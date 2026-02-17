@@ -99,8 +99,8 @@
     }
 
     const props = withDefaults(defineProps<Props>(), {
-        homeTitle: 'DASHBOARD',
-        homePath: '/dashboard',
+        homeTitle: 'DEALING ROOM',
+        homePath: '/dealing-room',
         showIcon: true,
         customBreadcrumb: () => ({})
     })

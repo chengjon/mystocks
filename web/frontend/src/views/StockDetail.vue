@@ -388,27 +388,20 @@ const loadTradingSummary = async (): Promise<void> => {
     const symbol = stockDetail.value.symbol
     if (!symbol) return
 
-    try {
-      const response = await dataApi.getTradingSummary(symbol, summaryPeriod.value)
-      if (response.success && response.data) {
-        tradingSummary.value = response.data
-      } else {
-        throw new Error('INVALID API RESPONSE')
-      }
-    } catch (apiError) {
-      console.warn('Trading summary API failed, using mock data:', apiError)
-      tradingSummary.value = {
-        price_change: parseFloat((Math.random() * 20 - 10).toFixed(2)),
-        price_change_pct: parseFloat((Math.random() * 10 - 5).toFixed(2)),
-        highest_price: parseFloat((parseFloat(stockDetail.value.price as string) + Math.random() * 10).toFixed(2)),
-        lowest_price: parseFloat((parseFloat(stockDetail.value.price as string) - Math.random() * 10).toFixed(2)),
-        total_volume: Math.floor(Math.random() * 10000000 + 1000000),
-        total_turnover: Math.floor(Math.random() * 100000000 + 10000000),
-        volatility: parseFloat((Math.random() * 20 + 5).toFixed(2)),
-        win_rate: parseFloat((Math.random() * 40 + 30).toFixed(2)),
-        sharpe_ratio: parseFloat((Math.random() * 4 - 2).toFixed(2)),
-        max_drawdown: parseFloat((Math.random() * -20 - 5).toFixed(2))
-      }
+    // TODO: Implement getTradingSummary API endpoint
+    // For now, use mock data as the API is not yet available
+    console.info('Trading summary API not implemented, using mock data for:', symbol)
+    tradingSummary.value = {
+      price_change: parseFloat((Math.random() * 20 - 10).toFixed(2)),
+      price_change_pct: parseFloat((Math.random() * 10 - 5).toFixed(2)),
+      highest_price: parseFloat((parseFloat(stockDetail.value.price as string) + Math.random() * 10).toFixed(2)),
+      lowest_price: parseFloat((parseFloat(stockDetail.value.price as string) - Math.random() * 10).toFixed(2)),
+      total_volume: Math.floor(Math.random() * 10000000 + 1000000),
+      total_turnover: Math.floor(Math.random() * 100000000 + 10000000),
+      volatility: parseFloat((Math.random() * 20 + 5).toFixed(2)),
+      win_rate: parseFloat((Math.random() * 40 + 30).toFixed(2)),
+      sharpe_ratio: parseFloat((Math.random() * 4 - 2).toFixed(2)),
+      max_drawdown: parseFloat((Math.random() * -20 - 5).toFixed(2))
     }
   } catch (error) {
     console.error('Failed to load trading summary:', error)

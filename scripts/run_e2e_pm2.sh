@@ -19,8 +19,9 @@ done
 
 # 3. 探测前端
 FOUND_PORT=""
+TARGET_FRONTEND_PORT="${FRONTEND_PORT:-3020}"
 for i in $(seq 1 $MAX_RETRIES); do
-    for port in {3000..3009}; do
+    for port in "$TARGET_FRONTEND_PORT" {3000..3009}; do
         if curl -s -f http://localhost:$port > /dev/null; then
             FOUND_PORT=$port
             echo "Frontend FOUND on $FOUND_PORT"

@@ -42,6 +42,7 @@
   --artdeco-bg-base: #141414;         // 丰富的炭黑 - 表面
   --artdeco-bg-card: #141414;         // 卡片背景
   --artdeco-bg-elevated: #1a1a1a;     // 提升表面
+  --artdeco-bg-header: #111118;       // ✨ 侧边栏/顶部栏背景
 
   // Foregrounds - 浅色前景系列
   --artdeco-fg-primary: #F2F0E4;      // 香槟奶油 - 主要文本
@@ -409,6 +410,11 @@
   --artdeco-z-30: 30;
   --artdeco-z-40: 40;
   --artdeco-z-50: 50;
+  --artdeco-z-fixed: 100; // ✨ 固定定位层级
+
+  // Sidebar Dimensions
+  --artdeco-sidebar-width: 260px;
+  --artdeco-sidebar-collapsed-width: 68px;
 }
 
 // ============================================

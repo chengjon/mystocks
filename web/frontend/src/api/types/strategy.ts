@@ -1,5 +1,5 @@
 // Auto-generated types for strategy domain
-// Generated at: 2026-02-16T20:48:47.507252
+// Generated at: 2026-02-17T09:47:17.534284
 
 export interface BacktestRequest {
   strategy_id?: string;

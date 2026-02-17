@@ -39,10 +39,10 @@
       <el-button
         size="small"
         type="primary"
-        :icon="RefreshRight"
         :loading="loading"
         @click="handleRefresh"
       >
+        <el-icon><RefreshRight /></el-icon>
         刷新
       </el-button>
 

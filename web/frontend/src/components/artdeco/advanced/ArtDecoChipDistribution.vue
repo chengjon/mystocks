@@ -401,6 +401,9 @@
         range: string
         percentage?: number
         volume?: number
+        count?: number
+        chipVolume?: number
+        avgCost?: number
     }
 
     interface StabilityTimelineItem {
@@ -460,8 +463,8 @@
         formatDate,
         renderDistributionChart
     } = useArtDecoChipDistribution({
-        data: toRef(props, 'data') as { value: Record<string, unknown> },
-        symbol: toRef(props, 'symbol'),
+        data: toRef(props, 'data') as unknown as { value: Record<string, unknown> },
+        symbol: toRef(props, 'symbol') as unknown as Ref<string>,
         loading: toRef(props, 'loading')
     })
 

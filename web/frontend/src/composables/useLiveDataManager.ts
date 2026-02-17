@@ -1,6 +1,6 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useMenuService } from '@/services/menuService'
-import type { MenuItem } from '@/layouts/MenuConfig.enhanced'
+import type { MenuItem } from '@/layouts/MenuConfig'
 
 /**
  * Live Data Manager Composable

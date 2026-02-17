@@ -11,7 +11,7 @@
 
 import { apiClient } from '@/api/apiClient'
 import type { UnifiedResponse } from '@/api/types/common'
-import type { MenuItem } from '@/layouts/MenuConfig.enhanced'
+import type { MenuItem } from '@/layouts/MenuConfig'
 
 export interface MenuDataFetchOptions {
   timeout?: number // 超时时间（毫秒）

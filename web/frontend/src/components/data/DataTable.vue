@@ -144,11 +144,12 @@ const sortedData = computed(() => {
   })
 })
 
-function getRowKey(row: Record<string, unknown>, index: number) {
-  return row[props.rowKey] || index
+function getRowKey(row: Record<string, unknown>, index: number): string | number {
+  const key = row[props.rowKey]
+  return (typeof key === 'string' || typeof key === 'number') ? key : index
 }
 
-function getRowValue(row: Record<string, unknown>, key: string) {
+function getRowValue(row: Record<string, unknown>, key: string): unknown {
   return key.split('.').reduce((obj: Record<string, unknown> | undefined, k) => obj?.[k] as Record<string, unknown> | undefined, row)
 }
 
@@ -158,7 +159,7 @@ function formatCellValue(row: Record<string, unknown>, col: Column) {
     return col.format(value)
   }
   if (typeof value === 'number') {
-    return value.toLocaleString('zh-CN', {
+    return (value as number).toLocaleString('zh-CN', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     })
@@ -179,11 +180,11 @@ function getCellClass(row: Record<string, unknown>, col: Column) {
   return classes
 }
 
-function isRowActive(row: unknown) {
+function isRowActive(row: Record<string, unknown>) {
   return props.activeRow && getRowKey(row, 0) === getRowKey(props.activeRow, 0)
 }
 
-function handleRowClick(row: unknown, index: number) {
+function handleRowClick(row: Record<string, unknown>, index: number) {
   emit('row-click', row, index)
 }
 

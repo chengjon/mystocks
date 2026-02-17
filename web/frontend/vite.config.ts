@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 import { visualizer } from 'rollup-plugin-visualizer'
@@ -6,56 +6,19 @@ import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import commonjs from 'vite-plugin-commonjs'
-import { VitePWA } from 'vite-plugin-pwa'
-
-// 查找可用端口的函数
-async function findAvailablePort(startPort: number, endPort: number): Promise<number> {
-  const net = await import('net');
-
-  return new Promise((resolve, reject) => {
-    function checkPort(port: number) {
-      if (port > endPort) {
-        reject(new Error(`No available port found in range ${startPort}-${endPort}`));
-        return;
-      }
-
-      const server = net.createServer();
-
-      server.listen(port, '0.0.0.0', () => {
-        server.once('close', () => {
-          resolve(port);
-        });
-        server.close();
-      });
-
-      server.on('error', () => {
-        checkPort(port + 1);
-      });
-    }
-
-    checkPort(startPort);
-  });
-}
+// import { VitePWA } from 'vite-plugin-pwa' // PWA 禁用
 
 // https://vitejs.dev/config/
-export default defineConfig(async ({ command }) => {
-  let availablePort = 3000; // 默认端口
-
-  if (command === 'serve') {
-    try {
-      // 端口分配规则: 前端使用 3000-3009 范围
-      availablePort = await findAvailablePort(3000, 3009);
-      console.log(`🚀 Using available port: ${availablePort}`);
-    } catch (error) {
-      console.error(`❌ ${(error as Error).message}`);
-      process.exit(1);
-    }
-  }
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  const devPort = parseInt(env.FRONTEND_PORT || process.env.PORT || '3020')
+  const backendPort = env.BACKEND_PORT || '8000'
+  const backendUrl = `http://localhost:${backendPort}`
 
   return {
     define: {
-      'import.meta.env.VITE_USE_MOCK_DATA': JSON.stringify(process.env.VITE_USE_MOCK_DATA === 'true'),
-      'import.meta.env.VITE_API_BASE_URL': JSON.stringify(process.env.VITE_API_BASE_URL || '/api')
+      'import.meta.env.VITE_USE_MOCK_DATA': JSON.stringify(env.VITE_USE_MOCK_DATA === 'true'),
+      'import.meta.env.VITE_API_BASE_URL': JSON.stringify(env.VITE_API_BASE_URL || '/api')
     },
   plugins: [
       vue(),
@@ -79,83 +42,9 @@ export default defineConfig(async ({ command }) => {
         gzipSize: true,
         brotliSize: true,
         open: false
-      }),
-
-      // PWA插件 - 生成Service Worker和Web App Manifest
-      VitePWA({
-        registerType: 'autoUpdate',
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
-        manifest: {
-          name: 'MyStocks - Professional Quantitative Trading Platform',
-          short_name: 'MyStocks',
-          description: 'Advanced quantitative trading platform with real-time market data, technical analysis, and automated trading strategies',
-          theme_color: '#D4AF37',
-          background_color: '#0A0A0A',
-          display: 'standalone',
-          orientation: 'any',
-          scope: '/',
-          start_url: '/',
-          icons: [
-            {
-              src: 'icons/icon-192.png',
-              sizes: '192x192',
-              type: 'image/png',
-              purpose: 'any maskable'
-            },
-            {
-              src: 'icons/icon-512.png',
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'any maskable'
-            }
-          ]
-        },
-        workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-          runtimeCaching: [
-            {
-              urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-              handler: 'CacheFirst',
-              options: {
-                cacheName: 'google-fonts-cache',
-                expiration: {
-                  maxEntries: 10,
-                  maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
-                },
-                cacheKeyWillBeUsed: async ({ request }) => {
-                  return `${request.url}?${Date.now()}`
-                }
-              }
-            },
-            {
-              urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-              handler: 'CacheFirst',
-              options: {
-                cacheName: 'google-fonts-static-cache',
-                expiration: {
-                  maxEntries: 10,
-                  maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
-                }
-              }
-            },
-            {
-              urlPattern: ({ url }) => url.pathname.startsWith('/api/'),
-              handler: 'NetworkFirst',
-              options: {
-                cacheName: 'api-cache',
-                expiration: {
-                  maxEntries: 100,
-                  maxAgeSeconds: 60 * 5 // 5 minutes
-                },
-                networkTimeoutSeconds: 10
-              }
-            }
-          ]
-        },
-        devOptions: {
-          enabled: false // Disable PWA in development
-        }
       })
+      
+      // PWA 插件已禁用以解决 Node 24 兼容性问题
     ],
     resolve: {
       mainFields: ['module', 'main'],  // 优先使用ESM版本
@@ -173,11 +62,23 @@ export default defineConfig(async ({ command }) => {
       }
     },
     server: {
-      host: '0.0.0.0',  // 监听所有网卡，允许外部访问
-      port: availablePort,
+      host: '0.0.0.0',
+      port: devPort,
+      strictPort: true,
       proxy: {
         '/api': {
-          target: 'http://localhost:8000', // 后端运行端口
+          target: backendUrl,
+          changeOrigin: true
+        }
+      }
+    },
+    preview: {
+      host: '0.0.0.0',
+      port: devPort,
+      strictPort: true,
+      proxy: {
+        '/api': {
+          target: backendUrl,
           changeOrigin: true
         }
       }
@@ -244,23 +145,24 @@ export default defineConfig(async ({ command }) => {
       // CSS代码分割 - Phase 1.3.1
       cssCodeSplit: true,
       // 目标浏览器支持 - Phase 1.3.3
-      target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14']
-    },
-    // 优化依赖预构建 - Phase 1.3.3 (增量构建)
-    optimizeDeps: {
-      include: [
-        'vue',
-        'vue-router',
-        'pinia',
-        'klinecharts',
-        'axios'  // 🔧 修复apiClient.ts加载问题 - 预构建axios
-      ],
-      // 排除不需要预构建的包（按需引入）
-      exclude: [
-        'echarts'
-        // 移除dayjs排除，让Vite预构建dayjs及其插件
-        // 移除了element-plus排除，现在使用按需导入
-      ]
+      target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14'],
+      // 优化依赖预构建 - Phase 1.3.3 (增量构建)
+      optimizeDeps: {
+        include: [
+          'vue',
+          'vue-router',
+          'pinia',
+          'klinecharts',
+          'axios'  // 🔧 修复apiClient.ts加载问题 - 预构建axios
+        ],
+        // 排除不需要预构建的包（按需引入）
+        exclude: [
+          'echarts'
+          // 移除dayjs排除，让Vite预构建dayjs及其插件
+          // 移除了element-plus排除，现在使用按需导入
+        ]
+      }
     }
-  };
+
+  }
 })

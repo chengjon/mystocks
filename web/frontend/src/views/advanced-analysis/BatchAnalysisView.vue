@@ -56,6 +56,7 @@
     interface AnalysisResult {
         success: boolean
         data?: AnalysisData
+        error?: string
     }
 
     interface Props {

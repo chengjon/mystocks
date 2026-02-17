@@ -109,7 +109,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMenuStore } from '@/stores/menuStore'
 import ArtDecoIcon from '@/components/artdeco/core/ArtDecoIcon.vue'
-import { ARTDECO_MENU_ENHANCED, type MenuItem } from '@/layouts/MenuConfig.enhanced'
+import { ARTDECO_MENU_ENHANCED, type MenuItem } from '@/layouts/MenuConfig'
 
 const route = useRoute()
 const router = useRouter()

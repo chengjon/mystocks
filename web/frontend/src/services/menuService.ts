@@ -9,8 +9,8 @@
  */
 
 import { ref, reactive } from 'vue'
-import type { MenuItem } from '@/layouts/MenuConfig.enhanced'
-import { ARTDECO_MENU_ENHANCED } from '@/layouts/MenuConfig.enhanced'
+import type { MenuItem } from '@/layouts/MenuConfig'
+import { ARTDECO_MENU_ENHANCED } from '@/layouts/MenuConfig'
 import { API_BASE_URL, WS_BASE_URL } from '@/config/runtime-endpoints'
 
 // ========== 类型定义 ==========

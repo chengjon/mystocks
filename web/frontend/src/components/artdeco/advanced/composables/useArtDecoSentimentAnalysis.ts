@@ -12,18 +12,43 @@ interface SentimentDataType {
     neutral?: number
 }
 
+interface ResearchReport {
+    id?: string | number
+    broker?: string
+    title?: string
+    rating?: string
+    targetPrice?: number
+    upside?: number
+    date?: string
+}
+
 interface ResearchDataType {
     total?: number
     avgRating?: number
     avgTargetPrice?: number
     avgUpside?: number
-    recent?: unknown[]
+    recent?: ResearchReport[]
+}
+
+interface NewsSegment {
+    type?: string
+    startAngle?: number
+    endAngle?: number
+    percentage?: number
+    count?: number
+}
+
+interface NewsDataType {
+    segments?: NewsSegment[]
+    total?: number
+    recent?: Record<string, unknown>[]
+    [key: string]: unknown
 }
 
 interface PropsData {
     sentiment?: SentimentDataType
     research?: ResearchDataType
-    news?: Record<string, unknown>
+    news?: NewsDataType
     popularity?: Record<string, unknown>
 }
 

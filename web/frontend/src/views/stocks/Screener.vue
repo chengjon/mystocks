@@ -318,7 +318,7 @@
       gap: var(--spacing-lg);
       padding: var(--spacing-lg);
       background: var(--color-bg-primary);
-      min-height: 100vh);
+      min-height: 100vh;
     }
 
     .page-header {

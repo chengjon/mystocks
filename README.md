@@ -706,6 +706,44 @@ quality_report = manager.quality_monitor.generate_quality_report()
 print(f"数据质量评分: {quality_report['overall_score']:.2f}")
 ```
 
+## 🛠️ 开发环境配置
+
+为了确保开发与测试环境的一致性，系统采用固定的端口分配策略。
+
+### 1. 端口分配规范 (Port Allocation)
+
+| 服务名称 | 默认端口 | 备用端口 | 访问地址 |
+| :--- | :--- | :--- | :--- |
+| **前端开发/测试** | `3000` | `3001` | `http://localhost:3000` |
+| **后端 API/测试** | `8000` | `8001` | `http://localhost:8000` |
+| **时序数据库 (TDengine)** | `6030` | `6041 (REST)` | - |
+| **关系数据库 (PostgreSQL)** | `5438` | `5432` | - |
+| **缓存中心 (Redis)** | `6379` | - | - |
+
+### 2. 端口冲突解决 (Troubleshooting)
+
+若启动服务时提示端口已被占用（Address already in use），请按以下步骤操作：
+
+**查看端口占用进程:**
+```bash
+# 示例：查看 3000 端口
+lsof -i :3000
+```
+
+**强制释放进程:**
+```bash
+# 找到 PID 后执行
+kill -9 <PID>
+```
+
+**一键清理残留进程 (Linux/WSL2):**
+```bash
+# 清理前端开发进程
+pkill -f "node"
+# 清理后端开发进程
+pkill -f "uvicorn"
+```
+
 ## 📁 文件与模块说明
 
 ### 🎯 根目录入口点文件

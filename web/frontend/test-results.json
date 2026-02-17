@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 4
+      "actualWorkers": 1
     },
     "preserveOutput": "always",
     "reporter": [
@@ -50,7 +50,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 4
+          "actualWorkers": 1
         },
         "id": "chromium-desktop",
         "name": "chromium-desktop",
@@ -59,14 +59,14 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 60000
+        "timeout": 30000
       },
       {
         "outputDir": "/opt/claude/mystocks_spec/web/frontend/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 4
+          "actualWorkers": 1
         },
         "id": "chrome-debug",
         "name": "chrome-debug",
@@ -75,7 +75,7 @@
         "testMatch": [
           "/.*chrome-devtools.*\\.spec\\.ts$/"
         ],
-        "timeout": 60000
+        "timeout": 30000
       }
     ],
     "shard": null,
@@ -88,246 +88,55 @@
   },
   "suites": [
     {
-      "title": "chrome-devtools-basic.spec.ts",
-      "file": "chrome-devtools-basic.spec.ts",
+      "title": "smoke.spec.ts",
+      "file": "smoke.spec.ts",
       "column": 0,
       "line": 0,
-      "specs": [],
-      "suites": [
+      "specs": [
         {
-          "title": "Chrome DevTools Basic Functionality Test",
-          "file": "chrome-devtools-basic.spec.ts",
-          "line": 3,
-          "column": 6,
-          "specs": [
+          "title": "smoke test",
+          "ok": true,
+          "tags": [],
+          "tests": [
             {
-              "title": "should load the main application",
-              "ok": true,
-              "tags": [],
-              "tests": [
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-desktop",
+              "projectName": "chromium-desktop",
+              "results": [
                 {
-                  "timeout": 60000,
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 963,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-02-16T19:11:40.113Z",
                   "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chrome-debug",
-                  "projectName": "chrome-debug",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 7876,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "Page title: MyStocks - Professional Stock Analysis\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-26T16:07:28.889Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "attachments": []
                 }
               ],
-              "id": "ff57148e7f7e6ed9aae0-1c9b87a386eb94215b61",
-              "file": "chrome-devtools-basic.spec.ts",
-              "line": 6,
-              "column": 7
-            },
-            {
-              "title": "should check browser console for errors",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chrome-debug",
-                  "projectName": "chrome-debug",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 9993,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "Console [error]: Failed to load resource: the server responded with a status of 500 (Internal Server Error)\n"
-                        },
-                        {
-                          "text": "Console [debug]: [vite] connecting...\n"
-                        },
-                        {
-                          "text": "Console [debug]: [vite] connected.\n"
-                        },
-                        {
-                          "text": "Console messages found: [\n  \u001b[32m'ERROR: Failed to load resource: the server responded with a status of 500 (Internal Server Error)'\u001b[39m\n]\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-26T16:07:28.877Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ff57148e7f7e6ed9aae0-cd94fbfe9ed9f2db9228",
-              "file": "chrome-devtools-basic.spec.ts",
-              "line": 22,
-              "column": 7
-            },
-            {
-              "title": "should check network requests",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chrome-debug",
-                  "projectName": "chrome-debug",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 10086,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "Request: GET http://localhost:3020/src/api/unifiedApiClient.ts?t=1769443556690\n"
-                        },
-                        {
-                          "text": "Request: GET http://localhost:3020/src/api/apiClient.ts\n"
-                        },
-                        {
-                          "text": "Request: GET http://localhost:3020/src/api/index.js?t=1769443556690\n"
-                        },
-                        {
-                          "text": "Request: GET http://localhost:3020/src/api/mockApiClient.ts\n"
-                        },
-                        {
-                          "text": "Total requests captured: 4\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-26T16:07:28.892Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ff57148e7f7e6ed9aae0-a7253106837af655cb1f",
-              "file": "chrome-devtools-basic.spec.ts",
-              "line": 52,
-              "column": 7
-            },
-            {
-              "title": "should check page performance metrics",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chrome-debug",
-                  "projectName": "chrome-debug",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 3,
-                      "status": "failed",
-                      "duration": 4282,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m30000\u001b[39m\nReceived:   \u001b[31mNaN\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m30000\u001b[39m\nReceived:   \u001b[31mNaN\u001b[39m\n    at /opt/claude/mystocks_spec/web/frontend/tests/chrome-devtools-basic.spec.ts:98:42",
-                        "location": {
-                          "file": "/opt/claude/mystocks_spec/web/frontend/tests/chrome-devtools-basic.spec.ts",
-                          "column": 42,
-                          "line": 98
-                        },
-                        "snippet": "\u001b[0m \u001b[90m  96 |\u001b[39m     \n \u001b[90m  97 |\u001b[39m     expect(loadTime)\u001b[33m.\u001b[39mtoBeLessThan(\u001b[35m30000\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  98 |\u001b[39m     expect(performanceMetrics\u001b[33m.\u001b[39mtotalTime)\u001b[33m.\u001b[39mtoBeLessThan(\u001b[35m30000\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m  99 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 100 |\u001b[39m })\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/opt/claude/mystocks_spec/web/frontend/tests/chrome-devtools-basic.spec.ts",
-                            "column": 42,
-                            "line": 98
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m30000\u001b[39m\nReceived:   \u001b[31mNaN\u001b[39m\n\n\u001b[0m \u001b[90m  96 |\u001b[39m     \n \u001b[90m  97 |\u001b[39m     expect(loadTime)\u001b[33m.\u001b[39mtoBeLessThan(\u001b[35m30000\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  98 |\u001b[39m     expect(performanceMetrics\u001b[33m.\u001b[39mtotalTime)\u001b[33m.\u001b[39mtoBeLessThan(\u001b[35m30000\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m  99 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 100 |\u001b[39m })\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /opt/claude/mystocks_spec/web/frontend/tests/chrome-devtools-basic.spec.ts:98:42\u001b[22m"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "Page load time: 3491ms\n"
-                        },
-                        {
-                          "text": "Performance metrics: { domContentLoaded: \u001b[33mNaN\u001b[39m, loadComplete: \u001b[33mNaN\u001b[39m, totalTime: \u001b[33mNaN\u001b[39m }\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-26T16:07:28.892Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/opt/claude/mystocks_spec/web/frontend/test-results/chrome-devtools-basic-Chro-23550-ck-page-performance-metrics-chrome-debug/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/opt/claude/mystocks_spec/web/frontend/test-results/chrome-devtools-basic-Chro-23550-ck-page-performance-metrics-chrome-debug/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/opt/claude/mystocks_spec/web/frontend/test-results/chrome-devtools-basic-Chro-23550-ck-page-performance-metrics-chrome-debug/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/opt/claude/mystocks_spec/web/frontend/tests/chrome-devtools-basic.spec.ts",
-                        "column": 42,
-                        "line": 98
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "ff57148e7f7e6ed9aae0-d65e4329aee57efc9d50",
-              "file": "chrome-devtools-basic.spec.ts",
-              "line": 75,
-              "column": 7
+              "status": "expected"
             }
-          ]
+          ],
+          "id": "4219922fea2e2bd3c691-eebeabed43264ff315ca",
+          "file": "smoke.spec.ts",
+          "line": 3,
+          "column": 5
         }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-01-26T16:07:28.257Z",
-    "duration": 15334.579,
-    "expected": 3,
+    "startTime": "2026-02-16T19:11:39.467Z",
+    "duration": 1832.145,
+    "expected": 1,
     "skipped": 0,
-    "unexpected": 1,
+    "unexpected": 0,
     "flaky": 0
   }
 }

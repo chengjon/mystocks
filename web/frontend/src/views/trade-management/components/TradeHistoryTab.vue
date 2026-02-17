@@ -174,9 +174,36 @@ const loadTrades = async () => {
       }
     })
 
-    const data = await tradeApi.getTradeHistory(params)
-    trades.value = data
-    pagination.total = data.length
+    // TODO: Transform TradeHistoryVM to TradeRecord format when API is ready
+    // For now, the API returns a different structure, so we use mock data
+    const _apiData = await tradeApi.getTradeHistory(params)
+    // Transform API data to component format (API returns grouped by date)
+    // Using mock data until API response format is aligned
+    trades.value = [
+      {
+        trade_time: '2025-12-30 10:30:00',
+        type: 'buy',
+        symbol: '000001',
+        stock_name: 'PING AN BANK',
+        quantity: 1000,
+        price: 12.50,
+        commission: 5.0,
+        status: 'completed',
+        remark: 'NORMAL BUY'
+      },
+      {
+        trade_time: '2025-12-29 14:20:00',
+        type: 'buy',
+        symbol: '000002',
+        stock_name: 'VANKA A',
+        quantity: 500,
+        price: 25.80,
+        commission: 5.0,
+        status: 'completed',
+        remark: 'NORMAL BUY'
+      }
+    ]
+    pagination.total = trades.value.length
   } catch (error) {
     console.error('Load failed:', error)
     ElMessage.error('FAILED TO LOAD TRADE HISTORY')

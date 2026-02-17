@@ -3,7 +3,7 @@ import { defineConfig } from 'cypress';
 export default defineConfig({
   e2e: {
     // We'll serve the app using a dev server
-    baseUrl: 'http://localhost:3000',
+    baseUrl: 'http://localhost:3020',
     // Support video recording
     video: false,
     // Screenshot configuration
@@ -16,7 +16,7 @@ export default defineConfig({
     // Page load timeout
     pageLoadTimeout: 60000,
     // Response timeout
-    responseTimeout: 30000,
+    responseTimeout: 30200,
     // Support Chrome devtools
     chromeWebSecurity: false,
     // Experimental features

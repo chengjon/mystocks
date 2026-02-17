@@ -3,12 +3,13 @@ module.exports = {
     {
       name: 'mystocks-backend',
       script: 'uvicorn',
-      args: 'app.main:app --host 0.0.0.0 --port 8000 --reload',
+      args: `app.main:app --host 0.0.0.0 --port ${process.env.BACKEND_PORT || 8000} --reload`,
       cwd: '/opt/claude/mystocks_spec/web/backend',
       interpreter: 'python3',
       env: {
         PYTHONPATH: '/opt/claude/mystocks_spec/web/backend',
-        NODE_ENV: 'development'
+        NODE_ENV: 'development',
+        PORT: process.env.BACKEND_PORT || 8000
       },
       error_file: '/root/.pm2/logs/mystocks-backend-error.log',
       out_file: '/root/.pm2/logs/mystocks-backend-out.log',

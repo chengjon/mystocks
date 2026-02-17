@@ -72,7 +72,7 @@ import { ref, computed, nextTick, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMenuStore } from '@/stores/menuStore'
 import ArtDecoIcon from '@/components/artdeco/core/ArtDecoIcon.vue'
-import { ARTDECO_MENU_ENHANCED } from '@/layouts/MenuConfig.enhanced'
+import { ARTDECO_MENU_ENHANCED } from '@/layouts/MenuConfig'
 
 // Types
 type CommandType = 'navigation' | 'action' | 'search' | 'external'

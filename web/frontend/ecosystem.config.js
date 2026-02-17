@@ -8,51 +8,36 @@
 module.exports = {
   apps: [
     {
-      // 前端服务：Vite开发服务器
+      // 前端服务：Vite Preview (生产模式) - 解决Node 24不稳定性
       name: 'mystocks-frontend',
       script: 'npm',
-      args: 'run dev',
+      args: 'run preview -- --port 3020 --host 0.0.0.0 --strictPort',
       cwd: '/opt/claude/mystocks_spec/web/frontend',
       
       // Environment configuration
       env: {
-        NODE_ENV: 'development',
-        PORT: 3020,  // Vite会查找3000-3009范围可用端口，实际可能使用3002
+        NODE_ENV: 'production',
+        PORT: 3020,  // 固定端口
+        FRONTEND_PORT: 3020,
         HOST: '0.0.0.0',
+        VITE_API_BASE_URL: '/api'
       },
       
       // Instance configuration
       instances: 1,
       exec_mode: 'fork',
       autorestart: true,
-      max_restarts: 30,
-      min_uptime: '30s',  // ✅ 增加到30秒，给Vite更多启动时间
-      max_memory_restart: '2G',  // 限制内存重启次数
-      restart_delay: 10000,  // 10秒重启延迟
+      max_restarts: 10,
+      min_uptime: '5s',
       
-      // 🆕 Logging configuration - 专门为前端服务配置
-      log_file: './logs/frontend-frontend-error.log',
-      error_file: './logs/frontend-frontend-error.log',
-      out_file: './logs/frontend-frontend-out.log',
-      log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
+      // Logging
+      log_file: './logs/frontend-access.log',
+      error_file: './logs/frontend-error.log',
+      out_file: './logs/frontend-out.log',
       merge_logs: true,
-      source_map_support: true,
       
-      // Process management
-      kill_timeout: 5000,
-      listen_timeout: 10000,
-      shutdown_with_message: true,
-      
-      // Instance variables
-      node_args: '--max-old-space-size=1024',
-      
-      // Monitoring
-      monitor_command: 'pm2 monit mystocks-frontend',
-      
-      // 🔧 稳定性优化
-      wait_ready: true,
-      listen_timeout: 10000,
-      exp_backoff_restart_delay: 2000,
+      // Stability
+      exp_backoff_restart_delay: 1000,
     },
     
     {

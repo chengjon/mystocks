@@ -1,9 +1,9 @@
-import { createRouter, createWebHistory, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { authGuard } from './guards'
 
 /**
- * MyStocks Frontend Router Configuration (ArtDeco v3.1 Baseline)
- * Synchronized with menu.config.js - 2026-02-15
+ * MyStocks Frontend Router - V3.2 Elite
+ * Architecture Aligned Navigation & Deep Linking
  */
 
 declare module 'vue-router' {
@@ -13,6 +13,8 @@ declare module 'vue-router' {
     icon?: string
     api?: string
     layout?: 'ArtDeco' | 'Blank'
+    isDetail?: boolean
+    group?: string
   }
 }
 
@@ -20,20 +22,21 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('@/layouts/ArtDecoLayoutEnhanced.vue'),
-    redirect: '/dashboard',
+    redirect: '/dealing-room',
     children: [
-      // 1. Dashboard
+      // 0. Dealing Room (The Soul of the System)
       {
-        path: 'dashboard',
-        name: 'dashboard',
+        path: 'dealing-room',
+        name: 'dealing-room',
         component: () => import('@/views/artdeco-pages/ArtDecoDashboard.vue'),
-        meta: { title: '指挥中心', requiresAuth: true, api: '/api/v1/market/overview' }
+        meta: { title: '交易室', requiresAuth: true, api: '/api/v1/market/overview' }
       },
 
-      // 2. Market Domain
+      // 1. Market Domain (市场行情)
       {
         path: 'market',
         redirect: '/market/realtime',
+        meta: { group: 'market' },
         children: [
           {
             path: 'realtime',
@@ -42,181 +45,240 @@ const routes: RouteRecordRaw[] = [
             meta: { title: '实时行情', requiresAuth: true, api: '/api/v1/market/quotes' }
           },
           {
-            path: 'overview',
-            name: 'market-overview',
-            component: () => import('@/views/artdeco-pages/market-data-tabs/ArtDecoMarketOverview.vue'),
-            meta: { title: '市场概览', requiresAuth: true, api: '/api/v1/market/overview' }
-          },
-          {
             path: 'technical',
-            name: 'market-kline',
+            name: 'market-technical',
             component: () => import('@/views/artdeco-pages/market-tabs/MarketKLineTab.vue'),
-            meta: { title: 'K线图', requiresAuth: true, api: '/api/v1/market/kline' }
+            meta: { title: 'K线分析', requiresAuth: true, api: '/api/v1/market/kline' }
           },
           {
-            path: 'wencai',
-            name: 'market-wencai',
-            component: () => import('@/views/artdeco-pages/ArtDecoMarketData.vue'),
-            meta: { title: '问财选股', requiresAuth: true, api: '/api/v1/market/wencai' }
-          },
+            path: 'lhb',
+            name: 'market-lhb',
+            component: () => import('@/views/artdeco-pages/market-data-tabs/DragonTigerAnalysis.vue'),
+            meta: { title: '龙虎榜', requiresAuth: true, api: '/api/data/lhb' }
+          }
+        ]
+      },
+
+      // 2. Data Analysis (数据分析)
+      {
+        path: 'data',
+        redirect: '/data/industry',
+        meta: { group: 'data' },
+        children: [
           {
-            path: 'etf',
-            name: 'market-etf',
-            component: () => import('@/views/artdeco-pages/market-tabs/MarketETFTab.vue'),
-            meta: { title: 'ETF行情', requiresAuth: true, api: '/api/v1/market/etf' }
+            path: 'industry',
+            name: 'data-industry',
+            component: () => import('@/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue'),
+            meta: { title: '板块动向', requiresAuth: true, api: '/api/akshare_market/boards' }
           },
           {
             path: 'concept',
-            name: 'market-concept',
+            name: 'data-concept',
             component: () => import('@/views/artdeco-pages/market-tabs/MarketConceptTab.vue'),
-            meta: { title: '概念板块', requiresAuth: true, api: '/api/v1/market/concept' }
-          }
-        ]
-      },
-
-      // 3. Technical Analysis
-      {
-        path: 'technical',
-        redirect: '/technical/indicators',
-        children: [
-          {
-            path: 'indicators',
-            name: 'technical-indicators',
-            component: () => import('@/views/artdeco-pages/technical-tabs/TechnicalScannerTab.vue'),
-            meta: { title: '技术指标', requiresAuth: true, api: '/api/v1/data/stocks' }
+            meta: { title: '概念动向', requiresAuth: true, api: '/api/akshare_market/boards' }
           },
           {
-            path: 'analysis',
-            name: 'technical-analysis',
-            component: () => import('@/views/artdeco-pages/ArtDecoTechnicalAnalysis.vue'),
-            meta: { title: '综合分析', requiresAuth: true, api: '/api/v1/market/analysis' }
+            path: 'fund-flow',
+            name: 'data-fund-flow',
+            component: () => import('@/views/artdeco-pages/market-data-tabs/FundFlowAnalysis.vue'),
+            meta: { title: '资金流向', requiresAuth: true, api: '/api/akshare_market/fund_flow' }
           }
         ]
       },
 
-      // 4. Strategy Domain
+      // 3. Watchlist (自选管理)
       {
-        path: 'strategy',
-        redirect: '/strategy/management',
+        path: 'watchlist',
+        redirect: '/watchlist/manage',
+        meta: { group: 'watchlist' },
         children: [
           {
-            path: 'management',
-            name: 'strategy-management',
+            path: 'manage',
+            name: 'watchlist-manage',
+            component: () => import('@/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue'),
+            meta: { title: '组合管理', requiresAuth: true, api: '/api/watchlist' }
+          },
+          {
+            path: 'signals',
+            name: 'watchlist-signals',
+            component: () => import('@/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue'),
+            meta: { title: '信号雷达', requiresAuth: true, api: '/api/v1/trade/signals' }
+          },
+          {
+            path: 'screener',
+            name: 'watchlist-screener',
+            component: () => import('@/views/stocks/Screener.vue'),
+            meta: { title: '策略选股', requiresAuth: true, api: '/api/data/stocks' }
+          }
+        ]
+      },
+
+      // 4. Strategy (策略管理)
+      {
+        path: 'strategy',
+        redirect: '/strategy/repo',
+        meta: { group: 'strategy' },
+        children: [
+          {
+            path: 'repo',
+            name: 'strategy-repo',
             component: () => import('@/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue'),
-            meta: { title: '策略管理', requiresAuth: true, api: '/api/v1/strategy/list' }
+            meta: { title: '策略仓库', requiresAuth: true, api: '/api/v1/strategy/list' }
           },
           {
             path: 'backtest',
             name: 'strategy-backtest',
             component: () => import('@/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue'),
-            meta: { title: '回测分析', requiresAuth: true, api: '/api/v1/strategy/backtest' }
+            meta: { title: '回测引擎', requiresAuth: true, api: '/api/v1/strategy/backtest' }
           },
           {
-            path: 'risk',
-            name: 'strategy-risk',
-            component: () => import('@/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue'),
-            meta: { title: '策略参数', requiresAuth: true, api: '/api/v1/strategy/risk' }
+            path: 'gpu',
+            name: 'strategy-gpu',
+            component: () => import('@/views/strategy/BacktestGPU.vue'),
+            meta: { title: '加速监控', requiresAuth: true }
           },
           {
-            path: 'signals',
-            name: 'strategy-signals',
-            component: () => import('@/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue'),
-            alias: '/trading/signals', // 对齐菜单配置
-            meta: { title: '信号监控', requiresAuth: true, api: '/api/v1/trade/signals' }
+            path: 'opt',
+            name: 'strategy-opt',
+            component: () => import('@/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue'),
+            meta: { title: '参数优化', requiresAuth: true }
+          },
+          {
+            path: 'pos',
+            name: 'strategy-pos',
+            component: () => import('@/views/artdeco-pages/stock-management-tabs/PortfolioMonitor.vue'),
+            meta: { title: '仓位管理', requiresAuth: true }
           }
         ]
       },
 
-      // 5. Risk Management
+      // 5. Trade (交易管理)
+      {
+        path: 'trade',
+        redirect: '/trade/terminal',
+        meta: { group: 'trade' },
+        children: [
+          {
+            path: 'positions',
+            name: 'trade-positions',
+            component: () => import('@/views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue'),
+            meta: { title: '头寸管理', requiresAuth: true }
+          },
+          {
+            path: 'terminal',
+            name: 'trade-terminal',
+            component: () => import('@/views/TradingDashboard.vue'),
+            meta: { title: '交易操作', requiresAuth: true }
+          },
+          {
+            path: 'signals',
+            name: 'trade-signals',
+            component: () => import('@/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue'),
+            meta: { title: '信号监控', requiresAuth: true }
+          },
+          {
+            path: 'portfolio',
+            name: 'trade-portfolio',
+            component: () => import('@/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue'),
+            meta: { title: '持仓透视', requiresAuth: true }
+          },
+          {
+            path: 'history',
+            name: 'trade-history',
+            component: () => import('@/views/artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue'),
+            meta: { title: '历史对账', requiresAuth: true }
+          }
+        ]
+      },
+
+      // 6. Risk (风险管理)
       {
         path: 'risk',
         redirect: '/risk/overview',
+        meta: { group: 'risk' },
         children: [
           {
             path: 'overview',
             name: 'risk-overview',
             component: () => import('@/views/artdeco-pages/risk-tabs/RiskOverviewTab.vue'),
-            meta: { title: '风险概览', requiresAuth: true, api: '/api/v1/risk/overview' }
+            meta: { title: '风险概览', requiresAuth: true }
+          },
+          {
+            path: 'pnl',
+            name: 'risk-pnl',
+            component: () => import('@/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue'),
+            meta: { title: '组合盈亏', requiresAuth: true }
+          },
+          {
+            path: 'stop-loss',
+            name: 'risk-stop-loss',
+            component: () => import('@/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue'),
+            meta: { title: '止损雷达', requiresAuth: true }
           },
           {
             path: 'alerts',
             name: 'risk-alerts',
             component: () => import('@/views/artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue'),
-            meta: { title: '告警中心', requiresAuth: true, api: '/api/v1/risk/alerts' }
+            meta: { title: '告警中心', requiresAuth: true }
           },
           {
-            path: 'announcement',
-            name: 'risk-announcement',
+            path: 'news',
+            name: 'risk-news',
             component: () => import('@/views/artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue'),
-            meta: { title: '公告监控', requiresAuth: true, api: '/api/v1/risk/announcement' }
+            meta: { title: '舆情预警', requiresAuth: true }
           }
         ]
       },
 
-      // 6. Monitoring (Stop-Loss)
-      {
-        path: 'monitoring',
-        redirect: '/monitoring/watchlists',
-        children: [
-          {
-            path: 'watchlists',
-            name: 'risk-stop-loss',
-            component: () => import('@/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue'),
-            meta: { title: '止损监控', requiresAuth: true, api: '/api/v1/monitoring/watchlists' }
-          }
-        ]
-      },
-
-      // 7. Watchlist & Portfolio
-      {
-        path: 'stocks',
-        redirect: '/stocks/management',
-        children: [
-          {
-            path: 'management',
-            name: 'watchlist-manage',
-            component: () => import('@/views/artdeco-pages/ArtDecoStockManagement.vue'),
-            alias: '/watchlist/manage', // 对齐菜单配置
-            meta: { title: '自选管理', requiresAuth: true, api: '/api/v1/stock/list' }
-          },
-          {
-            path: 'portfolio',
-            name: 'watchlist-portfolio',
-            component: () => import('@/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue'),
-            alias: ['/stocks/portfolio', '/trading/positions'], // 核心校准：支持两个路径
-            meta: { title: '持仓透视', requiresAuth: true, api: '/api/v1/trade/positions' }
-          }
-        ]
-      },
-
-      // 8. System Management
+      // 7. System (系统设置)
       {
         path: 'system',
-        redirect: '/system/monitoring',
+        redirect: '/system/config',
+        meta: { group: 'system' },
         children: [
           {
-            path: 'architecture',
-            name: 'system-architecture',
-            component: () => import('@/views/system/Architecture.vue'),
-            meta: { title: '系统架构', requiresAuth: true }
-          },
-          {
-            path: 'database-monitor',
-            name: 'system-database-monitor',
-            component: () => import('@/views/system/DatabaseMonitor.vue'),
-            meta: { title: '数据库监控', requiresAuth: true }
-          },
-          {
-            path: 'monitoring',
-            name: 'system-monitoring',
-            component: () => import('@/views/artdeco-pages/system-tabs/SystemHealthTab.vue'),
-            meta: { title: '运维监控', requiresAuth: true, api: '/health' }
-          },
-          {
-            path: 'settings',
+            path: 'config',
             name: 'system-config',
             component: () => import('@/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue'),
             meta: { title: '系统配置', requiresAuth: true }
+          },
+          {
+            path: 'health',
+            name: 'system-health',
+            component: () => import('@/views/artdeco-pages/system-tabs/SystemHealthTab.vue'),
+            meta: { title: '健康矩阵', requiresAuth: true }
+          },
+          {
+            path: 'api',
+            name: 'system-api',
+            component: () => import('@/views/artdeco-pages/system-tabs/ArtDecoMonitoringDashboard.vue'),
+            meta: { title: 'API 终端', requiresAuth: true }
+          },
+          {
+            path: 'data',
+            name: 'system-data',
+            component: () => import('@/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue'),
+            meta: { title: '数据源管理', requiresAuth: true }
+          }
+        ]
+      },
+
+      // Detail Pages (Details Groups - 同标准、同规则)
+      {
+        path: 'detail',
+        meta: { isDetail: true },
+        children: [
+          {
+            path: 'graphics/:symbol',
+            name: 'stock-graphics',
+            component: () => import('@/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue'),
+            meta: { title: '股票图形', requiresAuth: true }
+          },
+          {
+            path: 'news/:symbol',
+            name: 'stock-news',
+            component: () => import('@/views/announcement/AnnouncementMonitor.vue'),
+            meta: { title: '相关新闻', requiresAuth: true }
           }
         ]
       }

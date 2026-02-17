@@ -1,11 +1,11 @@
 <template>
   <div class="artdeco-layout">
-    <!-- Sidebar -->
+    <!-- Sidebar: Correctly imported collapsible sidebar -->
     <ArtDecoSidebar />
 
     <!-- Main Content Area -->
     <main class="artdeco-main" :class="{ 'sidebar-collapsed': preferenceStore.sidebarCollapsed }">
-      <!-- Top Bar -->
+      <!-- Top Bar: Core ArtDeco header -->
       <ArtDecoHeader 
         :unread-count="unreadCount"
         :user-name="userName"
@@ -17,7 +17,7 @@
       <!-- Breadcrumb Navigation -->
       <div class="artdeco-breadcrumb-container">
         <ArtDecoBreadcrumb
-          home-title="仪表盘"
+          home-title="指挥中心"
           home-path="/dashboard"
           :show-icon="true"
         />
@@ -50,18 +50,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useMenuStore } from '@/stores/menuStore'
 import { usePreferenceStore } from '@/stores/preferenceStore'
 import { useLiveDataManager } from '@/composables/useLiveDataManager'
-import ArtDecoSidebar from '@/components/layout/ArtDecoSidebar.vue'
-import ArtDecoHeader from '@/components/layout/ArtDecoHeader.vue'
+
+// ✅ 修正组件引用路径
+import ArtDecoSidebar from '@/components/artdeco/trading/ArtDecoCollapsibleSidebar.vue'
+import ArtDecoHeader from '@/components/artdeco/core/ArtDecoHeader.vue'
 import CommandPalette from '@/components/menu/CommandPalette.vue'
 import PerformanceMonitor from '@/components/common/PerformanceMonitor.vue'
 import ArtDecoBreadcrumb from '@/components/artdeco/core/ArtDecoBreadcrumb.vue'
 import ArtDecoIcon from '@/components/artdeco/core/ArtDecoIcon.vue'
-import { ARTDECO_MENU_ENHANCED } from './MenuConfig.enhanced'
+
+// ✅ 修正菜单配置引用
+import { ARTDECO_MENU_ITEMS } from './MenuConfig'
 
 // Store & Route
 const route = useRoute()
@@ -71,11 +75,11 @@ const preferenceStore = usePreferenceStore()
 // Layout State
 const unreadCount = ref(3) // Mock data
 const userName = ref('Admin User')
-const commandPaletteRef = ref<unknown>(null)
+const commandPaletteRef = ref<{ open: () => void } | null>(null)
 const devMode = import.meta.env.DEV
 
-// Live Data Management - Simplified for layout, detailed logic in specific views
-const { isConnected: isLiveDataConnected } = useLiveDataManager(ARTDECO_MENU_ENHANCED)
+// Live Data Management
+const { isConnected: isLiveDataConnected } = useLiveDataManager(ARTDECO_MENU_ITEMS)
 
 // Methods
 const openCommandPalette = () => {
@@ -84,12 +88,10 @@ const openCommandPalette = () => {
 
 const toggleNotifications = () => {
   console.log('Toggle notifications')
-  // Future: Open notification drawer
 }
 
 const toggleUserMenu = () => {
   console.log('Toggle user menu')
-  // Future: Open user dropdown
 }
 
 </script>
@@ -118,10 +120,13 @@ const toggleUserMenu = () => {
   overflow: hidden;
   position: relative;
   background: var(--artdeco-bg-global);
+  margin-left: var(--artdeco-sidebar-width); /* Default */
   
-  // Transition handled by sidebar component width change usually, 
-  // but if we need margin transition:
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.sidebar-collapsed {
+    margin-left: var(--artdeco-sidebar-collapsed-width);
+  }
 }
 
 // Breadcrumb Container
@@ -132,18 +137,17 @@ const toggleUserMenu = () => {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  height: 48px; // Fixed height for consistency
+  height: 48px;
 }
 
 // Content Container
 .artdeco-content {
   flex: 1;
-  overflow: hidden auto; // Main scrollable area
+  overflow: hidden auto;
   padding: var(--artdeco-space-6);
   position: relative;
   scroll-behavior: smooth;
   
-  // Custom scrollbar
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -164,7 +168,7 @@ const toggleUserMenu = () => {
   position: absolute;
   top: var(--artdeco-space-2);
   right: var(--artdeco-space-6);
-  background: rgb(244 67 54 / 10%); // Error color with opacity
+  background: rgba(244, 67, 54, 0.1);
   border: 1px solid var(--artdeco-error);
   color: var(--artdeco-error);
   padding: 4px 12px;
@@ -184,12 +188,12 @@ const toggleUserMenu = () => {
 }
 
 .fade-slide-enter-from {
-  opacity: 0%;
+  opacity: 0;
   transform: translateY(10px);
 }
 
 .fade-slide-leave-to {
-  opacity: 0%;
+  opacity: 0;
   transform: translateY(-10px);
 }
 </style>

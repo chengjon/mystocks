@@ -14,9 +14,12 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import echarts from '@/utils/echarts'
-import type { ECharts, EChartsOption } from 'echarts'
+import type { EChartsOption } from 'echarts'
 import { artDecoTheme } from '@/utils/echarts'
 import { Loading, WarningFilled } from '@element-plus/icons-vue'
+
+// Use ReturnType to get the actual type from echarts.init
+type EChartsInstance = ReturnType<typeof echarts.init>
 
 interface Props {
   chartType: 'line' | 'bar' | 'pie' | 'scatter'
@@ -38,7 +41,7 @@ const props = withDefaults(defineProps<Props>(), {
 const chartContainerRef = ref<HTMLElement>()
 const chartRef = ref<HTMLElement>()
 
-let chartInstance: ECharts | null = null
+let chartInstance: EChartsInstance | null = null
 const error = ref<string>('')
 
 const getChartOption = (): EChartsOption => {

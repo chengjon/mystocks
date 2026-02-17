@@ -18,7 +18,7 @@ Wave1	python_source	P2	800	807	./src/advanced_analysis/fundamental_analyzer.py	T
 Wave1	python_source	P2	800	806	./src/advanced_analysis/trading_signals_analyzer/trading_signal.py	TODO
 Wave1	python_source	P2	800	806	./src/advanced_analysis/chip_distribution_analyzer/chip_concentration.py	TODO
 Wave1	python_source	P2	800	805	./src/routes/stocks_routes/check_use_mock_data.py	TODO
-Wave3	ts	P0	500	2235	./web/frontend/src/api/types/common.ts	TODO
+Wave3	ts	P0	500	2235	./web/frontend/src/api/types/common.ts	DONE
 Wave3	ts	P1	500	978	./web/frontend/tests/e2e/strategy-management.spec.ts	TODO
 Wave3	ts	P2	500	703	./web/frontend/src/components/market/composables/useProKLineChart.ts	TODO
 Wave3	ts	P2	500	663	./tests/e2e/trade-management-page.spec.ts	TODO
@@ -55,3 +55,7 @@ Wave3	ts	P2	500	503	./web/frontend/src/composables/useAria/use-aria.ts	TODO
 Wave3	ts	P2	500	502	./web/frontend/src/layouts/MenuConfig.enhanced.ts	TODO
 Wave3	ts	P2	500	501	./web/frontend/src/utils/indicators-extended/part-1.ts	TODO
 Wave3	ts	P2	500	501	./web/frontend/src/utils/chartDataUtils.ts	TODO
+Wave3	ts	P0	500	3137	./web/frontend/src/api/types/generated-types.ts	DONE
+Wave2	js	P1	500	1289	./scripts/tests/web-usability-runner.js	DONE
+Wave4	test_js	P1	1000	1141	./web/frontend/tests/api-automation.spec.js	DONE
+Wave2	vue	P1	500	1140	./web/frontend/src/views/converted.archive/market-quotes.vue	EXCLUDED

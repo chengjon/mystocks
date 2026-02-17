@@ -10,12 +10,18 @@ const getFrontendPort = () => {
   if (process.env.FRONTEND_PORT) {
     return parseInt(process.env.FRONTEND_PORT);
   }
+  if (process.env.VITE_PORT) {
+    return parseInt(process.env.VITE_PORT);
+  }
+  if (process.env.PORT) {
+    return parseInt(process.env.PORT);
+  }
   // 然后使用.env文件中的配置
   if (process.env.FRONTEND_PORT_RANGE_START) {
     return parseInt(process.env.FRONTEND_PORT_RANGE_START);
   }
   // 默认值
-  return 3000;
+  return 3020;
 };
 
 const frontendPort = getFrontendPort();

@@ -145,7 +145,7 @@
   );
   margin: var(--artdeco-spacing-3) auto 0;
   position: relative;
-  opacity: 60%;
+  opacity: 0.6;
 }
 
 .artdeco-divider-ornament {
@@ -195,7 +195,7 @@
   text-transform: uppercase;
   letter-spacing: var(--artdeco-tracking-wide);
   flex: 1;
-  opacity: 80%;
+  opacity: 0.8;
 }
 
 .artdeco-nav-section-line {
@@ -338,11 +338,11 @@
 // ============================================
 @keyframes fade-in-up {
   from {
-    opacity: 0%;
+    opacity: 0;
     transform: translateY(20px);
   }
   to {
-    opacity: 100%;
+    opacity: 1;
     transform: translateY(0);
   }
 }

@@ -68,12 +68,25 @@ interface WebSocketMessage {
     analysis_type?: string
 }
 
+interface BatchAnalysisData {
+    overall_score?: number
+    overall_signal?: string
+    score?: number
+    [key: string]: unknown
+}
+
+interface BatchAnalysisResult {
+    success: boolean
+    data?: BatchAnalysisData
+    error?: string
+}
+
 export function useAdvancedAnalysis() {
 
     const loading = ref(false)
     const batchLoading = ref(false)
     const analysisResult = ref<AnalysisResult | null>(null)
-    const batchResults = ref<unknown>(null)
+    const batchResults = ref<Record<string, BatchAnalysisResult> | null>(null)
     const realtimeInterval = ref<NodeJS.Timeout | null>(null)
 
     const form = ref<AnalysisForm>({
@@ -197,7 +210,7 @@ export function useAdvancedAnalysis() {
             const response = await advancedAnalysisApi.batch(batchData) as ApiResponse
 
             if (response.success) {
-                batchResults.value = response.data
+                batchResults.value = response.data as Record<string, BatchAnalysisResult> | null
                 ElMessage.success('批量分析完成')
             } else {
                 ElMessage.error(response.message || '批量分析失败')
