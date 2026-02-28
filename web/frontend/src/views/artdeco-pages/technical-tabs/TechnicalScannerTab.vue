@@ -72,7 +72,7 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .technical-scanner-tab {
   padding: var(--artdeco-spacing-6);
@@ -90,10 +90,12 @@ onMounted(() => {
     margin: 0;
     font-size: var(--artdeco-text-2xl);
     color: var(--artdeco-gold-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wide);
   }
   
   .trace-info {
-    font-family: var(--font-mono);
+    font-family: var(--artdeco-font-mono);
     font-size: var(--artdeco-text-xs);
     color: var(--artdeco-fg-muted);
   }
@@ -109,17 +111,24 @@ onMounted(() => {
   padding: var(--artdeco-spacing-4);
   background: var(--artdeco-bg-card);
   border: 1px solid var(--artdeco-border-default);
+
   @include artdeco-hover-lift-glow;
 
   .stock-header {
     display: flex;
     justify-content: space-between;
     margin-bottom: var(--artdeco-spacing-4);
-    border-bottom: 1px solid rgb(212 175 55 / 20%);
+    border-bottom: 1px solid var(--artdeco-gold-opacity-20);
     padding-bottom: var(--artdeco-spacing-2);
 
-    .symbol { font-family: var(--font-mono); font-weight: bold; color: var(--artdeco-gold-primary); }
-    .name { font-size: var(--artdeco-text-sm); }
+    .symbol {
+      font-family: var(--artdeco-font-mono);
+      font-weight: bold;
+      color: var(--artdeco-gold-primary);
+    }
+    .name {
+      font-size: var(--artdeco-text-sm);
+    }
   }
 }
 
@@ -134,9 +143,11 @@ onMounted(() => {
     justify-content: space-between;
     font-size: var(--artdeco-text-xs);
     
-    .label { color: var(--artdeco-fg-muted); }
+    .label {
+      color: var(--artdeco-fg-muted);
+    }
     .value {
-      font-family: var(--font-mono);
+      font-family: var(--artdeco-font-mono);
       &.overbought { color: var(--artdeco-rise); }
       &.oversold { color: var(--artdeco-down); }
       &.rise { color: var(--artdeco-rise); }
@@ -146,13 +157,25 @@ onMounted(() => {
 }
 
 .trend-gauge {
-  .gauge-label { font-size: 10px; color: var(--artdeco-fg-muted); text-transform: uppercase; margin-bottom: 4px; }
+  .gauge-label {
+    font-size: 10px;
+    color: var(--artdeco-fg-muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
   .gauge-bar {
     height: 4px;
     background: var(--artdeco-bg-elevated);
     margin-bottom: 4px;
-    .gauge-fill { height: 100%; transition: width 0.5s ease; }
+    .gauge-fill {
+      height: 100%;
+      transition: width 0.5s ease;
+    }
   }
-  .gauge-value { font-family: var(--font-mono); font-size: 10px; text-align: right; }
+  .gauge-value {
+    font-family: var(--artdeco-font-mono);
+    font-size: 10px;
+    text-align: right;
+  }
 }
 </style>

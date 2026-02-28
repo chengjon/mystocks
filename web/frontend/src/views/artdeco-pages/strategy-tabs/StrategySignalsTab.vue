@@ -64,7 +64,7 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .strategy-signals-tab {
   padding: var(--artdeco-spacing-6);
@@ -78,7 +78,20 @@ onMounted(() => {
   border-bottom: 2px solid var(--artdeco-gold-primary);
   padding-bottom: var(--artdeco-spacing-2);
 
-  .section-title { font-size: var(--artdeco-text-2xl); color: var(--artdeco-gold-primary); text-transform: uppercase; }
+  .section-title {
+    margin: 0;
+    font-size: var(--artdeco-text-2xl);
+    color: var(--artdeco-gold-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wide);
+  }
+
+  .trace-id {
+    font-family: var(--artdeco-font-mono);
+    font-size: var(--artdeco-text-xs);
+    color: var(--artdeco-fg-muted);
+    letter-spacing: var(--artdeco-tracking-wide);
+  }
 }
 
 .signals-timeline {
@@ -111,34 +124,76 @@ onMounted(() => {
     z-index: 2;
   }
 
-  &.buy .signal-marker { background: var(--artdeco-rise); box-shadow: 0 0 10px var(--artdeco-rise); }
-  &.sell .signal-marker { background: var(--artdeco-down); box-shadow: 0 0 10px var(--artdeco-down); }
+  &.buy .signal-marker {
+    background: var(--artdeco-rise);
+    box-shadow: 0 0 10px var(--artdeco-rise);
+  }
+  &.sell .signal-marker {
+    background: var(--artdeco-down);
+    box-shadow: 0 0 10px var(--artdeco-down);
+  }
 
   .signal-content {
     padding: var(--artdeco-spacing-4);
+
     @include artdeco-geometric-corners;
     
     .sig-header {
       display: flex;
       justify-content: space-between;
       margin-bottom: var(--artdeco-spacing-3);
-      border-bottom: 1px solid rgb(212 175 55 / 10%);
+      border-bottom: 1px solid var(--artdeco-gold-opacity-10);
       padding-bottom: 4px;
       
-      .sig-type { font-family: var(--font-display); font-weight: bold; }
-      .sig-time { font-family: var(--font-mono); font-size: var(--artdeco-text-xs); color: var(--artdeco-fg-muted); }
+      .sig-type {
+        font-family: var(--artdeco-font-display);
+        font-weight: bold;
+      }
+      .sig-time {
+        font-family: var(--artdeco-font-mono);
+        font-size: var(--artdeco-text-xs);
+        color: var(--artdeco-fg-muted);
+      }
     }
   }
 
-  &.buy .sig-type { color: var(--artdeco-rise); }
-  &.sell .sig-type { color: var(--artdeco-down); }
+  &.buy .sig-type {
+    color: var(--artdeco-rise);
+  }
+  &.sell .sig-type {
+    color: var(--artdeco-down);
+  }
 }
 
 .sig-body {
   display: flex;
   justify-content: space-between;
-  .stock-info { display: flex; flex-direction: column; .name { font-weight: bold; color: var(--artdeco-gold-light); } .symbol { font-family: var(--font-mono); font-size: 12px; } }
-  label { display: block; font-size: 10px; color: var(--artdeco-fg-muted); margin-bottom: 2px; }
-  .val { font-family: var(--font-mono); font-weight: bold; }
+
+  .stock-info {
+    display: flex;
+    flex-direction: column;
+
+    .name {
+      font-weight: bold;
+      color: var(--artdeco-gold-light);
+    }
+
+    .symbol {
+      font-family: var(--artdeco-font-mono);
+      font-size: 12px;
+    }
+  }
+
+  label {
+    display: block;
+    font-size: 10px;
+    color: var(--artdeco-fg-muted);
+    margin-bottom: 2px;
+  }
+
+  .val {
+    font-family: var(--artdeco-font-mono);
+    font-weight: bold;
+  }
 }
 </style>
