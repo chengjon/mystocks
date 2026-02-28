@@ -185,5 +185,5 @@
 </script>
 
 <style scoped lang="scss">
-@import "./styles/ArtDecoDynamicSidebar.scss";
+@import "./styles/ArtDecoDynamicSidebar";
 </style>

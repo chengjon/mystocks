@@ -62,6 +62,15 @@
   --artdeco-border-accent: rgb(212 175 55 / 80%); // 强调边框
   --artdeco-border-gold: #D4AF37;      // ✨ V3.0新增：金色边框（用于装饰性元素）
 
+  // Gold Opacity Variants - 金色透明度变体（用于侧边栏和悬停效果）
+  --artdeco-gold-opacity-05: rgb(212 175 55 / 5%);   // 背景点缀
+  --artdeco-gold-opacity-08: rgb(212 175 55 / 8%);   // 浅色背景
+  --artdeco-gold-opacity-10: rgb(212 175 55 / 10%);  // 边框透明
+  --artdeco-gold-opacity-15: rgb(212 175 55 / 15%);  // 悬停背景
+  --artdeco-gold-opacity-20: rgb(212 175 55 / 20%);  // 边框默认
+  --artdeco-gold-opacity-30: rgb(212 175 55 / 30%);  // 强调边框
+  --artdeco-gold-opacity-shadow: rgb(212 175 55 / 30%); // 阴影效果
+
   // ============================================
   //   FINANCIAL COLORS - 金融专用颜色 V3.0 (A股标准：红涨绿跌）
   //   ⚠️ 重要：A股市场颜色约定与西方市场相反

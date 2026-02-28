@@ -21,18 +21,20 @@ export function useApiService() {
 
       // 调用系统健康检查API
       const response = await monitoringApi.getSystemHealth()
+      const payload = response?.data ?? response
+      const services = payload?.services ?? {}
 
       // 将API响应转换为前端需要的格式
       const healthData = {
-        timestamp: new Date(response.timestamp).getTime(),
-        frontend: response.services.frontend?.status === 'normal' ? 200 : 500,
-        frontendResponseTime: response.services.frontend?.response_time || 0,
-        api: response.services.api?.status === 'normal' ? 200 : 500,
-        postgresql: response.services.postgresql?.status === 'normal' ? '正常' : '异常',
-        tdengine: response.services.tdengine?.status === 'normal' ? '可访问' : '不可访问',
-        disk: response.services.disk?.status === 'normal' ? '正常' : '异常',
-        system: response.services.system?.status === 'normal' ? '正常' : '异常',
-        overallStatus: response.overall_status
+        timestamp: new Date(payload?.timestamp || Date.now()).getTime(),
+        frontend: services.frontend?.status === 'normal' ? 200 : 500,
+        frontendResponseTime: services.frontend?.response_time || 0,
+        api: services.api?.status === 'normal' ? 200 : 500,
+        postgresql: services.postgresql?.status === 'normal' ? '正常' : '异常',
+        tdengine: services.tdengine?.status === 'normal' ? '可访问' : '不可访问',
+        disk: services.disk?.status === 'normal' ? '正常' : '异常',
+        system: services.system?.status === 'normal' ? '正常' : '异常',
+        overallStatus: payload?.overall_status || 'error'
       }
 
       return healthData
@@ -66,7 +68,7 @@ export function useApiService() {
       error.value = null
 
       const response = await monitoringApi.getDetailedSystemHealth()
-      return response
+      return response?.data ?? response
     } catch (err) {
       console.error('执行详细健康检查失败:', err)
       error.value = err

@@ -7,16 +7,13 @@ import json
 import logging
 import queue
 import time
-from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import numpy as np
 import pandas as pd
 
 from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
-from src.gpu.api_system.utils.monitoring import MetricsCollector
-from src.gpu.api_system.utils.redis_utils import RedisQueue
 
 try:
     from src.gpu.api_system.api_proto.backtest_pb2 import (
@@ -38,19 +35,9 @@ except ImportError:
     sys.path.append("/opt/claude/mystocks_spec/src/gpu/api_system/api_proto")
     from backtest_pb2 import (
         BacktestRequest,
-        TaskResponse,
-        QueryRequest,
-        QueryResponse,
-        HistoryResponse,
-        BatchRequest,
-        BatchResponse,
         PerformanceMetrics,
-        ParameterOptimizationRequest,
-        OptimizationResult,
     )
-    from backtest_pb2_grpc import BacktestServiceServicer
 
-import grpc
 
 logger = logging.getLogger(__name__)
 

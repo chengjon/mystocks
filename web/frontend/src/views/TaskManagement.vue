@@ -365,5 +365,5 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/TaskManagement.scss";
+@import "./styles/TaskManagement";
 </style>

@@ -118,12 +118,12 @@
         letter-spacing: var(--artdeco-tracking-wide);
 
         &.artdeco-signal-history__type--buy {
-            background: rgb(255 82 82 / 10%);
+            background: color-mix(in srgb, var(--artdeco-up) 10%, transparent);
             color: var(--artdeco-up);
         }
 
         &.artdeco-signal-history__type--sell {
-            background: rgb(0 230 118 / 10%);
+            background: color-mix(in srgb, var(--artdeco-down) 10%, transparent);
             color: var(--artdeco-down);
         }
     }
@@ -159,12 +159,12 @@
         letter-spacing: var(--artdeco-tracking-wide);
 
         &.artdeco-signal-history__outcome--win {
-            background: rgb(0 230 118 / 10%);
+            background: color-mix(in srgb, var(--artdeco-down) 10%, transparent);
             color: var(--artdeco-down);
         }
 
         &.artdeco-signal-history__outcome--loss {
-            background: rgb(255 82 82 / 10%);
+            background: color-mix(in srgb, var(--artdeco-up) 10%, transparent);
             color: var(--artdeco-up);
         }
     }

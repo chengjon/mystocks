@@ -231,5 +231,5 @@ const { loading, activeTab, marketTabs, marketOverview, watchlist, portfolio, ri
 </script>
 
 <style scoped lang="scss">
-@import "./styles/Phase4Dashboard.scss";
+@import "./styles/Phase4Dashboard";
 </style>

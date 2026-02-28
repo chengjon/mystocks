@@ -109,25 +109,25 @@ export const dashboardService = {
 
   /**
    * 获取资金流向数据
-   * API: GET /api/v1/market/fund-flow
+   * API: GET /api/akshare/market/fund-flow/hsgt-summary
    * 用途: 获取沪股通、深股通、北向资金、主力净流入数据
    */
   async getFundFlow(date?: string): Promise<{ data: FundFlowData }> {
     const params = date ? { date } : {}
-    const response = await apiClient.get('/v1/market/fund-flow', { params })
+    const response = await apiClient.get('/akshare/market/fund-flow/hsgt-summary', { params })
     return response.data
   },
 
   /**
    * 获取行业板块资金流向
-   * API: GET /api/v1/market/industry/flow
+   * API: GET /api/v2/market/sector/fund-flow
    * 用途: 获取市场热度板块前 10 名
    */
   async getIndustryFlow(
     sort = 'change_percent',
     limit = 10
   ): Promise<{ data: IndustryFlowData[] }> {
-    const response = await apiClient.get('/v1/market/industry/flow', {
+    const response = await apiClient.get('/v2/market/sector/fund-flow', {
       params: { sort, limit }
     })
     return response.data
@@ -154,7 +154,7 @@ export const dashboardService = {
 
   /**
    * 获取大宗交易数据
-   * API: GET /api/v1/market/v2/block-trading
+   * API: GET /api/v2/market/blocktrade
    * 用途: 获取大宗交易成交数据
    */
   async getBlockTrading(
@@ -163,20 +163,20 @@ export const dashboardService = {
   ): Promise<{ data: BlockTradingData[] }> {
     const params: Record<string, unknown> = { limit }
     if (date) params.date = date
-    const response = await apiClient.get('/v1/market/v2/block-trading', { params })
+    const response = await apiClient.get('/v2/market/blocktrade', { params })
     return response.data
   },
 
   /**
    * 获取个股资金流向排名
-   * API: GET /api/monitoring/stock/flow/ranking
-   * 用途: 获取个股净流入前10名
+   * API: GET /api/akshare/market/fund-flow/big-deal
+   * 用途: 获取个股净流入前10名 (暂用大单统计代替)
    */
   async getStockFlowRanking(
     period = '1day',
     limit = 10
   ): Promise<{ data: StockFlowRankingData[] }> {
-    const response = await apiClient.get('/api/monitoring/stock/flow/ranking', {
+    const response = await apiClient.get('/akshare/market/fund-flow/big-deal', {
       params: { period, limit }
     })
     return response.data

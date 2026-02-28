@@ -75,11 +75,11 @@ defineEmits(['update:activeCategory', 'select'])
     gap: var(--artdeco-spacing-3);
     padding: var(--artdeco-spacing-3);
     background: var(--artdeco-bg-card);
-    border: 1px solid rgb(212 175 55 / 10%);
+    border: 1px solid var(--artdeco-gold-opacity-10);
     color: var(--artdeco-fg-primary);
     cursor: pointer;
     &.active {
-        background: rgb(212 175 55 / 10%);
+        background: var(--artdeco-gold-opacity-10);
         border-color: var(--artdeco-gold-primary);
         color: var(--artdeco-gold-primary);
     }

@@ -170,16 +170,16 @@ const trendChartOption = computed(() => {
 
 .filter-btn {
   background: transparent;
-  border: 1px solid var(--artdeco-border-gold-subtle);
+  border: 1px solid var(--artdeco-border-default);
   color: var(--artdeco-fg-muted);
   padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
   cursor: pointer;
   transition: all var(--artdeco-duration-base);
 
   &.active {
-    border-color: var(--artdeco-accent-gold);
-    color: var(--artdeco-accent-gold);
-    background: rgb(212 175 55 / 10%);
+    border-color: var(--artdeco-gold-primary);
+    color: var(--artdeco-gold-primary);
+    background: var(--artdeco-gold-opacity-10);
   }
 }
 

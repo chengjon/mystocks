@@ -96,11 +96,11 @@
                             border-radius: 50%;
                             background: conic-gradient(
                                 from 0deg,
-                                rgb(239 68 68 / 20%) 0deg,
-                                rgb(245 158 11 / 40%) 45deg,
-                                rgb(34 197 94 / 60%) 90deg,
-                                rgb(34 197 94 / 60%) 180deg,
-                                rgb(34 197 94 / 60%) 180deg
+                                color-mix(in srgb, var(--artdeco-down) 20%, transparent) 0deg,
+                                color-mix(in srgb, var(--artdeco-warning) 40%, transparent) 45deg,
+                                color-mix(in srgb, var(--artdeco-up) 60%, transparent) 90deg,
+                                color-mix(in srgb, var(--artdeco-up) 60%, transparent) 180deg,
+                                color-mix(in srgb, var(--artdeco-up) 60%, transparent) 180deg
                             );
 
                             .gauge-fill {
@@ -114,8 +114,8 @@
                                     from 0deg,
                                     transparent 0deg,
                                     transparent 180deg,
-                                    rgb(34 197 94 / 90%) 180deg,
-                                    rgb(34 197 94 / 90%) 360deg
+                                    color-mix(in srgb, var(--artdeco-up) 90%, transparent) 180deg,
+                                    color-mix(in srgb, var(--artdeco-up) 90%, transparent) 360deg
                                 );
                                 clip-path: polygon(50% 50%, 50% 50%, 50% 0%, 100% 0%, 100% 100%, 50% 100%);
                                 transition: transform var(--artdeco-transition-base);
@@ -125,8 +125,8 @@
                                         from 0deg,
                                         transparent 0deg,
                                         transparent 180deg,
-                                        rgb(34 197 94 / 90%) 180deg,
-                                        rgb(34 197 94 / 90%) 360deg
+                                        color-mix(in srgb, var(--artdeco-up) 90%, transparent) 180deg,
+                                        color-mix(in srgb, var(--artdeco-up) 90%, transparent) 360deg
                                     );
                                 }
 
@@ -135,8 +135,8 @@
                                         from 0deg,
                                         transparent 0deg,
                                         transparent 180deg,
-                                        rgb(245 158 11 / 90%) 180deg,
-                                        rgb(245 158 11 / 90%) 360deg
+                                        color-mix(in srgb, var(--artdeco-warning) 90%, transparent) 180deg,
+                                        color-mix(in srgb, var(--artdeco-warning) 90%, transparent) 360deg
                                     );
                                 }
 
@@ -145,8 +145,8 @@
                                         from 0deg,
                                         transparent 0deg,
                                         transparent 180deg,
-                                        rgb(239 68 68 / 90%) 180deg,
-                                        rgb(239 68 68 / 90%) 360deg
+                                        color-mix(in srgb, var(--artdeco-down) 90%, transparent) 180deg,
+                                        color-mix(in srgb, var(--artdeco-down) 90%, transparent) 360deg
                                     );
                                 }
                             }
@@ -435,7 +435,7 @@
                         grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
                         gap: var(--artdeco-spacing-4);
                         padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
-                        background: linear-gradient(135deg, var(--artdeco-bg-muted), rgb(212 175 55 / 5%));
+                        background: linear-gradient(135deg, var(--artdeco-bg-muted), var(--artdeco-gold-opacity-05));
                         border-bottom: 1px solid var(--artdeco-border-default);
                         font-family: var(--artdeco-font-body);
                         font-size: var(--artdeco-font-size-sm);
@@ -451,11 +451,11 @@
                             grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
                             gap: var(--artdeco-spacing-4);
                             padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
-                            border-bottom: 1px solid rgb(212 175 55 / 10%);
+                            border-bottom: 1px solid var(--artdeco-gold-opacity-10);
                             transition: all var(--artdeco-transition-base);
 
                             &:hover {
-                                background: rgb(212 175 55 / 2%);
+                                background: var(--artdeco-gold-opacity-02);
                             }
 
                             &.buy-signal {
@@ -511,12 +511,12 @@
 
                                     &.buy {
                                         background: var(--artdeco-up);
-                                        color: white;
+                                        color: var(--artdeco-fg-primary);
                                     }
 
                                     &.sell {
                                         background: var(--artdeco-down);
-                                        color: white;
+                                        color: var(--artdeco-fg-primary);
                                     }
 
                                     &.hold {
@@ -706,7 +706,7 @@
 
                         &:hover {
                             border-color: var(--artdeco-gold-primary);
-                            box-shadow: 0 0 15px rgb(212 175 55 / 10%);
+                            box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
                         }
 
                         &.success {
@@ -714,7 +714,7 @@
                         }
 
                         &.warning {
-                            border-left: 3px solid #f59e0b;
+                            border-left: 3px solid var(--artdeco-warning);
                         }
 
                         &.info {

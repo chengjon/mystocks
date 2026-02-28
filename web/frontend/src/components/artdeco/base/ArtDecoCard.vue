@@ -94,7 +94,7 @@
         content: '';
         position: absolute;
         inset: 6px 6px 6px 6px;
-        border: 1px solid rgb(212 175 55 / 15%);
+        border: 1px solid var(--artdeco-gold-opacity-15);
         pointer-events: none;
         opacity: 30%;
         transition: opacity var(--artdeco-transition-base);
@@ -143,7 +143,7 @@
     .artdeco-card__footer {
         margin-top: var(--artdeco-spacing-3);
         padding-top: var(--artdeco-spacing-3);
-        border-top: 1px solid rgb(212 175 55 / 20%);
+        border-top: 1px solid var(--artdeco-gold-opacity-20);
         color: var(--artdeco-fg-muted);
         font-size: var(--artdeco-font-size-sm);
     }
@@ -237,7 +237,7 @@
 
     .artdeco-card--elevated {
         box-shadow: var(--artdeco-shadow-md);
-        border-color: rgb(212 175 55 / 30%);
+        border-color: var(--artdeco-gold-opacity-30);
         background: var(--artdeco-bg-surface);
     }
 </style>

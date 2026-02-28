@@ -261,17 +261,17 @@
 
         &.change-up {
             color: var(--artdeco-up);
-            background: rgb(255 82 82 / 10%);
+            background: color-mix(in srgb, var(--artdeco-up) 10%, transparent);
         }
 
         &.change-down {
             color: var(--artdeco-down);
-            background: rgb(0 230 118 / 10%);
+            background: color-mix(in srgb, var(--artdeco-down) 10%, transparent);
         }
 
         &.change-flat {
             color: var(--artdeco-fg-muted);
-            background: rgb(184 184 184 / 10%);
+            background: color-mix(in srgb, var(--artdeco-fg-muted) 10%, transparent);
         }
     }
 

@@ -18,7 +18,7 @@ def check_service_status():
     print()
 
     # 检查前端服务
-    frontend_ports = [3001, 3002, 3003, 3004, 3005]
+    frontend_ports = [3020, 3021, 3022, 3023, 3024]
     frontend_url = None
 
     print("🔍 检查前端服务...")
@@ -36,7 +36,7 @@ def check_service_status():
         print("   ❌ 前端服务未找到")
 
     # 检查后端服务
-    backend_ports = [8000, 8888, 8001]
+    backend_ports = [8020, 8021, 8022]
     backend_url = None
 
     print("\n🔍 检查后端服务...")
@@ -192,15 +192,15 @@ def show_access_info():
     print("=" * 60)
 
     print("📱 前端访问地址:")
-    print("   - 本地访问: http://localhost:3001")
-    print("   - 网络访问: http://0.0.0.0:3001")
+    print("   - 本地访问: http://localhost:3020")
+    print("   - 网络访问: http://0.0.0.0:3020")
     print("   - 浏览器支持: Chrome, Firefox, Safari, Edge")
     print()
 
     print("🔧 后端API服务:")
-    print("   - API文档: http://localhost:8888/docs")
-    print("   - API接口: http://localhost:8888/api")
-    print("   - 健康检查: http://localhost:8888/health")
+    print("   - API文档: http://localhost:8020/docs")
+    print("   - API接口: http://localhost:8020/api")
+    print("   - 健康检查: http://localhost:8020/health")
     print()
 
     print("👤 默认登录账户:")

@@ -20,8 +20,6 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from src.data_access.postgresql_access import PostgreSQLDataAccess
-from src.interfaces.relational_data_source import IRelationalDataSource
 
 logger = logging.getLogger(__name__)
 

@@ -155,7 +155,9 @@ defineProps<{
 
 .metrics-summary-card {
   margin-top: var(--artdeco-spacing-4);
+
   @include artdeco-stepped-corners(16px);
+
   border: 2px solid var(--artdeco-border-default) !important;
 }
 

@@ -1,13 +1,7 @@
 """TDX 数据源适配器子模块"""
 
 import logging
-import os
-import struct
-import time
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
 
-import numpy as np
 import pandas as pd
 
 logger = logging.getLogger(__name__)

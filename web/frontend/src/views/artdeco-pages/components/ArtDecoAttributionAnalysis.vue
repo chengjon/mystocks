@@ -164,7 +164,7 @@
 
                     .category-bar {
                         height: 8px;
-                        background: rgb(255 255 255 / 10%);
+                        background: color-mix(in srgb, var(--artdeco-fg-primary) 10%, transparent);
                         border-radius: var(--artdeco-radius-sm);
                         overflow: hidden;
 
@@ -210,12 +210,12 @@
                         letter-spacing: var(--artdeco-tracking-wider);
 
                         &.buy {
-                            background: rgb(255 82 82 / 15%);
+                            background: color-mix(in srgb, var(--artdeco-up) 15%, transparent);
                             color: var(--artdeco-up);
                         }
 
                         &.sell {
-                            background: rgb(0 230 118 / 15%);
+                            background: color-mix(in srgb, var(--artdeco-down) 15%, transparent);
                             color: var(--artdeco-down);
                         }
                     }

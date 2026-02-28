@@ -138,7 +138,7 @@
 
     .artdeco-stat-icon {
       font-size: var(--artdeco-font-size-md); // 18px - Compact v3.1
-      color: rgb(212 175 55 / 20%);
+      color: var(--artdeco-gold-opacity-20);
     }
 
     .artdeco-stat-value {
@@ -181,17 +181,17 @@
 
     .artdeco-stat-change-rise {
       color: var(--artdeco-up);
-      background: rgb(255 82 82 / 10%);
+      background: color-mix(in srgb, var(--artdeco-up) 10%, transparent);
     }
 
     .artdeco-stat-change-fall {
       color: var(--artdeco-down);
-      background: rgb(0 230 118 / 10%);
+      background: color-mix(in srgb, var(--artdeco-down) 10%, transparent);
     }
 
     .artdeco-stat-change-flat {
       color: var(--artdeco-fg-muted);
-      background: rgb(184 184 184 / 10%);
+      background: color-mix(in srgb, var(--artdeco-fg-muted) 10%, transparent);
     }
 
     .artdeco-stat-description {
@@ -212,17 +212,17 @@
 
     .artdeco-stat-card-gold:hover .artdeco-stat-value {
       color: var(--artdeco-gold-light);
-      text-shadow: 0 0 15px rgb(212 175 55 / 50%);
+      text-shadow: 0 0 15px var(--artdeco-gold-opacity-50);
     }
 
     .artdeco-stat-card-rise:hover .artdeco-stat-value {
       color: var(--artdeco-up);
-      text-shadow: 0 0 15px rgb(255 82 82 / 50%);
+      text-shadow: 0 0 15px color-mix(in srgb, var(--artdeco-up) 50%, transparent);
     }
 
     .artdeco-stat-card-fall:hover .artdeco-stat-value {
       color: var(--artdeco-down);
-      text-shadow: 0 0 15px rgb(0 230 118 / 50%);
+      text-shadow: 0 0 15px color-mix(in srgb, var(--artdeco-down) 50%, transparent);
     }
 
     // ============================================

@@ -171,66 +171,66 @@ const getIconForType = (type: ToastConfig['type'] = 'info') => {
 
   // Type-specific styles
   &--success {
-    border-color: rgb(34 197 94 / 50%);
+    border-color: color-mix(in srgb, var(--artdeco-success) 50%, transparent);
     background: linear-gradient(135deg,
-      rgb(34 197 94 / 5%) 0%,
-      rgb(34 197 94 / 2%) 100%
+      color-mix(in srgb, var(--artdeco-success) 5%, transparent) 0%,
+      color-mix(in srgb, var(--artdeco-success) 2%, transparent) 100%
     );
 
     .artdeco-toast__icon {
-      color: #22c55e;
+      color: var(--artdeco-success);
     }
 
     .artdeco-toast__progress {
-      background: linear-gradient(90deg, #22c55e 0%, transparent 100%);
+      background: linear-gradient(90deg, var(--artdeco-success) 0%, transparent 100%);
     }
   }
 
   &--error {
-    border-color: rgb(239 68 68 / 50%);
+    border-color: color-mix(in srgb, var(--artdeco-danger) 50%, transparent);
     background: linear-gradient(135deg,
-      rgb(239 68 68 / 5%) 0%,
-      rgb(239 68 68 / 2%) 100%
+      color-mix(in srgb, var(--artdeco-danger) 5%, transparent) 0%,
+      color-mix(in srgb, var(--artdeco-danger) 2%, transparent) 100%
     );
 
     .artdeco-toast__icon {
-      color: #ef4444;
+      color: var(--artdeco-danger);
     }
 
     .artdeco-toast__progress {
-      background: linear-gradient(90deg, #ef4444 0%, transparent 100%);
+      background: linear-gradient(90deg, var(--artdeco-danger) 0%, transparent 100%);
     }
   }
 
   &--warning {
-    border-color: rgb(251 191 36 / 50%);
+    border-color: color-mix(in srgb, var(--artdeco-warning) 50%, transparent);
     background: linear-gradient(135deg,
-      rgb(251 191 36 / 5%) 0%,
-      rgb(251 191 36 / 2%) 100%
+      color-mix(in srgb, var(--artdeco-warning) 5%, transparent) 0%,
+      color-mix(in srgb, var(--artdeco-warning) 2%, transparent) 100%
     );
 
     .artdeco-toast__icon {
-      color: #fbbf24;
+      color: var(--artdeco-warning);
     }
 
     .artdeco-toast__progress {
-      background: linear-gradient(90deg, #fbbf24 0%, transparent 100%);
+      background: linear-gradient(90deg, var(--artdeco-warning) 0%, transparent 100%);
     }
   }
 
   &--info {
-    border-color: rgb(59 130 246 / 50%);
+    border-color: color-mix(in srgb, var(--artdeco-info) 50%, transparent);
     background: linear-gradient(135deg,
-      rgb(59 130 246 / 5%) 0%,
-      rgb(59 130 246 / 2%) 100%
+      color-mix(in srgb, var(--artdeco-info) 5%, transparent) 0%,
+      color-mix(in srgb, var(--artdeco-info) 2%, transparent) 100%
     );
 
     .artdeco-toast__icon {
-      color: #3b82f6;
+      color: var(--artdeco-info);
     }
 
     .artdeco-toast__progress {
-      background: linear-gradient(90deg, #3b82f6 0%, transparent 100%);
+      background: linear-gradient(90deg, var(--artdeco-info) 0%, transparent 100%);
     }
   }
 }

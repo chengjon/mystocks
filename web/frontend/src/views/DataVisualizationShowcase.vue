@@ -471,5 +471,5 @@
 </script>
 
 <style scoped lang="scss">
-@import "./styles/DataVisualizationShowcase.scss";
+@import "./styles/DataVisualizationShowcase";
 </style>

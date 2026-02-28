@@ -454,7 +454,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import './styles/market-data.scss';
+@import './styles/market-data';
 
   position: relative;
 

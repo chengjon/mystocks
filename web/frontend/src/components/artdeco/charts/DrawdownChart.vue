@@ -251,7 +251,7 @@
             height - padding.bottom - ((value - minValue) / valueRange) * (height - padding.top - padding.bottom)
 
         // Draw zero line
-        context.strokeStyle = 'rgb(212 175 55 / 30%)'
+        context.strokeStyle = 'var(--artdeco-gold-opacity-30)'
         context.lineWidth = 2
         context.setLineDash([5, 5])
         context.beginPath()
@@ -262,7 +262,7 @@
         context.setLineDash([])
 
         // Draw grid lines
-        context.strokeStyle = 'rgb(212 175 55 / 10%)'
+        context.strokeStyle = 'var(--artdeco-gold-opacity-10)'
         context.lineWidth = 1
         for (let i = 0; i <= 5; i++) {
             const y = padding.top + (i / 5) * (height - padding.top - padding.bottom)
@@ -284,14 +284,14 @@
 
         // Create gradient fill
         const gradient = context.createLinearGradient(0, padding.top, 0, height - padding.bottom)
-        gradient.addColorStop(0, 'rgb(255 82 82 / 30%)')
-        gradient.addColorStop(1, 'rgb(255 82 82 / 5%)')
+        gradient.addColorStop(0, 'var(--artdeco-gold-opacity-30)')
+        gradient.addColorStop(1, 'var(--artdeco-gold-opacity-05)')
         context.fillStyle = gradient
         context.fill()
 
         // Draw line
         context.beginPath()
-        context.strokeStyle = '#FF5252'
+        context.strokeStyle = 'var(--artdeco-rise)'
         context.lineWidth = 2
         context.moveTo(getX(0), getY(props.data[0].drawdown))
         for (let i = 1; i < props.data.length; i++) {
@@ -300,7 +300,7 @@
         context.stroke()
 
         // Draw Y-axis labels
-        context.fillStyle = '#D4AF37'
+        context.fillStyle = 'var(--artdeco-gold-primary)'
         context.font = '11px "IBM Plex Mono"'
         context.textAlign = 'right'
         for (let i = 0; i <= 5; i++) {
@@ -324,7 +324,7 @@
             const startX = getX(period.start)
             const endX = getX(period.end)
 
-            context.fillStyle = 'rgb(255 82 82 / 5%)'
+            context.fillStyle = 'var(--artdeco-gold-opacity-05)'
             context.fillRect(startX, padding.top, endX - startX, height - padding.top - padding.bottom)
         })
     }
@@ -427,5 +427,5 @@
 </script>
 
 <style scoped lang="scss">
-@import "./styles/DrawdownChart.scss";
+@import "./styles/DrawdownChart";
 </style>

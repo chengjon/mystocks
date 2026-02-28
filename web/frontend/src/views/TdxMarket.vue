@@ -442,5 +442,5 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/TdxMarket.scss";
+@import "./styles/TdxMarket";
 </style>

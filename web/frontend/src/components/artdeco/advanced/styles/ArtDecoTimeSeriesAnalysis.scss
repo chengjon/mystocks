@@ -77,7 +77,7 @@
 
             .chart-placeholder {
                 height: 400px;
-                background: linear-gradient(135deg, var(--artdeco-bg-card), rgb(212 175 55 / 2%));
+                background: linear-gradient(135deg, var(--artdeco-bg-card), var(--artdeco-gold-opacity-02));
                 border: 1px solid var(--artdeco-border-default);
                 border-radius: 8px;
                 display: flex;
@@ -113,7 +113,7 @@
                             display: flex;
                             flex-direction: column;
                             gap: var(--artdeco-spacing-2);
-                            background: rgb(0 0 0 / 80%);
+                            background: color-mix(in srgb, var(--artdeco-bg-dark) 80%, transparent);
                             padding: var(--artdeco-spacing-3);
                             border-radius: 6px;
                             backdrop-filter: blur(10px);
@@ -272,12 +272,12 @@
 
                     &.peak {
                         border-color: var(--artdeco-up);
-                        background: linear-gradient(135deg, rgb(34 197 94 / 5%), transparent);
+                        background: linear-gradient(135deg, color-mix(in srgb, var(--artdeco-up) 5%, transparent), transparent);
                     }
 
                     &.valley {
                         border-color: var(--artdeco-down);
-                        background: linear-gradient(135deg, rgb(239 68 68 / 5%), transparent);
+                        background: linear-gradient(135deg, color-mix(in srgb, var(--artdeco-down) 5%, transparent), transparent);
                     }
 
                     .inflection-header {
@@ -297,12 +297,12 @@
 
                                 &.peak {
                                     background: var(--artdeco-up);
-                                    color: white;
+                                    color: var(--artdeco-fg-primary);
                                 }
 
                                 &.valley {
                                     background: var(--artdeco-down);
-                                    color: white;
+                                    color: var(--artdeco-fg-primary);
                                 }
                             }
                         }
@@ -442,7 +442,7 @@
 
                             &:hover {
                                 border-color: var(--artdeco-gold-primary);
-                                box-shadow: 0 0 15px rgb(212 175 55 / 10%);
+                                box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
                             }
 
                             .period-frequency {
@@ -707,8 +707,8 @@
                                 background: linear-gradient(
                                     90deg,
                                     transparent 75%,
-                                    rgb(59 130 246 / 30%) 75%,
-                                    rgb(59 130 246 / 30%) 85%,
+                                    color-mix(in srgb, var(--artdeco-info, var(--artdeco-gold-primary)) 30%, transparent) 75%,
+                                    color-mix(in srgb, var(--artdeco-info, var(--artdeco-gold-primary)) 30%, transparent) 85%,
                                     transparent 85%
                                 );
                                 border-radius: 2px;
@@ -744,7 +744,7 @@
 
                             &:hover {
                                 border-color: var(--artdeco-gold-primary);
-                                box-shadow: 0 0 15px rgb(212 175 55 / 10%);
+                                box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
                             }
 
                             &.bullish {

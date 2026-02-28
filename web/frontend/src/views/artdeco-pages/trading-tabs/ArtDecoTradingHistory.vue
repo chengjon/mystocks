@@ -163,17 +163,17 @@
         letter-spacing: var(--artdeco-tracking-wide);
 
         &.artdeco-trading-history__status--completed {
-            background: rgb(0 230 118 / 10%);
+            background: color-mix(in srgb, var(--artdeco-down) 10%, transparent);
             color: var(--artdeco-down);
         }
 
         &.artdeco-trading-history__status--pending {
-            background: rgb(255 213 79 / 10%);
+            background: color-mix(in srgb, var(--artdeco-gold-light) 10%, transparent);
             color: var(--artdeco-gold-primary);
         }
 
         &.artdeco-trading-history__status--cancelled {
-            background: rgb(255 82 82 / 10%);
+            background: color-mix(in srgb, var(--artdeco-up) 10%, transparent);
             color: var(--artdeco-up);
         }
     }

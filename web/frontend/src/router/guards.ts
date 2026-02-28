@@ -40,9 +40,9 @@ export const authGuard = (to: RouteLocationNormalized) => {
     }
   }
 
-  // If user is authenticated and trying to access login page, redirect to dashboard
+  // If user is authenticated and trying to access login page, redirect to main page
   if (authStore.isAuthenticated && to.name === 'login') {
-    return { name: 'dashboard' }
+    return { name: 'dealing-room' }
   }
 
   // Allow navigation

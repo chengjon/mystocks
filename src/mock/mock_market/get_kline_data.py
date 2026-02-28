@@ -21,11 +21,9 @@ Mock数据文件: Market
 """
 
 import datetime
-import math
 import random
 from typing import Dict, List, Optional
 
-import numpy as np
 
 def get_kline_data(
     stock_code: str,

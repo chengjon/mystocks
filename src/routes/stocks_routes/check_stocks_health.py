@@ -7,11 +7,9 @@ FastAPI路由文件: Stocks
 """
 
 import logging
-import os
 from datetime import datetime
-from typing import Dict, Optional
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter
 
 # 设置日志
 logging.basicConfig(level=logging.INFO)

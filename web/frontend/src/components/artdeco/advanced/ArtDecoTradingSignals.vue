@@ -460,5 +460,5 @@
 </script>
 
 <style scoped lang="scss">
-@import './styles/ArtDecoTradingSignals.scss';
+@import './styles/ArtDecoTradingSignals';
 </style>

@@ -565,7 +565,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import './styles/market-quotes.scss';
+@import './styles/market-quotes';
 
   // Gold accent top border
   &::before {

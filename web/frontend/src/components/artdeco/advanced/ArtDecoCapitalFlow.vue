@@ -564,5 +564,5 @@
 </script>
 
 <style scoped lang="scss">
-@import './styles/ArtDecoCapitalFlow.scss';
+@import './styles/ArtDecoCapitalFlow';
 </style>

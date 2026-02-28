@@ -13,28 +13,16 @@ import json
 import logging
 import os
 from datetime import datetime, timezone
-from enum import Enum
 from typing import Any, Dict, List, Optional
 
 import psycopg2
 import redis
-import sqlalchemy as sa
 import yaml
 from dotenv import load_dotenv
 from sqlalchemy import (
-    JSON,
-    Boolean,
-    Column,
-    DateTime,
-)
-from sqlalchemy import Enum as SQLEnum
-from sqlalchemy import (
-    Integer,
-    String,
-    Text,
     create_engine,
 )
-from sqlalchemy.orm import declarative_base, relationship, sessionmaker
+from sqlalchemy.orm import sessionmaker
 
 # Import from parent module
 from .._build_monitor_db_url import Base, DatabaseType, _build_monitor_db_url

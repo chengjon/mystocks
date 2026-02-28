@@ -237,5 +237,5 @@ const { wizardSteps, currentStep, selectedStrategy, quickTemplates, customTempla
 </script>
 
 <style scoped lang="scss">
-@import "./styles/BacktestWizard.scss";
+@import "./styles/BacktestWizard";
 </style>

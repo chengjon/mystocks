@@ -24,27 +24,29 @@ const _props = withDefaults(defineProps<Props>(), {
 </script>
 
 <style scoped lang="scss">
+@import '@/styles/artdeco-tokens';
+
 .artdeco-status-indicator {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: var(--font-family-mono, monospace);
+  font-family: var(--artdeco-font-mono);
   font-size: 12px;
 
   .label {
-    color: var(--artdeco-text-secondary, #888);
+    color: var(--artdeco-fg-muted);
   }
 
   .indicator-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background-color: var(--status-color, #888);
-    box-shadow: 0 0 4px var(--status-color, #888);
+    background-color: var(--status-color, var(--artdeco-fg-muted));
+    box-shadow: 0 0 4px var(--status-color, var(--artdeco-fg-muted));
   }
 
   .value {
-    color: var(--artdeco-text-primary, #ccc);
+    color: var(--artdeco-fg-secondary);
     font-weight: 500;
   }
 
@@ -105,15 +107,15 @@ const _props = withDefaults(defineProps<Props>(), {
 
   // Status mapping
   &.online, &.good, &.low {
-    --status-color: #00ff9d;
+    --status-color: var(--artdeco-up);
   }
 
   &.degraded, &.warning, &.medium {
-    --status-color: #ffd700;
+    --status-color: var(--artdeco-accent-gold);
   }
 
   &.offline, &.error, &.high {
-    --status-color: #ff3e3e;
+    --status-color: var(--artdeco-down);
   }
 }
 </style>

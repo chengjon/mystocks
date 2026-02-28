@@ -271,5 +271,5 @@ const { loading, quoteLoading, chartLoading, searchSymbol, selectedPeriod, chart
 </script>
 
 <style scoped lang="scss">
-@import './styles/Tdx.scss';
+@import './styles/Tdx';
 </style>

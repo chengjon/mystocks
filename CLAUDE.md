@@ -240,6 +240,13 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
   - **组件体积红线**：单个 `.vue` 文件不得超过 800 行，超过时必须提取 CSS 到独立 SCSS 或拆分 composables
   - **提交前零错误**：`cd web/frontend && npx stylelint "src/**/*.{vue,scss,css}"` 必须通过
   - **禁止废弃属性**（如 `clip`）、禁止 shorthand 覆盖冲突、禁止重复选择器
+- **代码清单扫描工具（强制执行）**:
+  - 位置：`src/monitoring/code_inventory/`
+  - 用途：扫描代码行数、检测Mock数据使用、生成Markdown报告
+  - 运行命令：`python -m src.monitoring.code_inventory.cli --no-validation --scan-dirs src scripts web/backend/app`
+  - **定期扫描要求**：每月至少执行一次扫描，检查代码复杂度趋势和Mock使用情况
+  - 报告位置：`reports/code_inventory_report_*.md`
+  - 发现问题处理：如发现超过阈值文件或异常Mock使用，需在相应模块下创建治理任务
 - BUG 登记按模板 `docs/standards/bug-report-template.json`，输出到 `docs/quality/bugs/` 并更新 `docs/guides/BUG_LESSONS_LEARNED.md`
 - 多 CLI/Worktree 协作核心索引 (必读):
   - **`docs/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md` (总手册)**

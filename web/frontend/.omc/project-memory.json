@@ -1,0 +1,502 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1772276485863,
+  "projectRoot": "/opt/claude/mystocks_spec/web/frontend",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "@playwright/test",
+        "version": "1.56.1",
+        "category": "testing"
+      },
+      {
+        "name": "vue",
+        "version": "3.4.0",
+        "category": "frontend"
+      },
+      {
+        "name": "playwright",
+        "version": "1.57.0",
+        "category": "testing"
+      },
+      {
+        "name": "vite",
+        "version": "5.4.0",
+        "category": "build"
+      },
+      {
+        "name": "vitest",
+        "version": "4.0.16",
+        "category": "testing"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "npm run build",
+    "testCommand": "npm test",
+    "lintCommand": "npm run lint",
+    "devCommand": "npm run dev",
+    "scripts": {
+      "dev": "npm run generate-types && vite",
+      "dev:mock": "cp .env.mock .env && npm run generate-types && vite",
+      "dev:real": "cp .env.real .env && npm run generate-types && vite",
+      "dev:no-types": "vite",
+      "build": "npm run generate-types && (vue-tsc --noEmit || true) && vite build",
+      "build:no-types": "vite build",
+      "type-check": "vue-tsc --noEmit",
+      "type:validate": "node scripts/validate-types.js",
+      "type:check:conflicts": "node scripts/check-type-conflicts.js",
+      "type:usage": "node scripts/generate-type-usage.js",
+      "type:build": "npm run generate-types && npm run type:validate && npm run type-check",
+      "preview": "vite preview",
+      "generate-types": "python ../../scripts/generate_frontend_types.py",
+      "generate-page-config": "node ../../scripts/dev/tools/generate-page-config.js",
+      "validate-page-config": "node ../../scripts/hooks/check-page-config.mjs --fail",
+      "lint": "eslint . --max-warnings=0",
+      "lint:artdeco": "node scripts/check-artdeco-tokens.js",
+      "test": "vitest run",
+      "test:watch": "vitest",
+      "test:coverage": "vitest run --coverage",
+      "test:e2e": "playwright test",
+      "test:e2e:chromium": "playwright test --project=chromium",
+      "test:e2e:firefox": "playwright test --project=firefox",
+      "test:e2e:webkit": "playwright test --project=webkit",
+      "test:e2e:ui": "playwright test --ui",
+      "test:e2e:debug": "playwright test --debug",
+      "test:e2e:comprehensive": "node run-comprehensive-e2e.js",
+      "test:e2e:validate": "node validate-e2e-setup.js",
+      "test:pm2": "playwright test pm2-deployment.test.ts",
+      "test:design-token": "playwright test design-token.test.ts",
+      "test:bloomberg": "playwright test bloomberg-style.test.ts",
+      "test:stock-colors": "playwright test stock-colors.test.ts",
+      "test:mobile-cleanup": "playwright test mobile-cleanup.test.ts",
+      "test:phase3": "playwright test pm2-deployment.test.ts design-token.test.ts bloomberg-style.test.ts stock-colors.test.ts mobile-cleanup.test.ts",
+      "verify:web-access": "node ../../scripts/dev/verify_web_access.mjs",
+      "pm2:start": "./start.sh",
+      "pm2:stop": "./stop.sh",
+      "pm2:restart": "pm2 reload ecosystem.config.js --env production",
+      "pm2:logs": "pm2 logs mystocks-frontend --lines 50",
+      "pm2:status": "pm2 list"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": "*.spec.ts",
+    "fileOrganization": "type-based"
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "docs",
+      "public",
+      "scripts",
+      "src",
+      "tests"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "archives": {
+      "path": "archives",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1772276485842,
+      "keyFiles": []
+    },
+    "artdeco-design": {
+      "path": "artdeco-design",
+      "purpose": null,
+      "fileCount": 12,
+      "lastAccessed": 1772276485843,
+      "keyFiles": [
+        "01-dashboard.html",
+        "02-market-center.html",
+        "03-stock-screener.html",
+        "04-data-analysis.html",
+        "05-strategy-lab.html"
+      ]
+    },
+    "config": {
+      "path": "config",
+      "purpose": "Configuration files",
+      "fileCount": 3,
+      "lastAccessed": 1772276485849,
+      "keyFiles": [
+        "apache-history-mode.conf",
+        "auto-imports.mjs",
+        "nginx-history-mode.conf"
+      ]
+    },
+    "cypress": {
+      "path": "cypress",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1772276485850,
+      "keyFiles": []
+    },
+    "dist": {
+      "path": "dist",
+      "purpose": "Distribution/build output",
+      "fileCount": 6,
+      "lastAccessed": 1772276485852,
+      "keyFiles": [
+        "accessibility-test.html",
+        "index.html",
+        "manifest.json",
+        "offline.html",
+        "stats.html"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 1,
+      "lastAccessed": 1772276485852,
+      "keyFiles": [
+        "ArtDeco-Phase1B-Completion-Report.md.bak"
+      ]
+    },
+    "logs": {
+      "path": "logs",
+      "purpose": null,
+      "fileCount": 16,
+      "lastAccessed": 1772276485853,
+      "keyFiles": [
+        "frontend-access.log",
+        "frontend-error.log",
+        "frontend-frontend-error.log",
+        "frontend-frontend-out.log",
+        "frontend-frontend-static-error-2.log"
+      ]
+    },
+    "playwright-report": {
+      "path": "playwright-report",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1772276485853,
+      "keyFiles": [
+        "index.html"
+      ]
+    },
+    "public": {
+      "path": "public",
+      "purpose": "Public files",
+      "fileCount": 4,
+      "lastAccessed": 1772276485854,
+      "keyFiles": [
+        "accessibility-test.html",
+        "manifest.json",
+        "offline.html",
+        "sw.js"
+      ]
+    },
+    "reports": {
+      "path": "reports",
+      "purpose": null,
+      "fileCount": 7,
+      "lastAccessed": 1772276485854,
+      "keyFiles": [
+        "LIGHTHOUSE_AUDIT_REPORT.md",
+        "LIGHTHOUSE_QUICK_REFERENCE.md",
+        "LIGHTHOUSE_WINDOWS_AUDIT_GUIDE.md",
+        "README.md",
+        "T1.13_COMPLETION_SUMMARY.md"
+      ]
+    },
+    "screenshots": {
+      "path": "screenshots",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1772276485854,
+      "keyFiles": [
+        "test-fullpage.png",
+        "test-viewport.png"
+      ]
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 20,
+      "lastAccessed": 1772276485855,
+      "keyFiles": [
+        "PRE_DEPLOYMENT_CHECKLIST.md",
+        "check-artdeco-tokens.js",
+        "cleanup-artdeco.sh",
+        "diagnose-pages.js",
+        "fix-all-type-files.js"
+      ]
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 19,
+      "lastAccessed": 1772276485855,
+      "keyFiles": [
+        "App.vue",
+        "App.vue.backup",
+        "App.vue.old",
+        "TASK-REPORT.md",
+        "TASK.md"
+      ]
+    },
+    "test-reports": {
+      "path": "test-reports",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1772276485856,
+      "keyFiles": [
+        "e2e-execution.log",
+        "e2e-report.json",
+        "page-test-report.json"
+      ]
+    },
+    "test-results": {
+      "path": "test-results",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1772276485856,
+      "keyFiles": []
+    },
+    "tests": {
+      "path": "tests",
+      "purpose": "Test files",
+      "fileCount": 41,
+      "lastAccessed": 1772276485856,
+      "keyFiles": [
+        "README-E2E.md",
+        "all-pages-accessibility.spec.ts",
+        "api-automation.spec.js",
+        "api-mapping-validation.spec.ts",
+        "artdeco-dashboard.spec.ts"
+      ]
+    },
+    "undefined:": {
+      "path": "undefined:",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1772276485857,
+      "keyFiles": []
+    },
+    "web": {
+      "path": "web",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1772276485857,
+      "keyFiles": []
+    },
+    "dist/assets": {
+      "path": "dist/assets",
+      "purpose": "Static assets",
+      "fileCount": 0,
+      "lastAccessed": 1772276485859,
+      "keyFiles": []
+    },
+    "src/api": {
+      "path": "src/api",
+      "purpose": "API routes",
+      "fileCount": 22,
+      "lastAccessed": 1772276485861,
+      "keyFiles": [
+        "advancedAnalysis.ts",
+        "apiClient.spec.ts",
+        "apiClient.ts"
+      ]
+    },
+    "src/components": {
+      "path": "src/components",
+      "purpose": "UI components",
+      "fileCount": 6,
+      "lastAccessed": 1772276485861,
+      "keyFiles": [
+        "BacktestPanel.vue",
+        "BloombergStatCard.vue",
+        "DynamicSidebar.vue"
+      ]
+    },
+    "tests/api": {
+      "path": "tests/api",
+      "purpose": "API routes",
+      "fileCount": 1,
+      "lastAccessed": 1772276485862,
+      "keyFiles": [
+        "mockApiClient.spec.ts"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "",
+      "accessCount": 17,
+      "lastAccessed": 1772288977496,
+      "type": "directory"
+    },
+    {
+      "path": "src/views/artdeco-pages/ArtDecoRiskManagement.vue",
+      "accessCount": 9,
+      "lastAccessed": 1772289070661,
+      "type": "file"
+    },
+    {
+      "path": "src/views/artdeco-pages/_templates/ExampleRiskManagement.vue",
+      "accessCount": 9,
+      "lastAccessed": 1772289087456,
+      "type": "file"
+    },
+    {
+      "path": "src/views/stock-analysis/StockStatusTab.vue",
+      "accessCount": 7,
+      "lastAccessed": 1772289087939,
+      "type": "file"
+    },
+    {
+      "path": "src/views/artdeco-pages/market-tabs/MarketConceptTab.vue",
+      "accessCount": 6,
+      "lastAccessed": 1772289110990,
+      "type": "file"
+    },
+    {
+      "path": "src/views/demo/styles/Phase4Dashboard.scss",
+      "accessCount": 6,
+      "lastAccessed": 1772290756663,
+      "type": "file"
+    },
+    {
+      "path": "src/views/artdeco-pages/market-tabs/MarketETFTab.vue",
+      "accessCount": 5,
+      "lastAccessed": 1772289111475,
+      "type": "file"
+    },
+    {
+      "path": "src/components/artdeco/trading/ArtDecoDynamicSidebar.vue",
+      "accessCount": 3,
+      "lastAccessed": 1772277232065,
+      "type": "file"
+    },
+    {
+      "path": "src/components/artdeco/trading/ArtDecoSidebar.vue",
+      "accessCount": 3,
+      "lastAccessed": 1772277232262,
+      "type": "file"
+    },
+    {
+      "path": "src/components/artdeco/trading/ArtDecoTable.vue",
+      "accessCount": 3,
+      "lastAccessed": 1772277232453,
+      "type": "file"
+    },
+    {
+      "path": "src/views/artdeco-pages/system-tabs/SystemHealthTab.vue",
+      "accessCount": 3,
+      "lastAccessed": 1772289034958,
+      "type": "file"
+    },
+    {
+      "path": "src/views/artdeco-pages/risk-tabs/RiskOverviewTab.vue",
+      "accessCount": 3,
+      "lastAccessed": 1772289034999,
+      "type": "file"
+    },
+    {
+      "path": "src/components/artdeco/advanced/ArtDecoBatchAnalysisView.vue",
+      "accessCount": 2,
+      "lastAccessed": 1772279430849,
+      "type": "file"
+    },
+    {
+      "path": "src/views/Analysis.vue",
+      "accessCount": 2,
+      "lastAccessed": 1772279430914,
+      "type": "file"
+    },
+    {
+      "path": "src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue",
+      "accessCount": 2,
+      "lastAccessed": 1772288963563,
+      "type": "file"
+    },
+    {
+      "path": "src/views/artdeco-pages/market-tabs/MarketKLineTab.vue",
+      "accessCount": 2,
+      "lastAccessed": 1772288963600,
+      "type": "file"
+    },
+    {
+      "path": "src/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue",
+      "accessCount": 2,
+      "lastAccessed": 1772289008386,
+      "type": "file"
+    },
+    {
+      "path": "src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+      "accessCount": 2,
+      "lastAccessed": 1772289008432,
+      "type": "file"
+    },
+    {
+      "path": "src/views/artdeco-pages/technical-tabs/TechnicalScannerTab.vue",
+      "accessCount": 2,
+      "lastAccessed": 1772289008516,
+      "type": "file"
+    },
+    {
+      "path": "src/components/artdeco/trading/ArtDecoCollapsibleSidebar.vue",
+      "accessCount": 1,
+      "lastAccessed": 1772276502526,
+      "type": "file"
+    },
+    {
+      "path": "src/components/artdeco",
+      "accessCount": 1,
+      "lastAccessed": 1772279369220,
+      "type": "directory"
+    },
+    {
+      "path": "src/views",
+      "accessCount": 1,
+      "lastAccessed": 1772279369235,
+      "type": "directory"
+    },
+    {
+      "path": "src/components/artdeco/advanced/ArtDecoCapitalFlow.vue",
+      "accessCount": 1,
+      "lastAccessed": 1772279430892,
+      "type": "file"
+    },
+    {
+      "path": "src/views/artdeco-pages/ArtDecoDashboard.vue",
+      "accessCount": 1,
+      "lastAccessed": 1772279430952,
+      "type": "file"
+    },
+    {
+      "path": "src/views/Phase4Dashboard.vue",
+      "accessCount": 1,
+      "lastAccessed": 1772289043846,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

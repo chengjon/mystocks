@@ -272,8 +272,8 @@
         top: 2px;
         right: 2px;
         font-size: 10px;
-        color: rgb(255 255 255 / 50%);
-        background: rgb(0 0 0 / 80%);
+        color: color-mix(in srgb, var(--artdeco-fg-primary) 50%, transparent);
+        background: color-mix(in srgb, var(--artdeco-bg-global) 80%, transparent);
         padding: 2px 4px;
         border-radius: 0px;
         font-family: var(--hybrid-font-mono);

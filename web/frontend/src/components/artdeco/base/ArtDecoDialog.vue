@@ -296,14 +296,14 @@
         font-size: 2.5rem;
         font-weight: bold;
         margin-bottom: 0.5rem;
-        background: linear-gradient(45deg, #ffd700, #ffa500);
+        background: linear-gradient(45deg, var(--artdeco-gold-primary), var(--artdeco-gold-hover));
         -webkit-text-fill-color: transparent;
         background-clip: text;
     }
 
     .artdeco-subtitle {
         font-size: 1.2rem;
-        color: #666;
+        color: var(--artdeco-fg-muted);
         margin-bottom: 2rem;
     }
 
@@ -350,8 +350,8 @@
         margin: 0;
         font-size: 1.1rem;
         font-weight: bold;
-        color: #333;
-        border-bottom: 2px solid #ffd700;
+        color: var(--artdeco-fg-secondary);
+        border-bottom: 2px solid var(--artdeco-gold-primary);
         padding-bottom: 0.5rem;
     }
 
@@ -363,7 +363,7 @@
 
     .control-item label {
         font-weight: bold;
-        color: #333;
+        color: var(--artdeco-fg-secondary);
         font-size: 0.9rem;
     }
 

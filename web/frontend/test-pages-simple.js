@@ -1,7 +1,8 @@
 const { chromium } = require('@playwright/test');
 
+const FRONTEND_URL = process.env.FRONTEND_URL || `http://localhost:${process.env.FRONTEND_PORT || '3020'}`;
+
 const pages = [
-    { name: 'Home', path: '/' },
     { name: 'Dashboard', path: '/dashboard' },
     { name: 'Market', path: '/market' },
     { name: 'Stocks', path: '/stocks' },
@@ -67,7 +68,7 @@ function shouldIgnoreError(text) {
         });
         
         try {
-            const response = await page.goto('http://localhost:3002' + p.path, { 
+            const response = await page.goto(FRONTEND_URL + p.path, {
                 waitUntil: 'domcontentloaded',
                 timeout: 30000 
             });

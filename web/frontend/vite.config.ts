@@ -12,7 +12,7 @@ import commonjs from 'vite-plugin-commonjs'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const devPort = parseInt(env.FRONTEND_PORT || process.env.PORT || '3020')
-  const backendPort = env.BACKEND_PORT || '8000'
+  const backendPort = env.BACKEND_PORT || '8020'
   const backendUrl = `http://localhost:${backendPort}`
 
   return {

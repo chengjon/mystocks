@@ -9,7 +9,6 @@ This module provides multi-level trading signals system including:
 - Risk-adjusted signal validation
 """
 
-import warnings
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional

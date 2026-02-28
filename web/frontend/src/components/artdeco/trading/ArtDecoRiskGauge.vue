@@ -10,9 +10,9 @@
                 <svg viewBox="0 0 200 120" class="gauge-svg">
                     <defs>
                         <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stop-color="#00E676" />
-                            <stop offset="50%" stop-color="#FFD700" />
-                            <stop offset="100%" stop-color="#FF5252" />
+                            <stop offset="0%" stop-color="var(--artdeco-down)" />
+                            <stop offset="50%" stop-color="var(--artdeco-accent-gold)" />
+                            <stop offset="100%" stop-color="var(--artdeco-up)" />
                         </linearGradient>
                     </defs>
 
@@ -115,7 +115,7 @@
     })
 
     const riskColor = computed(() => {
-        if (props.riskScore >= 70) return 'var(--artdeco-fall)'
+        if (props.riskScore >= 70) return 'var(--artdeco-down)'
         if (props.riskScore >= 40) return 'var(--artdeco-accent-gold)'
         return 'var(--artdeco-rise)'
     })
@@ -157,7 +157,7 @@
 
     .artdeco-risk-gauge {
       background: var(--artdeco-bg-card);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       padding: var(--artdeco-spacing-4);
       display: flex;
       flex-direction: column;
@@ -278,7 +278,7 @@
     .breakdown-bar {
       height: 6px;
       background: var(--artdeco-bg-primary);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       overflow: hidden;
     }
 

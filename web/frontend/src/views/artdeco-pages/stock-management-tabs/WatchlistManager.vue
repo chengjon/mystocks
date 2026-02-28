@@ -1,9 +1,16 @@
 <template>
   <div class="watchlist-manager">
+    <div class="overview-grid">
+      <ArtDecoStatCard label="组合数量" :value="watchlists.length" variant="gold" />
+      <ArtDecoStatCard label="当前股票数" :value="stocksCount" variant="gold" />
+      <ArtDecoStatCard label="上涨家数" :value="upCount" variant="rise" />
+      <ArtDecoStatCard label="下跌家数" :value="downCount" variant="fall" />
+    </div>
+
     <div class="watchlist-header">
       <div class="watchlist-tabs">
         <button
-          v-for="(list, _idx) in watchlists"
+          v-for="list in watchlists"
           :key="list.id"
           class="watchlist-tab"
           :class="{ active: activeWatchlistId === list.id }"
@@ -20,16 +27,24 @@
       </div>
     </div>
 
-    <ArtDecoTable :columns="columns" :data="currentStocks">
-      <template #action="{ row }">
-        <ArtDecoButton variant="outline" size="sm" @click="emit('remove-stock', row)">删除</ArtDecoButton>
-      </template>
-    </ArtDecoTable>
+    <ArtDecoCard title="组合持仓明细" hoverable>
+      <ArtDecoTable :columns="columns" :data="currentStocks">
+        <template #action="{ row }">
+          <ArtDecoButton variant="outline" size="sm" @click="emit('remove-stock', row)">删除</ArtDecoButton>
+        </template>
+      </ArtDecoTable>
+    </ArtDecoCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ArtDecoButton, ArtDecoTable } from '@/components/artdeco'
+import { computed } from 'vue'
+import { ArtDecoButton, ArtDecoCard, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
+
+interface StockRow {
+  [key: string]: unknown
+  change?: number | string
+}
 
 interface WatchlistItem {
   id: string
@@ -40,29 +55,52 @@ interface WatchlistItem {
 interface Props {
   watchlists: WatchlistItem[]
   activeWatchlistId: string
-  currentStocks: unknown[]
+  currentStocks: StockRow[]
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 const emit = defineEmits(['select-list', 'add-list', 'import', 'export', 'remove-stock'])
+
+const numericChanges = computed(() => props.currentStocks.map((row) => {
+  const value = row.change
+  if (typeof value === 'number') return value
+  if (typeof value === 'string') return Number(value.replace('%', ''))
+  return 0
+}))
+
+const stocksCount = computed(() => props.currentStocks.length)
+const upCount = computed(() => numericChanges.value.filter((v) => v > 0).length)
+const downCount = computed(() => numericChanges.value.filter((v) => v < 0).length)
 
 const columns = [
   { key: 'symbol', label: '代码', width: '100px' },
   { key: 'name', label: '名称' },
   { key: 'price', label: '现价', align: 'right' },
   { key: 'change', label: '涨跌幅', variant: 'color', align: 'right' },
-  { key: 'action', label: '操作', width: '80px' }
+  { key: 'volume', label: '成交量', align: 'right' },
+  { key: 'action', label: '操作', width: '90px' }
 ]
 </script>
 
 <style scoped lang="scss">
 @import '@/styles/artdeco-tokens';
 
+.watchlist-manager {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-4);
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--artdeco-spacing-4);
+}
+
 .watchlist-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--artdeco-spacing-4);
 }
 
 .watchlist-tabs {
@@ -72,14 +110,15 @@ const columns = [
 
 .watchlist-tab {
   background: var(--artdeco-bg-card);
-  border: 1px solid var(--artdeco-border-gold-subtle);
+  border: 1px solid var(--artdeco-border-default);
   color: var(--artdeco-fg-muted);
-  padding: 8px 16px;
+  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
   cursor: pointer;
-  
+
   &.active {
-    border-color: var(--artdeco-accent-gold);
-    color: var(--artdeco-accent-gold);
+    border-color: var(--artdeco-gold-primary);
+    color: var(--artdeco-gold-primary);
+    background: var(--artdeco-gold-opacity-10);
   }
 
   .count {
@@ -94,5 +133,10 @@ const columns = [
 
   width: 40px;
   padding: 8px 0;
+}
+
+.actions {
+  display: flex;
+  gap: var(--artdeco-spacing-2);
 }
 </style>

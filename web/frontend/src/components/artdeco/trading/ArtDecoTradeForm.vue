@@ -208,7 +208,7 @@
     .artdeco-trade-form-overlay {
       position: fixed;
       inset: 0 0 0 0;
-      background: rgb(0 0 0 / 70%);
+      background: color-mix(in srgb, var(--artdeco-bg-global) 70%, transparent);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -218,7 +218,7 @@
 
     .artdeco-trade-form {
       background: var(--artdeco-bg-card);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       padding: var(--artdeco-spacing-5);
       min-width: 500px;
       max-width: 600px;
@@ -258,7 +258,7 @@
       align-items: center;
       margin-bottom: var(--artdeco-spacing-5);
       padding-bottom: var(--artdeco-spacing-4);
-      border-bottom: 1px solid rgb(212 175 55 / 20%);
+      border-bottom: 1px solid var(--artdeco-gold-opacity-20);
     }
 
     .form-title {
@@ -316,7 +316,7 @@
     .artdeco-input,
     .artdeco-textarea {
       background: var(--artdeco-bg-primary);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-mono);
       font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
@@ -348,7 +348,7 @@
       font-weight: 700;
       padding: var(--artdeco-spacing-3);
       background: var(--artdeco-bg-primary);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       text-align: center;
     }
 
@@ -361,7 +361,7 @@
     }
 
     .trade-amount-display.fall {
-      color: var(--artdeco-fall);
+      color: var(--artdeco-down);
     }
 
     .max-quantity-display {
@@ -370,7 +370,7 @@
       color: var(--artdeco-fg-muted);
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
       background: var(--artdeco-bg-primary);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
     }
 
     /* Form footer */
@@ -379,13 +379,13 @@
       justify-content: flex-end;
       gap: var(--artdeco-spacing-3);
       padding-top: var(--artdeco-spacing-4);
-      border-top: 1px solid rgb(212 175 55 / 20%);
+      border-top: 1px solid var(--artdeco-gold-opacity-20);
     }
 
     /* Button styles */
     .artdeco-btn {
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-5);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       background: var(--artdeco-bg-card);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-display);
@@ -424,15 +424,15 @@
     }
 
     .artdeco-btn-fall:hover {
-      color: var(--artdeco-fall);
-      border-color: var(--artdeco-fall);
+      color: var(--artdeco-down);
+      border-color: var(--artdeco-down);
     }
 
     /* Spinner */
     .artdeco-spinner {
       width: 16px;
       height: 16px;
-      border: 2px solid rgb(212 175 55 / 20%);
+      border: 2px solid var(--artdeco-gold-opacity-20);
       border-top-color: var(--artdeco-accent-gold);
       border-radius: 50%;
       animation: spin 0.6s linear infinite;

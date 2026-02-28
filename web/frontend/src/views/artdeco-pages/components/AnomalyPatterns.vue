@@ -30,9 +30,9 @@ defineProps({
     gap: 20px;
 }
 .pattern-card {
-    background: rgb(212 175 55 / 5%);
+    background: var(--artdeco-gold-opacity-05);
     padding: 15px;
-    border: 1px solid rgb(212 175 55 / 10%);
+    border: 1px solid var(--artdeco-gold-opacity-10);
     .pattern-header {
         display: flex;
         justify-content: space-between;

@@ -380,5 +380,5 @@
 </script>
 
 <style scoped lang="scss">
-@import "./styles/PerformanceTable.scss";
+@import "./styles/PerformanceTable";
 </style>

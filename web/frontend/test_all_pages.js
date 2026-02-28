@@ -1,5 +1,6 @@
 // Chrome DevTools Test for MyStocks All Pages
 const puppeteer = require('puppeteer');
+const FRONTEND_URL = process.env.FRONTEND_URL || `http://localhost:${process.env.FRONTEND_PORT || '3020'}`;
 
 const pages = [
     { name: 'Home', path: '/' },
@@ -45,7 +46,7 @@ async function testPage(page, browser) {
     });
     
     try {
-        const response = await pageObj.goto('http://localhost:3002' + page.path, { 
+        const response = await pageObj.goto(FRONTEND_URL + page.path, {
             waitUntil: 'domcontentloaded', 
             timeout: 30000 
         });

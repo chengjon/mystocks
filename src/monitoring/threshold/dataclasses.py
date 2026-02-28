@@ -1,13 +1,9 @@
 """智能阈值管理器 - 数据类定义"""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 from datetime import datetime
-from typing import Any, Dict, List, Optional
 
-import numpy as np
-from sklearn.cluster import DBSCAN
-from sklearn.ensemble import IsolationForest
 
 # 监控组件导入
 try:

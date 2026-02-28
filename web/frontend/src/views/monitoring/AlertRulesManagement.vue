@@ -192,5 +192,5 @@ const { alertRules, loading, showCreateDialog, editingRule, pagination, ruleType
 </script>
 
 <style scoped lang="scss">
-@import "./styles/AlertRulesManagement.scss";
+@import "./styles/AlertRulesManagement";
 </style>

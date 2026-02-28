@@ -315,5 +315,5 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/BatchScan.scss";
+@import "./styles/BatchScan";
 </style>

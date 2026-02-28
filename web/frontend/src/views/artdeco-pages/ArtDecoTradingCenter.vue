@@ -451,5 +451,5 @@
     })
 </script>
 <style scoped lang="scss">
-@import "./styles/ArtDecoTradingCenter.scss";
+@import "./styles/ArtDecoTradingCenter";
 </style>

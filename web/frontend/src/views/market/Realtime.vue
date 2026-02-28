@@ -356,5 +356,5 @@
 </script>
 
 <style scoped lang="scss">
-@import "./styles/Realtime.scss";
+@import "./styles/Realtime";
 </style>

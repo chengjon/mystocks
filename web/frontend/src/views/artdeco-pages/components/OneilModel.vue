@@ -61,7 +61,7 @@ defineProps({
         }
         .score-bar {
             height: 4px;
-            background: rgb(212 175 55 / 10%);
+            background: var(--artdeco-gold-opacity-10);
             .score-fill {
               height: 100%;
               background: var(--artdeco-gold-primary);
@@ -73,7 +73,7 @@ defineProps({
     display: flex;
     align-items: center;
     justify-content: center;
-    border-left: 1px solid rgb(212 175 55 / 20%);
+    border-left: 1px solid var(--artdeco-gold-opacity-20);
     .gauge {
         text-align: center;
         .value {

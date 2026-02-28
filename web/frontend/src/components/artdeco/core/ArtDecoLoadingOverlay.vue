@@ -18,13 +18,15 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
+@import '@/styles/artdeco-tokens';
+
 .artdeco-loading-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgb(0 0 0 / 70%);
+  background-color: color-mix(in srgb, var(--artdeco-bg-global) 70%, transparent);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -37,36 +39,36 @@ defineProps<{
     align-items: center;
     gap: 16px;
     padding: 24px;
-    background-color: var(--artdeco-bg-secondary, #1a1a1a);
-    border: 1px solid var(--artdeco-border-color, #333);
+    background-color: var(--artdeco-bg-card);
+    border: 1px solid var(--artdeco-gold-opacity-20);
     border-radius: 4px;
-    box-shadow: 0 4px 12px rgb(0 0 0 / 50%);
+    box-shadow: var(--artdeco-shadow-lg);
     min-width: 200px;
 
     .spinner {
       width: 32px;
       height: 32px;
-      border: 3px solid var(--artdeco-bg-tertiary, #333);
-      border-top-color: var(--artdeco-accent-color, #d4af37);
+      border: 3px solid var(--artdeco-bg-secondary);
+      border-top-color: var(--artdeco-accent-gold);
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
 
     .message {
-      color: var(--artdeco-text-primary, #fff);
+      color: var(--artdeco-fg-primary);
       font-size: 14px;
     }
 
     .progress-bar {
       width: 100%;
       height: 4px;
-      background-color: var(--artdeco-bg-tertiary, #333);
+      background-color: var(--artdeco-bg-secondary);
       border-radius: 2px;
       overflow: hidden;
 
       .progress-fill {
         height: 100%;
-        background-color: var(--artdeco-accent-color, #d4af37);
+        background-color: var(--artdeco-accent-gold);
         transition: width 0.3s ease;
       }
     }

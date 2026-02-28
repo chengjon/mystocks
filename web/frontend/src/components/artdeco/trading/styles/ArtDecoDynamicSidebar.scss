@@ -22,8 +22,8 @@
             45deg,
             transparent,
             transparent 10px,
-            rgb(212 175 55 / 2%) 10px,
-            rgb(212 175 55 / 2%) 20px
+            color-mix(in srgb, var(--artdeco-gold-primary) 2%, transparent) 10px,
+            color-mix(in srgb, var(--artdeco-gold-primary) 2%, transparent) 20px
         );
         pointer-events: none;
         z-index: 0;
@@ -34,7 +34,7 @@
     // ============================================
     .artdeco-sidebar-header {
         padding: var(--artdeco-spacing-5) var(--artdeco-spacing-4);
-        border-bottom: 2px solid rgb(212 175 55 / 20%);
+        border-bottom: 2px solid var(--artdeco-gold-opacity-20);
         text-align: center;
         position: relative;
         background: var(--artdeco-bg-header);
@@ -47,7 +47,7 @@
         position: absolute;
         width: 30px;
         height: 30px;
-        border: 2px solid rgb(212 175 55 / 20%);
+        border: 2px solid var(--artdeco-gold-opacity-20);
         pointer-events: none;
     }
 
@@ -78,7 +78,7 @@
         border: 2px solid var(--artdeco-accent-gold);
         padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
         background: var(--artdeco-bg-card);
-        box-shadow: 0 4px 12px rgb(212 175 55 / 10%);
+        box-shadow: 0 4px 12px var(--artdeco-gold-opacity-10);
         transition: all var(--artdeco-transition-slow);
     }
 
@@ -148,7 +148,7 @@
         padding: 0 var(--artdeco-spacing-4) var(--artdeco-spacing-2);
         position: relative;
         z-index: 1;
-        border-bottom: 1px solid rgb(212 175 55 / 10%);
+        border-bottom: 1px solid var(--artdeco-gold-opacity-10);
     }
 
     .module-tab {
@@ -160,7 +160,7 @@
         padding: var(--artdeco-spacing-3) var(--artdeco-spacing-2);
         margin-bottom: var(--artdeco-spacing-1);
         background: var(--artdeco-bg-card);
-        border: 1px solid rgb(212 175 55 / 20%);
+        border: 1px solid var(--artdeco-gold-opacity-20);
         border-radius: var(--artdeco-radius-none);
         color: var(--artdeco-fg-primary);
         font-family: var(--artdeco-font-body);
@@ -177,7 +177,7 @@
         }
 
         &.active {
-            background: linear-gradient(135deg, rgb(212 175 55 / 10%), rgb(212 175 55 / 5%));
+            background: linear-gradient(135deg, var(--artdeco-gold-opacity-10), var(--artdeco-gold-opacity-05));
             border-color: var(--artdeco-gold-primary);
             color: var(--artdeco-gold-primary);
             box-shadow: var(--artdeco-glow-medium);
@@ -213,13 +213,13 @@
         gap: var(--artdeco-spacing-2);
         margin-bottom: var(--artdeco-spacing-3);
         padding-bottom: var(--artdeco-spacing-2);
-        border-bottom: 1px solid rgb(212 175 55 / 20%);
+        border-bottom: 1px solid var(--artdeco-gold-opacity-20);
     }
 
     .artdeco-nav-section-icon {
         font-size: var(--artdeco-text-base);
         color: var(--artdeco-accent-gold);
-        text-shadow: 0 0 8px rgb(212 175 55 / 30%);
+        text-shadow: 0 0 8px var(--artdeco-gold-opacity-30);
     }
 
     .artdeco-nav-section-title {
@@ -236,7 +236,7 @@
     .artdeco-nav-section-line {
         flex: 1;
         height: 1px;
-        background: linear-gradient(to right, rgb(212 175 55 / 20%), transparent);
+        background: linear-gradient(to right, var(--artdeco-gold-opacity-20), transparent);
     }
 
     // Navigation Item
@@ -263,7 +263,7 @@
         top: 0;
         width: 0;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgb(212 175 55 / 5%));
+        background: linear-gradient(90deg, transparent, var(--artdeco-gold-opacity-05));
         transition: width var(--artdeco-transition-slow);
     }
 
@@ -271,7 +271,7 @@
         font-family: var(--artdeco-font-display);
         font-size: var(--artdeco-text-md);
         font-weight: 700;
-        color: rgb(212 175 55 / 20%);
+        color: var(--artdeco-gold-opacity-20);
         min-width: 32px;
         text-align: center;
         transition: all var(--artdeco-transition-slow);
@@ -307,7 +307,7 @@
 
     // Hover State
     .artdeco-nav-item:hover {
-        background: rgb(212 175 55 / 8%);
+        background: color-mix(in srgb, var(--artdeco-gold-primary) 8%, transparent);
         border-left-color: var(--artdeco-accent-gold);
         padding-left: calc(var(--artdeco-spacing-3) + 4px);
     }
@@ -319,12 +319,12 @@
     .artdeco-nav-item:hover .artdeco-nav-number {
         color: var(--artdeco-accent-gold);
         transform: scale(1.1);
-        text-shadow: 0 0 12px rgb(212 175 55 / 50%);
+        text-shadow: 0 0 12px color-mix(in srgb, var(--artdeco-gold-primary) 50%, transparent);
     }
 
     .artdeco-nav-item:hover .artdeco-nav-label {
         color: var(--artdeco-accent-gold);
-        text-shadow: 0 0 8px rgb(212 175 55 / 20%);
+        text-shadow: 0 0 8px var(--artdeco-gold-opacity-20);
     }
 
     .artdeco-nav-item:hover .artdeco-nav-subtitle {
@@ -333,10 +333,10 @@
 
     // Active State
     .artdeco-nav-item.active {
-        background: linear-gradient(90deg, rgb(212 175 55 / 20%), rgb(212 175 55 / 8%));
+        background: linear-gradient(90deg, var(--artdeco-gold-opacity-20), color-mix(in srgb, var(--artdeco-gold-primary) 8%, transparent));
         border-left-color: var(--artdeco-accent-gold);
         border-left-width: 4px;
-        box-shadow: inset 0 0 30px rgb(212 175 55 / 15%);
+        box-shadow: inset 0 0 30px color-mix(in srgb, var(--artdeco-gold-primary) 15%, transparent);
     }
 
     .artdeco-nav-item.active .artdeco-nav-number {
@@ -348,7 +348,7 @@
     .artdeco-nav-item.active .artdeco-nav-label {
         color: var(--artdeco-accent-gold);
         font-weight: 700;
-        text-shadow: 0 0 10px rgb(212 175 55 / 30%);
+        text-shadow: 0 0 10px var(--artdeco-gold-opacity-30);
     }
 
     .artdeco-nav-item.active .artdeco-nav-subtitle {
@@ -361,7 +361,7 @@
     .artdeco-sidebar-footer {
         padding: var(--artdeco-spacing-4);
         text-align: center;
-        border-top: 1px solid rgb(212 175 55 / 20%);
+        border-top: 1px solid var(--artdeco-gold-opacity-20);
         background: var(--artdeco-bg-header);
         position: relative;
         z-index: 1;
@@ -369,9 +369,9 @@
 
     .artdeco-footer-ornament {
         font-size: var(--artdeco-text-lg);
-        color: rgb(212 175 55 / 20%);
+        color: var(--artdeco-gold-opacity-20);
         margin-bottom: var(--artdeco-spacing-1);
-        text-shadow: 0 0 8px rgb(212 175 55 / 20%);
+        text-shadow: 0 0 8px var(--artdeco-gold-opacity-20);
     }
 
     .artdeco-footer-text {

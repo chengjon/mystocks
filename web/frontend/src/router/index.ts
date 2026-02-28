@@ -82,6 +82,12 @@ const routes: RouteRecordRaw[] = [
             name: 'data-fund-flow',
             component: () => import('@/views/artdeco-pages/market-data-tabs/FundFlowAnalysis.vue'),
             meta: { title: '资金流向', requiresAuth: true, api: '/api/akshare_market/fund_flow' }
+          },
+          {
+            path: 'indicator',
+            name: 'data-indicator',
+            component: () => import('@/views/artdeco-pages/ArtDecoDataAnalysis.vue'),
+            meta: { title: '指标分析', requiresAuth: true }
           }
         ]
       },
@@ -197,6 +203,13 @@ const routes: RouteRecordRaw[] = [
         redirect: '/risk/overview',
         meta: { group: 'risk' },
         children: [
+          {
+            path: 'management',
+            alias: ['/risk-management'],
+            name: 'risk-management',
+            component: () => import('@/views/artdeco-pages/ArtDecoRiskManagement.vue'),
+            meta: { title: '风险管理中心', requiresAuth: true }
+          },
           {
             path: 'overview',
             name: 'risk-overview',

@@ -174,5 +174,5 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/StrategyList.scss";
+@import "./styles/StrategyList";
 </style>

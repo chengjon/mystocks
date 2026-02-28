@@ -80,8 +80,8 @@
             align-items: center;
             justify-content: center;
             padding: var(--artdeco-spacing-12);
-            background: rgb(0 230 118 / 5%);
-            border: 1px solid rgb(0 230 118 / 20%);
+            background: color-mix(in srgb, var(--artdeco-down) 5%, transparent);
+            border: 1px solid color-mix(in srgb, var(--artdeco-down) 20%, transparent);
             border-radius: var(--artdeco-radius-none);
             color: var(--artdeco-up);
 
@@ -116,7 +116,7 @@
                 justify-content: space-between;
                 padding: var(--artdeco-spacing-3);
                 background: var(--artdeco-bg-card);
-                border: 1px solid rgb(212 175 55 / 10%);
+                border: 1px solid var(--artdeco-gold-opacity-10);
                 border-radius: var(--artdeco-radius-none);
 
                 .setting-label {

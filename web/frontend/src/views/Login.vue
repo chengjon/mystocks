@@ -22,6 +22,7 @@
             class="input"
             placeholder="ENTER USERNAME"
             data-testid="username-input"
+            autocomplete="username"
           >
         </div>
 
@@ -33,6 +34,7 @@
             class="input"
             placeholder="ENTER PASSWORD"
             data-testid="password-input"
+            autocomplete="current-password"
             @keyup.enter="handleLogin"
           >
         </div>

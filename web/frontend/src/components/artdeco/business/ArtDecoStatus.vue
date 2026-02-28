@@ -40,7 +40,7 @@
       padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
       border-radius: var(--artdeco-radius-none);
       background: var(--artdeco-bg-card);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       transition: all var(--artdeco-transition-base);
     }
 

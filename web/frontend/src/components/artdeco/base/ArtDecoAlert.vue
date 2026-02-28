@@ -134,59 +134,59 @@ onUnmounted(() => {
 
 // Alert Variants
 .artdeco-alert-success {
-  border-color: var(--artdeco-success, #00E676);
-  color: var(--artdeco-success, #00E676);
+  border-color: var(--artdeco-success);
+  color: var(--artdeco-success);
   background: linear-gradient(
     135deg,
-    rgb(0 230 118 / 10%),
-    rgb(0 230 118 / 5%)
+    color-mix(in srgb, var(--artdeco-success) 10%, transparent),
+    color-mix(in srgb, var(--artdeco-success) 5%, transparent)
   );
 
   .artdeco-alert-icon {
-    color: var(--artdeco-success, #00E676);
+    color: var(--artdeco-success);
   }
 }
 
 .artdeco-alert-warning {
-  border-color: var(--artdeco-warning, #FFC107);
-  color: var(--artdeco-warning, #FFC107);
+  border-color: var(--artdeco-warning);
+  color: var(--artdeco-warning);
   background: linear-gradient(
     135deg,
-    rgb(255 193 7 / 10%),
-    rgb(255 193 7 / 5%)
+    color-mix(in srgb, var(--artdeco-warning) 10%, transparent),
+    color-mix(in srgb, var(--artdeco-warning) 5%, transparent)
   );
 
   .artdeco-alert-icon {
-    color: var(--artdeco-warning, #FFC107);
+    color: var(--artdeco-warning);
   }
 }
 
 .artdeco-alert-danger,
 .artdeco-alert-error {
-  border-color: var(--artdeco-danger, #FF5252);
-  color: var(--artdeco-danger, #FF5252);
+  border-color: var(--artdeco-danger);
+  color: var(--artdeco-danger);
   background: linear-gradient(
     135deg,
-    rgb(255 82 82 / 10%),
-    rgb(255 82 82 / 5%)
+    color-mix(in srgb, var(--artdeco-danger) 10%, transparent),
+    color-mix(in srgb, var(--artdeco-danger) 5%, transparent)
   );
 
   .artdeco-alert-icon {
-    color: var(--artdeco-danger, #FF5252);
+    color: var(--artdeco-danger);
   }
 }
 
 .artdeco-alert-info {
-  border-color: var(--artdeco-info, #2196F3);
-  color: var(--artdeco-info, #2196F3);
+  border-color: var(--artdeco-info);
+  color: var(--artdeco-info);
   background: linear-gradient(
     135deg,
-    rgb(33 150 243 / 10%),
-    rgb(33 150 243 / 5%)
+    color-mix(in srgb, var(--artdeco-info) 10%, transparent),
+    color-mix(in srgb, var(--artdeco-info) 5%, transparent)
   );
 
   .artdeco-alert-icon {
-    color: var(--artdeco-info, #2196F3);
+    color: var(--artdeco-info);
   }
 }
 
@@ -242,7 +242,7 @@ onUnmounted(() => {
 
   &:hover {
     opacity: 100%;
-    background: rgb(0 0 0 / 10%);
+    background: color-mix(in srgb, var(--artdeco-bg-global) 10%, transparent);
   }
 
   &:active {

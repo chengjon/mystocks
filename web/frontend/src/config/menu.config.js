@@ -143,6 +143,13 @@ const menuConfig = [
     roles: ['admin', 'user'],
     children: [
       {
+        id: 'risk-management-center',
+        title: '风险管理中心',
+        path: '/risk/management',
+        icon: 'Warning',
+        disabled: false
+      },
+      {
         id: 'risk-overview',
         title: '风险概览',
         path: '/risk/overview',

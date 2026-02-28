@@ -15,11 +15,8 @@ Mock数据文件: Stocks
 生成时间: 2025-11-13
 """
 
-import datetime
 import random
-from typing import Dict, List, Optional
 
-import pandas as pd
 
 def generate_realistic_volume() -> int:
     """生成真实感的成交量数据

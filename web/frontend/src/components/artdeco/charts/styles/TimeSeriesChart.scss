@@ -133,7 +133,7 @@
         border-radius: 4px;
         pointer-events: none;
         z-index: 100;
-        box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
+        box-shadow: var(--artdeco-shadow-md);
         min-width: 150px;
 
         .tooltip-date {

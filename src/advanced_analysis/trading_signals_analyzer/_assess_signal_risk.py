@@ -9,16 +9,11 @@ This module provides multi-level trading signals system including:
 - Risk-adjusted signal validation
 """
 
-import warnings
-from dataclasses import dataclass
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from datetime import datetime
+from typing import List
 
-import numpy as np
-import pandas as pd
 
-from src.advanced_analysis import AnalysisResult, AnalysisType, BaseAnalyzer
-from src.indicators.indicator_factory import IndicatorFactory
+from src.advanced_analysis import AnalysisResult, AnalysisType
 
 def _assess_signal_risk(self, signals: List[TradingSignal]) -> str:
     """评估信号风险水平"""

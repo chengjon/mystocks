@@ -324,5 +324,5 @@
 </script>
 
 <style scoped lang="scss">
-@import "./styles/ArtDecoTable.scss";
+@import "./styles/ArtDecoTable";
 </style>

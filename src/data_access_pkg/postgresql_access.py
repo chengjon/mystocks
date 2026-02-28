@@ -1,9 +1,8 @@
 """数据访问层 - PostgreSQL 关系数据库访问"""
 
-import json
 import logging
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from datetime import datetime
+from typing import Dict, List
 
 import pandas as pd
 

@@ -119,9 +119,9 @@ defineProps<{
   align-items: center;
   gap: var(--artdeco-spacing-3);
   padding: var(--artdeco-spacing-2) 0;
-  border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+  border-bottom: 1px solid rgb(212 175 55 / 10%);
 
-  &.muted { opacity: 0.6; }
+  &.muted { opacity: 60%; }
 
   .label {
     flex: 1;
@@ -138,7 +138,7 @@ defineProps<{
   background: var(--artdeco-gold-primary);
   transform: rotate(45deg);
   border: 1px solid var(--artdeco-gold-light);
-  box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+  box-shadow: 0 0 8px rgb(212 175 55 / 40%);
 
   &.gray {
     background: var(--artdeco-fg-muted);
@@ -160,7 +160,11 @@ defineProps<{
   display: flex;
   align-items: center;
   gap: var(--artdeco-spacing-3);
-  h3 { margin: 0; font-size: var(--artdeco-text-lg); }
+
+  h3 {
+    margin: 0;
+    font-size: var(--artdeco-text-lg);
+  }
 }
 
 .luxury-list {
@@ -170,12 +174,16 @@ defineProps<{
   li {
     margin-bottom: var(--artdeco-spacing-2);
     color: var(--artdeco-fg-primary);
-    span { color: var(--artdeco-gold-primary); font-weight: bold; }
+
+    span {
+      color: var(--artdeco-gold-primary);
+      font-weight: bold;
+    }
   }
 }
 
 .path-box {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgb(0 0 0 / 30%);
   padding: var(--artdeco-spacing-3);
   border-left: 3px solid var(--artdeco-gold-primary);
   font-family: var(--font-mono);

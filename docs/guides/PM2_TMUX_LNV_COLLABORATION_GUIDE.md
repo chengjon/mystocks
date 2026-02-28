@@ -1,222 +1,206 @@
-# PM2、Tmux和Lnav三者协作开发运维体系完整指南
+# PM2、Tmux 和 Lnav 协作开发运维指南（可执行版）
 
-## 概述
+## 文档目标
 
-MyStocks项目通过PM2、Tmux和Lnav的深度集成，构建了一个高效的三维开发运维体系。本指南详细说明了如何使用这套增强版的工具链，实现开发、监控、部署和运维的全面自动化。
+本指南用于在 MyStocks 项目中建立一套“可落地、可复现”的协作流程：
 
-## 版本信息
+- `PM2` 负责服务进程管理（启动、重启、日志、状态）
+- `Tmux` 负责多人/多任务并行终端协作
+- `Lnav` 负责日志聚合与故障定位
 
-- **版本**: 2.0 Enhanced
-- **更新日期**: 2026-01-27
-- **兼容性**: 支持WSL2、Linux、macOS环境
-
-## 🎯 核心优势
-
-### 1. 三维统一管理
-- **PM2**: 进程管理和自动重启
-- **Tmux**: 多窗口并行开发环境
-- **Lnav**: 智能日志分析和错误处理
-
-### 2. 增强功能特性
-- **智能健康检查**: 不仅检查URL可用性，还检查响应时间和状态码
-- **指数退避重启策略**: 防止频繁重启导致系统不稳定
-- **系统资源监控**: CPU、内存、磁盘使用率实时监控
-- **高级日志分析**: 结构化日志查询、错误模式匹配、性能分析
-- **多渠道告警**: 邮件、Webhook、Slack集成
-
-## 📋 快速参考卡片
-
-### 快速启动命令
-
-```bash
-# 启动增强开发环境
-./scripts/dev/tmux-enhanced-session.sh start
-
-# 启动监控（守护进程模式）
-./scripts/dev/tmux-enhanced-session.sh start --daemon
-
-# 执行一次性监控检查
-./scripts/automation/monitor_and_fix.py --check-once
-
-# PM2命令参考
-pm2 list                          # 列出所有应用
-pm2 show mystocks-frontend        # 查看前端状态
-pm2 restart mystocks-backend       # 重启后端服务
-pm2 logs mystocks-frontend        # 查看前端日志
-pm2 monit                     # 查看监控状态
-
-# Tmux命令参考
-tmux list-sessions                   # 列出所有会话
-tmux new-session -s mystocks_dev     # 创建新会话
-tmux attach-session -t mystocks_dev    # 连接到会话
-
-# Lnav命令参考
-lnav -c logs/api/*               # 分析API日志
-lnav -c logs/backend/*            # 分析后端日志
-lnav -c logs/frontend/*           # 分析前端日志
-lnav -c logs/database/*            # 分析数据库日志
-lnav -c :export-to-json report.json logs/*  # 导出分析报告
-```
-
-### 常用操作流程
-
-#### 1. 开发环境启动
-```bash
-# 一键启动完整开发环境
-./scripts/dev/tmux-enhanced-session.sh start
-```
-
-#### 2. 监控和告警
-```bash
-# 启动自动化监控（后台运行）
-nohup ./scripts/automation/monitor_and_fix.py --daemon &
-
-# 手动执行一次检查
-./scripts/automation/monitor_and_fix.py --check-once
-```
-
-#### 3. 日志分析
-```bash
-# 实时分析API错误日志
-lnav -c logs/api/*
-
-# 过滤ERROR级别日志
-lnav -c ":filter-in log_level IN (ERROR, CRITICAL)" logs/api/*
-
-# 分析响应时间超过1秒的请求
-lnav -c ":filter-in response_time > 1000" logs/api/*
-
-# 导出分析报告
-lnav -c ":export-to-json /tmp/analysis_report.json" logs/api/*
-```
-
-## 🔧 配置详解
-
-### PM2增强配置
-
-#### 核心服务配置
-- **健康检查增强**: 响应时间阈值、数据库连接检查、多端点验证
-- **重启策略**: 指数退避、最大重试次数、冷却期保护
-- **日志管理**: 自动轮转、大小限制、压缩存档
-- **资源监控**: CPU/内存/磁盘阈值告警
-
-#### 新增监控服务
-- **独立监控进程**: 专门的监控应用，不影响主服务
-- **GPU服务支持**: 自动检测GPU API服务并集成监控
-
-### Tmux增强功能
-
-#### 6个功能窗口
-1. **PM2管理面板**: 应用状态、启动/停止/重启
-2. **数据库监控**: TDengine + PostgreSQL实时状态
-3. **自动化监控面板**: 系统监控、告警状态、日志查看
-4. **高级日志分析**: Lnav集成、结构化查询、实时过滤
-5. **系统资源监控**: CPU/内存/磁盘使用率、进程状态
-6. **开发工具**: Python环境、Git操作、包管理
-
-### Lnav集成优化
-
-#### 日志格式配置
-```json
-{
-  "backend_logs": {
-    "title": "MyStocks Backend Logs",
-    "description": "FastAPI后端结构化日志分析",
-    "url": ["file:///opt/claude/mystocks_spec/logs/backend.log"],
-    "sample": ["2026-01-27 10:00:00 [INFO] request_id=abc123 duration=200ms"]
-  }
-}
-```
-
-## 📊 性能指标
-
-### 监控覆盖率
-- **服务健康检查**: 99.9% 可用性
-- **系统资源监控**: 实时CPU/内存/磁盘使用率
-- **告警响应时间**: < 30秒（包含Webhook通知）
-- **日志分析效率**: 支持GB级日志文件，毫秒级查询
-
-### 故障恢复能力
-- **自动重启**: 90% 成功率，指数退避策略
-- **故障检测**: < 60秒发现异常
-- **告警送达**: 99% 成功率（多渠道支持）
-
-## 🚀 部署和运维
-
-### 一键部署
-```bash
-# 生产环境部署
-pm2 deploy production
-
-# 开发环境启动
-pm2 deploy development
-```
-
-### 生产环境配置切换
-- **自动识别**: 通过NODE_ENV自动选择配置
-- **安全切换**: 支持代码拉取、构建、部署自动化
-
-## 📈 最佳实践
-
-### 1. 监控配置
-- 设置合理的检查间隔（60秒）
-- 配置适当的告警阈值（CPU 80%, 内存 85%, 磁盘 90%）
-- 启用错误率监控（> 5% 告警）
-
-### 2. 日志管理
-- 定期清理旧日志文件
-- 使用结构化日志格式（JSON推荐）
-- 关键日志保留30天，普通日志保留7天
-
-### 3. 资源优化
-- 监控GPU资源使用情况
-- 设置进程优先级和限制
-- 定期检查磁盘空间和内存泄漏
-
-### 4. 安全考虑
-- 使用环境变量管理敏感配置
-- 限制PM2 Web接口访问权限
-- 定期更新依赖包和系统补丁
-
-## 🔍 故障排查
-
-### 常见问题解决
-1. **服务无法启动**: 检查端口占用、配置文件错误
-2. **监控误报**: 调整阈值、检查依赖服务
-3. **日志分析慢**: 优化日志格式、使用索引
-4. **内存泄漏**: 重启服务、检查进程状态
-
-### 调试工具
-```bash
-# PM2调试模式
-pm2 start --no-daemon
-
-# Tmux调试
-tmux new-session -d -L debug_session -c "$PROJECT_ROOT"
-
-# Lnav调试
-lnav -c logs/error.log --debug
-```
-
-## 📚 相关文档
-
-- **配置文件详解**: `ecosystem.enhanced.config.js`
-- **监控API文档**: `scripts/automation/monitor_and_fix.py`
-- **Tmux脚本详解**: `scripts/dev/tmux-enhanced-session.sh`
-- **Lnav格式配置**: `config/lnav_formats.json`
-- **部署脚本**: `deploy.sh`（如需）
-
-## 🎓 总结
-
-通过这套增强版的PM2、Tmux和Lnav协作体系，MyStocks项目实现了：
-
-✅ **开发效率提升**: 多窗口并行开发，一键环境搭建
-✅ **系统稳定性**: 智能监控和自动恢复，减少人工干预
-✅ **问题定位**: 结构化日志分析，快速故障诊断
-✅ **运维自动化**: 部署和配置管理，降低运维成本
-✅ **可扩展性**: 模块化设计，易于扩展新功能
+> 本文档已按当前仓库现状修订，优先保证命令可执行。
 
 ---
 
-**最后更新**: 2026-01-27
-**文档维护**: MyStocks开发团队
+## 当前基线（必须统一）
+
+- 后端服务名：`mystocks-backend`
+- 前端服务名：`mystocks-frontend`
+- 后端地址：`http://localhost:8000`
+- 前端地址：`http://localhost:3020`
+
+快速校验：
+
+```bash
+pm2 list
+curl -f http://localhost:8000/health
+curl -f http://localhost:3020
+```
+
+---
+
+## 一、PM2 协作规范
+
+### 1. 启动/重启命令（推荐）
+
+```bash
+# 在仓库根目录执行
+pm2 start web/backend/ecosystem.config.js --only mystocks-backend
+pm2 start web/frontend/ecosystem.config.js --only mystocks-frontend
+
+# 重启单服务
+pm2 restart mystocks-backend
+pm2 restart mystocks-frontend
+
+# 查看状态与详细信息
+pm2 list
+pm2 describe mystocks-backend
+pm2 describe mystocks-frontend
+```
+
+### 2. 日志查看（优先 PM2）
+
+```bash
+pm2 logs mystocks-backend --lines 100
+pm2 logs mystocks-frontend --lines 100
+pm2 monit
+```
+
+### 3. 常用排障动作
+
+```bash
+# 快速确认端口监听
+lsof -i :8000
+lsof -i :3020
+
+# 重载配置（不中断服务）
+pm2 reload web/frontend/ecosystem.config.js --only mystocks-frontend
+pm2 reload web/backend/ecosystem.config.js --only mystocks-backend
+```
+
+---
+
+## 二、Tmux 协作规范
+
+### 1. 推荐脚本
+
+当前可用的 tmux 会话脚本：
+
+- `scripts/dev/tmux_session.sh`（开发会话）
+- `scripts/setup_tmux_session.sh`（CI/CD 会话）
+- `scripts/dev/start-tmux-simple.sh`（简化 5 窗格）
+
+推荐使用：
+
+```bash
+./scripts/dev/tmux_session.sh start
+```
+
+常用命令：
+
+```bash
+tmux list-sessions
+tmux attach -t mystocks_dev
+tmux kill-session -t mystocks_dev
+```
+
+### 2. 协作建议布局
+
+- 窗口 1：`PM2` 状态和重启操作
+- 窗口 2：后端日志/健康检查
+- 窗口 3：前端日志/页面访问验证
+- 窗口 4：`Lnav` 深度分析
+
+---
+
+## 三、Lnav 日志分析规范
+
+### 1. 推荐日志输入
+
+优先使用真实存在的日志文件：
+
+- `web/frontend/logs/frontend-error.log`
+- `web/frontend/logs/frontend-out.log`
+- `web/backend/logs/backend.log`
+- `/root/.pm2/logs/mystocks-backend-error.log`
+- `/root/.pm2/logs/mystocks-backend-out.log`
+
+### 2. 示例命令
+
+```bash
+# 后端日志分析
+lnav web/backend/logs/backend.log /root/.pm2/logs/mystocks-backend-error.log
+
+# 前端日志分析
+lnav web/frontend/logs/frontend-error.log web/frontend/logs/frontend-out.log
+
+# 按错误级别过滤
+lnav -c ":filter-in ERROR|CRITICAL" web/backend/logs/backend.log
+
+# 导出 JSON 报告
+lnav -c ":export-to-json /tmp/mystocks-log-report.json" web/backend/logs/backend.log
+```
+
+### 3. 辅助脚本
+
+可使用：
+
+```bash
+./scripts/lnav-monitor.sh help
+```
+
+---
+
+## 四、监控脚本集成（当前状态）
+
+监控脚本位置为：`scripts/dev/automation/monitor_and_fix.py`
+
+```bash
+# 单次检查
+python scripts/dev/automation/monitor_and_fix.py --check-once
+```
+
+注意事项：
+
+- 默认配置路径在脚本内写的是 `scripts/automation/monitor_config.json`，仓库实际配置为 `scripts/dev/automation/monitor_config.json`。
+- 若需指定配置，建议显式传参：
+
+```bash
+python scripts/dev/automation/monitor_and_fix.py \
+  --config /opt/claude/mystocks_spec/scripts/dev/automation/monitor_config.json \
+  --check-once
+```
+
+- `--daemon` 模式当前不稳定（脚本内部尚有待修复项），不建议用于生产值守。
+
+---
+
+## 五、标准协作流程（建议）
+
+1. 启动并确认 PM2 双服务在线：`mystocks-backend` / `mystocks-frontend`
+2. 用 `tmux` 建立协作会话并固定窗口职责
+3. 用 `pm2 logs` 做实时观察，用 `lnav` 做深度分析
+4. 每次变更后执行健康检查：`/health` 与前端首页
+5. 问题闭环后记录“故障现象-根因-命令证据”
+
+---
+
+## 六、已知限制与替代方案
+
+### 1. 不建议使用的脚本
+
+`scripts/dev/tmux-enhanced-session.sh` 当前存在语法错误，暂不作为标准入口。
+
+### 2. 文档路径统一
+
+历史文档中的以下路径已过时：
+
+- `scripts/automation/monitor_and_fix.py`（应为 `scripts/dev/automation/monitor_and_fix.py`）
+- `ecosystem.enhanced.config.js`（应使用仓库内实际路径，如 `config/pm2/ecosystem.enhanced.config.js`）
+
+---
+
+## 七、关联文件
+
+- 前端 PM2 配置：`web/frontend/ecosystem.config.js`
+- 后端 PM2 配置：`web/backend/ecosystem.config.js`
+- 增强 PM2 配置（历史增强版）：`config/pm2/ecosystem.enhanced.config.js`
+- Tmux 开发脚本：`scripts/dev/tmux_session.sh`
+- Lnav 辅助脚本：`scripts/lnav-monitor.sh`
+- 监控脚本：`scripts/dev/automation/monitor_and_fix.py`
+- Lnav 格式：`config/lnav_formats.json`
+
+---
+
+**最后更新**: 2026-02-24  
+**文档维护**: MyStocks 开发团队

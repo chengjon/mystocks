@@ -13,13 +13,11 @@ import logging
 from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Optional
 
-from src.core import DataClassification
 from src.core.exceptions import (
     DataSourceDataNotFound,
     DataSourceQueryError,
 )
 from src.data_access.tdengine_access import TDengineDataAccess
-from src.interfaces.timeseries_data_source import ITimeSeriesDataSource
 
 
 class TDengineTimeSeriesDataSourceCoreMixin:

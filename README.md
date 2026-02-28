@@ -1,10 +1,35 @@
 # MyStocks 量化交易数据管理系统
 
 **创建人**: JohnC & Claude
-**版本**: 3.2.0 (Security Hardened)
-**批准日期**: 2025-10-15
-**最后修订**: 2026-02-09
-**本次修订内容**: 安全加固 + Redis 持久化 + SQL 注入防护
+**版本**: 3.2.1 (Code Quality)
+**批准日期**: 2026-02-23
+**最后修订**: 2026-02-23
+**本次修订内容**: 代码清单扫描工具 + Mock数据治理
+
+---
+
+## 📊 2026-02-23 代码清单扫描工具上线
+
+**核心改进**: 创建自动化代码清单扫描工具，监控代码复杂度与Mock数据使用。
+
+**主要成果**:
+- ✅ **扫描工具**: 创建 `src/monitoring/code_inventory/` 模块，支持扫描代码行数和Mock数据使用
+- ✅ **CLI工具**: 支持 `--help`, `--check-env`, `--check-mock-only`, `--scan-dirs` 等命令
+- ✅ **Markdown报告**: 自动生成扫描报告并保存到 `reports/code_inventory_report_*.md`
+- ✅ **Mock治理**: 扫描发现80个使用Mock的文件，其中20个为error级别（需关注）
+- ✅ **环境验证**: 支持REAL/MOCK模式验证，检查配置一致性
+
+**扫描结果**:
+- 总文件数: 4,940
+- 总代码行数: 1,042,764
+- 超过阈值文件: 61（主要是第三方库，无需处理）
+- 使用Mock文件: 80
+
+**核心原则**: **定期扫描，主动治理，文档驱动**
+
+扫描报告：[reports/code_inventory_report_20260223.md](./reports/code_inventory_report_20260223.md)
+
+**使用指引**：[src/monitoring/code_inventory/README.md](./src/monitoring/code_inventory/README.md)
 
 ---
 
@@ -469,7 +494,7 @@ from adapters.akshare_adapter import AkshareDataSource
 - 完整保留了文件的Git历史记录
 - 可追溯每个文件的完整演进历史
 
-**详细报告**: 参见 [`REORGANIZATION_COMPLETION_REPORT.md`](./REORGANIZATION_COMPLETION_REPORT.md)
+**详细报告**: 参见 [`REORGANIZATION_COMPLETION_REPORT.md`](./docs/reports/REORGANIZATION_COMPLETION_REPORT.md)
 
 ### 核心模块组织 (src/ 目录详解)
 
@@ -922,8 +947,7 @@ tables:
 
 ### 📚 docs/ 文档
 
-- `docs/guides/QUICKSTART.md` - 快速入门指南
-- `docs/guides/IFLOW.md` - 项目工作流程
+- `docs/IFLOW.md` - 项目工作流程
 - `docs/architecture/` - 架构设计文档
 - `docs/api/` - API文档
 - `docs/archived/` - 历史文档归档
@@ -1014,13 +1038,7 @@ POST /api/announcement/monitor/evaluate   # 评估监控规则
 
 ## 📚 更多信息
 
-- **项目模块清单**: [PROJECT_MODULES.md](./PROJECT_MODULES.md) - 详细的模块来源和分类
-- **ValueCell Phase 1 完成报告**: [VALUECELL_PHASE1_COMPLETION.md](./VALUECELL_PHASE1_COMPLETION.md)
-- **ValueCell Phase 2 完成报告**: [VALUECELL_PHASE2_COMPLETION.md](./VALUECELL_PHASE2_COMPLETION.md)
-- **ValueCell Phase 3 完成报告**: [VALUECELL_PHASE3_COMPLETION.md](./VALUECELL_PHASE3_COMPLETION.md)
-- **详细使用指南**: [example.md](./example.md)
-- **适配器使用**: [adapters/example.md](./adapters/example.md)
-- **数据库管理**: [db_manager/example.md](./db_manager/example.md)
+- **项目模块清单**: [PROJECT_MODULES.md](./docs/standards/PROJECT_MODULES.md) - 详细的模块来源和分类
 
 ---
 
@@ -1173,7 +1191,7 @@ sources = search_data_sources(quality_score="<70")
 
 ### GPU加速回测与实时分析系统
 
-MyStocks项目包含一个完整的GPU加速量化交易API系统，位于 `gpu_api_system/` 目录。该系统使用RAPIDS框架（cuDF/cuML）实现高性能市场数据处理和机器学习加速。
+MyStocks项目包含一个完整的GPU加速量化交易API系统，位于 `src/gpu/api_system/` 目录。该系统使用RAPIDS框架（cuDF/cuML）实现高性能市场数据处理和机器学习加速。
 
 **系统状态**: ✅ **100%完成** (Phase 1-5 全部完成，包括WSL2 GPU支持)
 
@@ -1228,9 +1246,9 @@ cat WSL2_GPU_SETUP.md
 ```
 
 **WSL2专用文档**:
-- [`gpu_api_system/WSL2_GPU_SETUP.md`](./gpu_api_system/WSL2_GPU_SETUP.md) - 完整配置指南
-- [`gpu_api_system/WSL2_GPU_COMPLETION.md`](./gpu_api_system/WSL2_GPU_COMPLETION.md) - 完工验收报告
-- [`gpu_api_system/WSL2_GPU_SUMMARY.md`](./gpu_api_system/WSL2_GPU_SUMMARY.md) - 工作总结
+- [`src/gpu/api_system/WSL2_GPU_SETUP.md`](./src/gpu/api_system/WSL2_GPU_SETUP.md) - 完整配置指南
+- [`src/gpu/api_system/WSL2_GPU_COMPLETION.md`](./src/gpu/api_system/WSL2_GPU_COMPLETION.md) - 完工验收报告
+- [`src/gpu/api_system/WSL2_GPU_SUMMARY.md`](./src/gpu/api_system/WSL2_GPU_SUMMARY.md) - 工作总结
 
 ### 核心功能
 
@@ -1321,12 +1339,12 @@ print(f"预测准确率: {stats['prediction_accuracy']:.2%}")
 
 **性能提升**: 缓存命中率从80%提升至**90%+**,显著减少GPU内存访问延迟
 
-**详细文档**: 参见 [`gpu_api_system/CACHE_OPTIMIZATION_GUIDE.md`](gpu_api_system/CACHE_OPTIMIZATION_GUIDE.md)
+**详细文档**: 参见 [`src/gpu/api_system/CACHE_OPTIMIZATION_GUIDE.md`](src/gpu/api_system/CACHE_OPTIMIZATION_GUIDE.md)
 
 ### 系统架构
 
 ```
-gpu_api_system/
+src/gpu/api_system/
 ├── services/               # 核心服务
 │   ├── gpu_api_server.py             # 主API服务器
 │   ├── integrated_backtest_service.py # GPU回测服务
@@ -1363,7 +1381,7 @@ gpu_api_system/
 
 #### 使用Docker (推荐)
 ```bash
-cd gpu_api_system/deployment
+cd src/gpu/api_system/deployment
 docker-compose up -d
 ```
 
@@ -1426,8 +1444,7 @@ curl -X POST http://localhost:8000/backtest \
 ### 📚 文档导航
 
 **快速开始**:
-- [`QUICKSTART.md`](./docs/guides/QUICKSTART.md) - 快速入门指南
-- [`IFLOW.md`](./docs/guides/IFLOW.md) - 项目工作流程
+- [`IFLOW.md`](./docs/IFLOW.md) - 项目工作流程
 - [`.taskmaster/CLAUDE.md`](./.taskmaster/CLAUDE.md) - Task Master集成指南
 
 **架构设计文档** (`docs/architecture/`):

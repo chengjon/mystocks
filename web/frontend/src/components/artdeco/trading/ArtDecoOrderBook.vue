@@ -86,7 +86,7 @@
 
     .artdeco-orderbook {
       background: var(--artdeco-bg-card);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       padding: var(--artdeco-spacing-2);
       font-family: var(--artdeco-font-mono);
       width: 100%;
@@ -108,7 +108,7 @@
     }
 
     .artdeco-orderbook-row:hover {
-      background: rgb(255 255 255 / 5%);
+      background: var(--artdeco-gold-opacity-05);
     }
 
     .row-label {
@@ -146,8 +146,8 @@
     .artdeco-orderbook-meta {
       margin: 12px 0;
       padding: 8px;
-      border-top: 1px solid rgb(212 175 55 / 20%);
-      border-bottom: 1px solid rgb(212 175 55 / 20%);
+      border-top: 1px solid var(--artdeco-gold-opacity-20);
+      border-bottom: 1px solid var(--artdeco-gold-opacity-20);
       text-align: center;
     }
 

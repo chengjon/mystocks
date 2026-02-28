@@ -219,7 +219,7 @@ const getQualityColor = (quality: number) => {
 }
 
 .status-table thead {
-  background: rgb(212 175 55 / 5%);
+  background: var(--artdeco-gold-opacity-05);
 }
 
 .status-table th {
@@ -243,7 +243,7 @@ const getQualityColor = (quality: number) => {
   transition: background-color var(--artdeco-transition-base);
 
   &:hover {
-    background: rgb(212 175 55 / 3%);
+    background: color-mix(in srgb, var(--artdeco-gold-primary) 3%, transparent);
   }
 }
 

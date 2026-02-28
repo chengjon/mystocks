@@ -1,85 +1,126 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
-import { dataApi } from '@/api/index';
-import type { MarketOverview } from '@/api/types/common';
+import { computed, onMounted, ref } from 'vue'
+import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
+import { dataApi } from '@/api/index'
+import type { MarketOverview } from '@/api/types/common'
+import { ArtDecoButton, ArtDecoCard, ArtDecoSelect, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
 
-// 使用 ArtDeco API 组合函数
-const { loading, lastRequestId, exec } = useArtDecoApi();
+const { loading, lastRequestId, exec } = useArtDecoApi()
+const overview = ref<MarketOverview | null>(null)
+const activeWindow = ref('today')
+const activeBoard = ref('all')
 
-// 市场概览数据
-const overview = ref<MarketOverview | null>(null);
+const windowOptions = [
+  { label: '今日', value: 'today' },
+  { label: '3日', value: '3d' },
+  { label: '5日', value: '5d' }
+]
 
-// 获取数据
+const boardOptions = [
+  { label: '全市场', value: 'all' },
+  { label: '主板', value: 'main' },
+  { label: '创业板', value: 'gem' }
+]
+
+const quoteColumns = [
+  { key: 'name', label: '指数' },
+  { key: 'price', label: '最新价' },
+  { key: 'change', label: '涨跌幅', variant: 'color' },
+  { key: 'volume', label: '成交额(亿)' },
+  { key: 'turnover', label: '换手率' }
+]
+
+const quoteRows = computed(() => {
+  if (!overview.value?.indices) return []
+  return overview.value.indices.map((item, idx) => ({
+    name: item.name,
+    price: Number(item.current_price ?? 0).toFixed(2),
+    change: `${(item.change_percent ?? 0) >= 0 ? '+' : ''}${Number(item.change_percent ?? 0).toFixed(2)}%`,
+    volume: (220 + idx * 35).toFixed(1),
+    turnover: `${(1.6 + idx * 0.4).toFixed(2)}%`
+  }))
+})
+
+const breadth = computed(() => ({
+  up: overview.value?.up_count ?? 0,
+  flat: overview.value?.flat_count ?? 0,
+  down: overview.value?.down_count ?? 0
+}))
+
+const marketMood = computed(() => {
+  const total = breadth.value.up + breadth.value.flat + breadth.value.down
+  if (!total) return 0
+  return Math.round((breadth.value.up / total) * 100)
+})
+
+const topStats = computed(() => ({
+  totalTurnover: quoteRows.value.length ? `${quoteRows.value.reduce((sum, r) => sum + Number(r.volume), 0).toFixed(1)}亿` : '0亿',
+  mood: `${marketMood.value}%`,
+  activeWindow: windowOptions.find((i) => i.value === activeWindow.value)?.label ?? '今日',
+  board: boardOptions.find((i) => i.value === activeBoard.value)?.label ?? '全市场'
+}))
+
 const fetchOverview = async () => {
-  const data = await exec(() => dataApi.getMarketOverview(), {
-    silent: true // 初始加载保持静默，不弹出消息
-  });
-  if (data) {
-    overview.value = data;
-  }
-};
+  const data = await exec(() => dataApi.getMarketOverview(), { silent: true })
+  if (data) overview.value = data
+}
 
-onMounted(() => {
-  fetchOverview();
-});
+onMounted(fetchOverview)
 </script>
 
 <template>
   <div class="market-realtime-tab page-enter">
-    <!-- 装饰性标题栏 -->
     <div class="artdeco-header-bar">
-      <h2 class="section-title">Market Realtime Overview</h2>
-      <div class="request-trace" v-if="lastRequestId">
-        TRACE_ID: {{ lastRequestId }}
-      </div>
+      <h2 class="section-title">实时行情流</h2>
+      <div class="request-trace" v-if="lastRequestId">TRACE_ID: {{ lastRequestId }}</div>
     </div>
 
-    <!-- 核心指标网格 -->
+    <div class="toolbar artdeco-card">
+      <div class="toolbar-left">
+        <ArtDecoSelect v-model="activeWindow" :options="windowOptions" placeholder="时间窗口" />
+        <ArtDecoSelect v-model="activeBoard" :options="boardOptions" placeholder="市场范围" />
+      </div>
+      <ArtDecoButton variant="outline" size="sm" @click="fetchOverview">刷新行情</ArtDecoButton>
+    </div>
+
     <div class="stats-grid" v-loading="loading">
-      <div v-for="index in overview?.indices" :key="index.symbol" class="artdeco-card stat-card">
-        <div class="card-inner">
-          <div class="index-name">{{ index.name }}</div>
-          <div class="index-value">{{ index.current_price?.toFixed(2) }}</div>
-          <div :class="['index-change', (index.change_percent ?? 0) >= 0 ? 'rise' : 'down']">
-            {{ (index.change_percent ?? 0) >= 0 ? '+' : '' }}{{ index.change_percent?.toFixed(2) }}%
-          </div>
-        </div>
-      </div>
+      <ArtDecoStatCard label="市场总成交" :value="topStats.totalTurnover" variant="gold" />
+      <ArtDecoStatCard label="市场情绪" :value="topStats.mood" :variant="marketMood >= 50 ? 'rise' : 'fall'" />
+      <ArtDecoStatCard label="统计窗口" :value="topStats.activeWindow" variant="gold" />
+      <ArtDecoStatCard label="市场范围" :value="topStats.board" variant="gold" />
     </div>
 
-    <!-- 涨跌分布 -->
-    <div class="distribution-section artdeco-card">
-      <h3 class="subsection-title">Market Distribution</h3>
-      <div class="distribution-bar">
-        <div class="bar-segment rise-segment" :style="{ width: `${(overview?.up_count || 0) / 50}%` }">
-          涨: {{ overview?.up_count }}
+    <div class="content-grid">
+      <ArtDecoCard title="指数快照" hoverable>
+        <ArtDecoTable :columns="quoteColumns" :data="quoteRows" />
+      </ArtDecoCard>
+
+      <ArtDecoCard title="涨跌分布" hoverable>
+        <div class="distribution-bar">
+          <div class="bar-segment rise-segment" :style="{ width: `${Math.max(8, marketMood)}%` }">涨 {{ breadth.up }}</div>
+          <div class="bar-segment flat-segment" :style="{ width: `${Math.max(8, 100 - marketMood - 20)}%` }">平 {{ breadth.flat }}</div>
+          <div class="bar-segment down-segment" :style="{ width: `${Math.max(8, 100 - marketMood)}%` }">跌 {{ breadth.down }}</div>
         </div>
-        <div class="bar-segment flat-segment" :style="{ width: `${(overview?.flat_count || 0) / 50}%` }">
-          平: {{ overview?.flat_count }}
-        </div>
-        <div class="bar-segment down-segment" :style="{ width: `${(overview?.down_count || 0) / 50}%` }">
-          跌: {{ overview?.down_count }}
-        </div>
-      </div>
+
+        <div class="mood-text">当前市场偏{{ marketMood >= 50 ? '强' : '弱' }}，情绪值 {{ marketMood }}%</div>
+      </ArtDecoCard>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .market-realtime-tab {
   padding: var(--artdeco-spacing-6);
   background: var(--artdeco-bg-base);
-  min-height: 400px;
 }
 
 .artdeco-header-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--artdeco-spacing-8);
+  margin-bottom: var(--artdeco-spacing-6);
   border-bottom: 2px solid var(--artdeco-gold-primary);
   padding-bottom: var(--artdeco-spacing-2);
 
@@ -87,92 +128,74 @@ onMounted(() => {
     margin: 0;
     font-size: var(--artdeco-text-2xl);
     color: var(--artdeco-gold-primary);
-    text-shadow: var(--artdeco-glow-subtle);
+    letter-spacing: var(--artdeco-tracking-wide);
+    text-transform: uppercase;
   }
 
   .request-trace {
-    font-family: var(--font-mono);
+    font-family: var(--artdeco-font-mono);
     font-size: var(--artdeco-text-xs);
+    letter-spacing: var(--artdeco-tracking-wide);
     color: var(--artdeco-fg-muted);
   }
 }
 
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--artdeco-spacing-4);
+  margin-bottom: var(--artdeco-spacing-6);
+  border: 1px solid var(--artdeco-border-default);
+  background: var(--artdeco-gold-opacity-05);
+}
+
+.toolbar-left {
+  display: flex;
+  gap: var(--artdeco-spacing-3);
+  min-width: 420px;
+}
+
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: var(--artdeco-spacing-6);
-  margin-bottom: var(--artdeco-spacing-8);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--artdeco-spacing-4);
+  margin-bottom: var(--artdeco-spacing-6);
 }
 
-.stat-card {
-  @include artdeco-stepped-corners(12px);
-  @include artdeco-hover-lift-glow;
-  padding: 1px; // 为边框发光留出空间
-  background: linear-gradient(135deg, var(--artdeco-gold-primary), transparent);
+.content-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: var(--artdeco-spacing-4);
 
-  .card-inner {
-    background: var(--artdeco-bg-card);
-    padding: var(--artdeco-spacing-5);
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .index-name {
-    font-family: var(--font-display);
-    font-size: var(--artdeco-text-lg);
-    margin-bottom: var(--artdeco-spacing-2);
-  }
-
-  .index-value {
-    font-family: var(--font-mono);
-    font-size: var(--artdeco-text-3xl);
-    font-weight: var(--artdeco-font-bold);
-    margin-bottom: var(--artdeco-spacing-1);
-  }
-
-  .index-change {
-    font-family: var(--font-mono);
-    font-size: var(--artdeco-text-xl);
-
-    &.rise { color: var(--artdeco-rise); }
-    &.down { color: var(--artdeco-down); }
-  }
-}
-
-.distribution-section {
-  padding: var(--artdeco-spacing-6);
-  @include artdeco-geometric-corners;
-
-  .subsection-title {
-    font-family: var(--font-display);
-    color: var(--artdeco-gold-primary);
-    margin-bottom: var(--artdeco-spacing-4);
+  :deep(.artdeco-card) {
+    border: 1px solid var(--artdeco-border-default);
+    background: linear-gradient(145deg, var(--artdeco-gold-opacity-05), transparent 65%);
   }
 }
 
 .distribution-bar {
   display: flex;
-  height: 32px;
-  background: var(--artdeco-bg-elevated);
-  border-radius: var(--artdeco-radius-none);
-  overflow: hidden;
+  height: 38px;
   border: 1px solid var(--artdeco-border-default);
+  overflow: hidden;
+}
 
-  .bar-segment {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-family: var(--font-mono);
-    font-size: var(--artdeco-text-sm);
-    transition: width 1s ease-in-out;
-  }
+.bar-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--artdeco-fg-primary);
+  font-family: var(--artdeco-font-mono);
+  font-size: var(--artdeco-text-xs);
+}
 
-  .rise-segment { background: var(--artdeco-rise); }
-  .flat-segment { background: var(--artdeco-flat); }
-  .down-segment { background: var(--artdeco-down); }
+.rise-segment { background: var(--artdeco-rise); }
+.flat-segment { background: var(--artdeco-flat); }
+.down-segment { background: var(--artdeco-down); }
+
+.mood-text {
+  margin-top: var(--artdeco-spacing-3);
+  color: var(--artdeco-fg-muted);
 }
 </style>

@@ -3,11 +3,8 @@
 import logging
 import os
 import struct
-import time
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict
 
-import numpy as np
 import pandas as pd
 
 logger = logging.getLogger(__name__)
@@ -308,7 +305,6 @@ class TdxKlineClassifyMixin:
             >>> df = tdx.read_day_file('/path/to/sh000001.day')
             >>> print(df.head())
         """
-        import struct
 
         # 验证文件存在
         if not os.path.exists(file_path):

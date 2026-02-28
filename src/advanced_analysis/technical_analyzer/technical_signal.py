@@ -9,7 +9,6 @@ This module provides advanced technical analysis capabilities including:
 - Advanced pattern analysis (turtle channels, volatility breakouts)
 """
 
-import warnings
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional

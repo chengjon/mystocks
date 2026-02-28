@@ -300,7 +300,7 @@ watch(activeTab, refreshData)
 
     &:hover, &.active {
         border-color: var(--artdeco-accent-gold);
-        background: rgb(212 175 55 / 10%);
+        background: var(--artdeco-gold-opacity-10);
     }
 
     &.active {

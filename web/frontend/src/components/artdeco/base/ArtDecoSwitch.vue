@@ -76,8 +76,8 @@
     .artdeco-switch-track {
       position: absolute;
       inset: 0 0 0 0;
-      background: #1A2026;
-      border: 1px solid rgb(212 175 55 / 20%);
+      background: var(--artdeco-bg-secondary);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       transition: all var(--artdeco-transition-base);
     }
 
@@ -88,15 +88,15 @@
       width: 18px;
       height: 18px;
       background: var(--artdeco-silver-dim);
-      border: 1px solid #000;
+      border: 1px solid var(--artdeco-bg-global);
       transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-      box-shadow: 0 0 5px rgb(0 0 0 / 50%);
+      box-shadow: 0 0 5px color-mix(in srgb, var(--artdeco-bg-global) 50%, transparent);
       z-index: 2;
     }
 
     /* Active State */
     .artdeco-switch.active .artdeco-switch-track {
-      background: rgb(212 175 55 / 15%);
+      background: color-mix(in srgb, var(--artdeco-accent-gold) 15%, transparent);
       border-color: var(--artdeco-accent-gold);
     }
 

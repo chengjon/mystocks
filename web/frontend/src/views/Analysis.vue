@@ -368,5 +368,5 @@ const {
 </script>
 
 <style scoped lang="scss">
-@import './styles/Analysis.scss';
+@import './styles/Analysis';
 </style>

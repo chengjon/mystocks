@@ -313,5 +313,5 @@ const { autoRefresh, refreshInterval, isLoading, error, services, servicesData, 
 </script>
 
 <style scoped lang="scss">
-@import './styles/monitor.scss';
+@import './styles/monitor';
 </style>

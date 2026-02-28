@@ -126,7 +126,7 @@
     .artdeco-btn-group--in-form {
         margin-top: var(--artdeco-spacing-4); // 32px - 与表单字段间距
         padding-top: var(--artdeco-spacing-3); // 24px - 上内边距
-        border-top: 1px solid rgb(212 175 55 / 20%); // 可选：分隔线
+        border-top: 1px solid var(--artdeco-gold-opacity-20); // 可选：分隔线
     }
 
     // ============================================

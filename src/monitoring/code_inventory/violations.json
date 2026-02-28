@@ -1,0 +1,1753 @@
+{
+  "generated_at": "2026-02-23T13:39:15.972264",
+  "total_violations": 141,
+  "violations": [
+    {
+      "file_path": "./src/governance/tests/test_fetcher_bridge.py",
+      "file_type": ".py",
+      "line_count": 44,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.227220"
+    },
+    {
+      "file_path": "./src/data_sources/mock_data_source.py",
+      "file_type": ".py",
+      "line_count": 209,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "import mock_",
+        "from src.mock import"
+      ],
+      "mock_calls": [
+        "MockDataSource("
+      ],
+      "mock_severity": "error",
+      "last_scanned": "2026-02-23T13:39:12.422751"
+    },
+    {
+      "file_path": "./src/data_sources/factory.py",
+      "file_type": ".py",
+      "line_count": 345,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.data_sources.mock.timeseries_mock import",
+        "from src.data_sources.mock.relational_mock import",
+        "from src.data_sources.mock.business_mock import",
+        "from src.data_sources.mock"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.427557"
+    },
+    {
+      "file_path": "./src/data_sources/mock/timeseries_mock.py",
+      "file_type": ".py",
+      "line_count": 464,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [],
+      "mock_calls": [
+        "MockTimeSeriesDataSource("
+      ],
+      "mock_severity": "error",
+      "last_scanned": "2026-02-23T13:39:12.447409"
+    },
+    {
+      "file_path": "./src/data_sources/mock/__init__.py",
+      "file_type": ".py",
+      "line_count": 22,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.data_sources.mock",
+        "from src.data_sources.mock import",
+        "from src.data_sources.mock.business_mock import",
+        "from src.data_sources.mock.timeseries_mock import",
+        "from src.data_sources.mock.relational_mock import"
+      ],
+      "mock_calls": [
+        "MockTimeSeriesDataSource("
+      ],
+      "mock_severity": "error",
+      "last_scanned": "2026-02-23T13:39:12.447566"
+    },
+    {
+      "file_path": "./src/data_sources/mock/relational_mock.py",
+      "file_type": ".py",
+      "line_count": 428,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [],
+      "mock_calls": [
+        "MockRelationalDataSource("
+      ],
+      "mock_severity": "error",
+      "last_scanned": "2026-02-23T13:39:12.449067"
+    },
+    {
+      "file_path": "./src/data_sources/mock/business_mock.py",
+      "file_type": ".py",
+      "line_count": 413,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.data_sources.mock.timeseries_mock import",
+        "from src.data_sources.mock.relational_mock import",
+        "from src.data_sources.mock"
+      ],
+      "mock_calls": [
+        "MockBusinessDataSource(",
+        "MockTimeSeriesDataSource(",
+        "MockRelationalDataSource("
+      ],
+      "mock_severity": "error",
+      "last_scanned": "2026-02-23T13:39:12.450635"
+    },
+    {
+      "file_path": "./src/utils/data_source_validator.py",
+      "file_type": ".py",
+      "line_count": 150,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [],
+      "mock_calls": [
+        "MockDataSource("
+      ],
+      "mock_severity": "error",
+      "last_scanned": "2026-02-23T13:39:12.515239"
+    },
+    {
+      "file_path": "./src/gpu/api_system/tests/conftest.py",
+      "file_type": ".py",
+      "line_count": 122,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.536850"
+    },
+    {
+      "file_path": "./src/gpu/api_system/tests/performance/test_performance.py",
+      "file_type": ".py",
+      "line_count": 272,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.537973"
+    },
+    {
+      "file_path": "./src/gpu/api_system/tests/integration/test_end_to_end.py",
+      "file_type": ".py",
+      "line_count": 219,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.538855"
+    },
+    {
+      "file_path": "./src/gpu/api_system/tests/unit/test_services/test_integrated_services.py",
+      "file_type": ".py",
+      "line_count": 299,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.540000"
+    },
+    {
+      "file_path": "./src/gpu/api_system/tests/unit/test_utils/test_gpu_resource_manager.py",
+      "file_type": ".py",
+      "line_count": 299,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.541009"
+    },
+    {
+      "file_path": "./src/gpu/api_system/tests/unit/test_gpu/test_acceleration_engine.py",
+      "file_type": ".py",
+      "line_count": 191,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.541756"
+    },
+    {
+      "file_path": "./src/gpu/api_system/tests/unit/test_cache/test_cache_optimization.py",
+      "file_type": ".py",
+      "line_count": 267,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.543944"
+    },
+    {
+      "file_path": "./src/routes/wencai_routes.py",
+      "file_type": ".py",
+      "line_count": 464,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.mock."
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.719739"
+    },
+    {
+      "file_path": "./src/routes/strategy_routes.py",
+      "file_type": ".py",
+      "line_count": 593,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.mock."
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.721855"
+    },
+    {
+      "file_path": "./src/routes/dashboard_routes.py",
+      "file_type": ".py",
+      "line_count": 250,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.mock."
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.722715"
+    },
+    {
+      "file_path": "./src/routes/monitoring_routes/check_use_mock_data.py",
+      "file_type": ".py",
+      "line_count": 627,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.mock."
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.725086"
+    },
+    {
+      "file_path": "./src/routes/technical_routes/check_use_mock_data.py",
+      "file_type": ".py",
+      "line_count": 580,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.mock."
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.727669"
+    },
+    {
+      "file_path": "./src/routes/stocks_routes/check_use_mock_data.py",
+      "file_type": ".py",
+      "line_count": 649,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.mock."
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.730287"
+    },
+    {
+      "file_path": "./src/factories/data_source_factory.py",
+      "file_type": ".py",
+      "line_count": 67,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.data_sources.mock_data_source",
+        "from src.data_sources.mock"
+      ],
+      "mock_calls": [
+        "MockDataSource("
+      ],
+      "mock_severity": "error",
+      "last_scanned": "2026-02-23T13:39:12.754157"
+    },
+    {
+      "file_path": "./scripts/test_database_optimizer.py",
+      "file_type": ".py",
+      "line_count": 273,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.816193"
+    },
+    {
+      "file_path": "./scripts/test_logging_audit_system.py",
+      "file_type": ".py",
+      "line_count": 248,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.824576"
+    },
+    {
+      "file_path": "./scripts/test_alternative_data_integration.py",
+      "file_type": ".py",
+      "line_count": 223,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.832222"
+    },
+    {
+      "file_path": "./scripts/examples/mock_data_demo.py",
+      "file_type": ".py",
+      "line_count": 213,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.mock."
+      ],
+      "mock_calls": [
+        "USE_MOCK_DATA=true"
+      ],
+      "mock_severity": "error",
+      "last_scanned": "2026-02-23T13:39:12.880937"
+    },
+    {
+      "file_path": "./scripts/test_generator/code_analyzer_tests.py",
+      "file_type": ".py",
+      "line_count": 321,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.883884"
+    },
+    {
+      "file_path": "./scripts/test_generator/test_optimizer.py",
+      "file_type": ".py",
+      "line_count": 177,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import Mock, patch, MagicMock\nimport"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.886692"
+    },
+    {
+      "file_path": "./scripts/ai_enhancer/advanced_enhancement.py",
+      "file_type": ".py",
+      "line_count": 340,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.889212"
+    },
+    {
+      "file_path": "./scripts/tests/test_mock_system.py",
+      "file_type": ".py",
+      "line_count": 201,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [],
+      "mock_calls": [
+        "use_mock_data=True"
+      ],
+      "mock_severity": "error",
+      "last_scanned": "2026-02-23T13:39:12.892136"
+    },
+    {
+      "file_path": "./scripts/tests/test_base_adapter.py",
+      "file_type": ".py",
+      "line_count": 113,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.892580"
+    },
+    {
+      "file_path": "./scripts/tests/test_check_db_health.py",
+      "file_type": ".py",
+      "line_count": 732,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import patch, MagicMock\nimport"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.897337"
+    },
+    {
+      "file_path": "./scripts/tests/test_mock_data_validation_simple.py",
+      "file_type": ".py",
+      "line_count": 180,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.mock."
+      ],
+      "mock_calls": [
+        "use_mock_data=True"
+      ],
+      "mock_severity": "error",
+      "last_scanned": "2026-02-23T13:39:12.902065"
+    },
+    {
+      "file_path": "./scripts/tests/test_data_manager_phase6.py",
+      "file_type": ".py",
+      "line_count": 565,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.913919"
+    },
+    {
+      "file_path": "./scripts/tests/test_contract_testing.py",
+      "file_type": ".py",
+      "line_count": 480,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import MagicMock\n\nimport"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.916324"
+    },
+    {
+      "file_path": "./scripts/tests/test_gpu_hal_failure_scenarios.py",
+      "file_type": ".py",
+      "line_count": 506,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import patch, MagicMock, AsyncMock\nimport"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.918342"
+    },
+    {
+      "file_path": "./scripts/tests/test_config.py",
+      "file_type": ".py",
+      "line_count": 414,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.919953"
+    },
+    {
+      "file_path": "./scripts/tests/test_add_doc_metadata.py",
+      "file_type": ".py",
+      "line_count": 468,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.922228"
+    },
+    {
+      "file_path": "./scripts/tests/test_tdx_adapter.py",
+      "file_type": ".py",
+      "line_count": 407,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.923817"
+    },
+    {
+      "file_path": "./scripts/tests/test_connection_pool_config.py",
+      "file_type": ".py",
+      "line_count": 415,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.927536"
+    },
+    {
+      "file_path": "./scripts/tests/test_mock_data_system.py",
+      "file_type": ".py",
+      "line_count": 223,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.mock."
+      ],
+      "mock_calls": [
+        "USE_MOCK_DATA=true",
+        "use_mock_data=True"
+      ],
+      "mock_severity": "error",
+      "last_scanned": "2026-02-23T13:39:12.930901"
+    },
+    {
+      "file_path": "./scripts/tests/test_tdx_server_config.py",
+      "file_type": ".py",
+      "line_count": 678,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.933415"
+    },
+    {
+      "file_path": "./scripts/tests/test_enhanced_mock_data.py",
+      "file_type": ".py",
+      "line_count": 224,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.mock."
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.935060"
+    },
+    {
+      "file_path": "./scripts/tests/test_check_api_health_v2.py",
+      "file_type": ".py",
+      "line_count": 667,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.938277"
+    },
+    {
+      "file_path": "./scripts/tests/test_data_manager.py",
+      "file_type": ".py",
+      "line_count": 505,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.940544"
+    },
+    {
+      "file_path": "./scripts/tests/test_check_db_health_simple.py",
+      "file_type": ".py",
+      "line_count": 285,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import patch, MagicMock\nimport"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.942975"
+    },
+    {
+      "file_path": "./scripts/tests/test_base_adapter_phase6_fixed.py",
+      "file_type": ".py",
+      "line_count": 390,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.951776"
+    },
+    {
+      "file_path": "./scripts/tests/test_db_connection_retry_simple.py",
+      "file_type": ".py",
+      "line_count": 315,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.954853"
+    },
+    {
+      "file_path": "./scripts/tests/test_base_adapter_phase6.py",
+      "file_type": ".py",
+      "line_count": 405,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.959535"
+    },
+    {
+      "file_path": "./scripts/tests/test_add_python_headers.py",
+      "file_type": ".py",
+      "line_count": 602,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.961534"
+    },
+    {
+      "file_path": "./scripts/tests/test_add_doc_metadata_accurate.py",
+      "file_type": ".py",
+      "line_count": 380,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import patch, mock_open, MagicMock\nimport"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.965828"
+    },
+    {
+      "file_path": "./scripts/tests/test_error_handler.py",
+      "file_type": ".py",
+      "line_count": 385,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.967263"
+    },
+    {
+      "file_path": "./scripts/tests/test_simple_end_to_end.py",
+      "file_type": ".py",
+      "line_count": 318,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.mock."
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.968313"
+    },
+    {
+      "file_path": "./scripts/tests/test_check_api_health.py",
+      "file_type": ".py",
+      "line_count": 670,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import patch, Mock\nimport"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.970901"
+    },
+    {
+      "file_path": "./scripts/tests/test_data_source_manager.py",
+      "file_type": ".py",
+      "line_count": 626,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [
+        "MockDataSource("
+      ],
+      "mock_severity": "error",
+      "last_scanned": "2026-02-23T13:39:12.975130"
+    },
+    {
+      "file_path": "./scripts/tests/test_end_to_end_mock.py",
+      "file_type": ".py",
+      "line_count": 356,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.mock."
+      ],
+      "mock_calls": [
+        "use_mock_data=True"
+      ],
+      "mock_severity": "error",
+      "last_scanned": "2026-02-23T13:39:12.976240"
+    },
+    {
+      "file_path": "./scripts/tests/test_mock_simple.py",
+      "file_type": ".py",
+      "line_count": 144,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [],
+      "mock_calls": [
+        "use_mock_data=True"
+      ],
+      "mock_severity": "error",
+      "last_scanned": "2026-02-23T13:39:12.977406"
+    },
+    {
+      "file_path": "./scripts/tests/test_exceptions_phase6.py",
+      "file_type": ".py",
+      "line_count": 502,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.980467"
+    },
+    {
+      "file_path": "./scripts/tests/test_data_source_validator.py",
+      "file_type": ".py",
+      "line_count": 630,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.983671"
+    },
+    {
+      "file_path": "./scripts/tests/test_logging_config.py",
+      "file_type": ".py",
+      "line_count": 570,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.985692"
+    },
+    {
+      "file_path": "./scripts/tests/test_mock_data_validation.py",
+      "file_type": ".py",
+      "line_count": 304,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.mock."
+      ],
+      "mock_calls": [
+        "use_mock_data=True"
+      ],
+      "mock_severity": "error",
+      "last_scanned": "2026-02-23T13:39:12.988624"
+    },
+    {
+      "file_path": "./scripts/tests/test_base_adapter_simple.py",
+      "file_type": ".py",
+      "line_count": 437,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.991893"
+    },
+    {
+      "file_path": "./scripts/tests/test_base_adapter_correct.py",
+      "file_type": ".py",
+      "line_count": 405,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.994715"
+    },
+    {
+      "file_path": "./scripts/tests/test_failure_recovery_queue.py",
+      "file_type": ".py",
+      "line_count": 529,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:12.997497"
+    },
+    {
+      "file_path": "./scripts/tests/test_validate_gitignore.py",
+      "file_type": ".py",
+      "line_count": 731,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import patch, MagicMock\nimport"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:13.002070"
+    },
+    {
+      "file_path": "./scripts/tests/test_data_source_logger.py",
+      "file_type": ".py",
+      "line_count": 554,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:13.010671"
+    },
+    {
+      "file_path": "./scripts/tests/test_validate_test_naming.py",
+      "file_type": ".py",
+      "line_count": 545,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import patch, MagicMock\nimport"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:13.012544"
+    },
+    {
+      "file_path": "./scripts/tests/web-usability/runner-core.js",
+      "file_type": ".js",
+      "line_count": 1080,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.019285"
+    },
+    {
+      "file_path": "./scripts/tests/test_data_quality_validator/mock_data_quality_monitor.py",
+      "file_type": ".py",
+      "line_count": 563,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:13.024855"
+    },
+    {
+      "file_path": "./scripts/tests/test_data_quality_validator/test_data_quality_validator_outliers.py",
+      "file_type": ".py",
+      "line_count": 526,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:13.026663"
+    },
+    {
+      "file_path": "./scripts/tests/test_db_connection_retry/test_integration.py",
+      "file_type": ".py",
+      "line_count": 199,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:13.027603"
+    },
+    {
+      "file_path": "./scripts/tests/test_db_connection_retry/test_db_retry_decorator.py",
+      "file_type": ".py",
+      "line_count": 533,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:13.029560"
+    },
+    {
+      "file_path": "./scripts/tests/test_data_format_converter/test_performance_and_scalability.py",
+      "file_type": ".py",
+      "line_count": 201,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:13.036473"
+    },
+    {
+      "file_path": "./scripts/dev/verify_security_fixes.py",
+      "file_type": ".py",
+      "line_count": 124,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:13.086968"
+    },
+    {
+      "file_path": "./scripts/dev/generate_tests.py",
+      "file_type": ".py",
+      "line_count": 239,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from unittest.mock import"
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:13.102294"
+    },
+    {
+      "file_path": "./scripts/dev/mock_data_demo.py",
+      "file_type": ".py",
+      "line_count": 213,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.mock."
+      ],
+      "mock_calls": [
+        "USE_MOCK_DATA=true"
+      ],
+      "mock_severity": "error",
+      "last_scanned": "2026-02-23T13:39:13.114009"
+    },
+    {
+      "file_path": "./scripts/dev/@babel/parser/lib/index.js",
+      "file_type": ".js",
+      "line_count": 14660,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.483496"
+    },
+    {
+      "file_path": "./scripts/dev/@babel/types/lib/index-legacy.d.ts",
+      "file_type": ".ts",
+      "line_count": 2527,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.494819"
+    },
+    {
+      "file_path": "./scripts/dev/@babel/types/lib/index.d.ts",
+      "file_type": ".ts",
+      "line_count": 3454,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.536503"
+    },
+    {
+      "file_path": "./scripts/dev/@babel/types/lib/builders/generated/lowercase.js",
+      "file_type": ".js",
+      "line_count": 2893,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.548884"
+    },
+    {
+      "file_path": "./scripts/dev/@babel/types/lib/asserts/generated/index.js",
+      "file_type": ".js",
+      "line_count": 1248,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.554149"
+    },
+    {
+      "file_path": "./scripts/dev/@babel/types/lib/validators/generated/index.js",
+      "file_type": ".js",
+      "line_count": 2794,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.562668"
+    },
+    {
+      "file_path": "./scripts/dev/@babel/types/lib/definitions/core.js",
+      "file_type": ".js",
+      "line_count": 1723,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.567347"
+    },
+    {
+      "file_path": "./scripts/dev/puppeteer-core/lib/types.d.ts",
+      "file_type": ".ts",
+      "line_count": 8003,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.596738"
+    },
+    {
+      "file_path": "./scripts/dev/puppeteer-core/lib/cjs/puppeteer/common/Device.js",
+      "file_type": ".js",
+      "line_count": 1606,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.650753"
+    },
+    {
+      "file_path": "./scripts/dev/puppeteer-core/lib/cjs/puppeteer/api/Page.d.ts",
+      "file_type": ".ts",
+      "line_count": 2397,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.674109"
+    },
+    {
+      "file_path": "./scripts/dev/puppeteer-core/lib/cjs/puppeteer/api/ElementHandle.js",
+      "file_type": ".js",
+      "line_count": 1393,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.682357"
+    },
+    {
+      "file_path": "./scripts/dev/puppeteer-core/lib/cjs/puppeteer/api/Page.js",
+      "file_type": ".js",
+      "line_count": 1491,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.689779"
+    },
+    {
+      "file_path": "./scripts/dev/puppeteer-core/lib/cjs/third_party/rxjs/rxjs.js",
+      "file_type": ".js",
+      "line_count": 9256,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.764122"
+    },
+    {
+      "file_path": "./scripts/dev/puppeteer-core/lib/esm/puppeteer/common/Device.js",
+      "file_type": ".js",
+      "line_count": 1603,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.818457"
+    },
+    {
+      "file_path": "./scripts/dev/puppeteer-core/lib/esm/puppeteer/api/Page.d.ts",
+      "file_type": ".ts",
+      "line_count": 2397,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.840059"
+    },
+    {
+      "file_path": "./scripts/dev/puppeteer-core/lib/esm/puppeteer/api/ElementHandle.js",
+      "file_type": ".js",
+      "line_count": 1389,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.848332"
+    },
+    {
+      "file_path": "./scripts/dev/puppeteer-core/lib/esm/puppeteer/api/Page.js",
+      "file_type": ".js",
+      "line_count": 1487,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.856241"
+    },
+    {
+      "file_path": "./scripts/dev/puppeteer-core/lib/esm/third_party/rxjs/rxjs.js",
+      "file_type": ".js",
+      "line_count": 2660,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.908112"
+    },
+    {
+      "file_path": "./scripts/dev/puppeteer-core/lib/es5-iife/puppeteer-core-browser.d.ts",
+      "file_type": ".ts",
+      "line_count": 8003,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.930689"
+    },
+    {
+      "file_path": "./scripts/dev/puppeteer-core/lib/es5-iife/puppeteer-core-browser.js",
+      "file_type": ".js",
+      "line_count": 24608,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:13.999405"
+    },
+    {
+      "file_path": "./scripts/dev/chromium-bidi/lib/cjs/bidiMapper/modules/context/BrowsingContextImpl.js",
+      "file_type": ".js",
+      "line_count": 1297,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:14.020600"
+    },
+    {
+      "file_path": "./scripts/dev/chromium-bidi/lib/cjs/protocol/generated/webdriver-bidi.d.ts",
+      "file_type": ".ts",
+      "line_count": 2710,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:14.072773"
+    },
+    {
+      "file_path": "./scripts/dev/chromium-bidi/lib/cjs/protocol-parser/generated/webdriver-bidi-bluetooth.d.ts",
+      "file_type": ".ts",
+      "line_count": 2216,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:14.088677"
+    },
+    {
+      "file_path": "./scripts/dev/chromium-bidi/lib/cjs/protocol-parser/generated/webdriver-bidi.d.ts",
+      "file_type": ".ts",
+      "line_count": 64724,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:14.247032"
+    },
+    {
+      "file_path": "./scripts/dev/chromium-bidi/lib/cjs/protocol-parser/generated/webdriver-bidi.js",
+      "file_type": ".js",
+      "line_count": 2937,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:14.256989"
+    },
+    {
+      "file_path": "./scripts/dev/chromium-bidi/lib/iife/mapperTab.js",
+      "file_type": ".js",
+      "line_count": 19231,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:14.318464"
+    },
+    {
+      "file_path": "./scripts/dev/chromium-bidi/lib/esm/bidiMapper/modules/context/BrowsingContextImpl.js",
+      "file_type": ".js",
+      "line_count": 1292,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:14.334601"
+    },
+    {
+      "file_path": "./scripts/dev/chromium-bidi/lib/esm/protocol/generated/webdriver-bidi.d.ts",
+      "file_type": ".ts",
+      "line_count": 2710,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:14.380288"
+    },
+    {
+      "file_path": "./scripts/dev/chromium-bidi/lib/esm/protocol-parser/generated/webdriver-bidi-bluetooth.d.ts",
+      "file_type": ".ts",
+      "line_count": 2216,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:14.392993"
+    },
+    {
+      "file_path": "./scripts/dev/chromium-bidi/lib/esm/protocol-parser/generated/webdriver-bidi.d.ts",
+      "file_type": ".ts",
+      "line_count": 64724,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:14.545299"
+    },
+    {
+      "file_path": "./scripts/dev/chromium-bidi/lib/esm/protocol-parser/generated/webdriver-bidi.js",
+      "file_type": ".js",
+      "line_count": 2931,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:14.553462"
+    },
+    {
+      "file_path": "./scripts/dev/@acemir/cssom/lib/parse.js",
+      "file_type": ".js",
+      "line_count": 2122,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:14.567470"
+    },
+    {
+      "file_path": "./scripts/dev/playwright-core/lib/protocol/validator.js",
+      "file_type": ".js",
+      "line_count": 2889,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:14.810190"
+    },
+    {
+      "file_path": "./scripts/dev/playwright-core/lib/utils/isomorphic/cssTokenizer.js",
+      "file_type": ".js",
+      "line_count": 1050,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:14.812256"
+    },
+    {
+      "file_path": "./scripts/dev/playwright-core/lib/server/frames.js",
+      "file_type": ".js",
+      "line_count": 1449,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:14.861082"
+    },
+    {
+      "file_path": "./scripts/dev/playwright-core/lib/server/webkit/wkPage.js",
+      "file_type": ".js",
+      "line_count": 1119,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:14.895845"
+    },
+    {
+      "file_path": "./scripts/dev/playwright-core/lib/server/chromium/crPage.js",
+      "file_type": ".js",
+      "line_count": 1056,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:14.921705"
+    },
+    {
+      "file_path": "./scripts/dev/playwright-core/lib/server/registry/index.js",
+      "file_type": ".js",
+      "line_count": 1375,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:14.953728"
+    },
+    {
+      "file_path": "./scripts/dev/playwright-core/lib/server/registry/nativeDeps.js",
+      "file_type": ".js",
+      "line_count": 1279,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:14.957283"
+    },
+    {
+      "file_path": "./scripts/dev/cssstyle/lib/normalize.js",
+      "file_type": ".js",
+      "line_count": 1391,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.019699"
+    },
+    {
+      "file_path": "./scripts/dev/cssstyle/lib/generated/implementedProperties.js",
+      "file_type": ".js",
+      "line_count": 1464,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.024840"
+    },
+    {
+      "file_path": "./scripts/dev/cssstyle/lib/generated/properties.js",
+      "file_type": ".js",
+      "line_count": 6943,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.040713"
+    },
+    {
+      "file_path": "./scripts/dev/esbuild/lib/main.js",
+      "file_type": ".js",
+      "line_count": 2206,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.095580"
+    },
+    {
+      "file_path": "./scripts/dev/speakingurl/lib/speakingurl.js",
+      "file_type": ".js",
+      "line_count": 1484,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.111093"
+    },
+    {
+      "file_path": "./scripts/dev/@formatjs/intl-localematcher/lib/abstract/regions.generated.js",
+      "file_type": ".js",
+      "line_count": 1333,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.131961"
+    },
+    {
+      "file_path": "./scripts/dev/@formatjs/intl-localematcher/lib/abstract/languageMatching.d.ts",
+      "file_type": ".ts",
+      "line_count": 2240,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.137208"
+    },
+    {
+      "file_path": "./scripts/dev/@formatjs/intl-localematcher/lib/abstract/languageMatching.js",
+      "file_type": ".js",
+      "line_count": 2620,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.143261"
+    },
+    {
+      "file_path": "./scripts/dev/@formatjs/icu-messageformat-parser/lib/time-data.generated.js",
+      "file_type": ".js",
+      "line_count": 1415,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.145374"
+    },
+    {
+      "file_path": "./scripts/dev/@formatjs/icu-messageformat-parser/lib/parser.js",
+      "file_type": ".js",
+      "line_count": 1213,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.149345"
+    },
+    {
+      "file_path": "./scripts/dev/jpeg-js/lib/decoder.js",
+      "file_type": ".js",
+      "line_count": 1012,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.158531"
+    },
+    {
+      "file_path": "./scripts/dev/jsdom/lib/jsdom/living/generated/HTMLInputElement.js",
+      "file_type": ".js",
+      "line_count": 1621,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.195685"
+    },
+    {
+      "file_path": "./scripts/dev/jsdom/lib/jsdom/living/generated/ElementInternals.js",
+      "file_type": ".js",
+      "line_count": 1829,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.219747"
+    },
+    {
+      "file_path": "./scripts/dev/jsdom/lib/jsdom/living/generated/Document.js",
+      "file_type": ".js",
+      "line_count": 3744,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.241168"
+    },
+    {
+      "file_path": "./scripts/dev/jsdom/lib/jsdom/living/generated/HTMLTextAreaElement.js",
+      "file_type": ".js",
+      "line_count": 1017,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.305778"
+    },
+    {
+      "file_path": "./scripts/dev/jsdom/lib/jsdom/living/generated/SVGElement.js",
+      "file_type": ".js",
+      "line_count": 2558,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.316171"
+    },
+    {
+      "file_path": "./scripts/dev/jsdom/lib/jsdom/living/generated/Element.js",
+      "file_type": ".js",
+      "line_count": 3223,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.336608"
+    },
+    {
+      "file_path": "./scripts/dev/jsdom/lib/jsdom/living/generated/HTMLElement.js",
+      "file_type": ".js",
+      "line_count": 2833,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.348865"
+    },
+    {
+      "file_path": "./scripts/dev/jsdom/lib/jsdom/level3/xpath.js",
+      "file_type": ".js",
+      "line_count": 1781,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.412469"
+    },
+    {
+      "file_path": "./scripts/dev/ws/lib/websocket.js",
+      "file_type": ".js",
+      "line_count": 1122,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.417742"
+    },
+    {
+      "file_path": "./scripts/dev/whatwg-url/lib/url-state-machine.js",
+      "file_type": ".js",
+      "line_count": 1059,
+      "is_over_threshold": true,
+      "uses_mock_data": false,
+      "mock_imports": [],
+      "mock_calls": [],
+      "mock_severity": "info",
+      "last_scanned": "2026-02-23T13:39:15.465196"
+    },
+    {
+      "file_path": "./scripts/dev/quality_gate/fix_test_imports.py",
+      "file_type": ".py",
+      "line_count": 288,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.mock."
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:15.478901"
+    },
+    {
+      "file_path": "./web/backend/app/services/data_source_factory/data_source_mode.py",
+      "file_type": ".py",
+      "line_count": 532,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [],
+      "mock_calls": [
+        "MockDataSource("
+      ],
+      "mock_severity": "error",
+      "last_scanned": "2026-02-23T13:39:15.707609"
+    },
+    {
+      "file_path": "./web/backend/app/services/data_source_factory/data_source_factory.py",
+      "file_type": ".py",
+      "line_count": 253,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [],
+      "mock_calls": [
+        "MockDataSource("
+      ],
+      "mock_severity": "error",
+      "last_scanned": "2026-02-23T13:39:15.708736"
+    },
+    {
+      "file_path": "./web/backend/app/mock/mock_data/factory.py",
+      "file_type": ".py",
+      "line_count": 72,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [],
+      "mock_calls": [
+        "use_mock_data=True"
+      ],
+      "mock_severity": "error",
+      "last_scanned": "2026-02-23T13:39:15.834748"
+    },
+    {
+      "file_path": "./web/backend/app/mock/mock_data/core.py",
+      "file_type": ".py",
+      "line_count": 610,
+      "is_over_threshold": false,
+      "uses_mock_data": true,
+      "mock_imports": [
+        "from src.mock."
+      ],
+      "mock_calls": [],
+      "mock_severity": "warning",
+      "last_scanned": "2026-02-23T13:39:15.837622"
+    }
+  ]
+}

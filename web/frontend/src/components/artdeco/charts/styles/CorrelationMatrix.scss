@@ -118,7 +118,7 @@
         max-height: 600px;
         overflow: auto;
         padding: var(--artdeco-spacing-4);
-        background: rgb(212 175 55 / 2%);
+        background: color-mix(in srgb, var(--artdeco-gold-primary) 2%, transparent);
         border: 1px solid var(--artdeco-gold-dim);
         border-radius: 8px;
     }
@@ -145,13 +145,13 @@
 
             &:hover {
                 color: var(--artdeco-gold-primary);
-                background: rgb(212 175 55 / 10%);
+                background: var(--artdeco-gold-opacity-10);
             }
 
             &.active {
                 color: var(--artdeco-gold-primary);
                 border-right-color: var(--artdeco-gold-primary);
-                background: rgb(212 175 55 / 15%);
+                background: var(--artdeco-gold-opacity-15);
             }
         }
     }
@@ -188,13 +188,13 @@
 
             &:hover {
                 color: var(--artdeco-gold-primary);
-                background: rgb(212 175 55 / 10%);
+                background: var(--artdeco-gold-opacity-10);
             }
 
             &.active {
                 color: var(--artdeco-gold-primary);
                 border-bottom-color: var(--artdeco-gold-primary);
-                background: rgb(212 175 55 / 15%);
+                background: var(--artdeco-gold-opacity-15);
             }
         }
     }
@@ -222,20 +222,20 @@
         font-weight: 700;
         cursor: pointer;
         transition: all var(--artdeco-transition-default);
-        border: 1px solid rgb(212 175 55 / 20%);
+        border: 1px solid var(--artdeco-gold-opacity-20);
         color: var(--artdeco-fg-primary);
 
         &:hover {
             transform: scale(1.1);
             border-color: var(--artdeco-gold-primary);
-            box-shadow: 0 0 10px rgb(212 175 55 / 30%);
+            box-shadow: 0 0 10px var(--artdeco-gold-opacity-30);
             z-index: 10;
         }
 
         // Cell intensity classes
         &.strong {
-            color: #fff;
-            text-shadow: 0 1px 2px rgb(0 0 0 / 50%);
+            color: var(--artdeco-fg-primary);
+            text-shadow: 0 1px 2px color-mix(in srgb, var(--artdeco-bg-global) 50%, transparent);
         }
 
         &.moderate {
@@ -263,7 +263,7 @@
         border-radius: 4px;
         pointer-events: none;
         z-index: 1000;
-        box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
+        box-shadow: var(--artdeco-shadow-md);
         min-width: 200px;
 
         .tooltip-symbols {
@@ -372,10 +372,10 @@
                 height: 12px;
                 background: linear-gradient(
                     to right,
-                    rgb(255 82 82 / 100%) 0%,
-                    rgb(255 82 82 / 10%) 50%,
-                    rgb(0 230 118 / 10%) 50%,
-                    rgb(0 230 118 / 100%) 100%
+                    color-mix(in srgb, var(--artdeco-fall) 100%, transparent) 0%,
+                    color-mix(in srgb, var(--artdeco-fall) 10%, transparent) 50%,
+                    color-mix(in srgb, var(--artdeco-rise) 10%, transparent) 50%,
+                    color-mix(in srgb, var(--artdeco-rise) 100%, transparent) 100%
                 );
                 border: 1px solid var(--artdeco-gold-dim);
                 border-radius: 2px;

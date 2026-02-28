@@ -31,10 +31,11 @@ defineProps({
 </script>
 
 <style scoped lang="scss">
+@import '@/styles/artdeco-tokens';
 .alert-item {
     padding: 15px;
-    border-bottom: 1px solid rgb(212 175 55 / 10%);
-    &.critical { border-left: 4px solid var(--artdeco-fall); }
+    border-bottom: 1px solid var(--artdeco-gold-opacity-10);
+    &.critical { border-left: 4px solid var(--artdeco-down); }
     &.warning { border-left: 4px solid var(--artdeco-gold-primary); }
 }
 .alert-header {

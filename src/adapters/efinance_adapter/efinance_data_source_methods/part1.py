@@ -27,7 +27,6 @@ import pandas as pd
 from src.core.data_source.circuit_breaker import CircuitBreaker
 from src.core.data_source.data_quality_validator import DataQualityValidator
 from src.core.data_source.smart_cache import SmartCache
-from src.interfaces.data_source import IDataSource
 from src.utils.column_mapper import ColumnMapper
 
 logger = logging.getLogger(__name__)

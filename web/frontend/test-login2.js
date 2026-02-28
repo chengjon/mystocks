@@ -1,5 +1,7 @@
 const { chromium } = require('@playwright/test');
 
+const FRONTEND_URL = process.env.FRONTEND_URL || `http://localhost:${process.env.FRONTEND_PORT || '3020'}`;
+
 (async () => {
     const browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
@@ -14,7 +16,7 @@ const { chromium } = require('@playwright/test');
     
     // Navigate to login page
     console.log('Navigating to login page...');
-    await page.goto('http://localhost:3002/login?redirect=/dashboard', { waitUntil: 'networkidle' });
+    await page.goto(`${FRONTEND_URL}/login?redirect=/dashboard`, { waitUntil: 'networkidle' });
     await page.waitForTimeout(3000);
     
     // Check page content

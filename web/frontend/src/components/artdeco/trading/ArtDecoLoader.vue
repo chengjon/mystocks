@@ -41,7 +41,7 @@
     .artdeco-loader-container.fullscreen {
       position: fixed;
       inset: 0 0 0 0;
-      background: rgb(10 12 14 / 90%);
+      background: color-mix(in srgb, var(--artdeco-bg-global) 90%, transparent);
       z-index: var(--artdeco-z-modal);
     }
 
@@ -53,7 +53,7 @@
     }
 
     .artdeco-loader {
-      border: 2px solid rgb(212 175 55 / 20%);
+      border: 2px solid var(--artdeco-gold-opacity-20);
       position: relative;
       animation: artdeco-spin 3s linear infinite;
     }
@@ -76,7 +76,7 @@
       color: var(--artdeco-accent-gold);
       letter-spacing: 3px;
       text-transform: uppercase;
-      text-shadow: 0 0 10px rgb(212 175 55 / 30%);
+      text-shadow: 0 0 10px var(--artdeco-gold-opacity-30);
     }
 
     @keyframes artdeco-spin {

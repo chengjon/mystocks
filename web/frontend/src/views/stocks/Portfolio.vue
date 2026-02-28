@@ -290,5 +290,5 @@
 </script>
 
 <style scoped lang="scss">
-@import "./styles/Portfolio.scss";
+@import "./styles/Portfolio";
 </style>

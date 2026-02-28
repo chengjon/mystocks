@@ -163,7 +163,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   color: var(--artdeco-fg-muted);
-  background: rgb(0 0 0 / 10%);
+  background: color-mix(in srgb, var(--artdeco-bg-global) 10%, transparent);
   z-index: 5;
   
   .empty-icon {

@@ -15,18 +15,11 @@
 import asyncio
 import json
 import logging
-import os
-import smtplib
-import ssl
-from dataclasses import asdict, dataclass
-from datetime import datetime, timedelta
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+from dataclasses import asdict
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse
 
-import aiohttp
 
 # 监控组件导入
 try:

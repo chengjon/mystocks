@@ -9,17 +9,13 @@
 # 版权：MyStocks Project © 2025
 """
 
-import json
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-import psycopg2
-import redis
 import sqlalchemy as sa
-import yaml
 from dotenv import load_dotenv
 from sqlalchemy import (
     JSON,
@@ -32,9 +28,8 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
-    create_engine,
 )
-from sqlalchemy.orm import declarative_base, relationship, sessionmaker
+from sqlalchemy.orm import declarative_base, relationship
 
 # Create declarative base for SQLAlchemy models
 Base = declarative_base()

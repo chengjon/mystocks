@@ -10,7 +10,6 @@ This module provides comprehensive sentiment analysis including:
 - Multi-source sentiment aggregation
 """
 
-import warnings
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple

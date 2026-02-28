@@ -441,5 +441,5 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/Watchlist.scss";
+@import "./styles/Watchlist";
 </style>

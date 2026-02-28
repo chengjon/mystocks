@@ -75,7 +75,7 @@ const radius = computed(() => {
       background: linear-gradient(
         90deg,
         transparent,
-        rgb(255 255 255 / 5%),
+        color-mix(in srgb, var(--artdeco-fg-primary) 5%, transparent),
         transparent
       );
       animation: skeleton-loading 1.5s infinite;

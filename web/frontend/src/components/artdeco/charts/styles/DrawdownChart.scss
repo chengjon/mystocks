@@ -83,15 +83,15 @@
                     font-weight: 700;
 
                     &.severe {
-                        color: #d32f2f;
+                        color: var(--artdeco-fall);
                     }
 
                     &.high {
-                        color: #f57c00;
+                        color: color-mix(in srgb, var(--artdeco-warning) 75%, var(--artdeco-fall));
                     }
 
                     &.moderate {
-                        color: #fbc02d;
+                        color: var(--artdeco-warning);
                     }
 
                     &.mild {
@@ -180,7 +180,7 @@
         border-radius: 4px;
         pointer-events: none;
         z-index: 100;
-        box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
+        box-shadow: var(--artdeco-shadow-md);
         min-width: 150px;
 
         .tooltip-date {
@@ -213,15 +213,15 @@
                 font-weight: 700;
 
                 &.severe {
-                    color: #d32f2f;
+                    color: var(--artdeco-fall);
                 }
 
                 &.high {
-                    color: #f57c00;
+                    color: color-mix(in srgb, var(--artdeco-warning) 75%, var(--artdeco-fall));
                 }
 
                 &.moderate {
-                    color: #fbc02d;
+                    color: var(--artdeco-warning);
                 }
 
                 &.mild {
@@ -275,19 +275,19 @@
                 border: 1px solid var(--artdeco-gold-dim);
 
                 &.severe {
-                    background: rgb(211 47 47 / 80%);
+                    background: color-mix(in srgb, var(--artdeco-fall) 80%, transparent);
                 }
 
                 &.high {
-                    background: rgb(245 124 0 / 60%);
+                    background: color-mix(in srgb, var(--artdeco-warning) 60%, var(--artdeco-fall));
                 }
 
                 &.moderate {
-                    background: rgb(251 192 45 / 40%);
+                    background: color-mix(in srgb, var(--artdeco-warning) 40%, transparent);
                 }
 
                 &.mild {
-                    background: rgb(255 82 82 / 20%);
+                    background: color-mix(in srgb, var(--artdeco-fall) 20%, transparent);
                 }
             }
 

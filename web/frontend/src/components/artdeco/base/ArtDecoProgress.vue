@@ -24,9 +24,9 @@
                     <defs>
                         <!-- Gold gradient for gauge background -->
                         <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#1A2026" />
-                            <stop offset="50%" stop-color="#00E676" />
-                            <stop offset="100%" stop-color="#FF5252" />
+                            <stop offset="0%" stop-color="var(--artdeco-bg-secondary)" />
+                            <stop offset="50%" stop-color="var(--artdeco-down)" />
+                            <stop offset="100%" stop-color="var(--artdeco-up)" />
                         </linearGradient>
 
                         <!-- Glow effect -->
@@ -43,7 +43,7 @@
                         r="50"
                         fill="url(#gaugeGradient)"
                         fill-opacity="0.3"
-                        stroke="rgb(212 175 55 / 10%)"
+                        stroke="var(--artdeco-gold-opacity-10)"
                         stroke-width="16"
                     />
 
@@ -168,13 +168,13 @@
      * Determine value color based on thresholds
      */
     const valueColor = computed(() => {
-        if (percentage.value >= 80) return 'var(--artdeco-fall)'
+        if (percentage.value >= 80) return 'var(--artdeco-down)'
         if (percentage.value >= 60) return 'var(--artdeco-accent-gold)'
         return 'var(--artdeco-up)'
     })
 
     const progressColor = computed(() => {
-        if (percentage.value >= 80) return 'var(--artdeco-fall)'
+        if (percentage.value >= 80) return 'var(--artdeco-down)'
         if (percentage.value >= 60) return 'var(--artdeco-accent-gold)'
         return 'var(--artdeco-up)'
     })
@@ -219,5 +219,5 @@
 </script>
 
 <style scoped lang="scss">
-@import "./styles/ArtDecoProgress.scss";
+@import "./styles/ArtDecoProgress";
 </style>

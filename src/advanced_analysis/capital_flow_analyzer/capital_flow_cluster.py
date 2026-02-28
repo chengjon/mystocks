@@ -10,7 +10,6 @@ This module provides comprehensive capital flow analysis including:
 - Smart money tracking and identification
 """
 
-import warnings
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Tuple

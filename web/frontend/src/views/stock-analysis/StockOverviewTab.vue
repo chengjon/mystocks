@@ -115,12 +115,12 @@ defineProps<{
 
 .overview-header {
   :deep(.header-title) {
-    font-family: 'Cinzel', serif;
+    font-family: Cinzel, serif;
   }
 }
 
 .artdeco-sub-header {
-  font-family: 'Marcellus', serif;
+  font-family: Marcellus, serif;
   color: var(--artdeco-gold-primary);
   text-transform: uppercase;
   letter-spacing: var(--artdeco-tracking-wider);
@@ -192,12 +192,12 @@ defineProps<{
 }
 
 .advantage-alert {
-  background: rgba(212, 175, 55, 0.05) !important;
+  background: rgb(212 175 55 / 5%) !important;
   border-color: var(--artdeco-border-default) !important;
   
   .alert-title {
     color: var(--artdeco-gold-primary);
-    font-family: 'Marcellus', serif;
+    font-family: Marcellus, serif;
     font-weight: bold;
     margin-bottom: var(--artdeco-spacing-2);
   }

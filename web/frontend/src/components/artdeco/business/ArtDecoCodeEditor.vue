@@ -100,8 +100,8 @@
     .artdeco-code-editor {
       display: flex;
       flex-direction: column;
-      background: #0F1215; /* Deepest dark */
-      border: 1px solid rgb(212 175 55 / 20%);
+      background: var(--artdeco-bg-global);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       border-radius: var(--artdeco-radius-none);
       transition: all var(--artdeco-transition-base);
       height: 100%;
@@ -119,7 +119,7 @@
       align-items: center;
       padding: 8px 16px;
       background: var(--artdeco-bg-header);
-      border-bottom: 1px solid rgb(212 175 55 / 20%);
+      border-bottom: 1px solid var(--artdeco-gold-opacity-20);
     }
 
     .editor-title {
@@ -145,7 +145,7 @@
     .line-numbers {
       width: 40px;
       background: var(--artdeco-bg-card);
-      border-right: 1px solid rgb(212 175 55 / 20%);
+      border-right: 1px solid var(--artdeco-gold-opacity-20);
       color: var(--artdeco-fg-muted);
       font-family: var(--artdeco-font-mono);
       font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
@@ -178,8 +178,8 @@
     }
 
     .code-textarea::selection {
-      background: rgb(212 175 55 / 30%);
-      color: #fff;
+      background: var(--artdeco-gold-opacity-30);
+      color: var(--artdeco-fg-primary);
     }
 
     /* Syntax Highlighting Simulation (Simple color overrides) */

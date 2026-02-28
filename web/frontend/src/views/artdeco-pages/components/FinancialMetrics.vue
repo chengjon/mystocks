@@ -25,15 +25,16 @@ defineProps({
 </script>
 
 <style scoped lang="scss">
+@import '@/styles/artdeco-tokens';
 .metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
 }
 .metric-item {
-    background: rgb(212 175 55 / 5%);
+    background: var(--artdeco-gold-opacity-05);
     padding: 15px;
-    border: 1px solid rgb(212 175 55 / 10%);
+    border: 1px solid var(--artdeco-gold-opacity-10);
     .header {
         display: flex;
         justify-content: space-between;
@@ -53,6 +54,6 @@ defineProps({
         color: var(--artdeco-fg-muted);
     }
     .trend.up { color: var(--artdeco-rise); }
-    .trend.down { color: var(--artdeco-fall); }
+    .trend.down { color: var(--artdeco-down); }
 }
 </style>

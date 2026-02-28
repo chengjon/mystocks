@@ -28,11 +28,15 @@ const allPagePaths = getAllPaths(ARTDECO_MENU_ITEMS);
 test.describe('全页面地毯式冒烟测试 (Full Site Crawl)', () => {
   
   test.beforeEach(async ({ page }) => {
-    // 注入 Token 绕过登录
+    // 注入 Token 绕过登录 (使用正确的 Key)
     await page.addInitScript(() => {
-      localStorage.setItem('auth_token', 'smoke-test-token');
+      localStorage.setItem('auth_token', 'mock-token-full-smoke-test');
       localStorage.setItem('auth_user', JSON.stringify({
-        id: 1, username: 'admin', role: 'admin', permissions: ['*']
+        id: 1,
+        username: 'admin',
+        email: 'admin@mystocks.com',
+        role: 'admin',
+        permissions: ['*']
       }));
     });
   });
@@ -40,6 +44,12 @@ test.describe('全页面地毯式冒烟测试 (Full Site Crawl)', () => {
   // 为每个路径创建一个独立的测试用例
   for (const path of allPagePaths) {
     test(`巡检页面: ${path}`, async ({ page }) => {
+      // 首次进入任意页面以触发 Store 初始化
+      // 避免直接访问深度子路由导致的认证竞争
+      if (allPagePaths.indexOf(path) === 0) {
+         await page.goto(`${BASE_URL}/dealing-room`);
+      }
+      
       console.log(`正在检查: ${BASE_URL}${path}`);
       
       const response = await page.goto(`${BASE_URL}${path}`, { 
@@ -54,7 +64,7 @@ test.describe('全页面地毯式冒烟测试 (Full Site Crawl)', () => {
       expect(page.url()).not.toContain('/login');
 
       // 3. 验证基础布局
-      const sidebar = page.locator('.artdeco-collapsible-sidebar');
+      const sidebar = page.locator('.artdeco-sidebar-v3');
       await expect(sidebar).toBeVisible({ timeout: 5000 });
 
       const mainContent = page.locator('.artdeco-main');

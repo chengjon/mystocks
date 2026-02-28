@@ -43,9 +43,9 @@
     .ticker-section {
         margin-bottom: var(--artdeco-spacing-6);
         padding: var(--artdeco-spacing-4);
-        background: rgb(255 255 255 / 2%);
+        background: color-mix(in srgb, var(--artdeco-fg-primary) 2%, transparent);
         border-radius: var(--artdeco-radius-none);
-        border: 1px solid rgb(212 175 55 / 10%);
+        border: 1px solid var(--artdeco-gold-opacity-10);
     }
 
     .indices-section {

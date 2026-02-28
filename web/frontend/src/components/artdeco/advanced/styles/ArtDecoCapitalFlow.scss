@@ -118,7 +118,7 @@
 
                             &:hover {
                                 transform: translateY(-2px);
-                                box-shadow: 0 4px 12px rgb(212 175 55 / 20%);
+                                box-shadow: 0 4px 12px var(--artdeco-gold-opacity-20);
                             }
 
                             .cell-label {
@@ -127,8 +127,8 @@
                                 align-items: center;
                                 gap: var(--artdeco-spacing-1);
                                 text-align: center;
-                                color: white;
-                                text-shadow: 0 1px 2px rgb(0 0 0 / 50%);
+                                color: var(--artdeco-fg-primary);
+                                text-shadow: 0 1px 2px color-mix(in srgb, var(--artdeco-bg-dark) 50%, transparent);
 
                                 .sector-name {
                                     font-family: var(--artdeco-font-body);
@@ -147,8 +147,8 @@
                                     font-family: var(--artdeco-font-mono);
                                     font-size: var(--artdeco-font-size-lg);
                                     font-weight: 600;
-                                    color: white;
-                                    text-shadow: 0 1px 2px rgb(0 0 0 / 50%);
+                                    color: var(--artdeco-fg-primary);
+                                    text-shadow: 0 1px 2px color-mix(in srgb, var(--artdeco-bg-dark) 50%, transparent);
                                 }
                             }
                         }
@@ -178,9 +178,9 @@
                                 height: 12px;
                                 background: linear-gradient(
                                     90deg,
-                                    rgb(239 68 68 / 80%) 0%,
-                                    rgb(156 163 175 / 30%) 50%,
-                                    rgb(34 197 94 / 80%) 100%
+                                    color-mix(in srgb, var(--artdeco-down) 80%, transparent) 0%,
+                                    color-mix(in srgb, var(--artdeco-fg-muted) 30%, transparent) 50%,
+                                    color-mix(in srgb, var(--artdeco-up) 80%, transparent) 100%
                                 );
                                 border-radius: 6px;
                             }
@@ -321,8 +321,8 @@
                                 width: 8px;
                                 height: 8px;
                                 border-radius: 50%;
-                                border: 2px solid white;
-                                box-shadow: 0 0 4px rgb(0 0 0 / 30%);
+                                border: 2px solid var(--artdeco-fg-primary);
+                                box-shadow: 0 0 4px color-mix(in srgb, var(--artdeco-bg-dark) 30%, transparent);
                                 transform: translate(-50%, -50%);
                                 transition: all var(--artdeco-transition-base);
 
@@ -386,7 +386,7 @@
 
                         &:hover {
                             border-color: var(--artdeco-gold-primary);
-                            box-shadow: 0 0 15px rgb(212 175 55 / 10%);
+                            box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
                         }
 
                         .cluster-header {
@@ -559,10 +559,10 @@
                                     border-radius: 50%;
                                     background: conic-gradient(
                                         from 0deg,
-                                        rgb(239 68 68 / 20%) 0deg,
-                                        rgb(212 175 55 / 40%) 90deg,
-                                        rgb(34 197 94 / 60%) 180deg,
-                                        rgb(34 197 94 / 60%) 180deg
+                                        color-mix(in srgb, var(--artdeco-down) 20%, transparent) 0deg,
+                                        color-mix(in srgb, var(--artdeco-warning) 40%, transparent) 90deg,
+                                        color-mix(in srgb, var(--artdeco-up) 60%, transparent) 180deg,
+                                        color-mix(in srgb, var(--artdeco-up) 60%, transparent) 180deg
                                     );
 
                                     .gauge-fill {
@@ -576,8 +576,8 @@
                                             from 0deg,
                                             transparent 0deg,
                                             transparent 180deg,
-                                            rgb(212 175 55 / 80%) 180deg,
-                                            rgb(212 175 55 / 80%) 360deg
+                                            color-mix(in srgb, var(--artdeco-warning) 80%, transparent) 180deg,
+                                            color-mix(in srgb, var(--artdeco-warning) 80%, transparent) 360deg
                                         );
                                         clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%);
                                         transition: transform var(--artdeco-transition-base);
@@ -690,7 +690,7 @@
 
                         &:hover {
                             border-color: var(--artdeco-gold-primary);
-                            box-shadow: 0 0 15px rgb(212 175 55 / 10%);
+                            box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
                         }
 
                         .rank-number {
@@ -846,7 +846,7 @@
                             }
 
                             &.warning {
-                                color: #f59e0b;
+                                color: var(--artdeco-warning);
                             }
                         }
                     }
@@ -880,7 +880,7 @@
 
                         &:hover {
                             border-color: var(--artdeco-gold-primary);
-                            box-shadow: 0 0 15px rgb(212 175 55 / 10%);
+                            box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
                         }
 
                         .sector-header {
@@ -962,7 +962,7 @@
                             color: var(--artdeco-fg-secondary);
                             line-height: 1.5;
                             padding-top: var(--artdeco-spacing-2);
-                            border-top: 1px solid rgb(212 175 55 / 10%);
+                            border-top: 1px solid var(--artdeco-gold-opacity-10);
                         }
                     }
                 }
@@ -1007,7 +1007,7 @@
 
                         &:hover {
                             border-color: var(--artdeco-gold-primary);
-                            box-shadow: 0 0 15px rgb(212 175 55 / 10%);
+                            box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
                         }
 
                         .insight-icon {

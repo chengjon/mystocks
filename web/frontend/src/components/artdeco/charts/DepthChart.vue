@@ -25,7 +25,12 @@
                 <!-- 背景网格 -->
                 <defs>
                     <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgb(212 175 55 / 10%)" stroke-width="1" />
+                        <path
+                            d="M 40 0 L 0 0 0 40"
+                            fill="none"
+                            stroke="var(--artdeco-gold-opacity-10)"
+                            stroke-width="1"
+                        />
                     </pattern>
 
                     <!-- 渐变定义 -->
@@ -481,5 +486,5 @@
 </script>
 
 <style scoped lang="scss">
-@import "./styles/DepthChart.scss";
+@import "./styles/DepthChart";
 </style>

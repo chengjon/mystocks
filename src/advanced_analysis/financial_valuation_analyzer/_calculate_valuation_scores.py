@@ -10,15 +10,12 @@ This module provides comprehensive financial valuation analysis including:
 - Industry-relative valuation benchmarking
 """
 
-import warnings
-from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import numpy as np
-import pandas as pd
 
-from src.advanced_analysis import AnalysisResult, AnalysisType, BaseAnalyzer
+from src.advanced_analysis import AnalysisResult, AnalysisType
 
 def _calculate_valuation_scores(
     self,

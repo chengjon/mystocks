@@ -9,7 +9,7 @@
     .artdeco-progress {
         padding: var(--artdeco-spacing-4);
         background: var(--artdeco-bg-card);
-        border: 1px solid rgb(212 175 55 / 20%);
+        border: 1px solid var(--artdeco-gold-opacity-20);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -157,7 +157,7 @@
         gap: var(--artdeco-spacing-1);
         align-items: center;
         text-align: center;
-        background: rgb(212 175 55 / 8%);
+        background: color-mix(in srgb, var(--artdeco-gold-primary) 8%, transparent);
         border-radius: var(--artdeco-radius-none);
         padding: var(--artdeco-spacing-2);
     }
@@ -181,24 +181,24 @@
     .detail-value--good {
         color: var(--artdeco-up);
         border: 1px solid var(--artdeco-up);
-        background: rgb(0 230 118 / 10%);
+        background: color-mix(in srgb, var(--artdeco-up) 10%, transparent);
     }
 
     .detail-value--bad {
         color: var(--artdeco-down);
         border: 1px solid var(--artdeco-down);
-        background: rgb(255 82 82 / 10%);
+        background: color-mix(in srgb, var(--artdeco-down) 10%, transparent);
     }
 
     // Value color modifiers
     .artdeco-progress__value--up {
         fill: var(--artdeco-up);
-        text-shadow: 0 0 8px rgb(0 230 118 / 40%);
+        text-shadow: 0 0 8px color-mix(in srgb, var(--artdeco-up) 40%, transparent);
     }
 
     .artdeco-progress__value--down {
         fill: var(--artdeco-down);
-        text-shadow: 0 0 8px rgb(255 82 82 / 40%);
+        text-shadow: 0 0 8px color-mix(in srgb, var(--artdeco-down) 40%, transparent);
     }
 
     // ============================================

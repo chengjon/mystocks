@@ -9,15 +9,12 @@ This module provides advanced time series analysis capabilities including:
 - Seasonal and cyclical pattern recognition
 """
 
-import warnings
-from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 import numpy as np
-import pandas as pd
 
-from src.advanced_analysis import AnalysisResult, AnalysisType, BaseAnalyzer
+from src.advanced_analysis import AnalysisResult, AnalysisType
 
 def _assess_ts_risk(
     self, turning_points: List[TurningPoint], segments: List[TimeSeriesSegment], patterns: List[PatternMatch]

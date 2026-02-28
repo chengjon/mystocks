@@ -62,7 +62,7 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .market-etf-tab {
   padding: var(--artdeco-spacing-6);
@@ -94,6 +94,7 @@ onMounted(() => {
   background: var(--artdeco-bg-card);
   border: 1px solid var(--artdeco-border-default);
   position: relative;
+
   @include artdeco-hover-lift-glow;
 
   .card-inner {
@@ -106,8 +107,16 @@ onMounted(() => {
     display: flex;
     justify-content: space-between;
     margin-bottom: var(--artdeco-spacing-4);
-    .symbol { font-family: var(--font-mono); color: var(--artdeco-gold-primary); font-weight: bold; }
-    .name { font-size: var(--artdeco-text-sm); color: var(--artdeco-fg-primary); }
+    .symbol {
+      font-family: var(--artdeco-font-mono);
+      color: var(--artdeco-gold-primary);
+      font-weight: bold;
+    }
+
+    .name {
+      font-size: var(--artdeco-text-sm);
+      color: var(--artdeco-fg-primary);
+    }
   }
 
   .etf-price-row {
@@ -115,14 +124,29 @@ onMounted(() => {
     justify-content: space-between;
     align-items: baseline;
     margin-bottom: var(--artdeco-spacing-3);
-    .price { font-family: var(--font-mono); font-size: var(--artdeco-text-xl); }
-    .change { font-family: var(--font-mono); font-size: var(--artdeco-text-md); &.rise { color: var(--artdeco-rise); } &.down { color: var(--artdeco-down); } }
+    .price {
+      font-family: var(--artdeco-font-mono);
+      font-size: var(--artdeco-text-xl);
+    }
+
+    .change {
+      font-family: var(--artdeco-font-mono);
+      font-size: var(--artdeco-text-md);
+
+      &.rise {
+        color: var(--artdeco-rise);
+      }
+
+      &.down {
+        color: var(--artdeco-down);
+      }
+    }
   }
 
   .etf-volume {
     font-size: 10px;
     color: var(--artdeco-fg-muted);
-    font-family: var(--font-mono);
+    font-family: var(--artdeco-font-mono);
     label { margin-right: 4px; }
   }
 

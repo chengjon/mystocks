@@ -336,5 +336,5 @@ const _dataClassifications = ref([
 </script>
 
 <style scoped lang="scss">
-@import "./styles/Architecture.scss";
+@import "./styles/Architecture";
 </style>

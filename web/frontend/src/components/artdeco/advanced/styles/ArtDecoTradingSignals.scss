@@ -99,7 +99,7 @@
                 content: '';
                 position: absolute;
                 inset: 4px 4px 4px 4px;
-                border: 1px solid rgb(212 175 55 / 10%);
+                border: 1px solid var(--artdeco-gold-opacity-10);
                 pointer-events: none;
                 opacity: 30%;
                 transition: opacity var(--artdeco-transition-base);
@@ -111,20 +111,20 @@
 
             &.buy {
                 border-color: var(--artdeco-up);
-                background: linear-gradient(135deg, rgb(34 197 94 / 5%), transparent);
+                background: linear-gradient(135deg, color-mix(in srgb, var(--artdeco-up) 5%, transparent), transparent);
             }
 
             &.sell {
                 border-color: var(--artdeco-down);
-                background: linear-gradient(135deg, rgb(239 68 68 / 5%), transparent);
+                background: linear-gradient(135deg, color-mix(in srgb, var(--artdeco-down) 5%, transparent), transparent);
             }
 
             &.strength-high {
-                box-shadow: 0 0 20px rgb(212 175 55 / 20%);
+                box-shadow: 0 0 20px var(--artdeco-gold-opacity-20);
             }
 
             &.strength-medium {
-                box-shadow: 0 0 15px rgb(212 175 55 / 10%);
+                box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
             }
         }
 
@@ -171,12 +171,12 @@
 
                 &.buy {
                     background: var(--artdeco-up);
-                    color: white;
+                    color: var(--artdeco-fg-primary);
                 }
 
                 &.sell {
                     background: var(--artdeco-down);
-                    color: white;
+                    color: var(--artdeco-fg-primary);
                 }
             }
 
@@ -207,11 +207,11 @@
                         }
 
                         &.medium {
-                            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+                            background: linear-gradient(90deg, var(--artdeco-warning), color-mix(in srgb, var(--artdeco-warning) 80%, var(--artdeco-fall)));
                         }
 
                         &.low {
-                            background: linear-gradient(90deg, #ef4444, #dc2626);
+                            background: linear-gradient(90deg, var(--artdeco-fall), color-mix(in srgb, var(--artdeco-fall) 80%, var(--artdeco-warning)));
                         }
                     }
                 }
@@ -337,7 +337,7 @@
                 grid-template-columns: 120px 100px 120px 80px 1fr;
                 gap: var(--artdeco-spacing-4);
                 padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
-                background: linear-gradient(135deg, var(--artdeco-bg-muted), rgb(212 175 55 / 5%));
+                background: linear-gradient(135deg, var(--artdeco-bg-muted), var(--artdeco-gold-opacity-05));
                 border-bottom: 1px solid var(--artdeco-border-default);
                 font-family: var(--artdeco-font-body);
                 font-size: var(--artdeco-font-size-sm);
@@ -353,21 +353,21 @@
                     grid-template-columns: 120px 100px 120px 80px 1fr;
                     gap: var(--artdeco-spacing-4);
                     padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
-                    border-bottom: 1px solid rgb(212 175 55 / 10%);
+                    border-bottom: 1px solid var(--artdeco-gold-opacity-10);
                     transition: all var(--artdeco-transition-base);
 
                     &:hover {
-                        background: rgb(212 175 55 / 2%);
+                        background: var(--artdeco-gold-opacity-02);
                     }
 
                     &.profit {
                         border-left: 3px solid var(--artdeco-up);
-                        background: linear-gradient(90deg, rgb(34 197 94 / 3%), transparent);
+                        background: linear-gradient(90deg, color-mix(in srgb, var(--artdeco-up) 3%, transparent), transparent);
                     }
 
                     &.loss {
                         border-left: 3px solid var(--artdeco-down);
-                        background: linear-gradient(90deg, rgb(239 68 68 / 3%), transparent);
+                        background: linear-gradient(90deg, color-mix(in srgb, var(--artdeco-down) 3%, transparent), transparent);
                     }
 
                     .col-symbol {
@@ -416,11 +416,11 @@
                                 }
 
                                 &.medium {
-                                    background: linear-gradient(90deg, #fbbf24, #f59e0b);
+                                    background: linear-gradient(90deg, var(--artdeco-warning), color-mix(in srgb, var(--artdeco-warning) 80%, var(--artdeco-fall)));
                                 }
 
                                 &.low {
-                                    background: linear-gradient(90deg, #ef4444, #dc2626);
+                                    background: linear-gradient(90deg, var(--artdeco-fall), color-mix(in srgb, var(--artdeco-fall) 80%, var(--artdeco-warning)));
                                 }
                             }
                         }
@@ -567,7 +567,7 @@
 
                         &:hover {
                             border-color: var(--artdeco-gold-primary);
-                            box-shadow: 0 0 15px rgb(212 175 55 / 10%);
+                            box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
                         }
 
                         .type-description {

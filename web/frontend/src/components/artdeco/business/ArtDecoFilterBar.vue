@@ -260,7 +260,7 @@
 
     .artdeco-filter-bar {
       background: var(--artdeco-bg-card);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       padding: var(--artdeco-spacing-4);
       display: flex;
       flex-direction: column;
@@ -347,7 +347,7 @@
     .artdeco-input {
       width: 100%;
       background: var(--artdeco-bg-primary);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-mono);
       font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
@@ -406,7 +406,7 @@
       align-items: center;
       gap: var(--artdeco-spacing-3);
       padding-top: var(--artdeco-spacing-3);
-      border-top: 1px solid rgb(212 175 55 / 10%);
+      border-top: 1px solid var(--artdeco-gold-opacity-10);
     }
 
     .quick-filters-label {
@@ -421,7 +421,7 @@
     .quick-filter-btn {
       padding: var(--artdeco-spacing-1) var(--artdeco-spacing-3);
       background: var(--artdeco-bg-primary);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-body);
       font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1

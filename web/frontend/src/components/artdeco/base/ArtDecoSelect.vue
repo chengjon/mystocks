@@ -70,7 +70,7 @@
       font-weight: 500;
       color: var(--artdeco-fg-secondary);
       background: var(--artdeco-bg-card);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       border-radius: var(--artdeco-radius-none);
       cursor: pointer;
       appearance: none;

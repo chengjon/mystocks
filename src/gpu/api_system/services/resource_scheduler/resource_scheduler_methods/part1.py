@@ -8,7 +8,6 @@ import queue
 import threading
 import time
 from datetime import datetime, timedelta
-from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
 from src.gpu.api_system.utils.gpu_utils import GPUResourceManager

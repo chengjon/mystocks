@@ -61,6 +61,7 @@ const DATA_DOMAIN: MenuItem = {
   businessKey: 'domain.data',
   children: [
     { path: '/data/industry', label: '板块动向', icon: ARTDECO_ICONS.CONCEPT, businessKey: 'data.industry' },
+    { path: '/data/indicator', label: '指标分析', icon: 'Indicator', businessKey: 'data.indicator' },
     { path: '/data/concept', label: '概念动向', icon: ARTDECO_ICONS.CONCEPT, businessKey: 'data.concept' },
     { path: '/data/fund-flow', label: '资金流向', icon: ARTDECO_ICONS.FLOW, businessKey: 'data.fundflow' }
   ]
@@ -116,6 +117,7 @@ const RISK_DOMAIN: MenuItem = {
   icon: ARTDECO_ICONS.RISK,
   businessKey: 'domain.risk',
   children: [
+    { path: '/risk/management', label: '风险管理中心', icon: ARTDECO_ICONS.RISK, businessKey: 'risk.management' },
     { path: '/risk/overview', label: '风险概览', icon: ARTDECO_ICONS.RISK, businessKey: 'risk.overview' },
     { path: '/risk/pnl', label: '组合盈亏', icon: 'Indicator', businessKey: 'risk.pnl' },
     { path: '/risk/stop-loss', label: '止损雷达', icon: 'PositionRisk', businessKey: 'risk.stoploss' },

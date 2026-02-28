@@ -95,8 +95,8 @@
 
             &:hover {
                 border-color: var(--artdeco-gold-primary);
-                background: rgb(212 175 55 / 5%);
-                box-shadow: 0 0 10px rgb(212 175 55 / 20%);
+                background: var(--artdeco-gold-opacity-05);
+                box-shadow: 0 0 10px var(--artdeco-gold-opacity-20);
             }
 
             &:active {
@@ -110,7 +110,7 @@
                 box-shadow:
                     0 0 0 2px var(--artdeco-bg-global),
                     0 0 0 4px var(--artdeco-gold-primary),
-                    0 0 12px rgb(212 175 55 / 40%);
+                    0 0 12px var(--artdeco-gold-opacity-40);
             }
 
             .language-flag {
@@ -156,12 +156,12 @@
             transition: all var(--artdeco-transition-fast);
 
             &:hover {
-                background: rgb(212 175 55 / 10%);
+                background: var(--artdeco-gold-opacity-10);
                 color: var(--artdeco-gold-primary);
             }
 
             &.is-active {
-                background: rgb(212 175 55 / 15%);
+                background: var(--artdeco-gold-opacity-15);
                 color: var(--artdeco-gold-primary);
                 font-weight: 600;
             }

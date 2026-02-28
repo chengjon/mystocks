@@ -246,14 +246,14 @@
 
         &:hover {
             color: var(--artdeco-breadcrumb-text-hover);
-            text-shadow: 0 0 10px rgb(212 175 55 / 30%);
+            text-shadow: 0 0 10px color-mix(in srgb, var(--artdeco-gold-primary) 30%, transparent);
         }
 
         &--active {
             color: var(--artdeco-breadcrumb-text-active);
             font-weight: var(--artdeco-font-weight-bold);
             cursor: default;
-            text-shadow: 0 0 15px rgb(212 175 55 / 40%);
+            text-shadow: 0 0 15px color-mix(in srgb, var(--artdeco-gold-primary) 40%, transparent);
         }
     }
 
@@ -343,8 +343,8 @@
     /* 打印样式 */
     @media print {
         .artdeco-breadcrumb {
-            background: white;
-            border-bottom: 1px solid #000;
+            background: var(--artdeco-bg-card);
+            border-bottom: 1px solid currentColor;
 
             .breadcrumb-decoration,
             .breadcrumb-separator-line,
@@ -354,7 +354,7 @@
         }
 
         .breadcrumb-link {
-            color: #000;
+            color: var(--artdeco-fg-primary);
         }
     }
 

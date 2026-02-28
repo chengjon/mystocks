@@ -15,15 +15,17 @@ module.exports = {
 
       // 使用 npm run preview (vite preview) - 符合Vite最佳实践
       script: 'npm',
-      args: 'run preview -- --port 3001 --host',
+      args: `run preview -- --port ${process.env.FRONTEND_PORT || 3020} --host 0.0.0.0 --strictPort`,
 
       cwd: '/opt/claude/mystocks_spec/web/frontend',
 
       // 环境变量
       env: {
         NODE_ENV: 'production',
-        PORT: 3001,
-        VITE_API_BASE_URL: process.env.VITE_API_BASE_URL || 'http://localhost:8000'
+        PORT: process.env.FRONTEND_PORT || 3020,
+        FRONTEND_PORT: process.env.FRONTEND_PORT || 3020,
+        BACKEND_PORT: process.env.BACKEND_PORT || 8020,
+        VITE_API_BASE_URL: process.env.VITE_API_BASE_URL || `http://localhost:${process.env.BACKEND_PORT || 8020}`
       },
 
       // 实例配置

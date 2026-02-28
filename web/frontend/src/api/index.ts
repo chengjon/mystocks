@@ -19,6 +19,9 @@ import type {
 } from './types/common'
 import type { LoginResponse } from './types/admin'
 
+// Legacy compatibility export for modules still importing `request` from this entry.
+export const request = apiClient
+
 // --- Auth API (v1 compatible) ---
 export const authApi = {
   login: (username: string, password: string): Promise<UnifiedResponse<LoginResponse>> => {
@@ -51,6 +54,8 @@ export const marketApi = {
 
 // --- Monitoring API (v1 compatible) ---
 export const monitoringApi = {
+  getSystemHealth: (): Promise<UnifiedResponse<any>> => apiClient.get('/health'),
+  getDetailedSystemHealth: (): Promise<UnifiedResponse<any>> => apiClient.get('/health/detailed'),
   getAlertRules: (): Promise<UnifiedResponse<AlertRuleResponse[]>> => apiClient.get('/v1/monitoring/alert-rules'),
   getAlerts: (params: any): Promise<UnifiedResponse<AlertRecordResponse[]>> => apiClient.get('/v1/monitoring/alerts', { params }),
   createAlertRule: (data: any): Promise<UnifiedResponse<AlertRuleResponse>> => apiClient.post('/v1/monitoring/alert-rules', data),

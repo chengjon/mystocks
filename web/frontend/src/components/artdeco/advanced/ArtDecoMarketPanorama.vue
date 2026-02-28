@@ -73,7 +73,7 @@ const {
     padding: 20px;
     .activity-bar {
         height: 6px;
-        background: rgb(212 175 55 / 10%);
+        background: var(--artdeco-gold-opacity-10);
         margin-top: 15px;
         .fill {
           height: 100%;

@@ -133,5 +133,5 @@
 </script>
 
 <style scoped lang="scss">
-@import "./styles/ArtDecoMechanicalSwitch.scss";
+@import "./styles/ArtDecoMechanicalSwitch";
 </style>

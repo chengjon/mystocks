@@ -201,12 +201,14 @@
                         smooth: true,
                         showSymbol: false,
                         lineStyle: {
-                            color: props.strategy.total_return >= 0 ? '#FF5252' : '#00E676',
+                            color: props.strategy.total_return >= 0 ? 'var(--artdeco-up)' : 'var(--artdeco-down)',
                             width: 2
                         },
                         areaStyle: {
                             color:
-                                props.strategy.total_return >= 0 ? 'rgb(255 82 82 / 10%)' : 'rgb(0 230 118 / 10%)'
+                                props.strategy.total_return >= 0
+                                    ? 'color-mix(in srgb, var(--artdeco-up) 10%, transparent)'
+                                    : 'color-mix(in srgb, var(--artdeco-down) 10%, transparent)'
                         }
                     }
                 ]
@@ -236,7 +238,7 @@
 
     .artdeco-strategy-card {
       background: var(--artdeco-bg-card);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       padding: var(--artdeco-spacing-4);
       position: relative;
       overflow: hidden;
@@ -374,11 +376,11 @@
     }
 
     .item-value.profit-down {
-      color: var(--artdeco-fall);
+      color: var(--artdeco-down);
     }
 
     .item-value.blue-glow {
-      color: #60A5FA;
+      color: var(--artdeco-info);
     }
 
     /* Strategy chart */
@@ -386,7 +388,7 @@
       height: 100px;
       margin-top: var(--artdeco-spacing-3);
       padding-top: var(--artdeco-spacing-3);
-      border-top: 1px solid rgb(212 175 55 / 10%);
+      border-top: 1px solid var(--artdeco-gold-opacity-10);
     }
 
     .strategy-chart canvas {
@@ -400,13 +402,13 @@
       gap: var(--artdeco-spacing-2);
       flex-wrap: wrap;
       padding-top: var(--artdeco-spacing-3);
-      border-top: 1px solid rgb(212 175 55 / 10%);
+      border-top: 1px solid var(--artdeco-gold-opacity-10);
     }
 
     .artdeco-btn-mini {
       flex: 1;
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       background: var(--artdeco-bg-primary);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-display);
@@ -439,8 +441,8 @@
     }
 
     .artdeco-btn-mini.artdeco-btn-fall:hover:not(:disabled) {
-      border-color: var(--artdeco-fall);
-      color: var(--artdeco-fall);
+      border-color: var(--artdeco-down);
+      color: var(--artdeco-down);
     }
 
     /* Compact variant */

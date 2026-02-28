@@ -5,14 +5,12 @@ Backtest Service
 
 import json
 import logging
-import queue
 import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from typing import Any, Dict, List
 
 import numpy as np
-import pandas as pd
 
 from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
 from src.gpu.api_system.utils.monitoring import MetricsCollector
@@ -44,7 +42,6 @@ except ImportError:
         HistoryResponse,
         BatchRequest,
         BatchResponse,
-        PerformanceMetrics,
         ParameterOptimizationRequest,
         OptimizationResult,
     )

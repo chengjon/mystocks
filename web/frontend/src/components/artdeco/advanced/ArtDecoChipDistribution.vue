@@ -483,5 +483,5 @@
 </script>
 
 <style scoped lang="scss">
-@import './styles/ArtDecoChipDistribution.scss';
+@import './styles/ArtDecoChipDistribution';
 </style>

@@ -18,9 +18,20 @@ def main():
 
     os.chdir(backend_dir)
 
-    cmd = [sys.executable, "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    backend_port = os.environ.get("BACKEND_PORT", "8020")
+    cmd = [
+        sys.executable,
+        "-m",
+        "uvicorn",
+        "app.main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        backend_port,
+        "--reload",
+    ]
 
-    print(f"🚀 Starting MyStocks backend on port 8000...")
+    print(f"🚀 Starting MyStocks backend on port {backend_port}...")
     print(f"📁 Project root: {project_root}")
     print(f"📁 Backend dir: {backend_dir}")
     print(f"🐍 Python path: {os.environ.get('PYTHONPATH')}")

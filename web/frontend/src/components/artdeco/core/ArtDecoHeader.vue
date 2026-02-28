@@ -56,7 +56,7 @@
     }
 
     .header-title {
-        font-family: var(--font-display);
+        font-family: var(--artdeco-font-display);
         font-size: var(--artdeco-text-xl);
         font-weight: 700;
         color: var(--artdeco-gold-primary);
@@ -66,7 +66,7 @@
     }
 
     .logo {
-        font-family: var(--font-display);
+        font-family: var(--artdeco-font-display);
         font-size: var(--artdeco-text-lg);
         font-weight: 700;
         color: var(--artdeco-gold-primary);
@@ -74,7 +74,7 @@
     }
 
     .header-subtitle {
-        font-family: var(--font-body);
+        font-family: var(--artdeco-font-body);
         font-size: var(--artdeco-text-sm);
         color: var(--artdeco-fg-muted);
         margin: 0;
@@ -91,7 +91,7 @@
         align-items: center;
         gap: var(--artdeco-spacing-2);
         padding: var(--artdeco-spacing-1) var(--artdeco-spacing-3);
-        background: rgba(212, 175, 55, 0.05);
+        background: var(--artdeco-gold-opacity-05);
         border: 1px solid var(--artdeco-border-default);
     }
 
@@ -103,7 +103,7 @@
     }
 
     .status-text {
-        font-family: var(--font-mono);
+        font-family: var(--artdeco-font-mono);
         font-size: var(--artdeco-text-xs);
         color: var(--artdeco-gold-primary);
         text-transform: uppercase;

@@ -445,5 +445,5 @@ const { loading, activeTab, watchlists, selectedWatchlist, watchlistStocks, port
 </script>
 
 <style scoped lang="scss">
-@import './styles/PortfolioManagement.scss';
+@import './styles/PortfolioManagement';
 </style>

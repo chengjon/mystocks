@@ -1,0 +1,459 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1772267442442,
+  "projectRoot": "/opt/claude/mystocks_spec",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "Python",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "pyproject.toml",
+          "requirements.txt"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "react",
+        "version": "19.2.3",
+        "category": "frontend"
+      },
+      {
+        "name": "@playwright/test",
+        "version": "1.57.0",
+        "category": "testing"
+      },
+      {
+        "name": "vite",
+        "version": "7.3.1",
+        "category": "build"
+      },
+      {
+        "name": "vitest",
+        "version": "4.0.15",
+        "category": "testing"
+      },
+      {
+        "name": "fastapi",
+        "version": null,
+        "category": "backend"
+      },
+      {
+        "name": "pytest",
+        "version": null,
+        "category": "testing"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": "pytest",
+    "lintCommand": "ruff check",
+    "devCommand": null,
+    "scripts": {
+      "verify:web-access": "cd web/frontend && npm run verify:web-access"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": "*.spec.ts",
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "docs",
+      "scripts",
+      "src",
+      "tests"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "__pycache__": {
+      "path": "__pycache__",
+      "purpose": null,
+      "fileCount": 23,
+      "lastAccessed": 1772267442417,
+      "keyFiles": [
+        "__init__.cpython-312.pyc",
+        "conftest.cpython-312-pytest-9.0.2.pyc",
+        "conftest.cpython-312.pyc",
+        "core.cpython-312.pyc",
+        "data_access.cpython-312.pyc"
+      ]
+    },
+    "architecture": {
+      "path": "architecture",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1772267442417,
+      "keyFiles": [
+        "DOMAIN_BOUNDARIES.md",
+        "INDEX.md",
+        "STANDARDS.md"
+      ]
+    },
+    "archived": {
+      "path": "archived",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1772267442423,
+      "keyFiles": [
+        "INDEX.md",
+        "archive_INDEX.md"
+      ]
+    },
+    "backups": {
+      "path": "backups",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1772267442424,
+      "keyFiles": []
+    },
+    "config": {
+      "path": "config",
+      "purpose": "Configuration files",
+      "fileCount": 92,
+      "lastAccessed": 1772267442426,
+      "keyFiles": [
+        "DATA_SOURCES_SPLIT_PLAN.md",
+        "TDX目录规则 .md",
+        "__init__.py",
+        "adapter_priority_config.yaml",
+        "advanced_analysis_contract.json"
+      ]
+    },
+    "data": {
+      "path": "data",
+      "purpose": "Data files",
+      "fileCount": 1,
+      "lastAccessed": 1772267442427,
+      "keyFiles": [
+        "recovery_queue.db"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 59,
+      "lastAccessed": 1772267442428,
+      "keyFiles": [
+        "AGENTS_1.md",
+        "CLAUDE.md",
+        "CLAUDE_1.md",
+        "CODE_OPTIMIZATION_PLAN.md",
+        "CONNECTION_LEAK_ANALYSIS.md"
+      ]
+    },
+    "htmlcov": {
+      "path": "htmlcov",
+      "purpose": null,
+      "fileCount": 959,
+      "lastAccessed": 1772267442430,
+      "keyFiles": [
+        "class_index.html",
+        "coverage_html_cb_6fb7b396.js",
+        "favicon_32_cb_58284776.png",
+        "function_index.html",
+        "index.html"
+      ]
+    },
+    "logs": {
+      "path": "logs",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1772267442431,
+      "keyFiles": []
+    },
+    "monitoring-stack": {
+      "path": "monitoring-stack",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1772267442431,
+      "keyFiles": []
+    },
+    "openspec": {
+      "path": "openspec",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1772267442433,
+      "keyFiles": [
+        "AGENTS.md",
+        "OPENSPEC_CONVENTIONS.md",
+        "project.md"
+      ]
+    },
+    "reports": {
+      "path": "reports",
+      "purpose": null,
+      "fileCount": 65,
+      "lastAccessed": 1772267442433,
+      "keyFiles": [
+        "AI_Developer_Onboarding_Guide.md",
+        "ArtDeco_3.1_Upgrade_Summary.md",
+        "ArtDeco_E2E_Test_Guide.md",
+        "CACHE_PERFORMANCE_REPORT.md",
+        "FINAL_CODE_QUALITY_REPORT_20251230.md"
+      ]
+    },
+    "reviews": {
+      "path": "reviews",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1772267442434,
+      "keyFiles": [
+        "review-20260223-031831-9e70a2.md",
+        "review-20260223-202118-558dc1.md"
+      ]
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 111,
+      "lastAccessed": 1772267442434,
+      "keyFiles": [
+        "JWT_key_update.sh",
+        "LICENSE",
+        "README.md",
+        "__init__.py",
+        "ai-collaboration-setup.sh"
+      ]
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 5,
+      "lastAccessed": 1772267442435,
+      "keyFiles": [
+        "README.md",
+        "__init__.py",
+        "core.py",
+        "data_access.py",
+        "unified_manager.py"
+      ]
+    },
+    "test-results": {
+      "path": "test-results",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1772267442435,
+      "keyFiles": []
+    },
+    "tests": {
+      "path": "tests",
+      "purpose": "Test files",
+      "fileCount": 90,
+      "lastAccessed": 1772267442436,
+      "keyFiles": [
+        "AGENTS.md",
+        "INDEX.md",
+        "LICENSE",
+        "README.md",
+        "__init__.py"
+      ]
+    },
+    "web": {
+      "path": "web",
+      "purpose": null,
+      "fileCount": 13,
+      "lastAccessed": 1772267442436,
+      "keyFiles": [
+        "INDEX.md",
+        "PORTS.md",
+        "README.md",
+        "TASK_MANAGEMENT.md",
+        "TASK_MANAGEMENT_SUMMARY.md"
+      ]
+    },
+    "data/models": {
+      "path": "data/models",
+      "purpose": "Data models",
+      "fileCount": 3,
+      "lastAccessed": 1772267442438,
+      "keyFiles": [
+        "sh000001_demo.pkl",
+        "test_integration.pkl",
+        "test_predictor.pkl"
+      ]
+    },
+    "monitoring-stack/config": {
+      "path": "monitoring-stack/config",
+      "purpose": "Configuration files",
+      "fileCount": 0,
+      "lastAccessed": 1772267442440,
+      "keyFiles": []
+    },
+    "src/api": {
+      "path": "src/api",
+      "purpose": "API routes",
+      "fileCount": 1,
+      "lastAccessed": 1772267442441,
+      "keyFiles": [
+        "alert_history_routes.py"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "web/frontend/src/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue",
+      "accessCount": 17,
+      "lastAccessed": 1772290588853,
+      "type": "file"
+    },
+    {
+      "path": "web/frontend/src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue",
+      "accessCount": 15,
+      "lastAccessed": 1772290602805,
+      "type": "file"
+    },
+    {
+      "path": "web/frontend/src/views/artdeco-pages/technical-tabs/TechnicalScannerTab.vue",
+      "accessCount": 11,
+      "lastAccessed": 1772290695188,
+      "type": "file"
+    },
+    {
+      "path": "web/frontend/src/views/artdeco-pages/market-tabs/MarketKLineTab.vue",
+      "accessCount": 10,
+      "lastAccessed": 1772290648500,
+      "type": "file"
+    },
+    {
+      "path": "web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+      "accessCount": 9,
+      "lastAccessed": 1772290624916,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 8,
+      "lastAccessed": 1772290567597,
+      "type": "directory"
+    },
+    {
+      "path": "web/frontend/src/views/demo/styles/Phase4Dashboard.scss",
+      "accessCount": 8,
+      "lastAccessed": 1772290695362,
+      "type": "file"
+    },
+    {
+      "path": "web/frontend/src/components/artdeco/advanced/styles/ArtDecoChipDistribution.scss",
+      "accessCount": 6,
+      "lastAccessed": 1772275476933,
+      "type": "file"
+    },
+    {
+      "path": "web/frontend/src/components/artdeco/advanced/styles",
+      "accessCount": 6,
+      "lastAccessed": 1772275488118,
+      "type": "directory"
+    },
+    {
+      "path": "web/frontend/src/views/artdeco-pages/system-tabs/SystemHealthTab.vue",
+      "accessCount": 5,
+      "lastAccessed": 1772290441164,
+      "type": "file"
+    },
+    {
+      "path": "web/frontend/src/components/artdeco/advanced/styles/ArtDecoSentimentAnalysis.scss",
+      "accessCount": 3,
+      "lastAccessed": 1772274948397,
+      "type": "file"
+    },
+    {
+      "path": "web/frontend/src/components/artdeco",
+      "accessCount": 3,
+      "lastAccessed": 1772276250859,
+      "type": "directory"
+    },
+    {
+      "path": "web/frontend/src/views/artdeco-pages",
+      "accessCount": 3,
+      "lastAccessed": 1772276250911,
+      "type": "directory"
+    },
+    {
+      "path": "web/frontend/src/components/artdeco/base",
+      "accessCount": 2,
+      "lastAccessed": 1772276213232,
+      "type": "directory"
+    },
+    {
+      "path": "web/frontend/src/components/artdeco/business",
+      "accessCount": 2,
+      "lastAccessed": 1772276213280,
+      "type": "directory"
+    },
+    {
+      "path": "web/frontend/src/components/artdeco/core",
+      "accessCount": 2,
+      "lastAccessed": 1772276213356,
+      "type": "directory"
+    },
+    {
+      "path": "web/frontend/src/components/artdeco/charts",
+      "accessCount": 2,
+      "lastAccessed": 1772276213369,
+      "type": "directory"
+    },
+    {
+      "path": "web/frontend/src/components/artdeco/trading",
+      "accessCount": 2,
+      "lastAccessed": 1772276213396,
+      "type": "directory"
+    },
+    {
+      "path": "web/frontend",
+      "accessCount": 2,
+      "lastAccessed": 1772276272121,
+      "type": "directory"
+    },
+    {
+      "path": "web/frontend/src/views/artdeco-pages/risk-tabs/RiskOverviewTab.vue",
+      "accessCount": 2,
+      "lastAccessed": 1772290440638,
+      "type": "file"
+    },
+    {
+      "path": "web/frontend/src/views",
+      "accessCount": 1,
+      "lastAccessed": 1772276230389,
+      "type": "directory"
+    },
+    {
+      "path": "web/frontend/src/styles",
+      "accessCount": 1,
+      "lastAccessed": 1772276230452,
+      "type": "directory"
+    },
+    {
+      "path": "web/frontend/src",
+      "accessCount": 1,
+      "lastAccessed": 1772276261287,
+      "type": "directory"
+    },
+    {
+      "path": "web/frontend/src/views/Phase4Dashboard.vue",
+      "accessCount": 1,
+      "lastAccessed": 1772289967041,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

@@ -1,14 +1,14 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "enabled_providers": [
+    "opencode",
     "cpap",
     "cpap-oai",
     "cpap-claude",
-    "cpap-gemini",
     "cpap-mini"
   ],
-  "model": "cpap-claude/kiro-claude-opus-4-6",
-  "small_model": "cpap-gemini/gemini-3-pro-preview",
+  "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/main.model}",
+  "small_model": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/small.model}",
   "permission": {
     "*": "allow"
   },
@@ -21,48 +21,112 @@
       "npm": "@ai-sdk/openai-compatible",
       "name": "cpap",
       "options": {
-        "baseURL": "https://johncpa.zeabur.app/v1",
+        "baseURL": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/cpap.base_url}",
         "apiKey": "{file:~/.config/opencode/secrets/cliproxyapi_api_key}",
         "timeout": 300000
       },
       "models": {
-        "kimi-k2.5": {
-          "name": "Kimi K2.5",
-          "thinking": true,
-          "attachment": true,
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "limit": {
-            "context": 262144,
-            "output": 32768
-          }
+        "qwen3-235b-a22b-thinking-2507": {
+          "name": "qwen3-235b-a22b-thinking-2507",
+          "thinking": true
         },
-        "glm-5": {
-          "name": "GLM-5",
-          "thinking": true,
-          "attachment": true,
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "limit": {
-            "context": 204800,
-            "output": 131072
-          }
+        "qwen3-vl-plus": {
+          "name": "qwen3-vl-plus",
+          "attachment": true
+        },
+        "qwen3-235b-a22b-instruct": {
+          "name": "qwen3-235b-a22b-instruct"
+        },
+        "grok-4-thinking": {
+          "name": "grok-4-thinking",
+          "thinking": true
+        },
+        "grok-3": {
+          "name": "grok-3"
+        },
+        "qwen3-coder-plus": {
+          "name": "qwen3-coder-plus"
+        },
+        "qwen-3.5-397B": {
+          "name": "qwen-3.5-397B"
+        },
+        "grok-imagine-1.0-edit": {
+          "name": "grok-imagine-1.0-edit",
+          "attachment": true
+        },
+        "grok-4.20-beta": {
+          "name": "grok-4.20-beta"
+        },
+        "qwen3-max": {
+          "name": "qwen3-max"
+        },
+        "grok-4": {
+          "name": "grok-4"
+        },
+        "deepseek-r1": {
+          "name": "deepseek-r1",
+          "thinking": true
+        },
+        "grok-imagine-1.0": {
+          "name": "grok-imagine-1.0",
+          "attachment": true
+        },
+        "qwen3-235b": {
+          "name": "qwen3-235b"
+        },
+        "grok-4-heavy": {
+          "name": "grok-4-heavy"
+        },
+        "glm-4.6": {
+          "name": "glm-4.6"
+        },
+        "grok-4-mini": {
+          "name": "grok-4-mini"
+        },
+        "zai-org/GLM-5-FP8": {
+          "name": "zai-org/GLM-5-FP8"
+        },
+        "grok-imagine-1.0-video": {
+          "name": "grok-imagine-1.0-video",
+          "attachment": true
+        },
+        "qwen3-max-preview": {
+          "name": "qwen3-max-preview"
+        },
+        "kimi-k2-0905": {
+          "name": "kimi-k2-0905"
+        },
+        "qwen3-32b": {
+          "name": "qwen3-32b"
+        },
+        "deepseek-v3": {
+          "name": "deepseek-v3"
+        },
+        "grok-4.1-expert": {
+          "name": "grok-4.1-expert"
+        },
+        "kimi-k2": {
+          "name": "kimi-k2"
+        },
+        "grok-3-thinking": {
+          "name": "grok-3-thinking",
+          "thinking": true
+        },
+        "grok-4.1-fast": {
+          "name": "grok-4.1-fast"
+        },
+        "deepseek-v3.2": {
+          "name": "deepseek-v3.2"
+        },
+        "grok-4.1-thinking": {
+          "name": "grok-4.1-thinking",
+          "thinking": true
+        },
+        "grok-4.1-mini": {
+          "name": "grok-4.1-mini"
+        },
+        "grok-3-mini": {
+          "name": "grok-3-mini"
         }
       }
     },
@@ -70,19 +134,57 @@
       "npm": "@ai-sdk/openai",
       "name": "cpap-oai",
       "options": {
-        "baseURL": "https://johncpa.zeabur.app/v1",
+        "baseURL": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/cpap.base_url}",
         "apiKey": "{file:~/.config/opencode/secrets/cliproxyapi_api_key}",
-        "setCacheKey": true,
-        "timeout": 300000
+        "timeout": 300000,
+        "setCacheKey": true
       },
       "models": {
-        "kiro-gpt-4-turbo": {
-          "name": "Kiro GPT-4 Turbo",
-          "thinking": false,
-          "limit": {
-            "context": 128000,
-            "output": 4096
-          }
+        "gpt-5.1-codex": {
+          "name": "gpt-5.1-codex",
+          "thinking": true
+        },
+        "gpt-5.3": {
+          "name": "gpt-5.3"
+        },
+        "gpt-5.3-codex": {
+          "name": "gpt-5.3-codex",
+          "thinking": true
+        },
+        "gpt-4o": {
+          "name": "gpt-4o"
+        },
+        "gpt-5": {
+          "name": "gpt-5"
+        },
+        "gpt-5-codex": {
+          "name": "gpt-5-codex",
+          "thinking": true
+        },
+        "gpt-5.2-codex": {
+          "name": "gpt-5.2-codex",
+          "thinking": true
+        },
+        "gpt-5.1-codex-mini": {
+          "name": "gpt-5.1-codex-mini",
+          "thinking": true
+        },
+        "gpt-5.1-codex-max": {
+          "name": "gpt-5.1-codex-max",
+          "thinking": true
+        },
+        "gpt-5.1": {
+          "name": "gpt-5.1"
+        },
+        "gpt-5-codex-mini": {
+          "name": "gpt-5-codex-mini",
+          "thinking": true
+        },
+        "gpt-5.2": {
+          "name": "gpt-5.2"
+        },
+        "gpt-3.5": {
+          "name": "gpt-3.5"
         }
       }
     },
@@ -90,175 +192,34 @@
       "npm": "@ai-sdk/anthropic",
       "name": "cpap-claude",
       "options": {
-        "baseURL": "https://johncpa.zeabur.app/v1",
+        "baseURL": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/cpap.base_url}",
         "apiKey": "{file:~/.config/opencode/secrets/cliproxyapi_api_key}",
         "timeout": 300000
       },
       "models": {
-        "kiro-claude-opus-4-6": {
-          "name": "Kiro Claude Opus 4.6",
-          "thinking": true,
-          "attachment": true,
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "options": {
-            "thinking": {
-              "type": "enabled",
-              "budgetTokens": 32768
-            }
-          },
-          "limit": {
-            "context": 200000,
-            "output": 64000
-          },
-          "cost": {
-            "input": 5,
-            "output": 25,
-            "cache_read": 0.5,
-            "cache_write": 6.25
-          },
-          "variants": {
-            "none": {
-              "thinking": {
-                "type": "disabled"
-              }
-            },
-            "low": {
-              "thinking": {
-                "budgetTokens": 4000
-              }
-            },
-            "medium": {
-              "thinking": {
-                "budgetTokens": 8000
-              }
-            },
-            "high": {
-              "thinking": {
-                "budgetTokens": 16000
-              }
-            },
-            "max": {
-              "thinking": {
-                "budgetTokens": 32000
-              }
-            }
-          }
+        "claude-haiku-4-5": {
+          "name": "claude-haiku-4-5"
         },
-        "kiro-claude-opus-4-6-agentic": {
-          "name": "Kiro Claude Opus 4.6 Agentic",
-          "thinking": true,
-          "attachment": true,
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "options": {
-            "thinking": {
-              "type": "enabled",
-              "budgetTokens": 32768
-            }
-          },
-          "limit": {
-            "context": 200000,
-            "output": 64000
-          },
-          "cost": {
-            "input": 5,
-            "output": 25,
-            "cache_read": 0.5,
-            "cache_write": 6.25
-          },
-          "variants": {
-            "none": {
-              "thinking": {
-                "type": "disabled"
-              }
-            },
-            "low": {
-              "thinking": {
-                "budgetTokens": 4000
-              }
-            },
-            "medium": {
-              "thinking": {
-                "budgetTokens": 8000
-              }
-            },
-            "high": {
-              "thinking": {
-                "budgetTokens": 16000
-              }
-            },
-            "max": {
-              "thinking": {
-                "budgetTokens": 32000
-              }
-            }
-          }
-        }
-      }
-    },
-    "cpap-gemini": {
-      "npm": "@ai-sdk/google",
-      "name": "cpap-gemini",
-      "options": {
-        "baseURL": "https://johncpa.zeabur.app/v1beta",
-        "apiKey": "{file:~/.config/opencode/secrets/cliproxyapi_api_key}",
-        "timeout": 300000
-      },
-      "models": {
-        "gemini-3-pro-preview": {
-          "name": "Gemini 3 Pro Preview",
-          "thinking": true,
-          "attachment": true,
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          }
+        "claude-opus-4-5": {
+          "name": "claude-opus-4-5"
         },
-        "gemini-3-flash-preview": {
-          "name": "Gemini 3 Flash Preview",
-          "thinking": true,
-          "attachment": true,
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          }
+        "claude-opus-4-6": {
+          "name": "claude-opus-4-6"
+        },
+        "claude-3-7-sonnet": {
+          "name": "claude-3-7-sonnet"
+        },
+        "claude-haiku-4-5-20251001": {
+          "name": "claude-haiku-4-5-20251001"
+        },
+        "claude-4.5": {
+          "name": "claude-4.5"
+        },
+        "claude-sonnet-4-6": {
+          "name": "claude-sonnet-4-6"
+        },
+        "claude-sonnet-4-5": {
+          "name": "claude-sonnet-4-5"
         }
       }
     },
@@ -266,29 +227,16 @@
       "npm": "@ai-sdk/openai-compatible",
       "name": "cpap-mini",
       "options": {
-        "baseURL": "https://johncpa.zeabur.app/v1",
+        "baseURL": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/cpap.base_url}",
         "apiKey": "{file:~/.config/opencode/secrets/cliproxyapi_api_key}",
         "timeout": 300000
       },
       "models": {
-        "minimax-m2.5": {
-          "name": "Minimax M2.5",
-          "thinking": true,
-          "attachment": true,
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "limit": {
-            "context": 204800,
-            "output": 131072
-          }
+        "MiniMax 2.5": {
+          "name": "MiniMax 2.5"
+        },
+        "MiniMax M2.5-hignspeed": {
+          "name": "MiniMax M2.5-hignspeed"
         }
       }
     }
@@ -340,7 +288,7 @@
   "oh_my_opencode": {
     "agents": {
       "sisyphus": {
-        "model": "cpap-claude/kiro-claude-opus-4-6",
+        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.sisyphus.model}",
         "description": "主协调器 - 整体任务规划和编排，深度推理",
         "capabilities": [
           "task_planning",
@@ -350,7 +298,7 @@
         ]
       },
       "oracle": {
-        "model": "cpap-claude/kiro-claude-opus-4-6",
+        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.oracle.model}",
         "description": "架构师 - 架构设计、代码审查、策略分析",
         "capabilities": [
           "architecture_design",
@@ -360,7 +308,7 @@
         ]
       },
       "librarian": {
-        "model": "cpap-claude/kiro-claude-opus-4-6-agentic",
+        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.librarian.model}",
         "description": "研究员 - 多仓库分析、文档查找、实现示例研究",
         "capabilities": [
           "multi_repo_analysis",
@@ -370,7 +318,7 @@
         ]
       },
       "explore": {
-        "model": "cpap-gemini/gemini-3-pro-preview",
+        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.explore.model}",
         "description": "探索者 - 快速代码库探索和模式匹配",
         "capabilities": [
           "quick_exploration",
@@ -380,7 +328,7 @@
         ]
       },
       "frontend": {
-        "model": "cpap-claude/kiro-claude-opus-4-6",
+        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.frontend.model}",
         "description": "Frontend UI/UX - 构建精美前端界面",
         "capabilities": [
           "ui_design",
@@ -390,7 +338,7 @@
         ]
       },
       "document_writer": {
-        "model": "cpap/kimi-k2.5",
+        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.document_writer.model}",
         "description": "Document Writer - 撰写技术文档",
         "capabilities": [
           "technical_writing",
@@ -400,7 +348,7 @@
         ]
       },
       "multimodal_looker": {
-        "model": "cpap-mini/minimax-m2.5",
+        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.multimodal_looker.model}",
         "description": "Multimodal Looker - 分析 PDF、图像和图表",
         "capabilities": [
           "pdf_analysis",
@@ -412,18 +360,24 @@
     },
     "background_task": {
       "providerConcurrency": {
+        "opencode": 12,
         "cpap": 8,
-        "cpap-oai": 5,
-        "cpap-claude": 5,
-        "cpap-gemini": 5,
-        "cpap-mini": 5
+        "cpap-oai": 4,
+        "cpap-claude": 4,
+        "cpap-mini": 6
       },
       "modelConcurrency": {
-        "cpap-claude/kiro-claude-opus-4-6": 3,
-        "cpap/kimi-k2.5": 8,
-        "cpap-claude/kiro-claude-opus-4-6-agentic": 3,
-        "cpap-gemini/gemini-3-pro-preview": 10,
-        "cpap-mini/minimax-m2.5": 5
+        "opencode/glm-4.7-free": 10,
+        "opencode/kimi-k2.5-free": 10,
+        "opencode/minimax-m2.1-free": 10,
+        "opencode/gpt-5-nano": 10,
+        "opencode/trinity-large-preview-free": 10,
+        "cpap-claude/claude-opus-4-5": 2,
+        "cpap-claude/claude-opus-4-6": 2,
+        "cpap-oai/gpt-5.3": 2,
+        "cpap-oai/gpt-5.3-codex": 2,
+        "cpap/grok-4-heavy": 2,
+        "cpap/grok-4.20-beta": 2
       }
     },
     "ralph_loop": {

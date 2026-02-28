@@ -347,5 +347,5 @@ const { props, chartType, analysisType, showInflectionPoints, showTrend, predict
 </script>
 
 <style scoped lang="scss">
-@import './styles/ArtDecoTimeSeriesAnalysis.scss';
+@import './styles/ArtDecoTimeSeriesAnalysis';
 </style>

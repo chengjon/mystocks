@@ -107,21 +107,21 @@ onUnmounted(() => {
         border-radius: 0; // ArtDeco风格：直角
         text-decoration: none;
         white-space: nowrap;
-        box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
+        box-shadow: var(--artdeco-shadow-lg);
         transition: all var(--artdeco-transition-normal) var(--artdeco-ease-out);
 
         // 焦点时显示（键盘导航）
         &:focus {
             top: var(--artdeco-spacing-md); // 从顶部滑入
             outline: none;
-            box-shadow: 0 0 0 4px rgb(212 175 55 / 30%);
+            box-shadow: 0 0 0 4px var(--artdeco-gold-opacity-30);
         }
 
         // 悬停效果
         &:hover {
             background: var(--skip-link-focus);
             transform: translateX(-50%) translateY(-2px);
-            box-shadow: 0 6px 16px rgb(212 175 55 / 40%);
+            box-shadow: 0 6px 16px var(--artdeco-gold-opacity-40);
         }
 
         // 激活状态

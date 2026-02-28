@@ -146,8 +146,8 @@
             { label: 'ALL', value: 'all' }
         ],
         height: 400,
-        lineColor: '#D4AF37',
-        fillColor: 'rgb(212 175 55 / 10%)'
+        lineColor: 'var(--artdeco-gold-primary)',
+        fillColor: 'var(--artdeco-gold-opacity-10)'
     })
 
     const emit = defineEmits<{
@@ -232,7 +232,7 @@
             height - padding.bottom - ((value - minValue) / valueRange) * (height - padding.top - padding.bottom)
 
         // 绘制网格线
-        ctx.strokeStyle = 'rgb(212 175 55 / 10%)'
+        ctx.strokeStyle = 'var(--artdeco-gold-opacity-10)'
         ctx.lineWidth = 1
         for (let i = 0; i <= 5; i++) {
             const y = padding.top + (i / 5) * (height - padding.top - padding.bottom)
@@ -265,7 +265,7 @@
         ctx.stroke()
 
         // 绘制Y轴标签
-        ctx.fillStyle = '#D4AF37'
+        ctx.fillStyle = 'var(--artdeco-gold-primary)'
         ctx.font = '11px "IBM Plex Mono"'
         ctx.textAlign = 'right'
         for (let i = 0; i <= 5; i++) {
@@ -405,5 +405,5 @@
 </script>
 
 <style scoped lang="scss">
-@import "./styles/TimeSeriesChart.scss";
+@import "./styles/TimeSeriesChart";
 </style>

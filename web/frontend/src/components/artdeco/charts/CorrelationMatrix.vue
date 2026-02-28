@@ -198,13 +198,14 @@
         // 红色表示负相关，绿色表示正相关，透明度表示强度
         const absValue = Math.abs(value)
         const opacity = 0.1 + absValue * 0.9 // 0.1 to 1.0
+        const colorStrength = `${(opacity * 100).toFixed(1)}%`
 
         if (value > 0) {
             // 正相关 - 绿色
-            return `rgba(0, 230, 118, ${opacity})`
+            return `color-mix(in srgb, var(--artdeco-rise) ${colorStrength}, transparent)`
         } else {
             // 负相关 - 红色
-            return `rgba(255, 82, 82, ${opacity})`
+            return `color-mix(in srgb, var(--artdeco-fall) ${colorStrength}, transparent)`
         }
     }
 
@@ -291,5 +292,5 @@
 </script>
 
 <style scoped lang="scss">
-@import "./styles/CorrelationMatrix.scss";
+@import "./styles/CorrelationMatrix";
 </style>

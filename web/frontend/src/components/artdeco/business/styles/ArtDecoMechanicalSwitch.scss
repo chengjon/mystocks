@@ -57,7 +57,7 @@
         position: relative;
         width: 100%;
         height: 64px;
-        border: 2px solid rgb(212 175 55 / 20%);
+        border: 2px solid var(--artdeco-gold-opacity-20);
         background: var(--artdeco-bg-card);
         box-sizing: border-box;
         transition: all var(--artdeco-transition-base);
@@ -71,9 +71,9 @@
             height: calc(100% - 8px);
             background: radial-gradient(
                 circle at center,
-                rgb(212 175 55 / 15%) 0%,
-                rgb(212 175 55 / 0%) 20%,
-                rgb(212 175 55 / 0%)
+                var(--artdeco-gold-opacity-15) 0%,
+                color-mix(in srgb, var(--artdeco-gold-primary) 0%, transparent) 20%,
+                color-mix(in srgb, var(--artdeco-gold-primary) 0%, transparent)
             );
             border-radius: 4px;
             z-index: -1;
@@ -177,7 +177,7 @@
             background: radial-gradient(
                 circle at center,
                 var(--artdeco-gold-light) 0%,
-                rgb(212 175 55 / 0%) 30%,
+                color-mix(in srgb, var(--artdeco-gold-primary) 0%, transparent) 30%,
                 transparent
             );
             z-index: 0;
@@ -266,7 +266,7 @@
             background: radial-gradient(
                 circle at center,
                 var(--artdeco-gold-light) 0%,
-                rgb(212 175 55 / 0%) 20%,
+                color-mix(in srgb, var(--artdeco-gold-primary) 0%, transparent) 20%,
                 transparent
             );
             z-index: 3;
@@ -365,7 +365,7 @@
             width: 1px;
             height: 100%;
             background: var(--artdeco-accent-gold);
-            box-shadow: 0 0 2px rgb(212 175 55 / 20%);
+            box-shadow: 0 0 2px var(--artdeco-gold-opacity-20);
         }
 
         &--left {
@@ -408,7 +408,7 @@
     @keyframes thumb-glow {
         0%,
         100% {
-            box-shadow: 0 0 8px rgb(202 175 55 / 20%);
+            box-shadow: 0 0 8px var(--artdeco-gold-opacity-20);
         }
 
     }

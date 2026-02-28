@@ -119,7 +119,7 @@
                                 right: 0;
                                 height: 2px;
                                 background: linear-gradient(90deg, transparent, var(--artdeco-up), transparent);
-                                box-shadow: 0 0 10px rgb(34 197 94 / 50%);
+                                box-shadow: 0 0 10px color-mix(in srgb, var(--artdeco-up) 50%, transparent);
                             }
 
                             .price-label {
@@ -144,7 +144,7 @@
                             left: 0;
                             display: flex;
                             gap: var(--artdeco-spacing-4);
-                            background: rgb(0 0 0 / 80%);
+                            background: color-mix(in srgb, var(--artdeco-bg-dark) 80%, transparent);
                             padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
                             border-radius: 6px;
                             backdrop-filter: blur(10px);
@@ -162,14 +162,14 @@
                                     border-radius: 2px;
 
                                     &.profit {
-                                        background: linear-gradient(135deg, var(--artdeco-up), rgb(34 197 94 / 60%));
+                                        background: linear-gradient(135deg, var(--artdeco-up), color-mix(in srgb, var(--artdeco-up) 60%, transparent));
                                     }
 
                                     &.loss {
                                         background: linear-gradient(
                                             135deg,
                                             var(--artdeco-down),
-                                            rgb(239 68 68 / 60%)
+                                            color-mix(in srgb, var(--artdeco-down) 60%, transparent)
                                         );
                                     }
 
@@ -177,7 +177,7 @@
                                         background: linear-gradient(
                                             135deg,
                                             var(--artdeco-gold-primary),
-                                            rgb(212 175 55 / 60%)
+                                            color-mix(in srgb, var(--artdeco-warning) 60%, transparent)
                                         );
                                     }
                                 }
@@ -258,7 +258,7 @@
 
                         &:hover {
                             border-color: var(--artdeco-gold-primary);
-                            box-shadow: 0 0 15px rgb(212 175 55 / 10%);
+                            box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
                         }
 
                         &.cost-zone {
@@ -315,18 +315,18 @@
                                 }
 
                                 &.profit-fill {
-                                    background: linear-gradient(90deg, var(--artdeco-up), rgb(34 197 94 / 60%));
+                                    background: linear-gradient(90deg, var(--artdeco-up), color-mix(in srgb, var(--artdeco-up) 60%, transparent));
                                 }
 
                                 &.loss-fill {
-                                    background: linear-gradient(90deg, var(--artdeco-down), rgb(239 68 68 / 60%));
+                                    background: linear-gradient(90deg, var(--artdeco-down), color-mix(in srgb, var(--artdeco-down) 60%, transparent));
                                 }
 
                                 &.neutral-fill {
                                     background: linear-gradient(
                                         90deg,
                                         var(--artdeco-fg-muted),
-                                        rgb(156 163 175 / 60%)
+                                        color-mix(in srgb, var(--artdeco-fg-muted) 60%, transparent)
                                     );
                                 }
                             }
@@ -377,7 +377,7 @@
 
                     &:hover {
                         border-color: var(--artdeco-gold-primary);
-                        box-shadow: 0 0 15px rgb(212 175 55 / 10%);
+                        box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
                     }
 
                     .insight-icon {
@@ -521,10 +521,10 @@
                                     border-radius: 50%;
                                     background: conic-gradient(
                                         from 0deg,
-                                        rgb(239 68 68 / 20%) 0deg,
-                                        rgb(212 175 55 / 40%) 90deg,
-                                        rgb(34 197 94 / 60%) 180deg,
-                                        rgb(34 197 94 / 60%) 180deg
+                                        color-mix(in srgb, var(--artdeco-down) 20%, transparent) 0deg,
+                                        color-mix(in srgb, var(--artdeco-warning) 40%, transparent) 90deg,
+                                        color-mix(in srgb, var(--artdeco-up) 60%, transparent) 180deg,
+                                        color-mix(in srgb, var(--artdeco-up) 60%, transparent) 180deg
                                     );
 
                                     .gauge-fill {
@@ -538,8 +538,8 @@
                                             from 0deg,
                                             transparent 0deg,
                                             transparent 180deg,
-                                            rgb(34 197 94 / 80%) 180deg,
-                                            rgb(34 197 94 / 80%) 360deg
+                                            color-mix(in srgb, var(--artdeco-up) 80%, transparent) 180deg,
+                                            color-mix(in srgb, var(--artdeco-up) 80%, transparent) 360deg
                                         );
                                         clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%);
                                         transition: transform var(--artdeco-transition-base);
@@ -649,7 +649,7 @@
 
                         &:hover {
                             border-color: var(--artdeco-gold-primary);
-                            box-shadow: 0 0 15px rgb(212 175 55 / 10%);
+                            box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
                         }
 
                         .zone-header {
@@ -691,30 +691,30 @@
                                 transition: width var(--artdeco-transition-base);
 
                                 &.loss-zone-fill {
-                                    background: linear-gradient(90deg, var(--artdeco-down), rgb(239 68 68 / 60%));
+                                    background: linear-gradient(90deg, var(--artdeco-down), color-mix(in srgb, var(--artdeco-down) 60%, transparent));
                                 }
 
                                 &.small-profit-fill {
-                                    background: linear-gradient(90deg, #fbbf24, rgb(245 191 36 / 60%));
+                                    background: linear-gradient(90deg, var(--artdeco-warning), color-mix(in srgb, var(--artdeco-warning) 60%, transparent));
                                 }
 
                                 &.medium-profit-fill {
                                     background: linear-gradient(
                                         90deg,
                                         var(--artdeco-gold-primary),
-                                        rgb(212 175 55 / 60%)
+                                        color-mix(in srgb, var(--artdeco-warning) 60%, transparent)
                                     );
                                 }
 
                                 &.large-profit-fill {
-                                    background: linear-gradient(90deg, var(--artdeco-up), rgb(34 197 94 / 60%));
+                                    background: linear-gradient(90deg, var(--artdeco-up), color-mix(in srgb, var(--artdeco-up) 60%, transparent));
                                 }
 
                                 &.neutral-zone-fill {
                                     background: linear-gradient(
                                         90deg,
                                         var(--artdeco-fg-muted),
-                                        rgb(156 163 175 / 60%)
+                                        color-mix(in srgb, var(--artdeco-fg-muted) 60%, transparent)
                                     );
                                 }
                             }
@@ -812,7 +812,7 @@
                             }
 
                             &.warning {
-                                color: #f59e0b;
+                                color: var(--artdeco-warning);
                             }
 
                             &.negative {
@@ -895,10 +895,10 @@
                                     width: 8px;
                                     height: 8px;
                                     background: var(--artdeco-gold-primary);
-                                    border: 2px solid white;
+                                    border: 2px solid var(--artdeco-fg-primary);
                                     border-radius: 50%;
                                     transform: translate(-50%, -50%);
-                                    box-shadow: 0 0 6px rgb(212 175 55 / 50%);
+                                    box-shadow: 0 0 6px color-mix(in srgb, var(--artdeco-warning) 50%, transparent);
                                     transition: all var(--artdeco-transition-base);
 
                                     &:hover {
@@ -952,7 +952,7 @@
 
                         &:hover {
                             border-color: var(--artdeco-gold-primary);
-                            box-shadow: 0 0 15px rgb(212 175 55 / 10%);
+                            box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
                         }
 
                         .insight-icon {

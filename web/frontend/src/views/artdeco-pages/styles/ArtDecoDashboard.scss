@@ -53,7 +53,7 @@
         transform: translateX(-50%);
         width: 200px;
         height: 2px;
-        background: linear-gradient(90deg, transparent, #ffd700, #ffa500, #ffd700, transparent);
+        background: linear-gradient(90deg, transparent, var(--artdeco-gold-primary), var(--artdeco-bronze), var(--artdeco-gold-primary), transparent);
         box-shadow: 0 0 20px rgb(255 215 0 / 50%);
     }
 }
@@ -64,7 +64,7 @@
     align-items: center;
     margin-bottom: var(--artdeco-spacing-8);
     padding-bottom: var(--artdeco-spacing-4);
-    border-bottom: 1px solid rgb(212 175 55 / 20%);
+    border-bottom: 1px solid var(--artdeco-gold-opacity-20);
 }
 
 .header-content {
@@ -150,7 +150,7 @@
     justify-content: center;
     padding: var(--artdeco-spacing-4);
     background: var(--artdeco-bg-card);
-    border: 1px solid rgb(212 175 55 / 10%);
+    border: 1px solid var(--artdeco-gold-opacity-10);
     border-radius: var(--artdeco-radius-none);
     transition: all var(--artdeco-transition-base);
     min-height: 100px;
@@ -207,7 +207,7 @@
     display: flex;
     gap: var(--artdeco-spacing-2);
     margin-bottom: var(--artdeco-spacing-4);
-    border-bottom: 1px solid rgb(212 175 55 / 20%);
+    border-bottom: 1px solid var(--artdeco-gold-opacity-20);
     padding-bottom: var(--artdeco-spacing-2);
 }
 
@@ -261,7 +261,7 @@
     justify-content: space-between;
     padding: var(--artdeco-spacing-3);
     background: var(--artdeco-bg-card);
-    border: 1px solid rgb(212 175 55 / 10%);
+    border: 1px solid var(--artdeco-gold-opacity-10);
     border-radius: var(--artdeco-radius-none);
     transition: all var(--artdeco-transition-base);
 
@@ -341,7 +341,7 @@
     text-align: center;
     padding: var(--artdeco-spacing-4);
     background: var(--artdeco-bg-card);
-    border: 1px solid rgb(212 175 55 / 10%);
+    border: 1px solid var(--artdeco-gold-opacity-10);
     border-radius: var(--artdeco-radius-none);
 
     .stat-label {
@@ -379,7 +379,7 @@
     align-items: flex-start;
     padding: var(--artdeco-spacing-4);
     background: var(--artdeco-bg-card);
-    border: 1px solid rgb(212 175 55 / 10%);
+    border: 1px solid var(--artdeco-gold-opacity-10);
     border-radius: var(--artdeco-radius-none);
     transition: all var(--artdeco-transition-base);
     text-align: left;
@@ -443,7 +443,7 @@
     align-items: center;
     padding: var(--artdeco-spacing-6);
     background: var(--artdeco-bg-card);
-    border: 1px solid rgb(212 175 55 / 10%);
+    border: 1px solid var(--artdeco-gold-opacity-10);
     border-radius: var(--artdeco-radius-none);
     text-decoration: none;
     transition: all var(--artdeco-transition-base);
@@ -504,7 +504,7 @@
 .indicator-item {
     padding: var(--artdeco-spacing-4);
     background: var(--artdeco-bg-card);
-    border: 1px solid rgb(212 175 55 / 10%);
+    border: 1px solid var(--artdeco-gold-opacity-10);
     border-radius: var(--artdeco-radius-none);
     text-align: center;
     transition: all var(--artdeco-transition-base);
@@ -570,7 +570,7 @@
     align-items: center;
     padding: var(--artdeco-spacing-4);
     background: var(--artdeco-bg-card);
-    border: 1px solid rgb(212 175 55 / 10%);
+    border: 1px solid var(--artdeco-gold-opacity-10);
     border-radius: var(--artdeco-radius-none);
     transition: all var(--artdeco-transition-base);
 
@@ -608,53 +608,96 @@
         }
 
         &.warning {
-            background: rgb(212 175 55 / 10%);
+            background: var(--artdeco-gold-opacity-10);
             color: var(--artdeco-gold-primary);
         }
     }
 }
 
 // ============================================
-// ENHANCED FUND FLOW OVERVIEW - Art Deco Style
+// Dashboard Rhythm Unification
 // ============================================
 
-.enhanced-fund-flow {
-    margin-bottom: 2rem;
+.market-panorama {
+    display: flex;
+    flex-direction: column;
+    gap: var(--artdeco-spacing-5);
+    margin-bottom: var(--artdeco-spacing-6);
+}
 
-    .fund-flow-overview {
-        .fund-flow-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1rem;
-        }
+.flow-section {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--artdeco-spacing-4);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--artdeco-spacing-2);
+
+    .artdeco-icon {
+        color: var(--artdeco-gold-primary);
+        opacity: 86%;
+    }
+
+    h3,
+    h4 {
+        margin: 0;
+        font-family: var(--artdeco-font-display);
+        letter-spacing: var(--artdeco-tracking-wide);
+        color: var(--artdeco-gold-primary);
+        text-transform: uppercase;
+    }
+
+    h3 {
+        font-size: var(--artdeco-text-lg);
+    }
+
+    h4 {
+        font-size: var(--artdeco-text-base);
     }
 }
 
-// Art Deco 装饰增强
-.fund-flow-overview {
-    position: relative;
+.chart-section {
+    margin-top: var(--artdeco-spacing-4);
+    padding: var(--artdeco-spacing-4);
+    border: 1px solid var(--artdeco-border-default);
+    background: linear-gradient(135deg, var(--artdeco-gold-opacity-05), transparent 65%);
+}
 
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: linear-gradient(90deg,
-            transparent 0%,
-            var(--artdeco-gold-primary) 20%,
-            var(--artdeco-gold-primary) 80%,
-            transparent 100%);
-        border-radius: 2px 2px 0 0;
+.content-grid {
+    gap: var(--artdeco-spacing-4);
+}
+
+.flow-item,
+.stock-item,
+.nav-item {
+    transition: border-color var(--artdeco-transition-base), transform var(--artdeco-transition-base), box-shadow var(--artdeco-transition-base);
+}
+
+.flow-item {
+    padding: var(--artdeco-spacing-4);
+
+    &:hover {
+        transform: translateY(-1px);
     }
+}
 
-    // 金色装饰边框
-    .artdeco-card-content {
-        border-left: 2px solid var(--artdeco-gold-primary);
-        border-right: 2px solid var(--artdeco-gold-primary);
-        margin: 0 1px;
-        padding: 1.5rem;
+.stock-item {
+    gap: var(--artdeco-spacing-2);
+
+    &:hover {
+        transform: translateY(-1px);
+    }
+}
+
+.nav-item {
+    justify-content: center;
+    min-height: 168px;
+
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 0 1px var(--artdeco-border-default), var(--artdeco-glow-subtle);
     }
 }

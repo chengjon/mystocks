@@ -242,5 +242,5 @@ const { route, _router, currentRouteName, currentPageConfig, isMonolithic, activ
 </script>
 
 <style scoped lang="scss">
-@import "./styles/ArtDecoTradingManagement.scss";
+@import "./styles/ArtDecoTradingManagement";
 </style>

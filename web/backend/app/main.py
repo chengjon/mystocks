@@ -704,6 +704,10 @@ for key, config in VERSION_MAPPING.items():
 # 身份验证兼容路由
 app.include_router(auth.compat_router, prefix="/api/auth", tags=["auth-compat"])
 
+# AKShare Market Data
+from .api import akshare_market
+app.include_router(akshare_market.router)
+
 # 基础与监控类 (通常挂在 /api 下)
 app.include_router(data_quality.router, prefix="/api", tags=["data-quality"])
 app.include_router(metrics.router, prefix="/api", tags=["metrics"])

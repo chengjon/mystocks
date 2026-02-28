@@ -24,7 +24,7 @@ defineProps({
 .placeholder-content {
     padding: 40px;
     text-align: center;
-    color: var(--artdeco-text-secondary);
+    color: var(--artdeco-fg-muted);
 }
 .debug-data {
     margin-top: 20px;

@@ -36,6 +36,7 @@ defineProps({
 </script>
 
 <style scoped lang="scss">
+@import '@/styles/artdeco-tokens';
 .main-flows {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -54,7 +55,7 @@ defineProps({
       font-weight: bold;
     }
     .value.rise { color: var(--artdeco-rise); }
-    .value.fall { color: var(--artdeco-fall); }
+    .value.fall { color: var(--artdeco-down); }
 }
 .sector-flows {
     display: flex;
@@ -66,12 +67,12 @@ defineProps({
     font-size: 12px;
     border-radius: 4px;
     &.in {
-      background: rgb(76 175 80 / 10%);
-      color: var(--artdeco-rise);
+      background: color-mix(in srgb, var(--artdeco-down) 10%, transparent);
+      color: var(--artdeco-down);
     }
     &.out {
-      background: rgb(244 67 54 / 10%);
-      color: var(--artdeco-fall);
+      background: color-mix(in srgb, var(--artdeco-up) 10%, transparent);
+      color: var(--artdeco-down);
     }
 }
 </style>

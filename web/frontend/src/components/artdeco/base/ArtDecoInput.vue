@@ -350,7 +350,7 @@
         // Focus state: Border brightens + glow
         .artdeco-input--focused &::after {
             background-color: var(--artdeco-accent-gold);
-            box-shadow: 0 4px 10px rgb(212 175 55 / 20%);
+            box-shadow: 0 4px 10px var(--artdeco-gold-opacity-20);
         }
 
         // Error state

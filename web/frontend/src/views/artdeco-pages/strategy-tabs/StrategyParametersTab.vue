@@ -64,7 +64,7 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .strategy-parameters-tab {
   padding: var(--artdeco-spacing-6);
@@ -82,12 +82,15 @@ onMounted(() => {
     margin: 0;
     font-size: var(--artdeco-text-2xl);
     color: var(--artdeco-gold-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wide);
   }
 
   .trace-id {
-    font-family: var(--font-mono);
+    font-family: var(--artdeco-font-mono);
     font-size: var(--artdeco-text-xs);
     color: var(--artdeco-fg-muted);
+    letter-spacing: var(--artdeco-tracking-wide);
   }
 }
 
@@ -130,7 +133,7 @@ onMounted(() => {
 
   .strategy-name {
     margin: 0;
-    font-family: var(--font-display);
+    font-family: var(--artdeco-font-display);
     font-size: var(--artdeco-text-xl);
     color: var(--artdeco-fg-primary);
   }
@@ -139,7 +142,7 @@ onMounted(() => {
 .status-badge {
   padding: 2px 8px;
   font-size: var(--artdeco-text-xs);
-  font-family: var(--font-mono);
+  font-family: var(--artdeco-font-mono);
   border: 1px solid currentColor;
   
   &.active { color: var(--artdeco-rise); }
@@ -159,13 +162,14 @@ onMounted(() => {
   background: var(--artdeco-bg-elevated);
   padding: var(--artdeco-spacing-4);
   margin-bottom: var(--artdeco-spacing-6);
+
   @include artdeco-corner-brackets;
 
   .param-item {
     display: flex;
     justify-content: space-between;
     margin-bottom: var(--artdeco-spacing-2);
-    font-family: var(--font-mono);
+    font-family: var(--artdeco-font-mono);
     font-size: var(--artdeco-text-sm);
 
     &:last-child { margin-bottom: 0; }
@@ -183,7 +187,7 @@ onMounted(() => {
     flex: 1;
     padding: 8px;
     cursor: pointer;
-    font-family: var(--font-display);
+    font-family: var(--artdeco-font-display);
     text-transform: uppercase;
     transition: all 0.3s ease;
     border: 1px solid var(--artdeco-gold-primary);
@@ -191,7 +195,7 @@ onMounted(() => {
     &.gold-outline {
       background: transparent;
       color: var(--artdeco-gold-primary);
-      &:hover { background: rgb(212 175 55 / 10%); }
+      &:hover { background: var(--artdeco-gold-opacity-10); }
     }
 
     &.gold-solid {

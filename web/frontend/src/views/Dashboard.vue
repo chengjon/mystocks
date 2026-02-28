@@ -402,5 +402,5 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/Dashboard.scss";
+@import "./styles/Dashboard";
 </style>

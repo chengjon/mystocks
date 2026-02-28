@@ -170,5 +170,5 @@ const backtestMetrics: BacktestMetricItem[] = [
 
 
 <style scoped>
-@import './styles/StockAnalysisDemo.scss';
+@import './styles/StockAnalysisDemo';
 </style>

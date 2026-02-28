@@ -13,16 +13,8 @@ GPU性能优化管理器
 """
 
 import asyncio
-import json
 import logging
-import time
-from dataclasses import asdict, dataclass
-from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional
 
-import numpy as np
-import pandas as pd
 
 # GPU相关导入
 try:
@@ -35,14 +27,6 @@ except ImportError:
     logging.warning("⚠️ GPU库不可用，GPU性能优化管理器将使用模拟模式")
 
 # 导入MyStocks组件
-from src.monitoring.ai_alert_manager import (
-    AIAlertManager,
-    get_ai_alert_manager,
-)
-from src.monitoring.ai_realtime_monitor import (
-    AIRealtimeMonitor,
-    get_ai_realtime_monitor,
-)
 
 async def main():
     """主函数 - 示例用法"""

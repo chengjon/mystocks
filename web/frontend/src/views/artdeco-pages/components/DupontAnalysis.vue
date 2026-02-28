@@ -48,7 +48,7 @@ defineProps({
     gap: 15px;
 }
 .node {
-    background: rgb(212 175 55 / 10%);
+    background: var(--artdeco-gold-opacity-10);
     border: 1px solid var(--artdeco-gold-primary);
     padding: 15px;
     text-align: center;
@@ -65,7 +65,7 @@ defineProps({
 }
 .roe {
     background: var(--artdeco-gold-primary);
-    color: white;
-    .value { color: white; }
+    color: var(--artdeco-bg-global);
+    .value { color: var(--artdeco-bg-global); }
 }
 </style>

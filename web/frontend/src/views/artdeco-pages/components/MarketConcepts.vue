@@ -31,7 +31,8 @@ defineProps({
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import '@/styles/artdeco-tokens';
 .concepts-list {
     display: flex;
     flex-direction: column;
@@ -42,13 +43,13 @@ defineProps({
     display: flex;
     align-items: center;
     padding: 12px;
-    background: rgb(255 255 255 / 3%);
+    background: color-mix(in srgb, var(--artdeco-fg-primary) 3%, transparent);
     border-radius: 8px;
     transition: all 0.3s ease;
 }
 
 .concept-item:hover {
-    background: rgb(255 255 255 / 5%);
+    background: color-mix(in srgb, var(--artdeco-fg-primary) 5%, transparent);
     transform: translateX(5px);
 }
 
@@ -58,8 +59,8 @@ defineProps({
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--artdeco-gold);
-    color: #000;
+    background: var(--artdeco-gold-primary);
+    color: var(--artdeco-bg-global);
     border-radius: 50%;
     font-weight: bold;
     margin-right: 15px;
@@ -77,7 +78,7 @@ defineProps({
 
 .concept-stats {
     font-size: 12px;
-    color: var(--artdeco-text-secondary);
+    color: var(--artdeco-fg-muted);
     display: flex;
     gap: 10px;
 }
@@ -87,6 +88,6 @@ defineProps({
     font-size: 16px;
 }
 
-.rise { color: #e74c3c; }
-.fall { color: #27ae60; }
+.rise { color: var(--artdeco-up); }
+.fall { color: var(--artdeco-down); }
 </style>

@@ -17,8 +17,8 @@
       <!-- Breadcrumb Navigation -->
       <div class="artdeco-breadcrumb-container">
         <ArtDecoBreadcrumb
-          home-title="指挥中心"
-          home-path="/dashboard"
+          home-title="交易室"
+          home-path="/dealing-room"
           :show-icon="true"
         />
       </div>

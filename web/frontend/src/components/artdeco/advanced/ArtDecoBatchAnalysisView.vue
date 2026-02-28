@@ -351,5 +351,5 @@ const { props, autoRefresh, resultsFilter, resultsSort, batchData, progressData,
 </script>
 
 <style scoped lang="scss">
-@import './styles/ArtDecoBatchAnalysisView.scss';
+@import './styles/ArtDecoBatchAnalysisView';
 </style>

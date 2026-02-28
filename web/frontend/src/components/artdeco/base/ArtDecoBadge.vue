@@ -47,7 +47,7 @@
 
     /* Gold Badge */
     .artdeco-badge-gold {
-        background: rgb(212 175 55 / 20%);
+        background: var(--artdeco-gold-opacity-20);
         color: var(--artdeco-accent-gold);
         border: 1px solid var(--artdeco-accent-gold);
     }
@@ -60,28 +60,28 @@
 
     /* Rise Badge (A股红涨) */
     .artdeco-badge-rise {
-        background: rgb(201 64 66 / 15%);
+        background: color-mix(in srgb, var(--artdeco-rise) 15%, transparent);
         color: var(--artdeco-rise);
         border: 1px solid var(--artdeco-rise);
     }
 
     .artdeco-badge-rise:hover {
         background: var(--artdeco-rise);
-        color: white;
-        box-shadow: 0 0 12px rgb(201 64 66 / 40%);
+        color: var(--artdeco-bg-global);
+        box-shadow: 0 0 12px color-mix(in srgb, var(--artdeco-rise) 40%, transparent);
     }
 
     /* Fall Badge (A股绿跌) */
     .artdeco-badge-fall {
-        background: rgb(61 153 112 / 15%);
-        color: var(--artdeco-fall);
-        border: 1px solid var(--artdeco-fall);
+        background: color-mix(in srgb, var(--artdeco-down) 15%, transparent);
+        color: var(--artdeco-down);
+        border: 1px solid var(--artdeco-down);
     }
 
     .artdeco-badge-fall:hover {
-        background: var(--artdeco-fall);
-        color: white;
-        box-shadow: 0 0 12px rgb(61 153 112 / 40%);
+        background: var(--artdeco-down);
+        color: var(--artdeco-bg-global);
+        box-shadow: 0 0 12px color-mix(in srgb, var(--artdeco-down) 40%, transparent);
     }
 
     /* Info Badge */
@@ -93,46 +93,46 @@
 
     .artdeco-badge-info:hover {
         background: var(--artdeco-info);
-        color: white;
-        box-shadow: 0 0 12px rgb(52 152 219 / 40%);
+        color: var(--artdeco-bg-global);
+        box-shadow: 0 0 12px color-mix(in srgb, var(--artdeco-info) 40%, transparent);
     }
 
     /* Warning Badge */
     .artdeco-badge-warning {
-        background: rgb(230 126 34 / 15%);
+        background: color-mix(in srgb, var(--artdeco-warning) 15%, transparent);
         color: var(--artdeco-warning);
         border: 1px solid var(--artdeco-warning);
     }
 
     .artdeco-badge-warning:hover {
         background: var(--artdeco-warning);
-        color: white;
-        box-shadow: 0 0 12px rgb(230 126 34 / 40%);
+        color: var(--artdeco-bg-global);
+        box-shadow: 0 0 12px color-mix(in srgb, var(--artdeco-warning) 40%, transparent);
     }
 
     /* Success Badge */
     .artdeco-badge-success {
-        background: rgb(39 174 96 / 15%);
+        background: color-mix(in srgb, var(--artdeco-success) 15%, transparent);
         color: var(--artdeco-success);
         border: 1px solid var(--artdeco-success);
     }
 
     .artdeco-badge-success:hover {
         background: var(--artdeco-success);
-        color: white;
-        box-shadow: 0 0 12px rgb(39 174 96 / 40%);
+        color: var(--artdeco-bg-global);
+        box-shadow: 0 0 12px color-mix(in srgb, var(--artdeco-success) 40%, transparent);
     }
 
     /* Danger Badge */
     .artdeco-badge-danger {
-        background: rgb(231 76 60 / 15%);
+        background: color-mix(in srgb, var(--artdeco-danger) 15%, transparent);
         color: var(--artdeco-danger);
         border: 1px solid var(--artdeco-danger);
     }
 
     .artdeco-badge-danger:hover {
         background: var(--artdeco-danger);
-        color: white;
-        box-shadow: 0 0 12px rgb(231 76 60 / 40%);
+        color: var(--artdeco-bg-global);
+        box-shadow: 0 0 12px color-mix(in srgb, var(--artdeco-danger) 40%, transparent);
     }
 </style>

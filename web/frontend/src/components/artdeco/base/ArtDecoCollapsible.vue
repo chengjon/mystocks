@@ -203,7 +203,7 @@
 
         &:hover {
             border-color: var(--artdeco-border-hover);
-            box-shadow: 0 4px 12px rgb(212 175 55 / 10%);
+            box-shadow: var(--artdeco-shadow-md);
         }
 
         &.is-expanded {
@@ -234,12 +234,12 @@
             box-shadow:
                 0 0 0 2px var(--artdeco-bg-global),
                 0 0 0 4px var(--artdeco-gold-primary),
-                0 0 12px rgb(212 175 55 / 40%);
+                0 0 12px var(--artdeco-gold-opacity-40);
         }
 
         // 悬停状态
         &:hover {
-            background: rgb(212 175 55 / 5%);
+            background: var(--artdeco-gold-opacity-05);
 
             .artdeco-collapsible-title {
                 color: var(--artdeco-gold-primary);
@@ -310,7 +310,7 @@
 
     .artdeco-collapsible-content {
         overflow: hidden;
-        background: rgb(10 10 10 / 50%);
+        background: color-mix(in srgb, var(--artdeco-bg-global) 50%, transparent);
     }
 
     .artdeco-collapsible-inner {

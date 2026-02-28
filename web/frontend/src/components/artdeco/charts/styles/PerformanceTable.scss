@@ -135,7 +135,7 @@
         width: 100%;
 
         :deep(.el-table__header-wrapper) {
-            background: rgb(212 175 55 / 5%);
+            background: var(--artdeco-gold-opacity-05);
 
             th {
                 background: transparent;
@@ -158,11 +158,11 @@
             }
 
             tr:hover > td {
-                background: rgb(212 175 55 / 10%) !important;
+                background: var(--artdeco-gold-opacity-10) !important;
             }
 
             tr.current-row > td {
-                background: rgb(212 175 55 / 15%) !important;
+                background: var(--artdeco-gold-opacity-15) !important;
             }
         }
 
@@ -223,7 +223,7 @@
         }
 
         .good {
-            color: #66bb6a;
+            color: color-mix(in srgb, var(--artdeco-down) 40%, var(--artdeco-warning));
             font-weight: 600;
         }
 
@@ -237,17 +237,17 @@
 
         // Drawdown classes
         .severe {
-            color: #d32f2f;
+            color: var(--artdeco-fall);
             font-weight: 700;
         }
 
         .high {
-            color: #f57c00;
+            color: color-mix(in srgb, var(--artdeco-warning) 75%, var(--artdeco-fall));
             font-weight: 600;
         }
 
         .moderate {
-            color: #fbc02d;
+            color: var(--artdeco-warning);
         }
 
         .mild {

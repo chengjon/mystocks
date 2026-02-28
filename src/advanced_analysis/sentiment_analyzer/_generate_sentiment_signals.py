@@ -10,15 +10,12 @@ This module provides comprehensive sentiment analysis including:
 - Multi-source sentiment aggregation
 """
 
-import warnings
-from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 import numpy as np
-import pandas as pd
 
-from src.advanced_analysis import AnalysisResult, AnalysisType, BaseAnalyzer
+from src.advanced_analysis import AnalysisResult, AnalysisType
 
 def _generate_sentiment_signals(
     self, sentiment: SentimentScore, sentiment_trend: Dict[str, Any], alerts: List[SentimentAlert]

@@ -70,7 +70,7 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .market-concept-tab {
   padding: var(--artdeco-spacing-6);
@@ -84,12 +84,19 @@ onMounted(() => {
   border-bottom: 2px solid var(--artdeco-gold-primary);
   padding-bottom: var(--artdeco-spacing-2);
 
-  .section-title { margin: 0; font-size: var(--artdeco-text-2xl); color: var(--artdeco-gold-primary); }
+  .section-title {
+    margin: 0;
+    font-size: var(--artdeco-text-2xl);
+    color: var(--artdeco-gold-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wide);
+  }
 }
 
 .concept-table-container {
   padding: var(--artdeco-spacing-4);
   background: var(--artdeco-bg-card);
+
   @include artdeco-stepped-corners(10px);
 }
 
@@ -101,7 +108,7 @@ onMounted(() => {
     padding: var(--artdeco-spacing-4);
     text-align: left;
     color: var(--artdeco-gold-primary);
-    font-family: var(--font-display);
+    font-family: var(--artdeco-font-display);
     font-size: var(--artdeco-text-sm);
     border-bottom: 1px solid var(--artdeco-border-default);
   }
@@ -109,13 +116,30 @@ onMounted(() => {
   td {
     padding: var(--artdeco-spacing-4);
     color: var(--artdeco-fg-primary);
-    border-bottom: 1px solid rgb(212 175 55 / 10%);
-    font-family: var(--font-mono);
+    border-bottom: 1px solid var(--artdeco-gold-opacity-10);
+    font-family: var(--artdeco-font-mono);
   }
 
-  .concept-name { font-family: var(--font-body); font-weight: bold; color: var(--artdeco-gold-light); }
-  .change { &.rise { color: var(--artdeco-rise); } &.down { color: var(--artdeco-down); } }
-  .leader { color: var(--artdeco-fg-muted); font-size: var(--artdeco-text-sm); }
+  .concept-name {
+    font-family: var(--artdeco-font-body);
+    font-weight: bold;
+    color: var(--artdeco-gold-light);
+  }
+
+  .change {
+    &.rise {
+      color: var(--artdeco-rise);
+    }
+
+    &.down {
+      color: var(--artdeco-down);
+    }
+  }
+
+  .leader {
+    color: var(--artdeco-fg-muted);
+    font-size: var(--artdeco-text-sm);
+  }
 }
 
 .mini-chart {
@@ -123,6 +147,9 @@ onMounted(() => {
   align-items: flex-end;
   height: 30px;
   width: 40px;
-  .trend-bar { width: 100%; border-radius: 1px; }
+  .trend-bar {
+    width: 100%;
+    border-radius: 1px;
+  }
 }
 </style>

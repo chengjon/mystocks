@@ -78,7 +78,7 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .system-health-tab {
   padding: var(--artdeco-spacing-6);
@@ -96,12 +96,15 @@ onMounted(() => {
     margin: 0;
     font-size: var(--artdeco-text-2xl);
     color: var(--artdeco-gold-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wide);
   }
 
   .trace-id {
-    font-family: var(--font-mono);
+    font-family: var(--artdeco-font-mono);
     font-size: var(--artdeco-text-xs);
     color: var(--artdeco-fg-muted);
+    letter-spacing: var(--artdeco-tracking-wide);
   }
 }
 
@@ -114,10 +117,11 @@ onMounted(() => {
 
 .status-card {
   padding: var(--artdeco-spacing-6);
+
   @include artdeco-stepped-corners(12px);
 
   .card-title {
-    font-family: var(--font-display);
+    font-family: var(--artdeco-font-display);
     color: var(--artdeco-gold-primary);
     margin-bottom: var(--artdeco-spacing-6);
     border-left: 3px solid var(--artdeco-gold-primary);
@@ -148,7 +152,7 @@ onMounted(() => {
   }
 
   .status-text {
-    font-family: var(--font-display);
+    font-family: var(--artdeco-font-display);
     font-size: var(--artdeco-text-xl);
     letter-spacing: 0.1em;
   }
@@ -158,7 +162,7 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   margin-bottom: var(--artdeco-spacing-2);
-  font-family: var(--font-mono);
+  font-family: var(--artdeco-font-mono);
   font-size: var(--artdeco-text-sm);
   color: var(--artdeco-fg-muted);
 }
@@ -168,10 +172,15 @@ onMounted(() => {
     display: flex;
     justify-content: space-between;
     padding: var(--artdeco-spacing-2) 0;
-    border-bottom: 1px solid rgb(212 175 55 / 10%);
+    border-bottom: 1px solid var(--artdeco-gold-opacity-10);
 
-    .mw-name { font-size: var(--artdeco-text-sm); }
-    .mw-status.active { color: var(--artdeco-rise); font-weight: bold; }
+    .mw-name {
+      font-size: var(--artdeco-text-sm);
+    }
+    .mw-status.active {
+      color: var(--artdeco-rise);
+      font-weight: bold;
+    }
   }
 }
 
@@ -182,6 +191,8 @@ onMounted(() => {
   line-height: var(--artdeco-leading-relaxed);
   color: var(--artdeco-fg-muted);
   
-  .gold-text { color: var(--artdeco-gold-primary); }
+  .gold-text {
+    color: var(--artdeco-gold-primary);
+  }
 }
 </style>

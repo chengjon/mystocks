@@ -5,9 +5,7 @@ GPU Acceleration Engine
 
 import logging
 import time
-from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, Union
 
 import cudf
 import cupy as cp
@@ -18,7 +16,6 @@ from cuml.linear_model import Lasso, LinearRegression, Ridge
 from cuml.preprocessing import StandardScaler as GPUStandardScaler
 
 from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
-from src.gpu.api_system.utils.monitoring import MetricsCollector
 
 logger = logging.getLogger(__name__)
 

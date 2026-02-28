@@ -3,14 +3,16 @@ module.exports = {
     {
       name: 'mystocks-frontend-dev',
       script: 'npm',
-      args: 'run dev',
+      args: 'run dev -- --host 0.0.0.0 --strictPort',
       cwd: '/opt/claude/mystocks_spec/web/frontend',
 
       env: {
         NODE_ENV: 'development',
-        PORT: 3001,
+        PORT: process.env.FRONTEND_PORT || 3020,
+        FRONTEND_PORT: process.env.FRONTEND_PORT || 3020,
+        BACKEND_PORT: process.env.BACKEND_PORT || 8020,
         HOST: '0.0.0.0',
-        VITE_API_BASE_URL: 'http://localhost:8000'
+        VITE_API_BASE_URL: `http://localhost:${process.env.BACKEND_PORT || 8020}`
       },
 
       instances: 1,
@@ -41,7 +43,9 @@ module.exports = {
 
       env: {
         TESTING: 'false',
-        USE_MOCK_DATA: 'false'
+        USE_MOCK_DATA: 'false',
+        BACKEND_PORT: process.env.BACKEND_PORT || 8020,
+        BACKEND_BACKUP_PORT: process.env.BACKEND_BACKUP_PORT || 8021
       },
 
       instances: 1,

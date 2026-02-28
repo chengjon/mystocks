@@ -412,5 +412,5 @@ const { props, loading, summary, alerts, suggestions, criticalAlerts, warningAle
 </script>
 
 <style scoped>
-@import './styles/RiskDashboard.scss';
+@import './styles/RiskDashboard';
 </style>

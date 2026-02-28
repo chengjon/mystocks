@@ -10,12 +10,12 @@ import asyncio
 import logging
 import time
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 import numpy as np
 import pandas as pd
 
-from src.governance.risk_management.core import IRiskCalculator, PortfolioRiskMetrics, StockRiskMetrics
+from src.governance.risk_management.core import PortfolioRiskMetrics, StockRiskMetrics
 
 # 复用现有的GPU基础设施
 try:

@@ -137,7 +137,7 @@
 
     .artdeco-alert-rule {
       background: var(--artdeco-bg-card);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       padding: var(--artdeco-spacing-4);
       position: relative;
       overflow: hidden;
@@ -204,7 +204,7 @@
 
     .rule-indicator.active {
       background: var(--artdeco-rise);
-      box-shadow: 0 0 8px rgb(0 230 118 / 60%);
+      box-shadow: 0 0 8px color-mix(in srgb, var(--artdeco-down) 60%, transparent);
     }
 
     .rule-title {
@@ -251,7 +251,7 @@
       color: var(--artdeco-fg-secondary);
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
       background: var(--artdeco-bg-primary);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
     }
 
     .rule-meta {
@@ -313,7 +313,7 @@
     .action-tag {
       padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
       background: var(--artdeco-bg-primary);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       font-family: var(--artdeco-font-body);
       font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       color: var(--artdeco-fg-secondary);
@@ -325,13 +325,13 @@
       display: flex;
       gap: var(--artdeco-spacing-2);
       padding-top: var(--artdeco-spacing-3);
-      border-top: 1px solid rgb(212 175 55 / 10%);
+      border-top: 1px solid var(--artdeco-gold-opacity-10);
     }
 
     .artdeco-btn-mini {
       flex: 1;
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       background: var(--artdeco-bg-card);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-display);
@@ -359,8 +359,8 @@
     }
 
     .artdeco-btn-mini.artdeco-btn-fall:hover {
-      border-color: var(--artdeco-fall);
-      color: var(--artdeco-fall);
+      border-color: var(--artdeco-down);
+      color: var(--artdeco-down);
     }
 
     /* Compact variant */

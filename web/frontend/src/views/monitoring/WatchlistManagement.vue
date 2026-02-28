@@ -404,5 +404,5 @@ const { loading, watchlists, watchlistStocks, stockDrawerVisible, createModalVis
 </script>
 
 <style scoped>
-@import './styles/WatchlistManagement.scss';
+@import './styles/WatchlistManagement';
 </style>

@@ -40,18 +40,18 @@
           <svg width="100%" height="200" viewBox="0 0 800 200" preserveAspectRatio="none">
             <defs>
               <linearGradient id="fundPositive" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" style="stop-color: #e74c3c; stop-opacity: 60%" />
+                <stop offset="0%" style="stop-color: var(--artdeco-up); stop-opacity: 60%" />
               </linearGradient>
               <linearGradient id="fundNegative" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="100%" style="stop-color: #27ae60; stop-opacity: 60%" />
+                <stop offset="100%" style="stop-color: var(--artdeco-down); stop-opacity: 60%" />
               </linearGradient>
-              <rect x="20" y="60" width="25" height="80" fill="url(#fundPositive)" stroke="#E74C3C" stroke-width="1" />
-              <rect x="55" y="40" width="25" height="80" fill="url(#fundPositive)" stroke="#E74C3C" stroke-width="1" />
-              <rect x="90" y="20" width="25" height="80" fill="url(#fundPositive)" stroke="#E74C3C" stroke-width="1" />
-              <rect x="125" y="80" width="25" height="20" fill="url(#fundPositive)" stroke="#E74C3C" stroke-width="1" />
-              <rect x="160" y="60" width="25" height="40" fill="url(#fundPositive)" stroke="#E74C3C" stroke-width="1" />
-              <rect x="195" y="40" width="25" height="60" fill="url(#fundPositive)" stroke="#E74C3C" stroke-width="1" />
-              <rect x="230" y="20" width="25" height="20" fill="url(#fundPositive)" stroke="#E74C3C" stroke-width="1" />
+              <rect x="20" y="60" width="25" height="80" fill="url(#fundPositive)" stroke="var(--artdeco-up)" stroke-width="1" />
+              <rect x="55" y="40" width="25" height="80" fill="url(#fundPositive)" stroke="var(--artdeco-up)" stroke-width="1" />
+              <rect x="90" y="20" width="25" height="80" fill="url(#fundPositive)" stroke="var(--artdeco-up)" stroke-width="1" />
+              <rect x="125" y="80" width="25" height="20" fill="url(#fundPositive)" stroke="var(--artdeco-up)" stroke-width="1" />
+              <rect x="160" y="60" width="25" height="40" fill="url(#fundPositive)" stroke="var(--artdeco-up)" stroke-width="1" />
+              <rect x="195" y="40" width="25" height="60" fill="url(#fundPositive)" stroke="var(--artdeco-up)" stroke-width="1" />
+              <rect x="230" y="20" width="25" height="20" fill="url(#fundPositive)" stroke="var(--artdeco-up)" stroke-width="1" />
             </defs>
             </svg>
         </div>
@@ -168,13 +168,17 @@ onMounted(() => {
 <style scoped>
 .fund-flow-panel {
   padding: 20px;
-  background: linear-gradient(135deg, #f0f4e6 0%, #e9e8f8 100%);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--artdeco-gold-primary) 8%, var(--artdeco-bg-primary)) 0%,
+    color-mix(in srgb, var(--artdeco-fg-primary) 6%, var(--artdeco-bg-primary)) 100%
+  );
 }
 
 .panel-title {
   font-size: 24px;
   font-weight: 600;
-  color: #e74c3c;
+  color: var(--artdeco-gold-primary);
   margin-bottom: 20px;
   text-align: center;
 }
@@ -188,7 +192,7 @@ onMounted(() => {
 
 .chart-card {
   grid-column: span 2;
-  background: rgb(255 255 255 / 5%);
+  background: color-mix(in srgb, var(--artdeco-fg-primary) 5%, transparent);
   border-radius: 12px;
   padding: 20px;
 }
@@ -203,13 +207,13 @@ onMounted(() => {
 
 .chart-title {
   font-size: 16px;
-  color: #e74c3c;
+  color: var(--artdeco-gold-primary);
   margin-bottom: 10px;
 }
 
 .chart-area {
   flex: 1;
-  background: rgb(255 255 255 / 2%);
+  background: color-mix(in srgb, var(--artdeco-fg-primary) 2%, transparent);
   border-radius: 8px;
   padding: 15px;
   overflow: hidden;
@@ -217,7 +221,7 @@ onMounted(() => {
 
 .ranking-card {
   grid-column: span 2;
-  background: rgb(255 255 255 / 5%);
+  background: color-mix(in srgb, var(--artdeco-fg-primary) 5%, transparent);
   border-radius: 12px;
   padding: 20px;
 }
@@ -235,35 +239,36 @@ onMounted(() => {
 
 .filter-btn {
   padding: 8px 16px;
-  background: rgb(255 255 255 / 10%);
-  border: 1px solid rgb(255 255 255 / 20%);
+  background: color-mix(in srgb, var(--artdeco-fg-primary) 10%, transparent);
+  border: 1px solid var(--artdeco-border-default);
   border-radius: 8px;
-  color: #e74c3c;
+  color: var(--artdeco-gold-primary);
   cursor: pointer;
   transition: all 0.3s;
 }
 
 .filter-btn:hover {
-  background: rgb(231 76 60 / 100%);
+  background: var(--artdeco-gold-primary);
+  color: var(--artdeco-bg-primary);
   transform: translateY(-2px);
 }
 
 .filter-btn.active {
-  background: #e74c3c;
-  color: #fff;
+  background: var(--artdeco-gold-primary);
+  color: var(--artdeco-bg-primary);
 }
 
 .ranking-select {
   width: 200px;
   padding: 8px 12px;
-  background: rgb(255 255 255 / 5%);
-  border: 1px solid rgb(255 255 255 / 20%);
+  background: color-mix(in srgb, var(--artdeco-fg-primary) 5%, transparent);
+  border: 1px solid var(--artdeco-border-default);
   border-radius: 8px;
-  color: #e74c3c;
+  color: var(--artdeco-gold-primary);
 }
 
 .ranking-table {
-  background: rgb(255 255 255 / 2%);
+  background: color-mix(in srgb, var(--artdeco-fg-primary) 2%, transparent);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -272,9 +277,9 @@ onMounted(() => {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   padding: 12px;
-  background: rgb(231 76 60 / 10%);
+  background: var(--artdeco-gold-opacity-10);
   font-weight: 600;
-  color: #e74c3c;
+  color: var(--artdeco-gold-primary);
   border-radius: 8px 8px 8px 0 0;
 }
 
@@ -286,11 +291,11 @@ onMounted(() => {
 .table-row {
   display: contents;
   padding: 12px;
-  border-bottom: 1px solid rgb(255 255 255 / 10%);
+  border-bottom: 1px solid var(--artdeco-gold-opacity-10);
 }
 
 .table-row:hover {
-  background: rgb(231 76 60 / 5%);
+  background: var(--artdeco-gold-opacity-05);
 }
 
 .col-rank {
@@ -304,19 +309,19 @@ onMounted(() => {
 
 .stock-name {
   font-weight: 600;
-  color: #e74c3c;
+  color: var(--artdeco-gold-primary);
   margin-bottom: 4px;
 }
 
 .stock-code {
   font-size: 12px;
-  color: rgb(231 76 60 / 70%);
+  color: var(--artdeco-fg-muted);
 }
 
 .col-price {
   text-align: right;
   font-weight: 600;
-  color: #e74c3c;
+  color: var(--artdeco-gold-primary);
 }
 
 .col-change {
@@ -325,11 +330,11 @@ onMounted(() => {
 }
 
 .col-change.rise {
-  color: #e74c3c;
+  color: var(--artdeco-up);
 }
 
 .col-change.fall {
-  color: #27ae60;
+  color: var(--artdeco-down);
 }
 
 .col-flow {
@@ -338,7 +343,7 @@ onMounted(() => {
 }
 
 .col-flow.rise {
-  color: #e74c3c;
+  color: var(--artdeco-up);
 }
 
 .col-main {

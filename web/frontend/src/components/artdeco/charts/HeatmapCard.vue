@@ -256,17 +256,13 @@
         } else if (clamped > 0) {
             // 上涨 - 红色渐变
             const intensity = clamped / 10
-            const r = Math.round(255)
-            const g = Math.round(255 * (1 - intensity))
-            const b = Math.round(255 * (1 - intensity))
-            return `rgb(${r}, ${g}, ${b})`
+            const strength = `${(intensity * 100).toFixed(1)}%`
+            return `color-mix(in srgb, var(--artdeco-up) ${strength}, var(--artdeco-fg-primary))`
         } else if (clamped < 0) {
             // 下跌 - 绿色渐变
             const intensity = Math.abs(clamped) / 10
-            const r = Math.round(255 * (1 - intensity))
-            const g = Math.round(255)
-            const b = Math.round(255 * (1 - intensity))
-            return `rgb(${r}, ${g}, ${b})`
+            const strength = `${(intensity * 100).toFixed(1)}%`
+            return `color-mix(in srgb, var(--artdeco-down) ${strength}, var(--artdeco-fg-primary))`
         } else {
             // 平盘 - 灰色
             return 'var(--artdeco-flat)'
@@ -334,5 +330,5 @@
 </script>
 
 <style scoped lang="scss">
-@import "./styles/HeatmapCard.scss";
+@import "./styles/HeatmapCard";
 </style>

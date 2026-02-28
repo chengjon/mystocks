@@ -1,0 +1,102 @@
+{
+  "version": "2026-02-28",
+  "source": {
+    "endpoint": "https://fucaixie.xyz/v1/models",
+    "updated_at": "2026-02-28",
+    "exclude": [
+      "gemini"
+    ]
+  },
+  "defaults": {
+    "main_model": "cpap-claude/claude-opus-4-6",
+    "small_model": "opencode/glm-4.7-free",
+    "cpap_base_url": "https://fucaixie.xyz/v1"
+  },
+  "enabled_providers": [
+    "opencode",
+    "cpap",
+    "cpap-oai",
+    "cpap-claude",
+    "cpap-mini"
+  ],
+  "opencode_free_models": [
+    "opencode/glm-4.7-free",
+    "opencode/kimi-k2.5-free",
+    "opencode/minimax-m2.1-free",
+    "opencode/gpt-5-nano",
+    "opencode/trinity-large-preview-free"
+  ],
+  "external_models": {
+    "cpap-oai": [
+      "gpt-5.1-codex",
+      "gpt-5.3",
+      "gpt-5.3-codex",
+      "gpt-4o",
+      "gpt-5",
+      "gpt-5-codex",
+      "gpt-5.2-codex",
+      "gpt-5.1-codex-mini",
+      "gpt-5.1-codex-max",
+      "gpt-5.1",
+      "gpt-5-codex-mini",
+      "gpt-5.2",
+      "gpt-3.5"
+    ],
+    "cpap-claude": [
+      "claude-haiku-4-5",
+      "claude-opus-4-5",
+      "claude-opus-4-6",
+      "claude-3-7-sonnet",
+      "claude-haiku-4-5-20251001",
+      "claude-4.5",
+      "claude-sonnet-4-6",
+      "claude-sonnet-4-5"
+    ],
+    "cpap-mini": [
+      "MiniMax 2.5",
+      "MiniMax M2.5-hignspeed"
+    ],
+    "cpap": [
+      "qwen3-235b-a22b-thinking-2507",
+      "qwen3-vl-plus",
+      "qwen3-235b-a22b-instruct",
+      "grok-4-thinking",
+      "grok-3",
+      "qwen3-coder-plus",
+      "qwen-3.5-397B",
+      "grok-imagine-1.0-edit",
+      "grok-4.20-beta",
+      "qwen3-max",
+      "grok-4",
+      "deepseek-r1",
+      "grok-imagine-1.0",
+      "qwen3-235b",
+      "grok-4-heavy",
+      "glm-4.6",
+      "grok-4-mini",
+      "zai-org/GLM-5-FP8",
+      "grok-imagine-1.0-video",
+      "qwen3-max-preview",
+      "kimi-k2-0905",
+      "qwen3-32b",
+      "deepseek-v3",
+      "grok-4.1-expert",
+      "kimi-k2",
+      "grok-3-thinking",
+      "grok-4.1-fast",
+      "deepseek-v3.2",
+      "grok-4.1-thinking",
+      "grok-4.1-mini",
+      "grok-3-mini"
+    ]
+  },
+  "omo_agents": {
+    "sisyphus": "cpap-claude/claude-opus-4-6",
+    "oracle": "cpap-oai/gpt-5.3-codex",
+    "librarian": "cpap-claude/claude-opus-4-5",
+    "explore": "cpap/grok-4.20-beta",
+    "frontend": "cpap-oai/gpt-5.3",
+    "document_writer": "cpap-oai/gpt-5.3",
+    "multimodal_looker": "cpap/grok-4-heavy"
+  }
+}

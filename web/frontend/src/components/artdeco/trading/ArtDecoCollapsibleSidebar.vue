@@ -29,26 +29,30 @@
         </div>
 
         <!-- Domain Root (Toggle for Children) -->
-        <div 
+        <button
           class="nav-item domain-root"
           :class="{ 'is-active': isDomainActive(domain) }"
           @click="toggleDomain(domain.path)"
+          :aria-expanded="expandedDomains[domain.path] ? 'true' : 'false'"
+          :aria-controls="`domain-menu-${domain.path}`"
+          type="button"
         >
           <ArtDecoIcon :name="domain.icon" size="sm" class="nav-icon" />
           <span v-if="!preferenceStore.sidebarCollapsed" class="nav-label">{{ domain.label }}</span>
-          <ArtDecoIcon 
-            v-if="!preferenceStore.sidebarCollapsed && domain.children" 
-            :name="expandedDomains[domain.path] ? 'ChevronUp' : 'ChevronDown'" 
-            size="xs" 
-            class="arrow-icon" 
+          <ArtDecoIcon
+            v-if="!preferenceStore.sidebarCollapsed && domain.children"
+            :name="expandedDomains[domain.path] ? 'ChevronUp' : 'ChevronDown'"
+            size="xs"
+            class="arrow-icon"
           />
-        </div>
+        </button>
 
         <!-- Sub Items -->
         <transition name="slide-fade">
-          <div 
-            v-show="expandedDomains[domain.path] && !preferenceStore.sidebarCollapsed" 
+          <div
+            v-show="expandedDomains[domain.path] && !preferenceStore.sidebarCollapsed"
             class="nav-children"
+            :id="`domain-menu-${domain.path}`"
           >
             <router-link
               v-for="child in domain.children"
@@ -131,8 +135,8 @@ onMounted(syncExpansion)
 .artdeco-sidebar-v3 {
   width: var(--artdeco-sidebar-width);
   height: 100vh;
-  background: #0A0A0A; // Obsidian Black
-  border-right: 1px solid rgba(212, 175, 55, 0.2);
+  background: var(--artdeco-bg-global);
+  border-right: 1px solid var(--artdeco-border-default);
   position: fixed;
   left: 0;
   top: 0;
@@ -150,7 +154,7 @@ onMounted(syncExpansion)
 .sidebar-bg-pattern {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle at 2px 2px, rgba(212, 175, 55, 0.05) 1px, transparent 0);
+  background-image: radial-gradient(circle at 2px 2px, var(--artdeco-gold-opacity-05) 1px, transparent 0);
   background-size: 24px 24px;
   pointer-events: none;
 }
@@ -160,22 +164,22 @@ onMounted(syncExpansion)
   padding: var(--artdeco-spacing-8) 0;
   display: flex;
   justify-content: center;
-  border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+  border-bottom: 1px solid var(--artdeco-gold-opacity-10);
 
   .brand-icon-frame {
     border: 2px solid var(--artdeco-gold-primary);
     padding: 8px 12px;
-    background: rgba(212, 175, 55, 0.05);
+    background: var(--artdeco-gold-opacity-05);
     transition: all 0.3s ease;
-    
+
     &:hover {
-      background: rgba(212, 175, 55, 0.15);
-      box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+      background: var(--artdeco-gold-opacity-15);
+      box-shadow: 0 0 15px var(--artdeco-gold-opacity-shadow);
     }
   }
 
   .brand-text {
-    font-family: 'Cinzel', serif;
+    font-family: Cinzel, serif;
     font-weight: 700;
     color: var(--artdeco-gold-primary);
     letter-spacing: 4px;
@@ -197,10 +201,10 @@ onMounted(syncExpansion)
   align-items: center;
   gap: 12px;
   margin: 24px 0 12px 12px;
-  opacity: 0.6;
+  opacity: 60%;
 
   .domain-label {
-    font-family: 'Barlow', sans-serif;
+    font-family: Barlow, sans-serif;
     font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -211,7 +215,7 @@ onMounted(syncExpansion)
   .domain-line {
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, rgba(212, 175, 55, 0.3), transparent);
+    background: linear-gradient(90deg, var(--artdeco-gold-opacity-30), transparent);
   }
 }
 
@@ -223,35 +227,65 @@ onMounted(syncExpansion)
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
-  color: #A0A0A0;
+  color: var(--artdeco-fg-muted);
   text-decoration: none;
 
-  .nav-icon { margin-right: 16px; transition: color 0.3s; }
-  .nav-label { font-size: 14px; font-weight: 500; flex: 1; transition: opacity 0.3s; }
-  .arrow-icon { opacity: 0.5; }
+  .nav-icon {
+    margin-right: 16px;
+    transition: color 0.3s;
+  }
+
+  .nav-label {
+    font-size: 14px;
+    font-weight: 500;
+    flex: 1;
+    transition: opacity 0.3s;
+  }
+
+  .arrow-icon {
+    opacity: 50%;
+  }
 
   &:hover {
-    background: rgba(212, 175, 55, 0.08);
+    background: var(--artdeco-gold-opacity-08);
     color: var(--artdeco-gold-light);
-    .nav-icon { color: var(--artdeco-gold-primary); }
+
+    .nav-icon {
+      color: var(--artdeco-gold-primary);
+    }
   }
 
   &.is-active {
-    background: linear-gradient(90deg, rgba(212, 175, 55, 0.15), transparent);
+    background: linear-gradient(90deg, var(--artdeco-gold-opacity-15), transparent);
     color: var(--artdeco-gold-primary);
     border-left: 3px solid var(--artdeco-gold-primary);
-    
-    .nav-icon { color: var(--artdeco-gold-primary); }
-    .nav-label { font-weight: 600; }
+
+    .nav-icon {
+      color: var(--artdeco-gold-primary);
+    }
+
+    .nav-label {
+      font-weight: 600;
+    }
   }
+}
+
+.domain-root {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font: inherit;
+  text-align: left;
 }
 
 .child-item {
   padding-left: 44px;
   font-size: 13px;
-  opacity: 0.8;
-  
-  &:hover { opacity: 1; }
+  opacity: 80%;
+
+  &:hover {
+    opacity: 100%;
+  }
 }
 
 // Footer
@@ -260,11 +294,11 @@ onMounted(syncExpansion)
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid rgba(212, 175, 55, 0.1);
+  border-top: 1px solid var(--artdeco-gold-opacity-10);
 
   .collapse-toggle {
     background: transparent;
-    border: 1px solid rgba(212, 175, 55, 0.3);
+    border: 1px solid var(--artdeco-border-default);
     color: var(--artdeco-gold-primary);
     width: 32px;
     height: 32px;
@@ -274,11 +308,14 @@ onMounted(syncExpansion)
     cursor: pointer;
     transition: all 0.3s;
 
-    &:hover { background: var(--artdeco-gold-primary); color: black; }
+    &:hover {
+      background: var(--artdeco-gold-primary);
+      color: var(--artdeco-bg-global);
+    }
   }
 
   .footer-signature {
-    font-family: 'Cinzel', serif;
+    font-family: Cinzel, serif;
     font-size: 9px;
     color: var(--artdeco-gold-dim);
     letter-spacing: 1px;
@@ -286,10 +323,47 @@ onMounted(syncExpansion)
 }
 
 // Transitions
-.slide-fade-enter-active { transition: all 0.3s ease-out; }
-.slide-fade-leave-active { transition: all 0.2s ease-in; }
-.slide-fade-enter-from, .slide-fade-leave-to {
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.2s ease-in;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
   transform: translateY(-10px);
-  opacity: 0;
+  opacity: 0%;
+}
+
+// Reduced Motion Support
+@media (prefers-reduced-motion: reduce) {
+  .artdeco-sidebar-v3,
+  .brand-icon-frame,
+  .nav-item,
+  .collapse-toggle {
+    transition: none;
+  }
+
+  .slide-fade-enter-active,
+  .slide-fade-leave-active {
+    transition: none;
+  }
+
+  .slide-fade-enter-from,
+  .slide-fade-leave-to {
+    transform: none;
+  }
+
+  // Disable continuous pulse animations
+  .sidebar-bg-pattern {
+    background-image: none;
+  }
+
+  // Disable hover glow effects
+  .brand-icon-frame:hover {
+    box-shadow: none;
+  }
 }
 </style>

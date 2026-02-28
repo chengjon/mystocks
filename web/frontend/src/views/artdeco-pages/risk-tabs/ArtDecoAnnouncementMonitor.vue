@@ -165,7 +165,7 @@
     .detail-header {
         margin-bottom: var(--artdeco-spacing-6);
         padding-bottom: var(--artdeco-spacing-4);
-        border-bottom: 1px solid rgb(212 175 55 / 20%);
+        border-bottom: 1px solid var(--artdeco-gold-opacity-20);
 
         .detail-meta {
             display: flex;
@@ -230,7 +230,7 @@
             background: var(--artdeco-bg-card);
             padding: var(--artdeco-spacing-4);
             border-radius: var(--artdeco-radius-none);
-            border: 1px solid rgb(212 175 55 / 10%);
+            border: 1px solid var(--artdeco-gold-opacity-10);
         }
 
         .impact-analysis {
@@ -244,7 +244,7 @@
                 align-items: center;
                 padding: var(--artdeco-spacing-3);
                 background: var(--artdeco-bg-card);
-                border: 1px solid rgb(212 175 55 / 10%);
+                border: 1px solid var(--artdeco-gold-opacity-10);
                 border-radius: var(--artdeco-radius-none);
 
                 .impact-label {
@@ -346,7 +346,7 @@
 .announcements-section {
     .artdeco-table__row {
         &:has(.artdeco-status[status="info"]) {
-            background: rgb(255 213 79 / 5%);
+            background: color-mix(in srgb, var(--artdeco-gold-light) 5%, transparent);
             border-left: 3px solid var(--artdeco-gold-primary);
         }
     }

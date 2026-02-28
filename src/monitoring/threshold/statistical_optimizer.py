@@ -1,7 +1,7 @@
 """智能阈值管理器 - 统计优化器"""
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import List
 import numpy as np
 
 logger = logging.getLogger(__name__)

@@ -199,7 +199,7 @@
     .detail-header {
         margin-bottom: var(--artdeco-spacing-6);
         padding-bottom: var(--artdeco-spacing-4);
-        border-bottom: 1px solid rgb(212 175 55 / 20%);
+        border-bottom: 1px solid var(--artdeco-gold-opacity-20);
 
         .detail-meta {
             display: flex;
@@ -229,7 +229,7 @@
                     align-items: center;
                     padding: var(--artdeco-spacing-3);
                     background: var(--artdeco-bg-card);
-                    border: 1px solid rgb(212 175 55 / 10%);
+                    border: 1px solid var(--artdeco-gold-opacity-10);
                     border-radius: var(--artdeco-radius-none);
 
                     .info-label {
@@ -286,7 +286,7 @@
                 align-items: center;
                 padding: var(--artdeco-spacing-3);
                 background: var(--artdeco-bg-card);
-                border: 1px solid rgb(212 175 55 / 10%);
+                border: 1px solid var(--artdeco-gold-opacity-10);
                 border-radius: var(--artdeco-radius-none);
 
                 .strategy-label {

@@ -91,7 +91,7 @@
         letter-spacing: 0.05em;
         white-space: nowrap;
         user-select: none;
-        background-color: rgb(212 175 55 / 5%);
+        background-color: color-mix(in srgb, var(--artdeco-gold-primary) 5%, transparent);
         height: var(--data-dense-table-header-height);
     }
 
@@ -101,7 +101,7 @@
         @include data-dense-transitions;
 
         &:hover {
-            background-color: rgb(212 175 55 / 10%);
+            background-color: color-mix(in srgb, var(--artdeco-gold-primary) 10%, transparent);
         }
     }
 
@@ -116,7 +116,7 @@
     }
 
     .hybrid-table__sort-icon {
-        color: rgb(212 175 55 / 40%);
+        color: color-mix(in srgb, var(--artdeco-gold-primary) 40%, transparent);
         font-size: var(--data-dense-font-xs);
 
         @include data-dense-transitions;
@@ -160,12 +160,12 @@
         @include gpu-accelerated;
 
         &:hover .hybrid-table__cell {
-            background-color: rgb(212 175 55 / 5%);
+            background-color: color-mix(in srgb, var(--artdeco-gold-primary) 5%, transparent);
         }
     }
 
     .hybrid-table__row--active .hybrid-table__cell {
-        background-color: rgb(212 175 55 / 10%);
+        background-color: color-mix(in srgb, var(--artdeco-gold-primary) 10%, transparent);
         color: var(--artdeco-gold-primary);
     }
 
@@ -205,7 +205,7 @@
     .hybrid-table__spinner {
         width: 24px;
         height: 24px;
-        border: 2px solid rgb(212 175 55 / 20%);
+        border: 2px solid var(--artdeco-gold-opacity-20);
         border-top-color: var(--artdeco-gold-primary);
         border-radius: 0px; // Art Deco sharp corners
         animation: hybrid-spin 1s linear infinite;
@@ -245,8 +245,8 @@
         top: 2px;
         right: 2px;
         font-size: 10px;
-        color: rgb(255 255 255 / 50%);
-        background: rgb(0 0 0 / 80%);
+        color: color-mix(in srgb, var(--artdeco-fg-primary) 50%, transparent);
+        background: color-mix(in srgb, var(--artdeco-bg-global) 80%, transparent);
         padding: 2px 4px;
         border-radius: 0px;
         font-family: var(--hybrid-font-mono);

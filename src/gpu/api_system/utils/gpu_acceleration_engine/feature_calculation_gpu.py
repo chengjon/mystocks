@@ -7,15 +7,12 @@ import logging
 import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List
 
 import cudf
 import cupy as cp
 import numpy as np
 import pandas as pd
-from cuml.ensemble import RandomForestRegressor
-from cuml.linear_model import Lasso, LinearRegression, Ridge
-from cuml.preprocessing import StandardScaler as GPUStandardScaler
 
 from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
 from src.gpu.api_system.utils.monitoring import MetricsCollector

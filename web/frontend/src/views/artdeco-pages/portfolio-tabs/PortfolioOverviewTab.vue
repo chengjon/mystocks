@@ -84,7 +84,7 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .portfolio-overview-tab {
   padding: var(--artdeco-spacing-6);
@@ -98,8 +98,18 @@ onMounted(() => {
   border-bottom: 2px solid var(--artdeco-gold-primary);
   padding-bottom: var(--artdeco-spacing-2);
 
-  .section-title { margin: 0; font-size: var(--artdeco-text-2xl); color: var(--artdeco-gold-primary); }
-  .trace-info { font-family: var(--font-mono); font-size: var(--artdeco-text-xs); color: var(--artdeco-fg-muted); }
+  .section-title {
+    margin: 0;
+    font-size: var(--artdeco-text-2xl);
+    color: var(--artdeco-gold-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wide);
+  }
+  .trace-info {
+    font-family: var(--artdeco-font-mono);
+    font-size: var(--artdeco-text-xs);
+    color: var(--artdeco-fg-muted);
+  }
 }
 
 .assets-hero {
@@ -107,7 +117,9 @@ onMounted(() => {
   background: var(--artdeco-bg-elevated);
   margin-bottom: var(--artdeco-spacing-10);
   padding: var(--artdeco-spacing-8);
+
   @include artdeco-stepped-corners(20px);
+
   border: 1px solid var(--artdeco-gold-primary);
 
   .hero-content {
@@ -118,9 +130,38 @@ onMounted(() => {
     position: relative;
   }
 
-  label { font-family: var(--font-display); color: var(--artdeco-fg-muted); text-transform: uppercase; font-size: var(--artdeco-text-sm); letter-spacing: 0.1em; display: block; margin-bottom: 8px; }
-  .value { font-family: var(--font-mono); font-size: var(--artdeco-text-4xl); color: var(--artdeco-gold-primary); font-weight: bold; }
-  .pnl-value { font-family: var(--font-mono); font-size: var(--artdeco-text-2xl); &.rise { color: var(--artdeco-rise); } &.down { color: var(--artdeco-down); } .pct { font-size: var(--artdeco-text-lg); margin-left: 10px; } }
+  label {
+    font-family: var(--artdeco-font-display);
+    color: var(--artdeco-fg-muted);
+    text-transform: uppercase;
+    font-size: var(--artdeco-text-sm);
+    letter-spacing: 0.1em;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .value {
+    font-family: var(--artdeco-font-mono);
+    font-size: var(--artdeco-text-4xl);
+    color: var(--artdeco-gold-primary);
+    font-weight: bold;
+  }
+  .pnl-value {
+    font-family: var(--artdeco-font-mono);
+    font-size: var(--artdeco-text-2xl);
+
+    &.rise {
+      color: var(--artdeco-rise);
+    }
+
+    &.down {
+      color: var(--artdeco-down);
+    }
+
+    .pct {
+      font-size: var(--artdeco-text-lg);
+      margin-left: 10px;
+    }
+  }
 }
 
 .positions-grid {
@@ -131,26 +172,60 @@ onMounted(() => {
 
 .position-item {
   padding: var(--artdeco-spacing-5);
+
   @include artdeco-geometric-corners;
+
   background: var(--artdeco-bg-card);
 
   .pos-header {
     display: flex;
     justify-content: space-between;
     margin-bottom: var(--artdeco-spacing-4);
-    .name { font-family: var(--font-display); font-size: var(--artdeco-text-lg); color: var(--artdeco-gold-light); }
-    .symbol { font-family: var(--font-mono); color: var(--artdeco-fg-muted); }
+    .name {
+      font-family: var(--artdeco-font-display);
+      font-size: var(--artdeco-text-lg);
+      color: var(--artdeco-gold-light);
+    }
+    .symbol {
+      font-family: var(--artdeco-font-mono);
+      color: var(--artdeco-fg-muted);
+    }
   }
 
   .pos-data {
     display: flex;
     justify-content: space-between;
     .data-group {
-      label { font-size: 10px; color: var(--artdeco-fg-muted); text-transform: uppercase; margin-bottom: 4px; display: block; }
-      .val { font-family: var(--font-mono); font-size: var(--artdeco-text-md); &.rise { color: var(--artdeco-rise); } &.down { color: var(--artdeco-down); } }
+      label {
+        font-size: 10px;
+        color: var(--artdeco-fg-muted);
+        text-transform: uppercase;
+        margin-bottom: 4px;
+        display: block;
+      }
+      .val {
+        font-family: var(--artdeco-font-mono);
+        font-size: var(--artdeco-text-md);
+
+        &.rise {
+          color: var(--artdeco-rise);
+        }
+
+        &.down {
+          color: var(--artdeco-down);
+        }
+      }
     }
   }
 }
 
-.subsection-title { font-family: var(--font-display); color: var(--artdeco-gold-primary); margin-bottom: var(--artdeco-spacing-6); text-transform: uppercase; letter-spacing: 0.15em; border-left: 4px solid var(--artdeco-gold-primary); padding-left: 12px; }
+.subsection-title {
+  font-family: var(--artdeco-font-display);
+  color: var(--artdeco-gold-primary);
+  margin-bottom: var(--artdeco-spacing-6);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  border-left: 4px solid var(--artdeco-gold-primary);
+  padding-left: 12px;
+}
 </style>

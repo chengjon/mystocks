@@ -82,15 +82,15 @@
         }
 
         &--up {
-            border: 1px solid rgb(255 82 82 / 30%);
+            border: 1px solid color-mix(in srgb, var(--artdeco-rise) 30%, transparent);
         }
 
         &--down {
-            border: 1px solid rgb(0 230 118 / 30%);
+            border: 1px solid color-mix(in srgb, var(--artdeco-down) 30%, transparent);
         }
 
         &--flat {
-            border: 1px solid rgb(136 136 136 / 30%);
+            border: 1px solid color-mix(in srgb, var(--artdeco-flat) 30%, transparent);
         }
     }
 
@@ -109,8 +109,8 @@
 
         font-size: var(--data-dense-font-xs);
         font-weight: 600;
-        color: white;
-        text-shadow: 0 1px 2px rgb(0 0 0 / 50%);
+        color: var(--artdeco-fg-primary);
+        text-shadow: 0 1px 2px color-mix(in srgb, var(--artdeco-bg-global) 50%, transparent);
         text-align: center;
         word-break: break-all;
     }
@@ -120,8 +120,8 @@
 
         font-size: 10px;
         font-weight: 600;
-        color: white;
-        text-shadow: 0 1px 2px rgb(0 0 0 / 50%);
+        color: var(--artdeco-fg-primary);
+        text-shadow: 0 1px 2px color-mix(in srgb, var(--artdeco-bg-global) 50%, transparent);
         margin-top: 2px;
     }
 
@@ -130,7 +130,7 @@
         bottom: 0;
         left: 0;
         height: 3px;
-        background-color: rgb(255 255 255 / 30%);
+        background-color: color-mix(in srgb, var(--artdeco-fg-primary) 30%, transparent);
         transition: width var(--data-dense-transition-fast);
     }
 
@@ -163,7 +163,7 @@
         cursor: pointer;
 
         &:hover {
-            background-color: rgb(212 175 55 / 5%);
+            background-color: var(--artdeco-gold-opacity-05);
         }
 
         &:last-child {
@@ -203,7 +203,7 @@
         width: 16px;
         height: 16px;
         border-radius: 0px;
-        border: 1px solid rgb(255 255 255 / 20%);
+        border: 1px solid color-mix(in srgb, var(--artdeco-fg-primary) 20%, transparent);
     }
 
     .hybrid-heatmap-card__legend-text {
@@ -283,7 +283,7 @@
     .hybrid-heatmap-card__spinner {
         width: 24px;
         height: 24px;
-        border: 2px solid rgb(212 175 55 / 20%);
+        border: 2px solid var(--artdeco-gold-opacity-20);
         border-top-color: var(--artdeco-gold-primary);
         border-radius: 0px;
         animation: hybrid-spin 1s linear infinite;

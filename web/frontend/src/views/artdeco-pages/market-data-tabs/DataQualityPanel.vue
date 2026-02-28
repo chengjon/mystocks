@@ -109,7 +109,7 @@ defineProps<Props>()
   align-items: center;
   padding: var(--artdeco-spacing-4);
   background: var(--artdeco-bg-card);
-  border: 1px solid rgb(212 175 55 / 10%);
+  border: 1px solid var(--artdeco-gold-opacity-10);
   border-radius: var(--artdeco-radius-none);
   
   .source-info {
@@ -130,11 +130,11 @@ defineProps<Props>()
     text-transform: uppercase;
     &.healthy {
       color: var(--artdeco-up);
-      background: rgb(255 82 82 / 10%);
+      background: color-mix(in srgb, var(--artdeco-rise) 10%, transparent);
     }
     &.warning {
       color: var(--artdeco-gold-primary);
-      background: rgb(212 175 55 / 10%);
+      background: var(--artdeco-gold-opacity-10);
     }
   }
 }

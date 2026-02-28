@@ -86,7 +86,7 @@
         gap: var(--artdeco-spacing-3);
         padding: 8px 16px;
         background: var(--artdeco-bg-header);
-        border: 1px solid rgb(212 175 55 / 20%);
+        border: 1px solid var(--artdeco-gold-opacity-20);
         cursor: pointer;
         transition: all var(--artdeco-transition-base);
     }
@@ -125,34 +125,34 @@
 <style>
     /* Global Popper Styles for this component */
     .artdeco-date-popper.el-picker__popper {
-        background: #161b22 !important; /* var(--artdeco-bg-card) */
-        border: 1px solid #d4af37 !important; /* rgb(212 175 55 / 20%) */
-        box-shadow: 0 4px 20px rgb(0 0 0 / 50%) !important;
+        background: var(--artdeco-bg-card) !important;
+        border: 1px solid var(--artdeco-gold-primary) !important;
+        box-shadow: 0 4px 20px color-mix(in srgb, var(--artdeco-bg-global) 50%, transparent) !important;
     }
 
     .artdeco-date-popper .el-date-table th {
-        color: #8b9bb4 !important; /* var(--artdeco-silver-dim) */
-        border-bottom: 1px solid #8a7120 !important; /* var(--artdeco-gold-muted) */
+        color: var(--artdeco-silver-dim) !important;
+        border-bottom: 1px solid var(--artdeco-gold-muted) !important;
     }
 
     .artdeco-date-popper .el-date-table td.available:hover {
-        color: #f4cf57 !important; /* var(--artdeco-gold-hover) */
+        color: var(--artdeco-gold-hover) !important;
     }
 
     .artdeco-date-popper .el-date-table td.in-range .el-date-table-cell {
-        background-color: rgb(212 175 55 / 15%) !important;
+        background-color: var(--artdeco-gold-opacity-15) !important;
     }
 
     .artdeco-date-popper .el-date-table td.start-date .el-date-table-cell__text,
     .artdeco-date-popper .el-date-table td.end-date .el-date-table-cell__text {
-        background-color: #d4af37 !important;
+        background-color: var(--artdeco-gold-primary) !important;
     }
 
     .artdeco-date-popper .el-picker-panel__icon-btn {
-        color: #d4af37 !important;
+        color: var(--artdeco-gold-primary) !important;
     }
 
     .artdeco-date-popper .el-date-range-picker__content.is-left {
-        border-right: 1px solid #8a7120 !important;
+        border-right: 1px solid var(--artdeco-gold-muted) !important;
     }
 </style>

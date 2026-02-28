@@ -69,7 +69,7 @@ defineProps<Props>()
   align-items: center;
   padding: var(--artdeco-spacing-4);
   background: var(--artdeco-bg-card);
-  border: 1px solid rgb(212 175 55 / 10%);
+  border: 1px solid var(--artdeco-gold-opacity-10);
   border-radius: var(--artdeco-radius-none);
   transition: all var(--artdeco-transition-base);
 

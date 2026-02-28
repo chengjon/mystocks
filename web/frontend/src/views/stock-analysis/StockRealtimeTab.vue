@@ -135,14 +135,16 @@ defineProps<{
 .obsidian-log-panel {
   margin-top: var(--artdeco-spacing-4);
   border: 2px solid var(--artdeco-border-default);
+
   @include artdeco-stepped-corners(8px);
+
   overflow: hidden;
 }
 
 .obsidian-code-block {
   width: 100%;
   height: 300px;
-  background: #000000; // Obsidian Deep Black
+  background: #000; // Obsidian Deep Black
   color: #a6acb9; // Obsidian Muted Text
   font-family: 'JetBrains Mono', monospace;
   font-size: var(--artdeco-text-sm);

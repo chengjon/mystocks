@@ -247,5 +247,5 @@ const {
 </script>
 
 <style scoped lang="scss">
-@import './styles/Technical.scss';
+@import './styles/Technical';
 </style>

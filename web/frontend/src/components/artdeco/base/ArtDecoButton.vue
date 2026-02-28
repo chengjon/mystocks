@@ -266,7 +266,7 @@
         border: 1px solid var(--artdeco-gold-primary);
 
         &:hover:not(:disabled, &--disabled) {
-            background-color: rgb(212 175 55 / 10%); // 10% gold fill
+            background-color: var(--artdeco-gold-opacity-10); // 10% gold fill
             border-color: var(--artdeco-gold-hover);
             color: var(--artdeco-gold-hover);
             box-shadow: var(--artdeco-glow-subtle);
@@ -288,8 +288,8 @@
         border: 2px solid var(--artdeco-up);
 
         &:hover:not(:disabled, &--disabled) {
-            background-color: rgb(255 82 82 / 15%);
-            box-shadow: 0 0 15px rgb(255 82 82 / 40%);
+            background-color: color-mix(in srgb, var(--artdeco-up) 15%, transparent);
+            box-shadow: 0 0 15px color-mix(in srgb, var(--artdeco-up) 40%, transparent);
         }
 
         &:active:not(:disabled, &--disabled) {
@@ -308,8 +308,8 @@
         border: 2px solid var(--artdeco-down);
 
         &:hover:not(:disabled, &--disabled) {
-            background-color: rgb(0 230 118 / 15%);
-            box-shadow: 0 0 15px rgb(0 230 118 / 40%);
+            background-color: color-mix(in srgb, var(--artdeco-down) 15%, transparent);
+            box-shadow: 0 0 15px color-mix(in srgb, var(--artdeco-down) 40%, transparent);
         }
 
         &:active:not(:disabled, &--disabled) {

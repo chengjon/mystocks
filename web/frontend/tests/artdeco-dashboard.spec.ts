@@ -2,10 +2,24 @@ import { test, expect } from '@playwright/test';
 
 test.describe('ArtDeco Dashboard Component Test', () => {
   test('ArtDeco Dashboard should render', async ({ page }) => {
-    console.log('Navigating to /dashboard...');
-    await page.goto('http://localhost:3020/dashboard');
+    console.log('Navigating to /dealing-room...');
+
+    await page.addInitScript(() => {
+      localStorage.setItem('auth_token', 'mock-token-dashboard-test');
+      localStorage.setItem('auth_user', JSON.stringify({
+        id: 1,
+        username: 'admin',
+        email: 'admin@mystocks.com',
+        role: 'admin',
+        permissions: ['*']
+      }));
+    });
+
+    await page.goto('http://localhost:3020/dealing-room');
     await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(3000);
+
+    await expect(page).toHaveURL(/\/dealing-room/);
 
     const app = page.locator('#app');
     await expect(app).toBeVisible();
@@ -16,6 +30,7 @@ test.describe('ArtDeco Dashboard Component Test', () => {
     // Check for ArtDeco components
     const artDecoElements = await page.locator('[class*="artdeco"], [class*="art-deco"]').count();
     console.log('ArtDeco elements found:', artDecoElements);
+    expect(artDecoElements).toBeGreaterThan(0);
 
     // Check for specific ArtDeco components
     const statCards = await page.locator('[class*="stat-card"]').count();

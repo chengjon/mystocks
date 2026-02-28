@@ -389,5 +389,5 @@ const { props, radarTimeframe, showHistorical, radarCanvas, sentimentData, resea
 </script>
 
 <style scoped lang="scss">
-@import './styles/ArtDecoSentimentAnalysis.scss';
+@import './styles/ArtDecoSentimentAnalysis';
 </style>

@@ -175,14 +175,16 @@
                         smooth: true,
                         showSymbol: false,
                         lineStyle: {
-                            color: props.pnlHistory[props.pnlHistory.length - 1].profit >= 0 ? '#FF5252' : '#00E676',
+                            color: props.pnlHistory[props.pnlHistory.length - 1].profit >= 0
+                                ? 'var(--artdeco-up)'
+                                : 'var(--artdeco-down)',
                             width: 2
                         },
                         areaStyle: {
                             color:
                                 props.pnlHistory[props.pnlHistory.length - 1].profit >= 0
-                                    ? 'rgb(255 82 82 / 10%)'
-                                    : 'rgb(0 230 118 / 10%)'
+                                    ? 'color-mix(in srgb, var(--artdeco-up) 10%, transparent)'
+                                    : 'color-mix(in srgb, var(--artdeco-down) 10%, transparent)'
                         }
                     }
                 ]
@@ -212,7 +214,7 @@
 
     .artdeco-position-card {
       background: var(--artdeco-bg-card);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       padding: var(--artdeco-spacing-4);
       position: relative;
       overflow: hidden;
@@ -313,7 +315,7 @@
     .grid-item.full-width {
       grid-column: 1 / -1;
       padding-top: var(--artdeco-spacing-2);
-      border-top: 1px solid rgb(212 175 55 / 10%);
+      border-top: 1px solid var(--artdeco-gold-opacity-10);
     }
 
     .item-label {
@@ -358,13 +360,13 @@
       display: flex;
       gap: var(--artdeco-spacing-2);
       padding-top: var(--artdeco-spacing-3);
-      border-top: 1px solid rgb(212 175 55 / 10%);
+      border-top: 1px solid var(--artdeco-gold-opacity-10);
     }
 
     .artdeco-btn-mini {
       flex: 1;
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       background: var(--artdeco-bg-primary);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-display);
@@ -396,7 +398,7 @@
       height: 80px;
       margin-top: var(--artdeco-spacing-3);
       padding-top: var(--artdeco-spacing-3);
-      border-top: 1px solid rgb(212 175 55 / 10%);
+      border-top: 1px solid var(--artdeco-gold-opacity-10);
     }
 
     .pnl-chart canvas {

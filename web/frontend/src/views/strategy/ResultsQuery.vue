@@ -457,5 +457,5 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/ResultsQuery.scss";
+@import "./styles/ResultsQuery";
 </style>

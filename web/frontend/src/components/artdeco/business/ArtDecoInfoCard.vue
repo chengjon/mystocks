@@ -113,7 +113,7 @@
     .artdeco-info-footer {
       margin-top: var(--artdeco-spacing-3);
       padding-top: var(--artdeco-spacing-3);
-      border-top: 1px solid rgb(212 175 55 / 20%);
+      border-top: 1px solid var(--artdeco-gold-opacity-20);
     }
 
     .artdeco-info-description {
@@ -131,7 +131,7 @@
       margin-top: var(--artdeco-spacing-3);
       padding: var(--artdeco-spacing-2);
       background: var(--artdeco-bg-header);
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid var(--artdeco-gold-opacity-20);
       border-radius: var(--artdeco-radius-none);
     }
 
@@ -168,7 +168,7 @@
     }
 
     .artdeco-info-value.data-fall {
-      color: var(--artdeco-fall);
+      color: var(--artdeco-down);
     }
 
     .artdeco-info-value.data-flat {

@@ -1,73 +1,113 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
-import { monitoringApi } from '@/api/index';
-import type { AlertRuleResponse } from '@/api/types/common';
+import { computed, onMounted, ref } from 'vue'
+import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
+import { monitoringApi } from '@/api/index'
+import type { AlertRuleResponse } from '@/api/types/common'
+import { ArtDecoButton, ArtDecoCard, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
 
-const { loading, lastRequestId, exec } = useArtDecoApi();
-const rules = ref<AlertRuleResponse[]>([]);
+const { loading, lastRequestId, exec } = useArtDecoApi()
+const rules = ref<AlertRuleResponse[]>([])
+const activeTab = ref<'overview' | 'rules' | 'alerts'>('overview')
+
+const alertMessages = ref([
+  { level: '高', content: '组合波动率超过阈值 18%', time: '09:42' },
+  { level: '中', content: '单票仓位接近上限 9.6%', time: '09:28' },
+  { level: '低', content: '北向资金流入放缓', time: '09:13' }
+])
+
+const overviewRows = [
+  { metric: '组合Beta', value: '1.08', status: '正常' },
+  { metric: '波动率(20日)', value: '16.2%', status: '关注' },
+  { metric: '最大回撤(近3月)', value: '-8.9%', status: '正常' },
+  { metric: 'VaR(95%)', value: '2.6%', status: '正常' }
+]
+
+const overviewColumns = [
+  { key: 'metric', label: '风险指标' },
+  { key: 'value', label: '当前值' },
+  { key: 'status', label: '状态', variant: 'color' }
+]
+
+const ruleColumns = [
+  { key: 'rule_name', label: '规则名称' },
+  { key: 'rule_type', label: '类型' },
+  { key: 'symbol', label: '目标' },
+  { key: 'is_active', label: '状态' },
+  { key: 'priority', label: '优先级' }
+]
+
+const statCards = computed(() => {
+  const total = rules.value.length
+  const active = rules.value.filter((r) => r.is_active).length
+  return {
+    total,
+    active,
+    alerts: alertMessages.value.length,
+    concentration: '38.6%'
+  }
+})
+
+const normalizedRuleRows = computed(() => rules.value.map((r) => ({
+  ...r,
+  symbol: r.symbol || 'Global',
+  is_active: r.is_active ? 'Active' : 'Disabled'
+})))
 
 const fetchRules = async () => {
-  const data = await exec(() => monitoringApi.getAlertRules(), {
-    errorMsg: '获取风控规则失败'
-  });
-  if (data) {
-    rules.value = data;
-  }
-};
+  const data = await exec(() => monitoringApi.getAlertRules(), { errorMsg: '获取风控规则失败' })
+  if (data) rules.value = data
+}
 
-onMounted(() => {
-  fetchRules();
-});
+onMounted(fetchRules)
 </script>
 
 <template>
   <div class="risk-overview-tab page-enter">
     <div class="artdeco-header-bar">
-      <h2 class="section-title">Risk Management Rules</h2>
+      <h2 class="section-title">风险概览中心</h2>
       <div class="trace-id" v-if="lastRequestId">REQ_ID: {{ lastRequestId }}</div>
     </div>
 
-    <div class="rules-container" v-loading="loading">
-      <table class="artdeco-table">
-        <thead>
-          <tr>
-            <th>RULE NAME</th>
-            <th>TYPE</th>
-            <th>TARGET</th>
-            <th>STATUS</th>
-            <th>PRIORITY</th>
-            <th>ACTIONS</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="rule in rules" :key="rule.id">
-            <td class="rule-name">{{ rule.rule_name }}</td>
-            <td><span class="type-tag">{{ rule.rule_type }}</span></td>
-            <td>{{ rule.symbol || 'Global' }}</td>
-            <td>
-              <span :class="['status-dot', rule.is_active ? 'active' : 'inactive']"></span>
-              {{ rule.is_active ? 'Active' : 'Disabled' }}
-            </td>
-            <td class="priority">{{ rule.priority }}</td>
-            <td>
-              <button class="action-btn">Edit</button>
-              <button class="action-btn toggle">{{ rule.is_active ? 'Disable' : 'Enable' }}</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="stats-grid">
+      <ArtDecoStatCard label="规则总数" :value="statCards.total" variant="gold" />
+      <ArtDecoStatCard label="启用规则" :value="statCards.active" variant="rise" />
+      <ArtDecoStatCard label="今日告警" :value="statCards.alerts" variant="fall" />
+      <ArtDecoStatCard label="仓位集中度" :value="statCards.concentration" variant="gold" />
+    </div>
 
-      <!-- 无数据 -->
-      <div v-if="!loading && rules.length === 0" class="empty-placeholder">
-        <p>No active risk rules found. Define new rules to protect your portfolio.</p>
-      </div>
+    <div class="tabs">
+      <button class="tab" :class="{ active: activeTab === 'overview' }" @click="activeTab = 'overview'">风险概览</button>
+      <button class="tab" :class="{ active: activeTab === 'rules' }" @click="activeTab = 'rules'">规则清单</button>
+      <button class="tab" :class="{ active: activeTab === 'alerts' }" @click="activeTab = 'alerts'">预警消息</button>
+      <ArtDecoButton variant="outline" size="sm" @click="fetchRules">刷新</ArtDecoButton>
+    </div>
+
+    <div class="tab-panel" v-loading="loading">
+      <ArtDecoCard v-if="activeTab === 'overview'" title="组合风险摘要" hoverable>
+        <ArtDecoTable :columns="overviewColumns" :data="overviewRows" />
+      </ArtDecoCard>
+
+      <ArtDecoCard v-else-if="activeTab === 'rules'" title="风险规则" hoverable>
+        <ArtDecoTable :columns="ruleColumns" :data="normalizedRuleRows" />
+      </ArtDecoCard>
+
+      <ArtDecoCard v-else title="实时预警" hoverable>
+        <div class="alerts-list">
+          <div class="alert-item" v-for="item in alertMessages" :key="item.content">
+            <div class="left">
+              <span class="level" :class="`level-${item.level}`">{{ item.level }}风险</span>
+              <span class="content">{{ item.content }}</span>
+            </div>
+            <span class="time">{{ item.time }}</span>
+          </div>
+        </div>
+      </ArtDecoCard>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .risk-overview-tab {
   padding: var(--artdeco-spacing-6);
@@ -77,7 +117,7 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--artdeco-spacing-8);
+  margin-bottom: var(--artdeco-spacing-6);
   border-bottom: 2px solid var(--artdeco-gold-primary);
   padding-bottom: var(--artdeco-spacing-2);
 
@@ -86,96 +126,92 @@ onMounted(() => {
     font-size: var(--artdeco-text-2xl);
     color: var(--artdeco-gold-primary);
     text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wide);
   }
 
   .trace-id {
-    font-family: var(--font-mono);
+    font-family: var(--artdeco-font-mono);
     font-size: var(--artdeco-text-xs);
+    letter-spacing: var(--artdeco-tracking-wide);
     color: var(--artdeco-fg-muted);
   }
 }
 
-.artdeco-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: var(--font-body);
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--artdeco-spacing-4);
+  margin-bottom: var(--artdeco-spacing-5);
+}
 
-  th {
-    text-align: left;
-    padding: var(--artdeco-spacing-4);
-    font-family: var(--font-display);
-    color: var(--artdeco-gold-primary);
-    border-bottom: 1px solid var(--artdeco-border-default);
-    font-size: var(--artdeco-text-sm);
-    letter-spacing: 0.1em;
-  }
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-2);
+  margin-bottom: var(--artdeco-spacing-4);
+  padding: var(--artdeco-spacing-2);
+  border: 1px solid var(--artdeco-border-default);
+  background: var(--artdeco-gold-opacity-05);
+}
 
-  td {
-    padding: var(--artdeco-spacing-4);
-    color: var(--artdeco-fg-primary);
-    border-bottom: 1px solid rgb(212 175 55 / 10%);
-  }
+.tab {
+  border: 1px solid var(--artdeco-border-default);
+  background: transparent;
+  color: var(--artdeco-fg-muted);
+  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
+  cursor: pointer;
+  transition: border-color var(--artdeco-transition-base), background-color var(--artdeco-transition-base), color var(--artdeco-transition-base);
 
-  tr:hover td {
-    background: rgb(212 175 55 / 5%);
-  }
-
-  .rule-name {
-    font-weight: var(--artdeco-font-semibold);
+  &:hover {
+    border-color: var(--artdeco-border-accent);
     color: var(--artdeco-gold-light);
+    background: var(--artdeco-gold-opacity-08);
   }
 
-  .type-tag {
-    background: var(--artdeco-bg-elevated);
-    border: 1px solid var(--artdeco-border-default);
-    padding: 2px 6px;
-    font-size: var(--artdeco-text-xs);
-    font-family: var(--font-mono);
+  &:focus-visible {
+    outline: none;
+    border-color: var(--artdeco-border-hover);
+    box-shadow: 0 0 0 1px var(--artdeco-border-hover);
   }
 
-  .status-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-right: 8px;
-
-    &.active { background: var(--artdeco-rise); box-shadow: 0 0 8px var(--artdeco-rise); }
-    &.inactive { background: var(--artdeco-fg-muted); }
-  }
-
-  .priority {
-    font-family: var(--font-mono);
-  }
-
-  .action-btn {
-    background: transparent;
-    border: 1px solid var(--artdeco-gold-dim);
-    color: var(--artdeco-gold-dim);
-    padding: 2px 8px;
-    margin-right: 8px;
-    cursor: pointer;
-    font-size: var(--artdeco-text-xs);
-    transition: all 0.3s ease;
-
-    &:hover {
-      border-color: var(--artdeco-gold-primary);
-      color: var(--artdeco-gold-primary);
-    }
-    
-    &.toggle {
-      border-color: var(--artdeco-fg-muted);
-      color: var(--artdeco-fg-muted);
-      &:hover { border-color: var(--artdeco-fg-primary); color: var(--artdeco-fg-primary); }
-    }
+  &.active {
+    border-color: var(--artdeco-gold-primary);
+    color: var(--artdeco-gold-primary);
+    background: var(--artdeco-gold-opacity-08);
   }
 }
 
-.empty-placeholder {
-  padding: var(--artdeco-spacing-20);
-  text-align: center;
-  color: var(--artdeco-fg-muted);
-  border: 1px dashed var(--artdeco-border-default);
-  margin-top: var(--artdeco-spacing-8);
+.alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-3);
+}
+
+.alert-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--artdeco-border-default);
+  padding: var(--artdeco-spacing-3);
+
+  .left {
+    display: flex;
+    gap: var(--artdeco-spacing-3);
+  }
+
+  .level {
+    font-size: var(--artdeco-text-xs);
+    font-weight: 600;
+  }
+
+  .level-高 { color: var(--artdeco-down); }
+  .level-中 { color: var(--artdeco-warning); }
+  .level-低 { color: var(--artdeco-rise); }
+
+  .content { color: var(--artdeco-fg-primary); }
+  .time {
+    color: var(--artdeco-fg-muted);
+    font-family: var(--artdeco-font-mono);
+  }
 }
 </style>

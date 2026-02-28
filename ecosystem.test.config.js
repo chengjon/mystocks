@@ -3,7 +3,7 @@ module.exports = {
     {
       name: 'mystocks-backend',
       script: 'python3',
-      args: `-m uvicorn app.main:app --host 0.0.0.0 --port ${process.env.BACKEND_PORT || 8000}`,
+      args: `-m uvicorn app.main:app --host 0.0.0.0 --port ${process.env.BACKEND_PORT || 8020}`,
       cwd: './web/backend',
       min_uptime: '10s',
       restart_delay: 5000,
@@ -11,7 +11,7 @@ module.exports = {
       env: {
         PYTHONPATH: '/opt/claude/mystocks_spec/web/backend', 
         VITE_APP_MODE: 'mock',
-        PORT: process.env.BACKEND_PORT || 8000
+        PORT: process.env.BACKEND_PORT || 8020
       }
     },
     {

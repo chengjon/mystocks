@@ -160,7 +160,7 @@
         justify-content: space-between;
         padding: var(--artdeco-spacing-3);
         background: var(--artdeco-bg-card);
-        border: 1px solid rgb(212 175 55 / 10%);
+        border: 1px solid var(--artdeco-gold-opacity-10);
         border-radius: var(--artdeco-radius-none);
 
         .position-info {

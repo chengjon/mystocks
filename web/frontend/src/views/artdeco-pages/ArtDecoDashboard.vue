@@ -2,8 +2,8 @@
     <div class="artdeco-dashboard">
         <!-- 戏剧性的页面头部 -->
         <ArtDecoHeader
-            title="MyStocks 指挥中心"
-            subtitle="量化交易的神经中枢 · 实时洞察 · 智能决策"
+            title="QUANTIX"
+            subtitle="实时 洞察 策略 执行"
             :show-status="true"
             :status-text="marketStatus"
             :status-type="marketStatusType"
@@ -458,5 +458,5 @@ const {
 </script>
 
 <style scoped lang="scss">
-@import './styles/ArtDecoDashboard.scss';
+@import './styles/ArtDecoDashboard';
 </style>

@@ -1,9 +1,8 @@
 """智能阈值管理器 - 数据分析器"""
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 import numpy as np
-from .dataclasses import ThresholdConfig, ThresholdResult, OptimizationHistory
 
 logger = logging.getLogger(__name__)
 class DataAnalyzer:

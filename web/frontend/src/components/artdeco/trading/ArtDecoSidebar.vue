@@ -145,5 +145,5 @@
 <script setup lang="ts"></script>
 
 <style scoped lang="scss">
-@import "./styles/ArtDecoSidebar.scss";
+@import "./styles/ArtDecoSidebar";
 </style>

@@ -15,14 +15,12 @@
 import asyncio
 import json
 import logging
-import os
 import smtplib
 import ssl
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from pathlib import Path
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 

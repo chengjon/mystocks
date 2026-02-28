@@ -13,16 +13,18 @@
 </template>
 
 <style scoped lang="scss">
+@import '@/styles/artdeco-tokens';
+
 .artdeco-footer {
   height: 32px;
-  background-color: var(--artdeco-bg-secondary, #1a1a1a);
-  border-top: 1px solid var(--artdeco-border-color, #333);
+  background-color: var(--artdeco-bg-secondary);
+  border-top: 1px solid var(--artdeco-border-default);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
   font-size: 12px;
-  color: var(--artdeco-text-secondary, #888);
+  color: var(--artdeco-fg-muted);
 
   .footer-left, .footer-right {
     display: flex;

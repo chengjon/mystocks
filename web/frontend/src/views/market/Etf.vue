@@ -280,5 +280,5 @@ const { loading, autoRefresh, activeCategory, searchQuery, sortBy, refreshInterv
 </script>
 
 <style scoped lang="scss">
-@import './styles/Etf.scss';
+@import './styles/Etf';
 </style>
