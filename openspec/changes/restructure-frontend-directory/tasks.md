@@ -1,9 +1,9 @@
 # Implementation Tasks: Restructure Frontend Directory
 
 ## 1. Pre-flight (Phase 0 – Freeze & Planning)
-- [ ] 1.1 Add git pre-commit hook to block new `.vue` files under `src/views/` not in migration table
-- [ ] 1.2 Run `openspec validate restructure-frontend-directory --strict` to verify change package
-- [ ] 1.3 Create a tracking document (e.g., `MIGRATION_PROGRESS.md`) to log completed moves
+- [x] 1.1 Add git pre-commit hook to block new `.vue` files under `src/views/` not in migration table
+- [x] 1.2 Run `openspec validate restructure-frontend-directory --strict` to verify change package
+- [x] 1.3 Create a tracking document (e.g., `MIGRATION_PROGRESS.md`) to log completed moves
 
 ## 2. Governance & Approval (Phase 1)
 - [ ] 2.1 Submit PR with OpenSpec change to Architecture Board for review

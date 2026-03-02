@@ -225,6 +225,13 @@ repos:
         pass_filenames: false
         always_run: true
 
+      - id: views-migration-gate
+        name: Views Migration Table Gate
+        entry: python scripts/hooks/check-views-migration-table.py
+        language: system
+        pass_filenames: false
+        always_run: true
+
 # CI 配置
 # ============================================================================
 ci:
