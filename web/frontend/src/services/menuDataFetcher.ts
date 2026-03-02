@@ -163,8 +163,12 @@ export async function fetchMenuItemData<T = unknown>(
           data,
           cached: false
         }
-      } else {
-        throw new Error(response?.message || '请求失败')
+      }
+
+      // 后端返回业务失败时，直接透传消息，不进入重试流程
+      return {
+        success: false,
+        error: response?.message || '请求失败'
       }
     } catch (error: unknown) {
       lastError = error
@@ -183,7 +187,9 @@ export async function fetchMenuItemData<T = unknown>(
   }
 
   // 所有重试都失败
-  const errorMessage = lastError instanceof Error ? lastError.message : `获取数据失败: ${item.label}`
+  const errorMessage = lastError instanceof Error
+    ? `获取数据失败: ${lastError.message}`
+    : `获取数据失败: ${item.label}`
 
   console.error(`[MenuDataFetcher] All retries failed: ${method} ${item.apiEndpoint}`, lastError)
 

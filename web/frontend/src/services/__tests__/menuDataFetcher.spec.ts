@@ -396,8 +396,19 @@ describe('menuDataFetcher', () => {
         { ...mockMenuItem, path: '/test3', apiEndpoint: '/api/test3' }
       ]
 
-      menuItems.forEach((item, index) => {
-        vi.mocked(apiClient.get).mockResolvedValue({
+      const dataByEndpoint = new Map<string, number>([
+        ['/api/test1', 0],
+        ['/api/test2', 1],
+        ['/api/test3', 2]
+      ])
+
+      vi.mocked(apiClient.get).mockImplementation((url: string) => {
+        const index = dataByEndpoint.get(url)
+        if (index === undefined) {
+          return Promise.reject(new Error(`Unexpected endpoint: ${url}`))
+        }
+
+        return Promise.resolve({
           success: true,
           code: 200,
           message: 'OK',
