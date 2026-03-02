@@ -19,6 +19,13 @@
   - Status: Pending (will execute after approvals received)
 
 ## 3. Shared Asset Extraction (Phase 2)
+- [ ] 3.0 **Identify existing files at target locations**
+  - [ ] 3.0.1 List all files that already exist in `src/shared/components/` and `src/shared/composables/`
+  - [ ] 3.0.2 For each existing file, determine merge strategy:
+    - Compare source and target file contents
+    - Choose which version to keep (or merge both)
+    - Run unit tests to verify functionality
+    - Delete source file after merge
 - [ ] 3.1 Create target directories: `src/shared/components/` and `src/shared/composables/`
 - [ ] 3.2 Move all files from `src/views/shared/components/*` → `src/shared/components/` (use `git mv`)
 - [ ] 3.3 Move all files from `src/views/shared/composables/*` → `src/shared/composables/` (use `git mv`)
@@ -28,29 +35,35 @@
 
 ## 4. Page-by-Page Migration – Market Domain (Phase 3a)
 - [ ] 4.1 Move `artdeco-pages/market-tabs/MarketRealtimeTab.vue` → `views/market/Realtime.vue`
+  - [ ] 4.1.0 **Identify all relative imports** (composables, styles, components) in the source file
   - [ ] 4.1.1 Move dependency: `useMarketData.ts` → `src/shared/composables/`
   - [ ] 4.1.2 Move dependency: `market.scss` → `src/shared/styles/`
-  - [ ] 4.1.3 Update all imports in the moved file
+  - [ ] 4.1.3 Update all imports in the moved file to use `@/shared/...` absolute paths
   - [ ] 4.1.4 Run `npm run lint && npm run type-check`
 - [ ] 4.2 Move `artdeco-pages/market-tabs/MarketKLineTab.vue` → `views/market/Technical.vue`
+  - [ ] 4.2.0 **Identify all relative imports**
   - [ ] 4.2.1 Move dependency: `useKlineAnalysis.ts` → `src/shared/composables/`
-  - [ ] 4.2.2 Update imports
+  - [ ] 4.2.2 Update imports to use `@/shared/...` absolute paths
   - [ ] 4.2.3 Run lint & type-check
 - [ ] 4.3 Move `artdeco-pages/market-data-tabs/DragonTigerAnalysis.vue` → `views/market/LHB.vue`
-  - [ ] 4.3.1 Move dependencies
-  - [ ] 4.3.2 Update imports
+  - [ ] 4.3.0 **Identify all relative imports**
+  - [ ] 4.3.1 Move dependencies to `src/shared/`
+  - [ ] 4.3.2 Update imports to use `@/shared/...` absolute paths
   - [ ] 4.3.3 Run lint & type-check
 - [ ] 4.4 Move `artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue` → `views/data/Industry.vue`
-  - [ ] 4.4.1 Move dependency: `useIndustry.ts`
-  - [ ] 4.4.2 Update imports
+  - [ ] 4.4.0 **Identify all relative imports**
+  - [ ] 4.4.1 Move dependency: `useIndustry.ts` to `src/shared/composables/`
+  - [ ] 4.4.2 Update imports to use `@/shared/...` absolute paths
   - [ ] 4.4.3 Run lint & type-check
 - [ ] 4.5 Move `artdeco-pages/market-tabs/MarketConceptTab.vue` → `views/data/Concepts.vue`
-  - [ ] 4.5.1 Move dependency: `useConcepts.ts`
-  - [ ] 4.5.2 Update imports
+  - [ ] 4.5.0 **Identify all relative imports**
+  - [ ] 4.5.1 Move dependency: `useConcepts.ts` to `src/shared/composables/`
+  - [ ] 4.5.2 Update imports to use `@/shared/...` absolute paths
   - [ ] 4.5.3 Run lint & type-check
 - [ ] 4.6 Move `artdeco-pages/market-data-tabs/FundFlowAnalysis.vue` → `views/data/FundFlow.vue`
-  - [ ] 4.6.1 Move dependency: `useFundFlow.ts`
-  - [ ] 4.6.2 Update imports
+  - [ ] 4.6.0 **Identify all relative imports**
+  - [ ] 4.6.1 Move dependency: `useFundFlow.ts` to `src/shared/composables/`
+  - [ ] 4.6.2 Update imports to use `@/shared/...` absolute paths
   - [ ] 4.6.3 Run lint & type-check
 - [ ] 4.7 Commit: "refactor: migrate market domain pages"
 
@@ -100,27 +113,38 @@
 
 ## 8. Page-by-Page Migration – Trade Domain (Phase 3e)
 - [ ] 8.1 Move `artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue` → `views/trade/Center.vue`
-  - [ ] 8.1.1 Move dependency: `usePositions.ts`
-  - [ ] 8.1.2 Update imports
+  - [ ] 8.1.0 **Identify all relative imports**
+  - [ ] 8.1.1 Move dependency: `usePositions.ts` to `src/shared/composables/`
+  - [ ] 8.1.2 Update imports to use `@/shared/...` absolute paths
   - [ ] 8.1.3 Run lint & type-check
   - [ ] 8.1.4 Run unit tests for Center.vue
 - [ ] 8.2 Move `artdeco-pages/trading-tabs/ArtDecoSignalsView.vue` → `views/trade/Signals.vue`
-  - [ ] 8.2.1 Move dependency: `useSignals.ts`
-  - [ ] 8.2.2 Update imports
+  - [ ] 8.2.0 **Identify all relative imports**
+  - [ ] 8.2.1 Move dependency: `useSignals.ts` to `src/shared/composables/`
+  - [ ] 8.2.2 Update imports to use `@/shared/...` absolute paths
   - [ ] 8.2.3 Run lint & type-check
 - [ ] 8.3 Move `artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue` → `views/trade/Portfolio.vue`
-  - [ ] 8.3.1 Move dependency: `usePortfolio.ts`
-  - [ ] 8.3.2 Update imports
+  - [ ] 8.3.0 **Identify all relative imports**
+  - [ ] 8.3.1 Move dependency: `usePortfolio.ts` to `src/shared/composables/`
+  - [ ] 8.3.2 Update imports to use `@/shared/...` absolute paths
   - [ ] 8.3.3 Run lint & type-check
 - [ ] 8.4 Move `artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue` → `views/trade/History.vue`
-  - [ ] 8.4.1 Move dependency: `useHistory.ts`
-  - [ ] 8.4.2 Update imports
+  - [ ] 8.4.0 **Identify all relative imports**
+  - [ ] 8.4.1 Move dependency: `useHistory.ts` to `src/shared/composables/`
+  - [ ] 8.4.2 Update imports to use `@/shared/...` absolute paths
   - [ ] 8.4.3 Run lint & type-check
-- [ ] 8.5 Move `trading/TradingDashboard.vue` → `views/trade/DealingRoom.vue`
-  - [ ] 8.5.1 Move dependencies: `useTrade.ts`, `trading.scss` → `src/shared/`
-  - [ ] 8.5.2 Update imports
-  - [ ] 8.5.3 Run lint & type-check
-  - [ ] 8.5.4 Run unit tests for DealingRoom.vue
+- [ ] 8.5 **CLARIFICATION: Terminal.vue and DealingRoom.vue**
+  - [ ] 8.5.0 Determine final disposition:
+    - Option A: Move `trading/TradingDashboard.vue` → `views/trade/DealingRoom.vue` (add to trade domain)
+    - Option B: Move to `deprecated/` (remove from active pages)
+    - Option C: Keep in current location (no migration)
+  - [ ] 8.5.1 If Option A: Move `trading/TradingDashboard.vue` → `views/trade/DealingRoom.vue`
+    - [ ] 8.5.1.0 **Identify all relative imports**
+    - [ ] 8.5.1.1 Move dependencies: `useTrade.ts`, `trading.scss` → `src/shared/`
+    - [ ] 8.5.1.2 Update imports to use `@/shared/...` absolute paths
+    - [ ] 8.5.1.3 Run lint & type-check
+    - [ ] 8.5.1.4 Run unit tests for DealingRoom.vue
+  - [ ] 8.5.2 If Option B or C: Document decision and rationale
 - [ ] 8.6 Move `artdeco-pages/ArtDecoDashboard.vue` → `src/views/deprecated/ArtDecoDashboard.vue`
   - [ ] 8.6.1 No import updates needed (deprecated)
   - [ ] 8.6.2 Verify file moved
