@@ -11,7 +11,13 @@
 
 import { apiClient } from '@/api/apiClient'
 import type { UnifiedResponse } from '@/api/types/common'
-import type { MenuItem } from '@/layouts/MenuConfig'
+
+export interface MenuDataItem {
+  path: string
+  label: string
+  apiEndpoint?: string
+  apiMethod?: 'GET' | 'POST' | 'PUT' | 'DELETE'
+}
 
 export interface MenuDataFetchOptions {
   timeout?: number // 超时时间（毫秒）
@@ -83,7 +89,7 @@ export const clearMenuDataCache = (pattern?: string): void => {
  * @returns Promise<MenuDataFetchResult>
  */
 export async function fetchMenuItemData<T = unknown>(
-  item: MenuItem,
+  item: MenuDataItem,
   options: MenuDataFetchOptions = {}
 ): Promise<MenuDataFetchResult<T>> {
   const {
@@ -210,7 +216,7 @@ async function executeWithTimeout<T>(
  * @returns Promise<Map<string, MenuDataFetchResult>>
  */
 export async function fetchMultipleMenuItems(
-  items: MenuItem[],
+  items: MenuDataItem[],
   options: MenuDataFetchOptions = {}
 ): Promise<Map<string, MenuDataFetchResult>> {
   const results = new Map<string, MenuDataFetchResult>()

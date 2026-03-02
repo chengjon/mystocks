@@ -12,7 +12,7 @@
         <p>Freqtrade 使用 JSON 格式配置文件 (config.json):</p>
 
         <el-tabs type="border-card" style="margin-top: 20px;">
-          <el-tab-pane label="基础配置">
+          <el-tab-pane name="base-config" label="基础配置">
             <pre v-pre class="code-block">{
   "max_open_trades": 3,
   "stake_currency": "USDT",
@@ -40,7 +40,7 @@
 }</pre>
           </el-tab-pane>
 
-          <el-tab-pane label="策略配置">
+          <el-tab-pane name="strategy-config" label="策略配置">
             <pre v-pre class="code-block">{
   "strategy": "SampleStrategy",
   "strategy_path": "user_data/strategies/",
@@ -65,7 +65,7 @@
 }</pre>
           </el-tab-pane>
 
-          <el-tab-pane label="Telegram 机器人">
+          <el-tab-pane name="telegram" label="Telegram 机器人">
             <pre v-pre class="code-block">{
   "telegram": {
     "enabled": true,
@@ -84,7 +84,7 @@
 }</pre>
           </el-tab-pane>
 
-          <el-tab-pane label="API 配置">
+          <el-tab-pane name="api-config" label="API 配置">
             <pre v-pre class="code-block">{
   "api_server": {
     "enabled": true,

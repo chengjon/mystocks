@@ -316,7 +316,7 @@
 <script setup lang="ts">
 import { useBacktestGPU } from './composables/useBacktestGPU'
 
-const { gpuStatus, autoRefresh, refreshing, accelerationRatio, performanceGain, energyEfficiency, computeMode, monitorFrequency, activeLogTab, realtimeLogs, getAvailabilityColor, getUtilizationColor, getMemoryColor, getTemperatureStatus, getTemperatureStatusText, formatBytes, k, sizes, i, formatTime, toggleAutoRefresh, manualRefresh, refreshGPUStatus, startAutoRefresh, interval, stopAutoRefresh, handleComputeModeChange, handleMonitorFrequencyChange, runBenchmark, newRatio, resetGPU } = useBacktestGPU()
+const { gpuStatus, autoRefresh, refreshing, accelerationRatio, performanceGain, energyEfficiency, computeMode, monitorFrequency, activeLogTab, realtimeLogs, getAvailabilityColor, getUtilizationColor, getMemoryColor, getTemperatureStatus, getTemperatureStatusText, formatBytes, formatTime, toggleAutoRefresh, manualRefresh, refreshGPUStatus, startAutoRefresh, stopAutoRefresh, handleComputeModeChange, handleMonitorFrequencyChange, runBenchmark, resetGPU } = useBacktestGPU()
 </script>
 
 <style scoped lang="scss">

@@ -1,21 +1,22 @@
 // System Base & Common Infrastructure Types
 
-export type Dict = Record<string, any>;
-export type List<T = any> = T[];
+export type Dict = Record<string, unknown>;
+export type List<T = unknown> = T[];
 
-export interface UnifiedResponse<T = any> {
+export interface UnifiedResponse<T = unknown> {
   success: boolean;
   code: number;
   message: string;
   data: T;
   timestamp: string;
   request_id: string;
-  errors?: any;
+  process_time?: string;
+  errors?: unknown;
 }
 
 export interface APIResponse {
   success?: boolean;
-  data?: Record<string, any> | null;
+  data?: Record<string, unknown> | null;
   error?: ErrorDetail | null;
   timestamp?: string;
   code?: number;
@@ -26,7 +27,7 @@ export interface APIResponse {
 export interface BaseResponse {
   success?: boolean;
   message?: string;
-  data?: any | null;
+  data?: unknown | null;
   timestamp?: string;
   request_id?: string | null;
 }
@@ -41,14 +42,14 @@ export interface StandardResponse {
 export interface ResponseModel {
   code?: string;
   message?: string;
-  data?: any | null;
+  data?: unknown | null;
   timestamp?: number;
 }
 
 export interface MessageResponse {
   success?: boolean;
   message?: string;
-  data?: Record<string, any> | null;
+  data?: Record<string, unknown> | null;
 }
 
 export type MessageStatus = 'pending' | 'in_progress' | 'success' | 'failed' | 'retry' | 'dead_letter';
@@ -56,7 +57,7 @@ export type MessageStatus = 'pending' | 'in_progress' | 'success' | 'failed' | '
 export interface ErrorDetail {
   error_code?: string;
   error_message?: string;
-  details?: Record<string, any> | null;
+  details?: Record<string, unknown> | null;
 }
 
 export interface ErrorResponse {
@@ -65,7 +66,7 @@ export interface ErrorResponse {
   message?: string;
   error_code?: string;
   error_message?: string;
-  details?: Record<string, any> | null;
+  details?: Record<string, unknown> | null;
   timestamp?: string;
   success?: 'False';
   path?: string | null;
@@ -75,14 +76,14 @@ export interface ErrorResponse {
 export interface ErrorResponseModel {
   code?: string;
   message?: string;
-  details?: any | null;
+  details?: unknown | null;
   timestamp?: number;
 }
 
 export interface CommonError {
   code?: number;
   message?: string;
-  data?: Record<string, any> | null;
+  data?: Record<string, unknown> | null;
   detail?: string | null;
 }
 
@@ -110,7 +111,7 @@ export interface PaginationRequest {
   page_size?: number;
 }
 
-export interface PagedResponse<T = any> {
+export interface PagedResponse<T = unknown> {
   success?: boolean;
   message?: string;
   data?: T[];
@@ -123,7 +124,7 @@ export interface PagedResponse<T = any> {
   timestamp?: string;
 }
 
-export interface PaginatedResponse<T = any> {
+export interface PaginatedResponse<T = unknown> {
   items?: T[];
   total?: number;
   page?: number;
@@ -146,7 +147,7 @@ export interface FilterParams {
 }
 
 export interface FilterRequest {
-  filters?: Record<string, any> | null;
+  filters?: Record<string, unknown> | null;
 }
 
 export interface DateField {
@@ -192,7 +193,7 @@ export interface StockSymbolModel {
 
 export interface BatchOperation {
   operation?: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   id?: string | null;
 }
 
@@ -206,11 +207,11 @@ export interface BatchOperationResult {
   total_operations?: number;
   successful_operations?: number;
   failed_operations?: number;
-  results?: any[];
+  results?: unknown[];
   execution_time?: number;
   id?: string | null;
   success?: boolean;
-  data?: any | null;
+  data?: unknown | null;
   error?: string | null;
 }
 
@@ -219,7 +220,7 @@ export interface HealthCheckResponse {
   version?: string;
   uptime?: number;
   timestamp?: string;
-  services?: Record<string, any> | null;
+  services?: Record<string, unknown> | null;
 }
 
 export interface BaseEvent {
@@ -233,7 +234,7 @@ export interface WebSocketErrorMessage {
   request_id?: string | null;
   error_code?: string;
   error_message?: string;
-  error_details?: Record<string, any> | null;
+  error_details?: Record<string, unknown> | null;
   timestamp?: number;
   trace_id?: string | null;
 }
@@ -248,7 +249,7 @@ export interface WebSocketNotificationMessage {
   type?: string;
   room?: string;
   event?: string;
-  data?: any;
+  data?: unknown;
   timestamp?: number;
   server_time?: number;
 }
@@ -257,7 +258,7 @@ export interface WebSocketRequestMessage {
   type?: string;
   request_id?: string;
   action?: string;
-  payload?: Record<string, any>;
+  payload?: Record<string, unknown>;
   user_id?: string | null;
   timestamp?: number;
   trace_id?: string | null;
@@ -267,7 +268,7 @@ export interface WebSocketResponseMessage {
   type?: string;
   request_id?: string;
   success?: boolean;
-  data?: any;
+  data?: unknown;
   timestamp?: number;
   server_time?: number;
   trace_id?: string | null;

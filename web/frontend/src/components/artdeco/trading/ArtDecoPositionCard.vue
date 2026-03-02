@@ -97,7 +97,7 @@
     }>()
 
     const chartCanvas = ref<HTMLCanvasElement>()
-    let chartInstance: unknown = null
+    let chartInstance: ReturnType<typeof echarts.init> | null = null
 
     const marketValue = computed(() => {
         return props.position.quantity * props.position.current_price
@@ -204,7 +204,7 @@
 
     onBeforeUnmount(() => {
         if (chartInstance) {
-            chartInstance.dispose()
+            (chartInstance as any).dispose()
         }
     })
 </script>

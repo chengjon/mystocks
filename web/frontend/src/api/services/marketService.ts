@@ -8,31 +8,45 @@
 
 import { apiClient } from '../apiClient'
 
+type GenericDataResponse<T = unknown> = {
+  data?: T
+}
+
+type QuotesResponse = {
+  data?: { quotes?: unknown[] }
+  quotes?: unknown[]
+}
+
+type StocksResponse = {
+  data?: { stocks?: unknown[] }
+  stocks?: unknown[]
+}
+
 export const marketService = {
   // 实时行情
   getQuotes: async (symbols?: string) => {
-    const response = await apiClient.get<any>('/v1/market/quotes', { 
-        params: { symbols } 
+    const response = await apiClient.get<QuotesResponse>('/v1/market/quotes', {
+      params: { symbols }
     })
     return response.data?.quotes || response.quotes || []
   },
 
   // 股票列表
-  getStocks: async (params?: any) => {
-    const response = await apiClient.get<any>('/v1/market/stocks', { params })
+  getStocks: async (params?: Record<string, unknown>) => {
+    const response = await apiClient.get<StocksResponse>('/v1/market/stocks', { params })
     return response.data?.stocks || response.stocks || []
   },
 
   // 资金流向
-  getFundFlow: async (params?: any) => {
-    const response = await apiClient.get<any>('/v1/market/fund-flow', { params })
-    return response.data || response
+  getFundFlow: async (params?: Record<string, unknown>) => {
+    const response = await apiClient.get<GenericDataResponse<unknown>>('/v1/market/fund-flow', { params })
+    return response.data ?? response
   },
 
   // K线数据
   getKline: async (params: { stock_code: string; period?: string; adjust?: string }) => {
-    const response = await apiClient.get<any>('/v1/market/kline', { params })
-    return response.data || response
+    const response = await apiClient.get<GenericDataResponse<unknown>>('/v1/market/kline', { params })
+    return response.data ?? response
   }
 }
 

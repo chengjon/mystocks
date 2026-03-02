@@ -14,6 +14,8 @@ import {
   type AuthTokens,
 } from './auth';
 
+const FRONTEND_BASE_URL = process.env.FRONTEND_BASE_URL || 'http://localhost:3020';
+
 test.describe('Authentication Helper', () => {
   test.describe('loginAndGetCsrfToken', () => {
     test('should successfully login and get tokens', async ({ request }) => {
@@ -81,7 +83,7 @@ test.describe('Authentication Helper', () => {
       });
 
       // Make a page navigation that triggers API calls
-      await page.goto('http://localhost:3001/');
+      await page.goto(FRONTEND_BASE_URL);
       await page.waitForLoadState('domcontentloaded');
 
       // Verify Authorization header was set (might not have API calls immediately)

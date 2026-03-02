@@ -1,7 +1,14 @@
 <template>
   <div class="system-settings-page">
     <div class="page-header">
-      <h2 class="section-title">系统配置中心</h2>
+      <div>
+        <h2 class="section-title">系统配置中心</h2>
+        <div class="header-meta">
+          <span>DATA: {{ monitorSource }}</span>
+          <span>REQ_ID: {{ displayRequestId }}</span>
+          <span>TIME: {{ displayProcessTime }}</span>
+        </div>
+      </div>
       <ArtDecoButton variant="solid" size="sm" @click="saveAll">保存配置</ArtDecoButton>
     </div>
 
@@ -61,8 +68,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { ArtDecoButton, ArtDecoCard, ArtDecoInput, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
+import { monitoringApi } from '@/api'
+import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
+
+interface MonitorRow {
+  endpoint: string
+  qps: number | string
+  p95: number | string
+  errorRate: string
+}
+
+interface HealthApiMetrics {
+  name?: string
+  endpoint?: string
+  qps?: number | string
+  avg_qps?: number | string
+  p95?: number | string
+  p95_ms?: number | string
+  latency?: number | string
+  avg_latency_ms?: number | string
+  error_rate?: number | string
+  errorRate?: number | string
+}
+
+const STORAGE_KEY = 'artdeco-system-settings'
 
 const tabs = [
   { key: 'sources', label: '数据源' },
@@ -78,6 +109,9 @@ const form = reactive({
   slippage: '0.05',
   feeRate: '2.5'
 })
+
+const { lastRequestId, lastProcessTime, exec } = useArtDecoApi()
+const monitorSource = ref<'REAL' | 'MOCK'>('REAL')
 
 const sourceColumns = [
   { key: 'name', label: '数据源' },
@@ -101,15 +135,152 @@ const apiColumns = [
   { key: 'errorRate', label: '错误率' }
 ]
 
-const apiRows = [
+const defaultApiRows: MonitorRow[] = [
   { endpoint: '/api/v1/market/quotes', qps: 53, p95: 128, errorRate: '0.18%' },
   { endpoint: '/api/v1/auth/login', qps: 7, p95: 164, errorRate: '0.02%' },
   { endpoint: '/api/v1/strategy/backtest', qps: 3, p95: 342, errorRate: '0.64%' }
 ]
 
-function saveAll() {
-  // placeholder action
+const apiRows = ref<MonitorRow[]>([...defaultApiRows])
+
+const displayRequestId = computed(() => lastRequestId.value || 'N/A')
+const displayProcessTime = computed(() => {
+  if (!lastProcessTime.value) {
+    return 'N/A'
+  }
+
+  const value = Number.parseFloat(lastProcessTime.value)
+  if (Number.isNaN(value)) {
+    return lastProcessTime.value
+  }
+
+  return `${value.toFixed(2)}ms`
+})
+
+function toPercentString(value: unknown): string {
+  if (typeof value === 'string') {
+    return value.includes('%') ? value : `${value}%`
+  }
+
+  if (typeof value === 'number') {
+    return `${value.toFixed(2)}%`
+  }
+
+  return '0.00%'
 }
+
+function toNumberOrDash(value: unknown): number | string {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? Number(value.toFixed(2)) : '-'
+  }
+
+  if (typeof value === 'string') {
+    const parsed = Number.parseFloat(value)
+    return Number.isNaN(parsed) ? value : Number(parsed.toFixed(2))
+  }
+
+  return '-'
+}
+
+function normalizeMonitorRows(payload: unknown): MonitorRow[] {
+  if (!Array.isArray(payload)) {
+    return []
+  }
+
+  return payload.map((item, index) => {
+    const row = (item ?? {}) as HealthApiMetrics
+    const endpoint = typeof row.endpoint === 'string'
+      ? row.endpoint
+      : typeof row.name === 'string'
+        ? row.name
+        : `API-${index + 1}`
+
+    const qps = toNumberOrDash(row.qps ?? row.avg_qps)
+    const p95 = toNumberOrDash(row.p95 ?? row.p95_ms ?? row.latency ?? row.avg_latency_ms)
+
+    return {
+      endpoint,
+      qps,
+      p95,
+      errorRate: toPercentString(row.errorRate ?? row.error_rate)
+    }
+  })
+}
+
+async function loadMonitorRows() {
+  const detailed = await exec(() => monitoringApi.getDetailedSystemHealth(), {
+    silent: true,
+    errorMsg: '系统监控数据加载失败'
+  })
+
+  if (detailed !== null) {
+    const fromDetailed = normalizeMonitorRows(
+      (detailed as { data?: unknown[]; apis?: unknown[]; metrics?: unknown[] }).data
+      ?? (detailed as { data?: unknown[]; apis?: unknown[]; metrics?: unknown[] }).apis
+      ?? (detailed as { data?: unknown[]; apis?: unknown[]; metrics?: unknown[] }).metrics
+      ?? detailed
+    )
+
+    if (fromDetailed.length > 0) {
+      monitorSource.value = 'REAL'
+      apiRows.value = fromDetailed
+      return
+    }
+  }
+
+  const health = await exec(() => monitoringApi.getSystemHealth(), {
+    silent: true,
+    errorMsg: '系统健康状态加载失败'
+  })
+
+  if (health !== null) {
+    const fromHealth = normalizeMonitorRows(
+      (health as { data?: unknown[]; apis?: unknown[]; metrics?: unknown[] }).data
+      ?? (health as { data?: unknown[]; apis?: unknown[]; metrics?: unknown[] }).apis
+      ?? (health as { data?: unknown[]; apis?: unknown[]; metrics?: unknown[] }).metrics
+      ?? health
+    )
+
+    if (fromHealth.length > 0) {
+      monitorSource.value = 'REAL'
+      apiRows.value = fromHealth
+      return
+    }
+  }
+
+  monitorSource.value = 'MOCK'
+  apiRows.value = [...defaultApiRows]
+}
+
+function restoreSettings() {
+  const raw = localStorage.getItem(STORAGE_KEY)
+  if (!raw) {
+    return
+  }
+
+  try {
+    const saved = JSON.parse(raw) as Partial<typeof form>
+    if (typeof saved.backendUrl === 'string') form.backendUrl = saved.backendUrl
+    if (typeof saved.maxBacktestJobs === 'string') form.maxBacktestJobs = saved.maxBacktestJobs
+    if (typeof saved.slippage === 'string') form.slippage = saved.slippage
+    if (typeof saved.feeRate === 'string') form.feeRate = saved.feeRate
+  } catch {
+    localStorage.removeItem(STORAGE_KEY)
+  }
+}
+
+function saveAll() {
+  if (!form.backendUrl.trim() || !form.maxBacktestJobs.trim() || !form.slippage.trim() || !form.feeRate.trim()) {
+    return
+  }
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...form }))
+}
+
+onMounted(() => {
+  restoreSettings()
+  void loadMonitorRows()
+})
 </script>
 
 <style scoped lang="scss">
@@ -130,6 +301,16 @@ function saveAll() {
   margin: 0;
   font-size: var(--artdeco-text-2xl);
   color: var(--artdeco-gold-primary);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-wide);
+}
+
+.header-meta {
+  margin-top: var(--artdeco-spacing-2);
+  display: flex;
+  gap: var(--artdeco-spacing-3);
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-xs);
   text-transform: uppercase;
   letter-spacing: var(--artdeco-tracking-wide);
 }

@@ -9,7 +9,6 @@ import type { UnifiedResponse } from '../types/common';
 import type {
   MarketOverviewVM,
   FundFlowChartPoint,
-  KLineChartData,
 } from '../types/extensions';
 import type {
   ChipRaceItem,
@@ -60,9 +59,14 @@ export class MarketAdapter {
     try {
       const data = apiResponse.data;
 
-      // Handle missing fields gracefully - backend API may not have all fields yet
-      // Use type assertions to access fields that may not be in the type definition
-      const apiData = data as any;
+      const apiData = data as Partial<MarketOverviewResponse> & {
+        rise_fall_count?: {
+          rise?: number;
+          fall?: number;
+          flat?: number;
+        };
+        timestamp?: string;
+      };
 
       const rise = apiData.rise_fall_count?.rise || 0;
       const fall = apiData.rise_fall_count?.fall || 0;
@@ -110,7 +114,7 @@ export class MarketAdapter {
       const fundFlowData = apiResponse.data?.fund_flow || [];
 
       // Transform API data to match FundFlowChartPoint interface
-      return fundFlowData.map((item: any) => ({
+      return fundFlowData.map((item) => ({
         date: item.trade_date || '',
         timestamp: item.trade_date ? new Date(item.trade_date).getTime() : Date.now(),
 
@@ -183,15 +187,15 @@ export class MarketAdapter {
       const klineData = apiResponse.data;
       const points = klineData.data || [];
 
-      const categoryData = points.map((p: any) => p.datetime || '');
-      const values = points.map((p: any) => ({
+      const categoryData = points.map((p) => p.datetime || '');
+      const values = points.map((p) => ({
         open: p.open || 0,
         close: p.close || 0,
         low: p.low || 0,
         high: p.high || 0,
         volume: p.volume || 0,
       }));
-      const volumes = points.map((p: any) => p.volume || 0);
+      const volumes = points.map((p) => p.volume || 0);
 
       return {
         categoryData,
@@ -215,7 +219,7 @@ export class MarketAdapter {
       }
       // Handle both single item and array responses
       const items = Array.isArray(apiResponse.data) ? apiResponse.data : [apiResponse.data];
-      return items.map((stock: any) => ({
+      return items.map((stock) => ({
           symbol: stock.symbol || '',
           name: stock.name || '',
           raceAmount: stock.race_amount || 0,
@@ -234,7 +238,7 @@ export class MarketAdapter {
       }
       // Handle both single item and array responses
       const items = Array.isArray(apiResponse.data) ? apiResponse.data : [apiResponse.data];
-      return items.map((stock: any) => ({
+      return items.map((stock) => ({
           symbol: stock.symbol || '',
           name: stock.name || '',
           net_amount: stock.net_amount || 0,

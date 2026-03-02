@@ -3,8 +3,17 @@ import { onMounted, ref } from 'vue';
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
 import { dataApi } from '@/api/index';
 
+interface KLineRow {
+  datetime: string
+  open: number
+  high: number
+  low: number
+  close: number
+  volume: number
+}
+
 const { loading, lastRequestId, exec } = useArtDecoApi();
-const klineData = ref<any[]>([]);
+const klineData = ref<KLineRow[]>([]);
 const currentSymbol = ref('000001');
 
 const fetchKLine = async () => {
@@ -14,8 +23,16 @@ const fetchKLine = async () => {
     limit: 100
   }), { silent: true });
   
-  if (data && data.data) {
-    klineData.value = data.data;
+  if (data && Array.isArray((data as { data?: unknown }).data)) {
+    const rows = (data as { data: Array<Record<string, unknown>> }).data
+    klineData.value = rows.map((row, index) => ({
+      datetime: String(row.datetime ?? row.time ?? index),
+      open: Number(row.open ?? 0),
+      high: Number(row.high ?? 0),
+      low: Number(row.low ?? 0),
+      close: Number(row.close ?? 0),
+      volume: Number(row.volume ?? 0)
+    }))
   }
 };
 

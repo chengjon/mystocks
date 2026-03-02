@@ -31,7 +31,7 @@
     <ul class="menu-root" role="tree">
       <li
         v-for="(domain, dIndex) in filteredMenuDomains"
-        :key="domain.key || domain.path"
+        :key="domain.businessKey || domain.path"
         class="menu-domain"
         role="presentation"
       >
@@ -39,12 +39,12 @@
         <button
           class="domain-header"
           :class="{
-            expanded: menuStore.expandedKeys.includes(String(domain.key || domain.path)),
+            expanded: menuStore.expandedKeys.includes(String(domain.businessKey || domain.path)),
             active: !domain.children?.length && isActive(domain.path),
             focused: isDomainFocused(dIndex)
           }"
           @click="handleDomainClick(domain)"
-          :aria-expanded="menuStore.expandedKeys.includes(String(domain.key || domain.path))"
+          :aria-expanded="menuStore.expandedKeys.includes(String(domain.businessKey || domain.path))"
           :aria-selected="!domain.children?.length && isActive(domain.path)"
           role="treeitem"
           tabindex="-1"
@@ -54,14 +54,14 @@
           </span>
           <span class="domain-label">{{ domain.label }}</span>
           <span v-if="domain.children?.length" class="toggle-icon" aria-hidden="true">
-            <ArtDecoIcon :name="menuStore.expandedKeys.includes(String(domain.key || domain.path)) ? 'ChevronDown' : 'ChevronRight'" size="xs" />
+            <ArtDecoIcon :name="menuStore.expandedKeys.includes(String(domain.businessKey || domain.path)) ? 'ChevronDown' : 'ChevronRight'" size="xs" />
           </span>
         </button>
 
         <!-- Domain Children -->
         <transition name="slide">
-          <ul 
-            v-if="menuStore.expandedKeys.includes(String(domain.key || domain.path))" 
+          <ul
+            v-if="menuStore.expandedKeys.includes(String(domain.businessKey || domain.path))"
             class="domain-items"
             role="group"
           >
@@ -163,7 +163,7 @@ const filteredMenuItems = (domain: MenuItem): MenuItem[] => {
 // ==========================================
 const handleDomainClick = (domain: MenuItem) => {
   if (domain.children?.length) {
-    const key = String(domain.key || domain.path)
+    const key = String(domain.businessKey || domain.path)
     menuStore.toggleExpand(key)
   } else {
     navigateTo(domain.path)
@@ -193,7 +193,7 @@ const handleSearch = () => {
     // Auto-expand all filtered results
     const keysToExpand: string[] = []
     filteredMenuDomains.value.forEach(domain => {
-      keysToExpand.push(String(domain.key || domain.path))
+      keysToExpand.push(String(domain.businessKey || domain.path))
     })
     menuStore.expandAll(keysToExpand)
   }
@@ -260,7 +260,7 @@ const handleGlobalKeydown = (e: KeyboardEvent) => {
     case 'ArrowDown':
       if (isHeaderFocus) {
         // If on header, check if expanded and has children
-        const key = String(currentDomain.key || currentDomain.path)
+        const key = String(currentDomain.businessKey || currentDomain.path)
         if (menuStore.expandedKeys.includes(key) && currentChildren.length > 0) {
           // Go to first child
           focusState.value.itemIndex = 0
@@ -292,9 +292,9 @@ const handleGlobalKeydown = (e: KeyboardEvent) => {
           focusState.value.domainIndex--
           // Check previous domain state to decide where to land
           const prevDomain = filteredMenuDomains.value[focusState.value.domainIndex]
-          const prevKey = String(prevDomain.key || prevDomain.path)
+          const prevKey = String(prevDomain.businessKey || prevDomain.path)
           const prevChildren = filteredMenuItems(prevDomain)
-          
+
           if (menuStore.expandedKeys.includes(prevKey) && prevChildren.length > 0) {
             // Land on last child of previous domain
             focusState.value.itemIndex = prevChildren.length - 1
@@ -317,7 +317,7 @@ const handleGlobalKeydown = (e: KeyboardEvent) => {
     case 'ArrowRight':
       if (isHeaderFocus) {
         // Expand domain
-        const key = String(currentDomain.key || currentDomain.path)
+        const key = String(currentDomain.businessKey || currentDomain.path)
         menuStore.setExpanded(key, true)
       }
       break
@@ -325,7 +325,7 @@ const handleGlobalKeydown = (e: KeyboardEvent) => {
     case 'ArrowLeft':
       if (isHeaderFocus) {
         // Collapse domain
-        const key = String(currentDomain.key || currentDomain.path)
+        const key = String(currentDomain.businessKey || currentDomain.path)
         menuStore.setExpanded(key, false)
       } else {
         // Go back to parent header
@@ -354,7 +354,7 @@ onMounted(() => {
   ARTDECO_MENU_ENHANCED.forEach(domain => {
     const isInDomain = domain.children?.some(child => currentPath.startsWith(child.path))
     if (isInDomain) {
-      menuStore.setExpanded(String(domain.key || domain.path), true)
+      menuStore.setExpanded(String(domain.businessKey || domain.path), true)
     }
   })
   

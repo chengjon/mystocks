@@ -220,7 +220,7 @@
     const formData = reactive<BacktestConfig>({
         strategy_code: '',
         symbol: '',
-        dateRange: [] as unknown[],
+        dateRange: ['', ''],
         initial_capital: props.defaultCapital,
         commission_rate: 0.0003,
         slippage_rate: 0.0001,

@@ -63,7 +63,13 @@ const tabs = [
 interface WatchlistItem {
   id: string
   name: string
-  stocks: unknown[]
+  stocks: StockRow[]
+}
+
+interface StockRow {
+  symbol: string
+  name: string
+  [key: string]: unknown
 }
 
 const activeWatchlistId = ref('')

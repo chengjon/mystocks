@@ -53,10 +53,11 @@ class TestTradeRoutesAPIFile:
         assert api_test_fixtures["test_timeout"] > 0
 
     @pytest.mark.file_test
-    def test_execute_trade_endpoint(self, api_test_fixtures):
-        """Test POST /api/trade/execute - Execute trade"""
-        # Test trade execution (mock implementation)
-        assert True
+    def test_execute_trade_endpoint(self, api_test_fixtures, mock_responses):
+        response = mock_responses["error_response"]
+        assert api_test_fixtures["mock_enabled"] is True
+        assert response["success"] is False
+        assert response["code"] == 500
 
     @pytest.mark.file_test
     @pytest.mark.contract_test
@@ -78,10 +79,16 @@ class TestTradeRoutesAPIFile:
         assert "message" in error_response
 
     @pytest.mark.file_test
-    def test_response_format_validation(self):
+    def test_response_format_validation(self, mock_responses):
         """Test response format validation for trade endpoints"""
         # Validate response schemas match contract specifications
-        assert True  # Placeholder
+        success_response = mock_responses["strategy_list"]
+        error_response = mock_responses["error_response"]
+
+        assert set(["success", "data"]).issubset(success_response.keys())
+        assert set(["success", "code", "message"]).issubset(error_response.keys())
+        assert isinstance(success_response["success"], bool)
+        assert isinstance(error_response["code"], int)
 
     @pytest.mark.file_test
     def test_performance_requirements(self, api_test_fixtures):
@@ -95,36 +102,50 @@ class TestTradeRoutesAPIFile:
     async def test_concurrent_trading_operations(self):
         """Test concurrent trading operations"""
         # Test multiple simultaneous trading operations
+        start = asyncio.get_event_loop().time()
         await asyncio.sleep(0.01)  # Simulate async operation
-        assert True
+        elapsed = asyncio.get_event_loop().time() - start
+        assert elapsed >= 0.01
 
     @pytest.mark.file_test
-    def test_trade_data_consistency(self):
+    def test_trade_data_consistency(self, mock_responses):
         """Test data consistency across trading operations"""
         # Ensure trading data remains consistent across operations
-        assert True
+        strategy_payload = mock_responses["strategy_list"]["data"]["strategies"]
+        assert len(strategy_payload) > 0
+        assert all("id" in strategy and "status" in strategy for strategy in strategy_payload)
 
     @pytest.mark.file_test
-    def test_portfolio_workflow(self):
+    def test_portfolio_workflow(self, api_test_fixtures, contract_specs):
         """Test complete portfolio management workflow"""
-        # Test view portfolio -> check positions -> review trades workflow
-        assert True
+        base_url = api_test_fixtures["base_url"]
+        trading_paths = contract_specs["trading"]["paths"]
+
+        assert base_url.startswith("http")
+        assert "/api/trade/portfolio" in trading_paths
+        assert "/api/trade/positions" in trading_paths
+        assert "/api/trade/trades" in trading_paths
 
 
 class TestTradeIntegration:
     """Integration tests for trade/routes.py with related modules"""
 
     @pytest.mark.file_test
-    def test_trade_strategy_integration(self):
+    def test_trade_strategy_integration(self, mock_responses):
         """Test trading operations with strategy execution"""
-        # Test strategy-driven trade execution
-        assert True
+        strategies = mock_responses["strategy_list"]["data"]["strategies"]
+
+        assert len(strategies) >= 1
+        assert all("id" in strategy for strategy in strategies)
+        assert all(strategy.get("status") in {"active", "inactive"} for strategy in strategies)
 
     @pytest.mark.file_test
-    def test_trade_risk_integration(self):
+    def test_trade_risk_integration(self, contract_specs):
         """Test trading operations with risk management"""
-        # Test risk-controlled trading operations
-        assert True
+        risk_paths = contract_specs["risk-management"]["paths"]
+
+        assert "/alerts" in risk_paths
+        assert "/risk-limits" in risk_paths
 
 
 class TestTradeContractValidation:
@@ -138,10 +159,14 @@ class TestTradeContractValidation:
         assert spec["openapi"] == "3.0.3"
 
     @pytest.mark.contract_test
-    def test_response_schema_validation(self):
+    def test_response_schema_validation(self, contract_specs, mock_responses):
         """Test response schemas match contract definitions"""
-        # Validate actual responses against contract schemas
-        assert True
+        trading_paths = contract_specs["trading"]["paths"]
+        strategy_list = mock_responses["strategy_list"]
+
+        assert "/api/trade/orders/create" in trading_paths
+        assert "success" in strategy_list and isinstance(strategy_list["success"], bool)
+        assert "data" in strategy_list and "strategies" in strategy_list["data"]
 
     @pytest.mark.contract_test
     def test_endpoint_coverage(self, contract_specs):

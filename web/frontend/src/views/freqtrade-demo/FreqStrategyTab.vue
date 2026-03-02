@@ -12,7 +12,7 @@
         <p>Freqtrade 策略基于 IStrategy 接口,主要包含以下核心方法:</p>
 
         <el-tabs type="border-card" style="margin-top: 20px;">
-          <el-tab-pane label="基础策略示例">
+          <el-tab-pane name="basic-strategy" label="基础策略示例">
             <pre v-pre class="code-block">from freqtrade.strategy import IStrategy
 from pandas import DataFrame
 import talib.abstract as ta
@@ -62,7 +62,7 @@ class SampleStrategy(IStrategy):
         return dataframe</pre>
           </el-tab-pane>
 
-          <el-tab-pane label="机器学习策略">
+          <el-tab-pane name="ml-strategy" label="机器学习策略">
             <pre v-pre class="code-block">from freqtrade.strategy import IStrategy
 from freqai.base_model import BaseRegressionModel
 import pandas as pd
@@ -93,7 +93,7 @@ class FreqAIStrategy(IStrategy):
         return dataframe</pre>
           </el-tab-pane>
 
-          <el-tab-pane label="常用技术指标">
+          <el-tab-pane name="common-indicators" label="常用技术指标">
             <div style="padding: 15px;">
               <h4>TECHNICAL INDICATORS</h4>
               <div class="indicators-grid">

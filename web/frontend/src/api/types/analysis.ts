@@ -1,5 +1,5 @@
 // Auto-generated types for analysis domain
-// Generated at: 2026-02-27T13:28:03.660928
+// Generated at: 2026-03-02T17:03:15.814371
 
 export interface MonteCarloRequest {
   strategy_id?: string;
@@ -16,8 +16,8 @@ export interface MonteCarloResponse {
   simulations_run?: number;
   return_distribution?: Record<string, number>;
   risk_metrics?: Record<string, number>;
-  confidence_intervals?: Record<string, any>;
-  equity_curves?: Record<string, any>[];
+  confidence_intervals?: Record<string, unknown>;
+  equity_curves?: Record<string, unknown>[];
 }
 
 export interface SentimentRequest {
@@ -39,14 +39,14 @@ export interface SentimentResponse {
 
 export interface StressTestRequest {
   portfolio_id?: string;
-  scenarios?: Record<string, any>[];
+  scenarios?: Record<string, unknown>[];
   initial_capital?: number;
 }
 
 export interface StressTestResponse {
   portfolio_id?: string;
   scenarios_tested?: number;
-  results?: Record<string, any>[];
+  results?: Record<string, unknown>[];
   recommendations?: string[];
 }
 

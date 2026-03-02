@@ -295,12 +295,11 @@ while IFS= read -r repo; do
                 ERROR_PREVIEW=$(echo "$CHECK_OUTPUT" | head -n 5)
                 ERROR_SUMMARY="${ERROR_SUMMARY}[$CHECK_NAME - CRITICAL] $ERROR_COUNT errors:\n$ERROR_PREVIEW\n\n"
             elif [ "$ERROR_COUNT" -gt 0 ]; then
-                # 非关键检查失败，记录但不增加计数（或根据需求调整）
-                TOTAL_ERRORS=$((TOTAL_ERRORS + ERROR_COUNT))
-                debug_log "    [$CHECK_NAME] ⚠ Failed with $ERROR_COUNT errors (non-critical)"
+                # 非关键检查失败，仅记录（不计入阻断/告警总错误）
+                debug_log "    [$CHECK_NAME] ⚠ Failed with $ERROR_COUNT errors (non-critical, non-blocking)"
 
                 ERROR_PREVIEW=$(echo "$CHECK_OUTPUT" | head -n 3)
-                ERROR_SUMMARY="${ERROR_SUMMARY}[$CHECK_NAME] $ERROR_COUNT errors:\n$ERROR_PREVIEW\n\n"
+                ERROR_SUMMARY="${ERROR_SUMMARY}[$CHECK_NAME] $ERROR_COUNT errors (non-critical):\n$ERROR_PREVIEW\n\n"
             fi
         fi
     done

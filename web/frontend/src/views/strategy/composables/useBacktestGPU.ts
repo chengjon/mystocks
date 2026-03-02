@@ -77,6 +77,7 @@ export function useBacktestGPU() {
     const computeMode = ref('auto')
     const monitorFrequency = ref('5000')
     const activeLogTab = ref('realtime')
+    let refreshInterval: ReturnType<typeof setInterval> | null = null
 
     const realtimeLogs = ref<LogEntry[]>([
         {
@@ -203,15 +204,16 @@ export function useBacktestGPU() {
     }
 
     const startAutoRefresh = () => {
-        const interval = setInterval(refreshGPUStatus, parseInt(monitorFrequency.value))
-        // Store interval ID for cleanup
-        ;(window as unknown as Record<string, unknown>).gpuRefreshInterval = interval
+        if (refreshInterval) {
+            clearInterval(refreshInterval)
+        }
+        refreshInterval = setInterval(refreshGPUStatus, parseInt(monitorFrequency.value))
     }
 
     const stopAutoRefresh = () => {
-        if ((window as unknown as Record<string, unknown>).gpuRefreshInterval) {
-            clearInterval((window as unknown as Record<string, unknown>).gpuRefreshInterval)
-            ;(window as unknown as Record<string, unknown>).gpuRefreshInterval = null
+        if (refreshInterval) {
+            clearInterval(refreshInterval)
+            refreshInterval = null
         }
     }
 

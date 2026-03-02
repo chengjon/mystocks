@@ -378,14 +378,127 @@
 </template>
 
 <script setup lang="ts">
+    import { computed } from 'vue'
     import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
     import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
     import _ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
     import ArtDecoSelect from '@/components/artdeco/base/ArtDecoSelect.vue'
     import ArtDecoSwitch from '@/components/artdeco/base/ArtDecoSwitch.vue'
-import { useArtDecoSentimentAnalysis } from './composables/useArtDecoSentimentAnalysis'
+    import { useArtDecoSentimentAnalysis } from './composables/useArtDecoSentimentAnalysis'
 
-const { props, radarTimeframe, showHistorical, radarCanvas, sentimentData, researchData, newsData, popularityData, overallSentimentIndex, bullishPercentage, bearishPercentage, neutralPercentage, totalReports, avgRating, avgTargetPrice, avgUpside, recentReports, sentimentSegments, totalNews, recentNews, searchHeatIndex, forumDiscussion, socialMedia, newsCoverage, consensusLevel, sentimentVolatility, timeframeOptions, getOverallSentimentIndex, getBullishPercentage, getBearishPercentage, getNeutralPercentage, getRatingClass, getRatingText, getUpsideClass, formatPrice, formatDate, formatTime, getSentimentColor, getSentimentTypeText, getSentimentClass, getHeatClass, getAttentionTrend, renderRadarChart } = useArtDecoSentimentAnalysis()
+    interface ReportItem {
+        id: string | number
+        broker: string
+        title: string
+        rating: number
+        targetPrice: number
+        upside: number
+        date: string
+    }
+
+    interface SegmentItem {
+        type: string
+        startAngle: number
+        endAngle: number
+        percentage: number
+        count: number
+    }
+
+    interface NewsItem {
+        id: string | number
+        sentiment: string
+        title: string
+        source: string
+        time: string
+    }
+
+    const {
+        radarTimeframe,
+        showHistorical,
+        radarCanvas,
+        sentimentData,
+        researchData,
+        newsData,
+        popularityData,
+        overallSentimentIndex,
+        bullishPercentage,
+        bearishPercentage,
+        neutralPercentage,
+        totalReports,
+        avgRating: rawAvgRating,
+        avgTargetPrice: rawAvgTargetPrice,
+        avgUpside: rawAvgUpside,
+        recentReports: rawRecentReports,
+        sentimentSegments: rawSentimentSegments,
+        totalNews,
+        recentNews: rawRecentNews,
+        searchHeatIndex: rawSearchHeatIndex,
+        forumDiscussion: rawForumDiscussion,
+        socialMedia: rawSocialMedia,
+        newsCoverage: rawNewsCoverage,
+        consensusLevel: rawConsensusLevel,
+        sentimentVolatility: rawSentimentVolatility,
+        timeframeOptions,
+        getOverallSentimentIndex,
+        getBullishPercentage,
+        getBearishPercentage,
+        getNeutralPercentage,
+        getRatingClass,
+        getRatingText,
+        getUpsideClass,
+        formatPrice,
+        formatDate,
+        formatTime,
+        getSentimentColor,
+        getSentimentTypeText,
+        getSentimentClass,
+        getHeatClass,
+        getAttentionTrend,
+        renderRadarChart
+    } = useArtDecoSentimentAnalysis()
+
+    const avgRating = computed((): number => Number(rawAvgRating.value || 0))
+    const avgTargetPrice = computed((): number => Number(rawAvgTargetPrice.value || 0))
+    const avgUpside = computed((): number => Number(rawAvgUpside.value || 0))
+
+    const recentReports = computed((): ReportItem[] => {
+        return rawRecentReports.value.map((report) => ({
+            id: report.id,
+            broker: report.broker,
+            title: report.title,
+            rating: report.rating,
+            targetPrice: report.targetPrice,
+            upside: report.upside,
+            date: report.date
+        }))
+    })
+
+    const sentimentSegments = computed((): SegmentItem[] => {
+        return rawSentimentSegments.value.map((segment) => ({
+            type: segment.type,
+            startAngle: segment.startAngle,
+            endAngle: segment.endAngle,
+            percentage: segment.percentage,
+            count: segment.count
+        }))
+    })
+
+    const recentNews = computed((): NewsItem[] => {
+        return rawRecentNews.value.map((news) => ({
+            id: news.id,
+            sentiment: news.sentiment,
+            title: news.title,
+            source: news.source,
+            time: news.time
+        }))
+    })
+
+    const searchHeatIndex = computed((): number => Number(rawSearchHeatIndex.value || 0))
+    const forumDiscussion = computed((): number => Number(rawForumDiscussion.value || 0))
+    const socialMedia = computed((): number => Number(rawSocialMedia.value || 0))
+    const newsCoverage = computed((): number => Number(rawNewsCoverage.value || 0))
+    const consensusLevel = computed((): number => Number(rawConsensusLevel.value || 0))
+    const sentimentVolatility = computed((): number => Number(rawSentimentVolatility.value || 0))
 </script>
 
 <style scoped lang="scss">

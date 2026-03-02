@@ -4,6 +4,9 @@
 
 本文档提供了完整的web端测试方案，包括PM2生产环境部署和Playwright端到端自动化测试，确保所有功能正常运行。
 
+> 2026-03 基线补充：标准 E2E 链路默认执行 `web/frontend/playwright.config.js`（`tests/e2e`）。
+> 历史 PM2/视觉专项脚本使用 `playwright.config.ts`（legacy）并按文件路径显式执行。
+
 ---
 
 ## 🚀 第一部分：PM2生产环境部署
@@ -30,15 +33,15 @@ module.exports = {
       name: 'mystocks-frontend-prod',
       script: 'npm run preview', // 使用preview模式（生产构建）
       // 或者使用nginx/caddy等静态服务器
-      // script: 'http-server dist -p 3001 -c-1 --cors',
+      // script: 'http-server dist -p 3020 -c-1 --cors',
 
       cwd: '/opt/claude/mystocks_spec/web/frontend',
 
       // 环境变量
       env: {
         NODE_ENV: 'production',
-        PORT: 3001,
-        VITE_API_BASE_URL: 'http://localhost:8000'
+        PORT: 3020,
+        VITE_API_BASE_URL: 'http://localhost:8020'
       },
 
       // 实例配置
@@ -109,7 +112,7 @@ pm2 logs mystocks-frontend-prod --lines 50
 
 ```bash
 # 检查服务是否运行
-curl -I http://localhost:3001
+curl -I http://localhost:3020
 
 # 应该返回：
 # HTTP/1.1 200 OK
@@ -417,7 +420,7 @@ test.describe('WebSocket实时更新测试', () => {
     // 监听WebSocket连接
     const wsConnected = await page.evaluate(() => {
       return new Promise((resolve) => {
-        const ws = new WebSocket('ws://localhost:8000/api/ws');
+        const ws = new WebSocket('ws://localhost:8020/api/ws');
 
         ws.onopen = () => {
           ws.close();
@@ -478,8 +481,8 @@ else
 fi
 
 # 检查端口
-echo "📡 检查端口3001..."
-if curl -s -o /dev/null -w "%{http_code}" http://localhost:3001 | grep -q "200"; then
+echo "📡 检查端口3020..."
+if curl -s -o /dev/null -w "%{http_code}" http://localhost:3020 | grep -q "200"; then
     echo "✅ 服务响应正常"
 else
     echo "❌ 服务无响应"
@@ -658,7 +661,7 @@ jobs:
 **解决方案**：
 ```bash
 # 检查端口占用
-lsof -i :3001
+lsof -i :3020
 
 # 如果端口被占用，停止占用进程
 kill -9 <PID>
@@ -683,7 +686,7 @@ pm2 status
 pm2 logs mystocks-frontend-prod --lines 50
 
 # 3. 检查端口
-curl http://localhost:3001
+curl http://localhost:3020
 
 # 4. 检查防火墙
 sudo ufw status
@@ -721,20 +724,20 @@ npx playwright install
 **解决方案**：
 ```bash
 # 1. 检查后端WebSocket服务
-netstat -an | grep 8000
+netstat -an | grep 8020
 
 # 2. 测试WebSocket连接
-wscat -c ws://localhost:8000/api/ws
+wscat -c ws://localhost:8020/api/ws
 
 # 3. 检查后端日志
 cd web/backend
 tail -f ../logs/app.log
 
 # 4. 验证CORS配置
-curl -H "Origin: http://localhost:3001" \
+curl -H "Origin: http://localhost:3020" \
      -H "Connection: Upgrade" \
      -H "Upgrade: websocket" \
-     http://localhost:8000/api/ws
+     http://localhost:8020/api/ws
 ```
 
 ### 4.2 性能问题
@@ -744,7 +747,7 @@ curl -H "Origin: http://localhost:3001" \
 **诊断**：
 ```bash
 # 1. 使用Chrome DevTools分析
-# 打开 http://localhost:3001
+# 打开 http://localhost:3020
 # 按F12 → Performance → Record
 # 执行操作 → Stop → 分析
 
@@ -767,9 +770,9 @@ ls -lh dist/
 
 ### 5.1 测试前检查
 
-- [ ] 后端API服务正常运行（`http://localhost:8000`）
-- [ ] WebSocket服务可访问（`ws://localhost:8000/api/ws`）
-- [ ] PM2服务已启动（`http://localhost:3001`）
+- [ ] 后端API服务正常运行（`http://localhost:8020`）
+- [ ] WebSocket服务可访问（`ws://localhost:8020/api/ws`）
+- [ ] PM2服务已启动（`http://localhost:3020`）
 - [ ] 数据库连接正常
 - [ ] 测试数据已准备
 - [ ] Playwright浏览器已安装
@@ -819,7 +822,7 @@ npm run build
 pm2 start ecosystem.prod.config.js
 
 # 3. 验证服务
-curl http://localhost:3001
+curl http://localhost:3020
 
 # 4. 运行所有E2E测试
 npm run test:e2e

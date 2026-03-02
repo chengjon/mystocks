@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>市场行情 - MyStocks</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: #f5f5f5; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+        /* 页面标题 */
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .page-title { font-size: 24px; color: #333; }
+
+        /* 工具栏 */
+        .toolbar { display: flex; gap: 10px; margin-bottom: 20px; align-items: center; }
+        .btn { padding: 8px 16px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .btn.active { background: #409EFF; color: white; border-color: #409EFF; }
+        .search-input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; width: 250px; }
+
+        /* 行情表格 */
+        .market-table { background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { background: #f5f5f5; padding: 12px; text-align: left; font-weight: bold; color: #333; position: sticky; top: 0; }
+        .data-table td { padding: 12px; border-bottom: 1px solid #eee; }
+        .data-table tr:hover { background: #f9f9f9; cursor: pointer; }
+
+        /* 涨跌颜色 */
+        .text-up { color: #F56C6C; }
+        .text-down { color: #67C23A; }
+        .text-flat { color: #999; }
+
+        /* 标签 */
+        .tag { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; }
+        .tag-hot { background: #F56C6C; color: white; }
+        .tag-new { background: #409EFF; color: white; }
+
+        /* 分页 */
+        .pagination { display: flex; justify-content: center; align-items: center; padding: 20px; gap: 10px; }
+        .page-btn { padding: 6px 12px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; }
+        .page-btn.active { background: #409EFF; color: white; border-color: #409EFF; }
+
+        /* 实时更新指示器 */
+        .live-indicator { display: inline-block; width: 8px; height: 8px; background: #67C23A; border-radius: 50%; margin-right: 5px; animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* API标签 */
+        .api-tag { display: inline-block; background: #67C23A; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <h1 class="page-title">市场行情 <span class="api-tag">GET /api/market/overview</span></h1>
+            <div>
+                <span class="live-indicator"></span>
+                <span style="font-size: 14px; color: #666;">实时行情</span>
+            </div>
+        </div>
+
+        <!-- 工具栏 -->
+        <div class="toolbar">
+            <button class="btn active">沪深A股</button>
+            <button class="btn">沪市</button>
+            <button class="btn">深市</button>
+            <button class="btn">创业板</button>
+            <button class="btn">科创板</button>
+            <span style="flex: 1;"></span>
+            <input type="text" class="search-input" placeholder="搜索股票代码或名称...">
+            <select class="btn">
+                <option>涨跌幅排序</option>
+                <option>成交量排序</option>
+                <option>成交额排序</option>
+                <option>价格排序</option>
+            </select>
+        </div>
+
+        <!-- 行情表格 -->
+        <div class="market-table">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>股票代码</th>
+                        <th>股票名称</th>
+                        <th>现价</th>
+                        <th>涨跌幅</th>
+                        <th>涨跌额</th>
+                        <th>成交量(手)</th>
+                        <th>成交额(万)</th>
+                        <th>今开</th>
+                        <th>最高</th>
+                        <th>最低</th>
+                        <th>昨收</th>
+                        <th>市盈率</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>600519</td>
+                        <td>贵州茅台 <span class="tag tag-hot">热</span></td>
+                        <td class="text-up">1678.50</td>
+                        <td class="text-up">+2.35%</td>
+                        <td class="text-up">+38.50</td>
+                        <td>34,567</td>
+                        <td>58,012.34</td>
+                        <td class="text-up">1650.00</td>
+                        <td class="text-up">1685.00</td>
+                        <td class="text-up">1648.00</td>
+                        <td>1640.00</td>
+                        <td>35.6</td>
+                        <td><button style="padding: 4px 12px; border: 1px solid #409EFF; background: white; color: #409EFF; border-radius: 4px; cursor: pointer;">详情</button></td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>000858</td>
+                        <td>五粮液</td>
+                        <td class="text-down">145.23</td>
+                        <td class="text-down">-1.12%</td>
+                        <td class="text-down">-1.65</td>
+                        <td>87,654</td>
+                        <td>12,756.89</td>
+                        <td class="text-down">146.00</td>
+                        <td class="text-up">147.50</td>
+                        <td class="text-down">144.80</td>
+                        <td>146.88</td>
+                        <td>28.3</td>
+                        <td><button style="padding: 4px 12px; border: 1px solid #409EFF; background: white; color: #409EFF; border-radius: 4px; cursor: pointer;">详情</button></td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>601318</td>
+                        <td>中国平安</td>
+                        <td class="text-up">45.67</td>
+                        <td class="text-up">+0.89%</td>
+                        <td class="text-up">+0.40</td>
+                        <td>156,789</td>
+                        <td>7,156.23</td>
+                        <td class="text-up">45.20</td>
+                        <td class="text-up">45.88</td>
+                        <td class="text-up">45.10</td>
+                        <td>45.27</td>
+                        <td>12.5</td>
+                        <td><button style="padding: 4px 12px; border: 1px solid #409EFF; background: white; color: #409EFF; border-radius: 4px; cursor: pointer;">详情</button></td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>600036</td>
+                        <td>招商银行 <span class="tag tag-new">新</span></td>
+                        <td class="text-up">32.45</td>
+                        <td class="text-up">+1.25%</td>
+                        <td class="text-up">+0.40</td>
+                        <td>234,567</td>
+                        <td>7,612.34</td>
+                        <td class="text-up">32.10</td>
+                        <td class="text-up">32.58</td>
+                        <td class="text-up">32.00</td>
+                        <td>32.05</td>
+                        <td>9.8</td>
+                        <td><button style="padding: 4px 12px; border: 1px solid #409EFF; background: white; color: #409EFF; border-radius: 4px; cursor: pointer;">详情</button></td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>000001</td>
+                        <td>平安银行</td>
+                        <td class="text-down">12.34</td>
+                        <td class="text-down">-0.56%</td>
+                        <td class="text-down">-0.07</td>
+                        <td>345,678</td>
+                        <td>4,267.89</td>
+                        <td class="text-up">12.40</td>
+                        <td class="text-up">12.48</td>
+                        <td class="text-down">12.30</td>
+                        <td>12.41</td>
+                        <td>6.5</td>
+                        <td><button style="padding: 4px 12px; border: 1px solid #409EFF; background: white; color: #409EFF; border-radius: 4px; cursor: pointer;">详情</button></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- 分页 -->
+            <div class="pagination">
+                <button class="page-btn">上一页</button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">...</button>
+                <button class="page-btn">100</button>
+                <button class="page-btn">下一页</button>
+                <span style="margin-left: 20px; color: #666;">共 5234 只股票</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API调用示例
+        console.log('=== Market API调用示例 ===');
+
+        // 1. 获取市场行情列表
+        async function fetchMarketList(page = 1, pageSize = 20, market = 'ALL') {
+            try {
+                const response = await fetch(`/api/market/overview?page=${page}&pageSize=${pageSize}&market=${market}`);
+                const data = await response.json();
+                console.log('市场行情:', data);
+                return data;
+            } catch (error) {
+                console.error('获取市场行情失败:', error);
+            }
+        }
+
+        // 2. 搜索股票
+        async function searchStock(keyword) {
+            try {
+                const response = await fetch(`/api/stocks/search?keyword=${keyword}`);
+                const data = await response.json();
+                console.log('搜索结果:', data);
+                return data;
+            } catch (error) {
+                console.error('搜索股票失败:', error);
+            }
+        }
+
+        // 3. 实时行情推送 (SSE)
+        function subscribeRealtimeQuotes() {
+            const eventSource = new EventSource('/api/sse/market/quotes');
+
+            eventSource.onmessage = function(event) {
+                const quote = JSON.parse(event.data);
+                console.log('实时行情更新:', quote);
+                // 更新UI显示
+                updateQuoteDisplay(quote);
+            };
+
+            eventSource.onerror = function(error) {
+                console.error('SSE连接错误:', error);
+                eventSource.close();
+            };
+
+            return eventSource;
+        }
+
+        // 更新行情显示
+        function updateQuoteDisplay(quote) {
+            // 根据股票代码更新对应的行
+            console.log(`更新股票 ${quote.symbol} 的报价:`, quote);
+        }
+
+        // 4. 添加到自选股
+        async function addToFavorites(symbol) {
+            try {
+                const response = await fetch('/api/watchlist/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ symbol: symbol })
+                });
+                const data = await response.json();
+                console.log('添加自选股:', data);
+            } catch (error) {
+                console.error('添加自选股失败:', error);
+            }
+        }
+
+        // 页面加载时执行
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchMarketList(1, 20, 'ALL');
+
+            // 订阅实时行情
+            const sseConnection = subscribeRealtimeQuotes();
+
+            // 页面卸载时关闭SSE连接
+            window.addEventListener('beforeunload', () => {
+                sseConnection.close();
+            });
+        });
+    </script>
+</body>
+</html>

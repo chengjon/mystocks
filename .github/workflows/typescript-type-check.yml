@@ -23,7 +23,7 @@ on:
 env:
   NODE_VERSION: '20'
   WORKING_DIRECTORY: 'web/frontend'
-  TYPE_CHECK_THRESHOLD: 40  # 允许的最大类型错误数（根据 quality gate）
+  TECH_DEBT_BASELINE_FILE: 'reports/analysis/tech-debt-baseline.json'
 
 jobs:
   # ============================================================
@@ -156,11 +156,11 @@ jobs:
 
           ### 过滤后错误数（排除 ArtDeco、cache.ts 等）
           \`\`\`
-          ${{ steps.filter-errors.outputs.error_count }} 个错误 (阈值: ${{ env.TYPE_CHECK_THRESHOLD }})
+          ${{ steps.filter-errors.outputs.error_count }} 个错误（最终门禁阈值由 type-check-gate 读取技术债基线文件）
           \`\`\`
 
           ### 质量门禁状态
-          ${{ steps.filter-errors.outputs.error_count < env.TYPE_CHECK_THRESHOLD && '✅ 通过' || '❌ 失败' }}
+          由 `type-check-gate` 阶段按基线文件 `reports/analysis/tech-debt-baseline.json` 判定
 
           ## 主要错误（前20个）
 
@@ -355,12 +355,99 @@ def analyze_ts_coverage(directory):
           retention-days: 30
 
   # ============================================================
-  # 阶段5: 类型检查质量门禁
+  # 阶段5: no-new-debt 门禁（新增抑制/裸 TODO 阻断）
+  # ============================================================
+  no-new-debt:
+    name: No New Debt Gate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve base revision
+        id: base
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE_SHA="${{ github.event.before }}"
+          fi
+
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            BASE_SHA=$(git rev-parse HEAD~1)
+          fi
+
+          echo "base_sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
+          echo "基线提交: $BASE_SHA"
+
+      - name: Check suppressions and bare TODO markers
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          BASE_SHA="${{ steps.base.outputs.base_sha }}"
+          DIFF_FILE="added-lines.diff"
+
+          git diff --unified=0 "$BASE_SHA"...HEAD -- web/frontend/src web/backend/app src tests \
+            | grep '^+' \
+            | grep -v '^+++' > "$DIFF_FILE" || true
+
+          echo "检查新增行总数: $(wc -l < "$DIFF_FILE" | tr -d ' ')"
+
+          SUPPRESSION_CANDIDATES=$(grep -nE '@ts-ignore|@ts-expect-error|@ts-nocheck|[[:space:]]as any\b|#\s*type:\s*ignore' "$DIFF_FILE" || true)
+          TODO_CANDIDATES=$(grep -nE 'TODO|FIXME|HACK' "$DIFF_FILE" || true)
+          BARE_TODO_VIOLATIONS=$(printf "%s\n" "$TODO_CANDIDATES" | grep -Evi 'owner|ttl|issue' || true)
+
+          EXCEPTION_PATTERN='\[debt-exception\].*owner=.*issue=.*ttl=.*reason=.*remediation='
+          SUPPRESSION_VIOLATIONS=$(printf "%s\n" "$SUPPRESSION_CANDIDATES" | grep -Ev "$EXCEPTION_PATTERN" || true)
+          SUPPRESSION_EXCEPTIONS=$(printf "%s\n" "$SUPPRESSION_CANDIDATES" | grep -E "$EXCEPTION_PATTERN" || true)
+
+          FAILED=0
+
+          if [ -n "$SUPPRESSION_VIOLATIONS" ]; then
+            echo "❌ 检测到新增抑制注释或 as any："
+            echo "$SUPPRESSION_VIOLATIONS"
+            FAILED=1
+          fi
+
+          if [ -n "$SUPPRESSION_EXCEPTIONS" ]; then
+            if [ "${{ github.event_name }}" != "pull_request" ]; then
+              echo "❌ debt-exception 仅允许在 PR 流程中使用"
+              FAILED=1
+            else
+              if ! printf "%s" "${PR_BODY:-}" | grep -Eqi 'debt-exception-tech-lead-approved:\s*yes'; then
+                echo "❌ 缺少 Tech Lead 双签标记: debt-exception-tech-lead-approved: yes"
+                FAILED=1
+              fi
+              if ! printf "%s" "${PR_BODY:-}" | grep -Eqi 'debt-exception-module-owner-approved:\s*yes'; then
+                echo "❌ 缺少模块负责人双签标记: debt-exception-module-owner-approved: yes"
+                FAILED=1
+              fi
+            fi
+          fi
+
+          if [ -n "$BARE_TODO_VIOLATIONS" ]; then
+            echo "❌ 检测到裸 TODO/FIXME/HACK（缺少 owner/ttl/issue 元数据）："
+            echo "$BARE_TODO_VIOLATIONS"
+            FAILED=1
+          fi
+
+          if [ "$FAILED" -ne 0 ]; then
+            echo "No-new-debt 门禁失败"
+            exit 1
+          fi
+
+          echo "✅ No-new-debt 门禁通过"
+
+  # ============================================================
+  # 阶段6: 类型检查质量门禁
   # ============================================================
   type-check-gate:
     name: Type Check Quality Gate
     runs-on: ubuntu-latest
-    needs: [type-check-vue, eslint-typescript]
+    needs: [type-check-vue, eslint-typescript, no-new-debt]
 
     outputs:
       type-check-pass: ${{ steps.gate.outputs.pass }}
@@ -378,14 +465,37 @@ def analyze_ts_coverage(directory):
           QUALITY_PASS=true
           GATE_ISSUES=""
 
-          # 检查 vue-tsc 错误
+          BASELINE_FILE="${{ github.workspace }}/${{ env.TECH_DEBT_BASELINE_FILE }}"
+          BASELINE_FRONTEND_ERRORS=""
+          if [ -f "$BASELINE_FILE" ]; then
+            BASELINE_FRONTEND_ERRORS=$(python - <<'PY'
+import json
+from pathlib import Path
+p = Path("${{ env.TECH_DEBT_BASELINE_FILE }}")
+try:
+    data = json.loads(p.read_text(encoding="utf-8"))
+    value = data.get("frontend_type_errors", "")
+    print(value if isinstance(value, int) and value >= 0 else "")
+except Exception:
+    print("")
+PY
+)
+          fi
+
+          if [ -z "$BASELINE_FRONTEND_ERRORS" ]; then
+            echo "❌ 未找到有效 frontend_type_errors 基线: $BASELINE_FILE"
+            QUALITY_PASS=false
+            GATE_ISSUES="$GATE_ISSUES 缺少有效技术债基线(frontend_type_errors)"
+          fi
+
+          # 检查 vue-tsc 错误（对比技术债基线文件）
           if [ -f vue-tsc-results/vue-tsc-filtered.txt ]; then
             ERROR_COUNT=$(wc -l < vue-tsc-results/vue-tsc-filtered.txt | tr -d ' ')
-            echo "Vue-tsc 错误数: $ERROR_COUNT (阈值: ${{ env.TYPE_CHECK_THRESHOLD }})"
+            echo "Vue-tsc 错误数: $ERROR_COUNT (基线: ${BASELINE_FRONTEND_ERRORS:-N/A})"
 
-            if [ "$ERROR_COUNT" -gt "${{ env.TYPE_CHECK_THRESHOLD }}" ]; then
+            if [ -n "$BASELINE_FRONTEND_ERRORS" ] && [ "$ERROR_COUNT" -gt "$BASELINE_FRONTEND_ERRORS" ]; then
               QUALITY_PASS=false
-              GATE_ISSUES="$GATE_ISSUES Vue-tsc 错误超过阈值: $ERROR_COUNT > ${{ env.TYPE_CHECK_THRESHOLD }}"
+              GATE_ISSUES="$GATE_ISSUES Vue-tsc 错误高于基线: $ERROR_COUNT > $BASELINE_FRONTEND_ERRORS"
             fi
           fi
 
@@ -411,12 +521,12 @@ def analyze_ts_coverage(directory):
           fi
 
   # ============================================================
-  # 阶段6: 最终报告汇总
+  # 阶段7: 最终报告汇总
   # ============================================================
   final-report:
     name: Final Type Check Report
     runs-on: ubuntu-latest
-    needs: [type-check-typescript, type-check-vue, eslint-typescript, type-coverage, type-check-gate]
+    needs: [type-check-typescript, type-check-vue, eslint-typescript, type-coverage, no-new-debt, type-check-gate]
     if: always()
 
     steps:

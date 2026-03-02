@@ -1,287 +1,176 @@
 /**
- * ArtDeco Configuration Integration Tests
- * 
- * End-to-end tests for verifying that ArtDeco components
- * correctly load and use the page configuration system.
+ * ArtDeco Route & Configuration Integration E2E
+ *
+ * Updated to verify current route shells and integration stability.
  */
 
-import { test, expect, describe } from '@playwright/test'
+import { expect, test, request as playwrightRequest } from "@playwright/test"
+const { loadPortEnv, resolveFrontendConfig, resolveBackendConfig } = require("./helpers/port-env.js")
 
-describe('ArtDeco Configuration Integration', () => {
-  describe('Market Data Component Configuration', () => {
-    test('should load market-realtime route with correct configuration', async ({ page }) => {
-      // Navigate to market realtime page
-      await page.goto('/market/realtime')
-      
-      // Wait for page to load
-      await page.waitForLoadState('networkidle')
-      
-      // Verify the page title contains expected text
-      await expect(page.locator('.page-title')).toContainText('市场行情')
-      
-      // Verify configuration is loaded (check console logs)
-      const consoleMessages: string[] = []
-      page.on('console', msg => {
-        if (msg.type() === 'log') {
-          consoleMessages.push(msg.text())
-        }
-      })
-      
-      // Navigate to trigger config loading
-      await page.reload()
-      await page.waitForLoadState('networkidle')
-      
-      // Check for configuration log messages
-      const configLogs = consoleMessages.filter(m => 
-        m.includes('API端点:') || 
-        m.includes('WebSocket频道:') ||
-        m.includes('artdeco-market')
-      )
-      
-      // At least one config-related log should exist
-      expect(configLogs.length).toBeGreaterThanOrEqual(0) // Flexible assertion
+loadPortEnv(process.cwd())
+
+const FRONTEND_BASE_URL = resolveFrontendConfig().baseUrl
+const BACKEND_BASE_URL = resolveBackendConfig().baseUrl
+const TEST_USER = { username: "admin", password: "admin123" }
+let cachedToken = ""
+let cachedUser: Record<string, unknown> = {}
+
+function isIgnoredConsoleError(text: string): boolean {
+  const ignored = [
+    "favicon",
+    "manifest",
+    "Service Worker",
+    "ResizeObserver loop",
+    "Failed to load resource",
+    "access control checks",
+    "WebSocket",
+    "ws://",
+    "downloadable font",
+    "fonts.gstatic.com",
+  ]
+  return ignored.some((item) => text.includes(item))
+}
+
+async function setupAuthenticatedSession(page: Parameters<typeof test>[0]["page"]) {
+  expect(Boolean(cachedToken)).toBeTruthy()
+  await page.addInitScript(
+    ({ token, user }) => {
+      localStorage.setItem("auth_token", token)
+      localStorage.setItem("auth_user", JSON.stringify(user))
+    },
+    { token: cachedToken, user: cachedUser }
+  )
+}
+
+test.describe("ArtDeco Configuration Integration", () => {
+  test.describe.configure({ mode: "serial", timeout: 120000 })
+
+  test.beforeAll(async () => {
+    test.setTimeout(120000)
+    const api = await playwrightRequest.newContext()
+    const loginResponse = await api.post(`${BACKEND_BASE_URL}/api/v1/auth/login`, {
+      data: new URLSearchParams({
+        username: TEST_USER.username,
+        password: TEST_USER.password,
+      }).toString(),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      timeout: 60000,
     })
 
-    test('should display market tabs correctly', async ({ page }) => {
-      await page.goto('/market/realtime')
-      await page.waitForLoadState('networkidle')
-      
-      // Check that main tabs are present
-      const tabs = page.locator('.main-tabs .main-tab')
-      await expect(tabs.first()).toBeVisible()
-    })
-  })
-
-  describe('Trading Management Component Configuration', () => {
-    test('should load trading-signals route with correct configuration', async ({ page }) => {
-      await page.goto('/trading/signals')
-      await page.waitForLoadState('networkidle')
-      
-      // Verify the page loads
-      await expect(page.locator('.artdeco-trading-management')).toBeVisible()
-    })
-
-    test('should display trading tabs correctly', async ({ page }) => {
-      await page.goto('/trading/signals')
-      await page.waitForLoadState('networkidle')
-      
-      // Check that main tabs are present
-      const tabs = page.locator('.main-tabs .main-tab')
-      const tabCount = await tabs.count()
-      expect(tabCount).toBeGreaterThan(0)
-    })
-  })
-
-  describe('Stock Management Component Configuration', () => {
-    test('should load stock-management route with correct configuration', async ({ page }) => {
-      await page.goto('/stocks/management')
-      await page.waitForLoadState('networkidle')
-      
-      // Verify the page loads
-      await expect(page.locator('.artdeco-stock-management')).toBeVisible()
-    })
-  })
-
-  describe('Risk Management Component Configuration', () => {
-    test('should load risk-overview route', async ({ page }) => {
-      await page.goto('/risk/overview')
-      await page.waitForLoadState('networkidle')
-      
-      // Verify the page loads (uses placeholder component)
-      await expect(page.locator('.artdeco-market-quotes')).toBeVisible()
-    })
-  })
-
-  describe('System Management Component Configuration', () => {
-    test('should load system-monitoring route', async ({ page }) => {
-      await page.goto('/system/monitoring')
-      await page.waitForLoadState('networkidle')
-      
-      // Verify the page loads
-      await expect(page.locator('.monitoring-dashboard')).toBeVisible()
-    })
-  })
-
-  describe('Configuration Validation', () => {
-    test('should have all routes configured', async ({ page }) => {
-      const routes = [
-        '/dashboard',
-        '/market/realtime',
-        '/trading/signals',
-        '/stocks/management',
-        '/risk/overview',
-        '/system/monitoring'
-      ]
-      
-      for (const route of routes) {
-        await page.goto(route)
-        await page.waitForLoadState('networkidle')
-        
-        // Each route should load without errors
-        // (The actual content may vary based on implementation)
-        const errors: string[] = []
-        page.on('console', msg => {
-          if (msg.type() === 'error') {
-            errors.push(msg.text())
-          }
-        })
-        
-        // Check for critical errors (not warnings)
-        const criticalErrors = errors.filter(e => 
-          e.includes('未配置的API端点') === false // Allow config warnings
-        )
-        
-        // Don't fail on minor errors - just log
-        console.log(`Route ${route}: ${errors.length} console errors`)
-      }
-    })
-
-    test('should have valid API endpoints in configuration', async ({ page }) => {
-      // This test verifies that the configuration system returns valid endpoints
-      await page.goto('/dashboard')
-      await page.waitForLoadState('networkidle')
-      
-      // Configuration should be loaded
-      const consoleMessages: string[] = []
-      page.on('console', msg => {
-        if (msg.type() === 'log') {
-          consoleMessages.push(msg.text())
-        }
-      })
-      
-      await page.reload()
-      await page.waitForLoadState('networkidle')
-      
-      // Look for API endpoint configuration
-      const apiEndpointLogs = consoleMessages.filter(m => m.includes('API端点:'))
-      
-      // Logs should exist and contain valid endpoints
-      if (apiEndpointLogs.length > 0) {
-        const hasValidEndpoint = apiEndpointLogs.some(m => 
-          m.includes('/api/') || m.includes('未配置')
-        )
-        expect(hasValidEndpoint).toBe(true)
-      }
-    })
-
-    test('should have valid WebSocket channels in configuration', async ({ page }) => {
-      await page.goto('/dashboard')
-      await page.waitForLoadState('networkidle')
-      
-      const consoleMessages: string[] = []
-      page.on('console', msg => {
-        if (msg.type() === 'log') {
-          consoleMessages.push(msg.text())
-        }
-      })
-      
-      await page.reload()
-      await page.waitForLoadState('networkidle')
-      
-      // Look for WebSocket channel configuration
-      const wsChannelLogs = consoleMessages.filter(m => m.includes('WebSocket频道:'))
-      
-      // Logs should exist and contain valid channels
-      if (wsChannelLogs.length > 0) {
-        const hasValidChannel = wsChannelLogs.some(m => 
-          m.includes(':') || m.includes('未配置')
-        )
-        expect(hasValidChannel).toBe(true)
-      }
-    })
-  })
-
-  describe('Route Name Validation', () => {
-    test('should correctly identify route names', async ({ page }) => {
-      const routeTests = [
-        { path: '/dashboard', expectedName: 'dashboard' },
-        { path: '/market/realtime', expectedName: 'market-realtime' },
-        { path: '/trading/signals', expectedName: 'trading-signals' },
-        { path: '/system/monitoring', expectedName: 'system-monitoring' }
-      ]
-      
-      for (const { path, expectedName } of routeTests) {
-        await page.goto(path)
-        await page.waitForLoadState('networkidle')
-        
-        // The route name should be logged or accessible
-        const consoleMessages: string[] = []
-        page.on('console', msg => {
-          if (msg.type() === 'log') {
-            consoleMessages.push(msg.text())
-          }
-        })
-        
-        await page.reload()
-        await page.waitForLoadState('networkidle')
-        
-        // Check for route name in logs
-        const routeLog = consoleMessages.find(m => 
-          m.includes('路由切换到:') || m.includes('当前路由:')
-        )
-        
-        if (routeLog) {
-          expect(routeLog).toContain(expectedName)
-        }
-      }
-    })
-  })
-})
-
-describe('Page Configuration System - Component Integration', () => {
-  test('should use configuration for API calls', async ({ page }) => {
-    // This test verifies that components use the configuration system
-    // rather than hardcoded endpoints
-    
-    await page.goto('/market/realtime')
-    await page.waitForLoadState('networkidle')
-    
-    const consoleLogs: string[] = []
-    page.on('console', msg => {
-      if (msg.type() === 'log') {
-        consoleLogs.push(msg.text())
-      }
-    })
-    
-    // Reload to capture logs
-    await page.reload()
-    await page.waitForLoadState('networkidle')
-    
-    // Check that configuration is being used (not hardcoded)
-    const configLogs = consoleLogs.filter(log => 
-      log.includes('API端点:') || 
-      log.includes('使用配置') ||
-      log.includes('apiEndpoint')
-    )
-    
-    // Components should log configuration usage
-    // This is a flexible assertion as not all components may log this
-    expect(configLogs.length).toBeGreaterThanOrEqual(0)
-  })
-
-  test('should handle configuration for nested routes', async ({ page }) => {
-    // Test that nested routes under layouts work correctly
-    const nestedRoutes = [
-      '/market/technical',
-      '/trading/history',
-      '/stocks/portfolio'
-    ]
-    
-    for (const route of nestedRoutes) {
-      await page.goto(route)
-      await page.waitForLoadState('networkidle')
-      
-      // Should load without JavaScript errors
-      const errors: string[] = []
-      page.on('pageerror', error => {
-        errors.push(error.message)
-      })
-      
-      // Give time for any errors to occur
-      await page.waitForTimeout(500)
-      
-      // Should not have page errors
-      expect(errors.filter(e => !e.includes('favicon'))).toHaveLength(0)
+    expect(loginResponse.ok()).toBeTruthy()
+    const payload = await loginResponse.json()
+    cachedToken = payload?.data?.token ?? payload?.token ?? payload?.access_token ?? ""
+    cachedUser = payload?.data?.user ?? {
+      id: 1,
+      username: TEST_USER.username,
+      email: "admin@example.com",
+      role: "admin",
+      permissions: [],
     }
+    await api.dispose()
+  })
+
+  test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await setupAuthenticatedSession(page)
+    await page.route("**/api/v1/strategy/strategies**", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          success: true,
+          data: [
+            {
+              id: "strat-001",
+              name: "MA Crossover",
+              description: "E2E mock strategy",
+              status: "active",
+              type: "trend_following",
+              parameters: { fast_period: 5, slow_period: 20 },
+              created_at: "2026-02-01T00:00:00Z",
+              updated_at: "2026-02-01T00:00:00Z",
+            },
+          ],
+          request_id: "e2e-artdeco-config-rid",
+          process_time_ms: 8,
+        }),
+      })
+    })
+  })
+
+  test("loads key route shells with expected components", async ({ page }) => {
+    const routeChecks = [
+      { path: "/market/realtime", selector: ".market-realtime-tab" },
+      { path: "/market/technical", selector: ".market-kline-tab" },
+      { path: "/strategy/repo", selector: ".strategy-management" },
+      { path: "/strategy/backtest", selector: ".backtest-analysis-page" },
+      { path: "/watchlist/manage", selector: ".watchlist-manager, .watchlist-page, .page-enter" },
+    ]
+
+    for (const item of routeChecks) {
+      await page.goto(`${FRONTEND_BASE_URL}${item.path}`, { waitUntil: "domcontentloaded" })
+      await expect(page.locator(item.selector).first()).toBeVisible()
+    }
+  })
+
+  test("keeps nested routes free of uncaught page errors", async ({ page }) => {
+    const nestedRoutes = ["/market/technical", "/trade/positions", "/watchlist/manage", "/system/settings"]
+
+    for (const route of nestedRoutes) {
+      const pageErrors: string[] = []
+      page.on("pageerror", (error) => pageErrors.push(error.message))
+
+      await page.goto(`${FRONTEND_BASE_URL}${route}`, { waitUntil: "domcontentloaded" })
+      await page.waitForTimeout(500)
+
+      expect(pageErrors).toHaveLength(0)
+    }
+  })
+
+  test("supports expected route redirects", async ({ page }) => {
+    await page.goto(`${FRONTEND_BASE_URL}/market`)
+    await expect(page).toHaveURL(/\/market\/realtime/)
+
+    await page.goto(`${FRONTEND_BASE_URL}/strategy`)
+    await expect(page).toHaveURL(/\/strategy\/repo/)
+  })
+
+  test("renders main layout container for domain entry routes", async ({ page }) => {
+    const domainRouteChecks = [
+      { path: "/dealing-room", selector: "main.artdeco-main" },
+      { path: "/market/realtime", selector: "main.artdeco-main, .market-realtime-tab" },
+      { path: "/strategy/repo", selector: "main.artdeco-main, .strategy-management" },
+      { path: "/system/config", selector: "main.artdeco-main, .system-settings-page" },
+    ]
+
+    for (const item of domainRouteChecks) {
+      await page.goto(`${FRONTEND_BASE_URL}${item.path}`, { waitUntil: "domcontentloaded" })
+      expect(new URL(page.url()).pathname).not.toBe("/login")
+      await expect(page.locator(item.selector).first()).toBeVisible()
+      await expect(page).toHaveTitle(/MyStocks/)
+    }
+  })
+
+  test("does not emit critical console errors on key routes", async ({ page }) => {
+    const routes = ["/dealing-room", "/market/realtime", "/strategy/repo", "/strategy/backtest", "/system/config"]
+    const criticalErrorsByRoute: Record<string, string[]> = {}
+
+    for (const route of routes) {
+      const consoleErrors: string[] = []
+      page.on("console", (msg) => {
+        if (msg.type() === "error" && !isIgnoredConsoleError(msg.text())) {
+          consoleErrors.push(msg.text())
+        }
+      })
+
+      await page.goto(`${FRONTEND_BASE_URL}${route}`, { waitUntil: "domcontentloaded" })
+      await page.waitForTimeout(500)
+      criticalErrorsByRoute[route] = [...consoleErrors]
+    }
+
+    const remainingRoutes = Object.entries(criticalErrorsByRoute).filter(([, errors]) => errors.length > 0)
+    expect(remainingRoutes, `critical console errors: ${JSON.stringify(remainingRoutes)}`).toHaveLength(0)
   })
 })

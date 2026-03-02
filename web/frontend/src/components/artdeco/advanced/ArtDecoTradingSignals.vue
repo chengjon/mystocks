@@ -260,22 +260,37 @@
     import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
     import ArtDecoSlider from '@/components/artdeco/business/ArtDecoSlider.vue'
 
+    type SignalType = 'buy' | 'sell'
+    type SignalResult = 'profit' | 'loss' | 'pending'
+
     interface TradingSignal {
-        type: 'buy' | 'sell'
+        id: string | number
+        type: SignalType
         strength: number
         symbol: string
+        name: string
+        reason: string
+        price: string
+        stopLoss: string
+        target: string
+        timestamp: string
         [key: string]: unknown
     }
 
     interface SignalHistoryItem {
-        result: 'profit' | 'loss' | 'pending'
+        id: string | number
+        symbol: string
+        type: SignalType
+        strength: number
+        result: SignalResult
+        timestamp: string
         holdingPeriod?: number
         [key: string]: unknown
     }
 
     interface TradingSignalsData {
-        signals?: TradingSignal[]
-        history?: SignalHistoryItem[]
+        signals?: Record<string, unknown>[]
+        history?: Record<string, unknown>[]
         [key: string]: unknown
     }
 
@@ -306,16 +321,60 @@
     })
 
     // 计算属性
-    const tradingSignals = computed(() => props.data?.signals || [])
+    const tradingSignals = computed<TradingSignal[]>(() => {
+        const signals = props.data?.signals || []
+        return signals.map((signal, index) => {
+            const item = signal as Record<string, unknown>
+            const rawType = item.type
+            const type: SignalType = rawType === 'sell' ? 'sell' : 'buy'
 
-    const filteredSignals = computed(() => {
-        if (signalFilter.value === 'all') return tradingSignals.value
-        if (signalFilter.value === 'buy') return tradingSignals.value.filter((s: TradingSignal) => s.type === 'buy')
-        if (signalFilter.value === 'sell') return tradingSignals.value.filter((s: TradingSignal) => s.type === 'sell')
-        return tradingSignals.value.filter((s: TradingSignal) => s.strength >= 80)
+            return {
+                id: (item.id as string | number | undefined) ?? index,
+                type,
+                strength: Number(item.strength || 0),
+                symbol: String(item.symbol || ''),
+                name: String(item.name || ''),
+                reason: String(item.reason || ''),
+                price: String(item.price || '--'),
+                stopLoss: String(item.stopLoss || '--'),
+                target: String(item.target || '--'),
+                timestamp: String(item.timestamp || '')
+            }
+        })
     })
 
-    const signalHistory = computed(() => props.data?.history || [])
+    const filteredSignals = computed<TradingSignal[]>(() => {
+        if (signalFilter.value === 'all') return tradingSignals.value
+        if (signalFilter.value === 'buy') return tradingSignals.value.filter(s => s.type === 'buy')
+        if (signalFilter.value === 'sell') return tradingSignals.value.filter(s => s.type === 'sell')
+        return tradingSignals.value.filter(s => s.strength >= 80)
+    })
+
+    const signalHistory = computed<SignalHistoryItem[]>(() => {
+        const history = props.data?.history || []
+        return history.map((record, index) => {
+            const item = record as Record<string, unknown>
+            const rawType = item.type
+            const type: SignalType = rawType === 'sell' ? 'sell' : 'buy'
+            const rawResult = item.result
+            const result: SignalResult = rawResult === 'profit' || rawResult === 'loss' ? rawResult : 'pending'
+
+            return {
+                id: (item.id as string | number | undefined) ?? index,
+                symbol: String(item.symbol || ''),
+                type,
+                strength: Number(item.strength || 0),
+                result,
+                timestamp: String(item.timestamp || ''),
+                holdingPeriod:
+                    typeof item.holdingPeriod === 'number'
+                        ? item.holdingPeriod
+                        : item.holdingPeriod
+                          ? Number(item.holdingPeriod)
+                          : undefined
+            }
+        })
+    })
 
     // 配置选项
     const signalFilterOptions = [

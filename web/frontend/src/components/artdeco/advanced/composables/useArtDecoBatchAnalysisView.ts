@@ -7,6 +7,8 @@ import ArtDecoSwitch from '@/components/artdeco/base/ArtDecoSwitch.vue'
 import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
 
 interface AnalysisResult {
+    id?: string
+    symbolName?: string
     signal: 'buy' | 'sell' | 'hold'
     confidence: number
     analysisType: string
@@ -58,8 +60,9 @@ interface UseArtDecoBatchAnalysisViewOptions {
     loading?: Ref<boolean>
 }
 
-export function useArtDecoBatchAnalysisView(options: UseArtDecoBatchAnalysisViewOptions) {
-    const { data, loading = ref(false) } = options
+export function useArtDecoBatchAnalysisView(options?: Partial<UseArtDecoBatchAnalysisViewOptions>) {
+    const data = options?.data ?? ref<PropsData>({})
+    const loading = options?.loading ?? ref(false)
 
     // 响应式数据
     const autoRefresh = ref(true)

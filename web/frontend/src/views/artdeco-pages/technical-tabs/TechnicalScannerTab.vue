@@ -2,10 +2,18 @@
 import { onMounted, ref } from 'vue';
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
 import { dataApi } from '@/api/index';
-import type { StockListResponse } from '@/api/types/common';
+
+interface ScannerRow {
+  symbol: string
+  name: string
+  rsi: string
+  macd_signal: 'BULL' | 'BEAR'
+  trend_score: string
+  [key: string]: unknown
+}
 
 const { loading, lastRequestId, exec } = useArtDecoApi();
-const scannerResults = ref<any[]>([]);
+const scannerResults = ref<ScannerRow[]>([]);
 
 const fetchScannerData = async () => {
   // 获取基础股票列表作为扫描展示（实际生产中会调用专门的筛选接口）
@@ -16,12 +24,17 @@ const fetchScannerData = async () => {
   const items = (response as Record<string, unknown>)?.data as unknown[] | undefined;
   if (response && items) {
     // 模拟添加一些技术指标评分数据
-    scannerResults.value = items.map((stock: unknown) => ({
-      ...(stock as Record<string, unknown>),
+    scannerResults.value = items.map((stock: unknown, index) => {
+      const row = stock as Record<string, unknown>
+      return {
+      ...row,
+      symbol: String(row.symbol ?? `UNKNOWN-${index + 1}`),
+      name: String(row.name ?? 'UNKNOWN'),
       rsi: (Math.random() * 40 + 30).toFixed(2),
       macd_signal: Math.random() > 0.5 ? 'BULL' : 'BEAR',
       trend_score: (Math.random() * 10).toFixed(1)
-    }));
+      }
+    });
   }
 };
 
@@ -62,7 +75,7 @@ onMounted(() => {
         <div class="trend-gauge">
           <div class="gauge-label">Trend Strength</div>
           <div class="gauge-bar">
-            <div class="gauge-fill" :style="{ width: `${stock.trend_score * 10}%`, background: stock.macd_signal === 'BULL' ? 'var(--artdeco-rise)' : 'var(--artdeco-down)' }"></div>
+            <div class="gauge-fill" :style="{ width: `${Number(stock.trend_score) * 10}%`, background: stock.macd_signal === 'BULL' ? 'var(--artdeco-rise)' : 'var(--artdeco-down)' }"></div>
           </div>
           <div class="gauge-value">{{ stock.trend_score }}/10</div>
         </div>

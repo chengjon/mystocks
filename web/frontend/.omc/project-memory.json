@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1772276485863,
+  "lastScanned": 1772365732093,
   "projectRoot": "/opt/claude/mystocks_spec/web/frontend",
   "techStack": {
     "languages": [
@@ -61,7 +61,7 @@
       "dev:mock": "cp .env.mock .env && npm run generate-types && vite",
       "dev:real": "cp .env.real .env && npm run generate-types && vite",
       "dev:no-types": "vite",
-      "build": "npm run generate-types && (vue-tsc --noEmit || true) && vite build",
+      "build": "npm run generate-types && vue-tsc --noEmit && vite build",
       "build:no-types": "vite build",
       "type-check": "vue-tsc --noEmit",
       "type:validate": "node scripts/validate-types.js",
@@ -123,14 +123,14 @@
       "path": "archives",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1772276485842,
+      "lastAccessed": 1772365732073,
       "keyFiles": []
     },
     "artdeco-design": {
       "path": "artdeco-design",
       "purpose": null,
       "fileCount": 12,
-      "lastAccessed": 1772276485843,
+      "lastAccessed": 1772365732074,
       "keyFiles": [
         "01-dashboard.html",
         "02-market-center.html",
@@ -143,7 +143,7 @@
       "path": "config",
       "purpose": "Configuration files",
       "fileCount": 3,
-      "lastAccessed": 1772276485849,
+      "lastAccessed": 1772365732080,
       "keyFiles": [
         "apache-history-mode.conf",
         "auto-imports.mjs",
@@ -154,14 +154,14 @@
       "path": "cypress",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1772276485850,
+      "lastAccessed": 1772365732081,
       "keyFiles": []
     },
     "dist": {
       "path": "dist",
       "purpose": "Distribution/build output",
       "fileCount": 6,
-      "lastAccessed": 1772276485852,
+      "lastAccessed": 1772365732083,
       "keyFiles": [
         "accessibility-test.html",
         "index.html",
@@ -174,7 +174,7 @@
       "path": "docs",
       "purpose": "Documentation",
       "fileCount": 1,
-      "lastAccessed": 1772276485852,
+      "lastAccessed": 1772365732083,
       "keyFiles": [
         "ArtDeco-Phase1B-Completion-Report.md.bak"
       ]
@@ -183,7 +183,7 @@
       "path": "logs",
       "purpose": null,
       "fileCount": 16,
-      "lastAccessed": 1772276485853,
+      "lastAccessed": 1772365732084,
       "keyFiles": [
         "frontend-access.log",
         "frontend-error.log",
@@ -196,7 +196,7 @@
       "path": "playwright-report",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1772276485853,
+      "lastAccessed": 1772365732084,
       "keyFiles": [
         "index.html"
       ]
@@ -205,7 +205,7 @@
       "path": "public",
       "purpose": "Public files",
       "fileCount": 4,
-      "lastAccessed": 1772276485854,
+      "lastAccessed": 1772365732084,
       "keyFiles": [
         "accessibility-test.html",
         "manifest.json",
@@ -217,7 +217,7 @@
       "path": "reports",
       "purpose": null,
       "fileCount": 7,
-      "lastAccessed": 1772276485854,
+      "lastAccessed": 1772365732085,
       "keyFiles": [
         "LIGHTHOUSE_AUDIT_REPORT.md",
         "LIGHTHOUSE_QUICK_REFERENCE.md",
@@ -230,7 +230,7 @@
       "path": "screenshots",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1772276485854,
+      "lastAccessed": 1772365732085,
       "keyFiles": [
         "test-fullpage.png",
         "test-viewport.png"
@@ -240,7 +240,7 @@
       "path": "scripts",
       "purpose": "Build/utility scripts",
       "fileCount": 20,
-      "lastAccessed": 1772276485855,
+      "lastAccessed": 1772365732086,
       "keyFiles": [
         "PRE_DEPLOYMENT_CHECKLIST.md",
         "check-artdeco-tokens.js",
@@ -253,7 +253,7 @@
       "path": "src",
       "purpose": "Source code",
       "fileCount": 19,
-      "lastAccessed": 1772276485855,
+      "lastAccessed": 1772365732086,
       "keyFiles": [
         "App.vue",
         "App.vue.backup",
@@ -266,7 +266,7 @@
       "path": "test-reports",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1772276485856,
+      "lastAccessed": 1772365732086,
       "keyFiles": [
         "e2e-execution.log",
         "e2e-report.json",
@@ -277,14 +277,14 @@
       "path": "test-results",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1772276485856,
+      "lastAccessed": 1772365732087,
       "keyFiles": []
     },
     "tests": {
       "path": "tests",
       "purpose": "Test files",
       "fileCount": 41,
-      "lastAccessed": 1772276485856,
+      "lastAccessed": 1772365732087,
       "keyFiles": [
         "README-E2E.md",
         "all-pages-accessibility.spec.ts",
@@ -297,28 +297,28 @@
       "path": "undefined:",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1772276485857,
+      "lastAccessed": 1772365732087,
       "keyFiles": []
     },
     "web": {
       "path": "web",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1772276485857,
+      "lastAccessed": 1772365732088,
       "keyFiles": []
     },
     "dist/assets": {
       "path": "dist/assets",
       "purpose": "Static assets",
       "fileCount": 0,
-      "lastAccessed": 1772276485859,
+      "lastAccessed": 1772365732089,
       "keyFiles": []
     },
     "src/api": {
       "path": "src/api",
       "purpose": "API routes",
       "fileCount": 22,
-      "lastAccessed": 1772276485861,
+      "lastAccessed": 1772365732091,
       "keyFiles": [
         "advancedAnalysis.ts",
         "apiClient.spec.ts",
@@ -329,7 +329,7 @@
       "path": "src/components",
       "purpose": "UI components",
       "fileCount": 6,
-      "lastAccessed": 1772276485861,
+      "lastAccessed": 1772365732092,
       "keyFiles": [
         "BacktestPanel.vue",
         "BloombergStatCard.vue",
@@ -340,7 +340,7 @@
       "path": "tests/api",
       "purpose": "API routes",
       "fileCount": 1,
-      "lastAccessed": 1772276485862,
+      "lastAccessed": 1772365732093,
       "keyFiles": [
         "mockApiClient.spec.ts"
       ]
@@ -348,153 +348,93 @@
   },
   "hotPaths": [
     {
+      "path": "src/api/types/generated-types.ts",
+      "accessCount": 10,
+      "lastAccessed": 1772370607473,
+      "type": "file"
+    },
+    {
+      "path": "src/api/types/domains/system-base.ts",
+      "accessCount": 9,
+      "lastAccessed": 1772367737915,
+      "type": "file"
+    },
+    {
+      "path": "src/api/types/domains/strategy-types.ts",
+      "accessCount": 9,
+      "lastAccessed": 1772367737958,
+      "type": "file"
+    },
+    {
       "path": "",
-      "accessCount": 17,
-      "lastAccessed": 1772288977496,
+      "accessCount": 9,
+      "lastAccessed": 1772367971660,
       "type": "directory"
     },
     {
-      "path": "src/views/artdeco-pages/ArtDecoRiskManagement.vue",
-      "accessCount": 9,
-      "lastAccessed": 1772289070661,
-      "type": "file"
-    },
-    {
-      "path": "src/views/artdeco-pages/_templates/ExampleRiskManagement.vue",
-      "accessCount": 9,
-      "lastAccessed": 1772289087456,
-      "type": "file"
-    },
-    {
-      "path": "src/views/stock-analysis/StockStatusTab.vue",
-      "accessCount": 7,
-      "lastAccessed": 1772289087939,
-      "type": "file"
-    },
-    {
-      "path": "src/views/artdeco-pages/market-tabs/MarketConceptTab.vue",
+      "path": "src/api/types/extensions/common.ts",
       "accessCount": 6,
-      "lastAccessed": 1772289110990,
+      "lastAccessed": 1772368317654,
       "type": "file"
     },
     {
-      "path": "src/views/demo/styles/Phase4Dashboard.scss",
-      "accessCount": 6,
-      "lastAccessed": 1772290756663,
-      "type": "file"
-    },
-    {
-      "path": "src/views/artdeco-pages/market-tabs/MarketETFTab.vue",
+      "path": "src/api/types/domains/market-data.ts",
       "accessCount": 5,
-      "lastAccessed": 1772289111475,
+      "lastAccessed": 1772367737979,
       "type": "file"
     },
     {
-      "path": "src/components/artdeco/trading/ArtDecoDynamicSidebar.vue",
+      "path": "src/api/types/domains/trading-ops.ts",
+      "accessCount": 5,
+      "lastAccessed": 1772367738019,
+      "type": "file"
+    },
+    {
+      "path": "src/api/services/marketService.ts",
+      "accessCount": 5,
+      "lastAccessed": 1772367777064,
+      "type": "file"
+    },
+    {
+      "path": "src/api/types/common/all.ts",
+      "accessCount": 4,
+      "lastAccessed": 1772368670971,
+      "type": "file"
+    },
+    {
+      "path": "src/api/unifiedApiClient.ts",
       "accessCount": 3,
-      "lastAccessed": 1772277232065,
+      "lastAccessed": 1772366142707,
       "type": "file"
     },
     {
-      "path": "src/components/artdeco/trading/ArtDecoSidebar.vue",
+      "path": "src/api/types/global.d.ts",
       "accessCount": 3,
-      "lastAccessed": 1772277232262,
+      "lastAccessed": 1772370792795,
       "type": "file"
     },
     {
-      "path": "src/components/artdeco/trading/ArtDecoTable.vue",
-      "accessCount": 3,
-      "lastAccessed": 1772277232453,
-      "type": "file"
-    },
-    {
-      "path": "src/views/artdeco-pages/system-tabs/SystemHealthTab.vue",
-      "accessCount": 3,
-      "lastAccessed": 1772289034958,
-      "type": "file"
-    },
-    {
-      "path": "src/views/artdeco-pages/risk-tabs/RiskOverviewTab.vue",
-      "accessCount": 3,
-      "lastAccessed": 1772289034999,
-      "type": "file"
-    },
-    {
-      "path": "src/components/artdeco/advanced/ArtDecoBatchAnalysisView.vue",
-      "accessCount": 2,
-      "lastAccessed": 1772279430849,
-      "type": "file"
-    },
-    {
-      "path": "src/views/Analysis.vue",
-      "accessCount": 2,
-      "lastAccessed": 1772279430914,
-      "type": "file"
-    },
-    {
-      "path": "src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue",
-      "accessCount": 2,
-      "lastAccessed": 1772288963563,
-      "type": "file"
-    },
-    {
-      "path": "src/views/artdeco-pages/market-tabs/MarketKLineTab.vue",
-      "accessCount": 2,
-      "lastAccessed": 1772288963600,
-      "type": "file"
-    },
-    {
-      "path": "src/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue",
-      "accessCount": 2,
-      "lastAccessed": 1772289008386,
-      "type": "file"
-    },
-    {
-      "path": "src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
-      "accessCount": 2,
-      "lastAccessed": 1772289008432,
-      "type": "file"
-    },
-    {
-      "path": "src/views/artdeco-pages/technical-tabs/TechnicalScannerTab.vue",
-      "accessCount": 2,
-      "lastAccessed": 1772289008516,
-      "type": "file"
-    },
-    {
-      "path": "src/components/artdeco/trading/ArtDecoCollapsibleSidebar.vue",
+      "path": "src/api/apiClient.ts",
       "accessCount": 1,
-      "lastAccessed": 1772276502526,
+      "lastAccessed": 1772366065119,
       "type": "file"
     },
     {
-      "path": "src/components/artdeco",
+      "path": "src/api/types/extensions",
       "accessCount": 1,
-      "lastAccessed": 1772279369220,
+      "lastAccessed": 1772367925450,
       "type": "directory"
     },
     {
-      "path": "src/views",
+      "path": "src/api/types",
       "accessCount": 1,
-      "lastAccessed": 1772279369235,
+      "lastAccessed": 1772367925485,
       "type": "directory"
     },
     {
-      "path": "src/components/artdeco/advanced/ArtDecoCapitalFlow.vue",
+      "path": "package.json",
       "accessCount": 1,
-      "lastAccessed": 1772279430892,
-      "type": "file"
-    },
-    {
-      "path": "src/views/artdeco-pages/ArtDecoDashboard.vue",
-      "accessCount": 1,
-      "lastAccessed": 1772279430952,
-      "type": "file"
-    },
-    {
-      "path": "src/views/Phase4Dashboard.vue",
-      "accessCount": 1,
-      "lastAccessed": 1772289043846,
+      "lastAccessed": 1772369763693,
       "type": "file"
     }
   ],

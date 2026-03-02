@@ -51,13 +51,15 @@ interface ChipData {
 }
 
 interface UseArtDecoChipDistributionOptions {
-  data: Ref<ChipData>
+  data: Ref<Record<string, unknown>>
   symbol: Ref<string>
   loading?: Ref<boolean>
 }
 
 export function useArtDecoChipDistribution(options: UseArtDecoChipDistributionOptions) {
     const { data, symbol, loading = ref(false) } = options
+
+    const sourceData = computed((): ChipData => (data.value as ChipData) || {})
 
     // 响应式数据
     const distributionType = ref('cost')
@@ -67,10 +69,10 @@ export function useArtDecoChipDistribution(options: UseArtDecoChipDistributionOp
     const distributionCanvas = ref<HTMLCanvasElement>()
 
     // 计算属性
-    const chipDistribution = computed((): ChipDistribution => data.value?.chipDistribution || {})
-    const costAnalysis = computed((): CostAnalysis => data.value?.costAnalysis || {})
-    const profitAnalysis = computed((): ProfitAnalysis => data.value?.profitAnalysis || {})
-    const stabilityAnalysis = computed((): StabilityAnalysis => data.value?.stabilityAnalysis || {})
+    const chipDistribution = computed((): ChipDistribution => sourceData.value?.chipDistribution || {})
+    const costAnalysis = computed((): CostAnalysis => sourceData.value?.costAnalysis || {})
+    const profitAnalysis = computed((): ProfitAnalysis => sourceData.value?.profitAnalysis || {})
+    const stabilityAnalysis = computed((): StabilityAnalysis => sourceData.value?.stabilityAnalysis || {})
 
     const currentPrice = computed((): number => chipDistribution.value?.currentPrice || 0)
 
@@ -128,14 +130,15 @@ export function useArtDecoChipDistribution(options: UseArtDecoChipDistributionOp
         return avgCost.toFixed(2)
     }
 
-    const formatChipVolume = (volume: number): string => {
-        if (volume >= 100000000) {
-            return `${(volume / 100000000).toFixed(1)}亿`
+    const formatChipVolume = (volume: number | undefined): string => {
+        const safeVolume = Number(volume || 0)
+        if (safeVolume >= 100000000) {
+            return `${(safeVolume / 100000000).toFixed(1)}亿`
         }
-        if (volume >= 10000) {
-            return `${(volume / 10000).toFixed(1)}万`
+        if (safeVolume >= 10000) {
+            return `${(safeVolume / 10000).toFixed(1)}万`
         }
-        return volume.toString()
+        return safeVolume.toString()
     }
 
     const getZoneClass = (zone: { range?: string }): string => {
@@ -206,7 +209,11 @@ export function useArtDecoChipDistribution(options: UseArtDecoChipDistributionOp
         return '换手频繁'
     }
 
-    const formatDate = (date: string): string => {
+    const formatDate = (date?: string): string => {
+        if (!date) {
+            return ''
+        }
+
         return new Date(date).toLocaleDateString('zh-CN', {
             month: '2-digit',
             day: '2-digit'

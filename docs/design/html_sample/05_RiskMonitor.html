@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>风险监控 - MyStocks</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: #f5f5f5; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+        /* 页面标题 */
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .page-title { font-size: 24px; color: #333; }
+
+        /* 风险等级卡片 */
+        .risk-level-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px; }
+        .risk-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; }
+        .risk-icon { font-size: 36px; margin-bottom: 10px; }
+        .risk-value { font-size: 28px; font-weight: bold; margin-bottom: 5px; }
+        .risk-label { font-size: 14px; color: #666; }
+        .risk-low { color: #67C23A; }
+        .risk-medium { color: #E6A23C; }
+        .risk-high { color: #F56C6C; }
+        .risk-critical { color: #F56C6C; animation: blink 1s infinite; }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* 风险指标 */
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
+        .metric-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .metric-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .metric-title { font-size: 16px; font-weight: bold; color: #333; }
+        .chart-placeholder { height: 200px; background: #f9f9f9; border: 2px dashed #ddd; display: flex; align-items: center; justify-content: center; color: #999; }
+
+        /* 风险预警表格 */
+        .alert-table { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { background: #f5f5f5; padding: 12px; text-align: left; font-weight: bold; color: #333; }
+        .data-table td { padding: 12px; border-bottom: 1px solid #eee; }
+        .data-table tr:hover { background: #f9f9f9; }
+
+        /* 风险等级标签 */
+        .alert-tag { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; }
+        .alert-info { background: #409EFF; color: white; }
+        .alert-warning { background: #E6A23C; color: white; }
+        .alert-danger { background: #F56C6C; color: white; }
+
+        /* API标签 */
+        .api-tag { display: inline-block; background: #67C23A; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <h1 class="page-title">风险监控仪表板 <span class="api-tag">GET /api/risk/overview</span></h1>
+            <button style="padding: 8px 16px; background: #409EFF; color: white; border: none; border-radius: 4px; cursor: pointer;">刷新数据</button>
+        </div>
+
+        <!-- 风险等级概览 -->
+        <div class="risk-level-grid">
+            <div class="risk-card">
+                <div class="risk-icon">🟢</div>
+                <div class="risk-value risk-low">低风险</div>
+                <div class="risk-label">12 个标的</div>
+            </div>
+            <div class="risk-card">
+                <div class="risk-icon">🟡</div>
+                <div class="risk-value risk-medium">中风险</div>
+                <div class="risk-label">5 个标的</div>
+            </div>
+            <div class="risk-card">
+                <div class="risk-icon">🟠</div>
+                <div class="risk-value risk-high">高风险</div>
+                <div class="risk-label">2 个标的</div>
+            </div>
+            <div class="risk-card">
+                <div class="risk-icon">🔴</div>
+                <div class="risk-value risk-critical">严重风险</div>
+                <div class="risk-label">1 个标的</div>
+            </div>
+        </div>
+
+        <!-- 风险指标 -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title">持仓集中度 <span class="api-tag">GET /api/risk/concentration</span></span>
+                </div>
+                <div class="chart-placeholder">
+                    [ECharts 饼图: 持仓分布]
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title">VaR风险价值 <span class="api-tag">GET /api/risk/var</span></span>
+                </div>
+                <div class="chart-placeholder">
+                    [ECharts 折线图: VaR变化趋势]
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title">波动率分析 <span class="api-tag">GET /api/risk/volatility</span></span>
+                </div>
+                <div class="chart-placeholder">
+                    [ECharts 柱状图: 波动率对比]
+                </div>
+            </div>
+        </div>
+
+        <!-- 风险预警列表 -->
+        <div class="alert-table">
+            <div style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 15px;">风险预警列表 <span class="api-tag">GET /api/risk/alerts</span></div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>预警时间</th>
+                        <th>股票代码</th>
+                        <th>股票名称</th>
+                        <th>风险类型</th>
+                        <th>风险等级</th>
+                        <th>当前值</th>
+                        <th>阈值</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2024-01-02 10:30:00</td>
+                        <td>600519</td>
+                        <td>贵州茅台</td>
+                        <td>持仓集中度过高</td>
+                        <td><span class="alert-tag alert-warning">中风险</span></td>
+                        <td>25.6%</td>
+                        <td>20.0%</td>
+                        <td>未处理</td>
+                        <td><button style="padding: 4px 12px; border: 1px solid #409EFF; background: white; color: #409EFF; border-radius: 4px; cursor: pointer;">查看</button></td>
+                    </tr>
+                    <tr>
+                        <td>2024-01-02 09:45:00</td>
+                        <td>000858</td>
+                        <td>五粮液</td>
+                        <td>单日跌幅过大</td>
+                        <td><span class="alert-tag alert-danger">高风险</span></td>
+                        <td>-5.2%</td>
+                        <td>-3.0%</td>
+                        <td>未处理</td>
+                        <td><button style="padding: 4px 12px; border: 1px solid #409EFF; background: white; color: #409EFF; border-radius: 4px; cursor: pointer;">查看</button></td>
+                    </tr>
+                    <tr>
+                        <td>2024-01-02 09:15:00</td>
+                        <td>601318</td>
+                        <td>中国平安</td>
+                        <td>波动率异常</td>
+                        <td><span class="alert-tag alert-warning">中风险</span></td>
+                        <td>35.6%</td>
+                        <td>30.0%</td>
+                        <td>已处理</td>
+                        <td><button style="padding: 4px 12px; border: 1px solid #409EFF; background: white; color: #409EFF; border-radius: 4px; cursor: pointer;">查看</button></td>
+                    </tr>
+                    <tr>
+                        <td>2024-01-01 15:00:00</td>
+                        <td>600000</td>
+                        <td>浦发银行</td>
+                        <td>VaR超限</td>
+                        <td><span class="alert-tag alert-danger">高风险</span></td>
+                        <td>-2.5%</td>
+                        <td>-2.0%</td>
+                        <td>已处理</td>
+                        <td><button style="padding: 4px 12px; border: 1px solid #409EFF; background: white; color: #409EFF; border-radius: 4px; cursor: pointer;">查看</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // API调用示例
+        console.log('=== RiskMonitor API调用示例 ===');
+
+        // 1. 获取风险概览
+        async function fetchRiskOverview() {
+            try {
+                const response = await fetch('/api/risk/overview');
+                const data = await response.json();
+                console.log('风险概览:', data);
+                return data;
+            } catch (error) {
+                console.error('获取风险概览失败:', error);
+            }
+        }
+
+        // 2. 获取风险预警列表
+        async function fetchRiskAlerts() {
+            try {
+                const response = await fetch('/api/risk/alerts?status=unhandled');
+                const data = await response.json();
+                console.log('风险预警:', data);
+                return data;
+            } catch (error) {
+                console.error('获取风险预警失败:', error);
+            }
+        }
+
+        // 3. 获取持仓集中度
+        async function fetchConcentrationRisk() {
+            try {
+                const response = await fetch('/api/risk/concentration');
+                const data = await response.json();
+                console.log('持仓集中度:', data);
+                return data;
+            } catch (error) {
+                console.error('获取持仓集中度失败:', error);
+            }
+        }
+
+        // 4. 获取VaR风险价值
+        async function fetchVARRisk() {
+            try {
+                const response = await fetch('/api/risk/var?confidence=0.95&days=10');
+                const data = await response.json();
+                console.log('VaR风险价值:', data);
+                return data;
+            } catch (error) {
+                console.error('获取VaR失败:', error);
+            }
+        }
+
+        // 5. 处理风险预警
+        async function handleRiskAlert(alertId, action) {
+            try {
+                const response = await fetch(`/api/risk/alerts/${alertId}/handle`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: action })
+                });
+                const data = await response.json();
+                console.log('处理预警:', data);
+                return data;
+            } catch (error) {
+                console.error('处理预警失败:', error);
+            }
+        }
+
+        // 页面加载时执行
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchRiskOverview();
+            fetchRiskAlerts();
+            fetchConcentrationRisk();
+            fetchVARRisk();
+        });
+    </script>
+</body>
+</html>

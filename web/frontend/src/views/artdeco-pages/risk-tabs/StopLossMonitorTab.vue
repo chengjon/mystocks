@@ -3,21 +3,34 @@ import { onMounted, ref } from 'vue';
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
 import { apiClient } from '@/api/apiClient';
 
+interface StopLossRow {
+  symbol: string
+  name: string
+  current_price: number | string
+  stop_price: number | string
+  distance: number | string
+}
+
 const { loading, lastRequestId, exec } = useArtDecoApi();
-const stopLossItems = ref<any[]>([]);
+const stopLossItems = ref<StopLossRow[]>([]);
 
 const fetchStopLossData = async () => {
   const data = await exec(() => apiClient.get('/v1/monitoring/watchlists'), {
     silent: true
   });
   
-  if (data && data.items) {
-    stopLossItems.value = data.items.map((item: any) => ({
-      ...item,
-      current_price: (Math.random() * 100 + 10).toFixed(2),
-      stop_price: (Math.random() * 100 + 5).toFixed(2),
-      distance: (Math.random() * 5).toFixed(2)
-    }));
+  const payload = data as { items?: unknown[] } | null
+  if (payload?.items) {
+    stopLossItems.value = payload.items.map((item: unknown) => {
+      const row = item as Partial<StopLossRow>
+      return {
+        symbol: String(row.symbol ?? ''),
+        name: String(row.name ?? ''),
+        current_price: (Math.random() * 100 + 10).toFixed(2),
+        stop_price: (Math.random() * 100 + 5).toFixed(2),
+        distance: (Math.random() * 5).toFixed(2)
+      }
+    });
   } else {
     stopLossItems.value = [
       { symbol: '600036', name: '招商银行', current_price: 35.20, stop_price: 33.50, distance: 4.8 },
@@ -41,7 +54,7 @@ onMounted(() => {
 
     <div class="monitor-grid" v-loading="loading">
       <div v-for="item in stopLossItems" :key="item.symbol" class="artdeco-card risk-card">
-        <div class="risk-level-bar" :style="{ background: parseFloat(item.distance) < 2 ? 'var(--artdeco-rise)' : 'var(--artdeco-gold-dim)' }"></div>
+        <div class="risk-level-bar" :style="{ background: Number(item.distance) < 2 ? 'var(--artdeco-rise)' : 'var(--artdeco-gold-dim)' }"></div>
         
         <div class="card-body">
           <div class="stock-id">
@@ -63,13 +76,13 @@ onMounted(() => {
 
           <div class="risk-status">
             <div class="distance-label">Distance to Stop</div>
-            <div :class="['distance-val', parseFloat(item.distance) < 2 ? 'critical' : '']">
+            <div :class="['distance-val', Number(item.distance) < 2 ? 'critical' : '']">
               {{ item.distance }}%
             </div>
           </div>
         </div>
 
-        <div class="warning-overlay" v-if="parseFloat(item.distance) < 0">
+        <div class="warning-overlay" v-if="Number(item.distance) < 0">
           <span>TRIGGERED</span>
         </div>
       </div>

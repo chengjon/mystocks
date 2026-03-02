@@ -532,22 +532,42 @@
         getRotationClass,
         getWindowClass
     } = useArtDecoCapitalFlow({
-        data: toRef(props, 'data') as unknown as { value: Record<string, unknown> },
-        symbol: toRef(props, 'symbol') as unknown as Ref<string>,
-        loading: toRef(props, 'loading')
+        data: toRef(props, 'data'),
+        symbol: computed(() => props.symbol || ''),
+        loading: computed(() => props.loading || false)
     })
 
     // Typed computed properties for template
     const typedSectorFlows = computed((): SectorFlowItem[] => {
-        return sectorFlows.value as SectorFlowItem[]
+        return sectorFlows.value.map((sector) => ({
+            name: String((sector as Record<string, unknown>).name || ''),
+            flow: Number((sector as Record<string, unknown>).flow || 0)
+        }))
     })
 
     const typedClusteredStocks = computed((): ClusteredStockItem[] => {
-        return clusteredStocks.value as ClusteredStockItem[]
+        return clusteredStocks.value.map((stock, index) => ({
+            code: String((stock as Record<string, unknown>).code || `S${index + 1}`),
+            name: String((stock as Record<string, unknown>).name || ''),
+            volume: Number((stock as Record<string, unknown>).volume || 0),
+            flow: Number((stock as Record<string, unknown>).flow || 0),
+            cluster: Number((stock as Record<string, unknown>).cluster || 0)
+        }))
     })
 
     const typedClusters = computed((): ClusterItem[] => {
-        return clusters.value as ClusterItem[]
+        return clusters.value.map((cluster, index) => ({
+            id: Number((cluster as Record<string, unknown>).id || index),
+            stocks: {
+                length: Array.isArray((cluster as Record<string, unknown>).stocks)
+                    ? ((cluster as Record<string, unknown>).stocks as unknown[]).length
+                    : 0
+            },
+            totalFlow: Number((cluster as Record<string, unknown>).totalFlow || 0),
+            avgFlow: Number((cluster as Record<string, unknown>).avgFlow || 0),
+            avgVolume: Number((cluster as Record<string, unknown>).avgVolume || 0),
+            representative: String((cluster as Record<string, unknown>).representative || '')
+        }))
     })
 
     const typedMainForceRanking = computed((): RankingItem[] => {

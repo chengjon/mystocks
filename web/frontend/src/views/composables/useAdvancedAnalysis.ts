@@ -1,6 +1,6 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { advancedAnalysisApi } from '@/api/advancedAnalysis'
+import { advancedAnalysisApi, type AnalysisRequest, type AnalysisResponse } from '@/api/advancedAnalysis'
 import { PageHeader } from '@/components/shared'
 import FundamentalAnalysisView from './advanced-analysis/FundamentalAnalysisView.vue'
 import TechnicalAnalysisView from './advanced-analysis/TechnicalAnalysisView.vue'
@@ -163,16 +163,37 @@ export function useAdvancedAnalysis() {
 
         loading.value = true
         try {
-            const params = {
+            const params: AnalysisRequest = {
                 symbol: form.value.symbol,
                 include_raw_data: form.value.includeRawData
             }
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const response = await (advancedAnalysisApi as any)[form.value.analysisType](params)
+            const analysisApiMap: Record<string, (request: AnalysisRequest) => Promise<AnalysisResponse>> = {
+                fundamental: advancedAnalysisApi.fundamental,
+                technical: advancedAnalysisApi.technical,
+                'trading-signals': advancedAnalysisApi['trading-signals'],
+                'time-series': advancedAnalysisApi['time-series'],
+                'market-panorama': advancedAnalysisApi['market-panorama'],
+                'capital-flow': advancedAnalysisApi['capital-flow'],
+                'chip-distribution': advancedAnalysisApi['chip-distribution'],
+                'anomaly-tracking': advancedAnalysisApi['anomaly-tracking'],
+                'financial-valuation': advancedAnalysisApi['financial-valuation'],
+                sentiment: advancedAnalysisApi.sentiment,
+                'decision-models': advancedAnalysisApi['decision-models'],
+                'multidimensional-radar': advancedAnalysisApi['multidimensional-radar']
+            }
 
-            if (response.data?.success) {
-                analysisResult.value = response.data.data
+            const requestHandler = analysisApiMap[form.value.analysisType]
+            if (!requestHandler) {
+                ElMessage.error('不支持的分析类型')
+                return
+            }
+
+            const response = await requestHandler(params)
+            const payload = (response as { data?: AnalysisResponse }).data ?? response
+
+            if (payload.success) {
+                analysisResult.value = (payload.data as AnalysisResult) ?? null
                 ElMessage.success('分析完成')
 
                 // 如果启用了实时更新，设置定时器
@@ -180,7 +201,7 @@ export function useAdvancedAnalysis() {
                     startRealtimeUpdates()
                 }
             } else {
-                ElMessage.error(response.data?.message || '分析失败')
+                ElMessage.error(payload.message || '分析失败')
             }
         } catch (error: unknown) {
             console.error('分析失败:', error)

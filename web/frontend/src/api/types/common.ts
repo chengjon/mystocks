@@ -1,5 +1,5 @@
 // MyStocks ArtDeco v3.1 Common Types Entry
-// Generated at: 2026-02-27T13:28:03.664895
+// Generated at: 2026-03-02T17:03:15.818729
 
 /**
  * ⚠️ 警告: 本文件已通过工程红线瘦身。
@@ -7,14 +7,15 @@
  */
 
 // 核心响应契约 (保留在入口方便查阅)
-export interface UnifiedResponse<T = any> {
+export interface UnifiedResponse<T = unknown> {
   success: boolean;
   code: number;
   message: string;
   data: T;
   timestamp: string;
   request_id: string;
-  errors?: any;
+  process_time?: string;
+  errors?: unknown;
 }
 
 // 重定向导出所有业务类型

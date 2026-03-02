@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1772267442442,
+  "lastScanned": 1772443913830,
   "projectRoot": "/opt/claude/mystocks_spec",
   "techStack": {
     "languages": [
@@ -89,7 +89,7 @@
       "path": "__pycache__",
       "purpose": null,
       "fileCount": 23,
-      "lastAccessed": 1772267442417,
+      "lastAccessed": 1772443913810,
       "keyFiles": [
         "__init__.cpython-312.pyc",
         "conftest.cpython-312-pytest-9.0.2.pyc",
@@ -102,7 +102,7 @@
       "path": "architecture",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1772267442417,
+      "lastAccessed": 1772443913810,
       "keyFiles": [
         "DOMAIN_BOUNDARIES.md",
         "INDEX.md",
@@ -113,7 +113,7 @@
       "path": "archived",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1772267442423,
+      "lastAccessed": 1772443913816,
       "keyFiles": [
         "INDEX.md",
         "archive_INDEX.md"
@@ -123,14 +123,14 @@
       "path": "backups",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1772267442424,
+      "lastAccessed": 1772443913817,
       "keyFiles": []
     },
     "config": {
       "path": "config",
       "purpose": "Configuration files",
       "fileCount": 92,
-      "lastAccessed": 1772267442426,
+      "lastAccessed": 1772443913818,
       "keyFiles": [
         "DATA_SOURCES_SPLIT_PLAN.md",
         "TDX目录规则 .md",
@@ -143,7 +143,7 @@
       "path": "data",
       "purpose": "Data files",
       "fileCount": 1,
-      "lastAccessed": 1772267442427,
+      "lastAccessed": 1772443913819,
       "keyFiles": [
         "recovery_queue.db"
       ]
@@ -152,7 +152,7 @@
       "path": "docs",
       "purpose": "Documentation",
       "fileCount": 59,
-      "lastAccessed": 1772267442428,
+      "lastAccessed": 1772443913820,
       "keyFiles": [
         "AGENTS_1.md",
         "CLAUDE.md",
@@ -161,11 +161,18 @@
         "CONNECTION_LEAK_ANALYSIS.md"
       ]
     },
+    "governance": {
+      "path": "governance",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1772443913820,
+      "keyFiles": []
+    },
     "htmlcov": {
       "path": "htmlcov",
       "purpose": null,
-      "fileCount": 959,
-      "lastAccessed": 1772267442430,
+      "fileCount": 1077,
+      "lastAccessed": 1772443913822,
       "keyFiles": [
         "class_index.html",
         "coverage_html_cb_6fb7b396.js",
@@ -178,21 +185,21 @@
       "path": "logs",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1772267442431,
+      "lastAccessed": 1772443913822,
       "keyFiles": []
     },
     "monitoring-stack": {
       "path": "monitoring-stack",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1772267442431,
+      "lastAccessed": 1772443913823,
       "keyFiles": []
     },
     "openspec": {
       "path": "openspec",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1772267442433,
+      "lastAccessed": 1772443913823,
       "keyFiles": [
         "AGENTS.md",
         "OPENSPEC_CONVENTIONS.md",
@@ -202,8 +209,8 @@
     "reports": {
       "path": "reports",
       "purpose": null,
-      "fileCount": 65,
-      "lastAccessed": 1772267442433,
+      "fileCount": 72,
+      "lastAccessed": 1772443913823,
       "keyFiles": [
         "AI_Developer_Onboarding_Guide.md",
         "ArtDeco_3.1_Upgrade_Summary.md",
@@ -216,7 +223,7 @@
       "path": "reviews",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1772267442434,
+      "lastAccessed": 1772443913824,
       "keyFiles": [
         "review-20260223-031831-9e70a2.md",
         "review-20260223-202118-558dc1.md"
@@ -226,7 +233,7 @@
       "path": "scripts",
       "purpose": "Build/utility scripts",
       "fileCount": 111,
-      "lastAccessed": 1772267442434,
+      "lastAccessed": 1772443913824,
       "keyFiles": [
         "JWT_key_update.sh",
         "LICENSE",
@@ -239,7 +246,7 @@
       "path": "src",
       "purpose": "Source code",
       "fileCount": 5,
-      "lastAccessed": 1772267442435,
+      "lastAccessed": 1772443913824,
       "keyFiles": [
         "README.md",
         "__init__.py",
@@ -248,18 +255,11 @@
         "unified_manager.py"
       ]
     },
-    "test-results": {
-      "path": "test-results",
-      "purpose": null,
-      "fileCount": 1,
-      "lastAccessed": 1772267442435,
-      "keyFiles": []
-    },
     "tests": {
       "path": "tests",
       "purpose": "Test files",
       "fileCount": 90,
-      "lastAccessed": 1772267442436,
+      "lastAccessed": 1772443913825,
       "keyFiles": [
         "AGENTS.md",
         "INDEX.md",
@@ -272,7 +272,7 @@
       "path": "web",
       "purpose": null,
       "fileCount": 13,
-      "lastAccessed": 1772267442436,
+      "lastAccessed": 1772443913825,
       "keyFiles": [
         "INDEX.md",
         "PORTS.md",
@@ -285,25 +285,36 @@
       "path": "data/models",
       "purpose": "Data models",
       "fileCount": 3,
-      "lastAccessed": 1772267442438,
+      "lastAccessed": 1772443913826,
       "keyFiles": [
         "sh000001_demo.pkl",
         "test_integration.pkl",
         "test_predictor.pkl"
       ]
     },
+    "logs/tests": {
+      "path": "logs/tests",
+      "purpose": "Test files",
+      "fileCount": 6,
+      "lastAccessed": 1772443913828,
+      "keyFiles": [
+        "pm2-logs.log",
+        "test-output.log",
+        "test-report-20260302-114411.md"
+      ]
+    },
     "monitoring-stack/config": {
       "path": "monitoring-stack/config",
       "purpose": "Configuration files",
       "fileCount": 0,
-      "lastAccessed": 1772267442440,
+      "lastAccessed": 1772443913828,
       "keyFiles": []
     },
     "src/api": {
       "path": "src/api",
       "purpose": "API routes",
       "fileCount": 1,
-      "lastAccessed": 1772267442441,
+      "lastAccessed": 1772443913829,
       "keyFiles": [
         "alert_history_routes.py"
       ]
@@ -311,148 +322,10 @@
   },
   "hotPaths": [
     {
-      "path": "web/frontend/src/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue",
-      "accessCount": 17,
-      "lastAccessed": 1772290588853,
-      "type": "file"
-    },
-    {
-      "path": "web/frontend/src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue",
-      "accessCount": 15,
-      "lastAccessed": 1772290602805,
-      "type": "file"
-    },
-    {
-      "path": "web/frontend/src/views/artdeco-pages/technical-tabs/TechnicalScannerTab.vue",
-      "accessCount": 11,
-      "lastAccessed": 1772290695188,
-      "type": "file"
-    },
-    {
-      "path": "web/frontend/src/views/artdeco-pages/market-tabs/MarketKLineTab.vue",
-      "accessCount": 10,
-      "lastAccessed": 1772290648500,
-      "type": "file"
-    },
-    {
-      "path": "web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
-      "accessCount": 9,
-      "lastAccessed": 1772290624916,
-      "type": "file"
-    },
-    {
-      "path": "",
-      "accessCount": 8,
-      "lastAccessed": 1772290567597,
-      "type": "directory"
-    },
-    {
-      "path": "web/frontend/src/views/demo/styles/Phase4Dashboard.scss",
-      "accessCount": 8,
-      "lastAccessed": 1772290695362,
-      "type": "file"
-    },
-    {
-      "path": "web/frontend/src/components/artdeco/advanced/styles/ArtDecoChipDistribution.scss",
-      "accessCount": 6,
-      "lastAccessed": 1772275476933,
-      "type": "file"
-    },
-    {
-      "path": "web/frontend/src/components/artdeco/advanced/styles",
-      "accessCount": 6,
-      "lastAccessed": 1772275488118,
-      "type": "directory"
-    },
-    {
-      "path": "web/frontend/src/views/artdeco-pages/system-tabs/SystemHealthTab.vue",
-      "accessCount": 5,
-      "lastAccessed": 1772290441164,
-      "type": "file"
-    },
-    {
-      "path": "web/frontend/src/components/artdeco/advanced/styles/ArtDecoSentimentAnalysis.scss",
-      "accessCount": 3,
-      "lastAccessed": 1772274948397,
-      "type": "file"
-    },
-    {
-      "path": "web/frontend/src/components/artdeco",
-      "accessCount": 3,
-      "lastAccessed": 1772276250859,
-      "type": "directory"
-    },
-    {
-      "path": "web/frontend/src/views/artdeco-pages",
-      "accessCount": 3,
-      "lastAccessed": 1772276250911,
-      "type": "directory"
-    },
-    {
-      "path": "web/frontend/src/components/artdeco/base",
-      "accessCount": 2,
-      "lastAccessed": 1772276213232,
-      "type": "directory"
-    },
-    {
-      "path": "web/frontend/src/components/artdeco/business",
-      "accessCount": 2,
-      "lastAccessed": 1772276213280,
-      "type": "directory"
-    },
-    {
-      "path": "web/frontend/src/components/artdeco/core",
-      "accessCount": 2,
-      "lastAccessed": 1772276213356,
-      "type": "directory"
-    },
-    {
-      "path": "web/frontend/src/components/artdeco/charts",
-      "accessCount": 2,
-      "lastAccessed": 1772276213369,
-      "type": "directory"
-    },
-    {
-      "path": "web/frontend/src/components/artdeco/trading",
-      "accessCount": 2,
-      "lastAccessed": 1772276213396,
-      "type": "directory"
-    },
-    {
-      "path": "web/frontend",
-      "accessCount": 2,
-      "lastAccessed": 1772276272121,
-      "type": "directory"
-    },
-    {
-      "path": "web/frontend/src/views/artdeco-pages/risk-tabs/RiskOverviewTab.vue",
-      "accessCount": 2,
-      "lastAccessed": 1772290440638,
-      "type": "file"
-    },
-    {
-      "path": "web/frontend/src/views",
-      "accessCount": 1,
-      "lastAccessed": 1772276230389,
-      "type": "directory"
-    },
-    {
-      "path": "web/frontend/src/styles",
-      "accessCount": 1,
-      "lastAccessed": 1772276230452,
-      "type": "directory"
-    },
-    {
       "path": "web/frontend/src",
       "accessCount": 1,
-      "lastAccessed": 1772276261287,
+      "lastAccessed": 1772443973527,
       "type": "directory"
-    },
-    {
-      "path": "web/frontend/src/views/Phase4Dashboard.vue",
-      "accessCount": 1,
-      "lastAccessed": 1772289967041,
-      "type": "file"
     }
   ],
   "userDirectives": []

@@ -1,3 +1,14 @@
+const fs = require("node:fs");
+const path = require("node:path");
+
+if (typeof process.loadEnvFile === "function") {
+  for (const envFile of [path.join(__dirname, ".env"), path.join(__dirname, "web", "frontend", ".env")]) {
+    if (fs.existsSync(envFile)) {
+      process.loadEnvFile(envFile);
+    }
+  }
+}
+
 module.exports = {
   apps: [
     {

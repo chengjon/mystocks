@@ -1,101 +1,77 @@
-/**
- * 菜单导航测试 - 修复版
- * 使用ApiMockManager解决路由处理器优先级问题
- */
+import { expect, test } from "@playwright/test"
+const { loadPortEnv, resolveFrontendConfig } = require("../helpers/port-env.js")
 
-import { test, expect } from '@playwright/test'
-import { setupApiMocks, ApiMockManager } from '@/tests/utils/api-mock-manager'
+loadPortEnv(process.cwd())
 
-test.describe('Critical Menu Navigation - Fixed', { tag: '@critical' }, () => {
+const FRONTEND_BASE_URL = resolveFrontendConfig().baseUrl
+
+const E2E_USER = {
+  id: 1,
+  username: "admin",
+  email: "admin@example.com",
+  role: "admin",
+  permissions: [],
+}
+
+test.describe("Critical Menu Navigation - Fixed", { tag: "@critical" }, () => {
   test.beforeEach(async ({ page }) => {
-    // 设置完全Mock模式，避免真实API依赖
-    const manager = new ApiMockManager(page)
-    manager.setMockMode('all')
+    await page.addInitScript(({ user }) => {
+      localStorage.setItem("auth_token", "e2e-menu-token")
+      localStorage.setItem("auth_user", JSON.stringify(user))
+    }, { user: E2E_USER })
 
-    // 注册必要的API Mock
-    manager.registerMocks([
-      {
-        method: 'GET',
-        url: '/api/user/info',
-        status: 200,
-        response: {
-          id: 1,
-          username: 'testuser',
-          roles: ['user']
-        }
-      },
-      {
-        method: 'GET',
-        url: '/api/system/database/health',
-        status: 200,
-        response: {
-          status: 'healthy',
-          connection_count: 5
-        }
+    await page.route("**/api/**", async (route) => {
+      const url = new URL(route.request().url())
+
+      if (url.pathname === "/api/csrf-token") {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ success: true, data: { csrf_token: "e2e-menu-csrf" } }),
+        })
+        return
       }
-    ])
 
-    // 应用所有Mock
-    await manager.applyMocks()
-
-    // 导航到首页
-    await page.goto('/')
-    await page.waitForLoadState('networkidle')
-  })
-
-  test('should navigate to dashboard without errors', async ({ page }) => {
-    // 点击仪表盘菜单
-    await page.click('[data-testid="menu-dashboard"]')
-    await page.waitForURL('**/dashboard')
-
-    // 验证页面加载成功
-    await expect(page.locator('h1')).toContainText('仪表盘')
-
-    // 检查控制台没有错误
-    const errors = await page.evaluate(() => {
-      return console.error.mock.calls.map(call => call[0])
-    })
-    expect(errors.filter(e => e.toString().includes('Error'))).toHaveLength(0)
-  })
-
-  test('should navigate to market data and load correctly', async ({ page }) => {
-    // Mock市场数据API
-    const manager = new ApiMockManager(page)
-    manager.registerMock({
-      method: 'GET',
-      url: '/api/market/overview',
-      status: 200,
-      response: {
-        market_cap: 1000000,
-        volume: 500000,
-        change: '+2.5%'
+      if (url.pathname === "/api/v1/data/markets/overview") {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({
+            success: true,
+            data: { up_count: 1800, down_count: 1100, turnover: 8234 },
+          }),
+        })
+        return
       }
+
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ success: true, data: [] }),
+      })
     })
-    await manager.applyMocks()
 
-    // 点击市场数据菜单
-    await page.click('[data-testid="menu-market"]')
-    await page.waitForURL('**/market')
-
-    // 验证数据加载
-    await expect(page.locator('[data-testid="market-overview"]')).toBeVisible()
+    await page.goto(`${FRONTEND_BASE_URL}/dealing-room`, { waitUntil: "domcontentloaded" })
   })
 
-  test('should handle missing API gracefully', async ({ page }) => {
-    // 不Mock /api/data-quality/health，测试默认处理
-    await page.goto('/system/database-monitor')
-
-    // 应该显示404错误提示，而不是挂起
-    await expect(page.locator('.error-message')).toContainText('API endpoint not mocked')
+  test("navigates to dealing room shell without errors", async ({ page }) => {
+    await expect(page).toHaveURL(/\/dealing-room/)
+    await expect(page.locator("main.artdeco-main")).toBeVisible()
+    await expect(page.locator(".artdeco-dashboard")).toBeVisible()
+    await expect(page.locator(".artdeco-sidebar-v3")).toBeVisible()
   })
-})
 
-// 全局测试设置
-test.beforeAll(async () => {
-  console.log('🚀 Starting Critical Menu Navigation Tests')
-  console.log('✅ Using API Mock Manager to avoid backend dependency')
-})
+  test("navigates to market realtime via sidebar menu", async ({ page }) => {
+    await page.locator("button.domain-root", { hasText: "市场行情" }).click()
+    await page.locator('a.nav-item.child-item[href="/market/realtime"]').click()
+    await expect(page).toHaveURL(/\/market\/realtime/)
+    await expect(page.locator(".market-realtime-tab")).toBeVisible()
+  })
 
-test.afterAll(async () => {
-  console.log('✅ All Critical Menu Navigation Tests Completed')
+  test("keeps market page usable when a key API fails", async ({ page }) => {
+    await page.route("**/api/v1/data/markets/overview", (route) => route.abort("failed"))
+    await page.goto(`${FRONTEND_BASE_URL}/market/realtime`, { waitUntil: "domcontentloaded" })
+    await expect(page.locator(".market-realtime-tab")).toBeVisible()
+    await expect(page.locator("h2.section-title")).toContainText("实时行情流")
+  })
 })

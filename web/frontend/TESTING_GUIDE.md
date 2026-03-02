@@ -12,6 +12,17 @@ This project has a comprehensive testing setup including unit tests, E2E tests, 
 
 ## Quick Start
 
+### Port Configuration (.env)
+
+```bash
+FRONTEND_PORT=3020
+FRONTEND_BACKUP_PORT=3021
+BACKEND_PORT=8020
+BACKEND_BACKUP_PORT=8021
+```
+
+Testing scripts should read ports from `.env` first, then use these defaults.
+
 ### Run All Tests Locally
 
 ```bash
@@ -360,11 +371,12 @@ npx playwright install --with-deps
 
 **Solution**:
 ```bash
-# Kill process on port 3000
-lsof -ti:3000 | xargs kill -9
+# Kill process on frontend port (default 3020)
+lsof -ti:${FRONTEND_PORT:-3020} | xargs kill -9
 
-# Or use different port
+# Or override by env
 FRONTEND_PORT=3020 npm run test:e2e
+BACKEND_PORT=8020 npm run test:e2e
 ```
 
 **Issue**: Tests timeout

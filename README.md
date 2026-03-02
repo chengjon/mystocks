@@ -153,6 +153,59 @@ ws.emit('subscribe', config.wsChannel)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109%2B-green.svg)](https://fastapi.tiangolo.com)
 [![Vue](https://img.shields.io/badge/Vue-3.4%2B-brightgreen.svg)](https://vuejs.org)
 
+## 🤖 OMC 使用与模型配置
+
+本项目已接入 **oh-my-claudecode (OMC)**，并将模型路由与 team member 模型选择统一纳入：
+- 模型目录：`/opt/claude/mystocks_spec/.config/opencode/model/model-catalog.json`
+- 项目 OMC 配置：`/opt/claude/mystocks_spec/.claude/omc.jsonc`
+
+### 快速用法
+
+```bash
+# 初始化/更新 OMC（项目级）
+/oh-my-claudecode:omc-setup --local
+
+# 启动 Claude 原生 Team（推荐）
+/team 2:executor "实现 signals 和 strategy 管理链路"
+
+# 启动 tmux CLI workers（Codex/Gemini/Claude）
+/omc-teams 2:codex "review strategy module"
+```
+
+### 模型同步（脚本化，避免手工改错）
+
+```bash
+# 1) 先同步 OpenCode/OMO 配置（基于 model-catalog.json）
+python3 /opt/claude/mystocks_spec/scripts/opencode/sync_opencode_model_catalog.py
+
+# 2) 再同步 OMC 模型路由与 team member 映射
+python3 /opt/claude/mystocks_spec/scripts/opencode/sync_omc_model_catalog.py
+
+# 可选：同时写入用户级 OMC 配置
+python3 /opt/claude/mystocks_spec/scripts/opencode/sync_omc_model_catalog.py --write-user-config
+```
+
+### 当前生效模型配置（来源：`omo_agents`）
+
+- Tier 路由
+  - `LOW`: `fucai/grok-4.20-beta`
+  - `MEDIUM`: `fucai-gpt/gpt-5.3-codex`
+  - `HIGH`: `fucai-claude/claude-opus-4-6`
+- Team member 映射
+  - `omc` / `planner` / `coordinator` -> `fucai-claude/claude-opus-4-6`
+  - `architect` / `critic` / `analyst` / `executor` -> `fucai-gpt/gpt-5.3-codex`
+  - `researcher` / `document-specialist` -> `fucai-claude/claude-opus-4-5`
+  - `explore` -> `fucai/grok-4.20-beta`
+  - `frontendEngineer` / `documentWriter` -> `fucai-gpt/gpt-5.3`
+  - `multimodalLooker` -> `fucai/grok-4-heavy`
+
+### OMC 文档
+
+- OMC 官方 README: <https://github.com/Yeachan-Heo/oh-my-claudecode/blob/main/README.md>
+- 项目内 OMC 指令集: `/root/.claude/CLAUDE.md`
+- 本项目 OMC 使用与故障排查（含 `Team "omc" does not exist`）:
+  [OMC_README.md](./OMC_README.md)
+
 MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，采用科学的数据分类体系和智能路由策略，实现多数据库协同工作。系统基于适配器模式和工厂模式构建统一的数据访问层，提供配置驱动的自动化管理，确保数据的高效存储、快速查询和实时监控。
 
 **最新特性 (ValueCell Migration)**:

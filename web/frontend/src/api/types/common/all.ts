@@ -1,20 +1,21 @@
 // Auto-generated types for common domain
-// Generated at: 2026-02-27T13:28:03.661812
+// Generated at: 2026-03-02T17:03:15.815210
 
 // Standard Unified Response Wrapper
-export interface UnifiedResponse<T = any> {
+export interface UnifiedResponse<T = unknown> {
   success: boolean;
   code: number;
   message: string;
   data: T;
   timestamp: string;
   request_id: string;
-  errors?: any;
+  process_time?: string;
+  errors?: unknown;
 }
 
 export interface APIResponse {
   success?: boolean;
-  data?: Record<string, any> | null;
+  data?: Record<string, unknown> | null;
   error?: ErrorDetail | null;
   timestamp?: string;
   code?: number;
@@ -134,9 +135,9 @@ export interface AlgorithmInfo {
   type?: string;
   category?: string;
   description?: string;
-  parameters?: Record<string, any>;
+  parameters?: Record<string, unknown>;
   use_cases?: string[];
-  performance?: Record<string, any>;
+  performance?: Record<string, unknown>;
 }
 
 export interface AlgorithmInfoRequest {
@@ -161,8 +162,8 @@ export interface AlgorithmMetrics {
 
 export interface AlgorithmPredictRequest {
   model_id?: string;
-  features_data?: (List[number] | List[List[number]]);
-  prediction_config?: Record<string, any> | null;
+  features_data?: number[] | number[][];
+  prediction_config?: Record<string, unknown> | null;
 }
 
 export interface AlgorithmResult {
@@ -172,7 +173,7 @@ export interface AlgorithmResult {
   status?: AlgorithmStatus;
   success?: boolean;
   message?: string | null;
-  data?: Record<string, any> | null;
+  data?: Record<string, unknown> | null;
 }
 
 export type AlgorithmStatus = 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
@@ -183,7 +184,7 @@ export interface AlgorithmTrainRequest {
   features?: string[];
   labels?: string[] | null;
   config?: AlgorithmConfig;
-  training_data?: Record<string, any> | null;
+  training_data?: Record<string, unknown> | null;
 }
 
 export type AlgorithmType = 'svm' | 'decision_tree' | 'naive_bayes' | 'brute_force' | 'knuth_morris_pratt' | 'boyer_moore_horspool' | 'aho_corasick' | 'hidden_markov_model' | 'bayesian_network' | 'n_gram' | 'neural_network';
@@ -198,7 +199,7 @@ export interface AnnouncementBase {
   url?: string | null;
   content?: string | null;
   summary?: string | null;
-  keywords?: any[];
+  keywords?: unknown[];
   importance_level?: number;
   data_source?: string;
   source_id?: string | null;
@@ -210,7 +211,7 @@ export interface AnnouncementMonitorRecordResponse {
   id?: number;
   rule_id?: number;
   announcement_id?: number;
-  matched_keywords?: any[];
+  matched_keywords?: unknown[];
   triggered_at?: string;
   notified?: boolean;
   notified_at?: string | null;
@@ -221,22 +222,22 @@ export interface AnnouncementMonitorRecordResponse {
 
 export interface AnnouncementMonitorRuleBase {
   rule_name?: string;
-  keywords?: any[];
-  announcement_types?: any[];
-  stock_codes?: any[];
+  keywords?: unknown[];
+  announcement_types?: unknown[];
+  stock_codes?: unknown[];
   min_importance_level?: number;
   notify_enabled?: boolean;
-  notify_channels?: any[];
+  notify_channels?: unknown[];
 }
 
 export interface AnnouncementMonitorRuleUpdate {
   rule_name?: string | null;
-  keywords?: any[] | null;
-  announcement_types?: any[] | null;
-  stock_codes?: any[] | null;
+  keywords?: unknown[] | null;
+  announcement_types?: unknown[] | null;
+  stock_codes?: unknown[] | null;
   min_importance_level?: number | null;
   notify_enabled?: boolean | null;
-  notify_channels?: any[] | null;
+  notify_channels?: unknown[] | null;
   is_active?: boolean | null;
 }
 
@@ -256,9 +257,9 @@ export interface AnnouncementStatsResponse {
   total_count?: number;
   today_count?: number;
   important_count?: number;
-  by_source?: Record<string, any>;
-  by_type?: Record<string, any>;
-  by_sentiment?: Record<string, any>;
+  by_source?: Record<string, unknown>;
+  by_type?: Record<string, unknown>;
+  by_sentiment?: Record<string, unknown>;
 }
 
 export interface BOLLParams {
@@ -378,7 +379,7 @@ export interface BaseResponse {
 
 export interface BatchOperation {
   operation?: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   id?: string | null;
 }
 
@@ -396,7 +397,7 @@ export interface BatchOperationResult {
   execution_time?: number;
   id?: string | null;
   success?: boolean;
-  data?: any | null;
+  data?: unknown | null;
   error?: string | null;
 }
 
@@ -408,7 +409,7 @@ export interface BayesianNetworkBuildRequest {
 
 export interface BayesianNetworkInferRequest {
   network_id?: string;
-  trigger_event?: Record<string, any>;
+  trigger_event?: Record<string, unknown>;
   max_delay?: number;
 }
 
@@ -492,7 +493,7 @@ export interface CleanupResult {
 export interface CommonError {
   code?: number;
   message?: string;
-  data?: Record<string, any> | null;
+  data?: Record<string, unknown> | null;
   detail?: string | null;
 }
 
@@ -515,7 +516,7 @@ export interface ConceptInfo {
 
 export interface ConceptListResponse {
   success?: boolean;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   timestamp?: string;
 }
 
@@ -610,7 +611,7 @@ export interface EquityCurvePoint {
 export interface ErrorDetail {
   error_code?: string;
   error_message?: string;
-  details?: Record<string, any> | null;
+  details?: Record<string, unknown> | null;
 }
 
 export interface ErrorResponse {
@@ -619,7 +620,7 @@ export interface ErrorResponse {
   message?: string;
   error_code?: string;
   error_message?: string;
-  details?: Record<string, any> | null;
+  details?: Record<string, unknown> | null;
   timestamp?: string;
   success?: 'False';
   path?: string | null;
@@ -629,7 +630,7 @@ export interface ErrorResponse {
 export interface ErrorResponseModel {
   code?: string;
   message?: string;
-  details?: any | null;
+  details?: unknown | null;
   timestamp?: number;
 }
 
@@ -649,14 +650,14 @@ export interface FeatureGenerationResponse {
   feature_dim?: number;
   step?: number;
   feature_columns?: string[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface FilterParams {
 }
 
 export interface FilterRequest {
-  filters?: Record<string, any> | null;
+  filters?: Record<string, unknown> | null;
 }
 
 export interface FundFlowDataResponse {
@@ -713,7 +714,7 @@ export interface HealthCheckResponse {
   version?: string;
   uptime?: number;
   timestamp?: string;
-  services?: Record<string, any> | null;
+  services?: Record<string, unknown> | null;
 }
 
 export interface HeatmapResponse {
@@ -741,16 +742,16 @@ export interface HyperparameterSearchRequest {
   market?: string;
   step?: number;
   cv?: number;
-  param_grid?: Record<string, List[any]> | null;
+  param_grid?: Record<string, unknown[]> | null;
 }
 
 export interface HyperparameterSearchResponse {
   success?: boolean;
   message?: string;
-  best_params?: Record<string, any>;
+  best_params?: Record<string, unknown>;
   best_rmse?: number;
   best_mse?: number;
-  cv_results?: Record<string, any>;
+  cv_results?: Record<string, unknown>;
 }
 
 export interface IndexQuote {
@@ -811,7 +812,7 @@ export interface IndicatorConfigResponse {
   id?: number;
   user_id?: number;
   name?: string;
-  indicators?: Record<string, any>[];
+  indicators?: Record<string, unknown>[];
   created_at?: string;
   updated_at?: string;
   last_used_at?: string | null;
@@ -827,7 +828,7 @@ export interface IndicatorInfo {
   indicator_name?: string;
   category?: string;
   description?: string;
-  default_params?: Record<string, any>;
+  default_params?: Record<string, unknown>;
   output_fields?: string[];
 }
 
@@ -838,7 +839,7 @@ export interface IndicatorMetadata {
   category?: string;
   description?: string;
   panel_type?: string;
-  parameters?: Record<string, any>[];
+  parameters?: Record<string, unknown>[];
   outputs?: Record<string, string>[];
   reference_lines?: number[] | null;
   min_data_points_formula?: string;
@@ -854,13 +855,13 @@ export interface IndicatorRegistryResponse {
 export interface IndicatorResponseItem {
   indicator_type?: string;
   indicator_name?: string;
-  data?: Record<string, any>[];
-  params?: Record<string, any>;
+  data?: Record<string, unknown>[];
+  params?: Record<string, unknown>;
 }
 
 export interface IndicatorResult {
   abbreviation?: string;
-  parameters?: Record<string, any>;
+  parameters?: Record<string, unknown>;
   outputs?: IndicatorValueOutput[];
   panel_type?: string;
   reference_lines?: number[] | null;
@@ -869,14 +870,14 @@ export interface IndicatorResult {
 
 export interface IndicatorSpec {
   indicator_type?: string;
-  params?: Record<string, any> | null;
+  params?: Record<string, unknown> | null;
   abbreviation?: string;
-  parameters?: Record<string, any>;
+  parameters?: Record<string, unknown>;
 }
 
 export interface IndicatorValueOutput {
   output_name?: string;
-  values?: number | null[];
+  values?: (number | null)[];
   display_name?: string;
 }
 
@@ -899,20 +900,20 @@ export interface IndustryInfo {
 
 export interface IndustryListResponse {
   success?: boolean;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   timestamp?: string;
 }
 
 export interface IndustryPerformanceResponse {
   success?: boolean;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   timestamp?: string;
 }
 
 export interface IntegrityVerificationResult {
   backup_id?: string;
   is_valid?: boolean;
-  verification_details?: Record<string, any>;
+  verification_details?: Record<string, unknown>;
   report_file_path?: string | null;
   verification_time?: string;
 }
@@ -1028,7 +1029,7 @@ export interface MAParams {
 export interface MLResponse {
   success?: boolean;
   message?: string;
-  data?: any | null;
+  data?: unknown | null;
 }
 
 export interface MarketDataQueryModel {
@@ -1055,9 +1056,9 @@ export interface MarketOverview {
   flat_count?: number;
   total_volume?: number | null;
   total_turnover?: number | null;
-  top_gainers?: Record<string, any>[];
-  top_losers?: Record<string, any>[];
-  most_active?: Record<string, any>[];
+  top_gainers?: Record<string, unknown>[];
+  top_losers?: Record<string, unknown>[];
+  most_active?: Record<string, unknown>[];
 }
 
 export interface MarketOverviewDetailedResponse {
@@ -1089,7 +1090,7 @@ export interface MarketOverviewStats {
 export interface MessageResponse {
   success?: boolean;
   message?: string;
-  data?: Record<string, any> | null;
+  data?: Record<string, unknown> | null;
 }
 
 export type MessageStatus = 'pending' | 'in_progress' | 'success' | 'failed' | 'retry' | 'dead_letter';
@@ -1100,9 +1101,9 @@ export interface MillisecondTimestampField {
 
 export interface ModelDetailResponse {
   name?: string;
-  metadata?: Record<string, any>;
-  training_history?: Record<string, any>[];
-  feature_importance?: Record<string, any>[] | null;
+  metadata?: Record<string, unknown>;
+  training_history?: Record<string, unknown>[];
+  feature_importance?: Record<string, unknown>[] | null;
 }
 
 export interface ModelEvaluationRequest {
@@ -1115,7 +1116,7 @@ export interface ModelEvaluationResponse {
   success?: boolean;
   message?: string;
   model_name?: string;
-  metrics?: Record<string, any>;
+  metrics?: Record<string, unknown>;
 }
 
 export interface ModelInfo {
@@ -1132,7 +1133,7 @@ export interface ModelInfo {
   symbol?: string;
   created_at?: string;
   metrics?: AlgorithmMetrics | null;
-  config?: Record<string, any>;
+  config?: Record<string, unknown>;
   status?: string;
 }
 
@@ -1162,14 +1163,14 @@ export interface ModelTrainRequest {
   step?: number;
   test_size?: number;
   model_name?: string;
-  model_params?: Record<string, any> | null;
+  model_params?: Record<string, unknown> | null;
 }
 
 export interface ModelTrainResponse {
   success?: boolean;
   message?: string;
   model_name?: string;
-  metrics?: Record<string, any>;
+  metrics?: Record<string, unknown>;
 }
 
 export interface MonitoringSummaryResponse {
@@ -1212,7 +1213,7 @@ export interface NGramTrainRequest {
 
 export interface NeuralNetworkPredictRequest {
   model_id?: string;
-  current_data?: Record<string, List[number]>;
+  current_data?: Record<string, number[]>;
 }
 
 export interface NeuralNetworkTrainRequest {
@@ -1228,7 +1229,7 @@ export interface NotificationResponse {
   type?: string;
   title?: string;
   message?: string;
-  data?: Record<string, any> | null;
+  data?: Record<string, unknown> | null;
   priority?: string;
   isRead?: boolean;
   createdAt?: string;
@@ -1241,7 +1242,7 @@ export interface NotificationResponse {
 
 export interface NotificationTestRequest {
   notification_type?: string;
-  config_data?: Record<string, any>;
+  config_data?: Record<string, unknown>;
 }
 
 export interface NotificationTestResponse {
@@ -1287,7 +1288,7 @@ export interface OrderResponse {
 export interface OscillatorIndicatorRequest {
   symbol?: string;
   indicator_type?: string;
-  params?: Record<string, any> | null;
+  params?: Record<string, unknown> | null;
   start_date?: string | null;
   end_date?: string | null;
 }
@@ -1297,7 +1298,7 @@ export interface OscillatorIndicatorResponse {
   indicator_type?: string;
   indicator_name?: string;
   values?: OscillatorIndicatorValue[];
-  params?: Record<string, any>;
+  params?: Record<string, unknown>;
   calculated_at?: string;
 }
 
@@ -1315,7 +1316,7 @@ export interface OscillatorIndicatorValue {
 export interface OverlayIndicatorRequest {
   symbol?: string;
   indicator_type?: string;
-  params?: Record<string, any>;
+  params?: Record<string, unknown>;
   start_date?: string | null;
   end_date?: string | null;
 }
@@ -1325,7 +1326,7 @@ export interface OverlayIndicatorResponse {
   indicator_type?: string;
   indicator_name?: string;
   values?: OverlayIndicatorValue[];
-  params?: Record<string, any>;
+  params?: Record<string, unknown>;
   calculated_at?: string;
 }
 
@@ -1454,9 +1455,9 @@ export interface PredictionResult {
   date?: string;
   predicted_price?: number;
   confidence?: number | null;
-  prediction?: (string | number | List[number]);
+  prediction?: string | number | number[];
   probabilities?: Record<string, number> | null;
-  metadata?: Record<string, any> | null;
+  metadata?: Record<string, unknown> | null;
 }
 
 export interface PriceField {
@@ -1530,7 +1531,7 @@ export interface RelationshipDefinition {
 export interface ResponseModel {
   code?: string;
   message?: string;
-  data?: any | null;
+  data?: unknown | null;
   timestamp?: number;
 }
 
@@ -1657,7 +1658,7 @@ export interface StockInfo {
 
 export interface StockListResponse {
   success?: boolean;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   timestamp?: string;
 }
 
@@ -1701,7 +1702,7 @@ export interface StockRatingsSummary {
   rating_agencies?: number;
   industries?: number;
   latest_update?: string;
-  rating_distribution?: Record<string, any>;
+  rating_distribution?: Record<string, unknown>;
 }
 
 export interface StockSymbolField {
@@ -1743,7 +1744,7 @@ export interface StrategyCreateRequest {
 export interface StrategyErrorResponse {
   error_code?: string;
   error_message?: string;
-  details?: Record<string, any> | null;
+  details?: Record<string, unknown> | null;
   timestamp?: string;
 }
 
@@ -1756,7 +1757,7 @@ export interface StrategyListResponse {
 
 export interface StrategyParameter {
   name?: string;
-  value?: any;
+  value?: unknown;
   description?: string | null;
   data_type?: string;
 }
@@ -1806,7 +1807,7 @@ export interface TaskConfig {
   description?: string | null;
   priority?: TaskPriority;
   schedule?: TaskSchedule | null;
-  params?: Record<string, any>;
+  params?: Record<string, unknown>;
   timeout?: number;
   retry_count?: number;
   retry_delay?: number;
@@ -1823,7 +1824,7 @@ export interface TaskExecution {
   start_time?: string | null;
   end_time?: string | null;
   duration?: number | null;
-  result?: Record<string, any> | null;
+  result?: Record<string, unknown> | null;
   error_message?: string | null;
   log_path?: string | null;
   retry_count?: number;
@@ -1834,7 +1835,7 @@ export type TaskPriority = 100 | 200 | 500 | 800 | 900;
 export interface TaskResponse {
   success?: boolean;
   message?: string;
-  data?: Record<string, any> | null;
+  data?: Record<string, unknown> | null;
   task_id?: string | null;
   execution_id?: string | null;
 }
@@ -1872,7 +1873,7 @@ export interface TdxDataRequest {
 export interface TdxDataResponse {
   code?: string;
   market?: string;
-  data?: Record<string, any>[];
+  data?: Record<string, unknown>[];
   total_records?: number;
 }
 
@@ -1886,7 +1887,7 @@ export interface TdxHealthResponse {
   status?: string;
   tdx_connected?: boolean;
   timestamp?: string;
-  server_info?: Record<string, any> | null;
+  server_info?: Record<string, unknown> | null;
 }
 
 export interface TechnicalIndicatorQueryModel {
@@ -1981,9 +1982,9 @@ export interface UserPreferences {
   timeFormat?: string;
   defaultDashboard?: string;
   watchlistLayout?: string;
-  chartSettings?: Record<string, any>;
+  chartSettings?: Record<string, unknown>;
   notifications?: Record<string, boolean>;
-  privacy?: Record<string, any>;
+  privacy?: Record<string, unknown>;
 }
 
 export interface UserProfileResponse {
@@ -2059,7 +2060,7 @@ export interface WatchlistResponse {
   isPublic?: boolean;
   owner?: Record<string, string>;
   stocks?: WatchlistStockResponse[];
-  statistics?: Record<string, any>;
+  statistics?: Record<string, unknown>;
   tags?: string[];
   createdAt?: string;
   updatedAt?: string;
@@ -2080,8 +2081,8 @@ export interface WatchlistStockResponse {
   pb?: number | null;
   addedAt?: string;
   notes?: string | null;
-  alerts?: Record<string, any>[];
-  customFields?: Record<string, any> | null;
+  alerts?: Record<string, unknown>[];
+  customFields?: Record<string, unknown> | null;
 }
 
 export interface WatchlistSummary {
@@ -2097,7 +2098,7 @@ export interface WebSocketErrorMessage {
   request_id?: string | null;
   error_code?: string;
   error_message?: string;
-  error_details?: Record<string, any> | null;
+  error_details?: Record<string, unknown> | null;
   timestamp?: number;
   trace_id?: string | null;
 }
@@ -2114,7 +2115,7 @@ export interface WebSocketNotificationMessage {
   type?: WebSocketMessageType;
   room?: string;
   event?: string;
-  data?: any;
+  data?: unknown;
   timestamp?: number;
   server_time?: number;
 }
@@ -2123,7 +2124,7 @@ export interface WebSocketRequestMessage {
   type?: WebSocketMessageType;
   request_id?: string;
   action?: string;
-  payload?: Record<string, any>;
+  payload?: Record<string, unknown>;
   user_id?: string | null;
   timestamp?: number;
   trace_id?: string | null;
@@ -2133,7 +2134,7 @@ export interface WebSocketResponseMessage {
   type?: WebSocketMessageType;
   request_id?: string;
   success?: boolean;
-  data?: any;
+  data?: unknown;
   timestamp?: number;
   server_time?: number;
   trace_id?: string | null;
@@ -2157,7 +2158,7 @@ export interface WencaiCustomQueryResponse {
   message?: string;
   query_text?: string;
   total_records?: number;
-  results?: Record<string, any>[];
+  results?: Record<string, unknown>[];
   columns?: string[];
   fetch_time?: string;
 }
@@ -2166,7 +2167,7 @@ export interface WencaiErrorResponse {
   success?: boolean;
   error?: string;
   message?: string;
-  details?: Record<string, any> | null;
+  details?: Record<string, unknown> | null;
 }
 
 export interface WencaiHistoryItem {
@@ -2226,14 +2227,14 @@ export interface WencaiRefreshResponse {
 }
 
 export interface WencaiResultItem {
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   fetch_time?: string;
 }
 
 export interface WencaiResultsResponse {
   query_name?: string;
   total?: number;
-  results?: Record<string, any>[];
+  results?: Record<string, unknown>[];
   columns?: string[];
   latest_fetch_time?: string | null;
 }

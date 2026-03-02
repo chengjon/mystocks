@@ -43,7 +43,7 @@ export function useArtDecoApi() {
       
       // Update tracing info
       lastRequestId.value = response.request_id || '';
-      lastProcessTime.value = (response as any).process_time || '';
+      lastProcessTime.value = response.process_time || '';
       
       const endTime = performance.now();
       const frontendDuration = endTime - startTime;
@@ -80,8 +80,8 @@ export function useArtDecoApi() {
         }
         return null;
       }
-    } catch (err: any) {
-      const msg = options.errorMsg || err.message || '网络请求异常';
+    } catch (err: unknown) {
+      const msg = options.errorMsg || (err instanceof Error ? err.message : '网络请求异常');
       error.value = msg;
       
       if (!options.silent) {

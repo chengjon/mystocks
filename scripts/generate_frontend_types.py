@@ -65,45 +65,47 @@ class TypeConverter:
         "Decimal": "number",
         "UUID": "string",
         "bytes": "string",
-        "dict": "Record<string, any>",
-        "list": "any[]",
-        "tuple": "any[]",
+        "dict": "Record<string, unknown>",
+        "list": "unknown[]",
+        "tuple": "unknown[]",
         "date_type": "string",
     }
 
     @classmethod
     def convert_type(cls, type_str: str) -> str:
         if not type_str:
-            return "any"
+            return "unknown"
+        type_str = type_str.strip()
 
         if type_str in cls.TYPE_MAP:
             return cls.TYPE_MAP[type_str]
 
         # Handle List[...]
-        if type_str.startswith("List[") and type_str.endswith("]"):
-            inner = type_str[5:-1]
-            return f"{cls.convert_type(inner)}[]"
+        if (type_str.startswith("List[") or type_str.startswith("list[")) and type_str.endswith("]"):
+            inner = cls._strip_outer_parentheses(type_str[5:-1])
+            converted = cls.convert_type(inner)
+            return cls._as_array_type(converted)
 
         # Handle Dict[...]
-        if type_str.startswith("Dict[") and type_str.endswith("]"):
-            inner = type_str[5:-1]
-            parts = inner.split(",", 1)
+        if (type_str.startswith("Dict[") or type_str.startswith("dict[")) and type_str.endswith("]"):
+            inner = cls._strip_outer_parentheses(type_str[5:-1])
+            parts = cls._split_top_level(inner, ",")
             if len(parts) == 2:
                 k = cls.convert_type(parts[0].strip())
                 v = cls.convert_type(parts[1].strip())
                 result = f"Record<{k}, {v}>"
                 return cls._fix_python_type_names(result)
-            return "Record<string, any>"
+            return "Record<string, unknown>"
 
         # Handle Optional[...]
         if type_str.startswith("Optional[") and type_str.endswith("]"):
-            inner = type_str[9:-1]
+            inner = cls._strip_outer_parentheses(type_str[9:-1])
             return f"{cls.convert_type(inner)} | null"
 
         # Handle Union[...]
         if type_str.startswith("Union[") and type_str.endswith("]"):
-            inner = type_str[6:-1]
-            parts = [cls.convert_type(p.strip()) for p in inner.split(",")]
+            inner = cls._strip_outer_parentheses(type_str[6:-1])
+            parts = [cls.convert_type(p.strip()) for p in cls._split_top_level(inner, ",")]
             return " | ".join(parts)
 
         # Handle Literal[...]
@@ -112,9 +114,15 @@ class TypeConverter:
             # Remove tuple parentheses if present: ('start', 'stop') -> 'start', 'stop'
             inner = re.sub(r"^\(|\)$", "", inner)
             # Split by comma and clean up quotes
-            parts = [p.strip().strip("'\"") for p in inner.split(",")]
+            parts = [p.strip().strip("'\"") for p in cls._split_top_level(inner, ",")]
             # Convert to TypeScript union type
             return " | ".join(f"'{part}'" for part in parts)
+
+        # Handle already flattened union expression, such as "(List[float] | List[List[float]])"
+        stripped = cls._strip_outer_parentheses(type_str)
+        union_parts = cls._split_top_level(stripped, "|")
+        if len(union_parts) > 1:
+            return " | ".join(cls.convert_type(part.strip()) for part in union_parts)
 
         # Fix any remaining list[...] patterns (not handled by List[...] above)
         if "list[" in type_str:
@@ -122,6 +130,81 @@ class TypeConverter:
 
         # Apply Python type name fixes at the end
         return cls._fix_python_type_names(type_str)
+
+    @classmethod
+    def _as_array_type(cls, ts_type: str) -> str:
+        ts_type = ts_type.strip()
+        if "|" in ts_type or "&" in ts_type:
+            ts_type = f"({ts_type})"
+        return f"{ts_type}[]"
+
+    @classmethod
+    def _strip_outer_parentheses(cls, value: str) -> str:
+        value = value.strip()
+        while value.startswith("(") and value.endswith(")") and cls._is_wrapped_by_outer_parens(value):
+            value = value[1:-1].strip()
+        return value
+
+    @classmethod
+    def _is_wrapped_by_outer_parens(cls, value: str) -> bool:
+        depth = 0
+        for idx, ch in enumerate(value):
+            if ch == "(":
+                depth += 1
+            elif ch == ")":
+                depth -= 1
+                if depth < 0:
+                    return False
+                if depth == 0 and idx != len(value) - 1:
+                    return False
+        return depth == 0
+
+    @classmethod
+    def _split_top_level(cls, value: str, delimiter: str = ",") -> List[str]:
+        parts: List[str] = []
+        current: List[str] = []
+        depth_round = 0
+        depth_square = 0
+        depth_angle = 0
+        depth_curly = 0
+
+        for ch in value:
+            if ch == "(":
+                depth_round += 1
+            elif ch == ")":
+                depth_round = max(depth_round - 1, 0)
+            elif ch == "[":
+                depth_square += 1
+            elif ch == "]":
+                depth_square = max(depth_square - 1, 0)
+            elif ch == "<":
+                depth_angle += 1
+            elif ch == ">":
+                depth_angle = max(depth_angle - 1, 0)
+            elif ch == "{":
+                depth_curly += 1
+            elif ch == "}":
+                depth_curly = max(depth_curly - 1, 0)
+
+            if (
+                ch == delimiter
+                and depth_round == 0
+                and depth_square == 0
+                and depth_angle == 0
+                and depth_curly == 0
+            ):
+                part = "".join(current).strip()
+                if part:
+                    parts.append(part)
+                current = []
+                continue
+
+            current.append(ch)
+
+        tail = "".join(current).strip()
+        if tail:
+            parts.append(tail)
+        return parts if parts else [value]
 
     @classmethod
     def _fix_python_type_names(cls, type_str: str) -> str:
@@ -136,9 +219,9 @@ class TypeConverter:
             r"\bint\b": "number",
             r"\bfloat\b": "number",
             r"\bbool\b": "boolean",
-            r"\bAny\b": "any",
-            r"\bdict\b": "Record<string, any>",
-            r"\blist(?!\[)": "Array<any>",  # Only replace 'list' when NOT followed by [
+            r"\bAny\b": "unknown",
+            r"\bdict\b": "Record<string, unknown>",
+            r"\blist(?!\[)": "Array<unknown>",  # Only replace 'list' when NOT followed by [
         }
         for py_type, ts_type in replacements.items():
             type_str = re.sub(py_type, ts_type, type_str)
@@ -452,6 +535,8 @@ class PydanticModelExtractor:
             return node.id
         if isinstance(node, ast.Constant):
             return str(node.value)
+        if isinstance(node, ast.Tuple):
+            return ", ".join(self._get_type_annotation(elt) for elt in node.elts)
         if isinstance(node, ast.Subscript):
             value = self._get_type_annotation(node.value)
             slice_val = self._get_type_annotation(node.slice)
@@ -464,10 +549,10 @@ class PydanticModelExtractor:
                     return "string"
                 if node.func.id in ("conint", "confloat"):
                     return "number"
-            return "any"
+            return "unknown"
         if hasattr(ast, "unparse"):
             return ast.unparse(node)
-        return "any"
+        return "unknown"
 
 
 class TypeScriptGenerator:
@@ -483,11 +568,12 @@ class TypeScriptGenerator:
             f"// Generated at: {datetime.now().isoformat()}",
             "",
             "// Standard Unified Response Wrapper",
-            "export interface UnifiedResponse<TData = any> {",
+            "export interface UnifiedResponse<TData = unknown> {",
             "  code: string | number;",
             "  message: string;",
             "  data: TData;",
             "  request_id?: string;",
+            "  process_time?: string;",
             "  timestamp?: number | string;",
             "}",
             "",
@@ -505,7 +591,7 @@ class TypeScriptGenerator:
                     union = " | ".join(info["values"])
                     output.append(f"export type {name} = {union};")
                 else:
-                    output.append(f"export type {name} = any;")
+                    output.append(f"export type {name} = unknown;")
             output.append("")
 
         return "\n".join(output)
@@ -524,14 +610,15 @@ class TypeScriptGenerator:
         if domain == "common":
             output.extend([
                 "// Standard Unified Response Wrapper",
-                "export interface UnifiedResponse<T = any> {",
+                "export interface UnifiedResponse<T = unknown> {",
                 "  success: boolean;",
                 "  code: number;",
                 "  message: string;",
                 "  data: T;",
                 "  timestamp: string;",
                 "  request_id: string;",
-                "  errors?: any;",
+                "  process_time?: string;",
+                "  errors?: unknown;",
                 "}",
                 "",
             ])
@@ -554,7 +641,7 @@ class TypeScriptGenerator:
                 union = " | ".join(info["values"])
                 lines.append(f"export type {name} = {union};")
             else:
-                lines.append(f"export type {name} = any;")
+                lines.append(f"export type {name} = unknown;")
         lines.append("")
         return lines
 
@@ -578,14 +665,15 @@ class TypeScriptGenerator:
             " */",
             "",
             "// 核心响应契约 (保留在入口方便查阅)",
-            "export interface UnifiedResponse<T = any> {",
+            "export interface UnifiedResponse<T = unknown> {",
             "  success: boolean;",
             "  code: number;",
             "  message: string;",
             "  data: T;",
             "  timestamp: string;",
             "  request_id: string;",
-            "  errors?: any;",
+            "  process_time?: string;",
+            "  errors?: unknown;",
             "}",
             "",
             "// 重定向导出所有业务类型",
@@ -710,6 +798,10 @@ def main():
         with open(index_file, "w", encoding="utf-8") as f:
             f.write(index_code)
         print(f"  ✅ Generated index.ts")
+
+        # Keep legacy generated-types.ts as a compatibility barrel
+        generator.write_generated_types_compat_barrel(OUTPUT_DIR)
+        print("  ✅ Generated generated-types.ts (compatibility barrel)")
 
         print(f"\n📊 Summary:")
         print(f"   Total models: {len(extractor.models)}")

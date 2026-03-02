@@ -10,9 +10,7 @@ import type {
   MarketOverviewResponse,
   FundFlowResponse,
   KlineResponse,
-  KLineDataResponse,
-  FundFlowItem,
-  StockSearchResult
+  FundFlowItem
 } from '@/api/types/generated-types'
 
 // Type definitions for API response items
@@ -170,7 +168,7 @@ export class DataAdapter {
    * Convert K-Line API response to chart data
    * Note: Handles actual API response format
    */
-  static toKLineChartData(data: KLineDataResponse): KLineChartData {
+  static toKLineChartData(data: KlineResponse): KLineChartData {
     // Handle different response formats
     const rawData = data as Record<string, unknown>
     const points = (rawData.points || rawData.data || rawData.candles || []) as (KLinePointItem | unknown[])[]
@@ -202,15 +200,18 @@ export class DataAdapter {
   /**
    * Convert Stock Search results to ViewModel
    */
-  static toStockSearchVM(data: StockSearchResult[]): StockSearchVM[] {
-    return data.map((item: unknown) => ({
-      symbol: (item as StockSearchResult).symbol || '',
-      name: (item as StockSearchResult).name || '',
-      market: (item as StockSearchResult).market || '',
-      current: (item as StockSearchResult).current || 0,
-      changePercent: this.formatPercent((item as StockSearchResult).changePercent || 0),
-      trend: this.getTrend((item as StockSearchResult).change || 0)
-    }))
+  static toStockSearchVM(data: unknown[]): StockSearchVM[] {
+    return data.map((item: unknown) => {
+      const stock = item as Record<string, unknown>
+      return {
+        symbol: String(stock.symbol || ''),
+        name: String(stock.name || ''),
+        market: String(stock.market || ''),
+        current: Number(stock.current || 0),
+        changePercent: this.formatPercent(Number(stock.changePercent || 0)),
+        trend: this.getTrend(Number(stock.change || 0))
+      }
+    })
   }
 
   // Utility methods

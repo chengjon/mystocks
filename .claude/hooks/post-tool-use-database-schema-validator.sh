@@ -73,7 +73,7 @@
 #
 # ============================================================================
 
-set -euo pipefail
+set -uo pipefail
 
 # ===== 配置 =====
 DEBUG_MODE="${DB_VALIDATOR_DEBUG:-false}"

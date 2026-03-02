@@ -90,6 +90,7 @@ const heatmapMarket = ref('cn')
 const heatmapLoading = ref(false)
 const heatmapContainerRef = ref<HTMLElement | null>(null)
 let heatmapChart: echarts.ECharts | null = null
+let heatmapResizeHandler: (() => void) | null = null
 
 const initHeatmapChart = () => {
   if (!heatmapContainerRef.value) return
@@ -97,11 +98,10 @@ const initHeatmapChart = () => {
     heatmapChart.dispose()
   }
   heatmapChart = echarts.init(heatmapContainerRef.value)
-  const resizeHandler = () => {
+  heatmapResizeHandler = () => {
     if (heatmapChart) heatmapChart.resize()
   }
-  window.addEventListener('resize', resizeHandler)
-  ;(heatmapChart as unknown & { _resizeHandler: () => void })._resizeHandler = resizeHandler
+  window.addEventListener('resize', heatmapResizeHandler)
 }
 
 const loadHeatmapData = async () => {
@@ -224,8 +224,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (heatmapChart) {
-    const resizeHandler = (heatmapChart as unknown & { _resizeHandler?: () => void })._resizeHandler
-    if (resizeHandler) window.removeEventListener('resize', resizeHandler)
+    if (heatmapResizeHandler) {
+      window.removeEventListener('resize', heatmapResizeHandler)
+      heatmapResizeHandler = null
+    }
     heatmapChart.dispose()
     heatmapChart = null
   }

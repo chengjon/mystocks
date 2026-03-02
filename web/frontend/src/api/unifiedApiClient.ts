@@ -22,8 +22,12 @@ export class ContractValidationError extends Error {
   }
 }
 
-export const getUserFriendlyErrorMessage = (error: any) => {
-  return error?.message || '请求失败，请检查网络';
+export const getUserFriendlyErrorMessage = (error: unknown) => {
+  const message =
+    typeof error === 'object' && error !== null && 'message' in error
+      ? (error as { message?: string }).message
+      : undefined;
+  return message || '请求失败，请检查网络';
 };
 
 export default unifiedApiClient;

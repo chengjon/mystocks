@@ -127,8 +127,11 @@
 
     interface FilterOption {
         label: string
-        value: unknown
+        value: string | number
+        disabled?: boolean
     }
+
+    type FilterValue = any
 
     interface Filter {
         key: string
@@ -182,19 +185,17 @@
     const expanded = ref(props.defaultExpanded)
     const activeQuickFilter = ref<string>('')
 
-    const filterValues = reactive<Record<string, unknown>>(() => {
-        const values: Record<string, unknown> = {}
-        props.filters.forEach(filter => {
-            if (filter.type === 'number') {
-                values[`${filter.key}_min`] = null
-                values[`${filter.key}_max`] = null
-            } else if (filter.type === 'multi-select' || filter.type === 'checkbox-group') {
-                values[filter.key] = []
-            } else {
-                values[filter.key] = null
-            }
-        })
-        return values
+    const filterValues = reactive<Record<string, any>>({})
+
+    props.filters.forEach(filter => {
+        if (filter.type === 'number') {
+            filterValues[`${filter.key}_min`] = null
+            filterValues[`${filter.key}_max`] = null
+        } else if (filter.type === 'multi-select' || filter.type === 'checkbox-group') {
+            filterValues[filter.key] = []
+        } else {
+            filterValues[filter.key] = null
+        }
     })
 
     const _activeFiltersCount = computed(() => {

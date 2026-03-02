@@ -35,6 +35,13 @@ export interface MenuItem {
   children?: MenuItem[]
   badge?: string | number
   featured?: boolean
+  // API 配置（可选）
+  apiEndpoint?: string
+  apiMethod?: 'GET' | 'POST' | 'PUT' | 'DELETE'
+  apiParams?: Record<string, unknown>
+  // WebSocket 配置（可选）
+  wsChannel?: string
+  liveUpdate?: boolean
 }
 
 // ========== 业务域定义 (7 Domains) ==========

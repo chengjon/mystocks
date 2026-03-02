@@ -209,19 +209,19 @@
 
         switch (sortBy.value) {
             case 'change':
-                return sorted.sort((a: unknown, b: unknown) => b.changePercent - a.changePercent)
+                return sorted.sort((a, b) => b.changePercent - a.changePercent)
             case 'volume':
-                return sorted.sort((a: unknown, b: unknown) => b.volume - a.volume)
+                return sorted.sort((a, b) => b.volume - a.volume)
             case 'symbol':
             default:
-                return sorted.sort((a: unknown, b: unknown) => a.symbol.localeCompare(b.symbol))
+                return sorted.sort((a, b) => a.symbol.localeCompare(b.symbol))
         }
     })
 
     // 最大成交量（用于相对宽度计算）
     const maxVolume = computed(() => {
         if (props.maxVolume > 0) return props.maxVolume
-        return Math.max(...props.stocks.map((s: unknown) => s.volume), 1)
+        return Math.max(...props.stocks.map(s => s.volume), 1)
     })
 
     // 工具函数

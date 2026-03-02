@@ -36,7 +36,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'market',
         redirect: '/market/realtime',
-        meta: { group: 'market' },
+        meta: { title: '市场行情', group: 'market' },
         children: [
           {
             path: 'realtime',
@@ -63,7 +63,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'data',
         redirect: '/data/industry',
-        meta: { group: 'data' },
+        meta: { title: '数据分析', group: 'data' },
         children: [
           {
             path: 'industry',
@@ -96,7 +96,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'watchlist',
         redirect: '/watchlist/manage',
-        meta: { group: 'watchlist' },
+        meta: { title: '自选管理', group: 'watchlist' },
         children: [
           {
             path: 'manage',
@@ -123,13 +123,25 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'strategy',
         redirect: '/strategy/repo',
-        meta: { group: 'strategy' },
+        meta: { title: '策略管理', group: 'strategy' },
         children: [
           {
             path: 'repo',
             name: 'strategy-repo',
             component: () => import('@/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue'),
             meta: { title: '策略仓库', requiresAuth: true, api: '/api/v1/strategy/list' }
+          },
+          {
+            path: 'parameters',
+            name: 'strategy-parameters',
+            component: () => import('@/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue'),
+            meta: { title: '策略参数', requiresAuth: true, api: '/api/v1/strategy/strategies' }
+          },
+          {
+            path: 'signals',
+            name: 'strategy-signals',
+            component: () => import('@/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue'),
+            meta: { title: '策略信号', requiresAuth: true, api: '/api/v1/trade/signals' }
           },
           {
             path: 'backtest',
@@ -162,7 +174,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'trade',
         redirect: '/trade/terminal',
-        meta: { group: 'trade' },
+        meta: { title: '交易管理', group: 'trade' },
         children: [
           {
             path: 'positions',
@@ -201,7 +213,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'risk',
         redirect: '/risk/overview',
-        meta: { group: 'risk' },
+        meta: { title: '风险管理', group: 'risk' },
         children: [
           {
             path: 'management',
@@ -247,7 +259,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'system',
         redirect: '/system/config',
-        meta: { group: 'system' },
+        meta: { title: '系统设置', group: 'system' },
         children: [
           {
             path: 'config',
@@ -279,7 +291,7 @@ const routes: RouteRecordRaw[] = [
       // Detail Pages (Details Groups - 同标准、同规则)
       {
         path: 'detail',
-        meta: { isDetail: true },
+        meta: { title: '详情页', isDetail: true },
         children: [
           {
             path: 'graphics/:symbol',

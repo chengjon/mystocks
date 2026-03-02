@@ -130,7 +130,7 @@
     }>()
 
     const chartCanvas = ref<HTMLCanvasElement>()
-    let chartInstance: unknown = null
+    let chartInstance: ReturnType<typeof echarts.init> | null = null
 
     const statusVariant = computed(() => {
         const variantMap: { [key: string]: 'gold' | 'rise' | 'fall' | 'info' | 'warning' | 'success' | 'danger' } = {
@@ -228,7 +228,7 @@
 
     onBeforeUnmount(() => {
         if (chartInstance) {
-            chartInstance.dispose()
+            (chartInstance as any).dispose()
         }
     })
 </script>

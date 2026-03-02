@@ -323,7 +323,7 @@ from web.backend.app.api import trading_signals_api, monitoring_api
 | 检查项 | 强制要求 |
 |--------|----------|
 | 结构性语法错误 | 必须为 `0`（阻塞项） |
-| 类型推断错误 | 当前基线为 `100`（历史技术债，按优先级分阶段治理） |
+| 类型推断错误 | 当前基线以 `reports/analysis/tech-debt-baseline.json` 的 `frontend_type_errors` 为准（历史技术债按优先级分阶段治理） |
 | PM2 服务 | 必须确认运行中（`mystocks-backend` 与 `mystocks-frontend`） |
 | E2E 测试 | 必须报告通过情况（当前基线 `18/18`） |
 
@@ -331,10 +331,11 @@ from web.backend.app.api import trading_signals_api, monitoring_api
 - 必须明确区分“本次引入问题”与“仓库既有技术债务”。
 - 若出现类型推断错误（如 `'x' is of type 'unknown'`），必须标注其是否为预先存在问题。
 - 在结构性语法错误为 `0` 且 E2E 通过时，可判定为“可运行”；类型推断债务不应被误报为本次回归。
-- 若本次改动导致类型推断错误数量高于基线 `100`，视为回归，必须在合并前修复或回退改动。
+- 若本次改动导致类型推断错误数量高于基线文件 `reports/analysis/tech-debt-baseline.json` 的 `frontend_type_errors`，视为回归，必须在合并前修复或回退改动。
 - 状态确认中必须包含服务访问地址：
   - `mystocks-backend`: `http://localhost:8000`
   - `mystocks-frontend`: `http://localhost:3020`
+- 技术债治理执行章程统一参考 `docs/guides/technical-debt-governance-charter-v1.md`，门禁、基线、豁免与周报模板以该文档为准，并与 `CLAUDE.md` 保持一致。
 
 类型推断债务治理（长期工作，非单次会话可完成）：
 
@@ -351,7 +352,7 @@ from web.backend.app.api import trading_signals_api, monitoring_api
    - 长期：常态化治理，每次迭代预留时间消化低优先级错误
 
 3. **工具提效**：
-   - CI/CD 集成 vue-tsc --noEmit，校验错误不超过基线
+   - CI/CD 集成 vue-tsc --noEmit 与技术债基线对比门禁，校验类型错误不高于基线文件
    - 编写脚本统计错误分布，生成可视化报告
    - 新模块开启 strict: true，老模块用 @ts-ignore 兼容
 

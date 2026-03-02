@@ -23,7 +23,7 @@ python setup.py install</pre>
         <p>pytdx 提供了两种主要的 API 类型:</p>
 
         <el-tabs type="border-card" style="margin-top: 20px;">
-          <el-tab-pane label="标准行情 API">
+          <el-tab-pane name="standard-api" label="标准行情 API">
             <div class="tab-content">
               <h4>📊 TdxHq_API - 标准行情接口</h4>
               <p>用于获取基础行情数据,如K线、实时价格等:</p>
@@ -53,7 +53,7 @@ else:
             </div>
           </el-tab-pane>
 
-          <el-tab-pane label="扩展行情 API">
+          <el-tab-pane name="extended-api" label="扩展行情 API">
             <div class="tab-content">
               <h4>🔌 TdxExHq_API - 扩展行情接口</h4>
               <p>提供更详细的行情数据,包括 Level-2、财务数据等:</p>
@@ -82,7 +82,7 @@ else:
             </div>
           </el-tab-pane>
 
-          <el-tab-pane label="自动服务器选择">
+          <el-tab-pane name="auto-server-select" label="自动服务器选择">
             <div class="tab-content">
               <h4>🔄 BestIP - 自动选择最佳服务器</h4>
               <p>pytdx 提供自动选择延迟最低的服务器功能:</p>

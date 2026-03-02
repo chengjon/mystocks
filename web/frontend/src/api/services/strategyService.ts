@@ -19,8 +19,8 @@ import type {
 export class StrategyApiService {
   /**
    * 根据 APP_MODE 环境变量决定使用哪个API端点
-   * - mock: 使用 /api/mock/strategy (Mock数据)
-   * - real/production: 使用 /api/v1/strategy (真实API)
+   * - mock: 使用 /mock/strategy (最终请求: /api/mock/strategy)
+   * - real/production: 使用 /v1/strategy (最终请求: /api/v1/strategy)
    */
   private readonly baseUrl: string;
 
@@ -30,10 +30,10 @@ export class StrategyApiService {
 
     // 根据模式选择API端点
     if (appMode === 'mock') {
-      this.baseUrl = '/api/mock/strategy';
+      this.baseUrl = '/mock/strategy';
       console.log('[Strategy API] Using Mock endpoint:', this.baseUrl);
     } else {
-      this.baseUrl = '/api/v1/strategy';
+      this.baseUrl = '/v1/strategy';
       console.log('[Strategy API] Using Real endpoint:', this.baseUrl);
     }
   }

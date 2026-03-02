@@ -44,8 +44,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import axios from 'axios'
-import { init, _dispose } from 'klinecharts'
+import axios, { type AxiosError } from 'axios'
+import { init, dispose, type Chart, type KLineData } from 'klinecharts'
 
 const emit = defineEmits<{
   'api-tested': [feature: string]
@@ -54,7 +54,7 @@ const emit = defineEmits<{
 const chartSymbol = ref('600000')
 const chartMarket = ref('CN')
 const chartLoading = ref(false)
-let chart: unknown = null
+let chart: Chart | null = null
 
 const loadKlineChart = async () => {
   if (!chartSymbol.value.trim()) {
@@ -67,6 +67,7 @@ const loadKlineChart = async () => {
   try {
     if (chart) {
       try {
+        dispose(chart)
         const container = document.getElementById('kline-chart')
         if (container) {
           container.textContent = ''
@@ -92,23 +93,26 @@ const loadKlineChart = async () => {
     }
 
     chart = init('kline-chart')
-    chart.setSymbol({ ticker: chartSymbol.value })
-    chart.setPeriod({ span: 1, type: 'day' })
+    if (!chart) {
+      ElMessage.error('图表初始化失败')
+      return
+    }
 
     if (response.data && response.data.length > 0) {
-      chart.applyNewData(response.data)
+      chart.applyNewData(response.data as KLineData[])
       emit('api-tested', 'klinechart')
       ElMessage.success(`成功加载 ${response.data.length} 条K线数据`)
     } else {
       ElMessage.warning('没有获取到K线数据')
     }
   } catch (error: unknown) {
-    if (error.response?.status === 404) {
+    const apiError = error as AxiosError<{ detail?: string }>
+    if (apiError.response?.status === 404) {
       ElMessage.error('K线数据接口未实现，请先实现后端接口: GET /api/market/kline')
     } else {
-      ElMessage.error('加载图表失败: ' + (error.response?.data?.detail || error.message))
+      ElMessage.error('加载图表失败: ' + (apiError.response?.data?.detail || apiError.message))
     }
-    console.error('klinecharts Error:', error)
+    console.error('klinecharts Error:', apiError)
   } finally {
     chartLoading.value = false
   }

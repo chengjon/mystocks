@@ -1,34 +1,20 @@
-import { defineConfig, devices } from '@playwright/test';
+const { defineConfig, devices } = require("@playwright/test");
+const { loadPortEnv, resolveFrontendConfig } = require("./tests/e2e/helpers/port-env.js");
 
 /**
  * @see https://playwright.dev/docs/test-configuration
  */
 
-// 从环境变量获取端口配置
-const getFrontendPort = () => {
-  // 优先使用命令行参数或环境变量
-  if (process.env.FRONTEND_PORT) {
-    return parseInt(process.env.FRONTEND_PORT);
-  }
-  if (process.env.VITE_PORT) {
-    return parseInt(process.env.VITE_PORT);
-  }
-  if (process.env.PORT) {
-    return parseInt(process.env.PORT);
-  }
-  // 然后使用.env文件中的配置
-  if (process.env.FRONTEND_PORT_RANGE_START) {
-    return parseInt(process.env.FRONTEND_PORT_RANGE_START);
-  }
-  // 默认值
-  return 3020;
-};
+loadPortEnv(__dirname);
 
-const frontendPort = getFrontendPort();
-const baseURL = `http://localhost:${frontendPort}`;
+const { port: frontendPort, baseUrl: baseURL } = resolveFrontendConfig();
 
-export default defineConfig({
-  testDir: './tests',
+module.exports = defineConfig({
+  // Canonical E2E scope: only chain/flow specs under tests/e2e.
+  testDir: './tests/e2e',
+  testMatch: '**/*.spec.ts',
+  // Helper self-tests are maintained separately from browser E2E chain.
+  testIgnore: ['**/helpers/**/*.spec.ts'],
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -39,38 +25,40 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
-    ['html', { outputFolder: 'playwright-report' }],
-    ['json', { outputFile: 'test-results/results.json' }],
-    ['github'],
+    ["html", { outputFolder: "playwright-report" }],
+    ["json", { outputFile: "test-results/results.json" }],
+    ["github"],
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL,
+    /* Prevent SW cache/proxy from bypassing route interception in E2E mocks. */
+    serviceWorkers: "block",
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    trace: "on-first-retry",
 
     /* Take screenshot on failure */
-    screenshot: 'only-on-failure',
+    screenshot: "only-on-failure",
 
     /* Record video on failure */
-    video: 'retain-on-failure',
+    video: "retain-on-failure",
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices["Desktop Chrome"] },
     },
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: { ...devices["Desktop Firefox"] },
     },
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      use: { ...devices["Desktop Safari"] },
     },
   ],
 

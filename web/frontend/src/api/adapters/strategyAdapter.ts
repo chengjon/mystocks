@@ -45,18 +45,26 @@ export class StrategyAdapter {
    * @param apiStrategy - Raw strategy object from API
    * @returns Adapted Strategy object
    */
-  static adaptStrategy(apiStrategy: any): Strategy {
+  static adaptStrategy(apiStrategy: unknown): Strategy {
+    const strategy = apiStrategy as Partial<Strategy> & {
+      type?: string;
+      status?: string;
+      created_at?: string | Date;
+      updated_at?: string | Date;
+      performance?: unknown;
+    };
+
     return {
-      id: apiStrategy.id || '',
-      name: apiStrategy.name || 'Unnamed Strategy',
-      description: apiStrategy.description || '',
-      type: this.translateType(apiStrategy.type),
-      status: this.translateStatus(apiStrategy.status),
-      created_at: this.parseDateToString(apiStrategy.created_at),
-      updated_at: this.parseDateToString(apiStrategy.updated_at),
-      parameters: apiStrategy.parameters || {},
-      performance: apiStrategy.performance
-        ? this.adaptPerformance(apiStrategy.performance)
+      id: strategy.id || '',
+      name: strategy.name || 'Unnamed Strategy',
+      description: strategy.description || '',
+      type: this.translateType(strategy.type || ''),
+      status: this.translateStatus(strategy.status || ''),
+      created_at: this.parseDateToString(strategy.created_at || ''),
+      updated_at: this.parseDateToString(strategy.updated_at || ''),
+      parameters: strategy.parameters || {},
+      performance: strategy.performance
+        ? this.adaptPerformance(strategy.performance)
         : undefined,
     };
   }
@@ -67,22 +75,53 @@ export class StrategyAdapter {
    * @param apiPerf - Raw performance object from API
    * @returns Adapted StrategyPerformance object
    */
-  static adaptPerformance(apiPerf: any): StrategyPerformance {
+  static adaptPerformance(apiPerf: unknown): StrategyPerformance {
+    const perf = apiPerf as {
+      total_return?: number;
+      totalReturn?: number;
+      annualized_return?: number;
+      annual_return?: number;
+      annualReturn?: number;
+      sharpe_ratio?: number;
+      sharpeRatio?: number;
+      sortino_ratio?: number;
+      sortinoRatio?: number;
+      max_drawdown?: number;
+      maxDrawdown?: number;
+      volatility?: number;
+      value_at_risk?: number;
+      valueAtRisk?: number;
+      total_trades?: number;
+      totalTrades?: number;
+      win_rate?: number;
+      winRate?: number;
+      profit_factor?: number;
+      profitLossRatio?: number;
+      average_win?: number;
+      averageWin?: number;
+      average_loss?: number;
+      averageLoss?: number;
+      calmar_ratio?: number;
+      calmarRatio?: number;
+      information_ratio?: number;
+      informationRatio?: number;
+    };
+
     return {
-      total_return: apiPerf.total_return || apiPerf.totalReturn || 0,
-      annualized_return: apiPerf.annualized_return || apiPerf.annual_return || apiPerf.annualReturn || 0,
-      sharpe_ratio: apiPerf.sharpe_ratio || apiPerf.sharpeRatio || 0,
-      sortino_ratio: apiPerf.sortino_ratio || apiPerf.sortinoRatio || 0,
-      max_drawdown: apiPerf.max_drawdown || apiPerf.maxDrawdown || 0,
-      volatility: apiPerf.volatility || 0,
-      value_at_risk: apiPerf.value_at_risk || apiPerf.valueAtRisk || 0,
-      total_trades: apiPerf.total_trades || apiPerf.totalTrades || 0,
-      win_rate: apiPerf.win_rate || apiPerf.winRate || 0,
-      profit_factor: apiPerf.profit_factor || apiPerf.profitLossRatio || 0,
-      average_win: apiPerf.average_win || apiPerf.averageWin || 0,
-      average_loss: apiPerf.average_loss || apiPerf.averageLoss || 0,
-      calmar_ratio: apiPerf.calmar_ratio || apiPerf.calmarRatio || 0,
-      information_ratio: apiPerf.information_ratio || apiPerf.informationRatio || 0,
+      total_return: perf.total_return || perf.totalReturn || 0,
+      annualized_return: perf.annualized_return || perf.annual_return || perf.annualReturn || 0,
+      sharpe_ratio: perf.sharpe_ratio || perf.sharpeRatio || 0,
+      sortino_ratio: perf.sortino_ratio || perf.sortinoRatio || 0,
+      max_drawdown: perf.max_drawdown || perf.maxDrawdown || 0,
+      volatility: perf.volatility || 0,
+      value_at_risk: perf.value_at_risk || perf.valueAtRisk || 0,
+      total_trades: perf.total_trades || perf.totalTrades || 0,
+      win_rate: perf.win_rate || perf.winRate || 0,
+      profit_factor: perf.profit_factor || perf.profitLossRatio || 0,
+      average_win: perf.average_win || perf.averageWin || 0,
+      average_loss: perf.average_loss || perf.averageLoss || 0,
+      calmar_ratio: perf.calmar_ratio || perf.calmarRatio || 0,
+      information_ratio: perf.information_ratio || perf.informationRatio || 0,
     };
   }
 
@@ -101,7 +140,18 @@ export class StrategyAdapter {
     }
 
     try {
-      const task: any = apiResponse.data as any; // Support both snake_case and camelCase
+      const task = apiResponse.data as Partial<BacktestTask> & {
+        strategyId?: string;
+        task_id?: string;
+        id?: string;
+        startDate?: string;
+        endDate?: string;
+        initialCapital?: number;
+        createdAt?: string | Date;
+        started_at?: string | Date;
+        startTime?: string | Date;
+        result?: unknown;
+      }; // Support both snake_case and camelCase
       return {
         strategy_id: task.strategy_id || task.strategyId || task.task_id || task.id || '',
         symbol: task.symbol || '',
@@ -128,31 +178,59 @@ export class StrategyAdapter {
    * @param apiResult - Raw backtest result from API
    * @returns Adapted BacktestResultVM object
    */
-  static adaptBacktestResult(apiResult: any): BacktestResultVM {
+  static adaptBacktestResult(apiResult: unknown): BacktestResultVM {
+    const result = apiResult as Omit<Partial<BacktestResultVM>, 'trades'> & {
+      task_id?: string;
+      summary?: Record<string, unknown>;
+      performance?: Record<string, unknown>;
+      trades?: Array<{
+        trade_id?: string;
+        symbol?: string;
+        side?: 'buy' | 'sell';
+        quantity?: number;
+        price?: number;
+        timestamp?: string;
+        commission?: number;
+        pnl?: number;
+        entry_date?: string;
+        entryDate?: string;
+        exit_date?: string;
+        exitDate?: string;
+        entry_price?: number;
+        entryPrice?: number;
+        exit_price?: number;
+        exitPrice?: number;
+      }>;
+      totalReturn?: number;
+      equityCurve?: unknown[];
+    };
+
     // BacktestResultVM is aliased to BacktestRequestVM, so return a valid BacktestRequestVM object
     // plus additional fields that the UI might need
     return {
-      strategy_id: apiResult.strategy_id || apiResult.task_id || '',
-      symbol: apiResult.symbol || '',
-      start_date: apiResult.start_date || '',
-      end_date: apiResult.end_date || '',
-      initial_capital: apiResult.initial_capital || 0,
-      parameters: apiResult.parameters || {},
+      strategy_id: result.strategy_id || result.task_id || '',
+      symbol: result.symbol || '',
+      start_date: result.start_date || '',
+      end_date: result.end_date || '',
+      initial_capital: result.initial_capital || 0,
+      parameters: result.parameters || {},
       // Additional fields for UI display (not in the original interface)
-      status: apiResult.status || 'completed',
-      performance: apiResult.summary || apiResult.performance || {},
-      trades: (apiResult.trades || []).map((t: any) => ({
+      status: result.status || 'completed',
+      performance: this.adaptPerformance(result.summary || result.performance || {}),
+      trades: (result.trades || []).map((t, index) => ({
+        trade_id: t.trade_id || `trade-${index}`,
         symbol: t.symbol || '',
-        entry_date: t.entry_date || t.entryDate || '',
-        exit_date: t.exit_date || t.exitDate || '',
-        entry_price: t.entry_price || t.entryPrice || 0,
-        exit_price: t.exit_price || t.exitPrice || 0,
+        side: t.side || 'buy',
+        quantity: t.quantity || 0,
+        price: t.price || t.entry_price || t.entryPrice || 0,
+        timestamp: t.timestamp || t.entry_date || t.entryDate || t.exit_date || t.exitDate || new Date().toISOString(),
+        commission: t.commission || 0,
         pnl: t.pnl || 0,
       })),
-      total_return: apiResult.total_return || apiResult.totalReturn || 0,
-      equity_curve: apiResult.equity_curve || apiResult.equityCurve || [],
-      created_at: apiResult.created_at || new Date().toISOString(),
-      completed_at: apiResult.completed_at || new Date().toISOString(),
+      total_return: result.total_return || result.totalReturn || 0,
+      equity_curve: result.equity_curve || result.equityCurve || [],
+      created_at: result.created_at || new Date().toISOString(),
+      completed_at: result.completed_at || new Date().toISOString(),
     } as BacktestResultVM;
   }
 
@@ -221,7 +299,7 @@ export class StrategyAdapter {
    * @param status - Raw status string from API
    * @returns Normalized BacktestStatus
    */
-  private static translateBacktestStatus(status: string): BacktestTask['status'] {
+  private static translateBacktestStatus(status: string | undefined): BacktestTask['status'] {
     const statusMap: Record<string, BacktestTask['status']> = {
       'pending': 'pending',
       'running': 'running',
@@ -229,7 +307,7 @@ export class StrategyAdapter {
       'failed': 'failed',
     };
 
-    const normalized = status?.toLowerCase();
+    const normalized = (status ?? '').toLowerCase();
     return statusMap[normalized] || 'pending';
   }
 
@@ -239,7 +317,7 @@ export class StrategyAdapter {
    * @param dateStr - Date string from API
    * @returns Date object (or current date if invalid)
    */
-  private static parseDate(dateStr: string | Date): Date {
+  private static parseDate(dateStr: string | Date | undefined): Date {
     if (!dateStr) {
       return new Date();
     }
@@ -262,7 +340,7 @@ export class StrategyAdapter {
    * @param dateStr - Date string from API
    * @returns ISO date string (or current date if invalid)
    */
-  private static parseDateToString(dateStr: string | Date): string {
+  private static parseDateToString(dateStr: string | Date | undefined): string {
     const date = this.parseDate(dateStr);
     return date.toISOString();
   }
@@ -293,13 +371,20 @@ export class StrategyAdapter {
    * @param params - Backtest parameters to validate
    * @returns True if valid, false otherwise
    */
-  static validateBacktestParams(params: any): params is BacktestRequest {
-    if (!params.startDate || !params.endDate) {
+  static validateBacktestParams(params: unknown): params is BacktestRequest {
+    const payload = params as Partial<BacktestRequest> & {
+      startDate?: string;
+      endDate?: string;
+      initialCapital?: number;
+    };
+
+    if (!(payload.start_date || payload.startDate) || !(payload.end_date || payload.endDate)) {
       console.error('[StrategyAdapter] Missing required date parameters');
       return false;
     }
 
-    if (!params.initialCapital || params.initialCapital <= 0) {
+    const initialCapital = payload.initial_capital ?? payload.initialCapital;
+    if (!initialCapital || initialCapital <= 0) {
       console.error('[StrategyAdapter] Invalid initial capital');
       return false;
     }

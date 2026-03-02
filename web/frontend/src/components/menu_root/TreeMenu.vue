@@ -2,23 +2,23 @@
   <div class="tree-menu">
     <div
       v-for="(domain, _idx) in menuDomains"
-      :key="domain.key || domain.path"
+      :key="domain.businessKey || domain.path"
       class="menu-domain"
     >
       <div
         class="domain-header"
-        @click="toggleDomain(domain.key || domain.path)"
-        :class="{ expanded: expandedDomains[domain.key || domain.path] }"
+        @click="toggleDomain(domain.businessKey || domain.path)"
+        :class="{ expanded: expandedDomains[domain.businessKey || domain.path] }"
       >
         <span class="domain-icon">{{ domain.icon || '📁' }}</span>
         <span class="domain-label">{{ domain.label }}</span>
         <span class="toggle-icon">
-          {{ expandedDomains[domain.key || domain.path] ? '▼' : '▶' }}
+          {{ expandedDomains[domain.businessKey || domain.path] ? '▼' : '▶' }}
         </span>
       </div>
 
       <transition name="slide">
-        <div v-if="expandedDomains[domain.key || domain.path]" class="domain-items">
+        <div v-if="expandedDomains[domain.businessKey || domain.path]" class="domain-items">
           <div
             v-for="(item, _idx) in domain.children || []"
             :key="item.path"

@@ -1,5 +1,8 @@
 # MyStocks Web端 - Playwright自动化测试快速参考
 
+> 2026-03 基线更新：标准 E2E 命令已统一到 `playwright.config.js`（`tests/e2e`）。
+> 推荐使用 `npm run test:e2e` / `npm run test:e2e:chromium`，避免直接执行未指定配置的 `playwright test`。
+
 ## 🚀 一键测试（推荐）
 
 ### 最简单的测试命令
@@ -253,7 +256,7 @@ npx playwright test tests/smoke/01-page-loading.spec.ts --debug
 ls -la test-results/
 
 # 4. 检查服务状态
-curl http://localhost:3001
+curl http://localhost:3020
 pm2 logs mystocks-frontend-prod
 ```
 
@@ -265,7 +268,7 @@ pm2 logs mystocks-frontend-prod
 
 ```bash
 # 1. 检查端口占用
-lsof -i :3001
+lsof -i :3020
 
 # 2. 检查构建产物
 ls -la dist/
@@ -277,7 +280,7 @@ pm2 start ecosystem.prod.config.js --no-daemon
 pm2 logs mystocks-frontend-prod --lines 50
 
 # 5. 手动测试
-npx http-server dist -p 3001
+npx http-server dist -p 3020
 ```
 
 ### 问题3：后端API连接失败
@@ -288,10 +291,10 @@ npx http-server dist -p 3001
 
 ```bash
 # 1. 检查后端服务
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 
 # 2. 检查WebSocket
-wscat -c ws://localhost:8000/api/ws
+wscat -c ws://localhost:8020/api/ws
 
 # 3. 查看后端日志
 cd web/backend
@@ -310,7 +313,7 @@ pm2 restart simple_backend
 
 ```bash
 # 1. 使用Chrome DevTools
-# 打开 http://localhost:3001
+# 打开 http://localhost:3020
 # 按F12 → Performance → Record
 # 执行操作 → Stop → 分析
 

@@ -1,5 +1,3 @@
-import { Dict, List } from './system-base';
-
 export interface WatchlistItem {
   symbol?: string;
   name?: string | null;
@@ -19,7 +17,7 @@ export interface RiskAlertSummary {
   total_count?: number;
   unread_count?: number;
   critical_count?: number;
-  alerts?: any[];
+  alerts?: unknown[];
 }
 
 export interface PerformanceMetrics {
@@ -203,15 +201,15 @@ export interface RiskMetricsSummary {
 
 export interface RiskDashboardResponse {
   metrics?: RiskMetricsSummary;
-  active_alerts?: any[];
-  risk_history?: any[];
+  active_alerts?: unknown[];
+  risk_history?: unknown[];
 }
 
 export interface DashboardResponse {
   user_id?: number;
   trade_date?: string;
   generated_at?: string;
-  market_overview?: any | null;
+  market_overview?: unknown | null;
   watchlist?: WatchlistSummary | null;
   portfolio?: PortfolioSummary | null;
   risk_alerts?: RiskAlertSummary | null;

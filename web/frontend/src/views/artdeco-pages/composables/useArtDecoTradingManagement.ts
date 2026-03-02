@@ -7,7 +7,7 @@
     import _ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
     import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
      import { getPageConfig, getTabConfig, isRouteName, isMonolithicConfig, type PageConfig, type MonolithicPageConfig, type TabConfig } from '@/config/pageConfig'
-     import type { MarketOverviewResponse, FundFlowAPIResponse } from '@/api/types/generated-types'
+     import type { MarketOverviewResponse, FundFlowResponse } from '@/api/types/generated-types'
      import { marketService } from '@/api/services/marketService'
      import { strategyApiService } from '@/api/services/strategyService'
 
@@ -219,11 +219,12 @@ export function useArtDecoTradingManagement() {
         confidence: number
         timestamp: string
         status: string
+        [key: string]: unknown
     }
 
     interface TradingSignalsData {
-        signals?: TradingSignal[]
-        history?: unknown[]
+        signals?: Record<string, unknown>[]
+        history?: Record<string, unknown>[]
         [key: string]: unknown
     }
 
@@ -291,7 +292,7 @@ export function useArtDecoTradingManagement() {
         // TODO: 实现批量执行逻辑
     }
 
-     const refreshData = async () => {
+    const refreshData = async () => {
         if (!apiEndpoint.value) {
             console.warn('未配置的API端点:', currentRouteName.value)
             refreshing.value = false
@@ -433,6 +434,7 @@ onUnmounted(() => {
     historyLoading,
     handleExportCsv,
     handleBatchExecute,
+    refreshData,
     openSettings,
     handleClosePosition,
     handleAdjustPosition,

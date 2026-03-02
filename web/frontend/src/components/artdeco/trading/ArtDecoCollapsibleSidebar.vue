@@ -63,7 +63,7 @@
             >
               <ArtDecoIcon :name="child.icon" size="xs" class="nav-icon" />
               <span class="nav-label">{{ child.label }}</span>
-              <ArtDecoBadge v-if="child.badge" :text="String(child.badge)" size="xs" />
+              <ArtDecoBadge v-if="child.badge" :text="String(child.badge)" size="sm" />
             </router-link>
           </div>
         </transition>

@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h } from 'vue'
+import { computed, h, type VNode } from 'vue'
 
 /**
  * ArtDecoIcon - ArtDeco风格SVG图标组件
@@ -321,7 +321,7 @@ const iconComponent = computed(() => {
   const strokeLinejoin: 'round' | 'miter' | 'bevel' = 'miter'
 
   // SVG filters for glow effect
-  const filters: unknown[] = []
+  const filters: VNode[] = []
   if (props.animated || props.variant === 'decorative') {
     filters.push(h('filter', { id: 'gold-glow' }, [
       h('feGaussianBlur', { stdDeviation: '1.5', result: 'blur' }),
@@ -345,7 +345,7 @@ const iconComponent = computed(() => {
           class: { 'artdeco-icon--animated': props.animated },
           filter: props.animated ? 'url(#gold-glow)' : undefined
         }, [
-          h('defs', filters),
+          h('defs', undefined, filters),
           h('rect', {
             x: '2', y: '2', width: '20', height: '20',
             fill: 'none',
@@ -380,7 +380,7 @@ const iconComponent = computed(() => {
         class: { 'artdeco-icon--animated': props.animated },
         filter: props.animated ? 'url(#gold-glow)' : undefined
       }, [
-        h('defs', filters),
+        h('defs', undefined, filters),
         h('path', {
           d: icon.path
         })

@@ -213,7 +213,7 @@
                   <td>
                     <ArtDecoButton
                       variant="outline"
-                      size="xs"
+                      size="sm"
                       @click="handleAction(stock)"
                     >
                       {{ stock.action }}

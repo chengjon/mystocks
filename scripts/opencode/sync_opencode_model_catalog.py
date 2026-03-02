@@ -5,24 +5,25 @@ import json
 from pathlib import Path
 from typing import Any
 
-CATALOG_PATH = Path("/opt/claude/mystocks_spec/.config/opencode/model_defaults/model-catalog.json")
+MODEL_DIR = Path("/opt/claude/mystocks_spec/.config/opencode/model")
+CATALOG_PATH = MODEL_DIR / "model-catalog.json"
 PROJECT_OPENCODE_PATH = Path("/opt/claude/mystocks_spec/opencode.json")
 GLOBAL_OPENCODE_PATH = Path.home() / ".config/opencode/opencode.json"
 OMO_PATH = Path("/opt/claude/mystocks_spec/.config/oh-my-opencode.noco.json")
 
-MODEL_MAIN_FILE_REF = "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/main.model}"
-MODEL_SMALL_FILE_REF = "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/small.model}"
-CPAP_BASE_URL_FILE_REF = "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/cpap.base_url}"
-CPAP_API_KEY_FILE_REF = "{file:~/.config/opencode/secrets/cliproxyapi_api_key}"
+MODEL_MAIN_FILE_REF = "{file:/opt/claude/mystocks_spec/.config/opencode/model/main.model}"
+MODEL_SMALL_FILE_REF = "{file:/opt/claude/mystocks_spec/.config/opencode/model/small.model}"
+FUCAI_BASE_URL_FILE_REF = "{file:/opt/claude/mystocks_spec/.config/opencode/model/fucai.base_url}"
+FUCAI_API_KEY_FILE_REF = "{file:/opt/claude/mystocks_spec/.config/opencode/model/fucai.api_key}"
 
 AGENT_MODEL_FILE_REFS = {
-    "sisyphus": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.sisyphus.model}",
-    "oracle": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.oracle.model}",
-    "librarian": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.librarian.model}",
-    "explore": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.explore.model}",
-    "frontend": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.frontend.model}",
-    "document_writer": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.document_writer.model}",
-    "multimodal_looker": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.multimodal_looker.model}",
+    "sisyphus": "{file:/opt/claude/mystocks_spec/.config/opencode/model/omo.sisyphus.model}",
+    "oracle": "{file:/opt/claude/mystocks_spec/.config/opencode/model/omo.oracle.model}",
+    "librarian": "{file:/opt/claude/mystocks_spec/.config/opencode/model/omo.librarian.model}",
+    "explore": "{file:/opt/claude/mystocks_spec/.config/opencode/model/omo.explore.model}",
+    "frontend": "{file:/opt/claude/mystocks_spec/.config/opencode/model/omo.frontend.model}",
+    "document_writer": "{file:/opt/claude/mystocks_spec/.config/opencode/model/omo.document_writer.model}",
+    "multimodal_looker": "{file:/opt/claude/mystocks_spec/.config/opencode/model/omo.multimodal_looker.model}",
 }
 
 
@@ -66,16 +67,16 @@ def sync_catalog_to_env_file(catalog: dict[str, Any]) -> None:
         "# OpenCode default model selection",
         f"OPENCODE_DEFAULT_MODEL={defaults.get('main_model', '')}",
         f"OPENCODE_SMALL_MODEL={defaults.get('small_model', '')}",
-        f"CPAP_BASE_URL={defaults.get('cpap_base_url', '')}",
+        f"FUCAI_BASE_URL={defaults.get('fucai_base_url', '')}",
         "",
         "# OpenCode free models (ordered)",
         f"OPENCODE_FREE_MODELS={join_csv(catalog.get('opencode_free_models', []))}",
         "",
-        "# External endpoint models (ordered, GEMINI excluded)",
-        f"CPAP_OAI_MODELS={join_csv(external.get('cpap-oai', []))}",
-        f"CPAP_CLAUDE_MODELS={join_csv(external.get('cpap-claude', []))}",
-        f"CPAP_MINI_MODELS={join_csv(external.get('cpap-mini', []))}",
-        f"CPAP_COMPAT_MODELS={join_csv(external.get('cpap', []))}",
+        "# External endpoint models (ordered, GEMINI excluded, fucai groups)",
+        f"FUCAI_GPT_MODELS={join_csv(external.get('fucai-gpt', []))}",
+        f"FUCAI_CLAUDE_MODELS={join_csv(external.get('fucai-claude', []))}",
+        f"FUCAI_MINI_MODELS={join_csv(external.get('fucai-mini', []))}",
+        f"FUCAI_MODELS={join_csv(external.get('fucai', []))}",
         "",
         "# oh-my-opencode agents (ordered by priority)",
         f"OMO_AGENT_SISYPHUS={omo_agents.get('sisyphus', '')}",
@@ -97,8 +98,11 @@ def sync_catalog_to_ref_files(catalog: dict[str, Any]) -> None:
         write_model_ref_file(MODEL_MAIN_FILE_REF, str(defaults["main_model"]))
     if "small_model" in defaults:
         write_model_ref_file(MODEL_SMALL_FILE_REF, str(defaults["small_model"]))
-    if "cpap_base_url" in defaults:
-        write_model_ref_file(CPAP_BASE_URL_FILE_REF, str(defaults["cpap_base_url"]))
+    base_url = defaults.get("fucai_base_url")
+    if base_url:
+        write_model_ref_file(FUCAI_BASE_URL_FILE_REF, str(base_url))
+    if "fucai_api_key" in defaults:
+        write_model_ref_file(FUCAI_API_KEY_FILE_REF, str(defaults["fucai_api_key"]))
 
     for agent_name, model in omo_agents.items():
         if agent_name in AGENT_MODEL_FILE_REFS:
@@ -132,8 +136,8 @@ def upsert_provider(config: dict[str, Any], provider_id: str, npm: str, set_cach
     provider["name"] = provider_id
 
     options: dict[str, Any] = {
-        "baseURL": CPAP_BASE_URL_FILE_REF,
-        "apiKey": CPAP_API_KEY_FILE_REF,
+        "baseURL": FUCAI_BASE_URL_FILE_REF,
+        "apiKey": FUCAI_API_KEY_FILE_REF,
         "timeout": 300000,
     }
     if set_cache_key:
@@ -142,23 +146,26 @@ def upsert_provider(config: dict[str, Any], provider_id: str, npm: str, set_cach
 
 
 def apply_provider_models(config: dict[str, Any], catalog: dict[str, Any]) -> None:
-    upsert_provider(config, "cpap", "@ai-sdk/openai-compatible")
-    upsert_provider(config, "cpap-oai", "@ai-sdk/openai", set_cache_key=True)
-    upsert_provider(config, "cpap-claude", "@ai-sdk/anthropic")
-    upsert_provider(config, "cpap-mini", "@ai-sdk/openai-compatible")
+    upsert_provider(config, "fucai", "@ai-sdk/openai-compatible")
+    upsert_provider(config, "fucai-gpt", "@ai-sdk/openai", set_cache_key=True)
+    upsert_provider(config, "fucai-claude", "@ai-sdk/anthropic")
+    upsert_provider(config, "fucai-mini", "@ai-sdk/openai-compatible")
 
     external = catalog["external_models"]
-    config["provider"]["cpap"]["models"] = build_models(external["cpap"])
-    config["provider"]["cpap-oai"]["models"] = build_models(external["cpap-oai"])
-    config["provider"]["cpap-claude"]["models"] = build_models(external["cpap-claude"])
-    config["provider"]["cpap-mini"]["models"] = build_models(external["cpap-mini"])
+    config["provider"]["fucai"]["models"] = build_models(external.get("fucai", []))
+    config["provider"]["fucai-gpt"]["models"] = build_models(external.get("fucai-gpt", []))
+    config["provider"]["fucai-claude"]["models"] = build_models(external.get("fucai-claude", []))
+    config["provider"]["fucai-mini"]["models"] = build_models(external.get("fucai-mini", []))
 
-    config["provider"].pop("cpap-gemini", None)
-    config["provider"].pop("google", None)
+    # Remove legacy provider groups to prevent merge contamination.
+    for legacy in ["cpap", "cpap-oai", "cpap-claude", "cpap-gemini", "cpap-mini", "google"]:
+        config["provider"].pop(legacy, None)
 
 
 def apply_common(config: dict[str, Any], catalog: dict[str, Any]) -> None:
-    config["enabled_providers"] = catalog["enabled_providers"]
+    config["enabled_providers"] = catalog.get(
+        "enabled_providers", ["opencode", "fucai", "fucai-gpt", "fucai-claude", "fucai-mini"]
+    )
     config["model"] = MODEL_MAIN_FILE_REF
     config["small_model"] = MODEL_SMALL_FILE_REF
     apply_provider_models(config, catalog)
@@ -177,10 +184,10 @@ def apply_omo_specific(config: dict[str, Any], catalog: dict[str, Any]) -> None:
     background_task = omo.setdefault("background_task", {})
     background_task["providerConcurrency"] = {
         "opencode": 12,
-        "cpap": 8,
-        "cpap-oai": 4,
-        "cpap-claude": 4,
-        "cpap-mini": 6,
+        "fucai": 8,
+        "fucai-gpt": 4,
+        "fucai-claude": 4,
+        "fucai-mini": 6,
     }
 
     model_concurrency: dict[str, int] = {}
@@ -189,22 +196,23 @@ def apply_omo_specific(config: dict[str, Any], catalog: dict[str, Any]) -> None:
 
     # Prefer selected OMO agents for external model concurrency budget.
     for model_ref in sorted(set(str(v) for v in omo_agents.values())):
-        if model_ref.startswith("cpap-claude/"):
+        if model_ref.startswith("fucai-claude/"):
             model_concurrency[model_ref] = 2
-        elif model_ref.startswith("cpap-oai/"):
+        elif model_ref.startswith("fucai-gpt/"):
             model_concurrency[model_ref] = 2
-        elif model_ref.startswith("cpap-mini/"):
+        elif model_ref.startswith("fucai-mini/"):
             model_concurrency[model_ref] = 3
-        elif model_ref.startswith("cpap/"):
+        elif model_ref.startswith("fucai/"):
             # Keep heavyweight xAI-compatible models conservative by default.
             model_concurrency[model_ref] = 2
 
     background_task["modelConcurrency"] = model_concurrency
 
-    # Ensure no GEMINI-series references remain.
+    # Ensure no GEMINI/legacy-group references remain in OMO agent bindings.
     for agent in agents.values():
         model = str(agent.get("model", ""))
-        if "gemini" in model.lower():
+        lowered = model.lower()
+        if "gemini" in lowered or lowered.startswith("cpap"):
             agent["model"] = AGENT_MODEL_FILE_REFS["librarian"]
 
 

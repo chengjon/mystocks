@@ -59,7 +59,7 @@ interface CapitalFlowData {
 }
 
 interface UseArtDecoCapitalFlowOptions {
-  data: Ref<CapitalFlowData>
+  data: Ref<Record<string, unknown>>
   symbol?: Ref<string>
   loading?: Ref<boolean>
 }
@@ -67,16 +67,18 @@ interface UseArtDecoCapitalFlowOptions {
 export function useArtDecoCapitalFlow(options: UseArtDecoCapitalFlowOptions) {
     const { data, symbol = ref(''), loading = ref(false) } = options
 
+    const sourceData = computed((): CapitalFlowData => (data.value as CapitalFlowData) || {})
+
     // 响应式数据
     const heatmapPeriod = ref('1d')
     const flowType = ref('net')
     const showLabels = ref(true)
 
     // 计算属性
-    const capitalFlows = computed((): CapitalFlows => data.value?.capitalFlows || {})
-    const clusteringData = computed((): ClusteringData => data.value?.clustering || {})
-    const mainForceData = computed((): MainForceData => data.value?.mainForce || {})
-    const opportunityData = computed((): OpportunityData => data.value?.opportunity || {})
+    const capitalFlows = computed((): CapitalFlows => sourceData.value?.capitalFlows || {})
+    const clusteringData = computed((): ClusteringData => sourceData.value?.clustering || {})
+    const mainForceData = computed((): MainForceData => sourceData.value?.mainForce || {})
+    const opportunityData = computed((): OpportunityData => sourceData.value?.opportunity || {})
 
     // 资金流向相关计算属性
     const northboundFlow = computed((): number => capitalFlows.value?.northbound || 0)

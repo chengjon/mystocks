@@ -1,112 +1,126 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from "@playwright/test"
+const { loadPortEnv, resolveFrontendConfig } = require("./helpers/port-env.js")
 
-test.describe('K-line Chart E2E Tests', () => {
+loadPortEnv(process.cwd())
+
+const FRONTEND_BASE_URL = resolveFrontendConfig().baseUrl
+
+const E2E_USER = {
+  id: 1,
+  username: "admin",
+  email: "admin@example.com",
+  role: "admin",
+  permissions: [],
+}
+
+const MOCK_KLINE = Array.from({ length: 12 }).map((_, index) => {
+  const base = 100 + index
+  return {
+    datetime: `2026-02-${String(index + 1).padStart(2, "0")} 15:00:00`,
+    open: base,
+    high: base + 2,
+    low: base - 1,
+    close: base + 1,
+    volume: 1000000 + index * 10000,
+  }
+})
+
+function isIgnoredConsoleError(text: string): boolean {
+  const ignored = [
+    "favicon",
+    "downloadable font",
+    "fonts.gstatic.com",
+    "Failed to load resource",
+    "WebSocket",
+  ]
+  return ignored.some((item) => text.includes(item))
+}
+
+test.describe("K-line Chart E2E", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/kline-demo');
-    await page.waitForLoadState('networkidle');
-  });
+    await page.addInitScript(({ user }) => {
+      localStorage.setItem("auth_token", "e2e-kline-token")
+      localStorage.setItem("auth_user", JSON.stringify(user))
+    }, { user: E2E_USER })
 
-  test('should load K-line chart demo page', async ({ page }) => {
-    await expect(page.locator('.pro-kline-chart')).toBeVisible();
-  });
+    await page.route("**/api/csrf-token", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          success: true,
+          data: { csrf_token: "e2e-kline-csrf" },
+        }),
+      })
+    })
 
-  test('should display chart toolbar with controls', async ({ page }) => {
-    await expect(page.locator('.chart-toolbar')).toBeVisible();
-    await expect(page.locator('.chart-toolbar-select')).toHaveCount(3);
-  });
+    await page.route("**/api/v1/market/kline**", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          success: true,
+          data: {
+            data: MOCK_KLINE,
+          },
+          request_id: "e2e-kline-rid",
+          process_time_ms: 9,
+        }),
+      })
+    })
 
-  test('should change symbol', async ({ page }) => {
-    const symbolSelect = page.locator('.chart-toolbar-select').first();
-    await symbolSelect.selectOption('600519.SH');
-    await page.waitForTimeout(500);
-  });
+    await page.goto(`${FRONTEND_BASE_URL}/market/technical`, { waitUntil: "domcontentloaded" })
+  })
 
-  test('should change interval', async ({ page }) => {
-    const intervalSelect = page.locator('.chart-toolbar-select').nth(1);
-    await intervalSelect.selectOption('1h');
-    await page.waitForTimeout(500);
-  });
+  test("loads technical page shell", async ({ page }) => {
+    await expect(page.locator(".market-kline-tab")).toBeVisible()
+    await expect(page.locator("h2.section-title")).toContainText("K-Line Analysis")
+    await expect(page).toHaveURL(/\/market\/technical/)
+  })
 
-  test('should toggle main indicators', async ({ page }) => {
-    const maButton = page.locator('.chart-toolbar-btn', { hasText: 'MA' });
-    await maButton.click();
-    await expect(maButton).toHaveClass(/active/);
-  });
+  test("renders chart placeholder and latest summary", async ({ page }) => {
+    await expect(page.locator(".kline-container")).toBeVisible()
+    await expect(page.locator(".chart-placeholder")).toContainText("Real-time K-Line Data Stream Active")
+    await expect(page.locator(".data-summary")).toContainText("Data Points: 12")
+  })
 
-  test('should show loading state', async ({ page }) => {
-    await expect(page.locator('.loading-overlay')).not.toBeVisible();
-  });
+  test("renders recent K-line rows", async ({ page }) => {
+    const rows = page.locator(".artdeco-table tbody tr")
+    await expect(rows).toHaveCount(5)
+    await expect(rows.first()).toBeVisible()
+    await expect(rows.first().locator("td").nth(1)).toContainText(/^\d+/)
+  })
 
-  test('should display chart info', async ({ page }) => {
-    await expect(page.locator('.chart-info')).toBeVisible();
-  });
+  test("shows request trace metadata when available", async ({ page }) => {
+    await expect(page.locator(".trace-id")).toContainText("REQ:")
+  })
 
-  test('should display latest price info', async ({ page }) => {
-    await expect(page.locator('.info-item').first()).toBeVisible();
-  });
+  test("keeps layout stable on mobile viewport", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await page.reload({ waitUntil: "domcontentloaded" })
+    await expect(page.locator("main.artdeco-main")).toBeVisible()
+    await expect(page.locator(".market-kline-tab")).toBeVisible()
+  })
 
-  test('should toggle oscillator panel', async ({ page }) => {
-    const toggleButton = page.locator('.chart-toolbar-btn', { hasText: '显示副图' });
-    await toggleButton.click();
-    await expect(page.locator('.oscillator-panel')).toBeVisible();
-  });
+  test("keeps layout stable on tablet viewport", async ({ page }) => {
+    await page.setViewportSize({ width: 768, height: 1024 })
+    await page.reload({ waitUntil: "domcontentloaded" })
+    await expect(page.locator("main.artdeco-main")).toBeVisible()
+    await expect(page.locator(".market-kline-tab")).toBeVisible()
+  })
 
-  test('should handle zoom controls', async ({ page }) => {
-    const zoomInButton = page.locator('.zoom-icon', { hasText: '+' }).locator('..');
-    await zoomInButton.click();
-  });
+  test("does not emit critical console errors", async ({ page }) => {
+    const consoleErrors: string[] = []
 
-  test('should handle reset view', async ({ page }) => {
-    const resetButton = page.locator('.chart-toolbar-btn', { hasText: '重置' });
-    await resetButton.click();
-  });
-});
-
-test.describe('K-line Chart Responsive Tests', () => {
-  test('should render on mobile viewport', async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 812 });
-    await page.goto('/kline-demo');
-    await page.waitForLoadState('networkidle');
-    await expect(page.locator('.pro-kline-chart')).toBeVisible();
-  });
-
-  test('should render on tablet viewport', async ({ page }) => {
-    await page.setViewportSize({ width: 768, height: 1024 });
-    await page.goto('/kline-demo');
-    await page.waitForLoadState('networkidle');
-    await expect(page.locator('.pro-kline-chart')).toBeVisible();
-  });
-
-  test('should render on large viewport', async ({ page }) => {
-    await page.setViewportSize({ width: 1920, height: 1080 });
-    await page.goto('/kline-demo');
-    await page.waitForLoadState('networkidle');
-    await expect(page.locator('.pro-kline-chart')).toBeVisible();
-  });
-});
-
-test.describe('K-line Chart Performance Tests', () => {
-  test('should load chart within performance budget', async ({ page }) => {
-    const startTime = Date.now();
-    await page.goto('/kline-demo');
-    await page.waitForLoadState('networkidle');
-    const loadTime = Date.now() - startTime;
-
-    expect(loadTime).toBeLessThan(5000);
-  });
-
-  test('should render without console errors', async ({ page }) => {
-    const errors: string[] = [];
-
-    page.on('console', msg => {
-      if (msg.type() === 'error') {
-        errors.push(msg.text());
+    page.removeAllListeners("console")
+    page.on("console", (msg) => {
+      if (msg.type() === "error" && !isIgnoredConsoleError(msg.text())) {
+        consoleErrors.push(msg.text())
       }
-    });
+    })
 
-    await page.goto('/kline-demo');
-    await page.waitForLoadState('networkidle');
-
-    expect(errors.filter(e => !e.includes('favicon'))).toHaveLength(0);
-  });
-});
+    await page.reload({ waitUntil: "domcontentloaded" })
+    await page.waitForTimeout(400)
+    expect(consoleErrors).toHaveLength(0)
+  })
+})

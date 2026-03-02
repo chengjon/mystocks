@@ -320,7 +320,7 @@
                             <div class="timeline-axis">
                                 <div class="time-points">
                                     <span v-for="point in typedStabilityTimeline" :key="point.date || point.stability" class="time-point">
-                                        {{ formatDate(point.date) }}
+                                        {{ point.date ? formatDate(point.date) : '--' }}
                                     </span>
                                 </div>
                             </div>
@@ -463,9 +463,9 @@
         formatDate,
         renderDistributionChart
     } = useArtDecoChipDistribution({
-        data: toRef(props, 'data') as unknown as { value: Record<string, unknown> },
-        symbol: toRef(props, 'symbol') as unknown as Ref<string>,
-        loading: toRef(props, 'loading')
+        data: toRef(props, 'data'),
+        symbol: computed(() => props.symbol || ''),
+        loading: computed(() => props.loading || false)
     })
 
     // Typed computed properties for template

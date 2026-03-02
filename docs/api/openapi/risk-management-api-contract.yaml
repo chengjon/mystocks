@@ -1,0 +1,2198 @@
+openapi: 3.0.3
+info:
+  title: MyStocks Risk Management API
+  description: |
+    风险管理API - 完整的个股+投资组合风险管理系统
+    
+    ## 功能特性
+    
+    ### 风险指标计算 (Risk Metrics Calculation)
+    - **VaR/CVaR计算**: 历史模拟法和参数法风险价值计算
+    - **Beta系数**: 股票相对市场波动性衡量
+    - **波动率分析**: 历史波动率和隐含波动率
+    - **流动性风险**: 交易量分析和冲击成本评估
+    
+    ### 智能止损策略 (Smart Stop Loss)
+    - **波动率自适应止损**: ATR指标动态调整止损点
+    - **跟踪止损**: 盈利保护机制
+    - **多层止损**: 不同风险等级的止损策略
+    - **止损绩效分析**: 历史表现和建议优化
+    
+    ### 三级预警系统 (Three-Level Alert System)
+    - **Level 1 (注意)**: 轻微风险提醒
+    - **Level 2 (警告)**: 中等风险警告
+    - **Level 3 (危险)**: 严重风险紧急警报
+    - **智能规则引擎**: 基于多维度指标的预警规则
+    
+    ### 实时风险监控 (Real-time Risk Monitoring)
+    - **个股风险**: 实时波动率、流动性、技术指标风险
+    - **组合风险**: VaR、最大回撤、集中度、相关性分析
+    - **市场风险**: 系统性风险和行业风险评估
+    - **WebSocket推送**: 实时风险指标更新
+    
+    ## 数据模型
+    
+    ### 风险指标 (Risk Metrics)
+    ```json
+    {
+      "var_95_hist": -0.025,
+      "var_95_param": -0.022,
+      "var_99_hist": -0.045,
+      "cvar_95": -0.035,
+      "cvar_99": -0.065,
+      "beta": 1.2,
+      "volatility": 0.25,
+      "sharpe_ratio": 1.8,
+      "max_drawdown": -0.15
+    }
+    ```
+    
+    ### 止损持仓 (Stop Loss Position)
+    ```json
+    {
+      "position_id": "SL_001",
+      "symbol": "600519",
+      "entry_price": 150.0,
+      "current_price": 165.0,
+      "stop_price": 148.5,
+      "risk_tolerance": "medium",
+      "atr_period": 14,
+      "status": "active"
+    }
+    ```
+    
+    ### 风险警报 (Risk Alert)
+    ```json
+    {
+      "id": 1,
+      "alert_type": "var_threshold",
+      "severity": "high",
+      "symbol": "600519",
+      "threshold_value": -0.05,
+      "current_value": -0.07,
+      "message": "VaR超过阈值5%，建议减仓",
+      "status": "active",
+      "created_at": "2024-01-01T10:00:00Z"
+    }
+    ```
+  version: 1.0.0
+  contact:
+    name: MyStocks Team
+    email: support@mystocks.com
+
+servers:
+  - url: http://localhost:8000/api/v1/risk
+    description: 本地开发环境
+
+components:
+  schemas:
+    VaRCVaRRequest:
+      type: object
+      required:
+        - entity_type
+        - entity_id
+      properties:
+        entity_type:
+          type: string
+          enum: [backtest, portfolio, strategy]
+          description: 实体类型
+          example: "portfolio"
+        entity_id:
+          type: integer
+          minimum: 1
+          description: 实体ID
+          example: 123
+        confidence_level:
+          type: number
+          minimum: 0.9
+          maximum: 0.99
+          default: 0.95
+          description: 置信水平
+          example: 0.95
+
+    VaRCVaRResult:
+      type: object
+      required:
+        - var_95_hist
+        - var_95_param
+        - cvar_95
+      properties:
+        var_95_hist:
+          type: number
+          description: 95%置信水平历史VaR
+          example: -0.025
+        var_95_param:
+          type: number
+          description: 95%置信水平参数VaR
+          example: -0.022
+        var_99_hist:
+          type: number
+          description: 99%置信水平历史VaR
+          example: -0.045
+        cvar_95:
+          type: number
+          description: 95%置信水平CVaR
+          example: -0.035
+        cvar_99:
+          type: number
+          description: 99%置信水平CVaR
+          example: -0.065
+        calculation_method:
+          type: string
+          enum: [historical, parametric, monte_carlo]
+          description: 计算方法
+          example: "historical"
+
+    BetaRequest:
+      type: object
+      required:
+        - entity_type
+        - entity_id
+      properties:
+        entity_type:
+          type: string
+          enum: [backtest, portfolio, strategy]
+          description: 实体类型
+          example: "portfolio"
+        entity_id:
+          type: integer
+          minimum: 1
+          description: 实体ID
+          example: 101
+        market_index:
+          type: string
+          description: 市场指数代码
+          default: "000001"
+          example: "000300"
+
+    BetaResult:
+      type: object
+      properties:
+        beta:
+          type: number
+          description: Beta系数
+          example: 1.23
+        correlation:
+          type: number
+          description: 与市场指数的相关系数
+          example: 0.85
+        entity_type:
+          type: string
+          description: 实体类型
+          example: "portfolio"
+        entity_id:
+          type: integer
+          description: 实体ID
+          example: 101
+        market_index:
+          type: string
+          description: 市场指数代码
+          example: "000300"
+
+    StopLossPosition:
+      type: object
+      required:
+        - symbol
+        - entry_price
+        - risk_tolerance
+      properties:
+        position_id:
+          type: string
+          description: 持仓ID
+          example: "SL_001"
+        symbol:
+          type: string
+          pattern: "^[A-Z0-9.]+$"
+          description: 股票代码
+          example: "600519"
+        entry_price:
+          type: number
+          description: 入场价格
+          example: 150.0
+        current_price:
+          type: number
+          description: 当前价格
+          example: 165.0
+        stop_price:
+          type: number
+          description: 止损价格
+          example: 148.5
+        risk_tolerance:
+          type: string
+          enum: [low, medium, high]
+          description: 风险承受度
+          example: "medium"
+        atr_period:
+          type: integer
+          minimum: 5
+          maximum: 50
+          default: 14
+          description: ATR周期
+          example: 14
+        status:
+          type: string
+          enum: [active, triggered, cancelled]
+          description: 状态
+          example: "active"
+        created_at:
+          type: string
+          format: date-time
+          description: 创建时间
+        updated_at:
+          type: string
+          format: date-time
+          description: 更新时间
+
+    RiskAlert:
+      type: object
+      required:
+        - alert_type
+        - severity
+        - symbol
+      properties:
+        id:
+          type: integer
+          description: 警报ID
+          example: 1
+        alert_type:
+          type: string
+          enum: [var_threshold, volatility_spike, drawdown_limit, concentration_risk]
+          description: 警报类型
+          example: "var_threshold"
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+          description: 严重程度
+          example: "high"
+        symbol:
+          type: string
+          pattern: "^[A-Z0-9.]+$"
+          description: 股票代码
+          example: "600519"
+        threshold_value:
+          type: number
+          description: 阈值
+          example: -0.05
+        current_value:
+          type: number
+          description: 当前值
+          example: -0.07
+        message:
+          type: string
+          description: 警报消息
+          example: "VaR超过阈值5%，建议减仓"
+        status:
+          type: string
+          enum: [active, acknowledged, resolved]
+          description: 状态
+          example: "active"
+        created_at:
+          type: string
+          format: date-time
+          description: 创建时间
+        acknowledged_at:
+          type: string
+          format: date-time
+          description: 确认时间
+
+    RiskRule:
+      type: object
+      required:
+        - name
+        - condition
+        - action
+      properties:
+        id:
+          type: integer
+          description: 规则ID
+          example: 1
+        name:
+          type: string
+          description: 规则名称
+          example: "高波动率警报"
+        condition:
+          type: object
+          description: 触发条件
+          additionalProperties: true
+          example: {"metric": "volatility", "operator": ">", "value": 0.3}
+        action:
+          type: object
+          description: 执行动作
+          additionalProperties: true
+          example: {"type": "alert", "severity": "high", "message": "波动率过高"}
+        is_active:
+          type: boolean
+          description: 是否激活
+          default: true
+          example: true
+        created_at:
+          type: string
+          format: date-time
+          description: 创建时间
+
+    RiskMetrics:
+      type: object
+      properties:
+        volatility:
+          type: number
+          description: 波动率
+          example: 0.25
+        sharpe_ratio:
+          type: number
+          description: 夏普比率
+          example: 1.8
+        max_drawdown:
+          type: number
+          description: 最大回撤
+          example: -0.15
+        var_95:
+          type: number
+          description: 95% VaR
+          example: -0.025
+        beta:
+          type: number
+          description: Beta系数
+          example: 1.2
+        concentration:
+          type: number
+          description: 集中度(HHI指数)
+          example: 0.35
+
+    RiskDashboardResponse:
+      type: object
+      properties:
+        portfolio_risk:
+          $ref: '#/components/schemas/RiskMetrics'
+        top_risk_positions:
+          type: array
+          items:
+            type: object
+            properties:
+              symbol:
+                type: string
+                example: "600519"
+              risk_score:
+                type: number
+                example: 85
+              risk_level:
+                type: string
+                example: "high"
+        active_alerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/RiskAlert'
+        risk_trends:
+          type: object
+          description: 风险趋势数据
+          additionalProperties: true
+
+    RiskAlertCreate:
+      type: object
+      required:
+        - alert_type
+        - severity
+        - symbol
+        - threshold_value
+        - message
+      properties:
+        alert_type:
+          type: string
+          enum: [var_threshold, volatility_spike, drawdown_limit, concentration_risk]
+          example: "var_threshold"
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+          example: "high"
+        symbol:
+          type: string
+          pattern: "^[A-Z0-9.]+$"
+          example: "600519"
+        threshold_value:
+          type: number
+          example: -0.05
+        message:
+          type: string
+          example: "VaR超过阈值5%，建议减仓"
+
+    RiskAlertUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [active, acknowledged, resolved]
+          example: "acknowledged"
+        message:
+          type: string
+          example: "已确认风险，已采取减仓措施"
+
+    RiskAlertResponse:
+      type: object
+      properties:
+        alert_id:
+          type: integer
+          example: 123
+        status:
+          type: string
+          example: "created"
+        message:
+          type: string
+          example: "风险警报创建成功"
+
+    NotificationTestRequest:
+      type: object
+      required:
+        - channel
+        - message
+      properties:
+        channel:
+          type: string
+          enum: [email, sms, webhook, slack]
+          example: "email"
+        message:
+          type: string
+          example: "风险管理系统测试通知"
+        recipient:
+          type: string
+          description: 接收者（如邮箱地址、手机号码）
+          example: "user@example.com"
+
+    NotificationTestResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        channel:
+          type: string
+          example: "email"
+        message_id:
+          type: string
+          example: "msg_123456"
+        sent_at:
+          type: string
+          format: date-time
+          example: "2024-01-01T10:00:00Z"
+
+    ErrorResponse:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          description: 错误详情
+          example: "无效的股票代码"
+
+  responses:
+    BadRequest:
+      description: 请求参数错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: 资源不存在
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: 服务器内部错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+paths:
+  /var-cvar:
+    post:
+      summary: 计算VaR和CVaR
+      description: |
+        计算投资组合或策略的Value at Risk和Conditional VaR
+        
+        **权限**: 需要认证
+        **计算方法**: 支持历史模拟法和参数法
+        **置信水平**: 95%和99%
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VaRCVaRRequest'
+      responses:
+        '200':
+          description: 计算成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VaRCVaRResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /beta:
+    post:
+      summary: 计算Beta系数
+      description: |
+        计算资产相对于市场指数的Beta系数
+        
+        **权限**: 需要认证
+        **基准指数**: 默认上证指数，可自定义
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BetaRequest'
+      responses:
+        '200':
+          description: 计算成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BetaResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /dashboard:
+    get:
+      summary: 获取风险仪表板
+      description: |
+        获取完整的风险管理仪表板数据
+        
+        **权限**: 需要认证
+        **数据**: 组合风险、风险持仓、活跃警报、风险趋势
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RiskDashboardResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/stop-loss/add-position:
+    post:
+      summary: 添加止损持仓
+      description: |
+        添加新的止损持仓到智能止损系统
+        
+        **权限**: 需要认证
+        **止损策略**: 波动率自适应 + 跟踪止损
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StopLossPosition'
+      responses:
+        '200':
+          description: 添加成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  position_id:
+                    type: string
+                    example: "SL_001"
+                  status:
+                    type: string
+                    example: "active"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/stop-loss/update-price:
+    post:
+      summary: 更新止损价格
+      description: 更新持仓的止损价格（手动调整）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - position_id
+                - new_stop_price
+              properties:
+                position_id:
+                  type: string
+                  example: "SL_001"
+                new_stop_price:
+                  type: number
+                  example: 155.0
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  position_id:
+                    type: string
+                  old_stop_price:
+                    type: number
+                  new_stop_price:
+                    type: number
+                  updated_at:
+                    type: string
+                    format: date-time
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/stop-loss/remove-position/{position_id}:
+    delete:
+      summary: 移除止损持仓
+      description: 从智能止损系统中移除持仓
+      parameters:
+        - name: position_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 持仓ID
+      responses:
+        '200':
+          description: 移除成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  position_id:
+                    type: string
+                  status:
+                    type: string
+                    example: "removed"
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/stop-loss/status/{position_id}:
+    get:
+      summary: 获取止损状态
+      description: 获取指定持仓的止损状态和详细信息
+      parameters:
+        - name: position_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 持仓ID
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StopLossPosition'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/stop-loss/overview:
+    get:
+      summary: 止损概览
+      description: 获取所有止损持仓的汇总信息
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_positions:
+                    type: integer
+                    example: 25
+                  active_positions:
+                    type: integer
+                    example: 20
+                  triggered_positions:
+                    type: integer
+                    example: 3
+                  total_pnl:
+                    type: number
+                    example: 12500.5
+                  positions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StopLossPosition'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/stop-loss/batch-update:
+    post:
+      summary: 批量更新止损
+      description: 批量更新多个持仓的止损参数
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - updates
+              properties:
+                updates:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - position_id
+                    properties:
+                      position_id:
+                        type: string
+                        example: "SL_001"
+                      risk_tolerance:
+                        type: string
+                        enum: [low, medium, high]
+                        example: "high"
+                      atr_period:
+                        type: integer
+                        example: 20
+                  minItems: 1
+                  maxItems: 100
+      responses:
+        '200':
+          description: 批量更新成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  updated_count:
+                    type: integer
+                    example: 15
+                  failed_count:
+                    type: integer
+                    example: 0
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        position_id:
+                          type: string
+                        success:
+                          type: boolean
+                        error:
+                          type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/stop-loss/history/performance:
+    get:
+      summary: 止损历史表现
+      description: 获取止损策略的历史表现统计
+      parameters:
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: 开始日期
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: 结束日期
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_trades:
+                    type: integer
+                    example: 150
+                  winning_trades:
+                    type: integer
+                    example: 95
+                  losing_trades:
+                    type: integer
+                    example: 55
+                  win_rate:
+                    type: number
+                    example: 0.633
+                  avg_win:
+                    type: number
+                    example: 1250.5
+                  avg_loss:
+                    type: number
+                    example: -850.2
+                  profit_factor:
+                    type: number
+                    example: 1.45
+                  total_pnl:
+                    type: number
+                    example: 25750.8
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/stop-loss/history/recommendations:
+    get:
+      summary: 止损历史建议
+      description: 基于历史表现的止损策略建议
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  optimal_atr_period:
+                    type: integer
+                    example: 14
+                  recommended_risk_tolerance:
+                    type: string
+                    example: "medium"
+                  suggested_stop_distance:
+                    type: number
+                    example: 2.5
+                  performance_score:
+                    type: number
+                    example: 78.5
+                  recommendations:
+                    type: array
+                    items:
+                      type: string
+                    example: [
+                      "建议使用14日ATR周期",
+                      "中等风险承受度更适合当前市场",
+                      "止损距离设置为2.5倍ATR"
+                    ]
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/alert/send:
+    post:
+      summary: 发送风险警报
+      description: |
+        手动发送风险警报通知
+        
+        **权限**: 需要认证
+        **通知**: 支持多种渠道（邮件、短信、Webhook、Slack）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - alert_type
+                - severity
+                - symbol
+                - message
+              properties:
+                alert_type:
+                  type: string
+                  enum: [var_threshold, volatility_spike, drawdown_limit, concentration_risk]
+                  example: "var_threshold"
+                severity:
+                  type: string
+                  enum: [low, medium, high, critical]
+                  example: "high"
+                symbol:
+                  type: string
+                  example: "600519"
+                message:
+                  type: string
+                  example: "VaR超过阈值5%，建议减仓"
+      responses:
+        '200':
+          description: 发送成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alert_id:
+                    type: string
+                    example: "alert_123"
+                  sent_channels:
+                    type: array
+                    items:
+                      type: string
+                    example: ["email", "slack"]
+                  sent_at:
+                    type: string
+                    format: date-time
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/alert/statistics:
+    get:
+      summary: 警报统计
+      description: 获取风险警报的统计信息
+      parameters:
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: 开始日期
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: 结束日期
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_alerts:
+                    type: integer
+                    example: 1250
+                  alerts_by_severity:
+                    type: object
+                    properties:
+                      low:
+                        type: integer
+                        example: 450
+                      medium:
+                        type: integer
+                        example: 350
+                      high:
+                        type: integer
+                        example: 320
+                      critical:
+                        type: integer
+                        example: 130
+                  alerts_by_type:
+                    type: object
+                    additionalProperties:
+                      type: integer
+                    example: {
+                      "var_threshold": 400,
+                      "volatility_spike": 300,
+                      "drawdown_limit": 350,
+                      "concentration_risk": 200
+                    }
+                  response_times:
+                    type: object
+                    properties:
+                      avg_response_time:
+                        type: number
+                        example: 45.5
+                      max_response_time:
+                        type: number
+                        example: 180.2
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/rules/evaluate:
+    post:
+      summary: 评估风险规则
+      description: 评估风险规则是否触发
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - rules
+                - context
+              properties:
+                rules:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/RiskRule'
+                  minItems: 1
+                  maxItems: 50
+                context:
+                  type: object
+                  description: 评估上下文数据
+                  additionalProperties: true
+                  example: {
+                    "symbol": "600519",
+                    "current_price": 165.0,
+                    "volatility": 0.25,
+                    "var_95": -0.025
+                  }
+      responses:
+        '200':
+          description: 评估完成
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    rule_id:
+                      type: integer
+                      example: 1
+                    rule_name:
+                      type: string
+                      example: "高波动率警报"
+                    triggered:
+                      type: boolean
+                      example: true
+                    confidence:
+                      type: number
+                      example: 0.85
+                    action:
+                      type: object
+                      additionalProperties: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/rules/add:
+    post:
+      summary: 添加风险规则
+      description: 创建新的风险监控规则
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RiskRule'
+      responses:
+        '200':
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rule_id:
+                    type: integer
+                    example: 123
+                  status:
+                    type: string
+                    example: "active"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/rules/remove/{rule_id}:
+    delete:
+      summary: 删除风险规则
+      description: 删除指定的风险监控规则
+      parameters:
+        - name: rule_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: 规则ID
+      responses:
+        '200':
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rule_id:
+                    type: integer
+                    example: 123
+                  status:
+                    type: string
+                    example: "deleted"
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/rules/statistics:
+    get:
+      summary: 规则统计
+      description: 获取风险规则的统计信息
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_rules:
+                    type: integer
+                    example: 45
+                  active_rules:
+                    type: integer
+                    example: 38
+                  rules_by_type:
+                    type: object
+                    additionalProperties:
+                      type: integer
+                    example: {
+                      "var_threshold": 15,
+                      "volatility_spike": 12,
+                      "drawdown_limit": 10,
+                      "concentration_risk": 8
+                    }
+                  trigger_counts:
+                    type: object
+                    additionalProperties:
+                      type: integer
+                    example: {
+                      "var_threshold": 2340,
+                      "volatility_spike": 1890,
+                      "drawdown_limit": 1560,
+                      "concentration_risk": 980
+                    }
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/risk/realtime/{symbol}:
+    get:
+      summary: 实时风险指标
+      description: 获取股票的实时风险指标
+      parameters:
+        - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "^[A-Z0-9.]+$"
+          description: 股票代码
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RiskMetrics'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /metrics/history:
+    get:
+      summary: 风险指标历史数据
+      description: 获取风险指标的历史时间序列数据
+      parameters:
+        - name: symbol
+          in: query
+          schema:
+            type: string
+            pattern: "^[A-Z0-9.]+$"
+          description: 股票代码
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: 开始日期
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: 结束日期
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+          description: 返回数量限制
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    date:
+                      type: string
+                      format: date
+                      example: "2024-01-01"
+                    volatility:
+                      type: number
+                      example: 0.25
+                    var_95:
+                      type: number
+                      example: -0.025
+                    beta:
+                      type: number
+                      example: 1.2
+                    sharpe_ratio:
+                      type: number
+                      example: 1.8
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /alerts:
+    get:
+      summary: 获取风险警报列表
+      description: 获取所有活跃的风险警报
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, acknowledged, resolved]
+          description: 按状态过滤
+        - name: severity
+          in: query
+          schema:
+            type: string
+            enum: [low, medium, high, critical]
+          description: 按严重程度过滤
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+          description: 返回数量限制
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RiskAlert'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: 创建风险警报
+      description: 创建新的风险警报
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RiskAlertCreate'
+      responses:
+        '200':
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RiskAlertResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /alerts/{alert_id}:
+    put:
+      summary: 更新风险警报
+      description: 更新警报状态或信息
+      parameters:
+        - name: alert_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: 警报ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RiskAlertUpdate'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alert_id:
+                    type: integer
+                    example: 123
+                  status:
+                    type: string
+                    example: "acknowledged"
+                  updated_at:
+                    type: string
+                    format: date-time
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: 删除风险警报
+      description: 删除指定的风险警报
+      parameters:
+        - name: alert_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: 警报ID
+      responses:
+        '200':
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alert_id:
+                    type: integer
+                    example: 123
+                  status:
+                    type: string
+                    example: "deleted"
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /notifications/test:
+    post:
+      summary: 测试风险通知
+      description: 发送测试通知以验证通知渠道配置
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationTestRequest'
+      responses:
+        '200':
+          description: 测试发送成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /metrics/calculate:
+    post:
+      summary: 计算风险指标
+      description: 计算指定股票或组合的风险指标
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - symbol
+              properties:
+                symbol:
+                  type: string
+                  pattern: "^[A-Z0-9.]+$"
+                  example: "600519"
+                portfolio:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      symbol:
+                        type: string
+                      weight:
+                        type: number
+                        minimum: 0
+                        maximum: 1
+                  description: 投资组合（可选，用于组合风险计算）
+      responses:
+        '200':
+          description: 计算成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RiskMetrics'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /position/assess:
+    post:
+      summary: 评估持仓风险
+      description: 评估单个持仓或整个投资组合的风险水平
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - symbol
+                - quantity
+                - entry_price
+              properties:
+                symbol:
+                  type: string
+                  pattern: "^[A-Z0-9.]+$"
+                  example: "600519"
+                quantity:
+                  type: integer
+                  minimum: 1
+                  example: 1000
+                entry_price:
+                  type: number
+                  minimum: 0
+                  example: 150.0
+                current_price:
+                  type: number
+                  minimum: 0
+                  example: 165.0
+                stop_loss_price:
+                  type: number
+                  minimum: 0
+                  example: 148.5
+      responses:
+        '200':
+          description: 评估成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  risk_level:
+                    type: string
+                    enum: [low, medium, high, critical]
+                    example: "medium"
+                  risk_score:
+                    type: number
+                    minimum: 0
+                    maximum: 100
+                    example: 65
+                  recommendations:
+                    type: array
+                    items:
+                      type: string
+                    example: [
+                      "建议设置止损位在148.5元",
+                      "当前盈利空间较大，可考虑部分获利了结",
+                      "建议关注波动率变化"
+                    ]
+                  metrics:
+                    $ref: '#/components/schemas/RiskMetrics'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /alerts/generate:
+    post:
+      summary: 生成风险警报
+      description: |
+        基于当前市场数据和风险指标生成警报
+        
+        **权限**: 需要认证
+        **智能**: 自动分析多个风险维度
+        **批量**: 支持批量生成警报
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbols:
+                  type: array
+                  items:
+                    type: string
+                    pattern: "^[A-Z0-9.]+$"
+                  minItems: 1
+                  maxItems: 100
+                  description: 股票代码列表（可选，默认扫描所有持仓）
+                  example: ["600519", "000001", "000002"]
+                risk_types:
+                  type: array
+                  items:
+                    type: string
+                    enum: [volatility, var, drawdown, concentration, liquidity]
+                  description: 风险类型过滤（可选，默认全部）
+                  example: ["volatility", "var"]
+      responses:
+        '200':
+          description: 生成成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  generated_alerts:
+                    type: integer
+                    example: 5
+                  alerts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RiskAlert'
+                  scan_timestamp:
+                    type: string
+                    format: date-time
+                    example: "2024-01-01T10:00:00Z"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/stock/{symbol}:
+    get:
+      summary: 获取个股风险指标
+      description: |
+        获取指定股票的完整风险指标分析
+        
+        **权限**: 需要认证
+        **实时**: 基于最新市场数据
+        **全面**: 涵盖波动率、VaR、流动性等多维度风险
+      parameters:
+        - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "^[A-Z0-9.]+$"
+          description: 股票代码
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  symbol:
+                    type: string
+                    example: "600519"
+                  risk_level:
+                    type: string
+                    enum: [low, medium, high, critical]
+                    example: "medium"
+                  overall_score:
+                    type: number
+                    minimum: 0
+                    maximum: 100
+                    example: 65
+                  metrics:
+                    $ref: '#/components/schemas/RiskMetrics'
+                  alerts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RiskAlert'
+                  last_updated:
+                    type: string
+                    format: date-time
+                    example: "2024-01-01T10:00:00Z"
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/portfolio/{portfolio_id}:
+    get:
+      summary: 获取组合风险指标
+      description: |
+        获取投资组合的完整风险分析
+        
+        **权限**: 需要认证
+        **组合**: 考虑资产相关性和集中度
+        **基准**: 相对于市场指数的超额风险
+      parameters:
+        - name: portfolio_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 投资组合ID
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  portfolio_id:
+                    type: string
+                    example: "PORT_001"
+                  risk_level:
+                    type: string
+                    enum: [low, medium, high, critical]
+                    example: "high"
+                  overall_score:
+                    type: number
+                    minimum: 0
+                    maximum: 100
+                    example: 78
+                  concentration_score:
+                    type: number
+                    minimum: 0
+                    maximum: 100
+                    example: 45
+                  diversification_score:
+                    type: number
+                    minimum: 0
+                    maximum: 100
+                    example: 72
+                  metrics:
+                    $ref: '#/components/schemas/RiskMetrics'
+                  top_risk_contributors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        symbol:
+                          type: string
+                          example: "600519"
+                        weight:
+                          type: number
+                          example: 0.25
+                        risk_contribution:
+                          type: number
+                          example: 0.35
+                  alerts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RiskAlert'
+                  last_updated:
+                    type: string
+                    format: date-time
+                    example: "2024-01-01T10:00:00Z"
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/stop-loss/calculate:
+    post:
+      summary: 计算止损价格
+      description: |
+        基于ATR指标和风险承受度计算智能止损价格
+        
+        **权限**: 需要认证
+        **智能**: 自动调整ATR周期和倍数
+        **自适应**: 根据波动率动态调整
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - symbol
+                - entry_price
+                - risk_tolerance
+              properties:
+                symbol:
+                  type: string
+                  pattern: "^[A-Z0-9.]+$"
+                  example: "600519"
+                entry_price:
+                  type: number
+                  minimum: 0
+                  example: 150.0
+                risk_tolerance:
+                  type: string
+                  enum: [low, medium, high]
+                  example: "medium"
+                atr_period:
+                  type: integer
+                  minimum: 5
+                  maximum: 50
+                  default: 14
+                  example: 14
+                custom_multiplier:
+                  type: number
+                  minimum: 0.5
+                  maximum: 5.0
+                  description: 自定义ATR倍数（可选）
+                  example: 2.5
+      responses:
+        '200':
+          description: 计算成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  symbol:
+                    type: string
+                    example: "600519"
+                  entry_price:
+                    type: number
+                    example: 150.0
+                  stop_price:
+                    type: number
+                    example: 142.5
+                  atr_value:
+                    type: number
+                    example: 3.0
+                  atr_period:
+                    type: integer
+                    example: 14
+                  multiplier:
+                    type: number
+                    example: 2.5
+                  risk_tolerance:
+                    type: string
+                    example: "medium"
+                  risk_amount:
+                    type: number
+                    example: 7.5
+                  risk_percentage:
+                    type: number
+                    example: 0.05
+                  calculation_method:
+                    type: string
+                    example: "ATR-based adaptive stop loss"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/stop-loss/trigger:
+    post:
+      summary: 触发止损执行
+      description: |
+        执行止损单，自动卖出持仓
+        
+        **权限**: 需要管理员权限
+        **安全**: 多重确认机制
+        **记录**: 完整交易记录和审计日志
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - position_id
+              properties:
+                position_id:
+                  type: string
+                  example: "SL_001"
+                execution_price:
+                  type: number
+                  description: 执行价格（可选，默认市价）
+                  example: 142.5
+                reason:
+                  type: string
+                  enum: [manual, automatic, risk_limit, portfolio_rebalance]
+                  default: "automatic"
+                  example: "automatic"
+                notes:
+                  type: string
+                  maxLength: 500
+                  description: 执行备注
+                  example: "ATR止损触发，市场波动加剧"
+      responses:
+        '200':
+          description: 止损执行成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  position_id:
+                    type: string
+                    example: "SL_001"
+                  order_id:
+                    type: string
+                    example: "ORD_123456"
+                  execution_price:
+                    type: number
+                    example: 142.5
+                  quantity:
+                    type: integer
+                    example: 1000
+                  total_amount:
+                    type: number
+                    example: 142500.0
+                  pnl:
+                    type: number
+                    example: -7500.0
+                  reason:
+                    type: string
+                    example: "automatic"
+                  executed_at:
+                    type: string
+                    format: date-time
+                    example: "2024-01-01T10:30:00Z"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/alerts/active:
+    get:
+      summary: 获取活跃警报
+      description: |
+        获取所有未解决的活跃风险警报
+        
+        **权限**: 需要认证
+        **实时**: 最新的警报状态
+        **优先级**: 按严重程度排序
+      parameters:
+        - name: severity
+          in: query
+          schema:
+            type: string
+            enum: [low, medium, high, critical]
+          description: 按严重程度过滤
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+          description: 返回数量限制
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_active:
+                    type: integer
+                    example: 12
+                  alerts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RiskAlert'
+                  last_updated:
+                    type: string
+                    format: date-time
+                    example: "2024-01-01T10:00:00Z"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/alerts/{alert_id}/acknowledge:
+    post:
+      summary: 确认风险警报
+      description: |
+        确认并标记警报为已处理
+        
+        **权限**: 需要认证
+        **状态**: 从active变为acknowledged
+        **审计**: 记录确认人和时间
+      parameters:
+        - name: alert_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: 警报ID
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notes:
+                  type: string
+                  maxLength: 500
+                  description: 处理备注
+                  example: "已查看VaR指标，已采取减仓措施"
+                action_taken:
+                  type: string
+                  maxLength: 200
+                  description: 采取的行动
+                  example: "减仓20%，设置更严格的止损"
+      responses:
+        '200':
+          description: 确认成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alert_id:
+                    type: integer
+                    example: 123
+                  status:
+                    type: string
+                    example: "acknowledged"
+                  acknowledged_by:
+                    type: string
+                    example: "user123"
+                  acknowledged_at:
+                    type: string
+                    format: date-time
+                    example: "2024-01-01T10:15:00Z"
+                  notes:
+                    type: string
+                    example: "已查看VaR指标，已采取减仓措施"
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/health:
+    get:
+      summary: 风险管理系统健康检查
+      description: |
+        检查风险管理系统的整体健康状态
+        
+        **权限**: 无需认证
+        **监控**: 系统状态、服务可用性、性能指标
+        **诊断**: 自动检测和报告问题
+      responses:
+        '200':
+          description: 系统健康
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy, degraded, unhealthy]
+                    example: "healthy"
+                  uptime:
+                    type: string
+                    example: "7d 4h 23m"
+                  version:
+                    type: string
+                    example: "3.1.0"
+                  services:
+                    type: object
+                    properties:
+                      database:
+                        type: string
+                        enum: [up, down, degraded]
+                        example: "up"
+                      gpu_acceleration:
+                        type: string
+                        enum: [up, down, degraded]
+                        example: "up"
+                      notification_system:
+                        type: string
+                        enum: [up, down, degraded]
+                        example: "up"
+                      websocket_service:
+                        type: string
+                        enum: [up, down, degraded]
+                        example: "up"
+                  metrics:
+                    type: object
+                    properties:
+                      active_alerts:
+                        type: integer
+                        example: 5
+                      active_stop_loss_positions:
+                        type: integer
+                        example: 23
+                      active_risk_rules:
+                        type: integer
+                        example: 18
+                      avg_response_time:
+                        type: number
+                        example: 45.2
+                  last_updated:
+                    type: string
+                    format: date-time
+                    example: "2024-01-01T10:00:00Z"
+        '503':
+          description: 系统不健康
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "unhealthy"
+                  issues:
+                    type: array
+                    items:
+                      type: string
+                    example: [
+                      "Database connection failed",
+                      "GPU service unavailable"
+                    ]
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /v31/ws/risk-updates:
+    get:
+      summary: WebSocket风险实时更新
+      description: |
+        建立WebSocket连接，接收实时风险指标更新
+        
+        **协议**: WebSocket
+        **认证**: 通过URL参数或初始消息
+        **主题**: 支持订阅不同类型的风险更新
+      parameters:
+        - name: topics
+          in: query
+          schema:
+            type: string
+            default: "portfolio_risk,stock_risk,alerts"
+          description: 订阅主题，逗号分隔
+      responses:
+        '101':
+          description: WebSocket连接建立成功
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "WebSocket connection established"
+
+  /v31/ws/broadcast/{topic}:
+    post:
+      summary: 广播风险更新
+      description: |
+        向所有订阅指定主题的WebSocket客户端广播风险更新
+        
+        **权限**: 需要管理员权限
+        **实时**: 即时推送给所有连接的客户端
+        **主题**: portfolio_risk, stock_risk, alerts等
+      parameters:
+        - name: topic
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 广播主题
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: object
+                  additionalProperties: true
+                  example: {
+                    "type": "risk_alert",
+                    "symbol": "600519",
+                    "alert": {
+                      "type": "var_threshold",
+                      "severity": "high",
+                      "message": "VaR超过阈值"
+                    }
+                  }
+                priority:
+                  type: string
+                  enum: [low, normal, high, urgent]
+                  default: "normal"
+                  description: 消息优先级
+      responses:
+        '200':
+          description: 广播成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  topic:
+                    type: string
+                    example: "alerts"
+                  recipients:
+                    type: integer
+                    example: 15
+                  message_id:
+                    type: string
+                    example: "msg_123456"
+                  broadcast_at:
+                    type: string
+                    format: date-time
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v31/ws/connections:
+    get:
+      summary: 获取WebSocket连接状态
+      description: |
+        获取当前活跃的WebSocket连接统计信息
+        
+        **权限**: 需要管理员权限
+        **监控**: 连接数量、主题订阅、性能指标
+        **诊断**: 连接健康状态和潜在问题
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_connections:
+                    type: integer
+                    example: 45
+                  connections_by_topic:
+                    type: object
+                    additionalProperties:
+                      type: integer
+                    example: {
+                      "portfolio_risk": 12,
+                      "stock_risk": 25,
+                      "alerts": 8
+                    }
+                  uptime_stats:
+                    type: object
+                    properties:
+                      avg_connection_time:
+                        type: string
+                        example: "2h 15m"
+                      max_connection_time:
+                        type: string
+                        example: "8h 30m"
+                      total_messages_sent:
+                        type: integer
+                        example: 15420
+                  health_status:
+                    type: string
+                    enum: [healthy, warning, critical]
+                    example: "healthy"
+                  last_updated:
+                    type: string
+                    format: date-time
+                    example: "2024-01-01T10:00:00Z"
+        '500':
+          $ref: '#/components/responses/InternalServerError'

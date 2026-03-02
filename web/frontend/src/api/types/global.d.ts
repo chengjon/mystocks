@@ -4,13 +4,13 @@
 
 declare global {
   // Generic dictionary type used throughout the codebase
-  type Dict = Record<string, any>;
+  type Dict = Record<string, unknown>;
 
   // Generic list type used throughout the codebase
-  type List<T = any> = T[];
+  type List<T = unknown> = T[];
 
   // Generic type parameter (used in generic type definitions)
-  type T = any;
+  type T = unknown;
 
   // Market overview (reference to market.ts)
   type MarketOverview = import('./market').MarketOverview;

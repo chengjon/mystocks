@@ -1,0 +1,77 @@
+# AI Task Card Template (v0.2)
+# Save as: governance/mainline/task-cards/pr-<pr-number>.yaml
+
+version: "v0.2"
+
+task:
+  id: "pr-0000"
+  title: "<one-line task title>"
+  owner: "<owner>"
+  created_at: "2026-03-01"
+
+mainline:
+  id: "L1-<north-star-id>"
+  objective: "<one measurable sentence>"
+  milestone_id: "L2-<milestone-id>"
+  slice_id: "L3-<slice-id>"
+
+classification:
+  task_type: "feature" # fix | feature | cleanup
+  secondary_type: "none" # none | fix | feature | cleanup
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "update-example-capability"
+  approval_status: "approved" # approved | not_required | pending | rejected
+
+scope:
+  allowed_paths:
+    - "src/**"
+    - "web/backend/app/**"
+    - "web/frontend/src/**"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No unrelated refactor outside allowed paths"
+  - "No new dependency unless explicitly approved"
+
+acceptance:
+  checks:
+    - id: "lint"
+      command: "ruff check src/"
+      required: true
+    - id: "type-check"
+      command: "npm --prefix web/frontend run type-check"
+      required: true
+    - id: "tests"
+      command: "pytest -m \"not slow\""
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Potential side effects in touched modules"
+  rollback_plan: "git revert <merge-commit-sha>"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "<why this change exists>"
+    modified_scope: "<exact modules/files touched>"
+    dependency_changes: "none"
+    legacy_logic_impact: "<impact to existing behavior>"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "<risk + rollback checkpoint>"
+
+governance:
+  phase: "phase_a_pr_hard_gate" # phase_a_pr_hard_gate | phase_b_dual_hard_gate | phase_c_zero_drift
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "<owner>"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "<approver>"
+    approved_at: "2026-03-01T00:00:00Z"
+    approval_note: "approved"
+    secondary_approved: false

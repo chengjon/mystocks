@@ -36,19 +36,19 @@
           </div>
           <div class="info-item">
             <span class="info-label">当前价</span>
-            <span :class="['info-value', 'price', currentQuote.change >= 0 ? 'price-up' : 'price-down']">
+            <span :class="['info-value', 'price', (currentQuote.change ?? 0) >= 0 ? 'price-up' : 'price-down']">
               {{ currentQuote.current?.toFixed(2) }}
             </span>
           </div>
           <div class="info-item">
             <span class="info-label">涨跌幅</span>
-            <span :class="['info-value', 'price', currentQuote.percent_change >= 0 ? 'price-up' : 'price-down']">
+            <span :class="['info-value', 'price', (currentQuote.percent_change ?? 0) >= 0 ? 'price-up' : 'price-down']">
               {{ currentQuote.percent_change?.toFixed(2) }}%
             </span>
           </div>
           <div class="info-item">
             <span class="info-label">涨跌额</span>
-            <span :class="['info-value', 'price', currentQuote.change >= 0 ? 'price-up' : 'price-down']">
+            <span :class="['info-value', 'price', (currentQuote.change ?? 0) >= 0 ? 'price-up' : 'price-down']">
               {{ currentQuote.change?.toFixed(2) }}
             </span>
           </div>

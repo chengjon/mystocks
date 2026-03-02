@@ -7,6 +7,18 @@ set -e
 PROJECT_ROOT="/opt/claude/mystocks_spec/web/frontend"
 cd "$PROJECT_ROOT"
 
+# Load .env for unified port/runtime config.
+if [ -f ".env" ]; then
+    set -a
+    . ./.env
+    set +a
+fi
+
+FRONTEND_PORT="${FRONTEND_PORT:-3020}"
+FRONTEND_BACKUP_PORT="${FRONTEND_BACKUP_PORT:-3021}"
+BACKEND_PORT="${BACKEND_PORT:-8020}"
+BACKEND_BACKUP_PORT="${BACKEND_BACKUP_PORT:-8021}"
+
 echo "╔════════════════════════════════════════════════════════════════╗"
 echo "║     MyStocks Web端 - 一键部署和测试                              ║"
 echo "║     构建生产版本 → PM2部署 → Playwright测试                      ║"
@@ -98,7 +110,7 @@ attempt=1
 
 echo -n "   ⏳ 等待服务就绪"
 while [ $attempt -le $MAX_ATTEMPTS ]; do
-    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3001 2>/dev/null || echo "000")
+    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:${FRONTEND_PORT}" 2>/dev/null || echo "000")
 
     if echo "$HTTP_CODE" | grep -qE "^(200|301|302|304)$"; then
         echo -e "\r   ${GREEN}✅ 服务就绪 (HTTP $HTTP_CODE)${NC}"
@@ -115,8 +127,8 @@ if [ $attempt -gt $MAX_ATTEMPTS ]; then
     echo ""
     echo "📋 故障排查："
     echo "   1. 查看PM2日志: pm2 logs mystocks-frontend-prod --lines 20"
-    echo "   2. 检查端口: lsof -i :3001"
-    echo "   3. 手动测试: curl http://localhost:3001"
+    echo "   2. 检查端口: lsof -i :${FRONTEND_PORT}"
+    echo "   3. 手动测试: curl http://localhost:${FRONTEND_PORT}"
     echo "   4. 重启服务: pm2 restart mystocks-frontend-prod"
     exit 1
 fi
@@ -129,14 +141,14 @@ echo ""
 echo -e "${BLUE}[步骤 4/6]${NC} 执行健康检查..."
 
 echo "   📡 检查前端服务..."
-if curl -sf http://localhost:3001 > /dev/null; then
+if curl -sf "http://localhost:${FRONTEND_PORT}" > /dev/null; then
     echo -e "   ${GREEN}✅ 前端服务正常${NC}"
 else
     echo -e "   ${RED}❌ 前端服务异常${NC}"
 fi
 
 echo "   🔌 检查后端API..."
-if curl -sf http://localhost:8000/health > /dev/null 2>&1; then
+if curl -sf "http://localhost:${BACKEND_PORT}/health" > /dev/null 2>&1 || curl -sf "http://localhost:${BACKEND_BACKUP_PORT}/health" > /dev/null 2>&1; then
     echo -e "   ${GREEN}✅ 后端API正常${NC}"
 else
     echo -e "   ${YELLOW}⚠️  后端API未响应${NC} (实时功能可能受影响)"
@@ -243,7 +255,7 @@ echo "║                     部署和测试总结                             
 echo "╠════════════════════════════════════════════════════════════════╣"
 echo "║  构建状态: ✅ 成功 (大小: $DIST_SIZE)"
 echo "║  PM2服务: ✅ 运行中"
-echo "║  前端端口: ✅ 3001可访问"
+echo "║  前端端口: ✅ ${FRONTEND_PORT}可访问"
 echo "║  E2E测试: ✅ 通过"
 
 if command -v pm2 &> /dev/null; then
@@ -278,7 +290,7 @@ echo ""
 echo -e "${GREEN}🎉 部署和测试完成！${NC}"
 echo ""
 echo "🌐 访问应用："
-echo "   http://localhost:3001"
+echo "   http://localhost:${FRONTEND_PORT}"
 echo ""
 
 echo "📋 后续步骤："

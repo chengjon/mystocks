@@ -9,8 +9,7 @@ import { DataAdapter } from '@/utils/adapters'
 import type {
   MarketOverviewResponse,
   FundFlowResponse,
-  KlineResponse,
-  StockSearchResult
+  KlineResponse
 } from '@/api/types/generated-types'
 import type {
   MarketOverviewVM,
@@ -18,6 +17,15 @@ import type {
   KLineChartData,
   StockSearchVM
 } from '@/utils/adapters'
+
+interface StockSearchResult {
+  symbol?: string
+  name?: string
+  market?: string
+  current?: number
+  changePercent?: number
+  change?: number
+}
 
 class MarketApiService {
   private baseUrl = '/api/market'

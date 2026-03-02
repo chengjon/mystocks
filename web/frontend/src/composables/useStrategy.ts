@@ -11,6 +11,88 @@ import { StrategyAdapter } from '@/utils/strategy-adapters';
 import type { StrategyVM as Strategy } from '@/api/types/extensions';
 import type { StrategyListItemVM } from '@/utils/strategy-adapters';
 import type { CreateStrategyRequestVM as CreateStrategyRequest, UpdateStrategyRequestVM as UpdateStrategyRequest } from '@/api/types/extensions';
+import type { BacktestRequestVM } from '@/api/types/extensions/strategy';
+import type { StrategyConfig } from '@/api/types/common';
+import { createMockStrategyManagementList } from '@/mock/strategyTabsMock';
+
+type StrategyDataSource = 'real' | 'mock';
+
+function normalizeStrategyStatus(status: unknown): StrategyListItemVM['status'] {
+  if (typeof status !== 'string') {
+    return 'stopped';
+  }
+
+  const normalized = status.toLowerCase();
+  if (normalized === 'running' || normalized === 'active' || normalized === 'enabled') {
+    return 'running';
+  }
+  if (normalized === 'paused') {
+    return 'paused';
+  }
+  if (normalized === 'error' || normalized === 'failed') {
+    return 'error';
+  }
+  return 'stopped';
+}
+
+function toStrategyListItemVM(strategy: StrategyConfig, index: number): StrategyListItemVM {
+  return {
+    id: strategy.strategy_id != null ? String(strategy.strategy_id) : `strategy-${index + 1}`,
+    code: strategy.strategy_type || '',
+    name: strategy.strategy_name || `策略 ${index + 1}`,
+    type: strategy.strategy_type || 'custom',
+    status: normalizeStrategyStatus(strategy.status),
+    lastRunTime: strategy.updated_at || '-',
+    nextRunTime: '-',
+    totalReturn: '-',
+    sharpeRatio: '-',
+    maxDrawdown: '-',
+    winRate: '-',
+    description: strategy.description || '',
+  };
+}
+
+function extractStrategyConfigs(payload: unknown): StrategyConfig[] | null {
+  if (Array.isArray(payload)) {
+    return payload as StrategyConfig[];
+  }
+
+  if (payload && typeof payload === 'object') {
+    const candidate = payload as Record<string, unknown>;
+    if (Array.isArray(candidate.strategies)) {
+      return candidate.strategies as StrategyConfig[];
+    }
+    if (Array.isArray(candidate.items)) {
+      return candidate.items as StrategyConfig[];
+    }
+    if (Array.isArray(candidate.data)) {
+      return candidate.data as StrategyConfig[];
+    }
+  }
+
+  return null;
+}
+
+function parseProcessTimeMs(processTime?: string): string {
+  if (!processTime) {
+    return 'N/A';
+  }
+
+  const normalized = processTime.trim().toLowerCase();
+  const rawNumber = Number.parseFloat(normalized);
+
+  if (!Number.isFinite(rawNumber)) {
+    return 'N/A';
+  }
+
+  if (normalized.endsWith('ms')) {
+    return rawNumber.toFixed(2);
+  }
+  if (normalized.endsWith('s')) {
+    return (rawNumber * 1000).toFixed(2);
+  }
+  return rawNumber.toFixed(2);
+}
 
 /**
  * Strategy management composable
@@ -22,9 +104,20 @@ export function useStrategy(autoFetch = true) {
   const strategies = ref<StrategyListItemVM[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
+  const dataSource = ref<StrategyDataSource>('real');
+  const lastRequestId = ref<string>('N/A');
+  const lastProcessTimeMs = ref<string>('N/A');
 
   // Service instance
   const strategyService = new StrategyApiService();
+
+  const applyMockFallback = (errorMessage: string) => {
+    strategies.value = createMockStrategyManagementList().map((item, index) =>
+      toStrategyListItemVM(item, index)
+    );
+    dataSource.value = 'mock';
+    error.value = errorMessage;
+  };
 
   /**
    * Fetch strategy list from API
@@ -35,11 +128,32 @@ export function useStrategy(autoFetch = true) {
 
     try {
       const response = await strategyService.getStrategyList();
-      strategies.value = StrategyAdapter.adaptStrategyList(response);
+      lastRequestId.value = response.request_id || 'N/A';
+      lastProcessTimeMs.value = parseProcessTimeMs(response.process_time);
+
+      if (!response.success) {
+        applyMockFallback(response.message || '获取策略列表失败，已回退到 MOCK 数据');
+        return;
+      }
+
+      const strategyList = extractStrategyConfigs(response.data);
+      if (strategyList === null) {
+        applyMockFallback('策略数据格式异常，已回退到 MOCK 数据');
+        return;
+      }
+
+      if (strategyList.length === 0) {
+        strategies.value = [];
+        dataSource.value = 'real';
+        return;
+      }
+
+      strategies.value = strategyList.map((item, index) => toStrategyListItemVM(item, index));
+      dataSource.value = 'real';
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
-      error.value = `获取策略列表失败: ${errorMsg}`;
-      console.error('[useStrategy] fetchStrategies error:', err);
+      applyMockFallback(`获取策略列表失败: ${errorMsg}`);
+      console.error('[useStrategy] fetchStrategies error, fallback to mock:', err);
     } finally {
       loading.value = false;
     }
@@ -77,6 +191,23 @@ export function useStrategy(autoFetch = true) {
   const createStrategy = async (data: CreateStrategyRequest): Promise<boolean> => {
     loading.value = true;
     error.value = null;
+    const previousStrategies = [...strategies.value];
+    const tempId = `temp-${Date.now()}`;
+    const optimisticItem: StrategyListItemVM = {
+      id: tempId,
+      code: data.type || '',
+      name: data.name || '未命名策略',
+      type: data.type || 'custom',
+      status: 'stopped',
+      lastRunTime: new Date().toISOString(),
+      nextRunTime: '-',
+      totalReturn: '-',
+      sharpeRatio: '-',
+      maxDrawdown: '-',
+      winRate: '-',
+      description: data.description || '',
+    };
+    strategies.value = [optimisticItem, ...strategies.value];
 
     try {
       const response = await strategyService.createStrategy(data);
@@ -86,11 +217,13 @@ export function useStrategy(autoFetch = true) {
         await fetchStrategies();
         return true;
       } else {
+        strategies.value = previousStrategies;
         error.value = response.message || '创建策略失败';
         return false;
       }
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+      strategies.value = previousStrategies;
       error.value = `创建策略失败: ${errorMsg}`;
       console.error('[useStrategy] createStrategy error:', err);
       return false;
@@ -112,13 +245,22 @@ export function useStrategy(autoFetch = true) {
   ): Promise<boolean> => {
     loading.value = true;
     error.value = null;
+    const index = strategies.value.findIndex((s) => s.id === id);
+    const previousItem = index !== -1 ? { ...strategies.value[index] } : null;
+
+    if (index !== -1) {
+      strategies.value[index] = {
+        ...strategies.value[index],
+        name: data.name || strategies.value[index].name,
+        description: data.description || strategies.value[index].description,
+      };
+    }
 
     try {
       const response = await strategyService.updateStrategy(id, data);
 
       if (response.success) {
         // Update local state with partial update
-        const index = strategies.value.findIndex((s) => s.id === id);
         if (index !== -1 && response.data) {
           // Update only the fields that exist in StrategyListItemVM
           const updated = StrategyAdapter.adaptStrategy(response.data);
@@ -131,11 +273,17 @@ export function useStrategy(autoFetch = true) {
         }
         return true;
       } else {
+        if (index !== -1 && previousItem) {
+          strategies.value[index] = previousItem;
+        }
         error.value = response.message || '更新策略失败';
         return false;
       }
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+      if (index !== -1 && previousItem) {
+        strategies.value[index] = previousItem;
+      }
       error.value = `更新策略失败: ${errorMsg}`;
       console.error('[useStrategy] updateStrategy error:', err);
       return false;
@@ -153,20 +301,22 @@ export function useStrategy(autoFetch = true) {
   const deleteStrategy = async (id: string): Promise<boolean> => {
     loading.value = true;
     error.value = null;
+    const previousStrategies = [...strategies.value];
+    strategies.value = strategies.value.filter((s) => s.id !== id);
 
     try {
       const response = await strategyService.deleteStrategy(id);
 
       if (response.success) {
-        // Remove from local list
-        strategies.value = strategies.value.filter((s) => s.id !== id);
         return true;
       } else {
+        strategies.value = previousStrategies;
         error.value = response.message || '删除策略失败';
         return false;
       }
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+      strategies.value = previousStrategies;
       error.value = `删除策略失败: ${errorMsg}`;
       console.error('[useStrategy] deleteStrategy error:', err);
       return false;
@@ -259,7 +409,15 @@ export function useStrategy(autoFetch = true) {
 
     try {
       const response = await strategyService.pauseStrategy(id);
-      return response.success;
+      if (response.success) {
+        const index = strategies.value.findIndex((s) => s.id === id);
+        if (index !== -1) {
+          strategies.value[index].status = 'paused';
+        }
+        return true;
+      }
+      error.value = response.message || '暂停策略失败';
+      return false;
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
       error.value = `暂停策略失败: ${errorMsg}`;
@@ -282,7 +440,15 @@ export function useStrategy(autoFetch = true) {
 
     try {
       const response = await strategyService.resumeStrategy(id);
-      return response.success;
+      if (response.success) {
+        const index = strategies.value.findIndex((s) => s.id === id);
+        if (index !== -1) {
+          strategies.value[index].status = 'running';
+        }
+        return true;
+      }
+      error.value = response.message || '恢复策略失败';
+      return false;
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
       error.value = `恢复策略失败: ${errorMsg}`;
@@ -312,6 +478,9 @@ export function useStrategy(autoFetch = true) {
     strategies: readonly(strategies),
     loading: readonly(loading),
     error: readonly(error),
+    dataSource: readonly(dataSource),
+    lastRequestId: readonly(lastRequestId),
+    lastProcessTimeMs: readonly(lastProcessTimeMs),
 
     // Methods
     fetchStrategies,
@@ -360,14 +529,18 @@ export function useBacktest() {
 
     try {
       // Convert camelCase params to snake_case for API
-      const backtestParams = {
-        strategy_id: parseInt(strategyId, 10),
+      const backtestParams: BacktestRequestVM = {
+        strategy_id: strategyId,
         start_date: params.startDate,
         end_date: params.endDate,
         initial_capital: params.initialCapital,
+        symbol: params.symbols?.[0] ?? '',
+        parameters: {
+          symbols: params.symbols ?? [],
+        },
         symbols: params.symbols,
       };
-      const response = await strategyService.startBacktest(strategyId, backtestParams as any);
+      const response = await strategyService.startBacktest(strategyId, backtestParams);
       const task = StrategyAdapter.adaptBacktestTask(response);
 
       if (task) {

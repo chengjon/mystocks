@@ -1,0 +1,882 @@
+openapi: 3.0.3
+info:
+  title: MyStocks Strategy Management API
+  description: |
+    策略管理API - 提供策略CRUD、模型训练、回测执行等完整功能
+    
+    ## 功能特性
+    
+    ### 策略管理 (Strategy Management)
+    - 策略的完整生命周期管理（创建、查询、更新、删除）
+    - 支持策略状态管理（draft、active、archived）
+    - 分页查询和过滤
+    
+    ### 模型训练 (Model Training)
+    - 支持多种机器学习模型（Random Forest、LightGBM等）
+    - 异步后台训练任务
+    - 训练状态监控和进度跟踪
+    - 模型性能指标记录
+    
+    ### 回测引擎 (Backtest Engine)
+    - 支持GPU加速回测（可选）
+    - 多策略并行回测
+    - 完整的绩效指标计算
+    - 资金曲线和回撤分析
+    - 图表数据导出
+    
+    ## 数据模型
+    
+    ### Strategy 策略
+    ```json
+    {
+      "id": 1,
+      "name": "MACD策略",
+      "description": "基于MACD指标的交易策略",
+      "strategy_type": "technical",
+      "parameters": {"fast_period": 12, "slow_period": 26},
+      "status": "active",
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+    ```
+    
+    ### Model 模型
+    ```json
+    {
+      "id": 1,
+      "name": "RandomForest_2024",
+      "model_type": "random_forest",
+      "hyperparameters": {"n_estimators": 100, "max_depth": 10},
+      "status": "completed",
+      "model_path": "/models/model_1.pkl",
+      "performance_metrics": {"accuracy": 0.85, "precision": 0.82}
+    }
+    ```
+    
+    ### Backtest 回测
+    ```json
+    {
+      "id": 1,
+      "name": "MACD策略回测",
+      "strategy_id": 1,
+      "start_date": "2024-01-01",
+      "end_date": "2024-12-31",
+      "initial_cash": 1000000,
+      "status": "completed",
+      "results": {
+        "total_return": 0.25,
+        "sharpe_ratio": 1.8,
+        "max_drawdown": -0.12,
+        "win_rate": 0.65,
+        "gpu_accelerated": true
+      }
+    }
+    ```
+  version: 1.0.0
+  contact:
+    name: MyStocks Team
+    email: support@mystocks.com
+
+servers:
+  - url: http://localhost:8000/api/v1/strategy
+    description: 本地开发环境
+
+components:
+  schemas:
+    Strategy:
+      type: object
+      required:
+        - name
+        - strategy_type
+        - status
+      properties:
+        id:
+          type: integer
+          description: 策略ID
+          example: 1
+        name:
+          type: string
+          description: 策略名称
+          minLength: 1
+          maxLength: 100
+          example: "MACD策略"
+        description:
+          type: string
+          description: 策略描述
+          maxLength: 500
+          example: "基于MACD指标的交易策略"
+        strategy_type:
+          type: string
+          enum: [technical, quantitative, ai]
+          description: 策略类型
+          example: "technical"
+        parameters:
+          type: object
+          description: 策略参数
+          additionalProperties: true
+          example: {"fast_period": 12, "slow_period": 26}
+        status:
+          type: string
+          enum: [draft, active, archived]
+          description: 策略状态
+          example: "active"
+        created_at:
+          type: string
+          format: date-time
+          description: 创建时间
+          example: "2024-01-01T00:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: 更新时间
+          example: "2024-01-01T00:00:00Z"
+
+    Model:
+      type: object
+      required:
+        - name
+        - model_type
+        - status
+      properties:
+        id:
+          type: integer
+          description: 模型ID
+          example: 1
+        name:
+          type: string
+          description: 模型名称
+          minLength: 1
+          maxLength: 100
+          example: "RandomForest_2024"
+        model_type:
+          type: string
+          enum: [random_forest, lightgbm, xgboost, neural_network]
+          description: 模型类型
+          example: "random_forest"
+        hyperparameters:
+          type: object
+          description: 模型超参数
+          additionalProperties: true
+          example: {"n_estimators": 100, "max_depth": 10}
+        training_config:
+          type: object
+          description: 训练配置
+          additionalProperties: true
+          example: {"epochs": 100, "batch_size": 32}
+        status:
+          type: string
+          enum: [training, completed, failed]
+          description: 训练状态
+          example: "completed"
+        model_path:
+          type: string
+          description: 模型文件路径
+          example: "/models/model_1.pkl"
+        training_started_at:
+          type: string
+          format: date-time
+          description: 训练开始时间
+        training_completed_at:
+          type: string
+          format: date-time
+          description: 训练完成时间
+        performance_metrics:
+          type: object
+          description: 性能指标
+          additionalProperties: true
+          example: {"accuracy": 0.85, "precision": 0.82}
+        created_at:
+          type: string
+          format: date-time
+          description: 创建时间
+
+    Backtest:
+      type: object
+      required:
+        - name
+        - start_date
+        - end_date
+        - initial_cash
+        - status
+      properties:
+        id:
+          type: integer
+          description: 回测ID
+          example: 1
+        name:
+          type: string
+          description: 回测名称
+          minLength: 1
+          maxLength: 100
+          example: "MACD策略回测"
+        strategy_id:
+          type: integer
+          description: 关联策略ID
+          example: 1
+        start_date:
+          type: string
+          format: date
+          description: 回测开始日期
+          example: "2024-01-01"
+        end_date:
+          type: string
+          format: date
+          description: 回测结束日期
+          example: "2024-12-31"
+        initial_cash:
+          type: number
+          description: 初始资金
+          minimum: 0
+          example: 1000000
+        commission_rate:
+          type: number
+          description: 手续费率
+          minimum: 0
+          maximum: 1
+          example: 0.0003
+        stamp_tax_rate:
+          type: number
+          description: 印花税率
+          minimum: 0
+          maximum: 1
+          example: 0.001
+        slippage_rate:
+          type: number
+          description: 滑点率
+          minimum: 0
+          maximum: 1
+          example: 0.001
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+          description: 回测状态
+          example: "completed"
+        results:
+          type: object
+          description: 回测结果
+          additionalProperties: true
+          example:
+            total_return: 0.25
+            sharpe_ratio: 1.8
+            max_drawdown: -0.12
+            win_rate: 0.65
+            gpu_accelerated: true
+            backend: "GPU"
+        created_at:
+          type: string
+          format: date-time
+          description: 创建时间
+        started_at:
+          type: string
+          format: date-time
+          description: 开始时间
+        completed_at:
+          type: string
+          format: date-time
+          description: 完成时间
+
+    TrainingRequest:
+      type: object
+      required:
+        - name
+        - model_type
+        - hyperparameters
+        - training_config
+      properties:
+        name:
+          type: string
+          description: 模型名称
+          minLength: 1
+          maxLength: 100
+          example: "RandomForest_2024"
+        model_type:
+          type: string
+          enum: [random_forest, lightgbm, xgboost, neural_network]
+          description: 模型类型
+          example: "random_forest"
+        hyperparameters:
+          type: object
+          description: 模型超参数
+          additionalProperties: true
+          example: {"n_estimators": 100, "max_depth": 10}
+        training_config:
+          type: object
+          description: 训练配置
+          additionalProperties: true
+          example: {"epochs": 100, "batch_size": 32}
+
+    BacktestRequest:
+      type: object
+      required:
+        - strategy_name
+        - symbols
+        - start_date
+        - end_date
+        - initial_capital
+      properties:
+        strategy_name:
+          type: string
+          description: 策略名称
+          minLength: 1
+          maxLength: 50
+          example: "macd"
+        symbols:
+          type: array
+          items:
+            type: string
+            pattern: "^[A-Z0-9.]+$"
+          minItems: 1
+          maxItems: 100
+          description: 股票代码列表
+          example: ["600000", "000001"]
+        start_date:
+          type: string
+          format: date
+          description: 开始日期
+          example: "2024-01-01"
+        end_date:
+          type: string
+          format: date
+          description: 结束日期
+          example: "2024-12-31"
+        initial_capital:
+          type: number
+          description: 初始资金
+          minimum: 1000
+          example: 1000000
+        commission_rate:
+          type: number
+          description: 手续费率
+          minimum: 0
+          maximum: 1
+          default: 0.0003
+          example: 0.0003
+        stamp_tax_rate:
+          type: number
+          description: 印花税率
+          minimum: 0
+          maximum: 1
+          default: 0.001
+          example: 0.001
+        slippage_rate:
+          type: number
+          description: 滑点率
+          minimum: 0
+          maximum: 1
+          default: 0.001
+          example: 0.001
+        use_gpu:
+          type: boolean
+          description: 是否使用GPU加速
+          default: true
+          example: true
+
+    ErrorResponse:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          description: 错误详情
+          example: "策略不存在"
+
+  responses:
+    BadRequest:
+      description: 请求参数错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: 资源不存在
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: 服务器内部错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+paths:
+  /strategies:
+    get:
+      summary: 获取策略列表
+      description: |
+        分页获取策略列表，支持按状态过滤
+        
+        **权限**: 需要认证
+        **缓存**: 5分钟
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, active, archived]
+          description: 按状态过滤
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: 页码
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: 每页数量
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - items
+                  - total
+                  - page
+                  - page_size
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Strategy'
+                  total:
+                    type: integer
+                    example: 100
+                  page:
+                    type: integer
+                    example: 1
+                  page_size:
+                    type: integer
+                    example: 20
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: 创建策略
+      description: |
+        创建新的量化策略
+        
+        **权限**: 需要认证
+        **监控**: 记录操作日志
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Strategy'
+      responses:
+        '200':
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                  - data
+                properties:
+                  message:
+                    type: string
+                    example: "策略创建成功"
+                  data:
+                    $ref: '#/components/schemas/Strategy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /strategies/{strategy_id}:
+    get:
+      summary: 获取策略详情
+      description: 获取指定策略的详细信息
+      parameters:
+        - name: strategy_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: 策略ID
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Strategy'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      summary: 更新策略
+      description: 更新策略信息
+      parameters:
+        - name: strategy_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: 策略ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Strategy'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    example: "策略更新成功"
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: 删除策略
+      description: |
+        删除策略（软删除，标记为archived）
+        
+        **权限**: 需要管理员权限
+      parameters:
+        - name: strategy_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: 策略ID
+      responses:
+        '200':
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    example: "策略已归档"
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /models/train:
+    post:
+      summary: 启动模型训练
+      description: |
+        异步启动机器学习模型训练任务
+        
+        **权限**: 需要认证
+        **异步**: 返回任务ID，训练在后台进行
+        **GPU**: 自动检测并使用GPU加速（如果可用）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainingRequest'
+      responses:
+        '200':
+          description: 训练任务已启动
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - task_id
+                  - model_id
+                properties:
+                  task_id:
+                    type: string
+                    example: "train_123_1704067200"
+                  model_id:
+                    type: integer
+                    example: 123
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /models/training/{task_id}/status:
+    get:
+      summary: 获取训练状态
+      description: 查询模型训练任务的进度和状态
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 训练任务ID
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                  - progress
+                  - metrics
+                properties:
+                  status:
+                    type: string
+                    enum: [training, completed, failed]
+                    example: "training"
+                  progress:
+                    type: integer
+                    minimum: 0
+                    maximum: 100
+                    example: 75
+                  metrics:
+                    type: object
+                    additionalProperties: true
+                    example: {"loss": 0.23, "accuracy": 0.85}
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /models:
+    get:
+      summary: 获取模型列表
+      description: 获取所有训练完成的模型
+      parameters:
+        - name: model_type
+          in: query
+          schema:
+            type: string
+            enum: [random_forest, lightgbm, xgboost, neural_network]
+          description: 按模型类型过滤
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [training, completed, failed]
+          description: 按状态过滤
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Model'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /backtest/run:
+    post:
+      summary: 执行回测
+      description: |
+        启动策略回测任务
+        
+        **权限**: 需要认证
+        **异步**: 返回回测ID，回测在后台进行
+        **GPU**: 支持GPU加速回测（配置选项）
+        **监控**: 完整的操作监控和日志记录
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BacktestRequest'
+      responses:
+        '200':
+          description: 回测任务已启动
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - backtest_id
+                properties:
+                  backtest_id:
+                    type: integer
+                    example: 123
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /backtest/results:
+    get:
+      summary: 获取回测结果列表
+      description: 分页获取回测结果列表
+      parameters:
+        - name: strategy_id
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+          description: 按策略ID过滤
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: 页码
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: 每页数量
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - items
+                  - total
+                  - page
+                  - page_size
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Backtest'
+                  total:
+                    type: integer
+                    example: 50
+                  page:
+                    type: integer
+                    example: 1
+                  page_size:
+                    type: integer
+                    example: 20
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /backtest/results/{backtest_id}:
+    get:
+      summary: 获取回测详细结果
+      description: 获取指定回测任务的完整结果和指标
+      parameters:
+        - name: backtest_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: 回测ID
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Backtest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /backtest/results/{backtest_id}/chart-data:
+    get:
+      summary: 获取回测图表数据
+      description: |
+        获取回测的可视化图表数据
+        
+        **用途**: 前端图表展示（资金曲线、回撤曲线、收益分布）
+        **格式**: 直接兼容ECharts等图表库
+        **数据**: 包含时间序列和统计分布数据
+      parameters:
+        - name: backtest_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: 回测ID
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - equity_curve
+                  - drawdown_curve
+                  - returns_distribution
+                properties:
+                  equity_curve:
+                    type: array
+                    description: 资金曲线数据 [[timestamp, equity_value], ...]
+                    items:
+                      type: array
+                      items:
+                        - type: string
+                          format: date-time
+                        - type: number
+                      minItems: 2
+                      maxItems: 2
+                    example:
+                      - ["2024-01-01T00:00:00", 1000000]
+                      - ["2024-01-02T00:00:00", 1005230]
+                  drawdown_curve:
+                    type: array
+                    description: 回撤曲线数据 [[timestamp, drawdown_percentage], ...]
+                    items:
+                      type: array
+                      items:
+                        - type: string
+                          format: date-time
+                        - type: number
+                      minItems: 2
+                      maxItems: 2
+                    example:
+                      - ["2024-01-01T00:00:00", 0]
+                      - ["2024-01-04T00:00:00", -0.0035]
+                  returns_distribution:
+                    type: array
+                    description: 收益分布数据 [[return_range, frequency], ...]
+                    items:
+                      type: array
+                      items:
+                        - type: string
+                        - type: integer
+                      minItems: 2
+                      maxItems: 2
+                    example:
+                      - ["-1% to 0%", 45]
+                      - ["0% to 1%", 78]
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

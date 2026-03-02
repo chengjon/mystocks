@@ -94840,3 +94840,3215 @@
   "session_id": "24633564-5346-4abf-afa7-f297681c2759",
   "cwd": "/opt/claude/mystocks_spec"
 }
+{
+  "timestamp": "2026-02-28T17:00:41Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/components/BacktestHeader.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/components/BacktestHeader.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Write",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T17:00:41Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/components/BacktestKpiGrid.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/components/BacktestKpiGrid.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Write",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T17:00:42Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/components/BacktestWorkbenchTabs.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/components/BacktestWorkbenchTabs.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Write",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T17:06:23Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/components/styles/BacktestHeader.scss",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/components/styles/BacktestHeader.scss",
+  "file_type": "Stylesheet",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Write",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T17:06:23Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/components/styles/BacktestKpiGrid.scss",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/components/styles/BacktestKpiGrid.scss",
+  "file_type": "Stylesheet",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Write",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T17:06:23Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/components/styles/BacktestWorkbenchTabs.scss",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/components/styles/BacktestWorkbenchTabs.scss",
+  "file_type": "Stylesheet",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Write",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T17:06:24Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoBacktestAnalysis.scss",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoBacktestAnalysis.scss",
+  "file_type": "Stylesheet",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Write",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T17:07:19Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Write",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T17:12:58Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Write",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T17:13:10Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoBacktestAnalysis.scss",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoBacktestAnalysis.scss",
+  "file_type": "Stylesheet",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T17:18:37Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "relative_path": "web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Write",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T17:19:29Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Write",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T17:27:03Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "relative_path": "web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T17:27:55Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T17:35:09Z",
+  "file_path": "/opt/claude/mystocks_spec/CLAUDE.md",
+  "relative_path": "CLAUDE.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T17:38:56Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/guides/technical-debt-governance-charter-v1.md",
+  "relative_path": "docs/guides/technical-debt-governance-charter-v1.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T17:39:05Z",
+  "file_path": "/opt/claude/mystocks_spec/CLAUDE.md",
+  "relative_path": "CLAUDE.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T17:41:53Z",
+  "file_path": "/opt/claude/mystocks_spec/AGENTS.md",
+  "relative_path": "AGENTS.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:12:53Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/package.json",
+  "relative_path": "web/frontend/package.json",
+  "file_type": "Config File",
+  "web_dir": "web/frontend/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:12:53Z",
+  "file_path": "/opt/claude/mystocks_spec/.github/workflows/typescript-type-check.yml",
+  "relative_path": ".github/workflows/typescript-type-check.yml",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:12:53Z",
+  "file_path": "/opt/claude/mystocks_spec/.github/workflows/typescript-type-check.yml",
+  "relative_path": ".github/workflows/typescript-type-check.yml",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:12:53Z",
+  "file_path": "/opt/claude/mystocks_spec/.github/workflows/typescript-type-check.yml",
+  "relative_path": ".github/workflows/typescript-type-check.yml",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:12:53Z",
+  "file_path": "/opt/claude/mystocks_spec/.github/workflows/typescript-type-check.yml",
+  "relative_path": ".github/workflows/typescript-type-check.yml",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:25:42Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T18:26:38Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/composables/useStrategy.ts",
+  "relative_path": "web/frontend/src/composables/useStrategy.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:26:38Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/composables/useStrategy.ts",
+  "relative_path": "web/frontend/src/composables/useStrategy.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:28:21Z",
+  "file_path": "/opt/claude/mystocks_spec/web/backend/app/api/trade/routes.py",
+  "relative_path": "web/backend/app/api/trade/routes.py",
+  "file_type": "Unknown",
+  "web_dir": "web/backend/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:28:44Z",
+  "file_path": "/opt/claude/mystocks_spec/web/backend/tests/test_api_integration.py",
+  "relative_path": "web/backend/tests/test_api_integration.py",
+  "file_type": "Unknown",
+  "web_dir": "web/backend/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:29:14Z",
+  "file_path": "/opt/claude/mystocks_spec/web/backend/tests/test_api_integration.py",
+  "relative_path": "web/backend/tests/test_api_integration.py",
+  "file_type": "Unknown",
+  "web_dir": "web/backend/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:36:24Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/composables/useStrategy.ts",
+  "relative_path": "web/frontend/src/composables/useStrategy.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:36:25Z",
+  "file_path": "/opt/claude/mystocks_spec/web/backend/app/api/trade/routes.py",
+  "relative_path": "web/backend/app/api/trade/routes.py",
+  "file_type": "Unknown",
+  "web_dir": "web/backend/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:39:16Z",
+  "file_path": "/opt/claude/mystocks_spec/web/backend/tests/test_api_integration.py",
+{
+  "timestamp": "2026-02-28T18:39:16Z",
+  "file_path": "/opt/claude/mystocks_spec/tests/api/file_tests/test_trade_routes_api.py",
+  "relative_path": "tests/api/file_tests/test_trade_routes_api.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+  "relative_path": "web/backend/tests/test_api_integration.py",
+  "file_type": "Unknown",
+  "web_dir": "web/backend/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:40:39Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "relative_path": "web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T18:40:57Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:40:57Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:40:57Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:40:57Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:40:58Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:49:44Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/common.ts",
+  "relative_path": "web/frontend/src/api/types/common.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:49:44Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/apiClient.ts",
+  "relative_path": "web/frontend/src/api/apiClient.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:49:44Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/composables/artdeco/useArtDecoApi.ts",
+  "relative_path": "web/frontend/src/composables/artdeco/useArtDecoApi.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:49:44Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/apiClient.ts",
+  "relative_path": "web/frontend/src/api/apiClient.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:49:44Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/composables/artdeco/useArtDecoApi.ts",
+  "relative_path": "web/frontend/src/composables/artdeco/useArtDecoApi.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:51:21Z",
+  "file_path": "/opt/claude/mystocks_spec/tests/api/file_tests/test_trade_routes_api.py",
+  "relative_path": "tests/api/file_tests/test_trade_routes_api.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:51:21Z",
+  "file_path": "/opt/claude/mystocks_spec/web/backend/app/api/trade/routes.py",
+  "relative_path": "web/backend/app/api/trade/routes.py",
+  "file_type": "Unknown",
+  "web_dir": "web/backend/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:51:37Z",
+  "file_path": "/opt/claude/mystocks_spec/web/backend/app/api/trade/routes.py",
+  "relative_path": "web/backend/app/api/trade/routes.py",
+  "file_type": "Unknown",
+  "web_dir": "web/backend/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:51:53Z",
+  "file_path": "/opt/claude/mystocks_spec/web/backend/app/api/trade/routes.py",
+  "relative_path": "web/backend/app/api/trade/routes.py",
+  "file_type": "Unknown",
+  "web_dir": "web/backend/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:53:18Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/apiClient.ts",
+  "relative_path": "web/frontend/src/api/apiClient.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:53:18Z",
+  "file_path": "/opt/claude/mystocks_spec/tests/api/file_tests/test_trade_routes_api.py",
+  "relative_path": "tests/api/file_tests/test_trade_routes_api.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:55:15Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/apiClient.ts",
+  "relative_path": "web/frontend/src/api/apiClient.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T18:55:15Z",
+  "file_path": "/opt/claude/mystocks_spec/tests/api/file_tests/test_trade_routes_api.py",
+  "relative_path": "tests/api/file_tests/test_trade_routes_api.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T19:02:52Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/adapters/marketAdapter.ts",
+  "relative_path": "web/frontend/src/api/adapters/marketAdapter.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T19:02:52Z",
+  "file_path": "/opt/claude/mystocks_spec/tests/api/file_tests/test_trade_routes_api.py",
+  "relative_path": "tests/api/file_tests/test_trade_routes_api.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T19:02:52Z",
+  "file_path": "/opt/claude/mystocks_spec/tests/api/file_tests/test_trade_routes_api.py",
+  "relative_path": "tests/api/file_tests/test_trade_routes_api.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T19:02:52Z",
+  "file_path": "/opt/claude/mystocks_spec/web/backend/app/api/trade/routes.py",
+  "relative_path": "web/backend/app/api/trade/routes.py",
+  "file_type": "Unknown",
+  "web_dir": "web/backend/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T19:02:53Z",
+  "file_path": "/opt/claude/mystocks_spec/web/backend/app/api/trade/routes.py",
+  "relative_path": "web/backend/app/api/trade/routes.py",
+  "file_type": "Unknown",
+  "web_dir": "web/backend/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T23:49:16Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "relative_path": "web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T23:49:32Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "relative_path": "web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T23:49:54Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "relative_path": "web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-02-28T23:52:57Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoMarketQuotes.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/ArtDecoMarketQuotes.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T23:52:57Z",
+  "file_path": "/opt/claude/mystocks_spec/tests/api/file_tests/test_trade_routes_api.py",
+  "relative_path": "tests/api/file_tests/test_trade_routes_api.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T23:52:57Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoMarketQuotes.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/ArtDecoMarketQuotes.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T23:52:57Z",
+  "file_path": "/opt/claude/mystocks_spec/tests/api/file_tests/test_trade_routes_api.py",
+  "relative_path": "tests/api/file_tests/test_trade_routes_api.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T23:52:57Z",
+  "file_path": "/opt/claude/mystocks_spec/web/backend/app/api/trade/routes.py",
+  "relative_path": "web/backend/app/api/trade/routes.py",
+  "file_type": "Unknown",
+  "web_dir": "web/backend/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T23:52:58Z",
+  "file_path": "/opt/claude/mystocks_spec/tests/api/file_tests/test_trade_routes_api.py",
+  "relative_path": "tests/api/file_tests/test_trade_routes_api.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T23:54:34Z",
+  "file_path": "/opt/claude/mystocks_spec/tests/api/file_tests/test_trade_routes_api.py",
+  "relative_path": "tests/api/file_tests/test_trade_routes_api.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T23:54:34Z",
+  "file_path": "/opt/claude/mystocks_spec/tests/api/file_tests/test_trade_routes_api.py",
+  "relative_path": "tests/api/file_tests/test_trade_routes_api.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T23:57:02Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoMarketQuotes.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/ArtDecoMarketQuotes.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T23:57:02Z",
+  "file_path": "/opt/claude/mystocks_spec/tests/api/file_tests/test_trade_routes_api.py",
+  "relative_path": "tests/api/file_tests/test_trade_routes_api.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-02-28T23:57:02Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoMarketQuotes.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/ArtDecoMarketQuotes.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T01:45:03Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "relative_path": "web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T01:45:03Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "relative_path": "web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T01:45:27Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "relative_path": "web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T01:47:16Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/composables/useAdvancedAnalysis.ts",
+  "relative_path": "web/frontend/src/views/composables/useAdvancedAnalysis.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T01:47:16Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/composables/useAdvancedAnalysis.ts",
+  "relative_path": "web/frontend/src/views/composables/useAdvancedAnalysis.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T02:32:19Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "relative_path": "web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T02:49:10Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "relative_path": "web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T02:49:10Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "relative_path": "web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T02:49:10Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "relative_path": "web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T02:51:37Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T03:03:37Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "relative_path": "web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T03:03:37Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "relative_path": "web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T03:03:37Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "relative_path": "web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T03:04:01Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "relative_path": "web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T03:04:12Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "relative_path": "web/frontend/src/mock/backtestWorkbenchMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T03:48:06Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T03:48:33Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T03:48:34Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T03:55:34Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T04:01:14Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/index.ts",
+  "relative_path": "web/frontend/src/api/index.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T04:01:59Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/index.ts",
+  "relative_path": "web/frontend/src/api/index.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T04:01:59Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/strategyTabsMock.ts",
+  "relative_path": "web/frontend/src/mock/strategyTabsMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Write",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T04:02:13Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T04:02:31Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T04:02:50Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoStrategyManagement.scss",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoStrategyManagement.scss",
+  "file_type": "Stylesheet",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Write",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T04:04:53Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/index.ts",
+  "relative_path": "web/frontend/src/api/index.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T04:04:53Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/mock/strategyTabsMock.ts",
+  "relative_path": "web/frontend/src/mock/strategyTabsMock.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T04:10:17Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T04:10:41Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/styles/StrategySignalsTab.scss",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/styles/StrategySignalsTab.scss",
+  "file_type": "Stylesheet",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Write",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T04:10:44Z",
+  "file_path": "/opt/claude/mystocks_spec/src/hook_violation_probe.py",
+  "relative_path": "src/hook_violation_probe.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "c74b6e2e-2466-4ff0-b98e-a1bb2440a49c",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T04:12:35Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T04:13:07Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T04:13:13Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T04:19:28Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/dev/quality_gate/collect_tech_debt_baseline.py",
+  "relative_path": "scripts/dev/quality_gate/collect_tech_debt_baseline.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T04:22:17Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T04:22:44Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T04:22:51Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T04:24:16Z",
+  "file_path": "/opt/claude/mystocks_spec/.claude/hooks/post-tool-use-mock-data-validator.sh",
+  "relative_path": ".claude/hooks/post-tool-use-mock-data-validator.sh",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "c74b6e2e-2466-4ff0-b98e-a1bb2440a49c",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T04:34:20Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/styles/StrategySignalsTab.scss",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/styles/StrategySignalsTab.scss",
+  "file_type": "Stylesheet",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T04:34:28Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/styles/StrategySignalsTab.scss",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/styles/StrategySignalsTab.scss",
+  "file_type": "Stylesheet",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T04:37:35Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T04:37:43Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T04:52:24Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T05:08:14Z",
+  "file_path": "/opt/claude/mystocks_spec/.claude/hooks/post-tool-use-mock-data-validator.sh",
+  "relative_path": ".claude/hooks/post-tool-use-mock-data-validator.sh",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "c74b6e2e-2466-4ff0-b98e-a1bb2440a49c",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T05:11:24Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T05:12:57Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T05:14:13Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T05:15:05Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T05:15:20Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T05:15:29Z",
+  "file_path": "/opt/claude/mystocks_spec/.claude/hooks/post-tool-use-mock-data-validator.sh",
+  "relative_path": ".claude/hooks/post-tool-use-mock-data-validator.sh",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "c74b6e2e-2466-4ff0-b98e-a1bb2440a49c",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T05:18:07Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T05:19:03Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T05:19:03Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T05:19:19Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T05:20:20Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T05:21:10Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T05:22:45Z",
+  "file_path": "/opt/claude/mystocks_spec/.claude/hooks/post-tool-use-mock-data-validator.sh",
+  "relative_path": ".claude/hooks/post-tool-use-mock-data-validator.sh",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "c74b6e2e-2466-4ff0-b98e-a1bb2440a49c",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T05:22:54Z",
+  "file_path": "/opt/claude/mystocks_spec/.claude/hooks/post-tool-use-mock-data-validator.sh",
+  "relative_path": ".claude/hooks/post-tool-use-mock-data-validator.sh",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "c74b6e2e-2466-4ff0-b98e-a1bb2440a49c",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T05:23:03Z",
+  "file_path": "/opt/claude/mystocks_spec/.claude/hooks/post-tool-use-mock-data-validator.sh",
+  "relative_path": ".claude/hooks/post-tool-use-mock-data-validator.sh",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "c74b6e2e-2466-4ff0-b98e-a1bb2440a49c",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T05:23:37Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T05:23:45Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T05:24:28Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T05:24:28Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T05:24:28Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T05:24:53Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T05:29:55Z",
+  "file_path": "/opt/claude/mystocks_spec/.claude/hooks/README.md",
+  "relative_path": ".claude/hooks/README.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "c74b6e2e-2466-4ff0-b98e-a1bb2440a49c",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T05:43:07Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/MOCK_DATA_VALIDATOR_HOOK_TUNING_REPORT_2026-03-01.md",
+  "relative_path": "docs/reports/MOCK_DATA_VALIDATOR_HOOK_TUNING_REPORT_2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "c74b6e2e-2466-4ff0-b98e-a1bb2440a49c",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T05:43:09Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T05:43:09Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T05:43:09Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T05:43:09Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-stage-b-summary-and-stage-c-recommendations-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T05:44:12Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/dev/quality_gate/collect_tech_debt_baseline.py",
+  "relative_path": "scripts/dev/quality_gate/collect_tech_debt_baseline.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T05:44:12Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/dev/quality_gate/collect_tech_debt_baseline.py",
+  "relative_path": "scripts/dev/quality_gate/collect_tech_debt_baseline.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T05:44:12Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/dev/quality_gate/collect_tech_debt_baseline.py",
+  "relative_path": "scripts/dev/quality_gate/collect_tech_debt_baseline.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T05:45:41Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/dev/quality_gate/collect_tech_debt_baseline.py",
+  "relative_path": "scripts/dev/quality_gate/collect_tech_debt_baseline.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T05:45:41Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/dev/quality_gate/collect_tech_debt_baseline.py",
+  "relative_path": "scripts/dev/quality_gate/collect_tech_debt_baseline.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T05:46:21Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T08:48:56Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T08:50:06Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T08:54:51Z",
+  "file_path": "/opt/claude/mystocks_spec/AGENTS.md",
+  "relative_path": "AGENTS.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T08:54:51Z",
+  "file_path": "/opt/claude/mystocks_spec/AGENTS.md",
+  "relative_path": "AGENTS.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T08:54:51Z",
+  "file_path": "/opt/claude/mystocks_spec/AGENTS.md",
+  "relative_path": "AGENTS.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T08:55:44Z",
+  "file_path": "/opt/claude/mystocks_spec/.github/workflows/typescript-type-check.yml",
+  "relative_path": ".github/workflows/typescript-type-check.yml",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T08:55:44Z",
+  "file_path": "/opt/claude/mystocks_spec/.github/workflows/typescript-type-check.yml",
+  "relative_path": ".github/workflows/typescript-type-check.yml",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T08:55:44Z",
+  "file_path": "/opt/claude/mystocks_spec/.github/workflows/typescript-type-check.yml",
+  "relative_path": ".github/workflows/typescript-type-check.yml",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T08:57:06Z",
+  "file_path": "/opt/claude/mystocks_spec/.github/workflows/typescript-type-check.yml",
+  "relative_path": ".github/workflows/typescript-type-check.yml",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T08:58:38Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T09:08:22Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T09:08:25Z",
+{
+  "timestamp": "2026-03-01T09:08:25Z",
+  "file_path": "/opt/claude/mystocks_spec/.github/workflows/typescript-type-check.yml",
+  "relative_path": ".github/workflows/typescript-type-check.yml",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+  "file_path": "/opt/claude/mystocks_spec/.github/workflows/typescript-type-check.yml",
+  "relative_path": ".github/workflows/typescript-type-check.yml",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T09:11:47Z",
+  "file_path": "/opt/claude/mystocks_spec/.github/workflows/typescript-type-check.yml",
+  "relative_path": ".github/workflows/typescript-type-check.yml",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T09:11:47Z",
+  "file_path": "/opt/claude/mystocks_spec/.github/workflows/typescript-type-check.yml",
+  "relative_path": ".github/workflows/typescript-type-check.yml",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T09:12:27Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T09:13:41Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/guides/templates/tech-debt-exception-template.md",
+  "relative_path": "docs/guides/templates/tech-debt-exception-template.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T09:16:00Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T10:57:55Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T10:57:56Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T10:57:56Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:05:35Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-tabs/MarketConceptTab.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/market-tabs/MarketConceptTab.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:05:36Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-tabs/MarketETFTab.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/market-tabs/MarketETFTab.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:05:36Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-tabs/MarketKLineTab.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/market-tabs/MarketKLineTab.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:05:36Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:05:36Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/system-tabs/SystemHealthTab.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/system-tabs/SystemHealthTab.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:05:37Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:05:37Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/technical-tabs/TechnicalScannerTab.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/technical-tabs/TechnicalScannerTab.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:09:25Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue",
+  "relative_path": "web/frontend/src/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "src/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:11:20Z",
+  "file_path": "/opt/claude/mystocks_spec/tests/unit/test_tech_debt_governance_gate.py",
+  "relative_path": "tests/unit/test_tech_debt_governance_gate.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_356f529e8ffe2YUyORI40Wh6G7",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:13:48Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/dev/quality_gate/tech_debt_governance_gate.py",
+  "relative_path": "scripts/dev/quality_gate/tech_debt_governance_gate.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_356f529e8ffe2YUyORI40Wh6G7",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:15:31Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/dev/quality_gate/tech_debt_governance_gate.py",
+  "relative_path": "scripts/dev/quality_gate/tech_debt_governance_gate.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_356f529e8ffe2YUyORI40Wh6G7",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:18:48Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/dev/quality_gate/tech_debt_governance_gate.py",
+  "relative_path": "scripts/dev/quality_gate/tech_debt_governance_gate.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_356f529e8ffe2YUyORI40Wh6G7",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:19:01Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/dev/quality_gate/tech_debt_governance_gate.py",
+  "relative_path": "scripts/dev/quality_gate/tech_debt_governance_gate.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_356f529e8ffe2YUyORI40Wh6G7",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:20:25Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_356f529e8ffe2YUyORI40Wh6G7",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:20:40Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_356f529e8ffe2YUyORI40Wh6G7",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:20:40Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_356f529e8ffe2YUyORI40Wh6G7",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:20:40Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_356f529e8ffe2YUyORI40Wh6G7",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:20:40Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_356f529e8ffe2YUyORI40Wh6G7",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:31:24Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/mockApiClient.ts",
+  "relative_path": "web/frontend/src/api/mockApiClient.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:31:24Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/apiClient.ts",
+  "relative_path": "web/frontend/src/api/apiClient.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:41:01Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/adapters/marketAdapter.ts",
+  "relative_path": "web/frontend/src/api/adapters/marketAdapter.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:41:15Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/adapters/marketAdapter.ts",
+  "relative_path": "web/frontend/src/api/adapters/marketAdapter.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:41:30Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/adapters/marketAdapter.ts",
+  "relative_path": "web/frontend/src/api/adapters/marketAdapter.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:41:35Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/adapters/marketAdapter.ts",
+  "relative_path": "web/frontend/src/api/adapters/marketAdapter.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:42:54Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/domains/market-data.ts",
+  "relative_path": "web/frontend/src/api/types/domains/market-data.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:42:55Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/domains/strategy-types.ts",
+  "relative_path": "web/frontend/src/api/types/domains/strategy-types.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:42:55Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/domains/trading-ops.ts",
+  "relative_path": "web/frontend/src/api/types/domains/trading-ops.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:44:19Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/adapters/strategyAdapter.ts",
+  "relative_path": "web/frontend/src/api/adapters/strategyAdapter.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:44:19Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/adapters/strategyAdapter.ts",
+  "relative_path": "web/frontend/src/api/adapters/strategyAdapter.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:44:40Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/adapters/strategyAdapter.ts",
+  "relative_path": "web/frontend/src/api/adapters/strategyAdapter.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:44:40Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/adapters/strategyAdapter.ts",
+  "relative_path": "web/frontend/src/api/adapters/strategyAdapter.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:45:26Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/adapters/strategyAdapter.ts",
+  "relative_path": "web/frontend/src/api/adapters/strategyAdapter.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:46:30Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/index.ts",
+  "relative_path": "web/frontend/src/api/index.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:46:46Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/index.ts",
+  "relative_path": "web/frontend/src/api/index.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:46:46Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/index.ts",
+  "relative_path": "web/frontend/src/api/index.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:46:46Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/index.ts",
+  "relative_path": "web/frontend/src/api/index.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:47:25Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/index.ts",
+  "relative_path": "web/frontend/src/api/index.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:49:29Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-stage4-4.1-pilot-plan-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-stage4-4.1-pilot-plan-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:49:29Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-stage4-4.2-governance-report-template-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-stage4-4.2-governance-report-template-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:49:29Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-stage4-4.3-rollout-plan-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-stage4-4.3-rollout-plan-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:49:50Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/domains/market-data.ts",
+  "relative_path": "web/frontend/src/api/types/domains/market-data.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:49:50Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/domains/strategy-types.ts",
+  "relative_path": "web/frontend/src/api/types/domains/strategy-types.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:49:50Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/domains/trading-ops.ts",
+  "relative_path": "web/frontend/src/api/types/domains/trading-ops.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:50:46Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/domains/market-data.ts",
+  "relative_path": "web/frontend/src/api/types/domains/market-data.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:50:47Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/domains/trading-ops.ts",
+  "relative_path": "web/frontend/src/api/types/domains/trading-ops.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:50:52Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:50:52Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:50:52Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T11:50:59Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/domains/strategy-types.ts",
+  "relative_path": "web/frontend/src/api/types/domains/strategy-types.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:51:08Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/domains/strategy-types.ts",
+  "relative_path": "web/frontend/src/api/types/domains/strategy-types.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:51:08Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/domains/strategy-types.ts",
+  "relative_path": "web/frontend/src/api/types/domains/strategy-types.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:51:09Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/domains/strategy-types.ts",
+  "relative_path": "web/frontend/src/api/types/domains/strategy-types.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:51:09Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/domains/strategy-types.ts",
+  "relative_path": "web/frontend/src/api/types/domains/strategy-types.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:51:49Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/domains/system-base.ts",
+  "relative_path": "web/frontend/src/api/types/domains/system-base.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:52:28Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/domains/system-base.ts",
+  "relative_path": "web/frontend/src/api/types/domains/system-base.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:53:07Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/domains/system-base.ts",
+  "relative_path": "web/frontend/src/api/types/domains/system-base.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:53:07Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/domains/system-base.ts",
+  "relative_path": "web/frontend/src/api/types/domains/system-base.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:53:07Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/domains/system-base.ts",
+  "relative_path": "web/frontend/src/api/types/domains/system-base.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:53:07Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/domains/system-base.ts",
+  "relative_path": "web/frontend/src/api/types/domains/system-base.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:55:02Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/services/marketService.ts",
+  "relative_path": "web/frontend/src/api/services/marketService.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T11:55:19Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/unifiedApiClient.ts",
+  "relative_path": "web/frontend/src/api/unifiedApiClient.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T12:22:33Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/services/marketService.ts",
+  "relative_path": "web/frontend/src/api/services/marketService.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T12:22:57Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/services/marketService.ts",
+  "relative_path": "web/frontend/src/api/services/marketService.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T12:31:57Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/extensions/common.ts",
+  "relative_path": "web/frontend/src/api/types/extensions/common.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T12:32:16Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/generated-types.ts",
+  "relative_path": "web/frontend/src/api/types/generated-types.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T12:37:14Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/standards/ai-development-mainline-governance-spec.md",
+  "relative_path": "docs/standards/ai-development-mainline-governance-spec.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "acb7ff56-04c0-4574-81b0-054e743d400a",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T12:37:50Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/common/all.ts",
+  "relative_path": "web/frontend/src/api/types/common/all.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T12:40:48Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/generate_frontend_types.py",
+  "relative_path": "scripts/generate_frontend_types.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T12:40:49Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/generate_frontend_types.py",
+  "relative_path": "scripts/generate_frontend_types.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T12:40:49Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/generate_frontend_types.py",
+  "relative_path": "scripts/generate_frontend_types.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T12:41:30Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/generate_frontend_types.py",
+  "relative_path": "scripts/generate_frontend_types.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T12:41:30Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/generate_frontend_types.py",
+  "relative_path": "scripts/generate_frontend_types.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T12:41:30Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/generate_frontend_types.py",
+  "relative_path": "scripts/generate_frontend_types.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T12:41:30Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/generate_frontend_types.py",
+  "relative_path": "scripts/generate_frontend_types.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T12:41:31Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/generate_frontend_types.py",
+  "relative_path": "scripts/generate_frontend_types.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T12:45:02Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-stage4-week1-pilot-report-draft-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-stage4-week1-pilot-report-draft-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T12:55:34Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/generate_frontend_types.py",
+  "relative_path": "scripts/generate_frontend_types.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T12:55:34Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/generate_frontend_types.py",
+  "relative_path": "scripts/generate_frontend_types.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T12:55:34Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/generate_frontend_types.py",
+  "relative_path": "scripts/generate_frontend_types.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T12:58:10Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-stage4-4.2-governance-review-v1-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-stage4-4.2-governance-review-v1-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:05:50Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/generate_frontend_types.py",
+  "relative_path": "scripts/generate_frontend_types.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T13:05:50Z",
+  "file_path": "/opt/claude/mystocks_spec/web/frontend/src/api/types/global.d.ts",
+  "relative_path": "web/frontend/src/api/types/global.d.ts",
+  "file_type": "Web Source",
+  "web_dir": "web/frontend/",
+  "web_subdir": "api/",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec/web/frontend"
+}
+{
+  "timestamp": "2026-03-01T13:16:19Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-stage4-4.2-week2-review-skeleton-2026-03-08.md",
+  "relative_path": "docs/reports/technical-debt-stage4-4.2-week2-review-skeleton-2026-03-08.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:23:00Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:23:07Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-recurrence-prevention-controls-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-recurrence-prevention-controls-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:23:07Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-governance-master-plan-v2-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-governance-master-plan-v2-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:53:22Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/templates/ai-task-card.schema.json",
+  "relative_path": "docs/templates/ai-task-card.schema.json",
+  "file_type": "Config File",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "acb7ff56-04c0-4574-81b0-054e743d400a",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:54:04Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/templates/ai-task-card.schema.json",
+  "relative_path": "docs/templates/ai-task-card.schema.json",
+  "file_type": "Config File",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "acb7ff56-04c0-4574-81b0-054e743d400a",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:54:04Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/templates/ai-task-card.yaml",
+  "relative_path": "docs/templates/ai-task-card.yaml",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "acb7ff56-04c0-4574-81b0-054e743d400a",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:54:04Z",
+  "file_path": "/opt/claude/mystocks_spec/.github/workflows/mainline-governance.yml",
+  "relative_path": ".github/workflows/mainline-governance.yml",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "acb7ff56-04c0-4574-81b0-054e743d400a",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:54:20Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/templates/ai-task-card.schema.json",
+  "relative_path": "docs/templates/ai-task-card.schema.json",
+  "file_type": "Config File",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "acb7ff56-04c0-4574-81b0-054e743d400a",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:54:20Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/dev/quality_gate/mainline_scope_gate.py",
+  "relative_path": "scripts/dev/quality_gate/mainline_scope_gate.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "acb7ff56-04c0-4574-81b0-054e743d400a",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:54:20Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/dev/quality_gate/mainline_scope_gate.py",
+  "relative_path": "scripts/dev/quality_gate/mainline_scope_gate.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "acb7ff56-04c0-4574-81b0-054e743d400a",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:54:59Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/dev/quality_gate/mainline_scope_gate.py",
+  "relative_path": "scripts/dev/quality_gate/mainline_scope_gate.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "acb7ff56-04c0-4574-81b0-054e743d400a",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:54:59Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/dev/quality_gate/mainline_scope_gate.py",
+  "relative_path": "scripts/dev/quality_gate/mainline_scope_gate.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "acb7ff56-04c0-4574-81b0-054e743d400a",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:55:53Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/dev/quality_gate/mainline_scope_gate.py",
+  "relative_path": "scripts/dev/quality_gate/mainline_scope_gate.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "acb7ff56-04c0-4574-81b0-054e743d400a",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:55:53Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/dev/quality_gate/mainline_scope_gate.py",
+  "relative_path": "scripts/dev/quality_gate/mainline_scope_gate.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "acb7ff56-04c0-4574-81b0-054e743d400a",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:55:54Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/dev/quality_gate/mainline_scope_gate.py",
+  "relative_path": "scripts/dev/quality_gate/mainline_scope_gate.py",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "acb7ff56-04c0-4574-81b0-054e743d400a",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:56:46Z",
+  "file_path": "/opt/claude/mystocks_spec/.github/workflows/mainline-governance.yml",
+  "relative_path": ".github/workflows/mainline-governance.yml",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "acb7ff56-04c0-4574-81b0-054e743d400a",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:57:40Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-governance-master-plan-v2-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-governance-master-plan-v2-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:57:46Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/guides/templates/task-card-standard-template.md",
+  "relative_path": "docs/guides/templates/task-card-standard-template.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T13:58:19Z",
+  "file_path": "/opt/claude/mystocks_spec/.github/pull_request_template.md",
+  "relative_path": ".github/pull_request_template.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "acb7ff56-04c0-4574-81b0-054e743d400a",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T14:11:36Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/guides/TYPESCRIPT_ERROR_FIXING_GUIDE.md",
+  "relative_path": "docs/guides/TYPESCRIPT_ERROR_FIXING_GUIDE.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T14:18:42Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/mainline-governance-v0.2-task-summary.md",
+  "relative_path": "docs/reports/mainline-governance-v0.2-task-summary.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "acb7ff56-04c0-4574-81b0-054e743d400a",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T14:23:30Z",
+  "file_path": "/opt/claude/mystocks_spec/CLAUDE.md",
+  "relative_path": "CLAUDE.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "acb7ff56-04c0-4574-81b0-054e743d400a",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T14:23:50Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/INDEX.md",
+  "relative_path": "docs/INDEX.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "acb7ff56-04c0-4574-81b0-054e743d400a",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T14:23:51Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-task-card-sample-03-rollout-phase-a-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-task-card-sample-03-rollout-phase-a-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T14:23:51Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-task-card-sample-02-governance-review-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-task-card-sample-02-governance-review-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T14:23:51Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-task-card-sample-01-pilot-execution-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-task-card-sample-01-pilot-execution-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T14:23:51Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-task-card-sample-05-ttl-cleanup-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-task-card-sample-05-ttl-cleanup-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T14:23:51Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/technical-debt-task-card-sample-04-exception-audit-2026-03-01.md",
+  "relative_path": "docs/reports/technical-debt-task-card-sample-04-exception-audit-2026-03-01.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T14:26:05Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T14:26:05Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T14:26:05Z",
+  "file_path": "/opt/claude/mystocks_spec/openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "relative_path": "openspec/changes/refactor-technical-debt-remediation-wave1/tasks.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "ses_35ac6d264ffeMYFIzd5L7wakwO",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T14:28:15Z",
+  "file_path": "/opt/claude/mystocks_spec/.claude/hooks/post-tool-use-web-dev-file-tracker.sh",
+  "relative_path": ".claude/hooks/post-tool-use-web-dev-file-tracker.sh",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T14:28:16Z",
+  "file_path": "/opt/claude/mystocks_spec/.claude/hooks/post-tool-use-web-dev-document-organizer.sh",
+  "relative_path": ".claude/hooks/post-tool-use-web-dev-document-organizer.sh",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T14:28:16Z",
+  "file_path": "/opt/claude/mystocks_spec/.claude/settings.json",
+  "relative_path": ".claude/settings.json",
+  "file_type": "Config File",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T14:30:20Z",
+  "file_path": "/opt/claude/mystocks_spec/scripts/hooks/mainline-governance-reminder.sh",
+  "relative_path": "scripts/hooks/mainline-governance-reminder.sh",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "acb7ff56-04c0-4574-81b0-054e743d400a",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-01T15:24:13Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/guides/TYPESCRIPT_ERROR_FIXING_GUIDE.md",
+  "relative_path": "/opt/claude/mystocks_spec/docs/guides/TYPESCRIPT_ERROR_FIXING_GUIDE.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Edit",
+  "session_id": "smoke",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-02T02:36:39Z",
+  "file_path": "/opt/claude/mystocks_spec/.omc/notepads/frontend-pages-interactive-audit/learnings.md",
+  "relative_path": ".omc/notepads/frontend-pages-interactive-audit/learnings.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "1e3a7b3b-e92f-49c4-93f5-ae61eabaa680",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-02T04:07:03Z",
+  "file_path": "/opt/claude/mystocks_spec/docs/reports/TYPESCRIPT_TYPE_CHECK_ISSUES_2026-03-02.md",
+  "relative_path": "docs/reports/TYPESCRIPT_TYPE_CHECK_ISSUES_2026-03-02.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "24633564-5346-4abf-afa7-f297681c2759",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-02T04:12:42Z",
+  "file_path": "/opt/claude/mystocks_spec/.env",
+  "relative_path": ".env",
+  "file_type": "Unknown",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "ec1fbfdc-07ff-4ff4-b877-96bd6439175f",
+  "cwd": "/opt/claude/mystocks_spec"
+}
+{
+  "timestamp": "2026-03-02T04:18:42Z",
+  "file_path": "/opt/claude/mystocks_spec/reports/frontend-directory-restructure-plan.md",
+  "relative_path": "reports/frontend-directory-restructure-plan.md",
+  "file_type": "Documentation",
+  "web_dir": "web/",
+  "web_subdir": "",
+  "tool_name": "Write",
+  "session_id": "1e3a7b3b-e92f-49c4-93f5-ae61eabaa680",
+  "cwd": "/opt/claude/mystocks_spec"
+}

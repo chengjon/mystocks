@@ -336,14 +336,138 @@
 </template>
 
 <script setup lang="ts">
+    import { computed, toRef } from 'vue'
     import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
     import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
     import _ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
     import ArtDecoSelect from '@/components/artdeco/base/ArtDecoSelect.vue'
     import ArtDecoSwitch from '@/components/artdeco/base/ArtDecoSwitch.vue'
-import { useArtDecoTimeSeriesAnalysis } from './composables/useArtDecoTimeSeriesAnalysis'
+    import { useArtDecoTimeSeriesAnalysis } from './composables/useArtDecoTimeSeriesAnalysis'
 
-const { props, chartType, analysisType, showInflectionPoints, showTrend, predictionMethod, predictionHorizon, chartCanvas, timeSeriesData, inflectionPoints, periodicityData, predictionData, chartTypeOptions, analysisTypeOptions, predictionMethodOptions, predictionHorizonOptions, getDataPointsCount, getInflectionPointsCount, getTrendStrength, getPeriodicityConfidence, getMaxChangeAmplitude, getAvgChangePeriod, getInflectionType, getPointTypeText, formatTime, dominantPeriods, getPeriodLabel, spectrumData, getSpectrumColor, getPredictionAccuracy, getPredictionInterval, getModelConfidence, predictionInsights, renderChart } = useArtDecoTimeSeriesAnalysis()
+    interface Props {
+        data: Record<string, unknown>
+        symbol: string
+        loading?: boolean
+    }
+
+    interface InflectionPointItem {
+        id: string | number
+        type: string
+        timestamp: string
+        value: number
+        changeAmplitude: number
+        confidence: number
+        duration: string
+        description: string
+        [key: string]: unknown
+    }
+
+    interface DominantPeriodItem {
+        frequency: string
+        strength: number
+    }
+
+    interface SpectrumBarItem {
+        frequency: string
+        power: number
+    }
+
+    interface PredictionInsightItem {
+        id: string | number
+        type: string
+        text: string
+        confidence: number
+    }
+
+    const props = defineProps<Props>()
+
+    const {
+        chartType,
+        analysisType,
+        showInflectionPoints,
+        showTrend,
+        predictionMethod,
+        predictionHorizon,
+        chartCanvas,
+        timeSeriesData,
+        inflectionPoints: rawInflectionPoints,
+        periodicityData,
+        predictionData,
+        chartTypeOptions,
+        analysisTypeOptions,
+        predictionMethodOptions,
+        predictionHorizonOptions,
+        getDataPointsCount,
+        getInflectionPointsCount,
+        getTrendStrength,
+        getPeriodicityConfidence,
+        getMaxChangeAmplitude,
+        getAvgChangePeriod,
+        getInflectionType,
+        getPointTypeText,
+        formatTime,
+        dominantPeriods: rawDominantPeriods,
+        getPeriodLabel,
+        spectrumData: rawSpectrumData,
+        getSpectrumColor,
+        getPredictionAccuracy,
+        getPredictionInterval,
+        getModelConfidence,
+        predictionInsights: rawPredictionInsights,
+        renderChart
+    } = useArtDecoTimeSeriesAnalysis({
+        data: toRef(props, 'data'),
+        symbol: computed(() => props.symbol || ''),
+        loading: computed(() => props.loading || false)
+    })
+
+    const inflectionPoints = computed((): InflectionPointItem[] => {
+        return rawInflectionPoints.value.map((point, index) => {
+            const item = point as Record<string, unknown>
+            return {
+                id: (item.id as string | number | undefined) ?? index,
+                type: String(item.type || 'neutral'),
+                timestamp: String(item.timestamp || ''),
+                value: Number(item.value || 0),
+                changeAmplitude: Number(item.changeAmplitude || 0),
+                confidence: Number(item.confidence || 0),
+                duration: String(item.duration || 'N/A'),
+                description: String(item.description || '')
+            }
+        })
+    })
+
+    const dominantPeriods = computed((): DominantPeriodItem[] => {
+        return rawDominantPeriods.value.map((period) => {
+            const item = period as Record<string, unknown>
+            return {
+                frequency: String(item.frequency || ''),
+                strength: Number(item.strength || 0)
+            }
+        })
+    })
+
+    const spectrumData = computed((): SpectrumBarItem[] => {
+        return rawSpectrumData.value.map((bar) => {
+            const item = bar as Record<string, unknown>
+            return {
+                frequency: String(item.frequency || ''),
+                power: Number(item.power || 0)
+            }
+        })
+    })
+
+    const predictionInsights = computed((): PredictionInsightItem[] => {
+        return rawPredictionInsights.value.map((insight, index) => {
+            const item = insight as Record<string, unknown>
+            return {
+                id: (item.id as string | number | undefined) ?? index,
+                type: String(item.type || 'neutral'),
+                text: String(item.text || ''),
+                confidence: Number(item.confidence || 0)
+            }
+        })
+    })
 </script>
 
 <style scoped lang="scss">

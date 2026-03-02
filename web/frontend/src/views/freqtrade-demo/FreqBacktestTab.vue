@@ -20,7 +20,7 @@
 
         <h3 style="margin-top: 30px;">⚙️ 回测命令示例</h3>
         <el-tabs type="border-card" style="margin-top: 20px;">
-          <el-tab-pane label="基础回测">
+          <el-tab-pane name="basic-backtest" label="基础回测">
             <pre v-pre class="code-block"># 回测单个策略
 freqtrade backtesting \
   --strategy SampleStrategy \
@@ -40,7 +40,7 @@ freqtrade backtesting \
   --verbose</pre>
           </el-tab-pane>
 
-          <el-tab-pane label="超参数优化">
+          <el-tab-pane name="hyperopt" label="超参数优化">
             <pre v-pre class="code-block"># Hyperopt 参数优化
 freqtrade hyperopt \
   --hyperopt-loss SharpeHyperOptLoss \
@@ -61,7 +61,7 @@ freqtrade hyperopt \
   --jobs 4</pre>
           </el-tab-pane>
 
-          <el-tab-pane label="生成报告">
+          <el-tab-pane name="report" label="生成报告">
             <pre v-pre class="code-block"># 生成 HTML 回测报告
 freqtrade backtesting \
   --strategy SampleStrategy \

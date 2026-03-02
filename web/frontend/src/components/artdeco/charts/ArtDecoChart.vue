@@ -52,9 +52,10 @@ let resizeObserver: ResizeObserver | null = null
 
 // Computed
 const isEmpty = computed(() => {
-  if (!props.option || !props.option.series || props.option.series.length === 0) return true
-  // Check if data arrays are empty
-  return props.option.series.every((s: unknown) => !s.data || s.data.length === 0)
+  const option = props.option as { series?: Array<{ data?: unknown[] }> }
+  const series = option.series
+  if (!series || series.length === 0) return true
+  return series.every(s => !Array.isArray(s.data) || s.data.length === 0)
 })
 
 // Methods

@@ -1,0 +1,8 @@
+@import '@/styles/artdeco-tokens';
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--artdeco-spacing-4);
+  margin-bottom: var(--artdeco-spacing-5);
+}

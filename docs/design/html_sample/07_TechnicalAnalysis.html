@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>技术分析 - MyStocks</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: #f5f5f5; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+        /* 页面标题 */
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .page-title { font-size: 24px; color: #333; }
+
+        /* 选股区域 */
+        .selector-panel { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .panel-title { font-size: 16px; font-weight: bold; color: #333; margin-bottom: 15px; }
+        .stock-selector { display: flex; gap: 15px; align-items: center; }
+        .stock-input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; width: 300px; }
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .btn-primary { background: #409EFF; color: white; }
+
+        /* 分析布局 */
+        .analysis-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+
+        /* K线图区域 */
+        .chart-section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .control-bar { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .control-group { display: flex; gap: 5px; border-right: 1px solid #ddd; padding-right: 10px; margin-right: 10px; }
+        .control-group:last-child { border-right: none; }
+        .btn-chart { padding: 6px 12px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-chart.active { background: #409EFF; color: white; border-color: #409EFF; }
+        .chart-placeholder { height: 450px; background: #f9f9f9; border: 2px dashed #ddd; display: flex; align-items: center; justify-content: center; color: #999; }
+
+        /* 指标面板 */
+        .indicator-panel { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .indicator-item { padding: 12px 0; border-bottom: 1px solid #eee; }
+        .indicator-name { font-size: 14px; font-weight: bold; color: #333; margin-bottom: 5px; }
+        .indicator-value { font-size: 20px; font-weight: bold; color: #409EFF; }
+        .indicator-signal { font-size: 12px; margin-top: 5px; }
+        .signal-buy { color: #F56C6C; }
+        .signal-sell { color: #67C23A; }
+        .signal-hold { color: #909399; }
+
+        /* 形态识别 */
+        .pattern-panel { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 20px; }
+        .pattern-tag { display: inline-block; padding: 6px 12px; border-radius: 4px; font-size: 12px; margin: 5px; }
+        .pattern-bullish { background: #F56C6C; color: white; }
+        .pattern-bearish { background: #67C23A; color: white; }
+        .pattern-neutral { background: #909399; color: white; }
+
+        /* API标签 */
+        .api-tag { display: inline-block; background: #67C23A; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <h1 class="page-title">技术分析 <span class="api-tag">GET /api/technical/*</span></h1>
+        </div>
+
+        <!-- 股票选择 -->
+        <div class="selector-panel">
+            <div class="panel-title">选择分析标的</div>
+            <div class="stock-selector">
+                <input type="text" class="stock-input" placeholder="输入股票代码或名称 (如: 600519 贵州茅台)" value="600519">
+                <button class="btn btn-primary">分析</button>
+                <span style="color: #666; font-size: 14px;">当前: <strong>贵州茅台 (600519.SH)</strong></span>
+            </div>
+        </div>
+
+        <!-- 分析区域 -->
+        <div class="analysis-grid">
+            <!-- 左侧: K线图 -->
+            <div class="chart-section">
+                <!-- 周期选择 -->
+                <div class="control-bar">
+                    <div class="control-group">
+                        <button class="btn-chart">分时</button>
+                        <button class="btn-chart">日K</button>
+                        <button class="btn-chart active">周K</button>
+                        <button class="btn-chart">月K</button>
+                    </div>
+                    <!-- 主图指标 -->
+                    <div class="control-group">
+                        <button class="btn-chart active">K线</button>
+                        <button class="btn-chart">MA</button>
+                        <button class="btn-chart">BOLL</button>
+                        <button class="btn-chart">SAR</button>
+                    </div>
+                    <!-- 副图指标 -->
+                    <div class="control-group">
+                        <button class="btn-chart active">VOL</button>
+                        <button class="btn-chart">MACD</button>
+                        <button class="btn-chart">KDJ</button>
+                        <button class="btn-chart">RSI</button>
+                        <button class="btn-chart">CCI</button>
+                    </div>
+                    <!-- 其他工具 -->
+                    <div class="control-group">
+                        <button class="btn-chart">画线</button>
+                        <button class="btn-chart">回放</button>
+                    </div>
+                </div>
+                <div class="chart-placeholder">
+                    [K线图表 - 使用KLineCharts]
+                    <div style="font-size: 12px; color: #999; margin-top: 10px;">
+                        支持多周期切换、技术指标叠加、画线工具、行情回放等功能
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧: 技术指标 -->
+            <div class="indicator-panel">
+                <div class="panel-title">技术指标分析</div>
+
+                <!-- MACD -->
+                <div class="indicator-item">
+                    <div class="indicator-name">MACD (12, 26, 9)</div>
+                    <div class="indicator-value">15.23</div>
+                    <div class="indicator-signal signal-buy">📈 金叉 · 买入信号</div>
+                </div>
+
+                <!-- KDJ -->
+                <div class="indicator-item">
+                    <div class="indicator-name">KDJ (9, 3, 3)</div>
+                    <div class="indicator-value">78.5</div>
+                    <div class="indicator-signal signal-hold">➡️ 超买区 · 观望</div>
+                </div>
+
+                <!-- RSI -->
+                <div class="indicator-item">
+                    <div class="indicator-name">RSI (14)</div>
+                    <div class="indicator-value">58.3</div>
+                    <div class="indicator-signal signal-hold">➡️ 中性区 · 观望</div>
+                </div>
+
+                <!-- BOLL -->
+                <div class="indicator-item">
+                    <div class="indicator-name">BOLL (20, 2)</div>
+                    <div class="indicator-value">1678.50</div>
+                    <div class="indicator-signal signal-hold">➡️ 中轨附近 · 观望</div>
+                </div>
+
+                <!-- CCI -->
+                <div class="indicator-item">
+                    <div class="indicator-name">CCI (14)</div>
+                    <div class="indicator-value">+85.6</div>
+                    <div class="indicator-signal signal-buy">📈 正常波动 · 偏多</div>
+                </div>
+
+                <!-- WR -->
+                <div class="indicator-item">
+                    <div class="indicator-name">WR (14)</div>
+                    <div class="indicator-value">-25.8</div>
+                    <div class="indicator-signal signal-sell">📉 超买 · 谨慎</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 形态识别 -->
+        <div class="pattern-panel">
+            <div class="panel-title">K线形态识别 <span class="api-tag">GET /api/technical/patterns</span></div>
+            <div>
+                <span class="pattern-tag pattern-bullish">🔥 早晨星 (看涨)</span>
+                <span class="pattern-tag pattern-bullish">⭐ 三白兵 (看涨)</span>
+                <span class="pattern-tag pattern-bearish">💧 上吊线 (看跌)</span>
+                <span class="pattern-tag pattern-neutral">➡️ 十字星 (观望)</span>
+                <span class="pattern-tag pattern-bullish">📈 突破形态 (看涨)</span>
+                <span class="pattern-tag pattern-bearish">📉 头肩顶 (看跌)</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API调用示例
+        console.log('=== TechnicalAnalysis API调用示例 ===');
+
+        const currentSymbol = '600519.SH';
+
+        // 1. 获取K线数据
+        async function fetchKLineData(interval = '1d', limit = 100) {
+            try {
+                const response = await fetch(`/api/market/kline?symbol=${currentSymbol}&interval=${interval}&limit=${limit}`);
+                const data = await response.json();
+                console.log('K线数据:', data);
+                return data;
+            } catch (error) {
+                console.error('获取K线数据失败:', error);
+            }
+        }
+
+        // 2. 计算技术指标
+        async function calculateIndicator(indicatorName, params) {
+            try {
+                const response = await fetch('/api/technical/calculate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        symbol: currentSymbol,
+                        indicator: indicatorName,
+                        params: params
+                    })
+                });
+                const data = await response.json();
+                console.log(`${indicatorName}指标:`, data);
+                return data;
+            } catch (error) {
+                console.error('计算指标失败:', error);
+            }
+        }
+
+        // 3. 获取所有技术指标
+        async function fetchAllIndicators() {
+            try {
+                const response = await fetch(`/api/technical/indicators?symbol=${currentSymbol}`);
+                const data = await response.json();
+                console.log('所有技术指标:', data);
+                return data;
+            } catch (error) {
+                console.error('获取技术指标失败:', error);
+            }
+        }
+
+        // 4. K线形态识别
+        async function recognizePatterns() {
+            try {
+                const response = await fetch(`/api/technical/patterns?symbol=${currentSymbol}&days=10`);
+                const data = await response.json();
+                console.log('形态识别结果:', data);
+                return data;
+            } catch (error) {
+                console.error('形态识别失败:', error);
+            }
+        }
+
+        // 5. 获取交易信号
+        async function getTradingSignals() {
+            try {
+                const response = await fetch(`/api/technical/signals?symbol=${currentSymbol}`);
+                const data = await response.json();
+                console.log('交易信号:', data);
+                return data;
+            } catch (error) {
+                console.error('获取交易信号失败:', error);
+            }
+        }
+
+        // 页面加载时执行
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchKLineData('1d', 100);
+            fetchAllIndicators();
+            recognizePatterns();
+            getTradingSignals();
+        });
+    </script>
+</body>
+</html>

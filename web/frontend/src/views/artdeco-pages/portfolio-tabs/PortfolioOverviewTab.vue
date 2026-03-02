@@ -3,8 +3,22 @@ import { onMounted, ref } from 'vue';
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
 import { apiClient } from '@/api/apiClient';
 
+interface PositionRow {
+  symbol: string
+  name: string
+  market_value: number
+  pnl_pct: number
+}
+
+interface PortfolioRow {
+  total_assets: number
+  today_pnl: number
+  today_pnl_pct: number
+  positions: PositionRow[]
+}
+
 const { loading, lastRequestId, exec } = useArtDecoApi();
-const portfolio = ref<any>(null);
+const portfolio = ref<PortfolioRow | null>(null);
 
 const fetchPortfolio = async () => {
   // 模拟从后端获取账户持仓
@@ -49,8 +63,8 @@ onMounted(() => {
         </div>
         <div class="asset-pnl">
           <label>Today's P&L</label>
-          <div :class="['pnl-value', portfolio?.today_pnl >= 0 ? 'rise' : 'down']">
-            {{ portfolio?.today_pnl >= 0 ? '+' : '' }}{{ portfolio?.today_pnl?.toLocaleString() }}
+          <div :class="['pnl-value', (portfolio?.today_pnl ?? 0) >= 0 ? 'rise' : 'down']">
+            {{ (portfolio?.today_pnl ?? 0) >= 0 ? '+' : '' }}{{ portfolio?.today_pnl?.toLocaleString() }}
             <span class="pct">({{ portfolio?.today_pnl_pct }}%)</span>
           </div>
         </div>

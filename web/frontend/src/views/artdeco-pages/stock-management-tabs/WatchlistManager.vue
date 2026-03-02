@@ -58,7 +58,11 @@ interface Props {
   currentStocks: StockRow[]
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  watchlists: () => [],
+  activeWatchlistId: '',
+  currentStocks: () => []
+})
 const emit = defineEmits(['select-list', 'add-list', 'import', 'export', 'remove-stock'])
 
 const numericChanges = computed(() => props.currentStocks.map((row) => {

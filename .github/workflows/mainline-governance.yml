@@ -1,0 +1,98 @@
+name: Mainline Governance Gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  mainline-governance:
+    name: Mainline Governance Gate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install gate dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml jsonschema
+
+      - name: Resolve task card path
+        id: task_card
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+
+          CANDIDATE="governance/mainline/task-cards/pr-${PR_NUMBER}.yaml"
+          if [ -f "$CANDIDATE" ]; then
+            echo "path=$CANDIDATE" >> "$GITHUB_OUTPUT"
+            echo "task card resolved: $CANDIDATE"
+            exit 0
+          fi
+
+          ALT=$(git diff --name-only "$BASE_SHA...$HEAD_SHA" | grep -E '^governance/mainline/task-cards/.*\.ya?ml$' | head -1 || true)
+          if [ -n "$ALT" ]; then
+            echo "path=$ALT" >> "$GITHUB_OUTPUT"
+            echo "task card resolved from diff: $ALT"
+            exit 0
+          fi
+
+          echo "❌ Missing task card: governance/mainline/task-cards/pr-${PR_NUMBER}.yaml"
+          exit 1
+
+      - name: Run mainline governance gate
+        run: |
+          python governance/mainline/scripts/mainline_scope_gate.py \
+            --task-card "${{ steps.task_card.outputs.path }}" \
+            --schema governance/mainline/schemas/ai-task-card.schema.json \
+            --base-sha "${{ github.event.pull_request.base.sha }}" \
+            --head-sha "${{ github.event.pull_request.head.sha }}" \
+            --report governance/mainline/reports/mainline-governance-report.json \
+            --fail-on-empty-diff
+
+      - name: Upload governance report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mainline-governance-report
+          path: governance/mainline/reports/mainline-governance-report.json
+          if-no-files-found: ignore
+
+      - name: Add workflow summary
+        if: always()
+        run: |
+          if [ -f governance/mainline/reports/mainline-governance-report.json ]; then
+            python - <<'PY'
+            import json
+            import os
+            from pathlib import Path
+
+            report = json.loads(Path("governance/mainline/reports/mainline-governance-report.json").read_text(encoding="utf-8"))
+            summary_path = Path(os.environ["GITHUB_STEP_SUMMARY"])
+
+            summary_path.write_text("\n".join([
+                "# Mainline Governance Report",
+                "",
+                f"- pass: `{report.get('pass')}`",
+                f"- changed_files: `{len(report.get('changed_files', []))}`",
+                f"- drift_rate_percent: `{report.get('drift_rate_percent', 'N/A')}`",
+                f"- drift_threshold_percent: `{report.get('drift_threshold_percent', 'N/A')}`",
+                f"- secondary_type: `{report.get('secondary_type', 'N/A')}`",
+                f"- secondary_ratio_percent: `{report.get('secondary_ratio_percent', 'N/A')}`",
+                f"- violations: `{len(report.get('violations', []))}`",
+            ]), encoding="utf-8")
+            PY
+          fi

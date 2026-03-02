@@ -1,0 +1,1102 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MyStocks API - Complete Phase 1-5 Collection",
+    "description": "Complete API collection for MyStocks Phase 1-5 features including Core Architecture, ML Trading Strategies, Real-time Trading, Enterprise Features, and Advanced Analytics. Complies with API Contract Management and OpenAPI 3.1.0 specifications.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "MyStocks Development Team",
+      "email": "api@mystocks.com"
+    },
+    "license": {
+      "name": "Proprietary",
+      "url": "https://mystocks.com/license"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.mystocks.com/v1",
+      "description": "Production server"
+    },
+    {
+      "url": "http://localhost:8000/api/v1",
+      "description": "Development server"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/mystocks/health/database": {
+      "get": {
+        "tags": ["Phase 1: Core Architecture"],
+        "summary": "Database Health Check",
+        "description": "检查所有数据库的健康状态 - Check health status of all databases",
+        "operationId": "getDatabaseHealth",
+        "responses": {
+          "200": {
+            "description": "成功获取数据库健康状态",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DatabaseHealthResponse"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/data/route": {
+      "post": {
+        "tags": ["Phase 1: Core Architecture"],
+        "summary": "Data Routing Decision",
+        "description": "根据数据特性和查询条件智能选择数据库路由 - Intelligent database routing based on data characteristics",
+        "operationId": "getDataRoute",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataRoutingRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功获取路由决策",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataRoutingResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/data/classification/stats": {
+      "get": {
+        "tags": ["Phase 1: Core Architecture"],
+        "summary": "Data Classification Statistics",
+        "description": "获取数据分类统计信息 - Get data classification statistics",
+        "operationId": "getDataClassificationStats",
+        "responses": {
+          "200": {
+            "description": "成功获取统计信息",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "description": "分类统计数据"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/strategies/train": {
+      "post": {
+        "tags": ["Phase 2: ML Trading Strategies"],
+        "summary": "Train ML Strategy",
+        "description": "训练机器学习交易策略 - Train machine learning trading strategies",
+        "operationId": "trainMLStrategy",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StrategyTrainingRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "策略训练成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StrategyTrainingResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/strategies/predict": {
+      "post": {
+        "tags": ["Phase 2: ML Trading Strategies"],
+        "summary": "Generate Strategy Prediction",
+        "description": "生成策略预测信号 - Generate trading signals using trained ML strategies",
+        "operationId": "generateStrategyPrediction",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StrategyPredictionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "预测生成成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StrategyPredictionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/strategies/backtest": {
+      "post": {
+        "tags": ["Phase 2: ML Trading Strategies"],
+        "summary": "Backtest ML Strategy",
+        "description": "回测机器学习策略 - Comprehensive backtesting of ML strategies",
+        "operationId": "backtestMLStrategy",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BacktestRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "回测完成",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BacktestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/strategies": {
+      "get": {
+        "tags": ["Phase 2: ML Trading Strategies"],
+        "summary": "List Available Strategies",
+        "description": "获取可用策略列表 - Get list of available ML trading strategies",
+        "operationId": "listStrategies",
+        "parameters": [
+          {
+            "name": "strategy_type",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/MLStrategyType"
+            },
+            "description": "策略类型过滤"
+          },
+          {
+            "name": "trained_only",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "description": "仅返回已训练的策略"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取策略列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "strategies": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/technical-indicators": {
+      "get": {
+        "tags": ["Phase 2: ML Trading Strategies"],
+        "summary": "Get Technical Indicators",
+        "description": "计算技术指标 - Calculate technical indicators",
+        "operationId": "getTechnicalIndicators",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{6}$"
+            },
+            "description": "股票代码"
+          },
+          {
+            "name": "indicators",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["rsi", "macd", "bollinger", "sma", "ema"]
+              }
+            },
+            "description": "指标名称列表"
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 14,
+              "minimum": 1
+            },
+            "description": "计算周期"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "指标计算成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "symbol": {"type": "string"},
+                    "indicators": {"type": "object"},
+                    "timestamp": {"type": "string", "format": "date-time"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/trading/session/start": {
+      "post": {
+        "tags": ["Phase 3: Real-time Trading"],
+        "summary": "Start Trading Session",
+        "description": "启动实时交易会话 - Start live trading session",
+        "operationId": "startTradingSession",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TradingSessionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "交易会话启动成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TradingSessionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/trading/session/{session_id}/status": {
+      "get": {
+        "tags": ["Phase 3: Real-time Trading"],
+        "summary": "Get Trading Session Status",
+        "description": "获取交易会话状态 - Get trading session status and metrics",
+        "operationId": "getTradingSessionStatus",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "交易会话ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取会话状态",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "session_id": {"type": "string"},
+                    "status": {"type": "string"},
+                    "start_time": {"type": "string", "format": "date-time"},
+                    "active_positions": {"type": "array"},
+                    "total_pnl": {"type": "number"},
+                    "daily_pnl": {"type": "number"},
+                    "current_drawdown": {"type": "number"},
+                    "total_trades": {"type": "integer"},
+                    "win_rate": {"type": "number"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/trading/positions": {
+      "get": {
+        "tags": ["Phase 3: Real-time Trading"],
+        "summary": "Get Current Positions",
+        "description": "获取当前持仓信息 - Get current trading positions",
+        "operationId": "getCurrentPositions",
+        "responses": {
+          "200": {
+            "description": "成功获取持仓信息",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PositionInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/trading/risk/metrics": {
+      "get": {
+        "tags": ["Phase 3: Real-time Trading"],
+        "summary": "Get Risk Metrics",
+        "description": "获取风险指标 - Get current risk metrics",
+        "operationId": "getRiskMetrics",
+        "responses": {
+          "200": {
+            "description": "成功获取风险指标",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskMetricsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/auth/profile": {
+      "get": {
+        "tags": ["Phase 4: Enterprise Features"],
+        "summary": "Get User Profile",
+        "description": "获取用户资料 - Get current user profile and information",
+        "operationId": "getUserProfile",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "成功获取用户资料",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfile"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未认证",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/auth/permissions": {
+      "get": {
+        "tags": ["Phase 4: Enterprise Features"],
+        "summary": "Get User Permissions",
+        "description": "获取用户权限列表 - Get current user permissions",
+        "operationId": "getUserPermissions",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "成功获取用户权限",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "permissions": {
+                      "type": "array",
+                      "items": {"type": "string"}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/database/optimize": {
+      "post": {
+        "tags": ["Phase 4: Enterprise Features"],
+        "summary": "Optimize Database",
+        "description": "执行数据库优化操作 - Perform database optimization operations",
+        "operationId": "optimizeDatabase",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatabaseOptimizationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "数据库优化完成",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatabaseOptimizationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/audit/logs": {
+      "get": {
+        "tags": ["Phase 4: Enterprise Features"],
+        "summary": "Get Audit Logs",
+        "description": "获取审计日志 - Get audit logs with filtering options",
+        "operationId": "getAuditLogs",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 50
+            },
+            "description": "返回日志数量"
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "schema": {"type": "string"},
+            "description": "按用户ID过滤"
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "schema": {"type": "string"},
+            "description": "按操作过滤"
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "schema": {"type": "string", "format": "date"},
+            "description": "开始日期"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "schema": {"type": "string", "format": "date"},
+            "description": "结束日期"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取审计日志",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuditLogEntry"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/sentiment/news/analyze": {
+      "post": {
+        "tags": ["Phase 5: Advanced Analytics"],
+        "summary": "Analyze News Sentiment",
+        "description": "分析新闻情感数据 - Perform sentiment analysis on financial news",
+        "operationId": "analyzeNewsSentiment",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewsSentimentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "情感分析完成",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SentimentAnalysisResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/sentiment/market/overview": {
+      "get": {
+        "tags": ["Phase 5: Advanced Analytics"],
+        "summary": "Get Market Sentiment Overview",
+        "description": "获取市场整体情感概览 - Get market-wide sentiment overview",
+        "operationId": "getMarketSentimentOverview",
+        "parameters": [
+          {
+            "name": "hours",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 168,
+              "default": 24
+            },
+            "description": "分析时间范围（小时）"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取市场情感概览",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "market_sentiment_score": {"type": "number"},
+                    "market_trend": {"type": "string"},
+                    "analyzed_symbols": {"type": "integer"},
+                    "sector_sentiment": {"type": "object"},
+                    "generated_at": {"type": "string", "format": "date-time"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/backtest/advanced": {
+      "post": {
+        "tags": ["Phase 5: Advanced Analytics"],
+        "summary": "Advanced Strategy Backtest",
+        "description": "执行高级策略回测 - Advanced backtesting with walk-forward and Monte Carlo",
+        "operationId": "advancedStrategyBacktest",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdvancedBacktestRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "高级回测完成",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdvancedBacktestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/strategies/optimize": {
+      "post": {
+        "tags": ["Phase 5: Advanced Analytics"],
+        "summary": "Optimize Strategy Parameters",
+        "description": "自动优化策略参数 - Automatic strategy parameter optimization",
+        "operationId": "optimizeStrategyParameters",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StrategyOptimizationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "参数优化完成",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StrategyOptimizationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/analytics/portfolio/attribution": {
+      "get": {
+        "tags": ["Phase 5: Advanced Analytics"],
+        "summary": "Portfolio Attribution Analysis",
+        "description": "投资组合归因分析 - Detailed portfolio attribution analysis",
+        "operationId": "getPortfolioAttribution",
+        "parameters": [
+          {
+            "name": "portfolio_id",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "投资组合ID"
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string", "format": "date"},
+            "description": "分析开始日期"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string", "format": "date"},
+            "description": "分析结束日期"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "归因分析完成",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "投资组合归因分析结果"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mystocks/analytics/risk/stress-test": {
+      "get": {
+        "tags": ["Phase 5: Advanced Analytics"],
+        "summary": "Portfolio Stress Testing",
+        "description": "投资组合压力测试 - Stress testing under various market conditions",
+        "operationId": "performStressTest",
+        "parameters": [
+          {
+            "name": "portfolio_id",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "投资组合ID"
+          },
+          {
+            "name": "scenarios",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {"type": "string"}
+            },
+            "description": "压力测试情景"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "压力测试完成",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "压力测试结果"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DatabaseHealthResponse": {
+        "type": "object",
+        "properties": {
+          "database_type": {"type": "string", "enum": ["postgresql", "tdengine"]},
+          "connection_status": {"type": "string"},
+          "response_time_ms": {"type": "number"},
+          "active_connections": {"type": "integer"},
+          "total_tables": {"type": "integer"},
+          "last_health_check": {"type": "string", "format": "date-time"}
+        },
+        "required": ["database_type", "connection_status", "response_time_ms", "active_connections", "total_tables", "last_health_check"]
+      },
+      "DataRoutingRequest": {
+        "type": "object",
+        "properties": {
+          "data_category": {"type": "string", "enum": ["market_data", "reference_data", "derived_data", "transaction_data", "metadata"]},
+          "symbol": {"type": "string"},
+          "date_range": {
+            "type": "object",
+            "properties": {
+              "start_date": {"type": "string", "format": "date"},
+              "end_date": {"type": "string", "format": "date"}
+            }
+          }
+        },
+        "required": ["data_category"]
+      },
+      "DataRoutingResponse": {
+        "type": "object",
+        "properties": {
+          "route_selected": {"type": "string"},
+          "estimated_records": {"type": "integer"},
+          "query_complexity": {"type": "string"},
+          "recommended_strategy": {"type": "string"}
+        },
+        "required": ["route_selected", "estimated_records", "query_complexity", "recommended_strategy"]
+      },
+      "MLStrategyType": {
+        "type": "string",
+        "enum": ["svm", "decision_tree", "naive_bayes", "lstm", "transformer"]
+      },
+      "StrategyTrainingRequest": {
+        "type": "object",
+        "properties": {
+          "strategy_type": {"$ref": "#/components/schemas/MLStrategyType"},
+          "symbol": {"type": "string", "pattern": "^\\d{6}$"},
+          "start_date": {"type": "string", "format": "date"},
+          "end_date": {"type": "string", "format": "date"},
+          "parameters": {"type": "object"}
+        },
+        "required": ["strategy_type", "symbol", "start_date", "end_date"]
+      },
+      "StrategyTrainingResponse": {
+        "type": "object",
+        "properties": {
+          "strategy_id": {"type": "string"},
+          "strategy_type": {"type": "string"},
+          "training_accuracy": {"type": "number"},
+          "validation_score": {"type": "number"},
+          "feature_importance": {"type": "object"},
+          "training_duration_ms": {"type": "integer"},
+          "model_size_bytes": {"type": "integer"}
+        },
+        "required": ["strategy_id", "strategy_type", "training_accuracy", "validation_score", "feature_importance", "training_duration_ms", "model_size_bytes"]
+      },
+      "StrategyPredictionRequest": {
+        "type": "object",
+        "properties": {
+          "strategy_id": {"type": "string"},
+          "symbol": {"type": "string", "pattern": "^\\d{6}$"},
+          "prediction_horizon": {"type": "integer", "default": 5, "minimum": 1}
+        },
+        "required": ["strategy_id", "symbol"]
+      },
+      "StrategyPredictionResponse": {
+        "type": "object",
+        "properties": {
+          "strategy_id": {"type": "string"},
+          "symbol": {"type": "string"},
+          "prediction": {"type": "object"},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "timestamp": {"type": "string", "format": "date-time"}
+        },
+        "required": ["strategy_id", "symbol", "prediction", "confidence", "timestamp"]
+      },
+      "BacktestRequest": {
+        "type": "object",
+        "properties": {
+          "strategy_id": {"type": "string"},
+          "symbol": {"type": "string", "pattern": "^\\d{6}$"},
+          "start_date": {"type": "string", "format": "date"},
+          "end_date": {"type": "string", "format": "date"},
+          "initial_capital": {"type": "number", "default": 100000.0},
+          "position_size": {"type": "number", "default": 0.1, "minimum": 0, "maximum": 1}
+        },
+        "required": ["strategy_id", "symbol", "start_date", "end_date"]
+      },
+      "BacktestResponse": {
+        "type": "object",
+        "properties": {
+          "strategy_id": {"type": "string"},
+          "total_return": {"type": "number"},
+          "annualized_return": {"type": "number"},
+          "sharpe_ratio": {"type": "number"},
+          "max_drawdown": {"type": "number"},
+          "win_rate": {"type": "number"},
+          "total_trades": {"type": "integer"},
+          "backtest_duration_ms": {"type": "integer"}
+        },
+        "required": ["strategy_id", "total_return", "annualized_return", "sharpe_ratio", "max_drawdown", "win_rate", "total_trades", "backtest_duration_ms"]
+      },
+      "TradingSessionRequest": {
+        "type": "object",
+        "properties": {
+          "strategies": {"type": "array", "items": {"type": "string"}},
+          "max_positions": {"type": "integer", "default": 10, "minimum": 1},
+          "max_position_size": {"type": "number", "default": 100000.0},
+          "risk_per_trade": {"type": "number", "default": 0.02, "minimum": 0, "maximum": 1}
+        },
+        "required": ["strategies"]
+      },
+      "TradingSessionResponse": {
+        "type": "object",
+        "properties": {
+          "session_id": {"type": "string"},
+          "status": {"type": "string"},
+          "strategies_active": {"type": "integer"},
+          "created_at": {"type": "string", "format": "date-time"}
+        },
+        "required": ["session_id", "status", "strategies_active", "created_at"]
+      },
+      "PositionInfo": {
+        "type": "object",
+        "properties": {
+          "symbol": {"type": "string"},
+          "quantity": {"type": "integer"},
+          "entry_price": {"type": "number"},
+          "current_price": {"type": "number"},
+          "unrealized_pnl": {"type": "number"},
+          "strategy_name": {"type": "string"}
+        },
+        "required": ["symbol", "quantity", "entry_price", "current_price", "unrealized_pnl", "strategy_name"]
+      },
+      "RiskMetricsResponse": {
+        "type": "object",
+        "properties": {
+          "current_drawdown": {"type": "number"},
+          "daily_pnl": {"type": "number"},
+          "active_positions": {"type": "integer"},
+          "risk_status": {"type": "string"},
+          "last_updated": {"type": "string", "format": "date-time"}
+        },
+        "required": ["current_drawdown", "daily_pnl", "active_positions", "risk_status", "last_updated"]
+      },
+      "UserProfile": {
+        "type": "object",
+        "properties": {
+          "user_id": {"type": "string"},
+          "username": {"type": "string"},
+          "email": {"type": "string"},
+          "full_name": {"type": "string"},
+          "role": {"type": "string"},
+          "is_active": {"type": "boolean"},
+          "created_at": {"type": "string", "format": "date-time"}
+        },
+        "required": ["user_id", "username", "email", "role", "is_active", "created_at"]
+      },
+      "DatabaseOptimizationRequest": {
+        "type": "object",
+        "properties": {
+          "operation": {"type": "string", "enum": ["vacuum", "reindex", "analyze"]},
+          "tables": {"type": "array", "items": {"type": "string"}},
+          "full_optimization": {"type": "boolean", "default": false}
+        },
+        "required": ["operation"]
+      },
+      "DatabaseOptimizationResponse": {
+        "type": "object",
+        "properties": {
+          "operation": {"type": "string"},
+          "status": {"type": "string"},
+          "affected_tables": {"type": "array", "items": {"type": "string"}},
+          "execution_time_ms": {"type": "integer"},
+          "space_reclaimed_mb": {"type": "number"}
+        },
+        "required": ["operation", "status", "affected_tables", "execution_time_ms"]
+      },
+      "AuditLogEntry": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "timestamp": {"type": "string", "format": "date-time"},
+          "user_id": {"type": "string"},
+          "action": {"type": "string"},
+          "resource_type": {"type": "string"},
+          "resource_id": {"type": "string"},
+          "ip_address": {"type": "string"},
+          "status": {"type": "string"},
+          "details": {"type": "object"}
+        },
+        "required": ["id", "timestamp", "action", "resource_type", "status"]
+      },
+      "NewsSentimentRequest": {
+        "type": "object",
+        "properties": {
+          "symbols": {"type": "array", "items": {"type": "string", "pattern": "^\\d{6}$"}},
+          "hours_back": {"type": "integer", "default": 24, "minimum": 1, "maximum": 168},
+          "include_articles": {"type": "boolean", "default": false}
+        },
+        "required": ["symbols"]
+      },
+      "SentimentAnalysisResponse": {
+        "type": "object",
+        "properties": {
+          "symbol": {"type": "string"},
+          "sentiment_score": {"type": "number", "minimum": -1, "maximum": 1},
+          "sentiment_trend": {"type": "string"},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "article_count": {"type": "integer"},
+          "time_range_hours": {"type": "integer"},
+          "articles": {"type": "array", "items": {"type": "object"}}
+        },
+        "required": ["symbol", "sentiment_score", "sentiment_trend", "confidence", "article_count", "time_range_hours"]
+      },
+      "AdvancedBacktestRequest": {
+        "type": "object",
+        "properties": {
+          "strategy_id": {"type": "string"},
+          "symbols": {"type": "array", "items": {"type": "string"}},
+          "start_date": {"type": "string", "format": "date"},
+          "end_date": {"type": "string", "format": "date"},
+          "initial_capital": {"type": "number", "default": 100000.0},
+          "walk_forward_window": {"type": "integer", "default": 252},
+          "monte_carlo_runs": {"type": "integer", "default": 1000}
+        },
+        "required": ["strategy_id", "symbols", "start_date", "end_date"]
+      },
+      "AdvancedBacktestResponse": {
+        "type": "object",
+        "properties": {
+          "strategy_id": {"type": "string"},
+          "backtest_type": {"type": "string"},
+          "total_return": {"type": "number"},
+          "annualized_return": {"type": "number"},
+          "sharpe_ratio": {"type": "number"},
+          "max_drawdown": {"type": "number"},
+          "win_rate": {"type": "number"},
+          "profit_factor": {"type": "number"},
+          "recovery_factor": {"type": "number"},
+          "monte_carlo_stats": {"type": "object"}
+        },
+        "required": ["strategy_id", "backtest_type", "total_return", "annualized_return", "sharpe_ratio", "max_drawdown", "win_rate", "profit_factor", "recovery_factor"]
+      },
+      "StrategyOptimizationRequest": {
+        "type": "object",
+        "properties": {
+          "strategy_type": {"$ref": "#/components/schemas/MLStrategyType"},
+          "symbol": {"type": "string"},
+          "start_date": {"type": "string", "format": "date"},
+          "end_date": {"type": "string", "format": "date"},
+          "optimization_target": {"type": "string", "default": "sharpe_ratio"},
+          "parameter_ranges": {"type": "object"},
+          "max_evaluations": {"type": "integer", "default": 100}
+        },
+        "required": ["strategy_type", "symbol", "start_date", "end_date"]
+      },
+      "StrategyOptimizationResponse": {
+        "type": "object",
+        "properties": {
+          "strategy_type": {"type": "string"},
+          "optimization_target": {"type": "string"},
+          "best_parameters": {"type": "object"},
+          "best_score": {"type": "number"},
+          "total_evaluations": {"type": "integer"},
+          "optimization_time_ms": {"type": "integer"},
+          "parameter_importance": {"type": "object"}
+        },
+        "required": ["strategy_type", "optimization_target", "best_parameters", "best_score", "total_evaluations", "optimization_time_ms", "parameter_importance"]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "code": {"type": "string"},
+          "message": {"type": "string"},
+          "data": {"type": "object"},
+          "request_id": {"type": "string"}
+        },
+        "required": ["code", "message"]
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

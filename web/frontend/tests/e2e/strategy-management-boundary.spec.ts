@@ -1,392 +1,262 @@
 /**
- * Strategy Management - Boundary and Edge Cases Tests
+ * Strategy Management - Boundary and Edge Cases
  *
- * Specialized E2E tests for boundary conditions, error handling,
- * and edge cases using Playwright.
+ * Rebased to current ArtDeco Strategy Management page (`/strategy/repo`).
  */
 
-import { test, expect } from '@playwright/test';
-import { loginAndSetupAuth } from './helpers/auth';
-
-/**
- * Base URL for the application
- */
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3020';
-
-test.describe('Strategy Management - Boundary and Edge Cases', () => {
-  test.beforeEach(async ({ page, request }) => {
-    // Set default viewport
-    await page.setViewportSize({ width: 1920, height: 1080 });
-
-    // Setup authentication
-    await loginAndSetupAuth(request, page);
-
-    // Navigate to strategy page
-    await page.goto(`${BASE_URL}/strategy`);
-
-    // Wait for page to load completely
-    await page.waitForLoadState('domcontentloaded');
-    await page.waitForTimeout(2000);
-  });
-
-  test.describe('Empty Search Results', () => {
-    test('should display empty state when no strategies match search', async ({ page }) => {
-      // Search for non-existent strategy (page already loaded from beforeEach)
-      const searchInput = page.locator('input[placeholder*="SEARCH STRATEGIES"]');
-      await searchInput.waitFor({ state: 'visible', timeout: 10000 });
-      await searchInput.first().fill('NonExistentStrategyXYZ123');
-
-      await page.waitForTimeout(500);
-
-      // Verify empty state or zero results
-      const strategyCards = page.locator('.strategy-card');
-      const count = await strategyCards.count();
-
-      expect(count).toBe(0);
-
-      // Check for empty state message
-      const emptyMessage = page.locator('.empty-state, .no-results, [data-testid="empty-message"]');
-      const hasEmptyMessage = await emptyMessage.count() > 0;
-
-      if (hasEmptyMessage) {
-        await expect(emptyMessage.first()).toBeVisible();
-      }
-    });
-  });
-
-  test.describe('Empty Filter Combinations', () => {
-    test('should handle filter combinations with no matches', async ({ page }) => {
-      // Apply filters that result in no matches
-      const searchInput = page.locator('input[placeholder*="SEARCH STRATEGIES"]');
-      await searchInput.waitFor({ state: 'visible', timeout: 10000 });
-      await searchInput.first().fill('nonexistent');
-
-      const typeFilter = page.locator('.el-select').filter({ hasText: /FILTER BY TYPE|TYPE/ }).first();
-      await typeFilter.waitFor({ state: 'visible', timeout: 5000 });
-      await typeFilter.click();
-      await page.locator('.el-select-dropdown__item').filter({ hasText: 'MOMENTUM' }).first().click();
-      await page.waitForTimeout(300);
-
-      const statusFilter = page.locator('.el-select').filter({ hasText: /STATUS/ }).nth(1);
-      await statusFilter.click();
-      await page.locator('.el-select-dropdown__item').filter({ hasText: 'INACTIVE' }).first().click();
-      await page.waitForTimeout(300);
-
-      // Verify no results
-      const strategyCards = page.locator('.strategy-card');
-      const count = await strategyCards.count();
-
-      expect(count).toBe(0);
-    });
-  });
-
-  test.describe('Large Dataset Pagination', () => {
-    test('should handle pagination with large datasets', async ({ page }) => {
-      // Find page size selector
-      const pageSizeSelector = page.locator('.el-pagination__sizes .el-select');
-      await pageSizeSelector.waitFor({ state: 'visible', timeout: 10000 });
-      await pageSizeSelector.click();
-
-      // Select maximum page size (48 or 24)
-      await page.locator('.el-select-dropdown__item').filter({ hasText: /48|24/ }).first().click();
-      await page.waitForTimeout(500);
-
-      // Check pagination controls
-      const pagination = page.locator('.el-pagination');
-      await expect(pagination).toBeVisible();
-
-      // Verify pagination info
-      const pageInfo = page.locator('.el-pagination__total');
-      const hasPageInfo = await pageInfo.count() > 0;
-
-      if (hasPageInfo) {
-        const text = await pageInfo.textContent();
-        expect(text).toMatch(/\d+/); // Should contain numbers
-      }
-
-      // Test navigation to last page
-      const lastPageButton = page.locator('.el-pager li').last();
-      await lastPageButton.click();
-      await page.waitForTimeout(500);
-
-      // Verify pagination still works
-      await expect(pagination).toBeVisible();
-    });
-  });
-
-  test.describe('Network Error Handling', () => {
-    test('should gracefully handle network failures', async ({ page }) => {
-      // Intercept and fail strategy API calls (need to reload page after setting up route)
-      await page.route('**/api/strategy/**', (route) => {
-        route.abort('failed');
-      });
-
-      await page.goto(`${BASE_URL}/strategy`);
-      await page.waitForTimeout(2000);
-
-      // Verify fallback to mock data or error message
-      const strategyCards = page.locator('.strategy-card');
-      const count = await strategyCards.count();
-
-      // Should either show mock data or error message
-      if (count > 0) {
-        // Mock data fallback
-        expect(count).toBeGreaterThan(0);
-
-        const mockIndicator = page.locator('.mock-data, [data-testid="mock-data"]');
-        const hasMockIndicator = await mockIndicator.count() > 0;
-
-        if (hasMockIndicator) {
-          await expect(mockIndicator.first()).toBeVisible();
-        }
-      } else {
-        // Error message
-        const errorMessage = page.locator('.el-message--error, .error-message');
-        const hasError = await errorMessage.count() > 0;
-
-        if (hasError) {
-          await expect(errorMessage.first()).toBeVisible();
-        }
-      }
-    });
-
-    test('should recover from temporary network failures', async ({ page }) => {
-      // Fail first request, then allow subsequent ones (need to reload page)
-      let requestCount = 0;
-      await page.route('**/api/strategy/**', (route) => {
-        requestCount++;
-        if (requestCount === 1) {
-          route.abort('failed');
-        } else {
-          route.continue();
-        }
-      });
-
-      await page.goto(`${BASE_URL}/strategy`);
-
-      // Wait for error and retry
-      await page.waitForTimeout(3000);
-
-      // Should recover and show data
-      const strategyCards = page.locator('.strategy-card');
-      const count = await strategyCards.count();
-
-      expect(count).toBeGreaterThan(0);
-    });
-  });
-
-  test.describe('Special Character Handling', () => {
-    test('should safely handle special characters in search', async ({ page }) => {
-      // Test various special characters (page already loaded from beforeEach)
-      const specialChars = [
-        '!@#$%',
-        '<script>',
-        '";DROP TABLE',
-        '../../etc/passwd',
-        '"><script>alert(1)</script>',
-        '${7*7}',
-        'javascript:alert(1)'
-      ];
-
-      for (const chars of specialChars) {
-        // Clear and fill search input
-        const searchInput = page.locator('input[placeholder*="SEARCH STRATEGIES"]').first();
-        await searchInput.fill('');
-        await searchInput.fill(chars);
-
-        await page.waitForTimeout(300);
-
-        // Verify no crashes or JavaScript errors
-        const pageErrors: string[] = [];
-        page.on('pageerror', (error) => {
-          pageErrors.push(error.toString());
-        });
-
-        // Should either return results or empty state
-        const strategyCards = page.locator('.strategy-card');
-        const count = await strategyCards.count();
-
-        expect(count).toBeGreaterThanOrEqual(0);
-
-        // Verify no XSS or injection occurred
-        expect(pageErrors.length).toBe(0);
-
-        // Clear for next test
-        await searchInput.fill('');
-      }
-    });
-
-    test('should handle unicode and emoji characters', async ({ page }) => {
-      await page.goto(`${BASE_URL}/strategy`);
-
-      // Wait for strategies to load
-      await page.waitForTimeout(2000);
-
-      // Test unicode and emoji
-      const unicodeStrings = [
-        '策略测试',
-        '📈💰🚀',
-        'αβγδε',
-        'مرحبا',
-        'こんにちは'
-      ];
-
-      const searchInput = page.locator('input[placeholder*="SEARCH STRATEGIES"]').first();
-
-      for (const str of unicodeStrings) {
-        await searchInput.fill('');
-        await searchInput.fill(str);
-
-        await page.waitForTimeout(300);
-
-        // Should not crash
-        const isVisible = await page.locator('.strategy-management').isVisible();
-        expect(isVisible).toBe(true);
-      }
-    });
-  });
-
-  test.describe('Invalid Parameter Inputs', () => {
-    test('should handle invalid strategy IDs', async ({ page }) => {
-      // Try to navigate to invalid strategy ID (page already loaded, just add query param)
-      const invalidId = '999999';
-      await page.goto(`${BASE_URL}/strategy?id=${invalidId}`);
-
-      await page.waitForTimeout(1000);
-
-      // Verify page doesn't crash
-      const isVisible = await page.locator('h1, h2').filter({ hasText: /策略管理|Strategy/ }).isVisible();
-      expect(isVisible).toBe(true);
-
-      // Return to list page
-      await page.goto(`${BASE_URL}/strategy`);
-      await page.waitForTimeout(1000);
-
-      // Test with negative ID
-      await page.goto(`${BASE_URL}/strategy?id=-1`);
-
-      await page.waitForTimeout(1000);
-
-      // Verify page doesn't crash
-      const stillVisible = await page.locator('h1, h2').filter({ hasText: /策略管理|Strategy/ }).isVisible();
-      expect(stillVisible).toBe(true);
-
-      // Test with non-numeric ID
-      await page.goto(`${BASE_URL}/strategy?id=abc`);
-
-      await page.waitForTimeout(1000);
-
-      // Verify page doesn't crash
-      const stillOk = await page.locator('h1, h2').filter({ hasText: /策略管理|Strategy/ }).isVisible();
-      expect(stillOk).toBe(true);
-    });
-
-    test('should handle malformed query parameters', async ({ page }) => {
-      // Test with malformed URL parameters
-      const malformedUrls = [
-        `${BASE_URL}/strategy?id=`,
-        `${BASE_URL}/strategy?foo=bar&baz=qux`,
-        `${BASE_URL}/strategy?[]=test`,
-        `${BASE_URL}/strategy?id[]=1&id[]=2`
-      ];
-
-      for (const url of malformedUrls) {
-        await page.goto(url);
-
-        await page.waitForTimeout(1000);
-
-        // Verify page doesn't crash
-        const isVisible = await page.locator('h1, h2').filter({ hasText: /策略管理|Strategy/ }).isVisible();
-        expect(isVisible).toBe(true);
-      }
-    });
-  });
-
-  test.describe('Concurrent Operations', () => {
-    test('should handle concurrent delete operations safely', async ({ page }) => {
-      // Get initial strategy count (page already loaded from beforeEach)
-      const strategiesBefore = await page.locator('.strategy-card').count();
-
-      if (strategiesBefore < 2) {
-        test.skip(); // Skip if not enough strategies to test
+import { expect, test } from "@playwright/test"
+const { loadPortEnv, resolveFrontendConfig } = require("./helpers/port-env.js")
+
+loadPortEnv(process.cwd())
+
+const FRONTEND_BASE_URL = resolveFrontendConfig().baseUrl
+
+const STRATEGY_LIST_ENDPOINTS = [
+  "**/api/v1/strategy/strategies**",
+  "**/api/mock/strategy/strategies**",
+  "**/api/api/v1/strategy/strategies**",
+  "**/api/api/mock/strategy/strategies**",
+]
+
+function buildUnifiedResponse<T>(data: T, overrides?: Partial<Record<string, unknown>>) {
+  return {
+    success: true,
+    code: 200,
+    message: "ok",
+    data,
+    timestamp: "2026-03-01T00:00:00Z",
+    request_id: "req-boundary",
+    ...(overrides ?? {}),
+  }
+}
+
+function buildStrategyDataset(count: number, statuses?: Array<"active" | "paused" | "archived">) {
+  const statusList = statuses ?? ["active", "paused", "archived"]
+  const types = ["momentum", "mean_reversion", "breakout"] as const
+  return Array.from({ length: count }, (_, idx) => ({
+    strategy_id: idx + 1,
+    strategy_name: `Boundary-${String(idx + 1).padStart(2, "0")}`,
+    strategy_type: types[idx % types.length],
+    description: `boundary case ${idx + 1}`,
+    status: statusList[idx % statusList.length],
+    updated_at: "2026-03-01T08:00:00Z",
+  }))
+}
+
+async function setupAuthenticatedSession(page: Parameters<typeof test>[0]["page"]) {
+  await page.addInitScript(() => {
+    const user = {
+      id: 1,
+      username: "e2e-admin",
+      email: "e2e-admin@mystocks.local",
+      role: "admin",
+      permissions: ["*"],
+    }
+    localStorage.setItem("auth_token", "e2e-token")
+    localStorage.setItem("auth_user", JSON.stringify(user))
+  })
+}
+
+async function mockCsrfEndpoint(page: Parameters<typeof test>[0]["page"]) {
+  await page.route("**/api/csrf-token", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(
+        buildUnifiedResponse(
+          {
+            csrf_token: "e2e-csrf-token",
+            token_type: "bearer",
+            expires_in: 3600,
+          },
+          { request_id: "req-csrf-boundary" }
+        )
+      ),
+    })
+  })
+}
+
+async function routeStrategyList(
+  page: Parameters<typeof test>[0]["page"],
+  handler: Parameters<typeof page.route>[1]
+) {
+  for (const endpoint of STRATEGY_LIST_ENDPOINTS) {
+    await page.route(endpoint, handler)
+  }
+}
+
+test.describe("Strategy Management - Boundary and Edge Cases", () => {
+  test.describe.configure({ mode: "serial", timeout: 120000 })
+
+  test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({ width: 1920, height: 1080 })
+    await setupAuthenticatedSession(page)
+    await mockCsrfEndpoint(page)
+  })
+
+  test("shows empty-state when search has no matches", async ({ page }) => {
+    await routeStrategyList(page, async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: { "content-type": "application/json", "x-request-id": "req-empty-search", "x-process-time": "22ms" },
+        body: JSON.stringify(buildUnifiedResponse(buildStrategyDataset(8), { request_id: "req-empty-search" })),
+      })
+    })
+
+    await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
+    await page.getByPlaceholder("搜索策略名称 / 类型").fill("NonExistentStrategyXYZ123")
+    await expect(page.locator(".strategy-table tbody tr")).toHaveCount(0)
+    await expect(page.locator(".empty-state")).toBeVisible()
+  })
+
+  test("handles filter combination with no results", async ({ page }) => {
+    await routeStrategyList(page, async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: { "content-type": "application/json", "x-request-id": "req-empty-filter", "x-process-time": "18ms" },
+        body: JSON.stringify(buildUnifiedResponse(buildStrategyDataset(10, ["active", "paused"]), { request_id: "req-empty-filter" })),
+      })
+    })
+
+    await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
+    await page.locator(".toolbar-select").selectOption("error")
+    await expect(page.locator(".strategy-table tbody tr")).toHaveCount(0)
+    await expect(page.locator(".empty-state")).toBeVisible()
+  })
+
+  test("paginates correctly with large dataset", async ({ page }) => {
+    await routeStrategyList(page, async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: { "content-type": "application/json", "x-request-id": "req-page-large", "x-process-time": "25ms" },
+        body: JSON.stringify(buildUnifiedResponse(buildStrategyDataset(25), { request_id: "req-page-large" })),
+      })
+    })
+
+    await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
+    await expect(page.locator(".pagination-text")).toContainText("第 1 / 4 页")
+
+    await page.getByRole("button", { name: "下一页" }).click()
+    await page.getByRole("button", { name: "下一页" }).click()
+    await page.getByRole("button", { name: "下一页" }).click()
+
+    await expect(page.locator(".pagination-text")).toContainText("第 4 / 4 页")
+    await expect(page.locator(".strategy-table tbody tr")).toHaveCount(1)
+  })
+
+  test("falls back to MOCK when strategy API fails", async ({ page }) => {
+    await routeStrategyList(page, async (route) => {
+      await route.abort("failed")
+    })
+
+    await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
+    await expect(page.locator(".source-badge.mock")).toContainText("SOURCE: MOCK")
+    const rows = await page.locator(".strategy-table tbody tr").count()
+    expect(rows).toBeGreaterThan(0)
+  })
+
+  test("recovers from temporary strategy API failure after refresh", async ({ page }) => {
+    let requestCount = 0
+    await routeStrategyList(page, async (route) => {
+      requestCount += 1
+      if (requestCount === 1) {
+        await route.abort("failed")
+        return
       }
 
-      // Find first two delete buttons
-      const deleteButtons = page.locator('.strategy-card button').filter({ hasText: /DELETE|REMOVE/ });
-      const deleteCount = await deleteButtons.count();
+      await route.fulfill({
+        status: 200,
+        headers: { "content-type": "application/json", "x-request-id": "req-recover", "x-process-time": "20ms" },
+        body: JSON.stringify(buildUnifiedResponse(buildStrategyDataset(9), { request_id: "req-recover" })),
+      })
+    })
 
-      if (deleteCount < 2) {
-        test.skip(); // Skip if not enough delete buttons
-      }
+    await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
+    await expect(page.locator(".source-badge.mock")).toContainText("SOURCE: MOCK")
 
-      // Click first delete button quickly
-      await deleteButtons.nth(0).click();
-      await page.waitForTimeout(100);
+    await page.getByRole("button", { name: "刷新" }).click()
+    await expect(page.locator(".source-badge.real")).toContainText("SOURCE: REAL")
+    await expect(page.locator(".strategy-table tbody tr")).toHaveCount(8)
+  })
 
-      // Try clicking second delete button while first dialog is open
-      await deleteButtons.nth(1).click();
-      await page.waitForTimeout(200);
+  test("handles special characters and unicode in search safely", async ({ page }) => {
+    await routeStrategyList(page, async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: { "content-type": "application/json", "x-request-id": "req-special-search", "x-process-time": "16ms" },
+        body: JSON.stringify(buildUnifiedResponse(buildStrategyDataset(12), { request_id: "req-special-search" })),
+      })
+    })
 
-      // Verify only one confirmation dialog appears
-      const confirmDialogs = page.locator('.el-message-box');
-      const dialogCount = await confirmDialogs.count();
+    await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
+    const searchInput = page.getByPlaceholder("搜索策略名称 / 类型")
+    const pageErrors: string[] = []
+    page.on("pageerror", (error) => pageErrors.push(error.message))
 
-      expect(dialogCount).toBeLessThanOrEqual(1); // Should not show multiple dialogs
+    const inputs = [
+      "!@#$%^&*()",
+      "<script>alert(1)</script>",
+      "\";DROP TABLE strategy;",
+      "../../etc/passwd",
+      "策略测试",
+      "📈💰🚀",
+      "こんにちは",
+    ]
 
-      // Cancel all dialogs to clean up
-      if (dialogCount > 0) {
-        const cancelButton = confirmDialogs.locator('button', { hasText: /CANCEL/ }).first();
-        await cancelButton.click();
-        await page.waitForTimeout(300);
-      }
+    for (const value of inputs) {
+      await searchInput.fill(value)
+      await page.waitForTimeout(120)
+      await expect(page.locator(".strategy-management")).toBeVisible()
+    }
 
-      // Verify no strategies were deleted
-      const strategiesAfter = await page.locator('.strategy-card').count();
-      expect(strategiesAfter).toBe(strategiesBefore);
-    });
+    expect(pageErrors).toHaveLength(0)
+  })
 
-    test('should handle rapid filter changes', async ({ page }) => {
-      const typeFilter = page.locator('.el-select').filter({ hasText: /FILTER BY TYPE|TYPE/ }).first();
+  test("keeps page stable with malformed query parameters", async ({ page }) => {
+    await routeStrategyList(page, async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: { "content-type": "application/json", "x-request-id": "req-query", "x-process-time": "17ms" },
+        body: JSON.stringify(buildUnifiedResponse(buildStrategyDataset(6), { request_id: "req-query" })),
+      })
+    })
 
-      // Rapidly change filter values
-      const filterValues = ['TREND FOLLOWING', 'MEAN REVERSION', 'MOMENTUM', 'TREND FOLLOWING'];
+    const urls = [
+      `${FRONTEND_BASE_URL}/strategy/repo?id=`,
+      `${FRONTEND_BASE_URL}/strategy/repo?foo=bar&baz=qux`,
+      `${FRONTEND_BASE_URL}/strategy/repo?[]=test`,
+      `${FRONTEND_BASE_URL}/strategy/repo?id[]=1&id[]=2`,
+    ]
 
-      for (const value of filterValues) {
-        await typeFilter.click();
-        await page.locator('.el-select-dropdown__item').filter({ hasText: value }).first().click();
-        await page.waitForTimeout(100); // Very short delay
-      }
+    for (const url of urls) {
+      await page.goto(url, { waitUntil: "domcontentloaded" })
+      await expect(page.locator(".strategy-management")).toBeVisible()
+      await expect(page.getByRole("heading", { name: "策略管理" })).toBeVisible()
+    }
+  })
 
-      // Verify final state is consistent
-      await page.waitForTimeout(500);
-      const strategyCards = page.locator('.strategy-card');
-      const count = await strategyCards.count();
+  test("remains consistent under rapid search and filter changes", async ({ page }) => {
+    await routeStrategyList(page, async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: { "content-type": "application/json", "x-request-id": "req-rapid", "x-process-time": "19ms" },
+        body: JSON.stringify(buildUnifiedResponse(buildStrategyDataset(20), { request_id: "req-rapid" })),
+      })
+    })
 
-      expect(count).toBeGreaterThanOrEqual(0);
-    });
+    await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
 
-    test('should handle concurrent search and filter operations', async ({ page }) => {
-      const searchInput = page.locator('input[placeholder*="SEARCH STRATEGIES"]').first();
-      const typeFilter = page.locator('.el-select').filter({ hasText: /FILTER BY TYPE|TYPE/ }).first();
+    const searchInput = page.getByPlaceholder("搜索策略名称 / 类型")
+    const statusSelect = page.locator(".toolbar-select")
 
-      // Simulate concurrent operations
-      await searchInput.fill('test');
-      await page.waitForTimeout(50);
+    await searchInput.fill("Boundary-01")
+    await statusSelect.selectOption("running")
+    await searchInput.fill("Boundary")
+    await statusSelect.selectOption("paused")
+    await searchInput.fill("mean_reversion")
+    await statusSelect.selectOption("all")
 
-      await typeFilter.click();
-      await page.waitForTimeout(50);
-
-      await searchInput.fill('momentum');
-      await page.waitForTimeout(50);
-
-      await page.locator('.el-select-dropdown__item').filter({ hasText: 'MOMENTUM' }).first().click();
-      await page.waitForTimeout(200);
-
-      // Verify no errors occurred
-      const strategyCards = page.locator('.strategy-card');
-      const count = await strategyCards.count();
-
-      expect(count).toBeGreaterThanOrEqual(0);
-    });
-  });
-});
+    await expect(page.locator(".strategy-management")).toBeVisible()
+    await expect(page.locator(".strategy-table, .empty-state").first()).toBeVisible()
+  })
+})

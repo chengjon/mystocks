@@ -341,7 +341,7 @@ const loadStockDetail = async (): Promise<void> => {
     try {
       const response = await dataApi.getStockDetail(symbol)
       if (response.success && response.data) {
-        stockDetail.value = response.data
+        stockDetail.value = response.data as StockDetail
 
         technicalIndicators.value = {
           ma5: (parseFloat(stockDetail.value.price as string) + Math.random() * 2 - 1).toFixed(2),

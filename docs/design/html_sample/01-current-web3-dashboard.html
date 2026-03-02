@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>当前实现 - Web3风格 Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      color: #ffffff;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 48px;
+      background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+      font-weight: 800;
+    }
+
+    .header p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 16px;
+      letter-spacing: 2px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 24px;
+      backdrop-filter: blur(20px);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(0, 210, 255, 0.5);
+      box-shadow: 0 20px 40px rgba(0, 210, 255, 0.2);
+    }
+
+    .stat-value {
+      font-size: 42px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    .stat-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+    }
+
+    .stat-sub {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .stat-trend {
+      font-weight: 600;
+    }
+
+    .trend-up {
+      color: #00ff88;
+    }
+
+    .trend-down {
+      color: #ff4757;
+    }
+
+    .charts-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .chart-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 24px;
+      min-height: 350px;
+    }
+
+    .chart-title {
+      color: #00d2ff;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .chart-placeholder {
+      width: 100%;
+      height: 250px;
+      background: linear-gradient(135deg, rgba(0, 210, 255, 0.1), rgba(58, 123, 213, 0.05));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 16px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+    }
+
+    .data-table th {
+      background: rgba(0, 210, 255, 0.1);
+      color: #00d2ff;
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 2px solid rgba(0, 210, 255, 0.3);
+    }
+
+    .data-table td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-online {
+      background: rgba(0, 255, 136, 0.2);
+      color: #00ff88;
+    }
+
+    .status-warning {
+      background: rgba(255, 193, 7, 0.2);
+      color: #ffc107;
+    }
+
+    .status-offline {
+      background: rgba(255, 71, 87, 0.2);
+      color: #ff4757;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>MARKET OVERVIEW</h1>
+    <p>REAL-TIME MARKET INTELLIGENCE & PORTFOLIO MONITORING</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="card">
+      <div class="stat-value">2,847</div>
+      <div class="stat-label">上涨家数</div>
+      <div class="stat-meta">
+        <span class="stat-sub">占比 68.5% | 涨停 42</span>
+        <span class="stat-trend trend-up">↑ +12.3%</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stat-value">1,256</div>
+      <div class="stat-label">下跌家数</div>
+      <div class="stat-meta">
+        <span class="stat-sub">占比 30.2% | 跌停 8</span>
+        <span class="stat-trend trend-down">↓ -8.7%</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stat-value">89</div>
+      <div class="stat-label">平盘家数</div>
+      <div class="stat-meta">
+        <span class="stat-sub">占比 2.1%</span>
+        <span class="stat-trend">— 0%</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stat-value">72</div>
+      <div class="stat-label">市场情绪</div>
+      <div class="stat-meta">
+        <span class="stat-sub">北向 +45.2亿 | 两市 8,234亿</span>
+        <span class="stat-trend trend-up">↑ +5.6</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-section">
+    <div class="chart-card">
+      <div class="badge">I. MARKET HEAT MAP</div>
+      <div class="chart-placeholder">市场热度热力图</div>
+    </div>
+
+    <div class="chart-card">
+      <div class="badge">II. CAPITAL FLOW</div>
+      <div class="chart-placeholder">资金流向分析</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="badge">III. DATA SOURCE STATUS</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>数据源</th>
+          <th>最后更新</th>
+          <th>状态</th>
+          <th>更新频率</th>
+          <th>数据量</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>AKShare</td>
+          <td>10:30:15</td>
+          <td><span class="status-badge status-online">在线</span></td>
+          <td>实时</td>
+          <td>2,345条/秒</td>
+        </tr>
+        <tr>
+          <td>Tushare</td>
+          <td>10:30:12</td>
+          <td><span class="status-badge status-online">在线</span></td>
+          <td>实时</td>
+          <td>1,876条/秒</td>
+        </tr>
+        <tr>
+          <td>通达信</td>
+          <td>10:30:08</td>
+          <td><span class="status-badge status-online">在线</span></td>
+          <td>实时</td>
+          <td>3,421条/秒</td>
+        </tr>
+        <tr>
+          <td>龙虎榜</td>
+          <td>10:25:00</td>
+          <td><span class="status-badge status-warning">待更新</span></td>
+          <td>盘后</td>
+          <td>156条/秒</td>
+        </tr>
+        <tr>
+          <td>财务数据</td>
+          <td>09:00:00</td>
+          <td><span class="status-badge status-offline">离线</span></td>
+          <td>每日</td>
+          <td>0条/秒</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // 模拟实时数据更新
+    setInterval(() => {
+      const values = document.querySelectorAll('.stat-value');
+      values.forEach(el => {
+        const currentValue = parseInt(el.textContent.replace(/,/g, ''));
+        const change = Math.floor(Math.random() * 10) - 5;
+        const newValue = Math.max(0, currentValue + change);
+        el.textContent = newValue.toLocaleString();
+      });
+    }, 3000);
+  </script>
+</body>
+</html>

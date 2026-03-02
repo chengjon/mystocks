@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>策略管理 - MyStocks</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: #f5f5f5; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+        /* 页面标题 */
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .page-title { font-size: 24px; color: #333; }
+
+        /* 工具栏 */
+        .toolbar { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .btn-primary { background: #409EFF; color: white; }
+        .btn-success { background: #67C23A; color: white; }
+        .btn-danger { background: #F56C6C; color: white; }
+        .search-input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; width: 250px; }
+
+        /* 策略表格 */
+        .strategy-table { background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { background: #f5f5f5; padding: 15px; text-align: left; font-weight: bold; color: #333; }
+        .data-table td { padding: 15px; border-bottom: 1px solid #eee; }
+        .data-table tr:hover { background: #f9f9f9; }
+
+        /* 状态标签 */
+        .status-tag { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; }
+        .status-active { background: #67C23A; color: white; }
+        .status-inactive { background: #909399; color: white; }
+        .status-testing { background: #E6A23C; color: white; }
+
+        /* 类型标签 */
+        .type-tag { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; background: #409EFF; color: white; }
+
+        /* 操作按钮 */
+        .action-btn { padding: 4px 12px; margin-right: 5px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-edit { background: #409EFF; color: white; }
+        .btn-delete { background: #F56C6C; color: white; }
+        .btn-run { background: #67C23A; color: white; }
+        .btn-backtest { background: #E6A23C; color: white; }
+
+        /* API标签 */
+        .api-tag { display: inline-block; background: #67C23A; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 5px; }
+
+        /* 分页 */
+        .pagination { display: flex; justify-content: center; align-items: center; padding: 20px; gap: 10px; }
+        .page-btn { padding: 6px 12px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; }
+        .page-btn.active { background: #409EFF; color: white; border-color: #409EFF; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <h1 class="page-title">策略管理 <span class="api-tag">GET /api/v1/strategy/strategies</span></h1>
+        </div>
+
+        <!-- 工具栏 -->
+        <div class="toolbar">
+            <button class="btn btn-primary">+ 新建策略</button>
+            <button class="btn btn-success">批量运行</button>
+            <button class="btn btn-danger">批量删除</button>
+            <span style="flex: 1;"></span>
+            <input type="text" class="search-input" placeholder="搜索策略名称...">
+            <select class="btn" style="border: 1px solid #ddd;">
+                <option>所有状态</option>
+                <option>运行中</option>
+                <option>已停止</option>
+                <option>测试中</option>
+            </select>
+            <select class="btn" style="border: 1px solid #ddd;">
+                <option>所有类型</option>
+                <option>趋势跟踪</option>
+                <option>均值回归</option>
+                <option>动量策略</option>
+            </select>
+        </div>
+
+        <!-- 策略表格 -->
+        <div class="strategy-table">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox"></th>
+                        <th>策略ID</th>
+                        <th>策略名称</th>
+                        <th>类型</th>
+                        <th>状态</th>
+                        <th>总收益</th>
+                        <th>年化收益</th>
+                        <th>最大回撤</th>
+                        <th>夏普比率</th>
+                        <th>创建时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>ST-001</td>
+                        <td>双均线趋势策略</td>
+                        <td><span class="type-tag">趋势跟踪</span></td>
+                        <td><span class="status-tag status-active">运行中</span></td>
+                        <td style="color: #F56C6C;">+45.6%</td>
+                        <td style="color: #F56C6C;">+23.4%</td>
+                        <td style="color: #67C23A;">-12.3%</td>
+                        <td>1.85</td>
+                        <td>2024-01-15</td>
+                        <td>
+                            <button class="action-btn btn-run">运行</button>
+                            <button class="action-btn btn-backtest">回测</button>
+                            <button class="action-btn btn-edit">编辑</button>
+                            <button class="action-btn btn-delete">删除</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>ST-002</td>
+                        <td>MACD金叉策略</td>
+                        <td><span class="type-tag">动量策略</span></td>
+                        <td><span class="status-tag status-inactive">已停止</span></td>
+                        <td style="color: #F56C6C;">+32.1%</td>
+                        <td style="color: #F56C6C;">+18.7%</td>
+                        <td style="color: #67C23A;">-15.6%</td>
+                        <td>1.42</td>
+                        <td>2024-02-20</td>
+                        <td>
+                            <button class="action-btn btn-run">运行</button>
+                            <button class="action-btn btn-backtest">回测</button>
+                            <button class="action-btn btn-edit">编辑</button>
+                            <button class="action-btn btn-delete">删除</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>ST-003</td>
+                        <td>布林带均值回归</td>
+                        <td><span class="type-tag">均值回归</span></td>
+                        <td><span class="status-tag status-testing">测试中</span></td>
+                        <td style="color: #F56C6C;">+28.9%</td>
+                        <td style="color: #F56C6C;">+16.5%</td>
+                        <td style="color: #67C23A;">-10.2%</td>
+                        <td>1.68</td>
+                        <td>2024-03-10</td>
+                        <td>
+                            <button class="action-btn btn-run">运行</button>
+                            <button class="action-btn btn-backtest">回测</button>
+                            <button class="action-btn btn-edit">编辑</button>
+                            <button class="action-btn btn-delete">删除</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>ST-004</td>
+                        <td>RSI超卖反弹</td>
+                        <td><span class="type-tag">均值回归</span></td>
+                        <td><span class="status-tag status-active">运行中</span></td>
+                        <td style="color: #F56C6C;">+38.7%</td>
+                        <td style="color: #F56C6C;">+21.3%</td>
+                        <td style="color: #67C23A;">-14.8%</td>
+                        <td>1.56</td>
+                        <td>2024-04-05</td>
+                        <td>
+                            <button class="action-btn btn-run">运行</button>
+                            <button class="action-btn btn-backtest">回测</button>
+                            <button class="action-btn btn-edit">编辑</button>
+                            <button class="action-btn btn-delete">删除</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- 分页 -->
+            <div class="pagination">
+                <button class="page-btn">上一页</button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">...</button>
+                <button class="page-btn">10</button>
+                <button class="page-btn">下一页</button>
+                <span style="margin-left: 20px; color: #666;">共 95 条记录</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API调用示例
+        console.log('=== StrategyManagement API调用示例 ===');
+
+        // 1. 获取策略列表
+        async function fetchStrategyList(page = 1, pageSize = 10) {
+            try {
+                const response = await fetch(`/api/v1/strategy/strategies?page=${page}&pageSize=${pageSize}`);
+                const data = await response.json();
+                console.log('策略列表:', data);
+                return data;
+            } catch (error) {
+                console.error('获取策略列表失败:', error);
+            }
+        }
+
+        // 2. 创建新策略
+        async function createStrategy(strategyData) {
+            try {
+                const response = await fetch('/api/v1/strategy/strategies', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(strategyData)
+                });
+                const data = await response.json();
+                console.log('创建策略:', data);
+                return data;
+            } catch (error) {
+                console.error('创建策略失败:', error);
+            }
+        }
+
+        // 3. 更新策略
+        async function updateStrategy(strategyId, strategyData) {
+            try {
+                const response = await fetch(`/api/v1/strategy/strategies/${strategyId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(strategyData)
+                });
+                const data = await response.json();
+                console.log('更新策略:', data);
+                return data;
+            } catch (error) {
+                console.error('更新策略失败:', error);
+            }
+        }
+
+        // 4. 删除策略
+        async function deleteStrategy(strategyId) {
+            try {
+                const response = await fetch(`/api/v1/strategy/strategies/${strategyId}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                console.log('删除策略:', data);
+                return data;
+            } catch (error) {
+                console.error('删除策略失败:', error);
+            }
+        }
+
+        // 5. 运行策略
+        async function runStrategy(strategyId) {
+            try {
+                const response = await fetch(`/api/v1/strategy/strategies/${strategyId}/run`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                console.log('运行策略:', data);
+                return data;
+            } catch (error) {
+                console.error('运行策略失败:', error);
+            }
+        }
+
+        // 页面加载时执行
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchStrategyList(1, 10);
+        });
+    </script>
+</body>
+</html>

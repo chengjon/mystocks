@@ -320,7 +320,7 @@
 
         // Highlight drawdown areas
         const drawdownPeriods = identifyDrawdownPeriods()
-        drawdownPeriods.forEach((period: unknown) => {
+        drawdownPeriods.forEach(period => {
             const startX = getX(period.start)
             const endX = getX(period.end)
 

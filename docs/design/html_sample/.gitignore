@@ -1,0 +1,13 @@
+# 忽略旧的HTML文件
+*.html.old
+
+# 保留核心文件
+!01_Dashboard.html
+!02_StockDetail.html
+!03_StrategyManagement.html
+!04_BacktestAnalysis.html
+!05_RiskMonitor.html
+!06_Market.html
+!07_TechnicalAnalysis.html
+!08_Login.html
+!README.md

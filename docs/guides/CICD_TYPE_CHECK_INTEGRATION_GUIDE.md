@@ -2,6 +2,9 @@
 
 本文档说明如何在 MyStocks 项目的 CI/CD 流程中使用 Python (mypy) 和 TypeScript (vue-tsc) 类型检查。
 
+> 2026-03 说明：前端 E2E 任务默认使用 `web/frontend/playwright.config.js`（`tests/e2e`）。  
+> CI 中如需执行标准浏览器链路，请使用 `cd web/frontend && npm run test:e2e`，不要直接运行未指定配置的 `playwright test`。
+
 ---
 
 ## 📋 目录

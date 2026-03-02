@@ -59,7 +59,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import axios from 'axios'
+import axios, { type AxiosError } from 'axios'
 
 interface NewsItem {
   datetime: number
@@ -101,7 +101,8 @@ const fetchNews = async () => {
     emit('api-tested', 'news')
     ElMessage.success(`获取到 ${response.data.length} 条新闻`)
   } catch (error: unknown) {
-    ElMessage.error('获取新闻失败: ' + (error.response?.data?.detail || error.message))
+    const apiError = error as AxiosError<{ detail?: string }>
+    ElMessage.error('获取新闻失败: ' + (apiError.response?.data?.detail || apiError.message))
   } finally {
     newsLoading.value = false
   }

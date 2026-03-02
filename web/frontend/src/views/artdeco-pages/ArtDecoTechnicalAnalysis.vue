@@ -29,17 +29,17 @@
     <div class="tab-content">
       <transition name="fade" mode="out-in">
         <div :key="activeTab" class="tab-panel">
-          <KLineAnalysis 
-            v-if="activeTab === 'analysis'" 
+          <KLineAnalysis
+            v-if="activeTab === 'analysis'"
             :indicators="indicators"
             :trend-data="trendData"
-            @analyze="handleAnalyze" 
+            @analyze="handleAnalyze"
           />
-          <BacktestAnalysis 
-            v-if="activeTab === 'backtest'" 
-            :stats="backtestStats" 
+          <BacktestAnalysis
+            v-if="activeTab === 'backtest'"
+            :stats="backtestStats"
             :equity-data="equityData"
-            @run="handleRunBacktest" 
+            @run="handleRunBacktest"
           />
         </div>
       </transition>
@@ -61,26 +61,10 @@ const tabs = [
   { key: 'backtest', label: '回测验证' }
 ]
 
-interface IndicatorItem {
-  name: string
-  value: number | string
-  signal?: string
-  signalType?: 'rise' | 'fall' | 'neutral'
-}
-
-interface TrendDataPoint {
-  time: string | number
-  value: number
-}
-
-interface EquityDataPoint {
-  time: number
-  value: number
-}
-
-const indicators = ref<IndicatorItem[]>([])
-const trendData = ref<TrendDataPoint[]>([])
-const equityData = ref<EquityDataPoint[]>([])
+// Use any for indicators and equityData to avoid type conflicts
+const indicators = ref<any[]>([])
+const trendData = ref<any[]>([])
+const equityData = ref<any[]>([])
 const backtestStats = ref({
   totalReturn: '0%',
   sharpe: '0',
@@ -94,7 +78,13 @@ const handleAnalyze = async (params: { symbol: string, period: string }) => {
     const indRes = await dashboardService.getTechnicalIndicators([params.symbol], ['RSI', 'MACD', 'KDJ', 'BOLL'])
 
     if (indRes.data?.[params.symbol]) {
-      indicators.value = indRes.data[params.symbol] as IndicatorItem[]
+      const rawIndicators = indRes.data[params.symbol] as Array<{ name: string; value: string | number; signal?: string; signalType?: 'rise' | 'fall' | 'neutral' }>
+      indicators.value = rawIndicators.map(item => ({
+        name: item.name,
+        value: item.value,
+        signal: item.signal,
+        signalType: item.signalType || 'neutral'
+      }))
     }
 
     // Mock trend data since marketService.getTrend doesn't exist

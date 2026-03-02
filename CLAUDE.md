@@ -193,9 +193,27 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
 
 0. **环境稳定性检查**: 开发前在 `~/.codex/config.toml` 中禁用不必要的 MCP 服务器（如后端任务禁用浏览器工具），防止工具集过大导致连接中断。
 1. 读取 `AGENTS.md` 与相关 `docs/`，确认约束与现有实现
-2. 以最小修改完成需求，避免顺手重构
-3. 运行必要的验证命令并记录结果
-4. 汇总变更与下一步建议
+2. **实现前必须先做“现有能力盘点”**：优先检索 `src/`、`web/`、`config/` 与 `docs/` 是否已有可复用模块、接口、配置或页面逻辑；禁止在未检索复用路径前直接新建实现，避免重复造轮子与多头管理
+3. 以最小修改完成需求，避免顺手重构
+4. 运行必要的验证命令并记录结果
+5. 汇总变更与下一步建议
+
+### 3.1.0 主线治理链路（PR 强制）
+
+以下链路用于确保“目标不跑偏、成果不沉没”，与 `architecture/STANDARDS.md` / `openspec/AGENTS.md` 联动执行：
+
+1. 规范基线：`governance/mainline/spec/ai-development-mainline-governance-spec.md`
+2. 任务卡模板：`governance/mainline/templates/ai-task-card.yaml`
+3. 任务卡 Schema：`governance/mainline/schemas/ai-task-card.schema.json`
+4. 本地门禁脚本：`governance/mainline/scripts/mainline_scope_gate.py`
+5. CI 门禁工作流：`.github/workflows/mainline-governance.yml`
+6. PR 模板入口：`.github/pull_request_template.md`
+7. 报告产物：`governance/mainline/reports/mainline-governance-report.json`
+
+执行要求：
+- 每个 PR 必须提供 `governance/mainline/task-cards/pr-<PR号>.yaml`
+- `feature` 类型必须满足 `openspec.change_id` 非空且 `openspec.approval_status=approved`
+- 门禁失败不得绕过，必须修复根因后再合并
 
 遇到"计划/提案/架构调整"类需求时，先打开 `openspec/AGENTS.md`。
 
@@ -229,6 +247,7 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
 
 - 文档放在 `docs/{guides,api,architecture,operations,testing,reports,archive}/`，命名使用 `kebab-case`
 - 运行索引更新：`python scripts/tools/docs_indexer.py --categories`
+- 技术债治理执行章程：`docs/guides/technical-debt-governance-charter-v1.md`（门禁、基线、豁免与周报模板）
 - TypeScript 修复遵循三原则，并参考：
   - `docs/reports/TYPESCRIPT_FIX_BEST_PRACTICES.md`
   - `docs/reports/TYPESCRIPT_TECHNICAL_DEBT_MANAGEMENT.md`

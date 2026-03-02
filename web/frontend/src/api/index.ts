@@ -9,13 +9,13 @@
 
 import { apiClient } from './apiClient'
 import type { UnifiedResponse } from './types/common'
-import type { 
-  StockListResponse, 
-  MarketOverview, 
-  KlineResponse, 
-  AlertRuleResponse, 
-  AlertRecordResponse, 
-  StrategyConfig 
+import type {
+  StockListResponse,
+  MarketOverview,
+  KlineResponse,
+  AlertRuleResponse,
+  AlertRecordResponse,
+  StrategyConfig
 } from './types/common'
 import type { LoginResponse } from './types/admin'
 
@@ -33,46 +33,47 @@ export const authApi = {
     });
   },
   logout: (): Promise<UnifiedResponse<void>> => apiClient.post('/v1/auth/logout'),
-  getCurrentUser: (): Promise<UnifiedResponse<any>> => apiClient.get('/v1/auth/me'),
+  getCurrentUser: (): Promise<UnifiedResponse<unknown>> => apiClient.get('/v1/auth/me'),
 }
 
 // --- Data API (v1 compatible) ---
 export const dataApi = {
-  getStocksBasic: (params: any): Promise<UnifiedResponse<StockListResponse>> => apiClient.get('/v1/data/stocks/basic', { params }),
+  getStocksBasic: (params: Record<string, unknown>): Promise<UnifiedResponse<StockListResponse>> => apiClient.get('/v1/data/stocks/basic', { params }),
   getMarketOverview: (): Promise<UnifiedResponse<MarketOverview>> => apiClient.get('/v1/data/markets/overview'),
-  getStockDetail: (symbol: string): Promise<UnifiedResponse<any>> => apiClient.get(`/v1/data/stocks/${symbol}/detail`),
-  getKline: (params: any): Promise<UnifiedResponse<KlineResponse>> => apiClient.get('/v1/market/kline', { params }),
+  getStockDetail: (symbol: string): Promise<UnifiedResponse<unknown>> => apiClient.get(`/v1/data/stocks/${symbol}/detail`),
+  getKline: (params: Record<string, unknown>): Promise<UnifiedResponse<KlineResponse>> => apiClient.get('/v1/market/kline', { params }),
   getStocksIndustries: (): Promise<UnifiedResponse<Array<{ industry_name: string }>>> => apiClient.get('/v1/data/stocks/industries'),
   getStocksConcepts: (): Promise<UnifiedResponse<Array<{ concept_name: string }>>> => apiClient.get('/v1/data/stocks/concepts'),
 }
 
 // --- Market API (v1 compatible) ---
 export const marketApi = {
-  getQuotes: (symbols?: string): Promise<UnifiedResponse<any>> => apiClient.get('/v1/market/quotes', { params: { symbols } }),
-  getStocks: (params?: any): Promise<UnifiedResponse<StockListResponse>> => apiClient.get('/v1/market/stocks', { params }),
+  getQuotes: (symbols?: string): Promise<UnifiedResponse<unknown>> => apiClient.get('/v1/market/quotes', { params: { symbols } }),
+  getStocks: (params?: Record<string, unknown>): Promise<UnifiedResponse<StockListResponse>> => apiClient.get('/v1/market/stocks', { params }),
 }
 
 // --- Monitoring API (v1 compatible) ---
 export const monitoringApi = {
-  getSystemHealth: (): Promise<UnifiedResponse<any>> => apiClient.get('/health'),
-  getDetailedSystemHealth: (): Promise<UnifiedResponse<any>> => apiClient.get('/health/detailed'),
+  getSystemHealth: (): Promise<UnifiedResponse<unknown>> => apiClient.get('/health'),
+  getDetailedSystemHealth: (): Promise<UnifiedResponse<unknown>> => apiClient.get('/health/detailed'),
   getAlertRules: (): Promise<UnifiedResponse<AlertRuleResponse[]>> => apiClient.get('/v1/monitoring/alert-rules'),
-  getAlerts: (params: any): Promise<UnifiedResponse<AlertRecordResponse[]>> => apiClient.get('/v1/monitoring/alerts', { params }),
-  createAlertRule: (data: any): Promise<UnifiedResponse<AlertRuleResponse>> => apiClient.post('/v1/monitoring/alert-rules', data),
-  updateAlertRule: (id: string, data: any): Promise<UnifiedResponse<AlertRuleResponse>> => apiClient.put(`/v1/monitoring/alert-rules/${id}`, data),
+  getAlerts: (params: Record<string, unknown>): Promise<UnifiedResponse<AlertRecordResponse[]>> => apiClient.get('/v1/monitoring/alerts', { params }),
+  createAlertRule: (data: Record<string, unknown>): Promise<UnifiedResponse<AlertRuleResponse>> => apiClient.post('/v1/monitoring/alert-rules', data),
+  updateAlertRule: (id: string, data: Record<string, unknown>): Promise<UnifiedResponse<AlertRuleResponse>> => apiClient.put(`/v1/monitoring/alert-rules/${id}`, data),
   deleteAlertRule: (id: string): Promise<UnifiedResponse<void>> => apiClient.delete(`/v1/monitoring/alert-rules/${id}`),
 }
 
 // --- Strategy API (v1 compatible) ---
 export const strategyApi = {
-  getStrategies: (params: any): Promise<UnifiedResponse<StrategyConfig[]>> => apiClient.get('/v1/strategy/strategies', { params }),
+  getStrategies: (params: Record<string, unknown>): Promise<UnifiedResponse<StrategyConfig[]>> => apiClient.get('/v1/strategy/strategies', { params }),
+  getSignals: (params?: Record<string, unknown>): Promise<UnifiedResponse<unknown>> => apiClient.get('/v1/trade/signals', { params }),
 }
 
 // --- Technical API (v1 compatible) ---
 export const technicalApi = {
-  getIndicators: (symbol: string): Promise<UnifiedResponse<any>> => apiClient.get(`/v1/technical/indicators/${symbol}`),
-  getAnalysis: (symbol: string): Promise<UnifiedResponse<any>> => apiClient.get(`/v1/technical/analysis/${symbol}`),
-  getBatchIndicators: (symbols: string[], params: { indicators: string[] }): Promise<UnifiedResponse<any>> =>
+  getIndicators: (symbol: string): Promise<UnifiedResponse<unknown>> => apiClient.get(`/v1/technical/indicators/${symbol}`),
+  getAnalysis: (symbol: string): Promise<UnifiedResponse<unknown>> => apiClient.get(`/v1/technical/analysis/${symbol}`),
+  getBatchIndicators: (symbols: string[], params: { indicators: string[] }): Promise<UnifiedResponse<unknown>> =>
     apiClient.post('/v1/technical/batch', { symbols, ...params }),
 }
 

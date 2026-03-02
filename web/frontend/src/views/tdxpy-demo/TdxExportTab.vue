@@ -12,7 +12,7 @@
         <p>pytdx 可以方便地将获取的数据导出为多种格式:</p>
 
         <el-tabs type="border-card" style="margin-top: 20px;">
-          <el-tab-pane label="导出到 CSV">
+          <el-tab-pane name="export-csv" label="导出到 CSV">
             <pre v-pre class="code-block">from pytdx.hq import TdxHq_API
 import pandas as pd
 
@@ -41,7 +41,7 @@ def export_to_csv(market, code, filename, count=1000):
 export_to_csv(0, '000001', '000001_daily.csv', count=500)</pre>
           </el-tab-pane>
 
-          <el-tab-pane label="导出到数据库">
+          <el-tab-pane name="export-db" label="导出到数据库">
             <pre v-pre class="code-block">from pytdx.hq import TdxHq_API
 import pandas as pd
 from sqlalchemy import create_engine
@@ -84,7 +84,7 @@ def export_to_database(market, code, table_name, count=1000):
 export_to_database(0, '000001', 'stock_daily', count=500)</pre>
           </el-tab-pane>
 
-          <el-tab-pane label="定时更新">
+          <el-tab-pane name="scheduled-update" label="定时更新">
             <pre v-pre class="code-block">import schedule
 import time
 from pytdx.hq import TdxHq_API

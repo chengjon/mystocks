@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyStocks Dashboard - Professional UI/UX Design</title>
+
+  <!-- Tailwind CSS (via CDN for standalone HTML) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Inter (Body) + JetBrains Mono (Data) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Custom Tailwind Configuration -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            // ✅ Fintech/Crypto Dark Theme Palette
+            primary: '#F59E0B',      // Amber-500 (Gold)
+            secondary: '#FBBF24',    // Amber-400 (Light Gold)
+            cta: '#8B5CF6',          // Violet-500 (Purple accent)
+            background: '#0F172A',    // Slate-900 (Dark bg)
+            surface: '#1E293B',      // Slate-800 (Card bg)
+            border: '#334155',       // Slate-700 (Borders)
+            text: {
+              primary: '#F8FAFC',    // Slate-50 (Primary text)
+              secondary: '#94A3B8',  // Slate-400 (Secondary text)
+              muted: '#64748B',      // Slate-500 (Muted text)
+            },
+            // ✅ Status colors (Real-Time Monitoring)
+            success: '#22C55E',      // Green-500 (Normal/Up)
+            warning: '#F97316',      // Orange-500 (Warning)
+            danger: '#EF4444',       // Red-500 (Critical/Down)
+            info: '#3B82F6',         // Blue-500 (Info)
+          },
+          boxShadow: {
+            'glow': '0 0 20px rgba(245, 158, 11, 0.15)',
+            'glow-lg': '0 0 30px rgba(245, 158, 11, 0.25)',
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'shimmer': 'shimmer 2s linear infinite',
+          },
+          keyframes: {
+            shimmer: {
+              '0%': { backgroundPosition: '-1000px 0' },
+              '100%': { backgroundPosition: '1000px 0' },
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    /* ============================================
+       BASE STYLES & CUSTOM UTILITIES
+       ✅ Dark Mode OLED + Data-Dense Layout
+       ============================================ */
+    body {
+      background-color: #0F172A; /* Deep dark background */
+      color: #F8FAFC;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ✅ Smooth transitions for interactive elements */
+    .transition-smooth {
+      transition: all 150ms ease-in-out;
+    }
+
+    /* ✅ Skeleton loading animation */
+    .skeleton {
+      background: linear-gradient(
+        90deg,
+        #1E293B 0%,
+        #334155 50%,
+        #1E293B 100%
+      );
+      background-size: 1000px 100%;
+      animation: shimmer 2s linear infinite;
+    }
+
+    /* ✅ Custom scrollbar for dark theme */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1E293B;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #64748B;
+    }
+
+    /* ✅ Chart placeholder gradient */
+    .chart-placeholder {
+      background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.1) 0%,
+        transparent 100%
+      );
+    }
+
+    /* ✅ Data table row hover effect */
+    .table-row-hover:hover {
+      background-color: rgba(245, 158, 11, 0.05);
+    }
+
+    /* ✅ Tab active indicator */
+    .tab-active {
+      border-bottom: 2px solid #F59E0B;
+      color: #F59E0B;
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- ==========================================
+       PAGE LAYOUT
+       ✅ Responsive padding + Container
+       ========================================== -->
+  <div class="px-4 md:px-6 lg:px-8 py-6 max-w-[1920px] mx-auto">
+
+    <!-- ==========================================
+         PAGE HEADER
+         ✅ Clear hierarchy + Action buttons
+         ========================================== -->
+    <header class="mb-8">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <!-- Title Section -->
+        <div>
+          <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">
+            MyStocks Dashboard
+          </h1>
+          <p class="text-text-secondary text-sm">
+            市场总览 · 实时数据 · 投资组合监控
+          </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-3">
+          <button class="px-4 py-2 bg-surface border border-border rounded-lg hover:border-primary transition-smooth text-sm font-medium text-text-primary cursor-pointer group">
+            <span class="group-hover:text-primary">刷新数据</span>
+          </button>
+          <button class="px-4 py-2 bg-primary text-background font-semibold rounded-lg hover:bg-secondary transition-smooth text-sm cursor-pointer shadow-glow">
+            导出报告
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==========================================
+         STATS GRID
+         ✅ Data-Dense + Real-Time status indicators
+         ========================================== -->
+    <section class="mb-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+
+        <!-- Card 1: Rising Stocks -->
+        <div class="bg-surface border border-border rounded-lg p-5 hover:border-primary transition-smooth cursor-pointer group">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <p class="text-text-secondary text-xs font-medium uppercase tracking-wider">上涨股票</p>
+              <p class="text-3xl font-bold text-success mt-1 font-mono">3,245</p>
+            </div>
+            <div class="w-2 h-2 rounded-full bg-success animate-pulse-slow"></div>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-text-muted">占比 68.5%</span>
+            <span class="text-success font-medium font-mono">↑ +12.5%</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Falling Stocks -->
+        <div class="bg-surface border border-border rounded-lg p-5 hover:border-primary transition-smooth cursor-pointer group">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <p class="text-text-secondary text-xs font-medium uppercase tracking-wider">下跌股票</p>
+              <p class="text-3xl font-bold text-danger mt-1 font-mono">1,876</p>
+            </div>
+            <div class="w-2 h-2 rounded-full bg-danger"></div>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-text-muted">占比 30.2%</span>
+            <span class="text-danger font-medium font-mono">↓ -8.3%</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Turnover -->
+        <div class="bg-surface border border-border rounded-lg p-5 hover:border-primary transition-smooth cursor-pointer group">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <p class="text-text-secondary text-xs font-medium uppercase tracking-wider">成交额</p>
+              <p class="text-3xl font-bold text-primary mt-1 font-mono">567.8<span class="text-lg">亿</span></p>
+            </div>
+            <div class="w-2 h-2 rounded-full bg-warning animate-pulse"></div>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-text-muted">沪深两市</span>
+            <span class="text-success font-medium font-mono">↑ +23.6%</span>
+          </div>
+        </div>
+
+        <!-- Card 4: Index -->
+        <div class="bg-surface border border-border rounded-lg p-5 hover:border-primary transition-smooth cursor-pointer group">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <p class="text-text-secondary text-xs font-medium uppercase tracking-wider">上证指数</p>
+              <p class="text-3xl font-bold text-success mt-1 font-mono">2.34<span class="text-lg">%</span></p>
+            </div>
+            <div class="w-2 h-2 rounded-full bg-success animate-pulse-slow"></div>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-text-muted font-mono">3,084.52</span>
+            <span class="text-success font-medium font-mono">↑ +0.45%</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         CHARTS SECTION
+         ✅ Grid layout + Chart placeholders
+         ========================================== -->
+    <section class="mb-8">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold text-white">三大指数实时走势</h2>
+        <div class="flex gap-2">
+          <span class="px-2 py-1 bg-success/20 text-success text-xs font-medium rounded">实时更新</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+
+        <!-- Shanghai Composite -->
+        <div class="bg-surface border border-border rounded-lg p-5 hover:border-primary transition-smooth">
+          <div class="mb-4">
+            <h3 class="text-lg font-semibold text-white mb-1">上证综指</h3>
+            <p class="text-text-secondary text-sm">
+              最新: <span class="text-white font-mono">3,084.52</span> ·
+              涨跌: <span class="text-success font-mono">+1.23%</span>
+            </p>
+          </div>
+          <div class="chart-placeholder h-48 rounded border border-border flex items-center justify-center">
+            <div class="text-center">
+              <svg class="w-12 h-12 mx-auto text-text-muted mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
+              </svg>
+              <p class="text-text-muted text-sm">ECharts 图表加载中...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shenzhen Component -->
+        <div class="bg-surface border border-border rounded-lg p-5 hover:border-primary transition-smooth">
+          <div class="mb-4">
+            <h3 class="text-lg font-semibold text-white mb-1">深证成指</h3>
+            <p class="text-text-secondary text-sm">
+              最新: <span class="text-white font-mono">9,852.31</span> ·
+              涨跌: <span class="text-success font-mono">+0.87%</span>
+            </p>
+          </div>
+          <div class="chart-placeholder h-48 rounded border border-border flex items-center justify-center">
+            <div class="text-center">
+              <svg class="w-12 h-12 mx-auto text-text-muted mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
+              </svg>
+              <p class="text-text-muted text-sm">ECharts 图表加载中...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ChiNext Index -->
+        <div class="bg-surface border border-border rounded-lg p-5 hover:border-primary transition-smooth">
+          <div class="mb-4">
+            <h3 class="text-lg font-semibold text-white mb-1">创业板指</h3>
+            <p class="text-text-secondary text-sm">
+              最新: <span class="text-white font-mono">1,923.67</span> ·
+              涨跌: <span class="text-danger font-mono">-0.32%</span>
+            </p>
+          </div>
+          <div class="chart-placeholder h-48 rounded border border-border flex items-center justify-center">
+            <div class="text-center">
+              <svg class="w-12 h-12 mx-auto text-text-muted mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
+              </svg>
+              <p class="text-text-muted text-sm">ECharts 图表加载中...</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         MARKET HEAT ANALYSIS
+         ✅ Tabs + Chart + Interactive elements
+         ========================================== -->
+    <section class="mb-8">
+      <div class="bg-surface border border-border rounded-lg">
+        <!-- Header -->
+        <div class="p-5 border-b border-border flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-white mb-1">I. 市场热度分析</h3>
+            <p class="text-text-secondary text-sm">实时市场数据监控</p>
+          </div>
+          <button class="px-4 py-2 bg-surface border border-border rounded-lg hover:border-primary transition-smooth text-sm font-medium text-text-primary cursor-pointer">
+            刷新数据
+          </button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex border-b border-border">
+          <button class="px-6 py-3 text-sm font-medium text-text-secondary hover:text-white transition-smooth tab-active">
+            市场热度
+          </button>
+          <button class="px-6 py-3 text-sm font-medium text-text-secondary hover:text-white transition-smooth">
+            领涨板块
+          </button>
+          <button class="px-6 py-3 text-sm font-medium text-text-secondary hover:text-white transition-smooth">
+            价格分布
+          </button>
+          <button class="px-6 py-3 text-sm font-medium text-text-secondary hover:text-white transition-smooth">
+            资金流向
+          </button>
+        </div>
+
+        <!-- Chart Content -->
+        <div class="p-5">
+          <div class="chart-placeholder h-72 rounded border border-border flex items-center justify-center">
+            <div class="text-center">
+              <svg class="w-16 h-16 mx-auto text-text-muted mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+              </svg>
+              <p class="text-text-muted">市场热度热力图</p>
+              <p class="text-text-muted text-sm mt-1">[ECharts 图表区域]</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SECTOR PERFORMANCE TABLE
+         ✅ Data-Dense + Hover effects + Accessibility
+         ========================================== -->
+    <section class="mb-8">
+      <div class="bg-surface border border-border rounded-lg">
+        <!-- Header -->
+        <div class="p-5 border-b border-border flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-white mb-1">板块表现监控</h3>
+            <p class="text-text-secondary text-sm">实时板块数据追踪</p>
+          </div>
+          <div class="flex gap-2">
+            <button class="px-4 py-2 bg-surface border border-border rounded-lg hover:border-primary transition-smooth text-sm font-medium text-text-primary cursor-pointer">
+              筛选
+            </button>
+            <button class="px-4 py-2 bg-primary text-background font-semibold rounded-lg hover:bg-secondary transition-smooth text-sm cursor-pointer">
+              自定义
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex border-b border-border">
+          <button class="px-6 py-3 text-sm font-medium text-text-secondary hover:text-white transition-smooth tab-active">
+            自选股票
+          </button>
+          <button class="px-6 py-3 text-sm font-medium text-text-secondary hover:text-white transition-smooth">
+            STRATEGY
+          </button>
+          <button class="px-6 py-3 text-sm font-medium text-text-secondary hover:text-white transition-smooth">
+            热门板块
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-background/50">
+              <tr>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                  CODE
+                </th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                  NAME
+                </th>
+                <th class="px-5 py-3 text-right text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                  PRICE
+                </th>
+                <th class="px-5 py-3 text-right text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                  CHANGE %
+                </th>
+                <th class="px-5 py-3 text-right text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                  VOLUME
+                </th>
+                <th class="px-5 py-3 text-right text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                  TURNOVER %
+                </th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                  INDUSTRY
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              <tr class="table-row-hover transition-smooth">
+                <td class="px-5 py-4 text-sm font-mono text-text-primary">600519</td>
+                <td class="px-5 py-4 text-sm font-medium text-white">贵州茅台</td>
+                <td class="px-5 py-4 text-sm text-right font-mono text-success">1678.50</td>
+                <td class="px-5 py-4 text-sm text-right font-mono text-success">+2.35%</td>
+                <td class="px-5 py-4 text-sm text-right font-mono text-text-secondary">3.45万</td>
+                <td class="px-5 py-4 text-sm text-right font-mono text-text-secondary">1.23%</td>
+                <td class="px-5 py-4 text-sm text-text-secondary">食品饮料</td>
+              </tr>
+              <tr class="table-row-hover transition-smooth">
+                <td class="px-5 py-4 text-sm font-mono text-text-primary">000858</td>
+                <td class="px-5 py-4 text-sm font-medium text-white">五粮液</td>
+                <td class="px-5 py-4 text-sm text-right font-mono text-danger">145.23</td>
+                <td class="px-5 py-4 text-sm text-right font-mono text-danger">-1.12%</td>
+                <td class="px-5 py-4 text-sm text-right font-mono text-text-secondary">8.76万</td>
+                <td class="px-5 py-4 text-sm text-right font-mono text-text-secondary">2.34%</td>
+                <td class="px-5 py-4 text-sm text-text-secondary">食品饮料</td>
+              </tr>
+              <tr class="table-row-hover transition-smooth">
+                <td class="px-5 py-4 text-sm font-mono text-text-primary">601318</td>
+                <td class="px-5 py-4 text-sm font-medium text-white">中国平安</td>
+                <td class="px-5 py-4 text-sm text-right font-mono text-success">45.67</td>
+                <td class="px-5 py-4 text-sm text-right font-mono text-success">+0.89%</td>
+                <td class="px-5 py-4 text-sm text-right font-mono text-text-secondary">15.6万</td>
+                <td class="px-5 py-4 text-sm text-right font-mono text-text-secondary">0.98%</td>
+                <td class="px-5 py-4 text-sm text-text-secondary">非银金融</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         DATA SOURCE STATUS MONITORING
+         ✅ Real-Time status + Action buttons
+         ========================================== -->
+    <section>
+      <div class="bg-surface border border-border rounded-lg">
+        <!-- Header -->
+        <div class="p-5 border-b border-border">
+          <h3 class="text-lg font-semibold text-white mb-1">数据源状态监控</h3>
+          <p class="text-text-secondary text-sm">实时数据质量与更新频率</p>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-background/50">
+              <tr>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                  数据源
+                </th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                  最后更新
+                </th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                  状态
+                </th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                  更新频率
+                </th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                  数据量
+                </th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                  操作
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              <tr class="table-row-hover transition-smooth">
+                <td class="px-5 py-4 text-sm font-medium text-white">AKShare</td>
+                <td class="px-5 py-4 text-sm font-mono text-text-secondary">10:30:15</td>
+                <td class="px-5 py-4 text-sm">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/20 text-success">
+                    <span class="w-1.5 h-1.5 rounded-full bg-success mr-1.5"></span>
+                    在线
+                  </span>
+                </td>
+                <td class="px-5 py-4 text-sm text-text-secondary">实时</td>
+                <td class="px-5 py-4 text-sm font-mono text-text-secondary">2,345条/秒</td>
+                <td class="px-5 py-4 text-sm">
+                  <button class="px-3 py-1.5 bg-surface border border-border rounded hover:border-primary transition-smooth text-xs font-medium text-text-primary cursor-pointer">
+                    刷新
+                  </button>
+                </td>
+              </tr>
+              <tr class="table-row-hover transition-smooth">
+                <td class="px-5 py-4 text-sm font-medium text-white">Tushare</td>
+                <td class="px-5 py-4 text-sm font-mono text-text-secondary">10:30:12</td>
+                <td class="px-5 py-4 text-sm">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/20 text-success">
+                    <span class="w-1.5 h-1.5 rounded-full bg-success mr-1.5"></span>
+                    在线
+                  </span>
+                </td>
+                <td class="px-5 py-4 text-sm text-text-secondary">实时</td>
+                <td class="px-5 py-4 text-sm font-mono text-text-secondary">1,876条/秒</td>
+                <td class="px-5 py-4 text-sm">
+                  <button class="px-3 py-1.5 bg-surface border border-border rounded hover:border-primary transition-smooth text-xs font-medium text-text-primary cursor-pointer">
+                    刷新
+                  </button>
+                </td>
+              </tr>
+              <tr class="table-row-hover transition-smooth">
+                <td class="px-5 py-4 text-sm font-medium text-white">通达信</td>
+                <td class="px-5 py-4 text-sm font-mono text-text-secondary">10:30:08</td>
+                <td class="px-5 py-4 text-sm">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/20 text-success">
+                    <span class="w-1.5 h-1.5 rounded-full bg-success mr-1.5"></span>
+                    在线
+                  </span>
+                </td>
+                <td class="px-5 py-4 text-sm text-text-secondary">实时</td>
+                <td class="px-5 py-4 text-sm font-mono text-text-secondary">3,421条/秒</td>
+                <td class="px-5 py-4 text-sm">
+                  <button class="px-3 py-1.5 bg-surface border border-border rounded hover:border-primary transition-smooth text-xs font-medium text-text-primary cursor-pointer">
+                    刷新
+                  </button>
+                </td>
+              </tr>
+              <tr class="table-row-hover transition-smooth">
+                <td class="px-5 py-4 text-sm font-medium text-white">龙虎榜</td>
+                <td class="px-5 py-4 text-sm font-mono text-text-secondary">10:25:00</td>
+                <td class="px-5 py-4 text-sm">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning/20 text-warning">
+                    <span class="w-1.5 h-1.5 rounded-full bg-warning mr-1.5"></span>
+                    待更新
+                  </span>
+                </td>
+                <td class="px-5 py-4 text-sm text-text-secondary">盘后</td>
+                <td class="px-5 py-4 text-sm font-mono text-text-secondary">156条/秒</td>
+                <td class="px-5 py-4 text-sm">
+                  <button class="px-3 py-1.5 bg-surface border border-border rounded hover:border-primary transition-smooth text-xs font-medium text-text-primary cursor-pointer">
+                    刷新
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ==========================================
+     JAVASCRIPT
+     ✅ Interactive enhancements
+     ========================================== -->
+  <script>
+    // ============================================
+    //  TAB SWITCHING
+    // ✅ Proper event handling + Visual feedback
+    // ============================================
+    document.querySelectorAll('button[class*="tab-active"]').forEach(tab => {
+      tab.addEventListener('click', function() {
+        // Remove active class from all tabs in the same group
+        const parent = this.parentElement;
+        parent.querySelectorAll('button').forEach(t => {
+          t.classList.remove('tab-active');
+        });
+        // Add active class to clicked tab
+        this.classList.add('tab-active');
+      });
+    });
+
+    // ============================================
+    //  REAL-TIME DATA SIMULATION
+    // ✅ Updates with visual feedback
+    // ============================================
+    setInterval(() => {
+      const statCards = document.querySelectorAll('.font-mono.text-3xl');
+      statCards.forEach(card => {
+        const currentValue = parseFloat(card.textContent.replace(/,/g, '').replace(/亿/g, ''));
+        const change = (Math.random() - 0.5) * 10;
+        const newValue = Math.max(0, currentValue + change);
+
+        // Apply glow effect during update
+        card.style.textShadow = '0 0 20px rgba(245, 158, 11, 0.5)';
+        card.textContent = Math.round(newValue).toLocaleString();
+
+        // Remove glow after animation
+        setTimeout(() => {
+          card.style.textShadow = 'none';
+        }, 300);
+      });
+    }, 3000);
+
+    // ============================================
+    //  API INTEGRATION EXAMPLES
+    // ✅ For future backend connection
+    // ============================================
+    async function fetchMarketOverview() {
+      try {
+        const response = await fetch('/api/market/overview');
+        const data = await response.json();
+        console.log('市场总览:', data);
+        return data;
+      } catch (error) {
+        console.error('获取市场总览失败:', error);
+      }
+    }
+
+    async function fetchFundFlow() {
+      try {
+        const response = await fetch('/api/market/fund-flow?market=SH');
+        const data = await response.json();
+        console.log('资金流向:', data);
+        return data;
+      } catch (error) {
+        console.error('获取资金流向失败:', error);
+      }
+    }
+
+    // ============================================
+    //  PAGE LOAD INITIALIZATION
+    // ============================================
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log('✅ MyStocks Dashboard initialized');
+      console.log('📊 Design System: UI/UX Pro Max Professional Fintech');
+      console.log('🎨 Stack: HTML + Tailwind CSS');
+
+      // Uncomment for production API calls:
+      // fetchMarketOverview();
+      // fetchFundFlow();
+    });
+  </script>
+</body>
+</html>

@@ -329,6 +329,71 @@ export interface UpdateStrategyRequest {
 
 ---
 
+## 🧭 本轮实战补充（2026-03）
+
+> 本节仅补充本轮新增经验，不替换既有方法论。
+
+### A. 先判断是否是“生成文件问题”
+
+当报错集中在以下目录时，优先怀疑“生成器源头”而不是手写业务代码：
+
+- `web/frontend/src/api/types/generated-types.ts`
+- `web/frontend/src/api/types/common/all.ts`
+- 其他带 `Auto-generated` / `Generated at` 头注释的文件
+
+**结论**：
+- 生成文件可做临时止血，但最终必须回到 `scripts/generate_frontend_types.py` 修复模板与 fallback。
+
+### B. `any -> unknown` 的安全替换顺序
+
+在不确定结构时，优先 `unknown`，并按以下顺序处理可显著降低回归风险：
+
+1. 先改生成器模板中的 `any` 输出
+2. 再执行 `npm --prefix web/frontend run generate-types`
+3. 最后做 lint 回归（先关键文件，再目录全量）
+
+常见安全替换：
+
+- `Record<string, any>` → `Record<string, unknown>`
+- `type X = any` → `type X = unknown`
+- `errors?: any` → `errors?: unknown`
+- `T = any` → `T = unknown`
+
+### C. `no-redeclare` 的实战定位法
+
+对于类型文件重复声明（如重复 `interface`）问题，推荐顺序：
+
+1. 先 grep 统计定义次数
+2. 保留一份权威定义（通常保留更完整/更靠前的一段）
+3. 删除重复块后单文件 lint 验证
+
+本轮该策略已用于 `extensions/common.ts`，可避免“删错后引入连锁错误”。
+
+### D. 防止“修完又回滚”：兼容桶文件策略
+
+如果项目存在历史兼容入口（如 `generated-types.ts`），建议在多文件生成流程中**稳定输出 compatibility barrel**，例如：
+
+```ts
+// generated-types.ts
+export * from './index';
+```
+
+这样可避免旧大文件残留导致：
+
+- 重复类型重新出现
+- 手动修复在下次生成后被覆盖
+- 旧导入路径断裂
+
+### E. 分层验证顺序（先小后大）
+
+推荐固定为三层：
+
+1. 关键文件 lint（快速定位）
+2. `src/api/types/**/*.ts` + `**/*.d.ts` 目录级 lint（确认无规则回归）
+3. 必要时再跑前端全量 lint（控制排障成本）
+
+---
+
 ## 🚀 批量修复脚本
 
 ### 自动修复常见错误

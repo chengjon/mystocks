@@ -7,7 +7,7 @@ STAMP="$(date +%Y%m%d-%H%M%S)"
 
 SRC_OPENCODE_JSON="$SRC_ROOT/opencode.json"
 SRC_OMO_JSON="$SRC_ROOT/.config/oh-my-opencode.noco.json"
-SRC_MODEL_DEFAULTS_DIR="$SRC_ROOT/.config/opencode/model_defaults"
+SRC_MODEL_DEFAULTS_DIR="$SRC_ROOT/.config/opencode/model"
 SRC_SYNC_SCRIPT="$SRC_ROOT/scripts/opencode/sync_opencode_model_catalog.py"
 SRC_GUIDE="$SRC_ROOT/docs/guides/OMO_SETUP_GUIDE.md"
 
@@ -18,7 +18,7 @@ DST_GUIDE="$DST_ROOT/OMO_SETUP_GUIDE.mystocks.md"
 DST_README="$DST_ROOT/README_MYSTOCKS_OPENCODE.md"
 DST_MIGRATION_SCRIPT="$DST_ROOT/migrate_mystocks_opencode_assets.sh"
 
-OLD_PREFIX="$SRC_ROOT/.config/opencode/model_defaults"
+OLD_PREFIX="$SRC_ROOT/.config/opencode/model"
 NEW_PREFIX="$DST_ROOT"
 
 usage() {
@@ -95,7 +95,7 @@ for f in "$DST_OPENCODE_JSON" "$DST_OMO_JSON" "$DST_ROOT/model-stack.env" "$DST_
 done
 
 # Rewrite absolute constants and file refs in sync script.
-sed -i "s|Path(\"$SRC_ROOT/.config/opencode/model_defaults/model-catalog.json\")|Path(\"$DST_ROOT/model-catalog.json\")|g" "$DST_SYNC_SCRIPT"
+sed -i "s|Path(\"$SRC_ROOT/.config/opencode/model/model-catalog.json\")|Path(\"$DST_ROOT/model-catalog.json\")|g" "$DST_SYNC_SCRIPT"
 sed -i "s|Path(\"$SRC_ROOT/opencode.json\")|Path(\"$DST_OPENCODE_JSON\")|g" "$DST_SYNC_SCRIPT"
 sed -i "s|Path(\"$SRC_ROOT/.config/oh-my-opencode.noco.json\")|Path(\"$DST_OMO_JSON\")|g" "$DST_SYNC_SCRIPT"
 sed -i "s|$OLD_PREFIX|$NEW_PREFIX|g" "$DST_SYNC_SCRIPT"
@@ -119,7 +119,8 @@ Migrated from:
 - $DST_ROOT/model-stack.env
 - $DST_ROOT/main.model
 - $DST_ROOT/small.model
-- $DST_ROOT/cpap.base_url
+- $DST_ROOT/fucai.base_url
+- $DST_ROOT/fucai.api_key
 - $DST_ROOT/omo.*.model
 
 ## Update workflow

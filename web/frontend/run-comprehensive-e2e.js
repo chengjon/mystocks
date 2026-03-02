@@ -12,15 +12,27 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const {
+  loadPortEnv,
+  resolveFrontendConfig,
+  resolveBackendConfig
+} = require('./tests/e2e/helpers/port-env.js');
+
+loadPortEnv(__dirname);
+
+const frontendConfig = resolveFrontendConfig();
+const backendConfig = resolveBackendConfig();
 
 const FRONTEND_CONFIG = {
   name: 'mystocks-frontend',
-  port: 3000
+  port: frontendConfig.port,
+  backupPort: frontendConfig.backupPort
 };
 
 const BACKEND_CONFIG = {
   name: 'mystocks-backend',
-  port: 8000
+  port: backendConfig.port,
+  backupPort: backendConfig.backupPort
 };
 
 function checkPM2Service(serviceName) {
@@ -44,6 +56,17 @@ function checkPort(port, retries = 5) {
       execSync(`lsof -Pi :${port} -sTCP:LISTEN -t`, { stdio: 'pipe' });
       return true;
     } catch {
+      try {
+        const httpCode = execSync(
+          `curl -sS -o /dev/null -m 2 -w "%{http_code}" http://127.0.0.1:${port}`,
+          { stdio: 'pipe', encoding: 'utf-8' }
+        ).trim();
+        if (httpCode !== '000') {
+          return true;
+        }
+      } catch {
+        // keep retrying
+      }
       if (i < retries - 1) {
         // Wait 1s before next retry
         execSync('sleep 1');
@@ -62,13 +85,13 @@ function runTests() {
 
   const frontendOnline = checkPM2Service(FRONTEND_CONFIG.name);
   const backendOnline = checkPM2Service(BACKEND_CONFIG.name);
-  const frontendPortOpen = checkPort(FRONTEND_CONFIG.port);
-  const backendPortOpen = checkPort(BACKEND_CONFIG.port);
+  const frontendPortOpen = checkPort(FRONTEND_CONFIG.port) || checkPort(FRONTEND_CONFIG.backupPort);
+  const backendPortOpen = checkPort(BACKEND_CONFIG.port) || checkPort(BACKEND_CONFIG.backupPort);
 
   console.log(`   Frontend PM2 (${FRONTEND_CONFIG.name}): ${frontendOnline ? '✅' : '❌'}`);
   console.log(`   Backend PM2 (${BACKEND_CONFIG.name}): ${backendOnline ? '✅' : '❌'}`);
-  console.log(`   Frontend Port (${FRONTEND_CONFIG.port}): ${frontendPortOpen ? '✅' : '❌'}`);
-  console.log(`   Backend Port (${BACKEND_CONFIG.port}): ${backendPortOpen ? '✅' : '❌'}`);
+  console.log(`   Frontend Port (${FRONTEND_CONFIG.port}/${FRONTEND_CONFIG.backupPort}): ${frontendPortOpen ? '✅' : '❌'}`);
+  console.log(`   Backend Port (${BACKEND_CONFIG.port}/${BACKEND_CONFIG.backupPort}): ${backendPortOpen ? '✅' : '❌'}`);
 
   if (!frontendOnline || !backendOnline || !frontendPortOpen || !backendPortOpen) {
     console.error('❌ Pre-flight checks failed. Services not ready for testing.');
@@ -82,7 +105,8 @@ function runTests() {
   console.log('\n🧪 Phase 2: Running E2E Tests');
 
   try {
-    const testCommand = 'npx playwright test tests/comprehensive-e2e-validation.spec.ts --reporter=line,json --workers=1';
+    const testCommand =
+      'npx playwright test tests/comprehensive-e2e-validation.spec.ts --config playwright.config.ts --reporter=line,json --workers=1';
     console.log(`   Executing: ${testCommand}`);
 
     execSync(testCommand, {

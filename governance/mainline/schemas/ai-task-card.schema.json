@@ -1,0 +1,495 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mystocks.local/schemas/ai-task-card.schema.json",
+  "title": "MyStocks AI Task Card",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "task",
+    "mainline",
+    "classification",
+    "openspec",
+    "scope",
+    "non_goals",
+    "acceptance",
+    "risk_and_rollback",
+    "delivery",
+    "governance"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "v0.2"
+    },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "owner", "created_at"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "mainline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "objective", "milestone_id", "slice_id"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "objective": {
+          "type": "string",
+          "minLength": 1
+        },
+        "milestone_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "slice_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_type",
+        "secondary_type",
+        "secondary_change_budget_percent",
+        "secondary_allowed_paths"
+      ],
+      "properties": {
+        "task_type": {
+          "type": "string",
+          "enum": ["fix", "feature", "cleanup"]
+        },
+        "secondary_type": {
+          "type": "string",
+          "enum": ["none", "fix", "feature", "cleanup"]
+        },
+        "secondary_change_budget_percent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "secondary_allowed_paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "openspec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["change_id", "approval_status"],
+      "properties": {
+        "change_id": {
+          "type": "string"
+        },
+        "approval_status": {
+          "type": "string",
+          "enum": ["approved", "not_required", "pending", "rejected"]
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed_paths", "forbidden_paths"],
+      "properties": {
+        "allowed_paths": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "forbidden_paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "non_goals": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "acceptance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checks"],
+      "properties": {
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "command", "required"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "command": {
+                "type": "string",
+                "minLength": 1
+              },
+              "required": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "risk_and_rollback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["risks", "rollback_plan"],
+      "properties": {
+        "risks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "rollback_plan": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "delivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["six_line_summary_required", "six_line_summary"],
+      "properties": {
+        "six_line_summary_required": {
+          "type": "boolean"
+        },
+        "six_line_summary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "change_purpose",
+            "modified_scope",
+            "dependency_changes",
+            "legacy_logic_impact",
+            "rollback_ready",
+            "risk_and_rollback_point"
+          ],
+          "properties": {
+            "change_purpose": {
+              "type": "string",
+              "minLength": 1
+            },
+            "modified_scope": {
+              "type": "string",
+              "minLength": 1
+            },
+            "dependency_changes": {
+              "type": "string",
+              "minLength": 1
+            },
+            "legacy_logic_impact": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rollback_ready": {
+              "type": "string",
+              "minLength": 1
+            },
+            "risk_and_rollback_point": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phase",
+        "mainline_drift_threshold_percent",
+        "stop_rule_owner",
+        "stop_rule_sla_hours",
+        "approval"
+      ],
+      "properties": {
+        "phase": {
+          "type": "string",
+          "enum": ["phase_a_pr_hard_gate", "phase_b_dual_hard_gate", "phase_c_zero_drift"]
+        },
+        "mainline_drift_threshold_percent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "stop_rule_owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stop_rule_sla_hours": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "approval": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["required", "approved_by", "approved_at", "approval_note", "secondary_approved"],
+          "properties": {
+            "required": {
+              "type": "boolean"
+            },
+            "approved_by": {
+              "type": "string",
+              "minLength": 1
+            },
+            "approved_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "approval_note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "secondary_approved": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "classification": {
+            "properties": {
+              "task_type": {
+                "const": "feature"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "openspec": {
+            "properties": {
+              "change_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "approval_status": {
+                "const": "approved"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "classification": {
+            "properties": {
+              "secondary_type": {
+                "const": "none"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "classification": {
+            "properties": {
+              "secondary_change_budget_percent": {
+                "const": 0
+              },
+              "secondary_allowed_paths": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "classification": {
+            "properties": {
+              "secondary_type": {
+                "not": {
+                  "const": "none"
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "classification": {
+            "properties": {
+              "secondary_change_budget_percent": {
+                "minimum": 1,
+                "maximum": 20
+              },
+              "secondary_allowed_paths": {
+                "minItems": 1
+              }
+            }
+          },
+          "governance": {
+            "properties": {
+              "approval": {
+                "properties": {
+                  "required": {
+                    "const": true
+                  },
+                  "secondary_approved": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "governance": {
+            "properties": {
+              "phase": {
+                "const": "phase_a_pr_hard_gate"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "governance": {
+            "properties": {
+              "mainline_drift_threshold_percent": {
+                "maximum": 5
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "governance": {
+            "properties": {
+              "phase": {
+                "const": "phase_b_dual_hard_gate"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "governance": {
+            "properties": {
+              "mainline_drift_threshold_percent": {
+                "maximum": 2
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "governance": {
+            "properties": {
+              "phase": {
+                "const": "phase_c_zero_drift"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "governance": {
+            "properties": {
+              "mainline_drift_threshold_percent": {
+                "const": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "delivery": {
+            "properties": {
+              "six_line_summary_required": {
+                "const": true
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "delivery": {
+            "required": ["six_line_summary"]
+          }
+        }
+      }
+    }
+  ]
+}

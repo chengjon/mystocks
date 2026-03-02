@@ -1,6 +1,4 @@
-import { Dict, List } from './system-base';
-import { IndicatorSpec, OHLCVData, IndicatorResult } from './market-data';
-import { TradeRecord, PerformanceMetrics } from './trading-ops';
+import { TradeRecord } from './trading-ops';
 
 export interface StrategyConfig {
   strategy_id?: number | null;
@@ -43,7 +41,7 @@ export interface StrategyUpdateRequest {
 
 export interface StrategyParameter {
   name?: string;
-  value?: any;
+  value?: unknown;
   description?: string | null;
   data_type?: string;
 }
@@ -69,8 +67,8 @@ export interface BacktestResult {
   end_date?: string;
   initial_capital?: number;
   final_capital?: number;
-  performance?: any;
-  equity_curve?: any[];
+  performance?: unknown;
+  equity_curve?: unknown[];
   trades?: TradeRecord[];
   status?: string;
   created_at?: string;
@@ -116,9 +114,9 @@ export interface AlgorithmInfo {
   type?: string;
   category?: string;
   description?: string;
-  parameters?: Record<string, any>;
+  parameters?: Record<string, unknown>;
   use_cases?: string[];
-  performance?: Record<string, any>;
+  performance?: Record<string, unknown>;
 }
 
 export interface AlgorithmMetrics {
@@ -137,7 +135,7 @@ export interface AlgorithmResult {
   status?: string;
   success?: boolean;
   message?: string | null;
-  data?: Record<string, any> | null;
+  data?: Record<string, unknown> | null;
 }
 
 export interface AlgorithmTrainRequest {
@@ -146,7 +144,7 @@ export interface AlgorithmTrainRequest {
   features?: string[];
   labels?: string[] | null;
   config?: AlgorithmConfig;
-  training_data?: Record<string, any> | null;
+  training_data?: Record<string, unknown> | null;
 }
 
 export interface ModelInfo {
@@ -163,7 +161,7 @@ export interface ModelInfo {
   symbol?: string;
   created_at?: string;
   metrics?: AlgorithmMetrics | null;
-  config?: Record<string, any>;
+  config?: Record<string, unknown>;
   status?: string;
 }
 
@@ -173,16 +171,16 @@ export interface ModelTrainRequest {
   step?: number;
   test_size?: number;
   model_name?: string;
-  model_params?: Record<string, any> | null;
+  model_params?: Record<string, unknown> | null;
 }
 
 export interface PredictionResult {
   date?: string;
   predicted_price?: number;
   confidence?: number | null;
-  prediction?: any;
+  prediction?: unknown;
   probabilities?: Record<string, number> | null;
-  metadata?: Record<string, any> | null;
+  metadata?: Record<string, unknown> | null;
 }
 
 export interface FeatureGenerationResponse {
@@ -192,7 +190,7 @@ export interface FeatureGenerationResponse {
   feature_dim?: number;
   step?: number;
   feature_columns?: string[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface TaskConfig {
@@ -203,8 +201,8 @@ export interface TaskConfig {
   task_function?: string;
   description?: string | null;
   priority?: number;
-  schedule?: any | null;
-  params?: Record<string, any>;
+  schedule?: unknown | null;
+  params?: Record<string, unknown>;
   timeout?: number;
   retry_count?: number;
   retry_delay?: number;
@@ -221,7 +219,7 @@ export interface TaskExecution {
   start_time?: string | null;
   end_time?: string | null;
   duration?: number | null;
-  result?: Record<string, any> | null;
+  result?: Record<string, unknown> | null;
   error_message?: string | null;
   log_path?: string | null;
   retry_count?: number;

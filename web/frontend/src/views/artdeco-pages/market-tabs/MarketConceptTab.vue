@@ -3,8 +3,15 @@ import { onMounted, ref } from 'vue';
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
 import { apiClient } from '@/api/apiClient';
 
+interface ConceptRow {
+  name: string
+  change_pct: number
+  main_inflow: string
+  leader: string
+}
+
 const { loading, lastRequestId, exec } = useArtDecoApi();
-const concepts = ref<any[]>([]);
+const concepts = ref<ConceptRow[]>([]);
 
 const fetchConcepts = async () => {
   // 调用 v1 概念板块接口
@@ -12,8 +19,8 @@ const fetchConcepts = async () => {
     silent: true
   });
   
-  if (data && data.items) {
-    concepts.value = data.items;
+  if (data && (data as Record<string, unknown>).items) {
+    concepts.value = (data as Record<string, unknown>).items as ConceptRow[];
   } else {
     // 降级模拟
     concepts.value = [

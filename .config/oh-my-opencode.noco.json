@@ -2,13 +2,13 @@
   "$schema": "https://opencode.ai/config.json",
   "enabled_providers": [
     "opencode",
-    "cpap",
-    "cpap-oai",
-    "cpap-claude",
-    "cpap-mini"
+    "fucai",
+    "fucai-gpt",
+    "fucai-claude",
+    "fucai-mini"
   ],
-  "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/main.model}",
-  "small_model": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/small.model}",
+  "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model/main.model}",
+  "small_model": "{file:/opt/claude/mystocks_spec/.config/opencode/model/small.model}",
   "permission": {
     "*": "allow"
   },
@@ -17,12 +17,12 @@
     "@tarquinen/opencode-dcp@latest"
   ],
   "provider": {
-    "cpap": {
+    "fucai": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "cpap",
+      "name": "fucai",
       "options": {
-        "baseURL": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/cpap.base_url}",
-        "apiKey": "{file:~/.config/opencode/secrets/cliproxyapi_api_key}",
+        "baseURL": "{file:/opt/claude/mystocks_spec/.config/opencode/model/fucai.base_url}",
+        "apiKey": "{file:/opt/claude/mystocks_spec/.config/opencode/model/fucai.api_key}",
         "timeout": 300000
       },
       "models": {
@@ -130,12 +130,12 @@
         }
       }
     },
-    "cpap-oai": {
+    "fucai-gpt": {
       "npm": "@ai-sdk/openai",
-      "name": "cpap-oai",
+      "name": "fucai-gpt",
       "options": {
-        "baseURL": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/cpap.base_url}",
-        "apiKey": "{file:~/.config/opencode/secrets/cliproxyapi_api_key}",
+        "baseURL": "{file:/opt/claude/mystocks_spec/.config/opencode/model/fucai.base_url}",
+        "apiKey": "{file:/opt/claude/mystocks_spec/.config/opencode/model/fucai.api_key}",
         "timeout": 300000,
         "setCacheKey": true
       },
@@ -188,12 +188,12 @@
         }
       }
     },
-    "cpap-claude": {
+    "fucai-claude": {
       "npm": "@ai-sdk/anthropic",
-      "name": "cpap-claude",
+      "name": "fucai-claude",
       "options": {
-        "baseURL": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/cpap.base_url}",
-        "apiKey": "{file:~/.config/opencode/secrets/cliproxyapi_api_key}",
+        "baseURL": "{file:/opt/claude/mystocks_spec/.config/opencode/model/fucai.base_url}",
+        "apiKey": "{file:/opt/claude/mystocks_spec/.config/opencode/model/fucai.api_key}",
         "timeout": 300000
       },
       "models": {
@@ -223,12 +223,12 @@
         }
       }
     },
-    "cpap-mini": {
+    "fucai-mini": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "cpap-mini",
+      "name": "fucai-mini",
       "options": {
-        "baseURL": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/cpap.base_url}",
-        "apiKey": "{file:~/.config/opencode/secrets/cliproxyapi_api_key}",
+        "baseURL": "{file:/opt/claude/mystocks_spec/.config/opencode/model/fucai.base_url}",
+        "apiKey": "{file:/opt/claude/mystocks_spec/.config/opencode/model/fucai.api_key}",
         "timeout": 300000
       },
       "models": {
@@ -241,54 +241,10 @@
       }
     }
   },
-  "mcp": {
-    "chrome-devtools": {
-      "command": [
-        "npx",
-        "chrome-devtools-mcp@latest"
-      ],
-      "enabled": true,
-      "type": "local"
-    },
-    "context7": {
-      "command": [
-        "npx",
-        "-y",
-        "@upstash/context7-mcp"
-      ],
-      "enabled": true,
-      "type": "local"
-    },
-    "playwright": {
-      "command": [
-        "npx",
-        "@playwright/mcp@latest"
-      ],
-      "enabled": true,
-      "type": "local"
-    },
-    "puppeteer": {
-      "command": [
-        "npx",
-        "-y",
-        "@modelcontextprotocol/server-puppeteer"
-      ],
-      "enabled": true,
-      "type": "local"
-    },
-    "web-reader": {
-      "enabled": true,
-      "headers": {
-        "Authorization": "Bearer REDACTED_WEB_READER_TOKEN"
-      },
-      "type": "remote",
-      "url": "https://open.bigmodel.cn/api/mcp/web_reader/mcp"
-    }
-  },
   "oh_my_opencode": {
     "agents": {
       "sisyphus": {
-        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.sisyphus.model}",
+        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model/omo.sisyphus.model}",
         "description": "主协调器 - 整体任务规划和编排，深度推理",
         "capabilities": [
           "task_planning",
@@ -298,7 +254,7 @@
         ]
       },
       "oracle": {
-        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.oracle.model}",
+        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model/omo.oracle.model}",
         "description": "架构师 - 架构设计、代码审查、策略分析",
         "capabilities": [
           "architecture_design",
@@ -308,7 +264,7 @@
         ]
       },
       "librarian": {
-        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.librarian.model}",
+        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model/omo.librarian.model}",
         "description": "研究员 - 多仓库分析、文档查找、实现示例研究",
         "capabilities": [
           "multi_repo_analysis",
@@ -318,7 +274,7 @@
         ]
       },
       "explore": {
-        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.explore.model}",
+        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model/omo.explore.model}",
         "description": "探索者 - 快速代码库探索和模式匹配",
         "capabilities": [
           "quick_exploration",
@@ -328,7 +284,7 @@
         ]
       },
       "frontend": {
-        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.frontend.model}",
+        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model/omo.frontend.model}",
         "description": "Frontend UI/UX - 构建精美前端界面",
         "capabilities": [
           "ui_design",
@@ -338,7 +294,7 @@
         ]
       },
       "document_writer": {
-        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.document_writer.model}",
+        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model/omo.document_writer.model}",
         "description": "Document Writer - 撰写技术文档",
         "capabilities": [
           "technical_writing",
@@ -348,7 +304,7 @@
         ]
       },
       "multimodal_looker": {
-        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model_defaults/omo.multimodal_looker.model}",
+        "model": "{file:/opt/claude/mystocks_spec/.config/opencode/model/omo.multimodal_looker.model}",
         "description": "Multimodal Looker - 分析 PDF、图像和图表",
         "capabilities": [
           "pdf_analysis",
@@ -361,10 +317,10 @@
     "background_task": {
       "providerConcurrency": {
         "opencode": 12,
-        "cpap": 8,
-        "cpap-oai": 4,
-        "cpap-claude": 4,
-        "cpap-mini": 6
+        "fucai": 8,
+        "fucai-gpt": 4,
+        "fucai-claude": 4,
+        "fucai-mini": 6
       },
       "modelConcurrency": {
         "opencode/glm-4.7-free": 10,
@@ -372,12 +328,12 @@
         "opencode/minimax-m2.1-free": 10,
         "opencode/gpt-5-nano": 10,
         "opencode/trinity-large-preview-free": 10,
-        "cpap-claude/claude-opus-4-5": 2,
-        "cpap-claude/claude-opus-4-6": 2,
-        "cpap-oai/gpt-5.3": 2,
-        "cpap-oai/gpt-5.3-codex": 2,
-        "cpap/grok-4-heavy": 2,
-        "cpap/grok-4.20-beta": 2
+        "fucai-claude/claude-opus-4-5": 2,
+        "fucai-claude/claude-opus-4-6": 2,
+        "fucai-gpt/gpt-5.3": 2,
+        "fucai-gpt/gpt-5.3-codex": 2,
+        "fucai/grok-4-heavy": 2,
+        "fucai/grok-4.20-beta": 2
       }
     },
     "ralph_loop": {

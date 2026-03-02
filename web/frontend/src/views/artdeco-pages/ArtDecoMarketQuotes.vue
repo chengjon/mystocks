@@ -287,20 +287,18 @@ const currentPageConfig = computed(() => {
 const apiEndpoint = computed(() => {
     const config = currentPageConfig.value
     if (!config) return ''
-    if ('apiEndpoint' in config) {
-        return (config as any).apiEndpoint
-    }
-    return ''
+
+    const endpoint = (config as { apiEndpoint?: unknown }).apiEndpoint
+    return typeof endpoint === 'string' ? endpoint : ''
 })
 
 // WebSocket 频道
 const wsChannel = computed(() => {
     const config = currentPageConfig.value
     if (!config) return ''
-    if ('wsChannel' in config) {
-        return (config as any).wsChannel
-    }
-    return ''
+
+    const channel = (config as { wsChannel?: unknown }).wsChannel
+    return typeof channel === 'string' ? channel : ''
 })
 
 // 组件名称
@@ -312,7 +310,7 @@ const _componentName = computed(() => {
 const _tabConfig = computed(() => {
     const config = currentPageConfig.value
     if (config && 'tabs' in config) {
-        return (config as Record<string, unknown>).tabs || []
+        return (config as unknown as Record<string, unknown>).tabs || []
     }
     return []
 })
@@ -384,17 +382,17 @@ async function fetchRealtimeQuotes() {
         const quotes = await marketService.getQuotes()
         
         // 数据转换逻辑
-        realtimeQuotes.value = quotes.map((item: any) => ({
-            code: item.symbol || item.code,
-            name: item.name,
-            price: item.latest_price || item.price || 0,
-            change: item.change_percent || item.change || 0,
-            volume: formatLargeNumber(item.volume),
-            amount: formatLargeNumber(item.amount),
-            turnover: item.turnover_ratio || item.turnover || 0,
-            pe: item.pe_ratio || item.pe || 0
+        realtimeQuotes.value = quotes.map((item: Record<string, unknown>) => ({
+            code: String(item.symbol ?? item.code ?? ''),
+            name: String(item.name ?? ''),
+            price: Number(item.latest_price ?? item.price ?? 0),
+            change: Number(item.change_percent ?? item.change ?? 0),
+            volume: formatLargeNumber(item.volume as number | string),
+            amount: formatLargeNumber(item.amount as number | string),
+            turnover: Number(item.turnover_ratio ?? item.turnover ?? 0),
+            pe: Number(item.pe_ratio ?? item.pe ?? 0)
         }))
-    } catch (e: any) {
+    } catch (e: unknown) {
         console.error('Failed to fetch quotes:', e)
         errorMsg.value = '行情数据加载失败，请重试'
     } finally {

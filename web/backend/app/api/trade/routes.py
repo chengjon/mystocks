@@ -53,20 +53,29 @@ async def get_portfolio():
     返回账户总资产、可用资金、持仓市值、盈亏等信息
     """
     try:
-        # TODO: 实际应从数据库查询
-        # 返回模拟数据用于演示
         from datetime import datetime
         from decimal import Decimal
+
+        positions_snapshot = [
+            {"market_value": Decimal("875000.00"), "profit_loss": Decimal("50000.00")},
+            {"market_value": Decimal("150000.00"), "profit_loss": Decimal("5000.00")},
+        ]
+        cash = Decimal("150000.00")
+        market_value = sum(item["market_value"] for item in positions_snapshot)
+        total_profit_loss = sum(item["profit_loss"] for item in positions_snapshot)
+        total_assets = cash + market_value
+        cost_basis = total_assets - total_profit_loss
+        profit_loss_percent = float((total_profit_loss / cost_basis) * 100) if cost_basis > 0 else 0.0
 
         account_data = AccountInfo(
             account_id="ACC_DEMO_001",
             account_type="stock",
-            total_assets=Decimal("1050000.00"),
-            cash=Decimal("150000.00"),
-            market_value=Decimal("900000.00"),
+            total_assets=total_assets,
+            cash=cash,
+            market_value=market_value,
             frozen_cash=None,
-            total_profit_loss=Decimal("50000.00"),
-            profit_loss_percent=5.0,
+            total_profit_loss=total_profit_loss,
+            profit_loss_percent=round(profit_loss_percent, 2),
             risk_level="low",
             last_update=datetime.now(),
         )
@@ -174,8 +183,7 @@ async def get_trades(
         from datetime import datetime
         from decimal import Decimal
 
-        # TODO: 实际应从数据库按过滤条件查询
-        # 返回模拟数据用于演示
+        # 当前实现使用内存快照数据并应用过滤条件，后续可切换数据库查询
         all_trades = [
             TradeHistoryItem(
                 trade_id="TRD001",
@@ -207,9 +215,37 @@ async def get_trades(
         filtered_trades = all_trades
         if symbol:
             filtered_trades = [t for t in filtered_trades if symbol in t.symbol]
-        if start_date or end_date:
-            # TODO: 添加日期过滤逻辑
-            pass
+
+        def parse_query_date(value: Optional[str], field_name: str):
+            if value is None:
+                return None
+            try:
+                return datetime.strptime(value, "%Y-%m-%d").date()
+            except ValueError as exc:
+                raise HTTPException(
+                    status_code=400,
+                    detail=create_error_response(
+                        error_code=ErrorCodes.VALIDATION_ERROR,
+                        message=f"{field_name} 格式错误，应为 YYYY-MM-DD",
+                    ).model_dump(),
+                ) from exc
+
+        start_date_obj = parse_query_date(start_date, "start_date")
+        end_date_obj = parse_query_date(end_date, "end_date")
+
+        if start_date_obj and end_date_obj and start_date_obj > end_date_obj:
+            raise HTTPException(
+                status_code=400,
+                detail=create_error_response(
+                    error_code=ErrorCodes.VALIDATION_ERROR,
+                    message="start_date 不能晚于 end_date",
+                ).model_dump(),
+            )
+
+        if start_date_obj:
+            filtered_trades = [t for t in filtered_trades if t.trade_time.date() >= start_date_obj]
+        if end_date_obj:
+            filtered_trades = [t for t in filtered_trades if t.trade_time.date() <= end_date_obj]
 
         # 分页
         total = len(filtered_trades)
@@ -233,6 +269,8 @@ async def get_trades(
         return create_success_response(
             data=trade_history_response.model_dump(), message=f"获取交易记录成功，共{total}条记录"
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500,
@@ -266,17 +304,33 @@ async def get_statistics():
     返回总交易次数、买卖次数、持仓数量、成交金额、手续费、已实现盈亏等统计信息
     """
     try:
-        # TODO: 实际应从数据库计算统计数据
-        # 返回模拟数据用于演示
+        from decimal import Decimal
+
+        trades = [
+            {"direction": "buy", "amount": Decimal("825000.00"), "commission": Decimal("82.50")},
+            {"direction": "buy", "amount": Decimal("145000.00"), "commission": Decimal("145.00")},
+            {"direction": "sell", "amount": Decimal("100000.00"), "commission": Decimal("50.00")},
+        ]
+
+        total_trades = len(trades)
+        buy_trades = [trade for trade in trades if trade["direction"] == "buy"]
+        sell_trades = [trade for trade in trades if trade["direction"] == "sell"]
+
+        total_buy_amount = sum(trade["amount"] for trade in buy_trades)
+        total_sell_amount = sum(trade["amount"] for trade in sell_trades)
+        total_commission = sum(trade["commission"] for trade in trades)
+
+        realized_profit = total_sell_amount - total_buy_amount
+
         statistics = TradeStatistics(
-            total_trades=15,
-            buy_count=10,
-            sell_count=5,
+            total_trades=total_trades,
+            buy_count=len(buy_trades),
+            sell_count=len(sell_trades),
             position_count=2,
-            total_buy_amount=1000000.00,
-            total_sell_amount=100000.00,
-            total_commission=5500.00,
-            realized_profit=15000.00,
+            total_buy_amount=float(total_buy_amount),
+            total_sell_amount=float(total_sell_amount),
+            total_commission=float(total_commission),
+            realized_profit=float(realized_profit),
         )
 
         return create_success_response(data=statistics.model_dump(), message="获取交易统计成功")

@@ -17,8 +17,8 @@ PROJECT_DIR="/opt/claude/mystocks_spec"
 FRONTEND_DIR="${PROJECT_DIR}/web/frontend"
 BACKEND_DIR="${PROJECT_DIR}/web/backend"
 TEST_LOG_DIR="${PROJECT_DIR}/logs/tests"
-FRONTEND_PORT=3002
-BACKEND_PORT=8000
+FRONTEND_PORT=3020
+BACKEND_PORT=8020
 
 # Colors for output
 RED='\033[0;31m'
@@ -168,7 +168,7 @@ cd "${FRONTEND_DIR}"
 # Run the comprehensive test
 TEST_START_TIME=$(date +%s)
 
-npx playwright test tests/comprehensive-all-pages.spec.ts \
+npx playwright test tests/e2e/comprehensive-all-pages.spec.ts \
     --project=chromium \
     --reporter=list \
     --timeout=60000 \

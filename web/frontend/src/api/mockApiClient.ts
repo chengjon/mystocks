@@ -3,7 +3,7 @@
 
 import { UnifiedResponse } from './types/common';
 import mockDashboard from '../mock/mockDashboard';
-import { loadMockKlineData, loadMockIndicators } from './mockKlineData';
+import { loadMockKlineData } from './mockKlineData';
 
 // A simple delay function to simulate network latency
 const simulateNetworkDelay = (min = 100, max = 500) =>

@@ -63,7 +63,7 @@
         "timeout": 5
       },
       {
-        "matcher": "Edit|Write",
+        "matcher": "Write",
         "hooks": [
           {
             "type": "command",

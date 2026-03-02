@@ -93,8 +93,9 @@ class ApiVersionNegotiator {
   private async detectSystemVersion(): Promise<void> {
     try {
       const response = await apiClient.get('/health')
-      if (response.success && response.data?.version) {
-        this.detectedVersions.set('system', response.data.version)
+      const data = response.data as Record<string, unknown> | undefined
+      if (response.success && data?.version) {
+        this.detectedVersions.set('system', String(data.version))
       }
     } catch (error) {
       console.warn('⚠️ 无法检测系统版本:', error)
@@ -108,9 +109,10 @@ class ApiVersionNegotiator {
     const versionPromises = endpoints.map(async (endpoint) => {
       try {
         const contractResponse = await apiClient.get(`/contracts/${endpoint.replace('/api/v1/', '').replace('/api/', '')}/active`)
-        if (contractResponse.success && contractResponse.data?.version) {
-          this.detectedVersions.set(endpoint, contractResponse.data.version)
-          return { endpoint, version: contractResponse.data.version, source: 'contract' }
+        const data = contractResponse.data as Record<string, unknown> | undefined
+        if (contractResponse.success && data?.version) {
+          this.detectedVersions.set(endpoint, String(data.version))
+          return { endpoint, version: String(data.version), source: 'contract' }
         }
       } catch (_error) {
         const defaultVersion = VERSION_CONFIG.endpoints[endpoint]

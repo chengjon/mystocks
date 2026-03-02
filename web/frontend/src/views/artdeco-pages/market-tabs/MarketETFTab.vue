@@ -3,8 +3,16 @@ import { onMounted, ref } from 'vue';
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
 import { apiClient } from '@/api/apiClient';
 
+interface EtfRow {
+  symbol: string
+  name: string
+  price: number
+  change_pct: number
+  volume: string
+}
+
 const { loading, lastRequestId, exec } = useArtDecoApi();
-const etfList = ref<any[]>([]);
+const etfList = ref<EtfRow[]>([]);
 
 const fetchETFs = async () => {
   // 获取 ETF 实时数据 (调用 v1 标准接口)
@@ -12,8 +20,8 @@ const fetchETFs = async () => {
     silent: true
   });
   
-  if (data && data.items) {
-    etfList.value = data.items;
+  if (data && (data as Record<string, unknown>).items) {
+    etfList.value = (data as Record<string, unknown>).items as EtfRow[];
   } else {
     // 降级模拟数据 (仅用于演示，实际生产需后端支持该接口)
     etfList.value = [

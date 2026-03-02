@@ -223,18 +223,30 @@ const addToWatchlist = async () => {
       ElMessage.warning('请输入分组名称')
       return
     }
+    if (!selectedStock.value) {
+      ElMessage.warning('请先选择要加入自选的股票')
+      return
+    }
+    const stock = selectedStock.value
     const token = localStorage.getItem('token') || ''
     const API_BASE = '/api'
     const response = await axios.post(
       `${API_BASE}/watchlist/add`,
-      { symbol: selectedStock.value.symbol, display_name: selectedStock.value.description, exchange: selectedStock.value.exchange, market: selectedStock.value.market, group_name: groupName },
+      {
+        symbol: stock.symbol,
+        display_name: stock.description,
+        exchange: stock.exchange,
+        market: stock.market,
+        group_name: groupName
+      },
       { headers: { Authorization: `Bearer ${token}` } }
     )
     ElMessage.success(`已添加到分组 "${response.data.group_name}"`)
     closeAddPopover()
     emit('api-tested', 'watchlist')
   } catch (error: unknown) {
-    ElMessage.error('添加失败: ' + (error.response?.data?.detail || error.message))
+    const apiError = error as ApiErrorResponse
+    ElMessage.error('添加失败: ' + (apiError.response?.data?.detail || apiError.message))
   }
 }
 </script>

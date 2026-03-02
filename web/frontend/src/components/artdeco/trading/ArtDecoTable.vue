@@ -233,12 +233,12 @@
         return sortedData.value.slice(visibleRange.value.start, visibleRange.value.end)
     })
 
-    function getRowKey(row: unknown, index: number) {
-        return row[props.rowKey] || index
+    function getRowKey(row: unknown, index: number): string | number {
+        return ((row as Record<string, unknown>)?.[props.rowKey] as string | number | undefined) ?? index
     }
 
     function getRowValue(row: unknown, key: string) {
-        return key.split('.').reduce((obj, k) => obj?.[k], row)
+        return key.split('.').reduce((obj, k) => (obj as Record<string, unknown>)?.[k], row)
     }
 
     function formatCellValue(row: unknown, col: Column) {
@@ -258,11 +258,11 @@
     function getCellClass(row: unknown, col: Column) {
         const classes = ['hybrid-table__cell']
         if (col.class) {
-            const colClass = col.class(row)
-            if (Array.isArray(colClass)) {
-                classes.push(...colClass)
-            } else {
-                classes.push(colClass)
+            const classResult = col.class(row)
+            if (typeof classResult === 'string') {
+                classes.push(classResult)
+            } else if (Array.isArray(classResult)) {
+                classes.push(...classResult)
             }
         }
         return classes

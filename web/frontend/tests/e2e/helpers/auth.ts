@@ -8,6 +8,12 @@
  */
 
 import { APIRequestContext, Page } from '@playwright/test';
+const { loadPortEnv, resolveFrontendConfig, resolveBackendConfig } = require('./port-env.js');
+
+loadPortEnv(process.cwd());
+
+const frontendConfig = resolveFrontendConfig();
+const backendConfig = resolveBackendConfig();
 
 /**
  * Configuration for authentication
@@ -16,7 +22,12 @@ const AUTH_CONFIG = {
   /**
    * Base URL for API requests
    */
-  baseURL: process.env.BASE_URL || 'http://localhost:8000',
+  backendBaseURL: backendConfig.baseUrl,
+
+  /**
+   * Base URL for frontend pages
+   */
+  frontendBaseURL: frontendConfig.baseUrl,
 
   /**
    * Login endpoint path
@@ -147,7 +158,7 @@ export async function loginAndGetCsrfToken(
   } = options;
 
   // Step 1: Login to get JWT token
-  const loginUrl = `${AUTH_CONFIG.baseURL}${AUTH_CONFIG.loginPath}`;
+  const loginUrl = `${AUTH_CONFIG.backendBaseURL}${AUTH_CONFIG.loginPath}`;
   const loginFormData = new URLSearchParams({
     username,
     password,
@@ -173,7 +184,7 @@ export async function loginAndGetCsrfToken(
   // Step 2: Get CSRF token
   let csrfToken = '';
   if (fetchCsrfToken) {
-    const csrfUrl = `${AUTH_CONFIG.baseURL}${AUTH_CONFIG.csrfPath}`;
+    const csrfUrl = `${AUTH_CONFIG.backendBaseURL}${AUTH_CONFIG.csrfPath}`;
     const csrfResponse = await request.get(csrfUrl);
 
     if (!csrfResponse.ok()) {
@@ -218,7 +229,7 @@ export async function loginAndGetCsrfToken(
  */
 export async function setupAuthForPage(page: Page, tokens: AuthTokens): Promise<void> {
   // Navigate to base URL first (required for localStorage to be accessible)
-  await page.goto(AUTH_CONFIG.baseURL.replace('8000', '3020')); // Frontend URL
+  await page.goto(AUTH_CONFIG.frontendBaseURL);
   await page.waitForLoadState('domcontentloaded');
 
   // Store JWT token in localStorage
@@ -303,8 +314,7 @@ export async function loginUI(
   username: string = AUTH_CONFIG.defaultCredentials.username,
   password: string = AUTH_CONFIG.defaultCredentials.password
 ): Promise<void> {
-  const frontendURL = AUTH_CONFIG.baseURL.replace('8000', '3001');
-  await page.goto(`${frontendURL}/login`);
+  await page.goto(`${AUTH_CONFIG.frontendBaseURL}/login`);
   await page.waitForLoadState('domcontentloaded');
 
   await page.fill('input[name="username"]', username);

@@ -33,20 +33,28 @@
         modelValue: (Date | string)[] | null
     }
 
+    type DatePickerModelValue = string | Date | (string | Date)[] | undefined
+
     const props = withDefaults(defineProps<Props>(), {
         modelValue: null
     })
 
     const emit = defineEmits<{
-        'update:modelValue': [value: unknown]
+        'update:modelValue': [value: (Date | string)[] | null]
     }>()
 
     const pickerRef = ref()
     const isPickerVisible = ref(false)
 
-    const internalValue = computed({
-        get: () => props.modelValue as unknown,
-        set: val => emit('update:modelValue', val)
+    const internalValue = computed<DatePickerModelValue>({
+        get: () => props.modelValue ?? undefined,
+        set: val => {
+            if (Array.isArray(val)) {
+                emit('update:modelValue', val as (Date | string)[])
+                return
+            }
+            emit('update:modelValue', null)
+        }
     })
 
     const displayStartDate = computed(() => {

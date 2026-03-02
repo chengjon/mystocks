@@ -4,6 +4,16 @@
 
 欢迎加入MyStocks量化交易平台开发团队！本指南将帮助你快速上手项目开发，掌握分支管理、CI/CD流程和最佳实践。
 
+## 🧪 E2E 执行入口（2026-03 基线）
+
+- 前端 E2E 默认入口统一为 `web/frontend/playwright.config.js`（`tests/e2e` 目录）。
+- 推荐命令：`cd web/frontend && npm run test:e2e`。
+- 单浏览器命令：`npm run test:e2e:chromium|firefox|webkit`。
+- StrategyManagement 专项：`npm run test:e2e:strategy-chain`。
+- 端口统一从 `.env` 读取：`FRONTEND_PORT=3020`、`FRONTEND_BACKUP_PORT=3021`、`BACKEND_PORT=8020`、`BACKEND_BACKUP_PORT=8021`。
+- 历史 PM2/视觉专项脚本继续使用 `playwright.config.ts`（legacy），避免与主 E2E 链路混用。
+- 历史文档兼容入口见：`docs/guides/TESTING_GUIDE.md` 与 `docs/guides/TESTING_EXAMPLES.md`。
+
 ## 🎯 快速开始
 
 ### 环境准备

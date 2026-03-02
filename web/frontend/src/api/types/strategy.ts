@@ -1,5 +1,5 @@
 // Auto-generated types for strategy domain
-// Generated at: 2026-02-27T13:28:03.661221
+// Generated at: 2026-03-02T17:03:15.814632
 
 export interface BacktestRequest {
   strategy_id?: string;
@@ -42,7 +42,7 @@ export interface StrategyPredictionRequest {
 export interface StrategyPredictionResponse {
   strategy_id?: string;
   symbol?: string;
-  prediction?: Record<string, any>;
+  prediction?: Record<string, unknown>;
   confidence?: number;
   timestamp?: string;
 }
@@ -52,7 +52,7 @@ export interface StrategyTrainingRequest {
   symbol?: string;
   start_date?: string;
   end_date?: string;
-  parameters?: Record<string, any> | null;
+  parameters?: Record<string, unknown> | null;
 }
 
 export interface StrategyTrainingResponse {
@@ -67,6 +67,6 @@ export interface StrategyTrainingResponse {
 
 export interface TechnicalIndicatorResponse {
   symbol?: string;
-  indicators?: Record<string, any>;
+  indicators?: Record<string, unknown>;
   calculated_at?: string;
 }

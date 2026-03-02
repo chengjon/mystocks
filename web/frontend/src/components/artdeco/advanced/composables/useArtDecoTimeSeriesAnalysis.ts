@@ -59,13 +59,15 @@ interface TimeSeriesData {
 }
 
 interface UseArtDecoTimeSeriesAnalysisOptions {
-    data: Ref<TimeSeriesData>
+    data: Ref<Record<string, unknown>>
     symbol: Ref<string>
     loading?: Ref<boolean>
 }
 
 export function useArtDecoTimeSeriesAnalysis(options: UseArtDecoTimeSeriesAnalysisOptions) {
     const { data, symbol, loading = ref(false) } = options
+
+    const sourceData = computed((): TimeSeriesData => (data.value as TimeSeriesData) || {})
 
     // 响应式数据
     const chartType = ref('line')
@@ -78,10 +80,10 @@ export function useArtDecoTimeSeriesAnalysis(options: UseArtDecoTimeSeriesAnalys
     const chartCanvas = ref<HTMLCanvasElement>()
 
     // 计算属性
-    const timeSeriesData = computed(() => data.value?.timeSeries || [])
-    const inflectionPoints = computed(() => data.value?.inflectionPoints || [])
-    const periodicityData = computed(() => data.value?.periodicity || {})
-    const predictionData = computed(() => data.value?.prediction || {})
+    const timeSeriesData = computed(() => sourceData.value?.timeSeries || [])
+    const inflectionPoints = computed(() => sourceData.value?.inflectionPoints || [])
+    const periodicityData = computed(() => sourceData.value?.periodicity || {})
+    const predictionData = computed(() => sourceData.value?.prediction || {})
 
     // 配置选项
     const chartTypeOptions = [
@@ -122,7 +124,7 @@ export function useArtDecoTimeSeriesAnalysis(options: UseArtDecoTimeSeriesAnalys
     }
 
     const getTrendStrength = (): string => {
-        const trend = data.value?.trend
+        const trend = sourceData.value?.trend
         if (!trend) return 'N/A'
 
         const strength = trend.strength || 0

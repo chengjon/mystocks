@@ -1,5 +1,5 @@
 // Auto-generated types for admin domain
-// Generated at: 2026-02-27T13:28:03.660366
+// Generated at: 2026-03-02T17:03:15.813877
 
 export interface AuditLogResponse {
   log_id?: string;
@@ -7,7 +7,7 @@ export interface AuditLogResponse {
   action?: string;
   resource_type?: string;
   resource_id?: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   ip_address?: string;
   user_agent?: string;
   timestamp?: string;
@@ -30,7 +30,7 @@ export interface OptimizationResponse {
   operation?: string;
   status?: string;
   duration_ms?: number;
-  result?: Record<string, any>;
+  result?: Record<string, unknown>;
 }
 
 export interface TokenPayload {

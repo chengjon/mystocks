@@ -3,6 +3,9 @@
 **版本**: v2.0（优化版）
 **更新**: 2026-01-19
 
+> 2026-03 基线补充：标准 E2E 入口统一为 `playwright.config.js`（`tests/e2e`）。
+> 推荐命令：`npm run test:e2e`、`npm run test:e2e:chromium`。
+
 ---
 
 ## 🚀 快速开始
@@ -12,11 +15,11 @@
 ```bash
 cd /opt/claude/mystocks_spec/web/frontend
 
-# 方式1：使用默认后端（localhost:8000）
+# 方式1：使用默认后端（localhost:8020）
 ./deploy-and-test.sh
 
 # 方式2：指定后端URL
-VITE_API_BASE_URL=http://localhost:8000 ./deploy-and-test.sh
+VITE_API_BASE_URL=http://localhost:8020 ./deploy-and-test.sh
 
 # 方式3：生产环境
 VITE_API_BASE_URL=https://api.production.com ./deploy-and-test.sh
@@ -107,7 +110,7 @@ npx playwright test --debug
 ```javascript
 // ✅ 使用 npm run preview
 script: 'npm',
-args: 'run preview -- --port 3001 --host'
+args: 'run preview -- --port 3020 --host'
 ```
 
 **优势**: 符合Vite最佳实践，更好的构建产物兼容性
@@ -122,7 +125,7 @@ MAX_ATTEMPTS=12
 POLL_INTERVAL=2.5
 
 while [ $attempt -le $MAX_ATTEMPTS ]; do
-    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3001)
+    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3020)
     if echo "$HTTP_CODE" | grep -qE "^(200|301|302|304)$"; then
         echo "✅ 服务就绪"
         break
@@ -139,7 +142,7 @@ done
 
 ```bash
 # ✅ 环境变量支持
-export VITE_API_BASE_URL=http://localhost:8000
+export VITE_API_BASE_URL=http://localhost:8020
 ./deploy-and-test.sh
 ```
 
@@ -203,7 +206,7 @@ RiskAlertScenarios.criticalAlert         // 严重级
 **解决方案**:
 ```bash
 # 1. 检查端口占用
-lsof -i :3001
+lsof -i :3020
 
 # 2. 查看PM2日志
 pm2 logs mystocks-frontend-prod --lines 50
@@ -212,7 +215,7 @@ pm2 logs mystocks-frontend-prod --lines 50
 ls -la dist/
 
 # 4. 手动测试（不使用PM2）
-npm run preview -- --port 3001 --host
+npm run preview -- --port 3020 --host
 ```
 
 ### 问题2: 测试超时
@@ -222,7 +225,7 @@ npm run preview -- --port 3001 --host
 **解决方案**:
 ```bash
 # 1. 检查服务是否真的在运行
-curl http://localhost:3001
+curl http://localhost:3020
 
 # 2. 增加轮询次数
 # 编辑 deploy-and-test.sh: MAX_ATTEMPTS=20
@@ -257,7 +260,7 @@ npx playwright test tests/artdeco/websocket-realtime-mock.spec.ts --debug
 npx playwright test --grep "CSS变量应该正确定义" --debug
 
 # 2. 在浏览器中手动验证
-# 打开 http://localhost:3001
+# 打开 http://localhost:3020
 # 运行以下代码：
 #   getComputedStyle(document.documentElement).getPropertyValue('--artdeco-gold-primary')
 
@@ -286,7 +289,7 @@ cat vite.config.ts | grep css
 ❌ **不推荐**: 依赖真实后端WebSocket
 ```typescript
 // 可能因网络问题失败
-await page.goto('http://localhost:3001');
+await page.goto('http://localhost:3020');
 // 等待真实WebSocket连接...
 ```
 
@@ -302,12 +305,12 @@ await wsMock.initialize();
 ❌ **不推荐**: 固定延迟
 ```bash
 sleep 5  # 浪费时间
-curl http://localhost:3001
+curl http://localhost:3020
 ```
 
 ✅ **推荐**: 智能轮询
 ```bash
-while ! curl -s http://localhost:3001; do
+while ! curl -s http://localhost:3020; do
     echo -n "."
     sleep 0.5
 done
@@ -317,12 +320,12 @@ done
 
 ❌ **不推荐**: 硬编码
 ```javascript
-VITE_API_BASE_URL: 'http://localhost:8000'  // 不灵活
+VITE_API_BASE_URL: 'http://localhost:8020'  // 不灵活
 ```
 
 ✅ **推荐**: 环境变量
 ```javascript
-VITE_API_BASE_URL: process.env.VITE_API_BASE_URL || 'http://localhost:8000'
+VITE_API_BASE_URL: process.env.VITE_API_BASE_URL || 'http://localhost:8020'
 ```
 
 ---
@@ -340,7 +343,7 @@ VITE_API_BASE_URL: process.env.VITE_API_BASE_URL || 'http://localhost:8000'
 ```bash
 # === 部署和测试 ===
 ./deploy-and-test.sh                              # 一键部署测试
-VITE_API_BASE_URL=http://localhost:8000 ./deploy-and-test.sh  # 指定后端
+VITE_API_BASE_URL=http://localhost:8020 ./deploy-and-test.sh  # 指定后端
 
 # === PM2管理 ===
 pm2 status                                        # 查看状态

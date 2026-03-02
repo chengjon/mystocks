@@ -1,5 +1,9 @@
 # MyStocks 端到端自动化测试套件
 
+> 2026-03 基线：标准 E2E 入口为 `npm run test:e2e`，使用 `playwright.config.js`（`tests/e2e`）。
+> `playwright.config.ts` 仅用于历史 legacy 专项脚本。
+> 端口统一由 `.env` 注入：前端 `3020`（备份 `3021`），后端 `8020`（备份 `8021`）。
+
 ## 概述
 
 本测试套件基于 Playwright 实现完整的端到端自动化测试，专门针对基于 PM2 运行的 MyStocks Web 服务进行全面验证。严格按照您的要求实现，不以简单的 HTTP 状态码作为通过依据，而是进行全链路的渲染、元素、数据、交互校验。
@@ -8,7 +12,7 @@
 
 ### Phase 1: 前置校验 (Preflight Checks)
 - ✅ PM2 进程状态验证（前端/后端服务）
-- ✅ 端口连通性检查（3001/8000）
+- ✅ 端口连通性检查（3020/8020）
 - ✅ HTTP 响应状态验证
 - ✅ 前端 HTML 内容完整性验证
 
@@ -50,10 +54,10 @@
 确保 MyStocks 服务已通过 PM2 启动：
 
 ```bash
-# 前端服务 (端口 3001)
+# 前端服务 (端口 3020)
 pm2 list | grep mystocks-frontend
 
-# 后端服务 (端口 8000)
+# 后端服务 (端口 8020)
 pm2 list | grep mystocks-backend
 ```
 
@@ -111,14 +115,14 @@ ls -la test-results/videos/
 ```javascript
 const FRONTEND_CONFIG = {
   name: 'mystocks-frontend',
-  port: 3001,
-  baseUrl: 'http://localhost:3001'
+  port: 3020,
+  baseUrl: 'http://localhost:3020'
 };
 
 const BACKEND_CONFIG = {
   name: 'mystocks-backend',
-  port: 8000,
-  baseUrl: 'http://localhost:8000'
+  port: 8020,
+  baseUrl: 'http://localhost:8020'
 };
 ```
 
@@ -150,8 +154,8 @@ const BACKEND_CONFIG = {
 pm2 list
 
 # 检查端口占用
-lsof -i :3001
-lsof -i :8000
+lsof -i :3020
+lsof -i :8020
 
 # 启动服务 (如果未运行)
 cd web/frontend && npm run pm2:start
@@ -205,7 +209,8 @@ test('自定义测试场景', async ({ page }) => {
 ```
 
 ### 修改测试配置
-- 编辑 `playwright.config.ts` 调整超时、视口等
+- 编辑 `playwright.config.js` 调整标准 E2E 超时、视口等
+- 编辑 `playwright.config.ts` 调整 legacy 专项脚本配置
 - 修改 `run-comprehensive-e2e.js` 调整服务配置
 - 更新 `package.json` 添加新的 npm 脚本
 

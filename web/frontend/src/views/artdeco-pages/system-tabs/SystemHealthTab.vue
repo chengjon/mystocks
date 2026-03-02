@@ -3,8 +3,14 @@ import { onMounted, ref } from 'vue';
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
 import { apiClient } from '@/api/apiClient';
 
+interface HealthRow {
+  status?: string
+  service?: string
+  version?: string
+}
+
 const { loading, lastRequestId, exec } = useArtDecoApi();
-const health = ref<any>(null);
+const health = ref<HealthRow | null>(null);
 
 const fetchHealth = async () => {
   // 直接调用健康检查端点

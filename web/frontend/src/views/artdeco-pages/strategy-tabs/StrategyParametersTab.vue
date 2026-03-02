@@ -1,35 +1,172 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
-import { strategyApi } from '@/api/index';
+import { useStrategyCrossTabContext } from '@/composables/strategy/useStrategyCrossTabContext';
+import { strategyApi } from '@/api';
 import type { StrategyConfig } from '@/api/types/common';
+import { extractStrategyIdFromQuery } from './strategyCrossTabNavigation';
+import {
+  createStrategyParametersMockFallback,
+  extractStrategyConfigs,
+  normalizeProcessTimeMs
+} from './strategyParametersData';
 
-const { loading, lastRequestId, exec } = useArtDecoApi();
+type ParametersDataSource = 'real' | 'mock';
+
+const { loading, error, lastRequestId, lastProcessTime, exec } = useArtDecoApi();
 const strategies = ref<StrategyConfig[]>([]);
+const dataSource = ref<ParametersDataSource>('real');
+const fallbackReason = ref('');
+const route = useRoute();
+const { getSnapshot, setActiveStrategy } = useStrategyCrossTabContext();
+
+const selectedStrategyId = computed(() => extractStrategyIdFromQuery(route.query as Record<string, unknown>));
+const selectedStrategySnapshot = computed(() => {
+  if (!selectedStrategyId.value) {
+    return null;
+  }
+  return getSnapshot(selectedStrategyId.value);
+});
+
+const traceRequestId = computed(() => {
+  const requestId = lastRequestId.value.trim();
+  return requestId.length > 0 ? requestId : 'N/A';
+});
+const traceProcessTimeMs = computed(() => normalizeProcessTimeMs(lastProcessTime.value));
+
+const displayedStrategies = computed(() => {
+  if (!selectedStrategyId.value) {
+    return strategies.value;
+  }
+
+  return strategies.value.filter((strategy) => String(strategy.strategy_id ?? '') === selectedStrategyId.value);
+});
+
+const selectedStrategyMissing = computed(() => {
+  return Boolean(selectedStrategyId.value) && displayedStrategies.value.length === 0;
+});
+
+const hydratedStrategies = computed(() => {
+  return displayedStrategies.value.map((strategy) => {
+    const strategyId = getStrategyId(strategy);
+    const snapshot = getSnapshot(strategyId);
+    if (!snapshot) {
+      return strategy;
+    }
+
+    return {
+      ...strategy,
+      status: mapSnapshotStatus(snapshot.status, strategy.status),
+      parameters: toStrategyParameters(snapshot.parameters, strategy.parameters)
+    };
+  });
+});
+
+const headerError = computed(() => {
+  if (dataSource.value === 'mock') {
+    return fallbackReason.value || error.value || 'REAL 数据不可用，已回退 MOCK 数据。';
+  }
+  return error.value;
+});
+
+function getStrategyId(strategy: StrategyConfig): string {
+  return String(strategy.strategy_id ?? '');
+}
+
+function mapSnapshotStatus(snapshotStatus: string, fallback?: StrategyConfig['status']): StrategyConfig['status'] {
+  if (snapshotStatus === 'running') return 'active';
+  if (snapshotStatus === 'paused') return 'paused';
+  if (snapshotStatus === 'stopped') return 'draft';
+  if (snapshotStatus === 'error') return 'paused';
+  return fallback;
+}
+
+function toStrategyParameters(
+  snapshotParameters: Record<string, unknown>,
+  fallback?: StrategyConfig['parameters']
+): StrategyConfig['parameters'] {
+  const entries = Object.entries(snapshotParameters);
+  if (!entries.length) {
+    return fallback;
+  }
+
+  return entries.map(([name, value]) => ({
+    name,
+    value,
+    data_type: typeof value
+  }));
+}
+
+function getOptimizationScore(strategy: StrategyConfig): number | null {
+  const strategyId = getStrategyId(strategy);
+  if (!strategyId) {
+    return null;
+  }
+
+  const snapshot = getSnapshot(strategyId);
+  return snapshot?.optimization?.score ?? null;
+}
 
 const fetchStrategies = async () => {
-  const data = await exec(() => strategyApi.getStrategies({}), {
-    errorMsg: '获取策略参数失败'
+  const payload = await exec(() => strategyApi.getStrategies({}), {
+    silent: true,
+    errorMsg: '获取策略参数失败，已回退 MOCK 数据'
   });
-  if (data) {
-    strategies.value = data;
+
+  if (!payload) {
+    strategies.value = createStrategyParametersMockFallback();
+    dataSource.value = 'mock';
+    fallbackReason.value = error.value || '获取策略参数失败，已回退 MOCK 数据';
+    return;
   }
+
+  const extracted = extractStrategyConfigs(payload);
+  if (extracted === null) {
+    strategies.value = createStrategyParametersMockFallback();
+    dataSource.value = 'mock';
+    fallbackReason.value = '策略参数数据格式异常，已回退 MOCK 数据';
+    return;
+  }
+
+  strategies.value = extracted;
+  dataSource.value = 'real';
+  fallbackReason.value = '';
 };
 
 onMounted(() => {
-  fetchStrategies();
+  void fetchStrategies();
 });
+
+watch(selectedStrategyId, (value) => {
+  setActiveStrategy(value);
+}, { immediate: true });
 </script>
 
 <template>
   <div class="strategy-parameters-tab page-enter">
     <div class="artdeco-header-bar">
       <h2 class="section-title">Strategy Parameters</h2>
-      <div class="trace-id" v-if="lastRequestId">REQ_ID: {{ lastRequestId }}</div>
+      <div class="header-meta">
+        <div class="trace-id">REQ_ID: {{ traceRequestId }}</div>
+        <div class="trace-id">PROCESS: {{ traceProcessTimeMs }} ms</div>
+        <div :class="['source-badge', dataSource]">SOURCE: {{ dataSource.toUpperCase() }}</div>
+        <div class="strategy-context" v-if="selectedStrategyId">策略ID: {{ selectedStrategyId }}</div>
+        <div class="strategy-context" v-if="selectedStrategySnapshot?.optimization">
+          OPT_SCORE: {{ selectedStrategySnapshot.optimization.score }}
+        </div>
+      </div>
     </div>
 
+    <p v-if="headerError" class="error-tip">{{ headerError }}</p>
+
     <div class="strategy-grid" v-loading="loading">
-      <div v-for="strategy in strategies" :key="strategy.strategy_id || 0" class="artdeco-card strategy-card">
+      <div
+        v-for="strategy in hydratedStrategies"
+        :key="getStrategyId(strategy)"
+        class="artdeco-card strategy-card"
+        :class="{ selected: getStrategyId(strategy) === selectedStrategyId }"
+      >
         <div class="card-decoration"></div>
         <div class="card-content">
           <div class="strategy-info">
@@ -37,8 +174,11 @@ onMounted(() => {
             <span :class="['status-badge', strategy.status]">
               {{ strategy.status?.toUpperCase() }}
             </span>
+            <span v-if="getOptimizationScore(strategy) !== null" class="optimization-badge">
+              OPT {{ getOptimizationScore(strategy) }}
+            </span>
           </div>
-          
+
           <p class="description">{{ strategy.description }}</p>
 
           <div class="params-list">
@@ -54,155 +194,18 @@ onMounted(() => {
           </div>
         </div>
       </div>
-      
-      <!-- 空状态 -->
-      <div v-if="!loading && strategies.length === 0" class="empty-state artdeco-card">
-        <p>No strategies found. Create one in Strategy Management.</p>
+
+      <div v-if="!loading && selectedStrategyMissing" class="empty-state artdeco-card">
+        <p>未找到策略 {{ selectedStrategyId }} 的参数配置，请返回策略管理页重试。</p>
+      </div>
+      <div v-else-if="!loading && strategies.length === 0" class="empty-state artdeco-card">
+        <p v-if="dataSource === 'real'">REAL 数据为空，请先在 Strategy Management 中创建策略。</p>
+        <p v-else>REAL 数据不可用，当前显示 MOCK 参数配置。</p>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
-
-.strategy-parameters-tab {
-  padding: var(--artdeco-spacing-6);
-}
-
-.artdeco-header-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--artdeco-spacing-8);
-  border-bottom: 2px solid var(--artdeco-gold-primary);
-  padding-bottom: var(--artdeco-spacing-2);
-
-  .section-title {
-    margin: 0;
-    font-size: var(--artdeco-text-2xl);
-    color: var(--artdeco-gold-primary);
-    text-transform: uppercase;
-    letter-spacing: var(--artdeco-tracking-wide);
-  }
-
-  .trace-id {
-    font-family: var(--artdeco-font-mono);
-    font-size: var(--artdeco-text-xs);
-    color: var(--artdeco-fg-muted);
-    letter-spacing: var(--artdeco-tracking-wide);
-  }
-}
-
-.strategy-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: var(--artdeco-spacing-6);
-}
-
-.strategy-card {
-  position: relative;
-  background: var(--artdeco-bg-card);
-  transition: all 0.3s ease;
-  overflow: hidden;
-  border: 1px solid var(--artdeco-border-default);
-
-  &:hover {
-    @include artdeco-hover-lift-glow;
-  }
-
-  .card-decoration {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: var(--artdeco-gold-primary);
-  }
-
-  .card-content {
-    padding: var(--artdeco-spacing-6);
-  }
-}
-
-.strategy-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: var(--artdeco-spacing-4);
-
-  .strategy-name {
-    margin: 0;
-    font-family: var(--artdeco-font-display);
-    font-size: var(--artdeco-text-xl);
-    color: var(--artdeco-fg-primary);
-  }
-}
-
-.status-badge {
-  padding: 2px 8px;
-  font-size: var(--artdeco-text-xs);
-  font-family: var(--artdeco-font-mono);
-  border: 1px solid currentColor;
-  
-  &.active { color: var(--artdeco-rise); }
-  &.paused { color: var(--artdeco-warning); }
-  &.draft { color: var(--artdeco-fg-muted); }
-}
-
-.description {
-  color: var(--artdeco-fg-muted);
-  font-size: var(--artdeco-text-sm);
-  margin-bottom: var(--artdeco-spacing-6);
-  height: 3em;
-  overflow: hidden;
-}
-
-.params-list {
-  background: var(--artdeco-bg-elevated);
-  padding: var(--artdeco-spacing-4);
-  margin-bottom: var(--artdeco-spacing-6);
-
-  @include artdeco-corner-brackets;
-
-  .param-item {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: var(--artdeco-spacing-2);
-    font-family: var(--artdeco-font-mono);
-    font-size: var(--artdeco-text-sm);
-
-    &:last-child { margin-bottom: 0; }
-
-    .param-label { color: var(--artdeco-fg-muted); }
-    .param-value { color: var(--artdeco-gold-primary); }
-  }
-}
-
-.card-footer {
-  display: flex;
-  gap: var(--artdeco-spacing-4);
-
-  .artdeco-button {
-    flex: 1;
-    padding: 8px;
-    cursor: pointer;
-    font-family: var(--artdeco-font-display);
-    text-transform: uppercase;
-    transition: all 0.3s ease;
-    border: 1px solid var(--artdeco-gold-primary);
-
-    &.gold-outline {
-      background: transparent;
-      color: var(--artdeco-gold-primary);
-      &:hover { background: var(--artdeco-gold-opacity-10); }
-    }
-
-    &.gold-solid {
-      background: var(--artdeco-gold-primary);
-      color: var(--artdeco-bg-global);
-      &:hover { background: var(--artdeco-gold-light); }
-    }
-  }
-}
+@import './styles/StrategyParametersTab';
 </style>

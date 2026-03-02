@@ -1,9 +1,4 @@
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
-import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
-import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
-import _ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
-import ArtDecoSelect from '@/components/artdeco/base/ArtDecoSelect.vue'
-import ArtDecoSwitch from '@/components/artdeco/base/ArtDecoSwitch.vue'
 
 interface SentimentDataType {
     overallIndex?: number
@@ -16,10 +11,20 @@ interface ResearchReport {
     id?: string | number
     broker?: string
     title?: string
-    rating?: string
+    rating?: number
     targetPrice?: number
     upside?: number
     date?: string
+}
+
+interface NormalizedResearchReport {
+    id: string | number
+    broker: string
+    title: string
+    rating: number
+    targetPrice: number
+    upside: number
+    date: string
 }
 
 interface ResearchDataType {
@@ -38,6 +43,22 @@ interface NewsSegment {
     count?: number
 }
 
+interface NormalizedNewsSegment {
+    type: string
+    startAngle: number
+    endAngle: number
+    percentage: number
+    count: number
+}
+
+interface RecentNewsItem {
+    id: string | number
+    sentiment: string
+    title: string
+    source: string
+    time: string
+}
+
 interface NewsDataType {
     segments?: NewsSegment[]
     total?: number
@@ -45,11 +66,22 @@ interface NewsDataType {
     [key: string]: unknown
 }
 
+interface PopularityDataType {
+    searchHeat?: number
+    forum?: number
+    social?: number
+    news?: number
+    consensus?: number
+    volatility?: number
+    attentionTrend?: string
+    [key: string]: unknown
+}
+
 interface PropsData {
     sentiment?: SentimentDataType
     research?: ResearchDataType
     news?: NewsDataType
-    popularity?: Record<string, unknown>
+    popularity?: PopularityDataType
 }
 
 interface Props {
@@ -68,36 +100,76 @@ export function useArtDecoSentimentAnalysis() {
     const radarCanvas = ref<HTMLCanvasElement>()
 
     // 计算属性
-    const sentimentData = computed(() => props.data?.sentiment || {})
-    const researchData = computed(() => props.data?.research || {})
-    const newsData = computed(() => props.data?.news || {})
-    const popularityData = computed(() => props.data?.popularity || {})
+    const sentimentData = computed<SentimentDataType>(() => props.data?.sentiment ?? {})
+    const researchData = computed<ResearchDataType>(() => props.data?.research ?? {})
+    const newsData = computed<NewsDataType>(() => props.data?.news ?? {})
+    const popularityData = computed<PopularityDataType>(() => props.data?.popularity ?? {})
 
     // 情绪分析相关
-    const overallSentimentIndex = computed(() => sentimentData.value?.overallIndex || 0)
-    const bullishPercentage = computed(() => sentimentData.value?.bullish || 0)
-    const bearishPercentage = computed(() => sentimentData.value?.bearish || 0)
-    const neutralPercentage = computed(() => sentimentData.value?.neutral || 0)
+    const overallSentimentIndex = computed<number>(() => Number(sentimentData.value.overallIndex ?? 0))
+    const bullishPercentage = computed<number>(() => Number(sentimentData.value.bullish ?? 0))
+    const bearishPercentage = computed<number>(() => Number(sentimentData.value.bearish ?? 0))
+    const neutralPercentage = computed<number>(() => Number(sentimentData.value.neutral ?? 0))
 
     // 研报分析相关
-    const totalReports = computed(() => researchData.value?.total || 0)
-    const avgRating = computed(() => researchData.value?.avgRating || 0)
-    const avgTargetPrice = computed(() => researchData.value?.avgTargetPrice || 0)
-    const avgUpside = computed(() => researchData.value?.avgUpside || 0)
-    const recentReports = computed(() => researchData.value?.recent || [])
+    const totalReports = computed<number>(() => Number(researchData.value.total ?? 0))
+    const avgRating = computed<number>(() => Number(researchData.value.avgRating ?? 0))
+    const avgTargetPrice = computed<number>(() => Number(researchData.value.avgTargetPrice ?? 0))
+    const avgUpside = computed<number>(() => Number(researchData.value.avgUpside ?? 0))
+    const recentReports = computed<NormalizedResearchReport[]>(() => {
+        const reports = researchData.value.recent ?? []
+
+        return reports.map((report, index) => ({
+            id: report.id ?? index,
+            broker: report.broker ?? '--',
+            title: report.title ?? '--',
+            rating: Number(report.rating ?? 0),
+            targetPrice: Number(report.targetPrice ?? 0),
+            upside: Number(report.upside ?? 0),
+            date: report.date ?? ''
+        }))
+    })
 
     // 新闻分析相关
-    const sentimentSegments = computed(() => newsData.value?.segments || [])
-    const totalNews = computed(() => newsData.value?.total || 0)
-    const recentNews = computed(() => newsData.value?.recent || [])
+    const sentimentSegments = computed<NormalizedNewsSegment[]>(() => {
+        const segments = newsData.value.segments ?? []
+
+        return segments.map((segment) => ({
+            type: segment.type ?? 'neutral',
+            startAngle: Number(segment.startAngle ?? 0),
+            endAngle: Number(segment.endAngle ?? 0),
+            percentage: Number(segment.percentage ?? 0),
+            count: Number(segment.count ?? 0)
+        }))
+    })
+
+    const totalNews = computed<number>(() => Number(newsData.value.total ?? 0))
+    const recentNews = computed<RecentNewsItem[]>(() => {
+        const newsList = newsData.value.recent ?? []
+
+        return newsList.map((item, index) => {
+            const news = item as Record<string, unknown>
+
+            return {
+                id:
+                    typeof news.id === 'string' || typeof news.id === 'number'
+                        ? news.id
+                        : index,
+                sentiment: typeof news.sentiment === 'string' ? news.sentiment : 'neutral',
+                title: typeof news.title === 'string' ? news.title : '--',
+                source: typeof news.source === 'string' ? news.source : '--',
+                time: typeof news.time === 'string' ? news.time : ''
+            }
+        })
+    })
 
     // 人气指标相关
-    const searchHeatIndex = computed(() => popularityData.value?.searchHeat || 0)
-    const forumDiscussion = computed(() => popularityData.value?.forum || 0)
-    const socialMedia = computed(() => popularityData.value?.social || 0)
-    const newsCoverage = computed(() => popularityData.value?.news || 0)
-    const consensusLevel = computed(() => popularityData.value?.consensus || 0)
-    const sentimentVolatility = computed(() => popularityData.value?.volatility || 0)
+    const searchHeatIndex = computed<number>(() => Number(popularityData.value.searchHeat ?? 0))
+    const forumDiscussion = computed<number>(() => Number(popularityData.value.forum ?? 0))
+    const socialMedia = computed<number>(() => Number(popularityData.value.social ?? 0))
+    const newsCoverage = computed<number>(() => Number(popularityData.value.news ?? 0))
+    const consensusLevel = computed<number>(() => Number(popularityData.value.consensus ?? 0))
+    const sentimentVolatility = computed<number>(() => Number(popularityData.value.volatility ?? 0))
 
     // 配置选项
     const timeframeOptions = [

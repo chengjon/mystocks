@@ -1,4 +1,4 @@
-import { Dict, List } from './system-base';
+import { Dict } from './system-base';
 
 export interface OHLCVData {
   dates?: string[];
@@ -38,7 +38,7 @@ export interface ConceptInfo {
 
 export interface ConceptListResponse {
   success?: boolean;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   timestamp?: string;
 }
 
@@ -61,13 +61,13 @@ export interface IndustryInfo {
 
 export interface IndustryListResponse {
   success?: boolean;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   timestamp?: string;
 }
 
 export interface IndustryPerformanceResponse {
   success?: boolean;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   timestamp?: string;
 }
 
@@ -159,14 +159,14 @@ export interface KlineResponse {
 
 export interface IndicatorSpec {
   indicator_type?: string;
-  params?: Record<string, any> | null;
+  params?: Record<string, unknown> | null;
   abbreviation?: string;
-  parameters?: Record<string, any>;
+  parameters?: Record<string, unknown>;
 }
 
 export interface IndicatorResult {
   abbreviation?: string;
-  parameters?: Record<string, any>;
+  parameters?: Record<string, unknown>;
   outputs?: IndicatorValueOutput[];
   panel_type?: string;
   reference_lines?: number[] | null;
@@ -184,7 +184,7 @@ export interface IndicatorInfo {
   indicator_name?: string;
   category?: string;
   description?: string;
-  default_params?: Record<string, any>;
+  default_params?: Record<string, unknown>;
   output_fields?: string[];
 }
 
@@ -195,7 +195,7 @@ export interface IndicatorMetadata {
   category?: string;
   description?: string;
   panel_type?: string;
-  parameters?: Record<string, any>[];
+  parameters?: Record<string, unknown>[];
   outputs?: Record<string, string>[];
   reference_lines?: number[] | null;
   min_data_points_formula?: string;
@@ -235,9 +235,9 @@ export interface MarketOverview {
   flat_count?: number;
   total_volume?: number | null;
   total_turnover?: number | null;
-  top_gainers?: Record<string, any>[];
-  top_losers?: Record<string, any>[];
-  most_active?: Record<string, any>[];
+  top_gainers?: Record<string, unknown>[];
+  top_losers?: Record<string, unknown>[];
+  most_active?: Record<string, unknown>[];
 }
 
 export interface MarketIndexItem {
@@ -330,7 +330,7 @@ export interface AnnouncementBase {
   url?: string | null;
   content?: string | null;
   summary?: string | null;
-  keywords?: any[];
+  keywords?: unknown[];
   importance_level?: number;
   data_source?: string;
   source_id?: string | null;
@@ -342,9 +342,9 @@ export interface AnnouncementStatsResponse {
   total_count?: number;
   today_count?: number;
   important_count?: number;
-  by_source?: Record<string, any>;
-  by_type?: Record<string, any>;
-  by_sentiment?: Record<string, any>;
+  by_source?: Record<string, unknown>;
+  by_type?: Record<string, unknown>;
+  by_sentiment?: Record<string, unknown>;
 }
 
 export interface RealTimeQuoteResponse {
@@ -401,7 +401,7 @@ export interface DragonTigerListResponse {
 
 export interface StockListResponse {
   success?: boolean;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   timestamp?: string;
 }
 

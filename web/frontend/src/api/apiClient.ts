@@ -58,28 +58,30 @@ instance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor - returns full UnifiedResponse
+// Response interceptor - preserve AxiosResponse shape
 instance.interceptors.response.use(
-  (response: AxiosResponse<UnifiedResponse<any>>): any => {
+  (response: AxiosResponse<UnifiedResponse<unknown>>): AxiosResponse<UnifiedResponse<unknown>> => {
     // Extract tracing headers
     const requestId = response.headers['x-request-id'] || ''
-    const processTime = response.headers['x-process-time'] || ''
+    const processTime =
+      response.headers['x-process-time'] ||
+      response.headers['x-process-time-ms'] ||
+      ''
 
     // Merge tracing into data if it's a UnifiedResponse
     if (response.data && typeof response.data === 'object') {
       response.data.request_id = requestId || response.data.request_id || ''
-      // We can also attach process time to the object if needed for monitoring
-      if (processTime) {
-        (response.data as any).process_time = processTime
+      if (!response.data.process_time && typeof processTime === 'string' && processTime.trim()) {
+        response.data.process_time = processTime
       }
     }
 
-    return response.data
+    return response
   },
   (error) => {
     // Extract tracing headers even on error if available
     const requestId = error.response?.headers?.['x-request-id'] || '';
-    
+
     // Handle JWT token expiration
     if (error.response?.status === 401) {
       // Clear expired token
@@ -101,7 +103,13 @@ instance.interceptors.response.use(
         errors: null,
       };
 
-      return Promise.resolve(unifiedError);
+      return Promise.resolve({
+        data: unifiedError,
+        status: 401,
+        statusText: 'Unauthorized',
+        headers: error.response?.headers || {},
+        config: error.config || ({ headers: {} } as InternalAxiosRequestConfig),
+      } as AxiosResponse<UnifiedResponse<null>>);
     }
 
     // Transform error to UnifiedResponse format
@@ -117,7 +125,13 @@ instance.interceptors.response.use(
 
     // Return unified error format instead of throwing
     // This allows adapters to implement fallback logic
-    return Promise.resolve(unifiedError);
+    return Promise.resolve({
+      data: unifiedError,
+      status: error.response?.status || 500,
+      statusText: error.response?.statusText || 'Error',
+      headers: error.response?.headers || {},
+      config: error.config || ({ headers: {} } as InternalAxiosRequestConfig),
+    } as AxiosResponse<UnifiedResponse<null>>);
   }
 );
 
@@ -158,35 +172,35 @@ export const apiClient = {
     if (import.meta.env.VITE_USE_MOCK_DATA) {
       return mockApiClient.get<T>(url, config);
     }
-    return instance.get(url, config);
+    return instance.get<T>(url, config).then((response) => response.data);
   },
 
   post<T = UnifiedResponse>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
     if (import.meta.env.VITE_USE_MOCK_DATA) {
       return mockApiClient.post<T>(url, data, config);
     }
-    return instance.post(url, data, config);
+    return instance.post<T>(url, data, config).then((response) => response.data);
   },
 
   put<T = UnifiedResponse>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
     if (import.meta.env.VITE_USE_MOCK_DATA) {
       return mockApiClient.put<T>(url, data, config);
     }
-    return instance.put(url, data, config);
+    return instance.put<T>(url, data, config).then((response) => response.data);
   },
 
   patch<T = UnifiedResponse>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
     if (import.meta.env.VITE_USE_MOCK_DATA) {
       return mockApiClient.patch<T>(url, data, config);
     }
-    return instance.patch(url, data, config);
+    return instance.patch<T>(url, data, config).then((response) => response.data);
   },
 
   delete<T = UnifiedResponse>(url: string, config?: RequestConfig): Promise<T> {
     if (import.meta.env.VITE_USE_MOCK_DATA) {
       return mockApiClient.delete<T>(url, config);
     }
-    return instance.delete(url, config);
+    return instance.delete<T>(url, config).then((response) => response.data);
   },
 };
 
