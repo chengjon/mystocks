@@ -3,6 +3,11 @@
 # 0. 清理残留进程
 pm2 delete all > /dev/null 2>&1
 
+# 端口配置（与 .env 一致）
+TARGET_BACKEND_PORT="${BACKEND_PORT:-8020}"
+TARGET_FRONTEND_PORT="${FRONTEND_PORT:-3020}"
+TARGET_FRONTEND_BACKUP_PORT="${FRONTEND_BACKUP_PORT:-3021}"
+
 # 1. 启动服务
 echo "--- Starting Services ---"
 pm2 start ecosystem.test.config.js
@@ -10,7 +15,7 @@ pm2 start ecosystem.test.config.js
 # 2. 探测后端
 MAX_RETRIES=20
 for i in $(seq 1 $MAX_RETRIES); do
-    if curl -s http://localhost:8000/health > /dev/null; then
+    if curl -s "http://localhost:${TARGET_BACKEND_PORT}/health" > /dev/null; then
         echo "Backend is READY"
         break
     fi
@@ -19,9 +24,8 @@ done
 
 # 3. 探测前端
 FOUND_PORT=""
-TARGET_FRONTEND_PORT="${FRONTEND_PORT:-3020}"
 for i in $(seq 1 $MAX_RETRIES); do
-    for port in "$TARGET_FRONTEND_PORT" {3000..3009}; do
+    for port in "$TARGET_FRONTEND_PORT" "$TARGET_FRONTEND_BACKUP_PORT"; do
         if curl -s -f http://localhost:$port > /dev/null; then
             FOUND_PORT=$port
             echo "Frontend FOUND on $FOUND_PORT"
