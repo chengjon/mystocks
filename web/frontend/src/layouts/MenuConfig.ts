@@ -95,6 +95,8 @@ const STRATEGY_DOMAIN: MenuItem = {
   businessKey: 'domain.strategy',
   children: [
     { path: '/strategy/repo', label: '策略仓库', icon: ARTDECO_ICONS.STRATEGY, businessKey: 'strategy.repo' },
+    { path: '/strategy/parameters', label: '参数设置', icon: 'Indicator', businessKey: 'strategy.parameters' },
+    { path: '/strategy/signals', label: '策略信号', icon: ARTDECO_ICONS.SIGNALS, businessKey: 'strategy.signals' },
     { path: '/strategy/backtest', label: '回测引擎', icon: ARTDECO_ICONS.BACKTEST, businessKey: 'strategy.backtest' },
     { path: '/strategy/gpu', label: '加速监控', icon: ARTDECO_ICONS.GPU, businessKey: 'strategy.gpu', badge: 'PRO' },
     { path: '/strategy/opt', label: '参数优化', icon: 'Indicator', businessKey: 'strategy.opt' },

@@ -1,12 +1,25 @@
 #!/bin/bash
 
-# 0. 清理残留进程
-pm2 delete all > /dev/null 2>&1
+set -euo pipefail
 
-# 端口配置（与 .env 一致）
-TARGET_BACKEND_PORT="${BACKEND_PORT:-8020}"
-TARGET_FRONTEND_PORT="${FRONTEND_PORT:-3020}"
-TARGET_FRONTEND_BACKUP_PORT="${FRONTEND_BACKUP_PORT:-3021}"
+if [ -f ".env" ]; then
+    set -a
+    # shellcheck disable=SC1091
+    source ".env"
+    set +a
+fi
+
+# 0. 清理残留进程
+pm2 delete all > /dev/null 2>&1 || true
+
+# 端口配置（由 .env 提供，不允许硬编码默认端口）
+: "${BACKEND_PORT:?Missing BACKEND_PORT in .env}"
+: "${FRONTEND_PORT:?Missing FRONTEND_PORT in .env}"
+: "${FRONTEND_BACKUP_PORT:?Missing FRONTEND_BACKUP_PORT in .env}"
+
+TARGET_BACKEND_PORT="${BACKEND_PORT}"
+TARGET_FRONTEND_PORT="${FRONTEND_PORT}"
+TARGET_FRONTEND_BACKUP_PORT="${FRONTEND_BACKUP_PORT}"
 
 # 1. 启动服务
 echo "--- Starting Services ---"
@@ -48,10 +61,12 @@ sleep 15
 # 4. 运行测试
 echo "--- Running Tests on http://localhost:$FOUND_PORT ---"
 export BASE_URL="http://localhost:$FOUND_PORT"
-npx playwright test tests/navigation-consistency.spec.ts --config=playwright.config.ts --project=chromium
-
-TEST_EXIT_CODE=$?
+if npx playwright test tests/navigation-consistency.spec.ts --config=playwright.config.ts --project=chromium; then
+    TEST_EXIT_CODE=0
+else
+    TEST_EXIT_CODE=$?
+fi
 
 # 5. 清理
-pm2 delete all
+pm2 delete all || true
 exit $TEST_EXIT_CODE

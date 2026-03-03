@@ -5,13 +5,42 @@ on:
     branches: [ main, develop ]
     paths:
       - 'web/frontend/**'
+      - 'docs/plans/frontend-page-optimization-list.md'
+      - 'scripts/dev/frontend_optimization_audit.py'
       - '.github/workflows/frontend-testing.yml'
   pull_request:
     branches: [ main, develop ]
     paths:
       - 'web/frontend/**'
+      - 'docs/plans/frontend-page-optimization-list.md'
+      - 'scripts/dev/frontend_optimization_audit.py'
 
 jobs:
+  frontend-optimization-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Run strict frontend optimization audit
+      run: |
+        python scripts/dev/frontend_optimization_audit.py \
+          --repo-root . \
+          --strict \
+          --report-file reports/analysis/frontend-page-optimization-audit-report.md
+
+    - name: Upload frontend optimization audit report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-optimization-audit-report
+        path: reports/analysis/frontend-page-optimization-audit-report.md
+
   frontend-test:
     runs-on: ubuntu-latest
     defaults:
