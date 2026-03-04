@@ -16,6 +16,7 @@
   - **[CONFLICT_PREVENTION.md](./guides/CONFLICT_PREVENTION.md)**: 冲突预防 (v3.2)
   - **[GIT_REMOTE_NAME_STANDARD.md](./guides/GIT_REMOTE_NAME_STANDARD.md)**: 远程命名标准 (v3.2)
   - **[OPERATIONAL_RESILIENCE.md](./guides/OPERATIONAL_RESILIENCE.md)**: 运营韧性补充 (v3.2)
+  - **[AI_PROMPT_AND_MANUAL_SOP.md](./guides/AI_PROMPT_AND_MANUAL_SOP.md)**: AI复用 Prompt 与人工SOP
 - **[guides/templates/](./guides/templates/)**: 标准化任务书与报告模板 (v3.2)
   - **[TASK_TEMPLATE.md](./guides/templates/TASK_TEMPLATE.md)**: 任务与报告模板
   - **[FILE_OWNERSHIP.template](./guides/templates/FILE_OWNERSHIP.template)**: 文件所有权模板
