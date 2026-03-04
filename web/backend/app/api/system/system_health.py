@@ -542,7 +542,7 @@ def get_mock_system_logs(filter_errors: bool = False, limit: int = 100) -> List[
             category="system",
             operation="系统启动",
             message="MyStocks Backend服务启动成功",
-            details={"version": "2.2.0", "port": 8000},
+            details={"version": "2.2.0", "port": os.getenv("BACKEND_PORT", "unknown")},
             duration_ms=0,
             has_error=False,
         ),

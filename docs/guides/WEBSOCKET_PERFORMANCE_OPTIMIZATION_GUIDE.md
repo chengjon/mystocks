@@ -356,7 +356,7 @@ describe('WebSocket连接性能测试', () => {
     const ws = useWebSocket()
     const startTime = Date.now()
 
-    ws.connect('ws://localhost:8000/api/ws')
+    ws.connect('ws://localhost:8020/api/ws')
 
     await waitForConnection(ws)
 
@@ -370,7 +370,7 @@ describe('WebSocket连接性能测试', () => {
     const connections = Array.from({ length: 100 }, () => useWebSocket())
 
     await Promise.all(
-      connections.map(ws => ws.connect('ws://localhost:8000/api/ws'))
+      connections.map(ws => ws.connect('ws://localhost:8020/api/ws'))
     )
 
     const allConnected = connections.every(
@@ -388,7 +388,7 @@ describe('WebSocket连接性能测试', () => {
 describe('WebSocket消息吞吐量测试', () => {
   it('应该处理1000条消息/秒', async () => {
     const ws = useWebSocket()
-    ws.connect('ws://localhost:8000/api/ws')
+    ws.connect('ws://localhost:8020/api/ws')
 
     const messageCount = 1000
     const processed: any[] = []
@@ -420,7 +420,7 @@ describe('WebSocket消息吞吐量测试', () => {
 describe('WebSocket内存泄漏测试', () => {
   it('长时间运行不应该泄漏内存', async () => {
     const ws = useWebSocket()
-    ws.connect('ws://localhost:8000/api/ws')
+    ws.connect('ws://localhost:8020/api/ws')
 
     const initialMemory = process.memoryUsage().heapUsed
 
@@ -446,7 +446,7 @@ describe('WebSocket内存泄漏测试', () => {
 describe('WebSocket稳定性测试', () => {
   it('应该从网络错误中恢复', async () => {
     const ws = useWebSocket()
-    ws.connect('ws://localhost:8000/api/ws')
+    ws.connect('ws://localhost:8020/api/ws')
 
     // 模拟网络中断
     ws.error.value = new Event('error')
@@ -459,7 +459,7 @@ describe('WebSocket稳定性测试', () => {
 
   it('应该处理服务器重启', async () => {
     const ws = useWebSocket()
-    ws.connect('ws://localhost:8000/api/ws')
+    ws.connect('ws://localhost:8020/api/ws')
 
     // 模拟服务器关闭
     ws.disconnect()
@@ -468,7 +468,7 @@ describe('WebSocket稳定性测试', () => {
     await delay(5000)
 
     // 尝试重连
-    ws.connect('ws://localhost:8000/api/ws')
+    ws.connect('ws://localhost:8020/api/ws')
 
     await waitFor(() => ws.connectionState.value === 'connected')
 
@@ -499,7 +499,7 @@ npm run test:performance:report
 // load-test.yml
 
 config:
-  target: "ws://localhost:8000/api/ws"
+  target: "ws://localhost:8020/api/ws"
   phases:
     - duration: 60
       arrivalRate: 10

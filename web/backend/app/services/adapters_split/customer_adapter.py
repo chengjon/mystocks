@@ -5,8 +5,9 @@
 """
 
 import asyncio
-from typing import Dict, List, Optional
 import json
+import os
+from typing import Dict, List, Optional
 import websockets
 
 from .base_adapter import BaseAdapter
@@ -19,8 +20,17 @@ logger = __import__("logging").getLogger(__name__)
 class CustomerAdapter(BaseAdapter):
     """客户端数据源适配器"""
 
-    def __init__(self, ws_url: str = "ws://localhost:8000/ws"):
+    def __init__(self, ws_url: Optional[str] = None):
         super().__init__(name="Customer", source_type="customer")
+        if ws_url is None:
+            ws_url = os.getenv("BACKEND_WS_URL", "").strip()
+        if not ws_url:
+            backend_port = os.getenv("BACKEND_PORT", "").strip()
+            if not backend_port:
+                raise RuntimeError("Missing BACKEND_PORT in .env")
+            ws_url = f"ws://localhost:{backend_port}/ws"
+        self.ws_url = ws_url
+
         self.db_service = db_service
         self.quality_monitor = get_data_quality_monitor()
         self.websocket = None

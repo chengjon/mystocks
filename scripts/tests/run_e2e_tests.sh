@@ -19,8 +19,8 @@ NC='\033[0m' # No Color
 echo -e "${YELLOW}[1/6] 检查服务状态${NC}"
 echo "-------------------------------------"
 
-BACKEND_URL="http://localhost:8000"
-FRONTEND_URL="http://localhost:5173"
+BACKEND_URL="http://localhost:"
+FRONTEND_URL="http://localhost:"
 
 # 检查后端
 if curl -s "${BACKEND_URL}/api/health" > /dev/null 2>&1; then

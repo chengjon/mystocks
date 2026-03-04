@@ -177,7 +177,7 @@ Interactive showcase of all design elements:
 ```javascript
 const API_BASE_URL = '/api/v1';
 const API_V2_URL = '/api/v2';
-const WS_BASE_URL = 'ws://localhost:8000/ws/market/realtime';
+const WS_BASE_URL = 'ws://localhost:8020/ws/market/realtime';
 ```
 
 ### Implemented Endpoints

@@ -17,7 +17,7 @@
                     <div class="artdeco-trading-history__col artdeco-trading-history__col--status">状态</div>
                 </div>
                 <div class="artdeco-trading-history__body">
-                    <div class="artdeco-trading-history__row" v-for="trade in history" :key="trade.id">
+                    <div class="artdeco-trading-history__row" v-for="trade in displayHistory" :key="trade.id">
                         <div class="artdeco-trading-history__col artdeco-trading-history__col--time">
                             {{ trade.time }}
                         </div>
@@ -57,10 +57,14 @@
 </template>
 
 <script setup lang="ts">
+    import { computed, onMounted, ref } from 'vue'
     import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
+    import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
+    import { apiClient } from '@/api/apiClient'
+    import { extractTradesPayload, toTradingHistoryRows } from './tradingDataTransform'
 
     export interface TradeHistory {
-        id: number
+        id: string | number
         time: string
         symbol: string
         symbolName: string
@@ -74,9 +78,30 @@
         statusText: string
     }
 
-    defineProps<{
-        history: TradeHistory[]
+    const props = defineProps<{
+        history?: TradeHistory[]
     }>()
+
+    const internalHistory = ref<TradeHistory[]>([])
+    const { exec } = useArtDecoApi()
+
+    const displayHistory = computed(() => {
+        if (Array.isArray(props.history) && props.history.length > 0) {
+            return props.history
+        }
+        return internalHistory.value
+    })
+
+    const loadHistory = async () => {
+        const responseData = await exec(() => apiClient.get('/v1/trade/trades'), { silent: true })
+        internalHistory.value = toTradingHistoryRows(extractTradesPayload(responseData))
+    }
+
+    onMounted(() => {
+        if (!Array.isArray(props.history) || props.history.length === 0) {
+            loadHistory()
+        }
+    })
 </script>
 
 <style scoped lang="scss">

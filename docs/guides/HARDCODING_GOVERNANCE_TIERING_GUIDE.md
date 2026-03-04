@@ -129,8 +129,8 @@
 
 ```env
 # .env.development
-VITE_API_BASE_URL=http://localhost:8000
-VITE_WS_BASE_URL=ws://localhost:8000
+VITE_API_BASE_URL=http://localhost:8020
+VITE_WS_BASE_URL=ws://localhost:8020
 VITE_FEATURE_X_ENABLED=true
 ```
 
@@ -141,7 +141,7 @@ export const WS_BASE_URL = import.meta.env.VITE_WS_BASE_URL;
 ```
 
 - 禁止模式：
-  - 在组件/服务文件中直接写死 `http://localhost:8000`；
+  - 在组件/服务文件中直接写死 `http://localhost:8020`；
   - 在前端代码中放置任何真实 `token/secret/password`。
 
 ## 6. CI/CD 门禁建议

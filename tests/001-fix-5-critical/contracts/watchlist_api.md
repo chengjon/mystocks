@@ -2,7 +2,7 @@
 
 **Feature**: Fix 5 Critical Issues in OpenStock Demo
 **API Version**: 1.0
-**Base URL**: `http://localhost:8000/api`
+**Base URL**: `http://localhost:8020/api`
 **Authentication**: Required (JWT Bearer token)
 
 ## Overview
@@ -22,7 +22,7 @@ Watchlist management endpoints for creating groups, adding stocks, and organizin
 **Request**:
 ```http
 GET /api/watchlist/groups HTTP/1.1
-Host: localhost:8000
+Host: localhost:8020
 Authorization: Bearer <JWT_TOKEN>
 ```
 
@@ -67,7 +67,7 @@ Authorization: Bearer <JWT_TOKEN>
 **Request**:
 ```http
 POST /api/watchlist/groups HTTP/1.1
-Host: localhost:8000
+Host: localhost:8020
 Authorization: Bearer <JWT_TOKEN>
 Content-Type: application/json
 
@@ -121,7 +121,7 @@ Content-Type: application/json
 **Request**:
 ```http
 PUT /api/watchlist/groups/3 HTTP/1.1
-Host: localhost:8000
+Host: localhost:8020
 Authorization: Bearer <JWT_TOKEN>
 Content-Type: application/json
 
@@ -163,7 +163,7 @@ Content-Type: application/json
 **Request**:
 ```http
 DELETE /api/watchlist/groups/3 HTTP/1.1
-Host: localhost:8000
+Host: localhost:8020
 Authorization: Bearer <JWT_TOKEN>
 ```
 
@@ -197,7 +197,7 @@ Authorization: Bearer <JWT_TOKEN>
 **Request**:
 ```http
 GET /api/watchlist/groups/1/stocks HTTP/1.1
-Host: localhost:8000
+Host: localhost:8020
 Authorization: Bearer <JWT_TOKEN>
 ```
 
@@ -242,7 +242,7 @@ Authorization: Bearer <JWT_TOKEN>
 **Request**:
 ```http
 POST /api/watchlist/groups/1/stocks HTTP/1.1
-Host: localhost:8000
+Host: localhost:8020
 Authorization: Bearer <JWT_TOKEN>
 Content-Type: application/json
 
@@ -303,7 +303,7 @@ Content-Type: application/json
 **Request**:
 ```http
 PUT /api/watchlist/stocks/103 HTTP/1.1
-Host: localhost:8000
+Host: localhost:8020
 Authorization: Bearer <JWT_TOKEN>
 Content-Type: application/json
 
@@ -339,7 +339,7 @@ Content-Type: application/json
 **Request**:
 ```http
 DELETE /api/watchlist/stocks/103 HTTP/1.1
-Host: localhost:8000
+Host: localhost:8020
 Authorization: Bearer <JWT_TOKEN>
 ```
 

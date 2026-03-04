@@ -35,7 +35,11 @@ interface Props {
   activeFilter: string
 }
 
-defineProps<Props>()
+withDefaults(defineProps<Props>(), {
+  lhbData: () => [],
+  lhbDate: 'today',
+  activeFilter: 'buy'
+})
 const emit = defineEmits(['date-change', 'filter-change'])
 
 const dateOptions = [

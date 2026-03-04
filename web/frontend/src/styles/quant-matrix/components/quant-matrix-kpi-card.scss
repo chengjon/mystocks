@@ -1,0 +1,38 @@
+@import '@/styles/quant-matrix/index';
+
+.qm-kpi-card {
+  border: 1px solid var(--qm-border);
+  border-radius: var(--qm-radius-md);
+  background: var(--qm-surface-elevated);
+  padding: 12px 14px;
+}
+
+.qm-kpi-card__label {
+  margin: 0;
+  font-size: 12px;
+  color: var(--qm-text-muted);
+}
+
+.qm-kpi-card__value {
+  margin: 8px 0 0;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.qm-kpi-card__delta {
+  margin: 8px 0 0;
+  font-size: 12px;
+}
+
+.qm-kpi-card__delta--up {
+  color: var(--qm-success);
+}
+
+.qm-kpi-card__delta--down {
+  color: var(--qm-danger);
+}
+
+.qm-kpi-card__delta--neutral {
+  color: var(--qm-text-muted);
+}

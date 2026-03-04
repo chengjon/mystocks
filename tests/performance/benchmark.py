@@ -291,7 +291,7 @@ async def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="API Performance Benchmark")
-    parser.add_argument("--url", default="http://localhost:8000", help="Base URL")
+    parser.add_argument("--url", default="http://localhost:8020", help="Base URL")
     parser.add_argument("--users", type=int, default=10, help="Concurrent users")
     parser.add_argument("--iterations", type=int, default=100, help="Iterations per endpoint")
     parser.add_argument("--output", default="performance-benchmark-report.txt", help="Output file")

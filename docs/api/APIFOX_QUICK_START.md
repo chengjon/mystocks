@@ -24,7 +24,7 @@
 
 ```json
 {
-  "base_url": "http://localhost:8000",
+  "base_url": "http://localhost:8020",
   "auth_token": "",
   "csrf_token": ""
 }
@@ -330,7 +330,7 @@ Authorization: Bearer {{auth_token}}
 - **社区论坛**: https://community.apifox.com/
 
 ### MyStocks 资源
-- **API 文档**: http://localhost:8000/api/docs
+- **API 文档**: http://localhost:8020/api/docs
 - **导入指南**: `APIFOX_IMPORT_GUIDE.md`
 - **成功报告**: `APIFOX_IMPORT_SUCCESS.md`
 

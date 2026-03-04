@@ -70,9 +70,9 @@
             <p><strong>Problem:</strong> Cannot connect to CDN servers (jsDelivr/unpkg).</p>
             <p><strong>Solution:</strong> Please use one of these alternatives:</p>
             <ul style="text-align: left; display: inline-block;">
-                <li>📘 <strong>Swagger UI</strong>: <a href="/docs">http://localhost:8000/docs</a> (Recommended, fully functional)</li>
-                <li>📄 <strong>OpenAPI JSON</strong>: <a href="/openapi.json">http://localhost:8000/openapi.json</a></li>
-                <li>🌐 <strong>Online ReDoc</strong>: <a href="https://redocly.github.io/redoc/?url=http://localhost:8000/openapi.json" target="_blank">View with Online ReDoc</a></li>
+                <li>📘 <strong>Swagger UI</strong>: <a href="/docs">/docs</a> (Recommended, fully functional)</li>
+                <li>📄 <strong>OpenAPI JSON</strong>: <a href="/openapi.json">/openapi.json</a></li>
+                <li>🌐 <strong>Online ReDoc</strong>: <a id="online-redoc-link" href="https://redocly.github.io/redoc/?url=/openapi.json" target="_blank">View with Online ReDoc</a></li>
             </ul>
             <p style="margin-top: 20px; font-size: 14px; opacity: 0.7;">
                 <em>If you have local redoc.standalone.js, please place it in <code>backend/static/</code> directory.</em>
@@ -83,6 +83,12 @@
     <redoc spec-url='{{openapi_url}}'></redoc>
 
     <script>
+        const onlineRedocLink = document.getElementById('online-redoc-link');
+        if (onlineRedocLink) {
+            const openapiAbsoluteUrl = `${window.location.origin}/openapi.json`;
+            onlineRedocLink.href = `https://redocly.github.io/redoc/?url=${encodeURIComponent(openapiAbsoluteUrl)}`;
+        }
+
         // Multiple CDN sources with fallback mechanism
         const cdnSources = [
             'https://cdn.jsdelivr.net/npm/redoc@latest/bundles/redoc.standalone.js',

@@ -29,11 +29,11 @@
 ### 4. API 端点可访问性验证 ✅
 所有 5 个新端点都可以通过 curl 访问并返回有效 JSON：
 ```bash
-curl http://localhost:8000/api/system/database/pool-stats          # ✓ 可访问
-curl http://localhost:8000/api/system/architecture/layers        # ✓ 可访问
-curl http://localhost:8000/api/system/performance/metrics        # ✓ 可访问
-curl http://localhost:8000/api/system/data-classifications      # ✓ 可访问
-curl http://localhost:8000/api/system/datasources/capabilities   # ✓ 可访问
+curl http://localhost:8020/api/system/database/pool-stats          # ✓ 可访问
+curl http://localhost:8020/api/system/architecture/layers        # ✓ 可访问
+curl http://localhost:8020/api/system/performance/metrics        # ✓ 可访问
+curl http://localhost:8020/api/system/data-classifications      # ✓ 可访问
+curl http://localhost:8020/api/system/datasources/capabilities   # ✓ 可访问
 ```
 
 ### 5. Pylint 修复 ✅
@@ -63,7 +63,7 @@ curl http://localhost:8000/api/system/datasources/capabilities   # ✓ 可访问
 - ✅ `run_e2e_tests.sh` - 自动化测试脚本
 
 ### 9. 前后端服务运行 ✅
-- ✅ 后端服务: 运行在 http://localhost:8000
+- ✅ 后端服务: 运行在 http://localhost:8020
 - ✅ 前端服务: 运行在 http://localhost:5173
 - ✅ 服务健康检查: 通过
 

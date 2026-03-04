@@ -6,6 +6,7 @@ API健康检查工具测试套件 v2.0
 """
 
 import sys
+import os
 import pytest
 import requests
 from unittest.mock import patch, Mock
@@ -17,6 +18,8 @@ sys.path.insert(0, str(project_root))
 
 # 导入被测试的模块
 from src.utils.check_api_health_v2 import Colors, APIHealthChecker, main
+
+EXPECTED_BASE_URL = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
 
 
 class TestColors:
@@ -126,7 +129,7 @@ class TestAPIHealthChecker:
 
             assert result is True
             mock_get.assert_called_once()
-            mock_get.assert_called_with("http://localhost:8000/api/docs", timeout=2)
+            mock_get.assert_called_with(f"{EXPECTED_BASE_URL}/api/docs", timeout=2)
 
     def test_check_backend_running_failure(self):
         """测试后端服务检查失败情况"""
@@ -558,7 +561,7 @@ class TestIntegrationScenarios:
                 endpoint_result = checker.test_endpoint(
                     name="Test Endpoint",
                     method="GET",
-                    url="http://localhost:8000/api/test",
+                    url=f"{EXPECTED_BASE_URL}/api/test",
                     priority="high",
                 )
 

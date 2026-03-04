@@ -9,6 +9,7 @@ import sys
 import json
 import requests
 import time
+import os
 from datetime import datetime
 from typing import Dict, List, Any
 from pathlib import Path
@@ -43,7 +44,7 @@ class OWASPSecurityTester:
     """OWASP Top 10 安全测试器"""
 
     def __init__(self):
-        self.base_url = "http://localhost:8000"
+        self.base_url = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
         self.results: List[SecurityTestResult] = []
         self.security_headers = {}
         self.session = requests.Session()

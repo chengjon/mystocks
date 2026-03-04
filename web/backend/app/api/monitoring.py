@@ -592,7 +592,7 @@ async def get_monitoring_status():
     **示例**:
     ```bash
     # 查询监控状态
-    curl -X GET "http://localhost:8000/api/monitoring/control/status"
+    curl -X GET "http://localhost:${BACKEND_PORT}/api/monitoring/control/status"
     ```
 
     **响应示例**:

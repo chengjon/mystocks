@@ -8,6 +8,7 @@ MyStocks 自动化测试和部署系统
 import sys
 import json
 import subprocess
+import os
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any
@@ -25,6 +26,7 @@ class AutomationTestDeployManager:
 
     def __init__(self):
         self.project_root = Path("/opt/claude/mystocks_spec")
+        self.backend_port = os.getenv("BACKEND_PORT", "8020")
         self.test_results = {}
         self.deployment_status = {}
         self.automation_configs = {}
@@ -468,7 +470,7 @@ class AutomationTestDeployManager:
 
         prometheus_config = {
             "scrape_configs": [
-                {"job_name": "mystocks-backend", "targets": ["localhost:8000"]},
+                {"job_name": "mystocks-backend", "targets": [f"localhost:{self.backend_port}"]},
                 {"job_name": "gpu-api", "targets": ["localhost:50051"]},
                 {"job_name": "database", "targets": ["localhost:5432"]},
             ],
@@ -567,7 +569,7 @@ class AutomationTestDeployManager:
         """创建部署指南"""
         guide_path = self.project_root / "docs" / "DEPLOYMENT_GUIDE.md"
 
-        guide_content = """# MyStocks 部署指南
+        guide_content = f"""# MyStocks 部署指南
 
 ## 快速部署
 
@@ -593,7 +595,7 @@ python src/gpu/api_system/wsl2_gpu_init.py
 ```
 
 ### 3. 验证部署
-- 访问 http://localhost:8000/api/docs
+- 访问 http://localhost:{self.backend_port}/api/docs
 - 检查监控系统
 - 验证AI功能
 """

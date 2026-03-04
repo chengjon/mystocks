@@ -92,8 +92,8 @@
   - 269 个端点的注册和聚合
   - OpenAPI/Swagger 自动文档生成
   - CORS、认证、错误处理中间件
-  - Swagger UI: http://localhost:8000/docs
-  - ReDoc: http://localhost:8000/redoc
+  - Swagger UI: http://localhost:8020/docs
+  - ReDoc: http://localhost:8020/redoc
 ```
 
 ---
@@ -205,7 +205,7 @@ WEBSOCKET: 1 个 (0.4%)    - 实时通信
 
 1. **验证 Swagger UI 更新**
    - 重启后端服务
-   - 访问 http://localhost:8000/docs
+   - 访问 http://localhost:8020/docs
    - 验证 3 个健康检查端点的新文档
 
 2. **提交代码更改**

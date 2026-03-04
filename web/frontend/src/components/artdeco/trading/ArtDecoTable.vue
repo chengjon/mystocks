@@ -123,7 +123,7 @@
 
     interface Props {
         columns?: Column[]
-        data: unknown[]
+        data?: unknown[]
         title?: string
         rowKey?: string
         pagination?: boolean
@@ -142,6 +142,7 @@
 
     const props = withDefaults(defineProps<Props>(), {
         columns: () => [],
+        data: () => [],
         title: '',
         rowKey: 'id',
         pagination: false,

@@ -253,11 +253,11 @@ jobs:
           # 启动后端服务
           cd web/backend
           pip install -r requirements.txt
-          python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+          python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 &
           BACKEND_PID=$!
 
           # 等待服务启动
-          timeout 60 bash -c 'until curl -f http://localhost:8000/health; do sleep 2; done'
+          timeout 60 bash -c 'until curl -f http://localhost:8020/health; do sleep 2; done'
 
       - name: Install Playwright
         run: |
@@ -292,14 +292,14 @@ jobs:
         run: |
           # 启动应用
           cd web/backend
-          python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+          python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 &
           BACKEND_PID=$!
 
           # 等待服务启动
           sleep 10
 
           # 运行性能测试
-          lighthouse http://localhost:8000/docs --output json --output html --output-path ./lighthouse-report.html
+          lighthouse http://localhost:8020/docs --output json --output html --output-path ./lighthouse-report.html
 
       - name: Upload performance report
         uses: actions/upload-artifact@v3
@@ -490,7 +490,7 @@ create_tmux_session() {
     tmux split-window -v
 
     # 启动服务
-    tmux send-keys -t "$session_name:0.0" "cd web/backend && python -m uvicorn app.main:app --reload --port 8000" C-m
+    tmux send-keys -t "$session_name:0.0" "cd web/backend && python -m uvicorn app.main:app --reload --port 8020" C-m
     tmux send-keys -t "$session_name:0.1" "cd web/frontend && npm run dev" C-m
     tmux send-keys -t "$session_name:0.2" "cd monitoring && docker-compose up" C-m
     tmux send-keys -t "$session_name:0.3" "lnav /var/log/pm2/*.log" C-m

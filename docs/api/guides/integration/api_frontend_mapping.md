@@ -21,7 +21,7 @@
 ### 排查 Bug 的步骤
 
 1. **定位问题页面/组件** → 在本文档中查找对应的 API 列表
-2. **检查 API 状态** → 访问 http://localhost:8000/api/docs 测试 API
+2. **检查 API 状态** → 访问 http://localhost:8020/api/docs 测试 API
 3. **查看网络请求** → 浏览器 F12 → Network 标签
 4. **验证请求参数** → 对比文档中的参数要求
 5. **查看后端日志** → 检查 API 错误信息
@@ -30,7 +30,7 @@
 
 | 工具 | 用途 | 访问方式 |
 |------|------|----------|
-| **Swagger UI** | 测试 API | http://localhost:8000/api/docs |
+| **Swagger UI** | 测试 API | http://localhost:8020/api/docs |
 | **浏览器 DevTools** | 查看网络请求 | F12 → Network |
 | **后端日志** | 查看错误详情 | `tail -f logs/app.log` |
 | **本文档** | API-页面映射 | 当前文档 |
@@ -383,7 +383,7 @@ interface Props {
 #!/bin/bash
 # 文件: scripts/check_api_health.sh
 
-BASE_URL="http://localhost:8000"
+BASE_URL="http://localhost:8020"
 
 echo "=== MyStocks API 健康检查 ==="
 echo
@@ -629,7 +629,7 @@ const connectSSE = (url) => {
 
 - **API 完整文档**: [API_GUIDE.md](./API_GUIDE.md)
 - **OpenAPI 规范**: [openapi.json](./openapi.json)
-- **Swagger UI**: http://localhost:8000/api/docs
+- **Swagger UI**: http://localhost:8020/api/docs
 - **项目 README**: [../../README.md](../../README.md)
 
 ---

@@ -206,7 +206,7 @@
 ```
 
 #### 方式2: Web界面
-1. 访问 http://localhost:3001/tasks
+1. 访问 http://localhost:3020/tasks
 2. 点击"新建任务"
 3. 填写表单并提交
 4. 任务自动调度执行
@@ -216,7 +216,7 @@
 import requests
 
 # 注册任务
-response = requests.post('http://localhost:8888/api/tasks/register', json={
+response = requests.post('http://localhost:8020/api/tasks/register', json={
     "task_id": "hourly_task",
     "task_name": "每小时任务",
     "task_type": "cron",
@@ -230,7 +230,7 @@ response = requests.post('http://localhost:8888/api/tasks/register', json={
 })
 
 # 启动任务
-requests.post('http://localhost:8888/api/tasks/hourly_task/start')
+requests.post('http://localhost:8020/api/tasks/hourly_task/start')
 ```
 
 ---
@@ -296,26 +296,26 @@ web/
 
 打开浏览器访问：
 ```
-http://localhost:3001/tasks
+http://localhost:3020/tasks
 ```
 
 ### 3. 查看API文档
 
 ```
-http://localhost:8888/api/docs
+http://localhost:8020/api/docs
 ```
 
 ### 4. 测试任务API
 
 ```bash
 # 健康检查
-curl http://localhost:8888/api/tasks/health
+curl http://localhost:8020/api/tasks/health
 
 # 获取任务列表
-curl http://localhost:8888/api/tasks/
+curl http://localhost:8020/api/tasks/
 
 # 查看统计信息
-curl http://localhost:8888/api/tasks/statistics/
+curl http://localhost:8020/api/tasks/statistics/
 ```
 
 ---

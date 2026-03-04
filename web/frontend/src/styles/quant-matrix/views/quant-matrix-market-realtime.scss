@@ -1,0 +1,44 @@
+@import '@/styles/quant-matrix/index';
+
+.qm-market-realtime {
+  display: grid;
+  grid-template-columns: minmax(280px, 320px) 1fr;
+  gap: 16px;
+}
+
+.qm-market-realtime__watchlist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.qm-market-realtime__watchlist li {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid var(--qm-border);
+  border-radius: var(--qm-radius-sm);
+  padding: 9px 10px;
+}
+
+.qm-market-realtime__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.qm-market-realtime__table th,
+.qm-market-realtime__table td {
+  border-bottom: 1px solid var(--qm-border);
+  padding: 10px;
+  font-size: 13px;
+  text-align: left;
+}
+
+.qm-market-realtime .is-up {
+  color: var(--qm-success);
+}
+
+.qm-market-realtime .is-down {
+  color: var(--qm-danger);
+}

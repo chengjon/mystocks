@@ -135,11 +135,11 @@ $ node verify-mount.js
 ### 服务状态
 
 ```bash
-$ lsof -i :3001
+$ lsof -i :3020
 COMMAND   PID USER   FD   TYPE  DEVICE SIZE/OFF NODE NAME
-node    60810 root   31u  IPv4 4567659      0t0  TCP *:3001 (LISTEN)
+node    60810 root   31u  IPv4 4567659      0t0  TCP *:3020 (LISTEN)
 
-$ curl -s http://localhost:3001/ | grep '<div id="app">'
+$ curl -s http://localhost:3020/ | grep '<div id="app">'
 <div id="app">
 ```
 
@@ -218,7 +218,7 @@ $ curl -s http://localhost:3001/ | grep '<div id="app">'
 
 1. **在浏览器中验证**
    ```
-   http://localhost:3001
+   http://localhost:3020
    ```
    - 查看加载动画
    - 测试导航功能

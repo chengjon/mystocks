@@ -358,10 +358,10 @@ cd /opt/claude/mystocks_spec/web/frontend
 npm install
 
 # 开发模式运行 (默认端口 5173，需手动指定前端端口)
-npm run dev -- --port 3001
+npm run dev -- --port 3020
 
 # 指定端口运行
-npm run dev -- --port 3001  # 前端服务1
+npm run dev -- --port 3020  # 前端服务1
 npm run dev -- --port 3002  # 前端服务2
 # ...
 
@@ -376,7 +376,7 @@ npm run build
 cd /opt/claude/mystocks_spec/web/backend
 
 # 开发模式运行 (默认端口 8000)
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 
 # 指定端口运行
 uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload  # 后端服务1
@@ -391,10 +391,10 @@ uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload  # 后端服务2
 ```python
 # CORS 配置 (前端端口范围: 3000-3009，后端端口范围: 8000-8009)
 cors_origins_str: str = (
-    "http://localhost:3000,http://localhost:3001,http://localhost:3002,"
+    "http://localhost:3000,http://localhost:3020,http://localhost:3002,"
     "http://localhost:3003,http://localhost:3004,http://localhost:3005,"
     "http://localhost:3006,http://localhost:3007,http://localhost:3008,http://localhost:3009,"
-    "http://localhost:8000,http://localhost:8001,http://localhost:8002,"
+    "http://localhost:8020,http://localhost:8001,http://localhost:8002,"
     "http://localhost:8003,http://localhost:8004,http://localhost:8005,"
     "http://localhost:8006,http://localhost:8007,http://localhost:8008,http://localhost:8009"
 )
@@ -404,8 +404,8 @@ cors_origins_str: str = (
 
 **症状**: 浏览器控制台显示 CORS 错误
 ```
-Access to XMLHttpRequest at 'http://localhost:8000/api/...'
-from origin 'http://localhost:3001' has been blocked by CORS policy
+Access to XMLHttpRequest at 'http://localhost:8020/api/...'
+from origin 'http://localhost:3020' has been blocked by CORS policy
 ```
 
 **解决方案**:

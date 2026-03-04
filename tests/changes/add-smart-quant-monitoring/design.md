@@ -815,13 +815,13 @@ python scripts/migrations/verify_migration.py
 ```bash
 # 1. 启动后端
 cd web/backend
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+uvicorn app.main:app --host 0.0.0.0 --port 8020
 
 # 2. 验证异步监控（自动启动）
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 
 # 3. 测试API
-curl -X POST http://localhost:8000/api/v1/monitoring/analysis/calculate \
+curl -X POST http://localhost:8020/api/v1/monitoring/analysis/calculate \
   -H "Authorization: Bearer $TOKEN" \
   -d '{"watchlist_id": 1}'
 ```

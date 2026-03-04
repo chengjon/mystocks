@@ -16,6 +16,10 @@ sys.path.insert(0, project_root)
 os.environ["PYTHONPATH"] = project_root
 
 # 启动命令
+backend_port = os.environ.get("BACKEND_PORT")
+if not backend_port:
+    raise RuntimeError("Missing BACKEND_PORT in .env")
+
 cmd = [
     sys.executable,
     "-m",
@@ -24,7 +28,7 @@ cmd = [
     "--host",
     "0.0.0.0",
     "--port",
-    "8000",
+    backend_port,
     "--reload",
 ]
 

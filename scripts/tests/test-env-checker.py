@@ -17,6 +17,9 @@ import requests
 from pathlib import Path
 from typing import Dict, Any, Optional
 
+FRONTEND_URL = os.getenv("FRONTEND_URL", f"http://localhost:{os.getenv('FRONTEND_PORT', '3020')}")
+BACKEND_URL = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
+
 
 class TestEnvironmentChecker:
     """测试环境检查器"""
@@ -199,12 +202,12 @@ class TestEnvironmentChecker:
 
         services = {
             "frontend": {
-                "url": "http://localhost:5173",
+                "url": FRONTEND_URL,
                 "status": "unknown",
                 "response_time": None,
             },
             "backend": {
-                "url": "http://localhost:8000",
+                "url": BACKEND_URL,
                 "status": "unknown",
                 "response_time": None,
             },

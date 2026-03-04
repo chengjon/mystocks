@@ -240,7 +240,7 @@ cd web/backend
 pip install fastapi sqlalchemy psycopg2-binary pydantic
 
 # 启动开发服务器
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --reload --port 8020
 ```
 
 ### 3. 前端开发
@@ -258,13 +258,13 @@ npm run dev  # http://localhost:5173
 
 ```bash
 # 访问API文档
-http://localhost:8000/api/docs  # Swagger UI
+http://localhost:8020/api/docs  # Swagger UI
 
 # 测试策略API
-curl -X GET "http://localhost:8000/api/v1/strategy/strategies"
+curl -X GET "http://localhost:8020/api/v1/strategy/strategies"
 
 # 测试风险API
-curl -X GET "http://localhost:8000/api/v1/risk/dashboard"
+curl -X GET "http://localhost:8020/api/v1/risk/dashboard"
 ```
 
 ---

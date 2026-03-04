@@ -99,7 +99,7 @@ black --check src/
 
 ### 每日检查清单
 - [ ] 前端服务状态 (http://localhost:3000)
-- [ ] 后端服务状态 (http://localhost:8000)
+- [ ] 后端服务状态 (http://localhost:8020)
 - [ ] 数据库连接状态
 - [ ] API健康检查
 - [ ] 安全扫描结果
@@ -146,7 +146,7 @@ git reset --hard backup-2025-12-15
 ```bash
 # 每次修改后必须运行的测试
 python -m pytest tests/ -v
-curl -f http://localhost:8000/health
+curl -f http://localhost:8020/health
 curl -f http://localhost:3000
 python scripts/switch_data_mode.py --status
 ```
@@ -177,7 +177,7 @@ python scripts/security/basic_security_check.py
 
 **第二步**: 检查当前服务状态
 ```bash
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 curl http://localhost:3000
 ```
 

@@ -17,6 +17,7 @@ Date: 2025-11-13
 
 import json
 import time
+import os
 import pandas as pd
 import numpy as np
 import requests
@@ -28,7 +29,7 @@ class MLFeatureEngineeringValidator:
     """机器学习特征工程验证器"""
 
     def __init__(self):
-        self.base_url = "http://localhost:8000"
+        self.base_url = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
         self.validation_results = []
 
     def validate_all(self) -> Dict[str, Any]:

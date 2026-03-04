@@ -154,11 +154,11 @@ npm run dev
 ### API测试
 ```bash
 # 获取A股热力图数据
-curl -X GET "http://localhost:8000/api/market/heatmap?market=cn&limit=30" \
+curl -X GET "http://localhost:8020/api/market/heatmap?market=cn&limit=30" \
   -H "Authorization: Bearer YOUR_TOKEN"
 
 # 获取港股热力图数据
-curl -X GET "http://localhost:8000/api/market/heatmap?market=hk&limit=30" \
+curl -X GET "http://localhost:8020/api/market/heatmap?market=hk&limit=30" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 

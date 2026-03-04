@@ -241,7 +241,7 @@ async function globalSetup(config: FullConfig) {
     process.env.NODE_ENV = 'test';
     process.env.USE_MOCK_DATA = 'true';
     process.env.PLAYWRIGHT_BASE_URL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173';
-    process.env.PLAYWRIGHT_API_URL = process.env.PLAYWRIGHT_API_URL || 'http://localhost:8000';
+    process.env.PLAYWRIGHT_API_URL = process.env.PLAYWRIGHT_API_URL || 'http://localhost:8020';
 
     console.log(`📋 Test Configuration:`);
     console.log(`   Base URL: ${process.env.PLAYWRIGHT_BASE_URL}`);

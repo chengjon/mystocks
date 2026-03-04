@@ -2,7 +2,7 @@
 
 **生成日期**: 2025-11-30
 **API 版本**: 1.0.0
-**基础 URL**: http://localhost:8000
+**基础 URL**: http://localhost:8020
 
 ---
 
@@ -49,7 +49,7 @@ GET /health
 
 #### 请求示例
 ```bash
-curl -X GET "http://localhost:8000/health"
+curl -X GET "http://localhost:8020/health"
 ```
 
 #### 响应示例
@@ -78,7 +78,7 @@ GET /
 
 #### 请求示例
 ```bash
-curl -X GET "http://localhost:8000/"
+curl -X GET "http://localhost:8020/"
 ```
 
 #### 响应
@@ -101,7 +101,7 @@ GET /docs
 
 #### 请求示例
 ```bash
-curl -X GET "http://localhost:8000/docs"
+curl -X GET "http://localhost:8020/docs"
 ```
 
 #### 响应
@@ -112,7 +112,7 @@ curl -X GET "http://localhost:8000/docs"
 
 #### 访问方法
 ```
-在浏览器中打开: http://localhost:8000/docs
+在浏览器中打开: http://localhost:8020/docs
 ```
 
 ---
@@ -129,7 +129,7 @@ GET /api/csrf-token
 
 #### 请求示例
 ```bash
-curl -X GET "http://localhost:8000/api/csrf-token"
+curl -X GET "http://localhost:8020/api/csrf-token"
 ```
 
 #### 请求参数
@@ -163,7 +163,7 @@ POST /api/auth/login
 
 #### 请求示例
 ```bash
-curl -X POST "http://localhost:8000/api/auth/login" \
+curl -X POST "http://localhost:8020/api/auth/login" \
   -H "Content-Type: application/json" \
   -d '{
     "username": "admin",
@@ -225,19 +225,19 @@ curl -X POST "http://localhost:8000/api/auth/login" \
 #### 使用返回的 Token
 ```bash
 # 在后续请求中，在 Authorization 头中添加 token
-curl -X GET "http://localhost:8000/api/auth/user" \
+curl -X GET "http://localhost:8020/api/auth/user" \
   -H "Authorization: Bearer <access_token>"
 ```
 
 #### 测试用例
 ```bash
 # 正确的凭证
-curl -X POST "http://localhost:8000/api/auth/login" \
+curl -X POST "http://localhost:8020/api/auth/login" \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"admin123"}'
 
 # 错误的凭证
-curl -X POST "http://localhost:8000/api/auth/login" \
+curl -X POST "http://localhost:8020/api/auth/login" \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"wrong"}'
 ```
@@ -256,7 +256,7 @@ GET /api/auth/user
 
 #### 请求示例
 ```bash
-curl -X GET "http://localhost:8000/api/auth/user" \
+curl -X GET "http://localhost:8020/api/auth/user" \
   -H "Authorization: Bearer <access_token>"
 ```
 
@@ -300,13 +300,13 @@ curl -X GET "http://localhost:8000/api/auth/user" \
 #### 测试用例
 ```bash
 # 首先登录获取 token
-TOKEN=$(curl -s -X POST "http://localhost:8000/api/auth/login" \
+TOKEN=$(curl -s -X POST "http://localhost:8020/api/auth/login" \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"admin123"}' \
   | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)
 
 # 使用 token 获取用户信息
-curl -X GET "http://localhost:8000/api/auth/user" \
+curl -X GET "http://localhost:8020/api/auth/user" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -318,7 +318,7 @@ curl -X GET "http://localhost:8000/api/auth/user" \
 
 #### 第1步: 登录
 ```bash
-curl -X POST "http://localhost:8000/api/auth/login" \
+curl -X POST "http://localhost:8020/api/auth/login" \
   -H "Content-Type: application/json" \
   -d '{
     "username": "admin",
@@ -342,7 +342,7 @@ curl -X POST "http://localhost:8000/api/auth/login" \
 
 #### 第2步: 使用 Token 获取用户信息
 ```bash
-curl -X GET "http://localhost:8000/api/auth/user" \
+curl -X GET "http://localhost:8020/api/auth/user" \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
@@ -453,20 +453,20 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVm
 
 ### 访问 Swagger UI
 ```
-URL: http://localhost:8000/docs
+URL: http://localhost:8020/docs
 描述: 交互式 API 文档，可在浏览器中直接测试所有端点
 ```
 
 ### OpenAPI Schema
 ```
-URL: http://localhost:8000/openapi.json
+URL: http://localhost:8020/openapi.json
 格式: JSON
 描述: 机器可读的 OpenAPI 3.1.0 规范
 ```
 
 ### API 健康检查
 ```
-URL: http://localhost:8000/health
+URL: http://localhost:8020/health
 方法: GET
 用途: 检查后端服务是否正常运行
 ```
@@ -482,7 +482,7 @@ import json
 
 # 登录
 response = requests.post(
-    "http://localhost:8000/api/auth/login",
+    "http://localhost:8020/api/auth/login",
     json={
         "username": "admin",
         "password": "admin123"
@@ -496,7 +496,7 @@ if response.status_code == 200:
     # 获取用户信息
     headers = {"Authorization": f"Bearer {token}"}
     user_response = requests.get(
-        "http://localhost:8000/api/auth/user",
+        "http://localhost:8020/api/auth/user",
         headers=headers
     )
 
@@ -506,7 +506,7 @@ if response.status_code == 200:
 ### 使用 JavaScript (Fetch API)
 ```javascript
 // 登录
-const loginResponse = await fetch('http://localhost:8000/api/auth/login', {
+const loginResponse = await fetch('http://localhost:8020/api/auth/login', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
@@ -521,7 +521,7 @@ const loginData = await loginResponse.json();
 const token = loginData.access_token;
 
 // 获取用户信息
-const userResponse = await fetch('http://localhost:8000/api/auth/user', {
+const userResponse = await fetch('http://localhost:8020/api/auth/user', {
   headers: {
     'Authorization': `Bearer ${token}`
   }
@@ -536,7 +536,7 @@ console.log(userData);
 #!/bin/bash
 
 # 第一步: 登录
-LOGIN_RESPONSE=$(curl -s -X POST "http://localhost:8000/api/auth/login" \
+LOGIN_RESPONSE=$(curl -s -X POST "http://localhost:8020/api/auth/login" \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"admin123"}')
 
@@ -546,7 +546,7 @@ TOKEN=$(echo $LOGIN_RESPONSE | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)
 echo "Login successful, token: $TOKEN"
 
 # 第二步: 使用 token 获取用户信息
-curl -X GET "http://localhost:8000/api/auth/user" \
+curl -X GET "http://localhost:8020/api/auth/user" \
   -H "Authorization: Bearer $TOKEN"
 ```
 

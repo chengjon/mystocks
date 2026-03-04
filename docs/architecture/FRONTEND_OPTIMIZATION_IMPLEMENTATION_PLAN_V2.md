@@ -233,7 +233,7 @@ export function useWebSocket() {
   }
 
   const connect = () => {
-    socket.value = io('http://localhost:8000', {
+    socket.value = io('http://localhost:8020', {
       auth: { token: localStorage.getItem('auth_token') },
       autoConnect: true,
       reconnection: true,

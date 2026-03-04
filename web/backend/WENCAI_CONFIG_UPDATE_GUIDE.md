@@ -239,13 +239,13 @@ SELECT query_name, description, is_active FROM wencai_queries;
 
 ```bash
 # 健康检查
-curl http://localhost:8000/api/market/wencai/health
+curl http://localhost:8020/api/market/wencai/health
 
 # 获取查询列表
-curl http://localhost:8000/api/market/wencai/queries
+curl http://localhost:8020/api/market/wencai/queries
 
 # 查看API文档
-open http://localhost:8000/api/docs
+open http://localhost:8020/api/docs
 ```
 
 ---
@@ -260,7 +260,7 @@ systemctl restart mystocks-backend
 
 # 或使用uvicorn
 pkill -f uvicorn
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 ```
 
 ### 重启Celery服务
@@ -343,7 +343,7 @@ tail -f /var/log/mystocks/backend.log
 uvicorn app.main:app --reload --log-level debug
 
 # 检查具体错误
-curl -v http://localhost:8000/api/market/wencai/queries
+curl -v http://localhost:8020/api/market/wencai/queries
 ```
 
 ---

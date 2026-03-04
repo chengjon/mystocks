@@ -9,7 +9,7 @@ info:
     name: 架构组
     email: arch@mystocks.com
 servers:
-  - url: http://localhost:8000
+  - url: http://localhost:8020
     description: 本地开发服务器
 
 tags:

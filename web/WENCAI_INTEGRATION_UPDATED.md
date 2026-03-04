@@ -53,7 +53,7 @@
 
 ### 方式 2: 直接访问
 ```
-URL: http://localhost:3001/market-data/wencai
+URL: http://localhost:3020/market-data/wencai
 ```
 
 ---
@@ -110,7 +110,7 @@ Vite 热更新已自动应用更改：
 ✅ WencaiPanel 组件已改进
 ✅ 前端无需重启
 
-**立即访问**: http://localhost:3001/market-data/wencai
+**立即访问**: http://localhost:3020/market-data/wencai
 
 ---
 
@@ -118,13 +118,13 @@ Vite 热更新已自动应用更改：
 
 ### 后端 ✅
 ```
-http://localhost:8000
+http://localhost:8020
 所有 API 端点正常工作
 ```
 
 ### 前端 ✅
 ```
-http://localhost:3001
+http://localhost:3020
 Vite 开发服务器运行中
 ```
 
@@ -155,6 +155,6 @@ rm src/components/market/WencaiQueryTable.vue
 ✅ 使用所有问财功能
 ✅ 与其他市场数据功能（ETF、龙虎榜等）在同一菜单下
 
-**访问地址**: http://localhost:3001 → 市场数据 → 问财筛选
+**访问地址**: http://localhost:3020 → 市场数据 → 问财筛选
 
 祝您使用愉快！ 🎊

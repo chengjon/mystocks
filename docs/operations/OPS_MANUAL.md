@@ -51,10 +51,10 @@ curl -f http://api.mystocks.example.com/health
 
 ```bash
 # API health
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 
 # Database health
-curl http://localhost:8000/api/health/database
+curl http://localhost:8020/api/health/database
 
 # Cache health
 redis-cli ping

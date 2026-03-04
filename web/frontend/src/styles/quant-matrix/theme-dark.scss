@@ -1,0 +1,6 @@
+@import './tokens.scss';
+
+:root[data-theme='dark'],
+:root {
+  color-scheme: dark;
+}

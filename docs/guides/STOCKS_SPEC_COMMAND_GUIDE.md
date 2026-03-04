@@ -29,8 +29,8 @@ stocks_spec -start
 ✅ 后端服务已启动
 ℹ️    PID: 1234
 ℹ️    端口: 8000
-ℹ️    Swagger文档: http://localhost:8000/docs
-ℹ️    ReDoc文档: http://localhost:8000/api/redoc
+ℹ️    Swagger文档: http://localhost:8020/docs
+ℹ️    ReDoc文档: http://localhost:8020/api/redoc
 ℹ️    日志文件: /opt/claude/mystocks_spec/web/backend/backend.log
 
 ✅ 前端服务已启动
@@ -42,10 +42,10 @@ stocks_spec -start
 ✅ MyStocks_spec服务已全部启动
 
 📊 服务状态:
-  后端: http://localhost:8000
+  后端: http://localhost:8020
   前端: http://localhost:3000
-  Swagger文档: http://localhost:8000/docs
-  ReDoc文档: http://localhost:8000/api/redoc
+  Swagger文档: http://localhost:8020/docs
+  ReDoc文档: http://localhost:8020/api/redoc
 ```
 
 ### 停止所有服务
@@ -112,18 +112,18 @@ stocks_spec -restart back
 启动后端服务后，可以通过以下地址访问 API 文档：
 
 ### Swagger UI
-- **主路径**: http://localhost:8000/docs
-- **备用路径**: http://localhost:8000/api/docs
+- **主路径**: http://localhost:8020/docs
+- **备用路径**: http://localhost:8020/api/docs
 - 提供交互式 API 测试界面
 - 支持直接在浏览器中测试 API 端点
 
 ### ReDoc
-- **路径**: http://localhost:8000/api/redoc
+- **路径**: http://localhost:8020/api/redoc
 - 提供更美观的 API 文档阅读界面
 - 适合查看完整的 API 规范
 
 ### OpenAPI JSON
-- **路径**: http://localhost:8000/openapi.json
+- **路径**: http://localhost:8020/openapi.json
 - 提供原始的 OpenAPI 规范文件
 
 ## 端口配置
@@ -170,13 +170,13 @@ stocks_spec -start
 # http://localhost:3000
 
 # 访问 API 文档
-# http://localhost:8000/docs
+# http://localhost:8020/docs
 ```
 
 ### 仅启动后端进行 API 测试
 ```bash
 stocks_spec -start back
-# 访问 http://localhost:8000/docs 进行 API 测试
+# 访问 http://localhost:8020/docs 进行 API 测试
 ```
 
 ### 前端开发（连接到已运行的后端）
@@ -209,7 +209,7 @@ stocks_spec -restart front
 1. 检查端口是否被占用：
    ```bash
    lsof -i :3000  # 检查前端端口
-   lsof -i :8000  # 检查后端端口
+   lsof -i :8020  # 检查后端端口
    ```
 
 2. 查看日志文件：
@@ -235,13 +235,13 @@ stocks_spec -restart front
    ```
 
 2. 尝试访问备用路径：
-   - http://localhost:8000/docs （会重定向到 /api/docs）
-   - http://localhost:8000/api/docs （Swagger UI）
-   - http://localhost:8000/api/redoc （ReDoc）
+   - http://localhost:8020/docs （会重定向到 /api/docs）
+   - http://localhost:8020/api/docs （Swagger UI）
+   - http://localhost:8020/api/redoc （ReDoc）
 
 3. 检查健康检查端点：
    ```bash
-   curl http://localhost:8000/health
+   curl http://localhost:8020/health
    ```
 
 ### 权限问题
@@ -280,7 +280,7 @@ chmod +x /opt/claude/mystocks_spec/scripts/stocks_spec.sh
 
 ## 相关文档
 
-- [API 文档](http://localhost:8000/docs) - 启动后端后访问
+- [API 文档](http://localhost:8020/docs) - 启动后端后访问
 - [WEB_PAGES_DOCUMENTATION.md](/opt/claude/mystocks_spec/docs/WEB_PAGES_DOCUMENTATION.md) - 前端页面文档
 - [WEB_PAGES_API_MAPPING.md](/opt/claude/mystocks_spec/docs/api/WEB_PAGES_API_MAPPING.md) - API 映射文档
 - [PORT_CONFIGURATION.md](/opt/claude/mystocks_spec/PORT_CONFIGURATION.md) - 端口配置说明

@@ -426,7 +426,7 @@ strategy:
 ./scripts/tests/run-e2e-tests.sh --timeout 60
 
 # 检查网络连接
-curl -I http://localhost:8000/health
+curl -I http://localhost:8020/health
 ```
 
 #### 2. 浏览器兼容性问题
@@ -445,7 +445,7 @@ export USE_MOCK_DATA=true
 export DATA_SOURCE=mock
 
 # 检查Mock服务状态
-curl http://localhost:8000/api/mock/status
+curl http://localhost:8020/api/mock/status
 ```
 
 #### 4. 环境清理

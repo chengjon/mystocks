@@ -184,6 +184,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { strategyApi } from '@/api'
 import { StrategyApiService } from '@/api/services/strategyService'
 import type { BacktestRequestVM } from '@/api/types/extensions'
+import type { StrategyConfig } from '@/api/types/common'
 import { ArtDecoButton, ArtDecoCard, ArtDecoInput, ArtDecoSelect, ArtDecoTable } from '@/components/artdeco'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import {
@@ -193,7 +194,6 @@ import {
 import {
   createBacktestWorkbenchRealConfig,
   getBacktestWorkbenchConfig,
-  type BacktestDataMode,
   type BacktestWorkbenchDataConfig
 } from '@/mock/backtestWorkbenchMock'
 import {
@@ -227,8 +227,7 @@ const route = useRoute()
 const router = useRouter()
 const strategyService = new StrategyApiService()
 const { getSnapshot, setActiveStrategy, setBacktestTaskSnapshot } = useStrategyCrossTabContext()
-const dataMode: BacktestDataMode = import.meta.env.VITE_USE_MOCK_DATA ? 'mock' : 'real'
-const initialConfig = getBacktestWorkbenchConfig(dataMode)
+const initialConfig = getBacktestWorkbenchConfig('real')
 
 function createDefaultConfig(source: BacktestWorkbenchDataConfig) {
   return {
@@ -301,20 +300,34 @@ function applyWorkbenchConfig(nextConfig: BacktestWorkbenchDataConfig) {
 }
 
 async function loadRealConfig() {
-  if (dataMode !== 'real') {
-    return
-  }
-
-  const strategies = await exec(() => strategyApi.getStrategies({}), {
+  const payload = await exec(() => strategyApi.getStrategies({}), {
     silent: true,
-    errorMsg: '获取REAL策略数据失败，已保留MOCK配置'
+    errorMsg: '获取REAL策略数据失败，当前显示空态'
   })
 
-  if (!strategies) {
+  if (!payload) {
     return
   }
 
-  applyWorkbenchConfig(createBacktestWorkbenchRealConfig(strategies))
+  applyWorkbenchConfig(createBacktestWorkbenchRealConfig(extractStrategiesFromPayload(payload)))
+}
+
+function extractStrategiesFromPayload(payload: unknown): StrategyConfig[] {
+  if (Array.isArray(payload)) {
+    return payload as StrategyConfig[]
+  }
+
+  if (payload && typeof payload === 'object') {
+    const candidate = payload as Record<string, unknown>
+    const collections = [candidate.strategies, candidate.items, candidate.data, candidate.records]
+    for (const collection of collections) {
+      if (Array.isArray(collection)) {
+        return collection as StrategyConfig[]
+      }
+    }
+  }
+
+  return []
 }
 
 function toTaskStatusClass(status: StrategyBacktestTaskStatus): BacktestTaskRow['statusClass'] {

@@ -5,10 +5,11 @@
 """
 
 import requests
+import os
 from datetime import datetime
 
 # Backend API基础URL
-BASE_URL = "http://localhost:8000"
+BASE_URL = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
 
 
 def print_separator():

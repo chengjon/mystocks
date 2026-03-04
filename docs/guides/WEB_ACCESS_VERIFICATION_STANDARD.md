@@ -30,7 +30,7 @@
 ```
 ✅ "全量路由测试通过 (Passed: N/N)，无白屏，无控制台错误"
 ✅ "登录功能已验证，Dashboard 数据正常显示"
-✅ "数据源: REAL (Connected to localhost:8000)"
+✅ "数据源: REAL (Connected to localhost:8020)"
 ```
 
 ---
@@ -67,10 +67,10 @@ cd /opt/claude/mystocks_spec/web/frontend && npm run verify:web-access
 
 ```bash
 # 检查端口
-lsof -i :8000 -i :3020
+lsof -i :8020 -i :3020
 
 # 后端健康检查（含延迟检测）
-curl -w "\nLatency: %{time_total}s\n" http://localhost:8000/health
+curl -w "\nLatency: %{time_total}s\n" http://localhost:8020/health
 # 期望: {"success":true,"code":200,"data":{"status":"healthy"}}
 # 延迟: < 0.5s
 ```
@@ -83,7 +83,7 @@ cat /opt/claude/mystocks_spec/web/frontend/.env | grep VITE_APP_MODE
 # 期望: VITE_APP_MODE=real (或 mock)
 
 # 验证后端连接（仅 Real 模式）
-curl http://localhost:8000/api/market/overview 2>/dev/null | head -c 200
+curl http://localhost:8020/api/market/overview 2>/dev/null | head -c 200
 # 期望: 返回有效 JSON，非错误响应
 ```
 
@@ -213,7 +213,7 @@ curl -s "http://localhost:3020/src/views/SomeComponent.vue" | head -10
 **验证时间**: YYYY-MM-DD HH:MM
 **前端端口**: 3020
 **后端端口**: 8000
-**数据源**: REAL (Connected to localhost:8000)
+**数据源**: REAL (Connected to localhost:8020)
 
 ### 服务状态
 - 后端健康检查: ✅ (延迟: 0.12s)
@@ -270,7 +270,7 @@ jobs:
           # 启动后端
           cd web/backend
           pip install -r requirements.txt
-          PYTHONPATH=../.. uvicorn app.main:app --port 8000 &
+          PYTHONPATH=../.. uvicorn app.main:app --port 8020 &
 
           # 启动前端
           cd ../frontend

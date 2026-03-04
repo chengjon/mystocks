@@ -144,7 +144,7 @@ This document outlines a three-phase implementation plan to consolidate security
    # Create: tests/.env.test (git-ignored)
    TEST_USERNAME=admin
    TEST_PASSWORD=admin123
-   TEST_API_URL=http://localhost:8000
+   TEST_API_URL=http://localhost:8020
    ```
 
    - Update .gitignore to include `tests/.env.test`

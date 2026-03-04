@@ -22,6 +22,18 @@ TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 LOG_DIR="${PROJECT_ROOT}/tests/logs"
 REPORT_DIR="${PROJECT_ROOT}/tests/reports"
 
+if [ -f "${PROJECT_ROOT}/.env" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "${PROJECT_ROOT}/.env"
+    set +a
+fi
+
+: "${FRONTEND_PORT:?Missing FRONTEND_PORT in .env}"
+: "${BACKEND_PORT:?Missing BACKEND_PORT in .env}"
+FRONTEND_URL="http://localhost:${FRONTEND_PORT}"
+BACKEND_URL="http://localhost:${BACKEND_PORT}"
+
 # 日志函数
 log_info() {
     echo -e "${GREEN}[INFO]${NC} $1"
@@ -177,14 +189,14 @@ start_pm2_services() {
     log_info "验证服务可用性..."
 
     # 检查前端服务
-    local frontend_status=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:3001" || echo "000")
+    local frontend_status=$(curl -s -o /dev/null -w "%{http_code}" "${FRONTEND_URL}" || echo "000")
     if [[ "$frontend_status" != "200" ]]; then
         log_error "前端服务不可用 (状态码: $frontend_status)"
         return 1
     fi
 
     # 检查后端服务
-    local backend_status=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8000/health" || echo "000")
+    local backend_status=$(curl -s -o /dev/null -w "%{http_code}" "${BACKEND_URL}/health" || echo "000")
     if [[ "$backend_status" != "200" ]]; then
         log_error "后端服务不可用 (状态码: $backend_status)"
         return 1
@@ -279,8 +291,8 @@ generate_report() {
         echo "  \"timestamp\": \"$(date -Iseconds)\","
         echo "  \"test_type\": \"$1\","
         echo "  \"environment\": \"test\","
-        echo "  \"frontend_url\": \"http://localhost:3001\","
-        echo "  \"backend_url\": \"http://localhost:8000\","
+        echo "  \"frontend_url\": \"${FRONTEND_URL}\","
+        echo "  \"backend_url\": \"${BACKEND_URL}\","
         echo "  \"report_directory\": \"${REPORT_DIR}/report-${TIMESTAMP}\","
         echo "  \"log_directory\": \"${LOG_DIR}\""
         echo "}"
@@ -299,11 +311,11 @@ check_service_status() {
 
     # 检查端口占用
     log_info "端口占用状态:"
-    ss -tuln | grep -E ":(3001|8000)" || true
+    ss -tuln | grep -E ":(${FRONTEND_PORT}|${BACKEND_PORT})" || true
 
     # 检查服务健康状态
-    local frontend_health=$(curl -s http://localhost:3001/health 2>/dev/null | head -c 100 || echo "Unreachable")
-    local backend_health=$(curl -s http://localhost:8000/health 2>/dev/null || echo "Unreachable")
+    local frontend_health=$(curl -s "${FRONTEND_URL}/health" 2>/dev/null | head -c 100 || echo "Unreachable")
+    local backend_health=$(curl -s "${BACKEND_URL}/health" 2>/dev/null || echo "Unreachable")
 
     log_info "前端健康检查: $frontend_health"
     log_info "后端健康检查: $backend_health"

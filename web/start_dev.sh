@@ -1,9 +1,23 @@
 #!/bin/bash
 
+set -euo pipefail
+
 # MyStocks Web 开发环境启动脚本
 
 echo "🚀 启动 MyStocks Web 开发环境..."
 echo "=================================="
+
+PROJECT_ROOT=$(cd "$(dirname "$0")/.." && pwd)
+
+if [ -f "${PROJECT_ROOT}/.env" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "${PROJECT_ROOT}/.env"
+    set +a
+fi
+
+: "${BACKEND_PORT:?Missing BACKEND_PORT in .env}"
+: "${FRONTEND_PORT:?Missing FRONTEND_PORT in .env}"
 
 # 检查Python和Node.js是否安装
 echo "📋 检查环境依赖..."
@@ -31,7 +45,7 @@ pip install -r requirements.txt
 
 # 启动后端服务
 echo "🔧 启动后端服务..."
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 &
+uvicorn app.main:app --reload --host 0.0.0.0 --port "${BACKEND_PORT}" &
 BACKEND_PID=$!
 
 # 安装前端依赖并启动
@@ -41,14 +55,14 @@ npm install
 
 # 启动前端服务
 echo "🎨 启动前端服务..."
-npm run dev &
+npm run dev -- --port "${FRONTEND_PORT}" --strictPort &
 FRONTEND_PID=$!
 
 echo "=================================="
 echo "✅ 服务启动成功！"
 echo ""
-echo "🌐 前端地址: http://localhost:3000"
-echo "📚 API文档: http://localhost:8000/api/docs"
+echo "🌐 前端地址: http://localhost:${FRONTEND_PORT}"
+echo "📚 API文档: http://localhost:${BACKEND_PORT}/api/docs"
 echo ""
 echo "🔑 默认登录账户："
 echo "   管理员: admin / admin123"

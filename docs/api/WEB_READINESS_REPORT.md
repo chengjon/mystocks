@@ -75,7 +75,7 @@ python -m app.main
 ```
 INFO:DatabaseTableManager:TDengine客户端已加载: taosws
 ✅ TDengine连接池已初始化
-INFO:     Uvicorn running on http://0.0.0.0:8000
+INFO:     Uvicorn running on http://0.0.0.0:8020
 ```
 
 ### 前端启动
@@ -185,7 +185,7 @@ VITE v4.x.x  ready in xxx ms
    ```
 
 2. **功能验证**
-   - 访问 http://localhost:8000/docs 查看API文档
+   - 访问 http://localhost:8020/docs 查看API文档
    - 测试数据库连接
    - 验证认证功能
 

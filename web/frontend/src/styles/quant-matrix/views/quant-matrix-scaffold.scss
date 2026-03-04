@@ -1,0 +1,17 @@
+@import '@/styles/quant-matrix/index';
+
+.qm-scaffold {
+  display: grid;
+  gap: 16px;
+}
+
+.qm-scaffold__text {
+  margin: 0;
+  color: var(--qm-text);
+}
+
+.qm-scaffold__hint {
+  margin: 10px 0 0;
+  color: var(--qm-text-muted);
+  font-size: 12px;
+}

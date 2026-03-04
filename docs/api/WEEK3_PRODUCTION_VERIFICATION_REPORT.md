@@ -60,7 +60,7 @@ INFO:app.services.data_source_factory:DataSourceFactory initialized successfully
 ### 3. API连接性验证 ✅
 
 **测试项目**: 后端API健康检查
-**测试端点**: http://localhost:8000/health
+**测试端点**: http://localhost:8020/health
 **结果**: ✅ API响应正常，服务稳定运行
 
 **关键系统指标**:

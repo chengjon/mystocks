@@ -1,7 +1,7 @@
 {
-  "tool_name": "Read",
-  "tool_input_preview": "{\"file_path\":\"/opt/claude/mystocks_spec/web/frontend\"}",
-  "error": "EISDIR: illegal operation on a directory, read '/opt/claude/mystocks_spec/web/frontend'",
-  "timestamp": "2026-03-02T07:56:48.810Z",
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"ls -la /home/workdir 2>&1\",\"description\":\"检查 /home/workdir 是否存在\"}",
+  "error": "Exit code 2\nls: cannot access '/home/workdir': No such file or directory\n\nls: cannot access '/home/workdir': No such file or directory",
+  "timestamp": "2026-03-04T02:49:22.530Z",
   "retry_count": 1
 }

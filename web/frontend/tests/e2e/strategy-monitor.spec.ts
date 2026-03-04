@@ -209,6 +209,8 @@ test.describe("Strategy Management - Monitoring & UI", () => {
     })
 
     await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
+    await expect(page.locator(".strategy-management")).toBeVisible()
+    await expect.poll(async () => page.locator("button").count()).toBeGreaterThan(0)
 
     const buttons = page.locator("button")
     const count = await buttons.count()

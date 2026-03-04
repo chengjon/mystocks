@@ -17,11 +17,11 @@
 ```bash
 # ❌ 错误的启动方式
 cd /opt/claude/mystocks_spec/web/backend
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020
 
 # ✅ 正确的启动方式
 cd /opt/claude/mystocks_spec
-PYTHONPATH=/opt/claude/mystocks_spec/web/backend:/opt/claude/mystocks_spec python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+PYTHONPATH=/opt/claude/mystocks_spec/web/backend:/opt/claude/mystocks_spec python -m uvicorn app.main:app --host 0.0.0.0 --port 8020
 ```
 
 **经验教训**:
@@ -37,7 +37,7 @@ PYTHONPATH=/opt/claude/mystocks_spec/web/backend:/opt/claude/mystocks_spec pytho
 **解决方案**:
 ```bash
 # 1. 检查端口占用
-lsof -i :8000
+lsof -i :8020
 
 # 2. 杀死占用进程
 kill -9 <PID>
@@ -100,7 +100,7 @@ npm run dev  # 自动选择3020-3029范围内的可用端口
 ```python
 # web/backend/app/core/config.py
 cors_origins_str: str = (
-    "http://localhost:3000,http://localhost:3001,"
+    "http://localhost:3000,http://localhost:3020,"
     "http://localhost:3020,http://localhost:3021,"
     # ... 其他端口
 )
@@ -137,7 +137,7 @@ docker-compose -f config/docker-compose.postgresql.yml up -d
 # 3. 启动后端服务
 cd /opt/claude/mystocks_spec
 PYTHONPATH=/opt/claude/mystocks_spec/web/backend:/opt/claude/mystocks_spec \
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 
 # 4. 启动前端服务
 cd web/frontend
@@ -161,19 +161,19 @@ command -v npm >/dev/null 2>&1 || { echo "❌ npm not found"; exit 1; }
 export PYTHONPATH="/opt/claude/mystocks_spec/web/backend:/opt/claude/mystocks_spec"
 
 # 检查端口
-if lsof -i :8000 >/dev/null 2>&1; then
+if lsof -i :8020 >/dev/null 2>&1; then
     echo "⚠️  Port 8000 is in use, attempting to free it..."
     fuser -k 8000/tcp || true
 fi
 
 # 启动后端
 echo "📡 Starting backend service..."
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload &
 BACKEND_PID=$!
 
 # 等待后端启动
 sleep 5
-if ! curl -s http://localhost:8000/health >/dev/null; then
+if ! curl -s http://localhost:8020/health >/dev/null; then
     echo "❌ Backend failed to start"
     kill $BACKEND_PID 2>/dev/null || true
     exit 1
@@ -194,9 +194,9 @@ if ! curl -s http://localhost:3000 >/dev/null; then
 fi
 
 echo "✅ All services started successfully!"
-echo "📊 Backend: http://localhost:8000"
+echo "📊 Backend: http://localhost:8020"
 echo "🌐 Frontend: http://localhost:3000"
-echo "📚 API Docs: http://localhost:8000/api/docs"
+echo "📚 API Docs: http://localhost:8020/api/docs"
 
 # 保存进程ID
 echo "$BACKEND_PID $FRONTEND_PID" > .service_pids
@@ -213,9 +213,9 @@ wait
 # scripts/health-check.sh
 
 SERVICES=(
-    "Backend API:http://localhost:8000/health"
+    "Backend API:http://localhost:8020/health"
     "Frontend App:http://localhost:3000"
-    "API Docs:http://localhost:8000/api/docs"
+    "API Docs:http://localhost:8020/api/docs"
 )
 
 echo "🔍 MyStocks Services Health Check"
@@ -239,7 +239,7 @@ done
 1. **端口检查**: `netstat -tlnp | grep -E ':(8000|3000)'`
 2. **进程状态**: `ps aux | grep -E "(uvicorn|vite)"`
 3. **日志查看**: `tail -f web/backend/*.log` 或 `tail -f web/frontend/*.log`
-4. **网络连通**: `curl -I http://localhost:8000/health`
+4. **网络连通**: `curl -I http://localhost:8020/health`
 5. **依赖检查**: `python -c "import app.main"` 和 `npm list --depth=0`
 
 #### 常见错误码处理

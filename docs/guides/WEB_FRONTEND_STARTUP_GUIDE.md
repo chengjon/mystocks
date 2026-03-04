@@ -52,7 +52,7 @@ cd /opt/claude/mystocks_spec/web/backend
 
 # 设置 PYTHONPATH 并启动
 PYTHONPATH=/opt/claude/mystocks_spec:/opt/claude/mystocks_spec/web/backend \
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 ```
 
 ### 方法 2：使用 PM2（推荐用于持久运行）
@@ -110,7 +110,7 @@ pip install -r requirements.txt  # 首次运行需要安装依赖
 
 # 方式 1：使用 uvicorn 直接启动
 PYTHONPATH=/opt/claude/mystocks_spec:/opt/claude/mystocks_spec/web/backend \
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 
 # 方式 2：使用 Python 模块方式
 cd /opt/claude/mystocks_spec
@@ -148,7 +148,7 @@ python -m web.backend.app.main
 // vite.config.ts
 proxy: {
   '/api': {
-    target: 'http://localhost:8000',
+    target: 'http://localhost:8020',
     changeOrigin: true
   }
 }
@@ -163,12 +163,12 @@ proxy: {
 - **`.env`**：当前激活的配置（默认与 `.env.real` 相同）
 - **`.env.real`**：真实 API 模式配置
   ```
-  VITE_API_BASE_URL=http://localhost:8000
+  VITE_API_BASE_URL=http://localhost:8020
   VITE_APP_MODE=real
   ```
 - **`.env.mock`**：Mock 数据模式配置
   ```
-  VITE_API_BASE_URL=http://localhost:8000
+  VITE_API_BASE_URL=http://localhost:8020
   VITE_APP_MODE=mock
   ```
 
@@ -281,7 +281,7 @@ pm2 start pm2_start.py --name mystocks-backend --interpreter python3
 # ✅ 正确方式 2：手动设置 PYTHONPATH
 cd /opt/claude/mystocks_spec/web/backend
 PYTHONPATH=/opt/claude/mystocks_spec:/opt/claude/mystocks_spec/web/backend \
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 ```
 
 ### 3. API 请求失败
@@ -289,7 +289,7 @@ python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 **检查后端是否运行：**
 
 ```bash
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 ```
 
 **检查 Vite 代理配置：**
@@ -299,7 +299,7 @@ curl http://localhost:8000/health
 ```typescript
 proxy: {
   '/api': {
-    target: 'http://localhost:8000',
+    target: 'http://localhost:8020',
     changeOrigin: true
   }
 }
@@ -309,7 +309,7 @@ proxy: {
 
 ```bash
 cat /opt/claude/mystocks_spec/web/frontend/.env
-# 确认 VITE_API_BASE_URL=http://localhost:8000
+# 确认 VITE_API_BASE_URL=http://localhost:8020
 ```
 
 ### 4. PM2 进程频繁重启
@@ -430,9 +430,9 @@ npm run build
 
 后端启动后可访问：
 
-- **Swagger UI**：http://localhost:8000/docs
-- **ReDoc**：http://localhost:8000/redoc
-- **健康检查**：http://localhost:8000/health
+- **Swagger UI**：http://localhost:8020/docs
+- **ReDoc**：http://localhost:8020/redoc
+- **健康检查**：http://localhost:8020/health
 
 ## 当前已知问题
 

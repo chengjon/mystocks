@@ -5,10 +5,14 @@ Real-time Monitoring System Test
 
 import requests
 import json
+import os
 from datetime import date
 
 # API base URL
-BASE_URL = "http://localhost:8000"
+BACKEND_PORT = os.getenv("BACKEND_PORT", "").strip()
+if not BACKEND_PORT:
+    raise RuntimeError("Missing BACKEND_PORT in environment")
+BASE_URL = os.getenv("API_BASE_URL", f"http://localhost:{BACKEND_PORT}")
 
 # 测试用的 Bearer Token (如果需要认证)
 # TOKEN = "your_auth_token_here"

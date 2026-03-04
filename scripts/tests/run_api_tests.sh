@@ -24,7 +24,7 @@ echo -e "${GREEN}✅ 依赖检查通过${NC}"
 echo ""
 
 # 启动后端服务 (如果未运行)
-if ! curl -s http://localhost:8000/health > /dev/null 2>&1; then
+if ! curl -s http://localhost:/health > /dev/null 2>&1; then
     echo -e "${YELLOW}⚠️  后端服务未运行，正在启动...${NC}"
     cd web/backend
     python -m app.main &
@@ -34,7 +34,7 @@ if ! curl -s http://localhost:8000/health > /dev/null 2>&1; then
     # 等待服务启动
     echo "等待后端服务启动..."
     for i in {1..30}; do
-        if curl -s http://localhost:8000/health > /dev/null 2>&1; then
+        if curl -s http://localhost:/health > /dev/null 2>&1; then
             echo -e "${GREEN}✅ 后端服务已启动${NC}"
             break
         fi
@@ -43,7 +43,7 @@ if ! curl -s http://localhost:8000/health > /dev/null 2>&1; then
 fi
 
 # 设置环境变量
-export API_TEST_BASE_URL="http://localhost:8000"
+export API_TEST_BASE_URL="http://localhost:"
 
 # 运行测试
 echo ""

@@ -75,7 +75,7 @@ import time
 def test_technical_indicators_accuracy(indicator):
     """测试技术指标计算准确性"""
     # 获取标准数据
-    response = requests.get(f"http://localhost:8000/api/indicators/{indicator}",
+    response = requests.get(f"http://localhost:8020/api/indicators/{indicator}",
                           params={"symbol": "000001", "period": "daily"})
     assert response.status_code == 200
 
@@ -94,7 +94,7 @@ def test_chart_rendering_performance():
     start_time = time.time()
 
     # 模拟大量数据点
-    response = requests.get("http://localhost:8000/api/chart/kline",
+    response = requests.get("http://localhost:8020/api/chart/kline",
                           params={"symbol": "000001", "period": "1min", "count": 1000})
 
     render_time = time.time() - start_time
@@ -448,7 +448,7 @@ def test_sql_injection_protection():
     ]
 
     for payload in malicious_inputs:
-        response = requests.get("http://localhost:8000/api/stock/search",
+        response = requests.get("http://localhost:8020/api/stock/search",
                               params={"q": payload})
         assert response.status_code != 500
         assert "error" in response.json() or len(response.json()) == 0
@@ -456,7 +456,7 @@ def test_sql_injection_protection():
 def test_rate_limiting():
     """测试API速率限制"""
     for i in range(105):  # 超过限制
-        response = requests.get("http://localhost:8000/api/data/stocks")
+        response = requests.get("http://localhost:8020/api/data/stocks")
         if i >= 100:
             assert response.status_code == 429
 
@@ -470,7 +470,7 @@ def test_xss_protection():
 
     for payload in xss_payloads:
         # 测试搜索功能
-        response = requests.post("http://localhost:8000/api/stock/search",
+        response = requests.post("http://localhost:8020/api/stock/search",
                                json={"query": payload})
 
         # 响应中不应包含未转义的脚本
@@ -764,12 +764,12 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=test
-      - VITE_API_BASE_URL=http://localhost:8000
+      - VITE_API_BASE_URL=http://localhost:8020
 
   backend:
     build: ./web/backend
     ports:
-      - "8000:8000"
+      - "8000:8020"
     environment:
       - ENVIRONMENT=test
       - DATABASE_URL=postgresql://test:test@postgres:5432/mystocks_test

@@ -28,7 +28,7 @@
 
 # 诊断步骤
 echo "=== 1. 检查端口占用 ==="
-lsof -i :8000
+lsof -i :8020
 
 echo ""
 echo "=== 2. 检查 Python 错误 ==="
@@ -48,7 +48,7 @@ python -c "from app.core.config import settings; print(settings.dict())"
 
 | 错误信息 | 原因 | 解决方案 |
 |----------|------|----------|
-| `Address already in use` | 端口被占用 | `kill $(lsof -t -i:8000)` 或使用其他端口 |
+| `Address already in use` | 端口被占用 | `kill $(lsof -t -i:8020)` 或使用其他端口 |
 | `ModuleNotFoundError` | 依赖缺失 | `pip install -r requirements.txt` |
 | `ImportError` | 导入路径错误 | 检查 `PYTHONPATH` 设置 |
 | `DatabaseError` | 数据库连接失败 | 先启动数据库服务 |
@@ -210,7 +210,7 @@ PGPASSWORD=$POSTGRESQL_PASSWORD psql \
 # 症状：请求等待超过 30s
 
 echo "=== 1. 测试 API 响应时间 ==="
-curl -w "\nTime: %{time_total}s\n" -s http://localhost:8000/health
+curl -w "\nTime: %{time_total}s\n" -s http://localhost:8020/health
 
 echo ""
 echo "=== 2. 检查慢查询日志 ==="
@@ -232,7 +232,7 @@ tail -100 /var/log/mystocks/api.log | grep -E "(ERROR|WARNING|timeout)"
 # 症状：Internal Server Error
 
 echo "=== 1. 查看详细错误 ==="
-curl -s http://localhost:8000/health
+curl -s http://localhost:8020/health
 echo ""
 
 # 开启调试模式
@@ -259,11 +259,11 @@ PGPASSWORD=$POSTGRESQL_PASSWORD psql \
 # 症状：/docs 返回 404 或空白
 
 echo "=== 1. 检查路由注册 ==="
-curl http://localhost:8000/openapi.json | python3 -m json.tool | head -20
+curl http://localhost:8020/openapi.json | python3 -m json.tool | head -20
 
 echo ""
 echo "=== 2. 检查 CORS 配置 ==="
-curl -s -I http://localhost:8000/docs | grep -i cors
+curl -s -I http://localhost:8020/docs | grep -i cors
 
 echo ""
 echo "=== 3. 检查静态文件 ==="
@@ -325,7 +325,7 @@ node --max-old-space-size=4096 build.js
 
 ```javascript
 // 在浏览器控制台执行
-const ws = new WebSocket('ws://localhost:8000/ws');
+const ws = new WebSocket('ws://localhost:8020/ws');
 ws.onopen = () => console.log('Connected!');
 ws.onerror = (e) => console.error('Error:', e);
 ws.onclose = (e) => console.log('Closed:', e.code, e.reason);
@@ -415,7 +415,7 @@ ps aux | grep python | head -10
 
 echo ""
 echo "=== 3. 检查慢 API 端点 ==="
-curl -s http://localhost:8000/api/v1/slow-endpoint -w "\nTime: %{time_total}s\n"
+curl -s http://localhost:8020/api/v1/slow-endpoint -w "\nTime: %{time_total}s\n"
 
 echo ""
 echo "=== 4. 检查数据库慢查询 ==="

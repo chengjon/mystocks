@@ -81,7 +81,7 @@ info:
     email: support@mystocks.com
 
 servers:
-  - url: http://localhost:8000/api/v1/risk
+  - url: http://localhost:8020/api/v1/risk
     description: 本地开发环境
 
 components:

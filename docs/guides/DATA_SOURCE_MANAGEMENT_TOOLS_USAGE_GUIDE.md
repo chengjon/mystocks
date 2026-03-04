@@ -300,7 +300,7 @@ python -m json.tool docs/reports/data_source_test_report_20260102_143022.json
 
 ### API概览
 
-**Base URL**: `http://localhost:8000/api/v1/data-sources`
+**Base URL**: `http://localhost:8020/api/v1/data-sources`
 
 **端点列表**:
 | 端点 | 方法 | 描述 |
@@ -313,8 +313,8 @@ python -m json.tool docs/reports/data_source_test_report_20260102_143022.json
 | `/{endpoint_name}/health-check` | POST | 健康检查单个数据源 |
 | `/health-check/all` | POST | 健康检查所有数据源 |
 
-**Swagger文档**: `http://localhost:8000/api/docs`
-**ReDoc文档**: `http://localhost:8000/api/redoc`
+**Swagger文档**: `http://localhost:8020/api/docs`
+**ReDoc文档**: `http://localhost:8020/api/redoc`
 
 ### 1. 搜索数据源
 
@@ -334,19 +334,19 @@ python -m json.tool docs/reports/data_source_test_report_20260102_143022.json
 
 ```bash
 # 搜索所有日线数据接口
-curl -X GET "http://localhost:8000/api/v1/data-sources/?data_category=DAILY_KLINE" \
+curl -X GET "http://localhost:8020/api/v1/data-sources/?data_category=DAILY_KLINE" \
   -H "Authorization: Bearer YOUR_TOKEN"
 
 # 搜索akshare数据源
-curl -X GET "http://localhost:8000/api/v1/data-sources/?source_type=akshare" \
+curl -X GET "http://localhost:8020/api/v1/data-sources/?source_type=akshare" \
   -H "Authorization: Bearer YOUR_TOKEN"
 
 # 关键词搜索
-curl -X GET "http://localhost:8000/api/v1/data-sources/?keyword=日线" \
+curl -X GET "http://localhost:8020/api/v1/data-sources/?keyword=日线" \
   -H "Authorization: Bearer YOUR_TOKEN"
 
 # 仅搜索健康的接口
-curl -X GET "http://localhost:8000/api/v1/data-sources/?only_healthy=true" \
+curl -X GET "http://localhost:8020/api/v1/data-sources/?only_healthy=true" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -391,7 +391,7 @@ curl -X GET "http://localhost:8000/api/v1/data-sources/?only_healthy=true" \
 
 **请求示例**:
 ```bash
-curl -X GET "http://localhost:8000/api/v1/data-sources/categories" \
+curl -X GET "http://localhost:8020/api/v1/data-sources/categories" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -425,7 +425,7 @@ curl -X GET "http://localhost:8000/api/v1/data-sources/categories" \
 
 **请求示例**:
 ```bash
-curl -X GET "http://localhost:8000/api/v1/data-sources/akshare.stock_zh_a_hist" \
+curl -X GET "http://localhost:8020/api/v1/data-sources/akshare.stock_zh_a_hist" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -481,7 +481,7 @@ curl -X GET "http://localhost:8000/api/v1/data-sources/akshare.stock_zh_a_hist" 
 
 **请求示例**:
 ```bash
-curl -X PUT "http://localhost:8000/api/v1/data-sources/akshare.stock_zh_a_hist" \
+curl -X PUT "http://localhost:8020/api/v1/data-sources/akshare.stock_zh_a_hist" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{
@@ -518,7 +518,7 @@ curl -X PUT "http://localhost:8000/api/v1/data-sources/akshare.stock_zh_a_hist" 
 
 **请求示例**:
 ```bash
-curl -X POST "http://localhost:8000/api/v1/data-sources/akshare.stock_zh_a_hist/test" \
+curl -X POST "http://localhost:8020/api/v1/data-sources/akshare.stock_zh_a_hist/test" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{
@@ -573,14 +573,14 @@ curl -X POST "http://localhost:8000/api/v1/data-sources/akshare.stock_zh_a_hist/
 **单个数据源健康检查**: `POST /api/v1/data-sources/{endpoint_name}/health-check`
 
 ```bash
-curl -X POST "http://localhost:8000/api/v1/data-sources/akshare.stock_zh_a_hist/health-check" \
+curl -X POST "http://localhost:8020/api/v1/data-sources/akshare.stock_zh_a_hist/health-check" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 **批量健康检查**: `POST /api/v1/data-sources/health-check/all`
 
 ```bash
-curl -X POST "http://localhost:8000/api/v1/data-sources/health-check/all" \
+curl -X POST "http://localhost:8020/api/v1/data-sources/health-check/all" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -622,7 +622,7 @@ npm install axios
 ```javascript
 import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8020'
 
 const dataSourceService = {
   /**
@@ -1019,7 +1019,7 @@ from typing import Dict, Any, List
 class DataSourceClient:
     """数据源管理API客户端"""
 
-    def __init__(self, base_url: str = "http://localhost:8000", token: str = None):
+    def __init__(self, base_url: str = "http://localhost:8020", token: str = None):
         self.base_url = base_url
         self.token = token
         self.headers = {}
@@ -1223,12 +1223,12 @@ Connection timeout: timeout expired
 **解决**:
 ```bash
 # 1. 获取token
-curl -X GET "http://localhost:8000/api/v1/auth/login" \
+curl -X GET "http://localhost:8020/api/v1/auth/login" \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"your-password"}'
 
 # 2. 在后续请求中使用token
-curl -X GET "http://localhost:8000/api/v1/data-sources/" \
+curl -X GET "http://localhost:8020/api/v1/data-sources/" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -1250,7 +1250,7 @@ python scripts/tools/manual_data_source_tester.py \
 
 ```bash
 # 使用curl -v 查看详细请求/响应
-curl -v -X GET "http://localhost:8000/api/v1/data-sources/" \
+curl -v -X GET "http://localhost:8020/api/v1/data-sources/" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 

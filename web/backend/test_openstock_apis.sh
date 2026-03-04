@@ -1,6 +1,15 @@
 #!/bin/bash
 
-API_BASE="http://localhost:8000/api"
+PROJECT_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+if [ -f "${PROJECT_ROOT}/.env" ]; then
+  set -a
+  # shellcheck disable=SC1090
+  source "${PROJECT_ROOT}/.env"
+  set +a
+fi
+
+: "${BACKEND_PORT:?Missing BACKEND_PORT in .env}"
+API_BASE="http://localhost:${BACKEND_PORT}/api"
 
 echo "=== Testing OpenStock APIs ==="
 echo ""

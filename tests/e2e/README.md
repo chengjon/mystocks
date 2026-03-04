@@ -30,10 +30,10 @@ pnpm add -D @playwright/test
 cd web/backend
 python run_server.py
 # 或
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020
 ```
 
-服务将运行在 `http://localhost:8000`
+服务将运行在 `http://localhost:8020`
 
 #### 启动前端开发服务
 
@@ -159,7 +159,7 @@ npx playwright show-report
 ```bash
 # .env.test (创建在 web/frontend 目录)
 BASE_URL=http://localhost:3000
-API_URL=http://localhost:8000
+API_URL=http://localhost:8020
 ```
 
 ### CI/CD 环境
@@ -202,7 +202,7 @@ expect: {
 
 ```bash
 # 测试后端连接
-curl http://localhost:8000/api/auth/login \
+curl http://localhost:8020/api/auth/login \
   -X POST \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"admin123"}'

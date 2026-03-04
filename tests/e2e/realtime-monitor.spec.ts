@@ -22,7 +22,7 @@ function getBaseUrl(): string {
  * Get the API base URL from environment or default
  */
 function getApiBaseUrl(): string {
-  return process.env.API_BASE || 'http://localhost:8000';
+  return process.env.API_BASE || 'http://localhost:8020';
 }
 
 /**

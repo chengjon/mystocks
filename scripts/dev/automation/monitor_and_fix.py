@@ -294,15 +294,17 @@ class MonitoringSystem:
 
     def get_default_config(self) -> Dict[str, Any]:
         """获取默认配置"""
+        frontend_url = os.getenv("FRONTEND_URL", f"http://localhost:{os.getenv('FRONTEND_PORT', '3020')}")
+        backend_url = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
         return {
             "check_interval": 60,  # 检查间隔60秒
             "alert_cooldown": 300,  # 告警冷却期5分钟
             "max_restart_attempts": 3,  # 最大重启尝试次数
             "webhook_url": os.getenv("ALERT_WEBHOOK_URL", ""),
             "services": {
-                "mystocks-frontend": {"url": "http://localhost:3002", "timeout": 5000, "expected_status": 200},
+                "mystocks-frontend": {"url": frontend_url, "timeout": 5000, "expected_status": 200},
                 "mystocks-backend": {
-                    "url": "http://localhost:8000/api/health",
+                    "url": f"{backend_url}/api/health",
                     "timeout": 3000,
                     "expected_status": 200,
                     "database_check": {"enabled": True, "query": "SELECT 1", "timeout": 5000},

@@ -13,7 +13,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # 配置
-BASE_URL="${BASE_URL:-http://localhost:8000}"
+BASE_URL="${BASE_URL:-http://localhost:}"
 API_TOKEN="${API_TOKEN:-}"
 TEST_DIR="/opt/claude/mystocks_spec/web/frontend/tests"
 TEST_FILE="api-automation.spec.js"
@@ -166,7 +166,7 @@ show_help() {
 
 选项:
   -h, --help          显示此帮助信息
-  -u, --url URL       指定后端服务URL (默认: http://localhost:8000)
+  -u, --url URL       指定后端服务URL (默认: http://localhost:)
   -t, --token TOKEN   指定认证令牌
 
 示例:
@@ -175,7 +175,7 @@ show_help() {
   $0 -t "Bearer my-token"         # 指定认证令牌
 
 环境变量:
-  BASE_URL          后端服务地址 (默认: http://localhost:8000)
+  BASE_URL          后端服务地址 (默认: http://localhost:)
   API_TOKEN         认证令牌 (用于需要登录的接口)
 
 注意: 本项目全面使用 REAL 数据，请确保后端已正确配置数据源。

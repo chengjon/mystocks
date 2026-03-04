@@ -11,7 +11,7 @@ import { defineConfig } from '@playwright/test';
 /**
  * 测试环境配置
  */
-const baseURL = process.env.PLAYWRIGHT_API_URL || 'http://localhost:8000';
+const baseURL = process.env.PLAYWRIGHT_API_URL || 'http://localhost:8020';
 const timeout = parseInt(process.env.PLAYWRIGHT_TIMEOUT || '30000');
 
 export default defineConfig({

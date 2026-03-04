@@ -462,7 +462,7 @@ window.addEventListener('resize', () => {
 server: {
   proxy: {
     '/api': {
-      target: 'http://localhost:8000',
+      target: 'http://localhost:8020',
       changeOrigin: true
     }
   }

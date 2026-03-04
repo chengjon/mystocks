@@ -191,8 +191,8 @@ return create_unified_success_response(
 
 **测试命令**:
 ```bash
-curl http://localhost:8000/health
-curl http://localhost:8000/api/health
+curl http://localhost:8020/health
+curl http://localhost:8020/api/health
 ```
 
 **响应示例**:
@@ -299,7 +299,7 @@ start_date  # 开始日期 YYYY-MM-DD
 end_date    # 结束日期 YYYY-MM-DD
 
 # 示例
-curl "http://localhost:8000/api/market/fund-flow?symbol=600519&timeframe=5"
+curl "http://localhost:8020/api/market/fund-flow?symbol=600519&timeframe=5"
 ```
 
 **K线数据 API** (`/api/market/kline`):
@@ -314,7 +314,7 @@ start_date  # 开始日期 YYYY-MM-DD
 end_date    # 结束日期 YYYY-MM-DD
 
 # 示例
-curl "http://localhost:8000/api/market/kline?stock_code=000001&period=daily&adjust=qfq"
+curl "http://localhost:8020/api/market/kline?stock_code=000001&period=daily&adjust=qfq"
 ```
 
 **CSRF Token API** (`/api/csrf-token`):
@@ -323,7 +323,7 @@ curl "http://localhost:8000/api/market/kline?stock_code=000001&period=daily&adju
 # 返回新的CSRF token用于修改操作
 
 # 示例
-curl "http://localhost:8000/api/csrf-token"
+curl "http://localhost:8020/api/csrf-token"
 ```
 
 ### 验证结果
@@ -646,7 +646,7 @@ npm run dev
 python3 scripts/verify_api_integration.py
 
 # 测试市场概览API
-curl http://localhost:8000/api/market/overview | python3 -m json.tool
+curl http://localhost:8020/api/market/overview | python3 -m json.tool
 
 # 检查缓存状态
 # (在前端控制台)

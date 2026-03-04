@@ -84,7 +84,7 @@ All modified files pass Python syntax validation:
    - Automatic TTL-based cleanup in Redis
    - Backwards compatibility with existing test suite
 
-3. **CORS fix**: Switched from `allow_origins=["*"]` to `settings.cors_origins` which reads from `CORS_ORIGINS` environment variable. The config already has sensible defaults covering `localhost:3000-3009` and `localhost:8000-8009`.
+3. **CORS fix**: Switched from `allow_origins=["*"]` to `settings.cors_origins` which reads from `CORS_ORIGINS` environment variable. The config already has sensible defaults covering `localhost:3000-3009` and `localhost:8020-8009`.
 
 ---
 

@@ -2,6 +2,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useApiService } from '@/composables/useApiService'
 import { PageHeader, StockListTable } from '@/components/shared'
 import type { TableColumn } from '@/components/shared'
+import { API_BASE_URL as RUNTIME_API_BASE_URL } from '@/config/runtime-endpoints'
 
 // Define service status type instead of using any
 interface ServiceStatus {
@@ -61,8 +62,9 @@ const servicesData = ref<{
 
 const historyData = ref<unknown[]>([])
 
-const FRONTEND_URL = 'http://localhost:3000'
-const API_BASE_URL = 'http://localhost:8000'
+const FRONTEND_URL =
+  (typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}` : '') || 'N/A'
+const API_BASE_URL = RUNTIME_API_BASE_URL || '/api'
 
 // 历史表格列配置
 const historyColumns = computed((): unknown[] => [

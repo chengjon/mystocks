@@ -1,0 +1,21 @@
+@import '@/styles/quant-matrix/index';
+
+.qm-layout {
+  min-height: 100vh;
+  background: var(--qm-bg);
+  color: var(--qm-text);
+}
+
+.qm-layout__main {
+  margin-left: var(--qm-sidebar-width);
+  min-height: 100vh;
+  transition: margin-left 0.2s ease;
+}
+
+.qm-layout__main--collapsed {
+  margin-left: var(--qm-sidebar-collapsed-width);
+}
+
+.qm-layout__content {
+  padding: 18px 22px 24px;
+}

@@ -207,7 +207,7 @@ export class IDEFeedbackChannel implements FeedbackChannel {
 ts-quality-guard watch --files "src/**/*.ts" --output console
 
 # IDE插件模式
-ts-quality-guard watch --ide vscode --port 3001
+ts-quality-guard watch --ide vscode --port 3020
 
 # 自定义配置
 ts-quality-guard watch --config .ts-quality-guard.json

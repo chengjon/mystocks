@@ -119,10 +119,10 @@ curl -w "@curl-format.txt" -o /dev/null -s "http://localhost:3000/"
 
 ```bash
 # 使用ab进行API压力测试
-ab -n 1000 -c 10 http://localhost:8888/api/data/stocks/basic
+ab -n 1000 -c 10 http://localhost:8020/api/data/stocks/basic
 
 # 使用wrk进行现代HTTP测试
-wrk -t12 -c400 -d30s http://localhost:8888/api/monitoring/health
+wrk -t12 -c400 -d30s http://localhost:8020/api/monitoring/health
 ```
 
 #### 3. 数据库性能测试
@@ -369,7 +369,7 @@ CREATE INDEX CONCURRENTLY idx_stocks_industry ON stocks_basic(industry);
 # performance_monitor.sh - 持续性能监控
 
 # 检查API响应时间
-api_response_time=$(curl -w "%{time_total}" -s -o /dev/null http://localhost:8888/api/monitoring/health)
+api_response_time=$(curl -w "%{time_total}" -s -o /dev/null http://localhost:8020/api/monitoring/health)
 if (( $(echo "$api_response_time > 0.5" | bc -l) )); then
     echo "WARNING: API响应时间超过500ms: ${api_response_time}s"
 fi

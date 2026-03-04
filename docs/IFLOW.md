@@ -424,7 +424,7 @@ cd web/backend && python -m uvicorn app.main:app --reload
 cd web/frontend && npm run dev
 
 # 访问地址
-# API文档: http://localhost:8000/api/docs
+# API文档: http://localhost:8020/api/docs
 # 前端界面: http://localhost:3000
 ```
 
@@ -558,7 +558,7 @@ CORS_ORIGINS=http://localhost:3000,http://localhost:5173
 **前端环境配置 (web/frontend/.env)**:
 ```bash
 # API 基础 URL（指向 Mock 后端）
-VITE_API_BASE_URL=http://localhost:8888
+VITE_API_BASE_URL=http://localhost:8020
 
 # Mock 模式标识
 VITE_APP_MODE=mock
@@ -671,14 +671,14 @@ risk_metrics = source.calculate_risk_metrics(portfolio_id="123")
 # 1. 启动后端 Mock 服务
 cd web/backend
 export USE_MOCK_DATA=true
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8888 &
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 &
 
 # 2. 启动前端服务
 cd web/frontend
 npm run dev
 
 # 3. 访问地址
-# API 文档: http://localhost:8888/api/docs
+# API 文档: http://localhost:8020/api/docs
 # 前端界面: http://localhost:3000
 ```
 
@@ -693,19 +693,19 @@ docker-compose -f config/docker-compose.yml up -d
 #### 监控模块
 ```bash
 # 获取监控摘要
-curl http://localhost:8888/api/monitoring/summary
+curl http://localhost:8020/api/monitoring/summary
 
 # 获取实时告警
-curl http://localhost:8888/api/monitoring/realtime/alerts
+curl http://localhost:8020/api/monitoring/realtime/alerts
 ```
 
 #### 问财模块
 ```bash
 # 获取预定义查询
-curl http://localhost:8888/api/market/wencai/queries
+curl http://localhost:8020/api/market/wencai/queries
 
 # 执行查询
-curl -X POST http://localhost:8888/api/market/wencai/query \
+curl -X POST http://localhost:8020/api/market/wencai/query \
   -H "Content-Type: application/json" \
   -d '{"query_name": "qs_1"}'
 ```
@@ -713,19 +713,19 @@ curl -X POST http://localhost:8888/api/market/wencai/query \
 #### 技术分析模块
 ```bash
 # 获取技术指标
-curl http://localhost:8888/api/technical/600000/indicators
+curl http://localhost:8020/api/technical/600000/indicators
 
 # 获取趋势指标
-curl http://localhost:8888/api/technical/600000/trend
+curl http://localhost:8020/api/technical/600000/trend
 ```
 
 #### 策略管理模块
 ```bash
 # 获取策略定义
-curl http://localhost:8888/api/strategy/definitions
+curl http://localhost:8020/api/strategy/definitions
 
 # 执行单策略
-curl -X POST http://localhost:8888/api/strategy/single \
+curl -X POST http://localhost:8020/api/strategy/single \
   -H "Content-Type: application/json" \
   -d '{"strategy_code": "volume_surge", "symbols": ["600000"]}'
 ```
@@ -775,7 +775,7 @@ def get_stock_quote(symbol: str) -> Dict:
 **1. 端口占用**
 ```bash
 # 检查端口占用
-lsof -i :8888
+lsof -i :8020
 lsof -i :3000
 
 # 清理进程
@@ -795,7 +795,7 @@ echo $USE_MOCK_DATA
 **3. Mock 数据格式错误**
 ```bash
 # 验证 API 响应
-curl -s http://localhost:8888/api/monitoring/summary | jq '.'
+curl -s http://localhost:8020/api/monitoring/summary | jq '.'
 
 # 检查 Mock 模块导入
 python -c "from src.mock.mock_Wencai import get_wencai_queries; print(get_wencai_queries())"
@@ -804,10 +804,10 @@ python -c "from src.mock.mock_Wencai import get_wencai_queries; print(get_wencai
 #### 性能基准
 ```bash
 # 响应时间测试
-curl -w "@curl-format.txt" -s -o /dev/null http://localhost:8888/api/monitoring/summary
+curl -w "@curl-format.txt" -s -o /dev/null http://localhost:8020/api/monitoring/summary
 
 # 并发测试
-ab -n 1000 -c 10 http://localhost:8888/api/market/wencai/queries
+ab -n 1000 -c 10 http://localhost:8020/api/market/wencai/queries
 ```
 
 **预期性能指标**:
@@ -941,7 +941,7 @@ npm run preview
 ```
 
 **访问地址**:
-- API文档: http://localhost:8000/api/docs
+- API文档: http://localhost:8020/api/docs
 - 前端界面: http://localhost:3000
 - 实时监控: WebSocket连接自动建立
 
@@ -1131,15 +1131,15 @@ POST /api/announcement/monitor/evaluate   # 评估监控规则
 import requests
 
 # 获取实时行情
-response = requests.get('http://localhost:8888/api/monitoring/realtime')
+response = requests.get('http://localhost:8020/api/monitoring/realtime')
 real_time_data = response.json()
 
 # 获取技术指标
-response = requests.get('http://localhost:8888/api/technical/600000/indicators')
+response = requests.get('http://localhost:8020/api/technical/600000/indicators')
 indicators = response.json()
 
 # 获取数据源健康状态
-response = requests.get('http://localhost:8888/api/multi-source/health')
+response = requests.get('http://localhost:8020/api/multi-source/health')
 health_status = response.json()
 ```
 
@@ -1236,7 +1236,7 @@ health_status = response.json()
 - **Grafana 面板**: http://localhost:3000 (如果配置了)
 - **TDengine 控制台**: http://localhost:6041
 - **PostgreSQL 控制台**: pgAdmin (如果配置了)
-- **Claude Code**: http://localhost:3001 (如果配置了)
+- **Claude Code**: http://localhost:3020 (如果配置了)
 
 ## 项目版本历史
 

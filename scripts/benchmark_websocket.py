@@ -16,6 +16,7 @@ import asyncio
 import time
 import json
 import argparse
+import os
 import websockets
 import statistics
 from datetime import datetime
@@ -98,8 +99,13 @@ async def run_benchmark(args):
     print("="*40)
 
 if __name__ == "__main__":
+    backend_port = os.getenv("BACKEND_PORT", "").strip()
+    if not backend_port:
+        raise RuntimeError("Missing BACKEND_PORT in environment")
+    default_ws_url = os.getenv("WS_BENCHMARK_URL", f"ws://localhost:{backend_port}/ws/events")
+
     parser = argparse.ArgumentParser(description="WebSocket Benchmark")
-    parser.add_argument("--url", default="ws://localhost:8000/ws/events", help="WS URL")
+    parser.add_argument("--url", default=default_ws_url, help="WS URL")
     parser.add_argument("--clients", type=int, default=50, help="并发数量")
     parser.add_argument("--duration", type=int, default=30, help="持续时间(秒)")
     parser.add_argument("--channels", default="events:tasks,events:indicators", help="订阅频道")

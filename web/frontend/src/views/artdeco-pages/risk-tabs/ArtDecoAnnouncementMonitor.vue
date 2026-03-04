@@ -1,361 +1,206 @@
 <template>
-  <div class="announcement-monitor">
-    <p>Announcement Monitor - Component under development</p>
+  <div class="announcement-monitor page-enter">
+    <div class="artdeco-header-bar">
+      <h2 class="section-title">公告监控</h2>
+      <div class="header-actions">
+        <div class="trace-id" v-if="requestId">REQ_ID: {{ requestId }}</div>
+        <ArtDecoButton variant="outline" size="sm" @click="fetchAnnouncements">刷新</ArtDecoButton>
+      </div>
+    </div>
+
+    <div class="stats-grid" v-loading="loading">
+      <ArtDecoCard title="公告总数" hoverable>
+        <div class="stat-value">{{ announcements.length }}</div>
+      </ArtDecoCard>
+      <ArtDecoCard title="今日公告" hoverable>
+        <div class="stat-value positive">{{ todayCount }}</div>
+      </ArtDecoCard>
+      <ArtDecoCard title="重要公告" hoverable>
+        <div class="stat-value warning">{{ importantCount }}</div>
+      </ArtDecoCard>
+      <ArtDecoCard title="含原文链接" hoverable>
+        <div class="stat-value">{{ linkedCount }}</div>
+      </ArtDecoCard>
+    </div>
+
+    <ArtDecoCard title="公告列表" class="table-card" hoverable>
+      <el-table :data="announcements" stripe empty-text="暂无公告数据">
+        <el-table-column prop="stock_code" label="代码" width="110" />
+        <el-table-column prop="stock_name" label="名称" width="140" />
+        <el-table-column prop="announcement_type" label="类型" width="140" show-overflow-tooltip />
+        <el-table-column prop="announcement_title" label="标题" min-width="320" show-overflow-tooltip />
+        <el-table-column label="重要性" width="120">
+          <template #default="{ row }">
+            <el-tag :type="importanceType(row.importance_level)">Lv.{{ row.importance_level ?? 0 }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="发布时间" width="190">
+          <template #default="{ row }">
+            <span class="mono">{{ formatPublishDate(row.publish_date, row.publish_time) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="120" fixed="right">
+          <template #default="{ row }">
+            <el-button text type="primary" :disabled="!row.url" @click="openSource(row.url)">查看原文</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </ArtDecoCard>
   </div>
 </template>
 
 <script setup lang="ts">
-// Placeholder component - under development
+import { computed, onMounted, ref } from 'vue';
+import { monitoringApi } from '@/api/index';
+import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
+import { ArtDecoButton, ArtDecoCard } from '@/components/artdeco';
+import type { AnnouncementBase } from '@/api/types/common';
+
+type JsonLike = Record<string, unknown>;
+
+const { loading, lastRequestId, exec } = useArtDecoApi();
+const announcements = ref<AnnouncementBase[]>([]);
+const requestId = ref('');
+
+const todayCount = computed(() => {
+  const today = new Date().toISOString().slice(0, 10);
+  return announcements.value.filter((item) => (item.publish_date || '').startsWith(today)).length;
+});
+
+const importantCount = computed(() => announcements.value.filter((item) => (item.importance_level || 0) >= 4).length);
+const linkedCount = computed(() => announcements.value.filter((item) => !!item.url).length);
+
+const normalizeList = <T>(payload: unknown, keys: string[]): T[] => {
+  if (Array.isArray(payload)) return payload as T[];
+  if (!payload || typeof payload !== 'object') return [];
+
+  const dict = payload as JsonLike;
+  for (const key of keys) {
+    const maybe = dict[key];
+    if (Array.isArray(maybe)) return maybe as T[];
+  }
+  return [];
+};
+
+const fetchAnnouncements = async (): Promise<void> => {
+  const data = await exec(() => monitoringApi.getAnnouncements({ page: 1, page_size: 50 }), {
+    errorMsg: '获取公告失败',
+    silent: true,
+  });
+
+  announcements.value = normalizeList<AnnouncementBase>(data, ['announcements', 'items', 'records', 'data']);
+  requestId.value = lastRequestId.value || requestId.value;
+};
+
+const importanceType = (level?: number): 'danger' | 'warning' | 'success' | 'info' => {
+  const value = Number(level || 0);
+  if (value >= 4) return 'danger';
+  if (value >= 3) return 'warning';
+  if (value >= 1) return 'success';
+  return 'info';
+};
+
+const formatPublishDate = (date?: string, time?: string | null): string => {
+  if (!date) return '-';
+  return time ? `${date} ${time}` : date;
+};
+
+const openSource = (url?: string | null): void => {
+  if (!url) return;
+  window.open(url, '_blank', 'noopener,noreferrer');
+};
+
+onMounted(fetchAnnouncements);
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-quant-extended';
-@import '@/styles/data-dense/index';
+@import '@/styles/artdeco-tokens';
 
 .announcement-monitor {
-    min-height: 900px;
+  padding: var(--artdeco-spacing-6);
 
-    .monitor-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: var(--artdeco-spacing-6);
-
-        h2 {
-            @include artdeco-gold-accent;
-
-            font-family: var(--artdeco-font-display);
-            font-size: var(--artdeco-text-2xl);
-            font-weight: 700;
-            margin: 0;
-            text-transform: uppercase;
-            letter-spacing: var(--artdeco-tracking-wider);
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: var(--artdeco-spacing-4);
-
-            .unread-count {
-                font-size: var(--artdeco-text-xs);
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: var(--artdeco-tracking-wide);
-            }
-        }
-    }
-
-    .announcement-stats {
-        margin-bottom: var(--artdeco-spacing-6);
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--artdeco-spacing-4);
-        }
-    }
-
-    .announcement-filters {
-        margin-bottom: var(--artdeco-spacing-6);
-    }
-
-    .announcements-section {
-        margin-bottom: var(--artdeco-spacing-6);
-    }
-
-    .monitor-settings-section {
-        .settings-content {
-            display: flex;
-            flex-direction: column;
-            gap: var(--artdeco-spacing-6);
-            padding: var(--artdeco-spacing-4);
-
-            .setting-group {
-                h4 {
-                    @include artdeco-gold-accent;
-
-                    font-family: var(--artdeco-font-display);
-                    font-size: var(--artdeco-text-lg);
-                    font-weight: 600;
-                    margin: 0 0 var(--artdeco-spacing-4) 0;
-                    text-transform: uppercase;
-                    letter-spacing: var(--artdeco-tracking-wide);
-                }
-
-                .setting-options {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                    gap: var(--artdeco-spacing-4);
-                }
-            }
-
-            .setting-actions {
-                display: flex;
-                gap: var(--artdeco-spacing-3);
-                justify-content: flex-end;
-            }
-        }
-    }
-}
-
-// 表格单元格样式
-.symbol-cell {
-    .symbol-code {
-        font-family: var(--artdeco-font-mono);
-        font-weight: 600;
-        color: var(--artdeco-gold-primary);
-        font-size: var(--artdeco-text-sm);
-        display: block;
-    }
-
-    .symbol-name {
-        font-family: var(--artdeco-font-body);
-        color: var(--artdeco-fg-muted);
-        font-size: var(--artdeco-text-xs);
-        margin-top: 2px;
-    }
-}
-
-.title-cell {
-    .announcement-title {
-        font-family: var(--artdeco-font-body);
-        font-weight: 600;
-        color: var(--artdeco-fg-primary);
-        font-size: var(--artdeco-text-sm);
-        display: block;
-        margin-bottom: var(--artdeco-spacing-2);
-        line-height: 1.4;
-    }
-
-    .title-meta {
-        display: flex;
-        gap: var(--artdeco-spacing-2);
-    }
-}
-
-.impact-cell {
-    text-align: center;
-}
-
-.time-cell {
-    .publish-time {
-        font-family: var(--artdeco-font-mono);
-        font-size: var(--artdeco-text-sm);
-        color: var(--artdeco-fg-primary);
-        display: block;
-    }
-
-    .relative-time {
-        font-family: var(--artdeco-font-body);
-        font-size: var(--artdeco-text-xs);
-        color: var(--artdeco-fg-muted);
-        margin-top: 2px;
-    }
-}
-
-.action-buttons {
+  .artdeco-header-bar {
     display: flex;
-    gap: var(--artdeco-spacing-2);
-    flex-wrap: wrap;
-}
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--artdeco-spacing-6);
+    border-bottom: 2px solid var(--artdeco-gold-primary);
+    padding-bottom: var(--artdeco-spacing-2);
 
-// 公告详情弹窗样式
-.announcement-detail {
-    .detail-header {
-        margin-bottom: var(--artdeco-spacing-6);
-        padding-bottom: var(--artdeco-spacing-4);
-        border-bottom: 1px solid var(--artdeco-gold-opacity-20);
-
-        .detail-meta {
-            display: flex;
-            gap: var(--artdeco-spacing-3);
-            margin-bottom: var(--artdeco-spacing-3);
-        }
-
-        .detail-company {
-            display: flex;
-            flex-direction: column;
-
-            .company-symbol {
-                font-family: var(--artdeco-font-mono);
-                font-weight: 600;
-                color: var(--artdeco-gold-primary);
-                font-size: var(--artdeco-text-lg);
-            }
-
-            .company-name {
-                font-family: var(--artdeco-font-body);
-                color: var(--artdeco-fg-muted);
-                font-size: var(--artdeco-text-sm);
-                margin-top: 2px;
-            }
-        }
-
-        .detail-time {
-            font-family: var(--artdeco-font-body);
-            color: var(--artdeco-fg-muted);
-            font-size: var(--artdeco-text-sm);
-        }
+    .section-title {
+      margin: 0;
+      font-size: var(--artdeco-text-2xl);
+      color: var(--artdeco-gold-primary);
+      text-transform: uppercase;
+      letter-spacing: var(--artdeco-tracking-wide);
     }
 
-    .detail-content {
-        h3 {
-            @include artdeco-gold-accent;
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--artdeco-spacing-4);
 
-            font-family: var(--artdeco-font-display);
-            font-size: var(--artdeco-text-lg);
-            font-weight: 600;
-            margin: var(--artdeco-spacing-6) 0 var(--artdeco-spacing-3) 0;
-            text-transform: uppercase;
-            letter-spacing: var(--artdeco-tracking-wide);
-
-            &:first-child {
-                margin-top: 0;
-            }
-        }
-
-        p {
-            font-family: var(--artdeco-font-body);
-            color: var(--artdeco-fg-primary);
-            line-height: 1.6;
-            margin-bottom: var(--artdeco-spacing-4);
-        }
-
-        .announcement-content {
-            font-family: var(--artdeco-font-body);
-            color: var(--artdeco-fg-primary);
-            line-height: 1.6;
-            white-space: pre-wrap;
-            background: var(--artdeco-bg-card);
-            padding: var(--artdeco-spacing-4);
-            border-radius: var(--artdeco-radius-none);
-            border: 1px solid var(--artdeco-gold-opacity-10);
-        }
-
-        .impact-analysis {
-            display: flex;
-            flex-direction: column;
-            gap: var(--artdeco-spacing-3);
-
-            .impact-item {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: var(--artdeco-spacing-3);
-                background: var(--artdeco-bg-card);
-                border: 1px solid var(--artdeco-gold-opacity-10);
-                border-radius: var(--artdeco-radius-none);
-
-                .impact-label {
-                    font-family: var(--artdeco-font-body);
-                    font-weight: 500;
-                    color: var(--artdeco-fg-primary);
-                }
-
-                .impact-value {
-                    font-family: var(--artdeco-font-body);
-                    color: var(--artdeco-gold-primary);
-                    font-weight: 500;
-                }
-            }
-        }
+      .trace-id {
+        font-family: var(--artdeco-font-mono);
+        font-size: var(--artdeco-text-xs);
+        color: var(--artdeco-fg-muted);
+        letter-spacing: var(--artdeco-tracking-wide);
+      }
     }
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+    gap: var(--artdeco-spacing-4);
+    margin-bottom: var(--artdeco-spacing-6);
+
+    .stat-value {
+      font-family: var(--artdeco-font-display);
+      font-size: var(--artdeco-text-3xl);
+      line-height: 1;
+      color: var(--artdeco-gold-primary);
+
+      &.positive {
+        color: var(--artdeco-rise);
+      }
+
+      &.warning {
+        color: var(--artdeco-warning);
+      }
+    }
+  }
+
+  .table-card {
+    margin-bottom: var(--artdeco-spacing-6);
+  }
+
+  .mono {
+    font-family: var(--artdeco-font-mono);
+    color: var(--artdeco-fg-muted);
+    font-size: var(--artdeco-text-xs);
+  }
 }
 
-// 响应式设计（桌面端优先）
 @media (width <= 1200px) {
-    .announcement-monitor {
-        .stats-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
+  .announcement-monitor {
+    .stats-grid {
+      grid-template-columns: repeat(2, minmax(160px, 1fr));
     }
+  }
 }
 
 @media (width <= 768px) {
-    .announcement-monitor {
-        .monitor-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: var(--artdeco-spacing-4);
-
-            .header-actions {
-                width: 100%;
-                justify-content: space-between;
-            }
-        }
-
-        .stats-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .setting-options {
-            grid-template-columns: 1fr !important;
-        }
-
-        .setting-actions {
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-        .detail-meta {
-            flex-wrap: wrap;
-        }
-
-        .impact-analysis .impact-item {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: var(--artdeco-spacing-2);
-        }
-    }
-}
-
-// 动画效果
-.announcement-monitor {
-    .announcement-stats,
-    .announcements-section,
-    .monitor-settings-section {
-        animation: fade-in-up 0.6s ease-out;
+  .announcement-monitor {
+    .artdeco-header-bar {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--artdeco-spacing-3);
     }
 
-    .announcement-stats {
-        animation-delay: 0.1s;
+    .stats-grid {
+      grid-template-columns: 1fr;
     }
-
-    .announcements-section {
-        animation-delay: 0.2s;
-    }
-
-    .monitor-settings-section {
-        animation-delay: 0.3s;
-    }
-}
-
-@keyframes fade-in-up {
-    from {
-        opacity: 0%;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 100%;
-        transform: translateY(0);
-    }
-}
-
-// 未读公告高亮
-.announcements-section {
-    .artdeco-table__row {
-        &:has(.artdeco-status[status="info"]) {
-            background: color-mix(in srgb, var(--artdeco-gold-light) 5%, transparent);
-            border-left: 3px solid var(--artdeco-gold-primary);
-        }
-    }
-}
-
-// 重要公告标记
-.title-meta {
-    .artdeco-badge {
-        animation: pulse 2s infinite;
-    }
+  }
 }
 </style>

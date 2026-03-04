@@ -19,12 +19,12 @@
 
 ### 2. 测试导航
 
-1. 访问：http://localhost:3001
+1. 访问：http://localhost:3020
 2. 登录（admin / admin123）
 3. 点击左侧菜单："市场数据" → "问财筛选"
 
 **预期结果**：
-- 地址栏显示：`http://localhost:3001/market-data/wencai`
+- 地址栏显示：`http://localhost:3020/market-data/wencai`
 - 右侧显示问财筛选主界面，包括：
   - 标题："问财股票筛选器"
   - 搜索框
@@ -77,11 +77,11 @@ ps aux | grep vite
 ps aux | grep uvicorn
 
 # 测试后端 API
-curl http://localhost:8000/api/market/wencai/health
+curl http://localhost:8020/api/market/wencai/health
 # 预期返回：{"status":"healthy","service":"wencai","version":"1.0.0"}
 
 # 测试查询列表
-curl http://localhost:8000/api/market/wencai/queries
+curl http://localhost:8020/api/market/wencai/queries
 # 预期返回：包含 9 个查询的 JSON
 ```
 
@@ -92,7 +92,7 @@ curl http://localhost:8000/api/market/wencai/queries
 1. **刷新页面**
 2. **点击"问财筛选"菜单**
 3. **查找这个请求**：
-   - URL: `http://localhost:8000/api/market/wencai/queries`
+   - URL: `http://localhost:8020/api/market/wencai/queries`
    - 状态应该是 `200 OK`
    - 响应应该包含 9 个查询
 

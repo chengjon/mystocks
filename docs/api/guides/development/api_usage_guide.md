@@ -24,22 +24,22 @@
 
 ### 基本信息
 
-- **Base URL**: `http://localhost:8000` (端口范围: 8000-8010)
-- **文档地址**: `http://localhost:8000/api/docs` (Swagger UI, 端口范围: 8000-8010)
-- **备用文档**: `http://localhost:8000/api/redoc` (ReDoc, 端口范围: 8000-8010)
-- **健康检查**: `http://localhost:8000/health` (端口范围: 8000-8010)
+- **Base URL**: `http://localhost:8020` (端口范围: 8000-8010)
+- **文档地址**: `http://localhost:8020/api/docs` (Swagger UI, 端口范围: 8000-8010)
+- **备用文档**: `http://localhost:8020/api/redoc` (ReDoc, 端口范围: 8000-8010)
+- **健康检查**: `http://localhost:8020/health` (端口范围: 8000-8010)
 
 ### 第一个请求
 
 ```bash
 # 1. 健康检查 (端口可能为8000-8010范围内的可用端口)
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 
 # 2. 获取CSRF Token (端口可能为8000-8010范围内的可用端口)
-curl http://localhost:8000/api/csrf-token
+curl http://localhost:8020/api/csrf-token
 
 # 3. 登录获取JWT Token (端口可能为8000-8010范围内的可用端口)
-curl -X POST http://localhost:8000/api/auth/login \
+curl -X POST http://localhost:8020/api/auth/login \
   -H "Content-Type: application/json" \
   -H "X-CSRF-Token: <your-csrf-token>" \
   -d '{
@@ -48,7 +48,7 @@ curl -X POST http://localhost:8000/api/auth/login \
   }'
 
 # 4. 使用JWT Token访问受保护的端点 (端口可能为8000-8010范围内的可用端口)
-curl http://localhost:8000/api/market/realtime \
+curl http://localhost:8020/api/market/realtime \
   -H "Authorization: Bearer <your-jwt-token>"
 ```
 
@@ -566,7 +566,7 @@ Authorization: Bearer <token>
 
 ### Swagger UI (推荐)
 
-访问地址: **http://localhost:8000/api/docs**
+访问地址: **http://localhost:8020/api/docs**
 
 **功能特点**:
 - ✅ 交互式 API 测试
@@ -585,7 +585,7 @@ Authorization: Bearer <token>
 
 ### ReDoc (备用文档)
 
-访问地址: **http://localhost:8000/api/redoc**
+访问地址: **http://localhost:8020/api/redoc**
 
 **功能特点**:
 - ✅ 更清晰的文档结构
@@ -604,7 +604,7 @@ Authorization: Bearer <token>
 
 ```bash
 # 步骤 1: 下载 OpenAPI 文件
-curl http://localhost:8000/openapi.json > mystocks-api.json
+curl http://localhost:8020/openapi.json > mystocks-api.json
 
 # 步骤 2: 在 Postman 中
 # Import → Upload Files → 选择 mystocks-api.json
@@ -613,7 +613,7 @@ curl http://localhost:8000/openapi.json > mystocks-api.json
 
 **配置环境变量**:
 ```
-base_url: http://localhost:8000
+base_url: http://localhost:8020
 jwt_token: <your-jwt-token>
 csrf_token: <your-csrf-token>
 ```
@@ -624,7 +624,7 @@ csrf_token: <your-csrf-token>
 #!/bin/bash
 
 # 配置
-BASE_URL="http://localhost:8000"
+BASE_URL="http://localhost:8020"
 USERNAME="admin"
 PASSWORD="your-password"
 
@@ -653,7 +653,7 @@ import requests
 from typing import Dict, Any
 
 class MyStocksAPI:
-    def __init__(self, base_url: str = "http://localhost:8000"):
+    def __init__(self, base_url: str = "http://localhost:8020"):
         self.base_url = base_url
         self.csrf_token = None
         self.jwt_token = None
@@ -704,7 +704,7 @@ class MyStocksAPI {
   private csrfToken?: string;
   private jwtToken?: string;
 
-  constructor(baseUrl: string = "http://localhost:8000") {
+  constructor(baseUrl: string = "http://localhost:8020") {
     this.baseUrl = baseUrl;
   }
 
@@ -760,8 +760,8 @@ console.log(data);
 
 - **OpenAPI JSON**: `docs/api/openapi.json`
 - **OpenAPI YAML**: `docs/api/openapi.yaml`
-- **Swagger UI**: `http://localhost:8000/api/docs`
-- **ReDoc**: `http://localhost:8000/api/redoc`
+- **Swagger UI**: `http://localhost:8020/api/docs`
+- **ReDoc**: `http://localhost:8020/api/redoc`
 - **项目 README**: `README.md`
 - **CLAUDE 开发指南**: `CLAUDE.md`
 

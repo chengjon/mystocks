@@ -42,8 +42,8 @@ async def websocket_events(
     - events:indicators (indicator calculations)
 
     Example:
-    - ws://localhost:8000/ws/events?channels=events:tasks,events:indicators
-    - ws://localhost:8000/ws/events?channels=events:task:calc_1234567890
+    - ws://localhost:${BACKEND_PORT}/ws/events?channels=events:tasks,events:indicators
+    - ws://localhost:${BACKEND_PORT}/ws/events?channels=events:task:calc_1234567890
     """
     # Generate connection ID
     import time
@@ -163,8 +163,8 @@ async def list_channels():
             },
         },
         "usage_examples": [
-            "ws://localhost:8000/ws/events  # Subscribe to default channels",
-            "ws://localhost:8000/ws/events?channels=events:tasks,events:indicators  # Custom channels",
-            "ws://localhost:8000/ws/events?channels=events:task:calc_1234567890  # Specific task",
+            "ws://localhost:${BACKEND_PORT}/ws/events  # Subscribe to default channels",
+            "ws://localhost:${BACKEND_PORT}/ws/events?channels=events:tasks,events:indicators  # Custom channels",
+            "ws://localhost:${BACKEND_PORT}/ws/events?channels=events:task:calc_1234567890  # Specific task",
         ],
     }

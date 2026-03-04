@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1772443913830,
+  "lastScanned": 1772547296475,
   "projectRoot": "/opt/claude/mystocks_spec",
   "techStack": {
     "languages": [
@@ -89,7 +89,7 @@
       "path": "__pycache__",
       "purpose": null,
       "fileCount": 23,
-      "lastAccessed": 1772443913810,
+      "lastAccessed": 1772547296439,
       "keyFiles": [
         "__init__.cpython-312.pyc",
         "conftest.cpython-312-pytest-9.0.2.pyc",
@@ -102,7 +102,7 @@
       "path": "architecture",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1772443913810,
+      "lastAccessed": 1772547296440,
       "keyFiles": [
         "DOMAIN_BOUNDARIES.md",
         "INDEX.md",
@@ -113,7 +113,7 @@
       "path": "archived",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1772443913816,
+      "lastAccessed": 1772547296451,
       "keyFiles": [
         "INDEX.md",
         "archive_INDEX.md"
@@ -123,14 +123,14 @@
       "path": "backups",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1772443913817,
+      "lastAccessed": 1772547296451,
       "keyFiles": []
     },
     "config": {
       "path": "config",
       "purpose": "Configuration files",
       "fileCount": 92,
-      "lastAccessed": 1772443913818,
+      "lastAccessed": 1772547296454,
       "keyFiles": [
         "DATA_SOURCES_SPLIT_PLAN.md",
         "TDX目录规则 .md",
@@ -143,7 +143,7 @@
       "path": "data",
       "purpose": "Data files",
       "fileCount": 1,
-      "lastAccessed": 1772443913819,
+      "lastAccessed": 1772547296454,
       "keyFiles": [
         "recovery_queue.db"
       ]
@@ -152,7 +152,7 @@
       "path": "docs",
       "purpose": "Documentation",
       "fileCount": 59,
-      "lastAccessed": 1772443913820,
+      "lastAccessed": 1772547296455,
       "keyFiles": [
         "AGENTS_1.md",
         "CLAUDE.md",
@@ -165,14 +165,14 @@
       "path": "governance",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1772443913820,
+      "lastAccessed": 1772547296455,
       "keyFiles": []
     },
     "htmlcov": {
       "path": "htmlcov",
       "purpose": null,
       "fileCount": 1077,
-      "lastAccessed": 1772443913822,
+      "lastAccessed": 1772547296458,
       "keyFiles": [
         "class_index.html",
         "coverage_html_cb_6fb7b396.js",
@@ -185,21 +185,21 @@
       "path": "logs",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1772443913822,
+      "lastAccessed": 1772547296462,
       "keyFiles": []
     },
     "monitoring-stack": {
       "path": "monitoring-stack",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1772443913823,
+      "lastAccessed": 1772547296462,
       "keyFiles": []
     },
     "openspec": {
       "path": "openspec",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1772443913823,
+      "lastAccessed": 1772547296463,
       "keyFiles": [
         "AGENTS.md",
         "OPENSPEC_CONVENTIONS.md",
@@ -210,7 +210,7 @@
       "path": "reports",
       "purpose": null,
       "fileCount": 72,
-      "lastAccessed": 1772443913823,
+      "lastAccessed": 1772547296464,
       "keyFiles": [
         "AI_Developer_Onboarding_Guide.md",
         "ArtDeco_3.1_Upgrade_Summary.md",
@@ -223,7 +223,7 @@
       "path": "reviews",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1772443913824,
+      "lastAccessed": 1772547296464,
       "keyFiles": [
         "review-20260223-031831-9e70a2.md",
         "review-20260223-202118-558dc1.md"
@@ -233,7 +233,7 @@
       "path": "scripts",
       "purpose": "Build/utility scripts",
       "fileCount": 111,
-      "lastAccessed": 1772443913824,
+      "lastAccessed": 1772547296466,
       "keyFiles": [
         "JWT_key_update.sh",
         "LICENSE",
@@ -246,7 +246,7 @@
       "path": "src",
       "purpose": "Source code",
       "fileCount": 5,
-      "lastAccessed": 1772443913824,
+      "lastAccessed": 1772547296466,
       "keyFiles": [
         "README.md",
         "__init__.py",
@@ -255,11 +255,18 @@
         "unified_manager.py"
       ]
     },
+    "test-results": {
+      "path": "test-results",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1772547296466,
+      "keyFiles": []
+    },
     "tests": {
       "path": "tests",
       "purpose": "Test files",
       "fileCount": 90,
-      "lastAccessed": 1772443913825,
+      "lastAccessed": 1772547296468,
       "keyFiles": [
         "AGENTS.md",
         "INDEX.md",
@@ -272,7 +279,7 @@
       "path": "web",
       "purpose": null,
       "fileCount": 13,
-      "lastAccessed": 1772443913825,
+      "lastAccessed": 1772547296468,
       "keyFiles": [
         "INDEX.md",
         "PORTS.md",
@@ -285,7 +292,7 @@
       "path": "data/models",
       "purpose": "Data models",
       "fileCount": 3,
-      "lastAccessed": 1772443913826,
+      "lastAccessed": 1772547296470,
       "keyFiles": [
         "sh000001_demo.pkl",
         "test_integration.pkl",
@@ -296,7 +303,7 @@
       "path": "logs/tests",
       "purpose": "Test files",
       "fileCount": 6,
-      "lastAccessed": 1772443913828,
+      "lastAccessed": 1772547296472,
       "keyFiles": [
         "pm2-logs.log",
         "test-output.log",
@@ -307,14 +314,14 @@
       "path": "monitoring-stack/config",
       "purpose": "Configuration files",
       "fileCount": 0,
-      "lastAccessed": 1772443913828,
+      "lastAccessed": 1772547296473,
       "keyFiles": []
     },
     "src/api": {
       "path": "src/api",
       "purpose": "API routes",
       "fileCount": 1,
-      "lastAccessed": 1772443913829,
+      "lastAccessed": 1772547296474,
       "keyFiles": [
         "alert_history_routes.py"
       ]
@@ -322,10 +329,94 @@
   },
   "hotPaths": [
     {
-      "path": "web/frontend/src",
-      "accessCount": 1,
-      "lastAccessed": 1772443973527,
+      "path": "docs/guides",
+      "accessCount": 12,
+      "lastAccessed": 1772584858067,
       "type": "directory"
+    },
+    {
+      "path": "docs/guides/multi-cli-tasks",
+      "accessCount": 8,
+      "lastAccessed": 1772585069423,
+      "type": "directory"
+    },
+    {
+      "path": "scripts/dev/analyze_api_data_usage_quick.sh",
+      "accessCount": 3,
+      "lastAccessed": 1772582855475,
+      "type": "file"
+    },
+    {
+      "path": "scripts/analyze_api_data_usage/report_generator.py",
+      "accessCount": 2,
+      "lastAccessed": 1772562779674,
+      "type": "file"
+    },
+    {
+      "path": "CLAUDE.md",
+      "accessCount": 1,
+      "lastAccessed": 1772561425284,
+      "type": "file"
+    },
+    {
+      "path": "docs/guides/MULTI_CLI_COLLABORATION_METHOD.md",
+      "accessCount": 1,
+      "lastAccessed": 1772561425618,
+      "type": "file"
+    },
+    {
+      "path": "scripts/analyze_api_data_usage.py",
+      "accessCount": 1,
+      "lastAccessed": 1772562675455,
+      "type": "file"
+    },
+    {
+      "path": "docs/reports/ANALYSIS_TOOL_README.md",
+      "accessCount": 1,
+      "lastAccessed": 1772562733440,
+      "type": "file"
+    },
+    {
+      "path": "scripts/analyze_api_data_usage/__init__.py",
+      "accessCount": 1,
+      "lastAccessed": 1772562756941,
+      "type": "file"
+    },
+    {
+      "path": "docs/reports/API_WEB_DATA_USAGE_REPORT.md",
+      "accessCount": 1,
+      "lastAccessed": 1772562796496,
+      "type": "file"
+    },
+    {
+      "path": "scripts/analyze_api_data_usage_README.md",
+      "accessCount": 1,
+      "lastAccessed": 1772563011485,
+      "type": "file"
+    },
+    {
+      "path": "docs/guides/multi-cli-tasks/MULTI_CLI_WORKTREE_MANAGEMENT.md",
+      "accessCount": 1,
+      "lastAccessed": 1772584938631,
+      "type": "file"
+    },
+    {
+      "path": "docs/guides/multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md",
+      "accessCount": 1,
+      "lastAccessed": 1772585038057,
+      "type": "file"
+    },
+    {
+      "path": "docs/guides/multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md",
+      "accessCount": 1,
+      "lastAccessed": 1772585038256,
+      "type": "file"
+    },
+    {
+      "path": "docs/guides/multi-cli-tasks/CLI_WORKFLOW_GUIDE.md",
+      "accessCount": 1,
+      "lastAccessed": 1772585038441,
+      "type": "file"
     }
   ],
   "userDirectives": []

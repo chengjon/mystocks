@@ -162,8 +162,9 @@ async def system_status():
 # ==================== 主程序 ====================
 
 if __name__ == "__main__":
+    backend_port = int(os.getenv("BACKEND_PORT", "8020"))
     print("🚀 启动简单认证API服务器...")
-    print("📍 地址: http://localhost:8000")
+    print(f"📍 地址: http://localhost:{backend_port}")
     print("👥 测试账号:")
     print("   - admin / admin123")
     print("   - user / user123")
@@ -172,6 +173,6 @@ if __name__ == "__main__":
     uvicorn.run(
         app,
         host="0.0.0.0",
-        port=8000,
+        port=backend_port,
         log_level="info"
     )

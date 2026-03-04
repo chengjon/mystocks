@@ -126,8 +126,8 @@ E2E测试运行脚本
     $0 --parallel --workers 4
 
 环境变量:
-    PLAYWRIGHT_BASE_URL   基础URL [默认: http://localhost:5173]
-    PLAYWRIGHT_API_URL    API URL [默认: http://localhost:8000]
+    PLAYWRIGHT_BASE_URL   基础URL [默认: http://localhost:]
+    PLAYWRIGHT_API_URL    API URL [默认: http://localhost:]
     PLAYWRIGHT_TIMEOUT    测试超时 [默认: 30000ms]
 
 EOF
@@ -167,8 +167,8 @@ check_dependencies() {
 
 # 检查服务状态
 check_services() {
-    local base_url="${PLAYWRIGHT_BASE_URL:-http://localhost:5173}"
-    local api_url="${PLAYWRIGHT_API_URL:-http://localhost:8000}"
+    local base_url="${PLAYWRIGHT_BASE_URL:-http://localhost:}"
+    local api_url="${PLAYWRIGHT_API_URL:-http://localhost:}"
 
     # 检查前端服务
     if ! curl -f "$base_url" &> /dev/null; then
@@ -309,8 +309,8 @@ parse_args() {
 # 设置环境变量
 setup_environment() {
     # 默认环境变量
-    export PLAYWRIGHT_BASE_URL="${PLAYWRIGHT_BASE_URL:-http://localhost:5173}"
-    export PLAYWRIGHT_API_URL="${PLAYWRIGHT_API_URL:-http://localhost:8000}"
+    export PLAYWRIGHT_BASE_URL="${PLAYWRIGHT_BASE_URL:-http://localhost:}"
+    export PLAYWRIGHT_API_URL="${PLAYWRIGHT_API_URL:-http://localhost:}"
     export PLAYWRIGHT_TIMEOUT="${PLAYWRIGHT_TIMEOUT:-$((TIMEOUT * 1000))}"
     export NODE_ENV="test"
     export USE_MOCK_DATA="true"
@@ -318,8 +318,8 @@ setup_environment() {
     # 根据环境设置特定变量
     case $ENV in
         dev)
-            export PLAYWRIGHT_BASE_URL="http://localhost:5173"
-            export PLAYWRIGHT_API_URL="http://localhost:8000"
+            export PLAYWRIGHT_BASE_URL="http://localhost:"
+            export PLAYWRIGHT_API_URL="http://localhost:"
             ;;
         staging)
             export PLAYWRIGHT_BASE_URL="https://staging.mystocks.company.com"

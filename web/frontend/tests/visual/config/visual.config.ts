@@ -3,6 +3,8 @@ import path from 'path';
 
 const ARTDECO_TOKENS_PATH = path.resolve(__dirname, '../../src/styles/artdeco-tokens.scss');
 const ECHARTS_THEME_PATH = path.resolve(__dirname, '../../src/utils/echarts.ts');
+const FRONTEND_PORT = process.env.FRONTEND_PORT || '3020';
+const FRONTEND_URL = process.env.FRONTEND_URL || `http://localhost:${FRONTEND_PORT}`;
 
 export default defineConfig({
   testDir: '../visual',
@@ -16,7 +18,7 @@ export default defineConfig({
     ['junit', { outputFile: 'test-results/visual/junit.xml' }]
   ],
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: FRONTEND_URL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -43,8 +45,8 @@ export default defineConfig({
   snapshotDir: '../visual/baselines',
   snapshotPathTemplate: '{snapshotDir}/{testFilePath}/{arg}{ext}',
   webServer: {
-    command: 'npm run dev -- --port 5173',
-    url: 'http://localhost:5173',
+    command: `npm run dev -- --port ${FRONTEND_PORT}`,
+    url: FRONTEND_URL,
     reuseExistingServer: !process.env.CI,
     timeout: 120000
   },

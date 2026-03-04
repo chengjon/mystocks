@@ -6,6 +6,17 @@
 
 set -e
 
+PROJECT_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+if [ -f "${PROJECT_ROOT}/.env" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "${PROJECT_ROOT}/.env"
+    set +a
+fi
+
+: "${FRONTEND_PORT:?Missing FRONTEND_PORT in .env}"
+: "${BACKEND_PORT:?Missing BACKEND_PORT in .env}"
+
 # 颜色定义
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -115,16 +126,16 @@ fi
 echo "4. 检查服务状态..."
 
 # 检查前端服务
-if curl -s http://localhost:3001 > /dev/null 2>&1; then
-    echo -e "${GREEN}✅ 前端服务运行中${NC} (http://localhost:3001)"
+if curl -s "http://localhost:${FRONTEND_PORT}" > /dev/null 2>&1; then
+    echo -e "${GREEN}✅ 前端服务运行中${NC} (http://localhost:${FRONTEND_PORT})"
 else
     echo -e "${RED}❌ 前端服务未运行${NC}"
     echo "   启动命令: npm run dev"
 fi
 
 # 检查后端服务
-if curl -s http://localhost:8000/docs > /dev/null 2>&1; then
-    echo -e "${GREEN}✅ 后端服务运行中${NC} (http://localhost:8000)"
+if curl -s "http://localhost:${BACKEND_PORT}/docs" > /dev/null 2>&1; then
+    echo -e "${GREEN}✅ 后端服务运行中${NC} (http://localhost:${BACKEND_PORT})"
 else
     echo -e "${YELLOW}⚠️  后端服务可能未运行${NC}"
     echo "   检查命令: ps aux | grep uvicorn"

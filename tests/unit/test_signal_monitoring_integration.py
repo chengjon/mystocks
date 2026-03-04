@@ -96,7 +96,7 @@ async def test_api_client():
     try:
         import httpx
 
-        base_url = os.getenv("MYSTOCKS_BACKEND_URL", "http://localhost:8000")
+        base_url = os.getenv("MYSTOCKS_BACKEND_URL", "http://localhost:8020")
         token = os.getenv("TEST_JWT_TOKEN", "dev-mock-token-for-development")
 
         headers = {"Authorization": f"Bearer {token}"}

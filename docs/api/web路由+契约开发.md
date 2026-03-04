@@ -117,7 +117,7 @@ from utils.common_func import verify_indicator_value
 def test_market_kline_api():
     with sync_playwright() as p:
         # 无需启动浏览器，直接创建API请求上下文
-        api_context = p.request.new_context(base_url="http://localhost:8000")  # 你的API服务地址
+        api_context = p.request.new_context(base_url="http://localhost:8020")  # 你的API服务地址
         symbol = TEST_SYMBOLS["BTC"]
         period = "1d"
         start_ts = TEST_TIME_RANGES["7d"]["start"]
@@ -162,7 +162,7 @@ def test_market_kline_api():
 ])
 def test_market_kline_batch_api(symbol, period):
     with sync_playwright() as p:
-        api_context = p.request.new_context(base_url="http://localhost:8000")
+        api_context = p.request.new_context(base_url="http://localhost:8020")
         response = api_context.get(
             "/api/data/stocks/kline",
             params={"symbol": symbol, "period": period, "start_ts": 1735689600000, "end_ts": 1736294400000}

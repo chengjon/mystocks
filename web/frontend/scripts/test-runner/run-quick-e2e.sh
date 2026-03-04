@@ -19,6 +19,17 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+PROJECT_ROOT="$(cd "$(dirname "$0")/../../../.." && pwd)"
+if [ -f "${PROJECT_ROOT}/.env" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "${PROJECT_ROOT}/.env"
+    set +a
+fi
+
+: "${FRONTEND_PORT:?Missing FRONTEND_PORT in .env}"
+: "${BACKEND_PORT:?Missing BACKEND_PORT in .env}"
+
 # ============================================
 # 步骤1：环境检查
 # ============================================
@@ -66,16 +77,16 @@ echo ""
 # ============================================
 # 步骤2：端口检查
 # ============================================
-echo -e "${YELLOW}[2/6]${NC} 检查端口3001..."
+echo -e "${YELLOW}[2/6]${NC} 检查前端端口${FRONTEND_PORT}..."
 
-if curl -s -o /dev/null -w "%{http_code}" http://localhost:3001 | grep -q "200\|301\|302"; then
+if curl -s -o /dev/null -w "%{http_code}" "http://localhost:${FRONTEND_PORT}" | grep -q "200\|301\|302"; then
     echo -e "${GREEN}✅ 服务响应正常 (HTTP 200/301/302)${NC}"
 else
     echo -e "${RED}❌ 服务无响应${NC}"
     echo ""
     echo "📝 故障排查："
     echo "   1. 检查PM2日志: pm2 logs mystocks-frontend-prod --lines 20"
-    echo "   2. 检查端口占用: lsof -i :3001"
+    echo "   2. 检查端口占用: lsof -i :${FRONTEND_PORT}"
     echo "   3. 重启服务: pm2 restart mystocks-frontend-prod"
     exit 1
 fi
@@ -87,12 +98,12 @@ echo ""
 # ============================================
 echo -e "${YELLOW}[3/6]${NC} 检查后端API服务..."
 
-if curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/health | grep -q "200\|302"; then
+if curl -s -o /dev/null -w "%{http_code}" "http://localhost:${BACKEND_PORT}/health" | grep -q "200\|302"; then
     echo -e "${GREEN}✅ 后端API服务正常${NC}"
 else
     echo -e "${YELLOW}⚠️  后端API服务未响应${NC}"
     echo "   WebSocket实时更新测试可能失败"
-    echo "   建议启动: cd web/backend && python3 simple_backend_fixed.py"
+    echo "   建议启动: cd web/backend && uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT}"
 fi
 
 echo ""
@@ -170,7 +181,7 @@ echo "║  失败数量: $FAILED_TESTS"
 echo "║  不稳定数: $FLAKY_TESTS"
 echo "╠════════════════════════════════════════════════════════════════╣"
 echo "║  PM2服务: ✅ 运行中"
-echo "║  端口3001: ✅ 可访问"
+echo "║  前端端口(${FRONTEND_PORT}): ✅ 可访问"
 echo "║  后端API:  ✅ 正常"
 echo "╚════════════════════════════════════════════════════════════════╝"
 echo ""

@@ -358,7 +358,7 @@ export function useWebSocket() {
   const isConnected = ref(false)
 
   const connect = () => {
-    socket.value = io('http://localhost:8000', {
+    socket.value = io('http://localhost:8020', {
       auth: {
         token: localStorage.getItem('auth_token')
       },
@@ -500,7 +500,7 @@ describe('Security Tests', () => {
 
   it('should handle CSRF attacks', async () => {
     // 测试CSRF保护
-    const response = await fetch('http://localhost:8000/api/auth/login', {
+    const response = await fetch('http://localhost:8020/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -660,8 +660,8 @@ npm run test:websocket
 ### 环境配置
 ```bash
 # 必需的环境变量
-VITE_API_BASE_URL=http://localhost:8000
-VITE_WS_URL=http://localhost:8000
+VITE_API_BASE_URL=http://localhost:8020
+VITE_WS_URL=http://localhost:8020
 VITE_USE_MOCK_DATA=false
 ```
 

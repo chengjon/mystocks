@@ -18,7 +18,7 @@
 
 ```bash
 # 检查后端服务
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 
 # 检查前端服务
 curl http://localhost:3000
@@ -188,10 +188,10 @@ tail -f /var/log/taos/taosd.log
 ps aux | grep uvicorn
 
 # 检查端口占用
-lsof -i :8000
+lsof -i :8020
 
 # 测试 API 健康
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 ```
 
 ### 请求超时
@@ -206,7 +206,7 @@ curl http://localhost:8000/health
 tail -f /var/log/postgresql/postgresql.log | grep "duration:"
 
 # 检查 API 响应时间
-curl -w "\nTime: %{time_total}s\n" http://localhost:8000/api/v1/market/kline
+curl -w "\nTime: %{time_total}s\n" http://localhost:8020/api/v1/market/kline
 ```
 
 ---
@@ -235,14 +235,14 @@ npm run preview
 **排查步骤**:
 ```javascript
 // 浏览器控制台检查
-const ws = new WebSocket('ws://localhost:8000/ws');
+const ws = new WebSocket('ws://localhost:8020/ws');
 ws.onerror = (e) => console.error('WebSocket error:', e);
 ```
 
 **解决方案**:
 ```bash
 # 检查 WebSocket 服务
-curl http://localhost:8000/ws/health
+curl http://localhost:8020/ws/health
 ```
 
 ---

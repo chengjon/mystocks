@@ -13,7 +13,7 @@ import aiohttp
 
 
 class P2ModuleTester:
-    def __init__(self, base_url="http://localhost:8000"):
+    def __init__(self, base_url="http://localhost:8020"):
         self.base_url = base_url
         self.test_results = {
             "technical_analysis": {},

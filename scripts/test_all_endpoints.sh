@@ -2,7 +2,16 @@
 # 综合API端点测试脚本
 # 测试所有Web后端API功能
 
-BASE_URL="http://localhost:8000"
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+if [ -f "${PROJECT_ROOT}/.env" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "${PROJECT_ROOT}/.env"
+    set +a
+fi
+
+: "${BACKEND_PORT:?Missing BACKEND_PORT in .env}"
+BASE_URL="http://localhost:${BACKEND_PORT}"
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 YELLOW='\033[1;33m'

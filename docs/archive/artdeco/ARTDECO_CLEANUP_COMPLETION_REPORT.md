@@ -258,7 +258,7 @@ npm run build
 2. **运行开发服务器测试**
    ```bash
    cd /opt/claude/mystocks_spec/web/frontend
-   npm run dev -- --port 3001
+   npm run dev -- --port 3020
    ```
    验证所有页面正常显示
 

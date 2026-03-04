@@ -202,15 +202,15 @@ fi
 
 echo ""
 echo "=== API 健康端点 ==="
-curl -s http://localhost:8000/health | python3 -m json.tool
+curl -s http://localhost:8020/health | python3 -m json.tool
 
 echo ""
 echo "=== API 响应时间 ==="
-curl -w "\nTotal time: %{time_total}s\n" -s http://localhost:8000/health -o /dev/null
+curl -w "\nTotal time: %{time_total}s\n" -s http://localhost:8020/health -o /dev/null
 
 echo ""
 echo "=== 数据库连接状态 ==="
-curl -s http://localhost:8000/api/v1/db-status | python3 -m json.tool
+curl -s http://localhost:8020/api/v1/db-status | python3 -m json.tool
 ```
 
 ### 3.2 前端服务检查
@@ -273,10 +273,10 @@ fi
 
 | 服务 | 检查方法 | 预期结果 | 状态 |
 |------|----------|----------|------|
-| 后端 API | `curl localhost:8000/health` | 返回 healthy | ☐ |
+| 后端 API | `curl localhost:8020/health` | 返回 healthy | ☐ |
 | 前端 Web | `curl localhost:3000` | 返回 200 | ☐ |
-| API 文档 | `curl localhost:8000/docs` | 返回 Swagger UI | ☐ |
-| WebSocket | `curl localhost:8000/ws` | 正常连接 | ☐ |
+| API 文档 | `curl localhost:8020/docs` | 返回 Swagger UI | ☐ |
+| WebSocket | `curl localhost:8020/ws` | 正常连接 | ☐ |
 | GPU 服务 | `curl localhost:8001/gpu/status` | 返回 GPU 状态 | ☐ |
 
 ---
@@ -435,15 +435,15 @@ curl -s http://localhost:9090/api/v1/alerts | python3 -m json.tool
 # Grafana 健康检查
 
 echo "=== Grafana 状态 ==="
-curl -s http://localhost:3001/api/health | python3 -m json.tool
+curl -s http://localhost:3020/api/health | python3 -m json.tool
 
 echo ""
 echo "=== Grafana 数据源 ==="
-curl -s -u admin:admin http://localhost:3001/api/datasources | python3 -m json.tool
+curl -s -u admin:admin http://localhost:3020/api/datasources | python3 -m json.tool
 
 echo ""
 echo "=== Grafana 仪表板 ==="
-curl -s -u admin:admin http://localhost:3001/api/search | python3 -m json.tool
+curl -s -u admin:admin http://localhost:3020/api/search | python3 -m json.tool
 ```
 
 ### 6.3 监控检查清单
@@ -451,7 +451,7 @@ curl -s -u admin:admin http://localhost:3001/api/search | python3 -m json.tool
 | 组件 | 检查方法 | 预期结果 | 状态 |
 |------|----------|----------|------|
 | Prometheus | `curl localhost:9090/api/v1/status` | 正常响应 | ☐ |
-| Grafana | `curl localhost:3001/api/health` | 返回 ok | ☐ |
+| Grafana | `curl localhost:3020/api/health` | 返回 ok | ☐ |
 | 告警规则 | `curl localhost:9090/api/v1/alerts` | 无活跃告警 | ☐ |
 | 数据源 | `curl Grafana/api/datasources` | 已配置 | ☐ |
 
@@ -531,7 +531,7 @@ fi
 
 echo ""
 echo "=== 5. 后端服务 ==="
-if curl -s http://localhost:8000/health > /dev/null 2>&1; then
+if curl -s http://localhost:8020/health > /dev/null 2>&1; then
     check_pass "后端 API 运行正常"
 else
     check_fail "后端 API 无响应"
@@ -589,7 +589,7 @@ bash -x ./scripts/check_infrastructure.sh
 | **数据库** | PostgreSQL 连接 | `psql -c "SELECT 1"` | ☐ |
 | | TDengine 连接 | `taos -c "SELECT 1"` | ☐ |
 | | 表结构验证 | `psql -c "\dt"` | ☐ |
-| **服务** | 后端 API | `curl localhost:8000/health` | ☐ |
+| **服务** | 后端 API | `curl localhost:8020/health` | ☐ |
 | | 前端 Web | `curl localhost:3000` | ☐ |
 | | GPU 服务 | `curl localhost:8001/gpu/status` | ☐ |
 | **依赖** | Redis | `redis-cli ping` | ☐ |
@@ -597,7 +597,7 @@ bash -x ./scripts/check_infrastructure.sh
 | **网络** | 端口监听 | `netstat -tlnp` | ☐ |
 | | 连通性 | `ping -c 1 host` | ☐ |
 | **监控** | Prometheus | `curl localhost:9090/api/v1/status` | ☐ |
-| | Grafana | `curl localhost:3001/api/health` | ☐ |
+| | Grafana | `curl localhost:3020/api/health` | ☐ |
 
 ---
 

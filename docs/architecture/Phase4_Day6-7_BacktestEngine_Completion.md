@@ -179,7 +179,7 @@ celery_result_backend: str = "redis://localhost:6379/1"
 
 ```javascript
 // 前端连接示例
-const ws = new WebSocket('ws://localhost:8000/ws/backtest/123');
+const ws = new WebSocket('ws://localhost:8020/ws/backtest/123');
 ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
     console.log(`Progress: ${data.progress}%`);
@@ -193,7 +193,7 @@ ws.onmessage = (event) => {
 ### 执行回测
 
 ```bash
-curl -X POST http://localhost:8000/api/strategy-mgmt/backtest/execute \
+curl -X POST http://localhost:8020/api/strategy-mgmt/backtest/execute \
   -H "Content-Type: application/json" \
   -d '{
     "strategy_id": 1,
@@ -210,7 +210,7 @@ curl -X POST http://localhost:8000/api/strategy-mgmt/backtest/execute \
 ### 查询状态
 
 ```bash
-curl http://localhost:8000/api/strategy-mgmt/backtest/status/1
+curl http://localhost:8020/api/strategy-mgmt/backtest/status/1
 ```
 
 ---

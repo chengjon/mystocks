@@ -2,44 +2,21 @@
 import { onMounted, ref } from 'vue';
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
 import { apiClient } from '@/api/apiClient';
-
-interface PositionRow {
-  symbol: string
-  name: string
-  market_value: number
-  pnl_pct: number
-}
-
-interface PortfolioRow {
-  total_assets: number
-  today_pnl: number
-  today_pnl_pct: number
-  positions: PositionRow[]
-}
+import {
+  extractTradePositionsPayload,
+  toPortfolioOverviewData,
+  type PortfolioOverviewData
+} from './portfolioOverviewData';
 
 const { loading, lastRequestId, exec } = useArtDecoApi();
-const portfolio = ref<PortfolioRow | null>(null);
+const portfolio = ref<PortfolioOverviewData>(toPortfolioOverviewData(null));
 
 const fetchPortfolio = async () => {
-  // 模拟从后端获取账户持仓
-  // 实际上可能会调用 api/v1/portfolio/summary
-  const data = await exec(() => apiClient.get('/v1/data/markets/overview'), {
+  const responseData = await exec(() => apiClient.get('/v1/trade/positions'), {
     silent: true
   });
-  
-  if (data) {
-    // 注入模拟的持仓数据
-    portfolio.value = {
-      total_assets: 1258400.52,
-      today_pnl: 12540.30,
-      today_pnl_pct: 1.02,
-      positions: [
-        { symbol: '600519', name: '贵州茅台', market_value: 450000, pnl_pct: 5.2 },
-        { symbol: '300750', name: '宁德时代', market_value: 320000, pnl_pct: -2.1 },
-        { symbol: '000001', name: '平安银行', market_value: 150000, pnl_pct: 0.5 }
-      ]
-    };
-  }
+
+  portfolio.value = toPortfolioOverviewData(extractTradePositionsPayload(responseData));
 };
 
 onMounted(() => {

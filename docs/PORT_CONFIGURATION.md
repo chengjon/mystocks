@@ -47,10 +47,10 @@ BACKEND_PORT_RANGE_START=8000
 BACKEND_PORT_RANGE_END=8009
 
 # API configuration
-VITE_API_BASE_URL=http://localhost:8000
+VITE_API_BASE_URL=http://localhost:8020
 
 # CORS origins (comma-separated)
-CORS_ORIGINS=http://localhost:3000,http://localhost:3001,http://localhost:3002
+CORS_ORIGINS=http://localhost:3000,http://localhost:3020,http://localhost:3002
 ```
 
 ### 3. Environment Variables
@@ -72,7 +72,7 @@ BACKEND_PORT=8003 python -m uvicorn app.main:app --host 0.0.0.0 --port 8003
 ```bash
 # Terminal 1: Backend
 cd /opt/claude/mystocks_spec
-python -m uvicorn web.backend.app.main:app --host 0.0.0.0 --port 8000
+python -m uvicorn web.backend.app.main:app --host 0.0.0.0 --port 8020
 
 # Terminal 2: Frontend
 cd /opt/claude/mystocks_spec/web/frontend
@@ -109,7 +109,7 @@ Check if services are running:
 
 ```bash
 # Backend health
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 
 # Frontend access
 curl http://localhost:3000
@@ -140,7 +140,7 @@ REAL_DATA_AVAILABLE=true
 
 Check current data mode:
 ```bash
-curl http://localhost:8000/api/data-quality/config/mode | jq .
+curl http://localhost:8020/api/data-quality/config/mode | jq .
 ```
 
 ## Troubleshooting
@@ -163,7 +163,7 @@ When changing ports, ensure the new frontend port is in the CORS origins list:
 
 ```bash
 # Update CORS_ORIGINS to include all frontend ports you use
-CORS_ORIGINS=http://localhost:3000,http://localhost:3001,http://localhost:3002
+CORS_ORIGINS=http://localhost:3000,http://localhost:3020,http://localhost:3002
 ```
 
 ### Environment Variables Not Loading

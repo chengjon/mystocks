@@ -18,7 +18,9 @@ def main():
 
     os.chdir(backend_dir)
 
-    backend_port = os.environ.get("BACKEND_PORT", "8020")
+    backend_port = os.environ.get("BACKEND_PORT")
+    if not backend_port:
+        raise RuntimeError("Missing BACKEND_PORT in environment. Configure it in .env before starting PM2.")
     cmd = [
         sys.executable,
         "-m",
@@ -28,7 +30,6 @@ def main():
         "0.0.0.0",
         "--port",
         backend_port,
-        "--reload",
     ]
 
     print(f"🚀 Starting MyStocks backend on port {backend_port}...")

@@ -45,19 +45,19 @@ npx playwright test
 # 启动 FastAPI 后端（端口 8000-8009）
 cd web/backend
 pip install -r requirements.txt
-python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn main:app --host 0.0.0.0 --port 8020 --reload
 
 # 运行测试
 pytest
 
 # 查看 API 文档
-# http://localhost:8000/docs
+# http://localhost:8020/docs
 ```
 
 ### 全栈开发
 ```bash
 # 同时启动两个服务
-终端 1: cd web/backend && python -m uvicorn main:app --port 8000
+终端 1: cd web/backend && python -m uvicorn main:app --port 8020
 终端 2: cd web/frontend && npm run dev -- --port 3000
 ```
 
@@ -213,9 +213,9 @@ if (!['3000','3001','3002','3003','3004','3005','3006','3007','3008','3009'].inc
 
 ## API 文档
 
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-- **OpenAPI JSON**: http://localhost:8000/openapi.json
+- **Swagger UI**: http://localhost:8020/docs
+- **ReDoc**: http://localhost:8020/redoc
+- **OpenAPI JSON**: http://localhost:8020/openapi.json
 - **Apifox 项目**: https://app.apifox.com/project/7376246
 
 ## 关键配置文件
@@ -290,7 +290,7 @@ if (!['3000','3001','3002','3003','3004','3005','3006','3007','3008','3009'].inc
    ```bash
    # 检查端口使用情况
    lsof -i :3000
-   lsof -i :8000
+   lsof -i :8020
 
    # 终止进程
    kill -9 <PID>

@@ -61,7 +61,7 @@
 - [ ] **FastAPI 后端** 正常运行
   ```bash
   # 检查后端是否运行
-  curl http://localhost:8000/health
+  curl http://localhost:8020/health
   ```
 
 - [ ] **Prometheus** 正常运行
@@ -183,7 +183,7 @@ docker-compose restart prometheus
 
 ```bash
 # 1. 测试 FastAPI /metrics 端点
-curl http://localhost:8000/metrics
+curl http://localhost:8020/metrics
 
 # 2. 检查 Prometheus 指标
 curl http://localhost:9090/api/v1/label/__name__/values | grep datasource
@@ -251,12 +251,12 @@ except CircuitBreakerOpenError as e:
 
 ```bash
 # 1. 生成一些 API 调用
-curl http://localhost:8000/api/market/daily?symbol=000001
+curl http://localhost:8020/api/market/daily?symbol=000001
 
 # 2. 等待几秒
 
 # 3. 查询指标
-curl http://localhost:8000/metrics | grep datasource_api_calls_total
+curl http://localhost:8020/metrics | grep datasource_api_calls_total
 ```
 
 **预期结果**:
@@ -421,7 +421,7 @@ cp src/core/data_source/base.py.backup src/core/data_source/base.py
 # 使用您的部署工具 (docker-compose / kubectl / systemd)
 
 # 3. 验证回滚成功
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 ```
 
 ### 配置回滚

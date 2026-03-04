@@ -59,7 +59,7 @@ cd /opt/claude/mystocks_spec/web/backend && ./start_backend.sh
 
 2. **验证后端服务状态**:
 ```bash
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 # 应该返回: {"status": "healthy"}
 ```
 
@@ -129,7 +129,7 @@ start playwright-report/index.html       # Windows
 **示例输出**:
 ```
 🧪 Health Check
-  URL: http://localhost:8000/health
+  URL: http://localhost:8020/health
   Status: 200
   Duration: 20ms
   ✅ PASS
@@ -180,7 +180,7 @@ start playwright-report/index.html       # Windows
   timeout: 180 * 1000,      // 3分钟超时
   workers: 2,                // 2个并发worker
   retries: 1,                // 失败重试1次
-  baseURL: 'http://localhost:8000'
+  baseURL: 'http://localhost:8020'
 }
 ```
 
@@ -292,7 +292,7 @@ npx playwright test backend-api-critical \
 **解决方案**:
 ```bash
 # 检查 OpenAPI 端点
-curl http://localhost:8000/openapi.json
+curl http://localhost:8020/openapi.json
 
 # 如果返回 404，检查后端日志
 pm2 logs mystocks-backend
@@ -331,7 +331,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Your API Module', () => {
   test('should return correct data', async ({ request }) => {
-    const response = await request.get('http://localhost:8000/api/v1/your-endpoint');
+    const response = await request.get('http://localhost:8020/api/v1/your-endpoint');
     expect(response.status()).toBe(200);
 
     const json = await response.json();

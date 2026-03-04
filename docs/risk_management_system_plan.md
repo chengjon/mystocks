@@ -477,7 +477,7 @@ GET /api/v1/risk/stop-loss/history
 #### 6.2.1 WebSocket连接
 ```typescript
 // 连接到风险监控频道
-ws://localhost:8000/ws/risk
+ws://localhost:8020/ws/risk
 
 // 接收的风险数据格式
 interface RiskUpdate {

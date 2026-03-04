@@ -44,7 +44,9 @@ if __name__ == "__main__":
     test_field("app_name", "str", "MyStocks Web", "MyStocks Web")
     test_field("debug", "bool", False, "true")
     test_field("host", "str", "0.0.0.0", "0.0.0.0")
-    test_field("port", "int", 8000, "8000")
+    backend_port = os.getenv("BACKEND_PORT", "8020")
+    frontend_port = os.getenv("FRONTEND_PORT", "3020")
+    test_field("port", "int", int(backend_port), backend_port)
     test_field("secret_key", "str", "your-secret-key-change-in-production", "dev-secret-key")
     test_field("algorithm", "str", "HS256", "HS256")
     test_field("access_token_expire_minutes", "int", 30, "1440")
@@ -72,9 +74,9 @@ if __name__ == "__main__":
     # 测试不设置环境变量的情况
     class TestCORSSettings1(BaseSettings):
         cors_origins: List[str] = [
-            "http://localhost:3000",
+            f"http://localhost:{frontend_port}",
             "http://localhost:8080",
-            "http://localhost:5173",
+            f"http://localhost:{os.getenv('FRONTEND_BACKUP_PORT', '3021')}",
         ]
 
         class Config:
@@ -89,13 +91,15 @@ if __name__ == "__main__":
         print(f"✗ CORS Origins (默认值): {e}")
 
     # 测试设置环境变量为逗号分隔的字符串
-    os.environ["CORS_ORIGINS"] = "http://localhost:5173,http://localhost:3000"
+    os.environ["CORS_ORIGINS"] = (
+        f"http://localhost:{os.getenv('FRONTEND_BACKUP_PORT', '3021')},http://localhost:{frontend_port}"
+    )
 
     class TestCORSSettings2(BaseSettings):
         cors_origins: List[str] = [
-            "http://localhost:3000",
+            f"http://localhost:{frontend_port}",
             "http://localhost:8080",
-            "http://localhost:5173",
+            f"http://localhost:{os.getenv('FRONTEND_BACKUP_PORT', '3021')}",
         ]
 
         class Config:
@@ -110,13 +114,15 @@ if __name__ == "__main__":
         print(f"✗ CORS Origins (逗号分隔): {e}")
 
     # 测试设置环境变量为JSON格式
-    os.environ["CORS_ORIGINS"] = '["http://localhost:5173", "http://localhost:3000"]'
+    os.environ["CORS_ORIGINS"] = (
+        f'["http://localhost:{os.getenv("FRONTEND_BACKUP_PORT", "3021")}", "http://localhost:{frontend_port}"]'
+    )
 
     class TestCORSSettings3(BaseSettings):
         cors_origins: List[str] = [
-            "http://localhost:3000",
+            f"http://localhost:{frontend_port}",
             "http://localhost:8080",
-            "http://localhost:5173",
+            f"http://localhost:{os.getenv('FRONTEND_BACKUP_PORT', '3021')}",
         ]
 
         class Config:

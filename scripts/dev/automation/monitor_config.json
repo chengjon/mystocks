@@ -5,12 +5,12 @@
   "webhook_url": "",
   "services": {
     "mystocks-frontend": {
-      "url": "http://localhost:3002",
+      "url": "http://localhost:3020",
       "timeout": 5000,
       "expected_status": 200
     },
     "mystocks-backend": {
-      "url": "http://localhost:8000/api/health",
+      "url": "http://localhost:8020/api/health",
       "timeout": 3000,
       "expected_status": 200,
       "database_check": {

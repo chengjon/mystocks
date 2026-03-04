@@ -2,7 +2,7 @@ import type { StrategyConfig } from '@/api/types/common'
 import type { StrategySnapshot } from '@/composables/strategy/useStrategyCrossTabContext'
 
 export type OptimizationStatusLabel = 'RUNNING' | 'PAUSED' | 'STOPPED' | 'ERROR'
-export type OptimizationDataSource = 'real' | 'mock'
+export type OptimizationDataSource = 'real'
 
 export interface StrategyOptimizationRow {
   strategyId: string
@@ -161,60 +161,4 @@ export function buildOptimizationRows(
       }
     })
     .filter((item): item is StrategyOptimizationRow => item !== null)
-}
-
-export function createMockOptimizationRows(): StrategyOptimizationRow[] {
-  return [
-    {
-      strategyId: 'mock-1',
-      strategyName: '动量轮动优化',
-      strategyType: 'momentum',
-      statusLabel: 'RUNNING',
-      parameterCount: 4,
-      recommendedParameters: {
-        lookback: 21,
-        hold_days: 5,
-        max_drawdown: 0.12,
-        risk_budget: 0.03
-      },
-      backtestStatus: 'COMPLETED',
-      score: 91,
-      lastUpdated: '2026-03-01 09:30:00',
-      source: 'mock'
-    },
-    {
-      strategyId: 'mock-2',
-      strategyName: '均值回归优化',
-      strategyType: 'mean_reversion',
-      statusLabel: 'PAUSED',
-      parameterCount: 3,
-      recommendedParameters: {
-        reversion_window: 14,
-        zscore_limit: 2.4,
-        max_holding_days: 6
-      },
-      backtestStatus: 'RUNNING',
-      score: 84,
-      lastUpdated: '2026-03-01 09:20:00',
-      source: 'mock'
-    },
-    {
-      strategyId: 'mock-3',
-      strategyName: '多因子稳健组合',
-      strategyType: 'custom',
-      statusLabel: 'STOPPED',
-      parameterCount: 5,
-      recommendedParameters: {
-        factor_a: 0.35,
-        factor_b: 0.25,
-        factor_c: 0.4,
-        rebalance_days: 3,
-        risk_limit: 0.05
-      },
-      backtestStatus: 'N/A',
-      score: 79,
-      lastUpdated: '2026-03-01 09:05:00',
-      source: 'mock'
-    }
-  ]
 }

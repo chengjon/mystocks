@@ -10,6 +10,17 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+if [ -f "${PROJECT_ROOT}/.env" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "${PROJECT_ROOT}/.env"
+    set +a
+fi
+
+: "${BACKEND_PORT:?Missing BACKEND_PORT in .env}"
+BACKEND_BASE_URL="http://localhost:${BACKEND_PORT}"
+
 # 日志函数
 log_info() {
     echo -e "${BLUE}[INFO]${NC} $(date '+%Y-%m-%d %H:%M:%S') - $1"
@@ -186,7 +197,7 @@ run_e2e_tests() {
     # 启动后端服务
     log_info "启动后端服务..."
     cd web/backend
-    python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &
+    python -m uvicorn app.main:app --host 0.0.0.0 --port "${BACKEND_PORT}" --reload &
     BACKEND_PID=$!
     cd ../..
 
@@ -202,16 +213,16 @@ run_e2e_tests() {
     # 运行不同浏览器的测试
     for browser in "chromium" "firefox" "webkit"; do
         log_info "运行 $browser 测试..."
-        PLAYWRIGHT_TEST_BASE_URL="http://localhost:8888" python -m pytest tests/ -s -v --browser="$browser" --html="playwright-report/report_$browser.html" --tb=short || true
+        PLAYWRIGHT_TEST_BASE_URL="${BACKEND_BASE_URL}" python -m pytest tests/ -s -v --browser="$browser" --html="playwright-report/report_$browser.html" --tb=short || true
     done
 
     # 运行分片测试
     log_info "运行测试分片..."
-    PLAYWRIGHT_TEST_BASE_URL="http://localhost:8888" python -m pytest tests/ --shard 1/5 -v || true
-    PLAYWRIGHT_TEST_BASE_URL="http://localhost:8888" python -m pytest tests/ --shard 2/5 -v || true
-    PLAYWRIGHT_TEST_BASE_URL="http://localhost:8888" python -m pytest tests/ --shard 3/5 -v || true
-    PLAYWRIGHT_TEST_BASE_URL="http://localhost:8888" python -m pytest tests/ --shard 4/5 -v || true
-    PLAYWRIGHT_TEST_BASE_URL="http://localhost:8888" python -m pytest tests/ --shard 5/5 -v || true
+    PLAYWRIGHT_TEST_BASE_URL="${BACKEND_BASE_URL}" python -m pytest tests/ --shard 1/5 -v || true
+    PLAYWRIGHT_TEST_BASE_URL="${BACKEND_BASE_URL}" python -m pytest tests/ --shard 2/5 -v || true
+    PLAYWRIGHT_TEST_BASE_URL="${BACKEND_BASE_URL}" python -m pytest tests/ --shard 3/5 -v || true
+    PLAYWRIGHT_TEST_BASE_URL="${BACKEND_BASE_URL}" python -m pytest tests/ --shard 4/5 -v || true
+    PLAYWRIGHT_TEST_BASE_URL="${BACKEND_BASE_URL}" python -m pytest tests/ --shard 5/5 -v || true
 
     # 终止后端服务
     kill $BACKEND_PID 2>/dev/null || true
@@ -230,7 +241,7 @@ run_performance_tests() {
 
     # 启动应用并运行Lighthouse测试
     cd web/backend
-    python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &
+    python -m uvicorn app.main:app --host 0.0.0.0 --port "${BACKEND_PORT}" --reload &
     BACKEND_PID=$!
     cd ../..
 
@@ -239,8 +250,8 @@ run_performance_tests() {
 
     # 运行Lighthouse测试
     if command -v lighthouse &> /dev/null; then
-        lighthouse http://localhost:8888/api/docs --output json --output html --output-path ./reports/lighthouse-report.html || true
-        lighthouse http://localhost:8888/api/docs --output json --output-path ./reports/lighthouse-report.json || true
+        lighthouse "${BACKEND_BASE_URL}/api/docs" --output json --output html --output-path ./reports/lighthouse-report.html || true
+        lighthouse "${BACKEND_BASE_URL}/api/docs" --output json --output-path ./reports/lighthouse-report.json || true
     else
         log_warning "Lighthouse未安装，跳过性能测试"
     fi

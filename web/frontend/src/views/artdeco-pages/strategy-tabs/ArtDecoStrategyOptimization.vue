@@ -90,8 +90,7 @@
           <p v-else-if="selectedStrategyMissing" class="empty-state">
             未找到策略 {{ selectedStrategyId }} 的优化候选，请返回策略管理页重试。
           </p>
-          <p v-else-if="dataSource === 'real'" class="empty-state">REAL 数据为空，暂无可优化策略。</p>
-          <p v-else class="empty-state">REAL 数据不可用，当前显示 MOCK 优化候选。</p>
+          <p v-else class="empty-state">REAL 数据为空，暂无可优化策略。</p>
         </div>
 
         <aside class="contract-card artdeco-card">
@@ -133,7 +132,6 @@ import {
 } from './strategyCrossTabNavigation'
 import {
   buildOptimizationRows,
-  createMockOptimizationRows,
   type StrategyOptimizationRow,
   type OptimizationDataSource,
   type OptimizationStatusLabel
@@ -158,8 +156,8 @@ const {
 const keyword = ref('')
 const statusFilter = ref<StatusFilter>('all')
 const strategyRecords = ref<StrategyConfig[]>([])
-const optimizationRows = ref(createMockOptimizationRows())
-const dataSource = ref<OptimizationDataSource>('mock')
+const optimizationRows = ref<StrategyOptimizationRow[]>([])
+const dataSource = ref<OptimizationDataSource>('real')
 
 const selectedStrategyId = computed(() => extractStrategyIdFromQuery(route.query as Record<string, unknown>))
 const selectedSnapshot = computed(() => {
@@ -220,7 +218,8 @@ function normalizeProcessTime(rawValue: string): string {
 }
 
 function rebuildRowsFromContext() {
-  if (dataSource.value !== 'real') {
+  if (strategyRecords.value.length === 0) {
+    optimizationRows.value = []
     return
   }
 
@@ -231,20 +230,37 @@ function rebuildRowsFromContext() {
   )
 }
 
+function extractStrategiesFromPayload(payload: unknown): StrategyConfig[] {
+  if (Array.isArray(payload)) {
+    return payload as StrategyConfig[]
+  }
+
+  if (payload && typeof payload === 'object') {
+    const candidate = payload as Record<string, unknown>
+    const collections = [candidate.strategies, candidate.items, candidate.data, candidate.records]
+    for (const collection of collections) {
+      if (Array.isArray(collection)) {
+        return collection as StrategyConfig[]
+      }
+    }
+  }
+
+  return []
+}
+
 async function refreshOptimizationRows() {
   const payload = await exec(() => strategyApi.getStrategies({}), {
     silent: true,
-    errorMsg: '获取策略优化数据失败，已回退 MOCK'
+    errorMsg: '获取策略优化数据失败，当前显示空结果'
   })
 
   if (!payload) {
-    dataSource.value = 'mock'
     strategyRecords.value = []
-    optimizationRows.value = createMockOptimizationRows()
+    optimizationRows.value = []
     return
   }
 
-  const realStrategies = Array.isArray(payload) ? payload : []
+  const realStrategies = extractStrategiesFromPayload(payload)
   strategyRecords.value = realStrategies
   dataSource.value = 'real'
 

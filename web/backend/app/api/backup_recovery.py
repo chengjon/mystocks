@@ -609,10 +609,10 @@ async def cleanup_old_backups(retention_days: int = Query(30, description="保�
     **示例**:
     ```bash
     # 清理30天前的备份
-    curl -X POST "http://localhost:8000/api/backup-recovery/cleanup/old-backups?retention_days=30"
+    curl -X POST "http://localhost:${BACKEND_PORT}/api/backup-recovery/cleanup/old-backups?retention_days=30"
 
     # 清理7天前的备份（测试环境）
-    curl -X POST "http://localhost:8000/api/backup-recovery/cleanup/old-backups?retention_days=7"
+    curl -X POST "http://localhost:${BACKEND_PORT}/api/backup-recovery/cleanup/old-backups?retention_days=7"
     ```
 
     **响应示例**:

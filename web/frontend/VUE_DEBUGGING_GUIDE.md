@@ -126,14 +126,14 @@ const iconMapping = {
 **错误做法**:
 ```javascript
 // ❌ 硬编码URL - 难以维护，不同环境需要手动修改
-const response = await fetch('http://localhost:8000/api/market/wencai/queries')
+const response = await fetch('http://localhost:8020/api/market/wencai/queries')
 ```
 
 **正确做法**:
 ```javascript
 // ✅ 集中管理API配置
 // src/config/api.js
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8020'
 
 export const API_ENDPOINTS = {
   wencai: {
@@ -151,7 +151,7 @@ const response = await fetch(API_ENDPOINTS.wencai.queries)
 **环境变量配置**:
 ```bash
 # .env.development
-VITE_API_BASE_URL=http://localhost:8000
+VITE_API_BASE_URL=http://localhost:8020
 
 # .env.production
 VITE_API_BASE_URL=https://api.yourdomain.com
@@ -480,8 +480,8 @@ echo ""
 
 # 4. 检查服务状态
 echo "4. 检查服务状态..."
-curl -s http://localhost:3001 > /dev/null && echo "✅ 前端服务运行中" || echo "❌ 前端服务未运行"
-curl -s http://localhost:8000/docs > /dev/null && echo "✅ 后端服务运行中" || echo "❌ 后端服务未运行"
+curl -s http://localhost:3020 > /dev/null && echo "✅ 前端服务运行中" || echo "❌ 前端服务未运行"
+curl -s http://localhost:8020/docs > /dev/null && echo "✅ 后端服务运行中" || echo "❌ 后端服务未运行"
 ```
 
 使用方法：

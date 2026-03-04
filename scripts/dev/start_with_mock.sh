@@ -88,7 +88,7 @@ start_backend() {
 
     # 等待服务启动
     for i in {1..30}; do
-        if curl -s http://localhost:8000/ > /dev/null; then
+        if curl -s http://localhost:/ > /dev/null; then
             info "后端服务已启动 (PID: $BACKEND_PID)"
             return 0
         fi
@@ -107,7 +107,7 @@ start_frontend() {
 
     # 确保环境变量设置正确
     export VITE_APP_MODE=mock
-    export VITE_API_BASE_URL=http://localhost:8000
+    export VITE_API_BASE_URL=http://localhost:
 
     # 检查是否需要安装依赖
     if [ ! -d "node_modules" ]; then
@@ -123,7 +123,7 @@ start_frontend() {
 
     # 等待服务启动
     for i in {1..30}; do
-        if curl -s http://localhost:5173/ > /dev/null; then
+        if curl -s http://localhost:/ > /dev/null; then
             info "前端服务已启动 (PID: $FRONTEND_PID)"
             return 0
         fi
@@ -139,11 +139,11 @@ check_services() {
     info "检查服务状态..."
 
     # 后端检查
-    if curl -s http://localhost:8000/ > /dev/null; then
+    if curl -s http://localhost:/ > /dev/null; then
         info "✅ 后端服务 (API) 正常运行"
 
         # 检查缓存状态
-        if curl -s http://localhost:8000/api/cache/status > /dev/null; then
+        if curl -s http://localhost:/api/cache/status > /dev/null; then
             info "✅ 后端缓存系统正常工作"
         else
             warn "⚠️ 后端缓存系统无法访问"
@@ -154,7 +154,7 @@ check_services() {
     fi
 
     # 前端检查
-    if curl -s http://localhost:5173/ > /dev/null; then
+    if curl -s http://localhost:/ > /dev/null; then
         info "✅ 前端服务正常运行"
     else
         error "❌ 前端服务未正常运行"
@@ -172,9 +172,9 @@ show_startup_info() {
     echo -e "${GREEN}========================================${NC}"
     echo ""
     echo -e "${YELLOW}访问地址:${NC}"
-    echo -e "  API文档: ${BLUE}http://localhost:8000/api/docs${NC}"
-    echo -e "  前端界面: ${BLUE}http://localhost:5173${NC}"
-    echo -e "  系统监控: ${BLUE}http://localhost:8000/api/cache/status${NC}"
+    echo -e "  API文档: ${BLUE}http://localhost:/api/docs${NC}"
+    echo -e "  前端界面: ${BLUE}http://localhost:${NC}"
+    echo -e "  系统监控: ${BLUE}http://localhost:/api/cache/status${NC}"
     echo ""
     echo -e "${YELLOW}Mock数据状态:${NC}"
     echo -e "  USE_MOCK_DATA: ${GREEN}已启用${NC}"

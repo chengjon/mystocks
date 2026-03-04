@@ -21,6 +21,8 @@ set LOG_DIR=%PROJECT_ROOT%\test-results\logs
 set TIMESTAMP=%date:~0,4%%date:~5,2%%date:~8,2%_%time:~0,2%%time:~3,2%%time:~6,2%
 set TIMESTAMP=%TIMESTAMP: =0%
 set LOG_FILE=%LOG_DIR%\test_execution_%TIMESTAMP%.log
+if "%FRONTEND_PORT%"=="" set FRONTEND_PORT=3020
+if "%BACKEND_PORT%"=="" set BACKEND_PORT=8020
 
 :: 配置参数
 set SKIP_ENV_CHECK=false
@@ -399,26 +401,26 @@ if not exist "!frontend_dir!" (
 )
 
 :: 检查端口
-netstat -an | find "0.0.0.0:5173" | find "LISTENING" >nul
+netstat -an | find "0.0.0.0:!FRONTEND_PORT!" | find "LISTENING" >nul
 if not errorlevel 1 (
-    call :log_error "前端端口 5173 被占用，无法启动前端服务器"
+    call :log_error "前端端口 !FRONTEND_PORT! 被占用，无法启动前端服务器"
     exit /b 1
 ) else (
-    call :log_success "前端端口 5173 可用"
+    call :log_success "前端端口 !FRONTEND_PORT! 可用"
 )
 
 pushd "!frontend_dir!"
 
 :: 启动开发服务器
 set NODE_ENV=test
-set PLAYWRIGHT_BASE_URL=http://localhost:5173
+set PLAYWRIGHT_BASE_URL=http://localhost:!FRONTEND_PORT!
 
 start /B npm run dev > "%LOG_DIR%\frontend_%TIMESTAMP%.log" 2>&1
 
 :: 等待服务器启动
 call :log_info "等待前端服务器启动..."
 for /l %%i in (1,1,30) do (
-    curl -s http://localhost:5173 >nul 2>&1
+    curl -s http://localhost:!FRONTEND_PORT! >nul 2>&1
     if not errorlevel 1 (
         call :log_success "前端服务器启动成功"
         popd
@@ -448,12 +450,12 @@ if not exist "!backend_dir!" (
 )
 
 :: 检查端口
-netstat -an | find "0.0.0.0:8000" | find "LISTENING" >nul
+netstat -an | find "0.0.0.0:!BACKEND_PORT!" | find "LISTENING" >nul
 if not errorlevel 1 (
-    call :log_error "后端端口 8000 被占用，无法启动后端服务器"
+    call :log_error "后端端口 !BACKEND_PORT! 被占用，无法启动后端服务器"
     exit /b 1
 ) else (
-    call :log_success "后端端口 8000 可用"
+    call :log_success "后端端口 !BACKEND_PORT! 可用"
 )
 
 pushd "!backend_dir!"
@@ -461,14 +463,14 @@ pushd "!backend_dir!"
 :: 启动API服务器
 set TESTING=1
 set USE_MOCK_DATA=1
-set PLAYWRIGHT_API_URL=http://localhost:8000
+set PLAYWRIGHT_API_URL=http://localhost:!BACKEND_PORT!
 
-start /B python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 > "%LOG_DIR%\backend_%TIMESTAMP%.log" 2>&1
+start /B python -m uvicorn app.main:app --host 0.0.0.0 --port !BACKEND_PORT! > "%LOG_DIR%\backend_%TIMESTAMP%.log" 2>&1
 
 :: 等待服务器启动
 call :log_info "等待后端服务器启动..."
 for /l %%i in (1,1,30) do (
-    curl -s http://localhost:8000/docs >nul 2>&1
+    curl -s http://localhost:!BACKEND_PORT!/docs >nul 2>&1
     if not errorlevel 1 (
         call :log_success "后端服务器启动成功"
         popd
@@ -509,8 +511,8 @@ if not exist "test-results\traces" mkdir "test-results\traces"
 if not exist "test-results\reports" mkdir "test-results\reports"
 
 :: 设置环境变量
-if "%PLAYWRIGHT_BASE_URL%"=="" set PLAYWRIGHT_BASE_URL=http://localhost:5173
-if "%PLAYWRIGHT_API_URL%"=="" set PLAYWRIGHT_API_URL=http://localhost:8000
+if "%PLAYWRIGHT_BASE_URL%"=="" set PLAYWRIGHT_BASE_URL=http://localhost:!FRONTEND_PORT!
+if "%PLAYWRIGHT_API_URL%"=="" set PLAYWRIGHT_API_URL=http://localhost:!BACKEND_PORT!
 if "%PLAYWRIGHT_TIMEOUT%"=="" set PLAYWRIGHT_TIMEOUT=30000
 
 :: 构建测试命令

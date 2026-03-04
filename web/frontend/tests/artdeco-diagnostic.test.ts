@@ -8,7 +8,10 @@ import { test, expect } from '@playwright/test'
 test.describe('ArtDeco集成诊断测试', () => {
   test.setTimeout(60000) // 1分钟超时
 
-  const BASE_URL = 'http://localhost:3001'
+  const FRONTEND_PORT = process.env.FRONTEND_PORT || '3020'
+  const BACKEND_PORT = process.env.BACKEND_PORT || '8020'
+  const BASE_URL = process.env.FRONTEND_URL || `http://localhost:${FRONTEND_PORT}`
+  const API_BASE = process.env.BACKEND_URL || `http://localhost:${BACKEND_PORT}`
 
   test('基本页面加载测试', async ({ page }) => {
     console.log('🔍 开始基本页面加载测试...')
@@ -171,7 +174,7 @@ test.describe('ArtDeco集成诊断测试', () => {
     // 监听网络请求
     const networkRequests: any[] = []
     page.on('request', request => {
-      if (request.url().includes('localhost:8000')) {
+      if (request.url().includes(`localhost:${BACKEND_PORT}`)) {
         networkRequests.push({
           url: request.url(),
           method: request.method(),
@@ -187,7 +190,7 @@ test.describe('ArtDeco集成诊断测试', () => {
 
     // 测试后端健康检查
     try {
-      const healthResponse = await page.request.get('http://localhost:8000/api/health')
+      const healthResponse = await page.request.get(`${API_BASE}/api/health`)
       console.log('🏥 后端健康检查:', healthResponse.status())
     } catch (error) {
       console.log('🏥 后端健康检查失败:', error.message)

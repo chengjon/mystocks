@@ -205,14 +205,14 @@ test_service_endpoints() {
     log_info "测试服务端点..."
 
     # 后端健康检查
-    if curl -s --max-time 10 "http://localhost:8000/api/health" >/dev/null 2>&1; then
+    if curl -s --max-time 10 "http://localhost:/api/health" >/dev/null 2>&1; then
         log_success "后端服务端点正常"
     else
         log_error "后端服务端点无响应"
     fi
 
     # 前端服务检查
-    if curl -s --max-time 10 "http://localhost:3001" >/dev/null 2>&1; then
+    if curl -s --max-time 10 "http://localhost:" >/dev/null 2>&1; then
         log_success "前端服务端点正常"
     else
         log_error "前端服务端点无响应"
@@ -291,8 +291,8 @@ except Exception as e:
 ## 服务状态
 
 ### 本地服务端点
-- **后端API**: $(curl -s --max-time 5 "http://localhost:8000/api/health" >/dev/null 2>&1 && echo "✅ 运行中" || echo "❌ 未运行")
-- **前端服务**: $(curl -s --max-time 5 "http://localhost:3001" >/dev/null 2>&1 && echo "✅ 运行中" || echo "❌ 未运行")
+- **后端API**: $(curl -s --max-time 5 "http://localhost:/api/health" >/dev/null 2>&1 && echo "✅ 运行中" || echo "❌ 未运行")
+- **前端服务**: $(curl -s --max-time 5 "http://localhost:" >/dev/null 2>&1 && echo "✅ 运行中" || echo "❌ 未运行")
 
 ## 诊断建议
 

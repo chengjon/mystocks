@@ -62,7 +62,7 @@ cd /opt/claude/mystocks_spec/web/backend
 ADMIN_PASSWORD=password python3 simple_backend_fixed.py
 
 # 2. 打开浏览器访问Swagger UI
-# http://localhost:8000/docs
+# http://localhost:8020/docs
 ```
 
 ### 启动WebSocket服务器（实时数据功能）
@@ -247,7 +247,7 @@ python3 websocket_server.py
 
 ```bash
 # 启动回测任务
-curl -X POST http://localhost:8000/api/v1/strategies/1/backtest \
+curl -X POST http://localhost:8020/api/v1/strategies/1/backtest \
   -H "Content-Type: application/json" \
   -d '{
     "symbols": ["sh600000"],
@@ -341,7 +341,7 @@ curl -X POST http://localhost:8000/api/v1/strategies/1/backtest \
 **计算风险指标**:
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/risk/metrics/calculate \
+curl -X POST http://localhost:8020/api/v1/risk/metrics/calculate \
   -H "Content-Type: application/json" \
   -d '{
     "equity_curve": [100000, 102000, 101000, 103000, 105000],
@@ -362,7 +362,7 @@ curl -X POST http://localhost:8000/api/v1/risk/metrics/calculate \
 **评估仓位风险**:
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/risk/position/assess \
+curl -X POST http://localhost:8020/api/v1/risk/position/assess \
   -H "Content-Type: application/json" \
   -d '{
     "positions": [
@@ -415,7 +415,7 @@ curl -X POST http://localhost:8000/api/v1/risk/position/assess \
 **生成风险告警**:
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/risk/alerts/generate \
+curl -X POST http://localhost:8020/api/v1/risk/alerts/generate \
   -H "Content-Type: application/json" \
   -d '{
     "current_drawdown": -0.25,
@@ -465,13 +465,13 @@ curl -X POST http://localhost:8000/api/v1/risk/alerts/generate \
 
 ### API基础信息
 
-**基础URL**: `http://localhost:8000`
+**基础URL**: `http://localhost:8020`
 
 **认证方式**: Bearer Token（可选）
 
 **响应格式**: JSON
 
-**API文档**: `http://localhost:8000/docs` (Swagger UI)
+**API文档**: `http://localhost:8020/docs` (Swagger UI)
 
 ### 策略回测API
 
@@ -562,7 +562,7 @@ curl -X POST http://localhost:8000/api/v1/risk/alerts/generate \
 ```python
 import requests
 
-API_BASE = "http://localhost:8000"
+API_BASE = "http://localhost:8020"
 
 # 1. 执行回测
 def run_backtest():
@@ -624,7 +624,7 @@ if __name__ == "__main__":
 ### JavaScript客户端示例
 
 ```javascript
-const API_BASE = 'http://localhost:8000';
+const API_BASE = 'http://localhost:8020';
 
 // 1. 执行回测
 async function runBacktest() {
@@ -902,7 +902,7 @@ async function calculateRiskMetrics() {
 
 - **主项目文档**: `/opt/claude/mystocks_spec/CLAUDE.md`
 - **GPU开发经验**: `/opt/claude/mystocks_spec/docs/api/GPU开发经验总结.md`
-- **API文档**: `http://localhost:8000/docs` (Swagger UI)
+- **API文档**: `http://localhost:8020/docs` (Swagger UI)
 
 ### 问题反馈
 

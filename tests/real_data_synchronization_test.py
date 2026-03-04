@@ -50,7 +50,7 @@ except ImportError:
 class RealDataSynchronizationTester:
     """真实数据同步测试器"""
 
-    def __init__(self, base_url: str = "http://localhost:8000"):
+    def __init__(self, base_url: str = "http://localhost:8020"):
         self.base_url = base_url
         self.api_client = requests.Session()
         self.auth_token = None

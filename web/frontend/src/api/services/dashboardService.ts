@@ -113,7 +113,11 @@ export const dashboardService = {
    * 用途: 获取沪股通、深股通、北向资金、主力净流入数据
    */
   async getFundFlow(date?: string): Promise<{ data: FundFlowData }> {
-    const params = date ? { date } : {}
+    const targetDate = date || this.getToday()
+    const params = {
+      start_date: targetDate,
+      end_date: targetDate
+    }
     const response = await apiClient.get('/akshare/market/fund-flow/hsgt-summary', { params })
     return response.data
   },

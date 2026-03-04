@@ -60,7 +60,7 @@ Ctrl+b 方向键  # 切换分屏
 ```bash
 # 启动后端服务
 cd /opt/claude/mystocks_spec/web/backend
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 
 # 或运行其他脚本
 python scripts/runtime/run_realtime_market_saver.py
@@ -153,7 +153,7 @@ Ctrl+b %
 # 3. 左屏：启动系统
 # (手动切换到左屏，运行服务)
 cd /opt/claude/mystocks_spec/web/backend
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 
 # 4. 右屏：启动 lnav 实时分析
 # (切换到右屏)

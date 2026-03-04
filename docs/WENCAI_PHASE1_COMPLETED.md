@@ -278,21 +278,21 @@ uvicorn app.main:app --reload
 
 ```bash
 # 1. 健康检查
-curl http://localhost:8000/api/market/wencai/health
+curl http://localhost:8020/api/market/wencai/health
 
 # 2. 获取查询列表
-curl http://localhost:8000/api/market/wencai/queries
+curl http://localhost:8020/api/market/wencai/queries
 
 # 3. 执行查询
-curl -X POST http://localhost:8000/api/market/wencai/query \
+curl -X POST http://localhost:8020/api/market/wencai/query \
   -H "Content-Type: application/json" \
   -d '{"query_name": "qs_9", "pages": 1}'
 
 # 4. 获取结果
-curl http://localhost:8000/api/market/wencai/results/qs_9?limit=10
+curl http://localhost:8020/api/market/wencai/results/qs_9?limit=10
 
 # 5. 查看Swagger文档
-open http://localhost:8000/api/docs
+open http://localhost:8020/api/docs
 ```
 
 ---

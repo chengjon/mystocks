@@ -190,7 +190,7 @@ npm install -g openapi-typescript
 cd web/frontend
 
 # 从API契约平台导出OpenAPI规范
-curl http://localhost:8000/openapi.json -o openapi.json
+curl http://localhost:8020/openapi.json -o openapi.json
 
 # 生成类型文件
 npx openapi-typescript openapi.json -o src/types/api-generated.ts
@@ -279,7 +279,7 @@ import type { UnifiedResponse } from '@/types/api-generated';
 
 // 创建axios实例
 const apiClient: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8020',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',

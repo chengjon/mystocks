@@ -5,10 +5,9 @@ import { strategyApi } from '@/api'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { useStrategyCrossTabContext } from '@/composables/strategy/useStrategyCrossTabContext'
 import {
-  createMockStrategySignals,
   createStrategySignalsFromResponse,
   type StrategySignalItem
-} from '@/mock/strategyTabsMock'
+} from './strategySignalsData'
 import { extractStrategyIdFromQuery } from './strategyCrossTabNavigation'
 
 const { loading, lastRequestId, exec } = useArtDecoApi()
@@ -71,8 +70,7 @@ const fetchSignals = async () => {
   })
 
   const mappedSignals = createStrategySignalsFromResponse(data)
-  const sourceSignals = mappedSignals.length > 0 ? mappedSignals : createMockStrategySignals()
-  signals.value = sortSignalsByTime(sourceSignals)
+  signals.value = sortSignalsByTime(mappedSignals)
 }
 
 onMounted(() => {

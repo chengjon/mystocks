@@ -20,7 +20,7 @@ test.describe("Critical Menu Navigation - Fixed", { tag: "@critical" }, () => {
       localStorage.setItem("auth_user", JSON.stringify(user))
     }, { user: E2E_USER })
 
-    await page.route("**/api/**", async (route) => {
+    await page.route(/https?:\/\/[^/]+\/api\/.*/, async (route) => {
       const url = new URL(route.request().url())
 
       if (url.pathname === "/api/csrf-token") {

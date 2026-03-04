@@ -49,7 +49,7 @@ class ContractTestConfig:
     """契约测试配置"""
 
     # 基础配置
-    api_base_url: str = "http://localhost:8000"
+    api_base_url: str = "http://localhost:8020"
     openapi_spec_path: Optional[str] = None
     contract_version: str = "1.0.0"
 

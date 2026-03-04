@@ -21,7 +21,8 @@ const path = require('path');
 
 
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:8000';
+const BACKEND_PORT = process.env.BACKEND_PORT || '8020';
+const BASE_URL = process.env.BASE_URL || process.env.BACKEND_URL || `http://localhost:${BACKEND_PORT}`;
 
 
 

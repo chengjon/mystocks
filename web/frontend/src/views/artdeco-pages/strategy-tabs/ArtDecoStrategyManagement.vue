@@ -27,7 +27,7 @@
           <option value="error">异常</option>
         </select>
         <button class="toolbar-button" :disabled="loading" @click="refreshStrategies">刷新</button>
-        <button class="toolbar-button" :disabled="loading || dataSource === 'mock'" @click="openCreateForm">
+        <button class="toolbar-button" :disabled="loading" @click="openCreateForm">
           新建策略
         </button>
       </div>
@@ -116,14 +116,14 @@
                 </button>
                 <button
                   class="action-button edit"
-                  :disabled="loading || dataSource === 'mock'"
+                  :disabled="loading"
                   @click="openEditForm(strategy)"
                 >
                   编辑
                 </button>
                 <button
                   class="action-button delete"
-                  :disabled="loading || dataSource === 'mock'"
+                  :disabled="loading"
                   @click="handleDelete(strategy)"
                 >
                   删除
@@ -203,7 +203,7 @@
 
         <div class="editor-actions">
           <button class="toolbar-button" :disabled="submitting" @click="closeForm">取消</button>
-          <button class="toolbar-button" :disabled="submitting || dataSource === 'mock'" @click="submitForm">
+          <button class="toolbar-button" :disabled="submitting" @click="submitForm">
             {{ submitting ? '提交中...' : formMode === 'create' ? '创建' : '保存' }}
           </button>
         </div>
@@ -351,10 +351,7 @@ const pagedStrategies = computed(() => {
 })
 
 const emptyStateText = computed(() => {
-  if (dataSource.value === 'real') {
-    return 'REAL 数据为空，请先创建策略。'
-  }
-  return 'REAL 数据不可用，当前显示 MOCK 数据。'
+  return 'REAL 数据为空，请先创建策略。'
 })
 
 watch([keyword, statusFilter], () => {
@@ -418,11 +415,6 @@ function createDefaultForm(): StrategyFormState {
 }
 
 function openCreateForm() {
-  if (dataSource.value === 'mock') {
-    ElMessage.warning('当前为 MOCK 数据源，暂不支持写操作。')
-    return
-  }
-
   formMode.value = 'create'
   formState.value = createDefaultForm()
   formVisible.value = true
@@ -431,11 +423,6 @@ function openCreateForm() {
 }
 
 function openEditForm(strategy: StrategyListItemVM) {
-  if (dataSource.value === 'mock') {
-    ElMessage.warning('当前为 MOCK 数据源，暂不支持写操作。')
-    return
-  }
-
   formMode.value = 'edit'
   formState.value = {
     id: strategy.id,
@@ -515,11 +502,6 @@ function toCustomParameters(): Record<string, unknown> {
 }
 
 async function submitForm() {
-  if (dataSource.value === 'mock') {
-    ElMessage.warning('当前为 MOCK 数据源，暂不支持写操作。')
-    return
-  }
-
   if (!formState.value.name) {
     ElMessage.warning('策略名称不能为空')
     return
@@ -590,11 +572,6 @@ async function submitForm() {
 }
 
 async function handleDelete(strategy: StrategyListItemVM, skipConfirm = false) {
-  if (dataSource.value === 'mock') {
-    ElMessage.warning('当前为 MOCK 数据源，暂不支持写操作。')
-    return
-  }
-
   const confirmed = skipConfirm ? true : window.confirm(`确认删除策略「${strategy.name}」吗？`)
   if (!confirmed) {
     return
@@ -632,7 +609,7 @@ function prevPage() {
 }
 
 function isActionDisabled(strategy: StrategyListItemVM, action: LifecycleAction): boolean {
-  if (!strategy.id || dataSource.value === 'mock' || loading.value) {
+  if (!strategy.id || loading.value) {
     return true
   }
 

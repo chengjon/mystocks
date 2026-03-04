@@ -4,6 +4,17 @@
 
 set -e
 
+PROJECT_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+if [ -f "${PROJECT_ROOT}/.env" ]; then
+  set -a
+  # shellcheck disable=SC1090
+  source "${PROJECT_ROOT}/.env"
+  set +a
+fi
+
+: "${BACKEND_PORT:?Missing BACKEND_PORT in .env}"
+BACKEND_BASE_URL="http://localhost:${BACKEND_PORT}"
+
 echo "🚀 Starting Backend API Automation Tests..."
 echo "=========================================="
 
@@ -12,7 +23,7 @@ cd "$(dirname "$0")"
 
 # 检查后端服务是否运行
 echo "📡 Checking backend service..."
-if ! curl -s http://localhost:8000/health > /dev/null; then
+if ! curl -s "${BACKEND_BASE_URL}/health" > /dev/null; then
   echo "❌ Backend service is not running!"
   echo "Please start the backend service first:"
   echo "  pm2 start ecosystem.config.js --only mystocks-backend"
@@ -24,7 +35,7 @@ echo ""
 
 # 检查 OpenAPI JSON 是否可访问
 echo "📋 Checking OpenAPI specification..."
-if ! curl -s http://localhost:8000/openapi.json > /dev/null; then
+if ! curl -s "${BACKEND_BASE_URL}/openapi.json" > /dev/null; then
   echo "❌ OpenAPI JSON is not accessible!"
   exit 1
 fi

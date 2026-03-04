@@ -96,7 +96,7 @@ const executeQuery = async (queryData) => {
 
 可以直接测试后端API：
 ```bash
-curl -X POST http://localhost:8000/api/market/wencai/query \
+curl -X POST http://localhost:8020/api/market/wencai/query \
   -H "Content-Type: application/json" \
   -d '{"query_name":"qs_1","pages":1}'
 ```

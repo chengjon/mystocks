@@ -147,7 +147,7 @@
 #### ✅ 前端服务状态
 
 ```bash
-✅ 前端服务运行: http://localhost:3001
+✅ 前端服务运行: http://localhost:3020
 ✅ 策略管理页面可访问: /strategy
 ✅ 路由集成完成: /strategy → StrategyManagement.vue
 ✅ 侧边栏菜单集成: "策略管理" 菜单项
@@ -207,7 +207,7 @@ const statusText = statusTextMap[props.strategy.status]; // ✅ 类型安全
 #### ✅ 后端服务状态
 
 ```bash
-✅ 后端服务运行: http://localhost:8000
+✅ 后端服务运行: http://localhost:8020
 ✅ 健康检查端点: /health (200 OK)
 ✅ API 文档可访问: /api/docs (Swagger UI)
 ✅ UnifiedResponse 中间件: 已启用
@@ -297,8 +297,8 @@ const statusText = statusTextMap[props.strategy.status]; // ✅ 类型安全
 - Python: 3.12+
 
 **服务状态**:
-- 前端服务: ✅ 运行中 (http://localhost:3001)
-- 后端服务: ✅ 运行中 (http://localhost:8000)
+- 前端服务: ✅ 运行中 (http://localhost:3020)
+- 后端服务: ✅ 运行中 (http://localhost:8020)
 - TDengine: ✅ 连接正常
 - PostgreSQL: ✅ 连接正常
 

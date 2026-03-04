@@ -128,9 +128,9 @@ app.add_middleware(
 # CORS 配置 - 使用白名单而非 "*"
 ALLOWED_ORIGINS = [
     "http://localhost:3000",  # 本地开发前端
-    "http://localhost:3001",  # 备用开发端口
+    "http://localhost:3020",  # 备用开发端口
     "http://127.0.0.1:3000",  # 127.0.0.1 本地访问
-    "http://localhost:8000",  # 本地后端
+    "http://localhost:8020",  # 本地后端
     # 生产环境需要添加：
     # "https://mystocks.example.com",
 ]
@@ -165,21 +165,21 @@ ALLOWED_ORIGINS = [
 ## 验证清单
 
 ### 认证修复验证
-- [ ] 启动后端服务: `cd web/backend && uvicorn app.main:app --reload --port 8000`
+- [ ] 启动后端服务: `cd web/backend && uvicorn app.main:app --reload --port 8020`
 - [ ] 测试无 token 请求被拒绝:
   ```bash
-  curl -X GET http://localhost:8000/api/data/stocks/basic
+  curl -X GET http://localhost:8020/api/data/stocks/basic
   # 预期响应: 401 Unauthorized
   ```
 - [ ] 测试无效 token 被拒绝:
   ```bash
-  curl -X GET http://localhost:8000/api/data/stocks/basic \
+  curl -X GET http://localhost:8020/api/data/stocks/basic \
     -H "Authorization: Bearer invalid_token_here"
   # 预期响应: 401 Unauthorized
   ```
 - [ ] 登录获取有效 token:
   ```bash
-  curl -X POST http://localhost:8000/api/login \
+  curl -X POST http://localhost:8020/api/login \
     -H "Content-Type: application/x-www-form-urlencoded" \
     -d "username=admin&password=admin123"
   # 预期响应: { "access_token": "...", "token_type": "bearer" }
@@ -187,7 +187,7 @@ ALLOWED_ORIGINS = [
 - [ ] 测试有效 token 可以访问:
   ```bash
   TOKEN="<从上一步获取的 token>"
-  curl -X GET http://localhost:8000/api/data/stocks/basic \
+  curl -X GET http://localhost:8020/api/data/stocks/basic \
     -H "Authorization: Bearer $TOKEN"
   # 预期响应: 200 OK 和数据
   ```
@@ -200,14 +200,14 @@ ALLOWED_ORIGINS = [
 ### CORS 修复验证
 - [ ] 测试白名单内的源被允许:
   ```bash
-  curl -X OPTIONS http://localhost:8000/api/data/stocks/basic \
+  curl -X OPTIONS http://localhost:8020/api/data/stocks/basic \
     -H "Origin: http://localhost:3000" \
     -H "Access-Control-Request-Method: GET"
   # 预期响应: 200 OK，包含 CORS 头部
   ```
 - [ ] 测试非白名单的源被拒绝:
   ```bash
-  curl -X OPTIONS http://localhost:8000/api/data/stocks/basic \
+  curl -X OPTIONS http://localhost:8020/api/data/stocks/basic \
     -H "Origin: https://evil.example.com" \
     -H "Access-Control-Request-Method: GET"
   # 预期响应: 200（OPTIONS 总是返回 200），但无 CORS 头部

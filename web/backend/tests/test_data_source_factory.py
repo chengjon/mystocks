@@ -32,6 +32,9 @@ from app.services.data_source_factory import (
     is_fallback_enabled,
 )
 
+BACKEND_PORT = os.getenv("BACKEND_PORT", "8020")
+API_BASE_URL = f"http://localhost:{BACKEND_PORT}/api"
+
 
 class TestDataSourceConfig:
     """测试DataSourceConfig"""
@@ -149,7 +152,7 @@ class TestRealDataSource:
             name="Real Test",
             type="market",
             mode=DataSourceMode.REAL,
-            base_url="http://localhost:8000/api",
+            base_url=API_BASE_URL,
         )
 
     @pytest.mark.asyncio
@@ -284,7 +287,7 @@ class TestHybridDataSource:
         """Hybrid数据源fixture"""
         real_config = hybrid_config.model_copy(deep=True)
         real_config.mode = DataSourceMode.REAL
-        real_config.base_url = "http://localhost:8000/api"
+        real_config.base_url = API_BASE_URL
         real_source = RealDataSource(real_config)
 
         mock_config = hybrid_config.model_copy(deep=True)
@@ -344,7 +347,7 @@ class TestHybridDataSource:
 
         real_config = hybrid_config.model_copy(deep=True)
         real_config.mode = DataSourceMode.REAL
-        real_config.base_url = "http://localhost:8000/api"
+        real_config.base_url = API_BASE_URL
         real_source = RealDataSource(real_config)
 
         mock_config = hybrid_config.model_copy(deep=True)

@@ -43,7 +43,7 @@ fi
 echo -e "${GREEN}✅ 前端服务已就绪。${NC}"
 
 # 3.5 解析实际端口
-# 从日志中提取 "Local:   http://localhost:3001/" 类似的行
+# 从日志中提取 "Local:   http://localhost:/" 类似的行
 ACTUAL_PORT=$(grep -oP 'Local:\s+http://localhost:\K\d+' frontend_startup.log | head -1)
 
 if [ -z "$ACTUAL_PORT" ]; then

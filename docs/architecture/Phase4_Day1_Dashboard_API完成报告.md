@@ -326,7 +326,7 @@ pytest tests/integration/test_dashboard_api.py -v
 启动FastAPI服务器后，访问Swagger UI：
 
 ```
-http://localhost:8000/docs
+http://localhost:8020/docs
 ```
 
 在Swagger UI中可以看到新增的仪表盘API端点：

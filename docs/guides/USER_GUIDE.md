@@ -33,17 +33,17 @@ cp .env.example .env
 
 ```bash
 # 启动后端服务
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020
 
 # 访问 API 文档
-# 打开浏览器访问 http://localhost:8000/docs
+# 打开浏览器访问 http://localhost:8020/docs
 ```
 
 ### 3. 登录系统
 
 ```bash
 # 使用默认管理员账户
-curl -X POST http://localhost:8000/api/v1/auth/login \
+curl -X POST http://localhost:8020/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username": "admin", "password": "password"}'
 ```
@@ -89,7 +89,7 @@ MyStocks 提供全面的市场数据功能：
 ```python
 import requests
 
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://localhost:8020"
 
 # 登录
 def login(username, password):

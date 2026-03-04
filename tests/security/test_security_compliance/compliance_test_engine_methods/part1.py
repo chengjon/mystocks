@@ -26,7 +26,7 @@ class ComplianceTestEngineCoreMixin:
     """ComplianceTestEngine 方法集 Part 1"""
 
     def __init__(self):
-        self.base_url = "http://localhost:8000"
+        self.base_url = "http://localhost:8020"
         self.compliance_controls = self._load_compliance_controls()
         self.test_results = {}
         self.encryption_key = Fernet.generate_key()

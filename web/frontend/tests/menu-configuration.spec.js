@@ -6,7 +6,8 @@
 import { test, expect } from '@playwright/test'
 
 // 测试基础URL
-const BASE_URL = 'http://localhost:3000'
+const FRONTEND_PORT = process.env.FRONTEND_PORT || '3020'
+const BASE_URL = process.env.FRONTEND_URL || `http://localhost:${FRONTEND_PORT}`
 
 test.describe('菜单配置功能测试', () => {
   test.beforeEach(async ({ page }) => {

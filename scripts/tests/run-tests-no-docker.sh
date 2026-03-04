@@ -119,8 +119,8 @@ MyStocks 无Docker E2E测试启动脚本
   $0 --headed --verbose                # 可视化调试模式
 
 环境变量:
-  PLAYWRIGHT_BASE_URL        前端URL (默认: http://localhost:5173)
-  PLAYWRIGHT_API_URL         后端API URL (默认: http://localhost:8000)
+  PLAYWRIGHT_BASE_URL        前端URL (默认: http://localhost:)
+  PLAYWRIGHT_API_URL         后端API URL (默认: http://localhost:)
   PLAYWRIGHT_TIMEOUT         测试超时时间 (默认: 30000)
 
 EOF
@@ -369,7 +369,7 @@ start_frontend_server() {
 
     # 启动开发服务器（后台进程）
     export NODE_ENV=test
-    export PLAYWRIGHT_BASE_URL=http://localhost:5173
+    export PLAYWRIGHT_BASE_URL=http://localhost:
 
     nohup npm run dev > "$LOG_DIR/frontend_$TIMESTAMP.log" 2>&1 &
     FRONTEND_PID=$!
@@ -379,7 +379,7 @@ start_frontend_server() {
     # 等待服务器启动
     log_info "等待前端服务器启动..."
     for i in {1..30}; do
-        if curl -s http://localhost:5173 >/dev/null 2>&1; then
+        if curl -s http://localhost: >/dev/null 2>&1; then
             log_success "前端服务器启动成功 (PID: $FRONTEND_PID)"
             return 0
         fi
@@ -417,7 +417,7 @@ start_backend_server() {
     # 启动API服务器（后台进程）
     export TESTING=1
     export USE_MOCK_DATA=1
-    export PLAYWRIGHT_API_URL=http://localhost:8000
+    export PLAYWRIGHT_API_URL=http://localhost:
 
     nohup python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 > "$LOG_DIR/backend_$TIMESTAMP.log" 2>&1 &
     BACKEND_PID=$!
@@ -427,7 +427,7 @@ start_backend_server() {
     # 等待服务器启动
     log_info "等待后端服务器启动..."
     for i in {1..30}; do
-        if curl -s http://localhost:8000/docs >/dev/null 2>&1; then
+        if curl -s http://localhost:/docs >/dev/null 2>&1; then
             log_success "后端服务器启动成功 (PID: $BACKEND_PID)"
             return 0
         fi
@@ -482,8 +482,8 @@ run_e2e_tests() {
     mkdir -p test-results/{screenshots,videos,traces,reports}
 
     # 设置环境变量
-    export PLAYWRIGHT_BASE_URL=${PLAYWRIGHT_BASE_URL:-http://localhost:5173}
-    export PLAYWRIGHT_API_URL=${PLAYWRIGHT_API_URL:-http://localhost:8000}
+    export PLAYWRIGHT_BASE_URL=${PLAYWRIGHT_BASE_URL:-http://localhost:}
+    export PLAYWRIGHT_API_URL=${PLAYWRIGHT_API_URL:-http://localhost:}
     export PLAYWRIGHT_TIMEOUT=${PLAYWRIGHT_TIMEOUT:-30000}
 
     # 构建测试命令
@@ -559,8 +559,8 @@ generate_test_report() {
 
 ## 环境信息
 
-- **前端URL**: ${PLAYWRIGHT_BASE_URL:-http://localhost:5173}
-- **后端URL**: ${PLAYWRIGHT_API_URL:-http://localhost:8000}
+- **前端URL**: ${PLAYWRIGHT_BASE_URL:-http://localhost:}
+- **后端URL**: ${PLAYWRIGHT_API_URL:-http://localhost:}
 - **超时设置**: ${PLAYWRIGHT_TIMEOUT:-30000}ms
 
 ## 文件输出

@@ -346,7 +346,7 @@ echo "models/" >> .gitignore
 pytest tests/test_price_predictor.py -v
 
 # 2. API 测试
-curl -X POST http://localhost:8000/api/ml/train \
+curl -X POST http://localhost:8020/api/ml/train \
   -H "Content-Type: application/json" \
   -d '{
     "stock_code": "sh000001",
@@ -631,7 +631,7 @@ coverage report --fail-under=80
 
 ```bash
 # 使用 FastAPI 自动生成 API 文档
-# 访问: http://localhost:8000/docs
+# 访问: http://localhost:8020/docs
 ```
 
 ##### Task 6.5: 示例代码和 Jupyter Notebook
@@ -842,7 +842,7 @@ git reset --hard <last-stable-commit>
 docker-compose restart backend
 
 # 3. 验证服务恢复正常
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 ```
 
 ---

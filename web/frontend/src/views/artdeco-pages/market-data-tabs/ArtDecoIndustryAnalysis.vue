@@ -43,28 +43,14 @@ import { ArtDecoButton, ArtDecoCard, ArtDecoStatCard, ArtDecoTable } from '@/com
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { apiClient } from '@/api/apiClient'
 import type { UnifiedResponse } from '@/api/types/common'
-import mockDashboard from '@/mock/mockDashboard'
-
-interface IndustryFlowRow {
-  rank?: number
-  name?: string
-  change?: number | string
-  amount?: number | string
-}
-
-interface BoardRow {
-  rank: number
-  name: string
-  change: string
-  turnover: number
-  netInflow: string
-}
-
-interface RotationRow {
-  name: string
-  window: string
-  flow: number
-}
+import {
+  extractIndustryFlowRows,
+  toBoardRows,
+  toRotationRows,
+  type IndustryFlowRow,
+  type BoardRow,
+  type RotationRow
+} from './industryAnalysisData'
 
 const { lastRequestId, lastProcessTime, exec } = useArtDecoApi()
 
@@ -78,7 +64,7 @@ const boardColumns = [
 
 const boardRows = ref<BoardRow[]>([])
 const rotationRows = ref<RotationRow[]>([])
-const dataSource = ref<'REAL' | 'MOCK'>('REAL')
+const dataSource = ref<'REAL'>('REAL')
 
 const displayRequestId = computed(() => lastRequestId.value || 'N/A')
 const displayProcessTime = computed(() => {
@@ -113,61 +99,6 @@ function parsePercent(change: string): number {
   return Number.parseFloat(change.replace('%', '')) || 0
 }
 
-function formatSigned(value: number, digits = 2): string {
-  const normalized = Number.isFinite(value) ? value : 0
-  const prefix = normalized > 0 ? '+' : ''
-  return `${prefix}${normalized.toFixed(digits)}`
-}
-
-function toBoardRows(rows: IndustryFlowRow[]): BoardRow[] {
-  return rows.map((row, index) => {
-    const change = typeof row.change === 'number'
-      ? row.change
-      : Number.parseFloat(String(row.change ?? '0')) || 0
-
-    const turnover = typeof row.amount === 'number'
-      ? row.amount
-      : Number.parseFloat(String(row.amount ?? '0')) || 0
-
-    return {
-      rank: typeof row.rank === 'number' ? row.rank : index + 1,
-      name: typeof row.name === 'string' && row.name.trim().length > 0 ? row.name : `板块-${index + 1}`,
-      change: `${formatSigned(change)}%`,
-      turnover: Number(turnover.toFixed(2)),
-      netInflow: formatSigned(turnover * (change / 100), 1)
-    }
-  })
-}
-
-function toRotationRows(rows: BoardRow[]): RotationRow[] {
-  const windows = ['近1日', '近3日', '近5日', '近10日']
-  return rows.slice(0, 4).map((row, index) => ({
-    name: row.name,
-    window: windows[index] ?? '近1日',
-    flow: Number.parseFloat(row.netInflow) || 0
-  }))
-}
-
-function createMockBoardRows(): BoardRow[] {
-  const fallback = mockDashboard.getLeadingSectors()
-  if (!Array.isArray(fallback) || fallback.length === 0) {
-    return []
-  }
-
-  return fallback.slice(0, 8).map((item: { name?: unknown; change?: unknown }, index: number) => {
-    const change = typeof item.change === 'number' ? item.change : Number.parseFloat(String(item.change ?? '0')) || 0
-    const turnover = Math.abs(change) * 100 + 120 + index * 20
-
-    return {
-      rank: index + 1,
-      name: typeof item.name === 'string' && item.name.trim().length > 0 ? item.name : `板块-${index + 1}`,
-      change: `${formatSigned(change)}%`,
-      turnover: Number(turnover.toFixed(2)),
-      netInflow: formatSigned(turnover * (change / 100), 1)
-    }
-  })
-}
-
 async function loadIndustryFlow() {
   const data = await exec(() => apiClient.get<UnifiedResponse<IndustryFlowRow[]>>('/v2/market/sector/fund-flow', {
     params: {
@@ -180,13 +111,12 @@ async function loadIndustryFlow() {
   })
 
   if (data === null) {
-    dataSource.value = 'MOCK'
-    boardRows.value = createMockBoardRows()
-    rotationRows.value = toRotationRows(boardRows.value)
+    boardRows.value = []
+    rotationRows.value = []
     return
   }
 
-  const normalizedRows = toBoardRows(Array.isArray(data) ? data : [])
+  const normalizedRows = toBoardRows(extractIndustryFlowRows(data))
 
   if (normalizedRows.length === 0) {
     dataSource.value = 'REAL'

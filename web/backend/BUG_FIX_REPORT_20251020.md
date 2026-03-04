@@ -25,11 +25,11 @@ The stock search function on the openstock-demo page was completely unresponsive
 ### Initial Diagnosis
 ```bash
 # Health check test
-curl "http://localhost:8000/health" --max-time 3
+curl "http://localhost:8020/health" --max-time 3
 # Result: Operation timed out after 3000 milliseconds
 
 # Login test
-curl -X POST "http://localhost:8000/api/auth/login" -d "username=admin&password=admin123"
+curl -X POST "http://localhost:8020/api/auth/login" -d "username=admin&password=admin123"
 # Result: Operation timed out after 5000 milliseconds
 ```
 
@@ -193,32 +193,32 @@ $ python3 -c "import app.api.wencai"
 
 #### 2. Backend Startup
 ```bash
-$ uvicorn app.main:app --host 0.0.0.0 --port 8000
+$ uvicorn app.main:app --host 0.0.0.0 --port 8020
 INFO: Application startup complete.
 ✓ Startup successful in ~3 seconds
 ```
 
 #### 3. Health Check
 ```bash
-$ curl http://localhost:8000/health
+$ curl http://localhost:8020/health
 {"status":"healthy","timestamp":1760970367.19,"service":"mystocks-web-api"}
 ✓ Response time: ~50ms
 ```
 
 #### 4. Authentication
 ```bash
-$ curl -X POST http://localhost:8000/api/auth/login -d "username=admin&password=admin123"
+$ curl -X POST http://localhost:8020/api/auth/login -d "username=admin&password=admin123"
 {"access_token":"eyJ...","token_type":"bearer","user":{...}}
 ✓ Login successful
 ```
 
 #### 5. Stock Search Function
 ```bash
-$ curl http://localhost:8000/api/stock-search/search?q=600519&market=cn
+$ curl http://localhost:8020/api/stock-search/search?q=600519&market=cn
 [{"symbol":"600519","description":"贵州茅台","displaySymbol":"600519","type":"A股",...}]
 ✓ Search successful - Returns results
 
-$ curl http://localhost:8000/api/stock-search/search?q=浦发&market=cn
+$ curl http://localhost:8020/api/stock-search/search?q=浦发&market=cn
 [{"symbol":"600000","description":"浦发银行","displaySymbol":"600000","type":"A股",...}]
 ✓ Name search successful
 ```
@@ -268,7 +268,7 @@ $ curl http://localhost:8000/api/stock-search/search?q=浦发&market=cn
 ### 4. Deployment Level
 - ✅ **Add startup timeout checks**
   ```bash
-  timeout 10 curl http://localhost:8000/health || (echo "Startup failed" && exit 1)
+  timeout 10 curl http://localhost:8020/health || (echo "Startup failed" && exit 1)
   ```
 
 ---

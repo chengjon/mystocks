@@ -376,7 +376,7 @@ TDengine:
    ```python
    allow_origins=[
        "http://localhost:3000",
-       "http://localhost:3001",
+       "http://localhost:3020",
        # 仅允许受信任的域名
    ]
    ```

@@ -13,6 +13,7 @@ import asyncio
 import time
 import json
 import statistics
+import os
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -39,7 +40,7 @@ class TestResult:
 
 
 async def simple_connection_test(
-    url: str = "http://localhost:8000",
+    url: str = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}"),
 ) -> List[TestResult]:
     """
     简单的连接测试
@@ -73,7 +74,7 @@ async def simple_connection_test(
 
 
 async def run_basic_stress_test(
-    url: str = "http://localhost:8000",
+    url: str = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}"),
     concurrent_requests: int = 50,
     requests_per_connection: int = 10,
 ) -> Dict[str, Any]:

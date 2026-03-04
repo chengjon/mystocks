@@ -273,8 +273,8 @@ check_status() {
 
     echo
     log_info "服务访问地址:"
-    log_info "  前端: http://localhost:5173"
-    log_info "  后端API: http://localhost:8000"
+    log_info "  前端: http://localhost:"
+    log_info "  后端API: http://localhost:"
     log_info "  PostgreSQL: localhost:5432"
     log_info "  Redis: localhost:6379"
 
@@ -330,7 +330,7 @@ wait_for_services() {
     # 等待后端API
     elapsed=0
     while [ $elapsed -lt $timeout ]; do
-        if curl -f http://localhost:8000/health &> /dev/null; then
+        if curl -f http://localhost:/health &> /dev/null; then
             log_success "后端API已就绪"
             break
         fi
@@ -346,7 +346,7 @@ wait_for_services() {
     # 等待前端
     elapsed=0
     while [ $elapsed -lt $timeout ]; do
-        if curl -f http://localhost:5173 &> /dev/null; then
+        if curl -f http://localhost: &> /dev/null; then
             log_success "前端已就绪"
             break
         fi

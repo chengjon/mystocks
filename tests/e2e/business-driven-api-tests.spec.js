@@ -2,7 +2,7 @@ const { test, expect } = require('@playwright/test');
 
 // 业务驱动测试配置
 const API_CONFIG = {
-  baseUrl: 'http://localhost:8000',
+  baseUrl: 'http://localhost:8020',
   frontendUrl: 'http://localhost:3000',
   timeout: {
     default: 30000,

@@ -43,7 +43,7 @@ PI 与 Web 页面数据对接 + 控件对齐：
 3. 环境与工具准备（提前搭好 “对接通道”）
 
     环境变量初始化：在前端项目根目录创建多环境配置文件（.env.development/.env.production），统一管理 API 基础地址、超时时间等：
-        开发环境：VITE_API_BASE_URL=http://localhost:8000
+        开发环境：VITE_API_BASE_URL=http://localhost:8020
         生产环境：VITE_API_BASE_URL=https://api.mystocks.com
     HTTP 客户端选型与配置：
         优先选 Axios（比 fetch 多拦截器、超时控制、取消请求等功能），安装后创建全局实例，预设基础配置（超时时间 5 秒、响应格式 JSON）。
@@ -145,7 +145,7 @@ PI 与 Web 页面数据对接 + 控件对齐：
 
     后端配置：要求后端设置Access-Control-Allow-Origin（指定前端域名 / IP）、Access-Control-Allow-Methods（允许 GET/POST/PUT/DELETE）、Access-Control-Allow-Headers（允许 Authorization 等自定义头）；
     前端适配：若后端无法修改，可使用前端代理（如 Vite 的proxy配置），开发环境将/api前缀请求转发至后端地址，避免跨域拦截：
-        示例：Vite 配置中添加proxy: { '/api': { target: 'http://localhost:8000', changeOrigin: true } }；
+        示例：Vite 配置中添加proxy: { '/api': { target: 'http://localhost:8020', changeOrigin: true } }；
     生产环境跨域：生产环境通过 Nginx 反向代理（将前端请求转发至 API 服务器），或使用 CDN 与 API 同域名部署，彻底解决跨域问题。
 
 3. 身份验证与授权强化（安全合规）

@@ -1,7 +1,7 @@
 # MyStocks Swagger API 信息提取报告
 
 **报告日期**: 2025-11-30
-**来源**: Swagger UI (http://localhost:8000/docs)
+**来源**: Swagger UI (http://localhost:8020/docs)
 **OpenAPI 版本**: 3.1.0
 **API 版本**: 1.0.0
 
@@ -28,8 +28,8 @@
 - 错误代码
 
 ✅ **访问路径**
-- Swagger UI: http://localhost:8000/docs
-- OpenAPI JSON: http://localhost:8000/openapi.json
+- Swagger UI: http://localhost:8020/docs
+- OpenAPI JSON: http://localhost:8020/openapi.json
 
 ---
 
@@ -174,17 +174,17 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ## 🌐 可访问的资源
 
 ### 1. Swagger UI
-- **URL**: http://localhost:8000/docs
+- **URL**: http://localhost:8020/docs
 - **格式**: 交互式 HTML 页面
 - **功能**: 可在浏览器中直接测试 API
 
 ### 2. OpenAPI JSON
-- **URL**: http://localhost:8000/openapi.json
+- **URL**: http://localhost:8020/openapi.json
 - **格式**: JSON (OpenAPI 3.1.0 格式)
 - **用途**: 机器可读的 API 定义
 
 ### 3. 健康检查
-- **URL**: http://localhost:8000/health
+- **URL**: http://localhost:8020/health
 - **格式**: JSON
 - **用途**: 检查 API 服务状态
 
@@ -202,7 +202,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ### ⚙️ 配置信息
 | 项目 | 值 |
 |------|-----|
-| 基础 URL | http://localhost:8000 |
+| 基础 URL | http://localhost:8020 |
 | API 版本 | 1.0.0 |
 | OpenAPI 版本 | 3.1.0 |
 | 认证方式 | JWT Bearer Token |
@@ -237,26 +237,26 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ```bash
 # 1. 登录
-curl -X POST "http://localhost:8000/api/auth/login" \
+curl -X POST "http://localhost:8020/api/auth/login" \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"admin123"}'
 
 # 2. 获取用户信息 (替换 TOKEN)
-curl -X GET "http://localhost:8000/api/auth/user" \
+curl -X GET "http://localhost:8020/api/auth/user" \
   -H "Authorization: Bearer <TOKEN>"
 
 # 3. 健康检查
-curl -X GET "http://localhost:8000/health"
+curl -X GET "http://localhost:8020/health"
 ```
 
 ### 在浏览器中访问
 
 ```
 交互式 Swagger UI:
-http://localhost:8000/docs
+http://localhost:8020/docs
 
 查看 OpenAPI JSON:
-http://localhost:8000/openapi.json
+http://localhost:8020/openapi.json
 ```
 
 ---
@@ -294,9 +294,9 @@ http://localhost:8000/openapi.json
 - [快速参考指南](../../../tmp/API_QUICK_REFERENCE.txt)
 
 ### 在线资源
-- [Swagger UI](http://localhost:8000/docs)
-- [OpenAPI JSON](http://localhost:8000/openapi.json)
-- [健康检查](http://localhost:8000/health)
+- [Swagger UI](http://localhost:8020/docs)
+- [OpenAPI JSON](http://localhost:8020/openapi.json)
+- [健康检查](http://localhost:8020/health)
 
 ---
 
@@ -316,7 +316,7 @@ http://localhost:8000/openapi.json
 - 本提取报告 (8 KB)
 
 **推荐行动:**
-1. 在浏览器中访问 Swagger UI (http://localhost:8000/docs)
+1. 在浏览器中访问 Swagger UI (http://localhost:8020/docs)
 2. 参考 API 文档进行开发
 3. 使用快速参考指南快速查询
 4. 根据示例代码集成到应用中
@@ -324,5 +324,5 @@ http://localhost:8000/openapi.json
 ---
 
 **报告生成**: 2025-11-30
-**数据来源**: Swagger UI @ http://localhost:8000
+**数据来源**: Swagger UI @ http://localhost:8020
 **API 状态**: ✅ 正常运行

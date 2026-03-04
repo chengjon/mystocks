@@ -131,6 +131,7 @@ import { MenuItem } from '@/layouts/archive/MenuConfig.ts'
 import { useWebSocket } from '@/composables/useWebSocket'
 import { useToastManager } from '@/composables/useToastManager'
 import { fetchMenuItemData, clearMenuDataCache } from '@/services/menuDataFetcher'
+import { wsUrl } from '@/config/runtime-endpoints'
 
 // Props
 interface Props {
@@ -160,8 +161,7 @@ const menuItemsRef = ref<MenuItem[]>(props.menuItems)
 const { connect, disconnect: _disconnect, message: wsMessage } = useWebSocket()
 
 onMounted(() => {
-  // Connect to WebSocket server, replace with your actual WebSocket URL
-  connect('ws://localhost:8000/api/ws')
+  connect(wsUrl('/api/ws'))
 })
 
 // WebSocket message type

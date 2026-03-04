@@ -1,5 +1,5 @@
 // Auto-generated types for common domain
-// Generated at: 2026-03-02T18:01:04.611132
+// Generated at: 2026-03-04T01:00:40.255704
 
 // Standard Unified Response Wrapper
 export interface UnifiedResponse<T = unknown> {

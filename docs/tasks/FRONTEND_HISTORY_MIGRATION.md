@@ -146,7 +146,7 @@ server {
 
     # API 反向代理到后端
     location /api/ {
-        proxy_pass http://localhost:8000;
+        proxy_pass http://localhost:8020;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
     }

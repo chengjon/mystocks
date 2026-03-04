@@ -161,7 +161,7 @@ npx ts-quality-guard watch
 npx ts-quality-guard watch src/components/
 
 # IDE插件模式
-npx ts-quality-guard watch --ide vscode --port 3001
+npx ts-quality-guard watch --ide vscode --port 3020
 ```
 
 #### 4. 质量门禁

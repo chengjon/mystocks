@@ -117,7 +117,7 @@ print(f"未来5天预测: {predictions}")
 ### 4. API 调用
 ```bash
 # 训练模型
-curl -X POST http://localhost:8000/api/ml/train \
+curl -X POST http://localhost:8020/api/ml/train \
   -H "Content-Type: application/json" \
   -d '{
     "stock_code": "sh000001",
@@ -128,7 +128,7 @@ curl -X POST http://localhost:8000/api/ml/train \
   }'
 
 # 预测价格
-curl -X POST http://localhost:8000/api/ml/predict \
+curl -X POST http://localhost:8020/api/ml/predict \
   -H "Content-Type: application/json" \
   -d '{
     "stock_code": "sh000001",

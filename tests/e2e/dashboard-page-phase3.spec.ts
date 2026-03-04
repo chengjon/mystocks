@@ -18,7 +18,7 @@
  * Environment Variables:
  * - USE_REAL_API=true  -> Use real backend APIs
  * - USE_REAL_API=false -> Use mock APIs (default)
- * - API_BASE_URL       -> Base URL for real APIs (default: http://localhost:8000)
+ * - API_BASE_URL       -> Base URL for real APIs (default: http://localhost:8020)
  * - FRONTEND_BASE_URL  -> Frontend URL (default: http://localhost:3000)
  */
 

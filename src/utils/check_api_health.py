@@ -6,16 +6,15 @@ Web API健康检查脚本
 """
 
 import sys
+import os
 from typing import Dict, Optional, Tuple
 
 import requests
 
-BASE_URL = "http://localhost:8000"
+BASE_URL = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
 TIMEOUT = 5  # 秒
 
 # 测试凭据（从环境变量读取，默认为测试凭据）
-import os
-
 TEST_USERNAME = os.getenv("TEST_ADMIN_USERNAME", "admin")
 TEST_PASSWORD = os.getenv("TEST_ADMIN_PASSWORD", "admin123")
 

@@ -19,7 +19,7 @@
                     <div class="artdeco-trading-positions__col artdeco-trading-positions__col--position">仓位%</div>
                 </div>
                 <div class="artdeco-trading-positions__body">
-                    <div class="artdeco-trading-positions__row" v-for="position in positions" :key="position.symbol">
+                    <div class="artdeco-trading-positions__row" v-for="position in displayPositions" :key="position.symbol">
                         <div class="artdeco-trading-positions__col artdeco-trading-positions__col--symbol">
                             <div class="artdeco-trading-positions__symbol-name">{{ position.name }}</div>
                             <div class="artdeco-trading-positions__symbol-code">{{ position.symbol }}</div>
@@ -75,7 +75,11 @@
 </template>
 
 <script setup lang="ts">
+    import { computed, onMounted, ref } from 'vue'
     import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
+    import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
+    import { apiClient } from '@/api/apiClient'
+    import { extractPositionsPayload, toTradingPositionRows } from './tradingDataTransform'
 
     export interface Position {
         symbol: string
@@ -89,9 +93,30 @@
         positionPercent: number
     }
 
-    defineProps<{
-        positions: Position[]
+    const props = defineProps<{
+        positions?: Position[]
     }>()
+
+    const internalPositions = ref<Position[]>([])
+    const { exec } = useArtDecoApi()
+
+    const displayPositions = computed(() => {
+        if (Array.isArray(props.positions) && props.positions.length > 0) {
+            return props.positions
+        }
+        return internalPositions.value
+    })
+
+    const loadPositions = async () => {
+        const responseData = await exec(() => apiClient.get('/v1/trade/positions'), { silent: true })
+        internalPositions.value = toTradingPositionRows(extractPositionsPayload(responseData))
+    }
+
+    onMounted(() => {
+        if (!Array.isArray(props.positions) || props.positions.length === 0) {
+            loadPositions()
+        }
+    })
 </script>
 
 <style scoped lang="scss">

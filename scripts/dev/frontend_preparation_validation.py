@@ -376,7 +376,7 @@ class FrontendPreparationValidator:
                 "确保 Node.js 16+ 版本",
                 "运行 'npm install' 安装依赖",
                 "运行 'npm run dev' 启动开发服务器",
-                "访问 http://localhost:3000 或 http://localhost:5173",
+                "访问 http://localhost:3020 或 http://localhost:3021",
             ],
         }
 

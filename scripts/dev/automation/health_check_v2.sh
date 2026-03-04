@@ -20,8 +20,8 @@ NC='\033[0m' # No Color
 PROJECT_ROOT="/opt/claude/mystocks_spec"
 LOG_DIR="/opt/mystocks/logs"
 HEALTH_LOG="${LOG_DIR}/health_check.log"
-API_BASE_URL="http://localhost:8000"
-FRONTEND_URL="http://localhost:3000"
+API_BASE_URL="http://localhost:"
+FRONTEND_URL="http://localhost:"
 PG_HOST="localhost"
 PG_PORT="5438"
 

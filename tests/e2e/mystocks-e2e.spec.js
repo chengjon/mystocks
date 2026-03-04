@@ -13,8 +13,8 @@
 const { test, expect, chromium } = require('@playwright/test');
 
 // 配置
-const FRONTEND_URL = 'http://localhost:3001';
-const BACKEND_URL = 'http://localhost:8000';
+const FRONTEND_URL = 'http://localhost:3020';
+const BACKEND_URL = 'http://localhost:8020';
 
 test.describe('MyStocks E2E 测试', () => {
   

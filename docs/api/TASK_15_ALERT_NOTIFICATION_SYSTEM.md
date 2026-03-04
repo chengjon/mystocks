@@ -369,7 +369,7 @@ AlertManager sends HTTP POST to custom webhook when alerts fire:
 receivers:
   - name: 'mystocks-notifier'
     webhook_configs:
-      - url: 'http://backend:8000/api/alerts/notify'
+      - url: 'http://backend:8020/api/alerts/notify'
         send_resolved: true
         headers:
           Authorization: 'Bearer ${ALERTMANAGER_TOKEN}'
@@ -461,13 +461,13 @@ def _init_providers(self):
 
 ```bash
 # Test Slack channel
-curl -X POST http://localhost:8000/api/alerts/test/slack
+curl -X POST http://localhost:8020/api/alerts/test/slack
 
 # Test Email channel
-curl -X POST http://localhost:8000/api/alerts/test/email
+curl -X POST http://localhost:8020/api/alerts/test/email
 
 # Test SMS channel
-curl -X POST http://localhost:8000/api/alerts/test/sms
+curl -X POST http://localhost:8020/api/alerts/test/sms
 
 # Response
 {

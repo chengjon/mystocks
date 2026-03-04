@@ -77,7 +77,7 @@ npx openapi-typescript ../docs/api/openapi/market-data-api.yaml -o src/types/mar
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                   Prerequisites                             │
-│  ✓ Backend API running (http://localhost:8000)             │
+│  ✓ Backend API running (http://localhost:8020)             │
 │  ✓ TypeScript types generated (market-data-api.ts)          │
 │  ✓ Frontend dev server ready (http://localhost:3020)        │
 └─────────────────────────────────────────────────────────────┘
@@ -238,7 +238,7 @@ import type {
   APIResponse
 } from '@/types/market-data-api';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8020';
 
 class MarketApiService {
   private client = axios.create({
@@ -732,7 +732,7 @@ testCases.forEach(({ input, expected }) => {
 **Load Backend**:
 ```bash
 # Ensure backend is running
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 # Expected: {"success":true,...}
 ```
 
@@ -842,7 +842,7 @@ The P1 phase will be considered successful when:
 ## 🚀 Ready to Start
 
 **Prerequisites Verified**:
-- ✅ Backend API running: `http://localhost:8000`
+- ✅ Backend API running: `http://localhost:8020`
 - ✅ Contract registered: `market-data v1.0.0`
 - ✅ TypeScript types generated: `market-data-api.ts`
 - ✅ Frontend dev server ready: `npm run dev`

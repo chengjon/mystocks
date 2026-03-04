@@ -168,9 +168,9 @@
 - ✅ 0 个错误
 
 ### 本地 Swagger UI
-**Swagger UI**: http://localhost:8000/api/docs
-**ReDoc**: http://localhost:8000/api/redoc
-**OpenAPI JSON**: http://localhost:8000/openapi.json
+**Swagger UI**: http://localhost:8020/api/docs
+**ReDoc**: http://localhost:8020/api/redoc
+**OpenAPI JSON**: http://localhost:8020/openapi.json
 
 ---
 
@@ -227,7 +227,7 @@ python scripts/runtime/import_to_apifox.py
 
 ```bash
 # 方法1: 从运行中的服务导出
-curl http://localhost:8000/openapi.json > docs/api/openapi.json
+curl http://localhost:8020/openapi.json > docs/api/openapi.json
 
 # 方法2: 重新导入到 Apifox
 python scripts/runtime/import_to_apifox.py
@@ -242,11 +242,11 @@ python scripts/runtime/import_to_apifox.py
 **使用 curl**:
 ```bash
 # 健康检查
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 
 # 获取实时行情（需要认证）
 curl -H "Authorization: Bearer YOUR_TOKEN" \
-  http://localhost:8000/api/market/realtime/000001
+  http://localhost:8020/api/market/realtime/000001
 ```
 
 **使用 Apifox**:
@@ -338,7 +338,7 @@ Authorization: Bearer eyJhbGc...
 
 ```json
 {
-  "base_url": "http://localhost:8000",
+  "base_url": "http://localhost:8020",
   "auth_token": "{{auto_generated}}",
   "csrf_token": "{{auto_generated}}"
 }
@@ -392,7 +392,7 @@ apifox run --project-id 7376246 --test-suite "核心功能测试"
 
 **解决方案**:
 1. 检查 API 路径是否正确
-2. 确认后端服务正在运行: `curl http://localhost:8000/health`
+2. 确认后端服务正在运行: `curl http://localhost:8020/health`
 
 ### 问题4: 500 服务器错误
 
@@ -408,8 +408,8 @@ apifox run --project-id 7376246 --test-suite "核心功能测试"
 ## 📞 获取帮助
 
 ### 文档资源
-- **Swagger UI**: http://localhost:8000/api/docs
-- **ReDoc**: http://localhost:8000/api/redoc
+- **Swagger UI**: http://localhost:8020/api/docs
+- **ReDoc**: http://localhost:8020/api/redoc
 - **Apifox 项目**: https://app.apifox.com/project/7376246
 
 ### Apifox 资源

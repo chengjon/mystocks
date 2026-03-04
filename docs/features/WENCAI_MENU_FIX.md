@@ -47,13 +47,13 @@
 ```python
 allow_origins=[
     "http://localhost:3000",
-    "http://localhost:3001",
+    "http://localhost:3020",
     "http://localhost:3002",
     "http://localhost:3003",    # 新增
     "http://localhost:5173",
     "http://localhost:8080",
     "http://127.0.0.1:3000",    # 新增
-    "http://127.0.0.1:3001",    # 新增
+    "http://127.0.0.1:3020",    # 新增
     "http://127.0.0.1:3002"     # 新增
 ]
 ```
@@ -64,7 +64,7 @@ allow_origins=[
 
 ### 1. 检查菜单显示
 ```
-1. 打开浏览器: http://localhost:3001 (或 3002)
+1. 打开浏览器: http://localhost:3020 (或 3002)
 2. 登录: admin / admin123
 3. 查看左侧菜单 "市场数据"
    ✅ 应该能看到以下子菜单:
@@ -147,7 +147,7 @@ Status: Running
 问财菜单现已正确显示在"市场数据"下，所有 API 调用不再有 CORS 问题。
 
 **立即访问**:
-- 打开: http://localhost:3001
+- 打开: http://localhost:3020
 - 登录: admin / admin123
 - 菜单: 市场数据 → 问财筛选
 

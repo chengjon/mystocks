@@ -230,19 +230,19 @@
   - 状态: ✅ / ⚠️ / ❌
 
 - [ ] **服务端口监听**: 服务监听在8000端口
-  - 检查命令: `netstat -tlnp | grep 8000` 或 `lsof -i :8000`
+  - 检查命令: `netstat -tlnp | grep 8000` 或 `lsof -i :8020`
   - 预期结果: 8000端口被python进程监听
   - 实际结果: _______________
   - 状态: ✅ / ⚠️ / ❌
 
 - [ ] **健康检查**: /health端点返回200 OK
-  - 检查命令: `curl -s http://localhost:8000/health | jq .`
+  - 检查命令: `curl -s http://localhost:8020/health | jq .`
   - 预期结果: `{"status": "healthy"}`
   - 实际结果: _______________
   - 状态: ✅ / ⚠️ / ❌
 
 - [ ] **Swagger UI**: Swagger UI可访问
-  - 检查命令: `curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/docs`
+  - 检查命令: `curl -s -o /dev/null -w "%{http_code}" http://localhost:8020/docs`
   - 预期结果: 200 OK
   - 实际结果: _______________
   - 状态: ✅ / ⚠️ / ❌
@@ -250,25 +250,25 @@
 ### 4.2 API端点验证
 
 - [ ] **POST /api/contracts/versions**: 创建契约版本
-  - 检查命令: `curl -X POST http://localhost:8000/api/contracts/versions -H "Content-Type: application/json" -d '{"name":"test","version":"1.0.0","spec":{"openapi":"3.0.0","info":{"title":"Test","version":"1.0.0"},"paths":{},"components":{"schemas":{}}}}' | jq .`
+  - 检查命令: `curl -X POST http://localhost:8020/api/contracts/versions -H "Content-Type: application/json" -d '{"name":"test","version":"1.0.0","spec":{"openapi":"3.0.0","info":{"title":"Test","version":"1.0.0"},"paths":{},"components":{"schemas":{}}}}' | jq .`
   - 预期结果: 返回200 OK，包含契约版本ID
   - 实际结果: _______________
   - 状态: ✅ / ⚠️ / ❌
 
 - [ ] **GET /api/contracts/versions**: 列出契约版本
-  - 检查命令: `curl -s http://localhost:8000/api/contracts/versions | jq .`
+  - 检查命令: `curl -s http://localhost:8020/api/contracts/versions | jq .`
   - 预期结果: 返回200 OK，包含契约版本列表
   - 实际结果: _______________
   - 状态: ✅ / ⚠️ / ❌
 
 - [ ] **GET /api/contracts/contracts**: 列出所有契约
-  - 检查命令: `curl -s http://localhost:8000/api/contracts/contracts | jq .`
+  - 检查命令: `curl -s http://localhost:8020/api/contracts/contracts | jq .`
   - 预期结果: 返回200 OK，包含契约元数据列表
   - 实际结果: _______________
   - 状态: ✅ / ⚠️ / ❌
 
 - [ ] **POST /api/contracts/validate**: 验证OpenAPI规范
-  - 检查命令: `curl -X POST http://localhost:8000/api/contracts/validate -H "Content-Type: application/json" -d '{"spec":{"openapi":"3.0.0","info":{"title":"Test","version":"1.0.0"},"paths":{},"components":{"schemas":{}}},"check_breaking_changes":false}' | jq .`
+  - 检查命令: `curl -X POST http://localhost:8020/api/contracts/validate -H "Content-Type: application/json" -d '{"spec":{"openapi":"3.0.0","info":{"title":"Test","version":"1.0.0"},"paths":{},"components":{"schemas":{}}},"check_breaking_changes":false}' | jq .`
   - 预期结果: 返回200 OK，验证通过
   - 实际结果: _______________
   - 状态: ✅ / ⚠️ / ❌
@@ -480,13 +480,13 @@
 ### 9.2 监控配置 (可选)
 
 - [ ] **Prometheus集成**: Prometheus metrics端点可用 (如果配置)
-  - 检查命令: `curl -s http://localhost:8000/metrics`
+  - 检查命令: `curl -s http://localhost:8020/metrics`
   - 预期结果: 返回Prometheus格式的metrics
   - 实际结果: _______________
   - 状态: ✅ / ⚠️ / ❌
 
 - [ ] **健康检查**: /health端点返回详细健康状态
-  - 检查命令: `curl -s http://localhost:8000/health | jq .`
+  - 检查命令: `curl -s http://localhost:8020/health | jq .`
   - 预期结果: 包含数据库状态、版本信息等
   - 实际结果: _______________
   - 状态: ✅ / ⚠️ / ❌
@@ -524,7 +524,7 @@
 ### 10.2 Swagger UI
 
 - [ ] **Swagger UI可访问**: Swagger UI页面可访问
-  - 浏览器访问: http://localhost:8000/docs
+  - 浏览器访问: http://localhost:8020/docs
   - 预期结果: 显示Swagger UI界面
   - 实际结果: _______________
   - 状态: ✅ / ⚠️ / ❌
@@ -586,13 +586,13 @@
 ### 12.1 API响应时间
 
 - [ ] **GET /api/contracts/versions**: 响应时间 < 1秒
-  - 检查命令: `time curl -s http://localhost:8000/api/contracts/versions`
+  - 检查命令: `time curl -s http://localhost:8020/api/contracts/versions`
   - 预期结果: real < 1.0s
   - 实际结果: _______________
   - 状态: ✅ / ⚠️ / ❌
 
 - [ ] **POST /api/contracts/validate**: 响应时间 < 2秒
-  - 检查命令: `time curl -X POST http://localhost:8000/api/contracts/validate -H "Content-Type: application/json" -d '{"spec":{"openapi":"3.0.0","info":{"title":"Test","version":"1.0.0"},"paths":{},"components":{"schemas":{}}},"check_breaking_changes":false}'`
+  - 检查命令: `time curl -X POST http://localhost:8020/api/contracts/validate -H "Content-Type: application/json" -d '{"spec":{"openapi":"3.0.0","info":{"title":"Test","version":"1.0.0"},"paths":{},"components":{"schemas":{}}},"check_breaking_changes":false}'`
   - 预期结果: real < 2.0s
   - 实际结果: _______________
   - 状态: ✅ / ⚠️ / ❌
@@ -600,7 +600,7 @@
 ### 12.2 并发测试
 
 - [ ] **并发请求测试**: 10个并发请求成功
-  - 检查命令: `ab -n 100 -c 10 http://localhost:8000/health`
+  - 检查命令: `ab -n 100 -c 10 http://localhost:8020/health`
   - 预期结果: 100%成功，无失败请求
   - 实际结果: _______________
   - 状态: ✅ / ⚠️ / ❌

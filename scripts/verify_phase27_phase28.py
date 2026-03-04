@@ -7,12 +7,16 @@ Technical Analysis API & Monitoring API
 import requests
 import time
 import json
+import os
 from datetime import datetime
 from typing import Dict, Any, List
 
 # ==================== 配置 ====================
 
-BASE_URL = "http://localhost:8000"
+BACKEND_PORT = os.getenv("BACKEND_PORT", "").strip()
+if not BACKEND_PORT:
+    raise RuntimeError("Missing BACKEND_PORT in environment")
+BASE_URL = os.getenv("API_BASE_URL", f"http://localhost:{BACKEND_PORT}")
 AUTH_TOKEN = "dev-mock-token-for-development"
 
 headers = {"Authorization": f"Bearer {AUTH_TOKEN}", "Content-Type": "application/json"}

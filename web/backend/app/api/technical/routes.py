@@ -63,7 +63,7 @@ async def analyze_data(data: dict):
     **示例**:
     ```bash
     # 综合技术分析
-    curl -X POST "http://localhost:8000/api/technical/analyze" \\
+    curl -X POST "http://localhost:${BACKEND_PORT}/api/technical/analyze" \\
       -H "Content-Type: application/json" \\
       -d '{
         "symbol": "600519",

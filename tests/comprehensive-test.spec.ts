@@ -90,7 +90,7 @@ test.describe('综合功能测试', () => {
     await page.evaluate(() => {
       localStorage.setItem('mock_enabled', 'true');
       localStorage.setItem('user_token', 'mock_token_12345');
-      localStorage.setItem('api_base_url', 'http://localhost:8000');
+      localStorage.setItem('api_base_url', 'http://localhost:8020');
       sessionStorage.setItem('session_id', 'session_abc123');
     });
 
@@ -108,7 +108,7 @@ test.describe('综合功能测试', () => {
 
     expect(mockData.mockEnabled).toBe('true');
     expect(mockData.userToken).toBe('mock_token_12345');
-    expect(mockData.apiBaseUrl).toBe('http://localhost:8000');
+    expect(mockData.apiBaseUrl).toBe('http://localhost:8020');
     expect(mockData.sessionId).toBe('session_abc123');
     expect(mockData.localStorageCount).toBe(3);
     expect(mockData.sessionStorageCount).toBe(1);
@@ -124,7 +124,7 @@ test.describe('综合功能测试', () => {
 
     const mockStatus = page.locator('#mock-status');
     await expect(mockStatus).toContainText('Mock状态: true');
-    await expect(mockStatus).toContainText('API地址: http://localhost:8000');
+    await expect(mockStatus).toContainText('API地址: http://localhost:8020');
 
     console.log('✅ Mock数据系统验证通过');
   });

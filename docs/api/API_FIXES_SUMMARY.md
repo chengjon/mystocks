@@ -416,9 +416,9 @@ if result.errors:
 
 - [ ] 检查API响应
   ```bash
-  curl http://localhost:8000/api/data/stocks/basic?limit=10
-  curl http://localhost:8000/api/monitoring/health
-  curl http://localhost:8000/api/monitoring/dashboard
+  curl http://localhost:8020/api/data/stocks/basic?limit=10
+  curl http://localhost:8020/api/monitoring/health
+  curl http://localhost:8020/api/monitoring/dashboard
   ```
 
 - [ ] 检查日志输出

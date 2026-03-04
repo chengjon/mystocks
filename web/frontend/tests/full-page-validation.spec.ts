@@ -11,6 +11,8 @@
 import { test, expect } from '@playwright/test';
 
 const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:3020';
+const BACKEND_PORT = process.env.BACKEND_PORT || '8020';
+const API_BASE = process.env.BACKEND_URL || `http://localhost:${BACKEND_PORT}`;
 
 // All pages to test
 const PAGES = [
@@ -125,7 +127,7 @@ test.describe('Full Page Validation', () => {
 // Test backend API integration
 test.describe('Backend API Integration', () => {
   test('Health endpoint returns code=0', async ({ request }) => {
-    const response = await request.get('http://localhost:8000/health');
+    const response = await request.get(`${API_BASE}/health`);
     const data = await response.json();
 
     console.log(`\nBackend Health: ${JSON.stringify(data)}`);
@@ -136,7 +138,7 @@ test.describe('Backend API Integration', () => {
   });
 
   test('Market overview returns data', async ({ request }) => {
-    const response = await request.get('http://localhost:8000/api/dashboard/market-overview');
+    const response = await request.get(`${API_BASE}/api/dashboard/market-overview`);
     const data = await response.json();
 
     console.log(`\nMarket Overview: ${JSON.stringify(data).substring(0, 200)}...`);

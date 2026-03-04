@@ -13,6 +13,9 @@ import uvicorn
 # 创建监控API
 monitor_app = FastAPI(title="MyStocks Monitor", description="系统监控面板")
 
+FRONTEND_PORT = int(os.getenv("FRONTEND_PORT", "3020"))
+BACKEND_PORT = int(os.getenv("BACKEND_PORT", "8020"))
+
 
 @monitor_app.get("/")
 async def monitor_root():
@@ -41,19 +44,19 @@ async def get_services_status():
     try:
         import requests
 
-        response = requests.get("http://localhost:3000", timeout=2)
-        services["frontend"] = {"status": "running", "port": 3000}
+        response = requests.get(f"http://localhost:{FRONTEND_PORT}", timeout=2)
+        services["frontend"] = {"status": "running", "port": FRONTEND_PORT}
     except:
-        services["frontend"] = {"status": "stopped", "port": 3000}
+        services["frontend"] = {"status": "stopped", "port": FRONTEND_PORT}
 
     # 检查后端服务
     try:
         import requests
 
-        response = requests.get("http://localhost:8000/health", timeout=2)
-        services["backend"] = {"status": "running", "port": 8000}
+        response = requests.get(f"http://localhost:{BACKEND_PORT}/health", timeout=2)
+        services["backend"] = {"status": "running", "port": BACKEND_PORT}
     except:
-        services["backend"] = {"status": "stopped", "port": 8000}
+        services["backend"] = {"status": "stopped", "port": BACKEND_PORT}
 
     return services
 

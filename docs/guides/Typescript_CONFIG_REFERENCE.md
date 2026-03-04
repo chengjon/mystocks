@@ -451,7 +451,7 @@ export default defineConfig({
     port: 3001,
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:8020',
         changeOrigin: true
       }
     }
@@ -599,7 +599,7 @@ manualChunks(id) {
     // ============================================================
     // 构建和开发
     // ============================================================
-    "dev": "vite --port 3001",
+    "dev": "vite --port 3020",
     "build": "npm run type-check && vite build",
     "build:force": "vite build",                              // 强制构建(跳过类型检查)
     "preview": "vite preview"

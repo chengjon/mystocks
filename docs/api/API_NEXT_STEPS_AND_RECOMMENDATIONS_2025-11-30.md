@@ -159,7 +159,7 @@ app.add_middleware(
 # main.py 第 162-168 行修改为：
 ALLOWED_ORIGINS = [
     "http://localhost:3000",  # 开发环境
-    "http://localhost:8000",
+    "http://localhost:8020",
     "https://mystocks.example.com",  # 生产环境（需配置）
 ]
 
@@ -327,7 +327,7 @@ def get_openapi_config(title, version):
         "version": version,
         "description": "MyStocks 量化交易数据管理系统 API",
         "servers": [
-            {"url": "http://localhost:8000", "description": "开发环境"},
+            {"url": "http://localhost:8020", "description": "开发环境"},
             {"url": "https://api.mystocks.example.com", "description": "生产环境"}
         ],
         "components": {
@@ -667,17 +667,17 @@ async def metrics():
 ### 测试命令
 ```bash
 # 测试认证
-curl -X GET http://localhost:8000/api/data/stocks/basic \
+curl -X GET http://localhost:8020/api/data/stocks/basic \
   -H "Authorization: Bearer invalid_token"  # 应返回 401
 
 # 测试 CORS
-curl -X OPTIONS http://localhost:8000/api/data/stocks/basic \
+curl -X OPTIONS http://localhost:8020/api/data/stocks/basic \
   -H "Origin: https://unauthorized.example.com" \
   # 应返回 403
 
 # 测试速率限制（实现后）
 for i in {1..101}; do
-  curl http://localhost:8000/api/data/stocks/basic
+  curl http://localhost:8020/api/data/stocks/basic
 done
 # 第 101 次应返回 429 (Too Many Requests)
 ```

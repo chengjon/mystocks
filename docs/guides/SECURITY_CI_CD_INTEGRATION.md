@@ -214,13 +214,13 @@ python scripts/dast/zap_generate_report.py
 #### SQLmap - SQL注入测试
 ```bash
 # 基本注入测试
-sqlmap -u "http://localhost:8000/api/users?id=1" --batch
+sqlmap -u "http://localhost:8020/api/users?id=1" --batch
 
 # POST请求测试
 sqlmap -r request.txt --batch
 
 # 数据库枚举
-sqlmap -u "http://localhost:8000/api/users?id=1" --dbs
+sqlmap -u "http://localhost:8020/api/users?id=1" --dbs
 ```
 
 ### 4. 软件成分分析 (SCA)

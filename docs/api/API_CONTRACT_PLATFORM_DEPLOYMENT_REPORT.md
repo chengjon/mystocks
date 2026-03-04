@@ -403,7 +403,7 @@ from app.core.error_codes import ErrorCode
 
 **验证命令**:
 ```bash
-curl -s http://localhost:8000/health | jq '.'
+curl -s http://localhost:8020/health | jq '.'
 ```
 
 **响应**:
@@ -425,7 +425,7 @@ curl -s http://localhost:8000/health | jq '.'
 
 **验证命令**:
 ```bash
-curl -s http://localhost:8000/api/contracts/versions | jq '.'
+curl -s http://localhost:8020/api/contracts/versions | jq '.'
 ```
 
 **响应**:
@@ -550,7 +550,7 @@ openapi-typescript docs/api/openapi/market-data-api.yaml \
 # 或使用在线API
 curl -X POST "https://api.openapi-generator.tech/api/gen/clients/typescript-fetch" \
   -d "{
-    \"specURL\": \"http://localhost:8000/openapi.json\",
+    \"specURL\": \"http://localhost:8020/openapi.json\",
     \"options\": {
       \"snapshot\": false,
       \"typeAliases\": true
@@ -611,7 +611,7 @@ import type {
   ChipRaceData
 } from '@/types/market-data-api';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8020';
 
 class MarketApiService {
   /**
@@ -886,7 +886,7 @@ fi
 ```bash
 # 后端服务
 cd web/backend
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 
 # 契约管理
 python3 scripts/cli/api_contract_sync.py list --name market-data
@@ -894,9 +894,9 @@ python3 scripts/cli/api_contract_sync.py show market-data 1.0.0
 python3 scripts/cli/api_contract_sync.py activate market-data 1.0.0
 
 # 验证API
-curl http://localhost:8000/health | jq '.'
-curl http://localhost:8000/api/contracts/versions | jq '.'
-curl http://localhost:8000/openapi.json | jq '.paths | keys'
+curl http://localhost:8020/health | jq '.'
+curl http://localhost:8020/api/contracts/versions | jq '.'
+curl http://localhost:8020/openapi.json | jq '.paths | keys'
 
 # 生成TypeScript类型
 npx openapi-typescript docs/api/openapi/market-data-api.yaml -o web/frontend/src/types/market-data-api.ts
@@ -922,8 +922,8 @@ ENVIRONMENT=development
 
 **前端环境变量** (`.env.local`):
 ```bash
-VITE_API_BASE_URL=http://localhost:8000
-VITE_WS_BASE_URL=ws://localhost:8000
+VITE_API_BASE_URL=http://localhost:8020
+VITE_WS_BASE_URL=ws://localhost:8020
 ```
 
 ### D. 错误码参考

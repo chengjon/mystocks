@@ -30,7 +30,7 @@ class TestEnvironment:
     TDENGINE_DB: str = "mystocks_test"
 
     # API配置
-    API_BASE_URL: str = "http://localhost:8000"
+    API_BASE_URL: str = "http://localhost:8020"
     API_TIMEOUT: int = 30
 
     # 性能测试配置

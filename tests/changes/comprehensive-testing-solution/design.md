@@ -444,7 +444,7 @@ ai_testing:
   model_path: "models/ai_test_model.pkl"
 
 contract_testing:
-  api_base_url: "http://localhost:8000"
+  api_base_url: "http://localhost:8020"
   test_timeout: 30
   max_retries: 2
   enable_security_tests: true
@@ -476,7 +476,7 @@ AI_MODEL_PATH=models/ai_test_model.pkl
 AI_MAX_CONCURRENT_TESTS=10
 
 # 契约测试配置
-CONTRACT_API_BASE_URL=http://localhost:8000
+CONTRACT_API_BASE_URL=http://localhost:8020
 CONTRACT_TEST_TIMEOUT=30
 
 # 性能测试配置

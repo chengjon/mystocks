@@ -687,10 +687,10 @@ describe('StrategyApiService', () => {
 **解决**:
 ```bash
 # 检查 API 参数要求
-curl http://localhost:8000/docs  # 查看 Swagger 文档
+curl http://localhost:8020/docs  # 查看 Swagger 文档
 
 # 确认参数名称和格式
-curl "http://localhost:8000/api/market/fund-flow?symbol=600519"
+curl "http://localhost:8020/api/market/fund-flow?symbol=600519"
 ```
 
 ### 问题 2: CORS 错误

@@ -277,7 +277,7 @@ logs/
 
 ```bash
 # 终端1：启动服务
-cd web/backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+cd web/backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8020
 
 # 终端2：启动日志监控
 ./scripts/lnav-monitor.sh api

@@ -7,12 +7,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { useWebSocket } from '@/composables/useWebSocket'
 
+const BACKEND_PORT = process.env.BACKEND_PORT || '8020'
+const BACKEND_WS_BASE = process.env.BACKEND_WS_URL || `ws://localhost:${BACKEND_PORT}`
+
 describe('WebSocket性能测试', () => {
   let ws: ReturnType<typeof useWebSocket>
 
   beforeEach(() => {
     ws = useWebSocket({
-      url: 'ws://localhost:8000/api/ws',
+      url: `${BACKEND_WS_BASE}/api/ws`,
       reconnectInterval: 1000,
       maxReconnectAttempts: 3,
       heartbeatInterval: 30000
@@ -62,7 +65,7 @@ describe('WebSocket性能测试', () => {
       // 创建10个并发连接
       for (let i = 0; i < 10; i++) {
         const connection = useWebSocket({
-          url: `ws://localhost:8000/api/ws/${i}`
+          url: `${BACKEND_WS_BASE}/api/ws/${i}`
         })
         connection.connect()
         connections.push(connection)

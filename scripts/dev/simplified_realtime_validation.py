@@ -20,6 +20,7 @@ import requests
 import json
 import time
 import asyncio
+import os
 import websockets
 from datetime import datetime
 from typing import Dict, List
@@ -29,7 +30,9 @@ class SimplifiedRealtimeValidator:
     """简化版实时数据流验证器"""
 
     def __init__(self):
-        self.base_url = "http://localhost:8000"
+        self.backend_port = int(os.getenv("BACKEND_PORT", "8020"))
+        self.base_url = os.getenv("BACKEND_URL", f"http://localhost:{self.backend_port}")
+        self.ws_base_url = os.getenv("BACKEND_WS_URL", f"ws://localhost:{self.backend_port}")
         self.test_symbols = ["600519", "000001", "600036"]
         self.results = []
 
@@ -227,7 +230,7 @@ class SimplifiedRealtimeValidator:
             connections_tested += 1
 
             try:
-                ws_url = f"ws://localhost:8000{endpoint}"
+                ws_url = f"{self.ws_base_url}{endpoint}"
                 async with websockets.connect(ws_url) as websocket:
                     connections_working += 1
                     return True

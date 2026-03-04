@@ -35,7 +35,7 @@ if (!isValidRouteName(routeName.value)) {
 const response = await axios.get(pageConfig.value.apiEndpoint)
 
 // ✅ 使用统一配置的WebSocket频道
-const wsUrl = `ws://localhost:8000/ws/${pageConfig.value.wsChannel}`
+const wsUrl = `ws://localhost:8020/ws/${pageConfig.value.wsChannel}`
 ```
 
 **使用方式**：

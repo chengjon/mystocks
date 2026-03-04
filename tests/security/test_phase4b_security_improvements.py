@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 class TestConfig:
     """Test configuration"""
 
-    base_url: str = "http://localhost:8000"
+    base_url: str = "http://localhost:8020"
     admin_token: Optional[str] = None
     user_token: Optional[str] = None
     test_results: List[Dict] = None

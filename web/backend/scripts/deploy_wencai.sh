@@ -22,6 +22,15 @@ NC='\033[0m' # No Color
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 MIGRATION_FILE="$PROJECT_ROOT/migrations/wencai_init.sql"
+if [ -f "${PROJECT_ROOT}/.env" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "${PROJECT_ROOT}/.env"
+    set +a
+fi
+
+BACKEND_PORT="${BACKEND_PORT:-8020}"
+BACKEND_BASE_URL="http://localhost:${BACKEND_PORT}"
 
 echo -e "${BLUE}========================================${NC}"
 echo -e "${BLUE}  问财功能部署脚本${NC}"
@@ -209,11 +218,11 @@ echo -e "   ${GREEN}systemctl restart celery-worker${NC}"
 echo -e "   ${GREEN}systemctl restart celery-beat${NC}"
 echo
 echo -e "3. 测试API端点:"
-echo -e "   ${GREEN}curl http://localhost:8000/api/market/wencai/health${NC}"
-echo -e "   ${GREEN}curl http://localhost:8000/api/market/wencai/queries${NC}"
+echo -e "   ${GREEN}curl ${BACKEND_BASE_URL}/api/market/wencai/health${NC}"
+echo -e "   ${GREEN}curl ${BACKEND_BASE_URL}/api/market/wencai/queries${NC}"
 echo
 echo -e "4. 查看API文档:"
-echo -e "   ${GREEN}http://localhost:8000/api/docs${NC}"
+echo -e "   ${GREEN}${BACKEND_BASE_URL}/api/docs${NC}"
 echo
 echo -e "${BLUE}详细文档:${NC}"
 echo -e "  - WENCAI_CONFIG_UPDATE_GUIDE.md"

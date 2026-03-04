@@ -1952,7 +1952,7 @@ async def websocket_risk_updates(websocket: WebSocket, topics: str = "portfolio_
     - stop_loss: 止损执行通知
 
     使用示例:
-    ws://localhost:8000/api/risk-management/v31/ws/risk-updates?topics=portfolio_risk,alerts
+    ws://localhost:${BACKEND_PORT}/api/risk-management/v31/ws/risk-updates?topics=portfolio_risk,alerts
     """
     try:
         # 解析订阅主题

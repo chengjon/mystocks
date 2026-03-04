@@ -13,16 +13,16 @@
 **问题痛点**：Vite开发服务器频繁启停，导致测试无法稳定执行。
 
 **解决方案**：
-- **前台运行验证**：放弃后台启动，直接前台运行`vite --port 3001 --host 0.0.0.0`，实时查看控制台输出
+- **前台运行验证**：放弃后台启动，直接前台运行`vite --port 3020 --host 0.0.0.0`，实时查看控制台输出
 - **固定端口配置**：在`vite.config.ts`中设置`server.port=3001`和`server.strictPort=true`，避免自动端口切换
 - **版本锁定**：通过`.nvmrc`或`package.json.engines`锁定Node/npm版本
 - **启动验证脚本**：
 ```bash
 # 标准化启动验证流程
-check_port() { lsof -i :3001 || echo "Port free"; }
+check_port() { lsof -i :3020 || echo "Port free"; }
 kill_residual() { pkill -f "vite" || true; }
 start_server() { npm run dev; }
-verify_server() { curl -s http://localhost:3001 | grep -q "<!DOCTYPE html>" && echo "✅ Server ready"; }
+verify_server() { curl -s http://localhost:3020 | grep -q "<!DOCTYPE html>" && echo "✅ Server ready"; }
 
 check_port && kill_residual && start_server &
 sleep 5 && verify_server
@@ -219,7 +219,7 @@ app.component('ElButton', ElButton)
 ### 4.1 手动验证vs自动化测试
 
 **手动验证流程**：
-1. **浏览器直接访问**：`http://localhost:3001`
+1. **浏览器直接访问**：`http://localhost:3020`
 2. **检查Console错误**：JavaScript运行时错误
 3. **检查Network请求**：API调用状态
 4. **检查页面渲染**：DOM结构完整性
@@ -235,7 +235,7 @@ app.component('ElButton', ElButton)
 **最小测试用例**：
 ```typescript
 test('basic page load', async ({ page }) => {
-  await page.goto('http://localhost:3001')
+  await page.goto('http://localhost:3020')
   await expect(page.locator('h1')).toBeVisible() // 只验证基础可见性
 })
 ```

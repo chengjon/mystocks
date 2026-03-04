@@ -54,7 +54,7 @@ class TestConfig:
     def _get_default_config(self) -> Dict[str, Any]:
         """Get default test configuration"""
         return {
-            "api": {"base_url": "http://localhost:8000", "timeout": 30, "auth_token": None},
+            "api": {"base_url": "http://localhost:8020", "timeout": 30, "auth_token": None},
             "database": {
                 "test_database_url": "postgresql://test:test@localhost:5438/mystocks_test",
                 "tdengine_url": "taos://root:taosdata@localhost:6030/mystocks_test",
@@ -246,7 +246,7 @@ def mock_postgresql():
 @pytest.fixture
 async def api_client(test_config):
     """Async API client for testing"""
-    base_url = test_config.get("api.base_url", "http://localhost:8000")
+    base_url = test_config.get("api.base_url", "http://localhost:8020")
     timeout = test_config.get("api.timeout", 30)
 
     async with httpx.AsyncClient(

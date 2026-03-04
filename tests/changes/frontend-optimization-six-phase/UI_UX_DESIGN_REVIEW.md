@@ -1019,7 +1019,7 @@ eventSource.addEventListener('error', (error) => {
 });
 
 // ✅ GOOD: WebSockets for bidirectional
-const ws = new WebSocket('ws://localhost:8000/ws/market');
+const ws = new WebSocket('ws://localhost:8020/ws/market');
 
 ws.onmessage = (event) => {
   const data = JSON.parse(event.data);

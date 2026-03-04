@@ -22,7 +22,10 @@ sys.path.insert(0, project_root)
 class AuthenticationTesterCoreMixin:
     """AuthenticationTester 方法集 Part 1"""
 
-    def __init__(self, base_url: str = "http://localhost:8000"):
+    def __init__(
+        self,
+        base_url: str = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}"),
+    ):
         self.base_url = base_url
         self.session = requests.Session()
         self.results: List[AuthTestResult] = []
@@ -905,4 +908,3 @@ class AuthenticationTesterCoreMixin:
                     "确保 MFA 功能正常",
                 )
             )
-

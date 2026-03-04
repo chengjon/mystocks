@@ -371,9 +371,9 @@ info:
     email: support@mystocks.com
 
 servers:
-  - url: http://localhost:8000/api/v1
+  - url: http://localhost:8020/api/v1
     description: 本地开发环境
-  - url: http://localhost:3001/api/v1
+  - url: http://localhost:3020/api/v1
     description: Mock服务器（前端独立开发）
   - url: https://api.mystocks.com/api/v1
     description: 生产环境
@@ -859,13 +859,13 @@ json-server \
   --watch db-generator.js \
   --routes routes.json \
   --middlewares middlewares.js \
-  --port 3001 \
+  --port 3020 \
   --host 0.0.0.0 \
   --delay 0
 
 # 启动后访问:
-# - API: http://localhost:3001/api/v1/market/fund-flow
-# - 管理界面: http://localhost:3001
+# - API: http://localhost:3020/api/v1/market/fund-flow
+# - 管理界面: http://localhost:3020
 ```
 
 ```bash
@@ -879,7 +879,7 @@ chmod +x mock-server/start-mock.sh
 
 ```bash
 # 开发环境 - 使用Mock服务器
-VITE_API_BASE_URL=http://localhost:3001
+VITE_API_BASE_URL=http://localhost:3020
 VITE_USE_MOCK=true
 ```
 
@@ -887,7 +887,7 @@ VITE_USE_MOCK=true
 
 ```bash
 # 生产环境 - 使用真实后端
-VITE_API_BASE_URL=http://localhost:8000
+VITE_API_BASE_URL=http://localhost:8020
 VITE_USE_MOCK=false
 ```
 
@@ -901,7 +901,7 @@ VITE_USE_MOCK=false
 import axios from 'axios'
 
 // 根据环境变量选择API基础URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8020'
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'
 
 console.log(`[API] Mode: ${USE_MOCK ? 'MOCK' : 'REAL'}, Base URL: ${API_BASE_URL}`)
@@ -988,7 +988,7 @@ reporter:
 loglevel: warning
 path:
   - ./api-specs/openapi.yaml
-endpoint: 'http://localhost:8000/api/v1'
+endpoint: 'http://localhost:8020/api/v1'
 ```
 
 **Step 3: 创建测试钩子（15分钟）**
@@ -1546,7 +1546,7 @@ async def health():
 
 
 # 启动命令:
-# uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+# uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 ```
 
 **Step 4: 前端WebSocket客户端（15分钟）**
@@ -1563,7 +1563,7 @@ import { io } from 'socket.io-client'
 
 export function useWebSocket(options = {}) {
   const {
-    url = 'http://localhost:8000/ws',
+    url = 'http://localhost:8020/ws',
     autoConnect = true,
     reconnection = true,
     reconnectionDelay = 1000,
@@ -2251,7 +2251,7 @@ jobs:
       - name: Start FastAPI Backend
         run: |
           cd web/backend
-          uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+          uvicorn app.main:app --host 0.0.0.0 --port 8020 &
           sleep 5
         env:
           POSTGRESQL_HOST: localhost
@@ -2264,7 +2264,7 @@ jobs:
 
       - name: Run Contract Tests with Dredd
         run: |
-          dredd api-specs/openapi.yaml http://localhost:8000 \
+          dredd api-specs/openapi.yaml http://localhost:8020 \
             --hookfiles=tests/contract/dredd-hooks.js \
             --reporter=markdown:reports/contract-report.md \
             --reporter=html:reports/contract-report.html
@@ -2348,7 +2348,7 @@ jobs:
     "mock:start": "cd mock-server && ./start-mock.sh",
     "swagger:ui": "docker run -d -p 8080:8080 -e SWAGGER_JSON=/specs/openapi.yaml -v $(pwd)/api-specs:/specs swaggerapi/swagger-ui",
     "types:generate": "openapi-typescript api-specs/openapi.yaml --output web/frontend/src/types/api.d.ts --export-type",
-    "contract:test": "dredd api-specs/openapi.yaml http://localhost:8000 --hookfiles=tests/contract/dredd-hooks.js",
+    "contract:test": "dredd api-specs/openapi.yaml http://localhost:8020 --hookfiles=tests/contract/dredd-hooks.js",
     "test:e2e": "jest --config jest.config.js",
     "dev:frontend": "cd web/frontend && npm run dev",
     "dev:backend": "cd web/backend && uvicorn app.main:app --reload",
@@ -2423,7 +2423,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     cd web/backend
     source venv/bin/activate 2>/dev/null || python3 -m venv venv && source venv/bin/activate
     pip install -r requirements.txt 2>/dev/null
-    uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &
+    uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload &
     BACKEND_PID=$!
     cd ../..
     sleep 3
@@ -2445,10 +2445,10 @@ echo "✅ MyStocks Development Environment Ready!"
 echo ""
 echo "📍 Available Services:"
 echo "   - Frontend:        http://localhost:5173"
-echo "   - Mock API:        http://localhost:3001"
+echo "   - Mock API:        http://localhost:3020"
 echo "   - Swagger Docs:    http://localhost:8080"
 if [[ $BACKEND_PID ]]; then
-    echo "   - Real Backend:    http://localhost:8000"
+    echo "   - Real Backend:    http://localhost:8020"
 fi
 echo ""
 echo "💡 Tips:"

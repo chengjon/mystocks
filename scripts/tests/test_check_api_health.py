@@ -5,6 +5,7 @@ API健康检查模块测试套件
 """
 
 import sys
+import os
 from pathlib import Path
 from unittest.mock import patch, Mock
 import pytest
@@ -31,7 +32,8 @@ class TestConstantsAndConfiguration:
 
     def test_base_url_constant(self):
         """测试BASE_URL常量"""
-        assert BASE_URL == "http://localhost:8000"
+        expected = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
+        assert BASE_URL == expected
 
     def test_timeout_constant(self):
         """测试TIMEOUT常量"""

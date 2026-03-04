@@ -616,6 +616,11 @@ class DynamicConfigManager:
 
     async def _get_default_config(self) -> Dict[str, Any]:
         """获取默认配置"""
+        backend_port = os.getenv("BACKEND_PORT", "").strip()
+        market_data_base_url = os.getenv("MARKET_DATA_BASE_URL", "").strip()
+        if not market_data_base_url and backend_port:
+            market_data_base_url = f"http://localhost:{backend_port}/api/market"
+
         return {
             "version": "1.0",
             "data_sources": {
@@ -627,7 +632,7 @@ class DynamicConfigManager:
                     and DataSourceMode.MOCK
                     or DataSourceMode.REAL,
                     "base_url": os.getenv("REAL_DATA_AVAILABLE", "false").lower() == "true"
-                    and "http://localhost:8000/api/market"
+                    and market_data_base_url
                     or None,
                     "timeout": 30.0,
                     "retry_count": 3,
@@ -675,5 +680,4 @@ class DynamicConfigManager:
                 "log_level": "INFO",
             },
         }
-
 

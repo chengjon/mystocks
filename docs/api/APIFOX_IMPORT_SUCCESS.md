@@ -35,10 +35,10 @@
 https://app.apifox.com/project/7376246
 
 **本地 Swagger UI**:
-http://localhost:8000/api/docs
+http://localhost:8020/api/docs
 
 **本地 ReDoc**:
-http://localhost:8000/api/redoc
+http://localhost:8020/api/redoc
 
 ---
 
@@ -73,7 +73,7 @@ http://localhost:8000/api/redoc
 **开发环境**:
 ```json
 {
-  "base_url": "http://localhost:8000",
+  "base_url": "http://localhost:8020",
   "auth_token": "",
   "csrf_token": ""
 }
@@ -166,7 +166,7 @@ python scripts/runtime/import_to_apifox.py
 
 1. 导出最新 OpenAPI 文档:
    ```bash
-   curl http://localhost:8000/openapi.json > docs/api/openapi.json
+   curl http://localhost:8020/openapi.json > docs/api/openapi.json
    ```
 
 2. 在 Apifox 中选择 "导入" → "文件导入"
@@ -178,7 +178,7 @@ python scripts/runtime/import_to_apifox.py
 如果后端服务在运行：
 
 1. 在 Apifox 中选择 "导入" → "URL导入"
-2. 输入: `http://localhost:8000/openapi.json`
+2. 输入: `http://localhost:8020/openapi.json`
 3. 导入模式选择 "智能合并"
 
 ---

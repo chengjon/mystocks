@@ -10,6 +10,11 @@ import subprocess
 import requests
 from datetime import datetime
 
+BACKEND_PORT = int(os.getenv("BACKEND_PORT", "8020"))
+FRONTEND_PORT = int(os.getenv("FRONTEND_PORT", "3020"))
+BACKEND_URL = os.getenv("BACKEND_URL", f"http://localhost:{BACKEND_PORT}")
+FRONTEND_URL = os.getenv("FRONTEND_URL", f"http://localhost:{FRONTEND_PORT}")
+
 
 # 检查端口是否被占用
 def is_port_in_use(port):
@@ -128,8 +133,8 @@ def main():
     print(f"{'=' * 60}")
 
     # 检查前端和后端服务
-    check_service_status("后端服务 (API)", 8000, "http://localhost:8000/")
-    check_service_status("前端服务 (Vue)", 5173, "http://localhost:5173/")
+    check_service_status("后端服务 (API)", BACKEND_PORT, f"{BACKEND_URL}/")
+    check_service_status("前端服务 (Vue)", FRONTEND_PORT, f"{FRONTEND_URL}/")
 
     # 检查日志目录
     check_logs_directory()
@@ -142,15 +147,15 @@ def main():
     print("总结")
     print(f"{'=' * 60}")
 
-    backend_running = is_port_in_use(8000)
-    frontend_running = is_port_in_use(5173)
+    backend_running = is_port_in_use(BACKEND_PORT)
+    frontend_running = is_port_in_use(FRONTEND_PORT)
 
     if backend_running and frontend_running:
         print("✅ 前端和后端服务均正常运行")
         print("🔗 访问地址:")
-        print("   - API文档: http://localhost:8000/api/docs")
-        print("   - 前端界面: http://localhost:5173")
-        print("   - 系统监控: http://localhost:8000/api/cache/status")
+        print(f"   - API文档: {BACKEND_URL}/api/docs")
+        print(f"   - 前端界面: {FRONTEND_URL}")
+        print(f"   - 系统监控: {BACKEND_URL}/api/cache/status")
     else:
         print("❌ 部分服务未正常运行")
         if not backend_running:

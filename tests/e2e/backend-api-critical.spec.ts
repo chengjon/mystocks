@@ -6,7 +6,7 @@
 
 import { test, expect } from '@playwright/test';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'http://localhost:8020';
 
 // 关键端点列表（不需要参数替换）
 const CRITICAL_ENDPOINTS = [

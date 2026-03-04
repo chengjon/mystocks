@@ -30,7 +30,7 @@ async def run_file_tests(
     api_dir: str = "web/backend/app/api",
     output_format: str = "json",
     max_workers: int = 4,
-    base_url: str = "http://localhost:8000",
+    base_url: str = "http://localhost:8020",
     verbose: bool = False
 ) -> FileTestSuiteResult:
     """
@@ -105,7 +105,7 @@ Examples:
 
     parser.add_argument(
         "--base-url",
-        default="http://localhost:8000",
+        default="http://localhost:8020",
         help="Base URL of the API to test"
     )
 

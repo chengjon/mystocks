@@ -501,7 +501,7 @@ GET /api/debug/dependencies
 
 **技术负责人**: Backend Development Team
 **UI/UX设计师**: Claude Code UI/UX Team
-**项目文档**: [MyStocks API Documentation](http://localhost:8000/docs)
+**项目文档**: [MyStocks API Documentation](http://localhost:8020/docs)
 
 **紧急问题处理**:
 - 📧 Email: api@mystocks.com

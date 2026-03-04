@@ -645,7 +645,7 @@ pytest --cov=web/backend/api --cov-report=html
 ```bash
 # 1. 启动后端服务
 cd web/backend
-uvicorn app.main:app --reload --port 8000 &
+uvicorn app.main:app --reload --port 8020 &
 
 # 2. 启动前端服务
 cd web/frontend

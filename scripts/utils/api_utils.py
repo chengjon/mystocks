@@ -1,8 +1,19 @@
 import requests
 import logging
+import os
 from typing import Dict, Any, Optional
 
 logger = logging.getLogger(__name__)
+
+
+def get_default_base_url() -> str:
+    api_base_url = os.getenv("API_BASE_URL", "").strip()
+    if api_base_url:
+        return api_base_url
+    backend_port = os.getenv("BACKEND_PORT", "").strip()
+    if not backend_port:
+        raise RuntimeError("Missing BACKEND_PORT in environment")
+    return f"http://localhost:{backend_port}"
 
 
 def call_api(
@@ -52,7 +63,7 @@ def call_api(
 def refresh_data_via_api(
     endpoint: str,
     payload: Dict[str, Any],
-    base_url: str = "http://localhost:8000",
+    base_url: Optional[str] = None,
     method: str = "POST",
 ) -> Dict[str, Any]:
     """
@@ -67,6 +78,8 @@ def refresh_data_via_api(
     Returns:
         Dict[str, Any]: API响应结果。
     """
+    if base_url is None:
+        base_url = get_default_base_url()
     url = f"{base_url}{endpoint}"
 
     try:

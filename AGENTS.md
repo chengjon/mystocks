@@ -333,7 +333,7 @@ from web.backend.app.api import trading_signals_api, monitoring_api
 - 在结构性语法错误为 `0` 且 E2E 通过时，可判定为“可运行”；类型推断债务不应被误报为本次回归。
 - 若本次改动导致类型推断错误数量高于基线文件 `reports/analysis/tech-debt-baseline.json` 的 `frontend_type_errors`，视为回归，必须在合并前修复或回退改动。
 - 状态确认中必须包含服务访问地址：
-  - `mystocks-backend`: `http://localhost:8000`
+  - `mystocks-backend`: `http://localhost:8020`
   - `mystocks-frontend`: `http://localhost:3020`
 - 技术债治理执行章程统一参考 `docs/guides/technical-debt-governance-charter-v1.md`，门禁、基线、豁免与周报模板以该文档为准，并与 `CLAUDE.md` 保持一致。
 

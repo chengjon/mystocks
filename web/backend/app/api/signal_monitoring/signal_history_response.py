@@ -149,13 +149,13 @@ async def get_signal_history(
     **示例**:
     ```bash
     # 查询某策略的所有信号
-    curl -X GET "http://localhost:8000/api/signals/history?strategy_id=macd_strategy"
+    curl -X GET "http://localhost:${BACKEND_PORT}/api/signals/history?strategy_id=macd_strategy"
 
     # 查询某股票的最近BUY信号
-    curl -X GET "http://localhost:8000/api/signals/history?symbol=600519.SH&signal_type=BUY"
+    curl -X GET "http://localhost:${BACKEND_PORT}/api/signals/history?symbol=600519.SH&signal_type=BUY"
 
     # 查询已执行的信号（最近7天）
-    curl -X GET "http://localhost:8000/api/signals/history?status=executed&start_date=2026-01-01"
+    curl -X GET "http://localhost:${BACKEND_PORT}/api/signals/history?status=executed&start_date=2026-01-01"
     ```
 
     **响应示例**:
@@ -311,10 +311,10 @@ async def get_signal_quality_report(
     **示例**:
     ```bash
     # 查询最近7天的信号质量报告
-    curl -X GET "http://localhost:8000/api/signals/quality-report?strategy_id=macd_strategy"
+    curl -X GET "http://localhost:${BACKEND_PORT}/api/signals/quality-report?strategy_id=macd_strategy"
 
     # 查询最近30天的信号质量报告
-    curl -X GET "http://localhost:8000/api/signals/quality-report?strategy_id=macd_strategy&period_days=30"
+    curl -X GET "http://localhost:${BACKEND_PORT}/api/signals/quality-report?strategy_id=macd_strategy&period_days=30"
     ```
 
     **响应示例**:
@@ -490,7 +490,7 @@ async def get_strategy_realtime_monitoring(
     **示例**:
     ```bash
     # 查询策略实时监控数据
-    curl -X GET "http://localhost:8000/api/strategies/macd_strategy/realtime"
+    curl -X GET "http://localhost:${BACKEND_PORT}/api/strategies/macd_strategy/realtime"
     ```
 
     **响应示例**:

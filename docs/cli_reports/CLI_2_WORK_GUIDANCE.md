@@ -258,16 +258,16 @@ cd /opt/claude/mystocks_phase6_e2e/web/backend
 pkill -f "uvicorn.*app.main"
 
 # 启动服务
-python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload > /tmp/backend_new.log 2>&1 &
+python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload > /tmp/backend_new.log 2>&1 &
 
 # 等待服务启动 (10秒)
 sleep 10
 
 # 测试API端点
-curl -s http://localhost:8000/api/system/database/health | jq
+curl -s http://localhost:8020/api/system/database/health | jq
 
 # 验证响应包含databases数组
-curl -s http://localhost:8000/api/system/database/health | jq '.databases'
+curl -s http://localhost:8020/api/system/database/health | jq '.databases'
 ```
 
 ---
@@ -318,11 +318,11 @@ vim app/api/system.py
 
 # 3.2 重启后端服务
 pkill -f "uvicorn.*app.main"
-python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload > /tmp/backend_new.log 2>&1 &
+python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload > /tmp/backend_new.log 2>&1 &
 sleep 10
 
 # 3.3 验证API响应格式
-curl -s http://localhost:8000/api/system/database/health | jq '.databases'
+curl -s http://localhost:8020/api/system/database/health | jq '.databases'
 
 # ============================================
 # 步骤4: 运行E2E测试验证 (15分钟)
@@ -348,7 +348,7 @@ pytest tests/e2e/test_architecture_optimization_e2e.py -v
 - [ ] **问题2验证**: `python3 -m py_compile` 通过
 - [ ] **问题3修复**: API返回 `databases` 数组
 - [ ] **问题3验证**: `curl /api/system/database/health | jq '.databases'` 显示数组
-- [ ] **后端服务**: 成功启动在 http://localhost:8000
+- [ ] **后端服务**: 成功启动在 http://localhost:8020
 - [ ] **E2E测试**: 通过率 ≥17/18 (94.4%)
 
 ---
@@ -377,7 +377,7 @@ export PYTHONPATH=/opt/claude/mystocks_phase6_e2e/web/backend:$PYTHONPATH
 
 # 或从web/backend目录运行
 cd /opt/claude/mystocks_phase6_e2e/web/backend
-python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8020
 ```
 
 ### 如果修复2后仍有语法错误:
@@ -395,7 +395,7 @@ pylint src/core/data_manager.py
 pytest tests/e2e/test_architecture_optimization_e2e.py -v --tb=short
 
 # 查看API实际响应
-curl -s http://localhost:8000/api/system/database/health | jq '.'
+curl -s http://localhost:8020/api/system/database/health | jq '.'
 ```
 
 ---

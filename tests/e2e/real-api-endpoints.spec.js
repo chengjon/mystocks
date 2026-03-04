@@ -4,7 +4,7 @@
 
 const { test, expect } = require('@playwright/test');
 
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = 'http://localhost:8020';
 
 test.describe('实际API端点验证测试', () => {
 

@@ -319,10 +319,10 @@ cd web/backend
 python -m uvicorn app.main:app --host 0.0.0.0 --reload
 
 # 或使用生产模式（使用gunicorn）
-gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
+gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8020
 ```
 
-访问API文档：http://localhost:8000/docs (端口可能为8000-8010范围内的可用端口)
+访问API文档：http://localhost:8020/docs (端口可能为8000-8010范围内的可用端口)
 
 ### 2. 启动前端服务（Vue3）
 

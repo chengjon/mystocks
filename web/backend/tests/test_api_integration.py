@@ -11,10 +11,14 @@ P1改进 API集成测试框架
 """
 
 import pytest
+import os
 from fastapi.testclient import TestClient
 
 # 导入应用
 from app.main import app
+
+FRONTEND_PORT = os.getenv("FRONTEND_PORT", "3020")
+FRONTEND_ORIGIN = f"http://localhost:{FRONTEND_PORT}"
 
 
 @pytest.fixture
@@ -214,7 +218,7 @@ class TestCORS:
 
     def test_cors_headers_present(self, client):
         """测试CORS头信息"""
-        response = client.get("/health", headers={"Origin": "http://localhost:3000"})
+        response = client.get("/health", headers={"Origin": FRONTEND_ORIGIN})
 
         # 检查CORS相关头
         # 注意：具体的CORS头取决于应用配置
@@ -222,7 +226,7 @@ class TestCORS:
 
     def test_options_request_allowed(self, client):
         """测试OPTIONS请求被允许或不被允许"""
-        response = client.options("/health", headers={"Origin": "http://localhost:3000"})
+        response = client.options("/health", headers={"Origin": FRONTEND_ORIGIN})
 
         # OPTIONS请求可能返回200或204（如果被允许）或405（如果不被允许）
         assert response.status_code in [200, 204, 405]

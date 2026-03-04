@@ -11,11 +11,14 @@ export interface MockWebSocketMessage {
   timestamp?: number;
 }
 
+const BACKEND_PORT = process.env.BACKEND_PORT || "8020";
+const DEFAULT_WS_URL = process.env.BACKEND_WS_URL || `ws://localhost:${BACKEND_PORT}`;
+
 export class WebSocketMock {
   private page: any;
   private mockUrl: string;
 
-  constructor(page: any, wsUrl: string = 'ws://localhost:8000/api/ws') {
+  constructor(page: any, wsUrl: string = `${DEFAULT_WS_URL}/api/ws`) {
     this.page = page;
     this.mockUrl = wsUrl;
   }

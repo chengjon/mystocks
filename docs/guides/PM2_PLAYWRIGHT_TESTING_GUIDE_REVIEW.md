@@ -9,7 +9,7 @@
 ### 1. PM2 配置优化 (`ecosystem.prod.config.js`)
 
 *   **灵活的API基础URL配置**
-    *   **问题**：`VITE_API_BASE_URL: 'http://localhost:8000'` 在测试或CI/CD环境中可能需要指向不同的后端服务地址。
+    *   **问题**：`VITE_API_BASE_URL: 'http://localhost:8020'` 在测试或CI/CD环境中可能需要指向不同的后端服务地址。
     *   **建议**：考虑将 `VITE_API_BASE_URL` 提取为PM2的环境变量，并通过PM2的 `--env` 或 `--watch-options-env` 参数在启动时动态传入，或者让 `ecosystem.prod.config.js` 能够读取外部 `.env` 文件（例如使用 `dotenv` 库）。这样可以为不同的部署环境提供更灵活的配置。
     *   **示例**：
         ```javascript
@@ -21,7 +21,7 @@
               env_production: { // 可以定义不同环境的env
                 NODE_ENV: 'production',
                 PORT: 3001,
-                VITE_API_BASE_URL: process.env.VITE_API_BASE_URL || 'http://localhost:8000'
+                VITE_API_BASE_URL: process.env.VITE_API_BASE_URL || 'http://localhost:8020'
               },
               // ...
             }
@@ -111,7 +111,7 @@
         MAX_RETRIES=5
         RETRY_COUNT=0
         while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-            if curl -s -o /dev/null -w "%{http_code}" http://localhost:3001 | grep -q "200"; then
+            if curl -s -o /dev/null -w "%{http_code}" http://localhost:3020 | grep -q "200"; then
                 echo "✅ 服务响应正常"
                 break
             else

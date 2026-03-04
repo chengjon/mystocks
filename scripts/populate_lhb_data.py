@@ -9,6 +9,7 @@
 
 import requests
 import logging
+import os
 from datetime import datetime, timedelta
 from typing import List
 
@@ -17,6 +18,11 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
+BACKEND_PORT = os.getenv("BACKEND_PORT", "").strip()
+if not BACKEND_PORT:
+    raise RuntimeError("Missing BACKEND_PORT in environment")
+DEFAULT_BASE_URL = os.getenv("API_BASE_URL", f"http://localhost:{BACKEND_PORT}")
 
 
 def get_recent_trading_dates(days: int = 10) -> List[str]:
@@ -42,7 +48,7 @@ def get_recent_trading_dates(days: int = 10) -> List[str]:
 
 
 def refresh_lhb_for_date(
-    date_str: str, base_url: str = "http://localhost:8000"
+    date_str: str, base_url: str = DEFAULT_BASE_URL
 ) -> dict:
     """
     刷新指定日期的龙虎榜数据

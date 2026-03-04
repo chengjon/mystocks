@@ -17,8 +17,21 @@ PROJECT_DIR="/opt/claude/mystocks_spec"
 FRONTEND_DIR="${PROJECT_DIR}/web/frontend"
 BACKEND_DIR="${PROJECT_DIR}/web/backend"
 TEST_LOG_DIR="${PROJECT_DIR}/logs/tests"
-FRONTEND_PORT=3020
-BACKEND_PORT=8020
+
+if [ -f "${PROJECT_DIR}/.env" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "${PROJECT_DIR}/.env"
+    set +a
+fi
+
+: "${FRONTEND_PORT:?Missing FRONTEND_PORT in .env}"
+: "${BACKEND_PORT:?Missing BACKEND_PORT in .env}"
+: "${BACKEND_BACKUP_PORT:?Missing BACKEND_BACKUP_PORT in .env}"
+
+# 兼容后端配置读取（Pydantic字段名映射）
+export PORT="${BACKEND_PORT}"
+export PORT_RANGE_END="${BACKEND_BACKUP_PORT}"
 
 # Colors for output
 RED='\033[0;31m'
@@ -102,7 +115,7 @@ cd "${BACKEND_DIR}"
 pm2 start ecosystem.config.js --name "mystocks-backend" || {
     log_warning "PM2 ecosystem config failed, starting manually..."
     pm2 start python3 --name "mystocks-backend" -- \
-        -m uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT} --reload
+        -m uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT}
 }
 
 # Start frontend service
@@ -131,7 +144,8 @@ attempt=0
 while [ $attempt -lt $max_attempts ]; do
     # Check backend
     backend_ready=false
-    if curl -s "http://localhost:${BACKEND_PORT}/api/health" > /dev/null 2>&1; then
+    if curl -s "http://localhost:${BACKEND_PORT}/health" > /dev/null 2>&1 || \
+       curl -s "http://localhost:${BACKEND_PORT}/api/health" > /dev/null 2>&1; then
         backend_ready=true
         log_success "Backend is ready"
     fi

@@ -6,8 +6,12 @@
 
 import requests
 import json
+import os
 
-BASE_URL = "http://localhost:8000"
+BACKEND_PORT = os.getenv("BACKEND_PORT", "").strip()
+if not BACKEND_PORT:
+    raise RuntimeError("Missing BACKEND_PORT in environment")
+BASE_URL = os.getenv("API_BASE_URL", f"http://localhost:{BACKEND_PORT}")
 
 
 def print_response(response, title="响应"):
@@ -228,7 +232,7 @@ def main():
     print("\n" + "=" * 60)
     print("使用说明")
     print("=" * 60)
-    print("1. 访问 http://localhost:8000/api/docs 查看完整API文档")
+    print(f"1. 访问 {BASE_URL}/api/docs 查看完整API文档")
     print("2. 策略代码列表:")
     print("   - volume_surge: 放量上涨")
     print("   - ma_bullish: 均线多头")

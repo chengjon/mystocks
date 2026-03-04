@@ -22,6 +22,7 @@ import aiohttp
 import time
 import json
 import statistics
+import os
 from typing import Dict, Any, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -70,8 +71,9 @@ class WebSocketStressTest:
 
     def __init__(
         self,
-        base_url: str = "http://localhost:8000",
-        websocket_url: str = "ws://localhost:8000/socket.io/",
+        base_url: str = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}"),
+        websocket_url: str = os.getenv("BACKEND_WS_URL", f"ws://localhost:{os.getenv('BACKEND_PORT', '8020')}")
+        + "/socket.io/",
     ):
         """
         初始化压力测试器

@@ -75,7 +75,7 @@ pkill -f "uvicorn"
 
 # 启动后端
 cd /opt/claude/mystocks_spec/web/backend
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --reload --port 8020
 ```
 
 验证启动输出，应该看到：
@@ -91,7 +91,7 @@ uvicorn app.main:app --reload --port 8000
 ### 测试 1: 获取 CSRF Token
 
 ```bash
-curl -X GET http://localhost:8000/api/csrf-token
+curl -X GET http://localhost:8020/api/csrf-token
 
 # 预期响应
 {
@@ -103,7 +103,7 @@ curl -X GET http://localhost:8000/api/csrf-token
 ### 测试 2: 没有 CSRF Token 的 POST 请求被拒绝
 
 ```bash
-curl -X POST http://localhost:8000/api/data/query \
+curl -X POST http://localhost:8020/api/data/query \
     -H "Content-Type: application/json" \
     -d '{"query": "test"}'
 
@@ -118,10 +118,10 @@ curl -X POST http://localhost:8000/api/data/query \
 
 ```bash
 # 1. 获取 token
-TOKEN=$(curl -s http://localhost:8000/api/csrf-token | jq -r .csrf_token)
+TOKEN=$(curl -s http://localhost:8020/api/csrf-token | jq -r .csrf_token)
 
 # 2. 使用 token 发送 POST 请求
-curl -X POST http://localhost:8000/api/data/query \
+curl -X POST http://localhost:8020/api/data/query \
     -H "Content-Type: application/json" \
     -H "X-CSRF-Token: $TOKEN" \
     -d '{"query": "test"}'
@@ -132,7 +132,7 @@ curl -X POST http://localhost:8000/api/data/query \
 ### 测试 4: 无效的 CSRF Token 被拒绝
 
 ```bash
-curl -X POST http://localhost:8000/api/data/query \
+curl -X POST http://localhost:8020/api/data/query \
     -H "Content-Type: application/json" \
     -H "X-CSRF-Token: invalid_token_12345" \
     -d '{"query": "test"}'
@@ -148,7 +148,7 @@ curl -X POST http://localhost:8000/api/data/query \
 
 ```bash
 # 登录端点不需要 CSRF token
-curl -X POST http://localhost:8000/api/auth/login \
+curl -X POST http://localhost:8020/api/auth/login \
     -H "Content-Type: application/x-www-form-urlencoded" \
     -d "username=admin&password=admin123"
 

@@ -20,7 +20,7 @@ PROJECT_ROOT="/opt/claude/mystocks_spec"
 TEST_REPORT_DIR="${PROJECT_ROOT}/reports/regression"
 TEST_LOG="${TEST_REPORT_DIR}/regression_test.log"
 PERFORMANCE_LOG="${TEST_REPORT_DIR}/performance_test.log"
-FRONTEND_URL="http://localhost:3000"
+FRONTEND_URL="http://localhost:"
 API_BASE_URL="http://localhost:8888"
 
 # 性能基准标准

@@ -8,6 +8,9 @@ import { test, expect } from '@playwright/test'
 test.describe('ESM Dayjs兼容性验证', () => {
   test.setTimeout(20000)
 
+  const FRONTEND_PORT = process.env.FRONTEND_PORT || '3020'
+  const FRONTEND_URL = process.env.FRONTEND_URL || `http://localhost:${FRONTEND_PORT}`
+
   test('dayjs ESM导入验证', async ({ page }) => {
     const errors: string[] = []
 
@@ -23,7 +26,7 @@ test.describe('ESM Dayjs兼容性验证', () => {
     })
 
     // 访问首页触发Vue应用加载
-    await page.goto('http://localhost:3001', {
+    await page.goto(FRONTEND_URL, {
       waitUntil: 'domcontentloaded',
       timeout: 10000
     })

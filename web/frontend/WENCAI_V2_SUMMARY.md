@@ -330,7 +330,7 @@ const getPriceChangeClass = (value) => {
 ```bash
 # 后端
 cd /opt/claude/mystocks_spec/web/backend
-nohup python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &
+nohup python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8020 > /tmp/backend.log 2>&1 &
 
 # 前端
 cd /opt/claude/mystocks_spec/web/frontend
@@ -338,7 +338,7 @@ npm run dev
 ```
 
 ### 访问系统
-1. 打开浏览器：`http://localhost:3001`
+1. 打开浏览器：`http://localhost:3020`
 2. 登录：admin / admin123
 3. 导航：市场数据 → 问财筛选
 4. 开始使用新功能

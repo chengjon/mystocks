@@ -7,7 +7,10 @@ import { test, expect } from '@playwright/test';
  * 验证页面加载、错误处理和用户界面元素
  */
 
-const BASE_URL = 'http://localhost:3001';
+const FRONTEND_PORT = process.env.FRONTEND_PORT || '3020';
+const BACKEND_PORT = process.env.BACKEND_PORT || '8020';
+const BASE_URL = process.env.FRONTEND_URL || `http://localhost:${FRONTEND_PORT}`;
+const API_BASE = process.env.BACKEND_URL || `http://localhost:${BACKEND_PORT}`;
 
 // 所有路由配置
 const routes = [
@@ -189,7 +192,7 @@ test.describe('MyStocks Frontend - Core Functionality', () => {
     console.log('\n🔍 Testing backend API health...');
 
     try {
-      const response = await page.request.get('http://localhost:8000/health');
+      const response = await page.request.get(`${API_BASE}/health`);
       console.log(`  📡 API Status: ${response.status()}`);
       expect(response.status()).toBe(200);
 

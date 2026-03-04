@@ -8,6 +8,9 @@
 import { test, expect } from '@playwright/test';
 import { WebSocketMock, MarketDataScenarios, RiskAlertScenarios } from '../helpers/websocket-mock';
 
+const BACKEND_PORT = process.env.BACKEND_PORT || '8020';
+const BACKEND_WS_BASE = process.env.BACKEND_WS_URL || `ws://localhost:${BACKEND_PORT}`;
+
 test.describe('WebSocket实时更新测试（Mock）', () => {
   let wsMock: WebSocketMock;
 
@@ -171,10 +174,10 @@ test.describe('WebSocket实时更新测试（Mock）', () => {
 
   test('多个WebSocket频道应该独立工作', async ({ page }) => {
     // 创建多个WebSocket Mock实例（模拟不同频道）
-    const wsMarket = new WebSocketMock(page, 'ws://localhost:8000/api/ws/market');
+    const wsMarket = new WebSocketMock(page, `${BACKEND_WS_BASE}/api/ws/market`);
     await wsMarket.initialize();
 
-    const wsRisk = new WebSocketMock(page, 'ws://localhost:8000/api/ws/risk');
+    const wsRisk = new WebSocketMock(page, `${BACKEND_WS_BASE}/api/ws/risk`);
     await wsRisk.initialize();
 
     // 同时推送不同频道的消息

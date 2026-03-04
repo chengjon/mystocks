@@ -189,7 +189,7 @@ test_performance_requirements()
 def api_test_fixtures():
     """Common API test configuration"""
     return {
-        "base_url": "http://localhost:8000",
+        "base_url": "http://localhost:8020",
         "timeout": 30,
         "retries": 3
     }

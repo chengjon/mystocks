@@ -92,7 +92,7 @@ services:
   api:
     build: .
     ports:
-      - "8000:8000"
+      - "8000:8020"
     environment:
       - PYTHONPATH=/app
     env_file:
@@ -307,11 +307,11 @@ python scripts/database/init_tables.py
 
 ```bash
 # 开发环境
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 
 # 生产环境
 python -m gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker \
-  --bind 0.0.0.0:8000 --access-logfile logs/access.log
+  --bind 0.0.0.0:8020 --access-logfile logs/access.log
 ```
 
 ### 5. 配置 Nginx
@@ -323,7 +323,7 @@ server {
     server_name mystocks.example.com;
 
     location / {
-        proxy_pass http://127.0.0.1:8000;
+        proxy_pass http://127.0.0.1:8020;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
     }
@@ -382,7 +382,7 @@ LOG_LEVEL=WARNING
 ### 1. 健康检查
 
 ```bash
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 ```
 
 预期响应:
@@ -401,26 +401,26 @@ curl http://localhost:8000/health
 
 ```bash
 # 测试登录
-curl -X POST http://localhost:8000/api/v1/auth/login \
+curl -X POST http://localhost:8020/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username": "admin", "password": "password"}'
 
 # 测试获取 K 线数据
-curl "http://localhost:8000/api/v1/market/kline?symbol=000001.SZ&start_date=2025-01-01&end_date=2025-01-31"
+curl "http://localhost:8020/api/v1/market/kline?symbol=000001.SZ&start_date=2025-01-01&end_date=2025-01-31"
 ```
 
 ### 3. 性能测试
 
 ```bash
 # 使用 ab 进行压力测试
-ab -n 1000 -c 10 http://localhost:8000/health
+ab -n 1000 -c 10 http://localhost:8020/health
 ```
 
 ### 4. 查看监控指标
 
 ```bash
 # Prometheus 指标
-curl http://localhost:8000/metrics
+curl http://localhost:8020/metrics
 ```
 
 ---
@@ -430,7 +430,7 @@ curl http://localhost:8000/metrics
 ### 常见问题
 
 1. **数据库连接失败**: 检查网络和防火墙设置
-2. **端口被占用**: 使用 `lsof -i :8000` 检查
+2. **端口被占用**: 使用 `lsof -i :8020` 检查
 3. **内存不足**: 增加服务器资源或优化配置
 
 详细故障排查请参阅 [TROUBLESHOOTING.md](./TROUBLESHOOTING.md)

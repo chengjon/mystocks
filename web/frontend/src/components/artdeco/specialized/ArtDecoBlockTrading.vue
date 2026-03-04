@@ -19,7 +19,7 @@
       <div class="block-trading-list">
         <div
           v-for="(item, _idx) in blockTradingData"
-          :key="item.code"
+          :key="`${item.code}-${_idx}`"
           class="block-trading-item"
         >
           <div class="stock-info">
@@ -121,10 +121,41 @@ const date = computed(() => {
 
 // 格式化金额（元→万元）
 const formatAmount = (amount: number): string => {
-  if (amount >= 10000) {
-    return (amount / 10000).toFixed(2) + '亿'
+  const absAmount = Math.abs(amount)
+  if (absAmount >= 100000000) {
+    return `${(amount / 100000000).toFixed(2)}亿`
   }
-  return (amount / 10000).toFixed(2) + '万'
+  if (absAmount >= 10000) {
+    return `${(amount / 10000).toFixed(2)}万`
+  }
+  return `${amount.toFixed(0)}元`
+}
+
+const toNumber = (value: unknown, fallback = 0): number => {
+  const numeric = Number(value)
+  return Number.isFinite(numeric) ? numeric : fallback
+}
+
+const normalizeBlockTradingItem = (
+  item: Record<string, unknown> | BlockTradingItem,
+  index: number
+): BlockTradingItem => {
+  const raw = item as Record<string, unknown>
+  const code = String(raw.code ?? raw.symbol ?? raw.ts_code ?? `BLOCK-${index}`)
+  const name = String(raw.name ?? raw.stock_name ?? '--')
+  const price = toNumber(raw.price ?? raw.deal_price ?? raw.latest_price ?? raw.close_price, 0)
+  const amount = toNumber(raw.amount ?? raw.deal_amount ?? raw.net_amount, 0)
+  const buyer = String(raw.buyer ?? raw.buyer_name ?? '--')
+  const seller = String(raw.seller ?? raw.seller_name ?? '--')
+
+  return {
+    code,
+    name,
+    price,
+    amount,
+    buyer,
+    seller
+  }
 }
 
 // 获取大宗交易数据
@@ -135,7 +166,12 @@ const fetchBlockTrading = async () => {
   try {
     const response = await dashboardService.getBlockTrading(undefined, 10)
     const payload = response?.data ?? response
-    blockTradingData.value = Array.isArray(payload) ? payload : FALLBACK_BLOCK_TRADING_DATA
+
+    if (Array.isArray(payload) && payload.length > 0) {
+      blockTradingData.value = payload.map((item, index) => normalizeBlockTradingItem(item, index))
+    } else {
+      blockTradingData.value = FALLBACK_BLOCK_TRADING_DATA
+    }
   } catch (_err: unknown) {
     error.value = ''
     blockTradingData.value = FALLBACK_BLOCK_TRADING_DATA

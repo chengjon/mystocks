@@ -108,7 +108,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 # API Configuration
 DEBUG=true
 LOG_LEVEL=INFO
-CORS_ORIGINS_STR=http://localhost:3000,http://localhost:8080
+CORS_ORIGINS_STR=http://localhost:3020,http://localhost:3021
 
 # Testing
 TEST_DATABASE_URL=postgresql://postgres:your_password_here@localhost/test_mystocks

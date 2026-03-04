@@ -5,8 +5,8 @@
 本文档详细记录了MyStocks Web前端应用的所有页面信息，包括菜单结构、路由地址、页面元素及其显示内容。
 
 **当前运行环境**：
-- 前端地址：http://localhost:3001
-- 后端API：http://localhost:8000
+- 前端地址：http://localhost:3020
+- 后端API：http://localhost:8020
 - 数据模式：真实数据（REAL）
 
 ---
@@ -14,7 +14,7 @@
 ## 🎯 菜单结构及页面详情
 
 ### 1. 仪表盘 (`/dashboard`)
-**URL**: http://localhost:3001/dashboard
+**URL**: http://localhost:3020/dashboard
 **菜单位置**: 顶部 > 仪表盘
 **组件文件**: `/src/views/Dashboard.vue`
 
@@ -49,7 +49,7 @@
 ### 2. 市场行情
 
 #### 2.1 实时行情 (`/market`)
-**URL**: http://localhost:3001/market
+**URL**: http://localhost:3020/market
 **菜单位置**: 市场行情 > 实时行情
 **组件文件**: `/src/views/Market.vue`
 
@@ -68,7 +68,7 @@
   - 详细持仓表格
 
 #### 2.2 TDX行情 (`/tdx-market`)
-**URL**: http://localhost:3001/tdx-market
+**URL**: http://localhost:3020/tdx-market
 **菜单位置**: 市场行情 > TDX行情
 **组件文件**: `/src/views/TdxMarket.vue`
 
@@ -77,7 +77,7 @@
 ### 3. 市场数据
 
 #### 3.1 资金流向 (`/market-data/fund-flow`)
-**URL**: http://localhost:3001/market-data/fund-flow
+**URL**: http://localhost:3020/market-data/fund-flow
 **菜单位置**: 市场数据 > 资金流向
 **组件文件**: `/src/components/market/FundFlowPanel.vue`
 
@@ -99,22 +99,22 @@
   | 散户净占比 | 百分比 | 如：+2.15% |
 
 #### 3.2 ETF行情 (`/market-data/etf`)
-**URL**: http://localhost:3001/market-data/etf
+**URL**: http://localhost:3020/market-data/etf
 **菜单位置**: 市场数据 > ETF行情
 **组件文件**: `/src/components/market/ETFDataTable.vue`
 
 #### 3.3 竞价抢筹 (`/market-data/chip-race`)
-**URL**: http://localhost:3001/market-data/chip-race
+**URL**: http://localhost:3020/market-data/chip-race
 **菜单位置**: 市场数据 > 竞价抢筹
 **组件文件**: `/src/components/market/ChipRaceTable.vue`
 
 #### 3.4 龙虎榜 (`/market-data/lhb`)
-**URL**: http://localhost:3001/market-data/lhb
+**URL**: http://localhost:3020/market-data/lhb
 **菜单位置**: 市场数据 > 龙虎榜
 **组件文件**: `/src/components/market/LongHuBangTable.vue`
 
 #### 3.5 问财筛选 (`/market-data/wencai`)
-**URL**: http://localhost:3001/market-data/wencai
+**URL**: http://localhost:3020/market-data/wencai
 **菜单位置**: 市场数据 > 问财筛选
 **组件文件**: `/src/components/market/WencaiPanelV2.vue`
 
@@ -123,12 +123,12 @@
 ### 4. 股票管理
 
 #### 4.1 股票列表 (`/stocks`)
-**URL**: http://localhost:3001/stocks
+**URL**: http://localhost:3020/stocks
 **菜单位置**: 股票管理
 **组件文件**: `/src/views/Stocks.vue`
 
 #### 4.2 股票详情 (`/stock-detail/:symbol`)
-**URL**: http://localhost:3001/stock-detail/{symbol}
+**URL**: http://localhost:3020/stock-detail/{symbol}
 **菜单位置**: 动态路由
 **组件文件**: `/src/views/StockDetail.vue`
 
@@ -169,12 +169,12 @@
 ### 5. 数据分析
 
 #### 5.1 数据分析概览 (`/analysis`)
-**URL**: http://localhost:3001/analysis
+**URL**: http://localhost:3020/analysis
 **菜单位置**: 数据分析
 **组件文件**: `/src/views/Analysis.vue`
 
 #### 5.2 行业概念分析 (`/analysis/industry-concept`)
-**URL**: http://localhost:3001/analysis/industry-concept
+**URL**: http://localhost:3020/analysis/industry-concept
 **菜单位置**: 数据分析 > 行业概念分析
 **组件文件**: `/src/views/IndustryConceptAnalysis.vue`
 
@@ -183,7 +183,7 @@
 ### 6. 技术分析
 
 #### 6.1 技术分析 (`/technical`)
-**URL**: http://localhost:3001/technical
+**URL**: http://localhost:3020/technical
 **菜单位置**: 技术分析 > 技术分析
 **组件文件**: `/src/views/TechnicalAnalysis.vue`
 
@@ -214,7 +214,7 @@
   - 参数配置面板
 
 #### 6.2 指标库 (`/indicators`)
-**URL**: http://localhost:3001/indicators
+**URL**: http://localhost:3020/indicators
 **菜单位置**: 技术分析 > 指标库
 **组件文件**: `/src/views/IndicatorLibrary.vue`
 
@@ -246,12 +246,12 @@
 ### 7. 风险监控
 
 #### 7.1 风险监控 (`/risk`)
-**URL**: http://localhost:3001/risk
+**URL**: http://localhost:3020/risk
 **菜单位置**: 风险监控
 **组件文件**: `/src/views/RiskMonitor.vue`
 
 #### 7.2 公告监控 (`/announcement`)
-**URL**: http://localhost:3001/announcement
+**URL**: http://localhost:3020/announcement
 **菜单位置**: 风险监控 > 公告监控
 **组件文件**: `/src/views/announcement/AnnouncementMonitor.vue`
 
@@ -260,7 +260,7 @@
 ### 8. 实时监控
 
 #### 8.1 实时监控 (`/realtime`)
-**URL**: http://localhost:3001/realtime
+**URL**: http://localhost:3020/realtime
 **菜单位置**: 实时监控（可能已启用）
 **组件文件**: `/src/views/RealTimeMonitor.vue`
 
@@ -286,7 +286,7 @@
 ### 9. 交易管理
 
 #### 9.1 交易管理 (`/trade`)
-**URL**: http://localhost:3001/trade
+**URL**: http://localhost:3020/trade
 **菜单位置**: 交易管理
 **组件文件**: `/src/views/TradeManagement.vue`
 
@@ -295,7 +295,7 @@
 ### 10. 量化策略
 
 #### 10.1 策略管理 (`/strategy`)
-**URL**: http://localhost:3001/strategy
+**URL**: http://localhost:3020/strategy
 **菜单位置**: 量化策略 > 策略管理
 **组件文件**: `/src/views/StrategyManagement.vue`
 
@@ -323,7 +323,7 @@
   - 收益分析图表、胜率统计
 
 #### 10.2 回测分析 (`/backtest`)
-**URL**: http://localhost:3001/backtest
+**URL**: http://localhost:3020/backtest
 **菜单位置**: 量化策略 > 回测分析
 **组件文件**: `/src/views/BacktestAnalysis.vue`
 
@@ -332,7 +332,7 @@
 ### 11. 任务管理
 
 #### 11.1 任务管理 (`/tasks`)
-**URL**: http://localhost:3001/tasks
+**URL**: http://localhost:3020/tasks
 **菜单位置**: 任务管理
 **组件文件**: `/src/views/TaskManagement.vue`
 
@@ -341,7 +341,7 @@
 ### 12. 系统设置
 
 #### 12.1 系统设置 (`/settings`)
-**URL**: http://localhost:3001/settings
+**URL**: http://localhost:3020/settings
 **菜单位置**: 系统设置
 **组件文件**: `/src/views/Settings.vue`
 
@@ -350,7 +350,7 @@
 ### 13. 系统管理
 
 #### 13.1 系统架构 (`/system/architecture`)
-**URL**: http://localhost:3001/system/architecture
+**URL**: http://localhost:3020/system/architecture
 **菜单位置**: 系统管理 > 系统架构
 **组件文件**: `/src/views/system/Architecture.vue`
 
@@ -377,12 +377,12 @@
   - 性能指标
 
 #### 13.2 数据库监控 (`/system/database-monitor`)
-**URL**: http://localhost:3001/system/database-monitor
+**URL**: http://localhost:3020/system/database-monitor
 **菜单位置**: 系统管理 > 数据库监控
 **组件文件**: `/src/views/system/DatabaseMonitor.vue`
 
 #### 13.3 智能数据源测试 (`/smart-data-test`)
-**URL**: http://localhost:3001/smart-data-test
+**URL**: http://localhost:3020/smart-data-test
 **菜单位置**: 系统管理 > 智能数据源测试
 **组件文件**: `/src/views/SmartDataSourceTest.vue`
 
@@ -391,12 +391,12 @@
 ### 14. 功能演示
 
 #### 14.1 Phase 4 Dashboard (`/demo/phase4-dashboard`)
-**URL**: http://localhost:3001/demo/phase4-dashboard
+**URL**: http://localhost:3020/demo/phase4-dashboard
 **菜单位置**: 功能演示 > Phase 4 Dashboard
 **组件文件**: `/src/views/demo/Phase4Dashboard.vue`
 
 #### 14.2 Wencai (`/demo/wencai`)
-**URL**: http://localhost:3001/demo/wencai
+**URL**: http://localhost:3020/demo/wencai
 **菜单位置**: 功能演示 > Wencai
 **组件文件**: `/src/views/demo/Wencai.vue`
 
@@ -419,27 +419,27 @@
   9. "回调企稳"
 
 #### 14.3 OpenStock (`/demo/openstock`)
-**URL**: http://localhost:3001/demo/openstock
+**URL**: http://localhost:3020/demo/openstock
 **菜单位置**: 功能演示 > OpenStock
 **组件文件**: `/src/views/demo/OpenStockDemo.vue`
 
 #### 14.4 PyProfiling (`/demo/pyprofiling`)
-**URL**: http://localhost:3001/demo/pyprofiling
+**URL**: http://localhost:3020/demo/pyprofiling
 **菜单位置**: 功能演示 > PyProfiling
 **组件文件**: `/src/views/demo/PyprofilingDemo.vue`
 
 #### 14.5 Freqtrade (`/demo/freqtrade`)
-**URL**: http://http://localhost:3001/demo/freqtrade
+**URL**: http://http://localhost:3020/demo/freqtrade
 **菜单位置**: 功能演示 > Freqtrade
 **组件文件**: `/src/views/demo/FreqtradeDemo.vue`
 
 #### 14.6 Stock Analysis (`/demo/stock-analysis`)
-**URL**: http://localhost:3001/demo/stock-analysis
+**URL**: http://localhost:3020/demo/stock-analysis
 **菜单位置**: 功能演示 > Stock-Analysis
 **组件文件**: `/src/views/demo/StockAnalysisDemo.vue`
 
 #### 14.7 TDX Python (`/demo/tdxpy`)
-**URL**: http://localhost:3001/demo/tdxpy
+**URL**: http://localhost:3020/demo/tdxpy
 **菜单位置**: 功能演示 > pytdx
 **组件文件**: `/src/views/demo/TdxpyDemo.vue`
 
@@ -448,12 +448,12 @@
 ### 15. 特殊页面
 
 #### 15.1 登录页 (`/login`)
-**URL**: http://localhost:3001/login
+**URL**: http://localhost:3020/login
 **组件文件**: `/src/views/Login.vue`
 **状态**: 认证功能已禁用
 
 #### 15.2 404页面 (`/not-found`)
-**URL**: http://localhost:3001/not-found
+**URL**: http://localhost:3020/not-found
 **组件文件**: `/src/views/NotFound.vue`
 
 ---
@@ -490,7 +490,7 @@
 
 ## 🔗 路由配置说明
 
-- **基础路径**：http://localhost:3001
+- **基础路径**：http://localhost:3020
 - **模式**：History模式（支持浏览器前进/后退）
 - **404处理**：自动跳转到 /not-found 页面
 - **权限控制**：基于角色的菜单过滤

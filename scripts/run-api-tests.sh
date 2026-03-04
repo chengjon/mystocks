@@ -4,6 +4,17 @@
 
 set -e
 
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+if [ -f "${PROJECT_ROOT}/.env" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "${PROJECT_ROOT}/.env"
+    set +a
+fi
+
+: "${BACKEND_PORT:?Missing BACKEND_PORT in .env}"
+BACKEND_BASE_URL="${API_BASE_URL:-http://localhost:${BACKEND_PORT}}"
+
 # 颜色定义
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -44,9 +55,9 @@ check_dependencies() {
 check_backend() {
     print_info "检查后端服务..."
 
-    if ! curl -s http://localhost:8000/health > /dev/null 2>&1; then
+    if ! curl -s "${BACKEND_BASE_URL}/health" > /dev/null 2>&1; then
         print_warn "后端服务未启动或无法访问"
-        print_warn "请先启动后端服务: cd web/backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"
+        print_warn "请先启动后端服务: cd web/backend && python -m uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT}"
         read -p "是否继续测试? (y/n) " -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -78,12 +89,12 @@ API 契约测试执行脚本
   help                显示此帮助信息
 
 环境变量:
-  API_BASE_URL        API基础URL (默认: http://localhost:8000)
+  API_BASE_URL        API基础URL (默认: http://localhost:${BACKEND_PORT})
 
 示例:
   ./run-api-tests.sh all
   ./run-api-tests.sh auth
-  API_BASE_URL=http://localhost:8001 ./run-api-tests.sh all
+  API_BASE_URL=http://localhost:${BACKEND_BACKUP_PORT:-8021} ./run-api-tests.sh all
 EOF
 }
 

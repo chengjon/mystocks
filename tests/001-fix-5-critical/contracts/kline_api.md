@@ -2,7 +2,7 @@
 
 **Feature**: Fix 5 Critical Issues in OpenStock Demo
 **API Version**: 1.0
-**Base URL**: `http://localhost:8000/api`
+**Base URL**: `http://localhost:8020/api`
 **Authentication**: Required (JWT Bearer token)
 
 ## Overview
@@ -32,7 +32,7 @@ Historical K-line (candlestick) data retrieval for technical analysis and chart 
 **Request**:
 ```http
 GET /api/market/kline?stock_code=600519&period=daily&adjust=qfq HTTP/1.1
-Host: localhost:8000
+Host: localhost:8020
 Authorization: Bearer <JWT_TOKEN>
 ```
 
@@ -402,7 +402,7 @@ This is the OPPOSITE of US markets (where green = up, red = down).
 
 #### 1. Happy Path - Default Parameters
 ```bash
-curl -X GET "http://localhost:8000/api/market/kline?stock_code=600519" \
+curl -X GET "http://localhost:8020/api/market/kline?stock_code=600519" \
   -H "Authorization: Bearer <token>"
 
 Expected: 200 OK with 60 daily candles, qfq adjustment
@@ -410,7 +410,7 @@ Expected: 200 OK with 60 daily candles, qfq adjustment
 
 #### 2. Happy Path - Custom Date Range
 ```bash
-curl -X GET "http://localhost:8000/api/market/kline?stock_code=600519&start_date=2024-01-01&end_date=2024-12-31" \
+curl -X GET "http://localhost:8020/api/market/kline?stock_code=600519&start_date=2024-01-01&end_date=2024-12-31" \
   -H "Authorization: Bearer <token>"
 
 Expected: 200 OK with ~244 trading days from 2024
@@ -418,7 +418,7 @@ Expected: 200 OK with ~244 trading days from 2024
 
 #### 3. Happy Path - Weekly Period
 ```bash
-curl -X GET "http://localhost:8000/api/market/kline?stock_code=000858&period=weekly&adjust=hfq" \
+curl -X GET "http://localhost:8020/api/market/kline?stock_code=000858&period=weekly&adjust=hfq" \
   -H "Authorization: Bearer <token>"
 
 Expected: 200 OK with ~52 weekly candles
@@ -426,7 +426,7 @@ Expected: 200 OK with ~52 weekly candles
 
 #### 4. Error - Invalid Stock Code
 ```bash
-curl -X GET "http://localhost:8000/api/market/kline?stock_code=ABC123" \
+curl -X GET "http://localhost:8020/api/market/kline?stock_code=ABC123" \
   -H "Authorization: Bearer <token>"
 
 Expected: 400 Bad Request
@@ -434,7 +434,7 @@ Expected: 400 Bad Request
 
 #### 5. Error - Invalid Period
 ```bash
-curl -X GET "http://localhost:8000/api/market/kline?stock_code=600519&period=hourly" \
+curl -X GET "http://localhost:8020/api/market/kline?stock_code=600519&period=hourly" \
   -H "Authorization: Bearer <token>"
 
 Expected: 400 Bad Request (hourly not supported)
@@ -442,7 +442,7 @@ Expected: 400 Bad Request (hourly not supported)
 
 #### 6. Error - Date Range Too Large
 ```bash
-curl -X GET "http://localhost:8000/api/market/kline?stock_code=600519&start_date=2020-01-01&end_date=2025-01-01" \
+curl -X GET "http://localhost:8020/api/market/kline?stock_code=600519&start_date=2020-01-01&end_date=2025-01-01" \
   -H "Authorization: Bearer <token>"
 
 Expected: 400 Bad Request (exceeds 250 trading days)
@@ -451,7 +451,7 @@ Expected: 400 Bad Request (exceeds 250 trading days)
 #### 7. Edge Case - Newly Listed Stock
 ```bash
 # Stock listed only 30 days ago
-curl -X GET "http://localhost:8000/api/market/kline?stock_code=688XXX" \
+curl -X GET "http://localhost:8020/api/market/kline?stock_code=688XXX" \
   -H "Authorization: Bearer <token>"
 
 Expected: 200 OK with ~30 candles (all available data)
@@ -460,7 +460,7 @@ Expected: 200 OK with ~30 candles (all available data)
 #### 8. Edge Case - Suspended Trading Days
 ```bash
 # Stock with trading suspension periods
-curl -X GET "http://localhost:8000/api/market/kline?stock_code=600519&start_date=2024-06-01&end_date=2024-06-30" \
+curl -X GET "http://localhost:8020/api/market/kline?stock_code=600519&start_date=2024-06-01&end_date=2024-06-30" \
   -H "Authorization: Bearer <token>"
 
 Expected: 200 OK with gaps in dates (suspended days omitted)

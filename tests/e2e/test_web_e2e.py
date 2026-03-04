@@ -20,7 +20,7 @@ class TestWebE2E:
             page = browser.new_page()
 
             # 访问应用
-            base_url = os.getenv("PLAYWRIGHT_TEST_BASE_URL", "http://localhost:8888")
+            base_url = os.getenv("PLAYWRIGHT_TEST_BASE_URL", "http://localhost:8020")
             try:
                 page.goto(base_url)
 
@@ -52,7 +52,7 @@ class TestWebE2E:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page()
 
-            base_url = os.getenv("PLAYWRIGHT_TEST_BASE_URL", "http://localhost:8888")
+            base_url = os.getenv("PLAYWRIGHT_TEST_BASE_URL", "http://localhost:8020")
 
             try:
                 # 测试股票API
@@ -77,7 +77,7 @@ class TestWebE2E:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page()
 
-            base_url = os.getenv("PLAYWRIGHT_TEST_BASE_URL", "http://localhost:8888")
+            base_url = os.getenv("PLAYWRIGHT_TEST_BASE_URL", "http://localhost:8020")
 
             try:
                 # 访问监控API
@@ -101,7 +101,7 @@ class TestWebE2E:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page()
 
-            base_url = os.getenv("PLAYWRIGHT_TEST_BASE_URL", "http://localhost:8888")
+            base_url = os.getenv("PLAYWRIGHT_TEST_BASE_URL", "http://localhost:8020")
 
             try:
                 # 访问策略API

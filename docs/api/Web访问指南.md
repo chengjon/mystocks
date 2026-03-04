@@ -14,10 +14,10 @@
 - **状态**: ✅ 运行中
 
 ### 后端服务 (FastAPI)
-- **URL**: http://localhost:8000
+- **URL**: http://localhost:8020
 - **端口**: 8000
 - **框架**: FastAPI + Uvicorn
-- **API文档**: http://localhost:8000/docs
+- **API文档**: http://localhost:8020/docs
 - **状态**: ✅ 运行中
 
 ---
@@ -52,7 +52,7 @@ http://localhost:3000/system/database-monitor
 
 ### 数据库健康检查
 ```bash
-curl http://localhost:8000/api/system/database/health | jq .
+curl http://localhost:8020/api/system/database/health | jq .
 ```
 
 **预期输出**:
@@ -89,7 +89,7 @@ curl http://localhost:8000/api/system/database/health | jq .
 
 ### 数据库统计信息
 ```bash
-curl http://localhost:8000/api/system/database/stats | jq .
+curl http://localhost:8020/api/system/database/stats | jq .
 ```
 
 **返回**: 34项数据分类，5项TDengine，29项PostgreSQL的详细统计
@@ -134,8 +134,8 @@ npm run dev
 ### 后端 (手动)
 ```bash
 cd /opt/claude/mystocks_spec/web/backend
-python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-# API启动在 http://localhost:8000
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8020
+# API启动在 http://localhost:8020
 ```
 
 ### 检查运行状态
@@ -146,7 +146,7 @@ curl -I http://localhost:3000
 
 # 检查后端
 ps aux | grep uvicorn | grep -v grep
-curl http://localhost:8000/api/system/database/health
+curl http://localhost:8020/api/system/database/health
 ```
 
 ---
@@ -158,7 +158,7 @@ curl http://localhost:8000/api/system/database/health
 
 ### Q: 数据库监控页面空白？
 **A**: 检查：
-1. 后端API是否运行 (curl http://localhost:8000/api/system/database/health)
+1. 后端API是否运行 (curl http://localhost:8020/api/system/database/health)
 2. TDengine和PostgreSQL是否可访问
 3. 浏览器控制台是否有错误
 
@@ -200,11 +200,11 @@ export default defineConfig({
 ```
 
 ### 后端
-后端已配置为监听 `0.0.0.0:8000`，可从外部访问。
+后端已配置为监听 `0.0.0.0:8020`，可从外部访问。
 
 **外部访问地址**:
 - 前端: http://[服务器IP]:3000
-- 后端: http://[服务器IP]:8000
+- 后端: http://[服务器IP]:8020
 
 **当前服务器IP**:
 - 10.255.255.254
@@ -212,7 +212,7 @@ export default defineConfig({
 
 **外部访问URL示例**:
 - http://172.26.26.12:3000/system/database-monitor
-- http://172.26.26.12:8000/api/system/database/health
+- http://172.26.26.12:8020/api/system/database/health
 
 ---
 

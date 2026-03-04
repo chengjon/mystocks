@@ -282,8 +282,8 @@ $ python test_app_import.py
 ### API Documentation ✅
 
 Available at:
-- Swagger UI: `http://localhost:8000/api/docs`
-- ReDoc: `http://localhost:8000/api/redoc`
+- Swagger UI: `http://localhost:8020/api/docs`
+- ReDoc: `http://localhost:8020/api/redoc`
 
 ---
 
@@ -514,7 +514,7 @@ Successfully achieved:
 ### Startup Command
 ```bash
 cd /opt/claude/mystocks_spec/web/backend
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 ```
 
 ### Test Import
@@ -523,12 +523,12 @@ python test_app_import.py
 ```
 
 ### API Documentation
-- Swagger: http://localhost:8000/api/docs
-- ReDoc: http://localhost:8000/api/redoc
+- Swagger: http://localhost:8020/api/docs
+- ReDoc: http://localhost:8020/api/redoc
 
 ### Health Check
 ```bash
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 ```
 
 ### Environment Variables Required

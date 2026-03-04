@@ -451,7 +451,7 @@
   python -m app.main --init-db
   ```
 - [ ] **验证表结构**: 3张表已创建 (contract_versions, contract_diffs, contract_validations)
-- [ ] **测试数据库连接**: `curl http://localhost:8000/health`返回200 OK
+- [ ] **测试数据库连接**: `curl http://localhost:8020/health`返回200 OK
 
 ### 后端服务部署
 
@@ -460,8 +460,8 @@
   cd web/backend
   python -m app.main
   ```
-- [ ] **验证健康检查**: `curl http://localhost:8000/health`
-- [ ] **访问Swagger UI**: http://localhost:8000/docs
+- [ ] **验证健康检查**: `curl http://localhost:8020/health`
+- [ ] **访问Swagger UI**: http://localhost:8020/docs
 - [ ] **验证11个API端点**:
   - [ ] POST /api/contracts/versions
   - [ ] GET /api/contracts/versions/{version_id}
@@ -538,7 +538,7 @@
 
 ### 文档部署
 
-- [ ] **API文档**: Swagger UI可访问 (http://localhost:8000/docs)
+- [ ] **API文档**: Swagger UI可访问 (http://localhost:8020/docs)
 - [ ] **开发者文档**: 7份文档已部署到docs/api/
 - [ ] **快速开始指南**: README_API_CONTRACT.md可访问
 

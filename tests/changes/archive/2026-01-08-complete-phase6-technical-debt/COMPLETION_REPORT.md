@@ -264,16 +264,16 @@ The 5 new API endpoints require a server restart to take effect:
 cd web/backend
 # Stop current server process
 # Then restart:
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8020
 ```
 
 After restart, verify endpoints are accessible:
 ```bash
-curl http://localhost:8000/api/system/database/pool-stats
-curl http://localhost:8000/api/system/architecture/layers
-curl http://localhost:8000/api/system/performance/metrics
-curl http://localhost:8000/api/system/data-classifications
-curl http://localhost:8000/api/system/datasources/capabilities
+curl http://localhost:8020/api/system/database/pool-stats
+curl http://localhost:8020/api/system/architecture/layers
+curl http://localhost:8020/api/system/performance/metrics
+curl http://localhost:8020/api/system/data-classifications
+curl http://localhost:8020/api/system/datasources/capabilities
 ```
 
 ### 2. Run E2E Tests
@@ -291,7 +291,7 @@ pytest tests/e2e/test_architecture_optimization_e2e.py -v --tb=short
 
 ### 3. Verify All Endpoints
 After tests pass, verify endpoints in browser or API client:
-- Open http://localhost:8000/api/docs (Swagger UI)
+- Open http://localhost:8020/api/docs (Swagger UI)
 - Check all new endpoints are listed and documented
 - Test endpoints interactively
 

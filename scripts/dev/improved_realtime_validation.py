@@ -29,7 +29,8 @@ class ImprovedRealtimeValidator:
     """改进版实时数据流验证器"""
 
     def __init__(self):
-        self.base_url = "http://localhost:8000"
+        self.backend_port = int(os.getenv("BACKEND_PORT", "8020"))
+        self.base_url = os.getenv("BACKEND_URL", f"http://localhost:{self.backend_port}")
         self.test_symbols = ["600519", "000001", "600036"]
         self.results = []
         self.env_issues = []
@@ -106,12 +107,12 @@ class ImprovedRealtimeValidator:
 
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(2)
-            result = sock.connect_ex(("localhost", 8000))
+            result = sock.connect_ex(("localhost", self.backend_port))
             sock.close()
             checks["Web服务端口"] = result == 0
         except:
             checks["Web服务端口"] = False
-            issues.append("无法检查端口8000")
+            issues.append(f"无法检查端口{self.backend_port}")
 
         total_checks = len(checks)
         passed = sum(1 for check in checks.values() if check)
@@ -277,15 +278,15 @@ class ImprovedRealtimeValidator:
             tdengine_port = sock.connect_ex(("localhost", 6041))
             sock.close()
 
-            # 检查端口8000是否存在（我们的Web服务）
+            # 检查后端端口是否存在（我们的Web服务）
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(2)
-            web_port = sock.connect_ex(("localhost", 8000))
+            web_port = sock.connect_ex(("localhost", self.backend_port))
             sock.close()
 
             ports_status = {
                 "TDengine WebSocket (6041)": tdengine_port == 0,
-                "Web服务 (8000)": web_port == 0,
+                f"Web服务 ({self.backend_port})": web_port == 0,
             }
 
             working_ports = sum(1 for status in ports_status.values() if status)
@@ -474,7 +475,7 @@ class ImprovedRealtimeValidator:
         }
 
         if not core_status["api_health"]:
-            recommendations.append("确保Web服务在端口8000上正常运行")
+            recommendations.append(f"确保Web服务在端口{self.backend_port}上正常运行")
             recommendations.append("检查API路由配置和数据库连接")
 
         if not core_status["data_access"]:

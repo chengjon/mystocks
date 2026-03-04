@@ -57,7 +57,7 @@ from tests.contract import ContractTestExecutor, ContractTestConfig
 
 # 配置契约测试
 config = ContractTestConfig(
-    api_base_url="http://localhost:8000",
+    api_base_url="http://localhost:8020",
     test_timeout=30,
     max_retries=2
 )
@@ -217,7 +217,7 @@ TestRunConfig(
 ### ContractTestConfig 配置
 ```python
 ContractTestConfig(
-    api_base_url="http://localhost:8000",     # API基础URL
+    api_base_url="http://localhost:8020",     # API基础URL
     test_timeout=30,                           # 测试超时
     max_retries=2,                            # 最大重试次数
     retry_delay=1,                            # 重试延迟
@@ -290,7 +290,7 @@ ContractTestConfig(
    ```python
    # 检查API URL和契约配置
    config = ContractTestConfig(
-       api_base_url="http://localhost:8000",
+       api_base_url="http://localhost:8020",
        test_timeout=60
    )
    ```

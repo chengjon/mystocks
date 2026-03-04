@@ -12,6 +12,7 @@ Author: Claude Code
 Date: 2025-11-06
 """
 
+import os
 from typing import Any, Dict
 
 # ==================== API 元数据 ====================
@@ -655,15 +656,26 @@ def get_openapi_schema_extra() -> Dict[str, Any]:
     Returns:
         OpenAPI Schema扩展配置（servers, security等）
     """
+    backend_port = os.getenv("BACKEND_PORT", "").strip()
+    backend_backup_port = os.getenv("BACKEND_BACKUP_PORT", "").strip()
+    servers = []
+
+    if backend_port:
+        servers.append({"url": f"http://localhost:{backend_port}", "description": "本地开发环境"})
+        servers.append({"url": f"http://127.0.0.1:{backend_port}", "description": "本地开发环境 (127.0.0.1)"})
+
+    if backend_backup_port and backend_backup_port != backend_port:
+        servers.append({"url": f"http://localhost:{backend_backup_port}", "description": "本地备用环境"})
+
+    servers.append(
+        {
+            "url": "https://api.mystocks.com",
+            "description": "生产环境 (需要HTTPS)",
+        }
+    )
+
     return {
-        "servers": [
-            {"url": "http://localhost:8000", "description": "本地开发环境"},
-            {"url": "http://127.0.0.1:8000", "description": "本地开发环境 (127.0.0.1)"},
-            {
-                "url": "https://api.mystocks.com",
-                "description": "生产环境 (需要HTTPS)",
-            },
-        ],
+        "servers": servers,
         "components": {
             "securitySchemes": SECURITY_SCHEMES,
             "responses": COMMON_RESPONSES,

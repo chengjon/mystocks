@@ -16,8 +16,8 @@
 - **菜单位置**: 市场行情 > TDX行情
 
 ### 后端 (固定端口8000)
-- **地址**: http://localhost:8000
-- **API文档**: http://localhost:8000/api/docs
+- **地址**: http://localhost:8020
+- **API文档**: http://localhost:8020/api/docs
 - **状态**: 运行中,TDX连接正常
 
 ## 🎯 功能验证
@@ -65,19 +65,19 @@
 ### 获取实时行情
 ```bash
 # 1. 获取token
-TOKEN=$(curl -s -X POST "http://localhost:8000/api/auth/login" \
+TOKEN=$(curl -s -X POST "http://localhost:8020/api/auth/login" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "username=admin&password=admin123" | jq -r '.access_token')
 
 # 2. 查询股票行情
 curl -H "Authorization: Bearer $TOKEN" \
-  "http://localhost:8000/api/tdx/quote/600519"
+  "http://localhost:8020/api/tdx/quote/600519"
 ```
 
 ### 获取K线数据
 ```bash
 curl -H "Authorization: Bearer $TOKEN" \
-  "http://localhost:8000/api/tdx/kline?symbol=600519&period=1d&start_date=2025-10-01&end_date=2025-10-15"
+  "http://localhost:8020/api/tdx/kline?symbol=600519&period=1d&start_date=2025-10-01&end_date=2025-10-15"
 ```
 
 ## 📁 已修改文件清单

@@ -72,7 +72,7 @@ GET /api/v1/market/overview
 GET /api/v1/market/limit
 GET /api/v1/fund/north_flow
 GET /api/v1/sector/heatmap
-WebSocket: ws://localhost:8000/ws/market/realtime
+WebSocket: ws://localhost:8020/ws/market/realtime
 ```
 
 **Key Components**:
@@ -545,7 +545,7 @@ klineChart.createChart('candle-solid', {
 ```javascript
 const API_BASE_URL = '/api/v1';
 const API_V2_URL = '/api/v2';
-const WS_BASE_URL = 'ws://localhost:8000/ws/market/realtime';
+const WS_BASE_URL = 'ws://localhost:8020/ws/market/realtime';
 ```
 
 ### Standard Fetch Pattern

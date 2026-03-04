@@ -23,4 +23,8 @@ print(f"JWT_SECRET_KEY loaded: {'✅' if jwt_secret else '❌'}")
 import uvicorn
 
 if __name__ == "__main__":
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+    backend_port = os.getenv("BACKEND_PORT")
+    if not backend_port:
+        raise RuntimeError("Missing BACKEND_PORT in .env")
+
+    uvicorn.run("app.main:app", host="0.0.0.0", port=int(backend_port), reload=True)

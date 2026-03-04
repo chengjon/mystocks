@@ -137,7 +137,7 @@ netstat -tlnp | grep -E ":(8000|8001|8002|8003|8004|8005|8006|8007|8008|8009|801
 
 ### 第五步：访问应用
 - **前端页面**: http://localhost:3000 (端口可能为3000-3010)
-- **API文档**: http://localhost:8000/api/docs (端口可能为8000-8010)
+- **API文档**: http://localhost:8020/api/docs (端口可能为8000-8010)
 - **核心功能测试**: 访问各个页面，验证功能正常
 
 ## 环境变量说明表
@@ -239,7 +239,7 @@ netstat -tlnp | grep -E ":(8000|8001|8002|8003|8004|8005|8006|8007|8008|8009|801
 **后端启动错误排查**:
 ```bash
 # 检查端口占用
-netstat -tlnp | grep :8000
+netstat -tlnp | grep :8020
 
 # 检查Python依赖
 pip list | grep -E "(fastapi|uvicorn|sqlalchemy)"
@@ -250,7 +250,7 @@ docker-compose logs tdengine
 
 # 查看详细错误日志
 cd web/backend
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --log-level debug
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload --log-level debug
 ```
 
 **前端启动错误排查**:
@@ -278,8 +278,8 @@ npm run dev -- --debug
 **排查步骤**:
 1. **检查API接口状态**：
    ```bash
-   curl http://localhost:8000/api/data/stocks/basic
-   curl http://localhost:8000/api/data/markets/overview
+   curl http://localhost:8020/api/data/stocks/basic
+   curl http://localhost:8020/api/data/markets/overview
    ```
 
 2. **检查浏览器控制台**：
@@ -362,8 +362,8 @@ npm run dev -- --debug
 1. **检查数据源一致性**：
    ```bash
    # 对比不同API返回的行业分类
-   curl http://localhost:8000/api/analysis/industry/list
-   curl http://localhost:8000/api/data/stocks/industries
+   curl http://localhost:8020/api/analysis/industry/list
+   curl http://localhost:8020/api/data/stocks/industries
    ```
 
 2. **验证数据映射**：
@@ -442,7 +442,7 @@ cd ../..
 pip install -r requirements.txt
 
 # 启动服务
-gunicorn -w 4 -k uvicorn.workers.UvicornWorker web.backend.app.main:app --bind 0.0.0.0:8000
+gunicorn -w 4 -k uvicorn.workers.UvicornWorker web.backend.app.main:app --bind 0.0.0.0:8020
 ```
 
 #### 4. 使用PM2管理服务
@@ -456,7 +456,7 @@ module.exports = {
   apps: [{
     name: 'mystocks-backend',
     script: 'uvicorn',
-    args: 'web.backend.app.main:app --host 0.0.0.0 --port 8000',
+    args: 'web.backend.app.main:app --host 0.0.0.0 --port 8020',
     cwd: '/opt/claude/mystocks_spec',
     instances: 4,
     exec_mode: 'cluster',
@@ -485,18 +485,18 @@ pm2 startup
 ### 访问地址
 
 - **前端页面**: http://localhost:3000 (端口3000-3010)
-- **API文档**: http://localhost:8000/api/docs (端口8000-8010)
-- **系统监控**: http://localhost:8000/api/monitoring/health
+- **API文档**: http://localhost:8020/api/docs (端口8000-8010)
+- **系统监控**: http://localhost:8020/api/monitoring/health
 - **数据库管理**: http://localhost:5432 (PostgreSQL)
 
 ### 健康检查
 
 ```bash
 # 检查服务状态
-curl http://localhost:8000/api/monitoring/health
+curl http://localhost:8020/api/monitoring/health
 
 # 检查数据库连接
-curl http://localhost:8000/api/monitoring/database
+curl http://localhost:8020/api/monitoring/database
 
 # 检查前端页面
 curl -I http://localhost:3000

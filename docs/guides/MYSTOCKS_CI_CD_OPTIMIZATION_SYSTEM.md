@@ -215,9 +215,9 @@ jobs:
           # 启动后端服务
           cd web/backend
           pip install -r requirements.txt
-          python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+          python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 &
           # 等待服务就绪
-          timeout 60 bash -c 'until curl -f http://localhost:8000/health; do sleep 2; done'
+          timeout 60 bash -c 'until curl -f http://localhost:8020/health; do sleep 2; done'
 
       - name: Run Playwright E2E Tests
         run: |
@@ -233,7 +233,7 @@ jobs:
       - name: Lighthouse Performance Test
         run: |
           npm install -g lighthouse
-          lighthouse http://localhost:8000/docs --output json --output html
+          lighthouse http://localhost:8020/docs --output json --output html
       - uses: actions/upload-artifact@v3
         with:
           name: lighthouse-report
@@ -301,7 +301,7 @@ global:
 scrape_configs:
   - job_name: 'mystocks-backend'
     static_configs:
-      - targets: ['localhost:8000']
+      - targets: ['localhost:8020']
     metrics_path: '/metrics'
     scrape_interval: 5s
 

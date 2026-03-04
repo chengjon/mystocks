@@ -1808,24 +1808,24 @@ else:
 
 ```bash
 # 列出所有数据源
-curl "http://localhost:8000/api/v1/data-sources/list"
+curl "http://localhost:8020/api/v1/data-sources/list"
 
 # 查找日线数据源
-curl "http://localhost:8000/api/v1/data-sources/find?data_category=DAILY_KLINE"
+curl "http://localhost:8020/api/v1/data-sources/find?data_category=DAILY_KLINE"
 
 # 获取最佳数据源
-curl "http://localhost:8000/api/v1/data-sources/best?data_category=DAILY_KLINE"
+curl "http://localhost:8020/api/v1/data-sources/best?data_category=DAILY_KLINE"
 
 # 健康检查
-curl -X POST "http://localhost:8000/api/v1/data-sources/health-check"
+curl -X POST "http://localhost:8020/api/v1/data-sources/health-check"
 
 # 搜索数据源
-curl -X POST "http://localhost:8000/api/v1/data-sources/search" \
+curl -X POST "http://localhost:8020/api/v1/data-sources/search" \
   -H "Content-Type: application/json" \
   -d '{"tags": ["free", "realtime"]}'
 
 # 获取统计摘要
-curl "http://localhost:8000/api/v1/data-sources/statistics/summary"
+curl "http://localhost:8020/api/v1/data-sources/statistics/summary"
 ```
 
 ---

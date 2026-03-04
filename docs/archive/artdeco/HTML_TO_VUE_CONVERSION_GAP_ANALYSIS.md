@@ -388,12 +388,12 @@ web/frontend/src/components/artdeco/
 cd /opt/claude/mystocks_spec/web/frontend
 
 # 启动开发服务器
-npm run dev -- --port 3001
+npm run dev -- --port 3020
 
 # 访问路由测试
-# http://localhost:3001/dashboard
-# http://localhost:3001/market-data
-# http://localhost:3001/trading-center
+# http://localhost:3020/dashboard
+# http://localhost:3020/market-data
+# http://localhost:3020/trading-center
 # ...
 ```
 
@@ -463,18 +463,18 @@ npm run dev -- --port 3001
 ```bash
 # 1. 启动前端服务
 cd /opt/claude/mystocks_spec/web/frontend
-npm run dev -- --port 3001
+npm run dev -- --port 3020
 
 # 2. 访问以下路由验证
-http://localhost:3001/dashboard
-http://localhost:3001/market-data
-http://localhost:3001/market-quotes
-http://localhost:3001/stock-management
-http://localhost:3001/trading-center
-http://localhost:3001/trading-management
-http://localhost:3001/data-analysis
-http://localhost:3001/risk-management
-http://localhost:3001/settings
+http://localhost:3020/dashboard
+http://localhost:3020/market-data
+http://localhost:3020/market-quotes
+http://localhost:3020/stock-management
+http://localhost:3020/trading-center
+http://localhost:3020/trading-management
+http://localhost:3020/data-analysis
+http://localhost:3020/risk-management
+http://localhost:3020/settings
 
 # 3. 检查清单
 - [ ] 页面正常加载（无404错误）

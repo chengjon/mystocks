@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed, onMounted , onUnmounted } from 'vue'
+import type { PropType } from 'vue'
 import echarts from '@/utils/echarts'
 import ArtDecoSkeleton from '@/components/artdeco/core/ArtDecoSkeleton.vue'
 import ArtDecoIcon from '@/components/artdeco/core/ArtDecoIcon.vue'
@@ -28,8 +29,8 @@ let artDecoThemeRegistered = false
 // Props
 const props = defineProps({
   option: {
-    type: Object,
-    required: true
+    type: Object as PropType<Record<string, unknown> | null>,
+    default: null
   },
   loading: {
     type: Boolean,
@@ -52,8 +53,8 @@ let resizeObserver: ResizeObserver | null = null
 
 // Computed
 const isEmpty = computed(() => {
-  const option = props.option as { series?: Array<{ data?: unknown[] }> }
-  const series = option.series
+  const option = props.option as { series?: Array<{ data?: unknown[] }> } | null
+  const series = option?.series
   if (!series || series.length === 0) return true
   return series.every(s => !Array.isArray(s.data) || s.data.length === 0)
 })
@@ -103,12 +104,14 @@ onMounted(() => {
 
 // Watchers
 watch(() => props.option, (newOption) => {
-  if (chartInstance && newOption) {
-    chartInstance.setOption(newOption, true) // true = not merge, replace? No, usually merge. let's check. 
-    // chartInstance.setOption(newOption) is merge. 
-    // If we want complete replace, we use setOption(newOption, true)
-    // For now, let's use merge (default) to animate updates
-    chartInstance.setOption(newOption)
+  if (!chartInstance) {
+    return
+  }
+
+  if (newOption) {
+    chartInstance.setOption(newOption, true)
+  } else {
+    chartInstance.clear()
   }
 }, { deep: true })
 

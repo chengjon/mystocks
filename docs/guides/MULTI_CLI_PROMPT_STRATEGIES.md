@@ -664,7 +664,7 @@ python -c "from app.main import app; print('Import success')"
 ## 🔍 验证方法
 ```bash
 # 运行健康检查
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 
 # 运行单个测试
 pytest tests/e2e/test_architecture_optimization_e2e.py::TestArchitectureOptimizationE2E::test_database_stats_endpoint_exists -v

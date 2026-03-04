@@ -13,11 +13,12 @@ Date: 2026-01-09
 import asyncio
 import httpx
 import time
+import os
 from typing import Dict, Any, List
 from datetime import datetime
 
 # API基础URL
-BASE_URL = "http://localhost:8000"
+BASE_URL = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
 
 
 class Phase3IntegrationTester:

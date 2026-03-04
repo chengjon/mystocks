@@ -2,7 +2,7 @@
 
 **Feature**: Fix 5 Critical Issues in OpenStock Demo
 **API Version**: 1.0
-**Base URL**: `http://localhost:8000/api`
+**Base URL**: `http://localhost:8020/api`
 **Authentication**: Required (JWT Bearer token)
 
 ## Overview
@@ -34,7 +34,7 @@ Real-time stock quote retrieval with automatic exchange suffix detection for Chi
 **Request**:
 ```http
 GET /api/stock-search/quote/600519?market=cn HTTP/1.1
-Host: localhost:8000
+Host: localhost:8020
 Authorization: Bearer <JWT_TOKEN>
 ```
 
@@ -251,7 +251,7 @@ interface StockQuote {
 
 #### 1. Happy Path - Valid Code Without Suffix
 ```bash
-curl -X GET "http://localhost:8000/api/stock-search/quote/600519?market=cn" \
+curl -X GET "http://localhost:8020/api/stock-search/quote/600519?market=cn" \
   -H "Authorization: Bearer <token>"
 
 Expected: 200 OK with complete quote data, symbol = "600519.SH"
@@ -259,7 +259,7 @@ Expected: 200 OK with complete quote data, symbol = "600519.SH"
 
 #### 2. Happy Path - Valid Code With Suffix
 ```bash
-curl -X GET "http://localhost:8000/api/stock-search/quote/000858.SZ?market=cn" \
+curl -X GET "http://localhost:8020/api/stock-search/quote/000858.SZ?market=cn" \
   -H "Authorization: Bearer <token>"
 
 Expected: 200 OK with complete quote data, symbol = "000858.SZ"
@@ -267,7 +267,7 @@ Expected: 200 OK with complete quote data, symbol = "000858.SZ"
 
 #### 3. Error - Invalid Code Format
 ```bash
-curl -X GET "http://localhost:8000/api/stock-search/quote/ABC123?market=cn" \
+curl -X GET "http://localhost:8020/api/stock-search/quote/ABC123?market=cn" \
   -H "Authorization: Bearer <token>"
 
 Expected: 400 Bad Request with error message
@@ -275,7 +275,7 @@ Expected: 400 Bad Request with error message
 
 #### 4. Error - Non-Existent Code
 ```bash
-curl -X GET "http://localhost:8000/api/stock-search/quote/600999?market=cn" \
+curl -X GET "http://localhost:8020/api/stock-search/quote/600999?market=cn" \
   -H "Authorization: Bearer <token>"
 
 Expected: 404 Not Found with "未找到股票报价" message
@@ -283,7 +283,7 @@ Expected: 404 Not Found with "未找到股票报价" message
 
 #### 5. Error - Missing Authentication
 ```bash
-curl -X GET "http://localhost:8000/api/stock-search/quote/600519?market=cn"
+curl -X GET "http://localhost:8020/api/stock-search/quote/600519?market=cn"
 
 Expected: 401 Unauthorized
 ```
@@ -291,7 +291,7 @@ Expected: 401 Unauthorized
 #### 6. Edge Case - After Trading Hours
 ```bash
 # Execute at 5:00 PM (after market close)
-curl -X GET "http://localhost:8000/api/stock-search/quote/600519?market=cn" \
+curl -X GET "http://localhost:8020/api/stock-search/quote/600519?market=cn" \
   -H "Authorization: Bearer <token>"
 
 Expected: 200 OK with trading_status = "closed", timestamp = last market close time

@@ -24,7 +24,7 @@ def data_manager():
 def api_test_fixtures():
     """Common API test fixtures"""
     return {
-        "base_url": "http://localhost:8000",
+        "base_url": "http://localhost:8020",
         "test_timeout": 30,
         "retry_attempts": 3,
         "mock_enabled": True,

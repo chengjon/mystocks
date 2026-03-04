@@ -561,7 +561,7 @@ psql -h localhost -U mystocks -d mystocks -c "SELECT * FROM watchlist_groups;"
 #### Test 4: Real-Time Quote with Auto-Detection
 ```bash
 # Test without suffix (should auto-detect)
-curl -X GET "http://localhost:8000/api/stock-search/quote/300892?market=cn" \
+curl -X GET "http://localhost:8020/api/stock-search/quote/300892?market=cn" \
   -H "Authorization: Bearer <YOUR_TOKEN>"
 
 # ✅ Expected: 200 OK with symbol="300892.SZ"

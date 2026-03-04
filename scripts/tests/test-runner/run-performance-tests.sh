@@ -46,7 +46,7 @@ main() {
     echo ""
     log_info "检查后端服务..."
 
-    if ! curl -s --max-time 5 "http://localhost:8000/docs" >/dev/null 2>&1; then
+    if ! curl -s --max-time 5 "http://localhost:/docs" >/dev/null 2>&1; then
         log_error "后端服务未运行，请先启动服务"
         exit 1
     fi
@@ -108,7 +108,7 @@ EOF
 
     # 运行简短的负载测试
     locust --headless --users 10 --spawn-rate 2 --run-time 30s \
-           --host http://localhost:8000 \
+           --host http://localhost: \
            --csv test-reports/locust-results 2>/dev/null || true
 
     echo ""

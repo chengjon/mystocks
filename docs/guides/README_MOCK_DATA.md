@@ -59,8 +59,8 @@
 ## 🚀 快速开始
 
 1. **访问系统**：
-   - 前端：http://localhost:3001
-   - 后端：http://localhost:8888
+   - 前端：http://localhost:3020
+   - 后端：http://localhost:8020
 
 2. **查看文档**：
    ```bash

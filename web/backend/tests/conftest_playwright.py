@@ -20,6 +20,11 @@ project_root = Path(__file__).parent.parent.parent.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
+FRONTEND_PORT = os.getenv("FRONTEND_PORT", "3020")
+BACKEND_PORT = os.getenv("BACKEND_PORT", "8020")
+DEFAULT_APP_URL = f"http://localhost:{FRONTEND_PORT}"
+DEFAULT_API_URL = f"http://localhost:{BACKEND_PORT}"
+
 
 # ============================================================================
 # Async Event Loop Configuration
@@ -154,19 +159,19 @@ async def page(context):
 @pytest.fixture
 def app_url():
     """Frontend application URL"""
-    return os.getenv("APP_URL", "http://localhost:3000")
+    return os.getenv("APP_URL", DEFAULT_APP_URL)
 
 
 @pytest.fixture
 def api_url():
     """Backend API URL"""
-    return os.getenv("API_URL", "http://localhost:8000")
+    return os.getenv("API_URL", DEFAULT_API_URL)
 
 
 @pytest.fixture
 def ws_url():
     """WebSocket URL"""
-    api_url = os.getenv("API_URL", "http://localhost:8000")
+    api_url = os.getenv("API_URL", DEFAULT_API_URL)
     return api_url.replace("http://", "ws://").replace("https://", "wss://")
 
 

@@ -32,10 +32,11 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT:-8020}:${BACKEND_PORT:-8020}"
     environment:
       ENVIRONMENT: development
       DEBUG: False
+      BACKEND_PORT: "${BACKEND_PORT:-8020}"
       POSTGRESQL_HOST: postgresql
       POSTGRESQL_PORT: 5432
       POSTGRESQL_USER: postgres
@@ -46,6 +47,8 @@ services:
       TDENGINE_USER: root
       TDENGINE_PASSWORD: taosdata
       TDENGINE_DATABASE: market_data
+    command: >
+      uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT:-8020}
     volumes:
       - ./backend:/app
     depends_on:
@@ -59,10 +62,13 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.dev
     ports:
-      - "3000:3000"
+      - "${FRONTEND_PORT:-3020}:${FRONTEND_PORT:-3020}"
     environment:
-      VITE_API_BASE_URL: http://localhost:8000
+      FRONTEND_PORT: "${FRONTEND_PORT:-3020}"
+      VITE_API_BASE_URL: http://localhost:${BACKEND_PORT:-8020}
       NODE_ENV: development
+    command: >
+      npm run dev -- --host 0.0.0.0 --port ${FRONTEND_PORT:-3020}
     volumes:
       - ./frontend:/app
       - /app/node_modules

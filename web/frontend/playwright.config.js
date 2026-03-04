@@ -7,7 +7,15 @@ const { loadPortEnv, resolveFrontendConfig } = require("./tests/e2e/helpers/port
 
 loadPortEnv(__dirname);
 
-const { port: frontendPort, baseUrl: baseURL } = resolveFrontendConfig();
+const resolvedFrontend = resolveFrontendConfig();
+const e2eFrontendPortRaw = process.env.E2E_FRONTEND_PORT || process.env.PLAYWRIGHT_FRONTEND_PORT;
+const e2eFrontendPort = e2eFrontendPortRaw ? Number.parseInt(e2eFrontendPortRaw, 10) : null;
+const frontendPort = Number.isInteger(e2eFrontendPort) ? e2eFrontendPort : resolvedFrontend.port;
+const baseURL = process.env.FRONTEND_BASE_URL || `http://127.0.0.1:${frontendPort}`;
+
+// Ensure helper utilities that read FRONTEND_PORT/FRONTEND_BASE_URL use the same dedicated E2E server.
+process.env.FRONTEND_PORT = String(frontendPort);
+process.env.FRONTEND_BASE_URL = baseURL;
 
 module.exports = defineConfig({
   // Canonical E2E scope: only chain/flow specs under tests/e2e.
@@ -15,14 +23,14 @@ module.exports = defineConfig({
   testMatch: '**/*.spec.ts',
   // Helper self-tests are maintained separately from browser E2E chain.
   testIgnore: ['**/helpers/**/*.spec.ts'],
-  /* Run tests in files in parallel */
-  fullyParallel: true,
+  /* Keep local runs deterministic and avoid browser/context starvation. */
+  fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  /* Use a single worker by default for local stability; override with PW_WORKERS when needed. */
+  workers: process.env.CI ? 1 : Number.parseInt(process.env.PW_WORKERS || "1", 10),
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ["html", { outputFolder: "playwright-report" }],
@@ -64,9 +72,10 @@ module.exports = defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: `npm run dev -- --port ${frontendPort}`,
+    command: `npm run dev:no-types -- --host 127.0.0.1 --port ${frontendPort} --strictPort`,
     port: frontendPort,
-    reuseExistingServer: !process.env.CI,
+    // Never reuse an existing server: PM2 preview on 3020 can cause stale assets and false negatives.
+    reuseExistingServer: false,
     timeout: 120 * 1000,
   },
 });

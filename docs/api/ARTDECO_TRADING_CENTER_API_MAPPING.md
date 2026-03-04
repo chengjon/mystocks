@@ -466,7 +466,7 @@ Response: {
 
 - **设计方案**: `ARTDECO_TRADING_CENTER_OPTIMIZED_V3.md`
 - **组件文档**: `web/frontend/src/components/artdeco/docs/`
-- **API文档**: `http://localhost:8000/docs` (Swagger UI)
+- **API文档**: `http://localhost:8020/docs` (Swagger UI)
 - **性能报告**: `docs/reports/API_PERFORMANCE_REPORT.md`
 
 ---

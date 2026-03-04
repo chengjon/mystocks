@@ -686,7 +686,7 @@ GET /api/contracts/versions?name=market-api&limit=10&offset=0
 
 ```bash
 # 1. 创建契约版本
-curl -X POST http://localhost:8000/api/contracts/versions \
+curl -X POST http://localhost:8020/api/contracts/versions \
   -H "Content-Type: application/json" \
   -d '{
     "name": "market-api",
@@ -701,7 +701,7 @@ curl -X POST http://localhost:8000/api/contracts/versions \
 VERSION_ID=1
 
 # 3. 验证契约 (可选)
-curl -X POST http://localhost:8000/api/contracts/validate \
+curl -X POST http://localhost:8020/api/contracts/validate \
   -H "Content-Type: application/json" \
   -d '{
     "spec": { /* OpenAPI规范 */ },
@@ -709,10 +709,10 @@ curl -X POST http://localhost:8000/api/contracts/validate \
   }'
 
 # 4. 激活版本
-curl -X POST http://localhost:8000/api/contracts/versions/${VERSION_ID}/activate
+curl -X POST http://localhost:8020/api/contracts/versions/${VERSION_ID}/activate
 
 # 5. 验证激活状态
-curl http://localhost:8000/api/contracts/versions/market-api/active
+curl http://localhost:8020/api/contracts/versions/market-api/active
 ```
 
 ---
@@ -721,7 +721,7 @@ curl http://localhost:8000/api/contracts/versions/market-api/active
 
 ```bash
 # 1. 创建新版本 (1.1.0)
-curl -X POST http://localhost:8000/api/contracts/versions \
+curl -X POST http://localhost:8020/api/contracts/versions \
   -H "Content-Type: application/json" \
   -d '{
     "name": "market-api",
@@ -731,7 +731,7 @@ curl -X POST http://localhost:8000/api/contracts/versions \
   }'
 
 # 2. 对比版本差异
-curl -X POST http://localhost:8000/api/contracts/diff \
+curl -X POST http://localhost:8020/api/contracts/diff \
   -H "Content-Type: application/json" \
   -d '{
     "from_version_id": 1,
@@ -742,7 +742,7 @@ curl -X POST http://localhost:8000/api/contracts/diff \
 # 如果 breaking_changes > 0，需要评估影响
 
 # 4. 激活新版本 (如果差异可接受)
-curl -X POST http://localhost:8000/api/contracts/versions/2/activate
+curl -X POST http://localhost:8020/api/contracts/versions/2/activate
 ```
 
 ---
@@ -756,7 +756,7 @@ from typing import Dict, Any, List
 class ContractManagementClient:
     """API契约管理客户端"""
 
-    def __init__(self, base_url: str = "http://localhost:8000"):
+    def __init__(self, base_url: str = "http://localhost:8020"):
         self.base_url = base_url
         self.api_prefix = "/api/contracts"
 

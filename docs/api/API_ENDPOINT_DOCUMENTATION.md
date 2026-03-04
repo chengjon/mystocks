@@ -532,9 +532,9 @@ API响应采用统一格式：
 
 ## API文档访问
 
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-- **OpenAPI JSON**: http://localhost:8000/openapi.json
+- **Swagger UI**: http://localhost:8020/docs
+- **ReDoc**: http://localhost:8020/redoc
+- **OpenAPI JSON**: http://localhost:8020/openapi.json
 
 ---
 

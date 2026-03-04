@@ -11,12 +11,19 @@ Test Coverage:
 
 import pytest
 import asyncio
+import os
 from datetime import datetime, timezone
 import logging
+from dotenv import load_dotenv
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+load_dotenv()
+
+FRONTEND_PORT = os.getenv("FRONTEND_PORT", "3020")
+BACKEND_PORT = os.getenv("BACKEND_PORT", "8020")
 
 
 # ============================================================================
@@ -75,13 +82,13 @@ async def page(browser_instance):
 @pytest.fixture
 def base_url():
     """Base URL for the application"""
-    return "http://localhost:3000"  # Frontend port
+    return f"http://localhost:{FRONTEND_PORT}"
 
 
 @pytest.fixture
 def api_base_url():
     """Base URL for the API"""
-    return "http://localhost:8000"  # Backend port
+    return f"http://localhost:{BACKEND_PORT}"
 
 
 # ============================================================================

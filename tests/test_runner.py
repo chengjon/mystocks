@@ -79,7 +79,7 @@ class EnhancedTestRunner:
 
         if self.config.enable_contract_testing:
             self.contract_config = ContractTestConfig(
-                api_base_url="http://localhost:8000",
+                api_base_url="http://localhost:8020",
                 test_timeout=30,
                 max_retries=2,
                 retry_delay=1,

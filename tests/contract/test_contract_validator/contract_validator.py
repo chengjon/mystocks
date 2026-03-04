@@ -29,7 +29,7 @@ class ContractValidator:
     """契约验证器主类"""
 
     def __init__(self, base_url: str = None, openapi_spec_path: str = None):
-        self.base_url = base_url or "http://localhost:8000"
+        self.base_url = base_url or "http://localhost:8020"
         self.openapi_spec_path = openapi_spec_path
         self.contract_spec = None
 
@@ -655,7 +655,7 @@ def demo_contract_validator():
             "version": "1.0.0",
             "description": "用于测试的API",
         },
-        "servers": [{"url": "http://localhost:8000", "description": "开发服务器"}],
+        "servers": [{"url": "http://localhost:8020", "description": "开发服务器"}],
         "paths": {
             "/users": {
                 "get": {
@@ -711,7 +711,7 @@ def demo_contract_validator():
         json.dump(openapi_spec, f, indent=2)
 
     # 创建契约验证器
-    validator = ContractValidator(base_url="http://localhost:8000")
+    validator = ContractValidator(base_url="http://localhost:8020")
     validator.load_openapi_spec("test_openapi.json")
 
     # 生成测试用例

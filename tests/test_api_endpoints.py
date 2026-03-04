@@ -6,7 +6,7 @@
 import requests
 
 # 后端基础URL
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://localhost:8020"
 
 
 def test_api_endpoint(endpoint, method="GET", params=None, headers=None):

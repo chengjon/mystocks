@@ -473,10 +473,10 @@ CREATE TABLE wencai_queries (
 5. **验证部署**
    ```bash
    # 健康检查
-   curl http://localhost:8000/api/health
+   curl http://localhost:8020/api/health
 
    # 测试问财API
-   curl http://localhost:8000/api/market/wencai/queries
+   curl http://localhost:8020/api/market/wencai/queries
    ```
 
 6. **监控日志**
@@ -500,8 +500,8 @@ CREATE TABLE wencai_queries (
 - `/opt/claude/mystocks_spec/web/backend/BACKEND_IMPLEMENTATION_SUMMARY.md` - 后端实现
 
 ### API文档
-- **Swagger UI**: http://localhost:8000/api/docs
-- **ReDoc**: http://localhost:8000/api/redoc
+- **Swagger UI**: http://localhost:8020/api/docs
+- **ReDoc**: http://localhost:8020/api/redoc
 
 ### 外部资源
 - **问财官网**: https://www.iwencai.com

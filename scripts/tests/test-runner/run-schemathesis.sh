@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # 配置参数
-BACKEND_URL="http://localhost:8000"
+BACKEND_URL="http://localhost:"
 SCHEMATHESIS_OPTIONS="--checks all --validate-schema true --hypothesis-max-examples 50"
 REPORT_DIR="${PROJECT_ROOT}/test-reports/schemathesis"
 TIMEOUT=300  # 5分钟超时

@@ -146,85 +146,75 @@ async def list_strategies(status: Optional[str] = None, page: int = 1, page_size
     支持Mock数据模式切换
     """
     operation_start = datetime.now()
+    use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
 
     try:
-        # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
         if use_mock:
-            # 使用Mock数据
-            mock_manager = get_mock_data_manager()
-            strategies_data = mock_manager.get_data("strategy", action="list")
-
-            strategies = strategies_data.get("strategies", [])
-
-            # 应用状态过滤
-            if status:
-                strategies = [s for s in strategies if s.get("status") == status]
-
-            # 分页处理
-            total = len(strategies)
-            start = (page - 1) * page_size
-            end = start + page_size
-            items = strategies[start:end]
-
-            return {"items": items, "total": total, "page": page, "page_size": page_size}
-        else:
-            # 使用真实数据库 - 通过UnifiedManager访问（符合项目架构）
-            manager = MyStocksUnifiedManager()
-
-            # 构建过滤条件
-            filters = {}
-            if status:
-                # is_active字段映射：active/active策略，inactive/inactive策略
-                filters["is_active"] = status == "active"
-
             try:
-                # 使用 UnifiedManager 加载数据（表已在table_config.yaml中注册）
-                strategies_df = manager.load_data_by_classification(
-                    classification=DataClassification.MODEL_OUTPUTS,
-                    table_name="strategy_definition",
-                    filters=filters,
-                )
+                mock_manager = get_mock_data_manager()
+                strategies_data = mock_manager.get_data("strategy", action="list")
+                strategies = strategies_data.get("strategies", [])
 
-                # 分页处理
-                total = len(strategies_df) if strategies_df is not None else 0
+                if status:
+                    strategies = [s for s in strategies if s.get("status") == status]
+
+                total = len(strategies)
                 start = (page - 1) * page_size
                 end = start + page_size
+                items = strategies[start:end]
 
-                if strategies_df is not None and len(strategies_df) > 0:
-                    paginated_df = strategies_df.iloc[start:end]
-                    items = paginated_df.to_dict("records")
-                else:
-                    items = []
+                return {"items": items, "total": total, "page": page, "page_size": page_size}
+            except Exception as mock_error:
+                # 避免递归重入：Mock 失败后直接降级到真实数据库路径
+                logger.warning("Mock数据获取失败，降级到真实数据库: %(e)s", e=str(mock_error))
 
-            except Exception:
-                # 数据库查询失败，记录错误并返回空结果
-                logger.error("数据库查询失败: {str(db_error)}")
-                items = []
-                total = 0
+        # 使用真实数据库 - 通过UnifiedManager访问（符合项目架构）
+        manager = MyStocksUnifiedManager()
 
-            # 记录操作到监控数据库
-            operation_time = (datetime.now() - operation_start).total_seconds() * 1000
-            get_monitoring_db().log_operation(
-                operation_type="SELECT",
-                table_name="strategies",
-                operation_name="list_strategies",
-                rows_affected=len(items),
-                operation_time_ms=operation_time,
-                success=True,
-                details=f"status={status}, page={page}, page_size={page_size}",
+        filters = {}
+        if status:
+            # is_active字段映射：active/active策略，inactive/inactive策略
+            filters["is_active"] = status == "active"
+
+        try:
+            # 使用 UnifiedManager 加载数据（表已在table_config.yaml中注册）
+            strategies_df = manager.load_data_by_classification(
+                classification=DataClassification.MODEL_OUTPUTS,
+                table_name="strategy_definition",
+                filters=filters,
             )
 
-            return {"items": items, "total": total, "page": page, "page_size": page_size}
+            total = len(strategies_df) if strategies_df is not None else 0
+            start = (page - 1) * page_size
+            end = start + page_size
+
+            if strategies_df is not None and len(strategies_df) > 0:
+                paginated_df = strategies_df.iloc[start:end]
+                items = paginated_df.to_dict("records")
+            else:
+                items = []
+
+        except Exception as db_error:
+            # 数据库查询失败，记录错误并返回空结果
+            logger.error("数据库查询失败: %(e)s", e=str(db_error))
+            items = []
+            total = 0
+
+        # 记录操作到监控数据库
+        operation_time = (datetime.now() - operation_start).total_seconds() * 1000
+        get_monitoring_db().log_operation(
+            operation_type="SELECT",
+            table_name="strategies",
+            operation_name="list_strategies",
+            rows_affected=len(items),
+            operation_time_ms=operation_time,
+            success=True,
+            details=f"status={status}, page={page}, page_size={page_size}",
+        )
+
+        return {"items": items, "total": total, "page": page, "page_size": page_size}
 
     except Exception as e:
-        # 如果使用Mock数据模式失败，降级到真实数据库
-        if use_mock:
-            logger.warning("Mock数据获取失败，降级到真实数据库: {str(e)}")
-            return await list_strategies(status=status, page=page, page_size=page_size)
-
-        # 记录失败操作
         operation_time = (datetime.now() - operation_start).total_seconds() * 1000
         get_monitoring_db().log_operation(
             operation_type="SELECT",
@@ -233,7 +223,7 @@ async def list_strategies(status: Optional[str] = None, page: int = 1, page_size
             rows_affected=0,
             operation_time_ms=operation_time,
             success=False,
-            error_message=str(e),
+            details=str(e),
         )
         raise HTTPException(status_code=500, detail=f"获取策略列表失败: {str(e)}")
 
@@ -831,5 +821,4 @@ async def list_backtest_results(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取回测结果失败: {str(e)}")
-
 

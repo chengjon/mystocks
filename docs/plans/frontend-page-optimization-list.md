@@ -126,35 +126,35 @@ bash scripts/tests/test/run-comprehensive-tests.sh
 | 3 | Market-Realtime | `/market/realtime` | `artdeco-pages/market-tabs/MarketRealtimeTab.vue` | P0 | mixed | `/api/v1/market/quotes` | verified | 核心页面 |
 | 4 | Market-Technical | `/market/technical` | `artdeco-pages/market-tabs/MarketKLineTab.vue` | P0 | mixed | `/api/v1/market/kline` | verified | 核心页面 |
 | 5 | Market-LHB | `/market/lhb` | `artdeco-pages/market-data-tabs/DragonTigerAnalysis.vue` | P1 | mixed | `/api/data/lhb` | pending | 需后端路由复核 |
-| 6 | Data-Industry | `/data/industry` | `artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue` | P1 | mixed | `/api/akshare/market/*` | verified | 当前含 mock fallback |
+| 6 | Data-Industry | `/data/industry` | `artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue` | P1 | real | `/api/akshare/market/*` | verified | 2026-03-03 已移除 mock 回退，失败转空态 |
 | 7 | Data-Concept | `/data/concept` | `artdeco-pages/market-tabs/MarketConceptTab.vue` | P1 | mixed | `/api/akshare/market/*` | verified | 统一走 akshare 前缀 |
 | 8 | Data-FundFlow | `/data/fund-flow` | `artdeco-pages/market-data-tabs/FundFlowAnalysis.vue` | P1 | mixed | `/api/akshare/market/fund-flow/*` | verified | 需统一接口映射 |
 | 9 | Data-Indicator | `/data/indicator` | `artdeco-pages/ArtDecoDataAnalysis.vue` | P1 | mixed | `/api/indicators/*` | pending | 公式编辑器升级中 |
 | 10 | Watchlist-Manage | `/watchlist/manage` | `artdeco-pages/stock-management-tabs/WatchlistManager.vue` | P1 | mixed | `/api/watchlist` | verified | |
-| 11 | Watchlist-Signals | `/watchlist/signals` | `artdeco-pages/strategy-tabs/StrategySignalsTab.vue` | P1 | mock | `/api/v1/trade/signals` | pending | `mock-debt` |
+| 11 | Watchlist-Signals | `/watchlist/signals` | `artdeco-pages/strategy-tabs/StrategySignalsTab.vue` | P1 | real | `/api/v1/trade/signals` | pending | 2026-03-03 已移除 mock 回退 |
 | 12 | Watchlist-Screener | `/watchlist/screener` | `stocks/Screener.vue` | P1 | mixed | `/api/data/stocks` | pending | |
-| 13 | Strategy-Repo | `/strategy/repo` | `artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue` | P1 | mixed | `/api/v1/strategy/strategies` | verified | 含 mock fallback |
-| 14 | Strategy-Parameters | `/strategy/parameters` | `artdeco-pages/strategy-tabs/StrategyParametersTab.vue` | P1 | mock | `/api/v1/strategy/strategies` | verified | `mock-debt` |
-| 15 | Strategy-Signals | `/strategy/signals` | `artdeco-pages/strategy-tabs/StrategySignalsTab.vue` | P1 | mock | `/api/v1/trade/signals` | pending | `mock-debt` |
-| 16 | Strategy-Backtest | `/strategy/backtest` | `artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue` | P1 | mixed | `/api/v1/strategy/backtest*` | verified | 受 `VITE_USE_MOCK_DATA` 影响 |
+| 13 | Strategy-Repo | `/strategy/repo` | `artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue` | P1 | real | `/api/v1/strategy/strategies` | verified | 2026-03-03 已移除 mock 回退，失败转空态 |
+| 14 | Strategy-Parameters | `/strategy/parameters` | `artdeco-pages/strategy-tabs/StrategyParametersTab.vue` | P1 | real | `/api/v1/strategy/strategies` | verified | 2026-03-03 已移除 mock 回退 |
+| 15 | Strategy-Signals | `/strategy/signals` | `artdeco-pages/strategy-tabs/StrategySignalsTab.vue` | P1 | real | `/api/v1/trade/signals` | pending | 2026-03-03 已移除 mock 回退 |
+| 16 | Strategy-Backtest | `/strategy/backtest` | `artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue` | P1 | real | `/api/v1/strategy/backtest*` | verified | 2026-03-03 已移除 mock 基线依赖，失败转空态 |
 | 17 | Strategy-GPU | `/strategy/gpu` | `strategy/BacktestGPU.vue` | P2 | mixed | `/api/gpu/*` | pending | 后端路由暂未发现已注册前缀 |
-| 18 | Strategy-Opt | `/strategy/opt` | `artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue` | P2 | mock | `/api/v1/strategy/*` | pending | `mock-debt` |
+| 18 | Strategy-Opt | `/strategy/opt` | `artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue` | P2 | real | `/api/v1/strategy/*` | pending | 2026-03-03 已移除 mock 回退，失败转空态 |
 | 19 | Strategy-Pos | `/strategy/pos` | `artdeco-pages/stock-management-tabs/PortfolioMonitor.vue` | P2 | mixed | `/api/v1/trade/positions` | pending | |
-| 20 | Trade-Positions | `/trade/positions` | `artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue` | P1 | mixed | `/api/v1/trade/positions` | pending | |
+| 20 | Trade-Positions | `/trade/positions` | `artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue` | P1 | real | `/api/v1/trade/positions` | pending | 2026-03-03 已接入 REAL API 持仓映射，失败转空态 |
 | 21 | Trade-Terminal | `/trade/terminal` | `TradingDashboard.vue` | P1 | mixed | `/api/trade/*` | pending | |
-| 22 | Trade-Signals | `/trade/signals` | `artdeco-pages/trading-tabs/ArtDecoSignalsView.vue` | P1 | mock | `/api/v1/trade/signals` | pending | `mock-debt` |
-| 23 | Trade-Portfolio | `/trade/portfolio` | `artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue` | P1 | mixed | `/api/v1/trade/positions` | pending | |
-| 24 | Trade-History | `/trade/history` | `artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue` | P1 | mixed | `/api/trade/*` | pending | |
+| 22 | Trade-Signals | `/trade/signals` | `artdeco-pages/trading-tabs/ArtDecoSignalsView.vue` | P1 | real | `/api/v1/trade/signals` | pending | 2026-03-03 已移除 mock 回退 |
+| 23 | Trade-Portfolio | `/trade/portfolio` | `artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue` | P1 | real | `/api/v1/trade/positions` | pending | 2026-03-03 已移除组件内模拟注入，改为 REAL API + 空态 |
+| 24 | Trade-History | `/trade/history` | `artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue` | P1 | real | `/api/trade/*` | pending | 2026-03-03 已接入 REAL API 历史映射，失败转空态 |
 | 25 | Risk-Management | `/risk/management` | `artdeco-pages/ArtDecoRiskManagement.vue` | P1 | mixed | `/api/v1/risk/*` | pending | |
 | 26 | Risk-Overview | `/risk/overview` | `artdeco-pages/risk-tabs/RiskOverviewTab.vue` | P1 | mixed | `/api/v1/risk/*` | pending | |
-| 27 | Risk-PnL | `/risk/pnl` | `artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue` | P1 | mixed | `/api/v1/trade/positions` | pending | 组件复用 |
-| 28 | Risk-StopLoss | `/risk/stop-loss` | `artdeco-pages/risk-tabs/StopLossMonitorTab.vue` | P1 | mock | `/api/v1/monitoring/watchlists` | verified | 存在 `Math.random()` |
-| 29 | Risk-Alerts | `/risk/alerts` | `artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue` | P1 | placeholder | `/api/v1/risk/alerts` | pending | 页面占位 |
-| 30 | Risk-News | `/risk/news` | `artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue` | P2 | placeholder | `/api/v1/announcement` | verified | 页面占位 |
+| 27 | Risk-PnL | `/risk/pnl` | `artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue` | P1 | real | `/api/v1/trade/positions` | pending | 组件复用，2026-03-03 已切 REAL API + 空态 |
+| 28 | Risk-StopLoss | `/risk/stop-loss` | `artdeco-pages/risk-tabs/StopLossMonitorTab.vue` | P1 | mixed | `/api/v1/monitoring/watchlists` | verified | 2026-03-03 已移除 `Math.random()` 伪数据 |
+| 29 | Risk-Alerts | `/risk/alerts` | `artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue` | P1 | mixed | `/api/v1/risk/alerts` | pending | 2026-03-03 已去占位，接入告警规则/记录 |
+| 30 | Risk-News | `/risk/news` | `artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue` | P2 | mixed | `/api/v1/announcement` | verified | 2026-03-03 已去占位，接入公告列表 |
 | 31 | System-Config | `/system/config` | `artdeco-pages/system-tabs/ArtDecoSystemSettings.vue` | P2 | mixed | `/api/system/*` | pending | |
 | 32 | System-Health | `/system/health` | `artdeco-pages/system-tabs/SystemHealthTab.vue` | P2 | mixed | `/health` | verified | |
-| 33 | System-API | `/system/api` | `artdeco-pages/system-tabs/ArtDecoMonitoringDashboard.vue` | P2 | placeholder | `/metrics` | verified | 页面占位 |
-| 34 | System-Data | `/system/data` | `artdeco-pages/system-tabs/ArtDecoDataManagement.vue` | P2 | placeholder | `/api/v1/data-sources/config` | verified | 页面占位 |
+| 33 | System-API | `/system/api` | `artdeco-pages/system-tabs/ArtDecoMonitoringDashboard.vue` | P2 | mixed | `/metrics` | verified | 非占位页，持续做可视化增强 |
+| 34 | System-Data | `/system/data` | `artdeco-pages/system-tabs/ArtDecoDataManagement.vue` | P2 | mixed | `/api/v1/data-sources/config` | verified | 非占位页，持续做配置治理 |
 
 ---
 
@@ -190,9 +190,9 @@ bash scripts/tests/test/run-comprehensive-tests.sh
 
 ## 9. 下一步执行顺序
 
-1. 先消除 `placeholder` 页面（#29/#30/#33/#34）。
-2. 再治理 `mock-debt` 页面（#11/#14/#15/#18/#22/#28）。
-3. 最后处理 `mixed` 页面的 API 对齐与可见性测试补强。
+1. `placeholder` 与 `mock-debt` 页面收口已完成，继续按 V3 策略推进 `mixed` 页面能力提取与聚合。
+2. 优先处理 P0/P1 的 `mixed` 页面，补齐 API 对齐与字段一致性验证。
+3. 同步扩展 E2E 对关键页面的可见性与数据一致性断言（保留 PM2 门禁链路）。
 4. 每次涉及路由或 Layout 变更，先过 `scripts/run_e2e_pm2.sh`。
 
 ---
@@ -207,4 +207,22 @@ bash scripts/tests/test/run-comprehensive-tests.sh
 - 当前运行端口真值:
   Frontend `3020`，Backend `8020`
 - 端口兼容性探测:
-  `http://localhost:3020` -> `200`，`http://localhost:8020/health` -> `200`，`http://localhost:8020/health` -> `000`
+  `http://localhost:3020` -> `200`，`http://localhost:8020/health` -> `200`，`http://localhost:8000/health` -> `000`
+- 本轮进展（2026-03-03）:
+  `#29/#30` 风险告警与公告监控页面完成去占位并接入数据加载；`#33/#34` 状态修正为 `mixed`
+- 本轮进展（2026-03-03，V3 第二批）:
+  `#11/#14/#15` 已移除 mock 回退，统一切换到 REAL API 驱动
+- 本轮进展（2026-03-03，V3 第三批）:
+  `#22/#28` 已移除 mock 依赖（信号页不再回退 MOCK；止损页移除 `Math.random`）
+- 本轮进展（2026-03-03，V3 第四批）:
+  `#18` 已移除 mock 回退（Strategy-Opt 改为 REAL API + 空态收口，`mock-debt` 清零）
+- 本轮进展（2026-03-03，V3 第五批）:
+  `#13` 已移除 mock 回退（Strategy-Repo 保持 REAL 数据源，写操作不再因 mock 状态被禁用）
+- 本轮进展（2026-03-03，V3 第六批）:
+  `#16` 已移除 `VITE_USE_MOCK_DATA` 触发的 mock 基线（Strategy-Backtest 切到 REAL 空态基线）
+- 本轮进展（2026-03-03，V3 第七批）:
+  `#6` 已移除 mock 回退（Data-Industry 改为 REAL 数据解析 + 空态收口）
+- 本轮进展（2026-03-03，V3 第八批）:
+  `#23/#27` 已移除组件内模拟持仓注入（Trade-Portfolio/Risk-PnL 切到 REAL API + 空态收口）
+- 本轮进展（2026-03-03，V3 第九批）:
+  `#20/#24` 已完成路由页直连 REAL API（Trade-Positions/Trade-History 去外部喂数依赖，失败转空态）

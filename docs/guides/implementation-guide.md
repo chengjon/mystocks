@@ -85,13 +85,13 @@ python3 scripts/test_data_consistency.py
 ### 5. 检查监控系统
 ```bash
 # 系统健康检查
-curl http://localhost:8000/api/monitoring/health
+curl http://localhost:8020/api/monitoring/health
 
 # 监控仪表板
-curl http://localhost:8000/api/monitoring/dashboard
+curl http://localhost:8020/api/monitoring/dashboard
 
 # 获取最近指标
-curl http://localhost:8000/api/monitoring/metrics?limit=10
+curl http://localhost:8020/api/monitoring/metrics?limit=10
 ```
 
 ---
@@ -233,7 +233,7 @@ setup_monitoring_middleware(app)
 **解决**: 提供有效的认证令牌
 ```bash
 curl -H "Authorization: Bearer YOUR_TOKEN" \
-  http://localhost:8000/api/monitoring/health
+  http://localhost:8020/api/monitoring/health
 ```
 
 ### 问题2: 数据质量评分低 (<70)
@@ -255,7 +255,7 @@ tail -f /var/log/mystocks/api.log
 3. 监控历史是否过大
 ```bash
 # 清理旧数据
-curl -X POST http://localhost:8000/api/monitoring/cleanup?older_than_hours=24
+curl -X POST http://localhost:8020/api/monitoring/cleanup?older_than_hours=24
 ```
 
 ### 问题4: 验证脚本失败
@@ -265,7 +265,7 @@ curl -X POST http://localhost:8000/api/monitoring/cleanup?older_than_hours=24
 2. 检查API_BASE_URL是否正确
 3. 查看脚本的错误输出
 ```bash
-API_BASE_URL=http://localhost:8000 bash scripts/test_api_fixes.sh
+API_BASE_URL=http://localhost:8020 bash scripts/test_api_fixes.sh
 ```
 
 ---
@@ -302,7 +302,7 @@ API_BASE_URL=http://localhost:8000 bash scripts/test_api_fixes.sh
 
 如有问题，请查看:
 1. 详细日志: `/var/log/mystocks/api.log`
-2. 监控仪表板: `http://localhost:8000/api/monitoring/dashboard`
+2. 监控仪表板: `http://localhost:8020/api/monitoring/dashboard`
 3. 项目文档: `docs/api/`
 
 ---

@@ -73,6 +73,7 @@ import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
 import dayjs from 'dayjs'
+import { API_BASE_URL } from '@/config/runtime-endpoints'
 
 // 显性标记：告知Vite该代码有用，不进行Tree Shaking删除
 /* vite-ignore-tree-shaking */
@@ -84,7 +85,7 @@ const minNetAmount = ref(null)
 const tableData = ref([])
 const loading = ref(false)
 const refreshing = ref(false)
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+const API_BASE = API_BASE_URL
 
 const queryData = async () => {
   loading.value = true

@@ -62,7 +62,7 @@ tmux list-panes -t mystocks-dev-v2
 **启动命令**:
 ```bash
 cd /opt/claude/mystocks_spec/web/backend
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8888 --reload --log-level debug
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload --log-level debug
 ```
 
 **遇到问题**:
@@ -182,16 +182,16 @@ lnav /opt/claude/mystocks_spec/logs/*.log
    pm2 list
 
    # 检查端口占用
-   netstat -tlnp | grep :8888
+   netstat -tlnp | grep :8020
    ```
 
 3. **测试API接口**
    ```bash
    # 健康检查
-   curl http://localhost:8888/health
+   curl http://localhost:8020/health
 
    # API文档
-   curl http://localhost:8888/api/docs
+   curl http://localhost:8020/api/docs
    ```
 
 ### 故障排除流程

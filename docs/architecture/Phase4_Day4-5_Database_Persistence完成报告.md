@@ -727,14 +727,14 @@ psql -h localhost -U postgres -d mystocks -c "\dt"
 
 ```bash
 cd web/backend
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8020
 ```
 
 ### 3. API测试
 
 ```bash
 # 创建策略
-curl -X POST http://localhost:8000/api/strategy-mgmt/strategies \
+curl -X POST http://localhost:8020/api/strategy-mgmt/strategies \
   -H "Content-Type: application/json" \
   -d '{
     "user_id": 1001,
@@ -750,10 +750,10 @@ curl -X POST http://localhost:8000/api/strategy-mgmt/strategies \
   }'
 
 # 获取策略列表
-curl http://localhost:8000/api/strategy-mgmt/strategies?user_id=1001
+curl http://localhost:8020/api/strategy-mgmt/strategies?user_id=1001
 
 # 健康检查
-curl http://localhost:8000/api/strategy-mgmt/health
+curl http://localhost:8020/api/strategy-mgmt/health
 ```
 
 ---

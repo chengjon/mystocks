@@ -389,7 +389,7 @@ const unsubscribe = ref<(() => void) | null>(null)
 
 onMounted(() => {
   // 连接WebSocket
-  ws.connect('ws://localhost:8000/api/ws')
+  ws.connect('ws://localhost:8020/api/ws')
 
   // 订阅频道
   if (menuItem.wsChannel) {

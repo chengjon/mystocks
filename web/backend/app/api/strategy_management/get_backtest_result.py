@@ -125,7 +125,7 @@ async def get_backtest_chart_data(backtest_id: int) -> Dict[str, List]:
     **示例**:
     ```bash
     # 获取回测图表数据
-    curl -X GET "http://localhost:8000/api/v1/strategy/backtest/results/123/chart-data"
+    curl -X GET "http://localhost:${BACKEND_PORT}/api/v1/strategy/backtest/results/123/chart-data"
     ```
 
     **响应示例**:

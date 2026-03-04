@@ -65,7 +65,7 @@ async def analyze_data(data: dict):
     **示例**:
     ```bash
     # 多数据源综合分析
-    curl -X POST "http://localhost:8000/api/multi_source/analyze" \\
+    curl -X POST "http://localhost:${BACKEND_PORT}/api/multi_source/analyze" \\
       -H "Content-Type: application/json" \\
       -d '{
         "symbol": "600519",

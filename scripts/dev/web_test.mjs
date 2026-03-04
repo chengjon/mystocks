@@ -3,7 +3,8 @@ import fs from 'fs';
 import path from 'path';
 
 // 测试配置
-const BASE_URL = 'http://localhost:3001';
+const FRONTEND_PORT = process.env.FRONTEND_PORT || '3020';
+const BASE_URL = process.env.FRONTEND_URL || `http://localhost:${FRONTEND_PORT}`;
 const OUTPUT_DIR = '/tmp/web-test-results';
 
 // 创建输出目录

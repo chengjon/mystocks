@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 test.describe('MyStocks 完整API功能测试套件', () => {
-  const API_BASE_URL = 'http://localhost:8000';
+  const API_BASE_URL = 'http://localhost:8020';
   const FRONTEND_BASE_URL = 'http://localhost:3000';
 
   test.describe('高优先级核心API测试', () => {

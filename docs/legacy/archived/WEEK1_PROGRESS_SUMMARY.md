@@ -285,16 +285,16 @@ WHERE tablename IN ('strategies', 'models', 'backtests',
 
 ```bash
 # Start backend
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --reload --port 8020
 
 # Test strategy APIs
-curl -X GET "http://localhost:8000/api/v1/strategy/strategies"
-curl -X POST "http://localhost:8000/api/v1/strategy/strategies" \
+curl -X GET "http://localhost:8020/api/v1/strategy/strategies"
+curl -X POST "http://localhost:8020/api/v1/strategy/strategies" \
   -d '{"name": "Test", "strategy_type": "rule_based"}'
 
 # Test risk APIs
-curl -X GET "http://localhost:8000/api/v1/risk/dashboard"
-curl -X GET "http://localhost:8000/api/v1/risk/var-cvar?entity_type=backtest&entity_id=1"
+curl -X GET "http://localhost:8020/api/v1/risk/dashboard"
+curl -X GET "http://localhost:8020/api/v1/risk/var-cvar?entity_type=backtest&entity_id=1"
 ```
 
 **Expected**: All 27 endpoints return 200 OK

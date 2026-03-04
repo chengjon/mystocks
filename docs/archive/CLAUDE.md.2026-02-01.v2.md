@@ -128,7 +128,7 @@ mypy src/ --no-error-summary
 
 ```bash
 cd web/backend
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 ```
 
 ### 5.3 Run Web Frontend (Vue)
@@ -136,7 +136,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```bash
 cd web/frontend
 npm install
-npm run dev -- --port 3001
+npm run dev -- --port 3020
 ```
 
 ### 5.4 Initialize / Demo

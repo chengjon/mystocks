@@ -218,7 +218,7 @@ validator = ContractResponseValidator(
 @pytest.mark.parametrize("user_id", [1, 2, 3])
 def test_user_query(user_id):
     # 发送实际请求
-    response = requests.get(f"http://localhost:8000/api/user/{user_id}")
+    response = requests.get(f"http://localhost:8020/api/user/{user_id}")
     response_json = response.json()
     
     # 自动校验响应与契约的一致性

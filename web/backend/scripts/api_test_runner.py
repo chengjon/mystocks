@@ -6,21 +6,42 @@ API 自动化测试运行器
 """
 
 import json
+import os
 import subprocess
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Dict, Any
 from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
 
+def _default_api_base_url() -> str:
+    api_base_url = os.getenv("API_BASE_URL", "").strip()
+    if api_base_url:
+        return api_base_url
+    backend_port = os.getenv("BACKEND_PORT", "").strip()
+    if not backend_port:
+        raise RuntimeError("Missing BACKEND_PORT in environment")
+    return f"http://localhost:{backend_port}"
+
+
+def _default_web_base_url() -> str:
+    web_base_url = os.getenv("WEB_BASE_URL", "").strip()
+    if web_base_url:
+        return web_base_url
+    frontend_port = os.getenv("FRONTEND_PORT", "").strip()
+    if not frontend_port:
+        raise RuntimeError("Missing FRONTEND_PORT in environment")
+    return f"http://localhost:{frontend_port}"
+
+
 @dataclass
 class TestConfig:
     """测试配置"""
 
-    api_base_url: str = "http://localhost:8000"
-    web_base_url: str = "http://localhost:5173"
+    api_base_url: str = field(default_factory=_default_api_base_url)
+    web_base_url: str = field(default_factory=_default_web_base_url)
     test_dir: str = "tests/api"
     report_dir: str = "playwright-report/api"
     workers: int = 4

@@ -156,10 +156,10 @@ python3 test_dual_database_architecture.py
 ### API Endpoints Test ✅
 ```bash
 # Health check
-curl http://localhost:8000/api/system/database/health
+curl http://localhost:8020/api/system/database/health
 
 # Stats
-curl http://localhost:8000/api/system/database/stats
+curl http://localhost:8020/api/system/database/stats
 ```
 **Expected**: Both return success with dual-database data
 

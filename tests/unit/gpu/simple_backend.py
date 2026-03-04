@@ -110,7 +110,7 @@ async def get_realtime_data():
 
 if __name__ == "__main__":
     print("🚀 启动 MyStocks 简化版后端服务...")
-    print("📍 服务地址: http://localhost:8000")
-    print("📖 API文档: http://localhost:8000/docs")
+    print("📍 服务地址: http://localhost:8020")
+    print("📖 API文档: http://localhost:8020/docs")
 
     uvicorn.run("simple_backend:app", host="0.0.0.0", port=8000, reload=False, log_level="info")

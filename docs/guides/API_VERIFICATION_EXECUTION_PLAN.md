@@ -86,7 +86,7 @@ async def get_stocks_basic(
 
 ```bash
 # 检查后端服务是否运行
-curl -s http://localhost:8000/health | jq '.'
+curl -s http://localhost:8020/health | jq '.'
 
 # 预期输出:
 # {
@@ -132,7 +132,7 @@ python -c "import requests; print(requests.__version__)"
 
 ```bash
 # 获取后端OpenAPI规范
-curl -s http://localhost:8000/openapi.json -o docs/api/openapi.json
+curl -s http://localhost:8020/openapi.json -o docs/api/openapi.json
 
 # 验证OpenAPI规范
 python -c "
@@ -157,17 +157,17 @@ print(f'Total Paths: {len(schema[\"paths\"])}')
 # 测试端点1: 行业列表
 curl -s -w "\nHTTP Status: %{http_code}\n" \
      -H "Authorization: Bearer dev-mock-token-for-development" \
-     http://localhost:8000/api/v1/data/stocks/industries
+     http://localhost:8020/api/v1/data/stocks/industries
 
 # 测试端点2: 概念列表
 curl -s -w "\nHTTP Status: %{http_code}\n" \
      -H "Authorization: Bearer dev-mock-token-for-development" \
-     http://localhost:8000/api/v1/data/stocks/concepts
+     http://localhost:8020/api/v1/data/stocks/concepts
 
 # 测试端点3: 股票基础信息（带分页参数）
 curl -s -w "\nHTTP Status: %{http_code}\n" \
      -H "Authorization: Bearer dev-mock-token-for-development" \
-     "http://localhost:8000/api/v1/data/stocks/basic?page=1&page_size=20"
+     "http://localhost:8020/api/v1/data/stocks/basic?page=1&page_size=20"
 ```
 
 **通过标准**:
@@ -197,7 +197,7 @@ curl -s -w "\nHTTP Status: %{http_code}\n" \
 ```bash
 # 测试端点1: 行业列表
 curl -s -H "Authorization: Bearer dev-mock-token-for-development" \
-     http://localhost:8000/api/v1/data/stocks/industries | jq '.'
+     http://localhost:8020/api/v1/data/stocks/industries | jq '.'
 
 # 预期输出示例:
 # {
@@ -241,7 +241,7 @@ do
   echo "Testing: /api/v1/data/$endpoint"
   curl -s -o /dev/null -w "  Response Time: %{time_total}s\n" \
        -H "Authorization: Bearer dev-mock-token-for-development" \
-       "http://localhost:8000/api/v1/data/$endpoint"
+       "http://localhost:8020/api/v1/data/$endpoint"
 done
 ```
 
@@ -262,7 +262,7 @@ done
 ```bash
 # 测试端点1: 行业列表（检查数据量）
 curl -s -H "Authorization: Bearer dev-mock-token-for-development" \
-     http://localhost:8000/api/v1/data/stocks/industries | \
+     http://localhost:8020/api/v1/data/stocks/industries | \
   jq '.data | length'
 
 # 预期: >= 50个行业（如果数据库有数据）
@@ -270,14 +270,14 @@ curl -s -H "Authorization: Bearer dev-mock-token-for-development" \
 
 # 测试端点2: 概念列表（检查数据量）
 curl -s -H "Authorization: Bearer dev-mock-token-for-development" \
-     http://localhost:8000/api/v1/data/stocks/concepts | \
+     http://localhost:8020/api/v1/data/stocks/concepts | \
   jq '.data | length'
 
 # 预期: >= 100个概念（如果数据库有数据）
 
 # 测试端点3: 股票基础信息（检查分页）
 curl -s -H "Authorization: Bearer dev-mock-token-for-development" \
-     "http://localhost:8000/api/v1/data/stocks/basic?page=1&page_size=20" | \
+     "http://localhost:8020/api/v1/data/stocks/basic?page=1&page_size=20" | \
   jq '.data | length'
 
 # 预期: 20条记录（page_size=20）
@@ -341,7 +341,7 @@ export interface StockBasic {
 ```bash
 # 1. 获取后端实际响应
 curl -s -H "Authorization: Bearer dev-mock-token-for-development" \
-     http://localhost:8000/api/v1/data/stocks/industries | \
+     http://localhost:8020/api/v1/data/stocks/industries | \
   jq '.data[0]' > /tmp/backend_industry_sample.json
 
 # 2. 提取字段名称
@@ -382,7 +382,7 @@ import pytest
 import requests
 from typing import Dict, Any
 
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://localhost:8020"
 AUTH_TOKEN = "dev-mock-token-for-development"
 
 class TestPhase21IndustryConcept:

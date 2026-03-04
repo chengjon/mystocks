@@ -236,7 +236,7 @@
 
 - [ ] **后端服务运行正常**
   ```bash
-  curl http://localhost:8000/health
+  curl http://localhost:8020/health
   # 或者后端的健康检查端点
   ```
 

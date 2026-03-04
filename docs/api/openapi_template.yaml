@@ -38,7 +38,7 @@ info:
     name: MIT
 
 servers:
-  - url: http://localhost:8000
+  - url: http://localhost:8020
     description: 本地开发环境
   - url: http://test-api.mystocks.com
     description: 测试环境

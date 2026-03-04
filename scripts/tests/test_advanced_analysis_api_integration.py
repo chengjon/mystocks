@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 # Test configuration
 TEST_CONFIG = {
-    "base_url": "http://localhost:8000",
+    "base_url": os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}"),
     "timeout": 30,
     "test_symbol": "000001",
     "auth_token": None,  # Will be set if authentication is required

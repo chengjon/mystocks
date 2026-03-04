@@ -3,7 +3,7 @@
  *
  * 测试目标：
  * - 前端：http://localhost:3000 (Vue3 + Element Plus)
- * - 后端：http://localhost:8000 (FastAPI + Swagger UI)
+ * - 后端：http://localhost:8020 (FastAPI + Swagger UI)
  *
  * 核心功能验证：
  * 1. 基础服务可用性
@@ -18,7 +18,7 @@ const { test, expect, chromium } = require('@playwright/test');
 // 测试配置
 const CONFIG = {
   frontendUrl: 'http://localhost:3000',
-  backendUrl: 'http://localhost:8000',
+  backendUrl: 'http://localhost:8020',
   timeout: {
     navigation: 30000,
     element: 15000,

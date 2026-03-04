@@ -64,7 +64,7 @@ class TestAPIIntegration:
         response = self.client.options(
             "/api/health",
             headers={
-                "Origin": "http://localhost:3001",
+                "Origin": "http://localhost:3020",
                 "Access-Control-Request-Method": "GET",
                 "Access-Control-Request-Headers": "content-type,authorization",
             },
@@ -126,14 +126,14 @@ class TestCORSMiddleware:
         response = self.client.options(
             "/api/health",
             headers={
-                "Origin": "http://localhost:3001",
+                "Origin": "http://localhost:3020",
                 "Access-Control-Request-Method": "GET",
                 "Access-Control-Request-Headers": "Content-Type,Authorization",
             },
         )
 
         assert response.status_code == 200
-        assert response.headers.get("access-control-allow-origin") == "http://localhost:3001"
+        assert response.headers.get("access-control-allow-origin") == "http://localhost:3020"
         assert "GET" in response.headers.get("access-control-allow-methods", "")
         assert "Content-Type" in response.headers.get("access-control-allow-headers", "")
         assert "Authorization" in response.headers.get("access-control-allow-headers", "")
@@ -142,9 +142,9 @@ class TestCORSMiddleware:
         """Test allowed CORS origins."""
         allowed_origins = [
             "http://localhost:3000",
-            "http://localhost:3001",
+            "http://localhost:3020",
             "http://localhost:3002",
-            "http://localhost:8000",
+            "http://localhost:8020",
             "http://localhost:8001",
         ]
 

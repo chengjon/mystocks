@@ -1,7 +1,9 @@
 import { chromium } from 'playwright';
 import fs from 'fs';
 
-const BASE_URL = 'http://localhost:3001';
+const FRONTEND_PORT = process.env.FRONTEND_PORT || '3020';
+const BACKEND_PORT = process.env.BACKEND_PORT || '8020';
+const BASE_URL = process.env.FRONTEND_URL || `http://localhost:${FRONTEND_PORT}`;
 const PAGE_URL = '/market/realtime';
 const OUTPUT_DIR = '/tmp/web-test-results';
 
@@ -92,7 +94,7 @@ async function debugRealtimePage() {
 
     // 分析网络请求
     const sseRequests = networkRequests.filter(req =>
-      req.url.includes('/api/v1/sse/') || req.url.includes(':8000')
+      req.url.includes('/api/v1/sse/') || req.url.includes(`:${BACKEND_PORT}`)
     );
 
     const failedRequests = networkResponses.filter(res =>

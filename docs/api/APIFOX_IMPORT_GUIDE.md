@@ -21,10 +21,10 @@
 ```bash
 # 1. 启动后端服务
 cd /opt/claude/mystocks_spec/web/backend
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020
 
 # 2. 验证OpenAPI端点可访问
-curl http://localhost:8000/openapi.json | jq '.info'
+curl http://localhost:8020/openapi.json | jq '.info'
 ```
 
 **Apifox导入步骤**:
@@ -36,7 +36,7 @@ curl http://localhost:8000/openapi.json | jq '.info'
 3. **配置导入**:
    ```
    导入方式: URL导入
-   URL地址: http://localhost:8000/openapi.json
+   URL地址: http://localhost:8020/openapi.json
    数据格式: OpenAPI 3.0
    导入模式: 智能合并（首次导入选"全部覆盖"）
    ```
@@ -111,7 +111,7 @@ apifox import \
 # 或使用URL导入
 apifox import \
   --project-id <你的项目ID> \
-  --url http://localhost:8000/openapi.json \
+  --url http://localhost:8020/openapi.json \
   --format openapi \
   --merge-mode smart
 ```
@@ -217,7 +217,7 @@ MyStocks API (根目录)
 {
   "name": "开发环境",
   "variables": {
-    "base_url": "http://localhost:8000",
+    "base_url": "http://localhost:8020",
     "auth_token": "",
     "csrf_token": ""
   }
@@ -308,7 +308,7 @@ pm.test("K线数据格式正确", function() {
 
 ```bash
 # 1. 重新生成OpenAPI文档（如果API有变化）
-curl http://localhost:8000/openapi.json > /opt/claude/mystocks_spec/docs/api/openapi.json
+curl http://localhost:8020/openapi.json > /opt/claude/mystocks_spec/docs/api/openapi.json
 
 # 2. 在Apifox中重新导入（选择"智能合并"模式）
 ```
@@ -323,7 +323,7 @@ curl http://localhost:8000/openapi.json > /opt/claude/mystocks_spec/docs/api/ope
 
 # 1. 启动后端服务（如果未运行）
 # 2. 导出最新OpenAPI文档
-curl -s http://localhost:8000/openapi.json > /tmp/openapi_latest.json
+curl -s http://localhost:8020/openapi.json > /tmp/openapi_latest.json
 
 # 3. 使用Apifox CLI同步
 apifox import \
@@ -357,7 +357,7 @@ jobs:
         run: |
           cd web/backend
           pip install -r requirements.txt
-          uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+          uvicorn app.main:app --host 0.0.0.0 --port 8020 &
           sleep 10
 
       - name: Sync to Apifox
@@ -532,8 +532,8 @@ iconv -f GBK -t UTF-8 openapi.json > openapi_utf8.json
 - **API Key申请**: Apifox设置 → API管理
 
 ### MyStocks项目资源
-- **API文档**: http://localhost:8000/api/docs
-- **OpenAPI JSON**: http://localhost:8000/openapi.json
+- **API文档**: http://localhost:8020/api/docs
+- **OpenAPI JSON**: http://localhost:8020/openapi.json
 - **项目文档**: `/docs/api/README.md`
 
 ### 问题反馈

@@ -3,6 +3,7 @@
 """
 
 # 创建一个最小化的配置类，不包含任何列表字段
+import os
 from pydantic_settings import BaseSettings
 
 
@@ -16,7 +17,7 @@ class MinimalSettings(BaseSettings):
 
     # 服务器配置
     host: str = "0.0.0.0"
-    port: int = 8000
+    port: int = int(os.getenv("BACKEND_PORT", "8020"))
 
     # 数据库配置
     postgresql_host: str = "localhost"
@@ -40,9 +41,9 @@ class MinimalSettings(BaseSettings):
 
     # 临时移除CORS配置以测试是否是它引起的问题
     # cors_origins: List[str] = [
-    #     "http://localhost:3000",
+    #     "http://localhost:3020",
     #     "http://localhost:8080",
-    #     "http://localhost:5173",
+    #     f"http://localhost:{os.getenv('FRONTEND_BACKUP_PORT', '3021')}",
     # ]
 
     class Config:

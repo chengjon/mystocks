@@ -8,6 +8,7 @@ import json
 import sys
 from pathlib import Path
 import requests
+import os
 
 # 添加项目根目录到 Python 路径
 project_root = Path(__file__).parent.parent.parent
@@ -277,12 +278,13 @@ def main():
     ACCESS_TOKEN = "APS-kN74RMte5panv5lPUjutEmulUiZEvyRh"
     PROJECT_ID = "7376246"  # MyStocks API 项目ID
     OPENAPI_FILE = project_root / "docs" / "api" / "openapi.json"
+    backend_port = os.getenv("BACKEND_PORT", "8020")
 
     # 验证文件存在
     if not OPENAPI_FILE.exists():
         print(f"❌ OpenAPI 文件不存在: {OPENAPI_FILE}")
         print("   请先生成 OpenAPI 文档或启动后端服务:")
-        print(f"   curl http://localhost:8000/openapi.json > {OPENAPI_FILE}")
+        print(f"   curl http://localhost:{backend_port}/openapi.json > {OPENAPI_FILE}")
         sys.exit(1)
 
     # 创建导入器

@@ -598,14 +598,14 @@ WHERE schemaname = 'public'
 **Test Suite**:
 ```bash
 # Strategy API tests
-curl -X GET "http://localhost:8000/api/v1/strategy/strategies"
-curl -X POST "http://localhost:8000/api/v1/strategy/strategies" \
+curl -X GET "http://localhost:8020/api/v1/strategy/strategies"
+curl -X POST "http://localhost:8020/api/v1/strategy/strategies" \
   -H "Content-Type: application/json" \
   -d '{"name": "Test Strategy", "strategy_type": "rule_based"}'
 
 # Risk API tests
-curl -X GET "http://localhost:8000/api/v1/risk/dashboard"
-curl -X GET "http://localhost:8000/api/v1/risk/var-cvar?entity_type=backtest&entity_id=1"
+curl -X GET "http://localhost:8020/api/v1/risk/dashboard"
+curl -X GET "http://localhost:8020/api/v1/risk/var-cvar?entity_type=backtest&entity_id=1"
 
 # Monitoring validation
 SELECT operation_type, table_name, operation_name, success
@@ -624,7 +624,7 @@ LIMIT 10;
 ```bash
 # Start backend
 cd web/backend
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --reload --port 8020
 
 # Start frontend
 cd web/frontend

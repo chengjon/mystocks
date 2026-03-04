@@ -372,14 +372,14 @@ systemctl restart celery-beat
 
 ```bash
 # 健康检查
-curl http://localhost:8000/api/market/wencai/health
+curl http://localhost:8020/api/market/wencai/health
 
 # 应该返回: {"status":"healthy","service":"wencai","version":"1.0.0"}
 ```
 
 ### 2. 查看API文档
 
-访问 `http://localhost:8000/api/docs`，应该能看到 `/api/market/wencai/*` 的所有端点
+访问 `http://localhost:8020/api/docs`，应该能看到 `/api/market/wencai/*` 的所有端点
 
 ### 3. 测试Celery任务
 

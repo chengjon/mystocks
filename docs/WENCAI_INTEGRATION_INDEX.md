@@ -218,7 +218,7 @@
 
 ### Q6: 如何测试集成是否成功？
 **A**:
-1. 访问 `http://localhost:8000/api/market/wencai/queries` 查看查询列表
+1. 访问 `http://localhost:8020/api/market/wencai/queries` 查看查询列表
 2. POST到 `/api/market/wencai/query` 执行一个查询
 3. 检查MySQL数据库中的数据
 4. 查看日志确认无错误
@@ -298,7 +298,7 @@ Phase 4: 前端集成（可选，4-6小时）
 
 ### 技术支持
 - **代码问题**: 参考原始项目 `/opt/claude/mystocks_spec/temp/`
-- **API问题**: 查看Swagger文档 `http://localhost:8000/api/docs`
+- **API问题**: 查看Swagger文档 `http://localhost:8020/api/docs`
 - **数据库问题**: 参考 `migrations/wencai_init.sql`
 
 ---

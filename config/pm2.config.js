@@ -7,6 +7,39 @@
 const path = require('path');
 const fs = require('fs');
 
+function loadEnvFile(envPath) {
+  if (!fs.existsSync(envPath)) {
+    return;
+  }
+
+  const lines = fs.readFileSync(envPath, 'utf8').split(/\r?\n/u);
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) {
+      continue;
+    }
+
+    const separatorIndex = trimmed.indexOf('=');
+    if (separatorIndex <= 0) {
+      continue;
+    }
+
+    const key = trimmed.slice(0, separatorIndex).trim();
+    if (!key || process.env[key] !== undefined) {
+      continue;
+    }
+
+    let value = trimmed.slice(separatorIndex + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    process.env[key] = value;
+  }
+}
+
 // 确保日志目录存在
 const ensureLogDir = (logPath) => {
   const dir = path.dirname(logPath);
@@ -17,6 +50,33 @@ const ensureLogDir = (logPath) => {
 
 // 项目根目录
 const projectRoot = '/opt/claude/mystocks_spec';
+
+for (const envPath of [path.join(projectRoot, '.env'), path.join(projectRoot, 'web', 'frontend', '.env')]) {
+  if (typeof process.loadEnvFile === 'function') {
+    try {
+      process.loadEnvFile(envPath);
+      continue;
+    } catch {
+      // fall through to manual parser
+    }
+  }
+  loadEnvFile(envPath);
+}
+
+function requireEnv(name) {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`[port-config] Missing required env var: ${name}`);
+  }
+  return value;
+}
+
+const backendPort = requireEnv('BACKEND_PORT');
+const backendBackupPort = requireEnv('BACKEND_BACKUP_PORT');
+const frontendPort = requireEnv('FRONTEND_PORT');
+const frontendBackupPort = requireEnv('FRONTEND_BACKUP_PORT');
+const viteApiBaseUrl = process.env.VITE_API_BASE_URL || `http://localhost:${backendPort}`;
+const viteWsUrl = process.env.VITE_WS_URL || `ws://localhost:${backendPort}`;
 
 module.exports = {
   apps: [
@@ -30,8 +90,12 @@ module.exports = {
       // 环境变量
       env: {
         NODE_ENV: 'test',
-        VITE_API_BASE_URL: 'http://localhost:8000',
-        VITE_WS_URL: 'ws://localhost:8000',
+        FRONTEND_PORT: frontendPort,
+        FRONTEND_BACKUP_PORT: frontendBackupPort,
+        BACKEND_PORT: backendPort,
+        BACKEND_BACKUP_PORT: backendBackupPort,
+        VITE_API_BASE_URL: viteApiBaseUrl,
+        VITE_WS_URL: viteWsUrl,
         VITE_APP_TITLE: 'MyStocks Test Environment'
       },
       env_test: {
@@ -55,7 +119,7 @@ module.exports = {
       max_memory_restart: '1G',
 
       // 端口配置
-      port: 3001,
+      port: frontendPort,
 
       // 启动延迟
       wait_ready: true,
@@ -67,7 +131,7 @@ module.exports = {
 
       // 服务健康检查
       health_check: {
-        script: 'curl -f http://localhost:3001/ > /dev/null 2>&1',
+        script: `curl -f http://localhost:${frontendPort}/ > /dev/null 2>&1`,
         interval: 30000
       }
     },
@@ -100,7 +164,9 @@ module.exports = {
 
         // 服务配置
         API_HOST: '0.0.0.0',
-        API_PORT: '8000',
+        API_PORT: backendPort,
+        BACKEND_PORT: backendPort,
+        BACKEND_BACKUP_PORT: backendBackupPort,
 
         // 测试配置
         TESTING: 'true',
@@ -129,7 +195,7 @@ module.exports = {
       max_memory_restart: '2G',
 
       // 端口配置
-      port: 8000,
+      port: backendPort,
 
       // 启动延迟
       wait_ready: true,
@@ -142,7 +208,7 @@ module.exports = {
 
       // 服务健康检查
       health_check: {
-        script: 'curl -f http://localhost:8000/health > /dev/null 2>&1',
+        script: `curl -f http://localhost:${backendPort}/health > /dev/null 2>&1`,
         interval: 30000
       },
 

@@ -1,7 +1,7 @@
 # Swagger UI 使用指南
 
 > **当前状态**: ✅ 后端服务已启动，Swagger UI 可访问
-> **访问地址**: http://localhost:8000/api/docs
+> **访问地址**: http://localhost:8020/api/docs
 > **最后更新**: 2025-11-09
 
 ---
@@ -23,32 +23,32 @@
 1. **确保后端服务已启动**:
    ```bash
    # 检查服务是否运行
-   curl http://localhost:8000/health
+   curl http://localhost:8020/health
 
    # 如果返回 {"status": "healthy"} 则服务正常
    ```
 
 2. **打开浏览器访问**:
    ```
-   http://localhost:8000/api/docs
+   http://localhost:8020/api/docs
    ```
 
 3. **或者访问 ReDoc (更适合阅读)**:
    ```
-   http://localhost:8000/api/redoc
+   http://localhost:8020/api/redoc
    ```
 
 ### 方法 2: 从命令行启动浏览器
 
 ```bash
 # Linux
-xdg-open http://localhost:8000/api/docs
+xdg-open http://localhost:8020/api/docs
 
 # macOS
-open http://localhost:8000/api/docs
+open http://localhost:8020/api/docs
 
 # Windows
-start http://localhost:8000/api/docs
+start http://localhost:8020/api/docs
 ```
 
 ---
@@ -61,7 +61,7 @@ start http://localhost:8000/api/docs
 ┌─────────────────────────────────────────────────────┐
 │  MyStocks Web API - Swagger UI                     │ ← 标题栏
 ├─────────────────────────────────────────────────────┤
-│  Servers: http://localhost:8000                    │ ← 服务器地址
+│  Servers: http://localhost:8020                    │ ← 服务器地址
 ├─────────────────────────────────────────────────────┤
 │  🔍 [Authorize] 按钮                                │ ← 全局认证
 ├─────────────────────────────────────────────────────┤
@@ -253,7 +253,7 @@ start http://localhost:8000/api/docs
 **示例**:
 ```bash
 curl -X 'GET' \
-  'http://localhost:8000/api/market/realtime?symbols=000001.SZ' \
+  'http://localhost:8020/api/market/realtime?symbols=000001.SZ' \
   -H 'accept: application/json' \
   -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
 ```
@@ -282,7 +282,7 @@ curl -X 'GET' \
 
 ## 🔧 故障排查
 
-### 问题 1: 无法访问 http://localhost:8000/api/docs
+### 问题 1: 无法访问 http://localhost:8020/api/docs
 
 **排查步骤**:
 
@@ -291,14 +291,14 @@ curl -X 'GET' \
 ps aux | grep uvicorn
 
 # 2. 检查端口是否被占用
-lsof -i :8000
+lsof -i :8020
 
 # 3. 检查健康状态
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 
 # 4. 启动服务 (如果未运行)
 cd /opt/claude/mystocks_spec/web/backend
-python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 ```
 
 ### 问题 2: API 返回 401 Unauthorized
@@ -330,7 +330,7 @@ python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 F12 → Console
 
 # 2. 检查 OpenAPI JSON 是否正常
-curl http://localhost:8000/openapi.json | jq '.' | head -20
+curl http://localhost:8020/openapi.json | jq '.' | head -20
 
 # 3. 清除浏览器缓存
 Ctrl+Shift+Del → 清除缓存
@@ -402,7 +402,7 @@ taos -h localhost -P 6030
 - **API-前端映射**: [API_FRONTEND_MAPPING.md](./API_FRONTEND_MAPPING.md)
 - **OpenAPI 规范**: [openapi.json](./openapi.json)
 - **项目 README**: [../../README.md](../../README.md)
-- **在线 ReDoc**: http://localhost:8000/api/redoc
+- **在线 ReDoc**: http://localhost:8020/api/redoc
 
 ---
 
@@ -418,9 +418,9 @@ taos -h localhost -P 6030
 
 ```
 为常用 API 创建书签:
-- http://localhost:8000/api/docs#/market
-- http://localhost:8000/api/docs#/indicators
-- http://localhost:8000/api/docs#/cache
+- http://localhost:8020/api/docs#/market
+- http://localhost:8020/api/docs#/indicators
+- http://localhost:8020/api/docs#/cache
 ```
 
 ### 技巧 3: 结合浏览器 DevTools 使用
@@ -435,13 +435,13 @@ F12 → Network 标签
 
 ```bash
 # 1. 下载 openapi.json
-curl http://localhost:8000/openapi.json > /tmp/mystocks-api.json
+curl http://localhost:8020/openapi.json > /tmp/mystocks-api.json
 
 # 2. 在 Postman 中导入
 Postman → Import → Upload Files → 选择 /tmp/mystocks-api.json
 
 # 3. 在 Postman 中配置环境变量
-base_url = http://localhost:8000
+base_url = http://localhost:8020
 jwt_token = <your-token>
 csrf_token = <your-csrf-token>
 ```
@@ -451,8 +451,8 @@ csrf_token = <your-csrf-token>
 ## ✅ 使用检查清单
 
 测试前确认:
-- [ ] 后端服务已启动 (`curl http://localhost:8000/health`)
-- [ ] 浏览器能访问 http://localhost:8000/api/docs
+- [ ] 后端服务已启动 (`curl http://localhost:8020/health`)
+- [ ] 浏览器能访问 http://localhost:8020/api/docs
 - [ ] 获取了 CSRF Token
 - [ ] 成功登录并获取了 JWT Token
 - [ ] 配置了全局 Authorize (JWT)
@@ -470,4 +470,4 @@ csrf_token = <your-csrf-token>
 **最后更新**: 2025-11-09
 **维护者**: 开发团队
 **服务状态**: ✅ 运行中
-**访问地址**: http://localhost:8000/api/docs
+**访问地址**: http://localhost:8020/api/docs

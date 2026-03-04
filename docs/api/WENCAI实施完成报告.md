@@ -243,10 +243,10 @@ systemctl restart celery-beat
 
 ```bash
 # 健康检查
-curl http://localhost:8000/api/market/wencai/health
+curl http://localhost:8020/api/market/wencai/health
 
 # 获取查询列表
-curl http://localhost:8000/api/market/wencai/queries
+curl http://localhost:8020/api/market/wencai/queries
 
 # 执行测试
 bash scripts/test_wencai_api.sh
@@ -373,8 +373,8 @@ bash scripts/test_wencai_api.sh
 ```
 
 **API文档**:
-- Swagger UI: `http://localhost:8000/api/docs`
-- ReDoc: `http://localhost:8000/api/redoc`
+- Swagger UI: `http://localhost:8020/api/docs`
+- ReDoc: `http://localhost:8020/api/redoc`
 
 ---
 

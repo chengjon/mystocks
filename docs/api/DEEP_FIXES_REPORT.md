@@ -350,7 +350,7 @@ bash /opt/claude/mystocks_spec/scripts/test_api_fixes.sh
 python3 /opt/claude/mystocks_spec/scripts/test_data_consistency.py
 
 # 5. 检查监控系统
-curl http://localhost:8000/api/monitoring/health
+curl http://localhost:8020/api/monitoring/health
 ```
 
 ---

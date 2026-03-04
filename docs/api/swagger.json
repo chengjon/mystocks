@@ -15,7 +15,7 @@
     },
     "version": "2.0.0"
   },
-  "host": "localhost:8000",
+  "host": "localhost:8020",
   "basePath": "/",
   "schemes": [
     "http",

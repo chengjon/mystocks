@@ -338,7 +338,7 @@ npm run dev
 npm run build
 
 # 2. 部署后端API
-gunicorn -w 4 -b 0.0.0.0:8000 app:app
+gunicorn -w 4 -b 0.0.0.0:8020 app:app
 
 # 3. 配置Nginx反向代理
 # ...

@@ -13,8 +13,8 @@ import { APIContractValidator } from './api_contract_tests'
 
 // 测试配置
 const TEST_CONFIG = {
-  baseURL: 'http://localhost:3001', // 前端URL
-  apiURL: 'http://localhost:8000',   // 后端API URL
+  baseURL: 'http://localhost:3020', // 前端URL
+  apiURL: 'http://localhost:8020',   // 后端API URL
   testData: {
     marketOverview: {
       indices: [

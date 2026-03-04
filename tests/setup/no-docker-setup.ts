@@ -314,7 +314,7 @@ async function configureMockData(): Promise<void> {
 
   // 设置默认URLs
   process.env.PLAYWRIGHT_BASE_URL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173';
-  process.env.PLAYWRIGHT_API_URL = process.env.PLAYWRIGHT_API_URL || 'http://localhost:8000';
+  process.env.PLAYWRIGHT_API_URL = process.env.PLAYWRIGHT_API_URL || 'http://localhost:8020';
 
   // 验证Mock数据系统
   const mockPath = path.join(process.cwd(), 'src', 'mock');
@@ -363,7 +363,7 @@ async function globalSetup(config: FullConfig) {
     console.log(`📋 Test Configuration:`);
     console.log(`   Node.js: ${process.version}`);
     console.log(`   Base URL: ${process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173'}`);
-    console.log(`   API URL: ${process.env.PLAYWRIGHT_API_URL || 'http://localhost:8000'}`);
+    console.log(`   API URL: ${process.env.PLAYWRIGHT_API_URL || 'http://localhost:8020'}`);
     console.log(`   Mock Data: ${process.env.USE_MOCK_DATA || 'true'}`);
     console.log('');
 

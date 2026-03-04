@@ -370,10 +370,10 @@ bash /opt/claude/mystocks_spec/scripts/test_api_fixes.sh
 python3 /opt/claude/mystocks_spec/scripts/test_data_consistency.py
 
 # 5. 查看监控仪表板
-curl http://localhost:8000/api/monitoring/dashboard
+curl http://localhost:8020/api/monitoring/dashboard
 
 # 6. 检查系统健康状态
-curl http://localhost:8000/api/monitoring/health
+curl http://localhost:8020/api/monitoring/health
 ```
 
 ---

@@ -44,7 +44,7 @@
 **Apifox 环境变量配置**：
 ```json
 {
-  "base_url": "http://localhost:8000",
+  "base_url": "http://localhost:8020",
   "auth_token": "{{auto_generated}}",
   "csrf_token": "{{auto_generated}}"
 }
@@ -1083,7 +1083,7 @@ try {
 ```bash
 # 启动后端服务
 cd web/backend
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 
 # 启动前端服务
 cd web/frontend
@@ -1173,7 +1173,7 @@ class MyStocksAPI {
 }
 
 // 使用示例
-const api = new MyStocksAPI('http://localhost:8000');
+const api = new MyStocksAPI('http://localhost:8020');
 await api.login('admin', 'password');
 const data = await api.getRealtimeData('000001');
 console.log(data);
@@ -1223,7 +1223,7 @@ class MyStocksAPI:
         return response.json()
 
 # 使用示例
-api = MyStocksAPI('http://localhost:8000')
+api = MyStocksAPI('http://localhost:8020')
 api.login('admin', 'password')
 data = api.get_realtime_data('000001')
 print(data)
@@ -1235,8 +1235,8 @@ print(data)
 
 ### 文档资源
 - **Apifox项目**: https://app.apifox.com/project/7376246
-- **Swagger UI**: http://localhost:8000/api/docs
-- **OpenAPI文档**: http://localhost:8000/openapi.json
+- **Swagger UI**: http://localhost:8020/api/docs
+- **OpenAPI文档**: http://localhost:8020/openapi.json
 
 ### 技术支持
 - **项目GitHub**: [项目仓库地址]

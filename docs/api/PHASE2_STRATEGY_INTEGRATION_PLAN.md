@@ -1145,8 +1145,8 @@ npm run dev
 
 ```bash
 # 使用验证脚本测试策略 API
-curl http://localhost:8000/api/strategy/list
-curl http://localhost:8000/api/strategy/1
+curl http://localhost:8020/api/strategy/list
+curl http://localhost:8020/api/strategy/1
 ```
 
 ---
@@ -1160,7 +1160,7 @@ curl http://localhost:8000/api/strategy/1
 - 适配器转换逻辑错误
 
 **排查步骤**:
-1. 检查后端 API 响应: `curl http://localhost:8000/api/strategy/list`
+1. 检查后端 API 响应: `curl http://localhost:8020/api/strategy/list`
 2. 检查浏览器控制台网络请求
 3. 检查适配器日志: `console.log('[StrategyAdapter]', ...)`
 

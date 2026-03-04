@@ -7,7 +7,13 @@ MyStocks Web前端状态检查和展示脚本
 """
 
 import requests
+import os
 from datetime import datetime
+
+FRONTEND_PORT = int(os.getenv("FRONTEND_PORT", "3020"))
+FRONTEND_BACKUP_PORT = int(os.getenv("FRONTEND_BACKUP_PORT", "3021"))
+BACKEND_PORT = int(os.getenv("BACKEND_PORT", "8020"))
+BACKEND_BACKUP_PORT = int(os.getenv("BACKEND_BACKUP_PORT", "8021"))
 
 
 def check_service_status():
@@ -18,7 +24,7 @@ def check_service_status():
     print()
 
     # 检查前端服务
-    frontend_ports = [3001, 3002, 3003, 3004, 3005]
+    frontend_ports = [FRONTEND_PORT, FRONTEND_BACKUP_PORT]
     frontend_url = None
 
     print("🔍 检查前端服务...")
@@ -36,7 +42,7 @@ def check_service_status():
         print("   ❌ 前端服务未找到")
 
     # 检查后端服务
-    backend_ports = [8000, 8888, 8001]
+    backend_ports = [BACKEND_PORT, BACKEND_BACKUP_PORT]
     backend_url = None
 
     print("\n🔍 检查后端服务...")
@@ -192,15 +198,15 @@ def show_access_info():
     print("=" * 60)
 
     print("📱 前端访问地址:")
-    print("   - 本地访问: http://localhost:3001")
-    print("   - 网络访问: http://0.0.0.0:3001")
+    print(f"   - 本地访问: http://localhost:{FRONTEND_PORT}")
+    print(f"   - 网络访问: http://0.0.0.0:{FRONTEND_PORT}")
     print("   - 浏览器支持: Chrome, Firefox, Safari, Edge")
     print()
 
     print("🔧 后端API服务:")
-    print("   - API文档: http://localhost:8888/docs")
-    print("   - API接口: http://localhost:8888/api")
-    print("   - 健康检查: http://localhost:8888/health")
+    print(f"   - API文档: http://localhost:{BACKEND_PORT}/docs")
+    print(f"   - API接口: http://localhost:{BACKEND_PORT}/api")
+    print(f"   - 健康检查: http://localhost:{BACKEND_PORT}/health")
     print()
 
     print("👤 默认登录账户:")

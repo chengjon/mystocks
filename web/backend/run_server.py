@@ -35,7 +35,11 @@ try:
     print("\n启动服务器...")
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")  # 使用8000端口，根据API文档规范
+    backend_port = os.getenv("BACKEND_PORT")
+    if not backend_port:
+        raise RuntimeError("Missing BACKEND_PORT in .env")
+
+    uvicorn.run(app, host="0.0.0.0", port=int(backend_port), log_level="info")
 except Exception as e:
     print(f"启动服务器失败: {e}")
     import traceback

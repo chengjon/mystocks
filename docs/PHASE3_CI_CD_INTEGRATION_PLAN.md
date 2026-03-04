@@ -77,7 +77,7 @@ Artifacts: 30-day retention
 
 **Configuration Variables**:
 - `USE_REAL_API` - Toggle between mock and real APIs
-- `API_BASE_URL` - Backend URL (default: http://localhost:8000)
+- `API_BASE_URL` - Backend URL (default: http://localhost:8020)
 - `FRONTEND_BASE_URL` - Frontend URL (default: http://localhost:3000)
 - `ENABLE_VISUAL_REGRESSION` - Enable visual regression testing
 - `ENABLE_PERFORMANCE_MONITORING` - Track performance metrics

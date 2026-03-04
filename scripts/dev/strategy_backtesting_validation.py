@@ -17,6 +17,7 @@ Date: 2025-11-13
 
 import json
 import time
+import os
 from datetime import datetime
 from typing import Dict, List, Any
 import requests
@@ -26,7 +27,7 @@ class StrategyBacktestingValidator:
     """策略回测系统验证器"""
 
     def __init__(self):
-        self.base_url = "http://localhost:8000"
+        self.base_url = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
         self.validation_results = []
 
     def validate_all(self) -> Dict[str, Any]:

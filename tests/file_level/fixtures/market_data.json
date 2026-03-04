@@ -2,7 +2,7 @@
 # This file contains configuration for file-level API testing
 
 api:
-  base_url: "http://localhost:8000"
+  base_url: "http://localhost:8020"
   timeout: 30
   auth_token: null  # Set this for authenticated endpoints
 

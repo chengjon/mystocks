@@ -62,6 +62,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { getPageConfig, isRouteName, isStandardConfig, type PageConfig, type StandardPageConfig } from '@/config/pageConfig'
+import { wsUrl } from '@/config/runtime-endpoints'
 import axios from 'axios'
 
 // 路由相关
@@ -128,9 +129,8 @@ const toggleWebSocket = () => {
     wsConnected.value = false
     console.log('🔇 WebSocket已断开')
   } else {
-    // 建立连接（示例URL，实际应从环境变量读取）
-    const wsUrl = `ws://localhost:8000/ws/${wsChannel}`
-    wsInstance = new WebSocket(wsUrl)
+    const socketUrl = wsUrl(`/ws/${wsChannel}`)
+    wsInstance = new WebSocket(socketUrl)
 
     wsInstance.onopen = () => {
       wsConnected.value = true

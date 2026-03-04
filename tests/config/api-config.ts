@@ -108,11 +108,11 @@ export const API_ENDPOINTS = {
  *
  * @example
  * const url = getApiUrl('/api/dashboard/overview');
- * // Returns: 'http://localhost:8000/api/dashboard/overview'
+ * // Returns: 'http://localhost:8020/api/dashboard/overview'
  */
 export function getApiUrl(
   endpoint: string,
-  baseUrl: string = process.env.API_BASE_URL || 'http://localhost:8000'
+  baseUrl: string = process.env.API_BASE_URL || 'http://localhost:8020'
 ): string {
   // Remove trailing slash from baseUrl if present
   const cleanBaseUrl = baseUrl.replace(/\/$/, '');
@@ -155,7 +155,7 @@ export function replacePathParams(
  *
  * @example
  * const url = buildApiUrl('/api/market/stock/:symbol/detail', { symbol: 'AAPL' });
- * // Returns: 'http://localhost:8000/api/market/stock/AAPL/detail'
+ * // Returns: 'http://localhost:8020/api/market/stock/AAPL/detail'
  */
 export function buildApiUrl(
   endpoint: string,

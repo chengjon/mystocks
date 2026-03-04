@@ -41,6 +41,21 @@ class HealthResponse(BaseModel):
     report_url: Optional[str] = None
 
 
+def _resolve_ports(*env_keys: str) -> list[int]:
+    ports: list[int] = []
+    for key in env_keys:
+        value = os.getenv(key, "").strip()
+        if not value:
+            continue
+        try:
+            port = int(value)
+        except ValueError:
+            continue
+        if port > 0:
+            ports.append(port)
+    return ports
+
+
 @router.get("/health")
 async def check_system_health(request: Request):
     """
@@ -102,20 +117,40 @@ async def check_frontend_service() -> HealthStatus:
     import aiohttp
 
     start_time = time.time()
+    frontend_ports = _resolve_ports("FRONTEND_PORT", "FRONTEND_BACKUP_PORT")
+    if not frontend_ports:
+        return HealthStatus(
+            service="frontend",
+            status="error",
+            details="缺少 FRONTEND_PORT/FRONTEND_BACKUP_PORT 环境变量",
+            response_time=(time.time() - start_time) * 1000,
+        )
+
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get("http://localhost:3000", timeout=aiohttp.ClientTimeout(total=5)) as response:
-                response_time = (time.time() - start_time) * 1000  # 转换为毫秒
+            for port in frontend_ports:
+                try:
+                    async with session.get(
+                        f"http://localhost:{port}", timeout=aiohttp.ClientTimeout(total=5)
+                    ) as response:
+                        response_time = (time.time() - start_time) * 1000  # 转换为毫秒
+                        if response.status == 200:
+                            return HealthStatus(service="frontend", status="normal", response_time=response_time)
+                        return HealthStatus(
+                            service="frontend",
+                            status="warning",
+                            details=f"服务响应异常: {response.status} (port={port})",
+                            response_time=response_time,
+                        )
+                except Exception:
+                    continue
 
-                if response.status == 200:
-                    return HealthStatus(service="frontend", status="normal", response_time=response_time)
-                else:
-                    return HealthStatus(
-                        service="frontend",
-                        status="warning",
-                        details=f"服务响应异常: {response.status}",
-                        response_time=response_time,
-                    )
+            return HealthStatus(
+                service="frontend",
+                status="error",
+                details=f"服务不可访问: 已尝试端口 {frontend_ports}",
+                response_time=(time.time() - start_time) * 1000,
+            )
     except Exception as e:
         return HealthStatus(
             service="frontend",
@@ -132,23 +167,42 @@ async def check_api_service() -> HealthStatus:
     import aiohttp
 
     start_time = time.time()
+    backend_ports = _resolve_ports("BACKEND_PORT", "BACKEND_BACKUP_PORT")
+    if not backend_ports:
+        return HealthStatus(
+            service="api",
+            status="error",
+            details="缺少 BACKEND_PORT/BACKEND_BACKUP_PORT 环境变量",
+            response_time=(time.time() - start_time) * 1000,
+        )
+
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(
-                f"http://localhost:{os.getenv('BACKEND_PORT', '8000')}/api/health",
-                timeout=aiohttp.ClientTimeout(total=5),
-            ) as response:
-                response_time = (time.time() - start_time) * 1000  # 转换为毫秒
+            for port in backend_ports:
+                try:
+                    async with session.get(
+                        f"http://localhost:{port}/api/health",
+                        timeout=aiohttp.ClientTimeout(total=5),
+                    ) as response:
+                        response_time = (time.time() - start_time) * 1000  # 转换为毫秒
 
-                if response.status == 200:
-                    return HealthStatus(service="api", status="normal", response_time=response_time)
-                else:
-                    return HealthStatus(
-                        service="api",
-                        status="warning",
-                        details=f"服务响应异常: {response.status}",
-                        response_time=response_time,
-                    )
+                        if response.status == 200:
+                            return HealthStatus(service="api", status="normal", response_time=response_time)
+                        return HealthStatus(
+                            service="api",
+                            status="warning",
+                            details=f"服务响应异常: {response.status} (port={port})",
+                            response_time=response_time,
+                        )
+                except Exception:
+                    continue
+
+            return HealthStatus(
+                service="api",
+                status="error",
+                details=f"服务不可访问: 已尝试端口 {backend_ports}",
+                response_time=(time.time() - start_time) * 1000,
+            )
     except Exception as e:
         return HealthStatus(
             service="api",

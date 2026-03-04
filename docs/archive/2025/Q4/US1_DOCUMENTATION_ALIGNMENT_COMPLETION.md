@@ -243,7 +243,7 @@ URL: http://localhost:5173/system/architecture
 ### API端点测试
 
 ```bash
-curl http://localhost:8000/api/system/architecture | jq .
+curl http://localhost:8020/api/system/architecture | jq .
 ```
 
 **预期返回**:

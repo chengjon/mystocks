@@ -1,5 +1,6 @@
 describe('MyStocks E2E Tests', () => {
-  const baseUrl = Cypress.env('baseUrl') || 'http://localhost:3000';
+  const frontendPort = Cypress.env('FRONTEND_PORT') || Cypress.env('frontendPort') || '3020';
+  const baseUrl = Cypress.env('baseUrl') || `http://localhost:${frontendPort}`;
 
   beforeEach(() => {
     cy.visit(baseUrl);

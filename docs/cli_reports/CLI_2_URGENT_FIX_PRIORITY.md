@@ -84,13 +84,13 @@ pkill -f "uvicorn.*app.main"
 
 # 重启后端
 cd web/backend
-python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload > /tmp/backend_fixed.log 2>&1 &
+python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload > /tmp/backend_fixed.log 2>&1 &
 
 # 等待启动
 sleep 5
 
 # 验证服务运行
-curl -s http://localhost:8000/health | jq
+curl -s http://localhost:8020/health | jq
 
 # 检查日志
 tail -30 /tmp/backend_fixed.log
@@ -146,7 +146,7 @@ sed -n '428,436p' src/ml_strategy/price_predictor.py | cat -A
 
 ```bash
 # 测试 system.py 的 database/health 端点
-curl -s http://localhost:8000/api/system/database/health | jq '.databases'
+curl -s http://localhost:8020/api/system/database/health | jq '.databases'
 ```
 
 **如果返回 `databases` 数组**: ✅ 问题3已修复
@@ -192,11 +192,11 @@ python3 -m py_compile \
 echo "✅ 所有文件语法检查通过"
 
 # 2. 后端服务成功启动
-curl -s http://localhost:8000/health | jq '.status'
+curl -s http://localhost:8020/health | jq '.status'
 # 输出: "healthy"
 
 # 3. API响应格式正确
-curl -s http://localhost:8000/api/system/database/health | jq '.databases'
+curl -s http://localhost:8020/api/system/database/health | jq '.databases'
 # 输出: 数组对象
 
 # 4. 运行E2E测试

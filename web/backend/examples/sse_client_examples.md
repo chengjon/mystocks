@@ -11,7 +11,7 @@ Complete examples showing how to consume SSE (Server-Sent Events) endpoints from
 
 ```javascript
 // Connect to training progress stream
-const eventSource = new EventSource('http://localhost:8000/api/v1/sse/training');
+const eventSource = new EventSource('http://localhost:8020/api/v1/sse/training');
 
 // Handle connection events
 eventSource.addEventListener('connected', (event) => {
@@ -66,7 +66,7 @@ export function useTrainingProgress(taskId: string) {
 
     useEffect(() => {
         const eventSource = new EventSource(
-            `http://localhost:8000/api/v1/sse/training?client_id=client-${taskId}`
+            `http://localhost:8020/api/v1/sse/training?client_id=client-${taskId}`
         );
 
         eventSource.addEventListener('connected', () => {
@@ -129,7 +129,7 @@ export function useBacktestProgress(backtestId: string) {
 
     onMounted(() => {
         eventSource = new EventSource(
-            `http://localhost:8000/api/v1/sse/backtest?client_id=backtest-${backtestId}`
+            `http://localhost:8020/api/v1/sse/backtest?client_id=backtest-${backtestId}`
         );
 
         eventSource.addEventListener('connected', () => {
@@ -180,7 +180,7 @@ class SSEManager {
         }
 
         const eventSource = new EventSource(
-            `http://localhost:8000/api/v1/sse/${channel}`
+            `http://localhost:8020/api/v1/sse/${channel}`
         );
 
         eventSource.addEventListener('connected', (event) => {
@@ -266,7 +266,7 @@ import json
 class MyStocksSSEClient:
     """Python client for MyStocks SSE endpoints"""
 
-    def __init__(self, base_url='http://localhost:8000'):
+    def __init__(self, base_url='http://localhost:8020'):
         self.base_url = base_url
 
     def listen_training(self, callback, client_id=None):
@@ -362,7 +362,7 @@ client.listen_training(handle_training_progress, client_id='python-client-001')
 ```bash
 # Connect to training progress stream
 curl -N -H "Accept: text/event-stream" \
-    http://localhost:8000/api/v1/sse/training
+    http://localhost:8020/api/v1/sse/training
 
 # Output:
 # data: {"event": "connected", "data": {"client_id": "...", "channel": "training", "message": "Connected to training channel"}, "timestamp": "2025-10-24T15:30:00Z"}
@@ -373,14 +373,14 @@ curl -N -H "Accept: text/event-stream" \
 
 # Connect to backtest stream
 curl -N -H "Accept: text/event-stream" \
-    http://localhost:8000/api/v1/sse/backtest?client_id=curl-client-001
+    http://localhost:8020/api/v1/sse/backtest?client_id=curl-client-001
 
 # Connect to alerts stream
 curl -N -H "Accept: text/event-stream" \
-    http://localhost:8000/api/v1/sse/alerts
+    http://localhost:8020/api/v1/sse/alerts
 
 # Check SSE server status
-curl http://localhost:8000/api/v1/sse/status
+curl http://localhost:8020/api/v1/sse/status
 
 # Output:
 # {
@@ -642,10 +642,10 @@ app.add_middleware(
 
 ```javascript
 // ❌ Wrong
-fetch('http://localhost:8000/api/v1/sse/training')
+fetch('http://localhost:8020/api/v1/sse/training')
 
 // ✅ Correct
-const eventSource = new EventSource('http://localhost:8000/api/v1/sse/training');
+const eventSource = new EventSource('http://localhost:8020/api/v1/sse/training');
 ```
 
 ### Issue: Connection Timeout

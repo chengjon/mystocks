@@ -19,7 +19,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # 配置
-API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
+BACKEND_PORT = os.getenv("BACKEND_PORT", "").strip()
+if not BACKEND_PORT:
+    raise RuntimeError("Missing BACKEND_PORT in environment")
+API_BASE_URL = os.getenv("API_BASE_URL", f"http://localhost:{BACKEND_PORT}")
 AUTH_TOKEN = os.getenv("AUTH_TOKEN", "")
 HEADERS = {"Content-Type": "application/json"}
 if AUTH_TOKEN:

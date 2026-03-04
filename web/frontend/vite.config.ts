@@ -11,8 +11,20 @@ import commonjs from 'vite-plugin-commonjs'
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  const devPort = parseInt(env.FRONTEND_PORT || process.env.PORT || '3020')
-  const backendPort = env.BACKEND_PORT || '8020'
+  const frontendPortRaw = env.FRONTEND_PORT || process.env.FRONTEND_PORT || process.env.PORT
+  if (!frontendPortRaw) {
+    throw new Error("[port-config] Missing FRONTEND_PORT in .env")
+  }
+
+  const devPort = Number.parseInt(frontendPortRaw, 10)
+  if (!Number.isInteger(devPort) || devPort <= 0) {
+    throw new Error(`[port-config] Invalid FRONTEND_PORT: ${frontendPortRaw}`)
+  }
+
+  const backendPort = env.BACKEND_PORT || process.env.BACKEND_PORT
+  if (!backendPort) {
+    throw new Error("[port-config] Missing BACKEND_PORT in .env")
+  }
   const backendUrl = `http://localhost:${backendPort}`
 
   return {

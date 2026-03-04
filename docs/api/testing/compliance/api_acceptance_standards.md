@@ -147,7 +147,7 @@ import { test, expect } from '@playwright/test';
 test.describe('身份认证旅程', () => {
   test('完整登录流程', async ({ page }) => {
     // 1. 访问登录页
-    await page.goto('http://localhost:3001/login');
+    await page.goto('http://localhost:3020/login');
 
     // 2. 输入凭证
     await page.fill('[data-testid="username-input"]', 'admin');
@@ -157,7 +157,7 @@ test.describe('身份认证旅程', () => {
     await page.click('[data-testid="login-button"]');
 
     // 4. 验证跳转到仪表板
-    await expect(page).toHaveURL('http://localhost:3001/dashboard');
+    await expect(page).toHaveURL('http://localhost:3020/dashboard');
 
     // 5. 验证用户信息显示
     await expect(page.locator('[data-testid="user-avatar"]')).toBeVisible();
@@ -172,7 +172,7 @@ test.describe('身份认证旅程', () => {
         req.url().includes('/api/strategy/list') &&
         req.headers()['authorization']
       ),
-      page.goto('http://localhost:3001/strategy')
+      page.goto('http://localhost:3020/strategy')
     ]);
     expect(apiRequest).toBeTruthy();
   });
@@ -190,7 +190,7 @@ test.describe('策略数据展示', () => {
     await login(page);
 
     // 2. 访问策略管理页面
-    await page.goto('http://localhost:3001/strategy');
+    await page.goto('http://localhost:3020/strategy');
 
     // 3. 等待数据加载（自动等待策略卡片出现）
     await expect(page.locator('.strategy-card')).toHaveCount(4, { timeout: 5000 });
@@ -227,7 +227,7 @@ test.describe('策略数据展示', () => {
 test.describe('策略 CRUD 操作', () => {
   test('完整 CRUD 流程', async ({ page }) => {
     await login(page);
-    await page.goto('http://localhost:3001/strategy');
+    await page.goto('http://localhost:3020/strategy');
 
     // === 创建策略 ===
     await page.click('[data-testid="create-strategy-button"]');
@@ -279,7 +279,7 @@ test.describe('策略 CRUD 操作', () => {
 test.describe('回测工作流', () => {
   test('从列表到回测结果的完整流程', async ({ page }) => {
     await login(page);
-    await page.goto('http://localhost:3001/strategy');
+    await page.goto('http://localhost:3020/strategy');
 
     // 1. 从策略列表选择策略
     const strategyCard = page.locator('.strategy-card').first();
@@ -323,7 +323,7 @@ test.describe('回测工作流', () => {
 ```typescript
 test('前端展示数据与 API 返回数据一致', async ({ page }) => {
   await login(page);
-  await page.goto('http://localhost:3001/strategy');
+  await page.goto('http://localhost:3020/strategy');
 
   // 1. 拦截 API 响应
   let apiData: any;
@@ -353,7 +353,7 @@ test('前端展示数据与 API 返回数据一致', async ({ page }) => {
 ```typescript
 test('筛选控件与 API 参数对齐', async ({ page }) => {
   await login(page);
-  await page.goto('http://localhost:3001/strategy');
+  await page.goto('http://localhost:3020/strategy');
 
   // 1. 设置筛选条件
   await page.selectOption('[data-testid="status-filter"]', 'active');
@@ -403,7 +403,7 @@ test.describe('异常场景处理', () => {
     await page.context().setOffline(true);
 
     // 2. 尝试加载数据
-    await page.goto('http://localhost:3001/strategy');
+    await page.goto('http://localhost:3020/strategy');
 
     // 3. 验证错误提示（非白屏/崩溃）
     await expect(page.locator('.error-message')).toBeVisible();
@@ -435,7 +435,7 @@ test('401 未认证时自动弹出登录框', async ({ page }) => {
   await page.evaluate(() => localStorage.removeItem('access_token'));
 
   // 2. 访问需要认证的页面
-  await page.goto('http://localhost:3001/strategy');
+  await page.goto('http://localhost:3020/strategy');
 
   // 3. 验证自动跳转到登录页或弹出登录框
   await expect(page).toHaveURL(/\/login/, { timeout: 5000 });
@@ -449,7 +449,7 @@ test('403 无权限时显示权限不足提示', async ({ page }) => {
   await login(page, 'limited_user'); // 使用权限不足的用户
 
   // 1. 尝试访问管理功能
-  await page.goto('http://localhost:3001/admin');
+  await page.goto('http://localhost:3020/admin');
 
   // 2. 验证权限提示
   await expect(page.locator('.error-message')).toContainText('权限不足');
@@ -474,7 +474,7 @@ test('500 服务器错误时显示友好提示', async ({ page, context }) => {
   });
 
   await login(page);
-  await page.goto('http://localhost:3001/strategy');
+  await page.goto('http://localhost:3020/strategy');
 
   // 2. 验证错误展示
   await expect(page.locator('.error-message')).toBeVisible();
@@ -489,7 +489,7 @@ test('500 服务器错误时显示友好提示', async ({ page, context }) => {
 ```typescript
 test('422 参数验证失败时显示具体错误', async ({ page }) => {
   await login(page);
-  await page.goto('http://localhost:3001/strategy');
+  await page.goto('http://localhost:3020/strategy');
 
   // 1. 点击创建策略
   await page.click('[data-testid="create-strategy-button"]');
@@ -536,7 +536,7 @@ test('错误日志包含 request_id', async ({ page }) => {
   });
 
   await login(page);
-  await page.goto('http://localhost:3001/strategy');
+  await page.goto('http://localhost:3020/strategy');
 
   // 3. 验证错误日志包含 request_id
   const errorLog = errors.find(e => e.includes('trace-abc-123'));
@@ -611,7 +611,7 @@ test.describe('桌面端布局验证', () => {
     test(`${viewport.name} (${viewport.width}x${viewport.height})`, async ({ page }) => {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await login(page);
-      await page.goto('http://localhost:3001/strategy');
+      await page.goto('http://localhost:3020/strategy');
 
       // 验证网格布局正确显示
       await expect(page.locator('.strategy-grid')).toBeVisible();
@@ -641,7 +641,7 @@ test.describe('桌面端布局验证', () => {
 test.describe('冒烟测试 - 关键功能验证', () => {
   test('核心功能快速验证', async ({ page }) => {
     // 1. 页面加载
-    await page.goto('http://localhost:3001');
+    await page.goto('http://localhost:3020');
     await expect(page).toHaveTitle(/MyStocks/);
 
     // 2. 健康检查
@@ -653,7 +653,7 @@ test.describe('冒烟测试 - 关键功能验证', () => {
 
     // 3. 关键数据加载
     await login(page);
-    await page.goto('http://localhost:3001/strategy');
+    await page.goto('http://localhost:3020/strategy');
     await expect(page.locator('.strategy-card')).toHaveCount(4);
 
     // 4. 基本操作

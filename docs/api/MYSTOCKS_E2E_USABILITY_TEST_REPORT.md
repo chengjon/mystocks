@@ -7,8 +7,8 @@
 **测试范围**: 前端Web应用 + 后端API服务的完整端到端功能验证
 
 ### 测试环境信息
-- **前端**: http://localhost:3001 (Vue3 + Vite + Element Plus)
-- **后端**: http://localhost:8000 (FastAPI + PostgreSQL + TDengine)
+- **前端**: http://localhost:3020 (Vue3 + Vite + Element Plus)
+- **后端**: http://localhost:8020 (FastAPI + PostgreSQL + TDengine)
 - **图表库**: echarts, klinecharts
 - **实时通信**: Socket.IO
 - **测试工具**: Playwright自动化测试框架
@@ -154,8 +154,8 @@
 1. **修复核心数据API**
    ```bash
    # 检查API实现
-   curl -X GET http://localhost:8000/api/stock/000001
-   curl -X GET http://localhost:8000/api/stock/realtime/000001
+   curl -X GET http://localhost:8020/api/stock/000001
+   curl -X GET http://localhost:8020/api/stock/realtime/000001
 
    # 检查数据库连接
    python -c "

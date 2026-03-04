@@ -4,6 +4,17 @@
 
 set -e
 
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+if [ -f "${PROJECT_ROOT}/.env" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "${PROJECT_ROOT}/.env"
+    set +a
+fi
+
+: "${FRONTEND_PORT:?Missing FRONTEND_PORT in .env}"
+: "${BACKEND_PORT:?Missing BACKEND_PORT in .env}"
+
 # 颜色定义
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -106,7 +117,7 @@ print_info "工作目录: $(pwd)"
 
 # 检查前端是否运行
 print_info "检查前端服务..."
-if ! curl -s http://localhost:3000 > /dev/null; then
+if ! curl -s "http://localhost:${FRONTEND_PORT}" > /dev/null; then
     print_warning "前端服务未运行，请先启动前端："
     echo "  cd web/frontend && npm run dev"
     exit 1
@@ -115,7 +126,7 @@ print_success "前端服务运行中"
 
 # 检查后端是否运行
 print_info "检查后端服务..."
-if ! curl -s http://localhost:8000/health > /dev/null; then
+if ! curl -s "http://localhost:${BACKEND_PORT}/health" > /dev/null; then
     print_warning "后端服务未运行，请先启动后端："
     echo "  python3 simple_auth_server.py"
     exit 1

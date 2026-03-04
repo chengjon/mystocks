@@ -16,6 +16,9 @@ const dataQualityMethods = require("./core/data-quality");
 const scoringMethods = require("./core/scoring");
 const reportHtmlMethods = require("./core/report-html");
 
+const FRONTEND_PORT = process.env.FRONTEND_PORT || "3020";
+const BACKEND_PORT = process.env.BACKEND_PORT || "8020";
+
 class WebUsabilityTestRunner {
   constructor() {
     this.testResults = {
@@ -35,8 +38,8 @@ class WebUsabilityTestRunner {
     };
 
     this.config = {
-      baseUrl: process.env.BASE_URL || "http://localhost:3000",
-      apiUrl: process.env.API_URL || "http://localhost:8000",
+      baseUrl: process.env.BASE_URL || process.env.FRONTEND_URL || `http://localhost:${FRONTEND_PORT}`,
+      apiUrl: process.env.API_URL || process.env.BACKEND_URL || `http://localhost:${BACKEND_PORT}`,
       timeout: parseInt(process.env.TEST_TIMEOUT, 10) || 60000,
       retries: parseInt(process.env.TEST_RETRIES, 10) || 2,
     };

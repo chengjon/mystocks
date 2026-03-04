@@ -4,8 +4,8 @@
 
 | 文档类型 | URL | 说明 |
 |---------|-----|------|
-| Swagger UI | http://localhost:8000/docs | 交互式 API 文档 |
-| ReDoc | http://localhost:8000/redoc | 替代 API 文档界面 |
+| Swagger UI | http://localhost:8020/docs | 交互式 API 文档 |
+| ReDoc | http://localhost:8020/redoc | 替代 API 文档界面 |
 | OpenAPI Schema | `/docs/api/openapi.json` | OpenAPI 3.1.0 JSON 格式 |
 | YAML Schema | `/docs/api/openapi.yaml` | OpenAPI 3.1.0 YAML 格式 |
 
@@ -25,7 +25,7 @@
 
 **请求示例** (登录):
 ```bash
-curl -X POST http://localhost:8000/api/v1/auth/login \
+curl -X POST http://localhost:8020/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username": "admin", "password": "password"}'
 ```

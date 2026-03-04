@@ -8,7 +8,7 @@ const path = require('path');
 
 // 测试配置
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
-const API_URL = process.env.API_URL || 'http://localhost:8000';
+const API_URL = process.env.API_URL || 'http://localhost:8020';
 
 // 测试数据
 const TEST_STOCKS = ['000001', '000002', '600000'];
@@ -439,7 +439,7 @@ test.describe('🔒 安全性测试', () => {
 
         // 尝试跨站请求伪造
         const maliciousPage = await context.newPage();
-        await maliciousPage.goto('data:text/html,<form id="csrf" method="POST" action="http://localhost:8000/api/user/delete"><input type="hidden" name="user_id" value="admin"></form>');
+        await maliciousPage.goto('data:text/html,<form id="csrf" method="POST" action="http://localhost:8020/api/user/delete"><input type="hidden" name="user_id" value="admin"></form>');
         await maliciousPage.click('#csrf input[type="submit"]');
 
         // 验证请求被拒绝

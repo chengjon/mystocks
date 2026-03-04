@@ -199,6 +199,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, Refresh } from '@element-plus/icons-vue'
 import axios from 'axios'
+import { API_BASE_URL } from '@/config/runtime-endpoints'
 
 // 响应式数据
 const queryForm = reactive({
@@ -213,7 +214,7 @@ const loading = ref(false)
 const refreshing = ref(false)
 
 // API基础URL
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+const API_BASE = API_BASE_URL
 
 // 计算属性 - 统计信息
 const totalRaceAmount = computed(() => {

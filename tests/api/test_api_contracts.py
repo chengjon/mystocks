@@ -12,7 +12,7 @@ import requests
 import yaml
 
 # 测试配置
-API_BASE_URL = os.environ.get("API_TEST_BASE_URL", "http://localhost:8000")
+API_BASE_URL = os.environ.get("API_TEST_BASE_URL", "http://localhost:8020")
 CONTRACTS_DIR = Path(__file__).parent.parent.parent / "docs/api/contracts"
 
 

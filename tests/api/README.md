@@ -101,7 +101,7 @@
 1. 启动后端服务：
 ```bash
 cd web/backend
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020
 ```
 
 2. 安装 Playwright 浏览器（首次运行）：
@@ -153,7 +153,7 @@ npx playwright test tests/api/ --project=chromium --only-failed
 测试配置文件位于 `tests/api/playwright.config.ts`。
 
 主要配置：
-- `baseURL`: `http://localhost:8000` (可通过环境变量 `API_BASE_URL` 覆盖)
+- `baseURL`: `http://localhost:8020` (可通过环境变量 `API_BASE_URL` 覆盖)
 - `timeout`: 30000ms (30秒)
 - `retries`: 1 (CI环境: 2)
 - `workers`: 4 (并行执行)

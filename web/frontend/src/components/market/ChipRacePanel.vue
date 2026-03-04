@@ -61,6 +61,7 @@
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
+import { API_BASE_URL } from '@/config/runtime-endpoints'
 
 const raceType = ref('open')
 const tradeDate = ref('')
@@ -68,7 +69,7 @@ const minAmount = ref(null)
 const tableData = ref([])
 const loading = ref(false)
 const refreshing = ref(false)
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+const API_BASE = API_BASE_URL
 
 const queryData = async () => {
   loading.value = true

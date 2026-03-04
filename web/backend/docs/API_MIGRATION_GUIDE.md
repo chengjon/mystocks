@@ -358,7 +358,7 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
 - 统一响应格式定义: `app/core/responses.py`
 - 响应格式中间件: `app/middleware/response_format.py`
 - 全局异常处理器: `app/core/global_exception_handlers.py`
-- API 文档: http://localhost:8000/docs
+- API 文档: http://localhost:8020/docs
 
 ---
 

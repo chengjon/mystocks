@@ -12,7 +12,8 @@
 import { test, expect } from '@playwright/test';
 
 const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:3020';
-const BACKEND_URL = 'http://localhost:8000';
+const BACKEND_PORT = process.env.BACKEND_PORT || '8020';
+const BACKEND_URL = process.env.BACKEND_URL || `http://localhost:${BACKEND_PORT}`;
 const TEST_USER = { username: 'admin', password: 'admin123' };
 
 // Pages that require authentication

@@ -62,12 +62,12 @@ pkill -f "node.*vite"
 rm -rf node_modules/.vite
 
 # 重新启动
-npm run dev -- --port 3001 --host 0.0.0.0
+npm run dev -- --port 3020 --host 0.0.0.0
 ```
 
 ### 步骤5: 验证修复
 
-打开浏览器访问：http://localhost:3001
+打开浏览器访问：http://localhost:3020
 
 **预期结果**：
 - ✅ 看到金色脉冲加载动画

@@ -298,15 +298,105 @@ const ICON_MAP: Record<string, { path: string; viewBox?: string; decorative?: bo
   Logout: {
     path: 'M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1',
     viewBox: '0 0 24 24'
+  },
+  Menu: {
+    path: 'M4 6h16M4 12h16M4 18h16',
+    viewBox: '0 0 24 24'
+  },
+  ChevronLeft: {
+    path: 'M15 19l-7-7 7-7',
+    viewBox: '0 0 24 24'
+  },
+  Bookmark: {
+    path: 'M6 4a2 2 0 012-2h8a2 2 0 012 2v17l-6-3-6 3V4z',
+    viewBox: '0 0 24 24'
+  },
+  WifiOff: {
+    path: 'M1 1l22 22M16.72 11.06A10.94 10.94 0 0112 10c-2.55 0-4.91.87-6.78 2.34M5 13.18A10.94 10.94 0 0112 10m0 0c2.55 0 4.91.87 6.78 2.34M8.53 16.11A6.97 6.97 0 0112 15c1.11 0 2.15.27 3.06.75M12 20h.01',
+    viewBox: '0 0 24 24'
+  },
+  Clock: {
+    path: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+    viewBox: '0 0 24 24'
+  },
+  Refresh: {
+    path: 'M4 4v5h5M20 20v-5h-5M20 9a8 8 0 00-13.66-5.66L4 5M4 15a8 8 0 0013.66 5.66L20 19',
+    viewBox: '0 0 24 24'
+  },
+  TrendingUp: {
+    path: 'M3 17l6-6 4 4 8-8M14 7h7v7',
+    viewBox: '0 0 24 24'
+  },
+  BarChart3: {
+    path: 'M5 20V10M12 20V4M19 20v-7',
+    viewBox: '0 0 24 24'
+  },
+  DollarSign: {
+    path: 'M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H7',
+    viewBox: '0 0 24 24'
+  },
+  Trophy: {
+    path: 'M8 21h8M12 17v4M7 4h10v3a5 5 0 01-10 0V4zM5 7a2 2 0 01-2-2V4h4M19 7a2 2 0 002-2V4h-4',
+    viewBox: '0 0 24 24'
+  },
+  Briefcase: {
+    path: 'M3 7h18v11a2 2 0 01-2 2H5a2 2 0 01-2-2V7zm5 0V5a2 2 0 012-2h4a2 2 0 012 2v2',
+    viewBox: '0 0 24 24'
   }
 }
 
+const ICON_ALIASES: Record<string, string> = {
+  activity: 'Activity',
+  'alert-circle': 'Alert',
+  'bar-chart-3': 'BarChart3',
+  bookmark: 'Bookmark',
+  briefcase: 'Briefcase',
+  'chevron-left': 'ChevronLeft',
+  clock: 'Clock',
+  'dollar-sign': 'DollarSign',
+  refresh: 'Refresh',
+  trophy: 'Trophy',
+  'trending-up': 'TrendingUp',
+  'wifi-off': 'WifiOff'
+}
+
+const missingIconWarnings = new Set<string>()
+
+const toPascalCase = (name: string): string =>
+  name
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join('')
+
+const resolveIconKey = (rawName: string): string => {
+  if (ICON_MAP[rawName]) {
+    return rawName
+  }
+
+  const normalized = rawName.trim().toLowerCase()
+  const alias = ICON_ALIASES[normalized]
+  if (alias && ICON_MAP[alias]) {
+    return alias
+  }
+
+  const pascal = toPascalCase(rawName)
+  if (ICON_MAP[pascal]) {
+    return pascal
+  }
+
+  if (!missingIconWarnings.has(rawName)) {
+    console.warn(`ArtDecoIcon: Icon "${rawName}" not found, fallback to "${FALLBACK_ICON_NAME}"`)
+    missingIconWarnings.add(rawName)
+  }
+  return FALLBACK_ICON_NAME
+}
+
+const resolvedIconKey = computed(() => resolveIconKey(props.name))
+
 // 计算图标组件和属性
 const iconComponent = computed(() => {
-  const icon = ICON_MAP[props.name] ?? ICON_MAP[FALLBACK_ICON_NAME]
-  if (!ICON_MAP[props.name]) {
-    console.warn(`ArtDecoIcon: Icon "${props.name}" not found, fallback to "${FALLBACK_ICON_NAME}"`)
-  }
+  const icon = ICON_MAP[resolvedIconKey.value] ?? ICON_MAP[FALLBACK_ICON_NAME]
 
   // Stroke Width based on weight
   let strokeWidth = '2'
@@ -390,7 +480,7 @@ const iconComponent = computed(() => {
 })
 
 const iconProps = computed(() => {
-  const icon = ICON_MAP[props.name] ?? ICON_MAP[FALLBACK_ICON_NAME]
+  const icon = ICON_MAP[resolvedIconKey.value] ?? ICON_MAP[FALLBACK_ICON_NAME]
   return {
     viewBox: icon?.viewBox || '0 0 24 24'
   }

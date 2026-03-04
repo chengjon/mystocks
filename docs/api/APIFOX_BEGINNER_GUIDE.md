@@ -104,7 +104,7 @@
 
    | 变量名 | 初始值 | 当前值 | 说明 |
    |--------|--------|--------|------|
-   | base_url | `http://localhost:8000` | `http://localhost:8000` | 服务器地址 |
+   | base_url | `http://localhost:8020` | `http://localhost:8020` | 服务器地址 |
    | auth_token | (留空) | (留空) | JWT认证令牌 |
    | csrf_token | (留空) | (留空) | CSRF令牌 |
 
@@ -130,7 +130,7 @@ GET /health
 【基础信息】
 请求方式: GET
 请求路径: /health
-完整URL: {{base_url}}/health  ← 注意这里会自动替换成 http://localhost:8000/health
+完整URL: {{base_url}}/health  ← 注意这里会自动替换成 http://localhost:8020/health
 
 【请求参数】
 无需参数 ✅
@@ -180,7 +180,7 @@ GET /health
 
 想象一下：
 - 您有 218 个 API
-- 每个 API 的 URL 都是 `http://localhost:8000/api/...`
+- 每个 API 的 URL 都是 `http://localhost:8020/api/...`
 - 如果服务器地址改了（比如从本地变成生产环境）
 - 您需要修改 218 次！😱
 
@@ -201,7 +201,7 @@ GET /health
 
 ```json
 {
-  "base_url": "http://localhost:8000",
+  "base_url": "http://localhost:8020",
   "auth_token": "",
   "csrf_token": ""
 }
@@ -442,7 +442,7 @@ Request timeout
 - `base_url` 配置错误
 
 **解决方案**:
-1. 确认服务器正在运行: 访问 http://localhost:8000/health
+1. 确认服务器正在运行: 访问 http://localhost:8020/health
 2. 检查 `base_url` 是否配置正确
 3. 检查防火墙设置
 

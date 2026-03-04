@@ -10,7 +10,7 @@
 | Phase | Name | Status | Notes |
 |---|---|---|---|
 | 0 | Freeze & Planning | Completed | Pre-commit gate added, OpenSpec strict validation passed, progress tracker initialized |
-| 1 | Governance & Approval | Not Started | Waiting architecture/front-end lead review |
+| 1 | Governance & Approval | In Progress | Approval package prepared; waiting architecture/front-end lead sign-off |
 | 2 | Shared Asset Extraction | Not Started | Pending approval |
 | 3a | Market Domain Migration | Not Started | Pending approval |
 | 3b | Data Domain Migration | Not Started | Pending approval |

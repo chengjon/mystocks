@@ -643,7 +643,7 @@ import aiohttp
 
 async def test_backtest_progress_stream():
     """测试回测进度推送"""
-    url = "http://localhost:8000/api/stream/backtest/test-task-123"
+    url = "http://localhost:8020/api/stream/backtest/test-task-123"
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
@@ -665,7 +665,7 @@ async def test_backtest_progress_stream():
 
 async def test_alert_stream():
     """测试告警推送"""
-    url = "http://localhost:8000/api/stream/alerts"
+    url = "http://localhost:8020/api/stream/alerts"
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:

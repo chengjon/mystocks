@@ -16,14 +16,14 @@
 
 - 后端服务名：`mystocks-backend`
 - 前端服务名：`mystocks-frontend`
-- 后端地址：`http://localhost:8000`
+- 后端地址：`http://localhost:8020`
 - 前端地址：`http://localhost:3020`
 
 快速校验：
 
 ```bash
 pm2 list
-curl -f http://localhost:8000/health
+curl -f http://localhost:8020/health
 curl -f http://localhost:3020
 ```
 
@@ -60,7 +60,7 @@ pm2 monit
 
 ```bash
 # 快速确认端口监听
-lsof -i :8000
+lsof -i :8020
 lsof -i :3020
 
 # 重载配置（不中断服务）

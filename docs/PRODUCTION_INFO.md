@@ -9,10 +9,10 @@
 - **版本**: v1.0.0-production
 
 ### 服务地址
-- **前端访问地址**: http://localhost:3001
-- **后端API地址**: http://localhost:8888
-- **API文档地址**: http://localhost:8888/docs
-- **API健康检查**: http://localhost:8888/api/health
+- **前端访问地址**: http://localhost:3020
+- **后端API地址**: http://localhost:8020
+- **API文档地址**: http://localhost:8020/docs
+- **API健康检查**: http://localhost:8020/api/health
 
 ### 端口使用情况
 - **3000**: 可用（未占用）
@@ -50,11 +50,11 @@
 # 启动后端服务
 cd /opt/claude/mystocks_spec/web/backend
 export PYTHONPATH=/opt/claude/mystocks_spec/web/backend:$PYTHONPATH
-python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8888 &
+python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8020 &
 
 # 启动前端服务
 cd /opt/claude/mystocks_spec/web/frontend
-npm run preview -- --port 3001 --host 0.0.0.0 &
+npm run preview -- --port 3020 --host 0.0.0.0 &
 ```
 
 ### 停止命令
@@ -117,8 +117,8 @@ top
 ### 服务状态
 ```bash
 # 检查端口占用
-lsof -Pi :8888 -sTCP:LISTEN
-lsof -Pi :3001 -sTCP:LISTEN
+lsof -Pi :8020 -sTCP:LISTEN
+lsof -Pi :3020 -sTCP:LISTEN
 
 # 检查进程状态
 ps aux | grep uvicorn
@@ -128,10 +128,10 @@ ps aux | grep npm
 ### 健康检查
 ```bash
 # API健康检查
-curl http://localhost:8888/api/health
+curl http://localhost:8020/api/health
 
 # 前端页面检查
-curl -I http://localhost:3001/
+curl -I http://localhost:3020/
 
 # 数据库连接检查
 docker exec mystocks_postgres pg_isready -U postgres
@@ -160,8 +160,8 @@ cp -r /opt/claude/mystocks_spec/config /opt/mystocks/config_backup_$(date +%Y%m%
 1. **端口被占用**
    ```bash
    # 查找占用进程
-   lsof -Pi :8888 -sTCP:LISTEN
-   lsof -Pi :3001 -sTCP:LISTEN
+   lsof -Pi :8020 -sTCP:LISTEN
+   lsof -Pi :3020 -sTCP:LISTEN
 
    # 清理冲突进程
    pkill -f "uvicorn.*8888"
@@ -181,14 +181,14 @@ cp -r /opt/claude/mystocks_spec/config /opt/mystocks/config_backup_$(date +%Y%m%
 3. **前端页面无法访问**
    ```bash
    # 检查前端服务
-   curl -I http://localhost:3001/
+   curl -I http://localhost:3020/
 
    # 检查前端日志
    tail -f /opt/claude/mystocks_spec/logs/frontend.log
 
    # 重启前端服务
    pkill -f "npm.*preview"
-   cd /opt/claude/mystocks_spec/web/frontend && npm run preview -- --port 3001 --host 0.0.0.0 &
+   cd /opt/claude/mystocks_spec/web/frontend && npm run preview -- --port 3020 --host 0.0.0.0 &
    ```
 
 4. **API响应异常**
@@ -201,7 +201,7 @@ cp -r /opt/claude/mystocks_spec/config /opt/mystocks/config_backup_$(date +%Y%m%
 
    # 重启后端服务
    pkill -f "uvicorn.*8888"
-   cd /opt/claude/mystocks_spec/web/backend && python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8888 &
+   cd /opt/claude/mystocks_spec/web/backend && python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8020 &
    ```
 
 ## 维护日程

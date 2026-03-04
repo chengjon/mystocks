@@ -1,7 +1,33 @@
 import { chromium } from 'playwright';
 import fs from 'fs';
+import path from 'path';
 
-const BASE_URL = 'http://localhost:3020';
+function loadEnvFile(envPath) {
+  if (!fs.existsSync(envPath)) return;
+  const lines = fs.readFileSync(envPath, 'utf8').split(/\r?\n/u);
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const separatorIndex = trimmed.indexOf('=');
+    if (separatorIndex <= 0) continue;
+    const key = trimmed.slice(0, separatorIndex).trim();
+    if (!key || process.env[key] !== undefined) continue;
+    process.env[key] = trimmed.slice(separatorIndex + 1).trim();
+  }
+}
+
+loadEnvFile(path.join(process.cwd(), '.env'));
+loadEnvFile(path.join(process.cwd(), '..', '.env'));
+loadEnvFile(path.join(process.cwd(), '..', '..', '.env'));
+
+const FRONTEND_PORT = process.env.FRONTEND_PORT;
+const BACKEND_PORT = process.env.BACKEND_PORT;
+
+if (!FRONTEND_PORT || !BACKEND_PORT) {
+  throw new Error('Missing FRONTEND_PORT or BACKEND_PORT in environment');
+}
+
+const BASE_URL = `http://localhost:${FRONTEND_PORT}`;
 const outputDir = '/tmp/mystocks_screenshots';
 
 // 创建输出目录
@@ -83,9 +109,9 @@ async function main() {
   await browser.close();
   console.log(`\n✅ 截图已保存到: ${outputDir}/`);
   console.log('\n🔗 访问地址:');
-  console.log(`   前端: http://localhost:3020`);
-  console.log(`   后端: http://localhost:8000`);
-  console.log(`   API文档: http://localhost:8000/docs`);
+  console.log(`   前端: http://localhost:${FRONTEND_PORT}`);
+  console.log(`   后端: http://localhost:${BACKEND_PORT}`);
+  console.log(`   API文档: http://localhost:${BACKEND_PORT}/docs`);
 }
 
 main().catch(console.error);

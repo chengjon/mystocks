@@ -5,7 +5,7 @@ import requests
 
 # 测试前端页面是否能正常加载
 def test_frontend_pages():
-    base_url = "http://localhost:3001"
+    base_url = "http://localhost:3020"
 
     # 测试页面列表
     pages = [

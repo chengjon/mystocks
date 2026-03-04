@@ -143,7 +143,7 @@ export TOKEN="dev-mock-token-for-development"
 
 # Test 1: Get industries
 curl -H "Authorization: Bearer $TOKEN" \
-     "http://localhost:8000/api/v1/data/stocks/industries" | jq '.'
+     "http://localhost:8020/api/v1/data/stocks/industries" | jq '.'
 ```
 
 **Expected Response**:
@@ -165,7 +165,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 ```bash
 # Test 2: Get concepts
 curl -H "Authorization: Bearer $TOKEN" \
-     "http://localhost:8000/api/v1/data/stocks/concepts" | jq '.'
+     "http://localhost:8020/api/v1/data/stocks/concepts" | jq '.'
 ```
 
 **Success Criteria**:
@@ -296,7 +296,7 @@ LIMIT 10;
 ```bash
 # Test 1: Get paginated stock list
 curl -H "Authorization: Bearer $TOKEN" \
-     "http://localhost:8000/api/v1/data/stocks/basic?page=1&page_size=20" | jq '.'
+     "http://localhost:8020/api/v1/data/stocks/basic?page=1&page_size=20" | jq '.'
 ```
 
 **Expected Response**:
@@ -324,7 +324,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 ```bash
 # Test 2: Search stocks
 curl -H "Authorization: Bearer $TOKEN" \
-     "http://localhost:8000/api/v1/data/stocks/search?keyword=平安" | jq '.'
+     "http://localhost:8020/api/v1/data/stocks/search?keyword=平安" | jq '.'
 ```
 
 **Expected Response**:
@@ -508,7 +508,7 @@ LIMIT 10;
 
 ```bash
 # Test 1: Basic K-line request
-curl "http://localhost:8000/api/v1/market/kline?symbol=000001&period=daily&adjust=qfq" | jq '.'
+curl "http://localhost:8020/api/v1/market/kline?symbol=000001&period=daily&adjust=qfq" | jq '.'
 ```
 
 **Expected Response**:
@@ -538,7 +538,7 @@ curl "http://localhost:8000/api/v1/market/kline?symbol=000001&period=daily&adjus
 
 ```bash
 # Test 2: With date range and limit
-curl "http://localhost:8000/api/v1/market/kline?symbol=000001&period=daily&start_date=2024-01-01&end_date=2025-12-31&limit=1000" | jq '.data | length'
+curl "http://localhost:8020/api/v1/market/kline?symbol=000001&period=daily&start_date=2024-01-01&end_date=2025-12-31&limit=1000" | jq '.data | length'
 
 # Expected: ~250 trading days (1 year)
 # Performance: Response time < 500ms
@@ -546,7 +546,7 @@ curl "http://localhost:8000/api/v1/market/kline?symbol=000001&period=daily&start
 
 ```bash
 # Test 3: Performance guard (no limit specified)
-curl "http://localhost:8000/api/v1/market/kline?symbol=000001&period=daily" | jq '.data | length'
+curl "http://localhost:8020/api/v1/market/kline?symbol=000001&period=daily" | jq '.data | length'
 
 # Expected: Max 1000 points (default limit enforced)
 # Prevents: "SELECT *" that returns 10,000+ points
@@ -554,7 +554,7 @@ curl "http://localhost:8000/api/v1/market/kline?symbol=000001&period=daily" | jq
 
 ```bash
 # Test 3: Different adjust types
-curl "http://localhost:8000/api/v1/market/kline?symbol=000001&period=daily&adjust=hfq" | jq '.data.klines[0]'
+curl "http://localhost:8020/api/v1/market/kline?symbol=000001&period=daily&adjust=hfq" | jq '.data.klines[0]'
 
 # Expected: Adjusted close price different from raw
 ```
@@ -604,7 +604,7 @@ curl "http://localhost:8000/api/v1/market/kline?symbol=000001&period=daily&adjus
 **Verify API Response**:
 ```bash
 # Test API directly
-curl "http://localhost:8000/api/v1/market/kline?symbol=000001&period=daily" | jq '.data.klines | length'
+curl "http://localhost:8020/api/v1/market/kline?symbol=000001&period=daily" | jq '.data.klines | length'
 
 # If 0: No data in database
 # If >0: Check frontend data transformation
@@ -667,7 +667,7 @@ export function adaptKlineData(apiResponse: UnifiedResponse): KlineData[] {
 
 ```bash
 # Test real-time quotes
-curl "http://localhost:8000/api/v1/market/quotes?symbols=000001,000002,600000" | jq '.'
+curl "http://localhost:8020/api/v1/market/quotes?symbols=000001,000002,600000" | jq '.'
 ```
 
 **Expected Response**:

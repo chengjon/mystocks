@@ -254,10 +254,10 @@ app.include_router(mymodule_router)
 python -m uvicorn web.backend.app.main:app --reload
 
 # 测试API端点
-curl -X GET "http://localhost:8000/api/v1/mymodule/" \
+curl -X GET "http://localhost:8020/api/v1/mymodule/" \
   -H "Authorization: Bearer YOUR_TOKEN"
 
-curl -X POST "http://localhost:8000/api/v1/mymodule/" \
+curl -X POST "http://localhost:8020/api/v1/mymodule/" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"name": "新模块", "description": "新模块描述"}'
@@ -267,7 +267,7 @@ curl -X POST "http://localhost:8000/api/v1/mymodule/" \
 
 访问 Swagger 文档：
 ```
-http://localhost:8000/api/docs
+http://localhost:8020/api/docs
 ```
 
 ---

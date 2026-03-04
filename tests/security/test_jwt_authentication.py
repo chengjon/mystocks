@@ -9,7 +9,7 @@ from datetime import datetime
 
 import aiohttp
 
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://localhost:8020"
 
 
 async def test_authentication():

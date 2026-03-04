@@ -78,7 +78,7 @@ info:
     email: support@mystocks.com
 
 servers:
-  - url: http://localhost:8000/api/v1/strategy
+  - url: http://localhost:8020/api/v1/strategy
     description: 本地开发环境
 
 components:

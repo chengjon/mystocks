@@ -642,28 +642,28 @@ for i in range(10):
 
 ```bash
 # Get alert history
-curl http://localhost:8000/api/alerts/history?days=7&limit=10
+curl http://localhost:8020/api/alerts/history?days=7&limit=10
 
 # Get statistics
-curl http://localhost:8000/api/alerts/statistics?alert_name=HighAPIResponseTime
+curl http://localhost:8020/api/alerts/statistics?alert_name=HighAPIResponseTime
 
 # Get top alerts
-curl http://localhost:8000/api/alerts/top-alerts?limit=5&order_by=resolution_time
+curl http://localhost:8020/api/alerts/top-alerts?limit=5&order_by=resolution_time
 
 # Get service health
-curl http://localhost:8000/api/alerts/service-health/api?days=7
+curl http://localhost:8020/api/alerts/service-health/api?days=7
 
 # Get daily report
-curl http://localhost:8000/api/alerts/report/daily?days=7
+curl http://localhost:8020/api/alerts/report/daily?days=7
 
 # Acknowledge alert
-curl -X PUT "http://localhost:8000/api/alerts/history/42/acknowledge?acknowledged_by=admin&comment=Investigating"
+curl -X PUT "http://localhost:8020/api/alerts/history/42/acknowledge?acknowledged_by=admin&comment=Investigating"
 
 # Escalate alert
-curl -X PUT "http://localhost:8000/api/alerts/history/42/escalate?to_level=2&reason=Not responding"
+curl -X PUT "http://localhost:8020/api/alerts/history/42/escalate?to_level=2&reason=Not responding"
 
 # Export as CSV
-curl http://localhost:8000/api/alerts/export/csv?days=7 > alerts.csv
+curl http://localhost:8020/api/alerts/export/csv?days=7 > alerts.csv
 ```
 
 ### Verification Checklist

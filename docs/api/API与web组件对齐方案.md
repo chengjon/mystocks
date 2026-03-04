@@ -218,7 +218,7 @@ export default {
 # 安装openapi-generator
 npm install @openapitools/openapi-generator-cli -g
 # 从FastAPI的openapi.json生成Vue代码
-openapi-generator generate -i http://localhost:8000/openapi.json -g typescript-axios -o src/api/auto
+openapi-generator generate -i http://localhost:8020/openapi.json -g typescript-axios -o src/api/auto
 
 
 

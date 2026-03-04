@@ -2,6 +2,7 @@
 调试配置加载问题
 """
 
+import os
 from pydantic_settings import BaseSettings
 from typing import List
 
@@ -16,7 +17,7 @@ class DebugSettings(BaseSettings):
 
     # 服务器配置
     host: str = "0.0.0.0"
-    port: int = 8000
+    port: int = int(os.getenv("BACKEND_PORT", "8020"))
 
     # 数据库配置
     postgresql_host: str = "localhost"
@@ -39,9 +40,8 @@ class DebugSettings(BaseSettings):
 
     # CORS 配置 - 这是问题所在，尝试使用字符串而非列表
     cors_origins: List[str] = [
-        "http://localhost:3000",
-        "http://localhost:8080",
-        "http://localhost:5173",
+        f"http://localhost:{os.getenv('FRONTEND_PORT', '3020')}",
+        f"http://localhost:{os.getenv('FRONTEND_BACKUP_PORT', '3021')}",
     ]
 
     class Config:

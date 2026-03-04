@@ -97,7 +97,7 @@ pm2 logs mystocks-backend
 
 ```bash
 # 测试登录端点
-curl -X POST http://localhost:8000/api/v1/auth/login \
+curl -X POST http://localhost:8020/api/v1/auth/login \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "username=admin&password=admin123" \
   -v 2>&1 | python3 -m json.tool
@@ -147,7 +147,7 @@ ENVIRONMENT=test
 **症状**：
 ```
 Error: 404 Not Found
-Request URL: http://localhost:8000/api/auth/login
+Request URL: http://localhost:8020/api/auth/login
 ```
 
 **识别方法**：
@@ -192,7 +192,7 @@ Detail: username or password field required
 
 **识别方法**：
 1. 查看后端日志中的请求数据
-2. 检查后端API文档（Swagger）：`http://localhost:8000/docs`
+2. 检查后端API文档（Swagger）：`http://localhost:8020/docs`
 3. 确认API期望的Content-Type
 
 **解决方案**：
@@ -393,14 +393,14 @@ this.url = `${baseUrl}/strategy-hub/backtest`;
 
 2. **使用curl快速验证API**
    ```bash
-   curl -X POST http://localhost:8000/api/v1/auth/login \
+   curl -X POST http://localhost:8020/api/v1/auth/login \
      -H "Content-Type: application/x-www-form-urlencoded" \
      -d "username=admin&password=admin123" -v
    ```
 
 3. **查看API文档确认接口定义**
    ```
-   http://localhost:8000/docs
+   http://localhost:8020/docs
    ```
 
 4. **逐步缩小测试范围**
@@ -454,7 +454,7 @@ Database authentication failed (will use fallback mock data)
 #### 第3步：直接测试API
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/auth/login \
+curl -X POST http://localhost:8020/api/v1/auth/login \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "username=admin&password=admin123" -v
 ```
@@ -488,7 +488,7 @@ pm2 restart mystocks-backend
 #### 第6步：验证修复
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/auth/login \
+curl -X POST http://localhost:8020/api/v1/auth/login \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "username=admin&password=admin123" | python3 -m json.tool
 ```
@@ -541,7 +541,7 @@ npx playwright test tests/e2e/auth.spec.ts -g "关键词" --headed
 pm2 logs mystocks-backend --lines 50
 
 # 测试API
-curl -X POST http://localhost:8000/api/v1/auth/login \
+curl -X POST http://localhost:8020/api/v1/auth/login \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "username=admin&password=admin123" -v
 
@@ -555,7 +555,7 @@ npx playwright show-report
 ### 文档参考
 
 - Playwright官方文档：https://playwright.dev
-- FastAPI文档：http://localhost:8000/docs
+- FastAPI文档：http://localhost:8020/docs
 - 项目E2E测试框架：`tests/e2e/README.md`
 
 ---

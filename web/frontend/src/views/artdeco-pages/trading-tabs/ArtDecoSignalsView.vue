@@ -37,10 +37,9 @@ import { ElMessage } from 'element-plus'
 import { strategyApi } from '@/api'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import {
-  createMockStrategySignals,
   createStrategySignalsFromResponse,
   type StrategySignalItem
-} from '@/mock/strategyTabsMock'
+} from '../strategy-tabs/strategySignalsData'
 import ArtDecoTradingSignals from './ArtDecoTradingSignals.vue'
 import ArtDecoSignalMonitoringOverview from '../components/ArtDecoSignalMonitoringOverview.vue'
 import ArtDecoTradingSignalsControls from '../components/ArtDecoTradingSignalsControls.vue'
@@ -83,7 +82,7 @@ const signalFilters = [
 ]
 
 const signals = ref<TradingSignalRow[]>([])
-const dataSource = ref<'REAL' | 'MOCK'>('REAL')
+const dataSource = ref<'REAL' | 'EMPTY'>('REAL')
 
 const { loading, lastRequestId, lastProcessTime, exec } = useArtDecoApi()
 
@@ -199,15 +198,15 @@ async function loadSignals() {
   })
 
   if (data === null) {
-    dataSource.value = 'MOCK'
-    signals.value = toTradingSignalRows(createMockStrategySignals())
+    dataSource.value = 'EMPTY'
+    signals.value = []
     return
   }
 
   const mapped = createStrategySignalsFromResponse(data)
   if (mapped.length === 0) {
-    dataSource.value = 'MOCK'
-    signals.value = toTradingSignalRows(createMockStrategySignals())
+    dataSource.value = 'EMPTY'
+    signals.value = []
     return
   }
 

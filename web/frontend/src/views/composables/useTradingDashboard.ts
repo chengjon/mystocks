@@ -15,7 +15,9 @@ import {
 
 // Type definitions
 interface TradingData {
+    session_id?: string
     current_drawdown?: number
+    daily_pnl?: number
     total_pnl?: number
     active_positions?: number
     win_rate?: number
@@ -32,24 +34,57 @@ interface StrategyPerformance {
 }
 
 interface MarketData {
+    timestamp?: string | number
+    data?: Record<string, { price: number; change: number; change_percent: number }>
     market_status?: string
     volatility?: number
     [key: string]: unknown
 }
 
 interface RiskData {
+    risk_status?: string
+    current_drawdown?: number
+    daily_pnl?: number
+    active_positions?: number
+    last_updated?: string | number
     risk_level?: string
     max_drawdown?: number
     [key: string]: unknown
 }
 
 interface ApiErrorResponse {
+    code?: string
+    config?: {
+        url?: string
+    }
     response?: {
+        status?: number
         data?: {
             detail?: string
         }
     }
     message?: string
+}
+
+const FALLBACK_TRADING_DATA: TradingData = {
+    session_id: 'fallback-offline',
+    active_positions: 0,
+    total_pnl: 0,
+    daily_pnl: 0,
+    current_drawdown: 0
+}
+
+const FALLBACK_MARKET_DATA: MarketData = {
+    timestamp: 0,
+    data: {}
+}
+
+const FALLBACK_RISK_DATA: RiskData = {
+    risk_status: 'normal',
+    current_drawdown: 0,
+    daily_pnl: 0,
+    active_positions: 0,
+    last_updated: 0
 }
 
 export function useTradingDashboard() {
@@ -72,6 +107,8 @@ export function useTradingDashboard() {
     const newStrategy = ref({
         type: ''
     })
+    const unavailableEndpointKeys = new Set<string>()
+    const unavailableWarningKeys = new Set<string>()
 
     // 状态指标
     const statusMetrics = ref([
@@ -119,6 +156,34 @@ export function useTradingDashboard() {
     })
 
     // 方法
+    const extractStatusCode = (error: unknown): number | undefined => {
+        const apiError = error as ApiErrorResponse
+        return apiError?.response?.status
+    }
+
+    const isEndpointUnavailable = (error: unknown): boolean => {
+        const status = extractStatusCode(error)
+        if (status === undefined) return true
+        return status === 404 || status === 502 || status === 503 || status === 504
+    }
+
+    const isMissingEndpoint = (error: unknown): boolean => extractStatusCode(error) === 404
+
+    const warnUnavailableOnce = (key: string, message: string) => {
+        if (unavailableWarningKeys.has(key)) return
+        unavailableWarningKeys.add(key)
+        console.warn(`[TradingDashboard] ${message}`)
+        ElMessage.warning(message)
+    }
+
+    const updateStatusMetricsFromTradingData = (data: TradingData) => {
+        statusMetrics.value[0].value = `¥${formatNumber(data.total_pnl || 0, 2)}`
+        statusMetrics.value[0].status = (data.total_pnl || 0) >= 0 ? 'profit' : 'loss'
+        statusMetrics.value[1].value = `${data.active_positions || 0}`
+        statusMetrics.value[3].value = `${formatPercent(data.current_drawdown || 0)}`
+        statusMetrics.value[3].status = (data.current_drawdown || 0) > 0.05 ? 'warning' : 'normal'
+    }
+
     const toggleTradingSession = async () => {
         controlLoading.value = true
         try {
@@ -157,47 +222,89 @@ export function useTradingDashboard() {
     }
 
     const loadTradingData = async () => {
+        if (unavailableEndpointKeys.has('trading-status')) {
+            tradingData.value = { ...FALLBACK_TRADING_DATA }
+            updateStatusMetricsFromTradingData(tradingData.value)
+            return
+        }
+
         try {
             const response = await axios.get('/api/trading/status')
-            tradingData.value = response.data
-
-            // 更新状态指标
-            statusMetrics.value[0].value = `¥${formatNumber(tradingData.value.total_pnl || 0, 2)}`
-            statusMetrics.value[0].status = (tradingData.value.total_pnl || 0) >= 0 ? 'profit' : 'loss'
-
-            statusMetrics.value[1].value = `${tradingData.value.active_positions || 0}`
-
-            statusMetrics.value[3].value = `${formatPercent(tradingData.value.current_drawdown || 0)}`
-            statusMetrics.value[3].status = (tradingData.value.current_drawdown || 0) > 0.05 ? 'warning' : 'normal'
-        } catch (error) {
-            console.error('Failed to load trading data:', error)
+            const payload = response.data?.data ?? response.data
+            tradingData.value = payload || FALLBACK_TRADING_DATA
+            updateStatusMetricsFromTradingData(tradingData.value)
+        } catch (error: unknown) {
+            if (isEndpointUnavailable(error)) {
+                if (isMissingEndpoint(error)) unavailableEndpointKeys.add('trading-status')
+                tradingData.value = { ...FALLBACK_TRADING_DATA }
+                updateStatusMetricsFromTradingData(tradingData.value)
+                warnUnavailableOnce('trading-status', '交易状态接口暂不可用，已使用回退数据。')
+                return
+            }
+            console.warn('Failed to load trading data:', error)
         }
     }
 
     const loadStrategyPerformance = async () => {
+        if (unavailableEndpointKeys.has('trading-performance')) {
+            strategyPerformance.value = []
+            return
+        }
+
         try {
             const response = await axios.get('/api/trading/strategies/performance')
-            strategyPerformance.value = response.data
-        } catch (error) {
-            console.error('Failed to load strategy performance:', error)
+            const payload = response.data?.data ?? response.data
+            strategyPerformance.value = Array.isArray(payload) ? payload : []
+        } catch (error: unknown) {
+            if (isEndpointUnavailable(error)) {
+                if (isMissingEndpoint(error)) unavailableEndpointKeys.add('trading-performance')
+                strategyPerformance.value = []
+                warnUnavailableOnce('trading-performance', '策略性能接口暂不可用，已使用空数据。')
+                return
+            }
+            console.warn('Failed to load strategy performance:', error)
         }
     }
 
     const loadMarketData = async () => {
+        if (unavailableEndpointKeys.has('trading-market')) {
+            marketData.value = { ...FALLBACK_MARKET_DATA }
+            return
+        }
+
         try {
             const response = await axios.get('/api/trading/market/snapshot')
-            marketData.value = response.data
-        } catch (error) {
-            console.error('Failed to load market data:', error)
+            const payload = response.data?.data ?? response.data
+            marketData.value = payload || FALLBACK_MARKET_DATA
+        } catch (error: unknown) {
+            if (isEndpointUnavailable(error)) {
+                if (isMissingEndpoint(error)) unavailableEndpointKeys.add('trading-market')
+                marketData.value = { ...FALLBACK_MARKET_DATA }
+                warnUnavailableOnce('trading-market', '市场快照接口暂不可用，已使用回退数据。')
+                return
+            }
+            console.warn('Failed to load market data:', error)
         }
     }
 
     const loadRiskData = async () => {
+        if (unavailableEndpointKeys.has('trading-risk')) {
+            riskData.value = { ...FALLBACK_RISK_DATA }
+            return
+        }
+
         try {
             const response = await axios.get('/api/trading/risk/metrics')
-            riskData.value = response.data
-        } catch (error) {
-            console.error('Failed to load risk data:', error)
+            const payload = response.data?.data ?? response.data
+            riskData.value = payload || FALLBACK_RISK_DATA
+        } catch (error: unknown) {
+            if (isEndpointUnavailable(error)) {
+                if (isMissingEndpoint(error)) unavailableEndpointKeys.add('trading-risk')
+                riskData.value = { ...FALLBACK_RISK_DATA }
+                warnUnavailableOnce('trading-risk', '风险指标接口暂不可用，已使用回退数据。')
+                return
+            }
+            console.warn('Failed to load risk data:', error)
         }
     }
 

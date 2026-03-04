@@ -457,7 +457,7 @@ pm2 list
 Expected:
 - syntax errors: 0
 - type errors: not above baseline `reports/analysis/tech-debt-baseline.json`
-- PM2 services alive: `mystocks-backend` (`http://localhost:8000`), `mystocks-frontend` (`http://localhost:3020`)
+- PM2 services alive: `mystocks-backend` (`http://localhost:8020`), `mystocks-frontend` (`http://localhost:3020`)
 - E2E baseline maintained
 
 **Step 3: Publish verification summary**

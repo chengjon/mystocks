@@ -7,12 +7,11 @@ import { strategyApi } from '@/api';
 import type { StrategyConfig } from '@/api/types/common';
 import { extractStrategyIdFromQuery } from './strategyCrossTabNavigation';
 import {
-  createStrategyParametersMockFallback,
   extractStrategyConfigs,
   normalizeProcessTimeMs
 } from './strategyParametersData';
 
-type ParametersDataSource = 'real' | 'mock';
+type ParametersDataSource = 'real';
 
 const { loading, error, lastRequestId, lastProcessTime, exec } = useArtDecoApi();
 const strategies = ref<StrategyConfig[]>([]);
@@ -64,10 +63,7 @@ const hydratedStrategies = computed(() => {
 });
 
 const headerError = computed(() => {
-  if (dataSource.value === 'mock') {
-    return fallbackReason.value || error.value || 'REAL 数据不可用，已回退 MOCK 数据。';
-  }
-  return error.value;
+  return error.value || fallbackReason.value;
 });
 
 function getStrategyId(strategy: StrategyConfig): string {
@@ -111,21 +107,21 @@ function getOptimizationScore(strategy: StrategyConfig): number | null {
 const fetchStrategies = async () => {
   const payload = await exec(() => strategyApi.getStrategies({}), {
     silent: true,
-    errorMsg: '获取策略参数失败，已回退 MOCK 数据'
+    errorMsg: '获取策略参数失败'
   });
 
   if (!payload) {
-    strategies.value = createStrategyParametersMockFallback();
-    dataSource.value = 'mock';
-    fallbackReason.value = error.value || '获取策略参数失败，已回退 MOCK 数据';
+    strategies.value = [];
+    dataSource.value = 'real';
+    fallbackReason.value = error.value || '获取策略参数失败';
     return;
   }
 
   const extracted = extractStrategyConfigs(payload);
   if (extracted === null) {
-    strategies.value = createStrategyParametersMockFallback();
-    dataSource.value = 'mock';
-    fallbackReason.value = '策略参数数据格式异常，已回退 MOCK 数据';
+    strategies.value = [];
+    dataSource.value = 'real';
+    fallbackReason.value = '策略参数数据格式异常';
     return;
   }
 
@@ -199,8 +195,7 @@ watch(selectedStrategyId, (value) => {
         <p>未找到策略 {{ selectedStrategyId }} 的参数配置，请返回策略管理页重试。</p>
       </div>
       <div v-else-if="!loading && strategies.length === 0" class="empty-state artdeco-card">
-        <p v-if="dataSource === 'real'">REAL 数据为空，请先在 Strategy Management 中创建策略。</p>
-        <p v-else>REAL 数据不可用，当前显示 MOCK 参数配置。</p>
+        <p>REAL 数据为空，请先在 Strategy Management 中创建策略。</p>
       </div>
     </div>
   </div>

@@ -43,7 +43,7 @@ globalSetup: './global-setup.ts',
 **修复**: 更新为正确的端口配置
 ```typescript
 // 修复前
-const frontendUrl = process.env.BASE_URL || 'http://localhost:3001';
+const frontendUrl = process.env.BASE_URL || 'http://localhost:3020';
 
 // 修复后
 const frontendUrl = process.env.BASE_URL || 'http://localhost:3000';

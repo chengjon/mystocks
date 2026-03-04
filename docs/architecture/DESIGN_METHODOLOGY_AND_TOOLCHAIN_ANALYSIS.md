@@ -60,9 +60,9 @@ async def get_signal_statistics(
 ```
 
 **自动生成文档**:
-- Swagger UI: http://localhost:8000/docs
-- ReDoc UI: http://localhost:8000/redoc
-- OpenAPI JSON: http://localhost:8000/openapi.json
+- Swagger UI: http://localhost:8020/docs
+- ReDoc UI: http://localhost:8020/redoc
+- OpenAPI JSON: http://localhost:8020/openapi.json
 
 #### 1.2 类型安全的数据契约
 ```python
@@ -250,12 +250,12 @@ import { test, expect } from '@playwright/test';
 
 test('信号监控完整流程', async ({ page }) => {
   // 1. 登录系统
-  await page.goto('http://localhost:3001/login');
+  await page.goto('http://localhost:3020/login');
   await page.fill('[name="username"]', 'testuser');
   await page.click('button[type="submit"]');
 
   // 2. 查看信号监控页面
-  await page.goto('http://localhost:3001/monitoring');
+  await page.goto('http://localhost:3020/monitoring');
   await expect(page.locator('text=信号监控')).toBeVisible();
 
   // 3. 验证数据显示
@@ -770,13 +770,13 @@ npm install -g @openapitools/openapi-generator-cli
 
 # 生成前端TypeScript客户端
 openapi-generator generate \
-  -i http://localhost:8000/openapi.json \
+  -i http://localhost:8020/openapi.json \
   -g typescript-fetch \
   -o web/frontend/src/api/generated/
 
 # 生成Python客户端
 openapi-generator generate \
-  -i http://localhost:8000/openapi.json \
+  -i http://localhost:8020/openapi.json \
   -g python \
   -o clients/python/
 ```
@@ -971,7 +971,7 @@ npm install -g @openapitools/openapi-generator-cli
 ```yaml
 # .github/workflows/api-contract-test.yml
 - name: API Contract Test
-  run: schemathesis run http://localhost:8000/openapi.json
+  run: schemathesis run http://localhost:8020/openapi.json
 ```
 
 **预期收益**:

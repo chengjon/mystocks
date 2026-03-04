@@ -5,6 +5,7 @@ API契约管理CLI工具
 """
 
 import json
+import os
 import sys
 import yaml
 from pathlib import Path
@@ -18,7 +19,10 @@ from rich.json import JSON
 from rich.panel import Panel
 
 # API配置
-API_BASE_URL = "http://localhost:8000"
+BACKEND_PORT = os.getenv("BACKEND_PORT", "").strip()
+if not BACKEND_PORT:
+    raise RuntimeError("Missing BACKEND_PORT in environment")
+API_BASE_URL = os.getenv("API_BASE_URL", f"http://localhost:{BACKEND_PORT}")
 API_PREFIX = "/api/contracts"
 
 console = Console()

@@ -46,7 +46,7 @@ export const TEST_ENV: TestEnvironmentConfig = {
   // API Configuration
   USE_REAL_API: process.env.USE_REAL_API === 'true',
   USE_MOCK_API: process.env.USE_REAL_API !== 'true',
-  API_BASE_URL: process.env.API_BASE_URL || 'http://localhost:8000',
+  API_BASE_URL: process.env.API_BASE_URL || 'http://localhost:8020',
   FRONTEND_BASE_URL: process.env.FRONTEND_BASE_URL || 'http://localhost:3000',
 
   // Feature Flags

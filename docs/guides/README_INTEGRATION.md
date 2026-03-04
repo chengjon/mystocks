@@ -75,7 +75,7 @@ cd web/backend
 pip install -r requirements.txt
 export ADMIN_PASSWORD=password
 python3 -m app.main
-# → http://localhost:8000
+# → http://localhost:8020
 
 # 2. 启动前端
 cd web/frontend

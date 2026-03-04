@@ -98,7 +98,7 @@
 | PostgreSQL | localhost:5438 | ✅ 连接成功 |
 | TDengine | localhost:6030 | ✅ 连接成功 |
 | Redis | localhost:6379 | ✅ 连接成功 |
-| FastAPI | localhost:8000 | ✅ 已启动 |
+| FastAPI | localhost:8020 | ✅ 已启动 |
 
 ### 验证结果
 | 测试组 | 通过 | 总数 | 通过率 |

@@ -26,7 +26,7 @@ sys.path.append("/opt/claude/mystocks_spec/web/backend")
 class IntegrationTester:
     """集成测试器"""
 
-    def __init__(self, base_url: str = "http://localhost:8000"):
+    def __init__(self, base_url: str = "http://localhost:8020"):
         self.base_url = base_url
         self.api_base = f"{base_url}/api"
         self.test_results = []
@@ -503,7 +503,7 @@ async def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="前后端集成测试")
-    parser.add_argument("--url", default="http://localhost:8000", help="测试URL")
+    parser.add_argument("--url", default="http://localhost:8020", help="测试URL")
     parser.add_argument(
         "--test-type",
         choices=["all", "api", "frontend", "consistency"],

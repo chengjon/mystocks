@@ -500,7 +500,7 @@ const formatMarketCap = (marketCap: number) => {
 const connectWebSocket = () => {
   try {
     // TODO: Implement actual WebSocket connection
-    // wsConnection = new WebSocket('ws://localhost:8000/ws/market-quotes')
+    // wsConnection = new WebSocket('ws://localhost:${BACKEND_PORT}/ws/market-quotes')
     isConnected.value = true
     lastUpdateTime.value = new Date().toLocaleTimeString()
     console.log('WebSocket connected')

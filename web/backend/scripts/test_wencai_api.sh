@@ -17,7 +17,20 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # 配置
-BASE_URL="${1:-http://localhost:8000}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+if [ -f "${PROJECT_ROOT}/.env" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "${PROJECT_ROOT}/.env"
+    set +a
+fi
+
+BASE_URL="${1:-${API_BASE_URL:-}}"
+if [ -z "$BASE_URL" ]; then
+    : "${BACKEND_PORT:?Missing BACKEND_PORT in .env}"
+    BASE_URL="http://localhost:${BACKEND_PORT}"
+fi
 API_PREFIX="/api/market/wencai"
 
 echo -e "${BLUE}========================================${NC}"

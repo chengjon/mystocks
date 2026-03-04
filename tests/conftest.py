@@ -43,7 +43,7 @@ class TestConfig:
     # 测试环境配置
     TEST_ENV = os.getenv("TEST_ENV", "development")
     DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///test.db")
-    API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
+    API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8020")
 
     # 测试超时设置
     UNIT_TEST_TIMEOUT = int(os.getenv("UNIT_TEST_TIMEOUT", "30"))

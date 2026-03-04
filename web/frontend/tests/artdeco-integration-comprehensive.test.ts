@@ -15,8 +15,10 @@ test.describe('ArtDeco集成验证测试套件', () => {
   test.setTimeout(120000) // 2分钟超时
 
   // 测试配置
-  const BASE_URL = 'http://localhost:3001'
-  const API_BASE = 'http://localhost:8000'
+  const FRONTEND_PORT = process.env.FRONTEND_PORT || '3020'
+  const BACKEND_PORT = process.env.BACKEND_PORT || '8020'
+  const BASE_URL = process.env.FRONTEND_URL || `http://localhost:${FRONTEND_PORT}`
+  const API_BASE = process.env.BACKEND_URL || `http://localhost:${BACKEND_PORT}`
 
   test.beforeEach(async ({ page }) => {
     // 设置页面配置

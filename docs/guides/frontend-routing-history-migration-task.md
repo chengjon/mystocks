@@ -103,7 +103,7 @@ location / {
 ### 步骤5: 功能测试
 **目标**: 全面验证路由功能
 **测试场景**:
-- [ ] 直接访问路由URL（如`http://localhost:3001/dashboard`）
+- [ ] 直接访问路由URL（如`http://localhost:3020/dashboard`）
 - [ ] 页面内路由跳转
 - [ ] 浏览器刷新页面
 - [ ] 浏览器前进/后退

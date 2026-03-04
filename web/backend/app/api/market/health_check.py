@@ -63,7 +63,7 @@ async def health_check():
     Examples:
         获取市场数据 API 健康状态:
         ```bash
-        curl http://localhost:8000/api/market/health
+        curl http://localhost:${BACKEND_PORT}/api/market/health
         ```
 
         正常响应:

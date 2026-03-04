@@ -132,7 +132,7 @@ jobs:
         run: |
           docker-compose -f docker-compose.test.yml up -d
           # 等待服务启动
-          timeout 300 bash -c 'until curl -f http://localhost:8000/health; do sleep 5; done'
+          timeout 300 bash -c 'until curl -f http://localhost:8020/health; do sleep 5; done'
           # 运行冒烟测试
           python -m pytest tests/smoke/ -v
 ```

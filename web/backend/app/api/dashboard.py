@@ -9,6 +9,7 @@
 """
 
 import logging
+import os
 import re
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional
@@ -82,7 +83,10 @@ class RealBusinessDataSource:
 
     def __init__(self):
         """初始化真实数据源"""
-        self.base_url = "http://localhost:8000"
+        backend_port = os.getenv("BACKEND_PORT", "").strip()
+        if not backend_port:
+            raise RuntimeError("Missing BACKEND_PORT in .env")
+        self.base_url = os.getenv("BACKEND_BASE_URL", f"http://localhost:{backend_port}")
         self.timeout = 10.0
         logger.info("✅ RealBusinessDataSource initialized")
 

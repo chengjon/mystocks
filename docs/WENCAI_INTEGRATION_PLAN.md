@@ -676,7 +676,7 @@ def test_db():
 
 4. **验证部署**
    ```bash
-   curl http://localhost:8000/api/market/wencai/queries
+   curl http://localhost:8020/api/market/wencai/queries
    ```
 
 ---
@@ -693,8 +693,8 @@ def test_db():
 - `/opt/claude/mystocks_spec/CLAUDE.md`
 
 ### API文档
-- Swagger UI: `http://localhost:8000/api/docs`
-- ReDoc: `http://localhost:8000/api/redoc`
+- Swagger UI: `http://localhost:8020/api/docs`
+- ReDoc: `http://localhost:8020/api/redoc`
 
 ---
 

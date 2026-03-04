@@ -3,7 +3,7 @@ const { test, expect } = require("@playwright/test");
 test.describe("MyStocks 健康检查测试", () => {
   test("CASE-API-HEALTH-001: API健康检查", async ({ request }) => {
     console.log("CASE-API-HEALTH-001: 开始API健康检查");
-    const response = await request.get("http://localhost:8000/health");
+    const response = await request.get("http://localhost:8020/health");
     expect(response.status()).toBe(200);
     console.log("✅ CASE-API-HEALTH-001: API健康检查通过");
   });

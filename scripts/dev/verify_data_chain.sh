@@ -13,7 +13,7 @@ NC='\033[0m' # No Color
 
 # 验证后端服务状态
 echo -e "\n📋 验证后端服务状态..."
-if curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/health | grep -q "200"; then
+if curl -s -o /dev/null -w "%{http_code}" http://localhost:/health | grep -q "200"; then
     echo -e "✅ 后端服务: ${GREEN}正常${NC}"
 else
     echo -e "❌ 后端服务: ${RED}异常${NC}"
@@ -22,7 +22,7 @@ fi
 
 # 验证前端服务状态
 echo -e "\n📋 验证前端服务状态..."
-if curl -s -o /dev/null -w "%{http_code}" http://localhost:3001/ | grep -q "200"; then
+if curl -s -o /dev/null -w "%{http_code}" http://localhost:/ | grep -q "200"; then
     echo -e "✅ 前端服务: ${GREEN}正常${NC}"
 else
     echo -e "❌ 前端服务: ${RED}异常${NC}"
@@ -33,7 +33,7 @@ fi
 echo -e "\n📋 验证前端页面访问..."
 PAGES=("/" "/dashboard" "/stocks" "/technical-analysis")
 for page in "${PAGES[@]}"; do
-    if curl -s -o /dev/null -w "%{http_code}" "http://localhost:3001$page" | grep -q "200"; then
+    if curl -s -o /dev/null -w "%{http_code}" "http://localhost:$page" | grep -q "200"; then
         echo -e "✅ 页面 $page: ${GREEN}正常访问${NC}"
     else
         echo -e "❌ 页面 $page: ${RED}访问失败${NC}"
@@ -46,7 +46,7 @@ echo -e "\n📋 验证API接口..."
 
 # 获取认证令牌
 echo "获取认证令牌..."
-AUTH_RESPONSE=$(curl -s -X POST "http://localhost:8000/api/auth/login" \
+AUTH_RESPONSE=$(curl -s -X POST "http://localhost:/api/auth/login" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "username=admin&password=admin123")
 
@@ -61,7 +61,7 @@ fi
 
 # 验证股票基本信息API
 echo "验证股票基本信息API..."
-STOCKS_RESPONSE=$(curl -s -X GET "http://localhost:8000/api/data/stocks/basic?limit=5" \
+STOCKS_RESPONSE=$(curl -s -X GET "http://localhost:/api/data/stocks/basic?limit=5" \
   -H "Authorization: Bearer $TOKEN")
 
 if echo "$STOCKS_RESPONSE" | grep -q '"success":true'; then
@@ -82,7 +82,7 @@ fi
 
 # 验证市场概览API
 echo "验证市场概览API..."
-OVERVIEW_RESPONSE=$(curl -s -X GET "http://localhost:8000/api/data/markets/overview" \
+OVERVIEW_RESPONSE=$(curl -s -X GET "http://localhost:/api/data/markets/overview" \
   -H "Authorization: Bearer $TOKEN")
 
 if echo "$OVERVIEW_RESPONSE" | grep -q '"success":true'; then
@@ -102,7 +102,7 @@ fi
 
 # 验证前端代理API
 echo "验证前端代理API..."
-FRONTEND_PROXY_RESPONSE=$(curl -s -X GET "http://localhost:3001/api/data/stocks/basic?limit=5" \
+FRONTEND_PROXY_RESPONSE=$(curl -s -X GET "http://localhost:/api/data/stocks/basic?limit=5" \
   -H "Authorization: Bearer $TOKEN")
 
 if echo "$FRONTEND_PROXY_RESPONSE" | grep -q '"success":true'; then

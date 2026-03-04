@@ -19,8 +19,8 @@ TEST_RESULTS_DIR="$PROJECT_ROOT/test-results"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 
 # 环境变量
-export BASE_URL="${BASE_URL:-http://localhost:3000}"
-export API_URL="${API_URL:-http://localhost:8000}"
+export BASE_URL="${BASE_URL:-http://localhost:}"
+export API_URL="${API_URL:-http://localhost:}"
 export TEST_TIMEOUT="${TEST_TIMEOUT:-120000}"
 export TEST_RETRIES="${TEST_RETRIES:-2}"
 
@@ -71,8 +71,8 @@ MyStocks Web端可用性测试执行脚本
     data-quality            仅执行数据质量测试
 
 环境变量:
-    BASE_URL                前端服务地址 (默认: http://localhost:3000)
-    API_URL                 后端API地址 (默认: http://localhost:8000)
+    BASE_URL                前端服务地址 (默认: http://localhost:)
+    API_URL                 后端API地址 (默认: http://localhost:)
     TEST_TIMEOUT            测试超时时间（毫秒） (默认: 120000)
     TEST_RETRIES            测试重试次数 (默认: 2)
 
@@ -168,8 +168,8 @@ setup_environment() {
 
     case "$ENVIRONMENT" in
         dev)
-            export BASE_URL="${BASE_URL:-http://localhost:3000}"
-            export API_URL="${API_URL:-http://localhost:8000}"
+            export BASE_URL="${BASE_URL:-http://localhost:}"
+            export API_URL="${API_URL:-http://localhost:}"
             ;;
         staging)
             export BASE_URL="${BASE_URL:-https://staging.mystocks.com}"

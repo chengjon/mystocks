@@ -345,7 +345,7 @@ tmux select-layout -t "mystocks-test" even-horizontal
 pytest tests/api/test_contract_consistency.py -v
 
 # 全量 API 测试
-pytest tests/api/ --api-base-url=http://localhost:8000 -v
+pytest tests/api/ --api-base-url=http://localhost:8020 -v
 
 # E2E 测试
 pytest tests/e2e/ -v
@@ -482,7 +482,7 @@ export async function getKlineWithFallback(symbol: string, period: string) {
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8020',
   timeout: 30000,
 })
 
@@ -583,7 +583,7 @@ module.exports = {
     {
       name: 'mystocks-api',
       script: 'uvicorn',
-      args: 'app.main:app --host 0.0.0.0 --port 8000',
+      args: 'app.main:app --host 0.0.0.0 --port 8020',
       cwd: '/opt/claude/mystocks_spec/web/backend',
       interpreter: 'python',
       instances: 2,
@@ -617,7 +617,7 @@ export default defineConfig({
   reporter: 'html',
 
   use: {
-    baseURL: 'http://localhost:8000',
+    baseURL: 'http://localhost:8020',
     trace: 'on-first-retry',
   },
 

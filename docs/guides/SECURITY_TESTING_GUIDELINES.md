@@ -97,19 +97,19 @@ pylint --msg-template="{path}:{line}: {msg_id} ({symbol}) {msg}" \
 ```bash
 # Docker 运行 ZAP
 docker run -t owasp/zap2docker-stable \
-  zap-baseline.py -t http://localhost:8000 \
+  zap-baseline.py -t http://localhost:8020 \
   -g genconfig -a api_key
 
 # 全面扫描
 docker run -t owasp/zap2docker-stable \
-  zap-baseline.py -t http://localhost:8000 \
+  zap-baseline.py -t http://localhost:8020 \
   -c zap-rules -r zap-report.html
 ```
 
 #### SQL 注入测试
 ```bash
 # 使用 sqlmap 测试端点
-sqlmap -u "http://localhost:8000/api/market/data" \
+sqlmap -u "http://localhost:8020/api/market/data" \
        --data "symbol=AAPL&limit=10" \
        --risk=3 --level=5 \
        --batch
@@ -175,17 +175,17 @@ jobs:
       - name: Start application
         run: |
           cd web/backend
-          python -m uvicorn main:app --host 0.0.0.0 --port 8000 &
+          python -m uvicorn main:app --host 0.0.0.0 --port 8020 &
       - name: Wait for health
         run: |
-          until curl -f http://localhost:8000/health; do
+          until curl -f http://localhost:8020/health; do
             echo "Waiting for health check..."
             sleep 5
           done
       - name: Run ZAP
         run: |
           docker run --network host -t owasp/zap2docker-stable \
-            zap-baseline.py -t http://localhost:8000 \
+            zap-baseline.py -t http://localhost:8020 \
             -r zap-report.html
 ```
 
@@ -194,31 +194,31 @@ jobs:
 ### 1. 身份认证测试
 ```bash
 # 弱密码测试
-curl -X POST http://localhost:8000/api/auth/login \
+curl -X POST http://localhost:8020/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"password"}'
 
 # JWT 令牌测试
-curl -X POST http://localhost:8000/api/auth/refresh \
+curl -X POST http://localhost:8020/api/auth/refresh \
   -H "Authorization: Bearer invalid_token"
 
 # 权限提升测试
-curl -X GET http://localhost:8000/api/admin/users \
+curl -X GET http://localhost:8020/api/admin/users \
   -H "Authorization: Bearer user_token"
 ```
 
 ### 2. API 安全测试
 ```bash
 # 输入验证测试
-curl -X GET "http://localhost:8000/api/market/data?symbol=<script>alert(1)</script>"
+curl -X GET "http://localhost:8020/api/market/data?symbol=<script>alert(1)</script>"
 
 # SQL 注入测试
-curl -X POST http://localhost:8000/api/trading/order \
+curl -X POST http://localhost:8020/api/trading/order \
   -H "Content-Type: application/json" \
   -d '{"symbol":"AAPL\' OR 1=1--","quantity":100}'
 
 # 文件上传测试
-curl -X POST http://localhost:8000/api/upload \
+curl -X POST http://localhost:8020/api/upload \
   -F "file=@malicious.php"
 ```
 

@@ -7,7 +7,13 @@ MyStocks 端口服务状态展示脚本
 
 import requests
 import socket
+import os
 from datetime import datetime
+
+FRONTEND_PORT = int(os.getenv("FRONTEND_PORT", "3020"))
+FRONTEND_BACKUP_PORT = int(os.getenv("FRONTEND_BACKUP_PORT", "3021"))
+BACKEND_PORT = int(os.getenv("BACKEND_PORT", "8020"))
+BACKEND_BACKUP_PORT = int(os.getenv("BACKEND_BACKUP_PORT", "8021"))
 
 
 def check_port_status(port):
@@ -42,33 +48,39 @@ def get_service_info(port):
 
 def show_port_status():
     """展示端口状态"""
-    print("🔍 MyStocks 端口服务状态检查 (3000-3010)")
+    print(f"🔍 MyStocks 端口服务状态检查 ({FRONTEND_PORT}/{FRONTEND_BACKUP_PORT}/{BACKEND_PORT}/{BACKEND_BACKUP_PORT})")
     print("=" * 70)
     print(f"📅 检查时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print()
 
     services_info = {
-        3001: {
+        FRONTEND_PORT: {
             "name": "MyStocks Web前端",
             "description": "Vue.js + Element Plus 前端界面",
-            "url": "http://localhost:3001",
+            "url": f"http://localhost:{FRONTEND_PORT}",
             "features": ["股票管理", "市场行情", "技术分析", "策略回测"],
         },
-        3002: {
+        FRONTEND_BACKUP_PORT: {
             "name": "预留端口",
             "description": "可用于WebSocket或API服务",
-            "url": "http://localhost:3002",
+            "url": f"http://localhost:{FRONTEND_BACKUP_PORT}",
             "features": ["WebSocket", "实时数据", "推送通知"],
         },
-        8000: {
+        BACKEND_PORT: {
             "name": "MyStocks Web后端",
             "description": "FastAPI后端API服务",
-            "url": "http://localhost:8000",
+            "url": f"http://localhost:{BACKEND_PORT}",
             "features": ["REST API", "数据库接口", "Mock数据", "实时数据"],
+        },
+        BACKEND_BACKUP_PORT: {
+            "name": "MyStocks Web后端(备用)",
+            "description": "FastAPI后端API服务备用端口",
+            "url": f"http://localhost:{BACKEND_BACKUP_PORT}",
+            "features": ["备用端口", "故障切换"],
         },
     }
 
-    for port in range(3000, 3011):
+    for port in sorted(services_info.keys()):
         is_running = check_port_status(port)
         status_icon = "✅" if is_running else "❌"
 
@@ -93,25 +105,25 @@ def show_port_status():
     print("📋 常用服务端口详情:")
     print()
 
-    if check_port_status(3001):
-        print("🌐 前端服务 (端口 3001):")
+    if check_port_status(FRONTEND_PORT):
+        print(f"🌐 前端服务 (端口 {FRONTEND_PORT}):")
         print("   - 技术栈: Vue 3 + Element Plus + Vite")
         print("   - 主要页面: 仪表盘、市场行情、技术分析、策略管理")
         print("   - 数据源: 集成Mock数据系统，支持真实API切换")
         print("   - 特性: 响应式设计、实时更新、现代化UI")
         print()
 
-    if check_port_status(8000):
-        print("🔧 后端服务 (端口 8000):")
+    if check_port_status(BACKEND_PORT):
+        print(f"🔧 后端服务 (端口 {BACKEND_PORT}):")
         print("   - 技术栈: FastAPI + Python 3.12")
-        print("   - API文档: http://localhost:8000/docs")
+        print(f"   - API文档: http://localhost:{BACKEND_PORT}/docs")
         print("   - 集成模块: 股票数据、技术指标、策略管理")
         print("   - 特性: 自动文档生成、Mock数据切换、CORS支持")
         print()
     else:
-        print("⚠️ 后端服务 (端口 8000): 未运行")
+        print(f"⚠️ 后端服务 (端口 {BACKEND_PORT}): 未运行")
         print(
-            "   启动命令: cd /opt/claude/mystocks_spec/web/backend && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000"
+            f"   启动命令: cd /opt/claude/mystocks_spec/web/backend && uvicorn app.main:app --reload --host 0.0.0.0 --port {BACKEND_PORT}"
         )
         print()
 
@@ -125,19 +137,19 @@ def show_quick_commands():
         {
             "title": "启动前端服务",
             "command": "cd /opt/claude/mystocks_spec/web/frontend && npm run dev",
-            "port": "3001",
+            "port": str(FRONTEND_PORT),
             "description": "启动Vue.js前端开发服务器",
         },
         {
             "title": "启动后端服务",
-            "command": "cd /opt/claude/mystocks_spec/web/backend && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
-            "port": "8000",
+            "command": f"cd /opt/claude/mystocks_spec/web/backend && uvicorn app.main:app --reload --host 0.0.0.0 --port {BACKEND_PORT}",
+            "port": str(BACKEND_PORT),
             "description": "启动FastAPI后端API服务",
         },
         {
             "title": "同时启动前后端",
             "command": "cd /opt/claude/mystocks_spec && ./web/start_dev.sh",
-            "port": "3001 + 8000",
+            "port": f"{FRONTEND_PORT} + {BACKEND_PORT}",
             "description": "启动开发环境的完整Web服务",
         },
         {
@@ -165,7 +177,7 @@ def show_usage_guide():
         {
             "title": "🌐 访问前端界面",
             "steps": [
-                "打开浏览器访问 http://localhost:3001",
+                f"打开浏览器访问 http://localhost:{FRONTEND_PORT}",
                 "系统会自动加载登录页面",
                 "使用默认账户登录 (admin/admin123)",
                 "进入仪表盘查看系统概览",
@@ -218,10 +230,10 @@ def main():
     print("✅ MyStocks Web系统状态检查完成！")
     print()
     print("🎯 立即体验:")
-    print("   1. 访问 http://localhost:3001 开始使用")
+    print(f"   1. 访问 http://localhost:{FRONTEND_PORT} 开始使用")
     print("   2. 浏览各个功能模块体验完整功能")
     print("   3. 使用Mock数据进行开发和测试")
-    print("   4. 查看API文档 http://localhost:8000/docs")
+    print(f"   4. 查看API文档 http://localhost:{BACKEND_PORT}/docs")
 
 
 if __name__ == "__main__":

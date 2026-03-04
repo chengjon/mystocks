@@ -61,32 +61,32 @@
                             <ArtDecoStatCard
                                 label="沪股通净流入"
                                 :value="marketData.fundFlow.hgt.amount + '亿'"
-                                :change="'+' + marketData.fundFlow.hgt.change + '亿'"
-                                change-percent
-                                variant="rise"
+                                :change="toNumber(marketData.fundFlow.hgt.change)"
+                                :change-percent="false"
+                                :variant="toNumber(marketData.fundFlow.hgt.change) >= 0 ? 'rise' : 'fall'"
                                 size="medium"
-                                :sub-value="'较昨日'"
+                                :description="'较昨日（亿元）'"
                             />
                             <ArtDecoStatCard
                                 label="深股通净流入"
                                 :value="marketData.fundFlow.sgt.amount + '亿'"
-                                :change="'+' + marketData.fundFlow.sgt.change + '亿'"
-                                change-percent
-                                variant="rise"
+                                :change="toNumber(marketData.fundFlow.sgt.change)"
+                                :change-percent="false"
+                                :variant="toNumber(marketData.fundFlow.sgt.change) >= 0 ? 'rise' : 'fall'"
                                 size="medium"
-                                :sub-value="'较昨日'"
+                                :description="'较昨日（亿元）'"
                             />
                             <ArtDecoStatCard
                                 label="北向资金总额"
                                 :value="marketData.fundFlow.northTotal.amount + '亿'"
-                                :sub-value="'本月累计 ' + marketData.fundFlow.northTotal.monthly + '亿'"
+                                :description="'本月累计 ' + marketData.fundFlow.northTotal.monthly + '亿'"
                                 variant="gold"
                                 size="medium"
                             />
                             <ArtDecoStatCard
                                 label="主力净流入"
                                 :value="marketData.fundFlow.mainForce.amount + '亿'"
-                                :sub-value="'占比 ' + marketData.fundFlow.mainForce.percentage + '%'"
+                                :description="'占比 ' + marketData.fundFlow.mainForce.percentage + '%'"
                                 variant="gold"
                                 size="medium"
                             />
@@ -128,7 +128,7 @@
                     <ArtDecoStatCard
                         label="上证指数"
                         :value="marketData.shanghai.index"
-                        :change="marketData.shanghai.change"
+                        :change="toNumber(marketData.shanghai.change)"
                         change-percent
                         variant="gold"
                         size="large"
@@ -137,7 +137,7 @@
                     <ArtDecoStatCard
                         label="深证成指"
                         :value="marketData.shenzhen.index"
-                        :change="marketData.shenzhen.change"
+                        :change="toNumber(marketData.shenzhen.change)"
                         change-percent
                         variant="gold"
                         size="large"
@@ -146,7 +146,7 @@
                     <ArtDecoStatCard
                         label="创业板指"
                         :value="marketData.chuangye.index"
-                        :change="marketData.chuangye.change"
+                        :change="toNumber(marketData.chuangye.change)"
                         change-percent
                         variant="gold"
                         size="large"
@@ -219,14 +219,14 @@
                         <ArtDecoStatCard
                             label="涨跌家数"
                             :value="`${marketData.stocks.up}↑/${marketData.stocks.down}↓`"
-                            change="2.1"
+                            :change="2.1"
                             change-percent
                             variant="gold"
                         />
                         <ArtDecoStatCard
                             label="成交金额"
                             :value="marketData.volume.amount"
-                            change="15.8"
+                            :change="15.8"
                             change-percent
                             variant="gold"
                         />

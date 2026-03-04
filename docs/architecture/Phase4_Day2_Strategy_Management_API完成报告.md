@@ -445,7 +445,7 @@ pytest tests/integration/test_strategy_mgmt_api.py -v
 启动FastAPI服务器后，访问Swagger UI：
 
 ```
-http://localhost:8000/api/docs
+http://localhost:8020/api/docs
 ```
 
 在Swagger UI中可以看到新增的策略管理API端点：
@@ -466,7 +466,7 @@ http://localhost:8000/api/docs
 ### 创建策略
 
 ```bash
-curl -X POST "http://localhost:8000/api/strategy-mgmt/strategies" \
+curl -X POST "http://localhost:8020/api/strategy-mgmt/strategies" \
   -H "Content-Type: application/json" \
   -d '{
     "user_id": 1001,
@@ -486,7 +486,7 @@ curl -X POST "http://localhost:8000/api/strategy-mgmt/strategies" \
 ### 执行回测
 
 ```bash
-curl -X POST "http://localhost:8000/api/strategy-mgmt/backtest/execute" \
+curl -X POST "http://localhost:8020/api/strategy-mgmt/backtest/execute" \
   -H "Content-Type: application/json" \
   -d '{
     "strategy_id": 1,
@@ -502,7 +502,7 @@ curl -X POST "http://localhost:8000/api/strategy-mgmt/backtest/execute" \
 ### 获取策略列表
 
 ```bash
-curl "http://localhost:8000/api/strategy-mgmt/strategies?user_id=1001&status=active&page=1&page_size=20"
+curl "http://localhost:8020/api/strategy-mgmt/strategies?user_id=1001&status=active&page=1&page_size=20"
 ```
 
 ---

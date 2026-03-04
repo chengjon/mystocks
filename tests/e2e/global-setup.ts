@@ -10,7 +10,7 @@ async function globalSetup(config) {
 
   // Per CLAUDE.md port allocation: Frontend 3020-3029, Backend 8020-8029
   const frontendUrl = process.env.BASE_URL || 'http://localhost:3020';
-  const backendUrl = process.env.API_URL || 'http://localhost:8000';
+  const backendUrl = process.env.API_URL || 'http://localhost:8020';
 
   try {
     // 检查前端服务器

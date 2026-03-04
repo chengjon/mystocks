@@ -57,16 +57,16 @@ pip install -r scripts/cli/requirements.txt
 
 ### API服务器地址
 
-默认连接到 `http://localhost:8000`
+默认连接到 `http://localhost:8020`
 
 **方法1**: 环境变量
 ```bash
-export API_CONTRACT_API_URL="http://localhost:8000"
+export API_CONTRACT_API_URL="http://localhost:8020"
 ```
 
 **方法2**: 命令行选项
 ```bash
-api-contract-sync --api-url "http://api-server:8000" list
+api-contract-sync --api-url "http://api-server:8020" list
 ```
 
 ---
@@ -552,12 +552,12 @@ done
 
 ### 问题1: 无法连接到API服务器
 
-**错误**: `❌ 无法连接到API服务器: http://localhost:8000`
+**错误**: `❌ 无法连接到API服务器: http://localhost:8020`
 
 **解决方案**:
 ```bash
 # 1. 检查后端服务是否运行
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 
 # 2. 启动后端服务
 cd web/backend

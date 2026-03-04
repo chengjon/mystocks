@@ -283,7 +283,7 @@ Slack + PagerDuty + Email
 ### Prerequisites
 ```bash
 # 1. Ensure backend is running with metrics endpoint
-curl http://localhost:8000/metrics
+curl http://localhost:8020/metrics
 
 # 2. Prometheus installed and running (or Docker)
 docker run -d --name prometheus \

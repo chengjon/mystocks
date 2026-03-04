@@ -20,6 +20,7 @@ Date: 2025-11-13
 import asyncio
 import time
 import json
+import os
 import websockets
 import requests
 import statistics
@@ -68,7 +69,9 @@ class RealtimeStreamingValidator:
         self.config_file = config_file
         self.results: List[ValidationResult] = []
         self.test_symbols = ["600519", "000001", "600036"]  # 测试股票代码
-        self.base_url = "http://localhost:8000"
+        self.backend_port = int(os.getenv("BACKEND_PORT", "8020"))
+        self.base_url = os.getenv("BACKEND_URL", f"http://localhost:{self.backend_port}")
+        self.ws_base_url = os.getenv("BACKEND_WS_URL", f"ws://localhost:{self.backend_port}")
 
         # 加载配置
         self.config = self._load_config()
@@ -76,8 +79,8 @@ class RealtimeStreamingValidator:
     def _load_config(self) -> Dict[str, Any]:
         """加载配置"""
         default_config = {
-            "websocket_url": "ws://localhost:8000/api/stream",
-            "http_base_url": "http://localhost:8000",
+            "websocket_url": f"{self.ws_base_url}/api/stream",
+            "http_base_url": self.base_url,
             "test_duration": 30,  # 测试持续时间(秒)
             "message_count": 100,  # 消息计数
             "timeout": 10,  # 超时时间(秒)
@@ -247,7 +250,7 @@ class RealtimeStreamingValidator:
             async def run_all_tests():
                 results = []
                 for endpoint in ws_endpoints:
-                    ws_url = f"ws://localhost:8000{endpoint}"
+                    ws_url = f"{self.ws_base_url}{endpoint}"
                     success, connection_time = await test_endpoint(endpoint, ws_url)
                     results.append((endpoint, success, connection_time))
                 return results
@@ -392,7 +395,7 @@ class RealtimeStreamingValidator:
         error_count = 0
 
         try:
-            ws_url = "ws://localhost:8000/api/v1/ws/realtime"
+            ws_url = f"{self.ws_base_url}/api/v1/ws/realtime"
 
             async def test_single_stream():
                 async with websockets.connect(ws_url) as websocket:
@@ -520,7 +523,7 @@ class RealtimeStreamingValidator:
             # 测试流的创建、暂停、恢复和销毁
             state_transitions = []
 
-            ws_url = "ws://localhost:8000/api/v1/ws/realtime"
+            ws_url = f"{self.ws_base_url}/api/v1/ws/realtime"
 
             async def test_state_management():
                 async with websockets.connect(ws_url) as websocket:
@@ -574,7 +577,7 @@ class RealtimeStreamingValidator:
 
         try:
             # 测试连接断开后的恢复
-            ws_url = "ws://localhost:8000/api/v1/ws/realtime"
+            ws_url = f"{self.ws_base_url}/api/v1/ws/realtime"
 
             for attempt in range(self.config["retry_count"]):
                 recovery_attempts += 1

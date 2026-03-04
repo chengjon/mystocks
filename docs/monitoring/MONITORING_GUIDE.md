@@ -165,13 +165,13 @@ docker run -d \
 
 ```bash
 # Get all metrics
-curl http://localhost:8000/metrics
+curl http://localhost:8020/metrics
 
 # Filter by endpoint
-curl http://localhost:8000/metrics | grep http_request_duration_seconds
+curl http://localhost:8020/metrics | grep http_request_duration_seconds
 
 # Get P95 latency
-curl http://localhost:8000/metrics | grep 'http_request_duration_seconds_bucket.*0\.3'
+curl http://localhost:8020/metrics | grep 'http_request_duration_seconds_bucket.*0\.3'
 ```
 
 ### Using Grafana

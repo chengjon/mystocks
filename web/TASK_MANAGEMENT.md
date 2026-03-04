@@ -221,7 +221,7 @@ task_groups:
 
 #### 访问任务管理页面
 ```
-http://localhost:3001/tasks
+http://localhost:3020/tasks
 ```
 
 #### 主要功能
@@ -241,7 +241,7 @@ http://localhost:3001/tasks
 
 #### 注册任务
 ```bash
-curl -X POST http://localhost:8888/api/tasks/register \
+curl -X POST http://localhost:8020/api/tasks/register \
   -H "Content-Type: application/json" \
   -d '{
     "task_id": "test_task",
@@ -256,17 +256,17 @@ curl -X POST http://localhost:8888/api/tasks/register \
 
 #### 启动任务
 ```bash
-curl -X POST http://localhost:8888/api/tasks/test_task/start
+curl -X POST http://localhost:8020/api/tasks/test_task/start
 ```
 
 #### 查询任务状态
 ```bash
-curl http://localhost:8888/api/tasks/test_task
+curl http://localhost:8020/api/tasks/test_task
 ```
 
 #### 查看执行历史
 ```bash
-curl http://localhost:8888/api/tasks/executions/?task_id=test_task
+curl http://localhost:8020/api/tasks/executions/?task_id=test_task
 ```
 
 ### 3. Python代码使用
@@ -574,19 +574,19 @@ dependencies:
 #### 定期检查执行历史
 ```bash
 # 查看失败任务
-curl http://localhost:8888/api/tasks/executions/ | jq '.[] | select(.status == "failed")'
+curl http://localhost:8020/api/tasks/executions/ | jq '.[] | select(.status == "failed")'
 ```
 
 #### 清理旧记录
 ```bash
 # 每周清理一次
-curl -X DELETE "http://localhost:8888/api/tasks/executions/cleanup?days=7"
+curl -X DELETE "http://localhost:8020/api/tasks/executions/cleanup?days=7"
 ```
 
 #### 导出配置备份
 ```bash
 # 定期备份配置
-curl -X POST http://localhost:8888/api/tasks/export \
+curl -X POST http://localhost:8020/api/tasks/export \
   -H "Content-Type: application/json" \
   -d '{"output_path": "/backup/tasks_$(date +%Y%m%d).json"}'
 ```
@@ -631,10 +631,10 @@ def batch_process_task(params):
 **解决方案**:
 ```bash
 # 查看详细错误
-curl http://localhost:8888/api/tasks/executions/{execution_id}
+curl http://localhost:8020/api/tasks/executions/{execution_id}
 
 # 手动重新执行
-curl -X POST http://localhost:8888/api/tasks/{task_id}/start
+curl -X POST http://localhost:8020/api/tasks/{task_id}/start
 ```
 
 #### 2. 任务超时
@@ -666,7 +666,7 @@ timeout: 7200  # 改为2小时
 **解决方案**:
 ```bash
 # 检查健康状态
-curl http://localhost:8888/api/tasks/health
+curl http://localhost:8020/api/tasks/health
 
 # 重启调度器
 # (在应用启动时自动启动)
@@ -683,7 +683,7 @@ curl http://localhost:8888/api/tasks/health
 **解决方案**:
 ```bash
 # 定期清理执行历史
-curl -X DELETE "http://localhost:8888/api/tasks/executions/cleanup?days=7"
+curl -X DELETE "http://localhost:8020/api/tasks/executions/cleanup?days=7"
 ```
 
 ### 日志分析

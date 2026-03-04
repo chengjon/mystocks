@@ -112,7 +112,7 @@
 **实际发现**：
 - ✅ Chrome 已经自动导航到 MyStocks (port 3001)
 - ✅ 页面标题: "Login - MyStocks Platform"
-- ✅ 页面URL: `http://localhost:3001/login?redirect=/dashboard`
+- ✅ 页面URL: `http://localhost:3020/login?redirect=/dashboard`
 - ✅ 我们一直在查询错误的页面（手动创建的 "about:blank" 页面）
 
 **教训**：
@@ -135,7 +135,7 @@ curl -s http://localhost:9222/json | python3 -m json.tool
 #     "id": "01F8BCC862BBB2512B978CB38E17F98F",
 #     "type": "page",
 #     "title": "Login - MyStocks Platform",
-#     "url": "http://localhost:3001/login?redirect=/dashboard",
+#     "url": "http://localhost:3020/login?redirect=/dashboard",
 #     "webSocketDebuggerUrl": "ws://localhost:9222/devtools/page/..."
 #   }
 # ]
@@ -412,7 +412,7 @@ fi
 
 # 3. 检查MyStocks前端
 echo -n "3. MyStocks前端 (3001): "
-if curl -s -I http://localhost:3001 | head -n 1 | grep -q "200"; then
+if curl -s -I http://localhost:3020 | head -n 1 | grep -q "200"; then
     echo "✅ 可访问"
 else
     echo "❌ 不可访问"
@@ -456,7 +456,7 @@ async def full_cdp_test():
     # 找到已导航的页面（排除 about:blank）
     target_page = None
     for p in pages:
-        if "localhost:3001" in p.get("url", ""):
+        if "localhost:3020" in p.get("url", ""):
             target_page = p
             break
     
@@ -689,7 +689,7 @@ google-chrome \
   --no-sandbox \
   --disable-dev-shm-usage \
   --remote-debugging-allow-origin=* \
-  "http://localhost:3001"
+  "http://localhost:3020"
 
 # 2. 验证端口
 curl -s http://localhost:9222/json
@@ -762,7 +762,7 @@ graph LR
     E -->|控制| G[Chrome浏览器]
     F -->|控制| G
     
-    H[浏览器] -->|访问| I[MyStocks :3001]
+    H[浏览器] -->|访问| I[MyStocks :3020]
     
     style B fill:#90EE90
     style G fill:#90EE90

@@ -849,7 +849,7 @@ Response: { success: true, data: [...], total: N }
   ↓
 src/api/index.js (Axios封装)
   ↓
-Vite代理 (/api → http://localhost:8000)
+Vite代理 (/api → http://localhost:8020)
   ↓
 FastAPI后端
   ↓

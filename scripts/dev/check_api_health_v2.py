@@ -14,10 +14,11 @@
 """
 
 import requests
+import os
 from typing import Dict, Tuple
 
 # 配置
-BASE_URL = "http://localhost:8000"
+BASE_URL = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
 TEST_USERNAME = "admin"
 TEST_PASSWORD = "admin123"
 

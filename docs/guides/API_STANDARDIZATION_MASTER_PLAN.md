@@ -257,8 +257,8 @@ API_METADATA = {
 
     # 新增: 服务器列表
     "servers": [
-        {"url": "http://localhost:8000", "description": "本地开发环境"},
-        {"url": "http://127.0.0.1:8000", "description": "本地开发环境 (127.0.0.1)"},
+        {"url": "http://localhost:8020", "description": "本地开发环境"},
+        {"url": "http://127.0.0.1:8020", "description": "本地开发环境 (127.0.0.1)"},
         {"url": "https://api.mystocks.com", "description": "生产环境"},
     ]
 }

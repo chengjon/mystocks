@@ -65,7 +65,7 @@
 1. **API连接错误** (预期内)
    - 问题: 后端服务未启动
    - 影响: CSRF初始化失败，API调用失败
-   - 解决方案: 启动后端服务 `python -m uvicorn main:app --port 8000`
+   - 解决方案: 启动后端服务 `python -m uvicorn main:app --port 8020`
 
 2. **浏览器兼容性**
    - Firefox测试超时，可能与测试环境相关

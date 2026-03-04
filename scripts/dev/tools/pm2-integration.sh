@@ -123,7 +123,7 @@ module.exports = {
       // 健康检查配置
       health_check: {
         enabled: true,
-        url: 'http://localhost:8000/api/health',
+        url: 'http://localhost:/api/health',
         interval: 30000, // 30秒检查一次
         timeout: 5000,   // 5秒超时
         fails: 3         // 连续失败3次重启
@@ -155,7 +155,7 @@ module.exports = {
       // 健康检查配置
       health_check: {
         enabled: true,
-        url: 'http://localhost:3001',
+        url: 'http://localhost:',
         interval: 30000,
         timeout: 5000,
         fails: 3
@@ -225,7 +225,7 @@ perform_health_checks() {
     local services_ok=true
 
     # 检查后端服务
-    if curl -s --max-time 10 "http://localhost:8000/api/health" >/dev/null 2>&1; then
+    if curl -s --max-time 10 "http://localhost:/api/health" >/dev/null 2>&1; then
         log_success "后端服务健康检查通过"
     else
         log_error "后端服务健康检查失败"
@@ -233,7 +233,7 @@ perform_health_checks() {
     fi
 
     # 检查前端服务
-    if curl -s --max-time 10 "http://localhost:3001" >/dev/null 2>&1; then
+    if curl -s --max-time 10 "http://localhost:" >/dev/null 2>&1; then
         log_success "前端服务健康检查通过"
     else
         log_error "前端服务健康检查失败"
@@ -274,11 +274,11 @@ $(pm2 jlist | jq .)
 
 ## 服务健康状态
 
-### 后端服务 (http://localhost:8000)
-$(curl -s -w "HTTP状态: %{http_code}\n响应时间: %{time_total}s\n" -o /dev/null "http://localhost:8000/api/health" 2>/dev/null || echo "❌ 服务无响应")
+### 后端服务 (http://localhost:)
+$(curl -s -w "HTTP状态: %{http_code}\n响应时间: %{time_total}s\n" -o /dev/null "http://localhost:/api/health" 2>/dev/null || echo "❌ 服务无响应")
 
-### 前端服务 (http://localhost:3001)
-$(curl -s -w "HTTP状态: %{http_code}\n响应时间: %{time_total}s\n" -o /dev/null "http://localhost:3001" 2>/dev/null || echo "❌ 服务无响应")
+### 前端服务 (http://localhost:)
+$(curl -s -w "HTTP状态: %{http_code}\n响应时间: %{time_total}s\n" -o /dev/null "http://localhost:" 2>/dev/null || echo "❌ 服务无响应")
 
 ## 系统资源使用
 
@@ -405,7 +405,7 @@ sleep 15
 log_info "执行健康检查..."
 
 # 检查后端
-if curl -f -s --max-time 30 "http://localhost:8000/api/health" >/dev/null 2>&1; then
+if curl -f -s --max-time 30 "http://localhost:/api/health" >/dev/null 2>&1; then
     log_success "后端服务健康检查通过"
 else
     log_error "后端服务健康检查失败"
@@ -414,7 +414,7 @@ else
 fi
 
 # 检查前端
-if curl -f -s --max-time 30 "http://localhost:3001" >/dev/null 2>&1; then
+if curl -f -s --max-time 30 "http://localhost:" >/dev/null 2>&1; then
     log_success "前端服务健康检查通过"
 else
     log_error "前端服务健康检查失败"
@@ -435,8 +435,8 @@ cat > deployment-report.md << EOF
 $(pm2 jlist | jq -r '.[] | "- \(.name): \(.pm2_env.status) (PID: \(.pid))"')
 
 ## 健康检查结果
-- ✅ 后端服务: http://localhost:8000
-- ✅ 前端服务: http://localhost:3001
+- ✅ 后端服务: http://localhost:
+- ✅ 前端服务: http://localhost:
 
 ## 下一步操作
 1. 监控服务运行状态: \`pm2 monit\`

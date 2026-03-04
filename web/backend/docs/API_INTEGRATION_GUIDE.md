@@ -474,11 +474,11 @@ console.log('Process Time:', response.headers['x-process-time'])
 
 ```bash
 # 后端健康检查
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 
 # API 健康检查
-curl http://localhost:8000/api/market/health
-curl http://localhost:8000/api/strategy/health
+curl http://localhost:8020/api/market/health
+curl http://localhost:8020/api/strategy/health
 ```
 
 ---

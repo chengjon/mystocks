@@ -318,7 +318,7 @@ describe('CommandPalette', () => {
 import { test, expect } from '@playwright/test'
 
 test('should navigate through 6 functional domains', async ({ page }) => {
-  await page.goto('http://localhost:3001')
+  await page.goto('http://localhost:3020')
   await expect(page.locator('nav')).toContainText('市场数据')
   // ... 测试代码
 })

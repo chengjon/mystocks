@@ -7,8 +7,8 @@
 ## 1. 端口与访问分配 (Port Allocation)
 | 服务 | 地址 | 访问角色 |
 | :--- | :--- | :--- |
-| **Frontend** | `http://localhost:3001` | 开发与 E2E 测试入口 |
-| **Backend** | `http://localhost:8000` | REST API / Health 探针 |
+| **Frontend** | `http://localhost:3020` | 开发与 E2E 测试入口 |
+| **Backend** | `http://localhost:8020` | REST API / Health 探针 |
 | **Redis** | `127.0.0.1:6379` | 热点数据中转 / 跨系统桥接 |
 
 ## 2. 自动化工具链 (Toolchain)

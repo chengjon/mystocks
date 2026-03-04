@@ -72,6 +72,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { ArtDecoButton, ArtDecoCard, ArtDecoInput, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
 import { monitoringApi } from '@/api'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
+import { API_BASE_URL } from '@/config/runtime-endpoints'
 
 interface MonitorRow {
   endpoint: string
@@ -104,7 +105,7 @@ const tabs = [
 const activeTab = ref('sources')
 
 const form = reactive({
-  backendUrl: 'http://localhost:8020',
+  backendUrl: API_BASE_URL,
   maxBacktestJobs: '4',
   slippage: '0.05',
   feeRate: '2.5'

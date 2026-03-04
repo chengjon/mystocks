@@ -90,5 +90,5 @@ class TestAPIAuthentication:
         """测试CSRF令牌要求"""
         import requests
 
-        response = requests.post("http://localhost:8000/api/v1/data/stock", json={})
+        response = requests.post("http://localhost:8020/api/v1/data/stock", json={})
         assert response.status_code == 403

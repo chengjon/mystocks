@@ -117,10 +117,10 @@ uvicorn app.main:app --reload
 ### 5. 测试API
 ```bash
 # 获取所有查询
-curl http://localhost:8000/api/market/wencai/queries
+curl http://localhost:8020/api/market/wencai/queries
 
 # 执行查询
-curl -X POST http://localhost:8000/api/market/wencai/query \
+curl -X POST http://localhost:8020/api/market/wencai/query \
   -H "Content-Type: application/json" \
   -d '{"query_name": "qs_9", "pages": 1}'
 ```

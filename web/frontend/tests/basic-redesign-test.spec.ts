@@ -1,8 +1,10 @@
 import { test, expect } from '@playwright/test';
 
-// 设置前端端口为3001（因为3000被占用）
+const FRONTEND_PORT = process.env.FRONTEND_PORT || '3020';
+const FRONTEND_URL = process.env.FRONTEND_URL || `http://localhost:${FRONTEND_PORT}`;
+
 test.use({
-  baseURL: 'http://localhost:3001'
+  baseURL: FRONTEND_URL
 });
 
 test.describe('MyStocks Web Redesign - Basic Functionality', () => {

@@ -15,10 +15,14 @@ import { readFileSync, existsSync } from 'fs';
 import { globSync } from 'glob';
 import path from 'path';
 
+const FRONTEND_PORT = process.env.FRONTEND_PORT || '3020';
+const FRONTEND_BACKUP_PORT = process.env.FRONTEND_BACKUP_PORT || '3021';
+const BACKEND_PORT = process.env.BACKEND_PORT || '8020';
+
 // 配置
 const CONFIG = {
-  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3020',
-  backendUrl: process.env.BACKEND_URL || 'http://localhost:8000',
+  frontendUrl: process.env.FRONTEND_URL || `http://localhost:${FRONTEND_PORT}`,
+  backendUrl: process.env.BACKEND_URL || `http://localhost:${BACKEND_PORT}`,
   timeout: 30000, 
   loadTimeThreshold: 3000, 
 };
@@ -27,7 +31,7 @@ const CONFIG = {
  * 智能探测前端端口
  */
 async function probeFrontend(browser) {
-  const ports = [3020, 3000, 3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 3009];
+  const ports = [Number(FRONTEND_PORT), Number(FRONTEND_BACKUP_PORT)];
   // 优先使用环境变量
   if (process.env.FRONTEND_URL) return process.env.FRONTEND_URL;
 

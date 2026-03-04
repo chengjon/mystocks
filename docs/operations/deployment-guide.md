@@ -32,7 +32,7 @@ python src/gpu/api_system/wsl2_gpu_init.py
 ```
 
 ### 3. 验证部署
-- 访问后端API文档：http://localhost:8000/api/docs (端口可能为8000-8010)
+- 访问后端API文档：http://localhost:8020/api/docs (端口可能为8000-8010)
 - 访问前端页面：http://localhost:3000 (端口可能为3000-3010)
 - 检查监控系统
 - 验证AI功能

@@ -362,7 +362,7 @@ addEventListener('training_progress', (data) => {
 
 ```bash
 # 开发环境
-VITE_API_BASE_URL=http://localhost:8000
+VITE_API_BASE_URL=http://localhost:8020
 
 # 生产环境
 VITE_API_BASE_URL=https://api.mystocks.com
@@ -406,7 +406,7 @@ VITE_API_BASE_URL=https://api.mystocks.com
 **解决方案**:
 ```bash
 # 1. 检查后端服务
-curl http://localhost:8000/api/v1/sse/status
+curl http://localhost:8020/api/v1/sse/status
 
 # 2. 检查环境变量
 echo $VITE_API_BASE_URL

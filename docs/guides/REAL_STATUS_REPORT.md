@@ -28,17 +28,17 @@ PostgreSQL数据库连接正常，能够查询数据
 ## API测试结果
 
 ### 健康检查接口
-- URL: http://localhost:8888/health
+- URL: http://localhost:8020/health
 - 状态码: 200
 - 响应: {"status":"healthy","timestamp":1763307063.4973557,"service":"mystocks-web-api"}
 
 ### API文档接口
-- URL: http://localhost:8888/api/docs
+- URL: http://localhost:8020/api/docs
 - 状态码: 200
 - 响应: Swagger UI文档页面
 
 ### 需要认证的API
-- URL: http://localhost:8888/api/data/stocks/basic?limit=5
+- URL: http://localhost:8020/api/data/stocks/basic?limit=5
 - 状态码: 401 (认证失败，正常)
 - 响应: {"detail":"Not authenticated"}
 

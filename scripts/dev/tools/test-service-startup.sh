@@ -36,7 +36,7 @@ sleep 5
 # 测试后端健康检查
 echo ""
 echo "🏥 测试后端健康检查..."
-if curl -s --max-time 5 "http://localhost:8000/api/health" >/dev/null 2>&1; then
+if curl -s --max-time 5 "http://localhost:/api/health" >/dev/null 2>&1; then
     echo "✅ 后端服务健康检查通过"
 else
     echo "❌ 后端服务健康检查失败"
@@ -58,7 +58,7 @@ sleep 10
 # 测试前端服务
 echo ""
 echo "🏥 测试前端服务..."
-if curl -s --max-time 5 "http://localhost:3001" >/dev/null 2>&1; then
+if curl -s --max-time 5 "http://localhost:" >/dev/null 2>&1; then
     echo "✅ 前端服务启动成功"
 else
     echo "❌ 前端服务启动失败"

@@ -70,7 +70,7 @@ Chrome was already successfully navigating to MyStocks on port 3001, but we were
 - **HTTP API**: `http://localhost:9222/json`
 
 ### ✅ MyStocks Frontend
-- **URL**: `http://localhost:3001/login?redirect=/dashboard`
+- **URL**: `http://localhost:3020/login?redirect=/dashboard`
 - **Status**: ✅ Running and accessible
 - **Page Type**: Vue.js + Vite application
 
@@ -78,7 +78,7 @@ Chrome was already successfully navigating to MyStocks on port 3001, but we were
 
 1. **Page Navigation** - ✅ Working
    - Chrome automatically navigates to MyStocks
-   - Page URL: `http://localhost:3001/login?redirect=/dashboard`
+   - Page URL: `http://localhost:3020/login?redirect=/dashboard`
    - Page Title: "Login - MyStocks Platform"
 
 2. **DOM Manipulation** - ✅ Working

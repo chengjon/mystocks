@@ -1,11 +1,14 @@
 import { test, expect } from '@playwright/test'
 
+const FRONTEND_PORT = process.env.FRONTEND_PORT || '3020'
+const FRONTEND_URL = process.env.FRONTEND_URL || `http://localhost:${FRONTEND_PORT}`
+
 test('Frontend loads successfully - comprehensive verification', async ({ page }) => {
   test.setTimeout(60000)
 
   console.log('🚀 Starting frontend verification test...')
 
-  await page.goto('http://localhost:3001', {
+  await page.goto(FRONTEND_URL, {
     waitUntil: 'domcontentloaded',
     timeout: 30000
   })
@@ -60,7 +63,7 @@ test('Frontend loads successfully - comprehensive verification', async ({ page }
     console.log('✅ No console errors detected')
   }
 
-  expect(page.url()).toContain('localhost:3001')
+  expect(page.url()).toContain(`localhost:${FRONTEND_PORT}`)
   expect(vueAppMounted).toBe(true)
 
   if (hasContent) {

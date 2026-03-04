@@ -9,7 +9,7 @@
 ├── GET 端点: 5 个 (83%)
 └── POST 端点: 1 个 (17%)
 
-基础 URL: http://localhost:8000
+基础 URL: http://localhost:8020
 认证方式: JWT Bearer Token
 数据格式: JSON
 
@@ -23,7 +23,7 @@
    描述: 获取 CSRF Token (可选)
 
    示例:
-   $ curl -X GET "http://localhost:8000/api/csrf-token"
+   $ curl -X GET "http://localhost:8020/api/csrf-token"
 
 2️⃣  用户登录
    方法: POST
@@ -37,7 +37,7 @@
    }
 
    示例:
-   $ curl -X POST "http://localhost:8000/api/auth/login" \
+   $ curl -X POST "http://localhost:8020/api/auth/login" \
      -H "Content-Type: application/json" \
      -d '{"username":"admin","password":"admin123"}'
 
@@ -57,7 +57,7 @@
    Authorization: Bearer <access_token>
 
    示例:
-   $ curl -X GET "http://localhost:8000/api/auth/user" \
+   $ curl -X GET "http://localhost:8020/api/auth/user" \
      -H "Authorization: Bearer eyJ..."
 
 
@@ -70,7 +70,7 @@
    描述: 系统健康检查
 
    示例:
-   $ curl -X GET "http://localhost:8000/health"
+   $ curl -X GET "http://localhost:8020/health"
 
 2️⃣  根路径
    方法: GET
@@ -78,7 +78,7 @@
    描述: 重定向到 Swagger 文档
 
    示例:
-   $ curl -X GET "http://localhost:8000/"
+   $ curl -X GET "http://localhost:8020/"
 
 3️⃣  Swagger UI
    方法: GET
@@ -86,7 +86,7 @@
    描述: 交互式 API 文档
 
    浏览器访问:
-   http://localhost:8000/docs
+   http://localhost:8020/docs
 
 
 🚀 完整工作流
@@ -95,7 +95,7 @@
 第一步: 登录获取 Token
 --------
 
-$ curl -X POST "http://localhost:8000/api/auth/login" \
+$ curl -X POST "http://localhost:8020/api/auth/login" \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"admin123"}'
 
@@ -115,7 +115,7 @@ $ curl -X POST "http://localhost:8000/api/auth/login" \
 第二步: 使用 Token 获取用户信息
 --------
 
-$ curl -X GET "http://localhost:8000/api/auth/user" \
+$ curl -X GET "http://localhost:8020/api/auth/user" \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 
 响应示例:
@@ -136,7 +136,7 @@ import requests
 
 # 登录
 response = requests.post(
-    "http://localhost:8000/api/auth/login",
+    "http://localhost:8020/api/auth/login",
     json={"username": "admin", "password": "admin123"}
 )
 data = response.json()
@@ -145,7 +145,7 @@ token = data["access_token"]
 # 获取用户信息
 headers = {"Authorization": f"Bearer {token}"}
 user_response = requests.get(
-    "http://localhost:8000/api/auth/user",
+    "http://localhost:8020/api/auth/user",
     headers=headers
 )
 print(user_response.json())
@@ -155,7 +155,7 @@ print(user_response.json())
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 // 登录
-const loginRes = await fetch('http://localhost:8000/api/auth/login', {
+const loginRes = await fetch('http://localhost:8020/api/auth/login', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
@@ -167,7 +167,7 @@ const loginRes = await fetch('http://localhost:8000/api/auth/login', {
 const { access_token } = await loginRes.json();
 
 // 获取用户信息
-const userRes = await fetch('http://localhost:8000/api/auth/user', {
+const userRes = await fetch('http://localhost:8020/api/auth/user', {
   headers: { 'Authorization': `Bearer ${access_token}` }
 });
 
@@ -178,25 +178,25 @@ console.log(user);
 🌐 在线访问
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Swagger UI:  http://localhost:8000/docs
-OpenAPI:    http://localhost:8000/openapi.json
-Health:     http://localhost:8000/health
+Swagger UI:  http://localhost:8020/docs
+OpenAPI:    http://localhost:8020/openapi.json
+Health:     http://localhost:8020/health
 
 
 💡 常用 cURL 命令
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # 健康检查
-curl -s http://localhost:8000/health | python3 -m json.tool
+curl -s http://localhost:8020/health | python3 -m json.tool
 
 # 获取 Token
-TOKEN=$(curl -s -X POST "http://localhost:8000/api/auth/login" \
+TOKEN=$(curl -s -X POST "http://localhost:8020/api/auth/login" \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"admin123"}' | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)
 
 # 使用 Token 请求数据
 curl -s -H "Authorization: Bearer $TOKEN" \
-  http://localhost:8000/api/auth/user | python3 -m json.tool
+  http://localhost:8020/api/auth/user | python3 -m json.tool
 
 
 ❌ 错误代码

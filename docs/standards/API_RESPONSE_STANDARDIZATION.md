@@ -548,8 +548,8 @@ def validate_response(url, response_data):
 
 # 测试所有端点
 endpoints = [
-    "http://localhost:8000/api/announcement/stats",
-    "http://localhost:8000/api/system/database/stats",
+    "http://localhost:8020/api/announcement/stats",
+    "http://localhost:8020/api/system/database/stats",
     # ... 更多端点
 ]
 

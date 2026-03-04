@@ -43,7 +43,7 @@ export const TEST_CREDENTIALS = {
 
 export const TEST_URLS = {
   frontend: process.env.E2E_BASE_URL || process.env.BASE_URL || 'http://localhost:3000',
-  backend: process.env.API_BASE_URL || 'http://localhost:8000',
+  backend: process.env.API_BASE_URL || 'http://localhost:8020',
   login: `${process.env.E2E_BASE_URL || process.env.BASE_URL || 'http://localhost:3000'}/login`,
 };
 

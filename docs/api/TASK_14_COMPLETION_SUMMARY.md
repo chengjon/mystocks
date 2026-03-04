@@ -372,7 +372,7 @@ report = ws_manager.get_performance_summary()
 ### 其他相关
 
 - **[API 文档中心](README.md)** - 所有API文档索引
-- **[Swagger UI](http://localhost:8000/api/docs)** - 实时API文档
+- **[Swagger UI](http://localhost:8020/api/docs)** - 实时API文档
 
 ---
 

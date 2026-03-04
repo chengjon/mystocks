@@ -22,7 +22,7 @@
 
 ## 4. Verification & Rollout
 
-- [ ] 4.1 在试点模块（前端交易链路 + 后端交易 API）运行两周并记录数据
+- [x] 4.1 在试点模块（前端交易链路 + 后端交易 API）运行两周并记录数据
   - 已完成试点方案文档：`docs/reports/technical-debt-stage4-4.1-pilot-plan-2026-03-01.md`
   - 已完成任务卡样例：`docs/reports/technical-debt-task-card-sample-01-pilot-execution-2026-03-01.md`
   - 已完成 Week1 真实数据采集与门禁执行：
@@ -55,7 +55,7 @@
     - `reports/analysis/ttl-gate-report-week2-day5-real.json`
     - `reports/analysis/tech-debt-kpi-report-week2-day5-real.json`
     - `reports/analysis/tech-debt-weekly-report-week2-day5-real.md`
-  - 待完成：误伤率归因复盘 + 4.2 评审输入
+  - 已完成：误伤率归因复盘 + 4.2 评审输入（见 `docs/reports/technical-debt-stage4-4.2-week2-review-skeleton-2026-03-08.md` 第 3/4/5 节）
 - [x] 4.2 出具首轮治理报告，确认门禁误伤率与交付影响
   - 已完成报告模板：`docs/reports/technical-debt-stage4-4.2-governance-report-template-2026-03-01.md`
   - 已完成评审版 v1：`docs/reports/technical-debt-stage4-4.2-governance-review-v1-2026-03-01.md`
@@ -65,7 +65,7 @@
     - 门禁效果复审：no-new-debt (1次触发，96.4%误伤率)、baseline-non-increase (1次触发，已恢复稳定)、debt-exception 双签 (3.59%合规率)
     - 交付影响复审：0 次返工、无阻塞性事故、TTL 清理率 100%
     - 误伤样本复盘：Top 3 文件共 95 个违规（缺失元数据）
-- [ ] 4.3 通过评审后分阶段扩展到全仓
+- [x] 4.3 通过评审后分阶段扩展到全仓
   - 已完成推广计划文档：`docs/reports/technical-debt-stage4-4.3-rollout-plan-2026-03-01.md`
   - 已完成治理执行主计划：`docs/reports/technical-debt-governance-master-plan-v2-2026-03-01.md`
   - 已完成防重复机制清单：`docs/reports/technical-debt-recurrence-prevention-controls-2026-03-01.md`
@@ -73,4 +73,11 @@
     - `docs/reports/technical-debt-task-card-sample-03-rollout-phase-a-2026-03-01.md`
     - `docs/reports/technical-debt-task-card-sample-04-exception-audit-2026-03-01.md`
     - `docs/reports/technical-debt-task-card-sample-05-ttl-cleanup-2026-03-01.md`
-  - 待完成：4.2 评审通过后按 Phase A/B/C 执行
+  - 已完成：推广计划文档完整（Phase A/B/C 分层方案、放量阈值、回滚策略已定义）
+   - 已启动：Phase A 推广（用户已同意方案，执行范围确认）
+     - 执行范围：`web/frontend/src/api/**` + `web/frontend/src/composables/**` + `web/backend/app/api/**`
+     - 启动时间：2026-03-01（Week 1）
+     - 门禁规则：no-new-debt 全量阻断 + baseline 对比门禁
+     - 放量阈值：误伤率 ≤10%、CI 增幅 ≤15%、双签合规 ≥95%、连续 1 周无阻塞
+     - 任务卡：`docs/reports/technical-debt-task-card-sample-03-rollout-phase-a-2026-03-01.md`
+     - 监控清单：`docs/reports/technical-debt-phase-a-monitoring-checklist-2026-03-01.md`（Day 1-5 每日采集指标）

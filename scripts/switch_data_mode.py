@@ -26,6 +26,26 @@ sys.path.append(str(PROJECT_ROOT))
 from dotenv import load_dotenv, set_key
 
 
+def get_backend_base_url() -> str:
+    api_base_url = os.getenv("API_BASE_URL", "").strip()
+    if api_base_url:
+        return api_base_url
+    backend_port = os.getenv("BACKEND_PORT", "").strip()
+    if not backend_port:
+        raise RuntimeError("Missing BACKEND_PORT in environment")
+    return f"http://localhost:{backend_port}"
+
+
+def get_frontend_base_url() -> str:
+    frontend_base_url = os.getenv("FRONTEND_BASE_URL", "").strip()
+    if frontend_base_url:
+        return frontend_base_url
+    frontend_port = os.getenv("FRONTEND_PORT", "").strip()
+    if not frontend_port:
+        raise RuntimeError("Missing FRONTEND_PORT in environment")
+    return f"http://localhost:{frontend_port}"
+
+
 def load_env_file():
     """加载环境变量文件"""
     env_path = PROJECT_ROOT / ".env"
@@ -135,10 +155,11 @@ def test_api_endpoints():
     print("   等待后端服务启动...")
     time.sleep(8)
 
+    backend_base_url = get_backend_base_url()
     test_cases = [
-        ("健康检查", "http://localhost:8000/health"),
-        ("API状态", "http://localhost:8000/api/status"),
-        ("概念分析", "http://localhost:8000/api/analysis/concept/list?limit=3"),
+        ("健康检查", f"{backend_base_url}/health"),
+        ("API状态", f"{backend_base_url}/api/status"),
+        ("概念分析", f"{backend_base_url}/api/analysis/concept/list?limit=3"),
     ]
 
     results = []
@@ -212,19 +233,22 @@ def show_status():
     try:
         import requests
 
+        backend_base_url = get_backend_base_url()
+        frontend_base_url = get_frontend_base_url()
+
         # 后端服务
-        backend_response = requests.get("http://localhost:8000/health", timeout=3)
+        backend_response = requests.get(f"{backend_base_url}/health", timeout=3)
         backend_status = (
             "✅ 运行中" if backend_response.status_code == 200 else "⚠️  异常"
         )
-        print(f"   后端服务 (8000): {backend_status}")
+        print(f"   后端服务 ({backend_base_url}): {backend_status}")
 
         # 前端服务
-        frontend_response = requests.get("http://localhost:3000", timeout=3)
+        frontend_response = requests.get(frontend_base_url, timeout=3)
         frontend_status = (
             "✅ 运行中" if frontend_response.status_code == 200 else "⚠️  异常"
         )
-        print(f"   前端服务 (3000): {frontend_status}")
+        print(f"   前端服务 ({frontend_base_url}): {frontend_status}")
 
     except Exception as e:
         print(f"   服务状态检查失败: {e}")

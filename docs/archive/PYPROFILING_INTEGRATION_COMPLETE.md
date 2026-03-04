@@ -267,7 +267,7 @@ pip install lightgbm scikit-learn pandas numpy
 ### 5.1 训练模型
 
 ```bash
-curl -X POST "http://localhost:8000/api/ml/models/train" \
+curl -X POST "http://localhost:8020/api/ml/models/train" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -282,7 +282,7 @@ curl -X POST "http://localhost:8000/api/ml/models/train" \
 ### 5.2 进行预测
 
 ```bash
-curl -X POST "http://localhost:8000/api/ml/models/predict" \
+curl -X POST "http://localhost:8020/api/ml/models/predict" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -296,14 +296,14 @@ curl -X POST "http://localhost:8000/api/ml/models/predict" \
 ### 5.3 列出所有模型
 
 ```bash
-curl -X GET "http://localhost:8000/api/ml/models" \
+curl -X GET "http://localhost:8020/api/ml/models" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ### 5.4 获取模型详情
 
 ```bash
-curl -X GET "http://localhost:8000/api/ml/models/sh000001_model_v1" \
+curl -X GET "http://localhost:8020/api/ml/models/sh000001_model_v1" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -414,8 +414,8 @@ models/
 ### 9.2 API 文档访问
 
 启动后端服务后访问：
-- Swagger UI: `http://localhost:8000/api/docs`
-- ReDoc: `http://localhost:8000/api/redoc`
+- Swagger UI: `http://localhost:8020/api/docs`
+- ReDoc: `http://localhost:8020/api/redoc`
 
 在文档中查找 **"Machine Learning"** 标签查看所有 ML API。
 
@@ -424,7 +424,7 @@ models/
 ## 10. 联系和支持
 
 如有问题，请参考：
-1. 查看 API 文档：`http://localhost:8000/api/docs`
+1. 查看 API 文档：`http://localhost:8020/api/docs`
 2. 查看前端演示页面：`http://localhost:3000/pyprofiling-demo`
 3. 检查日志输出
 

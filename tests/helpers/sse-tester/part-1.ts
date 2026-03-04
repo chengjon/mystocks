@@ -48,7 +48,7 @@ export interface SSEEvent {
  * @example
  * ```typescript
  * const sseTester = new SSETester(page);
- * await sseTester.connectSSE('http://localhost:8000/api/v1/sse/status');
+ * await sseTester.connectSSE('http://localhost:8020/api/v1/sse/status');
  *
  * const event = await sseTester.waitForEvent('risk_alert', 10000);
  * expect(event.data).toContain('risk_level');
@@ -93,7 +93,7 @@ export class SSETester {
    *
    * @example
    * ```typescript
-   * await sseTester.connectSSE('http://localhost:8000/api/v1/sse/status', {
+   * await sseTester.connectSSE('http://localhost:8020/api/v1/sse/status', {
    *   headers: { 'Authorization': 'Bearer token' }
    * });
    * ```

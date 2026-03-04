@@ -38,7 +38,7 @@ class APIContractTestResult:
 class APIContractValidator:
     """API契约验证器"""
 
-    def __init__(self, base_url: str = "http://localhost:8000"):
+    def __init__(self, base_url: str = "http://localhost:8020"):
         self.base_url = base_url
         self.contracts: Dict[str, Dict] = {}
         self.validation_results: List[APIContractTestResult] = []

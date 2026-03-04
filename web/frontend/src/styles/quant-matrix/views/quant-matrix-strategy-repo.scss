@@ -1,0 +1,51 @@
+@import '@/styles/quant-matrix/index';
+
+.qm-strategy-repo {
+  display: grid;
+  gap: 16px;
+}
+
+.qm-strategy-repo__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.qm-strategy-repo__table th,
+.qm-strategy-repo__table td {
+  border-bottom: 1px solid var(--qm-border);
+  padding: 10px;
+  font-size: 13px;
+  text-align: left;
+}
+
+.qm-strategy-repo .is-up {
+  color: var(--qm-success);
+}
+
+.qm-strategy-repo .is-down {
+  color: var(--qm-danger);
+}
+
+.qm-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 11px;
+  border: 1px solid var(--qm-border);
+}
+
+.qm-chip--active {
+  border-color: rgb(61 220 151 / 55%);
+  color: var(--qm-success);
+}
+
+.qm-chip--queued {
+  border-color: rgb(255 180 77 / 55%);
+  color: var(--qm-warning);
+}
+
+.qm-chip--paused {
+  border-color: rgb(255 110 122 / 55%);
+  color: var(--qm-danger);
+}

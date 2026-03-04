@@ -42,7 +42,7 @@ export interface WebSocketMessage {
  * @example
  * ```typescript
  * const wsTester = new WebSocketTester();
- * await wsTester.connectWebSocket('ws://localhost:8000/api/v1/realtime');
+ * await wsTester.connectWebSocket('ws://localhost:8020/api/v1/realtime');
  *
  * await wsTester.sendMessage({ type: 'subscribe', channel: 'training' });
  * const message = await wsTester.waitForMessage(m => m.type === 'training_progress');
@@ -85,7 +85,7 @@ export class WebSocketTester {
    *
    * @example
    * ```typescript
-   * await wsTester.connectWebSocket('ws://localhost:8000/api/realtime');
+   * await wsTester.connectWebSocket('ws://localhost:8020/api/realtime');
    * ```
    */
   public async connectWebSocket(

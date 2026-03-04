@@ -182,7 +182,7 @@ wait_for_services() {
             local health_url="http://localhost:8001/health"
             ;;
         production)
-            local health_url="http://localhost:8000/health"
+            local health_url="http://localhost:/health"
             ;;
     esac
 
@@ -245,7 +245,7 @@ run_smoke_tests() {
 run_production_verification() {
     log_info "运行生产环境验证..."
 
-    local api_base="http://localhost:8000/api"
+    local api_base="http://localhost:/api"
 
     # 基础API检查
     curl -f "${api_base}/health" || {

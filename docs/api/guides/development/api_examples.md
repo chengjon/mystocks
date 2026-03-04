@@ -31,7 +31,7 @@ import requests
 from datetime import datetime, date
 
 # API基础URL
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://localhost:8020"
 
 # 请求头配置
 headers = {
@@ -898,7 +898,7 @@ class MyStocksClient:
         return response.json()
 
 # 使用SDK
-client = MyStocksClient("http://localhost:8000", "admin", "password")
+client = MyStocksClient("http://localhost:8020", "admin", "password")
 
 # 获取资金流向
 fund_flow = client.get_fund_flow("600519", timeframe="5")
@@ -984,7 +984,7 @@ class MyStocksClient {
 }
 
 // 使用SDK
-const client = new MyStocksClient('http://localhost:8000');
+const client = new MyStocksClient('http://localhost:8020');
 await client.login('admin', 'password');
 
 // 获取资金流向
@@ -1024,9 +1024,9 @@ console.log(result);
 
 ## 📞 获取帮助
 
-- **Swagger UI**: http://localhost:8000/api/docs
-- **ReDoc**: http://localhost:8000/api/redoc
-- **健康检查**: http://localhost:8000/health
+- **Swagger UI**: http://localhost:8020/api/docs
+- **ReDoc**: http://localhost:8020/api/redoc
+- **健康检查**: http://localhost:8020/health
 - **问题反馈**: api@mystocks.com
 
 ---

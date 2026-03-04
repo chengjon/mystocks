@@ -14,6 +14,26 @@ interface StopLossRow {
 const { loading, lastRequestId, exec } = useArtDecoApi();
 const stopLossItems = ref<StopLossRow[]>([]);
 
+function toFiniteNumber(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+  if (typeof value === 'string') {
+    const normalized = Number.parseFloat(value);
+    if (Number.isFinite(normalized)) {
+      return normalized;
+    }
+  }
+  return null;
+}
+
+function calculateDistancePercent(currentPrice: number | null, stopPrice: number | null): number | null {
+  if (currentPrice === null || stopPrice === null || stopPrice <= 0) {
+    return null;
+  }
+  return ((currentPrice - stopPrice) / stopPrice) * 100;
+}
+
 const fetchStopLossData = async () => {
   const data = await exec(() => apiClient.get('/v1/monitoring/watchlists'), {
     silent: true
@@ -23,20 +43,24 @@ const fetchStopLossData = async () => {
   if (payload?.items) {
     stopLossItems.value = payload.items.map((item: unknown) => {
       const row = item as Partial<StopLossRow>
+      const currentPrice = toFiniteNumber((row as Record<string, unknown>).current_price ?? (row as Record<string, unknown>).price);
+      const stopPrice = toFiniteNumber(
+        (row as Record<string, unknown>).stop_price ??
+        (row as Record<string, unknown>).stop_loss_price ??
+        (row as Record<string, unknown>).stoploss_price
+      );
+      const distance = calculateDistancePercent(currentPrice, stopPrice);
+
       return {
         symbol: String(row.symbol ?? ''),
         name: String(row.name ?? ''),
-        current_price: (Math.random() * 100 + 10).toFixed(2),
-        stop_price: (Math.random() * 100 + 5).toFixed(2),
-        distance: (Math.random() * 5).toFixed(2)
+        current_price: currentPrice !== null ? currentPrice.toFixed(2) : '--',
+        stop_price: stopPrice !== null ? stopPrice.toFixed(2) : '--',
+        distance: distance !== null ? distance.toFixed(2) : '--'
       }
     });
   } else {
-    stopLossItems.value = [
-      { symbol: '600036', name: '招商银行', current_price: 35.20, stop_price: 33.50, distance: 4.8 },
-      { symbol: '601318', name: '中国平安', current_price: 48.15, stop_price: 47.50, distance: 1.3 },
-      { symbol: '000651', name: '格力电器', current_price: 42.05, stop_price: 42.50, distance: -1.0 }
-    ];
+    stopLossItems.value = [];
   }
 };
 

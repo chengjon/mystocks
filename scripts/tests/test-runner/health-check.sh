@@ -6,8 +6,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # 配置参数
-FRONTEND_URL="http://localhost:3001"
-BACKEND_URL="http://localhost:8000/api/health"
+FRONTEND_URL="http://localhost:"
+BACKEND_URL="http://localhost:/api/health"
 TIMEOUT=10
 RETRIES=3
 RETRY_DELAY=2
@@ -163,8 +163,8 @@ main() {
         log_info "MyStocks服务运行正常，可以开始测试。"
         echo ""
         echo "📊 服务状态摘要:"
-        echo "  • 前端服务: http://localhost:3001 ✅"
-        echo "  • 后端服务: http://localhost:8000 ✅"
+        echo "  • 前端服务: http://localhost: ✅"
+        echo "  • 后端服务: http://localhost: ✅"
         echo "  • 健康检查: 通过 ✅"
         return 0
     else

@@ -6,10 +6,11 @@ Web API健康检查脚本
 """
 
 import sys
+import os
 import requests
 from typing import Dict, Tuple, Optional
 
-BASE_URL = "http://localhost:8000"
+BASE_URL = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
 TIMEOUT = 5  # 秒
 
 # 10个关键API端点

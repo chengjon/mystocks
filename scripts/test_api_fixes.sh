@@ -9,8 +9,18 @@
 
 set -e
 
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+if [ -f "${PROJECT_ROOT}/.env" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "${PROJECT_ROOT}/.env"
+    set +a
+fi
+
+: "${BACKEND_PORT:?Missing BACKEND_PORT in .env}"
+
 # 配置
-API_BASE_URL="${API_BASE_URL:-http://localhost:8000}"
+API_BASE_URL="${API_BASE_URL:-http://localhost:${BACKEND_PORT}}"
 AUTH_TOKEN="${AUTH_TOKEN:-}"
 TEST_TIMEOUT=10
 

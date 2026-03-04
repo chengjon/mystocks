@@ -10,6 +10,16 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+PROJECT_ROOT="/opt/claude/mystocks_spec"
+if [ -f "${PROJECT_ROOT}/.env" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "${PROJECT_ROOT}/.env"
+    set +a
+fi
+
+: "${BACKEND_PORT:?Missing BACKEND_PORT in .env}"
+
 # 日志函数
 log_info() {
     echo -e "${BLUE}[INFO]${NC} $(date '+%Y-%m-%d %H:%M:%S') - $1"
@@ -74,14 +84,14 @@ run_e2e_tests() {
     mkdir -p reports/e2e
 
     # 设置Playwright测试环境
-    export PLAYWRIGHT_TEST_BASE_URL=${PLAYWRIGHT_TEST_BASE_URL:-"http://localhost:8000"}
+    export PLAYWRIGHT_TEST_BASE_URL=${PLAYWRIGHT_TEST_BASE_URL:-"http://localhost:${BACKEND_PORT}"}
 
     # 检查后端服务是否运行
     if ! curl -s --connect-timeout 5 $PLAYWRIGHT_TEST_BASE_URL/api/stocks/health > /dev/null; then
         log_warning "后端服务未运行，尝试启动..."
         # 启动后端服务
         cd web/backend
-        python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &
+        python -m uvicorn app.main:app --host 0.0.0.0 --port "${BACKEND_PORT}" --reload &
         BACKEND_PID=$!
         cd ../..
 

@@ -565,7 +565,7 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: availablePort,
-    proxy: { '/api': { target: 'http://localhost:8000' } }
+    proxy: { '/api': { target: 'http://localhost:8020' } }
   }
 })
 ```
@@ -884,7 +884,7 @@ test('dashboard loads successfully', async ({ page }) => {
     port: availablePort,  // Auto-detects port 3000-3010
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:8020',
         changeOrigin: true
       }
     }
@@ -917,7 +917,7 @@ test('dashboard loads successfully', async ({ page }) => {
 **Should Add:**
 ```bash
 # .env.example
-VITE_API_BASE_URL=http://localhost:8000
+VITE_API_BASE_URL=http://localhost:8020
 VITE_APP_TITLE=MyStocks
 VITE_ENABLE_MOCK_DATA=false
 VITE_LOG_LEVEL=debug

@@ -6,11 +6,15 @@ API集成验证脚本
 """
 
 import requests
+import os
 from datetime import datetime
 from typing import Dict, Any
 
 # API配置
-BASE_URL = "http://localhost:8000"
+BACKEND_PORT = os.getenv("BACKEND_PORT", "").strip()
+if not BACKEND_PORT:
+    raise RuntimeError("Missing BACKEND_PORT in environment")
+BASE_URL = os.getenv("API_BASE_URL", f"http://localhost:{BACKEND_PORT}")
 HEADERS = {
     "Content-Type": "application/json",
     "Accept": "application/json"

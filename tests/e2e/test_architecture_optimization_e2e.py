@@ -18,7 +18,7 @@ import requests
 class TestArchitectureOptimizationE2E:
     """E2E tests for architecture optimization endpoints"""
 
-    BASE_URL = "http://localhost:8000"
+    BASE_URL = "http://localhost:8020"
 
     @pytest.fixture(scope="class")
     def api_base(self):

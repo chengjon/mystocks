@@ -1383,7 +1383,7 @@ EXPOSE 8000
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+    CMD curl -f http://localhost:8020/health || exit 1
 
 # 启动命令
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
@@ -1399,7 +1399,7 @@ services:
   api:
     build: .
     ports:
-      - "8000:8000"
+      - "8000:8020"
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:password@db:5432/myapi
       - REDIS_URL=redis://redis:6379/0
@@ -1493,7 +1493,7 @@ alembic upgrade head
 uvicorn app.main:app --reload
 
 # 6. 访问API文档
-# http://localhost:8000/docs
+# http://localhost:8020/docs
 ```
 
 ### 核心特性总结

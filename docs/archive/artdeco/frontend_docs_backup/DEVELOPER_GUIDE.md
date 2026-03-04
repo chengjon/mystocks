@@ -438,8 +438,8 @@ npm run preview
 
 ```bash
 # .env.development
-VITE_API_BASE_URL=http://localhost:8000
-VITE_WS_URL=ws://localhost:8000
+VITE_API_BASE_URL=http://localhost:8020
+VITE_WS_URL=ws://localhost:8020
 
 # .env.production
 VITE_API_BASE_URL=https://api.example.com

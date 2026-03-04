@@ -10,7 +10,7 @@
 import { test, expect } from '@playwright/test';
 
 // API 基础配置
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'http://localhost:8020';
 const OPENAPI_JSON_URL = `${API_BASE_URL}/openapi.json`;
 
 // 测试配置

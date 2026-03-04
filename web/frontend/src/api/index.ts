@@ -54,15 +54,21 @@ export const marketApi = {
 
 // --- Monitoring API (v1 compatible) ---
 export const monitoringApi = {
+  // Existing methods
   getSystemHealth: (): Promise<UnifiedResponse<unknown>> => apiClient.get('/health'),
   getDetailedSystemHealth: (): Promise<UnifiedResponse<unknown>> => apiClient.get('/health/detailed'),
   getAlertRules: (): Promise<UnifiedResponse<AlertRuleResponse[]>> => apiClient.get('/v1/monitoring/alert-rules'),
   getAlerts: (params: Record<string, unknown>): Promise<UnifiedResponse<AlertRecordResponse[]>> => apiClient.get('/v1/monitoring/alerts', { params }),
+  // New method for announcements
+  getAnnouncements: (params: Record<string, unknown> = {}): Promise<UnifiedResponse<any>> => apiClient.get('/announcement/list', { params }),
+  // Data source configuration
+  getDataSourceConfig: (): Promise<UnifiedResponse<any>> => apiClient.get('/v1/data-sources/config/'),
+  updateDataSourceConfig: (data: Record<string, unknown>): Promise<UnifiedResponse<any>> => apiClient.put('/v1/data-sources/config', data),
+  // CRUD for alert rules
   createAlertRule: (data: Record<string, unknown>): Promise<UnifiedResponse<AlertRuleResponse>> => apiClient.post('/v1/monitoring/alert-rules', data),
   updateAlertRule: (id: string, data: Record<string, unknown>): Promise<UnifiedResponse<AlertRuleResponse>> => apiClient.put(`/v1/monitoring/alert-rules/${id}`, data),
   deleteAlertRule: (id: string): Promise<UnifiedResponse<void>> => apiClient.delete(`/v1/monitoring/alert-rules/${id}`),
-}
-
+};
 // --- Strategy API (v1 compatible) ---
 export const strategyApi = {
   getStrategies: (params: Record<string, unknown>): Promise<UnifiedResponse<StrategyConfig[]>> => apiClient.get('/v1/strategy/strategies', { params }),

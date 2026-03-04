@@ -20,7 +20,7 @@
             </div>
             <div class="form-group">
               <label class="label">API URL</label>
-              <input class="input" value="http://localhost:8000" readonly>
+              <input class="input" :value="apiBaseUrl" readonly>
             </div>
           </div>
         </el-tab-pane>
@@ -207,6 +207,7 @@
 
 <script setup lang="ts">
 import { useSettings } from './composables/useSettings'
+import { API_BASE_URL as apiBaseUrl } from '@/config/runtime-endpoints'
 
 const {
   activeTab,

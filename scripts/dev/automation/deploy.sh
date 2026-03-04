@@ -245,7 +245,7 @@ health_check() {
     # 检查API服务
     log "检查API服务..."
     for i in {1..30}; do
-        if curl -s -f http://localhost:8000/api/monitoring/health >/dev/null 2>&1; then
+        if curl -s -f http://localhost:/api/monitoring/health >/dev/null 2>&1; then
             success "API服务健康检查通过"
             break
         fi
@@ -259,7 +259,7 @@ health_check() {
     # 检查前端服务
     log "检查前端服务..."
     for i in {1..15}; do
-        if curl -s -f http://localhost:3000 >/dev/null 2>&1; then
+        if curl -s -f http://localhost: >/dev/null 2>&1; then
             success "前端服务健康检查通过"
             break
         fi
@@ -454,9 +454,9 @@ main() {
     success "=========================================="
     success "MyStocks 生产环境部署成功完成!"
     success "=========================================="
-    log "前端访问地址: http://localhost:3000"
-    log "API文档地址: http://localhost:8000/api/docs"
-    log "API健康检查: http://localhost:8000/api/monitoring/health"
+    log "前端访问地址: http://localhost:"
+    log "API文档地址: http://localhost:/api/docs"
+    log "API健康检查: http://localhost:/api/monitoring/health"
     log "PM2状态查看: pm2 list"
     log "日志查看: pm2 logs"
     success "=========================================="

@@ -19,7 +19,7 @@
 ```bash
 # 后端服务 (FastAPI)
 cd web/backend
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 
 # 前端服务 (Vue 3)
 cd web/frontend
@@ -45,8 +45,8 @@ Start-Process -FilePath $chromePath -ArgumentList @(
 ### 3. 访问测试页面
 
 - **前端界面**: http://localhost:5173
-- **API文档**: http://localhost:8000/docs
-- **WebSocket测试**: http://localhost:8000/ws-test
+- **API文档**: http://localhost:8020/docs
+- **WebSocket测试**: http://localhost:8020/ws-test
 
 ---
 
@@ -78,7 +78,7 @@ Start-Process -FilePath $chromePath -ArgumentList @(
 1. 打开 Console 面板
 2. 过滤日志：输入 "websocket" 或 "realtime"
 3. 观察数据接收日志：
-   - ✅ "WebSocket connected to ws://localhost:8000/ws/market"
+   - ✅ "WebSocket connected to ws://localhost:8020/ws/market"
    - ✅ "Received realtime data: [股票数据]"
    - ❌ 红色错误：连接断开、数据格式异常
 ```

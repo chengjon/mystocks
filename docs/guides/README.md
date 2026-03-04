@@ -851,7 +851,7 @@ cd web/frontend && npm run dev
 #### 后端服务
 ```bash
 cd web/backend
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 ```
 
 #### 前端服务
@@ -862,7 +862,7 @@ npm run dev
 ```
 
 访问：
-- **API 文档**: http://localhost:8000/api/docs
+- **API 文档**: http://localhost:8020/api/docs
 - **前端界面**: http://localhost:5173
 
 ### Web API 端点总览
@@ -967,11 +967,11 @@ python scripts/tools/manual_data_source_tester.py \
 **FastAPI管理接口** (`web/backend/app/api/data_source_registry.py`)
 ```bash
 # 搜索数据源
-curl -X GET "http://localhost:8000/api/v1/data-sources/?data_category=DAILY_KLINE" \
+curl -X GET "http://localhost:8020/api/v1/data-sources/?data_category=DAILY_KLINE" \
   -H "Authorization: Bearer YOUR_TOKEN"
 
 # 测试数据源
-curl -X POST "http://localhost:8000/api/v1/data-sources/akshare.stock_zh_a_hist/test" \
+curl -X POST "http://localhost:8020/api/v1/data-sources/akshare.stock_zh_a_hist/test" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{"test_params": {"symbol": "000001", "start_date": "20240101", "end_date": "20240131"}}'
@@ -1010,7 +1010,7 @@ python scripts/tools/manual_data_source_tester.py --interactive
 
 **场景2: 生产环境检查** - 批量健康检查
 ```bash
-curl -X POST "http://localhost:8000/api/v1/data-sources/health-check/all" \
+curl -X POST "http://localhost:8020/api/v1/data-sources/health-check/all" \
   -H "Authorization: Bearer YOUR_TOKEN"
 # 返回所有34个端点的健康状态
 ```
@@ -1279,13 +1279,13 @@ python main_server.py
 #### API访问
 ```bash
 # 健康检查
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 
 # GPU状态
-curl http://localhost:8000/gpu/status
+curl http://localhost:8020/gpu/status
 
 # 提交回测任务
-curl -X POST http://localhost:8000/backtest \
+curl -X POST http://localhost:8020/backtest \
   -H "Content-Type: application/json" \
   -d '{"strategy": "ma_cross", "symbols": ["600000"], "start_date": "2024-01-01"}'
 ```

@@ -264,7 +264,10 @@ class LocustTestSuite:
 
         # 测试配置
         self.config = {
-            "host": os.getenv("API_HOST", "http://localhost:8000"),
+            "host": os.getenv(
+                "API_HOST",
+                os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}"),
+            ),
             "users": int(os.getenv("LOCUST_USERS", "100")),
             "spawn_rate": int(os.getenv("LOCUST_SPAWN_RATE", "10")),
             "run_time": os.getenv("LOCUST_RUN_TIME", "5m"),

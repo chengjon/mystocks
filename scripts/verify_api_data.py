@@ -4,13 +4,20 @@ Analyze API responses for industries, concepts, and stocks data
 """
 
 import json
+import os
 import subprocess
 from datetime import datetime
 
 
+BACKEND_PORT = os.getenv("BACKEND_PORT", "").strip()
+if not BACKEND_PORT:
+    raise RuntimeError("Missing BACKEND_PORT in environment")
+BASE_URL = os.getenv("API_BASE_URL", f"http://localhost:{BACKEND_PORT}")
+
+
 def get_api_data(endpoint, token):
     """Fetch data from API endpoint"""
-    cmd = ["curl", "-s", f"http://localhost:8000{endpoint}", "-H", f"Authorization: Bearer {token}"]
+    cmd = ["curl", "-s", f"{BASE_URL}{endpoint}", "-H", f"Authorization: Bearer {token}"]
     result = subprocess.run(cmd, capture_output=True, text=True)
     return json.loads(result.stdout)
 
@@ -66,7 +73,7 @@ def main():
             "-s",
             "-X",
             "POST",
-            "http://localhost:8000/api/v1/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             "-H",
             "Content-Type: application/x-www-form-urlencoded",
             "-d",

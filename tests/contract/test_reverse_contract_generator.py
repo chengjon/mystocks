@@ -606,7 +606,7 @@ async def demo_reverse_contract_generator():
     test_urls = [
         "https://httpbin.org",
         "https://jsonplaceholder.typicode.com",
-        "http://localhost:8000",  # 如果本地有运行的服务
+        "http://localhost:8020",  # 如果本地有运行的服务
     ]
 
     for url in test_urls:

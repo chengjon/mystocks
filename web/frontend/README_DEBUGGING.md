@@ -199,8 +199,8 @@ ps aux | grep vite          # 前端
 ps aux | grep uvicorn       # 后端
 
 # 测试API连接
-curl http://localhost:3001  # 前端
-curl http://localhost:8000/docs  # 后端API文档
+curl http://localhost:3020  # 前端
+curl http://localhost:8020/docs  # 后端API文档
 
 # 查看实时日志
 tail -f /tmp/frontend.log
@@ -223,7 +223,7 @@ npm run dev
 
 # 后端
 pkill -f uvicorn
-python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8020
 ```
 
 ---

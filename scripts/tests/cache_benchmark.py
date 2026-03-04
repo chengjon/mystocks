@@ -1,6 +1,7 @@
 import requests
 import time
 import statistics
+import os
 
 def benchmark_api(url, num_requests=100):
     """API 性能基准测试"""
@@ -33,7 +34,8 @@ print("=" * 50)
 
 # 测试缓存性能
 print("\n测试 1: 启用缓存（/api/market/quotes）")
-result_cached = benchmark_api('http://localhost:8000/api/market/quotes?symbols=000001')
+backend_url = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
+result_cached = benchmark_api(f"{backend_url}/api/market/quotes?symbols=000001")
 for key, value in result_cached.items():
     print(f"{key}: {value*1000:.2f}ms")
 

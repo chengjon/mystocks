@@ -939,7 +939,7 @@ class RealtimeDataManager {
 
   // 连接管理
   connect(userId) {
-    const ws = new WebSocket(`ws://localhost:8000/ws/${userId}`)
+    const ws = new WebSocket(`ws://localhost:8020/ws/${userId}`)
 
     ws.onopen = () => {
       console.log(`WebSocket连接建立: ${userId}`)

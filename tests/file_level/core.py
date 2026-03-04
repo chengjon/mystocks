@@ -126,7 +126,7 @@ class FileLevelTestRunner:
 
     def __init__(
         self,
-        base_url: str = "http://localhost:8000",
+        base_url: str = "http://localhost:8020",
         max_workers: int = 4,
         timeout: int = 30,
         test_data_dir: Optional[str] = None,

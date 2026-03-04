@@ -1,8 +1,8 @@
 /**
  * Strategy Composable
  *
- * Vue 3 composable for strategy management with automatic error handling,
- * loading states, and Mock data fallback.
+ * Vue 3 composable for strategy management with automatic error handling
+ * and loading states.
  */
 
 import { ref, readonly, onMounted } from 'vue';
@@ -13,9 +13,8 @@ import type { StrategyListItemVM } from '@/utils/strategy-adapters';
 import type { CreateStrategyRequestVM as CreateStrategyRequest, UpdateStrategyRequestVM as UpdateStrategyRequest } from '@/api/types/extensions';
 import type { BacktestRequestVM } from '@/api/types/extensions/strategy';
 import type { StrategyConfig } from '@/api/types/common';
-import { createMockStrategyManagementList } from '@/mock/strategyTabsMock';
 
-type StrategyDataSource = 'real' | 'mock';
+type StrategyDataSource = 'real';
 
 function normalizeStrategyStatus(status: unknown): StrategyListItemVM['status'] {
   if (typeof status !== 'string') {
@@ -111,11 +110,9 @@ export function useStrategy(autoFetch = true) {
   // Service instance
   const strategyService = new StrategyApiService();
 
-  const applyMockFallback = (errorMessage: string) => {
-    strategies.value = createMockStrategyManagementList().map((item, index) =>
-      toStrategyListItemVM(item, index)
-    );
-    dataSource.value = 'mock';
+  const applyEmptyFallback = (errorMessage: string) => {
+    strategies.value = [];
+    dataSource.value = 'real';
     error.value = errorMessage;
   };
 
@@ -132,13 +129,13 @@ export function useStrategy(autoFetch = true) {
       lastProcessTimeMs.value = parseProcessTimeMs(response.process_time);
 
       if (!response.success) {
-        applyMockFallback(response.message || '获取策略列表失败，已回退到 MOCK 数据');
+        applyEmptyFallback(response.message || '获取策略列表失败');
         return;
       }
 
       const strategyList = extractStrategyConfigs(response.data);
       if (strategyList === null) {
-        applyMockFallback('策略数据格式异常，已回退到 MOCK 数据');
+        applyEmptyFallback('策略数据格式异常');
         return;
       }
 
@@ -152,8 +149,8 @@ export function useStrategy(autoFetch = true) {
       dataSource.value = 'real';
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
-      applyMockFallback(`获取策略列表失败: ${errorMsg}`);
-      console.error('[useStrategy] fetchStrategies error, fallback to mock:', err);
+      applyEmptyFallback(`获取策略列表失败: ${errorMsg}`);
+      console.error('[useStrategy] fetchStrategies error:', err);
     } finally {
       loading.value = false;
     }

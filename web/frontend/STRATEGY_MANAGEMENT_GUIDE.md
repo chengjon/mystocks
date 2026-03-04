@@ -93,7 +93,7 @@ cd /opt/claude/mystocks_spec/web/backend
 python -m app.main
 ```
 
-后端服务将在 `http://localhost:8000` 启动。
+后端服务将在 `http://localhost:8020` 启动。
 
 ### 2. 启动前端服务
 
@@ -319,7 +319,7 @@ python scripts/test_strategy_api.py
 ## 📞 技术支持
 
 如有问题，请查看：
-- API文档：http://localhost:8000/api/docs
+- API文档：http://localhost:8020/api/docs
 - 测试脚本：`scripts/test_strategy_api.py`
 - 迁移报告：`INSTOCK_MIGRATION_REPORT.md`
 

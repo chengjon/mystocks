@@ -581,7 +581,7 @@
 
     // Configuration
     const API_BASE_URL = '/api/v1';
-    const WS_BASE_URL = 'ws://localhost:8000/ws/market/realtime';
+    const WS_BASE_URL = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws/market/realtime`;
 
     // State
     const state = {

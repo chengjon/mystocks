@@ -52312,16 +52312,16 @@ src/utils/check_api_health.py:197:15: F541 f-string is missing placeholders
         print(f"  cd web/backend")
               ^
 src/utils/check_api_health.py:198:15: F541 f-string is missing placeholders
-        print(f"  python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload")
+        print(f"  python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload")
               ^
 src/utils/check_api_health.py:198:80: E501 line too long (86 > 79 characters)
-        print(f"  python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload")
+        print(f"  python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload")
                                                                                ^
 src/utils/check_api_health.py:199:15: F541 f-string is missing placeholders
         print(f"\n或检查是否运行在其他端口:")
               ^
 src/utils/check_api_health.py:200:15: F541 f-string is missing placeholders
-        print(f"  lsof -i :8000")
+        print(f"  lsof -i :8020")
               ^
 src/utils/check_api_health.py:201:15: F541 f-string is missing placeholders
         print(f"  ps aux | grep uvicorn")

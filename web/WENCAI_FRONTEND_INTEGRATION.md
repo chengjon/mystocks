@@ -36,12 +36,12 @@
 ## 🚀 访问地址
 
 ### 前端地址
-- **http://localhost:3001/** (当前运行端口)
+- **http://localhost:3020/** (当前运行端口)
 - **http://localhost:3002/** (备选端口，如果3001被占用)
 
 ### 页面路由
-- **http://localhost:3001/wencai** - 问财筛选页面 (完整系统)
-- **http://localhost:8000/api/docs** - API文档
+- **http://localhost:3020/wencai** - 问财筛选页面 (完整系统)
+- **http://localhost:8020/api/docs** - API文档
 
 ### 测试账户
 - 用户名: `admin`
@@ -139,10 +139,10 @@
 
 ```javascript
 // 获取查询列表
-fetch('http://localhost:8000/api/market/wencai/queries')
+fetch('http://localhost:8020/api/market/wencai/queries')
 
 // 执行查询
-fetch('http://localhost:8000/api/market/wencai/query', {
+fetch('http://localhost:8020/api/market/wencai/query', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
@@ -152,7 +152,7 @@ fetch('http://localhost:8000/api/market/wencai/query', {
 })
 
 // 获取查询结果
-fetch('http://localhost:8000/api/market/wencai/results/qs_9?limit=20&offset=0')
+fetch('http://localhost:8020/api/market/wencai/results/qs_9?limit=20&offset=0')
 ```
 
 ---
@@ -180,7 +180,7 @@ fetch('http://localhost:8000/api/market/wencai/results/qs_9?limit=20&offset=0')
 ### 步骤 1: 访问问财筛选页面
 
 ```
-打开浏览器 → http://localhost:3001/wencai → 登录
+打开浏览器 → http://localhost:3020/wencai → 登录
 ```
 
 ### 步骤 2: 选择查询模板
@@ -229,7 +229,7 @@ fetch('http://localhost:8000/api/market/wencai/results/qs_9?limit=20&offset=0')
 ### 查看后端连接
 ```bash
 # 检查后端是否运行
-curl http://localhost:8000/api/market/wencai/health
+curl http://localhost:8020/api/market/wencai/health
 
 # 查看后端日志
 tail -f /tmp/backend.log
@@ -247,7 +247,7 @@ F12 → Console 标签
 
 | 问题 | 原因 | 解决方案 |
 |------|------|--------|
-| API 404 | 后端未运行 | 运行 `python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000` |
+| API 404 | 后端未运行 | 运行 `python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8020` |
 | CORS错误 | 跨域问题 | 后端已配置CORS，应该不会出现 |
 | 查询超时 | 问财API响应慢 | 调整超时时间或重试 |
 | 前端加载失败 | 前端未编译 | 运行 `npm run dev` 重启前端 |
@@ -295,11 +295,11 @@ F12 → Console 标签
 npm run build
 
 # 启动后端（生产模式）
-gunicorn -w 4 -b 0.0.0.0:8000 app.main:app
+gunicorn -w 4 -b 0.0.0.0:8020 app.main:app
 
 # 使用Nginx反向代理
 upstream mystocks_backend {
-  server 127.0.0.1:8000;
+  server 127.0.0.1:8020;
 }
 
 server {
@@ -345,16 +345,16 @@ COPY --from=frontend-build /app/frontend/dist ./frontend/dist
 
 ### 相关文档
 - 后端集成指南: `/opt/claude/mystocks_spec/DEPLOYMENT_GUIDE.md`
-- API文档: http://localhost:8000/api/docs
+- API文档: http://localhost:8020/api/docs
 - 前端架构: `/opt/claude/mystocks_spec/web/frontend/src/views/Wencai.vue`
 
 ### 访问地址总结
 | 服务 | 地址 | 端口 |
 |------|------|------|
-| 前端 | http://localhost:3001 | 3001 |
-| 后端 API | http://localhost:8000 | 8000 |
-| API 文档 | http://localhost:8000/api/docs | 8000 |
-| 问财页面 | http://localhost:3001/wencai | 3001 |
+| 前端 | http://localhost:3020 | 3001 |
+| 后端 API | http://localhost:8020 | 8000 |
+| API 文档 | http://localhost:8020/api/docs | 8000 |
+| 问财页面 | http://localhost:3020/wencai | 3001 |
 
 ---
 

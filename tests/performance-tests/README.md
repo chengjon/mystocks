@@ -122,7 +122,7 @@ python3 scripts/tools/performance_test_suite.py --monitor
 python3 scripts/tools/performance_test_suite.py --load-test --users 1 --run-time 1s
 
 # 启动Web界面
-locust -f performance-tests/locustfile.py --host=http://localhost:8000
+locust -f performance-tests/locustfile.py --host=http://localhost:8020
 ```
 
 访问 http://localhost:8089 进行交互式测试。
@@ -268,10 +268,10 @@ def check_custom_metrics(self, results):
 1. **Locust启动失败**
    ```bash
    # 检查端口是否被占用
-   lsof -i :8000
+   lsof -i :8020
 
    # 确保后端服务运行
-   curl http://localhost:8000/health
+   curl http://localhost:8020/health
    ```
 
 2. **pytest-benchmark无结果**

@@ -250,6 +250,6 @@ Phase 4 (前端集成):    ⏸️  可选，未来实施
 
 文档位置: /opt/claude/mystocks_spec/docs/
 配置指南: web/backend/WENCAI_CONFIG_UPDATE_GUIDE.md
-API文档: http://localhost:8000/api/docs
+API文档: http://localhost:8020/api/docs
 
 ================================================================================

@@ -13,7 +13,7 @@ from pydantic import BaseModel
 class E2EConfig(BaseModel):
     """E2E测试配置"""
 
-    base_url: str = "http://localhost:8000"
+    base_url: str = "http://localhost:8020"
     headless: bool = True
     browser: str = "chromium"
     viewport_width: int = 1280
@@ -28,7 +28,7 @@ class E2EConfig(BaseModel):
 def get_config() -> E2EConfig:
     """获取E2E测试配置"""
     return E2EConfig(
-        base_url=os.getenv("E2E_BASE_URL", "http://localhost:8000"),
+        base_url=os.getenv("E2E_BASE_URL", "http://localhost:8020"),
         headless=os.getenv("E2E_HEADLESS", "true").lower() == "true",
         browser=os.getenv("E2E_BROWSER", "chromium"),
         viewport_width=int(os.getenv("E2E_VIEWPORT_WIDTH", "1280")),

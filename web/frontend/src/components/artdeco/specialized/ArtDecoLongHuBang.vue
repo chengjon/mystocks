@@ -19,7 +19,7 @@
       <div class="long-hu-list">
         <div
           v-for="(item, _idx) in longHuData"
-          :key="item.code"
+          :key="`${item.code}-${_idx}`"
           class="long-hu-item"
           :class="{ 'is-up': item.change_percent >= 0 }"
         >
@@ -74,10 +74,36 @@ const date = computed(() => {
 
 // 格式化金额（万→亿）
 const formatAmount = (amount: number): string => {
-  if (Math.abs(amount) >= 10000) {
-    return (amount / 10000).toFixed(2) + '亿'
+  const absAmount = Math.abs(amount)
+  if (absAmount >= 100000000) {
+    return `${(amount / 100000000).toFixed(2)}亿`
   }
-  return amount.toFixed(0) + '万'
+  if (absAmount >= 10000) {
+    return `${(amount / 10000).toFixed(2)}万`
+  }
+  return `${amount.toFixed(0)}元`
+}
+
+const toNumber = (value: unknown, fallback = 0): number => {
+  const numeric = Number(value)
+  return Number.isFinite(numeric) ? numeric : fallback
+}
+
+const normalizeLongHuBangItem = (item: Record<string, unknown> | LongHuBangItem, index: number): LongHuBangItem => {
+  const raw = item as Record<string, unknown>
+  const code = String(raw.code ?? raw.symbol ?? raw.ts_code ?? `LHB-${index}`)
+  const name = String(raw.name ?? raw.stock_name ?? '--')
+  const reason = String(raw.reason ?? raw.reason_desc ?? raw.board_reason ?? '暂无上榜原因')
+  const amount = toNumber(raw.amount ?? raw.net_amount ?? raw.deal_amount, 0)
+  const changePercent = toNumber(raw.change_percent ?? raw.change ?? raw.pct_chg, 0)
+
+  return {
+    code,
+    name,
+    reason,
+    amount,
+    change_percent: changePercent
+  }
 }
 
 // 获取龙虎榜数据
@@ -88,7 +114,12 @@ const fetchLongHuBang = async () => {
   try {
     const response = await dashboardService.getLongHuBang(undefined, 10)
     const payload = response?.data ?? response
-    longHuData.value = Array.isArray(payload) ? payload : FALLBACK_LONG_HU_DATA
+
+    if (Array.isArray(payload) && payload.length > 0) {
+      longHuData.value = payload.map((item, index) => normalizeLongHuBangItem(item, index))
+    } else {
+      longHuData.value = FALLBACK_LONG_HU_DATA
+    }
   } catch (_err: unknown) {
     error.value = ''
     longHuData.value = FALLBACK_LONG_HU_DATA

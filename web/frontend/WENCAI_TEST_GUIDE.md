@@ -22,11 +22,11 @@
 **方法 C：手动清除**
 1. 打开浏览器设置
 2. 清除浏览器缓存和 Cookie
-3. 重新访问 http://localhost:3001
+3. 重新访问 http://localhost:3020
 
 ### 第二步：登录系统
 
-访问：http://localhost:3001
+访问：http://localhost:3020
 
 使用测试账号：
 - 用户名：`admin`
@@ -44,7 +44,7 @@
 
 打开浏览器开发者工具（F12），切换到 Console 标签页
 
-**在地址栏中应该看到**：`http://localhost:3001/market-data/wencai`
+**在地址栏中应该看到**：`http://localhost:3020/market-data/wencai`
 
 **在 Console 中应该看到**：`Menu selected: /market-data/wencai`
 
@@ -87,7 +87,7 @@
 ps aux | grep uvicorn
 
 # 测试后端 API
-curl http://localhost:8000/api/market/wencai/health
+curl http://localhost:8020/api/market/wencai/health
 
 # 预期返回：
 # {"status":"healthy","service":"wencai","version":"1.0.0"}
@@ -167,11 +167,11 @@ const handleMenuSelect = (index) => {
 ## 服务状态
 
 **前端服务**：
-- URL: http://localhost:3001
+- URL: http://localhost:3020
 - 状态: ✅ 运行中
 
 **后端服务**：
-- URL: http://localhost:8000
+- URL: http://localhost:8020
 - 状态: ✅ 运行中
 
 **API 端点**：

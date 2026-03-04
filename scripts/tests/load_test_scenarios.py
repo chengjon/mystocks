@@ -287,7 +287,10 @@ class LoadTestOrchestrator:
         # 添加通用配置
         config.update(
             {
-                "api_host": os.getenv("API_HOST", "http://localhost:8000"),
+                "api_host": os.getenv(
+                    "API_HOST",
+                    os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}"),
+                ),
                 "api_timeout": 30,
                 "generated_at": datetime.now().isoformat(),
                 "task": "Task 14.1: Load Testing",

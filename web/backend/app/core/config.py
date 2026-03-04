@@ -4,7 +4,7 @@
 
 from typing import List
 
-from pydantic import Field
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # 环境变量文件配置
@@ -29,10 +29,14 @@ class Settings(BaseSettings):
     mock_auth_enabled: bool = Field(default=False, env="MOCK_AUTH_ENABLED")  # 生产环境安全控制：禁用Mock认证
 
     # 服务器配置
-    host: str = "0.0.0.0"  # nosec
-    port: int = 8000
-    port_range_start: int = 8000
-    port_range_end: int = 8010
+    host: str = Field(default="0.0.0.0", env="BACKEND_HOST")  # nosec
+    # Pydantic v2 no longer recommends Field(env=...), so use validation_alias for robust port mapping.
+    port: int = Field(default=0, validation_alias=AliasChoices("BACKEND_PORT", "PORT", "port"))
+    port_range_start: int = Field(default=0, validation_alias=AliasChoices("BACKEND_PORT", "PORT", "port"))
+    port_range_end: int = Field(
+        default=0,
+        validation_alias=AliasChoices("BACKEND_BACKUP_PORT", "PORT_RANGE_END", "port_range_end"),
+    )
 
     # 数据库配置 - PostgreSQL 主数据库 (Week 3 简化: 仅使用PostgreSQL)
     # 从环境变量读取，pydantic-settings会自动从.env文件加载
@@ -66,9 +70,9 @@ class Settings(BaseSettings):
     admin_initial_password: str = Field(default="", env="ADMIN_INITIAL_PASSWORD")
 
     # CORS 配置 (使用字符串形式，避免pydantic-settings解析问题)
-    # 前端端口范围: 3000-3009，后端端口范围: 8000-8009
+    # 默认仅允许固定前端端口，实际环境以 .env 的 CORS_ORIGINS 为准
     cors_origins_str: str = Field(
-        default="http://localhost:3000,http://localhost:3001,http://localhost:3002,http://localhost:3003,http://localhost:3004,http://localhost:3005,http://localhost:3006,http://localhost:3007,http://localhost:3008,http://localhost:3009,http://localhost:3020,http://localhost:3021,http://localhost:3022,http://localhost:3023,http://localhost:3024,http://localhost:3025,http://localhost:3026,http://localhost:3027,http://localhost:3028,http://localhost:3029,http://localhost:8000,http://localhost:8001,http://localhost:8002,http://localhost:8003,http://localhost:8004,http://localhost:8005,http://localhost:8006,http://localhost:8007,http://localhost:8008,http://localhost:8009",
+        default="http://localhost:3020,http://localhost:3021",
         env="CORS_ORIGINS",
     )
 
@@ -164,6 +168,8 @@ def validate_required_settings(settings_obj: Settings):
         ("postgresql_user", "POSTGRESQL_USER"),
         ("postgresql_password", "POSTGRESQL_PASSWORD"),
         ("jwt_secret_key", "JWT_SECRET_KEY"),
+        ("port", "BACKEND_PORT"),
+        ("port_range_end", "BACKEND_BACKUP_PORT"),
     ]
 
     missing_settings = []

@@ -25,11 +25,11 @@ python scripts/tools/manual_data_source_tester.py \
 
 ```bash
 # 搜索数据源
-curl -X GET "http://localhost:8000/api/v1/data-sources/?data_category=DAILY_KLINE" \
+curl -X GET "http://localhost:8020/api/v1/data-sources/?data_category=DAILY_KLINE" \
   -H "Authorization: Bearer YOUR_TOKEN"
 
 # 测试数据源
-curl -X POST "http://localhost:8000/api/v1/data-sources/akshare.stock_zh_a_hist/test" \
+curl -X POST "http://localhost:8020/api/v1/data-sources/akshare.stock_zh_a_hist/test" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{"test_params": {"symbol": "000001", "start_date": "20240101", "end_date": "20240131"}}'
@@ -168,7 +168,7 @@ tester.generate_test_report('my_test_report.json')
 - **架构文档**: `docs/architecture/DATA_SOURCE_MANAGEMENT_V2.md`
 - **验证报告**: `docs/reports/DATA_SOURCE_V2_FINAL_VERIFICATION_REPORT.md`
 - **配置文件**: `config/data_sources_registry.yaml`
-- **API文档**: `http://localhost:8000/api/docs`
+- **API文档**: `http://localhost:8020/api/docs`
 
 ---
 

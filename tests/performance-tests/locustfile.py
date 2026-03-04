@@ -8,7 +8,7 @@ MyStocks量化平台API压力测试
 - 验证系统在高负载下的稳定性
 
 运行方式:
-locust -f /opt/claude/mystocks_spec/performance-tests/locustfile.py --host=http://localhost:8000
+locust -f /opt/claude/mystocks_spec/performance-tests/locustfile.py --host=http://localhost:8020
 """
 
 import os
@@ -19,7 +19,7 @@ from locust import HttpUser, task, between, events
 from locust.runners import MasterRunner
 
 # 测试配置
-API_HOST = "http://localhost:8000"
+API_HOST = "http://localhost:8020"
 STOCKS = [
     "000001", "000002", "600000", "600036", "000858",
     "601398", "601939", "600519", "000333", "000651"

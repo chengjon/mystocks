@@ -143,7 +143,7 @@ class FastAPIParser:
             title=app.title or "Generated API",
             description=app.description or "",
             version=app.version or "1.0.0",
-            base_url="http://localhost:8000",
+            base_url="http://localhost:8020",
         )
 
         # 解析路由
@@ -385,9 +385,9 @@ class OpenAPISpecGenerator:
             description=content.get("info", {}).get("description", ""),
             version=content.get("info", {}).get("version", "1.0.0"),
             base_url=(
-                content.get("servers", [{}])[0].get("url", "http://localhost:8000")
+                content.get("servers", [{}])[0].get("url", "http://localhost:8020")
                 if content.get("servers")
-                else "http://localhost:8000"
+                else "http://localhost:8020"
             ),
         )
 

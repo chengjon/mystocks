@@ -17,6 +17,7 @@ Date: 2025-11-13
 
 import json
 import time
+import os
 import requests
 from datetime import datetime
 from typing import Dict, List, Any
@@ -26,7 +27,7 @@ class AlertSystemOptimizer:
     """监控告警系统优化器"""
 
     def __init__(self):
-        self.base_url = "http://localhost:8000"
+        self.base_url = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
         self.optimization_results = []
 
     def optimize_all(self) -> Dict[str, Any]:

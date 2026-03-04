@@ -61,7 +61,7 @@ import { Search } from '@element-plus/icons-vue'
 
 ```javascript
 // src/config/api.js
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8020'
 
 export const API_ENDPOINTS = {
   yourModule: {
@@ -74,7 +74,7 @@ export const API_ENDPOINTS = {
 
 ```bash
 # .env.development
-VITE_API_BASE_URL=http://localhost:8000
+VITE_API_BASE_URL=http://localhost:8020
 
 # .env.production
 VITE_API_BASE_URL=https://api.yourdomain.com
@@ -115,7 +115,7 @@ const handleMenuSelect = (index) => {
 console.log('API URL:', API_ENDPOINTS.yourModule.list)
 
 // 测试后端
-curl http://localhost:8000/api/your-module/list
+curl http://localhost:8020/api/your-module/list
 ```
 
 **解决**:
@@ -216,7 +216,7 @@ npm list @element-plus/icons-vue  # 检查特定包版本
 
 # 服务检查
 ps aux | grep vite      # 检查前端服务
-lsof -i :3001          # 检查3001端口占用
+lsof -i :3020          # 检查3001端口占用
 ```
 
 ## 七、浏览器开发者工具速查
@@ -312,8 +312,8 @@ npm run dev
 Ctrl + Shift + R
 
 # 4. 检查服务是否正常
-curl http://localhost:3001        # 前端
-curl http://localhost:8000/docs   # 后端
+curl http://localhost:3020        # 前端
+curl http://localhost:8020/docs   # 后端
 
 # 5. 查看日志
 tail -f /tmp/frontend.log         # 前端日志

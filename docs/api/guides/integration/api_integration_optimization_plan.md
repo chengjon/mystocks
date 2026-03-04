@@ -13,7 +13,7 @@
 - ✅ PostgreSQL数据库已配置 (localhost:5438)
 - ✅ JWT认证已配置
 - ✅ USE_MOCK_DATA=false (使用真实数据)
-- ✅ 后端API服务器运行在 http://localhost:8000
+- ✅ 后端API服务器运行在 http://localhost:8020
 
 ### 后端API状态 ✅
 - ✅ 20个API文件已迁移到UnifiedResponse v2.0.0
@@ -307,7 +307,7 @@ export class APIErrorHandler {
 
 ```bash
 # 1. 检查后端服务
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 
 # 2. 检查数据库连接
 python -c "

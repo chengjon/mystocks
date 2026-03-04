@@ -41,7 +41,7 @@
 **目标**：验证用户可以输入自定义查询并获得结果
 
 **步骤**：
-1. 访问 `http://localhost:3001`
+1. 访问 `http://localhost:3020`
 2. 登录（admin / admin123）
 3. 点击左侧菜单："市场数据" → "问财筛选"
 4. 在标题下方看到输入框
@@ -195,13 +195,13 @@
 
 ```bash
 # 测试健康检查
-curl http://localhost:8000/api/market/wencai/health
+curl http://localhost:8020/api/market/wencai/health
 
 # 预期返回
 # {"status":"healthy","service":"wencai","version":"1.0.0"}
 
 # 测试自定义查询
-curl -X POST http://localhost:8000/api/market/wencai/custom-query \
+curl -X POST http://localhost:8020/api/market/wencai/custom-query \
   -H "Content-Type: application/json" \
   -d '{"query_text":"请列出今天涨幅超过3%的股票","pages":1}'
 
@@ -229,7 +229,7 @@ curl -X POST http://localhost:8000/api/market/wencai/custom-query \
 **解决**：
 ```bash
 # 检查后端服务
-curl http://localhost:8000/api/market/wencai/health
+curl http://localhost:8020/api/market/wencai/health
 
 # 查看后端日志
 tail -f /tmp/backend.log

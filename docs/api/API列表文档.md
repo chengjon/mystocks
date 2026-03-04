@@ -5,8 +5,8 @@
 本文档包含 MyStocks 量化交易数据管理系统中所有的 RESTful API 端点详细说明。API 基于 FastAPI 框架构建，采用 JWT 认证（除公开端点外）。
 
 **API 基础信息**：
-- 基础URL: `http://localhost:8000`
-- API文档: `http://localhost:8000/api/docs`
+- 基础URL: `http://localhost:8020`
+- API文档: `http://localhost:8020/api/docs`
 - 认证方式: Bearer Token
 - 数据格式: JSON
 - 响应格式: JSON
@@ -1563,14 +1563,14 @@ Authorization: Bearer <token>
 
 ### 登录获取Token
 ```bash
-curl -X POST "http://localhost:8000/api/auth/login" \
+curl -X POST "http://localhost:8020/api/auth/login" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "username=admin&password=admin123"
 ```
 
 ### 使用Token访问API
 ```bash
-curl -X GET "http://localhost:8000/api/market/quotes" \
+curl -X GET "http://localhost:8020/api/market/quotes" \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 

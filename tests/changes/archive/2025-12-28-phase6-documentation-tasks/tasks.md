@@ -25,7 +25,7 @@
 
 #### 1.3 验证 Swagger UI 可访问
 - **Description**: 启动后端服务，验证 Swagger UI 可访问
-- **Validation**: 访问 http://localhost:8000/docs 显示 Swagger UI
+- **Validation**: 访问 http://localhost:8020/docs 显示 Swagger UI
 - **Dependencies**: 1.2
 - **Status**: ✅ completed
 - **Time Estimate**: 15 min

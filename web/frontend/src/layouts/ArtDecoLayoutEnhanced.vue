@@ -35,7 +35,8 @@
         <!-- Router View with Transition -->
         <router-view v-slot="{ Component }">
           <transition name="fade-slide" mode="out-in">
-            <component :is="Component" :key="route.fullPath" />
+            <!-- Guard against transient null component during async route resolution. -->
+            <component v-if="Component" :is="Component" :key="route.fullPath" />
           </transition>
         </router-view>
       </div>

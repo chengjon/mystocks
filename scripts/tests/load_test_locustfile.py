@@ -24,7 +24,10 @@ class LoadTestConfig:
     """压测配置"""
 
     # API服务地址
-    API_HOST = os.getenv("API_HOST", "http://localhost:8000")
+    API_HOST = os.getenv(
+        "API_HOST",
+        os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}"),
+    )
 
     # 测试参数
     TARGET_USERS = 1000  # 目标并发用户数

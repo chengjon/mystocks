@@ -49,11 +49,11 @@
 **验证步骤**:
 ```bash
 # 1. 端点存在性验证
-curl -s http://localhost:8000/openapi.json | jq '.paths["/api/v1/data/stocks/industries"]'
+curl -s http://localhost:8020/openapi.json | jq '.paths["/api/v1/data/stocks/industries"]'
 
 # 2. 契约格式验证
 curl -s -H "Authorization: Bearer dev-mock-token-for-development" \
-     http://localhost:8000/api/v1/data/stocks/industries | jq '.'
+     http://localhost:8020/api/v1/data/stocks/industries | jq '.'
 
 # 3. 真实数据验证（USE_MOCK_DATA=false）
 # 预期：返回数据库中的行业列表
@@ -88,11 +88,11 @@ curl -s -H "Authorization: Bearer dev-mock-token-for-development" \
 ```bash
 # 1. 分页测试
 curl -s -H "Authorization: Bearer dev-mock-token-for-development" \
-     "http://localhost:8000/api/v1/data/stocks/basic?page=1&page_size=20" | jq '.data | length'
+     "http://localhost:8020/api/v1/data/stocks/basic?page=1&page_size=20" | jq '.data | length'
 
 # 2. 搜索功能（如果有独立search端点）
 curl -s -H "Authorization: Bearer dev-mock-token-for-development" \
-     "http://localhost:8000/api/v1/data/stocks/search?keyword=平安" | jq '.'
+     "http://localhost:8020/api/v1/data/stocks/search?keyword=平安" | jq '.'
 ```
 
 ---
@@ -113,11 +113,11 @@ curl -s -H "Authorization: Bearer dev-mock-token-for-development" \
 **验证步骤**:
 ```bash
 # 1. 基础K线测试
-curl -s "http://localhost:8000/api/v1/market/kline?symbol=000001&period=daily&adjust=qfq&limit=1000" | jq '.data.klines | length'
+curl -s "http://localhost:8020/api/v1/market/kline?symbol=000001&period=daily&adjust=qfq&limit=1000" | jq '.data.klines | length'
 
 # 2. 性能限制验证（Gemini建议）
 # 测试 limit 参数是否生效
-curl -s "http://localhost:8000/api/v1/market/kline?symbol=000001&period=daily" | jq '.data | length'
+curl -s "http://localhost:8020/api/v1/market/kline?symbol=000001&period=daily" | jq '.data | length'
 # 预期：最多1000条（默认limit）
 
 # 3. 数据完整性检查
@@ -293,7 +293,7 @@ import pytest
 import requests
 from typing import Dict, Any
 
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://localhost:8020"
 AUTH_TOKEN = "dev-mock-token-for-development"
 
 class APIContractTest:
@@ -516,7 +516,7 @@ cd web/frontend
 npm install -g openapi-typescript
 
 # 2. 生成类型定义
-openapi-typescript http://localhost:8000/openapi.json -o src/api/types/generated-types.ts
+openapi-typescript http://localhost:8020/openapi.json -o src/api/types/generated-types.ts
 
 # 3. 验证生成结果
 cat src/api/types/generated-types.ts | head -20
@@ -558,7 +558,7 @@ def test_frontend_backend_contract_match():
 
     # 1. 获取后端OpenAPI Schema
     import requests
-    openapi_schema = requests.get("http://localhost:8000/openapi.json").json()
+    openapi_schema = requests.get("http://localhost:8020/openapi.json").json()
 
     # 2. 读取前端类型定义
     with open("web/frontend/src/api/types/generated-types.ts") as f:
@@ -681,7 +681,7 @@ def test_frontend_backend_contract_match():
 
 2. **生成OpenAPI Schema**
    ```bash
-   curl http://localhost:8000/openapi.json -o docs/api/openapi.json
+   curl http://localhost:8020/openapi.json -o docs/api/openapi.json
    ```
 
 3. **询问用户数据库状态**

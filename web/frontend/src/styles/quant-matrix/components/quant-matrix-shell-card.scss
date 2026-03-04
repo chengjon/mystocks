@@ -1,0 +1,25 @@
+@import '@/styles/quant-matrix/index';
+
+.qm-shell-card {
+  border: 1px solid var(--qm-border);
+  border-radius: var(--qm-radius-md);
+  background: linear-gradient(180deg, rgb(255 255 255 / 2%), transparent 60%), var(--qm-surface);
+  box-shadow: var(--qm-shadow);
+}
+
+.qm-shell-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--qm-border);
+}
+
+.qm-shell-card__title {
+  margin: 0;
+  font-size: 14px;
+}
+
+.qm-shell-card__body {
+  padding: 14px;
+}

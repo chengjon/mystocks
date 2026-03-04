@@ -23,7 +23,7 @@ info:
     url: https://opensource.org/licenses/MIT
 
 servers:
-  - url: http://localhost:8000
+  - url: http://localhost:8020
     description: 本地开发服务器
   - url: https://api.mystocks.com
     description: 生产环境服务器

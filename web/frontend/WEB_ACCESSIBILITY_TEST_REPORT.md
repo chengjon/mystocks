@@ -3,7 +3,7 @@
 
 **测试时间**: 2026-01-11 00:53
 **测试工具**: Playwright
-**测试环境**: http://localhost:3001 (前端), http://localhost:8000 (后端)
+**测试环境**: http://localhost:3020 (前端), http://localhost:8020 (后端)
 
 ---
 
@@ -125,7 +125,7 @@ import { versionNegotiator, showVersionNotifications } from './services/versionN
 tail -f /tmp/frontend-fixed.log
 
 # 在浏览器中手动测试
-open http://localhost:3001/#/dashboard
+open http://localhost:3020/#/dashboard
 # 检查 DevTools Console
 ```
 
@@ -162,7 +162,7 @@ open http://localhost:3001/#/dashboard
 1. **手动浏览器测试**
    ```bash
    # 在浏览器中访问并检查Console
-   http://localhost:3001/#/dashboard
+   http://localhost:3020/#/dashboard
    ```
 
 2. **修复后端Python错误**
@@ -174,7 +174,7 @@ open http://localhost:3001/#/dashboard
 
 3. **检查Vue控制台错误**
    - 打开浏览器 DevTools
-   - 访问 http://localhost:3001
+   - 访问 http://localhost:3020
    - 查看Console标签页的错误信息
 
 ### 后续优化

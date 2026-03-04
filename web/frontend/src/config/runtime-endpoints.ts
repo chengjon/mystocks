@@ -13,9 +13,9 @@ const apiBaseFromEnv = trimValue(import.meta.env.VITE_API_BASE_URL)
 const wsBaseFromEnv = trimValue(import.meta.env.VITE_WS_BASE_URL)
 
 const browserApiBase =
-  typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}` : 'http://localhost:8000'
+  typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}` : ''
 
-const defaultApiBase = isDev ? 'http://localhost:8000' : browserApiBase
+const defaultApiBase = isDev ? '/api' : browserApiBase
 
 export const API_BASE_URL = apiBaseFromEnv || defaultApiBase
 
@@ -27,10 +27,13 @@ const derivedWsBase = (() => {
   if (source.startsWith('http://')) {
     return `ws://${source.slice('http://'.length)}`
   }
+  if (source.startsWith('/') && typeof window !== 'undefined') {
+    return `${toWsProtocol(window.location.protocol)}//${window.location.host}`
+  }
   if (typeof window !== 'undefined') {
     return `${toWsProtocol(window.location.protocol)}//${window.location.host}`
   }
-  return 'ws://localhost:8000'
+  return ''
 })()
 
 export const WS_BASE_URL = wsBaseFromEnv || derivedWsBase
@@ -44,4 +47,3 @@ export const wsUrl = (path: string): string => {
   if (!path) return WS_BASE_URL
   return `${WS_BASE_URL}${path.startsWith('/') ? path : `/${path}`}`
 }
-

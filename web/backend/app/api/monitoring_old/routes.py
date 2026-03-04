@@ -64,7 +64,7 @@ async def analyze_data(data: dict):
     **示例**:
     ```bash
     # 监控数据异常分析
-    curl -X POST "http://localhost:8000/api/monitoring/analyze" \\
+    curl -X POST "http://localhost:${BACKEND_PORT}/api/monitoring/analyze" \\
       -H "Content-Type: application/json" \\
       -d '{
         "alert_type": "volume_spike",

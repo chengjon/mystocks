@@ -351,13 +351,13 @@ async def health_check(
         获取基本健康状态:
         ```bash
         curl -H "Authorization: Bearer TOKEN" \\
-             http://localhost:8000/health
+             http://localhost:8020/health
         ```
 
         获取包含详细指标的健康状态（需要管理员权限）:
         ```bash
         curl -H "Authorization: Bearer ADMIN_TOKEN" \\
-             http://localhost:8000/health?include_detailed_metrics=true
+             http://localhost:8020/health?include_detailed_metrics=true
         ```
 
     Notes:

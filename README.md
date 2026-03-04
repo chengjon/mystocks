@@ -3,8 +3,45 @@
 **创建人**: JohnC & Claude
 **版本**: 3.2.1 (Code Quality)
 **批准日期**: 2026-02-23
-**最后修订**: 2026-02-23
-**本次修订内容**: 代码清单扫描工具 + Mock数据治理
+**最后修订**: 2026-03-03
+**本次修订内容**: 前端页面优化清单收口（V3 mock-debt 清零 + 审计自动化 + CI门禁 + E2E实跑）
+
+---
+
+## ✅ 2026-03-03 前端页面优化清单收口（审批通过）
+
+**核心目标**: 将 `docs/plans/frontend-page-optimization-list.md` 从“人工维护清单”升级为“可审计、可门禁、可复核”的执行基线。
+
+**重点落地**:
+- ✅ **清单口径统一**: 固化 34 条页面范围，补齐数据状态/API状态列，纳入 V3 策略优先级说明  
+  文档: `docs/plans/frontend-page-optimization-list.md`
+- ✅ **审阅闭环文档**: 形成结构化审阅与收口证据归档  
+  文档: `docs/plans/2026-03-02-frontend-page-optimization-list-review.md`
+- ✅ **自动审计脚本**: 新增 `scripts/dev/frontend_optimization_audit.py`，支持 `--strict` 校验路由-组件映射与已校验API端点
+- ✅ **测试覆盖**: 新增脚本单测 `scripts/tests/test_frontend_optimization_audit.py`（9个测试）
+- ✅ **CI 门禁接入**: `frontend-testing.yml` 新增 `frontend-optimization-audit` 作业，自动产出审计报告工件
+- ✅ **导航与E2E补强**:
+  - `MenuConfig.ts` 补齐 `/strategy/parameters`、`/strategy/signals`
+  - `comprehensive-all-pages.spec.ts` 增强可见性与健康结构校验
+- ✅ **门禁脚本稳健化**:
+  - `scripts/run_e2e_pm2.sh` 修复 `pm2 delete all` 非零退出导致的误失败
+  - `ecosystem.test.config.js` 补齐 `BACKEND_BACKUP_PORT` 等兼容环境变量
+- ✅ **V3 mock-debt 收口完成**:
+  - `#11/#14/#15/#18/#22/#28` 均已移除 mock/随机回退，统一为 REAL API + 空态处理
+- ✅ **V3 mixed 页面继续收口**:
+  - `#13 Strategy-Repo` 已移除 mock 回退并改为空态策略，页面写操作不再受 mock 状态禁用
+  - `#16 Strategy-Backtest` 已移除 `VITE_USE_MOCK_DATA` 驱动的 mock 基线，切换为 REAL 空态基线
+  - `#6 Data-Industry` 已移除 mock 回退，统一使用 REAL 数据解析与空态策略
+  - `#23/#27 Trade-Portfolio/Risk-PnL` 已移除组件内模拟持仓注入，统一使用 REAL API + 空态策略
+  - `#20/#24 Trade-Positions/Trade-History` 已改为路由页直连 REAL API + 空态策略
+
+**验收结果（2026-03-03 实跑）**:
+- `npm --prefix web/frontend run type-check` → 通过（`vue-tsc --noEmit`）
+- `bash scripts/run_e2e_pm2.sh` → `8 passed`（exit `0`）
+- `python scripts/dev/frontend_optimization_audit.py --repo-root . --strict --report-file reports/analysis/frontend-page-optimization-audit-report.md`  
+  → `component_issues=0`，`verified_api_issues=0`
+- PM2 服务已恢复并在线: `mystocks-backend`、`mystocks-frontend`
+- 运行端口真值（审批备注）: Frontend `3020` / Backend `8020`（`8000` 不通为预期）
 
 ---
 

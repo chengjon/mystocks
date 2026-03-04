@@ -39,10 +39,10 @@ cd web/backend
 pip install -r requirements.txt
 
 # 启动服务 (固定端口 8000)
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 
 # 或使用后台运行
-nohup python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload > server.log 2>&1 &
+nohup python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload > server.log 2>&1 &
 ```
 
 ### 前端启动
@@ -67,8 +67,8 @@ docker-compose up -d
 
 ### 访问地址
 - **前端界面**: http://localhost:3000
-- **后端API**: http://localhost:8000
-- **API文档**: http://localhost:8000/api/docs
+- **后端API**: http://localhost:8020
+- **API文档**: http://localhost:8020/api/docs
 - **默认登录**:
   - 用户名: `admin`
   - 密码: `admin123`
@@ -164,7 +164,7 @@ Authorization: Bearer <token>
 
 # 示例
 curl -H "Authorization: Bearer $TOKEN" \
-  "http://localhost:8000/api/tdx/quote/600519"
+  "http://localhost:8020/api/tdx/quote/600519"
 ```
 
 #### 3. 获取股票K线数据
@@ -180,7 +180,7 @@ Authorization: Bearer <token>
 
 # 示例
 curl -H "Authorization: Bearer $TOKEN" \
-  "http://localhost:8000/api/tdx/kline?symbol=600519&period=1d&start_date=2025-10-01&end_date=2025-10-15"
+  "http://localhost:8020/api/tdx/kline?symbol=600519&period=1d&start_date=2025-10-01&end_date=2025-10-15"
 ```
 
 #### 4. 获取指数实时行情
@@ -190,7 +190,7 @@ Authorization: Bearer <token>
 
 # 示例 (上证指数)
 curl -H "Authorization: Bearer $TOKEN" \
-  "http://localhost:8000/api/tdx/index/quote/000001"
+  "http://localhost:8020/api/tdx/index/quote/000001"
 ```
 
 #### 5. 获取指数K线数据
@@ -265,9 +265,9 @@ username=admin&password=admin123
 
 ### 后端API报错
 1. 检查后端日志: `tail -f web/backend/server.log`
-2. 检查端口占用: `lsof -i :8000`
-3. 验证TDX连接: `curl http://localhost:8000/api/tdx/health`
-4. 重启后端: `cd web/backend && python -m uvicorn app.main:app --reload --port 8000`
+2. 检查端口占用: `lsof -i :8020`
+3. 验证TDX连接: `curl http://localhost:8020/api/tdx/health`
+4. 重启后端: `cd web/backend && python -m uvicorn app.main:app --reload --port 8020`
 
 ### TDX连接失败
 1. 检查服务器配置: `utils/tdx_server_config.py`

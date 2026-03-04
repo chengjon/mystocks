@@ -15,12 +15,12 @@
 ```bash
 # 启动前端和后端服务
 cd web/backend && python run_server.py &
-cd web/frontend && npm run dev -- --port 3001 &
+cd web/frontend && npm run dev -- --port 3020 &
 ```
 
 **成功标准**:
-- 后端: http://localhost:8000/api/health 返回200
-- 前端: http://localhost:3001 可访问
+- 后端: http://localhost:8020/api/health 返回200
+- 前端: http://localhost:3020 可访问
 
 ### 3. PM2服务部署
 ```bash
@@ -82,7 +82,7 @@ cd monitoring-stack && docker-compose up -d
 ### 9. 性能基准测试
 ```bash
 # 运行性能测试套件
-./performance-tests/locustfile.py --host=http://localhost:8000
+./performance-tests/locustfile.py --host=http://localhost:8020
 ```
 
 **成功标准**: 响应时间<500ms，错误率<1%

@@ -28,7 +28,7 @@ cd /opt/claude/mystocks_spec
 pm2 start ecosystem.config.js --env dev
 
 # 验证后端服务
-curl http://localhost:8888/health
+curl http://localhost:8020/health
 # 应返回: {"status":"healthy","timestamp":...,"service":"mystocks-web-api"}
 ```
 
@@ -43,7 +43,7 @@ npm install
 # 启动前端服务
 npm run dev
 
-# 前端服务将运行在 http://localhost:3001
+# 前端服务将运行在 http://localhost:3020
 ```
 
 ### 4. 启动数据同步服务（可选）
@@ -77,30 +77,30 @@ tail -f logs/data_sync/stock_industry_concept_sync.log
 ### 5. 验证效果
 ```bash
 # 访问前端页面
-open http://localhost:3001  # 或在浏览器中手动访问
+open http://localhost:3020  # 或在浏览器中手动访问
 
 # 验证API连接
-curl -X POST "http://localhost:8888/api/auth/login" \
+curl -X POST "http://localhost:8020/api/auth/login" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "username=admin&password=admin123"
 
 # 验证数据获取
-TOKEN=$(curl -s -X POST "http://localhost:8888/api/auth/login" \
+TOKEN=$(curl -s -X POST "http://localhost:8020/api/auth/login" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "username=admin&password=admin123" | \
   python3 -c "import sys, json; print(json.load(sys.stdin).get('access_token', ''))")
 
-curl -X GET "http://localhost:8888/api/data/stocks/basic?limit=5" \
+curl -X GET "http://localhost:8020/api/data/stocks/basic?limit=5" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
 ## 页面功能验证
 启动完成后，访问以下页面确认功能正常：
 
-1. **首页 (`http://localhost:3001/`)**: 显示系统概览
-2. **仪表板 (`http://localhost:3001/dashboard`)**: 显示股票统计数据
-3. **股票列表 (`http://localhost:3001/stocks`)**: 显示真实股票数据（如平安银行、万科A等）
-4. **技术分析 (`http://localhost:3001/technical-analysis`)**: 技术指标分析界面
+1. **首页 (`http://localhost:3020/`)**: 显示系统概览
+2. **仪表板 (`http://localhost:3020/dashboard`)**: 显示股票统计数据
+3. **股票列表 (`http://localhost:3020/stocks`)**: 显示真实股票数据（如平安银行、万科A等）
+4. **技术分析 (`http://localhost:3020/technical-analysis`)**: 技术指标分析界面
 
 ## 常见问题
 1. 如果前端页面显示空白，请检查Vite配置中的代理设置

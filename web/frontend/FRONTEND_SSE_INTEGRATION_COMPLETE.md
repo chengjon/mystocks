@@ -489,7 +489,7 @@ GET /api/v1/sse/status      # 连接状态（REST）
 
 ```bash
 # .env
-VITE_API_BASE_URL=http://localhost:8000
+VITE_API_BASE_URL=http://localhost:8020
 ```
 
 ### 请求参数
@@ -855,10 +855,10 @@ CMD ["nginx", "-g", "daemon off;"]
 **检查清单**:
 ```bash
 # 1. 检查后端服务
-curl http://localhost:8000/health
+curl http://localhost:8020/health
 
 # 2. 检查SSE状态
-curl http://localhost:8000/api/v1/sse/status
+curl http://localhost:8020/api/v1/sse/status
 
 # 3. 检查浏览器控制台CORS错误
 # DevTools > Console > 查找CORS相关错误
