@@ -1,5 +1,9 @@
 # Git Worktree文件所有权映射模板
 # ============================================================
+# 文档版本：v3.1
+# 最后更新：2026-03-04
+# v3.1治理增补：所有CLI以 dev 为开发入口，main 仅接受 dev 合并
+# ============================================================
 # 使用说明：
 # 1. 复制此文件到项目根目录，命名为 .FILE_OWNERSHIP
 # 2. 根据项目实际情况修改CLI分配
@@ -43,6 +47,7 @@ README.md                           main+clis | 主CLI维护，CLI可建议
 CLAUDE.md                           main      | 主CLI维护
 CHANGELOG.md                        main      | 主CLI维护
 AGENTS.md                           main      | 主CLI维护
+.multi-cli-tasks/                  main      | 多CLI运营中心与治理文档
 
 # ========== 规则说明 ==========
 # 1. 拥有者CLI可以修改其拥有的文件
@@ -51,6 +56,8 @@ AGENTS.md                           main      | 主CLI维护
 # 4. 未知所有权的文件默认属于主CLI
 # 5. 新增文件时，应在对应CLI的worktree中创建
 # 6. 跨worktree文件修改必须先请示主CLI
+# 7. Worker CLI创建功能分支必须基于 dev
+# 8. Worker CLI的PR目标分支必须是 dev，禁止直提 main
 
 # ========== 冲突解决优先级 ==========
 # 1. .FILE_OWNERSHIP 定义优先

@@ -1,7 +1,7 @@
 # 任务文档模板
 
-**文档版本**: v2.0
-**最后更新**: 2025-12-30
+**文档版本**: v3.1
+**最后更新**: 2026-03-04
 **适用场景**: 多CLI协作开发
 
 ---
@@ -18,6 +18,12 @@
 - ✅ 避免多CLI修改README.md导致合并冲突
 - ✅ 任务说明和进度报告分离
 - ✅ 支持多阶段任务管理
+
+**v3.1治理要求（新增）**:
+- ✅ 功能分支必须基于 `dev`
+- ✅ PR 目标必须为 `dev`（禁止直接指向 `main`）
+- ✅ 提交信息必须符合 `type(scope): short description`
+- ✅ 提交前必须执行验证并记录证据（命令 + 结果）
 
 **相关文档**:
 - [主CLI工作规范](../MAIN_CLI_WORKFLOW.md) - 任务分配方法（包含 .FILE_OWNERSHIP 检查）
@@ -41,10 +47,18 @@
 
 **Worker CLI**: CLI-X (描述)
 **Branch**: branch-name
+**Base Branch**: dev
+**PR Base**: dev
+**提交信息模板**: type(scope): short description
 **Worktree**: /path/to/worktree/
 **Phase**: 描述阶段
 **预计工作量**: X天
 **完成标准**: 描述成功标准
+
+**治理门禁**:
+- PR 目标分支必须是 `dev`
+- 提交信息必须符合 `type(scope): short description`
+- 提交前必须执行验证并记录证据
 
 ---
 
@@ -121,6 +135,9 @@
 **Worker CLI**: CLI-X (描述)
 **阶段**: Phase X
 **Branch**: branch-name
+**Base Branch**: dev
+**PR Base**: dev
+**提交信息模板**: type(scope): short description
 **Worktree**: /path/to/worktree/
 **本阶段预计工作量**: X天
 **总体预计工作量**: Y天
@@ -315,6 +332,8 @@ EOF
 
 **Worker CLI**: CLI-X (描述)
 **任务文档**: TASK.md
+**工作分支**: branch-name
+**PR目标分支**: dev
 **当前阶段**: T+Xh
 **报告时间**: YYYY-MM-DD HH:MM
 
@@ -365,6 +384,14 @@ EOF
 ## 📝 备注
 
 其他需要说明的事项
+
+---
+
+## ✅ v3.1 治理检查
+
+- [ ] 提交信息符合 `type(scope): short description`
+- [ ] PR 目标分支为 `dev`
+- [ ] 已执行验证命令并附结果摘要
 ```
 
 ---
@@ -377,6 +404,8 @@ EOF
 **Worker CLI**: CLI-X (描述)
 **任务文档**: TASK-X.md
 **报告文档**: TASK-X-REPORT.md
+**工作分支**: branch-name
+**PR目标分支**: dev
 **完成时间**: YYYY-MM-DD HH:MM
 
 ---
@@ -466,6 +495,14 @@ EOF
 
 ---
 
+## ✅ v3.1 治理检查
+
+- [x] 提交信息符合 `type(scope): short description`
+- [x] PR 目标分支为 `dev`
+- [x] 已附验证命令与结果证据
+
+---
+
 ## ✅ 下一步
 
 等待主CLI验收和合并
@@ -475,8 +512,8 @@ EOF
 **报告生成时间**: YYYY-MM-DD HH:MM
 **Worker CLI**: CLI-X
 **相关文档**:
-- [主CLI工作规范](./MAIN_CLI_WORKFLOW_STANDARDS.md)
-- [协作冲突预防](./GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md)
+- [主CLI工作规范](./MAIN_CLI_WORKFLOW.md)
+- [协作冲突预防](./CONFLICT_PREVENTION.md)
 ```
 
 ---
@@ -700,6 +737,6 @@ EOF
 
 ---
 
-**文档版本**: v2.0
-**最后更新**: 2025-12-30
+**文档版本**: v3.1
+**最后更新**: 2026-03-04
 **维护者**: Main CLI

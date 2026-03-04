@@ -1,9 +1,10 @@
 # Main CLI 工作规范与最佳实践
 
-**文档版本**: v2.0
+**文档版本**: v3.1
 **创建日期**: 2025-12-29
 **适用范围**: 所有使用Git Worktree进行多CLI并行开发的项目
-**最后更新**: 2025-12-30
+**最后更新**: 2026-03-04
+**v3.1更新说明**: 在 v2.2 体系基础上，新增 AI-CLI 统一治理门禁（dev/main 分支策略、PR 目标、提交规范、验证证据）。
 **维护者**: Main CLI (Manager)
 
 ---
@@ -17,6 +18,27 @@
 - ✅ 标准化工作流程，降低管理成本
 - ✅ 确保所有CLI具备完整的开发和提交能力
 - ✅ 建立可重复、可验证的并行开发框架
+
+## v3.1 治理增补：Main CLI 合并门禁
+
+本节用于落地《AI-CLI协作开发规范》在主 CLI 侧的强制执行项。
+
+- **分支入口统一**: 所有 Worker CLI 变更必须以 `dev` 为唯一入口，`main` 仅接受 `dev -> main` 合并。
+- **PR 目标统一**: 主 CLI 审核时必须确认 PR `base=dev`，发现 `base=main` 直接关闭并要求重提。
+- **提交规范统一**: 检查提交信息格式 `type(scope): short description`，禁止 `update code` 等无意义描述。
+- **证据合并门禁**: 合并前必须有验证证据（测试/类型检查命令与结果），并在 TASK 报告或 PR 描述中可追溯。
+
+**主 CLI 快速核验命令**:
+```bash
+# 1) 检查当前分支（应在 main 或 dev 的管理位）
+git branch --show-current
+
+# 2) 检查最近提交信息是否符合规范
+git log --oneline -n 10
+
+# 3) 合并前确认 dev 与 main 的差异范围
+git log --oneline main..dev
+```
 
 ---
 
@@ -250,7 +272,7 @@ EOF
 
 **相关文档**:
 - [任务文档模板](./TASK_TEMPLATE.md) - 详细的TASK.md和TASK-REPORT.md模板
-- [协作冲突预防](./GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md) - 避免README.md冲突
+- [协作冲突预防](./CONFLICT_PREVENTION.md) - 避免README.md冲突
 
 ---
 
@@ -278,7 +300,7 @@ EOF
 
 ### 0.2 创建工作流程指南
 
-**输出文件**: `docs/guides/.multi-cli-tasks/CLI_WORKFLOW_GUIDE.md`
+**输出文件**: `docs/guides/.multi-cli-tasks/WORKER_CLI_GUIDE.md`
 
 **必须包含的章节**:
 1. **任务启动阶段**: 如何确认任务理解、设置进度跟踪
@@ -436,7 +458,7 @@ Worker CLI需要修改其他CLI拥有的文件时：
 2. ✅ **在Worktree创建时**: 验证CLI专属工作目录不侵犯其他CLI
 3. ✅ **在开发过程中**: 定期运行冲突检测脚本（每天一次）
 
-**详细文档**: 参见 [Git Worktree协作冲突预防规范](./GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md)
+**详细文档**: 参见 [Git Worktree协作冲突预防规范](./CONFLICT_PREVENTION.md)
 
 ---
 
@@ -715,10 +737,10 @@ mystocks_spec/
 │           ├── CLI-5_PHASE6_GPU_MONITORING_TASKS.md
 │           ├── CLI-6_QUALITY_ASSURANCE_TASKS.md
 │           ├── PROGRESS_MONITORING_AND_MILESTONES.md
-│           ├── CLI_WORKFLOW_GUIDE.md
-│           ├── MAIN_CLI_WORKFLOW_STANDARDS.md  # 本文档
+│           ├── WORKER_CLI_GUIDE.md
+│           ├── MAIN_CLI_WORKFLOW.md  # 本文档
 │           ├── GIT_WORKTREE_MAIN_CLI_MANUAL.md
-│           ├── GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md
+│           ├── CONFLICT_PREVENTION.md
 │           ├── GIT_REMOTE_NAME_STANDARD.md
 │           └── TASK_TEMPLATE.md
 ├── openspec/
@@ -734,9 +756,9 @@ mystocks_spec/
 - 任务分配文档: `CLI-N_PHASE_NAME_TASKS.md`
 - 流程指南文档: `*_WORKFLOW_GUIDE.md`
 - 监控相关文档: `PROGRESS_MONITORING_AND_MILESTONES.md`
-- 工作规范文档: `MAIN_CLI_WORKFLOW_STANDARDS.md`
+- 工作规范文档: `MAIN_CLI_WORKFLOW.md`
 - Git命令文档: `*_MANUAL.md`
-- 冲突预防文档: `*_COLLABORATION_CONFLICT_PREVENTION.md`
+- 冲突预防文档: `CONFLICT_PREVENTION.md`
 - 远程名称文档: `GIT_REMOTE_NAME_STANDARD.md`
 - 任务模板文档: `TASK_TEMPLATE.md`
 
@@ -1027,6 +1049,10 @@ git commit -am "CLI-1完成"
   - 添加进度跟踪协调文件
   - 增强文档链接矩阵
   - 减少Git命令详解，链接到命令手册
+- v3.1 (2026-03-04): 治理升级
+  - 对齐 dev/main 分支门禁与 PR 审核规则
+  - 增加提交信息与验证证据的强制检查项
+  - 与《AI-CLI协作开发规范》保持一致
 
 **维护者**: Main CLI
 **更新频率**: 每个项目结束后总结经验教训，更新本文档

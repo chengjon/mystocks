@@ -1,9 +1,9 @@
 # Git 远程仓库名称标准化规范
 
-**文档版本**: v2.0
+**文档版本**: v3.1
 **创建日期**: 2025-12-29
 **问题发现**: Worker CLI多次遇到 `git push origin` 失败
-**最后更新**: 2025-12-30
+**最后更新**: 2026-03-04
 **维护者**: Main CLI
 
 ---
@@ -35,6 +35,30 @@ mystocks    https://github.com/chengjon/mystocks.git (push)
 - ❌ 所有文档中的 `git pull origin` 命令失败
 - ❌ Worker CLI无法按文档推送代码
 - ❌ 偏离Git标准命名约定
+
+---
+
+## v3.1 治理增补：远程与分支基线联动
+
+远程命名统一为 `origin` 后，v3.1 要求进一步统一分支门禁：
+
+- `origin/dev` 是所有 CLI 功能分支的唯一来源基线
+- Worker PR 统一 `--base dev`，禁止以 `origin/main` 为目标
+- 主 CLI 仅在 `dev` 验证通过后执行 `dev -> main` 合并
+
+**推荐命令**:
+
+```bash
+# Worker 开工前：同步 dev 基线
+git fetch origin
+git switch dev
+git pull --ff-only origin dev
+
+# Worker 提交 PR（必须指向 dev）
+gh pr create --base dev --head feat/<module>-<cli> \
+  --title "feat(<module>): short description" \
+  --body "AI CLI: <CLI_NAME> | 生成模块: <MODULE>"
+```
 
 ---
 
@@ -108,9 +132,9 @@ Impact:
 ### **如果坚持使用** (不推荐):
 
 需要更新以下所有文件中的 `origin` 为 `mystocks`:
-- `CLI_WORKFLOW_GUIDE.md` (50+处)
+- `WORKER_CLI_GUIDE.md` (50+处)
 - 所有CLI的TASK.md (30+处)
-- `MAIN_CLI_WORKFLOW_STANDARDS.md` (20+处)
+- `MAIN_CLI_WORKFLOW.md` (20+处)
 - 其他Git相关文档
 
 ---
@@ -286,12 +310,16 @@ git push origin main
   - 强化链接到其他核心文档
   - 优化文档结构
 
+- **v3.1** (2026-03-04): 治理增补
+  - 增加 dev/main 分支门禁与远程使用联动规则
+  - 补充 Worker PR 目标分支与命令模板
+
 ---
 
 ## ✍️ 维护者
 
 **创建者**: Main CLI
-**最后更新**: 2025-12-30
+**最后更新**: 2026-03-04
 **维护频率**: 每次创建新worktree时检查
 
 **反馈**: 如果遇到远程名称相关问题，请更新本文档。

@@ -104,12 +104,16 @@ git rev-parse --abbrev-ref HEAD
   - 协调角色：使用 `.FILE_OWNERSHIP` 分配任务
   - 监控 Worker 进度：查阅 `TASK.md` 和 `TASK-REPORT.md`（Worker CLI 工件）
   - 不直接在 Worker 任务文件中报告任务
-  - 参考：`docs/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md`
+  - 参考：`.multi-cli-tasks/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md`
 
 - **如果分支为非 main**（worktree）：遵循 Worker CLI 工作流程
   - 使用 worktree 根目录下的 `TASK.md` + `TASK-REPORT.md`（+ `TASK-*-REPORT.md`）
   - 报告进度和完成状态
-  - 参考：`docs/guides/GIT_WORKTREE_MAIN_CLI_MANUAL.md`
+  - 参考：`.multi-cli-tasks/guides/GIT_WORKTREE_MAIN_CLI_MANUAL.md`
+
+**强制声明（必须遵守）**:
+- 使用 Git Worktree 进行 multi-cli 协作时，必须遵守 `.multi-cli-tasks/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md`（v3.1）及其配套指南。
+- 任何偏离该规则的分支策略、PR 目标、提交格式与验证流程，均视为不合规交付。
 
 ---
 
@@ -284,11 +288,11 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
   - 发现问题处理：如发现超过阈值文件或异常Mock使用，需在相应模块下创建治理任务
 - BUG 登记按模板 `docs/standards/bug-report-template.json`，输出到 `docs/quality/bugs/` 并更新 `docs/guides/BUG_LESSONS_LEARNED.md`
 - 多 CLI/Worktree 协作核心索引 (必读):
-  - **`docs/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md` (总手册)**
+  - **`.multi-cli-tasks/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md` (总手册，强制遵守)**
   - 链接文档：
-    - `docs/guides/.multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md` (主 CLI 规范)
-    - `docs/guides/.multi-cli-tasks/CLI_WORKFLOW_GUIDE.md` (Worker CLI 规范)
-    - `docs/guides/.multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md` (冲突预防)
+    - `.multi-cli-tasks/guides/MAIN_CLI_WORKFLOW.md` (主 CLI 规范)
+    - `.multi-cli-tasks/guides/WORKER_CLI_GUIDE.md` (Worker CLI 规范)
+    - `.multi-cli-tasks/guides/CONFLICT_PREVENTION.md` (冲突预防)
 - **2026Q1 物理布局与治理指引**:
   - **Zero-Root-Config**: 禁止在根目录新增工具配置，所有配置必须入库 `config/` 对应子目录。
   - **Logic Gravity**: 业务逻辑下沉 `src/`，根目录 `.py` 文件仅作为 Re-export 外壳。

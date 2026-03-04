@@ -1,10 +1,12 @@
 # 多CLI协作 Worktree 管理手册
 
-**版本**: 2.2
+**版本**: v3.1
 **适用场景**: 任何使用Git Worktree进行多CLI并行协作的项目
 **创建者**: Main CLI (Manager & Coordinator)
 **创建时间**: 2025-12-28
 **基于**: Git Worktree官方文档 + 多项目协作实践经验
+**最后更新**: 2026-03-04
+**v3.1更新说明**: 在 v2.2 完整框架基础上，增补 v3.0 中《AI-CLI协作开发规范》的核心治理条款（分支策略、PR管理、提交规范、违规处理）。
 
 ---
 
@@ -124,6 +126,54 @@
 
 ---
 
+## v3.1 增补：AI-CLI 协作统一治理规则
+
+本节为 v3.1 新增，来源于 v3.0 中引入的《AI-CLI协作开发规范》核心内容。  
+原则：保留 v2.2 的完整执行细节，同时统一跨 CLI 的分支、PR、提交与违规处理规则。
+
+### 1) 分支策略（所有 CLI 必须遵循）
+
+- **基准分支**: `dev`（所有代码变更的唯一入口）
+- **生产分支**: `main`（仅允许从 `dev` 合并，禁止直提/直推）
+- **临时分支**: 子 CLI 必须基于 `dev` 创建功能分支
+  - 推荐格式：`feat/[模块名]-[cli标识]` 或 `fix/[模块名]-[cli标识]`
+  - 示例：`feat/payment-codex`、`fix/login-gemini`
+
+### 2) PR 管理规则
+
+- 所有 Worker CLI 的 PR 必须以 `dev` 为目标分支，禁止直接提交到 `main`
+- 统一建议使用 GitHub CLI 创建 PR：
+
+```bash
+gh pr create --base dev --head [branch] \
+  --title "[type(scope)]: description" \
+  --body "AI CLI: [CLI_NAME] | 生成模块: [MODULE]"
+```
+
+- 主 CLI 审核重点：需求符合性、质量门禁、验证证据完整性
+- 合并门禁：`dev` 累计至少 2 个有效 PR 后，方可执行 `dev -> main`
+
+### 3) 提交信息规范（AI 生成必须遵循）
+
+- 统一格式：`type(scope): short description`（建议英文，50 字符内）
+- 禁止无意义描述（如 `update code`、`fix bug`）
+- `type` 推荐枚举：`feat`、`fix`、`docs`、`refactor`、`chore`
+- `scope` 必须与主 CLI 分配模块一致（如 `payment`、`api`、`user`）
+
+### 4) AI CLI 通用约束
+
+- 生成代码后，提交前必须执行对应验证命令（如 `pytest` / `tsc --noEmit`）
+- PR 正文必须标注 CLI 标识与负责模块，确保可追溯
+- 子 CLI 只负责分配范围内改动；跨模块变更需先申请主 CLI 协调
+
+### 5) 违规处理（统一执行）
+
+- **PR 指向 main**: 主 CLI 直接关闭，要求重新基于 `dev` 提交
+- **提交信息不规范**: 主 CLI 驳回，修正后重新提交
+- **未附验证证据**: 主 CLI 要求补充验证命令与结果，未补齐不得合并
+
+---
+
 ## 角色定义与职责边界
 
 ### 主 CLI (Manager)
@@ -196,7 +246,7 @@ Worker CLI 拥有以下权利：
 ---
 
 ## 结项与资源回收标准
-(见 MAIN_CLI_WORKFLOW_STANDARDS.md 详细定义)
+(见 MAIN_CLI_WORKFLOW.md 详细定义)
 
 ---
 
@@ -2705,7 +2755,7 @@ DISABLE_DIR_STRUCTURE_CHECK=1 git commit -m "docs: 请示主CLI协助"
 
 ---
 
-**文档版本**: v2.0
-**最后更新**: 2025-12-28
+**文档版本**: v3.1
+**最后更新**: 2026-03-04
 **维护者**: Main CLI (Claude Code)
 **适用性**: 任何使用Git Worktree进行多CLI协作的项目

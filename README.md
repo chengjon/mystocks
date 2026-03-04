@@ -8,6 +8,22 @@
 
 ---
 
+## 🔒 Git Worktree 多 CLI 协作强制规则（v3.1）
+
+凡使用 Git Worktree 进行多 CLI 协作（Claude/Codex/Gemini/OpenCode 等），**必须**遵守以下统一规则文档：
+
+- 规则总纲（唯一入口）：`.multi-cli-tasks/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md`
+- 主 CLI 规范：`.multi-cli-tasks/guides/MAIN_CLI_WORKFLOW.md`
+- Worker CLI 规范：`.multi-cli-tasks/guides/WORKER_CLI_GUIDE.md`
+
+关键门禁：
+- 开发入口统一为 `dev`，`main` 仅接受 `dev -> main` 合并
+- Worker PR 必须以 `dev` 为 `base`
+- 提交信息必须符合 `type(scope): short description`
+- 合并前必须提供可复核验证证据（测试/类型检查等）
+
+---
+
 ## ✅ 2026-03-03 前端页面优化清单收口（审批通过）
 
 **核心目标**: 将 `docs/plans/frontend-page-optimization-list.md` 从“人工维护清单”升级为“可审计、可门禁、可复核”的执行基线。

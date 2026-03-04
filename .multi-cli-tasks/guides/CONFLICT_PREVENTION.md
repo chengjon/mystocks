@@ -1,21 +1,22 @@
 # Git Worktree协作冲突预防规范
 
-**文档版本**: v2.0
+**文档版本**: v3.1
 **创建日期**: 2025-12-29
 **问题来源**: Worker CLI反馈的实际问题
-**最后更新**: 2025-12-30
+**最后更新**: 2026-03-04
 **维护者**: Main CLI
 
 ---
 
 ## 📋 文档目的
 
-本文档解决4个关键的Git Worktree协作问题：
+本文档解决关键的Git Worktree协作问题（含 v3.1 新增治理冲突源）：
 
 1. **Pre-commit配置冲突**：主CLI和Worker CLI同时修改pre-commit配置导致合并冲突
 2. **任务分配冲突**：多个CLI修改同一文件导致协作冲突
 3. **主CLI忘记同步已完成worktree**：主CLI在开始新工作前忘记合并已完成的worktree
 4. **任务文档方式**：使用README.md vs TASK.md + TASK-REPORT.md导致冲突
+5. **治理门禁冲突（v3.1）**：PR 目标错误（指向 main）、提交信息不规范、缺失验证证据
 
 **核心原则**:
 - ✅ **明确所有权**：每个文件有明确的拥有者
@@ -23,6 +24,36 @@
 - ✅ **配置集中管理**：pre-commit配置在主仓库统一管理
 - ✅ **文件组织标准化**：通过目录结构避免冲突
 - ✅ **任务文档分离**：TASK.md（任务说明）→ TASK-REPORT.md（进度报告）→ TASK-*-REPORT.md（完成报告）
+- ✅ **治理门禁前置**：所有 Worker 变更统一 `base=dev`，`main` 仅接受 `dev -> main` 合并
+
+---
+
+## 🚨 v3.1 新增问题：治理门禁冲突（PR / Commit / Verification）
+
+### **问题描述**
+
+新增多 CLI 协作后，常见冲突已从“文件改同一处”扩展到“流程不一致”：
+
+1. Worker 直接提交 PR 到 `main`，导致主干流程被绕过  
+2. 提交信息不符合 `type(scope): short description`，审计困难  
+3. PR / TASK-REPORT 缺失验证证据，无法判断质量门禁是否满足
+
+### **解决方案（强制）**
+
+- **PR 基线统一**: 所有 Worker PR 必须 `--base dev`。
+- **提交规范统一**: 提交信息必须符合 `type(scope): short description`。
+- **证据链统一**: 在 `TASK-REPORT.md` 与 PR 描述中记录验证命令与结果摘要。
+
+**推荐检查命令**:
+
+```bash
+# 检查分支与提交
+git branch --show-current
+git log --oneline -n 10
+
+# 检查 dev/main 差异窗口
+git log --oneline main..dev
+```
 
 ---
 
@@ -205,7 +236,7 @@ read -p "选择 [1/2/3]: " choice
 case $choice in
     1)
         echo "🔄 开始合并已完成分支..."
-        # 实现见 MAIN_CLI_WORKFLOW_STANDARDS.md
+        # 实现见 MAIN_CLI_WORKFLOW.md
         ;;
     2)
         echo "📥 仅拉取远程更新..."
@@ -523,14 +554,14 @@ npm install
 ---
 
 ## 🔗 相关文档
-- [Git Worktree 命令手册 (v2.1)](./GIT_WORKTREE_MAIN_CLI_MANUAL.md) - 最新命令与修复技巧
+- [Git Worktree 命令手册 (v3.1)](./GIT_WORKTREE_MAIN_CLI_MANUAL.md) - 最新命令与修复技巧
 - [多 CLI 协作管理手册](../README.md) - 角色与职责定义
 
 ---
 
-**文档版本**: v2.1
+**文档版本**: v3.1
 **创建日期**: 2025-12-29
-**最后更新**: 2026-02-13
+**最后更新**: 2026-03-04
 **维护者**: Main CLI
 **更新频率**: 持续更新
 

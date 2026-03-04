@@ -1,8 +1,8 @@
 # Git Worktree 命令参考手册
 
-**版本**: v2.1
+**版本**: v3.1
 **创建日期**: 2025-12-28
-**最后更新**: 2026-02-13
+**最后更新**: 2026-03-04
 **维护者**: Main CLI
 **目标读者**: 主CLI、需要查询Git命令的Worker CLI
 
@@ -61,6 +61,40 @@ mystocks_spec/                    # 主仓库 (主 worktree)
 **共享 vs 独立**:
 - **共享**: `refs/`, `objects/`（Git历史和引用）
 - **独立**: `HEAD`, `index`, 工作目录文件（每个worktree有自己的状态）
+
+---
+
+## v3.1 治理增补：dev/main 分支与 PR 命令基线
+
+以下命令用于落实《AI-CLI协作开发规范》中的统一门禁。
+
+### Worker CLI：从 dev 创建功能分支
+
+```bash
+# 同步 dev 后创建功能分支
+git fetch origin
+git switch dev
+git pull --ff-only origin dev
+git switch -c feat/<module>-<cli>
+```
+
+### Worker CLI：提交 PR 到 dev（禁止 main）
+
+```bash
+gh pr create --base dev --head feat/<module>-<cli> \
+  --title "feat(<module>): short description" \
+  --body "AI CLI: <CLI_NAME> | 生成模块: <MODULE>"
+```
+
+### Main CLI：合并前检查
+
+```bash
+# 检查 dev 相比 main 的提交窗口
+git log --oneline main..dev
+
+# 抽查提交信息规范
+git log --oneline -n 20 dev
+```
 
 ---
 
@@ -603,6 +637,6 @@ git worktree list
 
 ---
 
-**版本**: v2.1
-**最后更新**: 2026-02-13
+**版本**: v3.1
+**最后更新**: 2026-03-04
 **维护者**: Main CLI

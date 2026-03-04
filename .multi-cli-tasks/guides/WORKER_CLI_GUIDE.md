@@ -1,7 +1,7 @@
 # Worker CLI 工作流程指南
 
-**文档版本**: v2.0
-**最后更新**: 2025-12-30
+**文档版本**: v3.1
+**最后更新**: 2026-03-04
 **维护者**: Main CLI
 **适用于**: 所有Worker CLI
 
@@ -18,6 +18,14 @@
 - ✅ 任务说明（TASK.md）与进度报告（TASK-REPORT.md）分离
 - ✅ 完成报告使用 TASK-*-REPORT.md
 - ✅ 更清晰的文档结构
+
+## v3.1 治理增补：Worker CLI 必守规则
+
+- **分支基线**: 功能分支必须从 `dev` 创建，禁止从 `main` 直接开工。
+- **PR 目标**: PR 必须提交到 `dev`，禁止 `base=main`。
+- **提交格式**: 统一使用 `type(scope): short description`（如 `feat(payment): add amount calc`）。
+- **验证证据**: 提交前至少执行一组与任务匹配的验证命令（如 `pytest` / `npm run test` / `tsc --noEmit`），并将结果写入 `TASK-REPORT.md` 与 PR 描述。
+- **范围约束**: 仅修改主 CLI 分配范围内文件；跨模块改动先在 `TASK-REPORT.md` 记录并申请协调。
 
 ---
 
@@ -590,7 +598,7 @@ git commit
 4. **协调资源**: 帮助解决跨CLI的依赖问题
 5. **文档维护**: 更新总体进度和里程碑状态
 
-主CLI工作流程参考：[主CLI工作规范](./MAIN_CLI_WORKFLOW_STANDARDS.md)
+主CLI工作流程参考：[主CLI工作规范](./MAIN_CLI_WORKFLOW.md)
 
 ---
 
@@ -697,7 +705,7 @@ git pull origin <branch>
 
 ---
 
-**文档版本**: v2.0
-**最后更新**: 2025-12-30
+**文档版本**: v3.1
+**最后更新**: 2026-03-04
 **维护者**: Main CLI
 **适用于**: 所有Worker CLI
