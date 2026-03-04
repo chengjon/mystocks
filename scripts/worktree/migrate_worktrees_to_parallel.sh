@@ -5,7 +5,6 @@ set -euo pipefail
 #
 # Examples:
 #   bash scripts/worktree/migrate_worktrees_to_parallel.sh --target-root /opt/claude
-#   bash scripts/worktree/migrate_worktrees_to_parallel.sh --target-root /opt
 #
 # Optional:
 #   --source-root .worktrees

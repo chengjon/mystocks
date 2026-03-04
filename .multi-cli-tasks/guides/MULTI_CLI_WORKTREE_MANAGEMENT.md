@@ -58,7 +58,7 @@
 
 ### v3.1 路径策略（CLI 隔离优先）
 
-- **推荐**: Worker worktree 放在主仓库外部平行目录（如 `/opt/claude/mystocks_spec1`）。
+- **统一标准**: Worker worktree 放在主仓库外部平行目录（如 `/opt/claude/mystocks_spec1`）。
 - **原因**:
   - 降低不同 CLI 本地配置互相污染风险
   - 降低单目录体积与索引负担

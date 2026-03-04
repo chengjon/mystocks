@@ -9,16 +9,16 @@
 
 ## 1. 工作单元拓扑
 
-> 路径策略（推荐）：
-> - 为避免不同 CLI 的本地配置互相污染，建议将 Worker worktree 放在主仓库外部平行目录（例如 `/opt/claude/mystocks_spec1`）。
+> 路径策略（统一标准）：
+> - 为避免不同 CLI 的本地配置互相污染，统一将 Worker worktree 放在主仓库外部平行目录（`/opt/claude/mystocks_specN`）。
 > - 若临时放在仓库内 `.worktrees/`，应尽快迁移到平行目录。
 
 | 工作单元 | 分支 | 物理路径 | 角色定位 |
 |---|---|---|---|
-| Worker-1 | `mystocks_spec1` | `/opt/claude/mystocks_spec1`（示例） | 前端功能开发 |
-| Worker-2 | `mystocks_spec2` | `/opt/claude/mystocks_spec2`（示例） | 后端 API/服务开发 |
-| Worker-3 | `mystocks_spec3` | `/opt/claude/mystocks_spec3`（示例） | 数据/策略/计算开发 |
-| Worker-4 | `mystocks_spec4` | `/opt/claude/mystocks_spec4`（示例） | 测试/质量/文档支持 |
+| Worker-1 | `mystocks_spec1` | `/opt/claude/mystocks_spec1` | 前端功能开发 |
+| Worker-2 | `mystocks_spec2` | `/opt/claude/mystocks_spec2` | 后端 API/服务开发 |
+| Worker-3 | `mystocks_spec3` | `/opt/claude/mystocks_spec3` | 数据/策略/计算开发 |
+| Worker-4 | `mystocks_spec4` | `/opt/claude/mystocks_spec4` | 测试/质量/文档支持 |
 
 ---
 
