@@ -163,6 +163,47 @@ async def get_positions():
         )
 
 
+@router.get("/signals", response_model=APIResponse)
+async def get_signals(limit: int = Query(20, ge=1, le=200)):
+    """
+    获取交易信号列表
+
+    返回用于策略/交易页面展示的信号数据。
+    """
+    try:
+        from datetime import datetime
+
+        signals = [
+            {
+                "symbol": "600519.SH",
+                "name": "贵州茅台",
+                "type": "BUY",
+                "price": 1750.0,
+                "time": datetime.now().strftime("%H:%M:%S"),
+                "strategy": "MomentumAlpha",
+            },
+            {
+                "symbol": "000858.SZ",
+                "name": "五粮液",
+                "type": "SELL",
+                "price": 150.0,
+                "time": datetime.now().strftime("%H:%M:%S"),
+                "strategy": "MeanReversion",
+            },
+        ]
+
+        payload = {"items": signals[:limit], "total": len(signals)}
+        return create_success_response(data=payload, message="获取交易信号成功")
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=create_error_response(
+                error_code=ErrorCodes.INTERNAL_SERVER_ERROR,
+                message=f"获取交易信号失败: {str(e)}",
+            ).model_dump(),
+        )
+
+
 # ==================== Trade History ====================
 
 

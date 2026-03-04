@@ -19,8 +19,12 @@ import os
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Header
 from pydantic import BaseModel
+
+from app.core.config import settings
+from app.core.responses import ErrorCodes, create_error_response
+from app.core.security import verify_token
 
 router = APIRouter(prefix="/api/v1/data-sources", tags=["数据源管理"])
 
@@ -99,6 +103,31 @@ def get_manager():
     from src.core.data_source import DataSourceManagerV2
 
     return DataSourceManagerV2()
+
+
+def _require_write_auth(authorization: Optional[str]) -> None:
+    """写操作鉴权：测试环境放行，非测试环境要求有效Bearer Token。"""
+    if settings.testing:
+        return
+
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=401,
+            detail=create_error_response(
+                ErrorCodes.UNAUTHORIZED,
+                "缺少或无效的认证凭据",
+            ).dict(),
+        )
+
+    token = authorization.removeprefix("Bearer ").strip()
+    if not token or verify_token(token) is None:
+        raise HTTPException(
+            status_code=401,
+            detail=create_error_response(
+                ErrorCodes.UNAUTHORIZED,
+                "认证失败或令牌已过期",
+            ).dict(),
+        )
 
 
 # ==================== API Endpoints ====================
@@ -292,7 +321,11 @@ async def get_data_source(endpoint_name: str):
 
 
 @router.put("/{endpoint_name}")
-async def update_data_source(endpoint_name: str, update: DataSourceUpdate):
+async def update_data_source(
+    endpoint_name: str,
+    update: DataSourceUpdate,
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
+):
     """
     更新数据源配置
 
@@ -317,6 +350,7 @@ async def update_data_source(endpoint_name: str, update: DataSourceUpdate):
         }
     """
     try:
+        _require_write_auth(authorization)
         manager = get_manager()
 
         if endpoint_name not in manager.registry:
@@ -371,7 +405,11 @@ async def update_data_source(endpoint_name: str, update: DataSourceUpdate):
 
 
 @router.post("/{endpoint_name}/test", response_model=TestResponse)
-async def test_data_source(endpoint_name: str, request: TestRequest):
+async def test_data_source(
+    endpoint_name: str,
+    request: TestRequest,
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
+):
     """
     手动测试数据源
 
@@ -401,6 +439,7 @@ async def test_data_source(endpoint_name: str, request: TestRequest):
         }
     """
     try:
+        _require_write_auth(authorization)
         manager = get_manager()
 
         if endpoint_name not in manager.registry:
@@ -464,7 +503,10 @@ async def test_data_source(endpoint_name: str, request: TestRequest):
 
 
 @router.post("/{endpoint_name}/health-check")
-async def health_check_data_source(endpoint_name: str):
+async def health_check_data_source(
+    endpoint_name: str,
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
+):
     """
     健康检查单个数据源
 
@@ -480,6 +522,7 @@ async def health_check_data_source(endpoint_name: str):
         POST /api/v1/data-sources/akshare.stock_zh_a_hist/health-check
     """
     try:
+        _require_write_auth(authorization)
         manager = get_manager()
 
         if endpoint_name not in manager.registry:
@@ -508,7 +551,9 @@ async def health_check_data_source(endpoint_name: str):
 
 
 @router.post("/health-check/all")
-async def health_check_all_data_sources():
+async def health_check_all_data_sources(
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
+):
     """
     健康检查所有数据源
 
@@ -521,6 +566,7 @@ async def health_check_all_data_sources():
         POST /api/v1/data-sources/health-check/all
     """
     try:
+        _require_write_auth(authorization)
         manager = get_manager()
 
         health_result = manager.health_check()
@@ -530,6 +576,8 @@ async def health_check_all_data_sources():
 
         return health_result
 
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"健康检查失败: {str(e)}")
 

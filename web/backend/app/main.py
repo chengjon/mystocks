@@ -165,9 +165,8 @@ async def lifespan(app: FastAPI):
     # 启动时执行
     logger.info("🚀 Starting MyStocks Web API (Week 3 Simplified - PostgreSQL-only)")
 
-    # DEVELOPMENT MODE: Set environment variable for testing
-    os.environ.setdefault("DEVELOPMENT_MODE", "true")
-    logger.info(f"🔧 Development mode: {os.getenv('DEVELOPMENT_MODE')}")
+    development_mode = os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
+    logger.info("🔧 Development mode: %s", development_mode)
 
     try:
         # 初始化PostgreSQL连接
@@ -182,7 +181,7 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"❌ Database initialization failed: {e}")
         # DEVELOPMENT MODE: Continue without database for frontend development
-        if os.getenv("DEVELOPMENT_MODE", "false").lower() == "true":
+        if development_mode:
             logger.warning("⚠️ DEVELOPMENT MODE: Continuing without database connection")
         else:
             raise
@@ -669,6 +668,8 @@ from .api import (
     tasks,
     tdx,
     technical_analysis,
+    trade,
+    trading_runtime,
     tradingview,
     watchlist,
     wencai,
@@ -685,6 +686,8 @@ router_modules = {
     "market": market.router,
     "market_v2": market_v2.router,
     "strategy": strategy.router,
+    "trade": trade.router,
+    "trading_runtime": trading_runtime.router,
     "monitoring": monitoring.router,
     "technical": technical_analysis.router,
     "data": data.router,
@@ -765,16 +768,13 @@ logger.info("✅ All API routers registered successfully")
 
 if __name__ == "__main__":
     import uvicorn
-    from .core.config import settings
 
-    # 在端口范围内查找可用端口并启动服务
     try:
-        available_port = find_available_port(settings.port_range_start, settings.port_range_end)
-        logger.info("🚀 Starting server on port %s", available_port)
+        logger.info("🚀 Starting server on port %s", settings.port)
         uvicorn.run(
             "app.main:app",
             host=settings.host,
-            port=available_port,
+            port=settings.port,
             reload=True,
             log_level="info",
         )

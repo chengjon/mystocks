@@ -12,10 +12,13 @@ import logging
 from datetime import datetime
 from typing import Optional
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Path, Query
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Path, Query, Header
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.core.database import get_db
+from app.core.responses import ErrorCodes, create_error_response
+from app.core.security import verify_token
 from app.models.strategy_schemas import (
     BacktestExecuteRequest,
     BacktestListResponse,
@@ -63,6 +66,31 @@ def get_backtest_repository(db: Session = Depends(get_db)) -> BacktestRepository
     return BacktestRepository(db)
 
 
+def _require_write_auth(authorization: Optional[str]) -> None:
+    """写操作鉴权：测试环境放行，非测试环境要求有效Bearer Token。"""
+    if settings.testing:
+        return
+
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=401,
+            detail=create_error_response(
+                ErrorCodes.UNAUTHORIZED,
+                "缺少或无效的认证凭据",
+            ).dict(),
+        )
+
+    token = authorization.removeprefix("Bearer ").strip()
+    if not token or verify_token(token) is None:
+        raise HTTPException(
+            status_code=401,
+            detail=create_error_response(
+                ErrorCodes.UNAUTHORIZED,
+                "认证失败或令牌已过期",
+            ).dict(),
+        )
+
+
 # ============================================================================
 # 策略CRUD端点
 # ============================================================================
@@ -76,7 +104,9 @@ def get_backtest_repository(db: Session = Depends(get_db)) -> BacktestRepository
     description="创建一个新的交易策略配置",
 )
 async def create_strategy(
-    strategy: StrategyCreateRequest, strategy_repo: StrategyRepository = Depends(get_strategy_repository)
+    strategy: StrategyCreateRequest,
+    strategy_repo: StrategyRepository = Depends(get_strategy_repository),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
     """
     创建新策略
@@ -96,6 +126,7 @@ async def create_strategy(
     - 完整的策略配置对象 (包含生成的strategy_id)
     """
     try:
+        _require_write_auth(authorization)
         # 使用仓库创建策略
         strategy_config = strategy_repo.create_strategy(strategy)
 
@@ -192,6 +223,7 @@ async def update_strategy(
     strategy_id: int = Path(..., description="策略ID", ge=1),
     update_data: StrategyUpdateRequest = ...,
     strategy_repo: StrategyRepository = Depends(get_strategy_repository),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
     """
     更新策略
@@ -206,6 +238,7 @@ async def update_strategy(
     - 更新后的策略配置
     """
     try:
+        _require_write_auth(authorization)
         strategy = strategy_repo.update_strategy(strategy_id, update_data)
 
         if strategy is None:
@@ -225,6 +258,7 @@ async def update_strategy(
 async def delete_strategy(
     strategy_id: int = Path(..., description="策略ID", ge=1),
     strategy_repo: StrategyRepository = Depends(get_strategy_repository),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
     """
     删除策略
@@ -236,6 +270,7 @@ async def delete_strategy(
     - 204 No Content (成功删除)
     """
     try:
+        _require_write_auth(authorization)
         deleted = strategy_repo.delete_strategy(strategy_id)
 
         if not deleted:
@@ -267,6 +302,7 @@ async def execute_backtest(
     background_tasks: BackgroundTasks,
     strategy_repo: StrategyRepository = Depends(get_strategy_repository),
     backtest_repo: BacktestRepository = Depends(get_backtest_repository),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
     """
     执行回测
@@ -287,6 +323,7 @@ async def execute_backtest(
     - 回测结果对象 (初始状态为PENDING)
     """
     try:
+        _require_write_auth(authorization)
         # 验证策略存在
         strategy = strategy_repo.get_strategy(backtest_req.strategy_id)
         if strategy is None:

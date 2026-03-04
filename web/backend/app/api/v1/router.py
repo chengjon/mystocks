@@ -16,7 +16,7 @@ Usage:
 
 from fastapi import APIRouter
 
-from .admin import audit_router, auth_router, optimization_router
+from .admin import audit_router, optimization_router
 from .analysis import backtest_router, sentiment_router, stress_test_router
 from .strategy import indicators_router, ml_router
 from .system import health_router, routing_router
@@ -40,7 +40,6 @@ api_v1_router.include_router(session_router)
 api_v1_router.include_router(positions_router)
 
 # 管理路由
-api_v1_router.include_router(auth_router)
 api_v1_router.include_router(audit_router)
 api_v1_router.include_router(optimization_router)
 

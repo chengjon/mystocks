@@ -201,6 +201,22 @@ class TestUserRegistration:
         assert "password" not in data["data"]
         assert "hashed_password" not in data["data"]
 
+    def test_register_forces_user_role(self, client):
+        """Public registration must not allow privilege escalation."""
+        response = client.post(
+            "/api/v1/auth/register",
+            json={
+                "username": "elevateduser",
+                "email": "elevated@example.com",
+                "password": "TestPass123",
+                "role": "admin",
+            },
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        data = response.json()
+        assert data["data"]["role"] == "user"
+
     def test_register_duplicate_username(self, client):
         """Test registration with duplicate username"""
         # First registration

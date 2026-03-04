@@ -65,6 +65,12 @@ VERSION_MAPPING = {
         "version": "1.0.0",
         "tags": ["trade-v1"],
     },
+    # Trading Runtime (Runtime control endpoints)
+    "trading_runtime": {
+        "prefix": "/api/trading",
+        "version": "1.0.0",
+        "tags": ["trading-runtime"],
+    },
     # Technical Analysis (Upgrading to v1)
     "technical": {
         "prefix": "/api/v1/technical",

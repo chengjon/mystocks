@@ -301,11 +301,12 @@ export class WencaiQueryEngine {
         error?: string
     }> {
         try {
+            const openAiApiKey = process.env.VUE_APP_OPENAI_API_KEY
             const aiResponse = await fetch(this.aiServiceUrl + '/chat/completions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${process.env.VUE_APP_OPENAI_API_KEY}`
+                    ...(openAiApiKey ? { Authorization: `Bearer ${openAiApiKey}` } : {})
                 },
                 body: JSON.stringify({
                     model: 'gpt-4',

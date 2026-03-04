@@ -28,17 +28,21 @@ Contract Version: 1.0
 import logging
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, Query, Request, Header, HTTPException
 from pydantic import BaseModel, Field, validator
 
 # 导入统一响应格式
+from app.core.config import settings
 from app.core.responses import (
     BusinessCode,
+    ErrorCodes,
     UnifiedResponse,
+    create_error_response,
     create_unified_error_response,
     create_unified_success_response,
     not_found,
 )
+from app.core.security import verify_token
 
 logger = logging.getLogger(__name__)
 
@@ -155,10 +159,32 @@ def get_config_manager():
     return ConfigManager(yaml_config_path=yaml_config_path, postgresql_access=postgresql_access)
 
 
-def get_current_user() -> str:
+def get_current_user(authorization: Optional[str] = Header(default=None, alias="Authorization")) -> str:
     """获取当前用户"""
-    # TODO: 实现真正的JWT认证
-    return "system"
+    if settings.testing:
+        return "system"
+
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=401,
+            detail=create_error_response(
+                ErrorCodes.UNAUTHORIZED,
+                "缺少或无效的认证凭据",
+            ).dict(),
+        )
+
+    token = authorization.removeprefix("Bearer ").strip()
+    token_data = verify_token(token) if token else None
+    if token_data is None:
+        raise HTTPException(
+            status_code=401,
+            detail=create_error_response(
+                ErrorCodes.UNAUTHORIZED,
+                "认证失败或令牌已过期",
+            ).dict(),
+        )
+
+    return token_data.username or "system"
 
 
 def handle_config_error(error: str, request_id: Optional[str] = None) -> UnifiedResponse:

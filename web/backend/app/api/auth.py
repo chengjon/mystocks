@@ -447,7 +447,7 @@ async def register_user(user_data: UserRegisterRequest):
             username=user_data.username,
             email=user_data.email,
             hashed_password=hashed_password,
-            role=user_data.role,
+            role="user",
             is_active=True,
         )
 
