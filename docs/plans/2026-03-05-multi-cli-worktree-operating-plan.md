@@ -39,6 +39,29 @@ rg -n "v3.1|MAIN_CLI_WORKFLOW|WORKER_CLI_GUIDE" .multi-cli-tasks/README.md
 
 Expected: 文档索引显示 v3.1 与主/Worker 指南。
 
+**Step 4: Configure and verify upstream tracking**
+
+Run:
+
+```bash
+# main/dev
+git branch --set-upstream-to=origin/main main
+git branch --set-upstream-to=origin/dev dev
+
+# worker branches
+for b in mystocks_spec1 mystocks_spec2 mystocks_spec3 mystocks_spec4; do
+  git branch --set-upstream-to="origin/${b}" "${b}"
+done
+
+# verify
+for b in main dev mystocks_spec1 mystocks_spec2 mystocks_spec3 mystocks_spec4; do
+  echo "=== $b ==="
+  git rev-parse --abbrev-ref --symbolic-full-name "${b}@{upstream}"
+done
+```
+
+Expected: 每个分支都显示对应 `origin/<branch>`，无 `(no-upstream)`。
+
 ### Task 2: Worktree Responsibility Matrix (Main CLI Owned)
 
 **Files:**
@@ -166,3 +189,4 @@ git commit -m "docs(multi-cli): define dev-to-main integration gate"
 - `mystocks_spec` 主目录固定为 Main CLI 治理位，不承担并行功能开发。
 - 4 个 Worker worktree 仅承担分配任务，禁止跨所有权修改。
 - 所有新功能 PR 统一 `base=dev`，禁止直提 `main`。
+- 所有分支必须配置 upstream；未配置 upstream 视为阻塞状态，不允许进入 PR 提交流程。

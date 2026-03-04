@@ -25,6 +25,31 @@
 3. 提交信息必须符合 `type(scope): short description`。  
 4. 提交前必须执行验证，并在 `TASK-REPORT.md` 记录证据。  
 5. `main` 仅用于治理、验收与合并 `dev -> main`。  
+6. 每个分支必须配置 upstream（`origin/<同名分支>`），未配置不得发起 PR。  
+
+---
+
+## 2.1 Upstream 标准
+
+- `main` -> `origin/main`
+- `dev` -> `origin/dev`
+- `mystocks_spec1` -> `origin/mystocks_spec1`
+- `mystocks_spec2` -> `origin/mystocks_spec2`
+- `mystocks_spec3` -> `origin/mystocks_spec3`
+- `mystocks_spec4` -> `origin/mystocks_spec4`
+
+首次推送建议命令（自动建立 upstream）：
+
+```bash
+git push -u origin "$(git branch --show-current)"
+```
+
+修复缺失 upstream：
+
+```bash
+branch="$(git branch --show-current)"
+git branch --set-upstream-to="origin/${branch}" "${branch}"
+```
 
 ---
 
@@ -61,4 +86,7 @@ git merge --ff-only dev
 git branch --show-current
 git branch --list dev mystocks_spec1 mystocks_spec2 mystocks_spec3 mystocks_spec4
 git worktree list | rg "mystocks_spec1|mystocks_spec2|mystocks_spec3|mystocks_spec4"
+for b in main dev mystocks_spec1 mystocks_spec2 mystocks_spec3 mystocks_spec4; do
+  git rev-parse --abbrev-ref --symbolic-full-name "${b}@{upstream}"
+done
 ```

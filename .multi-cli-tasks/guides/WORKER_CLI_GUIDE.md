@@ -26,6 +26,7 @@
 - **提交格式**: 统一使用 `type(scope): short description`（如 `feat(payment): add amount calc`）。
 - **验证证据**: 提交前至少执行一组与任务匹配的验证命令（如 `pytest` / `npm run test` / `tsc --noEmit`），并将结果写入 `TASK-REPORT.md` 与 PR 描述。
 - **范围约束**: 仅修改主 CLI 分配范围内文件；跨模块改动先在 `TASK-REPORT.md` 记录并申请协调。
+- **Upstream 约束**: 首次推送必须 `git push -u origin <当前分支>`，确保分支已绑定 `origin/<同名分支>`。
 
 ---
 
@@ -335,10 +336,13 @@ git commit -m "docs: update TASK-REPORT progress to T+4h
 
 ```bash
 # 首次推送（设置上游分支）
-git push -u origin phase3-frontend-optimization
+git push -u origin "$(git branch --show-current)"
 
 # 后续推送
 git push
+
+# 检查当前分支是否已绑定 upstream
+git rev-parse --abbrev-ref --symbolic-full-name "@{upstream}"
 ```
 
 ### 4.3 提交频率建议

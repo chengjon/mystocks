@@ -172,6 +172,22 @@ gh pr create --base dev --head [branch] \
 - **提交信息不规范**: 主 CLI 驳回，修正后重新提交
 - **未附验证证据**: 主 CLI 要求补充验证命令与结果，未补齐不得合并
 
+### 6) Upstream 跟踪规则（新增）
+
+- **必须配置**: 所有参与协作分支必须配置 upstream（上游跟踪分支）
+  - `main -> origin/main`
+  - `dev -> origin/dev`
+  - `worker-branch -> origin/worker-branch`
+- **首次推送**: Worker CLI 首次推送必须使用 `git push -u origin <branch>`
+- **阻塞门禁**: 若分支显示 `(no-upstream)`，该 Worker 不得进入 PR 提交流程
+- **修复命令**:
+
+```bash
+branch="$(git branch --show-current)"
+git branch --set-upstream-to="origin/${branch}" "${branch}"
+git rev-parse --abbrev-ref --symbolic-full-name "@{upstream}"
+```
+
 ---
 
 ## 角色定义与职责边界

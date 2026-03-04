@@ -18,6 +18,7 @@
 - **PR 目标巡检**: 所有 PR 的 `base` 必须为 `dev`，若指向 `main` 视为阻塞级异常。
 - **提交规范巡检**: 抽样检查最近提交是否符合 `type(scope): short description`。
 - **验证证据巡检**: `TASK-REPORT.md` / PR 描述必须包含已执行验证命令与结果摘要。
+- **Upstream 巡检**: 活跃 Worker 分支必须绑定 `origin/<同名分支>`，出现 `(no-upstream)` 立即修复。
 
 ---
 

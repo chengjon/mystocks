@@ -27,6 +27,7 @@
 - **PR 目标统一**: 主 CLI 审核时必须确认 PR `base=dev`，发现 `base=main` 直接关闭并要求重提。
 - **提交规范统一**: 检查提交信息格式 `type(scope): short description`，禁止 `update code` 等无意义描述。
 - **证据合并门禁**: 合并前必须有验证证据（测试/类型检查命令与结果），并在 TASK 报告或 PR 描述中可追溯。
+- **Upstream 强制校验**: `main/dev/worker` 分支必须绑定对应 `origin/*` 上游，`(no-upstream)` 视为阻塞。
 
 **主 CLI 快速核验命令**:
 ```bash
@@ -38,6 +39,11 @@ git log --oneline -n 10
 
 # 3) 合并前确认 dev 与 main 的差异范围
 git log --oneline main..dev
+
+# 4) 抽查 upstream 绑定状态
+for b in main dev; do
+  git rev-parse --abbrev-ref --symbolic-full-name "${b}@{upstream}"
+done
 ```
 
 ---
@@ -184,6 +190,17 @@ find . -maxdepth 1 -name "*.js" -o -name "*.ts" -o -name "*.json" | grep -v "pac
 
 # 6. 如果有worktree或新提交，处理它们
 #    （见下方的"合并已完成分支流程"）
+
+# 7. 检查关键分支 upstream（main/dev + 当前活跃worker）
+git rev-parse --abbrev-ref --symbolic-full-name main@{upstream}
+git rev-parse --abbrev-ref --symbolic-full-name dev@{upstream}
+```
+
+若出现 `(no-upstream)`，必须先修复：
+
+```bash
+branch="$(git branch --show-current)"
+git push -u origin "$branch"
 ```
 
 ### 合并已完成分支流程

@@ -49,6 +49,7 @@
 **Branch**: branch-name
 **Base Branch**: dev
 **PR Base**: dev
+**Upstream**: origin/branch-name（首次推送用 `git push -u origin branch-name` 建立）
 **提交信息模板**: type(scope): short description
 **Worktree**: /path/to/worktree/
 **Phase**: 描述阶段
@@ -137,6 +138,7 @@
 **Branch**: branch-name
 **Base Branch**: dev
 **PR Base**: dev
+**Upstream**: origin/branch-name（首次推送用 `git push -u origin branch-name` 建立）
 **提交信息模板**: type(scope): short description
 **Worktree**: /path/to/worktree/
 **本阶段预计工作量**: X天
@@ -334,6 +336,7 @@ EOF
 **任务文档**: TASK.md
 **工作分支**: branch-name
 **PR目标分支**: dev
+**Upstream**: origin/branch-name
 **当前阶段**: T+Xh
 **报告时间**: YYYY-MM-DD HH:MM
 
@@ -391,6 +394,7 @@ EOF
 
 - [ ] 提交信息符合 `type(scope): short description`
 - [ ] PR 目标分支为 `dev`
+- [ ] 工作分支已绑定 `origin/<branch-name>` upstream
 - [ ] 已执行验证命令并附结果摘要
 ```
 
@@ -406,6 +410,7 @@ EOF
 **报告文档**: TASK-X-REPORT.md
 **工作分支**: branch-name
 **PR目标分支**: dev
+**Upstream**: origin/branch-name
 **完成时间**: YYYY-MM-DD HH:MM
 
 ---
@@ -499,6 +504,7 @@ EOF
 
 - [x] 提交信息符合 `type(scope): short description`
 - [x] PR 目标分支为 `dev`
+- [x] 工作分支已绑定 `origin/<branch-name>` upstream
 - [x] 已附验证命令与结果证据
 
 ---

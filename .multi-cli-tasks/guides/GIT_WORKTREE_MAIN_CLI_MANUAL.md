@@ -96,6 +96,20 @@ git log --oneline main..dev
 git log --oneline -n 20 dev
 ```
 
+### Upstream：设置与修复（v3.1 强制）
+
+```bash
+# 首次推送并建立 upstream（推荐）
+git push -u origin "$(git branch --show-current)"
+
+# 查看当前分支 upstream
+git rev-parse --abbrev-ref --symbolic-full-name "@{upstream}"
+
+# 修复缺失 upstream
+branch="$(git branch --show-current)"
+git branch --set-upstream-to="origin/${branch}" "${branch}"
+```
+
 ---
 
 ## 命令速查
