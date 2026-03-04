@@ -65,6 +65,19 @@
   - 便于按 CLI 绑定独立运行环境
 - **过渡方案**: 若先建在仓库内 `.worktrees/`，应在启动研发前迁移到平行目录。
 
+#### 标准迁移命令（仓库内 `.worktrees/` -> `/opt/claude`）
+
+在仓库根目录执行：
+
+```bash
+bash scripts/worktree/migrate_worktrees_to_parallel.sh --target-root /opt/claude
+git worktree list
+```
+
+说明：
+- 该脚本会调用 `git worktree move` 迁移既有 worktree。
+- 迁移后会同步更新部分任务文档中的 Worktree 路径字段。
+
 ### 快速导航
 - **[规范库](./guides/)**: 存放所有 SOP 和模板。
 - **[活跃单元](./)**: 根目录下的各个 `project_*` 文件夹即为当前活跃或已结项的任务单元。

@@ -169,6 +169,16 @@ git worktree move <worktree> <new-path>
 # 注意：主工作树或包含子模块的链接工作树不能直接使用此命令移动。
 ```
 
+### 批量迁移到平行目录（项目内置脚本）
+
+```bash
+# 场景：历史 worktree 位于仓库内 .worktrees/，需迁移到 /opt/claude 平行目录
+bash scripts/worktree/migrate_worktrees_to_parallel.sh --target-root /opt/claude
+
+# 迁移后校验
+git worktree list
+```
+
 ### Prune（清理）
 
 ```bash

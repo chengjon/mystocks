@@ -186,6 +186,10 @@ cat .FILE_OWNERSHIP | head -20
 # 3. 检查所有worktree
 git worktree list
 
+# 3.1 [可选，一次性迁移] 若发现历史 in-repo worktree（.worktrees/），手动执行：
+# bash scripts/worktree/migrate_worktrees_to_parallel.sh --target-root /opt/claude
+# git worktree list
+
 # 4. 检查远程新提交（统一使用 origin）
 git fetch --all
 git log HEAD..origin/main --oneline

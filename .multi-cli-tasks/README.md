@@ -26,6 +26,8 @@
 1.  **查阅标准**: 请进入 `guides/` 查阅对应的标准文档。
 2.  **管理任务**: 请进入对应的worktree目录查看 `TASK.md` 和 `TASK-REPORT.md`。
 3.  **阶段总结**: 查阅根目录下的 `PHASE_X_SUMMARY.md`, 由主CLI根据各个worktree目录下的 `TASK.md` 和 `TASK-REPORT.md`整合编辑。
+4.  **历史路径迁移**（如仍存在仓库内 `.worktrees/`）:
+    `bash scripts/worktree/migrate_worktrees_to_parallel.sh --target-root /opt/claude`
 
 ## ✅ v3.2 治理快照（执行优先级最高）
 
