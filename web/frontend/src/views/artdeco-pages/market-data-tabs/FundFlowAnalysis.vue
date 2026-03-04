@@ -3,29 +3,29 @@
     <div class="fund-overview">
       <ArtDecoStatCard
         label="沪股通净流入"
-        :value="fundData.shanghai.amount"
-        :change="fundData.shanghai.change"
+        :value="safeFundData.shanghai.amount"
+        :change="safeFundData.shanghai.change"
         change-percent
         variant="gold"
       />
       <ArtDecoStatCard
         label="深股通净流入"
-        :value="fundData.shenzhen.amount"
-        :change="fundData.shenzhen.change"
+        :value="safeFundData.shenzhen.amount"
+        :change="safeFundData.shenzhen.change"
         change-percent
         variant="gold"
       />
       <ArtDecoStatCard
         label="北向资金总额"
-        :value="fundData.north.amount"
-        :change="fundData.north.change"
+        :value="safeFundData.north.amount"
+        :change="safeFundData.north.change"
         change-percent
-        :variant="fundData.north.change > 0 ? 'rise' : 'fall'"
+        :variant="safeFundData.north.change > 0 ? 'rise' : 'fall'"
       />
       <ArtDecoStatCard
         label="主力净流入"
-        :value="fundData.main.amount"
-        :change="fundData.main.change"
+        :value="safeFundData.main.amount"
+        :change="safeFundData.main.change"
         change-percent
         variant="gold"
       />
@@ -87,15 +87,45 @@ interface TrendItem {
 }
 
 interface Props {
-  fundData: FundData
-  stockRanking: unknown[]
-  trendData: TrendItem[]
-  activeTimeFilter: string
-  rankingType: string
+  fundData?: Partial<FundData>
+  stockRanking?: unknown[]
+  trendData?: TrendItem[]
+  activeTimeFilter?: string
+  rankingType?: string
 }
 
-const props = defineProps<Props>()
+const defaultFundData = (): FundData => ({
+  shanghai: { amount: 0, change: 0 },
+  shenzhen: { amount: 0, change: 0 },
+  north: { amount: 0, change: 0 },
+  main: { amount: 0, change: 0 }
+})
+
+const props = withDefaults(defineProps<Props>(), {
+  fundData: () => ({
+    shanghai: { amount: 0, change: 0 },
+    shenzhen: { amount: 0, change: 0 },
+    north: { amount: 0, change: 0 },
+    main: { amount: 0, change: 0 }
+  }),
+  stockRanking: () => [],
+  trendData: () => [],
+  activeTimeFilter: 'today',
+  rankingType: 'main_force'
+})
 const emit = defineEmits(['filter-change', 'ranking-change'])
+
+const safeFundData = computed<FundData>(() => {
+  const source = props.fundData ?? {}
+  const fallback = defaultFundData()
+
+  return {
+    shanghai: { ...fallback.shanghai, ...(source.shanghai ?? {}) },
+    shenzhen: { ...fallback.shenzhen, ...(source.shenzhen ?? {}) },
+    north: { ...fallback.north, ...(source.north ?? {}) },
+    main: { ...fallback.main, ...(source.main ?? {}) }
+  }
+})
 
 const timeFilters = [
   { key: 'today', label: '今日' },

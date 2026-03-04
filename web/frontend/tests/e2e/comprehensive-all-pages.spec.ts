@@ -311,21 +311,11 @@ test.describe('All Pages (Authenticated)', async () => {
         '.artdeco-content',
       ]);
       const hasCoreContent = await isAnySelectorVisible(page, CORE_CONTENT_SELECTORS);
-      const knownFundFlowRuntimeDebt =
-        pageInfo.path === '/data/fund-flow' &&
-        errors.some(e => e.includes("Cannot read properties of undefined (reading 'shanghai')"));
-
-      if (knownFundFlowRuntimeDebt) {
-        console.log('  Known debt bypass: /data/fund-flow route has unresolved prop wiring issue');
-      } else {
-        expect(hasLayoutShell || hasCoreContent).toBe(true);
-      }
+      expect(hasLayoutShell || hasCoreContent).toBe(true);
 
       // Basic interaction readiness check
       const hasInteractiveElement = await isAnySelectorVisible(page, INTERACTIVE_SELECTORS);
-      if (!knownFundFlowRuntimeDebt) {
-        expect(hasInteractiveElement || hasCoreContent).toBe(true);
-      }
+      expect(hasInteractiveElement || hasCoreContent).toBe(true);
     });
   }
 });
