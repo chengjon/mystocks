@@ -1,7 +1,7 @@
 # 任务文档模板
 
-**文档版本**: v3.1
-**最后更新**: 2026-03-04
+**文档版本**: v3.2
+**最后更新**: 2026-03-05
 **适用场景**: 多CLI协作开发
 
 ---
@@ -19,11 +19,12 @@
 - ✅ 任务说明和进度报告分离
 - ✅ 支持多阶段任务管理
 
-**v3.1治理要求（新增）**:
-- ✅ 功能分支必须基于 `dev`
-- ✅ PR 目标必须为 `dev`（禁止直接指向 `main`）
+**v3.2治理要求（新增）**:
+- ✅ 功能分支必须使用 `dev-*` 命名并在 worktree 中开发
+- ✅ PR 目标必须为 `main`
 - ✅ 提交信息必须符合 `type(scope): short description`
-- ✅ 提交前必须执行验证并记录证据（命令 + 结果）
+- ✅ PR 必须附变更范围、验证命令与结果、风险/回滚说明
+- ✅ 合并前必须通过质量门（TS/Python/tests）、安全门（secrets/audit/SAST）、审查门（code review）
 
 **相关文档**:
 - [主CLI工作规范](../MAIN_CLI_WORKFLOW.md) - 任务分配方法（包含 .FILE_OWNERSHIP 检查）
@@ -46,10 +47,10 @@
 # CLI-X 任务文档
 
 **Worker CLI**: CLI-X (描述)
-**Branch**: branch-name
-**Base Branch**: dev
-**PR Base**: dev
-**Upstream**: origin/branch-name（首次推送用 `git push -u origin branch-name` 建立）
+**Branch**: dev-<module>-<cli>
+**Base Branch**: main
+**PR Base**: main
+**Upstream**: origin/dev-<module>-<cli>（首次推送用 `git push -u origin dev-<module>-<cli>` 建立）
 **提交信息模板**: type(scope): short description
 **Worktree**: /path/to/worktree/
 **Phase**: 描述阶段
@@ -57,9 +58,10 @@
 **完成标准**: 描述成功标准
 
 **治理门禁**:
-- PR 目标分支必须是 `dev`
+- PR 目标分支必须是 `main`
 - 提交信息必须符合 `type(scope): short description`
-- 提交前必须执行验证并记录证据
+- PR 必须记录变更范围、验证命令与结果、风险/回滚说明
+- 合并前必须通过质量门、安全门、审查门
 
 ---
 
@@ -135,10 +137,10 @@
 
 **Worker CLI**: CLI-X (描述)
 **阶段**: Phase X
-**Branch**: branch-name
-**Base Branch**: dev
-**PR Base**: dev
-**Upstream**: origin/branch-name（首次推送用 `git push -u origin branch-name` 建立）
+**Branch**: dev-<module>-<cli>
+**Base Branch**: main
+**PR Base**: main
+**Upstream**: origin/dev-<module>-<cli>（首次推送用 `git push -u origin dev-<module>-<cli>` 建立）
 **提交信息模板**: type(scope): short description
 **Worktree**: /path/to/worktree/
 **本阶段预计工作量**: X天
@@ -211,7 +213,7 @@ cat > TASK.md << 'EOF'
 # CLI-X 功能模块开发任务
 
 **Worker CLI**: CLI-X (功能描述)
-**Branch**: feature-xxx
+**Branch**: dev-xxx-cli-x
 **Worktree**: /opt/claude/project_feature_xxx
 **阶段**: 阶段1
 **预计工作量**: X天
@@ -257,7 +259,7 @@ cat > TASK-1.md << 'EOF'
 
 **Worker CLI**: CLI-X (功能描述)
 **阶段**: 阶段1
-**Branch**: feature-xxx-core
+**Branch**: dev-xxx-core-cli-x
 **Worktree**: /opt/claude/project_feature_core
 **本阶段预计工作量**: X小时
 **总体预计工作量**: Y小时
@@ -301,7 +303,7 @@ cat > TASK-2.md << 'EOF'
 
 **Worker CLI**: CLI-X (功能描述)
 **阶段**: 阶段2
-**Branch**: feature-xxx-advanced
+**Branch**: dev-xxx-advanced-cli-x
 **Worktree**: /opt/claude/project_feature_advanced
 **本阶段预计工作量**: Y小时
 **总体预计工作量**: Z小时
@@ -335,7 +337,7 @@ EOF
 **Worker CLI**: CLI-X (描述)
 **任务文档**: TASK.md
 **工作分支**: branch-name
-**PR目标分支**: dev
+**PR目标分支**: main
 **Upstream**: origin/branch-name
 **当前阶段**: T+Xh
 **报告时间**: YYYY-MM-DD HH:MM
@@ -390,12 +392,15 @@ EOF
 
 ---
 
-## ✅ v3.1 治理检查
+## ✅ v3.2 治理检查
 
 - [ ] 提交信息符合 `type(scope): short description`
-- [ ] PR 目标分支为 `dev`
+- [ ] PR 目标分支为 `main`
 - [ ] 工作分支已绑定 `origin/<branch-name>` upstream
+- [ ] PR 已附变更范围
 - [ ] 已执行验证命令并附结果摘要
+- [ ] 已附风险/回滚说明
+- [ ] 质量门、安全门、审查门结论已明确
 ```
 
 ---
@@ -409,7 +414,7 @@ EOF
 **任务文档**: TASK-X.md
 **报告文档**: TASK-X-REPORT.md
 **工作分支**: branch-name
-**PR目标分支**: dev
+**PR目标分支**: main
 **Upstream**: origin/branch-name
 **完成时间**: YYYY-MM-DD HH:MM
 
@@ -500,12 +505,15 @@ EOF
 
 ---
 
-## ✅ v3.1 治理检查
+## ✅ v3.2 治理检查
 
 - [x] 提交信息符合 `type(scope): short description`
-- [x] PR 目标分支为 `dev`
+- [x] PR 目标分支为 `main`
 - [x] 工作分支已绑定 `origin/<branch-name>` upstream
+- [x] 已附变更范围
 - [x] 已附验证命令与结果证据
+- [x] 已附风险/回滚说明
+- [x] 质量门、安全门、审查门结论已明确
 
 ---
 
@@ -743,6 +751,6 @@ EOF
 
 ---
 
-**文档版本**: v3.1
-**最后更新**: 2026-03-04
+**文档版本**: v3.2
+**最后更新**: 2026-03-05
 **维护者**: Main CLI

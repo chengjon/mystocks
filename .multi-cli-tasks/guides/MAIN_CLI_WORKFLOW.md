@@ -1,10 +1,10 @@
 # Main CLI 工作规范与最佳实践
 
-**文档版本**: v3.1
+**文档版本**: v3.2
 **创建日期**: 2025-12-29
 **适用范围**: 所有使用Git Worktree进行多CLI并行开发的项目
-**最后更新**: 2026-03-04
-**v3.1更新说明**: 在 v2.2 体系基础上，新增 AI-CLI 统一治理门禁（dev/main 分支策略、PR 目标、提交规范、验证证据）。
+**最后更新**: 2026-03-05
+**v3.2更新说明**: main 角色收敛为“协调 + 验收”，所有功能开发改为 worktree/dev-*，PR 统一合并到 main 并通过三道门禁。
 **维护者**: Main CLI (Manager)
 
 ---
@@ -19,29 +19,35 @@
 - ✅ 确保所有CLI具备完整的开发和提交能力
 - ✅ 建立可重复、可验证的并行开发框架
 
-## v3.1 治理增补：Main CLI 合并门禁
+## v3.2 治理增补：Main CLI 合并门禁
 
-本节用于落地《AI-CLI协作开发规范》在主 CLI 侧的强制执行项。
+本节用于落实当前主线治理：`main` 只做协调与验收，不直接做功能开发。
 
-- **分支入口统一**: 所有 Worker CLI 变更必须以 `dev` 为唯一入口，`main` 仅接受 `dev -> main` 合并。
-- **PR 目标统一**: 主 CLI 审核时必须确认 PR `base=dev`，发现 `base=main` 直接关闭并要求重提。
+- **角色边界**: `main` 禁止直接承载功能开发提交。
+- **分支入口统一**: 所有 Worker CLI 功能开发统一在 `worktree/dev-*` 分支进行。
+- **PR 目标统一**: 主 CLI 审核时必须确认 PR `base=main`，若不是 `main` 则要求重提。
 - **提交规范统一**: 检查提交信息格式 `type(scope): short description`，禁止 `update code` 等无意义描述。
-- **证据合并门禁**: 合并前必须有验证证据（测试/类型检查命令与结果），并在 TASK 报告或 PR 描述中可追溯。
-- **Upstream 强制校验**: `main/dev/worker` 分支必须绑定对应 `origin/*` 上游，`(no-upstream)` 视为阻塞。
+- **PR 证据强制项**: 每个 PR 必须包含“变更范围 + 验证命令与结果 + 风险/回滚说明”。
+- **三道门禁强制项**: 质量门（TS/Python/tests）、安全门（secrets/audit/SAST）、审查门（code review）必须全部通过。
+- **Upstream 强制校验**: `main` 与活跃 `dev-*` 分支必须绑定对应 `origin/*` 上游，`(no-upstream)` 视为阻塞。
 
 **主 CLI 快速核验命令**:
 ```bash
-# 1) 检查当前分支（应在 main 或 dev 的管理位）
+# 1) 检查当前分支（应在 main 的管理位）
 git branch --show-current
 
 # 2) 检查最近提交信息是否符合规范
 git log --oneline -n 10
 
-# 3) 合并前确认 dev 与 main 的差异范围
-git log --oneline main..dev
+# 3) 抽查活跃 dev-* 分支相对 main 的差异窗口
+git for-each-ref --format='%(refname:short)' refs/heads/dev-* | while read -r b; do
+  echo "=== $b ==="
+  git log --oneline "main..$b" | head -20
+done
 
 # 4) 抽查 upstream 绑定状态
-for b in main dev; do
+git rev-parse --abbrev-ref --symbolic-full-name main@{upstream}
+git for-each-ref --format='%(refname:short)' refs/heads/dev-* | while read -r b; do
   git rev-parse --abbrev-ref --symbolic-full-name "${b}@{upstream}"
 done
 ```
@@ -191,9 +197,11 @@ find . -maxdepth 1 -name "*.js" -o -name "*.ts" -o -name "*.json" | grep -v "pac
 # 6. 如果有worktree或新提交，处理它们
 #    （见下方的"合并已完成分支流程"）
 
-# 7. 检查关键分支 upstream（main/dev + 当前活跃worker）
+# 7. 检查关键分支 upstream（main + 当前活跃 dev-*）
 git rev-parse --abbrev-ref --symbolic-full-name main@{upstream}
-git rev-parse --abbrev-ref --symbolic-full-name dev@{upstream}
+git for-each-ref --format='%(refname:short)' refs/heads/dev-* | while read -r b; do
+  git rev-parse --abbrev-ref --symbolic-full-name "${b}@{upstream}"
+done
 ```
 
 若出现 `(no-upstream)`，必须先修复：
@@ -1066,10 +1074,10 @@ git commit -am "CLI-1完成"
   - 添加进度跟踪协调文件
   - 增强文档链接矩阵
   - 减少Git命令详解，链接到命令手册
-- v3.1 (2026-03-04): 治理升级
-  - 对齐 dev/main 分支门禁与 PR 审核规则
-  - 增加提交信息与验证证据的强制检查项
-  - 与《AI-CLI协作开发规范》保持一致
+- v3.2 (2026-03-05): 治理升级
+  - `main` 角色收敛为“协调 + 验收”，不直接做功能开发
+  - 功能开发统一迁移到 `worktree/dev-*` 分支
+  - PR 统一 `base=main`，并强制三道合并门禁
 
 **维护者**: Main CLI
 **更新频率**: 每个项目结束后总结经验教训，更新本文档

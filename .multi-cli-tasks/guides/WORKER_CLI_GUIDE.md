@@ -1,7 +1,7 @@
 # Worker CLI 工作流程指南
 
-**文档版本**: v3.1
-**最后更新**: 2026-03-04
+**文档版本**: v3.2
+**最后更新**: 2026-03-05
 **维护者**: Main CLI
 **适用于**: 所有Worker CLI
 
@@ -19,12 +19,13 @@
 - ✅ 完成报告使用 TASK-*-REPORT.md
 - ✅ 更清晰的文档结构
 
-## v3.1 治理增补：Worker CLI 必守规则
+## v3.2 治理增补：Worker CLI 必守规则
 
-- **分支基线**: 功能分支必须从 `dev` 创建，禁止从 `main` 直接开工。
-- **PR 目标**: PR 必须提交到 `dev`，禁止 `base=main`。
+- **分支基线**: 功能分支必须按 `dev-*` 命名（建议 `dev-<module>-<cli>`），并在独立 worktree 中开发。
+- **PR 目标**: 所有 PR 必须提交到 `main`。
 - **提交格式**: 统一使用 `type(scope): short description`（如 `feat(payment): add amount calc`）。
-- **验证证据**: 提交前至少执行一组与任务匹配的验证命令（如 `pytest` / `npm run test` / `tsc --noEmit`），并将结果写入 `TASK-REPORT.md` 与 PR 描述。
+- **PR 必填信息**: PR 必须包含“变更范围 + 验证命令与结果 + 风险/回滚说明”。
+- **三道门禁**: 合并前必须通过质量门（TS/Python/tests）、安全门（secrets/audit/SAST）、审查门（code review）。
 - **范围约束**: 仅修改主 CLI 分配范围内文件；跨模块改动先在 `TASK-REPORT.md` 记录并申请协调。
 - **Upstream 约束**: 首次推送必须 `git push -u origin <当前分支>`，确保分支已绑定 `origin/<同名分支>`。
 
@@ -709,7 +710,7 @@ git pull origin <branch>
 
 ---
 
-**文档版本**: v3.1
-**最后更新**: 2026-03-04
+**文档版本**: v3.2
+**最后更新**: 2026-03-05
 **维护者**: Main CLI
 **适用于**: 所有Worker CLI

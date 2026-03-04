@@ -1,9 +1,9 @@
 # Multi-CLI Worktree 运维韧性补充手册
 
-> **版本**: v3.1  
+> **版本**: v3.2  
 > **定位**: 补充现有 6 份核心文档中未覆盖但在实战中至关重要的方法与工作  
-> **适用**: Git Worktree 多 CLI 协作体系 v3.1  
-> **最后更新**: 2026-03-04
+> **适用**: Git Worktree 多 CLI 协作体系 v3.2  
+> **最后更新**: 2026-03-05
 
 ---
 
@@ -21,7 +21,7 @@
 10. [通信协议容错](#10-通信协议容错)
 11. [审计追踪与结构化日志](#11-审计追踪与结构化日志)
 12. [事后复盘模板](#12-事后复盘模板)
-13. [v3.1 治理门禁韧性](#13-v31-治理门禁韧性)
+13. [v3.2 治理门禁韧性](#13-v32-治理门禁韧性)
 
 ---
 
@@ -673,22 +673,25 @@ echo "" >> .multi-cli-tasks/AUDIT_LOG.md
 
 ---
 
-## 13. v3.1 治理门禁韧性
+## 13. v3.2 治理门禁韧性
 
-新增目标：让分支/PR/验证规则在异常场景下仍可执行，不因工具切换而失效。
+新增目标：让 main 协调验收制与 dev-* 开发制在异常场景下仍可执行，不因工具切换而失效。
 
 ### 13.1 门禁最小集（必须可恢复）
 
-- **分支门禁**: 所有功能分支从 `dev` 派生，`main` 仅接收 `dev` 合并。
-- **PR 门禁**: 所有 Worker PR 目标必须是 `dev`。
-- **验证门禁**: PR 与 `TASK-REPORT.md` 必须提供可复核的验证证据（命令 + 结果）。
+- **角色门禁**: `main` 仅做协调与验收，不直接进行功能开发。
+- **分支门禁**: 所有功能分支必须使用 `dev-*` 并在 worktree 中开发。
+- **PR 门禁**: 所有 Worker PR 目标必须是 `main`。
+- **证据门禁**: PR 与 `TASK-REPORT.md` 必须提供“变更范围 + 验证命令与结果 + 风险/回滚说明”。
+- **合并门禁**: 质量门（TS/Python/tests）、安全门（secrets/audit/SAST）、审查门（code review）必须全部通过。
 
 ### 13.2 异常处置流程
 
-1. 发现 PR 目标为 `main`：立即关闭并要求按 `base=dev` 重提。  
-2. 发现提交信息不规范：驳回并要求重写为 `type(scope): short description`。  
-3. 发现缺失验证证据：标记阻塞，不进入合并队列。  
-4. 将异常记录在 `.multi-cli-tasks/INCIDENT_LOG.md`，用于复盘。  
+1. 发现功能提交直接落在 `main`：立即阻断并要求迁移到 `dev-*` 分支重提。  
+2. 发现 PR `base` 不是 `main`：立即驳回并要求按 `base=main` 重提。  
+3. 发现提交信息不规范：驳回并要求重写为 `type(scope): short description`。  
+4. 发现缺失验证/风险回滚证据：标记阻塞，不进入合并队列。  
+5. 将异常记录在 `.multi-cli-tasks/INCIDENT_LOG.md`，用于复盘。  
 
 ### 13.3 每日最小巡检命令
 
@@ -697,8 +700,11 @@ echo "" >> .multi-cli-tasks/AUDIT_LOG.md
 git branch --show-current
 git status -sb
 
-# 2) 检查 dev/main 差异窗口
-git log --oneline main..dev
+# 2) 检查活跃 dev-* 分支相对 main 的差异窗口
+git for-each-ref --format='%(refname:short)' refs/heads/dev-* | while read -r b; do
+  echo "=== $b ==="
+  git log --oneline "main..$b" | head -20
+done
 
 # 3) 抽查最近提交规范
 git log --oneline -n 20
@@ -735,4 +741,4 @@ echo "=== 进程检查 ===" && ps aux | grep -E 'claude|codex|gemini|opencode|if
 > **本文档与现有 6 份核心文档互补，不替代。**  
 > 建议将本文档加入 Main CLI 的 Pre-flight 阅读清单。  
 > 
-> 最后更新：2026-03-04 | 版本：v3.1
+> 最后更新：2026-03-05 | 版本：v3.2

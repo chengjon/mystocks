@@ -1,8 +1,8 @@
 # Git Worktree 命令参考手册
 
-**版本**: v3.1
+**版本**: v3.2
 **创建日期**: 2025-12-28
-**最后更新**: 2026-03-04
+**最后更新**: 2026-03-05
 **维护者**: Main CLI
 **目标读者**: 主CLI、需要查询Git命令的Worker CLI
 
@@ -64,39 +64,39 @@ mystocks_spec/                    # 主仓库 (主 worktree)
 
 ---
 
-## v3.1 治理增补：dev/main 分支与 PR 命令基线
+## v3.2 治理增补：main / dev-* 分支与 PR 命令基线
 
-以下命令用于落实《AI-CLI协作开发规范》中的统一门禁。
+以下命令用于落实当前统一门禁（main 协调验收 + worktree/dev-* 开发 + PR 直达 main）。
 
-### Worker CLI：从 dev 创建功能分支
+### Worker CLI：从 main 创建 dev-* 功能分支
 
 ```bash
-# 同步 dev 后创建功能分支
+# 同步 main 后创建功能分支
 git fetch origin
-git switch dev
-git pull --ff-only origin dev
-git switch -c feat/<module>-<cli>
+git switch main
+git pull --ff-only origin main
+git switch -c dev-<module>-<cli>
 ```
 
-### Worker CLI：提交 PR 到 dev（禁止 main）
+### Worker CLI：提交 PR 到 main
 
 ```bash
-gh pr create --base dev --head feat/<module>-<cli> \
+gh pr create --base main --head dev-<module>-<cli> \
   --title "feat(<module>): short description" \
-  --body "AI CLI: <CLI_NAME> | 生成模块: <MODULE>"
+  --body "Change Scope: ...\nVerification: <commands + results>\nRisk/Rollback: ..."
 ```
 
 ### Main CLI：合并前检查
 
 ```bash
-# 检查 dev 相比 main 的提交窗口
-git log --oneline main..dev
+# 检查目标分支相对 main 的提交窗口
+git log --oneline main..dev-<module>-<cli>
 
 # 抽查提交信息规范
-git log --oneline -n 20 dev
+git log --oneline -n 20 dev-<module>-<cli>
 ```
 
-### Upstream：设置与修复（v3.1 强制）
+### Upstream：设置与修复（v3.2 强制）
 
 ```bash
 # 首次推送并建立 upstream（推荐）
@@ -651,6 +651,6 @@ git worktree list
 
 ---
 
-**版本**: v3.1
-**最后更新**: 2026-03-04
+**版本**: v3.2
+**最后更新**: 2026-03-05
 **维护者**: Main CLI

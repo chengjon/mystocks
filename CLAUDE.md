@@ -112,8 +112,13 @@ git rev-parse --abbrev-ref HEAD
   - 参考：`.multi-cli-tasks/guides/GIT_WORKTREE_MAIN_CLI_MANUAL.md`
 
 **强制声明（必须遵守）**:
-- 使用 Git Worktree 进行 multi-cli 协作时，必须遵守 `.multi-cli-tasks/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md`（v3.1）及其配套指南。
-- 任何偏离该规则的分支策略、PR 目标、提交格式与验证流程，均视为不合规交付。
+- 使用 Git Worktree 进行 multi-cli 协作时，必须遵守 `.multi-cli-tasks/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md`（v3.2）及其配套指南。
+- `main` 只负责协调与验收，不直接承载功能开发提交。
+- 新功能统一在 `worktree/dev-*` 分支开发，并以 PR 方式合并到 `main`。
+- 每个 PR 必须提供：变更范围、验证命令与结果、风险与回滚说明。
+- 合并前必须通过三道门禁：质量门（TS/Python/tests）、安全门（secrets/audit/SAST）、审查门（code review）。
+- `main` 仅保留“干净、可复现、可回滚”的可发布状态。
+- 任何偏离上述分支策略、PR 要件、门禁规则与验证流程的交付，均视为不合规。
 
 ---
 

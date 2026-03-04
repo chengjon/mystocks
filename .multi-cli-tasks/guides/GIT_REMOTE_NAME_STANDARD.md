@@ -1,9 +1,9 @@
 # Git 远程仓库名称标准化规范
 
-**文档版本**: v3.1
+**文档版本**: v3.2
 **创建日期**: 2025-12-29
 **问题发现**: Worker CLI多次遇到 `git push origin` 失败
-**最后更新**: 2026-03-04
+**最后更新**: 2026-03-05
 **维护者**: Main CLI
 
 ---
@@ -38,26 +38,26 @@ mystocks    https://github.com/chengjon/mystocks.git (push)
 
 ---
 
-## v3.1 治理增补：远程与分支基线联动
+## v3.2 治理增补：远程与分支基线联动
 
-远程命名统一为 `origin` 后，v3.1 要求进一步统一分支门禁：
+远程命名统一为 `origin` 后，v3.2 要求分支与 PR 门禁进一步收敛：
 
-- `origin/dev` 是所有 CLI 功能分支的唯一来源基线
-- Worker PR 统一 `--base dev`，禁止以 `origin/main` 为目标
-- 主 CLI 仅在 `dev` 验证通过后执行 `dev -> main` 合并
+- `origin/main` 是所有 `dev-*` 功能分支的来源基线
+- Worker PR 统一 `--base main`
+- `main` 仅接收通过质量门/安全门/审查门的 PR 合并
 
 **推荐命令**:
 
 ```bash
-# Worker 开工前：同步 dev 基线
+# Worker 开工前：同步 main 基线
 git fetch origin
-git switch dev
-git pull --ff-only origin dev
+git switch main
+git pull --ff-only origin main
 
-# Worker 提交 PR（必须指向 dev）
-gh pr create --base dev --head feat/<module>-<cli> \
+# Worker 提交 PR（必须指向 main）
+gh pr create --base main --head dev-<module>-<cli> \
   --title "feat(<module>): short description" \
-  --body "AI CLI: <CLI_NAME> | 生成模块: <MODULE>"
+  --body "Change Scope: ...\nVerification: ...\nRisk/Rollback: ..."
 ```
 
 ---
@@ -310,16 +310,16 @@ git push origin main
   - 强化链接到其他核心文档
   - 优化文档结构
 
-- **v3.1** (2026-03-04): 治理增补
-  - 增加 dev/main 分支门禁与远程使用联动规则
-  - 补充 Worker PR 目标分支与命令模板
+- **v3.2** (2026-03-05): 治理增补
+  - 增加 main/dev-* 分支门禁与远程使用联动规则
+  - 补充 Worker PR 目标分支与必填证据模板
 
 ---
 
 ## ✍️ 维护者
 
 **创建者**: Main CLI
-**最后更新**: 2026-03-04
+**最后更新**: 2026-03-05
 **维护频率**: 每次创建新worktree时检查
 
 **反馈**: 如果遇到远程名称相关问题，请更新本文档。

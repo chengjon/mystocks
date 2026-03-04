@@ -3,12 +3,12 @@
 **创建人**: JohnC & Claude
 **版本**: 3.2.1 (Code Quality)
 **批准日期**: 2026-02-23
-**最后修订**: 2026-03-03
-**本次修订内容**: 前端页面优化清单收口（V3 mock-debt 清零 + 审计自动化 + CI门禁 + E2E实跑）
+**最后修订**: 2026-03-05
+**本次修订内容**: Git Worktree 多 CLI 协作治理升级至 v3.2（main 协调验收制 + dev-* worktree 开发制 + 三道合并门禁）
 
 ---
 
-## 🔒 Git Worktree 多 CLI 协作强制规则（v3.1）
+## 🔒 Git Worktree 多 CLI 协作强制规则（v3.2）
 
 凡使用 Git Worktree 进行多 CLI 协作（Claude/Codex/Gemini/OpenCode 等），**必须**遵守以下统一规则文档：
 
@@ -17,10 +17,12 @@
 - Worker CLI 规范：`.multi-cli-tasks/guides/WORKER_CLI_GUIDE.md`
 
 关键门禁：
-- 开发入口统一为 `dev`，`main` 仅接受 `dev -> main` 合并
-- Worker PR 必须以 `dev` 为 `base`
-- 提交信息必须符合 `type(scope): short description`
-- 合并前必须提供可复核验证证据（测试/类型检查等）
+- `main` 只做协调与验收，不直接做功能开发
+- 新功能统一在 `worktree/dev-*` 分支开发
+- 每个 worktree 分支都必须提交 PR 到 `main`
+- PR 必须附：变更范围、验证命令与结果、风险与回滚说明
+- 合并门禁必须全部通过：质量门（TS/Python/tests）、安全门（secrets/audit/SAST）、审查门（code review）
+- `main` 仅保留“干净、可复现、可回滚”的版本
 
 ---
 
