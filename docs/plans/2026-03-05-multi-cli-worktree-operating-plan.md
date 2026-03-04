@@ -188,5 +188,12 @@ git commit -m "docs(multi-cli): define dev-to-main integration gate"
 
 - `mystocks_spec` 主目录固定为 Main CLI 治理位，不承担并行功能开发。
 - 4 个 Worker worktree 仅承担分配任务，禁止跨所有权修改。
+- 为降低不同 CLI 本地配置冲突，Worker worktree 推荐使用主仓库外部平行目录（例如 `/opt/claude/mystocks_spec1`）。
 - 所有新功能 PR 统一 `base=dev`，禁止直提 `main`。
 - 所有分支必须配置 upstream；未配置 upstream 视为阻塞状态，不允许进入 PR 提交流程。
+
+迁移工具（如当前在 `.worktrees/`）：
+
+```bash
+bash scripts/worktree/migrate_worktrees_to_parallel.sh --target-root /opt/claude
+```
