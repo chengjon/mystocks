@@ -29,6 +29,28 @@
 @import './artdeco-grid'; // 网格布局系统 (V3.1新增)
 
 // ============================================
+//   CORNER DECORATION CLEANUP - 全局角标清理
+// ============================================
+// Hide decorative corner marker DOM artifacts and pseudo-corner wrappers.
+.artdeco-corner-tl,
+.artdeco-corner-tr,
+.artdeco-corner-bl,
+.artdeco-corner-br,
+[class$='__corner--tl'],
+[class$='__corner--tr'],
+[class$='__corner--bl'],
+[class$='__corner--br'],
+.corner-decoration,
+.corner-accents,
+.ziggurat-corners,
+.artdeco-toast__corners,
+.breadcrumb-corner-decoration {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+// ============================================
 //   GLOBAL RESET & BASE - 全局重置
 //   现代CSS重置,保留有用的浏览器默认值
 // ============================================

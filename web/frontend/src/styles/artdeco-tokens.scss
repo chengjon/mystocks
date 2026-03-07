@@ -490,31 +490,6 @@
 
 // Geometric corners (L-shaped brackets) - Art Deco embellishments
 @mixin artdeco-geometric-corners($color: var(--artdeco-gold-primary), $size: 16px, $border-width: 2px) {
-  &::before {
-    content: '';
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    width: $size;
-    height: $size;
-    border-top: $border-width solid $color;
-    border-left: $border-width solid $color;
-    opacity: 40%;
-    transition: opacity var(--artdeco-transition-base);
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
-    width: $size;
-    height: $size;
-    border-bottom: $border-width solid $color;
-    border-right: $border-width solid $color;
-    opacity: 40%;
-    transition: opacity var(--artdeco-transition-base);
-  }
 }
 
 // Hover lift with glow (theatrical effect)
