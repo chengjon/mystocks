@@ -9,7 +9,7 @@
 ├── web/
 │   ├── frontend/              # Vue 3 + Vite + TypeScript 前端
 │   │   ├── src/
-│   │   ├── vite.config.ts
+│   │   ├── vite.config.mts
 │   │   ├── package.json
 │   │   ├── ecosystem.config.js        # 前端 PM2 配置
 │   │   ├── .env                       # 当前激活的环境配置
@@ -129,7 +129,7 @@ python -m web.backend.app.main
 
 项目中存在多个端口配置来源，目前状态较为混乱：
 
-1. **vite.config.ts**：使用 `findAvailablePort(3000, 3009)` 自动查找可用端口
+1. **vite.config.mts**：使用 `findAvailablePort(3000, 3009)` 自动查找可用端口
 2. **ecosystem.config.js**：设置 `PORT=3020`（但 Vite 会忽略此环境变量）
 3. **ecosystem.dev.config.js**：设置 `PORT=3001`
 4. **CLAUDE.md 项目规则**：前端 3020-3029，后端 8020-8029
@@ -145,7 +145,7 @@ python -m web.backend.app.main
 前端开发服务器配置了 API 代理：
 
 ```typescript
-// vite.config.ts
+// vite.config.mts
 proxy: {
   '/api': {
     target: 'http://localhost:8020',
@@ -294,7 +294,7 @@ curl http://localhost:8020/health
 
 **检查 Vite 代理配置：**
 
-确保 `vite.config.ts` 中的代理目标正确：
+确保 `vite.config.mts` 中的代理目标正确：
 
 ```typescript
 proxy: {
@@ -442,7 +442,7 @@ npm run build
 
 项目中存在多个端口配置来源，导致配置不一致：
 
-- `vite.config.ts` 使用 `findAvailablePort(3000, 3009)`
+- `vite.config.mts` 使用 `findAvailablePort(3000, 3009)`
 - `ecosystem.config.js` 设置 `PORT=3020`
 - `ecosystem.dev.config.js` 设置 `PORT=3001`
 - `CLAUDE.md` 规定前端使用 3020-3029
@@ -453,7 +453,7 @@ npm run build
 
 **建议解决方案**：
 
-统一配置为 3020-3029 范围，修改 `vite.config.ts`：
+统一配置为 3020-3029 范围，修改 `vite.config.mts`：
 
 ```typescript
 server: {

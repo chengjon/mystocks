@@ -402,7 +402,7 @@ docs/
       "README.md",
       "package.json",
       "tsconfig.json",
-      "vite.config.ts",
+      "vite.config.mts",
       "docker-compose.yml"
     ]
   }
@@ -574,7 +574,7 @@ ALLOWED_ROOT_FILES=(
     "README.md"
     "package.json"
     "tsconfig.json"
-    "vite.config.ts"
+    "vite.config.mts"
     "docker-compose.yml"
     ".pre-commit-config.yaml"
     ".gitignore"

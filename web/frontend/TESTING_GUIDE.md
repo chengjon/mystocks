@@ -73,7 +73,7 @@ web/frontend/
 │   │   ├── market-data.spec.ts
 │   │   └── strategy-management.spec.ts
 │   └── unit/                   # Additional unit tests
-├── vitest.config.ts            # Vitest configuration
+├── vitest.config.mts           # Vitest configuration
 ├── playwright.config.js        # Playwright configuration
 └── .github/
     └── workflows/
@@ -84,7 +84,7 @@ web/frontend/
 
 ### Configuration
 
-**File**: `vitest.config.ts`
+**File**: `vitest.config.mts`
 
 - **Environment**: Happy DOM (lightweight DOM implementation)
 - **Coverage Provider**: V8

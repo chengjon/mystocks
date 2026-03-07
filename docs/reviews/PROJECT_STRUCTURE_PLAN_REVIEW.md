@@ -24,7 +24,7 @@
 尽管方案已经很成熟，但我提出以下几点微调建议，以进一步降低边缘风险：
 
 ### 3.1 关于 Frontend "Split Brain" 现象的处置
-**现状**：根目录存在 `package.json`, `vitest.config.ts`，同时 `web/frontend/` 下也有一套完整的 `package.json` 和构建配置。
+**现状**：根目录存在 `package.json`, `vitest.config.mts`，同时 `web/frontend/` 下也有一套完整的 `package.json` 和构建配置。
 **风险**：根目录的这些文件极可能是历史遗留（Debris）。
 **建议**：
 *   在 **阶段 2.4** 移动/保留根目录 `package.json` 时，建议对比一下 `package.json` 和 `web/frontend/package.json`。

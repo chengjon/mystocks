@@ -59,7 +59,7 @@ dayjs.locale(zhCn);
 
 // 此时 before3Hours 会输出：3小时前
 三、Vite 项目专属配置（解决兼容性 / 预构建问题）
-若按上述步骤操作后，出现「插件功能无效」「Vite 预构建警告」「生产打包报错」，需针对性配置vite.config.js（/vite.config.ts），适配 Vite 的 ESM 机制。
+若按上述步骤操作后，出现「插件功能无效」「Vite 预构建警告」「生产打包报错」，需针对性配置vite.config.js（/vite.config.mts），适配 Vite 的 ESM 机制。
 场景 1：解决 Vite 预构建破坏插件格式（最常见）
 问题根源
 Vite 会对node_modules中的依赖进行预构建（转为 ESM 格式提升开发性能），部分 dayjs 插件可能被预构建后破坏，导致功能丢失。

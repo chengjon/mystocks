@@ -265,7 +265,7 @@ npx playwright test --grep "CSS变量应该正确定义" --debug
 #   getComputedStyle(document.documentElement).getPropertyValue('--artdeco-gold-primary')
 
 # 3. 检查Vite构建配置
-cat vite.config.ts | grep css
+cat vite.config.mts | grep css
 ```
 
 ---

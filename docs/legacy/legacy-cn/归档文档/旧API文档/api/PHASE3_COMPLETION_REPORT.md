@@ -284,7 +284,7 @@ VUE_APP_ERROR_ENDPOINT=/api/errors
 
 ### Build Optimizations
 ```javascript
-// vite.config.ts
+// vite.config.mts
 export default defineConfig({
   build: {
     rollupOptions: {

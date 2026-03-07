@@ -763,7 +763,7 @@ const { toggleSidebar, setTheme } = uiStore
 
 ### 5.1 Manual Chunk Splitting
 
-**Update vite.config.ts:**
+**Update vite.config.mts:**
 ```typescript
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -841,7 +841,7 @@ app.use(ElementPlus)  // Imports entire library
 
 **After (auto-import with unplugin-vue-components):**
 ```typescript
-// vite.config.ts
+// vite.config.mts
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 

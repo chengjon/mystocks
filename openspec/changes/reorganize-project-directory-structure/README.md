@@ -42,7 +42,7 @@
 - **禁区保护**：23 个 dot-directories + 12 个 dot-files 不可触碰
 - **兼容入口**：4 个根级 .py 文件（core.py、data_access.py、monitoring.py、unified_manager.py）必须保留
 - **子模块自治**：web/ 内部结构不在本次整理范围
-- **Monorepo 根配置**：package.json、vitest.config.ts 是根级工具配置，非冗余
+- **Monorepo 根配置**：package.json、vitest.config.mts 是根级工具配置，非冗余
 
 ## 参考文档
 

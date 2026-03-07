@@ -10,7 +10,7 @@
 **框架**: Vitest + Happy DOM
 
 **配置文件**:
-- `vitest.config.ts` - Vitest 配置
+- `vitest.config.mts` - Vitest 配置
 - `package.json` - 添加测试脚本
 
 **测试脚本**:

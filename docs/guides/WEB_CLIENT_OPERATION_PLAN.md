@@ -143,7 +143,7 @@ if (typeof WebSocket === 'undefined') {
 **解决方案**:
 ```bash
 # 1. 检查Vite构建配置
-grep -A 10 "manualChunks" web/frontend/vite.config.ts
+grep -A 10 "manualChunks" web/frontend/vite.config.mts
 # 确认Element Plus已合并到vue-vendor chunk
 
 # 2. 重新构建应用
@@ -1387,7 +1387,7 @@ crontab -e
 
 **前端配置**:
 - ⚙️ [PM2配置](../../web/frontend/ecosystem.config.js) - 前端PM2进程管理配置
-- 🔨 [Vite配置](../../web/frontend/vite.config.ts) - 前端构建工具配置
+- 🔨 [Vite配置](../../web/frontend/vite.config.mts) - 前端构建工具配置
 - 📦 [NPM配置](../../web/frontend/package.json) - 前端依赖和脚本配置
 
 **后端配置**:

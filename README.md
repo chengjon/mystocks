@@ -525,7 +525,7 @@ mystocks_spec/
 ├── requirements.txt          # Python依赖清单
 ├── pyproject.toml            # Python项目配置
 ├── package.json              # Monorepo根级工具配置 (playwright/vitest)
-├── vitest.config.ts          # Vitest测试配置
+├── vitest.config.mts         # Vitest测试配置
 ├── mypy.ini                  # MyPy类型检查配置
 ├── pytest.ini                # Pytest测试配置
 ├── core.py                   # 核心模块入口点 (Re-export → src.core)

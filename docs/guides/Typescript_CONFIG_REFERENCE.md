@@ -27,7 +27,7 @@ web/frontend/
 ├── tsconfig.json              # TypeScript编译配置 ⭐
 ├── tsconfig.node.json         # Node环境专用配置
 ├── .eslintrc.cjs              # ESLint代码检查配置 ⭐
-├── vite.config.ts             # Vite构建配置 ⭐
+├── vite.config.mts            # Vite构建配置 ⭐
 ├── package.json               # 项目脚本和依赖 ⭐
 └── .vscode/settings.json      # VS Code工作区配置
 ```
@@ -248,7 +248,7 @@ import { UserService } from '../../../api/user'
 
 **Vite配置必须同步**:
 ```typescript
-// vite.config.ts
+// vite.config.mts
 export default defineConfig({
   resolve: {
     alias: {
@@ -415,7 +415,7 @@ module.exports = {
 ### TypeScript相关配置
 
 ```typescript
-// vite.config.ts
+// vite.config.mts
 export default defineConfig({
   // ============================================================
   // 插件配置
@@ -750,7 +750,7 @@ manualChunks(id) {
     "module": "ESNext",
     "moduleResolution": "bundler"
   },
-  "include": ["vite.config.ts", "plugins/**/*.ts"]
+  "include": ["vite.config.mts", "plugins/**/*.ts"]
 }
 ```
 
@@ -794,7 +794,7 @@ manualChunks(id) {
   }
 }
 
-// vite.config.ts (必须同步)
+// vite.config.mts (必须同步)
 export default defineConfig({
   resolve: {
     alias: {

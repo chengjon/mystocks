@@ -273,7 +273,7 @@ docker run -p 80:80 -v $(pwd)/dist:/usr/share/nginx/html nginx
 #### UI/UX
 - [ ] Element Plus 组件渲染
 - [ ] 响应式布局（1280x720+）
-- [ ] Bloomberg 风格界面
+- [ ] ArtDeco 风格界面
 - [ ] 加载动画和过渡效果
 
 **回归测试脚本**（可选）：
@@ -350,7 +350,7 @@ done
 - [ ] 检查是否有硬编码的 hash 链接（`#`）
 - [ ] 验证 `createWebHistory` 配置正确
 - [ ] 检查 `package.json` 中是否有相关配置需要更新
-- [ ] 验证 `vite.config.ts` 无冲突配置
+- [ ] 验证 `vite.config.mts` 无冲突配置
 
 **代码质量检查**:
 ```bash

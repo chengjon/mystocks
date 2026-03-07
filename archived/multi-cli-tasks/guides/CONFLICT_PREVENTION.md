@@ -493,7 +493,7 @@ npm install
 ## 🚨 问题6：物理路径污染冲突 (Zero-Root-Config)
 
 ### **问题描述**
-不同 CLI 在各自 Worktree 开发时，习惯性地在项目根目录创建工具配置文件（如 `playwright.config.ts`, `vitest.config.ts`），导致合并后根目录出现大量碎片文件及冲突。
+不同 CLI 在各自 Worktree 开发时，习惯性地在项目根目录创建工具配置文件（如 `playwright.config.ts`, `vitest.config.mts`），导致合并后根目录出现大量碎片文件及冲突。
 
 **解决方案：零根目录配置原则 (Zero-Root-Config)** ✅
 - ✅ **配置收敛**: 严禁在根目录新增工具配置。所有配置文件必须存放在 `config/` 下的对应子目录（如 `config/playwright/`）。

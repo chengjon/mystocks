@@ -53,7 +53,7 @@
 ### T2.3 ✅ 更新 Vite 配置为 TypeScript
 
 **文件修改**:
-1. **vite.config.js** → **vite.config.ts** (重命名)
+1. **vite.config.js** → **vite.config.mts** (重命名)
    - 添加 TypeScript 类型注解
    - `findAvailablePort(startPort: number, endPort: number): Promise<number>`
 
@@ -134,7 +134,7 @@ $ npm run type-check
 ### 新建文件 (3 个)
 1. `web/frontend/tsconfig.json` - TypeScript 配置
 2. `web/frontend/eslint.config.js` - ESLint flat config
-3. `web/frontend/vite.config.ts` - 从 .js 重命名并添加类型注解
+3. `web/frontend/vite.config.mts` - 从 .js 重命名并添加类型注解
 
 ### 修改文件 (1 个)
 1. `web/frontend/package.json` - 更新脚本和依赖

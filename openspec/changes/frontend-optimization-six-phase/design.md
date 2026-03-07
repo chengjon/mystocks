@@ -140,7 +140,7 @@ This document describes the architectural design for integrating two complementa
     "allowSyntheticDefaultImports": true
   },
   "include": [
-    "vite.config.ts"
+    "vite.config.mts"
   ]
 }
 ```
@@ -1404,7 +1404,7 @@ const priceClass = computed(() => {
 
 **Vite Configuration**:
 ```typescript
-// vite.config.ts
+// vite.config.mts
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 

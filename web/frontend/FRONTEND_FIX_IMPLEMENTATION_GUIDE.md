@@ -278,7 +278,7 @@ console.log('Router:', router)
 ls -la src/styles/app-core-styles.scss
 
 # 2. 检查 vite 配置
-cat vite.config.ts | grep css
+cat vite.config.mts | grep css
 ```
 
 **修复**：

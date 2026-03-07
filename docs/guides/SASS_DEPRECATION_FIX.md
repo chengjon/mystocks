@@ -31,7 +31,7 @@
 
 ### 1. Vite 配置修复 ✅
 
-**文件**: `vite.config.ts`
+**文件**: `vite.config.mts`
 
 **添加配置**:
 ```typescript
@@ -198,7 +198,7 @@ npm run dev -- --port 3021
 ## 📁 相关文件
 
 **已修改**:
-- `vite.config.ts` - 添加 Sass 现代编译器配置
+- `vite.config.mts` - 添加 Sass 现代编译器配置
 
 **待迁移** (可选):
 - `src/components/artdeco/advanced/ArtDecoDecisionModels.vue` - 第2行

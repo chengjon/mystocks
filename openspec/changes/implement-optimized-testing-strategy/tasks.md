@@ -3,7 +3,7 @@
 ## 0. ESM兼容性预处理
 
 - [ ] 0.1 更新Vite配置添加ESM别名
-  - 修改vite.config.ts添加`'dayjs': 'dayjs/esm/index.js'`别名配置
+  - 修改vite.config.mts添加`'dayjs': 'dayjs/esm/index.js'`别名配置
   - 添加dayjs到optimizeDeps.exclude列表
   - 验证配置语法正确性
 

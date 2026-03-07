@@ -631,12 +631,12 @@ onUnmounted(() => {
     "allowSyntheticDefaultImports": true
   },
   "include": [
-    "vite.config.ts"
+    "vite.config.mts"
   ]
 }
 ```
 
-**Update** `web/frontend/vite.config.js` → `vite.config.ts`:
+**Update** `web/frontend/vite.config.js` → `vite.config.mts`:
 
 ```typescript
 import { defineConfig } from 'vite'
@@ -1739,7 +1739,7 @@ worker.postMessage({
 
 ### 5.1 Bundle Size Optimization
 
-**Update** `vite.config.ts`:
+**Update** `vite.config.mts`:
 
 ```typescript
 export default defineConfig({
@@ -2269,7 +2269,7 @@ const handleStockClick = (stock: StockPrice) => {
 npm install -D @vitest/ui @vitest/coverage-v8 @vue/test-utils
 ```
 
-**vitest.config.ts**:
+**vitest.config.mts**:
 
 ```typescript
 import { defineConfig } from 'vitest/config'
@@ -2572,7 +2572,7 @@ test.describe('ProKLineChart', () => {
 **Bundle analysis**:
 
 ```typescript
-// vite.config.ts
+// vite.config.mts
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { visualizer } from 'rollup-plugin-visualizer'
@@ -2669,7 +2669,7 @@ server {
    - Trading hours display
 
 3. ✅ **Port configuration**
-   - Frontend: 3020-3029 (update vite.config.ts)
+   - Frontend: 3020-3029 (update vite.config.mts)
    - Backend: 8020-8029 (update proxy target)
 
 ### High Priority Recommendations

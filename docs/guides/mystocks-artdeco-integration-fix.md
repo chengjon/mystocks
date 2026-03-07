@@ -14,13 +14,13 @@
 
 **Files:**
 - Read: `web/frontend/package.json`
-- Read: `web/frontend/vite.config.ts`
+- Read: `web/frontend/vite.config.mts`
 - Read: `web/frontend/src/components/market/LongHuBangPanel.vue`
 - Read: `web/frontend/src/components/artdeco/specialized/ArtDecoDateRange.vue`
 
 **Step 1: 检查当前dayjs状态**
 检查package.json中dayjs版本是否正确
-检查vite.config.ts中的exclude配置是否导致问题
+检查vite.config.mts中的exclude配置是否导致问题
 
 **Step 2: 尝试恢复dayjs导入**
 在LongHuBangPanel.vue中取消dayjs注释，测试导入是否成功
@@ -38,10 +38,10 @@ git add web/frontend/src/components/market/LongHuBangPanel.vue
 git commit -m "fix: restore dayjs import in LongHuBangPanel component"
 ```
 
-### Task 1.2: 修复vite.config.ts中dayjs配置
+### Task 1.2: 修复vite.config.mts中dayjs配置
 
 **Files:**
-- Modify: `web/frontend/vite.config.ts:157-164`
+- Modify: `web/frontend/vite.config.mts:157-164`
 
 **Step 1: 移除dayjs的exclude配置**
 从optimizeDeps.exclude中移除'dayjs'
@@ -57,7 +57,7 @@ npm run dev
 
 **Step 4: 提交配置修复**
 ```bash
-git add web/frontend/vite.config.ts
+git add web/frontend/vite.config.mts
 git commit -m "fix: remove dayjs from vite optimizeDeps exclude"
 ```
 
@@ -98,10 +98,10 @@ git commit -m "fix: restore dayjs usage in ArtDecoDateRange component"
 **Step 3: 验证组件文件存在性**
 确保所有导出的组件文件都存在
 
-### Task 2.2: 更新vite.config.ts的ArtDeco组件配置
+### Task 2.2: 更新vite.config.mts的ArtDeco组件配置
 
 **Files:**
-- Modify: `web/frontend/vite.config.ts:57-62`
+- Modify: `web/frontend/vite.config.mts:57-62`
 
 **Step 1: 确认ArtDeco组件目录配置正确**
 确保dirs配置指向正确的artdeco目录
@@ -111,7 +111,7 @@ git commit -m "fix: restore dayjs usage in ArtDecoDateRange component"
 
 **Step 3: 提交配置更新**
 ```bash
-git add web/frontend/vite.config.ts
+git add web/frontend/vite.config.mts
 git commit -m "fix: verify ArtDeco component auto-import configuration"
 ```
 
@@ -200,7 +200,7 @@ git commit -m "fix: update ArtDeco styles import order and completeness"
 
 **Files:**
 - Read: `web/frontend/src/styles/element-plus-artdeco.scss`
-- Read: `web/frontend/src/styles/bloomberg-terminal-override.scss`
+- Read: `web/frontend/src/styles/bloomberg-terminal-override.scss`（ArtDeco 终端样式，历史文件名保留）
 
 **Step 1: 检查CSS变量使用**
 验证ArtDeco CSS变量在样式文件中正确使用

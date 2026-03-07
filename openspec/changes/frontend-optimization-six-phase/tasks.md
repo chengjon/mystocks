@@ -320,21 +320,21 @@ This document breaks down the six-phase optimization plan into small, verifiable
     - Configured vue-tsc with Vue 3.3 target
   - **File**: web/frontend/tsconfig.json (58 lines)
 
-- [x] **T2.3** ✅ Update `web/frontend/vite.config.ts` for TypeScript
+- [x] **T2.3** ✅ Update `web/frontend/vite.config.mts` for TypeScript
   - Configure esbuild for TSX/JSX support
   - Add TypeScript plugin if needed
   - **Validation**: Dev server starts, HMR works with TS files
   - **Estimated**: 1 hour
   - **Completed**: 2025-12-26
   - **Implementation**:
-    - Renamed vite.config.js to vite.config.ts
+    - Renamed vite.config.js to vite.config.mts
     - Added TypeScript type annotations to all functions
     - Updated package.json scripts:
       - `build`: Added vue-tsc --noEmit for type checking
       - `build:no-types`: Quick build without type checking
       - `type-check`: Standalone type verification script
   - **Files Modified**:
-    - web/frontend/vite.config.ts (renamed, added type annotations)
+    - web/frontend/vite.config.mts (renamed, added type annotations)
     - web/frontend/package.json (updated build scripts)
 
 - [x] **T2.4** ✅ Configure ESLint for TypeScript

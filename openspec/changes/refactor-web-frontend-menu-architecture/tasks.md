@@ -198,7 +198,7 @@
 ## Phase 5: 测试基础设施 (4-5周, 33 tasks)
 
 ### 5.1 Vitest单元测试 (8-10天, 12 tasks)
-- [ ] 5.1.1 配置Vitest（`vitest.config.ts`）
+- [ ] 5.1.1 配置Vitest（`vitest.config.mts`）
 - [ ] 5.1.2 编写Command Palette单元测试
 - [ ] 5.1.3 编写WebSocket管理器单元测试
 - [ ] 5.1.4 编写Layout组件单元测试

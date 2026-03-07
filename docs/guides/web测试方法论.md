@@ -14,7 +14,7 @@
 
 **解决方案**：
 - **前台运行验证**：放弃后台启动，直接前台运行`vite --port 3020 --host 0.0.0.0`，实时查看控制台输出
-- **固定端口配置**：在`vite.config.ts`中设置`server.port=3001`和`server.strictPort=true`，避免自动端口切换
+- **固定端口配置**：在`vite.config.mts`中设置`server.port=3001`和`server.strictPort=true`，避免自动端口切换
 - **版本锁定**：通过`.nvmrc`或`package.json.engines`锁定Node/npm版本
 - **启动验证脚本**：
 ```bash
@@ -151,7 +151,7 @@ The requested module 'dayjs.min.js' does not provide an export named 'default'
 
 #### Level 1: Vite配置优化
 ```typescript
-// vite.config.ts
+// vite.config.mts
 export default defineConfig({
   optimizeDeps: {
     exclude: ['dayjs'] // 排除预构建
@@ -191,7 +191,7 @@ dayjs.extend(utc)
 **调试步骤**：
 1. **检查配置完整性**
 ```typescript
-// vite.config.ts
+// vite.config.mts
 Components({
   resolvers: [ElementPlusResolver()], // 确保resolver存在
   dts: true // 生成类型定义

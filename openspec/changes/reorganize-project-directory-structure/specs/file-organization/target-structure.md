@@ -100,7 +100,7 @@ mystocks_spec/
 ├── unified_manager.py     # 兼容入口 → src.interfaces
 ├── pyproject.toml         # Python 项目配置
 ├── package.json           # Monorepo 根级工具依赖
-├── vitest.config.ts       # 根级测试配置
+├── vitest.config.mts      # 根级测试配置
 ├── tsconfig.json          # TypeScript 配置
 ├── requirements.txt       # Python 依赖
 │

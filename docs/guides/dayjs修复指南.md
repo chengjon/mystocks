@@ -46,7 +46,7 @@ console.log(beijingTime); // 正常输出当前北京时间，无报错
 问题根源
 Vite 会对node_modules中的依赖进行预构建（转为 ESM 格式，提升开发环境性能），部分 dayjs 插件（尤其是老旧第三方插件）的 CJS 格式可能被预构建后破坏，导致导入报错或功能丢失。
 解决方案：配置optimizeDeps优化依赖
-在项目根目录的vite.config.js（或vite.config.ts）中，调整预构建配置，要么排除 dayjs（不进行预构建），要么强制预构建插件，二选一即可：
+在项目根目录的vite.config.js（或vite.config.mts）中，调整预构建配置，要么排除 dayjs（不进行预构建），要么强制预构建插件，二选一即可：
 javascript
 运行
 import { defineConfig } from 'vite';

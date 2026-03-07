@@ -973,12 +973,12 @@ code --list-extensions | grep -i typescript
 npm run build 2>&1 | tee build.log
 
 # 检查构建配置
-cat vite.config.ts | grep -A 10 "build:"
+cat vite.config.mts | grep -A 10 "build:"
 ```
 
 **解决方案**:
 ```typescript
-// vite.config.ts
+// vite.config.mts
 export default defineConfig({
   build: {
     // 禁用构建时的类型检查（推荐在CI中单独检查）

@@ -52,7 +52,7 @@
 
 - **工具配置路径**:
   - Playwright: `config/playwright/playwright.config.ts`
-  - Vitest: `config/vitest/vitest.config.ts`
+  - Vitest: `config/vitest.config.mts`
   - PM2: `config/pm2/ecosystem.config.js`
 - **共享依赖**:
   - Node Modules: `ln -s ../mystocks_spec/node_modules ./node_modules` (Main CLI 已执行)

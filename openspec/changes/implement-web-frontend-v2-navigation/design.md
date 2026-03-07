@@ -664,7 +664,7 @@ export function throttle<T extends (...args: any[]) => any>(
 
 **Vite配置**:
 ```typescript
-// vite.config.ts
+// vite.config.mts
 export default defineConfig({
   build: {
     rollupOptions: {

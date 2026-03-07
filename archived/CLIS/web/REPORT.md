@@ -184,7 +184,7 @@
 3. ✅ `web/frontend/src/App.vue` (11行)
 4. ✅ `web/frontend/src/styles/artdeco-tokens.scss` (ArtDeco主题系统)
 5. ✅ `web/frontend/src/styles/artdeco-global.scss` (全局样式)
-6. ✅ `web/frontend/vite.config.ts` (Vite配置)
+6. ✅ `web/frontend/vite.config.mts` (Vite配置)
 
 ### 🎯 完成度评估
 

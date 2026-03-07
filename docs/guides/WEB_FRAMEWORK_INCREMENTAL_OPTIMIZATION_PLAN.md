@@ -58,7 +58,7 @@
 // web/frontend/src/styles/theme-dark.scss
 
 :root {
-  // 极深蓝黑背景系统 (Bloomberg/Wind风格)
+  // 极深蓝黑背景系统 (ArtDeco/Wind风格)
   --bg-primary: #0B0F19;        // 主背景 - 极深蓝黑
   --bg-secondary: #1A1F2E;      // 次级背景 - 深蓝灰
   --bg-card: #232936;           // 卡片背景 - 中深蓝灰
@@ -139,7 +139,7 @@
 #### 2.1 混合开发环境配置
 
 ```typescript
-// web/frontend/vite.config.ts
+// web/frontend/vite.config.mts
 export default defineConfig({
   // 允许.vue和.tsx文件共存
   resolve: {

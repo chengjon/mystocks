@@ -161,7 +161,7 @@ MyStocks 是一个专业的企业级量化交易数据管理系统和 Web 管理
 │       │   ├── services/            # API调用服务
 │       │   └── main.ts              # 应用入口
 │       ├── package.json             # 前端依赖
-│       ├── vite.config.ts           # Vite构建配置
+│       ├── vite.config.mts          # Vite构建配置
 │       └── .env                     # 环境变量
 │
 ├── ⚙️ config/                        # 配置文件

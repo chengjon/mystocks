@@ -391,7 +391,7 @@ validateIndicatorParams('SMA', { period: 0 })   // false
 
 | 文件路径 | 修改内容 |
 |---------|---------|
-| `vitest.config.ts` | 添加 utils 目录覆盖率，设定80%目标 |
+| `vitest.config.mts` | 添加 utils 目录覆盖率，设定80%目标 |
 | `package.json` | 已包含所有依赖 (technicalindicators) |
 
 ---

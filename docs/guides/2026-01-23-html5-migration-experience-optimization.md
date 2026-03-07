@@ -232,7 +232,7 @@ git commit -m "feat: complete menu system with 6 functional domains and tree nav
 
 **Files:**
 - Modify: `web/frontend/package.json`
-- Modify: `web/frontend/vite.config.ts`
+- Modify: `web/frontend/vite.config.mts`
 - Test: `web/frontend/tests/unit/components/ant-design-migration.spec.ts`
 
 **Step 1: Write failing test for dependency conflicts**
@@ -280,7 +280,7 @@ Expected: Shows current dependency state
 **Step 4: Update Vite config to remove conflicts**
 
 ```typescript
-// web/frontend/vite.config.ts
+// web/frontend/vite.config.mts
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
@@ -311,14 +311,14 @@ Expected: PASS - No ant-design-vue conflicts
 **Step 6: Commit**
 
 ```bash
-git add web/frontend/package.json web/frontend/vite.config.ts web/frontend/tests/unit/components/ant-design-migration.spec.ts
+git add web/frontend/package.json web/frontend/vite.config.mts web/frontend/tests/unit/components/ant-design-migration.spec.ts
 git commit -m "feat: unify dependency management, remove ant-design-vue conflicts"
 ```
 
 ### Task 1.3: Testing Infrastructure Enhancement
 
 **Files:**
-- Modify: `web/frontend/vite.config.ts`
+- Modify: `web/frontend/vite.config.mts`
 - Modify: `web/frontend/package.json`
 - Create: `web/frontend/tests/e2e/`
 - Test: `web/frontend/tests/unit/components/`
@@ -326,7 +326,7 @@ git commit -m "feat: unify dependency management, remove ant-design-vue conflict
 **Step 1: Configure Vitest coverage**
 
 ```typescript
-// web/frontend/vite.config.ts
+// web/frontend/vite.config.mts
 /// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -397,14 +397,14 @@ Expected: Coverage report shows >60% target
 **Step 5: Commit**
 
 ```bash
-git add web/frontend/vite.config.ts web/frontend/package.json web/frontend/tests/e2e/
+git add web/frontend/vite.config.mts web/frontend/package.json web/frontend/tests/e2e/
 git commit -m "feat: enhance testing infrastructure with Vitest coverage and Playwright E2E"
 ```
 
 ### Task 1.4: Bundle Size Optimization
 
 **Files:**
-- Modify: `web/frontend/vite.config.ts`
+- Modify: `web/frontend/vite.config.mts`
 - Modify: `web/frontend/package.json`
 - Create: `web/frontend/src/utils/lazyImports.ts`
 
@@ -433,7 +433,7 @@ export const lazyLoad = {
 **Step 3: Update Vite config for optimization**
 
 ```typescript
-// web/frontend/vite.config.ts
+// web/frontend/vite.config.mts
 export default defineConfig({
   build: {
     rollupOptions: {
@@ -465,7 +465,7 @@ Expected: Total bundle < 2.5MB
 **Step 6: Commit**
 
 ```bash
-git add web/frontend/vite.config.ts web/frontend/src/utils/lazyImports.ts
+git add web/frontend/vite.config.mts web/frontend/src/utils/lazyImports.ts
 git commit -m "feat: optimize bundle size with code splitting and lazy loading"
 ```
 

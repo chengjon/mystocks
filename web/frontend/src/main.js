@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-// ✅ Element Plus自动导入配置（通过vite.config.ts插件处理）
+// ✅ Element Plus自动导入配置（通过vite.config.mts插件处理）
 // Element Plus核心功能现在通过unplugin-vue-components自动导入
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import _zhCn from 'element-plus/dist/locale/zh-cn.mjs'

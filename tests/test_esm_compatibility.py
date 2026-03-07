@@ -73,13 +73,13 @@ class TestESMCompatibility:
     def test_frontend_build_configuration(self):
         """验证前端构建配置中的ESM相关设置"""
 
-        # 检查vite.config.ts是否存在
-        vite_config = project_root / "web" / "frontend" / "vite.config.ts"
-        assert vite_config.exists(), "vite.config.ts should exist"
+        # 检查vite.config.mts是否存在
+        vite_config = project_root / "web" / "frontend" / "vite.config.mts"
+        assert vite_config.exists(), "vite.config.mts should exist"
 
-        # 检查ecosystem.config.js是否存在
-        ecosystem_config = project_root / "ecosystem.config.js"
-        assert ecosystem_config.exists(), "ecosystem.config.js should exist"
+        # 检查前端 PM2 配置是否存在
+        ecosystem_config = project_root / "web" / "frontend" / "ecosystem.config.js"
+        assert ecosystem_config.exists(), "web/frontend/ecosystem.config.js should exist"
 
         # 验证package.json中包含必要的依赖
         package_json = project_root / "web" / "frontend" / "package.json"
@@ -134,11 +134,11 @@ class TestESMCompatibility:
             assert isinstance(optimization, str)
             assert len(optimization) > 0
 
-        # 在实际项目中，这些优化会在vite.config.ts中配置
+        # 在实际项目中，这些优化会在vite.config.mts中配置
 
     @pytest.mark.esm
     @pytest.mark.integration
-    async def test_full_stack_esm_integration(self):
+    def test_full_stack_esm_integration(self):
         """全栈ESM集成测试（概念验证）"""
 
         # 这个测试验证ESM模块如何在全栈环境中协同工作
@@ -198,7 +198,7 @@ def simulate_esm_import_error():
 def validate_esm_build_config():
     """验证ESM构建配置"""
     # 检查必要的配置文件是否存在
-    required_files = ["web/frontend/vite.config.ts", "web/frontend/package.json", "ecosystem.config.js"]
+    required_files = ["web/frontend/vite.config.mts", "web/frontend/package.json", "web/frontend/ecosystem.config.js"]
 
     for file_path in required_files:
         full_path = project_root / file_path

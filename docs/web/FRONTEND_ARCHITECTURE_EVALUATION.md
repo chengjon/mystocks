@@ -556,7 +556,7 @@ const CACHE_TTL = {
 
 **Current Configuration:**
 ```typescript
-// vite.config.ts
+// vite.config.mts
 export default defineConfig({
   plugins: [vue()],
   resolve: {

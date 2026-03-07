@@ -38,7 +38,7 @@ Successfully implemented comprehensive testing infrastructure and CI/CD pipeline
 
 ### 1.2 Vitest Configuration
 
-**File**: `vitest.config.ts`
+**File**: `vitest.config.mts`
 
 **Key Settings**:
 - Environment: Happy DOM (lightweight, fast)
@@ -484,7 +484,7 @@ import { useMarket } from '@/composables/useMarket';
 ### Created Files
 
 1. `.github/workflows/test.yml` - GitHub Actions CI/CD workflow
-2. `vitest.config.ts` - Vitest configuration
+2. `vitest.config.mts` - Vitest configuration
 3. `src/mock/marketOverview.ts` - Market overview mock data
 4. `src/mock/fundFlow.ts` - Fund flow mock data
 5. `src/mock/klineData.ts` - K-line mock data

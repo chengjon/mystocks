@@ -25,7 +25,7 @@
 **问题**: Vite 配置的端口范围是 3000-3010（不符合项目规范）
 **修复**: 更新为 3020-3029（项目规范的前端端口范围）
 
-**文件**: `web/frontend/vite.config.ts`
+**文件**: `web/frontend/vite.config.mts`
 ```typescript
 availablePort = await findAvailablePort(3020, 3029); // 原来是 3000-3010
 ```

@@ -33,7 +33,7 @@
 
 ### 2.1 Configure Vitest Framework
 - [ ] Add Vitest, @vue/test-utils, jsdom to devDependencies
-- [ ] Create vitest.config.ts configuration
+- [ ] Create vitest.config.mts configuration
 - [ ] Set up test utilities and helpers
 - [ ] Configure coverage reporting with @vitest/coverage-v8
 - [ ] Add test scripts to package.json

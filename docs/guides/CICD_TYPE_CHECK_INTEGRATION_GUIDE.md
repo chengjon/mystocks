@@ -257,7 +257,7 @@ class Box(Generic[T]):
 **触发路径**:
 - `web/frontend/src/**/*.{ts,tsx,vue}`
 - `web/frontend/tsconfig.json`
-- `web/frontend/vite.config.ts`
+- `web/frontend/vite.config.mts`
 - `web/frontend/package.json`
 
 ### 检查阶段

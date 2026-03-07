@@ -94,7 +94,7 @@ mystocks_spec/
 根目录保留文件（白名单）：
 ```
 README.md, CLAUDE.md, IFLOW.md, AGENTS.md
-pyproject.toml, package.json, vitest.config.ts, tsconfig.json
+pyproject.toml, package.json, vitest.config.mts, tsconfig.json
 requirements.txt, __init__.py
 core.py, data_access.py, monitoring.py, unified_manager.py  # src/ 兼容入口
 docker-compose.yml → config/docker/docker-compose.yml 的符号链接
