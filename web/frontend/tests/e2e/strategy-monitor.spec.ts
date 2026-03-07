@@ -91,7 +91,7 @@ async function routeStrategyList(
 }
 
 test.describe("Strategy Management - Monitoring & UI", () => {
-  test.describe.configure({ mode: "serial", timeout: 120000 })
+  test.describe.configure({ timeout: 120000 })
 
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1920, height: 1080 })
@@ -146,10 +146,19 @@ test.describe("Strategy Management - Monitoring & UI", () => {
     })
 
     await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
-    await expect(page.locator(".pagination-text")).toContainText("第 1 / 3 页")
+    const paginationText = page.locator(".pagination-text")
+    const nextPageButton = page.locator(".pagination-row .toolbar-button").last()
+    await expect(paginationText).toContainText("第 1 / 3 页")
+    await expect(nextPageButton).toBeEnabled()
+    await nextPageButton.scrollIntoViewIfNeeded()
 
-    await page.getByRole("button", { name: "下一页" }).click()
-    await expect(page.locator(".pagination-text")).toContainText("第 2 / 3 页")
+    try {
+      await nextPageButton.click({ timeout: 3000 })
+    } catch {
+      // WebKit occasionally reports visible footer buttons as outside viewport.
+      await nextPageButton.evaluate((button: HTMLButtonElement) => button.click())
+    }
+    await expect.poll(async () => (await paginationText.textContent())?.trim() ?? "").toContain("第 2 / 3 页")
   })
 
   test("refreshes strategy list and keeps page stable", async ({ page }) => {

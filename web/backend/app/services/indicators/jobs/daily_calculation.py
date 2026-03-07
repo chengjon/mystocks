@@ -22,6 +22,9 @@ from app.repositories.indicator_repo import IndicatorRepository
 from app.services.indicators import CalculationMode, OHLCVData, create_scheduler
 from app.services.indicators.defaults import load_default_indicators
 
+logger = logging.getLogger(__name__)
+
+
 # Phase 3: Event publishing
 try:
     from app.models.event_models import (
@@ -38,8 +41,6 @@ try:
 except ImportError:
     REDIS_PUBSUB_AVAILABLE = False
     logger.warning("Redis Pub/Sub not available, daily_calculation running without event publishing")
-
-logger = logging.getLogger(__name__)
 
 
 # ========== Event Publishing Helpers (Phase 3) ==========

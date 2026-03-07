@@ -707,6 +707,9 @@ MONITOR_DB_URL=postgresql://postgres:password@localhost:5438/mystocks
 # 应用层缓存配置
 CACHE_EXPIRE_SECONDS=300
 LRU_CACHE_MAXSIZE=1000
+
+# K线查询兜底开关（默认启用，保证行情源异常时仍可展示K线）
+KLINE_FALLBACK_ENABLED=true
 ```
 
 ### 2. 系统初始化

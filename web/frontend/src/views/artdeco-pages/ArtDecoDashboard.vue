@@ -280,6 +280,47 @@
                 </section>
             </ArtDecoCard>
 
+            <ArtDecoCard title="资金流向热力图" hoverable class="capital-heatmap-card">
+                <section class="heatmap-section" style="height: 300px;">
+                    <ArtDecoChart
+                        :option="capitalFlowHeatmapOption"
+                        :loading="loading.fundFlow"
+                        height="100%"
+                    />
+                </section>
+            </ArtDecoCard>
+
+            <ArtDecoCard title="行业轮动雷达" hoverable class="sector-radar-card">
+                <section class="heatmap-section" style="height: 300px;">
+                    <ArtDecoChart
+                        :option="sectorRotationRadarOption"
+                        :loading="loading.industry"
+                        height="100%"
+                    />
+                </section>
+            </ArtDecoCard>
+
+            <ArtDecoCard title="一键压力测试" hoverable class="stress-test-card">
+                <div class="stress-test-actions">
+                    <button class="stress-test-btn" @click="runOneClickStressTest">立即执行压力测试</button>
+                    <span class="stress-test-time" v-if="stressTestResult.timestamp">{{ stressTestResult.timestamp }}</span>
+                </div>
+                <div class="stress-test-metrics">
+                    <div class="stress-metric-item">
+                        <span class="metric-label">预估最大回撤</span>
+                        <span class="metric-value">{{ stressTestResult.drawdown }}%</span>
+                    </div>
+                    <div class="stress-metric-item">
+                        <span class="metric-label">VaR(95%)</span>
+                        <span class="metric-value">{{ stressTestResult.var95 }}%</span>
+                    </div>
+                    <div class="stress-metric-item">
+                        <span class="metric-label">集中度风险</span>
+                        <span class="metric-value">{{ stressTestResult.concentrationRisk }}%</span>
+                    </div>
+                </div>
+            </ArtDecoCard>
+
             <!-- 新增: 龙虎榜 -->
             <ArtDecoLongHuBang class="long-hu-bang-card" />
 
@@ -419,6 +460,8 @@ const {
   fundFlowChartOption,
   marketTrendOption,
   heatmapOption,
+  capitalFlowHeatmapOption,
+  sectorRotationRadarOption,
   currentTime,
   activeFlowTab,
   activePoolTab,
@@ -443,6 +486,7 @@ const {
   sentimentColor,
   marketStatus,
   marketStatusType,
+  stressTestResult,
   handleIndicatorsToggle,
   handleMonitoringToggle,
   fetchMarketOverview,
@@ -452,6 +496,7 @@ const {
   fetchTrendData,
   fetchSystemStats,
   refreshData,
+  runOneClickStressTest,
   updateTime,
   handleTrendUpdate
 } = useArtDecoDashboard()

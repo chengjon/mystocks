@@ -9,6 +9,7 @@ import {
   BarChart,
   LineChart,
   PieChart,
+  RadarChart,
   ScatterChart,
   CandlestickChart,
   EffectScatterChart,
@@ -22,6 +23,7 @@ import {
 // 按需引入组件
 import {
   GridComponent,
+  RadarComponent,
   TooltipComponent,
   TitleComponent,
   LegendComponent,
@@ -47,6 +49,7 @@ use([
   BarChart,
   LineChart,
   PieChart,
+  RadarChart,
   ScatterChart,
   CandlestickChart,
   EffectScatterChart,
@@ -58,6 +61,7 @@ use([
 
   // 组件
   GridComponent,
+  RadarComponent,
   TooltipComponent,
   TitleComponent,
   LegendComponent,

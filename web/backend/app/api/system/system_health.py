@@ -412,25 +412,10 @@ def get_system_logs_from_db(
         )
         cursor = conn.cursor()
 
-        # 构建查询SQL
-        where_clauses = []
-        params = []
+        # 使用固定SQL模板 + 参数占位，避免动态拼接 WHERE 子句
+        normalized_level = level.upper() if level else None
 
-        if filter_errors:
-            where_clauses.append("level IN ('WARNING', 'ERROR', 'CRITICAL')")
-
-        if level:
-            where_clauses.append("level = %s")
-            params.append(level.upper())
-
-        if category:
-            where_clauses.append("category = %s")
-            params.append(category)
-
-        where_sql = " AND ".join(where_clauses) if where_clauses else "1=1"
-
-        # 查询operation_log表
-        query = f"""
+        query = """
             SELECT
                 id,
                 timestamp,
@@ -441,14 +426,24 @@ def get_system_logs_from_db(
                 execution_time_ms as duration_ms,
                 CASE WHEN status IN ('failed', 'error') THEN true ELSE false END as has_error
             FROM operation_log
-            WHERE {where_sql}
+            WHERE (%s = false OR level IN ('WARNING', 'ERROR', 'CRITICAL'))
+              AND (%s IS NULL OR level = %s)
+              AND (%s IS NULL OR category = %s)
             ORDER BY timestamp DESC
             LIMIT %s OFFSET %s
         """
 
-        params.extend([limit, offset])
+        query_params = [
+            filter_errors,
+            normalized_level,
+            normalized_level,
+            category,
+            category,
+            limit,
+            offset,
+        ]
 
-        cursor.execute(query, params)
+        cursor.execute(query, query_params)
         rows = cursor.fetchall()
 
         # 转换为SystemLog对象
@@ -468,10 +463,21 @@ def get_system_logs_from_db(
             logs.append(log)
 
         # 获取总数
-        count_query = f"""
-            SELECT COUNT(*) FROM operation_log WHERE {where_sql}
+        count_query = """
+            SELECT COUNT(*)
+            FROM operation_log
+            WHERE (%s = false OR level IN ('WARNING', 'ERROR', 'CRITICAL'))
+              AND (%s IS NULL OR level = %s)
+              AND (%s IS NULL OR category = %s)
         """
-        cursor.execute(count_query, params[:-2])  # 不包括limit和offset
+        count_params = [
+            filter_errors,
+            normalized_level,
+            normalized_level,
+            category,
+            category,
+        ]
+        cursor.execute(count_query, count_params)
         total = cursor.fetchone()[0]
 
         return logs, total

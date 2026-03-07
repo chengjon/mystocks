@@ -1,5 +1,32 @@
 # TASK REPORT
 
+## [WORK] 2026-03-05 Mock Manager 修复与全链路验证（Task #4/#5）
+- Scope:
+  - 修复 `UnifiedMockDataManager` 获取链路健壮性，避免返回无 `get_data` 对象导致 `/api/v1/market/stocks` 500。
+  - 复测后端健康与核心接口可用性，整理结构化证据。
+- Code Change:
+  - `web/backend/app/mock/mock_data/factory.py:14`
+    - 新增 `_FallbackMockDataManager`（稳定提供 `get_data`）。
+    - 新增 `_is_valid_manager()` 校验 `get_data` 可调用性。
+    - 在 `get_mock_data_manager()` 中增加缓存实例与新实例的类型/模块日志。
+    - 当对象无有效 `get_data` 或异常时统一回退 fallback。
+- Verification Evidence:
+  - `curl http://127.0.0.1:8020/health` -> `200`
+    - 证据文件：`/tmp/backend_health_after_fix.json`
+    - 关键结果：`status=healthy`
+  - `curl http://127.0.0.1:8020/api/v1/market/stocks?limit=5` -> `200`
+    - 证据文件：`/tmp/stocks_api_after_fix.json`
+    - 关键结果：`success=true`, `source=mock`, `total=5`
+  - Python 运行态校验：
+    - `PYTHONPATH=/opt/claude/mystocks_spec/web/backend python3 -c "..."`
+    - 输出：`UnifiedMockDataManager app.mock.mock_data True`
+- Frontend Baseline Evidence (复用现有结果):
+  - 证据文件：`/tmp/playwright_results_v2.json`
+  - 关键结果：登录页加载正常，控制台错误 0，网络失败 0。
+- Status:
+  - Task #4: 已完成
+  - Task #5: 已完成结构化证据沉淀
+
 ## [AUTO] 2026-02-13 23:50:54 Session 9862d30c-05f2-458c-aa0b-047bdc3293ec
 - Completion: true
 - Summary: Scripts are executable and the skill is registered. Here's the completed skill summary:
@@ -446,4 +473,76 @@
 - Model: `claude-opus-4-6`
 - Files: (none)
 - Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/33ff4a1f-f24e-47f7-bd59-784bfe39a7a4.jsonl`
+
+
+## [AUTO] 2026-03-05 00:58:45 Session 0db6503d-8172-43b8-9072-9e34491e55d4
+- Completion: true
+- Summary: 收到，我已继续完成了三路并行审查（质量/安全/综合），结论一致：
+- Model: `claude-opus-4-6`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/0db6503d-8172-43b8-9072-9e34491e55d4.jsonl`
+
+
+## [AUTO] 2026-03-05 10:05:03 Session 0db6503d-8172-43b8-9072-9e34491e55d4
+- Completion: true
+- Summary: **结论：** **NO‑GO**（当前状态不适合作为 `main` 基线）
+- Model: `openai/gpt-oss-120b`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/0db6503d-8172-43b8-9072-9e34491e55d4.jsonl`
+
+
+## [AUTO] 2026-03-05 13:44:14 Session 0db6503d-8172-43b8-9072-9e34491e55d4
+- Completion: true
+- Summary: 已继续执行，我刚并行启动了两条修复线：
+- Model: `claude-opus-4-6`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/0db6503d-8172-43b8-9072-9e34491e55d4.jsonl`
+
+
+## [AUTO] 2026-03-05 15:54:24 Session 3c07c534-9cb9-457b-81ad-ea3fbc770bef
+- Completion: true
+- Summary: 已完成收敛，现为**单一配置源**：
+- Model: `claude-opus-4-6`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/3c07c534-9cb9-457b-81ad-ea3fbc770bef.jsonl`
+
+
+## [AUTO] 2026-03-05 16:01:33 Session 3c07c534-9cb9-457b-81ad-ea3fbc770bef
+- Completion: true
+- Summary: 已完成：
+- Model: `claude-opus-4-6`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/3c07c534-9cb9-457b-81ad-ea3fbc770bef.jsonl`
+
+
+## [AUTO] 2026-03-05 16:01:50 Session 0db6503d-8172-43b8-9072-9e34491e55d4
+- Completion: true
+- Summary: 已继续完成并收口，当前结论如下。
+- Model: `claude-opus-4-6`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/0db6503d-8172-43b8-9072-9e34491e55d4.jsonl`
+
+
+## [AUTO] 2026-03-05 23:08:38 Session 0db6503d-8172-43b8-9072-9e34491e55d4
+- Completion: true
+- Summary: <summary>
+- Model: `claude-opus-4-6`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/0db6503d-8172-43b8-9072-9e34491e55d4.jsonl`
+
+
+## [AUTO] 2026-03-06 01:16:22 Session 0db6503d-8172-43b8-9072-9e34491e55d4
+- Completion: true
+- Summary: 已继续完成最后任务收口：
+- Model: `claude-opus-4-6`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/0db6503d-8172-43b8-9072-9e34491e55d4.jsonl`
+
+
+## [AUTO] 2026-03-07 01:40:53 Session 58a20da9-d8fa-408d-bf03-03fc44bde647
+- Completion: true
+- Summary: 已完成检查和修改，当前配置如下：
+- Model: `claude-opus-4-6`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/58a20da9-d8fa-408d-bf03-03fc44bde647.jsonl`
 

@@ -60,6 +60,13 @@ interface SystemHealthItem {
     value: string
 }
 
+interface StressTestResult {
+    drawdown: number
+    var95: number
+    concentrationRisk: number
+    timestamp: string
+}
+
 export function useArtDecoDashboard() {
     // Chart Options Generation
     const fundFlowChartOption = computed(() => {
@@ -177,6 +184,91 @@ export function useArtDecoDashboard() {
         }
     })
 
+    const capitalFlowHeatmapOption = computed(() => {
+        if (!capitalFlowData.value || capitalFlowData.value.length === 0) return null
+
+        const source = capitalFlowData.value as Array<{ name?: string; amount?: number }>
+        const data = source.map((item) => {
+            const amount = toNumber(item.amount)
+            return {
+                name: item.name || '--',
+                value: Math.abs(amount),
+                amount,
+                itemStyle: {
+                    color: amount >= 0 ? '#4caf50' : '#f44336'
+                }
+            }
+        })
+
+        return {
+            tooltip: {
+                formatter: (params: { data: { name: string; amount: number } }): string => {
+                    const { name, amount } = params.data
+                    const sign = amount > 0 ? '+' : ''
+                    return `${name}<br/>净流向: ${sign}${amount.toFixed(2)}亿`
+                }
+            },
+            series: [{
+                type: 'treemap',
+                roam: false,
+                nodeClick: false,
+                breadcrumb: { show: false },
+                label: { show: true, formatter: '{b}' },
+                itemStyle: {
+                    borderColor: '#1f2833',
+                    borderWidth: 1,
+                    gapWidth: 1
+                },
+                data
+            }]
+        }
+    })
+
+    const sectorRotationRadarOption = computed(() => {
+        if (!marketHeat.value || marketHeat.value.length === 0) return null
+
+        const sectors = marketHeat.value
+            .slice()
+            .sort((a, b) => Math.abs(b.change) - Math.abs(a.change))
+            .slice(0, 6)
+
+        if (sectors.length === 0) return null
+
+        const maxValue = Math.max(...sectors.map(item => Math.abs(toNumber(item.change))), 1)
+        const indicator = sectors.map(item => ({
+            name: item.name,
+            max: Number((maxValue * 1.2).toFixed(2))
+        }))
+
+        return {
+            tooltip: {
+                formatter: (params: { value: number[] }): string => {
+                    return params.value
+                        .map((value, idx) => `${indicator[idx].name}: ${value.toFixed(2)}%`)
+                        .join('<br/>')
+                }
+            },
+            radar: {
+                radius: '62%',
+                indicator,
+                splitLine: { lineStyle: { color: 'rgb(255 255 255 / 12%)' } },
+                splitArea: { areaStyle: { color: ['transparent'] } },
+                axisLine: { lineStyle: { color: 'rgb(255 255 255 / 20%)' } },
+                axisName: { color: '#d4af37', fontSize: 11 }
+            },
+            series: [{
+                type: 'radar',
+                data: [{
+                    value: sectors.map(item => Number(Math.abs(toNumber(item.change)).toFixed(2))),
+                    name: '行业轮动强度',
+                    areaStyle: { color: 'rgb(212 175 55 / 25%)' },
+                    lineStyle: { color: '#d4af37', width: 2 },
+                    itemStyle: { color: '#d4af37' }
+                }]
+            }]
+        }
+    })
+
     // 响应式数据
     const currentTime: Ref<string> = ref('')
     const activeFlowTab: Ref<string> = ref('1day')
@@ -248,6 +340,13 @@ export function useArtDecoDashboard() {
         { code: '000001', name: '平安银行', price: '12.85', change: -0.4 },
         { code: '600036', name: '招商银行', price: '38.45', change: 0.9 }
     ])
+
+    const stressTestResult: Ref<StressTestResult> = ref({
+        drawdown: 8.6,
+        var95: 4.2,
+        concentrationRisk: 3.1,
+        timestamp: ''
+    })
 
     const indicatorsExpanded: Ref<boolean> = ref(true)
     const monitoringExpanded: Ref<boolean> = ref(true)
@@ -500,6 +599,23 @@ export function useArtDecoDashboard() {
         }
     }
 
+    const runOneClickStressTest = (): void => {
+        const marketShock = Math.abs(toNumber(marketData.value.shanghai.change))
+        const flowShock = Math.abs(toNumber(marketData.value.fundFlow.mainForce.amount)) / 10
+        const breadthRisk = marketSentiment.value < 45 ? 1.2 : 0.6
+
+        const drawdown = Math.min(25, Number((6 + marketShock * 2.8 + flowShock * 1.6 + breadthRisk).toFixed(2)))
+        const var95 = Math.min(12, Number((3 + marketShock * 0.8 + flowShock * 0.5).toFixed(2)))
+        const concentrationRisk = Number((Math.max(2.5, drawdown * 0.35)).toFixed(2))
+
+        stressTestResult.value = {
+            drawdown,
+            var95,
+            concentrationRisk,
+            timestamp: new Date().toLocaleString('zh-CN')
+        }
+    }
+
     watch(activeFlowTab, () => {
         fetchStockFlowRanking()
     })
@@ -530,6 +646,8 @@ export function useArtDecoDashboard() {
     fundFlowChartOption,
     marketTrendOption,
     heatmapOption,
+    capitalFlowHeatmapOption,
+    sectorRotationRadarOption,
     currentTime,
     activeFlowTab,
     activePoolTab,
@@ -554,6 +672,7 @@ export function useArtDecoDashboard() {
     sentimentColor,
     marketStatus,
     marketStatusType,
+    stressTestResult,
     handleIndicatorsToggle,
     handleMonitoringToggle,
     fetchMarketOverview,
@@ -563,6 +682,7 @@ export function useArtDecoDashboard() {
     fetchTrendData,
     fetchSystemStats,
     refreshData,
+    runOneClickStressTest,
     updateTime,
     handleTrendUpdate,
   }

@@ -144,15 +144,16 @@ test.describe("Strategy Management - Boundary and Edge Cases", () => {
     await expect(page.locator(".strategy-table tbody tr")).toHaveCount(1)
   })
 
-  test("falls back to MOCK when strategy API fails", async ({ page }) => {
+  test("shows REAL empty-state with error when strategy API fails", async ({ page }) => {
     await routeStrategyList(page, async (route) => {
       await route.abort("failed")
     })
 
     await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
-    await expect(page.locator(".source-badge.mock")).toContainText("SOURCE: MOCK")
-    const rows = await page.locator(".strategy-table tbody tr").count()
-    expect(rows).toBeGreaterThan(0)
+    await expect(page.locator(".source-badge.real")).toContainText("SOURCE: REAL")
+    await expect(page.locator(".error-tip")).toContainText(/Network Error|获取策略列表失败/)
+    await expect(page.locator(".strategy-table tbody tr")).toHaveCount(0)
+    await expect(page.locator(".empty-state")).toContainText("REAL 数据为空")
   })
 
   test("recovers from temporary strategy API failure after refresh", async ({ page }) => {
@@ -172,7 +173,8 @@ test.describe("Strategy Management - Boundary and Edge Cases", () => {
     })
 
     await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
-    await expect(page.locator(".source-badge.mock")).toContainText("SOURCE: MOCK")
+    await expect(page.locator(".source-badge.real")).toContainText("SOURCE: REAL")
+    await expect(page.locator(".strategy-table tbody tr")).toHaveCount(0)
 
     await page.getByRole("button", { name: "刷新" }).click()
     await expect(page.locator(".source-badge.real")).toContainText("SOURCE: REAL")

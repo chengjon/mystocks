@@ -293,7 +293,7 @@ export class ChartDataCache {
                 break
 
             case 'fifo': // First In First Out
-                keyToRemove = this.cache.keys().next().value
+                keyToRemove = this.cache.keys().next().value ?? null
                 break
         }
 

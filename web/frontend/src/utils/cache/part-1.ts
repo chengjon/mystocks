@@ -447,7 +447,9 @@ export function memoize<T extends (...args: unknown[]) => unknown>(
       cache.set(key, result)
       if (options.maxSize && cache.size > options.maxSize) {
         const firstKey = cache.keys().next().value
-        cache.delete(firstKey)
+        if (firstKey !== undefined) {
+          cache.delete(firstKey)
+        }
       }
       return result
     }) as T

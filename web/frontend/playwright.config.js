@@ -12,6 +12,7 @@ const e2eFrontendPortRaw = process.env.E2E_FRONTEND_PORT || process.env.PLAYWRIG
 const e2eFrontendPort = e2eFrontendPortRaw ? Number.parseInt(e2eFrontendPortRaw, 10) : null;
 const frontendPort = Number.isInteger(e2eFrontendPort) ? e2eFrontendPort : resolvedFrontend.port;
 const baseURL = process.env.FRONTEND_BASE_URL || `http://127.0.0.1:${frontendPort}`;
+const isLinux = process.platform === "linux";
 
 // Ensure helper utilities that read FRONTEND_PORT/FRONTEND_BASE_URL use the same dedicated E2E server.
 process.env.FRONTEND_PORT = String(frontendPort);
@@ -62,7 +63,21 @@ module.exports = defineConfig({
     },
     {
       name: 'firefox',
-      use: { ...devices["Desktop Firefox"] },
+      use: {
+        ...devices["Desktop Firefox"],
+        launchOptions: isLinux
+          ? {
+              firefoxUserPrefs: {
+                "security.sandbox.content.level": 0,
+              },
+              env: {
+                MOZ_DISABLE_CONTENT_SANDBOX: "1",
+                MOZ_DISABLE_RDD_SANDBOX: "1",
+                MOZ_DISABLE_GMP_SANDBOX: "1",
+              },
+            }
+          : {},
+      },
     },
     {
       name: 'webkit',

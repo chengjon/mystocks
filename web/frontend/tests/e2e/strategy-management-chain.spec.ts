@@ -373,7 +373,7 @@ test.describe('Strategy Management Chain E2E', () => {
     await expect(page.locator('.strategy-table tbody tr', { hasText: 'Gamma Strategy V2' })).toHaveCount(0)
   })
 
-  test('falls back to MOCK data when REAL list API fails', async ({ page }) => {
+  test('shows REAL empty-state and error when list API fails', async ({ page }) => {
     await routeStrategyList(page, async (route) => {
       await route.fulfill({
         status: 200,
@@ -395,8 +395,9 @@ test.describe('Strategy Management Chain E2E', () => {
 
     await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
 
-    await expect(page.locator('.source-badge.mock')).toContainText('SOURCE: MOCK')
-    await expect(page.locator('.error-tip')).toContainText(/strategy-service-unavailable|已回退到 MOCK 数据/)
-    await expect(page.locator('.strategy-table tbody tr').count()).resolves.toBeGreaterThan(0)
+    await expect(page.locator('.source-badge.real')).toContainText('SOURCE: REAL')
+    await expect(page.locator('.error-tip')).toContainText(/strategy-service-unavailable|获取策略列表失败/)
+    await expect(page.locator('.strategy-table tbody tr')).toHaveCount(0)
+    await expect(page.locator('.empty-state')).toContainText('REAL 数据为空')
   })
 })

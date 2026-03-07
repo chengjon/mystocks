@@ -8,11 +8,39 @@
 """
 
 import json
+import logging
+import os
 from datetime import datetime, timedelta
 from functools import lru_cache
 from typing import Dict, List, Optional
 
 import requests
+
+try:
+    import akshare as ak
+
+    AKSHARE_AVAILABLE = True
+except ImportError:
+    ak = None
+    AKSHARE_AVAILABLE = False
+
+try:
+    from .parse_datetime_to_timestamp import FinnhubAPIError, normalize_stock_code, parse_datetime_to_timestamp
+except ImportError:
+    from app.services.stock_search_service.parse_datetime_to_timestamp import (  # type: ignore
+        FinnhubAPIError,
+        normalize_stock_code,
+        parse_datetime_to_timestamp,
+    )
+
+logger = logging.getLogger(__name__)
+if not AKSHARE_AVAILABLE:
+    logger.warning("AKShare library not available, A/H share search features are disabled")
+
+
+# Module-level singleton guard, required by get_stock_search_service().
+_stock_search_service = None
+
 
 class StockSearchService:
     """
@@ -31,6 +59,12 @@ class StockSearchService:
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": "MyStocks/1.0"})
         self.akshare_available = AKSHARE_AVAILABLE
+        self.kline_fallback_enabled = os.getenv("KLINE_FALLBACK_ENABLED", "true").strip().lower() in {
+            "1",
+            "true",
+            "yes",
+            "on",
+        }
         self.api_key = api_key
         self.base_url = base_url
 
@@ -557,10 +591,6 @@ class StockSearchService:
         Returns:
             Optional[Dict]: K线数据 {stock_code, stock_name, period, adjust, data[], count}
         """
-        if not self.akshare_available:
-            print("获取 K 线数据失败: AKShare 未安装")
-            return None
-
         try:
             # Normalize stock code
             try:
@@ -577,6 +607,13 @@ class StockSearchService:
             # Validate adjust
             if adjust not in ["qfq", "hfq", ""]:
                 print(f"无效的复权类型: {adjust}。支持的值: qfq, hfq, 或空字符串")
+                return None
+
+            if not self.akshare_available:
+                if self.kline_fallback_enabled:
+                    logger.warning("AKShare unavailable, returning fallback kline data for %s", normalized_code)
+                    return self._build_fallback_kline(normalized_code, period, adjust, end_date=end_date)
+                logger.warning("AKShare unavailable and fallback disabled for %s", normalized_code)
                 return None
 
             # Extract numeric code for akshare (remove exchange suffix)
@@ -608,7 +645,10 @@ class StockSearchService:
             )
 
             if df.empty:
-                print(f"股票代码 {code_for_query} 不存在或暂无K线数据")
+                if self.kline_fallback_enabled:
+                    logger.warning("No kline data from AKShare for %s, using fallback", code_for_query)
+                    return self._build_fallback_kline(normalized_code, period, adjust, end_date=end_date)
+                logger.warning("No kline data from AKShare for %s and fallback disabled", code_for_query)
                 return None
 
             # Get stock name from first row
@@ -674,11 +714,73 @@ class StockSearchService:
             }
 
         except Exception as e:
-            print(f"获取 K 线数据时发生错误: {e}")
-            import traceback
-
-            traceback.print_exc()
+            normalized_code = normalize_stock_code(symbol, market="cn")
+            if self.kline_fallback_enabled:
+                logger.warning("Kline upstream fetch failed for %s: %s. Using fallback data.", symbol, e)
+                return self._build_fallback_kline(normalized_code, period, adjust, end_date=end_date)
+            logger.warning("Kline upstream fetch failed for %s and fallback disabled: %s", symbol, e)
             return None
+
+    def _build_fallback_kline(
+        self, normalized_code: str, period: str, adjust: str, end_date: Optional[str] = None
+    ) -> Dict:
+        """
+        Build deterministic fallback kline data for UI/runtime availability.
+        """
+        if end_date:
+            end_dt = datetime.strptime(end_date, "%Y-%m-%d")
+        else:
+            end_dt = datetime.now()
+
+        points = []
+        previous_close = 100.0
+        count = 60
+        start_dt = end_dt - timedelta(days=count - 1)
+
+        for index in range(count):
+            date_obj = start_dt + timedelta(days=index)
+            trend = index * 0.08
+            seasonal = ((index % 10) - 5) * 0.25
+            close_price = round(max(1.0, 100 + trend + seasonal), 2)
+            open_price = round(previous_close, 2)
+            high_price = round(max(open_price, close_price) * 1.01, 2)
+            low_price = round(min(open_price, close_price) * 0.99, 2)
+            volume = 1_200_000 + index * 5_000
+            amount = round(close_price * volume, 2)
+
+            if previous_close > 0:
+                amplitude = round(((high_price - low_price) / previous_close) * 100, 2)
+                change_percent = round(((close_price - previous_close) / previous_close) * 100, 2)
+            else:
+                amplitude = 0.0
+                change_percent = 0.0
+
+            points.append(
+                {
+                    "date": date_obj.strftime("%Y-%m-%d"),
+                    "timestamp": int(date_obj.timestamp()),
+                    "open": open_price,
+                    "high": high_price,
+                    "low": low_price,
+                    "close": close_price,
+                    "volume": int(volume),
+                    "amount": amount,
+                    "amplitude": amplitude,
+                    "change_percent": change_percent,
+                }
+            )
+            previous_close = close_price
+
+        points.reverse()
+        return {
+            "stock_code": normalized_code,
+            "stock_name": f"Fallback-{normalized_code.split('.')[0]}",
+            "period": period,
+            "adjust": adjust,
+            "data": points,
+            "count": len(points),
+            "source": "fallback",
+        }
 
     # ========== 统一搜索接口 ==========
 
@@ -739,5 +841,3 @@ def get_stock_search_service() -> StockSearchService:
     if _stock_search_service is None:
         _stock_search_service = StockSearchService()
     return _stock_search_service
-
-

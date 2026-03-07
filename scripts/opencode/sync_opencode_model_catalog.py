@@ -168,6 +168,16 @@ def apply_common(config: dict[str, Any], catalog: dict[str, Any]) -> None:
     )
     config["model"] = MODEL_MAIN_FILE_REF
     config["small_model"] = MODEL_SMALL_FILE_REF
+
+    server = config.get("server")
+    if not isinstance(server, dict):
+        server = {}
+        config["server"] = server
+
+    port = server.get("port")
+    if isinstance(port, bool) or not isinstance(port, int):
+        server["port"] = 11000
+
     apply_provider_models(config, catalog)
 
 

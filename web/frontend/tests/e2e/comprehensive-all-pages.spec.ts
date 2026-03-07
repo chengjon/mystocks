@@ -138,31 +138,55 @@ async function seedAuthSession(page: Page): Promise<void> {
 }
 
 async function bootstrapAuthSession(): Promise<void> {
+  const loginPaths = ['/api/v1/auth/login', '/api/auth/login'];
   const api = await playwrightRequest.newContext();
   try {
-    const loginResponse = await api.post(`${BACKEND_URL}/api/v1/auth/login`, {
-      data: new URLSearchParams({
-        username: TEST_USER.username,
-        password: TEST_USER.password,
-      }).toString(),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      timeout: 20000,
-    });
+    let loginPayload: Record<string, any> | null = null;
+    let lastLoginError: unknown = null;
 
-    if (!loginResponse.ok()) {
-      throw new Error(`HTTP ${loginResponse.status()}`);
+    for (const loginPath of loginPaths) {
+      for (let attempt = 1; attempt <= 2; attempt += 1) {
+        try {
+          const loginResponse = await api.post(`${BACKEND_URL}${loginPath}`, {
+            data: new URLSearchParams({
+              username: TEST_USER.username,
+              password: TEST_USER.password,
+            }).toString(),
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            timeout: 30000 + (attempt - 1) * 15000,
+          });
+
+          if (!loginResponse.ok()) {
+            throw new Error(`${loginPath} HTTP ${loginResponse.status()}`);
+          }
+
+          const payload = await loginResponse.json().catch(() => null);
+          const resolvedToken = payload?.data?.token ?? payload?.token ?? payload?.access_token;
+          if (!resolvedToken) {
+            throw new Error(`${loginPath} token is missing`);
+          }
+
+          loginPayload = payload;
+          break;
+        } catch (error) {
+          lastLoginError = error;
+        }
+      }
+
+      if (loginPayload) {
+        break;
+      }
     }
 
-    const payload = await loginResponse.json().catch(() => null);
-    const resolvedToken = payload?.data?.token ?? payload?.token ?? payload?.access_token;
-    if (!resolvedToken) {
-      throw new Error('Login response token is missing');
+    if (!loginPayload) {
+      throw lastLoginError ?? new Error('Login failed for all endpoints');
     }
 
+    const resolvedToken = loginPayload?.data?.token ?? loginPayload?.token ?? loginPayload?.access_token;
     cachedAuthToken = String(resolvedToken);
-    cachedAuthUser = payload?.data?.user ?? E2E_AUTH_USER;
+    cachedAuthUser = loginPayload?.data?.user ?? E2E_AUTH_USER;
     usingFallbackAuth = false;
   } catch (error) {
     usingFallbackAuth = true;
@@ -187,6 +211,17 @@ async function setupFallbackRoutes(page: Page): Promise<void> {
   });
 
   await page.route('**/api/v1/auth/me', async route => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        data: cachedAuthUser,
+      }),
+    });
+  });
+
+  await page.route('**/api/auth/me', async route => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',

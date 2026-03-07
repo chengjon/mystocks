@@ -1,8 +1,5 @@
 <template>
     <div class="artdeco-card" :class="cardClasses" @click="handleClick">
-        <!-- Corner decorations - BEM: artdeco-card__corner--position -->
-        <div class="artdeco-card__corner artdeco-card__corner--tl"></div>
-        <div class="artdeco-card__corner artdeco-card__corner--br"></div>
 
         <!-- Card Header (Optional) -->
         <div v-if="$slots.header || title" class="artdeco-card__header">
@@ -146,27 +143,6 @@
         border-top: 1px solid var(--artdeco-gold-opacity-20);
         color: var(--artdeco-fg-muted);
         font-size: var(--artdeco-font-size-sm);
-    }
-
-    /* Card corner decorations - BEM: artdeco-card__corner--position */
-    .artdeco-card__corner {
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        border-color: var(--artdeco-gold-primary);
-        border-style: solid;
-    }
-
-    .artdeco-card__corner--tl {
-        top: -1px;
-        left: -1px;
-        border-width: 2px 0 0 2px;
-    }
-
-    .artdeco-card__corner--br {
-        bottom: -1px;
-        right: -1px;
-        border-width: 0 2px 2px 0;
     }
 
     /* Card modifiers - BEM: artdeco-card--modifier */

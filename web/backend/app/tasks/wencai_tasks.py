@@ -13,6 +13,7 @@
 """
 
 import logging
+import re
 from datetime import datetime, timedelta
 from typing import Any, Dict
 
@@ -26,6 +27,14 @@ from app.services.wencai_service import ALLOWED_QUERY_TABLES, WencaiService
 # 配置日志
 logger = logging.getLogger(__name__)
 
+_TABLE_NAME_PATTERN = re.compile(r"^wencai_qs_[A-Za-z0-9_]+$")
+
+
+def _assert_safe_table_identifier(table_name: str) -> str:
+    """验证动态表名仅包含允许字符，防止标识符注入。"""
+    if not _TABLE_NAME_PATTERN.match(table_name):
+        raise ValueError(f"Unsafe table name detected: {table_name}")
+    return table_name
 
 def _get_safe_table_name(query_name: str) -> str:
     """
@@ -224,16 +233,21 @@ def cleanup_old_wencai_data(days: int = 30, dry_run: bool = False) -> Dict[str, 
         # 逐表清理
         for table_name in tables:
             try:
+                safe_table_name = _assert_safe_table_identifier(table_name)
                 with engine.connect() as conn:
                     # 统计将被删除的记录数
-                    count_query = text(f"SELECT COUNT(*) as cnt FROM {table_name} " f"WHERE fetch_time < :cutoff_date")
+                    count_query = text(
+                        f"SELECT COUNT(*) as cnt FROM {safe_table_name} " f"WHERE fetch_time < :cutoff_date"
+                    )
                     count_result = conn.execute(count_query, {"cutoff_date": cutoff_date})
                     delete_count = count_result.scalar()
 
                     if delete_count > 0:
                         if not dry_run:
                             # 实际删除
-                            delete_query = text(f"DELETE FROM {table_name} " f"WHERE fetch_time < :cutoff_date")
+                            delete_query = text(
+                                f"DELETE FROM {safe_table_name} " f"WHERE fetch_time < :cutoff_date"
+                            )
                             conn.execute(delete_query, {"cutoff_date": cutoff_date})
                             conn.commit()
 
@@ -315,12 +329,14 @@ def get_wencai_stats() -> Dict[str, Any]:
                     exists = conn.execute(check_query, {"table_name": table_name}).scalar() > 0
 
                     if exists:
+                        safe_table_name = _assert_safe_table_identifier(table_name)
+
                         # 统计记录数
-                        count_query = text(f"SELECT COUNT(*) as cnt FROM {table_name}")
+                        count_query = text(f"SELECT COUNT(*) as cnt FROM {safe_table_name}")
                         record_count = conn.execute(count_query).scalar()
 
                         # 获取最新fetch_time
-                        latest_query = text(f"SELECT MAX(fetch_time) as latest FROM {table_name}")
+                        latest_query = text(f"SELECT MAX(fetch_time) as latest FROM {safe_table_name}")
                         latest_fetch = conn.execute(latest_query).scalar()
 
                         stats["total_records"] += record_count
@@ -333,8 +349,8 @@ def get_wencai_stats() -> Dict[str, Any]:
                             }
                         )
 
-                except Exception:
-                    logger.warning("Failed to get stats for %(table_name)s: {str(e)}")
+                except Exception as e:
+                    logger.warning("Failed to get stats for %s: %s", table_name, str(e))
 
         engine.dispose()
 

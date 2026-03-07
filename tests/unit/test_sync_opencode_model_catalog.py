@@ -11,6 +11,41 @@ def _write_json(path: Path, payload: dict) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
+def _minimal_catalog() -> dict:
+    return {
+        "external_models": {
+            "fucai": [],
+            "fucai-gpt": [],
+            "fucai-claude": [],
+            "fucai-mini": [],
+        }
+    }
+
+
+def test_apply_common_sets_server_port_default_when_missing() -> None:
+    config: dict = {}
+
+    sync.apply_common(config, _minimal_catalog())
+
+    assert config["server"]["port"] == 11000
+
+
+def test_apply_common_guards_invalid_server_port_with_default() -> None:
+    config: dict = {"server": {"port": "invalid"}}
+
+    sync.apply_common(config, _minimal_catalog())
+
+    assert config["server"]["port"] == 11000
+
+
+def test_apply_common_keeps_valid_server_port() -> None:
+    config: dict = {"server": {"port": 12000}}
+
+    sync.apply_common(config, _minimal_catalog())
+
+    assert config["server"]["port"] == 12000
+
+
 def test_main_updates_model_files_from_catalog(tmp_path: Path, monkeypatch) -> None:
     model_defaults_dir = tmp_path / "model_defaults"
     model_defaults_dir.mkdir(parents=True)
@@ -115,8 +150,8 @@ def test_main_updates_model_files_from_catalog(tmp_path: Path, monkeypatch) -> N
     assert agent_files["oracle"].read_text(encoding="utf-8").strip() == "fucai-gpt/gpt-5.3-codex"
     assert agent_files["multimodal_looker"].read_text(encoding="utf-8").strip() == "fucai/grok-4-heavy"
 
+    project = json.loads(project_opencode_path.read_text(encoding="utf-8"))
+    assert project["server"]["port"] == 11000
+
     omo = json.loads(omo_path.read_text(encoding="utf-8"))
-    assert (
-        omo["oh_my_opencode"]["agents"]["oracle"]["model"]
-        == f"{{file:{agent_files['oracle']}}}"
-    )
+    assert omo["oh_my_opencode"]["agents"]["oracle"]["model"] == f"{{file:{agent_files['oracle']}}}"

@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class MockExtendedDataMixin:
     """Mock 扩展数据：自选股、回测、默认数据、缓存"""
 
-    def _generate_watchlist_data(user_id: int = 1) -> List[Dict[str, Any]]:
+    def _generate_watchlist_data(self, user_id: int = 1) -> List[Dict[str, Any]]:
         """生成自选股Mock数据"""
         import random
         from datetime import datetime
@@ -49,7 +49,7 @@ class MockExtendedDataMixin:
                     "notes": f"备注信息 {random.randint(1, 5)}",
                     "group_id": group_id,
                     "group_name": next(g["name"] for g in groups if g["id"] == group_id),
-                    "added_at": added_date.isoformat(),
+                    "added_at": added_date.strftime("%Y-%m-%d %H:%M:%S"),
                     "price": round(random.uniform(10, 500), 2),
                     "change": round(random.uniform(-10, 10), 2),
                     "change_percent": round(random.uniform(-5, 5), 2),
@@ -319,4 +319,3 @@ class MockExtendedDataMixin:
 
         # 切换模式时清除缓存
         self.clear_cache()
-

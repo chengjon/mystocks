@@ -5,9 +5,46 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main]
+  schedule:
+    - cron: '0 2 * * *'
 
 jobs:
-  test:
+  stable-suite:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          cd web/frontend
+          npm ci
+
+      - name: Install Playwright
+        run: |
+          cd web/frontend
+          npx playwright install --with-deps chromium
+
+      - name: Run Stable E2E Subset
+        run: |
+          cd web/frontend
+          npm run test:e2e:stable
+
+      - name: Upload stable test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-stable
+          path: web/frontend/test-results/
+
+  nightly-full:
+    if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
     
     steps:
@@ -31,11 +68,11 @@ jobs:
       - name: Run E2E tests
         run: |
           cd web/frontend
-          npx playwright test
+          npm run test:e2e:nightly
       
-      - name: Upload test results
+      - name: Upload nightly test results
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: test-results
+          name: test-results-nightly
           path: web/frontend/test-results/

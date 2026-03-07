@@ -1,0 +1,10 @@
+{
+  "active": false,
+  "started_at": "2026-03-04T07:29:24.907Z",
+  "original_prompt": "如果不能下载以上两个文件，请参考官方的解决方法：Summary\n\nFixes #1299 - /oh-my-claudecode:cancel not working because the stop hook continued blocking session stops even after the cancel command was issued.\nRoot Cause\n\nThe stop hook (persistent-mode.cjs) checked state.active === true to decide whether to block, but it didn't check for the cancel signal (cancel-signal-state.json) that gets written when state_clear is called during cancellation.\nChanges\n\nAdded isSessionCancelInProgress() function to both:\n\n    scripts/persistent-mode.cjs\n    templates/hooks/persistent-mode.mjs\n\nThis function:\n\n    Checks session-scoped cancel signal first (.omc/state/sessions/{id}/cancel-signal-state.json)\n    Falls back to legacy path (.omc/state/cancel-signal-state.json)\n    Validates the 30-second TTL on the signal\n    Allows stop immediately if cancel is in progress\n\nImpact\n\nThis fixes the issue for all persistent modes (ralph, autopilot, ultrawork, ultraqa, pipeline, team, omc-teams) since they all rely on the same persistent-mode hook.",
+  "session_id": "5ae67728-2aaa-4150-a71f-2b770e97ae82",
+  "reinforcement_count": 0,
+  "last_checked_at": "2026-03-04T07:35:14.394Z",
+  "linked_team": true,
+  "iteration": 2
+}

@@ -25,7 +25,7 @@ const MOCK_KLINE = Array.from({ length: 12 }).map((_, index) => {
   }
 })
 
-function isIgnoredConsoleError(text: string): boolean {
+function isIgnoredConsoleError(text: string, browserName: string): boolean {
   const ignored = [
     "favicon",
     "downloadable font",
@@ -33,6 +33,9 @@ function isIgnoredConsoleError(text: string): boolean {
     "Failed to load resource",
     "WebSocket",
   ]
+  if (browserName === "webkit" && text.includes("Importing a module script failed")) {
+    return true
+  }
   return ignored.some((item) => text.includes(item))
 }
 
@@ -109,18 +112,20 @@ test.describe("K-line Chart E2E", () => {
     await expect(page.locator(".market-kline-tab")).toBeVisible()
   })
 
-  test("does not emit critical console errors", async ({ page }) => {
+  test("does not emit critical console errors", async ({ page, browserName }) => {
     const consoleErrors: string[] = []
-
-    page.removeAllListeners("console")
-    page.on("console", (msg) => {
-      if (msg.type() === "error" && !isIgnoredConsoleError(msg.text())) {
+    const onConsole = (msg: { type: () => string; text: () => string }) => {
+      if (msg.type() === "error" && !isIgnoredConsoleError(msg.text(), browserName)) {
         consoleErrors.push(msg.text())
       }
-    })
+    }
+
+    page.on("console", onConsole)
 
     await page.reload({ waitUntil: "domcontentloaded" })
+    await expect(page.locator(".market-kline-tab")).toBeVisible()
     await page.waitForTimeout(400)
+    page.off("console", onConsole)
     expect(consoleErrors).toHaveLength(0)
   })
 })

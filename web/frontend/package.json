@@ -24,6 +24,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test --config playwright.config.js",
+    "test:e2e:stable": "playwright test --config playwright.config.js --project=chromium tests/e2e/critical/menu-navigation-fixed.spec.ts tests/e2e/kline-chart.spec.ts",
+    "test:e2e:nightly": "playwright test --config playwright.config.js",
     "test:e2e:chromium": "playwright test --config playwright.config.js --project=chromium",
     "test:e2e:firefox": "playwright test --config playwright.config.js --project=firefox",
     "test:e2e:webkit": "playwright test --config playwright.config.js --project=webkit",

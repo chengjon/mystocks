@@ -7,6 +7,11 @@
         "apifox-mcp-server@latest",
         "--site-id=4478210"
       ]
+    },
+    "exa": {
+      "type": "http",
+      "url": "https://mcp.exa.ai/mcp?exaApiKey=${EXA_API_KEY}&tools=web_search_exa,get_code_context_exa,company_research_exa",
+      "description": "Exa MCP for web, code, and company research"
     }
   }
 }

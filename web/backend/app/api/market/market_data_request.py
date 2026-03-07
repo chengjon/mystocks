@@ -545,26 +545,9 @@ async def get_stock_list(
 
             session = get_postgresql_session()
 
-            # 构建查询SQL
-            where_clauses = []
-            params = {}
-
-            if search:
-                where_clauses.append("(symbol LIKE :search OR name LIKE :search)")
-                params["search"] = f"%{search}%"
-
-            if exchange:
-                where_clauses.append("exchange = :exchange")
-                params["exchange"] = exchange
-
-            if security_type:
-                where_clauses.append("security_type = :security_type")
-                params["security_type"] = security_type
-
-            where_sql = " AND ".join(where_clauses) if where_clauses else "1=1"
-
+            # 使用固定SQL模板 + 参数占位，避免动态拼接 WHERE 子句
             sql = text(
-                f"""
+                """
                 SELECT
                     symbol,
                     name,
@@ -576,12 +559,20 @@ async def get_stock_list(
                     market_cap,
                     circulating_market_cap
                 FROM stock_info
-                WHERE {where_sql}
+                WHERE (:search IS NULL OR symbol LIKE :search OR name LIKE :search)
+                  AND (:exchange IS NULL OR exchange = :exchange)
+                  AND (:security_type IS NULL OR security_type = :security_type)
                 ORDER BY symbol
                 LIMIT :limit
             """
             )
-            params["limit"] = limit
+
+            params = {
+                "search": f"%{search}%" if search else None,
+                "exchange": exchange,
+                "security_type": security_type,
+                "limit": limit,
+            }
 
             result = session.execute(sql, params)
             stocks = [dict(row._mapping) for row in result]

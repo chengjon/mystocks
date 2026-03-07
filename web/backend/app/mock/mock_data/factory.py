@@ -10,21 +10,67 @@ logger = logging.getLogger(__name__)
 
 from typing import Callable, TYPE_CHECKING
 
+
+class _FallbackMockDataManager:
+    """兜底 Mock 管理器，确保存在 get_data 接口。"""
+
+    def __init__(self, reason: str = ""):
+        self.reason = reason
+        logger.warning("使用 FallbackMockDataManager，原因: %s", reason)
+
+    def get_data(self, *args, **kwargs):
+        return {}
+
+
+def _is_valid_manager(manager: Any) -> bool:
+    """校验管理器是否具备可调用的 get_data 接口。"""
+    return callable(getattr(manager, "get_data", None))
+
+
 def get_mock_data_manager() -> 'UnifiedMockDataManager':
     """获取Mock数据管理器实例"""
     try:
         from app.mock.mock_data import UnifiedMockDataManager
-        # 尝试从全局获取实例，如果不存在则创建
+
+        # 尝试从全局模块缓存获取实例
         import sys
+
         main_module = sys.modules.get('app.mock.mock_data')
         if main_module and hasattr(main_module, 'mock_data_manager'):
-            return main_module.mock_data_manager
-        return UnifiedMockDataManager()
-    except Exception:
-        # 兜底返回一个带有 get_data 方法的对象，避免崩溃
-        class Fallback:
-            def get_data(self, *args, **kwargs): return {}
-        return Fallback()
+            cached_manager = getattr(main_module, 'mock_data_manager')
+            logger.info(
+                "使用缓存 mock_data_manager: type=%s module=%s",
+                type(cached_manager).__name__,
+                getattr(type(cached_manager), "__module__", "unknown"),
+            )
+            if _is_valid_manager(cached_manager):
+                return cached_manager
+            logger.error(
+                "缓存 mock_data_manager 无有效 get_data: type=%s module=%s",
+                type(cached_manager).__name__,
+                getattr(type(cached_manager), "__module__", "unknown"),
+            )
+
+        # 创建新实例
+        manager = UnifiedMockDataManager()
+        logger.info(
+            "创建 UnifiedMockDataManager: type=%s module=%s",
+            type(manager).__name__,
+            getattr(type(manager), "__module__", "unknown"),
+        )
+        if _is_valid_manager(manager):
+            return manager
+
+        logger.error(
+            "UnifiedMockDataManager 缺少有效 get_data: type=%s module=%s",
+            type(manager).__name__,
+            getattr(type(manager), "__module__", "unknown"),
+        )
+    except Exception as e:
+        logger.exception("获取 Mock 数据管理器失败，将使用 fallback: %s", e)
+        return _FallbackMockDataManager(reason=str(e))
+
+    return _FallbackMockDataManager(reason="invalid manager without callable get_data")
 
 
 # 便利函数

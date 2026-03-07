@@ -121,7 +121,9 @@ export function useKLineData(chartRef: Ref<ChartRef | null>, _props: Props) {
 
     if (dataCache.value.size >= CACHE_MAX_SIZE) {
       const firstKey = dataCache.value.keys().next().value
-      dataCache.value.delete(firstKey)
+      if (firstKey !== undefined) {
+        dataCache.value.delete(firstKey)
+      }
     }
 
     dataCache.value.set(hash, data)
