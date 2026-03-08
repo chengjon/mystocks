@@ -9,6 +9,7 @@ from scripts.maintenance.check_structure import (
     analyze_project,
     build_text_report,
     load_policy,
+    main,
 )
 
 
@@ -235,3 +236,33 @@ def test_empty_scope_paths_produce_no_findings(tmp_path: Path) -> None:
 
     assert result["summary"]["errors"] == 0
     assert result["summary"]["warnings"] == 0
+
+
+def test_main_without_path_scope_runs_full_scan(tmp_path: Path, monkeypatch, capsys) -> None:
+    policy_path = tmp_path / "policy.yaml"
+    project_root = tmp_path / "repo"
+    project_root.mkdir()
+    write_policy(policy_path)
+    (project_root / "README.md").write_text("ok", encoding="utf-8")
+    (project_root / "src").mkdir()
+    (project_root / "rogue.txt").write_text("oops", encoding="utf-8")
+
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "check_structure.py",
+            str(project_root),
+            "--policy",
+            str(policy_path),
+            "--format",
+            "json",
+        ],
+    )
+
+    exit_code = main()
+    output = capsys.readouterr().out
+    payload = json.loads(output)
+
+    assert exit_code == 1
+    assert payload["summary"]["errors"] == 1
+    assert payload["errors"][0]["path"] == "rogue.txt"

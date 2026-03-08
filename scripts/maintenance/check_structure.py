@@ -394,7 +394,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("project_root", nargs="?", default=str(PROJECT_ROOT))
     parser.add_argument("--policy", default=str(DEFAULT_POLICY_PATH))
     parser.add_argument("--format", choices=("text", "json"), default="text")
-    parser.add_argument("--path", action="append", dest="paths", default=[])
+    parser.add_argument("--path", action="append", dest="paths", default=None)
     parser.add_argument("--staged", action="store_true")
     parser.add_argument("--strict", action="store_true")
     parser.add_argument("-v", "--verbose", action="store_true")
@@ -405,7 +405,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     policy = load_policy(args.policy)
-    path_scope = args.paths
+    path_scope = args.paths or None
     if args.staged:
         path_scope = staged_paths(Path(args.project_root))
     result = analyze_project(args.project_root, policy, policy_path=args.policy, paths=path_scope)
