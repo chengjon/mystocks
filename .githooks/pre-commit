@@ -1,185 +1,22 @@
 #!/bin/bash
-# Pre-commit hook: Prevent root directory pollution
+# Pre-commit hook: directory governance gate
 # Install: git config core.hooksPath .githooks
-#
-# 基于 FILE_ORGANIZATION_RULES.md v1.4 更新
-# 更新记录: 2026-02-13 - 对齐 reorganize-project-directory-structure 任务结果
-#
-# ============================================================================
 
-set -e
+set -euo pipefail
 
-# Whitelist of allowed root files (non-hidden)
-# 允许在根目录的文件 (基于 FILE_ORGANIZATION_RULES.md v1.4)
-ALLOWED_ROOT_FILES=(
-  # 项目入口/说明文档
-  "README.md" "CLAUDE.md" "IFLOW.md" "AGENTS.md" "GEMINI.md" "LICENSE"
-  # Python 工具链配置
-  "pyproject.toml" "setup.py" "setup.cfg"
-  "requirements.txt" "requirements-dev.txt" "requirements-test.txt"
-  "pytest.ini" "mypy.ini" "conftest.py" "__init__.py"
-  # Node/E2E 工具链配置
-  "package.json" "package-lock.json"
-  "tsconfig.json" "tsconfig.node.json" "tsconfig.app.json"
-  "vitest.config.ts" "vitest.config.js"
-  "playwright.config.ts"
-  "ecosystem.test.config.js"
-  # 兼容入口点 (src/ 重导出)
-  "core.py" "data_access.py" "monitoring.py" "unified_manager.py"
-  # Docker/部署配置
-  "docker-compose.yml" "docker-compose.test.yml" "docker-compose.prod.yml"
-  "monitoring-stack.yml"
-  # 其他工具
-  ".mcp.json" "opencode.json"
-)
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-# Whitelist of allowed root directories (non-hidden)
-# 允许的顶层目录 (v1.4: 9个核心目录 + 工具链目录)
-ALLOWED_ROOT_DIRS=(
-  # 核心目录 (v1.4 规范)
-  "src"           # 核心业务代码
-  "tests"         # 测试文件 (独立顶层)
-  "scripts"       # 脚本工具
-  "docs"          # 文档
-  "architecture"  # 架构设计文档 (独立顶层)
-  "config"        # 配置文件
-  "reports"       # 生成的报告
-  "archived"      # 归档文件
-  "data"          # 数据文件
-  # 工具链/服务目录
-  "web"           # Web 前后端
-  "services"      # 微服务
-  "openspec"      # OpenSpec 变更管理
-  "gpu_api_system"  # GPU API 系统
-  ".multi-cli-tasks"  # 多 CLI 协作工作目录 (dot-prefix)
-  "monitoring-stack"  # 监控栈
-  # 缓存/构建目录
-  "node_modules" "__pycache__"
-)
-
-ERRORS=0
-WARNINGS=0
-
-# ===== 辅助函数 =====
-log_error() {
-  echo "❌ ERROR: $1" >&2
-  ERRORS=$((ERRORS + 1))
-}
-
-log_warning() {
-  echo "⚠️  WARNING: $1" >&2
-  WARNINGS=$((WARNINGS + 1))
-}
-
-# ===== 检查新文件 =====
-for file in $(git diff --cached --name-only --diff-filter=A 2>/dev/null); do
-  # 获取目录和文件名
-  dir=$(dirname "$file")
-  basename=$(basename "$file")
-  top_dir=$(echo "$file" | cut -d'/' -f1)
-
-  # 跳过隐藏文件和目录
-  [[ "$basename" == .* ]] && continue
-  [[ "$top_dir" == .* ]] && continue
-
-  # 检查根目录文件
-  if [ "$dir" = "." ]; then
-    ALLOWED=false
-    for allowed in "${ALLOWED_ROOT_FILES[@]}"; do
-      if [ "$basename" = "$allowed" ]; then
-        ALLOWED=true
-        break
-      fi
-    done
-
-    if [ "$ALLOWED" = false ]; then
-      log_error "New root file '$basename' is not in the allowlist."
-      echo "   Suggestion: Move it to the appropriate subdirectory:" >&2
-
-      # 根据文件类型提供建议 (v1.4 规范)
-      ext="${basename##*.}"
-      case "$ext" in
-        py)
-          if [[ "$basename" =~ ^test_ ]]; then
-            echo "   → tests/unit/ (测试文件)" >&2
-          elif [[ "$basename" =~ ^(run_|save_|monitor_) ]]; then
-            echo "   → scripts/runtime/ (运行时脚本)" >&2
-          elif [[ "$basename" =~ ^(check_|verify_|create_) ]]; then
-            echo "   → scripts/database/ (数据库脚本)" >&2
-          else
-            echo "   → scripts/dev/ 或 src/" >&2
-          fi
-          ;;
-        md|rst|txt)
-          echo "   → docs/guides/ (或 docs/api/, docs/standards/, docs/legacy/)" >&2
-          ;;
-        yaml|yml|ini|toml)
-          echo "   → config/ (配置文件)" >&2
-          ;;
-        json)
-          echo "   → config/ 或 reports/ (根据内容)" >&2
-          ;;
-        *)
-          echo "   → 根据 FILE_ORGANIZATION_RULES.md v1.4 选择合适目录" >&2
-          ;;
-      esac
-    fi
-  fi
-
-  # 检查新顶层目录
-  if [ "$top_dir" != "$file" ] && [ "$dir" != "." ]; then
-    ALLOWED=false
-    for allowed in "${ALLOWED_ROOT_DIRS[@]}"; do
-      if [ "$top_dir" = "$allowed" ]; then
-        ALLOWED=true
-        break
-      fi
-    done
-
-    if [ "$ALLOWED" = false ]; then
-      log_warning "File added under non-standard root directory '$top_dir/'."
-      echo "   Standard directories (v1.4): src/, tests/, scripts/, docs/, architecture/, config/, reports/, archived/, data/" >&2
-    fi
-  fi
-done
-
-# ===== 根目录统计检查 =====
-ROOT_FILE_COUNT=$(find . -maxdepth 1 -type f ! -name '.*' 2>/dev/null | wc -l)
-ROOT_DIR_COUNT=$(find . -maxdepth 1 -type d ! -name '.' ! -name '.*' 2>/dev/null | wc -l)
-
-if [ "$ROOT_FILE_COUNT" -gt 20 ]; then
-  log_warning "Root directory has $ROOT_FILE_COUNT files (threshold: 20)."
-  echo "   Consider cleaning up root-level files." >&2
+if [[ "${DISABLE_DIR_STRUCTURE_CHECK:-0}" == "1" ]]; then
+  echo "⚠️  Directory governance check skipped via DISABLE_DIR_STRUCTURE_CHECK=1"
+  exit 0
 fi
 
-if [ "$ROOT_DIR_COUNT" -gt 15 ]; then
-  log_warning "Root directory has $ROOT_DIR_COUNT subdirectories (threshold: 15)."
-  echo "   Standard count is ~9 (v1.4: src/tests/scripts/docs/architecture/config/reports/archived/data)" >&2
+if [[ "${SKIP:-}" == *"directory-governance"* ]]; then
+  echo "⚠️  Directory governance check skipped via SKIP=directory-governance"
+  exit 0
 fi
 
-# ===== 临时文件检查 =====
-TEMP_PATTERNS=("*.log" "*.tmp" "*.bak" "*.swp" "*~" "*.pyc" "*.pyo")
-for pattern in "${TEMP_PATTERNS[@]}"; do
-  if git diff --cached --name-only 2>/dev/null | grep -q "$pattern"; then
-    log_warning "Temporary file pattern '$pattern' detected in staging."
-    echo "   Consider adding to .gitignore instead of committing." >&2
-  fi
-done
+echo "🔍 Running directory governance check on staged changes..."
+bash "$PROJECT_ROOT/scripts/maintenance/check-structure.sh" "$PROJECT_ROOT" --staged --quiet
 
-# ===== 输出结果 =====
-if [ "$ERRORS" -gt 0 ]; then
-  echo ""
-  echo "❌ Commit blocked: $ERRORS violation(s) found." >&2
-  echo "   Use 'git commit --no-verify' to bypass (not recommended)." >&2
-  echo ""
-  echo "📖 Reference: docs/standards/FILE_ORGANIZATION_RULES.md" >&2
-  exit 1
-fi
-
-if [ "$WARNINGS" -gt 0 ]; then
-  echo ""
-  echo "⚠️  Commit allowed with $WARNINGS warning(s)." >&2
-  echo "   Please review the warnings above." >&2
-fi
-
-exit 0
+echo "✅ Directory governance check passed"

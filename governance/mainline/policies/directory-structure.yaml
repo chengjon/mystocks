@@ -1,0 +1,141 @@
+version: 1
+
+root:
+  allowed_files:
+    - README.md
+    - LICENSE
+    - AGENTS.md
+    - CLAUDE.md
+    - IFLOW.md
+    - requirements.txt
+    - pyproject.toml
+    - package.json
+    - package-lock.json
+    - pytest.ini
+    - mypy.ini
+    - playwright.config.ts
+    - vitest.config.mts
+    - ecosystem.test.config.js
+    - docker-compose.prod.yml
+    - docker-compose.test.yml
+    - monitoring-stack.yml
+    - tui.json
+    - __init__.py
+    - core.py
+    - data_access.py
+    - monitoring.py
+    - unified_manager.py
+    - conftest.py
+  allowed_directories:
+    - architecture
+    - config
+    - data
+    - docs
+    - governance
+    - openspec
+    - reports
+    - scripts
+    - src
+    - tests
+    - web
+  tolerated_files:
+    - path: E2E_TEST_EXECUTION_SUCCESS_REPORT.md
+      reason: legacy delivery report remains in the project root
+      recommendation: move into reports/delivery/
+    - path: E2E_TEST_QUICK_REFERENCE.md
+      reason: legacy quick reference remains in the project root
+      recommendation: move into docs/guides/ or reports/delivery/
+    - path: GEMINI_设置相关文件迁移清单.md
+      reason: migration note remains in the project root
+      recommendation: move into docs/archive/
+    - path: Gemini代理配置成功经验与固化指南.updated.md
+      reason: tool migration guide remains in the project root
+      recommendation: move into docs/guides/ or docs/archive/
+    - path: OMC_README.md
+      reason: tool-specific guide remains in the project root
+      recommendation: move into docs/operations/
+    - path: TASK.md
+      reason: current workflow artifact remains in the project root
+      recommendation: move into reports/tasks/ or docs/reports/tasks/
+    - path: TASK-REPORT.md
+      reason: current workflow artifact remains in the project root
+      recommendation: move into reports/tasks/ or docs/reports/tasks/
+    - path: coverage.json
+      reason: coverage artifact remains versioned in the project root
+      recommendation: move into reports/coverage/
+  tolerated_directories:
+    - path: archived
+      reason: historical materials have not yet converged into archive/
+      recommendation: consolidate into archive/
+    - path: backups
+      reason: operational backups have not yet converged into var/backups/
+      recommendation: move operational backups into var/backups/
+    - path: reviews
+      reason: review evidence remains outside reports/
+      recommendation: consolidate into reports/reviews/
+  forbidden_file_patterns:
+    - pattern: "*.log"
+      message: runtime log files must not live in the project root
+      recommendation: move into var/log/ or logs/ and ignore from git
+    - pattern: "*.csv"
+      message: generated CSV artifacts must not live in the project root
+      recommendation: move into reports/ or var/reports/
+    - pattern: "*.tmp"
+      message: temporary files must not live in the project root
+      recommendation: move into var/tmp/ or delete after use
+    - pattern: "*.bak"
+      message: backup files must not live in the project root
+      recommendation: move into var/backups/ or archive/
+    - pattern: ".coverage"
+      message: coverage state files must not live in the project root
+      recommendation: move into var/reports/coverage/ or ignore from git
+    - pattern: "coverage.xml"
+      message: coverage XML artifacts must not live in the project root
+      recommendation: move into var/reports/coverage/ or reports/coverage/
+  forbidden_directory_patterns:
+    - pattern: logs
+      message: runtime log directories must not live in the project root
+      recommendation: move into var/log/ and ignore from git
+    - pattern: htmlcov
+      message: generated coverage HTML must not live in the project root
+      recommendation: move into var/reports/coverage/
+    - pattern: node_modules
+      message: dependency directories must not live in the project root
+      recommendation: keep dependencies inside subprojects and ignore them from git
+    - pattern: __pycache__
+      message: Python cache directories must not live in the project root
+      recommendation: delete caches and ignore them from git
+
+scan:
+  ignore_directory_names:
+    - .git
+    - node_modules
+    - __pycache__
+    - htmlcov
+    - logs
+    - .mypy_cache
+    - .pytest_cache
+    - .ruff_cache
+
+rules:
+  - id: reports-convergence
+    severity: warning
+    report_once: true
+    match_any:
+      - docs/completion_reports/**
+      - docs/phase_reports/**
+      - docs/test_reports/**
+      - docs/monitoring_reports/**
+      - reviews/**
+    message: versioned evidence is spread across docs/ and reviews/
+    recommendation: consolidate into reports/<domain>/ and keep docs/ for explanatory content
+  - id: archive-convergence
+    severity: warning
+    report_once: true
+    match_any:
+      - archived/**
+      - backups/**
+      - docs/archive/**
+      - docs/legacy/**
+    message: archive and backup assets are split across multiple lifecycle locations
+    recommendation: keep historical assets in archive/ and operational backups in var/backups/

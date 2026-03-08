@@ -185,9 +185,9 @@ repos:
   # ============================================================================
   - repo: local
     hooks:
-      - id: tree-lint
-        name: Tree Lint
-        entry: scripts/tree-lint.sh --strict
+      - id: directory-governance
+        name: Directory Governance Check
+        entry: bash scripts/maintenance/check-structure.sh --staged
         language: script
         pass_filenames: false
         always_run: true
