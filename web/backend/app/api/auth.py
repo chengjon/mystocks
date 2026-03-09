@@ -8,8 +8,9 @@ from typing import Any, Dict
 
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2PasswordRequestForm
-from pydantic import BaseModel, EmailStr, Field, field_validator
 
+from app.api.auth_compat import compat_router
+from app.api.auth_schemas import PasswordResetConfirm, PasswordResetRequest, UserRegisterRequest, UserResponse
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -24,71 +25,6 @@ from app.core.security import (
     revoke_token,
     verify_token,
 )
-
-
-# Pydantic schemas for request validation
-class UserRegisterRequest(BaseModel):
-    """User registration request schema"""
-
-    username: str = Field(..., min_length=3, max_length=50, description="Username")
-    email: EmailStr = Field(..., description="Email address")
-    password: str = Field(..., min_length=8, max_length=100, description="Password")
-    role: str = Field(default="user", pattern="^(user|admin)$", description="User role")
-
-    @field_validator("username")
-    @classmethod
-    def validate_username(cls, v):
-        """Validate username format"""
-        if not v.isalnum() and "_" not in v:
-            raise ValueError("Username must be alphanumeric or contain underscores")
-        return v
-
-    @field_validator("password")
-    @classmethod
-    def validate_password(cls, v):
-        """Validate password strength"""
-        if not any(c.isupper() for c in v):
-            raise ValueError("Password must contain at least one uppercase letter")
-        if not any(c.islower() for c in v):
-            raise ValueError("Password must contain at least one lowercase letter")
-        if not any(c.isdigit() for c in v):
-            raise ValueError("Password must contain at least one digit")
-        return v
-
-
-class UserResponse(BaseModel):
-    """User response schema"""
-
-    id: int
-    username: str
-    email: str
-    role: str
-    is_active: bool
-
-
-class PasswordResetRequest(BaseModel):
-    """Password reset request schema"""
-
-    email: EmailStr = Field(..., description="Email address")
-
-
-class PasswordResetConfirm(BaseModel):
-    """Password reset confirmation schema"""
-
-    token: str = Field(..., description="Password reset token")
-    new_password: str = Field(..., min_length=8, max_length=100, description="New password")
-
-    @field_validator("new_password")
-    @classmethod
-    def validate_password(cls, v):
-        """Validate password strength"""
-        if not any(c.isupper() for c in v):
-            raise ValueError("Password must contain at least one uppercase letter")
-        if not any(c.islower() for c in v):
-            raise ValueError("Password must contain at least one lowercase letter")
-        if not any(c.isdigit() for c in v):
-            raise ValueError("Password must contain at least one digit")
-        return v
 
 
 router = APIRouter()
@@ -585,7 +521,7 @@ async def request_password_reset(request: PasswordResetRequest):
 
     except (DatabaseConnectionError, DatabaseOperationError) as e:
         # Database errors still return success message
-        print(f"Database error during password reset request: {str(e)}")
+        logger.exception("Database error during password reset request: %s", e)
         return create_success_response(
             data=None,
             message="If the email exists, a password reset link has been sent",
@@ -593,7 +529,7 @@ async def request_password_reset(request: PasswordResetRequest):
 
     except Exception as e:
         # Unexpected errors
-        print(f"Unexpected error during password reset request: {str(e)}")
+        logger.exception("Unexpected error during password reset request: %s", e)
         return create_success_response(
             data=None,
             message="If the email exists, a password reset link has been sent",
@@ -736,46 +672,3 @@ async def confirm_password_reset(reset_data: PasswordResetConfirm):
         if session:
             session.close()
 
-
-# ============================================================================
-# 兼容路由 - /api/auth/* (前端旧版本兼容)
-# ============================================================================
-from fastapi import APIRouter, Form
-from pydantic import BaseModel
-
-compat_router = APIRouter()  # 无前缀，直接使用 /login
-
-
-@compat_router.post("/login")
-async def compat_login(
-    username: str = Form(..., description="用户名"),
-    password: str = Form(..., description="密码"),
-):
-    """
-    兼容登录端点 - 支持前端 /api/auth/login 请求
-
-    此端点支持表单数据格式（application/x-www-form-urlencoded），
-    用于兼容使用 URLSearchParams 的前端请求。
-    """
-    # 验证用户身份
-    user = authenticate_user(username, password)
-    if not user:
-        raise UnauthorizedException(detail="用户名或密码错误")
-
-    # 创建访问令牌
-    access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
-    access_token = create_access_token(
-        data={"sub": user.username, "user_id": user.id, "role": user.role},
-        expires_delta=access_token_expires,
-    )
-
-    # 返回格式兼容前端期望
-    return create_success_response(
-        data={
-            "token": access_token,
-            "token_type": "bearer",
-            "expires_in": settings.access_token_expire_minutes * 60,
-            "user": {"username": user.username, "email": user.email, "role": user.role},
-        },
-        message="登录成功",
-    )
