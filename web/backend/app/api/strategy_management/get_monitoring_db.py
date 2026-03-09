@@ -25,32 +25,14 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 from app.mock.unified_mock_data import get_mock_data_manager
+from app.api.strategy_management._strategy_management_task_tail import run_backtest_task, train_model_task
 from app.schemas.backtest_schemas import BacktestRequest
+from app.api.strategy_management.monitoring_adapter import MonitoringAdapter, MonitoringFallback
 from src.core import DataClassification
 from src.monitoring.monitoring_database import MonitoringDatabase
 
 # 使用 MyStocksUnifiedManager 作为统一入口点
 from unified_manager import MyStocksUnifiedManager
-
-# 注意: backtest, model 模块需要确保存在
-try:
-    from app.backtest.backtest_engine import BacktestEngine
-    from model import LightGBMModel, RandomForestModel
-except ImportError:
-    BacktestEngine = None
-    RandomForestModel = None
-    LightGBMModel = None
-
-# GPU加速回测引擎（新功能 - 2025-12-26）
-try:
-    from src.gpu.acceleration.backtest_engine_gpu import BacktestEngineGPU
-    from src.utils.gpu_utils import GPUResourceManager
-
-    GPU_BACKTEST_AVAILABLE = True
-except ImportError:
-    GPU_BACKTEST_AVAILABLE = False
-    BacktestEngineGPU = None
-    GPUResourceManager = None
 
 router = APIRouter(prefix="/api/v1/strategy", tags=["策略管理-Week1"])
 
@@ -64,62 +46,10 @@ def get_monitoring_db():
         try:
             real_monitoring_db = MonitoringDatabase()
 
-            # 创建适配器来匹配Week1 API的参数命名约定
-            class MonitoringAdapter:
-                def __init__(self, real_db):
-                    self.real_db = real_db
-
-                def log_operation(
-                    self,
-                    operation_type="UNKNOWN",
-                    table_name=None,
-                    operation_name=None,
-                    rows_affected=0,
-                    operation_time_ms=0,
-                    success=True,
-                    details="",
-                    **kwargs,
-                ):
-                    """
-                    适配Week1 API的参数命名到MonitoringDatabase的实际参数
-
-                    Week1 API参数 → MonitoringDatabase参数:
-                    - operation_name → (ignored, not used in MonitoringDatabase)
-                    - rows_affected → record_count
-                    - operation_time_ms → execution_time_ms
-                    - success → operation_status ('SUCCESS' or 'FAILED')
-                    - details → additional_info
-                    """
-                    try:
-                        return self.real_db.log_operation(
-                            operation_type=operation_type,
-                            classification="DERIVED_DATA",  # Default classification
-                            target_database="PostgreSQL",  # Week 3 simplified
-                            table_name=table_name,
-                            record_count=rows_affected,
-                            operation_status="SUCCESS" if success else "FAILED",
-                            error_message=None if success else details,
-                            execution_time_ms=int(operation_time_ms),
-                            additional_info=(
-                                {"operation_name": operation_name, "details": details}
-                                if operation_name or details
-                                else None
-                            ),
-                        )
-                    except Exception:
-                        logger.debug("Monitoring log failed (non-critical): %(e)s")
-                        return False
-
             monitoring_db = MonitoringAdapter(real_monitoring_db)
 
         except Exception:
             logger.warning("MonitoringDatabase initialization failed, using fallback: %(e)s")
-
-            # 创建一个简单的fallback对象
-            class MonitoringFallback:
-                def log_operation(self, *args, **kwargs):
-                    logger.debug("Monitoring fallback: operation logged")
-                    return True
 
             monitoring_db = MonitoringFallback()
     return monitoring_db
@@ -461,66 +391,6 @@ async def train_model(config: Dict[str, Any], background_tasks: BackgroundTasks)
         raise HTTPException(status_code=500, detail=f"启动模型训练失败: {str(e)}")
 
 
-async def train_model_task(model_id: int, config: Dict[str, Any]):
-    """后台训练任务"""
-    try:
-        manager = MyStocksUnifiedManager()
-
-        # 创建模型实例
-        if config["model_type"] == "random_forest":
-            # model = RandomForestModel(**config.get("hyperparameters", {}))
-            pass
-        elif config["model_type"] == "lightgbm":
-            # model = LightGBMModel(**config.get("hyperparameters", {}))
-            pass
-        else:
-            raise ValueError(f"不支持的模型类型: {config['model_type']}")
-
-        # 训练模型（这里用模拟数据）
-        # 实际应该加载真实训练数据
-        # X_train, y_train = load_training_data(config['training_config'])
-        # metrics = model.fit(X_train, y_train, **config['training_config'])
-
-        # 保存模型
-        model_path = f"models/model_{model_id}.pkl"
-        # model.save_model(model_path)
-
-        # 更新数据库
-        import pandas as pd
-
-        update_data = pd.DataFrame(
-            [
-                {
-                    "id": model_id,
-                    "status": "completed",
-                    "model_path": model_path,
-                    "training_completed_at": datetime.now(),
-                }
-            ]
-        )
-
-        manager.save_data_by_classification(
-            data=update_data,
-            classification=DataClassification.MODEL_OUTPUT,
-            table_name="models",
-            upsert=True,
-        )
-
-    except Exception:
-        # 训练失败
-        manager = MyStocksUnifiedManager()
-        import pandas as pd
-
-        fail_data = pd.DataFrame([{"id": model_id, "status": "failed"}])
-        manager.save_data_by_classification(
-            data=fail_data,
-            classification=DataClassification.MODEL_OUTPUT,
-            table_name="models",
-            upsert=True,
-        )
-        raise
-
-
 @router.get("/models/training/{task_id}/status")
 async def get_training_status(task_id: str) -> Dict[str, Any]:
     """
@@ -661,139 +531,6 @@ async def run_backtest(request: BacktestRequest, background_tasks: BackgroundTas
         raise HTTPException(status_code=500, detail=f"启动回测失败: {str(e)}")
 
 
-async def run_backtest_task(backtest_id: int, config: Dict[str, Any]):
-    """后台回测任务"""
-    try:
-        manager = MyStocksUnifiedManager()
-
-        # 更新状态为运行中
-        import pandas as pd
-
-        running_data = pd.DataFrame([{"id": backtest_id, "status": "running", "started_at": datetime.now()}])
-        manager.save_data_by_classification(
-            data=running_data,
-            classification=DataClassification.MODEL_OUTPUT,
-            table_name="backtests",
-            upsert=True,
-        )
-
-        # 执行回测（使用GPU加速引擎，如果可用）
-        symbols = config.get("symbols", ["sh600000"])
-        start_date = config.get("start_date", "2024-01-01")
-        end_date = config.get("end_date", "2024-12-31")
-        initial_capital = config.get("initial_cash", 1000000)
-        strategy_type = config.get("strategy_type", "macd")
-        use_gpu = config.get("use_gpu", True)
-
-        logger.info("回测任务 %(backtest_id)s: %(strategy_type)s 策略, GPU=%(use_gpu)s")
-
-        # 获取回测数据（使用 Mock 数据源）
-        from src.data_sources.factory import get_timeseries_source
-
-        ts_source = get_timeseries_source(source_type="mock")
-        ts_source.set_random_seed(42)
-
-        start_dt = datetime.strptime(start_date, "%Y-%m-%d") if isinstance(start_date, str) else start_date
-        end_dt = datetime.strptime(end_date, "%Y-%m-%d") if isinstance(end_date, str) else end_date
-
-        symbol = symbols[0] if symbols else "sh600000"
-        stock_data = ts_source.get_kline_data(symbol=symbol, start_time=start_dt, end_time=end_dt, interval="1d")
-
-        if stock_data is None or len(stock_data) == 0:
-            import numpy as np
-
-            dates = pd.date_range(start=start_date, end=end_date, freq="D")
-            np.random.seed(42)
-            base_price = 10.0 + np.random.rand() * 20
-            returns = np.random.normal(0, 0.02, len(dates))
-            prices = base_price * (1 + returns).cumprod()
-            stock_data = pd.DataFrame(
-                {
-                    "trade_date": dates,
-                    "open": prices * (1 + np.random.uniform(-0.01, 0.01, len(dates))),
-                    "high": prices * (1 + np.random.uniform(0, 0.02, len(dates))),
-                    "low": prices * (1 - np.random.uniform(0, 0.02, len(dates))),
-                    "close": prices,
-                    "volume": np.random.randint(1000000, 10000000, len(dates)),
-                }
-            ).set_index("trade_date")
-
-        # 尝试使用GPU加速
-        if use_gpu and GPU_BACKTEST_AVAILABLE and BacktestEngineGPU:
-            try:
-                logger.info("🚀 使用GPU加速回测引擎")
-                gpu_manager = GPUResourceManager()
-                gpu_engine = BacktestEngineGPU(gpu_manager)
-
-                strategy_config = {
-                    "name": strategy_type,
-                    "parameters": {
-                        "stop_loss": config.get("stop_loss_pct"),
-                        "take_profit": config.get("take_profit_pct"),
-                        "max_position": config.get("max_position_size", 0.1),
-                    },
-                }
-
-                results = gpu_engine.run_gpu_backtest(
-                    stock_data=stock_data, strategy_config=strategy_config, initial_capital=initial_capital
-                )
-
-                results["gpu_accelerated"] = True
-                results["backend"] = "GPU"
-                logger.info("✅ GPU回测完成: 总收益率={results.get('performance', {}).get('total_return', 0):.2%}")
-
-            except Exception:
-                logger.warning("⚠️  GPU回测失败，使用模拟结果: %(gpu_error)s")
-                results = {
-                    "total_return": 0.15,
-                    "sharpe_ratio": 1.5,
-                    "max_drawdown": -0.12,
-                    "win_rate": 0.65,
-                    "gpu_accelerated": False,
-                    "backend": "CPU (fallback)",
-                }
-        else:
-            logger.info("📊 使用CPU回测模式 (GPU available: %(GPU_BACKTEST_AVAILABLE)s)")
-            results = {
-                "total_return": 0.15,
-                "sharpe_ratio": 1.5,
-                "max_drawdown": -0.12,
-                "win_rate": 0.65,
-                "gpu_accelerated": False,
-                "backend": "CPU",
-            }
-
-        completed_data = pd.DataFrame(
-            [
-                {
-                    "id": backtest_id,
-                    "status": "completed",
-                    "results": results,
-                    "completed_at": datetime.now(),
-                }
-            ]
-        )
-        manager.save_data_by_classification(
-            data=completed_data,
-            classification=DataClassification.MODEL_OUTPUT,
-            table_name="backtests",
-            upsert=True,
-        )
-
-    except Exception:
-        manager = MyStocksUnifiedManager()
-        import pandas as pd
-
-        failed_data = pd.DataFrame([{"id": backtest_id, "status": "failed"}])
-        manager.save_data_by_classification(
-            data=failed_data,
-            classification=DataClassification.MODEL_OUTPUT,
-            table_name="backtests",
-            upsert=True,
-        )
-        raise
-
-
 @router.get("/backtest/results")
 async def list_backtest_results(
     strategy_id: Optional[int] = None, page: int = 1, page_size: int = 20
@@ -821,4 +558,3 @@ async def list_backtest_results(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取回测结果失败: {str(e)}")
-
