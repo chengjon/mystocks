@@ -11,6 +11,12 @@ import os
 from datetime import datetime
 
 from fastapi import APIRouter
+from src.routes.monitoring_routes._monitoring_control_tail import (
+    get_monitoring_status_impl,
+    get_today_stats_impl,
+    start_monitoring_impl,
+    stop_monitoring_impl,
+)
 
 # 设置日志
 logging.basicConfig(level=logging.INFO)
@@ -502,80 +508,11 @@ async def get_today_stats():
     Returns:
         Dict: 今日统计数据
     """
-    try:
-        logger.info("获取今日统计数据")
-
-        if check_use_mock_data():
-            logger.info("使用Mock数据源: 获取今日统计")
-            # 模拟今日统计
-            today_stats = {
-                "date": datetime.now().strftime("%Y-%m-%d"),
-                "market_stats": {
-                    "total_stocks": 4000,
-                    "rising_stocks": 2500,
-                    "falling_stocks": 1200,
-                    "flat_stocks": 300,
-                    "limit_up_count": 45,
-                    "limit_down_count": 8,
-                    "volume_rank_20": [],
-                },
-                "alert_stats": {
-                    "total_alerts": 25,
-                    "price_alerts": 15,
-                    "volume_alerts": 8,
-                    "other_alerts": 2,
-                },
-            }
-
-            return {
-                "success": True,
-                "data": today_stats,
-                "timestamp": datetime.now().isoformat(),
-                "source": "mock",
-            }
-        else:
-            logger.info("使用真实数据库: 获取今日统计")
-            db_service = get_database_service()
-            if db_service is None:
-                return {
-                    "success": False,
-                    "message": "数据库服务暂未实现，请使用Mock数据源",
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-
-            # 实现真实数据库查询
-            try:
-                # 导入真实数据库服务
-                from src.database.database_service import db_service
-
-                # 调用真实数据服务，参数与Mock接口一致
-                result = db_service.get_monitoring_alerts()
-
-                logger.info("真实数据库查询成功: 告警记录")
-
-                return {
-                    "success": True,
-                    "data": result,
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-            except Exception as e:
-                logger.error("真实数据库查询失败: %s", str(e))
-                return {
-                    "success": False,
-                    "message": f"真实数据库查询失败: {str(e)}",
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-
-    except Exception as e:
-        logger.error("获取今日统计失败: %s", str(e))
-        return {
-            "success": False,
-            "message": f"获取今日统计失败: {str(e)}",
-            "timestamp": datetime.now().isoformat(),
-        }
+    return await get_today_stats_impl(
+        check_use_mock_data=check_use_mock_data,
+        get_database_service=get_database_service,
+        logger=logger,
+    )
 
 
 @router.post("/control/start")
@@ -585,58 +522,11 @@ async def start_monitoring():
     Returns:
         Dict: 启动结果
     """
-    try:
-        logger.info("启动监控")
-
-        if check_use_mock_data():
-            logger.info("使用Mock数据源: 启动监控")
-            return {
-                "success": True,
-                "message": "监控已启动",
-                "timestamp": datetime.now().isoformat(),
-                "source": "mock",
-            }
-        else:
-            logger.info("使用真实数据库: 启动监控")
-            db_service = get_database_service()
-            if db_service is None:
-                return {
-                    "success": False,
-                    "message": "数据库服务暂未实现，请使用Mock数据源",
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-
-            # 实现真实数据库操作
-            try:
-                # 导入真实数据库服务
-                from src.database.database_service import db_service
-
-                # 实现监控启动逻辑
-                logger.info("真实数据库操作: 启动监控")
-
-                return {
-                    "success": True,
-                    "message": "监控已启动",
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-            except Exception as e:
-                logger.error("真实数据库操作失败: %s", str(e))
-                return {
-                    "success": False,
-                    "message": f"真实数据库操作失败: {str(e)}",
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-
-    except Exception as e:
-        logger.error("启动监控失败: %s", str(e))
-        return {
-            "success": False,
-            "message": f"启动监控失败: {str(e)}",
-            "timestamp": datetime.now().isoformat(),
-        }
+    return await start_monitoring_impl(
+        check_use_mock_data=check_use_mock_data,
+        get_database_service=get_database_service,
+        logger=logger,
+    )
 
 
 @router.post("/control/stop")
@@ -646,58 +536,11 @@ async def stop_monitoring():
     Returns:
         Dict: 停止结果
     """
-    try:
-        logger.info("停止监控")
-
-        if check_use_mock_data():
-            logger.info("使用Mock数据源: 停止监控")
-            return {
-                "success": True,
-                "message": "监控已停止",
-                "timestamp": datetime.now().isoformat(),
-                "source": "mock",
-            }
-        else:
-            logger.info("使用真实数据库: 停止监控")
-            db_service = get_database_service()
-            if db_service is None:
-                return {
-                    "success": False,
-                    "message": "数据库服务暂未实现，请使用Mock数据源",
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-
-            # 实现真实数据库操作
-            try:
-                # 导入真实数据库服务
-                from src.database.database_service import db_service
-
-                # 实现监控停止逻辑
-                logger.info("真实数据库操作: 停止监控")
-
-                return {
-                    "success": True,
-                    "message": "监控已停止",
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-            except Exception as e:
-                logger.error("真实数据库操作失败: %s", str(e))
-                return {
-                    "success": False,
-                    "message": f"真实数据库操作失败: {str(e)}",
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-
-    except Exception as e:
-        logger.error("停止监控失败: %s", str(e))
-        return {
-            "success": False,
-            "message": f"停止监控失败: {str(e)}",
-            "timestamp": datetime.now().isoformat(),
-        }
+    return await stop_monitoring_impl(
+        check_use_mock_data=check_use_mock_data,
+        get_database_service=get_database_service,
+        logger=logger,
+    )
 
 
 @router.get("/control/status")
@@ -707,68 +550,8 @@ async def get_monitoring_status():
     Returns:
         Dict: 监控状态信息
     """
-    try:
-        logger.info("获取监控状态")
-
-        if check_use_mock_data():
-            logger.info("使用Mock数据源: 获取监控状态")
-            status = {
-                "is_running": True,
-                "start_time": "2024-11-13 09:00:00",
-                "last_update": datetime.now().isoformat(),
-                "monitored_symbols": 100,
-                "active_alerts": 12,
-                "status": "healthy",
-            }
-
-            return {
-                "success": True,
-                "data": status,
-                "timestamp": datetime.now().isoformat(),
-                "source": "mock",
-            }
-        else:
-            logger.info("使用真实数据库: 获取监控状态")
-            db_service = get_database_service()
-            if db_service is None:
-                return {
-                    "success": False,
-                    "message": "数据库服务暂未实现，请使用Mock数据源",
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-
-            # 实现真实数据库查询
-            try:
-                # 导入真实数据库服务
-                from src.database.database_service import db_service
-
-                # 调用真实数据服务，参数与Mock接口一致
-                result = db_service.get_monitoring_alerts()
-
-                logger.info("真实数据库查询成功: 实时监控数据")
-
-                return {
-                    "success": True,
-                    "data": result,
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-            except Exception as e:
-                logger.error("真实数据库查询失败: %s", str(e))
-                return {
-                    "success": False,
-                    "message": f"真实数据库查询失败: {str(e)}",
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-
-    except Exception as e:
-        logger.error("获取监控状态失败: %s", str(e))
-        return {
-            "success": False,
-            "message": f"获取监控状态失败: {str(e)}",
-            "timestamp": datetime.now().isoformat(),
-        }
-
-
+    return await get_monitoring_status_impl(
+        check_use_mock_data=check_use_mock_data,
+        get_database_service=get_database_service,
+        logger=logger,
+    )
