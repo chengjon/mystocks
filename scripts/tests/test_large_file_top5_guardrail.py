@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+import csv
 
 # ArtDeco 3.1 Engineering Red Lines
 LIMITS = {
@@ -65,6 +66,45 @@ def check_governance_compliance() -> list[str]:
 def test_governance_targets_comply_with_size_limits() -> None:
     violations = check_governance_compliance()
     assert not violations, "\n" + "\n".join(violations)
+
+
+def test_converted_archive_large_files_are_governed() -> None:
+    archive_root = Path("web/frontend/src/views/converted.archive")
+    backlog_path = Path("reports/plans/large_file_splitting_backlog.tsv")
+    exceptions_path = Path("reports/compliance/exceptions/large_files.md")
+
+    oversized_archive_files = []
+    for file_path in sorted(archive_root.glob("*.vue")):
+        with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
+            lines = sum(1 for _ in file)
+        if lines > _resolve_limit(str(file_path)):
+            oversized_archive_files.append((str(file_path), lines))
+
+    assert oversized_archive_files, "Expected at least one oversized archived Vue file"
+
+    with open(backlog_path, "r", encoding="utf-8", errors="ignore") as file:
+        backlog_rows = list(csv.DictReader(file, delimiter="\t"))
+
+    backlog_map = {
+        row["path"].lstrip("./"): row
+        for row in backlog_rows
+        if row.get("path")
+    }
+    exceptions_content = exceptions_path.read_text(encoding="utf-8", errors="ignore")
+
+    missing_in_backlog: list[str] = []
+    missing_in_exceptions: list[str] = []
+
+    for rel_path, _lines in oversized_archive_files:
+        normalized = rel_path.lstrip("./")
+        row = backlog_map.get(normalized)
+        if not row or row.get("status") != "EXCLUDED":
+            missing_in_backlog.append(normalized)
+        if normalized not in exceptions_content:
+            missing_in_exceptions.append(normalized)
+
+    assert not missing_in_backlog, f"Archive oversized files missing EXCLUDED backlog entries: {missing_in_backlog}"
+    assert not missing_in_exceptions, f"Archive oversized files missing exception registry entries: {missing_in_exceptions}"
 
 
 if __name__ == "__main__":
