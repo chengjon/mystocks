@@ -4,6 +4,7 @@
 基于Phase 6成功模式：功能→边界→异常→性能→集成测试
 """
 
+import importlib
 import sys
 from pathlib import Path
 from unittest.mock import patch, MagicMock
@@ -14,12 +15,25 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 # 导入被测试的模块
-from src.utils.check_db_health import (
-    check_mysql_connection,
-    check_postgresql_connection,
-    check_tdengine_connection,
-    check_redis_connection,
-    main,
+try:
+    from src.utils.check_db_health import (
+        check_mysql_connection,
+        check_postgresql_connection,
+        check_tdengine_connection,
+        check_redis_connection,
+        main,
+    )
+except ImportError:
+    fallback_module = importlib.import_module("scripts.dev.check_db_health")
+    sys.modules["src.utils.check_db_health"] = fallback_module
+    check_mysql_connection = fallback_module.check_mysql_connection
+    check_postgresql_connection = fallback_module.check_postgresql_connection
+    check_tdengine_connection = fallback_module.check_tdengine_connection
+    check_redis_connection = fallback_module.check_redis_connection
+    main = fallback_module.main
+from scripts._test_check_db_health_tail import (
+    TestEdgeCasesAndErrorHandling,
+    TestIntegrationScenarios,
 )
 
 
@@ -738,196 +752,6 @@ class TestMainFunction:
         print_calls = [str(call) for call in mock_print.call_args_list]
         assert any("4/4" in call for call in print_calls)
         assert any("100.0%" in call for call in print_calls)
-
-
-class TestEdgeCasesAndErrorHandling:
-    """边界条件和错误处理测试类"""
-
-    @patch("src.utils.check_db_health.check_redis_connection")
-    @patch("src.utils.check_db_health.check_tdengine_connection")
-    @patch("src.utils.check_db_health.check_postgresql_connection")
-    @patch("src.utils.check_db_health.check_mysql_connection")
-    @patch("builtins.print")
-    def test_main_exception_handling(
-        self, mock_print, mock_mysql, mock_pg, mock_td, mock_redis
-    ):
-        """测试主函数异常处理"""
-        mock_mysql.side_effect = Exception("MySQL检查异常")
-
-        exit_code = main()
-
-        # 应该优雅地处理异常
-        assert exit_code == 1
-
-    @patch("src.utils.check_db_health.settings")
-    @patch("builtins.print")
-    def test_mysql_missing_settings(self, mock_print, mock_settings):
-        """测试MySQL设置缺失"""
-        # 模拟settings对象缺少某些属性
-        del mock_settings.mysql_host
-
-        with patch("src.utils.check_db_health.pymysql") as mock_pymysql:
-            mock_pymysql.connect.side_effect = AttributeError("Missing attribute")
-
-            success, error = check_mysql_connection()
-
-            assert success is False
-            assert "Missing attribute" in error
-
-    @patch("src.utils.check_db_health.settings")
-    @patch("builtins.print")
-    def test_postgresql_missing_settings(self, mock_print, mock_settings):
-        """测试PostgreSQL设置缺失"""
-        del mock_settings.postgresql_host
-
-        with patch("src.utils.check_db_health.psycopg2") as mock_psycopg2:
-            mock_psycopg2.connect.side_effect = AttributeError("Missing attribute")
-
-            success, error = check_postgresql_connection()
-
-            assert success is False
-            assert "Missing attribute" in error
-
-    @patch("src.utils.check_db_health.settings")
-    @patch("builtins.print")
-    def test_tdengine_missing_settings(self, mock_print, mock_settings):
-        """测试TDengine设置缺失"""
-        del mock_settings.tdengine_host
-
-        with patch("src.utils.check_db_health.taos") as mock_taos:
-            mock_taos.connect.side_effect = AttributeError("Missing attribute")
-
-            success, error = check_tdengine_connection()
-
-            assert success is False
-            assert "Missing attribute" in error
-
-    @patch("src.utils.check_db_health.settings")
-    @patch("builtins.print")
-    def test_redis_missing_settings(self, mock_print, mock_settings):
-        """测试Redis设置缺失"""
-        del mock_settings.redis_host
-
-        with patch("src.utils.check_db_health.redis") as mock_redis:
-            mock_redis.Redis.side_effect = AttributeError("Missing attribute")
-
-            success, error = check_redis_connection()
-
-            assert success is False
-            assert "Missing attribute" in error
-
-
-class TestIntegrationScenarios:
-    """集成场景测试类"""
-
-    @patch("builtins.print")
-    def test_real_workflow_simulation(self, mock_print):
-        """模拟真实工作流程"""
-        # 这个测试模拟实际的数据库检查流程，而不依赖真实的数据库服务
-
-        with patch("src.utils.check_db_health.settings") as mock_settings:
-            # 设置模拟的配置
-            mock_settings.mysql_host = "localhost"
-            mock_settings.mysql_port = 3306
-            mock_settings.mysql_user = "test_user"
-            mock_settings.mysql_password = "test_pass"
-            mock_settings.mysql_database = "test_db"
-            mock_settings.postgresql_host = "localhost"
-            mock_settings.postgresql_port = 5432
-            mock_settings.postgresql_user = "test_user"
-            mock_settings.postgresql_password = "test_pass"
-            mock_settings.postgresql_database = "test_db"
-            mock_settings.tdengine_host = "localhost"
-            mock_settings.tdengine_port = 6030
-            mock_settings.tdengine_user = "root"
-            mock_settings.tdengine_password = "taosdata"
-            mock_settings.tdengine_database = "test_db"
-            mock_settings.redis_host = "localhost"
-            mock_settings.redis_port = 6379
-            mock_settings.redis_password = ""
-            mock_settings.redis_db = 0
-
-            # 模拟不同数据库的不同响应
-            with patch("src.utils.check_db_health.pymysql") as mock_pymysql:
-                with patch("src.utils.check_db_health.psycopg2") as mock_psycopg2:
-                    with patch("src.utils.check_db_health.taos") as mock_taos:
-                        with patch("src.utils.check_db_health.redis") as mock_redis:
-                            # MySQL连接成功
-                            mock_mysql_conn = MagicMock()
-                            mock_mysql_cursor = MagicMock()
-                            mock_mysql_cursor.fetchall.return_value = [("test_table",)]
-                            mock_mysql_conn.cursor.return_value = mock_mysql_cursor
-                            mock_pymysql.connect.return_value = mock_mysql_conn
-
-                            # PostgreSQL连接成功，监控数据库失败
-                            mock_pg_conn = MagicMock()
-                            mock_pg_cursor = MagicMock()
-                            mock_pg_cursor.fetchone.return_value = ("PostgreSQL 13.0",)
-                            mock_pg_cursor.fetchall.return_value = [("pg_table",)]
-                            mock_pg_conn.cursor.return_value = mock_pg_cursor
-                            mock_psycopg2.connect.side_effect = [
-                                mock_pg_conn,
-                                Exception("监控数据库连接失败"),
-                            ]
-
-                            # TDengine连接成功但数据库不存在
-                            mock_td_conn = MagicMock()
-                            mock_td_cursor = MagicMock()
-                            mock_td_cursor.fetchone.return_value = ("3.0.0",)
-                            mock_td_cursor.execute.side_effect = [
-                                None,
-                                Exception("数据库不存在"),
-                            ]
-                            mock_td_conn.cursor.return_value = mock_td_cursor
-                            mock_taos.connect.return_value = mock_td_conn
-
-                            # Redis连接失败
-                            mock_redis.Redis.side_effect = Exception("Redis连接失败")
-
-                            # 执行主函数
-                            exit_code = main()
-
-                            # 验证结果：3个成功，1个失败
-                            assert exit_code == 1
-
-                            # 验证输出包含关键信息
-                            print_calls = [
-                                str(call) for call in mock_print.call_args_list
-                            ]
-                            assert any("3/4" in call for call in print_calls)
-                            assert any("75.0%" in call for call in print_calls)
-                            assert any("修复建议" in call for call in print_calls)
-
-    def test_path_import_structure(self):
-        """测试路径和导入结构"""
-        # 验证模块可以被正确导入
-        assert callable(check_mysql_connection)
-        assert callable(check_postgresql_connection)
-        assert callable(check_tdengine_connection)
-        assert callable(check_redis_connection)
-        assert callable(main)
-
-    @patch("builtins.print")
-    def test_constants_and_configuration(self, mock_print):
-        """测试常量和配置结构"""
-        # 验证模块的基本结构完整性
-        functions = [
-            check_mysql_connection,
-            check_postgresql_connection,
-            check_tdengine_connection,
-            check_redis_connection,
-            main,
-        ]
-
-        for func in functions:
-            assert callable(func)
-            # 验证函数可以被调用（即使可能失败）
-            try:
-                # 尝试调用函数，预期会失败（因为没有mock数据库）
-                func()
-            except Exception as e:
-                # 预期的异常，因为数据库服务不存在
-                assert e is not None
 
 
 if __name__ == "__main__":
