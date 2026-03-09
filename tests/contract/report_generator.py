@@ -12,6 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
 
+from ._report_generator_rendering import ContractTestReportGeneratorRenderingMixin
 from .models import (
     ContractTestReport,
     ContractTestSuite,
@@ -22,7 +23,7 @@ from .models import (
 logger = logging.getLogger(__name__)
 
 
-class ContractTestReportGenerator:
+class ContractTestReportGenerator(ContractTestReportGeneratorRenderingMixin):
     """契约测试报告生成器"""
 
     def __init__(self, output_dir: str = "reports/contract"):
@@ -656,133 +657,3 @@ class ContractTestReportGenerator:
         xml_content += "</contract_test_report>"
 
         return xml_content
-
-    def _generate_markdown_report(self, report: ContractTestReport) -> str:
-        """生成 Markdown 格式报告"""
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"contract_report_{timestamp}.md"
-        filepath = self.output_dir / filename
-
-        # 生成 Markdown 内容
-        md_content = self._generate_markdown_content(report)
-
-        # 写入文件
-        with open(filepath, "w", encoding="utf-8") as f:
-            f.write(md_content)
-
-        logger.info("Markdown 报告已保存: %(filepath)s")
-        return str(filepath)
-
-    def _generate_markdown_content(self, report: ContractTestReport) -> str:
-        """生成 Markdown 内容"""
-        md_content = f"""# MyStocks 契约测试报告
-
-## 基本信息
-- **测试套件**: {report.suite.name}
-- **描述**: {report.suite.description}
-- **生成时间**: {report.generated_at.strftime("%Y-%m-%d %H:%M:%S")}
-
-## 测试概览
-
-| 指标 | 数值 |
-|------|------|
-| 总测试数 | {report.total_tests} |
-| 通过 | {report.passed_tests} |
-| 失败 | {report.failed_tests} |
-| 跳过 | {report.skipped_tests} |
-| 错误 | {report.error_tests} |
-| 成功率 | {report.success_rate:.2f}% |
-
-## 类别统计
-
-"""
-
-        for category, stats in report.category_stats.items():
-            success_rate = (stats["passed"] / stats["total"] * 100) if stats["total"] > 0 else 0
-            md_content += f"""
-### {category.replace("_", " ").title()}
-
-| 统计 | 数值 |
-|------|------|
-| 总数 | {stats["total"]} |
-| 通过 | {stats["passed"]} |
-| 失败 | {stats["failed"]} |
-| 跳过 | {stats["skipped"]} |
-| 错误 | {stats["error"]} |
-| 成功率 | {success_rate:.2f}% |
-
-"""
-
-        # 性能统计
-        if report.performance_stats:
-            md_content += "## 性能统计\n\n"
-            for metric, values in report.performance_stats.items():
-                md_content += f"### {metric.replace('_', ' ').title()}\n\n"
-                md_content += "| 指标 | 数值 |\n"
-                md_content += "|------|------|\n"
-                for key, value in values.items():
-                    unit = "ms" if "ms" in key else ""
-                    md_content += f"| {key.replace('_', ' ').title()} | {value}{unit} |\n"
-                md_content += "\n"
-
-        # 测试结果详情
-        md_content += "## 测试结果详情\n\n"
-        md_content += "| 测试用例 | 端点 | 类别 | 状态 | 耗时(ms) | 响应时间(ms) | 详情 |\n"
-        md_content += "|----------|------|------|------|----------|--------------|------|\n"
-
-        for result in report.results:
-            status_badge = result.status.value.replace("_", " ").title()
-            details = ""
-
-            if result.error_message:
-                details = f"错误: {result.error_message}"
-
-            if result.validation_results:
-                valid_count = sum(1 for v in result.validation_results if v["valid"])
-                total_count = len(result.validation_results)
-                if details:
-                    details += " | "
-                details += f"验证: {valid_count}/{total_count}"
-
-            md_content += f"| {result.test_case.name} | {result.test_case.endpoint} | "
-            md_content += f"{result.test_case.category.value.replace('_', ' ').title()} | "
-            md_content += f"{status_badge} | {result.duration:.2f} | "
-            md_content += f"{result.performance_metrics.get('response_time_ms', 0):.2f} | {details} |\n"
-
-        # 建议
-        if report.recommendations:
-            md_content += "\n## 优化建议\n\n"
-            for i, rec in enumerate(report.recommendations, 1):
-                md_content += f"{i}. {rec}\n"
-
-        md_content += f"\n---\n*报告生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*"
-
-        return md_content
-
-    def generate_summary_report(self, all_reports: List[Dict[str, Any]]) -> str:
-        """生成综合报告摘要"""
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"contract_summary_{timestamp}.json"
-        filepath = self.output_dir / filename
-
-        summary = {
-            "generated_at": datetime.now().isoformat(),
-            "total_suites": len(all_reports),
-            "total_tests": sum(r.get("total_tests", 0) for r in all_reports),
-            "total_passed": sum(r.get("passed_tests", 0) for r in all_reports),
-            "total_failed": sum(r.get("failed_tests", 0) for r in all_reports),
-            "total_skipped": sum(r.get("skipped_tests", 0) for r in all_reports),
-            "total_error": sum(r.get("error_tests", 0) for r in all_reports),
-            "overall_success_rate": round(
-                (sum(r.get("passed_tests", 0) for r in all_reports) / sum(r.get("total_tests", 1) for r in all_reports))
-                * 100,
-                2,
-            ),
-            "suite_reports": all_reports,
-        }
-
-        with open(filepath, "w", encoding="utf-8") as f:
-            json.dump(summary, f, ensure_ascii=False, indent=2, default=str)
-
-        logger.info("综合报告摘要已保存: %(filepath)s")
-        return str(filepath)
