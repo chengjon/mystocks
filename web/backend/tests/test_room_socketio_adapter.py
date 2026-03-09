@@ -10,6 +10,7 @@ Date: 2025-11-07
 """
 
 import pytest
+from web.backend.tests._room_socketio_adapter_tail import RoomSocketIOAdapterIntegrationScenariosMixin
 
 from app.services.room_socketio_adapter import (
     RoomSocketIOAdapter,
@@ -662,126 +663,5 @@ class TestStats:
         assert stats["active_users"] == 0
 
 
-class TestIntegrationScenarios:
+class TestIntegrationScenarios(RoomSocketIOAdapterIntegrationScenariosMixin):
     """Test integration scenarios"""
-
-    @pytest.mark.asyncio
-    async def test_multiple_users_in_room(self):
-        """Test multiple users in same room"""
-        reset_all_singletons()
-        adapter = get_room_socketio_adapter()
-
-        adapter.room_manager.create_room("room_1", "Test Room", "owner_1")
-
-        # Multiple users join
-        for i in range(3):
-            await adapter.handle_join_room(
-                sid=f"sid_{i}",
-                user_id=f"user_{i}",
-                username=f"user{i}",
-                room_id="room_1",
-                role=RoomRole.MEMBER,
-            )
-
-        # Users send messages
-        for i in range(3):
-            await adapter.handle_room_message(
-                sid=f"sid_{i}",
-                user_id=f"user_{i}",
-                room_id="room_1",
-                content=f"Message from user {i}",
-            )
-
-        users = adapter.get_room_users("room_1")
-        assert len(users) == 3
-        assert adapter.total_messages == 3
-
-    @pytest.mark.asyncio
-    async def test_user_in_multiple_rooms(self):
-        """Test user in multiple rooms simultaneously"""
-        reset_all_singletons()
-        adapter = get_room_socketio_adapter()
-
-        adapter.room_manager.create_room("room_1", "Room 1", "owner_1")
-        adapter.room_manager.create_room("room_2", "Room 2", "owner_1")
-        adapter.room_manager.create_room("room_3", "Room 3", "owner_1")
-
-        # User joins multiple rooms
-        for i, room_id in enumerate(["room_1", "room_2", "room_3"]):
-            await adapter.handle_join_room(
-                sid=f"sid_{i}",
-                user_id="user_1",
-                username="alice",
-                room_id=room_id,
-                role=RoomRole.MEMBER,
-            )
-
-        user_rooms = adapter.get_user_rooms("user_1")
-        assert len(user_rooms) == 3
-
-        # Leave one room
-        await adapter.handle_leave_room(
-            sid="sid_0",
-            user_id="user_1",
-            room_id="room_1",
-        )
-
-        user_rooms = adapter.get_user_rooms("user_1")
-        assert len(user_rooms) == 2
-
-    @pytest.mark.asyncio
-    async def test_full_room_lifecycle(self):
-        """Test complete room lifecycle with adapter"""
-        reset_all_singletons()
-        adapter = get_room_socketio_adapter()
-
-        # Create room
-        adapter.room_manager.create_room("room_1", "Meeting", "owner_1")
-
-        # Users join
-        await adapter.handle_join_room(
-            sid="sid_1",
-            user_id="user_1",
-            username="alice",
-            room_id="room_1",
-            role=RoomRole.OWNER,
-        )
-
-        await adapter.handle_join_room(
-            sid="sid_2",
-            user_id="user_2",
-            username="bob",
-            room_id="room_1",
-            role=RoomRole.MEMBER,
-        )
-
-        # Send messages
-        await adapter.handle_room_message(
-            sid="sid_1",
-            user_id="user_1",
-            room_id="room_1",
-            content="Hello everyone",
-        )
-
-        await adapter.handle_room_message(
-            sid="sid_2",
-            user_id="user_2",
-            room_id="room_1",
-            content="Hi alice!",
-        )
-
-        # User leaves
-        await adapter.handle_leave_room(
-            sid="sid_2",
-            user_id="user_2",
-            room_id="room_1",
-        )
-
-        # User stays and disconnects
-        await adapter.handle_disconnect(sid="sid_1")
-
-        # Verify state
-        assert len(adapter.sid_to_connection) == 0
-        assert len(adapter.user_room_subscriptions) == 0
-        assert adapter.total_joins == 2
-        assert adapter.total_messages == 2
