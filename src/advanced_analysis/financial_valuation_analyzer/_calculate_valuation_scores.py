@@ -10,12 +10,21 @@ This module provides comprehensive financial valuation analysis including:
 - Industry-relative valuation benchmarking
 """
 
+import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import numpy as np
 
 from src.advanced_analysis import AnalysisResult, AnalysisType
+from src.advanced_analysis.financial_valuation_analyzer._dcf_valuation_models import (
+    DCFValuation,
+    DuPontAnalysis,
+    RelativeValuation,
+    ValuationConsensus,
+)
+
+logger = logging.getLogger(__name__)
 
 def _calculate_valuation_scores(
     self,
@@ -69,7 +78,7 @@ def _calculate_valuation_scores(
         scores["overall_score"] = overall_score
 
     except Exception as e:
-        print(f"Error calculating valuation scores: {e}")
+        logger.error("Error calculating valuation scores: %s", e)
         scores = {"overall_score": 0.5, "error": True}
 
     return scores
@@ -245,7 +254,7 @@ def _generate_valuation_recommendations(
         )
 
     except Exception as e:
-        print(f"Error generating valuation recommendations: {e}")
+        logger.error("Error generating valuation recommendations: %s", e)
         recommendations = {
             "primary_signal": "hold",
             "recommended_action": "分析过程中出现错误，建议观望",
@@ -331,7 +340,7 @@ def _assess_valuation_risk(
         )
 
     except Exception as e:
-        print(f"Error assessing valuation risk: {e}")
+        logger.error("Error assessing valuation risk: %s", e)
         risk_assessment = {"overall_risk_level": "unknown", "error": str(e)}
 
     return risk_assessment
@@ -349,5 +358,3 @@ def _create_error_result(self, stock_code: str, error_msg: str) -> AnalysisResul
         risk_assessment={"error": True},
         metadata={"error": True, "error_message": error_msg},
     )
-
-
