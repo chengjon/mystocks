@@ -1,1 +1,1 @@
-# Package marker for scripts.
+"""Scripts package."""

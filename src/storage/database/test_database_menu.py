@@ -5,6 +5,7 @@
 整合了路径查找、配置检查、连通性测试功能
 """
 
+import importlib
 import os
 import time
 from typing import Any, Dict
@@ -184,7 +185,7 @@ class DatabaseTestTool:
         for driver_name, description in drivers_info:
             try:
                 if driver_name == "sqlalchemy":
-                    exec("from sqlalchemy import create_engine, text")
+                    importlib.import_module("sqlalchemy")
                     self.db_libs[driver_name] = True  # 简化存储
                 elif driver_name == "tdengine":
                     # TDengine 多种连接方式检测
@@ -207,7 +208,7 @@ class DatabaseTestTool:
                         self.db_libs[driver_name] = None
                     continue
                 else:
-                    exec(f"import {driver_name}")
+                    importlib.import_module(driver_name)
                     self.db_libs[driver_name] = True
                 print(f"  ✅ {description}: 已安装")
                 installed_count += 1
@@ -236,7 +237,7 @@ class DatabaseTestTool:
 
         # 1. 检测 WebSocket 连接 (taos-ws-py包)
         try:
-            exec("import taosws")
+            importlib.import_module("taosws")
             available_methods.append("WebSocket(taos-ws-py)")
         except ImportError:
             pass
@@ -246,7 +247,7 @@ class DatabaseTestTool:
 
         # 2. 检测 REST 连接 (taospy包的taosrest模块)
         try:
-            exec("import taosrest")
+            importlib.import_module("taosrest")
             available_methods.append("REST(taosrest)")
         except ImportError:
             pass
@@ -256,7 +257,7 @@ class DatabaseTestTool:
 
         # 3. 检测原生连接 (taospy包的taos模块)
         try:
-            exec("import taos")
+            importlib.import_module("taos")
             available_methods.append("原生(taos)")
         except ImportError:
             pass

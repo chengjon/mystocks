@@ -12,15 +12,22 @@ Usage:
     python scripts/generate_frontend_types.py --domain=trading  # Generate specific domain
 """
 
-import sys
 import re
 import ast
-import argparse
 from pathlib import Path
 from typing import Dict, List, Set, Optional, Any
 from datetime import datetime
 from collections import defaultdict
 import yaml
+
+try:
+    from ._generate_frontend_types_cli import (
+        build_argument_parser,
+        generate_index_file as _generate_index_file,
+        run_generation,
+    )
+except ImportError:
+    from _generate_frontend_types_cli import build_argument_parser, generate_index_file as _generate_index_file, run_generation
 
 # Project paths
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -696,144 +703,20 @@ class TypeScriptGenerator:
 
 
 def generate_index_file(domains: List[str]) -> str:
-    """Generate index.ts file with unified exports (no duplicates)"""
-    lines = [
-        "// Auto-generated index file for TypeScript types",
-        f"// Generated at: {datetime.now().isoformat()}",
-        "",
-    ]
-
-    # Export all domain types (including common) in one pass to avoid duplicates
-    for domain in sorted(domains):
-        domain_file = OUTPUT_DIR / f"{domain}.ts"
-        if domain_file.exists():
-            lines.append(f"// {domain.title()} domain types")
-            lines.append(f"export * from './{domain}';")
-            lines.append("")
-
-    return "\n".join(lines)
+    """Generate index.ts file with unified exports (no duplicates)."""
+    return _generate_index_file(domains, OUTPUT_DIR)
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Generate TypeScript types from Pydantic models")
-    parser.add_argument("--domain", "-d", help="Generate types for specific domain only")
-    parser.add_argument("--all", action="store_true", help="Generate multi-file output (default)")
-    parser.add_argument(
-        "--single",
-        action="store_true",
-        help="Generate single file (backward compatible)",
+def main() -> None:
+    args = build_argument_parser().parse_args()
+    run_generation(
+        args,
+        project_root=PROJECT_ROOT,
+        output_dir=OUTPUT_DIR,
+        config_factory=TypeGenerationConfig,
+        extractor_factory=PydanticModelExtractor,
+        generator_factory=TypeScriptGenerator,
     )
-    parser.add_argument("--watch", "-w", action="store_true", help="Watch mode (not implemented)")
-    args = parser.parse_args()
-
-    print("🔄 Generating TypeScript types from Pydantic models...")
-
-    # Directories to scan for Pydantic models
-    SCAN_DIRS = [
-        PROJECT_ROOT / "web" / "backend" / "app" / "schemas",
-        PROJECT_ROOT / "web" / "backend" / "app" / "schema",
-        PROJECT_ROOT / "web" / "backend" / "app" / "api" / "v1",
-        PROJECT_ROOT / "web" / "backend" / "app" / "models",
-    ]
-
-    # Load configuration
-    config = TypeGenerationConfig()
-
-    # Extract models
-    extractor = PydanticModelExtractor(config)
-
-    for scan_dir in SCAN_DIRS:
-        if not scan_dir.exists():
-            print(f"  ⚠️  Directory not found: {scan_dir}")
-            continue
-
-        print(f"  📂 Scanning {scan_dir.relative_to(PROJECT_ROOT)}...")
-        for py_file in scan_dir.rglob("*.py"):
-            if py_file.name != "__init__.py":
-                extractor.extract_from_file(py_file)
-
-    # Generate output
-    generator = TypeScriptGenerator()
-
-    if args.single:
-        # Generate single file (backward compatible)
-        ts_code = generator.generate(extractor.models)
-        output_file = OUTPUT_DIR / "generated-types.ts"
-        with open(output_file, "w", encoding="utf-8") as f:
-            f.write(ts_code)
-        print(f"✅ Generated single file: {output_file}")
-    else:
-        # Generate multi-file output organized by domain
-        domains = set(extractor.domain_models.keys())
-        generated_domains = []
-        non_common_used_models = set()
-
-        for domain in sorted(domains):
-            if domain == "common":
-                continue
-            models = extractor.domain_models[domain]
-            if models:
-                ts_code = generator.generate_domain(domain, models)
-                domain_file = OUTPUT_DIR / f"{domain}.ts"
-                with open(domain_file, "w", encoding="utf-8") as f:
-                    f.write(ts_code)
-                print(f"  ✅ Generated {domain}.ts ({len(models)} models)")
-                generated_domains.append(domain)
-                non_common_used_models.update(models.keys())
-
-        # Generate split common types, including explicit common models and uncategorized leftovers.
-        common_models: Dict[str, Dict] = dict(extractor.domain_models.get("common", {}))
-        for name, info in extractor.models.items():
-            if name not in non_common_used_models:
-                common_models.setdefault(name, info)
-
-        if common_models:
-            chunk_count = generator.write_common_split_files(common_models, OUTPUT_DIR)
-            print(f"  ✅ Generated common.ts + common/index.ts + {chunk_count} chunk files")
-            generated_domains.append("common")
-
-        # Generate index file
-        index_code = generate_index_file(generated_domains)
-        index_file = OUTPUT_DIR / "index.ts"
-        with open(index_file, "w", encoding="utf-8") as f:
-            f.write(index_code)
-        print(f"  ✅ Generated index.ts")
-
-        # Keep legacy generated-types.ts as a compatibility barrel
-        generator.write_generated_types_compat_barrel(OUTPUT_DIR)
-        print("  ✅ Generated generated-types.ts (compatibility barrel)")
-
-        print(f"\n📊 Summary:")
-        print(f"   Total models: {len(extractor.models)}")
-        print(f"   Domains: {', '.join(generated_domains)}")
-
-    # Report results
-    if extractor.fixed_conflicts:
-        print(f"\n✅ {len(extractor.fixed_conflicts)} conflicts auto-fixed:")
-        for fix in extractor.fixed_conflicts[:10]:  # Show first 10 fixes
-            print(f"    • {fix}")
-        if len(extractor.fixed_conflicts) > 10:
-            print(f"    • ... and {len(extractor.fixed_conflicts) - 10} more fixes")
-
-    if extractor.warnings:
-        max_warnings = config.get_max_warnings()
-        print(f"\n⚠️  {len(extractor.warnings)} warnings detected:")
-        for warning in extractor.warnings[:max_warnings]:  # Show configured number of warnings
-            print(f"    • {warning}")
-        if len(extractor.warnings) > max_warnings:
-            print(f"    • ... and {len(extractor.warnings) - max_warnings} more warnings (limited by config)")
-
-    if extractor.type_conflicts and config.should_warn_on_conflicts():
-        print(f"\n🚨 {len(extractor.type_conflicts)} type conflicts detected:")
-        for name, conflicts in extractor.type_conflicts.items():
-            print(f"    • {name}: {len(conflicts)} conflicting definitions")
-
-    # Check for strict mode
-    if config.is_strict_mode() and (extractor.warnings or extractor.type_conflicts):
-        print(f"\n❌ Strict mode enabled - exiting with error due to conflicts/warnings")
-        sys.exit(1)
-
-    print(f"\n📁 Output directory: {OUTPUT_DIR}")
 
 
 if __name__ == "__main__":
