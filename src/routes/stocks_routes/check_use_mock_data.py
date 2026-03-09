@@ -7,11 +7,12 @@ FastAPI路由文件: Stocks
 """
 
 import logging
-import os
 from datetime import datetime
 from typing import Dict, Optional
 
 from fastapi import APIRouter, Query
+from src.routes.stocks_routes._watchlist_router import router as watchlist_router
+from src.routes.stocks_routes.stocks_data_sources import check_use_mock_data, get_database_service, get_stocks_mock_data
 
 # 设置日志
 logging.basicConfig(level=logging.INFO)
@@ -19,58 +20,7 @@ logger = logging.getLogger(__name__)
 
 # 创建路由实例
 router = APIRouter(prefix="/api/stocks", tags=["Stocks"])
-
-def check_use_mock_data() -> bool:
-    """检查是否使用Mock数据
-
-    Returns:
-        bool: 是否使用Mock数据
-    """
-    return os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
-
-def get_stocks_mock_data():
-    """获取股票管理Mock数据模块
-
-    Returns:
-        module: Mock数据模块
-    """
-    from src.mock.mock_Stocks import (
-        add_to_watchlist,
-        get_realtime_quotes,
-        get_stock_by_industry,
-        get_stock_detail,
-        get_stock_financial_data,
-        get_stock_indicators,
-        get_stock_list,
-        get_watchlist,
-        remove_from_watchlist,
-        search_stocks,
-    )
-
-    return {
-        "get_stock_list": get_stock_list,
-        "get_stock_detail": get_stock_detail,
-        "get_stock_financial_data": get_stock_financial_data,
-        "get_stock_indicators": get_stock_indicators,
-        "get_realtime_quotes": get_realtime_quotes,
-        "search_stocks": search_stocks,
-        "get_stock_by_industry": get_stock_by_industry,
-        "get_watchlist": get_watchlist,
-        "add_to_watchlist": add_to_watchlist,
-        "remove_from_watchlist": remove_from_watchlist,
-    }
-
-
-def get_database_service():
-    """获取数据库服务（真实数据源）
-
-    Returns:
-        object: 数据库服务实例
-    """
-    # 这里实现真实数据库查询逻辑
-    # 返回None表示功能未实现
-    return None
+router.include_router(watchlist_router)
 
 
 @router.get("/list")
@@ -656,150 +606,3 @@ async def get_watchlist():
             "message": f"获取自选股列表失败: {str(e)}",
             "timestamp": datetime.now().isoformat(),
         }
-
-
-@router.post("/watchlist")
-async def add_to_watchlist(request: Dict):
-    """添加到自选股
-
-    Args:
-        request: Dict - 请求参数：
-                stock_code: str - 股票代码
-                notes: str - 备注（可选）
-
-    Returns:
-        Dict: 添加结果
-    """
-    try:
-        stock_code = request.get("stock_code", "")
-        notes = request.get("notes", "")
-
-        logger.info("添加到自选股: %s, 备注: %s", stock_code, notes)
-
-        if check_use_mock_data():
-            logger.info("使用Mock数据源: 添加到自选股")
-            mock_data = get_stocks_mock_data()
-            result = mock_data["add_to_watchlist"](request)
-            logger.info("Mock数据响应: 添加%s到自选股", stock_code)
-            return {
-                "success": True,
-                "data": result,
-                "timestamp": datetime.now().isoformat(),
-                "source": "mock",
-            }
-        else:
-            logger.info("使用真实数据库: 添加到自选股")
-            db_service = get_database_service()
-            if db_service is None:
-                return {
-                    "success": False,
-                    "message": "数据库服务暂未实现，请使用Mock数据源",
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-
-            # 实现真实数据库查询
-            try:
-                # 导入真实数据库服务
-                from src.database.database_service import db_service
-
-                # 调用真实数据服务，参数与Mock接口一致
-                # For adding to watchlist, we'll return a success message
-                result = {"message": f"成功添加股票{stock_code}到自选股"}
-
-                logger.info("真实数据库查询成功: 添加股票%s到自选股", stock_code)
-
-                return {
-                    "success": True,
-                    "data": result,
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-            except Exception as e:
-                logger.error("真实数据库查询失败: %s", str(e))
-                return {
-                    "success": False,
-                    "message": f"真实数据库查询失败: {str(e)}",
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-
-    except Exception as e:
-        logger.error("添加到自选股失败: %s", str(e))
-        return {
-            "success": False,
-            "message": f"添加到自选股失败: {str(e)}",
-            "timestamp": datetime.now().isoformat(),
-        }
-
-
-@router.delete("/watchlist/{stock_code}")
-async def remove_from_watchlist(stock_code: str):
-    """从自选股移除
-
-    Args:
-        stock_code: str - 股票代码
-
-    Returns:
-        Dict: 移除结果
-    """
-    try:
-        logger.info("从自选股移除: %s", stock_code)
-
-        if check_use_mock_data():
-            logger.info("使用Mock数据源: 从自选股移除")
-            mock_data = get_stocks_mock_data()
-            result = mock_data["remove_from_watchlist"]({"stock_code": stock_code})
-            logger.info("Mock数据响应: 从自选股移除%s", stock_code)
-            return {
-                "success": True,
-                "data": result,
-                "timestamp": datetime.now().isoformat(),
-                "source": "mock",
-            }
-        else:
-            logger.info("使用真实数据库: 从自选股移除")
-            db_service = get_database_service()
-            if db_service is None:
-                return {
-                    "success": False,
-                    "message": "数据库服务暂未实现，请使用Mock数据源",
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-
-            # 实现真实数据库查询
-            try:
-                # 导入真实数据库服务
-                from src.database.database_service import db_service
-
-                # 调用真实数据服务，参数与Mock接口一致
-                # For removing from watchlist, we'll return a success message
-                result = {"message": f"成功从自选股移除股票{stock_code}"}
-
-                logger.info("真实数据库查询成功: 从自选股移除股票%s", stock_code)
-
-                return {
-                    "success": True,
-                    "data": result,
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-            except Exception as e:
-                logger.error("真实数据库查询失败: %s", str(e))
-                return {
-                    "success": False,
-                    "message": f"真实数据库查询失败: {str(e)}",
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-
-    except Exception as e:
-        logger.error("从自选股移除失败: %s", str(e))
-        return {
-            "success": False,
-            "message": f"从自选股移除失败: {str(e)}",
-            "timestamp": datetime.now().isoformat(),
-        }
-
-
