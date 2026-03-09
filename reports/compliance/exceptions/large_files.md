@@ -10,7 +10,13 @@ This document tracks files temporarily allowed to exceed limits and the current 
 | **Test** | `web/frontend/tests/api-automation.spec.js` | 6 | ✅ Slimmed | Suite Migration to `legacy-suite.js` |
 | **Ops** | `scripts/tests/web-usability-runner.js` | 30 | ✅ Slimmed | Core Migration to `runner-core.js` |
 | **Ops** | `scripts/tests/web-usability/runner-core.js` | 142 | ✅ Slimmed | Split into `scripts/tests/web-usability/core/*.js` modules |
+| **Archive** | `web/frontend/src/views/converted.archive/market-quotes.vue` | 1141 | ✅ Governed | Archived page; route-detached, TS-excluded, only reactivated after migration to active ArtDeco page |
+| **Archive** | `web/frontend/src/views/converted.archive/market-data.vue` | 978 | ✅ Governed | Archived page; route-detached, TS-excluded, only reactivated after migration to active ArtDeco page |
+| **Archive** | `web/frontend/src/views/converted.archive/backtest-management.vue` | 863 | ✅ Governed | Archived page; route-detached, TS-excluded, only reactivated after migration to active ArtDeco page |
+| **Archive** | `web/frontend/src/views/converted.archive/setting.vue` | 829 | ✅ Governed | Archived page; route-detached, TS-excluded, only reactivated after migration to active ArtDeco page |
+| **Archive** | `web/frontend/src/views/converted.archive/trading-management.vue` | 741 | ✅ Governed | Archived page; route-detached, TS-excluded, only reactivated after migration to active ArtDeco page |
+| **Archive** | `web/frontend/src/views/converted.archive/dashboard.vue` | 605 | ✅ Governed | Archived page; route-detached, TS-excluded, only reactivated after migration to active ArtDeco page |
 | **3rd Party** | `scripts/dev/**` | 70 files >1000 lines | ✅ Exception Approved | Third-party/generated artifacts (Playwright, Puppeteer, jsdom, Babel, etc.); no manual split, monthly inventory review only |
 
 ---
-**Last Updated**: 2026-02-23
+**Last Updated**: 2026-03-08

@@ -60,7 +60,7 @@
               // ... 可以添加更多组件或页面区域的快照测试
             });
             ```
-        3.  **生成基准快照**：首次运行测试时，使用 `npx playwright test web/frontend/tests/visual/artdeco-visual-regression.spec.ts --update-snapshots` 命令生成基准快照。
+        3.  **生成基准快照**：首次运行测试时，使用 `npx playwright test web/frontend/tests/visual/artdeco-visual-regression.spec.ts --update-snapshots` 命令生成基准快照（补充场景：快照更新）。
         4.  **持续对比**：在后续的开发中，定期运行视觉回归测试以检测非预期的UI变化。
     *   **预期成果**：项目拥有健全的视觉回归测试，能有效捕获ArtDeco UI的视觉变化。
 

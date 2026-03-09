@@ -227,13 +227,13 @@ pm2 start start.sh --name mystocks-prod
 ```bash
 cd /opt/claude/mystocks_spec/web/frontend
 
-# 运行所有 E2E 测试
+# 运行所有 E2E 测试（推荐入口）
 npm run test:e2e
 
-# 运行特定测试文件
+# 运行特定测试文件（补充场景：单文件测试）
 npx playwright test tests/comprehensive-all-pages.spec.ts --project=chromium --reporter=list
 
-# 以 UI 模式运行测试
+# 以 UI 模式运行测试（补充场景：UI模式）
 npx playwright test --ui
 ```
 

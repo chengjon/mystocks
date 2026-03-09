@@ -64,7 +64,7 @@
 - Implement layout switching logic in router
 - Create layout unit tests
 
-#### 1.2 Bloomberg-Style Dark Theme ✅ (12/12 tasks completed)
+#### 1.2 ArtDeco-Style Dark Theme ✅ (12/12 tasks completed)
 
 **Completed Tasks:**
 - ✅ Create `src/styles/themes/dark.scss` with professional color palette
@@ -170,7 +170,7 @@
 
 #### High Coverage Areas
 1. **Layout System** (75%): 12/16 domain layouts exist, comprehensive responsive design
-2. **Theme System** (100%): Complete Bloomberg-style dark theme with design tokens
+2. **Theme System** (100%): Complete ArtDeco-style dark theme with design tokens
 3. **Trading Rules** (27%): Core A股 T+1 and price limit validation implemented
 4. **GPU Monitoring** (12%): Basic GPU dashboard and progress bars exist
 

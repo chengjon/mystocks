@@ -100,17 +100,17 @@ cat test-results.json | jq
 ### 1. 冒烟测试（基础功能验证）
 
 ```bash
-# 运行所有冒烟测试
+# 运行所有冒烟测试（补充场景：单目录测试）
 npx playwright test tests/smoke/
 
-# 运行特定测试
+# 运行特定测试（补充场景：单文件测试）
 npx playwright test tests/smoke/02-page-loading.spec.ts
 
 # 并行运行（更快）
 npx playwright test tests/smoke/ --workers=4
 ```
 
-**包含的测试**：
+**包含的测试**:
 - ✅ 页面加载测试
 - ✅ 菜单导航测试
 - ✅ 侧边栏折叠测试
@@ -120,7 +120,7 @@ npx playwright test tests/smoke/ --workers=4
 ### 2. ArtDeco菜单测试
 
 ```bash
-# 运行菜单导航测试
+# 运行菜单导航测试（补充场景：单文件测试）
 npx playwright test tests/artdeco/02-menu-navigation.spec.ts
 
 # 运行Toast测试
@@ -136,7 +136,7 @@ npx playwright test tests/artdeco/05-websocket-realtime.spec.ts
 ### 3. 组件测试
 
 ```bash
-# 运行所有组件测试
+# 运行所有组件测试（补充场景：特定项目）
 npx playwright test --project=component-tests
 
 # 运行特定组件测试
@@ -146,7 +146,7 @@ npx playwright test tests/components/ArtDecoButton.spec.ts
 ### 4. 性能测试
 
 ```bash
-# 运行性能测试
+# 运行性能测试（补充场景：特定项目）
 npx playwright test --project=performance
 
 # 生成Lighthouse报告
@@ -160,7 +160,7 @@ npm run test:lighthouse
 ### 基础测试
 
 ```bash
-# 标准E2E测试
+# 标准E2E测试（推荐入口）
 npm run test:e2e
 
 # 仅Chromium
@@ -169,17 +169,17 @@ npm run test:e2e:chromium
 # 仅Firefox
 npm run test:e2e:firefox
 
-# 调试模式
-npx playwright test --debug
+# 调试模式（补充场景）
+npm run test:e2e:debug
 ```
 
 ### 高级测试
 
 ```bash
-# 带追踪的测试（性能分析）
+# 带追踪的测试（补充场景：性能分析）
 npx playwright test --trace=on
 
-# 生成HTML报告
+# 生成HTML报告（推荐方式）
 npm run test:e2e -- --reporter=html
 
 # 生成JUnit报告（CI/CD）
@@ -192,19 +192,19 @@ npm run test:e2e -- --workers=4
 ### 调试和故障排查
 
 ```bash
-# 调试特定测试
+# 调试特定测试（补充场景：单文件调试）
 npx playwright test tests/smoke/01-page-loading.spec.ts --debug
 
-# 显示浏览器窗口
+# 显示浏览器窗口（补充场景）
 npx playwright test --headed
 
-# 慢动作模式（方便观察）
+# 慢动作模式（补充场景）
 npx playwright test --slow-mo=1000
 
-# 保留视频证据（失败时）
+# 保留视频证据（补充场景）
 npx playwright test --video=retain-on-failure
 
-# 保留截图证据（失败时）
+# 保留截图证据（补充场景）
 npx playwright test --screenshot=only-on-failure
 ```
 
@@ -246,10 +246,10 @@ open playwright-report/index.html
 **解决方案**：
 
 ```bash
-# 1. 查看详细错误
+# 1. 查看详细错误（补充场景：list报告）
 npx playwright test tests/smoke/ --reporter=list
 
-# 2. 调试模式
+# 2. 调试模式（补充场景：单文件调试）
 npx playwright test tests/smoke/01-page-loading.spec.ts --debug
 
 # 3. 查看截图
@@ -279,7 +279,7 @@ pm2 start ecosystem.prod.config.js --no-daemon
 # 4. 查看详细日志
 pm2 logs mystocks-frontend-prod --lines 50
 
-# 5. 手动测试
+# 5. 手动测试（补充场景：临时服务器）
 npx http-server dist -p 3020
 ```
 
@@ -317,7 +317,7 @@ pm2 restart simple_backend
 # 按F12 → Performance → Record
 # 执行操作 → Stop → 分析
 
-# 2. Playwright性能测试
+# 2. Playwright性能测试（补充场景：特定项目）
 npx playwright test --project=performance
 
 # 3. 检查构建产物大小
@@ -368,7 +368,7 @@ pm2 restart ecosystem.prod.config.js
 # 2. 快速测试
 ./scripts/test-runner/run-quick-e2e.sh
 
-# 3. 查看报告
+# 3. 查看报告（补充场景：查看报告）
 npx playwright show-report
 ```
 

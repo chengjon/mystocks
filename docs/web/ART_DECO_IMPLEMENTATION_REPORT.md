@@ -46,7 +46,7 @@
 
 ## Executive Summary
 
-Successfully implemented the **Art Deco Design System** for the MyStocks web frontend, transforming the existing Bloomberg Terminal-style dark theme into a luxurious "Great Gatsby meets Metropolis" aesthetic. The redesign maintains all existing functionality while introducing:
+Successfully implemented the **Art Deco Design System** for the MyStocks web frontend, transforming the existing ArtDeco Terminal-style dark theme into a luxurious "Great Gatsby meets Metropolis" aesthetic. The redesign maintains all existing functionality while introducing:
 
 - **Obsidian black (#0A0A0A)** and **metallic gold (#D4AF37)** color palette
 - **Google Fonts integration** (Marcellus + Josefin Sans)
@@ -585,7 +585,7 @@ p {
    - Sunburst effects on chart containers
 
 4. **Theme Toggle (Optional)**
-   - Switch between Art Deco and Bloomberg themes
+   - Switch between Art Deco and ArtDeco themes
    - Persistent user preference
    - Smooth transition between themes
 

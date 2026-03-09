@@ -44,7 +44,7 @@
 ### 自动化测试
 - [ ] **DOM结构检查** - `node web/frontend/check-artdeco-dom.mjs`
 - [ ] **API检查** - `node web/frontend/check-api.mjs`
-- [ ] **E2E测试** - `npx playwright test tests/smoke/02-page-loading.spec.ts`
+- [ ] **E2E测试（补充场景：单文件测试）** - `npx playwright test tests/smoke/02-page-loading.spec.ts`
 
 **如果以上所有项都确认✅，但问题仍存在，请继续阅读下文。**
 
@@ -185,7 +185,7 @@ Test timeout: 30000ms exceeded
 # 在测试文件中添加:
 test.setTimeout(60000);  // 60秒
 
-# 2. 使用调试模式运行测试
+# 2. 使用调试模式运行测试（补充场景：单文件调试）
 npx playwright test tests/smoke/02-page-loading.spec.ts --debug
 
 # 3. 检查页面加载性能
@@ -325,8 +325,8 @@ node check-artdeco-dom.mjs
 # 4.3 检查菜单配置
 node inspect-menu.mjs
 
-# 4.4 运行CORS检查测试
-npx playwright test tests/smoke/02-page-loading.spec.ts --reporter=list
+# 4.4 运行CORS检查测试（补充场景：单文件测试）
+npx playwright test tests/cors-websocket-check.spec.ts --reporter=list
 ```
 
 **步骤5: 浏览器手动诊断（如自动化工具无法检测）**
@@ -538,14 +538,14 @@ echo "⚠️  请手动检查并更新菜单项文本和其他业务逻辑"
 **步骤4: 验证测试更新**
 
 ```bash
-# 4.1 运行单个测试文件（调试模式）
+# 4.1 运行单个测试文件（补充场景：单文件调试）
 npx playwright test tests/artdeco-integration-comprehensive.test.ts --debug
 
-# 4.2 运行所有测试（仅显示通过/失败）
-npx playwright test --reporter=list
+# 4.2 运行所有测试（推荐入口：npm scripts）
+npm run test:e2e -- --reporter=list
 
-# 4.3 生成测试报告
-npx playwright test --reporter=html
+# 4.3 生成测试报告（推荐入口）
+npm run test:e2e -- --reporter=html
 # 报告位置: playwright-report/index.html
 ```
 
@@ -580,12 +580,12 @@ test.describe('ArtDeco视觉回归测试', () => {
 });
 ```
 
-运行视觉回归测试:
+运行视觉回归测试（补充场景：快照对比）
 ```bash
 # 首次运行（生成基准快照）
 npx playwright test tests/visual/artdeco-visual.spec.ts
 
-# 更新快照
+# 更新快照（当UI变化后更新基准）
 npx playwright test tests/visual/artdeco-visual.spec.ts --update-snapshots
 ```
 
@@ -1499,6 +1499,9 @@ new WebSocket('ws://localhost:8020/api/ws')
 **步骤4: 运行E2E测试（5分钟）**
 ```bash
 cd web/frontend
+# 运行冒烟测试（推荐入口）
+npm run test:e2e -- --grep="smoke"
+# 或使用 npx 直接运行单文件（补充场景：单文件测试）
 npx playwright test tests/smoke/02-page-loading.spec.ts --reporter=list
 ```
 

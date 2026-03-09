@@ -11,7 +11,7 @@
     "main_model": "fucai-claude/claude-opus-4-6",
     "small_model": "opencode/glm-4.7-free",
     "fucai_base_url": "https://fucaixie.xyz/v1",
-    "fucai_api_key": "REDACTED_FUCAI_API_KEY"
+    "fucai_api_key": "REDACTED_MODEL_CATALOG_API_KEY"
   },
   "enabled_providers": [
     "opencode",

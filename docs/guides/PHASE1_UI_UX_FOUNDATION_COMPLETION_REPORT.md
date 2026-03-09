@@ -16,7 +16,7 @@
 
 ### Core Achievements (核心成就)
 
-✅ **深色主题系统** - 完成 Bloomberg/Wind 风格的专业金融主题
+✅ **深色主题系统** - 完成 ArtDeco/Wind 风格的专业金融主题
 ✅ **A股颜色约定** - 成功实现红涨绿跌的中国市场标准
 ✅ **5个专用布局** - 创建市场、数据、风险、策略专用布局组件
 ✅ **响应式侧边栏** - 实现桌面/移动端自适应导航系统
@@ -523,7 +523,7 @@ const routes = [
 
 ### 2. 深色主题系统架构 (Dark Theme Architecture)
 
-**设计理念**: Bloomberg Terminal + Wind Trading System
+**设计理念**: ArtDeco Terminal + Wind Trading System
 
 **颜色层次**:
 ```
@@ -1195,7 +1195,7 @@ const handleTouchEnd = (e: TouchEvent) => {
 ```bash
 git tag -a phase1-ui-ux-foundation -m "Phase 1: UI/UX Foundation 完成
 
-- 深色主题系统 (Bloomberg/Wind 风格)
+- 深色主题系统 (ArtDeco/Wind 风格)
 - A股颜色约定 (红涨绿跌)
 - 5个专用布局组件
 - 响应式侧边栏
@@ -1327,7 +1327,7 @@ web/frontend/src/
 
 **外部资源**:
 - [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
-- [Bloomberg Terminal Design](https://www.bloomberg.com/professional/)
+- [ArtDeco Terminal Design](https://www.bloomberg.com/professional/)
 - [Wind Financial Terminal](https://www.wind.com.cn/)
 - [Material Design](https://material.io/design)
 - [Vue 3 Composition API](https://vuejs.org/guide/extras/composition-api-faq.html)
@@ -1339,7 +1339,7 @@ web/frontend/src/
 Phase 1 (UI/UX Foundation) 已成功完成 73% 的任务，为 MyStocks 量化交易平台建立了坚实的视觉系统和布局基础设施。
 
 **核心成就**:
-- ✅ 深色主题系统 (Bloomberg/Wind 专业风格)
+- ✅ 深色主题系统 (ArtDeco/Wind 专业风格)
 - ✅ A股颜色约定 (红涨绿跌，100% 覆盖)
 - ✅ 5个专用布局组件 (5,818 lines 代码)
 - ✅ 响应式侧边栏 (桌面/移动端自适应)

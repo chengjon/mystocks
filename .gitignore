@@ -294,3 +294,5 @@ coverage.json
 
 # Test timing artifacts
 test_timing.csv
+.aider*
+.gitnexus

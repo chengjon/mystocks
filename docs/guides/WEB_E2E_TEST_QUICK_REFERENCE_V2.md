@@ -40,7 +40,10 @@ VITE_API_BASE_URL=https://api.production.com ./deploy-and-test.sh
 ### 1. 冒烟测试（Smoke Tests）
 
 ```bash
-# 快速验证基础功能
+# 标准入口（推荐）
+npm run test:e2e:chromium
+
+# 仅运行冒烟测试（补充场景）
 npx playwright test tests/smoke/
 
 # 包含测试
@@ -54,7 +57,7 @@ npx playwright test tests/smoke/
 ### 2. ArtDeco视觉回归测试（新增✨）
 
 ```bash
-# 验证ArtDeco设计系统
+# 验证ArtDeco设计系统（补充场景：单文件测试）
 npx playwright test tests/artdeco/artdeco-visual-regression.spec.ts
 
 # 包含测试（11个）
@@ -73,7 +76,7 @@ npx playwright test tests/artdeco/artdeco-visual-regression.spec.ts
 ### 3. WebSocket实时更新测试（新增✨）
 
 ```bash
-# 使用Mock测试WebSocket功能
+# 使用Mock测试WebSocket功能（补充场景：单文件测试）
 npx playwright test tests/artdeco/websocket-realtime-mock.spec.ts
 
 # 包含测试（12个）
@@ -89,14 +92,14 @@ npx playwright test tests/artdeco/websocket-realtime-mock.spec.ts
 ### 4. 完整E2E测试
 
 ```bash
-# 运行所有测试
-npx playwright test
+# 运行所有测试（标准入口）
+npm run test:e2e
 
 # 仅Chromium
-npx playwright test --project=chromium
+npm run test:e2e:chromium
 
-# 调试模式
-npx playwright test --debug
+# 调试模式（补充场景）
+npm run test:e2e:debug
 ```
 
 ---
@@ -246,7 +249,7 @@ ls -la tests/helpers/websocket-mock.ts
 # 2. 验证TypeScript编译
 npx tsc --noEmit
 
-# 3. 运行单个测试
+# 3. 运行单个测试（补充场景：单文件调试）
 npx playwright test tests/artdeco/websocket-realtime-mock.spec.ts --debug
 ```
 
@@ -256,7 +259,7 @@ npx playwright test tests/artdeco/websocket-realtime-mock.spec.ts --debug
 
 **解决方案**:
 ```bash
-# 1. 检查ArtDeco样式是否加载
+# 1. 检查ArtDeco样式是否加载（补充场景：grep调试）
 npx playwright test --grep "CSS变量应该正确定义" --debug
 
 # 2. 在浏览器中手动验证
@@ -351,16 +354,17 @@ pm2 logs mystocks-frontend-prod --lines 50       # 查看日志
 pm2 restart mystocks-frontend-prod                # 重启服务
 pm2 stop mystocks-frontend-prod && pm2 delete mystocks-frontend-prod  # 清理
 
-# === 测试运行 ===
-npx playwright test tests/smoke/                  # 冒烟测试
-npx playwright test tests/artdeco/                # ArtDeco测试
-npx playwright test --reporter=html               # 生成HTML报告
+# === 测试运行（标准入口）===
+npm run test:e2e                                  # 标准E2E测试
+npm run test:e2e:chromium                         # 仅Chromium
+npm run test:e2e -- --reporter=html               # 生成HTML报告
 npx playwright show-report                        # 打开报告
 
-# === 调试 ===
+# === 补充场景（单文件/grep调试）===
+npx playwright test tests/smoke/                  # 冒烟测试（单目录）
+npx playwright test tests/artdeco/                # ArtDeco测试（单目录）
 npx playwright test --debug                       # 调试模式
 npx playwright test --headed                      # 显示浏览器
-npx playwright test --project=chromium            # 仅Chromium
 ```
 
 ---

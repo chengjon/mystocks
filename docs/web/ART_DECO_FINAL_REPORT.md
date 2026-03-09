@@ -9,7 +9,7 @@
 
 ## 📋 执行摘要
 
-成功将 MyStocks Web 前端从 **Bloomberg Terminal 风格**（深蓝黑金融主题）完全重构为 **Art Deco 装饰艺术风格**（1920s 奢华美学）。本次重构涉及 5 个阶段，共创建 15 个文件，修改 4 个核心文件，实现了完整的 Art Deco 设计系统。
+成功将 MyStocks Web 前端从 **ArtDeco Terminal 风格**（深蓝黑金融主题）完全重构为 **Art Deco 装饰艺术风格**（1920s 奢华美学）。本次重构涉及 5 个阶段，共创建 15 个文件，修改 4 个核心文件，实现了完整的 Art Deco 设计系统。
 
 **核心成就:**
 - ✅ 创建完整的设计令牌系统（颜色、字体、间距、阴影）
@@ -410,7 +410,7 @@ const chartOptions = {
 
 ## 📊 对比分析
 
-### 重构前（Bloomberg Terminal 风格）
+### 重构前（ArtDeco Terminal 风格）
 
 - **配色**: 深蓝黑色系（#0B0F19, #1A1F2E, #232936）
 - **字体**: 系统默认字体
@@ -526,7 +526,7 @@ const handleSubmit = () => {
 ### 可选增强功能
 
 1. **主题切换器**
-   - 在 ArtDeco 和 Bloomberg Terminal 主题之间切换
+   - 在 ArtDeco 和 ArtDeco Terminal 主题之间切换
    - 保存用户偏好到 localStorage
 
 2. **更多页面重构**

@@ -15,32 +15,32 @@
 ### 基础命令
 
 ```bash
-# 运行所有E2E测试
-npx playwright test tests/e2e/
+# 运行所有E2E测试（推荐入口）
+npm run test:e2e
 
-# 运行特定测试文件
+# 运行特定测试文件（补充场景：单文件测试）
 npx playwright test tests/e2e/auth.spec.ts
 
-# 运行特定测试用例（通过grep过滤）
+# 运行特定测试用例（补充场景：grep过滤）
 npx playwright test tests/e2e/auth.spec.ts -g "管理员账号登录成功"
 
-# 以有头模式运行（可以看到浏览器）
+# 以有头模式运行（补充场景：headed模式）
 npx playwright test tests/e2e/auth.spec.ts --headed
 
-# 以调试模式运行
-npx playwright test tests/e2e/auth.spec.ts --debug
+# 以调试模式运行（推荐入口）
+npm run test:e2e:debug
 
-# 指定浏览器运行
-npx playwright test tests/e2e/auth.spec.ts --project=chromium
+# 指定浏览器运行（推荐入口）
+npm run test:e2e:chromium
 ```
 
 ### 测试报告查看
 
 ```bash
-# 查看HTML报告
+# 查看HTML报告（补充场景：查看报告）
 npx playwright show-report
 
-# 查看测试结果摘要
+# 查看测试结果摘要（补充场景：line报告）
 npx playwright test tests/e2e/auth.spec.ts --reporter=line
 ```
 
@@ -405,16 +405,17 @@ this.url = `${baseUrl}/strategy-hub/backtest`;
 
 4. **逐步缩小测试范围**
    ```bash
-   # 先运行单个测试
+   # 先运行单个测试（补充场景：grep+headed）
    npx playwright test tests/e2e/auth.spec.ts -g "测试名称" --headed
 
-   # 再运行整个测试套件
-   npx playwright test tests/e2e/auth.spec.ts
+   # 再运行整个测试套件（推荐入口）
+   npm run test:e2e -- --grep "auth"
    ```
 
 5. **使用调试模式暂停执行**
    ```bash
-   npx playwright test tests/e2e/auth.spec.ts --debug
+   # 调试模式（推荐入口）
+   npm run test:e2e:debug
    # 可以逐步执行，查看每个步骤
    ```
 
@@ -507,6 +508,7 @@ curl -X POST http://localhost:8020/api/v1/auth/login \
 #### 第7步：运行E2E测试验证
 
 ```bash
+# 运行特定测试用例（补充场景：grep过滤）
 npx playwright test tests/e2e/auth.spec.ts -g "管理员账号登录成功"
 ```
 
@@ -534,7 +536,7 @@ npx playwright test tests/e2e/auth.spec.ts -g "管理员账号登录成功"
 ### 常用命令速查
 
 ```bash
-# 运行测试
+# 运行测试（补充场景：单文件测试）
 npx playwright test tests/e2e/auth.spec.ts -g "关键词" --headed
 
 # 查看日志
@@ -548,7 +550,7 @@ curl -X POST http://localhost:8020/api/v1/auth/login \
 # 重启服务
 pm2 restart mystocks-backend
 
-# 查看报告
+# 查看报告（补充场景：查看报告）
 npx playwright show-report
 ```
 

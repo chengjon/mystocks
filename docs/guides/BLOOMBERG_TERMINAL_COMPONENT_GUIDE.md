@@ -1,4 +1,4 @@
-# Bloomberg Terminal 组件使用指南
+# ArtDeco Terminal 组件使用指南
 
 ## 📋 目录
 
@@ -15,11 +15,11 @@
 
 ## 概述
 
-Bloomberg Terminal 组件库为 MyStocks 项目提供专业金融终端风格的用户界面，采用深色主题、高对比度显示和实时数据展示。
+ArtDeco Terminal 组件库为 MyStocks 项目提供专业金融终端风格的用户界面，采用深色主题、高对比度显示和实时数据展示。
 
 ### 设计理念
 
-- **专业金融风格**: 模仿 Bloomberg Terminal 的专业数据展示方式
+- **专业金融风格**: 遵循 ArtDeco Terminal 的专业数据展示方式
 - **高对比度**: OLED 深色背景 (#000000) 与金融蓝 (#0080FF) 的强烈对比
 - **信息密度**: 在有限空间内展示大量关键数据
 - **实时更新**: 支持高频数据刷新而不影响视觉稳定性
@@ -37,9 +37,9 @@ Bloomberg Terminal 组件库为 MyStocks 项目提供专业金融终端风格的
 
 ## 核心组件
 
-### 1. BloombergStatCard - 统计卡片组件
+### 1. ArtDecoStatCard - 统计卡片组件
 
-**文件位置**: `src/components/BloombergStatCard.vue`
+**文件位置**: `src/components/ArtDecoStatCard.vue`
 
 #### 功能特性
 
@@ -69,7 +69,7 @@ interface Props {
 <template>
   <div class="stats-grid">
     <!-- 基础数字格式 -->
-    <BloombergStatCard
+    <ArtDecoStatCard
       label="TOTAL STOCKS"
       :value="5216"
       icon="data"
@@ -77,7 +77,7 @@ interface Props {
     />
 
     <!-- 货币格式 + 上涨趋势 -->
-    <BloombergStatCard
+    <ArtDecoStatCard
       label="TOTAL ASSETS"
       :value="portfolio.total_assets"
       icon="wallet"
@@ -86,7 +86,7 @@ interface Props {
     />
 
     <!-- 百分比格式 + 下跌趋势 -->
-    <BloombergStatCard
+    <ArtDecoStatCard
       label="DAILY CHANGE"
       :value="+2.35"
       icon="trending-up"
@@ -95,7 +95,7 @@ interface Props {
     />
 
     <!-- 涨跌幅格式（自动颜色） -->
-    <BloombergStatCard
+    <ArtDecoStatCard
       label="PROFIT RATE"
       :value="15.67"
       icon="chart"
@@ -104,7 +104,7 @@ interface Props {
     />
 
     <!-- 自定义格式 -->
-    <BloombergStatCard
+    <ArtDecoStatCard
       label="RATIO"
       :value="ratio"
       icon="pie-chart"
@@ -113,7 +113,7 @@ interface Props {
     />
 
     <!-- 加载状态 -->
-    <BloombergStatCard
+    <ArtDecoStatCard
       label="LOADING..."
       :value="0"
       format="number"
@@ -124,7 +124,7 @@ interface Props {
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import BloombergStatCard from '@/components/BloombergStatCard.vue'
+import ArtDecoStatCard from '@/components/ArtDecoStatCard.vue'
 
 const portfolio = ref({
   total_assets: 1250000.50
@@ -157,15 +157,15 @@ const isLoading = ref(false)
 
 ---
 
-### 2. Bloomberg 页面布局
+### 2. ArtDeco 页面布局
 
 #### 标准页面结构
 
 ```vue
 <template>
   <div class="page-container">
-    <!-- Bloomberg 风格头部 -->
-    <div class="bloomberg-header">
+    <!-- ArtDeco 风格头部 -->
+    <div class="artdeco-header">
       <div class="header-title-section">
         <h1 class="page-title">PAGE TITLE</h1>
         <p class="page-subtitle">DESCRIPTION | METADATA | STATUS</p>
@@ -177,7 +177,7 @@ const isLoading = ref(false)
 
     <!-- 统计卡片网格 -->
     <div class="stats-grid">
-      <BloombergStatCard
+      <ArtDecoStatCard
         v-for="stat in statistics"
         :key="stat.label"
         v-bind="stat"
@@ -201,7 +201,7 @@ const isLoading = ref(false)
   min-height: 100vh;
 }
 
-.bloomberg-header {
+.artdeco-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -254,7 +254,7 @@ $bg-hover: rgba(0, 128, 255, 0.05);     // 悬停背景
 $bg-active: rgba(0, 128, 255, 0.08);    // 激活背景
 
 // 金融色彩
-$financial-blue: #0080FF;   // Bloomberg蓝（主色）
+$financial-blue: #0080FF;   // ArtDeco蓝（主色）
 $financial-blue-light: #3DA9FC;
 
 // A股涨跌色
@@ -367,14 +367,14 @@ npm install @element-plus/icons-vue
 
 ```typescript
 // 全局注册（main.ts）
-import BloombergStatCard from '@/components/BloombergStatCard.vue'
-app.component('BloombergStatCard', BloombergStatCard)
+import ArtDecoStatCard from '@/components/ArtDecoStatCard.vue'
+app.component('ArtDecoStatCard', ArtDecoStatCard)
 
 // 或局部导入
-import BloombergStatCard from '@/components/BloombergStatCard.vue'
+import ArtDecoStatCard from '@/components/ArtDecoStatCard.vue'
 ```
 
-#### 3. 创建第一个Bloomberg页面
+#### 3. 创建第一个ArtDeco页面
 
 ```vue
 <!-- Dashboard.vue -->
@@ -390,27 +390,27 @@ import BloombergStatCard from '@/components/BloombergStatCard.vue'
 
     <!-- 统计卡片 -->
     <div class="stats-grid">
-      <BloombergStatCard
+      <ArtDecoStatCard
         label="TOTAL STOCKS"
         :value="totalStocks"
         icon="data"
         format="number"
       />
-      <BloombergStatCard
+      <ArtDecoStatCard
         label="RISING"
         :value="risingStocks"
         icon="trending-up"
         trend="up"
         format="number"
       />
-      <BloombergStatCard
+      <ArtDecoStatCard
         label="FALLING"
         :value="fallingStocks"
         icon="trending-down"
         trend="down"
         format="number"
       />
-      <BloombergStatCard
+      <ArtDecoStatCard
         label="INDEX"
         :value="indexValue"
         icon="chart"
@@ -427,7 +427,7 @@ import BloombergStatCard from '@/components/BloombergStatCard.vue'
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import BloombergStatCard from '@/components/BloombergStatCard.vue'
+import ArtDecoStatCard from '@/components/ArtDecoStatCard.vue'
 
 const totalStocks = ref(5216)
 const risingStocks = ref(2456)
@@ -502,10 +502,10 @@ onMounted(() => {
 
 ### 卡片样式
 
-#### BloombergStatCard 样式
+#### ArtDecoStatCard 样式
 
 ```scss
-.bloomberg-stat-card {
+.artdeco-stat-card {
   background: linear-gradient(135deg, #0F1115 0%, #141A24 100%);
   border: 1px solid #1E293B;
   border-radius: 8px;
@@ -594,14 +594,14 @@ onMounted(() => {
 ### 标签页样式
 
 ```scss
-.bloomberg-tabs-wrapper {
+.artdeco-tabs-wrapper {
   display: flex;
   gap: 2px;
   border-bottom: 2px solid #1E293B;
   margin-bottom: 24px;
 }
 
-.bloomberg-tab {
+.artdeco-tab {
   display: flex;
   align-items: center;
   padding: 12px 24px;
@@ -640,7 +640,7 @@ onMounted(() => {
 
 ```vue
 <!-- 使用内置格式 -->
-<BloombergStatCard
+<ArtDecoStatCard
   label="ASSETS"
   :value="1250000.50"
   format="currency"
@@ -648,7 +648,7 @@ onMounted(() => {
 <!-- 显示: ¥1,250,000.50 -->
 
 <!-- 使用 trend 属性自动着色 -->
-<BloombergStatCard
+<ArtDecoStatCard
   label="CHANGE"
   :value="2.35"
   format="percent"
@@ -661,14 +661,14 @@ onMounted(() => {
 
 ```vue
 <!-- 手动格式化（维护困难） -->
-<BloombergStatCard
+<ArtDecoStatCard
   label="ASSETS"
   value="¥1,250,000.50"
   format="custom"
 />
 
 <!-- 不使用 trend 属性 -->
-<BloombergStatCard
+<ArtDecoStatCard
   label="CHANGE"
   value="+2.35%"
   :style="{ color: 'red' }"
@@ -681,7 +681,7 @@ onMounted(() => {
 
 ```vue
 <template>
-  <BloombergStatCard
+  <ArtDecoStatCard
     label="TOTAL STOCKS"
     :value="totalStocks"
     :loading="isLoading"
@@ -731,7 +731,7 @@ fetchData().then(data => {
 ```vue
 <template>
   <div class="stats-grid">
-    <BloombergStatCard
+    <ArtDecoStatCard
       v-for="stat in statistics"
       :key="stat.id"
       v-memo="[stat.value, stat.trend]"
@@ -838,24 +838,27 @@ const formattedValue = computed(() => {
 
 ### Playwright 测试
 
-项目包含完整的 Bloomberg 组件测试套件。
+项目包含完整的 ArtDeco 组件测试套件。
 
 #### 运行测试
 
 ```bash
-# 运行所有Bloomberg测试
-npx playwright test tests/bloomberg/test-bloomberg-pages.spec.js
+# 运行所有ArtDeco测试（推荐入口）
+npm run test:e2e -- --grep "artdeco"
 
-# 运行特定测试
-npx playwright test tests/bloomberg/ --grep "Performance"
+# 运行特定测试（补充场景：单文件测试）
+npx playwright test tests/artdeco/test-artdeco-pages.spec.js
 
-# 运行特定浏览器
-npx playwright test tests/bloomberg/ --project=chromium
+# 运行特定测试用例（补充场景：grep过滤）
+npx playwright test tests/artdeco/ --grep "Performance"
+
+# 运行特定浏览器（推荐入口）
+npm run test:e2e:chromium -- --grep "artdeco"
 ```
 
 #### 测试覆盖
 
-**测试文件**: `tests/bloomberg/test-bloomberg-pages.spec.js`
+**测试文件**: `tests/artdeco/test-artdeco-pages.spec.js`
 
 | 测试类型 | 数量 | 描述 |
 |---------|------|------|
@@ -915,7 +918,7 @@ expect(errors.length).toBe(0)  // 0个关键错误
 
 ### 组件相关
 
-- **BloombergStatCard 源码**: `src/components/BloombergStatCard.vue`
+- **ArtDecoStatCard 源码**: `src/components/ArtDecoStatCard.vue`
 - **Dashboard 页面**: `src/views/Dashboard.vue`
 - **Market 页面**: `src/views/Market.vue`
 - **Trade Management 页面**: `src/views/TradeManagement.vue`
@@ -928,7 +931,7 @@ expect(errors.length).toBe(0)  // 0个关键错误
 
 ### 测试相关
 
-- **测试套件**: `tests/bloomberg/test-bloomberg-pages.spec.js`
+- **测试套件**: `tests/artdeco/test-artdeco-pages.spec.js`
 - **Playwright 配置**: `playwright.config.js`
 
 ### 其他参考
@@ -944,8 +947,8 @@ expect(errors.length).toBe(0)  // 0个关键错误
 ### v1.0.0 (2026-01-09)
 
 **新增**:
-- ✅ BloombergStatCard 组件
-- ✅ Bloomberg 页面布局模板
+- ✅ ArtDecoStatCard 组件
+- ✅ ArtDeco 页面布局模板
 - ✅ 完整测试套件（21个测试）
 - ✅ 性能监控集成
 - ✅ 完整使用文档
@@ -967,7 +970,7 @@ expect(errors.length).toBe(0)  // 0个关键错误
 ### 组件开发
 
 1. **遵循现有样式规范**
-   - 使用 Bloomberg 颜色系统
+   - 使用 ArtDeco 颜色系统
    - 遵循字体和间距规范
    - 保持一致的视觉风格
 
@@ -984,10 +987,10 @@ expect(errors.length).toBe(0)  // 0个关键错误
 ### 代码风格
 
 ```typescript
-// 组件命名: PascalCase + Bloomberg 前缀
-BloombergStatCard.vue
-BloombergChart.vue
-BloombergTable.vue
+// 组件命名: PascalCase + ArtDeco 前缀
+ArtDecoStatCard.vue
+ArtDecoChart.vue
+ArtDecoTable.vue
 
 // Props 命名: camelCase
 interface Props {
@@ -1014,5 +1017,5 @@ const emit = defineEmits<{
 ---
 
 **文档版本**: v1.0.0
-**项目**: MyStocks Bloomberg Terminal 组件库
+**项目**: MyStocks ArtDeco Terminal 组件库
 **许可**: MIT License

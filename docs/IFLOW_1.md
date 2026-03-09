@@ -993,7 +993,10 @@ pytest tests/ -v --cov=src --cov-report=html
 pytest tests/test_core/ -v
 pytest tests/test_gpu/ -v
 
-# 端到端测试
+# 端到端测试（补充场景：临时运行Playwright测试，# 注意： 这是补充场景，应在临时需要运行Playwright测试时使用
+npm run test:e2e
+
+# 或者直接运行（不推荐）
 npx playwright test
 
 # 代码质量检查

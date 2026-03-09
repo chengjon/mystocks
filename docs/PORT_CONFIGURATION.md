@@ -90,17 +90,19 @@ make start-backend    # Starts backend on configured port
 
 ### Playwright Tests
 
-Playwright automatically uses the configured frontend port:
+Playwright standard E2E entry uses npm scripts from `web/frontend/package.json`:
 
 ```bash
 cd /opt/claude/mystocks_spec/web/frontend
-npx playwright test  # Uses port from .env or environment variables
+npm run test:e2e              # Standard E2E entry (playwright.config.js)
+npm run test:e2e:chromium     # Chromium only
+npm run test:e2e:debug        # Debug mode
 ```
 
-You can override for testing:
+You can still override ports for test runs when needed:
 
 ```bash
-FRONTEND_PORT=3002 npx playwright test
+E2E_FRONTEND_PORT=3022 npm run test:e2e:chromium
 ```
 
 ### Health Checks

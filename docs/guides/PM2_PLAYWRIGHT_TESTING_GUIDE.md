@@ -516,29 +516,29 @@ chmod +x /opt/claude/mystocks_spec/web/frontend/scripts/test-runner/run-quick-e2
 ```bash
 cd /opt/claude/mystocks_spec/web/frontend
 
-# 1. 快速冒烟测试（仅Chromium）
+# 1. 快速冒烟测试（仅Chromium）- 推荐入口
 npm run test:e2e:chromium
 
-# 2. 所有浏览器测试
+# 2. 所有浏览器测试 - 推荐入口
 npm run test:e2e
 
-# 3. 仅运行特定测试文件
+# 3. 仅运行特定测试文件（补充场景：单文件测试）
 npx playwright test tests/smoke/01-page-loading.spec.ts
 
-# 4. 调试模式（打开浏览器窗口）
-npx playwright test --debug
+# 4. 调试模式（补充场景）
+npm run test:e2e:debug
 
-# 5. 查看测试报告
+# 5. 查看测试报告（补充场景）
 npx playwright show-report
 
-# 6. 生成HTML报告
+# 6. 生成HTML报告（推荐入口）
 npm run test:e2e -- --reporter=html
 
-# 7. 运行特定项目（如visual-regression）
+# 7. 运行特定项目（补充场景：特定项目）
 npx playwright test --project=visual-regression
 
 # 8. 并行运行测试（更快）
-npx playwright test --workers=4
+npm run test:e2e -- --workers=4
 ```
 
 ---

@@ -1012,7 +1012,7 @@ pytest tests/ -v --cov=src --cov-report=html
 pytest tests/test_core/ -v
 pytest tests/test_gpu/ -v
 
-# 端到端测试
+# 端到端测试（补充场景：临时运行Playwright测试）
 npx playwright test
 
 # 代码质量检查
