@@ -40,6 +40,7 @@ from .middleware.response_format import ResponseFormatMiddleware
 
 # 导入OpenAPI配置
 from .openapi_config import get_openapi_config
+from .router_registry import register_api_routes
 
 # 导入缓存淘汰调度器
 # from .core.cache_eviction import get_eviction_scheduler, reset_eviction_scheduler  # 临时禁用
@@ -628,143 +629,7 @@ async def custom_redoc_html():
     return HTMLResponse(content=html_content)
 
 
-# 导入 API 路由 - 优化结构: 先导入，后统一挂载
-from .api import contract  # Phase 4: API契约管理
-from .api import data_lineage  # Phase 3: 数据血缘追踪API
-from .api import data_source_config  # Phase 3: 数据源配置CRUD API
-from .api import data_source_registry  # 数据源注册表管理API (V2.0)
-from .api import governance_dashboard  # Phase 3: 数据治理仪表板数据API
-from .api import indicator_registry  # 指标注册表管理API (V2.1)
-from .api import monitoring_analysis  # 智能量化监控 - 组合分析与健康度计算
-from .api import monitoring_watchlists  # 智能量化监控 - 清单管理 API
-from .api import realtime_market  # Phase 12.3: Real-time Data Stream Integration
-from .api import signal_monitoring  # 智能量化监控 - 信号历史与质量报告
-from .api import strategy_list_mock  # Mock策略列表端点 (仅开发环境)
-from .api import websocket  # 🆕 导入 WebSocket 路由
-from .api import (
-    announcement,
-    auth,
-    cache,
-    dashboard,
-    data,
-    data_quality,
-    health,
-    indicators,
-    industry_concept_analysis,
-    market,
-    market_v2,
-    metrics,
-    ml,
-    monitoring,
-    multi_source,
-    notification,
-    risk_management,
-    sse_endpoints,
-    stock_search,
-    strategy,
-    strategy_management,
-    strategy_mgmt,
-    system,
-    tasks,
-    tdx,
-    technical_analysis,
-    trade,
-    trading_runtime,
-    tradingview,
-    watchlist,
-    wencai,
-)
-from .api.v1 import pool_monitoring  # Phase 3 Task 19: Connection Pool Monitoring
-
-# 导入版本映射 (Phase 3: API 契约标准化)
-from .api.VERSION_MAPPING import VERSION_MAPPING
-
-# --- 1. 标准化路由注册 (基于 VERSION_MAPPING) ---
-# 定义模块与路由器的映射
-router_modules = {
-    "auth": auth.router,
-    "market": market.router,
-    "market_v2": market_v2.router,
-    "strategy": strategy.router,
-    "trade": trade.router,
-    "trading_runtime": trading_runtime.router,
-    "monitoring": monitoring.router,
-    "technical": technical_analysis.router,
-    "data": data.router,
-    "system": system.router,
-    "indicators": indicators.router,
-    "tdx": tdx.router,
-    "announcement": announcement.router,
-}
-
-# 动态注册标准路由
-for key, config in VERSION_MAPPING.items():
-    if key in router_modules:
-        app.include_router(router_modules[key], prefix=config["prefix"], tags=config["tags"])
-        logger.info(f"✅ Registered {key} router at {config['prefix']}")
-
-# --- 2. 兼容性与特殊路由注册 ---
-# 身份验证兼容路由
-app.include_router(auth.compat_router, prefix="/api/auth", tags=["auth-compat"])
-
-# AKShare Market Data
-from .api import akshare_market
-app.include_router(akshare_market.router)
-
-# 基础与监控类 (通常挂在 /api 下)
-app.include_router(data_quality.router, prefix="/api", tags=["data-quality"])
-app.include_router(metrics.router, prefix="/api", tags=["metrics"])
-app.include_router(pool_monitoring.router, prefix="/api", tags=["pool-monitoring"])
-app.include_router(cache.router, prefix="/api", tags=["cache"])
-app.include_router(ml.router, prefix="/api", tags=["machine-learning"])
-app.include_router(realtime_market.router, prefix="/api", tags=["realtime-market"])
-app.include_router(signal_monitoring.router, prefix="/api", tags=["signal-monitoring"])
-app.include_router(announcement.router, prefix="/api", tags=["announcement"])
-app.include_router(health.router, prefix="/api", tags=["health"])
-
-# 无前缀或自包含前缀的路由
-app.include_router(websocket.router)
-app.include_router(tasks.router, tags=["tasks"])
-app.include_router(wencai.router)
-app.include_router(dashboard.router, tags=["dashboard"])
-app.include_router(strategy_mgmt.router, tags=["strategy-mgmt"])
-app.include_router(multi_source.router, tags=["multi-source"])
-
-# OpenStock / 迁移类
-app.include_router(stock_search.router, prefix="/api/stock-search", tags=["stock-search"])
-app.include_router(watchlist.router, prefix="/api/watchlist", tags=["watchlist"])
-app.include_router(tradingview.router, prefix="/api/tradingview", tags=["tradingview"])
-app.include_router(notification.router, prefix="/api/notification", tags=["notification"])
-
-# 智能量化监控扩展 (v1 规范)
-app.include_router(monitoring_watchlists.router, prefix="/api/v1", tags=["monitoring-watchlists"])
-app.include_router(monitoring_analysis.router, prefix="/api/v1", tags=["monitoring-analysis"])
-
-# Week 1/2 核心功能
-app.include_router(strategy_management.router)
-app.include_router(risk_management.router)
-app.include_router(sse_endpoints.router)
-app.include_router(industry_concept_analysis.router)
-
-# --- MyStocks v1 Domain-Split API (from mystocks_complete.py refactor) ---
-from .api.v1.router import api_v1_router as mystocks_v1_router
-
-app.include_router(mystocks_v1_router)
-
-# Phase 3/4 数据治理
-app.include_router(contract.router)
-app.include_router(data_source_registry.router)
-app.include_router(data_source_config.router)
-app.include_router(data_lineage.router)
-app.include_router(governance_dashboard.router)
-app.include_router(indicator_registry.router)
-
-# Mock API (仅开发环境)
-if settings.use_mock_apis:
-    app.include_router(strategy_list_mock.router)
-    logger.info("✅ Mock API routes registered")
-
-logger.info("✅ All API routers registered successfully")
+register_api_routes(app, use_mock_apis=settings.use_mock_apis, logger=logger)
 
 if __name__ == "__main__":
     import uvicorn
