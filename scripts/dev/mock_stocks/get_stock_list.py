@@ -15,10 +15,12 @@ Mock数据文件: Stocks
 生成时间: 2025-11-13
 """
 
-from typing import List, Dict, Optional
-import pandas as pd
 import datetime
 import random
+from typing import Dict, List, Optional
+
+import pandas as pd
+from scripts.dev.mock_stocks._watchlist_tail import add_to_watchlist, generate_realistic_price, get_watchlist, remove_from_watchlist
 
 def get_stock_list(params: Optional[Dict] = None) -> List[Dict]:
     """获取股票列表（支持按交易所筛选，支持分页）
@@ -691,103 +693,3 @@ def get_stock_by_industry(params: Dict) -> Dict:
         "limit": limit,
         "total_pages": (len(stocks) + limit - 1) // limit,
     }
-
-
-def get_watchlist() -> Dict:
-    """获取自选股列表
-
-    Returns:
-        Dict: 自选股列表
-    """
-    watchlist_stocks = [
-        {
-            "symbol": "600519",
-            "name": "贵州茅台",
-            "price": round(random.uniform(1500, 2000), 2),
-            "change": round(random.uniform(-5, 5), 2),
-        },
-        {
-            "symbol": "300750",
-            "name": "宁德时代",
-            "price": round(random.uniform(200, 500), 2),
-            "change": round(random.uniform(-5, 5), 2),
-        },
-        {
-            "symbol": "688981",
-            "name": "中芯国际",
-            "price": round(random.uniform(50, 100), 2),
-            "change": round(random.uniform(-5, 5), 2),
-        },
-        {
-            "symbol": "000858",
-            "name": "五粮液",
-            "price": round(random.uniform(130, 250), 2),
-            "change": round(random.uniform(-5, 5), 2),
-        },
-    ]
-
-    return {
-        "watchlist": watchlist_stocks,
-        "total": len(watchlist_stocks),
-        "updated_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-    }
-
-
-def add_to_watchlist(params: Dict) -> Dict:
-    """添加到自选股
-
-    Args:
-        params: Dict - 请求参数：
-                stock_code: str - 股票代码
-                notes: str - 备注（可选）
-
-    Returns:
-        Dict: 添加结果
-    """
-    stock_code = params.get("stock_code", "")
-    notes = params.get("notes", "")
-
-    return {
-        "success": True,
-        "message": f"股票{stock_code}已添加到自选股",
-        "stock_code": stock_code,
-        "notes": notes,
-        "added_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-    }
-
-
-def remove_from_watchlist(params: Dict) -> Dict:
-    """从自选股移除
-
-    Args:
-        params: Dict - 查询参数：
-                stock_code: str - 股票代码
-
-    Returns:
-        Dict: 移除结果
-    """
-    stock_code = params.get("stock_code", "")
-
-    return {
-        "success": True,
-        "message": f"股票{stock_code}已从自选股移除",
-        "stock_code": stock_code,
-        "removed_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-    }
-
-
-def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02) -> float:
-    """生成真实感的价格数据
-
-    Args:
-        base_price: 基准价格
-        volatility: 波动率
-
-    Returns:
-        float: 生成的价格（保留2位小数）
-    """
-    change_rate = random.uniform(-volatility, volatility)
-    price = base_price * (1 + change_rate)
-    return round(price, 2)
-
-
