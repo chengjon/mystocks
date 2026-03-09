@@ -10,6 +10,7 @@ This module provides comprehensive chip distribution analysis including:
 - Long-term vs short-term chip distribution analysis
 """
 
+import logging
 from datetime import datetime
 from typing import Any, Dict, Optional
 
@@ -17,6 +18,14 @@ import numpy as np
 import pandas as pd
 
 from src.advanced_analysis import AnalysisResult, AnalysisType
+from src.advanced_analysis.chip_distribution_analyzer.chip_models import (
+    ChipConcentration,
+    ChipFlowDynamics,
+    CostAreaAnalysis,
+    WinningProbability,
+)
+
+logger = logging.getLogger(__name__)
 
 def _generate_chip_recommendations(
     self,
@@ -87,7 +96,7 @@ def _generate_chip_recommendations(
         )
 
     except Exception as e:
-        print(f"Error generating chip recommendations: {e}")
+        logger.error("Error generating chip recommendations: %s", e)
         recommendations = {
             "primary_signal": "unknown",
             "recommended_action": "分析过程中出现错误，建议观望",
@@ -185,7 +194,7 @@ def _assess_chip_risk(
         )
 
     except Exception as e:
-        print(f"Error assessing chip risk: {e}")
+        logger.error("Error assessing chip risk: %s", e)
         risk_assessment = {"overall_risk_level": "unknown", "error": str(e)}
 
     return risk_assessment
@@ -203,5 +212,4 @@ def _create_error_result(self, stock_code: str, error_msg: str) -> AnalysisResul
         risk_assessment={"error": True},
         metadata={"error": True, "error_message": error_msg},
     )
-
 
