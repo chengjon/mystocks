@@ -14,100 +14,21 @@ from datetime import date, datetime, timedelta
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel
 
+from app.api.signal_monitoring.signal_history_response_schemas import (
+    ActiveSignalsResponse,
+    SignalHistoryResponse,
+    SignalQualityReportResponse,
+    SignalStatisticsResponse,
+    StrategyDetailedHealthResponse,
+    StrategyRealtimeMonitoringResponse,
+    UnifiedResponse,
+)
 from app.core.security import User, get_current_user
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-
-class SignalHistoryResponse(BaseModel):
-    """信号历史记录响应"""
-
-    id: int
-    strategy_id: str
-    symbol: str
-    signal_type: str
-    generated_at: datetime
-    status: str
-    execution_time_ms: Optional[float] = None
-    gpu_used: bool = False
-    gpu_latency_ms: Optional[float] = None
-
-    # 执行结果（如果存在）
-    executed: bool = False
-    executed_at: Optional[datetime] = None
-    profit_loss: Optional[float] = None
-    profit_loss_percent: Optional[float] = None
-
-
-class SignalQualityReportResponse(BaseModel):
-    """信号质量报告响应"""
-
-    strategy_id: str
-    period_start: date
-    period_end: date
-
-    # 信号统计
-    total_signals: int
-    buy_signals: int
-    sell_signals: int
-    hold_signals: int
-
-    # 执行统计
-    executed_signals: int
-    execution_rate: float
-
-    # 性能指标
-    signal_accuracy: float  # 信号准确率（0-100）
-    signal_success_rate: float  # 信号成功率（0-100）
-    avg_profit_loss: float  # 平均盈亏
-    total_profit_loss: float  # 总盈亏
-
-    # 性能指标
-    avg_execution_time_ms: float
-    gpu_usage_rate: float  # GPU使用率（0-100）
-
-    # 盈利信号统计
-    profitable_signals: int
-    losing_signals: int
-    win_rate: float  # 胜率（0-100）
-
-
-class StrategyRealtimeMonitoringResponse(BaseModel):
-    """策略实时监控响应"""
-
-    strategy_id: str
-    timestamp: datetime
-
-    # 健康状态
-    health_status: int  # 1=healthy, 0=degraded, -1=unhealthy
-
-    # 实时指标
-    active_signals_count: int  # 活跃信号数量
-    signal_generation_rate: float  # 信号生成速率（信号/分钟）
-
-    # 性能指标
-    avg_latency_ms: float
-    p95_latency_ms: float
-    p99_latency_ms: float
-
-    # GPU使用情况
-    gpu_enabled: bool
-    gpu_utilization: Optional[float] = None
-
-    # 最近信号（最新5条）
-    recent_signals: List[dict] = []
-
-
-class UnifiedResponse(BaseModel):
-    """统一响应格式"""
-
-    success: bool
-    message: Optional[str] = None
-    data: Optional[dict] = None
-
 
 @router.get("/signals/history", response_model=List[SignalHistoryResponse])
 async def get_signal_history(
@@ -675,97 +596,4 @@ async def health_check():
             "database": "error",
             "error": str(e),
         }
-
-
-class SignalStatisticsResponse(BaseModel):
-    """信号统计响应（小时级）"""
-
-    strategy_id: str
-    hour_timestamp: datetime
-
-    # 信号统计
-    signal_count: int
-    buy_count: int
-    sell_count: int
-    hold_count: int
-
-    # 执行统计
-    executed_count: int
-    execution_rate: float
-
-    # 性能指标
-    accuracy_rate: float
-    profit_ratio: float
-
-    # 盈亏统计
-    total_profit_loss: float
-    avg_profit_loss: float
-    max_profit: float
-    max_loss: float
-
-    # 延迟统计
-    avg_execution_time_ms: float
-    p50_execution_time_ms: float
-    p95_execution_time_ms: float
-    p99_execution_time_ms: float
-
-    # GPU统计
-    gpu_used_count: int
-    gpu_rate: float
-
-
-class ActiveSignalItem(BaseModel):
-    """活跃信号项"""
-
-    id: int
-    strategy_id: str
-    symbol: str
-    signal_type: str
-    generated_at: datetime
-    status: str
-    execution_time_ms: Optional[float] = None
-    gpu_used: bool = False
-
-
-class ActiveSignalsResponse(BaseModel):
-    """活跃信号列表响应"""
-
-    strategy_id: Optional[str] = None
-    total_count: int
-    signals: List[ActiveSignalItem]
-
-
-class StrategyDetailedHealthResponse(BaseModel):
-    """策略详细健康状态响应"""
-
-    strategy_id: str
-    timestamp: datetime
-
-    # 整体健康状态
-    health_status: int  # 1=healthy, 0=degraded, -1=unhealthy
-    health_status_text: str  # healthy/degraded/unhealthy
-
-    # 组件状态
-    components: dict = {
-        "signal_generation": str,  # healthy/degraded/unhealthy
-        "signal_execution": str,
-        "signal_push": str,
-        "database": str,
-        "gpu": str,
-    }
-
-    # 性能指标
-    metrics: dict = {
-        "signal_success_rate": float,  # 0-100
-        "signal_accuracy": float,  # 0-100
-        "avg_execution_time_ms": float,
-        "active_signals_count": int,
-    }
-
-    # 最近检查时间
-    last_check_time: datetime
-
-    # 告警信息
-    alerts: List[str] = []
-
 
