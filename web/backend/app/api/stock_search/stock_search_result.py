@@ -16,9 +16,16 @@ import time
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, Query, HTTPException
-from pydantic import BaseModel, Field, ValidationError, field_validator
+from pydantic import ValidationError
 
 from app.api.auth import User, get_current_user
+from app.api.stock_search.stock_search_schemas import NewsItem, SearchRequest, StockQuote, StockSearchResult
+from app.api.stock_search.stock_search_support import (
+    check_admin_privileges,
+    check_search_rate_limit,
+    log_search_operation,
+    search_analytics,
+)
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
 from app.core.exceptions import BusinessException, ForbiddenException, NotFoundException, ValidationException
 from app.core.responses import APIResponse, create_error_response
@@ -35,164 +42,6 @@ from src.core.exceptions import (
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
-
-# Rate limiting for search operations
-search_operation_count = {}
-
-# Search analytics
-search_analytics = []
-
-class StockSearchResult(BaseModel):
-    """股票搜索结果"""
-
-    symbol: str = Field(..., description="股票代码")
-    description: str = Field(..., description="股票名称")
-    displaySymbol: str = Field(..., description="显示代码")
-    type: str = Field(..., description="类型")
-    exchange: str = Field(..., description="交易所")
-    market: Optional[str] = Field(None, description="市场")
-
-
-class StockQuote(BaseModel):
-    """股票报价"""
-
-    symbol: Optional[str] = None
-    name: Optional[str] = None
-    current: float = Field(..., description="当前价格")
-    change: float = Field(..., description="涨跌额")
-    percent_change: float = Field(..., description="涨跌幅")
-    high: float = Field(..., description="最高价")
-    low: float = Field(..., description="最低价")
-    open: float = Field(..., description="开盘价")
-    previous_close: float = Field(..., description="昨收")
-    volume: Optional[float] = Field(None, description="成交量")
-    amount: Optional[float] = Field(None, description="成交额")
-    timestamp: float = Field(..., description="时间戳")
-
-
-class NewsItem(BaseModel):
-    """新闻条目"""
-
-    headline: str = Field(..., description="标题", max_length=200)
-    summary: str = Field(..., description="摘要", max_length=1000)
-    source: str = Field(..., description="来源", max_length=100)
-    datetime: float = Field(..., description="时间戳")
-    url: str = Field(..., description="链接", max_length=500)
-    image: Optional[str] = Field(None, description="图片", max_length=500)
-    category: Optional[str] = Field(None, description="分类", max_length=50)
-
-    @field_validator("headline")
-    @classmethod
-    def validate_headline(cls, v: str) -> str:
-        """验证新闻标题"""
-        if not v.strip():
-            raise ValueError("新闻标题不能为空")
-
-        # 检查是否包含恶意脚本
-        if re.search(r"<script|javascript:|onload=|onerror=", v, re.IGNORECASE):
-            raise ValueError("新闻标题包含不安全的脚本或标签")
-
-        return v.strip()
-
-    @field_validator("summary")
-    @classmethod
-    def validate_summary(cls, v: str) -> str:
-        """验证新闻摘要"""
-        if not v.strip():
-            raise ValueError("新闻摘要不能为空")
-
-        # 检查是否包含恶意脚本
-        if re.search(r"<script|javascript:|onload=|onerror=", v, re.IGNORECASE):
-            raise ValueError("新闻摘要包含不安全的脚本或标签")
-
-        return v.strip()
-
-
-class SearchRequest(BaseModel):
-    """搜索请求模型"""
-
-    query: str = Field(..., description="搜索关键词", min_length=1, max_length=100)
-    market: str = Field("auto", description="市场类型", pattern=r"^(auto|cn|hk)$")
-    limit: int = Field(20, description="返回结果数量", ge=1, le=100)
-
-    @field_validator("query")
-    @classmethod
-    def validate_query(cls, v: str) -> str:
-        """验证搜索关键词"""
-        if not v.strip():
-            raise ValueError("搜索关键词不能为空")
-
-        # 移除特殊字符，防止SQL注入
-        v = re.sub(r'[<>"\'/\\]', "", v)
-
-        # 检查长度
-        if len(v.strip()) > 100:
-            raise ValueError("搜索关键词过长，最多100个字符")
-
-        return v.strip()
-
-
-def check_search_rate_limit(user_id: int, max_searches_per_minute: int = 30) -> bool:
-    """
-    检查搜索操作频率限制
-
-    Args:
-        user_id: 用户ID
-        max_searches_per_minute: 每分钟最大搜索数
-
-    Returns:
-        bool: 是否允许搜索
-    """
-    current_time = int(time.time() / 60)  # 分钟级时间窗口
-
-    if user_id not in search_operation_count:
-        search_operation_count[user_id] = {}
-
-    if current_time not in search_operation_count[user_id]:
-        search_operation_count[user_id][current_time] = 0
-
-    search_operation_count[user_id][current_time] += 1
-
-    # 清理过期的时间窗口
-    for old_time in list(search_operation_count[user_id].keys()):
-        if current_time - old_time > 5:  # 保留5分钟内的记录
-            del search_operation_count[user_id][old_time]
-
-    return search_operation_count[user_id][current_time] <= max_searches_per_minute
-
-
-def check_admin_privileges(user: User) -> bool:
-    """检查管理员权限"""
-    return user.role in ["admin", "backup_operator"]
-
-
-def log_search_operation(user: User, operation: str, query: Optional[str] = None, details: Optional[Dict] = None):
-    """
-    记录搜索操作分析
-
-    Args:
-        user: 操作用户
-        operation: 操作类型
-        query: 搜索查询（可选）
-        details: 操作详情（可选）
-    """
-    analytics_entry = {
-        "timestamp": time.time(),
-        "user_id": user.id,
-        "username": user.username,
-        "operation": operation,
-        "query": query,
-        "details": details,
-        "ip_address": getattr(user, "ip_address", "unknown"),
-    }
-
-    search_analytics.append(analytics_entry)
-
-    # 限制分析数据大小，保留最近1000条记录
-    if len(search_analytics) > 1000:
-        search_analytics.pop(0)
-
-    logger.info("Search operation logged: {operation} by {user.username}", analytics_data=analytics_entry)
 
 
 def validate_stock_symbol(symbol: str, market: str) -> str:
@@ -813,5 +662,3 @@ async def cleanup_search_analytics(
         raise BusinessException(
             detail="清理搜索分析数据失败", status_code=500, error_code="SEARCH_ANALYTICS_DATA_CLEANUP_FAILED"
         )
-
-
