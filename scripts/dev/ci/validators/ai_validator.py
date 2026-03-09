@@ -11,10 +11,14 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+from scripts.dev.ci.validators._ai_validator_performance_tail import (
+    AIValidatorPerformanceAnalysisMixin,
+)
+
 logger = logging.getLogger(__name__)
 
 
-class AIValidatorMixin:
+class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
     """AI代码审查与性能优化验证"""
 
     def _validate_ai_code_review(self) -> Dict[str, Any]:
@@ -654,140 +658,4 @@ class AIValidatorMixin:
 
         except Exception as e:
             return {"passed": False, "error": f"性能优化分析异常: {str(e)}"}
-
-    def _analyze_performance_patterns(self, tree: ast.AST) -> list:
-        """通过AST分析性能反模式"""
-        issues = []
-
-        for node in ast.walk(tree):
-            # 检测嵌套循环
-            if isinstance(node, ast.For):
-                nested_loops = self._count_nested_loops(node)
-                if nested_loops > 2:
-                    issues.append(
-                        {
-                            "file": "current_file",
-                            "category": "COMPLEXITY",
-                            "type": f"深度嵌套循环 ({nested_loops}层)",
-                            "severity": "high",
-                            "suggestion": "考虑重构嵌套循环，使用更高效的算法",
-                            "line_number": getattr(node, "lineno", 0),
-                        }
-                    )
-
-            # 检测大的数据结构创建
-            elif isinstance(node, ast.ListComp):
-                if self._is_large_comprehension(node):
-                    issues.append(
-                        {
-                            "file": "current_file",
-                            "category": "MEMORY",
-                            "type": "大型列表推导式可能消耗大量内存",
-                            "severity": "medium",
-                            "suggestion": "考虑使用生成器表达式或分批处理",
-                            "line_number": getattr(node, "lineno", 0),
-                        }
-                    )
-
-        return issues
-
-    def _generate_performance_suggestions(
-        self, content: str, lines: list, file_path: str
-    ) -> list:
-        """生成具体的性能优化建议"""
-        suggestions = []
-
-        # 检查导入优化
-        if "import pandas as pd" in content and "pd.read_csv" in content:
-            suggestions.append(
-                {
-                    "file": file_path,
-                    "type": "IO_OPTIMIZATION",
-                    "title": "Pandas读取优化",
-                    "description": "使用chunksize参数分块读取大文件",
-                    "code_example": "pd.read_csv('large_file.csv', chunksize=10000)",
-                    "impact": "high",
-                }
-            )
-
-        # 检查循环优化
-        loop_count = content.count("for ") + content.count("while ")
-        if loop_count > 10:
-            suggestions.append(
-                {
-                    "file": file_path,
-                    "type": "LOOP_OPTIMIZATION",
-                    "title": "循环优化",
-                    "description": f"文件包含{loop_count}个循环，考虑向量化操作",
-                    "code_example": "使用numpy数组操作替代循环",
-                    "impact": "high",
-                }
-            )
-
-        return suggestions
-
-    def _calculate_performance_score(self, issues: list, files_analyzed: int) -> float:
-        """计算性能优化评分"""
-        if files_analyzed == 0:
-            return 100.0
-
-        base_score = 100.0
-
-        # 根据问题严重性和数量扣分
-        for issue in issues:
-            severity = issue.get("severity", "low")
-            if severity == "high":
-                base_score -= 8
-            elif severity == "medium":
-                base_score -= 4
-            else:  # low
-                base_score -= 1
-
-        return max(0.0, min(100.0, base_score))
-
-    def _prioritize_optimizations(self, suggestions: list, issues: list) -> list:
-        """优先排序优化建议"""
-        # 按影响程度和问题严重性排序
-        prioritized = []
-
-        # 高影响的建议优先
-        high_impact = [s for s in suggestions if s.get("impact") == "high"]
-        prioritized.extend(high_impact)
-
-        # 中等影响的建议
-        medium_impact = [s for s in suggestions if s.get("impact") == "medium"]
-        prioritized.extend(medium_impact)
-
-        # 基于问题数量的建议
-        issue_count = len(issues)
-        if issue_count > 5:
-            prioritized.append(
-                {
-                    "type": "ARCHITECTURE_REVIEW",
-                    "title": "架构性能审查",
-                    "description": f"检测到{issue_count}个性能问题，建议进行架构级优化",
-                    "priority": "critical",
-                }
-            )
-
-        return prioritized[:5]  # 返回前5个优先建议
-
-    def _count_nested_loops(self, node: ast.For, depth: int = 1) -> int:
-        """计算嵌套循环深度"""
-        max_depth = depth
-
-        for child in ast.iter_child_nodes(node):
-            if isinstance(child, ast.For):
-                nested_depth = self._count_nested_loops(child, depth + 1)
-                max_depth = max(max_depth, nested_depth)
-
-        return max_depth
-
-    def _is_large_comprehension(self, node: ast.ListComp) -> bool:
-        """判断列表推导式是否过大"""
-        # 简单的启发式判断：包含多个for子句或复杂的条件
-        generators = len(node.generators)
-        has_complex_conditions = any(len(gen.ifs) > 1 for gen in node.generators)
-
-        return generators > 2 or has_complex_conditions
 
