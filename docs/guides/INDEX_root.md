@@ -79,8 +79,8 @@
 - [BACKUP_GUIDE](guides/BACKUP_GUIDE.md)
   - *MyStocks 项目备份指南*
 
-- [BLOOMBERG_TERMINAL_COMPONENT_GUIDE](guides/BLOOMBERG_TERMINAL_COMPONENT_GUIDE.md)
-  - *Bloomberg Terminal 组件使用指南*
+- [ARTDECO_TERMINAL_COMPONENT_GUIDE](guides/BLOOMBERG_TERMINAL_COMPONENT_GUIDE.md)
+  - *ArtDeco Terminal 组件使用指南（历史文件名保留）*
 
 - [BRANCH_STRATEGY](guides/BRANCH_STRATEGY.md)
   - *MyStocks 分支策略与开发流程*
@@ -262,6 +262,12 @@
 - [MAIN_CLI_WORKFLOW_STANDARDS](guides/.multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md)
   - *Main CLI 工作规范与最佳实践*
 
+- [MAESTRO_QUICK_START](guides/MAESTRO_QUICK_START.md)
+  - *Maestro 本地 SQLite + 多 CLI 协作快速启动指南*
+
+- [MAESTRO_SUMMARY](guides/MAESTRO_SUMMARY.md)
+  - *Maestro 本地优先运行时总结文档*
+
 - [MOCK_DATA_USAGE_RULES](guides/MOCK_DATA_USAGE_RULES.md)
   - *Mock数据使用规则文档*
 
@@ -402,6 +408,9 @@
 
 - [SIGNAL_MONITORING_METRICS_DESIGN](guides/SIGNAL_MONITORING_METRICS_DESIGN.md)
   - *交易信号监控指标系统设计方案*
+
+- [SYMPHONY_LOCAL_MULTICLI_WORKFLOW](guides/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md)
+  - *Symphony 本地 SQLite + 多 CLI 协作工作流*
 
 - [SPLIT_DATA_ACCESS_PLAN](guides/SPLIT_DATA_ACCESS_PLAN.md)
   - *Data Access文件拆分计划*

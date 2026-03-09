@@ -1,7 +1,8 @@
 # 01-unified-response-format Specification
 
 ## Purpose
-TBD - created by archiving change implement-api-web-alignment. Update Purpose after archive.
+Define the standard response envelope, wrapper usage, and frontend handling expectations for all
+MyStocks API responses.
 ## Requirements
 ### Requirement: All API endpoints MUST return responses in a standardized format.
 
@@ -132,4 +133,3 @@ ElMessage.error(error.message)
 **WHEN** the response is created
 **THEN** the `timestamp` field MUST be an ISO 8601 UTC timestamp
 **AND** it MUST reflect the exact time the response was generated.
-

@@ -1,7 +1,8 @@
 # 04-smart-dumb-components Specification
 
 ## Purpose
-TBD - created by archiving change implement-api-web-alignment. Update Purpose after archive.
+Define the separation of responsibilities between smart container components and dumb presentational
+components in the frontend architecture.
 ## Requirements
 ### Requirement: Smart Component Definition
 
@@ -402,4 +403,3 @@ describe('MarketIndicesCard', () => {
   })
 })
 ```
-

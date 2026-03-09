@@ -1,7 +1,8 @@
 # 02-type-safety-generation Specification
 
 ## Purpose
-TBD - created by archiving change implement-api-web-alignment. Update Purpose after archive.
+Define automatic type generation rules that keep backend Pydantic schemas and frontend TypeScript
+types aligned.
 ## Requirements
 ### Requirement: Pydantic Model to TypeScript Generation MUST
 
@@ -178,4 +179,3 @@ export interface MarketOverviewResponseWrapper {
 **WHEN** they run the dev server
 **THEN** TypeScript types MUST be automatically regenerated
 **AND** type errors MUST be immediately visible in the IDE.
-

@@ -110,7 +110,7 @@ CLI-2: 好的，严格按照指令执行。
       - 修复所有语法错误
 
       验收标准：
-      - [ ] pytest tests/e2e/ 18/18 PASSED
+      - [ ] 实际执行的 E2E 套件全部通过（填写命令 / 浏览器项目 / 通过数 / 总数）
       - [ ] Pylint评级 > 8.5/10
       - [ ] 所有测试套件通过
 
@@ -189,7 +189,7 @@ CLI-2: 好的，我会努力提高
 
       ✅ 做得好的地方：
       - 测试覆盖率达到了95%（目标80%）
-      - 所有E2E测试通过（18/18）
+      - 所有已执行E2E测试通过（请附命令和实际通过数）
       - 提交信息格式规范
 
       ⚠️  需要改进的地方：
@@ -219,10 +219,61 @@ CLI-2: 收到。我会按照反馈逐项改进：
 
 ### 📝 任务分配Prompt模板
 
+#### 模板0: 分发前 owner 建议检查（适用于本地 SQLite + Maestro）
+
+在主 CLI 给 worker 下发任务前，先跑一遍 owner suggestion，减少人工翻 `.FILE_OWNERSHIP` 的重复劳动：
+
+```bash
+python scripts/runtime/maestro_collab.py suggest \
+  --ownership-path .FILE_OWNERSHIP \
+  --task-path TASK.md \
+  --path <可选补充路径>
+```
+
+建议把结果压缩成 3 行，写进主 CLI 的任务分配上下文：
+
+```markdown
+【Owner建议检查】
+- suggest结果: <cli-x / main>
+- 人工最终owner: <cli-x / main>
+- 判断依据: <.FILE_OWNERSHIP 命中 / TASK.md 路径线索 / 依赖关系>
+```
+
+解释规则：
+- `suggested_owner` 命中单一 owner 时，可直接作为主 CLI 的首选候选
+- 若结果是 `main`，不要机械理解为“必须主 CLI 自己做”，也可能只是提示“当前任务需要再拆分”
+- 真正生效的 owner，仍以主 CLI 写入 `TASK.md` 和后续 `assign` 为准
+
+推荐同步把下面这个最小片段写进 `TASK.md`：
+
+```markdown
+## Owner 建议检查
+- Suggested Owner: <cli-x / main>
+- Suggest Reasons: <命中规则 / fallback原因>
+
+## 最终 Owner 决策
+- Final Owner: <cli-x / main>
+- Worker CLI: <cli-x / main>
+- Decision Basis: <路径命中 / 模块边界 / 依赖判断>
+
+## Assign 记录
+- Issue Identifier: <MT-1 / LOCAL-1 / ...>
+- Assigned By: main
+- Acceptance Summary: <一句话验收口径>
+- Assigned At: <YYYY-MM-DD HH:MM TZ>
+```
+
+---
+
 #### 模板1: 简单任务分配（适用于小任务）
 
 ```
 CLI-X，请你完成以下任务：
+
+【Owner 决策】
+- suggest结果: <cli-x / main>
+- 人工最终owner: <cli-x / main>
+- 依据: <路径命中 / 模块边界 / 依赖判断>
 
 【任务目标】
 <用一句话描述任务目标>
@@ -248,6 +299,11 @@ CLI-X，请你完成以下任务：
 **示例**:
 ```
 CLI-3，请你完成缓存优化任务：
+
+【Owner 决策】
+- suggest结果: main
+- 人工最终owner: CLI-3
+- 依据: 任务主要落在后端缓存逻辑，`.FILE_OWNERSHIP` 未提供更细粒度 owner，因此由主CLI人工指定
 
 【任务目标】
 实现高频API端点的缓存功能，提升响应速度
@@ -277,6 +333,11 @@ CLI-3，请你完成缓存优化任务：
 
 ```
 CLI-X，我为你创建了一个详细的工作文档。
+
+【Owner 决策】
+- suggest结果: <cli-x / main>
+- 人工最终owner: <cli-x / main>
+- 依据: <路径命中 / 模块边界 / 依赖判断>
 
 【工作文档】
 请阅读：<WORKTREE_PATH>/README.md
@@ -315,6 +376,11 @@ CLI-X，我为你创建了一个详细的工作文档。
 ```
 CLI-2，我为你创建了一个详细的工作文档。
 
+【Owner 决策】
+- suggest结果: <按当前仓库实时输出填写>
+- 人工最终owner: CLI-2
+- 依据: 该示例来自旧流程；接入 Maestro 后，应以 `.FILE_OWNERSHIP`、`TASK.md` 与主 CLI 最终判断为准
+
 【工作文档】
 请阅读：/opt/claude/mystocks_phase6_e2e/README.md
 
@@ -324,7 +390,7 @@ CLI-2，我为你创建了一个详细的工作文档。
 3. 验收标准：
    - [ ] 单元测试通过
    - [ ] 集成测试通过
-   - [ ] E2E测试通过（18/18）
+   - [ ] E2E测试通过（按实际执行套件填写）
    - [ ] Pylint评级>8.5/10
 4. 技术建议：pytest框架（可选）
 5. 参考资料：pytest文档，项目测试指南
@@ -821,7 +887,7 @@ pytest tests/e2e/test_architecture_optimization_e2e.py::TestArchitectureOptimiza
    - 影响: 代码质量有保障
 
 2. **E2E测试全部通过**
-   - 描述: 18/18 E2E测试通过（100%）
+   - 描述: 实际执行E2E套件全部通过（需附命令与通过数）
    - 影响: 架构优化验证成功
 
 ## ⚠️  需要改进的地方
@@ -956,9 +1022,9 @@ pytest tests/e2e/test_architecture_optimization_e2e.py::TestArchitectureOptimiza
 - **结果**: ✅ 通过
 
 ### 验收项2: E2E测试通过
-- **标准**: 18/18 E2E测试通过
-- **验证方法**: pytest tests/e2e/ -v
-- **结果**: ✅ 通过 (18/18 PASSED)
+- **标准**: 实际执行的 E2E 套件全部通过
+- **验证方法**: 运行项目当前标准 E2E 命令，并记录命令 / 项目 / 通过数
+- **结果**: ✅ 通过（示例：chromium smoke 15/15 PASSED）
 
 ### 验收项3: Pylint评级
 - **标准**: Pylint评级 > 8.5/10
@@ -1024,10 +1090,11 @@ pytest tests/e2e/test_architecture_optimization_e2e.py::TestArchitectureOptimiza
 
 合并完成后，我会运行E2E测试验证：
 ```bash
-pytest tests/e2e/test_architecture_optimization_e2e.py -v
+# 运行项目当前标准 E2E 命令（推荐入口）
+npm run test:e2e:chromium -- <suite-or-spec>
 ```
 
-**验收标准**: 18/18 PASSED (100%)
+**验收标准**: 实际执行的 E2E 套件全部通过（需附命令、项目、通过/总数）
 
 ## ✅ 合并完成后
 
@@ -1084,7 +1151,7 @@ pytest tests/e2e/test_architecture_optimization_e2e.py -v
 **项目用时**: 10小时
 **时间节省**: 65.5%（19小时）
 **质量指标**:
-- ✅ E2E测试: 18/18 PASSED (100%)
+- ✅ E2E测试: 按实际执行结果报告（示例：chromium smoke 15/15 PASSED）
 - ✅ Pylint评级: 9.32/10
 - ✅ TODO清理: 87.2%减少
 

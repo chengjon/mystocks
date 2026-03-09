@@ -65,6 +65,37 @@ git fetch --all
 git log HEAD..origin/dev --oneline
 ```
 
+对于 MyStocks 当前的“本地优先 + SQLite tracker + Maestro”工作流，在**正式分配 owner / worker 前**，还应增加一轮 owner suggestion pre-flight：
+
+```bash
+python scripts/runtime/maestro_collab.py suggest \
+  --ownership-path .FILE_OWNERSHIP \
+  --task-path TASK.md \
+  --path <可选补充路径1> \
+  --path <可选补充路径2>
+```
+
+主 CLI 解释输出时遵循：
+1. `suggested_owner` 只是建议，不是自动分配结果
+2. 若建议 owner 与 `.FILE_OWNERSHIP`、`TASK.md` 路径线索一致，可优先采用
+3. 若输出回退到 `main`，通常表示“未知路径较多”或“多个 owner 并列”，应由主 CLI 继续人工拆分/协调
+4. 在确定最终 owner 后，先写入 `TASK.md`，再用运行时记录机器态 assignment
+
+建议的落地顺序：
+
+```bash
+# 1) 先拿建议
+python scripts/runtime/maestro_collab.py suggest \
+  --ownership-path .FILE_OWNERSHIP \
+  --task-path TASK.md
+
+# 2) 人工确认 owner / worker 后，再持久化 assignment
+python scripts/runtime/maestro_collab.py assign <ISSUE-ID> \
+  --worker-cli <CLI-NAME> \
+  --assigned-by main \
+  --acceptance-summary "<验收摘要>"
+```
+
 如果发现已完成的 worker 分支：
 1. 确认其工作区无未提交变更
 2. 审核并合并 PR 至 `dev`

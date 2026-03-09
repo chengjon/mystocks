@@ -1,7 +1,8 @@
 # 03-adapter-pattern Specification
 
 ## Purpose
-TBD - created by archiving change implement-api-web-alignment. Update Purpose after archive.
+Define adapter-based data transformation boundaries between backend API payloads, frontend state, and
+UI-facing view models.
 ## Requirements
 ### Requirement: Data Adapter Interface
 
@@ -217,4 +218,3 @@ describe('DataAdapter', () => {
   })
 })
 ```
-

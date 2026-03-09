@@ -1,7 +1,8 @@
 # api-documentation Specification
 
 ## Purpose
-TBD - created by archiving change phase6-documentation-tasks. Update Purpose after archive.
+Define OpenAPI schema generation and interactive API documentation requirements for the MyStocks backend
+service.
 ## Requirements
 ### Requirement: OpenAPI Schema Generation
 
@@ -126,4 +127,3 @@ The system SHALL provide a comprehensive error code reference.
 - HTTP status code mapping
 - Suggested user actions for each error
 - Troubleshooting steps for common errors
-

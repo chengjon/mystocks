@@ -1,7 +1,8 @@
 # 05-csrf-protection Specification
 
 ## Purpose
-TBD - created by archiving change implement-api-web-alignment. Update Purpose after archive.
+Define CSRF token issuance, validation, and frontend request-handling requirements for protecting
+state-changing web requests.
 ## Requirements
 ### Requirement: CSRF Token Endpoint MUST
 
@@ -251,4 +252,3 @@ def test_csrf_protection(client):
     response = client.post("/api/trade/order", headers=headers)
     assert response.status_code != 403
 ```
-
