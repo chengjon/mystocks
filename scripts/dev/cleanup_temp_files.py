@@ -1,169 +1,199 @@
 #!/usr/bin/env python3
 """
-临时文件清理脚本
-安全清理temp、tmp目录和备份文件
+Canonical cleanup planner for repository hygiene.
+
+Default mode is dry-run. Destructive behavior requires ``--execute``.
 """
 
-import os
+from __future__ import annotations
+
+import argparse
+import json
+import shutil
+import sys
+from datetime import datetime
 from pathlib import Path
-import subprocess
+
+TEMP_DIRECTORIES = ("temp", "tmp", "test_temp", "opencodetmp")
+BACKUP_PATTERNS = ("*.bak", "*.backup", "*.orig", "*~")
+ROOT_BACKUPS_DIR = "backups"
+IGNORED_DIRECTORIES = {".git", ".venv", "node_modules", "var"}
 
 
-def backup_temp_directory():
-    """备份临时目录（如果需要的话）"""
-    print("=== 临时文件清理 ===")
-    print("清理时间: 2025-11-25 14:43:19")
-    print()
+def should_skip_path(path: Path, root_dir: Path) -> bool:
+    try:
+        relative_parts = path.relative_to(root_dir).parts
+    except ValueError:
+        return True
 
-    # 检查temp目录
-    temp_path = Path("/opt/claude/mystocks_spec/temp")
-    tmp_path = Path("/opt/claude/mystocks_spec/tmp")
+    if relative_parts and relative_parts[0] == ROOT_BACKUPS_DIR:
+        return True
 
-    print("1. 目录清理分析:")
-    if temp_path.exists():
-        temp_files = list(temp_path.rglob("*"))
-        print(f"   temp/ 目录包含 {len(temp_files)} 个文件")
-    else:
-        print("   temp/ 目录不存在")
-
-    if tmp_path.exists():
-        tmp_files = list(tmp_path.rglob("*"))
-        print(f"   tmp/ 目录包含 {len(tmp_files)} 个文件")
-    else:
-        print("   tmp/ 目录不存在")
-
-    return temp_path, tmp_path
+    return any(part in IGNORED_DIRECTORIES for part in relative_parts)
 
 
-def clean_backup_files():
-    """清理备份文件"""
-    print("\n2. 备份文件清理:")
+def iter_backup_files(root_dir: Path) -> list[Path]:
+    backup_files: list[Path] = []
+    for pattern in BACKUP_PATTERNS:
+        for candidate in root_dir.rglob(pattern):
+            if not candidate.is_file():
+                continue
+            if should_skip_path(candidate, root_dir):
+                continue
+            backup_files.append(candidate)
+    unique_candidates = {candidate.resolve(): candidate for candidate in backup_files}
+    return sorted(unique_candidates.values(), key=lambda item: item.as_posix())
 
-    backup_patterns = ["*.bak", "*.backup", "*.orig", "*~"]
-    cleaned_count = 0
 
-    for pattern in backup_patterns:
-        backup_files = []
-        try:
-            # 使用subprocess来执行find命令
-            result = subprocess.run(
-                ["find", "/opt/claude/mystocks_spec", "-name", pattern, "-type", "f"],
-                capture_output=True,
-                text=True,
-                check=True,
+def build_cleanup_plan(root_dir: str | Path, *, backup_stamp: str) -> dict[str, object]:
+    project_root = Path(root_dir).resolve()
+    actions: list[dict[str, object]] = []
+
+    for directory_name in TEMP_DIRECTORIES:
+        candidate = project_root / directory_name
+        if candidate.exists():
+            actions.append(
+                {
+                    "type": "remove_dir",
+                    "path": candidate.relative_to(project_root).as_posix(),
+                    "target": None,
+                    "reason": "temporary_directory",
+                }
             )
-            backup_files = [f.strip() for f in result.stdout.split("\n") if f.strip()]
-        except subprocess.CalledProcessError:
+
+    for cache_dir in sorted(project_root.rglob("__pycache__")):
+        if not cache_dir.is_dir():
+            continue
+        if should_skip_path(cache_dir, project_root):
+            continue
+        actions.append(
+            {
+                "type": "remove_dir",
+                "path": cache_dir.relative_to(project_root).as_posix(),
+                "target": None,
+                "reason": "python_cache",
+            }
+        )
+
+    coverage_dir = project_root / "htmlcov"
+    if coverage_dir.exists():
+        actions.append(
+            {
+                "type": "remove_dir",
+                "path": coverage_dir.relative_to(project_root).as_posix(),
+                "target": None,
+                "reason": "coverage_html",
+            }
+        )
+
+    root_backups_dir = project_root / ROOT_BACKUPS_DIR
+    if root_backups_dir.exists():
+        target = project_root / "var" / "backups" / backup_stamp / "legacy-root-backups"
+        actions.append(
+            {
+                "type": "archive_dir",
+                "path": root_backups_dir.relative_to(project_root).as_posix(),
+                "target": target.relative_to(project_root).as_posix(),
+                "reason": "legacy_root_backups",
+            }
+        )
+
+    for backup_file in iter_backup_files(project_root):
+        target = project_root / "var" / "backups" / backup_stamp / backup_file.name
+        actions.append(
+            {
+                "type": "archive_file",
+                "path": backup_file.relative_to(project_root).as_posix(),
+                "target": target.relative_to(project_root).as_posix(),
+                "reason": "backup_artifact",
+            }
+        )
+
+    actions.sort(key=lambda item: (str(item["type"]), str(item["path"])))
+    remove_dirs = sum(1 for item in actions if item["type"] == "remove_dir")
+    archive_files = sum(1 for item in actions if item["type"] in {"archive_file", "archive_dir"})
+
+    return {
+        "project_root": str(project_root),
+        "dry_run": True,
+        "backup_stamp": backup_stamp,
+        "summary": {
+            "total_actions": len(actions),
+            "remove_dirs": remove_dirs,
+            "archive_files": archive_files,
+        },
+        "actions": actions,
+    }
+
+
+def execute_plan(plan: dict[str, object]) -> None:
+    project_root = Path(str(plan["project_root"]))
+    for action in plan["actions"]:
+        source_path = project_root / str(action["path"])
+        if action["type"] == "remove_dir":
+            if source_path.exists():
+                shutil.rmtree(source_path)
             continue
 
-        if backup_files:
-            print(f"   找到 {len(backup_files)} 个 {pattern} 文件:")
-            for file in backup_files[:5]:  # 只显示前5个
-                print(f"   - {file}")
-            if len(backup_files) > 5:
-                print(f"   ... 还有 {len(backup_files) - 5} 个文件")
+        if action["type"] == "archive_file":
+            target_path = project_root / str(action["target"])
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            if source_path.exists():
+                shutil.move(str(source_path), str(target_path))
+            continue
 
-            # 安全删除备份文件
-            for file in backup_files:
-                try:
-                    os.remove(file)
-                    cleaned_count += 1
-                except OSError as e:
-                    print(f"   ⚠️  无法删除 {file}: {e}")
-
-    if cleaned_count > 0:
-        print(f"\n✅ 成功清理了 {cleaned_count} 个备份文件")
-    else:
-        print("✅ 无需要清理的备份文件")
-
-    return cleaned_count
+        if action["type"] == "archive_dir":
+            target_path = project_root / str(action["target"])
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            if source_path.exists():
+                shutil.move(str(source_path), str(target_path))
 
 
-def remove_backup_file_extentions():
-    """删除backup文件扩展名相关的文件"""
-    print("\n3. 扩展名备份文件清理:")
+def print_report(plan: dict[str, object], output_format: str) -> None:
+    if output_format == "json":
+        print(json.dumps(plan, ensure_ascii=False, indent=2))
+        return
 
-    # 查找带有特定扩展名的备份文件
-    extension_patterns = ["**/*.backup", "**/*.bak.*", "**/*_backup.*"]
+    mode = "DRY-RUN" if plan["dry_run"] else "EXECUTE"
+    print("Auto cleanup report")
+    print("===================")
+    print(f"mode: {mode}")
+    print(f"project_root: {plan['project_root']}")
+    print(f"backup_stamp: {plan['backup_stamp']}")
+    print(f"total_actions: {plan['summary']['total_actions']}")
+    print(f"remove_dirs: {plan['summary']['remove_dirs']}")
+    print(f"archive_files: {plan['summary']['archive_files']}")
 
-    cleaned_count = 0
-    for pattern in extension_patterns:
-        files = []
-        for path in Path("/opt/claude/mystocks_spec").rglob("*"):
-            if path.is_file() and path.name.endswith(".backup"):
-                files.append(str(path))
+    if not plan["actions"]:
+        print("\nNo cleanup actions detected.")
+        return
 
-        if files:
-            print(f"   找到 {len(files)} 个扩展名备份文件:")
-            for file in files[:5]:
-                print(f"   - {file}")
-
-            for file in files:
-                try:
-                    os.remove(file)
-                    cleaned_count += 1
-                except OSError as e:
-                    print(f"   ⚠️  无法删除 {file}: {e}")
-
-    if cleaned_count > 0:
-        print(f"✅ 成功清理了 {cleaned_count} 个扩展名备份文件")
-
-    return cleaned_count
+    print("\nPlanned actions:")
+    for action in plan["actions"]:
+        target = f" -> {action['target']}" if action["target"] else ""
+        print(f"  - {action['type']}: {action['path']}{target} ({action['reason']})")
 
 
-def clean_old_backup_directories():
-    """清理旧的备份目录"""
-    print("\n4. 旧备份目录清理:")
-
-    # 清理特定命名的目录
-    old_dirs = []
-    base_path = Path("/opt/claude/mystocks_spec")
-
-    # 查找备份目录
-    for pattern in ["*backup*", "*temp*", "*tmp*", "*unused*"]:
-        old_dirs.extend(base_path.glob(pattern))
-
-    if old_dirs:
-        print(f"   找到 {len(old_dirs)} 个相关目录:")
-        for dir_path in old_dirs:
-            if dir_path.is_dir():
-                print(f"   - {dir_path.name}/")
-
-    return old_dirs
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Canonical repository auto cleanup planner")
+    parser.add_argument("--root-dir", default=".")
+    parser.add_argument("--format", choices=("text", "json"), default="text")
+    parser.add_argument("--execute", action="store_true")
+    parser.add_argument("--backup-stamp", default=datetime.utcnow().strftime("%Y%m%d"))
+    return parser.parse_args(argv)
 
 
-def main():
-    """主清理函数"""
-    print("MyStocks 临时文件安全清理")
-    print("=" * 50)
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
+    plan = build_cleanup_plan(args.root_dir, backup_stamp=args.backup_stamp)
+    plan["dry_run"] = not args.execute
 
-    # 1. 备份和清理分析
-    temp_path, tmp_path = backup_temp_directory()
+    if args.execute:
+        execute_plan(plan)
 
-    # 2. 清理备份文件
-    backup_files_cleaned = clean_backup_files()
-
-    # 3. 清理扩展名备份文件
-    extension_files_cleaned = remove_backup_file_extentions()
-
-    # 4. 清理旧备份目录
-    old_dirs = clean_old_backup_directories()
-
-    print("\n" + "=" * 50)
-    print("清理总结:")
-    print(f"- 清理的备份文件: {backup_files_cleaned + extension_files_cleaned} 个")
-    print(
-        f"- 检查的临时目录: {len([p for p in [temp_path, tmp_path] if p.exists()])} 个"
-    )
-
-    if temp_path.exists() or tmp_path.exists():
-        print("\n⚠️  重要提示:")
-        print("   temp/ 和 tmp/ 目录包含大量临时测试文件")
-        print("   根据优化方案，这些目录应该被清理或移动到外部存储")
-        print("   建议执行: rm -rf temp/ tmp/")
-
-    print("\n✅ 清理脚本执行完成")
+    print_report(plan, args.format)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

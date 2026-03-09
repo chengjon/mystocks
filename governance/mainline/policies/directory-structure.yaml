@@ -27,6 +27,7 @@ root:
     - unified_manager.py
     - conftest.py
   allowed_directories:
+    - archive
     - architecture
     - config
     - data
@@ -37,7 +38,13 @@ root:
     - scripts
     - src
     - tests
+    - var
     - web
+  workflow_exception_files:
+    - path: TASK.md
+      reason: worktree and main-CLI task contract remains in the repository root by workflow design
+    - path: TASK-REPORT.md
+      reason: worktree and main-CLI execution report remains in the repository root by workflow design
   tolerated_files:
     - path: E2E_TEST_EXECUTION_SUCCESS_REPORT.md
       reason: legacy delivery report remains in the project root
@@ -54,12 +61,6 @@ root:
     - path: OMC_README.md
       reason: tool-specific guide remains in the project root
       recommendation: move into docs/operations/
-    - path: TASK.md
-      reason: current workflow artifact remains in the project root
-      recommendation: move into reports/tasks/ or docs/reports/tasks/
-    - path: TASK-REPORT.md
-      reason: current workflow artifact remains in the project root
-      recommendation: move into reports/tasks/ or docs/reports/tasks/
     - path: coverage.json
       reason: coverage artifact remains versioned in the project root
       recommendation: move into reports/coverage/

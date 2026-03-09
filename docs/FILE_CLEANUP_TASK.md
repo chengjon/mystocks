@@ -1,134 +1,198 @@
 # 项目目录文件整理任务
 
-**文档版本**: v1.0
+**文档版本**: v2.0
 **创建日期**: 2025-12-30
+**更新日期**: 2026-03-09
 **项目名称**: MyStocks 股票分析系统
-**目标**: 清理冗余文件、规范目录结构、提升项目可维护性
+**目标**: 将文件清理工作升级为“目录治理 + 生命周期目录 + dry-run 优先入口”的持续仓库卫生治理流程
 
 ---
 
-## 📊 整理分析
+## 📊 当前治理基线（2026-03-09）
 
-### 当前文件统计
+当前基线以目录治理检查器输出为准：
 
-| 文件类型 | 数量 | 总大小 | 状态 |
-|---------|------|--------|------|
-| 临时文件 | 0 | ~0KB | ✅ 已清理 |
-| 备份文件 | 0 | ~0KB | ✅ 已处理 |
-| HTML覆盖率文件 | 0 | ~0MB | ✅ 已清理 |
-| Python缓存 | 0 | ~0KB | ✅ 已清理 |
-| 旧报告文档 | 0 | ~0KB | ✅ 已归档 |
-| 根目录日志 | 11 | ~50MB | ⚠️ 待处理 |
-| **总计** | ~11 | ~50MB | 已处理 |
+- 命令：`python scripts/maintenance/check_structure.py --format json`
+- 快照环境：`dev-repo-hygiene-b1` worktree
+- 最新结果：
+  - `errors: 0`
+  - `warnings: 0`
+  - `infos: 0`
 
-### 整理执行情况
+### 当前阻塞项（error）
 
-#### ✅ 已完成的清理任务（2025-12-30）
+- 当前无阻塞项。
 
-1. **临时文件清理**（P0优先级）✅
-   - 清理数量: 2个
-   - 文件列表:
-     - `scripts/tests/test-directory-org/subdir1/temp.tmp`
-     - `temp/cache/temp_data.tmp`
-   - 释放空间: ~378KB
+### 当前主要 warning 收敛项
 
-2. **Python缓存清理**（P0优先级）✅
-   - 清理数量: 8个
-   - 清理目录: `src/**/__pycache__/`
-   - 释放空间: ~377KB
+- 当前无 warning。
 
-3. **HTML覆盖率清理**（P0优先级）✅
-   - 清理数量: 11个
-   - 清理目录: `htmlcov/`
-   - 释放空间: ~42MB
+### 已批准 workflow exception
 
-4. **旧报告归档**（P1优先级）✅
-   - 归档数量: 22个
-   - 归档目录: `docs/archive/2025/Q4/`
-   - 归档类型:
-     - 完成报告: 9个
-     - 代码质量报告: 4个
-     - 技术分析报告: 3个
-     - 测试验证报告: 2个
-     - Mock系统报告: 2个
-     - 工具链报告: 2个
-   - 释放空间: ~312KB（归档后）
+- `TASK.md`
+- `TASK-REPORT.md`
 
-5. **备份文件评估**（P1优先级）✅
-   - 查找结果: 0个符合条件的备份文件（<30天）
-   - 处理方式: 无需处理
-   - 建议: 定期检查是否有备份文件产生
+## 🧭 Canonical Lifecycle Targets
 
-6. **日志文件评估**（P1优先级）✅
-   - 处理数量: 11个
-   - 文件类型: 根目录日志（非应用日志）
-   - 处理方式: 已识别，logs/目录为空无需移动
-   - 建议: 建立统一的应用日志目录结构
+| 类型 | Canonical Target | 说明 |
+|------|------------------|------|
+| 活跃说明文档 | `docs/` | 指南、设计、操作手册、活跃说明 |
+| 版本化证据/治理报告 | `reports/` | 阶段报告、验证证据、治理产物 |
+| 历史冻结资产 | `archive/` | 历史文档、冻结资产、归档材料 |
+| 运行时/本地产物 | `var/` | 日志、覆盖率、临时文件、备份、运行报告 |
 
-### 整理执行情况
+### 目标映射说明
 
-#### ✅ 已完成的清理任务
+- 旧的 `docs/archive/` 语义，逐步收敛到顶层 `archive/`
+- 旧的 `logs/`、`data/backups/`、覆盖率产物落点，逐步收敛到 `var/`
+- 阶段性/证据性文档，不再长期堆放在 `docs/`，而是迁往 `reports/`
 
-1. **临时文件清理**（P0优先级）
-   - 清理数量: 2个
-   - 文件列表:
-     - `scripts/tests/test-directory-org/subdir1/temp.tmp`
-     - `temp/cache/temp_data.tmp`
-   - 释放空间: ~378KB
+## 🎯 当前执行批次（Batch 1）
 
-2. **Python缓存清理**（P0优先级）
-   - 清理数量: 8个
-   - 清理目录: `src/**/__pycache__/`
-   - 释放空间: ~377KB
+### Batch 1 目标
 
-3. **HTML覆盖率清理**（P0优先级）
-   - 清理数量: 11个
-   - 清理目录: `htmlcov/`
-   - 释放空间: ~42MB
+1. 刷新当前清理基线，使其与 `check_structure` 结果一致
+2. 让 `archive/`、`reports/`、`var/` 成为正式目录治理允许目标
+3. 为日志轮转、自动清理、文件大小监控建立 dry-run-first 官方入口
+4. 在不做大规模迁移的前提下，为后续根目录收敛建立稳定规则基础
 
-4. **根目录日志整理**（P1优先级）
-   - 处理数量: 11个
-   - 文件类型: 根目录日志（非应用日志）
-   - 处理方式: 已识别但logs/目录为空，无需移动
-   - 建议: 建立统一的应用日志目录结构
+### Batch 1 当前任务
 
-5. **备份文件评估**（P1优先级）
-   - 查找结果: 0个符合条件的备份文件（<30天）
-   - 处理方式: 无需处理
-   - 建议: 定期检查是否有备份文件产生
+| 任务 | 状态 | 说明 |
+|------|------|------|
+| 刷新本基线文档 | ✅ 已完成 | 已改为引用当前治理检查器输出与 canonical targets |
+| lifecycle 目录准入 | ✅ 已完成 | `archive/` 与 `var/` 已加入 policy，`reports/` 已纳入允许目录 |
+| 日志轮转入口收敛 | ✅ 已完成 | `rotate_logs.sh` 已支持 `--dry-run`，并使用 `var/log/app -> archive/logs/app` |
+| 文件大小监控入口收敛 | ✅ 已完成 | `monitor_file_size.sh` 已成为 canonical 入口，并支持 `text/json` 输出 |
+| 自动清理入口收敛 | ✅ 已完成 | `auto_cleanup.sh` 默认 dry-run，仅在 `--execute` 时清理/归档 |
+| canonical 目录骨架 | ✅ 已完成 | 已补齐 `archive/`、`reports/governance/`、`var/` 最小跟踪骨架 |
+| 根目录阻塞项第一批修复 | ✅ 已完成 | 已修复 pytest 运行时产物泄漏：`test_timing.csv` 与根目录 `__pycache__/` |
+| 根目录文档首批收敛 | ✅ 已完成 | 已迁移 5 个 legacy root docs 到 `docs/` / `archive/`，warning 从 `20` 降到 `15` |
+| 覆盖率与备份收敛 | ✅ 已完成 | 已迁移 `coverage.json` 与 root `backups/`，warning 从 `15` 降到 `12` |
+| reviews 与 archived 收敛 | ✅ 已完成 | 已迁移 `reviews/` 与 `archived/`，warning 从 `12` 降到 `8` |
+| TASK 工件治理例外 | ✅ 已完成 | `TASK.md` / `TASK-REPORT.md` 已定义为 workflow-approved exceptions，warning 从 `8` 降到 `6` |
+| docs/reports/archive 最终收敛 | ✅ 已完成 | 已迁移 `docs/*_reports`、`docs/archive`、`docs/legacy`，warning 从 `6` 降到 `0` |
+
+### 已完成能力（Batch 1）
+
+- 日志轮转统一入口：`scripts/maintenance/rotate_logs.sh`
+- 文件大小监控统一入口：`scripts/maintenance/monitor_file_size.sh`
+- 自动清理统一入口：`scripts/cleanup/auto_cleanup.sh`
+- 当前官方落点：
+  - 活跃日志：`var/log/app/`
+  - 归档日志：`archive/logs/app/`
+  - 备份归档：`var/backups/`
+  - 运行报告：`var/reports/`
+  - 治理报告：`reports/governance/`
+- 当前支持：
+  - `--dry-run`
+  - `--project-root`
+  - `--retention-days`
+- 文件大小监控当前支持：
+  - `--project-root`
+  - `--format text|json`
+  - 复用 `scripts/compliance/file_size_guardrail.py`
+- 自动清理当前支持：
+  - 默认 dry-run
+  - `--execute`
+  - `--project-root`
+  - `--format text|json`
+  - `--backup-stamp`
+
+### Batch 1-2 验证结果
+
+- `pytest tests/unit/scripts/test_check_structure_policy.py tests/unit/scripts/test_rotate_logs.py tests/unit/scripts/test_monitor_file_size.py tests/unit/scripts/test_auto_cleanup.py tests/unit/scripts/test_pytest_runtime_artifacts.py -q -o addopts=''`
+  - 结果：`22 passed`
+- `openspec validate integrate-repository-hygiene --strict`
+  - 结果：通过
+- `python scripts/maintenance/check_structure.py --format text`
+  - 结果：根目录阻塞项已清零：
+    - `errors: 0`
+    - `warnings: 15`
+
+### Batch 3 文档收敛结果
+
+- 迁移 inventory：
+  - `reports/governance/2026-03-09-batch-3-root-doc-inventory.md`
+- 已迁移的根目录文档：
+  - `E2E_TEST_EXECUTION_SUCCESS_REPORT.md` → `archive/docs/e2e/E2E_TEST_EXECUTION_SUCCESS_REPORT_2026-03-01.md`
+  - `E2E_TEST_QUICK_REFERENCE.md` → `docs/guides/E2E_TEST_QUICK_REFERENCE_COMPATIBILITY.md`
+  - `GEMINI_设置相关文件迁移清单.md` → `archive/docs/tooling/GEMINI_SETTINGS_FILE_MIGRATION_CHECKLIST_2026-03.md`
+  - `Gemini代理配置成功经验与固化指南.updated.md` → `docs/guides/GEMINI_PROXY_CONFIGURATION_GUIDE.md`
+  - `OMC_README.md` → `docs/guides/OMC_WORKFLOW_GUIDE.md`
+- 索引/入口更新：
+  - `README.md`
+  - `docs/guides/INDEX_root.md`
+- `python scripts/maintenance/check_structure.py --format text`
+  - 结果：
+    - `errors: 0`
+    - `warnings: 15`
+
+### Root coverage / backups 收敛结果
+
+- 治理报告：
+  - `reports/governance/2026-03-09-root-coverage-backups-convergence.md`
+- 已迁移：
+  - `coverage.json` → `reports/coverage/coverage.json`
+  - `backups/data_source_registry/*.json` → `archive/backups/data_source_registry/*.json`
+- 未来默认落点已修正：
+  - `pytest.ini` → `reports/coverage/coverage.json`
+  - `BackupManager` / `BackupScheduler` → `var/backups`
+  - `scripts/sync_sources.py` → `var/backups/data_source_registry`
+  - `scripts/migrations/migrate_watchlist_to_monitoring.py` → `var/backups`
+- 回归结果：
+  - `errors: 0`
+  - `warnings: 12`
+
+### Root reviews / archived 收敛结果
+
+- 治理报告：
+  - `reports/governance/2026-03-09-reviews-archived-convergence.md`
+- 已迁移：
+  - `reviews/*.md` → `reports/reviews/*.md`
+  - `archived/` → `archive/legacy-root-archived/`
+- 回归结果：
+  - `errors: 0`
+  - `warnings: 8`
+
+### TASK 工件 workflow exception 结果
+
+- 治理报告：
+  - `reports/governance/2026-03-09-task-artifacts-workflow-exception.md`
+- 已生效策略：
+  - `TASK.md`
+  - `TASK-REPORT.md`
+  - 不再视为 root debt，而是本项目多 CLI 本地协作的正式 workflow exception
+- 回归结果：
+  - `errors: 0`
+  - `warnings: 6`
+
+### docs/reports/archive 最终收敛结果
+
+- 治理报告：
+  - `reports/governance/2026-03-09-docs-report-archive-convergence.md`
+- 已迁移：
+  - `docs/completion_reports/` → `reports/completion/`
+  - `docs/monitoring_reports/` → `reports/monitoring/`
+  - `docs/phase_reports/` → `reports/phase/`
+  - `docs/test_reports/` → `reports/tests/`
+  - `docs/archive/` → `archive/docs/`
+  - `docs/legacy/` → `archive/legacy-docs/`
+- 回归结果：
+  - `errors: 0`
+  - `warnings: 0`
+
+### 本文档与历史记录的关系
+
+- 本文档顶部内容是 **当前治理基线与当前计划**
+- 下方保留的 2025-12-30 清理记录是 **历史上下文**
+- 历史章节中的旧落点（如 `docs/archive/`、`logs/`、`data/backups/`）仅代表当时执行背景，**不再是当前 canonical target**
 
 ---
 
-## 🎯 整理目标
+## 📋 历史清理记录（2025-12-30，保留原始上下文）
 
-### 高优先级（P0 - 立即清理）
-
-| 任务 | 状态 | 说明 |
-|------|------|------|
-| 清理临时文件 | ✅ 完成 | 已删除2个临时文件和8个缓存文件 |
-| 清理Python缓存 | ✅ 完成 | 已删除所有Python缓存目录 |
-| 清理HTML覆盖率 | ✅ 完成 | 已删除htmlcov/目录，释放42MB空间 |
-| 根目录日志评估 | ✅ 完成 | 评估了11个根目录日志文件 |
-
-### 中优先级（P1 - 1周内完成）
-
-| 任务 | 状态 | 说明 |
-|------|------|------|
-| 旧报告归档 | ⏳ 待完成 | 2个旧报告文档需归档到docs/archive/ |
-| 建立日志轮转 | ⏳ 待完成 | logs/目录为空，需建立轮转机制 |
-| 归档目录结构 | ⏳ 待完成 | 需创建data/backups/和docs/archive/季度目录 |
-
-### 低优先级（P2 - 2周内完成）
-
-| 任务 | 状态 | 说明 |
-|------|------|------|
-| 建立监控脚本 | ⏳ 待完成 | 创建自动清理脚本scripts/cleanup/auto_cleanup.sh |
-| 优化文件大小监控 | ⏳ 待完成 | 建立文件大小监控机制 |
-| 文档整理 | ⏳ 待完成 | 梳理docs/目录文档结构 |
-
----
-
-## 📋 待清理文件清单（需审批）
+以下内容保留为早期文件清理执行记录，仅作为历史参考。
 
 ### P1 - 1周内完成
 

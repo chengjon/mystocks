@@ -55,7 +55,7 @@ class CoverageChecker:
                     "pytest",
                     test_file,
                     f"--cov={module}",
-                    "--cov-report=json",
+                    "--cov-report=json:reports/coverage/coverage.json",
                     "--cov-report=term-missing",
                     "--tb=no",
                     "-q",
@@ -95,6 +95,7 @@ class CoverageChecker:
         except Exception:
             # 尝试其他可能的文件位置
             alternative_paths = [
+                project_root / "reports" / "coverage" / "coverage.json",
                 project_root / "coverage.json",
                 project_root / ".coverage.json",
                 coverage_path,

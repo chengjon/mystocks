@@ -9,6 +9,8 @@ Pytest 配置文件 - 项目根目录
 import sys
 from pathlib import Path
 
+sys.dont_write_bytecode = True
+
 # 排除有问题的目录，防止 pytest 收集
 collect_ignore = [
     "scripts/",
@@ -42,6 +44,10 @@ src_dir = project_root / 'src'
 if str(src_dir) not in sys.path:
     sys.path.insert(0, str(src_dir))
 
+from tests.pytest_runtime_artifacts import (
+    cleanup_root_runtime_artifacts,
+    ensure_canonical_timing_output,
+)
 
 def pytest_configure(config):
     """Pytest 配置钩子"""
@@ -61,6 +67,7 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "gpu: marks tests requiring GPU support"
     )
+    ensure_canonical_timing_output(config, project_root=project_root)
 
 
 def pytest_collection_modifyitems(config, items):
@@ -73,6 +80,14 @@ def pytest_collection_modifyitems(config, items):
         # 自动为网络测试添加 network 标记
         if "network" in item.nodeid.lower() or "external" in item.nodeid.lower():
             item.add_marker(pytest.mark.network)
+
+
+def pytest_sessionfinish(session, exitstatus):
+    cleanup_root_runtime_artifacts(project_root=project_root)
+
+
+def pytest_unconfigure(config):
+    cleanup_root_runtime_artifacts(project_root=project_root)
 
 
 # 导入 pytest

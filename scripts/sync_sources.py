@@ -296,7 +296,7 @@ def backup_current_registry():
         finally:
             pool.putconn(conn)
 
-        backup_dir = Path("backups/data_source_registry")
+        backup_dir = Path("var/backups/data_source_registry")
         backup_dir.mkdir(parents=True, exist_ok=True)
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

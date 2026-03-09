@@ -200,7 +200,7 @@ docs/目录: 44+子目录, 分类混乱
 | `docs/guides/` | `docs/guides/` | ✅ 符合 |
 | `docs/architecture/` | `docs/architecture/` | ✅ 符合 |
 | `docs/api/` | `docs/api/` | ✅ 符合 |
-| `docs/legacy/` | `docs/legacy/` | ✅ 符合 |
+| `docs/legacy/` | `archive/legacy-docs/` | ✅ 已迁移 |
 | - | `docs/archived/` | 需合并到legacy |
 | - | 中文目录 | 需删除 |
 
@@ -487,14 +487,14 @@ docs/
 
 | 序号 | 原路径 | 新路径 | 操作 | 风险 | 回滚命令 |
 |------|--------|--------|------|------|---------|
-| 1 | `docs/archived/` | `docs/legacy/archived/` | 移动 | 低 | `git checkout HEAD -- docs/archived/` |
-| 2 | `docs/archived-docs/` | `docs/legacy/archived-docs/` | 移动 | 低 | `git checkout HEAD -- docs/archived-docs/` |
+| 1 | `docs/archived/` | `archive/legacy-docs/archived/` | 移动 | 低 | `git checkout HEAD -- docs/archived/` |
+| 2 | `docs/archived-docs/` | `archive/legacy-docs/archived-docs/` | 移动 | 低 | `git checkout HEAD -- docs/archived-docs/` |
 | 3 | `docs/02-架构与设计文档/` | - | 删除 | 低 | `git checkout HEAD -- docs/02-架构与设计文档/` |
 | 4 | `docs/03-API与功能文档/` | - | 删除 | 低 | `git checkout HEAD -- docs/03-API与功能文档/` |
 | 5 | `docs/06-项目管理与报告/` | - | 删除 | 低 | `git checkout HEAD -- docs/06-项目管理与报告/` |
-| 6 | `docs/归档文档/` | `docs/legacy/zh-archived/` | 移动 | 低 | `git checkout HEAD -- docs/归档文档/` |
+| 6 | `docs/归档文档/` | `archive/legacy-docs/zh-archived/` | 移动 | 低 | `git checkout HEAD -- docs/归档文档/` |
 | 7 | `docs/docs/` | - | 删除 | 低 | `git checkout HEAD -- docs/docs/` |
-| 8 | `docs/docsOLD/` | `docs/legacy/docsOLD/` | 移动 | 低 | `git checkout HEAD -- docs/docsOLD/` |
+| 8 | `docs/docsOLD/` | `archive/legacy-docs/docsOLD/` | 移动 | 低 | `git checkout HEAD -- docs/docsOLD/` |
 | 9 | `docs/completion_reports/` | `docs/reports/completion/` | 移动 | 低 | `git checkout HEAD -- docs/completion_reports/` |
 | 10 | `docs/monitoring_reports/` | `docs/reports/monitoring/` | 移动 | 低 | `git checkout HEAD -- docs/monitoring_reports/` |
 | 11 | `docs/phase_reports/` | `docs/reports/phase/` | 移动 | 低 | `git checkout HEAD -- docs/phase_reports/` |
@@ -515,7 +515,7 @@ docs/
 | 26 | `docs/deployment/` | `docs/operations/deployment/` | 移动 | 低 | `git checkout HEAD -- docs/deployment/` |
 | 27 | `docs/ai_tools/` | `docs/guides/ai_tools/` | 移动 | 低 | `git checkout HEAD -- docs/ai_tools/` |
 | 28 | `docs/ci-cd/` | `docs/operations/ci-cd/` | 移动 | 低 | `git checkout HEAD -- docs/ci-cd/` |
-| 29 | `docs/buger/` | `docs/legacy/buger/` | 移动 | 低 | `git checkout HEAD -- docs/buger/` |
+| 29 | `docs/buger/` | `archive/legacy-docs/buger/` | 移动 | 低 | `git checkout HEAD -- docs/buger/` |
 | 30 | `docs/openspec_cmd/` | `docs/guides/openspec_cmd/` | 移动 | 低 | `git checkout HEAD -- docs/openspec_cmd/` |
 | 31 | `docs/tasks/` | `docs/reports/tasks/` | 移动 | 低 | `git checkout HEAD -- docs/tasks/` |
 | 32 | `docs/reviews/` | `docs/reports/reviews/` | 移动 | 低 | `git checkout HEAD -- docs/reviews/` |
@@ -844,7 +844,7 @@ git mv scripts/project scripts/development/
 
 ```bash
 # 1. 创建目标目录结构
-mkdir -p docs/legacy/{archived,archived-docs,zh-archived,docsOLD,buger}
+mkdir -p archive/legacy-docs/{archived,archived-docs,zh-archived,docsOLD,buger}
 mkdir -p docs/reports/{completion,monitoring,phase,test,cli,tasks,reviews,technical_debt,plans}
 mkdir -p docs/standards/code_quality
 mkdir -p docs/operations/{monitoring,performance,deployment,ci-cd}
@@ -855,10 +855,10 @@ mkdir -p web/frontend/docs
 mkdir -p web/backend/docs
 
 # 2. 合并archived到legacy
-git mv docs/archived docs/legacy/
+git mv docs/archived archive/legacy-docs/
 
 # 3. 合并archived-docs到legacy
-git mv docs/archived-docs docs/legacy/
+git mv docs/archived-docs archive/legacy-docs/
 
 # 4. 删除中文目录
 rm -rf docs/02-架构与设计文档/
@@ -866,13 +866,13 @@ rm -rf docs/03-API与功能文档/
 rm -rf docs/06-项目管理与报告/
 
 # 5. 移动归档文档
-git mv docs/归档文档 docs/legacy/zh-archived/
+git mv docs/归档文档 archive/legacy-docs/zh-archived/
 
 # 6. 删除空目录
 rm -rf docs/docs/
 
 # 7. 移动docsOLD
-git mv docs/docsOLD docs/legacy/
+git mv docs/docsOLD archive/legacy-docs/
 
 # 8. 合并报告目录
 git mv docs/completion_reports docs/reports/completion/
@@ -918,7 +918,7 @@ git mv docs/openspec_cmd docs/guides/
 git mv docs/tdx_integration docs/guides/
 
 # 17. 移动buger到legacy
-git mv docs/buger docs/legacy/
+git mv docs/buger archive/legacy-docs/
 ```
 
 ---

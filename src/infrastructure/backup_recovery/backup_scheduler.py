@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 class BackupScheduler:
     """备份调度器"""
 
-    def __init__(self, backup_base_path: str = "./backups"):
+    def __init__(self, backup_base_path: str = "var/backups"):
         """
         初始化备份调度器
 

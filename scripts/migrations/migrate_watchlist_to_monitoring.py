@@ -44,7 +44,7 @@ class WatchlistDataMigrator:
         self,
         sqlite_path: str = None,
         postgres_dsn: str = None,
-        backup_dir: str = "backups",
+        backup_dir: str = "var/backups",
     ):
         self.sqlite_path = sqlite_path or self._find_sqlite_db()
         self.postgres_dsn = postgres_dsn or self._get_postgres_dsn()
@@ -358,7 +358,7 @@ async def main():
     parser = argparse.ArgumentParser(description="自选股数据迁移工具")
     parser.add_argument("--sqlite", "-s", help="SQLite 数据库路径")
     parser.add_argument("--postgres", "-p", help="PostgreSQL 连接字符串")
-    parser.add_argument("--backup", "-b", default="backups", help="备份目录")
+    parser.add_argument("--backup", "-b", default="var/backups", help="备份目录")
     parser.add_argument("--user-id", "-u", type=int, default=1, help="用户ID")
     parser.add_argument("--test", action="store_true", help="使用测试数据")
 

@@ -1,5 +1,30 @@
 # MyStocks 更新日志
 
+## Unreleased (2026-03-09)
+
+### 🎼 Maestro / Symphony 本地优先收口
+
+- 将 `Symphony + Linear` 的默认协作模型正式收敛为 **本地优先 + SQLite tracker + 多 CLI 协作**。
+- 明确人类 / Main CLI / Worker CLI 的责任边界，并把权威说明沉淀到多 CLI 工作流文档中。
+- 完成 `Maestro` 三层命名体系、总结文档与 `quick start` 文档，方便后续独立迁移为跨项目工具。
+- 打通 owner suggestion → assign → tracker state 的本地主流程，并补齐相关回归测试与运行入口。
+
+### 🧹 仓库卫生治理与生命周期目录
+
+- 落地 `integrate-repository-hygiene` 的首轮执行结果，统一生命周期目录到 `docs/`、`reports/`、`archive/`、`var/`。
+- 将 `TASK.md` 与 `TASK-REPORT.md` 正式定义为工作流允许的 root exception，而不是目录治理债务。
+- 修正覆盖率、备份、清理、结构检查等脚本的默认落点，避免新的根目录运行时产物继续回流。
+- 完成历史 `docs/*_reports`、`docs/archive/`、`docs/legacy/`、root `reviews/`、root `archived/` 等内容收敛。
+- 当前目录治理基线已收敛为：
+  - `errors: 0`
+  - `warnings: 0`
+
+### ✅ 验证
+
+- `pytest tests/unit/scripts/test_check_structure_policy.py tests/unit/scripts/test_rotate_logs.py tests/unit/scripts/test_monitor_file_size.py tests/unit/scripts/test_auto_cleanup.py tests/unit/scripts/test_pytest_runtime_artifacts.py tests/unit/scripts/test_repository_hygiene_paths.py -q -o addopts=''`
+- `openspec validate integrate-repository-hygiene --strict`
+- `python scripts/maintenance/check_structure.py --format text`
+
 ## v1.4.0 (2025-12-28)
 
 ### 🎉 Phase 6 文档和标准化

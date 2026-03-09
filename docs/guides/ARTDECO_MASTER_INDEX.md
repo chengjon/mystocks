@@ -41,4 +41,4 @@ This document is the authoritative entry point for ArtDeco v3/v3.1 governance in
     *   Recent updates to button heights, card ratios, and spacing.
 
 ---
-**Maintenance**: All new ArtDeco documentation must be indexed here. Active guidance must stay aligned to the ArtDeco v3/v3.1 Governance Baseline. Obsolete documents are moved to `docs/archive/artdeco/`.
+**Maintenance**: All new ArtDeco documentation must be indexed here. Active guidance must stay aligned to the ArtDeco v3/v3.1 Governance Baseline. Obsolete documents are moved to `archive/docs/artdeco/`.

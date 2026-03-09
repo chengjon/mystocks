@@ -1,0 +1,78 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "ts-quality-guard",
+    "type": "library",
+    "framework": "vanilla",
+    "typescript": "4.9+"
+  },
+  "standards": {
+    "strict": true,
+    "noImplicitAny": true,
+    "exactOptionalPropertyTypes": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "namingConvention": "camelCase",
+    "apiCase": "snake_case",
+    "maxFileLines": 300,
+    "maxFunctionLines": 50,
+    "requiredJSDoc": true
+  },
+  "checklists": {
+    "component": [
+      "props-interface",
+      "emits-definition",
+      "label-required"
+    ],
+    "adapter": [
+      "explicit-types",
+      "error-handling",
+      "data-validation"
+    ],
+    "service": [
+      "api-contract",
+      "response-typing",
+      "error-boundaries"
+    ],
+    "store": [
+      "pinia-best-practices",
+      "type-safe-mutations"
+    ]
+  },
+  "gates": {
+    "preCommit": {
+      "enabled": true,
+      "threshold": 85,
+      "blockOnError": true,
+      "allowWarnings": true,
+      "autoFix": false
+    },
+    "prePush": {
+      "enabled": true,
+      "threshold": 80,
+      "blockOnError": false,
+      "allowWarnings": true
+    },
+    "ci": {
+      "enabled": true,
+      "threshold": 90,
+      "failOnWarning": false,
+      "reportFormat": "junit"
+    }
+  },
+  "monitoring": {
+    "enabled": true,
+    "realTime": true,
+    "idePlugin": true,
+    "feedbackLevel": "warnings",
+    "debounceMs": 500,
+    "maxConcurrentFiles": 10,
+    "cacheEnabled": true,
+    "cacheSize": 100,
+    "reportFrequency": "daily"
+  },
+  "notifications": {
+    "enabled": false,
+    "channels": {}
+  }
+}

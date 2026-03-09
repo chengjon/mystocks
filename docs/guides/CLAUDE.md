@@ -544,7 +544,7 @@ python test_performance_comparison.py
 | **Operations** | `docs/operations/` | 部署、监控、运维 | deployment-guide.md, log-monitoring.md |
 | **Testing** | `docs/testing/` | 测试策略、质量保障 | testing-strategy.md, quality-reports.md |
 | **Reports** | `docs/reports/` | 阶段报告、分析总结 | comprehensive-cleanup.md, project-status.md |
-| **Archive** | `docs/archive/` | 归档文档、历史版本 | old-phase-reports/, deprecated-docs/ |
+| **Archive** | `archive/docs/` | 归档文档、历史版本 | old-phase-reports/, deprecated-docs/ |
 
 ### 📝 文档命名规范
 

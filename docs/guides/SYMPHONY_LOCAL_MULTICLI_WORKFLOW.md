@@ -4,6 +4,8 @@
 
 `TASK.md` / `TASK-REPORT.md` 是人工协作契约，Symphony 是契约形成后的自动化执行与监控层。
 
+为匹配本项目的本地优先 + 多 CLI 工作流，仓库根目录的 `TASK.md` / `TASK-REPORT.md` 被目录治理策略定义为 **workflow-approved exceptions**：它们是当前协作机制的正式入口与回报面，不再视为“待迁移债务”。
+
 ## 权威责任模型
 
 - **人**：定义目标、方向、总任务和高层约束

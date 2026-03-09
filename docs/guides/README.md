@@ -1352,7 +1352,7 @@ curl -X POST http://localhost:8020/backtest \
 - 系统性能优化总结
 - 开发进展总结
 
-**旧文档归档** (`docs/archive/`):
+**旧文档归档** (`archive/docs/`):
 - 历史决策记录
 - 过期的规划文档
 - 前期讨论材料

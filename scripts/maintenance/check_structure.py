@@ -167,6 +167,7 @@ def analyze_root_entries(
     root_policy = policy.get("root", {})
     allowed_files = set(root_policy.get("allowed_files", []))
     allowed_directories = set(root_policy.get("allowed_directories", []))
+    workflow_exception_files = normalize_entries(root_policy.get("workflow_exception_files"))
     tolerated_files = normalize_entries(root_policy.get("tolerated_files"))
     tolerated_directories = normalize_entries(root_policy.get("tolerated_directories"))
     forbidden_file_patterns = root_policy.get("forbidden_file_patterns", [])
@@ -244,6 +245,9 @@ def analyze_root_entries(
             continue
 
         if entry.name in allowed_files:
+            continue
+
+        if entry.name in workflow_exception_files:
             continue
 
         tolerated = tolerated_files.get(entry.name)

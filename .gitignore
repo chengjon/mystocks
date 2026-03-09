@@ -244,6 +244,20 @@ docs/归档文档/
 
 # Compliance reports (CI artifacts)
 reports/
+!reports/
+reports/*
+!reports/completion/
+!reports/completion/**
+!reports/governance/
+!reports/governance/**
+!reports/monitoring/
+!reports/monitoring/**
+!reports/phase/
+!reports/phase/**
+!reports/reviews/
+!reports/reviews/**
+!reports/tests/
+!reports/tests/**
 reports/compliance/*.json
 
 # Coverage Reports

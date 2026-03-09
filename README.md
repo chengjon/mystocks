@@ -202,7 +202,7 @@ ws.emit('subscribe', config.wsChannel)
 
 ---
 
-[![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](docs/overview/changelog.md)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109%2B-green.svg)](https://fastapi.tiangolo.com)
@@ -259,7 +259,7 @@ python3 /opt/claude/mystocks_spec/scripts/opencode/sync_omc_model_catalog.py --w
 - OMC 官方 README: <https://github.com/Yeachan-Heo/oh-my-claudecode/blob/main/README.md>
 - 项目内 OMC 指令集: `/root/.claude/CLAUDE.md`
 - 本项目 OMC 使用与故障排查（含 `Team "omc" does not exist`）:
-  [OMC_README.md](./OMC_README.md)
+  [`docs/guides/OMC_WORKFLOW_GUIDE.md`](docs/guides/OMC_WORKFLOW_GUIDE.md)
 
 MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，采用科学的数据分类体系和智能路由策略，实现多数据库协同工作。系统基于适配器模式和工厂模式构建统一的数据访问层，提供配置驱动的自动化管理，确保数据的高效存储、快速查询和实时监控。
 
@@ -1588,7 +1588,7 @@ curl -X POST http://localhost:8000/backtest \
 - 系统性能优化总结
 - 开发进展总结
 
-**旧文档归档** (`docs/archive/`):
+**旧文档归档** (`archive/docs/`):
 - 历史决策记录
 - 过期的规划文档
 - 前期讨论材料

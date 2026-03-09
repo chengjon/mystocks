@@ -1,0 +1,2369 @@
+{
+  "modules_count": 35,
+  "endpoints_count": 261,
+  "modules": {
+    "announcement.routes": {
+      "file": "announcement/routes.py",
+      "prefix": "/announcement",
+      "endpoints_count": 14,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/health",
+          "function": "health_check",
+          "description": "健康检查",
+          "module": "announcement.routes",
+          "file": "announcement/routes.py"
+        },
+        {
+          "method": "GET",
+          "path": "/status",
+          "function": "get_status",
+          "description": "获取服务状态",
+          "module": "announcement.routes",
+          "file": "announcement/routes.py"
+        },
+        {
+          "method": "POST",
+          "path": "/analyze",
+          "function": "analyze_data",
+          "description": "",
+          "module": "announcement.routes",
+          "file": "announcement/routes.py"
+        },
+        {
+          "method": "POST",
+          "path": "/fetch",
+          "function": "fetch_announcements",
+          "description": "",
+          "module": "announcement.routes",
+          "file": "announcement/routes.py"
+        },
+        {
+          "method": "GET",
+          "path": "/list",
+          "function": "get_announcements",
+          "description": "",
+          "module": "announcement.routes",
+          "file": "announcement/routes.py"
+        },
+        {
+          "method": "GET",
+          "path": "/today",
+          "function": "get_today_announcements",
+          "description": "",
+          "module": "announcement.routes",
+          "file": "announcement/routes.py"
+        },
+        {
+          "method": "GET",
+          "path": "/important",
+          "function": "get_important_announcements",
+          "description": "",
+          "module": "announcement.routes",
+          "file": "announcement/routes.py"
+        },
+        {
+          "method": "GET",
+          "path": "/stats",
+          "function": "get_announcement_stats",
+          "description": "获取公告统计信息",
+          "module": "announcement.routes",
+          "file": "announcement/routes.py"
+        },
+        {
+          "method": "GET",
+          "path": "/monitor-rules",
+          "function": "get_monitor_rules",
+          "description": "获取监控规则列表",
+          "module": "announcement.routes",
+          "file": "announcement/routes.py"
+        },
+        {
+          "method": "POST",
+          "path": "/monitor-rules",
+          "function": "create_monitor_rule",
+          "description": "",
+          "module": "announcement.routes",
+          "file": "announcement/routes.py"
+        },
+        {
+          "method": "PUT",
+          "path": "/monitor-rules/{rule_id}",
+          "function": "update_monitor_rule",
+          "description": "",
+          "module": "announcement.routes",
+          "file": "announcement/routes.py"
+        },
+        {
+          "method": "DELETE",
+          "path": "/monitor-rules/{rule_id}",
+          "function": "delete_monitor_rule",
+          "description": "",
+          "module": "announcement.routes",
+          "file": "announcement/routes.py"
+        },
+        {
+          "method": "GET",
+          "path": "/triggered-records",
+          "function": "get_triggered_records",
+          "description": "",
+          "module": "announcement.routes",
+          "file": "announcement/routes.py"
+        },
+        {
+          "method": "POST",
+          "path": "/monitor/evaluate",
+          "function": "evaluate_monitor_rules",
+          "description": "评估所有监控规则",
+          "module": "announcement.routes",
+          "file": "announcement/routes.py"
+        }
+      ]
+    },
+    "announcement": {
+      "file": "announcement.py",
+      "prefix": "/api/announcement",
+      "endpoints_count": 13,
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/fetch",
+          "function": "fetch_announcements",
+          "description": "",
+          "module": "announcement",
+          "file": "announcement.py"
+        },
+        {
+          "method": "GET",
+          "path": "/list",
+          "function": "get_announcements",
+          "description": "",
+          "module": "announcement",
+          "file": "announcement.py"
+        },
+        {
+          "method": "GET",
+          "path": "/today",
+          "function": "get_today_announcements",
+          "description": "",
+          "module": "announcement",
+          "file": "announcement.py"
+        },
+        {
+          "method": "GET",
+          "path": "/important",
+          "function": "get_important_announcements",
+          "description": "",
+          "module": "announcement",
+          "file": "announcement.py"
+        },
+        {
+          "method": "GET",
+          "path": "/stock/{stock_code}",
+          "function": "get_stock_announcements",
+          "description": "",
+          "module": "announcement",
+          "file": "announcement.py"
+        },
+        {
+          "method": "POST",
+          "path": "/monitor/evaluate",
+          "function": "evaluate_monitor_rules",
+          "description": "评估所有监控规则",
+          "module": "announcement",
+          "file": "announcement.py"
+        },
+        {
+          "method": "GET",
+          "path": "/stats",
+          "function": "get_announcement_stats",
+          "description": "获取公告统计信息",
+          "module": "announcement",
+          "file": "announcement.py"
+        },
+        {
+          "method": "GET",
+          "path": "/types",
+          "function": "get_announcement_types",
+          "description": "获取支持的公告类型",
+          "module": "announcement",
+          "file": "announcement.py"
+        },
+        {
+          "method": "GET",
+          "path": "/monitor-rules",
+          "function": "get_monitor_rules",
+          "description": "获取监控规则列表",
+          "module": "announcement",
+          "file": "announcement.py"
+        },
+        {
+          "method": "POST",
+          "path": "/monitor-rules",
+          "function": "create_monitor_rule",
+          "description": "",
+          "module": "announcement",
+          "file": "announcement.py"
+        },
+        {
+          "method": "PUT",
+          "path": "/monitor-rules/{rule_id}",
+          "function": "update_monitor_rule",
+          "description": "",
+          "module": "announcement",
+          "file": "announcement.py"
+        },
+        {
+          "method": "DELETE",
+          "path": "/monitor-rules/{rule_id}",
+          "function": "delete_monitor_rule",
+          "description": "",
+          "module": "announcement",
+          "file": "announcement.py"
+        },
+        {
+          "method": "GET",
+          "path": "/triggered-records",
+          "function": "get_triggered_records",
+          "description": "",
+          "module": "announcement",
+          "file": "announcement.py"
+        }
+      ]
+    },
+    "auth": {
+      "file": "auth.py",
+      "prefix": "",
+      "endpoints_count": 5,
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/login",
+          "function": "login_for_access_token",
+          "description": "",
+          "module": "auth",
+          "file": "auth.py"
+        },
+        {
+          "method": "POST",
+          "path": "/logout",
+          "function": "logout",
+          "description": "",
+          "module": "auth",
+          "file": "auth.py"
+        },
+        {
+          "method": "GET",
+          "path": "/me",
+          "function": "read_users_me",
+          "description": "",
+          "module": "auth",
+          "file": "auth.py"
+        },
+        {
+          "method": "POST",
+          "path": "/refresh",
+          "function": "refresh_token",
+          "description": "",
+          "module": "auth",
+          "file": "auth.py"
+        },
+        {
+          "method": "GET",
+          "path": "/users",
+          "function": "get_users",
+          "description": "",
+          "module": "auth",
+          "file": "auth.py"
+        }
+      ]
+    },
+    "backtest_ws": {
+      "file": "backtest_ws.py",
+      "prefix": "/ws",
+      "endpoints_count": 1,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/status",
+          "function": "get_websocket_status",
+          "description": "获取 WebSocket 连接状态",
+          "module": "backtest_ws",
+          "file": "backtest_ws.py"
+        }
+      ]
+    },
+    "backup_recovery": {
+      "file": "backup_recovery.py",
+      "prefix": "/api/backup-recovery",
+      "endpoints_count": 13,
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/backup/tdengine/full",
+          "function": "backup_tdengine_full",
+          "description": "执行 TDengine 全量备份",
+          "module": "backup_recovery",
+          "file": "backup_recovery.py"
+        },
+        {
+          "method": "POST",
+          "path": "/backup/tdengine/incremental",
+          "function": "backup_tdengine_incremental",
+          "description": "",
+          "module": "backup_recovery",
+          "file": "backup_recovery.py"
+        },
+        {
+          "method": "POST",
+          "path": "/backup/postgresql/full",
+          "function": "backup_postgresql_full",
+          "description": "执行 PostgreSQL 全量备份",
+          "module": "backup_recovery",
+          "file": "backup_recovery.py"
+        },
+        {
+          "method": "GET",
+          "path": "/backups",
+          "function": "list_backups",
+          "description": "",
+          "module": "backup_recovery",
+          "file": "backup_recovery.py"
+        },
+        {
+          "method": "POST",
+          "path": "/recovery/tdengine/full",
+          "function": "restore_tdengine_full",
+          "description": "",
+          "module": "backup_recovery",
+          "file": "backup_recovery.py"
+        },
+        {
+          "method": "POST",
+          "path": "/recovery/tdengine/pitr",
+          "function": "restore_tdengine_pitr",
+          "description": "",
+          "module": "backup_recovery",
+          "file": "backup_recovery.py"
+        },
+        {
+          "method": "POST",
+          "path": "/recovery/postgresql/full",
+          "function": "restore_postgresql_full",
+          "description": "",
+          "module": "backup_recovery",
+          "file": "backup_recovery.py"
+        },
+        {
+          "method": "GET",
+          "path": "/recovery/objectives",
+          "function": "get_recovery_objectives",
+          "description": "获取恢复目标 (RTO/RPO)",
+          "module": "backup_recovery",
+          "file": "backup_recovery.py"
+        },
+        {
+          "method": "POST",
+          "path": "/scheduler/start",
+          "function": "start_scheduler",
+          "description": "启动备份调度器",
+          "module": "backup_recovery",
+          "file": "backup_recovery.py"
+        },
+        {
+          "method": "POST",
+          "path": "/scheduler/stop",
+          "function": "stop_scheduler",
+          "description": "停止备份调度器",
+          "module": "backup_recovery",
+          "file": "backup_recovery.py"
+        },
+        {
+          "method": "GET",
+          "path": "/scheduler/jobs",
+          "function": "get_scheduled_jobs",
+          "description": "获取所有计划的备份任务",
+          "module": "backup_recovery",
+          "file": "backup_recovery.py"
+        },
+        {
+          "method": "GET",
+          "path": "/integrity/verify/{backup_id}",
+          "function": "verify_backup_integrity",
+          "description": "",
+          "module": "backup_recovery",
+          "file": "backup_recovery.py"
+        },
+        {
+          "method": "POST",
+          "path": "/cleanup/old-backups",
+          "function": "cleanup_old_backups",
+          "description": "",
+          "module": "backup_recovery",
+          "file": "backup_recovery.py"
+        }
+      ]
+    },
+    "cache": {
+      "file": "cache.py",
+      "prefix": "/cache",
+      "endpoints_count": 11,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/status",
+          "function": "get_cache_status",
+          "description": "",
+          "module": "cache",
+          "file": "cache.py"
+        },
+        {
+          "method": "GET",
+          "path": "/{symbol}/{data_type}",
+          "function": "get_cached_data",
+          "description": "",
+          "module": "cache",
+          "file": "cache.py"
+        },
+        {
+          "method": "POST",
+          "path": "/{symbol}/{data_type}",
+          "function": "write_cache_data",
+          "description": "",
+          "module": "cache",
+          "file": "cache.py"
+        },
+        {
+          "method": "DELETE",
+          "path": "/{symbol}",
+          "function": "invalidate_symbol_cache",
+          "description": "",
+          "module": "cache",
+          "file": "cache.py"
+        },
+        {
+          "method": "GET",
+          "path": "/{symbol}/{data_type}/fresh",
+          "function": "check_cache_freshness",
+          "description": "",
+          "module": "cache",
+          "file": "cache.py"
+        },
+        {
+          "method": "POST",
+          "path": "/evict/manual",
+          "function": "manual_cache_eviction",
+          "description": "",
+          "module": "cache",
+          "file": "cache.py"
+        },
+        {
+          "method": "GET",
+          "path": "/eviction/stats",
+          "function": "get_eviction_statistics",
+          "description": "",
+          "module": "cache",
+          "file": "cache.py"
+        },
+        {
+          "method": "POST",
+          "path": "/prewarming/trigger",
+          "function": "trigger_cache_prewarming",
+          "description": "",
+          "module": "cache",
+          "file": "cache.py"
+        },
+        {
+          "method": "GET",
+          "path": "/prewarming/status",
+          "function": "get_prewarming_status",
+          "description": "",
+          "module": "cache",
+          "file": "cache.py"
+        },
+        {
+          "method": "GET",
+          "path": "/monitoring/metrics",
+          "function": "get_cache_monitoring_metrics",
+          "description": "",
+          "module": "cache",
+          "file": "cache.py"
+        },
+        {
+          "method": "GET",
+          "path": "/monitoring/health",
+          "function": "get_cache_health_status",
+          "description": "",
+          "module": "cache",
+          "file": "cache.py"
+        }
+      ]
+    },
+    "dashboard": {
+      "file": "dashboard.py",
+      "prefix": "/api/dashboard",
+      "endpoints_count": 1,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/health",
+          "function": "health_check",
+          "description": "健康检查端点",
+          "module": "dashboard",
+          "file": "dashboard.py"
+        }
+      ]
+    },
+    "data": {
+      "file": "data.py",
+      "prefix": "",
+      "endpoints_count": 15,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/stocks/basic",
+          "function": "get_stocks_basic",
+          "description": "",
+          "module": "data",
+          "file": "data.py"
+        },
+        {
+          "method": "GET",
+          "path": "/stocks/industries",
+          "function": "get_stocks_industries",
+          "description": "",
+          "module": "data",
+          "file": "data.py"
+        },
+        {
+          "method": "GET",
+          "path": "/stocks/concepts",
+          "function": "get_stocks_concepts",
+          "description": "",
+          "module": "data",
+          "file": "data.py"
+        },
+        {
+          "method": "GET",
+          "path": "/stocks/daily",
+          "function": "get_daily_kline",
+          "description": "",
+          "module": "data",
+          "file": "data.py"
+        },
+        {
+          "method": "GET",
+          "path": "/markets/overview",
+          "function": "get_market_overview",
+          "description": "",
+          "module": "data",
+          "file": "data.py"
+        },
+        {
+          "method": "GET",
+          "path": "/stocks/search",
+          "function": "search_stocks",
+          "description": "",
+          "module": "data",
+          "file": "data.py"
+        },
+        {
+          "method": "GET",
+          "path": "/kline",
+          "function": "get_kline",
+          "description": "",
+          "module": "data",
+          "file": "data.py"
+        },
+        {
+          "method": "GET",
+          "path": "/stocks/kline",
+          "function": "get_kline_data",
+          "description": "",
+          "module": "data",
+          "file": "data.py"
+        },
+        {
+          "method": "GET",
+          "path": "/financial",
+          "function": "get_financial_data",
+          "description": "",
+          "module": "data",
+          "file": "data.py"
+        },
+        {
+          "method": "GET",
+          "path": "/markets/price-distribution",
+          "function": "get_price_distribution",
+          "description": "",
+          "module": "data",
+          "file": "data.py"
+        },
+        {
+          "method": "GET",
+          "path": "/markets/hot-industries",
+          "function": "get_hot_industries",
+          "description": "",
+          "module": "data",
+          "file": "data.py"
+        },
+        {
+          "method": "GET",
+          "path": "/markets/hot-concepts",
+          "function": "get_hot_concepts",
+          "description": "",
+          "module": "data",
+          "file": "data.py"
+        },
+        {
+          "method": "GET",
+          "path": "/stocks/intraday",
+          "function": "get_intraday_data",
+          "description": "",
+          "module": "data",
+          "file": "data.py"
+        },
+        {
+          "method": "GET",
+          "path": "/stocks/{symbol}/detail",
+          "function": "get_stock_detail",
+          "description": "",
+          "module": "data",
+          "file": "data.py"
+        },
+        {
+          "method": "GET",
+          "path": "/stocks/{symbol}/trading-summary",
+          "function": "get_trading_summary",
+          "description": "",
+          "module": "data",
+          "file": "data.py"
+        }
+      ]
+    },
+    "health": {
+      "file": "health.py",
+      "prefix": "",
+      "endpoints_count": 3,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/health",
+          "function": "check_system_health",
+          "description": "系统健康检查API端点",
+          "module": "health",
+          "file": "health.py"
+        },
+        {
+          "method": "GET",
+          "path": "/health/detailed",
+          "function": "detailed_health_check",
+          "description": "详细健康检查",
+          "module": "health",
+          "file": "health.py"
+        },
+        {
+          "method": "GET",
+          "path": "/reports/health/{timestamp}",
+          "function": "get_health_report",
+          "description": "",
+          "module": "health",
+          "file": "health.py"
+        }
+      ]
+    },
+    "indicators": {
+      "file": "indicators.py",
+      "prefix": "",
+      "endpoints_count": 8,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/registry",
+          "function": "get_indicator_registry_endpoint",
+          "description": "获取指标注册表",
+          "module": "indicators",
+          "file": "indicators.py"
+        },
+        {
+          "method": "GET",
+          "path": "/registry/{category}",
+          "function": "get_indicators_by_category",
+          "description": "",
+          "module": "indicators",
+          "file": "indicators.py"
+        },
+        {
+          "method": "POST",
+          "path": "/calculate",
+          "function": "calculate_indicators",
+          "description": "",
+          "module": "indicators",
+          "file": "indicators.py"
+        },
+        {
+          "method": "POST",
+          "path": "/configs",
+          "function": "create_indicator_config",
+          "description": "",
+          "module": "indicators",
+          "file": "indicators.py"
+        },
+        {
+          "method": "GET",
+          "path": "/configs",
+          "function": "list_indicator_configs",
+          "description": "",
+          "module": "indicators",
+          "file": "indicators.py"
+        },
+        {
+          "method": "GET",
+          "path": "/configs/{config_id}",
+          "function": "get_indicator_config",
+          "description": "",
+          "module": "indicators",
+          "file": "indicators.py"
+        },
+        {
+          "method": "PUT",
+          "path": "/configs/{config_id}",
+          "function": "update_indicator_config",
+          "description": "",
+          "module": "indicators",
+          "file": "indicators.py"
+        },
+        {
+          "method": "DELETE",
+          "path": "/configs/{config_id}",
+          "function": "delete_indicator_config",
+          "description": "",
+          "module": "indicators",
+          "file": "indicators.py"
+        }
+      ]
+    },
+    "industry_concept_analysis": {
+      "file": "industry_concept_analysis.py",
+      "prefix": "/api/analysis",
+      "endpoints_count": 5,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/industry/list",
+          "function": "get_industry_list",
+          "description": "获取所有行业分类列表",
+          "module": "industry_concept_analysis",
+          "file": "industry_concept_analysis.py"
+        },
+        {
+          "method": "GET",
+          "path": "/concept/list",
+          "function": "get_concept_list",
+          "description": "获取所有概念分类列表",
+          "module": "industry_concept_analysis",
+          "file": "industry_concept_analysis.py"
+        },
+        {
+          "method": "GET",
+          "path": "/industry/stocks",
+          "function": "get_industry_stocks",
+          "description": "",
+          "module": "industry_concept_analysis",
+          "file": "industry_concept_analysis.py"
+        },
+        {
+          "method": "GET",
+          "path": "/concept/stocks",
+          "function": "get_concept_stocks",
+          "description": "",
+          "module": "industry_concept_analysis",
+          "file": "industry_concept_analysis.py"
+        },
+        {
+          "method": "GET",
+          "path": "/industry/performance",
+          "function": "get_industry_performance",
+          "description": "",
+          "module": "industry_concept_analysis",
+          "file": "industry_concept_analysis.py"
+        }
+      ]
+    },
+    "market": {
+      "file": "market.py",
+      "prefix": "/api/market",
+      "endpoints_count": 5,
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/etf/refresh",
+          "function": "refresh_etf_data",
+          "description": "",
+          "module": "market",
+          "file": "market.py"
+        },
+        {
+          "method": "POST",
+          "path": "/lhb/refresh",
+          "function": "refresh_lhb_detail",
+          "description": "",
+          "module": "market",
+          "file": "market.py"
+        },
+        {
+          "method": "GET",
+          "path": "/stocks",
+          "function": "get_stock_list",
+          "description": "",
+          "module": "market",
+          "file": "market.py"
+        },
+        {
+          "method": "GET",
+          "path": "/kline",
+          "function": "get_kline_data",
+          "description": "",
+          "module": "market",
+          "file": "market.py"
+        },
+        {
+          "method": "GET",
+          "path": "/health",
+          "function": "health_check",
+          "description": "API健康检查",
+          "module": "market",
+          "file": "market.py"
+        }
+      ]
+    },
+    "market_v2": {
+      "file": "market_v2.py",
+      "prefix": "/api/market/v2",
+      "endpoints_count": 13,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/fund-flow",
+          "function": "get_fund_flow",
+          "description": "",
+          "module": "market_v2",
+          "file": "market_v2.py"
+        },
+        {
+          "method": "POST",
+          "path": "/fund-flow/refresh",
+          "function": "refresh_fund_flow",
+          "description": "",
+          "module": "market_v2",
+          "file": "market_v2.py"
+        },
+        {
+          "method": "GET",
+          "path": "/etf/list",
+          "function": "get_etf_list",
+          "description": "",
+          "module": "market_v2",
+          "file": "market_v2.py"
+        },
+        {
+          "method": "POST",
+          "path": "/etf/refresh",
+          "function": "refresh_etf_spot",
+          "description": "从东方财富刷新全市场ETF数据",
+          "module": "market_v2",
+          "file": "market_v2.py"
+        },
+        {
+          "method": "GET",
+          "path": "/lhb",
+          "function": "get_lhb_detail",
+          "description": "",
+          "module": "market_v2",
+          "file": "market_v2.py"
+        },
+        {
+          "method": "POST",
+          "path": "/lhb/refresh",
+          "function": "refresh_lhb_detail",
+          "description": "",
+          "module": "market_v2",
+          "file": "market_v2.py"
+        },
+        {
+          "method": "GET",
+          "path": "/sector/fund-flow",
+          "function": "get_sector_fund_flow",
+          "description": "",
+          "module": "market_v2",
+          "file": "market_v2.py"
+        },
+        {
+          "method": "POST",
+          "path": "/sector/fund-flow/refresh",
+          "function": "refresh_sector_fund_flow",
+          "description": "",
+          "module": "market_v2",
+          "file": "market_v2.py"
+        },
+        {
+          "method": "GET",
+          "path": "/dividend",
+          "function": "get_stock_dividend",
+          "description": "",
+          "module": "market_v2",
+          "file": "market_v2.py"
+        },
+        {
+          "method": "POST",
+          "path": "/dividend/refresh",
+          "function": "refresh_stock_dividend",
+          "description": "",
+          "module": "market_v2",
+          "file": "market_v2.py"
+        },
+        {
+          "method": "GET",
+          "path": "/blocktrade",
+          "function": "get_stock_blocktrade",
+          "description": "",
+          "module": "market_v2",
+          "file": "market_v2.py"
+        },
+        {
+          "method": "POST",
+          "path": "/blocktrade/refresh",
+          "function": "refresh_stock_blocktrade",
+          "description": "",
+          "module": "market_v2",
+          "file": "market_v2.py"
+        },
+        {
+          "method": "POST",
+          "path": "/refresh-all",
+          "function": "refresh_all_market_data",
+          "description": "一键刷新所有市场数据（用于定时任务）",
+          "module": "market_v2",
+          "file": "market_v2.py"
+        }
+      ]
+    },
+    "metrics": {
+      "file": "metrics.py",
+      "prefix": "",
+      "endpoints_count": 1,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/metrics",
+          "function": "metrics",
+          "description": "Prometheus metrics端点",
+          "module": "metrics",
+          "file": "metrics.py"
+        }
+      ]
+    },
+    "ml": {
+      "file": "ml.py",
+      "prefix": "/ml",
+      "endpoints_count": 8,
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/tdx/data",
+          "function": "get_tdx_data",
+          "description": "",
+          "module": "ml",
+          "file": "ml.py"
+        },
+        {
+          "method": "GET",
+          "path": "/tdx/stocks/{market}",
+          "function": "list_tdx_stocks",
+          "description": "",
+          "module": "ml",
+          "file": "ml.py"
+        },
+        {
+          "method": "POST",
+          "path": "/features/generate",
+          "function": "generate_features",
+          "description": "",
+          "module": "ml",
+          "file": "ml.py"
+        },
+        {
+          "method": "POST",
+          "path": "/models/train",
+          "function": "train_model",
+          "description": "",
+          "module": "ml",
+          "file": "ml.py"
+        },
+        {
+          "method": "POST",
+          "path": "/models/predict",
+          "function": "predict_with_model",
+          "description": "",
+          "module": "ml",
+          "file": "ml.py"
+        },
+        {
+          "method": "GET",
+          "path": "/models",
+          "function": "list_models",
+          "description": "",
+          "module": "ml",
+          "file": "ml.py"
+        },
+        {
+          "method": "GET",
+          "path": "/models/{model_name}",
+          "function": "get_model_detail",
+          "description": "",
+          "module": "ml",
+          "file": "ml.py"
+        },
+        {
+          "method": "POST",
+          "path": "/models/evaluate",
+          "function": "evaluate_model",
+          "description": "",
+          "module": "ml",
+          "file": "ml.py"
+        }
+      ]
+    },
+    "monitoring.routes": {
+      "file": "monitoring/routes.py",
+      "prefix": "/monitoring",
+      "endpoints_count": 3,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/health",
+          "function": "health_check",
+          "description": "健康检查",
+          "module": "monitoring.routes",
+          "file": "monitoring/routes.py"
+        },
+        {
+          "method": "GET",
+          "path": "/status",
+          "function": "get_status",
+          "description": "获取服务状态",
+          "module": "monitoring.routes",
+          "file": "monitoring/routes.py"
+        },
+        {
+          "method": "POST",
+          "path": "/analyze",
+          "function": "analyze_data",
+          "description": "",
+          "module": "monitoring.routes",
+          "file": "monitoring/routes.py"
+        }
+      ]
+    },
+    "monitoring": {
+      "file": "monitoring.py",
+      "prefix": "/api/monitoring",
+      "endpoints_count": 17,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/alert-rules",
+          "function": "get_alert_rules",
+          "description": "",
+          "module": "monitoring",
+          "file": "monitoring.py"
+        },
+        {
+          "method": "POST",
+          "path": "/alert-rules",
+          "function": "create_alert_rule",
+          "description": "",
+          "module": "monitoring",
+          "file": "monitoring.py"
+        },
+        {
+          "method": "PUT",
+          "path": "/alert-rules/{rule_id}",
+          "function": "update_alert_rule",
+          "description": "",
+          "module": "monitoring",
+          "file": "monitoring.py"
+        },
+        {
+          "method": "DELETE",
+          "path": "/alert-rules/{rule_id}",
+          "function": "delete_alert_rule",
+          "description": "",
+          "module": "monitoring",
+          "file": "monitoring.py"
+        },
+        {
+          "method": "GET",
+          "path": "/alerts",
+          "function": "get_alert_records",
+          "description": "",
+          "module": "monitoring",
+          "file": "monitoring.py"
+        },
+        {
+          "method": "POST",
+          "path": "/alerts/{alert_id}/mark-read",
+          "function": "mark_alert_read",
+          "description": "",
+          "module": "monitoring",
+          "file": "monitoring.py"
+        },
+        {
+          "method": "POST",
+          "path": "/alerts/mark-all-read",
+          "function": "mark_all_alerts_read",
+          "description": "批量标记所有未读告警为已读",
+          "module": "monitoring",
+          "file": "monitoring.py"
+        },
+        {
+          "method": "GET",
+          "path": "/realtime/{symbol}",
+          "function": "get_realtime_monitoring",
+          "description": "",
+          "module": "monitoring",
+          "file": "monitoring.py"
+        },
+        {
+          "method": "GET",
+          "path": "/realtime",
+          "function": "get_realtime_monitoring_list",
+          "description": "",
+          "module": "monitoring",
+          "file": "monitoring.py"
+        },
+        {
+          "method": "POST",
+          "path": "/realtime/fetch",
+          "function": "fetch_realtime_data",
+          "description": "",
+          "module": "monitoring",
+          "file": "monitoring.py"
+        },
+        {
+          "method": "GET",
+          "path": "/dragon-tiger",
+          "function": "get_dragon_tiger_list",
+          "description": "",
+          "module": "monitoring",
+          "file": "monitoring.py"
+        },
+        {
+          "method": "POST",
+          "path": "/dragon-tiger/fetch",
+          "function": "fetch_dragon_tiger_data",
+          "description": "",
+          "module": "monitoring",
+          "file": "monitoring.py"
+        },
+        {
+          "method": "GET",
+          "path": "/summary",
+          "function": "get_monitoring_summary",
+          "description": "获取监控系统摘要",
+          "module": "monitoring",
+          "file": "monitoring.py"
+        },
+        {
+          "method": "GET",
+          "path": "/stats/today",
+          "function": "get_today_statistics",
+          "description": "获取今日统计数据",
+          "module": "monitoring",
+          "file": "monitoring.py"
+        },
+        {
+          "method": "POST",
+          "path": "/control/start",
+          "function": "start_monitoring",
+          "description": "",
+          "module": "monitoring",
+          "file": "monitoring.py"
+        },
+        {
+          "method": "POST",
+          "path": "/control/stop",
+          "function": "stop_monitoring",
+          "description": "停止监控",
+          "module": "monitoring",
+          "file": "monitoring.py"
+        },
+        {
+          "method": "GET",
+          "path": "/control/status",
+          "function": "get_monitoring_status",
+          "description": "获取监控状态",
+          "module": "monitoring",
+          "file": "monitoring.py"
+        }
+      ]
+    },
+    "multi_source.routes": {
+      "file": "multi_source/routes.py",
+      "prefix": "/multi_source",
+      "endpoints_count": 3,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/health",
+          "function": "health_check",
+          "description": "健康检查",
+          "module": "multi_source.routes",
+          "file": "multi_source/routes.py"
+        },
+        {
+          "method": "GET",
+          "path": "/status",
+          "function": "get_status",
+          "description": "获取服务状态",
+          "module": "multi_source.routes",
+          "file": "multi_source/routes.py"
+        },
+        {
+          "method": "POST",
+          "path": "/analyze",
+          "function": "analyze_data",
+          "description": "",
+          "module": "multi_source.routes",
+          "file": "multi_source/routes.py"
+        }
+      ]
+    },
+    "multi_source": {
+      "file": "multi_source.py",
+      "prefix": "/api/multi-source",
+      "endpoints_count": 8,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/health",
+          "function": "get_all_data_sources_health",
+          "description": "获取所有数据源的健康状态",
+          "module": "multi_source",
+          "file": "multi_source.py"
+        },
+        {
+          "method": "GET",
+          "path": "/health/{source_type}",
+          "function": "get_data_source_health",
+          "description": "",
+          "module": "multi_source",
+          "file": "multi_source.py"
+        },
+        {
+          "method": "GET",
+          "path": "/realtime-quote",
+          "function": "fetch_realtime_quote",
+          "description": "",
+          "module": "multi_source",
+          "file": "multi_source.py"
+        },
+        {
+          "method": "GET",
+          "path": "/fund-flow",
+          "function": "fetch_fund_flow",
+          "description": "",
+          "module": "multi_source",
+          "file": "multi_source.py"
+        },
+        {
+          "method": "GET",
+          "path": "/dragon-tiger",
+          "function": "fetch_dragon_tiger",
+          "description": "",
+          "module": "multi_source",
+          "file": "multi_source.py"
+        },
+        {
+          "method": "POST",
+          "path": "/refresh-health",
+          "function": "refresh_data_source_health",
+          "description": "刷新所有数据源的健康状态",
+          "module": "multi_source",
+          "file": "multi_source.py"
+        },
+        {
+          "method": "POST",
+          "path": "/clear-cache",
+          "function": "clear_cache",
+          "description": "清空数据缓存",
+          "module": "multi_source",
+          "file": "multi_source.py"
+        },
+        {
+          "method": "GET",
+          "path": "/supported-categories",
+          "function": "get_supported_categories",
+          "description": "获取所有支持的数据类别及其对应的数据源",
+          "module": "multi_source",
+          "file": "multi_source.py"
+        }
+      ]
+    },
+    "notification": {
+      "file": "notification.py",
+      "prefix": "",
+      "endpoints_count": 6,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/status",
+          "function": "get_email_service_status",
+          "description": "获取邮件服务状态",
+          "module": "notification",
+          "file": "notification.py"
+        },
+        {
+          "method": "POST",
+          "path": "/email/send",
+          "function": "send_email",
+          "description": "",
+          "module": "notification",
+          "file": "notification.py"
+        },
+        {
+          "method": "POST",
+          "path": "/email/welcome",
+          "function": "send_welcome_email",
+          "description": "",
+          "module": "notification",
+          "file": "notification.py"
+        },
+        {
+          "method": "POST",
+          "path": "/email/newsletter",
+          "function": "send_daily_newsletter",
+          "description": "",
+          "module": "notification",
+          "file": "notification.py"
+        },
+        {
+          "method": "POST",
+          "path": "/email/price-alert",
+          "function": "send_price_alert",
+          "description": "",
+          "module": "notification",
+          "file": "notification.py"
+        },
+        {
+          "method": "POST",
+          "path": "/test-email",
+          "function": "send_test_email",
+          "description": "",
+          "module": "notification",
+          "file": "notification.py"
+        }
+      ]
+    },
+    "prometheus_exporter": {
+      "file": "prometheus_exporter.py",
+      "prefix": "",
+      "endpoints_count": 3,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/metrics",
+          "function": "metrics",
+          "description": "Prometheus 指标端点",
+          "module": "prometheus_exporter",
+          "file": "prometheus_exporter.py"
+        },
+        {
+          "method": "GET",
+          "path": "/metrics/health",
+          "function": "metrics_health",
+          "description": "",
+          "module": "prometheus_exporter",
+          "file": "prometheus_exporter.py"
+        },
+        {
+          "method": "GET",
+          "path": "/metrics/list",
+          "function": "metrics_list",
+          "description": "",
+          "module": "prometheus_exporter",
+          "file": "prometheus_exporter.py"
+        }
+      ]
+    },
+    "risk_management": {
+      "file": "risk_management.py",
+      "prefix": "/api/v1/risk",
+      "endpoints_count": 9,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/var-cvar",
+          "function": "calculate_var_cvar",
+          "description": "",
+          "module": "risk_management",
+          "file": "risk_management.py"
+        },
+        {
+          "method": "GET",
+          "path": "/beta",
+          "function": "calculate_beta",
+          "description": "",
+          "module": "risk_management",
+          "file": "risk_management.py"
+        },
+        {
+          "method": "GET",
+          "path": "/dashboard",
+          "function": "get_risk_dashboard",
+          "description": "",
+          "module": "risk_management",
+          "file": "risk_management.py"
+        },
+        {
+          "method": "GET",
+          "path": "/metrics/history",
+          "function": "get_risk_metrics_history",
+          "description": "",
+          "module": "risk_management",
+          "file": "risk_management.py"
+        },
+        {
+          "method": "GET",
+          "path": "/alerts",
+          "function": "list_risk_alerts",
+          "description": "",
+          "module": "risk_management",
+          "file": "risk_management.py"
+        },
+        {
+          "method": "POST",
+          "path": "/alerts",
+          "function": "create_risk_alert",
+          "description": "",
+          "module": "risk_management",
+          "file": "risk_management.py"
+        },
+        {
+          "method": "PUT",
+          "path": "/alerts/{alert_id}",
+          "function": "update_risk_alert",
+          "description": "",
+          "module": "risk_management",
+          "file": "risk_management.py"
+        },
+        {
+          "method": "DELETE",
+          "path": "/alerts/{alert_id}",
+          "function": "delete_risk_alert",
+          "description": "",
+          "module": "risk_management",
+          "file": "risk_management.py"
+        },
+        {
+          "method": "POST",
+          "path": "/notifications/test",
+          "function": "test_notification",
+          "description": "",
+          "module": "risk_management",
+          "file": "risk_management.py"
+        }
+      ]
+    },
+    "sse_endpoints": {
+      "file": "sse_endpoints.py",
+      "prefix": "/api/v1/sse",
+      "endpoints_count": 5,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/training",
+          "function": "sse_training_stream",
+          "description": "",
+          "module": "sse_endpoints",
+          "file": "sse_endpoints.py"
+        },
+        {
+          "method": "GET",
+          "path": "/backtest",
+          "function": "sse_backtest_stream",
+          "description": "",
+          "module": "sse_endpoints",
+          "file": "sse_endpoints.py"
+        },
+        {
+          "method": "GET",
+          "path": "/alerts",
+          "function": "sse_alerts_stream",
+          "description": "",
+          "module": "sse_endpoints",
+          "file": "sse_endpoints.py"
+        },
+        {
+          "method": "GET",
+          "path": "/dashboard",
+          "function": "sse_dashboard_stream",
+          "description": "",
+          "module": "sse_endpoints",
+          "file": "sse_endpoints.py"
+        },
+        {
+          "method": "GET",
+          "path": "/status",
+          "function": "sse_status",
+          "description": "Get SSE server status",
+          "module": "sse_endpoints",
+          "file": "sse_endpoints.py"
+        }
+      ]
+    },
+    "stock_search": {
+      "file": "stock_search.py",
+      "prefix": "",
+      "endpoints_count": 7,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/search",
+          "function": "search_stocks",
+          "description": "",
+          "module": "stock_search",
+          "file": "stock_search.py"
+        },
+        {
+          "method": "GET",
+          "path": "/quote/{symbol}",
+          "function": "get_stock_quote",
+          "description": "",
+          "module": "stock_search",
+          "file": "stock_search.py"
+        },
+        {
+          "method": "GET",
+          "path": "/profile/{symbol}",
+          "function": "get_company_profile",
+          "description": "",
+          "module": "stock_search",
+          "file": "stock_search.py"
+        },
+        {
+          "method": "GET",
+          "path": "/news/{symbol}",
+          "function": "get_stock_news",
+          "description": "",
+          "module": "stock_search",
+          "file": "stock_search.py"
+        },
+        {
+          "method": "GET",
+          "path": "/news/market/{category}",
+          "function": "get_market_news",
+          "description": "",
+          "module": "stock_search",
+          "file": "stock_search.py"
+        },
+        {
+          "method": "GET",
+          "path": "/recommendation/{symbol}",
+          "function": "get_recommendation_trends",
+          "description": "",
+          "module": "stock_search",
+          "file": "stock_search.py"
+        },
+        {
+          "method": "POST",
+          "path": "/cache/clear",
+          "function": "clear_search_cache",
+          "description": "",
+          "module": "stock_search",
+          "file": "stock_search.py"
+        }
+      ]
+    },
+    "strategy": {
+      "file": "strategy.py",
+      "prefix": "/api/strategy",
+      "endpoints_count": 6,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/definitions",
+          "function": "get_strategy_definitions",
+          "description": "获取所有策略定义",
+          "module": "strategy",
+          "file": "strategy.py"
+        },
+        {
+          "method": "POST",
+          "path": "/run/single",
+          "function": "run_strategy_single",
+          "description": "",
+          "module": "strategy",
+          "file": "strategy.py"
+        },
+        {
+          "method": "POST",
+          "path": "/run/batch",
+          "function": "run_strategy_batch",
+          "description": "",
+          "module": "strategy",
+          "file": "strategy.py"
+        },
+        {
+          "method": "GET",
+          "path": "/results",
+          "function": "query_strategy_results",
+          "description": "",
+          "module": "strategy",
+          "file": "strategy.py"
+        },
+        {
+          "method": "GET",
+          "path": "/matched-stocks",
+          "function": "get_matched_stocks",
+          "description": "",
+          "module": "strategy",
+          "file": "strategy.py"
+        },
+        {
+          "method": "GET",
+          "path": "/stats/summary",
+          "function": "get_strategy_summary",
+          "description": "",
+          "module": "strategy",
+          "file": "strategy.py"
+        }
+      ]
+    },
+    "strategy_management": {
+      "file": "strategy_management.py",
+      "prefix": "/api/v1/strategy",
+      "endpoints_count": 12,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/strategies",
+          "function": "list_strategies",
+          "description": "",
+          "module": "strategy_management",
+          "file": "strategy_management.py"
+        },
+        {
+          "method": "POST",
+          "path": "/strategies",
+          "function": "create_strategy",
+          "description": "",
+          "module": "strategy_management",
+          "file": "strategy_management.py"
+        },
+        {
+          "method": "GET",
+          "path": "/strategies/{strategy_id}",
+          "function": "get_strategy",
+          "description": "",
+          "module": "strategy_management",
+          "file": "strategy_management.py"
+        },
+        {
+          "method": "PUT",
+          "path": "/strategies/{strategy_id}",
+          "function": "update_strategy",
+          "description": "",
+          "module": "strategy_management",
+          "file": "strategy_management.py"
+        },
+        {
+          "method": "DELETE",
+          "path": "/strategies/{strategy_id}",
+          "function": "delete_strategy",
+          "description": "",
+          "module": "strategy_management",
+          "file": "strategy_management.py"
+        },
+        {
+          "method": "POST",
+          "path": "/models/train",
+          "function": "train_model",
+          "description": "",
+          "module": "strategy_management",
+          "file": "strategy_management.py"
+        },
+        {
+          "method": "GET",
+          "path": "/models/training/{task_id}/status",
+          "function": "get_training_status",
+          "description": "",
+          "module": "strategy_management",
+          "file": "strategy_management.py"
+        },
+        {
+          "method": "GET",
+          "path": "/models",
+          "function": "list_models",
+          "description": "",
+          "module": "strategy_management",
+          "file": "strategy_management.py"
+        },
+        {
+          "method": "POST",
+          "path": "/backtest/run",
+          "function": "run_backtest",
+          "description": "",
+          "module": "strategy_management",
+          "file": "strategy_management.py"
+        },
+        {
+          "method": "GET",
+          "path": "/backtest/results",
+          "function": "list_backtest_results",
+          "description": "",
+          "module": "strategy_management",
+          "file": "strategy_management.py"
+        },
+        {
+          "method": "GET",
+          "path": "/backtest/results/{backtest_id}",
+          "function": "get_backtest_result",
+          "description": "",
+          "module": "strategy_management",
+          "file": "strategy_management.py"
+        },
+        {
+          "method": "GET",
+          "path": "/backtest/results/{backtest_id}/chart-data",
+          "function": "get_backtest_chart_data",
+          "description": "",
+          "module": "strategy_management",
+          "file": "strategy_management.py"
+        }
+      ]
+    },
+    "system": {
+      "file": "system.py",
+      "prefix": "",
+      "endpoints_count": 9,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/health",
+          "function": "system_health",
+          "description": "系统健康检查端点 (双数据库架构: TDengine + PostgreSQL)",
+          "module": "system",
+          "file": "system.py"
+        },
+        {
+          "method": "GET",
+          "path": "/adapters/health",
+          "function": "get_adapters_health",
+          "description": "🚀 适配器健康检查端点（新增）",
+          "module": "system",
+          "file": "system.py"
+        },
+        {
+          "method": "GET",
+          "path": "/datasources",
+          "function": "get_datasources",
+          "description": "获取已配置的数据源列表",
+          "module": "system",
+          "file": "system.py"
+        },
+        {
+          "method": "POST",
+          "path": "/test-connection",
+          "function": "test_database_connection",
+          "description": "",
+          "module": "system",
+          "file": "system.py"
+        },
+        {
+          "method": "GET",
+          "path": "/logs",
+          "function": "get_system_logs",
+          "description": "",
+          "module": "system",
+          "file": "system.py"
+        },
+        {
+          "method": "GET",
+          "path": "/logs/summary",
+          "function": "get_logs_summary",
+          "description": "获取日志统计摘要",
+          "module": "system",
+          "file": "system.py"
+        },
+        {
+          "method": "GET",
+          "path": "/architecture",
+          "function": "get_system_architecture",
+          "description": "获取系统架构信息 (Week 3简化后 - 双数据库架构)",
+          "module": "system",
+          "file": "system.py"
+        },
+        {
+          "method": "GET",
+          "path": "/database/health",
+          "function": "database_health",
+          "description": "",
+          "module": "system",
+          "file": "system.py"
+        },
+        {
+          "method": "GET",
+          "path": "/database/stats",
+          "function": "database_stats",
+          "description": "",
+          "module": "system",
+          "file": "system.py"
+        }
+      ]
+    },
+    "tasks": {
+      "file": "tasks.py",
+      "prefix": "/api/tasks",
+      "endpoints_count": 13,
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/register",
+          "function": "register_task",
+          "description": "",
+          "module": "tasks",
+          "file": "tasks.py"
+        },
+        {
+          "method": "DELETE",
+          "path": "/{task_id}",
+          "function": "unregister_task",
+          "description": "",
+          "module": "tasks",
+          "file": "tasks.py"
+        },
+        {
+          "method": "GET",
+          "path": "/",
+          "function": "list_tasks",
+          "description": "",
+          "module": "tasks",
+          "file": "tasks.py"
+        },
+        {
+          "method": "GET",
+          "path": "/{task_id}",
+          "function": "get_task",
+          "description": "获取任务统计信息",
+          "module": "tasks",
+          "file": "tasks.py"
+        },
+        {
+          "method": "POST",
+          "path": "/{task_id}/start",
+          "function": "start_task",
+          "description": "",
+          "module": "tasks",
+          "file": "tasks.py"
+        },
+        {
+          "method": "POST",
+          "path": "/{task_id}/stop",
+          "function": "stop_task",
+          "description": "",
+          "module": "tasks",
+          "file": "tasks.py"
+        },
+        {
+          "method": "GET",
+          "path": "/executions/",
+          "function": "list_task_executions",
+          "description": "",
+          "module": "tasks",
+          "file": "tasks.py"
+        },
+        {
+          "method": "GET",
+          "path": "/executions/{execution_id}",
+          "function": "get_execution",
+          "description": "",
+          "module": "tasks",
+          "file": "tasks.py"
+        },
+        {
+          "method": "GET",
+          "path": "/statistics/",
+          "function": "get_task_statistics",
+          "description": "获取任务统计信息",
+          "module": "tasks",
+          "file": "tasks.py"
+        },
+        {
+          "method": "POST",
+          "path": "/import",
+          "function": "import_config",
+          "description": "",
+          "module": "tasks",
+          "file": "tasks.py"
+        },
+        {
+          "method": "POST",
+          "path": "/export",
+          "function": "export_config",
+          "description": "",
+          "module": "tasks",
+          "file": "tasks.py"
+        },
+        {
+          "method": "DELETE",
+          "path": "/executions/cleanup",
+          "function": "cleanup_executions",
+          "description": "",
+          "module": "tasks",
+          "file": "tasks.py"
+        },
+        {
+          "method": "GET",
+          "path": "/health",
+          "function": "tasks_health",
+          "description": "任务管理健康检查",
+          "module": "tasks",
+          "file": "tasks.py"
+        }
+      ]
+    },
+    "technical.routes": {
+      "file": "technical/routes.py",
+      "prefix": "/technical",
+      "endpoints_count": 3,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/health",
+          "function": "health_check",
+          "description": "健康检查",
+          "module": "technical.routes",
+          "file": "technical/routes.py"
+        },
+        {
+          "method": "GET",
+          "path": "/status",
+          "function": "get_status",
+          "description": "获取服务状态",
+          "module": "technical.routes",
+          "file": "technical/routes.py"
+        },
+        {
+          "method": "POST",
+          "path": "/analyze",
+          "function": "analyze_data",
+          "description": "",
+          "module": "technical.routes",
+          "file": "technical/routes.py"
+        }
+      ]
+    },
+    "technical_analysis": {
+      "file": "technical_analysis.py",
+      "prefix": "/api/technical",
+      "endpoints_count": 9,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/{symbol}/indicators",
+          "function": "get_all_indicators",
+          "description": "",
+          "module": "technical_analysis",
+          "file": "technical_analysis.py"
+        },
+        {
+          "method": "GET",
+          "path": "/{symbol}/trend",
+          "function": "get_trend_indicators",
+          "description": "",
+          "module": "technical_analysis",
+          "file": "technical_analysis.py"
+        },
+        {
+          "method": "GET",
+          "path": "/{symbol}/momentum",
+          "function": "get_momentum_indicators",
+          "description": "",
+          "module": "technical_analysis",
+          "file": "technical_analysis.py"
+        },
+        {
+          "method": "GET",
+          "path": "/{symbol}/volatility",
+          "function": "get_volatility_indicators",
+          "description": "",
+          "module": "technical_analysis",
+          "file": "technical_analysis.py"
+        },
+        {
+          "method": "GET",
+          "path": "/{symbol}/volume",
+          "function": "get_volume_indicators",
+          "description": "",
+          "module": "technical_analysis",
+          "file": "technical_analysis.py"
+        },
+        {
+          "method": "GET",
+          "path": "/{symbol}/signals",
+          "function": "get_trading_signals",
+          "description": "",
+          "module": "technical_analysis",
+          "file": "technical_analysis.py"
+        },
+        {
+          "method": "GET",
+          "path": "/{symbol}/history",
+          "function": "get_stock_history",
+          "description": "",
+          "module": "technical_analysis",
+          "file": "technical_analysis.py"
+        },
+        {
+          "method": "POST",
+          "path": "/batch/indicators",
+          "function": "get_batch_indicators",
+          "description": "",
+          "module": "technical_analysis",
+          "file": "technical_analysis.py"
+        },
+        {
+          "method": "GET",
+          "path": "/patterns/{symbol}",
+          "function": "detect_patterns",
+          "description": "",
+          "module": "technical_analysis",
+          "file": "technical_analysis.py"
+        }
+      ]
+    },
+    "trade.routes": {
+      "file": "trade/routes.py",
+      "prefix": "/trade",
+      "endpoints_count": 6,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/health",
+          "function": "health_check",
+          "description": "健康检查",
+          "module": "trade.routes",
+          "file": "trade/routes.py"
+        },
+        {
+          "method": "GET",
+          "path": "/portfolio",
+          "function": "get_portfolio",
+          "description": "获取投资组合概览",
+          "module": "trade.routes",
+          "file": "trade/routes.py"
+        },
+        {
+          "method": "GET",
+          "path": "/positions",
+          "function": "get_positions",
+          "description": "获取持仓列表",
+          "module": "trade.routes",
+          "file": "trade/routes.py"
+        },
+        {
+          "method": "GET",
+          "path": "/trades",
+          "function": "get_trades",
+          "description": "",
+          "module": "trade.routes",
+          "file": "trade/routes.py"
+        },
+        {
+          "method": "GET",
+          "path": "/statistics",
+          "function": "get_statistics",
+          "description": "获取交易统计数据",
+          "module": "trade.routes",
+          "file": "trade/routes.py"
+        },
+        {
+          "method": "POST",
+          "path": "/execute",
+          "function": "execute_trade",
+          "description": "",
+          "module": "trade.routes",
+          "file": "trade/routes.py"
+        }
+      ]
+    },
+    "tradingview": {
+      "file": "tradingview.py",
+      "prefix": "",
+      "endpoints_count": 6,
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/chart/config",
+          "function": "get_chart_config",
+          "description": "",
+          "module": "tradingview",
+          "file": "tradingview.py"
+        },
+        {
+          "method": "POST",
+          "path": "/mini-chart/config",
+          "function": "get_mini_chart_config",
+          "description": "",
+          "module": "tradingview",
+          "file": "tradingview.py"
+        },
+        {
+          "method": "POST",
+          "path": "/ticker-tape/config",
+          "function": "get_ticker_tape_config",
+          "description": "",
+          "module": "tradingview",
+          "file": "tradingview.py"
+        },
+        {
+          "method": "GET",
+          "path": "/market-overview/config",
+          "function": "get_market_overview_config",
+          "description": "",
+          "module": "tradingview",
+          "file": "tradingview.py"
+        },
+        {
+          "method": "GET",
+          "path": "/screener/config",
+          "function": "get_screener_config",
+          "description": "",
+          "module": "tradingview",
+          "file": "tradingview.py"
+        },
+        {
+          "method": "GET",
+          "path": "/symbol/convert",
+          "function": "convert_symbol",
+          "description": "",
+          "module": "tradingview",
+          "file": "tradingview.py"
+        }
+      ]
+    },
+    "v1.pool_monitoring": {
+      "file": "v1/pool_monitoring.py",
+      "prefix": "/pool-monitoring",
+      "endpoints_count": 4,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/postgresql/stats",
+          "function": "get_postgresql_pool_stats",
+          "description": "获取PostgreSQL连接池统计信息",
+          "module": "v1.pool_monitoring",
+          "file": "v1/pool_monitoring.py"
+        },
+        {
+          "method": "GET",
+          "path": "/tdengine/stats",
+          "function": "get_tdengine_pool_stats",
+          "description": "获取TDengine连接池统计信息",
+          "module": "v1.pool_monitoring",
+          "file": "v1/pool_monitoring.py"
+        },
+        {
+          "method": "GET",
+          "path": "/health",
+          "function": "connection_pools_health_check",
+          "description": "检查所有连接池的健康状态",
+          "module": "v1.pool_monitoring",
+          "file": "v1/pool_monitoring.py"
+        },
+        {
+          "method": "GET",
+          "path": "/alerts",
+          "function": "check_connection_pool_alerts",
+          "description": "检测连接池是否存在需要告警的情况",
+          "module": "v1.pool_monitoring",
+          "file": "v1/pool_monitoring.py"
+        }
+      ]
+    },
+    "watchlist": {
+      "file": "watchlist.py",
+      "prefix": "",
+      "endpoints_count": 15,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/",
+          "function": "get_my_watchlist",
+          "description": "",
+          "module": "watchlist",
+          "file": "watchlist.py"
+        },
+        {
+          "method": "GET",
+          "path": "/symbols",
+          "function": "get_my_watchlist_symbols",
+          "description": "",
+          "module": "watchlist",
+          "file": "watchlist.py"
+        },
+        {
+          "method": "POST",
+          "path": "/add",
+          "function": "add_to_watchlist",
+          "description": "",
+          "module": "watchlist",
+          "file": "watchlist.py"
+        },
+        {
+          "method": "DELETE",
+          "path": "/remove/{symbol}",
+          "function": "remove_from_watchlist",
+          "description": "",
+          "module": "watchlist",
+          "file": "watchlist.py"
+        },
+        {
+          "method": "GET",
+          "path": "/check/{symbol}",
+          "function": "check_in_watchlist",
+          "description": "",
+          "module": "watchlist",
+          "file": "watchlist.py"
+        },
+        {
+          "method": "PUT",
+          "path": "/notes/{symbol}",
+          "function": "update_watchlist_notes",
+          "description": "",
+          "module": "watchlist",
+          "file": "watchlist.py"
+        },
+        {
+          "method": "GET",
+          "path": "/count",
+          "function": "get_watchlist_count",
+          "description": "",
+          "module": "watchlist",
+          "file": "watchlist.py"
+        },
+        {
+          "method": "DELETE",
+          "path": "/clear",
+          "function": "clear_watchlist",
+          "description": "",
+          "module": "watchlist",
+          "file": "watchlist.py"
+        },
+        {
+          "method": "GET",
+          "path": "/groups",
+          "function": "get_user_groups",
+          "description": "",
+          "module": "watchlist",
+          "file": "watchlist.py"
+        },
+        {
+          "method": "POST",
+          "path": "/groups",
+          "function": "create_group",
+          "description": "",
+          "module": "watchlist",
+          "file": "watchlist.py"
+        },
+        {
+          "method": "PUT",
+          "path": "/groups/{group_id}",
+          "function": "update_group",
+          "description": "",
+          "module": "watchlist",
+          "file": "watchlist.py"
+        },
+        {
+          "method": "DELETE",
+          "path": "/groups/{group_id}",
+          "function": "delete_group",
+          "description": "",
+          "module": "watchlist",
+          "file": "watchlist.py"
+        },
+        {
+          "method": "GET",
+          "path": "/group/{group_id}",
+          "function": "get_watchlist_by_group",
+          "description": "",
+          "module": "watchlist",
+          "file": "watchlist.py"
+        },
+        {
+          "method": "PUT",
+          "path": "/move",
+          "function": "move_stock_to_group",
+          "description": "",
+          "module": "watchlist",
+          "file": "watchlist.py"
+        },
+        {
+          "method": "GET",
+          "path": "/with-groups",
+          "function": "get_watchlist_with_groups",
+          "description": "",
+          "module": "watchlist",
+          "file": "watchlist.py"
+        }
+      ]
+    },
+    "wencai": {
+      "file": "wencai.py",
+      "prefix": "/api/market/wencai",
+      "endpoints_count": 1,
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/health",
+          "function": "health_check",
+          "description": "健康检查",
+          "module": "wencai",
+          "file": "wencai.py"
+        }
+      ]
+    }
+  },
+  "versions": [
+    "v1",
+    "v2"
+  ],
+  "tags": [
+    "dashboard",
+    "multi-source",
+    "market",
+    "notification",
+    "auth",
+    "strategy",
+    "data",
+    "watchlist",
+    "technical-analysis",
+    "monitoring",
+    "machine-learning",
+    "cache",
+    "metrics",
+    "tradingview",
+    "system",
+    "indicators",
+    "trade",
+    "pool-monitoring",
+    "announcement",
+    "tasks",
+    "market-v2",
+    "stock-search",
+    "tdx",
+    "strategy-mgmt"
+  ]
+}

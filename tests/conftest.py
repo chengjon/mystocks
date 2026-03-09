@@ -17,6 +17,8 @@ import pytest
 import pytest_asyncio
 from dotenv import load_dotenv
 
+sys.dont_write_bytecode = True
+
 # ========== 重要: PYTHONPATH 配置 ==========
 # 添加项目根目录和src目录到Python路径
 # 这样测试文件可以正确导入 from src.xxx 模块
@@ -30,6 +32,11 @@ if str(project_root) not in sys.path:
 src_dir = project_root / "src"
 if str(src_dir) not in sys.path:
     sys.path.insert(0, str(src_dir))
+
+from tests.pytest_runtime_artifacts import (
+    cleanup_root_runtime_artifacts,
+    ensure_canonical_timing_output,
+)
 
 # ==========================================
 
@@ -622,6 +629,7 @@ def pytest_configure(config):
     from .markers import pytest_configure as markers_configure
 
     markers_configure(config)
+    ensure_canonical_timing_output(config, project_root=project_root)
 
 
 def pytest_collection_modifyitems(config, items):
@@ -665,3 +673,11 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
         print(f"✅ {len(passed)} 个测试通过")
     if skipped:
         print(f"⏭️  {len(skipped)} 个测试跳过")
+
+
+def pytest_sessionfinish(session, exitstatus):
+    cleanup_root_runtime_artifacts(project_root=project_root)
+
+
+def pytest_unconfigure(config):
+    cleanup_root_runtime_artifacts(project_root=project_root)

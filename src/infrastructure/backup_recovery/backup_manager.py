@@ -46,7 +46,7 @@ class BackupManager:
 
     def __init__(
         self,
-        backup_base_path: str = "./backups",
+        backup_base_path: str = "var/backups",
         compression: bool = True,
         retention_days: int = 30,
     ):

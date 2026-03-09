@@ -74,7 +74,7 @@
 │ ├─ 示例页面: 11 页                      │
 │ ├─ 其他实验: 108 页                     │
 └─────────────────────────────────────────┘
-         ↓ 删除或归档到 docs/archive/
+         ↓ 删除或归档到 archive/docs/
 ```
 
 ### 功能域分布
@@ -275,7 +275,7 @@ export function calculateSharpeRatio(returns) { }
 
 **实施步骤**:
 ```
-1. 备份 → 将所有低复用度页面备份到 docs/archive/
+1. 备份 → 将所有低复用度页面备份到 archive/docs/
 2. 验证 → 确认没有其他文件引用这些页面
 3. 删除 → 从源代码中删除这些页面
 4. 路由清理 → 从路由配置中移除相关路由
@@ -423,7 +423,7 @@ export function calculateSharpeRatio(returns) { }
 
 ### 决策 3: 低复用度页面处理
 - **选项 A**: 全部删除
-- **选项 B**: 全部归档到 docs/archive/
+- **选项 B**: 全部归档到 archive/docs/
 - **推荐**: 选项 B（保留历史记录，便于查阅）
 
 ---

@@ -1,26 +1,98 @@
-#!/bin/bash
-# 日志轮转脚本 - 将旧日志移动到归档
+#!/usr/bin/env bash
 
-LOG_DIR="/opt/claude/mystocks_spec/logs/app"
-OLD_DIR="${LOG_DIR}/old"
-ARCHIVE_DIR="/opt/claude/mystocks_spec/logs/archive"
+set -euo pipefail
 
-echo "开始日志轮转..."
-echo "日志目录: $LOG_DIR"
-echo ""
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+DEFAULT_PROJECT_ROOT="$(cd -- "${SCRIPT_DIR}/../.." && pwd)"
 
-mkdir -p "$OLD_DIR"
-mkdir -p "$ARCHIVE_DIR"
+PROJECT_ROOT="${DEFAULT_PROJECT_ROOT}"
+RETENTION_DAYS=7
+DRY_RUN=0
 
-# 移动超过7天的日志到old目录
-find "$LOG_DIR" -maxdepth 1 -name "*.log" -type f -mtime +7 -print0 | while IFS= read -r -d '' logfile; do
-    if [ -f "$logfile" ]; then
-        echo "归档: $(basename "$logfile")"
-        mv "$logfile" "$OLD_DIR/"
-    fi
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") [--project-root PATH] [--retention-days DAYS] [--dry-run]
+
+Rotate expired application logs from:
+  var/log/app/
+to:
+  archive/logs/app/
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --project-root)
+            PROJECT_ROOT="$2"
+            shift 2
+            ;;
+        --retention-days)
+            RETENTION_DAYS="$2"
+            shift 2
+            ;;
+        --dry-run|-n)
+            DRY_RUN=1
+            shift
+            ;;
+        --help|-h)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "Unknown argument: $1" >&2
+            usage >&2
+            exit 2
+            ;;
+    esac
 done
 
-echo ""
-echo "日志轮转完成"
-echo "当前日志文件数: $(find "$LOG_DIR" -maxdepth 1 -name "*.log" -type f | wc -l)"
-echo "归档日志文件数: $(find "$OLD_DIR" -maxdepth 1 -name "*.log" -type f | wc -l)"
+LOG_DIR="${PROJECT_ROOT}/var/log/app"
+ARCHIVE_DIR="${PROJECT_ROOT}/archive/logs/app"
+
+mode_label="EXECUTE"
+if [[ "${DRY_RUN}" -eq 1 ]]; then
+    mode_label="DRY-RUN"
+fi
+
+echo "log rotation mode: ${mode_label}"
+echo "project_root: ${PROJECT_ROOT}"
+echo "log_dir: ${LOG_DIR}"
+echo "archive_dir: ${ARCHIVE_DIR}"
+echo "retention_days: ${RETENTION_DAYS}"
+
+if [[ ! -d "${LOG_DIR}" ]]; then
+    echo "status: log directory does not exist; nothing to rotate"
+    echo "rotated: 0"
+    echo "active_logs: 0"
+    echo "archived_logs: 0"
+    exit 0
+fi
+
+if [[ "${DRY_RUN}" -eq 0 ]]; then
+    mkdir -p "${ARCHIVE_DIR}"
+fi
+
+rotated_count=0
+
+while IFS= read -r -d '' logfile; do
+    target_path="${ARCHIVE_DIR}/$(basename "${logfile}")"
+
+    if [[ "${DRY_RUN}" -eq 1 ]]; then
+        echo "[DRY-RUN] rotate ${logfile} -> ${target_path}"
+    else
+        mv "${logfile}" "${target_path}"
+        echo "rotated ${logfile} -> ${target_path}"
+    fi
+
+    rotated_count=$((rotated_count + 1))
+done < <(find "${LOG_DIR}" -maxdepth 1 -name "*.log" -type f -mtime +"${RETENTION_DAYS}" -print0)
+
+active_logs=$(find "${LOG_DIR}" -maxdepth 1 -name "*.log" -type f | wc -l | tr -d ' ')
+archived_logs=0
+if [[ -d "${ARCHIVE_DIR}" ]]; then
+    archived_logs=$(find "${ARCHIVE_DIR}" -maxdepth 1 -name "*.log" -type f | wc -l | tr -d ' ')
+fi
+
+echo "rotated: ${rotated_count}"
+echo "active_logs: ${active_logs}"
+echo "archived_logs: ${archived_logs}"

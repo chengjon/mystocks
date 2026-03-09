@@ -12,15 +12,24 @@ from scripts.maintenance.check_structure import (
     main,
 )
 
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+PROJECT_POLICY_PATH = PROJECT_ROOT / "governance" / "mainline" / "policies" / "directory-structure.yaml"
+
 
 def write_policy(path: Path) -> None:
     policy = {
         "root": {
             "allowed_files": ["README.md"],
             "allowed_directories": ["src", "docs"],
-            "tolerated_files": [
+            "workflow_exception_files": [
                 {
                     "path": "TASK.md",
+                    "reason": "workflow-owned task contract remains in root",
+                }
+            ],
+            "tolerated_files": [
+                {
+                    "path": "LEGACY_TASK.md",
                     "reason": "legacy workflow artifact",
                     "recommendation": "move into docs/reports/tasks/",
                 }
@@ -92,7 +101,7 @@ def test_analyze_project_reports_tolerated_root_entries_as_warning(tmp_path: Pat
     write_policy(policy_path)
     (project_root / "README.md").write_text("ok", encoding="utf-8")
     (project_root / "src").mkdir()
-    (project_root / "TASK.md").write_text("legacy", encoding="utf-8")
+    (project_root / "LEGACY_TASK.md").write_text("legacy", encoding="utf-8")
     (project_root / "archived").mkdir()
 
     result = analyze_project(project_root, load_policy(policy_path))
@@ -100,7 +109,51 @@ def test_analyze_project_reports_tolerated_root_entries_as_warning(tmp_path: Pat
     assert result["summary"]["errors"] == 0
     assert result["summary"]["warnings"] == 2
     warning_paths = {item["path"] for item in result["warnings"]}
-    assert warning_paths == {"TASK.md", "archived"}
+    assert warning_paths == {"LEGACY_TASK.md", "archived"}
+
+
+def test_analyze_project_skips_workflow_exception_files_without_warning(tmp_path: Path) -> None:
+    policy_path = tmp_path / "policy.yaml"
+    project_root = tmp_path / "repo"
+    project_root.mkdir()
+    write_policy(policy_path)
+    (project_root / "README.md").write_text("ok", encoding="utf-8")
+    (project_root / "src").mkdir()
+    (project_root / "TASK.md").write_text("workflow contract", encoding="utf-8")
+
+    result = analyze_project(project_root, load_policy(policy_path))
+
+    assert result["summary"]["errors"] == 0
+    assert result["summary"]["warnings"] == 0
+
+
+def test_project_policy_allows_canonical_lifecycle_directories(tmp_path: Path) -> None:
+    project_root = tmp_path / "repo"
+    project_root.mkdir()
+    (project_root / "README.md").write_text("ok", encoding="utf-8")
+    (project_root / "docs").mkdir()
+    (project_root / "reports").mkdir()
+    (project_root / "archive").mkdir()
+    (project_root / "var").mkdir()
+
+    result = analyze_project(project_root, load_policy(PROJECT_POLICY_PATH))
+
+    assert result["summary"]["errors"] == 0
+    assert result["summary"]["warnings"] == 0
+
+
+def test_project_policy_treats_task_artifacts_as_workflow_exceptions(tmp_path: Path) -> None:
+    project_root = tmp_path / "repo"
+    project_root.mkdir()
+    (project_root / "README.md").write_text("ok", encoding="utf-8")
+    (project_root / "docs").mkdir()
+    (project_root / "TASK.md").write_text("workflow task", encoding="utf-8")
+    (project_root / "TASK-REPORT.md").write_text("workflow report", encoding="utf-8")
+
+    result = analyze_project(project_root, load_policy(PROJECT_POLICY_PATH))
+
+    assert result["summary"]["errors"] == 0
+    assert result["summary"]["warnings"] == 0
 
 
 def test_analyze_project_reports_root_runtime_artifact_as_error(tmp_path: Path) -> None:
@@ -145,7 +198,7 @@ def test_build_text_report_contains_summary_counts(tmp_path: Path) -> None:
     write_policy(policy_path)
     (project_root / "README.md").write_text("ok", encoding="utf-8")
     (project_root / "src").mkdir()
-    (project_root / "TASK.md").write_text("legacy", encoding="utf-8")
+    (project_root / "LEGACY_TASK.md").write_text("legacy", encoding="utf-8")
 
     result = analyze_project(project_root, load_policy(policy_path))
     report = build_text_report(result)

@@ -142,9 +142,9 @@ echo "-------------------------------------"
 cd /opt/claude/mystocks_phase6_e2e
 
 echo "生成后端测试覆盖率..."
-if pytest --cov=src --cov-report=html --cov-report=json 2>&1 | tee /tmp/coverage_output.txt; then
-    if [ -f "coverage.json" ]; then
-        COVERAGE=$(python -c "import json; data=json.load(open('coverage.json')); print(f'{data[\"totals\"][\"percent_covered\"]:.2f}%')")
+if pytest --cov=src --cov-report=html --cov-report=json:reports/coverage/coverage.json 2>&1 | tee /tmp/coverage_output.txt; then
+    if [ -f "reports/coverage/coverage.json" ]; then
+        COVERAGE=$(python -c "import json; data=json.load(open('reports/coverage/coverage.json')); print(f'{data[\"totals\"][\"percent_covered\"]:.2f}%')")
         echo -e "${GREEN}✓ 测试覆盖率: ${COVERAGE}${NC}"
 
         if [ -f "htmlcov/index.html" ]; then
@@ -225,11 +225,11 @@ fi)
 ========================================
 EOF
 
-if [ -f "coverage.json" ]; then
+if [ -f "reports/coverage/coverage.json" ]; then
     cat >> ${REPORT_FILE} << EOF
   Overall Coverage: ${COVERAGE}
   HTML Report: file://$(pwd)/htmlcov/index.html
-  JSON Report: $(pwd)/coverage.json
+  JSON Report: $(pwd)/reports/coverage/coverage.json
 EOF
 else
     echo "  Coverage report not generated" >> ${REPORT_FILE}
@@ -252,7 +252,7 @@ if [ ${FAILED} -gt 0 ]; then
     echo "  ⚠️  Fix failing architecture E2E tests" >> ${REPORT_FILE}
 fi
 
-python -c "import json; data=json.load(open('coverage.json')); cov=data['totals']['percent_covered']; print(f'  {'✓ Coverage meets target' if cov >= 80 else '⚠️  Coverage below 80% target'}: {cov:.2f}%')" >> ${REPORT_FILE}
+python -c "import json; data=json.load(open('reports/coverage/coverage.json')); cov=data['totals']['percent_covered']; print(f'  {'✓ Coverage meets target' if cov >= 80 else '⚠️  Coverage below 80% target'}: {cov:.2f}%')" >> ${REPORT_FILE}
 
 cat ${REPORT_FILE}
 echo ""
