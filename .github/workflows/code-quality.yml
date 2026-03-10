@@ -74,6 +74,259 @@ jobs:
                 print(f"- {item['path']}: {item['message']}")
         PY
 
+    - name: Production Python Guardrails
+      run: |
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+        else
+          BASE_SHA="${{ github.event.before }}"
+        fi
+
+        if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+          mapfile -t changed_files < <(git ls-files)
+        else
+          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+        fi
+
+        cmd=(python scripts/compliance/production_python_guardrails.py --format json)
+        production_changed=0
+
+        for changed_file in "${changed_files[@]}"; do
+          if [[ "$changed_file" =~ ^(src|web/backend/app)/.*\.py$ ]]; then
+            cmd+=(--path "$changed_file")
+            production_changed=1
+          fi
+        done
+
+        if [ "$production_changed" -eq 0 ]; then
+          printf '{"project_root":"%s","scope_roots":["src","web/backend/app"],"paths":[],"checked_files":0,"errors":[],"warnings":[],"summary":{"errors":0,"warnings":0,"checked_files":0},"policy":{"warning_lines":650,"failure_lines":700}}' "$PWD" > production-python-guardrails-report.json
+          echo "No changed production Python files detected."
+          exit 0
+        fi
+
+        "${cmd[@]}" > production-python-guardrails-report.json
+
+        python - <<'PY'
+        import json
+        from pathlib import Path
+
+        report = json.loads(Path("production-python-guardrails-report.json").read_text(encoding="utf-8"))
+        summary = report["summary"]
+        print(f"Production Python guardrails summary: {summary}")
+
+        if report["warnings"]:
+            print("Warnings:")
+            for item in report["warnings"][:10]:
+                print(f"- {item['path']}: {item['message']}")
+
+        if report["errors"]:
+            print("Blocking findings:")
+            for item in report["errors"][:10]:
+                print(f"- {item['path']}: {item['message']}")
+        PY
+
+    - name: Observability Readiness Gate
+      run: |
+        python scripts/compliance/readiness_contract_gate.py --format json > readiness-contract-gate-report.json
+
+        python - <<'PY'
+        import json
+        from pathlib import Path
+
+        report = json.loads(Path("readiness-contract-gate-report.json").read_text(encoding="utf-8"))
+        print(f"Readiness contract summary: {report['summary']}")
+
+        if report["errors"]:
+            print("Blocking findings:")
+            for item in report["errors"]:
+                print(f"- {item['check']}: {item['detail']}")
+        PY
+
+    - name: Backend Singleton None Guard
+      run: |
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+        else
+          BASE_SHA="${{ github.event.before }}"
+        fi
+
+        if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+          mapfile -t changed_files < <(git ls-files)
+        else
+          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+        fi
+
+        cmd=(python scripts/compliance/backend_singleton_none_guard.py --format json --root-dir "$PWD")
+        backend_changed=0
+
+        for changed_file in "${changed_files[@]}"; do
+          if [[ "$changed_file" =~ ^(src|web/backend/app)/.*\.py$ ]]; then
+            cmd+=(--path "$changed_file")
+            backend_changed=1
+          fi
+        done
+
+        if [ "$backend_changed" -eq 0 ]; then
+          printf '{"project_root":"%s","scope_roots":["src","web/backend/app"],"paths":[],"checked_files":0,"errors":[],"summary":{"errors":0,"checked_files":0}}' "$PWD" > backend-singleton-none-guard-report.json
+          echo "No changed backend Python files detected for singleton None guard."
+          exit 0
+        fi
+
+        "${cmd[@]}" > backend-singleton-none-guard-report.json
+
+        python - <<'PY'
+        import json
+        from pathlib import Path
+
+        report = json.loads(Path("backend-singleton-none-guard-report.json").read_text(encoding="utf-8"))
+        print(f"Backend singleton None guard summary: {report['summary']}")
+
+        if report["errors"]:
+            print("Blocking findings:")
+            for item in report["errors"]:
+                suffix = f" ({', '.join(item['names'])})" if item.get("names") else ""
+                print(f"- {item['path']}: {item['message']}{suffix}")
+        PY
+
+    - name: UnifiedResponse Contract Guard
+      run: |
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+        else
+          BASE_SHA="${{ github.event.before }}"
+        fi
+
+        if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+          mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "${{ github.sha }}")
+        else
+          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+        fi
+
+        cmd=(python scripts/compliance/unified_response_contract_guard.py --format json --root-dir "$PWD")
+        api_changed=0
+
+        for changed_file in "${changed_files[@]}"; do
+          if [[ "$changed_file" =~ ^web/backend/app/api/.*\.py$ ]]; then
+            cmd+=(--path "$changed_file")
+            api_changed=1
+          fi
+        done
+
+        if [ "$api_changed" -eq 0 ]; then
+          printf '{"project_root":"%s","scope_root":"web/backend/app/api","paths":[],"checked_files":0,"checked_routes":0,"results":[],"errors":[],"summary":{"errors":0,"checked_files":0,"checked_routes":0}}' "$PWD" > unified-response-contract-guard-report.json
+          echo "No changed backend API Python files detected for UnifiedResponse contract guard."
+          exit 0
+        fi
+
+        "${cmd[@]}" > unified-response-contract-guard-report.json
+
+        python - <<'PY'
+        import json
+        from pathlib import Path
+
+        report = json.loads(Path("unified-response-contract-guard-report.json").read_text(encoding="utf-8"))
+        print(f"UnifiedResponse contract summary: {report['summary']}")
+
+        if report["errors"]:
+            print("Blocking findings:")
+            for item in report["errors"]:
+                endpoint = f"{item['path']}::{item['endpoint']}"
+                print(f"- {endpoint}: {item['message']}")
+        PY
+
+    - name: Frontend/Test File Size Guard
+      run: |
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+        else
+          BASE_SHA="${{ github.event.before }}"
+        fi
+
+        if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+          mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "${{ github.sha }}")
+        else
+          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+        fi
+
+        cmd=(python scripts/compliance/file_size_guardrail.py --format json --root-dir "$PWD" --scope-root web/frontend --scope-root tests)
+        gated_changed=0
+
+        for changed_file in "${changed_files[@]}"; do
+          if [[ "$changed_file" =~ ^((web/frontend/.*\.(vue|ts|js))|(tests/.*\.(ts|js)))$ ]]; then
+            cmd+=(--path "$changed_file")
+            gated_changed=1
+          fi
+        done
+
+        if [ "$gated_changed" -eq 0 ]; then
+          printf '{"root_dir":"%s","scope_roots":["web/frontend","tests"],"paths":[],"checked_files":0,"oversized_count":0,"violations":[],"limits":{".py":800,".ts":500,".vue":500,".spec.ts":1000,".spec.js":1000},"summary":{"checked_files":0,"oversized_count":0}}' "$PWD" > frontend-test-file-size-gate-report.json
+          echo "No changed frontend/test files detected for file size guard."
+          exit 0
+        fi
+
+        "${cmd[@]}" > frontend-test-file-size-gate-report.json
+
+        python - <<'PY'
+        import json
+        from pathlib import Path
+
+        report = json.loads(Path("frontend-test-file-size-gate-report.json").read_text(encoding="utf-8"))
+        print(f"Frontend/test file size summary: {report['summary']}")
+
+        if report["violations"]:
+            print("Blocking findings:")
+            for item in report["violations"]:
+                print(f"- {item['path']}: {item['lines']} lines (limit: {item['limit']}, type: {item['type']})")
+        PY
+
+    - name: PM2 First-Class Gate
+      run: |
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+        else
+          BASE_SHA="${{ github.event.before }}"
+        fi
+
+        if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+          mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "${{ github.sha }}")
+        else
+          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+        fi
+
+        cmd=(python scripts/compliance/pm2_first_class_gate.py --format json --root-dir "$PWD")
+        orchestration_changed=0
+
+        for changed_file in "${changed_files[@]}"; do
+          if [[ "$changed_file" =~ ^((\.github/workflows/.*\.(yml|yaml))|(scripts/.*\.(sh|py))|(config/.*\.(js|json))|(ecosystem\.test\.config\.js)|(web/backend/ecosystem\.config\.js)|(web/frontend/ecosystem\.config\.js)|(web/backend/pm2\.config\.json))$ ]]; then
+            cmd+=(--path "$changed_file")
+            orchestration_changed=1
+          fi
+        done
+
+        if [ "$orchestration_changed" -eq 0 ]; then
+          printf '{"project_root":"%s","paths":[],"checked_files":0,"results":[],"errors":[],"summary":{"errors":0,"checked_files":0},"scope_patterns":[".github/workflows/*.yml",".github/workflows/*.yaml","scripts/*.sh","scripts/*.py","scripts/**/*.sh","scripts/**/*.py","config/**/*.js","config/**/*.json","ecosystem.test.config.js","web/backend/ecosystem.config.js","web/frontend/ecosystem.config.js","web/backend/pm2.config.json"]}' "$PWD" > pm2-first-class-gate-report.json
+          echo "No changed orchestration files detected for PM2 first-class gate."
+          exit 0
+        fi
+
+        "${cmd[@]}" > pm2-first-class-gate-report.json
+
+        python - <<'PY'
+        import json
+        from pathlib import Path
+
+        report = json.loads(Path("pm2-first-class-gate-report.json").read_text(encoding="utf-8"))
+        print(f"PM2 first-class summary: {report['summary']}")
+
+        if report["errors"]:
+            print("Blocking findings:")
+            for item in report["errors"]:
+                suffix = ""
+                if item.get("raw_startup_markers"):
+                    suffix = f" raw={','.join(item['raw_startup_markers'])}"
+                print(f"- {item['path']}: {item['message']}{suffix}")
+        PY
+
     - name: Run Pylint with security profile
       run: |
         pylint src/ --rcfile=.pylintrc -j 0 --disable=import-error --output-format=json > pylint-report.json || true
@@ -101,6 +354,7 @@ jobs:
         name: code-quality-results
         path: |
           directory-governance-report.json
+          production-python-guardrails-report.json
           pylint-report.json
           flake8-report.json
           black-diff.txt

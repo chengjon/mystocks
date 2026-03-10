@@ -38,14 +38,14 @@ logger = logging.getLogger(__name__)
 
 # 全局缓存管理器 (异步初始化)
 _cache_manager: Optional[CacheManager] = None
-_cache_manager_initialized = False
+_cache_manager_initialized: Optional[bool] = None
 
 
 async def get_cache_manager() -> CacheManager:
     """获取或初始化缓存管理器（单例模式，支持Redis注入）"""
     global _cache_manager, _cache_manager_initialized
 
-    if _cache_manager is None or not _cache_manager_initialized:
+    if _cache_manager is None or _cache_manager_initialized is not True:
         # 尝试获取Redis缓存服务
         redis_cache = None
         try:

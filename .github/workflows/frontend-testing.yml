@@ -41,6 +41,117 @@ jobs:
         name: frontend-optimization-audit-report
         path: reports/analysis/frontend-page-optimization-audit-report.md
 
+  route-layout-pm2-detect:
+    runs-on: ubuntu-latest
+    outputs:
+      gate_required: ${{ steps.detect.outputs.gate_required }}
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Detect route/layout PM2 gate scope
+      id: detect
+      run: |
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+        else
+          BASE_SHA="${{ github.event.before }}"
+        fi
+
+        if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+          mapfile -t changed_files < <(git ls-files)
+        else
+          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+        fi
+
+        cmd=(python scripts/compliance/route_layout_pm2_gate.py --format json)
+        for changed_file in "${changed_files[@]}"; do
+          cmd+=(--path "$changed_file")
+        done
+
+        "${cmd[@]}" > route-layout-pm2-gate-report.json
+
+        python - <<'PY'
+        import json
+        import os
+        from pathlib import Path
+
+        report = json.loads(Path("route-layout-pm2-gate-report.json").read_text(encoding="utf-8"))
+        gate_required = "true" if report["gate_required"] else "false"
+
+        with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as handle:
+            handle.write(f"gate_required={gate_required}\n")
+
+        print(f"Route/Layout PM2 gate required: {gate_required}")
+        if report["matched_paths"]:
+            for item in report["matched_paths"]:
+                print(f"- {item['path']}: {', '.join(item['rules'])}")
+        PY
+
+    - name: Upload route/layout PM2 gate report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: route-layout-pm2-gate-report
+        path: route-layout-pm2-gate-report.json
+
+  route-layout-pm2-gate:
+    name: Route/Layout PM2 Gate
+    runs-on: ubuntu-latest
+    needs: route-layout-pm2-detect
+    if: needs.route-layout-pm2-detect.outputs.gate_required == 'true'
+    timeout-minutes: 45
+    env:
+      BACKEND_PORT: '8020'
+      BACKEND_BACKUP_PORT: '8021'
+      FRONTEND_PORT: '3020'
+      FRONTEND_BACKUP_PORT: '3021'
+      USE_MOCK_DATA: 'true'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: |
+          package-lock.json
+          web/frontend/package-lock.json
+
+    - name: Install root dependencies
+      run: npm ci
+
+    - name: Install frontend dependencies
+      run: npm ci
+      working-directory: web/frontend
+
+    - name: Install backend dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Install PM2 and Playwright browser
+      run: |
+        npm install -g pm2
+        npx playwright install --with-deps chromium
+
+    - name: Run route/layout PM2 E2E gate
+      run: bash scripts/run_e2e_pm2.sh
+
   frontend-test:
     runs-on: ubuntu-latest
     defaults:
@@ -49,6 +160,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
@@ -62,6 +175,40 @@ jobs:
 
     - name: Lint code
       run: npm run lint
+
+    - name: App Route Purity Gate
+      run: |
+        python scripts/compliance/app_route_purity_gate.py --format json > app-route-purity-gate-report.json
+        cat app-route-purity-gate-report.json
+
+    - name: Request ID Visibility Gate
+      run: |
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+        else
+          BASE_SHA="${{ github.event.before }}"
+        fi
+
+        if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+          if git rev-parse HEAD^ >/dev/null 2>&1; then
+            mapfile -t changed_files < <(git diff --name-only HEAD^ HEAD)
+          else
+            changed_files=()
+          fi
+        else
+          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+        fi
+
+        cmd=(python scripts/compliance/request_id_visibility_gate.py --format json)
+        for changed_file in "${changed_files[@]}"; do
+          cmd+=(--path "$changed_file")
+        done
+
+        "${cmd[@]}" > request-id-visibility-gate-report.json
+        cat request-id-visibility-gate-report.json
+
+    - name: Run ArtDeco token lint
+      run: npm run lint:artdeco
 
     - name: Type check
       run: npm run type-check

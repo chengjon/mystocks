@@ -33,11 +33,12 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+_gpu_risk_calculator_instance = None
+
 def get_gpu_risk_calculator() -> GPURiskCalculator:
     """获取GPU风险计算器实例（单例模式）"""
     global _gpu_risk_calculator_instance
     if _gpu_risk_calculator_instance is None:
         _gpu_risk_calculator_instance = GPURiskCalculator()
     return _gpu_risk_calculator_instance
-
 

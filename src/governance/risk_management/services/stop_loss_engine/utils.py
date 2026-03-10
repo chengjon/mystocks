@@ -21,11 +21,12 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+_stop_loss_engine_instance = None
+
 def get_stop_loss_engine() -> StopLossEngine:
     """获取止损引擎实例（单例模式）"""
     global _stop_loss_engine_instance
     if _stop_loss_engine_instance is None:
         _stop_loss_engine_instance = StopLossEngine()
     return _stop_loss_engine_instance
-
 

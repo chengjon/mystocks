@@ -324,24 +324,38 @@ class QueryPerformanceLogger:
         self._slow_queries.clear()
 
 
-_global_metrics_collectors: Dict[str, DatabaseMetricsCollector] = {}
-_global_performance_loggers: Dict[str, QueryPerformanceLogger] = {}
+_global_metrics_collectors: Optional[Dict[str, DatabaseMetricsCollector]] = None
+_global_performance_loggers: Optional[Dict[str, QueryPerformanceLogger]] = None
+
+
+def _get_global_metrics_collectors() -> Dict[str, DatabaseMetricsCollector]:
+    global _global_metrics_collectors
+    if _global_metrics_collectors is None:
+        _global_metrics_collectors = {}
+    return _global_metrics_collectors
+
+
+def _get_global_performance_loggers() -> Dict[str, QueryPerformanceLogger]:
+    global _global_performance_loggers
+    if _global_performance_loggers is None:
+        _global_performance_loggers = {}
+    return _global_performance_loggers
 
 
 def get_metrics_collector(database: str = "mystocks") -> DatabaseMetricsCollector:
     """Get metrics collector for database"""
-    global _global_metrics_collectors
-    if database not in _global_metrics_collectors:
-        _global_metrics_collectors[database] = DatabaseMetricsCollector(database)
-    return _global_metrics_collectors[database]
+    collectors = _get_global_metrics_collectors()
+    if database not in collectors:
+        collectors[database] = DatabaseMetricsCollector(database)
+    return collectors[database]
 
 
 def get_performance_logger(database: str = "mystocks") -> QueryPerformanceLogger:
     """Get performance logger for database"""
-    global _global_performance_loggers
-    if database not in _global_performance_loggers:
-        _global_performance_loggers[database] = QueryPerformanceLogger()
-    return _global_performance_loggers[database]
+    loggers = _get_global_performance_loggers()
+    if database not in loggers:
+        loggers[database] = QueryPerformanceLogger()
+    return loggers[database]
 
 
 @asynccontextmanager

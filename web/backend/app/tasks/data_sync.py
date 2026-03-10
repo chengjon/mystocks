@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 # 初始化数据管理器和数据源
 _unified_manager = None
-_data_sources = {}
+_data_sources = None
 
 
 def _get_unified_manager() -> MyStocksUnifiedManager:
@@ -31,6 +31,8 @@ def _get_unified_manager() -> MyStocksUnifiedManager:
 def _get_data_source(source_name: str):
     """获取数据源实例（单例模式）"""
     global _data_sources
+    if _data_sources is None:
+        _data_sources = {}
     if source_name not in _data_sources:
         if source_name == "akshare":
             _data_sources[source_name] = AkshareDataSource()

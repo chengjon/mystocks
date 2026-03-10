@@ -347,15 +347,18 @@ class DatabaseService:
 
 
 # 创建全局数据库服务实例（延迟初始化）
-db_service = DatabaseService()
+_db_service: Optional[DatabaseService] = None
 
 
 def get_db_service() -> DatabaseService:
     """获取数据库服务实例（单例模式，延迟初始化）"""
-    global db_service
-    if db_service is None:
-        db_service = DatabaseService()
-    return db_service
+    global _db_service
+    if _db_service is None:
+        _db_service = DatabaseService()
+    return _db_service
+
+
+db_service = get_db_service()
 
 
 # FastAPI 依赖注入函数 - Week 3 简化: 使用PostgreSQL

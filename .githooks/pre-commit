@@ -1,22 +1,180 @@
 #!/bin/bash
-# Pre-commit hook: directory governance gate
+# Pre-commit hook: directory governance + production Python guardrails + backend singleton None guard + UnifiedResponse contract guard + frontend/test file size guard + PM2 first-class gate
 # Install: git config core.hooksPath .githooks
 
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-if [[ "${DISABLE_DIR_STRUCTURE_CHECK:-0}" == "1" ]]; then
-  echo "⚠️  Directory governance check skipped via DISABLE_DIR_STRUCTURE_CHECK=1"
-  exit 0
-fi
+run_directory_governance() {
+  if [[ "${DISABLE_DIR_STRUCTURE_CHECK:-0}" == "1" ]]; then
+    echo "⚠️  Directory governance check skipped via DISABLE_DIR_STRUCTURE_CHECK=1"
+    return 0
+  fi
 
-if [[ "${SKIP:-}" == *"directory-governance"* ]]; then
-  echo "⚠️  Directory governance check skipped via SKIP=directory-governance"
-  exit 0
-fi
+  if [[ "${SKIP:-}" == *"directory-governance"* ]]; then
+    echo "⚠️  Directory governance check skipped via SKIP=directory-governance"
+    return 0
+  fi
 
-echo "🔍 Running directory governance check on staged changes..."
-bash "$PROJECT_ROOT/scripts/maintenance/check-structure.sh" "$PROJECT_ROOT" --staged --quiet
+  echo "🔍 Running directory governance check on staged changes..."
+  bash "$PROJECT_ROOT/scripts/maintenance/check-structure.sh" "$PROJECT_ROOT" --staged --quiet
+  echo "✅ Directory governance check passed"
+}
 
-echo "✅ Directory governance check passed"
+run_production_python_guardrails() {
+  if [[ "${DISABLE_PRODUCTION_PYTHON_GUARDRAILS:-0}" == "1" ]]; then
+    echo "⚠️  Production Python guardrails skipped via DISABLE_PRODUCTION_PYTHON_GUARDRAILS=1"
+    return 0
+  fi
+
+  if [[ "${SKIP:-}" == *"production-python-guardrails"* ]]; then
+    echo "⚠️  Production Python guardrails skipped via SKIP=production-python-guardrails"
+    return 0
+  fi
+
+  mapfile -t staged_python_files < <(
+    git -C "$PROJECT_ROOT" diff --cached --name-only --diff-filter=ACMR \
+      | grep -E '^(src|web/backend/app)/.*\.py$' || true
+  )
+
+  if [[ "${#staged_python_files[@]}" -eq 0 ]]; then
+    echo "ℹ️  No staged production Python files for guardrails"
+    return 0
+  fi
+
+  echo "🔍 Running production Python guardrails on staged changes..."
+  cmd=(python "$PROJECT_ROOT/scripts/compliance/production_python_guardrails.py" --root-dir "$PROJECT_ROOT" --format text)
+  for path in "${staged_python_files[@]}"; do
+    cmd+=(--path "$path")
+  done
+  "${cmd[@]}"
+  echo "✅ Production Python guardrails passed"
+}
+
+run_backend_singleton_none_guard() {
+  if [[ "${DISABLE_BACKEND_SINGLETON_NONE_GUARD:-0}" == "1" ]]; then
+    echo "⚠️  Backend singleton None guard skipped via DISABLE_BACKEND_SINGLETON_NONE_GUARD=1"
+    return 0
+  fi
+
+  if [[ "${SKIP:-}" == *"backend-singleton-none-guard"* ]]; then
+    echo "⚠️  Backend singleton None guard skipped via SKIP=backend-singleton-none-guard"
+    return 0
+  fi
+
+  mapfile -t staged_python_files < <(
+    git -C "$PROJECT_ROOT" diff --cached --name-only --diff-filter=ACMR \
+      | grep -E '^(src|web/backend/app)/.*\.py$' || true
+  )
+
+  if [[ "${#staged_python_files[@]}" -eq 0 ]]; then
+    echo "ℹ️  No staged backend Python files for singleton None guard"
+    return 0
+  fi
+
+  echo "🔍 Running backend singleton None guard on staged changes..."
+  cmd=(python "$PROJECT_ROOT/scripts/compliance/backend_singleton_none_guard.py" --root-dir "$PROJECT_ROOT" --format text)
+  for path in "${staged_python_files[@]}"; do
+    cmd+=(--path "$path")
+  done
+  "${cmd[@]}"
+  echo "✅ Backend singleton None guard passed"
+}
+
+run_unified_response_contract_guard() {
+  if [[ "${DISABLE_UNIFIED_RESPONSE_CONTRACT_GUARD:-0}" == "1" ]]; then
+    echo "⚠️  UnifiedResponse contract guard skipped via DISABLE_UNIFIED_RESPONSE_CONTRACT_GUARD=1"
+    return 0
+  fi
+
+  if [[ "${SKIP:-}" == *"unified-response-contract-guard"* ]]; then
+    echo "⚠️  UnifiedResponse contract guard skipped via SKIP=unified-response-contract-guard"
+    return 0
+  fi
+
+  mapfile -t staged_api_files < <(
+    git -C "$PROJECT_ROOT" diff --cached --name-only --diff-filter=ACMR \
+      | grep -E '^web/backend/app/api/.*\.py$' || true
+  )
+
+  if [[ "${#staged_api_files[@]}" -eq 0 ]]; then
+    echo "ℹ️  No staged backend API files for UnifiedResponse contract guard"
+    return 0
+  fi
+
+  echo "🔍 Running UnifiedResponse contract guard on staged changes..."
+  cmd=(python "$PROJECT_ROOT/scripts/compliance/unified_response_contract_guard.py" --root-dir "$PROJECT_ROOT" --format text)
+  for path in "${staged_api_files[@]}"; do
+    cmd+=(--path "$path")
+  done
+  "${cmd[@]}"
+  echo "✅ UnifiedResponse contract guard passed"
+}
+
+run_frontend_test_file_size_guard() {
+  if [[ "${DISABLE_FRONTEND_TEST_FILE_SIZE_GUARD:-0}" == "1" ]]; then
+    echo "⚠️  Frontend/test file size guard skipped via DISABLE_FRONTEND_TEST_FILE_SIZE_GUARD=1"
+    return 0
+  fi
+
+  if [[ "${SKIP:-}" == *"frontend-test-file-size-guard"* ]]; then
+    echo "⚠️  Frontend/test file size guard skipped via SKIP=frontend-test-file-size-guard"
+    return 0
+  fi
+
+  mapfile -t staged_frontend_test_files < <(
+    git -C "$PROJECT_ROOT" diff --cached --name-only --diff-filter=ACMR \
+      | grep -E '^((web/frontend/.*\.(vue|ts|js))|(tests/.*\.(ts|js)))$' || true
+  )
+
+  if [[ "${#staged_frontend_test_files[@]}" -eq 0 ]]; then
+    echo "ℹ️  No staged frontend/test files for file size guard"
+    return 0
+  fi
+
+  echo "🔍 Running frontend/test file size guard on staged changes..."
+  cmd=(python "$PROJECT_ROOT/scripts/compliance/file_size_guardrail.py" --root-dir "$PROJECT_ROOT" --format text --scope-root web/frontend --scope-root tests)
+  for path in "${staged_frontend_test_files[@]}"; do
+    cmd+=(--path "$path")
+  done
+  "${cmd[@]}"
+  echo "✅ Frontend/test file size guard passed"
+}
+
+run_pm2_first_class_gate() {
+  if [[ "${DISABLE_PM2_FIRST_CLASS_GATE:-0}" == "1" ]]; then
+    echo "⚠️  PM2 first-class gate skipped via DISABLE_PM2_FIRST_CLASS_GATE=1"
+    return 0
+  fi
+
+  if [[ "${SKIP:-}" == *"pm2-first-class-gate"* ]]; then
+    echo "⚠️  PM2 first-class gate skipped via SKIP=pm2-first-class-gate"
+    return 0
+  fi
+
+  mapfile -t staged_orchestration_files < <(
+    git -C "$PROJECT_ROOT" diff --cached --name-only --diff-filter=ACMR \
+      | grep -E '^((\.github/workflows/.*\.(yml|yaml))|(scripts/.*\.(sh|py))|(config/.*\.(js|json))|(ecosystem\.test\.config\.js)|(web/backend/ecosystem\.config\.js)|(web/frontend/ecosystem\.config\.js)|(web/backend/pm2\.config\.json))$' || true
+  )
+
+  if [[ "${#staged_orchestration_files[@]}" -eq 0 ]]; then
+    echo "ℹ️  No staged orchestration files for PM2 first-class gate"
+    return 0
+  fi
+
+  echo "🔍 Running PM2 first-class gate on staged changes..."
+  cmd=(python "$PROJECT_ROOT/scripts/compliance/pm2_first_class_gate.py" --root-dir "$PROJECT_ROOT" --format text)
+  for path in "${staged_orchestration_files[@]}"; do
+    cmd+=(--path "$path")
+  done
+  "${cmd[@]}"
+  echo "✅ PM2 first-class gate passed"
+}
+
+run_directory_governance
+run_production_python_guardrails
+run_backend_singleton_none_guard
+run_unified_response_contract_guard
+run_frontend_test_file_size_guard
+run_pm2_first_class_gate

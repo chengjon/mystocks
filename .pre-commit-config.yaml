@@ -1,19 +1,12 @@
 # Pre-commit configuration for MyStocks project
 # Install: pip install pre-commit && pre-commit install
 # Run manually: pre-commit run --all-files
-#
-# 核心策略：Black 强制格式化 + Ruff 补充修复（避免格式冲突）
-# 执行顺序：Black (format) → Ruff (selective fix) → Ruff (final check) → MyPy → Bandit → Safety
-#
-# 关键避坑点：
-#   ⚠️  Ruff 不使用 --fix 做完整格式化（避免与 Black 冲突）
-#   ✅   Black 负责所有格式化工作（punctual formatter）
-#   ✅   Ruff 仅做 lint 检查和轻量级修复（如未使用的导入）
-#   ✅   顺序：Black 先行 → Ruff 补充（避免 Ruff 格式被 Black 覆盖）
+# 维护要点：Black 负责格式化，Ruff 负责 lint，local hooks 负责治理门禁
+# 执行顺序：Black → Ruff selective fix → Ruff final check → MyPy → Bandit → Safety
 
 repos:
   # ============================================================================
-  # 第一步：Black 强制格式化（解决所有格式问题）
+  # 第一步：Black 格式化
   # ============================================================================
   # Black 的优势：
   #   - 非常固执的格式化规则（团队统一风格保证）
@@ -30,7 +23,7 @@ repos:
         args: [--line-length=120]
 
   # ============================================================================
-  # 第二步：Ruff 补充修复（只修复 lint 问题，不做格式化）
+  # 第二步：Ruff 选择性修复
   # ============================================================================
   # Ruff 的优势：
   #   - 快速的 linter（比 Flake8 快 30-100x）
@@ -54,7 +47,7 @@ repos:
         args: [--select, F401,F841, --fix]
 
   # ============================================================================
-  # 第三步：Ruff 最终检查（确保没有遗漏的 lint 问题）
+  # 第三步：Ruff 最终检查
   # ============================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.10
@@ -155,7 +148,7 @@ repos:
         name: No Log Warn
 
   # ============================================================================
-  # 第十步：文档位置检查
+  # 第十步：文档治理与主线提醒
   # ============================================================================
   # 检查文档是否放在了正确的位置
   # - 检测根目录下的.md文件（应移到docs/子目录）
@@ -181,7 +174,7 @@ repos:
         always_run: true
 
   # ============================================================================
-  # 第十一步：目录结构校验
+  # 第十一步：目录结构与生产 Python 门禁
   # ============================================================================
   - repo: local
     hooks:
@@ -192,9 +185,23 @@ repos:
         pass_filenames: false
         always_run: true
 
+      - id: production-python-guardrails
+        name: Production Python Guardrails
+        entry: >-
+          bash -lc 'args=(--format text); for file in "$@"; do args+=(--path "$file"); done;
+          python scripts/compliance/production_python_guardrails.py "${args[@]}"' --
+        language: system
+        files: ^((src/)|(web/backend/app/)).*\.py$
+        pass_filenames: true
+        stages: [pre-commit]
+
   # ============================================================================
-  # 第十二步：TypeScript 质量门禁 (新增)
+  # 第十二步：前端质量与配置门禁
   # ============================================================================
+  # 覆盖两类前端提交前校验：
+  # - TypeScript 类型质量检查
+  # - 路由与 pageConfig.ts 的一致性检查
+  # - ArtDeco token 使用合规检查
   - repo: local
     hooks:
       - id: typescript-check
@@ -205,9 +212,26 @@ repos:
         files: ^web/frontend/.*\.(ts|tsx|vue)$
         pass_filenames: false
 
-   # ============================================================================   # 第十二步：前端页面配置验证 (新增)   # ============================================================================   # 验证路由配置与 pageConfig.ts 的一致性   # - 检测新增路由是否缺少配置   # - 检测已删除路由的配置是否残留   # - 验证配置的必需字段完整性   # ============================================================================   - repo: local     hooks:       - id: page-config-validator         name: Page Configuration Validator         # 运行配置验证（不阻塞提交，仅警告）         entry: bash -c "cd web/frontend && node ../../scripts/hooks/check-page-config.mjs --warn || true"         language: system         files: ^web/frontend/src/(router/|config/)/         pass_filenames: false         stages: [pre-commit]         always_run: true # ================# ============================================================================
+      - id: page-config-validator
+        name: Page Configuration Validator
+        # 运行配置验证（不阻塞提交，仅警告）
+        entry: bash -c "cd web/frontend && node ../../scripts/hooks/check-page-config.mjs --warn || true"
+        language: system
+        files: ^web/frontend/src/(router/|config/)
+        pass_filenames: false
+        stages: [pre-commit]
+        always_run: true
+
+      - id: artdeco-token-lint
+        name: ArtDeco Token Lint
+        entry: bash -c "cd web/frontend && npm run lint:artdeco"
+        language: system
+        files: ^web/frontend/src/.*\.(vue|scss|css)$
+        pass_filenames: false
+        stages: [pre-commit]
+
   # ============================================================================
-  # 第十三步：硬编码治理门禁
+  # 第十三步：硬编码与迁移门禁
   # ============================================================================
   - repo: local
     hooks:
@@ -231,6 +255,97 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
+
+  # ============================================================================
+  # 第十四步：Readiness 与可观测性门禁
+  # ============================================================================
+  - repo: local
+    hooks:
+      - id: observability-readiness-gate
+        name: Observability Readiness Gate
+        entry: python scripts/compliance/readiness_contract_gate.py --format text
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
+  # ============================================================================
+  # 第十五步：App 路由纯净度门禁
+  # ============================================================================
+  - repo: local
+    hooks:
+      - id: app-route-purity-gate
+        name: App Route Purity Gate
+        entry: python scripts/compliance/app_route_purity_gate.py --format text
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
+  # ============================================================================
+  # 第十六步：业务 Tab Request ID 显位门禁
+  # ============================================================================
+  - repo: local
+    hooks:
+      - id: request-id-visibility-gate
+        name: Request ID Visibility Gate
+        entry: python scripts/compliance/request_id_visibility_gate.py --format text
+        language: system
+        files: ^web/frontend/src/views/artdeco-pages/[^/]+-tabs/[^/]+\.vue$
+        pass_filenames: true
+        stages: [pre-commit]
+
+  # ============================================================================
+  # 第十七步：后端单例 None 初始化门禁
+  # ============================================================================
+  - repo: local
+    hooks:
+      - id: backend-singleton-none-guard
+        name: Backend Singleton None Guard
+        entry: python scripts/compliance/backend_singleton_none_guard.py --format text --root-dir .
+        language: system
+        files: ^((src/)|(web/backend/app/)).*\.py$
+        pass_filenames: true
+        stages: [pre-commit]
+
+  # ============================================================================
+  # 第十八步：UnifiedResponse 响应契约门禁
+  # ============================================================================
+  - repo: local
+    hooks:
+      - id: unified-response-contract-guard
+        name: UnifiedResponse Contract Guard
+        entry: python scripts/compliance/unified_response_contract_guard.py --format text --root-dir .
+        language: system
+        files: ^web/backend/app/api/.*\.py$
+        pass_filenames: true
+        stages: [pre-commit]
+
+  # ============================================================================
+  # 第十九步：前端 / 测试文件大小门禁
+  # ============================================================================
+  - repo: local
+    hooks:
+      - id: frontend-test-file-size-guard
+        name: Frontend/Test File Size Guard
+        entry: python scripts/compliance/file_size_guardrail.py --format text --root-dir . --scope-root web/frontend --scope-root tests
+        language: system
+        files: ^((web/frontend/.*\.(vue|ts|js))|(tests/.*\.(ts|js)))$
+        pass_filenames: true
+        stages: [pre-commit]
+
+  # ============================================================================
+  # 第二十步：PM2 一等公民门禁
+  # ============================================================================
+  - repo: local
+    hooks:
+      - id: pm2-first-class-gate
+        name: PM2 First-Class Gate
+        entry: python scripts/compliance/pm2_first_class_gate.py --format text --root-dir .
+        language: system
+        files: ^((\.github/workflows/.*\.(yml|yaml))|(scripts/.*\.(sh|py))|(config/.*\.(js|json))|(ecosystem\.test\.config\.js)|(web/backend/ecosystem\.config\.js)|(web/frontend/ecosystem\.config\.js)|(web/backend/pm2\.config\.json))$
+        pass_filenames: true
+        stages: [pre-commit]
 
 # CI 配置
 # ============================================================================

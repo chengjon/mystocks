@@ -25,6 +25,7 @@ from .core.config import settings, validate_required_settings
 
 # 导入数据库连接管理
 from .core.database import close_all_connections, get_postgresql_engine
+from .core.readiness import collect_readiness_checks
 
 # 导入全局异常处理器 (Phase 3 - API契约标准化)
 from .core.exception_handler import register_exception_handlers
@@ -515,6 +516,39 @@ async def health_check(request: Request):
         message="系统健康检查完成",
         request_id=request_id,
     )
+
+
+@app.get("/health/ready")
+@app.get("/api/health/ready")
+async def readiness_check(request: Request):
+    """系统就绪探针，校验 PostgreSQL / Redis 连通性。"""
+    request_id = getattr(request.state, "request_id", None)
+
+    from .core.responses import create_unified_error_response, create_unified_success_response
+
+    ready, checks = collect_readiness_checks()
+    payload = {
+        "service": "mystocks-web-api",
+        "status": "ready" if ready else "not_ready",
+        "timestamp": time.time(),
+        "version": "1.0.0",
+        "checks": checks,
+    }
+
+    if ready:
+        return create_unified_success_response(
+            data=payload,
+            message="系统就绪检查完成",
+            request_id=request_id,
+        )
+
+    error_response = create_unified_error_response(
+        code=503,
+        message="系统未就绪",
+        request_id=request_id,
+    )
+    error_response.data = payload
+    return JSONResponse(status_code=503, content=error_response.model_dump(mode="json"))
 
 
 # Phase 5: Prometheus指标端点

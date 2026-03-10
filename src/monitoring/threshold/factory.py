@@ -2,6 +2,8 @@
 
 from .manager import IntelligentThresholdManager
 
+_intelligent_threshold_manager = None
+
 def get_intelligent_threshold_manager() -> IntelligentThresholdManager:
     """获取智能阈值管理器单例"""
     global _intelligent_threshold_manager

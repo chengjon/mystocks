@@ -31,7 +31,14 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # Rate limiting for metrics endpoints
-metrics_access_count = {}
+metrics_access_count: Dict[int, Dict[int, int]] | None = None
+
+
+def _get_metrics_access_count() -> Dict[int, Dict[int, int]]:
+    global metrics_access_count
+    if metrics_access_count is None:
+        metrics_access_count = {}
+    return metrics_access_count
 
 # ==================== 定义监控指标 ====================
 
@@ -117,21 +124,22 @@ def check_rate_limit(user_id: int, max_requests_per_minute: int = 60) -> bool:
     import time
 
     current_time = int(time.time() / 60)  # 分钟级时间窗口
+    access_count = _get_metrics_access_count()
 
-    if user_id not in metrics_access_count:
-        metrics_access_count[user_id] = {}
+    if user_id not in access_count:
+        access_count[user_id] = {}
 
-    if current_time not in metrics_access_count[user_id]:
-        metrics_access_count[user_id][current_time] = 0
+    if current_time not in access_count[user_id]:
+        access_count[user_id][current_time] = 0
 
-    metrics_access_count[user_id][current_time] += 1
+    access_count[user_id][current_time] += 1
 
     # 清理过期的时间窗口
-    for old_time in list(metrics_access_count[user_id].keys()):
+    for old_time in list(access_count[user_id].keys()):
         if current_time - old_time > 5:  # 保留5分钟内的记录
-            del metrics_access_count[user_id][old_time]
+            del access_count[user_id][old_time]
 
-    return metrics_access_count[user_id][current_time] <= max_requests_per_minute
+    return access_count[user_id][current_time] <= max_requests_per_minute
 
 
 def check_admin_privileges(user: User) -> bool:
@@ -426,12 +434,13 @@ async def reset_metrics(current_user: User = Depends(get_current_user)) -> APIRe
             raise ForbiddenException(detail="需要管理员权限访问此端点")
 
         # 清理访问频率限制数据
-        global metrics_access_count
-        metrics_access_count.clear()
+        access_count = _get_metrics_access_count()
+        reset_count = len(access_count)
+        access_count.clear()
 
         logger.info("Metrics reset by admin: {current_user.username}")
 
-        return APIResponse(success=True, data={"reset_count": len(metrics_access_count)}, message="监控指标已重置")
+        return APIResponse(success=True, data={"reset_count": reset_count}, message="监控指标已重置")
 
     except (BusinessException, ForbiddenException):
         raise

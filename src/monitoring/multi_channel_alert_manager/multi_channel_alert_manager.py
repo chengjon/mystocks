@@ -353,6 +353,9 @@ class MultiChannelAlertManager:
             return False
 
 
+_multi_channel_manager = None
+
+
 def get_multi_channel_alert_manager() -> MultiChannelAlertManager:
     """获取多渠道告警管理器单例"""
     global _multi_channel_manager
@@ -385,5 +388,3 @@ def add_log_alert_handler(name: str, log_config: LogConfig) -> bool:
     """添加日志告警处理器"""
     manager = get_multi_channel_alert_manager()
     return manager.add_log_handler(name, log_config)
-
-
