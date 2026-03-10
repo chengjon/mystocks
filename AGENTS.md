@@ -180,6 +180,16 @@ npm run pm2:logs                  # View logs
 - Implement retry logic for external API calls
 - Use context managers for resource management
 
+### Cleanup and Deletion Decision Standard
+- **“未引用 / 未使用” 不等于“可删除”**；禁止仅凭静态搜索、IDE 提示、lint 告警或“当前文件内未使用”就直接删除文件、模块、组件、函数、测试、配置或导入。
+- 发起任何“清理 / 删除 / 裁剪”前，必须同时完成两层判定：
+  1. **代码路径判定**：确认是否仍被路由、菜单、注册表、动态导入、构建脚本、样式注入、副作用导入、兼容分支、特性开关、文档约定或运行时字符串映射使用。
+  2. **功能树判定**：确认该对象在当前项目功能树中的归属与状态，至少标记为以下之一：`有效`、`失效但兼容保留`、`实验/灰度`、`重复冗余`、`待判定`。
+- 只有在 **代码路径可安全移除** 且 **功能树状态明确为“重复冗余”或“正式下线”** 时，才允许删除。
+- 若功能仍有效、可能恢复、承担兼容职责，或状态无法明确判定，则默认 **不删除**；优先选择补注释、补文档、登记技术债、标记 `deprecated`、或在汇报中说明保留原因。
+- 对于 `unused import`、未使用局部变量、未使用解构项等“看起来可机械清理”的项，也必须先确认其不承担 **副作用初始化、类型约束、样式加载、注册触发、polyfill、扩展槽位** 等隐含职责；无法证明时不得删除。
+- 当提交包含清理/删除动作时，提交说明或任务汇报中应简要写明：**清理对象、所属功能节点、状态判定、删除依据、未删除原因（如有）**。
+
 ### Project Structure
 ```
 /opt/claude/mystocks_spec/
@@ -384,6 +394,7 @@ tests/
 - “零、统一治理与审批门禁”（含 `Proposal-First Rule`）
 - “一、推荐开发流程：六步走战略”
 - “二、技术工程红线 -> 3. 环境一致性”（Docker/PM2 一等公民）
+- 前端变更卫生 / 微提交规范：`docs/guides/frontend-change-hygiene-and-micro-commit-guide.md`
 
 ---
 
@@ -544,7 +555,7 @@ python scripts/database/check_postgresql_tables.py
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **mystocks_spec** (80403 symbols, 187555 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **mystocks_spec** (80575 symbols, 187870 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 

@@ -290,9 +290,21 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
 - 优先使用显式类型、接口、泛型、联合类型或 `unknown`，禁止在业务代码中新增无说明的裸 `any`
 - 自动生成文件、类型声明文件、兼容层代码、测试代码可按实际情况豁免，但应尽量缩小 `any` 的影响范围并说明原因
 
+#### 清理 / 删除判定标准（强制）
+
+- **“未引用 / 未使用” 不等于“可删除”**。禁止仅凭静态搜索结果、编辑器提示、lint 报警或“当前文件内未使用”就直接删除文件、模块、组件、函数、测试、配置或导入。
+- 在执行任何清理、删除、裁剪前，必须同时完成两类判定：
+  1. **代码路径判定**：核查其是否仍被路由、菜单、注册表、动态导入、构建脚本、样式副作用、兼容分支、特性开关、运行时字符串映射或文档约定使用。
+  2. **功能树判定**：核查其在当前项目功能树中的归属与状态，并明确标记为：`有效`、`失效但兼容保留`、`实验/灰度`、`重复冗余`、`待判定` 之一。
+- 只有当 **代码路径已证明可安全移除**，且 **功能树状态明确为“重复冗余”或“正式下线”** 时，才允许删除。
+- 若该对象仍承载有效功能、兼容职责、实验用途，或功能状态无法确认，则默认 **不删除**；优先采用补文档、补注释、登记技术债、标记弃用、或在任务汇报中说明保留原因。
+- 对 `unused import`、未使用局部变量、未使用解构项等低层级清理，也必须确认其不承担 **副作用初始化、样式加载、类型约束、自动注册、polyfill、扩展占位** 等隐含职责；无法证明时不得删除。
+- 涉及清理 / 删除的提交、`TASK-REPORT` 或最终汇报，应至少说明：**清理对象、所属功能节点、状态判定、删除依据、保留原因（如适用）**。
+
 #### 文档与维护工作流
 
 - 文档放在 `docs/{guides,api,architecture,operations,testing,reports,archive}/`，命名使用 `kebab-case`
+- 前端变更卫生 / 微提交规范：`docs/guides/frontend-change-hygiene-and-micro-commit-guide.md`
 - 运行索引更新：`python scripts/tools/docs_indexer.py --categories`
 - 技术债治理执行章程：`docs/guides/technical-debt-governance-charter-v1.md`（门禁、基线、豁免与周报模板）
 - TypeScript 修复遵循三原则，并参考：
@@ -387,7 +399,7 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **mystocks_spec** (80403 symbols, 187555 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **mystocks_spec** (80575 symbols, 187870 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
