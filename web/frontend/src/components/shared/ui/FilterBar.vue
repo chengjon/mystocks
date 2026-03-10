@@ -86,7 +86,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
+import { reactive, watch } from 'vue'
 import { Search, RefreshLeft } from '@element-plus/icons-vue'
 
 export interface FilterOption {
