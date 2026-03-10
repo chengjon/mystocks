@@ -15,6 +15,7 @@
 创建时间: 2026-01-02
 """
 
+import logging
 import os
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -25,6 +26,8 @@ from pydantic import BaseModel
 from app.core.config import settings
 from app.core.responses import ErrorCodes, create_error_response
 from app.core.security import verify_token
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/data-sources", tags=["数据源管理"])
 
@@ -684,10 +687,10 @@ def _check_data_quality(data: Any, config: Dict) -> Dict[str, Any]:
 @router.on_event("startup")
 async def startup_event():
     """API启动事件"""
-    print("✅ 数据源管理API已启动")
+    logger.info("数据源管理API已启动")
 
 
 @router.on_event("shutdown")
 async def shutdown_event():
     """API关闭事件"""
-    print("👋 数据源管理API已关闭")
+    logger.info("数据源管理API已关闭")
