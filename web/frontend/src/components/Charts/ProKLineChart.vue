@@ -131,7 +131,41 @@
 <script setup lang="ts">
 import { useProKLineChart } from './composables/useProKLineChart'
 
-const { props, emit, chartContainer, klineRef, oscillatorRef, chartInstance, oscillatorInstance, selectedSymbol, selectedInterval, selectedAdjust, showOscillatorPanel, activeMainIndicators, activeOscillatorIndicator, availableSymbols, intervals, mainIndicators, oscillatorIndicators, latestClose, latestChange, latestChangePercent, latestHigh, latestLow, latestVolume, formatVolume, initChart, updateChartData, registerIndicators, toggleMainIndicator, initOscillatorChart, updateOscillatorIndicator, onSymbolChange, onIntervalChange, onAdjustChange, toggleOscillatorPanel, handleZoomIn, handleZoomOut, handleResetView, handleRetry, handleResize, loading, error, limitData, klineData } = useProKLineChart()
+const {
+  chartContainer,
+  klineRef,
+  oscillatorRef,
+  selectedSymbol,
+  selectedInterval,
+  selectedAdjust,
+  showOscillatorPanel,
+  activeMainIndicators,
+  activeOscillatorIndicator,
+  availableSymbols,
+  intervals,
+  mainIndicators,
+  oscillatorIndicators,
+  latestClose,
+  latestChange,
+  latestChangePercent,
+  latestHigh,
+  latestLow,
+  latestVolume,
+  formatVolume,
+  toggleMainIndicator,
+  updateOscillatorIndicator,
+  onSymbolChange,
+  onIntervalChange,
+  onAdjustChange,
+  toggleOscillatorPanel,
+  handleZoomIn,
+  handleZoomOut,
+  handleResetView,
+  handleRetry,
+  loading,
+  error,
+  limitData
+} = useProKLineChart()
 </script>
 
 <style scoped>

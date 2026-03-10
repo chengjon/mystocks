@@ -3,29 +3,30 @@
 // that are best handled with type assertions. Type safety is maintained through
 // runtime checks and the library's own type guards.
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
-import { init, dispose, registerIndicator, type Chart as KLineChartsChart } from 'klinecharts';
+import { init, registerIndicator, type Chart as KLineChartsChart } from 'klinecharts';
 import { useKlineChart } from '@/composables/useKlineChart';
-import { klineCache } from '@/utils/cacheManager';
-import { calculateIndicator, type IndicatorType } from '@/utils/indicator/mainIndicator';
-import { calculateOscillator, type OscillatorType } from '@/utils/indicator/oscillator';
-import type { KLineData, IntervalType, AdjustType, StopLimitData } from '@/types/kline';
-import type { Chart, LayoutChildType, ActionType, LayoutOptions } from '@/types/klinecharts';
+import type { KLineData, IntervalType, AdjustType } from '@/types/kline';
+import type { Chart } from '@/types/klinecharts';
 import '@/styles/kline-chart.scss';
+import { createMainChartConfig, createOscillatorChartConfig } from './useProKLineChart.chart-config.ts';
+import {
+  availableSymbols,
+  defaultAdjustType,
+  defaultOscillatorIndicator,
+  defaultProKLineChartProps,
+  formatKLineVolume,
+  intervals,
+  mainIndicators,
+  oscillatorIndicators,
+  type ProKLineChartProps
+} from './useProKLineChart.options.ts';
 
 // Type alias for compatibility
 type KLineChart = KLineChartsChart;
 
 export function useProKLineChart() {
 
-const props = withDefaults(defineProps<{
-  initialSymbol?: string;
-  initialInterval?: IntervalType;
-  useMock?: boolean;
-}>(), {
-  initialSymbol: '000001.SZ',
-  initialInterval: '1d',
-  useMock: true
-});
+const props = withDefaults(defineProps<ProKLineChartProps>(), defaultProKLineChartProps);
 
 const emit = defineEmits<{
   (e: 'dataLoaded', data: KLineData[]): void;
@@ -52,40 +53,10 @@ const {
 
 const selectedSymbol = ref(props.initialSymbol);
 const selectedInterval = ref<IntervalType>(props.initialInterval);
-const selectedAdjust = ref<AdjustType>('qfq');
+const selectedAdjust = ref<AdjustType>(defaultAdjustType);
 const showOscillatorPanel = ref(false);
 const activeMainIndicators = ref<Map<string, boolean>>(new Map());
-const activeOscillatorIndicator = ref('MACD');
-
-const availableSymbols = [
-  { code: '000001.SZ', name: '平安银行' },
-  { code: '600519.SH', name: '贵州茅台' },
-  { code: '000001.SH', name: '上证指数' },
-  { code: '300750.SZ', name: '宁德时代' }
-];
-
-const intervals = [
-  { value: '1m', label: '1分' },
-  { value: '5m', label: '5分' },
-  { value: '15m', label: '15分' },
-  { value: '1h', label: '1时' },
-  { value: '4h', label: '4时' },
-  { value: '1d', label: '日' },
-  { value: '1w', label: '周' },
-  { value: '1M', label: '月' }
-];
-
-const mainIndicators = [
-  { key: 'MA', label: 'MA' },
-  { key: 'BOLL', label: 'BOLL' },
-  { key: 'EMA', label: 'EMA' }
-];
-
-const oscillatorIndicators = [
-  { key: 'MACD', label: 'MACD' },
-  { key: 'RSI', label: 'RSI' },
-  { key: 'KDJ', label: 'KDJ' }
-];
+const activeOscillatorIndicator = ref(defaultOscillatorIndicator);
 
 const latestClose = computed(() => latestPrice.value?.close ?? null);
 const latestChange = computed(() => priceChange.value?.change ?? null);
@@ -94,79 +65,12 @@ const latestHigh = computed(() => latestPrice.value?.high ?? null);
 const latestLow = computed(() => latestPrice.value?.low ?? null);
 const latestVolume = computed(() => latestPrice.value?.volume ?? 0);
 
-const formatVolume = (vol: number): string => {
-  if (vol >= 100000000) return (vol / 100000000).toFixed(2) + '亿';
-  if (vol >= 10000) return (vol / 10000).toFixed(2) + '万';
-  return vol.toLocaleString();
-};
+const formatVolume = formatKLineVolume;
 
 const initChart = () => {
   if (!klineRef.value) return;
 
-  const chartStyles = {
-    grid: {
-      show: true,
-      horizontal: { show: true, size: 1, color: '#1A1A1A' },
-      vertical: { show: true, size: 1, color: '#1A1A1A' }
-    },
-    candle: {
-      type: 'candle_solid' as const,
-      bar: {
-        upColor: '#2DC08E',
-        downColor: '#F92855',
-        upBorderColor: '#2DC08E',
-        downBorderColor: '#F92855',
-        upWickColor: '#2DC08E',
-        downWickColor: '#F92855'
-      }
-    },
-    volume: {
-      barColor: {
-        upColor: 'rgb(45 192 142 / 40%)',
-        downColor: 'rgb(249 40 85 / 40%)'
-      }
-    },
-    xAxis: {
-      axisLine: { show: true, color: '#333333' },
-      tickLine: { show: true, color: '#333333' },
-      tickText: { color: '#888888', size: 11 }
-    },
-    yAxis: {
-      axisLine: { show: true, color: '#333333' },
-      tickLine: { show: true, color: '#333333' },
-      tickText: { color: '#888888', size: 11 }
-    },
-    crosshair: {
-      show: true,
-      horizontal: { show: true, lineColor: '#D4AF37', lineWidth: 1, lineStyle: 'dashed' as const },
-      vertical: { show: true, lineColor: '#D4AF37', lineWidth: 1, lineStyle: 'dashed' as const }
-    },
-    tooltip: {
-      show: true,
-      type: 'standard' as const,
-      labels: ['时间', '开盘', '最高', '最低', '收盘', '成交量'],
-      labelColor: '#F2F0E4',
-      labelColorDot: '#D4AF37'
-    }
-  };
-
-  chartInstance = init(klineRef.value, {
-    locale: 'zh-CN',
-    styles: chartStyles as unknown,  // 类型断言绕过 DeepPartial 推断限制
-    layout: [
-      { type: 'candle' as LayoutChildType, height: '65%' } as LayoutOptions,
-      { type: 'volume' as LayoutChildType, height: '15%' } as LayoutOptions,
-      { type: 'xAxis' as LayoutChildType, height: 30 } as LayoutOptions
-    ]
-  }) as Chart;
-
-  try {
-    chartInstance.subscribeAction('onZoom' as ActionType, () => {
-      console.log('Zoom event');
-    });
-  } catch (e) {
-    console.warn('Failed to subscribe zoom:', e);
-  }
+  chartInstance = init(klineRef.value, createMainChartConfig()) as Chart;
 };
 
 const updateChartData = () => {
@@ -421,15 +325,7 @@ const initOscillatorChart = () => {
       }) as unknown
     });
 
-    oscillatorInstance = init(oscillatorRef.value, {
-      locale: 'zh-CN',
-      styles: {
-        grid: { show: true, horizontal: { show: true, size: 1, color: '#1A1A1A' }, vertical: { show: false } },
-        xAxis: { axisLine: { show: true, color: '#333333' }, tickText: { color: '#888888' } },
-        yAxis: { axisLine: { show: true, color: '#333333' }, tickText: { color: '#888888' } }
-      },
-      layout: [{ type: 'xAxis' as LayoutChildType, height: 25 } as LayoutOptions]
-    }) as Chart;
+    oscillatorInstance = init(oscillatorRef.value, createOscillatorChartConfig()) as Chart;
 
     updateOscillatorIndicator();
   } catch (e) {
@@ -518,10 +414,10 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize);
   if (chartInstance) {
-    try { chartInstance.dispose(); } catch (e) {}
+    try { chartInstance.dispose(); } catch (_error) { void _error; }
   }
   if (oscillatorInstance) {
-    try { oscillatorInstance.dispose(); } catch (e) {}
+    try { oscillatorInstance.dispose(); } catch (_error) { void _error; }
   }
 });
 
