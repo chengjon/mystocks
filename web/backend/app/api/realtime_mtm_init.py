@@ -132,5 +132,5 @@ if __name__ == "__main__":
 
     adapter = get_realtime_mtm_adapter()
     if adapter:
-        print("✅ Real-time MTM adapter ready")
-        print(f"📊 Metrics: {adapter.get_metrics()}")
+        logger.info("Real-time MTM adapter ready")
+        logger.info("Metrics: %s", adapter.get_metrics())
