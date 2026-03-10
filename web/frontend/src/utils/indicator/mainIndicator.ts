@@ -1,4 +1,4 @@
-import type { KLineData } from '@/types/kline';
+import type { KLineData } from '@/types/kline.ts';
 
 export type IndicatorType = 'MA' | 'EMA' | 'BOLL' | 'SAR' | 'KAMA' | 'WMA' | 'DEMA' | 'TEMA';
 
