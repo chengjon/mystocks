@@ -677,46 +677,8 @@ class MonitoringPostgreSQLAccess:
         return None
 
 
-# =====================================================
-# 全局单例
-# =====================================================
-
-_postgres_async_instance: Optional[MonitoringPostgreSQLAccess] = None
-
-
-def get_postgres_async() -> MonitoringPostgreSQLAccess:
-    """
-    获取全局单例实例
-
-    Returns:
-        MonitoringPostgreSQLAccess 实例
-    """
-    global _postgres_async_instance
-    if _postgres_async_instance is None:
-        _postgres_async_instance = MonitoringPostgreSQLAccess()
-    return _postgres_async_instance
-
-
-async def initialize_postgres_async() -> bool:
-    """
-    初始化全局单例
-
-    Returns:
-        是否成功
-    """
-    instance = get_postgres_async()
-    try:
-        await instance.initialize()
-        return True
-    except Exception:
-        logger.error("❌ 异步数据库初始化失败: %(e)s")
-        return False
-
-
-async def close_postgres_async():
-    """
-    关闭全局单例
-    """
-    instance = get_postgres_async()
-    await instance.close()
-    logger.info("✅ 异步数据库连接已关闭")
+from src.monitoring.infrastructure._postgresql_async_v3_singleton import (
+    close_postgres_async,
+    get_postgres_async,
+    initialize_postgres_async,
+)
