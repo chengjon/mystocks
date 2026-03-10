@@ -1,4 +1,4 @@
-import type { KLineData } from '@/types/kline';
+import type { KLineData } from '@/types/kline.ts';
 
 export interface AdjustInfo {
   type: 'qfq' | 'hfq' | 'none';
