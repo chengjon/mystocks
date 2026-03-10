@@ -11,6 +11,7 @@ import json
 import logging
 import os
 import shutil
+import subprocess
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
@@ -327,21 +328,33 @@ class BackupManager:
             backup_file = self.postgresql_backup_dir / f"{backup_id}.sql"
 
             # 构建 pg_dump 命令
-            pg_dump_cmd = (
-                f"pg_dump "
-                f"--host {os.getenv('POSTGRESQL_HOST', 'localhost')} "
-                f"--port {os.getenv('POSTGRESQL_PORT', '5432')} "
-                f"--username {os.getenv('POSTGRESQL_USER', 'postgres')} "
-                f"--format plain "
-                f"--file {backup_file} "
-                f"{os.getenv('POSTGRESQL_DATABASE', 'mystocks')}"
-            )
+            pg_dump_cmd = [
+                "pg_dump",
+                "--host",
+                os.getenv("POSTGRESQL_HOST", "localhost"),
+                "--port",
+                os.getenv("POSTGRESQL_PORT", "5432"),
+                "--username",
+                os.getenv("POSTGRESQL_USER", "postgres"),
+                "--format",
+                "plain",
+                "--file",
+                str(backup_file),
+                os.getenv("POSTGRESQL_DATABASE", "mystocks"),
+            ]
 
             # 执行备份
-            result = os.system(f"PGPASSWORD={os.getenv('POSTGRESQL_PASSWORD')} {pg_dump_cmd}")
+            env = os.environ.copy()
+            password = os.getenv("POSTGRESQL_PASSWORD")
+            if password:
+                env["PGPASSWORD"] = password
 
-            if result != 0:
-                raise Exception(f"pg_dump failed with exit code {result}")
+            subprocess.run(
+                pg_dump_cmd,
+                env=env,
+                check=True,
+                shell=False,
+            )
 
             # 获取备份大小
             original_size = backup_file.stat().st_size
