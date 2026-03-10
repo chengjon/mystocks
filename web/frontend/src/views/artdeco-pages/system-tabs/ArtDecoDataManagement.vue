@@ -53,24 +53,39 @@ import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
 import { monitoringApi } from '@/api/index';
 import { ArtDecoCard, ArtDecoButton } from '@/components/artdeco';
 
-const { loading, lastRequestId, exec } = useArtDecoApi();
-const configItems = ref<any[]>([]);
+interface DataSourceConfigItem {
+  name?: string;
+  source_name?: string;
+  enabled?: boolean;
+  endpoint?: string;
+  url?: string;
+}
+
+interface DataSourceConfigPayload {
+  data?: DataSourceConfigItem[];
+  request_id?: string;
+}
+
+const { loading, exec } = useArtDecoApi();
+const configItems = ref<DataSourceConfigItem[]>([]);
 const requestId = ref<string>('');
-const originalConfig = ref<any[]>([]);
+const originalConfig = ref<DataSourceConfigItem[]>([]);
 
 const fetchConfig = async () => {
   const data = await exec(() => monitoringApi.getDataSourceConfig(), {
     errorMsg: '获取数据源配置失败'
   });
   if (data) {
-    const items = (Array.isArray(data) ? data : (data as any).data || []) as any[];
-    configItems.value = items.map((item: any) => ({
+    const items = Array.isArray(data) ? data : (data as DataSourceConfigPayload).data || [];
+    configItems.value = items.map((item: DataSourceConfigItem) => ({
       name: item.name || item.source_name || 'Unknown',
       enabled: item.enabled !== false,
       endpoint: item.endpoint || item.url || 'N/A'
     }));
     originalConfig.value = JSON.parse(JSON.stringify(configItems.value));
-    requestId.value = (data as any).request_id || `cfg-${Date.now()}`;
+    requestId.value = Array.isArray(data)
+      ? `cfg-${Date.now()}`
+      : (data as DataSourceConfigPayload).request_id || `cfg-${Date.now()}`;
   }
 };
 
@@ -80,7 +95,7 @@ const toggleConfig = (idx: number) => {
 
 const saveConfig = async () => {
   const payload = {
-    sources: configItems.value.map((item: any) => ({
+    sources: configItems.value.map((item: DataSourceConfigItem) => ({
       name: item.name,
       enabled: item.enabled,
       endpoint: item.endpoint
