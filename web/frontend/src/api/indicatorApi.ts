@@ -1,8 +1,8 @@
-import apiClient from './apiClient';
+import apiClient from './apiClient.ts';
 import type {
   OverlayIndicatorResponse,
   OscillatorIndicatorResponse,
-} from '@/api/types/additional-types';
+} from '@/api/types/additional-types.ts';
 
 export interface IndicatorRequest {
   symbol: string;
