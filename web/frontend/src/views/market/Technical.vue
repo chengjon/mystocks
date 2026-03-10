@@ -239,7 +239,6 @@ const {
   handlePeriodChange,
   handleChartTypeChange,
   refreshData,
-  fetchChartData,
   handleIndicatorToggle,
   formatParams,
   removeIndicator

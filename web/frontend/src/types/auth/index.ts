@@ -6,7 +6,6 @@
  */
 
 import type { UnifiedResponse } from '../common/response';
-import type { LoginResponse, UserProfile } from '../user';
 
 /**
  * JWT令牌信息

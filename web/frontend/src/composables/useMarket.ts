@@ -7,7 +7,6 @@
 
 import { ref, readonly, onMounted } from 'vue';
 import { marketService } from '@/api/services/marketService';
-import { MarketAdapter } from '@/api/adapters/marketAdapter';
 import { getCache } from '@/utils/cache/part-1';
 import type { MarketOverviewVM, FundFlowChartPoint, KLineChartData } from '@/api/types/extensions';
 

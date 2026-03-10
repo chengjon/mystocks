@@ -51,7 +51,6 @@
 <script setup lang="ts">
     import { ref, computed, type Component } from 'vue'
     import { MENU_CONFIG_MAP, type MenuConfigMap } from '@/layouts/archive/MenuConfig'
-    import type { MenuItem } from '@/types/common'
     import {
         TrendCharts,
         Grid,
