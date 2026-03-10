@@ -4,115 +4,26 @@
 // 使用方案A的替代API替换缺失的端点
 //
 
-import { apiGet, apiPost } from '@/api/apiClient';
+import { apiGet, apiPost } from '@/api/apiClient.ts';
 import {
   MarketOverviewDetailedResponse,
-  WatchlistSummary,
   PortfolioSummary,
-  RiskAlertSummary
-} from '@/api/types/common';
-
-// Local UnifiedResponse type
-export interface UnifiedResponse<T> {
-  success: boolean;
-  code: number;
-  message: string;
-  data: T;
-  timestamp: string;
-  request_id: string;
-  errors: Record<string, unknown> | null;
-}
-
-// ChartDataPoint type definition
-export interface ChartDataPoint {
-  name: string;
-  value: number;
-  change_percent: number;
-}
-
-// Interface for dashboard summary data
-export interface DashboardSummary {
-  marketOverview?: MarketOverviewDetailedResponse;
-  watchlist?: WatchlistSummary;
-  portfolio?: PortfolioSummary;
-  riskAlerts?: RiskAlertSummary;
-}
-
-export interface IndustryConceptData {
-  industry_name: string;
-  avg_change: number;
-  stock_count: number;
-}
-
-// API Response type definitions
-interface EtfItem {
-  symbol: string;
-  name: string;
-  latest_price?: number;
-  change_percent?: number;
-  change_amount?: number;
-  volume?: number;
-  amount?: number;
-  created_at?: string;
-  trade_date?: string;
-}
-
-interface MarketOverviewData {
-  up_count?: number;
-  down_count?: number;
-  flat_count?: number;
-  total_volume?: number;
-  total_turnover?: number;
-  top_gainers?: unknown[];
-  top_losers?: unknown[];
-}
-
-interface PortfolioData {
-  total_value?: number;
-  total_cost?: number;
-  profit_loss?: number;
-  profit_loss_percent?: number;
-  positions?: unknown[];
-}
-
-interface IndustryPerformanceItem {
-  name?: string;
-  industry_name?: string;
-  change_percent?: number;
-  avg_change?: number;
-  stock_count?: number;
-}
-
-interface SectorFundFlowItem {
-  sector_name?: string;
-  sector_code?: string;
-  main_net_inflow?: number;
-  main_net_inflow_rate?: number;
-}
-
-interface ConceptStockItem {
-  concept_name?: string;
-  name?: string;
-}
-
-interface StrategyItem {
-  status?: string;
-  is_active?: boolean;
-}
-
-interface StockSearchItem {
-  code?: string;
-  symbol?: string;
-  name?: string;
-  price?: number;
-  latest_price?: number;
-  change_percent?: number;
-  chg_pct?: number;
-}
-
-interface WencaiResponse {
-  results?: StockSearchItem[];
-}
+} from '@/api/types/common.ts';
+import type {
+  ChartDataPoint,
+  ConceptStockItem,
+  DashboardSummary,
+  EtfItem,
+  IndustryConceptData,
+  IndustryPerformanceItem,
+  MarketOverviewData,
+  PortfolioData,
+  SectorFundFlowItem,
+  StockSearchItem,
+  StrategyItem,
+  UnifiedResponse,
+  WencaiResponse
+} from './dashboardService.types.ts';
 
 // Helper to create UnifiedResponse
 function createUnifiedResponse<T>(data: T, success = true): UnifiedResponse<T> {
