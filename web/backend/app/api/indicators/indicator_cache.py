@@ -12,12 +12,8 @@ Phase 4C Enhanced - 企业级技术指标计算服务
 """
 
 import asyncio
-import hashlib
-import json
 import time
-from collections import defaultdict
 from datetime import datetime, timezone
-from functools import wraps
 from typing import Dict, List, Optional, Union
 
 import numpy as np
@@ -26,6 +22,7 @@ from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel, Field, constr, validator
 
 from app.api.auth import get_current_active_user
+from app.api.indicators.indicator_runtime_support import IndicatorCache, RateLimiter, indicator_cache, rate_limit
 from app.core.exceptions import BusinessException, ForbiddenException, NotFoundException, ValidationException
 from app.core.responses import create_success_response
 from app.core.security import User
@@ -46,138 +43,6 @@ from app.services.indicator_registry import IndicatorCategory, get_indicator_reg
 
 logger = structlog.get_logger()
 router = APIRouter()
-
-class IndicatorCache:
-    """技术指标计算结果缓存"""
-
-    def __init__(self, max_size: int = 1000, ttl: int = 3600):
-        self.cache: Dict[str, Dict] = {}
-        self.max_size = max_size
-        self.ttl = ttl  # 缓存时间（秒）
-        self.access_times: Dict[str, datetime] = {}
-
-    def _generate_cache_key(self, symbol: str, start_date: str, end_date: str, indicators: List[Dict]) -> str:
-        """生成缓存键"""
-        cache_data = {
-            "symbol": symbol,
-            "start_date": start_date,
-            "end_date": end_date,
-            "indicators": sorted(indicators, key=lambda x: x["abbreviation"]),
-        }
-        cache_str = json.dumps(cache_data, sort_keys=True)
-        return hashlib.md5(cache_str.encode()).hexdigest()
-
-    def get(self, cache_key: str) -> Optional[Dict]:
-        """获取缓存结果"""
-        if cache_key not in self.cache:
-            return None
-
-        cache_entry = self.cache[cache_key]
-
-        # 检查是否过期
-        if (datetime.now(timezone.utc) - cache_entry["timestamp"]).seconds > self.ttl:
-            self.remove(cache_key)
-            return None
-
-        # 更新访问时间
-        self.access_times[cache_key] = datetime.now(timezone.utc)
-        return cache_entry["data"]
-
-    def set(self, cache_key: str, data: Dict):
-        """设置缓存结果"""
-        # 检查缓存大小，如果超过限制则清理最旧的条目
-        if len(self.cache) >= self.max_size:
-            self._cleanup_old_entries()
-
-        self.cache[cache_key] = {"data": data, "timestamp": datetime.now(timezone.utc)}
-        self.access_times[cache_key] = datetime.now(timezone.utc)
-
-    def remove(self, cache_key: str):
-        """移除缓存条目"""
-        self.cache.pop(cache_key, None)
-        self.access_times.pop(cache_key, None)
-
-    def _cleanup_old_entries(self):
-        """清理最旧的缓存条目"""
-        if not self.access_times:
-            return
-
-        # 找到最旧的条目
-        oldest_key = min(self.access_times.keys(), key=lambda k: self.access_times[k])
-        self.remove(oldest_key)
-
-    def clear(self):
-        """清空缓存"""
-        self.cache.clear()
-        self.access_times.clear()
-
-    def get_stats(self) -> Dict:
-        """获取缓存统计信息"""
-        return {
-            "size": len(self.cache),
-            "max_size": self.max_size,
-            "ttl": self.ttl,
-            "hit_rate": getattr(self, "_hit_count", 0) / max(getattr(self, "_total_requests", 1), 1),
-        }
-
-
-class RateLimiter:
-    """技术指标API速率限制器"""
-
-    def __init__(self):
-        self.requests = defaultdict(list)
-
-    def is_allowed(self, key: str, limit: int, window: int) -> bool:
-        """检查是否允许请求"""
-        now = datetime.now(timezone.utc)
-
-        # 清理过期的请求记录
-        self.requests[key] = [req_time for req_time in self.requests[key] if (now - req_time).seconds < window]
-
-        # 检查是否超过限制
-        if len(self.requests[key]) >= limit:
-            return False
-
-        # 记录当前请求
-        self.requests[key].append(now)
-        return True
-
-
-def rate_limit(limit: int, window: int):
-    """速率限制装饰器"""
-
-    def decorator(func):
-        @wraps(func)
-        async def wrapper(*args, **kwargs):
-            current_user = None
-            for arg in args:
-                if hasattr(arg, "id"):
-                    current_user = arg
-                    break
-
-            if not current_user:
-                for key, value in kwargs.items():
-                    if hasattr(value, "id"):
-                        current_user = value
-                        break
-
-            if current_user:
-                user_key = f"indicators_user_{current_user.id}"
-            else:
-                user_key = "indicators_anonymous"
-
-            if not rate_limiter.is_allowed(user_key, limit, window):
-                raise BusinessException(
-                    detail=f"技术指标计算请求过于频繁，请在{window}秒后重试",
-                    status_code=429,
-                    error_code="RATE_LIMIT_EXCEEDED",
-                )
-
-            return await func(*args, **kwargs)
-
-        return wrapper
-
-    return decorator
 
 
 class IndicatorCalculateBatchRequest(BaseModel):
@@ -820,5 +685,3 @@ async def clear_cache(
     except Exception as e:
         logger.error("缓存清理失败", user_id=current_user.id, error=str(e), exc_info=True)
         raise BusinessException(detail=f"缓存清理失败: {str(e)}", status_code=500, error_code="CACHE_CLEANUP_FAILED")
-
-
