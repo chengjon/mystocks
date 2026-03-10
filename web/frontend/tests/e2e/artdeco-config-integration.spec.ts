@@ -146,7 +146,7 @@ test.describe("ArtDeco Configuration Integration", () => {
 
   test("renders main layout container for domain entry routes", async ({ page }) => {
     const domainRouteChecks = [
-      { path: "/dealing-room", selector: "main.artdeco-main" },
+      { path: "/dashboard", selector: "main.artdeco-main" },
       { path: "/market/realtime", selector: "main.artdeco-main, .market-realtime-tab" },
       { path: "/strategy/repo", selector: "main.artdeco-main, .strategy-management" },
       { path: "/system/config", selector: "main.artdeco-main, .system-settings-page" },
@@ -162,7 +162,7 @@ test.describe("ArtDeco Configuration Integration", () => {
 
   test("does not emit critical console errors on key routes", async ({ page, browserName }) => {
     const routes = [
-      { path: "/dealing-room", selector: "main.artdeco-main" },
+      { path: "/dashboard", selector: "main.artdeco-main" },
       { path: "/market/realtime", selector: "main.artdeco-main, .market-realtime-tab" },
       { path: "/strategy/repo", selector: "main.artdeco-main, .strategy-management" },
       { path: "/strategy/backtest", selector: "main.artdeco-main, .backtest-analysis-page" },
