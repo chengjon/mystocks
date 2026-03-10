@@ -29,6 +29,7 @@ from app.schemas.algorithm_schemas import (  # Add other algorithm-specific impo
     AlgorithmTrainRequest,
     AlgorithmType,
 )
+from app.services._algorithm_service_history import AlgorithmServiceHistoryMixin
 
 # Define logger early for try/except block
 logger = logging.getLogger(__name__)
@@ -243,7 +244,7 @@ class AlgorithmResultFormatter:
         }
 
 
-class AlgorithmService:
+class AlgorithmService(AlgorithmServiceHistoryMixin):
     """
     Main service class for algorithm operations.
 
@@ -652,65 +653,6 @@ class AlgorithmService:
         except Exception:
             logger.error("Failed to persist prediction result: %(e)s")
             # Don't raise exception to avoid breaking the main flow
-
-    # ==================== 历史查询方法 ====================
-
-    async def get_training_history(
-        self,
-        model_id: Optional[str] = None,
-        algorithm_type: Optional[str] = None,
-        limit: int = 50,
-    ) -> List[Dict[str, Any]]:
-        """
-        获取训练历史记录
-
-        Args:
-            model_id: 模型ID过滤
-            algorithm_type: 算法类型过滤
-            limit: 返回记录数量限制
-
-        Returns:
-            训练历史列表
-        """
-        if not self.repository:
-            return []
-
-        return await self.repository.list_training_history(model_id, algorithm_type, limit)
-
-    async def get_prediction_history(
-        self,
-        model_id: Optional[str] = None,
-        algorithm_type: Optional[str] = None,
-        limit: int = 100,
-    ) -> List[Dict[str, Any]]:
-        """
-        获取预测历史记录
-
-        Args:
-            model_id: 模型ID过滤
-            algorithm_type: 算法类型过滤
-            limit: 返回记录数量限制
-
-        Returns:
-            预测历史列表
-        """
-        if not self.repository:
-            return []
-
-        return await self.repository.list_prediction_history(model_id, algorithm_type, limit)
-
-    async def get_model_statistics(self) -> Dict[str, Any]:
-        """
-        获取模型统计信息
-
-        Returns:
-            统计数据字典
-        """
-        if not self.repository:
-            return {}
-
-        return await self.repository.get_model_statistics()
-
 
 # Global service instance (without database session - for backward compatibility)
 algorithm_service = AlgorithmService()
