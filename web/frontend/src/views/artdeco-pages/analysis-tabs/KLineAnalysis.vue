@@ -19,7 +19,7 @@
 
       <ArtDecoCard title="趋势分析" class="trend-card">
         <div class="chart-container">
-          <ArtDecoChart :option="trendOption" height="300px" />
+          <ArtDecoChart :option="trendOption" height="calc(var(--artdeco-spacing-px) * 300)" />
         </div>
       </ArtDecoCard>
     </div>
