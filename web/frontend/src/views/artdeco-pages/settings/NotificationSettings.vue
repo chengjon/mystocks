@@ -165,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { reactive } from 'vue'
 import ArtDecoCard from '@/components/artdeco/ArtDecoCard.vue'
 import ArtDecoSelect from '@/components/artdeco/ArtDecoSelect.vue'
 
