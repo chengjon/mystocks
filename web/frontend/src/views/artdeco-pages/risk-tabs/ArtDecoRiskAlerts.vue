@@ -85,7 +85,7 @@ const criticalAlertCount = computed(() =>
   }).length,
 );
 
-const normalizeList = <T>(payload: unknown, keys: string[]): T[] => {
+function normalizeList<T>(payload: unknown, keys: string[]): T[] {
   if (Array.isArray(payload)) return payload as T[];
   if (!payload || typeof payload !== 'object') return [];
 
@@ -95,7 +95,7 @@ const normalizeList = <T>(payload: unknown, keys: string[]): T[] => {
     if (Array.isArray(maybe)) return maybe as T[];
   }
   return [];
-};
+}
 
 const fetchRiskAlerts = async (): Promise<void> => {
   const [rulesData, alertsData] = await Promise.all([
