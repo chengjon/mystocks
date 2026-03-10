@@ -1,0 +1,58 @@
+@import '@/styles/artdeco-tokens';
+
+.artdeco-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+  }
+
+  &--xs {
+    width: 14px;
+    height: 14px;
+  }
+
+  &--sm {
+    width: 16px;
+    height: 16px;
+  }
+
+  &--md {
+    width: 20px;
+    height: 20px;
+  }
+
+  &--lg {
+    width: 24px;
+    height: 24px;
+  }
+
+  &--xl {
+    width: 32px;
+    height: 32px;
+  }
+
+  &--spin {
+    animation: artdeco-icon-spin 1s linear infinite;
+  }
+
+  &:hover {
+    opacity: 80%;
+    transition: opacity 150ms ease;
+  }
+}
+
+@keyframes artdeco-icon-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

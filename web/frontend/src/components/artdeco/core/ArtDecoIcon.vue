@@ -11,6 +11,12 @@
 <script setup lang="ts">
 import { computed, h, type VNode } from 'vue'
 
+import {
+  FALLBACK_ICON_NAME,
+  resolveArtDecoIconKey,
+  type ArtDecoIconDefinition,
+} from './artdeco-icon.resolver'
+
 /**
  * ArtDecoIcon - ArtDeco风格SVG图标组件
  *
@@ -48,8 +54,6 @@ const props = withDefaults(defineProps<Props>(), {
   animated: false
 })
 
-const FALLBACK_ICON_NAME = "Alert"
-
 // 计算颜色
 const computedColor = computed(() => {
   if (!props.color) {
@@ -59,7 +63,7 @@ const computedColor = computed(() => {
 })
 
 // SVG图标映射（使用Heroicons/Lucide风格的路径）
-const ICON_MAP: Record<string, { path: string; viewBox?: string; decorative?: boolean }> = {
+const ICON_MAP: Record<string, ArtDecoIconDefinition> = {
   // ========== 市场行情 ==========
   Market: {
     path: 'M3 3v18h18 M3 13l4-4 4 4 6-6 4 4',
@@ -345,54 +349,7 @@ const ICON_MAP: Record<string, { path: string; viewBox?: string; decorative?: bo
   }
 }
 
-const ICON_ALIASES: Record<string, string> = {
-  activity: 'Activity',
-  'alert-circle': 'Alert',
-  'bar-chart-3': 'BarChart3',
-  bookmark: 'Bookmark',
-  briefcase: 'Briefcase',
-  'chevron-left': 'ChevronLeft',
-  clock: 'Clock',
-  'dollar-sign': 'DollarSign',
-  refresh: 'Refresh',
-  trophy: 'Trophy',
-  'trending-up': 'TrendingUp',
-  'wifi-off': 'WifiOff'
-}
-
-const missingIconWarnings = new Set<string>()
-
-const toPascalCase = (name: string): string =>
-  name
-    .split(/[-_\s]+/)
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
-    .join('')
-
-const resolveIconKey = (rawName: string): string => {
-  if (ICON_MAP[rawName]) {
-    return rawName
-  }
-
-  const normalized = rawName.trim().toLowerCase()
-  const alias = ICON_ALIASES[normalized]
-  if (alias && ICON_MAP[alias]) {
-    return alias
-  }
-
-  const pascal = toPascalCase(rawName)
-  if (ICON_MAP[pascal]) {
-    return pascal
-  }
-
-  if (!missingIconWarnings.has(rawName)) {
-    console.warn(`ArtDecoIcon: Icon "${rawName}" not found, fallback to "${FALLBACK_ICON_NAME}"`)
-    missingIconWarnings.add(rawName)
-  }
-  return FALLBACK_ICON_NAME
-}
-
-const resolvedIconKey = computed(() => resolveIconKey(props.name))
+const resolvedIconKey = computed(() => resolveArtDecoIconKey(ICON_MAP, props.name))
 
 // 计算图标组件和属性
 const iconComponent = computed(() => {
@@ -487,66 +444,4 @@ const iconProps = computed(() => {
 })
 </script>
 
-<style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
-
-.artdeco-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  // SVG样式
-  svg {
-    width: 100%;
-    height: 100%;
-    stroke: currentColor;
-  }
-
-  // 尺寸变体
-  &--xs {
-    width: 14px;
-    height: 14px;
-  }
-
-  &--sm {
-    width: 16px;
-    height: 16px;
-  }
-
-  &--md {
-    width: 20px;
-    height: 20px;
-  }
-
-  &--lg {
-    width: 24px;
-    height: 24px;
-  }
-
-  &--xl {
-    width: 32px;
-    height: 32px;
-  }
-
-  // 旋转动画
-  &--spin {
-    animation: artdeco-icon-spin 1s linear infinite;
-  }
-
-  // 悬停效果
-  &:hover {
-    opacity: 80%;
-    transition: opacity 150ms ease;
-  }
-}
-
-@keyframes artdeco-icon-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-</style>
+<style scoped src="./ArtDecoIcon.scss" lang="scss"></style>
