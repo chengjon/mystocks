@@ -57,7 +57,7 @@ interface UseArtDecoChipDistributionOptions {
 }
 
 export function useArtDecoChipDistribution(options: UseArtDecoChipDistributionOptions) {
-    const { data, symbol, loading = ref(false) } = options
+    const { data } = options
 
     const sourceData = computed((): ChipData => (data.value as ChipData) || {})
 
