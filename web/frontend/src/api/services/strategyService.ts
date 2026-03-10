@@ -166,9 +166,14 @@ export class StrategyApiService {
     id: string,
     params: BacktestParams
   ): Promise<UnifiedResponse<BacktestTask>> {
+    const requestPayload: BacktestParams = {
+      ...params,
+      strategy_id: id,
+    };
+
     return apiPost<UnifiedResponse<BacktestTask>>(
-      `${this.baseUrl}/${id}/backtest`,
-      params
+      `${this.baseUrl}/backtest/run`,
+      requestPayload
     );
   }
 
@@ -182,7 +187,7 @@ export class StrategyApiService {
     taskId: string
   ): Promise<UnifiedResponse<BacktestTask>> {
     return apiGet<UnifiedResponse<BacktestTask>>(
-      `${this.baseUrl}/backtest/${taskId}`
+      `${this.baseUrl}/backtest/status/${taskId}`
     );
   }
 
@@ -196,7 +201,7 @@ export class StrategyApiService {
     taskId: string
   ): Promise<UnifiedResponse<BacktestTask>> {
     return apiGet<UnifiedResponse<BacktestTask>>(
-      `${this.baseUrl}/backtest/${taskId}/result`
+      `${this.baseUrl}/backtest/results/${taskId}`
     );
   }
 
@@ -210,7 +215,8 @@ export class StrategyApiService {
     strategyId: string
   ): Promise<UnifiedResponse<BacktestTask[]>> {
     return apiGet<UnifiedResponse<BacktestTask[]>>(
-      `${this.baseUrl}/${strategyId}/backtests`
+      `${this.baseUrl}/backtest/results`,
+      { strategy_id: strategyId }
     );
   }
 
