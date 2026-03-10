@@ -174,7 +174,7 @@ class RedisPubSubService:
         使用示例:
         ```python
         def handler(message):
-            print(f"Received: {message}")
+            logger.info("Received: %s", message)
 
         pubsub.subscribe("indicator:calculated", handler)
         ```
