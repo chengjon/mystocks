@@ -266,7 +266,6 @@ const {
   selectedStock,
   indicatorsData,
   chartContainer,
-  chartInstance,
   batchResult,
   availableIndicators,
   indicatorStats,
@@ -280,8 +279,6 @@ const {
   formatStatus,
   signalCountClass,
   fetchTechnicalData,
-  updateIndicatorStats,
-  renderChart,
   resetSearch,
   exportChart,
   calculateBatchIndicators
