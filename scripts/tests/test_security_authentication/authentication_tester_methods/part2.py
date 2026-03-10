@@ -14,6 +14,8 @@ import jwt
 from datetime import datetime, timedelta
 from typing import Dict, List, Any
 
+from ..helpers import AuthTestResult
+
 # 设置项目路径
 project_root = "/opt/claude/mystocks_spec"
 sys.path.insert(0, project_root)
@@ -247,4 +249,3 @@ class AuthenticationTesterTestPasswordResetMixin:
                 )
 
         return report
-
