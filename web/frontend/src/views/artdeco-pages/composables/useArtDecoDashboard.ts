@@ -1,273 +1,32 @@
-import { ref, computed, onMounted, onUnmounted, watch, type Ref, type ComputedRef } from 'vue'
-import {
-    ArtDecoStatCard, ArtDecoCard, ArtDecoButton, ArtDecoCollapsible,
-    ArtDecoHeader, ArtDecoIcon, ArtDecoBadge, ArtDecoLoading
-} from '@/components/artdeco'
-import ArtDecoSkeleton from '@/components/artdeco/core/ArtDecoSkeleton.vue'
-import ArtDecoChart from '@/components/artdeco/charts/ArtDecoChart.vue'
-import ArtDecoLongHuBang from '@/components/artdeco/specialized/ArtDecoLongHuBang.vue'
-import ArtDecoBlockTrading from '@/components/artdeco/specialized/ArtDecoBlockTrading.vue'
+import { ref, computed, onMounted, onUnmounted, watch, type Ref } from 'vue'
 import { marketService } from '@/api/services/marketService'
 import { mockWebSocket } from '@/api/mockWebSocket'
 import dashboardService from '@/api/services/dashboardService'
-
-// Type definitions
-interface MarketHeatItem {
-    name: string
-    change: number
-    amount?: number
-}
-
-interface FundFlowItem {
-    amount: number
-    change?: number
-    monthly?: number
-    percentage?: number
-}
-
-interface MarketData {
-    shanghai: { index: string; change: string }
-    shenzhen: { index: string; change: string }
-    chuangye: { index: string; change: string }
-    fundFlow: {
-        hgt: FundFlowItem
-        sgt: FundFlowItem
-        northTotal: FundFlowItem
-        mainForce: FundFlowItem
-    }
-    northFund: { amount: string; change: number }
-    stocks: { up: number; down: number }
-    volume: { amount: string }
-}
-
-interface TopStock {
-    code: string
-    name: string
-    price: string
-    change: number
-}
-
-interface IndicatorItem {
-    name: string
-    value: string
-    trend: string
-    signal: string
-}
-
-interface SystemHealthItem {
-    name: string
-    status: string
-    value: string
-}
-
-interface StressTestResult {
-    drawdown: number
-    var95: number
-    concentrationRisk: number
-    timestamp: string
-}
+import {
+    createCapitalFlowHeatmapOption,
+    createFundFlowChartOption,
+    createHeatmapOption,
+    createMarketTrendOption,
+    createSectorRotationRadarOption
+} from './useArtDecoDashboard.chart-options.ts'
+import type {
+    IndicatorItem,
+    MarketData,
+    MarketHeatItem,
+    StressTestResult,
+    SystemHealthItem,
+    TopStock
+} from './useArtDecoDashboard.types.ts'
 
 export function useArtDecoDashboard() {
     // Chart Options Generation
-    const fundFlowChartOption = computed(() => {
-        const data = marketData.value.fundFlow
-        const categories = ['沪股通', '深股通', '主力']
-        const values = [data.hgt.amount, data.sgt.amount, data.mainForce.amount]
-
-        return {
-            tooltip: { trigger: 'axis' },
-            grid: { top: 30, bottom: 20, left: 40, right: 10, containLabel: true },
-            xAxis: {
-                type: 'category',
-                data: categories,
-                axisLine: { show: false },
-                axisTick: { show: false }
-            },
-            yAxis: {
-                type: 'value',
-                splitLine: { show: true, lineStyle: { color: 'rgb(255 255 255 / 5%)' } }
-            },
-            series: [{
-                type: 'bar',
-                barWidth: '40%',
-                data: values.map(val => ({
-                    value: val,
-                    itemStyle: {
-                        color: val >= 0 ? '#4caf50' : '#f44336',
-                        borderRadius: [4, 4, 0, 0]
-                    }
-                }))
-            }]
-        }
-    })
-
-    const marketTrendOption = computed(() => {
-        if (!trendData.value || trendData.value.length === 0) return null;
-
-        // Generate time labels (simplified)
-        const dataLength = trendData.value.length;
-        const hours = Array.from({length: dataLength}, (_, i) => i); // Placeholder x-axis
-
-        return {
-            tooltip: { trigger: 'axis' },
-            grid: { top: 10, bottom: 20, left: 40, right: 10, containLabel: true },
-            xAxis: {
-                type: 'category',
-                data: hours,
-                boundaryGap: false,
-                axisLine: { show: false },
-                axisLabel: { show: false } // Hide labels for clean look
-            },
-            yAxis: {
-                type: 'value',
-                scale: true, // Auto scale
-                splitLine: { show: true, lineStyle: { color: 'rgb(255 255 255 / 5%)' } }
-            },
-            series: [{
-                type: 'line',
-                smooth: true,
-                symbol: 'none',
-                lineStyle: { width: 2, color: '#d4af37' },
-                areaStyle: {
-                    color: {
-                        type: 'linear',
-                        x: 0, y: 0, x2: 0, y2: 1,
-                        colorStops: [
-                            { offset: 0, color: 'rgb(212 175 55 / 30%)' },
-                            { offset: 1, color: 'rgb(212 175 55 / 0)' }
-                        ]
-                    }
-                },
-                data: trendData.value
-            }]
-        }
-    })
-
-    const heatmapOption = computed(() => {
-        if (!marketHeat.value || marketHeat.value.length === 0) return null
-
-        const data = marketHeat.value.map(item => ({
-            name: item.name,
-            value: Math.abs(item.change),
-            change: item.change,
-            itemStyle: {
-                color: item.change >= 0 ? '#4caf50' : '#f44336'
-            }
-        }))
-
-        return {
-            tooltip: {
-                formatter: (params: { data: { name: string; change: number } }): string => {
-                    const { name, change } = params.data
-                    const sign = change > 0 ? '+' : ''
-                    return `${name}: ${sign}${change}%`
-                }
-            },
-            series: [{
-                type: 'treemap',
-                width: '100%',
-                height: '100%',
-                roam: false,
-                nodeClick: false,
-                breadcrumb: { show: false },
-                label: {
-                    show: true,
-                    formatter: '{b}\n{c}%'
-                },
-                itemStyle: {
-                    borderColor: '#1f2833',
-                    borderWidth: 1,
-                    gapWidth: 1
-                },
-                data: data
-            }]
-        }
-    })
-
-    const capitalFlowHeatmapOption = computed(() => {
-        if (!capitalFlowData.value || capitalFlowData.value.length === 0) return null
-
-        const source = capitalFlowData.value as Array<{ name?: string; amount?: number }>
-        const data = source.map((item) => {
-            const amount = toNumber(item.amount)
-            return {
-                name: item.name || '--',
-                value: Math.abs(amount),
-                amount,
-                itemStyle: {
-                    color: amount >= 0 ? '#4caf50' : '#f44336'
-                }
-            }
-        })
-
-        return {
-            tooltip: {
-                formatter: (params: { data: { name: string; amount: number } }): string => {
-                    const { name, amount } = params.data
-                    const sign = amount > 0 ? '+' : ''
-                    return `${name}<br/>净流向: ${sign}${amount.toFixed(2)}亿`
-                }
-            },
-            series: [{
-                type: 'treemap',
-                roam: false,
-                nodeClick: false,
-                breadcrumb: { show: false },
-                label: { show: true, formatter: '{b}' },
-                itemStyle: {
-                    borderColor: '#1f2833',
-                    borderWidth: 1,
-                    gapWidth: 1
-                },
-                data
-            }]
-        }
-    })
-
-    const sectorRotationRadarOption = computed(() => {
-        if (!marketHeat.value || marketHeat.value.length === 0) return null
-
-        const sectors = marketHeat.value
-            .slice()
-            .sort((a, b) => Math.abs(b.change) - Math.abs(a.change))
-            .slice(0, 6)
-
-        if (sectors.length === 0) return null
-
-        const maxValue = Math.max(...sectors.map(item => Math.abs(toNumber(item.change))), 1)
-        const indicator = sectors.map(item => ({
-            name: item.name,
-            max: Number((maxValue * 1.2).toFixed(2))
-        }))
-
-        return {
-            tooltip: {
-                formatter: (params: { value: number[] }): string => {
-                    return params.value
-                        .map((value, idx) => `${indicator[idx].name}: ${value.toFixed(2)}%`)
-                        .join('<br/>')
-                }
-            },
-            radar: {
-                radius: '62%',
-                indicator,
-                splitLine: { lineStyle: { color: 'rgb(255 255 255 / 12%)' } },
-                splitArea: { areaStyle: { color: ['transparent'] } },
-                axisLine: { lineStyle: { color: 'rgb(255 255 255 / 20%)' } },
-                axisName: { color: '#d4af37', fontSize: 11 }
-            },
-            series: [{
-                type: 'radar',
-                data: [{
-                    value: sectors.map(item => Number(Math.abs(toNumber(item.change)).toFixed(2))),
-                    name: '行业轮动强度',
-                    areaStyle: { color: 'rgb(212 175 55 / 25%)' },
-                    lineStyle: { color: '#d4af37', width: 2 },
-                    itemStyle: { color: '#d4af37' }
-                }]
-            }]
-        }
-    })
+    const fundFlowChartOption = computed(() => createFundFlowChartOption(marketData.value))
+    const marketTrendOption = computed(() => createMarketTrendOption(trendData.value))
+    const heatmapOption = computed(() => createHeatmapOption(marketHeat.value))
+    const capitalFlowHeatmapOption = computed(() =>
+        createCapitalFlowHeatmapOption(capitalFlowData.value as Array<{ name?: string; amount?: number }>, toNumber)
+    )
+    const sectorRotationRadarOption = computed(() => createSectorRotationRadarOption(marketHeat.value, toNumber))
 
     // 响应式数据
     const currentTime: Ref<string> = ref('')
@@ -509,7 +268,12 @@ export function useArtDecoDashboard() {
 
     const fetchTrendData = async () => {
         try {
-            const response = await (marketService as Record<string, any>).getMarketTrend?.('000001.SH') || marketService.getQuotes?.('000001.SH')
+            const response = await (
+                marketService as {
+                    getMarketTrend?: (symbol: string) => Promise<unknown>
+                    getQuotes?: (symbol: string) => Promise<unknown>
+                }
+            ).getMarketTrend?.('000001.SH') || marketService.getQuotes?.('000001.SH')
             const payload = response?.data ?? response
             const source = Array.isArray(payload?.data)
                 ? payload.data
@@ -586,7 +350,7 @@ export function useArtDecoDashboard() {
         })
     }
 
-    const handleTrendUpdate = (msg: Record<string, any>): void => {
+    const handleTrendUpdate = (msg: { data?: { price?: string | number } }): void => {
         if (msg.data && msg.data.price) {
             // Append new point
             // For ECharts dynamic update, we might need to shift if array is too long
