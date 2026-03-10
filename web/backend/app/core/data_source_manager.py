@@ -6,10 +6,13 @@
 """
 
 import json
+import logging
 import os
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, List
+
+logger = logging.getLogger(__name__)
 
 
 class DataSourceType(Enum):
@@ -153,4 +156,4 @@ def init_default_config(config_path: str = "config/data_sources.json"):
     os.makedirs(os.path.dirname(config_path), exist_ok=True)
     with open(config_path, "w") as f:
         json.dump(DEFAULT_MODULE_CONFIG, f, indent=2)
-    print(f"✅ Default data source config saved to {config_path}")
+    logger.info("Default data source config saved to %s", config_path)

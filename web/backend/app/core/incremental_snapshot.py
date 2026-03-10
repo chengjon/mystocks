@@ -4,6 +4,7 @@
 """
 
 import hashlib
+import logging
 import pickle
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -11,6 +12,8 @@ from typing import Any, Dict, List, Optional, Set
 
 import pandas as pd
 from prometheus_client import Counter, Gauge, Histogram
+
+logger = logging.getLogger(__name__)
 
 # ==================== 监控指标 ====================
 
@@ -112,7 +115,7 @@ class IncrementalDataManager:
 
         except Exception as e:
             SNAPSHOT_OPERATION_COUNT.labels(operation_type="create_base", result="error").inc()
-            print(f"Failed to create base snapshot for {snapshot_type}: {e}")
+            logger.exception("Failed to create base snapshot for %s: %s", snapshot_type, e)
             return False
 
     def update_incremental(self, snapshot_type: str, new_data: Any) -> Dict[str, Any]:
@@ -214,7 +217,7 @@ class IncrementalDataManager:
 
         except Exception as e:
             SNAPSHOT_OPERATION_COUNT.labels(operation_type="incremental_update", result="error").inc()
-            print(f"Failed to update snapshot incrementally for {snapshot_type}: {e}")
+            logger.exception("Failed to update snapshot incrementally for %s: %s", snapshot_type, e)
             return {"success": False, "error": str(e)}
 
     def load_snapshot(self, snapshot_type: str) -> bool:
@@ -243,7 +246,7 @@ class IncrementalDataManager:
 
         except Exception as e:
             SNAPSHOT_OPERATION_COUNT.labels(operation_type="load", result="error").inc()
-            print(f"Failed to load snapshot for {snapshot_type}: {e}")
+            logger.exception("Failed to load snapshot for %s: %s", snapshot_type, e)
             return False
 
     def get_snapshot_data(self, snapshot_type: str) -> Optional[Any]:
@@ -294,7 +297,7 @@ class IncrementalDataManager:
 
         except Exception as e:
             SNAPSHOT_OPERATION_COUNT.labels(operation_type="cleanup", result="error").inc()
-            print(f"Failed to cleanup old snapshots: {e}")
+            logger.exception("Failed to cleanup old snapshots: %s", e)
 
         return cleaned_count
 
@@ -319,7 +322,7 @@ class IncrementalDataManager:
                 ids = set(data.keys())
 
         except Exception as e:
-            print(f"Warning: Failed to extract IDs from data: {e}")
+            logger.warning("Failed to extract IDs from data: %s", e)
 
         return ids
 

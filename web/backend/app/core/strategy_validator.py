@@ -5,6 +5,7 @@
 
 import hashlib
 import json
+import logging
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -12,6 +13,8 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 import pandas as pd
 from prometheus_client import Counter, Gauge, Histogram
+
+logger = logging.getLogger(__name__)
 
 # ==================== 校验指标 ====================
 
@@ -75,7 +78,7 @@ class StrategyValidator:
     def register_benchmark(self, strategy_name: str, benchmark_result: BenchmarkResult):
         """注册策略基准结果"""
         self.benchmarks[strategy_name] = benchmark_result
-        print(f"✅ 已注册策略 '{strategy_name}' 的基准结果")
+        logger.info("已注册策略 '%s' 的基准结果", strategy_name)
 
     def create_benchmark_from_backtest(self, strategy_name: str, backtest_results: Dict[str, Any]) -> BenchmarkResult:
         """从回测结果创建基准"""
