@@ -1,99 +1,25 @@
 import { ref, reactive, onMounted, watch, type Ref, computed, onUnmounted } from 'vue'
 import { ElMessage, ElNotification, ElMessageBox } from 'element-plus'
-import StockSearchBar from '@/components/technical/StockSearchBar.vue'
-import ProKLineChart from '@/components/market/ProKLineChart.vue'
-import IndicatorPanel from '@/components/technical/IndicatorPanel.vue'
-import { ElCard, ElButton, ElInput, ElDropdown, ElDropdownMenu, ElDropdownItem, ElIcon } from 'element-plus'
-import { ArrowDown } from '@element-plus/icons-vue'
-import { indicatorService, handleIndicatorError } from '@/services/indicatorService.ts'
+import { indicatorService } from '@/services/indicatorService.ts'
 import { dataApi } from '@/api/index.js'
 import { calculateTechnicalIndicators } from '@/utils/technicalIndicators.js'
+import { dateRangeShortcuts } from './useTechnicalAnalysis.shortcuts'
+import type {
+  ChartData,
+  ConfigListResponse,
+  ConfigOption,
+  IndicatorConfig,
+  KlineApiResponse,
+  SelectedIndicator
+} from './useTechnicalAnalysis.types'
 
-// ============================================
-// 类型定义
-// ============================================
-
-interface IndicatorParameters {
-  [key: string]: number | string | boolean | undefined
-  timeperiod?: number
-}
-
-interface SelectedIndicator {
-  abbreviation: string
-  parameters: IndicatorParameters
-}
-
-interface OHLCVData {
-  dates: string[]
-  open: number[]
-  high: number[]
-  low: number[]
-  close: number[]
-  volume: number[]
-}
-
-interface IndicatorOutput {
-  output_name: string
-  values: (number | null)[]
-  displayName: string
-}
-
-interface ChartIndicator {
-  abbreviation: string
-  parameters: IndicatorParameters
-  outputs: IndicatorOutput[]
-  panelType: 'overlay' | 'separate'
-}
-
-interface ChartData {
-  symbol: string
-  symbolName: string
-  ohlcv: OHLCVData | null
-  indicators: ChartIndicator[]
-  calculationTime: number
-}
-
-interface DateRangeShortcut {
-  text: string
-  value: () => Date[]
-}
-
-interface KlineDataItem {
-  date: string
-  open: number
-  high: number
-  low: number
-  close: number
-  volume: number
-}
-
-interface KlineApiResponse {
-  success: boolean
-  data: KlineDataItem[]
-  stock_code?: string
-  stock_name?: string
-  total?: number
-}
-
-interface IndicatorConfig {
-  id: number
-  name: string
-  indicators: SelectedIndicator[]
-}
-
-interface ConfigListResponse {
-  total_count: number
-  configs: IndicatorConfig[]
-}
-
-interface ConfigOption {
-  label: string
-  value: number
-}
-
-declare global {
-  interface Window {
-    deleteConfig: (configId: number) => Promise<void>
+interface HttpLikeError {
+  message?: string
+  response?: {
+    status?: number
+    data?: {
+      msg?: string
+    }
   }
 }
 
@@ -138,45 +64,6 @@ const handleRetry = async (): Promise<void> => {
     ElMessage.warning('Please select stock code and date range first')
   }
 }
-
-const dateRangeShortcuts: DateRangeShortcut[] = [
-  {
-    text: 'LAST 1 MONTH',
-    value: () => {
-      const end = new Date()
-      const start = new Date()
-      start.setMonth(start.getMonth() - 1)
-      return [start, end]
-    }
-  },
-  {
-    text: 'LAST 3 MONTHS',
-    value: () => {
-      const end = new Date()
-      const start = new Date()
-      start.setMonth(start.getMonth() - 3)
-      return [start, end]
-    }
-  },
-  {
-    text: 'LAST 6 MONTHS',
-    value: () => {
-      const end = new Date()
-      const start = new Date()
-      start.setMonth(start.getMonth() - 6)
-      return [start, end]
-    }
-  },
-  {
-    text: 'LAST 1 YEAR',
-    value: () => {
-      const end = new Date()
-      const start = new Date()
-      start.setFullYear(start.getFullYear() - 1)
-      return [start, end]
-    }
-  }
-]
 
 const handleStockSearch = async (symbol: string): Promise<void> => {
   selectedSymbol.value = symbol
@@ -285,7 +172,7 @@ const fetchKlineData = async (): Promise<void> => {
     }
   } catch (error: unknown) {
     console.error('Failed to fetch kline data:', error)
-    const errorObj = error as Record<string, any>
+    const errorObj = error as HttpLikeError
     const errorMessage = errorObj?.response?.data?.msg || errorObj?.message || 'Failed to fetch K-line data'
 
     ElNotification({
@@ -431,7 +318,7 @@ const handleLoadConfig = async (): Promise<void> => {
           }
 
           indicatorService.getConfig(parseInt(selectedConfigId))
-            .then(((config: IndicatorConfig): void => {
+            .then((config: IndicatorConfig): void => {
               selectedIndicators.value = config.indicators
               ElMessage.success(`Config "${config.name}" loaded`)
 
@@ -440,7 +327,7 @@ const handleLoadConfig = async (): Promise<void> => {
               }
 
               done()
-            }) as any)
+            })
             .catch((error: unknown) => {
               console.error('Failed to load config:', error)
               ElMessage.error('Load failed')
