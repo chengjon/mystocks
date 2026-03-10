@@ -19,8 +19,10 @@ from datetime import date, datetime
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Query, HTTPException
-from pydantic import BaseModel, Field, ValidationError, field_validator
+from pydantic import ValidationError
 
+from app.api.market._market_heatmap_router import router as market_heatmap_router
+from app.api.market.market_request_models import ETFQueryParams, FundFlowRequest, MarketDataRequest, RefreshRequest
 from app.core.cache_utils import cache_response  # 导入缓存工具
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
 from app.core.exceptions import BusinessException, NotFoundException, ValidationException
@@ -34,110 +36,8 @@ from app.schemas.market_schemas import (
 from app.services.market_data_service import MarketDataService, get_market_data_service
 
 router = APIRouter()
+router.include_router(market_heatmap_router)
 logger = logging.getLogger(__name__)
-
-class MarketDataRequest(BaseModel):
-    """市场数据请求基类"""
-
-    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$")
-
-    @field_validator("symbol")
-    @classmethod
-    def validate_symbol(cls, v: str) -> str:
-        """验证股票代码格式"""
-        if v.startswith("."):
-            raise ValueError("股票代码不能以点开头")
-        if ".." in v:
-            raise ValueError("股票代码不能包含连续的点")
-        return v.upper()
-
-
-class FundFlowRequest(BaseModel):
-    """资金流向请求参数"""
-
-    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$")
-    timeframe: str = Field("1", description="时间维度: 1/3/5/10天", pattern=r"^[13510]$")
-    start_date: Optional[date] = Field(None, description="开始日期")
-    end_date: Optional[date] = Field(None, description="结束日期")
-
-    @field_validator("symbol")
-    @classmethod
-    def validate_symbol(cls, v: str) -> str:
-        """验证股票代码格式"""
-        if v.startswith("."):
-            raise ValueError("股票代码不能以点开头")
-        if ".." in v:
-            raise ValueError("股票代码不能包含连续的点")
-        return v.upper()
-
-    @field_validator("end_date")
-    @classmethod
-    def validate_date_range(cls, v: Optional[date], values) -> Optional[date]:
-        """验证结束日期必须大于开始日期"""
-        if v is None or "start_date" not in values or values["start_date"] is None:
-            return v
-
-        if v <= values["start_date"]:
-            raise ValueError("结束日期必须大于开始日期")
-
-        # 限制查询范围不能超过1年
-        time_diff = v - values["start_date"]
-        if time_diff.days > 365:
-            raise ValueError("查询时间范围不能超过365天")
-
-        return v
-
-
-class ETFQueryParams(BaseModel):
-    """ETF查询参数"""
-
-    symbol: Optional[str] = Field(None, description="ETF代码", min_length=1, max_length=10, pattern=r"^[A-Z0-9]+$")
-    keyword: Optional[str] = Field(None, description="关键词搜索", min_length=1, max_length=50)
-    market: Optional[str] = Field(None, description="市场类型", pattern=r"^(SH|SZ)$")
-    category: Optional[str] = Field(None, description="ETF类型", pattern=r"^(股票|债券|商品|货币|QDII)$")
-    limit: int = Field(100, description="返回数量", ge=1, le=500)
-    offset: int = Field(0, description="偏移量", ge=0, le=10000)
-
-    @field_validator("symbol")
-    @classmethod
-    def validate_symbol(cls, v: Optional[str]) -> Optional[str]:
-        """验证ETF代码"""
-        if v is None:
-            return v
-        return v.upper()
-
-    @field_validator("keyword")
-    @classmethod
-    def validate_keyword(cls, v: Optional[str]) -> Optional[str]:
-        """验证搜索关键词"""
-        if v is None:
-            return v
-
-        # 检查是否包含SQL注入模式
-        sql_patterns = ["union", "select", "insert", "update", "delete", "drop", "exec"]
-        v_lower = v.lower()
-        for pattern in sql_patterns:
-            if pattern in v_lower:
-                raise ValueError("搜索关键词包含不安全内容")
-
-        return v.strip()
-
-
-class RefreshRequest(BaseModel):
-    """数据刷新请求"""
-
-    symbol: str = Field(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$")
-    timeframe: Optional[str] = Field(None, description="时间维度", pattern=r"^[13510]$")
-
-    @field_validator("symbol")
-    @classmethod
-    def validate_symbol(cls, v: str) -> str:
-        """验证股票代码格式"""
-        if v.startswith("."):
-            raise ValueError("股票代码不能以点开头")
-        if ".." in v:
-            raise ValueError("股票代码不能包含连续的点")
-        return v.upper()
 
 
 @router.get("/fund-flow", summary="查询资金流向")
@@ -697,117 +597,6 @@ async def get_kline_data(
         # Unexpected errors (e.g., AKShare failures)
         raise BusinessException(
             detail=f"数据源暂时不可用，请稍后重试: {str(e)}", status_code=500, error_code="DATA_SOURCE_UNAVAILABLE"
-        )
-
-
-@router.get("/heatmap", summary="获取市场热力图数据")
-@cache_response("market_heatmap", ttl=60)  # 🚀 添加1分钟缓存
-async def get_market_heatmap(
-    market: str = Query(default="cn", description="市场类型: cn(A股)/hk(港股)"),
-    limit: int = Query(default=50, ge=10, le=200, description="返回股票数量"),
-):
-    """
-    获取市场热力图数据，用于可视化展示各股票的涨跌情况
-
-    **参数说明:**
-    - market: 市场类型
-      - "cn" - 中国A股市场
-      - "hk" - 香港股市
-    - limit: 返回的股票数量 (10-200)
-
-    **数据源:** AKShare 或 Mock数据
-    **返回:** 股票列表，包含代码、名称、涨跌幅、价格、成交量、市值等
-    """
-    try:
-        # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
-        if use_mock:
-            # 使用Mock数据
-            from app.mock.unified_mock_data import get_mock_data_manager
-
-            mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data("market_heatmap", market=market, limit=limit)
-            return {
-                "success": True,
-                "data": mock_data.get("data", []),
-                "total": len(mock_data.get("data", [])),
-                "timestamp": mock_data.get("timestamp"),
-                "source": "mock",
-            }
-        else:
-            # 正常获取真实数据
-            import akshare as ak
-
-            # 根据市场类型选择数据源
-            if market == "cn":
-                # 获取A股实时行情
-                df = ak.stock_zh_a_spot_em()
-                df = df.head(limit)
-
-                # 数据转换
-                result = []
-                for _, row in df.iterrows():
-                    try:
-                        result.append(
-                            {
-                                "symbol": row.get("代码", ""),
-                                "name": row.get("名称", ""),
-                                "price": float(row.get("最新价", 0)),
-                                "change": float(row.get("涨跌额", 0)),
-                                "change_pct": float(row.get("涨跌幅", 0)),
-                                "volume": int(row.get("成交量", 0)),
-                                "amount": float(row.get("成交额", 0)),
-                                "market_cap": (float(row.get("总市值", 0)) if "总市值" in row else None),
-                            }
-                        )
-                    except Exception:
-                        continue
-
-            elif market == "hk":
-                # 获取港股实时行情
-                df = ak.stock_hk_spot_em()
-                df = df.head(limit)
-
-                # 数据转换
-                result = []
-                for _, row in df.iterrows():
-                    try:
-                        result.append(
-                            {
-                                "symbol": row.get("代码", ""),
-                                "name": row.get("名称", ""),
-                                "price": float(row.get("最新价", 0)),
-                                "change": float(row.get("涨跌额", 0)),
-                                "change_pct": float(row.get("涨跌幅", 0)),
-                                "volume": int(row.get("成交量", 0)),
-                                "amount": float(row.get("成交额", 0)),
-                                "market_cap": (float(row.get("总市值", 0)) if "总市值" in row else None),
-                            }
-                        )
-                    except Exception:
-                        continue
-            else:
-                raise BusinessException(
-                    detail=f"不支持的市场类型: {market}", status_code=400, error_code="UNSUPPORTED_MARKET_TYPE"
-                )
-
-            # 按涨跌幅排序
-            result = sorted(result, key=lambda x: x["change_pct"], reverse=True)
-
-            return {
-                "success": True,
-                "data": result,
-                "total": len(result),
-                "timestamp": datetime.now().isoformat(),
-                "source": "real",
-            }
-
-    except ImportError:
-        raise BusinessException(detail="AKShare库未安装", status_code=500, error_code="LIBRARY_NOT_INSTALLED")
-    except Exception as e:
-        raise BusinessException(
-            detail=f"获取热力图数据失败: {str(e)}", status_code=500, error_code="HEATMAP_DATA_FAILED"
         )
 
 
