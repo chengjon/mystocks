@@ -3,10 +3,13 @@
 提供用户体验相关的核心监控指标：响应时间、成功率、系统资源、页面加载时间
 """
 
+import logging
 import time
 
 import psutil
 from prometheus_client import Counter, Gauge, Histogram, generate_latest
+
+logger = logging.getLogger(__name__)
 
 # ==================== 用户体验核心指标 ====================
 
@@ -88,7 +91,7 @@ class UserExperienceMonitor:
             self.last_update = current_time
 
         except Exception as e:
-            print(f"Failed to update system metrics: {e}")
+            logger.exception("Failed to update system metrics: %s", e)
 
     def record_api_response(self, endpoint: str, method: str, status_code: int, response_time: float):
         """记录API响应"""
@@ -161,7 +164,7 @@ class UserExperienceMonitor:
                 USER_EXPERIENCE_HEALTH.labels(component="overall").set(overall_score)
 
         except Exception as e:
-            print(f"Failed to calculate health score: {e}")
+            logger.exception("Failed to calculate health score: %s", e)
 
 
 # ==================== 全局监控实例 ====================

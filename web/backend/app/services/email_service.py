@@ -4,6 +4,7 @@
 支持欢迎邮件、每日新闻简报等功能
 """
 
+import logging
 import os
 import smtplib
 from datetime import datetime
@@ -11,6 +12,8 @@ from email.header import Header
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import Dict, List
+
+logger = logging.getLogger(__name__)
 
 
 class EmailService:
@@ -42,7 +45,7 @@ class EmailService:
 
         # 验证配置
         if not self.username or not self.password:
-            print("⚠️ 邮件服务未配置：请设置 SMTP_USERNAME 和 SMTP_PASSWORD 环境变量")
+            logger.warning("邮件服务未配置：请设置 SMTP_USERNAME 和 SMTP_PASSWORD 环境变量")
 
     def is_configured(self) -> bool:
         """
@@ -103,7 +106,7 @@ class EmailService:
             }
         except Exception as e:
             error_msg = f"发送邮件失败: {str(e)}"
-            print(f"❌ {error_msg}")
+            logger.exception(error_msg)
             return {"success": False, "message": error_msg}
 
     def send_welcome_email(self, user_email: str, user_name: str) -> Dict[str, any]:

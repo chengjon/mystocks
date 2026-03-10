@@ -3,6 +3,7 @@
 """
 
 import json
+import logging
 import os
 import subprocess
 from datetime import datetime, timezone
@@ -19,6 +20,8 @@ from app.core.responses import (
     create_health_response,
 )
 from app.core.security import User, get_current_user
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["health"])
 
@@ -340,7 +343,7 @@ async def generate_health_report(services: Dict[str, HealthStatus]) -> Optional[
         # 返回报告URL
         return f"/api/reports/health/{timestamp}"
     except Exception as e:
-        print(f"生成健康报告失败: {str(e)}")
+        logger.exception("生成健康报告失败: %s", e)
         return None
 
 

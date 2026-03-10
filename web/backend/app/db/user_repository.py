@@ -3,6 +3,7 @@ User Database Repository
 Handles all user-related database operations with proper error handling
 """
 
+import logging
 from typing import List, Optional
 
 from sqlalchemy import text
@@ -10,6 +11,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.core.security import UserInDB
+
+logger = logging.getLogger(__name__)
 
 try:
     from src.core.exceptions import (
@@ -346,7 +349,7 @@ class UserRepository:
 
         except Exception as e:
             # Log but don't raise - audit logging should not block authentication
-            print(f"Warning: Failed to log user action: {str(e)}")
+            logger.warning("Failed to log user action: %s", e)
             self.session.rollback()
             return False
 
