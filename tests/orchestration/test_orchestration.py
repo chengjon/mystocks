@@ -16,6 +16,11 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from tests.orchestration._orchestration_tail import (
+    OrchestrationManager as OrchestrationManagerHelper,
+    demo_orchestration as demo_orchestration_helper,
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -723,115 +728,30 @@ class OrchestrationManager:
     @staticmethod
     def create_default_orchestrator() -> TestOrchestrator:
         """创建默认编排器"""
-        config = OrchestrationConfig(
-            max_concurrent_tasks=5,
-            enable_parallel=True,
-            enable_monitoring=True,
-            checkpoint_enabled=True,
-        )
-        return TestOrchestrator(config)
+        return OrchestrationManagerHelper.create_default_orchestrator(TestOrchestrator, OrchestrationConfig)
 
     @staticmethod
     def create_performance_orchestrator() -> TestOrchestrator:
         """创建性能测试编排器"""
-        config = OrchestrationConfig(
-            max_concurrent_tasks=3,
-            enable_parallel=False,
-            task_timeout=1800,  # 30分钟
-            enable_retry=True,
-        )
-        return TestOrchestrator(config)
+        return OrchestrationManagerHelper.create_performance_orchestrator(TestOrchestrator, OrchestrationConfig)
 
     @staticmethod
     def create_chaos_orchestrator() -> TestOrchestrator:
         """创建混沌工程编排器"""
-        config = OrchestrationConfig(
-            max_concurrent_tasks=2,
-            enable_parallel=False,
-            task_timeout=600,
-            fail_fast=False,
-            log_level="WARNING",
-        )
-        return TestOrchestrator(config)
+        return OrchestrationManagerHelper.create_chaos_orchestrator(TestOrchestrator, OrchestrationConfig)
 
 
 # 使用示例
 async def demo_orchestration():
     """演示编排功能"""
-    print("🚀 演示测试编排功能")
-
-    # 创建编排器
-    orchestrator = OrchestrationManager.create_default_orchestrator()
-
-    # 添加测试任务
-    tasks = [
-        TestTask(
-            id="task_001",
-            name="数据库连接测试",
-            description="测试数据库连接",
-            test_type="unit",
-            priority=TaskPriority.HIGH,
-            timeout=30,
-        ),
-        TestTask(
-            id="task_002",
-            name="API集成测试",
-            description="测试API集成",
-            test_type="integration",
-            priority=TaskPriority.HIGH,
-            dependencies=["task_001"],
-            timeout=60,
-        ),
-        TestTask(
-            id="task_003",
-            name="端到端测试",
-            description="执行端到端测试",
-            test_type="e2e",
-            priority=TaskPriority.NORMAL,
-            dependencies=["task_002"],
-            timeout=120,
-        ),
-        TestTask(
-            id="task_004",
-            name="性能测试",
-            description="执行性能测试",
-            test_type="performance",
-            priority=TaskPriority.NORMAL,
-            timeout=300,
-        ),
-        TestTask(
-            id="task_005",
-            name="安全扫描",
-            description="执行安全扫描",
-            test_type="security",
-            priority=TaskPriority.LOW,
-            timeout=180,
-        ),
-    ]
-
-    for task in tasks:
-        orchestrator.add_task(task)
-
-    # 执行所有任务
-    report = await orchestrator.execute_all_tasks()
-
-    # 显示执行结果
-    print("\n📊 执行报告:")
-    print(f"总任务数: {report['execution_summary']['total_tasks']}")
-    print(f"成功任务: {report['execution_summary']['completed_tasks']}")
-    print(f"失败任务: {report['execution_summary']['failed_tasks']}")
-    print(f"成功率: {report['execution_summary']['success_rate']:.2%}")
-    print(f"平均执行时间: {report['execution_summary']['average_duration']:.2f}秒")
-
-    # 显示任务类型统计
-    print("\n📈 任务类型统计:")
-    for test_type, stats in report["task_type_statistics"].items():
-        print(f"  {test_type}: {stats['completed']}/{stats['total']} 成功")
-
-    # 显示检查点信息
-    checkpoint_manager = CheckpointManager()
-    checkpoints = checkpoint_manager.list_checkpoints()
-    print(f"\n📍 检查点数量: {len(checkpoints)}")
+    await demo_orchestration_helper(
+        OrchestrationManager,
+        TestOrchestrator,
+        OrchestrationConfig,
+        TestTask,
+        TaskPriority,
+        CheckpointManager,
+    )
 
 
 if __name__ == "__main__":
