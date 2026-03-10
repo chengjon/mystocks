@@ -65,6 +65,9 @@ import { ArtDecoCard, ArtDecoButton } from '@/components/artdeco';
 
 interface MonitoringHealthData {
   request_id?: string;
+  status?: string;
+  service?: string;
+  version?: string;
   [key: string]: unknown;
 }
 
