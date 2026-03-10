@@ -466,7 +466,6 @@ const {
   activeFlowTab,
   activePoolTab,
   refreshing,
-  trendData,
   activeStrategiesCount,
   todayPnLValue,
   indicatorList,
@@ -474,7 +473,6 @@ const {
   loading,
   error,
   marketData,
-  marketHeat,
   capitalFlowData,
   flowTabs,
   poolTabs,
@@ -489,16 +487,8 @@ const {
   stressTestResult,
   handleIndicatorsToggle,
   handleMonitoringToggle,
-  fetchMarketOverview,
-  fetchFundFlow,
-  fetchIndustryFlow,
-  fetchStockFlowRanking,
-  fetchTrendData,
-  fetchSystemStats,
   refreshData,
   runOneClickStressTest,
-  updateTime,
-  handleTrendUpdate
 } = useArtDecoDashboard()
 </script>
 
