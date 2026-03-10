@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import type { UnifiedResponse, UnifiedPaginatedResponse } from '../common/response';
+import type { UnifiedResponse } from '../common/response';
 
 /**
  * 绩效指标
