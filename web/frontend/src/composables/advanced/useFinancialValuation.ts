@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 
 export function useFinancialValuation() {
     const keyMetrics = ref([
