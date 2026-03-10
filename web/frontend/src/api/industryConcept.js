@@ -3,7 +3,7 @@
  * 提供行业/概念分类数据的查询接口
  */
 
-import request from '@/api'
+import request from '@/api/index.ts'
 
 // 行业概念分析 API
 export const industryConceptApi = {

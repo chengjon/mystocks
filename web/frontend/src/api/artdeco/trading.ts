@@ -6,7 +6,7 @@ import type {
     SignalMetrics,
     SignalQuality,
     SignalType
-} from './types'
+} from './types.ts'
 
 const API_BASE = '/api/v1'
 

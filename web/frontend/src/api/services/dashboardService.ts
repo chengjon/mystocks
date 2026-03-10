@@ -6,7 +6,7 @@
  * 按优先级分为：核心市场数据(P0)、专业交易数据(P1)、技术分析(P2)
  */
 
-import apiClient from '../apiClient'
+import apiClient from '../apiClient.ts'
 
 export interface MarketOverviewData {
   symbol: string

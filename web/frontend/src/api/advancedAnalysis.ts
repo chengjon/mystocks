@@ -1,8 +1,8 @@
 // 高级分析API客户端
 // Advanced Analysis API Client
 
-import request from '@/utils/request'
 import type { AxiosRequestConfig, AxiosResponse } from 'axios'
+import request from '@/utils/request.ts'
 
 // 创建专用的 http 客户端
 const http = {
