@@ -52,14 +52,14 @@
         gap: var(--artdeco-spacing-3);
         padding: var(--artdeco-spacing-4);
         background: var(--artdeco-bg-card);
-        border: 1px solid var(--artdeco-border-default);
+        border: calc(var(--artdeco-spacing-px) * 1) solid var(--artdeco-border-default);
         border-radius: var(--artdeco-radius-none);
 
         // Art Deco signature: stepped corners
-        @include artdeco-stepped-corners(8px);
+        @include artdeco-stepped-corners(calc(var(--artdeco-spacing-px) * 8));
 
         // Geometric corner decorations
-        @include artdeco-geometric-corners($color: var(--artdeco-gold-primary), $size: 12px, $border-width: 1px);
+        @include artdeco-geometric-corners($color: var(--artdeco-gold-primary), $size: calc(var(--artdeco-spacing-px) * 12), $border-width: calc(var(--artdeco-spacing-px) * 1));
     }
 
     .artdeco-trading-signals-controls__filters {
@@ -70,7 +70,7 @@
 
     .artdeco-trading-signals-controls__chip {
         padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
-        border: 1px solid var(--artdeco-border-default);
+        border: calc(var(--artdeco-spacing-px) * 1) solid var(--artdeco-border-default);
         border-radius: var(--artdeco-radius-none);
         background: transparent;
         color: var(--artdeco-fg-muted);
