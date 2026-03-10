@@ -18,6 +18,7 @@ except ImportError:
     cp = None
     print("Warning: CuPy not available, falling back to NumPy")
 
+from ._matrix_transpose_kernels import MatrixTransposeKernelMixin
 from .standardized_interface import MatrixConfig  # 别名
 from .standardized_interface import (
     InferenceConfig,
@@ -32,7 +33,7 @@ from .standardized_interface import (
 logger = logging.getLogger(__name__)
 
 
-class MatrixKernelEngine(StandardizedKernelInterface):
+class MatrixKernelEngine(MatrixTransposeKernelMixin, StandardizedKernelInterface):
     """矩阵运算GPU内核引擎"""
 
     def __init__(self, config: Optional[KernelConfig] = None):
@@ -662,43 +663,3 @@ class MatrixKernelEngine(StandardizedKernelInterface):
         else:
             # 小矩阵使用标准方法
             return cp.matmul(a, b)
-
-    def _optimize_memory_access(self, data: cp.ndarray) -> cp.ndarray:
-        """优化内存访问模式"""
-        # 确保数据在GPU上是连续的
-        if not data.flags["C_CONTIGUOUS"] and not data.flags["F_CONTIGUOUS"]:
-            return cp.ascontiguousarray(data)
-
-        # 对于大型矩阵，考虑内存对齐
-        if data.size > 1000 * 1000:
-            # 使用内存池分配对齐的内存
-            return cp.zeros_like(data, dtype=data.dtype, order="C")
-
-        return data
-
-    def _gpu_transpose_optimized(self, data: cp.ndarray, config: MatrixConfig) -> cp.ndarray:
-        """优化的矩阵转置"""
-        # 优化内存访问
-        data = self._optimize_memory_access(data)
-
-        # 对于大型矩阵，使用分块转置
-        if data.size > 1000 * 1000:
-            return self._gpu_blocked_transpose(data)
-        else:
-            return cp.transpose(data)
-
-    def _gpu_blocked_transpose(self, data: cp.ndarray, block_size: int = 1024) -> cp.ndarray:
-        """分块矩阵转置"""
-        m, n = data.shape
-        result = cp.zeros((n, m), dtype=data.dtype)
-
-        for i in range(0, m, block_size):
-            for j in range(0, n, block_size):
-                # 获取块
-                block = data[i : min(i + block_size, m), j : min(j + block_size, n)]
-                # 转置块
-                result_block = cp.transpose(block)
-                # 放置到结果矩阵
-                result[j : min(j + block_size, n), i : min(i + block_size, m)] = result_block
-
-        return result
