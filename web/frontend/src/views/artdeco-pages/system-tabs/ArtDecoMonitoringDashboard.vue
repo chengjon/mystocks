@@ -63,8 +63,13 @@ import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
 import { monitoringApi } from '@/api/index';
 import { ArtDecoCard, ArtDecoButton } from '@/components/artdeco';
 
-const { loading, lastRequestId, exec } = useArtDecoApi();
-const health = ref<any>(null);
+interface MonitoringHealthData {
+  request_id?: string;
+  [key: string]: unknown;
+}
+
+const { loading, exec } = useArtDecoApi();
+const health = ref<MonitoringHealthData | null>(null);
 const requestId = ref<string>('');
 
 const fetchHealth = async () => {
@@ -72,8 +77,8 @@ const fetchHealth = async () => {
     errorMsg: '无法连接到后端服务'
   });
   if (data) {
-    health.value = data;
-    requestId.value = (data as any).request_id || `sys-${Date.now()}`;
+    health.value = data as MonitoringHealthData;
+    requestId.value = health.value.request_id || `sys-${Date.now()}`;
   }
 };
 
