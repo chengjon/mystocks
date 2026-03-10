@@ -7,8 +7,8 @@
  * removing router/store imports.
  */
 
-import { apiClient } from './apiClient'
-import type { UnifiedResponse } from './types/common'
+import { apiClient } from './apiClient.ts'
+import type { UnifiedResponse } from './types/common.ts'
 import type {
   StockListResponse,
   MarketOverview,
@@ -16,8 +16,8 @@ import type {
   AlertRuleResponse,
   AlertRecordResponse,
   StrategyConfig
-} from './types/common'
-import type { LoginResponse } from './types/admin'
+} from './types/common.ts'
+import type { LoginResponse } from './types/admin.ts'
 
 // Legacy compatibility export for modules still importing `request` from this entry.
 export const request = apiClient
