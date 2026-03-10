@@ -654,8 +654,3 @@ class DataDataSourceAdapter(DataAdapterMetricsMixin, IDataSource):
                 message=f"Data source health check failed: {str(e)}",
                 timestamp=datetime.now(),
             )
-
-    async def close(self):
-        """关闭连接和清理资源"""
-        # Data适配器不需要清理特定资源
-

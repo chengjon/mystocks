@@ -1,18 +1,16 @@
-"""Metrics mixin for `data_adapter.py`."""
+"""Metrics helpers for the data adapter."""
 
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 
 class DataAdapterMetricsMixin:
-    """Provide adapter metrics helpers for data adapters."""
+    """Shared metrics helpers for `DataDataSourceAdapter`."""
 
     def get_metrics(self) -> Dict[str, Any]:
-        """获取性能指标"""
         success_rate = (self.successful_requests / self.total_requests * 100) if self.total_requests > 0 else 0
-
         return {
             "total_requests": self.total_requests,
             "successful_requests": self.successful_requests,
@@ -25,8 +23,7 @@ class DataAdapterMetricsMixin:
             "name": self.name,
         }
 
-    def _update_metrics(self, success: bool, response_time: float, error: str = None) -> None:
-        """更新监控指标 (兼容数据源工厂)"""
+    def _update_metrics(self, success: bool, response_time: float, error: Optional[str] = None) -> None:
         self.metrics.total_requests += 1
         self.metrics.last_check = datetime.now()
 
@@ -44,5 +41,7 @@ class DataAdapterMetricsMixin:
             self.metrics.success_rate = (
                 (self.metrics.total_requests - self.metrics.error_count) / self.metrics.total_requests * 100
             )
-
         self.metrics.availability = self.metrics.success_rate
+
+    async def close(self) -> None:
+        """关闭连接和清理资源。"""
