@@ -420,7 +420,33 @@
 <script setup>
 import { useAnnouncementMonitor } from './composables/useAnnouncementMonitor'
 
-const { API_BASE_URL, stats, announcements, monitorRules, triggeredRecords, loading, searchForm, pagination, showRuleDialog, ruleFormRef, editingRule, ruleFormRules, fetchStats, fetchAnnouncements, fetchTodayAnnouncements, fetchImportantAnnouncements, fetchMonitorRules, fetchTriggeredRecords, evaluateRules, editRule, deleteRule, saveRule, stockCodes, keywords, ruleData, openAnnouncement, getImportanceClass, getSentimentType, formatSentiment, map, handleSizeChange, handleCurrentChange, refreshData } = useAnnouncementMonitor()
+const {
+  stats,
+  announcements,
+  monitorRules,
+  triggeredRecords,
+  loading,
+  searchForm,
+  pagination,
+  showRuleDialog,
+  ruleFormRef,
+  editingRule,
+  ruleFormRules,
+  fetchAnnouncements,
+  fetchTodayAnnouncements,
+  fetchImportantAnnouncements,
+  evaluateRules,
+  editRule,
+  deleteRule,
+  saveRule,
+  openAnnouncement,
+  getImportanceClass,
+  getSentimentType,
+  formatSentiment,
+  handleSizeChange,
+  handleCurrentChange,
+  refreshData
+} = useAnnouncementMonitor()
 </script>
 
 <style scoped lang="scss">
