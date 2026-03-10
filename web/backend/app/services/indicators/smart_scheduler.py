@@ -23,6 +23,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 
+from app.services.indicators._smart_scheduler_factory import create_scheduler
 from .dependency_graph import (
     IncrementalCalculator,
     IndicatorDependencyGraph,
@@ -690,27 +691,3 @@ class SmartScheduler:
         self._dependency_graph.reset()
         self._incremental_calculator.clear_cache()
         self.clear_cache()
-
-
-def create_scheduler(
-    max_workers: int = 4,
-    mode: CalculationMode = CalculationMode.ASYNC_PARALLEL,
-    enable_cache: bool = True,
-    enable_distributed_lock: bool = True,
-) -> SmartScheduler:
-    """
-    创建调度器
-
-    Args:
-        max_workers: 最大并行数
-        mode: 计算模式
-        enable_cache: 是否启用缓存
-        enable_distributed_lock: 是否启用分布式锁 (需要Redis)
-
-    Returns:
-        SmartScheduler实例
-    """
-    scheduler = SmartScheduler(
-        max_workers=max_workers, mode=mode, enable_cache=enable_cache, enable_distributed_lock=enable_distributed_lock
-    )
-    return scheduler
