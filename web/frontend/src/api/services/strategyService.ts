@@ -5,8 +5,8 @@
  * All methods return complete UnifiedResponse objects for fallback handling.
  */
 
-import { apiGet, apiPost, apiPut, apiDelete } from '../apiClient';
-import type { UnifiedResponse } from '../types/common';
+import { apiGet, apiPost, apiPut, apiDelete } from '../apiClient.ts';
+import type { UnifiedResponse } from '../types/common.ts';
 import type {
   StrategyVM as Strategy,
   CreateStrategyRequestVM as CreateStrategyRequest,
@@ -14,7 +14,7 @@ import type {
   BacktestRequestVM as BacktestParams,
   BacktestRequestVM as BacktestTask,
   StrategyListResponseVM as StrategyListResponse,
-} from '../types/extensions';
+} from '../types/extensions/index.ts';
 
 export class StrategyApiService {
   /**
