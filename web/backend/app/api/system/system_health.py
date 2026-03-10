@@ -3,6 +3,7 @@
 提供系统设置、数据库连接测试、运行日志查询等功能
 """
 
+import logging
 import os
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
@@ -11,6 +12,10 @@ import psycopg2
 import taos
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
+
+from app.api.system._logs_summary_helper import build_logs_summary_payload
+
+logger = logging.getLogger(__name__)
 
 # Mock数据支持
 use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
@@ -484,7 +489,7 @@ def get_system_logs_from_db(
 
     except Exception as e:
         # 如果数据库查询失败，返回模拟日志
-        print(f"Error fetching logs from database: {e}")
+        logger.exception("Error fetching logs from database: %s", e)
         return get_mock_system_logs(filter_errors, limit), 0
     finally:
         # 确保连接和游标被关闭，防止连接泄漏
@@ -686,31 +691,7 @@ async def get_logs_summary():
             logs = get_mock_system_logs(limit=100)
             total = len(logs)
 
-        # 统计各级别数量
-        level_counts = {"INFO": 0, "WARNING": 0, "ERROR": 0, "CRITICAL": 0}
-        for log in logs:
-            if log.level in level_counts:
-                level_counts[log.level] += 1
-
-        # 统计各分类数量
-        category_counts = {}
-        for log in logs:
-            category_counts[log.category] = category_counts.get(log.category, 0) + 1
-
-        # 统计最近1小时的错误
-        recent_errors = sum(1 for log in logs if log.has_error)
-
-        return {
-            "success": True,
-            "data": {
-                "total_logs": total,
-                "level_counts": level_counts,
-                "category_counts": category_counts,
-                "recent_errors_1h": recent_errors,
-                "last_update": datetime.now().isoformat(),
-            },
-            "timestamp": datetime.now().isoformat(),
-        }
+        return build_logs_summary_payload(logs, total)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取日志统计失败: {str(e)}")
