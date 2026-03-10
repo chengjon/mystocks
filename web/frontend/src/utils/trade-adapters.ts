@@ -9,7 +9,7 @@
 import type {
   OrderResponse,
   TradeHistoryResponse
-} from '@/api/types/generated-types'
+} from '@/api/types/generated-types.ts'
 
 // Temporary: Use any for missing generated types
 // TODO: Fix type generation to include these types
