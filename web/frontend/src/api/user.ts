@@ -4,19 +4,42 @@
  * Provides methods for managing user profiles, watchlists, and notifications.
  */
 
-import { request } from '@/utils/request'
-import { UserAdapter } from '@/utils/user-adapters'
+import { request } from '@/utils/request.ts'
+import { UserAdapter } from '@/utils/user-adapters.ts'
 import type {
-  _UserProfileResponse,
-  _WatchlistResponse,
-  _NotificationResponse
-} from '@/api/types/additional-types'
-import type {
+  NotificationVM,
+  UserPreferencesVM,
   UserProfileVM,
   WatchlistVM,
-  NotificationVM,
-  UserPreferencesVM
-} from '@/utils/user-adapters'
+} from '@/utils/user-adapters.ts'
+import type {
+  ActivityLogEntry,
+  ActivityLogParams,
+  AddWatchlistStockPayload,
+  ApiKey,
+  ChangePasswordPayload,
+  CopyWatchlistPayload,
+  CreateApiKeyPayload,
+  CreatedApiKey,
+  CreateWatchlistPayload,
+  GetNotificationsParams,
+  GetPopularWatchlistsParams,
+  GetWatchlistsParams,
+  ImportWatchlistOptions,
+  NotificationSettings,
+  NotificationStatistics,
+  NotificationSubscription,
+  SearchWatchlistsPayload,
+  UpdateNotificationSettingsPayload,
+  UpdateProfilePayload,
+  UpdateWatchlistPayload,
+  UserStatistics,
+  WatchlistAlertPayload,
+  WatchlistExportFormat,
+  WatchlistHistoryEntry,
+  WatchlistHistoryParams,
+  WatchlistPerformance,
+} from './user.types.ts'
 
 class UserApiService {
   private baseUrl = '/api/user'
@@ -34,12 +57,7 @@ class UserApiService {
   /**
    * Update user profile
    */
-  async updateProfile(profileData: {
-    displayName?: string
-    avatar?: string
-    bio?: string
-    phone?: string
-  }): Promise<UserProfileVM> {
+  async updateProfile(profileData: UpdateProfilePayload): Promise<UserProfileVM> {
     const rawData = await request.put(`${this.baseUrl}/profile`, profileData)
     return UserAdapter.toUserProfileVM(rawData)
   }
@@ -62,30 +80,14 @@ class UserApiService {
   /**
    * Change password
    */
-  async changePassword(data: {
-    currentPassword: string
-    newPassword: string
-    confirmPassword: string
-  }): Promise<void> {
+  async changePassword(data: ChangePasswordPayload): Promise<void> {
     await request.post(`${this.baseUrl}/change-password`, data)
   }
 
   /**
    * Get user statistics
    */
-  async getStatistics(period?: string): Promise<{
-    totalTrades: number
-    winningTrades: number
-    losingTrades: number
-    winRate: number
-    totalPnL: number
-    totalPnLPercent: string
-    averageReturn: number
-    sharpeRatio: number
-    maxDrawdown: number
-    monthlyReturns: Array<{ month: string; return: number }>
-    sectorPerformance: Array<{ sector: string; return: number }>
-  }> {
+  async getStatistics(period?: string): Promise<UserStatistics> {
     return request.get(`${this.baseUrl}/statistics`, {
       params: { period }
     })
@@ -94,13 +96,7 @@ class UserApiService {
   /**
    * Get all watchlists
    */
-  async getWatchlists(params?: {
-    public?: boolean
-    owner?: string
-    tag?: string
-    limit?: number
-    offset?: number
-  }): Promise<WatchlistVM[]> {
+  async getWatchlists(params?: GetWatchlistsParams): Promise<WatchlistVM[]> {
     const rawData = await request.get(`${this.watchlistUrl}`, { params })
     return UserAdapter.toWatchlistVM(rawData)
   }
@@ -117,12 +113,7 @@ class UserApiService {
   /**
    * Create new watchlist
    */
-  async createWatchlist(watchlistData: {
-    name: string
-    description?: string
-    isPublic?: boolean
-    tags?: string[]
-  }): Promise<WatchlistVM> {
+  async createWatchlist(watchlistData: CreateWatchlistPayload): Promise<WatchlistVM> {
     const rawData = await request.post(`${this.watchlistUrl}`, watchlistData)
     const watchlists = UserAdapter.toWatchlistVM([rawData])
     return watchlists[0]
@@ -131,12 +122,7 @@ class UserApiService {
   /**
    * Update watchlist
    */
-  async updateWatchlist(watchlistId: string, updates: {
-    name?: string
-    description?: string
-    isPublic?: boolean
-    tags?: string[]
-  }): Promise<WatchlistVM> {
+  async updateWatchlist(watchlistId: string, updates: UpdateWatchlistPayload): Promise<WatchlistVM> {
     const rawData = await request.put(`${this.watchlistUrl}/${watchlistId}`, updates)
     const watchlists = UserAdapter.toWatchlistVM([rawData])
     return watchlists[0]
@@ -152,15 +138,7 @@ class UserApiService {
   /**
    * Add stock to watchlist
    */
-  async addStockToWatchlist(watchlistId: string, stockData: {
-    symbol: string
-    notes?: string
-    alerts?: Array<{
-      type: string
-      condition: string
-      value: number
-    }>
-  }): Promise<void> {
+  async addStockToWatchlist(watchlistId: string, stockData: AddWatchlistStockPayload): Promise<void> {
     await request.post(`${this.watchlistUrl}/${watchlistId}/stocks`, stockData)
   }
 
@@ -181,13 +159,7 @@ class UserApiService {
   /**
    * Add stock alert
    */
-  async addStockAlert(watchlistId: string, symbol: string, alert: {
-    type: string
-    condition: string
-    value: number
-    notificationMethod?: string
-    expiresAt?: string
-  }): Promise<void> {
+  async addStockAlert(watchlistId: string, symbol: string, alert: WatchlistAlertPayload): Promise<void> {
     await request.post(`${this.watchlistUrl}/${watchlistId}/stocks/${symbol}/alerts`, alert)
   }
 
@@ -208,20 +180,7 @@ class UserApiService {
   /**
    * Get watchlist performance
    */
-  async getWatchlistPerformance(watchlistId: string, period?: string): Promise<{
-    totalValue: number
-    todayChange: number
-    todayChangePercent: string
-    periodReturn: number
-    periodReturnPercent: string
-    annualizedReturn: number
-    volatility: number
-    sharpeRatio: number
-    maxDrawdown: number
-    beta: number
-    alpha: number
-    performanceChart: Array<{ date: string; value: number; benchmark?: number }>
-  }> {
+  async getWatchlistPerformance(watchlistId: string, period?: string): Promise<WatchlistPerformance> {
     return request.get(`${this.watchlistUrl}/${watchlistId}/performance`, {
       params: { period }
     })
@@ -230,27 +189,17 @@ class UserApiService {
   /**
    * Get watchlist history
    */
-  async getWatchlistHistory(watchlistId: string, params?: {
-    startDate?: string
-    endDate?: string
-    limit?: number
-  }): Promise<Array<{
-    date: string
-    action: string
-    symbol: string
-    price: number
-    notes?: string
-  }>> {
+  async getWatchlistHistory(
+    watchlistId: string,
+    params?: WatchlistHistoryParams
+  ): Promise<WatchlistHistoryEntry[]> {
     return request.get(`${this.watchlistUrl}/${watchlistId}/history`, { params })
   }
 
   /**
    * Copy watchlist
    */
-  async copyWatchlist(watchlistId: string, newData?: {
-    name?: string
-    description?: string
-  }): Promise<WatchlistVM> {
+  async copyWatchlist(watchlistId: string, newData?: CopyWatchlistPayload): Promise<WatchlistVM> {
     const rawData = await request.post(`${this.watchlistUrl}/${watchlistId}/copy`, newData)
     const watchlists = UserAdapter.toWatchlistVM([rawData])
     return watchlists[0]
@@ -281,11 +230,7 @@ class UserApiService {
   /**
    * Get popular watchlists
    */
-  async getPopularWatchlists(params?: {
-    category?: string
-    period?: string
-    limit?: number
-  }): Promise<WatchlistVM[]> {
+  async getPopularWatchlists(params?: GetPopularWatchlistsParams): Promise<WatchlistVM[]> {
     const rawData = await request.get(`${this.watchlistUrl}/popular`, { params })
     return UserAdapter.toWatchlistVM(rawData)
   }
@@ -293,17 +238,7 @@ class UserApiService {
   /**
    * Search watchlists
    */
-  async searchWatchlists(query: {
-    searchTerm: string
-    filters?: {
-      category?: string
-      tags?: string[]
-      owner?: string
-      minStocks?: number
-      maxStocks?: number
-    }
-    limit?: number
-  }): Promise<WatchlistVM[]> {
+  async searchWatchlists(query: SearchWatchlistsPayload): Promise<WatchlistVM[]> {
     const rawData = await request.post(`${this.watchlistUrl}/search`, query)
     return UserAdapter.toWatchlistVM(rawData)
   }
@@ -311,15 +246,7 @@ class UserApiService {
   /**
    * Get notifications
    */
-  async getNotifications(params?: {
-    type?: string
-    isRead?: boolean
-    category?: string
-    startDate?: string
-    endDate?: string
-    limit?: number
-    offset?: number
-  }): Promise<NotificationVM[]> {
+  async getNotifications(params?: GetNotificationsParams): Promise<NotificationVM[]> {
     const rawData = await request.get(`${this.notificationUrl}`, { params })
     return UserAdapter.toNotificationVM(rawData)
   }
@@ -348,57 +275,21 @@ class UserApiService {
   /**
    * Get notification settings
    */
-  async getNotificationSettings(): Promise<{
-    email: boolean
-    push: boolean
-    sms: boolean
-    categories: Array<{
-      name: string
-      enabled: boolean
-      methods: string[]
-    }>
-    quietHours: {
-      enabled: boolean
-      start: string
-      end: string
-      timezone: string
-    }
-  }> {
+  async getNotificationSettings(): Promise<NotificationSettings> {
     return request.get(`${this.notificationUrl}/settings`)
   }
 
   /**
    * Update notification settings
    */
-  async updateNotificationSettings(settings: {
-    email?: boolean
-    push?: boolean
-    sms?: boolean
-    categories?: Array<{
-      name: string
-      enabled: boolean
-      methods: string[]
-    }>
-    quietHours?: {
-      enabled?: boolean
-      start?: string
-      end?: string
-      timezone?: string
-    }
-  }): Promise<void> {
+  async updateNotificationSettings(settings: UpdateNotificationSettingsPayload): Promise<void> {
     await request.put(`${this.notificationUrl}/settings`, settings)
   }
 
   /**
    * Subscribe to notifications
    */
-  async subscribeToNotifications(subscription: {
-    endpoint: string
-    keys: {
-      p256dh: string
-      auth: string
-    }
-  }): Promise<void> {
+  async subscribeToNotifications(subscription: NotificationSubscription): Promise<void> {
     await request.post(`${this.notificationUrl}/subscribe`, subscription)
   }
 
@@ -412,23 +303,14 @@ class UserApiService {
   /**
    * Get notification statistics
    */
-  async getNotificationStatistics(): Promise<{
-    total: number
-    unread: number
-    read: number
-    byType: Record<string, number>
-    byCategory: Record<string, number>
-    todayReceived: number
-    weekReceived: number
-    monthReceived: number
-  }> {
+  async getNotificationStatistics(): Promise<NotificationStatistics> {
     return request.get(`${this.notificationUrl}/statistics`)
   }
 
   /**
    * Export watchlist
    */
-  async exportWatchlist(watchlistId: string, format: 'csv' | 'json' | 'excel' = 'csv'): Promise<Blob> {
+  async exportWatchlist(watchlistId: string, format: WatchlistExportFormat = 'csv'): Promise<Blob> {
     const response = await request.get(`${this.watchlistUrl}/${watchlistId}/export`, {
       params: { format },
       responseType: 'blob'
@@ -439,11 +321,7 @@ class UserApiService {
   /**
    * Import watchlist
    */
-  async importWatchlist(file: File, options?: {
-    name?: string
-    isPublic?: boolean
-    tags?: string[]
-  }): Promise<WatchlistVM> {
+  async importWatchlist(file: File, options?: ImportWatchlistOptions): Promise<WatchlistVM> {
     const formData = new FormData()
     formData.append('file', file)
     if (options) {
@@ -468,55 +346,21 @@ class UserApiService {
   /**
    * Get user activity log
    */
-  async getActivityLog(params?: {
-    type?: string
-    startDate?: string
-    endDate?: string
-    limit?: number
-    offset?: number
-  }): Promise<Array<{
-    id: string
-    type: string
-    action: string
-    target: string
-    details: Record<string, unknown>
-    timestamp: string
-    ipAddress?: string
-    userAgent?: string
-  }>> {
+  async getActivityLog(params?: ActivityLogParams): Promise<ActivityLogEntry[]> {
     return request.get(`${this.baseUrl}/activity`, { params })
   }
 
   /**
    * Get API keys
    */
-  async getApiKeys(): Promise<Array<{
-    id: string
-    name: string
-    key: string
-    permissions: string[]
-    lastUsed?: string
-    expiresAt?: string
-    isActive: boolean
-    createdAt: string
-  }>> {
+  async getApiKeys(): Promise<ApiKey[]> {
     return request.get(`${this.baseUrl}/api-keys`)
   }
 
   /**
    * Create API key
    */
-  async createApiKey(keyData: {
-    name: string
-    permissions: string[]
-    expiresAt?: string
-  }): Promise<{
-    id: string
-    name: string
-    key: string
-    permissions: string[]
-    expiresAt?: string
-  }> {
+  async createApiKey(keyData: CreateApiKeyPayload): Promise<CreatedApiKey> {
     return request.post(`${this.baseUrl}/api-keys`, keyData)
   }
 
