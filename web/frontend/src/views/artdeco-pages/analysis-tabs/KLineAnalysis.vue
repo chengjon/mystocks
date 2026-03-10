@@ -108,14 +108,14 @@ const trendOption = computed(() => {
   text-align: center;
 
   .indicator-name {
-    font-size: 12px;
+    font-size: var(--artdeco-text-xs);
     color: var(--artdeco-fg-muted);
     text-transform: uppercase;
   }
   .indicator-value {
     font-family: var(--artdeco-font-mono);
-    font-size: 18px;
-    margin: 4px 0;
+    font-size: var(--artdeco-text-compact-lg);
+    margin: var(--artdeco-spacing-1) 0;
   }
   .indicator-signal { font-weight: 600; 
     &.rise { color: var(--artdeco-up); }
