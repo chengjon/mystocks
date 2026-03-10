@@ -5,7 +5,7 @@
  * Implement data downsampling for large datasets (>10,000 points)
  */
 
-import type { KLineDataPoint } from './indicators'
+import type { KLineDataPoint } from './indicators.ts'
 
 /**
  * 降采样方法枚举
