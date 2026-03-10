@@ -8,6 +8,7 @@ quantitative analysis features integrated with the existing MyStocks platform.
 """
 
 import asyncio
+import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -17,6 +18,8 @@ from pydantic import BaseModel, Field
 from src.advanced_analysis import AdvancedAnalysisEngine, AnalysisType
 from src.core import MyStocksUnifiedManager
 from src.monitoring import AlertManager
+
+logger = logging.getLogger(__name__)
 
 # Initialize components
 data_manager = MyStocksUnifiedManager()
@@ -445,10 +448,10 @@ async def _execute_comprehensive_analysis_async(
         result = analysis_engine.comprehensive_analysis(stock_code, analysis_types, **params)
 
         # 这里可以添加结果存储或通知逻辑
-        print(f"Comprehensive analysis completed for {stock_code}: {len(result)} analysis types")
+        logger.info("Comprehensive analysis completed for %s: %s analysis types", stock_code, len(result))
 
     except Exception as e:
-        print(f"Async comprehensive analysis failed for {stock_code}: {e}")
+        logger.exception("Async comprehensive analysis failed for %s: %s", stock_code, e)
         # 这里可以添加错误处理和告警逻辑
 
 
@@ -473,18 +476,18 @@ async def _execute_batch_analysis_async(
                 try:
                     result = analysis_engine.comprehensive_analysis(code, analysis_types, **(params or {}))
                     results[code] = result
-                    print(f"Batch analysis completed for {code}")
+                    logger.info("Batch analysis completed for %s", code)
                 except Exception as e:
                     results[code] = {"error": str(e)}
-                    print(f"Batch analysis failed for {code}: {e}")
+                    logger.exception("Batch analysis failed for %s: %s", code, e)
 
         # 并发执行
         tasks = [analyze_single(code) for code in stock_codes]
         await asyncio.gather(*tasks)
 
         # 这里可以添加批量结果存储或通知逻辑
-        print(f"Batch analysis completed for {len(stock_codes)} stocks")
+        logger.info("Batch analysis completed for %s stocks", len(stock_codes))
 
     except Exception as e:
-        print(f"Async batch analysis failed: {e}")
+        logger.exception("Async batch analysis failed: %s", e)
         # 这里可以添加错误处理和告警逻辑
