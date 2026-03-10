@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 
 export function useMarketPanorama() {
     const marketIndices = ref([
