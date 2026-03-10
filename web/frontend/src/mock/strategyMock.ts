@@ -232,7 +232,7 @@ function generateMockEquityCurve(): Array<{ date: string; value: number; drawdow
 /**
  * Generate mock trades
  */
-function generateMockTrades(count: number) {
+function _generateMockTrades(count: number) {
   const trades: Array<{
     id: string;
     symbol: string;
