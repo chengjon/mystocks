@@ -456,6 +456,20 @@ class TestAdaptiveIntervalManager:
         interval = manager.calculate_next_interval(system_metrics)
         assert interval <= manager.base_interval  # 应该减少间隔
 
+    def test_low_load_does_not_exceed_base_after_high_load(self, monkeypatch):
+        """测试高负载后低负载不会因抖动重新高于基线"""
+        monkeypatch.setattr("random.uniform", lambda _start, _end: 1.1)
+
+        manager = AdaptiveIntervalManager(base_interval=5.0, min_interval=2.0, max_interval=60.0)
+
+        high_load_metrics = {"cpu_usage": 90, "memory_usage": 85}
+        manager.calculate_next_interval(high_load_metrics)
+
+        low_load_metrics = {"cpu_usage": 20, "memory_usage": 25}
+        interval = manager.calculate_next_interval(low_load_metrics)
+
+        assert interval <= manager.base_interval
+
     def test_interval_bounds(self):
         """测试间隔边界"""
         manager = AdaptiveIntervalManager(base_interval=5.0, min_interval=2.0, max_interval=60.0)

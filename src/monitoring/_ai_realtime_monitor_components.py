@@ -255,7 +255,14 @@ class AdaptiveIntervalManager:
             import random
 
             self.current_interval *= random.uniform(0.9, 1.1)
-            return max(self.min_interval, min(self.current_interval, self.max_interval))
+            self.current_interval = max(self.min_interval, min(self.current_interval, self.max_interval))
+
+            if load_score > 80:
+                self.current_interval = max(self.current_interval, self.base_interval)
+            elif load_score < 30:
+                self.current_interval = min(self.current_interval, self.base_interval)
+
+            return self.current_interval
         except Exception as error:
             logger.error("❌ 自适应间隔计算失败: %s", error)
             return self.base_interval
