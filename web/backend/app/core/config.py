@@ -2,10 +2,13 @@
 应用配置管理
 """
 
+import logging
 from typing import List
 
 from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+logger = logging.getLogger(__name__)
 
 # 环境变量文件配置
 # 仅使用项目根目录的.env文件，便于管理和版本控制
@@ -196,8 +199,8 @@ settings = Settings()
 try:
     validate_required_settings(settings)
 except ValueError as e:
-    print(f"❌ 启动失败：{e}")
-    print("🔧 请修复配置后重新启动应用")
+    logger.critical("启动失败：%s", e)
+    logger.critical("请修复配置后重新启动应用")
     import sys
 
     sys.exit(1)  # 生产环境：配置错误时立即终止启动
