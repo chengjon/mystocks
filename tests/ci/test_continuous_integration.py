@@ -24,6 +24,8 @@ from pydantic import BaseModel, Field
 
 import docker
 
+from ._continuous_integration_tail import ContinuousIntegrationManagerTailMixin, demo_ci_system as _demo_ci_system
+
 # 设置日志
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -154,7 +156,7 @@ class PipelineConfig(BaseModel):
         return f"{self.name} ({self.environment.value})"
 
 
-class ContinuousIntegrationManager:
+class ContinuousIntegrationManager(ContinuousIntegrationManagerTailMixin):
     """持续集成管理器"""
 
     def __init__(self, config_file: str = "ci_config.json"):
@@ -693,209 +695,9 @@ class ContinuousIntegrationManager:
 
         return False
 
-    async def get_pipeline_history(self, limit: int = 10) -> List[Dict[str, Any]]:
-        """获取流水线历史"""
-        sorted_pipelines = sorted(self.pipelines.values(), key=lambda x: x.get("start_time", ""), reverse=True)
-
-        return sorted_pipelines[:limit]
-
-    async def generate_report(self, pipeline_id: str) -> Dict[str, Any]:
-        """生成流水线报告"""
-        pipeline = self.pipelines.get(pipeline_id, {})
-
-        if not pipeline:
-            return {"error": "Pipeline not found"}
-
-        reports = self.reports.get(pipeline_id, [])
-
-        # 生成综合报告
-        report = {
-            "pipeline_id": pipeline_id,
-            "pipeline_name": pipeline.get("name"),
-            "status": pipeline.get("status"),
-            "start_time": pipeline.get("start_time"),
-            "end_time": pipeline.get("end_time"),
-            "duration": self._calculate_duration(pipeline.get("start_time"), pipeline.get("end_time")),
-            "total_steps": len(pipeline.get("steps", [])),
-            "successful_steps": len(
-                [step for step in pipeline.get("steps", []) if step.get("status") == PipelineStatus.SUCCESS.value]
-            ),
-            "failed_steps": len(
-                [step for step in pipeline.get("steps", []) if step.get("status") == PipelineStatus.FAILED.value]
-            ),
-            "test_reports": [],
-            "artifacts": pipeline.get("artifacts", []),
-            "quality_checks": {},  # 从实际检查中获取
-            "recommendations": self._generate_recommendations(pipeline, reports),
-        }
-
-        # 添加测试报告详情
-        for test_report in reports:
-            report["test_reports"].append(
-                {
-                    "test_suite_id": test_report.test_suite_id,
-                    "test_type": test_report.test_type.value,
-                    "summary": test_report.summary,
-                    "coverage": test_report.coverage,
-                    "duration": test_report.duration,
-                    "artifacts": test_report.artifacts,
-                }
-            )
-
-        return report
-
-    def _calculate_duration(self, start_time: Optional[str], end_time: Optional[str]) -> str:
-        """计算持续时间"""
-        if not start_time:
-            return "0s"
-
-        start = datetime.fromisoformat(start_time)
-        end = datetime.fromisoformat(end_time) if end_time else datetime.now()
-
-        duration = end - start
-
-        minutes = int(duration.total_seconds() // 60)
-        seconds = int(duration.total_seconds() % 60)
-
-        return f"{minutes}m {seconds}s"
-
-    def _generate_recommendations(self, pipeline: Dict[str, Any], reports: List[TestReport]) -> List[str]:
-        """生成改进建议"""
-        recommendations = []
-
-        # 分析步骤失败情况
-        failed_steps = [step for step in pipeline.get("steps", []) if step.get("status") == PipelineStatus.FAILED.value]
-        if failed_steps:
-            recommendations.append(f"有 {len(failed_steps)} 个步骤失败，请检查错误详情")
-
-        # 分析测试覆盖率
-        for report in reports:
-            if report.coverage < 80:
-                recommendations.append(f"测试覆盖率较低 ({report.coverage:.1f}%)，建议增加测试用例")
-
-        # 分析性能
-        total_duration = sum(report.duration for report in reports)
-        if total_duration > 300:  # 5分钟
-            recommendations.append("测试执行时间较长，可以考虑并行执行优化")
-
-        return recommendations
-
-    async def close(self):
-        """关闭资源"""
-        if self.session:
-            await self.session.close()
-        if self.docker_client:
-            self.docker_client.close()
-
-
-# 示例使用
 async def demo_ci_system():
     """演示CI系统功能"""
-    async with ContinuousIntegrationManager() as ci:
-        # 加载配置
-        config = ci.load_config()
-
-        # 创建默认测试步骤
-        if not config.steps:
-            config.steps = [
-                PipelineStep(id="1", name="依赖检查", type=TestType.UNIT, command="pip list"),
-                PipelineStep(
-                    id="2",
-                    name="代码检查",
-                    type=TestType.UNIT,
-                    command="python -m pylint src/ -E",
-                ),
-                PipelineStep(
-                    id="3",
-                    name="单元测试",
-                    type=TestType.UNIT,
-                    command="python -m pytest tests/unit tests/test_data_format.py --tb=short",
-                ),
-                PipelineStep(
-                    id="4",
-                    name="集成测试",
-                    type=TestType.INTEGRATION,
-                    command="python -m pytest tests/integration --tb=short",
-                ),
-                PipelineStep(
-                    id="5",
-                    name="E2E测试",
-                    type=TestType.E2E,
-                    command="python -m pytest tests/e2e --tb=short",
-                ),
-            ]
-
-        # Apply global variables to all steps
-        for step in config.steps:
-            if not step.environment:
-                step.environment = {}
-            step.environment.update(config.variables)
-
-        # 创建测试套件
-        if not config.test_suites:
-            config.test_suites = [
-                TestSuite(
-                    id="unit_tests",
-                    name="单元测试套件",
-                    description="运行所有单元测试",
-                    test_type=TestType.UNIT,
-                    tests=[
-                        "tests/test_data_format.py",
-                        "tests/unit/test_config_driven_table_manager.py",
-                        "tests/unit/test_config_validation.py",
-                    ],
-                    parallel=True,
-                ),
-                TestSuite(
-                    id="integration_tests",
-                    name="集成测试套件",
-                    description="运行所有集成测试",
-                    test_type=TestType.INTEGRATION,
-                    tests=[
-                        "tests/integration/test_api_integration.py",
-                        "tests/integration/test_datasource_switching.py",
-                    ],
-                    parallel=True,
-                ),
-                TestSuite(
-                    id="e2e_tests",
-                    name="端到端测试套件",
-                    description="运行E2E测试",
-                    test_type=TestType.E2E,
-                    tests=[
-                        "tests/e2e/test_web_e2e.py",
-                        "tests/e2e/test_dashboard_page.py",
-                    ],
-                    parallel=True,
-                ),
-            ]
-
-        # 运行流水线
-        pipeline_result = await ci.run_pipeline("demo_pipeline", config)
-
-        # 监控流水线
-        monitor_info = await ci.monitor_pipeline("demo_pipeline")
-
-        # 生成报告
-        report = await ci.generate_report("demo_pipeline")
-
-        print("=== CI系统演示完成 ===")
-        print(f"流水线状态: {pipeline_result['status']}")
-        print(f"监控信息: {monitor_info}")
-        print(f"报告摘要: {report}")
-
-        # 打印失败步骤的详细输出
-        failed_steps = [s for s in pipeline_result.get("steps", []) if s.get("status") == "failed"]
-        if failed_steps:
-            print("\n=== 失败步骤详情 ===")
-            for step in failed_steps:
-                print(f"\n[{step['name']}] Output:")
-                print(step.get("output", "No output"))
-                if step.get("error"):
-                    print(f"[{step['name']}] Error:")
-                    print(step.get("error"))
-
-        return pipeline_result
+    return await _demo_ci_system(ContinuousIntegrationManager, PipelineStep, TestType, TestSuite)
 
 
 if __name__ == "__main__":
