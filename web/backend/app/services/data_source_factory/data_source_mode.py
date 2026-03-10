@@ -5,6 +5,7 @@
 """
 
 import asyncio
+from copy import copy, deepcopy
 import json
 import logging
 import os
@@ -145,6 +146,10 @@ class DataSourceConfig:
     custom_headers: Dict[str, str] = field(default_factory=dict)
     cache_enabled: bool = True
     cache_ttl: int = 300  # 缓存时间(秒)
+
+    def model_copy(self, deep: bool = False) -> "DataSourceConfig":
+        """兼容 Pydantic 风格复制接口。"""
+        return deepcopy(self) if deep else copy(self)
 
 
 class BaseDataSource(IDataSource):
@@ -680,4 +685,3 @@ class DynamicConfigManager:
                 "log_level": "INFO",
             },
         }
-
