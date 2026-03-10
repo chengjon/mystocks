@@ -16,9 +16,12 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 
 # 测试目标模块
 from src.data_access.tdengine_access import TDengineDataAccess
+from tests.unit.data_access._tdengine_access_basic_tail import (
+    TestTDengineDataAccessBasicTailMixin,
+)
 
 
-class TestTDengineDataAccessBasic:
+class TestTDengineDataAccessBasic(TestTDengineDataAccessBasicTailMixin):
     """TDengineDataAccess基础测试 - 专注覆盖率"""
 
     def test_class_import_compatibility(self):
@@ -645,133 +648,6 @@ class TestTDengineDataAccessBasic:
             # 应该抛出数据库异常
             with pytest.raises(Exception, match="Database error"):
                 data_access.create_stable("test", {}, {})
-
-    def test_method_parameter_validation(self):
-        """测试方法参数验证"""
-        import inspect
-
-        data_access = TDengineDataAccess()
-
-        # 检查关键方法的参数
-        methods_to_check = [
-            "create_stable",
-            "create_table",
-            "insert_dataframe",
-            "query_by_time_range",
-            "query_latest",
-            "aggregate_to_kline",
-            "delete_by_time_range",
-            "get_table_info",
-        ]
-
-        for method_name in methods_to_check:
-            method = getattr(data_access, method_name)
-            sig = inspect.signature(method)
-            assert sig is not None
-            # 方法应该有合理的参数数量
-            assert len(sig.parameters) >= 1  # 至少有self参数
-
-    def test_dataframe_processing_capabilities(self):
-        """测试DataFrame处理能力"""
-        data_access = TDengineDataAccess()
-
-        # 测试不同的DataFrame格式
-        test_dfs = [
-            pd.DataFrame({"ts": pd.date_range("2025-01-01", periods=2), "price": [10.0, 20.0]}),
-            pd.DataFrame({"timestamp": pd.date_range("2025-01-01", periods=2), "bid": [0.5, 0.8]}),
-            pd.DataFrame({"ts": ["2025-01-01", "2025-01-02"], "value": [1, 2]}),
-        ]
-
-        for i, df in enumerate(test_dfs):
-            # 测试DataFrame不为空时的处理
-            assert not df.empty
-            assert len(df) > 0
-
-    def test_class_documentation(self):
-        """测试类文档"""
-        class_doc = TDengineDataAccess.__doc__
-        assert class_doc is not None
-        assert len(class_doc.strip()) > 0
-        assert "TDengine" in class_doc
-
-    def test_module_imports(self):
-        """测试模块导入"""
-        from src.data_access.tdengine_access import TDengineDataAccess, datetime, pd
-
-        # 验证关键模块被导入
-        assert TDengineDataAccess is not None
-        assert pd is not None
-        assert datetime is not None
-
-    def test_database_error_handling_in_get_table_info(self):
-        """测试获取表信息时的数据库错误处理"""
-        with patch.object(TDengineDataAccess, "_get_connection") as mock_get_conn:
-            mock_conn = Mock()
-            mock_cursor = Mock()
-            mock_cursor.execute.side_effect = Exception("Connection failed")
-            mock_conn.cursor.return_value = mock_cursor
-            mock_get_conn.return_value = mock_conn
-
-            data_access = TDengineDataAccess()
-
-            result = data_access.get_table_info("test_table")
-
-            # 应该返回默认值而不是抛出异常
-            assert result == {"row_count": 0, "start_time": None, "end_time": None}
-
-    def test_timestamp_formatting_in_insert(self):
-        """测试插入时时间戳格式化"""
-        test_df = pd.DataFrame(
-            {
-                "ts": [datetime(2025, 1, 1, 9, 30, 0, 500000)],
-                "price": [10.5],
-                "volume": [1000],
-            }  # 包含微秒
-        )
-
-        with patch.object(TDengineDataAccess, "_get_connection") as mock_get_conn:
-            mock_conn = Mock()
-            mock_cursor = Mock()
-            mock_conn.cursor.return_value = mock_cursor
-            mock_get_conn.return_value = mock_conn
-
-            data_access = TDengineDataAccess()
-
-            data_access.insert_dataframe("test_table", test_df)
-
-            # 验证SQL包含正确格式的时间戳（毫秒精度）
-            sql_call = mock_cursor.execute.call_args[0][0]
-            assert "2025-01-01 09:30:00.500" in sql_call
-
-    def test_all_method_signatures(self):
-        """测试所有方法签名的完整性"""
-        import inspect
-
-        data_access = TDengineDataAccess()
-
-        expected_methods = [
-            "__init__",
-            "_get_connection",
-            "create_stable",
-            "create_table",
-            "insert_dataframe",
-            "query_by_time_range",
-            "query_latest",
-            "aggregate_to_kline",
-            "delete_by_time_range",
-            "get_table_info",
-            "save_data",
-            "load_data",
-            "close",
-        ]
-
-        for method_name in expected_methods:
-            assert hasattr(data_access, method_name), f"缺少方法: {method_name}"
-
-            method = getattr(data_access, method_name)
-            sig = inspect.signature(method)
-            assert sig is not None, f"方法签名为空: {method_name}"
-
 
 if __name__ == "__main__":
     # 运行测试
