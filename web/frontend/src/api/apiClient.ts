@@ -6,7 +6,7 @@
  */
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-import { UnifiedResponse } from './types/common';
+import type { UnifiedResponse } from './types/common.ts';
 
 // Request configuration
 interface RequestConfig extends AxiosRequestConfig {
@@ -164,7 +164,7 @@ async function getCSRFToken(): Promise<string> {
   return '';
 }
 
-import { mockApiClient } from './mockApiClient';
+import { mockApiClient } from './mockApiClient.ts';
 
 // Export API methods
 export const apiClient = {
