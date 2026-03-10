@@ -70,7 +70,7 @@ const todayCount = computed(() => {
 const importantCount = computed(() => announcements.value.filter((item) => (item.importance_level || 0) >= 4).length);
 const linkedCount = computed(() => announcements.value.filter((item) => !!item.url).length);
 
-const normalizeList = <T>(payload: unknown, keys: string[]): T[] => {
+function normalizeList<T>(payload: unknown, keys: string[]): T[] {
   if (Array.isArray(payload)) return payload as T[];
   if (!payload || typeof payload !== 'object') return [];
 
@@ -80,7 +80,7 @@ const normalizeList = <T>(payload: unknown, keys: string[]): T[] => {
     if (Array.isArray(maybe)) return maybe as T[];
   }
   return [];
-};
+}
 
 const fetchAnnouncements = async (): Promise<void> => {
   const data = await exec(() => monitoringApi.getAnnouncements({ page: 1, page_size: 50 }), {
