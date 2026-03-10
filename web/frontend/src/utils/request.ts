@@ -11,8 +11,8 @@
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig, AxiosRequestHeaders } from 'axios'
 import { ElMessage, ElNotification } from 'element-plus'
-import type { APIResponse } from '@/api/types/generated-types'
-import { API_BASE_URL } from '@/config/runtime-endpoints'
+import type { APIResponse } from '@/api/types/generated-types.ts'
+import { API_BASE_URL } from '@/config/runtime-endpoints.ts'
 
 // Type definitions
 export interface RequestConfig extends Partial<Omit<InternalAxiosRequestConfig, 'headers'>> {
