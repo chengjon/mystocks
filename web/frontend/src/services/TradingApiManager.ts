@@ -15,145 +15,35 @@ import {
     indicatorApi,
     userApi,
     announcementApi,
-    _watchlistApi,
-    realtimeService
-} from '@/api'
-
-// 数据流转管理器
-class DataFlowManager {
-    private cache = new Map<string, CachedData>()
-    private realtimeConnections = new Set<string>()
-
-    // US3架构数据路由
-    async saveData(classification: DataClassification, data: unknown): Promise<boolean> {
-        // 自动路由到最优数据库
-        const route = this.getDataRoute(classification)
-        return await this.saveToDatabase(route.database, data, route.table)
-    }
-
-    async loadData(classification: DataClassification, filters: Record<string, unknown> = {}): Promise<unknown> {
-        const route = this.getDataRoute(classification)
-        const cacheKey = `${classification}-${JSON.stringify(filters)}`
-
-        // 检查缓存
-        const cached = this.cache.get(cacheKey)
-        if (cached && !this.isExpired(cached)) {
-            return cached.data
-        }
-
-        // 从数据库加载
-        const data = await this.loadFromDatabase(route.database, route.table, filters)
-
-        // 缓存数据
-        this.cache.set(cacheKey, {
-            data,
-            timestamp: Date.now(),
-            ttl: 300000 // 5分钟TTL
-        })
-
-        return data
-    }
-
-    private getDataRoute(classification: DataClassification): DataRoute {
-        // US3架构路由映射
-        const routes: Record<DataClassification, DataRoute> = {
-            // 市场数据 → TDengine
-            [DataClassification.TICK_DATA]: { database: 'tdengine', table: 'tick_data' },
-            [DataClassification.MINUTE_KLINE]: { database: 'tdengine', table: 'minute_kline' },
-            [DataClassification.DAILY_KLINE]: { database: 'postgresql', table: 'daily_kline' },
-
-            // 参考数据 → PostgreSQL
-            [DataClassification.SYMBOLS_INFO]: { database: 'postgresql', table: 'symbols_info' },
-            [DataClassification.INDUSTRY_CLASS]: { database: 'postgresql', table: 'industry_class' },
-            [DataClassification.CONCEPT_CLASS]: { database: 'postgresql', table: 'concept_class' },
-
-            // 衍生数据 → PostgreSQL
-            [DataClassification.TECHNICAL_INDICATORS]: { database: 'postgresql', table: 'technical_indicators' },
-            [DataClassification.QUANT_FACTORS]: { database: 'postgresql', table: 'quant_factors' },
-            [DataClassification.TRADE_SIGNALS]: { database: 'postgresql', table: 'trade_signals' },
-
-            // 交易数据 → PostgreSQL
-            [DataClassification.ORDER_RECORDS]: { database: 'postgresql', table: 'order_records' },
-            [DataClassification.TRADE_RECORDS]: { database: 'postgresql', table: 'trade_records' },
-            [DataClassification.POSITION_HISTORY]: { database: 'postgresql', table: 'position_history' },
-
-            // 元数据 → PostgreSQL
-            [DataClassification.USER_CONFIG]: { database: 'postgresql', table: 'user_config' },
-            [DataClassification.SYSTEM_CONFIG]: { database: 'postgresql', table: 'system_config' },
-            [DataClassification.DATA_QUALITY_METRICS]: { database: 'postgresql', table: 'data_quality_metrics' }
-        }
-
-        return routes[classification] || { database: 'postgresql', table: 'default' }
-    }
-
-    private async saveToDatabase(database: string, data: unknown, table: string): Promise<boolean> {
-        try {
-            if (database === 'tdengine') {
-                return await this.saveToTDengine(data, table)
-            } else {
-                return await this.saveToPostgreSQL(data, table)
-            }
-        } catch (error) {
-            console.error(`Failed to save to ${database}:`, error)
-            return false
-        }
-    }
-
-    private async loadFromDatabase(database: string, table: string, filters: unknown): Promise<unknown> {
-        if (database === 'tdengine') {
-            return await this.loadFromTDengine(table, filters)
-        } else {
-            return await this.loadFromPostgreSQL(table, filters)
-        }
-    }
-
-    private async saveToTDengine(data: unknown, table: string): Promise<boolean> {
-        // 实现TDengine批量插入
-        const result = await dataApi.saveBatchData(table, data, {
-            database: 'tdengine',
-            useExecuteValues: true,
-            compression: true
-        })
-        return result.success
-    }
-
-    private async saveToPostgreSQL(data: unknown, table: string): Promise<boolean> {
-        // 实现PostgreSQL批量插入
-        const result = await dataApi.saveBatchData(table, data, {
-            database: 'postgresql',
-            useUpsert: true,
-            conflictColumns: ['id'], // 假设有id字段
-            updateColumns: Object.keys(data[0] || {}).filter(key => key !== 'id')
-        })
-        return result.success
-    }
-
-    private async loadFromTDengine(table: string, filters: unknown): Promise<unknown> {
-        return await dataApi.queryTimeSeries(table, filters)
-    }
-
-    private async loadFromPostgreSQL(table: string, filters: unknown): Promise<unknown> {
-        return await dataApi.queryRelational(table, filters)
-    }
-
-    private isExpired(cached: CachedData): boolean {
-        return Date.now() - cached.timestamp > cached.ttl
-    }
-
-    // 实时数据流管理
-    setupRealtimeUpdates(channel: string, callback: Function): () => void {
-        if (!this.realtimeConnections.has(channel)) {
-            realtimeService.connect(channel, callback)
-            this.realtimeConnections.add(channel)
-        }
-
-        // 返回清理函数
-        return () => {
-            realtimeService.disconnect(channel)
-            this.realtimeConnections.delete(channel)
-        }
-    }
-}
+    _watchlistApi
+} from '@/api/index.ts'
+import { DataFlowManager } from './TradingApiManager.data-flow.ts'
+import {
+    DataClassification,
+    type AnnouncementFilters,
+    type BacktestConfig,
+    type BacktestResult,
+    type BacktestResults,
+    type DataConfig,
+    type DataOperation,
+    type DataOperationResult,
+    type HistoryFilters,
+    type MarketOverview,
+    type MonitoringDashboardData,
+    type OptimizationConfig,
+    type OptimizationResult,
+    type PerformanceAnalysis,
+    type PositionMonitorData,
+    type RealtimeUpdateConfig,
+    type RiskAlertsData,
+    type RiskMonitorData,
+    type SignalFilters,
+    type StrategyManagementData,
+    type SystemHealth,
+    type SystemSettings,
+    type TradingHistory,
+    type TradingSignals
+} from './TradingApiManager.types.ts'
 
 // 主API管理器
 export class TradingApiManager {
@@ -461,174 +351,31 @@ export class TradingApiManager {
     }
 }
 
-// 类型定义
-export interface MarketOverview {
-    indices: unknown[]
-    rankings: unknown[]
-    volume: unknown
-    lastUpdate: string
-}
-
-export interface TradingSignals {
-    signals: unknown[]
-    total: number
-    filters: SignalFilters
-}
-
-export interface TradingHistory {
-    records: unknown[]
-    total: number
-    filters: HistoryFilters
-}
-
-export interface PositionMonitorData {
-    positions: unknown[]
-    pnlAnalysis: unknown
-    riskMetrics: unknown[]
-}
-
-export interface PerformanceAnalysis {
-    returnCurve: unknown[]
-    attribution: unknown
-    metrics: unknown
-}
-
-export interface StrategyManagementData {
-    strategies: unknown[]
-    templates: unknown[]
-}
-
-export interface RiskMonitorData {
-    overview: unknown
-    trends: unknown[]
-    alerts: unknown[]
-}
-
-export interface AnnouncementMonitorData {
-    announcements: unknown[]
-    sentimentAnalysis: unknown
-}
-
-export interface RiskAlertsData {
-    activeAlerts: unknown[]
-    alertRules: unknown[]
-    alertHistory: unknown[]
-}
-
-export interface MonitoringDashboardData {
-    systemStatus: unknown
-    performanceMetrics: unknown[]
-    dataQuality: unknown
-}
-
-export interface SystemSettings {
-    general: unknown
-    datasource: unknown
-    notification: unknown
-    security: unknown
-}
-
-export interface SystemHealth {
-    api: 'healthy' | 'degraded'
-    data: 'healthy' | 'degraded'
-    monitoring: 'healthy' | 'degraded'
-    overall: 'healthy' | 'degraded'
-}
-
-// 枚举和类型
-export enum DataClassification {
-    // 市场数据
-    TICK_DATA = 'tick_data',
-    MINUTE_KLINE = 'minute_kline',
-    DAILY_KLINE = 'daily_kline',
-
-    // 参考数据
-    SYMBOLS_INFO = 'symbols_info',
-    INDUSTRY_CLASS = 'industry_class',
-    CONCEPT_CLASS = 'concept_class',
-
-    // 衍生数据
-    TECHNICAL_INDICATORS = 'technical_indicators',
-    QUANT_FACTORS = 'quant_factors',
-    TRADE_SIGNALS = 'trade_signals',
-
-    // 交易数据
-    ORDER_RECORDS = 'order_records',
-    TRADE_RECORDS = 'trade_records',
-    POSITION_HISTORY = 'position_history',
-
-    // 元数据
-    USER_CONFIG = 'user_config',
-    SYSTEM_CONFIG = 'system_config',
-    DATA_QUALITY_METRICS = 'data_quality_metrics'
-}
-
-interface DataRoute {
-    database: 'tdengine' | 'postgresql'
-    table: string
-}
-
-interface CachedData {
-    data: unknown
-    timestamp: number
-    ttl: number
-}
-
-export interface RealtimeUpdateConfig {
-    channel: string
-    callback: Function
-}
-
-// 过滤器和配置类型
-export interface SignalFilters {
-    type?: string
-    status?: string
-    symbol?: string
-    dateRange?: [Date, Date]
-}
-
-export interface HistoryFilters {
-    symbol?: string
-    type?: string
-    dateRange?: [Date, Date]
-    status?: string
-}
-
-export interface AnnouncementFilters {
-    type?: string
-    dateRange?: [Date, Date]
-    symbol?: string
-}
-
-export interface BacktestConfig {
-    strategyId: string
-    symbol: string
-    startDate: string
-    endDate: string
-    initialCapital: number
-    parameters?: Record<string, unknown>
-}
-
-export interface OptimizationConfig {
-    method: 'grid' | 'genetic' | 'bayesian'
-    parameters: Record<string, unknown[]>
-    target: 'sharpe' | 'returns' | 'max_drawdown'
-    constraints?: Record<string, unknown>
-}
-
-export interface DataConfig {
-    source?: string
-    destination?: string
-    filters?: unknown
-    format?: string
-}
-
-export type DataOperation = 'import' | 'export' | 'cleanup'
-export type BatchExecutionResult = unknown
-export type BacktestResult = unknown
-export type BacktestResults = unknown[]
-export type OptimizationResult = unknown
-export type DataOperationResult = unknown
-
 // 导出单例实例
 export const tradingApiManager = new TradingApiManager()
+export { DataClassification }
+export type {
+    AnnouncementFilters,
+    BacktestConfig,
+    BacktestResult,
+    BacktestResults,
+    DataConfig,
+    DataOperation,
+    DataOperationResult,
+    HistoryFilters,
+    MarketOverview,
+    MonitoringDashboardData,
+    OptimizationConfig,
+    OptimizationResult,
+    PerformanceAnalysis,
+    PositionMonitorData,
+    RealtimeUpdateConfig,
+    RiskAlertsData,
+    RiskMonitorData,
+    SignalFilters,
+    StrategyManagementData,
+    SystemHealth,
+    SystemSettings,
+    TradingHistory,
+    TradingSignals
+} from './TradingApiManager.types.ts'
