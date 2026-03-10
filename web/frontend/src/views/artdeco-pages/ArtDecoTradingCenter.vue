@@ -96,8 +96,7 @@
     import ArtDecoLoadingOverlay from '@/components/artdeco/core/ArtDecoLoadingOverlay.vue'
 
     // ========== 配置系统集成 ==========
-    import { getPageConfig, getTabConfig } from '@/config/pageConfig'
-    import { marketService } from '@/api/services/marketService'
+    import { getPageConfig } from '@/config/pageConfig'
     import { strategyApiService } from '@/api/services/strategyService'
 
     const routeName = 'artdeco-trading-center'
