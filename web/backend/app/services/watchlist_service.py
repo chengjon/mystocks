@@ -4,12 +4,15 @@
 迁移自 OpenStock 项目，适配 PostgreSQL 数据库
 """
 
+import logging
 import os
 from datetime import date, datetime
 from typing import Dict, List, Optional
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
+
+logger = logging.getLogger(__name__)
 
 
 class WatchlistError(Exception):
@@ -48,6 +51,14 @@ def serialize_row(row: dict) -> dict:
 
 class WatchlistService:
     """自选股管理服务"""
+
+    @staticmethod
+    def _log_database_error(action: str, error: Exception) -> None:
+        logger.exception("%s: %s", action, error)
+
+    @staticmethod
+    def _log_warning(message: str, *args) -> None:
+        logger.warning(message, *args)
 
     def __init__(self, db_config: Dict[str, str] = None):
         """
@@ -131,7 +142,7 @@ class WatchlistService:
                     cur.execute(create_table_sql)
                 conn.commit()
         except psycopg2.Error as e:
-            print(f"创建自选股表时警告: {e}")
+            logger.warning("创建自选股表时警告: %s", e, exc_info=True)
 
     def add_to_watchlist(
         self,
@@ -216,10 +227,7 @@ class WatchlistService:
                 conn.commit()
                 return True
         except psycopg2.Error as e:
-            print(f"添加自选股时发生错误: {e}")
-            import traceback
-
-            traceback.print_exc()
+            self._log_database_error("添加自选股时发生错误", e)
             return False
 
     def remove_from_watchlist(self, user_id: int, symbol: str) -> bool:
@@ -246,7 +254,7 @@ class WatchlistService:
                 conn.commit()
                 return deleted_count > 0
         except psycopg2.Error as e:
-            print(f"删除自选股时发生错误: {e}")
+            self._log_database_error("删除自选股时发生错误", e)
             return False
 
     def get_user_watchlist(self, user_id: int) -> List[Dict]:
@@ -276,7 +284,7 @@ class WatchlistService:
                     # 转换为列表，并序列化datetime对象
                     return [serialize_row(dict(row)) for row in rows]
         except psycopg2.Error as e:
-            print(f"获取自选股列表时发生错误: {e}")
+            self._log_database_error("获取自选股列表时发生错误", e)
             return []
 
     def get_watchlist_symbols(self, user_id: int) -> List[str]:
@@ -302,7 +310,7 @@ class WatchlistService:
                     rows = cur.fetchall()
                     return [row[0] for row in rows]
         except psycopg2.Error as e:
-            print(f"获取自选股代码列表时发生错误: {e}")
+            self._log_database_error("获取自选股代码列表时发生错误", e)
             return []
 
     def is_in_watchlist(self, user_id: int, symbol: str) -> bool:
@@ -328,7 +336,7 @@ class WatchlistService:
                     cur.execute(select_sql, (user_id, stock_code))
                     return cur.fetchone() is not None
         except psycopg2.Error as e:
-            print(f"检查自选股时发生错误: {e}")
+            self._log_database_error("检查自选股时发生错误", e)
             return False
 
     def update_watchlist_notes(self, user_id: int, symbol: str, notes: str) -> bool:
@@ -357,7 +365,7 @@ class WatchlistService:
                 conn.commit()
                 return updated_count > 0
         except psycopg2.Error as e:
-            print(f"更新自选股备注时发生错误: {e}")
+            self._log_database_error("更新自选股备注时发生错误", e)
             return False
 
     def get_watchlist_count(self, user_id: int) -> int:
@@ -381,7 +389,7 @@ class WatchlistService:
                     result = cur.fetchone()
                     return result[0] if result else 0
         except psycopg2.Error as e:
-            print(f"获取自选股数量时发生错误: {e}")
+            self._log_database_error("获取自选股数量时发生错误", e)
             return 0
 
     def clear_watchlist(self, user_id: int) -> bool:
@@ -405,7 +413,7 @@ class WatchlistService:
                 conn.commit()
                 return True
         except psycopg2.Error as e:
-            print(f"清空自选股列表时发生错误: {e}")
+            self._log_database_error("清空自选股列表时发生错误", e)
             return False
 
     # ========== 分组管理功能 ==========
@@ -434,7 +442,7 @@ class WatchlistService:
                     rows = cur.fetchall()
                     return [serialize_row(dict(row)) for row in rows]
         except psycopg2.Error as e:
-            print(f"获取用户分组时发生错误: {e}")
+            self._log_database_error("获取用户分组时发生错误", e)
             return []
 
     def get_or_create_group(self, user_id: int, group_name: str) -> Optional[Dict]:
@@ -573,7 +581,7 @@ class WatchlistService:
                 conn.commit()
                 return updated_count > 0
         except psycopg2.Error as e:
-            print(f"更新分组时发生错误: {e}")
+            self._log_database_error("更新分组时发生错误", e)
             return False
 
     def delete_group(self, user_id: int, group_id: int) -> bool:
@@ -604,7 +612,7 @@ class WatchlistService:
                         return False
 
                     if result[0] == "默认分组":
-                        print("不能删除默认分组")
+                        self._log_warning("不能删除默认分组")
                         return False
 
                     # 删除分组
@@ -617,7 +625,7 @@ class WatchlistService:
                 conn.commit()
                 return deleted_count > 0
         except psycopg2.Error as e:
-            print(f"删除分组时发生错误: {e}")
+            self._log_database_error("删除分组时发生错误", e)
             return False
 
     def get_watchlist_by_group(self, user_id: int, group_id: int) -> List[Dict]:
@@ -646,7 +654,7 @@ class WatchlistService:
                     rows = cur.fetchall()
                     return [serialize_row(dict(row)) for row in rows]
         except psycopg2.Error as e:
-            print(f"获取分组自选股时发生错误: {e}")
+            self._log_database_error("获取分组自选股时发生错误", e)
             return []
 
     def move_stock_to_group(self, user_id: int, symbol: str, from_group_id: int, to_group_id: int) -> bool:
@@ -676,7 +684,7 @@ class WatchlistService:
                     )
 
                     if not cur.fetchone():
-                        print(f"目标分组 {to_group_id} 不存在")
+                        self._log_warning("目标分组 %s 不存在", to_group_id)
                         return False
 
                     # 更新股票的分组
@@ -690,10 +698,7 @@ class WatchlistService:
                 conn.commit()
                 return updated_count > 0
         except psycopg2.Error as e:
-            print(f"移动股票时发生错误: {e}")
-            import traceback
-
-            traceback.print_exc()
+            self._log_database_error("移动股票时发生错误", e)
             return False
 
     def get_watchlist_with_groups(self, user_id: int) -> Dict:
@@ -723,7 +728,7 @@ class WatchlistService:
 
             return result
         except Exception as e:
-            print(f"获取分组视图时发生错误: {e}")
+            self._log_database_error("获取分组视图时发生错误", e)
             return {"groups": []}
 
 
