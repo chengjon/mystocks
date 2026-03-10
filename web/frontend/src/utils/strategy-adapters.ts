@@ -8,8 +8,8 @@
 
 import type {
   StrategyListResponse
-} from '@/api/types/generated-types'
-import type { Strategy } from '@/api/types/strategy'
+} from '@/api/types/generated-types.ts'
+import type { Strategy } from '@/api/types/strategy.ts'
 
 // Temporary: Use any for missing generated types
 // TODO: Fix type generation to include these types
