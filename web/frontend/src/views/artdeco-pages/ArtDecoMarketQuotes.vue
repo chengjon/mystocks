@@ -228,8 +228,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import {
-    ArtDecoStatCard, ArtDecoCard, ArtDecoButton, ArtDecoCollapsible,
-    ArtDecoHeader, ArtDecoIcon, ArtDecoBadge, ArtDecoLoading,
+    ArtDecoCard, ArtDecoButton, ArtDecoIcon,
     ArtDecoSelect, ArtDecoInput
 } from '@/components/artdeco'
 import ArtDecoSkeleton from '@/components/artdeco/core/ArtDecoSkeleton.vue'
