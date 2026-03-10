@@ -181,7 +181,7 @@
         return 'normal'
     }
 
-    const getMetricClass = (value: string, benchmark: string): string => {
+    const getMetricClass = (value: string, _benchmark: string): string => {
         if (value === 'N/A') return 'neutral'
         // 这里可以实现更复杂的比较逻辑
         return 'normal'
