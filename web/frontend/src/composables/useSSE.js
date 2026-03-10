@@ -7,6 +7,16 @@
 
 import { ref, onMounted, onUnmounted, _watch } from 'vue'
 import { API_BASE_URL } from '@/config/api.js'
+import {
+  appendBoundedAlert,
+  clearAlertState,
+  createChannelConnectedLogger,
+  createKeepaliveLogger,
+  createRiskAlertRecord,
+  markAlertAsReadById,
+  markAllAlertsAsRead,
+  unwrapSSEPayload
+} from './useSSE.helpers.js'
 
 /**
  * Base SSE composable for generic SSE connections
@@ -67,7 +77,7 @@ export function useSSE(url, options = {}) {
       const sseUrl = buildUrl()
       console.log('[SSE] Connecting to SSE endpoint:', sseUrl)
 
-      eventSource = new EventSource(sseUrl)
+      eventSource = new globalThis.EventSource(sseUrl)
 
       // Connection opened
       eventSource.onopen = () => {
@@ -79,7 +89,7 @@ export function useSSE(url, options = {}) {
         currentReconnectDelay = reconnectDelay
 
         if (reconnectTimer) {
-          clearTimeout(reconnectTimer)
+          globalThis.clearTimeout(reconnectTimer)
           reconnectTimer = null
         }
       }
@@ -101,7 +111,7 @@ export function useSSE(url, options = {}) {
           retryCount.value++
           console.log(`[SSE] Reconnecting in ${currentReconnectDelay}ms (attempt ${retryCount.value}/${maxRetries})`)
 
-          reconnectTimer = setTimeout(() => {
+          reconnectTimer = globalThis.setTimeout(() => {
             currentReconnectDelay = Math.min(currentReconnectDelay * 2, maxReconnectDelay)
             connect()
           }, currentReconnectDelay)
@@ -130,7 +140,7 @@ export function useSSE(url, options = {}) {
     console.log('[SSE] Disconnecting...')
 
     if (reconnectTimer) {
-      clearTimeout(reconnectTimer)
+      globalThis.clearTimeout(reconnectTimer)
       reconnectTimer = null
     }
 
@@ -244,13 +254,11 @@ export function useTrainingProgress(options = {}) {
   const sse = useSSE('/api/v1/sse/training', { clientId, autoConnect })
 
   // Handle connected event
-  sse.addEventListener('connected', (data) => {
-    console.log('[Training] Connected to training channel:', data)
-  })
+  sse.addEventListener('connected', createChannelConnectedLogger('Training', 'training'))
 
   // Handle training progress event
   sse.addEventListener('training_progress', (data) => {
-    const progressData = data.data || data
+    const progressData = unwrapSSEPayload(data)
     taskId.value = progressData.task_id || ''
     progress.value = progressData.progress || 0
     status.value = progressData.status || ''
@@ -265,9 +273,7 @@ export function useTrainingProgress(options = {}) {
   })
 
   // Handle ping event (keepalive)
-  sse.addEventListener('ping', (_data) => {
-    console.log('[Training] Keepalive ping received')
-  })
+  sse.addEventListener('ping', createKeepaliveLogger('Training'))
 
   return {
     // SSE state
@@ -305,13 +311,11 @@ export function useBacktestProgress(options = {}) {
   const sse = useSSE('/api/v1/sse/backtest', { clientId, autoConnect })
 
   // Handle connected event
-  sse.addEventListener('connected', (data) => {
-    console.log('[Backtest] Connected to backtest channel:', data)
-  })
+  sse.addEventListener('connected', createChannelConnectedLogger('Backtest', 'backtest'))
 
   // Handle backtest progress event
   sse.addEventListener('backtest_progress', (data) => {
-    const progressData = data.data || data
+    const progressData = unwrapSSEPayload(data)
     backtestId.value = progressData.backtest_id || ''
     progress.value = progressData.progress || 0
     status.value = progressData.status || ''
@@ -328,9 +332,7 @@ export function useBacktestProgress(options = {}) {
   })
 
   // Handle ping event (keepalive)
-  sse.addEventListener('ping', (_data) => {
-    console.log('[Backtest] Keepalive ping received')
-  })
+  sse.addEventListener('ping', createKeepaliveLogger('Backtest'))
 
   return {
     // SSE state
@@ -367,26 +369,12 @@ export function useRiskAlerts(options = {}) {
   const sse = useSSE('/api/v1/sse/alerts', { clientId, autoConnect })
 
   // Handle connected event
-  sse.addEventListener('connected', (data) => {
-    console.log('[Alerts] Connected to alerts channel:', data)
-  })
+  sse.addEventListener('connected', createChannelConnectedLogger('Alerts', 'alerts'))
 
   // Handle risk alert event
   sse.addEventListener('risk_alert', (data) => {
-    const alert = {
-      ...(data.data || data),
-      id: `alert-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      timestamp: new Date().toISOString(),
-      read: false
-    }
-
-    // Add to alerts list
-    alerts.value.unshift(alert)
-
-    // Limit alerts in memory
-    if (alerts.value.length > maxAlerts) {
-      alerts.value = alerts.value.slice(0, maxAlerts)
-    }
+    const alert = createRiskAlertRecord(data)
+    appendBoundedAlert(alerts, alert, maxAlerts)
 
     // Update latest alert
     latestAlert.value = alert
@@ -396,38 +384,27 @@ export function useRiskAlerts(options = {}) {
   })
 
   // Handle ping event (keepalive)
-  sse.addEventListener('ping', (_data) => {
-    console.log('[Alerts] Keepalive ping received')
-  })
+  sse.addEventListener('ping', createKeepaliveLogger('Alerts'))
 
   /**
    * Mark alert as read
    */
   const markAsRead = (alertId) => {
-    const alert = alerts.value.find(a => a.id === alertId)
-    if (alert && !alert.read) {
-      alert.read = true
-      unreadCount.value = Math.max(0, unreadCount.value - 1)
-    }
+    markAlertAsReadById(alerts, unreadCount, alertId)
   }
 
   /**
    * Mark all alerts as read
    */
   const markAllAsRead = () => {
-    alerts.value.forEach(alert => {
-      alert.read = true
-    })
-    unreadCount.value = 0
+    markAllAlertsAsRead(alerts, unreadCount)
   }
 
   /**
    * Clear all alerts
    */
   const clearAlerts = () => {
-    alerts.value = []
-    latestAlert.value = null
-    unreadCount.value = 0
+    clearAlertState(alerts, latestAlert, unreadCount)
   }
 
   return {
@@ -466,13 +443,11 @@ export function useDashboardUpdates(options = {}) {
   const sse = useSSE('/api/v1/sse/dashboard', { clientId, autoConnect })
 
   // Handle connected event
-  sse.addEventListener('connected', (data) => {
-    console.log('[Dashboard] Connected to dashboard channel:', data)
-  })
+  sse.addEventListener('connected', createChannelConnectedLogger('Dashboard', 'dashboard'))
 
   // Handle dashboard update event
   sse.addEventListener('dashboard_update', (data) => {
-    const updateData = data.data || data
+    const updateData = unwrapSSEPayload(data)
     updateType.value = updateData.update_type || ''
     metrics.value = updateData.data || {}
     lastUpdate.value = new Date()
@@ -484,9 +459,7 @@ export function useDashboardUpdates(options = {}) {
   })
 
   // Handle ping event (keepalive)
-  sse.addEventListener('ping', (_data) => {
-    console.log('[Dashboard] Keepalive ping received')
-  })
+  sse.addEventListener('ping', createKeepaliveLogger('Dashboard'))
 
   return {
     // SSE state

@@ -8,7 +8,7 @@
  * Example Vue composable:
  * ```typescript
  * import { ref, onUnmounted } from 'vue'
- * import { SSEManager, type SSEOptions, type SSEEvent } from '@/utils/sse'
+ * import { SSEManager, type SSEOptions, type SSEEvent } from '@/utils/sse.ts'
  *
  * export function useSSE(name: string, options: SSEOptions) {
  *   const connection = SSEManager.getInstance().create(name, options)
@@ -33,9 +33,9 @@
  * ```
  */
 
-import { SSEManager, SSEConnection, type SSEOptions } from './part-1'
+import { SSEManager, SSEConnection, type SSEOptions } from './part-1.ts'
 
-export function useSSE(name: string, options: SSEOptions) {
+export function useSSE(name: string, options: SSEOptions): SSEConnection {
   // This function is now a placeholder. See the documentation above
   // for how to create a Vue composable wrapper.
   console.warn('useSSE: This is a placeholder. Please implement a Vue composable wrapper.')
@@ -43,4 +43,3 @@ export function useSSE(name: string, options: SSEOptions) {
 }
 
 export default SSEConnection
-
