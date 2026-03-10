@@ -211,6 +211,34 @@ class TestAkshareMarketDataAdapterTestGetStockMixin:
         self.assertIn("main_net_inflow", result.columns)
         self.assertIn("super_large_net_inflow", result.columns)
 
+    async def test_get_stock_board_concept_cons_em_success(self, mock_concept_cons):
+        """测试成功获取概念板块成分股"""
+        # Setup mocks
+        mock_concept_cons.return_value = pd.DataFrame(
+            {
+                "代码": ["000001", "000002"],
+                "名称": ["平安银行", "万科A"],
+                "最新价": [11.5, 15.8],
+                "涨跌幅": [2.1, -0.8],
+                "成交量": [1000000, 500000],
+                "成交额": [11500000, 7900000],
+                "市值": [200000000000, 150000000000],
+                "市盈率-动态": [8.5, 12.3],
+                "市净率": [0.85, 1.2],
+            }
+        )
+
+        # Execute
+        result = await self.adapter.get_stock_board_concept_cons_em("BK0477")
+
+        # Verify
+        self.assertIsInstance(result, pd.DataFrame)
+        self.assertEqual(len(result), 2)
+        self.assertIn("symbol", result.columns)
+        self.assertIn("name", result.columns)
+        self.assertIn("concept_code", result.columns)
+        self.assertEqual(result["concept_code"].iloc[0], "BK0477")
+
     async def test_get_stock_board_concept_cons_em_empty_data(self):
         """测试概念板块成分股返回空数据"""
         # Setup mocks
@@ -275,4 +303,3 @@ class TestAkshareMarketDataAdapterTestGetStockMixin:
             # Verify
             self.assertIsInstance(result, pd.DataFrame)
             self.assertTrue(result.empty)
-
