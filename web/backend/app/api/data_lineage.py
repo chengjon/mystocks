@@ -21,6 +21,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
+from app.api._data_lineage_impact_helper import build_impacted_nodes
 from app.core.config import settings
 from app.core.responses import (
     BusinessCode,
@@ -628,73 +629,8 @@ async def analyze_impact(
     try:
         tracker, conn = await get_lineage_tracker()
 
-        # 获取受影响的节点
         impacted_node_ids = await tracker.get_downstream_impact(request.node_id, max_levels=request.max_levels)
-
-        # 构建影响节点列表（包含路径信息）
-        impacted_nodes = []
-
-        for node_id in impacted_node_ids:
-            # 查询该节点的信息
-            nodes, edges = await tracker._storage.get_lineage(node_id)
-
-            if nodes:
-                node = nodes[0]
-
-                # 查找从源节点到该节点的路径
-                path = [request.node_id]
-                current = request.node_id
-
-                # 简单的路径查找（BFS）
-                queue = [(current, [])]
-                found_path = None
-
-                while queue and not found_path:
-                    curr, curr_path = queue.pop(0)
-                    if curr == node_id:
-                        found_path = curr_path
-                        break
-
-                    # 查找下游边
-                    for edge in edges:
-                        if edge.from_node == curr:
-                            queue.append((edge.to_node, curr_path + [edge.to_node]))
-
-                # 确定影响层级
-                level = 0
-                for edge in edges:
-                    if edge.from_node == request.node_id and edge.to_node == node_id:
-                        level = 1
-                        break
-
-                # 如果不是直接连接，尝试通过其他节点查找
-                if level == 0:
-                    # 使用BFS查找层级
-                    level_queue = [(request.node_id, 0)]
-                    visited_level = {request.node_id}
-
-                    while level_queue:
-                        curr, curr_level = level_queue.pop(0)
-                        if curr == node_id:
-                            level = curr_level
-                            break
-
-                        for edge in edges:
-                            if edge.from_node == curr and edge.to_node not in visited_level:
-                                visited_level.add(edge.to_node)
-                                level_queue.append((edge.to_node, curr_level + 1))
-
-                impact_type = "direct" if level == 1 else "indirect"
-
-                impacted_nodes.append(
-                    ImpactNode(
-                        node_id=node.node_id,
-                        node_type=node.node_type.value,
-                        level=level,
-                        path=path,
-                        impact_type=impact_type,
-                    )
-                )
+        impacted_nodes = await build_impacted_nodes(tracker, request.node_id, impacted_node_ids)
 
         await conn.close()
 
@@ -706,7 +642,7 @@ async def analyze_impact(
         return create_unified_success_response(
             data={
                 "node_id": request.node_id,
-                "impacted_nodes": [n.dict() for n in impacted_nodes],
+                "impacted_nodes": impacted_nodes,
                 "total_impacted": len(impacted_nodes),
                 "max_level": request.max_levels,
                 "analysis_timestamp": datetime.now().isoformat(),
