@@ -1,4 +1,4 @@
-import { LRUCache, getCache, type CacheOptions, type CacheConfig, type CacheStats } from './part-1'
+import { LRUCache, getCache, type CacheOptions, type CacheConfig, type CacheStats } from './part-1.ts'
 
 /**
  * Cache Manager - Wrapper class for LRUCache with simplified API
@@ -84,4 +84,3 @@ export class CacheManager<T = unknown> {
 }
 
 export default LRUCache
-
