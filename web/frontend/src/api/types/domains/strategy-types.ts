@@ -1,4 +1,6 @@
-import { TradeRecord } from './trading-ops';
+import { TradeRecord } from './trading-ops.ts';
+
+export type StrategyStatus = 'draft' | 'active' | 'paused' | 'archived';
 
 export interface StrategyConfig {
   strategy_id?: number | null;
@@ -10,7 +12,7 @@ export interface StrategyConfig {
   max_position_size?: number;
   stop_loss_percent?: number | null;
   take_profit_percent?: number | null;
-  status?: string;
+  status?: StrategyStatus;
   created_at?: string | null;
   updated_at?: string | null;
   tags?: string[];
@@ -35,7 +37,7 @@ export interface StrategyUpdateRequest {
   max_position_size?: number | null;
   stop_loss_percent?: number | null;
   take_profit_percent?: number | null;
-  status?: string | null;
+  status?: StrategyStatus | null;
   tags?: string[] | null;
 }
 
@@ -236,3 +238,215 @@ export interface TaskStatistics {
   last_status?: string | null;
   success_rate?: number;
 }
+
+export interface AhoCorasickMatchRequest {
+  automaton_id?: string;
+  time_series?: number[];
+  threshold?: number;
+}
+
+export interface AhoCorasickTrainRequest {
+  patterns?: PatternDefinition[];
+  market?: string;
+}
+
+export interface AlgorithmHealthStatus {
+  service?: string;
+  status?: string;
+  algorithms_loaded?: boolean;
+  gpu_available?: boolean;
+  supported_algorithms?: number;
+  timestamp?: string;
+}
+
+export interface AlgorithmInfoRequest {
+  algorithm_type?: AlgorithmType;
+}
+
+export interface AlgorithmMetadata {
+  algorithm_type?: AlgorithmType;
+  algorithm_name?: string;
+  version?: string;
+  description?: string | null;
+}
+
+export interface AlgorithmPredictRequest {
+  model_id?: string;
+  features_data?: number[] | number[][];
+  prediction_config?: Record<string, unknown> | null;
+}
+
+export type AlgorithmStatus = 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
+
+export type AlgorithmType = 'svm' | 'decision_tree' | 'naive_bayes' | 'brute_force' | 'knuth_morris_pratt' | 'boyer_moore_horspool' | 'aho_corasick' | 'hidden_markov_model' | 'bayesian_network' | 'n_gram' | 'neural_network';
+
+export interface BacktestListResponse {
+  total_count?: number;
+  backtests?: BacktestResultSummary[];
+  page?: number;
+  page_size?: number;
+}
+
+export type BacktestStatus = 'pending' | 'running' | 'completed' | 'failed';
+
+export interface BayesianNetworkBuildRequest {
+  symbols?: string[];
+  relationships?: RelationshipDefinition[];
+  time_window?: number;
+}
+
+export interface BayesianNetworkInferRequest {
+  network_id?: string;
+  trigger_event?: Record<string, unknown>;
+  max_delay?: number;
+}
+
+export interface EquityCurvePoint {
+  date_field?: string;
+  equity?: number;
+  drawdown?: number;
+  benchmark_equity?: number | null;
+}
+
+export interface FeatureGenerationRequest {
+  stock_code?: string;
+  market?: string;
+  step?: number;
+  include_indicators?: boolean;
+}
+
+export interface HMMPredictRequest {
+  model_id?: string;
+  current_observations?: string[];
+}
+
+export interface HMMTrainRequest {
+  symbol?: string;
+  observations?: string[];
+  hmm_config?: HMMConfig;
+}
+
+export interface HyperparameterSearchRequest {
+  stock_code?: string;
+  market?: string;
+  step?: number;
+  cv?: number;
+  param_grid?: Record<string, unknown[]> | null;
+}
+
+export interface HyperparameterSearchResponse {
+  success?: boolean;
+  message?: string;
+  best_params?: Record<string, unknown>;
+  best_rmse?: number;
+  best_mse?: number;
+  cv_results?: Record<string, unknown>;
+}
+
+export interface MLResponse {
+  success?: boolean;
+  message?: string;
+  data?: unknown | null;
+}
+
+export interface ModelDetailResponse {
+  name?: string;
+  metadata?: Record<string, unknown>;
+  training_history?: Record<string, unknown>[];
+  feature_importance?: Record<string, unknown>[] | null;
+}
+
+export interface ModelEvaluationRequest {
+  model_name?: string;
+  stock_code?: string;
+  market?: string;
+}
+
+export interface ModelEvaluationResponse {
+  success?: boolean;
+  message?: string;
+  model_name?: string;
+  metrics?: Record<string, unknown>;
+}
+
+export interface ModelListResponse {
+  total?: number;
+  models?: ModelInfo[];
+}
+
+export interface ModelPredictRequest {
+  model_name?: string;
+  stock_code?: string;
+  market?: string;
+  days?: number;
+}
+
+export interface ModelPredictResponse {
+  success?: boolean;
+  message?: string;
+  model_name?: string;
+  stock_code?: string;
+  predictions?: PredictionResult[];
+}
+
+export interface ModelTrainResponse {
+  success?: boolean;
+  message?: string;
+  model_name?: string;
+  metrics?: Record<string, unknown>;
+}
+
+export interface NGramPredictRequest {
+  model_id?: string;
+  current_sequence?: number[];
+  n?: number;
+}
+
+export interface NGramTrainRequest {
+  symbol?: string;
+  n?: number;
+  sequence_type?: string;
+  window_size?: number;
+}
+
+export interface NeuralNetworkPredictRequest {
+  model_id?: string;
+  current_data?: Record<string, number[]>;
+}
+
+export interface NeuralNetworkTrainRequest {
+  symbol?: string;
+  input_features?: string[];
+  prediction_horizon?: number;
+  lookback_window?: number;
+  nn_config?: NeuralNetworkConfig;
+}
+
+export interface PatternDefinition {
+  name?: string;
+  sequence?: number[];
+}
+
+export type PredictionLabel = 'BUY' | 'SELL' | 'HOLD';
+
+export interface RelationshipDefinition {
+  from_symbol?: string;
+  to_symbol?: string;
+  delay?: number;
+}
+
+export interface StrategyErrorResponse {
+  error_code?: string;
+  error_message?: string;
+  details?: Record<string, unknown> | null;
+  timestamp?: string;
+}
+
+export interface StrategyListResponse {
+  total_count?: number;
+  strategies?: StrategyConfig[];
+  page?: number;
+  page_size?: number;
+}
+
+export type StrategyType = 'momentum' | 'mean_reversion' | 'breakout' | 'grid' | 'custom';

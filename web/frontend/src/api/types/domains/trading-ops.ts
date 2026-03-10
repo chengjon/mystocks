@@ -216,3 +216,107 @@ export interface DashboardResponse {
   data_source?: string;
   cache_hit?: boolean;
 }
+
+export interface DashboardRequest {
+  user_id?: number;
+  trade_date?: string | null;
+  include_market_overview?: boolean;
+  include_watchlist?: boolean;
+  include_portfolio?: boolean;
+  include_risk_alerts?: boolean;
+}
+
+export interface RiskAlertCreate {
+  name?: string;
+  metric_type?: string;
+  threshold_value?: number;
+  condition?: string;
+  entity_type?: string;
+  entity_id?: number | null;
+  is_active?: boolean;
+  notification_channels?: string[];
+}
+
+export interface RiskAlertListResponse {
+  alerts?: RiskAlertResponse[];
+}
+
+export interface RiskAlertUpdate {
+  name?: string | null;
+  metric_type?: string | null;
+  threshold_value?: number | null;
+  condition?: string | null;
+  entity_type?: string | null;
+  entity_id?: number | null;
+  is_active?: boolean | null;
+  notification_channels?: string[] | null;
+}
+
+export interface RiskHistoryPoint {
+  date?: string;
+  var_95_hist?: number | null;
+  cvar_95?: number | null;
+  beta?: number | null;
+}
+
+export interface RiskMetricsHistoryResponse {
+  metrics_history?: RiskHistoryPoint[];
+}
+
+export interface TradeHistoryRequest {
+  start_date?: string | null;
+  end_date?: string | null;
+  symbol?: string | null;
+  page?: number;
+  page_size?: number;
+}
+
+export interface VaRCVaRRequest {
+  entity_type?: string;
+  entity_id?: number;
+  confidence_level?: number;
+}
+
+export interface VaRCVaRResult {
+  var_95_hist?: number | null;
+  var_95_param?: number | null;
+  var_99_hist?: number | null;
+  cvar_95?: number | null;
+  cvar_99?: number | null;
+  entity_type?: string | null;
+  entity_id?: number | null;
+  confidence_level?: number | null;
+}
+
+export interface WatchlistResponse {
+  id?: string;
+  name?: string;
+  description?: string | null;
+  isDefault?: boolean;
+  isPublic?: boolean;
+  owner?: Record<string, string>;
+  stocks?: WatchlistStockResponse[];
+  statistics?: Record<string, unknown>;
+  tags?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+  lastViewedAt?: string | null;
+  sortOrder?: number;
+}
+
+export interface WatchlistStockResponse {
+  symbol?: string;
+  name?: string;
+  market?: string;
+  currentPrice?: number;
+  changeAmount?: number;
+  changePercent?: number;
+  volume?: number;
+  marketCap?: number;
+  pe?: number | null;
+  pb?: number | null;
+  addedAt?: string;
+  notes?: string | null;
+  alerts?: Record<string, unknown>[];
+  customFields?: Record<string, unknown> | null;
+}

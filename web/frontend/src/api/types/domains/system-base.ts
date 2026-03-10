@@ -281,3 +281,107 @@ export interface WebSocketSubscribeMessage {
   user_id?: string | null;
   timestamp?: number;
 }
+
+export type EventType = 'task.created' | 'task.started' | 'task.progress' | 'task.completed' | 'task.failed' | 'indicator.calculation.started' | 'indicator.calculation.completed' | 'indicator.calculation.failed' | 'stock.indicators.completed' | 'market.data.update' | 'market.price.update' | 'system.heartbeat' | 'system.status_changed';
+
+export interface SubscriptionInfo {
+  plan?: string;
+  status?: string;
+  startDate?: string;
+  endDate?: string;
+  trialEndDate?: string | null;
+  autoRenew?: boolean;
+  features?: string[];
+  limits?: Record<string, number>;
+  nextBillingAmount?: number | null;
+  nextBillingDate?: string | null;
+}
+
+export type TaskPriority = 100 | 200 | 500 | 800 | 900;
+
+export interface TaskResponse {
+  success?: boolean;
+  message?: string;
+  data?: Record<string, unknown> | null;
+  task_id?: string | null;
+  execution_id?: string | null;
+}
+
+export interface TaskSchedule {
+  schedule_type?: string;
+  cron_expression?: string | null;
+  interval_seconds?: number | null;
+  start_time?: string | null;
+  end_time?: string | null;
+  enabled?: boolean;
+}
+
+export type TaskStatus = 'pending' | 'running' | 'success' | 'failed' | 'paused' | 'cancelled';
+
+export type TaskType = 'cron' | 'supervisor' | 'manual' | 'data_sync' | 'indicator_calc' | 'market_fetch' | 'data_processing' | 'strategy_backtest' | 'cache_cleanup' | 'market_sync' | 'notification' | 'health_check' | 'cache_warmup' | 'report_generation';
+
+export interface UserPermissions {
+  canTrade?: boolean;
+  canWithdraw?: boolean;
+  canUseStrategies?: boolean;
+  canAccessAdvancedFeatures?: boolean;
+  canViewMarketData?: boolean;
+  canExportData?: boolean;
+  canManageUsers?: boolean;
+  canViewAnalytics?: boolean;
+  maxStrategies?: number;
+  maxWatchlists?: number;
+  maxApiCalls?: number;
+}
+
+export interface UserPreferences {
+  theme?: string;
+  language?: string;
+  timezone?: string;
+  dateFormat?: string;
+  timeFormat?: string;
+  defaultDashboard?: string;
+  watchlistLayout?: string;
+  chartSettings?: Record<string, unknown>;
+  notifications?: Record<string, boolean>;
+  privacy?: Record<string, unknown>;
+}
+
+export interface UserProfileResponse {
+  userId?: string;
+  username?: string;
+  email?: string;
+  displayName?: string | null;
+  avatar?: string | null;
+  role?: string;
+  status?: string;
+  preferences?: UserPreferences;
+  permissions?: UserPermissions;
+  subscription?: SubscriptionInfo;
+  statistics?: UserStatistics;
+  createdAt?: string;
+  lastLoginAt?: string;
+  lastUpdateAt?: string;
+}
+
+export interface UserStatistics {
+  totalTrades?: number;
+  winningTrades?: number;
+  losingTrades?: number;
+  winRate?: number;
+  totalPnL?: number;
+  totalPnLPercent?: number;
+  averageReturn?: number;
+  sharpeRatio?: number;
+  maxDrawdown?: number;
+  totalCommission?: number;
+  joinDate?: string;
+  activeStrategies?: number;
+  activeWatchlists?: number;
+  followers?: number;
+  following?: number;
+}
+
+export type WebSocketErrorCode = 'AUTH_REQUIRED' | 'AUTH_FAILED' | 'AUTH_TOKEN_EXPIRED' | 'INVALID_MESSAGE_FORMAT' | 'INVALID_ACTION' | 'INVALID_SYMBOL' | 'INVALID_PARAMETERS' | 'PERMISSION_DENIED' | 'RATE_LIMIT_EXCEEDED' | 'ROOM_NOT_FOUND' | 'SUBSCRIPTION_FAILED' | 'ALREADY_SUBSCRIBED' | 'INTERNAL_ERROR' | 'SERVICE_UNAVAILABLE' | 'TIMEOUT';
+
+export type WebSocketMessageType = 'request' | 'subscribe' | 'unsubscribe' | 'ping' | 'response' | 'error' | 'notification' | 'pong';
