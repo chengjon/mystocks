@@ -1,6 +1,6 @@
 // stores/baseStore.ts - 统一Store模板
 import { defineStore } from 'pinia'
-import { ref, reactive, computed } from 'vue'
+import { reactive, computed } from 'vue'
 
 export interface BaseStoreState {
   data: unknown | null
