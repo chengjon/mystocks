@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
-import { klineCache } from '../utils/cacheManager';
-import type { KLineResponse, IndicatorResponse, StopLimitData, KLineData, IntervalType, AdjustType } from '../types/kline';
+import { klineCache } from '../utils/cacheManager.ts';
+import type { KLineResponse, IndicatorResponse, StopLimitData, KLineData, IntervalType, AdjustType } from '../types/kline.ts';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 const TIMEOUT = 30000;
