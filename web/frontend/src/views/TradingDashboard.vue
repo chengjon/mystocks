@@ -315,7 +315,33 @@
 <script setup>
 import { useTradingDashboard } from './composables/useTradingDashboard'
 
-const { isRunning, controlLoading, refreshLoading, strategyLoading, tradingData, strategyPerformance, marketData, riskData, strategyDialogVisible, riskDialogVisible, activeStrategyTab, newStrategy, statusMetrics, tradingStatus, toggleTradingSession, refreshData, loadTradingData, loadStrategyPerformance, loadMarketData, loadRiskData, openStrategyManager, openRiskReport, addStrategy, removeStrategy, viewStrategyDetails, formatNumber, formatPercent, formatTime, formatPerformanceMetrics, formatted, refreshTimer, startAutoRefresh, stopAutoRefresh } = useTradingDashboard()
+const {
+  isRunning,
+  controlLoading,
+  refreshLoading,
+  strategyLoading,
+  tradingData,
+  strategyPerformance,
+  marketData,
+  riskData,
+  strategyDialogVisible,
+  riskDialogVisible,
+  activeStrategyTab,
+  newStrategy,
+  statusMetrics,
+  tradingStatus,
+  toggleTradingSession,
+  refreshData,
+  openStrategyManager,
+  openRiskReport,
+  addStrategy,
+  removeStrategy,
+  viewStrategyDetails,
+  formatNumber,
+  formatPercent,
+  formatTime,
+  formatPerformanceMetrics
+} = useTradingDashboard()
 </script>
 
 <style scoped>
