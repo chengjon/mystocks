@@ -143,9 +143,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
 import { ArrowDown, DocumentDelete } from '@element-plus/icons-vue'
-import type { TableColumnCtx } from 'element-plus'
 
 export interface TableColumn {
   prop: string
