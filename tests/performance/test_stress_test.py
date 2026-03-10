@@ -21,6 +21,14 @@ import psutil
 import pytest
 
 from tests.config.test_config import test_env
+from tests.performance._stress_test_runtime_tail import (
+    SystemMonitor,
+    run_stress_test_example,
+    test_burst_stress,
+    test_extreme_stress,
+    test_gradual_stress,
+)
+from tests.performance._stress_test_tail import StressTestSuiteTailMixin
 
 
 class StressTestType(Enum):
@@ -124,7 +132,7 @@ class CircuitBreaker:
             self.state = "closed"
 
 
-class StressTestSuite:
+class StressTestSuite(StressTestSuiteTailMixin):
     """压力测试套件"""
 
     def __init__(self, config: StressTestConfig):
@@ -664,203 +672,5 @@ class StressTestSuite:
         if hasattr(self, "session"):
             await self.session.close()
 
-    def _generate_stress_test_report(self) -> str:
-        """生成压力测试报告"""
-        total_duration = (self.result.end_time - self.result.start_time).total_seconds()
-
-        # 计算统计指标
-        if self.result.response_times:
-            avg_response_time = sum(self.result.response_times) / len(self.result.response_times)
-            max_response_time = max(self.result.response_times)
-            min_response_time = min(self.result.response_times)
-            p95_response_time = np.percentile(self.result.response_times, 95)
-            p99_response_time = np.percentile(self.result.response_times, 99)
-        else:
-            avg_response_time = max_response_time = min_response_time = p95_response_time = p99_response_time = 0
-
-        # 计算TPS
-        tps = self.result.total_requests / total_duration if total_duration > 0 else 0
-
-        # 生成报告
-        report_data = {
-            "test_summary": {
-                "test_type": self.config.test_type.value,
-                "start_time": self.result.start_time.isoformat(),
-                "end_time": self.result.end_time.isoformat(),
-                "duration_seconds": round(total_duration, 2),
-                "total_requests": self.result.total_requests,
-                "successful_requests": self.result.successful_requests,
-                "failed_requests": self.result.failed_requests,
-                "breakpoint": self.result.breaking_point,
-                "recovery_point": self.result.recovery_point,
-            },
-            "performance_metrics": {
-                "tps": round(tps, 2),
-                "success_rate_percent": round(
-                    (self.result.successful_requests / max(self.result.total_requests, 1)) * 100,
-                    2,
-                ),
-                "avg_response_time_ms": round(avg_response_time, 2),
-                "max_response_time_ms": round(max_response_time, 2),
-                "min_response_time_ms": round(min_response_time, 2),
-                "p95_response_time_ms": round(p95_response_time, 2),
-                "p99_response_time_ms": round(p99_response_time, 2),
-            },
-            "error_analysis": {
-                "total_errors": len(self.result.error_messages),
-                "error_messages": self.result.error_messages[:10],  # 只显示前10个错误
-                "most_common_errors": self._get_most_common_errors(),
-            },
-            "system_metrics": self.result.system_metrics,
-            "test_conclusions": self._generate_test_conclusions(),
-        }
-
-        # 保存报告
-        report_path = f"/tmp/stress_test_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        with open(report_path, "w", encoding="utf-8") as f:
-            json.dump(report_data, f, ensure_ascii=False, indent=2)
-
-        return report_path
-
-    def _get_most_common_errors(self) -> List[Dict[str, Any]]:
-        """获取最常见的错误"""
-        error_counts = {}
-        for error in self.result.error_messages:
-            error_counts[error] = error_counts.get(error, 0) + 1
-
-        return [
-            {"error": error, "count": count}
-            for error, count in sorted(error_counts.items(), key=lambda x: x[1], reverse=True)[:5]
-        ]
-
-    def _generate_test_conclusions(self) -> List[str]:
-        """生成测试结论"""
-        conclusions = []
-
-        success_rate = self.result.successful_requests / max(self.result.total_requests, 1)
-
-        # 分析结果
-        if success_rate >= 0.95:
-            conclusions.append(f"✅ 系统表现优秀，成功率 {success_rate * 100:.1f}%")
-        elif success_rate >= 0.8:
-            conclusions.append(f"⚠️  系统表现一般，成功率 {success_rate * 100:.1f}%")
-        else:
-            conclusions.append(f"❌ 系统表现不佳，成功率 {success_rate * 100:.1f}%")
-
-        if self.result.breaking_point:
-            conclusions.append(f"🚫 系统断点在 {self.result.breaking_point} 用户")
-            if self.result.recovery_point:
-                conclusions.append(f"🔄 系统恢复点在 {self.result.recovery_point} 用户")
-
-        if self.result.response_times:
-            avg_time = sum(self.result.response_times) / len(self.result.response_times)
-            if avg_time > self.config.response_time_threshold * 1000:
-                conclusions.append(f"⏱️  响应时间过长，平均 {avg_time:.0f}ms")
-
-        return conclusions
-
-
-class SystemMonitor:
-    """系统监控器"""
-
-    def __init__(self, monitor_interval: int = 5):
-        self.monitor_interval = monitor_interval
-        self.metrics_history = []
-
-    async def monitor(self, duration_minutes: int) -> List[Dict[str, Any]]:
-        """监控系统性能"""
-        start_time = time.time()
-        end_time = start_time + (duration_minutes * 60)
-
-        while time.time() < end_time:
-            metrics = self._collect_metrics()
-            self.metrics_history.append(metrics)
-
-            await asyncio.sleep(self.monitor_interval)
-
-        return self.metrics_history
-
-    def _collect_metrics(self) -> Dict[str, Any]:
-        """收集当前性能指标"""
-        return {
-            "timestamp": datetime.now().isoformat(),
-            "cpu_percent": psutil.cpu_percent(interval=1),
-            "memory_percent": psutil.virtual_memory().percent,
-            "disk_io_read": psutil.disk_io_counters().read_bytes if psutil.disk_io_counters() else 0,
-            "disk_io_write": psutil.disk_io_counters().write_bytes if psutil.disk_io_counters() else 0,
-            "network_io": psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv,
-        }
-
-
-# Pytest测试用例
-@pytest.mark.performance
-async def test_gradual_stress():
-    """逐步增加压力测试"""
-    config = StressTestConfig(
-        test_type=StressTestType.GRADUAL,
-        initial_users=10,
-        max_users=200,
-        increment_rate=20,
-        increment_interval=15,
-        max_duration_minutes=5,
-    )
-
-    suite = StressTestSuite(config)
-    report = await suite.run_stress_test()
-
-    # 验证测试结果
-    assert suite.result.total_requests > 0
-    assert "performance_metrics" in suite.result
-
-    print(f"📊 逐步压力测试报告: {report}")
-
-
-@pytest.mark.performance
-async def test_burst_stress():
-    """突发压力测试"""
-    config = StressTestConfig(test_type=StressTestType.BURST, max_users=300, max_duration_minutes=5)
-
-    suite = StressTestSuite(config)
-    report = await suite.run_stress_test()
-
-    # 验证测试结果
-    assert suite.result.total_requests > 0
-
-    print(f"📊 突发压力测试报告: {report}")
-
-
-@pytest.mark.performance
-async def test_extreme_stress():
-    """极限压力测试"""
-    config = StressTestConfig(test_type=StressTestType.EXTREME, max_users=500, max_duration_minutes=3)
-
-    suite = StressTestSuite(config)
-    report = await suite.run_stress_test()
-
-    # 验证测试结果
-    assert suite.result.total_requests > 0
-
-    print(f"📊 极限压力测试报告: {report}")
-
-
 if __name__ == "__main__":
-    # 运行压力测试示例
-    async def main():
-        # 配置逐步压力测试
-        config = StressTestConfig(
-            test_type=StressTestType.GRADUAL,
-            initial_users=10,
-            max_users=200,
-            increment_rate=20,
-            increment_interval=15,
-            max_duration_minutes=5,
-        )
-
-        suite = StressTestSuite(config)
-        report = await suite.run_stress_test()
-        print(f"\n🎯 压力测试报告已保存到: {report}")
-
-    # 运行测试
-    import asyncio
-
-    asyncio.run(main())
+    asyncio.run(run_stress_test_example())
