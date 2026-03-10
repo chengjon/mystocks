@@ -4,7 +4,7 @@
  * K线图表类型定义
  */
 
-import type { KLineData, IndicatorCreate } from 'klinecharts'
+import type { KLineData } from 'klinecharts'
 import type { IndicatorSpec, IndicatorResult, OHLCVData } from './indicator'
 
 /**
