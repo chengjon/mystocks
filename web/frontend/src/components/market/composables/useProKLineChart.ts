@@ -1,62 +1,28 @@
-import { ref, onMounted, onUnmounted, watch, computed, type PropType } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { init, dispose, type Chart } from 'klinecharts'
-import { CandleType, TooltipShowRule, TooltipShowType, LineType, YAxisPosition } from 'klinecharts'
-import { RefreshRight } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { marketApi } from '@/api/market'
-import type { KLineChartData } from '@/utils/adapters'
-import * as Indicators from '@/utils/indicators'
 import type { KLineDataPoint } from '@/utils/indicators'
-import * as ATrading from '@/utils/atrading'
-import { PriceLimitStatus, detectPriceLimit, getPriceLimitColor } from '@/utils/atrading'
-
-/**
- * 时间周期定义
- */
-export interface TimePeriod {
-  label: string
-  value: string
-}
-
-/**
- * 技术指标定义
- */
-export interface Indicator {
-  label: string
-  value: string
-}
-
-/**
- * 涨跌停标记数据
- */
-interface PriceLimitMarker {
-  timestamp: number
-  status: PriceLimitStatus
-  color: string
-  price: number
-}
-
-/**
- * 组件Props
- */
-interface ProKLineChartProps {
-  /** 股票代码 */
-  symbol: string
-  /** 可选时间周期 */
-  periods?: TimePeriod[]
-  /** 默认时间周期 */
-  defaultPeriod?: string
-  /** 可选技术指标 */
-  indicators?: Indicator[]
-  /** 图表高度 */
-  height?: string | number
-  /** 是否显示涨跌停标记 */
-  showPriceLimits?: boolean
-  /** 是否使用前复权 */
-  forwardAdjusted?: boolean
-  /** 板块类型 (用于涨跌停检测) */
-  boardType?: 'main' | 'chiNext' | 'star' | 'bje'
-}
+import { applyChartContainerHeight, createProKLineChartStyleConfig } from './useProKLineChart.chart-config.ts'
+import {
+  applyKDJIndicator as applyKDJIndicatorToChart,
+  applyMACDIndicator as applyMACDIndicatorToChart,
+  applyMAIndicator as applyMAIndicatorToChart,
+  applyRSIIndicator as applyRSIIndicatorToChart,
+  applySelectedIndicators,
+  applyVolumeIndicator as applyVolumeIndicatorToChart
+} from './useProKLineChart.indicators.ts'
+import {
+  applyPriceLimitOverlay as applyPriceLimitOverlayToChart,
+  calculatePriceLimitMarkers as buildPriceLimitMarkers
+} from './useProKLineChart.price-limits.ts'
+import {
+  defaultProKLineChartProps,
+  defaultSelectedIndicators,
+  type Indicator,
+  type PriceLimitMarker,
+  type ProKLineChartProps
+} from './useProKLineChart.types.ts'
 
 // @ts-nocheck - Complex third-party chart library integration with dynamic API responses
 /**
@@ -66,33 +32,7 @@ interface ProKLineChartProps {
  */
 export function useProKLineChart() {
   // Props with defaults
-  const props = withDefaults(defineProps<ProKLineChartProps>(), {
-    periods: () => [
-      { label: '分时', value: '1m' },
-      { label: '5分', value: '5m' },
-      { label: '15分', value: '15m' },
-      { label: '30分', value: '30m' },
-      { label: '60分', value: '1h' },
-      { label: '日K', value: '1d' },
-      { label: '周K', value: '1w' },
-      { label: '月K', value: '1M' }
-    ],
-    defaultPeriod: '1d',
-    indicators: () => [
-      { label: 'MA5', value: 'MA5' },
-      { label: 'MA10', value: 'MA10' },
-      { label: 'MA20', value: 'MA20' },
-      { label: 'MA60', value: 'MA60' },
-      { label: 'VOL', value: 'VOL' },
-      { label: 'MACD', value: 'MACD' },
-      { label: 'RSI', value: 'RSI' },
-      { label: 'KDJ', value: 'KDJ' }
-    ],
-    height: '600px',
-    showPriceLimits: true,
-    forwardAdjusted: false,
-    boardType: 'main'
-  })
+  const props = withDefaults(defineProps<ProKLineChartProps>(), defaultProKLineChartProps)
 
   // Emits
   const emit = defineEmits<{
@@ -107,7 +47,7 @@ export function useProKLineChart() {
   const chartInstance = ref<Chart | null>(null)
   const loading = ref<boolean>(false)
   const selectedPeriod = ref<string>(props.defaultPeriod)
-  const selectedIndicators = ref<string[]>(['MA5', 'MA10', 'MA20', 'VOL'])
+  const selectedIndicators = ref<string[]>([...defaultSelectedIndicators])
   const showPriceLimits = ref<boolean>(props.showPriceLimits)
   const useForwardAdjusted = ref<boolean>(props.forwardAdjusted)
   const currentKLineData = ref<KLineDataPoint[]>([])
@@ -133,129 +73,10 @@ export function useProKLineChart() {
 
       // Initialize klinecharts
       chartInstance.value = init(chartContainer.value)
-
-      // Configure chart styles with A股 specific colors (红涨绿跌)
-      const styleConfig = {
-        grid: {
-          show: true,
-          horizontal: {
-            show: true,
-            size: 1,
-            color: 'rgb(255 255 255 / 10%)',
-            style: 'dashed',
-            dashedValue: [2, 2]
-          },
-          vertical: {
-            show: true,
-            size: 1,
-            color: 'rgb(255 255 255 / 10%)',
-            style: 'dashed',
-            dashedValue: [2, 2]
-          }
-        },
-        candle: {
-          type: 'candle_solid',
-          bar: {
-            upColor: '#EF5350',    // 红色 (涨)
-            downColor: '#26A69A',  // 绿色 (跌)
-            noChangeColor: '#888888'
-          },
-          tooltip: {
-            showRule: 'always',
-            showType: 'standard',
-            labels: ['时间: ', '开: ', '收: ', '低: ', '高: ', '涨跌: ', '涨幅: ', '成交量: ', '成交额: '],
-            text: {
-              size: 12,
-              color: '#D9D9D9'
-            }
-          },
-          // 涨跌停标记样式
-          priceMark: {
-            show: true,
-            high: {
-              show: true,
-              color: '#EF5350',
-              textSize: 10
-            },
-            low: {
-              show: true,
-              color: '#26A69A',
-              textSize: 10
-            }
-          }
-        },
-        indicator: {
-          tooltip: {
-            showRule: 'always',
-            showType: 'standard',
-            text: {
-              size: 12,
-              color: '#D9D9D9'
-            }
-          }
-        },
-        crosshair: {
-          show: true,
-          horizontal: {
-            show: true,
-            line: {
-              show: true,
-              style: 'dashed',
-              dashValue: [4, 2],
-              size: 1,
-              color: '#ffffff'
-            },
-            text: {
-              show: true,
-              color: '#D9D9D9',
-              size: 12
-            }
-          },
-          vertical: {
-            show: true,
-            line: {
-              show: true,
-              style: 'dashed',
-              dashValue: [4, 2],
-              size: 1,
-              color: '#ffffff'
-            },
-            text: {
-              show: true,
-              color: '#D9D9D9',
-              size: 12
-            }
-          }
-        },
-        // A股 Y轴标签格式：价格（元）
-        yAxis: {
-          show: true,
-          position: 'right',
-          showTitle: false
-        },
-        // A股 X轴标签格式：日期
-        xAxis: {
-          show: true,
-          axisLabel: {
-            show: true,
-            format: (date: number) => {
-              const d = new Date(date)
-              return `${d.getMonth() + 1}/${d.getDate()}`
-            }
-          }
-        }
-      }
-
-      ;(chartInstance.value as unknown as { setStyles: (config: unknown) => void })?.setStyles(styleConfig)
-
-      // Set chart dimensions
-      if (typeof props.height === 'number') {
-        chartContainer.value.style.height = `${props.height}px`
-      } else {
-        chartContainer.value.style.height = props.height
-      }
-
-      console.log('K-line chart initialized successfully')
+      ;(chartInstance.value as unknown as { setStyles: (config: unknown) => void })?.setStyles(
+        createProKLineChartStyleConfig()
+      )
+      applyChartContainerHeight(chartContainer.value, props.height)
     } catch (error) {
       console.error('Failed to initialize chart:', error)
       emit('error', error as Error)
@@ -295,7 +116,7 @@ export function useProKLineChart() {
           close: number
           volume: number
         }
-        const chartData = (rawData as RawKLineItem[]).map((item) => ({
+        const chartData: KLineDataPoint[] = (rawData as RawKLineItem[]).map((item) => ({
           timestamp: item.timestamp || item.date || Date.now(),
           open: item.open,
           high: item.high,
@@ -305,14 +126,14 @@ export function useProKLineChart() {
         }))
 
         // Save current K-line data for indicator calculation
-        currentKLineData.value = chartData as any
+        currentKLineData.value = chartData
 
         // Calculate price limit markers if enabled
         if (showPriceLimits.value) {
-          calculatePriceLimitMarkers(chartData as any)
+          calculatePriceLimitMarkers(chartData)
         }
 
-        chartInstance.value?.applyNewData(chartData as any)
+        chartInstance.value?.applyNewData(chartData)
         emit('data-loaded', chartData)
         ElMessage.success(`加载 ${chartData.length} 条K线数据`)
 
@@ -345,52 +166,14 @@ export function useProKLineChart() {
    * 计算涨跌停标记
    */
   const calculatePriceLimitMarkers = (data: KLineDataPoint[]): void => {
-    priceLimitMarkers.value = []
-
-    for (let i = 1; i < data.length; i++) {
-      const current = data[i]
-      const prevClose = data[i - 1].close
-
-      const status = detectPriceLimit(
-        current.close,
-        prevClose,
-        props.boardType
-      )
-
-      if (status !== PriceLimitStatus.NONE) {
-        priceLimitMarkers.value.push({
-          timestamp: current.timestamp,
-          status,
-          color: getPriceLimitColor(status),
-          price: current.close
-        })
-      }
-    }
-
-    console.log(`Found ${priceLimitMarkers.value.length} price limit bars`)
+    priceLimitMarkers.value = buildPriceLimitMarkers(data, props.boardType)
   }
 
   /**
    * 应用涨跌停标记到图表
    */
   const applyPriceLimitOverlay = (): void => {
-    if (!chartInstance.value || priceLimitMarkers.value.length === 0) {
-      return
-    }
-
-    try {
-      // 使用 klinecharts 的图形标记功能
-      // Note: klinecharts 9.x API可能需要调整，这里提供基本实现
-      priceLimitMarkers.value.forEach(marker => {
-        // 在涨跌停K线上添加标记
-        // 具体实现取决于klinecharts的API版本
-        console.log(`Price limit marker: ${marker.timestamp} - ${marker.status}`)
-      })
-
-      console.log('Applied price limit overlay')
-    } catch (error: unknown) {
-      console.error('Failed to apply price limit overlay:', error)
-    }
+    applyPriceLimitOverlayToChart(chartInstance.value, priceLimitMarkers.value)
   }
 
   /**
@@ -469,47 +252,8 @@ export function useProKLineChart() {
       return
     }
 
-    const indicators = selectedIndicators.value
-
     try {
-      // Clear all existing indicators first
-      const chartAny = chartInstance.value as unknown
-      // @ts-ignore - removeIndicator can be called with no arguments at runtime
-      chartAny?.removeIndicator?.()
-
-      // Apply each selected indicator
-      indicators.forEach(indicator => {
-        switch (indicator) {
-          case 'MA5':
-            applyMAIndicator(5, 'MA5', '#FF9800')
-            break
-          case 'MA10':
-            applyMAIndicator(10, 'MA10', '#FFC107')
-            break
-          case 'MA20':
-            applyMAIndicator(20, 'MA20', '#4CAF50')
-            break
-          case 'MA60':
-            applyMAIndicator(60, 'MA60', '#2196F3')
-            break
-          case 'VOL':
-            applyVolumeIndicator()
-            break
-          case 'MACD':
-            applyMACDIndicator()
-            break
-          case 'RSI':
-            applyRSIIndicator()
-            break
-          case 'KDJ':
-            applyKDJIndicator()
-            break
-          default:
-            console.warn('Unknown indicator:', indicator)
-        }
-      })
-
-      console.log('Applied indicators:', indicators)
+      applySelectedIndicators(chartInstance.value, selectedIndicators.value)
     } catch (error) {
       console.error('Failed to apply indicators:', error)
       ElMessage.error('应用技术指标失败')
@@ -525,19 +269,7 @@ export function useProKLineChart() {
     color: string
   ): void => {
     try {
-      // 使用klinecharts内置MA指标
-      type ChartWithIndicator = {
-        createIndicator?: (name: string, isPane: boolean, options: { id: string; calcParams: number[] }) => void
-      }
-      const chartAny = chartInstance.value as unknown as ChartWithIndicator
-      chartAny?.createIndicator?.('MA', true, {
-        id: name,
-        calcParams: [period]
-      })
-
-      // 尝试设置MA颜色 (可能需要根据klinecharts版本调整)
-      // Note: klinecharts 9.x可能不支持直接修改颜色，需要查看API文档
-      console.log(`Applied ${name} with color ${color}`)
+      applyMAIndicatorToChart(chartInstance.value, period, name, color)
     } catch (error: unknown) {
       console.error(`Failed to apply ${name}:`, error)
     }
@@ -548,15 +280,7 @@ export function useProKLineChart() {
    */
   const applyVolumeIndicator = (): void => {
     try {
-      // klinecharts has built-in volume indicator
-      type ChartWithIndicator = {
-        createIndicator?: (name: string, isPane: boolean, options: { id: string }) => void
-      }
-      const chartAny = chartInstance.value as unknown as ChartWithIndicator
-      chartAny?.createIndicator?.('VOL', false, {
-        id: 'VOL'
-      })
-      console.log('Applied VOL indicator')
+      applyVolumeIndicatorToChart(chartInstance.value)
     } catch (error: unknown) {
       console.error('Failed to apply VOL:', error)
     }
@@ -567,16 +291,7 @@ export function useProKLineChart() {
    */
   const applyMACDIndicator = (): void => {
     try {
-      // klinecharts has built-in MACD indicator
-      type ChartWithIndicator = {
-        createIndicator?: (name: string, isPane: boolean, options: { id: string; calcParams: number[] }) => void
-      }
-      const chartAny = chartInstance.value as unknown as ChartWithIndicator
-      chartAny?.createIndicator?.('MACD', false, {
-        id: 'MACD',
-        calcParams: [12, 26, 9]
-      })
-      console.log('Applied MACD indicator')
+      applyMACDIndicatorToChart(chartInstance.value)
     } catch (error: unknown) {
       console.error('Failed to apply MACD:', error)
     }
@@ -587,16 +302,7 @@ export function useProKLineChart() {
    */
   const applyRSIIndicator = (): void => {
     try {
-      // klinecharts has built-in RSI indicator
-      type ChartWithIndicator = {
-        createIndicator?: (name: string, isPane: boolean, options: { id: string; calcParams: number[] }) => void
-      }
-      const chartAny = chartInstance.value as unknown as ChartWithIndicator
-      chartAny?.createIndicator?.('RSI', false, {
-        id: 'RSI',
-        calcParams: [14]
-      })
-      console.log('Applied RSI indicator')
+      applyRSIIndicatorToChart(chartInstance.value)
     } catch (error: unknown) {
       console.error('Failed to apply RSI:', error)
     }
@@ -607,16 +313,7 @@ export function useProKLineChart() {
    */
   const applyKDJIndicator = (): void => {
     try {
-      // klinecharts has built-in KDJ indicator
-      type ChartWithIndicator = {
-        createIndicator?: (name: string, isPane: boolean, options: { id: string; calcParams: number[] }) => void
-      }
-      const chartAny = chartInstance.value as unknown as ChartWithIndicator
-      chartAny?.createIndicator?.('KDJ', false, {
-        id: 'KDJ',
-        calcParams: [9, 3, 3]
-      })
-      console.log('Applied KDJ indicator')
+      applyKDJIndicatorToChart(chartInstance.value)
     } catch (error: unknown) {
       console.error('Failed to apply KDJ:', error)
     }
@@ -655,8 +352,6 @@ export function useProKLineChart() {
       // Remove price limit markers (需要实现清除逻辑)
       ElMessage.info('涨跌停标记已关闭')
     }
-
-    console.log('Show price limits:', show)
   }
 
   /**
@@ -670,8 +365,6 @@ export function useProKLineChart() {
 
     // Reload data with new adjustment setting
     loadHistoricalData()
-
-    console.log('Use forward adjustment:', forward)
   }
 
   /**
