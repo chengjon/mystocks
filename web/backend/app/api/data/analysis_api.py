@@ -10,6 +10,8 @@ from datetime import datetime
 from dataclasses import dataclass
 from enum import Enum
 
+from app.api.data._analysis_api_tail import AnalysisDataServiceTailMixin
+
 logger = __import__("logging").getLogger(__name__)
 
 
@@ -113,7 +115,7 @@ class AnalysisResult:
         }
 
 
-class AnalysisDataService:
+class AnalysisDataService(AnalysisDataServiceTailMixin):
     """分析数据服务"""
 
     def __init__(self):
@@ -676,64 +678,3 @@ class AnalysisDataService:
 
         except Exception:
             return "数据不足，无法生成建议"
-
-    async def validate_data(self, data: Any, data_type: str) -> Dict:
-        """
-        验证数据质量
-        
-        Args:
-            data: 待验证数据
-            data_type: 数据类型
-        
-        Returns:
-            Dict: 验证结果
-        """
-        try:
-            result = {
-                'is_valid': True,
-                'data_type': data_type,
-                'validation_time': datetime.now().isoformat(),
-                'errors': [],
-                'warnings': []
-            }
-
-            if data_type == 'price':
-                if not data or data <= 0:
-                    result['is_valid'] = False
-                    result['errors'].append("价格数据无效")
-
-            elif data_type == 'volume':
-                if not data or data <= 0:
-                    result['is_valid'] = False
-                    result['errors'].append("成交量数据无效")
-
-            elif data_type == 'ratio':
-                if not data or data <= 0:
-                    result['is_valid'] = False
-                    result['errors'].append("比率数据无效")
-                elif data == 0:
-                    result['warnings'].append("比率为0可能导致除零错误")
-
-            return result
-
-        except Exception as e:
-            self.logger.error(f"数据验证失败: {e}")
-            return {
-                'is_valid': False,
-                'data_type': data_type,
-                'validation_time': datetime.now().isoformat(),
-                'errors': [str(e)],
-                'warnings': []
-            }
-
-    def _log_request_start(self, method: str, params: Dict):
-        """记录请求开始"""
-        self.logger.info(f"开始{method}: {params}")
-
-    def _log_request_success(self, method: str, result: Dict):
-        """记录请求成功"""
-        self.logger.info(f"{method}成功: {result}")
-
-    def _log_request_error(self, method: str, error: Exception):
-        """记录请求错误"""
-        self.logger.error(f"{method}失败: {error}")
