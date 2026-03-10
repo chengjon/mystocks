@@ -1,8 +1,8 @@
-
 /**
  * 字段名映射配置
  * 定义后端snake_case字段与前端camelCase字段的映射关系
  */
+import type { TradeContract } from './part-1.trade-contract'
 
 // Type definitions for enums
 export type SignalType = 'buy' | 'sell' | 'hold' | 'strong_buy' | 'strong_sell'
@@ -497,23 +497,4 @@ export interface BacktestContract {
   trades: TradeContract[];
 }
 
-export interface TradeContract {
-  id: string;
-  symbol: string;
-  type: TradeType;
-  status: TradeStatus;
-  direction: TradeDirection;
-  entryPrice: number;
-  exitPrice: number;
-  entryTime: string;
-  exitTime: string;
-  entryQuantity: number;
-  exitQuantity: number;
-  entryAmount: number;
-  exitAmount: number;
-  commission: number;
-  slippage: number;
-  pnl: number;
-  pnlPercent: number;
-}
-
+export type { TradeContract } from './part-1.trade-contract'
