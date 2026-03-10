@@ -1,5 +1,5 @@
 
-import type { MarketIndex } from './types-1'
+import type { MarketIndex } from './types-1.ts'
 
 /**
  * Individual sector heatmap item
