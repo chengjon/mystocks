@@ -4,18 +4,18 @@
  * Provides methods for managing trades, orders, and positions.
  */
 
-import { request } from '@/utils/request'
-import { TradeAdapter } from '@/utils/trade-adapters'
+import { request } from '@/utils/request.ts'
+import { TradeAdapter } from '@/utils/trade-adapters.ts'
 import type {
   OrderRequest
 // OrderResponse  // Currently unused
-} from '@/api/types/additional-types'
+} from '@/api/types/additional-types.ts'
 import type {
   OrderVM,
   PositionVM,
   AccountOverviewVM,
   TradeHistoryVM
-} from '@/utils/trade-adapters'
+} from '@/utils/trade-adapters.ts'
 
 class TradeApiService {
   private baseUrl = '/api/trade'
