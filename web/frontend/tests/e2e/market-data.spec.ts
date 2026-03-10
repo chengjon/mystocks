@@ -227,7 +227,7 @@ test.describe("Market Data Module - E2E Tests", () => {
 
     test("should keep route stable on revisit", async ({ page }) => {
       await gotoRealtime(page)
-      await page.goto(`${FRONTEND_BASE_URL}/dealing-room`)
+      await page.goto(`${FRONTEND_BASE_URL}/dashboard`)
       await page.goto(`${FRONTEND_BASE_URL}${MARKET_ROUTES.realtime}`)
       await expect(page).toHaveURL(/\/market\/realtime/)
       await expect(page.locator(".market-realtime-tab")).toBeVisible()

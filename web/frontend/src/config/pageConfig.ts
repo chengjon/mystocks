@@ -84,8 +84,8 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
   'dashboard': {
     type: 'page',
     routePath: 'dashboard',
-    title: '仪表盘',
-    description: '仪表盘概览',
+    title: '交易室',
+    description: '交易室概览',
     apiEndpoint: '/api/dashboard/overview',
     wsChannel: 'dashboard:realtime',
     component: 'ArtDecoDashboard.vue',

@@ -14,14 +14,14 @@ const router = createRouter({
     history: createWebHistory(),
     routes: [
         { path: '/', name: 'home', meta: { title: 'Home' } },
-        { path: '/dashboard', name: 'dashboard', meta: { title: 'Dashboard' } },
+        { path: '/dashboard', name: 'dashboard', meta: { title: 'Trading Room' } },
         { path: '/trading', name: 'trading', meta: { title: 'Trading' } }
     ]
 })
 
 describe('ArtDecoBaseLayout Navigation', () => {
     const mockMenuItems = [
-        { path: '/dashboard', label: 'Dashboard', icon: '📊' },
+        { path: '/dashboard', label: 'Trading Room', icon: '📊' },
         { path: '/trading', label: 'Trading', icon: '💼' }
     ]
 
@@ -56,7 +56,7 @@ describe('ArtDecoBaseLayout Navigation', () => {
             const wrapper = mount(ArtDecoBaseLayout, {
                 props: {
                     menuItems: mockMenuItems,
-                    pageTitle: 'Dashboard'
+                    pageTitle: 'Trading Room'
                 },
                 global: {
                     plugins: [router]

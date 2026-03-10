@@ -166,7 +166,7 @@ export const ARTDECO_MENU_ENHANCED = ARTDECO_MENU_ITEMS
 
 // 特殊路由定义 (非菜单项)
 export const DEALING_ROOM_CONFIG: MenuItem = {
-  path: '/dealing-room',
+  path: '/dashboard',
   label: '交易室',
   icon: 'Home',
   businessKey: 'core.dealing_room'

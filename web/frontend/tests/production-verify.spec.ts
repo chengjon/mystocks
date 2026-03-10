@@ -110,17 +110,17 @@ test.describe('全链路深度验收 (Comprehensive Verification)', () => {
   test('路由健壮性验证 (Route Robustness)', async ({ page }) => {
     // A. 根路径重定向
     await page.goto(FRONTEND_URL);
-    await expect(page).toHaveURL(/\/dealing-room/);
-    logResult('✅', '根路径 / 自动重定向到 /dealing-room');
+    await expect(page).toHaveURL(/\/dashboard/);
+    logResult('✅', '根路径 / 自动重定向到 /dashboard');
 
-    // B. 直接访问 /dealing-room (避免 CSR 路由问题)
+    // B. 直接访问旧入口 /dealing-room，验证兼容重定向
     await page.goto(`${FRONTEND_URL}/dealing-room`);
-    await expect(page).toHaveURL(/\/dealing-room/);
-    logResult('✅', '直接访问 /dealing-room 正常');
+    await expect(page).toHaveURL(/\/dashboard/);
+    logResult('✅', '旧入口 /dealing-room 已兼容重定向到 /dashboard');
 
     // C. 页面刷新状态保持
     await page.reload();
-    await expect(page).toHaveURL(/\/dealing-room/);
+    await expect(page).toHaveURL(/\/dashboard/);
     const sidebar = page.locator('.artdeco-sidebar-v3');
     await expect(sidebar).toBeVisible();
     logResult('✅', '页面刷新后状态不丢失');
@@ -149,7 +149,7 @@ test.describe('全链路深度验收 (Comprehensive Verification)', () => {
   // 2. 组件“可用性”量化验证
   // ---------------------------------------------------------------------------
   test('组件布局与渲染质量 (Layout & Rendering)', async ({ page }) => {
-    await page.goto(`${FRONTEND_URL}/dealing-room`);
+    await page.goto(`${FRONTEND_URL}/dashboard`);
     await page.waitForLoadState('networkidle');
 
     // A. 侧边栏尺寸
@@ -219,7 +219,7 @@ test.describe('全链路深度验收 (Comprehensive Verification)', () => {
       }
     });
 
-    await page.goto(`${FRONTEND_URL}/dealing-room`);
+    await page.goto(`${FRONTEND_URL}/dashboard`);
     await page.waitForTimeout(2000); // 等待异步资源加载
 
     // A. 验证 JS 错误
@@ -252,7 +252,7 @@ test.describe('全链路深度验收 (Comprehensive Verification)', () => {
       route.abort('failed'); // 模拟网络中断
     });
 
-    await page.goto(`${FRONTEND_URL}/dealing-room`);
+    await page.goto(`${FRONTEND_URL}/dashboard`);
     
     // 验证页面没有完全白屏
     const sidebar = page.locator('.artdeco-sidebar-v3');

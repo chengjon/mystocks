@@ -10,7 +10,7 @@
             <div class="artdeco-corner-tr"></div>
 
             <!-- Logo with ArtDeco style -->
-            <router-link to="/artdeco/dashboard" class="artdeco-logo">
+            <router-link to="/dashboard" class="artdeco-logo">
                 <div class="artdeco-logo-frame">
                     <span class="artdeco-logo-text">MYSTOCKS</span>
                     <span class="artdeco-logo-subtitle">ArtDeco Edition</span>
@@ -33,11 +33,11 @@
                     <div class="artdeco-nav-section-line"></div>
                 </div>
 
-                <router-link to="/artdeco/dashboard" class="artdeco-nav-item" active-class="active">
+                <router-link to="/dashboard" class="artdeco-nav-item" active-class="active">
                     <div class="artdeco-nav-number">Ⅰ</div>
                     <div class="artdeco-nav-content">
-                        <div class="artdeco-nav-label">主控仪表盘</div>
-                        <div class="artdeco-nav-subtitle">Dashboard</div>
+                        <div class="artdeco-nav-label">交易室总览</div>
+                        <div class="artdeco-nav-subtitle">Dealing Room</div>
                     </div>
                 </router-link>
 

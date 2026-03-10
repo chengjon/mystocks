@@ -24,7 +24,7 @@
                 <div class="helpful-links">
                     <h4>可能有用的链接</h4>
                     <ul>
-                        <li><router-link to="/dashboard">仪表盘</router-link></li>
+                        <li><router-link to="/dashboard">交易室</router-link></li>
                         <li><router-link to="/analysis">数据分析</router-link></li>
                         <li><router-link to="/settings">系统设置</router-link></li>
                     </ul>

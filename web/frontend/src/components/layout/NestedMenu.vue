@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 /**
@@ -165,7 +165,7 @@ const handleMenuSelect = (index, indexPath) => {
  * const menuList = [
  *   {
  *     id: 'dashboard',
- *     title: '仪表盘',
+ *     title: '交易室',
  *     path: '/dashboard',
  *     icon: 'Monitor',
  *     disabled: false

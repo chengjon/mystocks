@@ -18,7 +18,7 @@
       <div class="artdeco-breadcrumb-container">
         <ArtDecoBreadcrumb
           home-title="交易室"
-          home-path="/dealing-room"
+          home-path="/dashboard"
           :show-icon="true"
         />
       </div>
@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useMenuStore } from '@/stores/menuStore'
 import { usePreferenceStore } from '@/stores/preferenceStore'

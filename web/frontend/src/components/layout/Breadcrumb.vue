@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowRight } from '@element-plus/icons-vue'
 
@@ -42,7 +42,7 @@ import { ArrowRight } from '@element-plus/icons-vue'
  * @example
  * <Breadcrumb
  *   :show-icon="true"
- *   home-title="DASHBOARD"
+ *   home-title="交易室"
  * />
  */
 
@@ -51,7 +51,7 @@ const props = defineProps({
   // 首页标题（大写）
   homeTitle: {
     type: String,
-    default: 'DASHBOARD'
+    default: '交易室'
   },
   // 首页路径
   homePath: {

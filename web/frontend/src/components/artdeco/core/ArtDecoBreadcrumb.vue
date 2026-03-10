@@ -55,7 +55,6 @@
 <script setup lang="ts">
     import { computed } from 'vue'
     import { useRoute } from 'vue-router'
-    import type { RouteLocationNormalized } from 'vue-router'
     import ArtDecoIcon from './ArtDecoIcon.vue'
 
     /**
@@ -75,7 +74,7 @@
      * @example
      * <ArtDecoBreadcrumb
      *   :show-icon="true"
-     *   home-title="DASHBOARD"
+     *   home-title="DEALING ROOM"
      *   home-path="/dashboard"
      * />
      */
@@ -100,7 +99,7 @@
 
     const props = withDefaults(defineProps<Props>(), {
         homeTitle: 'DEALING ROOM',
-        homePath: '/dealing-room',
+        homePath: '/dashboard',
         showIcon: true,
         customBreadcrumb: () => ({})
     })

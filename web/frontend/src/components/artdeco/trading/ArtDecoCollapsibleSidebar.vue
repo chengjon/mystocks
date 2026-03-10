@@ -8,7 +8,7 @@
 
     <!-- Top Section: Brand -->
     <div class="sidebar-brand">
-      <router-link to="/dealing-room" class="brand-link">
+      <router-link to="/dashboard" class="brand-link">
         <div class="brand-icon-frame">
           <span class="brand-text">{{ preferenceStore.sidebarCollapsed ? 'MS' : 'MYSTOCKS' }}</span>
         </div>

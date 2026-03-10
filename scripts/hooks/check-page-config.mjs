@@ -18,7 +18,7 @@
 
 import { readFileSync, existsSync } from 'fs'
 import { fileURLToPath } from 'url'
-import { dirname, join, relative } from 'path'
+import { dirname, join, relative, resolve } from 'path'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -73,13 +73,105 @@ function log(message, verbose = false, options = {}) {
   }
 }
 
-function extractRoutes(routerContent) {
+function parseStringConstantDeclarations(content, exportOnly = false) {
+  const constants = {}
+  const exportPrefix = exportOnly ? 'export\\s+' : '(?:export\\s+)?'
+  const constRegex = new RegExp(
+    `${exportPrefix}const\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*(['"\`])([^\\2]*?)\\2`,
+    'g'
+  )
+
+  let match
+  while ((match = constRegex.exec(content)) !== null) {
+    const [, name, , value] = match
+    constants[name] = value
+  }
+
+  return constants
+}
+
+function resolveImportFilePath(baseDir, importPath) {
+  const candidates = [
+    importPath,
+    `${importPath}.ts`,
+    `${importPath}.js`,
+    join(importPath, 'index.ts'),
+    join(importPath, 'index.js')
+  ]
+
+  for (const candidate of candidates) {
+    const resolvedPath = resolve(baseDir, candidate)
+    if (existsSync(resolvedPath)) {
+      return resolvedPath
+    }
+  }
+
+  return null
+}
+
+function parseImportedStringConstants(content, filePath) {
+  const constants = {}
+  const importRegex = /import\s+\{\s*([^}]+)\s*\}\s+from\s+['"]([^'"]+)['"]/g
+  const baseDir = dirname(filePath)
+
+  let match
+  while ((match = importRegex.exec(content)) !== null) {
+    const [, importedNames, importPath] = match
+
+    if (!importPath.startsWith('.')) {
+      continue
+    }
+
+    const resolvedImportPath = resolveImportFilePath(baseDir, importPath)
+    if (!resolvedImportPath) {
+      continue
+    }
+
+    const importedContent = readFileSync(resolvedImportPath, 'utf-8')
+    const exportedConstants = parseStringConstantDeclarations(importedContent, true)
+
+    for (const importedName of importedNames.split(',').map((item) => item.trim()).filter(Boolean)) {
+      const [originalName, aliasName] = importedName.split(/\s+as\s+/).map((item) => item.trim())
+      const localName = aliasName || originalName
+
+      if (exportedConstants[originalName]) {
+        constants[localName] = exportedConstants[originalName]
+      }
+    }
+  }
+
+  return constants
+}
+
+function resolveRouteValue(rawValue, constants) {
+  const value = rawValue.trim()
+
+  if (
+    (value.startsWith("'") && value.endsWith("'")) ||
+    (value.startsWith('"') && value.endsWith('"')) ||
+    (value.startsWith('`') && value.endsWith('`'))
+  ) {
+    return value.slice(1, -1)
+  }
+
+  return constants[value] || null
+}
+
+function extractRoutes(routerContent, routerPath) {
   const routes = []
-  const routeRegex = /path:\s*['"]([^'"]+)['"]\s*,\s*name:\s*['"]([^'"]+)['"]\s*,\s*component:/g
+  const constants = {
+    ...parseStringConstantDeclarations(routerContent),
+    ...parseImportedStringConstants(routerContent, routerPath)
+  }
+  const routeRegex = /path:\s*(['"`][^'"`]+['"`]|[A-Za-z_$][\w$]*)\s*,\s*name:\s*(['"`][^'"`]+['"`]|[A-Za-z_$][\w$]*)\s*,\s*component:/g
   
   let match
   while ((match = routeRegex.exec(routerContent)) !== null) {
-    const routeName = match[2]
+    const routeName = resolveRouteValue(match[2], constants)
+
+    if (!routeName) {
+      continue
+    }
     
     if (CONFIG.ignoreRoutes.includes(routeName)) {
       continue
@@ -214,7 +306,7 @@ function validateRoutes(options) {
   }
   
   const routerContent = readFileSync(CONFIG.routerPath, 'utf-8')
-  const routes = extractRoutes(routerContent)
+  const routes = extractRoutes(routerContent, CONFIG.routerPath)
   result.routesChecked = routes.length
   
   log(`Found ${routes.length} routes in router`, options.verbose)

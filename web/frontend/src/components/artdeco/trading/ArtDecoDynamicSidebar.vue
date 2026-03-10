@@ -79,7 +79,7 @@
 
     // 模块配置
     const modules = [
-        { key: 'dashboard', label: '仪表盘', icon: '📊' },
+        { key: 'dashboard', label: '交易室', icon: '📊' },
         { key: 'market', label: '市场行情', icon: '📈' },
         { key: 'stocks', label: '股票管理', icon: '📋' },
         { key: 'analysis', label: '投资分析', icon: '🔍' },
@@ -91,10 +91,10 @@
     // 各模块的菜单项配置
     const menuConfigs = {
         dashboard: {
-            title: 'DASHBOARD',
+            title: 'DEALING ROOM',
             icon: '◈',
             items: [
-                { path: '/dashboard', label: '主控仪表盘', subtitle: 'Dashboard', number: 'Ⅰ' },
+                { path: '/dashboard', label: '交易室总览', subtitle: 'Dealing Room', number: 'Ⅰ' },
                 { path: '/artdeco-test', label: 'ArtDeco测试', subtitle: 'ArtDeco Test', number: 'Ⅱ' }
             ]
         },

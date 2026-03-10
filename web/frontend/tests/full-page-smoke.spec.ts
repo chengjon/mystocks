@@ -47,7 +47,7 @@ test.describe('全页面地毯式冒烟测试 (Full Site Crawl)', () => {
       // 首次进入任意页面以触发 Store 初始化
       // 避免直接访问深度子路由导致的认证竞争
       if (allPagePaths.indexOf(path) === 0) {
-         await page.goto(`${BASE_URL}/dealing-room`);
+         await page.goto(`${BASE_URL}/dashboard`);
       }
       
       console.log(`正在检查: ${BASE_URL}${path}`);

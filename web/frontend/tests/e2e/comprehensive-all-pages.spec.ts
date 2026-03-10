@@ -29,8 +29,8 @@ const PAGES = [
   // Public pages
   { name: 'Login', path: '/login', requiresAuth: false },
 
-  // 0. Dealing Room (交易室 - 主仪表板)
-  { name: 'DealingRoom', path: '/dealing-room', requiresAuth: true },
+  // 0. Dashboard / Trading Room (交易室 - 主仪表板)
+  { name: 'Dashboard', path: '/dashboard', requiresAuth: true },
 
   // 1. Market Domain (市场行情 - 3 pages)
   { name: 'Market-Realtime', path: '/market/realtime', requiresAuth: true },
@@ -293,7 +293,7 @@ test.describe('All Pages (Authenticated)', async () => {
       await setupFallbackRoutes(page);
     }
 
-    await page.goto(`${FRONTEND_URL}/dealing-room`, {
+    await page.goto(`${FRONTEND_URL}/dashboard`, {
       waitUntil: 'domcontentloaded',
       timeout: 30000,
     });

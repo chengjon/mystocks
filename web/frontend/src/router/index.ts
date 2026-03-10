@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { authGuard } from './guards'
+import { HOME_ROUTE_NAME, HOME_ROUTE_PATH, LEGACY_HOME_ROUTE_PATH } from './homeRoute'
 
 /**
  * MyStocks Frontend Router - V3.2 Elite
@@ -22,12 +23,12 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('@/layouts/ArtDecoLayoutEnhanced.vue'),
-    redirect: '/dealing-room',
+    redirect: HOME_ROUTE_PATH,
     children: [
       // 0. Dealing Room (The Soul of the System)
       {
-        path: 'dealing-room',
-        name: 'dealing-room',
+        path: 'dashboard',
+        name: HOME_ROUTE_NAME,
         component: () => import('@/views/artdeco-pages/ArtDecoDashboard.vue'),
         meta: { title: '交易室', requiresAuth: true, api: '/api/v1/market/overview' }
       },
@@ -308,6 +309,10 @@ const routes: RouteRecordRaw[] = [
         ]
       }
     ]
+  },
+  {
+    path: LEGACY_HOME_ROUTE_PATH,
+    redirect: HOME_ROUTE_PATH
   },
   {
     path: '/qm',

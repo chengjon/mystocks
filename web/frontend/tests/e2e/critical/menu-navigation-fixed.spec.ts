@@ -51,11 +51,11 @@ test.describe("Critical Menu Navigation - Fixed", { tag: "@critical" }, () => {
       })
     })
 
-    await page.goto(`${FRONTEND_BASE_URL}/dealing-room`, { waitUntil: "domcontentloaded" })
+    await page.goto(`${FRONTEND_BASE_URL}/dashboard`, { waitUntil: "domcontentloaded" })
   })
 
   test("navigates to dealing room shell without errors", async ({ page }) => {
-    await expect(page).toHaveURL(/\/dealing-room/)
+    await expect(page).toHaveURL(/\/dashboard/)
     await expect(page.locator("main.artdeco-main")).toBeVisible()
     await expect(page.locator(".artdeco-dashboard")).toBeVisible()
     await expect(page.locator(".artdeco-sidebar-v3")).toBeVisible()

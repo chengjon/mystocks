@@ -38,7 +38,7 @@
  * @example
  * <BreadcrumbNav :items="[
  *   { label: 'Home', path: '/' },
- *   { label: 'Dashboard', path: '/dashboard' },
+ *   { label: 'Dealing Room', path: '/dashboard' },
  *   { label: 'Overview' }
  * ]" />
  */

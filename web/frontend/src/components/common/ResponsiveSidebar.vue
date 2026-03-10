@@ -118,7 +118,7 @@ const props = defineProps({
     default: () => [
       {
         index: '/dashboard',
-        title: '仪表盘',
+        title: '交易室',
         icon: Odometer
       },
       {

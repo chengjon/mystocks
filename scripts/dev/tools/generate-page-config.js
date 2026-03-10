@@ -29,7 +29,7 @@ const CONFIG = {
   configBackupPath: path.resolve(__dirname, '../../../web/frontend/src/config/pageConfig.ts.bak'),
   
   routeConfigMap: {
-    'dashboard': { apiEndpoint: '/api/dashboard/overview', wsChannel: 'dashboard:realtime', description: '仪表盘概览' },
+    'dashboard': { apiEndpoint: '/api/dashboard/overview', wsChannel: 'dashboard:realtime', description: '交易室概览' },
     'market-realtime': { apiEndpoint: '/api/market/realtime', wsChannel: 'market:realtime', description: '实时行情' },
     'market-technical': { apiEndpoint: '/api/technical/indicators', wsChannel: 'market:technical', description: '技术指标' },
     'market-fund-flow': { apiEndpoint: '/api/market/fund-flow', wsChannel: 'market:fund-flow', description: '资金流向' },
@@ -112,20 +112,108 @@ function log(message, verbose = false) {
   }
 }
 
+function parseStringConstantDeclarations(content, exportOnly = false) {
+  const constants = {}
+  const exportPrefix = exportOnly ? 'export\\s+' : '(?:export\\s+)?'
+  const constRegex = new RegExp(
+    `${exportPrefix}const\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*(['"\`])([^\\2]*?)\\2`,
+    'g'
+  )
+
+  let match
+  while ((match = constRegex.exec(content)) !== null) {
+    const [, name, , value] = match
+    constants[name] = value
+  }
+
+  return constants
+}
+
+function resolveImportFilePath(baseDir, importPath) {
+  const candidates = [
+    importPath,
+    `${importPath}.ts`,
+    `${importPath}.js`,
+    path.join(importPath, 'index.ts'),
+    path.join(importPath, 'index.js')
+  ]
+
+  for (const candidate of candidates) {
+    const resolvedPath = path.resolve(baseDir, candidate)
+    if (fs.existsSync(resolvedPath)) {
+      return resolvedPath
+    }
+  }
+
+  return null
+}
+
+function parseImportedStringConstants(content, filePath) {
+  const constants = {}
+  const importRegex = /import\s+\{\s*([^}]+)\s*\}\s+from\s+['"]([^'"]+)['"]/g
+  const baseDir = path.dirname(filePath)
+
+  let match
+  while ((match = importRegex.exec(content)) !== null) {
+    const [, importedNames, importPath] = match
+
+    if (!importPath.startsWith('.')) {
+      continue
+    }
+
+    const resolvedImportPath = resolveImportFilePath(baseDir, importPath)
+    if (!resolvedImportPath) {
+      continue
+    }
+
+    const importedContent = fs.readFileSync(resolvedImportPath, 'utf-8')
+    const exportedConstants = parseStringConstantDeclarations(importedContent, true)
+
+    for (const importedName of importedNames.split(',').map(item => item.trim()).filter(Boolean)) {
+      const [originalName, aliasName] = importedName.split(/\s+as\s+/).map(item => item.trim())
+      const localName = aliasName || originalName
+
+      if (exportedConstants[originalName]) {
+        constants[localName] = exportedConstants[originalName]
+      }
+    }
+  }
+
+  return constants
+}
+
+function resolveRouteValue(rawValue, constants) {
+  const value = rawValue.trim()
+
+  if ((value.startsWith("'") && value.endsWith("'")) || (value.startsWith('"') && value.endsWith('"')) || (value.startsWith('`') && value.endsWith('`'))) {
+    return value.slice(1, -1)
+  }
+
+  return constants[value] || null
+}
+
 function parseRouterFile(filePath) {
   const routes = []
   
   try {
     const content = fs.readFileSync(filePath, 'utf-8')
+    const constants = {
+      ...parseStringConstantDeclarations(content),
+      ...parseImportedStringConstants(content, filePath)
+    }
     
-    const routeBlockRegex = /path:\s*['"]([^'"]+)['"]\s*,\s*name:\s*['"]([^'"]+)['"]\s*,\s*component:\s*\(\)\s*=>\s*import\(['"]@\/views\/([^'"]+)['"]\)/g
+    const routeBlockRegex = /path:\s*(['"`][^'"`]+['"`]|[A-Za-z_$][\w$]*)\s*,\s*name:\s*(['"`][^'"`]+['"`]|[A-Za-z_$][\w$]*)\s*,\s*component:\s*\(\)\s*=>\s*import\(['"]@\/views\/([^'"]+)['"]\)/g
     
     let match
     while ((match = routeBlockRegex.exec(content)) !== null) {
-      const routePath = match[1]
-      const routeName = match[2]
+      const routePath = resolveRouteValue(match[1], constants)
+      const routeName = resolveRouteValue(match[2], constants)
       const componentPath = match[3]
       const component = componentPath.split('/').pop()
+
+      if (!routePath || !routeName) {
+        continue
+      }
       
       if (routeName === 'notFound' || routeName === 'login' || routeName === 'test' || routeName === 'artdeco-test') {
         continue

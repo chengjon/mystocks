@@ -11,7 +11,7 @@
         </button>
         <!-- ArtDeco Breadcrumb (自动从路由meta生成) -->
         <ArtDecoBreadcrumb
-          home-title="仪表盘"
+          home-title="交易室"
           home-path="/dashboard"
           :show-icon="true"
         />
@@ -119,7 +119,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import ArtDecoBreadcrumb from '@/components/artdeco/core/ArtDecoBreadcrumb.vue'
 import ArtDecoSkipLink from '@/components/artdeco/base/ArtDecoSkipLink.vue'

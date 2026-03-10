@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('ArtDeco Dashboard Component Test', () => {
   test('ArtDeco Dashboard should render', async ({ page }) => {
-    console.log('Navigating to /dealing-room...');
+    console.log('Navigating to /dashboard...');
 
     await page.addInitScript(() => {
       localStorage.setItem('auth_token', 'mock-token-dashboard-test');
@@ -15,11 +15,11 @@ test.describe('ArtDeco Dashboard Component Test', () => {
       }));
     });
 
-    await page.goto('http://localhost:3020/dealing-room');
+    await page.goto('http://localhost:3020/dashboard');
     await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(3000);
 
-    await expect(page).toHaveURL(/\/dealing-room/);
+    await expect(page).toHaveURL(/\/dashboard/);
 
     const app = page.locator('#app');
     await expect(app).toBeVisible();

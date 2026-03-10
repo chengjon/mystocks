@@ -1,6 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 // import { useAuthStore } from '@/stores/auth'  // 已移除认证依赖
 
+const HOME_ROUTE_NAME = 'dashboard'
+const HOME_ROUTE_PATH = '/dashboard'
+const LEGACY_HOME_ROUTE_PATH = '/dealing-room'
+
 /**
  * MyStocks Frontend Router Configuration
  *
@@ -29,14 +33,14 @@ const router = createRouter({
     {
       path: '/',
       component: () => import('@/layouts/ArtDecoLayoutEnhanced.vue'),
-      redirect: '/dashboard',
+      redirect: HOME_ROUTE_PATH,
       meta: { requiresAuth: false },
       children: [
         {
           path: 'dashboard',
-          name: 'dashboard',
+          name: HOME_ROUTE_NAME,
           component: () => import('@/views/Dashboard.vue'),
-          meta: { title: '仪表盘', icon: 'Odometer' }
+          meta: { title: '交易室', icon: 'Odometer' }
         },
         {
           path: 'analysis',
@@ -295,6 +299,10 @@ const router = createRouter({
 
     // 404 Not Found
     {
+      path: LEGACY_HOME_ROUTE_PATH,
+      redirect: HOME_ROUTE_PATH
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'notFound',
       component: () => import('@/views/NotFound.vue')
@@ -311,7 +319,7 @@ const router = createRouter({
 //     next({ name: 'login', query: { redirect: to.fullPath } })
 //   } else if (to.name === 'login' && authStore.isAuthenticated) {
 //     // 已登录,访问登录页,重定向到首页
-//     next({ name: 'dashboard' })
+//     next({ name: HOME_ROUTE_NAME })
 //   } else {
 //     next()
 //   }

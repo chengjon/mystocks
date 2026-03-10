@@ -14,10 +14,10 @@
  */
 
 const menuConfig = [
-  // 仪表盘
+  // 交易室
   {
     id: 'dashboard',
-    title: '仪表盘',
+    title: '交易室',
     path: '/dashboard',
     icon: 'Monitor',
     disabled: false,
