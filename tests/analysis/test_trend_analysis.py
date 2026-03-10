@@ -6,6 +6,7 @@
 提供测试数据的时间序列分析、趋势预测和模式识别功能
 """
 
+import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
@@ -17,6 +18,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from scipy import stats
 from sklearn.linear_model import LinearRegression
+from tests.analysis._trend_analysis_demo import run_trend_analysis_demo
 
 
 class TrendDirection(Enum):
@@ -680,103 +682,9 @@ class TrendAnalyzer:
 # 使用示例
 def demo_trend_analysis():
     """演示趋势分析功能"""
-    print("📈 演示趋势分析功能")
-
-    # 创建趋势分析器
-    analyzer = TrendAnalyzer()
-
-    # 生成模拟数据 - 测试成功率
-    success_rates = []
-    timestamps = []
-    base_rate = 95.0
-
-    for i in range(100):
-        timestamp = datetime.now() - timedelta(hours=100 - i)
-        # 添加一些趋势和噪声
-        trend = -0.05 * i  # 轻微下降趋势
-        noise = np.random.normal(0, 2)
-        rate = base_rate + trend + noise
-        rate = max(80, min(100, rate))  # 限制在80-100之间
-
-        success_rates.append(rate)
-        timestamps.append(timestamp)
-
-    # 创建时间序列数据
-    test_success_data = [
-        TimeSeriesPoint(timestamp=t, value=v, category="test_success") for t, v in zip(timestamps, success_rates)
-    ]
-
-    # 添加数据到分析器
-    analyzer.add_historical_data("test_success_rate", test_success_data)
-
-    # 添加API响应时间数据（上升趋势）
-    response_times = []
-    for i in range(80):
-        timestamp = datetime.now() - timedelta(hours=100 - i)
-        # 上升趋势
-        trend = 2.0 * i
-        noise = np.random.normal(0, 10)
-        response_time = 100 + trend + noise
-        response_time = max(50, response_time)  # 最小50ms
-
-        response_times.append(response_time)
-        timestamps.append(timestamp)
-
-    api_response_data = [
-        TimeSeriesPoint(timestamp=t, value=v, category="api_response") for t, v in zip(timestamps[:80], response_times)
-    ]
-    analyzer.add_historical_data("api_response_time", api_response_data)
-
-    # 分析趋势
-    print("\n📊 测试成功率趋势分析:")
-    success_result = analyzer.analyze_trend("test_success_rate")
-    print(f"  趋势方向: {success_result.direction.value}")
-    print(f"  置信度: {success_result.confidence.value}")
-    print(f"  斜率: {success_result.slope:.4f}")
-    print(f"  R²: {success_result.r_squared:.4f}")
-    print(f"  p值: {success_result.p_value:.4f}")
-    print(f"  预测下一值: {success_result.prediction:.2f}")
-    print(f"  异常值数量: {len(success_result.anomalies)}")
-    print(f"  模式数量: {len(success_result.patterns)}")
-    print("  洞察:")
-    for insight in success_result.insights:
-        print(f"    - {insight}")
-
-    print("\n⚡ API响应时间趋势分析:")
-    api_result = analyzer.analyze_trend("api_response_time")
-    print(f"  趋势方向: {api_result.direction.value}")
-    print(f"  置信度: {api_result.confidence.value}")
-    print(f"  斜率: {api_result.slope:.4f}")
-    print(f"  R²: {api_result.r_squared:.4f}")
-    print(f"  p值: {api_result.p_value:.4f}")
-    print(f"  预测下一值: {api_result.prediction:.2f}")
-    print("  洞察:")
-    for insight in api_result.insights:
-        print(f"    - {insight}")
-
-    # 创建可视化
-    print("\n🎨 创建可视化图表:")
-    try:
-        success_chart = analyzer.create_visualization("test_success_rate")
-        print(f"  ✅ 测试成功率图表已生成 (包含 {len(success_chart.get('data', []))} 个数据系列)")
-
-        api_chart = analyzer.create_visualization("api_response_time")
-        print(f"  ✅ API响应时间图表已生成 (包含 {len(api_chart.get('data', []))} 个数据系列)")
-    except Exception as e:
-        print(f"  ❌ 图表生成失败: {e}")
-
-    # 获取总体摘要
-    print("\n📋 总体趋势摘要:")
-    summary = analyzer.get_trend_summary(["test_success_rate", "api_response_time"])
-    print(f"  指标数量: {summary['metrics_count']}")
-    print(f"  高置信度指标比例: {summary['confidence_ratio']:.2f}")
-    print("  总体洞察:")
-    for insight in summary["overall_insights"]:
-        print(f"    - {insight}")
-
-    return analyzer
+    return run_trend_analysis_demo(TrendAnalyzer, TimeSeriesPoint)
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     analyzer = demo_trend_analysis()
-    print("\n✅ 趋势分析演示完成")
