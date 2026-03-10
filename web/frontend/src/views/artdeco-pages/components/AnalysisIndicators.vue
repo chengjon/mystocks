@@ -59,7 +59,7 @@ defineEmits(['update:activeCategory', 'select'])
 
 .indicators-layout {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: calc(var(--artdeco-spacing-px) * 280) 1fr;
     gap: var(--artdeco-spacing-4);
 }
 
@@ -87,16 +87,16 @@ defineEmits(['update:activeCategory', 'select'])
 
 .indicators-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(calc(var(--artdeco-spacing-px) * 300), 1fr));
     gap: var(--artdeco-spacing-4);
 }
 
 .indicator-card {
     .desc {
-        font-size: 14px;
+        font-size: var(--artdeco-text-sm);
         color: var(--artdeco-fg-muted);
-        margin-bottom: 15px;
-        height: 40px;
+        margin-bottom: calc(var(--artdeco-spacing-px) * 15);
+        height: calc(var(--artdeco-spacing-px) * 40);
         overflow: hidden;
     }
     .meta {
