@@ -19,15 +19,19 @@
 - LOW (1个): 保持公开访问
 """
 
-import logging
-import time
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
-from slowapi import Limiter
-from slowapi.util import get_remote_address
 
+from app.api.backup_recovery_secure.backup_security_support import (
+    check_backup_rate_limit,
+    check_recovery_rate_limit,
+    log_security_event,
+    verify_admin_permission,
+    verify_backup_permission,
+    verify_recovery_permission,
+)
 from app.core.responses import ErrorCode, error_response, success_response
 from app.core.security import User, get_current_user
 from app.models.backup_schemas import (
@@ -45,23 +49,8 @@ from app.models.backup_schemas import (
     TDengineFullRecoveryRequest,
     TDengineIncrementalBackupRequest,
     TDenginePITRRequest,
-    require_admin_role,
-    require_backup_permission,
-    require_recovery_permission,
 )
 from src.backup_recovery import BackupManager, BackupScheduler, IntegrityChecker, RecoveryManager
-
-# 初始化速率限制器
-limiter = Limiter(key_func=get_remote_address)
-
-# 安全日志配置
-security_logger = logging.getLogger("backup_security")
-security_logger.setLevel(logging.INFO)
-
-# 创建文件处理器
-handler = logging.FileHandler("/tmp/backup_security.log")
-handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
-security_logger.addHandler(handler)
 
 router = APIRouter(prefix="/api/backup-recovery", tags=["Backup & Recovery (Secure)"])
 
@@ -70,112 +59,6 @@ backup_manager = BackupManager()
 recovery_manager = RecoveryManager()
 backup_scheduler = BackupScheduler()
 integrity_checker = IntegrityChecker()
-
-# 内存中的速率限制跟踪器（生产环境建议使用 Redis）
-_backup_operation_cache = {}
-_recovery_operation_cache = {}
-_rate_limit_window = 300  # 5分钟窗口
-_max_backup_operations = 3  # 每5分钟最多3次备份操作
-_max_recovery_operations = 1  # 每5分钟最多1次恢复操作
-
-def log_security_event(
-    event_type: str, user: User, action: str, details: Optional[Dict[str, Any]] = None, success: bool = True
-):
-    """记录安全审计日志"""
-    log_data = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "event_type": event_type,
-        "user_id": user.id,
-        "username": user.username,
-        "user_role": user.role,
-        "action": action,
-        "ip_address": "client",  # FastAPI Request context
-        "success": success,
-        "details": details or {},
-    }
-
-    security_logger.info("SECURITY_EVENT: %(log_data)s")
-
-
-def check_backup_rate_limit(user: User) -> bool:
-    """检查备份操作速率限制"""
-    current_time = time.time()
-    user_id = user.id
-
-    # 清理过期记录
-    cutoff_time = current_time - _rate_limit_window
-    if user_id in _backup_operation_cache:
-        _backup_operation_cache[user_id] = [t for t in _backup_operation_cache[user_id] if t > cutoff_time]
-
-    # 检查当前窗口内的操作次数
-    user_operations = _backup_operation_cache.get(user_id, [])
-    if len(user_operations) >= _max_backup_operations:
-        return False
-
-    # 记录当前操作
-    user_operations.append(current_time)
-    _backup_operation_cache[user_id] = user_operations
-    return True
-
-
-def check_recovery_rate_limit(user: User) -> bool:
-    """检查恢复操作速率限制（更严格）"""
-    current_time = time.time()
-    user_id = user.id
-
-    # 清理过期记录
-    cutoff_time = current_time - _rate_limit_window
-    if user_id in _recovery_operation_cache:
-        _recovery_operation_cache[user_id] = [t for t in _recovery_operation_cache[user_id] if t > cutoff_time]
-
-    # 检查当前窗口内的操作次数
-    user_operations = _recovery_operation_cache.get(user_id, [])
-    if len(user_operations) >= _max_recovery_operations:
-        return False
-
-    # 记录当前操作
-    user_operations.append(current_time)
-    _recovery_operation_cache[user_id] = user_operations
-    return True
-
-
-def verify_admin_permission(user: User) -> None:
-    """验证管理员权限"""
-    if not require_admin_role(user.role):
-        log_security_event(
-            "AUTHORIZATION_FAILED",
-            user,
-            "admin_access_denied",
-            {"required_role": "admin", "user_role": user.role},
-            success=False,
-        )
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限执行此操作")
-
-
-def verify_backup_permission(user: User) -> None:
-    """验证备份操作权限"""
-    if not require_backup_permission(user.role):
-        log_security_event(
-            "AUTHORIZATION_FAILED",
-            user,
-            "backup_access_denied",
-            {"required_permission": "backup", "user_role": user.role},
-            success=False,
-        )
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要备份操作权限")
-
-
-def verify_recovery_permission(user: User) -> None:
-    """验证恢复操作权限"""
-    if not require_recovery_permission(user.role):
-        log_security_event(
-            "AUTHORIZATION_FAILED",
-            user,
-            "recovery_access_denied",
-            {"required_permission": "recovery", "user_role": user.role},
-            success=False,
-        )
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限执行恢复操作")
 
 
 @router.post("/backup/tdengine/full")
@@ -862,5 +745,4 @@ async def verify_backup_integrity(backup_id: str, current_user: User = Depends(g
         return error_response(
             message="备份完整性验证失败", error_code=ErrorCode.INTERNAL_ERROR, details={"backup_id": backup_id}
         )
-
 

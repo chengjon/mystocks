@@ -1,67 +1,19 @@
 """
-# pylint: disable=no-member  # TODO: 实现缺失的 GPU/业务方法
-备份恢复 API 端点 - 完全安全版本
-
-完整的安全实现，包含所有13个端点的安全保护：
-- JWT 认证和基于角色的授权
-- 输入验证和路径安全检查
-- 统一响应格式
-- 安全审计日志
-- 速率限制
-
-版本: 2.0.0 (完全安全版)
-日期: 2025-12-01
-安全级别: SEVERE RISK COMPLETELY FIXED
-
-保护端点统计:
-- CRITICAL (9个): 需要管理员权限 + JWT + 审计
-- MODERATE (3个): 需要认证 + JWT + 审计
-- LOW (1个): 保持公开访问
+备份恢复 API 端点 - 安全清理与健康检查
 """
 
-import logging
-import time
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
-from slowapi import Limiter
-from slowapi.util import get_remote_address
+from fastapi import APIRouter, Body, Depends
 
+from app.api.backup_recovery_secure.backup_security_support import log_security_event, verify_admin_permission
 from app.core.responses import ErrorCode, error_response, success_response
 from app.core.security import User, get_current_user
 from app.models.backup_schemas import (
-    BackupListQueryParams,
-    BackupMetadata,
     CleanupBackupsRequest,
     CleanupResult,
-    IntegrityVerificationResult,
-    PostgreSQLFullBackupRequest,
-    PostgreSQLFullRecoveryRequest,
-    RecoveryMetadata,
-    ScheduledJobInfo,
-    SchedulerControlRequest,
-    TDengineFullBackupRequest,
-    TDengineFullRecoveryRequest,
-    TDengineIncrementalBackupRequest,
-    TDenginePITRRequest,
-    require_admin_role,
-    require_backup_permission,
-    require_recovery_permission,
 )
 from src.backup_recovery import BackupManager, BackupScheduler, IntegrityChecker, RecoveryManager
-
-# 初始化速率限制器
-limiter = Limiter(key_func=get_remote_address)
-
-# 安全日志配置
-security_logger = logging.getLogger("backup_security")
-security_logger.setLevel(logging.INFO)
-
-# 创建文件处理器
-handler = logging.FileHandler("/tmp/backup_security.log")
-handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
-security_logger.addHandler(handler)
 
 router = APIRouter(prefix="/api/backup-recovery", tags=["Backup & Recovery (Secure)"])
 
@@ -70,13 +22,6 @@ backup_manager = BackupManager()
 recovery_manager = RecoveryManager()
 backup_scheduler = BackupScheduler()
 integrity_checker = IntegrityChecker()
-
-# 内存中的速率限制跟踪器（生产环境建议使用 Redis）
-_backup_operation_cache = {}
-_recovery_operation_cache = {}
-_rate_limit_window = 300  # 5分钟窗口
-_max_backup_operations = 3  # 每5分钟最多3次备份操作
-_max_recovery_operations = 1  # 每5分钟最多1次恢复操作
 
 @router.post("/cleanup/old-backups")
 async def cleanup_old_backups(
@@ -214,5 +159,4 @@ async def backup_service_health():
         return error_response(
             message="健康检查失败", error_code=ErrorCode.SERVICE_UNAVAILABLE, details={"error": str(e)}
         )
-
 
