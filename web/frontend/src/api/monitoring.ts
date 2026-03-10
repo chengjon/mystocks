@@ -4,14 +4,14 @@
  * Provides methods for monitoring system status, alerts, logs, and data quality.
  */
 
-import { request } from '@/utils/request'
-import { MonitoringAdapter } from '@/utils/monitoring-adapters'
+import { request } from '@/utils/request.ts'
+import { MonitoringAdapter } from '@/utils/monitoring-adapters.ts'
 import type {
   SystemStatusVM,
   MonitoringAlertVM,
   LogEntryVM,
   DataQualityVM
-} from '@/utils/monitoring-adapters'
+} from '@/utils/monitoring-adapters.ts'
 
 // Temporary: Use any for missing generated types
 // TODO: Fix type generation to include these types
