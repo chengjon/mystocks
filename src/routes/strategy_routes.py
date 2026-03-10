@@ -12,6 +12,7 @@ from datetime import datetime
 from typing import Dict
 
 from fastapi import APIRouter
+from src.routes._strategy_health_router import router as strategy_health_router
 
 # 设置日志
 logging.basicConfig(level=logging.INFO)
@@ -19,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 # 创建路由实例
 router = APIRouter(prefix="/api/strategy", tags=["Strategy"])
+router.include_router(strategy_health_router)
 
 
 def check_use_mock_data() -> bool:
@@ -665,69 +667,5 @@ async def optimize_strategy_parameters(strategy_code: str, request: Dict):
         return {
             "success": False,
             "message": f"优化策略参数失败: {str(e)}",
-            "timestamp": datetime.now().isoformat(),
-        }
-
-
-@router.get("/health")
-async def check_strategy_health():
-    """检查策略服务健康状态
-
-    Returns:
-        Dict: 健康状态信息
-    """
-    try:
-        if check_use_mock_data():
-            logger.info("检查Mock数据源健康状态")
-            return {
-                "status": "healthy",
-                "service": "Strategy",
-                "source": "mock",
-                "timestamp": datetime.now().isoformat(),
-                "version": "1.0.0",
-            }
-        else:
-            logger.info("检查真实数据库健康状态")
-            db_service = get_database_service()
-            if db_service is None:
-                return {
-                    "status": "unavailable",
-                    "service": "Strategy",
-                    "source": "database",
-                    "message": "数据库服务暂未实现",
-                    "timestamp": datetime.now().isoformat(),
-                }
-
-            # 实现真实数据库健康检查
-            try:
-                # 导入真实数据库服务
-                from src.database.database_service import db_service
-
-                # 实现健康检查逻辑
-                logger.info("真实数据库健康检查: 策略服务")
-
-                return {
-                    "status": "healthy",
-                    "service": "Strategy",
-                    "source": "database",
-                    "timestamp": datetime.now().isoformat(),
-                    "version": "1.0.0",
-                }
-            except Exception as e:
-                logger.error("真实数据库健康检查失败: %s", str(e))
-                return {
-                    "status": "unhealthy",
-                    "service": "Strategy",
-                    "source": "database",
-                    "error": str(e),
-                    "timestamp": datetime.now().isoformat(),
-                }
-
-    except Exception as e:
-        logger.error("检查策略服务健康状态失败: %s", str(e))
-        return {
-            "status": "unhealthy",
-            "service": "Strategy",
-            "error": str(e),
             "timestamp": datetime.now().isoformat(),
         }
