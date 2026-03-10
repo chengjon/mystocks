@@ -7,6 +7,7 @@ Phase 6.4.3 - 性能基准对比验证
 """
 
 import asyncio
+import logging
 import sys
 import time
 from pathlib import Path
@@ -14,8 +15,14 @@ from typing import Any, Dict
 
 import numpy as np
 
+from tests.unit.gpu._performance_comparison_reporting import (
+    build_benchmark_report_lines,
+    generate_summary_snapshot,
+    log_benchmark_report,
+)
+
 # 添加项目根目录到路径
-project_root = Path(__file__).parent
+project_root = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(project_root))
 
 
@@ -29,18 +36,18 @@ class PerformanceBenchmarkComparison:
 
     async def run_comprehensive_benchmark(self) -> Dict[str, Any]:
         """运行全面的性能基准对比"""
-        print("🚀 GPU加速引擎性能基准对比测试...")
+        logging.info("🚀 GPU加速引擎性能基准对比测试...")
 
         # 1. 基准测试（当前优化后的性能）
-        print("   📊 运行优化后性能基准...")
+        logging.info("   📊 运行优化后性能基准...")
         self.optimized_results = await self.run_optimized_benchmarks()
 
         # 2. 模拟基准测试（优化前的性能）
-        print("   📊 模拟优化前性能基准...")
+        logging.info("   📊 模拟优化前性能基准...")
         self.baseline_results = await self.simulate_baseline_benchmarks()
 
         # 3. 计算性能提升
-        print("   📈 计算性能提升...")
+        logging.info("   📈 计算性能提升...")
         self.calculate_performance_improvements()
 
         return self.generate_comparison_report()
@@ -604,177 +611,17 @@ class PerformanceBenchmarkComparison:
 
     def _generate_summary(self) -> Dict[str, Any]:
         """生成性能提升摘要"""
-        summary = {
-            "matrix_performance": {},
-            "transform_performance": {},
-            "memory_performance": {},
-            "workflow_performance": {},
-            "overall_improvement": {},
-        }
-
-        # 计算各类别的平均性能提升
-        if "matrix_operations" in self.performance_improvements:
-            matrix_improvements = self.performance_improvements["matrix_operations"]
-            speedups = [imp.get("speedup_factor", 1) for imp in matrix_improvements.values() if "speedup_factor" in imp]
-            if speedups:
-                summary["matrix_performance"] = {
-                    "average_speedup": np.mean(speedups),
-                    "max_speedup": max(speedups),
-                    "min_speedup": min(speedups),
-                }
-
-        if "transform_operations" in self.performance_improvements:
-            transform_improvements = self.performance_improvements["transform_operations"]
-            speedups = [
-                imp.get("speedup_factor", 1) for imp in transform_improvements.values() if "speedup_factor" in imp
-            ]
-            if speedups:
-                summary["transform_performance"] = {
-                    "average_speedup": np.mean(speedups),
-                    "max_speedup": max(speedups),
-                    "min_speedup": min(speedups),
-                }
-
-        if "memory_operations" in self.performance_improvements:
-            memory_improvements = self.performance_improvements["memory_operations"]
-            speedups = [imp.get("speedup_factor", 1) for imp in memory_improvements.values() if "speedup_factor" in imp]
-            if speedups:
-                summary["memory_performance"] = {
-                    "average_speedup": np.mean(speedups),
-                    "max_speedup": max(speedups),
-                    "min_speedup": min(speedups),
-                }
-
-        if "workflow_performance" in self.performance_improvements:
-            workflow_improvements = self.performance_improvements["workflow_performance"]
-            speedups = [
-                imp.get("speedup_factor", 1) for imp in workflow_improvements.values() if "speedup_factor" in imp
-            ]
-            if speedups:
-                summary["workflow_performance"] = {
-                    "average_speedup": np.mean(speedups),
-                    "max_speedup": max(speedups),
-                    "min_speedup": min(speedups),
-                }
-
-        # 计算总体性能提升
-        all_speedups = []
-        for category in [
-            "matrix_performance",
-            "transform_performance",
-            "memory_performance",
-            "workflow_performance",
-        ]:
-            if summary[category].get("average_speedup"):
-                all_speedups.append(summary[category]["average_speedup"])
-
-        if all_speedups:
-            summary["overall_improvement"] = {
-                "average_speedup_across_all_categories": np.mean(all_speedups),
-                "categories_tested": len(all_speedups),
-                "max_category_speedup": max(all_speedups),
-                "min_category_speedup": min(all_speedups),
-            }
-
-        return summary
+        return generate_summary_snapshot(self.performance_improvements)
 
     def print_summary(self, report: Dict[str, Any]):
         """打印性能对比摘要"""
-        print("\n" + "=" * 80)
-        print("📊 GPU加速引擎性能基准对比报告")
-        print("=" * 80)
-
-        summary = report["summary"]
-        print(f"📈 测试时间: {report['benchmark_timestamp']}")
-
-        # 矩阵运算性能提升
-        if summary.get("matrix_performance"):
-            matrix_perf = summary["matrix_performance"]
-            print("\n🧮 矩阵运算性能提升:")
-            print(f"   📊 平均加速比: {matrix_perf['average_speedup']:.2f}x")
-            print(f"   🚀 最大加速比: {matrix_perf['max_speedup']:.2f}x")
-            print(f"   📉 最小加速比: {matrix_perf['min_speedup']:.2f}x")
-
-        # 变换操作性能提升
-        if summary.get("transform_performance"):
-            transform_perf = summary["transform_performance"]
-            print("\n🔄 变换操作性能提升:")
-            print(f"   📊 平均加速比: {transform_perf['average_speedup']:.2f}x")
-            print(f"   🚀 最大加速比: {transform_perf['max_speedup']:.2f}x")
-            print(f"   📉 最小加速比: {transform_perf['min_speedup']:.2f}x")
-
-        # 内存操作性能提升
-        if summary.get("memory_performance"):
-            memory_perf = summary["memory_performance"]
-            print("\n💾 内存操作性能提升:")
-            print(f"   📊 平均加速比: {memory_perf['average_speedup']:.2f}x")
-            print(f"   🚀 最大加速比: {memory_perf['max_speedup']:.2f}x")
-            print(f"   📉 最小加速比: {memory_perf['min_speedup']:.2f}x")
-
-        # 工作流性能提升
-        if summary.get("workflow_performance"):
-            workflow_perf = summary["workflow_performance"]
-            print("\n⚡ 工作流性能提升:")
-            print(f"   📊 平均加速比: {workflow_perf['average_speedup']:.2f}x")
-            print(f"   🚀 最大加速比: {workflow_perf['max_speedup']:.2f}x")
-            print(f"   📉 最小加速比: {workflow_perf['min_speedup']:.2f}x")
-
-        # 总体性能提升
-        if summary.get("overall_improvement"):
-            overall = summary["overall_improvement"]
-            print("\n🎯 总体性能提升:")
-            print(f"   📊 所有类别平均加速比: {overall['average_speedup_across_all_categories']:.2f}x")
-            print(f"   📈 测试类别数量: {overall['categories_tested']}")
-            print(f"   🚀 最高类别加速比: {overall['max_category_speedup']:.2f}x")
-
-        # 详细数据展示
-        print("\n📋 详细性能数据:")
-
-        # 矩阵运算详细数据
-        if (
-            "matrix_operations" in report["optimized_results"]
-            and report["optimized_results"]["matrix_operations"]["success"]
-        ):
-            print("\n   🧮 矩阵运算 (优化后):")
-            for result in report["optimized_results"]["matrix_operations"]["results"]:
-                size = result["matrix_size"]
-                gflops = result["performance_gflops"]
-                time_ms = result["avg_execution_time"] * 1000
-                print(f"      {size}x{size}: {gflops:.2f} GFLOPS ({time_ms:.2f}ms)")
-
-        # 变换操作详细数据
-        if (
-            "transform_operations" in report["optimized_results"]
-            and report["optimized_results"]["transform_operations"]["success"]
-        ):
-            print("\n   🔄 变换操作 (优化后):")
-            for result in report["optimized_results"]["transform_operations"]["results"]:
-                op = result["operation"]
-                time_ms = result["avg_execution_time"] * 1000
-                throughput = result["throughput_elements_per_sec"]
-                print(f"      {op}: {time_ms:.3f}ms ({throughput:.0f} elements/s)")
-
-        # 内存操作详细数据
-        if (
-            "memory_operations" in report["optimized_results"]
-            and report["optimized_results"]["memory_operations"]["success"]
-        ):
-            print("\n   💾 内存操作 (优化后):")
-            print(f"      内存池效率: {report['optimized_results']['memory_operations']['pool_efficiency']:.1%}")
-
-            for result in report["optimized_results"]["memory_operations"]["results"][:3]:  # 显示前3个
-                size_kb = result["allocation_size_bytes"] / 1024
-                time_us = result["avg_allocation_time"] * 1e6
-                rate = result["allocations_per_sec"]
-                print(f"      {size_kb:.0f}KB: {time_us:.1f}μs ({rate:.0f} alloc/s)")
-
-        print("\n" + "=" * 80)
+        log_benchmark_report(report)
 
 
 async def main():
     """主函数"""
-    print("🚀 Phase 6.4.3 GPU加速引擎性能基准对比测试")
-    print("=" * 80)
+    logging.info("🚀 Phase 6.4.3 GPU加速引擎性能基准对比测试")
+    logging.info("=" * 80)
 
     comparison = PerformanceBenchmarkComparison()
 
