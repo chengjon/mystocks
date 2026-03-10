@@ -71,6 +71,7 @@ import { ref, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { ElMessage } from 'element-plus'
+import { HOME_ROUTE_PATH, normalizeLegacyHomeRedirect } from '@/router/homeRoute'
 
 const router = useRouter()
 const route = useRoute()
@@ -110,7 +111,7 @@ const handleLogin = async (): Promise<void> => {
 
     if (result.success) {
       ElMessage.success('LOGIN SUCCESSFUL')
-      const redirect = (route.query.redirect as string) || '/'
+      const redirect = normalizeLegacyHomeRedirect((route.query.redirect as string) || HOME_ROUTE_PATH)
       router.push(redirect)
     } else {
       ElMessage.error(result.message || 'LOGIN FAILED')
