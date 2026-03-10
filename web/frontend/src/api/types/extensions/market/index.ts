@@ -1,2 +1,2 @@
-export type { MarketOverviewVM, MarketIndex, SectorPerformance, ConceptPerformance, SubSectorData, CapitalFlow, KLineChartData, KLineChartConfig, FundFlowChartPoint, FundFlowChartConfig, MarketHeatmapData } from './types-1';
-export type { SectorHeatmapItem, SubSectorHeatmapItem, HeatmapConfig, RealtimeQuote, RealtimeQuotesResponse, MarketDepth, OrderBookLevel, RecentTrade, MarketSnapshot } from './types-2';
+export type { MarketOverviewVM, MarketIndex, SectorPerformance, ConceptPerformance, SubSectorData, CapitalFlow, KLineChartData, KLineChartConfig, FundFlowChartPoint, FundFlowChartConfig, MarketHeatmapData } from './types-1.ts';
+export type { SectorHeatmapItem, SubSectorHeatmapItem, HeatmapConfig, RealtimeQuote, RealtimeQuotesResponse, MarketDepth, OrderBookLevel, RecentTrade, MarketSnapshot } from './types-2.ts';
