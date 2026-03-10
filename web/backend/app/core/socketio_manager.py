@@ -25,6 +25,7 @@ try:
 except ImportError:
     raise ImportError("python-socketio is not installed. Install it with: pip install python-socketio")
 
+from app.core._socketio_manager_singleton import get_socketio_manager, reset_socketio_manager
 from app.core.reconnection_manager import get_reconnection_manager
 from app.models.websocket_message import (
     WebSocketErrorCode,
@@ -685,21 +686,3 @@ class MySocketIOManager:
         """Get real-time streaming service statistics"""
         streaming_service = get_streaming_service()
         return streaming_service.get_stats()
-
-
-# 全局单例
-_socketio_manager: Optional[MySocketIOManager] = None
-
-
-def get_socketio_manager() -> MySocketIOManager:
-    """获取Socket.IO管理器单例"""
-    global _socketio_manager
-    if _socketio_manager is None:
-        _socketio_manager = MySocketIOManager()
-    return _socketio_manager
-
-
-def reset_socketio_manager() -> None:
-    """重置Socket.IO管理器（仅用于测试）"""
-    global _socketio_manager
-    _socketio_manager = None
