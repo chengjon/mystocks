@@ -211,7 +211,7 @@ def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
 
     # 测试环境：直接使用mock数据，跳过数据库
     if settings.testing:
-        print(f"[Test Mode] Using mock authentication for user: {username}")
+        logger.info("[Test Mode] Using mock authentication for user: %s", username)
         return _authenticate_with_mock(username, password)
 
     # 生产环境：首先尝试从数据库查询用户
@@ -226,9 +226,11 @@ def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
 
     except Exception as e:
         # 捕获所有异常，回退到模拟用户数据
-        print(
-            f"Database authentication failed (will use fallback mock data): "
-            f"{type(e).__name__}: {e.message if hasattr(e, 'message') else str(e)}"
+        logger.warning(
+            "Database authentication failed (will use fallback mock data): %s: %s",
+            type(e).__name__,
+            e.message if hasattr(e, "message") else str(e),
+            exc_info=True,
         )
 
     # 回退到mock数据
@@ -255,7 +257,13 @@ def authenticate_user_by_id(user_id: int) -> Optional[UserInDB]:
         return get_user_from_database_by_id(user_id)
     except Exception as e:
         # 数据库查询失败时记录错误
-        print(f"Database user lookup failed for ID {user_id} (will return None): {type(e).__name__}: {str(e)}")
+        logger.warning(
+            "Database user lookup failed for ID %s (will return None): %s: %s",
+            user_id,
+            type(e).__name__,
+            str(e),
+            exc_info=True,
+        )
         return None
 
 
@@ -285,7 +293,7 @@ def get_user_from_database(username: str) -> Optional[UserInDB]:
 
     except Exception as e:
         # 捕获所有异常并记录
-        print(f"[get_user_from_database] Error: {e}")
+        logger.exception("[get_user_from_database] Error: %s", e)
         return None
     finally:
         # 确保会话被关闭
@@ -432,7 +440,7 @@ def _authenticate_with_mock(username: str, password: str) -> Optional[UserInDB]:
 
     # SECURITY: Only allow mock auth if explicitly enabled
     if not getattr(settings, "mock_auth_enabled", False):
-        print("[Security] Mock authentication attempt blocked (MOCK_AUTH_ENABLED=False)")
+        logger.warning("[Security] Mock authentication attempt blocked (MOCK_AUTH_ENABLED=False)")
         return None
 
     # 获取管理员初始密码
