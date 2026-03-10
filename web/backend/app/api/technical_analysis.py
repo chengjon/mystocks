@@ -3,19 +3,24 @@
 Enhanced Technical Analysis
 """
 
+import logging
 from datetime import date, datetime
 from typing import Dict, List, Optional
 
 from fastapi import APIRouter, Path, Query
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
+from app.api._technical_patterns_router import router as technical_patterns_router
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
 from app.core.exceptions import BusinessException, ValidationException
 from app.core.responses import create_error_response, create_success_response
 from app.schema import StockSymbolModel, TechnicalIndicatorQueryModel  # 导入P0改进的验证模型
 from app.services.data_source_factory import DataSourceFactory
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(tags=["technical-analysis"])
+router.include_router(technical_patterns_router)
 
 
 # ============================================================================
@@ -689,32 +694,3 @@ async def get_batch_indicators(
         raise
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500, error_code="TECHNICAL_ANALYSIS_OPERATION_FAILED")
-
-
-@router.get("/patterns/{symbol}")
-async def detect_patterns(symbol: str, period: str = Query("daily", description="数据周期")):
-    """
-    检测技术形态 (预留功能)
-
-    将实现:
-    - 头肩顶/底
-    - 双顶/底
-    - 三角形整理
-    - 矩形整理
-    - 旗形、楔形
-    等常见形态
-
-    示例:
-    - GET /api/technical/patterns/600519
-    """
-    return {
-        "success": False,
-        "message": "Pattern recognition feature is under development",
-        "symbol": symbol,
-    }
-
-
-# 导入日志
-import logging
-
-logger = logging.getLogger(__name__)
