@@ -1,6 +1,5 @@
 import { ref } from 'vue';
 import { ElMessage } from 'element-plus';
-import { apiClient } from '@/api/apiClient';
 import type { UnifiedResponse } from '@/api/types/common';
 
 /**
