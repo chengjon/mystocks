@@ -125,6 +125,7 @@ import { ArtDecoCard } from '@/components/artdeco'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import type { StrategySnapshot } from '@/composables/strategy/useStrategyCrossTabContext'
 import { useStrategyCrossTabContext } from '@/composables/strategy/useStrategyCrossTabContext'
+import { createMockStrategyManagementList } from '@/mock/strategyTabsMock'
 import {
   buildQuickBacktestRoute,
   buildStrategyCrossTabRoute,
@@ -132,6 +133,7 @@ import {
 } from './strategyCrossTabNavigation'
 import {
   buildOptimizationRows,
+  createMockOptimizationRows,
   type StrategyOptimizationRow,
   type OptimizationDataSource,
   type OptimizationStatusLabel
@@ -217,7 +219,7 @@ function normalizeProcessTime(rawValue: string): string {
   return numericValue.toFixed(2)
 }
 
-function rebuildRowsFromContext() {
+function rebuildRowsFromContext(source: OptimizationDataSource = dataSource.value) {
   if (strategyRecords.value.length === 0) {
     optimizationRows.value = []
     return
@@ -226,11 +228,11 @@ function rebuildRowsFromContext() {
   optimizationRows.value = buildOptimizationRows(
     strategyRecords.value,
     snapshots.value as Record<string, StrategySnapshot>,
-    'real'
+    source
   )
 }
 
-function extractStrategiesFromPayload(payload: unknown): StrategyConfig[] {
+function extractStrategiesFromPayload(payload: unknown): StrategyConfig[] | null {
   if (Array.isArray(payload)) {
     return payload as StrategyConfig[]
   }
@@ -245,7 +247,16 @@ function extractStrategiesFromPayload(payload: unknown): StrategyConfig[] {
     }
   }
 
-  return []
+  return null
+}
+
+function applyMockFallback() {
+  strategyRecords.value = createMockStrategyManagementList()
+  dataSource.value = 'mock'
+  rebuildRowsFromContext('mock')
+  if (optimizationRows.value.length === 0) {
+    optimizationRows.value = createMockOptimizationRows()
+  }
 }
 
 async function refreshOptimizationRows() {
@@ -255,12 +266,16 @@ async function refreshOptimizationRows() {
   })
 
   if (!payload) {
-    strategyRecords.value = []
-    optimizationRows.value = []
+    applyMockFallback()
     return
   }
 
   const realStrategies = extractStrategiesFromPayload(payload)
+  if (realStrategies === null) {
+    applyMockFallback()
+    return
+  }
+
   strategyRecords.value = realStrategies
   dataSource.value = 'real'
 
