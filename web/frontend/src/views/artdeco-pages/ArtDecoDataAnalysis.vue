@@ -254,7 +254,7 @@ function handleRowClick(row) {
     display: flex;
     align-items: center;
     gap: var(--artdeco-spacing-2);
-    padding: 10px 16px;
+    padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
     background: transparent;
     border: 1px solid transparent;
     color: var(--artdeco-fg-primary);
@@ -281,7 +281,7 @@ function handleRowClick(row) {
         color: var(--artdeco-gold-primary);
         border-color: var(--artdeco-border-accent);
         background: var(--artdeco-gold-opacity-08);
-        box-shadow: inset 0 -2px 0 var(--artdeco-gold-primary);
+        box-shadow: inset 0 calc(var(--artdeco-spacing-px) * -2) 0 var(--artdeco-gold-primary);
 
         .tab-icon {
             opacity: 100%;
@@ -290,13 +290,13 @@ function handleRowClick(row) {
 }
 
 .tab-content {
-    min-height: 520px;
+    min-height: calc(var(--artdeco-spacing-px) * 520);
     padding: var(--artdeco-spacing-5);
     position: relative;
 }
 
 .loading-overlay {
-    min-height: 380px;
+    min-height: calc(var(--artdeco-spacing-px) * 380);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -305,12 +305,12 @@ function handleRowClick(row) {
     color: var(--artdeco-fg-muted);
 
     .spinner {
-        width: 36px;
-        height: 36px;
-        border: 2px solid var(--artdeco-gold-opacity-20);
+        width: var(--artdeco-text-3xl);
+        height: var(--artdeco-text-3xl);
+        border: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-gold-opacity-20);
         border-top-color: var(--artdeco-gold-primary);
         border-radius: 50%;
-        animation: spin 0.9s linear infinite;
+        animation: spin var(--artdeco-transition-dramatic) linear infinite;
     }
 }
 
@@ -336,7 +336,7 @@ function handleRowClick(row) {
 
     .placeholder-list {
         margin: 0;
-        padding-left: 20px;
+        padding-left: var(--artdeco-spacing-5);
         color: var(--artdeco-fg-primary);
         display: flex;
         flex-direction: column;
