@@ -65,7 +65,7 @@ interface UseArtDecoCapitalFlowOptions {
 }
 
 export function useArtDecoCapitalFlow(options: UseArtDecoCapitalFlowOptions) {
-    const { data, symbol = ref(''), loading = ref(false) } = options
+    const { data } = options
 
     const sourceData = computed((): CapitalFlowData => (data.value as CapitalFlowData) || {})
 
