@@ -648,40 +648,7 @@ class AlertNotificationManager:
             logger.error("Failed to retrieve notification history: %s", e)
             return []
 
-
-# Global instance
-_notification_manager: Optional[AlertNotificationManager] = None
-
-
-def get_notification_manager() -> AlertNotificationManager:
-    """Get or create global notification manager instance"""
-    global _notification_manager
-    if _notification_manager is None:
-        _notification_manager = AlertNotificationManager()
-    return _notification_manager
-
-
-async def send_test_notification(channel: NotificationChannel):
-    """Send test notification to verify channel configuration"""
-    manager = get_notification_manager()
-
-    test_alert = Alert(
-        alertname="TestAlert",
-        severity="info",
-        service="monitoring",
-        category="testing",
-        instance="test-instance",
-        summary="This is a test notification",
-        description="If you received this, the notification channel is working correctly!",
-        timestamp=datetime.now().isoformat(),
-        labels={},
-        annotations={},
-    )
-
-    recipients_map = {channel: [os.getenv(f"{channel.name}_RECIPIENT", "")]}
-
-    results = await manager.send_alert(test_alert, recipients_map)
-    return results
+from src.monitoring._alert_notifier_singleton import get_notification_manager, send_test_notification
 
 
 if __name__ == "__main__":
@@ -712,6 +679,6 @@ if __name__ == "__main__":
 
         results = await manager.send_alert(test_alert, recipients_map)
         for result in results:
-            print(f"✅ {result.channel.value}: {result.message}")
+            logger.info("✅ %s: %s", result.channel.value, result.message)
 
     asyncio.run(test())
