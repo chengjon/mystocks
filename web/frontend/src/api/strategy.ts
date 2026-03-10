@@ -4,18 +4,18 @@
  * Provides methods for managing trading strategies.
  */
 
-import { request } from '@/utils/request'
-import { StrategyAdapter } from '@/utils/strategy-adapters'
+import { request } from '@/utils/request.ts'
+import { StrategyAdapter } from '@/utils/strategy-adapters.ts'
 import type {
   BacktestRequest
 // BacktestResponse  // Currently unused
-} from '@/api/types/strategy'
+} from '@/api/types/strategy.ts'
 import type {
   StrategyListItemVM,
   StrategyConfigVM,
   BacktestResultVM
 // TechnicalIndicatorVM  // Currently unused
-} from '@/utils/strategy-adapters'
+} from '@/utils/strategy-adapters.ts'
 
 // Type definitions for API responses
 interface StrategyListResponse {
