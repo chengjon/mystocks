@@ -5,7 +5,7 @@
 
 import axios, { AxiosInstance, AxiosError } from 'axios'
 import { ElMessage } from 'element-plus'
-import { API_BASE_URL } from '@/config/runtime-endpoints'
+import { API_BASE_URL } from '@/config/runtime-endpoints.ts'
 import type {
   IndicatorCalculateRequest,
   IndicatorCalculateResponse,
@@ -16,7 +16,7 @@ import type {
   IndicatorConfig,
   IndicatorConfigListResponse,
   IndicatorCategory
-} from '@/types/indicator'
+} from '@/types/indicator.ts'
 
 /**
  * API 基础配置
