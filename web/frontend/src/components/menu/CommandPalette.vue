@@ -129,14 +129,15 @@ const generateNavigationCommands = (): CommandItem[] => {
       if (item.children) {
         traverse(item.children, item.label)
       } else if (item.path) {
+        const itemPath = item.path
         commands.push({
-          id: `nav-${item.path}`,
+          id: `nav-${itemPath}`,
           label: item.label,
           sublabel: parentLabel ? `${parentLabel} > ${item.label}` : 'Navigation',
           type: 'navigation',
           icon: item.icon || 'FileText',
           handler: () => {
-            router.push(item.path!)
+            router.push(itemPath)
             close()
           },
           keywords: [item.label, parentLabel, 'page', 'nav']
