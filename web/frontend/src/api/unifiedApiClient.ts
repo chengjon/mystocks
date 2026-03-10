@@ -6,13 +6,13 @@
  * to ensure backward compatibility without circular dependencies.
  */
 
-import { apiClient } from './apiClient'
+import { apiClient } from './apiClient.ts'
 
 export const unifiedApiClient = apiClient;
 export const _unifiedApiClient = apiClient;
 
-export const createLoadingConfig = (show = true) => ({ show });
-export const createCacheConfig = (use = false) => ({ use });
+export const createLoadingConfig = (show: boolean = true): { show: boolean } => ({ show });
+export const createCacheConfig = (use: boolean = false): { use: boolean } => ({ use });
 export const DEFAULT_RETRY_CONFIG = { retries: 0 };
 
 export class ContractValidationError extends Error {
@@ -22,7 +22,7 @@ export class ContractValidationError extends Error {
   }
 }
 
-export const getUserFriendlyErrorMessage = (error: unknown) => {
+export const getUserFriendlyErrorMessage = (error: unknown): string => {
   const message =
     typeof error === 'object' && error !== null && 'message' in error
       ? (error as { message?: string }).message
