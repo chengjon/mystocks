@@ -6,47 +6,21 @@
  */
 
 import type { EChartsOption } from 'echarts'
-import { FINANCIAL_COLORS, GRADIENTS } from '@/styles/chart-theme/functions-1'
+import { FINANCIAL_COLORS, GRADIENTS } from '@/styles/chart-theme/functions-1.ts'
+import type {
+    SankeyLink,
+    SankeyNode,
+    TimeSeriesDataPoint
+} from './chartDataUtils.types.ts'
 
-// ================ 数据类型定义 ================
-
-export interface ChartDataPoint {
-    name: string
-    value: number
-    [key: string]: unknown
-}
-
-export interface TimeSeriesDataPoint {
-    timestamp: number | string | Date
-    value: number
-    [key: string]: unknown
-}
-
-export interface SankeyNode {
-    name: string
-    [key: string]: unknown
-}
-
-export interface SankeyLink {
-    source: string
-    target: string
-    value: number
-    [key: string]: unknown
-}
-
-export interface TreeNode {
-    name: string
-    value?: number
-    children?: TreeNode[]
-    [key: string]: unknown
-}
-
-export interface HeatmapDataPoint {
-    x: number | string
-    y: number | string
-    value: number
-    [key: string]: unknown
-}
+export type {
+    ChartDataPoint,
+    HeatmapDataPoint,
+    SankeyLink,
+    SankeyNode,
+    TimeSeriesDataPoint,
+    TreeNode
+} from './chartDataUtils.types.ts'
 
 // ================ 数据格式化工具 ================
 
@@ -178,7 +152,10 @@ export class DataAggregator {
             if (!grouped.has(groupKey)) {
                 grouped.set(groupKey, [])
             }
-            grouped.get(groupKey)!.push(item)
+            const group = grouped.get(groupKey)
+            if (group) {
+                group.push(item)
+            }
         })
 
         // 聚合每组数据
