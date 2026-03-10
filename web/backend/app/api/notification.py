@@ -14,287 +14,31 @@ Phase 4C Enhanced - 企业级通知服务
 import asyncio
 import json
 from datetime import datetime, timezone
-from functools import wraps
-from typing import Dict, List, Optional
+from typing import Dict
 
 import structlog
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, WebSocket, WebSocketDisconnect
-from pydantic import BaseModel, EmailStr, Field, constr, validator
 
 from app.api.auth import User, get_current_active_user, get_current_user
+from app.api.notification_models import (
+    NotificationPreferences,
+    RealTimeNotification,
+    SendEmailRequest,
+    SendNewsletterRequest,
+    SendPriceAlertRequest,
+    SendWelcomeEmailRequest,
+)
+from app.api.notification_support import (
+    connection_manager,
+    is_in_quiet_hours,
+    rate_limit,
+    validate_notification_preferences,
+)
 from app.core.responses import create_success_response
 from app.services.email_service import get_email_service
 
 logger = structlog.get_logger()
 router = APIRouter()
-
-
-# ==================== 请求模型 ====================
-
-
-class SendEmailRequest(BaseModel):
-    """发送邮件请求 - Phase 4C Enhanced"""
-
-    to_addresses: List[EmailStr] = Field(..., min_items=1, max_items=100, description="收件人列表，最多100个邮箱地址")
-    subject: constr(min_length=1, max_length=200, strip_whitespace=True) = Field(..., description="邮件主题，1-200字符")
-    content: constr(min_length=1, max_length=100000, strip_whitespace=True) = Field(
-        ..., description="邮件内容，1-100000字符"
-    )
-    content_type: str = Field("plain", pattern="^(plain|html)$", description="内容类型: plain 或 html")
-    priority: str = Field("normal", pattern="^(low|normal|high|urgent)$", description="邮件优先级")
-    scheduled_at: Optional[datetime] = Field(None, description="定时发送时间（UTC），为空则立即发送")
-
-    @validator("to_addresses")
-    def validate_recipients(cls, v):
-        """验证收件人列表"""
-        if not v:
-            raise ValueError("收件人列表不能为空")
-
-        # 检查重复邮箱
-        if len(v) != len(set(v)):
-            raise ValueError("收件人列表包含重复邮箱地址")
-
-        return v
-
-    @validator("scheduled_at")
-    def validate_schedule_time(cls, v):
-        """验证定时发送时间"""
-        if v and v <= datetime.now(timezone.utc):
-            raise ValueError("定时发送时间必须晚于当前时间")
-        return v
-
-
-class SendWelcomeEmailRequest(BaseModel):
-    """发送欢迎邮件请求 - Phase 4C Enhanced"""
-
-    user_email: EmailStr = Field(..., description="用户邮箱")
-    user_name: constr(min_length=1, max_length=100, strip_whitespace=True) = Field(
-        ..., description="用户姓名，1-100字符"
-    )
-    welcome_offer: Optional[str] = Field(None, max_length=500, description="欢迎优惠信息，最多500字符")
-    language: str = Field("zh-CN", pattern="^(zh-CN|en-US)$", description="邮件语言")
-
-
-class SendNewsletterRequest(BaseModel):
-    """发送新闻简报请求 - Phase 4C Enhanced"""
-
-    user_email: EmailStr = Field(..., description="用户邮箱")
-    user_name: constr(min_length=1, max_length=100, strip_whitespace=True) = Field(..., description="用户姓名")
-    watchlist_symbols: List[constr(min_length=1, max_length=20, strip_whitespace=True)] = Field(
-        ..., min_items=1, max_items=50, description="自选股列表，1-50个股票代码"
-    )
-    news_data: List[Dict] = Field(..., min_items=1, max_items=100, description="新闻数据，1-100条新闻")
-    newsletter_type: str = Field("daily", pattern="^(daily|weekly|monthly)$", description="简报类型")
-
-    @validator("watchlist_symbols")
-    def validate_symbols(cls, v):
-        """验证股票代码列表"""
-        if not v:
-            raise ValueError("自选股列表不能为空")
-        return list(set(v))  # 去重
-
-
-class SendPriceAlertRequest(BaseModel):
-    """发送价格提醒请求 - Phase 4C Enhanced"""
-
-    user_email: EmailStr = Field(..., description="用户邮箱")
-    user_name: constr(min_length=1, max_length=100, strip_whitespace=True) = Field(..., description="用户姓名")
-    symbol: constr(min_length=1, max_length=20, strip_whitespace=True, pattern=r"^[A-Za-z0-9\.]+$") = Field(
-        ..., description="股票代码"
-    )
-    stock_name: constr(min_length=1, max_length=100, strip_whitespace=True) = Field(..., description="股票名称")
-    current_price: float = Field(..., gt=0, description="当前价格，必须大于0")
-    alert_condition: str = Field(..., pattern="^(高于|低于|突破|跌破)$", description="提醒条件")
-    alert_price: float = Field(..., gt=0, description="提醒价格，必须大于0")
-    percentage_change: Optional[float] = Field(None, ge=-100, le=1000, description="价格变化百分比，-100%到1000%")
-
-
-class NotificationPreferences(BaseModel):
-    """用户通知偏好设置"""
-
-    email_enabled: bool = Field(True, description="是否启用邮件通知")
-    websocket_enabled: bool = Field(True, description="是否启用WebSocket通知")
-    price_alerts: bool = Field(True, description="是否接收价格提醒")
-    news_alerts: bool = Field(True, description="是否接收新闻提醒")
-    system_alerts: bool = Field(True, description="是否接收系统提醒")
-    quiet_hours: Optional[Dict[str, str]] = Field(None, description="免打扰时间段 {'start': '22:00', 'end': '08:00'}")
-    max_daily_emails: int = Field(50, ge=1, le=200, description="每日最大邮件数量")
-
-
-class RealTimeNotification(BaseModel):
-    """实时通知消息"""
-
-    notification_id: str = Field(..., description="通知唯一ID")
-    user_id: int = Field(..., description="用户ID")
-    type: str = Field(..., pattern="^(price_alert|news|system|reminder)$", description="通知类型")
-    title: constr(min_length=1, max_length=200) = Field(..., description="通知标题")
-    message: constr(min_length=1, max_length=1000) = Field(..., description="通知内容")
-    data: Optional[Dict] = Field(None, description="通知相关数据")
-    priority: str = Field("normal", pattern="^(low|normal|high|urgent)$", description="优先级")
-    created_at: datetime = Field(default_factory=datetime.utcnow, description="创建时间")
-    expires_at: Optional[datetime] = Field(None, description="过期时间")
-    action_required: bool = Field(False, description="是否需要用户操作")
-    action_url: Optional[str] = Field(None, description="操作链接")
-
-
-# ==================== 工具函数和中间件 ====================
-
-
-# 简单的内存速率限制器
-class RateLimiter:
-    """内存速率限制器"""
-
-    def __init__(self):
-        self.requests = {}
-
-    def is_allowed(self, key: str, limit: int, window: int) -> bool:
-        """
-        检查是否允许请求
-
-        Args:
-            key: 限制键（通常是用户ID或IP）
-            limit: 限制次数
-            window: 时间窗口（秒）
-        """
-        now = datetime.now(timezone.utc)
-
-        if key not in self.requests:
-            self.requests[key] = []
-
-        # 清理过期的请求记录
-        self.requests[key] = [req_time for req_time in self.requests[key] if (now - req_time).seconds < window]
-
-        # 检查是否超过限制
-        if len(self.requests[key]) >= limit:
-            return False
-
-        # 记录当前请求
-        self.requests[key].append(now)
-        return True
-
-
-# 全局速率限制器实例
-rate_limiter = RateLimiter()
-
-
-def rate_limit(limit: int, window: int):
-    """速率限制装饰器"""
-
-    def decorator(func):
-        @wraps(func)
-        async def wrapper(*args, **kwargs):
-            # 获取当前用户
-            current_user = None
-            for arg in args:
-                if hasattr(arg, "id"):
-                    current_user = arg
-                    break
-
-            # 如果在依赖中查找
-            if not current_user:
-                for key, value in kwargs.items():
-                    if hasattr(value, "id"):
-                        current_user = value
-                        break
-
-            if current_user:
-                user_key = f"user_{current_user.id}"
-            else:
-                # 如果没有用户信息，使用IP限制（简化版）
-                user_key = "anonymous"
-
-            if not rate_limiter.is_allowed(user_key, limit, window):
-                raise HTTPException(status_code=429, detail=f"请求过于频繁，请在{window}秒后重试")
-
-            return await func(*args, **kwargs)
-
-        return wrapper
-
-    return decorator
-
-
-# WebSocket连接管理
-class ConnectionManager:
-    """WebSocket连接管理器"""
-
-    def __init__(self):
-        self.active_connections: Dict[int, List[WebSocket]] = {}
-
-    async def connect(self, websocket: WebSocket, user_id: int):
-        """接受WebSocket连接"""
-        await websocket.accept()
-
-        if user_id not in self.active_connections:
-            self.active_connections[user_id] = []
-
-        self.active_connections[user_id].append(websocket)
-        logger.info("WebSocket连接建立", user_id=user_id)
-
-    def disconnect(self, websocket: WebSocket, user_id: int):
-        """断开WebSocket连接"""
-        if user_id in self.active_connections:
-            if websocket in self.active_connections[user_id]:
-                self.active_connections[user_id].remove(websocket)
-
-            # 如果用户没有活跃连接，清理
-            if not self.active_connections[user_id]:
-                del self.active_connections[user_id]
-
-        logger.info("WebSocket连接断开", user_id=user_id)
-
-    async def send_personal_notification(self, notification: RealTimeNotification):
-        """发送个人实时通知"""
-        user_id = notification.user_id
-
-        if user_id in self.active_connections:
-            message = notification.dict()
-
-            # 移除过期连接
-            dead_connections = []
-            for connection in self.active_connections[user_id]:
-                try:
-                    await connection.send_json(message)
-                except Exception:
-                    dead_connections.append(connection)
-
-            # 清理死连接
-            for dead_connection in dead_connections:
-                self.disconnect(dead_connection, user_id)
-
-    async def broadcast_system_notification(self, notification: RealTimeNotification):
-        """广播系统通知"""
-        message = notification.dict()
-
-        # 向所有用户发送
-        dead_connections = []
-        for user_id, connections in self.active_connections.items():
-            for connection in connections:
-                try:
-                    await connection.send_json(message)
-                except Exception:
-                    dead_connections.append((user_id, connection))
-
-        # 清理死连接
-        for user_id, connection in dead_connections:
-            self.disconnect(connection, user_id)
-
-
-# 全局连接管理器
-connection_manager = ConnectionManager()
-
-
-def validate_notification_preferences(user_id: int, notification_type: str) -> bool:
-    """验证用户通知偏好（简化实现）"""
-    # 这里应该从数据库获取用户偏好设置
-    # 暂时返回True，表示允许所有类型的通知
-    return True
-
-
-def is_in_quiet_hours(user_id: int) -> bool:
-    """检查是否在免打扰时间"""
-    # 这里应该从数据库获取用户免打扰设置
-    # 暂时返回False，表示不在免打扰时间
-    return False
 
 
 # ==================== API 端点 ====================
@@ -629,9 +373,9 @@ async def send_daily_newsletter(
             news_data=request.news_data,
         )
         if result["success"]:
-            print(f"✅ 新闻简报已发送至 {request.user_email}")
+            logger.info("新闻简报已发送至 %s", request.user_email)
         else:
-            print(f"❌ 新闻简报发送失败: {result['message']}")
+            logger.error("新闻简报发送失败: %s", result["message"])
 
     background_tasks.add_task(send_task)
 
@@ -669,9 +413,9 @@ async def send_price_alert(
             alert_price=request.alert_price,
         )
         if result["success"]:
-            print(f"✅ 价格提醒已发送至 {request.user_email}")
+            logger.info("价格提醒已发送至 %s", request.user_email)
         else:
-            print(f"❌ 价格提醒发送失败: {result['message']}")
+            logger.error("价格提醒发送失败: %s", result["message"])
 
     background_tasks.add_task(send_task)
 
