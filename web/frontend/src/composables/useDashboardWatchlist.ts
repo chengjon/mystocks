@@ -1,4 +1,4 @@
-import { ref, Ref } from 'vue'
+import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { apiClient } from '@/api/apiClient'
 import type { WatchlistItem } from '@/api/types/common'
