@@ -3,11 +3,14 @@
 用于解析通达信二进制 .day 文件格式
 """
 
+import logging
 import struct
 from pathlib import Path
 from typing import List, Optional
 
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 
 class TdxDayFileParser:
@@ -199,7 +202,7 @@ class TdxDataService:
         try:
             return self.parser.read_tdx_day_file(str(file_path), f"{market}{stock_code}")
         except Exception as e:
-            print(f"读取股票数据失败: {e}")
+            logger.exception("读取股票数据失败: %s", e)
             return None
 
     def get_index_data(self, index_code: str = "000001") -> Optional[pd.DataFrame]:
