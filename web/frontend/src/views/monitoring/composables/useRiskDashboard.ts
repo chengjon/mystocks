@@ -87,7 +87,7 @@ const getScoreTrend = (score: number): string => {
   return 'negative'
 }
 
-const getScoreChange = (score: number): string => {
+const getScoreChange = (_score: number): string => {
   const change = (Math.random() - 0.5) * 10
   const sign = change >= 0 ? '+' : ''
   return `${sign}${change.toFixed(1)}%`
