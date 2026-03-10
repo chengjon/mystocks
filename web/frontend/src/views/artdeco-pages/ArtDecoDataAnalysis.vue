@@ -157,7 +157,7 @@ const resultColumns = [
     { key: 'change', label: '涨跌幅' }
 ]
 
-function getCategoryCount(key) {
+function getCategoryCount(_key) {
     return 5 // Simplified
 }
 
