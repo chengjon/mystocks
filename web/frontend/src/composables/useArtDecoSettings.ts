@@ -1,6 +1,5 @@
 // ArtDeco Settings composable
-import { ref, reactive, computed, onMounted } from 'vue'
-import { ArtDecoCard, ArtDecoButton, ArtDecoInput, ArtDecoSelect } from '@/components/artdeco'
+import { ref } from 'vue'
 
 export function useArtDecoSettings() {
       // 响应式数据
