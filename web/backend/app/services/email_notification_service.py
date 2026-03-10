@@ -4,6 +4,7 @@
 迁移自 OpenStock 项目
 """
 
+import logging
 import os
 import smtplib
 from datetime import datetime
@@ -12,6 +13,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import Dict, List
 
+logger = logging.getLogger(__name__)
+
 
 class EmailServiceError(Exception):
     """邮件服务错误"""
@@ -19,6 +22,18 @@ class EmailServiceError(Exception):
 
 class EmailNotificationService:
     """邮件通知服务"""
+
+    @staticmethod
+    def _log_exception(action: str, error: Exception) -> None:
+        logger.exception("%s: %s", action, error)
+
+    @staticmethod
+    def _log_warning(message: str, *args) -> None:
+        logger.warning(message, *args)
+
+    @staticmethod
+    def _log_info(message: str, *args) -> None:
+        logger.info(message, *args)
 
     def __init__(self, config: Dict[str, any] = None):
         """
@@ -44,7 +59,7 @@ class EmailNotificationService:
             self.from_name = os.getenv("SMTP_FROM_NAME", "MyStocks")
 
         if not self.username or not self.password:
-            print("警告: SMTP 配置未完整，邮件发送功能将不可用")
+            self._log_warning("警告: SMTP 配置未完整，邮件发送功能将不可用")
 
     def send_email(
         self,
@@ -68,7 +83,7 @@ class EmailNotificationService:
             bool: 发送是否成功
         """
         if not self.username or not self.password:
-            print("邮件发送失败: SMTP 配置未完整")
+            self._log_warning("邮件发送失败: SMTP 配置未完整")
             return False
 
         try:
@@ -92,13 +107,13 @@ class EmailNotificationService:
             server.send_message(msg)
             server.quit()
 
-            print(f"邮件已成功发送到: {', '.join(to_addresses)}")
+            self._log_info("邮件已成功发送到: %s", ", ".join(to_addresses))
             return True
         except smtplib.SMTPException as e:
-            print(f"发送邮件时发生 SMTP 错误: {e}")
+            self._log_exception("发送邮件时发生 SMTP 错误", e)
             return False
         except Exception as e:
-            print(f"发送邮件时发生错误: {e}")
+            self._log_exception("发送邮件时发生错误", e)
             return False
 
     def send_welcome_email(self, user_email: str, user_name: str) -> bool:
