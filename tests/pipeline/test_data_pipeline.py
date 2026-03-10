@@ -18,116 +18,21 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
+from tests.pipeline._data_pipeline_models import (
+    DataBatch,
+    DataQuality,
+    PipelineConfig,
+    PipelineMetrics,
+    PipelineStage,
+)
+from tests.pipeline._data_pipeline_tail import (
+    PipelineFactory as PipelineFactoryHelper,
+    demo_data_pipeline as demo_data_pipeline_helper,
+)
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
-
-
-class PipelineStage(Enum):
-    """管道处理阶段枚举"""
-
-    INGESTION = "ingestion"  # 数据摄入
-    VALIDATION = "validation"  # 数据验证
-    TRANSFORMATION = "transformation"  # 数据转换
-    AGGREGATION = "aggregation"  # 数据聚合
-    OPTIMIZATION = "optimization"  # 数据优化
-    EXPORT = "export"  # 数据导出
-
-
-class DataQuality(Enum):
-    """数据质量级别枚举"""
-
-    EXCELLENT = "excellent"
-    GOOD = "good"
-    FAIR = "fair"
-    POOR = "poor"
-    INVALID = "invalid"
-
-
-@dataclass
-class PipelineConfig:
-    """管道配置类"""
-
-    # 基础配置
-    name: str
-    description: str
-
-    # 性能配置
-    max_workers: int = 4
-    batch_size: int = 1000
-    timeout_seconds: int = 300
-
-    # 质量配置
-    quality_threshold: float = 0.8
-    validation_enabled: bool = True
-    auto_repair: bool = True
-
-    # 存储配置
-    storage_path: str = "data/pipeline"
-    cache_enabled: bool = True
-    cache_ttl: int = 3600
-
-    # 监控配置
-    enable_monitoring: bool = True
-    metrics_interval: int = 60
-
-    # 错误处理配置
-    fail_fast: bool = False
-    max_retries: int = 3
-    retry_delay: float = 1.0
-
-
-@dataclass
-class DataBatch:
-    """数据批次类"""
-
-    id: str
-    source: str
-    data: List[Dict[str, Any]]
-    metadata: Dict[str, Any]
-    created_at: datetime = field(default_factory=datetime.now)
-    quality_score: float = 0.0
-    processing_stage: PipelineStage = PipelineStage.INGESTION
-
-    def to_dict(self) -> Dict[str, Any]:
-        """转换为字典"""
-        return {
-            "id": self.id,
-            "source": self.source,
-            "data": self.data,
-            "metadata": self.metadata,
-            "created_at": self.created_at.isoformat(),
-            "quality_score": self.quality_score,
-            "processing_stage": self.processing_stage.value,
-        }
-
-
-@dataclass
-class PipelineMetrics:
-    """管道性能指标"""
-
-    total_records: int = 0
-    processed_records: int = 0
-    failed_records: int = 0
-    batches_processed: int = 0
-    total_duration: float = 0.0
-    avg_processing_time: float = 0.0
-    quality_score: float = 0.0
-    throughput_records_per_second: float = 0.0
-
-    def to_dict(self) -> Dict[str, Any]:
-        """转换为字典"""
-        return {
-            "total_records": self.total_records,
-            "processed_records": self.processed_records,
-            "failed_records": self.failed_records,
-            "batches_processed": self.batches_processed,
-            "total_duration": self.total_duration,
-            "avg_processing_time": self.avg_processing_time,
-            "quality_score": self.quality_score,
-            "throughput_records_per_second": self.throughput_records_per_second,
-        }
 
 
 class TestDataValidator:
@@ -767,117 +672,23 @@ class PipelineFactory:
     @staticmethod
     def create_market_data_pipeline() -> TestDataPipeline:
         """创建市场数据管道"""
-        config = PipelineConfig(
-            name="market_data_pipeline",
-            description="市场数据处理管道",
-            max_workers=8,
-            batch_size=5000,
-            quality_threshold=0.85,
-            enable_monitoring=True,
-        )
-
-        # 市场数据特定的配置
-        config.metadata = {
-            "transformations": ["normalize", "aggregate"],
-            "essential_fields": [
-                "symbol",
-                "timestamp",
-                "open",
-                "high",
-                "low",
-                "close",
-                "volume",
-            ],
-            "price_ranges": {
-                "open": (0, 1000000),
-                "high": (0, 1000000),
-                "low": (0, 1000000),
-                "close": (0, 1000000),
-            },
-        }
-
-        return TestDataPipeline(config)
+        return PipelineFactoryHelper.create_market_data_pipeline(TestDataPipeline, PipelineConfig)
 
     @staticmethod
     def create_trading_data_pipeline() -> TestDataPipeline:
         """创建交易数据管道"""
-        config = PipelineConfig(
-            name="trading_data_pipeline",
-            description="交易数据处理管道",
-            max_workers=6,
-            batch_size=2000,
-            quality_threshold=0.9,
-            auto_repair=True,
-        )
-
-        config.metadata = {
-            "transformations": ["normalize", "filter"],
-            "essential_fields": ["symbol", "quantity", "price", "timestamp"],
-            "volume_ranges": {"quantity": (0, 1000000), "price": (0, 100000)},
-        }
-
-        return TestDataPipeline(config)
+        return PipelineFactoryHelper.create_trading_data_pipeline(TestDataPipeline, PipelineConfig)
 
     @staticmethod
     def create_performance_data_pipeline() -> TestDataPipeline:
         """创建性能数据管道"""
-        config = PipelineConfig(
-            name="performance_data_pipeline",
-            description="性能数据处理管道",
-            max_workers=4,
-            batch_size=1000,
-            quality_threshold=0.95,
-            fail_fast=True,
-        )
-
-        config.metadata = {
-            "transformations": ["normalize", "optimize"],
-            "essential_fields": ["test_name", "duration", "status", "timestamp"],
-        }
-
-        return TestDataPipeline(config)
+        return PipelineFactoryHelper.create_performance_data_pipeline(TestDataPipeline, PipelineConfig)
 
 
 # 使用示例
 async def demo_data_pipeline():
     """演示数据管道功能"""
-    print("🚀 演示测试数据管道功能")
-
-    # 创建市场数据管道
-    market_pipeline = PipelineFactory.create_market_data_pipeline()
-
-    # 生成测试数据
-    test_data = [
-        {
-            "symbol": "AAPL",
-            "date": "2024-12-12",
-            "open": 150.0,
-            "high": 155.0,
-            "low": 149.0,
-            "close": 152.0,
-            "volume": 1000000,
-        }
-        for _ in range(100)
-    ]
-
-    # 摄入数据
-    batch_id = await market_pipeline.ingest_data("market_data", test_data)
-    print(f"✓ 数据摄入完成: {batch_id}")
-
-    # 处理管道
-    processed_batches = await market_pipeline.process_pipeline()
-    print(f"✓ 处理完成 {len(processed_batches)} 个批次")
-
-    # 获取指标
-    metrics = market_pipeline.get_metrics()
-    print(f"📊 管道指标: {metrics.to_dict()}")
-
-    # 导出数据
-    await market_pipeline.export_data(processed_batches, "exported_market_data.json", "json")
-    print("✓ 数据导出完成")
-
-    # 清理
-    await market_pipeline.clear_cache()
+    await demo_data_pipeline_helper(PipelineFactory, TestDataPipeline, PipelineConfig)
 
 
 if __name__ == "__main__":
