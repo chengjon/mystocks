@@ -284,8 +284,8 @@ if __name__ == "__main__":
 
     for password in test_passwords:
         is_valid, errors = validator.validate(password)
-        print(f"密码: {password}")
-        print(f"验证通过: {is_valid}")
+        logger.info("密码: %s", password)
+        logger.info("验证通过: %s", is_valid)
         if errors:
-            print(f"错误: {errors}")
-        print("-" * 50)
+            logger.info("错误: %s", errors)
+        logger.info("%s", "-" * 50)

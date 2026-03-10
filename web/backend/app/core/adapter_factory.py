@@ -293,7 +293,7 @@ USAGE EXAMPLES:
 4. Get factory status:
     ```python
     info = AdapterFactory.info()
-    print(f"Loaded adapters: {info}")
+    logger.info("Loaded adapters: %s", info)
     # Output: {"registered": 4, "loaded": 2, "adapters": [...]}
     ```
 """

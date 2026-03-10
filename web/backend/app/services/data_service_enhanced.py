@@ -586,18 +586,18 @@ def get_enhanced_data_service() -> EnhancedDataService:
 
 
 if __name__ == "__main__":
-    print("Testing Enhanced Data Service...")
+    logger.info("Testing Enhanced Data Service...")
 
     # Test enhanced data service
     service = get_enhanced_data_service()
 
     # Test health check
     health = service.get_service_health()
-    print(f"Service Health: {health}")
+    logger.info("Service Health: %s", health)
 
     # Test performance metrics
     metrics = service.get_performance_metrics()
-    print(f"Performance Metrics: {metrics}")
+    logger.info("Performance Metrics: %s", metrics)
 
     # Test data loading with error handling
     try:
@@ -608,22 +608,22 @@ if __name__ == "__main__":
 
         # Test with valid symbol
         df, ohlcv = service.get_daily_ohlcv("600000.SH", start_date, end_date)
-        print(f"Successfully loaded {len(df)} records for 600000.SH")
+        logger.info("Successfully loaded %s records for 600000.SH", len(df))
 
         # Test with invalid symbol (should use fallback)
         df, ohlcv = service.get_daily_ohlcv("INVALID.XX", start_date, end_date)
-        print(f"Fallback test: loaded {len(df)} records")
+        logger.info("Fallback test: loaded %s records", len(df))
 
     except Exception as e:
-        print(f"Expected error for invalid symbol: {e}")
+        logger.info("Expected error for invalid symbol: %s", e)
 
-    print("\nEnhanced Data Service basic functionality implemented")
-    print("Main features:")
-    print("  - Comprehensive error handling and recovery")
-    print("  - Circuit breaker pattern")
-    print("  - Performance monitoring and metrics")
-    print("  - Health check endpoints")
-    print("  - Retry mechanisms with exponential backoff")
-    print("  - Input validation and sanitization")
-    print("  - Graceful degradation and fallbacks")
-    print("  - Real-time monitoring integration")
+    logger.info("Enhanced Data Service basic functionality implemented")
+    logger.info("Main features:")
+    logger.info("  - Comprehensive error handling and recovery")
+    logger.info("  - Circuit breaker pattern")
+    logger.info("  - Performance monitoring and metrics")
+    logger.info("  - Health check endpoints")
+    logger.info("  - Retry mechanisms with exponential backoff")
+    logger.info("  - Input validation and sanitization")
+    logger.info("  - Graceful degradation and fallbacks")
+    logger.info("  - Real-time monitoring integration")

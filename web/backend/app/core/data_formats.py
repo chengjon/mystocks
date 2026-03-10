@@ -12,12 +12,15 @@ Reference: docs/api/API_SPECIFICATION.md
 """
 
 import re
+import logging
 from datetime import date, datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import Any, Optional, Union
 
 from pydantic import BaseModel, Field, validator
+
+logger = logging.getLogger(__name__)
 
 # ============================================================================
 # TIMESTAMP FORMATS
@@ -496,25 +499,25 @@ class DataFormatValidator:
 
 if __name__ == "__main__":
     # Example usage
-    print("Data Format Conventions Module")
-    print("=" * 50)
+    logger.info("Data Format Conventions Module")
+    logger.info("%s", "=" * 50)
 
     # Example: Price validation
     price = validate_price(123.456)
-    print(f"Price validation: 123.456 → {price}")
+    logger.info("Price validation: 123.456 → %s", price)
 
     # Example: Percentage validation
     percentage = validate_percentage(15.2569, high_precision=True)
-    print(f"Percentage validation: 15.2569 → {percentage}")
+    logger.info("Percentage validation: 15.2569 → %s", percentage)
 
     # Example: Timestamp formats
     iso_ts = get_current_iso_timestamp()
     ms_ts = get_current_ms_timestamp()
-    print(f"Current ISO timestamp: {iso_ts}")
-    print(f"Current millisecond timestamp: {ms_ts}")
+    logger.info("Current ISO timestamp: %s", iso_ts)
+    logger.info("Current millisecond timestamp: %s", ms_ts)
 
     # Example: Stock symbol validation
     symbol = StockSymbolFormat.validate("600000")
-    print(f"Stock symbol validation: 600000 → {symbol}")
+    logger.info("Stock symbol validation: 600000 → %s", symbol)
 
-    print("\n✅ Data format conventions module initialized successfully")
+    logger.info("Data format conventions module initialized successfully")
