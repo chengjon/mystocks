@@ -1,8 +1,9 @@
 import type { StrategyConfig } from '@/api/types/common'
 import type { StrategySnapshot } from '@/composables/strategy/useStrategyCrossTabContext'
+import { createMockStrategyManagementList } from '@/mock/strategyTabsMock'
 
 export type OptimizationStatusLabel = 'RUNNING' | 'PAUSED' | 'STOPPED' | 'ERROR'
-export type OptimizationDataSource = 'real'
+export type OptimizationDataSource = 'real' | 'mock'
 
 export interface StrategyOptimizationRow {
   strategyId: string
@@ -161,4 +162,8 @@ export function buildOptimizationRows(
       }
     })
     .filter((item): item is StrategyOptimizationRow => item !== null)
+}
+
+export function createMockOptimizationRows(): StrategyOptimizationRow[] {
+  return buildOptimizationRows(createMockStrategyManagementList(), {}, 'mock')
 }
