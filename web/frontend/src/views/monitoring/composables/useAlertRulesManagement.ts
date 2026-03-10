@@ -1,8 +1,6 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { monitoringApi } from '@/api'
-import { PageHeader, StockListTable, PaginationBar, DetailDialog } from '@/components/shared'
-import type { TableColumn } from '@/components/shared'
 
 interface AlertRule {
   id: string
