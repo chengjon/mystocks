@@ -1,2 +1,2 @@
 // 向后兼容入口 - 实际实现已拆分至 ./performance/
-export * from './performance';
+export * from './performance.ts';

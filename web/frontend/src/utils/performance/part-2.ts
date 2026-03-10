@@ -142,7 +142,11 @@ export class BundleAnalyzer {
 /**
  * Performance optimization decorators
  */
-export function performanceMonitor(target: unknown, propertyName: string, descriptor: PropertyDescriptor) {
+export function performanceMonitor(
+  target: unknown,
+  propertyName: string,
+  descriptor: PropertyDescriptor
+): PropertyDescriptor {
   const method = descriptor.value
   const monitor = PerformanceMonitor.getInstance()
 
@@ -226,4 +230,3 @@ export default {
   throttle,
   debounce
 }
-
