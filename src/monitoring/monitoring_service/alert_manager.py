@@ -20,6 +20,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import Any, Dict, List
 
+from src.monitoring.monitoring_service._operation_metric_models import Alert, AlertLevel
 
 # 导入核心模块 (US3: 已移除DataStorageStrategy)
 
@@ -266,5 +267,4 @@ class WebhookAlertChannel(AlertChannel):
 
         except Exception as e:
             logger.error("发送Webhook告警失败: %s", e)
-
 
