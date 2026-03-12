@@ -12,6 +12,7 @@ import os
 from typing import Any, Dict, Optional
 
 from dotenv import load_dotenv
+from src.utils.redis_runtime_config import get_redis_connection_kwargs
 
 try:
     import redis
@@ -169,15 +170,12 @@ class DatabaseConnectionManager:
                 raise ImportError
 
             if "redis" not in self._connections:
-                redis_db = int(os.getenv("REDIS_DB", "1"))
+                redis_role = "app_cache"
+                redis_kwargs = get_redis_connection_kwargs(redis_role, decode_responses=True)
 
                 # 使用连接池
                 redis_pool = redis.ConnectionPool(
-                    host=os.getenv("REDIS_HOST"),
-                    port=int(os.getenv("REDIS_PORT", "6379")),
-                    db=redis_db,
-                    password=os.getenv("REDIS_PASSWORD") or None,
-                    decode_responses=True,
+                    **redis_kwargs,
                     socket_connect_timeout=5,
                     socket_timeout=5,
                     max_connections=10,
@@ -194,9 +192,10 @@ class DatabaseConnectionManager:
         except ImportError:
             raise ImportError("Redis驱动未安装: pip install redis>=4.5.0")
         except Exception as e:
+            redis_kwargs = get_redis_connection_kwargs("app_cache", decode_responses=True)
             raise ConnectionError(
-                f"Redis连接失败: {e}\n"
-                f"请检查配置: {os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')} DB={os.getenv('REDIS_DB')}"
+                f"Redis连接失败 [role=app_cache]: {e}\n"
+                f"请检查配置: {redis_kwargs['host']}:{redis_kwargs['port']} DB={redis_kwargs['db']}"
             )
 
     def close_all_connections(self) -> None:

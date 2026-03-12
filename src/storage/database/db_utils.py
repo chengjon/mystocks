@@ -9,6 +9,7 @@ from typing import Dict, Optional
 import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
+from src.utils.redis_runtime_config import get_redis_db_for_role
 
 
 def create_databases_safely() -> bool:
@@ -109,7 +110,7 @@ def get_database_config(db_type) -> Optional[Dict]:
             "host": os.getenv("REDIS_HOST"),
             "port": int(os.getenv("REDIS_PORT", "6379")),
             "password": os.getenv("REDIS_PASSWORD"),
-            "db": int(os.getenv("REDIS_DB", "0")),
+            "db": get_redis_db_for_role("tooling_maintenance"),
         },
     }
 

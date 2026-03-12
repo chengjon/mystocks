@@ -23,6 +23,8 @@ from sqlalchemy import (
     create_engine,
 )
 from sqlalchemy.orm import sessionmaker
+from src.utils.redis_runtime_config import get_redis_db_for_role
+from src.utils.redis_runtime_config import get_redis_db_for_role
 
 # Import from parent module
 from .._build_monitor_db_url import Base, DatabaseType, _build_monitor_db_url
@@ -82,7 +84,7 @@ class DatabaseTableManagerCoreMixin:
                 "host": os.getenv("REDIS_HOST"),
                 "port": int(os.getenv("REDIS_PORT", "6379")),
                 "password": os.getenv("REDIS_PASSWORD"),
-                "db": int(os.getenv("REDIS_DB", "0")),
+                "db": get_redis_db_for_role("tooling_maintenance"),
             },
         }
 
@@ -563,7 +565,6 @@ class DatabaseTableManagerCoreMixin:
             logger.error("Failed to batch create tables: %s", str(e))
             return {"error": str(e)}
 
-    def _generate_alter_ddl(self, db_type: DatabaseType, table_name: str, alterations: List[Dict]) -> str:
         """生成ALTER TABLE语句"""
         ddl_parts = []
 

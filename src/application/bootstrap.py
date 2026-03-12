@@ -24,6 +24,7 @@ from src.infrastructure.persistence.repository_impl import (
     StrategyRepositoryImpl,
     TradingPositionRepositoryImpl,
 )
+from src.utils.redis_runtime_config import get_redis_connection_kwargs
 
 logger = logging.getLogger(__name__)
 
@@ -37,9 +38,8 @@ class AppContainer:
         self.db_session = db_session
 
         # Redis 客户端初始化 (复用于总线和锁)
-        self.redis_client = redis.Redis(
-            host=os.getenv("REDIS_HOST", "localhost"), port=int(os.getenv("REDIS_PORT", 6379)), decode_responses=True
-        )
+        redis_kwargs = get_redis_connection_kwargs("monitoring_events", decode_responses=True)
+        self.redis_client = redis.Redis(**redis_kwargs)
 
         # 1. 基础设施实现 - 根据配置选择事件总线
         bus_type = os.getenv("EVENT_BUS_TYPE", "LOCAL").upper()

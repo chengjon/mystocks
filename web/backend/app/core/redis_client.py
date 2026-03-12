@@ -15,6 +15,7 @@ from typing import Optional
 import redis
 
 from app.core.config import settings
+from src.utils.redis_runtime_config import get_redis_connection_kwargs
 
 logger = logging.getLogger(__name__)
 
@@ -45,22 +46,19 @@ class RedisManager:
     def _initialize_client(self):
         """初始化Redis连接池"""
         try:
+            redis_kwargs = get_redis_connection_kwargs('app_cache', decode_responses=settings.redis_decode_responses)
             self._redis_client = redis.Redis(
-                host=settings.redis_host,
-                port=settings.redis_port,
-                db=settings.redis_db,
-                password=settings.redis_password if settings.redis_password else None,
+                **redis_kwargs,
                 max_connections=settings.redis_max_connections,
                 socket_timeout=settings.redis_socket_timeout,
                 socket_connect_timeout=settings.redis_socket_connect_timeout,
-                decode_responses=settings.redis_decode_responses,
                 health_check_interval=30,  # 健康检查间隔
                 retry_on_timeout=True,  # 超时自动重试
                 retry_on_error=[redis.ConnectionError, redis.TimeoutError],
             )
             # 测试连接
             self._redis_client.ping()
-            logger.info("✅ Redis connected: {settings.redis_host}:{settings.redis_port}/{settings.redis_db}")
+            logger.info("✅ Redis connected: %(host)s:%(port)s/%(db)s", redis_kwargs)
         except Exception:
             logger.error("❌ Redis connection failed: %(e)s")
             self._redis_client = None
@@ -120,7 +118,7 @@ class RedisManager:
         """
         try:
             self.client.flushdb(asynchronous=asynchronous)
-            logger.warning("Redis DB {settings.redis_db} flushed")
+            logger.warning("Redis DB %(db)s flushed", {"db": get_redis_connection_kwargs("app_cache")["db"]})
         except Exception:
             logger.error("Failed to flush Redis DB: %(e)s")
 

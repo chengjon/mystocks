@@ -24,15 +24,17 @@ class Settings(BaseSettings):
     debug: bool = False
 
     # 测试环境配置
-    testing: bool = Field(default=False, env="TESTING")
+    testing: bool = Field(default=False, validation_alias="TESTING")
     csrf_enabled: bool = Field(default=True)  # 默认启用CSRF，测试环境自动禁用
 
     # Mock API配置
-    use_mock_apis: bool = Field(default=False, env="USE_MOCK_DATA")  # 控制是否注册Mock API路由
-    mock_auth_enabled: bool = Field(default=False, env="MOCK_AUTH_ENABLED")  # 生产环境安全控制：禁用Mock认证
+    use_mock_apis: bool = Field(default=False, validation_alias="USE_MOCK_DATA")  # 控制是否注册Mock API路由
+    mock_auth_enabled: bool = Field(
+        default=False, validation_alias="MOCK_AUTH_ENABLED"
+    )  # 生产环境安全控制：禁用Mock认证
 
     # 服务器配置
-    host: str = Field(default="0.0.0.0", env="BACKEND_HOST")  # nosec
+    host: str = Field(default="0.0.0.0", validation_alias="BACKEND_HOST")  # nosec
     # Pydantic v2 no longer recommends Field(env=...), so use validation_alias for robust port mapping.
     port: int = Field(default=0, validation_alias=AliasChoices("BACKEND_PORT", "PORT", "port"))
     port_range_start: int = Field(default=0, validation_alias=AliasChoices("BACKEND_PORT", "PORT", "port"))
@@ -43,23 +45,23 @@ class Settings(BaseSettings):
 
     # 数据库配置 - PostgreSQL 主数据库 (Week 3 简化: 仅使用PostgreSQL)
     # 从环境变量读取，pydantic-settings会自动从.env文件加载
-    postgresql_host: str = Field(default="", env="POSTGRESQL_HOST")
-    postgresql_port: int = Field(default=5432, env="POSTGRESQL_PORT")
-    postgresql_user: str = Field(default="", env="POSTGRESQL_USER")
-    postgresql_password: str = Field(default="", env="POSTGRESQL_PASSWORD")
-    postgresql_database: str = Field(default="", env="POSTGRESQL_DATABASE")
+    postgresql_host: str = Field(default="", validation_alias="POSTGRESQL_HOST")
+    postgresql_port: int = Field(default=5432, validation_alias="POSTGRESQL_PORT")
+    postgresql_user: str = Field(default="", validation_alias="POSTGRESQL_USER")
+    postgresql_password: str = Field(default="", validation_alias="POSTGRESQL_PASSWORD")
+    postgresql_database: str = Field(default="", validation_alias="POSTGRESQL_DATABASE")
 
     # 监控数据库配置 (使用PostgreSQL，同库不同schema)
-    monitor_db_url: str = Field(default="", env="MONITOR_DB_URL")
-    monitor_db_host: str = Field(default="", env="POSTGRESQL_HOST")  # 默认与主库相同
-    monitor_db_user: str = Field(default="", env="POSTGRESQL_USER")  # 默认与主库相同
-    monitor_db_password: str = Field(default="", env="POSTGRESQL_PASSWORD")  # 默认与主库相同
-    monitor_db_port: int = Field(default=5432, env="POSTGRESQL_PORT")  # 默认与主库相同
-    monitor_db_database: str = Field(default="", env="POSTGRESQL_DATABASE")  # 默认与主库相同
+    monitor_db_url: str = Field(default="", validation_alias="MONITOR_DB_URL")
+    monitor_db_host: str = Field(default="", validation_alias="POSTGRESQL_HOST")  # 默认与主库相同
+    monitor_db_user: str = Field(default="", validation_alias="POSTGRESQL_USER")  # 默认与主库相同
+    monitor_db_password: str = Field(default="", validation_alias="POSTGRESQL_PASSWORD")  # 默认与主库相同
+    monitor_db_port: int = Field(default=5432, validation_alias="POSTGRESQL_PORT")  # 默认与主库相同
+    monitor_db_database: str = Field(default="", validation_alias="POSTGRESQL_DATABASE")  # 默认与主库相同
 
     # JWT 认证配置
     # 注意: 字段名使用 jwt_secret_key 以便在 case_sensitive=False 时正确映射到 JWT_SECRET_KEY 环境变量
-    jwt_secret_key: str = Field(default="", env="JWT_SECRET_KEY")  # 必须从环境变量设置，否则启动失败
+    jwt_secret_key: str = Field(default="", validation_alias="JWT_SECRET_KEY")  # 必须从环境变量设置，否则启动失败
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
 
@@ -70,13 +72,13 @@ class Settings(BaseSettings):
         return self.jwt_secret_key
 
     # 管理员初始密码配置
-    admin_initial_password: str = Field(default="", env="ADMIN_INITIAL_PASSWORD")
+    admin_initial_password: str = Field(default="", validation_alias="ADMIN_INITIAL_PASSWORD")
 
     # CORS 配置 (使用字符串形式，避免pydantic-settings解析问题)
     # 默认仅允许固定前端端口，实际环境以 .env 的 CORS_ORIGINS 为准
     cors_origins_str: str = Field(
         default="http://localhost:3020,http://localhost:3021",
-        env="CORS_ORIGINS",
+        validation_alias="CORS_ORIGINS",
     )
 
     @property
@@ -94,10 +96,15 @@ class Settings(BaseSettings):
     # 4. 会话存储 - JWT黑名单、用户会话
 
     # Redis连接配置
-    redis_host: str = Field(default="", env="REDIS_HOST")
-    redis_port: int = Field(default=6379, env="REDIS_PORT")
-    redis_password: str = Field(default="", env="REDIS_PASSWORD")
-    redis_db: int = Field(default=1, env="REDIS_DB")
+    redis_host: str = Field(default="", validation_alias="REDIS_HOST")
+    redis_port: int = Field(default=6379, validation_alias="REDIS_PORT")
+    redis_password: str = Field(default="", validation_alias="REDIS_PASSWORD")
+    redis_db: int = Field(default=1, validation_alias="REDIS_DB")
+    redis_app_cache_db: int = Field(default=1, validation_alias=AliasChoices("REDIS_APP_CACHE_DB", "REDIS_DB"))
+    redis_monitoring_db: int = Field(default=0, validation_alias=AliasChoices("REDIS_MONITORING_DB", "REDIS_DB"))
+    redis_tooling_db: int = Field(default=0, validation_alias=AliasChoices("REDIS_TOOLING_DB", "REDIS_DB"))
+    redis_celery_broker_db: int = Field(default=0, validation_alias=AliasChoices("REDIS_CELERY_BROKER_DB", "REDIS_DB"))
+    redis_celery_result_db: int = Field(default=1, validation_alias=AliasChoices("REDIS_CELERY_RESULT_DB", "REDIS_DB"))
 
     # Redis连接池配置
     redis_max_connections: int = 50
@@ -124,8 +131,16 @@ class Settings(BaseSettings):
     redis_session_ttl: int = 86400  # 会话过期时间 (24小时)
 
     # Celery 异步任务配置
-    celery_broker_url: str = Field(default="redis://localhost:6379/0", env="CELERY_BROKER_URL")
-    celery_result_backend: str = Field(default="redis://localhost:6379/1", env="CELERY_RESULT_BACKEND")
+    celery_broker_url: str = Field(default="redis://localhost:6379/0", validation_alias="CELERY_BROKER_URL")
+    celery_result_backend: str = Field(default="redis://localhost:6379/1", validation_alias="CELERY_RESULT_BACKEND")
+
+    @property
+    def default_celery_broker_url(self) -> str:
+        return f"redis://{self.redis_host or 'localhost'}:{self.redis_port}/{self.redis_celery_broker_db}"
+
+    @property
+    def default_celery_result_backend(self) -> str:
+        return f"redis://{self.redis_host or 'localhost'}:{self.redis_port}/{self.redis_celery_result_db}"
     celery_task_track_started: bool = True
     celery_task_time_limit: int = 3600  # 任务超时时间（秒），默认1小时
     celery_enable_utc: bool = True
@@ -136,7 +151,7 @@ class Settings(BaseSettings):
     upload_dir: str = "uploads"
 
     # 日志配置 - 从环境变量读取，默认INFO，生产环境可设置为WARNING/ERROR
-    log_level: str = Field(default="INFO", env="LOG_LEVEL")
+    log_level: str = Field(default="INFO", validation_alias="LOG_LEVEL")
 
     # 指标计算配置
     enable_talib: bool = True

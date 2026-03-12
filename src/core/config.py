@@ -6,27 +6,35 @@
 import os
 
 
+def _get_env_value(*names: str, default=None):
+    """按优先级读取环境变量，兼容新旧命名。"""
+    for name in names:
+        if name in os.environ:
+            return os.environ[name]
+    return default
+
+
 class DatabaseConfig:
     """数据库配置"""
 
     def __init__(self):
         # PostgreSQL配置
-        self.postgresql_host = os.getenv("DB_POSTGRESQL_HOST", "localhost")
-        self.postgresql_port = int(os.getenv("DB_POSTGRESQL_PORT", "5432"))
-        self.postgresql_username = os.getenv("DB_POSTGRESQL_USERNAME", "postgres")
-        self.postgresql_password = os.getenv("DB_POSTGRESQL_PASSWORD")
+        self.postgresql_host = _get_env_value("POSTGRESQL_HOST", "DB_POSTGRESQL_HOST", default="localhost")
+        self.postgresql_port = int(_get_env_value("POSTGRESQL_PORT", "DB_POSTGRESQL_PORT", default="5432"))
+        self.postgresql_username = _get_env_value("POSTGRESQL_USER", "DB_POSTGRESQL_USERNAME", default="postgres")
+        self.postgresql_password = _get_env_value("POSTGRESQL_PASSWORD", "DB_POSTGRESQL_PASSWORD")
         if not self.postgresql_password:
-            raise ValueError("DB_POSTGRESQL_PASSWORD environment variable must be set")
-        self.postgresql_database = os.getenv("DB_POSTGRESQL_DATABASE", "mystocks")
+            raise ValueError("POSTGRESQL_PASSWORD or DB_POSTGRESQL_PASSWORD environment variable must be set")
+        self.postgresql_database = _get_env_value("POSTGRESQL_DATABASE", "DB_POSTGRESQL_DATABASE", default="mystocks")
 
         # TDengine配置
-        self.tdengine_host = os.getenv("DB_TDENGINE_HOST", "localhost")
-        self.tdengine_port = int(os.getenv("DB_TDENGINE_PORT", "6030"))
-        self.tdengine_username = os.getenv("DB_TDENGINE_USERNAME", "root")
-        self.tdengine_password = os.getenv("DB_TDENGINE_PASSWORD")
+        self.tdengine_host = _get_env_value("TDENGINE_HOST", "DB_TDENGINE_HOST", default="localhost")
+        self.tdengine_port = int(_get_env_value("TDENGINE_PORT", "DB_TDENGINE_PORT", default="6030"))
+        self.tdengine_username = _get_env_value("TDENGINE_USER", "DB_TDENGINE_USERNAME", default="root")
+        self.tdengine_password = _get_env_value("TDENGINE_PASSWORD", "DB_TDENGINE_PASSWORD")
         if not self.tdengine_password:
-            raise ValueError("DB_TDENGINE_PASSWORD environment variable must be set")
-        self.tdengine_database = os.getenv("DB_TDENGINE_DATABASE", "mystocks")
+            raise ValueError("TDENGINE_PASSWORD or DB_TDENGINE_PASSWORD environment variable must be set")
+        self.tdengine_database = _get_env_value("TDENGINE_DATABASE", "DB_TDENGINE_DATABASE", default="mystocks")
 
     def get_postgresql_url(self) -> str:
         """获取PostgreSQL连接字符串"""

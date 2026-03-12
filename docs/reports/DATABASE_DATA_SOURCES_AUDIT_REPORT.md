@@ -4,7 +4,7 @@
 > 审计分支: `main`
 > 审计范围: 数据库连接配置、数据源注册表、运行时配置入口、当前环境可用性
 > 审计方式: 仓库静态核对 + 当前 `.env` 环境实测
-> 审计结论: 报告口径已修正为“仓库事实”和“当前环境实测”分离；截至 2026-03-12 当前会话，`CFG-001`、访问层导入问题、旧 JSON 结构兼容问题与后端重复配置副本已完成第一轮整改，剩余重点为 Redis 用途梳理与环境变量命名收敛
+> 审计结论: 报告口径已修正为“仓库事实”和“当前环境实测”分离；截至 2026-03-12 当前会话，`CFG-001`、`CFG-002`、访问层导入问题、旧 JSON 结构兼容问题与后端重复配置副本已完成第一轮整改，剩余重点为 Redis 用途矩阵治理与 JSON/YAML 配置职责边界收敛
 
 ---
 
@@ -12,7 +12,7 @@
 
 本次复核后，可以确认以下事实：
 
-1. 当前环境下，`PostgreSQL`、`TimescaleDB` 扩展、`TDengine` 可连接；`Redis` 不可连接。
+1. 当前环境下，`PostgreSQL`、`TimescaleDB` 扩展、`TDengine` 可连接；`Redis` 已由用户确认可连接。
 2. `src/storage/database/connection_manager.py` 的 PostgreSQL 回退端口已统一为 `5432`，并已与模板 `config/.env.data_sources.example` 同步。
 3. 根目录 `config/data_sources.json` 不是可直接删除的冗余文件，后端 `DataSourceFactory` 仍直接依赖它。
 4. `web/backend/config/data_sources.json` 重复副本已删除；当前仅保留根目录 `config/data_sources.json` 作为运行时 JSON 配置入口。
@@ -86,7 +86,7 @@
 | PostgreSQL | ✅ 可连接 | `select 1` 成功 |
 | TimescaleDB | ✅ 可用 | 扩展版本 `2.22.0` |
 | TDengine | ✅ 可连接 | `select 1` 成功 |
-| Redis | ❌ 不可连接 | `Could not connect to Redis at localhost:6379: Connection refused` |
+| Redis | ✅ 可连接 | 用户确认 `redis.ping() == True` |
 
 ### 4.3 本机端口监听观察
 
@@ -182,8 +182,6 @@
 
 **状态**: 已修复
 
-### 6.2 仍需处理的问题
-
 #### CFG-002 数据库环境变量命名空间分裂
 
 **位置**:
@@ -202,9 +200,15 @@
 - 容易造成同一环境下两套配置源并存。
 - 对新环境接入不友好。
 
-**结论**:
+**当前状态**:
 
-这是真实问题，但更接近“历史兼容治理”，不是立即阻塞上线的问题。
+- `src/core/config.py` 已支持标准变量 `POSTGRESQL_*` / `TDENGINE_*`
+- 旧 `DB_*` 变量仍保留为 fallback，兼容历史调用方
+- 已补充针对标准变量优先级与旧变量回退的回归测试
+
+**状态**: 已修复
+
+### 6.2 仍需处理的问题
 
 #### CFG-003 Redis DB 号存在多套约定
 
@@ -332,7 +336,7 @@
 
 | 优先级 | 编号 | 行动项 | 说明 |
 |--------|------|--------|------|
-| `P0` | `VERIFY-001` | 保留并记录当前环境实测结果 | 当前已确认 PostgreSQL / TDengine / TimescaleDB 可用，Redis 不可用 |
+| `P0` | `VERIFY-001` | 保留并记录当前环境实测结果 | 当前已确认 PostgreSQL / TDengine / TimescaleDB 可用，Redis 也已由用户确认可用 |
 | `P1` | `DUP-002` | 保持根目录 `config/data_sources.json` 为运行时入口 | 暂不删除，避免影响 `DataSourceFactory` |
 
 ### 8.2 需要方案后再做
@@ -340,7 +344,6 @@
 | 优先级 | 编号 | 行动项 | 说明 |
 |--------|------|--------|------|
 | `P1` | `CFG-003` | 整理 Redis 用途矩阵 | 不建议直接统一到单一 DB 号 |
-| `P2` | `CFG-002` | 收敛 `DB_*` 与无前缀环境变量命名 | 需要兼容策略 |
 | `P2` | `DATA-001` | 补齐注册表缺失字段和测试参数 | 适合加自动校验 |
 | `P3` | `MIG-001` | 设计 JSON 到 YAML 的迁移方案 | 先保证 `DataSourceFactory` 兼容 |
 
@@ -401,4 +404,4 @@ PY
 ---
 
 **报告状态**: 已复核并修正
-**下一步建议**: 继续围绕 `CFG-002`、`CFG-003` 和 JSON/YAML 配置职责边界收敛，避免直接进入大范围重构
+**下一步建议**: 继续围绕 `CFG-003` 和 JSON/YAML 配置职责边界收敛，避免直接进入大范围重构

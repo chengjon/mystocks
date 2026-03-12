@@ -15,6 +15,8 @@ import structlog
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from src.utils.redis_runtime_config import get_redis_connection_kwargs
+
 logger = structlog.get_logger()
 
 
@@ -57,7 +59,8 @@ def initialize_realtime_mtm():
         try:
             from src.infrastructure.messaging.redis_event_bus import RedisEventBus
 
-            event_bus = RedisEventBus(host="localhost", port=6379, db=0)
+            redis_kwargs = get_redis_connection_kwargs("monitoring_events", decode_responses=True)
+            event_bus = RedisEventBus(host=redis_kwargs["host"], port=redis_kwargs["port"], db=redis_kwargs["db"], password=redis_kwargs["password"])
             logger.info("✅ Redis Event Bus connected for Real-time MTM")
         except Exception:
             logger.warning("⚠️ Redis not available for Real-time MTM: %(e)s")

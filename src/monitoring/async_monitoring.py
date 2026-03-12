@@ -19,6 +19,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+from src.utils.redis_runtime_config import get_redis_db_for_role
+
 logger = logging.getLogger(__name__)
 
 
@@ -82,7 +84,7 @@ class MonitoringEventPublisher:
 
                 redis_host = os.getenv("REDIS_HOST", "localhost")
                 redis_port = int(os.getenv("REDIS_PORT", 6379))
-                redis_db = int(os.getenv("REDIS_DB", 0))
+                redis_db = get_redis_db_for_role("monitoring_events")
 
                 # 使用连接池
                 self._redis_pool = redis.ConnectionPool(
@@ -214,7 +216,7 @@ class MonitoringEventWorker:
 
                 redis_host = os.getenv("REDIS_HOST", "localhost")
                 redis_port = int(os.getenv("REDIS_PORT", 6379))
-                redis_db = int(os.getenv("REDIS_DB", 0))
+                redis_db = get_redis_db_for_role("monitoring_events")
 
                 # 使用连接池
                 self._redis_pool = redis.ConnectionPool(

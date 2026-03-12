@@ -9,6 +9,8 @@ from typing import Any, Dict, List, Optional
 from datetime import datetime
 from enum import Enum
 
+from src.utils.redis_runtime_config import get_redis_db_for_role
+
 logger = __import__("logging").getLogger(__name__)
 
 
@@ -99,7 +101,7 @@ class CacheService:
         self.cache_type = cache_type
         self.redis_host = redis_host
         self.redis_port = redis_port
-        self.redis_db = 0
+        self.redis_db = get_redis_db_for_role("app_cache")
         self.memory_cache = {}  # key -> CacheEntry
         self.redis_pool = None
         self.max_cache_size = 10000

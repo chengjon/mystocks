@@ -4,6 +4,8 @@ System Configuration Module
 
 import os
 
+from src.utils.redis_runtime_config import get_redis_db_for_role
+
 
 class SystemConfig:
     """System Configuration"""
@@ -12,7 +14,7 @@ class SystemConfig:
         self.redis_config = {
             "host": os.getenv("REDIS_HOST", "localhost"),
             "port": int(os.getenv("REDIS_PORT", 6379)),
-            "db": int(os.getenv("REDIS_DB", 0)),
+            "db": get_redis_db_for_role("tooling_maintenance"),
         }
 
         self.grpc_config = {
