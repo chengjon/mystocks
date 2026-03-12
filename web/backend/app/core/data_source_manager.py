@@ -41,6 +41,8 @@ class DataSourceManager:
     def __init__(self, config_path: str = None):
         self.config_path = config_path or "config/data_sources.json"
         self.modules: Dict[str, ModuleConfig] = {}
+        self._config_format = "modules"
+        self._raw_config: Dict = {}
         self._load_config()
 
     def _load_config(self):
@@ -48,31 +50,68 @@ class DataSourceManager:
         if os.path.exists(self.config_path):
             with open(self.config_path, "r") as f:
                 data = json.load(f)
-                for module_data in data.get("modules", []):
-                    self.modules[module_data["name"]] = ModuleConfig(
-                        module_name=module_data["name"],
-                        data_source=DataSourceType(module_data.get("data_source", "mock")),
-                        fallback=DataSourceType(module_data.get("fallback", "real")),
-                        endpoints=module_data.get("endpoints", []),
-                        cache_ttl=module_data.get("cache_ttl", 300),
-                        enabled=module_data.get("enabled", True),
-                    )
+                self._raw_config = data
+                self.modules.clear()
+
+                if "modules" in data:
+                    self._config_format = "modules"
+                    for module_data in data.get("modules", []):
+                        self.modules[module_data["name"]] = ModuleConfig(
+                            module_name=module_data["name"],
+                            data_source=DataSourceType(module_data.get("data_source", "mock")),
+                            fallback=DataSourceType(module_data.get("fallback", "real")),
+                            endpoints=module_data.get("endpoints", []),
+                            cache_ttl=module_data.get("cache_ttl", 300),
+                            enabled=module_data.get("enabled", True),
+                        )
+                    return
+
+                if "data_sources" in data:
+                    self._config_format = "data_sources"
+                    for source_name, source_config in data.get("data_sources", {}).items():
+                        mode = source_config.get("mode", "mock")
+                        fallback = "mock" if source_config.get("fallback_enabled", False) and mode != "mock" else "real"
+                        self.modules[source_name] = ModuleConfig(
+                            module_name=source_name,
+                            data_source=DataSourceType(mode),
+                            fallback=DataSourceType(fallback),
+                            endpoints=source_config.get("endpoints", []),
+                            cache_ttl=source_config.get("cache_ttl", 300),
+                            enabled=source_config.get("enabled", True),
+                        )
 
     def save_config(self):
         """保存配置"""
-        data = {
-            "modules": [
-                {
-                    "name": m.module_name,
-                    "data_source": m.data_source.value,
-                    "fallback": m.fallback.value,
-                    "endpoints": m.endpoints,
-                    "cache_ttl": m.cache_ttl,
-                    "enabled": m.enabled,
-                }
-                for m in self.modules.values()
-            ]
-        }
+        if self._config_format == "data_sources":
+            data = dict(self._raw_config)
+            data_sources = {
+                name: dict(config)
+                for name, config in data.get("data_sources", {}).items()
+            }
+            for module_name, module in self.modules.items():
+                source_config = data_sources.get(module_name, {})
+                source_config["enabled"] = module.enabled
+                source_config["mode"] = module.data_source.value
+                source_config["cache_ttl"] = module.cache_ttl
+                source_config.setdefault("type", module_name)
+                if "fallback_enabled" not in source_config:
+                    source_config["fallback_enabled"] = module.fallback == DataSourceType.MOCK
+                data_sources[module_name] = source_config
+            data["data_sources"] = data_sources
+        else:
+            data = {
+                "modules": [
+                    {
+                        "name": m.module_name,
+                        "data_source": m.data_source.value,
+                        "fallback": m.fallback.value,
+                        "endpoints": m.endpoints,
+                        "cache_ttl": m.cache_ttl,
+                        "enabled": m.enabled,
+                    }
+                    for m in self.modules.values()
+                ]
+            }
 
         os.makedirs(os.path.dirname(self.config_path), exist_ok=True)
         with open(self.config_path, "w") as f:

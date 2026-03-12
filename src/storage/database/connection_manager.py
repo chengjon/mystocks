@@ -13,6 +13,21 @@ from typing import Any, Dict, Optional
 
 from dotenv import load_dotenv
 
+try:
+    import redis
+except ImportError:
+    redis = None
+
+try:
+    import taosws
+except ImportError:
+    taosws = None
+
+try:
+    from psycopg2 import pool
+except ImportError:
+    pool = None
+
 # 加载环境变量
 load_dotenv()
 
@@ -66,7 +81,8 @@ class DatabaseConnectionManager:
             ConnectionError: 连接失败
         """
         try:
-            import taosws
+            if taosws is None:
+                raise ImportError
 
             if "tdengine" not in self._connections:
                 # WebSocket连接优先使用REST端口(6041),否则使用默认端口(6030)
@@ -101,14 +117,15 @@ class DatabaseConnectionManager:
             ConnectionError: 连接失败
         """
         try:
-            from psycopg2 import pool
+            if pool is None:
+                raise ImportError
 
             if "postgresql" not in self._connections:
                 connection_pool = pool.SimpleConnectionPool(
                     minconn=1,
                     maxconn=20,
                     host=os.getenv("POSTGRESQL_HOST"),
-                    port=int(os.getenv("POSTGRESQL_PORT", "5438")),
+                    port=int(os.getenv("POSTGRESQL_PORT", "5432")),
                     user=os.getenv("POSTGRESQL_USER", "postgres"),
                     password=os.getenv("POSTGRESQL_PASSWORD", ""),
                     database=os.getenv("POSTGRESQL_DATABASE", "mystocks"),
@@ -148,7 +165,8 @@ class DatabaseConnectionManager:
             ConnectionError: 连接失败
         """
         try:
-            import redis
+            if redis is None:
+                raise ImportError
 
             if "redis" not in self._connections:
                 redis_db = int(os.getenv("REDIS_DB", "1"))

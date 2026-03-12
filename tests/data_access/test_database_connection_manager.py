@@ -170,7 +170,7 @@ class TestDatabaseConnectionManagerTDengine(unittest.TestCase):
 
     def test_get_tdengine_connection_import_error(self):
         """测试TDengine驱动未安装时抛出ImportError"""
-        with patch("src.storage.database.connection_manager.taosws", side_effect=ImportError):
+        with patch("src.storage.database.connection_manager.taosws", None):
             with self.assertRaises(ImportError) as context:
                 self.manager.get_tdengine_connection()
 
@@ -252,14 +252,14 @@ class TestDatabaseConnectionManagerPostgreSQL(unittest.TestCase):
 
         # 验证调用参数包含默认值
         call_args = mock_pool.SimpleConnectionPool.call_args
-        self.assertEqual(call_args[1]["port"], 5438)  # 默认端口
+        self.assertEqual(call_args[1]["port"], 5432)  # 默认端口
         self.assertEqual(call_args[1]["user"], "postgres")  # 默认用户
         self.assertEqual(call_args[1]["password"], "")  # 默认空密码
         self.assertEqual(call_args[1]["database"], "mystocks")  # 默认数据库
 
     def test_get_postgresql_connection_import_error(self):
         """测试PostgreSQL驱动未安装时抛出ImportError"""
-        with patch("src.storage.database.connection_manager.pool", side_effect=ImportError):
+        with patch("src.storage.database.connection_manager.pool", None):
             with self.assertRaises(ImportError) as context:
                 self.manager.get_postgresql_connection()
 
@@ -335,7 +335,7 @@ class TestDatabaseConnectionManagerRedis(unittest.TestCase):
 
     def test_get_redis_connection_import_error(self):
         """测试Redis驱动未安装时抛出ImportError"""
-        with patch("src.storage.database.connection_manager.redis", side_effect=ImportError):
+        with patch("src.storage.database.connection_manager.redis", None):
             with self.assertRaises(ImportError) as context:
                 self.manager.get_redis_connection()
 

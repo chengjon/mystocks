@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """数据访问层 - PostgreSQL 关系数据库访问"""
 
 import logging
@@ -6,8 +8,10 @@ from typing import Dict, List
 
 import pandas as pd
 
+from src.core import DataClassification
 from src.data_access_pkg._postgresql_access_query_mixin import PostgreSQLDataAccessQueryMixin
-from .interface import IDataAccessLayer
+from src.storage.database import DatabaseTableManager, DatabaseType
+from .interface import IDataAccessLayer, _get_database_name_from_classification
 
 logger = logging.getLogger(__name__)
 

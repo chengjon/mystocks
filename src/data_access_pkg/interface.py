@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """数据访问层 - 接口定义"""
 
 import logging
@@ -5,8 +7,21 @@ from abc import ABC, abstractmethod
 from typing import Dict, List
 
 import pandas as pd
+from src.core import DataClassification
 
 logger = logging.getLogger(__name__)
+
+
+_TDENGINE_CLASSIFICATIONS = {
+    DataClassification.TICK_DATA,
+    DataClassification.MINUTE_KLINE,
+    DataClassification.DEPTH_DATA,
+    DataClassification.ORDER_BOOK_DEPTH,
+    DataClassification.LEVEL2_SNAPSHOT,
+    DataClassification.INDEX_QUOTES,
+}
+
+
 def _get_database_name_from_classification(classification: DataClassification) -> str:
     """
     从数据分类获取数据库名称 (US3架构简化)
@@ -17,13 +32,9 @@ def _get_database_name_from_classification(classification: DataClassification) -
     Returns:
         数据库名称字符串
     """
-    target_db = _data_manager.get_target_database(classification)
-    # 将DatabaseTarget转换为数据库名称
-    database_name_map = {
-        DatabaseTarget.TDENGINE: "market_data",  # TDengine数据库名
-        DatabaseTarget.POSTGRESQL: "mystocks",  # PostgreSQL数据库名
-    }
-    return database_name_map.get(target_db, "mystocks")
+    if classification in _TDENGINE_CLASSIFICATIONS:
+        return "market_data"
+    return "mystocks"
 
 
 class IDataAccessLayer(ABC):
@@ -69,5 +80,4 @@ class IDataAccessLayer(ABC):
         **kwargs,
     ) -> bool:
         """删除数据"""
-
 
