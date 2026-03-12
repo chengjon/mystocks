@@ -101,11 +101,13 @@ def _load_from_yaml(self) -> Dict:
 
         sources = {}
         for endpoint_key, source_config in config.get("data_sources", {}).items():
-            if "endpoint_name" not in source_config:
-                source_config["endpoint_name"] = endpoint_key
+            canonical_endpoint_name = source_config.get("endpoint_name") or endpoint_key
+            source_config["endpoint_name"] = canonical_endpoint_name
 
             source_config["_loaded_from"] = "yaml"
-            sources[endpoint_key] = source_config
+            if canonical_endpoint_name in sources:
+                logger.warning("YAML duplicate endpoint_name detected: %s", canonical_endpoint_name)
+            sources[canonical_endpoint_name] = source_config
 
         return sources
     except Exception:
@@ -116,10 +118,12 @@ def _merge_sources(self, db_sources: Dict, yaml_sources: Dict) -> Dict:
     merged = db_sources.copy()
 
     for endpoint_name, yaml_config in yaml_sources.items():
-        if endpoint_name not in merged:
-            merged[endpoint_name] = yaml_config
+        canonical_endpoint_name = yaml_config.get("endpoint_name") or endpoint_name
+
+        if canonical_endpoint_name not in merged:
+            merged[canonical_endpoint_name] = yaml_config
         else:
-            db_source = merged[endpoint_name]
+            db_source = merged[canonical_endpoint_name]
             config_fields = [
                 "parameters",
                 "description",

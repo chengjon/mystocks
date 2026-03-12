@@ -6,7 +6,7 @@ services:
     container_name: mystocks-mongodb
     restart: unless-stopped
     ports:
-      - "${MONGODB_PORT:-27018}:27017"
+      - "${MONGODB_PORT:-27017}:27017"
     volumes:
       - mongodb_data:/data/db
       - ${MONGODB_CONFIG_PATH:-./config/mongodb}/mongod.conf:/etc/mongod.conf
@@ -18,7 +18,7 @@ services:
     networks:
       - mystocks-network
     healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand({ ping: 1 })"]
       interval: 30s
       timeout: 10s
       retries: 3

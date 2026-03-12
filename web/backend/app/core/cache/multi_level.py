@@ -13,6 +13,7 @@ from typing import Any, Callable, Optional
 
 import redis.asyncio as redis
 from prometheus_client import Counter, Gauge, Histogram
+from src.utils.redis_runtime_config import get_redis_url_for_role
 
 logger = logging.getLogger(__name__)
 
@@ -227,14 +228,15 @@ class MultiLevelCache:
         )
         self._lock = asyncio.Lock()
 
-    async def initialize(self, redis_url: str = "redis://localhost:6379") -> None:
+    async def initialize(self, redis_url: Optional[str] = None) -> None:
         """初始化Redis连接"""
         async with self._lock:
             if self._redis is not None:
                 return
 
             try:
-                self._redis = redis.from_url(redis_url, decode_responses=True)
+                resolved_redis_url = redis_url or get_redis_url_for_role("app_cache")
+                self._redis = redis.from_url(resolved_redis_url, decode_responses=True)
                 await self._redis.ping()
                 self._redis_connected = True
                 logger.info("Redis connection established")
@@ -405,10 +407,10 @@ def get_cache() -> MultiLevelCache:
     return _global_cache
 
 
-async def init_cache(redis_url: str = "redis://localhost:6379") -> None:
+async def init_cache(redis_url: Optional[str] = None) -> None:
     """初始化全局缓存"""
     cache = get_cache()
-    await cache.initialize(redis_url)
+    await cache.initialize(redis_url or get_redis_url_for_role("app_cache"))
 
 
 async def close_cache() -> None:

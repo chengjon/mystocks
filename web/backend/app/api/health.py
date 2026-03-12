@@ -13,6 +13,7 @@ import psycopg2
 from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
 
+from app.core.readiness import check_mongodb_readiness
 from app.core.exceptions import BusinessException, NotFoundException
 from app.core.responses import (
     ErrorCodes,
@@ -78,6 +79,9 @@ async def check_system_health(request: Request):
 
         # 检查TDengine
         services["tdengine"] = await check_tdengine_service()
+
+        # 检查MongoDB（默认可选基础设施）
+        services["mongodb"] = await check_mongodb_service()
 
         # 检查磁盘空间
         services["disk"] = await check_disk_space()
@@ -258,6 +262,22 @@ async def check_tdengine_service() -> HealthStatus:
             return HealthStatus(service="tdengine", status="warning", details="端口不可访问")
     except Exception as e:
         return HealthStatus(service="tdengine", status="error", details=f"连接检查失败: {str(e)}")
+
+
+async def check_mongodb_service() -> HealthStatus:
+    """检查 MongoDB 服务状态（默认可见但不作为硬阻塞项）。"""
+    result = check_mongodb_readiness()
+    status = result.get("status", "optional_unavailable")
+    details = result.get("detail")
+    latency = result.get("latency_ms")
+
+    if status in {"ready", "optional_unconfigured"}:
+        return HealthStatus(service="mongodb", status="normal", details=details, response_time=latency)
+
+    if status == "optional_unavailable":
+        return HealthStatus(service="mongodb", status="warning", details=details, response_time=latency)
+
+    return HealthStatus(service="mongodb", status="error", details=details, response_time=latency)
 
 
 async def check_disk_space() -> HealthStatus:

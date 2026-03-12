@@ -184,14 +184,14 @@ try:
         host=os.getenv('REDIS_HOST'),
         port=int(os.getenv('REDIS_PORT', '6379')),
         password=os.getenv('REDIS_PASSWORD') or None,
-        db=int(os.getenv('REDIS_DB', '1'))
+        db=int(os.getenv('REDIS_APP_CACHE_DB', os.getenv('REDIS_DB', '1')))
     )
 
     # 测试连接
     r.ping()
     info = r.info('server')
 
-    print('✅ Redis连接成功')
+    print('✅ Redis连接成功 (role=app_cache)')
     print(f'   版本: {info[\"redis_version\"]}')
 
 except Exception as e:
@@ -287,6 +287,8 @@ except Exception as e:
 - **TDENGINE_HOST**: $(grep TDENGINE_HOST .env | cut -d'=' -f2)
 - **MYSQL_HOST**: $(grep MYSQL_HOST .env | cut -d'=' -f2)
 - **REDIS_HOST**: $(grep REDIS_HOST .env | cut -d'=' -f2)
+- **REDIS_APP_CACHE_DB**: $(grep REDIS_APP_CACHE_DB .env | cut -d'=' -f2)
+- **REDIS_MONITORING_DB**: $(grep REDIS_MONITORING_DB .env | cut -d'=' -f2)
 
 ## 服务状态
 

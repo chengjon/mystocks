@@ -16,7 +16,11 @@ def generate_spec(tag_filter=None, output_file=None):
         # Import app
         # We need to mock some environment variables if necessary
         os.environ.setdefault("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/mystocks")
-        os.environ.setdefault("REDIS_URL", "redis://localhost:6379/0")
+        os.environ.setdefault("REDIS_HOST", "localhost")
+        os.environ.setdefault("REDIS_PORT", "6379")
+        os.environ.setdefault("REDIS_APP_CACHE_DB", "1")
+        os.environ.setdefault("REDIS_CELERY_BROKER_DB", "0")
+        os.environ.setdefault("REDIS_CELERY_RESULT_DB", "1")
 
         from app.main import app
         from fastapi.openapi.utils import get_openapi

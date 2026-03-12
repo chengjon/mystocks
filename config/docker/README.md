@@ -2,6 +2,16 @@
 
 本目录包含 MyStocks 监控基础设施的 Docker Compose 配置文件。
 
+当前 Redis 运行时基线：
+
+- 端口 `6379`
+- 逻辑角色 DB:
+  - `REDIS_APP_CACHE_DB=1`
+  - `REDIS_MONITORING_DB=0`
+  - `REDIS_TOOLING_DB=0`
+  - `REDIS_CELERY_BROKER_DB=0`
+  - `REDIS_CELERY_RESULT_DB=1`
+
 ## 📁 文件结构
 
 ```
@@ -46,6 +56,12 @@ docker-compose -f grafana.yml --env-file .env up -d
 
 # 启动 MongoDB
 docker-compose -f mongodb.yml --env-file .env up -d
+
+# 运行时健康检查
+scripts/dev/check_mongodb_runtime_health.sh
+
+# 进入 Mongo Shell
+docker exec -it mystocks-mongodb mongosh
 ```
 
 #### 选项 C: 使用脚本
@@ -63,7 +79,8 @@ docker-compose -f mongodb.yml --env-file .env up -d
 |------|------|--------|------|
 | Prometheus | http://localhost:9090 | - | - |
 | Grafana | http://localhost:3000 | admin | mystocks2025 |
-| MongoDB | localhost:27018 | admin | mystocks2025 |
+| Redis | localhost:6379 | password via `.env` | 缓存 / 角色化 DB |
+| MongoDB | localhost:27017 | admin | mystocks2025 |
 | AlertManager | http://localhost:9093 | - | - |
 
 ## 📊 配置说明
@@ -82,8 +99,19 @@ GRAFANA_PORT=3000
 GRAFANA_ADMIN_USER=admin
 GRAFANA_ADMIN_PASSWORD=mystocks2025
 
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=change_me
+REDIS_APP_CACHE_DB=1
+REDIS_MONITORING_DB=0
+REDIS_TOOLING_DB=0
+REDIS_CELERY_BROKER_DB=0
+REDIS_CELERY_RESULT_DB=1
+
 # MongoDB
-MONGODB_PORT=27018
+MONGODB_PORT=27017
+MONGODB_AUTH_SOURCE=admin
 MONGODB_ROOT_USERNAME=admin
 MONGODB_ROOT_PASSWORD=mystocks2025
 MONGODB_DATABASE=mystocks
@@ -97,8 +125,16 @@ DOCKER_NETWORK_SUBNET=172.20.0.0/16
 所有服务都配置了数据卷持久化：
 - `prometheus_data`: Prometheus 时间序列数据
 - `grafana_data`: Grafana 仪表板和配置
+- `redis_prod_data`: Redis 数据文件
 - `mongodb_data`: MongoDB 数据库文件
+- `config/mongodb/mongod.conf`: MongoDB 运行配置
 - `alertmanager_data`: AlertManager 配置
+
+Redis 运行时验证：
+
+```bash
+scripts/dev/check_redis_runtime_health.sh
+```
 
 ## 🔧 维护操作
 

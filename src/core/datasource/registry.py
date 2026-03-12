@@ -12,6 +12,7 @@ from typing import Any, Dict, List, Optional
 
 import redis.asyncio as redis
 from pydantic import BaseModel, Field
+from src.utils.redis_runtime_config import get_redis_url_for_role
 
 logger = logging.getLogger(__name__)
 
@@ -81,8 +82,8 @@ class DataSourceRegistry:
     and health statuses.
     """
 
-    def __init__(self, redis_url: str = "redis://localhost:6379"):
-        self._redis_url = redis_url
+    def __init__(self, redis_url: Optional[str] = None):
+        self._redis_url = redis_url or get_redis_url_for_role("monitoring_events")
         self._redis: Optional[redis.Redis] = None
         self._local_cache: Dict[str, DataSourceConfig] = {}
         self._health_status: Dict[str, HealthStatus] = {}

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from typing import Any, Dict
+from urllib.parse import quote
 
 
 REDIS_ROLE_DEFAULTS = {
@@ -66,3 +67,10 @@ def get_redis_connection_kwargs(role: str, *, decode_responses: bool = True) -> 
         'password': get_redis_password(),
         'decode_responses': decode_responses,
     }
+
+
+def get_redis_url_for_role(role: str) -> str:
+    kwargs = get_redis_connection_kwargs(role, decode_responses=True)
+    password = kwargs['password']
+    auth = f":{quote(password, safe='')}@" if password else ""
+    return f"redis://{auth}{kwargs['host']}:{kwargs['port']}/{kwargs['db']}"

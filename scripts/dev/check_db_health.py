@@ -6,6 +6,7 @@
 """
 
 import sys
+from src.utils.redis_runtime_config import get_redis_connection_kwargs
 import os
 
 # 添加项目根目录到路径
@@ -202,11 +203,12 @@ def check_redis_connection():
         import redis
         from web.backend.app.core.config import settings
 
+        redis_kwargs = get_redis_connection_kwargs("app_cache", decode_responses=True)
         r = redis.Redis(
-            host=settings.redis_host,
-            port=settings.redis_port,
-            password=settings.redis_password if settings.redis_password else None,
-            db=settings.redis_db,
+            host=redis_kwargs["host"],
+            port=redis_kwargs["port"],
+            password=redis_kwargs["password"],
+            db=redis_kwargs["db"],
             socket_connect_timeout=5,
         )
 
@@ -215,7 +217,8 @@ def check_redis_connection():
         info = r.info()
         print("✅ Redis连接成功")
         print(f"   版本: {info.get('redis_version', 'Unknown')}")
-        print(f"   数据库: DB{settings.redis_db}")
+        print(f"   逻辑角色: app_cache")
+        print(f"   数据库: DB{redis_kwargs['db']}")
         print(f"   内存使用: {info.get('used_memory_human', 'Unknown')}")
         print(f"   键数量: {r.dbsize()}")
 

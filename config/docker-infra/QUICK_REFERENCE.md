@@ -17,7 +17,8 @@ cd /opt/claude/mystocks_spec/docker
 |------|------|------|------|
 | Prometheus | http://localhost:9090 | 无 | 指标收集和查询 |
 | Grafana | http://localhost:3000 | admin/mystocks2025 | 可视化仪表板 |
-| MongoDB | localhost:27018 | admin/mystocks2025 | 文档数据库 |
+| Redis | localhost:6379 | password via `.env` | app_cache=1 / monitoring=0 |
+| MongoDB | localhost:27017 | admin/mystocks2025 | 文档数据库 |
 | AlertManager | http://localhost:9093 | 无 | 告警管理 |
 
 ## 📁 关键文件
@@ -26,6 +27,7 @@ cd /opt/claude/mystocks_spec/docker
 |------|------|
 | `docker/prometheus.yml` | Prometheus 独立配置 |
 | `docker/grafana.yml` | Grafana 独立配置 |
+| `docker/docker-compose.prod.yml` | Redis 生产配置 |
 | `docker/mongodb.yml` | MongoDB 独立配置 |
 | `docker/monitoring-stack.yml` | 完整监控栈配置 |
 | `.env` | 环境变量配置 |
@@ -49,7 +51,8 @@ curl -X POST http://localhost:9090/-/reload
 # 进入容器
 docker exec -it mystocks-prometheus sh
 docker exec -it mystocks-grafana bash
-docker exec -it mystocks-mongodb mongo
+docker exec -it mystocks-redis redis-cli
+docker exec -it mystocks-mongodb mongosh
 ```
 
 ## 🔧 环境变量配置 (.env)
@@ -58,12 +61,17 @@ docker exec -it mystocks-mongodb mongo
 # 核心端口配置
 PROMETHEUS_PORT=9090
 GRAFANA_PORT=3000
-MONGODB_PORT=27018
+REDIS_PORT=6379
+REDIS_APP_CACHE_DB=1
+REDIS_CELERY_BROKER_DB=0
+MONGODB_PORT=27017
+MONGODB_AUTH_SOURCE=admin
 ALERTMANAGER_PORT=9093
 
 # 认证信息
 GRAFANA_ADMIN_USER=admin
 GRAFANA_ADMIN_PASSWORD=mystocks2025
+REDIS_PASSWORD=change_me
 MONGODB_ROOT_USERNAME=admin
 MONGODB_ROOT_PASSWORD=mystocks2025
 
@@ -202,3 +210,8 @@ docker run --rm \
 - [Grafana 官方文档](https://grafana.com/docs/)
 - [Docker Compose 参考](https://docs.docker.com/compose/)
 - [MyStocks 项目文档](../docs/)
+## Redis 运行时检查
+
+```bash
+scripts/dev/check_redis_runtime_health.sh
+```
