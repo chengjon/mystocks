@@ -98,7 +98,8 @@ pip install cudf-cu12 cuml-cu12
 # Redis配置
 REDIS_HOST=localhost
 REDIS_PORT=6379
-REDIS_DB=0
+REDIS_TOOLING_DB=0
+# 如需应用缓存，显式设置 REDIS_APP_CACHE_DB=1
 
 # gRPC配置
 GRPC_HOST=0.0.0.0

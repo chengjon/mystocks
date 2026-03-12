@@ -11,16 +11,18 @@ from typing import Any, Dict, List, Optional, Union
 
 import redis
 
+from src.utils.redis_runtime_config import get_redis_db_for_role
+
 logger = logging.getLogger(__name__)
 
 
 class RedisQueue:
     """Redis队列管理器"""
 
-    def __init__(self, host: str = "localhost", port: int = 6379, db: int = 0):
+    def __init__(self, host: str = "localhost", port: int = 6379, db: int | None = None):
         self.host = host
         self.port = port
-        self.db = db
+        self.db = get_redis_db_for_role("tooling_maintenance") if db is None else db
         self.redis_client = None
         self.redis_pool = None
         self.task_queues = {

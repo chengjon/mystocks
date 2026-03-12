@@ -1346,7 +1346,7 @@ class ProductionSettings(BaseSettings):
     allowed_origins: List[str] = ["https://yourdomain.com"]
 
     # Redis配置（用于缓存和会话）
-    redis_url: str = "redis://localhost:6379/0"
+    redis_url: str = "redis://localhost:6379/1"
 
     # 监控配置
     enable_metrics: bool = True

@@ -112,11 +112,14 @@ MYSQL_USER=root
 MYSQL_PASSWORD=your_password
 MYSQL_DATABASE=mystocks_reference
 
-# Redis (使用1号库,避开0号)
+# Redis
 REDIS_HOST=localhost
 REDIS_PORT=6379
 REDIS_PASSWORD=
-REDIS_DB=1
+REDIS_APP_CACHE_DB=1
+REDIS_MONITORING_DB=0
+REDIS_CELERY_BROKER_DB=0
+REDIS_CELERY_RESULT_DB=1
 
 # 监控数据库
 MONITOR_DB_URL=postgresql://postgres:your_password@localhost:5432/mystocks_monitor

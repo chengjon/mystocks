@@ -11,6 +11,8 @@ import time
 from typing import Any, Dict
 
 from dotenv import load_dotenv
+from src.storage.database._test_database_menu_cli import run_database_test_menu, show_menu
+from src.utils.redis_runtime_config import get_redis_db_for_role
 
 
 class DatabaseTestTool:
@@ -109,7 +111,7 @@ class DatabaseTestTool:
                 "host": os.getenv("REDIS_HOST", ""),
                 "port": int(os.getenv("REDIS_PORT", 6379)),
                 "password": os.getenv("REDIS_PASSWORD", ""),
-                "db": int(os.getenv("REDIS_DB", 0)),
+                "db": get_redis_db_for_role("tooling_maintenance"),
                 "type": "Redis",
             },
         }
@@ -679,64 +681,9 @@ class DatabaseTestTool:
             print("\n⚠️ 由于未找到 .env 文件，跳过后续测试")
 
 
-def show_menu():
-    """显示主菜单"""
-    print("\n" + "=" * 60)
-    print("🔧 数据库测试工具")
-    print("=" * 60)
-    print("请选择要执行的操作:")
-    print()
-    print("1️⃣  查找 .env 文件路径")
-    print("2️⃣  数据库配置完整性测试")
-    print("3️⃣  数据库连通性测试（包括驱动检查）")
-    print("4️⃣  以上全部")
-    print("5️⃣  退出")
-    print()
-    return input("请输入选项 (1-5): ").strip()
-
-
 def main():
     """主函数"""
-    tool = DatabaseTestTool()
-
-    print("=" * 60)
-    print("🎉 欢迎使用数据库测试工具!")
-    print("=" * 60)
-    print("本工具可以帮您:")
-    print("• 查找 .env 配置文件位置")
-    print("• 验证数据库配置完整性")
-    print("• 检查数据库驱动安装情况")
-    print("• 测试数据库连接可用性")
-
-    while True:
-        try:
-            choice = show_menu()
-
-            if choice == "1":
-                tool.find_env_file()
-            elif choice == "2":
-                tool.test_config_integrity()
-            elif choice == "3":
-                # 先检查驱动，再测试连通性
-                tool.check_database_drivers()
-                tool.test_database_connectivity()
-            elif choice == "4":
-                tool.run_all_tests()
-            elif choice == "5":
-                print("\n👋 感谢使用！再见!")
-                break
-            else:
-                print("\n❌ 无效选项，请输入 1-5 之间的数字")
-
-            # 等待用户按键继续
-            input("\n按 Enter 键继续...")
-
-        except KeyboardInterrupt:
-            print("\n\n👋 程序已被用户中断，再见!")
-            break
-        except Exception as e:
-            print(f"\n❌ 发生错误: {str(e)}")
-            input("\n按 Enter 键继续...")
+    run_database_test_menu(DatabaseTestTool)
 
 
 if __name__ == "__main__":

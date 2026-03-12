@@ -93,7 +93,7 @@ check_dependencies() {
     log_info "检查依赖服务..."
 
     # 检查Redis
-    if python -c "import redis; r = redis.Redis(host='redis', port=6379); r.ping()" 2>/dev/null; then
+    if python -c "import os, redis; r = redis.Redis(host=os.getenv('REDIS_HOST', 'redis'), port=int(os.getenv('REDIS_PORT', 6379)), db=int(os.getenv('REDIS_TOOLING_DB', os.getenv('REDIS_DB', 0)))); r.ping()" 2>/dev/null; then
         log_info "Redis: ✅ 连接成功"
     else
         log_warn "Redis: ❌ 连接失败"

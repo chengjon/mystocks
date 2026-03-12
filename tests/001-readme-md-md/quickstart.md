@@ -161,11 +161,14 @@ MYSQL_USER=root
 MYSQL_PASSWORD=your_password
 MYSQL_DATABASE=mystocks_reference
 
-# Redis配置 (使用1号库,避开0号)
+# Redis配置
 REDIS_HOST=localhost
 REDIS_PORT=6379
 REDIS_PASSWORD=
-REDIS_DB=1
+REDIS_APP_CACHE_DB=1
+REDIS_MONITORING_DB=0
+REDIS_CELERY_BROKER_DB=0
+REDIS_CELERY_RESULT_DB=1
 
 # 监控数据库配置
 MONITOR_DB_URL=postgresql://postgres:your_password@localhost:5432/mystocks_monitor
@@ -337,7 +340,7 @@ print(f"检查结果: {report['check_result']}")
 **问题**: Redis 0号数据库被其他程序占用
 
 **解决**:
-在 `.env` 中设置 `REDIS_DB=1` (或2-15任意未占用的数据库编号)
+在 `.env` 中按角色设置 Redis DB，例如 `REDIS_APP_CACHE_DB=1`、`REDIS_MONITORING_DB=0`、`REDIS_CELERY_BROKER_DB=0`、`REDIS_CELERY_RESULT_DB=1`
 
 ---
 

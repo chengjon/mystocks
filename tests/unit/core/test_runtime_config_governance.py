@@ -324,3 +324,72 @@ def test_initialize_realtime_mtm_uses_role_aware_redis_kwargs() -> None:
     fake_redis_event_bus_cls.assert_called_once_with(host='redis-host', port=6380, db=0, password=None)
     fake_initialize_adapter.assert_called_once()
     assert adapter is fake_adapter
+
+
+
+def test_redis_event_bus_defaults_to_monitoring_role_kwargs() -> None:
+    module_name = 'test_src_infra_redis_event_bus_module'
+    module_path = Path('/opt/claude/mystocks_spec/src/infrastructure/messaging/redis_event_bus.py')
+
+    import importlib.util
+    import sys
+
+    spec = importlib.util.spec_from_file_location(module_name, module_path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec is not None and spec.loader is not None
+
+    fake_redis_client = MagicMock()
+    fake_redis_module = MagicMock(Redis=MagicMock(return_value=fake_redis_client))
+
+    with patch.dict(
+        sys.modules,
+        {
+            'redis': fake_redis_module,
+            'src.domain.shared.event': MagicMock(DomainEvent=object),
+            'src.domain.shared.event_bus': MagicMock(IEventBus=object),
+        },
+    ), patch('src.utils.redis_runtime_config.get_redis_connection_kwargs', return_value={
+        'host': 'redis-host',
+        'port': 6380,
+        'db': 0,
+        'password': None,
+        'decode_responses': True,
+    }) as mock_kwargs:
+        sys.modules.pop(module_name, None)
+        spec.loader.exec_module(module)
+        bus = module.RedisEventBus()
+
+    mock_kwargs.assert_called_once_with('monitoring_events', decode_responses=True)
+    fake_redis_module.Redis.assert_called_once_with(host='redis-host', port=6380, db=0, password=None, decode_responses=True)
+    assert bus.redis_client is fake_redis_client
+
+
+def test_redis_event_bus_preserves_explicit_db_argument() -> None:
+    module_name = 'test_src_infra_redis_event_bus_module_explicit'
+    module_path = Path('/opt/claude/mystocks_spec/src/infrastructure/messaging/redis_event_bus.py')
+
+    import importlib.util
+    import sys
+
+    spec = importlib.util.spec_from_file_location(module_name, module_path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec is not None and spec.loader is not None
+
+    fake_redis_client = MagicMock()
+    fake_redis_module = MagicMock(Redis=MagicMock(return_value=fake_redis_client))
+
+    with patch.dict(
+        sys.modules,
+        {
+            'redis': fake_redis_module,
+            'src.domain.shared.event': MagicMock(DomainEvent=object),
+            'src.domain.shared.event_bus': MagicMock(IEventBus=object),
+        },
+    ), patch('src.utils.redis_runtime_config.get_redis_connection_kwargs') as mock_kwargs:
+        sys.modules.pop(module_name, None)
+        spec.loader.exec_module(module)
+        bus = module.RedisEventBus(host='explicit-host', port=6390, db=6, password='secret')
+
+    mock_kwargs.assert_not_called()
+    fake_redis_module.Redis.assert_called_once_with(host='explicit-host', port=6390, db=6, password='secret', decode_responses=True)
+    assert bus.redis_client is fake_redis_client

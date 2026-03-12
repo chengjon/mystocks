@@ -25,6 +25,7 @@ from typing import Any, Dict, Optional
 import pandas as pd
 import redis
 from dotenv import load_dotenv
+from src.utils.redis_runtime_config import get_redis_db_for_role
 
 
 class SimpleRealtimeDataSaver:
@@ -85,7 +86,7 @@ class SimpleRealtimeDataSaver:
             "redis_host": os.getenv("REDIS_HOST", "localhost"),
             "redis_port": int(os.getenv("REDIS_PORT", "6379")),
             "redis_password": os.getenv("REDIS_PASSWORD", None),
-            "redis_db": int(os.getenv("REDIS_DB", "0")),
+            "redis_db": get_redis_db_for_role("app_cache"),
             "cache_expire_seconds": int(os.getenv("CACHE_EXPIRE_SECONDS", "300")),
             # 数据处理配置
             "add_timestamp_column": os.getenv("ADD_TIMESTAMP_COLUMN", "true").lower() == "true",

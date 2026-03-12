@@ -12,6 +12,7 @@ import redis
 
 from src.domain.shared.event import DomainEvent
 from src.domain.shared.event_bus import IEventBus
+from src.utils.redis_runtime_config import get_redis_connection_kwargs
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,7 @@ class RedisEventBus(IEventBus):
         self,
         host="localhost",
         port=6379,
-        db=0,
+        db=None,
         password=None,
         channel_prefix="mystocks:events:",
         redis_client: Optional[redis.Redis] = None,
@@ -33,6 +34,12 @@ class RedisEventBus(IEventBus):
         if redis_client:
             self.redis_client = redis_client
         else:
+            if db is None:
+                redis_kwargs = get_redis_connection_kwargs("monitoring_events", decode_responses=True)
+                host = redis_kwargs["host"]
+                port = redis_kwargs["port"]
+                db = redis_kwargs["db"]
+                password = redis_kwargs["password"]
             self.redis_client = redis.Redis(host=host, port=port, db=db, password=password, decode_responses=True)
 
         self.channel_prefix = channel_prefix

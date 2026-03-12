@@ -17,6 +17,7 @@ import psutil
 import redis
 
 from src.gpu.api_system.utils._cache_manager_reporting import CacheManagerReportingMixin
+from src.utils.redis_runtime_config import get_redis_db_for_role
 
 logger = logging.getLogger(__name__)
 
@@ -230,10 +231,10 @@ class L2Cache(CacheLayer):
 class RedisCache:
     """Redis缓存"""
 
-    def __init__(self, host: str = "localhost", port: int = 6379, db: int = 0, ttl: int = 600):
+    def __init__(self, host: str = "localhost", port: int = 6379, db: int | None = None, ttl: int = 600):
         self.host = host
         self.port = port
-        self.db = db
+        self.db = get_redis_db_for_role("tooling_maintenance") if db is None else db
         self.ttl = ttl
         self.client = None
         self.connect()
@@ -331,13 +332,15 @@ class MultiLevelCache:
 
         logger.info("Multi-level cache system initialized")
 
-    def initialize(self, redis_host: str = "localhost", redis_port: int = 6379):
+    def initialize(self, redis_host: str = "localhost", redis_port: int = 6379, redis_db: int | None = None):
         """初始化缓存系统"""
         try:
+            resolved_db = get_redis_db_for_role("tooling_maintenance") if redis_db is None else redis_db
             # 连接Redis
             self.redis_client = redis.Redis(
                 host=redis_host,
                 port=redis_port,
+                db=resolved_db,
                 decode_responses=True,
                 socket_timeout=2,
                 socket_connect_timeout=2,

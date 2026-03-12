@@ -235,7 +235,8 @@ POSTGRESQL_DATABASE=mystocks
 REDIS_HOST=localhost
 REDIS_PORT=6379
 REDIS_PASSWORD=
-REDIS_DB=1  # 此db1完全空白
+REDIS_APP_CACHE_DB=1  # 应用缓存角色
+REDIS_MONITORING_DB=0  # 监控事件角色
 
 # MongoDB（已配置但从未使用）
 MongoDB_HOST=localhost
@@ -433,7 +434,8 @@ MongoDB_DATABASE=mystocks
 #### 配置建议
 ```bash
 # 激活Redis用于缓存
-REDIS_DB=0  # 使用db0（已有3个keys）
+REDIS_APP_CACHE_DB=1
+REDIS_MONITORING_DB=0
 CACHE_EXPIRE_SECONDS=300
 REDIS_FIXATION_INTERVAL_SECONDS=300
 ```
