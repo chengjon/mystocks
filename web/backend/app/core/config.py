@@ -7,6 +7,7 @@ from typing import List
 
 from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from src.utils.mongo_runtime_config import get_mongo_connection_kwargs
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +59,23 @@ class Settings(BaseSettings):
     monitor_db_password: str = Field(default="", validation_alias="POSTGRESQL_PASSWORD")  # 默认与主库相同
     monitor_db_port: int = Field(default=5432, validation_alias="POSTGRESQL_PORT")  # 默认与主库相同
     monitor_db_database: str = Field(default="", validation_alias="POSTGRESQL_DATABASE")  # 默认与主库相同
+
+    # MongoDB 兼容配置
+    # 说明：
+    # - 当前主应用未直接使用 MongoDB 作为核心业务库
+    # - 但测试、Docker 与部分周边工具仍依赖这些兼容字段
+    mongodb_host: str = Field(default="", validation_alias="MONGODB_HOST")
+    mongodb_port: int = Field(default=27017, validation_alias="MONGODB_PORT")
+    mongodb_root_username: str = Field(
+        default="",
+        validation_alias=AliasChoices("MONGODB_ROOT_USERNAME", "USERNAME"),
+    )
+    mongodb_root_password: str = Field(
+        default="",
+        validation_alias=AliasChoices("MONGODB_ROOT_PASSWORD", "PASSWORD"),
+    )
+    mongodb_database: str = Field(default="", validation_alias="MONGODB_DATABASE")
+    mongodb_auth_source: str = Field(default="admin", validation_alias="MONGODB_AUTH_SOURCE")
 
     # JWT 认证配置
     # 注意: 字段名使用 jwt_secret_key 以便在 case_sensitive=False 时正确映射到 JWT_SECRET_KEY 环境变量
@@ -131,8 +149,8 @@ class Settings(BaseSettings):
     redis_session_ttl: int = 86400  # 会话过期时间 (24小时)
 
     # Celery 异步任务配置
-    celery_broker_url: str = Field(default="redis://localhost:6379/0", validation_alias="CELERY_BROKER_URL")
-    celery_result_backend: str = Field(default="redis://localhost:6379/1", validation_alias="CELERY_RESULT_BACKEND")
+    celery_broker_url: str = Field(default="", validation_alias="CELERY_BROKER_URL")
+    celery_result_backend: str = Field(default="", validation_alias="CELERY_RESULT_BACKEND")
 
     @property
     def default_celery_broker_url(self) -> str:
@@ -141,6 +159,25 @@ class Settings(BaseSettings):
     @property
     def default_celery_result_backend(self) -> str:
         return f"redis://{self.redis_host or 'localhost'}:{self.redis_port}/{self.redis_celery_result_db}"
+
+    @property
+    def mongodb_runtime_host(self) -> str:
+        return get_mongo_connection_kwargs()["host"]
+
+    @property
+    def mongodb_runtime_port(self) -> int:
+        return get_mongo_connection_kwargs()["port"]
+
+    @property
+    def mongodb_connection_kwargs(self) -> dict:
+        return get_mongo_connection_kwargs()
+
+    def model_post_init(self, __context) -> None:
+        # 兼容旧配置口径：当未显式配置 Celery URL 时，按 role-aware Redis DB 自动回落。
+        if not self.celery_broker_url:
+            object.__setattr__(self, "celery_broker_url", self.default_celery_broker_url)
+        if not self.celery_result_backend:
+            object.__setattr__(self, "celery_result_backend", self.default_celery_result_backend)
     celery_task_track_started: bool = True
     celery_task_time_limit: int = 3600  # 任务超时时间（秒），默认1小时
     celery_enable_utc: bool = True
