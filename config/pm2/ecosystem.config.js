@@ -1,178 +1,176 @@
-// PM2 多服务进程管理配置 (整合优化版)
-// 支持开发/生产环境自动切换
+const path = require("node:path");
+
+const projectRoot = path.resolve(__dirname, "..", "..");
+const backendCwd = path.join(projectRoot, "web", "backend");
+const frontendCwd = path.join(projectRoot, "web", "frontend");
+
+const frontendPort = process.env.FRONTEND_PORT || "3020";
+const frontendBackupPort = process.env.FRONTEND_BACKUP_PORT || "3021";
+const backendPort = process.env.BACKEND_PORT || "8020";
+const backendBackupPort = process.env.BACKEND_BACKUP_PORT || "8021";
+const pythonBin = process.env.PYTHON_BIN || "python3";
+
 module.exports = {
-  apps: [{
-    // 前端服务: Vite开发服务器
-    name: 'mystocks-frontend',
-    script: 'npm run dev',
-    cwd: '/opt/claude/mystocks_spec/web/frontend',
-    env: {
-      NODE_ENV: 'development',
-      PORT: 3002,
-      HOST: '0.0.0.0'
+  apps: [
+    {
+      name: "mystocks-frontend",
+      script: "npm",
+      args: `run dev -- --host 0.0.0.0 --port ${frontendPort}`,
+      cwd: frontendCwd,
+      env: {
+        NODE_ENV: "development",
+        HOST: "0.0.0.0",
+        PORT: frontendPort,
+        FRONTEND_PORT: frontendPort,
+        FRONTEND_BACKUP_PORT: frontendBackupPort,
+        VITE_API_BASE_URL: process.env.VITE_API_BASE_URL || `http://localhost:${backendPort}`,
+      },
+      instances: 1,
+      exec_mode: "fork",
+      health_check: {
+        url: `http://localhost:${frontendPort}`,
+        timeout: 5000,
+        retries: 3,
+        interval: 10000,
+      },
+      autorestart: true,
+      max_restarts: 30,
+      min_uptime: "10s",
+      log_file: "/tmp/pm2-mystocks-frontend.log",
+      out_file: "/tmp/pm2-mystocks-frontend-out.log",
+      error_file: "/tmp/pm2-mystocks-frontend-error.log",
+      merge_logs: true,
+      max_memory_restart: "1G",
     },
-    instances: 1,
-    exec_mode: 'fork',
-    // 健康检查配置
-    health_check: {
-      url: 'http://localhost:3002',
-      timeout: 5000,
-      retries: 3,
-      interval: 10000
+    {
+      name: "mystocks-backend",
+      script: pythonBin,
+      args: `-m uvicorn app.main:app --host 0.0.0.0 --port ${backendPort} --reload`,
+      cwd: backendCwd,
+      instances: 1,
+      exec_mode: "fork",
+      env: {
+        NODE_ENV: "development",
+        LOG_LEVEL: process.env.LOG_LEVEL || "debug",
+        TESTING: process.env.TESTING || "true",
+        USE_MOCK: process.env.USE_MOCK || "true",
+        USE_MOCK_DATA: process.env.USE_MOCK_DATA || "true",
+        BACKEND_PORT: backendPort,
+        BACKEND_BACKUP_PORT: backendBackupPort,
+        PORT: backendPort,
+        port: backendPort,
+        PORT_RANGE_END: backendBackupPort,
+        port_range_end: backendBackupPort,
+        PYTHONPATH: `${backendCwd}:${projectRoot}`,
+      },
+      env_production: {
+        NODE_ENV: "production",
+        LOG_LEVEL: process.env.LOG_LEVEL || "info",
+        TESTING: process.env.TESTING || "false",
+        USE_MOCK: process.env.USE_MOCK || "false",
+        USE_MOCK_DATA: process.env.USE_MOCK_DATA || "false",
+        BACKEND_PORT: backendPort,
+        BACKEND_BACKUP_PORT: backendBackupPort,
+        PORT: backendPort,
+        port: backendPort,
+        PORT_RANGE_END: backendBackupPort,
+        port_range_end: backendBackupPort,
+        PYTHONPATH: `${backendCwd}:${projectRoot}`,
+      },
+      autorestart: true,
+      watch: false,
+      max_restarts: 10,
+      restart_delay: 5000,
+      max_memory_restart: "1G",
+      health_check: {
+        url: `http://localhost:${backendPort}/api/health`,
+        timeout: 3000,
+        retries: 3,
+        interval: 15000,
+      },
+      log_file: "/tmp/pm2-mystocks-backend.log",
+      out_file: "/tmp/pm2-mystocks-backend-out.log",
+      error_file: "/tmp/pm2-mystocks-backend-error.log",
+      merge_logs: true,
+      min_uptime: "10s",
     },
-    // 自动重启配置
-    autorestart: true,
-    max_restarts: 30,
-    min_uptime: '10s',
-    // 日志配置
-    log_file: '/tmp/pm2-mystocks-frontend.log',
-    out_file: '/tmp/pm2-mystocks-frontend-out.log',
-    error_file: '/tmp/pm2-mystocks-frontend-error.log',
-    merge_logs: true,
-    // 资源限制
-    max_memory_restart: '1G'
-  },
-  {
-    // 核心服务: 后端 API 服务
-    name: 'mystocks-backend',
-    script: 'python -m uvicorn app.main:app',
-    args: '--host 0.0.0.0 --port 8000 --reload',
-    interpreter: 'python',
-    cwd: '/opt/claude/mystocks_spec/web/backend',
-    instances: 1,
-    exec_mode: 'fork',
-
-    // 环境差异化配置
-    env: {
-      NODE_ENV: 'dev',
-      USE_MOCK: 'true',
-      DB_HOST: 'localhost',
-      DB_NAME: 'quant_dev',
-      DB_USER: 'dev_user',
-      DB_PASS: 'dev_pass',
-      LOG_LEVEL: 'debug',
-      TESTING: 'true',
-      PYTHONPATH: '/opt/claude/mystocks_spec/web/backend:/opt/claude/mystocks_spec'
+    {
+      name: "data-sync-basic",
+      script: pythonBin,
+      args: "scripts/data_sync/sync_stock_basic.py",
+      cwd: projectRoot,
+      cron_restart: "0 3 * * 0",
+      out_file: "logs/data_sync/stock_basic_sync.log",
+      error_file: "logs/data_sync/stock_basic_sync_error.log",
+      env: {
+        NODE_ENV: "dev",
+        PYTHONPATH: projectRoot,
+      },
     },
-    env_production: {
-      NODE_ENV: 'prod',
-      USE_MOCK: 'false',
-      DB_HOST: 'db-prod',
-      DB_NAME: 'quant_prod',
-      DB_USER: 'prod_user',
-      DB_PASS: 'prod_pass',
-      LOG_LEVEL: 'info'
+    {
+      name: "data-sync-kline",
+      script: pythonBin,
+      args: "scripts/data_sync/sync_stock_kline.py",
+      cwd: projectRoot,
+      cron_restart: "0 2 * * *",
+      out_file: "logs/data_sync/stock_kline_sync.log",
+      error_file: "logs/data_sync/stock_kline_sync_error.log",
+      env: {
+        NODE_ENV: "dev",
+        PYTHONPATH: projectRoot,
+      },
     },
-
-    // 自动重启策略
-    autorestart: true,
-    watch: false,  // 生产环境禁用
-    max_restarts: 10,
-    restart_delay: 5000,
-
-    // 资源限制
-    max_memory_restart: '1G',
-
-    // 健康检查配置
-    health_check: {
-      url: 'http://localhost:8000/api/health',
-      timeout: 3000,
-      retries: 3,
-      interval: 15000
+    {
+      name: "data-sync-minute-kline",
+      script: pythonBin,
+      args: "scripts/data_sync/sync_minute_kline.py --periods 1m 5m 15m 30m 60m",
+      cwd: projectRoot,
+      cron_restart: "0 17 * * 1-5",
+      out_file: "logs/data_sync/minute_kline_sync.log",
+      error_file: "logs/data_sync/minute_kline_sync_error.log",
+      env: {
+        NODE_ENV: "dev",
+        PYTHONPATH: projectRoot,
+      },
     },
-
-    // 日志配置
-    log_file: '/tmp/pm2-mystocks-backend.log',
-    out_file: '/tmp/pm2-mystocks-backend-out.log',
-    error_file: '/tmp/pm2-mystocks-backend-error.log',
-    merge_logs: true,
-
-    // 进程管理
-    min_uptime: '10s'
-  },
-  {
-    // 数据同步服务: 股票基础信息同步
-    name: "data-sync-basic",
-    script: "scripts/data_sync/sync_stock_basic.py",
-    interpreter: "python3",
-    cwd: "/opt/claude/mystocks_spec",
-    cron_restart: "0 3 * * 0", // 每周日凌晨3点
-    out_file: "logs/data_sync/stock_basic_sync.log",
-    error_file: "logs/data_sync/stock_basic_sync_error.log",
-    env: {
-      NODE_ENV: 'dev',
-      PYTHONPATH: "/opt/claude/mystocks_spec"
-    }
-  },
-  {
-    // 数据同步服务: 股票K线数据同步
-    name: "data-sync-kline",
-    script: "scripts/data_sync/sync_stock_kline.py",
-    interpreter: "python3",
-    cwd: "/opt/claude/mystocks_spec",
-    cron_restart: "0 2 * * *", // 每日凌晨2点
-    out_file: "logs/data_sync/stock_kline_sync.log",
-    error_file: "logs/data_sync/stock_kline_sync_error.log",
-    env: {
-      NODE_ENV: 'dev',
-      PYTHONPATH: "/opt/claude/mystocks_spec"
-    }
-  },
-  {
-    // 数据同步服务: 分时线数据同步
-    name: "data-sync-minute-kline",
-    script: "scripts/data_sync/sync_minute_kline.py",
-    interpreter: "python3",
-    args: "--periods 1m 5m 15m 30m 60m",
-    cwd: "/opt/claude/mystocks_spec",
-    cron_restart: "0 17 * * 1-5", // 周一到周五 17:00（交易日收盘后1小时）
-    out_file: "logs/data_sync/minute_kline_sync.log",
-    error_file: "logs/data_sync/minute_kline_sync_error.log",
-    env: {
-      NODE_ENV: 'dev',
-      PYTHONPATH: "/opt/claude/mystocks_spec"
-    }
-  },
-  {
-    // 数据同步服务: 行业分类数据同步
-    name: "data-sync-industry-classify",
-    script: "scripts/data_sync/sync_industry_classify.py",
-    interpreter: "python3",
-    cwd: "/opt/claude/mystocks_spec",
-    cron_restart: "0 4 * * 1", // 每周一凌晨4点
-    out_file: "logs/data_sync/industry_classify_sync.log",
-    error_file: "logs/data_sync/industry_classify_sync_error.log",
-    env: {
-      NODE_ENV: 'dev',
-      PYTHONPATH: "/opt/claude/mystocks_spec"
-    }
-  },
-  {
-    // 数据同步服务: 概念分类数据同步
-    name: "data-sync-concept-classify",
-    script: "scripts/data_sync/sync_concept_classify.py",
-    interpreter: "python3",
-    cwd: "/opt/claude/mystocks_spec",
-    cron_restart: "30 4 * * 1", // 每周一凌晨4:30（错开30分钟避免资源冲突）
-    out_file: "logs/data_sync/concept_classify_sync.log",
-    error_file: "logs/data_sync/concept_classify_sync_error.log",
-    env: {
-      NODE_ENV: 'dev',
-      PYTHONPATH: "/opt/claude/mystocks_spec"
-    }
-  },
-  {
-    // 数据同步服务: 个股-行业概念关联数据同步
-    name: "data-sync-stock-industry-concept",
-    script: "scripts/data_sync/sync_stock_industry_concept.py",
-    interpreter: "python3",
-    cwd: "/opt/claude/mystocks_spec",
-    cron_restart: "0 5 * * 1", // 每周一凌晨5:00（确保跟随行业概念分类同步）
-    out_file: "logs/data_sync/stock_industry_concept_sync.log",
-    error_file: "logs/data_sync/stock_industry_concept_sync_error.log",
-    env: {
-      NODE_ENV: 'dev',
-      PYTHONPATH: "/opt/claude/mystocks_spec"
-    }
-  }]
+    {
+      name: "data-sync-industry-classify",
+      script: pythonBin,
+      args: "scripts/data_sync/sync_industry_classify.py",
+      cwd: projectRoot,
+      cron_restart: "0 4 * * 1",
+      out_file: "logs/data_sync/industry_classify_sync.log",
+      error_file: "logs/data_sync/industry_classify_sync_error.log",
+      env: {
+        NODE_ENV: "dev",
+        PYTHONPATH: projectRoot,
+      },
+    },
+    {
+      name: "data-sync-concept-classify",
+      script: pythonBin,
+      args: "scripts/data_sync/sync_concept_classify.py",
+      cwd: projectRoot,
+      cron_restart: "30 4 * * 1",
+      out_file: "logs/data_sync/concept_classify_sync.log",
+      error_file: "logs/data_sync/concept_classify_sync_error.log",
+      env: {
+        NODE_ENV: "dev",
+        PYTHONPATH: projectRoot,
+      },
+    },
+    {
+      name: "data-sync-stock-industry-concept",
+      script: pythonBin,
+      args: "scripts/data_sync/sync_stock_industry_concept.py",
+      cwd: projectRoot,
+      cron_restart: "0 5 * * 1",
+      out_file: "logs/data_sync/stock_industry_concept_sync.log",
+      error_file: "logs/data_sync/stock_industry_concept_sync_error.log",
+      env: {
+        NODE_ENV: "dev",
+        PYTHONPATH: projectRoot,
+      },
+    },
+  ],
 };
