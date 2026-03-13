@@ -1,3 +1,5 @@
+"""PostgreSQL-only database manager example script."""
+
 # pylint: disable=import-error,no-name-in-module
 import os
 

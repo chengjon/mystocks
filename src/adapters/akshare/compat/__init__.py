@@ -1,6 +1,6 @@
-"""Compatibility shim for legacy AkShare market data helpers."""
+"""Compatibility-only AkShare helper exports."""
 
-from .compat.legacy_market_data import (
+from .legacy_market_data import (
     get_market_overview_sse,
     get_market_overview_szse,
     get_sse_daily_deal_summary,

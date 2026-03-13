@@ -28,7 +28,7 @@ echo "📁 检查关键文件..."
 CRITICAL_FILES=(
     "src/adapters/sina_finance_adapter.py"
     "web/backend/app/api/stock_ratings_api.py"
-    "config/sina_finance_only.yaml"
+    "config/compatibility/sina_finance/main.yaml"
 )
 
 for file in "${CRITICAL_FILES[@]}"; do

@@ -23,7 +23,7 @@ from .market_adapter import AkshareMarketDataAdapter
 
 # 导出旧版市场数据函数（如果存在）
 try:
-    from .legacy_market_data import (
+    from .compat import (
         get_market_overview_sse,
         get_market_overview_szse,
     )
