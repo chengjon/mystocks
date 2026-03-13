@@ -30,15 +30,15 @@ route:
 receivers:
   - name: 'default'
     # webhook_configs:
-    #   - url: 'http://localhost:8000/api/alerts/webhook
+    #   - url: 'http://localhost:8020/api/alerts/webhook
 
   - name: 'critical'
     # webhook_configs:
-    #   - url: 'http://localhost:8000/api/alerts/webhook
+    #   - url: 'http://localhost:8020/api/alerts/webhook
 
   - name: 'warning'
     # webhook_configs:
-    #   - url: 'http://localhost:8000/api/alerts/webhook'
+    #   - url: 'http://localhost:8020/api/alerts/webhook'
 
 # 抑制规则
 inhibit_rules:

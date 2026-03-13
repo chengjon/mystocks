@@ -300,11 +300,13 @@ taos -h localhost -P 6030 -u root -p taosdata -s "USE market_data; SHOW STABLES;
 
 ## 端口配置
 
-### 端口范围说明
-- **后端服务**: 8000-8010 (自动选择可用端口)
-- **前端服务**: 3000-3010 (自动选择可用端口)
+### 固定端口说明
+- **后端服务**: 8020
+- **后端备用端口**: 8021
+- **前端服务**: 3020
+- **前端备用端口**: 3021
 
-系统会在指定范围内自动查找并使用可用端口，避免端口冲突问题。
+当前端口规则以 `web/PORTS.md` 与 `.env` 为准，不再使用“自动范围选择端口”口径。
 
 ## 服务启动
 
@@ -314,15 +316,15 @@ taos -h localhost -P 6030 -u root -p taosdata -s "USE market_data; SHOW STABLES;
 # 激活虚拟环境
 source venv/bin/activate
 
-# 启动FastAPI服务（自动在8000-8010范围内选择可用端口）
+# 启动FastAPI服务（固定端口 8020）
 cd web/backend
-python -m uvicorn app.main:app --host 0.0.0.0 --reload
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 
 # 或使用生产模式（使用gunicorn）
 gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8020
 ```
 
-访问API文档：http://localhost:8020/docs (端口可能为8000-8010范围内的可用端口)
+访问API文档：http://localhost:8020/docs
 
 ### 2. 启动前端服务（Vue3）
 
@@ -331,14 +333,14 @@ gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bin
 cd web/frontend
 npm install
 
-# 开发模式启动（自动在3000-3010范围内选择可用端口）
-npm run dev
+# 开发模式启动（固定端口 3020）
+npm run dev -- --port 3020
 
 # 生产模式构建
 npm run build
 ```
 
-访问前端页面：http://localhost:3000 (端口可能为3000-3010范围内的可用端口)
+访问前端页面：http://localhost:3020
 
 ### 3. 使用Docker Compose（推荐）
 
