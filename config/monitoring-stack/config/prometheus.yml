@@ -26,14 +26,14 @@ rule_files:
 scrape_configs:
   # ==================== MyStocks FastAPI 后端 ====================
   # 注意: 根据Docker环境选择正确的target:
-  #   - Docker Desktop/Mac/Windows: 使用 host.docker.internal:8000
-  #   - Linux Docker: 使用宿主机IP (如 localhost:8000 或 172.17.0.1:8000)
+  #   - Docker Desktop/Mac/Windows: 使用 host.docker.internal:8020
+  #   - Linux Docker: 使用宿主机IP (如 localhost:8020 或 172.17.0.1:8020)
   - job_name: 'mystocks-backend'
     static_configs:
       - targets:
-          - 'host.docker.internal:8000'  # Docker Desktop 访问宿主机
-          # - 'localhost:8000'     # Linux Docker - 使用宿主机实际IP (参考 .env 中 MYSTOCKS_BACKEND_HOST)
-          # - '172.17.0.1:8000'          # Linux Docker - 使用 Docker 网桥网关
+          - 'host.docker.internal:8020'  # Docker Desktop 访问宿主机
+          # - 'localhost:8020'     # Linux Docker - 使用宿主机实际IP (参考 .env 中 MYSTOCKS_BACKEND_HOST)
+          # - '172.17.0.1:8020'          # Linux Docker - 使用 Docker 网桥网关
         labels:
           service: 'mystocks-api'
           component: 'backend'
@@ -49,8 +49,8 @@ scrape_configs:
   - job_name: 'mystocks-health'
     static_configs:
       - targets:
-          - 'host.docker.internal:8000'
-          # - 'localhost:8000'  # Linux Docker
+          - 'host.docker.internal:8020'
+          # - 'localhost:8020'  # Linux Docker
         labels:
           service: 'mystocks-health'
 
@@ -61,8 +61,8 @@ scrape_configs:
   - job_name: 'mystocks-components'
     static_configs:
       - targets:
-          - 'host.docker.internal:8000'
-          # - 'localhost:8000'  # Linux Docker
+          - 'host.docker.internal:8020'
+          # - 'localhost:8020'  # Linux Docker
         labels:
           component: 'system'
     metrics_path: '/api/system/health'
@@ -71,8 +71,8 @@ scrape_configs:
   - job_name: 'mystocks-monitoring'
     static_configs:
       - targets:
-          - 'host.docker.internal:8000'
-          # - 'localhost:8000'  # Linux Docker
+          - 'host.docker.internal:8020'
+          # - 'localhost:8020'  # Linux Docker
         labels:
           component: 'monitoring'
     metrics_path: '/api/monitoring/health'
@@ -81,8 +81,8 @@ scrape_configs:
   - job_name: 'mystocks-trade'
     static_configs:
       - targets:
-          - 'host.docker.internal:8000'
-          # - 'localhost:8000'  # Linux Docker
+          - 'host.docker.internal:8020'
+          # - 'localhost:8020'  # Linux Docker
         labels:
           component: 'trade'
     metrics_path: '/api/trade/health'
@@ -91,8 +91,8 @@ scrape_configs:
   - job_name: 'mystocks-technical'
     static_configs:
       - targets:
-          - 'host.docker.internal:8000'
-          # - 'localhost:8000'  # Linux Docker
+          - 'host.docker.internal:8020'
+          # - 'localhost:8020'  # Linux Docker
         labels:
           component: 'technical'
     metrics_path: '/api/technical/health'
@@ -101,8 +101,8 @@ scrape_configs:
   - job_name: 'mystocks-announcement'
     static_configs:
       - targets:
-          - 'host.docker.internal:8000'
-          # - 'localhost:8000'  # Linux Docker
+          - 'host.docker.internal:8020'
+          # - 'localhost:8020'  # Linux Docker
         labels:
           component: 'announcement'
     metrics_path: '/api/announcement/health'
@@ -111,8 +111,8 @@ scrape_configs:
   - job_name: 'mystocks-market'
     static_configs:
       - targets:
-          - 'host.docker.internal:8000'
-          # - 'localhost:8000'  # Linux Docker
+          - 'host.docker.internal:8020'
+          # - 'localhost:8020'  # Linux Docker
         labels:
           component: 'market'
     metrics_path: '/api/market/health'
@@ -121,8 +121,8 @@ scrape_configs:
   - job_name: 'mystocks-wencai'
     static_configs:
       - targets:
-          - 'host.docker.internal:8000'
-          # - 'localhost:8000'  # Linux Docker
+          - 'host.docker.internal:8020'
+          # - 'localhost:8020'  # Linux Docker
         labels:
           component: 'wencai'
     metrics_path: '/api/wencai/health'
@@ -131,8 +131,8 @@ scrape_configs:
   - job_name: 'mystocks-tasks'
     static_configs:
       - targets:
-          - 'host.docker.internal:8000'
-          # - 'localhost:8000'  # Linux Docker
+          - 'host.docker.internal:8020'
+          # - 'localhost:8020'  # Linux Docker
         labels:
           component: 'tasks'
     metrics_path: '/api/tasks/health'
@@ -141,8 +141,8 @@ scrape_configs:
   - job_name: 'mystocks-multi-source'
     static_configs:
       - targets:
-          - 'host.docker.internal:8000'
-          # - 'localhost:8000'  # Linux Docker
+          - 'host.docker.internal:8020'
+          # - 'localhost:8020'  # Linux Docker
         labels:
           component: 'multi-source'
     metrics_path: '/api/multi_source/health'

@@ -1,3 +1,6 @@
+const path = require("node:path");
+const projectRoot = path.resolve(__dirname, "..", "..");
+
 module.exports = {
   apps: [
     {
@@ -5,7 +8,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_dashboard_p0.py',
       interpreter: 'none',
-      cwd: '/opt/claude/mystocks_spec',
+      cwd: projectRoot,
       error_file: '/var/log/pm2/p0-dashboard-error.log',
       out_file: '/var/log/pm2/p0-dashboard-out.log',
       env: {
@@ -20,7 +23,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_market_p0.py',
       interpreter: 'none',
-      cwd: '/opt/claude/mystocks_spec',
+      cwd: projectRoot,
       error_file: '/var/log/pm2/p0-market-error.log',
       out_file: '/var/log/pm2/p0-market-out.log',
       env: {
@@ -35,7 +38,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_stocks_p0.py',
       interpreter: 'none',
-      cwd: '/opt/claude/mystocks_spec',
+      cwd: projectRoot,
       error_file: '/var/log/pm2/p0-stocks-error.log',
       out_file: '/var/log/pm2/p0-stocks-out.log',
       env: {
@@ -50,7 +53,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_analysis_p0.py',
       interpreter: 'none',
-      cwd: '/opt/claude/mystocks_spec',
+      cwd: projectRoot,
       error_file: '/var/log/pm2/p0-analysis-error.log',
       out_file: '/var/log/pm2/p0-analysis-out.log',
       env: {
@@ -65,7 +68,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_trade_p0.py',
       interpreter: 'none',
-      cwd: '/opt/claude/mystocks_spec',
+      cwd: projectRoot,
       error_file: '/var/log/pm2/p0-trade-error.log',
       out_file: '/var/log/pm2/p0-trade-out.log',
       env: {
@@ -80,7 +83,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_settings_p0.py',
       interpreter: 'none',
-      cwd: '/opt/claude/mystocks_spec',
+      cwd: projectRoot,
       error_file: '/var/log/pm2/p0-settings-error.log',
       out_file: '/var/log/pm2/p0-settings-out.log',
       env: {

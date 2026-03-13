@@ -7,6 +7,7 @@ from typing import List
 
 from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from src.utils.mongo_runtime_config import get_mongo_connection_kwargs
 
 logger = logging.getLogger(__name__)
 
@@ -59,51 +60,23 @@ class Settings(BaseSettings):
     monitor_db_port: int = Field(default=5432, validation_alias="POSTGRESQL_PORT")  # 默认与主库相同
     monitor_db_database: str = Field(default="", validation_alias="POSTGRESQL_DATABASE")  # 默认与主库相同
 
-    # MongoDB 配置（默认可选基础设施）
+    # MongoDB 兼容配置
+    # 说明：
+    # - 当前主应用未直接使用 MongoDB 作为核心业务库
+    # - 但测试、Docker 与部分周边工具仍依赖这些兼容字段
     mongodb_host: str = Field(default="", validation_alias="MONGODB_HOST")
     mongodb_port: int = Field(default=0, validation_alias="MONGODB_PORT")
     mongodb_root_username: str = Field(
-        default="", validation_alias=AliasChoices("MONGODB_ROOT_USERNAME", "USERNAME")
+        default="",
+        validation_alias=AliasChoices("MONGODB_ROOT_USERNAME", "USERNAME"),
     )
     mongodb_root_password: str = Field(
-        default="", validation_alias=AliasChoices("MONGODB_ROOT_PASSWORD", "PASSWORD")
+        default="",
+        validation_alias=AliasChoices("MONGODB_ROOT_PASSWORD", "PASSWORD"),
     )
     mongodb_database: str = Field(default="mystocks", validation_alias="MONGODB_DATABASE")
     mongodb_auth_source: str = Field(default="admin", validation_alias="MONGODB_AUTH_SOURCE")
     mongodb_ip: str = Field(default="", validation_alias="MONGODB_IP")
-
-    @staticmethod
-    def _split_mongodb_host_port(raw_value: str) -> tuple[str | None, int | None]:
-        if not raw_value:
-            return None, None
-        if ":" not in raw_value:
-            return raw_value, None
-        host, port = raw_value.rsplit(":", 1)
-        return host.strip() or None, int(port)
-
-    @property
-    def mongodb_runtime_host(self) -> str:
-        if self.mongodb_host:
-            return self.mongodb_host
-        host, _ = self._split_mongodb_host_port(self.mongodb_ip)
-        return host or "localhost"
-
-    @property
-    def mongodb_runtime_port(self) -> int:
-        if self.mongodb_port:
-            return self.mongodb_port
-        _, port = self._split_mongodb_host_port(self.mongodb_ip)
-        return port or 27017
-
-    @property
-    def mongodb_connection_kwargs(self) -> dict[str, object]:
-        return {
-            "host": self.mongodb_runtime_host,
-            "port": self.mongodb_runtime_port,
-            "username": self.mongodb_root_username or None,
-            "password": self.mongodb_root_password or None,
-            "authSource": self.mongodb_auth_source,
-        }
 
     # JWT 认证配置
     # 注意: 字段名使用 jwt_secret_key 以便在 case_sensitive=False 时正确映射到 JWT_SECRET_KEY 环境变量
@@ -188,12 +161,24 @@ class Settings(BaseSettings):
     def default_celery_result_backend(self) -> str:
         return f"redis://{self.redis_host or 'localhost'}:{self.redis_port}/{self.redis_celery_result_db}"
 
+    @property
+    def mongodb_runtime_host(self) -> str:
+        return str(get_mongo_connection_kwargs()["host"])
+
+    @property
+    def mongodb_runtime_port(self) -> int:
+        return int(get_mongo_connection_kwargs()["port"])
+
+    @property
+    def mongodb_connection_kwargs(self) -> dict[str, object]:
+        return get_mongo_connection_kwargs()
+
     def model_post_init(self, __context) -> None:
         """Backfill role-based Celery URLs only when they are not explicitly configured."""
         if not self.celery_broker_url:
-            self.celery_broker_url = self.default_celery_broker_url
+            object.__setattr__(self, "celery_broker_url", self.default_celery_broker_url)
         if not self.celery_result_backend:
-            self.celery_result_backend = self.default_celery_result_backend
+            object.__setattr__(self, "celery_result_backend", self.default_celery_result_backend)
     celery_task_track_started: bool = True
     celery_task_time_limit: int = 3600  # 任务超时时间（秒），默认1小时
     celery_enable_utc: bool = True

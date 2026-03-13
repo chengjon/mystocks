@@ -49,10 +49,10 @@ docker network inspect mystocks-monitoring
 
 | 服务      | 配置文件                                  |
 |-----------|------------------------------------------|
-| Prometheus | /opt/claude/mystocks_spec/monitoring-stack/config/prometheus.yml |
-| Grafana    | /opt/claude/mystocks_spec/monitoring-stack/provisioning/ |
-| Loki       | /opt/claude/mystocks_spec/monitoring-stack/config/loki-config.yaml |
-| Tempo      | /opt/claude/mystocks_spec/monitoring-stack/config/tempo-config.yaml |
+| Prometheus | /opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack/config/prometheus.yml |
+| Grafana    | /opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack/provisioning/ |
+| Loki       | /opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack/config/loki-config.yaml |
+| Tempo      | /opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack/config/tempo-config.yaml |
 
 ---
 
@@ -124,13 +124,13 @@ curl http://localhost:9100/metrics
 
 ### 启动所有服务
 ```bash
-cd /opt/claude/mystocks_spec/monitoring-stack
+cd /opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack
 docker-compose up -d
 ```
 
 ### 停止所有服务
 ```bash
-cd /opt/claude/mystocks_spec/monitoring-stack
+cd /opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack
 docker-compose down
 ```
 

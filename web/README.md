@@ -27,8 +27,8 @@
 
 ### 端口配置规则 (v2.1)
 **严格遵守以下端口配置** (详见 `web/PORTS.md`):
-- **前端**: 固定端口 3000 (备用 3001)
-- **后端**: 固定端口 8000
+- **前端**: 固定端口 3020 (备用 3021)
+- **后端**: 固定端口 8020 (备用 8021)
 - **禁止随意更改端口号**
 
 ### 后端启动
@@ -38,7 +38,7 @@ cd web/backend
 # 安装依赖
 pip install -r requirements.txt
 
-# 启动服务 (固定端口 8000)
+# 启动服务 (固定端口 8020)
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 
 # 或使用后台运行
@@ -52,8 +52,8 @@ cd web/frontend
 # 安装依赖
 npm install
 
-# 启动开发服务器 (固定端口 3000)
-npm run dev
+# 启动开发服务器 (固定端口 3020)
+npm run dev -- --port 3020
 
 # 或使用后台运行
 nohup npm run dev > /tmp/frontend.log 2>&1 &
@@ -66,7 +66,7 @@ docker-compose up -d
 ```
 
 ### 访问地址
-- **前端界面**: http://localhost:3000
+- **前端界面**: http://localhost:3020
 - **后端API**: http://localhost:8020
 - **API文档**: http://localhost:8020/api/docs
 - **默认登录**:
@@ -217,7 +217,7 @@ username=admin&password=admin123
 ## 使用指南
 
 ### TDX 行情使用
-1. **登录系统**: http://localhost:3000
+1. **登录系统**: http://localhost:3020
 2. **导航到TDX行情**: 点击 "市场行情" > "TDX行情"
 3. **查看实时行情**: 输入6位股票代码 (如: 600519)
 4. **切换K线周期**: 点击周期按钮 (1m/5m/15m/30m/1h/1d)
@@ -258,7 +258,7 @@ username=admin&password=admin123
 ## 故障排查
 
 ### 前端无法访问
-1. 检查端口占用: `lsof -i :3000`
+1. 检查端口占用: `lsof -i :3020`
 2. 检查Vite进程: `ps aux | grep vite`
 3. 清理旧进程: `pkill -f vite`
 4. 重启前端: `cd web/frontend && npm run dev`

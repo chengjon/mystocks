@@ -1,3 +1,6 @@
+const path = require("node:path");
+const projectRoot = path.resolve(__dirname, "..", "..");
+
 module.exports = {
   apps: [
     {
@@ -5,7 +8,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_industry_concept_analysis_fixed.py',
       interpreter: 'none',
-      cwd: '/opt/claude/mystocks_spec',
+      cwd: projectRoot,
       error_file: '/var/log/pm2/p1-fixed-industry_concept_analysis_fixed-error.log',
       out_file: '/var/log/pm2/p1-fixed-industry_concept_analysis_fixed-out.log',
       env: {
@@ -20,7 +23,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_technical_analysis_fixed.py',
       interpreter: 'none',
-      cwd: '/opt/claude/mystocks_spec',
+      cwd: projectRoot,
       error_file: '/var/log/pm2/p1-fixed-technical_analysis_fixed-error.log',
       out_file: '/var/log/pm2/p1-fixed-technical_analysis_fixed-out.log',
       env: {
@@ -35,7 +38,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_stock_detail_fixed.py',
       interpreter: 'none',
-      cwd: '/opt/claude/mystocks_spec',
+      cwd: projectRoot,
       error_file: '/var/log/pm2/p1-fixed-stock_detail_fixed-error.log',
       out_file: '/var/log/pm2/p1-fixed-stock_detail_fixed-out.log',
       env: {
@@ -50,7 +53,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_settings_fixed.py',
       interpreter: 'none',
-      cwd: '/opt/claude/mystocks_spec',
+      cwd: projectRoot,
       error_file: '/var/log/pm2/p1-fixed-settings_fixed-error.log',
       out_file: '/var/log/pm2/p1-fixed-settings_fixed-out.log',
       env: {
@@ -65,7 +68,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_trade_management_fixed.py',
       interpreter: 'none',
-      cwd: '/opt/claude/mystocks_spec',
+      cwd: projectRoot,
       error_file: '/var/log/pm2/p1-fixed-trade_management_fixed-error.log',
       out_file: '/var/log/pm2/p1-fixed-trade_management_fixed-out.log',
       env: {
@@ -80,7 +83,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_risk_monitor_fixed.py',
       interpreter: 'none',
-      cwd: '/opt/claude/mystocks_spec',
+      cwd: projectRoot,
       error_file: '/var/log/pm2/p1-fixed-risk_monitor_fixed-error.log',
       out_file: '/var/log/pm2/p1-fixed-risk_monitor_fixed-out.log',
       env: {
@@ -95,7 +98,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_real_time_monitor_fixed.py',
       interpreter: 'none',
-      cwd: '/opt/claude/mystocks_spec',
+      cwd: projectRoot,
       error_file: '/var/log/pm2/p1-fixed-real_time_monitor_fixed-error.log',
       out_file: '/var/log/pm2/p1-fixed-real_time_monitor_fixed-out.log',
       env: {
@@ -110,7 +113,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_market_fixed.py',
       interpreter: 'none',
-      cwd: '/opt/claude/mystocks_spec',
+      cwd: projectRoot,
       error_file: '/var/log/pm2/p1-fixed-market_fixed-error.log',
       out_file: '/var/log/pm2/p1-fixed-market_fixed-out.log',
       env: {

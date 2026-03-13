@@ -49,7 +49,8 @@ def test_sina_finance_integration():
         from config.data_sources_loader import DataSourcesLoader
 
         loader = DataSourcesLoader()
-        loader.main_config_file = loader.config_dir / "sina_finance_only.yaml"
+        loader.main_config_file = loader.config_dir / "compatibility" / "sina_finance" / "main.yaml"
+        loader.sources_dir = loader.config_dir / "compatibility" / "sina_finance"
         config = loader.load_all_sources()
 
         if "sina_finance_stock_ratings" in config.get("data_sources", {}):

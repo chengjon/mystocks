@@ -5,15 +5,24 @@
 // 作者: MyStocks开发团队
 // 创建日期: 2026-01-27
 
+const path = require("node:path");
+
+const projectRoot = path.resolve(__dirname, "..", "..");
+const frontendCwd = path.join(projectRoot, "web", "frontend");
+const backendCwd = path.join(projectRoot, "web", "backend");
+const gpuApiCwd = path.join(projectRoot, "gpu_api_system");
+const frontendPort = process.env.FRONTEND_PORT || "3020";
+const backendPort = process.env.BACKEND_PORT || "8020";
+
 module.exports = {
   apps: [{
     // 前端服务: Vite开发服务器
     name: 'mystocks-frontend',
     script: 'npm run dev',
-    cwd: '/opt/claude/mystocks_spec/web/frontend',
+    cwd: frontendCwd,
     env: {
       NODE_ENV: 'development',
-      PORT: 3002,
+      PORT: frontendPort,
       HOST: '0.0.0.0'
     },
     instances: 1,
@@ -21,7 +30,7 @@ module.exports = {
     
     // 增强健康检查配置
     health_check: {
-      url: 'http://localhost:3002',
+      url: `http://localhost:${frontendPort}`,
       timeout: 5000,
       retries: 3,
       interval: 10000,
@@ -84,7 +93,7 @@ module.exports = {
     // 核心服务: 后端 API 服务
     name: 'mystocks-backend',
     script: './start_backend.sh',
-    cwd: '/opt/claude/mystocks_spec/web/backend',
+    cwd: backendCwd,
     instances: 1,
     exec_mode: 'fork',
 
@@ -94,7 +103,7 @@ module.exports = {
       USE_MOCK: 'true',
       LOG_LEVEL: 'debug',
       TESTING: 'true',
-      PYTHONPATH: '/opt/claude/mystocks_spec'
+      PYTHONPATH: projectRoot,
     },
     env_production: {
       NODE_ENV: 'prod',
@@ -120,7 +129,7 @@ module.exports = {
 
     // 增强健康检查配置
     health_check: {
-      url: 'http://localhost:8000/api/health',
+      url: `http://localhost:${backendPort}/api/health`,
       timeout: 3000,
       retries: 3,
       interval: 15000,
@@ -188,7 +197,7 @@ module.exports = {
     name: 'mystocks-monitoring',
     script: 'python scripts/automation/monitor_and_fix.py',
     interpreter: 'python',
-    cwd: '/opt/claude/mystocks_spec',
+    cwd: projectRoot,
     instances: 1,
     exec_mode: 'fork',
     autorestart: true,
@@ -197,7 +206,7 @@ module.exports = {
     
     // 监控专用配置
     env: {
-      PYTHONPATH: '/opt/claude/mystocks_spec',
+      PYTHONPATH: projectRoot,
       LOG_LEVEL: 'info',
       CHECK_INTERVAL: 60, // 检查间隔60秒
       ALERT_COOLDOWN: 300, // 告警冷却期5分钟
@@ -207,7 +216,7 @@ module.exports = {
 
     // 健康检查
     health_check: {
-      url: 'http://localhost:8000/api/monitoring/health',
+      url: `http://localhost:${backendPort}/api/monitoring/health`,
       timeout: 5000,
       retries: 2,
       interval: 30000
@@ -224,7 +233,7 @@ module.exports = {
   {
     name: 'mystocks-gpu-api',
     script: 'python main_server.py',
-    cwd: '/opt/claude/mystocks_spec/gpu_api_system',
+    cwd: gpuApiCwd,
     instances: 1,
     exec_mode: 'fork',
     autorestart: true,
@@ -233,7 +242,7 @@ module.exports = {
     
     // GPU服务专用配置
     env: {
-      PYTHONPATH: '/opt/claude/mystocks_spec/gpu_api_system',
+      PYTHONPATH: gpuApiCwd,
       CUDA_VISIBLE_DEVICES: '0',
       GPU_MEMORY_FRACTION: '0.8',
       LOG_LEVEL: 'info'
@@ -266,7 +275,7 @@ module.exports = {
     name: "data-sync-basic",
     script: "scripts/data_sync/sync_stock_basic.py",
     interpreter: "python3",
-    cwd: "/opt/claude/mystocks_spec",
+    cwd: projectRoot,
     cron_restart: "0 3 * * 0", // 每周日凌晨3点
     out_file: "logs/data_sync/stock_basic_sync.log",
     error_file: "logs/data_sync/stock_basic_sync_error.log",
@@ -283,7 +292,7 @@ module.exports = {
     
     env: {
       NODE_ENV: 'dev',
-      PYTHONPATH: "/opt/claude/mystocks_spec",
+      PYTHONPATH: projectRoot,
       LOG_LEVEL: 'info'
     }
   },
@@ -293,7 +302,7 @@ module.exports = {
     name: "data-sync-kline",
     script: "scripts/data_sync/sync_stock_kline.py",
     interpreter: "python3",
-    cwd: "/opt/claude/mystocks_spec",
+    cwd: projectRoot,
     cron_restart: "0 2 * * *", // 每日凌晨2点
     out_file: "logs/data_sync/stock_kline_sync.log",
     error_file: "logs/data_sync/stock_kline_sync_error.log",
@@ -307,7 +316,7 @@ module.exports = {
     },
     env: {
       NODE_ENV: 'dev',
-      PYTHONPATH: "/opt/claude/mystocks_spec",
+      PYTHONPATH: projectRoot,
       LOG_LEVEL: 'info'
     }
   },
@@ -317,7 +326,7 @@ module.exports = {
     script: "scripts/data_sync/sync_minute_kline.py",
     interpreter: "python3",
     args: "--periods 1m 5m 15m 30m 60m",
-    cwd: "/opt/claude/mystocks_spec",
+    cwd: projectRoot,
     cron_restart: "0 17 * * 1-5", // 周一到周五17:00
     out_file: "logs/data_sync/minute_kline_sync.log",
     error_file: "logs/data_sync/minute_kline_sync.error.log",
@@ -331,7 +340,7 @@ module.exports = {
     },
     env: {
       NODE_ENV: 'dev',
-      PYTHONPATH: "/opt/claude/mystocks_spec",
+      PYTHONPATH: projectRoot,
       LOG_LEVEL: 'info'
     }
   }
@@ -344,7 +353,7 @@ module.exports = {
       host: 'localhost',
       ref: 'origin/main',
       repo: 'https://github.com/your-org/mystocks.git',
-      path: '/opt/claude/mystocks_spec',
+      path: projectRoot,
       'pre-deploy-local': 'echo "Starting deployment..."',
       'post-deploy': 'echo "Deployment completed. Services restarted."',
       'setup-commands': [
@@ -358,8 +367,8 @@ module.exports = {
   monitoring_integration: {
     enabled: true,
     log_aggregation: true,
-    dashboard_url: 'http://localhost:3000', // 前端监控面板
-    metrics_endpoint: 'http://localhost:8000/api/metrics', // 后端指标端点
+    dashboard_url: `http://localhost:${frontendPort}`, // 前端监控面板
+    metrics_endpoint: `http://localhost:${backendPort}/api/metrics`, // 后端指标端点
     alerting: {
       enabled: true,
       channels: ['email', 'webhook', 'slack'],
