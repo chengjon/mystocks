@@ -17,7 +17,17 @@
       <ArtDecoStatCard label="回撤板块" :value="stats.fallingBoards" variant="fall" />
     </div>
 
-    <div class="content-grid">
+    <div v-if="showErrorState" class="error-state artdeco-card" role="alert">
+      <p>板块数据加载失败</p>
+      <span>{{ error }}</span>
+    </div>
+
+    <div v-else-if="showEmptyState" class="empty-state artdeco-card" role="status" aria-live="polite">
+      <p>暂无板块数据</p>
+      <span>当前环境未返回板块热度排行，可稍后刷新重试。</span>
+    </div>
+
+    <div v-else class="content-grid">
       <ArtDecoCard title="板块热度排行" hoverable>
         <ArtDecoTable :columns="boardColumns" :data="boardRows" />
       </ArtDecoCard>
@@ -52,7 +62,7 @@ import {
   type RotationRow
 } from './industryAnalysisData'
 
-const { lastRequestId, lastProcessTime, exec } = useArtDecoApi()
+const { loading, error, lastRequestId, lastProcessTime, exec } = useArtDecoApi()
 
 const boardColumns = [
   { key: 'rank', label: '排名', width: '80px' },
@@ -94,6 +104,9 @@ const stats = computed(() => {
     leadStrength
   }
 })
+
+const showErrorState = computed(() => Boolean(error.value) && boardRows.value.length === 0)
+const showEmptyState = computed(() => !loading.value && !error.value && boardRows.value.length === 0)
 
 function parsePercent(change: string): number {
   return Number.parseFloat(change.replace('%', '')) || 0
@@ -172,6 +185,27 @@ void loadIndustryFlow()
   gap: var(--artdeco-spacing-4);
 }
 
+.error-state,
+.empty-state {
+  display: grid;
+  gap: var(--artdeco-spacing-2);
+  padding: var(--artdeco-spacing-5);
+  border: thin solid var(--artdeco-border-default);
+  background: linear-gradient(145deg, var(--artdeco-gold-opacity-05), transparent 65%);
+
+  p {
+    margin: 0;
+    color: var(--artdeco-fg-primary);
+    font-family: var(--font-display);
+    letter-spacing: var(--artdeco-tracking-wide);
+  }
+
+  span {
+    color: var(--artdeco-fg-muted);
+    font-size: var(--artdeco-text-sm);
+  }
+}
+
 .rotation-list {
   display: flex;
   flex-direction: column;
@@ -179,7 +213,7 @@ void loadIndustryFlow()
 }
 
 .rotation-item {
-  border: 1px solid var(--artdeco-border-default);
+  border: thin solid var(--artdeco-border-default);
   padding: var(--artdeco-spacing-3);
 
   .name {
@@ -190,7 +224,7 @@ void loadIndustryFlow()
   .meta {
     color: var(--artdeco-fg-muted);
     font-size: var(--artdeco-text-xs);
-    margin-top: 2px;
+    margin-top: var(--artdeco-spacing-1);
   }
 
   .value {

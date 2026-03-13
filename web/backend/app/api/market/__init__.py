@@ -14,7 +14,7 @@ from .market_data_request import refresh_lhb_detail  # noqa: F401
 from .market_data_request import get_market_quotes  # noqa: F401
 from .market_data_request import get_stock_list  # noqa: F401
 from .market_data_request import get_kline_data  # noqa: F401
-from .market_data_request import get_market_heatmap  # noqa: F401
+from ._market_heatmap_router import get_market_heatmap  # noqa: F401
 from .market_data_request import router  # noqa: F401
 from .health_check import health_check  # noqa: F401
 

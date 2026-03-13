@@ -1,5 +1,5 @@
 // Auto-generated types for trading domain
-// Generated at: 2026-03-07T09:46:37.482927
+// Generated at: 2026-03-13T10:56:20.357242
 
 export interface PositionCreate {
   symbol?: string;

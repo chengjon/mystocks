@@ -7,7 +7,13 @@
 
     <div class="config-section" v-loading="loading">
       <ArtDecoCard title="数据源配置" hoverable>
-        <div class="config-table">
+        <div v-if="showErrorState" class="data-management__state data-management__state--error" role="alert">
+          数据源配置加载失败：{{ error }}
+        </div>
+        <div v-else-if="showEmptyState" class="data-management__state" role="status" aria-live="polite">
+          暂无数据源配置。
+        </div>
+        <div v-else class="config-table">
           <div class="config-row header">
             <div class="col name">数据源名称</div>
             <div class="col status">状态</div>
@@ -48,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
 import { monitoringApi } from '@/api/index';
 import { ArtDecoCard, ArtDecoButton } from '@/components/artdeco';
@@ -66,10 +72,12 @@ interface DataSourceConfigPayload {
   request_id?: string;
 }
 
-const { loading, exec } = useArtDecoApi();
+const { loading, error, exec } = useArtDecoApi();
 const configItems = ref<DataSourceConfigItem[]>([]);
 const requestId = ref<string>('');
 const originalConfig = ref<DataSourceConfigItem[]>([]);
+const showErrorState = computed(() => Boolean(error.value) && configItems.value.length === 0);
+const showEmptyState = computed(() => !loading.value && !error.value && configItems.value.length === 0);
 
 const fetchConfig = async () => {
   const data = await exec(() => monitoringApi.getDataSourceConfig(), {
@@ -149,6 +157,17 @@ onMounted(fetchConfig);
 
   .config-section {
     margin-bottom: var(--artdeco-spacing-8);
+
+    .data-management__state {
+      padding: var(--artdeco-spacing-5);
+      border: 1px solid var(--artdeco-border-default);
+      background: linear-gradient(145deg, var(--artdeco-gold-opacity-05), transparent 65%);
+      color: var(--artdeco-fg-primary);
+
+      &--error {
+        color: var(--artdeco-down);
+      }
+    }
 
     .config-table {
       display: flex;

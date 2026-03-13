@@ -1,324 +1,85 @@
-/**
- * Page Configuration System Tests
- * 
- * Tests for the extended page configuration model including:
- * - Type guards (isRouteName, isMonolithicConfig, isStandardConfig)
- * - Helper functions (getPageConfig, getTabConfig)
- * - Monolithic and standard page configurations
- * - Tab configuration access
- */
-
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import {
-  getPageConfig,
-  getTabConfig,
-  isRouteName,
-  isMonolithicConfig,
-  isStandardConfig,
   PAGE_CONFIG,
   TAB_CONFIGS,
-  type PageConfig,
-  type MonolithicPageConfig,
-  type StandardPageConfig,
-  type TabConfig
+  getPageConfig,
+  getTabConfig,
+  isMonolithicConfig,
+  isRouteName,
+  isStandardConfig,
 } from '@/config/pageConfig'
 
 describe('Page Configuration System', () => {
-  describe('Type Guards', () => {
-    describe('isRouteName', () => {
-      it('should return true for valid route names', () => {
-        expect(isRouteName('dashboard')).toBe(true)
-        expect(isRouteName('market-realtime')).toBe(true)
-        expect(isRouteName('trading-signals')).toBe(true)
-        expect(isRouteName('system-monitoring')).toBe(true)
-      })
-
-      it('should return false for invalid route names', () => {
-        expect(isRouteName('invalid-route')).toBe(false)
-        expect(isRouteName('')).toBe(false)
-        expect(isRouteName('dashboard-extra')).toBe(false)
-      })
+  describe('active ArtDeco route names', () => {
+    it('recognizes current P0/P1 route names', () => {
+      expect(isRouteName('dashboard')).toBe(true)
+      expect(isRouteName('market-realtime')).toBe(true)
+      expect(isRouteName('strategy-repo')).toBe(true)
+      expect(isRouteName('trade-positions')).toBe(true)
+      expect(isRouteName('risk-alerts')).toBe(true)
     })
 
-    describe('isMonolithicConfig', () => {
-      it('should return true for monolithic configurations', () => {
-        const config = PAGE_CONFIG['artdeco-market-data']
-        expect(config).toBeDefined()
-        if (config) {
-          expect(isMonolithicConfig(config)).toBe(true)
-        }
-      })
-
-      it('should return false for standard configurations', () => {
-        const config = PAGE_CONFIG['dashboard']
-        expect(config).toBeDefined()
-        if (config) {
-          expect(isMonolithicConfig(config)).toBe(false)
-        }
-      })
-    })
-
-    describe('isStandardConfig', () => {
-      it('should return true for standard configurations', () => {
-        const config = PAGE_CONFIG['dashboard']
-        expect(config).toBeDefined()
-        if (config) {
-          expect(isStandardConfig(config)).toBe(true)
-        }
-      })
-
-      it('should return false for monolithic configurations', () => {
-        const config = PAGE_CONFIG['artdeco-market-data']
-        expect(config).toBeDefined()
-        if (config) {
-          expect(isStandardConfig(config)).toBe(false)
-        }
-      })
+    it('rejects legacy or out-of-scope route names', () => {
+      expect(isRouteName('artdeco-market-data')).toBe(false)
+      expect(isRouteName('qm-market-realtime')).toBe(false)
+      expect(isRouteName('stock-graphics')).toBe(false)
+      expect(isRouteName('not-found')).toBe(false)
     })
   })
 
-  describe('getPageConfig', () => {
-    it('should return configuration for valid route names', () => {
+  describe('standard page configurations', () => {
+    it('returns the canonical dashboard config', () => {
       const config = getPageConfig('dashboard')
+
       expect(config).toBeDefined()
       expect(config?.type).toBe('page')
-      expect(config?.apiEndpoint).toBe('/api/dashboard/overview')
+      expect(config?.routePath).toBe('dashboard')
+      expect(config?.component).toBe('ArtDecoDashboard.vue')
+      expect(config?.apiEndpoint).toBe('/api/v1/market/overview')
     })
 
-    it('should return undefined for invalid route names', () => {
-      const config = getPageConfig('nonexistent-route')
-      expect(config).toBeUndefined()
+    it('uses current router-or-plan API truth for verified pages', () => {
+      expect(getPageConfig('market-realtime')?.apiEndpoint).toBe('/api/v1/market/quotes')
+      expect(getPageConfig('market-technical')?.apiEndpoint).toBe('/api/v1/market/kline')
+      expect(getPageConfig('data-industry')?.apiEndpoint).toBe('/api/akshare/market/boards')
+      expect(getPageConfig('strategy-repo')?.apiEndpoint).toBe('/api/v1/strategy/strategies')
     })
 
-    it('should return monolithic configuration for market data routes', () => {
-      const config = getPageConfig('artdeco-market-data')
+    it('uses current route mapping for pending-but-active pages', () => {
+      expect(getPageConfig('trade-positions')?.apiEndpoint).toBe('/api/v1/trade/positions')
+      expect(getPageConfig('trade-portfolio')?.apiEndpoint).toBe('/api/v1/trade/positions')
+      expect(getPageConfig('risk-overview')?.apiEndpoint).toBe('/api/v1/risk/*')
+      expect(getPageConfig('system-config')?.apiEndpoint).toBe('/api/system/*')
+    })
+
+    it('keeps login reachable in page config', () => {
+      const config = getPageConfig('login')
+
       expect(config).toBeDefined()
-      expect(config?.type).toBe('monolithic')
+      expect(config?.type).toBe('page')
+      expect(config?.component).toBe('Login.vue')
+      expect(config?.apiEndpoint).toBe('/api/v1/auth/login')
+      expect(config?.requiresAuth).toBe(false)
     })
   })
 
-  describe('getTabConfig', () => {
-    it('should return tab configuration for valid route and tab', () => {
-      const tabConfig = getTabConfig('artdeco-market-data', 'realtime')
-      expect(tabConfig).toBeDefined()
-      expect(tabConfig?.id).toBe('realtime')
-      expect(tabConfig?.apiEndpoint).toBe('/api/market/realtime')
-      expect(tabConfig?.wsChannel).toBe('market:realtime')
-    })
-
-    it('should return undefined for invalid route', () => {
-      const tabConfig = getTabConfig('invalid-route', 'realtime')
-      expect(tabConfig).toBeUndefined()
-    })
-
-    it('should return undefined for non-monolithic route', () => {
-      const tabConfig = getTabConfig('dashboard', 'overview')
-      expect(tabConfig).toBeUndefined()
-    })
-
-    it('should return undefined for non-existent tab', () => {
-      const tabConfig = getTabConfig('artdeco-market-data', 'nonexistent-tab')
-      expect(tabConfig).toBeUndefined()
+  describe('scope filtering', () => {
+    it('excludes QuantMatrix, detail, and fallback routes from active page config', () => {
+      expect(PAGE_CONFIG['qm-market-realtime']).toBeUndefined()
+      expect(PAGE_CONFIG['stock-news']).toBeUndefined()
+      expect(PAGE_CONFIG['not-found']).toBeUndefined()
     })
   })
 
-  describe('Standard Page Configurations', () => {
-    it('should have valid API endpoints for dashboard routes', () => {
-      const config = getPageConfig('dashboard')
-      expect(config?.apiEndpoint).toBe('/api/dashboard/overview')
-      expect(config?.wsChannel).toBe('dashboard:overview')
-      expect(config?.component).toBe('DashboardPage')
+  describe('tab helpers', () => {
+    it('does not expose obsolete monolithic tabs for active ArtDeco routes', () => {
+      const dashboardConfig = getPageConfig('dashboard')
+
+      expect(dashboardConfig).toBeDefined()
+      expect(isStandardConfig(dashboardConfig!)).toBe(true)
+      expect(isMonolithicConfig(dashboardConfig!)).toBe(false)
+      expect(getTabConfig('dashboard', 'overview')).toBeUndefined()
+      expect(Object.keys(TAB_CONFIGS)).toHaveLength(0)
     })
-
-    it('should have valid API endpoints for trading routes', () => {
-      const config = getPageConfig('trading-signals')
-      expect(config?.apiEndpoint).toBe('/api/trading/signals')
-      expect(config?.wsChannel).toBe('trading:signals')
-    })
-
-    it('should have valid API endpoints for risk routes', () => {
-      const config = getPageConfig('risk-overview')
-      expect(config?.apiEndpoint).toBe('/api/risk/overview')
-      expect(config?.wsChannel).toBe('risk:overview')
-    })
-
-    it('should have valid API endpoints for system routes', () => {
-      const config = getPageConfig('system-monitoring')
-      expect(config?.apiEndpoint).toBe('/api/system/monitoring')
-      expect(config?.wsChannel).toBe('system:monitoring')
-    })
-  })
-
-  describe('Monolithic Page Configurations', () => {
-    it('should have tabs for market data route', () => {
-      const config = getPageConfig('artdeco-market-data')
-      expect(config).toBeDefined()
-      if (config && 'tabs' in config) {
-        const monolithicConfig = config as MonolithicPageConfig
-        expect(monolithicConfig.tabs).toBeDefined()
-        expect(monolithicConfig.tabs.length).toBeGreaterThan(0)
-      }
-    })
-
-    it('should have tabs for stock management route', () => {
-      const config = getPageConfig('artdeco-stock-management')
-      expect(config).toBeDefined()
-      if (config && 'tabs' in config) {
-        const monolithicConfig = config as MonolithicPageConfig
-        expect(monolithicConfig.tabs).toBeDefined()
-        expect(monolithicConfig.tabs.length).toBeGreaterThan(0)
-      }
-    })
-
-    it('should have tabs for trading management route', () => {
-      const config = getPageConfig('artdeco-trading-management')
-      expect(config).toBeDefined()
-      if (config && 'tabs' in config) {
-        const monolithicConfig = config as MonolithicPageConfig
-        expect(monolithicConfig.tabs).toBeDefined()
-        expect(monolithicConfig.tabs.length).toBeGreaterThan(0)
-      }
-    })
-
-    it('should reference valid TAB_CONFIGS for each tab', () => {
-      const routes = ['artdeco-market-data', 'artdeco-stock-management', 'artdeco-trading-management']
-      
-      for (const route of routes) {
-        const config = getPageConfig(route)
-        expect(config).toBeDefined()
-        
-        if (config && 'tabs' in config) {
-          const monolithicConfig = config as MonolithicPageConfig
-          for (const tab of monolithicConfig.tabs) {
-            const tabConfig = TAB_CONFIGS[tab.id]
-            expect(tabConfig).toBeDefined()
-            expect(tabConfig?.apiEndpoint).toBeDefined()
-            expect(tabConfig?.wsChannel).toBeDefined()
-          }
-        }
-      }
-    })
-  })
-
-  describe('TAB_CONFIGS', () => {
-    it('should have complete configuration for market tabs', () => {
-      const tabs = ['realtime', 'technical', 'fund-flow', 'long-hub', 'institution', 'concepts', 'etf', 'screener']
-      
-      for (const tabId of tabs) {
-        const config = TAB_CONFIGS[tabId]
-        expect(config).toBeDefined()
-        expect(config?.id).toBe(tabId)
-        expect(config?.apiEndpoint).toBeDefined()
-        expect(config?.wsChannel).toBeDefined()
-      }
-    })
-
-    it('should have complete configuration for stock tabs', () => {
-      const tabs = ['watchlist', 'positions', 'attribution', 'history', 'strategy', 'screener']
-      
-      for (const tabId of tabs) {
-        const config = TAB_CONFIGS[tabId]
-        expect(config).toBeDefined()
-        expect(config?.id).toBe(tabId)
-        expect(config?.apiEndpoint).toBeDefined()
-        expect(config?.wsChannel).toBeDefined()
-      }
-    })
-
-    it('should have complete configuration for trading tabs', () => {
-      const tabs = ['signals', 'history', 'positions', 'attribution']
-      
-      for (const tabId of tabs) {
-        const config = TAB_CONFIGS[tabId]
-        expect(config).toBeDefined()
-        expect(config?.id).toBe(tabId)
-        expect(config?.apiEndpoint).toBeDefined()
-        expect(config?.wsChannel).toBeDefined()
-      }
-    })
-  })
-
-  describe('Configuration Coverage', () => {
-    it('should have configuration for all routes in router', () => {
-      const routerRoutes = [
-        'dashboard',
-        'market-realtime',
-        'market-technical',
-        'market-fund-flow',
-        'market-etf',
-        'market-concept',
-        'market-industry',
-        'market-long-hub',
-        'market-institution',
-        'market-wencai',
-        'market-screener',
-        'strategy-overview',
-        'strategy-backtest',
-        'strategy-optimization',
-        'strategy-analysis',
-        'risk-overview',
-        'risk-alerts',
-        'risk-indicators',
-        'risk-sentiment',
-        'risk-announcement',
-        'system-monitoring',
-        'system-settings',
-        'system-data-update',
-        'system-data-quality',
-        'system-api-health',
-        'trading-signals',
-        'trading-history',
-        'trading-positions',
-        'trading-attribution',
-        'stock-management',
-        'stock-portfolio',
-        'artdeco-market-data',
-        'artdeco-stock-management',
-        'artdeco-trading-management'
-      ]
-
-      for (const route of routerRoutes) {
-        const config = getPageConfig(route)
-        expect(config).toBeDefined()
-      }
-    })
-  })
-})
-
-describe('PageConfig Type Definitions', () => {
-  it('should properly type monolithic configuration', () => {
-    const config = getPageConfig('artdeco-market-data')
-    expect(config).toBeDefined()
-    
-    if (config && isMonolithicConfig(config)) {
-      const monolithicConfig = config as MonolithicPageConfig
-      expect(monolithicConfig.type).toBe('monolithic')
-      expect(monolithicConfig.component).toBe('ArtDecoMarketData')
-      expect(monolithicConfig.tabs).toBeDefined()
-    }
-  })
-
-  it('should properly type standard configuration', () => {
-    const config = getPageConfig('dashboard')
-    expect(config).toBeDefined()
-    
-    if (config && isStandardConfig(config)) {
-      const standardConfig = config as StandardPageConfig
-      expect(standardConfig.type).toBe('page')
-      expect(standardConfig.apiEndpoint).toBe('/api/dashboard/overview')
-      expect(standardConfig.wsChannel).toBe('dashboard:overview')
-    }
-  })
-
-  it('should properly type tab configuration', () => {
-    const tabConfig = getTabConfig('artdeco-market-data', 'realtime')
-    expect(tabConfig).toBeDefined()
-    
-    if (tabConfig) {
-      const typedTab = tabConfig as TabConfig
-      expect(typedTab.id).toBe('realtime')
-      expect(typedTab.apiEndpoint).toBe('/api/market/realtime')
-      expect(typedTab.wsChannel).toBe('market:realtime')
-    }
   })
 })

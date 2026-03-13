@@ -147,8 +147,50 @@ test.describe("Market Data Module - E2E Tests", () => {
       await gotoRealtime(page)
       await expect(page.locator(".toolbar")).toBeVisible()
       await expect(page.locator(".stats-grid")).toBeVisible()
-      await expect(page.locator(".content-grid")).toBeVisible()
       await expect(page.locator('button:has-text("刷新行情")')).toBeVisible()
+      await expect(page.locator(".content-grid, .empty-state")).toBeVisible()
+    })
+
+    test("should render an empty state when quotes API returns no rows", async ({ page }) => {
+      await gotoRealtime(page)
+      await expect(page.locator(".empty-state")).toContainText("暂无实时行情数据")
+    })
+
+    test("should render quotes rows from the live quotes endpoint", async ({ page }) => {
+      await page.route("**/api/v1/market/quotes**", async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({
+            success: true,
+            data: {
+              quotes: [
+                {
+                  symbol: "000001.SZ",
+                  name: "平安银行",
+                  current_price: 12.34,
+                  change_percent: 1.23,
+                  volume: 345600000,
+                  turnover: 2.56,
+                },
+                {
+                  symbol: "600519.SH",
+                  name: "贵州茅台",
+                  current_price: 1688.0,
+                  change_percent: -0.45,
+                  volume: 98760000,
+                  turnover: 0.78,
+                },
+              ],
+            },
+            request_id: "e2e-market-rid",
+          }),
+        })
+      })
+
+      await gotoRealtime(page)
+      await expect(page.locator(".quote-table tbody tr")).toHaveCount(2)
+      await expect(page.locator(".empty-state")).toHaveCount(0)
     })
 
     test("should keep shell available when market API fails", async ({ page }) => {
@@ -156,6 +198,7 @@ test.describe("Market Data Module - E2E Tests", () => {
       await gotoRealtime(page)
       await expect(page.locator("h2.section-title")).toContainText("实时行情流")
       await expect(page.locator('button:has-text("刷新行情")')).toBeVisible()
+      await expect(page.locator(".error-state")).toContainText("行情接口暂不可用")
     })
   })
 
@@ -198,7 +241,7 @@ test.describe("Market Data Module - E2E Tests", () => {
     test("should open market technical page", async ({ page }) => {
       await page.goto(`${FRONTEND_BASE_URL}${MARKET_ROUTES.technical}`)
       await expect(page.locator(".market-kline-tab")).toBeVisible()
-      await expect(page.locator("h2.section-title")).toContainText("K-Line Analysis")
+      await expect(page.locator("h2.section-title")).toContainText("K线分析")
     })
 
     test("should open market lhb page", async ({ page }) => {

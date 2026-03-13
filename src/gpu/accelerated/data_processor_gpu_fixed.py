@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 GPU Data Processor with Memory Management Fix
 修复内存泄漏问题的GPU数据处理器

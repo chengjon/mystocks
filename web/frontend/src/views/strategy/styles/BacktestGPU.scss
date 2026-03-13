@@ -4,6 +4,16 @@
         margin: 0 auto;
     }
 
+    .analysis-blocker {
+        margin-bottom: var(--spacing-6);
+        padding: var(--spacing-4);
+        border: 1px solid var(--color-status-warning);
+        background: rgb(255 183 77 / 10%);
+        color: var(--color-text-primary);
+        font-size: var(--font-size-sm);
+        line-height: 1.6;
+    }
+
     .dashboard-header {
         display: flex;
         justify-content: space-between;

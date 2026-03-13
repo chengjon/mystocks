@@ -11,6 +11,7 @@ import commonjs from 'vite-plugin-commonjs'
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
+  const isLightE2E = env.VITE_E2E_LIGHT === 'true' || process.env.VITE_E2E_LIGHT === 'true' || process.env.PLAYWRIGHT_TEST === 'true'
   const frontendPortRaw = env.FRONTEND_PORT || process.env.FRONTEND_PORT || process.env.PORT
   if (!frontendPortRaw) {
     throw new Error("[port-config] Missing FRONTEND_PORT in .env")
@@ -38,6 +39,7 @@ export default defineConfig(({ mode }) => {
       commonjs({
         include: [/dayjs/, /node_modules/]
       }),
+      ...(!isLightE2E ? [
       // 重新启用Element Plus自动导入（按需导入模式）
       AutoImport({
         resolvers: [ElementPlusResolver()],
@@ -55,6 +57,7 @@ export default defineConfig(({ mode }) => {
         brotliSize: true,
         open: false
       })
+      ] : [])
       
       // PWA 插件已禁用以解决 Node 24 兼容性问题
     ],

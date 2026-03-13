@@ -10,8 +10,9 @@ import {
 } from './strategySignalsData'
 import { extractStrategyIdFromQuery } from './strategyCrossTabNavigation'
 
-const { loading, lastRequestId, exec } = useArtDecoApi()
+const { loading, error, lastRequestId, exec } = useArtDecoApi()
 const signals = ref<StrategySignalItem[]>([])
+const dataSource = ref<'REAL' | 'EMPTY'>('REAL')
 const route = useRoute()
 const { getSnapshot, setActiveStrategy } = useStrategyCrossTabContext()
 const selectedStrategyId = computed(() => extractStrategyIdFromQuery(route.query as Record<string, unknown>))
@@ -22,6 +23,8 @@ const selectedStrategySnapshot = computed(() => {
 
   return getSnapshot(selectedStrategyId.value)
 })
+const showErrorState = computed(() => Boolean(error.value) && signals.value.length === 0)
+const showEmptyState = computed(() => !loading.value && !error.value && signals.value.length === 0)
 
 function toSeconds(time: string): number {
   if (!/^\d{2}:\d{2}:\d{2}$/.test(time)) {
@@ -66,10 +69,24 @@ const fetchSignals = async () => {
   }
 
   const data = await exec(() => strategyApi.getSignals(params), {
-    silent: true
+    silent: true,
+    errorMsg: '策略信号加载失败'
   })
 
+  if (data === null) {
+    dataSource.value = 'EMPTY'
+    signals.value = []
+    return
+  }
+
   const mappedSignals = createStrategySignalsFromResponse(data)
+  if (mappedSignals.length === 0) {
+    dataSource.value = 'EMPTY'
+    signals.value = []
+    return
+  }
+
+  dataSource.value = 'REAL'
   signals.value = sortSignalsByTime(mappedSignals)
 }
 
@@ -92,10 +109,14 @@ watch(selectedStrategyId, () => {
         <div class="trace-id" v-if="lastRequestId">ID: {{ lastRequestId }}</div>
         <div class="trace-id" v-if="selectedStrategyId">STRATEGY_ID: {{ selectedStrategyId }}</div>
         <div class="trace-id" v-if="selectedStrategySnapshot">STATUS: {{ selectedStrategySnapshot.status.toUpperCase() }}</div>
+        <div class="trace-id">DATA: {{ dataSource }}</div>
       </div>
     </div>
 
-    <div class="signals-timeline" v-loading="loading" v-if="signals.length > 0">
+    <div v-if="showErrorState" class="error-state artdeco-card" role="alert">
+      策略信号加载失败：{{ error }}
+    </div>
+    <div class="signals-timeline" v-loading="loading" v-else-if="signals.length > 0">
       <div v-for="sig in signals" :key="`${sig.symbol}-${sig.time}-${sig.strategy}`" :class="['signal-item', sig.type.toLowerCase()]">
         <div class="signal-marker"></div>
         <div class="signal-content artdeco-card">
@@ -119,6 +140,9 @@ watch(selectedStrategyId, () => {
           </div>
         </div>
       </div>
+    </div>
+    <div v-else-if="showEmptyState" class="empty-state artdeco-card" v-loading="loading">
+      当前暂无策略信号，保持真实接口空态展示。
     </div>
     <div v-else class="empty-state artdeco-card" v-loading="loading">
       当前暂无策略信号。

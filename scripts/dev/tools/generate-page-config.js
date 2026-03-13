@@ -27,6 +27,7 @@ const CONFIG = {
   routerPath: path.resolve(__dirname, '../../../web/frontend/src/router/index.ts'),
   configOutputPath: path.resolve(__dirname, '../../../web/frontend/src/config/pageConfig.ts'),
   configBackupPath: path.resolve(__dirname, '../../../web/frontend/src/config/pageConfig.ts.bak'),
+  optimizationPlanPath: path.resolve(__dirname, '../../../docs/plans/frontend-page-optimization-list.md'),
   
   routeConfigMap: {
     'dashboard': { apiEndpoint: '/api/dashboard/overview', wsChannel: 'dashboard:realtime', description: '交易室概览' },
@@ -63,43 +64,7 @@ const CONFIG = {
     'system-api-health': { apiEndpoint: '/api/system/api-health', wsChannel: 'system:api-health', description: 'API健康' },
   },
   
-  monolithicTabs: {
-    'ArtDecoMarketData.vue': [
-      { id: 'fund-flow', apiEndpoint: '/api/market/fund-flow', wsChannel: 'market:fund-flow' },
-      { id: 'etf', apiEndpoint: '/api/market/etf', wsChannel: 'market:etf' },
-      { id: 'concepts', apiEndpoint: '/api/market/concept', wsChannel: 'market:concept' },
-      { id: 'lhb', apiEndpoint: '/api/market/longhubang', wsChannel: 'market:longhubang' },
-      { id: 'auction', apiEndpoint: '/api/market/auction', wsChannel: 'market:auction' },
-      { id: 'institution', apiEndpoint: '/api/market/institution', wsChannel: 'market:institution' },
-    ],
-    'ArtDecoStockManagement.vue': [
-      { id: 'overview', apiEndpoint: '/api/stock/overview', wsChannel: 'stock:overview' },
-      { id: 'watchlist', apiEndpoint: '/api/stock/watchlist', wsChannel: 'stock:watchlist' },
-      { id: 'positions', apiEndpoint: '/api/stock/positions', wsChannel: 'stock:positions' },
-      { id: 'attribution', apiEndpoint: '/api/trading/attribution', wsChannel: 'trading:attribution' },
-      { id: 'history', apiEndpoint: '/api/trading/history', wsChannel: 'trading:history' },
-      { id: 'strategy', apiEndpoint: '/api/strategy/management', wsChannel: 'strategy:management' },
-    ],
-    'ArtDecoTradingManagement.vue': [
-      { id: 'overview', apiEndpoint: '/api/trading/overview', wsChannel: 'trading:overview' },
-      { id: 'signals', apiEndpoint: '/api/trading/signals', wsChannel: 'trading:signals' },
-      { id: 'positions', apiEndpoint: '/api/trading/positions', wsChannel: 'trading:positions' },
-      { id: 'history', apiEndpoint: '/api/trading/history', wsChannel: 'trading:history' },
-      { id: 'attribution', apiEndpoint: '/api/trading/attribution', wsChannel: 'trading:attribution' },
-    ],
-    'ArtDecoTechnicalAnalysis.vue': [
-      { id: 'analysis', apiEndpoint: '/api/technical/indicators', wsChannel: 'technical:indicators' },
-      { id: 'backtest', apiEndpoint: '/api/strategy/backtest', wsChannel: 'strategy:backtest' },
-      { id: 'optimization', apiEndpoint: '/api/strategy/optimization', wsChannel: 'strategy:optimization' },
-    ],
-    'ArtDecoRiskManagement.vue': [
-      { id: 'overview', apiEndpoint: '/api/risk/overview', wsChannel: 'risk:overview' },
-      { id: 'alerts', apiEndpoint: '/api/risk/alerts', wsChannel: 'risk:alerts' },
-      { id: 'indicators', apiEndpoint: '/api/risk/indicators', wsChannel: 'risk:indicators' },
-      { id: 'sentiment', apiEndpoint: '/api/risk/sentiment', wsChannel: 'risk:sentiment' },
-      { id: 'announcement', apiEndpoint: '/api/risk/announcement', wsChannel: 'risk:announcement' },
-    ],
-  }
+  monolithicTabs: {}
 }
 
 // ============================================================================
@@ -192,84 +157,425 @@ function resolveRouteValue(rawValue, constants) {
   return constants[value] || null
 }
 
+function findBalancedSegment(text, startIdx, openChar, closeChar) {
+  if (startIdx < 0 || startIdx >= text.length || text[startIdx] !== openChar) {
+    throw new Error(`Invalid segment start for ${openChar}: ${startIdx}`)
+  }
+
+  let depth = 0
+  let inString = null
+  let escaped = false
+
+  for (let idx = startIdx; idx < text.length; idx += 1) {
+    const ch = text[idx]
+
+    if (inString) {
+      if (escaped) {
+        escaped = false
+        continue
+      }
+      if (ch === '\\') {
+        escaped = true
+        continue
+      }
+      if (ch === inString) {
+        inString = null
+      }
+      continue
+    }
+
+    if (ch === "'" || ch === '"' || ch === '`') {
+      inString = ch
+      continue
+    }
+
+    if (ch === openChar) {
+      depth += 1
+    } else if (ch === closeChar) {
+      depth -= 1
+      if (depth === 0) {
+        return [startIdx, idx]
+      }
+    }
+  }
+
+  throw new Error(`Unbalanced segment for ${openChar}${closeChar} at index ${startIdx}`)
+}
+
+function extractRoutesArray(content) {
+  const markerIdx = content.indexOf('const routes')
+  if (markerIdx < 0) {
+    throw new Error('Cannot find `const routes` in router file')
+  }
+
+  const assignIdx = content.indexOf('=', markerIdx)
+  if (assignIdx < 0) {
+    throw new Error('Cannot find routes assignment')
+  }
+
+  const arrayStart = content.indexOf('[', assignIdx)
+  if (arrayStart < 0) {
+    throw new Error('Cannot find routes array start')
+  }
+
+  const [, arrayEnd] = findBalancedSegment(content, arrayStart, '[', ']')
+  return content.slice(arrayStart + 1, arrayEnd)
+}
+
+function splitTopLevelObjects(arrayContent) {
+  const objects = []
+  let depth = 0
+  let inString = null
+  let escaped = false
+  let startIdx = -1
+
+  for (let idx = 0; idx < arrayContent.length; idx += 1) {
+    const ch = arrayContent[idx]
+
+    if (inString) {
+      if (escaped) {
+        escaped = false
+        continue
+      }
+      if (ch === '\\') {
+        escaped = true
+        continue
+      }
+      if (ch === inString) {
+        inString = null
+      }
+      continue
+    }
+
+    if (ch === "'" || ch === '"' || ch === '`') {
+      inString = ch
+      continue
+    }
+
+    if (ch === '{') {
+      if (depth === 0) {
+        startIdx = idx
+      }
+      depth += 1
+    } else if (ch === '}') {
+      depth -= 1
+      if (depth === 0 && startIdx >= 0) {
+        objects.push(arrayContent.slice(startIdx, idx + 1))
+        startIdx = -1
+      }
+    }
+  }
+
+  return objects
+}
+
+function findTopLevelPropertyIndex(objText, prop) {
+  let depth = 0
+  let inString = null
+  let escaped = false
+
+  for (let idx = 0; idx < objText.length; idx += 1) {
+    const ch = objText[idx]
+
+    if (inString) {
+      if (escaped) {
+        escaped = false
+        continue
+      }
+      if (ch === '\\') {
+        escaped = true
+        continue
+      }
+      if (ch === inString) {
+        inString = null
+      }
+      continue
+    }
+
+    if (ch === "'" || ch === '"' || ch === '`') {
+      inString = ch
+      continue
+    }
+
+    if (ch === '{') {
+      depth += 1
+      continue
+    }
+
+    if (ch === '}') {
+      depth -= 1
+      continue
+    }
+
+    if (depth !== 1) {
+      continue
+    }
+
+    if (!objText.startsWith(prop, idx)) {
+      continue
+    }
+
+    const before = idx === 0 ? '' : objText[idx - 1]
+    const after = objText[idx + prop.length] || ''
+    if (/[A-Za-z0-9_$]/.test(before) || /[A-Za-z0-9_$]/.test(after)) {
+      continue
+    }
+
+    const remainder = objText.slice(idx + prop.length)
+    if (/^\s*:/.test(remainder)) {
+      return idx
+    }
+  }
+
+  return -1
+}
+
+function extractPropertyToken(objText, prop) {
+  const propertyIdx = findTopLevelPropertyIndex(objText, prop)
+  if (propertyIdx < 0) {
+    return null
+  }
+
+  const pattern = new RegExp(`^${prop}\\s*:\\s*(['"\`][^'"\`]+['"\`]|[A-Za-z_$][\\w$]*)`)
+  const match = objText.slice(propertyIdx).match(pattern)
+  return match ? match[1].trim() : null
+}
+
+function extractArrayProperty(objText, prop) {
+  const propertyIdx = findTopLevelPropertyIndex(objText, prop)
+  if (propertyIdx < 0) {
+    return null
+  }
+
+  const arrayStart = objText.indexOf('[', propertyIdx)
+  if (arrayStart < 0) {
+    return null
+  }
+
+  const [, arrayEnd] = findBalancedSegment(objText, arrayStart, '[', ']')
+  return objText.slice(arrayStart + 1, arrayEnd)
+}
+
+function extractComponentPath(objText) {
+  const match = objText.match(/component\s*:\s*\(\)\s*=>\s*import\(\s*['"]@\/views\/([^'"]+)['"]\s*\)/)
+  return match ? match[1].trim() : null
+}
+
+function extractObjectProperty(objText, prop) {
+  const propertyIdx = findTopLevelPropertyIndex(objText, prop)
+  if (propertyIdx < 0) {
+    return null
+  }
+
+  const objectStart = objText.indexOf('{', propertyIdx)
+  if (objectStart < 0) {
+    return null
+  }
+
+  const [, objectEnd] = findBalancedSegment(objText, objectStart, '{', '}')
+  return objText.slice(objectStart + 1, objectEnd)
+}
+
+function extractQuotedProperty(text, prop) {
+  if (!text) {
+    return null
+  }
+
+  const patterns = [
+    new RegExp(`\\b${prop}\\s*:\\s*'([^']*)'`),
+    new RegExp(`\\b${prop}\\s*:\\s*"([^"]*)"`),
+  ]
+
+  for (const pattern of patterns) {
+    const match = text.match(pattern)
+    if (match) {
+      return match[1].trim()
+    }
+  }
+
+  return null
+}
+
+function extractBooleanProperty(text, prop) {
+  if (!text) {
+    return undefined
+  }
+
+  const match = text.match(new RegExp(`\\b${prop}\\s*:\\s*(true|false)`))
+  if (!match) {
+    return undefined
+  }
+  return match[1] === 'true'
+}
+
+function joinPaths(basePath, childPath) {
+  if (childPath.startsWith('/')) {
+    return childPath
+  }
+  if (!basePath || basePath === '/') {
+    return `/${childPath}`
+  }
+  return `${basePath.replace(/\/$/, '')}/${childPath}`
+}
+
+function shouldIgnoreRoute(route) {
+  return (
+    !route.name ||
+    route.name === 'not-found' ||
+    route.name.startsWith('qm-') ||
+    route.fullPath.startsWith('/qm') ||
+    route.fullPath.startsWith('/detail/')
+  )
+}
+
+function parseRouteArray(arrayContent, basePath, constants, routes) {
+  for (const obj of splitTopLevelObjects(arrayContent)) {
+    const rawPath = extractPropertyToken(obj, 'path')
+    if (!rawPath) {
+      continue
+    }
+
+    const resolvedPath = resolveRouteValue(rawPath, constants)
+    if (resolvedPath == null) {
+      continue
+    }
+
+    const fullPath = joinPaths(basePath, resolvedPath)
+    const rawName = extractPropertyToken(obj, 'name')
+    const routeName = rawName ? resolveRouteValue(rawName, constants) : null
+    const componentPath = extractComponentPath(obj)
+    const component = componentPath ? componentPath.split('/').pop() : null
+    const metaText = extractObjectProperty(obj, 'meta')
+
+    if (routeName && component) {
+      routes.push({
+        path: resolvedPath,
+        fullPath,
+        name: routeName,
+        component,
+        meta: {
+          title: extractQuotedProperty(metaText, 'title') || '',
+          api: extractQuotedProperty(metaText, 'api') || '',
+          requiresAuth: extractBooleanProperty(metaText, 'requiresAuth') ?? true,
+        },
+      })
+    }
+
+    const children = extractArrayProperty(obj, 'children')
+    if (children !== null) {
+      parseRouteArray(children, fullPath, constants, routes)
+    }
+  }
+}
+
 function parseRouterFile(filePath) {
-  const routes = []
-  
   try {
     const content = fs.readFileSync(filePath, 'utf-8')
     const constants = {
       ...parseStringConstantDeclarations(content),
-      ...parseImportedStringConstants(content, filePath)
+      ...parseImportedStringConstants(content, filePath),
     }
-    
-    const routeBlockRegex = /path:\s*(['"`][^'"`]+['"`]|[A-Za-z_$][\w$]*)\s*,\s*name:\s*(['"`][^'"`]+['"`]|[A-Za-z_$][\w$]*)\s*,\s*component:\s*\(\)\s*=>\s*import\(['"]@\/views\/([^'"]+)['"]\)/g
-    
-    let match
-    while ((match = routeBlockRegex.exec(content)) !== null) {
-      const routePath = resolveRouteValue(match[1], constants)
-      const routeName = resolveRouteValue(match[2], constants)
-      const componentPath = match[3]
-      const component = componentPath.split('/').pop()
+    const routesArray = extractRoutesArray(content)
+    const routes = []
 
-      if (!routePath || !routeName) {
-        continue
-      }
-      
-      if (routeName === 'notFound' || routeName === 'login' || routeName === 'test' || routeName === 'artdeco-test') {
-        continue
-      }
-      
-      const routeEndIndex = content.indexOf('}', match.index)
-      const routeBlock = content.substring(match.index, routeEndIndex + 1)
-      
-      let title = ''
-      let requiresAuth = true
-      let activeTab = ''
-      let description = ''
-      
-      const titleMatch = routeBlock.match(/title:\s*['"]([^'"]+)['"]/)
-      if (titleMatch) title = titleMatch[1]
-      
-      const authMatch = routeBlock.match(/requiresAuth:\s*(true|false)/)
-      if (authMatch) requiresAuth = authMatch[1] === 'true'
-      
-      const tabMatch = routeBlock.match(/activeTab:\s*['"]([^'"]+)['"]/)
-      if (tabMatch) activeTab = tabMatch[1]
-      
-      routes.push({
-        path: routePath,
-        name: routeName,
-        component,
-        meta: { title, requiresAuth, activeTab, description }
-      })
-    }
-    
-    return routes
+    parseRouteArray(routesArray, '', constants, routes)
+
+    return routes.filter((route) => !shouldIgnoreRoute(route))
   } catch (error) {
     throw new Error(`Failed to parse router file: ${error}`)
   }
 }
 
-function inferConfig(route) {
-  if (CONFIG.routeConfigMap[route.name]) {
-    return CONFIG.routeConfigMap[route.name]
+function parseOptimizationPlan(filePath) {
+  if (!fs.existsSync(filePath)) {
+    return new Map()
   }
-  
-  const nameParts = route.name.split('-')
-  const domain = nameParts[0]
-  const subPath = nameParts.slice(1).join('/')
-  
-  let apiEndpoint = `/api/${domain}/${subPath}`
-  if (subPath === domain) {
-    apiEndpoint = `/api/${domain}`
+
+  const content = fs.readFileSync(filePath, 'utf-8')
+  const lines = content.split(/\r?\n/)
+  const headerIdx = lines.findIndex((line) => line.trim().startsWith('| # | 页面 | 路径 |'))
+  if (headerIdx < 0) {
+    return new Map()
   }
-  
-  let wsChannel = `${domain}:${subPath}`
-  if (subPath === domain) {
-    wsChannel = domain
+
+  const rows = new Map()
+  const normalizeCell = (value) => value.trim().replace(/^`|`$/g, '').trim()
+
+  for (const line of lines.slice(headerIdx + 2)) {
+    const stripped = line.trim()
+    if (!stripped.startsWith('|')) {
+      break
+    }
+
+    const cols = stripped
+      .replace(/^\|/, '')
+      .replace(/\|$/, '')
+      .split('|')
+      .map(normalizeCell)
+
+    if (cols.length < 9) {
+      continue
+    }
+
+    const row = {
+      index: cols[0],
+      page: cols[1],
+      path: cols[2],
+      componentPath: cols[3],
+      priority: cols[4],
+      dataStatus: cols[5],
+      api: cols[6],
+      apiStatus: cols[7],
+      notes: cols[8],
+    }
+
+    rows.set(row.path, row)
+    if (row.path === '/dealing-room') {
+      rows.set('/dashboard', row)
+    }
   }
-  
-  return { apiEndpoint, wsChannel, description: route.meta.title || route.name }
+
+  return rows
+}
+
+function inferWsChannel(route, fallback) {
+  if (route.name === 'login' || route.meta.requiresAuth === false) {
+    return ''
+  }
+
+  if (fallback) {
+    return fallback
+  }
+
+  const [domain, ...rest] = route.name.split('-')
+  if (!domain) {
+    return ''
+  }
+
+  const suffix = rest.join('-')
+  return suffix ? `${domain}:${suffix}` : domain
+}
+
+function inferApiFromRouteName(route) {
+  const [domain, ...rest] = route.name.split('-')
+  if (!domain) {
+    return ''
+  }
+
+  const suffix = rest.join('-')
+  return suffix ? `/api/${domain}/${suffix}` : `/api/${domain}`
+}
+
+function inferConfig(route, optimizationRow) {
+  const manual = CONFIG.routeConfigMap[route.name] || {}
+  const apiEndpoint = route.meta.api || optimizationRow?.api || manual.apiEndpoint || inferApiFromRouteName(route)
+  const wsChannel = inferWsChannel(route, manual.wsChannel)
+
+  return {
+    apiEndpoint,
+    wsChannel,
+    description: manual.description || route.meta.title || route.name,
+  }
 }
 
 function getMonolithicTabs(component) {
@@ -282,11 +588,11 @@ function isMonolithicComponent(component) {
   return componentName in CONFIG.monolithicTabs
 }
 
-function generatePageConfig(routes) {
+function generatePageConfig(routes, optimizationRows) {
   const configs = []
   
   for (const route of routes) {
-    const inferred = inferConfig(route)
+    const inferred = inferConfig(route, optimizationRows.get(route.fullPath))
     const tabs = getMonolithicTabs(route.component)
     
     const config = {
@@ -461,11 +767,12 @@ function runGeneration(options) {
   try {
     log('Parsing router file...', options.verbose)
     const routes = parseRouterFile(CONFIG.routerPath)
+    const optimizationRows = parseOptimizationPlan(CONFIG.optimizationPlanPath)
     result.routesFound = routes.length
     log(`Found ${routes.length} routes`, options.verbose)
     
     log('Generating page configurations...', options.verbose)
-    const configs = generatePageConfig(routes)
+    const configs = generatePageConfig(routes, optimizationRows)
     result.configsGenerated = configs.length
     
     const generatedContent = generateConfigFileContent(configs)

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
-import { apiClient } from '@/api/apiClient';
+import { computed, onMounted, ref } from 'vue'
+import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
+import { apiClient } from '@/api/apiClient'
 
 interface HealthRow {
   status?: string
@@ -9,22 +9,24 @@ interface HealthRow {
   version?: string
 }
 
-const { loading, lastRequestId, exec } = useArtDecoApi();
-const health = ref<HealthRow | null>(null);
+const { loading, error, lastRequestId, exec } = useArtDecoApi()
+const health = ref<HealthRow | null>(null)
+
+const showErrorState = computed(() => Boolean(error.value) && !health.value)
+const showEmptyState = computed(() => !loading.value && !error.value && !health.value)
 
 const fetchHealth = async () => {
-  // 直接调用健康检查端点
   const data = await exec(() => apiClient.get('/health'), {
-    errorMsg: '无法连接到后端服务'
-  });
-  if (data) {
-    health.value = data;
-  }
-};
+    errorMsg: '无法连接到后端服务',
+    silent: true,
+  })
+
+  health.value = data as HealthRow | null
+}
 
 onMounted(() => {
-  fetchHealth();
-});
+  void fetchHealth()
+})
 </script>
 
 <template>
@@ -34,52 +36,59 @@ onMounted(() => {
       <div class="trace-id" v-if="lastRequestId">LAST_REQ: {{ lastRequestId }}</div>
     </div>
 
-    <div class="health-grid" v-loading="loading">
-      <!-- 核心服务状态 -->
-      <div class="artdeco-card status-card">
-        <h3 class="card-title">Backend Status</h3>
-        <div class="status-indicator">
-          <div :class="['glow-dot', health?.status === 'healthy' ? 'online' : 'offline']"></div>
-          <span class="status-text">{{ health?.status?.toUpperCase() || 'UNKNOWN' }}</span>
+    <div v-if="showErrorState" class="system-health-state system-health-state--error" role="alert">
+      {{ error }}
+    </div>
+
+    <div v-else-if="showEmptyState" class="system-health-state" role="status" aria-live="polite">
+      暂无健康检查数据。
+    </div>
+
+    <template v-else>
+      <div class="health-grid" v-loading="loading">
+        <div class="artdeco-card status-card">
+          <h3 class="card-title">Backend Status</h3>
+          <div class="status-indicator">
+            <div :class="['glow-dot', health?.status === 'healthy' ? 'online' : 'offline']"></div>
+            <span class="status-text">{{ health?.status?.toUpperCase() || 'UNKNOWN' }}</span>
+          </div>
+          <div class="info-row">
+            <span>Service:</span>
+            <span>{{ health?.service || 'N/A' }}</span>
+          </div>
+          <div class="info-row">
+            <span>Version:</span>
+            <span>{{ health?.version || 'N/A' }}</span>
+          </div>
         </div>
-        <div class="info-row">
-          <span>Service:</span>
-          <span>{{ health?.service }}</span>
-        </div>
-        <div class="info-row">
-          <span>Version:</span>
-          <span>{{ health?.version }}</span>
+
+        <div class="artdeco-card status-card">
+          <h3 class="card-title">Middleware Layers</h3>
+          <div class="middleware-list">
+            <div class="mw-item">
+              <span class="mw-name">Performance Tracing</span>
+              <span class="mw-status active">ENABLED</span>
+            </div>
+            <div class="mw-item">
+              <span class="mw-name">Unified Response</span>
+              <span class="mw-status active">ENABLED</span>
+            </div>
+            <div class="mw-item">
+              <span class="mw-name">Redis Caching</span>
+              <span class="mw-status active">ACTIVE</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 中间件状态 -->
-      <div class="artdeco-card status-card">
-        <h3 class="card-title">Middleware Layers</h3>
-        <div class="middleware-list">
-          <div class="mw-item">
-            <span class="mw-name">Performance Tracing</span>
-            <span class="mw-status active">ENABLED</span>
-          </div>
-          <div class="mw-item">
-            <span class="mw-name">Unified Response</span>
-            <span class="mw-status active">ENABLED</span>
-          </div>
-          <div class="mw-item">
-            <span class="mw-name">Redis Caching</span>
-            <span class="mw-status active">ACTIVE</span>
-          </div>
-        </div>
+      <div class="observability-note artdeco-card">
+        <p>
+          <strong class="gold-text">Note:</strong> All API interactions are tracked via UUID v4 Request IDs.
+          Slow queries (&gt;300ms) are automatically flagged by the Performance Monitoring middleware
+          and reported to the backend telemetry system.
+        </p>
       </div>
-    </div>
-
-    <!-- 底部追踪说明 -->
-    <div class="observability-note artdeco-card">
-      <p>
-        <strong class="gold-text">Note:</strong> All API interactions are tracked via UUID v4 Request IDs. 
-        Slow queries (>300ms) are automatically flagged by the Performance Monitoring middleware 
-        and reported to the backend telemetry system.
-      </p>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -114,6 +123,18 @@ onMounted(() => {
   }
 }
 
+.system-health-state {
+  margin-bottom: var(--artdeco-spacing-6);
+  padding: var(--artdeco-spacing-5);
+  border: 1px solid var(--artdeco-border-default);
+  background: linear-gradient(145deg, var(--artdeco-gold-opacity-05), transparent 65%);
+  color: var(--artdeco-fg-primary);
+
+  &--error {
+    color: var(--artdeco-down);
+  }
+}
+
 .health-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -145,12 +166,12 @@ onMounted(() => {
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    
+
     &.online {
       background: var(--artdeco-rise);
       box-shadow: 0 0 15px var(--artdeco-rise);
     }
-    
+
     &.offline {
       background: var(--artdeco-down);
       box-shadow: 0 0 15px var(--artdeco-down);
@@ -183,6 +204,7 @@ onMounted(() => {
     .mw-name {
       font-size: var(--artdeco-text-sm);
     }
+
     .mw-status.active {
       color: var(--artdeco-rise);
       font-weight: bold;
@@ -196,7 +218,7 @@ onMounted(() => {
   font-size: var(--artdeco-text-sm);
   line-height: var(--artdeco-leading-relaxed);
   color: var(--artdeco-fg-muted);
-  
+
   .gold-text {
     color: var(--artdeco-gold-primary);
   }
