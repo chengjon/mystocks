@@ -15,6 +15,7 @@ Byapi (biyingapi.com) 数据源适配器测试
 Phase: 2 - Task 2.2.5
 """
 
+import os
 import unittest
 from unittest.mock import Mock, patch
 
@@ -28,10 +29,17 @@ class TestByapiDataSourceInit(unittest.TestCase):
 
     def test_init_default_params(self):
         """测试默认参数初始化"""
-        adapter = ByapiAdapter()
+        with patch.dict(
+            os.environ,
+            {},
+            clear=False,
+        ):
+            for key in ("BYAPI_KEY", "BYAPI_LICENCE", "BYAPI_LICENSE", "BYAPI_TOKEN", "BYAPI_BASE_URL"):
+                os.environ.pop(key, None)
+            adapter = ByapiAdapter()
 
         self.assertEqual(adapter.licence, "04C01BF1-7F2F-41A3-B470-1F81F14B1FC8")
-        self.assertEqual(adapter.base_url, "http://api.biyingapi.com")
+        self.assertEqual(adapter.base_url, "https://api.biyingapi.com")
         self.assertEqual(adapter.min_interval, 0.2)
         self.assertEqual(adapter.last_request_time, 0.0)
 

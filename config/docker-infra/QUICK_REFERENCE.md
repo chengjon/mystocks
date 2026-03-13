@@ -74,12 +74,27 @@ GRAFANA_ADMIN_PASSWORD=mystocks2025
 REDIS_PASSWORD=change_me
 MONGODB_ROOT_USERNAME=admin
 MONGODB_ROOT_PASSWORD=mystocks2025
+BYAPI_KEY=your_active_byapi_key
+BYAPI_BASE_URL=https://api.biyingapi.com
+TUSHARE_TOKEN=your_tushare_token
 
 # 数据持久化路径
 PROMETHEUS_DATA_PATH=./data/prometheus
 GRAFANA_DATA_PATH=./data/grafana
 MONGODB_DATA_PATH=./data/mongodb
 ```
+
+初始化本地数据源凭据文件：
+
+```bash
+cp config/docker/data-source-credentials.env.example .env.data-sources.local
+vim .env.data-sources.local
+```
+
+数据源凭据约束：
+
+- `BYAPI_KEY` 和 `TUSHARE_TOKEN` 只从本地 env / secrets 注入。
+- 不提交真实凭据到 Git。
 
 ## 📊 监控指标
 

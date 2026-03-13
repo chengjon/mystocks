@@ -53,6 +53,7 @@ check_dependencies() {
 # 检查环境变量文件
 check_env_file() {
     local env_file="$PROJECT_ROOT/.env"
+    local data_source_env_file="$PROJECT_ROOT/.env.data-sources.local"
 
     if [[ ! -f "$env_file" ]]; then
         log_warning ".env 文件不存在，正在从 .env.example 复制..."
@@ -61,8 +62,17 @@ check_env_file() {
         return 1
     fi
 
-    # 加载环境变量
+    # 导出环境变量，便于 docker-compose 读取补充的本地数据源凭据
+    set -a
     source "$env_file"
+    if [[ -f "$data_source_env_file" ]]; then
+        source "$data_source_env_file"
+        log_info "已加载本地数据源凭据文件: $data_source_env_file"
+    else
+        log_warning "未找到本地数据源凭据文件: $data_source_env_file"
+        log_warning "如需启用 Byapi / Tushare，请在该文件中设置 BYAPI_KEY 和 TUSHARE_TOKEN"
+    fi
+    set +a
 
     # 验证必需的安全配置
     if [[ -z "$GRAFANA_ADMIN_PASSWORD" ]]; then

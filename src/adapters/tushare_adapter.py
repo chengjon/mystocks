@@ -31,8 +31,8 @@ class TushareDataSource(IDataSource):
             token = os.getenv("TUSHARE_TOKEN")
             if not token:
                 raise ImportError("请设置环境变量 TUSHARE_TOKEN")
-            ts.set_token(token)
-            self.ts = ts.pro_api()
+            # 直接把 token 传给 pro_api，避免 set_token 落盘到只读文件系统。
+            self.ts = ts.pro_api(token)
             print("Tushare数据源初始化完成")
             self.available = True
         except ImportError as e:

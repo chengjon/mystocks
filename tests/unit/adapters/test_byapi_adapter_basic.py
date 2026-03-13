@@ -18,8 +18,11 @@ from src.adapters.byapi_adapter import ByapiAdapter, DataSourceError
 class TestByapiAdapterBasic:
     """ByapiAdapter基础测试 - 专注覆盖率"""
 
-    def test_initialization_default(self):
+    def test_initialization_default(self, monkeypatch):
         """测试默认初始化"""
+        for key in ("BYAPI_KEY", "BYAPI_LICENCE", "BYAPI_LICENSE", "BYAPI_TOKEN", "BYAPI_BASE_URL"):
+            monkeypatch.delenv(key, raising=False)
+
         adapter = ByapiAdapter()
 
         # 验证基本属性
@@ -31,7 +34,7 @@ class TestByapiAdapterBasic:
 
         # 验证默认值
         assert adapter.licence == "04C01BF1-7F2F-41A3-B470-1F81F14B1FC8"
-        assert adapter.base_url == "http://api.biyingapi.com"
+        assert adapter.base_url == "https://api.biyingapi.com"
         assert adapter.min_interval == 0.2
         assert adapter.last_request_time == 0.0
         assert isinstance(adapter.frequency_map, dict)

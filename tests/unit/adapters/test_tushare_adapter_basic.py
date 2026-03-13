@@ -6,7 +6,7 @@ Tushare适配器基础测试
 import inspect
 import os
 import sys
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -99,6 +99,20 @@ class TestTushareDataSourceBasic:
         init_source = inspect.getsource(init_method)
         assert "tushare" in init_source
         assert "TUSHARE_TOKEN" in init_source
+
+    @patch("src.adapters.tushare_adapter.os.getenv", return_value="test_token")
+    def test_initialization_uses_pro_api_token_without_set_token_side_effect(self, _mock_getenv):
+        """测试初始化直接把 token 传给 pro_api，不依赖 set_token 落盘"""
+        fake_tushare = MagicMock()
+        fake_tushare.set_token.side_effect = AssertionError("set_token should not be used")
+        fake_tushare.pro_api.return_value = object()
+
+        with patch.dict("sys.modules", {"tushare": fake_tushare}):
+            ds = TushareDataSource()
+
+        fake_tushare.pro_api.assert_called_once_with("test_token")
+        fake_tushare.set_token.assert_not_called()
+        assert ds.available is True
 
     def test_interface_compliance(self):
         """测试接口兼容性"""

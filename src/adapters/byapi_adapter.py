@@ -12,6 +12,7 @@
 # 版权：MyStocks Project © 2025
 """
 
+import os
 import time
 from abc import ABC, abstractmethod
 from datetime import datetime
@@ -19,6 +20,10 @@ from typing import Any, Dict, List
 
 import pandas as pd
 import requests
+
+
+DEFAULT_BYAPI_LICENCE = "04C01BF1-7F2F-41A3-B470-1F81F14B1FC8"
+DEFAULT_BYAPI_BASE_URL = "https://api.biyingapi.com"
 
 
 class DataSourceError(Exception):
@@ -67,18 +72,22 @@ class ByapiAdapter(IDataSource):
 
     Args:
         licence: biyingapi.com API许可证
-        base_url: API基础URL (默认: http://api.biyingapi.com)
+        base_url: API基础URL (默认: https://api.biyingapi.com)
         min_interval: 最小请求间隔秒数 (默认: 0.2s, 对应300次/分钟)
     """
 
     def __init__(
         self,
-        licence: str = "04C01BF1-7F2F-41A3-B470-1F81F14B1FC8",
-        base_url: str = "http://api.biyingapi.com",
+        licence: str | None = None,
+        base_url: str | None = None,
         min_interval: float = 0.2,
     ):
-        self.licence = licence
-        self.base_url = base_url
+        env_licence = self._resolve_env_value("BYAPI_KEY", "BYAPI_LICENCE", "BYAPI_LICENSE", "BYAPI_TOKEN")
+        env_base_url = self._resolve_env_value("BYAPI_BASE_URL")
+
+        self.licence = licence if licence is not None else env_licence or DEFAULT_BYAPI_LICENCE
+        resolved_base_url = base_url if base_url is not None else env_base_url or DEFAULT_BYAPI_BASE_URL
+        self.base_url = resolved_base_url.rstrip("/") if resolved_base_url else resolved_base_url
         self.min_interval = min_interval
         self.last_request_time = 0.0
 
@@ -113,6 +122,14 @@ class ByapiAdapter(IDataSource):
             "cashflow": "cashflow",  # 现金流量表
             "metrics": "pershareindex",  # 财务指标
         }
+
+    @staticmethod
+    def _resolve_env_value(*keys: str) -> str | None:
+        for key in keys:
+            value = os.getenv(key)
+            if value:
+                return value
+        return None
 
     @property
     def source_name(self) -> str:
@@ -246,9 +263,8 @@ class ByapiAdapter(IDataSource):
         if not level:
             raise ValueError(f"不支持的频率: {frequency}. 支持: {list(self.frequency_map.keys())}")
 
-        # 构建API URL (使用https)
         url = (
-            f"https://api.biyingapi.com/hsstock/history/{std_symbol}/{level}/n/{self.licence}"
+            f"{self.base_url}/hsstock/history/{std_symbol}/{level}/n/{self.licence}"
             f"?st={start_date.replace('-', '')}&et={end_date.replace('-', '')}"
         )
 
@@ -414,12 +430,12 @@ class ByapiAdapter(IDataSource):
         # 构建URL
         if report_period == "latest":
             # 获取最近1条记录
-            url = f"http://api.biyingapi.com/hsstock/financial/{api_type}/{std_symbol}/{self.licence}?lt=1"
+            url = f"{self.base_url}/hsstock/financial/{api_type}/{std_symbol}/{self.licence}?lt=1"
         else:
             # 获取指定日期前后的数据
             period_date = report_period.replace("-", "")
             url = (
-                f"http://api.biyingapi.com/hsstock/financial/{api_type}/{std_symbol}/{self.licence}"
+                f"{self.base_url}/hsstock/financial/{api_type}/{std_symbol}/{self.licence}"
                 f"?st={period_date}&et={period_date}"
             )
 

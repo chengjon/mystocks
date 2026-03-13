@@ -35,8 +35,12 @@ docker/
 # 复制环境变量配置
 cp ../.env.example .env
 
+# 复制数据源本地凭据模板（不会提交到 Git）
+cp config/docker/data-source-credentials.env.example .env.data-sources.local
+
 # 编辑配置文件（根据需要修改密码和端口）
 vim .env
+vim .env.data-sources.local
 ```
 
 ### 2. 启动选项
@@ -116,9 +120,20 @@ MONGODB_ROOT_USERNAME=admin
 MONGODB_ROOT_PASSWORD=mystocks2025
 MONGODB_DATABASE=mystocks
 
+# 外部数据源凭据（本地注入，不提交到 Git）
+BYAPI_KEY=your_active_byapi_key
+BYAPI_BASE_URL=https://api.biyingapi.com
+TUSHARE_TOKEN=your_tushare_token
+
 # 网络配置
 DOCKER_NETWORK_SUBNET=172.20.0.0/16
 ```
+
+数据源凭据约束：
+
+- `BYAPI_KEY`、`BYAPI_BASE_URL`、`TUSHARE_TOKEN` 只应放在本地 `--env-file` 或部署平台 secrets 中。
+- 不要把有效凭据提交进 Git。
+- compose 资产只保留占位变量。
 
 ### 数据持久化
 
