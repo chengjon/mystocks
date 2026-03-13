@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
 import { apiClient } from '@/api/apiClient';
 
@@ -11,8 +11,10 @@ interface StopLossRow {
   distance: number | string
 }
 
-const { loading, lastRequestId, exec } = useArtDecoApi();
+const { loading, error, lastRequestId, exec } = useArtDecoApi();
 const stopLossItems = ref<StopLossRow[]>([]);
+const showErrorState = computed(() => Boolean(error.value) && stopLossItems.value.length === 0)
+const showEmptyState = computed(() => !loading.value && !error.value && stopLossItems.value.length === 0)
 
 function toFiniteNumber(value: unknown): number | null {
   if (typeof value === 'number' && Number.isFinite(value)) {
@@ -36,7 +38,8 @@ function calculateDistancePercent(currentPrice: number | null, stopPrice: number
 
 const fetchStopLossData = async () => {
   const data = await exec(() => apiClient.get('/v1/monitoring/watchlists'), {
-    silent: true
+    silent: true,
+    errorMsg: '止损监控数据加载失败'
   });
   
   const payload = data as { items?: unknown[] } | null
@@ -76,7 +79,15 @@ onMounted(() => {
       <div class="trace-id" v-if="lastRequestId">REQ: {{ lastRequestId }}</div>
     </div>
 
-    <div class="monitor-grid" v-loading="loading">
+    <div v-if="showErrorState" class="state-panel state-panel--error" role="alert">
+      止损监控数据加载失败：{{ error }}
+    </div>
+
+    <div v-else-if="showEmptyState" class="state-panel" role="status" aria-live="polite">
+      暂无止损监控数据。
+    </div>
+
+    <div v-else class="monitor-grid" v-loading="loading">
       <div v-for="item in stopLossItems" :key="item.symbol" class="artdeco-card risk-card">
         <div class="risk-level-bar" :style="{ background: Number(item.distance) < 2 ? 'var(--artdeco-rise)' : 'var(--artdeco-gold-dim)' }"></div>
         
@@ -141,6 +152,18 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--artdeco-spacing-6);
+}
+
+.state-panel {
+  padding: var(--artdeco-spacing-5);
+  margin-bottom: var(--artdeco-spacing-6);
+  border: thin solid var(--artdeco-border-default);
+  background: linear-gradient(145deg, var(--artdeco-gold-opacity-05), transparent 65%);
+  color: var(--artdeco-fg-primary);
+
+  &--error {
+    color: var(--artdeco-rise);
+  }
 }
 
 .risk-card {

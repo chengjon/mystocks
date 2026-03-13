@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 #!/usr/bin/env python3
 """
 # 功能：GPU加速特征计算引擎
@@ -20,6 +22,8 @@ try:
     GPU_AVAILABLE = True
 except ImportError:
     GPU_AVAILABLE = False
+    cudf = None
+    cp = None
 
 try:
     from src.gpu.core.hardware_abstraction.resource_manager import GPUResourceManager
@@ -184,4 +188,3 @@ class FeatureCalculationGPUCalculatePriceVolumeMixin:
             "cached_keys": list(self.feature_cache.keys()),
             "memory_usage_estimate": len(str(self.feature_cache)),  # 简单的内存使用估计
         }
-

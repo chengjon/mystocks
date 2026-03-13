@@ -24,7 +24,13 @@
     </div>
 
     <ArtDecoCard title="公告列表" class="table-card" hoverable>
-      <el-table :data="announcements" stripe empty-text="暂无公告数据">
+      <div v-if="showErrorState" class="announcement-monitor__state announcement-monitor__state--error" role="alert">
+        公告接口加载失败：{{ error }}
+      </div>
+      <div v-else-if="showEmptyState" class="announcement-monitor__state" role="status" aria-live="polite">
+        暂无公告数据。
+      </div>
+      <el-table v-else :data="announcements" stripe empty-text="暂无公告数据">
         <el-table-column prop="stock_code" label="代码" width="110" />
         <el-table-column prop="stock_name" label="名称" width="140" />
         <el-table-column prop="announcement_type" label="类型" width="140" show-overflow-tooltip />
@@ -58,9 +64,11 @@ import type { AnnouncementBase } from '@/api/types/common';
 
 type JsonLike = Record<string, unknown>;
 
-const { loading, lastRequestId, exec } = useArtDecoApi();
+const { loading, error, lastRequestId, exec } = useArtDecoApi();
 const announcements = ref<AnnouncementBase[]>([]);
 const requestId = ref('');
+const showErrorState = computed(() => Boolean(error.value) && announcements.value.length === 0);
+const showEmptyState = computed(() => !loading.value && !error.value && announcements.value.length === 0);
 
 const todayCount = computed(() => {
   const today = new Date().toISOString().slice(0, 10);
@@ -173,6 +181,17 @@ onMounted(fetchAnnouncements);
 
   .table-card {
     margin-bottom: var(--artdeco-spacing-6);
+  }
+
+  .announcement-monitor__state {
+    padding: var(--artdeco-spacing-5);
+    border: 1px solid var(--artdeco-border-default);
+    background: linear-gradient(145deg, var(--artdeco-gold-opacity-05), transparent 65%);
+    color: var(--artdeco-fg-primary);
+
+    &--error {
+      color: var(--artdeco-down);
+    }
   }
 
   .mono {

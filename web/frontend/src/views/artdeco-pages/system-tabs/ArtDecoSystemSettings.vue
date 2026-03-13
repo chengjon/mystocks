@@ -24,6 +24,10 @@
       </button>
     </div>
 
+    <div class="analysis-blocker" role="status" aria-live="polite">
+      系统配置接口真值待确认，当前页面仅保留本地设置持久化与健康监控视图。
+    </div>
+
     <template v-if="activeTab === 'sources'">
       <div class="stats-grid">
         <ArtDecoStatCard label="可用数据源" :value="4" variant="gold" />
@@ -320,6 +324,16 @@ onMounted(() => {
   display: flex;
   gap: var(--artdeco-spacing-2);
   margin-bottom: var(--artdeco-spacing-5);
+}
+
+.analysis-blocker {
+  margin-bottom: var(--artdeco-spacing-5);
+  padding: var(--artdeco-spacing-4);
+  border: 1px solid var(--artdeco-warning);
+  background: color-mix(in srgb, var(--artdeco-warning) 14%, transparent);
+  color: var(--artdeco-fg-primary);
+  font-size: var(--artdeco-text-sm);
+  line-height: var(--artdeco-leading-relaxed);
 }
 
 .tab {

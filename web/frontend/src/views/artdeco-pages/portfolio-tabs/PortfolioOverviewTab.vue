@@ -8,8 +8,10 @@ import {
   type PortfolioOverviewData
 } from './portfolioOverviewData';
 
-const { loading, lastRequestId, exec } = useArtDecoApi();
+const { loading, error, lastRequestId, exec } = useArtDecoApi();
 const portfolio = ref<PortfolioOverviewData>(toPortfolioOverviewData(null));
+const showErrorState = computed(() => Boolean(error.value) && portfolio.value.positions.length === 0)
+const showEmptyState = computed(() => !loading.value && !error.value && portfolio.value.positions.length === 0)
 
 const performanceAttribution = computed(() => {
   const positions = portfolio.value?.positions ?? [];
@@ -104,6 +106,15 @@ onMounted(() => {
       <div class="hero-decoration"></div>
     </div>
 
+    <div v-if="showErrorState" class="state-panel state-panel--error" role="alert">
+      持仓透视接口加载失败：{{ error }}
+    </div>
+
+    <div v-else-if="showEmptyState" class="state-panel" role="status" aria-live="polite">
+      当前暂无持仓透视数据。
+    </div>
+
+    <template v-else>
     <!-- 持仓列表 -->
     <div class="position-list-section">
       <h3 class="subsection-title">Top Positions</h3>
@@ -179,6 +190,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
+    </template>
   </div>
 </template>
 
@@ -260,6 +272,18 @@ onMounted(() => {
       font-size: var(--artdeco-text-lg);
       margin-left: 10px;
     }
+  }
+}
+
+.state-panel {
+  padding: var(--artdeco-spacing-5);
+  margin-bottom: var(--artdeco-spacing-6);
+  border: thin solid var(--artdeco-border-default);
+  background: linear-gradient(145deg, var(--artdeco-gold-opacity-05), transparent 65%);
+  color: var(--artdeco-fg-primary);
+
+  &--error {
+    color: var(--artdeco-rise);
   }
 }
 

@@ -312,23 +312,35 @@ def load_backend_paths_from_app(repo_root: Path) -> set[str]:
     # Compatibility defaults: this project currently validates required settings
     # on attribute-like names in addition to .env names.
     defaults = {
+        "DEVELOPMENT_MODE": "true",
         "BACKEND_PORT": "8020",
         "BACKEND_BACKUP_PORT": "8021",
         "POSTGRESQL_HOST": "localhost",
+        "POSTGRESQL_PORT": "5432",
         "POSTGRESQL_USER": "postgres",
         "POSTGRESQL_PASSWORD": "postgres",
+        "POSTGRESQL_DATABASE": "postgres",
+        "TDENGINE_HOST": "localhost",
+        "TDENGINE_PORT": "6030",
+        "TDENGINE_USER": "root",
+        "TDENGINE_PASSWORD": "dev-password",
+        "TDENGINE_DATABASE": "market_data",
         "JWT_SECRET_KEY": "dev-key",
         "port": "8020",
         "port_range_end": "8021",
         "postgresql_host": "localhost",
+        "postgresql_port": "5432",
         "postgresql_user": "postgres",
         "postgresql_password": "postgres",
+        "postgresql_database": "postgres",
         "jwt_secret_key": "dev-key",
     }
     for key, value in defaults.items():
         os.environ.setdefault(key, value)
 
     backend_root = repo_root / "web" / "backend"
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
     if str(backend_root) not in sys.path:
         sys.path.insert(0, str(backend_root))
 

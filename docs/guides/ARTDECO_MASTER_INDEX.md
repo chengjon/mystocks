@@ -5,9 +5,9 @@ This document is the authoritative entry point for ArtDeco v3/v3.1 governance in
 ## 1. 核心设计规范 (Core Specifications)
 
 *   **Design Tokens**: `web/frontend/src/styles/artdeco-tokens.scss`
-    *   Primary source of truth for colors (#D4AF37), spacing (11-level system), and typography (Marcellus/Josefin Sans).
+    *   Primary source of truth for colors (#D4AF37), spacing (11-level system), and typography (Cinzel/Barlow/JetBrains Mono).
 *   **System Architecture**: [ArtDeco System Architecture Summary](../api/ArtDeco_System_Architecture_Summary.md)
-    *   Overview of the "One Component, Multiple Tabs" monolithic architecture.
+    *   Overview of the `Container-Tab` hybrid architecture with parent containers, page tabs, and reusable domain components.
 *   **V3.1 Design Spec**: [ArtDeco Trading Center Optimized V3.1](../api/ARTDECO_TRADING_CENTER_OPTIMIZED_V3.1.md)
     *   The latest specification for the Trading Center and V3 upgrades.
 *   **Component Catalog**: [ArtDeco Components Catalog](../../web/frontend/ARTDECO_COMPONENTS_CATALOG.md)

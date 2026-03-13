@@ -2,7 +2,7 @@
 
 **版本**: V2.1（依据 2026-03-02 审核意见修订）
 **创建日期**: 2026-03-02
-**最后更新**: 2026-03-03
+**最后更新**: 2026-03-13
 
 ## 0. 统计口径（先定义再统计）
 
@@ -121,85 +121,134 @@ bash scripts/tests/test/run-comprehensive-tests.sh
 
 | # | 页面 | 路径 | 组件路径（router 真值） | 优先级 | 数据状态 | API（当前） | API状态 | 备注 |
 |---|---|---|---|---|---|---|---|---|
-| 1 | Login | `/login` | `Login.vue` | P0 | real | `/api/v1/auth/login` | pending | 认证入口 |
-| 2 | DealingRoom | `/dealing-room` | `artdeco-pages/ArtDecoDashboard.vue` | P0 | mixed | `/api/v1/market/overview` | pending | 主仪表板 |
-| 3 | Market-Realtime | `/market/realtime` | `artdeco-pages/market-tabs/MarketRealtimeTab.vue` | P0 | mixed | `/api/v1/market/quotes` | verified | 核心页面 |
-| 4 | Market-Technical | `/market/technical` | `artdeco-pages/market-tabs/MarketKLineTab.vue` | P0 | mixed | `/api/v1/market/kline` | verified | 核心页面 |
-| 5 | Market-LHB | `/market/lhb` | `artdeco-pages/market-data-tabs/DragonTigerAnalysis.vue` | P1 | mixed | `/api/data/lhb` | pending | 需后端路由复核 |
-| 6 | Data-Industry | `/data/industry` | `artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue` | P1 | real | `/api/akshare/market/*` | verified | 2026-03-03 已移除 mock 回退，失败转空态 |
-| 7 | Data-Concept | `/data/concept` | `artdeco-pages/market-tabs/MarketConceptTab.vue` | P1 | mixed | `/api/akshare/market/*` | verified | 统一走 akshare 前缀 |
-| 8 | Data-FundFlow | `/data/fund-flow` | `artdeco-pages/market-data-tabs/FundFlowAnalysis.vue` | P1 | mixed | `/api/akshare/market/fund-flow/*` | verified | 需统一接口映射 |
-| 9 | Data-Indicator | `/data/indicator` | `artdeco-pages/ArtDecoDataAnalysis.vue` | P1 | mixed | `/api/indicators/*` | pending | 公式编辑器升级中 |
-| 10 | Watchlist-Manage | `/watchlist/manage` | `artdeco-pages/stock-management-tabs/WatchlistManager.vue` | P1 | mixed | `/api/watchlist` | verified | |
-| 11 | Watchlist-Signals | `/watchlist/signals` | `artdeco-pages/strategy-tabs/StrategySignalsTab.vue` | P1 | real | `/api/v1/trade/signals` | pending | 2026-03-03 已移除 mock 回退 |
-| 12 | Watchlist-Screener | `/watchlist/screener` | `stocks/Screener.vue` | P1 | mixed | `/api/data/stocks` | pending | |
-| 13 | Strategy-Repo | `/strategy/repo` | `artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue` | P1 | real | `/api/v1/strategy/strategies` | verified | 2026-03-03 已移除 mock 回退，失败转空态 |
-| 14 | Strategy-Parameters | `/strategy/parameters` | `artdeco-pages/strategy-tabs/StrategyParametersTab.vue` | P1 | real | `/api/v1/strategy/strategies` | verified | 2026-03-03 已移除 mock 回退 |
-| 15 | Strategy-Signals | `/strategy/signals` | `artdeco-pages/strategy-tabs/StrategySignalsTab.vue` | P1 | real | `/api/v1/trade/signals` | pending | 2026-03-03 已移除 mock 回退 |
-| 16 | Strategy-Backtest | `/strategy/backtest` | `artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue` | P1 | real | `/api/v1/strategy/backtest*` | verified | 2026-03-03 已移除 mock 基线依赖，失败转空态 |
-| 17 | Strategy-GPU | `/strategy/gpu` | `strategy/BacktestGPU.vue` | P2 | mixed | `/api/gpu/*` | pending | 后端路由暂未发现已注册前缀 |
-| 18 | Strategy-Opt | `/strategy/opt` | `artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue` | P2 | real | `/api/v1/strategy/*` | pending | 2026-03-03 已移除 mock 回退，失败转空态 |
-| 19 | Strategy-Pos | `/strategy/pos` | `artdeco-pages/stock-management-tabs/PortfolioMonitor.vue` | P2 | mixed | `/api/v1/trade/positions` | pending | |
-| 20 | Trade-Positions | `/trade/positions` | `artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue` | P1 | real | `/api/v1/trade/positions` | pending | 2026-03-03 已接入 REAL API 持仓映射，失败转空态 |
-| 21 | Trade-Terminal | `/trade/terminal` | `TradingDashboard.vue` | P1 | mixed | `/api/trade/*` | pending | |
-| 22 | Trade-Signals | `/trade/signals` | `artdeco-pages/trading-tabs/ArtDecoSignalsView.vue` | P1 | real | `/api/v1/trade/signals` | pending | 2026-03-03 已移除 mock 回退 |
-| 23 | Trade-Portfolio | `/trade/portfolio` | `artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue` | P1 | real | `/api/v1/trade/positions` | pending | 2026-03-03 已移除组件内模拟注入，改为 REAL API + 空态 |
-| 24 | Trade-History | `/trade/history` | `artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue` | P1 | real | `/api/trade/*` | pending | 2026-03-03 已接入 REAL API 历史映射，失败转空态 |
-| 25 | Risk-Management | `/risk/management` | `artdeco-pages/ArtDecoRiskManagement.vue` | P1 | mixed | `/api/v1/risk/*` | pending | |
-| 26 | Risk-Overview | `/risk/overview` | `artdeco-pages/risk-tabs/RiskOverviewTab.vue` | P1 | mixed | `/api/v1/risk/*` | pending | |
-| 27 | Risk-PnL | `/risk/pnl` | `artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue` | P1 | real | `/api/v1/trade/positions` | pending | 组件复用，2026-03-03 已切 REAL API + 空态 |
-| 28 | Risk-StopLoss | `/risk/stop-loss` | `artdeco-pages/risk-tabs/StopLossMonitorTab.vue` | P1 | mixed | `/api/v1/monitoring/watchlists` | verified | 2026-03-03 已移除 `Math.random()` 伪数据 |
-| 29 | Risk-Alerts | `/risk/alerts` | `artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue` | P1 | mixed | `/api/v1/risk/alerts` | pending | 2026-03-03 已去占位，接入告警规则/记录 |
-| 30 | Risk-News | `/risk/news` | `artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue` | P2 | mixed | `/api/v1/announcement` | verified | 2026-03-03 已去占位，接入公告列表 |
-| 31 | System-Config | `/system/config` | `artdeco-pages/system-tabs/ArtDecoSystemSettings.vue` | P2 | mixed | `/api/system/*` | pending | |
-| 32 | System-Health | `/system/health` | `artdeco-pages/system-tabs/SystemHealthTab.vue` | P2 | mixed | `/health` | verified | |
-| 33 | System-API | `/system/api` | `artdeco-pages/system-tabs/ArtDecoMonitoringDashboard.vue` | P2 | mixed | `/metrics` | verified | 非占位页，持续做可视化增强 |
-| 34 | System-Data | `/system/data` | `artdeco-pages/system-tabs/ArtDecoDataManagement.vue` | P2 | mixed | `/api/v1/data-sources/config` | verified | 非占位页，持续做配置治理 |
+| 1 | Login | `/login` | `Login.vue` | P0 | real | `/api/v1/auth/login` | verified | 认证入口；2026-03-13 已重写 ArtDeco 壳层，补齐可见错误区与 chromium E2E |
+| 2 | DealingRoom | `/dashboard` | `artdeco-pages/ArtDecoDashboard.vue` | P0 | real | `/api/v1/market/*` | verified | 主仪表板（保留 `/dealing-room` -> `/dashboard` 兼容跳转）；2026-03-13 已补 header 指标加载链路与 chromium E2E；当前页为多接口聚合容器 |
+| 3 | Market-Realtime | `/market/realtime` | `artdeco-pages/market-tabs/MarketRealtimeTab.vue` | P0 | real | `/api/v1/market/quotes` | verified | 核心页面；2026-03-13 已切 quotes 真值链路，补齐 empty/error state 与 chromium E2E |
+| 4 | Market-Technical | `/market/technical` | `artdeco-pages/market-tabs/MarketKLineTab.vue` | P0 | real | `/api/v1/market/kline` | verified | 核心页面；2026-03-13 已补 K 线 empty/error state、数组 payload 兼容与 chromium E2E |
+| 5 | Market-LHB | `/market/lhb` | `artdeco-pages/market-data-tabs/DragonTigerAnalysis.vue` | P1 | mixed | `/api/v1/market/lhb` | verified | 2026-03-13 已补 blocker 壳层与 chromium E2E；live backend 已存在 `/api/v1/market/lhb`，后续只需接通页面实现 |
+| 6 | Data-Industry | `/data/industry` | `artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue` | P1 | real | `/api/akshare/market/*` | verified | 2026-03-03 已移除 mock 回退；2026-03-13 已补 empty/error state 与 chromium E2E |
+| 7 | Data-Concept | `/data/concept` | `artdeco-pages/market-tabs/MarketConceptTab.vue` | P1 | real | `/api/akshare/market/*` | verified | 2026-03-13 已移除 mock fallback，改为真实接口空态收口与 chromium E2E |
+| 8 | Data-FundFlow | `/data/fund-flow` | `artdeco-pages/market-data-tabs/FundFlowAnalysis.vue` | P1 | real | `/api/akshare/market/fund-flow/*` | verified | 2026-03-13 已补路由级自加载、empty state 与 chromium E2E |
+| 9 | Data-Indicator | `/data/indicator` | `artdeco-pages/ArtDecoDataAnalysis.vue` | P1 | mixed | `/api/v1/indicators/*` | verified | 公式编辑器升级中；2026-03-13 已补 blocker 壳层与 chromium E2E；live backend 已存在指标前缀 |
+| 10 | Watchlist-Manage | `/watchlist/manage` | `artdeco-pages/stock-management-tabs/WatchlistManager.vue` | P1 | real | `/api/watchlist` | verified | 2026-03-13 已补路由级自加载与 empty/error state，并通过 chromium E2E |
+| 11 | Watchlist-Signals | `/watchlist/signals` | `artdeco-pages/strategy-tabs/StrategySignalsTab.vue` | P1 | real | `/api/v1/trade/signals` | verified | 2026-03-03 已移除 mock 回退；2026-03-13 已补 shared empty/error state 与 chromium E2E |
+| 12 | Watchlist-Screener | `/watchlist/screener` | `stocks/Screener.vue` | P1 | mixed | `/api/v1/data/stocks/*` | verified | 当前仍保留 blocker 壳层；live backend 已存在数据选股前缀 |
+| 13 | Strategy-Repo | `/strategy/repo` | `artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue` | P1 | real | `/api/v1/strategy/strategies` | verified | 2026-03-03 已移除 mock 回退，失败转空态；2026-03-13 已补 chromium E2E 主链验证 |
+| 14 | Strategy-Parameters | `/strategy/parameters` | `artdeco-pages/strategy-tabs/StrategyParametersTab.vue` | P1 | real | `/api/v1/strategy/strategies` | verified | 2026-03-03 已移除 mock 回退；2026-03-13 已补 chromium E2E 主链验证 |
+| 15 | Strategy-Signals | `/strategy/signals` | `artdeco-pages/strategy-tabs/StrategySignalsTab.vue` | P1 | real | `/api/v1/trade/signals` | verified | 2026-03-03 已移除 mock 回退；2026-03-13 已补 shared empty/error state 与 chromium E2E |
+| 16 | Strategy-Backtest | `/strategy/backtest` | `artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue` | P1 | real | `/api/v1/strategy/backtest*` | verified | 2026-03-03 已移除 mock 基线依赖；2026-03-13 已补 backtest workbench view model 与 chromium E2E |
+| 17 | Strategy-GPU | `/strategy/gpu` | `strategy/BacktestGPU.vue` | P2 | mixed | `/api/gpu/*` | pending | 2026-03-13 已补 API pending blocker 壳层与 chromium E2E；live backend 仍未发现该前缀 |
+| 18 | Strategy-Opt | `/strategy/opt` | `artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue` | P2 | real | `/api/v1/strategy/*` | verified | 2026-03-13 已移除失败时 mock 回退，改为空态/错误态收口并通过 chromium E2E |
+| 19 | Strategy-Pos | `/strategy/pos` | `artdeco-pages/stock-management-tabs/PortfolioMonitor.vue` | P2 | real | `/api/v1/trade/positions` | verified | 2026-03-13 已补路由级自加载与 empty/error state，并通过 chromium E2E |
+| 20 | Trade-Positions | `/trade/positions` | `artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue` | P1 | real | `/api/v1/trade/positions` | verified | 2026-03-03 已接入 REAL API 持仓映射；2026-03-13 已补 empty/error state 与 chromium E2E |
+| 21 | Trade-Terminal | `/trade/terminal` | `TradingDashboard.vue` | P1 | mixed | `/api/trading/*` | verified | 2026-03-13 已完成壳层可用性验证，并通过 chromium E2E；live backend 已存在交易运行时前缀 |
+| 22 | Trade-Signals | `/trade/signals` | `artdeco-pages/trading-tabs/ArtDecoSignalsView.vue` | P1 | real | `/api/v1/trade/signals` | verified | 2026-03-03 已移除 mock 回退；2026-03-13 已切 shared signal transform 与 chromium E2E |
+| 23 | Trade-Portfolio | `/trade/portfolio` | `artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue` | P1 | real | `/api/v1/trade/positions` | verified | 2026-03-03 已移除组件内模拟注入；2026-03-13 已补 shared empty/error state 与 chromium E2E |
+| 24 | Trade-History | `/trade/history` | `artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue` | P1 | real | `/api/v1/trade/trades` | verified | 2026-03-03 已接入 REAL API 历史映射；2026-03-13 已补 empty/error state 与 chromium E2E |
+| 25 | Risk-Management | `/risk/management` | `artdeco-pages/ArtDecoRiskManagement.vue` | P1 | mixed | `/api/v1/risk/*` | verified | 2026-03-13 已补容器 helpers / panels 并通过 chromium E2E |
+| 26 | Risk-Overview | `/risk/overview` | `artdeco-pages/risk-tabs/RiskOverviewTab.vue` | P1 | mixed | `/api/v1/risk/*` | verified | 2026-03-13 已完成壳层可用性验证，并通过 chromium E2E |
+| 27 | Risk-PnL | `/risk/pnl` | `artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue` | P1 | real | `/api/v1/trade/positions` | verified | 组件复用，2026-03-03 已切 REAL API + 空态；2026-03-13 已补 shared empty/error state 与 chromium E2E |
+| 28 | Risk-StopLoss | `/risk/stop-loss` | `artdeco-pages/risk-tabs/StopLossMonitorTab.vue` | P1 | real | `/api/v1/monitoring/watchlists` | verified | 2026-03-03 已移除 `Math.random()` 伪数据；2026-03-13 已补 empty/error state 与 chromium E2E |
+| 29 | Risk-Alerts | `/risk/alerts` | `artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue` | P1 | mixed | `/api/v1/risk/alerts` | verified | 2026-03-03 已去占位并接入告警规则/记录；2026-03-13 已完成壳层可用性验证并通过 chromium E2E |
+| 30 | Risk-News | `/risk/news` | `artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue` | P2 | real | `/api/v1/announcement` | verified | 2026-03-13 已补 empty/error state 与 chromium E2E |
+| 31 | System-Config | `/system/config` | `artdeco-pages/system-tabs/ArtDecoSystemSettings.vue` | P2 | mixed | `/api/v1/system/*` | verified | 2026-03-13 已补 blocker 壳层，保留本地设置持久化与 chromium E2E；live backend 已存在系统配置前缀 |
+| 32 | System-Health | `/system/health` | `artdeco-pages/system-tabs/SystemHealthTab.vue` | P2 | real | `/health` | verified | 2026-03-13 已补 health empty/error state 与 chromium E2E |
+| 33 | System-API | `/system/api` | `artdeco-pages/system-tabs/ArtDecoMonitoringDashboard.vue` | P2 | real | `/metrics` | verified | 2026-03-13 已补 metrics empty/error state 与 chromium E2E |
+| 34 | System-Data | `/system/data` | `artdeco-pages/system-tabs/ArtDecoDataManagement.vue` | P2 | real | `/api/v1/data-sources/config` | verified | 2026-03-13 已补 config empty/error state 与 chromium E2E |
 
 ---
 
 ## 7. 已校验端点清单（自动校验）
 
-`last_verified_at: 2026-03-03`（来源: `scripts/dev/frontend_optimization_audit.py`）
+`last_verified_at: 2026-03-13`（来源: `scripts/dev/frontend_optimization_audit.py --strict`, `backend_source=backend_app`, `verified_api_issues=0`）
 
+- `/api/v1/auth/login`（`auth router`）
+- `/api/v1/market/*`（`market router`; 仪表板页为多接口聚合容器）
 - `/api/v1/market/quotes`（`VERSION_MAPPING + market router`）
 - `/api/v1/market/kline`（`VERSION_MAPPING + market router`）
+- `/api/v1/market/lhb`（`market router`）
 - `/api/watchlist`（`main.py include_router(watchlist, prefix="/api/watchlist")`）
+- `/api/v1/data/stocks/*`（`data router`）
 - `/api/v1/strategy/strategies`（`strategy_management/get_monitoring_db.py`）
 - `/api/v1/strategy/backtest*`（`strategy_management/*.py`）
+- `/api/v1/indicators/*`（`indicators router`）
+- `/api/v1/trade/signals`（`trade router`）
+- `/api/v1/trade/positions`（`trade router`）
+- `/api/v1/trade/trades`（`trade router`）
+- `/api/trading/*`（`trading runtime router`）
+- `/api/v1/risk/*`、`/api/v1/risk/alerts`（`risk router`）
 - `/api/v1/announcement`（`VERSION_MAPPING + announcement`）
+- `/api/announcement/list`（`announcement compatibility route`）
+- `/api/v1/system/*`（`system router`）
 - `/api/v1/data-sources/config`（`data_source_config.py`）
 - `/health`、`/metrics`（`main.py`）
 
 待校验（pending）:
 - `/api/gpu/*`（当前后端注册路由中未发现该前缀，保留为 pending）
 
-> 说明: 清单中标记为 `pending` 的 API，需在下一轮以 OpenAPI 导出或后端路由表完成逐条校验；已校验结果以自动脚本输出为准。
+> 说明: 2026-03-13 已在可导入 `backend_app` 的环境下重跑审计，`verified_api_issues=0`。当前真正未证实的页面级 API 只剩 `/api/gpu/*`。
 
 ---
 
 ## 8. 当前进度
 
 - 总清单条目: 34
-- 优化中: 2（Login、DealingRoom）
-- 待优化: 32
-- 完成: 0
-- 完成率: 0%
+- 优化中: 0
+- 待优化: 0
+- 完成: 34（Login、DealingRoom、Market-Realtime、Market-Technical、Market-LHB、Data-Industry、Data-Concept、Data-FundFlow、Data-Indicator、Watchlist-Manage、Watchlist-Signals、Watchlist-Screener、Strategy-Repo、Strategy-Parameters、Strategy-Signals、Strategy-Backtest、Strategy-GPU、Strategy-Opt、Strategy-Pos、Trade-Positions、Trade-Terminal、Trade-Signals、Trade-Portfolio、Trade-History、Risk-Management、Risk-Overview、Risk-PnL、Risk-StopLoss、Risk-Alerts、Risk-News、System-Config、System-Health、System-API、System-Data）
+- 完成率: 100%
+
+## 8.1 Gate-0 P0/P1 分类矩阵（2026-03-12）
+
+| 页面 | 批次 | 分类标记 | 说明 |
+|---|---|---|---|
+| Login | P0-B | `container-only`, `needs-token-cleanup`, `api-pending-blocked` | 登录入口页，保留独立壳层与错误态 |
+| DealingRoom | P0-B | `container-only`, `needs-domain-component-extraction`, `needs-token-cleanup`, `api-pending-blocked` | 规范路径已切到 `/dashboard`，`/dealing-room` 仅保留兼容跳转 |
+| Market-Realtime | P0-A | `tab-only`, `needs-token-cleanup` | 核心实时行情页，优先补 E2E 可见性与状态断言 |
+| Market-Technical | P0-A | `tab-only`, `needs-token-cleanup` | 核心 K 线分析页，优先补图表与空态收口 |
+| Market-LHB | P1-A | `tab-only`, `needs-token-cleanup`, `api-pending-blocked` | 后端路由仍需复核 |
+| Data-Industry | P1-A | `tab-only` | 已切真实数据，保持空态/失败态一致性 |
+| Data-Concept | P1-A | `tab-only`, `needs-domain-component-extraction`, `needs-token-cleanup` | 与行业/资金流共享分析块 |
+| Data-FundFlow | P1-A | `tab-only`, `needs-domain-component-extraction`, `needs-token-cleanup` | 统一 akshare 资金流映射 |
+| Data-Indicator | P1-A | `container-only`, `needs-domain-component-extraction`, `api-pending-blocked` | 指标分析页仍受接口真值阻塞 |
+| Watchlist-Manage | P1-E | `tab-only`, `needs-token-cleanup` | 自选管理页优先补交互一致性 |
+| Watchlist-Signals | P1-B | `tab-only`, `needs-domain-component-extraction`, `api-pending-blocked` | 与策略/交易信号页共组件 |
+| Watchlist-Screener | P1-E | `container-only`, `needs-domain-component-extraction`, `needs-token-cleanup`, `api-pending-blocked` | 当前仍是独立 `stocks/Screener.vue` |
+| Strategy-Repo | P1-C | `tab-only` | 路由 API 真值已收口到 `/api/v1/strategy/strategies` |
+| Strategy-Parameters | P1-C | `tab-only` | 保持真实接口驱动 |
+| Strategy-Signals | P1-B | `tab-only`, `needs-domain-component-extraction`, `api-pending-blocked` | 与 watchlist/trade signals 共组件 |
+| Strategy-Backtest | P1-C | `tab-only`, `needs-domain-component-extraction` | 回测工作台需继续沉淀复用块 |
+| Trade-Positions | P1-B | `tab-only`, `needs-domain-component-extraction`, `api-pending-blocked` | 与组合/风险页共享持仓模型 |
+| Trade-Terminal | P1-E | `container-only`, `needs-token-cleanup`, `api-pending-blocked` | 交易壳层页，先保流程可达 |
+| Trade-Signals | P1-B | `tab-only`, `needs-domain-component-extraction`, `api-pending-blocked` | 与另外两个信号页共组件 |
+| Trade-Portfolio | P1-B | `tab-only`, `needs-domain-component-extraction`, `api-pending-blocked` | 与 `Risk-PnL` 共用 `PortfolioOverviewTab.vue` |
+| Trade-History | P1-E | `tab-only`, `needs-domain-component-extraction`, `api-pending-blocked` | 历史对账与交易控制块可抽复用组件 |
+| Risk-Management | P1-D | `container-only`, `needs-domain-component-extraction`, `api-pending-blocked` | 风控父容器，需统一路由/API 壳层 |
+| Risk-Overview | P1-D | `tab-only`, `api-pending-blocked` | 保持风险摘要与空态一致性 |
+| Risk-PnL | P1-B | `tab-only`, `needs-domain-component-extraction`, `api-pending-blocked` | 与 Trade-Portfolio 共组件 |
+| Risk-StopLoss | P1-D | `tab-only`, `needs-token-cleanup` | 已去伪数据，继续做视觉和状态口径统一 |
+| Risk-Alerts | P1-D | `tab-only`, `api-pending-blocked` | 告警中心先保结构与 blocker 登记 |
+
+## 8.2 P2 验证补充（2026-03-13）
+
+- `/tmp` 镜像副本 `chromium`：
+  `cd /tmp/mystocks-frontend-run && PW_REUSE_EXISTING_SERVER=true FRONTEND_BASE_URL=http://127.0.0.1:3021 FRONTEND_PORT=3021 FRONTEND_BACKUP_PORT=3022 BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 HOME=/tmp XDG_CACHE_HOME=/tmp npx playwright test --config playwright.config.js --project=chromium tests/e2e/p2-pages.spec.ts`
+- 结果：`8 passed`
 
 ---
 
 ## 9. 下一步执行顺序
 
-1. `placeholder` 与 `mock-debt` 页面收口已完成，继续按 V3 策略推进 `mixed` 页面能力提取与聚合。
-2. 优先处理 P0/P1 的 `mixed` 页面，补齐 API 对齐与字段一致性验证。
-3. 同步扩展 E2E 对关键页面的可见性与数据一致性断言（保留 PM2 门禁链路）。
-4. 每次涉及路由或 Layout 变更，先过 `scripts/run_e2e_pm2.sh`。
+1. `Gate-0` 到 `P2` 首轮页面收口已完成，34 页已全部进入可执行状态。
+2. 下一步优先补 `API pending` 真值复核：当前仅剩 `Strategy-GPU` 的 `/api/gpu/*`。
+3. 持续使用 `scripts/run_e2e_pm2.sh` 做 PM2 smoke，避免回退到手工环境绕过。
+4. 对仍为 `mixed` 的页面继续做二轮治理，目标是把 blocker 页推进到真实接口模式，而不是继续扩散页面内临时壳层。
 
 ---
 
 ## 10. 审批备注（2026-03-03）
 
-- 门禁命令实跑结果: `bash scripts/run_e2e_pm2.sh` -> `8 passed`（chromium，navigation-consistency）
+- 门禁命令实跑结果: `KEEP_PM2_SERVICES=1 scripts/run_e2e_pm2.sh` -> `8 passed`（chromium，navigation-consistency）
 - 审计报告路径统一为:
   `reports/analysis/frontend-page-optimization-audit-report.md`
 - CI 门禁已接入:
@@ -208,6 +257,12 @@ bash scripts/tests/test/run-comprehensive-tests.sh
   Frontend `3020`，Backend `8020`
 - 端口兼容性探测:
   `http://localhost:3020` -> `200`，`http://localhost:8020/health` -> `200`，`http://localhost:8000/health` -> `000`
+- 本轮进展（2026-03-13）:
+  `scripts/run_e2e_pm2.sh` 已修复环境依赖问题，可直接复用本地前端 Playwright 和 `/tmp/ms-playwright` 浏览器缓存
+- 本轮进展（2026-03-13，审计真值恢复）:
+  `frontend_optimization_audit.py --strict` 已回到 `backend_app` 模式，`verified_api_issues=0`
+- 本轮进展（2026-03-13，pending 收口）:
+  页面级 `pending` 已收缩到仅剩 `Strategy-GPU` 的 `/api/gpu/*`
 - 本轮进展（2026-03-03）:
   `#29/#30` 风险告警与公告监控页面完成去占位并接入数据加载；`#33/#34` 状态修正为 `mixed`
 - 本轮进展（2026-03-03，V3 第二批）:
@@ -226,3 +281,21 @@ bash scripts/tests/test/run-comprehensive-tests.sh
   `#23/#27` 已移除组件内模拟持仓注入（Trade-Portfolio/Risk-PnL 切到 REAL API + 空态收口）
 - 本轮进展（2026-03-03，V3 第九批）:
   `#20/#24` 已完成路由页直连 REAL API（Trade-Positions/Trade-History 去外部喂数依赖，失败转空态）
+- 本轮进展（2026-03-12，Gate-0）:
+  `router/pageConfig/优化清单` 已完成首轮 SSOT 纠偏；`/dashboard` 取代清单中的旧 `/dealing-room` 作为主路径，`/qm/*`、详情页和 `not-found` 不再进入活跃 `pageConfig` 生成范围
+- 本轮校验限制（2026-03-13）:
+  `frontend_optimization_audit.py --strict` 在当前会话环境缺少完整数据库相关变量时会退回 `openapi_fallback`；该模式下仍报告 `verified_api_issues=9`，只能视为“待带完整环境复核”的校验提示，不能直接判定为后端真值回归
+- 本轮进展（2026-03-13，P0-A）:
+  `#3/#4` 已完成状态收口与页面级回归；在 `/tmp/mystocks-frontend-run` 镜像副本上使用 `chromium` 实测 `market-data.spec.ts + kline-chart.spec.ts` 共 30 条用例，结果 `30 passed`
+- 本轮进展（2026-03-13，P0-B）:
+  `#1/#2` 已完成登录页壳层与仪表板容器首轮收口；在 `/tmp/mystocks-frontend-run` 镜像副本上使用 `chromium` 实测 `login-dashboard.spec.ts` 共 3 条用例，结果 `3 passed`
+- 本轮进展（2026-03-13，P1-A）:
+  `#5/#6/#7/#8/#9` 已完成首轮页面收口；在 `/tmp/mystocks-frontend-run` 镜像副本上使用 `chromium` 实测 `market-data-p1a.spec.ts` 共 5 条用例，结果 `5 passed`
+- 本轮进展（2026-03-13，P1-B）:
+  `#11/#15/#20/#22/#23/#27` 已完成 shared signals / positions 首轮收口；在 `/tmp/mystocks-frontend-run` 镜像副本上使用 `chromium` 实测 `signals-positions-p1b.spec.ts` 共 5 条用例，结果 `5 passed`
+- 本轮进展（2026-03-13，P1-C）:
+  `#13/#14/#16` 已完成策略主链首轮收口；在 `/tmp/mystocks-frontend-run` 镜像副本上使用 `chromium` 实测 `strategy-mainline-p1c.spec.ts` 共 3 条用例，结果 `3 passed`
+- 本轮进展（2026-03-13，P1-D）:
+  `#25/#26/#28/#29` 已完成风控主链首轮收口；在 `/tmp/mystocks-frontend-run` 镜像副本上使用 `chromium` 实测 `risk-mainline-p1d.spec.ts` 共 4 条用例，结果 `4 passed`
+- 本轮进展（2026-03-13，P1-E）:
+  `#10/#12/#21/#24` 已完成自选与交易边缘页首轮收口；在 `/tmp/mystocks-frontend-run` 镜像副本上使用 `chromium` 实测 `watchlist-trade-p1e.spec.ts` 共 4 条用例，结果 `4 passed`

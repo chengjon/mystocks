@@ -1,49 +1,46 @@
 # TASK.md
 
 ## Goal
-盘点数据源、数据库、缓存和运行依赖，做清理与必要优化。
+对 ArtDeco 相关页面做页面优化、状态收口和测试补强。
 
 ## Branch
-`dev-data-db-audit-claude`
+`dev-artdeco-pages-codex`
 
 ## Scope
+- `web/frontend/src/views/**`
+- `web/frontend/src/components/**`
+- `web/frontend/src/composables/**`
+- `web/frontend/src/router/**`
+- `web/frontend/src/config/**`
+- `web/frontend/tests/**`
+- `tests/e2e/**`
+- `docs/plans/frontend-page-optimization-list.md`
+
+## Do Not Touch
+- `web/backend/app/api/**`
 - `src/adapters/**`
 - `src/data_access/**`
 - `src/storage/**`
-- `src/core/**` 中与数据路由/存储直接相关部分
-- `config/**`
-- `scripts/database/**`
-- `docs/architecture/**`
-- `docs/deployment/**`
-- `docs/operations/**`
-
-## Do Not Touch
-- `web/frontend/src/views/**`
-- `.github/pull_request_template.md`
 
 ## Required Reading
 - `architecture/STANDARDS.md`
 - `docs/FUNCTION_TREE.md`
 - `docs/guides/AI_QUICK_START.md`
-- `docs/architecture/README.md`
-- `docs/deployment/README.md`
-- `docs/operations/README.md`
+- `docs/plans/frontend-page-optimization-list.md`
 
 ## Deliverables
-- 数据源/数据库现状矩阵
-- 冗余/失效/兼容保留项清单
-- 必要清理或优化修复
-- 验证结果
+- 页面优化实现
+- `real/mixed/mock` 状态收口建议或修复
+- E2E / smoke / type-check 结果
 - `TASK-REPORT.md`
 
 ## Acceptance
-- 明确区分“可删”“兼容保留”“待判定”
-- 不顺手改前端页面
-- 任何清理动作都要写清依据
+- 明确报告实际执行的前端测试与 E2E 结果
+- 不越界修改后端契约
+- 若 API 真值不明，记录阻塞并交给 API 分支
 
 ## Report Back
-- 资产盘点结果
-- 清理建议
-- 已实施修复
-- 风险与回滚
+- 已完成项
+- 阻塞项
+- 风险项
 - 验证命令与结果

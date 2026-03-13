@@ -393,6 +393,7 @@ export function useArtDecoDashboard() {
         fetchFundFlow()
         fetchIndustryFlow()
         fetchStockFlowRanking()
+        fetchSystemStats()
         fetchTrendData().then(() => {
             // Start WS subscription after initial load
             mockWebSocket.subscribe('market.trend.000001', handleTrendUpdate)

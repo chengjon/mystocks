@@ -1,5 +1,12 @@
 // web/frontend/tests/unit/components/ant-design-migration.spec.ts
 import { describe, it, expect } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+
+const packageJsonPath = resolve(process.cwd(), 'package.json')
+const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as {
+  dependencies: Record<string, string>
+}
 
 describe('Dependency Migration Validation', () => {
   it('should not have ant-design-vue in runtime dependencies', () => {
@@ -28,7 +35,7 @@ describe('Dependency Migration Validation', () => {
   })
 
   it('should validate package.json structure', () => {
-    const pkg = require('../../../package.json')
+    const pkg = packageJson
 
     // Should not have ant-design-vue
     expect(pkg.dependencies).not.toHaveProperty('ant-design-vue')

@@ -33,7 +33,7 @@ const CONFIG = {
   configPath: join(PROJECT_ROOT, 'web/frontend/src/config/pageConfig.ts'),
   requiredFieldsPage: ['apiEndpoint', 'wsChannel', 'component'],
   requiredFieldsTab: ['id', 'apiEndpoint', 'wsChannel'],
-  ignoreRoutes: ['notFound', 'login', 'test', 'artdeco-test', 'home']
+  ignoreRoutes: ['notFound', 'not-found', 'test', 'artdeco-test', 'home']
 }
 
 // ============================================================================
@@ -157,28 +157,260 @@ function resolveRouteValue(rawValue, constants) {
   return constants[value] || null
 }
 
+function findBalancedSegment(text, startIdx, openChar, closeChar) {
+  if (startIdx < 0 || startIdx >= text.length || text[startIdx] !== openChar) {
+    throw new Error(`Invalid segment start for ${openChar}: ${startIdx}`)
+  }
+
+  let depth = 0
+  let inString = null
+  let escaped = false
+
+  for (let idx = startIdx; idx < text.length; idx += 1) {
+    const ch = text[idx]
+
+    if (inString) {
+      if (escaped) {
+        escaped = false
+        continue
+      }
+      if (ch === '\\') {
+        escaped = true
+        continue
+      }
+      if (ch === inString) {
+        inString = null
+      }
+      continue
+    }
+
+    if (ch === "'" || ch === '"' || ch === '`') {
+      inString = ch
+      continue
+    }
+
+    if (ch === openChar) {
+      depth += 1
+    } else if (ch === closeChar) {
+      depth -= 1
+      if (depth === 0) {
+        return [startIdx, idx]
+      }
+    }
+  }
+
+  throw new Error(`Unbalanced segment for ${openChar}${closeChar} at index ${startIdx}`)
+}
+
+function extractRoutesArray(content) {
+  const markerIdx = content.indexOf('const routes')
+  if (markerIdx < 0) {
+    throw new Error('Cannot find `const routes` in router file')
+  }
+
+  const assignIdx = content.indexOf('=', markerIdx)
+  if (assignIdx < 0) {
+    throw new Error('Cannot find routes assignment')
+  }
+
+  const arrayStart = content.indexOf('[', assignIdx)
+  if (arrayStart < 0) {
+    throw new Error('Cannot find routes array start')
+  }
+
+  const [, arrayEnd] = findBalancedSegment(content, arrayStart, '[', ']')
+  return content.slice(arrayStart + 1, arrayEnd)
+}
+
+function splitTopLevelObjects(arrayContent) {
+  const objects = []
+  let depth = 0
+  let inString = null
+  let escaped = false
+  let startIdx = -1
+
+  for (let idx = 0; idx < arrayContent.length; idx += 1) {
+    const ch = arrayContent[idx]
+
+    if (inString) {
+      if (escaped) {
+        escaped = false
+        continue
+      }
+      if (ch === '\\') {
+        escaped = true
+        continue
+      }
+      if (ch === inString) {
+        inString = null
+      }
+      continue
+    }
+
+    if (ch === "'" || ch === '"' || ch === '`') {
+      inString = ch
+      continue
+    }
+
+    if (ch === '{') {
+      if (depth === 0) {
+        startIdx = idx
+      }
+      depth += 1
+    } else if (ch === '}') {
+      depth -= 1
+      if (depth === 0 && startIdx >= 0) {
+        objects.push(arrayContent.slice(startIdx, idx + 1))
+        startIdx = -1
+      }
+    }
+  }
+
+  return objects
+}
+
+function findTopLevelPropertyIndex(objText, prop) {
+  let depth = 0
+  let inString = null
+  let escaped = false
+
+  for (let idx = 0; idx < objText.length; idx += 1) {
+    const ch = objText[idx]
+
+    if (inString) {
+      if (escaped) {
+        escaped = false
+        continue
+      }
+      if (ch === '\\') {
+        escaped = true
+        continue
+      }
+      if (ch === inString) {
+        inString = null
+      }
+      continue
+    }
+
+    if (ch === "'" || ch === '"' || ch === '`') {
+      inString = ch
+      continue
+    }
+
+    if (ch === '{') {
+      depth += 1
+      continue
+    }
+
+    if (ch === '}') {
+      depth -= 1
+      continue
+    }
+
+    if (depth !== 1 || !objText.startsWith(prop, idx)) {
+      continue
+    }
+
+    const before = idx === 0 ? '' : objText[idx - 1]
+    const after = objText[idx + prop.length] || ''
+    if (/[A-Za-z0-9_$]/.test(before) || /[A-Za-z0-9_$]/.test(after)) {
+      continue
+    }
+
+    const remainder = objText.slice(idx + prop.length)
+    if (/^\s*:/.test(remainder)) {
+      return idx
+    }
+  }
+
+  return -1
+}
+
+function extractPropertyToken(objText, prop) {
+  const propertyIdx = findTopLevelPropertyIndex(objText, prop)
+  if (propertyIdx < 0) {
+    return null
+  }
+
+  const pattern = new RegExp(`^${prop}\\s*:\\s*(['"\`][^'"\`]+['"\`]|[A-Za-z_$][\\w$]*)`)
+  const match = objText.slice(propertyIdx).match(pattern)
+  return match ? match[1].trim() : null
+}
+
+function extractArrayProperty(objText, prop) {
+  const propertyIdx = findTopLevelPropertyIndex(objText, prop)
+  if (propertyIdx < 0) {
+    return null
+  }
+
+  const arrayStart = objText.indexOf('[', propertyIdx)
+  if (arrayStart < 0) {
+    return null
+  }
+
+  const [, arrayEnd] = findBalancedSegment(objText, arrayStart, '[', ']')
+  return objText.slice(arrayStart + 1, arrayEnd)
+}
+
+function hasTopLevelComponent(objText) {
+  return findTopLevelPropertyIndex(objText, 'component') >= 0
+}
+
+function joinPaths(basePath, childPath) {
+  if (childPath.startsWith('/')) {
+    return childPath
+  }
+  if (!basePath || basePath === '/') {
+    return `/${childPath}`
+  }
+  return `${basePath.replace(/\/$/, '')}/${childPath}`
+}
+
+function shouldIgnoreRoute(routeName, fullPath) {
+  return (
+    CONFIG.ignoreRoutes.includes(routeName) ||
+    routeName.startsWith('qm-') ||
+    fullPath.startsWith('/qm') ||
+    fullPath.startsWith('/detail/')
+  )
+}
+
 function extractRoutes(routerContent, routerPath) {
   const routes = []
   const constants = {
     ...parseStringConstantDeclarations(routerContent),
     ...parseImportedStringConstants(routerContent, routerPath)
   }
-  const routeRegex = /path:\s*(['"`][^'"`]+['"`]|[A-Za-z_$][\w$]*)\s*,\s*name:\s*(['"`][^'"`]+['"`]|[A-Za-z_$][\w$]*)\s*,\s*component:/g
-  
-  let match
-  while ((match = routeRegex.exec(routerContent)) !== null) {
-    const routeName = resolveRouteValue(match[2], constants)
+  const routesArray = extractRoutesArray(routerContent)
 
-    if (!routeName) {
-      continue
+  function parseRouteArray(arrayContent, basePath) {
+    for (const obj of splitTopLevelObjects(arrayContent)) {
+      const rawPath = extractPropertyToken(obj, 'path')
+      if (!rawPath) {
+        continue
+      }
+
+      const resolvedPath = resolveRouteValue(rawPath, constants)
+      if (resolvedPath == null) {
+        continue
+      }
+
+      const fullPath = joinPaths(basePath, resolvedPath)
+      const rawName = extractPropertyToken(obj, 'name')
+      const routeName = rawName ? resolveRouteValue(rawName, constants) : null
+
+      if (routeName && hasTopLevelComponent(obj) && !shouldIgnoreRoute(routeName, fullPath)) {
+        routes.push(routeName)
+      }
+
+      const children = extractArrayProperty(obj, 'children')
+      if (children !== null) {
+        parseRouteArray(children, fullPath)
+      }
     }
-    
-    if (CONFIG.ignoreRoutes.includes(routeName)) {
-      continue
-    }
-    
-    routes.push(routeName)
   }
+
+  parseRouteArray(routesArray, '')
   
   return routes
 }

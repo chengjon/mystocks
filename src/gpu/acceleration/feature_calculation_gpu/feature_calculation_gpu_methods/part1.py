@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 #!/usr/bin/env python3
 """
 # 功能：GPU加速特征计算引擎
@@ -21,6 +23,8 @@ try:
     GPU_AVAILABLE = True
 except ImportError:
     GPU_AVAILABLE = False
+    cudf = None
+    cp = None
 
 try:
     from src.gpu.core.hardware_abstraction.resource_manager import GPUResourceManager
@@ -721,4 +725,3 @@ class FeatureCalculationGPUCoreMixin:
         except Exception as e:
             logger.error("SMA计算失败: %s", e)
             return 0.0
-

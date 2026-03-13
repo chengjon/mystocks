@@ -1,5 +1,5 @@
 // MyStocks ArtDeco v3.1 Common Types Entry
-// Generated at: 2026-03-07T09:46:37.486559
+// Generated at: 2026-03-13T10:56:20.360729
 
 /**
  * ⚠️ 警告: 本文件已通过工程红线瘦身。

@@ -1,58 +1,64 @@
 <template>
-  <div class="login-container">
+  <div class="login-shell page-enter">
+    <div class="login-backdrop" aria-hidden="true"></div>
 
-    <div class="login-card">
-      <div class="corner-tl"></div>
-      <div class="corner-br"></div>
+    <section class="login-panel" aria-labelledby="login-title">
+      <header class="login-header">
+        <p class="eyebrow">MYSTOCKS</p>
+        <h1 id="login-title" class="title">交易系统登录</h1>
+        <p class="subtitle">量化交易管理中枢</p>
+      </header>
 
-      <div class="login-header">
-        <div class="divider">
-          <span class="divider-text">MYSTOCKS</span>
-        </div>
-        <h1 class="title">LOGIN</h1>
-        <p class="subtitle">QUANTITATIVE TRADING MANAGEMENT SYSTEM</p>
-      </div>
+      <ArtDecoAlert
+        v-if="errorMessage"
+        class="login-alert"
+        type="error"
+        title="登录提示"
+        :message="errorMessage"
+        :dismissible="false"
+      />
 
-      <form @submit.prevent="handleLogin" class="login-form">
-        <div class="form-group">
-          <label class="label">USERNAME</label>
+      <form class="login-form" @submit.prevent="handleLogin">
+        <label class="field" for="username-input">
+          <span class="field-label">USERNAME</span>
           <input
+            id="username-input"
             v-model="loginForm.username"
             type="text"
-            class="input"
+            class="field-input"
             placeholder="ENTER USERNAME"
             data-testid="username-input"
             autocomplete="username"
           >
-        </div>
+        </label>
 
-        <div class="form-group">
-          <label class="label">PASSWORD</label>
+        <label class="field" for="password-input">
+          <span class="field-label">PASSWORD</span>
           <input
+            id="password-input"
             v-model="loginForm.password"
             type="password"
-            class="input"
+            class="field-input"
             placeholder="ENTER PASSWORD"
             data-testid="password-input"
             autocomplete="current-password"
             @keyup.enter="handleLogin"
           >
-        </div>
+        </label>
 
         <button
           type="submit"
+          class="login-submit"
           :disabled="loading"
           data-testid="login-button"
         >
-          <span v-if="loading" class="spinner"></span>
-          <span v-else>SIGN IN</span>
+          <span v-if="loading" class="spinner" aria-hidden="true"></span>
+          <span>{{ loading ? 'SIGNING IN' : 'SIGN IN' }}</span>
         </button>
       </form>
 
-      <div class="test-accounts">
-        <div class="divider">
-          <span class="divider-text">TEST ACCOUNTS</span>
-        </div>
+      <footer class="test-accounts">
+        <div class="accounts-header">TEST ACCOUNTS</div>
         <div class="account-row" data-testid="admin-account-hint">
           <span class="account-label">ADMIN</span>
           <span class="account-value">admin / admin123</span>
@@ -61,63 +67,69 @@
           <span class="account-label">USER</span>
           <span class="account-value">user / user123</span>
         </div>
-      </div>
-    </div>
+      </footer>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { reactive, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { ArtDecoAlert } from '@/components/artdeco'
+import { useAuthStore } from '@/stores/auth'
 import { HOME_ROUTE_PATH, normalizeLegacyHomeRedirect } from '@/router/homeRoute'
-
-const router = useRouter()
-const route = useRoute()
-const authStore = useAuthStore()
-
-const loading = ref<boolean>(false)
 
 interface LoginForm {
   username: string
   password: string
 }
 
-const loginForm = reactive<LoginForm>({
-  username: '',
-  password: ''
-})
-
 interface LoginResult {
   success: boolean
   message?: string
 }
 
+const router = useRouter()
+const route = useRoute()
+const authStore = useAuthStore()
+
+const loading = ref(false)
+const errorMessage = ref('')
+const loginForm = reactive<LoginForm>({
+  username: '',
+  password: ''
+})
+
 const handleLogin = async (): Promise<void> => {
-  if (!loginForm.username || !loginForm.password) {
-    ElMessage.error('PLEASE ENTER USERNAME AND PASSWORD')
+  const username = loginForm.username.trim()
+  const password = loginForm.password
+
+  if (!username || !password) {
+    errorMessage.value = '请输入用户名和密码'
     return
   }
 
-  if (loginForm.password.length < 6) {
-    ElMessage.error('PASSWORD MUST BE AT LEAST 6 CHARACTERS')
+  if (password.length < 6) {
+    errorMessage.value = '密码长度不能少于 6 位'
     return
   }
 
   loading.value = true
-  try {
-    const result: LoginResult = await authStore.login(loginForm.username, loginForm.password)
+  errorMessage.value = ''
 
-    if (result.success) {
-      ElMessage.success('LOGIN SUCCESSFUL')
-      const redirect = normalizeLegacyHomeRedirect((route.query.redirect as string) || HOME_ROUTE_PATH)
-      router.push(redirect)
-    } else {
-      ElMessage.error(result.message || 'LOGIN FAILED')
+  try {
+    const result = await authStore.login(username, password) as LoginResult
+    if (!result.success) {
+      errorMessage.value = result.message || '登录失败，请检查账号或网络状态'
+      return
     }
+
+    ElMessage.success('LOGIN SUCCESSFUL')
+    const redirect = normalizeLegacyHomeRedirect((route.query.redirect as string) || HOME_ROUTE_PATH)
+    await router.push(redirect)
   } catch (_error) {
-    ElMessage.error('LOGIN FAILED')
+    errorMessage.value = '登录失败，请稍后重试'
   } finally {
     loading.value = false
   }
@@ -125,293 +137,213 @@ const handleLogin = async (): Promise<void> => {
 </script>
 
 <style scoped lang="scss">
+@import '@/styles/artdeco-tokens';
 
-.login {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.login-shell {
   position: relative;
-  background: var(--bg-primary);
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: var(--artdeco-spacing-6);
   overflow: hidden;
+  background:
+    radial-gradient(circle at top, rgb(212 175 55 / 14%), transparent 32%),
+    linear-gradient(135deg, rgb(255 255 255 / 3%), transparent 45%),
+    var(--artdeco-bg-global);
 }
 
-.background-pattern {
+.login-backdrop {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 4%;
-  background-image:
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent 0%, rgb(212 175 55 / 6%) 50%, transparent 100%),
     repeating-linear-gradient(
-        45deg,
-        var(--accent-gold) 0px,
-        var(--accent-gold) 1px,
-        transparent 1px,
-        transparent 10px
-      ),
-      repeating-linear-gradient(
-        -45deg,
-        var(--accent-gold) 0px,
-        var(--accent-gold) 1px,
-        transparent 1px,
-        transparent 10px
-      );
+      135deg,
+      transparent 0,
+      transparent calc(var(--artdeco-spacing-6) * 1.5),
+      rgb(212 175 55 / 6%) calc(var(--artdeco-spacing-6) * 1.5),
+      rgb(212 175 55 / 6%) calc(var(--artdeco-spacing-6) * 1.625)
+    );
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.login-panel {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: var(--artdeco-spacing-5);
+  width: min(100%, 32rem);
+  padding: var(--artdeco-spacing-8);
+  border: thin solid var(--artdeco-border-accent);
+  background:
+    linear-gradient(145deg, rgb(212 175 55 / 10%), transparent 38%),
+    var(--artdeco-bg-card);
+  box-shadow:
+    0 0 0 1px rgb(212 175 55 / 12%),
+    0 1.5rem 4rem rgb(0 0 0 / 45%);
+}
+
+.login-header {
+  display: grid;
+  gap: var(--artdeco-spacing-2);
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--artdeco-gold-primary);
+  font-family: var(--font-display);
+  font-size: var(--artdeco-text-sm);
+  letter-spacing: var(--artdeco-tracking-widest);
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  color: var(--artdeco-fg-primary);
+  font-family: var(--font-display);
+  font-size: clamp(var(--artdeco-text-2xl), 4vw, var(--artdeco-text-4xl));
+  letter-spacing: var(--artdeco-tracking-wide);
+  text-transform: uppercase;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
+  letter-spacing: var(--artdeco-tracking-wider);
+  text-transform: uppercase;
+}
+
+.login-alert {
+  width: 100%;
+}
+
+.login-form {
+  display: grid;
+  gap: var(--artdeco-spacing-4);
+}
+
+.field {
+  display: grid;
+  gap: var(--artdeco-spacing-2);
+}
+
+.field-label {
+  color: var(--artdeco-gold-primary);
+  font-family: var(--font-display);
+  font-size: var(--artdeco-text-xs);
+  letter-spacing: var(--artdeco-tracking-widest);
+  text-transform: uppercase;
+}
+
+.field-input {
+  width: 100%;
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+  border: thin solid var(--artdeco-border-default);
+  background: rgb(255 255 255 / 2%);
+  color: var(--artdeco-fg-primary);
+  font-family: var(--font-body);
+  font-size: var(--artdeco-text-base);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+
+  &::placeholder {
+    color: var(--artdeco-fg-muted);
+    letter-spacing: var(--artdeco-tracking-wide);
   }
 
-  .login-card {
-    position: relative;
-    width: 480px;
-    background: var(--bg-card);
-    border: 1px solid var(--accent-gold);
-    border-radius: var(--radius-none);
-    padding: var(--spacing-8);
-    box-shadow: 0 0 40px rgb(212 175 55 / 10%);
-    z-index: 1;
-    transition: all var(--transition-base);
+  &:focus {
+    outline: none;
+    border-color: var(--artdeco-border-hover);
+    background: rgb(212 175 55 / 6%);
+    box-shadow: 0 0 1.25rem rgb(212 175 55 / 12%);
+  }
+}
+
+.login-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--artdeco-spacing-2);
+  width: 100%;
+  min-height: 3rem;
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-5);
+  border: thin solid var(--artdeco-border-hover);
+  background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-bronze));
+  color: var(--artdeco-bg-global);
+  font-family: var(--font-display);
+  font-size: var(--artdeco-text-sm);
+  font-weight: var(--artdeco-font-semibold);
+  letter-spacing: var(--artdeco-tracking-widest);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 0.75rem 1.5rem rgb(212 175 55 / 25%);
   }
 
-  .corner-decoration {
-    position: absolute;
-    width: 24px;
-    height: 24px;
-    pointer-events: none;
-    opacity: 60%;
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
   }
+}
 
-  .corner-tl {
-    top: 12px;
-    left: 12px;
-    border-top: 3px solid var(--accent-gold);
-    border-left: 3px solid var(--accent-gold);
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgb(0 0 0 / 15%);
+  border-top-color: currentColor;
+  border-radius: 999px;
+  animation: spin 0.7s linear infinite;
+}
+
+.test-accounts {
+  display: grid;
+  gap: var(--artdeco-spacing-2);
+  padding-top: var(--artdeco-spacing-4);
+  border-top: thin solid var(--artdeco-gold-opacity-20);
+}
+
+.accounts-header {
+  color: var(--artdeco-fg-muted);
+  font-family: var(--font-display);
+  font-size: var(--artdeco-text-xs);
+  letter-spacing: var(--artdeco-tracking-widest);
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.account-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--artdeco-spacing-3);
+  color: var(--artdeco-fg-primary);
+  font-size: var(--artdeco-text-sm);
+}
+
+.account-label {
+  color: var(--artdeco-gold-primary);
+  font-family: var(--font-display);
+  letter-spacing: var(--artdeco-tracking-wide);
+}
+
+.account-value {
+  font-family: var(--font-mono);
+  color: var(--artdeco-fg-muted);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
-
-  .corner-br {
-    bottom: 12px;
-    right: 12px;
-    border-bottom: 3px solid var(--accent-gold);
-    border-right: 3px solid var(--accent-gold);
-  }
-
-  .login-header {
-    text-align: center;
-    margin-bottom: var(--spacing-6);
-
-    .logo-container {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-4);
-      margin-bottom: var(--spacing-4);
-    }
-
-    .logo-container {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-4);
-      margin-bottom: var(--spacing-4);
-
-      &::before,
-      &::after {
-        content: '';
-        flex: 1;
-        height: 1px;
-        background: linear-gradient(
-          to right,
-          transparent,
-          var(--accent-gold),
-          transparent
-        );
-        opacity: 50%;
-      }
-    }
-
-    .logo-text {
-      font-family: var(--font-display);
-      font-size: var(--font-size-small);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: var(--tracking-widest);
-      color: var(--accent-gold);
-      padding: 0 var(--spacing-4);
-    }
-
-    .login-title {
-      font-family: var(--font-display);
-      font-size: var(--font-size-h2);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: var(--tracking-widest);
-      color: var(--accent-gold);
-      margin: var(--spacing-3) 0 var(--spacing-2) 0;
-    }
-
-    .login-subtitle {
-      font-family: var(--font-body);
-      font-size: var(--font-size-small);
-      color: var(--fg-muted);
-      text-transform: uppercase;
-      letter-spacing: var(--tracking-wider);
-      margin: 0;
-    }
-  }
-
-  .login-form {
-    margin-bottom: var(--spacing-6);
-
-    .form-group {
-      margin-bottom: var(--spacing-4);
-
-      .form-label {
-        display: block;
-
-    .login-form {
-      margin-bottom: var(--spacing-6);
-
-      .form-group {
-          display: block;
-          font-family: var(--font-display);
-          font-size: var(--font-size-xs);
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: var(--tracking-wider);
-          color: var(--accent-gold);
-          margin-bottom: var(--spacing-1);
-        }
-
-        .input {
-          width: 100%;
-          padding: var(--spacing-2) var(--spacing-3);
-          font-family: var(--font-body);
-          font-size: var(--font-size-body);
-          color: var(--fg-primary);
-          background: transparent;
-          border: none;
-          border-bottom: 2px solid var(--accent-gold);
-          border-radius: var(--radius-none);
-          transition: all var(--transition-base);
-
-          &::placeholder {
-            color: var(--fg-muted);
-            text-transform: uppercase;
-            letter-spacing: var(--tracking-normal);
-          }
-
-          &:focus {
-            outline: none;
-            border-bottom-color: var(--accent-gold-light);
-            box-shadow: 0 4px 10px rgb(212 175 55 / 20%);
-          }
-        }
-      }
-
-      .btn-login {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        padding: var(--spacing-3) var(--spacing-6);
-        font-family: var(--font-display);
-        font-size: var(--font-size-body);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: var(--tracking-widest);
-        border: 2px solid var(--accent-gold);
-        border-radius: var(--radius-none);
-        cursor: pointer;
-        transition: all var(--transition-base);
-        margin-top: var(--spacing-4);
-
-        &:disabled {
-          opacity: 50%;
-          cursor: not-allowed;
-        }
-
-        .spinner {
-          display: inline-block;
-          width: 20px;
-          height: 20px;
-          border: 2px solid rgb(0 0 0 / 10%);
-          border-top-color: currentColor;
-          border-radius: 50%;
-          animation: spin 0.6s linear infinite;
-        }
-
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      }
-
-      .btn-login-primary {
-        background: var(--accent-gold);
-        color: var(--bg-primary);
-
-        &:hover:not(:disabled) {
-          background: var(--accent-gold-light);
-          box-shadow: var(--glow-medium);
-        }
-      }
-    }
-
-    .test-accounts {
-      text-align: center;
-      padding-top: var(--spacing-4);
-      border-top: 1px solid rgb(212 175 55 / 20%);
-
-      .account-buttons {
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-4);
-        margin-bottom: var(--spacing-3);
-
-        &::before,
-        &::after {
-          content: '';
-          flex: 1;
-          height: 1px;
-          background: linear-gradient(
-            to right,
-            transparent,
-            var(--accent-gold),
-            transparent
-          );
-          opacity: 30%;
-        }
-
-          font-family: var(--font-display);
-          font-size: var(--font-size-xs);
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: var(--tracking-widest);
-          color: var(--fg-muted);
-          padding: 0 var(--spacing-2);
-        }
-      }
-
-      .account-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: var(--spacing-2) 0;
-        font-family: var(--font-body);
-
-        .account-label {
-          font-size: var(--font-size-small);
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: var(--tracking-wider);
-          color: var(--fg-muted);
-        }
-
-        .account-value {
-          font-size: var(--font-size-small);
-          font-family: var(--font-body);
-          color: var(--fg-secondary);
-          letter-spacing: var(--tracking-normal);
-        }
-      }
-    }
-  }
+}
 </style>

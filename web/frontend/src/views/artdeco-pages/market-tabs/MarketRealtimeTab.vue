@@ -1,12 +1,24 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
-import { dataApi } from '@/api/index'
-import type { MarketOverview } from '@/api/types/common'
-import { ArtDecoButton, ArtDecoCard, ArtDecoSelect, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
+import { marketApi } from '@/api/index'
+import { ArtDecoAlert, ArtDecoButton, ArtDecoCard, ArtDecoSelect, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
 
-const { loading, lastRequestId, exec } = useArtDecoApi()
-const overview = ref<MarketOverview | null>(null)
+interface QuoteItem {
+  symbol?: string
+  name?: string
+  current_price?: number
+  price?: number
+  last_price?: number
+  change_percent?: number
+  change_pct?: number
+  change?: number
+  volume?: number
+  turnover?: number
+}
+
+const { loading, error, lastRequestId, exec } = useArtDecoApi()
+const quotes = ref<QuoteItem[]>([])
 const activeWindow = ref('today')
 const activeBoard = ref('all')
 
@@ -23,6 +35,7 @@ const boardOptions = [
 ]
 
 const quoteColumns = [
+  { key: 'symbol', label: '代码' },
   { key: 'name', label: '指数' },
   { key: 'price', label: '最新价' },
   { key: 'change', label: '涨跌幅', variant: 'color' },
@@ -30,21 +43,50 @@ const quoteColumns = [
   { key: 'turnover', label: '换手率' }
 ]
 
+const normalizeQuotes = (payload: unknown): QuoteItem[] => {
+  if (Array.isArray(payload)) {
+    return payload as QuoteItem[]
+  }
+
+  if (payload && typeof payload === 'object') {
+    const nestedQuotes = (payload as { quotes?: unknown[] }).quotes
+    if (Array.isArray(nestedQuotes)) {
+      return nestedQuotes as QuoteItem[]
+    }
+  }
+
+  return []
+}
+
+const filteredQuotes = computed(() => {
+  if (activeBoard.value === 'all') {
+    return quotes.value
+  }
+
+  return quotes.value.filter((item) => {
+    const symbol = String(item.symbol ?? '')
+    if (activeBoard.value === 'gem') {
+      return /^30\d{4}/.test(symbol) || /^301\d{3}/.test(symbol)
+    }
+    return !/^30\d{4}/.test(symbol) && !/^301\d{3}/.test(symbol)
+  })
+})
+
 const quoteRows = computed(() => {
-  if (!overview.value?.indices) return []
-  return overview.value.indices.map((item, idx) => ({
+  return filteredQuotes.value.map((item) => ({
+    symbol: item.symbol ?? '--',
     name: item.name,
-    price: Number(item.current_price ?? 0).toFixed(2),
-    change: `${(item.change_percent ?? 0) >= 0 ? '+' : ''}${Number(item.change_percent ?? 0).toFixed(2)}%`,
-    volume: (220 + idx * 35).toFixed(1),
-    turnover: `${(1.6 + idx * 0.4).toFixed(2)}%`
+    price: Number(item.current_price ?? item.price ?? item.last_price ?? 0).toFixed(2),
+    change: `${(item.change_percent ?? item.change_pct ?? item.change ?? 0) >= 0 ? '+' : ''}${Number(item.change_percent ?? item.change_pct ?? item.change ?? 0).toFixed(2)}%`,
+    volume: (Number(item.volume ?? 0) / 100000000).toFixed(1),
+    turnover: `${Number(item.turnover ?? 0).toFixed(2)}%`
   }))
 })
 
 const breadth = computed(() => ({
-  up: overview.value?.up_count ?? 0,
-  flat: overview.value?.flat_count ?? 0,
-  down: overview.value?.down_count ?? 0
+  up: filteredQuotes.value.filter((item) => Number(item.change_percent ?? item.change_pct ?? item.change ?? 0) > 0).length,
+  flat: filteredQuotes.value.filter((item) => Number(item.change_percent ?? item.change_pct ?? item.change ?? 0) === 0).length,
+  down: filteredQuotes.value.filter((item) => Number(item.change_percent ?? item.change_pct ?? item.change ?? 0) < 0).length
 }))
 
 const marketMood = computed(() => {
@@ -60,12 +102,15 @@ const topStats = computed(() => ({
   board: boardOptions.find((i) => i.value === activeBoard.value)?.label ?? '全市场'
 }))
 
-const fetchOverview = async () => {
-  const data = await exec(() => dataApi.getMarketOverview(), { silent: true })
-  if (data) overview.value = data
+const showErrorState = computed(() => Boolean(error.value) && quoteRows.value.length === 0)
+const showEmptyState = computed(() => !loading.value && !error.value && quoteRows.value.length === 0)
+
+const fetchQuotes = async () => {
+  const data = await exec(() => marketApi.getQuotes(), { silent: true, errorMsg: '行情接口暂不可用' })
+  quotes.value = normalizeQuotes(data)
 }
 
-onMounted(fetchOverview)
+onMounted(fetchQuotes)
 </script>
 
 <template>
@@ -80,7 +125,7 @@ onMounted(fetchOverview)
         <ArtDecoSelect v-model="activeWindow" :options="windowOptions" placeholder="时间窗口" />
         <ArtDecoSelect v-model="activeBoard" :options="boardOptions" placeholder="市场范围" />
       </div>
-      <ArtDecoButton variant="outline" size="sm" @click="fetchOverview">刷新行情</ArtDecoButton>
+      <ArtDecoButton variant="outline" size="sm" @click="fetchQuotes">刷新行情</ArtDecoButton>
     </div>
 
     <div class="stats-grid" v-loading="loading">
@@ -90,9 +135,20 @@ onMounted(fetchOverview)
       <ArtDecoStatCard label="市场范围" :value="topStats.board" variant="gold" />
     </div>
 
-    <div class="content-grid">
-      <ArtDecoCard title="指数快照" hoverable>
-        <ArtDecoTable :columns="quoteColumns" :data="quoteRows" />
+    <div v-if="showErrorState" class="error-state artdeco-card" role="alert">
+      <ArtDecoAlert type="error" title="行情接口暂不可用" :message="error || '请稍后重试或切换验证环境。'" :dismissible="false" />
+    </div>
+
+    <div v-else-if="showEmptyState" class="empty-state artdeco-card" role="status" aria-live="polite">
+      <p>暂无实时行情数据</p>
+      <span>当前窗口 {{ topStats.activeWindow }}，可点击“刷新行情”重试。</span>
+    </div>
+
+    <div v-else class="content-grid">
+      <ArtDecoCard title="行情快照" hoverable>
+        <div class="quote-table">
+          <ArtDecoTable :columns="quoteColumns" :data="quoteRows" />
+        </div>
       </ArtDecoCard>
 
       <ArtDecoCard title="涨跌分布" hoverable>
@@ -121,7 +177,7 @@ onMounted(fetchOverview)
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--artdeco-spacing-6);
-  border-bottom: 2px solid var(--artdeco-gold-primary);
+  border-bottom: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-primary);
   padding-bottom: var(--artdeco-spacing-2);
 
   .section-title {
@@ -146,14 +202,14 @@ onMounted(fetchOverview)
   align-items: center;
   padding: var(--artdeco-spacing-4);
   margin-bottom: var(--artdeco-spacing-6);
-  border: 1px solid var(--artdeco-border-default);
+  border: thin solid var(--artdeco-border-default);
   background: var(--artdeco-gold-opacity-05);
 }
 
 .toolbar-left {
   display: flex;
   gap: var(--artdeco-spacing-3);
-  min-width: 420px;
+  min-width: min(100%, 26rem);
 }
 
 .stats-grid {
@@ -169,15 +225,39 @@ onMounted(fetchOverview)
   gap: var(--artdeco-spacing-4);
 
   :deep(.artdeco-card) {
-    border: 1px solid var(--artdeco-border-default);
+    border: thin solid var(--artdeco-border-default);
     background: linear-gradient(145deg, var(--artdeco-gold-opacity-05), transparent 65%);
+  }
+}
+
+.error-state,
+.empty-state {
+  display: grid;
+  gap: var(--artdeco-spacing-3);
+  padding: var(--artdeco-spacing-5);
+  border: thin solid var(--artdeco-border-default);
+  background: linear-gradient(145deg, var(--artdeco-gold-opacity-05), transparent 65%);
+}
+
+.empty-state {
+  color: var(--artdeco-fg-muted);
+
+  p {
+    margin: 0;
+    color: var(--artdeco-fg-primary);
+    font-family: var(--font-display);
+    letter-spacing: var(--artdeco-tracking-wide);
+  }
+
+  span {
+    font-size: var(--artdeco-text-sm);
   }
 }
 
 .distribution-bar {
   display: flex;
-  height: 38px;
-  border: 1px solid var(--artdeco-border-default);
+  min-height: 2.5rem;
+  border: thin solid var(--artdeco-border-default);
   overflow: hidden;
 }
 
