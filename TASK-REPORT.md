@@ -2639,3 +2639,144 @@
    - 推荐 commit message
 
 3. 若在可写 git metadata 环境下执行，可直接按 playbook 顺序完成拆分提交。
+
+## [WORK] 2026-03-14 Active-Tree Legacy Backup Cleanup（mystocks_spec2）
+- Scope:
+  - 按 `TASK.md` 仅处理 12 个 active-tree legacy / backup / broken 文件。
+  - 目标是完成“代码路径判定 + 功能树判定”，只删除已证明 `重复冗余` 的对象。
+
+### Startup Blockers / Read-First Gaps
+
+1. `git fetch origin` / `git rebase main`
+   - 阻塞原因：当前沙箱无法写上游主仓库的 worktree git metadata。
+   - 实际报错：`cannot open '/opt/claude/mystocks_spec/.git/worktrees/mystocks_spec2/FETCH_HEAD': Read-only file system`
+   - 补充核对：
+     - `git -c safe.directory=/opt/claude/mystocks_spec2 rev-list --left-right --count main...HEAD` -> `1 0`
+     - `git -c safe.directory=/opt/claude/mystocks_spec2 diff --stat HEAD..main` 仅涉及：
+       - `scripts/runtime/maestro_collab.py`
+       - `tests/unit/runtime/test_maestro_coordination_cli.py`
+     - 上述差异均不在本任务允许范围内。
+
+2. Mongo control plane `coordctl`
+   - 阻塞原因：Mongo 鉴权不可用。
+   - 实际报错：`pymongo.errors.OperationFailure: Command createIndexes requires authentication`
+   - 影响：
+     - 无法执行 `work show`
+     - 无法执行 `work mark/update add`
+     - 本轮进度仅能先落在 `TASK-REPORT.md`
+
+3. `TASK.md` 指定的 3 份必读文档在仓库中不存在：
+   - `docs/reports/ARCHITECTURE_ASSESSMENT_REPORT.md`
+   - `docs/reports/API_VERSION_CONFLICT_INVESTIGATION.md`
+   - `docs/guides/MONGO_MULTICLI_OPERATION_CHECKLIST.md`
+   - 替代读取：
+     - `docs/plans/2026-03-14-architecture-api-remediation-worker-allocation.md`
+     - `docs/guides/MONGO_MULTICLI_COORDINATION_GUIDE.md`
+     - `docs/reports/plans/compatibility-inventory.md`
+     - `docs/reports/plans/code-simplification-notes.md`
+
+### Classification and Action
+
+| 文件 | 状态判定 | 动作 | 代码路径判定 | 功能树判定 |
+|---|---|---|---|---|
+| `web/frontend/src/views/RiskMonitor.vue.broken` | `重复冗余` | 已删除 | 对后缀文件名在 `web/frontend/src` 精确扫描为 `0`；当前 `main.js` 只加载 `router/index.ts`，现行 `router/index.ts` 风控路由指向 ArtDeco 页面 | `docs/reports/EMERGENCY_FIX_COMPLETION_REPORT.md` 说明它是临时重命名的损坏页面；当前风险功能树已转到 `ArtDecoRiskManagement.vue` / `risk-tabs/*` |
+| `web/frontend/src/views/BacktestAnalysis.vue.broken` | `重复冗余` | 已删除 | 对后缀文件名在 `web/frontend/src` 精确扫描为 `0`；现行 `router/index.ts` 的回测路由指向 `ArtDecoBacktestAnalysis.vue` | `EMERGENCY_FIX_COMPLETION_REPORT.md` 说明它是临时重命名的损坏页面；当前回测功能树已转到 ArtDeco 策略页 |
+| `web/frontend/src/router/index.ts.broken` | `重复冗余` | 已删除 | 对后缀文件名在 `web/frontend/src` 精确扫描为 `0`；当前入口 `web/frontend/src/main.js` 明确导入 `./router/index.ts` | 属于旧路由快照，功能树已被当前 `router/index.ts` 覆盖 |
+| `web/frontend/src/router/index.ts.bak.20260214` | `重复冗余` | 已删除 | 对后缀文件名在 `web/frontend/src` 精确扫描为 `0`；当前入口只使用 `router/index.ts` | 属于日期备份快照，功能树已被当前 `router/index.ts` 覆盖 |
+| `web/frontend/src/main.js.old` | `重复冗余` | 已删除 | 对后缀文件名在 `web/frontend/src` 精确扫描为 `0`；当前活动入口是 `web/frontend/src/main.js` | `web/frontend/FRONTEND_FIX_IMPLEMENTATION_GUIDE.md` 将其标记为替换入口文件时产生的临时旧文件 |
+| `web/frontend/src/App.vue.old` | `重复冗余` | 已删除 | 对后缀文件名在 `web/frontend/src` 精确扫描为 `0`；当前活动入口从 `main.js` 导入 `./App.vue` | `FRONTEND_FIX_IMPLEMENTATION_GUIDE.md` 将其标记为替换 App 壳层时产生的临时旧文件 |
+| `web/backend/app/api/risk_management.py.backup.20260130` | `重复冗余` | 已删除 | 对后缀文件名在 `web/backend/app` 精确扫描为 `0`；现行注册链路导入的是 `web/backend/app/api/risk_management.py` | `docs/reports/phase1.4_risk_management_split_progress.md` 标记其为“备份原文件”；现行 `risk_management.py` 是指向 `app.api.risk` 的弃用 shim |
+| `web/backend/app/api/data.py.backup.20260130` | `重复冗余` | 已删除 | 对后缀文件名在 `web/backend/app` 精确扫描为 `0`；现行注册链路导入的是包级 facade `web/backend/app/api/data/__init__.py` | `docs/reports/phase1_complete_execution_summary_report.md` 标记其为“备份原文件”；当前数据功能树由 `api/data/*` 子路由和 `data_api_new.py` 兼容层承接 |
+| `web/backend/app/api/technical_analysis.py.new` | `重复冗余` | 已删除 | 对后缀文件名在 `web/backend/app` 精确扫描为 `0`；`api.__init__`、`register_routers.py`、`router_registry.py` 均导入现行 `technical_analysis.py` | `docs/reports/plans/compatibility-inventory.md` 与 `code-simplification-notes.md` 都把它列为零引用删除候选；现行技术分析模块存在且可编译 |
+| `src/database/database_service.py.backup.20260130` | `重复冗余` | 已删除 | 对后缀文件名在 `src` 精确扫描为 `0`；现行代码树使用 `src/database/services/database_service.py` 与 `src/database/database_service.py` | `docs/reports/phase1.2_database_service_split_completion.md` 明确它是拆分时备份的原文件 |
+| `src/advanced_analysis/decision_models_analyzer.py.backup.20260130` | `重复冗余` | 已删除 | 对后缀文件名在 `src` 精确扫描为 `0`；GitNexus 图谱命中活跃 `DecisionModelsAnalyzer` 位于 `src/advanced_analysis/decision_models_analyzer.py` | `docs/reports/phase1.1_decision_models_split_completion.md` 明确它是拆分时备份的原文件；活跃类仍由 `src/advanced_analysis/__init__.py` 调用 |
+| `src/monitoring/alert_manager.py.backup_complex_20251108` | `重复冗余` | 已删除 | 对后缀文件名在 `src` 精确扫描为 `0`；GitNexus 图谱命中活跃 `AlertManager` 位于 `src/monitoring/alert_manager.py` | 活跃文件头部注释明确“复杂多渠道告警已迁移到 Grafana”；备份文件仅是简化前快照 |
+
+### Completed
+
+1. 删除了以下 12 个已证明 `重复冗余` 的文件：
+   - `web/frontend/src/views/RiskMonitor.vue.broken`
+   - `web/frontend/src/views/BacktestAnalysis.vue.broken`
+   - `web/frontend/src/router/index.ts.broken`
+   - `web/frontend/src/router/index.ts.bak.20260214`
+   - `web/frontend/src/main.js.old`
+   - `web/frontend/src/App.vue.old`
+   - `web/backend/app/api/risk_management.py.backup.20260130`
+   - `web/backend/app/api/data.py.backup.20260130`
+   - `web/backend/app/api/technical_analysis.py.new`
+   - `src/database/database_service.py.backup.20260130`
+   - `src/advanced_analysis/decision_models_analyzer.py.backup.20260130`
+   - `src/monitoring/alert_manager.py.backup_complex_20251108`
+
+2. 保留结论：
+   - 本批次没有任何文件需要按 `有效` / `兼容保留` / `待判定` 留在 active tree。
+   - 当前可见的剩余引用仅存在于历史文档与非运行时元数据，不构成代码路径阻塞。
+
+### Verification Evidence
+
+1. 精确残留扫描：
+   - 命令：
+     - `rg -n --hidden --glob '!*.git' "RiskMonitor\\.vue\\.broken|BacktestAnalysis\\.vue\\.broken|index\\.ts\\.broken|index\\.ts\\.bak\\.20260214|main\\.js\\.old|App\\.vue\\.old|risk_management\\.py\\.backup\\.20260130|data\\.py\\.backup\\.20260130|technical_analysis\\.py\\.new|database_service\\.py\\.backup\\.20260130|decision_models_analyzer\\.py\\.backup\\.20260130|alert_manager\\.py\\.backup_complex_20251108" web/frontend/src web/backend/app src`
+   - 结果：
+     - 返回码 `1`
+     - 标准输出为空
+     - 说明：active code trees 中已无上述 legacy 文件名残留
+
+2. Git diff 格式检查：
+   - 命令：
+     - `git -c safe.directory=/opt/claude/mystocks_spec2 diff --check`
+   - 结果：
+     - 通过，无 whitespace / conflict marker 问题
+
+3. 当前工作树实际变更面：
+   - 命令：
+     - `git -c safe.directory=/opt/claude/mystocks_spec2 status --short`
+   - 结果：
+     - 本轮相关变更为 `TASK-REPORT.md` + 12 个目标文件删除
+     - 另有 `TASK.md` 为派单前置脏改，未在本轮修改
+
+4. 现行替代模块语法检查：
+   - 命令：
+     - `python -m py_compile web/backend/app/api/risk_management.py web/backend/app/api/data/__init__.py web/backend/app/api/technical_analysis.py src/database/database_service.py src/advanced_analysis/decision_models_analyzer.py src/monitoring/alert_manager.py`
+   - 结果：
+     - 通过
+
+5. GitNexus 变更探测（按规范执行，但结果受 worktree 既有脏改污染）：
+   - 命令：
+     - `gitnexus_detect_changes(scope="all")`
+   - 结果：
+     - 返回 `critical`
+     - 原因不是本轮 12 个删除文件本身，而是当前 worktree 先验存在大量既有未清理变更，导致全局探测结果噪声过大
+   - 解释：
+     - 本轮实际交付范围仍以 `git status --short` 的文件级结果为准
+
+6. 探索性回归（非本次门禁，但已记录）：
+   - 命令：
+     - `pytest web/backend/tests/test_large_file_split_regressions.py tests/unit/monitoring/test_alert_manager_simplified.py -q`
+   - 结果：
+     - `13 failed, 44 passed`
+   - 失败归因（均不指向已删除文件）：
+     - `tests/unit/monitoring/test_alert_manager_simplified.py`
+       - 失败原因：测试文件未导入 `AlertManager`，直接实例化触发 `NameError`
+     - `web/backend/tests/test_large_file_split_regressions.py::test_strategy_management_module_stays_below_850_lines`
+       - 失败原因：`web/backend/app/api/strategy_management/get_monitoring_db.py` 当前为 `930` 行，超出门禁
+     - `web/backend/tests/test_large_file_split_regressions.py::test_cache_api_split_helpers_remain_importable`
+     - `web/backend/tests/test_large_file_split_regressions.py::test_notification_module_remains_importable`
+       - 失败原因：`app.core.config` 因缺失必需环境变量触发 `SystemExit: 1`
+   - 结论：
+     - 该命令暴露的是仓库既有测试/环境债务，不是本次 legacy 删除回归
+
+### Residual Risks / Notes
+
+1. 历史文档仍提到已删除文件名，例如：
+   - `web/frontend/FRONTEND_FIX_IMPLEMENTATION_GUIDE.md`
+   - `docs/reports/EMERGENCY_FIX_COMPLETION_REPORT.md`
+   - `docs/reports/phase1_complete_execution_summary_report.md`
+   - 这些引用属于历史迁移记录，不构成运行时代码路径
+
+2. `.omc` 元数据仍可能保留旧文件名：
+   - 按 `TASK.md` 明确要求，本轮未触碰 `.omc/**`
+   - 该类引用属于非运行时记忆数据，不作为保留 active-tree legacy 文件的依据
+
+3. 由于 Mongo control plane 鉴权阻塞，本轮尚无法把状态回写为 `in_progress` / `ready_for_review`
+   - 交付状态已完整记录在本文件，待具备凭据后可由 main CLI 或后续会话补写
