@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import json
 
 import pytest
@@ -173,6 +174,73 @@ def test_coordctl_wrapper_delegates_to_maestro_collab(monkeypatch) -> None:
 
     assert coordctl.main(["work", "list"]) == 7
     assert captured["argv"] == ["work", "list"]
+
+
+def test_build_coordination_service_uses_env_driven_mongo_client_when_uri_omitted(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+
+    class _FakeClient:
+        def __getitem__(self, name: str):
+            captured["mongo_db"] = name
+            return object()
+
+    monkeypatch.setattr(maestro_collab, "load_dotenv", lambda path, override=False: captured.update({"dotenv_path": str(path)}))
+    monkeypatch.setattr(
+        maestro_collab,
+        "get_mongo_connection_kwargs",
+        lambda **kwargs: {
+            "host": "mongo.local",
+            "port": 27017,
+            "username": "coord",
+            "password": "secret",
+            "authSource": "admin",
+            "serverSelectionTimeoutMS": kwargs["server_selection_timeout_ms"],
+        },
+    )
+    monkeypatch.setattr(maestro_collab, "MongoClient", lambda **kwargs: captured.update({"client_kwargs": kwargs}) or _FakeClient())
+    monkeypatch.setattr(maestro_collab, "MongoCollaborationStore", lambda database: captured.update({"database": database}) or object())
+    monkeypatch.setattr(maestro_collab, "CoordinationService", lambda store: captured.update({"store": store}) or object())
+
+    facade = maestro_collab._build_coordination_service(argparse.Namespace(mongo_uri=None, mongo_db="mystocks_coord"))
+
+    assert isinstance(facade, maestro_collab._MongoCoordinationFacade)
+    assert captured["mongo_db"] == "mystocks_coord"
+    assert captured["client_kwargs"] == {
+        "host": "mongo.local",
+        "port": 27017,
+        "username": "coord",
+        "password": "secret",
+        "authSource": "admin",
+        "serverSelectionTimeoutMS": 3000,
+    }
+    assert str(maestro_collab.PROJECT_ROOT / ".env") == captured["dotenv_path"]
+
+
+def test_build_coordination_service_prefers_explicit_mongo_uri(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+
+    class _FakeClient:
+        def __getitem__(self, name: str):
+            captured["mongo_db"] = name
+            return object()
+
+    monkeypatch.setattr(maestro_collab, "load_dotenv", lambda *_args, **_kwargs: pytest.fail("load_dotenv should not run"))
+    monkeypatch.setattr(
+        maestro_collab,
+        "get_mongo_connection_kwargs",
+        lambda **_kwargs: pytest.fail("env-driven mongo kwargs should not be used when uri is explicit"),
+    )
+    monkeypatch.setattr(maestro_collab, "MongoClient", lambda uri: captured.update({"mongo_uri": uri}) or _FakeClient())
+    monkeypatch.setattr(maestro_collab, "MongoCollaborationStore", lambda database: captured.update({"database": database}) or object())
+    monkeypatch.setattr(maestro_collab, "CoordinationService", lambda store: captured.update({"store": store}) or object())
+
+    facade = maestro_collab._build_coordination_service(
+        argparse.Namespace(mongo_uri="mongodb://user:pass@mongo.example:27017/admin?authSource=admin", mongo_db="mystocks_coord")
+    )
+
+    assert isinstance(facade, maestro_collab._MongoCoordinationFacade)
+    assert captured["mongo_uri"] == "mongodb://user:pass@mongo.example:27017/admin?authSource=admin"
+    assert captured["mongo_db"] == "mystocks_coord"
 
 
 class _FakeCoordinationService:

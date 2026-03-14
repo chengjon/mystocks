@@ -8,6 +8,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
+from dotenv import load_dotenv
 from pymongo import MongoClient
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -26,6 +27,7 @@ from src.services.maestro.collab.backends.mongo import MongoCollaborationStore
 from src.services.maestro.collab.services import CoordinationService
 from src.services.maestro.collab.store.models import WorkItemRecord, WorkRequestRecord, WorkUpdateRecord
 from src.services.maestro.profiles.mystocks import COLLAB_CONTROL_PLANE_DEFAULTS
+from src.utils.mongo_runtime_config import get_mongo_connection_kwargs
 
 
 @dataclass(frozen=True)
@@ -121,8 +123,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--sqlite-path", default=".symphony/tracker.db", help="Path to the local tracker sqlite DB.")
     parser.add_argument(
         "--mongo-uri",
-        default=COLLAB_CONTROL_PLANE_DEFAULTS["mongo_uri"],
-        help="MongoDB URI for coordination state.",
+        default=None,
+        help="MongoDB URI for coordination state. If omitted, use env/config-driven Mongo connection settings.",
     )
     parser.add_argument(
         "--mongo-db",
@@ -273,11 +275,19 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _build_coordination_service(args: argparse.Namespace) -> _MongoCoordinationFacade:
-    client = MongoClient(args.mongo_uri)
+    client = _build_mongo_client(args.mongo_uri)
     database = client[args.mongo_db]
     store = MongoCollaborationStore(database)
     service = CoordinationService(store)
     return _MongoCoordinationFacade(service)
+
+
+def _build_mongo_client(mongo_uri: str | None) -> MongoClient:
+    if mongo_uri:
+        return MongoClient(mongo_uri)
+
+    load_dotenv(PROJECT_ROOT / ".env", override=False)
+    return MongoClient(**get_mongo_connection_kwargs(server_selection_timeout_ms=3000))
 
 
 def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordinationFacade) -> tuple[dict | list[dict], str]:
