@@ -1,0 +1,39 @@
+const test = require('node:test')
+const assert = require('node:assert/strict')
+const fs = require('node:fs')
+const path = require('node:path')
+
+const frontendRoot = path.resolve(__dirname, '..', '..')
+const startScriptPath = path.join(frontendRoot, 'scripts', 'test-runner', 'start-sandbox-safe-dev.sh')
+const smokeScriptPath = path.join(frontendRoot, 'scripts', 'test-runner', 'run-api-availability-smoke.sh')
+const readmePath = path.join(frontendRoot, 'tests', 'README-E2E.md')
+
+function read(filePath) {
+  return fs.readFileSync(filePath, 'utf8')
+}
+
+test('sandbox-safe dev runner uses standard fallback ports and real-backend default', () => {
+  const source = read(startScriptPath)
+
+  assert.match(source, /FRONTEND_PORT="\$\{FRONTEND_PORT:-3020\}"/)
+  assert.match(source, /FRONTEND_BACKUP_PORT="\$\{FRONTEND_BACKUP_PORT:-3021\}"/)
+  assert.match(source, /BACKEND_PORT="\$\{BACKEND_PORT:-8020\}"/)
+  assert.match(source, /BACKEND_BACKUP_PORT="\$\{BACKEND_BACKUP_PORT:-8021\}"/)
+  assert.match(source, /VITE_USE_MOCK_DATA="\$\{VITE_USE_MOCK_DATA:-false\}"/)
+})
+
+test('api availability smoke runner uses the same fallback ports as helper/docs', () => {
+  const source = read(smokeScriptPath)
+
+  assert.match(source, /FRONTEND_PORT="\$\{FRONTEND_PORT:-3020\}"/)
+  assert.match(source, /FRONTEND_BACKUP_PORT="\$\{FRONTEND_BACKUP_PORT:-3021\}"/)
+  assert.match(source, /BACKEND_PORT="\$\{BACKEND_PORT:-8020\}"/)
+  assert.match(source, /BACKEND_BACKUP_PORT="\$\{BACKEND_BACKUP_PORT:-8021\}"/)
+})
+
+test('readme explicitly distinguishes real-backend dev runner from mock fallback usage', () => {
+  const source = read(readmePath)
+
+  assert.match(source, /npm run dev:sandbox-safe/)
+  assert.match(source, /VITE_USE_MOCK_DATA=true/)
+})

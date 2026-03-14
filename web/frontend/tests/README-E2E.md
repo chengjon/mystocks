@@ -2,7 +2,7 @@
 
 > 2026-03 基线：标准 E2E 入口为 `npm run test:e2e`，使用 `playwright.config.js`（`tests/e2e`）。
 > `playwright.config.ts` 仅用于历史 legacy 专项脚本。
-> 端口统一由 `.env` 注入：前端 `3020`（备份 `3021`），后端 `8020`（备份 `8021`）。
+> 端口优先由 `.env` 注入；若缺失，当前 helper / smoke runner 会回落到标准端口：前端 `3020`（备份 `3021`），后端 `8020`（备份 `8021`）。
 
 ## 概述
 
@@ -67,8 +67,18 @@ pm2 list | grep mystocks-backend
 ```bash
 cd web/frontend
 
+# 当前 worktree 若受 ancestor package.json / PostCSS sandbox 阻塞，可用 /tmp 副本起前端
+# 默认走真实 backend 验证；只有显式设置时才启用 mock fallback
+npm run dev:sandbox-safe
+VITE_USE_MOCK_DATA=true npm run dev:sandbox-safe
+
 # 运行完整 E2E 测试套件
 npm run test:e2e:comprehensive
+
+# 运行 API availability 最小 smoke（Data-Indicator + Watchlist-Screener）
+# 如当前 backend 未启动，可让脚本自动拉起当前 worktree backend
+# 脚本默认优先使用标准端口 3020/3021 与 8020/8021；主端口被占用时自动切到备份端口
+START_BACKEND_IF_NEEDED=true npm run test:e2e:api-availability-smoke
 ```
 
 #### 方法 2: 直接运行脚本
@@ -77,6 +87,9 @@ cd web/frontend
 
 # 运行测试执行器
 node run-comprehensive-e2e.js
+
+# 运行 sandbox-safe API availability smoke runner
+START_BACKEND_IF_NEEDED=true ./scripts/test-runner/run-api-availability-smoke.sh
 ```
 
 #### 方法 3: Playwright 直接运行

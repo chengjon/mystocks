@@ -6,12 +6,15 @@ REPO_ROOT="$(cd "${ROOT_DIR}/../.." && pwd)"
 TMP_FRONTEND_DIR="${TMP_FRONTEND_DIR:-/tmp/mystocks-frontend-e2e}"
 NPM_CACHE_DIR="${NPM_CACHE_DIR:-/tmp/npm-cache}"
 PLAYWRIGHT_BROWSERS_PATH="${PLAYWRIGHT_BROWSERS_PATH:-/tmp/pw-browsers}"
-FRONTEND_PORT="${FRONTEND_PORT:-3032}"
-FRONTEND_BACKUP_PORT="${FRONTEND_BACKUP_PORT:-3033}"
-BACKEND_PORT="${BACKEND_PORT:-8132}"
-BACKEND_BACKUP_PORT="${BACKEND_BACKUP_PORT:-8133}"
-FRONTEND_BASE_URL="${FRONTEND_BASE_URL:-http://127.0.0.1:${FRONTEND_PORT}}"
-BACKEND_BASE_URL="${BACKEND_BASE_URL:-http://127.0.0.1:${BACKEND_PORT}}"
+FRONTEND_PORT_WAS_SET="${FRONTEND_PORT+x}"
+BACKEND_PORT_WAS_SET="${BACKEND_PORT+x}"
+FRONTEND_BASE_URL_WAS_SET="${FRONTEND_BASE_URL+x}"
+BACKEND_BASE_URL_WAS_SET="${BACKEND_BASE_URL+x}"
+
+FRONTEND_PORT="${FRONTEND_PORT:-3020}"
+FRONTEND_BACKUP_PORT="${FRONTEND_BACKUP_PORT:-3021}"
+BACKEND_PORT="${BACKEND_PORT:-8020}"
+BACKEND_BACKUP_PORT="${BACKEND_BACKUP_PORT:-8021}"
 PLAYWRIGHT_GREP="${PLAYWRIGHT_GREP:-Data-Indicator|Watchlist-Screener}"
 SMOKE_USERNAME="${SMOKE_USERNAME:-admin}"
 SMOKE_PASSWORD="${SMOKE_PASSWORD:-admin123}"
@@ -26,6 +29,28 @@ POSTGRESQL_DATABASE="${POSTGRESQL_DATABASE:-mystocks_test}"
 JWT_SECRET_KEY="${JWT_SECRET_KEY:-test_secret_key_for_testing_only_do_not_use_in_production}"
 ADMIN_INITIAL_PASSWORD="${ADMIN_INITIAL_PASSWORD:-admin123}"
 BACKEND_PID=""
+
+port_is_listening() {
+  ss -ltnH "( sport = :$1 )" 2>/dev/null | grep -q .
+}
+
+if [ -z "${FRONTEND_PORT_WAS_SET}" ] && port_is_listening "${FRONTEND_PORT}"; then
+  echo "[smoke] frontend port ${FRONTEND_PORT} already in use, falling back to ${FRONTEND_BACKUP_PORT}"
+  FRONTEND_PORT="${FRONTEND_BACKUP_PORT}"
+fi
+
+if [ -z "${BACKEND_PORT_WAS_SET}" ] && port_is_listening "${BACKEND_PORT}"; then
+  echo "[smoke] backend port ${BACKEND_PORT} already in use, falling back to ${BACKEND_BACKUP_PORT}"
+  BACKEND_PORT="${BACKEND_BACKUP_PORT}"
+fi
+
+if [ -z "${FRONTEND_BASE_URL_WAS_SET}" ]; then
+  FRONTEND_BASE_URL="http://127.0.0.1:${FRONTEND_PORT}"
+fi
+
+if [ -z "${BACKEND_BASE_URL_WAS_SET}" ]; then
+  BACKEND_BASE_URL="http://127.0.0.1:${BACKEND_PORT}"
+fi
 
 echo "[smoke] frontend source: ${ROOT_DIR}"
 echo "[smoke] tmp frontend copy: ${TMP_FRONTEND_DIR}"
