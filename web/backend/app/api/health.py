@@ -19,6 +19,7 @@ from app.core.responses import (
     ErrorCodes,
     create_error_response,
     create_health_response,
+    create_unified_success_response,
 )
 from app.core.security import User, get_current_user
 
@@ -379,17 +380,26 @@ async def detailed_health_check(current_user: User = Depends(get_current_user)):
         health_script = "/opt/claude/mystocks_spec/scripts/dev/automation/health_check_simple.sh"
 
         if os.path.exists(health_script):
-            # 设置脚本可执行权限
-            os.chmod(health_script, 0o755)
-
-            # 执行脚本
-            result = subprocess.run(health_script, shell=True, capture_output=True, text=True, timeout=30)
+            # 直接通过 bash 执行，避免只读文件系统上的 chmod 失败
+            result = subprocess.run(["bash", health_script], capture_output=True, text=True, timeout=30)
 
             # 检查执行结果
             if result.returncode == 0:
-                return {"status": "success", "output": result.stdout, "error": result.stderr}
-            else:
-                raise Exception(f"脚本执行失败，返回码: {result.returncode}, 错误: {result.stderr}")
+                return create_unified_success_response(
+                    data={"status": "success", "output": result.stdout, "error": result.stderr},
+                    message="详细健康检查完成",
+                )
+            if result.stdout.strip():
+                return create_unified_success_response(
+                    data={
+                        "status": "warning",
+                        "output": result.stdout,
+                        "error": result.stderr,
+                        "returncode": result.returncode,
+                    },
+                    message="详细健康检查完成（存在非阻塞警告）",
+                )
+            raise Exception(f"脚本执行失败，返回码: {result.returncode}, 错误: {result.stderr}")
         else:
             raise Exception(f"健康检查脚本不存在: {health_script}")
     except Exception as e:

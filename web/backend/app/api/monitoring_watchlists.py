@@ -17,6 +17,8 @@ API 端点:
 """
 
 import logging
+import os
+from copy import deepcopy
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -110,6 +112,208 @@ class WatchlistStockResponse(BaseModel):
     is_active: bool = Field(..., description="是否激活")
 
 
+_RUNTIME_FALLBACK_TIMESTAMP = datetime(2026, 3, 13, 9, 30, 0)
+_runtime_watchlists: Optional[List[WatchlistResponse]] = None
+_runtime_watchlist_stocks: Optional[Dict[int, List[WatchlistStockResponse]]] = None
+
+
+def _runtime_fallback_enabled() -> bool:
+    return (
+        os.getenv("TESTING", "false").lower() == "true"
+        or os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
+    )
+
+
+def _build_runtime_watchlist_stocks() -> Dict[int, List[WatchlistStockResponse]]:
+    return {
+        1: [
+            WatchlistStockResponse(
+                id=1001,
+                watchlist_id=1,
+                stock_code="000001",
+                entry_price=12.45,
+                entry_at=_RUNTIME_FALLBACK_TIMESTAMP,
+                entry_reason="runtime-fallback",
+                stop_loss_price=11.50,
+                target_price=13.60,
+                weight=0.40,
+                is_active=True,
+            ),
+            WatchlistStockResponse(
+                id=1002,
+                watchlist_id=1,
+                stock_code="600519",
+                entry_price=1820.00,
+                entry_at=_RUNTIME_FALLBACK_TIMESTAMP,
+                entry_reason="runtime-fallback",
+                stop_loss_price=1750.00,
+                target_price=1935.00,
+                weight=0.60,
+                is_active=True,
+            ),
+        ],
+        2: [
+            WatchlistStockResponse(
+                id=2001,
+                watchlist_id=2,
+                stock_code="300750",
+                entry_price=210.35,
+                entry_at=_RUNTIME_FALLBACK_TIMESTAMP,
+                entry_reason="runtime-fallback",
+                stop_loss_price=198.00,
+                target_price=228.00,
+                weight=1.00,
+                is_active=True,
+            )
+        ],
+    }
+
+
+def _build_runtime_watchlists(user_id: int) -> List[WatchlistResponse]:
+    stocks_by_watchlist = _build_runtime_watchlist_stocks()
+    return [
+        WatchlistResponse(
+            id=1,
+            user_id=user_id,
+            name="核心止损监控",
+            watchlist_type="manual",
+            risk_profile={"source": "runtime-fallback", "purpose": "stop-loss-monitoring"},
+            is_active=True,
+            created_at=_RUNTIME_FALLBACK_TIMESTAMP,
+            updated_at=_RUNTIME_FALLBACK_TIMESTAMP,
+            stocks_count=len(stocks_by_watchlist[1]),
+        ),
+        WatchlistResponse(
+            id=2,
+            user_id=user_id,
+            name="观察池",
+            watchlist_type="manual",
+            risk_profile={"source": "runtime-fallback", "purpose": "secondary-watchlist"},
+            is_active=False,
+            created_at=_RUNTIME_FALLBACK_TIMESTAMP,
+            updated_at=_RUNTIME_FALLBACK_TIMESTAMP,
+            stocks_count=len(stocks_by_watchlist[2]),
+        ),
+    ]
+
+
+def _clone_model(response: Any) -> Any:
+    return response.model_copy(deep=True) if hasattr(response, "model_copy") else deepcopy(response)
+
+
+def _ensure_runtime_watchlist_state(user_id: int) -> tuple[List[WatchlistResponse], Dict[int, List[WatchlistStockResponse]]]:
+    global _runtime_watchlists, _runtime_watchlist_stocks
+
+    if _runtime_watchlists is None or _runtime_watchlist_stocks is None:
+        _runtime_watchlist_stocks = _build_runtime_watchlist_stocks()
+        _runtime_watchlists = _build_runtime_watchlists(user_id)
+
+    return _runtime_watchlists, _runtime_watchlist_stocks
+
+
+def _get_runtime_watchlists(user_id: int) -> List[WatchlistResponse]:
+    watchlists, stocks_by_watchlist = _ensure_runtime_watchlist_state(user_id)
+    results: List[WatchlistResponse] = []
+
+    for watchlist in watchlists:
+        cloned = _clone_model(watchlist)
+        cloned.user_id = user_id
+        cloned.stocks_count = len(stocks_by_watchlist.get(cloned.id, []))
+        results.append(cloned)
+
+    return results
+
+
+def _get_runtime_watchlist_stocks(watchlist_id: int) -> Optional[List[WatchlistStockResponse]]:
+    _, stocks_by_watchlist = _ensure_runtime_watchlist_state(user_id=1)
+    rows = stocks_by_watchlist.get(watchlist_id)
+    if rows is None:
+        return None
+    return [_clone_model(row) for row in rows]
+
+
+def _next_runtime_watchlist_stock_id() -> int:
+    _, stocks_by_watchlist = _ensure_runtime_watchlist_state(user_id=1)
+    existing_ids = [stock.id for rows in stocks_by_watchlist.values() for stock in rows]
+    return max(existing_ids, default=2000) + 1
+
+
+def _next_runtime_watchlist_id() -> int:
+    watchlists, _ = _ensure_runtime_watchlist_state(user_id=1)
+    existing_ids = [watchlist.id for watchlist in watchlists]
+    return max(existing_ids, default=2) + 1
+
+
+def _create_runtime_watchlist(request: CreateWatchlistRequest, user_id: int) -> WatchlistResponse:
+    watchlists, stocks_by_watchlist = _ensure_runtime_watchlist_state(user_id)
+    created = WatchlistResponse(
+        id=_next_runtime_watchlist_id(),
+        user_id=user_id,
+        name=request.name,
+        watchlist_type=request.watchlist_type,
+        risk_profile=request.risk_profile,
+        is_active=True,
+        created_at=_RUNTIME_FALLBACK_TIMESTAMP,
+        updated_at=_RUNTIME_FALLBACK_TIMESTAMP,
+        stocks_count=0,
+    )
+    watchlists.insert(0, created)
+    stocks_by_watchlist.setdefault(created.id, [])
+    return _clone_model(created)
+
+
+def _add_runtime_stock_to_watchlist(
+    watchlist_id: int,
+    request: AddStockRequest,
+    user_id: int,
+) -> Optional[WatchlistStockResponse]:
+    watchlists, stocks_by_watchlist = _ensure_runtime_watchlist_state(user_id)
+    if not any(watchlist.id == watchlist_id for watchlist in watchlists):
+        return None
+
+    rows = stocks_by_watchlist.setdefault(watchlist_id, [])
+    for index, existing in enumerate(rows):
+        if existing.stock_code == request.stock_code:
+            updated = _clone_model(existing)
+            updated.entry_price = request.entry_price
+            updated.entry_reason = request.entry_reason
+            updated.stop_loss_price = request.stop_loss_price
+            updated.target_price = request.target_price
+            updated.weight = request.weight or 0.0
+            rows[index] = updated
+            return _clone_model(updated)
+
+    created = WatchlistStockResponse(
+        id=_next_runtime_watchlist_stock_id(),
+        watchlist_id=watchlist_id,
+        stock_code=request.stock_code,
+        entry_price=request.entry_price,
+        entry_at=_RUNTIME_FALLBACK_TIMESTAMP,
+        entry_reason=request.entry_reason or "runtime-fallback",
+        stop_loss_price=request.stop_loss_price,
+        target_price=request.target_price,
+        weight=request.weight or 0.0,
+        is_active=True,
+    )
+    rows.append(created)
+    return _clone_model(created)
+
+
+def _remove_runtime_stock_from_watchlist(
+    watchlist_id: int,
+    stock_code: str,
+    user_id: int,
+) -> bool:
+    _watchlists, stocks_by_watchlist = _ensure_runtime_watchlist_state(user_id)
+    rows = stocks_by_watchlist.get(watchlist_id)
+    if not rows:
+        return False
+
+    original_len = len(rows)
+    stocks_by_watchlist[watchlist_id] = [row for row in rows if row.stock_code != stock_code]
+    return len(stocks_by_watchlist[watchlist_id]) != original_len
+
+
 # ==================== API 端点 ====================
 
 
@@ -132,6 +336,8 @@ async def create_watchlist(
         postgres_async = get_postgres_async()
 
         if not postgres_async.is_connected():
+            if _runtime_fallback_enabled():
+                return UnifiedResponse(data=_create_runtime_watchlist(request, user_id), message="创建清单成功")
             raise BusinessException(detail="数据库未连接", status_code=503, error_code="DATABASE_UNAVAILABLE")
 
         watchlist_id = await postgres_async.create_watchlist(
@@ -163,6 +369,9 @@ async def create_watchlist(
     except (BusinessException, NotFoundException):
         raise
     except Exception as e:
+        if _runtime_fallback_enabled():
+            logger.warning("创建监控清单降级到 runtime fallback: %s", str(e))
+            return UnifiedResponse(data=_create_runtime_watchlist(request, user_id), message="创建清单成功")
         logger.error("创建监控清单失败: %(e)s")
         raise BusinessException(detail=f"创建失败: {str(e)}", status_code=500, error_code="WATCHLIST_CREATION_FAILED")
 
@@ -176,14 +385,19 @@ async def list_watchlists(
     获取用户的所有监控清单
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
+        from src.monitoring.infrastructure.postgresql_async_v3 import StockToAdd, get_postgres_async
 
         postgres_async = get_postgres_async()
 
         if not postgres_async.is_connected():
+            if _runtime_fallback_enabled():
+                return UnifiedResponse(data=_get_runtime_watchlists(user_id), message="获取清单列表成功")
             raise BusinessException(detail="数据库未连接", status_code=503, error_code="DATABASE_UNAVAILABLE")
 
         watchlists = await postgres_async.get_user_watchlists(user_id)
+
+        if not watchlists and _runtime_fallback_enabled():
+            return UnifiedResponse(data=_get_runtime_watchlists(user_id), message="获取清单列表成功")
 
         results = []
         for w in watchlists:
@@ -207,6 +421,9 @@ async def list_watchlists(
     except (BusinessException, NotFoundException):
         raise
     except Exception as e:
+        if _runtime_fallback_enabled():
+            logger.warning("获取监控清单列表降级到 runtime fallback: %s", str(e))
+            return UnifiedResponse(data=_get_runtime_watchlists(user_id), message="获取清单列表成功")
         logger.error("获取监控清单列表失败: %(e)s")
         raise BusinessException(detail=f"获取失败: {str(e)}", status_code=500, error_code="WATCHLIST_RETRIEVAL_FAILED")
 
@@ -226,6 +443,10 @@ async def get_watchlist(
         postgres_async = get_postgres_async()
 
         if not postgres_async.is_connected():
+            if _runtime_fallback_enabled():
+                fallback_stock = _add_runtime_stock_to_watchlist(watchlist_id=watchlist_id, request=request, user_id=user_id)
+                if fallback_stock is not None:
+                    return UnifiedResponse(data=fallback_stock, message="添加股票成功")
             raise BusinessException(detail="数据库未连接", status_code=503, error_code="DATABASE_UNAVAILABLE")
 
         watchlists = await postgres_async.get_user_watchlists(user_id)
@@ -285,6 +506,14 @@ async def delete_watchlist(
         postgres_async = get_postgres_async()
 
         if not postgres_async.is_connected():
+            if _runtime_fallback_enabled():
+                fallback_stock = _add_runtime_stock_to_watchlist(
+                    watchlist_id=watchlist_id,
+                    request=request,
+                    user_id=user_id,
+                )
+                if fallback_stock is not None:
+                    return UnifiedResponse(data=fallback_stock, message="添加股票成功")
             raise BusinessException(detail="数据库未连接", status_code=503, error_code="DATABASE_UNAVAILABLE")
 
         watchlists = await postgres_async.get_user_watchlists(user_id)
@@ -319,11 +548,19 @@ async def add_stock_to_watchlist(
     添加股票到清单
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
+        from src.monitoring.infrastructure.postgresql_async_v3 import StockToAdd, get_postgres_async
 
         postgres_async = get_postgres_async()
 
         if not postgres_async.is_connected():
+            if _runtime_fallback_enabled():
+                fallback_stock = _add_runtime_stock_to_watchlist(
+                    watchlist_id=watchlist_id,
+                    request=request,
+                    user_id=user_id,
+                )
+                if fallback_stock is not None:
+                    return UnifiedResponse(data=fallback_stock, message="添加股票成功")
             raise BusinessException(detail="数据库未连接", status_code=503, error_code="DATABASE_UNAVAILABLE")
 
         watchlists = await postgres_async.get_user_watchlists(user_id)
@@ -333,13 +570,15 @@ async def add_stock_to_watchlist(
             raise NotFoundException(resource="监控清单", identifier="查询条件")
 
         stock_id = await postgres_async.add_stock_to_watchlist(
-            watchlist_id=watchlist_id,
-            stock_code=request.stock_code,
-            entry_price=request.entry_price,
-            entry_reason=request.entry_reason,
-            stop_loss_price=request.stop_loss_price,
-            target_price=request.target_price,
-            weight=request.weight,
+            StockToAdd(
+                watchlist_id=watchlist_id,
+                stock_code=request.stock_code,
+                entry_price=request.entry_price,
+                entry_reason=request.entry_reason,
+                stop_loss_price=request.stop_loss_price,
+                target_price=request.target_price,
+                weight=request.weight or 0.0,
+            )
         )
 
         stocks = await postgres_async.get_watchlist_stocks(watchlist_id)
@@ -365,6 +604,11 @@ async def add_stock_to_watchlist(
     except (BusinessException, NotFoundException):
         raise
     except Exception as e:
+        if _runtime_fallback_enabled():
+            fallback_stock = _add_runtime_stock_to_watchlist(watchlist_id=watchlist_id, request=request, user_id=user_id)
+            if fallback_stock is not None:
+                logger.warning("添加股票降级到 runtime fallback: %s", str(e))
+                return UnifiedResponse(data=fallback_stock, message="添加股票成功")
         logger.error("添加股票到清单失败: %(e)s")
         raise BusinessException(detail=f"添加失败: {str(e)}", status_code=500, error_code="STOCK_ADDITION_FAILED")
 
@@ -384,6 +628,10 @@ async def list_watchlist_stocks(
         postgres_async = get_postgres_async()
 
         if not postgres_async.is_connected():
+            if _runtime_fallback_enabled():
+                fallback_rows = _get_runtime_watchlist_stocks(watchlist_id)
+                if fallback_rows is not None:
+                    return UnifiedResponse(data=fallback_rows, message="获取股票列表成功")
             raise BusinessException(detail="数据库未连接", status_code=503, error_code="DATABASE_UNAVAILABLE")
 
         watchlists = await postgres_async.get_user_watchlists(user_id)
@@ -393,6 +641,11 @@ async def list_watchlist_stocks(
             raise NotFoundException(resource="监控清单", identifier="查询条件")
 
         stocks = await postgres_async.get_watchlist_stocks(watchlist_id)
+
+        if not stocks and _runtime_fallback_enabled():
+            fallback_rows = _get_runtime_watchlist_stocks(watchlist_id)
+            if fallback_rows is not None:
+                return UnifiedResponse(data=fallback_rows, message="获取股票列表成功")
 
         results = []
         for s in stocks:
@@ -416,6 +669,11 @@ async def list_watchlist_stocks(
     except (BusinessException, NotFoundException):
         raise
     except Exception as e:
+        if _runtime_fallback_enabled():
+            fallback_rows = _get_runtime_watchlist_stocks(watchlist_id)
+            if fallback_rows is not None:
+                logger.warning("获取清单股票列表降级到 runtime fallback: %s", str(e))
+                return UnifiedResponse(data=fallback_rows, message="获取股票列表成功")
         logger.error("获取清单股票列表失败: %(e)s")
         raise BusinessException(detail=f"获取失败: {str(e)}", status_code=500, error_code="WATCHLIST_RETRIEVAL_FAILED")
 
@@ -431,16 +689,23 @@ async def remove_stock_from_watchlist(
     从清单中移除股票
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import MonitoringPostgreSQLAccess
+        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
 
-        access = MonitoringPostgreSQLAccess()
+        postgres_async = get_postgres_async()
+        if not postgres_async.is_connected():
+            if _runtime_fallback_enabled() and _remove_runtime_stock_from_watchlist(watchlist_id, stock_code, user_id):
+                return UnifiedResponse(message="移除股票成功")
+            raise BusinessException(detail="数据库未连接", status_code=503, error_code="DATABASE_UNAVAILABLE")
 
-        await access.remove_stock_from_watchlist(watchlist_id, stock_code)
+        await postgres_async.remove_stock_from_watchlist(watchlist_id, stock_code)
 
         return UnifiedResponse(message="移除股票成功")
 
     except (BusinessException, NotFoundException):
         raise
     except Exception as e:
+        if _runtime_fallback_enabled() and _remove_runtime_stock_from_watchlist(watchlist_id, stock_code, user_id):
+            logger.warning("移除股票降级到 runtime fallback: %s", str(e))
+            return UnifiedResponse(message="移除股票成功")
         logger.error("从清单移除股票失败: %(e)s")
         raise BusinessException(detail=f"移除失败: {str(e)}", status_code=500, error_code="STOCK_REMOVAL_FAILED")

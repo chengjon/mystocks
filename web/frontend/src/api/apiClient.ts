@@ -7,6 +7,7 @@
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import type { UnifiedResponse } from './types/common.ts';
+import { createCSRFTokenResolver } from './csrfTokenResolver.ts';
 
 // Request configuration
 interface RequestConfig extends AxiosRequestConfig {
@@ -140,29 +141,21 @@ function getJWTToken(): string | null {
   return localStorage.getItem('auth_token');
 }
 
-// CSRF token management
-let csrfTokenCache: string | null = null;
-
-async function getCSRFToken(): Promise<string> {
-  if (csrfTokenCache) {
-    return csrfTokenCache;
-  }
-
+const getCSRFToken = createCSRFTokenResolver(async () => {
   try {
     const response = await axios.get('/api/csrf-token', {
       withCredentials: true,
     });
 
     if (response.data?.data?.csrf_token) {
-      csrfTokenCache = response.data.data.csrf_token;
-      return csrfTokenCache || '';
+      return response.data.data.csrf_token || '';
     }
   } catch (error) {
     console.error('[apiClient] Failed to fetch CSRF token:', error);
   }
 
   return '';
-}
+})
 
 import { mockApiClient } from './mockApiClient.ts';
 

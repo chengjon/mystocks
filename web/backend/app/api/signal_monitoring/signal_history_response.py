@@ -16,6 +16,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.api.signal_monitoring.signal_history_response_schemas import (
+    ActiveSignalItem,
     ActiveSignalsResponse,
     SignalHistoryResponse,
     SignalQualityReportResponse,
@@ -596,4 +597,3 @@ async def health_check():
             "database": "error",
             "error": str(e),
         }
-

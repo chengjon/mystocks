@@ -174,7 +174,8 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, reactive, computed, onUnmounted } from 'vue'
+    import axios from 'axios'
+    import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
     import {
         ElCard,
         ElButton,
@@ -186,6 +187,22 @@
         ElMessage
     } from 'element-plus'
     import { Search } from '@element-plus/icons-vue'
+    import { API_BASE_URL } from '@/config/runtime-endpoints'
+    import {
+        extractStockScreenerRows,
+        filterStockScreenerRows,
+        resolveStocksBasicEndpoint,
+        type StockScreenerRow,
+    } from './stockScreenerData.ts'
+
+    function buildAuthHeaders(): Record<string, string> {
+        if (typeof localStorage === 'undefined') {
+            return {}
+        }
+
+        const token = localStorage.getItem('access_token')
+        return token ? { Authorization: `Bearer ${token}` } : {}
+    }
 
     const filters = reactive({
         priceMin: undefined,
@@ -202,95 +219,23 @@
         marketCapRange: 'any'
     })
 
-    const allStocks = ref([
-        {
-            symbol: '000001',
-            name: '平安银行',
-            price: 12.85,
-            changePercent: 1.18,
-            volume: 125000000,
-            amount: 1606250000,
-            pe: 8.5,
-            marketCap: 350000000000
-        },
-        {
-            symbol: '000002',
-            name: '万科A',
-            price: 18.95,
-            changePercent: -1.3,
-            volume: 98000000,
-            amount: 1859100000,
-            pe: 12.3,
-            marketCap: 280000000000
-        },
-        {
-            symbol: '600036',
-            name: '招商银行',
-            price: 42.8,
-            changePercent: 2.03,
-            volume: 45000000,
-            amount: 1926000000,
-            pe: 11.2,
-            marketCap: 950000000000
-        },
-        {
-            symbol: '000858',
-            name: '五粮液',
-            price: 128.5,
-            changePercent: -1.76,
-            volume: 12000000,
-            amount: 1542000000,
-            pe: 25.8,
-            marketCap: 480000000000
-        },
-        {
-            symbol: '300750',
-            name: '宁德时代',
-            price: 245.8,
-            changePercent: 2.16,
-            volume: 35000000,
-            amount: 8623000000,
-            pe: 45.6,
-            marketCap: 1200000000000
-        }
-    ])
+    const allStocks = ref<StockScreenerRow[]>([])
 
     const filteredStocks = computed(() => {
-        return allStocks.value.filter(stock => {
-            // Price filter
-            if (filters.priceMin && stock.price < filters.priceMin) return false
-            if (filters.priceMax && stock.price > filters.priceMax) return false
+        return filterStockScreenerRows(allStocks.value, filters)
+    })
 
-            // P/E filter
-            if (filters.peMin && stock.pe < filters.peMin) return false
-            if (filters.peMax && stock.pe > filters.peMax) return false
-
-            // Volume filter
-            if (filters.volumeMin && stock.volume < filters.volumeMin) return false
-            if (filters.volumeMax && stock.volume > filters.volumeMax) return false
-
-            // Amount filter
-            if (filters.amountMin && stock.amount < filters.amountMin) return false
-            if (filters.amountMax && stock.amount > filters.amountMax) return false
-
-            // Change type filter
-            if (filters.changeType === 'positive' && stock.changePercent < 0) return false
-            if (filters.changeType === 'negative' && stock.changePercent > 0) return false
-
-            // Change percent filter
-            if (filters.changePercentMin && stock.changePercent < filters.changePercentMin) return false
-            if (filters.changePercentMax && stock.changePercent > filters.changePercentMax) return false
-
-            // Market cap filter
-            const capRanges = {
-                large: stock.marketCap > 50000000000,
-                mid: stock.marketCap >= 5000000000 && stock.marketCap <= 50000000000,
-                small: stock.marketCap < 5000000000
-            }
-            if (filters.marketCapRange !== 'any' && !(capRanges as Record<string, boolean>)[filters.marketCapRange]) return false
-
-            return true
-        })
+    onMounted(async () => {
+        try {
+            const response = await axios.get(resolveStocksBasicEndpoint(API_BASE_URL), {
+                params: { limit: 200 },
+                headers: buildAuthHeaders(),
+            })
+            allStocks.value = extractStockScreenerRows(response.data)
+        } catch (error) {
+            console.error('Failed to load screener universe:', error)
+            ElMessage.error('FAILED TO LOAD STOCK UNIVERSE')
+        }
     })
 
     let timer: ReturnType<typeof setTimeout> | null = null;

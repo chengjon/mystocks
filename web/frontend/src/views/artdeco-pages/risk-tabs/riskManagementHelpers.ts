@@ -20,38 +20,77 @@ export interface RiskAlertItem {
   action: string
 }
 
+export interface SectorDistributionItem {
+  name: string
+  percent: number
+}
+
+export interface ConcentrationMetric {
+  label: string
+  current: number
+  limit: number
+  variant: 'gold' | 'success' | 'warning'
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
+
 export const riskPageConfig = {
   title: '风险管理中心',
-  subtitle: '实时监控组合风险、仓位集中度与告警状态',
+  subtitle: '实时监控投资组合风险，设置止损策略，接收风险预警通知',
   showStatus: true,
   statusText: '监控中',
   statusType: 'success' as const,
   showRefresh: true,
   showStats: true,
   showTabs: true,
+  apiUrl: '',
   skeleton: { columns: 4, rows: 3 },
   emptyMessage: '暂无风险数据',
-  permission: 'artdeco:risk:view',
+  permission: '',
   cacheTime: 300000
 }
 
-export const riskTabs = [
+export const riskTabs: Array<{ key: string; label: string; icon: string }> = [
   { key: 'overview', label: '风险概览', icon: 'grid' },
   { key: 'stock', label: '个股分析', icon: 'chart' }
 ]
 
+export const sectorDistribution: SectorDistributionItem[] = [
+  { name: '科技股', percent: 35 },
+  { name: '医药生物', percent: 25 },
+  { name: '新能源', percent: 20 },
+  { name: '金融', percent: 12 },
+  { name: '其他', percent: 8 }
+]
+
+export const sectorColors = [
+  'linear-gradient(90deg, var(--artdeco-bronze), var(--artdeco-gold-primary))',
+  'linear-gradient(90deg, var(--artdeco-info), var(--artdeco-gold-light))',
+  'linear-gradient(90deg, var(--artdeco-down), var(--artdeco-info))',
+  'linear-gradient(90deg, var(--artdeco-fg-muted), var(--artdeco-fg-primary))',
+  'linear-gradient(90deg, var(--artdeco-bg-elevated), var(--artdeco-fg-muted))'
+]
+
+export const concentrationMetrics: ConcentrationMetric[] = [
+  { label: '前10大重仓股占比', current: 65, limit: 70, variant: 'gold' },
+  { label: '单股最大仓位', current: 12, limit: 15, variant: 'success' },
+  { label: '行业集中度 HHI', current: 0.18, limit: 0.25, variant: 'success' },
+  { label: '总仓位', current: 92, limit: 95, variant: 'warning' }
+]
+
 export function createInitialRiskMetrics(): RiskMetrics {
   return {
-    totalAssets: 0,
-    totalAssetsChange: 0,
-    todayProfit: 0,
-    todayProfitChange: 0,
-    maxDrawdown: 0,
-    sharpeRatio: 0,
-    volatility: 0,
-    beta: 0,
-    sortinoRatio: 0,
-    positionValue: 0
+    totalAssets: 1250000,
+    totalAssetsChange: 2.5,
+    todayProfit: 31250,
+    todayProfitChange: 2.57,
+    maxDrawdown: 8.5,
+    sharpeRatio: 1.35,
+    volatility: 18.2,
+    beta: 1.12,
+    sortinoRatio: 2.1,
+    positionValue: 1150000
   }
 }
 
@@ -66,33 +105,52 @@ export function createInitialRiskAlerts(): RiskAlertItem[] {
       action: '减仓'
     },
     {
+      code: '000858.SZ',
+      name: '五粮液',
+      riskLevel: 'medium',
+      position: 8.3,
+      stopStatus: 'normal',
+      action: '监控'
+    },
+    {
+      code: '002594.SZ',
+      name: '比亚迪',
+      riskLevel: 'high',
+      position: 15.2,
+      stopStatus: 'triggered',
+      action: '止损'
+    },
+    {
       code: '600519.SH',
       name: '贵州茅台',
       riskLevel: 'low',
-      position: 8.1,
+      position: 20.1,
       stopStatus: 'normal',
       action: '持有'
     }
   ]
 }
 
-function toNumber(value: unknown, fallback = 0): number {
-  const numeric = Number(value)
-  return Number.isFinite(numeric) ? numeric : fallback
+export function formatRiskCurrencyNumber(num: number): string {
+  return num.toLocaleString('zh-CN')
 }
 
-export function mergeRiskMetrics(current: RiskMetrics, payload: unknown): RiskMetrics {
-  const source = payload && typeof payload === 'object' ? payload as Record<string, unknown> : {}
-  return {
-    totalAssets: toNumber(source.totalAssets ?? source.total_assets, current.totalAssets),
-    totalAssetsChange: toNumber(source.totalAssetsChange ?? source.total_assets_change, current.totalAssetsChange),
-    todayProfit: toNumber(source.todayProfit ?? source.today_profit, current.todayProfit),
-    todayProfitChange: toNumber(source.todayProfitChange ?? source.today_profit_change, current.todayProfitChange),
-    maxDrawdown: toNumber(source.maxDrawdown ?? source.max_drawdown, current.maxDrawdown),
-    sharpeRatio: toNumber(source.sharpeRatio ?? source.sharpe_ratio, current.sharpeRatio),
-    volatility: toNumber(source.volatility, current.volatility),
-    beta: toNumber(source.beta, current.beta),
-    sortinoRatio: toNumber(source.sortinoRatio ?? source.sortino_ratio, current.sortinoRatio),
-    positionValue: toNumber(source.positionValue ?? source.position_value, current.positionValue)
+export function mergeRiskMetrics(current: RiskMetrics, data: unknown): RiskMetrics {
+  if (!isRecord(data)) {
+    return current
   }
+
+  return { ...current, ...(data as Partial<RiskMetrics>) }
+}
+
+export function getRiskLevelLabel(level: RiskAlertItem['riskLevel']): string {
+  if (level === 'high') return '高风险'
+  if (level === 'medium') return '中风险'
+  return '低风险'
+}
+
+export function getStopStatusLabel(status: RiskAlertItem['stopStatus']): string {
+  if (status === 'triggered') return '已触发'
+  if (status === 'approaching') return '接近'
+  return '正常'
 }

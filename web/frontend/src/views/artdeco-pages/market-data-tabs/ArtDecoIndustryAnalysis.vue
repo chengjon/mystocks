@@ -68,8 +68,8 @@ const boardColumns = [
   { key: 'rank', label: '排名', width: '80px' },
   { key: 'name', label: '板块' },
   { key: 'change', label: '涨跌幅', variant: 'color' },
-  { key: 'turnover', label: '成交额(亿)' },
-  { key: 'netInflow', label: '主力净流入(亿)', variant: 'color' }
+  { key: 'turnover', label: '主力净额(亿)' },
+  { key: 'netInflow', label: '流入强度', variant: 'color' }
 ]
 
 const boardRows = ref<BoardRow[]>([])
@@ -115,7 +115,8 @@ function parsePercent(change: string): number {
 async function loadIndustryFlow() {
   const data = await exec(() => apiClient.get<UnifiedResponse<IndustryFlowRow[]>>('/v2/market/sector/fund-flow', {
     params: {
-      sort: 'change_percent',
+      sector_type: '行业',
+      timeframe: '今日',
       limit: 10
     }
   }), {

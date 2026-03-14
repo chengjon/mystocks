@@ -13,6 +13,8 @@ import {
     RefreshRight,
     Document
 } from '@element-plus/icons-vue'
+import axios from 'axios'
+import { deriveGpuDashboardSummary, mapGpuStatusPayload } from './gpuMonitorData'
 
 // Types
 interface GPUStatus {
@@ -181,15 +183,23 @@ export function useBacktestGPU() {
     }
 
     const refreshGPUStatus = async () => {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        const [statusResponse, performanceResponse] = await Promise.all([
+            axios.get('/api/gpu/status'),
+            axios.get('/api/gpu/performance'),
+        ])
 
-        // Update with mock data
-        gpuStatus.utilization = Math.floor(Math.random() * 30) + 60
-        gpuStatus.temperature = Math.floor(Math.random() * 20) + 60
-        gpuStatus.memoryUsagePercent = Math.floor(Math.random() * 20) + 25
+        const mappedStatus = mapGpuStatusPayload(statusResponse.data)
+        if (mappedStatus) {
+            Object.assign(gpuStatus, mappedStatus)
+        }
 
-        // Add log entry
+        const summary = deriveGpuDashboardSummary(performanceResponse.data)
+        if (summary) {
+            accelerationRatio.value = summary.accelerationRatio
+            performanceGain.value = summary.performanceGain
+            energyEfficiency.value = summary.energyEfficiency
+        }
+
         realtimeLogs.value.unshift({
             id: Date.now().toString(),
             timestamp: Date.now(),
@@ -197,7 +207,6 @@ export function useBacktestGPU() {
             message: `状态更新 - 利用率: ${gpuStatus.utilization}%, 温度: ${gpuStatus.temperature}°C`
         })
 
-        // Keep only last 50 logs
         if (realtimeLogs.value.length > 50) {
             realtimeLogs.value = realtimeLogs.value.slice(0, 50)
         }

@@ -63,7 +63,7 @@ export const monitoringApi = {
   getAnnouncements: (params: Record<string, unknown> = {}): Promise<UnifiedResponse<any>> => apiClient.get('/announcement/list', { params }),
   // Data source configuration
   getDataSourceConfig: (): Promise<UnifiedResponse<any>> => apiClient.get('/v1/data-sources/config/'),
-  updateDataSourceConfig: (data: Record<string, unknown>): Promise<UnifiedResponse<any>> => apiClient.put('/v1/data-sources/config', data),
+  updateDataSourceConfig: (data: Record<string, unknown>): Promise<UnifiedResponse<any>> => apiClient.post('/v1/data-sources/config/batch', data),
   // CRUD for alert rules
   createAlertRule: (data: Record<string, unknown>): Promise<UnifiedResponse<AlertRuleResponse>> => apiClient.post('/v1/monitoring/alert-rules', data),
   updateAlertRule: (id: string, data: Record<string, unknown>): Promise<UnifiedResponse<AlertRuleResponse>> => apiClient.put(`/v1/monitoring/alert-rules/${id}`, data),

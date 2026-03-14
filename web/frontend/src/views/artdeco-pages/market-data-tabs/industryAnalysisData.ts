@@ -1,8 +1,12 @@
 export interface IndustryFlowRow {
   rank?: number
   name?: string
+  sector_name?: string
   change?: number | string
+  change_percent?: number | string
   amount?: number | string
+  main_net_inflow?: number | string
+  main_net_inflow_rate?: number | string
 }
 
 export interface BoardRow {
@@ -52,15 +56,23 @@ export function extractIndustryFlowRows(payload: unknown): IndustryFlowRow[] {
 
 export function toBoardRows(rows: IndustryFlowRow[]): BoardRow[] {
   return rows.map((row, index) => {
-    const change = parseNumeric(row.change)
-    const turnover = parseNumeric(row.amount)
+    const change = parseNumeric(row.change_percent ?? row.change)
+    const netAmountRaw = parseNumeric(row.main_net_inflow)
+    const hasV2NetAmount = Number.isFinite(netAmountRaw) && netAmountRaw !== 0
+    const turnover = hasV2NetAmount ? Number((netAmountRaw / 100000000).toFixed(2)) : parseNumeric(row.amount)
+    const netInflowRate = parseNumeric(row.main_net_inflow_rate)
 
     return {
       rank: typeof row.rank === 'number' ? row.rank : index + 1,
-      name: typeof row.name === 'string' && row.name.trim().length > 0 ? row.name : `板块-${index + 1}`,
+      name:
+        (typeof row.name === 'string' && row.name.trim().length > 0
+          ? row.name
+          : typeof row.sector_name === 'string' && row.sector_name.trim().length > 0
+            ? row.sector_name
+            : `板块-${index + 1}`),
       change: `${formatSigned(change)}%`,
       turnover: Number(turnover.toFixed(2)),
-      netInflow: formatSigned(turnover * (change / 100), 1)
+      netInflow: hasV2NetAmount ? `${formatSigned(netInflowRate)}%` : formatSigned(turnover * (change / 100), 1)
     }
   })
 }
@@ -70,6 +82,6 @@ export function toRotationRows(rows: BoardRow[]): RotationRow[] {
   return rows.slice(0, 4).map((row, index) => ({
     name: row.name,
     window: windows[index] ?? '近1日',
-    flow: Number.parseFloat(row.netInflow) || 0
+    flow: row.turnover
   }))
 }

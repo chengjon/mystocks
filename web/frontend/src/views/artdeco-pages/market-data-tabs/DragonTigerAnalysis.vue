@@ -1,43 +1,37 @@
 <template>
-  <div class="lhb-analysis-page">
-    <div class="page-header">
-      <h2 class="section-title">龙虎榜分析</h2>
-      <div class="trace-info">API STATUS: PENDING</div>
-    </div>
-
-    <div class="pending-state artdeco-card">
-      <p>API 真值待复核</p>
-      <span>当前保留页面壳层、日期筛选器和表格骨架；待后端路由口径确认后再接入真实数据。</span>
-    </div>
-
+  <div class="lhb-analysis">
     <ArtDecoCard title="龙虎榜数据" hoverable class="lhb-card">
       <div class="lhb-controls">
         <ArtDecoSelect
-          :model-value="lhbDate"
+          :model-value="currentDate"
           :options="dateOptions"
           placeholder="选择日期"
-          @update:model-value="emit('date-change', $event)"
+          @update:model-value="handleDateChange"
         />
         <div class="lhb-filters">
           <button
-            v-for="filter in filters"
-            :key="filter.key"
+            v-for="(f, _idx) in filters"
+            :key="f.key"
             class="filter-btn"
-            :class="{ active: activeFilter === filter.key }"
-            @click="emit('filter-change', filter.key)"
+            :class="{ active: currentFilter === f.key }"
+            @click="handleFilterChange(f.key)"
           >
-            {{ filter.label }}
+            {{ f.label }}
           </button>
         </div>
       </div>
 
-      <ArtDecoTable :columns="columns" :data="lhbData" />
+      <ArtDecoTable :columns="columns" :data="displayRows" />
     </ArtDecoCard>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue'
+import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
+import { apiClient } from '@/api/apiClient'
 import { ArtDecoCard, ArtDecoSelect, ArtDecoTable } from '@/components/artdeco'
+import { extractDragonTigerRows, type DragonTigerRow } from './dragonTigerData'
 
 interface Props {
   lhbData: unknown[]
@@ -45,13 +39,32 @@ interface Props {
   activeFilter: string
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   lhbData: () => [],
   lhbDate: 'today',
   activeFilter: 'buy'
 })
-
 const emit = defineEmits(['date-change', 'filter-change'])
+const { exec } = useArtDecoApi()
+const internalRows = ref<DragonTigerRow[]>([])
+const currentDate = ref(props.lhbDate)
+const currentFilter = ref(props.activeFilter)
+
+watch(() => props.lhbDate, (value) => {
+  currentDate.value = value
+})
+
+watch(() => props.activeFilter, (value) => {
+  currentFilter.value = value
+})
+
+const hasExternalRows = computed(() => Array.isArray(props.lhbData) && props.lhbData.length > 0)
+const displayRows = computed(() => {
+  if (hasExternalRows.value) {
+    return extractDragonTigerRows(props.lhbData, currentFilter.value, currentDate.value)
+  }
+  return internalRows.value
+})
 
 const dateOptions = [
   { label: '今日', value: 'today' },
@@ -67,65 +80,52 @@ const filters = [
 
 const columns = [
   { key: 'rank', label: '排名', width: '60px' },
-  { key: 'name', label: '股票信息' },
-  { key: 'price', label: '收盘价', align: 'right' },
-  { key: 'change', label: '涨跌幅', variant: 'color', align: 'right' },
+  { key: 'tradeDate', label: '交易日', width: '120px' },
+  { key: 'stockInfo', label: '股票信息' },
+  { key: 'reason', label: '上榜原因' },
   { key: 'buyAmount', label: '买入金额', align: 'right' },
   { key: 'sellAmount', label: '卖出金额', align: 'right' },
-  { key: 'netBuy', label: '净买入', variant: 'color', align: 'right' }
+  { key: 'netBuy', label: '净买入', variant: 'color', align: 'right' },
+  { key: 'turnoverRate', label: '换手率', align: 'right' }
 ]
+
+const fetchDragonTigerRows = async () => {
+  const data = await exec(() => apiClient.get('/v2/market/lhb', { params: { limit: 100 } }), {
+    silent: true,
+  })
+
+  internalRows.value = extractDragonTigerRows(
+    data && typeof data === 'object' ? (data as { data?: unknown[] }).data ?? data : data,
+    currentFilter.value,
+    currentDate.value,
+  )
+}
+
+function handleDateChange(value: string) {
+  currentDate.value = value
+  emit('date-change', value)
+  if (!hasExternalRows.value) {
+    void fetchDragonTigerRows()
+  }
+}
+
+function handleFilterChange(value: string) {
+  currentFilter.value = value
+  emit('filter-change', value)
+  if (!hasExternalRows.value) {
+    void fetchDragonTigerRows()
+  }
+}
+
+onMounted(() => {
+  if (!hasExternalRows.value) {
+    void fetchDragonTigerRows()
+  }
+})
 </script>
 
 <style scoped lang="scss">
 @import '@/styles/artdeco-tokens';
-
-.lhb-analysis-page {
-  display: grid;
-  gap: var(--artdeco-spacing-4);
-  padding: var(--artdeco-spacing-6);
-}
-
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-primary);
-  padding-bottom: var(--artdeco-spacing-2);
-}
-
-.section-title {
-  margin: 0;
-  color: var(--artdeco-gold-primary);
-  font-size: var(--artdeco-text-2xl);
-  letter-spacing: var(--artdeco-tracking-wide);
-  text-transform: uppercase;
-}
-
-.trace-info {
-  color: var(--artdeco-fg-muted);
-  font-family: var(--artdeco-font-mono);
-  font-size: var(--artdeco-text-xs);
-}
-
-.pending-state {
-  display: grid;
-  gap: var(--artdeco-spacing-2);
-  padding: var(--artdeco-spacing-5);
-  border: thin solid var(--artdeco-border-default);
-  background: linear-gradient(145deg, var(--artdeco-gold-opacity-05), transparent 65%);
-
-  p {
-    margin: 0;
-    color: var(--artdeco-fg-primary);
-    font-family: var(--font-display);
-    letter-spacing: var(--artdeco-tracking-wide);
-  }
-
-  span {
-    color: var(--artdeco-fg-muted);
-    font-size: var(--artdeco-text-sm);
-  }
-}
 
 .lhb-controls {
   display: flex;
@@ -141,7 +141,7 @@ const columns = [
 
 .filter-btn {
   background: transparent;
-  border: thin solid var(--artdeco-border-default);
+  border: 1px solid var(--artdeco-border-default);
   color: var(--artdeco-fg-muted);
   padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
   cursor: pointer;

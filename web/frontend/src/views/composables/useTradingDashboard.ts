@@ -12,6 +12,7 @@ import {
     ArrowUp,
     ArrowDown
 } from '@element-plus/icons-vue'
+import { tradingDashboardActions } from './tradingDashboardActions'
 
 // Type definitions
 interface TradingData {
@@ -189,13 +190,13 @@ export function useTradingDashboard() {
         try {
             if (isRunning.value) {
                 // 停止交易会话
-                const _response = await axios.post('/api/trading/stop')
+                const _response = await tradingDashboardActions.stopTradingSession()
                 ElMessage.success('交易会话已停止')
                 isRunning.value = false
                 await loadTradingData()
             } else {
                 // 启动交易会话
-                await axios.post('/api/trading/start')
+                await tradingDashboardActions.startTradingSession()
                 ElMessage.success('交易会话已启动')
                 isRunning.value = true
                 await loadTradingData()
@@ -324,9 +325,7 @@ export function useTradingDashboard() {
 
         strategyLoading.value = true
         try {
-            await axios.post('/api/trading/strategies/add', {
-                strategy_name: newStrategy.value.type
-            })
+            await tradingDashboardActions.addStrategy(newStrategy.value.type)
             ElMessage.success('策略添加成功')
             newStrategy.value.type = ''
             await loadStrategyPerformance()
@@ -346,7 +345,7 @@ export function useTradingDashboard() {
                 type: 'warning'
             })
 
-            await axios.delete(`/api/trading/strategies/${strategyName}`)
+            await tradingDashboardActions.removeStrategy(strategyName)
             ElMessage.success('策略移除成功')
             await loadStrategyPerformance()
         } catch (error: unknown) {

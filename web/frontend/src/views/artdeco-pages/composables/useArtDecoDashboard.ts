@@ -2,6 +2,7 @@ import { ref, computed, onMounted, onUnmounted, watch, type Ref } from 'vue'
 import { marketService } from '@/api/services/marketService'
 import { mockWebSocket } from '@/api/mockWebSocket'
 import dashboardService from '@/api/services/dashboardService'
+import { extractKlineRows } from '../market-tabs/marketKlineData.ts'
 import {
     createCapitalFlowHeatmapOption,
     createFundFlowChartOption,
@@ -268,18 +269,12 @@ export function useArtDecoDashboard() {
 
     const fetchTrendData = async () => {
         try {
-            const response = await (
-                marketService as {
-                    getMarketTrend?: (symbol: string) => Promise<unknown>
-                    getQuotes?: (symbol: string) => Promise<unknown>
-                }
-            ).getMarketTrend?.('000001.SH') || marketService.getQuotes?.('000001.SH')
-            const payload = response?.data ?? response
-            const source = Array.isArray(payload?.data)
-                ? payload.data
-                : (Array.isArray(payload) ? payload : [])
-
-            trendData.value = source.map((point: unknown) => toNumber(point)).filter((point: number) => Number.isFinite(point))
+            const response = await marketService.getKline({
+                stock_code: '000001',
+                period: 'daily'
+            })
+            const rows = extractKlineRows(response)
+            trendData.value = rows.slice(-30).map((row) => row.close).filter((point) => Number.isFinite(point))
         } catch {
             trendData.value = []
         }

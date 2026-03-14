@@ -195,9 +195,19 @@ async function retryRequest<T>(
 /**
  * 创建 Axios 实例
  */
+function resolveIndicatorApiBase(): string {
+  const normalizedBase = API_BASE_URL.trim().replace(/\/+$/, '') || '/api'
+
+  if (normalizedBase === '/api' || normalizedBase.endsWith('/api')) {
+    return `${normalizedBase}/v1`
+  }
+
+  return `${normalizedBase}/api/v1`
+}
+
 const createApiClient = (): AxiosInstance => {
   const client = axios.create({
-    baseURL: `${API_BASE_URL}/api`,
+    baseURL: resolveIndicatorApiBase(),
     timeout: API_TIMEOUT,
     headers: {
       'Content-Type': 'application/json'

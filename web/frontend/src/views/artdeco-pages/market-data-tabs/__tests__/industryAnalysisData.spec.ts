@@ -23,6 +23,24 @@ describe('industryAnalysisData', () => {
     expect(rows[0]?.netInflow).toBe('+5.0')
   })
 
+  it('maps v2 sector fund-flow fields to board rows', () => {
+    const rows = toBoardRows([
+      {
+        rank: 1,
+        sector_name: '证券',
+        change_percent: 2.92,
+        main_net_inflow: 3441226240,
+        main_net_inflow_rate: 7.58
+      } as any
+    ])
+
+    expect(rows).toHaveLength(1)
+    expect(rows[0]?.name).toBe('证券')
+    expect(rows[0]?.change).toBe('+2.92%')
+    expect(rows[0]?.turnover).toBe(34.41)
+    expect(rows[0]?.netInflow).toBe('+7.58%')
+  })
+
   it('builds rotation rows from board rows without mock fallback', () => {
     const rotation = toRotationRows([
       { rank: 1, name: '半导体', change: '+2.10%', turnover: 310, netInflow: '+6.5' },

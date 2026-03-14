@@ -1,92 +1,83 @@
 <template>
-  <div class="fund-flow-route-page">
-    <div class="page-header">
-      <h2 class="section-title">资金流向</h2>
-      <div class="trace-info" v-if="lastRequestId">REQ: {{ lastRequestId }}</div>
+  <div class="fund-flow-analysis">
+    <div class="fund-overview">
+      <ArtDecoStatCard
+        label="沪股通净流入"
+        :value="safeFundData.shanghai.amount"
+        :change="safeFundData.shanghai.change"
+        change-percent
+        variant="gold"
+      />
+      <ArtDecoStatCard
+        label="深股通净流入"
+        :value="safeFundData.shenzhen.amount"
+        :change="safeFundData.shenzhen.change"
+        change-percent
+        variant="gold"
+      />
+      <ArtDecoStatCard
+        label="北向资金总额"
+        :value="safeFundData.north.amount"
+        :change="safeFundData.north.change"
+        change-percent
+        :variant="safeFundData.north.change > 0 ? 'rise' : 'fall'"
+      />
+      <ArtDecoStatCard
+        label="主力净流入"
+        :value="safeFundData.main.amount"
+        :change="safeFundData.main.change"
+        change-percent
+        variant="gold"
+      />
     </div>
 
-    <div v-if="showErrorState" class="error-state artdeco-card" role="alert">
-      <p>资金流向数据加载失败</p>
-      <span>{{ error }}</span>
-    </div>
+    <ArtDecoCard title="近30日资金流向趋势" hoverable class="fund-chart-card">
+      <div class="chart-container">
+        <ArtDecoChart :option="trendChartOption" height="300px" />
+      </div>
+    </ArtDecoCard>
 
-    <div v-else-if="showEmptyState" class="empty-state artdeco-card" role="status" aria-live="polite">
-      <p>暂无资金流向数据</p>
-      <span>当前真实接口未返回排行或趋势数据。</span>
-    </div>
-
-    <template v-else>
-      <div class="fund-overview">
-        <ArtDecoStatCard label="沪股通净流入" :value="safeFundData.shanghai.amount" :change="safeFundData.shanghai.change" change-percent variant="gold" />
-        <ArtDecoStatCard label="深股通净流入" :value="safeFundData.shenzhen.amount" :change="safeFundData.shenzhen.change" change-percent variant="gold" />
-        <ArtDecoStatCard label="北向资金总额" :value="safeFundData.north.amount" :change="safeFundData.north.change" change-percent :variant="safeFundData.north.change > 0 ? 'rise' : 'fall'" />
-        <ArtDecoStatCard label="主力净流入" :value="safeFundData.main.amount" :change="safeFundData.main.change" change-percent variant="gold" />
+    <ArtDecoCard title="个股资金流向排行" hoverable class="fund-ranking-card">
+      <div class="ranking-controls">
+        <div class="time-filters">
+          <button
+            v-for="(filter, _idx) in timeFilters"
+            :key="filter.key"
+            class="filter-btn"
+            :class="{ active: currentTimeFilter === filter.key }"
+            @click="handleFilterChange(filter.key)"
+          >
+            {{ filter.label }}
+          </button>
+        </div>
+        <ArtDecoSelect
+          :model-value="currentRankingType"
+          :options="rankingOptions"
+          placeholder="选择排序方式"
+          class="ranking-select"
+          @update:model-value="handleRankingChange"
+        />
       </div>
 
-      <ArtDecoCard title="近30日资金流向趋势" hoverable class="fund-chart-card">
-        <div class="chart-container">
-          <ArtDecoChart :option="trendChartOption" height="300px" />
-        </div>
-      </ArtDecoCard>
-
-      <ArtDecoCard title="个股资金流向排行" hoverable class="fund-ranking-card">
-        <div class="ranking-controls">
-          <div class="time-filters">
-            <button
-              v-for="filter in timeFilters"
-              :key="filter.key"
-              class="filter-btn"
-              :class="{ active: activeTimeFilter === filter.key }"
-              @click="emit('filter-change', filter.key)"
-            >
-              {{ filter.label }}
-            </button>
-          </div>
-          <ArtDecoSelect
-            :model-value="rankingType"
-            :options="rankingOptions"
-            placeholder="选择排序方式"
-            class="ranking-select"
-            @update:model-value="emit('ranking-change', $event)"
-          />
-        </div>
-
-        <ArtDecoTable :columns="columns" :data="effectiveStockRanking" />
-      </ArtDecoCard>
-    </template>
+      <ArtDecoTable :columns="columns" :data="displayStockRanking" />
+    </ArtDecoCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { ArtDecoStatCard, ArtDecoCard, ArtDecoSelect, ArtDecoTable } from '@/components/artdeco'
-import ArtDecoChart from '@/components/artdeco/charts/ArtDecoChart.vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { apiClient } from '@/api/apiClient'
-
-interface FundChannel {
-  amount: number
-  change: number
-}
-
-interface FundData {
-  shanghai: FundChannel
-  shenzhen: FundChannel
-  north: FundChannel
-  main: FundChannel
-}
-
-interface TrendItem {
-  date: string
-  value: number
-}
-
-interface StockFlowRankingData {
-  code?: string
-  name?: string
-  amount?: number
-  change?: number
-}
+import { ArtDecoStatCard, ArtDecoCard, ArtDecoSelect, ArtDecoTable } from '@/components/artdeco'
+import ArtDecoChart from '@/components/artdeco/charts/ArtDecoChart.vue'
+import {
+  buildFundOverview,
+  buildFundTrend,
+  buildStockRanking,
+  type FundData,
+  type TrendItem,
+  type StockRankingRow,
+} from './fundFlowPageData'
 
 interface Props {
   fundData?: Partial<FundData>
@@ -115,27 +106,37 @@ const props = withDefaults(defineProps<Props>(), {
   activeTimeFilter: 'today',
   rankingType: 'main_force'
 })
-
 const emit = defineEmits(['filter-change', 'ranking-change'])
-const { loading, error, lastRequestId, exec } = useArtDecoApi()
+const { exec } = useArtDecoApi()
+const internalFundData = ref<FundData>(defaultFundData())
+const internalStockRanking = ref<StockRankingRow[]>([])
+const internalTrendData = ref<TrendItem[]>([])
+const currentTimeFilter = ref(props.activeTimeFilter)
+const currentRankingType = ref(props.rankingType)
 
-const localFundData = ref<FundData>(defaultFundData())
-const localStockRanking = ref<unknown[]>([])
-const localTrendData = ref<TrendItem[]>([])
+watch(() => props.activeTimeFilter, (value) => {
+  currentTimeFilter.value = value
+})
+
+watch(() => props.rankingType, (value) => {
+  currentRankingType.value = value
+})
 
 const hasExternalData = computed(() => {
-  return Boolean(
-    props.stockRanking.length ||
-    props.trendData.length ||
-    props.fundData?.shanghai?.amount ||
-    props.fundData?.shenzhen?.amount ||
-    props.fundData?.north?.amount ||
-    props.fundData?.main?.amount
-  )
+  const hasRanking = Array.isArray(props.stockRanking) && props.stockRanking.length > 0
+  const hasTrend = Array.isArray(props.trendData) && props.trendData.length > 0
+  const fund = props.fundData
+  const hasFund =
+    !!fund &&
+    ['shanghai', 'shenzhen', 'north', 'main'].some((key) => {
+      const item = fund[key as keyof typeof fund]
+      return !!item && typeof item === 'object' && Number((item as { amount?: number }).amount || 0) !== 0
+    })
+  return hasRanking || hasTrend || hasFund
 })
 
 const safeFundData = computed<FundData>(() => {
-  const source = hasExternalData.value ? (props.fundData ?? {}) : localFundData.value
+  const source = hasExternalData.value ? (props.fundData ?? {}) : internalFundData.value
   const fallback = defaultFundData()
 
   return {
@@ -146,10 +147,19 @@ const safeFundData = computed<FundData>(() => {
   }
 })
 
-const effectiveStockRanking = computed(() => hasExternalData.value ? props.stockRanking : localStockRanking.value)
-const effectiveTrendData = computed(() => hasExternalData.value ? props.trendData : localTrendData.value)
-const showErrorState = computed(() => Boolean(error.value) && effectiveStockRanking.value.length === 0)
-const showEmptyState = computed(() => !loading.value && !error.value && effectiveStockRanking.value.length === 0)
+const displayStockRanking = computed(() => {
+  if (hasExternalData.value) {
+    return props.stockRanking ?? []
+  }
+  return internalStockRanking.value
+})
+
+const displayTrendData = computed(() => {
+  if (hasExternalData.value) {
+    return props.trendData ?? []
+  }
+  return internalTrendData.value
+})
 
 const timeFilters = [
   { key: 'today', label: '今日' },
@@ -179,112 +189,65 @@ interface ChartParams {
 }
 
 const trendChartOption = computed(() => {
-  if (!effectiveTrendData.value || effectiveTrendData.value.length === 0) return {}
+  if (!displayTrendData.value || displayTrendData.value.length === 0) return {}
 
   return {
     tooltip: { trigger: 'axis' },
-    xAxis: { type: 'category', data: effectiveTrendData.value.map((d) => d.date) },
+    xAxis: { type: 'category', data: displayTrendData.value.map((d) => d.date) },
     yAxis: { type: 'value' },
     series: [{
-      data: effectiveTrendData.value.map((d) => d.value),
+      data: displayTrendData.value.map((d) => d.value),
       type: 'bar',
       itemStyle: {
-        color: (params: ChartParams) => params.value >= 0 ? 'var(--artdeco-rise)' : 'var(--artdeco-down)'
+        color: (params: ChartParams) => params.value >= 0 ? 'var(--artdeco-up)' : 'var(--artdeco-down)'
       }
     }]
   }
 })
 
-async function loadRouteData() {
-  if (hasExternalData.value) {
-    return
-  }
+function formatDate(value: Date): string {
+  return value.toISOString().slice(0, 10)
+}
 
-  const [fundFlow, ranking] = await Promise.all([
-    exec(() => apiClient.get('/akshare/market/fund-flow/hsgt-summary'), { silent: true, errorMsg: '资金流向数据加载失败' }),
-    exec(() => apiClient.get('/akshare/market/fund-flow/big-deal', { params: { period: props.activeTimeFilter, limit: 10 } }), { silent: true, errorMsg: '资金流向数据加载失败' })
+async function fetchFundFlowData() {
+  const end = new Date()
+  const start = new Date()
+  start.setDate(end.getDate() - 30)
+
+  const [summary, bigDeal] = await Promise.all([
+    exec(() => apiClient.get('/akshare/market/fund-flow/hsgt-summary', {
+      params: {
+        start_date: formatDate(start),
+        end_date: formatDate(end),
+      },
+    }), { silent: true }),
+    exec(() => apiClient.get('/akshare/market/fund-flow/big-deal'), { silent: true }),
   ])
 
-  if (fundFlow && typeof fundFlow === 'object') {
-    const payload = fundFlow as unknown as Record<string, Record<string, number>>
-    localFundData.value = {
-      shanghai: { amount: Number(payload.hgt?.amount ?? 0), change: Number(payload.hgt?.change ?? 0) },
-      shenzhen: { amount: Number(payload.sgt?.amount ?? 0), change: Number(payload.sgt?.change ?? 0) },
-      north: { amount: Number(payload.northTotal?.amount ?? 0), change: Number(payload.northTotal?.monthly ?? 0) },
-      main: { amount: Number(payload.mainForce?.amount ?? 0), change: Number(payload.mainForce?.percentage ?? 0) }
-    }
-  }
+  internalFundData.value = buildFundOverview(summary, bigDeal)
+  internalTrendData.value = buildFundTrend(summary)
+  internalStockRanking.value = buildStockRanking(bigDeal)
+}
 
-  localStockRanking.value = Array.isArray((ranking as { data?: unknown[] } | null)?.data)
-    ? (ranking as { data: unknown[] }).data
-    : Array.isArray(ranking)
-      ? ranking as unknown[]
-      : []
+function handleFilterChange(value: string) {
+  currentTimeFilter.value = value
+  emit('filter-change', value)
+}
 
-  localTrendData.value = (localStockRanking.value as StockFlowRankingData[]).slice(0, 5).map((item, index) => {
-    return {
-      date: `T-${index + 1}`,
-      value: Number(item.amount ?? 0)
-    }
-  }).reverse()
+function handleRankingChange(value: string) {
+  currentRankingType.value = value
+  emit('ranking-change', value)
 }
 
 onMounted(() => {
-  void loadRouteData()
+  if (!hasExternalData.value) {
+    void fetchFundFlowData()
+  }
 })
 </script>
 
 <style scoped lang="scss">
 @import '@/styles/artdeco-tokens';
-
-.fund-flow-route-page {
-  display: grid;
-  gap: var(--artdeco-spacing-4);
-  padding: var(--artdeco-spacing-6);
-}
-
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-primary);
-  padding-bottom: var(--artdeco-spacing-2);
-}
-
-.section-title {
-  margin: 0;
-  color: var(--artdeco-gold-primary);
-  font-size: var(--artdeco-text-2xl);
-  letter-spacing: var(--artdeco-tracking-wide);
-  text-transform: uppercase;
-}
-
-.trace-info {
-  color: var(--artdeco-fg-muted);
-  font-family: var(--artdeco-font-mono);
-  font-size: var(--artdeco-text-xs);
-}
-
-.error-state,
-.empty-state {
-  display: grid;
-  gap: var(--artdeco-spacing-2);
-  padding: var(--artdeco-spacing-5);
-  border: thin solid var(--artdeco-border-default);
-  background: linear-gradient(145deg, var(--artdeco-gold-opacity-05), transparent 65%);
-
-  p {
-    margin: 0;
-    color: var(--artdeco-fg-primary);
-    font-family: var(--font-display);
-    letter-spacing: var(--artdeco-tracking-wide);
-  }
-
-  span {
-    color: var(--artdeco-fg-muted);
-    font-size: var(--artdeco-text-sm);
-  }
-}
 
 .fund-overview {
   display: grid;
@@ -311,7 +274,7 @@ onMounted(() => {
 
 .filter-btn {
   background: transparent;
-  border: thin solid var(--artdeco-border-default);
+  border: 1px solid var(--artdeco-border-default);
   color: var(--artdeco-fg-muted);
   padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
   cursor: pointer;

@@ -27,6 +27,7 @@ from app.core.cache_utils import cache_response  # 导入缓存工具
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
 from app.core.exceptions import BusinessException, NotFoundException, ValidationException
 from app.core.responses import create_error_response, create_success_response
+from app.quotes_payload import build_quotes_response_payload
 from app.schemas.market_schemas import (
     ChipRaceResponse,
     ETFDataResponse,
@@ -376,16 +377,8 @@ async def get_market_quotes(
         # 调用数据源工厂获取quotes数据
         result = await factory.get_data("market", "quotes", {"symbols": symbol_list})
 
-        quotes_data = result.get("data", [])
-
         return create_success_response(
-            data={
-                "quotes": quotes_data,
-                "total": len(quotes_data),
-                "symbols": symbol_list,
-                "source": result.get("source", "market"),
-                "endpoint": result.get("endpoint", "quotes"),
-            },
+            data=build_quotes_response_payload(result, symbol_list),
             message=f"获取{len(symbol_list)}只股票实时行情成功",
         )
 
@@ -598,5 +591,4 @@ async def get_kline_data(
         raise BusinessException(
             detail=f"数据源暂时不可用，请稍后重试: {str(e)}", status_code=500, error_code="DATA_SOURCE_UNAVAILABLE"
         )
-
 

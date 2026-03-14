@@ -129,8 +129,8 @@ import AnalysisResults from './components/AnalysisResults.vue'
 
 const {
     activeTab, activeCategory, loading, stats,
-    indicatorCategories, filteredIndicators,
-    screeningFilters, screeningResults,
+    indicatorCategories, indicators, filteredIndicators,
+    screeningFilters, screeningResults, availableIndicatorsForFilter,
     switchTab, refreshData, runScreening, resetFilters
 } = useDataAnalysis()
 
@@ -149,12 +149,6 @@ const operatorOptions = [
     { label: '死叉', value: 'death_cross' }
 ]
 
-const availableIndicatorsForFilter = [
-    { label: 'MA5', value: 'ma5' },
-    { label: 'RSI', value: 'rsi' },
-    { label: 'MACD', value: 'macd' }
-]
-
 const resultColumns = [
     { key: 'symbol', label: '代码' },
     { key: 'name', label: '名称' },
@@ -163,7 +157,7 @@ const resultColumns = [
 ]
 
 function getCategoryCount(_key) {
-    return 5 // Simplified
+    return indicators.value.filter((item) => item.category === _key).length
 }
 
 function selectIndicator(ind) {

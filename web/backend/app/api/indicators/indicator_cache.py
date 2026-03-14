@@ -193,9 +193,7 @@ async def get_indicator_registry_endpoint(
             filtered_count=len(all_indicators) - len(filtered_indicators),
         )
 
-        return create_success_response(
-            data=response_data.dict(), message=f"技术指标注册表查询成功，共{len(filtered_indicators)}个指标"
-        ).dict(exclude_unset=True)
+        return response_data
 
     except Exception as e:
         logger.error("技术指标注册表查询失败", user_id=current_user.id, error=str(e), exc_info=True)

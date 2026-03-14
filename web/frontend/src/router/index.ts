@@ -30,7 +30,7 @@ const routes: RouteRecordRaw[] = [
         path: 'dashboard',
         name: HOME_ROUTE_NAME,
         component: () => import('@/views/artdeco-pages/ArtDecoDashboard.vue'),
-        meta: { title: '交易室', requiresAuth: true, api: '/api/v1/market/*' }
+        meta: { title: '交易室', requiresAuth: true, api: '/api/v1/market/overview' }
       },
 
       // 1. Market Domain (市场行情)
@@ -55,7 +55,7 @@ const routes: RouteRecordRaw[] = [
             path: 'lhb',
             name: 'market-lhb',
             component: () => import('@/views/artdeco-pages/market-data-tabs/DragonTigerAnalysis.vue'),
-            meta: { title: '龙虎榜', requiresAuth: true, api: '/api/v1/market/lhb' }
+            meta: { title: '龙虎榜', requiresAuth: true, api: '/api/data/lhb' }
           }
         ]
       },
@@ -70,25 +70,25 @@ const routes: RouteRecordRaw[] = [
             path: 'industry',
             name: 'data-industry',
             component: () => import('@/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue'),
-            meta: { title: '板块动向', requiresAuth: true, api: '/api/akshare/market/boards' }
+            meta: { title: '板块动向', requiresAuth: true, api: '/api/akshare_market/boards' }
           },
           {
             path: 'concept',
             name: 'data-concept',
             component: () => import('@/views/artdeco-pages/market-tabs/MarketConceptTab.vue'),
-            meta: { title: '概念动向', requiresAuth: true, api: '/api/akshare/market/boards' }
+            meta: { title: '概念动向', requiresAuth: true, api: '/api/akshare_market/boards' }
           },
           {
             path: 'fund-flow',
             name: 'data-fund-flow',
             component: () => import('@/views/artdeco-pages/market-data-tabs/FundFlowAnalysis.vue'),
-            meta: { title: '资金流向', requiresAuth: true, api: '/api/akshare/market/fund-flow' }
+            meta: { title: '资金流向', requiresAuth: true, api: '/api/akshare_market/fund_flow' }
           },
           {
             path: 'indicator',
             name: 'data-indicator',
             component: () => import('@/views/artdeco-pages/ArtDecoDataAnalysis.vue'),
-            meta: { title: '指标分析', requiresAuth: true, api: '/api/v1/indicators/*' }
+            meta: { title: '指标分析', requiresAuth: true, api: '/api/v1/indicators/registry' }
           }
         ]
       },
@@ -115,7 +115,7 @@ const routes: RouteRecordRaw[] = [
             path: 'screener',
             name: 'watchlist-screener',
             component: () => import('@/views/stocks/Screener.vue'),
-            meta: { title: '策略选股', requiresAuth: true, api: '/api/v1/data/stocks/*' }
+            meta: { title: '策略选股', requiresAuth: true, api: '/api/v1/data/stocks/basic' }
           }
         ]
       },
@@ -130,7 +130,7 @@ const routes: RouteRecordRaw[] = [
             path: 'repo',
             name: 'strategy-repo',
             component: () => import('@/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue'),
-            meta: { title: '策略仓库', requiresAuth: true, api: '/api/v1/strategy/strategies' }
+            meta: { title: '策略仓库', requiresAuth: true, api: '/api/v1/strategy/list' }
           },
           {
             path: 'parameters',
@@ -154,19 +154,19 @@ const routes: RouteRecordRaw[] = [
             path: 'gpu',
             name: 'strategy-gpu',
             component: () => import('@/views/strategy/BacktestGPU.vue'),
-            meta: { title: '加速监控', requiresAuth: true, api: '/api/gpu/*' }
+            meta: { title: '加速监控', requiresAuth: true }
           },
           {
             path: 'opt',
             name: 'strategy-opt',
             component: () => import('@/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue'),
-            meta: { title: '参数优化', requiresAuth: true, api: '/api/v1/strategy/*' }
+            meta: { title: '参数优化', requiresAuth: true }
           },
           {
             path: 'pos',
             name: 'strategy-pos',
             component: () => import('@/views/artdeco-pages/stock-management-tabs/PortfolioMonitor.vue'),
-            meta: { title: '仓位管理', requiresAuth: true, api: '/api/v1/trade/positions' }
+            meta: { title: '仓位管理', requiresAuth: true }
           }
         ]
       },
@@ -181,31 +181,31 @@ const routes: RouteRecordRaw[] = [
             path: 'positions',
             name: 'trade-positions',
             component: () => import('@/views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue'),
-            meta: { title: '头寸管理', requiresAuth: true, api: '/api/v1/trade/positions' }
+            meta: { title: '头寸管理', requiresAuth: true }
           },
           {
             path: 'terminal',
             name: 'trade-terminal',
             component: () => import('@/views/TradingDashboard.vue'),
-            meta: { title: '交易操作', requiresAuth: true, api: '/api/trading/*' }
+            meta: { title: '交易操作', requiresAuth: true }
           },
           {
             path: 'signals',
             name: 'trade-signals',
             component: () => import('@/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue'),
-            meta: { title: '信号监控', requiresAuth: true, api: '/api/v1/trade/signals' }
+            meta: { title: '信号监控', requiresAuth: true }
           },
           {
             path: 'portfolio',
             name: 'trade-portfolio',
             component: () => import('@/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue'),
-            meta: { title: '持仓透视', requiresAuth: true, api: '/api/v1/trade/positions' }
+            meta: { title: '持仓透视', requiresAuth: true }
           },
           {
             path: 'history',
             name: 'trade-history',
             component: () => import('@/views/artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue'),
-            meta: { title: '历史对账', requiresAuth: true, api: '/api/v1/trade/trades' }
+            meta: { title: '历史对账', requiresAuth: true }
           }
         ]
       },
@@ -221,37 +221,37 @@ const routes: RouteRecordRaw[] = [
             alias: ['/risk-management'],
             name: 'risk-management',
             component: () => import('@/views/artdeco-pages/ArtDecoRiskManagement.vue'),
-            meta: { title: '风险管理中心', requiresAuth: true, api: '/api/v1/risk/*' }
+            meta: { title: '风险管理中心', requiresAuth: true }
           },
           {
             path: 'overview',
             name: 'risk-overview',
             component: () => import('@/views/artdeco-pages/risk-tabs/RiskOverviewTab.vue'),
-            meta: { title: '风险概览', requiresAuth: true, api: '/api/v1/risk/*' }
+            meta: { title: '风险概览', requiresAuth: true }
           },
           {
             path: 'pnl',
             name: 'risk-pnl',
             component: () => import('@/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue'),
-            meta: { title: '组合盈亏', requiresAuth: true, api: '/api/v1/trade/positions' }
+            meta: { title: '组合盈亏', requiresAuth: true }
           },
           {
             path: 'stop-loss',
             name: 'risk-stop-loss',
             component: () => import('@/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue'),
-            meta: { title: '止损雷达', requiresAuth: true, api: '/api/v1/monitoring/watchlists' }
+            meta: { title: '止损雷达', requiresAuth: true }
           },
           {
             path: 'alerts',
             name: 'risk-alerts',
             component: () => import('@/views/artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue'),
-            meta: { title: '告警中心', requiresAuth: true, api: '/api/v1/risk/alerts' }
+            meta: { title: '告警中心', requiresAuth: true }
           },
           {
             path: 'news',
             name: 'risk-news',
             component: () => import('@/views/artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue'),
-            meta: { title: '舆情预警', requiresAuth: true, api: '/api/announcement/list' }
+            meta: { title: '舆情预警', requiresAuth: true }
           }
         ]
       },
@@ -266,25 +266,25 @@ const routes: RouteRecordRaw[] = [
             path: 'config',
             name: 'system-config',
             component: () => import('@/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue'),
-            meta: { title: '系统配置', requiresAuth: true, api: '/api/v1/system/*' }
+            meta: { title: '系统配置', requiresAuth: true }
           },
           {
             path: 'health',
             name: 'system-health',
             component: () => import('@/views/artdeco-pages/system-tabs/SystemHealthTab.vue'),
-            meta: { title: '健康矩阵', requiresAuth: true, api: '/health' }
+            meta: { title: '健康矩阵', requiresAuth: true }
           },
           {
             path: 'api',
             name: 'system-api',
             component: () => import('@/views/artdeco-pages/system-tabs/ArtDecoMonitoringDashboard.vue'),
-            meta: { title: 'API 终端', requiresAuth: true, api: '/metrics' }
+            meta: { title: 'API 终端', requiresAuth: true }
           },
           {
             path: 'data',
             name: 'system-data',
             component: () => import('@/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue'),
-            meta: { title: '数据源管理', requiresAuth: true, api: '/api/v1/data-sources/config' }
+            meta: { title: '数据源管理', requiresAuth: true }
           }
         ]
       },

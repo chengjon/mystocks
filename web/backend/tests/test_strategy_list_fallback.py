@@ -51,7 +51,8 @@ async def test_list_strategies_falls_back_to_real_when_mock_source_fails(monkeyp
     monkeypatch.setattr(strategy_api, "get_monitoring_db", lambda: _MonitoringNoop())
 
     result = await strategy_api.list_strategies(status=None, page=1, page_size=20)
+    payload = result.model_dump(mode="json") if hasattr(result, "model_dump") else result
 
-    assert result["total"] == 1
-    assert len(result["items"]) == 1
-    assert result["items"][0]["strategy_name"] == "fallback_strategy"
+    assert payload["data"]["total"] == 1
+    assert len(payload["data"]["items"]) == 1
+    assert payload["data"]["items"][0]["strategy_name"] == "fallback_strategy"

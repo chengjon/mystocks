@@ -77,26 +77,7 @@ import { ArtDecoButton, ArtDecoCard, ArtDecoInput, ArtDecoStatCard, ArtDecoTable
 import { monitoringApi } from '@/api'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { API_BASE_URL } from '@/config/runtime-endpoints'
-
-interface MonitorRow {
-  endpoint: string
-  qps: number | string
-  p95: number | string
-  errorRate: string
-}
-
-interface HealthApiMetrics {
-  name?: string
-  endpoint?: string
-  qps?: number | string
-  avg_qps?: number | string
-  p95?: number | string
-  p95_ms?: number | string
-  latency?: number | string
-  avg_latency_ms?: number | string
-  error_rate?: number | string
-  errorRate?: number | string
-}
+import { normalizeSystemSettingsMonitorRows, type MonitorRow } from './systemSettingsMonitorData.ts'
 
 const STORAGE_KEY = 'artdeco-system-settings'
 
@@ -162,56 +143,6 @@ const displayProcessTime = computed(() => {
   return `${value.toFixed(2)}ms`
 })
 
-function toPercentString(value: unknown): string {
-  if (typeof value === 'string') {
-    return value.includes('%') ? value : `${value}%`
-  }
-
-  if (typeof value === 'number') {
-    return `${value.toFixed(2)}%`
-  }
-
-  return '0.00%'
-}
-
-function toNumberOrDash(value: unknown): number | string {
-  if (typeof value === 'number') {
-    return Number.isFinite(value) ? Number(value.toFixed(2)) : '-'
-  }
-
-  if (typeof value === 'string') {
-    const parsed = Number.parseFloat(value)
-    return Number.isNaN(parsed) ? value : Number(parsed.toFixed(2))
-  }
-
-  return '-'
-}
-
-function normalizeMonitorRows(payload: unknown): MonitorRow[] {
-  if (!Array.isArray(payload)) {
-    return []
-  }
-
-  return payload.map((item, index) => {
-    const row = (item ?? {}) as HealthApiMetrics
-    const endpoint = typeof row.endpoint === 'string'
-      ? row.endpoint
-      : typeof row.name === 'string'
-        ? row.name
-        : `API-${index + 1}`
-
-    const qps = toNumberOrDash(row.qps ?? row.avg_qps)
-    const p95 = toNumberOrDash(row.p95 ?? row.p95_ms ?? row.latency ?? row.avg_latency_ms)
-
-    return {
-      endpoint,
-      qps,
-      p95,
-      errorRate: toPercentString(row.errorRate ?? row.error_rate)
-    }
-  })
-}
-
 async function loadMonitorRows() {
   const detailed = await exec(() => monitoringApi.getDetailedSystemHealth(), {
     silent: true,
@@ -219,12 +150,7 @@ async function loadMonitorRows() {
   })
 
   if (detailed !== null) {
-    const fromDetailed = normalizeMonitorRows(
-      (detailed as { data?: unknown[]; apis?: unknown[]; metrics?: unknown[] }).data
-      ?? (detailed as { data?: unknown[]; apis?: unknown[]; metrics?: unknown[] }).apis
-      ?? (detailed as { data?: unknown[]; apis?: unknown[]; metrics?: unknown[] }).metrics
-      ?? detailed
-    )
+    const fromDetailed = normalizeSystemSettingsMonitorRows(detailed)
 
     if (fromDetailed.length > 0) {
       monitorSource.value = 'REAL'
@@ -239,12 +165,7 @@ async function loadMonitorRows() {
   })
 
   if (health !== null) {
-    const fromHealth = normalizeMonitorRows(
-      (health as { data?: unknown[]; apis?: unknown[]; metrics?: unknown[] }).data
-      ?? (health as { data?: unknown[]; apis?: unknown[]; metrics?: unknown[] }).apis
-      ?? (health as { data?: unknown[]; apis?: unknown[]; metrics?: unknown[] }).metrics
-      ?? health
-    )
+    const fromHealth = normalizeSystemSettingsMonitorRows(health)
 
     if (fromHealth.length > 0) {
       monitorSource.value = 'REAL'

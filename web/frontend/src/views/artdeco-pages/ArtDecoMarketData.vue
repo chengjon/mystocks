@@ -240,9 +240,11 @@ const refreshData = async () => {
             const payload = res?.data ?? res
             conceptRanking.value = Array.isArray(payload) ? payload : []
         } else if (activeTab.value === 'lhb') {
-            const res = await dashboardService.getLongHuBang()
+            const res = await apiClient.get('/api/v2/market/lhb', { params: { limit: 100 } })
             const payload = res?.data ?? res
-            lhbData.value = Array.isArray(payload) ? payload : []
+            lhbData.value = Array.isArray(payload?.data)
+                ? payload.data
+                : (Array.isArray(payload) ? payload : [])
         } else if (activeTab.value === 'auction') {
             const res = await dashboardService.getBlockTrading()
             const payload = res?.data ?? res

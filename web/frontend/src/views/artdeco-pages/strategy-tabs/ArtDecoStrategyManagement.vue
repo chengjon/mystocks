@@ -230,6 +230,7 @@ import {
   buildQuickBacktestRoute,
   type StrategyCrossTabTarget
 } from './strategyCrossTabNavigation'
+import { supportsStrategyLifecycleAction } from './strategyLifecycleAvailability'
 
 type LifecycleAction = 'start' | 'stop' | 'pause' | 'resume'
 type StrategyStatusFilter = 'all' | StrategyListItemVM['status']
@@ -609,6 +610,9 @@ function prevPage() {
 }
 
 function isActionDisabled(strategy: StrategyListItemVM, action: LifecycleAction): boolean {
+  if (!supportsStrategyLifecycleAction(action)) {
+    return true
+  }
   if (!strategy.id || loading.value) {
     return true
   }

@@ -7,20 +7,14 @@
 
     <div class="config-section" v-loading="loading">
       <ArtDecoCard title="数据源配置" hoverable>
-        <div v-if="showErrorState" class="data-management__state data-management__state--error" role="alert">
-          数据源配置加载失败：{{ error }}
-        </div>
-        <div v-else-if="showEmptyState" class="data-management__state" role="status" aria-live="polite">
-          暂无数据源配置。
-        </div>
-        <div v-else class="config-table">
+        <div class="config-table">
           <div class="config-row header">
             <div class="col name">数据源名称</div>
             <div class="col status">状态</div>
             <div class="col endpoint">端点</div>
             <div class="col actions">操作</div>
           </div>
-          <div class="config-row" v-for="(item, idx) in configItems" :key="idx">
+          <div class="config-row" v-for="(item, idx) in configItems" :key="item.endpointName">
             <div class="col name">{{ item.name }}</div>
             <div class="col status">
               <span :class="['status-badge', item.enabled ? 'active' : 'inactive']">
@@ -40,7 +34,7 @@
 
     <div class="action-bar">
       <ArtDecoButton variant="outline" size="sm" @click="fetchConfig">刷新</ArtDecoButton>
-      <ArtDecoButton variant="outline" size="sm" @click="saveConfig">保存配置</ArtDecoButton>
+      <ArtDecoButton variant="outline" size="sm" :disabled="!writeEnabled" @click="saveConfig">保存配置</ArtDecoButton>
       <ArtDecoButton variant="outline" size="sm" @click="resetConfig">恢复默认</ArtDecoButton>
     </div>
 
@@ -49,51 +43,42 @@
         <strong class="gold-text">提示：</strong> 修改数据源配置后需点击"保存配置"才能生效。
         点击"恢复默认"将重置所有配置为系统默认值。
       </p>
+      <p v-if="writeEnabled">
+        <strong class="gold-text">当前状态：</strong> 保存会批量写回后端 `status` 字段：
+        启用 -> `active`，禁用 -> `maintenance`。
+      </p>
     </ArtDecoCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
 import { monitoringApi } from '@/api/index';
 import { ArtDecoCard, ArtDecoButton } from '@/components/artdeco';
+import {
+  extractDataSourceConfigItems,
+  type NormalizedDataSourceConfigItem as DataSourceConfigItem,
+} from './dataManagementData';
+import {
+  buildDataSourceConfigBatchRequest,
+  supportsDataSourceConfigWrite,
+} from './dataManagementCapabilities';
 
-interface DataSourceConfigItem {
-  name?: string;
-  source_name?: string;
-  enabled?: boolean;
-  endpoint?: string;
-  url?: string;
-}
-
-interface DataSourceConfigPayload {
-  data?: DataSourceConfigItem[];
-  request_id?: string;
-}
-
-const { loading, error, exec } = useArtDecoApi();
+const { loading, exec, lastRequestId } = useArtDecoApi();
 const configItems = ref<DataSourceConfigItem[]>([]);
 const requestId = ref<string>('');
 const originalConfig = ref<DataSourceConfigItem[]>([]);
-const showErrorState = computed(() => Boolean(error.value) && configItems.value.length === 0);
-const showEmptyState = computed(() => !loading.value && !error.value && configItems.value.length === 0);
+const writeEnabled = supportsDataSourceConfigWrite();
 
 const fetchConfig = async () => {
   const data = await exec(() => monitoringApi.getDataSourceConfig(), {
     errorMsg: '获取数据源配置失败'
   });
   if (data) {
-    const items = Array.isArray(data) ? data : (data as DataSourceConfigPayload).data || [];
-    configItems.value = items.map((item: DataSourceConfigItem) => ({
-      name: item.name || item.source_name || 'Unknown',
-      enabled: item.enabled !== false,
-      endpoint: item.endpoint || item.url || 'N/A'
-    }));
+    configItems.value = extractDataSourceConfigItems(data);
     originalConfig.value = JSON.parse(JSON.stringify(configItems.value));
-    requestId.value = Array.isArray(data)
-      ? `cfg-${Date.now()}`
-      : (data as DataSourceConfigPayload).request_id || `cfg-${Date.now()}`;
+    requestId.value = lastRequestId.value || `cfg-${Date.now()}`;
   }
 };
 
@@ -102,13 +87,13 @@ const toggleConfig = (idx: number) => {
 };
 
 const saveConfig = async () => {
-  const payload = {
-    sources: configItems.value.map((item: DataSourceConfigItem) => ({
-      name: item.name,
-      enabled: item.enabled,
-      endpoint: item.endpoint
-    }))
-  };
+  if (!writeEnabled) {
+    return;
+  }
+  const payload = buildDataSourceConfigBatchRequest(configItems.value, originalConfig.value);
+  if (payload.operations.length === 0) {
+    return;
+  }
   const result = await exec(() => monitoringApi.updateDataSourceConfig(payload), {
     successMsg: '配置已保存',
     errorMsg: '保存配置失败'
@@ -157,17 +142,6 @@ onMounted(fetchConfig);
 
   .config-section {
     margin-bottom: var(--artdeco-spacing-8);
-
-    .data-management__state {
-      padding: var(--artdeco-spacing-5);
-      border: 1px solid var(--artdeco-border-default);
-      background: linear-gradient(145deg, var(--artdeco-gold-opacity-05), transparent 65%);
-      color: var(--artdeco-fg-primary);
-
-      &--error {
-        color: var(--artdeco-down);
-      }
-    }
 
     .config-table {
       display: flex;

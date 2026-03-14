@@ -252,6 +252,15 @@ def authenticate_user_by_id(user_id: int) -> Optional[UserInDB]:
         2. 如果数据库查询失败，返回None
         3. 返回用户信息或None
     """
+    from app.core.config import settings
+
+    if settings.testing and getattr(settings, "mock_auth_enabled", False):
+        if user_id == 1:
+            return _authenticate_with_mock("admin", "admin123")
+        if user_id == 2:
+            return _authenticate_with_mock("user", "user123")
+        return None
+
     try:
         # 从数据库查询用户
         return get_user_from_database_by_id(user_id)

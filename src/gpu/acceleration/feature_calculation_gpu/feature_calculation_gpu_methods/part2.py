@@ -9,6 +9,8 @@ from __future__ import annotations
 # 说明：GPU加速的金融特征计算和技术指标引擎
 """
 
+from __future__ import annotations
+
 import logging
 from typing import Any, Dict, List, Union
 

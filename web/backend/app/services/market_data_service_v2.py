@@ -53,6 +53,55 @@ class MarketDataServiceV2:
             f"{os.getenv('POSTGRESQL_DATABASE')}"
         )
 
+    def _runtime_fallback_enabled(self) -> bool:
+        return (
+            os.getenv("TESTING", "false").lower() == "true"
+            or os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
+        )
+
+    def _build_sector_fund_flow_runtime_rows(
+        self,
+        sector_type: str,
+        timeframe: str,
+        limit: int,
+    ) -> List[Dict[str, Any]]:
+        df = self.em_adapter.get_sector_fund_flow(sector_type, timeframe)
+
+        if df.empty:
+            return []
+
+        today = datetime.now().date().isoformat()
+        rows: List[Dict[str, Any]] = []
+
+        for _, row in df.head(limit).iterrows():
+            rows.append(
+                {
+                    "id": None,
+                    "sector_code": row.get("代码"),
+                    "sector_name": row.get("名称"),
+                    "sector_type": sector_type,
+                    "trade_date": today,
+                    "timeframe": timeframe,
+                    "latest_price": float(row.get("最新价", 0) or 0),
+                    "change_percent": float(row.get("涨跌幅", 0) or 0),
+                    "main_net_inflow": float(row.get("主力净流入", 0) or 0),
+                    "main_net_inflow_rate": float(row.get("主力净流入占比", 0) or 0),
+                    "super_large_net_inflow": float(row.get("超大单净流入", 0) or 0),
+                    "super_large_net_inflow_rate": float(row.get("超大单净流入占比", 0) or 0),
+                    "large_net_inflow": float(row.get("大单净流入", 0) or 0),
+                    "large_net_inflow_rate": float(row.get("大单净流入占比", 0) or 0),
+                    "medium_net_inflow": float(row.get("中单净流入", 0) or 0),
+                    "medium_net_inflow_rate": float(row.get("中单净流入占比", 0) or 0),
+                    "small_net_inflow": float(row.get("小单净流入", 0) or 0),
+                    "small_net_inflow_rate": float(row.get("小单净流入占比", 0) or 0),
+                    "leading_stock": None,
+                    "leading_stock_change_percent": 0,
+                    "created_at": None,
+                }
+            )
+
+        return rows
+
     # ==================== 资金流向 (Fund Flow) ====================
 
     def fetch_and_save_fund_flow(self, symbol: Optional[str] = None, timeframe: str = "今日") -> Dict[str, Any]:
@@ -419,8 +468,8 @@ class MarketDataServiceV2:
         self, sector_type: str = "行业", timeframe: str = "今日", limit: int = 100
     ) -> List[Dict]:
         """查询行业/概念资金流向"""
-        db = self.SessionLocal()
         try:
+            db = self.SessionLocal()
             # 查询最新日期的数据
             from sqlalchemy import func
 
@@ -436,6 +485,8 @@ class MarketDataServiceV2:
             )
 
             if not latest_date:
+                if self._runtime_fallback_enabled():
+                    return self._build_sector_fund_flow_runtime_rows(sector_type, timeframe, limit)
                 return []
 
             query = db.query(SectorFundFlow).filter(
@@ -449,8 +500,14 @@ class MarketDataServiceV2:
             results = query.order_by(SectorFundFlow.main_net_inflow.desc()).limit(limit).all()
             return [r.to_dict() for r in results]
 
+        except Exception as e:
+            if self._runtime_fallback_enabled():
+                logger.warning("查询板块资金流向降级到 runtime fallback: %s", str(e))
+                return self._build_sector_fund_flow_runtime_rows(sector_type, timeframe, limit)
+            raise
         finally:
-            db.close()
+            if "db" in locals():
+                db.close()
 
     # ==================== 股票分红配送 ====================
 

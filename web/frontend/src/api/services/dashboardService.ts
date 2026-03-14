@@ -7,6 +7,15 @@
  */
 
 import apiClient from '../apiClient.ts'
+import {
+  normalizeDashboardActiveStrategies,
+  normalizeDashboardFundFlow,
+  normalizeDashboardIndustryFlow,
+  normalizeDashboardMarketOverview,
+  normalizeDashboardPositionRisk,
+  normalizeDashboardStockFlowRanking,
+  normalizeDashboardSystemHealth,
+} from './dashboardServiceData.ts'
 
 export interface MarketOverviewData {
   symbol: string
@@ -102,9 +111,12 @@ export const dashboardService = {
    */
   async getMarketOverview(limit = 100): Promise<{ data: MarketOverviewData[] }> {
     const response = await apiClient.get('/v1/market/quotes', {
-      params: { limit }
+      params: {
+        limit,
+        symbols: '000001.SH,399001.SZ,399006.SZ'
+      }
     })
-    return response.data
+    return { data: normalizeDashboardMarketOverview(response) }
   },
 
   /**
@@ -118,8 +130,11 @@ export const dashboardService = {
       start_date: targetDate,
       end_date: targetDate
     }
-    const response = await apiClient.get('/akshare/market/fund-flow/hsgt-summary', { params })
-    return response.data
+    const [summaryResponse, bigDealResponse] = await Promise.all([
+      apiClient.get('/akshare/market/fund-flow/hsgt-summary', { params }),
+      apiClient.get('/akshare/market/fund-flow/big-deal')
+    ])
+    return { data: normalizeDashboardFundFlow(summaryResponse, bigDealResponse) }
   },
 
   /**
@@ -132,9 +147,21 @@ export const dashboardService = {
     limit = 10
   ): Promise<{ data: IndustryFlowData[] }> {
     const response = await apiClient.get('/v2/market/sector/fund-flow', {
-      params: { sort, limit }
+      params: { sort, limit, sector_type: '行业', timeframe: '今日' }
     })
-    return response.data
+    let rows = normalizeDashboardIndustryFlow(response)
+
+    if (rows.length === 0) {
+      const fallbackResponse = await apiClient.get('/akshare/market/sector/fund-flow-ranking')
+      rows = normalizeDashboardIndustryFlow(fallbackResponse)
+    }
+
+    if (rows.length === 0) {
+      const hotRankingResponse = await apiClient.get('/akshare/market/sector/hot-ranking')
+      rows = normalizeDashboardIndustryFlow(hotRankingResponse)
+    }
+
+    return { data: rows }
   },
 
   // ============================================
@@ -183,7 +210,7 @@ export const dashboardService = {
     const response = await apiClient.get('/akshare/market/fund-flow/big-deal', {
       params: { period, limit }
     })
-    return response.data
+    return { data: normalizeDashboardStockFlowRanking(response) }
   },
 
   /**
@@ -229,10 +256,10 @@ export const dashboardService = {
    * 用途: 获取用户持仓的风险指标
    */
   async getPositionRisk(userId: number): Promise<{ data: PositionRiskData }> {
-    const response = await apiClient.get('/api/v1/risk/position/assessment', {
+    const response = await apiClient.get('/v1/trade/positions', {
       params: { user_id: userId }
     })
-    return response.data
+    return { data: normalizeDashboardPositionRisk(response) }
   },
 
   /**
@@ -241,10 +268,15 @@ export const dashboardService = {
    * 用途: 获取用户的活跃策略数量
    */
   async getActiveStrategies(userId: number): Promise<{ data: unknown[] }> {
-    const response = await apiClient.get('/api/strategy-mgmt/strategies', {
+    const response = await apiClient.get('/v1/strategy/strategies', {
       params: { user_id: userId, status: 'active' }
     })
-    return response.data
+    return {
+      data: normalizeDashboardActiveStrategies(response).filter((item) => {
+        const status = String(item.status ?? '').toLowerCase()
+        return status === 'active' || status === 'running'
+      })
+    }
   },
 
   /**
@@ -253,8 +285,8 @@ export const dashboardService = {
    * 用途: 获取API响应时间、CPU、内存等系统指标
    */
   async getSystemHealth(): Promise<{ data: SystemHealthData[] }> {
-    const response = await apiClient.get('/api/system/health')
-    return response.data
+    const response = await apiClient.get('/health')
+    return { data: normalizeDashboardSystemHealth(response) }
   },
 
   // ============================================

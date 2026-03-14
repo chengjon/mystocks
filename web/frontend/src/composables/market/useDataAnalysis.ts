@@ -1,4 +1,27 @@
-import { ref, computed } from 'vue'
+import axios from 'axios'
+import { computed, onMounted, ref } from 'vue'
+
+import { API_BASE_URL } from '@/config/runtime-endpoints'
+import { indicatorService } from '@/services/indicatorService'
+import {
+    buildDataAnalysisStats,
+    extractDataAnalysisIndicators,
+    toDataAnalysisResults,
+} from './dataAnalysisData'
+import {
+    extractStockScreenerRows,
+    filterStockScreenerRows,
+    resolveStocksBasicEndpoint,
+} from '@/views/stocks/stockScreenerData'
+
+function buildAuthHeaders(): Record<string, string> {
+    if (typeof localStorage === 'undefined') {
+        return {}
+    }
+
+    const token = localStorage.getItem('access_token')
+    return token ? { Authorization: `Bearer ${token}` } : {}
+}
 
 export function useDataAnalysis() {
     const activeTab = ref('indicators')
@@ -10,102 +33,27 @@ export function useDataAnalysis() {
     const loading = ref(false)
     const lastUpdateTime = ref(new Date().toLocaleString('zh-CN'))
 
-    const stats = ref({
-        availableIndicators: 26,
-        customIndicators: 5,
-        screenedStocks: 1248,
-        screeningTimes: 18,
-        qualifiedStocks: 156,
-        qualifiedChange: 12
-    })
+    const screeningTimes = ref(0)
+    const allStocks = ref([])
+    const stats = ref(
+        buildDataAnalysisStats({
+            indicators: [],
+            stockUniverseSize: 0,
+            qualifiedStocks: 0,
+            previousQualifiedStocks: 0,
+            screeningTimes: 0,
+        })
+    )
 
     const indicatorCategories = [
         { key: 'trend', label: '趋势指标', icon: '📈' },
         { key: 'momentum', label: '动量指标', icon: '⚡' },
         { key: 'volatility', label: '波动指标', icon: '🌊' },
-        { key: 'volume', label: '成交量指标', icon: '📊' }
+        { key: 'volume', label: '成交量指标', icon: '📊' },
+        { key: 'candlestick', label: '形态指标', icon: '🕯️' }
     ]
 
-    const indicators = ref([
-        {
-            id: 1,
-            name: '简单移动平均线',
-            key: 'sma',
-            category: 'trend',
-            categoryLabel: '趋势',
-            type: '主图',
-            description: '计算指定周期的收盘价算术平均值',
-            params: [{ name: '周期', default: 5, min: 2, max: 200, type: 'integer', desc: '计算周期' }],
-            formula: 'SMA = (C1 + C2 + ... + Cn) / n',
-            example: 15.68,
-            historyHigh: 28.5,
-            historyLow: 8.2
-        },
-        {
-            id: 2,
-            name: '指数移动平均线',
-            key: 'ema',
-            category: 'trend',
-            categoryLabel: '趋势',
-            type: '主图',
-            description: '对近期数据赋予更大权重的移动平均',
-            params: [{ name: '周期', default: 12, min: 2, max: 200, type: 'integer', desc: '计算周期' }],
-            formula: 'EMA = alpha * Close + (1-alpha) * EMA_prev',
-            example: 15.72,
-            historyHigh: 29.1,
-            historyLow: 8.5
-        },
-        {
-            id: 3,
-            name: 'MACD',
-            key: 'macd',
-            category: 'trend',
-            categoryLabel: '趋势',
-            type: '副图',
-            description: '指数平滑异同移动平均线',
-            params: [
-                { name: '快线', default: 12, min: 2, max: 50, type: 'integer', desc: '快速EMA周期' },
-                { name: '慢线', default: 26, min: 5, max: 100, type: 'integer', desc: '慢速EMA周期' },
-                { name: '信号线', default: 9, min: 2, max: 50, type: 'integer', desc: '信号线周期' }
-            ],
-            formula: 'MACD = EMA12 - EMA26, Signal = EMA9 of MACD',
-            example: 0.45,
-            historyHigh: 3.2,
-            historyLow: -2.8
-        },
-        {
-            id: 4,
-            name: '布林带',
-            key: 'boll',
-            category: 'trend',
-            categoryLabel: '趋势',
-            type: '主图',
-            description: '基于标准差的通道型指标',
-            params: [
-                { name: '周期', default: 20, min: 5, max: 50, type: 'integer', desc: '中轨周期' },
-                { name: '倍数', default: 2, min: 1, max: 5, step: 0.1, type: 'float', desc: '标准差倍数' }
-            ],
-            formula: 'Upper = MA + K * Std, Lower = MA - K * Std',
-            example: 16.2,
-            historyHigh: 22.5,
-            historyLow: 10.1
-        },
-        {
-            id: 8,
-            name: '相对强弱指标',
-            key: 'rsi',
-            category: 'momentum',
-            categoryLabel: '动量',
-            type: '副图',
-            description: '衡量价格变动的速度和幅度',
-            params: [{ name: '周期', default: 14, min: 2, max: 50, type: 'integer', desc: '计算周期' }],
-            formula: 'RSI = 100 - 100 / (1 + RS)',
-            example: 62.5,
-            historyHigh: 85.2,
-            historyLow: 15.8
-        }
-        // ... truncated for brevity, but in real case all would be here
-    ])
+    const indicators = ref([])
 
     const filteredIndicators = computed(() => {
         return indicators.value.filter(ind => ind.category === activeCategory.value)
@@ -127,48 +75,94 @@ export function useDataAnalysis() {
         indicators: []
     })
 
-    const screeningResults = ref([
-        { symbol: '600519', name: '贵州茅台', price: 1680.5, change: 2.35, volume: 520000, turnover: 1.25, pe: 28.5, marketCap: 21000 },
-        { symbol: '000001', name: '平安银行', price: 12.35, change: 1.25, volume: 4500000, turnover: 2.85, pe: 6.2, marketCap: 1200 }
-    ])
+    const screeningResults = ref([])
 
     const metrics = ref({
-        riseCount: 5,
+        riseCount: 0,
         flatCount: 0,
-        fallCount: 3,
-        riseDistribution: 62,
+        fallCount: 0,
+        riseDistribution: 0,
         flatDistribution: 0,
-        fallDistribution: 38,
-        avgChange: 1.58,
-        avgTurnover: 1.78,
-        avgMarketCap: 2850,
-        limitUpCount: 1,
-        industryDistribution: [
-            { name: '银行', count: 3, percentage: 37.5 },
-            { name: '酿酒', count: 1, percentage: 12.5 }
-        ]
+        fallDistribution: 0,
+        avgChange: 0,
+        avgTurnover: 0,
+        avgMarketCap: 0,
+        limitUpCount: 0,
+        industryDistribution: []
     })
+
+    const availableIndicatorsForFilter = computed(() =>
+        indicators.value.map((indicator) => ({
+            label: indicator.key.toUpperCase(),
+            value: indicator.key,
+        }))
+    )
+
+    async function loadIndicatorRegistry() {
+        const registry = await indicatorService.getRegistry()
+        indicators.value = extractDataAnalysisIndicators(registry)
+    }
+
+    async function loadStockUniverse() {
+        const response = await axios.get(resolveStocksBasicEndpoint(API_BASE_URL), {
+            params: { limit: 200 },
+            headers: buildAuthHeaders(),
+        })
+        allStocks.value = extractStockScreenerRows(response.data)
+    }
+
+    function updateStats(previousQualifiedStocks = stats.value.qualifiedStocks) {
+        stats.value = buildDataAnalysisStats({
+            indicators: indicators.value,
+            stockUniverseSize: allStocks.value.length,
+            qualifiedStocks: screeningResults.value.length,
+            previousQualifiedStocks,
+            screeningTimes: screeningTimes.value,
+        })
+    }
+
+    function applyScreening() {
+        const filteredRows = filterStockScreenerRows(allStocks.value, {
+            priceMin: screeningFilters.value.priceMin,
+            priceMax: screeningFilters.value.priceMax,
+            peMin: screeningFilters.value.peMin,
+            peMax: screeningFilters.value.peMax,
+            volumeMin: screeningFilters.value.volumeMin,
+            volumeMax: screeningFilters.value.volumeMax,
+            amountMin: screeningFilters.value.turnoverMin,
+            amountMax: screeningFilters.value.turnoverMax,
+            changePercentMin: screeningFilters.value.changeMin,
+            changePercentMax: screeningFilters.value.changeMax,
+            changeType: 'any',
+            marketCapRange: 'any',
+        })
+        screeningResults.value = toDataAnalysisResults(filteredRows)
+    }
 
     // Methods
     const switchTab = (tabKey: string) => {
         activeTab.value = tabKey
     }
 
-    const refreshData = () => {
+    const refreshData = async () => {
         loading.value = true
-        setTimeout(() => {
+        try {
+            await Promise.all([loadIndicatorRegistry(), loadStockUniverse()])
+            applyScreening()
+            updateStats()
+        } finally {
             loading.value = false
             lastUpdateTime.value = new Date().toLocaleString('zh-CN')
-        }, 1000)
+        }
     }
 
     const runScreening = () => {
-        loading.value = true
+        const previousQualifiedStocks = stats.value.qualifiedStocks
+        screeningTimes.value += 1
+        applyScreening()
+        updateStats(previousQualifiedStocks)
         activeTab.value = 'results'
-        setTimeout(() => {
-            loading.value = false
-            lastUpdateTime.value = new Date().toLocaleString('zh-CN')
-        }, 1500)
+        lastUpdateTime.value = new Date().toLocaleString('zh-CN')
     }
 
     const resetFilters = () => {
@@ -178,7 +172,13 @@ export function useDataAnalysis() {
             marketCapMin: null, marketCapMax: null, peMin: null, peMax: null,
             indicators: []
         }
+        applyScreening()
+        updateStats()
     }
+
+    onMounted(() => {
+        void refreshData()
+    })
 
     return {
         activeTab,
@@ -195,6 +195,7 @@ export function useDataAnalysis() {
         filteredIndicators,
         screeningFilters,
         screeningResults,
+        availableIndicatorsForFilter,
         metrics,
         switchTab,
         refreshData,

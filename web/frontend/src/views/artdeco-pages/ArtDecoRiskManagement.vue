@@ -1,6 +1,6 @@
 <template>
   <ArtDecoPageTemplate
-    :page-config="riskPageConfig"
+    :page-config="riskPageConfigWithApi"
     :tabs="riskTabs"
     default-tab="overview"
     @data-loaded="handleDataLoaded"
@@ -77,20 +77,25 @@ import ArtDecoRiskStockPanel from './risk-tabs/ArtDecoRiskStockPanel.vue'
 import {
   createInitialRiskAlerts,
   createInitialRiskMetrics,
-  mergeRiskMetrics,
   riskPageConfig,
   riskTabs,
   type RiskAlertItem,
   type RiskMetrics
 } from './risk-tabs/riskManagementHelpers'
+import { toRiskManagementAlerts, toRiskManagementMetrics } from './risk-tabs/riskManagementData'
 
 const riskData = ref<RiskMetrics>(createInitialRiskMetrics())
-const riskAlerts = createInitialRiskAlerts()
+const riskAlerts = ref<RiskAlertItem[]>(createInitialRiskAlerts())
 const lastUpdateTime = ref(new Date().toLocaleString())
+const riskPageConfigWithApi = {
+  ...riskPageConfig,
+  apiUrl: '/v1/trade/positions'
+}
 
 const handleDataLoaded = (data: unknown) => {
   lastUpdateTime.value = new Date().toLocaleString()
-  riskData.value = mergeRiskMetrics(riskData.value, data)
+  riskData.value = toRiskManagementMetrics(data)
+  riskAlerts.value = toRiskManagementAlerts(data)
 }
 
 const handleExport = () => {
