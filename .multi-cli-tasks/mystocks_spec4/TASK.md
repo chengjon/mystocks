@@ -7,7 +7,7 @@
 **提交信息模板**: `type(scope): short description`
 **Worktree**: `/opt/claude/mystocks_spec4`
 **Upstream**: `origin/dev-mystocks-spec4`
-**当前状态**: 待主 CLI 分配具体模块任务
+**当前状态**: 已规划，等待 `dev-api-availability-gemini` 提交后激活
 
 ---
 
@@ -19,12 +19,41 @@
 
 ---
 
-## 📋 初始任务清单
+## 📋 本轮任务
 
-- [ ] 阅读 `.multi-cli-tasks/guides/WORKER_CLI_GUIDE.md`
-- [ ] 与主 CLI 确认本轮任务范围
-- [ ] 切换到开发分支：`git switch dev-mystocks-spec4`
-- [ ] 更新 `TASK-REPORT.md` 并开始开发
+### 任务标题
+
+`数据源配置双轨收敛与回归保护`
+
+### 目标
+
+- 核实 YAML/JSON 双配置入口的真实使用边界
+- 先建立 source-of-truth 矩阵与回归保护，再推进收敛
+
+### 范围
+
+- `config/data_sources_registry.yaml`
+- `config/data_sources.json`
+- `config/data_sources_loader.py`
+- `src/core/data_source/base.py`
+- `src/core/data_source/config_manager.py`
+- `web/backend/app/core/data_source_manager.py`
+- `web/backend/app/services/data_source_factory/data_source_factory.py`
+- `web/backend/app/api/data_source_config.py`
+- 相关测试：`tests/` 与 `web/backend/tests/`
+
+### 禁止触碰
+
+- `web/backend/config/data_sources.json`（除非先证明它是本任务必需输入，并记录原因）
+- `web/backend/app/api/market/**`
+- 与 `dev-api-availability-gemini` 当前分支直接冲突的文件
+
+### 验收标准
+
+- 产出 YAML/JSON source-of-truth 矩阵
+- 为关键入口补充回归测试或断言
+- 收敛 ambiguity，但不引入静默行为变化
+- 若无法一次性统一，分阶段写清迁移方案与剩余风险
 
 ---
 

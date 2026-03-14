@@ -7,7 +7,7 @@
 **提交信息模板**: `type(scope): short description`
 **Worktree**: `/opt/claude/mystocks_spec1`
 **Upstream**: `origin/dev-mystocks-spec1`
-**当前状态**: 待主 CLI 分配具体模块任务
+**当前状态**: 已规划，等待 `dev-api-availability-gemini` 提交后激活
 
 ---
 
@@ -19,12 +19,44 @@
 
 ---
 
-## 📋 初始任务清单
+## 📋 本轮任务
 
-- [ ] 阅读 `.multi-cli-tasks/guides/WORKER_CLI_GUIDE.md`
-- [ ] 与主 CLI 确认本轮任务范围
-- [ ] 切换到开发分支：`git switch dev-mystocks-spec1`
-- [ ] 更新 `TASK-REPORT.md` 并开始开发
+### 任务标题
+
+`API 路由注册与版本前缀治理`
+
+### 目标
+
+- 收敛 API 注册入口与版本前缀规则
+- 修复报告中已核实的非 `/api` / 非版本化前缀问题
+- 增加回归检查，避免新旧路由规则继续漂移
+
+### 范围
+
+- `web/backend/app/router_registry.py`
+- `web/backend/app/api/register_routers.py`
+- `web/backend/app/api/VERSION_MAPPING.py`
+- `web/backend/app/api/technical/routes.py`
+- `web/backend/app/api/monitoring_analysis.py`
+- `web/backend/app/api/monitoring_watchlists.py`
+- `web/backend/app/api/multi_source/routes.py`
+- `web/backend/app/api/market_v2.py`
+- `web/backend/tests/` 下新增 focused tests
+
+### 禁止触碰
+
+- `web/backend/app/api/market/**`
+- `web/backend/app/api/signal_monitoring/**`
+- `web/backend/app/api/strategy_management/get_monitoring_db.py`
+- `web/backend/app/api/health.py`
+- 当前 `dev-api-availability-gemini` 已在推进的页面/API 真值修正工作
+
+### 验收标准
+
+- 明确单一主注册入口，或把双注册职责差异写清并固化
+- 处理本任务范围内非 `/api` / 非版本前缀路由
+- 新增回归测试，证明 scoped 路由前缀符合预期
+- 在 `TASK-REPORT.md` 写清：改动文件、验证命令、风险与回滚方式
 
 ---
 

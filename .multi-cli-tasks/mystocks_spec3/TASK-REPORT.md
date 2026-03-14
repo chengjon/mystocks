@@ -2,33 +2,46 @@
 
 **Worker CLI**: mystocks_spec3
 **任务文档**: `TASK.md`
-**工作分支**: `mystocks_spec3`
-**PR目标分支**: `dev`
-**当前阶段**: T+0h
-**报告时间**: 2026-03-05
+**工作分支**: `dev-mystocks-spec3`
+**PR目标分支**: `main`
+**当前阶段**: 已规划，暂缓执行
+**报告时间**: 2026-03-14
 
 ---
 
 ## ✅ 已完成
 
 - [x] Worktree 与分支初始化完成
+- [x] 接收主 CLI 派单
 
 ---
 
 ## 🔄 进行中
 
-- [ ] 等待主 CLI 下发本轮具体任务
+- [ ] 等待 `dev-api-availability-gemini` 提交/合并后重新复核范围
+- [ ] 激活后再拆分 `ArtDecoStrategyManagement.vue`
+- [ ] 激活后再收敛 scoped 页面中的硬编码 API / WebSocket 使用
+- [ ] 激活后再增补对应单元测试
 
 ---
 
 ## 🚧 阻塞问题
 
-无
+- 当前主阻塞：API availability 条线已覆盖大量页面级 API 真值修正，需等其提交后再做前端结构性收敛，避免重复改动
 
 ---
 
 ## ✅ v3.1 治理检查
 
-- [x] 分支基线为 `dev`
-- [x] PR 目标分支设置为 `dev`
+- [x] 分支基线为 `main`
+- [x] PR 目标分支设置为 `main`
 - [ ] 已执行业务验证命令（待任务开始后补充）
+
+## 📌 本轮任务摘要
+
+- 任务标题：`前端大组件/API硬编码/WebSocket收敛`
+- 当前状态：`deferred draft`，待 API availability 分支提交后再启动
+- 关键目标：
+  - active 页面降复杂度
+  - active 页面去硬编码 API
+  - active 页面统一 WebSocket 调用方式

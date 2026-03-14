@@ -7,7 +7,7 @@
 **提交信息模板**: `type(scope): short description`
 **Worktree**: `/opt/claude/mystocks_spec3`
 **Upstream**: `origin/dev-mystocks-spec3`
-**当前状态**: 待主 CLI 分配具体模块任务
+**当前状态**: 已规划，等待 `dev-api-availability-gemini` 提交后激活
 
 ---
 
@@ -19,12 +19,41 @@
 
 ---
 
-## 📋 初始任务清单
+## 📋 本轮任务
 
-- [ ] 阅读 `.multi-cli-tasks/guides/WORKER_CLI_GUIDE.md`
-- [ ] 与主 CLI 确认本轮任务范围
-- [ ] 切换到开发分支：`git switch dev-mystocks-spec3`
-- [ ] 更新 `TASK-REPORT.md` 并开始开发
+### 任务标题
+
+`前端大组件/API硬编码/WebSocket收敛`
+
+### 目标
+
+- 处理报告中已核实的 active 前端大组件与硬编码接口问题
+- 以小步方式拆分超大页面，并把 scoped 逻辑收敛到 service / config / websocket 工具层
+
+### 范围
+
+- `web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue`
+- `web/frontend/src/views/artdeco-pages/ArtDecoMarketData.vue`
+- `web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts`
+- `web/frontend/src/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue`
+- `web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue`
+- `web/frontend/src/components/realtime/RealtimePositionPanel.vue`
+- `web/frontend/src/config/pageConfig.ts`
+- `web/frontend/src/composables/useWebSocketWithConfig.ts`
+- 相关 `web/frontend/tests/unit/**`
+
+### 禁止触碰
+
+- `web/frontend/src/views/converted.archive/**`
+- 不在本任务范围内的 demo / example 页面
+- 与 `dev-api-availability-gemini` 正在调整的 API 真值判断逻辑
+
+### 验收标准
+
+- 至少拆分 1 个 active 超大页面为更小的 helper / view-model / subcomponent
+- scoped active 页面中的硬编码 API 调用明显减少
+- scoped websocket 使用统一到现有 shared composable / utility
+- 补充对应单元测试，并在 `TASK-REPORT.md` 报告验证结果
 
 ---
 

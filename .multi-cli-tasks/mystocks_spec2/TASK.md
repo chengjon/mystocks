@@ -7,7 +7,7 @@
 **提交信息模板**: `type(scope): short description`
 **Worktree**: `/opt/claude/mystocks_spec2`
 **Upstream**: `origin/dev-mystocks-spec2`
-**当前状态**: 待主 CLI 分配具体模块任务
+**当前状态**: 已规划，等待 `dev-api-availability-gemini` 提交后激活
 
 ---
 
@@ -19,12 +19,46 @@
 
 ---
 
-## 📋 初始任务清单
+## 📋 本轮任务
 
-- [ ] 阅读 `.multi-cli-tasks/guides/WORKER_CLI_GUIDE.md`
-- [ ] 与主 CLI 确认本轮任务范围
-- [ ] 切换到开发分支：`git switch dev-mystocks-spec2`
-- [ ] 更新 `TASK-REPORT.md` 并开始开发
+### 任务标题
+
+`历史遗留文件与损坏文件治理`
+
+### 目标
+
+- 核实并清理 active repo 内仍残留的 `.backup` / `.broken` / `.old` / `.new` 文件
+- 严格遵守功能树判定与代码路径判定，避免误删兼容层
+
+### 范围
+
+- `web/frontend/src/views/RiskMonitor.vue.broken`
+- `web/frontend/src/views/BacktestAnalysis.vue.broken`
+- `web/frontend/src/router/index.ts.broken`
+- `web/frontend/src/router/index.ts.bak.20260214`
+- `web/frontend/src/main.js.old`
+- `web/frontend/src/App.vue.old`
+- `web/backend/app/api/risk_management.py.backup.20260130`
+- `web/backend/app/api/data.py.backup.20260130`
+- `web/backend/app/api/technical_analysis.py.new`
+- `src/database/database_service.py.backup.20260130`
+- `src/advanced_analysis/decision_models_analyzer.py.backup.20260130`
+- `src/monitoring/alert_manager.py.backup_complex_20251108`
+
+### 禁止触碰
+
+- `.claude/worktrees/**`
+- `.config/**`
+- `.omc/**`
+- `src/adapters/legacy_adapter.py`
+- 任何未能证明为“重复冗余 / 正式下线”的文件
+
+### 验收标准
+
+- 为每个目标文件写出状态判定：`有效` / `兼容保留` / `重复冗余` / `待判定`
+- 只删除已证明可安全移除的文件
+- 对保留文件写清保留原因
+- 在 `TASK-REPORT.md` 记录清理对象、依据与未删原因
 
 ---
 
