@@ -85,6 +85,10 @@
 - `mainline.id`
 - `classification.task_type`
 - `classification.secondary_type`
+- `function_tree.domain_id`
+- `function_tree.node_id`
+- `function_tree.affected_entrypoints`
+- `function_tree.update_status`
 - `scope.allowed_paths`
 - `non_goals`
 - `acceptance.checks`
@@ -130,6 +134,7 @@
 - 任务卡存在
 - 任务卡符合 JSON Schema
 - Feature 与 OpenSpec 审批状态匹配
+- `function_tree` 声明与 catalog、git diff 一致
 - 白名单路径合法
 
 ### 5.2 门二：输出门（开发后）
@@ -230,6 +235,8 @@
 
 - 任务卡 Schema 校验
 - OpenSpec 绑定校验
+- function-tree catalog 校验
+- `function_tree` 节点 / 入口 / 跨域 / 自举校验
 - 白名单/黑名单路径校验
 - 主线偏移率计算
 - 副类型预算校验

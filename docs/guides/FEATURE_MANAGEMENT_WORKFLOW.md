@@ -22,6 +22,7 @@
 - `docs/INDEX.md`：按任务类型找入口，适合 AI 和开发者快速定向。
 - `docs/guides/AI_QUICK_START.md`：提供完整任务路由、最小读取路径和文档优先级。
 - `docs/FUNCTION_TREE.md`：按功能域找规范、代码、测试和运行入口。
+- `governance/mainline/task-cards/pr-<PR号>.yaml`：`function_tree` 的唯一机器事实源；PR 模板只是 reviewer 镜像。
 - `CHANGELOG.md`：记录已经发生的变更事实。
 - 本指南：规定什么时候必须同步更新功能树和 PR 描述。
 
@@ -69,7 +70,8 @@
 
 4. 合并到 main
    └─→ 在 CHANGELOG.md 记录变更
-   └─→ 在 PR 中标明所属功能域和 FUNCTION_TREE 节点
+   └─→ 在 task card 中填写 `function_tree.domain_id` / `node_id` / `affected_entrypoints`
+   └─→ 在 PR 中镜像 task card 的稳定 ID 和 reviewer 摘要
    └─→ 如需发布版本，创建版本号段落
 ```
 
@@ -118,7 +120,7 @@
    └─→ 如任务类型、最小读取路径或高优先级入口变化，同步更新 docs/guides/AI_QUICK_START.md
 
 5. 提交前复核
-   └─→ 确认 PR 描述中的功能域、节点、验证证据与 FUNCTION_TREE 一致
+   └─→ 确认 task card.function_tree 与 PR 镜像字段、验证证据、FUNCTION_TREE 稳定 ID 一致
 ```
 
 ---
@@ -197,15 +199,23 @@
 
 ## 六、PR 与 Review 对齐要求
 
+### 6.0 机器事实源
+
+- `governance/mainline/task-cards/pr-<PR号>.yaml` 是 `function_tree` 的唯一机器事实源。
+- PR 模板只负责 reviewer 镜像，不承担机器门禁真相源职责。
+- `meta-governance` 仅存在于 machine-readable catalog / task card 中，不要求镜像到业务 `FUNCTION_TREE` 文档。
+
 ### 6.1 PR 描述必填字段
 
 若本次改动影响功能、入口、流程或状态，PR 描述至少补充以下字段：
 
 - `变更类型`：`feature` / `bugfix` / `docs` / `refactor`
-- `所属功能域`：对应 `FUNCTION_TREE` 一级领域名称
-- `FUNCTION_TREE 节点`：对应二级或三级功能节点
-- `受影响入口`：规范 / API / 前端 / 核心代码 / 测试 / 运行排障
-- `是否已更新 FUNCTION_TREE`：`yes` / `no` / `not-needed`
+- `function_tree.domain_id`：对应稳定业务域 ID 或 `meta-governance`
+- `function_tree.node_id`：对应稳定节点 ID
+- `function_tree.affected_entrypoints`：`governance` / `api` / `frontend` / `core` / `tests` / `operations`
+- `function_tree.update_status`：`required` / `not-needed`
+- `function_tree.secondary_domains`：跨业务域时显式列出
+- `function_tree.exemption_reason`：豁免或自举原因
 - `验证证据`：命令、结果、关键链路
 - `风险与回滚`：是否跨域、是否影响主链路、如何回滚
 

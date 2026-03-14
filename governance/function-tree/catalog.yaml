@@ -1,0 +1,692 @@
+version: "v1"
+domains:
+  - id: "domain-01"
+    label: "01-市场数据与行情"
+    category: "business"
+    mirror_to_function_tree: true
+    nodes:
+      - id: "domain-01-node-01"
+        label: "1.1 实时行情监控"
+        coverage_paths:
+          - "src/adapters/tdx/**"
+          - "web/backend/app/api/market.py"
+          - "web/backend/app/api/market/**"
+          - "web/frontend/src/views/market/**"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/market.py"
+            - "web/backend/app/api/market/**"
+          frontend:
+            - "web/frontend/src/views/market/**"
+            - "web/frontend/src/views/artdeco-pages/market-data-tabs/**"
+          core:
+            - "src/adapters/tdx/**"
+            - "src/application/market_data/**"
+          tests:
+            - "tests/api/file_tests/test_market_api.py"
+            - "tests/e2e/market-data.spec.ts"
+            - "web/frontend/tests/e2e/market-data.spec.ts"
+          operations:
+            - "docs/testing/E2E_TEST_GUIDE.md"
+            - "docs/operations/OPS_MANUAL.md"
+      - id: "domain-01-node-02"
+        label: "1.2 资金流向分析"
+        coverage_paths:
+          - "src/adapters/akshare/market_adapter/**"
+          - "src/adapters/efinance_adapter/**"
+          - "web/frontend/src/views/artdeco-pages/market-data-tabs/FundFlow*"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/market/**"
+          frontend:
+            - "web/frontend/src/views/artdeco-pages/market-data-tabs/**"
+          core:
+            - "src/adapters/akshare/market_adapter/**"
+            - "src/adapters/efinance_adapter/**"
+          tests:
+            - "tests/e2e/market-data.spec.ts"
+            - "web/frontend/tests/e2e/market-data.spec.ts"
+          operations:
+            - "docs/operations/OPS_MANUAL.md"
+      - id: "domain-01-node-03"
+        label: "1.3 多数据源集成"
+        coverage_paths:
+          - "src/adapters/**"
+          - "config/data_sources*"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/akshare_market/**"
+            - "web/backend/app/api/market/**"
+          core:
+            - "src/adapters/**"
+          tests:
+            - "tests/unit/adapters/**"
+          operations:
+            - "docs/operations/OPS_MANUAL.md"
+      - id: "domain-01-node-04"
+        label: "1.4 K线数据服务"
+        coverage_paths:
+          - "src/adapters/tdx/kline_data_service.py"
+          - "src/adapters/akshare/misc_data/**"
+          - "src/core/**"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/market/**"
+          frontend:
+            - "web/frontend/src/views/market/**"
+          core:
+            - "src/adapters/tdx/kline_data_service.py"
+            - "src/adapters/akshare/misc_data/**"
+            - "src/core/**"
+          tests:
+            - "web/frontend/tests/e2e/kline-chart.spec.ts"
+          operations:
+            - "docs/testing/E2E_TEST_GUIDE.md"
+
+  - id: "domain-02"
+    label: "02-技术分析与指标"
+    category: "business"
+    mirror_to_function_tree: true
+    nodes:
+      - id: "domain-02-node-01"
+        label: "2.1 技术指标库"
+        coverage_paths:
+          - "src/indicators/**"
+          - "web/backend/app/api/indicators.py"
+          - "web/backend/app/api/technical/**"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/indicators.py"
+            - "web/backend/app/api/technical/**"
+          frontend:
+            - "web/frontend/src/views/technical/**"
+          core:
+            - "src/indicators/**"
+            - "src/advanced_analysis/technical_analyzer/**"
+          tests:
+            - "tests/api/technical.spec.ts"
+            - "tests/e2e/technical-analysis.spec.ts"
+          operations:
+            - "docs/operations/OPS_MANUAL.md"
+      - id: "domain-02-node-02"
+        label: "2.2 K线图表分析"
+        coverage_paths:
+          - "web/frontend/src/utils/klinecharts/**"
+          - "web/frontend/src/composables/useKLineData.ts"
+          - "web/frontend/src/utils/crosshair.ts"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          frontend:
+            - "web/frontend/src/views/technical/**"
+            - "web/frontend/src/views/artdeco-pages/technical-tabs/**"
+          core:
+            - "web/frontend/src/utils/klinecharts/**"
+            - "web/frontend/src/composables/useKLineData.ts"
+            - "web/frontend/src/utils/crosshair.ts"
+          tests:
+            - "web/frontend/tests/e2e/kline-chart.spec.ts"
+            - "tests/e2e/technical-analysis.spec.ts"
+          operations:
+            - "docs/testing/README.md"
+      - id: "domain-02-node-03"
+        label: "2.3 技术形态识别"
+        coverage_paths:
+          - "src/advanced_analysis/technical_analyzer/**"
+          - "web/backend/app/api/technical/**"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/technical/**"
+          frontend:
+            - "web/frontend/src/views/technical/**"
+          core:
+            - "src/advanced_analysis/technical_analyzer/**"
+          tests:
+            - "tests/e2e/technical-analysis.spec.ts"
+          operations:
+            - "docs/testing/README.md"
+
+  - id: "domain-03"
+    label: "03-策略管理与回测"
+    category: "business"
+    mirror_to_function_tree: true
+    nodes:
+      - id: "domain-03-node-01"
+        label: "3.1 策略配置管理"
+        coverage_paths:
+          - "src/application/strategy/**"
+          - "src/strategies/**"
+          - "web/backend/app/api/strategy_management/**"
+          - "web/backend/app/api/strategy_mgmt.py"
+          - "web/frontend/src/views/strategy/**"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/strategy_management/**"
+            - "web/backend/app/api/strategy_mgmt.py"
+          frontend:
+            - "web/frontend/src/views/strategy/**"
+            - "web/frontend/src/views/artdeco-pages/strategy-tabs/**"
+          core:
+            - "src/application/strategy/**"
+            - "src/strategies/**"
+          tests:
+            - "tests/api/strategy.spec.ts"
+            - "tests/e2e/strategy-management.spec.ts"
+            - "web/frontend/tests/e2e/strategy-backtest.spec.ts"
+          operations:
+            - "docs/operations/OPS_MANUAL.md"
+      - id: "domain-03-node-02"
+        label: "3.2 回测引擎"
+        coverage_paths:
+          - "src/backtesting/**"
+          - "src/gpu/acceleration/**"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/backtest_ws.py"
+          frontend:
+            - "web/frontend/src/views/strategy/**"
+          core:
+            - "src/backtesting/**"
+            - "src/gpu/acceleration/**"
+          tests:
+            - "tests/unit/test_advanced_backtest_engine.py"
+            - "web/frontend/tests/e2e/strategy-backtest.spec.ts"
+          operations:
+            - "src/gpu/api_system/TESTING_QUICK_START.md"
+      - id: "domain-03-node-03"
+        label: "3.3 回测分析"
+        coverage_paths:
+          - "src/backtesting/**"
+          - "web/frontend/src/views/artdeco-pages/strategy-tabs/**"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          frontend:
+            - "web/frontend/src/views/artdeco-pages/strategy-tabs/**"
+          core:
+            - "src/backtesting/**"
+          tests:
+            - "tests/e2e/strategy-management.spec.ts"
+          operations:
+            - "docs/operations/OPS_MANUAL.md"
+
+  - id: "domain-04"
+    label: "04-风险管理与监控"
+    category: "business"
+    mirror_to_function_tree: true
+    nodes:
+      - id: "domain-04-node-01"
+        label: "4.1 风险指标计算"
+        coverage_paths:
+          - "src/governance/risk_management/**"
+          - "web/backend/app/api/risk/**"
+          - "web/backend/app/api/risk_management.py"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/risk/**"
+            - "web/backend/app/api/risk_management.py"
+          frontend:
+            - "web/frontend/src/views/risk/**"
+          core:
+            - "src/governance/risk_management/**"
+          tests:
+            - "tests/backend/test_risk_management_core.py"
+            - "tests/e2e/risk-monitor.spec.ts"
+          operations:
+            - "docs/operations/OPS_MANUAL.md"
+      - id: "domain-04-node-02"
+        label: "4.2 止损止盈管理"
+        coverage_paths:
+          - "src/governance/risk_management/services/stop_loss_engine/**"
+          - "src/governance/risk_management/**"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/risk/**"
+          frontend:
+            - "web/frontend/src/views/risk/**"
+          core:
+            - "src/governance/risk_management/services/stop_loss_engine/**"
+            - "src/governance/risk_management/**"
+          tests:
+            - "tests/backend/test_risk_management_regression.py"
+            - "tests/e2e/risk-monitor.spec.ts"
+          operations:
+            - "docs/testing/README.md"
+      - id: "domain-04-node-03"
+        label: "4.3 风险仪表板"
+        coverage_paths:
+          - "web/frontend/src/views/risk/**"
+          - "web/frontend/src/views/artdeco-pages/risk-tabs/**"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          frontend:
+            - "web/frontend/src/views/risk/**"
+            - "web/frontend/src/views/artdeco-pages/risk-tabs/**"
+          tests:
+            - "tests/e2e/risk-monitor.spec.ts"
+          operations:
+            - "docs/operations/OPS_MANUAL.md"
+
+  - id: "domain-05"
+    label: "05-投资组合与交易"
+    category: "business"
+    mirror_to_function_tree: true
+    nodes:
+      - id: "domain-05-node-01"
+        label: "5.1 持仓管理"
+        coverage_paths:
+          - "src/application/portfolio/**"
+          - "src/portfolio/**"
+          - "web/backend/app/api/trading_runtime.py"
+          - "web/frontend/src/views/trading/**"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/trading_runtime.py"
+            - "web/backend/app/api/data/trading_api.py"
+          frontend:
+            - "web/frontend/src/views/trading/**"
+            - "web/frontend/src/views/artdeco-pages/trading-tabs/**"
+          core:
+            - "src/application/portfolio/**"
+            - "src/portfolio/**"
+          tests:
+            - "tests/api/file_tests/test_trade_routes_api.py"
+            - "tests/e2e/trade-management.spec.ts"
+            - "tests/ddd/test_phase_5_portfolio.py"
+          operations:
+            - "docs/operations/OPS_MANUAL.md"
+      - id: "domain-05-node-02"
+        label: "5.2 交易记录"
+        coverage_paths:
+          - "src/application/trading/**"
+          - "src/trading/**"
+          - "web/backend/app/api/trading_monitor.py"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/trading_monitor.py"
+            - "web/backend/app/api/data/trading_api.py"
+          frontend:
+            - "web/frontend/src/views/trading/**"
+          core:
+            - "src/application/trading/**"
+            - "src/trading/**"
+          tests:
+            - "tests/api/file_tests/test_trade_routes_api.py"
+            - "tests/e2e/trade-management.spec.ts"
+          operations:
+            - "docs/testing/README.md"
+      - id: "domain-05-node-03"
+        label: "5.3 交易决策"
+        coverage_paths:
+          - "web/frontend/src/views/trading-decision/**"
+          - "src/domain/trading/**"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          frontend:
+            - "web/frontend/src/views/trading-decision/**"
+          core:
+            - "src/domain/trading/**"
+            - "src/application/trading/**"
+          tests:
+            - "tests/e2e/trade-management.spec.ts"
+          operations:
+            - "docs/operations/OPS_MANUAL.md"
+
+  - id: "domain-06"
+    label: "06-监控与告警"
+    category: "business"
+    mirror_to_function_tree: true
+    nodes:
+      - id: "domain-06-node-01"
+        label: "6.1 系统监控"
+        coverage_paths:
+          - "src/monitoring/**"
+          - "src/core/monitoring.py"
+          - "web/backend/app/api/monitoring.py"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/monitoring.py"
+            - "web/backend/app/api/signal_monitoring/**"
+          frontend:
+            - "web/frontend/src/views/monitoring/**"
+            - "web/frontend/src/views/monitor.vue"
+          core:
+            - "src/monitoring/**"
+            - "src/core/monitoring.py"
+          tests:
+            - "tests/monitoring/**"
+            - "tests/e2e/monitoring-dashboard.spec.ts"
+            - "tests/unit/monitoring/test_monitoring_service.py"
+          operations:
+            - "config/monitoring-stack/README.md"
+            - "docs/deployment/SETUP_GRAFANA.md"
+            - "docs/operations/OPS_MANUAL.md"
+      - id: "domain-06-node-02"
+        label: "6.2 数据质量"
+        coverage_paths:
+          - "src/monitoring/**"
+          - "tests/unit/monitoring/**"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          core:
+            - "src/monitoring/**"
+          tests:
+            - "tests/unit/monitoring/**"
+            - "tests/monitoring/**"
+          operations:
+            - "docs/operations/OPS_MANUAL.md"
+      - id: "domain-06-node-03"
+        label: "6.3 告警管理"
+        coverage_paths:
+          - "src/monitoring/**"
+          - "web/backend/app/api/signal_monitoring/**"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/signal_monitoring/**"
+            - "web/backend/app/api/monitoring.py"
+          frontend:
+            - "web/frontend/src/views/monitoring/**"
+          core:
+            - "src/monitoring/**"
+          tests:
+            - "tests/monitoring/**"
+            - "tests/unit/monitoring/test_alert_manager.py"
+          operations:
+            - "docs/operations/OPS_MANUAL.md"
+
+  - id: "domain-07"
+    label: "07-高级分析与AI"
+    category: "business"
+    mirror_to_function_tree: true
+    nodes:
+      - id: "domain-07-node-01"
+        label: "7.1 机器学习策略"
+        coverage_paths:
+          - "src/ml_strategy/**"
+          - "web/backend/app/api/ml.py"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/ml.py"
+          frontend:
+            - "web/frontend/src/views/strategy/BacktestGPU.vue"
+            - "web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue"
+          core:
+            - "src/ml_strategy/**"
+            - "src/gpu/api_system/services/**"
+          tests:
+            - "tests/api/test_ml_file.py"
+            - "src/gpu/api_system/tests/README.md"
+          operations:
+            - "src/ml_strategy/automation/README.md"
+            - "src/gpu/api_system/README.md"
+            - "src/gpu/api_system/WSL2_GPU_SETUP.md"
+      - id: "domain-07-node-02"
+        label: "7.2 批量分析"
+        coverage_paths:
+          - "src/advanced_analysis/**"
+          - "web/backend/app/api/advanced_analysis.py"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/advanced_analysis.py"
+            - "web/backend/app/api/algorithms.py"
+          frontend:
+            - "web/frontend/src/views/quant-matrix/**"
+          core:
+            - "src/advanced_analysis/**"
+          tests:
+            - "tests/unit/test_advanced_backtest_engine.py"
+          operations:
+            - "src/gpu/api_system/README.md"
+      - id: "domain-07-node-03"
+        label: "7.3 情感分析"
+        coverage_paths:
+          - "src/advanced_analysis/**"
+          - "web/backend/app/api/algorithms.py"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/algorithms.py"
+            - "web/backend/app/api/advanced_analysis.py"
+          core:
+            - "src/advanced_analysis/**"
+          tests:
+            - "tests/unit/test_advanced_backtest_engine.py"
+          operations:
+            - "src/ml_strategy/automation/README.md"
+
+  - id: "domain-08"
+    label: "08-系统管理与配置"
+    category: "business"
+    mirror_to_function_tree: true
+    nodes:
+      - id: "domain-08-node-01"
+        label: "8.1 认证授权"
+        coverage_paths:
+          - "web/backend/app/api/auth.py"
+          - "tests/security/test_jwt_authentication.py"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/auth.py"
+          frontend:
+            - "web/frontend/src/views/system/**"
+            - "web/frontend/src/views/artdeco-pages/system-tabs/**"
+          core:
+            - "web/backend/app/api/auth.py"
+          tests:
+            - "tests/api/auth.spec.ts"
+            - "tests/security/test_jwt_authentication.py"
+          operations:
+            - "docs/deployment/README.md"
+            - "docs/operations/deployment-guide.md"
+      - id: "domain-08-node-02"
+        label: "8.2 系统配置"
+        coverage_paths:
+          - "web/backend/app/api/system.py"
+          - "config/**"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/system.py"
+          frontend:
+            - "web/frontend/src/views/system/**"
+            - "web/frontend/src/views/artdeco-pages/system-tabs/**"
+          core:
+            - "config/**"
+          tests:
+            - "tests/api/system.spec.ts"
+          operations:
+            - "docs/deployment/README.md"
+            - "config/docker/README.md"
+      - id: "domain-08-node-03"
+        label: "8.3 备份恢复"
+        coverage_paths:
+          - "web/backend/app/api/backup_recovery.py"
+          - "src/infrastructure/backup_recovery/**"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/backup_recovery.py"
+          frontend:
+            - "web/frontend/src/views/system/**"
+          core:
+            - "src/infrastructure/backup_recovery/**"
+          tests:
+            - "tests/api/system.spec.ts"
+          operations:
+            - "docs/operations/deployment-guide.md"
+            - "config/docker/README.md"
+
+  - id: "domain-09"
+    label: "09-数据存储与管理"
+    category: "business"
+    mirror_to_function_tree: true
+    nodes:
+      - id: "domain-09-node-01"
+        label: "9.1 数据库架构"
+        coverage_paths:
+          - "src/storage/database/**"
+          - "config/docker-infra/**"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/data/market.py"
+          frontend:
+            - "web/frontend/src/views/system/DatabaseMonitor.vue"
+            - "web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue"
+          core:
+            - "src/storage/database/**"
+            - "src/core/**"
+          tests:
+            - "tests/api/test_data_file.py"
+            - "tests/integration/test_api_integration.py"
+          operations:
+            - "config/docker-infra/README.md"
+            - "docs/operations/README.md"
+            - "docs/architecture/README.md"
+      - id: "domain-09-node-02"
+        label: "9.2 数据访问层"
+        coverage_paths:
+          - "src/data_access/**"
+          - "src/core/unified_manager.py"
+          - "src/core/data_classification.py"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/data/market.py"
+          core:
+            - "src/data_access/**"
+            - "src/core/unified_manager.py"
+            - "src/core/data_classification.py"
+          tests:
+            - "tests/api/test_data_file.py"
+            - "tests/integration/test_api_integration.py"
+            - "tests/unit/test_market_data.py"
+          operations:
+            - "docs/architecture/README.md"
+      - id: "domain-09-node-03"
+        label: "9.3 缓存管理"
+        coverage_paths:
+          - "src/core/**"
+          - "config/**"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          core:
+            - "src/core/**"
+          tests:
+            - "tests/unit/core/test_cache_service_redis_role.py"
+          operations:
+            - "docs/operations/README.md"
+
+  - id: "domain-10"
+    label: "10-公告与信息"
+    category: "business"
+    mirror_to_function_tree: true
+    nodes:
+      - id: "domain-10-node-01"
+        label: "10.1 公告管理"
+        coverage_paths:
+          - "web/backend/app/api/announcement.py"
+          - "web/backend/app/api/announcement/**"
+          - "web/backend/app/services/announcement_service.py"
+          - "web/backend/app/models/announcement.py"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/announcement.py"
+            - "web/backend/app/api/announcement/**"
+          frontend:
+            - "web/frontend/src/views/announcement/**"
+          core:
+            - "web/backend/app/services/announcement_service.py"
+            - "web/backend/app/models/announcement.py"
+          tests:
+            - "tests/api/file_tests/test_announcement_api.py"
+            - "web/backend/app/api/test_announcement_api.py"
+          operations:
+            - "docs/testing/README.md"
+            - "docs/operations/OPS_MANUAL.md"
+      - id: "domain-10-node-02"
+        label: "10.2 公告监控"
+        coverage_paths:
+          - "web/frontend/src/views/announcement/**"
+          - "web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue"
+        entrypoints:
+          governance:
+            - "docs/FUNCTION_TREE.md"
+          frontend:
+            - "web/frontend/src/views/announcement/**"
+            - "web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue"
+          tests:
+            - "tests/api/file_tests/test_announcement_api.py"
+          operations:
+            - "docs/operations/OPS_MANUAL.md"
+
+  - id: "meta-governance"
+    label: "META-治理与门禁"
+    category: "meta"
+    mirror_to_function_tree: false
+    nodes:
+      - id: "meta-governance-mainline"
+        label: "Mainline Governance And Function-Tree Gate"
+        coverage_paths:
+          - "governance/mainline/**"
+          - "governance/function-tree/**"
+          - ".github/pull_request_template.md"
+          - "docs/guides/FEATURE_MANAGEMENT_WORKFLOW.md"
+          - "docs/guides/AI_QUICK_START.md"
+        entrypoints:
+          governance:
+            - "governance/mainline/**"
+            - "governance/function-tree/**"
+            - ".github/pull_request_template.md"
+            - "docs/guides/FEATURE_MANAGEMENT_WORKFLOW.md"
+            - "docs/guides/AI_QUICK_START.md"
+          tests:
+            - "tests/unit/governance/**"
+            - "tests/fixtures/governance/**"
+          operations:
+            - "docs/guides/MONGO_MULTICLI_COORDINATION_GUIDE.md"

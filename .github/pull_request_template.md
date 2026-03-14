@@ -11,15 +11,19 @@
 
 - task_card_path: `governance/mainline/task-cards/pr-<PR号>.yaml`
 
+> task card 是唯一机器事实源。PR 模板只做 reviewer 镜像，不替代 `task_card_path` 中的 machine-readable `function_tree`。
+
 ## Function Tree Mapping (Required when functionality, scope, or entrypoints change)
 
 > 若本次改动涉及功能变化、入口变化、跨域影响或行为变更，请完整填写；纯治理/纯格式调整可写 `N/A`。
 
 - change_type: `<feature|bugfix|docs|refactor>`
-- function_domain: `<01-市场数据与行情|02-技术分析与指标|03-策略管理与回测|04-风险管理与监控|05-投资组合与交易|06-监控与告警|07-高级分析与AI|08-系统管理与配置|09-数据存储与管理|10-公告与信息|N/A>`
-- function_tree_node: `<二级/三级节点名称 | N/A>`
-- affected_entrypoints: `<规范|API/契约|前端/交互|核心代码|测试与验证|运行与排障 | N/A>`
-- function_tree_updated: `<yes|no|not-needed>`
+- function_tree_domain_id: `<domain-01|...|domain-10|meta-governance|N/A>`
+- function_tree_node_id: `<domain-xx-node-yy|meta-governance-mainline|N/A>`
+- function_tree_secondary_domains: `<domain-xx,... | [] | N/A>`
+- affected_entrypoints: `<governance|api|frontend|core|tests|operations | N/A>`
+- function_tree_update_status: `<required|not-needed|N/A>`
+- function_tree_exemption_reason: `<why exempt or self-bootstrap | N/A>`
 
 ## Verification And Risk (Required)
 

@@ -25,6 +25,8 @@ except ImportError as exc:  # pragma: no cover
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_SCHEMA = PROJECT_ROOT / "governance/mainline/schemas/ai-task-card.schema.json"
 DEFAULT_REPORT = PROJECT_ROOT / "governance/mainline/reports/mainline-governance-report.json"
+DEFAULT_FUNCTION_TREE_CATALOG = PROJECT_ROOT / "governance/function-tree/catalog.yaml"
+DEFAULT_FUNCTION_TREE_SCHEMA = PROJECT_ROOT / "governance/function-tree/schema.json"
 
 SUMMARY_FIELDS = (
     "change_purpose",
@@ -34,6 +36,9 @@ SUMMARY_FIELDS = (
     "rollback_ready",
     "risk_and_rollback_point",
 )
+
+FUNCTION_TREE_ENTRYPOINTS = ("governance", "api", "frontend", "core", "tests", "operations")
+FUNCTION_TREE_SHARED_SYNC_FILES = ("docs/FUNCTION_TREE.md",)
 
 GOVERNANCE_META_PATTERNS = (
     "governance/mainline/task-cards/*.yaml",
@@ -93,6 +98,188 @@ def load_yaml(path: Path) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError("task card root must be an object")
     return payload
+
+
+def load_function_tree_catalog(
+    catalog_path: Path = DEFAULT_FUNCTION_TREE_CATALOG,
+    schema_path: Path = DEFAULT_FUNCTION_TREE_SCHEMA,
+) -> dict[str, Any]:
+    if not catalog_path.exists():
+        raise FileNotFoundError(f"function tree catalog not found: {catalog_path}")
+    if not schema_path.exists():
+        raise FileNotFoundError(f"function tree schema not found: {schema_path}")
+
+    catalog = load_yaml(catalog_path)
+    schema = load_json(schema_path)
+    validator = Draft202012Validator(schema, format_checker=FormatChecker())
+    errors = sorted(validator.iter_errors(catalog), key=lambda item: list(item.absolute_path))
+    if errors:
+        location = ".".join(str(part) for part in errors[0].absolute_path) or "<root>"
+        raise ValueError(f"function tree catalog schema violation at {location}: {errors[0].message}")
+    validate_function_tree_catalog_integrity(catalog)
+    return catalog
+
+
+def validate_function_tree_catalog_integrity(catalog: dict[str, Any]) -> None:
+    seen_domain_ids: set[str] = set()
+    seen_node_ids: set[str] = set()
+
+    for domain in catalog.get("domains", []):
+        domain_id = str(domain.get("id", "")).strip()
+        if domain_id in seen_domain_ids:
+            raise ValueError(f"duplicate function tree domain id: {domain_id}")
+        seen_domain_ids.add(domain_id)
+
+        for node in domain.get("nodes", []):
+            node_id = str(node.get("id", "")).strip()
+            if node_id in seen_node_ids:
+                raise ValueError(f"duplicate function tree node id: {node_id}")
+            seen_node_ids.add(node_id)
+
+            entrypoints = node.get("entrypoints", {})
+            for paths in entrypoints.values():
+                if not isinstance(paths, list):
+                    continue
+                for raw_path in paths:
+                    if not isinstance(raw_path, str) or any(token in raw_path for token in "*?["):
+                        continue
+                    if not (PROJECT_ROOT / raw_path).exists():
+                        raise ValueError(f"missing literal function tree entrypoint path: {raw_path}")
+
+
+def list_entrypoint_paths(node: dict[str, Any], categories: list[str] | None = None) -> list[str]:
+    entrypoints = node.get("entrypoints", {})
+    selected_categories = categories or list(FUNCTION_TREE_ENTRYPOINTS)
+    paths: list[str] = []
+    for category in selected_categories:
+        values = entrypoints.get(category, [])
+        if isinstance(values, list):
+            paths.extend(str(value) for value in values if str(value).strip())
+    return sorted(set(paths))
+
+
+def is_shared_function_tree_sync_file(path: str) -> bool:
+    return matches_any(path, list(FUNCTION_TREE_SHARED_SYNC_FILES))
+
+
+def find_domain_by_id(catalog: dict[str, Any], domain_id: str) -> dict[str, Any] | None:
+    for domain in catalog.get("domains", []):
+        if domain.get("id") == domain_id:
+            return domain
+    return None
+
+
+def find_node_by_id(domain: dict[str, Any], node_id: str) -> dict[str, Any] | None:
+    for node in domain.get("nodes", []):
+        if node.get("id") == node_id:
+            return node
+    return None
+
+
+def collect_matched_domains(catalog: dict[str, Any], changed_files: list[str]) -> list[dict[str, Any]]:
+    matched_domains: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+
+    for domain in catalog.get("domains", []):
+        for node in domain.get("nodes", []):
+            patterns = list(node.get("coverage_paths", [])) + list_entrypoint_paths(node)
+            if any(
+                not is_shared_function_tree_sync_file(path) and matches_any(path, patterns) for path in changed_files
+            ):
+                domain_id = str(domain.get("id", "")).strip()
+                if domain_id and domain_id not in seen_ids:
+                    matched_domains.append(domain)
+                    seen_ids.add(domain_id)
+                break
+    return matched_domains
+
+
+def validate_function_tree_mapping(
+    card: dict[str, Any], changed_files: list[str], catalog: dict[str, Any] | None = None
+) -> tuple[list[str], dict[str, Any]]:
+    task_type = str(card.get("classification", {}).get("task_type", "")).strip()
+    function_tree = card.get("function_tree")
+    metrics: dict[str, Any] = {
+        "matched_domain_ids": [],
+        "matched_business_domain_ids": [],
+        "function_tree_declared_matches": [],
+        "function_tree_declared_entrypoint_paths": [],
+    }
+
+    violations: list[str] = []
+    if not function_tree:
+        if task_type == "feature":
+            violations.append("feature task requires function_tree metadata")
+        return violations, metrics
+
+    if catalog is None:
+        catalog = load_function_tree_catalog()
+
+    domain_id = str(function_tree.get("domain_id", "")).strip()
+    node_id = str(function_tree.get("node_id", "")).strip()
+    affected_entrypoints = list(function_tree.get("affected_entrypoints") or [])
+    update_status = str(function_tree.get("update_status", "")).strip()
+    secondary_domains = [str(item).strip() for item in list(function_tree.get("secondary_domains") or []) if str(item).strip()]
+    exemption_reason = str(function_tree.get("exemption_reason", "")).strip()
+
+    invalid_entrypoints = [item for item in affected_entrypoints if item not in FUNCTION_TREE_ENTRYPOINTS]
+    if invalid_entrypoints:
+        violations.append(f"unsupported function_tree.affected_entrypoints: {', '.join(sorted(set(invalid_entrypoints)))}")
+
+    declared_domain = find_domain_by_id(catalog, domain_id)
+    if declared_domain is None:
+        violations.append(f"unknown function_tree.domain_id: {domain_id}")
+        return violations, metrics
+
+    declared_node = find_node_by_id(declared_domain, node_id)
+    if declared_node is None:
+        violations.append(f"unknown function_tree.node_id: {node_id}")
+        return violations, metrics
+
+    declared_patterns = list(declared_node.get("coverage_paths", []))
+    declared_entrypoint_paths = list_entrypoint_paths(declared_node, affected_entrypoints)
+    metrics["function_tree_declared_entrypoint_paths"] = declared_entrypoint_paths
+
+    declared_matches = [
+        path
+        for path in changed_files
+        if not is_shared_function_tree_sync_file(path)
+        and (matches_any(path, declared_patterns) or matches_any(path, declared_entrypoint_paths))
+    ]
+    metrics["function_tree_declared_matches"] = declared_matches
+
+    if changed_files and not declared_matches:
+        violations.append("declared function_tree mapping did not match changed files")
+
+    matched_domains = collect_matched_domains(catalog, changed_files)
+    matched_domain_ids = [str(domain.get("id", "")).strip() for domain in matched_domains if str(domain.get("id", "")).strip()]
+    matched_business_domain_ids = [
+        domain_id for domain_id in matched_domain_ids if find_domain_by_id(catalog, domain_id).get("category") == "business"
+    ]
+    metrics["matched_domain_ids"] = matched_domain_ids
+    metrics["matched_business_domain_ids"] = matched_business_domain_ids
+
+    if len(matched_business_domain_ids) > 1:
+        undeclared_domains = [
+            item for item in matched_business_domain_ids if item != domain_id and item not in secondary_domains
+        ]
+        if undeclared_domains and not exemption_reason:
+            violations.append(
+                "cross-domain business diff requires function_tree.secondary_domains or exemption_reason"
+            )
+
+    if bool(declared_domain.get("mirror_to_function_tree")) and update_status == "not-needed":
+        mirrored_entrypoint_hits = [
+            path
+            for path in changed_files
+            if not is_shared_function_tree_sync_file(path) and matches_any(path, declared_entrypoint_paths)
+        ]
+        if mirrored_entrypoint_hits:
+            violations.append(
+                "mirrored business entrypoint changes cannot use update_status=not-needed"
+            )
+
+    return violations, metrics
 
 
 def resolve_event_context() -> tuple[str | None, str | None, int | None]:
@@ -421,6 +608,13 @@ def main() -> int:
         report["violations"].extend(check_feature_openspec(card))
         report["violations"].extend(check_summary(card))
         report["violations"].extend(check_phase_threshold(card))
+
+        function_tree_catalog = load_function_tree_catalog()
+        function_tree_violations, function_tree_metrics = validate_function_tree_mapping(
+            card, changed_files, catalog=function_tree_catalog
+        )
+        report["violations"].extend(function_tree_violations)
+        report.update(function_tree_metrics)
 
         scope_violations, scope_metrics = check_scope_and_drift(card, effective_changed_files, task_card_rel)
         report["violations"].extend(scope_violations)

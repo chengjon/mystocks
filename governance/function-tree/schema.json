@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mystocks.local/schemas/function-tree.schema.json",
+  "title": "MyStocks Function Tree Catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "domains"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "v1"
+    },
+    "domains": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "#/$defs/domain"
+      }
+    }
+  },
+  "$defs": {
+    "path_list": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "entrypoints": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "governance": {
+          "$ref": "#/$defs/path_list"
+        },
+        "api": {
+          "$ref": "#/$defs/path_list"
+        },
+        "frontend": {
+          "$ref": "#/$defs/path_list"
+        },
+        "core": {
+          "$ref": "#/$defs/path_list"
+        },
+        "tests": {
+          "$ref": "#/$defs/path_list"
+        },
+        "operations": {
+          "$ref": "#/$defs/path_list"
+        }
+      }
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "coverage_paths", "entrypoints"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "coverage_paths": {
+          "$ref": "#/$defs/path_list"
+        },
+        "entrypoints": {
+          "$ref": "#/$defs/entrypoints"
+        }
+      }
+    },
+    "domain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "category", "mirror_to_function_tree", "nodes"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "enum": ["business", "meta"]
+        },
+        "mirror_to_function_tree": {
+          "type": "boolean"
+        },
+        "nodes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/node"
+          }
+        }
+      }
+    }
+  }
+}

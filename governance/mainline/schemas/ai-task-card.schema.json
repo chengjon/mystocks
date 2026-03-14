@@ -243,6 +243,52 @@
         }
       }
     },
+    "function_tree": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "domain_id",
+        "node_id",
+        "affected_entrypoints",
+        "update_status",
+        "secondary_domains",
+        "exemption_reason"
+      ],
+      "properties": {
+        "domain_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "node_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "affected_entrypoints": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["governance", "api", "frontend", "core", "tests", "operations"]
+          }
+        },
+        "update_status": {
+          "type": "string",
+          "enum": ["required", "not-needed"]
+        },
+        "secondary_domains": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "exemption_reason": {
+          "type": "string"
+        }
+      }
+    },
     "governance": {
       "type": "object",
       "additionalProperties": false,
@@ -313,6 +359,7 @@
         }
       },
       "then": {
+        "required": ["function_tree"],
         "properties": {
           "openspec": {
             "properties": {

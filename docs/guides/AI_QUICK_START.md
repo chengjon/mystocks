@@ -27,6 +27,8 @@ MyStocks 是持续演进中的工程仓库，不是纯知识库。
    适用：需要快速知道从哪份文档开始读
 4. [功能树](../FUNCTION_TREE.md)
    适用：任何落到具体业务能力的任务
+5. `governance/mainline/task-cards/pr-<PR号>.yaml`
+   适用：需要 machine-readable `function_tree` 声明、scope gate 或 reviewer 镜像对齐的任务
 
 ---
 
@@ -52,6 +54,7 @@ MyStocks 是持续演进中的工程仓库，不是纯知识库。
 2. 如涉及规划或能力新增，再读 [OpenSpec 工作流](../../openspec/AGENTS.md)
 3. 进入 [功能树](../FUNCTION_TREE.md) 的目标功能域
 4. 只下钻该领域的“领域入口”表
+5. 如本次是受治理的 PR / 任务，再检查 task card 中的 `function_tree` 稳定 ID 与 `affected_entrypoints`
 
 ### Bug 修复
 
@@ -94,6 +97,7 @@ MyStocks 是持续演进中的工程仓库，不是纯知识库。
 - 先按功能域定位，不先按目录瞎找
 - 先看领域入口，不先展开全仓搜索
 - 跨领域任务由主领域维护完整入口，其他领域只看引用
+- task card 的 `function_tree` 是机器真相源；`meta-governance` 只在 machine-readable catalog / task card 中声明，不进入业务功能树文档
 
 ---
 

@@ -1,0 +1,133 @@
+business_feature_card:
+  version: "v0.2"
+  task:
+    id: "pr-3101"
+    title: "sync market domain function tree metadata"
+    owner: "mystocks_spec1"
+    created_at: "2026-03-14"
+  mainline:
+    id: "L1-market"
+    objective: "keep market domain governance aligned"
+    milestone_id: "L2-market"
+    slice_id: "L3-market-function-tree"
+  classification:
+    task_type: "feature"
+    secondary_type: "none"
+    secondary_change_budget_percent: 0
+    secondary_allowed_paths: []
+  openspec:
+    change_id: "govern-function-tree-as-code"
+    approval_status: "approved"
+  function_tree:
+    domain_id: "domain-01"
+    node_id: "domain-01-node-01"
+    affected_entrypoints:
+      - "api"
+      - "tests"
+    update_status: "required"
+    secondary_domains: []
+    exemption_reason: ""
+  scope:
+    allowed_paths:
+      - "web/backend/app/api/market.py"
+      - "tests/api/file_tests/test_market_api.py"
+    forbidden_paths:
+      - "web/frontend/src/App.vue"
+  non_goals:
+    - "No unrelated governance refactor"
+  acceptance:
+    checks:
+      - id: "market-tests"
+        command: "pytest --no-cov tests/api/file_tests/test_market_api.py -q"
+        required: true
+  risk_and_rollback:
+    risks:
+      - "May broaden market API scope validation"
+    rollback_plan: "git revert <sha>"
+  delivery:
+    six_line_summary_required: true
+    six_line_summary:
+      change_purpose: "align market task card with function-tree IDs"
+      modified_scope: "market api + tests"
+      dependency_changes: "none"
+      legacy_logic_impact: "none"
+      rollback_ready: "yes"
+      risk_and_rollback_point: "revert market governance-only diff"
+  governance:
+    phase: "phase_a_pr_hard_gate"
+    mainline_drift_threshold_percent: 5
+    stop_rule_owner: "mystocks_spec1"
+    stop_rule_sla_hours: 24
+    approval:
+      required: false
+      approved_by: "main"
+      approved_at: "2026-03-14T00:00:00Z"
+      approval_note: "approved"
+      secondary_approved: false
+
+meta_governance_cleanup_card:
+  version: "v0.2"
+  task:
+    id: "pr-3102"
+    title: "tighten mainline governance docs"
+    owner: "mystocks_spec5"
+    created_at: "2026-03-14"
+  mainline:
+    id: "L1-governance"
+    objective: "keep governance inputs machine-readable"
+    milestone_id: "L2-governance"
+    slice_id: "L3-function-tree"
+  classification:
+    task_type: "cleanup"
+    secondary_type: "none"
+    secondary_change_budget_percent: 0
+    secondary_allowed_paths: []
+  openspec:
+    change_id: "not-required"
+    approval_status: "not_required"
+  function_tree:
+    domain_id: "meta-governance"
+    node_id: "meta-governance-mainline"
+    affected_entrypoints:
+      - "governance"
+      - "tests"
+    update_status: "not-needed"
+    secondary_domains: []
+    exemption_reason: "governance-self-bootstrap"
+  scope:
+    allowed_paths:
+      - "governance/mainline/**"
+      - "tests/unit/governance/**"
+    forbidden_paths:
+      - "web/frontend/src/App.vue"
+  non_goals:
+    - "No business-domain behavior changes"
+  acceptance:
+    checks:
+      - id: "governance-tests"
+        command: "pytest --no-cov tests/unit/governance -q"
+        required: true
+  risk_and_rollback:
+    risks:
+      - "May over-tighten governance gate wording"
+    rollback_plan: "git revert <sha>"
+  delivery:
+    six_line_summary_required: true
+    six_line_summary:
+      change_purpose: "keep governance docs and gates aligned"
+      modified_scope: "governance/mainline + tests"
+      dependency_changes: "none"
+      legacy_logic_impact: "none"
+      rollback_ready: "yes"
+      risk_and_rollback_point: "revert governance-only cleanup"
+  governance:
+    phase: "phase_a_pr_hard_gate"
+    mainline_drift_threshold_percent: 5
+    stop_rule_owner: "mystocks_spec5"
+    stop_rule_sla_hours: 24
+    approval:
+      required: false
+      approved_by: "main"
+      approved_at: "2026-03-14T00:00:00Z"
+      approval_note: "approved"
+      secondary_approved: false

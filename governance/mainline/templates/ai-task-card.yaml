@@ -25,6 +25,16 @@ openspec:
   change_id: "update-example-capability"
   approval_status: "approved" # approved | not_required | pending | rejected
 
+function_tree:
+  domain_id: "domain-05"
+  node_id: "domain-05-node-01"
+  affected_entrypoints:
+    - "api"
+    - "frontend"
+  update_status: "required" # required | not-needed
+  secondary_domains: []
+  exemption_reason: ""
+
 scope:
   allowed_paths:
     - "src/**"
