@@ -2969,3 +2969,36 @@
 - 如需补控制面状态：
   - 需先解决 Mongo 认证，再执行：
     - `python scripts/runtime/coordctl.py work mark 2026-03-14-api-route-governance-mystocks-spec1 --status ready_for_review --actor-cli mystocks_spec1 --summary "Code, focused validation, and TASK-REPORT are ready for main review" --output json`
+
+## [MAIN MERGE] 2026-03-15 Frontend Structure Convergence Worker3
+- Source:
+  - Mongo `work_item_id`: `2026-03-14-frontend-structure-convergence-mystocks-spec3`
+  - Worker worktree: `/opt/claude/mystocks_spec3`
+- Merged Into Local `main`:
+  - `web/frontend/src/components/realtime/RealtimePositionPanel.vue`
+  - `web/frontend/src/composables/useWebSocketWithConfig.ts`
+  - `web/frontend/src/views/artdeco-pages/ArtDecoMarketData.vue`
+  - `web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts`
+  - `web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts`
+  - `web/frontend/tests/unit/realtime-position-panel.spec.ts`
+  - `web/frontend/tests/unit/use-websocket-with-config.spec.ts`
+- Merge Notes:
+  - 已并入 worker3 已复核的 realtime/dashboard/WebSocket 收口结果：
+    - `RealtimePositionPanel` 改为 shared `useRealtimeMarket()`，并修复真实双 `connected` 握手下的重复握手动作
+    - `useWebSocketWithConfig` 立即激活底层订阅注册并返回真实 cleanup
+    - `useArtDecoDashboard` 维持已验证的 `market.trend.000001` 订阅路径，并补趋势点追加断言
+    - `ArtDecoMarketData` 的龙虎榜加载改为 `dashboardService.getLongHuBang(...)`
+  - worker3 中较早版本的 `ArtDecoStrategyManagement.vue` / `strategyManagementViewModel.ts` 纯逻辑拆分未按原样并入。
+  - 原因：当前 `main` 工作树已存在更完整的 `strategyManagementHelpers.ts` + `useStrategyManagementViewModel()` 路线与对应测试，强行覆盖会踩掉主仓并行重构；该部分按 `superseded by current main-side refactor` 处理。
+- Main-Side Verification:
+  - `npm --prefix web/frontend run test -- strategy-management-view-model.spec.ts use-websocket-with-config.spec.ts ArtDecoDashboardLogic.spec.ts realtime-position-panel.spec.ts`
+    - 结果：`3 files passed`, `9 tests passed`
+    - 说明：`strategy-management-view-model.spec.ts` 未在当前 `main` 中并入，按现有主仓 helper 路线改为单独验证
+  - `npm --prefix web/frontend run test -- strategy-management-helpers.spec.ts`
+    - 结果：`1 file passed`, `5 tests passed`
+  - `git diff --check -- web/frontend/src/components/realtime/RealtimePositionPanel.vue web/frontend/src/composables/useWebSocketWithConfig.ts web/frontend/src/views/artdeco-pages/ArtDecoMarketData.vue web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts web/frontend/tests/unit/realtime-position-panel.spec.ts web/frontend/tests/unit/use-websocket-with-config.spec.ts`
+    - 结果：通过
+  - `gitnexus_detect_changes(scope="staged")`
+    - 结果：`risk_level=low`
+- Local Main Commits:
+  - `065953da` `fix(frontend): converge realtime dashboard subscriptions`
