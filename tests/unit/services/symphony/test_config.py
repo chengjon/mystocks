@@ -147,6 +147,28 @@ def test_service_config_reads_runtime_cli_identity_and_reclaim_flag(monkeypatch:
     assert config.runtime.reclaim_stale_assignments is True
 
 
+def test_service_config_supports_mongo_tracker_settings() -> None:
+    definition = WorkflowDefinition(
+        config={
+            "tracker": {
+                "kind": "mongo",
+                "mongo_uri": "mongodb://mongo:27017",
+                "mongo_db": "mystocks_coord",
+                "active_states": ["created", "dispatched", "in_progress"],
+                "terminal_states": ["verified", "merged"],
+            }
+        },
+        prompt_template="Prompt",
+    )
+
+    config = ServiceConfig.from_workflow_definition(definition)
+
+    assert config.tracker.kind == "mongo"
+    assert config.tracker.mongo_uri == "mongodb://mongo:27017"
+    assert config.tracker.mongo_db == "mystocks_coord"
+    validate_dispatch_config(config)
+
+
 def test_service_config_expands_home_but_preserves_bare_relative_roots(monkeypatch: pytest.MonkeyPatch) -> None:
     definition_home = WorkflowDefinition(
         config={

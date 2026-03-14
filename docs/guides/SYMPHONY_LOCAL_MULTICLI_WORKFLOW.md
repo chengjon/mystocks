@@ -2,18 +2,27 @@
 
 ## 一句话原则
 
-`TASK.md` / `TASK-REPORT.md` 是人工协作契约，Symphony 是契约形成后的自动化执行与监控层。
+`TASK.md` / `TASK-REPORT.md` 是人工协作契约，`Maestro/Symphony` 是契约形成后的自动化执行层，而 MongoDB Multi-CLI Coordination 是 `maestro.collab` 的下一代协作控制面。
 
 为匹配本项目的本地优先 + 多 CLI 工作流，仓库根目录的 `TASK.md` / `TASK-REPORT.md` 被目录治理策略定义为 **workflow-approved exceptions**：它们是当前协作机制的正式入口与回报面，不再视为“待迁移债务”。
+
+## 当前阶段边界（2026-03-13）
+
+- 当前已落地基线仍是 `SQLite tracker + SQLite collaboration registry`
+- `MongoDB Multi-CLI Coordination` 当前归属 `maestro.collab` 演进线，不作为平行新系统存在
+- 本期目标是在 MyStocks 内验证 Mongo 协作主事实源，而不是立即独立拆仓
+- 在切换期内，`TASK.md` 继续承担任务契约职责
+- 在切换期内，`TASK-REPORT.md` 允许从 Mongo 协作状态导出摘要，并保留人工异常补充
 
 ## 权威责任模型
 
 - **人**：定义目标、方向、总任务和高层约束
 - **`main CLI`**：拆解总任务，结合约束/依赖/`.FILE_OWNERSHIP` 决定 owner 与 worker CLI，定义验收标准，维护 `TASK.md`，审阅 `TASK-REPORT.md`
-- **`worker CLI`**：按 `TASK.md` 执行，在 owner 边界内修改，更新 `TASK-REPORT.md`，提供验证证据
+- **`worker CLI`**：按 `TASK.md` 执行，在 owner 边界内修改，更新协作状态，并在需要时补充 `TASK-REPORT.md` 证据
 - **Symphony / `Maestro Runtime`**：在任务进入活跃状态后负责自动化分发、执行、监控、心跳、stale 检测、重试与状态汇总
+- **Mongo Coordination Control Plane**：负责主 CLI 分发、worker 更新、request 审批和跨 worker 汇总
 
-这四者里，只有前两者可以定义任务契约；运行时系统只负责契约之后的自动化流程。
+这几类角色中，只有人和 `main CLI` 可以定义任务契约；运行时系统和协作控制面只负责契约之后的自动化流程。  
 其中 `main CLI` 可以使用 `maestro.collab` 的建议能力辅助判断 owner，但最终分配动作仍是显式人工决定。
 
 ## 角色分工
@@ -29,32 +38,49 @@
 
 - 读取 `TASK.md`
 - 在 owner 边界内执行
-- 更新 `TASK-REPORT.md`
+- 更新协作状态
+- 在需要时补充 `TASK-REPORT.md`
 - 提供验证证据
 
-### Symphony
+### Symphony / Maestro Runtime
 
 - 读取 SQLite tracker 中已进入活跃状态的任务
 - 拉起对应 worker 执行会话
 - 暴露运行态、最近事件、heartbeat / stale 视图
 - 负责自动化分发、监控、重试，不负责任务定义
 
+### MongoDB Coordination Control Plane
+
+- 归属 `maestro.collab` 的下一代协作控制面
+- 管理主 CLI 分发、worker 更新、request 审批和跨 worker 汇总
+- 在当前阶段与现有 runtime 并存，并通过兼容入口逐步接线
+- 稳定前不替代 `TASK.md` 的人工契约作用
+
 ## 推荐流程
 
 1. 开发者 / 主 CLI 完成任务拆分
-2. 更新 `TASK.md`、必要时初始化 `TASK-REPORT.md`
-3. 将 issue 放入本地 tracker 活跃状态
-4. 启动 Symphony
-5. Symphony 自动执行后续流程：
+2. 更新 `TASK.md`，必要时初始化 `TASK-REPORT.md`
+3. 运行 `maestro_collab suggest` 获取 owner 建议
+4. 主 CLI 决定当前任务走哪条协作路径：
+   - SQLite 基线路径
+   - Mongo 协作控制面路径
+5. 若走 SQLite 基线路径：
+   - 将 issue 放入本地 tracker 活跃状态
+   - 启动 Symphony
+6. 若走 Mongo 协作控制面路径：
+   - 由主 CLI 创建/分发 Mongo `work_item`
+   - worker 通过 `coordctl` / 兼容入口读取任务并上报更新
+   - 必要时导出 `TASK-REPORT.md` 摘要
+7. Runtime / Control Plane 自动执行后续流程：
    - 创建 / 复用 workspace
    - 启动 worker session
    - 持续监控 session 状态
-6. Worker 在执行中更新 `TASK-REPORT.md`
-7. 主 CLI 查看：
+8. Worker 在执行中更新协作状态；若当前任务仍依赖 Markdown，则同步更新 `TASK-REPORT.md`
+9. 主 CLI 查看：
    - `TASK-REPORT.md`
-   - Symphony 状态 API
+   - Symphony / collab 状态 API
    - Git / PR / 提交证据
-8. 主 CLI 决定是否收尾、重派或回滚
+10. 主 CLI 决定是否收尾、重派、回滚，或推进到 `verified / merged`
 
 ## 为什么不让 Symphony 直接写 TASK.md
 
@@ -71,6 +97,11 @@
 - `WORKFLOW.md` 明确 worker 必须读取 `TASK.md` / `TASK-REPORT.md`
 - 状态 API 能看见运行态与 heartbeat/stale 信息
 - workspace hooks 能拿到 repo/workspace/issue 上下文
+
+补充：
+
+- Mongo 协作控制面当前属于增强能力，不改变上述本地优先基线
+- 新任务可逐步切到 Mongo 主事实源，但在途任务允许按兼容策略收尾
 
 ## 命名与三层架构
 
@@ -90,6 +121,7 @@
    - 多 CLI 协作管理核心
    - assignment / workspace(worktree) registry / heartbeat(stale) 持久化
    - workspace / worktree / owner / task contract 自动化
+   - MongoDB 协作控制面扩展
 3. **`maestro.profiles.mystocks`**
    - MyStocks 专属协作规则、prompt、默认工作流和绑定策略
 
@@ -106,7 +138,8 @@
 - workspace / worktree registry 持久化
 - worker heartbeat / stale 视图持久化
 
-这些状态与 `TASK.md` / `TASK-REPORT.md` 分离，专门服务自动化执行层与后续独立迁移。
+这些状态与 `TASK.md` / `TASK-REPORT.md` 分离，专门服务自动化执行层与后续独立迁移。  
+下一阶段，`maestro.collab` 将继续向 Mongo 协作控制面演进，但该演进仍以当前项目为第一落点。
 
 ## Owner-Aware Dispatch
 
@@ -133,8 +166,9 @@
   - `GET /api/v1/collab/workspaces`
   - `GET /api/v1/collab/stale`
 
-这组入口用于维护和观察机器态协作事实，而不是替代 `TASK.md` / `TASK-REPORT.md`。
-其中 `suggest` 只根据 `.FILE_OWNERSHIP`、显式路径和 `TASK.md` 路径线索给出建议 owner，不会自动写入 assignment。
+这组入口用于维护和观察机器态协作事实，而不是替代 `TASK.md` / `TASK-REPORT.md`。  
+其中 `suggest` 只根据 `.FILE_OWNERSHIP`、显式路径和 `TASK.md` 路径线索给出建议 owner，不会自动写入 assignment。  
+未来 Mongo 协作控制面稳定后，`coordctl` 可作为这组 operator surface 的兼容扩展入口。
 
 ## Main CLI 分发前检查命令
 
@@ -215,3 +249,4 @@ python scripts/runtime/maestro_collab.py assign MT-1 \
 - stale worker 自动提醒
 - assignment / heartbeat 持久化
 - 主 CLI 一键重派
+- Mongo 协作控制面接管主分发 / 审批 / 汇总

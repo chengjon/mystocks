@@ -13,7 +13,7 @@
 - [archived](overview/archived.md)
   - *MyStocks项目归档文件记录*
 
-- [changelog](overview/changelog.md)
+- [CHANGELOG](../../CHANGELOG.md)
   - *MyStocks 更新日志*
 
 - [claude](overview/claude.md)

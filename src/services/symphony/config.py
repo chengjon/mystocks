@@ -100,6 +100,8 @@ class TrackerConfig:
     active_states: list[str]
     terminal_states: list[str]
     sqlite_path: Path | None = None
+    mongo_uri: str = ""
+    mongo_db: str = ""
     active_state_names: list[str] = field(default_factory=list)
     terminal_state_names: list[str] = field(default_factory=list)
     enable_linear_graphql_tool: bool = False
@@ -153,6 +155,9 @@ class CodexConfig:
 class RuntimeConfig:
     cli_name: str = ""
     reclaim_stale_assignments: bool = False
+    collab_backend: str = "sqlite"
+    collab_mongo_uri: str = "mongodb://localhost:27017"
+    collab_mongo_db: str = "mystocks_coord"
 
 
 @dataclass(frozen=True)
@@ -195,6 +200,19 @@ class ServiceConfig:
                 sqlite_path = DEFAULT_LOCAL_TRACKER_SQLITE_PATH
             else:
                 sqlite_path = _resolve_path(raw_sqlite_path, env_map, DEFAULT_LOCAL_TRACKER_SQLITE_PATH)
+        mongo_uri = ""
+        mongo_db = ""
+        if tracker_kind == "mongo":
+            mongo_uri = _resolve_env_string(
+                tracker_config.get("mongo_uri"),
+                env_map,
+                default_env_key="MAESTRO_TRACKER_MONGO_URI",
+            ) or "mongodb://localhost:27017"
+            mongo_db = _resolve_env_string(
+                tracker_config.get("mongo_db"),
+                env_map,
+                default_env_key="MAESTRO_TRACKER_MONGO_DB",
+            ) or "mystocks_coord"
 
         tracker = TrackerConfig(
             kind=tracker_kind,
@@ -208,6 +226,8 @@ class ServiceConfig:
             active_states=_normalize_state_list(active_state_names),
             terminal_states=_normalize_state_list(terminal_state_names),
             sqlite_path=sqlite_path,
+            mongo_uri=mongo_uri,
+            mongo_db=mongo_db,
             active_state_names=active_state_names,
             terminal_state_names=terminal_state_names,
             enable_linear_graphql_tool=_coerce_bool(tracker_config.get("enable_linear_graphql_tool"), False),
@@ -260,6 +280,22 @@ class ServiceConfig:
         runtime = RuntimeConfig(
             cli_name=str(runtime_cli_name).strip(),
             reclaim_stale_assignments=_coerce_bool(runtime_config.get("reclaim_stale_assignments"), False),
+            collab_backend=str(
+                _resolve_env_string(runtime_config.get("collab_backend"), env_map, default_env_key="MAESTRO_COLLAB_BACKEND")
+                or "sqlite"
+            ).strip().lower(),
+            collab_mongo_uri=_resolve_env_string(
+                runtime_config.get("collab_mongo_uri"),
+                env_map,
+                default_env_key="MAESTRO_COLLAB_MONGO_URI",
+            )
+            or "mongodb://localhost:27017",
+            collab_mongo_db=_resolve_env_string(
+                runtime_config.get("collab_mongo_db"),
+                env_map,
+                default_env_key="MAESTRO_COLLAB_MONGO_DB",
+            )
+            or "mystocks_coord",
         )
 
         server_port = server_config.get("port")
@@ -289,6 +325,11 @@ def validate_dispatch_config(config: ServiceConfig) -> None:
             raise ConfigurationValidationError(
                 "Missing local tracker sqlite path.", code="missing_local_tracker_sqlite_path"
             )
+    elif config.tracker.kind == "mongo":
+        if not config.tracker.mongo_uri:
+            raise ConfigurationValidationError("Missing mongo tracker URI.", code="missing_mongo_tracker_uri")
+        if not config.tracker.mongo_db:
+            raise ConfigurationValidationError("Missing mongo tracker database.", code="missing_mongo_tracker_db")
     else:
         raise ConfigurationValidationError("Unsupported tracker kind.", code="unsupported_tracker_kind")
     if not config.codex.command.strip():

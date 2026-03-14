@@ -1,6 +1,32 @@
 # MyStocks 更新日志
 
-## Unreleased (2026-03-09)
+## Unreleased (2026-03-14)
+
+### 🧭 MongoDB Multi-CLI Coordination（Maestro vNext）
+
+- 将 `MongoDB Multi-CLI Coordination` 正式定义为 `Maestro` 体系下的下一代协作控制面，而不是平行新系统。
+- 在 `maestro.collab` 内落地 Mongo control-plane：
+  - `work_items`
+  - `work_updates`
+  - `work_requests`
+  - `work_events`
+  - `worker_status_views`
+- 扩展 `maestro_collab.py` 与 `coordctl.py`，提供主 CLI / worker CLI 的 Mongo 协作命令面。
+- 新增作用域校验、审计事件和自动摘要刷新，worker 不可直接修改 `work_item` 定义。
+- `Symphony` runtime 支持 `sqlite / mongo / dual-write` 三种 collab backend。
+- 新增 `MongoWorkItemTrackerClient`，`tracker.kind == mongo` 时可直接从 Mongo `work_items` 调度。
+- runtime 事件已可自动回写 control-plane 状态，并把 control-plane 摘要并入 `/api/v1/state`。
+- 新增迁移与导出脚本：
+  - `scripts/runtime/migrate_collab_to_mongo.py`
+  - `scripts/runtime/export_collab_snapshots.py`
+- 新增真实 Mongo smoke 脚本：`scripts/runtime/smoke_mongo_multicli.py`
+
+### ✅ 验证
+
+- `pytest tests/unit/services/symphony/test_config.py tests/unit/services/symphony/test_tracker_factory.py tests/unit/services/symphony/test_mongo_tracker.py tests/unit/services/symphony/test_mongo_runtime_flow.py tests/unit/services/symphony/test_orchestrator.py tests/unit/services/symphony/test_workspace_manager.py tests/unit/services/symphony/test_status_api.py tests/unit/services/symphony/test_maestro_collab_cli.py tests/unit/services/symphony/test_maestro_namespace.py tests/unit/services/symphony/test_collab_backend_selection.py tests/unit/maestro_collab tests/unit/runtime/test_maestro_coordination_cli.py tests/unit/runtime/test_collab_migration_scripts.py tests/unit/runtime/test_smoke_mongo_multicli.py -q -o addopts=''`
+- 结果：`77 passed`
+- `python scripts/runtime/smoke_mongo_multicli.py`
+- 真实 Mongo smoke 结果：`assignment_status=retrying`，`control_plane_status=ready_for_review`，`status_api_control_plane_count=1`
 
 ### 🎼 Maestro / Symphony 本地优先收口
 
@@ -232,35 +258,7 @@ mystocks/
 ├── adapters/          # 数据源适配器
 ├── factory/           # 数据源工厂
 ├── manager/           # 统一数据管理器
-├── utils/             # 工具函数
-└── main.py           # 主程序入口
+├── tools/             # 工具类
+├── examples/          # 使用示例
+└── tests/             # 测试文件
 ```
-
-#### 🎯 设计目标
-- 统一数据接口
-- 数据源工厂创建
-- 统一数据管理门户
-- 适配器模式应用
-- 工厂模式应用
-
----
-
-## 📋 开发计划
-
-### 下一个版本 (v1.3.0)
-- [ ] 添加更多数据源（Wind、Choice、聚宽等）
-- [ ] 数据缓存机制
-- [ ] 并发数据获取
-- [ ] 性能监控和统计
-- [ ] 单元测试完善
-
-### 长期规划
-- [ ] 实时数据推送
-- [ ] 数据质量监控
-- [ ] 可视化界面
-- [ ] RESTful API接口
-- [ ] 分布式部署支持
-
----
-
-*最后更新：2025年12月28日*

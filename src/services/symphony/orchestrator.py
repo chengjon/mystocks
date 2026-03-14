@@ -107,6 +107,8 @@ class SymphonyOrchestrator:
                 assigned_worker_cli=self._resolve_runtime_assignee(issue),
                 assigned_by="runtime",
             )
+        if self.collab_registry is not None and hasattr(self.collab_registry, "sync_work_item_progress"):
+            self.collab_registry.sync_work_item_progress(issue, status="in_progress")
 
     def on_worker_exit(self, issue_id: str, reason: str) -> None:
         running_entry = self.state.running.pop(issue_id, None)
@@ -127,6 +129,12 @@ class SymphonyOrchestrator:
                     assigned_worker_cli=self._resolve_runtime_assignee(running_entry.issue),
                     assigned_by="runtime",
                 )
+            if self.collab_registry is not None and hasattr(self.collab_registry, "sync_work_item_progress"):
+                self.collab_registry.sync_work_item_progress(
+                    running_entry.issue,
+                    status="ready_for_review",
+                    latest_update=running_entry.last_message,
+                )
             self.schedule_retry(issue_id=issue_id, identifier=running_entry.issue.identifier, attempt=1, delay_ms=1000)
         else:
             next_attempt = 1 if running_entry.retry_attempt in (None, 0) else running_entry.retry_attempt + 1
@@ -137,6 +145,12 @@ class SymphonyOrchestrator:
                     status="failed",
                     assigned_worker_cli=self._resolve_runtime_assignee(running_entry.issue),
                     assigned_by="runtime",
+                )
+            if self.collab_registry is not None and hasattr(self.collab_registry, "sync_work_item_progress"):
+                self.collab_registry.sync_work_item_progress(
+                    running_entry.issue,
+                    status="blocked",
+                    latest_update=running_entry.last_message,
                 )
             self.schedule_retry(
                 issue_id=issue_id,
@@ -276,6 +290,12 @@ class SymphonyOrchestrator:
                 last_message=running_entry.last_message,
                 stale_after_seconds=max(int(self.state.poll_interval_ms * 3 / 1000), 1),
             )
+        if self.collab_registry is not None and hasattr(self.collab_registry, "sync_work_item_progress"):
+            self.collab_registry.sync_work_item_progress(
+                running_entry.issue,
+                status="in_progress",
+                latest_update=running_entry.last_message,
+            )
 
     def record_worker_result(self, issue_id: str, result: Any) -> None:
         running_entry = self.state.running.get(issue_id)
@@ -320,11 +340,17 @@ class SymphonyOrchestrator:
                 }
             )
 
+        control_plane_rows = self.list_collab_control_plane()
+
         return {
             "generated_at": generated_at,
             "counts": {"running": len(running_rows), "retrying": len(retry_rows)},
             "running": running_rows,
             "retrying": retry_rows,
+            "control_plane": {
+                "count": len(control_plane_rows),
+                "items": control_plane_rows,
+            },
             "codex_totals": self.state.codex_totals,
             "rate_limits": self.state.codex_rate_limits,
         }
@@ -394,6 +420,11 @@ class SymphonyOrchestrator:
         if self.collab_registry is None or not hasattr(self.collab_registry, "list_stale_heartbeats"):
             return []
         return self.collab_registry.list_stale_heartbeats()
+
+    def list_collab_control_plane(self) -> list[dict[str, Any]]:
+        if self.collab_registry is None or not hasattr(self.collab_registry, "list_control_plane_status_views"):
+            return []
+        return self.collab_registry.list_control_plane_status_views()
 
     def _assignment_allows_dispatch(self, issue: Issue) -> bool:
         if self.collab_registry is None or not hasattr(self.collab_registry, "get_assignment_state"):

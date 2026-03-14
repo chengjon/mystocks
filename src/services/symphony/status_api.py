@@ -64,4 +64,8 @@ def create_status_app(orchestrator) -> FastAPI:
     def collab_stale() -> dict:
         return {"items": orchestrator.list_collab_stale()}
 
+    @app.get("/api/v1/collab/control-plane")
+    def collab_control_plane() -> dict:
+        return {"items": orchestrator.list_collab_control_plane()}
+
     return app

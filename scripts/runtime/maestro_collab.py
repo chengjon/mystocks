@@ -4,7 +4,11 @@ import argparse
 import json
 import sys
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
+from uuid import uuid4
+
+from pymongo import MongoClient
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
@@ -17,6 +21,11 @@ from src.services.maestro.collab import (
     extract_task_path_hints,
     load_file_ownership,
 )
+from src.services.maestro.collab.authz import ActorIdentity, AuthorizationError
+from src.services.maestro.collab.backends.mongo import MongoCollaborationStore
+from src.services.maestro.collab.services import CoordinationService
+from src.services.maestro.collab.store.models import WorkItemRecord, WorkRequestRecord, WorkUpdateRecord
+from src.services.maestro.profiles.mystocks import COLLAB_CONTROL_PLANE_DEFAULTS
 
 
 @dataclass(frozen=True)
@@ -25,9 +34,101 @@ class _IssueRef:
     id: str | None = None
 
 
+class _MongoCoordinationFacade:
+    def __init__(self, service: CoordinationService) -> None:
+        self._service = service
+
+    def create_work_item(self, payload: dict) -> dict:
+        now = _utcnow()
+        work_item = WorkItemRecord(
+            work_item_id=payload["work_item_id"],
+            task_key=payload["task_key"],
+            title=payload["title"],
+            objective=payload["objective"],
+            branch=payload["branch"],
+            owner_cli=payload["owner_cli"],
+            status=payload.get("status", "created"),
+            allowed_paths=payload.get("allowed_paths", []),
+            forbidden_paths=payload.get("forbidden_paths", []),
+            acceptance_checks=payload.get("acceptance_checks", []),
+            openspec=payload.get("openspec"),
+            created_at=now,
+            updated_at=now,
+        )
+        stored = self._service.upsert_work_item(ActorIdentity(cli_name="main", role="main_cli"), work_item)
+        return stored.model_dump(mode="json")
+
+    def get_work_item(self, work_item_id: str) -> dict | None:
+        work_item = self._service.get_work_item(ActorIdentity(cli_name="main", role="main_cli"), work_item_id)
+        if work_item is None:
+            return None
+        return work_item.model_dump(mode="json")
+
+    def list_work_items(self) -> list[dict]:
+        return [item.model_dump(mode="json") for item in self._service.list_work_items(ActorIdentity(cli_name="main", role="main_cli"))]
+
+    def transition_work_item(self, work_item_id: str, status: str, actor_cli: str) -> dict:
+        work_item = self._service.get_work_item(ActorIdentity(cli_name="main", role="main_cli"), work_item_id)
+        if work_item is None:
+            raise KeyError(f"Unknown work item: {work_item_id}")
+        updated = work_item.model_copy(update={"status": status, "updated_at": _utcnow()})
+        role = "main_cli" if actor_cli == "main" else "worker_cli"
+        stored = self._service.upsert_work_item(ActorIdentity(cli_name=actor_cli, role=role), updated)
+        return stored.model_dump(mode="json")
+
+    def create_work_update(self, work_item_id: str, actor_cli: str, summary: str, status: str) -> dict:
+        update = WorkUpdateRecord(
+            work_item_id=work_item_id,
+            update_id=f"upd-{uuid4().hex}",
+            actor_cli=actor_cli,
+            status=status,
+            summary=summary,
+            details={},
+            created_at=_utcnow(),
+        )
+        stored = self._service.append_work_update(ActorIdentity(cli_name=actor_cli, role="worker_cli"), update)
+        return stored.model_dump(mode="json")
+
+    def create_work_request(self, work_item_id: str, actor_cli: str, request_id: str, request_type: str, summary: str) -> dict:
+        request = WorkRequestRecord(
+            work_item_id=work_item_id,
+            request_id=request_id,
+            actor_cli=actor_cli,
+            status="pending",
+            request_type=request_type,
+            summary=summary,
+            payload={},
+            created_at=_utcnow(),
+            reviewed_at=None,
+            reviewed_by=None,
+        )
+        stored = self._service.create_work_request(ActorIdentity(cli_name=actor_cli, role="worker_cli"), request)
+        return stored.model_dump(mode="json")
+
+    def review_work_request(self, work_item_id: str, request_id: str, reviewed_by: str, status: str) -> dict:
+        reviewed = self._service.review_work_request(
+            ActorIdentity(cli_name=reviewed_by, role="main_cli"),
+            work_item_id=work_item_id,
+            request_id=request_id,
+            reviewed_by=reviewed_by,
+            status=status,
+        )
+        return reviewed.model_dump(mode="json")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Manage Maestro collaboration state.")
     parser.add_argument("--sqlite-path", default=".symphony/tracker.db", help="Path to the local tracker sqlite DB.")
+    parser.add_argument(
+        "--mongo-uri",
+        default=COLLAB_CONTROL_PLANE_DEFAULTS["mongo_uri"],
+        help="MongoDB URI for coordination state.",
+    )
+    parser.add_argument(
+        "--mongo-db",
+        default=COLLAB_CONTROL_PLANE_DEFAULTS["mongo_db"],
+        help="MongoDB database name for coordination state.",
+    )
 
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -42,31 +143,76 @@ def build_parser() -> argparse.ArgumentParser:
     state_parser.add_argument("issue_identifier", help="Issue identifier")
 
     suggest_parser = subparsers.add_parser("suggest", help="Suggest a likely owner from task paths and ownership rules")
-    suggest_parser.add_argument(
-        "--ownership-path",
-        default=".FILE_OWNERSHIP",
-        help="Path to the repository ownership rules file.",
-    )
-    suggest_parser.add_argument(
-        "--task-path",
-        default=None,
-        help="Optional TASK.md path used to derive path hints.",
-    )
-    suggest_parser.add_argument(
-        "--path",
-        dest="paths",
-        action="append",
-        default=[],
-        help="Explicit candidate path. Can be provided multiple times.",
-    )
-    suggest_parser.add_argument(
-        "--fallback-owner",
-        default="main",
-        help="Fallback owner when no explicit ownership rule matches.",
-    )
+    suggest_parser.add_argument("--ownership-path", default=".FILE_OWNERSHIP", help="Path to the repository ownership rules file.")
+    suggest_parser.add_argument("--task-path", default=None, help="Optional TASK.md path used to derive path hints.")
+    suggest_parser.add_argument("--path", dest="paths", action="append", default=[], help="Explicit candidate path. Can be provided multiple times.")
+    suggest_parser.add_argument("--fallback-owner", default="main", help="Fallback owner when no explicit ownership rule matches.")
 
     subparsers.add_parser("list-workspaces", help="List persisted workspaces")
     subparsers.add_parser("list-stale", help="List stale persisted heartbeats")
+
+    work_parser = subparsers.add_parser("work", help="Manage Mongo-backed work items")
+    work_subparsers = work_parser.add_subparsers(dest="work_command", required=True)
+
+    work_create = work_subparsers.add_parser("create", help="Create a work item")
+    work_create.add_argument("--work-item-id", required=True)
+    work_create.add_argument("--task-key", required=True)
+    work_create.add_argument("--title", required=True)
+    work_create.add_argument("--objective", required=True)
+    work_create.add_argument("--branch", required=True)
+    work_create.add_argument("--owner-cli", required=True)
+    work_create.add_argument("--status", default="created")
+    work_create.add_argument("--allowed-path", action="append", default=[])
+    work_create.add_argument("--forbidden-path", action="append", default=[])
+    work_create.add_argument("--acceptance-check", action="append", default=[])
+    work_create.add_argument("--openspec-json", default=None)
+    work_create.add_argument("--output", choices=("json", "text"), default="json")
+
+    work_list = work_subparsers.add_parser("list", help="List work items")
+    work_list.add_argument("--output", choices=("json", "text"), default="json")
+
+    work_show = work_subparsers.add_parser("show", help="Show one work item")
+    work_show.add_argument("work_item_id")
+    work_show.add_argument("--output", choices=("json", "text"), default="json")
+
+    work_transition = work_subparsers.add_parser("transition", help="Transition work item status")
+    work_transition.add_argument("work_item_id")
+    work_transition.add_argument("--to", required=True)
+    work_transition.add_argument("--actor-cli", default="main")
+    work_transition.add_argument("--output", choices=("json", "text"), default="json")
+
+    work_mark = work_subparsers.add_parser("mark", help="Mark owned work with a status update")
+    work_mark.add_argument("work_item_id")
+    work_mark.add_argument("--status", required=True)
+    work_mark.add_argument("--actor-cli", required=True)
+    work_mark.add_argument("--summary", default=None)
+    work_mark.add_argument("--output", choices=("json", "text"), default="json")
+
+    update_parser = subparsers.add_parser("update", help="Manage work updates")
+    update_subparsers = update_parser.add_subparsers(dest="update_command", required=True)
+    update_add = update_subparsers.add_parser("add", help="Append a work update")
+    update_add.add_argument("work_item_id")
+    update_add.add_argument("--actor-cli", required=True)
+    update_add.add_argument("--summary", required=True)
+    update_add.add_argument("--status", required=True)
+    update_add.add_argument("--output", choices=("json", "text"), default="json")
+
+    request_parser = subparsers.add_parser("request", help="Manage work requests")
+    request_subparsers = request_parser.add_subparsers(dest="request_command", required=True)
+    request_create = request_subparsers.add_parser("create", help="Create a work request")
+    request_create.add_argument("work_item_id")
+    request_create.add_argument("--actor-cli", required=True)
+    request_create.add_argument("--request-id", required=True)
+    request_create.add_argument("--request-type", required=True)
+    request_create.add_argument("--summary", required=True)
+    request_create.add_argument("--output", choices=("json", "text"), default="json")
+
+    request_review = request_subparsers.add_parser("review", help="Review a work request")
+    request_review.add_argument("work_item_id")
+    request_review.add_argument("request_id")
+    request_review.add_argument("--reviewed-by", default="main")
+    request_review.add_argument("--status", required=True)
+    request_review.add_argument("--output", choices=("json", "text"), default="json")
 
     return parser
 
@@ -74,57 +220,158 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
 
-    if args.command == "suggest":
-        ownership_index = FileOwnershipIndex(load_file_ownership(Path(args.ownership_path)))
-        task_path_hints = extract_task_path_hints(Path(args.task_path)) if args.task_path else []
-        suggestion = OwnershipSuggestionEngine(
-            ownership_index,
-            fallback_owner=args.fallback_owner,
-        ).suggest(candidate_paths=args.paths, task_path_hints=task_path_hints)
-        print(json.dumps(suggestion, ensure_ascii=False, indent=2, sort_keys=True))
-        return 0
-
-    registry = SQLiteCollaborationRegistry(Path(args.sqlite_path))
-
     try:
-        if args.command == "assign":
-            issue = _IssueRef(identifier=args.issue_identifier)
-            registry.record_assignment(
-                issue,
-                status=args.status,
-                assigned_worker_cli=args.worker_cli,
-                assigned_by=args.assigned_by,
-                acceptance_summary=args.acceptance_summary,
-            )
-            print(
-                json.dumps(
-                    registry.get_issue_state(args.issue_identifier)["assignment"],
-                    ensure_ascii=False,
-                    indent=2,
-                    sort_keys=True,
+        if args.command == "suggest":
+            ownership_index = FileOwnershipIndex(load_file_ownership(Path(args.ownership_path)))
+            task_path_hints = extract_task_path_hints(Path(args.task_path)) if args.task_path else []
+            suggestion = OwnershipSuggestionEngine(
+                ownership_index,
+                fallback_owner=args.fallback_owner,
+            ).suggest(candidate_paths=args.paths, task_path_hints=task_path_hints)
+            _emit(suggestion, output="json")
+            return 0
+
+        if args.command in {"work", "update", "request"}:
+            service = _build_coordination_service(args)
+            payload, output = _handle_coordination_command(args, service)
+            _emit(payload, output=output)
+            return 0
+
+        registry = SQLiteCollaborationRegistry(Path(args.sqlite_path))
+        try:
+            if args.command == "assign":
+                issue = _IssueRef(identifier=args.issue_identifier)
+                registry.record_assignment(
+                    issue,
+                    status=args.status,
+                    assigned_worker_cli=args.worker_cli,
+                    assigned_by=args.assigned_by,
+                    acceptance_summary=args.acceptance_summary,
                 )
-            )
-            return 0
+                _emit(registry.get_issue_state(args.issue_identifier)["assignment"], output="json")
+                return 0
 
-        if args.command == "state":
-            print(
-                json.dumps(
-                    registry.get_issue_state(args.issue_identifier), ensure_ascii=False, indent=2, sort_keys=True
-                )
-            )
-            return 0
+            if args.command == "state":
+                _emit(registry.get_issue_state(args.issue_identifier), output="json")
+                return 0
 
-        if args.command == "list-workspaces":
-            print(json.dumps({"items": registry.list_workspaces()}, ensure_ascii=False, indent=2, sort_keys=True))
-            return 0
+            if args.command == "list-workspaces":
+                _emit({"items": registry.list_workspaces()}, output="json")
+                return 0
 
-        if args.command == "list-stale":
-            print(json.dumps({"items": registry.list_stale_heartbeats()}, ensure_ascii=False, indent=2, sort_keys=True))
-            return 0
-    finally:
-        registry.close()
+            if args.command == "list-stale":
+                _emit({"items": registry.list_stale_heartbeats()}, output="json")
+                return 0
+        finally:
+            registry.close()
+    except (AuthorizationError, KeyError, ValueError) as exc:
+        output = getattr(args, "output", "json")
+        _emit_error(exc, output=output)
+        return 1
 
     return 1
+
+
+def _build_coordination_service(args: argparse.Namespace) -> _MongoCoordinationFacade:
+    client = MongoClient(args.mongo_uri)
+    database = client[args.mongo_db]
+    store = MongoCollaborationStore(database)
+    service = CoordinationService(store)
+    return _MongoCoordinationFacade(service)
+
+
+def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordinationFacade) -> tuple[dict | list[dict], str]:
+    if args.command == "work":
+        if args.work_command == "create":
+            openspec = json.loads(args.openspec_json) if args.openspec_json else None
+            payload = service.create_work_item(
+                {
+                    "work_item_id": args.work_item_id,
+                    "task_key": args.task_key,
+                    "title": args.title,
+                    "objective": args.objective,
+                    "branch": args.branch,
+                    "owner_cli": args.owner_cli,
+                    "status": args.status,
+                    "allowed_paths": args.allowed_path,
+                    "forbidden_paths": args.forbidden_path,
+                    "acceptance_checks": args.acceptance_check,
+                    "openspec": openspec,
+                }
+            )
+            return payload, args.output
+        if args.work_command == "list":
+            return service.list_work_items(), args.output
+        if args.work_command == "show":
+            payload = service.get_work_item(args.work_item_id)
+            if payload is None:
+                raise KeyError(f"Unknown work item: {args.work_item_id}")
+            return payload, args.output
+        if args.work_command == "transition":
+            return service.transition_work_item(args.work_item_id, args.to, args.actor_cli), args.output
+        if args.work_command == "mark":
+            summary = args.summary or f"status marked to {args.status}"
+            return service.create_work_update(args.work_item_id, args.actor_cli, summary, args.status), args.output
+
+    if args.command == "update" and args.update_command == "add":
+        return service.create_work_update(args.work_item_id, args.actor_cli, args.summary, args.status), args.output
+
+    if args.command == "request":
+        if args.request_command == "create":
+            return (
+                service.create_work_request(
+                    args.work_item_id,
+                    args.actor_cli,
+                    args.request_id,
+                    args.request_type,
+                    args.summary,
+                ),
+                args.output,
+            )
+        if args.request_command == "review":
+            return (
+                service.review_work_request(args.work_item_id, args.request_id, args.reviewed_by, args.status),
+                args.output,
+            )
+
+    raise ValueError("Unsupported coordination command")
+
+
+def _emit(payload: dict | list[dict], *, output: str) -> None:
+    if output == "json":
+        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+        return
+
+    if isinstance(payload, list):
+        for item in payload:
+            print(_format_text(item))
+        return
+    print(_format_text(payload))
+
+
+def _emit_error(error: Exception, *, output: str) -> None:
+    payload = {
+        "error_code": error.__class__.__name__,
+        "message": str(error),
+        "audit_id": f"err-{uuid4().hex[:12]}",
+    }
+    _emit(payload, output=output)
+
+
+def _format_text(payload: dict) -> str:
+    parts = []
+    for key in sorted(payload):
+        value = payload[key]
+        if isinstance(value, (dict, list)):
+            rendered = json.dumps(value, ensure_ascii=False, sort_keys=True)
+        else:
+            rendered = str(value)
+        parts.append(f"{key}={rendered}")
+    return " ".join(parts)
+
+
+def _utcnow() -> datetime:
+    return datetime.now(UTC)
 
 
 if __name__ == "__main__":

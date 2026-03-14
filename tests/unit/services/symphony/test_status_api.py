@@ -40,6 +40,16 @@ class DummyCollabRegistry:
     def list_stale_heartbeats(self, now=None) -> list[dict]:
         return [{"issue_identifier": "MT-9", "stale": True}]
 
+    def list_control_plane_status_views(self) -> list[dict]:
+        return [
+            {
+                "work_item_id": "MT-1",
+                "status": "in_progress",
+                "owner_cli": "cli-1",
+                "latest_update": "collected regressions",
+            }
+        ]
+
 
 def _make_orchestrator() -> SymphonyOrchestrator:
     workflow_definition = WorkflowDefinition(
@@ -134,3 +144,25 @@ def test_status_api_exposes_collaboration_views() -> None:
     assert workspaces_response.json()["items"][0]["workspace_key"] == "MT-1"
     assert stale_response.status_code == 200
     assert stale_response.json()["items"][0]["issue_identifier"] == "MT-9"
+
+
+def test_status_api_exposes_control_plane_summary_views() -> None:
+    orchestrator = _make_orchestrator()
+    client = TestClient(create_status_app(orchestrator))
+
+    response = client.get("/api/v1/collab/control-plane")
+
+    assert response.status_code == 200
+    assert response.json()["items"][0]["work_item_id"] == "MT-1"
+    assert response.json()["items"][0]["latest_update"] == "collected regressions"
+
+
+def test_status_snapshot_includes_control_plane_summary() -> None:
+    orchestrator = _make_orchestrator()
+    client = TestClient(create_status_app(orchestrator))
+
+    response = client.get("/api/v1/state")
+
+    assert response.status_code == 200
+    assert response.json()["control_plane"]["count"] == 1
+    assert response.json()["control_plane"]["items"][0]["work_item_id"] == "MT-1"

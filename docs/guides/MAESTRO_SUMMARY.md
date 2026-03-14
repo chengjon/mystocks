@@ -2,7 +2,7 @@
 
 ## 一句话定义
 
-`Maestro` 是 MyStocks 当前这套“本地优先、多 CLI 协作、SQLite tracker 驱动”的自动化运行时家族名。
+`Maestro` 是 MyStocks 当前这套“本地优先、多 CLI 协作、可演进协作控制面”的自动化运行时家族名。
 
 在仓库内部，历史实现名仍然是 `Symphony`；但从长期演进、可迁移和可独立抽取的角度看，推荐把它理解为：
 
@@ -27,7 +27,7 @@
 - 默认 tracker 为 SQLite
 - 默认 workspace 为本地目录
 - 默认协作事实写入本地 `.symphony/tracker.db`
-- 即使未来接 PostgreSQL 或远程系统，也不改变“本地先可跑”的基线
+- 即使未来接 PostgreSQL、MongoDB 或远程服务，也不改变“本地先可跑”的基线
 
 ### 2. 人工契约优先
 
@@ -59,6 +59,13 @@ Maestro 不直接替人写任务契约；它只消费这些契约并执行自动
 
 这样做的好处是：人类可读的协作语义不被运行时污染，运行时也不需要去“猜”任务定义。
 
+### 4. 渐进式协作控制面
+
+- 当前已落地基线是 SQLite tracker + SQLite collaboration registry
+- MongoDB Multi-CLI Coordination 应视为 `Maestro` 的下一代协作控制面
+- 在 MyStocks 内先完成验证，再决定是否独立拆出
+- 新控制面是 `maestro.collab` 的演进，不是当前阶段的平行新系统
+
 ## 三层架构
 
 ### `maestro.kernel`
@@ -84,8 +91,15 @@ Maestro 不直接替人写任务契约；它只消费这些契约并执行自动
 - owner-aware dispatch gating
 - stale reclaim
 - `.FILE_OWNERSHIP` + `TASK.md` 驱动的 advisory owner suggestion
+- 面向未来的 MongoDB 协作控制面扩展
 
 这是未来最值得独立抽出的“协作内核”。
+
+当前阶段补充说明：
+
+- SQLite 仍是当前已落地的本地基线
+- MongoDB 协作控制面在本项目内归属 `maestro.collab` 演进线
+- 若未来独立拆分，优先迁出的也是 `kernel + collab`
 
 ### `maestro.profiles`
 
@@ -94,6 +108,7 @@ Maestro 不直接替人写任务契约；它只消费这些契约并执行自动
 - 项目级 profile
 - repo-specific prompt / policy / workflow binding
 - 默认配置与协作约束
+- 控制当前项目对协作后端、切换窗口和导出策略的选择
 
 当前仓库的落地点是 `maestro.profiles.mystocks`。
 
@@ -188,6 +203,22 @@ Maestro 不直接替人写任务契约；它只消费这些契约并执行自动
 - workspace 列表
 - stale heartbeat 列表
 
+## 正在演进的能力
+
+### MongoDB Multi-CLI Coordination
+
+定位：
+
+- `Maestro` 体系下的下一代协作控制面
+- 当前阶段先服务 MyStocks
+- 目标是补齐“主 CLI 分发 -> worker 上报 -> request 审批 -> 跨 worker 汇总”链路
+
+边界：
+
+- 不重写 `maestro.kernel`
+- 不立即独立成通用产品
+- 不在当前阶段与 `maestro.collab` 平行建第二套长期体系
+
 ## 操作面
 
 ### 任务定义面
@@ -217,6 +248,10 @@ Maestro 不直接替人写任务契约；它只消费这些契约并执行自动
 - `list-workspaces`
 - `list-stale`
 
+未来扩展：
+
+- `coordctl` 可作为面向 Mongo 控制面的兼容操作入口
+
 ## 推荐工作流
 
 1. 人与 `main CLI` 确定目标与约束
@@ -231,6 +266,8 @@ Maestro 不直接替人写任务契约；它只消费这些契约并执行自动
 10. worker 执行并更新 `TASK-REPORT.md`
 11. `main CLI` 根据状态 API、`TASK-REPORT.md` 和 Git 证据收尾
 
+Mongo 协作控制面成熟后，步骤 6-11 将逐步迁移到新的协作主事实源，但仍保持 `TASK.md` 的任务契约作用。
+
 ## 为什么它现在适合 MyStocks
 
 因为 MyStocks 当前更偏：
@@ -243,7 +280,7 @@ Maestro 不直接替人写任务契约；它只消费这些契约并执行自动
 Maestro 在这种场景下的价值是：
 
 - 把本地多 CLI 协作的“自动化层”稳定下来
-- 保留未来升级到 PostgreSQL / 远程服务的空间
+- 保留未来升级到 MongoDB / PostgreSQL / 远程服务的空间
 - 先把最关键的协作事实跑通，而不是一开始就绑定外部 SaaS
 
 ## 当前边界
@@ -261,12 +298,18 @@ Maestro 现在还**不是**：
 - 多 CLI 协作状态内核
 - 将来可独立抽离的 automation backbone
 
+补充边界：
+
+- MongoDB 协作线目前仍属于 `Maestro` 体系内部演进
+- 本期目标是增强 MyStocks 的多 CLI 协作控制面，不是立即孵化平行产品
+- 只有在 Mongo 协作链路在本项目内稳定后，才进入独立化评估
+
 ## 建议的长期演进方向
 
 1. 抽离 `kernel` + `collab` 为独立工具仓库
 2. 把 `profiles.mystocks` 继续留在业务仓库
 3. 为 `assign/suggest/state` 增加更好的 operator UI
-4. 在保留 SQLite 基线的同时，补 PostgreSQL 后端
+4. 在保留 SQLite 基线的同时，补 MongoDB 协作控制面
 5. 为多 CLI 心跳、阻塞、回收建立更完整的观测面
 
 ## 关键文件索引
@@ -282,4 +325,6 @@ Maestro 现在还**不是**：
 - `scripts/runtime/local_tracker.py`
 - `scripts/runtime/maestro_collab.py`
 - `docs/guides/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md`
+- `docs/plans/2026-03-13-mongodb-multicli-coordination-design.md`
+- `docs/plans/2026-03-13-mongodb-multicli-coordination-implementation-plan.md`
 - `WORKFLOW.md`

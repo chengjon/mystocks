@@ -8,7 +8,7 @@
 
 ### 🎯 项目概览文档
 - **[项目总览.md](./项目总览.md)** - 项目简介、核心功能、当前状态
-- **[CHANGELOG.md](./CHANGELOG.md)** - 版本变更日志（月度更新）
+- **[CHANGELOG.md](../../CHANGELOG.md)** - 版本变更日志（月度更新）
 - **[PROJECT_STATUS_REPORT.md](./PROJECT_STATUS_REPORT.md)** - 项目状态报告（月度更新）
 - **[项目执行摘要.md](./项目执行摘要.md)** - 最新版本执行摘要
 
@@ -24,14 +24,14 @@
 3. 配置 **[开发工具链指南.md](./开发工具链指南.md)** 中的开发工具
 
 ### 开发人员
-- 查看最新 **[CHANGELOG.md](./CHANGELOG.md)** 了解版本变更
+- 查看最新 **[CHANGELOG.md](../../CHANGELOG.md)** 了解版本变更
 - 参考 **[开发与安全规范.md](./开发与安全规范.md)** 确保代码质量
 - 使用 **[开发工具链指南.md](./开发工具链指南.md)** 提升开发效率
 
 ### 项目管理人员
 - 查看 **[PROJECT_STATUS_REPORT.md](./PROJECT_STATUS_REPORT.md)** 了解项目进展
 - 参考 **[项目执行摘要.md](./项目执行摘要.md)** 掌握执行情况
-- 关注 **[CHANGELOG.md](./CHANGELOG.md)** 了解功能交付
+- 关注 **[CHANGELOG.md](../../CHANGELOG.md)** 了解功能交付
 
 ## 📝 文档维护规范
 

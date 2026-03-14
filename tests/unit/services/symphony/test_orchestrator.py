@@ -108,6 +108,15 @@ class FakeCollabRegistry:
     ) -> None:
         self.actions.append(("heartbeat", issue.identifier, session_id, last_event, worker_cli))
 
+    def sync_work_item_progress(
+        self,
+        issue: Issue,
+        *,
+        status: str,
+        latest_update: str | None = None,
+    ) -> None:
+        self.actions.append(("sync", issue.identifier, status, latest_update))
+
     def get_assignment_state(self, issue_identifier: str):
         return self.assignments.get(issue_identifier)
 
@@ -224,7 +233,10 @@ def test_orchestrator_updates_collab_registry_on_dispatch_event_and_exit() -> No
     orchestrator.on_worker_exit(issue.id, reason="normal")
 
     assert ("assignment", "MT-30", "running", None, "runtime") in collab_registry.actions
+    assert ("sync", "MT-30", "in_progress", None) in collab_registry.actions
+    assert ("sync", "MT-30", "in_progress", "ok") in collab_registry.actions
     assert ("heartbeat", "MT-30", "session-30", "turn.completed", None) in collab_registry.actions
+    assert ("sync", "MT-30", "ready_for_review", "ok") in collab_registry.actions
     assert ("assignment", "MT-30", "retrying", None, "runtime") in collab_registry.actions
 
 

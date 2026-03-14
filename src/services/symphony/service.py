@@ -5,8 +5,10 @@ import time
 from pathlib import Path
 
 import uvicorn
+from pymongo import MongoClient
 
 from src.services.maestro.collab.registry import SQLiteCollaborationRegistry
+from src.services.maestro.collab.runtime_registry import DualWriteCollaborationRegistry, MongoCollaborationRegistry
 
 from .agent_runner import AgentRunner
 from .config import ServiceConfig
@@ -128,8 +130,24 @@ class SymphonyService:
         return self.workflow_path.stat().st_mtime
 
     @staticmethod
-    def _create_collab_registry(service_config: ServiceConfig) -> SQLiteCollaborationRegistry | None:
+    def _create_collab_registry(service_config: ServiceConfig):
         tracker = service_config.tracker
-        if tracker.kind != "local" or tracker.sqlite_path is None:
-            return None
-        return SQLiteCollaborationRegistry(tracker.sqlite_path)
+        backend = service_config.runtime.collab_backend
+        sqlite_registry = None
+        if tracker.kind == "local" and tracker.sqlite_path is not None:
+            sqlite_registry = SQLiteCollaborationRegistry(tracker.sqlite_path)
+
+        if backend == "sqlite":
+            return sqlite_registry
+
+        mongo_database = MongoClient(service_config.runtime.collab_mongo_uri)[service_config.runtime.collab_mongo_db]
+        mongo_registry = MongoCollaborationRegistry(mongo_database)
+
+        if backend == "mongo":
+            return mongo_registry
+        if backend == "dual-write":
+            if sqlite_registry is None:
+                raise ValueError("dual-write collab backend requires a local sqlite tracker path")
+            return DualWriteCollaborationRegistry(primary=mongo_registry, secondary=sqlite_registry)
+
+        raise ValueError(f"Unsupported collab backend: {backend}")

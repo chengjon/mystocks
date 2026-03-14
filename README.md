@@ -3,8 +3,57 @@
 **创建人**: JohnC & Claude
 **版本**: 3.2.1 (Code Quality)
 **批准日期**: 2026-02-23
-**最后修订**: 2026-03-05
-**本次修订内容**: Git Worktree 多 CLI 协作治理升级至 v3.2（main 协调验收制 + dev-* worktree 开发制 + 三道合并门禁）
+**最后修订**: 2026-03-14
+**本次修订内容**: `Maestro` 下一代 MongoDB Multi-CLI 协作控制面已在本项目内打通最小闭环（control-plane + runtime wiring + status API + smoke verification）
+
+---
+
+## 🧭 MongoDB Multi-CLI Coordination（Maestro vNext）
+
+`MongoDB Multi-CLI Coordination` 当前被定义为 `Maestro` 体系下的下一代协作控制面，而不是平行新系统。
+
+当前已落地能力：
+- `maestro.collab` 的 Mongo control-plane：`work_items`、`work_updates`、`work_requests`、`work_events`、`worker_status_views`
+- `Symphony` runtime 支持 `sqlite / mongo / dual-write` 三种 collab backend
+- `tracker.kind == mongo` 时，runtime 可直接从 Mongo `work_items` 调度
+- runtime 事件会自动回写 control-plane 状态
+- `/api/v1/state` 已包含 `control_plane` 摘要段
+- `scripts/runtime/smoke_mongo_multicli.py` 已可做真实 Mongo smoke 验证
+
+关键入口：
+- 操作手册：`docs/guides/MONGO_MULTICLI_COORDINATION_GUIDE.md`
+- 设计文档：`docs/plans/2026-03-13-mongodb-multicli-coordination-design.md`
+- 实施计划：`docs/plans/2026-03-13-mongodb-multicli-coordination-implementation-plan.md`
+- 进展报告：`docs/reports/MONGODB_MULTICLI_COORDINATION_PROGRESS_2026-03-14.md`
+- 功能映射：`FUNCTION_MAP.md`
+
+快速验证：
+
+```bash
+# 定向回归
+pytest tests/unit/services/symphony/test_config.py \
+  tests/unit/services/symphony/test_tracker_factory.py \
+  tests/unit/services/symphony/test_mongo_tracker.py \
+  tests/unit/services/symphony/test_mongo_runtime_flow.py \
+  tests/unit/services/symphony/test_orchestrator.py \
+  tests/unit/services/symphony/test_workspace_manager.py \
+  tests/unit/services/symphony/test_status_api.py \
+  tests/unit/services/symphony/test_maestro_collab_cli.py \
+  tests/unit/services/symphony/test_maestro_namespace.py \
+  tests/unit/services/symphony/test_collab_backend_selection.py \
+  tests/unit/maestro_collab \
+  tests/unit/runtime/test_maestro_coordination_cli.py \
+  tests/unit/runtime/test_collab_migration_scripts.py \
+  tests/unit/runtime/test_smoke_mongo_multicli.py \
+  -q -o addopts=''
+
+# 真实 Mongo smoke（支持自动加载项目根目录 .env）
+python scripts/runtime/smoke_mongo_multicli.py
+```
+
+当前验证状态：
+- 定向回归：`77 passed`
+- 真实 Mongo smoke：通过
 
 ---
 
@@ -202,7 +251,7 @@ ws.emit('subscribe', config.wsChannel)
 
 ---
 
-[![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](docs/overview/changelog.md)
+[![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](./CHANGELOG.md)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109%2B-green.svg)](https://fastapi.tiangolo.com)

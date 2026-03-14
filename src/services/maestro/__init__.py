@@ -11,7 +11,18 @@ from .profiles.mystocks import (
 )
 
 if TYPE_CHECKING:
-    from .collab import SQLiteCollaborationRegistry, WorkspaceManager
+    from .collab import (
+        ActorIdentity,
+        CollaborationStore,
+        CoordinationAuthorizer,
+        CoordinationService,
+        DualWriteCollaborationRegistry,
+        MongoCollaborationRegistry,
+        MongoCollaborationStore,
+        SQLiteCollaborationRegistry,
+        WorkItemRecord,
+        WorkspaceManager,
+    )
     from .kernel import (
         MaestroOrchestrator,
         MaestroService,
@@ -24,7 +35,18 @@ if TYPE_CHECKING:
         validate_dispatch_config,
     )
 
-_COLLAB_EXPORTS = {"SQLiteCollaborationRegistry", "WorkspaceManager"}
+_COLLAB_EXPORTS = {
+    "ActorIdentity",
+    "CollaborationStore",
+    "CoordinationAuthorizer",
+    "CoordinationService",
+    "DualWriteCollaborationRegistry",
+    "MongoCollaborationRegistry",
+    "MongoCollaborationStore",
+    "SQLiteCollaborationRegistry",
+    "WorkItemRecord",
+    "WorkspaceManager",
+}
 _KERNEL_EXPORTS = {
     "MaestroOrchestrator",
     "MaestroService",
@@ -39,8 +61,15 @@ _KERNEL_EXPORTS = {
 
 __all__ = [
     "LEGACY_RUNTIME_NAME",
+    "ActorIdentity",
+    "CollaborationStore",
+    "CoordinationAuthorizer",
+    "CoordinationService",
+    "DualWriteCollaborationRegistry",
     "MaestroOrchestrator",
     "MaestroService",
+    "MongoCollaborationRegistry",
+    "MongoCollaborationStore",
     "PROFILE_NAME",
     "ROLE_MODEL",
     "RUNTIME_FAMILY_NAME",
@@ -48,6 +77,7 @@ __all__ = [
     "SQLiteCollaborationRegistry",
     "THREE_LAYER_ARCHITECTURE",
     "TrackerConfig",
+    "WorkItemRecord",
     "WorkflowDefinition",
     "WorkspaceManager",
     "create_status_app",
