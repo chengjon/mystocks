@@ -2813,3 +2813,159 @@
 3. 当前工作树状态：
    - 仅剩 `TASK.md` 为未提交派单文件改动
    - 本轮实现文件已全部在提交中
+
+## [WORK] 2026-03-14 API Route Registration And Prefix Governance（mystocks_spec1）
+- Scope:
+  - 统一 `register_all_routers` 与 `register_api_routes` 的注册职责，收敛为单一主注册入口。
+  - 治理本任务范围内 scoped router 的前缀来源，避免模块内硬编码非 `/api` / 非版本化前缀。
+  - 增加 focused backend regression checks，验证映射、前缀约束与兼容包装器行为。
+
+### Completed
+
+- `web/backend/app/api/register_routers.py`
+  - 改为兼容包装器，统一委托 `app.router_registry.register_api_routes(...)`
+  - 不再维护第二套路由清单
+- `web/backend/app/router_registry.py`
+  - 通过 `VERSION_MAPPING` 挂载：
+    - `monitoring_watchlists`
+    - `monitoring_analysis`
+    - `multi_source`
+  - 补回 `prometheus_exporter`，避免 `app_factory.py` 切到 central registry 后丢路由
+- `web/backend/app/api/VERSION_MAPPING.py`
+  - 新增治理映射：
+    - `monitoring_analysis -> /api/v1/monitoring/analysis`
+    - `monitoring_watchlists -> /api/v1/monitoring/watchlists`
+    - `multi_source -> /api/multi-source`
+- `web/backend/app/api/technical/routes.py`
+  - 移除模块内 `/technical` 前缀，改由 central registry 负责挂载
+- `web/backend/app/api/monitoring_analysis.py`
+  - 移除模块内 `/monitoring/analysis` 前缀
+  - 文档注释更新为 `/api/v1/monitoring/analysis/**`
+- `web/backend/app/api/monitoring_watchlists.py`
+  - 移除模块内 `/monitoring/watchlists` 前缀
+  - 文档注释更新为 `/api/v1/monitoring/watchlists/**`
+  - 根据 main review follow-up 修复 runtime fallback：
+    - `get_watchlist` 改为返回 runtime watchlist 详情
+    - `delete_watchlist` 改为删除 runtime watchlist，而不是误走“添加股票”分支
+- `web/backend/app/api/multi_source/routes.py`
+  - 移除模块内 `/multi_source` 前缀
+  - 文档示例更新为 `/api/multi-source/**`
+- `web/backend/tests/test_route_governance_static.py`
+  - 新增 focused static regression checks：
+    - 版本映射包含治理条目
+    - scoped router 模块本身不再烘焙 runtime prefix
+    - `register_all_routers` 委托到 central registry
+- `web/backend/tests/test_monitoring_watchlists_runtime_fallback.py`
+  - 直接按 canonical prefix 挂载 `watchlists` router
+  - 测试装载方式改为按文件路径加载目标模块，绕开 `app.api.__init__` 现存导入炸点
+  - 补充 `get_watchlist` / `delete_watchlist` 的 runtime fallback regression tests
+
+### Verification Evidence
+
+- TDD red phase:
+  - `pytest web/backend/tests/test_route_governance_static.py -q`
+  - 结果：`3 failed`
+  - 失败点：
+    - `VERSION_MAPPING` 缺少治理条目
+    - scoped router 仍保留硬编码前缀
+    - `register_all_routers` 仍维持第二套注册逻辑
+- Focused pytest green phase:
+  - `PYTHONPATH=.:web/backend pytest -o addopts='' web/backend/tests/test_route_governance_static.py -q`
+  - 结果：`3 passed`
+  - `PYTHONPATH=.:web/backend pytest -o addopts='' web/backend/tests/test_monitoring_watchlists_runtime_fallback.py -q`
+  - 初次结果：`6 passed`
+  - review follow-up 后结果：`8 passed`
+- Review follow-up red/green:
+  - `PYTHONPATH=.:web/backend pytest -o addopts='' web/backend/tests/test_monitoring_watchlists_runtime_fallback.py -q -k 'get_watchlist_returns_runtime_fallback_when_db_unavailable or delete_watchlist_uses_runtime_fallback_when_db_unavailable'`
+  - red 结果：`2 failed`
+  - 失败点：
+    - `get_watchlist` runtime fallback 误引用未定义 `request`
+    - `delete_watchlist` runtime fallback 误引用未定义 `request`
+  - green 结果：`2 passed, 6 deselected`
+- Syntax:
+  - `PYTHONPATH=.:web/backend python -m py_compile web/backend/app/api/VERSION_MAPPING.py web/backend/app/router_registry.py web/backend/app/api/register_routers.py web/backend/app/api/technical/routes.py web/backend/app/api/monitoring_analysis.py web/backend/app/api/monitoring_watchlists.py web/backend/app/api/multi_source/routes.py web/backend/tests/test_route_governance_static.py web/backend/tests/test_monitoring_watchlists_runtime_fallback.py`
+  - 结果：通过
+- Diff hygiene:
+  - `git -c safe.directory=/opt/claude/mystocks_spec1 diff --check -- web/backend/app/api/VERSION_MAPPING.py web/backend/app/router_registry.py web/backend/app/api/register_routers.py web/backend/app/api/technical/routes.py web/backend/app/api/monitoring_analysis.py web/backend/app/api/monitoring_watchlists.py web/backend/app/api/multi_source/routes.py web/backend/tests/test_route_governance_static.py web/backend/tests/test_monitoring_watchlists_runtime_fallback.py`
+  - 结果：通过
+- GitNexus:
+  - `impact(register_api_routes, upstream)` -> `LOW`
+  - `impact(register_all_routers, upstream)` -> `LOW`
+  - `detect_changes(scope=unstaged)` -> `CRITICAL`
+  - 说明：该结果受当前 worktree 既有 `405` 个已改文件影响，非本批次单独引入；本批次实际修改文件仅限上文列出的 9 个目标文件
+
+### Environment / Process Blockers
+
+- `git fetch origin`
+  - 初次失败：此前 worktree git metadata 位于只读路径，无法写 `FETCH_HEAD`
+  - 当前状态：已在全局 `safe.directory` 放行后执行成功
+- `git rebase main`
+  - 未执行
+  - 原因：
+    - 当前 worktree 存在本地未提交改动（含派单文件 `TASK.md` 的既有改动）
+    - `HEAD...origin/main = 22 0`，当前分支不落后于 `origin/main`
+    - 在脏工作树上强行 rebase 风险高于收益
+- `python scripts/runtime/coordctl.py work show ...`
+  - 失败：Mongo `createIndexes` 鉴权失败（`Unauthorized`）
+- `TASK.md` 指向的以下文件在当前路径不存在：
+  - `docs/reports/ARCHITECTURE_ASSESSMENT_REPORT.md`
+  - `docs/reports/API_VERSION_CONFLICT_INVESTIGATION.md`
+  - `docs/guides/MONGO_MULTICLI_OPERATION_CHECKLIST.md`
+  - 本轮改以现有可定位文档与代码真值推进
+
+### Risks
+
+- `router_registry.py` 仍依赖 `app.api.__init__` 的现有导入行为；本轮没有越界重构该包初始化逻辑。
+- `detect_changes(scope=unstaged)` 在当前脏 worktree 中噪音很大，提交前仍需 main CLI 结合文件清单人工确认范围。
+- `technical/routes.py` 目前仍非主注册链路的活跃技术分析实现；本轮只做前缀治理，不扩展其职责。
+- `config/monitoring-stack/config/prometheus.yml` 仍引用 `/api/multi_source/health`；这与本轮 canonical `/api/multi-source/**` 口径不一致，但该文件超出 worker scope，需由 main CLI 或对应 owner 单独收敛。
+
+### Rollback
+
+1. 还原以下文件到本轮前状态：
+   - `web/backend/app/api/VERSION_MAPPING.py`
+   - `web/backend/app/router_registry.py`
+   - `web/backend/app/api/register_routers.py`
+   - `web/backend/app/api/technical/routes.py`
+   - `web/backend/app/api/monitoring_analysis.py`
+   - `web/backend/app/api/monitoring_watchlists.py`
+   - `web/backend/app/api/multi_source/routes.py`
+   - `web/backend/tests/test_route_governance_static.py`
+   - `web/backend/tests/test_monitoring_watchlists_runtime_fallback.py`
+2. 重新执行：
+   - `PYTHONPATH=.:web/backend pytest -o addopts='' web/backend/tests/test_route_governance_static.py -q`
+   - `PYTHONPATH=.:web/backend pytest -o addopts='' web/backend/tests/test_monitoring_watchlists_runtime_fallback.py -q`
+
+### Delivery Status
+
+- 代码状态：
+  - 已满足本任务 acceptance 的实现与 focused regression 要求
+- 可复核状态：
+  - 可进入 main CLI review
+- 未完成的流程项：
+  - Mongo control plane `ready_for_review` 打点
+  - 原因：当前环境对目标 Mongo 库无鉴权，`coordctl` 在 `createIndexes` 阶段即失败
+- 分支同步结论：
+  - `git fetch origin` 已成功
+  - `HEAD...origin/main = 22 0`
+  - 当前分支未落后于 `origin/main`
+  - 因 worktree 非干净且含既有 `TASK.md` 改动，未执行 `git rebase main`
+
+### Main CLI Handoff
+
+- 请 main CLI 优先核对：
+  - `TASK.md` 为派单文件既有改动，不属于本轮实现
+  - 本轮目标文件仅为：
+    - `web/backend/app/api/VERSION_MAPPING.py`
+    - `web/backend/app/router_registry.py`
+    - `web/backend/app/api/register_routers.py`
+    - `web/backend/app/api/technical/routes.py`
+    - `web/backend/app/api/monitoring_analysis.py`
+    - `web/backend/app/api/monitoring_watchlists.py`
+    - `web/backend/app/api/multi_source/routes.py`
+    - `web/backend/tests/test_monitoring_watchlists_runtime_fallback.py`
+    - `web/backend/tests/test_route_governance_static.py`
+    - `TASK-REPORT.md`
+- 如需补控制面状态：
+  - 需先解决 Mongo 认证，再执行：
+    - `python scripts/runtime/coordctl.py work mark 2026-03-14-api-route-governance-mystocks-spec1 --status ready_for_review --actor-cli mystocks_spec1 --summary "Code, focused validation, and TASK-REPORT are ready for main review" --output json`
