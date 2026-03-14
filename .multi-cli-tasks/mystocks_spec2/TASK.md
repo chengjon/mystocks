@@ -1,13 +1,13 @@
 # mystocks_spec2 任务文档
 
 **Worker CLI**: mystocks_spec2
-**Branch**: `dev-mystocks-spec2`
+**Branch**: `mystocks_spec2`
 **Base Branch**: `main`
 **PR Base**: `main`
 **提交信息模板**: `type(scope): short description`
 **Worktree**: `/opt/claude/mystocks_spec2`
 **Upstream**: `origin/dev-mystocks-spec2`
-**当前状态**: 已规划，等待 `dev-api-availability-gemini` 提交后激活
+**当前状态**: 已激活，待同步最新 `main` 后执行
 
 ---
 
@@ -29,6 +29,12 @@
 
 - 核实并清理 active repo 内仍残留的 `.backup` / `.broken` / `.old` / `.new` 文件
 - 严格遵守功能树判定与代码路径判定，避免误删兼容层
+
+### 启动前步骤
+
+- `git fetch origin`
+- `git rebase main`
+- 确认当前 worktree 已对齐 `main@4ec63902` 之后再开始修改
 
 ### 范围
 

@@ -1,13 +1,13 @@
 # mystocks_spec3 任务文档
 
 **Worker CLI**: mystocks_spec3
-**Branch**: `dev-mystocks-spec3`
+**Branch**: `mystocks_spec3`
 **Base Branch**: `main`
 **PR Base**: `main`
 **提交信息模板**: `type(scope): short description`
 **Worktree**: `/opt/claude/mystocks_spec3`
 **Upstream**: `origin/dev-mystocks-spec3`
-**当前状态**: 已规划，等待 `dev-api-availability-gemini` 提交后激活
+**当前状态**: 已激活，待同步最新 `main` 后执行
 
 ---
 
@@ -29,6 +29,12 @@
 
 - 处理报告中已核实的 active 前端大组件与硬编码接口问题
 - 以小步方式拆分超大页面，并把 scoped 逻辑收敛到 service / config / websocket 工具层
+
+### 启动前步骤
+
+- `git fetch origin`
+- `git rebase main`
+- 确认当前 worktree 已对齐 `main@4ec63902` 之后再开始修改
 
 ### 范围
 

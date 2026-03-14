@@ -4,7 +4,7 @@
 **任务文档**: `TASK.md`
 **工作分支**: `dev-mystocks-spec1`
 **PR目标分支**: `main`
-**当前阶段**: 已规划，暂缓执行
+**当前阶段**: 已激活，待同步 main 后执行
 **报告时间**: 2026-03-14
 
 ---
@@ -18,16 +18,16 @@
 
 ## 🔄 进行中
 
-- [ ] 等待 `dev-api-availability-gemini` 提交/合并后重新复核范围
-- [ ] 激活后再收敛 `router_registry.py` / `register_routers.py` 的职责边界
-- [ ] 激活后再修复 scoped 非 `/api` 路由前缀
-- [ ] 激活后再增加路由前缀回归测试
+- [ ] 同步当前 worktree 到最新 `main`
+- [ ] 收敛 `router_registry.py` / `register_routers.py` 的职责边界
+- [ ] 修复 scoped 非 `/api` 路由前缀
+- [ ] 增加路由前缀回归测试
 
 ---
 
 ## 🚧 阻塞问题
 
-- 当前主阻塞：`dev-api-availability-gemini` 仍在做最终提交收口，提前启动本任务容易与已落地 API 修正重复
+无；已等待 API availability 主线落地完毕
 
 ---
 
@@ -40,7 +40,7 @@
 ## 📌 本轮任务摘要
 
 - 任务标题：`API 路由注册与版本前缀治理`
-- 当前状态：`deferred draft`，待 API availability 分支提交后再启动
+- 当前状态：`active`
 - 关键文件：
   - `web/backend/app/router_registry.py`
   - `web/backend/app/api/register_routers.py`

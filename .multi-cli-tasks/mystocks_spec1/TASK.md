@@ -1,13 +1,13 @@
 # mystocks_spec1 任务文档
 
 **Worker CLI**: mystocks_spec1
-**Branch**: `dev-mystocks-spec1`
+**Branch**: `mystocks_spec1`
 **Base Branch**: `main`
 **PR Base**: `main`
 **提交信息模板**: `type(scope): short description`
 **Worktree**: `/opt/claude/mystocks_spec1`
 **Upstream**: `origin/dev-mystocks-spec1`
-**当前状态**: 已规划，等待 `dev-api-availability-gemini` 提交后激活
+**当前状态**: 已激活，待同步最新 `main` 后执行
 
 ---
 
@@ -30,6 +30,12 @@
 - 收敛 API 注册入口与版本前缀规则
 - 修复报告中已核实的非 `/api` / 非版本化前缀问题
 - 增加回归检查，避免新旧路由规则继续漂移
+
+### 启动前步骤
+
+- `git fetch origin`
+- `git rebase main`
+- 确认当前 worktree 已对齐 `main@4ec63902` 之后再开始修改
 
 ### 范围
 

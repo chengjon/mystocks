@@ -1,13 +1,13 @@
 # mystocks_spec4 任务文档
 
 **Worker CLI**: mystocks_spec4
-**Branch**: `dev-mystocks-spec4`
+**Branch**: `mystocks_spec4`
 **Base Branch**: `main`
 **PR Base**: `main`
 **提交信息模板**: `type(scope): short description`
 **Worktree**: `/opt/claude/mystocks_spec4`
 **Upstream**: `origin/dev-mystocks-spec4`
-**当前状态**: 已规划，等待 `dev-api-availability-gemini` 提交后激活
+**当前状态**: 已激活，待同步最新 `main` 后执行
 
 ---
 
@@ -29,6 +29,12 @@
 
 - 核实 YAML/JSON 双配置入口的真实使用边界
 - 先建立 source-of-truth 矩阵与回归保护，再推进收敛
+
+### 启动前步骤
+
+- `git fetch origin`
+- `git rebase main`
+- 确认当前 worktree 已对齐 `main@4ec63902` 之后再开始修改
 
 ### 范围
 

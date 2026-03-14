@@ -10,26 +10,24 @@
 
 ---
 
-## Activation Gate
+## Activation State
 
-- **Current decision:** keep this plan as a deferred coordination draft.
-- **Do not activate worker execution yet.**
-- **Trigger to activate:** `dev-api-availability-gemini` is submitted/merged and its final diff is available for re-check.
-- **Reason:** the API availability line has already closed its business goal (`verified: 34 / pending: 0`), but the branch still carries environment-layer follow-up and final submission work. Starting parallel remediation before that branch lands would create avoidable overlap and rework.
+- **Current decision:** activate the worker plan now.
+- **Activation baseline:** local `main` after recent mainline integration work, currently headed by `4ec63902`.
+- **Reason:** the API availability line has landed into `main`, including its smoke-tooling follow-up, so the remaining remediation work can now be split without duplicating that branch's in-flight edits.
 
-### What stays deferred for now
+### Worker startup rule
 
-- `mystocks_spec1` route-governance execution
-- `mystocks_spec2` legacy-file cleanup execution
-- `mystocks_spec3` frontend normalization execution
-- `mystocks_spec4` data-source config convergence execution
+Before implementing anything, each worker branch must sync to current `main`.
 
-### Re-entry checklist after API branch submission
+Recommended startup sequence in each worker worktree:
 
-1. Re-check `dev-api-availability-gemini` final diff against `main`
-2. Remove tasks already solved by that branch from this allocation plan
-3. Re-scope worker packages to avoid duplicate edits
-4. Then activate the remaining worker tasks
+```bash
+git fetch origin
+git rebase main
+```
+
+If the branch has no worker-local commits and the rebase path is awkward, resetting to `main` is acceptable after confirming the worktree is clean.
 
 ---
 
@@ -196,8 +194,8 @@
 - reduce ambiguity without introducing hidden behavior changes
 - record follow-up items if full convergence must be phased
 
-## Deferred Until `dev-api-availability-gemini` Lands
+## Still Deferred
 
 - full market/strategy/risk endpoint consolidation
 - removal of compatibility layers whose runtime consumers are still unclear
-- contract cleanup for endpoints currently under active availability verification
+- cross-domain API redesign that would require a fresh OpenSpec proposal
