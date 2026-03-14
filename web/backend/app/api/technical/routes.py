@@ -4,7 +4,8 @@
 
 from fastapi import APIRouter
 
-router = APIRouter(prefix="/technical")
+# Prefix is governed by the central route registry.
+router = APIRouter()
 
 
 @router.get("/health")

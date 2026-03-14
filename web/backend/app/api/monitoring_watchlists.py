@@ -4,13 +4,13 @@
 提供投资组合/观察列表的 CRUD 操作
 
 API 端点:
-- POST /api/monitoring/watchlists - 创建清单
-- GET /api/monitoring/watchlists - 获取所有清单
-- GET /api/monitoring/watchlists/{id} - 获取单个清单
-- PUT /api/monitoring/watchlists/{id} - 更新清单
-- DELETE /api/monitoring/watchlists/{id} - 删除清单
-- POST /api/monitoring/watchlists/{id}/stocks - 添加股票
-- DELETE /api/monitoring/watchlists/{id}/stocks/{code} - 移除股票
+- POST /api/v1/monitoring/watchlists - 创建清单
+- GET /api/v1/monitoring/watchlists - 获取所有清单
+- GET /api/v1/monitoring/watchlists/{id} - 获取单个清单
+- PUT /api/v1/monitoring/watchlists/{id} - 更新清单
+- DELETE /api/v1/monitoring/watchlists/{id} - 删除清单
+- POST /api/v1/monitoring/watchlists/{id}/stocks - 添加股票
+- DELETE /api/v1/monitoring/watchlists/{id}/stocks/{code} - 移除股票
 
 作者: Claude Code
 创建日期: 2026-01-07
@@ -31,7 +31,8 @@ from app.core.responses import UnifiedResponse
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/monitoring/watchlists", tags=["monitoring-watchlists"])
+# Prefix is governed by the central route registry.
+router = APIRouter(tags=["monitoring-watchlists"])
 
 
 # ==================== 请求模型 ====================
@@ -232,6 +233,13 @@ def _get_runtime_watchlist_stocks(watchlist_id: int) -> Optional[List[WatchlistS
     return [_clone_model(row) for row in rows]
 
 
+def _get_runtime_watchlist(watchlist_id: int, user_id: int) -> Optional[WatchlistResponse]:
+    for watchlist in _get_runtime_watchlists(user_id):
+        if watchlist.id == watchlist_id:
+            return _clone_model(watchlist)
+    return None
+
+
 def _next_runtime_watchlist_stock_id() -> int:
     _, stocks_by_watchlist = _ensure_runtime_watchlist_state(user_id=1)
     existing_ids = [stock.id for rows in stocks_by_watchlist.values() for stock in rows]
@@ -312,6 +320,14 @@ def _remove_runtime_stock_from_watchlist(
     original_len = len(rows)
     stocks_by_watchlist[watchlist_id] = [row for row in rows if row.stock_code != stock_code]
     return len(stocks_by_watchlist[watchlist_id]) != original_len
+
+
+def _delete_runtime_watchlist(watchlist_id: int, user_id: int) -> bool:
+    watchlists, stocks_by_watchlist = _ensure_runtime_watchlist_state(user_id)
+    original_len = len(watchlists)
+    watchlists[:] = [watchlist for watchlist in watchlists if watchlist.id != watchlist_id]
+    stocks_by_watchlist.pop(watchlist_id, None)
+    return len(watchlists) != original_len
 
 
 # ==================== API 端点 ====================
@@ -444,9 +460,9 @@ async def get_watchlist(
 
         if not postgres_async.is_connected():
             if _runtime_fallback_enabled():
-                fallback_stock = _add_runtime_stock_to_watchlist(watchlist_id=watchlist_id, request=request, user_id=user_id)
-                if fallback_stock is not None:
-                    return UnifiedResponse(data=fallback_stock, message="添加股票成功")
+                fallback_watchlist = _get_runtime_watchlist(watchlist_id=watchlist_id, user_id=user_id)
+                if fallback_watchlist is not None:
+                    return UnifiedResponse(data=fallback_watchlist, message="获取清单成功")
             raise BusinessException(detail="数据库未连接", status_code=503, error_code="DATABASE_UNAVAILABLE")
 
         watchlists = await postgres_async.get_user_watchlists(user_id)
@@ -507,13 +523,8 @@ async def delete_watchlist(
 
         if not postgres_async.is_connected():
             if _runtime_fallback_enabled():
-                fallback_stock = _add_runtime_stock_to_watchlist(
-                    watchlist_id=watchlist_id,
-                    request=request,
-                    user_id=user_id,
-                )
-                if fallback_stock is not None:
-                    return UnifiedResponse(data=fallback_stock, message="添加股票成功")
+                if _delete_runtime_watchlist(watchlist_id=watchlist_id, user_id=user_id):
+                    return UnifiedResponse(message="删除清单成功")
             raise BusinessException(detail="数据库未连接", status_code=503, error_code="DATABASE_UNAVAILABLE")
 
         watchlists = await postgres_async.get_user_watchlists(user_id)

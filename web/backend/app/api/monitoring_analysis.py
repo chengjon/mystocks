@@ -4,10 +4,10 @@
 提供股票健康度评分计算和分析功能
 
 API 端点:
-- POST /api/monitoring/analysis/calculate - 计算健康度
-- GET /api/monitoring/analysis/results/{code} - 获取历史评分
-- GET /api/monitoring/analysis/portfolio/{watchlist_id} - 组合分析
-- GET /api/monitoring/analysis/market-regime - 市场体制识别
+- POST /api/v1/monitoring/analysis/calculate - 计算健康度
+- GET /api/v1/monitoring/analysis/results/{code} - 获取历史评分
+- GET /api/v1/monitoring/analysis/portfolio/{watchlist_id} - 组合分析
+- GET /api/v1/monitoring/analysis/market-regime - 市场体制识别
 
 作者: Claude Code
 创建日期: 2026-01-07
@@ -26,7 +26,8 @@ from app.core.responses import UnifiedResponse
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/monitoring/analysis", tags=["monitoring-analysis"])
+# Prefix is governed by the central route registry.
+router = APIRouter(tags=["monitoring-analysis"])
 router.include_router(monitoring_portfolio_router)
 
 

@@ -32,6 +32,24 @@ VERSION_MAPPING = {
         "version": "2.0.0",
         "tags": ["market-v2"],
     },
+    # Monitoring Analysis (Versioned smart monitoring analysis APIs)
+    "monitoring_analysis": {
+        "prefix": "/api/v1/monitoring/analysis",
+        "version": "1.0.0",
+        "tags": ["monitoring-analysis"],
+    },
+    # Monitoring Watchlists (Versioned watchlist management APIs)
+    "monitoring_watchlists": {
+        "prefix": "/api/v1/monitoring/watchlists",
+        "version": "1.0.0",
+        "tags": ["monitoring-watchlists"],
+    },
+    # Multi-source Management (Canonical non-versioned system route)
+    "multi_source": {
+        "prefix": "/api/multi-source",
+        "version": "1.0.0",
+        "tags": ["multi-source"],
+    },
     # Strategy Management (Upgrading to v1)
     "strategy": {
         "prefix": "/api/v1/strategy",

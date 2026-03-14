@@ -4,7 +4,8 @@
 
 from fastapi import APIRouter
 
-router = APIRouter(prefix="/multi_source")
+# Prefix is governed by the central route registry.
+router = APIRouter()
 
 
 @router.get("/health")
@@ -65,7 +66,7 @@ async def analyze_data(data: dict):
     **示例**:
     ```bash
     # 多数据源综合分析
-    curl -X POST "http://localhost:${BACKEND_PORT}/api/multi_source/analyze" \\
+    curl -X POST "http://localhost:${BACKEND_PORT}/api/multi-source/analyze" \\
       -H "Content-Type: application/json" \\
       -d '{
         "symbol": "600519",

@@ -15,6 +15,7 @@ from .api import gpu_monitoring
 from .api import indicator_registry
 from .api import monitoring_analysis
 from .api import monitoring_watchlists
+from .api import prometheus_exporter
 from .api import realtime_market
 from .api import signal_monitoring
 from .api import strategy_list_mock
@@ -99,15 +100,27 @@ def register_api_routes(app: FastAPI, *, use_mock_apis: bool, logger: logging.Lo
     app.include_router(wencai.router)
     app.include_router(dashboard.router, tags=["dashboard"])
     app.include_router(strategy_mgmt.router, tags=["strategy-mgmt"])
-    app.include_router(multi_source.router, tags=["multi-source"])
+    app.include_router(
+        multi_source.router,
+        prefix=VERSION_MAPPING["multi_source"]["prefix"],
+        tags=VERSION_MAPPING["multi_source"]["tags"],
+    )
 
     app.include_router(stock_search.router, prefix="/api/stock-search", tags=["stock-search"])
     app.include_router(watchlist.router, prefix="/api/watchlist", tags=["watchlist"])
     app.include_router(tradingview.router, prefix="/api/tradingview", tags=["tradingview"])
     app.include_router(notification.router, prefix="/api/notification", tags=["notification"])
 
-    app.include_router(monitoring_watchlists.router, prefix="/api/v1", tags=["monitoring-watchlists"])
-    app.include_router(monitoring_analysis.router, prefix="/api/v1", tags=["monitoring-analysis"])
+    app.include_router(
+        monitoring_watchlists.router,
+        prefix=VERSION_MAPPING["monitoring_watchlists"]["prefix"],
+        tags=VERSION_MAPPING["monitoring_watchlists"]["tags"],
+    )
+    app.include_router(
+        monitoring_analysis.router,
+        prefix=VERSION_MAPPING["monitoring_analysis"]["prefix"],
+        tags=VERSION_MAPPING["monitoring_analysis"]["tags"],
+    )
 
     app.include_router(strategy_management.router)
     app.include_router(risk_management.router)
@@ -123,6 +136,7 @@ def register_api_routes(app: FastAPI, *, use_mock_apis: bool, logger: logging.Lo
     app.include_router(governance_dashboard.router)
     app.include_router(indicator_registry.router)
     app.include_router(gpu_monitoring.router)
+    app.include_router(prometheus_exporter.router, tags=["prometheus"])
 
     if use_mock_apis:
         app.include_router(strategy_list_mock.router)
