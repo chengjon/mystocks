@@ -345,11 +345,12 @@ export function useArtDecoDashboard() {
         })
     }
 
-    const handleTrendUpdate = (msg: { data?: { price?: string | number } }): void => {
-        if (msg.data && msg.data.price) {
+    const handleTrendUpdate = (msg: { data?: { price?: string | number }; price?: string | number }): void => {
+        const price = msg?.data?.price ?? msg?.price
+        if (price !== undefined && price !== null) {
             // Append new point
             // For ECharts dynamic update, we might need to shift if array is too long
-            const newPoint = parseFloat(msg.data.price)
+            const newPoint = parseFloat(String(price))
             if (trendData.value && Array.isArray(trendData.value)) {
                 const newData = [...trendData.value, newPoint]
                 if (newData.length > 240) newData.shift() // Keep window size
@@ -390,7 +391,6 @@ export function useArtDecoDashboard() {
         fetchStockFlowRanking()
         fetchSystemStats()
         fetchTrendData().then(() => {
-            // Start WS subscription after initial load
             mockWebSocket.subscribe('market.trend.000001', handleTrendUpdate)
         })
     })

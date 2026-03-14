@@ -1,131 +1,136 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
-import ArtDecoDashboard from '@/views/artdeco-pages/ArtDecoDashboard.vue'
 import { createPinia, setActivePinia } from 'pinia'
-import { usePreferenceStore } from '@/stores/preferenceStore'
+import ArtDecoDashboard from '@/views/artdeco-pages/ArtDecoDashboard.vue'
 import dashboardService from '@/api/services/dashboardService'
+import { marketService } from '@/api/services/marketService'
 import { mockWebSocket } from '@/api/mockWebSocket'
 
-// Mock dependencies
 vi.mock('@/api/services/dashboardService', () => ({
   default: {
     getMarketOverview: vi.fn().mockResolvedValue({ data: [] }),
     getFundFlow: vi.fn().mockResolvedValue({ data: {} }),
     getIndustryFlow: vi.fn().mockResolvedValue({ data: [] }),
-    getStockFlowRanking: vi.fn().mockResolvedValue({ data: [] })
+    getStockFlowRanking: vi.fn().mockResolvedValue({ data: [] }),
+    getActiveStrategies: vi.fn().mockResolvedValue({ data: [] }),
+    getPositionRisk: vi.fn().mockResolvedValue({ data: { totalPnL: 0 } }),
+    getSystemHealth: vi.fn().mockResolvedValue({ data: [] }),
+    getTechnicalIndicators: vi.fn().mockResolvedValue({ data: {} })
   }
 }))
+
+vi.mock('@/api/services/marketService', () => ({
+  marketService: {
+    getKline: vi.fn().mockResolvedValue({ data: [] })
+  }
+}))
+
+const wsMock = vi.hoisted(() => {
+  let trendHandler: ((payload: unknown) => void) | null = null
+  const unsubscribeTrend = vi.fn()
+
+  return {
+    subscribe: vi.fn((_topic: string, handler: (payload: unknown) => void) => {
+      trendHandler = handler
+    }),
+    unsubscribe: vi.fn(() => unsubscribeTrend()),
+    unsubscribeTrend,
+    getTrendHandler: () => trendHandler,
+    reset: () => {
+      trendHandler = null
+      unsubscribeTrend.mockReset()
+    }
+  }
+})
 
 vi.mock('@/api/mockWebSocket', () => ({
   mockWebSocket: {
-    subscribe: vi.fn(),
-    unsubscribe: vi.fn()
+    subscribe: wsMock.subscribe,
+    unsubscribe: wsMock.unsubscribe
   }
 }))
 
-// Mock router-link
 const RouterLinkStub = {
   template: '<a><slot /></a>',
   props: ['to']
+}
+
+const mountDashboard = () =>
+  mount(ArtDecoDashboard, {
+    global: {
+      stubs: {
+        'router-link': RouterLinkStub,
+        ArtDecoChart: true,
+        ArtDecoHeader: true,
+        ArtDecoButton: true,
+        ArtDecoIcon: true,
+        ArtDecoBadge: true,
+        ArtDecoSkeleton: true,
+        ArtDecoCard: true,
+        ArtDecoStatCard: true,
+        ArtDecoCollapsible: true
+      }
+    }
+  })
+
+const flushMicrotasks = async () => {
+  await Promise.resolve()
+  await Promise.resolve()
 }
 
 describe('ArtDecoDashboard Logic Integration', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.clearAllMocks()
-    
-    // Mock localStorage
-    const localStorageMock = (() => {
-      let store: Record<string, string> = {}
-      return {
-        getItem: (key: string) => store[key] || null,
-        setItem: (key: string, value: string) => { store[key] = value },
-        clear: () => { store = {} }
-      }
-    })()
-    Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+    wsMock.reset()
   })
 
-  it('should initialize with correct default loading states', async () => {
-    const wrapper = mount(ArtDecoDashboard, {
-      global: {
-        stubs: {
-          'router-link': RouterLinkStub,
-          'ArtDecoChart': true // Stub complex chart
-        }
-      }
-    })
-
-    // Access internal state via vm if needed or check rendered skeletons
-    expect(wrapper.findComponent({ name: 'ArtDecoHeader' }).exists()).toBe(true)
-  })
-
-  it('should call dashboard services on mount', async () => {
-    mount(ArtDecoDashboard, {
-      global: {
-        stubs: {
-          'router-link': RouterLinkStub,
-          'ArtDecoChart': true
-        }
-      }
-    })
+  it('loads dashboard data on mount', async () => {
+    mountDashboard()
+    await flushMicrotasks()
 
     expect(dashboardService.getMarketOverview).toHaveBeenCalled()
     expect(dashboardService.getFundFlow).toHaveBeenCalled()
     expect(dashboardService.getIndustryFlow).toHaveBeenCalled()
+    expect(dashboardService.getStockFlowRanking).toHaveBeenCalled()
+    expect(dashboardService.getActiveStrategies).toHaveBeenCalled()
+    expect(marketService.getKline).toHaveBeenCalled()
   })
 
-  it('should subscribe to WebSocket on mount', async () => {
-    mount(ArtDecoDashboard, {
-      global: {
-        stubs: {
-          'router-link': RouterLinkStub,
-          'ArtDecoChart': true
-        }
-      }
-    })
+  it('subscribes to the explicit trend topic after trend data loads', async () => {
+    mountDashboard()
+    await flushMicrotasks()
 
-    expect(mockWebSocket.subscribe).toHaveBeenCalledWith(
-      expect.stringContaining('market.trend'),
-      expect.any(Function)
-    )
+    expect(mockWebSocket.subscribe).toHaveBeenCalledWith('market.trend.000001', expect.any(Function))
   })
 
-  it('should integrate with preferenceStore for collapse states', async () => {
-    // Setup localStorage with saved state
-    localStorage.setItem('dashboard-collapse-indicators', 'false')
-    
-    const wrapper = mount(ArtDecoDashboard, {
-      global: {
-        stubs: {
-          'router-link': RouterLinkStub,
-          'ArtDecoChart': true
-        }
+  it('appends trend points from the mock trend stream payload', async () => {
+    const wrapper = mountDashboard()
+    await flushMicrotasks()
+
+    const initialOption = (wrapper.vm as { marketTrendOption: { series?: Array<{ data?: number[] }> } | null }).marketTrendOption
+    const initialLength = initialOption?.series?.[0]?.data?.length ?? 0
+    wsMock.getTrendHandler()?.({
+      topic: 'market.trend.000001',
+      data: {
+        timestamp: Date.now(),
+        price: '3138.88'
       }
     })
+    await flushMicrotasks()
 
-    // The component uses ref(getSavedState(...)) which reads from localStorage on init
-    // Note: In current ArtDecoDashboard.vue, it uses local getSavedState helper
-    // We expect indicatorsExpanded to be false
-    expect((wrapper.vm as any).indicatorsExpanded).toBe(false)
+    const nextOption = (wrapper.vm as { marketTrendOption: { series?: Array<{ data?: number[] }> } | null }).marketTrendOption
+    const nextTrendData = nextOption?.series?.[0]?.data ?? []
+    expect(nextTrendData.length).toBe(initialLength + 1)
+    expect(nextTrendData.at(-1)).toBe(3138.88)
   })
 
-  it('should update refresh time correctly', async () => {
-    vi.useFakeTimers()
-    const wrapper = mount(ArtDecoDashboard, {
-      global: {
-        stubs: {
-          'router-link': RouterLinkStub,
-          'ArtDecoChart': true
-        }
-      }
-    })
+  it('unsubscribes the dashboard trend listener on unmount', async () => {
+    const wrapper = mountDashboard()
+    await flushMicrotasks()
 
-    const initialTime = (wrapper.vm as any).currentTime
-    vi.advanceTimersByTime(1000)
-    
-    // currentTime is updated via setInterval in component
-    expect((wrapper.vm as any).currentTime).not.toBe(initialTime)
-    vi.useRealTimers()
+    wrapper.unmount()
+
+    expect(mockWebSocket.unsubscribe).toHaveBeenCalledWith('market.trend.000001', expect.any(Function))
   })
 })

@@ -33,6 +33,7 @@ import {
 
 // 消息回调类型
 type MessageCallback = (data: unknown) => void
+type SubscriptionRegistrar = (() => (() => void) | void) | (() => void)
 
 // 路由名称类型（从 PAGE_CONFIG 的键推导）
 type RouteName = keyof typeof PAGE_CONFIG
@@ -51,6 +52,19 @@ function getWebSocketRoutes(): Array<{ routeName: RouteName; channel: string }> 
   }
 
   return routes
+}
+
+function activateSubscription(subscription: SubscriptionRegistrar | void): () => void {
+  if (typeof subscription !== 'function') {
+    return () => {}
+  }
+
+  const maybeCleanup = subscription()
+  if (typeof maybeCleanup === 'function') {
+    return maybeCleanup
+  }
+
+  return () => {}
 }
 
 /**
@@ -107,7 +121,7 @@ export function useWebSocketWithConfig() {
     console.log(`[WebSocket] 订阅路由 ${routeName} 的频道: ${channel}`)
 
     // 调用底层subscribe函数
-    return subscribe(channel, callback)
+    return activateSubscription(subscribe(channel, callback))
   }
 
   /**
@@ -167,7 +181,7 @@ export function useWebSocketWithConfig() {
     // 为每个路由订阅
     wsRoutes.forEach(({ routeName, channel }: { routeName: RouteName; channel: string }) => {
       console.log(`[WebSocket] 订阅 ${routeName} -> ${channel}`)
-      const unsubscribe = subscribe(channel, callback)
+      const unsubscribe = activateSubscription(subscribe(channel, callback))
       unsubscribers.push(unsubscribe)
     })
 

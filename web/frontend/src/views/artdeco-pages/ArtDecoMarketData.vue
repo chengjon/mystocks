@@ -240,7 +240,8 @@ const refreshData = async () => {
             const payload = res?.data ?? res
             conceptRanking.value = Array.isArray(payload) ? payload : []
         } else if (activeTab.value === 'lhb') {
-            const res = await apiClient.get('/api/v2/market/lhb', { params: { limit: 100 } })
+            const targetDate = lhbDate.value !== 'today' ? lhbDate.value : undefined
+            const res = await dashboardService.getLongHuBang(targetDate, 100)
             const payload = res?.data ?? res
             lhbData.value = Array.isArray(payload?.data)
                 ? payload.data

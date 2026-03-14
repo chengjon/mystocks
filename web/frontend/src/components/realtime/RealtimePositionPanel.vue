@@ -122,6 +122,7 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { TrendCharts, Refresh, Download } from '@element-plus/icons-vue'
+import { useRealtimeMarket } from '@/services/realtimeMarket'
 
 interface PositionSnapshot {
   position_id: string
@@ -146,29 +147,33 @@ interface PortfolioSnapshot {
   positions: Record<string, PositionSnapshot>
 }
 
-interface WebSocketMessage {
-  action: 'connected' | 'portfolio_update' | 'snapshot' | 'pong'
-  snapshot?: PortfolioSnapshot
-}
-
 const props = defineProps<{
   portfolioId?: string
   autoConnect?: boolean
 }>()
 
 const emit = defineEmits(['update', 'error'])
+const {
+  connectionStatus,
+  connectWebSocket: connectPortfolioWebSocket,
+  disconnect: disconnectPortfolioWebSocket,
+  getPortfolioMTM,
+  on,
+  off,
+  requestSnapshot,
+  subscribe,
+  unsubscribe
+} = useRealtimeMarket()
 
 const loading = ref(false)
-const connectionStatus = ref('disconnected')
 const autoRefresh = ref(true)
 const portfolioSnapshot = ref<PortfolioSnapshot | null>(null)
 const positionList = ref<PositionSnapshot[]>([])
-const ws = ref<WebSocket | null>(null)
-const reconnectAttempts = ref(0)
-const maxReconnectAttempts = 5
-const reconnectDelay = 3000
+const resolvedPortfolioId = computed(() => props.portfolioId || 'default')
 
 let refreshInterval: number | null = null
+const subscribedSymbols = new Set<string>()
+let hasHandledConnectedHandshake = false
 const stockNames: Record<string, string> = {
   '600519': '贵州茅台',
   '000001': '平安银行',
@@ -176,100 +181,111 @@ const stockNames: Record<string, string> = {
   '600000': '浦发银行',
 }
 
-const connectWebSocket = () => {
-  if (ws.value?.readyState === WebSocket.OPEN) {
+const getTrackedSymbols = (items: PositionSnapshot[]) =>
+  items
+    .map((position) => String(position.symbol || '').trim())
+    .filter((symbol) => symbol.length > 0)
+
+const clearTrackedSubscriptions = () => {
+  if (connectionStatus.value === 'connected') {
+    subscribedSymbols.forEach((symbol) => {
+      unsubscribe(symbol)
+    })
+  }
+  subscribedSymbols.clear()
+}
+
+const syncTrackedSubscriptions = (items: PositionSnapshot[], options: { force?: boolean } = {}) => {
+  if (connectionStatus.value !== 'connected') {
     return
   }
 
-  const wsUrl = `ws://${window.location.host}/api/ws/portfolio?portfolio_id=${props.portfolioId || 'default'}`
+  const nextSymbols = new Set(getTrackedSymbols(items))
 
-  try {
-    ws.value = new WebSocket(wsUrl)
-
-    ws.value.onopen = () => {
-      connectionStatus.value = 'connected'
-      reconnectAttempts.value = 0
-      ElMessage.success('实时行情连接已建立')
-      subscribeToPositions()
-    }
-
-    ws.value.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data) as WebSocketMessage
-        handleWebSocketMessage(data)
-      } catch (e) {
-        console.error('Failed to parse WebSocket message:', e)
-      }
-    }
-
-    ws.value.onclose = () => {
-      connectionStatus.value = 'disconnected'
-      if (reconnectAttempts.value < maxReconnectAttempts) {
-        setTimeout(() => {
-          reconnectAttempts.value++
-          connectWebSocket()
-        }, reconnectDelay)
-      }
-    }
-
-    ws.value.onerror = (error) => {
-      console.error('WebSocket error:', error)
-      connectionStatus.value = 'error'
-      emit('error', error)
-    }
-  } catch (error) {
-    console.error('Failed to connect WebSocket:', error)
+  if (options.force) {
+    subscribedSymbols.clear()
+    nextSymbols.forEach((symbol) => {
+      subscribe(symbol)
+      subscribedSymbols.add(symbol)
+    })
+    return
   }
-}
 
-const handleWebSocketMessage = (data: WebSocketMessage) => {
-  if (data.action === 'connected') {
-    if (data.snapshot) {
-      updateSnapshot(data.snapshot)
+  Array.from(subscribedSymbols).forEach((symbol) => {
+    if (!nextSymbols.has(symbol)) {
+      unsubscribe(symbol)
+      subscribedSymbols.delete(symbol)
     }
-  } else if (data.action === 'portfolio_update') {
-    if (data.snapshot) {
-      updateSnapshot(data.snapshot)
+  })
+
+  nextSymbols.forEach((symbol) => {
+    if (!subscribedSymbols.has(symbol)) {
+      subscribe(symbol)
+      subscribedSymbols.add(symbol)
     }
-  } else if (data.action === 'snapshot') {
-    if (data.snapshot) {
-      updateSnapshot(data.snapshot)
-    }
-  } else if (data.action === 'pong') {
-    console.log('Pong received')
-  }
+  })
 }
 
 const updateSnapshot = (snapshot: PortfolioSnapshot) => {
   portfolioSnapshot.value = snapshot
   positionList.value = Object.values(snapshot.positions || {})
+  syncTrackedSubscriptions(positionList.value)
   emit('update', snapshot)
 }
 
-const subscribeToPositions = () => {
-  if (ws.value?.readyState === WebSocket.OPEN) {
-    const symbols = positionList.value.map(p => p.symbol)
-    ws.value.send(JSON.stringify({
-      action: 'subscribe_all',
-      symbols
-    }))
+const getSnapshotFromPayload = (payload: unknown): PortfolioSnapshot | null => {
+  const snapshot = (payload as { snapshot?: PortfolioSnapshot } | null)?.snapshot
+  return snapshot ?? null
+}
+
+const handleRealtimePayload = (payload: unknown) => {
+  const snapshot = getSnapshotFromPayload(payload)
+  if (snapshot) {
+    updateSnapshot(snapshot)
   }
 }
 
-const disconnectWebSocket = () => {
-  if (ws.value) {
-    ws.value.close()
-    ws.value = null
+const handleConnected = (payload?: unknown) => {
+  const snapshot = getSnapshotFromPayload(payload)
+
+  if (!hasHandledConnectedHandshake) {
+    ElMessage.success('实时行情连接已建立')
+    hasHandledConnectedHandshake = true
+
+    if (snapshot) {
+      updateSnapshot(snapshot)
+      return
+    }
+
+    syncTrackedSubscriptions(positionList.value, { force: true })
+    requestSnapshot()
+    return
   }
+
+  if (snapshot) {
+    updateSnapshot(snapshot)
+  }
+}
+
+const connectWebSocket = () => {
+  hasHandledConnectedHandshake = false
+  connectPortfolioWebSocket(resolvedPortfolioId.value)
+}
+
+const disconnectWebSocket = () => {
+  hasHandledConnectedHandshake = false
+  clearTrackedSubscriptions()
+  disconnectPortfolioWebSocket()
 }
 
 const refreshData = async () => {
   loading.value = true
   try {
-    const response = await fetch(`/api/mtm/portfolio/${props.portfolioId || 'default'}`)
-    const data = await response.json()
-    if (data.success && data.data) {
-      updateSnapshot(data.data)
+    const snapshot = await getPortfolioMTM(resolvedPortfolioId.value)
+    if (snapshot) {
+      updateSnapshot(snapshot as PortfolioSnapshot)
+    } else {
+      ElMessage.error('刷新数据失败')
     }
   } catch (error) {
     console.error('Failed to refresh data:', error)
@@ -386,13 +402,28 @@ const tableRowClassName = ({ row }: { row: PositionSnapshot }) => {
 }
 
 watch(() => props.portfolioId, () => {
-  if (ws.value?.readyState === WebSocket.OPEN) {
-    disconnectWebSocket()
+  disconnectWebSocket()
+  if (props.autoConnect !== false) {
     connectWebSocket()
+  }
+  void refreshData()
+})
+
+watch(connectionStatus, (status) => {
+  if (status === 'error') {
+    emit('error', new Error('portfolio realtime connection error'))
+  }
+  if (status !== 'connected') {
+    hasHandledConnectedHandshake = false
+    subscribedSymbols.clear()
   }
 })
 
 onMounted(() => {
+  on('connected', handleConnected)
+  on('portfolio_update', handleRealtimePayload)
+  on('snapshot', handleRealtimePayload)
+
   if (props.autoConnect !== false) {
     connectWebSocket()
     startAutoRefresh()
@@ -401,6 +432,9 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  off('connected', handleConnected)
+  off('portfolio_update', handleRealtimePayload)
+  off('snapshot', handleRealtimePayload)
   disconnectWebSocket()
   stopAutoRefresh()
 })
