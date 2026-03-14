@@ -2648,14 +2648,18 @@
 ### Startup Blockers / Read-First Gaps
 
 1. `git fetch origin` / `git rebase main`
-   - 阻塞原因：当前沙箱无法写上游主仓库的 worktree git metadata。
-   - 实际报错：`cannot open '/opt/claude/mystocks_spec/.git/worktrees/mystocks_spec2/FETCH_HEAD': Read-only file system`
-   - 补充核对：
+   - 初始阻塞原因：早先沙箱无法写上游主仓库的 worktree git metadata。
+   - 初始报错：`cannot open '/opt/claude/mystocks_spec/.git/worktrees/mystocks_spec2/FETCH_HEAD': Read-only file system`
+   - 后续处理结果：
+     - 权限放开后已成功执行 `git fetch origin`
+     - 已成功执行 `git rebase main`
+     - 当前分支已同步到 `main` 最新提交 `e4ecf083 (feat(maestro): enable env-auth mongo coordination)`
+   - 同步前核对：
      - `git -c safe.directory=/opt/claude/mystocks_spec2 rev-list --left-right --count main...HEAD` -> `1 0`
      - `git -c safe.directory=/opt/claude/mystocks_spec2 diff --stat HEAD..main` 仅涉及：
        - `scripts/runtime/maestro_collab.py`
        - `tests/unit/runtime/test_maestro_coordination_cli.py`
-     - 上述差异均不在本任务允许范围内。
+     - 上述差异均不在本任务允许范围内，因此先提交本轮清理，再 rebase 吃入该修复提交。
 
 2. Mongo control plane `coordctl`
    - 阻塞原因：Mongo 鉴权不可用。
@@ -2735,22 +2739,33 @@
      - 本轮相关变更为 `TASK-REPORT.md` + 12 个目标文件删除
      - 另有 `TASK.md` 为派单前置脏改，未在本轮修改
 
-4. 现行替代模块语法检查：
+4. 相对 `main` 的真实交付范围：
+   - 命令：
+     - `git -c safe.directory=/opt/claude/mystocks_spec2 diff --name-status main...HEAD`
+     - `git -c safe.directory=/opt/claude/mystocks_spec2 diff --check main...HEAD`
+   - 结果：
+     - 仅包含 `TASK-REPORT.md` 和 12 个目标文件删除
+     - `diff --check main...HEAD` 通过
+
+5. 现行替代模块语法检查：
    - 命令：
      - `python -m py_compile web/backend/app/api/risk_management.py web/backend/app/api/data/__init__.py web/backend/app/api/technical_analysis.py src/database/database_service.py src/advanced_analysis/decision_models_analyzer.py src/monitoring/alert_manager.py`
    - 结果：
      - 通过
 
-5. GitNexus 变更探测（按规范执行，但结果受 worktree 既有脏改污染）：
+6. GitNexus 变更探测（按规范执行，但结果受 worktree / index freshness 限制污染）：
    - 命令：
      - `gitnexus_detect_changes(scope="all")`
+     - `gitnexus_detect_changes(scope="staged")`
+     - `gitnexus_detect_changes(scope="compare", base_ref="main")`
    - 结果：
-     - 返回 `critical`
-     - 原因不是本轮 12 个删除文件本身，而是当前 worktree 先验存在大量既有未清理变更，导致全局探测结果噪声过大
+     - `scope="all"` 与 `scope="compare"` 返回高噪声 `critical`
+     - `scope="staged"` 返回 `No changes detected`
+     - 该工具对本轮“删除 legacy 备份文件 + worktree 既有历史状态”的组合不够稳定
    - 解释：
-     - 本轮实际交付范围仍以 `git status --short` 的文件级结果为准
+     - 本轮实际交付范围以 `git diff --name-status main...HEAD` 和 `git status --short` 为准
 
-6. 探索性回归（非本次门禁，但已记录）：
+7. 探索性回归（非本次门禁，但已记录）：
    - 命令：
      - `pytest web/backend/tests/test_large_file_split_regressions.py tests/unit/monitoring/test_alert_manager_simplified.py -q`
    - 结果：
@@ -2779,4 +2794,22 @@
    - 该类引用属于非运行时记忆数据，不作为保留 active-tree legacy 文件的依据
 
 3. 由于 Mongo control plane 鉴权阻塞，本轮尚无法把状态回写为 `in_progress` / `ready_for_review`
+   - 即使在 rebase 到 `e4ecf083` 之后，`coordctl` 仍失败
+   - 进一步核对：
+     - worktree 根目录不存在 `.env`
+     - 当前 shell 中也不存在 `MONGODB_ROOT_USERNAME` / `MONGODB_ROOT_PASSWORD` / `MAESTRO_COLLAB_MONGO_URI` 等变量
+     - `coordctl` 现行逻辑会从 `.env` 或环境变量读取 Mongo 凭据；在缺失凭据时只能匿名连接，最终触发 `Command createIndexes requires authentication`
    - 交付状态已完整记录在本文件，待具备凭据后可由 main CLI 或后续会话补写
+
+### Git Delivery Snapshot
+
+1. 本轮清理提交：
+   - `4ef9ecb7`
+   - `chore(cleanup): remove active-tree legacy backups`
+
+2. 当前分支基线：
+   - 已 rebase 到 `main` 的 `e4ecf083`
+
+3. 当前工作树状态：
+   - 仅剩 `TASK.md` 为未提交派单文件改动
+   - 本轮实现文件已全部在提交中
