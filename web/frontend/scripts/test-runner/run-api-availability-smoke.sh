@@ -3,6 +3,9 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 REPO_ROOT="$(cd "${ROOT_DIR}/../.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/port-selection.sh"
+
 TMP_FRONTEND_DIR="${TMP_FRONTEND_DIR:-/tmp/mystocks-frontend-e2e}"
 NPM_CACHE_DIR="${NPM_CACHE_DIR:-/tmp/npm-cache}"
 PLAYWRIGHT_BROWSERS_PATH="${PLAYWRIGHT_BROWSERS_PATH:-/tmp/pw-browsers}"
@@ -30,18 +33,10 @@ JWT_SECRET_KEY="${JWT_SECRET_KEY:-test_secret_key_for_testing_only_do_not_use_in
 ADMIN_INITIAL_PASSWORD="${ADMIN_INITIAL_PASSWORD:-admin123}"
 BACKEND_PID=""
 
-port_is_listening() {
-  ss -ltnH "( sport = :$1 )" 2>/dev/null | grep -q .
-}
-
-if [ -z "${FRONTEND_PORT_WAS_SET}" ] && port_is_listening "${FRONTEND_PORT}"; then
+RESOLVED_FRONTEND_PORT="$(resolve_frontend_port "${FRONTEND_PORT}" "${FRONTEND_BACKUP_PORT}" "${FRONTEND_PORT_WAS_SET}")"
+if [ "${RESOLVED_FRONTEND_PORT}" != "${FRONTEND_PORT}" ]; then
   echo "[smoke] frontend port ${FRONTEND_PORT} already in use, falling back to ${FRONTEND_BACKUP_PORT}"
-  FRONTEND_PORT="${FRONTEND_BACKUP_PORT}"
-fi
-
-if [ -z "${BACKEND_PORT_WAS_SET}" ] && port_is_listening "${BACKEND_PORT}"; then
-  echo "[smoke] backend port ${BACKEND_PORT} already in use, falling back to ${BACKEND_BACKUP_PORT}"
-  BACKEND_PORT="${BACKEND_BACKUP_PORT}"
+  FRONTEND_PORT="${RESOLVED_FRONTEND_PORT}"
 fi
 
 if [ -z "${FRONTEND_BASE_URL_WAS_SET}" ]; then
@@ -95,6 +90,15 @@ LOGIN_STATUS="$(login_backend "${LOGIN_BODY_FILE}")"
 
 if [ "${LOGIN_STATUS}" != "200" ] && [ "${START_BACKEND_IF_NEEDED}" = "true" ]; then
   echo "[smoke] backend unavailable, starting local uvicorn"
+  SPAWN_BACKEND_PORT="$(resolve_backend_spawn_port "${BACKEND_PORT}" "${BACKEND_BACKUP_PORT}" "${BACKEND_PORT_WAS_SET}")"
+  if [ "${SPAWN_BACKEND_PORT}" != "${BACKEND_PORT}" ]; then
+    echo "[smoke] backend port ${BACKEND_PORT} is occupied, spawning local backend on ${SPAWN_BACKEND_PORT}"
+    BACKEND_PORT="${SPAWN_BACKEND_PORT}"
+    if [ -z "${BACKEND_BASE_URL_WAS_SET}" ]; then
+      BACKEND_BASE_URL="http://127.0.0.1:${BACKEND_PORT}"
+      echo "[smoke] backend url updated to ${BACKEND_BASE_URL}"
+    fi
+  fi
   (
     cd "${BACKEND_WORKDIR}"
     TESTING=true \
