@@ -3002,3 +3002,49 @@
     - 结果：`risk_level=low`
 - Local Main Commits:
   - `065953da` `fix(frontend): converge realtime dashboard subscriptions`
+
+## [MAIN MERGE] 2026-03-15 Function Tree Governance Worker5
+- Source:
+  - Mongo `work_item_id`: `2026-03-14-govern-function-tree-as-code-mystocks-spec5`
+  - Worker worktree: `/opt/claude/mystocks_spec5`
+  - Worker commits reviewed:
+    - `74d9a273` `feat(governance): codify function tree governance`
+    - `07c1cae5` `fix(governance): harden function tree catalog`
+- Merged Into Local `main`:
+  - `.github/pull_request_template.md`
+  - `docs/FUNCTION_TREE.md`
+  - `docs/guides/AI_QUICK_START.md`
+  - `docs/guides/FEATURE_MANAGEMENT_WORKFLOW.md`
+  - `governance/function-tree/catalog.yaml`
+  - `governance/function-tree/schema.json`
+  - `governance/mainline/schemas/ai-task-card.schema.json`
+  - `governance/mainline/scripts/mainline_scope_gate.py`
+  - `governance/mainline/spec/ai-development-mainline-governance-spec.md`
+  - `governance/mainline/templates/ai-task-card.yaml`
+  - `openspec/changes/govern-function-tree-as-code/**`
+  - `tests/fixtures/governance/function-tree-governance-sample-card.yaml`
+  - `tests/unit/governance/**`
+- Merge Notes:
+  - 已选择性并入 worker5 的治理实现，不带 worker worktree 根的 `TASK.md` / `TASK-REPORT.md`。
+  - `function_tree` 现在具备 machine-readable catalog/schema、task-card schema 合同、mainline scope gate 校验、PR reviewer 镜像字段，以及 `FUNCTION_TREE` 稳定 ID 文档同步口径。
+  - follow-up 修复也已包含在主线并入结果中：
+    - duplicate `domain_id` / `node_id` 由 `load_function_tree_catalog()` 的 integrity check 直接拒绝
+    - literal entrypoint path existence 补了回归测试
+    - `meta-governance` dead link 已改为仓内真实存在的 `docs/guides/MONGO_MULTICLI_COORDINATION_GUIDE.md`
+    - OpenSpec `design.md` 的 trailing whitespace 已清掉
+  - 当前唯一仍保留的限制是：
+    - 原始 `pytest ... -q` 在仓库默认 coverage fail-under 80 下仍返回退出码 `1`
+    - 但 focused governance 测试本身已全部通过，不属于本次变更引入的功能失败
+- Main-Side Verification:
+  - `pytest --no-cov tests/unit/governance/test_function_tree_catalog.py tests/unit/governance/test_task_card_function_tree_schema.py tests/unit/governance/test_mainline_scope_gate_function_tree.py tests/unit/governance/test_function_tree_doc_sync.py -q`
+    - 结果：`19 passed`
+  - `pytest tests/unit/governance/test_function_tree_catalog.py tests/unit/governance/test_task_card_function_tree_schema.py tests/unit/governance/test_mainline_scope_gate_function_tree.py tests/unit/governance/test_function_tree_doc_sync.py -q`
+    - 结果：`19 passed`，但命令整体因仓库默认 coverage fail-under 80 / no-data-collected 返回退出码 `1`
+  - `openspec validate govern-function-tree-as-code --strict`
+    - 结果：通过
+  - `git diff --check -- .github/pull_request_template.md docs/FUNCTION_TREE.md docs/guides/AI_QUICK_START.md docs/guides/FEATURE_MANAGEMENT_WORKFLOW.md governance/function-tree/catalog.yaml governance/function-tree/schema.json governance/mainline/schemas/ai-task-card.schema.json governance/mainline/scripts/mainline_scope_gate.py governance/mainline/spec/ai-development-mainline-governance-spec.md governance/mainline/templates/ai-task-card.yaml openspec/changes/govern-function-tree-as-code/design.md openspec/changes/govern-function-tree-as-code/proposal.md openspec/changes/govern-function-tree-as-code/specs/function-tree-governance/spec.md openspec/changes/govern-function-tree-as-code/tasks.md tests/fixtures/governance/function-tree-governance-sample-card.yaml tests/unit/governance/__init__.py tests/unit/governance/test_function_tree_catalog.py tests/unit/governance/test_function_tree_doc_sync.py tests/unit/governance/test_mainline_scope_gate_function_tree.py tests/unit/governance/test_task_card_function_tree_schema.py`
+    - 结果：通过
+  - `gitnexus_detect_changes(scope="staged")`
+    - 结果：`risk_level=low`
+- Local Main Commits:
+  - `f8bbcc6a` `feat(governance): codify function tree governance`
