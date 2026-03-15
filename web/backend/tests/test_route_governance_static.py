@@ -111,3 +111,22 @@ def test_register_all_routers_delegates_to_central_registry(monkeypatch):
     assert calls[0]["app"] is app
     assert calls[0]["use_mock_apis"] == register_routers.settings.use_mock_apis
     assert calls[0]["logger"] is register_routers.logger
+
+
+def test_monitoring_old_routes_module_is_removed_from_active_api_tree():
+    assert not (PROJECT_ROOT / "web/backend/app/api/monitoring_old/routes.py").exists()
+
+
+def test_monitoring_old_package_is_alias_only():
+    source = (PROJECT_ROOT / "web/backend/app/api/monitoring_old/__init__.py").read_text(encoding="utf-8")
+
+    assert "from app.api.monitoring import router as main_router" in source
+    assert "APIRouter(" not in source
+
+
+def test_risk_management_is_deprecated_shim_only():
+    source = (PROJECT_ROOT / "web/backend/app/api/risk_management.py").read_text(encoding="utf-8")
+
+    assert "from app.api.risk import router" in source
+    assert "DeprecationWarning" in source
+    assert "APIRouter(" not in source
