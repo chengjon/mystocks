@@ -12,6 +12,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, List
 
+from config.data_sources_loader import JSON_DATA_SOURCES_CONFIG_PATH
+
 logger = logging.getLogger(__name__)
 
 
@@ -38,8 +40,8 @@ class ModuleConfig:
 class DataSourceManager:
     """数据源管理器"""
 
-    def __init__(self, config_path: str = None):
-        self.config_path = config_path or "config/data_sources.json"
+    def __init__(self, config_path: str = JSON_DATA_SOURCES_CONFIG_PATH):
+        self.config_path = config_path or JSON_DATA_SOURCES_CONFIG_PATH
         self.modules: Dict[str, ModuleConfig] = {}
         self._config_format = "modules"
         self._raw_config: Dict = {}
@@ -190,9 +192,10 @@ DEFAULT_MODULE_CONFIG = {
 }
 
 
-def init_default_config(config_path: str = "config/data_sources.json"):
+def init_default_config(config_path: str = JSON_DATA_SOURCES_CONFIG_PATH):
     """初始化默认配置"""
-    os.makedirs(os.path.dirname(config_path), exist_ok=True)
-    with open(config_path, "w") as f:
+    target_path = config_path or JSON_DATA_SOURCES_CONFIG_PATH
+    os.makedirs(os.path.dirname(target_path), exist_ok=True)
+    with open(target_path, "w") as f:
         json.dump(DEFAULT_MODULE_CONFIG, f, indent=2)
-    logger.info("Default data source config saved to %s", config_path)
+    logger.info("Default data source config saved to %s", target_path)

@@ -5,20 +5,55 @@ Data Sources Configuration Dynamic Loader
 支持从拆分后的多个YAML文件加载和合并数据源配置。
 """
 
+from copy import deepcopy
 import logging
-import yaml
 from pathlib import Path
 from typing import Dict, Any
 
+import yaml
+
 logger = logging.getLogger(__name__)
+
+
+CONFIG_ROOT = Path(__file__).resolve().parent
+YAML_DATA_SOURCES_REGISTRY_PATH = str((CONFIG_ROOT / "data_sources_registry.yaml").resolve())
+JSON_DATA_SOURCES_CONFIG_PATH = str((CONFIG_ROOT / "data_sources.json").resolve())
+
+_DATA_SOURCE_CONFIG_MATRIX = {
+    "yaml_registry": {
+        "path": YAML_DATA_SOURCES_REGISTRY_PATH,
+        "format": "yaml",
+        "role": "Core endpoint registry and CRUD source of truth",
+        "consumers": [
+            "DataSourcesLoader",
+            "DataSourceManagerV2",
+            "ConfigManager",
+            "data_source_config.get_config_manager",
+        ],
+    },
+    "json_runtime": {
+        "path": JSON_DATA_SOURCES_CONFIG_PATH,
+        "format": "json",
+        "role": "Web backend runtime mode/fallback source of truth",
+        "consumers": [
+            "DataSourceManager",
+            "DataSourceFactory",
+        ],
+    },
+}
+
+
+def get_data_source_config_matrix() -> Dict[str, Dict[str, Any]]:
+    """Return the declared YAML/JSON source-of-truth matrix for data source configs."""
+    return deepcopy(_DATA_SOURCE_CONFIG_MATRIX)
 
 
 class DataSourcesLoader:
     """数据源配置加载器"""
 
-    def __init__(self, config_dir: str = "config"):
+    def __init__(self, config_dir: str | Path = CONFIG_ROOT):
         self.config_dir = Path(config_dir)
-        self.main_config_file = self.config_dir / "data_sources_registry.yaml"
+        self.main_config_file = self.config_dir / Path(YAML_DATA_SOURCES_REGISTRY_PATH).name
         self.sources_dir = self.config_dir / "data_sources"
 
     def load_all_sources(self) -> Dict[str, Any]:
