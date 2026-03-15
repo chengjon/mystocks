@@ -8,6 +8,7 @@ from pymongo import ASCENDING, DESCENDING
 from src.services.maestro.collab.backends.mongo.indexes import build_collaboration_index_models
 from src.services.maestro.collab.backends.mongo.store import MongoCollaborationStore
 from src.services.maestro.collab.store.models import (
+    WorkPlanItemRecord,
     WorkerStatusViewRecord,
     WorkEventRecord,
     WorkItemRecord,
@@ -25,6 +26,10 @@ def test_build_collaboration_index_models_exposes_expected_unique_indexes() -> N
 
     work_update_indexes = index_models["work_updates"]
     assert any(index.document["name"] == "ux_work_updates_work_item_id_update_id" for index in work_update_indexes)
+
+    work_plan_indexes = index_models["work_plan_items"]
+    assert any(index.document["name"] == "ux_work_plan_items_work_item_id_plan_item_id" for index in work_plan_indexes)
+    assert any(index.document["name"] == "ix_work_plan_items_work_item_id_order" for index in work_plan_indexes)
 
 
 def test_mongo_collaboration_store_round_trips_work_item_and_status_view() -> None:
@@ -161,6 +166,35 @@ def test_mongo_collaboration_store_lists_requests_and_events_in_created_order() 
     assert [event.event_id for event in store.list_work_events("MT-102")] == ["evt-1", "evt-2"]
 
 
+def test_mongo_collaboration_store_round_trips_plan_items_in_order() -> None:
+    store = MongoCollaborationStore(_FakeDatabase())
+    second = WorkPlanItemRecord(
+        work_item_id="MT-103",
+        plan_item_id="plan-2",
+        title="Implement board",
+        order=20,
+        status="todo",
+        evidence_summary=None,
+        updated_at=_ts("2026-03-14T10:20:00Z"),
+    )
+    first = WorkPlanItemRecord(
+        work_item_id="MT-103",
+        plan_item_id="plan-1",
+        title="Inspect schema",
+        order=10,
+        status="doing",
+        evidence_summary="Working on schema capture",
+        updated_at=_ts("2026-03-14T10:10:00Z"),
+    )
+
+    store.upsert_work_plan_item(second)
+    store.upsert_work_plan_item(first)
+
+    plan_items = store.list_work_plan_items("MT-103")
+    assert [item.plan_item_id for item in plan_items] == ["plan-1", "plan-2"]
+    assert plan_items[0].status == "doing"
+
+
 def _ts(value: str) -> datetime:
     return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(UTC)
 
@@ -170,6 +204,7 @@ class _FakeDatabase:
         self._collections = {
             "work_items": _FakeCollection(),
             "work_updates": _FakeCollection(),
+            "work_plan_items": _FakeCollection(),
             "work_requests": _FakeCollection(),
             "work_events": _FakeCollection(),
             "worker_status_views": _FakeCollection(),

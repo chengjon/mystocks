@@ -36,6 +36,16 @@ class WorkUpdateRecord(_FrozenModel):
     created_at: datetime
 
 
+class WorkPlanItemRecord(_FrozenModel):
+    work_item_id: str
+    plan_item_id: str
+    title: str
+    order: int
+    status: str
+    evidence_summary: str | None
+    updated_at: datetime
+
+
 class WorkRequestRecord(_FrozenModel):
     work_item_id: str
     request_id: str
@@ -67,3 +77,12 @@ class WorkerStatusViewRecord(_FrozenModel):
     blocker: str | None
     has_pending_request: bool
     updated_at: datetime
+    claimed_by: str | None = None
+    claimed_at: datetime | None = None
+    plan_total: int = 0
+    plan_done: int = 0
+    progress_percent: int = 0
+    current_focus: str | None = None
+    submitted_at: datetime | None = None
+    delivery_commit: str | None = None
+    delivery_branch: str | None = None

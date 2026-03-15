@@ -61,6 +61,7 @@ class _FakeDatabase:
         self._collections = {
             "work_items": _FakeCollection(),
             "work_updates": _FakeCollection(),
+            "work_plan_items": _FakeCollection(),
             "work_requests": _FakeCollection(),
             "work_events": _FakeCollection(),
             "worker_status_views": _FakeCollection(),

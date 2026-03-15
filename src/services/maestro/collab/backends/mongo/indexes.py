@@ -32,6 +32,21 @@ def build_collaboration_index_models() -> dict[str, list[IndexModel]]:
                 name="ix_work_updates_work_item_id_created_at",
             ),
         ],
+        "work_plan_items": [
+            IndexModel(
+                [("work_item_id", ASCENDING), ("plan_item_id", ASCENDING)],
+                name="ux_work_plan_items_work_item_id_plan_item_id",
+                unique=True,
+            ),
+            IndexModel(
+                [("work_item_id", ASCENDING), ("order", ASCENDING)],
+                name="ix_work_plan_items_work_item_id_order",
+            ),
+            IndexModel(
+                [("work_item_id", ASCENDING), ("status", ASCENDING), ("updated_at", DESCENDING)],
+                name="ix_work_plan_items_work_item_id_status_updated_at",
+            ),
+        ],
         "work_requests": [
             IndexModel(
                 [("work_item_id", ASCENDING), ("request_id", ASCENDING)],

@@ -7,6 +7,7 @@ from pymongo import ASCENDING
 from src.services.maestro.collab.backends.mongo.indexes import build_collaboration_index_models
 from src.services.maestro.collab.store.base import CollaborationStore
 from src.services.maestro.collab.store.models import (
+    WorkPlanItemRecord,
     WorkerStatusViewRecord,
     WorkEventRecord,
     WorkItemRecord,
@@ -18,6 +19,7 @@ RecordT = TypeVar(
     "RecordT",
     WorkItemRecord,
     WorkUpdateRecord,
+    WorkPlanItemRecord,
     WorkRequestRecord,
     WorkEventRecord,
     WorkerStatusViewRecord,
@@ -29,6 +31,7 @@ class MongoCollaborationStore(CollaborationStore):
         self._database = database
         self._work_items = database["work_items"]
         self._work_updates = database["work_updates"]
+        self._work_plan_items = database["work_plan_items"]
         self._work_requests = database["work_requests"]
         self._work_events = database["work_events"]
         self._worker_status_views = database["worker_status_views"]
@@ -65,6 +68,18 @@ class MongoCollaborationStore(CollaborationStore):
     def list_work_updates(self, work_item_id: str) -> list[WorkUpdateRecord]:
         cursor = self._work_updates.find({"work_item_id": work_item_id}).sort("created_at", ASCENDING)
         return [_load_required(document, WorkUpdateRecord) for document in cursor]
+
+    def upsert_work_plan_item(self, plan_item: WorkPlanItemRecord) -> WorkPlanItemRecord:
+        self._work_plan_items.replace_one(
+            {"work_item_id": plan_item.work_item_id, "plan_item_id": plan_item.plan_item_id},
+            _document_for(plan_item),
+            upsert=True,
+        )
+        return plan_item
+
+    def list_work_plan_items(self, work_item_id: str) -> list[WorkPlanItemRecord]:
+        cursor = self._work_plan_items.find({"work_item_id": work_item_id}).sort("order", ASCENDING)
+        return [_load_required(document, WorkPlanItemRecord) for document in cursor]
 
     def create_work_request(self, request: WorkRequestRecord) -> WorkRequestRecord:
         self._work_requests.replace_one(

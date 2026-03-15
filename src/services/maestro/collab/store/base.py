@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Protocol
 
 from .models import (
+    WorkPlanItemRecord,
     WorkerStatusViewRecord,
     WorkEventRecord,
     WorkItemRecord,
@@ -21,6 +22,10 @@ class CollaborationStore(Protocol):
     def append_work_update(self, update: WorkUpdateRecord) -> WorkUpdateRecord: ...
 
     def list_work_updates(self, work_item_id: str) -> list[WorkUpdateRecord]: ...
+
+    def upsert_work_plan_item(self, plan_item: WorkPlanItemRecord) -> WorkPlanItemRecord: ...
+
+    def list_work_plan_items(self, work_item_id: str) -> list[WorkPlanItemRecord]: ...
 
     def create_work_request(self, request: WorkRequestRecord) -> WorkRequestRecord: ...
 

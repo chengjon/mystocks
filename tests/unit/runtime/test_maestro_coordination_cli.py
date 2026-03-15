@@ -13,6 +13,7 @@ def test_build_parser_exposes_coordination_command_groups() -> None:
 
     choices = parser._subparsers._group_actions[0].choices  # type: ignore[attr-defined]
     assert "work" in choices
+    assert "plan" in choices
     assert "update" in choices
     assert "request" in choices
     assert "assign" in choices
@@ -109,6 +110,98 @@ def test_worker_can_mark_work_and_add_update(monkeypatch, capsys) -> None:
     assert exit_code == 0
     payload = json.loads(capsys.readouterr().out)
     assert payload["summary"] == "Collected failures"
+
+
+def test_worker_can_claim_plan_submit_and_inspect_board(monkeypatch, capsys) -> None:
+    service = _FakeCoordinationService()
+    service.create_work_item(
+        {
+            "work_item_id": "MT-303",
+            "task_key": "mongo-lifecycle",
+            "title": "Mongo lifecycle",
+            "objective": "Track claim, plan, and submit",
+            "branch": "feat/mongo-lifecycle",
+            "owner_cli": "gemini",
+            "status": "dispatched",
+            "allowed_paths": ["src/services/maestro/collab"],
+            "forbidden_paths": [],
+            "acceptance_checks": [],
+            "openspec": None,
+        }
+    )
+    monkeypatch.setattr(maestro_collab, "_build_coordination_service", lambda _args: service)
+
+    exit_code = maestro_collab.main(
+        ["work", "claim", "MT-303", "--actor-cli", "gemini", "--summary", "Accepted task", "--output", "json"]
+    )
+    assert exit_code == 0
+    claim_payload = json.loads(capsys.readouterr().out)
+    assert claim_payload["details"]["kind"] == "claim"
+
+    exit_code = maestro_collab.main(
+        ["plan", "add", "MT-303", "--actor-cli", "gemini", "--title", "Inspect schema", "--order", "10", "--output", "json"]
+    )
+    assert exit_code == 0
+    added_plan = json.loads(capsys.readouterr().out)
+    assert added_plan["title"] == "Inspect schema"
+
+    exit_code = maestro_collab.main(
+        [
+            "plan",
+            "mark",
+            "MT-303",
+            added_plan["plan_item_id"],
+            "--actor-cli",
+            "gemini",
+            "--status",
+            "done",
+            "--evidence",
+            "Schema captured",
+            "--output",
+            "json",
+        ]
+    )
+    assert exit_code == 0
+    marked_plan = json.loads(capsys.readouterr().out)
+    assert marked_plan["status"] == "done"
+
+    exit_code = maestro_collab.main(
+        [
+            "work",
+            "submit",
+            "MT-303",
+            "--actor-cli",
+            "gemini",
+            "--summary",
+            "Ready for review",
+            "--commit",
+            "abc123",
+            "--branch",
+            "feat/mongo-lifecycle",
+            "--verify",
+            "pytest tests/unit/runtime -q",
+            "--output",
+            "json",
+        ]
+    )
+    assert exit_code == 0
+    submit_payload = json.loads(capsys.readouterr().out)
+    assert submit_payload["details"]["kind"] == "submit"
+    assert submit_payload["status"] == "ready_for_review"
+
+    exit_code = maestro_collab.main(["work", "board", "--active-only", "--output", "json"])
+    assert exit_code == 0
+    board_payload = json.loads(capsys.readouterr().out)
+    assert board_payload[0]["work_item_id"] == "MT-303"
+    assert board_payload[0]["plan_total"] == 1
+    assert board_payload[0]["plan_done"] == 1
+    assert board_payload[0]["delivery_commit"] == "abc123"
+
+    exit_code = maestro_collab.main(["work", "show", "MT-303", "--include-plan", "--output", "json"])
+    assert exit_code == 0
+    show_payload = json.loads(capsys.readouterr().out)
+    assert show_payload["work_item"]["work_item_id"] == "MT-303"
+    assert len(show_payload["plan_items"]) == 1
 
 
 def test_request_review_and_text_output(monkeypatch, capsys) -> None:
@@ -247,7 +340,10 @@ class _FakeCoordinationService:
     def __init__(self) -> None:
         self.work_items: dict[str, dict] = {}
         self.requests: dict[tuple[str, str], dict] = {}
+        self.plan_items: dict[str, list[dict]] = {}
+        self.board_rows: dict[str, dict] = {}
         self.update_seq = 0
+        self.plan_seq = 0
 
     def create_work_item(self, payload: dict) -> dict:
         item = {
@@ -269,6 +365,23 @@ class _FakeCoordinationService:
         item["last_actor_cli"] = actor_cli
         return item
 
+    def claim_work_item(self, work_item_id: str, actor_cli: str, summary: str) -> dict:
+        self.update_seq += 1
+        item = self.work_items[work_item_id]
+        item["status"] = "in_progress"
+        board = self.board_rows.setdefault(work_item_id, {"work_item_id": work_item_id, "plan_total": 0, "plan_done": 0})
+        board["status"] = "in_progress"
+        board["claimed_by"] = actor_cli
+        board["latest_update"] = summary
+        return {
+            "work_item_id": work_item_id,
+            "update_id": f"upd-{self.update_seq}",
+            "actor_cli": actor_cli,
+            "summary": summary,
+            "status": "in_progress",
+            "details": {"kind": "claim"},
+        }
+
     def create_work_update(self, work_item_id: str, actor_cli: str, summary: str, status: str) -> dict:
         self.update_seq += 1
         item = self.work_items[work_item_id]
@@ -281,6 +394,87 @@ class _FakeCoordinationService:
             "summary": summary,
             "status": status,
         }
+
+    def add_plan_item(self, work_item_id: str, actor_cli: str, title: str, order: int) -> dict:
+        self.plan_seq += 1
+        payload = {
+            "work_item_id": work_item_id,
+            "plan_item_id": f"plan-{self.plan_seq}",
+            "actor_cli": actor_cli,
+            "title": title,
+            "order": order,
+            "status": "todo",
+            "evidence_summary": None,
+        }
+        self.plan_items.setdefault(work_item_id, []).append(payload)
+        self.plan_items[work_item_id].sort(key=lambda item: item["order"])
+        board = self.board_rows.setdefault(work_item_id, {"work_item_id": work_item_id, "plan_done": 0})
+        board["plan_total"] = len(self.plan_items[work_item_id])
+        board["current_focus"] = self.plan_items[work_item_id][0]["title"]
+        return payload
+
+    def mark_plan_item(self, work_item_id: str, plan_item_id: str, actor_cli: str, status: str, evidence: str | None) -> dict:
+        for plan_item in self.plan_items[work_item_id]:
+            if plan_item["plan_item_id"] == plan_item_id:
+                plan_item["status"] = status
+                plan_item["evidence_summary"] = evidence
+                break
+        board = self.board_rows.setdefault(work_item_id, {"work_item_id": work_item_id, "plan_total": 0})
+        board["plan_total"] = len(self.plan_items[work_item_id])
+        board["plan_done"] = sum(1 for item in self.plan_items[work_item_id] if item["status"] == "done")
+        board["current_focus"] = next(
+            (item["title"] for item in self.plan_items[work_item_id] if item["status"] != "done"),
+            None,
+        )
+        return next(item for item in self.plan_items[work_item_id] if item["plan_item_id"] == plan_item_id)
+
+    def submit_work_item(
+        self,
+        work_item_id: str,
+        actor_cli: str,
+        summary: str,
+        commit_sha: str,
+        branch: str,
+        remote: str | None,
+        verification_summary: str | None,
+    ) -> dict:
+        self.update_seq += 1
+        item = self.work_items[work_item_id]
+        item["status"] = "ready_for_review"
+        board = self.board_rows.setdefault(work_item_id, {"work_item_id": work_item_id})
+        board["status"] = "ready_for_review"
+        board["delivery_commit"] = commit_sha
+        board["delivery_branch"] = branch
+        board["latest_update"] = summary
+        return {
+            "work_item_id": work_item_id,
+            "update_id": f"upd-{self.update_seq}",
+            "actor_cli": actor_cli,
+            "summary": summary,
+            "status": "ready_for_review",
+            "details": {
+                "kind": "submit",
+                "commit_sha": commit_sha,
+                "branch": branch,
+                "remote": remote,
+                "verification_summary": verification_summary,
+            },
+        }
+
+    def get_work_item_snapshot(self, work_item_id: str, include_plan: bool = False) -> dict:
+        payload = {
+            "work_item": self.work_items[work_item_id],
+            "status_view": self.board_rows.get(work_item_id, {"work_item_id": work_item_id, "status": self.work_items[work_item_id]["status"]}),
+        }
+        if include_plan:
+            payload["plan_items"] = self.plan_items.get(work_item_id, [])
+        return payload
+
+    def list_work_board_rows(self, active_only: bool = False) -> list[dict]:
+        rows = list(self.board_rows.values())
+        if active_only:
+            rows = [row for row in rows if row.get("status") not in {"verified", "merged", "archived"}]
+        return rows
 
     def create_work_request(
         self, work_item_id: str, actor_cli: str, request_id: str, request_type: str, summary: str

@@ -30,18 +30,19 @@ class CoordinationAuthorizer:
         raise AuthorizationError(f"{actor.cli_name} cannot view work item {work_item.work_item_id}")
 
     def require_can_append_update(self, actor: ActorIdentity, work_item: WorkItemRecord, *, actor_cli: str) -> None:
-        if actor.role in {"main_cli", "system"}:
-            return
-        if actor.role == "worker_cli" and actor.cli_name == work_item.owner_cli and actor.cli_name == actor_cli:
-            return
-        raise AuthorizationError(f"{actor.cli_name} cannot append update for work item {work_item.work_item_id}")
+        self._require_owned_worker_or_main(actor, work_item, actor_cli=actor_cli, action="append update")
 
     def require_can_create_request(self, actor: ActorIdentity, work_item: WorkItemRecord, *, actor_cli: str) -> None:
-        if actor.role in {"main_cli", "system"}:
-            return
-        if actor.role == "worker_cli" and actor.cli_name == work_item.owner_cli and actor.cli_name == actor_cli:
-            return
-        raise AuthorizationError(f"{actor.cli_name} cannot create request for work item {work_item.work_item_id}")
+        self._require_owned_worker_or_main(actor, work_item, actor_cli=actor_cli, action="create request")
+
+    def require_can_claim_work_item(self, actor: ActorIdentity, work_item: WorkItemRecord, *, actor_cli: str) -> None:
+        self._require_owned_worker_or_main(actor, work_item, actor_cli=actor_cli, action="claim work item")
+
+    def require_can_manage_plan_item(self, actor: ActorIdentity, work_item: WorkItemRecord, *, actor_cli: str) -> None:
+        self._require_owned_worker_or_main(actor, work_item, actor_cli=actor_cli, action="manage plan item")
+
+    def require_can_submit_work_item(self, actor: ActorIdentity, work_item: WorkItemRecord, *, actor_cli: str) -> None:
+        self._require_owned_worker_or_main(actor, work_item, actor_cli=actor_cli, action="submit work item")
 
     def require_can_upsert_status_view(self, actor: ActorIdentity) -> None:
         self._require_main_or_system(actor, action="upsert worker status view")
@@ -51,3 +52,17 @@ class CoordinationAuthorizer:
         if actor.role in {"main_cli", "system"}:
             return
         raise AuthorizationError(f"{actor.cli_name} cannot {action}")
+
+    @staticmethod
+    def _require_owned_worker_or_main(
+        actor: ActorIdentity,
+        work_item: WorkItemRecord,
+        *,
+        actor_cli: str,
+        action: str,
+    ) -> None:
+        if actor.role in {"main_cli", "system"}:
+            return
+        if actor.role == "worker_cli" and actor.cli_name == work_item.owner_cli and actor.cli_name == actor_cli:
+            return
+        raise AuthorizationError(f"{actor.cli_name} cannot {action} for work item {work_item.work_item_id}")

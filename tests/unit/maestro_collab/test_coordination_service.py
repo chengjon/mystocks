@@ -7,6 +7,7 @@ import pytest
 from src.services.maestro.collab.authz.policy import ActorIdentity, AuthorizationError
 from src.services.maestro.collab.services.coordination import CoordinationService
 from src.services.maestro.collab.store.models import (
+    WorkPlanItemRecord,
     WorkerStatusViewRecord,
     WorkEventRecord,
     WorkItemRecord,
@@ -171,6 +172,159 @@ def test_create_and_review_request_refresh_pending_request_flag() -> None:
     assert reviewed_status_view.has_pending_request is False
 
 
+def test_claim_work_item_refreshes_claim_metadata_and_owned_status() -> None:
+    store = _InMemoryCollaborationStore()
+    service = CoordinationService(store)
+    work_item = _work_item(owner_cli="gemini")
+    service.upsert_work_item(ActorIdentity(cli_name="main", role="main_cli"), work_item)
+
+    claimed = service.claim_work_item(
+        ActorIdentity(cli_name="gemini", role="worker_cli"),
+        work_item_id=work_item.work_item_id,
+        actor_cli="gemini",
+        summary="Accepted task and started execution",
+    )
+
+    updated_work_item = store.get_work_item(work_item.work_item_id)
+    status_view = store.get_worker_status_view(work_item.work_item_id)
+
+    assert claimed.status == "in_progress"
+    assert claimed.details["kind"] == "claim"
+    assert updated_work_item is not None
+    assert updated_work_item.status == "in_progress"
+    assert status_view is not None
+    assert status_view.status == "in_progress"
+    assert status_view.claimed_by == "gemini"
+    assert status_view.claimed_at == claimed.created_at
+    assert status_view.latest_update == "Accepted task and started execution"
+
+
+def test_plan_items_refresh_progress_and_current_focus() -> None:
+    store = _InMemoryCollaborationStore()
+    service = CoordinationService(store)
+    work_item = _work_item(owner_cli="gemini")
+    service.upsert_work_item(ActorIdentity(cli_name="main", role="main_cli"), work_item)
+    service.claim_work_item(
+        ActorIdentity(cli_name="gemini", role="worker_cli"),
+        work_item_id=work_item.work_item_id,
+        actor_cli="gemini",
+        summary="Accepted task",
+    )
+
+    first = service.add_plan_item(
+        ActorIdentity(cli_name="gemini", role="worker_cli"),
+        WorkPlanItemRecord(
+            work_item_id=work_item.work_item_id,
+            plan_item_id="plan-1",
+            title="Inspect current schema",
+            order=10,
+            status="todo",
+            evidence_summary=None,
+            updated_at=_ts("2026-03-14T01:11:00Z"),
+        ),
+    )
+    second = service.add_plan_item(
+        ActorIdentity(cli_name="gemini", role="worker_cli"),
+        WorkPlanItemRecord(
+            work_item_id=work_item.work_item_id,
+            plan_item_id="plan-2",
+            title="Implement board aggregation",
+            order=20,
+            status="todo",
+            evidence_summary=None,
+            updated_at=_ts("2026-03-14T01:12:00Z"),
+        ),
+    )
+
+    initial_status_view = store.get_worker_status_view(work_item.work_item_id)
+    assert initial_status_view is not None
+    assert initial_status_view.plan_total == 2
+    assert initial_status_view.plan_done == 0
+    assert initial_status_view.progress_percent == 0
+    assert initial_status_view.current_focus == first.title
+
+    service.mark_plan_item(
+        ActorIdentity(cli_name="gemini", role="worker_cli"),
+        work_item_id=work_item.work_item_id,
+        plan_item_id=first.plan_item_id,
+        actor_cli="gemini",
+        status="done",
+        evidence_summary="Schema reviewed",
+    )
+
+    completed_status_view = store.get_worker_status_view(work_item.work_item_id)
+    assert completed_status_view is not None
+    assert completed_status_view.plan_total == 2
+    assert completed_status_view.plan_done == 1
+    assert completed_status_view.progress_percent == 50
+    assert completed_status_view.current_focus == second.title
+
+
+def test_submit_work_item_records_delivery_metadata_and_ready_for_review() -> None:
+    store = _InMemoryCollaborationStore()
+    service = CoordinationService(store)
+    work_item = _work_item(owner_cli="gemini")
+    service.upsert_work_item(ActorIdentity(cli_name="main", role="main_cli"), work_item)
+    service.claim_work_item(
+        ActorIdentity(cli_name="gemini", role="worker_cli"),
+        work_item_id=work_item.work_item_id,
+        actor_cli="gemini",
+        summary="Accepted task",
+    )
+
+    submitted = service.submit_work_item(
+        ActorIdentity(cli_name="gemini", role="worker_cli"),
+        work_item_id=work_item.work_item_id,
+        actor_cli="gemini",
+        summary="Ready for review",
+        commit_sha="abc123def",
+        branch="feat/mongo-worker-lifecycle",
+        remote="origin",
+        verification_summary="pytest tests/unit/maestro_collab -q",
+    )
+
+    updated_work_item = store.get_work_item(work_item.work_item_id)
+    status_view = store.get_worker_status_view(work_item.work_item_id)
+
+    assert submitted.status == "ready_for_review"
+    assert submitted.details["kind"] == "submit"
+    assert submitted.details["commit_sha"] == "abc123def"
+    assert updated_work_item is not None
+    assert updated_work_item.status == "ready_for_review"
+    assert status_view is not None
+    assert status_view.status == "ready_for_review"
+    assert status_view.submitted_at == submitted.created_at
+    assert status_view.delivery_commit == "abc123def"
+    assert status_view.delivery_branch == "feat/mongo-worker-lifecycle"
+
+
+def test_non_owner_cannot_claim_plan_or_submit_work_item() -> None:
+    store = _InMemoryCollaborationStore()
+    service = CoordinationService(store)
+    work_item = _work_item(owner_cli="gemini")
+    service.upsert_work_item(ActorIdentity(cli_name="main", role="main_cli"), work_item)
+
+    with pytest.raises(AuthorizationError):
+        service.claim_work_item(
+            ActorIdentity(cli_name="codex", role="worker_cli"),
+            work_item_id=work_item.work_item_id,
+            actor_cli="codex",
+            summary="Trying to steal the task",
+        )
+
+    with pytest.raises(AuthorizationError):
+        service.submit_work_item(
+            ActorIdentity(cli_name="codex", role="worker_cli"),
+            work_item_id=work_item.work_item_id,
+            actor_cli="codex",
+            summary="Illegitimate submit",
+            commit_sha="badc0de",
+            branch="feat/invalid",
+            remote="origin",
+            verification_summary="none",
+        )
+
+
 def _work_item(owner_cli: str) -> WorkItemRecord:
     return WorkItemRecord(
         work_item_id="MT-200",
@@ -237,6 +391,7 @@ class _InMemoryCollaborationStore:
     def __init__(self) -> None:
         self.work_items: dict[str, WorkItemRecord] = {}
         self.work_updates: dict[str, list[WorkUpdateRecord]] = {}
+        self.work_plan_items: dict[str, list[WorkPlanItemRecord]] = {}
         self.work_requests: dict[str, list[WorkRequestRecord]] = {}
         self.work_events: dict[str, list[WorkEventRecord]] = {}
         self.worker_status_views: dict[str, WorkerStatusViewRecord] = {}
@@ -262,6 +417,16 @@ class _InMemoryCollaborationStore:
 
     def list_work_updates(self, work_item_id: str) -> list[WorkUpdateRecord]:
         return list(self.work_updates.get(work_item_id, []))
+
+    def upsert_work_plan_item(self, plan_item: WorkPlanItemRecord) -> WorkPlanItemRecord:
+        items = self.work_plan_items.setdefault(plan_item.work_item_id, [])
+        items = [existing for existing in items if existing.plan_item_id != plan_item.plan_item_id] + [plan_item]
+        items.sort(key=lambda item: (item.order, item.updated_at))
+        self.work_plan_items[plan_item.work_item_id] = items
+        return plan_item
+
+    def list_work_plan_items(self, work_item_id: str) -> list[WorkPlanItemRecord]:
+        return list(self.work_plan_items.get(work_item_id, []))
 
     def create_work_request(self, request: WorkRequestRecord) -> WorkRequestRecord:
         requests = self.work_requests.setdefault(request.work_item_id, [])

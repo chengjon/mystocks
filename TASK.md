@@ -28,6 +28,12 @@
 - Markdown Role After Cutover:
   - `TASK.md` 继续承担任务契约、owner 决策与验收口径
   - `TASK-REPORT.md` 逐步转为 Mongo 协作状态的导出摘要与人工异常补充面
+- Worker Runtime Lifecycle:
+  - 读取自己被分配的 `work_item_id`
+  - `python scripts/runtime/coordctl.py work claim <work_item_id> --actor-cli <worker_cli> --summary "..."`
+  - `python scripts/runtime/coordctl.py plan add <work_item_id> --actor-cli <worker_cli> --title "..." --order <n>`
+  - 执行过程中使用 `plan mark` 与 `update add`
+  - 交付前执行 `python scripts/runtime/coordctl.py work submit <work_item_id> --actor-cli <worker_cli> --summary "..." --commit <sha> --branch <branch> --verify "..."`
 - Rollback Rule:
   - 若 Mongo 协作链路阻塞，可临时回切到 Markdown 手工流程
   - 回切需在协作事件和 `TASK.md` 中留痕
