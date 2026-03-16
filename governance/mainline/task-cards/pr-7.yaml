@@ -1,0 +1,100 @@
+version: "v0.2"
+
+task:
+  id: "pr-7"
+  title: "adopt Graphiti memory and Mongo task exports"
+  owner: "main"
+  created_at: "2026-03-17"
+
+mainline:
+  id: "L1-collab"
+  objective: "make Mongo the active task truth and keep Graphiti as the memory layer with exported markdown task artifacts"
+  milestone_id: "L2-collab"
+  slice_id: "L3-graphiti-mongo-task-artifacts"
+
+classification:
+  task_type: "feature"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "update-mongo-task-artifact-export"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "collaboration-control-plane and workflow documentation change outside business domains"
+
+scope:
+  allowed_paths:
+    - ".mcp.json"
+    - "config/.mcp.json"
+    - ".multi-cli-tasks/**"
+    - "docs/guides/**"
+    - "docs/reports/INDEX.md"
+    - "docs/reports/PROJECT_STATUS_QUICK_INDEX.md"
+    - "docs/reports/项目状态报告.md"
+    - "docs/api/apifox_mcp_playwright使用.md"
+    - "\"docs/api/*\""
+    - "\"docs/reports/*\""
+    - "openspec/changes/update-graphiti-memory-workflow/**"
+    - "openspec/changes/update-mongo-task-artifact-export/**"
+    - "scripts/runtime/export_collab_snapshots.py"
+    - "scripts/runtime/maestro_collab.py"
+    - "src/services/maestro/collab/services/coordination.py"
+    - "src/services/maestro/profiles/mystocks.py"
+    - "tests/unit/runtime/test_collab_migration_scripts.py"
+    - "tests/unit/runtime/test_maestro_coordination_cli.py"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No unrelated frontend or backend product behavior changes"
+  - "No broad repository CI-baseline cleanup in this PR"
+
+acceptance:
+  checks:
+    - id: "mcp-json"
+      command: "python -m json.tool .mcp.json && python -m json.tool config/.mcp.json"
+      required: true
+    - id: "openspec"
+      command: "openspec validate update-graphiti-memory-workflow --strict && openspec validate update-mongo-task-artifact-export --strict"
+      required: true
+    - id: "runtime-focused"
+      command: "PYTHONPATH=. pytest -o addopts='' --no-cov tests/unit/runtime/test_maestro_coordination_cli.py tests/unit/runtime/test_collab_migration_scripts.py tests/unit/maestro_collab/test_profile_defaults.py::test_mystocks_profile_exposes_collab_control_plane_defaults tests/unit/services/symphony/test_maestro_namespace.py -q"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Workflow docs and control-plane export semantics may diverge if future changes only update one path"
+  rollback_plan: "git revert <merge-commit-sha>"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "switch active memory workflow to Graphiti and make Mongo export readable task artifacts"
+    modified_scope: "MCP config, worker task templates, Mongo collab runtime export commands, focused runtime tests, and governance/docs"
+    dependency_changes: "none"
+    legacy_logic_impact: "legacy markdown task contract remains import-compatible but new Mongo-backed work should export task snapshots instead of hand-maintaining them"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the PR if Graphiti/Mongo workflow guidance or export commands block worker startup"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-03-17T00:00:00Z"
+    approval_note: "approved"
+    secondary_approved: false
