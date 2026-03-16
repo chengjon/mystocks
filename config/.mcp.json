@@ -1,12 +1,8 @@
 {
   "mcpServers": {
-    "apifox-api-docs": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "apifox-mcp-server@latest",
-        "--site-id=4478210"
-      ]
+    "graphiti-memory": {
+      "type": "http",
+      "url": "http://localhost:8011/mcp"
     }
   }
 }

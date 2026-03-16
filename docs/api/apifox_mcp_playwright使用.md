@@ -1,6 +1,13 @@
+> 状态说明（2026-03-17）
+>
+> - 本文是旧方案评估文档，保留用于历史参考。
+> - 当前项目已停用 `Apifox MCP`，活动记忆 MCP 已切换为 `Graphiti MCP`。
+> - 若你的目标是 AI CLI 长期记忆、handoff、事实检索，请改看 `docs/guides/GRAPHITI_MCP_WORKFLOW.md`。
+> - 若你的目标仍然是 API 调试 / OpenAPI 导入 / 平台侧接口管理，Apifox 平台本身仍可独立使用，但不再作为本项目活动 MCP。
+
 结合你的项目场景（FastAPI 模块化单体架构的量化 Web 应用）、目标工具（Apifox-API-Docs MCP + Playwright），以及核心需求（API 测试 / 修复 / 优化），以下是可行性评估、功能覆盖分析、实施路径及注意事项，帮你判断该工具组合是否适配：
-一、核心结论
-Apifox-API-Docs MCP + Playwright 完全可以完成目标 API 的测试 / 修复 / 优化工作，且适配你的项目架构和测试阶段需求。
+一、历史结论（保留原评估语境）
+在该文档形成时，`Apifox-API-Docs MCP + Playwright` 被评估为可完成目标 API 的测试 / 修复 / 优化工作，且适配当时的项目架构和测试阶段需求。
 适配性：⭐️⭐️⭐️⭐️⭐️（贴合 FastAPI + 前后端分离架构，覆盖 API 全生命周期管理）
 效率：⭐️⭐️⭐️⭐️（Apifox 简化 API 文档、Mock、测试；Playwright 保障端到端验证）
 学习成本：⭐️⭐️⭐️（Apifox 操作直观，Playwright 需熟悉基础语法，但有成熟文档）

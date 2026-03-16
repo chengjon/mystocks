@@ -1,0 +1,120 @@
+# Mongo Multi-CLI Operation Checklist
+
+## Purpose
+
+本清单给 main CLI 与 worker CLI 提供当前有效的最小操作顺序。
+
+当前约定：
+
+- Mongo 是任务状态与审批流的唯一真相源
+- Graphiti MCP 是长期记忆层
+- Worker 收到任务后的统一开工口令保持为：
+  - `请按你当前 worktree 的 TASK.md 开工。`
+
+## Main CLI Checklist
+
+### 派单前
+
+1. 确认当前任务范围与 owner
+2. 如需历史上下文，先查 Graphiti：
+   - `get_status`
+   - `search_nodes`
+   - `search_memory_facts`
+3. 在 Mongo control plane 中创建或核对 work item
+
+### 正式派单
+
+1. 确保 worker worktree 中的 `TASK.md` 已写明：
+   - 任务目标
+   - 范围边界
+   - Mongo 操作要求
+   - Graphiti 记忆要求
+   - 最小验证要求
+2. 发给 worker 的统一指令：
+
+```text
+请按你当前 worktree 的 TASK.md 开工。
+```
+
+### 复核时
+
+1. 查 Mongo：
+   - `claim`
+   - `plan`
+   - `submit`
+   - `ready_for_review`
+2. 查 Graphiti：
+   - handoff 摘要
+   - 历史事实
+   - review 结论
+
+## Worker CLI Checklist
+
+### 收到任务后
+
+1. 阅读当前 worktree 的 `TASK.md`
+2. 阅读：
+   - `docs/guides/GRAPHITI_MCP_WORKFLOW.md`
+   - 涉及的 `openspec` / `docs` / ownership 文件
+3. 先在 Mongo control plane 中开工留痕：
+   - `work claim`
+4. 如需要历史上下文，再查 Graphiti：
+   - `search_nodes`
+   - `search_memory_facts`
+
+### 执行中
+
+1. 只修改任务范围内文件
+2. 任务分解走 Mongo：
+   - `plan add`
+   - `plan mark`
+3. 每完成一个批次：
+   - 在 `TASK-REPORT.md` 记录证据
+   - 必要时向 Graphiti 写入 handoff / fact summary
+
+### 提交前
+
+1. 做最小必要验证
+2. 更新 `TASK-REPORT.md`
+3. 在 Mongo control plane 中提交：
+   - `work submit`
+4. 不要只把状态写到 Graphiti 而跳过 Mongo
+
+## Boundary Summary
+
+### Mongo
+
+负责：
+
+- work item lifecycle
+- owner / worker
+- claim / plan / submit
+- ready_for_review / verified / merged
+
+### Graphiti
+
+负责：
+
+- 长期记忆
+- handoff 摘要
+- 架构 / 审核 / 排障事实
+- 恢复上下文时的历史检索
+
+## Fast Reference
+
+### Main CLI
+
+```text
+查状态 -> Mongo
+查历史事实 -> Graphiti
+给 worker 的唯一开工口令 -> 请按你当前 worktree 的 TASK.md 开工。
+```
+
+### Worker CLI
+
+```text
+开工留痕 -> Mongo claim
+做任务分解 -> Mongo plan
+写长期记忆 -> Graphiti add_memory
+提审 -> Mongo submit
+```

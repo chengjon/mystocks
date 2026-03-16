@@ -4,11 +4,29 @@
 
 本指南说明如何在 MyStocks 当前仓库内使用 `Maestro` 的 MongoDB 多 CLI 协作控制面。
 
+操作层的命名规范、主/从 CLI 命令分工、以及当前有效开工顺序，统一以
+`docs/guides/MONGO_MULTICLI_OPERATION_CHECKLIST.md` 为准。
+本文件保留为控制面能力说明；不要再以 `MT-*` 作为新的正式任务命名。
+
 当前定位：
 
 - 属于 `maestro.collab` 的下一代协作控制面
 - 当前阶段先服务 `mystocks_spec`
 - 当前阶段不作为平行于 `Maestro` 的独立系统运行
+
+## Boundary With Graphiti
+
+`Graphiti` 在当前项目中的定位是 AI 记忆层，不是 control plane。
+
+必须遵守：
+
+- Mongo 负责任务状态、派单、回执、计划、提审、验收、合并
+- Graphiti 负责长期记忆、handoff 摘要、历史事实检索
+- 任何 `work_item.status`、review decision、ownership 判断，都不能以 Graphiti 结果替代 Mongo
+
+如果需要查看 Graphiti 的具体用法与 `group_id` 约定，统一参考：
+
+- `docs/guides/GRAPHITI_MCP_WORKFLOW.md`
 
 ## Current Modes
 
@@ -82,42 +100,59 @@ python scripts/runtime/maestro_collab.py state MT-1
 
 ```bash
 python scripts/runtime/coordctl.py work create \
-  --work-item-id MT-300 \
-  --task-key mongo-cli \
-  --title "Add coordctl" \
-  --objective "Expose Mongo coordination CLI" \
-  --branch feat/mongo-cli \
-  --owner-cli gemini \
+  --work-item-id 2026-03-14-api-route-governance-mystocks-spec1 \
+  --task-key 2026-03-14-api-route-governance \
+  --title "API route registration and prefix governance" \
+  --objective "Converge route registration entrypoints and normalize scoped non-/api prefixes." \
+  --branch mystocks_spec1 \
+  --owner-cli mystocks_spec1 \
   --allowed-path scripts/runtime \
   --acceptance-check "pytest tests/unit/runtime -q"
 ```
 
 ```bash
 python scripts/runtime/coordctl.py work list --output json
-python scripts/runtime/coordctl.py work show MT-300 --output json
-python scripts/runtime/coordctl.py work transition MT-300 --to merged --output json
+python scripts/runtime/coordctl.py work show 2026-03-14-api-route-governance-mystocks-spec1 --output json
+python scripts/runtime/coordctl.py work show 2026-03-14-api-route-governance-mystocks-spec1 --include-plan --output json
+python scripts/runtime/coordctl.py work board --active-only --output json
+python scripts/runtime/coordctl.py work transition 2026-03-14-api-route-governance-mystocks-spec1 --to merged --output json
 ```
 
 ```bash
-python scripts/runtime/coordctl.py update add MT-300 \
-  --actor-cli gemini \
+python scripts/runtime/coordctl.py work claim 2026-03-14-api-route-governance-mystocks-spec1 \
+  --actor-cli mystocks_spec1 \
+  --summary "Accepted task and started execution"
+```
+
+```bash
+python scripts/runtime/coordctl.py plan add 2026-03-14-api-route-governance-mystocks-spec1 \
+  --actor-cli mystocks_spec1 \
+  --title "Inspect current router state" \
+  --order 10
+```
+
+```bash
+python scripts/runtime/coordctl.py plan mark 2026-03-14-api-route-governance-mystocks-spec1 plan-abc123 \
+  --actor-cli mystocks_spec1 \
+  --status done \
+  --evidence "Verified scoped prefixes and duplicate registrations"
+```
+
+```bash
+python scripts/runtime/coordctl.py update add 2026-03-14-api-route-governance-mystocks-spec1 \
+  --actor-cli mystocks_spec1 \
   --summary "Implemented CLI command surface" \
   --status in_progress
 ```
 
 ```bash
-python scripts/runtime/coordctl.py request create MT-300 \
-  --actor-cli gemini \
-  --request-id req-1 \
-  --request-type definition_change \
-  --summary "Need broader backend scope"
-```
-
-```bash
-python scripts/runtime/coordctl.py request review MT-300 req-1 \
-  --reviewed-by main \
-  --status approved \
-  --output text
+python scripts/runtime/coordctl.py work submit 2026-03-14-api-route-governance-mystocks-spec1 \
+  --actor-cli mystocks_spec1 \
+  --summary "Code, verification, and TASK-REPORT are ready for review" \
+  --commit abc123def \
+  --branch mystocks_spec1 \
+  --remote origin \
+  --verify "pytest tests/unit/runtime -q"
 ```
 
 ## Real Smoke Verification
@@ -215,15 +250,18 @@ python scripts/runtime/export_collab_snapshots.py \
 
 - worker 不能直接改 `work_item` 定义
 - worker 只能读取/写入自己 owner 的任务范围
+- `work claim` / `plan add` / `plan mark` / `work submit` 已作为正式命令面提供
 - `work_update` / `work_request` 会自动触发审计事件
-- `worker_status_views` 会在任务、update、request 变化后自动刷新
+- `worker_status_views` 会在任务、claim、plan、update、request、submit 变化后自动刷新
+- `worker_status_views` 当前已汇总 claim、plan progress、delivery metadata
 - 旧的 `assign/state/suggest` CLI 仍兼容
 - `tracker.kind: mongo` 已可直接驱动 runtime candidate dispatch
 
 ## Current Limitations
 
 - runtime 主流程仍以现有 `Symphony` orchestration 为核心
-- `TASK.md` 仍承担任务契约作用
+- `TASK.md` 仍承担任务契约作用，但现在应显式引导 worker 走 `claim -> plan -> submit`
 - `TASK-REPORT.md` 仍保留为人工补充与导出摘要面
 - 目前尚未实现完整的 `TASK.md / TASK-REPORT.md` 自动导入
+- 目前尚未实现从 Mongo 自动导出 `TASK.md / TASK-REPORT.md`
 - 目前尚未提供 Web UI
