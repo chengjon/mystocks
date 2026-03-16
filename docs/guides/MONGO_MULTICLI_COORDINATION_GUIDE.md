@@ -4,7 +4,7 @@
 
 本指南说明如何在 MyStocks 当前仓库内使用 `Maestro` 的 MongoDB 多 CLI 协作控制面。
 
-操作层的命名规范、主/从 CLI 命令分工、以及当前有效任务编号，统一以
+操作层的命名规范、主/从 CLI 命令分工、以及当前有效开工顺序，统一以
 `docs/guides/MONGO_MULTICLI_OPERATION_CHECKLIST.md` 为准。
 本文件保留为控制面能力说明；不要再以 `MT-*` 作为新的正式任务命名。
 
@@ -13,6 +13,20 @@
 - 属于 `maestro.collab` 的下一代协作控制面
 - 当前阶段先服务 `mystocks_spec`
 - 当前阶段不作为平行于 `Maestro` 的独立系统运行
+
+## Boundary With Graphiti
+
+`Graphiti` 在当前项目中的定位是 AI 记忆层，不是 control plane。
+
+必须遵守：
+
+- Mongo 负责任务状态、派单、回执、计划、提审、验收、合并
+- Graphiti 负责长期记忆、handoff 摘要、历史事实检索
+- 任何 `work_item.status`、review decision、ownership 判断，都不能以 Graphiti 结果替代 Mongo
+
+如果需要查看 Graphiti 的具体用法与 `group_id` 约定，统一参考：
+
+- `docs/guides/GRAPHITI_MCP_WORKFLOW.md`
 
 ## Current Modes
 
@@ -206,9 +220,10 @@ python scripts/runtime/migrate_collab_to_mongo.py \
 - 覆盖 workspace/worktree registry
 - 覆盖 heartbeat/stale 数据
 
-### 1B. Markdown Contract -> Mongo Control Plane
+### 1B. Legacy Markdown Contract -> Mongo Control Plane
 
-当前脚本也支持把 `TASK.md / TASK-REPORT.md` 的必要字段导入 Mongo control plane：
+当前脚本也支持把旧的 `TASK.md / TASK-REPORT.md` 的必要字段导入 Mongo control plane，
+仅用于兼容历史任务，不应作为新任务主流程：
 
 - `Issue Identifier`
 - `Issue Title`
@@ -231,6 +246,25 @@ python scripts/runtime/export_collab_snapshots.py \
 
 - 从 Mongo control plane 导出 Markdown 快照
 - 供主 CLI 审阅、归档、回放
+- 供 worker worktree 生成只读 `TASK.md` / `TASK-REPORT.md`
+
+### 2B. Export Worktree Task Artifacts
+
+```bash
+python scripts/runtime/coordctl.py work export-task <WORK_ITEM_ID> \
+  --output-path /path/to/TASK.md \
+  --output json
+
+python scripts/runtime/coordctl.py work export-task-report <WORK_ITEM_ID> \
+  --output-path /path/to/TASK-REPORT.md \
+  --output json
+```
+
+用途：
+
+- 从 Mongo 主事实源生成 worker 可读快照
+- 避免继续手工维护 active `TASK.md`
+- 保留 `请按你当前 worktree 的 TASK.md 开工。` 这句口令，但让 `TASK.md` 不再是人工主源
 
 ## Current Guarantees
 
@@ -246,8 +280,7 @@ python scripts/runtime/export_collab_snapshots.py \
 ## Current Limitations
 
 - runtime 主流程仍以现有 `Symphony` orchestration 为核心
-- `TASK.md` 仍承担任务契约作用，但现在应显式引导 worker 走 `claim -> plan -> submit`
-- `TASK-REPORT.md` 仍保留为人工补充与导出摘要面
-- 目前尚未实现完整的 `TASK.md / TASK-REPORT.md` 自动导入
-- 目前尚未实现从 Mongo 自动导出 `TASK.md / TASK-REPORT.md`
+- 历史任务仍可能残留手工 `TASK.md` 契约
+- `TASK-REPORT.md` 仍允许人工追加异常说明，但 active 状态不应以其为准
+- 旧文档与旧脚本仍有部分 `TASK.md` 人工主源口径，需分阶段清理
 - 目前尚未提供 Web UI

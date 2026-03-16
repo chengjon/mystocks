@@ -51,6 +51,27 @@
 3. **非侵入式监控**：主 CLI 以报告和提交记录观察，不代做实现。
 4. **标准化复用**：统一命名、统一提交、统一 PR 模板。
 
+## 当前开工口令标准
+
+主 CLI 给 worker 的统一开工口令保持为：
+
+```text
+请按你当前 worktree 的 TASK.md 开工。
+```
+
+其余上下文不再依赖聊天补充，默认写入：
+
+- `TASK.md`
+- `TASK-REPORT.md`
+- `docs/guides/MONGO_MULTICLI_OPERATION_CHECKLIST.md`
+- `docs/guides/GRAPHITI_MCP_WORKFLOW.md`
+
+边界要求：
+
+- Mongo 负责任务状态、claim、plan、submit、review 生命周期
+- Graphiti 负责长期记忆、handoff、历史事实检索
+- 主 CLI 不得把 Graphiti 当作任务状态真相源
+
 ---
 
 ## Step -1: Pre-flight检查清单

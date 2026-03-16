@@ -36,6 +36,33 @@
 - `git fetch origin`
 - `git rebase main`
 - 确认当前 worktree 已对齐 `main@4ec63902` 之后再开始修改
+- 阅读 `docs/guides/MONGO_MULTICLI_OPERATION_CHECKLIST.md`
+- 阅读 `docs/guides/GRAPHITI_MCP_WORKFLOW.md`
+- 在 Mongo control plane 中先执行 `work claim`
+- 如需历史背景或 handoff 事实，再使用 Graphiti 查询
+
+### Checklist 对齐项
+
+**参考清单**:
+- `/opt/claude/GitNexus/docs/plans/2026-03-17-mystocks-spec-task-checklist.md`
+
+**主对齐条目**:
+- `1. API Pending Truth-Source Verification`
+
+**补充要求**:
+- 如果本轮修复影响任何 `API pending` / `blocker` 页面，必须在 `TASK-REPORT.md` 中显式分开：
+  - 已可切换真实 API
+  - 仍属 backend-blocked
+  - 与本任务无关，留待后续 review
+- 不要把整条页面真值复核线整体吞并进来，只处理与本轮路由注册 / 前缀治理直接相关的阻塞点
+
+**建议命令**:
+- `rg -n "API pending|blocker" web/frontend/src/views`
+- `rg -n "mixed -> real|真值复核|API pending" TASK-REPORT.md docs`
+
+**Done when**:
+- 路由注册/前缀治理修复结果与受影响页面列表已在 `TASK-REPORT.md` 中写清
+- 能区分“路由治理已解锁”与“仍需其他后端能力补齐”的页面
 
 ### 范围
 
@@ -63,6 +90,7 @@
 - 处理本任务范围内非 `/api` / 非版本前缀路由
 - 新增回归测试，证明 scoped 路由前缀符合预期
 - 在 `TASK-REPORT.md` 写清：改动文件、验证命令、风险与回滚方式
+- 若本轮影响 `API pending` 页面，补充页面级状态拆分证据
 
 ---
 

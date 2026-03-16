@@ -111,9 +111,27 @@ gh pr create --base dev --head [分支名] \
 
 ## 阶段1：任务启动
 
+收到主 CLI 指令：
+
+```text
+请按你当前 worktree 的 TASK.md 开工。
+```
+
+默认按以下顺序执行：
+
 1. 阅读 `TASK.md`（目标、范围、验收标准）
-2. 创建或更新 `TASK-REPORT.md`
-3. 识别依赖与风险，并记录到报告
+2. 阅读：
+   - `docs/guides/MONGO_MULTICLI_OPERATION_CHECKLIST.md`
+   - `docs/guides/GRAPHITI_MCP_WORKFLOW.md`
+3. 在 Mongo control plane 中记录开工：
+   - `work claim`
+4. 创建或更新 `TASK-REPORT.md`
+5. 识别依赖与风险，并记录到报告
+
+补充规则：
+
+- 需要任务状态、owner、plan 进度时，查 Mongo
+- 需要历史 handoff、架构事实、审核结论时，查 Graphiti
 
 ---
 
@@ -170,6 +188,8 @@ git push -u origin [分支名]
 
 建议节点：25% / 50% / 75% / 100%。
 
+如果该批次存在后续复用价值，还应补一条 Graphiti 记忆摘要，但这不能替代 Mongo 状态流转。
+
 ---
 
 ## 阶段6：完成确认
@@ -180,6 +200,7 @@ git push -u origin [分支名]
 - 代码已推送到远程分支
 - PR 已创建（base=dev）
 - `TASK-*-REPORT.md` 已生成（如阶段性任务）
+- Mongo control plane 已执行 `work submit`
 
 ---
 

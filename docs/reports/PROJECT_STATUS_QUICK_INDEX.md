@@ -1,7 +1,24 @@
 # 项目状态快速索引
 
-**生成时间**: 2025-11-11
+**生成时间**: 2026-03-12 15:00:55
 **项目**: MyStocks Quantitative Trading System
+
+---
+
+## 2026-03-12 增量更新
+
+- `dashboard` 对象已完成一轮后端收口，当前本地稳定记录见：
+  - `/opt/claude/mystocks_spec/docs/reports/analysis/2026-03-12-dashboard-market-overview-closure.md`
+  - `/opt/claude/mystocks_spec/docs/reports/analysis/INDEX.md`
+- `dashboard market-overview` 当前冻结语义：
+  - `indices` 固定表示 `上证指数 / 深证成指 / 创业板指`
+  - breadth / ranking 优先走实时快照，当前环境下可回退到 TDX live batch snapshot
+- 当前本地运行状态：
+  - `mystocks-backend`: `http://localhost:8020`
+  - `mystocks-frontend`: `http://localhost:3020`
+  - PM2 两项均为 `online`
+- 本地文档索引已更新；若需要同步到 `/opt/claude/GitNexus/tmp_exports/mystocks_spec/`，仍需由外部导出维护流程单独处理
+- Redis / MongoDB 仍在独立修复中，不属于这条 `dashboard` 收口记录的已完成范围
 
 ---
 
@@ -117,7 +134,7 @@ pytest scripts/tests/
 
 3. **API文档完善** (2-3h)
    - 补充缺失端点
-   - 工具: Apifox
+   - 工具: OpenAPI/Swagger（必要时可手动同步 Apifox 平台，非 MCP）
 
 ### 🟡 优先级2 (本月)
 1. 实时数据流完整性验证

@@ -25,8 +25,8 @@ ROLE_MODEL = {
             "decompose the total task",
             "assign owner and worker CLI",
             "define acceptance criteria",
-            "maintain TASK.md",
-            "review TASK-REPORT.md",
+            "export TASK.md snapshots from Mongo state",
+            "review exported TASK-REPORT.md snapshots and human evidence",
         ),
     },
     "worker_cli": {
@@ -34,7 +34,8 @@ ROLE_MODEL = {
         "responsibilities": (
             "execute within assigned scope",
             "respect file ownership boundaries",
-            "update TASK-REPORT.md",
+            "update Mongo coordination state",
+            "append human evidence to exported TASK-REPORT.md when needed",
             "provide verification evidence",
         ),
     },

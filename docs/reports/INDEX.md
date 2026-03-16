@@ -1,20 +1,36 @@
 # 项目管理与报告
 
-**最后更新**: 2026-01-10 22:15:42
+**最后更新**: 2026-03-12 14:37:03
 
-**文档数量**: 106
+**文档数量**: 870
 
 
 ---
+
+## Recent Updates
+
+- `2026-03-12`: Redis / Mongo runtime convergence closure and Mongo scope gate added
+  - `docs/reports/REDIS_MONGO_RUNTIME_CONVERGENCE_CLOSURE_20260312.md`
+  - `docs/reports/MONGODB_SCOPE_AND_EVIDENCE_GATE.md`
+
+- `2026-03-12`: `dashboard` `market-overview` 收口记录已入索引
+  - `docs/reports/analysis/2026-03-12-dashboard-market-overview-closure.md`
+  - `docs/reports/analysis/INDEX.md`
+
+- [ANALYSIS_INDEX](analysis/INDEX.md)
+  - *分析与交接记录索引*
 
 - [AI_PERFORMANCE_OPTIMIZATION_COMPLETION_REPORT](06-项目管理与报告/历史指南/AI_PERFORMANCE_OPTIMIZATION_COMPLETION_REPORT.md)
   - *MyStocks系统性能优化完成报告*
 
 - [APIFOX_INTEGRATION_COMPLETE](06-项目管理与报告/历史指南/APIFOX_INTEGRATION_COMPLETE.md)
-  - *✅ Apifox 集成完成报告*
+  - *历史 Apifox 集成完成报告*
 
 - [APIFOX_MCP_SETUP](06-项目管理与报告/历史指南/APIFOX_MCP_SETUP.md)
-  - *Apifox MCP 集成指南 - Claude Code*
+  - *历史 Apifox MCP 集成指南 - Claude Code*
+
+- [GRAPHITI_MCP_WORKFLOW](../guides/GRAPHITI_MCP_WORKFLOW.md)
+  - *当前 Graphiti MCP 工作流与边界说明*
 
 - [ARCHITECTURE_REVIEW_SUMMARY_2025-12-04](06-项目管理与报告/历史指南/ARCHITECTURE_REVIEW_SUMMARY_2025-12-04.md)
   - *MyStocks API 架构评审总结 - 2025-12-04*

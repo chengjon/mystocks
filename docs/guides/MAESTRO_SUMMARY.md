@@ -18,7 +18,7 @@
 3. 如何在不依赖 Linear 的情况下，保留 assignment、workspace、heartbeat、stale、owner-aware dispatch 这些自动化能力
 4. 如何给未来的“独立工具化”保留一条清晰迁移路径
 
-因此，Maestro 的目标不是替代人，也不是替代 `TASK.md`，而是接管契约形成之后那些重复、机械、流程化的动作。
+因此，Maestro 的目标不是替代人，而是把 active task truth 收敛到协作控制面，再把 `TASK.md` / `TASK-REPORT.md` 降级为导出快照与可读审阅面。
 
 ## 核心理念
 
@@ -37,14 +37,14 @@
 - 总任务与边界
 - owner / worker CLI
 - 验收标准
-- `TASK.md`
-- `TASK-REPORT.md`
+- 任务契约内容本身
+- 是否导出 `TASK.md` / `TASK-REPORT.md` 快照
 
 Maestro 不直接替人写任务契约；它只消费这些契约并执行自动化流程。
 
 ### 3. 机器态与文档态分离
 
-文档态：
+文档态（导出/审阅面）：
 
 - `TASK.md`
 - `TASK-REPORT.md`
@@ -122,15 +122,16 @@ Maestro 不直接替人写任务契约；它只消费这些契约并执行自动
 
 - 拆解任务
 - 决定 owner / worker CLI
-- 写 `TASK.md`
+- 定义任务契约
+- 导出 `TASK.md` / `TASK-REPORT.md`
 - 审 `TASK-REPORT.md`
 - 做分发、回收、重派、合并决策
 
 ### `worker CLI`
 
-- 按 `TASK.md` 执行
+- 按导出的 `TASK.md` 快照执行
 - 在 owner 边界内修改
-- 更新 `TASK-REPORT.md`
+- 更新 Mongo 协作状态，并在需要时补充 `TASK-REPORT.md`
 - 提供验证证据
 
 ### Maestro Runtime
@@ -255,18 +256,18 @@ Maestro 不直接替人写任务契约；它只消费这些契约并执行自动
 ## 推荐工作流
 
 1. 人与 `main CLI` 确定目标与约束
-2. `main CLI` 起草 `TASK.md`
+2. `main CLI` 起草任务契约
 3. 运行 `suggest` 获取 owner 建议
 4. `main CLI` 决定最终 owner / worker
-5. 在 `TASK.md` 中写入 owner、边界、验收
+5. 在控制面中写入 owner、边界、验收，并按需导出 `TASK.md`
 6. 创建本地 issue
 7. 执行 `assign`
 8. 把 issue 置为 `In Progress`
 9. 启动 runtime
-10. worker 执行并更新 `TASK-REPORT.md`
-11. `main CLI` 根据状态 API、`TASK-REPORT.md` 和 Git 证据收尾
+10. worker 执行并更新 Mongo 协作状态，必要时补充 `TASK-REPORT.md`
+11. `main CLI` 根据状态 API、导出的 `TASK-REPORT.md` 和 Git 证据收尾
 
-Mongo 协作控制面成熟后，步骤 6-11 将逐步迁移到新的协作主事实源，但仍保持 `TASK.md` 的任务契约作用。
+Mongo 协作控制面成熟后，步骤 6-11 将逐步迁移到新的协作主事实源，`TASK.md` 保留为导出快照而不是人工主契约。
 
 ## 为什么它现在适合 MyStocks
 
@@ -289,7 +290,7 @@ Maestro 现在还**不是**：
 
 - 通用远程项目管理平台
 - 自动拆任务系统
-- 自动写 `TASK.md` / `TASK-REPORT.md` 的系统
+- 自动定义任务契约的系统
 - 完整的可视化调度台
 
 它当前更像一个：

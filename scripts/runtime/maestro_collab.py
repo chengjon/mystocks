@@ -25,9 +25,10 @@ from src.services.maestro.collab import (
 from src.services.maestro.collab.authz import ActorIdentity, AuthorizationError
 from src.services.maestro.collab.backends.mongo import MongoCollaborationStore
 from src.services.maestro.collab.services import CoordinationService
-from src.services.maestro.collab.store.models import WorkItemRecord, WorkPlanItemRecord, WorkRequestRecord, WorkUpdateRecord
+from src.services.maestro.collab.store.models import WorkItemRecord, WorkRequestRecord, WorkUpdateRecord
 from src.services.maestro.profiles.mystocks import COLLAB_CONTROL_PLANE_DEFAULTS
 from src.utils.mongo_runtime_config import get_mongo_connection_kwargs
+from scripts.runtime.export_collab_snapshots import render_task_markdown, render_task_report_markdown
 
 
 @dataclass(frozen=True)
@@ -66,18 +67,24 @@ class _MongoCoordinationFacade:
             return None
         return work_item.model_dump(mode="json")
 
-    def get_work_item_snapshot(self, work_item_id: str, *, include_plan: bool = False) -> dict:
-        return self._service.get_work_item_snapshot(
-            ActorIdentity(cli_name="main", role="main_cli"),
-            work_item_id,
-            include_plan=include_plan,
-        )
-
     def list_work_items(self) -> list[dict]:
         return [item.model_dump(mode="json") for item in self._service.list_work_items(ActorIdentity(cli_name="main", role="main_cli"))]
 
-    def list_work_board_rows(self, *, active_only: bool = False) -> list[dict]:
-        return self._service.list_work_board_rows(ActorIdentity(cli_name="main", role="main_cli"), active_only=active_only)
+    def list_work_updates(self, work_item_id: str) -> list[dict]:
+        return [
+            item.model_dump(mode="json")
+            for item in self._service.list_work_updates(ActorIdentity(cli_name="main", role="main_cli"), work_item_id)
+        ]
+
+    def list_work_requests(self, work_item_id: str) -> list[dict]:
+        return [
+            item.model_dump(mode="json")
+            for item in self._service.list_work_requests(ActorIdentity(cli_name="main", role="main_cli"), work_item_id)
+        ]
+
+    def get_worker_status_view(self, work_item_id: str) -> dict | None:
+        status_view = self._service.get_worker_status_view(ActorIdentity(cli_name="main", role="main_cli"), work_item_id)
+        return None if status_view is None else status_view.model_dump(mode="json")
 
     def transition_work_item(self, work_item_id: str, status: str, actor_cli: str) -> dict:
         work_item = self._service.get_work_item(ActorIdentity(cli_name="main", role="main_cli"), work_item_id)
@@ -99,68 +106,6 @@ class _MongoCoordinationFacade:
             created_at=_utcnow(),
         )
         stored = self._service.append_work_update(ActorIdentity(cli_name=actor_cli, role="worker_cli"), update)
-        return stored.model_dump(mode="json")
-
-    def claim_work_item(self, work_item_id: str, actor_cli: str, summary: str) -> dict:
-        stored = self._service.claim_work_item(
-            ActorIdentity(cli_name=actor_cli, role="worker_cli"),
-            work_item_id=work_item_id,
-            actor_cli=actor_cli,
-            summary=summary,
-        )
-        return stored.model_dump(mode="json")
-
-    def add_plan_item(self, work_item_id: str, actor_cli: str, title: str, order: int) -> dict:
-        plan_item = WorkPlanItemRecord(
-            work_item_id=work_item_id,
-            plan_item_id=f"plan-{uuid4().hex[:12]}",
-            title=title,
-            order=order,
-            status="todo",
-            evidence_summary=None,
-            updated_at=_utcnow(),
-        )
-        stored = self._service.add_plan_item(ActorIdentity(cli_name=actor_cli, role="worker_cli"), plan_item)
-        return stored.model_dump(mode="json")
-
-    def mark_plan_item(
-        self,
-        work_item_id: str,
-        plan_item_id: str,
-        actor_cli: str,
-        status: str,
-        evidence: str | None,
-    ) -> dict:
-        stored = self._service.mark_plan_item(
-            ActorIdentity(cli_name=actor_cli, role="worker_cli"),
-            work_item_id=work_item_id,
-            plan_item_id=plan_item_id,
-            actor_cli=actor_cli,
-            status=status,
-            evidence_summary=evidence,
-        )
-        return stored.model_dump(mode="json")
-
-    def submit_work_item(
-        self,
-        work_item_id: str,
-        actor_cli: str,
-        summary: str,
-        commit_sha: str,
-        branch: str,
-        remote: str | None,
-        verification_summary: str | None,
-    ) -> dict:
-        stored = self._service.submit_work_item(
-            ActorIdentity(cli_name=actor_cli, role="worker_cli"),
-            work_item_id=work_item_id,
-            actor_cli=actor_cli,
-            summary=summary,
-            commit_sha=commit_sha,
-            branch=branch,
-            remote=remote,
-            verification_summary=verification_summary,
-        )
         return stored.model_dump(mode="json")
 
     def create_work_request(self, work_item_id: str, actor_cli: str, request_id: str, request_type: str, summary: str) -> dict:
@@ -247,12 +192,17 @@ def build_parser() -> argparse.ArgumentParser:
 
     work_show = work_subparsers.add_parser("show", help="Show one work item")
     work_show.add_argument("work_item_id")
-    work_show.add_argument("--include-plan", action="store_true")
     work_show.add_argument("--output", choices=("json", "text"), default="json")
 
-    work_board = work_subparsers.add_parser("board", help="List aggregated work board rows")
-    work_board.add_argument("--active-only", action="store_true")
-    work_board.add_argument("--output", choices=("json", "text"), default="json")
+    work_export_task = work_subparsers.add_parser("export-task", help="Export TASK.md snapshot from Mongo state")
+    work_export_task.add_argument("work_item_id")
+    work_export_task.add_argument("--output-path", default=None)
+    work_export_task.add_argument("--output", choices=("json", "text"), default="json")
+
+    work_export_report = work_subparsers.add_parser("export-task-report", help="Export TASK-REPORT.md snapshot from Mongo state")
+    work_export_report.add_argument("work_item_id")
+    work_export_report.add_argument("--output-path", default=None)
+    work_export_report.add_argument("--output", choices=("json", "text"), default="json")
 
     work_transition = work_subparsers.add_parser("transition", help="Transition work item status")
     work_transition.add_argument("work_item_id")
@@ -266,40 +216,6 @@ def build_parser() -> argparse.ArgumentParser:
     work_mark.add_argument("--actor-cli", required=True)
     work_mark.add_argument("--summary", default=None)
     work_mark.add_argument("--output", choices=("json", "text"), default="json")
-
-    work_claim = work_subparsers.add_parser("claim", help="Claim dispatched work and mark it in progress")
-    work_claim.add_argument("work_item_id")
-    work_claim.add_argument("--actor-cli", required=True)
-    work_claim.add_argument("--summary", default="Claimed work item")
-    work_claim.add_argument("--output", choices=("json", "text"), default="json")
-
-    work_submit = work_subparsers.add_parser("submit", help="Submit completed work for review")
-    work_submit.add_argument("work_item_id")
-    work_submit.add_argument("--actor-cli", required=True)
-    work_submit.add_argument("--summary", required=True)
-    work_submit.add_argument("--commit", required=True)
-    work_submit.add_argument("--branch", required=True)
-    work_submit.add_argument("--remote", default=None)
-    work_submit.add_argument("--verify", default=None)
-    work_submit.add_argument("--output", choices=("json", "text"), default="json")
-
-    plan_parser = subparsers.add_parser("plan", help="Manage structured work plan items")
-    plan_subparsers = plan_parser.add_subparsers(dest="plan_command", required=True)
-
-    plan_add = plan_subparsers.add_parser("add", help="Add a plan item")
-    plan_add.add_argument("work_item_id")
-    plan_add.add_argument("--actor-cli", required=True)
-    plan_add.add_argument("--title", required=True)
-    plan_add.add_argument("--order", required=True, type=int)
-    plan_add.add_argument("--output", choices=("json", "text"), default="json")
-
-    plan_mark = plan_subparsers.add_parser("mark", help="Update a plan item status")
-    plan_mark.add_argument("work_item_id")
-    plan_mark.add_argument("plan_item_id")
-    plan_mark.add_argument("--actor-cli", required=True)
-    plan_mark.add_argument("--status", required=True)
-    plan_mark.add_argument("--evidence", default=None)
-    plan_mark.add_argument("--output", choices=("json", "text"), default="json")
 
     update_parser = subparsers.add_parser("update", help="Manage work updates")
     update_subparsers = update_parser.add_subparsers(dest="update_command", required=True)
@@ -344,7 +260,7 @@ def main(argv: list[str] | None = None) -> int:
             _emit(suggestion, output="json")
             return 0
 
-        if args.command in {"work", "plan", "update", "request"}:
+        if args.command in {"work", "update", "request"}:
             service = _build_coordination_service(args)
             payload, output = _handle_coordination_command(args, service)
             _emit(payload, output=output)
@@ -401,7 +317,7 @@ def _build_mongo_client(mongo_uri: str | None) -> MongoClient:
     return MongoClient(**get_mongo_connection_kwargs(server_selection_timeout_ms=3000))
 
 
-def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordinationFacade) -> tuple[dict | list[dict], str]:
+def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordinationFacade) -> tuple[dict | list[dict] | str, str]:
     if args.command == "work":
         if args.work_command == "create":
             openspec = json.loads(args.openspec_json) if args.openspec_json else None
@@ -424,49 +340,52 @@ def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordi
         if args.work_command == "list":
             return service.list_work_items(), args.output
         if args.work_command == "show":
-            if args.include_plan:
-                return service.get_work_item_snapshot(args.work_item_id, include_plan=True), args.output
             payload = service.get_work_item(args.work_item_id)
             if payload is None:
                 raise KeyError(f"Unknown work item: {args.work_item_id}")
             return payload, args.output
-        if args.work_command == "board":
-            return service.list_work_board_rows(active_only=args.active_only), args.output
+        if args.work_command == "export-task":
+            work_item = service.get_work_item(args.work_item_id)
+            if work_item is None:
+                raise KeyError(f"Unknown work item: {args.work_item_id}")
+            status_view = service.get_worker_status_view(args.work_item_id)
+            markdown = render_task_markdown(work_item=work_item, status_view=status_view)
+            if args.output_path:
+                output_path = Path(args.output_path)
+                output_path.write_text(markdown, encoding="utf-8")
+                return {
+                    "artifact": "TASK.md",
+                    "output_path": str(output_path),
+                    "work_item_id": args.work_item_id,
+                }, args.output
+            return markdown, "raw"
+        if args.work_command == "export-task-report":
+            work_item = service.get_work_item(args.work_item_id)
+            if work_item is None:
+                raise KeyError(f"Unknown work item: {args.work_item_id}")
+            status_view = service.get_worker_status_view(args.work_item_id)
+            updates = service.list_work_updates(args.work_item_id)
+            requests = service.list_work_requests(args.work_item_id)
+            markdown = render_task_report_markdown(
+                work_item=work_item,
+                updates=updates,
+                requests=requests,
+                status_view=status_view,
+            )
+            if args.output_path:
+                output_path = Path(args.output_path)
+                output_path.write_text(markdown, encoding="utf-8")
+                return {
+                    "artifact": "TASK-REPORT.md",
+                    "output_path": str(output_path),
+                    "work_item_id": args.work_item_id,
+                }, args.output
+            return markdown, "raw"
         if args.work_command == "transition":
             return service.transition_work_item(args.work_item_id, args.to, args.actor_cli), args.output
         if args.work_command == "mark":
             summary = args.summary or f"status marked to {args.status}"
             return service.create_work_update(args.work_item_id, args.actor_cli, summary, args.status), args.output
-        if args.work_command == "claim":
-            return service.claim_work_item(args.work_item_id, args.actor_cli, args.summary), args.output
-        if args.work_command == "submit":
-            return (
-                service.submit_work_item(
-                    args.work_item_id,
-                    args.actor_cli,
-                    args.summary,
-                    args.commit,
-                    args.branch,
-                    args.remote,
-                    args.verify,
-                ),
-                args.output,
-            )
-
-    if args.command == "plan":
-        if args.plan_command == "add":
-            return service.add_plan_item(args.work_item_id, args.actor_cli, args.title, args.order), args.output
-        if args.plan_command == "mark":
-            return (
-                service.mark_plan_item(
-                    args.work_item_id,
-                    args.plan_item_id,
-                    args.actor_cli,
-                    args.status,
-                    args.evidence,
-                ),
-                args.output,
-            )
 
     if args.command == "update" and args.update_command == "add":
         return service.create_work_update(args.work_item_id, args.actor_cli, args.summary, args.status), args.output
@@ -492,7 +411,10 @@ def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordi
     raise ValueError("Unsupported coordination command")
 
 
-def _emit(payload: dict | list[dict], *, output: str) -> None:
+def _emit(payload: dict | list[dict] | str, *, output: str) -> None:
+    if output == "raw":
+        print(payload)
+        return
     if output == "json":
         print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
         return
