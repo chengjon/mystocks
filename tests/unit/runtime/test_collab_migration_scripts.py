@@ -9,7 +9,11 @@ from src.services.maestro.collab.registry import SQLiteCollaborationRegistry
 from src.services.maestro.collab.runtime_registry import MongoCollaborationRegistry
 from src.services.maestro.collab.store.models import WorkItemRecord, WorkUpdateRecord
 
-from scripts.runtime.export_collab_snapshots import export_work_item_snapshots
+from scripts.runtime.export_collab_snapshots import (
+    export_work_item_snapshots,
+    render_task_markdown,
+    render_task_report_markdown,
+)
 from scripts.runtime import migrate_collab_to_mongo
 from scripts.runtime.migrate_collab_to_mongo import migrate_markdown_contract, migrate_runtime_registry
 
@@ -156,6 +160,57 @@ def test_migrate_cli_can_optionally_import_markdown_contract(monkeypatch, tmp_pa
     assert exit_code == 0
     payload = capsys.readouterr().out
     assert "work_items" in payload
+
+
+def test_render_task_artifacts_from_mongo_records() -> None:
+    work_item = {
+        "work_item_id": "MT-900",
+        "title": "Mongo export",
+        "objective": "Export task markdown from Mongo state",
+        "branch": "feat/mongo-export",
+        "owner_cli": "mystocks_spec1",
+        "status": "ready_for_review",
+        "allowed_paths": ["scripts/runtime", "src/services/maestro/collab"],
+        "forbidden_paths": ["docs/archive"],
+        "acceptance_checks": ["pytest tests/unit/runtime -q"],
+        "openspec": {"change_id": "update-mongo-task-artifact-export"},
+    }
+    status_view = {
+        "status": "ready_for_review",
+        "latest_update": "Export verified",
+        "has_pending_request": True,
+    }
+    updates = [
+        {
+            "created_at": "2026-03-17T00:00:00+00:00",
+            "status": "in_progress",
+            "actor_cli": "mystocks_spec1",
+            "summary": "Export verified",
+        }
+    ]
+    requests = [
+        {
+            "created_at": "2026-03-17T00:01:00+00:00",
+            "status": "pending",
+            "request_type": "review",
+            "actor_cli": "mystocks_spec1",
+            "summary": "Need final approval",
+        }
+    ]
+
+    task_markdown = render_task_markdown(work_item=work_item, status_view=status_view)
+    report_markdown = render_task_report_markdown(
+        work_item=work_item,
+        updates=updates,
+        requests=requests,
+        status_view=status_view,
+    )
+
+    assert "Issue Identifier: `MT-900`" in task_markdown
+    assert "Assigned Worker CLI: `mystocks_spec1`" in task_markdown
+    assert "Exported from Mongo control plane" in task_markdown
+    assert "Latest Progress: Export verified" in report_markdown
+    assert "Need final approval" in report_markdown
 
 
 class _FakeMongoClient:

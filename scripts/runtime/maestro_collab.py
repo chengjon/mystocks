@@ -28,6 +28,7 @@ from src.services.maestro.collab.services import CoordinationService
 from src.services.maestro.collab.store.models import WorkItemRecord, WorkRequestRecord, WorkUpdateRecord
 from src.services.maestro.profiles.mystocks import COLLAB_CONTROL_PLANE_DEFAULTS
 from src.utils.mongo_runtime_config import get_mongo_connection_kwargs
+from scripts.runtime.export_collab_snapshots import render_task_markdown, render_task_report_markdown
 
 
 @dataclass(frozen=True)
@@ -68,6 +69,22 @@ class _MongoCoordinationFacade:
 
     def list_work_items(self) -> list[dict]:
         return [item.model_dump(mode="json") for item in self._service.list_work_items(ActorIdentity(cli_name="main", role="main_cli"))]
+
+    def list_work_updates(self, work_item_id: str) -> list[dict]:
+        return [
+            item.model_dump(mode="json")
+            for item in self._service.list_work_updates(ActorIdentity(cli_name="main", role="main_cli"), work_item_id)
+        ]
+
+    def list_work_requests(self, work_item_id: str) -> list[dict]:
+        return [
+            item.model_dump(mode="json")
+            for item in self._service.list_work_requests(ActorIdentity(cli_name="main", role="main_cli"), work_item_id)
+        ]
+
+    def get_worker_status_view(self, work_item_id: str) -> dict | None:
+        status_view = self._service.get_worker_status_view(ActorIdentity(cli_name="main", role="main_cli"), work_item_id)
+        return None if status_view is None else status_view.model_dump(mode="json")
 
     def transition_work_item(self, work_item_id: str, status: str, actor_cli: str) -> dict:
         work_item = self._service.get_work_item(ActorIdentity(cli_name="main", role="main_cli"), work_item_id)
@@ -176,6 +193,16 @@ def build_parser() -> argparse.ArgumentParser:
     work_show = work_subparsers.add_parser("show", help="Show one work item")
     work_show.add_argument("work_item_id")
     work_show.add_argument("--output", choices=("json", "text"), default="json")
+
+    work_export_task = work_subparsers.add_parser("export-task", help="Export TASK.md snapshot from Mongo state")
+    work_export_task.add_argument("work_item_id")
+    work_export_task.add_argument("--output-path", default=None)
+    work_export_task.add_argument("--output", choices=("json", "text"), default="json")
+
+    work_export_report = work_subparsers.add_parser("export-task-report", help="Export TASK-REPORT.md snapshot from Mongo state")
+    work_export_report.add_argument("work_item_id")
+    work_export_report.add_argument("--output-path", default=None)
+    work_export_report.add_argument("--output", choices=("json", "text"), default="json")
 
     work_transition = work_subparsers.add_parser("transition", help="Transition work item status")
     work_transition.add_argument("work_item_id")
@@ -290,7 +317,7 @@ def _build_mongo_client(mongo_uri: str | None) -> MongoClient:
     return MongoClient(**get_mongo_connection_kwargs(server_selection_timeout_ms=3000))
 
 
-def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordinationFacade) -> tuple[dict | list[dict], str]:
+def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordinationFacade) -> tuple[dict | list[dict] | str, str]:
     if args.command == "work":
         if args.work_command == "create":
             openspec = json.loads(args.openspec_json) if args.openspec_json else None
@@ -317,6 +344,43 @@ def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordi
             if payload is None:
                 raise KeyError(f"Unknown work item: {args.work_item_id}")
             return payload, args.output
+        if args.work_command == "export-task":
+            work_item = service.get_work_item(args.work_item_id)
+            if work_item is None:
+                raise KeyError(f"Unknown work item: {args.work_item_id}")
+            status_view = service.get_worker_status_view(args.work_item_id)
+            markdown = render_task_markdown(work_item=work_item, status_view=status_view)
+            if args.output_path:
+                output_path = Path(args.output_path)
+                output_path.write_text(markdown, encoding="utf-8")
+                return {
+                    "artifact": "TASK.md",
+                    "output_path": str(output_path),
+                    "work_item_id": args.work_item_id,
+                }, args.output
+            return markdown, "raw"
+        if args.work_command == "export-task-report":
+            work_item = service.get_work_item(args.work_item_id)
+            if work_item is None:
+                raise KeyError(f"Unknown work item: {args.work_item_id}")
+            status_view = service.get_worker_status_view(args.work_item_id)
+            updates = service.list_work_updates(args.work_item_id)
+            requests = service.list_work_requests(args.work_item_id)
+            markdown = render_task_report_markdown(
+                work_item=work_item,
+                updates=updates,
+                requests=requests,
+                status_view=status_view,
+            )
+            if args.output_path:
+                output_path = Path(args.output_path)
+                output_path.write_text(markdown, encoding="utf-8")
+                return {
+                    "artifact": "TASK-REPORT.md",
+                    "output_path": str(output_path),
+                    "work_item_id": args.work_item_id,
+                }, args.output
+            return markdown, "raw"
         if args.work_command == "transition":
             return service.transition_work_item(args.work_item_id, args.to, args.actor_cli), args.output
         if args.work_command == "mark":
@@ -347,7 +411,10 @@ def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordi
     raise ValueError("Unsupported coordination command")
 
 
-def _emit(payload: dict | list[dict], *, output: str) -> None:
+def _emit(payload: dict | list[dict] | str, *, output: str) -> None:
+    if output == "raw":
+        print(payload)
+        return
     if output == "json":
         print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
         return

@@ -8,6 +8,7 @@
 
 - Mongo 是任务状态与审批流的唯一真相源
 - Graphiti MCP 是长期记忆层
+- `TASK.md` / `TASK-REPORT.md` 仅作为 Mongo 导出的可读快照
 - Worker 收到任务后的统一开工口令保持为：
   - `请按你当前 worktree 的 TASK.md 开工。`
 
@@ -21,10 +22,16 @@
    - `search_nodes`
    - `search_memory_facts`
 3. 在 Mongo control plane 中创建或核对 work item
+4. 如需生成 worker 可读快照，导出：
+
+```bash
+python scripts/runtime/coordctl.py work export-task <WORK_ITEM_ID> --output-path /path/to/TASK.md --output json
+python scripts/runtime/coordctl.py work export-task-report <WORK_ITEM_ID> --output-path /path/to/TASK-REPORT.md --output json
+```
 
 ### 正式派单
 
-1. 确保 worker worktree 中的 `TASK.md` 已写明：
+1. 确保 worker worktree 中的 `TASK.md` 是从 Mongo 导出的当前快照，至少包含：
    - 任务目标
    - 范围边界
    - Mongo 操作要求
@@ -115,6 +122,7 @@
 ```text
 开工留痕 -> Mongo claim
 做任务分解 -> Mongo plan
+导出快照 -> coordctl work export-task / export-task-report
 写长期记忆 -> Graphiti add_memory
 提审 -> Mongo submit
 ```

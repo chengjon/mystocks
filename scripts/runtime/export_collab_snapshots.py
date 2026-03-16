@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 from typing import Any
@@ -75,6 +76,102 @@ def render_work_item_snapshot(*, work_item: dict[str, Any], updates: list[dict[s
     if requests:
         for request in requests:
             lines.append(f"- [{request['status']}] {request['request_type']}: {request['summary']}")
+    else:
+        lines.append("- (none)")
+
+    lines.append("")
+    return "\n".join(lines)
+
+
+def render_task_markdown(*, work_item: dict[str, Any], status_view: dict[str, Any] | None = None) -> str:
+    allowed_paths = work_item.get("allowed_paths", [])
+    forbidden_paths = work_item.get("forbidden_paths", [])
+    acceptance_checks = work_item.get("acceptance_checks", [])
+    openspec = work_item.get("openspec")
+    tracker_state = status_view["status"] if status_view else work_item["status"]
+
+    lines = [
+        "# TASK",
+        "",
+        "> Exported from Mongo control plane. Do not treat this file as the primary editable task source.",
+        "",
+        f"- Issue Identifier: `{work_item['work_item_id']}`",
+        f"- Issue Title: `{work_item['title']}`",
+        f"- Objective: `{work_item['objective']}`",
+        f"- Branch: `{work_item['branch']}`",
+        f"- Assigned Worker CLI: `{work_item['owner_cli']}`",
+        f"- Tracker State: `{tracker_state}`",
+        "",
+        "## Allowed Paths",
+    ]
+
+    if allowed_paths:
+        lines.extend(f"- `{path}`" for path in allowed_paths)
+    else:
+        lines.append("- (none)")
+
+    lines.extend(["", "## Forbidden Paths"])
+    if forbidden_paths:
+        lines.extend(f"- `{path}`" for path in forbidden_paths)
+    else:
+        lines.append("- (none)")
+
+    lines.extend(["", "## Acceptance Checks"])
+    if acceptance_checks:
+        lines.extend(f"- `{check}`" for check in acceptance_checks)
+    else:
+        lines.append("- (none)")
+
+    lines.extend(["", "## OpenSpec"])
+    if openspec:
+        lines.append(f"- `{json.dumps(openspec, ensure_ascii=False, sort_keys=True)}`")
+    else:
+        lines.append("- (none)")
+
+    lines.append("")
+    return "\n".join(lines)
+
+
+def render_task_report_markdown(
+    *,
+    work_item: dict[str, Any],
+    updates: list[dict[str, Any]],
+    requests: list[dict[str, Any]],
+    status_view: dict[str, Any] | None = None,
+) -> str:
+    current_status = status_view["status"] if status_view else work_item["status"]
+    latest_progress = status_view.get("latest_update") if status_view else None
+    pending_request = status_view["has_pending_request"] if status_view else "(unknown)"
+
+    lines = [
+        "# TASK-REPORT",
+        "",
+        "> Exported from Mongo control plane. Human notes may be appended, but active state lives in Mongo.",
+        "",
+        f"- Issue Identifier: `{work_item['work_item_id']}`",
+        f"- Issue Title: `{work_item['title']}`",
+        f"- Assigned Worker CLI: `{work_item['owner_cli']}`",
+        f"- Current Status: `{current_status}`",
+        f"- Latest Progress: {latest_progress or '(none)'}",
+        f"- Pending Request: `{pending_request}`",
+        "",
+        "## Updates",
+    ]
+
+    if updates:
+        for update in updates:
+            lines.append(
+                f"- `{update['created_at']}` [{update['status']}] {update['actor_cli']}: {update['summary']}"
+            )
+    else:
+        lines.append("- (none)")
+
+    lines.extend(["", "## Requests"])
+    if requests:
+        for request in requests:
+            lines.append(
+                f"- `{request['created_at']}` [{request['status']}] {request['request_type']} by {request['actor_cli']}: {request['summary']}"
+            )
     else:
         lines.append("- (none)")
 

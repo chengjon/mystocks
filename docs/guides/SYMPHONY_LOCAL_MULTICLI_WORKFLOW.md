@@ -4,21 +4,22 @@
 
 `TASK.md` / `TASK-REPORT.md` 是人工协作契约，`Maestro/Symphony` 是契约形成后的自动化执行层，而 MongoDB Multi-CLI Coordination 是 `maestro.collab` 的下一代协作控制面。
 
-为匹配本项目的本地优先 + 多 CLI 工作流，仓库根目录的 `TASK.md` / `TASK-REPORT.md` 被目录治理策略定义为 **workflow-approved exceptions**：它们是当前协作机制的正式入口与回报面，不再视为“待迁移债务”。
+为匹配本项目的本地优先 + 多 CLI 工作流，仓库根目录的 `TASK.md` / `TASK-REPORT.md` 被目录治理策略定义为 **workflow-approved exceptions**。
+在当前 Mongo-only 新流程下，它们不再是 active task truth，而是从 Mongo control plane 导出的可读快照与补充证据面。
 
 ## 当前阶段边界（2026-03-13）
 
 - 当前已落地基线仍是 `SQLite tracker + SQLite collaboration registry`
 - `MongoDB Multi-CLI Coordination` 当前归属 `maestro.collab` 演进线，不作为平行新系统存在
 - 本期目标是在 MyStocks 内验证 Mongo 协作主事实源，而不是立即独立拆仓
-- 在切换期内，`TASK.md` 继续承担任务契约职责
-- 在切换期内，`TASK-REPORT.md` 允许从 Mongo 协作状态导出摘要，并保留人工异常补充
+- 在切换期内，历史任务允许继续沿用手工 `TASK.md`
+- 对新的 Mongo-backed 任务，`TASK.md` / `TASK-REPORT.md` 应以导出快照为主
 
 ## 权威责任模型
 
 - **人**：定义目标、方向、总任务和高层约束
-- **`main CLI`**：拆解总任务，结合约束/依赖/`.FILE_OWNERSHIP` 决定 owner 与 worker CLI，定义验收标准，维护 `TASK.md`，审阅 `TASK-REPORT.md`
-- **`worker CLI`**：按 `TASK.md` 执行，在 owner 边界内修改，更新协作状态，并在需要时补充 `TASK-REPORT.md` 证据
+- **`main CLI`**：拆解总任务，结合约束/依赖/`.FILE_OWNERSHIP` 决定 owner 与 worker CLI，定义验收标准，并在需要时导出 `TASK.md` / `TASK-REPORT.md` 快照
+- **`worker CLI`**：按导出的 `TASK.md` 快照执行，在 owner 边界内修改，更新协作状态，并在需要时补充 `TASK-REPORT.md` 证据
 - **Symphony / `Maestro Runtime`**：在任务进入活跃状态后负责自动化分发、执行、监控、心跳、stale 检测、重试与状态汇总
 - **Mongo Coordination Control Plane**：负责主 CLI 分发、worker 更新、request 审批和跨 worker 汇总
 
@@ -30,13 +31,13 @@
 ### 开发者 / 主 CLI
 
 - 拆任务、定 owner、定边界、定验收
-- 维护 `TASK.md`
+- 导出 `TASK.md` / `TASK-REPORT.md` 快照
 - 审阅 `TASK-REPORT.md`
 - 做重派、合并、回滚决策
 
 ### Worker CLI
 
-- 读取 `TASK.md`
+- 读取导出的 `TASK.md`
 - 在 owner 边界内执行
 - 更新协作状态
 - 在需要时补充 `TASK-REPORT.md`
@@ -59,7 +60,7 @@
 ## 推荐流程
 
 1. 开发者 / 主 CLI 完成任务拆分
-2. 更新 `TASK.md`，必要时初始化 `TASK-REPORT.md`
+2. 对 Mongo-backed 新任务，优先创建/更新 Mongo work item
 3. 运行 `maestro_collab suggest` 获取 owner 建议
 4. 主 CLI 决定当前任务走哪条协作路径：
    - SQLite 基线路径
@@ -69,8 +70,8 @@
    - 启动 Symphony
 6. 若走 Mongo 协作控制面路径：
    - 由主 CLI 创建/分发 Mongo `work_item`
+   - 使用 `coordctl work export-task` / `export-task-report` 生成 worktree 快照
    - worker 通过 `coordctl` / 兼容入口读取任务并上报更新
-   - 必要时导出 `TASK-REPORT.md` 摘要
 7. Runtime / Control Plane 自动执行后续流程：
    - 创建 / 复用 workspace
    - 启动 worker session
@@ -82,12 +83,11 @@
    - Git / PR / 提交证据
 10. 主 CLI 决定是否收尾、重派、回滚，或推进到 `verified / merged`
 
-## 为什么不让 Symphony 直接写 TASK.md
+## 为什么仍保留导出的 TASK.md
 
-- `TASK.md` 是任务契约，不只是运行指令
-- 它包含边界、owner、验收标准、协作语义
-- 这些内容更适合由开发者与主 CLI 共同确定
-- Symphony 更适合做契约之后的“自动化流水线”
+- worker 仍然需要一个 worktree 本地可读入口
+- 但这个入口现在应从 Mongo 导出，而不是手工维护
+- 这样既保留可读性，也避免 Mongo 与 Markdown 双真相源
 
 ## 当前最小落地能力
 

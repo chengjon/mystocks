@@ -55,6 +55,21 @@ class CoordinationService:
             return work_items
         return [work_item for work_item in work_items if work_item.owner_cli == actor.cli_name]
 
+    def list_work_updates(self, actor: ActorIdentity, work_item_id: str) -> list[WorkUpdateRecord]:
+        work_item = self._require_work_item(work_item_id)
+        self._authorizer.require_can_view_work_item(actor, work_item)
+        return self._store.list_work_updates(work_item_id)
+
+    def list_work_requests(self, actor: ActorIdentity, work_item_id: str) -> list[WorkRequestRecord]:
+        work_item = self._require_work_item(work_item_id)
+        self._authorizer.require_can_view_work_item(actor, work_item)
+        return self._store.list_work_requests(work_item_id)
+
+    def get_worker_status_view(self, actor: ActorIdentity, work_item_id: str) -> WorkerStatusViewRecord | None:
+        work_item = self._require_work_item(work_item_id)
+        self._authorizer.require_can_view_work_item(actor, work_item)
+        return self._store.get_worker_status_view(work_item_id)
+
     def append_work_update(self, actor: ActorIdentity, update: WorkUpdateRecord) -> WorkUpdateRecord:
         work_item = self._require_work_item(update.work_item_id)
         self._authorizer.require_can_append_update(actor, work_item, actor_cli=update.actor_cli)
