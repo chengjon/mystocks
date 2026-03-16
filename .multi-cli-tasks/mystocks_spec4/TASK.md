@@ -35,6 +35,36 @@
 - `git fetch origin`
 - `git rebase main`
 - 确认当前 worktree 已对齐 `main@4ec63902` 之后再开始修改
+- 阅读 `docs/guides/MONGO_MULTICLI_OPERATION_CHECKLIST.md`
+- 阅读 `docs/guides/GRAPHITI_MCP_WORKFLOW.md`
+- 在 Mongo control plane 中先执行 `work claim`
+- 如需历史 source-of-truth / review 事实，再使用 Graphiti 查询
+
+### Checklist 对齐项
+
+**参考清单**:
+- `/opt/claude/GitNexus/docs/plans/2026-03-17-mystocks-spec-task-checklist.md`
+
+**主对齐条目**:
+- `3. Mongo ready_for_review control-plane unblock`
+- `5. Code Simplification Phase A Baseline Inventory`
+
+**补充要求**:
+- 如果 `ready_for_review` 仍写不进去，必须留下精确 blocker：
+  - 缺失凭证
+  - 失败命令
+  - 配置位置
+- source-of-truth 矩阵之外，还要补一份只读 inventory，说明哪些配置入口仍是兼容层、哪些是 canonical entrypoint
+- 不做静默行为变化，不在本轮直接删除尚未判定的入口
+
+**建议命令**:
+- `rg -n "coordctl|ready_for_review|createIndexes|Mongo" . docs scripts src`
+- `sed -n '108,125p' docs/reports/plans/code-simplification-optimization-plan.md`
+- `rg -n "compat|legacy|\\.old|\\.bak|\\.backup|apiClient|services/api-client" src web/frontend/src web/backend/app`
+
+**Done when**:
+- `ready_for_review` 成功写入，或 blocker note 足够精确可交接
+- YAML/JSON / compatibility entrypoint 的 inventory 与 canonical destination 已写清
 
 ### 范围
 
@@ -60,6 +90,7 @@
 - 为关键入口补充回归测试或断言
 - 收敛 ambiguity，但不引入静默行为变化
 - 若无法一次性统一，分阶段写清迁移方案与剩余风险
+- 补充 Mongo 提审阻塞状态与 baseline inventory 证据
 
 ---
 

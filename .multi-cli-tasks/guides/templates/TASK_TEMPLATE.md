@@ -83,6 +83,36 @@
 
 ---
 
+## 🚀 统一开工顺序
+
+- 收到主 CLI 指令后，默认执行：
+  - 阅读当前 `TASK.md`
+  - 阅读 `docs/guides/MONGO_MULTICLI_OPERATION_CHECKLIST.md`
+  - 阅读 `docs/guides/GRAPHITI_MCP_WORKFLOW.md`
+  - 在 Mongo control plane 中执行 `work claim`
+  - 如需要历史 handoff / 架构事实，再使用 Graphiti 检索
+- 任务状态、owner、plan、submit 一律以 Mongo 为准
+- 长期记忆、handoff 摘要、历史事实检索一律以 Graphiti 为准
+- 只做一个窄目标，不做 broad cleanup
+
+---
+
+## 🔍 Checklist 对齐项
+
+**参考清单**:
+- `/opt/claude/GitNexus/docs/plans/2026-03-17-mystocks-spec-task-checklist.md`
+
+**本任务对齐条目**:
+- 写明与哪些 checklist item 对齐
+
+**建议命令**:
+- 写明本任务应执行的 focused commands
+
+**Done when**:
+- 写明本任务如何把 checklist 条目落到可验收结果
+
+---
+
 ## 📋 任务清单
 
 ### 阶段1: XXX (T1.1-T1.3, X天)

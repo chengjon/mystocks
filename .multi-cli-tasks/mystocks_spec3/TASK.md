@@ -35,6 +35,34 @@
 - `git fetch origin`
 - `git rebase main`
 - 确认当前 worktree 已对齐 `main@4ec63902` 之后再开始修改
+- 阅读 `docs/guides/MONGO_MULTICLI_OPERATION_CHECKLIST.md`
+- 阅读 `docs/guides/GRAPHITI_MCP_WORKFLOW.md`
+- 在 Mongo control plane 中先执行 `work claim`
+- 如需历史页面判定或 handoff 事实，再使用 Graphiti 查询
+
+### Checklist 对齐项
+
+**参考清单**:
+- `/opt/claude/GitNexus/docs/plans/2026-03-17-mystocks-spec-task-checklist.md`
+
+**主对齐条目**:
+- `1. API Pending Truth-Source Verification`
+- `2. PM2 Smoke Validation`
+
+**补充要求**:
+- 对 scoped 页面补充“已可切换真实 API / backend-blocked / 待评审”三分法
+- PM2 smoke 目标不是全仓库救火，而是识别本轮改动后的第一个硬失败点
+- 若 PM2 失败与本任务改动无关，也必须把失败点与日志证据写进 `TASK-REPORT.md`
+
+**建议命令**:
+- `rg -n "API pending|blocker" web/frontend/src/views`
+- `rg -n "mixed -> real|真值复核|API pending" TASK-REPORT.md docs`
+- `bash scripts/run_e2e_pm2.sh`
+
+**Done when**:
+- scoped 页面状态拆分已写清
+- PM2 smoke 的 frontend/backend/script 首个硬失败点已被记录
+- 若本轮改动没有引入新失败，已有证据说明这一点
 
 ### 范围
 
@@ -60,6 +88,7 @@
 - scoped active 页面中的硬编码 API 调用明显减少
 - scoped websocket 使用统一到现有 shared composable / utility
 - 补充对应单元测试，并在 `TASK-REPORT.md` 报告验证结果
+- 补充 scoped 页面真值状态与 PM2 smoke 结果
 
 ---
 
