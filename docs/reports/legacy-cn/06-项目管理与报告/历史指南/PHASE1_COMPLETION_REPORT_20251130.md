@@ -32,7 +32,7 @@
   - `.env` and `.env.production` contain real credentials (ACCEPTABLE - protected by .gitignore)
   - Backup files deleted (config/.env.backup* removed)
 
-**Verification Method**: Global search for real credential values (`your-postgresql-password`, `taosdata`)
+**Verification Method**: Global search for real credential values (`your-postgresql-password`, `your-tdengine-password`)
 
 ---
 

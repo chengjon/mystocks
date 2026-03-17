@@ -63,7 +63,7 @@ class TestDatabaseTableManagerConnection:
         {
             "TDENGINE_HOST": "localhost",
             "TDENGINE_USER": "root",
-            "TDENGINE_PASSWORD": "taosdata",
+            "TDENGINE_PASSWORD": "your-tdengine-password",
             "TDENGINE_DATABASE": "test_db",
         },
     )

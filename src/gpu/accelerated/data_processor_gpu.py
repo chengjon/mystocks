@@ -18,6 +18,8 @@ import numpy as np
 import pandas as pd
 from dask.distributed import Client
 
+from ._data_processor_gpu_batch import create_batch_processing_bindings
+
 # 尝试导入 cuML 库
 try:
     from cuml.decomposition import PCA
@@ -633,118 +635,7 @@ class GPUDataProcessor:
         self.chunk_size = pipeline_data["chunk_size"]
 
 
-class BatchDataProcessor:
-    """批量数据处理器"""
-
-    def __init__(self, gpu_enabled: bool = True, max_workers: int = 4):
-        self.gpu_enabled = gpu_enabled
-        self.max_workers = max_workers
-        self.base_processor = GPUDataProcessor(gpu_enabled, max_workers)
-
-    def process_large_dataset(self, data_path: str, output_path: str, chunk_size: int = 100000) -> Dict:
-        """处理大型数据集"""
-        start_time = time.time()
-
-        # 使用分块处理
-        reader = pd.read_csv(data_path, chunksize=chunk_size)
-        processed_chunks = []
-
-        for i, chunk in enumerate(reader):
-            print(f"处理第 {i + 1} 块数据...")
-            result = self.base_processor.load_and_preprocess(chunk)
-            processed_chunks.append(result.processed_data)
-
-            # 保存中间结果
-            chunk_path = f"{output_path}_chunk_{i}.csv"
-            result.processed_data.to_csv(chunk_path, index=False)
-
-        # 合并所有块
-        final_result = pd.concat(processed_chunks, ignore_index=True)
-        final_path = f"{output_path}_final.csv"
-        final_result.to_csv(final_path, index=False)
-
-        total_time = time.time() - start_time
-
-        return {
-            "total_time": total_time,
-            "total_chunks": len(processed_chunks),
-            "final_records": len(final_result),
-            "output_path": final_path,
-        }
-
-    def distributed_processing(self, data_paths: List[str], output_path: str) -> Dict:
-        """分布式数据处理"""
-        start_time = time.time()
-        try:
-            # 初始化Dask客户端
-            client = Client(n_workers=self.max_workers)
-
-            # 读取数据
-            dfs = [dd.read_csv(path) for path in data_paths]
-            combined_df = dd.concat(dfs)
-
-            # 并行处理
-            processed_dfs = []
-            for i in range(len(dfs)):
-                processed_dfs.append(
-                    combined_df.map_partitions(
-                        lambda df: self.base_processor.load_and_preprocess(df).processed_data,
-                        meta=combined_df._meta,
-                    )
-                )
-
-            # 保存结果
-            final_df = dd.concat(processed_dfs)
-            final_df.to_csv(output_path, index=False, single_file=True)
-
-            total_time = time.time() - start_time
-
-            client.close()
-
-            return {
-                "total_time": total_time,
-                "input_files": len(data_paths),
-                "output_path": output_path,
-            }
-
-        except Exception as e:
-            self.logger.error("分布式处理失败: %s", e)
-            return {"error": str(e)}
-
-
-def benchmark_data_processing(data: pd.DataFrame, gpu_enabled: bool = True):
-    """数据处理性能基准测试"""
-    print("🔬 开始数据处理性能测试...")
-
-    # GPU版本
-    gpu_processor = GPUDataProcessor(gpu_enabled=True)
-    gpu_start = time.time()
-    gpu_result = gpu_processor.load_and_preprocess(data)
-    gpu_time = time.time() - gpu_start
-
-    # CPU版本
-    cpu_processor = GPUDataProcessor(gpu_enabled=False)
-    cpu_start = time.time()
-    cpu_result = cpu_processor.load_and_preprocess(data)
-    cpu_time = time.time() - cpu_start
-
-    # 对比结果
-    print("\n📊 数据处理性能对比:")
-    print(f"GPU处理时间: {gpu_time:.2f}秒")
-    print(f"CPU处理时间: {cpu_time:.2f}秒")
-    print(f"加速比: {cpu_time / gpu_time:.2f}x")
-    print(f"GPU压缩比: {gpu_result.memory_usage['compression_ratio']:.2f}x")
-    print(f"CPU压缩比: {cpu_result.memory_usage['compression_ratio']:.2f}x")
-    print(f"GPU处理记录数: {gpu_result.data_shape[0]}")
-    print(f"CPU处理记录数: {cpu_result.data_shape[0]}")
-
-    return {
-        "gpu_time": gpu_time,
-        "cpu_time": cpu_time,
-        "speedup": cpu_time / gpu_time,
-        "gpu_result": gpu_result,
-        "cpu_result": cpu_result,
-    }
+BatchDataProcessor, benchmark_data_processing = create_batch_processing_bindings(GPUDataProcessor)
 
 
 if __name__ == "__main__":

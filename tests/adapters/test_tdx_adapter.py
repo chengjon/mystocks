@@ -86,11 +86,11 @@ class TestTdxDataSourceInit(unittest.TestCase):
 
         # Execute
         adapter = TdxDataSource(
-            tdx_host="192.168.1.1", tdx_port=8080, max_retries=5, retry_delay=2, api_timeout=30, use_server_config=False
+            tdx_host="example.local", tdx_port=8080, max_retries=5, retry_delay=2, api_timeout=30, use_server_config=False
         )
 
         # Verify
-        self.assertEqual(adapter.tdx_host, "192.168.1.1")
+        self.assertEqual(adapter.tdx_host, "example.local")
         self.assertEqual(adapter.tdx_port, 8080)
         self.assertEqual(adapter.max_retries, 5)
         self.assertEqual(adapter.retry_delay, 2)

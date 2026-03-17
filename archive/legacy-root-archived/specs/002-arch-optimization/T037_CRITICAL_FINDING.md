@@ -19,7 +19,7 @@ While executing T037 (system initialization test), discovered that:
    # TDengine - 未实际使用 (仅5行测试数据)
    # TDENGINE_HOST=localhost
    # TDENGINE_USER=root
-   # TDENGINE_PASSWORD=taosdata
+   # TDENGINE_PASSWORD=your-tdengine-password
    # TDENGINE_PORT=6030
    # TDENGINE_DATABASE=market_data
    ```

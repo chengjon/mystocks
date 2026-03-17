@@ -12,6 +12,7 @@ from datetime import datetime
 from typing import Dict
 
 from fastapi import APIRouter
+from src.routes.technical_routes._technical_batch_indicators import batch_calculate_indicators_impl
 
 # 设置日志
 logging.basicConfig(level=logging.INFO)
@@ -642,81 +643,10 @@ async def batch_calculate_indicators(request: Dict):
     Returns:
         Dict: 批量指标计算结果
     """
-    try:
-        stock_codes = request.get("stock_codes", [])
-        indicators = request.get("indicators", ["trend", "momentum"])
-
-        logger.info("批量计算技术指标: %s, 指标: %s", stock_codes, indicators)
-
-        if check_use_mock_data():
-            logger.info("使用Mock数据源: 批量计算技术指标")
-            # 模拟批量计算结果
-            batch_results = {}
-            for stock_code in stock_codes:
-                batch_results[stock_code] = {
-                    "trend": {
-                        "ma5": round(100 + (hash(stock_code) % 20), 2),
-                        "ma10": round(102 + (hash(stock_code) % 18), 2),
-                        "ma20": round(104 + (hash(stock_code) % 16), 2),
-                    },
-                    "momentum": {
-                        "rsi": round(50 + (hash(stock_code) % 40), 2),
-                        "macd": round(-1 + (hash(stock_code) % 3), 3),
-                    },
-                }
-
-            return {
-                "success": True,
-                "data": {
-                    "batch_results": batch_results,
-                    "total_stocks": len(stock_codes),
-                    "calculated_indicators": indicators,
-                },
-                "timestamp": datetime.now().isoformat(),
-                "source": "mock",
-            }
-        else:
-            logger.info("使用真实数据库: 批量计算技术指标")
-            db_service = get_database_service()
-            if db_service is None:
-                return {
-                    "success": False,
-                    "message": "数据库服务暂未实现，请使用Mock数据源",
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-
-            # 实现真实数据库查询
-            try:
-                # 导入真实数据库服务
-                from src.database.database_service import db_service
-
-                # 调用真实数据服务，参数与Mock接口一致
-                result = db_service.get_batch_indicators(stock_codes)
-
-                logger.info("真实数据库查询成功: 批量计算技术指标")
-
-                return {
-                    "success": True,
-                    "data": result,
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-            except Exception as e:
-                logger.error("真实数据库查询失败: %s", str(e))
-                return {
-                    "success": False,
-                    "message": f"真实数据库查询失败: {str(e)}",
-                    "timestamp": datetime.now().isoformat(),
-                    "source": "database",
-                }
-
-    except Exception as e:
-        logger.error("批量计算技术指标失败: %s", str(e))
-        return {
-            "success": False,
-            "message": f"批量计算技术指标失败: {str(e)}",
-            "timestamp": datetime.now().isoformat(),
-        }
-
+    return await batch_calculate_indicators_impl(
+        request,
+        check_use_mock_data=check_use_mock_data,
+        get_database_service=get_database_service,
+        logger=logger,
+    )
 

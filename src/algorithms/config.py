@@ -9,7 +9,7 @@ for validation and type safety.
 from datetime import datetime
 from typing import Dict, List, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from .types import AlgorithmType
 
@@ -28,8 +28,7 @@ class AlgorithmConfig(BaseModel):
     gpu_memory_limit_mb: Optional[int] = Field(None, gt=0)
     enable_validation: bool = Field(default=True)
 
-    class Config:
-        validate_assignment = True
+    model_config = ConfigDict(validate_assignment=True)
 
 
 class ClassificationConfig(AlgorithmConfig):

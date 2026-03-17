@@ -94,7 +94,7 @@
 TDENGINE_HOST=localhost
 TDENGINE_PORT=6030
 TDENGINE_USER=root
-TDENGINE_PASSWORD=taosdata
+TDENGINE_PASSWORD=your-tdengine-password
 TDENGINE_DATABASE=market_data
 
 # Application-Level Cache Configuration (应用层缓存 - 替代Redis)

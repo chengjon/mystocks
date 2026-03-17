@@ -3,7 +3,6 @@
 Integrated Machine Learning Training Service
 """
 
-import json
 import logging
 import joblib
 import threading
@@ -16,6 +15,7 @@ from typing import Any, Dict, Tuple
 import numpy as np
 import pandas as pd
 
+from src.gpu.api_system.services._integrated_ml_service_stats import IntegratedMLServiceStatsMixin
 from src.gpu.api_system.utils.cache_optimization import CacheManager
 from src.gpu.api_system.utils.gpu_acceleration_engine import GPUAccelerationEngine
 from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
@@ -51,7 +51,7 @@ import grpc
 logger = logging.getLogger(__name__)
 
 
-class IntegratedMLService(MLServiceServicer):
+class IntegratedMLService(IntegratedMLServiceStatsMixin, MLServiceServicer):
     """集成机器学习训练服务实现"""
 
     def __init__(
@@ -687,44 +687,9 @@ class IntegratedMLService(MLServiceServicer):
             context.set_details(f"内部错误: {e}")
             return ModelMetrics()
 
-    def GetMLStats(self, request, context):
-        """获取ML统计信息"""
-        try:
-            with self.task_lock:
-                active_training_count = sum(1 for task in self.training_tasks.values() if task["status"] == "training")
-
-            stats = {
-                "timestamp": datetime.now().isoformat(),
-                "total_models_trained": self.stats["total_models_trained"],
-                "total_predictions": self.stats["total_predictions"],
-                "active_training_tasks": active_training_count,
-                "total_models": len(self.models),
-                "gpu_training_ratio": (
-                    self.stats["gpu_training_count"]
-                    / (self.stats["gpu_training_count"] + self.stats["cpu_training_count"])
-                    * 100
-                    if (self.stats["gpu_training_count"] + self.stats["cpu_training_count"]) > 0
-                    else 0
-                ),
-                "gpu_utilization": self.gpu_manager.get_gpu_stats().get("utilization", 0),
-            }
-
-            return json.dumps(stats, ensure_ascii=False)
-
-        except Exception as e:
-            logger.error("获取ML统计失败: %s", e)
-            context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details(f"内部错误: {e}")
-            return json.dumps({"error": str(e)})
-
     def stop(self):
         """停止服务"""
         logger.info("正在停止集成ML训练服务...")
-
-        # 等待正在运行的训练任务完成
         self.executor.shutdown(wait=True)
-
-        # 关闭缓存管理器
         self.cache_manager.shutdown()
-
         logger.info("集成ML训练服务已停止")

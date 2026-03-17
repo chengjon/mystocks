@@ -96,7 +96,7 @@ class DatabaseTestTool:
             "tdengine": {
                 "host": os.getenv("TDENGINE_HOST", ""),
                 "user": os.getenv("TDENGINE_USER", "root"),
-                "password": os.getenv("TDENGINE_PASSWORD", "taosdata"),
+                "password": os.getenv("TDENGINE_PASSWORD", "your-tdengine-password"),
                 "port": int(os.getenv("TDENGINE_PORT", 6030)),
                 "type": "TDengine",
             },

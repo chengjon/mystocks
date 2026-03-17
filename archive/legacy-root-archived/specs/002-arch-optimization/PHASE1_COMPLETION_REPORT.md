@@ -224,7 +224,7 @@ ls -lh docs/backup_strategy_arch_optimization.md
 PGPASSWORD="your-postgresql-password" psql -h localhost -p 5438 -U postgres -d mystocks -c "SELECT 1;"
 # ✅ PostgreSQL 连接成功
 
-python3 -c "import taos; conn = taos.connect(host='localhost', port=6030, user='root', password='taosdata'); print('✅ TDengine 连接成功'); conn.close()"
+python3 -c "import taos; conn = taos.connect(host='localhost', port=6030, user='root', password='your-tdengine-password'); print('✅ TDengine 连接成功'); conn.close()"
 # ✅ TDengine 连接成功
 ```
 

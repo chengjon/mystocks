@@ -61,7 +61,7 @@ class TestDatabaseManagerMockOnly:
             {
                 "TDENGINE_HOST": "localhost",
                 "TDENGINE_USER": "root",
-                "TDENGINE_PASSWORD": "taosdata",
+                "TDENGINE_PASSWORD": "your-tdengine-password",
             },
         ):
             result = manager.get_connection(DatabaseType.TDENGINE, "test_db")

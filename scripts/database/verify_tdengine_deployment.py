@@ -40,7 +40,7 @@ if env_file.exists():
 os.environ.setdefault("TDENGINE_HOST", "127.0.0.1")
 os.environ.setdefault("TDENGINE_PORT", "6030")
 os.environ.setdefault("TDENGINE_USER", "root")
-os.environ.setdefault("TDENGINE_PASSWORD", "taosdata")
+os.environ.setdefault("TDENGINE_PASSWORD", "your-tdengine-password")
 
 
 class TDengineDeploymentVerifier:

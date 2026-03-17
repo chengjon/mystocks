@@ -198,6 +198,10 @@ class TdxDataSource(BaseTdxAdapter, IDataSource):
         """获取分钟K线数据"""
         return self.kline_service.get_minute_kline(symbol, period, count, adjust)
 
+    def get_market_calendar(self, start_date: str, end_date: str) -> pd.DataFrame:
+        """获取交易日历"""
+        return self.kline_service.get_market_calendar(start_date, end_date)
+
     # ==================== 高级功能 ====================
 
     def get_market_overview(self) -> Dict:

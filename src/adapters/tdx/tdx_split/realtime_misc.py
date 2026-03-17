@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 import pandas as pd
+from src.utils.column_mapper import ColumnMapper
 
 logger = logging.getLogger(__name__)
 
@@ -174,4 +175,3 @@ class TdxRealtimeMiscMixin:
         return []
 
     # ==================== 扩展功能: 多周期K线 ====================
-

@@ -9,7 +9,7 @@ structured data handling.
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class AlgorithmMetrics(BaseModel):
@@ -51,8 +51,7 @@ class PredictionResult(BaseModel):
     probability_distribution: Optional[Dict[str, float]] = Field(default_factory=dict)
     features_used: Optional[Dict[str, Any]] = Field(default_factory=dict)
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class AlgorithmResult(BaseModel):
@@ -84,8 +83,7 @@ class AlgorithmResult(BaseModel):
     error_message: Optional[str] = None
     warnings: Optional[List[str]] = Field(default_factory=list)
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class BatchAlgorithmResult(BaseModel):
@@ -133,8 +131,7 @@ class ModelArtifact(BaseModel):
     model_size_bytes: int
     checksum_sha256: str
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class AlgorithmStatus(BaseModel):

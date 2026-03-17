@@ -35,7 +35,7 @@
 # 找到: TDENGINE_PASSWORD, POSTGRESQL_PASSWORD, JWT_SECRET_KEY
 
 # 步骤 2: 在每个服务轮换密码
-# - TDengine: 修改 taosdata 用户密码
+# - TDengine: 修改 your-tdengine-password 用户密码
 # - PostgreSQL: 修改 postgres 用户密码
 # - JWT: 生成新的随机密钥 (openssl rand -hex 32)
 

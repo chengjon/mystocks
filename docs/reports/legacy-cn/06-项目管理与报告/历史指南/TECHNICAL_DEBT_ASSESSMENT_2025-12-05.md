@@ -33,7 +33,7 @@
 
 ```bash
 # 已提交但敏感的信息:
-TDENGINE_PASSWORD=taosdata          # 默认密码，明文存储
+TDENGINE_PASSWORD=your-tdengine-password          # 默认密码，明文存储
 POSTGRESQL_PASSWORD=your-postgresql-password         # 已泄露
 JWT_SECRET_KEY=be5d2db05101c9...    # 硬编码密钥
 ```

@@ -30,13 +30,13 @@ MONITOR_DB_DATABASE=db_monitor
 
  
 
-# TDengine 连接参数(这个taosdata是正确密码）
+# TDengine 连接参数(这个your-tdengine-password是正确密码）
 
 TDENGINE_HOST=localhost
 
 TDENGINE_USER=root
 
-TDENGINE_PASSWORD=taosdata
+TDENGINE_PASSWORD=your-tdengine-password
 
 TDENGINE_PORT=6030
 

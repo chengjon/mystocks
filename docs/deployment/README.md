@@ -221,7 +221,7 @@ nano .env  # 或使用其他编辑器
 TDENGINE_HOST=localhost  # TDengine服务器地址
 TDENGINE_PORT=6030
 TDENGINE_USER=root
-TDENGINE_PASSWORD=taosdata
+TDENGINE_PASSWORD=your-tdengine-password
 TDENGINE_DATABASE=market_data
 
 # ========== PostgreSQL配置 ==========
@@ -243,7 +243,7 @@ MONITOR_DB_URL=postgresql://mystocks_user:your_secure_password@localhost:5432/my
 
 ```bash
 # 连接到TDengine
-taos -h localhost -P 6030 -u root -p taosdata
+taos -h localhost -P 6030 -u root -p your-tdengine-password
 
 # 创建数据库（在taos shell中执行）
 CREATE DATABASE IF NOT EXISTS market_data
@@ -293,7 +293,7 @@ python -c "from core import ConfigDrivenTableManager; mgr = ConfigDrivenTableMan
 python -c "from core import ConfigDrivenTableManager; mgr = ConfigDrivenTableManager(); mgr.validate_all_table_structures()"
 
 # 检查TDengine超表
-taos -h localhost -P 6030 -u root -p taosdata -s "USE market_data; SHOW STABLES;"
+taos -h localhost -P 6030 -u root -p your-tdengine-password -s "USE market_data; SHOW STABLES;"
 ```
 
 ---
@@ -371,7 +371,7 @@ try:
         host='localhost',
         port=6030,
         user='root',
-        password='taosdata',
+        password='your-tdengine-password',
         database='market_data'
     )
     result = conn.query("SELECT server_version()")

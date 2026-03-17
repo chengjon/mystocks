@@ -58,7 +58,7 @@ class PerformanceBaseline:
             "host": os.getenv("TDENGINE_HOST", "localhost"),
             "port": int(os.getenv("TDENGINE_PORT", "6030")),
             "user": os.getenv("TDENGINE_USER", "root"),
-            "password": os.getenv("TDENGINE_PASSWORD", "taosdata"),
+            "password": os.getenv("TDENGINE_PASSWORD", "your-tdengine-password"),
             "database": os.getenv("TDENGINE_DATABASE", "market_data"),
         }
 

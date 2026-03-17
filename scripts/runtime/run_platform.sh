@@ -131,7 +131,7 @@ start_backend() {
 
     # Set environment variables
     export PYTHONPATH="$PROJECT_ROOT/web/backend"
-    export DATABASE_URL="taos://root:taosdata@localhost:$DB_PORT/mystocks"
+    export DATABASE_URL="taos://root:your-tdengine-password@localhost:$DB_PORT/mystocks"
 
     # Start backend in background
     log_info "Starting FastAPI server on port $BACKEND_PORT..."

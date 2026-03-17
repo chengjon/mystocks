@@ -167,7 +167,7 @@
 
   Sensitive Data Identified: 15+ files
   ├─ PostgreSQL password (your-postgresql-password): 15+ locations
-  ├─ TDengine password (taosdata): 10+ locations
+  ├─ TDengine password (your-tdengine-password): 10+ locations
   ├─ MySQL password (your-postgresql-password): 5+ locations
   ├─ JWT tokens: Hardcoded in settings
   └─ Connection strings with credentials: 5+ locations

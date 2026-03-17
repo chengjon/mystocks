@@ -150,7 +150,7 @@ REDIS_DB=0
 TDENGINE_HOST=localhost
 TDENGINE_PORT=6041
 TDENGINE_USER=root
-TDENGINE_PASSWORD=taosdata
+TDENGINE_PASSWORD=your-tdengine-password
 TDENGINE_DATABASE=mystocks_market
 
 # TQLEX接口配置 (通达信)

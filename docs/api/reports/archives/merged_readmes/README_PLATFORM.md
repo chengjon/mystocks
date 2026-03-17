@@ -127,7 +127,7 @@ VITE_LOG_LEVEL=debug
 #### 后端配置 (`web/backend/.env`)
 ```bash
 # 数据库配置
-DATABASE_URL=taos://root:taosdata@localhost:6030/mystocks
+DATABASE_URL=taos://root:your-tdengine-password@localhost:6030/mystocks
 
 # 应用配置
 DEBUG=true

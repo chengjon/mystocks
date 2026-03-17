@@ -91,7 +91,7 @@ class ImprovedRealtimeValidator:
             ),
             "TDengine密码配置": bool(
                 os.getenv("TDENGINE_PASSWORD")
-                and os.getenv("TDENGINE_PASSWORD") != "taosdata"
+                and os.getenv("TDENGINE_PASSWORD") != "your-tdengine-password"
             ),
             "TDX数据路径": bool(
                 os.getenv("TDX_DATA_PATH") and Path(os.getenv("TDX_DATA_PATH")).exists()

@@ -40,12 +40,12 @@ class FinancialDataSource(IDataSource):
         self._stock_daily_adapter = StockDailyAdapter()
         self._financial_report_adapter = FinancialReportAdapter()
 
-        # 检查依赖库可用性
-        self._check_dependency_availability()
-
         # 数据源可用性标志
         self._stock_daily_available = False
         self._financial_reports_available = False
+
+        # 检查依赖库可用性
+        self._check_dependency_availability()
 
     def _check_dependency_availability(self) -> None:
         """检查依赖库的可用性"""

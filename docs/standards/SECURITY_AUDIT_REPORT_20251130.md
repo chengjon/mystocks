@@ -31,7 +31,7 @@ Line 26: MONITOR_DB_URL=postgresql://postgres:your-postgresql-password@localhost
 
 #### `/opt/claude/mystocks_spec/config/.env.data_sources.example`
 ```
-Line 60: TDENGINE_PASSWORD=taosdata  (was hardcoded)
+Line 60: TDENGINE_PASSWORD=your-tdengine-password  (was hardcoded)
 Line 68: POSTGRESQL_PASSWORD=your-postgresql-password  (was production credential)
 ```
 **Fix Applied**: Changed to `your-tdengine-password` and `your-postgres-password`
@@ -169,7 +169,7 @@ config/.env.backup*     # Prevent backup files from being committed
 
 #### File 2: `config/.env.data_sources.example`
 ```diff
-- TDENGINE_PASSWORD=taosdata
+- TDENGINE_PASSWORD=your-tdengine-password
 + TDENGINE_PASSWORD=your-tdengine-password
 
 - POSTGRESQL_PASSWORD=your-postgresql-password

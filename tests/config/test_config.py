@@ -260,7 +260,7 @@ def validate_test_environment():
             host=test_env.TDENGINE_HOST,
             port=test_env.TDENGINE_PORT,
             user="root",
-            password="taosdata",
+            password="your-tdengine-password",
         )
         conn.close()
     except Exception:

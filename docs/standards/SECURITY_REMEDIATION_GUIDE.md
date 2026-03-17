@@ -37,7 +37,7 @@
 # 连接 TDengine
 taos -h localhost -P 6030 -u root -p
 
-# 输入旧密码: taosdata
+# 输入旧密码: your-tdengine-password
 
 # 更改密码
 ALTER USER root PASS '新_强_密_码_这里';

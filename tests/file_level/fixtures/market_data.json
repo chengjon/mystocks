@@ -8,7 +8,7 @@ api:
 
 database:
   test_database_url: "postgresql://test:test@localhost:5438/mystocks_test"
-  tdengine_url: "taos://root:taosdata@localhost:6030/mystocks_test"
+  tdengine_url: "taos://root:your-tdengine-password@localhost:6030/mystocks_test"
 
 parallel:
   max_workers: 4

@@ -1,7 +1,0 @@
-{
-  "tool_name": "Agent",
-  "tool_input_preview": "{\"description\":\"Implement corner marker cleanup\",\"prompt\":\"Implement comprehensive minimal-risk cleanup to permanently remove decorative ArtDeco corner markers in frontend.\\n\\nRepository: /opt/claude/...",
-  "error": "Team \"mystocks_spec\" does not exist. Call spawnTeam first to create the team.",
-  "timestamp": "2026-03-07T02:12:21.014Z",
-  "retry_count": 3
-}

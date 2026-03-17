@@ -45,10 +45,16 @@ test.describe('侧边栏-路由联动一致性测试 (ArtDeco 3.1 Architecture)'
   });
 
   const menuTests = [
+    { name: '交易室', expectedPath: '/dashboard' },
     { name: '实时行情', expectedPath: '/market/realtime' },
     { name: '技术指标', expectedPath: '/market/technical' },
+    { name: '龙虎榜分析', expectedPath: '/market/lhb' },
+    { name: '概念动向', expectedPath: '/data/concept' },
+    { name: '资金流向', expectedPath: '/data/fund-flow' },
     { name: '问财选股', expectedPath: '/market/wencai' },
     { name: '策略管理', expectedPath: '/strategy/management' },
+    { name: '仓位管理', expectedPath: '/strategy/pos' },
+    { name: '组合管理', expectedPath: '/watchlist/manage' },
     { name: '风险概览', expectedPath: '/risk/overview' },
     { name: '交易信号', expectedPath: '/trading/signals' },
     { name: '持仓监控', expectedPath: '/trading/positions' },

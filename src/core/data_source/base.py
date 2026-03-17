@@ -5,6 +5,8 @@
 import logging
 from typing import Any, Dict, List, Optional
 
+from config.data_sources_loader import YAML_DATA_SOURCES_REGISTRY_PATH
+
 from .cache import LRUCache
 from .circuit_breaker import CircuitBreaker
 from .smart_cache import SmartCache
@@ -19,7 +21,7 @@ class DataSourceManagerV2:
     数据源管理器 V2.0
     """
 
-    def __init__(self, yaml_config_path: str = "config/data_sources_registry.yaml", use_smart_cache: bool = True):
+    def __init__(self, yaml_config_path: str = YAML_DATA_SOURCES_REGISTRY_PATH, use_smart_cache: bool = True):
         """
         初始化数据源管理器
 
@@ -185,11 +187,37 @@ class DataSourceManagerV2:
         for name, endpoint in self.registry.items():
             if endpoint_name and name != endpoint_name:
                 continue
-            is_healthy = endpoint.get("enabled", False) and endpoint.get("health_score", 0) > 50
+
+            config = endpoint.get("config", {})
+
+            enabled = endpoint.get("enabled")
+            if enabled is None:
+                enabled = config.get("enabled")
+            if enabled is None:
+                enabled = config.get("status") == "active"
+
+            health_score = endpoint.get("health_score")
+            if health_score is None:
+                health_score = config.get("health_score")
+            if health_score is None:
+                success_rate = config.get("success_rate")
+                if success_rate is not None:
+                    health_score = float(success_rate)
+                else:
+                    health_status = str(config.get("health_status") or "").lower()
+                    if health_status in {"failed", "down", "unhealthy"}:
+                        health_score = 0.0
+                    elif health_status == "degraded":
+                        health_score = 60.0
+                    else:
+                        health_score = 100.0 if enabled else 0.0
+
+            health_status = str(config.get("health_status") or "").lower()
+            is_healthy = bool(enabled) and float(health_score) > 50 and health_status not in {"failed", "down", "unhealthy"}
             details[name] = {
                 "healthy": is_healthy,
-                "health_score": endpoint.get("health_score", 0),
-                "enabled": endpoint.get("enabled", False),
+                "health_score": health_score,
+                "enabled": bool(enabled),
             }
             if is_healthy:
                 healthy += 1

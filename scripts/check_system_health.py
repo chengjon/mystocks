@@ -131,7 +131,7 @@ class SystemHealthChecker:
             conn = taos.connect(
                 host=os.getenv("TDENGINE_HOST", "localhost"),
                 user=os.getenv("TDENGINE_USER", "root"),
-                password=os.getenv("TDENGINE_PASSWORD", "taosdata"),
+                password=os.getenv("TDENGINE_PASSWORD", "your-tdengine-password"),
                 port=int(os.getenv("TDENGINE_PORT", "6030")),
                 timeout=5,
             )

@@ -36,7 +36,7 @@ import taosws
 
 # WebSocket连接字符串
 conn = taosws.connect(
-    "taosws://root:taosdata@localhost:6041/market_data",
+    "taosws://root:your-tdengine-password@localhost:6041/market_data",
     timeout=30
 )
 ```
@@ -702,7 +702,7 @@ databases:
     host: "${TDENGINE_HOST:localhost}"
     port: 6041
     user: "${TDENGINE_USER:root}"
-    password: "${TDENGINE_PASSWORD:taosdata}"
+    password: "${TDENGINE_PASSWORD:your-tdengine-password}"
     database: "${TDENGINE_DATABASE:market_data}"
     pool_size: 20
     max_overflow: 30

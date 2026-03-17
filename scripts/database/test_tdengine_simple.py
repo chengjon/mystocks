@@ -35,7 +35,7 @@ if env_file.exists():
 TDENGINE_HOST = os.getenv("TDENGINE_HOST", "127.0.0.1")
 TDENGINE_PORT = os.getenv("TDENGINE_PORT", "6030")
 TDENGINE_USER = os.getenv("TDENGINE_USER", "root")
-TDENGINE_PASSWORD = os.getenv("TDENGINE_PASSWORD", "taosdata")
+TDENGINE_PASSWORD = os.getenv("TDENGINE_PASSWORD", "your-tdengine-password")
 TDENGINE_DATABASE = os.getenv("TDENGINE_DATABASE", "market_data")
 
 

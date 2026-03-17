@@ -27,7 +27,7 @@ if not os.getenv("TDENGINE_HOST"):
     os.environ["TDENGINE_HOST"] = "localhost"
     os.environ["TDENGINE_PORT"] = "6030"
     os.environ["TDENGINE_USER"] = "root"
-    os.environ["TDENGINE_PASSWORD"] = "taosdata"
+    os.environ["TDENGINE_PASSWORD"] = "your-tdengine-password"
     os.environ["TDENGINE_DATABASE"] = "market_data"
 
 if not os.getenv("POSTGRESQL_HOST"):

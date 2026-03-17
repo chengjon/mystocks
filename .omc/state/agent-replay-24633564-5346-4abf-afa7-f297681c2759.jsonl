@@ -1,4 +1,0 @@
-{"t":0,"agent":"ae05d81","agent_type":"build-fixer","event":"agent_start","parent_mode":"none"}
-{"t":0,"agent":"a6fb2d0","agent_type":"build-fixer","event":"agent_start","parent_mode":"none"}
-{"t":0,"agent":"a6fb2d0","agent_type":"build-fixer","event":"agent_stop","success":true,"duration_ms":2995155}
-{"t":0,"agent":"ae05d81","agent_type":"build-fixer","event":"agent_stop","success":true,"duration_ms":4743616}

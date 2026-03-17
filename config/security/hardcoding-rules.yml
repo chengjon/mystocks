@@ -51,11 +51,11 @@ rules:
   - id: HC-P0-KNOWN-DEFAULT-SECRET
     severity: P0
     description: Known insecure/default secret literal
-    regex: "(?i)(default-insecure-password-change-me|your-postgresql-password|taosdata|mystocks_password|your-secret-key-here|your-encryption-key)"
+    regex: "(?i)(default-insecure-password-change-me|your-postgresql-password|your-tdengine-password|mystocks_password|your-secret-key-here|your-encryption-key)"
     include_extensions: [".py", ".js", ".ts", ".tsx", ".vue", ".json", ".yaml", ".yml", ".sh", ".env", ".conf"]
     excludes:
-      - "(?i)taosdata\\.com"
-      - "(?i)taosdata\\\\\\.com"
+      - "(?i)your-tdengine-password\\.com"
+      - "(?i)your-tdengine-password\\\\\\.com"
 
   - id: HC-P1-HARDCODED-IPV4
     severity: P1

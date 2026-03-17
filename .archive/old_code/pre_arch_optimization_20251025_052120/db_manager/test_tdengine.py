@@ -63,7 +63,7 @@ def test_tdengine_connection(taos_module, module_name):
 
         tdengine_host = os.getenv("TDENGINE_HOST")
         tdengine_user = os.getenv("TDENGINE_USER", "root")
-        tdengine_password = os.getenv("TDENGINE_PASSWORD", "taosdata")
+        tdengine_password = os.getenv("TDENGINE_PASSWORD", "your-tdengine-password")
         tdengine_port = int(os.getenv("TDENGINE_PORT", "6041"))
 
         if not tdengine_host:

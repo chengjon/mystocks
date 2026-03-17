@@ -76,7 +76,7 @@ ERROR:DatabaseTableManager:Failed to create table daily_kline: function create_h
 export TDENGINE_HOST=localhost
 export TDENGINE_PORT=6041
 export TDENGINE_USER=root
-export TDENGINE_PASSWORD=taosdata
+export TDENGINE_PASSWORD=your-tdengine-password
 
 # PostgreSQL 配置
 export POSTGRESQL_HOST=localhost

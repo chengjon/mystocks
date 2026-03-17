@@ -12,6 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
+from src.gpu.api_system.services._integrated_backtest_service_stats import IntegratedBacktestServiceStatsMixin
 from src.gpu.api_system.utils.cache_optimization import CacheManager
 from src.gpu.api_system.utils.gpu_acceleration_engine import GPUAccelerationEngine
 from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
@@ -47,7 +48,7 @@ import grpc
 logger = logging.getLogger(__name__)
 
 
-class IntegratedBacktestService(BacktestServiceServicer):
+class IntegratedBacktestService(IntegratedBacktestServiceStatsMixin, BacktestServiceServicer):
     """集成回测服务实现"""
 
     def __init__(
@@ -666,9 +667,7 @@ class IntegratedBacktestService(BacktestServiceServicer):
                 volatility=performance.get("volatility", 0.0),
             )
 
-            # 转换优化建议
             optimization_suggestions = result.get("optimization_suggestions", [])
-
             return BacktestResult(
                 backtest_id=backtest_id,
                 status=BacktestStatus.COMPLETED,
@@ -685,49 +684,13 @@ class IntegratedBacktestService(BacktestServiceServicer):
             logger.error("转换回测结果失败: %s", e)
             raise e
 
-    def GetIntegratedBacktestStats(self, request, context):
-        """获取集成回测统计信息"""
-        try:
-            with self.backtest_lock:
-                running_count = len(self.running_backtests)
-                gpu_accelerated_count = sum(
-                    1 for info in self.running_backtests.values() if info.get("gpu_accelerated", False)
-                )
-
-            stats = {
-                "timestamp": datetime.now().isoformat(),
-                "running_backtests": running_count,
-                "gpu_accelerated_backtests": gpu_accelerated_count,
-                "total_backtests": len(self.running_backtests),
-                "gpu_utilization": self.gpu_manager.get_gpu_stats().get("utilization", 0),
-                "cache_hit_rate": self.cache_manager.get_cache_performance_report()
-                .get("cache_stats", {})
-                .get("overall_hit_rate", 0),
-                "system_status": ("healthy" if running_count < self.config["max_concurrent_backtests"] else "busy"),
-            }
-
-            return json.dumps(stats, ensure_ascii=False)
-
-        except Exception as e:
-            logger.error("获取集成回测统计失败: %s", e)
-            context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details(f"内部错误: {e}")
-            return json.dumps({"error": str(e)})
-
     def stop(self):
         """停止服务"""
         logger.info("正在停止集成回测服务...")
-
-        # 停止所有运行中的回测
         with self.backtest_lock:
             for backtest_id, backtest_info in self.running_backtests.items():
                 if backtest_info.get("status") == "processing":
                     self._update_backtest_status(backtest_id, "cancelled", "服务停止")
-
-        # 关闭线程池
         self.executor.shutdown(wait=True)
-
-        # 关闭缓存管理器
         self.cache_manager.shutdown()
-
         logger.info("集成回测服务已停止")

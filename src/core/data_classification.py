@@ -22,16 +22,8 @@ from enum import Enum
 
 # 导入现有的数据库管理模块
 
-# 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler("mystocks_system.log", encoding="utf-8"),
-        logging.StreamHandler(),
-    ],
-)
 logger = logging.getLogger("MyStocksSystem")
+
 
 class DataClassification(Enum):
     """数据分类体系 - 基于原始设计的5大分类"""
@@ -98,5 +90,3 @@ class DatabaseTarget(Enum):
 
     TDENGINE = "TDengine"  # 高频时序数据专用
     POSTGRESQL = "PostgreSQL"  # 通用数据仓库+TimescaleDB时序扩展
-
-

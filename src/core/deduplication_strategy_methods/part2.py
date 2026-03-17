@@ -23,15 +23,6 @@ from typing import Dict, Optional
 # 导入现有的数据库管理模块
 from src.core.data_classification import DataClassification
 
-# 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler("mystocks_system.log", encoding="utf-8"),
-        logging.StreamHandler(),
-    ],
-)
 logger = logging.getLogger("MyStocksSystem")
 
 
@@ -102,4 +93,3 @@ class DeduplicationStrategyValidateSingleTableMixin:
             logger.info("配置驱动表管理器资源清理完成")
         except Exception as e:  # pylint: disable=broad-exception-caught
             logger.error("资源清理失败: %s", e)
-

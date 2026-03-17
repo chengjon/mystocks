@@ -19,6 +19,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from config.data_sources_loader import YAML_DATA_SOURCES_REGISTRY_PATH
 from src.core.data_source._config_manager_persistence_mixin import (
     BatchOperationResult,
     ConfigChangeResult,
@@ -61,7 +62,7 @@ class ConfigManager(ConfigManagerPersistenceMixin):
     ... )
     """
 
-    def __init__(self, yaml_config_path: str = "config/data_sources_registry.yaml", postgresql_access=None):
+    def __init__(self, yaml_config_path: str = YAML_DATA_SOURCES_REGISTRY_PATH, postgresql_access=None):
         """
         初始化配置管理器
 

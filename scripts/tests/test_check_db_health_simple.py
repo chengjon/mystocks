@@ -132,7 +132,7 @@ class TestDatabaseHealthCheck:
             settings.tdengine_host = "invalid_host"
             settings.tdengine_port = 6030
             settings.tdengine_user = "root"
-            settings.tdengine_password = "taosdata"
+            settings.tdengine_password = "your-tdengine-password"
             settings.tdengine_database = "test_db"
 
             import taos

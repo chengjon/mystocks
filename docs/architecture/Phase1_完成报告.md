@@ -217,7 +217,7 @@ BUSINESS_DATA_SOURCE=mock         # mock/composite
 # TDengine连接参数
 TDENGINE_HOST=localhost
 TDENGINE_USER=root
-TDENGINE_PASSWORD=taosdata
+TDENGINE_PASSWORD=your-tdengine-password
 TDENGINE_PORT=6030
 TDENGINE_REST_PORT=6041
 TDENGINE_DATABASE=market_data

@@ -182,7 +182,7 @@ metadata:
 data:
   DATABASE_URL: "postgresql://mystocks:password@postgres:5432/mystocks"
   REDIS_URL: "redis://redis:6379/0"
-  TDENGINE_URL: "taos://root:taosdata@tdengine:6030"
+  TDENGINE_URL: "taos://root:your-tdengine-password@tdengine:6030"
 ```
 
 ### 3. 创建 Deployment

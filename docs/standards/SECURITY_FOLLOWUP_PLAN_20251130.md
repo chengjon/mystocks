@@ -24,11 +24,11 @@ This document outlines a three-phase implementation plan to consolidate security
 
 **Checklist**:
 - [ ] Verify `.env.example` contains only placeholders (no real credentials)
-  - Command: `grep -E "your-postgresql-password|taosdata|real_password" .env.example`
+  - Command: `grep -E "your-postgresql-password|your-tdengine-password|real_password" .env.example`
   - Expected: 0 matches
 
 - [ ] Verify `config/.env.data_sources.example` contains only placeholders
-  - Command: `grep -E "your-postgresql-password|taosdata" config/.env.data_sources.example`
+  - Command: `grep -E "your-postgresql-password|your-tdengine-password" config/.env.data_sources.example`
   - Expected: 0 matches
 
 - [ ] E2E tests running on port 3000 without connection errors

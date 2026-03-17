@@ -41,7 +41,7 @@ class TestDatabaseConnectionManagerInit(unittest.TestCase):
             "TDENGINE_HOST": "localhost",
             "TDENGINE_PORT": "6030",
             "TDENGINE_USER": "root",
-            "TDENGINE_PASSWORD": "taosdata",  # pragma: allowlist secret
+            "TDENGINE_PASSWORD": "your-tdengine-password",  # pragma: allowlist secret
             "TDENGINE_DATABASE": "market_data",
             "POSTGRESQL_HOST": "localhost",
             "POSTGRESQL_PORT": "5438",
@@ -83,7 +83,7 @@ class TestDatabaseConnectionManagerInit(unittest.TestCase):
                 "TDENGINE_HOST": "localhost",
                 "TDENGINE_PORT": "6030",
                 "TDENGINE_USER": "root",
-                "TDENGINE_PASSWORD": "taosdata",
+                "TDENGINE_PASSWORD": "your-tdengine-password",
                 "TDENGINE_DATABASE": "market_data",
             }
         )
@@ -106,7 +106,7 @@ class TestDatabaseConnectionManagerTDengine(unittest.TestCase):
                 "TDENGINE_HOST": "localhost",
                 "TDENGINE_PORT": "6030",
                 "TDENGINE_USER": "root",
-                "TDENGINE_PASSWORD": "taosdata",
+                "TDENGINE_PASSWORD": "your-tdengine-password",
                 "TDENGINE_DATABASE": "market_data",
                 "POSTGRESQL_HOST": "localhost",
                 "POSTGRESQL_PORT": "5438",
@@ -130,7 +130,7 @@ class TestDatabaseConnectionManagerTDengine(unittest.TestCase):
             host="localhost",
             port=6030,
             user="root",
-            password="taosdata",
+            password="your-tdengine-password",
             database="market_data",
         )
         self.assertIn("tdengine", self.manager._connections)
@@ -164,7 +164,7 @@ class TestDatabaseConnectionManagerTDengine(unittest.TestCase):
             host="localhost",
             port=6041,  # 应该使用REST端口
             user="root",
-            password="taosdata",
+            password="your-tdengine-password",
             database="market_data",
         )
 
@@ -198,7 +198,7 @@ class TestDatabaseConnectionManagerPostgreSQL(unittest.TestCase):
                 "TDENGINE_HOST": "localhost",
                 "TDENGINE_PORT": "6030",
                 "TDENGINE_USER": "root",
-                "TDENGINE_PASSWORD": "taosdata",
+                "TDENGINE_PASSWORD": "your-tdengine-password",
                 "TDENGINE_DATABASE": "market_data",
                 "POSTGRESQL_HOST": "localhost",
                 "POSTGRESQL_PORT": "5438",
@@ -302,7 +302,7 @@ class TestDatabaseConnectionManagerRedis(unittest.TestCase):
                 "TDENGINE_HOST": "localhost",
                 "TDENGINE_PORT": "6030",
                 "TDENGINE_USER": "root",
-                "TDENGINE_PASSWORD": "taosdata",
+                "TDENGINE_PASSWORD": "your-tdengine-password",
                 "TDENGINE_DATABASE": "market_data",
                 "POSTGRESQL_HOST": "localhost",
                 "POSTGRESQL_PORT": "5438",
@@ -352,7 +352,7 @@ class TestDatabaseConnectionManagerClose(unittest.TestCase):
                 "TDENGINE_HOST": "localhost",
                 "TDENGINE_PORT": "6030",
                 "TDENGINE_USER": "root",
-                "TDENGINE_PASSWORD": "taosdata",
+                "TDENGINE_PASSWORD": "your-tdengine-password",
                 "TDENGINE_DATABASE": "market_data",
                 "POSTGRESQL_HOST": "localhost",
                 "POSTGRESQL_PORT": "5438",
@@ -442,7 +442,7 @@ class TestDatabaseConnectionManagerTestAll(unittest.TestCase):
                 "TDENGINE_HOST": "localhost",
                 "TDENGINE_PORT": "6030",
                 "TDENGINE_USER": "root",
-                "TDENGINE_PASSWORD": "taosdata",
+                "TDENGINE_PASSWORD": "your-tdengine-password",
                 "TDENGINE_DATABASE": "market_data",
                 "POSTGRESQL_HOST": "localhost",
                 "POSTGRESQL_PORT": "5438",
@@ -499,7 +499,7 @@ class TestDatabaseConnectionManagerSingleton(unittest.TestCase):
                 "TDENGINE_HOST": "localhost",
                 "TDENGINE_PORT": "6030",
                 "TDENGINE_USER": "root",
-                "TDENGINE_PASSWORD": "taosdata",
+                "TDENGINE_PASSWORD": "your-tdengine-password",
                 "TDENGINE_DATABASE": "market_data",
                 "POSTGRESQL_HOST": "localhost",
                 "POSTGRESQL_PORT": "5438",
@@ -533,7 +533,7 @@ class TestDatabaseConnectionManagerEdgeCases(unittest.TestCase):
                 "TDENGINE_HOST": "localhost",
                 "TDENGINE_PORT": "6030",
                 "TDENGINE_USER": "root",
-                "TDENGINE_PASSWORD": "taosdata",
+                "TDENGINE_PASSWORD": "your-tdengine-password",
                 "TDENGINE_DATABASE": "market_data",
                 "POSTGRESQL_HOST": "localhost",
                 "POSTGRESQL_PORT": "5438",

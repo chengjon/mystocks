@@ -344,7 +344,7 @@ postgresql_database: "mystocks"
 tdengine_host: "localhost"
 tdengine_port: 6030
 tdengine_user: "root"
-tdengine_password: "taosdata"
+tdengine_password: "your-tdengine-password"
 tdengine_database: "market_data"
 ```
 

@@ -416,7 +416,7 @@ INTERVAL(1h) SLIDING(5m);
 export TDENGINE_HOST=localhost
 export TDENGINE_PORT=6041
 export TDENGINE_USER=root
-export TDENGINE_PASSWORD=taosdata
+export TDENGINE_PASSWORD=your-tdengine-password
 export TDENGINE_DATABASE=market_data
 
 # 选择TDengine数据源

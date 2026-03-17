@@ -35,7 +35,7 @@ def test_frontend_pages():
     ]
 
     headers = {
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsInVzZXJfaWQiOjEsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2MzM5MzY0NH0.J1Xej9iRiKCH2Ni-n-9YpIUG1ZVQSOEHgV12CEEwLFk"
+        "Authorization": "Bearer <jwt-token>"
     }
 
     for endpoint in api_endpoints:

@@ -57,7 +57,7 @@ class TestConfig:
             "api": {"base_url": "http://localhost:8020", "timeout": 30, "auth_token": None},
             "database": {
                 "test_database_url": "postgresql://test:test@localhost:5438/mystocks_test",
-                "tdengine_url": "taos://root:taosdata@localhost:6030/mystocks_test",
+                "tdengine_url": "taos://root:your-tdengine-password@localhost:6030/mystocks_test",
             },
             "parallel": {"max_workers": 4, "worker_timeout": 60},
             "data": {"fixtures_dir": "tests/file_level/fixtures", "cleanup_after_test": True},

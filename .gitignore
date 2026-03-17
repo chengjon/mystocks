@@ -19,6 +19,8 @@
 # OpenCode config (may contain API keys)
 opencode.json
 config/opencode.json
+.mcp.json
+.omc/
 .config/opencode*.json*
 .config/oh-my-opencode*.json*
 .config/opencode/model/*.api_key

@@ -17,7 +17,7 @@ def _set_required_database_env(monkeypatch: pytest.MonkeyPatch) -> None:
         "TDENGINE_HOST": "localhost",
         "TDENGINE_PORT": "6030",
         "TDENGINE_USER": "root",
-        "TDENGINE_PASSWORD": "taosdata",
+        "TDENGINE_PASSWORD": "your-tdengine-password",
         "TDENGINE_DATABASE": "market_data",
         "POSTGRESQL_HOST": "localhost",
         "POSTGRESQL_PORT": "5438",

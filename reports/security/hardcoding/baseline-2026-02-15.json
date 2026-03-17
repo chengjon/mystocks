@@ -2097,7 +2097,7 @@
       "file": "web/backend/app/api/v1/admin/audit.py",
       "line": 55,
       "column": 28,
-      "snippet": "\"ip_address\": \"192.168.1.100\","
+      "snippet": "\"ip_address\": \"example.local\","
     },
     {
       "severity": "P1",
@@ -2106,7 +2106,7 @@
       "file": "web/backend/app/api/v1/admin/audit.py",
       "line": 83,
       "column": 21,
-      "snippet": "ip_address=\"192.168.1.100\","
+      "snippet": "ip_address=\"example.local\","
     },
     {
       "severity": "P1",

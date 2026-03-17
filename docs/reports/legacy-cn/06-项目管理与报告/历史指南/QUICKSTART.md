@@ -133,7 +133,7 @@ POSTGRESQL_DATABASE=mystocks
 # TDengine配置 (时序数据)
 TDENGINE_HOST=localhost
 TDENGINE_USER=root
-TDENGINE_PASSWORD=taosdata
+TDENGINE_PASSWORD=your-tdengine-password
 TDENGINE_PORT=6041
 TDENGINE_DATABASE=mystocks
 

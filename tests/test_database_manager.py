@@ -61,7 +61,7 @@ class TestDatabaseManager:
             {
                 "TDENGINE_HOST": "localhost",
                 "TDENGINE_USER": "root",
-                "TDENGINE_PASSWORD": "taosdata",
+                "TDENGINE_PASSWORD": "your-tdengine-password",
             },
         ):
             result = self.manager.get_tdengine_connection()

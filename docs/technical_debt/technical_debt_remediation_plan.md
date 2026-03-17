@@ -46,7 +46,7 @@ password="your_app_password",  # 这是示例，不是真实密码
 #### 3. 默认值配置 (可优化)
 **位置**: `src/database_optimization/tdengine_index_optimizer.py`
 ```python
-self.password = os.getenv("TDENGINE_PASSWORD", "taosdata")
+self.password = os.getenv("TDENGINE_PASSWORD", "your-tdengine-password")
 ```
 **风险等级**: 🟡 **中** (开发默认值，生产环境应使用环境变量)
 
@@ -57,7 +57,7 @@ self.password = os.getenv("TDENGINE_PASSWORD", "taosdata")
 1. **TDengine默认密码**
    ```bash
    # 问题: 使用默认密码作为fallback
-   self.password = os.getenv("TDENGINE_PASSWORD", "taosdata")
+   self.password = os.getenv("TDENGINE_PASSWORD", "your-tdengine-password")
 
    # 修复建议:
    self.password = os.getenv("TDENGINE_PASSWORD")
@@ -93,7 +93,7 @@ self.password = os.getenv("TDENGINE_PASSWORD", "taosdata")
 ```python
 # 文件: src/database_optimization/tdengine_index_optimizer.py
 # 原代码:
-self.password = os.getenv("TDENGINE_PASSWORD", "taosdata")
+self.password = os.getenv("TDENGINE_PASSWORD", "your-tdengine-password")
 
 # 修复:
 self.password = os.getenv("TDENGINE_PASSWORD")
@@ -163,7 +163,7 @@ password=os.getenv("SMTP_PASSWORD", ""),
 1. **最高优先级** (立即执行)
    ```bash
    # 1. 修复数据库默认密码
-   sed -i 's/os.getenv("TDENGINE_PASSWORD", "taosdata")/os.getenv("TDENGINE_PASSWORD")/g' src/database_optimization/tdengine_index_optimizer.py
+   sed -i 's/os.getenv("TDENGINE_PASSWORD", "your-tdengine-password")/os.getenv("TDENGINE_PASSWORD")/g' src/database_optimization/tdengine_index_optimizer.py
 
    # 2. 添加环境变量检查
    # 在上述文件中添加验证逻辑

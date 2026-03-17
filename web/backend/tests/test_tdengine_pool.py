@@ -35,7 +35,7 @@ class TestTDengineConnectionPool:
                 host="127.0.0.1",
                 port=6030,
                 user="root",
-                password="taosdata",
+                password="your-tdengine-password",
                 database="test_db",
                 min_size=2,
                 max_size=5,

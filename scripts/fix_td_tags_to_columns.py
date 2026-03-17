@@ -8,7 +8,7 @@ try:
         host='localhost',
         port=6030,
         user='root',
-        password='taosdata',
+        password='your-tdengine-password',
         database='market_data'
     )
     cursor = conn.cursor()

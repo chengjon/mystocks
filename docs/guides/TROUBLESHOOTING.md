@@ -160,7 +160,7 @@ systemctl status taosd
 netstat -tlnp | grep 6030
 
 # 测试连接
-taos -h localhost -P 6030 -u root -p taosdata
+taos -h localhost -P 6030 -u root -p your-tdengine-password
 ```
 
 **解决方案**:

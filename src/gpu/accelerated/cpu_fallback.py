@@ -19,6 +19,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split as sklearn_train_test_split
 from sklearn.preprocessing import StandardScaler
 
+from ._cpu_fallback_components import create_component_selector_bindings
 # 导入GPU模块中的数据类
 from .price_predictor_gpu import ModelPerformance, PredictionResult
 
@@ -593,160 +594,11 @@ class FeatureGeneratorCPU:
         }
 
 
-# 智能选择器 - 自动选择GPU或CPU版本
-class ComponentSelector:
-    """智能组件选择器 - 根据环境自动选择GPU或CPU版本"""
-
-    def __init__(self):
-        self.gpu_available = self._check_gpu_availability()
-        self.logger = logging.getLogger(__name__)
-
-    def _check_gpu_availability(self) -> bool:
-        """检查GPU是否可用"""
-        try:
-            import cupy as cp
-
-            # 检查是否有GPU设备
-            cp.cuda.Device(0)
-            return True
-        except Exception:
-            return False
-
-    def get_price_predictor(self, gpu_enabled: Optional[bool] = None):
-        """获取价格预测器"""
-        if gpu_enabled is True:
-            # 强制使用GPU
-            from .price_predictor_gpu import GPUPricePredictor
-
-            return GPUPricePredictor(gpu_enabled=True)
-        elif gpu_enabled is False:
-            # 强制使用CPU
-            return PricePredictorCPU(gpu_enabled=False)
-        else:
-            # 自动选择
-            if self.gpu_available:
-                from .price_predictor_gpu import GPUPricePredictor
-
-                return GPUPricePredictor(gpu_enabled=True)
-            else:
-                self.logger.info("GPU不可用，使用CPU版本")
-                return PricePredictorCPU(gpu_enabled=False)
-
-    def get_data_processor(self, gpu_enabled: Optional[bool] = None):
-        """获取数据处理器"""
-        if gpu_enabled is True:
-            from .data_processor_gpu import GPUDataProcessor
-
-            return GPUDataProcessor(gpu_enabled=True)
-        elif gpu_enabled is False:
-            return DataProcessorCPU(gpu_enabled=False)
-        else:
-            if self.gpu_available:
-                from .data_processor_gpu import GPUDataProcessor
-
-                return GPUDataProcessor(gpu_enabled=True)
-            else:
-                self.logger.info("GPU不可用，使用CPU版本")
-                return DataProcessorCPU(gpu_enabled=False)
-
-    def get_feature_generator(self, gpu_enabled: Optional[bool] = None):
-        """获取特征生成器"""
-        if gpu_enabled is True:
-            from .feature_generator_gpu import GPUFeatureGenerator
-
-            return GPUFeatureGenerator(gpu_enabled=True)
-        elif gpu_enabled is False:
-            return FeatureGeneratorCPU(gpu_enabled=False)
-        else:
-            if self.gpu_available:
-                from .feature_generator_gpu import GPUFeatureGenerator
-
-                return GPUFeatureGenerator(gpu_enabled=True)
-            else:
-                self.logger.info("GPU不可用，使用CPU版本")
-                return FeatureGeneratorCPU(gpu_enabled=False)
-
-    def get_environment_info(self) -> Dict[str, any]:
-        """获取环境信息"""
-        return {
-            "gpu_available": self.gpu_available,
-            "cpu_fallback_available": True,
-            "selected_mode": "GPU" if self.gpu_available else "CPU",
-        }
-
-
-# 全局智能选择器实例
-_component_selector = ComponentSelector()
-
-
-def get_component_selector() -> ComponentSelector:
-    """获取全局组件选择器"""
-    return _component_selector
-
-
-def auto_select_component(component_type: str, gpu_enabled: Optional[bool] = None):
-    """自动选择组件"""
-    selector = get_component_selector()
-
-    if component_type == "price_predictor":
-        return selector.get_price_predictor(gpu_enabled)
-    elif component_type == "data_processor":
-        return selector.get_data_processor(gpu_enabled)
-    elif component_type == "feature_generator":
-        return selector.get_feature_generator(gpu_enabled)
-    else:
-        raise ValueError(f"不支持的组件类型: {component_type}")
-
-
-def main():
-    """主函数 - CPU版本测试"""
-    print("🔄 CPU回退版本测试")
-    print("=" * 40)
-
-    # 创建组件选择器
-    selector = ComponentSelector()
-    print(f"GPU可用性: {selector.gpu_available}")
-
-    # 测试价格预测器
-    print("\n1. 价格预测器测试:")
-    predictor = auto_select_component("price_predictor")
-    print(f"使用版本: {'GPU' if selector.gpu_available else 'CPU'}")
-
-    # 获取测试数据
-    import yfinance as yf
-
-    test_data = yf.download("AAPL", start="2023-01-01", end="2024-01-01")
-
-    # 训练模型
-    print("训练模型...")
-    predictor.train_models(test_data[:200])  # 使用小样本
-    print(f"训练完成，最佳模型: {predictor.performance_stats['best_model'][0]}")
-
-    # 进行预测
-    print("进行预测...")
-    prediction = predictor.predict_price(test_data)
-    print(f"预测价格: {prediction.predicted_price:.2f}")
-    print(f"置信度: {prediction.confidence_score:.2f}")
-
-    # 测试数据处理器
-    print("\n2. 数据处理器测试:")
-    processor = auto_select_component("data_processor")
-    processed_data = processor.preprocess(test_data[:50])
-    print(f"处理完成，数据形状: {processed_data.shape}")
-
-    # 测试特征生成器
-    print("\n3. 特征生成器测试:")
-    feature_generator = auto_select_component("feature_generator")
-    features = feature_generator.generate_features(test_data[:50])
-    print(f"特征生成完成，特征数量: {len(features.columns)}")
-
-    # 显示环境信息
-    print("\n4. 环境信息:")
-    env_info = selector.get_environment_info()
-    for key, value in env_info.items():
-        print(f"  {key}: {value}")
-
-    print("\n✅ CPU回退版本测试完成")
+ComponentSelector, get_component_selector, auto_select_component, main = create_component_selector_bindings(
+    PricePredictorCPU,
+    DataProcessorCPU,
+    FeatureGeneratorCPU,
+)
 
 
 if __name__ == "__main__":

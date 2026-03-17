@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1772818037681,
+  "lastScanned": 1773654589838,
   "projectRoot": "/opt/claude/mystocks_spec",
   "techStack": {
     "languages": [
@@ -85,52 +85,36 @@
   },
   "customNotes": [],
   "directoryMap": {
-    "__pycache__": {
-      "path": "__pycache__",
-      "purpose": null,
-      "fileCount": 23,
-      "lastAccessed": 1772818037638,
-      "keyFiles": [
-        "__init__.cpython-312.pyc",
-        "conftest.cpython-312-pytest-9.0.2.pyc",
-        "conftest.cpython-312.pyc",
-        "core.cpython-312.pyc",
-        "data_access.cpython-312.pyc"
-      ]
-    },
     "architecture": {
       "path": "architecture",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1772818037639,
+      "lastAccessed": 1773654589798,
       "keyFiles": [
         "DOMAIN_BOUNDARIES.md",
         "INDEX.md",
         "STANDARDS.md"
       ]
     },
+    "archive": {
+      "path": "archive",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1773654589799,
+      "keyFiles": []
+    },
     "archived": {
       "path": "archived",
       "purpose": null,
-      "fileCount": 2,
-      "lastAccessed": 1772818037652,
-      "keyFiles": [
-        "INDEX.md",
-        "archive_INDEX.md"
-      ]
-    },
-    "backups": {
-      "path": "backups",
-      "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1772818037655,
+      "lastAccessed": 1773654589808,
       "keyFiles": []
     },
     "config": {
       "path": "config",
       "purpose": "Configuration files",
-      "fileCount": 92,
-      "lastAccessed": 1772818037656,
+      "fileCount": 90,
+      "lastAccessed": 1773654589813,
       "keyFiles": [
         "DATA_SOURCES_SPLIT_PLAN.md",
         "TDX目录规则 .md",
@@ -143,7 +127,7 @@
       "path": "data",
       "purpose": "Data files",
       "fileCount": 1,
-      "lastAccessed": 1772818037660,
+      "lastAccessed": 1773654589814,
       "keyFiles": [
         "recovery_queue.db"
       ]
@@ -151,8 +135,8 @@
     "docs": {
       "path": "docs",
       "purpose": "Documentation",
-      "fileCount": 59,
-      "lastAccessed": 1772818037662,
+      "fileCount": 60,
+      "lastAccessed": 1773654589815,
       "keyFiles": [
         "AGENTS_1.md",
         "CLAUDE.md",
@@ -165,14 +149,14 @@
       "path": "governance",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1772818037663,
+      "lastAccessed": 1773654589815,
       "keyFiles": []
     },
     "htmlcov": {
       "path": "htmlcov",
       "purpose": null,
-      "fileCount": 1082,
-      "lastAccessed": 1772818037670,
+      "fileCount": 1214,
+      "lastAccessed": 1773654589827,
       "keyFiles": [
         "class_index.html",
         "coverage_html_cb_6fb7b396.js",
@@ -185,21 +169,21 @@
       "path": "logs",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1772818037671,
+      "lastAccessed": 1773654589827,
       "keyFiles": []
     },
     "monitoring-stack": {
       "path": "monitoring-stack",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1772818037672,
+      "lastAccessed": 1773654589828,
       "keyFiles": []
     },
     "openspec": {
       "path": "openspec",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1772818037672,
+      "lastAccessed": 1773654589829,
       "keyFiles": [
         "AGENTS.md",
         "OPENSPEC_CONVENTIONS.md",
@@ -209,44 +193,34 @@
     "reports": {
       "path": "reports",
       "purpose": null,
-      "fileCount": 72,
-      "lastAccessed": 1772818037673,
+      "fileCount": 78,
+      "lastAccessed": 1773654589829,
       "keyFiles": [
         "AI_Developer_Onboarding_Guide.md",
         "ArtDeco_3.1_Upgrade_Summary.md",
         "ArtDeco_E2E_Test_Guide.md",
         "CACHE_PERFORMANCE_REPORT.md",
-        "FINAL_CODE_QUALITY_REPORT_20251230.md"
-      ]
-    },
-    "reviews": {
-      "path": "reviews",
-      "purpose": null,
-      "fileCount": 2,
-      "lastAccessed": 1772818037673,
-      "keyFiles": [
-        "review-20260223-031831-9e70a2.md",
-        "review-20260223-202118-558dc1.md"
+        "DATA_SOURCE_CREDENTIAL_VALIDATION_2026-03-13.md"
       ]
     },
     "scripts": {
       "path": "scripts",
       "purpose": "Build/utility scripts",
-      "fileCount": 111,
-      "lastAccessed": 1772818037674,
+      "fileCount": 126,
+      "lastAccessed": 1773654589831,
       "keyFiles": [
         "JWT_key_update.sh",
         "LICENSE",
         "README.md",
         "__init__.py",
-        "ai-collaboration-setup.sh"
+        "_generate_frontend_types_cli.py"
       ]
     },
     "src": {
       "path": "src",
       "purpose": "Source code",
       "fileCount": 5,
-      "lastAccessed": 1772818037674,
+      "lastAccessed": 1773654589831,
       "keyFiles": [
         "README.md",
         "__init__.py",
@@ -258,8 +232,8 @@
     "tests": {
       "path": "tests",
       "purpose": "Test files",
-      "fileCount": 90,
-      "lastAccessed": 1772818037675,
+      "fileCount": 96,
+      "lastAccessed": 1773654589832,
       "keyFiles": [
         "AGENTS.md",
         "INDEX.md",
@@ -268,11 +242,18 @@
         "__init__.py"
       ]
     },
+    "var": {
+      "path": "var",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1773654589833,
+      "keyFiles": []
+    },
     "web": {
       "path": "web",
       "purpose": null,
       "fileCount": 13,
-      "lastAccessed": 1772818037675,
+      "lastAccessed": 1773654589833,
       "keyFiles": [
         "INDEX.md",
         "PORTS.md",
@@ -281,22 +262,47 @@
         "TASK_MANAGEMENT_SUMMARY.md"
       ]
     },
+    "archive/docs": {
+      "path": "archive/docs",
+      "purpose": "Documentation",
+      "fileCount": 24,
+      "lastAccessed": 1773654589834,
+      "keyFiles": [
+        "CLAUDE.md.2026-02-01.md",
+        "CLAUDE.md.2026-02-01.v2.md",
+        "CONTRACT_DRIVEN_DEVELOPMENT_IMPROVEMENT_PLAN.md"
+      ]
+    },
+    "archived/services": {
+      "path": "archived/services",
+      "purpose": "Business logic services",
+      "fileCount": 0,
+      "lastAccessed": 1773654589835,
+      "keyFiles": []
+    },
     "data/models": {
       "path": "data/models",
       "purpose": "Data models",
       "fileCount": 3,
-      "lastAccessed": 1772818037676,
+      "lastAccessed": 1773654589835,
       "keyFiles": [
         "sh000001_demo.pkl",
         "test_integration.pkl",
         "test_predictor.pkl"
       ]
     },
+    "logs/app": {
+      "path": "logs/app",
+      "purpose": "Application code",
+      "fileCount": 0,
+      "lastAccessed": 1773654589837,
+      "keyFiles": []
+    },
     "logs/tests": {
       "path": "logs/tests",
       "purpose": "Test files",
       "fileCount": 16,
-      "lastAccessed": 1772818037678,
+      "lastAccessed": 1773654589837,
       "keyFiles": [
         "pm2-logs.log",
         "test-output.log",
@@ -307,14 +313,14 @@
       "path": "monitoring-stack/config",
       "purpose": "Configuration files",
       "fileCount": 0,
-      "lastAccessed": 1772818037678,
+      "lastAccessed": 1773654589837,
       "keyFiles": []
     },
     "src/api": {
       "path": "src/api",
       "purpose": "API routes",
       "fileCount": 1,
-      "lastAccessed": 1772818037680,
+      "lastAccessed": 1773654589838,
       "keyFiles": [
         "alert_history_routes.py"
       ]
@@ -322,63 +328,51 @@
   },
   "hotPaths": [
     {
-      "path": "web/frontend/src/styles/artdeco-tokens.scss",
-      "accessCount": 15,
-      "lastAccessed": 1772850814759,
-      "type": "file"
-    },
-    {
-      "path": "web/frontend/src/styles/artdeco-global.scss",
-      "accessCount": 13,
-      "lastAccessed": 1772850814793,
-      "type": "file"
-    },
-    {
-      "path": "web/frontend/src",
-      "accessCount": 11,
-      "lastAccessed": 1772849220834,
-      "type": "directory"
-    },
-    {
-      "path": "web/frontend/src/styles",
-      "accessCount": 10,
-      "lastAccessed": 1772849687128,
-      "type": "directory"
-    },
-    {
-      "path": "web/frontend/src/components/artdeco/base/ArtDecoCard.vue",
-      "accessCount": 7,
-      "lastAccessed": 1772848243826,
-      "type": "file"
-    },
-    {
-      "path": "",
-      "accessCount": 7,
-      "lastAccessed": 1772849703300,
-      "type": "directory"
-    },
-    {
-      "path": "web/frontend/src/components/artdeco/base/ArtDecoStatCard.vue",
+      "path": ".config/opencode/model/gmn.base_url",
       "accessCount": 2,
-      "lastAccessed": 1772848035772,
+      "lastAccessed": 1773670706567,
       "type": "file"
     },
     {
-      "path": "web/frontend/src/components/artdeco",
-      "accessCount": 1,
-      "lastAccessed": 1772849189378,
-      "type": "directory"
+      "path": ".config/opencode/model/gmn.api_key",
+      "accessCount": 2,
+      "lastAccessed": 1773670706837,
+      "type": "file"
     },
     {
-      "path": "web/frontend/src/views/artdeco-pages",
+      "path": "opencode.json",
       "accessCount": 1,
-      "lastAccessed": 1772849189396,
-      "type": "directory"
+      "lastAccessed": 1773670654239,
+      "type": "file"
     },
     {
-      "path": "web/frontend/src/components/artdeco/trading/ArtDecoPositionCard.vue",
+      "path": ".config/opencode/model/model-stack.env",
       "accessCount": 1,
-      "lastAccessed": 1772849220813,
+      "lastAccessed": 1773670677827,
+      "type": "file"
+    },
+    {
+      "path": ".config/opencode/model/fucai.base_url",
+      "accessCount": 1,
+      "lastAccessed": 1773670677844,
+      "type": "file"
+    },
+    {
+      "path": ".config/opencode/model/fucai.api_key",
+      "accessCount": 1,
+      "lastAccessed": 1773670677904,
+      "type": "file"
+    },
+    {
+      "path": ".config/opencode/model/glm.base_url",
+      "accessCount": 1,
+      "lastAccessed": 1773670699060,
+      "type": "file"
+    },
+    {
+      "path": ".config/opencode/model/glm.api_key",
+      "accessCount": 1,
+      "lastAccessed": 1773670699282,
       "type": "file"
     }
   ],

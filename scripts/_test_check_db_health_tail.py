@@ -115,7 +115,7 @@ class TestIntegrationScenarios:
             mock_settings.tdengine_host = "localhost"
             mock_settings.tdengine_port = 6030
             mock_settings.tdengine_user = "root"
-            mock_settings.tdengine_password = "taosdata"
+            mock_settings.tdengine_password = "your-tdengine-password"
             mock_settings.tdengine_database = "test_db"
             mock_settings.redis_host = "localhost"
             mock_settings.redis_port = 6379

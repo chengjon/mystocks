@@ -433,7 +433,7 @@ class TestLoggingIntegration:
         mock_logger.opt = Mock(return_value=mock_opt)
 
         logger = UnifiedLogger()
-        logger.info("Message", user_id=123, action="login", ip="192.168.1.1")
+        logger.info("Message", user_id=123, action="login", ip="example.local")
 
         mock_opt.info.assert_called_once()
 

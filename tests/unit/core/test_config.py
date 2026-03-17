@@ -68,7 +68,7 @@ class TestDatabaseConfig:
         assert config.tdengine_host == "localhost"
         assert config.tdengine_port == 6030
         assert config.tdengine_username == "root"
-        assert config.tdengine_password == "taosdata"
+        assert config.tdengine_password == "your-tdengine-password"
         assert config.tdengine_database == "mystocks"
 
     def test_environment_variable_override(self, clean_env):
@@ -131,7 +131,7 @@ class TestDatabaseConfig:
         config = DatabaseConfig()
         url = config.get_tdengine_url()
 
-        expected = "taosws://root:taosdata@localhost:6030/"
+        expected = "taosws://root:your-tdengine-password@localhost:6030/"
         assert url == expected
 
     def test_get_tdengine_url_custom(self, clean_env):

@@ -166,7 +166,7 @@ curl http://localhost:8020/api/system/database/health
 **A**: 检查数据库连接：
 ```bash
 # TDengine
-taos -h localhost -P 6030 -u root -p taosdata
+taos -h localhost -P 6030 -u root -p your-tdengine-password
 
 # PostgreSQL
 psql -h localhost -p 5438 -U postgres -d mystocks

@@ -275,7 +275,7 @@ docker stats mystocks_tdengine
 TDENGINE_HOST=127.0.0.1
 TDENGINE_PORT=6030
 TDENGINE_USER=root
-TDENGINE_PASSWORD=taosdata
+TDENGINE_PASSWORD=your-tdengine-password
 TDENGINE_DATABASE=mystocks_cache
 
 # PostgreSQL 配置 (用于其他数据)

@@ -95,7 +95,7 @@ mypy>=1.5.0
 TDENGINE_HOST=localhost
 TDENGINE_PORT=6041
 TDENGINE_USER=root
-TDENGINE_PASSWORD=taosdata
+TDENGINE_PASSWORD=your-tdengine-password
 TDENGINE_DATABASE=market_data
 
 # PostgreSQL

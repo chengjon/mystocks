@@ -202,7 +202,7 @@ POSTGRESQL_PORT=5432
 # TDengine 配置
 TDENGINE_HOST=your_nas_ip
 TDENGINE_USER=root
-TDENGINE_PASSWORD=taosdata
+TDENGINE_PASSWORD=your-tdengine-password
 TDENGINE_PORT=6041
 
 # Redis 配置

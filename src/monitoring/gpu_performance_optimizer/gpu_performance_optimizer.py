@@ -43,8 +43,19 @@ from src.monitoring.ai_realtime_monitor import (
     AIRealtimeMonitor,
     get_ai_realtime_monitor,
 )
+from src.monitoring.gpu_performance_optimizer._gpu_performance_optimizer_reporting import (
+    GPUPerformanceOptimizerReportingMixin,
+)
+from src.monitoring.gpu_performance_optimizer.gpu_optimization_config import (
+    GPUOptimizationConfig,
+    GPUMetrics,
+    OptimizationResult,
+)
 
-class GPUPerformanceOptimizer:
+_gpu_optimizer_instance = None
+
+
+class GPUPerformanceOptimizer(GPUPerformanceOptimizerReportingMixin):
     """GPU性能优化管理器"""
 
     def __init__(
@@ -500,244 +511,6 @@ class GPUPerformanceOptimizer:
             self.logger.error("建议生成失败: %s", e)
             return "优化建议生成失败"
 
-    async def _send_performance_alert(self, before: GPUMetrics, after: GPUMetrics, improvement: float):
-        """发送性能告警"""
-        try:
-            if not self.config.enable_performance_alerts:
-                return
-
-            {
-                "optimization_type": "gpu_performance_degradation",
-                "improvement_score": improvement,
-                "before_metrics": asdict(before),
-                "after_metrics": asdict(after),
-                "recommendation": self._generate_optimization_recommendation(before, after, []),
-            }
-
-            # 这里可以调用告警管理器发送具体的告警
-            self.logger.warning("GPU性能下降告警: %s", improvement)
-
-        except Exception as e:
-            self.logger.error("性能告警发送失败: %s", e)
-
-    async def get_performance_report(self) -> Dict[str, Any]:
-        """生成性能报告"""
-        try:
-            current_metrics = await self._collect_gpu_metrics()
-
-            # 计算统计信息
-            if self.metrics_history:
-                utilization_trend = self._calculate_utilization_trend()
-                memory_trend = self._calculate_memory_trend()
-            else:
-                utilization_trend = 0.0
-                memory_trend = 0.0
-
-            # 计算平均性能
-            avg_efficiency = (
-                np.mean([m.efficiency_score for m in self.metrics_history[-10:]]) if self.metrics_history else 0.0
-            )
-            avg_throughput = (
-                np.mean([m.throughput for m in self.metrics_history[-10:]]) if self.metrics_history else 0.0
-            )
-
-            return {
-                "timestamp": datetime.now().isoformat(),
-                "gpu_available": self.gpu_available,
-                "gpu_initialized": self.gpu_initialized,
-                "current_metrics": asdict(current_metrics),
-                "performance_baseline": asdict(self.performance_baseline) if self.performance_baseline else None,
-                "optimization_stats": self.optimization_stats,
-                "adaptive_params": self.adaptive_params,
-                "performance_trends": {
-                    "utilization_trend": utilization_trend,
-                    "memory_trend": memory_trend,
-                    "avg_efficiency_10": avg_efficiency,
-                    "avg_throughput_10": avg_throughput,
-                },
-                "recommendations": await self._generate_performance_recommendations(current_metrics),
-            }
-
-        except Exception as e:
-            self.logger.error("性能报告生成失败: %s", e)
-            return {"error": str(e)}
-
-    def _calculate_utilization_trend(self) -> float:
-        """计算利用率趋势"""
-        if len(self.metrics_history) < 2:
-            return 0.0
-
-        recent_utilizations = [m.gpu_utilization for m in self.metrics_history[-10:]]
-        if len(recent_utilizations) < 2:
-            return 0.0
-
-        # 简单线性回归
-        x = np.arange(len(recent_utilizations))
-        y = np.array(recent_utilizations)
-
-        if len(x) > 1:
-            slope = np.polyfit(x, y, 1)[0]
-            return slope  # 正值表示上升趋势，负值表示下降趋势
-
-        return 0.0
-
-    def _calculate_memory_trend(self) -> float:
-        """计算内存使用趋势"""
-        if len(self.metrics_history) < 2:
-            return 0.0
-
-        recent_memory = [m.gpu_memory_utilization for m in self.metrics_history[-10:]]
-        if len(recent_memory) < 2:
-            return 0.0
-
-        # 简单线性回归
-        x = np.arange(len(recent_memory))
-        y = np.array(recent_memory)
-
-        if len(x) > 1:
-            slope = np.polyfit(x, y, 1)[0]
-            return slope
-
-        return 0.0
-
-    async def _generate_performance_recommendations(self, metrics: GPUMetrics) -> List[str]:
-        """生成性能建议"""
-        recommendations = []
-
-        try:
-            # GPU利用率建议
-            if metrics.gpu_utilization < 30:
-                recommendations.append("💡 GPU利用率较低，建议增加并发任务或扩大批次大小")
-            elif metrics.gpu_utilization > 95:
-                recommendations.append("⚠️ GPU接近满载，建议减少批次大小或优化算法")
-
-            # 内存使用建议
-            if metrics.gpu_memory_utilization > 90:
-                recommendations.append("🧠 GPU内存使用过高，建议触发内存清理或减少数据集大小")
-            elif metrics.gpu_memory_utilization < 20:
-                recommendations.append("💾 GPU内存利用率较低，可以考虑处理更大的数据集")
-
-            # 效率评分建议
-            if metrics.efficiency_score < 0.5:
-                recommendations.append("📊 GPU效率评分较低，建议检查算法优化和内存管理")
-            elif metrics.efficiency_score > 0.9:
-                recommendations.append("🚀 GPU性能表现优秀，当前配置最优")
-
-            # 温度建议
-            if metrics.gpu_temperature > 85:
-                recommendations.append("🌡️ GPU温度较高，建议检查散热或降低工作负载")
-
-            # 功耗建议
-            if metrics.gpu_power_usage > 200:
-                recommendations.append("⚡ GPU功耗较高，注意电源供应和散热需求")
-
-        except Exception as e:
-            self.logger.error("性能建议生成失败: %s", e)
-            recommendations.append("建议生成失败，请检查系统状态")
-
-        return recommendations
-
-    async def start_continuous_optimization(self, duration_minutes: int = 60):
-        """启动连续优化监控"""
-        self.logger.info("启动连续GPU性能优化 - 持续时间: %s分钟", duration_minutes)
-
-        end_time = time.time() + (duration_minutes * 60)
-
-        try:
-            while time.time() < end_time:
-                # 收集当前指标
-                current_metrics = await self._collect_gpu_metrics()
-                self.metrics_history.append(current_metrics)
-
-                # 保持历史记录在合理范围内
-                if len(self.metrics_history) > 1000:
-                    self.metrics_history = self.metrics_history[-500:]
-
-                # 检查是否需要优化
-                should_optimize = False
-
-                # 检查优化间隔
-                last_optimization = self.adaptive_params.get("last_optimization_time")
-                if last_optimization is None:
-                    should_optimize = True
-                else:
-                    time_since_last = (datetime.now() - last_optimization).total_seconds()
-                    if time_since_last > self.config.optimization_interval:
-                        should_optimize = True
-
-                # 执行优化
-                if should_optimize and self.config.auto_optimize:
-                    result = await self.optimize_performance()
-                    if result.success:
-                        self.logger.info("自动优化完成: %s", result.recommendation)
-
-                # 等待下次检查
-                await asyncio.sleep(30)  # 每30秒检查一次
-
-        except asyncio.CancelledError:
-            self.logger.info("连续优化监控已取消")
-        except Exception as e:
-            self.logger.error("连续优化监控出错: %s", e)
-
-        self.logger.info("连续GPU性能优化结束")
-
-    def save_optimization_state(self, filepath: str):
-        """保存优化状态"""
-        try:
-            state = {
-                "config": asdict(self.config),
-                "optimization_stats": self.optimization_stats,
-                "adaptive_params": self.adaptive_params,
-                "metrics_history": [asdict(m) for m in self.metrics_history[-100:]],  # 只保存最近100条
-                "optimization_history": [asdict(o) for o in self.optimization_history[-50:]],  # 只保存最近50条
-                "performance_baseline": asdict(self.performance_baseline) if self.performance_baseline else None,
-            }
-
-            with open(filepath, "w", encoding="utf-8") as f:
-                json.dump(state, f, indent=2, ensure_ascii=False, default=str)
-
-            self.logger.info("优化状态已保存到: %s", filepath)
-
-        except Exception as e:
-            self.logger.error("保存优化状态失败: %s", e)
-
-    def load_optimization_state(self, filepath: str):
-        """加载优化状态"""
-        try:
-            if not Path(filepath).exists():
-                self.logger.warning("优化状态文件不存在: %s", filepath)
-                return
-
-            with open(filepath, "r", encoding="utf-8") as f:
-                state = json.load(f)
-
-            # 恢复配置
-            if "config" in state:
-                self.config = GPUOptimizationConfig(**state["config"])
-
-            # 恢复统计信息
-            if "optimization_stats" in state:
-                self.optimization_stats.update(state["optimization_stats"])
-
-            # 恢复自适应参数
-            if "adaptive_params" in state:
-                self.adaptive_params.update(state["adaptive_params"])
-
-            # 恢复历史数据
-            if "metrics_history" in state:
-                self.metrics_history = [GPUMetrics(**m) for m in state["metrics_history"]]
-
-            if "optimization_history" in state:
-                self.optimization_history = [OptimizationResult(**o) for o in state["optimization_history"]]
-
-            # 恢复性能基准
-            if "performance_baseline" in state and state["performance_baseline"]:
-                self.performance_baseline = GPUMetrics(**state["performance_baseline"])
-
-            self.logger.info("优化状态已从 %s 加载", filepath)
-
-        except Exception as e:
-            self.logger.error("加载优化状态失败: %s", e)
 
 
 def get_gpu_performance_optimizer() -> GPUPerformanceOptimizer:
@@ -761,5 +534,4 @@ async def initialize_gpu_optimizer(
         logging.warning("GPU优化管理器初始化失败，将使用模拟模式")
 
     return optimizer
-
 

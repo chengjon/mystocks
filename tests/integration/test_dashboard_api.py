@@ -146,15 +146,19 @@ class TestDashboardAPI:
         # Mock数据源可能返回404或200
         if response.status_code == 200:
             data = response.json()
+            market_payload = data.get("data")
 
-            # 验证市场概览数据结构
-            assert "indices" in data or True, "响应应包含indices字段"
-            assert "up_count" in data or True, "响应应包含up_count字段"
-            assert "down_count" in data or True, "响应应包含down_count字段"
+            # 验证统一响应包装和市场概览数据结构
+            assert data["success"] is True, "dashboard market-overview 必须返回 UnifiedResponse.success"
+            assert isinstance(market_payload, dict), "dashboard market-overview 必须将业务数据包装在 data 字段中"
+            assert isinstance(data.get("request_id"), str) and data["request_id"], "dashboard market-overview 必须返回 request_id"
+            assert "indices" in market_payload, "响应 data 应包含 indices 字段"
+            assert "up_count" in market_payload, "响应 data 应包含 up_count 字段"
+            assert "down_count" in market_payload, "响应 data 应包含 down_count 字段"
 
             print("\n✅ 市场概览测试通过")
-            print(f"   上涨家数: {data.get('up_count', 0)}")
-            print(f"   下跌家数: {data.get('down_count', 0)}")
+            print(f"   上涨家数: {market_payload.get('up_count', 0)}")
+            print(f"   下跌家数: {market_payload.get('down_count', 0)}")
         else:
             print(f"\n⚠️  市场概览返回{response.status_code} (Mock数据源可能无数据)")
 
@@ -164,14 +168,58 @@ class TestDashboardAPI:
 
         if response.status_code == 200:
             data = response.json()
+            market_payload = data.get("data")
 
             # 验证榜单数量限制
-            if "top_gainers" in data:
-                assert len(data["top_gainers"]) <= 5, "涨幅榜数量不应超过limit"
+            assert data["success"] is True, "dashboard market-overview limit 版本必须保持 UnifiedResponse.success"
+            assert isinstance(market_payload, dict), "dashboard market-overview limit 版本必须将业务数据包装在 data 字段中"
+            if "top_gainers" in market_payload:
+                assert len(market_payload["top_gainers"]) <= 5, "涨幅榜数量不应超过limit"
 
             print("\n✅ 榜单数量限制测试通过")
         else:
             print(f"\n⚠️  市场概览返回{response.status_code}")
+
+    def test_get_market_overview_applies_limit_to_rankings(self, client):
+        """测试榜单 limit 参数会约束 dashboard market-overview 排名列表"""
+        from app.api.dashboard_data_source import get_data_source
+
+        class _FakeDashboardSource:
+            def get_market_overview_data(self):
+                ranking = [
+                    {"symbol": "AAA", "name": "Alpha", "change_percent": 5.0},
+                    {"symbol": "BBB", "name": "Beta", "change_percent": 4.0},
+                    {"symbol": "CCC", "name": "Gamma", "change_percent": 3.0},
+                ]
+                return {
+                    "indices": [
+                        {
+                            "symbol": "000001.SH",
+                            "name": "上证指数",
+                            "current_price": 3200,
+                            "change_percent": 1.2,
+                        }
+                    ],
+                    "up_count": 3000,
+                    "down_count": 1200,
+                    "flat_count": 100,
+                    "top_gainers": ranking,
+                    "top_losers": list(reversed(ranking)),
+                    "most_active": ranking,
+                }
+
+        client.app.dependency_overrides[get_data_source] = lambda: _FakeDashboardSource()
+        try:
+            response = client.get("/api/dashboard/market-overview?limit=1")
+        finally:
+            client.app.dependency_overrides.pop(get_data_source, None)
+
+        assert response.status_code == 200
+
+        payload = response.json()["data"]
+        assert len(payload["top_gainers"]) == 1, "top_gainers 应被 limit 裁剪"
+        assert len(payload["top_losers"]) == 1, "top_losers 应被 limit 裁剪"
+        assert len(payload["most_active"]) == 1, "most_active 应被 limit 裁剪"
 
     def test_response_data_structure(self, client):
         """测试响应数据结构完整性"""

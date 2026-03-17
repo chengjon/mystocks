@@ -314,7 +314,7 @@ find ${BACKUP_DIR} -name "mystocks_*.backup" -mtime +7 -delete
 BACKUP_DIR="/opt/claude/mystocks_backup/tdengine"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
-taosdump -h localhost -u root -p taosdata \
+taosdump -h localhost -u root -p your-tdengine-password \
   -o ${BACKUP_DIR}/tdengine_${TIMESTAMP} \
   -A
 
@@ -378,7 +378,7 @@ pg_restore -h localhost -U mystocks_user -d mystocks -c \
   /path/to/backup.backup
 
 # TDengine恢复
-taosdump -h localhost -u root -p taosdata \
+taosdump -h localhost -u root -p your-tdengine-password \
   -i /path/to/backup/
 ```
 

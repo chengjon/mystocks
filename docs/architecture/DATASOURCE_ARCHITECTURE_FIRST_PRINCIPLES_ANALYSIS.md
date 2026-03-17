@@ -877,7 +877,7 @@ def save_data_by_classification(self, classification, data, table_name, **kwargs
 TDENGINE_HOST=localhost
 TDENGINE_PORT=6041
 TDENGINE_USER=root
-TDENGINE_PASSWORD=taosdata
+TDENGINE_PASSWORD=your-tdengine-password
 
 # PostgreSQL配置 (5行)
 POSTGRESQL_HOST=localhost

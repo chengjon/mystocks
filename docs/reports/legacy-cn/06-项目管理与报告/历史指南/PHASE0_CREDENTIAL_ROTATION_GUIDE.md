@@ -20,7 +20,7 @@ This guide covers the immediate security actions required for the MyStocks proje
 
 | Credential | Current Value | Exposure Risk | Status |
 |-----------|---------------|---------------|--------|
-| TDENGINE_PASSWORD | `taosdata` | ✅ Default, should rotate | ⏳ Needs rotation |
+| TDENGINE_PASSWORD | `your-tdengine-password` | ✅ Default, should rotate | ⏳ Needs rotation |
 | POSTGRESQL_PASSWORD | `your-postgresql-password` | ✅ Weak (8 chars), should rotate | ⏳ Needs rotation |
 | JWT_SECRET_KEY | `be5d2db05101...` | ✅ Exposed in repo | ⏳ Needs rotation |
 | MONITOR_DB_URL | Contains password | ✅ Exposed in repo | ⏳ Needs rotation |
@@ -47,7 +47,7 @@ echo "New PostgreSQL Password: $NEW_POSTGRES_PASS"
 **For TDengine (if accessible)**:
 ```bash
 # Connect to TDengine and change password
-taos -u root -p taosdata
+taos -u root -p your-tdengine-password
 
 # In taos CLI:
 ALTER USER root PASS '<NEW_TDENGINE_PASS>';
@@ -68,7 +68,7 @@ Edit `/opt/claude/mystocks_spec/.env`:
 
 ```bash
 # OLD VALUES (REMOVE)
-TDENGINE_PASSWORD=taosdata
+TDENGINE_PASSWORD=your-tdengine-password
 POSTGRESQL_PASSWORD=your-postgresql-password
 JWT_SECRET_KEY=be5d2db05101c9caf256b69b6895f20681e214d2578f3ceb98b3405581f00ae9
 MONITOR_DB_URL=postgresql://postgres:your-postgresql-password@localhost:5438/mystocks
@@ -102,7 +102,7 @@ git reset HEAD .env
 
 ```bash
 # Test with a hardcoded password in a Python file
-echo "PASSWORD = 'taosdata'" >> test_secret.py
+echo "PASSWORD = 'your-tdengine-password'" >> test_secret.py
 git add test_secret.py
 
 # Try to commit (should fail)
@@ -344,7 +344,7 @@ echo "🔒 Phase 0 Security Validation"
 echo "=============================="
 
 # 1. Check that old credentials are NOT in staging
-! git diff --cached | grep -E "taosdata|your-postgresql-password|be5d2db05101" && echo "✅ Old credentials not in staging" || (echo "❌ FOUND OLD CREDENTIALS"; exit 1)
+! git diff --cached | grep -E "your-tdengine-password|your-postgresql-password|be5d2db05101" && echo "✅ Old credentials not in staging" || (echo "❌ FOUND OLD CREDENTIALS"; exit 1)
 
 # 2. Verify .env is in gitignore
 grep "^\.env$" .gitignore > /dev/null && echo "✅ .env in .gitignore" || (echo "❌ .env not in .gitignore"; exit 1)

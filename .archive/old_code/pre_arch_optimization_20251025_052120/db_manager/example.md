@@ -65,7 +65,7 @@ pip install taospy
 TDENGINE_HOST=localhost
 TDENGINE_PORT=6030
 TDENGINE_USER=root
-TDENGINE_PASSWORD=taosdata
+TDENGINE_PASSWORD=your-tdengine-password
 TDENGINE_DATABASE=market_data
 ```
 

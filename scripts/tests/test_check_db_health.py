@@ -324,7 +324,7 @@ class TestTDengineConnection:
         mock_settings.tdengine_host = "localhost"
         mock_settings.tdengine_port = 6030
         mock_settings.tdengine_user = "root"
-        mock_settings.tdengine_password = "taosdata"
+        mock_settings.tdengine_password = "your-tdengine-password"
         mock_settings.tdengine_database = "test_db"
 
         mock_conn = MagicMock()
@@ -342,7 +342,7 @@ class TestTDengineConnection:
             host="localhost",
             port=6030,
             user="root",
-            password="taosdata",
+            password="your-tdengine-password",
             timeout=5000,
         )
 

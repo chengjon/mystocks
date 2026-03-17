@@ -3,9 +3,17 @@
 import logging
 import os
 import time
+from functools import wraps
 from typing import Optional
 
 import pandas as pd
+from src.utils.column_mapper import ColumnMapper
+from src.utils.tdx_server_config import TdxServerConfig
+
+try:
+    from pytdx.hq import TdxHq_API
+except ImportError:  # pragma: no cover - 依赖在运行环境中决定
+    TdxHq_API = None
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +116,7 @@ class TdxCoreMixin:
         prefix = symbol[:3]
 
         # 深圳市场
-        if prefix in ["000", "002", "300"]:
+        if prefix in ["000", "002", "300", "399"]:
             return 0
 
         # 上海市场 (包含ETF)
@@ -117,6 +125,7 @@ class TdxCoreMixin:
             "601",
             "603",
             "688",
+            "999",
             "510",
             "511",
             "512",
@@ -235,4 +244,3 @@ class TdxCoreMixin:
 
     # ==================== T011: 所有IDataSource方法的stub实现 ====================
     # 这些将在后续Phase中逐个实现
-

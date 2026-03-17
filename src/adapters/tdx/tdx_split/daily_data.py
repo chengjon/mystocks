@@ -3,6 +3,8 @@
 import logging
 
 import pandas as pd
+from src.utils.column_mapper import ColumnMapper
+from src.utils.date_utils import normalize_date
 
 logger = logging.getLogger(__name__)
 
@@ -316,4 +318,3 @@ class TdxDailyDataMixin:
             error_msg = f"获取指数日线失败: {str(e)}"
             self.logger.error(error_msg, exc_info=True)
             return pd.DataFrame()
-

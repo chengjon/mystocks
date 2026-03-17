@@ -64,7 +64,7 @@ pytest tests/unit/ -v
 TDENGINE_HOST=localhost
 TDENGINE_PORT=6030
 TDENGINE_USER=root
-TDENGINE_PASSWORD=taosdata
+TDENGINE_PASSWORD=your-tdengine-password
 TDENGINE_DATABASE=market_data_test        # ⚠️ 测试专用数据库
 TDENGINE_REST_PORT=6041
 ```
@@ -550,7 +550,7 @@ bash scripts/check_test_environment.sh
 2. **验证数据库**
    ```bash
    # TDengine
-   taos -h localhost -P 6030 -u root -p taosdata -s "USE market_data_test;"
+   taos -h localhost -P 6030 -u root -p your-tdengine-password -s "USE market_data_test;"
 
    # PostgreSQL
    PGPASSWORD=your-postgresql-password psql -h localhost -p 5438 -U postgres -d mystocks_test -c "\dt"

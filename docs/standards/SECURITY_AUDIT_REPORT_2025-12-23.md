@@ -44,7 +44,7 @@ self.monitor_db_url = (
 
 ```bash
 # TDengine Configuration
-TDENGINE_PASSWORD=taosdata
+TDENGINE_PASSWORD=your-tdengine-password
 
 # PostgreSQL Configuration
 POSTGRESQL_PASSWORD=your-postgresql-password
@@ -167,7 +167,7 @@ if not self.monitor_db_url:
 
 **立即执行以下操作**:
 
-1. **TDengine 数据库** (`taosdata`):
+1. **TDengine 数据库** (`your-tdengine-password`):
    ```bash
    # 在 TDengine 中更改 root 密码
    taos -h localhost -P 6030 -u root -p

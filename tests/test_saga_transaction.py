@@ -149,7 +149,7 @@ def verify_tags_in_tdengine():
     try:
         import taos
 
-        conn = taos.connect(host="localhost", port=6030, user="root", password="taosdata", database="market_data")
+        conn = taos.connect(host="localhost", port=6030, user="root", password="your-tdengine-password", database="market_data")
         cursor = conn.cursor()
 
         # 查询最近写入的测试数据

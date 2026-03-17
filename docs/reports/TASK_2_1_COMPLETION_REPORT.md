@@ -339,7 +339,7 @@ else:
 
 ### 相关文档
 - [TDengine 官方文档](https://docs.taosdata.com/)
-- [taos-py 驱动文档](https://github.com/taosdata/taos-connector-python)
+- [taos-py 驱动文档](https://github.com/your-tdengine-password/taos-connector-python)
 - [Docker 最佳实践](https://docs.docker.com/develop/dev-best-practices/)
 - [时序数据库设计](https://en.wikipedia.org/wiki/Time_series_database)
 
