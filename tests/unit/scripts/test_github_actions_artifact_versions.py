@@ -74,3 +74,13 @@ def test_ci_cd_workflow_references_existing_test_chain_scripts() -> None:
     assert "scripts/tests/test-runner/run-orchestration.sh" in content
     assert "scripts/dev/tools/run-performance-suite.sh" in content
     assert "python -m py_compile scripts/dev/tools/ai_test_assistant.py" in content
+
+
+def test_security_enhancement_workflow_does_not_reference_missing_helper_scripts() -> None:
+    workflow = WORKFLOW_ROOT / "security-enhancement.yml"
+    content = workflow.read_text(encoding="utf-8", errors="ignore")
+
+    assert "scripts/check_license_headers.py" not in content
+    assert "scripts/generate_security_report.py" not in content
+    assert "scripts/check_security_thresholds.py" not in content
+    assert "../bandit-report.json" not in content
