@@ -15,7 +15,8 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import structlog
-from fastapi import APIRouter, BackgroundTasks, HTTPException, Path
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Path
+from sqlalchemy.orm import Session
 
 logger = structlog.get_logger(__name__)
 
@@ -24,11 +25,17 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from app.mock.unified_mock_data import get_mock_data_manager
 from app.api.strategy_management._strategy_management_task_tail import run_backtest_task, train_model_task
-from app.core.responses import create_unified_success_response
-from app.schemas.backtest_schemas import BacktestRequest
+from app.api.strategy_management.backtest_status_contract import (
+    BacktestStatusResponse,
+    build_backtest_status_response,
+)
 from app.api.strategy_management.monitoring_adapter import MonitoringAdapter, MonitoringFallback
+from app.core.database import get_db
+from app.core.responses import create_unified_success_response
+from app.mock.unified_mock_data import get_mock_data_manager
+from app.repositories import BacktestRepository
+from app.schemas.backtest_schemas import BacktestRequest
 from src.core import DataClassification
 from src.monitoring.monitoring_database import MonitoringDatabase
 
@@ -41,6 +48,12 @@ router = APIRouter(prefix="/api/v1/strategy", tags=["策略管理-Week1"])
 monitoring_db = None
 _runtime_strategy_store: List[Dict[str, Any]] = []
 _runtime_backtest_store: List[Dict[str, Any]] = []
+
+
+def get_backtest_repository(db: Session = Depends(get_db)) -> BacktestRepository:
+    """获取回测仓库实例。"""
+
+    return BacktestRepository(db)
 
 
 def _runtime_fallback_enabled() -> bool:
@@ -912,19 +925,31 @@ async def get_backtest_result(backtest_id: int = Path(..., description="回测ID
         raise HTTPException(status_code=500, detail=f"获取回测结果失败: {str(e)}")
 
 
-@router.get("/backtest/status/{backtest_id}")
-async def get_backtest_status(backtest_id: int = Path(..., description="回测ID", ge=1)) -> Dict[str, Any]:
-    """获取回测任务状态"""
+@router.get(
+    "/backtest/status/{backtest_id}",
+    response_model=BacktestStatusResponse,
+    summary="获取回测任务状态",
+    description="返回 v1 回测状态公共契约",
+)
+async def get_backtest_status(
+    backtest_id: int = Path(..., description="回测ID", ge=1),
+    backtest_repo: BacktestRepository = Depends(get_backtest_repository),
+) -> BacktestStatusResponse:
+    """获取回测任务状态。"""
+    backtest = backtest_repo.get_backtest(backtest_id)
+    if backtest is not None:
+        return build_backtest_status_response(backtest_id, backtest)
+
     fallback_record = _find_runtime_backtest(backtest_id) if _runtime_fallback_enabled() else None
     if fallback_record is not None:
-        return {
-            "backtest_id": backtest_id,
-            "status": fallback_record.get("status", "completed"),
-            "created_at": fallback_record.get("created_at"),
-            "started_at": fallback_record.get("started_at"),
-            "completed_at": fallback_record.get("completed_at"),
-            "error_message": fallback_record.get("error_message"),
-            "has_results": fallback_record.get("has_results", True),
-        }
+        return BacktestStatusResponse(
+            backtest_id=backtest_id,
+            status=str(fallback_record.get("status", "completed")),
+            created_at=fallback_record.get("created_at"),
+            started_at=fallback_record.get("started_at"),
+            completed_at=fallback_record.get("completed_at"),
+            error_message=fallback_record.get("error_message"),
+            has_results=bool(fallback_record.get("has_results", True)),
+        )
 
     raise HTTPException(status_code=404, detail=f"回测不存在: backtest_id={backtest_id}")
