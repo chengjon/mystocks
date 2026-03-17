@@ -116,3 +116,22 @@ def test_catalog_literal_entrypoint_paths_exist() -> None:
                     if any(token in raw_path for token in "*?["):
                         continue
                     assert (PROJECT_ROOT / raw_path).exists(), f"missing literal entrypoint path: {raw_path}"
+
+
+def test_meta_governance_mainline_covers_github_workflows() -> None:
+    catalog = load_catalog()
+
+    meta_domain = next(domain for domain in catalog["domains"] if domain["id"] == "meta-governance")
+    mainline_node = next(node for node in meta_domain["nodes"] if node["id"] == "meta-governance-mainline")
+
+    assert ".github/workflows/**" in mainline_node["coverage_paths"]
+    assert ".github/workflows/**" in mainline_node["entrypoints"]["governance"]
+
+
+def test_meta_governance_mainline_covers_unit_script_gates() -> None:
+    catalog = load_catalog()
+
+    meta_domain = next(domain for domain in catalog["domains"] if domain["id"] == "meta-governance")
+    mainline_node = next(node for node in meta_domain["nodes"] if node["id"] == "meta-governance-mainline")
+
+    assert "tests/unit/scripts/**" in mainline_node["entrypoints"]["tests"]
