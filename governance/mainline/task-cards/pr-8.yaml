@@ -2,15 +2,15 @@ version: "v0.2"
 
 task:
   id: "pr-8"
-  title: "upgrade deprecated GitHub artifact actions to v4"
+  title: "stabilize CI workflow baselines for artifact downloads and type installs"
   owner: "main"
   created_at: "2026-03-17"
 
 mainline:
   id: "L1-governance"
-  objective: "remove deprecated GitHub artifact action versions so CI can fail on real workflow logic instead of setup-time action deprecations"
+  objective: "remove deprecated artifact action breakage and unblock CI workflow baseline install failures so checks can fail on real project issues"
   milestone_id: "L2-ci-hygiene"
-  slice_id: "L3-artifact-actions-v4"
+  slice_id: "L3-ci-baseline-unblock"
 
 classification:
   task_type: "fix"
@@ -35,15 +35,18 @@ function_tree:
 scope:
   allowed_paths:
     - ".github/workflows/**"
+    - "config/requirements.txt"
     - "governance/function-tree/catalog.yaml"
     - "governance/mainline/task-cards/pr-8.yaml"
+    - "requirements.txt"
     - "tests/unit/scripts/test_github_actions_artifact_versions.py"
+    - "tests/unit/scripts/test_python_dependency_constraints.py"
     - "tests/unit/governance/test_function_tree_catalog.py"
   forbidden_paths:
     - "web/frontend/src/App.vue"
 
 non_goals:
-  - "No workflow logic redesign beyond artifact action version upgrades"
+  - "No workflow logic redesign beyond artifact download compatibility and install-time unblockers"
   - "No broad CI policy reduction in this PR"
 
 acceptance:
@@ -51,21 +54,25 @@ acceptance:
     - id: "artifact-version-guard"
       command: "PYTHONPATH=. pytest -o addopts='' --no-cov tests/unit/scripts/test_github_actions_artifact_versions.py -q"
       required: true
+    - id: "ci-dependency-constraint-guard"
+      command: "PYTHONPATH=. pytest -o addopts='' --no-cov tests/unit/scripts/test_python_dependency_constraints.py -q"
+      required: true
 
 risk_and_rollback:
   risks:
     - "A workflow may rely on deprecated artifact action behavior not visible in local static replacement"
+    - "A CI job may still assume broader stub packages than the explicit installable set restored here"
   rollback_plan: "git revert <merge-commit-sha>"
 
 delivery:
   six_line_summary_required: true
   six_line_summary:
-    change_purpose: "restore GitHub Actions compatibility by replacing deprecated artifact action versions"
-    modified_scope: "18 workflow files under .github/workflows plus one regression test"
-    dependency_changes: "none"
-    legacy_logic_impact: "workflow behavior should stay the same apart from artifact action version"
+    change_purpose: "restore GitHub Actions CI compatibility by fixing artifact download semantics and removing a non-installable typing meta-package"
+    modified_scope: "workflow files under .github/workflows, CI dependency baselines, and focused regression tests"
+    dependency_changes: "runtime requirements keep installable lower bounds and CI typing installs use explicit stub packages"
+    legacy_logic_impact: "workflow behavior should stay the same apart from artifact v4 compatibility and Python type-check dependency installation"
     rollback_ready: "yes"
-    risk_and_rollback_point: "revert if any workflow shows v4-specific artifact behavior regressions"
+    risk_and_rollback_point: "revert if workflows regress on artifact retrieval or the CI type-check job loses required stubs"
 
 governance:
   phase: "phase_a_pr_hard_gate"
