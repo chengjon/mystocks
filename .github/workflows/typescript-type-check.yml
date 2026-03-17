@@ -532,6 +532,8 @@ PY
     steps:
       - name: Download all type check artifacts
         uses: actions/download-artifact@v4
+        with:
+          path: .
 
       - name: Generate consolidated report
         run: |

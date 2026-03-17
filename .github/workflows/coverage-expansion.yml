@@ -77,6 +77,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: coverage-report
+        path: .
 
     - name: Generate test expansion plan
       run: |

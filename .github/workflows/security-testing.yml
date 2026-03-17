@@ -196,6 +196,9 @@ jobs:
     steps:
     - name: Download all security artifacts
       uses: actions/download-artifact@v4
+      with:
+        path: .
+        merge-multiple: true
 
     - name: Generate consolidated security report
       run: |
@@ -323,6 +326,9 @@ else:
     steps:
     - name: Download security reports
       uses: actions/download-artifact@v4
+      with:
+        path: .
+        merge-multiple: true
 
     - name: Security Quality Gate Check
       id: gate
@@ -401,6 +407,8 @@ print(count)
     steps:
     - name: Download final security reports
       uses: actions/download-artifact@v4
+      with:
+        path: .
 
     - name: Final security verification
       run: |

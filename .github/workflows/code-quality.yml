@@ -567,6 +567,9 @@ jobs:
     steps:
     - name: Download all quality artifacts
       uses: actions/download-artifact@v4
+      with:
+        path: .
+        merge-multiple: true
 
     - name: Generate consolidated quality report
       run: |
@@ -677,6 +680,9 @@ jobs:
     steps:
     - name: Download quality reports
       uses: actions/download-artifact@v4
+      with:
+        path: .
+        merge-multiple: true
 
     - name: Quality Gate Evaluation
       id: gate
@@ -854,6 +860,8 @@ jobs:
     steps:
     - name: Download all artifacts
       uses: actions/download-artifact@v4
+      with:
+        path: .
 
     - name: Generate final CI/CD report
       run: |

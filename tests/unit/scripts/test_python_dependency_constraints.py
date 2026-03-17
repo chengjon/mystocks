@@ -42,3 +42,12 @@ def test_runtime_requirements_use_installable_datamodel_code_generator_package()
         content = requirement_path.read_text(encoding="utf-8")
         assert "datamodel-codegen==0.0.1" not in content
         assert "datamodel-code-generator" in content
+
+
+def test_ci_type_check_workflow_avoids_types_all_meta_package() -> None:
+    workflow = PROJECT_ROOT / ".github" / "workflows" / "ci-cd-with-type-checking.yml"
+    content = workflow.read_text(encoding="utf-8")
+
+    assert "pip install mypy types-all" not in content
+    assert "types-requests" in content
+    assert "types-PyYAML" in content
