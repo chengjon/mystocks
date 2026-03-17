@@ -299,7 +299,7 @@ jobs:
         pytest ai_generated_tests/ --cov=src --cov-report=xml --cov-report=html || echo "Coverage report generation completed with warnings"
 
     - name: Upload Optimization Report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: ai-optimization-report
@@ -309,7 +309,7 @@ jobs:
         retention-days: 30
 
     - name: Upload Generated Tests
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: steps.optimizer.outputs.optimizer-tests-generated > 0
       with:
         name: ai-generated-tests
@@ -317,7 +317,7 @@ jobs:
         retention-days: 7
 
     - name: Upload Test Results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: steps.optimizer.outputs.optimizer-tests-generated > 0
       with:
         name: generated-tests-results
@@ -347,7 +347,7 @@ jobs:
 
     steps:
     - name: Download optimization report
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: ai-optimization-report
 
@@ -417,12 +417,12 @@ jobs:
 
     steps:
     - name: Download optimization report
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: ai-optimization-report
 
     - name: Download test results
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       if: needs.ai-optimization.outputs.optimizer-tests-generated > 0
       with:
         name: generated-tests-results
@@ -532,7 +532,7 @@ jobs:
 
     steps:
     - name: Download reports
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: ai-optimization-report
 

@@ -154,7 +154,7 @@ jobs:
         echo "🔍 代码质量评分: ${quality_score}/100"
 
     - name: Upload quality reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: quality-reports-${{ github.run_id }}
         path: |
@@ -190,7 +190,7 @@ jobs:
         python scripts/tools/ai_test_assistant.py --output test-reports/ai_basic_analysis.md || true
 
     - name: Upload basic test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: basic-test-results
         path: test-reports/
@@ -218,7 +218,7 @@ jobs:
         npm run test:unit -- --run --reporter=verbose || true
 
     - name: Upload frontend test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: frontend-test-results
         path: web/frontend/
@@ -249,7 +249,7 @@ jobs:
         python scripts/tools/performance_test_suite.py --load-test --users 5 --run-time 10s || true
 
     - name: Upload performance validation results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: performance-validation
         path: test-reports/
@@ -281,7 +281,7 @@ jobs:
         bash scripts/test-runner/run-orchestration.sh --dry-run || echo "Orchestration dry-run failed"
 
     - name: Upload validation results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: test-chain-validation
         path: .
@@ -520,7 +520,7 @@ jobs:
         echo "✅ 优化总结报告已生成"
 
     - name: Upload optimization data
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: continuous-optimization-data-${{ github.run_id }}
         path: optimization-data/
@@ -536,7 +536,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Download all artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
 
     - name: Generate CI/CD summary
       run: |
@@ -576,7 +576,7 @@ jobs:
         echo "- 部署流程自动化" >> cicd_summary.md
 
     - name: Upload CI/CD summary
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: cicd-summary
         path: cicd-summary.md

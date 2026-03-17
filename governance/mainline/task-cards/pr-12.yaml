@@ -34,9 +34,7 @@ function_tree:
 
 scope:
   allowed_paths:
-    - ".github/workflows/ai-test-optimization.yml"
-    - ".github/workflows/mainline-governance.yml"
-    - ".github/workflows/directory-compliance.yml"
+    - ".github/workflows/**"
     - "governance/function-tree/catalog.yaml"
     - "governance/mainline/task-cards/pr-12.yaml"
     - "tests/unit/governance/test_function_tree_catalog.py"
