@@ -35,7 +35,10 @@ function_tree:
 scope:
   allowed_paths:
     - ".github/workflows/**"
+    - "governance/function-tree/catalog.yaml"
+    - "governance/mainline/task-cards/pr-8.yaml"
     - "tests/unit/scripts/test_github_actions_artifact_versions.py"
+    - "tests/unit/governance/test_function_tree_catalog.py"
   forbidden_paths:
     - "web/frontend/src/App.vue"
 
