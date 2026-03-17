@@ -99,7 +99,7 @@ jobs:
         npx vue-tsc --noEmit || (echo "TypeScript compilation failed" && exit 1)
 
     - name: Upload type check results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: type-check-results
@@ -169,7 +169,7 @@ jobs:
       run: npm run lint || (echo "Frontend linting failed" && exit 1)
 
     - name: Upload code quality reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: code-quality-reports
         path: |
@@ -229,7 +229,7 @@ jobs:
           || (echo "Unit tests failed" && exit 1)
 
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: unit-test-results
         path: |
@@ -305,7 +305,7 @@ jobs:
           || (echo "Integration tests failed" && exit 1)
 
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: integration-test-results
         path: |
@@ -383,7 +383,7 @@ jobs:
           || (echo "E2E tests failed" && exit 1)
 
     - name: Upload E2E test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: e2e-test-results
         path: |
@@ -500,7 +500,7 @@ jobs:
           || echo "Lighthouse test completed with warnings"
 
     - name: Upload performance reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: performance-reports
         path: |

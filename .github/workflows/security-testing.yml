@@ -55,7 +55,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload security scan results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: security-scan-results
@@ -88,7 +88,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload dependency check results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: dependency-check-results
@@ -131,7 +131,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload security test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: security-test-results
@@ -179,7 +179,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload frontend security results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: frontend-security-results
@@ -195,7 +195,7 @@ jobs:
 
     steps:
     - name: Download all security artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
 
     - name: Generate consolidated security report
       run: |
@@ -306,7 +306,7 @@ else:
         echo "安全测试报告已生成: security-reports/"
 
     - name: Upload security reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: security-reports
         path: security-reports/
@@ -322,7 +322,7 @@ else:
 
     steps:
     - name: Download security reports
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
 
     - name: Security Quality Gate Check
       id: gate
@@ -400,7 +400,7 @@ print(count)
 
     steps:
     - name: Download final security reports
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
 
     - name: Final security verification
       run: |

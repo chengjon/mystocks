@@ -96,7 +96,7 @@ jobs:
         GITHUB_STEP_SUMMARY: strategy_validation_summary_${{ matrix.validation_type }}.md
 
     - name: Upload validation results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: strategy-validation-${{ matrix.validation_type }}
         path: |
@@ -106,7 +106,7 @@ jobs:
 
     - name: Upload benchmark data (if updated)
       if: github.event.inputs.benchmark_update == 'true'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: updated-benchmarks
         path: ~/.mystocks/strategy_benchmarks/
@@ -173,7 +173,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Download validation results
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: strategy-validation-correctness
         path: validation-results
@@ -240,7 +240,7 @@ jobs:
 
     - name: Upload updated benchmarks
       if: github.event.inputs.benchmark_update == 'true'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: strategy-benchmarks
         path: .mystocks/benchmarks/
@@ -257,7 +257,7 @@ jobs:
 
     steps:
     - name: Download all validation results
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         path: all-results
 

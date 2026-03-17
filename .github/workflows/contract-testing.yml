@@ -62,7 +62,7 @@ jobs:
 
       - name: Upload test reports
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-reports-${{ matrix.python-version }}
           path: reports/
@@ -211,7 +211,7 @@ jobs:
 
       - name: Upload consistency report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: consistency-report
           path: reports/consistency-check.json
