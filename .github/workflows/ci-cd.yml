@@ -187,7 +187,7 @@ jobs:
 
     - name: Run AI test analysis
       run: |
-        python scripts/tools/ai_test_assistant.py --output test-reports/ai_basic_analysis.md || true
+        python scripts/dev/tools/ai_test_assistant.py --output test-reports/ai_basic_analysis.md || true
 
     - name: Upload basic test results
       uses: actions/upload-artifact@v4
@@ -264,21 +264,21 @@ jobs:
     - name: Validate test orchestration scripts
       run: |
         # 验证脚本存在性和可执行性
-        ls -la scripts/test-runner/run-orchestration.sh
-        ls -la scripts/tools/run-performance-suite.sh
-        ls -la scripts/tools/ai_test_assistant.py
+        ls -la scripts/tests/test-runner/run-orchestration.sh
+        ls -la scripts/dev/tools/run-performance-suite.sh
+        ls -la scripts/dev/tools/ai_test_assistant.py
 
         # 验证脚本语法
-        bash -n scripts/test-runner/run-orchestration.sh || echo "Orchestration script has syntax issues"
-        bash -n scripts/tools/run-performance-suite.sh || echo "Performance suite script has syntax issues"
+        bash -n scripts/tests/test-runner/run-orchestration.sh || echo "Orchestration script has syntax issues"
+        bash -n scripts/dev/tools/run-performance-suite.sh || echo "Performance suite script has syntax issues"
 
-        # 验证Python脚本导入
-        python -c "import sys; sys.path.append('.'); from scripts.tools import ai_test_assistant" 2>/dev/null || echo "AI assistant import failed"
+        # 验证Python脚本语法
+        python -m py_compile scripts/dev/tools/ai_test_assistant.py || echo "AI assistant syntax validation failed"
 
     - name: Test orchestration dry-run
       run: |
         # 测试编排脚本的dry-run模式
-        bash scripts/test-runner/run-orchestration.sh --dry-run || echo "Orchestration dry-run failed"
+        bash scripts/tests/test-runner/run-orchestration.sh --dry-run || echo "Orchestration dry-run failed"
 
     - name: Upload validation results
       uses: actions/upload-artifact@v4
@@ -565,17 +565,17 @@ jobs:
         echo "### ✅ 已实现功能" >> cicd-summary.md
         echo "- GitHub Actions CI/CD工作流配置" >> cicd-summary.md
         echo "- 代码质量检查 (Ruff, Black, MyPy, ESLint)" >> cicd-summary.md
-        echo "- 安全扫描 (Bandit, Safety)" >> cicd_summary.md
-        echo "- 前端测试集成 (Vitest, Playwright)" >> cicd_summary.md
-        echo "- 性能测试环境验证" >> cicd_summary.md
-        echo "- 测试链路编排验证" >> cicd_summary.md
-        echo "- AI测试分析集成" >> cicd_summary.md
-        echo "" >> cicd_summary.md
-        echo "### 🔄 需要后续完善" >> cicd_summary.md
-        echo "- 数据库服务集成 (PostgreSQL, TDengine)" >> cicd_summary.md
-        echo "- 完整后端测试执行" >> cicd_summary.md
-        echo "- Slack通知配置" >> cicd_summary.md
-        echo "- 部署流程自动化" >> cicd_summary.md
+        echo "- 安全扫描 (Bandit, Safety)" >> cicd-summary.md
+        echo "- 前端测试集成 (Vitest, Playwright)" >> cicd-summary.md
+        echo "- 性能测试环境验证" >> cicd-summary.md
+        echo "- 测试链路编排验证" >> cicd-summary.md
+        echo "- AI测试分析集成" >> cicd-summary.md
+        echo "" >> cicd-summary.md
+        echo "### 🔄 需要后续完善" >> cicd-summary.md
+        echo "- 数据库服务集成 (PostgreSQL, TDengine)" >> cicd-summary.md
+        echo "- 完整后端测试执行" >> cicd-summary.md
+        echo "- Slack通知配置" >> cicd-summary.md
+        echo "- 部署流程自动化" >> cicd-summary.md
 
     - name: Upload CI/CD summary
       uses: actions/upload-artifact@v4
@@ -686,7 +686,7 @@ jobs:
         bash .github/workflows/ci-cd.yml --dry-run
 
         # 运行本地测试
-        python scripts/tools/run-performance-suite.sh --all
+        bash scripts/dev/tools/run-performance-suite.sh --all
         \`\`\`
 
         ### 部署配置
