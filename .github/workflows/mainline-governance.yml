@@ -75,24 +75,24 @@ jobs:
         if: always()
         run: |
           if [ -f governance/mainline/reports/mainline-governance-report.json ]; then
-            python - <<'PY'
-            import json
-            import os
-            from pathlib import Path
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
 
-            report = json.loads(Path("governance/mainline/reports/mainline-governance-report.json").read_text(encoding="utf-8"))
-            summary_path = Path(os.environ["GITHUB_STEP_SUMMARY"])
+          report = json.loads(Path("governance/mainline/reports/mainline-governance-report.json").read_text(encoding="utf-8"))
+          summary_path = Path(os.environ["GITHUB_STEP_SUMMARY"])
 
-            summary_path.write_text("\n".join([
-                "# Mainline Governance Report",
-                "",
-                f"- pass: `{report.get('pass')}`",
-                f"- changed_files: `{len(report.get('changed_files', []))}`",
-                f"- drift_rate_percent: `{report.get('drift_rate_percent', 'N/A')}`",
-                f"- drift_threshold_percent: `{report.get('drift_threshold_percent', 'N/A')}`",
-                f"- secondary_type: `{report.get('secondary_type', 'N/A')}`",
-                f"- secondary_ratio_percent: `{report.get('secondary_ratio_percent', 'N/A')}`",
-                f"- violations: `{len(report.get('violations', []))}`",
-            ]), encoding="utf-8")
-            PY
+          summary_path.write_text("\n".join([
+              "# Mainline Governance Report",
+              "",
+              f"- pass: `{report.get('pass')}`",
+              f"- changed_files: `{len(report.get('changed_files', []))}`",
+              f"- drift_rate_percent: `{report.get('drift_rate_percent', 'N/A')}`",
+              f"- drift_threshold_percent: `{report.get('drift_threshold_percent', 'N/A')}`",
+              f"- secondary_type: `{report.get('secondary_type', 'N/A')}`",
+              f"- secondary_ratio_percent: `{report.get('secondary_ratio_percent', 'N/A')}`",
+              f"- violations: `{len(report.get('violations', []))}`",
+          ]), encoding="utf-8")
+          PY
           fi
