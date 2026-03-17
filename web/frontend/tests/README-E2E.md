@@ -93,16 +93,18 @@ START_BACKEND_IF_NEEDED=true ./scripts/test-runner/run-api-availability-smoke.sh
 ```
 
 #### 方法 3: Playwright 直接运行
+该方式用于单文件 / grep / 临时调试补充，标准入口仍是 `npm run test:e2e*`。
 ```bash
 cd web/frontend
 
-# 运行单个测试文件
-npx playwright test tests/comprehensive-e2e-validation.spec.ts
+# 标准入口（优先）
+npm run test:e2e
+npm run test:e2e:chromium
+npm run test:e2e:debug
 
-# 指定浏览器运行
+# npx 补充：单文件临时运行
 npx playwright test tests/comprehensive-e2e-validation.spec.ts --project=chromium
 
-# 调试模式
 npx playwright test tests/comprehensive-e2e-validation.spec.ts --debug
 ```
 
@@ -180,10 +182,11 @@ cd web/backend && pm2 start ecosystem.config.js
 # 查看详细错误日志
 cat test-results/e2e-test-report.json | jq '.categories'
 
-# 调试模式运行
-npm run test:e2e:debug tests/comprehensive-e2e-validation.spec.ts
+# 调试模式运行（npm 为主）
+npm run test:e2e:debug
 
-# 仅运行特定测试
+# npx 补充：单文件/grep 临时调试
+npx playwright test tests/comprehensive-e2e-validation.spec.ts --debug
 npx playwright test --grep "DOM元素存在性验证"
 ```
 

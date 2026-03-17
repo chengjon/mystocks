@@ -126,7 +126,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 
 const props = defineProps({
@@ -216,7 +216,7 @@ const handleSubmit = async () => {
     // 解析参数JSON
     try {
       formData.value.params = JSON.parse(paramsJson.value)
-    } catch (e) {
+    } catch {
       ElMessage.error('任务参数JSON格式错误')
       return
     }

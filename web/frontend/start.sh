@@ -2,7 +2,7 @@
 
 ###############################################################################
 # MyStocks Frontend - PM2 Start Script
-# Phase 3: Bloomberg Terminal Style Deployment
+# Phase 3: ArtDeco Unified Deployment
 #
 # Usage:
 #   ./start.sh [options]
@@ -53,7 +53,7 @@ done
 
 echo -e "${BLUE}╔════════════════════════════════════════════════════════════╗${NC}"
 echo -e "${BLUE}║   MyStocks Frontend - PM2 Deployment Start Script        ║${NC}"
-echo -e "${BLUE}║   Phase 3: Bloomberg Terminal Style Verification          ║${NC}"
+echo -e "${BLUE}║   Phase 3: ArtDeco Style Verification                     ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 

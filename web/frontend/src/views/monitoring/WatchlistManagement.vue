@@ -1,5 +1,5 @@
 <template>
-  <div class="watchlist-management fintech-bg-primary">
+  <div class="watchlist-management watchlist-page fintech-bg-primary">
     <!-- 顶部标题栏 -->
     <div class="fintech-card elevated header-section">
       <div class="header-content">
@@ -400,9 +400,46 @@
 <script setup>
 import { useWatchlistManagement } from './composables/useWatchlistManagement'
 
-const { loading, watchlists, watchlistStocks, stockDrawerVisible, createModalVisible, addStockModalVisible, deleteConfirmVisible, currentWatchlist, editingWatchlist, portfolioToDelete, watchlistForm, stockForm, riskTolerance, totalStocks, totalValue, price, totalPnL, current, entry, pnl, winRate, winners, current, entry, activeAlerts, getTypeClass, classes, getTypeText, texts, getPnlClass, current, entry, pnl, getPnlPercent, current, entry, pnl, getReasonClass, classes, getReasonText, texts, formatCurrency, formatPrice, fetchWatchlists, res, data, fetchWatchlistStocks, res, data, refreshData, handlePortfolioClick, showCreateModal, editWatchlist, handleCreateOrUpdate, url, method, res, data, confirmDelete, deleteWatchlist, res, data, manageStocks, showAddStockModal, handleAddStock, res, data, confirmRemoveStock, removeStock, res, data } = useWatchlistManagement()
+const {
+  watchlists,
+  watchlistStocks,
+  stockDrawerVisible,
+  createModalVisible,
+  addStockModalVisible,
+  deleteConfirmVisible,
+  currentWatchlist,
+  editingWatchlist,
+  portfolioToDelete,
+  watchlistForm,
+  stockForm,
+  riskTolerance,
+  totalStocks,
+  totalValue,
+  totalPnL,
+  winRate,
+  activeAlerts,
+  getTypeClass,
+  getTypeText,
+  getPnlClass,
+  getPnlPercent,
+  getReasonClass,
+  getReasonText,
+  formatCurrency,
+  formatPrice,
+  refreshData,
+  handlePortfolioClick,
+  showCreateModal,
+  editWatchlist,
+  handleCreateOrUpdate,
+  confirmDelete,
+  deleteWatchlist,
+  manageStocks,
+  showAddStockModal,
+  handleAddStock,
+  confirmRemoveStock
+} = useWatchlistManagement()
 </script>
 
-<style scoped>
-@import './styles/WatchlistManagement';
+<style scoped lang="scss">
+@import './styles/WatchlistManagement.scss';
 </style>

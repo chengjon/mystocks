@@ -231,7 +231,12 @@ export function useWebSocket(config: WebSocketConfig = {}) {
       globalState.value.subscriptions.set(channel, new Set())
     }
 
-    globalState.value.subscriptions.get(channel)!.add(callback)
+    const channelSubscriptions = globalState.value.subscriptions.get(channel)
+    if (!channelSubscriptions) {
+      return
+    }
+
+    channelSubscriptions.add(callback)
 
     // 发送订阅消息
     if (globalState.value.ws?.readyState === WebSocket.OPEN) {

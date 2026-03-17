@@ -13,7 +13,7 @@ import re
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 # ============================================================================
 # 请求Schema
@@ -30,21 +30,21 @@ class WencaiQueryRequest(BaseModel):
     query_name: str = Field(
         ...,
         description="查询名称，如qs_1, qs_2, ..., qs_9",
-        example="qs_9",
+        json_schema_extra={"example": "qs_9"},
         min_length=4,
         max_length=20,
     )
-    pages: int = Field(default=1, description="获取页数", ge=1, le=10, example=1)
+    pages: int = Field(default=1, description="获取页数", ge=1, le=10, json_schema_extra={"example": 1})
 
-    @validator("query_name")
+    @field_validator("query_name")
+    @classmethod
     def validate_query_name(cls, v):
         """验证查询名称格式 - 只允许 qs_1 到 qs_9"""
         if not re.match(r"^qs_[1-9]$", v):
             raise ValueError(f"query_name must be in format 'qs_N' where N is 1-9. Got: {v}")
         return v
 
-    class Config:
-        schema_extra = {"example": {"query_name": "qs_9", "pages": 1}}
+    model_config = ConfigDict(json_schema_extra={"example": {"query_name": "qs_9", "pages": 1}})
 
 
 class WencaiCustomQueryRequest(BaseModel):
@@ -57,14 +57,13 @@ class WencaiCustomQueryRequest(BaseModel):
     query_text: str = Field(
         ...,
         description="自定义查询语句（自然语言）",
-        example="请列出今天涨幅超过5%的股票",
+        json_schema_extra={"example": "请列出今天涨幅超过5%的股票"},
         min_length=5,
         max_length=500,
     )
-    pages: int = Field(default=1, description="获取页数", ge=1, le=5, example=1)
+    pages: int = Field(default=1, description="获取页数", ge=1, le=5, json_schema_extra={"example": 1})
 
-    class Config:
-        schema_extra = {"example": {"query_text": "请列出今天涨幅超过5%的股票", "pages": 1}}
+    model_config = ConfigDict(json_schema_extra={"example": {"query_text": "请列出今天涨幅超过5%的股票", "pages": 1}})
 
 
 class WencaiRefreshRequest(BaseModel):
@@ -91,16 +90,16 @@ class WencaiQueryInfo(BaseModel):
     """
 
     id: int = Field(..., description="查询ID")
-    query_name: str = Field(..., description="查询名称", example="qs_1")
-    query_text: str = Field(..., description="查询语句", example="请列出...")
+    query_name: str = Field(..., description="查询名称", json_schema_extra={"example": "qs_1"})
+    query_text: str = Field(..., description="查询语句", json_schema_extra={"example": "请列出..."})
     description: Optional[str] = Field(None, description="查询说明")
     is_active: bool = Field(..., description="是否启用")
     created_at: Optional[datetime] = Field(None, description="创建时间")
     updated_at: Optional[datetime] = Field(None, description="更新时间")
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
             "example": {
                 "id": 1,
                 "query_name": "qs_1",
@@ -110,7 +109,8 @@ class WencaiQueryInfo(BaseModel):
                 "created_at": "2025-10-17T09:00:00",
                 "updated_at": "2025-10-17T09:00:00",
             }
-        }
+        },
+    )
 
 
 class WencaiQueryListResponse(BaseModel):
@@ -123,8 +123,8 @@ class WencaiQueryListResponse(BaseModel):
     queries: List[WencaiQueryInfo] = Field(..., description="查询列表")
     total: int = Field(..., description="总数量")
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "queries": [
                     {
@@ -140,6 +140,7 @@ class WencaiQueryListResponse(BaseModel):
                 "total": 9,
             }
         }
+    )
 
 
 class WencaiQueryResponse(BaseModel):
@@ -158,8 +159,8 @@ class WencaiQueryResponse(BaseModel):
     table_name: str = Field(..., description="结果表名")
     fetch_time: datetime = Field(..., description="数据获取时间")
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "success": True,
                 "message": "查询执行成功",
@@ -174,6 +175,7 @@ class WencaiQueryResponse(BaseModel):
                 "fetch_time": "2025-10-17T09:00:00",
             }
         }
+    )
 
 
 class WencaiCustomQueryResponse(BaseModel):
@@ -191,8 +193,8 @@ class WencaiCustomQueryResponse(BaseModel):
     columns: List[str] = Field(..., description="列名列表")
     fetch_time: datetime = Field(..., description="数据获取时间")
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "success": True,
                 "message": "查询执行成功",
@@ -203,6 +205,7 @@ class WencaiCustomQueryResponse(BaseModel):
                 "fetch_time": "2025-10-18T10:00:00",
             }
         }
+    )
 
 
 class WencaiResultItem(BaseModel):
@@ -215,8 +218,8 @@ class WencaiResultItem(BaseModel):
     data: Dict[str, Any] = Field(..., description="结果数据（动态字段）")
     fetch_time: datetime = Field(..., description="数据获取时间")
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "data": {
                     "股票代码": "000001",
@@ -227,6 +230,7 @@ class WencaiResultItem(BaseModel):
                 "fetch_time": "2025-10-17T09:00:00",
             }
         }
+    )
 
 
 class WencaiResultsResponse(BaseModel):
@@ -242,8 +246,8 @@ class WencaiResultsResponse(BaseModel):
     columns: List[str] = Field(..., description="列名列表")
     latest_fetch_time: Optional[datetime] = Field(None, description="最新数据时间")
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "query_name": "qs_9",
                 "total": 45,
@@ -258,6 +262,7 @@ class WencaiResultsResponse(BaseModel):
                 "latest_fetch_time": "2025-10-17T09:00:00",
             }
         }
+    )
 
 
 class WencaiRefreshResponse(BaseModel):
@@ -267,13 +272,13 @@ class WencaiRefreshResponse(BaseModel):
     用于POST /api/market/wencai/refresh/{query_name}
     """
 
-    status: str = Field(..., description="任务状态", example="refreshing")
+    status: str = Field(..., description="任务状态", json_schema_extra={"example": "refreshing"})
     message: str = Field(..., description="消息")
     task_id: Optional[str] = Field(None, description="后台任务ID")
     query_name: str = Field(..., description="查询名称")
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "status": "refreshing",
                 "message": "后台任务已启动",
@@ -281,6 +286,7 @@ class WencaiRefreshResponse(BaseModel):
                 "query_name": "qs_9",
             }
         }
+    )
 
 
 class WencaiHistoryItem(BaseModel):
@@ -288,12 +294,13 @@ class WencaiHistoryItem(BaseModel):
     历史数据项
     """
 
-    date: str = Field(..., description="日期", example="2025-10-17")
+    date: str = Field(..., description="日期", json_schema_extra={"example": "2025-10-17"})
     total_records: int = Field(..., description="记录数", ge=0)
     fetch_count: int = Field(..., description="获取次数", ge=0)
 
-    class Config:
-        schema_extra = {"example": {"date": "2025-10-17", "total_records": 45, "fetch_count": 3}}
+    model_config = ConfigDict(
+        json_schema_extra={"example": {"date": "2025-10-17", "total_records": 45, "fetch_count": 3}}
+    )
 
 
 class WencaiHistoryResponse(BaseModel):
@@ -308,8 +315,8 @@ class WencaiHistoryResponse(BaseModel):
     history: List[WencaiHistoryItem] = Field(..., description="历史数据")
     total_days: int = Field(..., description="总天数", ge=0)
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "query_name": "qs_9",
                 "date_range": ["2025-10-10", "2025-10-17"],
@@ -317,6 +324,7 @@ class WencaiHistoryResponse(BaseModel):
                 "total_days": 7,
             }
         }
+    )
 
 
 # ============================================================================
@@ -336,8 +344,8 @@ class WencaiErrorResponse(BaseModel):
     message: str = Field(..., description="错误消息")
     details: Optional[Dict[str, Any]] = Field(None, description="错误详情")
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "success": False,
                 "error": "ValidationError",
@@ -345,6 +353,7 @@ class WencaiErrorResponse(BaseModel):
                 "details": {"field": "query_name", "value": "invalid_name"},
             }
         }
+    )
 
 
 # ============================================================================
@@ -362,8 +371,8 @@ class WencaiStatsResponse(BaseModel):
     total_records: int = Field(..., description="总记录数", ge=0)
     last_refresh_time: Optional[datetime] = Field(None, description="最后刷新时间")
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "total_queries": 9,
                 "active_queries": 9,
@@ -371,3 +380,4 @@ class WencaiStatsResponse(BaseModel):
                 "last_refresh_time": "2025-10-17T09:00:00",
             }
         }
+    )

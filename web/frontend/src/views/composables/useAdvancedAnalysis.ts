@@ -1,20 +1,6 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { advancedAnalysisApi, type AnalysisRequest, type AnalysisResponse } from '@/api/advancedAnalysis'
-import { PageHeader } from '@/components/shared'
-import FundamentalAnalysisView from './advanced-analysis/FundamentalAnalysisView.vue'
-import TechnicalAnalysisView from './advanced-analysis/TechnicalAnalysisView.vue'
-import RadarAnalysisView from './advanced-analysis/RadarAnalysisView.vue'
-import TradingSignalsView from './advanced-analysis/TradingSignalsView.vue'
-import TimeSeriesView from './advanced-analysis/TimeSeriesView.vue'
-import MarketPanoramaView from './advanced-analysis/MarketPanoramaView.vue'
-import CapitalFlowView from './advanced-analysis/CapitalFlowView.vue'
-import ChipDistributionView from './advanced-analysis/ChipDistributionView.vue'
-import AnomalyTrackingView from './advanced-analysis/AnomalyTrackingView.vue'
-import FinancialValuationView from './advanced-analysis/FinancialValuationView.vue'
-import SentimentAnalysisView from './advanced-analysis/SentimentAnalysisView.vue'
-import DecisionModelsView from './advanced-analysis/DecisionModelsView.vue'
-import BatchAnalysisView from './advanced-analysis/BatchAnalysisView.vue'
 
 interface AnalysisForm {
     symbol: string

@@ -2,7 +2,7 @@
  * WebSocket Connection Manager for Real-time Data
  * Handles connection lifecycle, reconnection, and message routing
  */
-import { wsUrl } from '@/config/runtime-endpoints'
+import { wsUrl } from '@/config/runtime-endpoints.ts'
 
 export interface WebSocketConfig {
   url: string
@@ -155,7 +155,10 @@ class WebSocketManager {
     if (!this.eventHandlers.has(event)) {
       this.eventHandlers.set(event, new Set())
     }
-    this.eventHandlers.get(event)!.add(handler)
+    const handlers = this.eventHandlers.get(event)
+    if (handlers) {
+      handlers.add(handler)
+    }
   }
 
   /**
@@ -164,8 +167,9 @@ class WebSocketManager {
   off(event: string, handler?: WebSocketEventHandler): void {
     if (!this.eventHandlers.has(event)) return
 
+    const handlers = this.eventHandlers.get(event)
     if (handler) {
-      this.eventHandlers.get(event)!.delete(handler)
+      handlers?.delete(handler)
     } else {
       this.eventHandlers.delete(event)
     }

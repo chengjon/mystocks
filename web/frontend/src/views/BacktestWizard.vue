@@ -233,7 +233,28 @@
 import ArtDecoCardCompact from '@/components/artdeco/base/ArtDecoCardCompact.vue'
 import { useBacktestWizard } from './composables/useBacktestWizard'
 
-const { wizardSteps, currentStep, selectedStrategy, quickTemplates, customTemplates, showSaveTemplateDialog, strategyTemplates, backtestParams, backtestResults, backtestHistory, selectedBacktest1, selectedBacktest2, comparisonData, bt1, bt2, backtestChartRef, backtestChart, canProceed, selectStrategy, template, nextStep, prevStep, resetWizard, getSelectedStrategyName, template, formatDate, initBacktestChart, option } = useBacktestWizard()
+const {
+  wizardSteps,
+  currentStep,
+  selectedStrategy,
+  quickTemplates,
+  customTemplates,
+  showSaveTemplateDialog,
+  backtestParams,
+  backtestResults,
+  backtestHistory,
+  selectedBacktest1,
+  selectedBacktest2,
+  comparisonData,
+  backtestChartRef,
+  canProceed,
+  selectStrategy,
+  nextStep,
+  prevStep,
+  resetWizard,
+  getSelectedStrategyName,
+  formatDate
+} = useBacktestWizard()
 </script>
 
 <style scoped lang="scss">

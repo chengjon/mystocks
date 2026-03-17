@@ -13,7 +13,7 @@ from typing import Dict
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.."))
 sys.path.insert(0, project_root)
 
-from src.adapters.tdx import TdxDataSource
+from src.adapters.tdx.tdx_adapter import TdxDataSource
 
 logger = logging.getLogger(__name__)
 
@@ -138,8 +138,18 @@ class TdxService:
             Dict: 指数行情数据
         """
         try:
+            index_symbol_map = {
+                "000001": "999999",
+            }
+            index_name_map = {
+                "000001": "上证指数",
+                "399001": "深证成指",
+                "399006": "创业板指",
+            }
+            query_symbol = index_symbol_map.get(symbol, symbol)
+
             # 调用TDX适配器(指数也用get_real_time_data)
-            result = self.tdx_adapter.get_real_time_data(symbol)
+            result = self.tdx_adapter.get_real_time_data(query_symbol)
 
             if isinstance(result, str):
                 logger.warning("获取指数行情失败: %(result)s")
@@ -155,6 +165,9 @@ class TdxService:
             else:
                 result["change"] = 0.0
                 result["change_pct"] = 0.0
+
+            result["symbol"] = symbol
+            result["name"] = result.get("name") or index_name_map.get(symbol, symbol)
 
             logger.info("获取指数行情成功: %(symbol)s")
             return result

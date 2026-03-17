@@ -22,6 +22,8 @@ from typing import Dict, Optional
 import pandas as pd
 import talib as tl
 
+from web.backend.app.strategies._stock_strategies_tail import create_low_atr_growth_strategy
+
 
 class BaseStrategy(ABC):
     """策略基类"""
@@ -658,64 +660,7 @@ class VolumeLimitDownStrategy(BaseStrategy):
         return vol_ratio >= 4
 
 
-class LowATRGrowthStrategy(BaseStrategy):
-    """
-    策略10: 低ATR成长
-
-    条件：
-    1. 必须至少上市交易250日
-    2. 最近10个交易日，最高收盘价/最低收盘价>1.1
-    3. 最近10个交易日，平均每日涨跌幅(ATR)<10%
-    """
-
-    def __init__(self):
-        super().__init__(
-            name="low_atr_growth",
-            name_cn="低ATR成长",
-            description="ATR（平均真实波幅）较低但稳定增长",
-        )
-
-    def check(
-        self,
-        symbol: str,
-        data: pd.DataFrame,
-        date: Optional[datetime] = None,
-        threshold: int = 10,
-    ) -> bool:
-        end_date = date.strftime("%Y-%m-%d") if date else None
-        data = self.filter_date(data, end_date)
-
-        # 条件1: 必须至少上市交易250日
-        if len(data) < 250:
-            return False
-
-        # 计算p_change如果不存在
-        if "p_change" not in data.columns:
-            data["p_change"] = data["close"].pct_change() * 100
-
-        # 取最近10个交易日
-        data = data.tail(n=threshold)
-
-        if len(data) < threshold:
-            return False
-
-        # 找出最高和最低收盘价
-        highest_close = data["close"].max()
-        lowest_close = data["close"].min()
-
-        # 条件2: 最高/最低>1.1
-        ratio = (highest_close - lowest_close) / lowest_close
-        if ratio <= 1.1:
-            return False
-
-        # 条件3: 计算平均ATR（平均每日涨跌幅绝对值）
-        total_change = data["p_change"].abs().sum()
-        atr = total_change / len(data)
-
-        if atr > 10:
-            return False
-
-        return True
+LowATRGrowthStrategy = create_low_atr_growth_strategy(BaseStrategy)
 
 
 # 策略注册表

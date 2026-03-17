@@ -19,7 +19,7 @@ from typing import Dict, List, Optional, Union
 import numpy as np
 import structlog
 from fastapi import APIRouter, Depends, Query
-from pydantic import BaseModel, Field, constr, validator
+from pydantic import BaseModel, Field, constr, field_validator
 
 from app.api.auth import get_current_active_user
 from app.api.indicators.indicator_runtime_support import IndicatorCache, RateLimiter, indicator_cache, rate_limit
@@ -49,10 +49,11 @@ class IndicatorCalculateBatchRequest(BaseModel):
     """批量技术指标计算请求"""
 
     calculations: List[IndicatorCalculateRequest] = Field(
-        ..., min_items=1, max_items=10, description="批量计算请求列表，最多10个"
+        ..., min_length=1, max_length=10, description="批量计算请求列表，最多10个"
     )
 
-    @validator("calculations")
+    @field_validator("calculations")
+    @classmethod
     def validate_calculations(cls, v):
         """验证批量计算请求"""
         if not v:

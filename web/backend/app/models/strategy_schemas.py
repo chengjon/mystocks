@@ -11,7 +11,7 @@ from datetime import date, datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 # ============================================================================
 # 枚举类型
@@ -83,8 +83,8 @@ class StrategyConfig(BaseModel):
     updated_at: Optional[datetime] = Field(None, description="更新时间")
     tags: List[str] = Field(default_factory=list, description="标签列表")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "user_id": 1001,
                 "strategy_name": "双均线策略",
@@ -111,6 +111,7 @@ class StrategyConfig(BaseModel):
                 "tags": ["均线", "趋势跟踪"],
             }
         }
+    )
 
 
 class StrategyCreateRequest(BaseModel):
@@ -161,7 +162,7 @@ class BacktestRequest(BaseModel):
     user_id: int = Field(..., description="用户ID", ge=1)
 
     # 回测范围
-    symbols: List[str] = Field(..., description="股票代码列表", min_items=1)
+    symbols: List[str] = Field(..., description="股票代码列表", min_length=1)
     start_date: date = Field(..., description="开始日期")
     end_date: date = Field(..., description="结束日期")
 
@@ -174,15 +175,14 @@ class BacktestRequest(BaseModel):
     benchmark: Optional[str] = Field(None, description="基准指数代码")
     include_analysis: bool = Field(True, description="是否包含详细分析")
 
-    @validator("end_date")
-    def validate_date_range(cls, v, values):
-        """验证日期范围"""
-        if "start_date" in values and v < values["start_date"]:
+    @model_validator(mode="after")
+    def validate_date_range(self):
+        if self.end_date < self.start_date:
             raise ValueError("结束日期必须晚于开始日期")
-        return v
+        return self
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "strategy_id": 123,
                 "user_id": 1001,
@@ -196,6 +196,7 @@ class BacktestRequest(BaseModel):
                 "include_analysis": True,
             }
         }
+    )
 
 
 class BacktestExecuteRequest(BaseModel):
@@ -205,7 +206,7 @@ class BacktestExecuteRequest(BaseModel):
     user_id: int = Field(..., description="用户ID", ge=1)
 
     # 回测范围
-    symbols: List[str] = Field(..., description="股票代码列表", min_items=1)
+    symbols: List[str] = Field(..., description="股票代码列表", min_length=1)
     start_date: date = Field(..., description="开始日期")
     end_date: date = Field(..., description="结束日期")
 
@@ -296,8 +297,8 @@ class BacktestResult(BaseModel):
     completed_at: Optional[datetime] = Field(None, description="完成时间")
     error_message: Optional[str] = Field(None, description="错误消息")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "backtest_id": 456,
                 "strategy_id": 123,
@@ -329,6 +330,7 @@ class BacktestResult(BaseModel):
                 "completed_at": "2024-12-01T10:05:00",
             }
         }
+    )
 
 
 class BacktestResultSummary(BaseModel):
@@ -368,8 +370,8 @@ class StrategyErrorResponse(BaseModel):
     details: Optional[Dict[str, Any]] = Field(None, description="错误详情")
     timestamp: datetime = Field(default_factory=datetime.now, description="错误时间")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "error_code": "STRATEGY_NOT_FOUND",
                 "error_message": "策略不存在",
@@ -377,3 +379,4 @@ class StrategyErrorResponse(BaseModel):
                 "timestamp": "2025-11-21T10:30:00",
             }
         }
+    )

@@ -1,15 +1,7 @@
     import { ref, computed, onMounted, watch , onUnmounted } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
-    import ArtDecoHeader from '@/components/artdeco/core/ArtDecoHeader.vue'
-    import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
-    import ArtDecoIcon from '@/components/artdeco/core/ArtDecoIcon.vue'
-    import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
     import _ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
-    import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
-     import { getPageConfig, getTabConfig, isRouteName, isMonolithicConfig, type PageConfig, type MonolithicPageConfig, type TabConfig } from '@/config/pageConfig'
-     import type { MarketOverviewResponse, FundFlowResponse } from '@/api/types/generated-types'
-     import { marketService } from '@/api/services/marketService'
-     import { strategyApiService } from '@/api/services/strategyService'
+     import { getPageConfig, getTabConfig, isRouteName, isMonolithicConfig, type MonolithicPageConfig, type TabConfig } from '@/config/pageConfig'
 
 export function useArtDecoTradingManagement() {
 
@@ -210,18 +202,6 @@ export function useArtDecoTradingManagement() {
     ])
 
     // 交易信号
-    interface TradingSignal {
-        id: string
-        symbol: string
-        name: string
-        type: string
-        price: number
-        confidence: number
-        timestamp: string
-        status: string
-        [key: string]: unknown
-    }
-
     interface TradingSignalsData {
         signals?: Record<string, unknown>[]
         history?: Record<string, unknown>[]

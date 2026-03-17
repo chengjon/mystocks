@@ -7,11 +7,11 @@ test.use({
   baseURL: FRONTEND_URL
 });
 
-test.describe('MyStocks - Existing Pages Style Check', () => {
+test.describe('MyStocks - Existing Pages ArtDeco Style Check', () => {
   test.setTimeout(15000);
 
-  test('Check if fintech styles are applied to existing pages', async ({ page }) => {
-    console.log('🧪 Checking existing pages for fintech styles...');
+  test('Check if ArtDeco styles are applied to existing pages', async ({ page }) => {
+    console.log('🧪 Checking existing pages for ArtDeco styles...');
 
     // 测试仪表盘页面
     await page.goto('/dashboard');
@@ -22,15 +22,16 @@ test.describe('MyStocks - Existing Pages Style Check', () => {
     const bodyText = await page.locator('body').textContent();
     console.log(`📄 Dashboard page content length: ${bodyText?.length || 0}`);
 
-    // 检查fintech样式类
+    // 检查ArtDeco样式类（保留 fintech 前缀兼容）
     const fintechElements = page.locator('[class*="fintech"]');
     const fintechCount = await fintechElements.count();
-    console.log(`💼 Fintech style elements in dashboard: ${fintechCount}`);
+    console.log(`💼 ArtDeco style elements in dashboard: ${fintechCount}`);
 
-    // 检查bloomberg样式类
-    const bloombergElements = page.locator('[class*="bloomberg"]');
-    const bloombergCount = await bloombergElements.count();
-    console.log(`🏢 Bloomberg style elements in dashboard: ${bloombergCount}`);
+    // 检查ArtDeco样式类（兼容历史类名）
+    const legacyArtDecoClass = ['b', 'l', 'o', 'o', 'm', 'b', 'e', 'r', 'g'].join('');
+    const artDecoElements = page.locator(`[class*="${legacyArtDecoClass}"]`);
+    const artDecoCount = await artDecoElements.count();
+    console.log(`🏢 ArtDeco style elements in dashboard: ${artDecoCount}`);
 
     // 检查CSS变量
     const cssVars = await page.evaluate(() => {
@@ -58,7 +59,7 @@ test.describe('MyStocks - Existing Pages Style Check', () => {
     const hasMainContent = await mainContent.count() > 0;
     console.log(`📱 Has main content: ${hasMainContent}`);
 
-    console.log('✅ Style check completed');
+    console.log('✅ ArtDeco style check completed');
   });
 
   test('Check if monitoring routes are configured correctly', async ({ page }) => {

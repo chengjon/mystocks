@@ -20,7 +20,7 @@
 └──────────────────────────┬──────────────────────────────────┘
                            │
 ┌──────────────────────────▼──────────────────────────────────┐
-│              MyStocks FastAPI (8020)                        │
+│              MyStocks FastAPI (8000)                        │
 │   ┌─────────────────────────────────────────────────────┐   │
 │   │  /api/metrics     - Prometheus 指标导出              │   │
 │   │  /api/system/health    - 系统健康检查              │   │
@@ -35,12 +35,12 @@
 
 ### 前置要求
 - Docker 和 Docker Compose 已安装
-- MyStocks FastAPI 后端运行在 `http://localhost:8020`
+- MyStocks FastAPI 后端运行在 `http://localhost:8000`
 
 ### 启动监控栈
 
 ```bash
-cd /opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack
+cd /opt/claude/mystocks_spec/monitoring-stack
 
 # 创建数据目录
 mkdir -p data/{prometheus,grafana,alertmanager}
@@ -97,7 +97,7 @@ Prometheus 每 15 秒抓取一次指标，配置文件位于 `config/prometheus.
 scrape_configs:
   - job_name: 'mystocks-backend'
     static_configs:
-      - targets: ['host.docker.internal:8020']
+      - targets: ['host.docker.internal:8000']
     metrics_path: '/api/metrics'
 ```
 
@@ -164,7 +164,7 @@ docker-compose down
 
 ### Prometheus 无法抓取指标
 
-1. 检查后端是否运行：`curl http://localhost:8020/api/metrics`
+1. 检查后端是否运行：`curl http://localhost:8000/api/metrics`
 2. 检查 Docker 网络连接：`docker logs mystocks-prometheus`
 3. 对于 Docker Desktop，使用 `host.docker.internal`
 4. 对于 Linux，使用 `172.17.0.1` 或宿主机 IP
@@ -182,7 +182,7 @@ docker-compose down
 receivers:
   - name: 'default'
     webhook_configs:
-      - url: 'http://host.docker.internal:8020/api/alerts/webhook'
+      - url: 'http://host.docker.internal:8000/api/alerts/webhook'
 ```
 
 ## 🔗 相关链接

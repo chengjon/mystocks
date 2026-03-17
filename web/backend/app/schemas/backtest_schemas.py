@@ -11,7 +11,7 @@ Date: 2025-12-26
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.mock.unified_mock_data import get_backtest_data
 
@@ -39,8 +39,7 @@ class BacktestRequest(BaseModel):
     initial_capital: float = Field(..., description="Initial capital for the backtest", gt=0)
     parameters: Dict[str, Any] = Field(default_factory=dict, description="Strategy parameters")
 
-    class Config:
-        json_schema_extra = {"example": _get_request_example()}
+    model_config = ConfigDict(json_schema_extra={"example": _get_request_example()})
 
 
 class BacktestTrade(BaseModel):
@@ -83,5 +82,4 @@ class BacktestResponse(BaseModel):
     trades: List[BacktestTrade] = Field(default_factory=list, description="List of trades executed")
     error_message: Optional[str] = Field(None, description="Error message if failed")
 
-    class Config:
-        json_schema_extra = {"example": get_backtest_data()}
+    model_config = ConfigDict(json_schema_extra={"example": get_backtest_data()})

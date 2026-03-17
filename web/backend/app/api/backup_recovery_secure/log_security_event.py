@@ -24,6 +24,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
 
+from app.api.backup_recovery_secure._integrity_verification import verify_backup_integrity_impl
 from app.api.backup_recovery_secure.backup_security_support import (
     check_backup_rate_limit,
     check_recovery_rate_limit,
@@ -39,7 +40,6 @@ from app.models.backup_schemas import (
     BackupMetadata,
     CleanupBackupsRequest,
     CleanupResult,
-    IntegrityVerificationResult,
     PostgreSQLFullBackupRequest,
     PostgreSQLFullRecoveryRequest,
     RecoveryMetadata,
@@ -670,79 +670,4 @@ async def get_scheduled_jobs(current_user: User = Depends(get_current_user)):
 @router.get("/integrity/verify/{backup_id}")
 async def verify_backup_integrity(backup_id: str, current_user: User = Depends(get_current_user)):
     """验证备份完整性 [MODERATE - 需要认证]"""
-    try:
-        verify_backup_permission(current_user)
-
-        # 安全验证备份ID格式
-        import re
-
-        if not re.match(r"^[a-zA-Z0-9_-]+$", backup_id):
-            log_security_event(
-                "INVALID_BACKUP_ID", current_user, "verify_backup_integrity", {"backup_id": backup_id}, success=False
-            )
-            return error_response(message="无效的备份ID格式", error_code=ErrorCode.INVALID_PARAMETER)
-
-        log_security_event("INTEGRITY_CHECK_START", current_user, "verify_backup_integrity", {"backup_id": backup_id})
-
-        # 加载元数据
-        metadata = backup_manager._load_metadata(backup_id)
-
-        if not metadata:
-            log_security_event(
-                "BACKUP_NOT_FOUND", current_user, "verify_backup_integrity", {"backup_id": backup_id}, success=False
-            )
-            return error_response(message=f"备份文件不存在: {backup_id}", error_code=ErrorCode.RESOURCE_NOT_FOUND)
-
-        # 验证恢复后的数据完整性
-        if metadata["database"] == "tdengine":
-            is_valid, details = integrity_checker.verify_tdengine_recovery(
-                metadata,
-                metadata["total_rows"],
-            )
-        elif metadata["database"] == "postgresql":
-            is_valid, details = integrity_checker.verify_postgresql_recovery(
-                metadata,
-                metadata["total_rows"],
-            )
-        else:
-            return error_response(
-                message=f"不支持的数据库类型: {metadata['database']}", error_code=ErrorCode.INVALID_PARAMETER
-            )
-
-        # 生成报告
-        report_file = integrity_checker.generate_integrity_report(
-            backup_id,
-            {"is_valid": is_valid, **details},
-        )
-
-        integrity_result = IntegrityVerificationResult(
-            backup_id=backup_id,
-            is_valid=is_valid,
-            verification_details=details,
-            report_file_path=str(report_file),
-            verification_time=datetime.now(timezone.utc).isoformat(),
-        )
-
-        log_security_event(
-            "INTEGRITY_CHECK_COMPLETE",
-            current_user,
-            "verify_backup_integrity",
-            {"backup_id": backup_id, "is_valid": is_valid, "verification_details": details},
-            success=is_valid,
-        )
-
-        return success_response(data=integrity_result.model_dump(), message="备份完整性验证完成")
-
-    except Exception as e:
-        log_security_event(
-            "INTEGRITY_CHECK_ERROR",
-            current_user,
-            "verify_backup_integrity",
-            {"error": str(e), "backup_id": backup_id},
-            success=False,
-        )
-
-        return error_response(
-            message="备份完整性验证失败", error_code=ErrorCode.INTERNAL_ERROR, details={"backup_id": backup_id}
-        )
-
+    return await verify_backup_integrity_impl(backup_id, current_user, backup_manager, integrity_checker)

@@ -204,7 +204,7 @@
 
     onBeforeUnmount(() => {
         if (chartInstance) {
-            (chartInstance as any).dispose()
+            chartInstance.dispose()
         }
     })
 </script>

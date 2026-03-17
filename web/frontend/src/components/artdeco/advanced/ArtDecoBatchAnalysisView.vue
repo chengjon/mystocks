@@ -347,7 +347,7 @@
     import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
 import { useArtDecoBatchAnalysisView } from './composables/useArtDecoBatchAnalysisView'
 
-const { autoRefresh, resultsFilter, resultsSort, batchData, progressData, resultsData, reportData, totalTasks, completedTasks, runningTasks, pendingTasks, failedTasks, overallProgress, avgConfidence, signalCoverage, dataQuality, analysisDepth, batchStartTime, batchEndTime, totalDuration, avgTaskDuration, buySignals, sellSignals, holdSignals, highConfidenceSignals, taskStatusData, analysisTypeData, filteredResults, reportInsights, filterOptions, sortOptions, getTotalTasks, getAvgProcessingTime, getSuccessRate, getTotalDataSize, getProgressClass, getResultClass, getSignalClass, getSignalText, getAnalysisTypeText, getQualityClass, formatTime, formatDuration, refreshProgress, exportReport, generateReport, saveReport, shareReport, scheduleReport, refreshTimer, startAutoRefresh, stopAutoRefresh } = useArtDecoBatchAnalysisView()
+const { autoRefresh, resultsFilter, resultsSort, totalTasks, completedTasks, runningTasks, pendingTasks, failedTasks, overallProgress, avgConfidence, signalCoverage, dataQuality, analysisDepth, batchStartTime, batchEndTime, totalDuration, avgTaskDuration, buySignals, sellSignals, holdSignals, highConfidenceSignals, taskStatusData, analysisTypeData, filteredResults, reportInsights, filterOptions, sortOptions, getTotalTasks, getAvgProcessingTime, getSuccessRate, getTotalDataSize, getProgressClass, getResultClass, getSignalClass, getSignalText, getAnalysisTypeText, getQualityClass, formatTime, formatDuration, refreshProgress, exportReport, generateReport, saveReport, shareReport, scheduleReport } = useArtDecoBatchAnalysisView()
 </script>
 
 <style scoped lang="scss">

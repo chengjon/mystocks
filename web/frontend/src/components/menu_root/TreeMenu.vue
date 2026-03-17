@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ARTDECO_MENU_ENHANCED, type MenuItem } from '@/layouts/MenuConfig'
+import { ARTDECO_MENU_ENHANCED } from '@/layouts/MenuConfig'
 
 const route = useRoute()
 const router = useRouter()

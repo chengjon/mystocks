@@ -252,7 +252,6 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
     import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
     import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
     import ArtDecoSelect from '@/components/artdeco/base/ArtDecoSelect.vue'
@@ -260,262 +259,40 @@
     import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
     import ArtDecoSlider from '@/components/artdeco/business/ArtDecoSlider.vue'
 
-    type SignalType = 'buy' | 'sell'
-    type SignalResult = 'profit' | 'loss' | 'pending'
+    import {
+        useArtDecoTradingSignalsViewModel,
+        type ArtDecoTradingSignalsProps
+    } from './composables/useArtDecoTradingSignalsViewModel'
 
-    interface TradingSignal {
-        id: string | number
-        type: SignalType
-        strength: number
-        symbol: string
-        name: string
-        reason: string
-        price: string
-        stopLoss: string
-        target: string
-        timestamp: string
-        [key: string]: unknown
-    }
+    const props = defineProps<ArtDecoTradingSignalsProps>()
 
-    interface SignalHistoryItem {
-        id: string | number
-        symbol: string
-        type: SignalType
-        strength: number
-        result: SignalResult
-        timestamp: string
-        holdingPeriod?: number
-        [key: string]: unknown
-    }
-
-    interface TradingSignalsData {
-        signals?: Record<string, unknown>[]
-        history?: Record<string, unknown>[]
-        [key: string]: unknown
-    }
-
-    interface Props {
-        data: TradingSignalsData
-        symbol?: string
-        loading?: boolean
-    }
-
-    const props = defineProps<Props>()
-
-    // 响应式数据
-    const signalFilter = ref('all')
-    const autoRefresh = ref(true)
-    const historyPeriod = ref('1d')
-    const minSignalStrength = ref(70)
-    const confirmationPeriod = ref('1h')
-    const stopLossRatio = ref(3)
-    const targetProfitRatio = ref(8)
-
-    const enabledSignalTypes = ref<Record<string, boolean>>({
-        ma_cross: true,
-        macd_signal: true,
-        rsi_divergence: true,
-        bollinger_break: true,
-        volume_surge: true,
-        pattern_recognition: false
-    })
-
-    // 计算属性
-    const tradingSignals = computed<TradingSignal[]>(() => {
-        const signals = props.data?.signals || []
-        return signals.map((signal, index) => {
-            const item = signal as Record<string, unknown>
-            const rawType = item.type
-            const type: SignalType = rawType === 'sell' ? 'sell' : 'buy'
-
-            return {
-                id: (item.id as string | number | undefined) ?? index,
-                type,
-                strength: Number(item.strength || 0),
-                symbol: String(item.symbol || ''),
-                name: String(item.name || ''),
-                reason: String(item.reason || ''),
-                price: String(item.price || '--'),
-                stopLoss: String(item.stopLoss || '--'),
-                target: String(item.target || '--'),
-                timestamp: String(item.timestamp || '')
-            }
-        })
-    })
-
-    const filteredSignals = computed<TradingSignal[]>(() => {
-        if (signalFilter.value === 'all') return tradingSignals.value
-        if (signalFilter.value === 'buy') return tradingSignals.value.filter(s => s.type === 'buy')
-        if (signalFilter.value === 'sell') return tradingSignals.value.filter(s => s.type === 'sell')
-        return tradingSignals.value.filter(s => s.strength >= 80)
-    })
-
-    const signalHistory = computed<SignalHistoryItem[]>(() => {
-        const history = props.data?.history || []
-        return history.map((record, index) => {
-            const item = record as Record<string, unknown>
-            const rawType = item.type
-            const type: SignalType = rawType === 'sell' ? 'sell' : 'buy'
-            const rawResult = item.result
-            const result: SignalResult = rawResult === 'profit' || rawResult === 'loss' ? rawResult : 'pending'
-
-            return {
-                id: (item.id as string | number | undefined) ?? index,
-                symbol: String(item.symbol || ''),
-                type,
-                strength: Number(item.strength || 0),
-                result,
-                timestamp: String(item.timestamp || ''),
-                holdingPeriod:
-                    typeof item.holdingPeriod === 'number'
-                        ? item.holdingPeriod
-                        : item.holdingPeriod
-                          ? Number(item.holdingPeriod)
-                          : undefined
-            }
-        })
-    })
-
-    // 配置选项
-    const signalFilterOptions = [
-        { label: '全部信号', value: 'all' },
-        { label: '买入信号', value: 'buy' },
-        { label: '卖出信号', value: 'sell' },
-        { label: '强信号', value: 'strong' }
-    ]
-
-    const historyPeriodOptions = [
-        { label: '1天', value: '1d' },
-        { label: '3天', value: '3d' },
-        { label: '1周', value: '1w' },
-        { label: '1月', value: '1M' }
-    ]
-
-    const confirmationPeriodOptions = [
-        { label: '5分钟', value: '5m' },
-        { label: '15分钟', value: '15m' },
-        { label: '1小时', value: '1h' },
-        { label: '4小时', value: '4h' }
-    ]
-
-    const availableSignalTypes = [
-        { key: 'ma_cross', label: '均线交叉', description: '移动平均线金叉/死叉信号' },
-        { key: 'macd_signal', label: 'MACD信号', description: 'MACD指标买卖信号' },
-        { key: 'rsi_divergence', label: 'RSI背离', description: 'RSI指标与价格背离信号' },
-        { key: 'bollinger_break', label: '布林带突破', description: '价格突破布林带上下轨' },
-        { key: 'volume_surge', label: '成交量激增', description: '成交量异常放大信号' },
-        { key: 'pattern_recognition', label: '形态识别', description: '经典技术形态识别' }
-    ]
-
-    // 辅助函数
-    const getBuySignalsCount = (): string => {
-        return tradingSignals.value.filter((s: TradingSignal) => s.type === 'buy').length.toString()
-    }
-
-    const getSellSignalsCount = (): string => {
-        return tradingSignals.value.filter((s: TradingSignal) => s.type === 'sell').length.toString()
-    }
-
-    const getSuccessRate = (): string => {
-        const history = signalHistory.value
-        if (history.length === 0) return 'N/A'
-
-        const successful = history.filter((h: SignalHistoryItem) => h.result === 'profit').length
-        const total = history.filter((h: SignalHistoryItem) => h.result !== 'pending').length
-
-        if (total === 0) return 'N/A'
-        return `${((successful / total) * 100).toFixed(1)}%`
-    }
-
-    const getAvgHoldingPeriod = (): string => {
-        const completedTrades = signalHistory.value.filter((h: SignalHistoryItem) => h.result !== 'pending' && h.holdingPeriod)
-        if (completedTrades.length === 0) return 'N/A'
-
-        const totalPeriod = completedTrades.reduce((sum: number, trade: SignalHistoryItem) => sum + (trade.holdingPeriod || 0), 0)
-        const avgPeriod = totalPeriod / completedTrades.length
-
-        if (avgPeriod < 60) return `${avgPeriod.toFixed(0)}分钟`
-        if (avgPeriod < 1440) return `${(avgPeriod / 60).toFixed(1)}小时`
-        return `${(avgPeriod / 1440).toFixed(1)}天`
-    }
-
-    const getSignalClass = (signal: TradingSignal): string => {
-        return `${signal.type} strength-${signal.strength >= 80 ? 'high' : signal.strength >= 60 ? 'medium' : 'low'}`
-    }
-
-    const getSignalTypeText = (type: string): string => {
-        return type === 'buy' ? '买入' : '卖出'
-    }
-
-    const getStrengthClass = (strength: number): string => {
-        if (strength >= 80) return 'high'
-        if (strength >= 60) return 'medium'
-        return 'low'
-    }
-
-    const getResultClass = (result: string): string => {
-        if (result === 'profit') return 'profit'
-        if (result === 'loss') return 'loss'
-        return 'pending'
-    }
-
-    const getResultText = (result: string): string => {
-        if (result === 'profit') return '盈利'
-        if (result === 'loss') return '亏损'
-        return '待定'
-    }
-
-    const formatTime = (timestamp: string): string => {
-        return new Date(timestamp).toLocaleString('zh-CN', {
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        })
-    }
-
-    const handleSignalAction = (signal: TradingSignal, action: string) => {
-        // 处理信号操作
-        console.log(`Signal action: ${action} for ${signal.symbol}`)
-        // 这里可以调用API执行相应的操作
-    }
-
-    // 自动刷新定时器
-    let refreshTimer: number | null = null
-
-    const startAutoRefresh = () => {
-        if (autoRefresh.value && !refreshTimer) {
-            refreshTimer = setInterval(() => {
-                // 触发数据刷新
-                console.log('Auto refreshing trading signals...')
-            }, 5000) as unknown as number
-        }
-    }
-
-    const stopAutoRefresh = () => {
-        if (refreshTimer) {
-            clearInterval(refreshTimer)
-            refreshTimer = null
-        }
-    }
-
-    // 生命周期
-    onMounted(() => {
-        startAutoRefresh()
-    })
-
-    onUnmounted(() => {
-        stopAutoRefresh()
-    })
-
-    // 监听自动刷新变化
-    watch(autoRefresh, newValue => {
-        if (newValue) {
-            startAutoRefresh()
-        } else {
-            stopAutoRefresh()
-        }
-    })
+    const {
+        signalFilter,
+        autoRefresh,
+        historyPeriod,
+        minSignalStrength,
+        confirmationPeriod,
+        stopLossRatio,
+        targetProfitRatio,
+        enabledSignalTypes,
+        filteredSignals,
+        signalHistory,
+        signalFilterOptions,
+        historyPeriodOptions,
+        confirmationPeriodOptions,
+        availableSignalTypes,
+        getBuySignalsCount,
+        getSellSignalsCount,
+        getSuccessRate,
+        getAvgHoldingPeriod,
+        getSignalClass,
+        getSignalTypeText,
+        getStrengthClass,
+        getResultClass,
+        getResultText,
+        formatTime,
+        handleSignalAction
+    } = useArtDecoTradingSignalsViewModel(props)
 </script>
 
 <style scoped lang="scss">

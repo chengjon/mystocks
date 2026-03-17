@@ -5,13 +5,13 @@
 from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, EmailStr, Field, constr, validator
+from pydantic import BaseModel, EmailStr, Field, constr, field_validator
 
 
 class SendEmailRequest(BaseModel):
     """发送邮件请求 - Phase 4C Enhanced"""
 
-    to_addresses: List[EmailStr] = Field(..., min_items=1, max_items=100, description="收件人列表，最多100个邮箱地址")
+    to_addresses: List[EmailStr] = Field(..., min_length=1, max_length=100, description="收件人列表，最多100个邮箱地址")
     subject: constr(min_length=1, max_length=200, strip_whitespace=True) = Field(..., description="邮件主题，1-200字符")
     content: constr(min_length=1, max_length=100000, strip_whitespace=True) = Field(
         ..., description="邮件内容，1-100000字符"
@@ -20,7 +20,8 @@ class SendEmailRequest(BaseModel):
     priority: str = Field("normal", pattern="^(low|normal|high|urgent)$", description="邮件优先级")
     scheduled_at: Optional[datetime] = Field(None, description="定时发送时间（UTC），为空则立即发送")
 
-    @validator("to_addresses")
+    @field_validator("to_addresses")
+    @classmethod
     def validate_recipients(cls, value):
         """验证收件人列表"""
         if not value:
@@ -31,7 +32,8 @@ class SendEmailRequest(BaseModel):
 
         return value
 
-    @validator("scheduled_at")
+    @field_validator("scheduled_at")
+    @classmethod
     def validate_schedule_time(cls, value):
         """验证定时发送时间"""
         if value and value <= datetime.now(timezone.utc):
@@ -56,12 +58,13 @@ class SendNewsletterRequest(BaseModel):
     user_email: EmailStr = Field(..., description="用户邮箱")
     user_name: constr(min_length=1, max_length=100, strip_whitespace=True) = Field(..., description="用户姓名")
     watchlist_symbols: List[constr(min_length=1, max_length=20, strip_whitespace=True)] = Field(
-        ..., min_items=1, max_items=50, description="自选股列表，1-50个股票代码"
+        ..., min_length=1, max_length=50, description="自选股列表，1-50个股票代码"
     )
-    news_data: List[Dict] = Field(..., min_items=1, max_items=100, description="新闻数据，1-100条新闻")
+    news_data: List[Dict] = Field(..., min_length=1, max_length=100, description="新闻数据，1-100条新闻")
     newsletter_type: str = Field("daily", pattern="^(daily|weekly|monthly)$", description="简报类型")
 
-    @validator("watchlist_symbols")
+    @field_validator("watchlist_symbols")
+    @classmethod
     def validate_symbols(cls, value):
         """验证股票代码列表"""
         if not value:

@@ -8,10 +8,10 @@
  * @updated 2026-01-20
  */
 
-import { ref, reactive } from 'vue'
-import type { MenuItem } from '@/layouts/MenuConfig'
-import { ARTDECO_MENU_ENHANCED } from '@/layouts/MenuConfig'
-import { API_BASE_URL, WS_BASE_URL } from '@/config/runtime-endpoints'
+import { ref } from 'vue'
+import type { MenuItem } from '@/layouts/MenuConfig.ts'
+import { ARTDECO_MENU_ENHANCED } from '@/layouts/MenuConfig.ts'
+import { API_BASE_URL, WS_BASE_URL } from '@/config/runtime-endpoints.ts'
 
 // ========== 类型定义 ==========
 export interface MenuApiResponse {
@@ -352,14 +352,14 @@ export class MenuService {
   /**
    * 获取加载状态
    */
-  isLoading() {
+  isLoading(): boolean {
     return this.loading.value
   }
 
   /**
    * 获取错误信息
    */
-  getError() {
+  getError(): string | null {
     return this.error.value
   }
 }
@@ -370,8 +370,19 @@ export const menuService = new MenuService(ARTDECO_MENU_ENHANCED)
 // ========== 导出WebSocket管理器 ==========
 export { wsManager }
 
+export interface MenuServiceBindings {
+  menus: ReturnType<MenuService['getMenus']>
+  loading: MenuService['loading']
+  error: MenuService['error']
+  getMenuData: MenuService['getMenuData']
+  getBatchMenuData: MenuService['getBatchMenuData']
+  subscribeToLiveUpdates: MenuService['subscribeToLiveUpdates']
+  getLiveUpdateMenus: MenuService['getLiveUpdateMenus']
+  clearCache: MenuService['clearCache']
+}
+
 // ========== 组合式API函数 ==========
-export function useMenuService() {
+export function useMenuService(): MenuServiceBindings {
   return {
     menus: menuService.getMenus(),
     loading: menuService.loading,  // Return Ref<boolean> instead of value

@@ -426,10 +426,6 @@
         timeRange,
         showCurrentPrice,
         distributionCanvas,
-        chipDistribution,
-        costAnalysis,
-        profitAnalysis,
-        stabilityAnalysis,
         currentPrice,
         distributionTypeOptions,
         timeRangeOptions,
@@ -460,8 +456,7 @@
         getStabilityDesc,
         getTurnoverStabilityClass,
         getTurnoverStabilityDesc,
-        formatDate,
-        renderDistributionChart
+        formatDate
     } = useArtDecoChipDistribution({
         data: toRef(props, 'data'),
         symbol: computed(() => props.symbol || ''),

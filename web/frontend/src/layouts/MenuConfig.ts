@@ -169,7 +169,8 @@ export const DEALING_ROOM_CONFIG: MenuItem = {
   path: '/dashboard',
   label: '交易室',
   icon: 'Home',
-  businessKey: 'core.dealing_room'
+  businessKey: 'core.dealing_room',
+  apiMethod: 'GET'
 }
 
 export const MENU_CONFIG_MAP = {

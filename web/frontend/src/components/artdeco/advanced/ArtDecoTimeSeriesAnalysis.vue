@@ -389,10 +389,7 @@
         predictionMethod,
         predictionHorizon,
         chartCanvas,
-        timeSeriesData,
         inflectionPoints: rawInflectionPoints,
-        periodicityData,
-        predictionData,
         chartTypeOptions,
         analysisTypeOptions,
         predictionMethodOptions,
@@ -413,8 +410,7 @@
         getPredictionAccuracy,
         getPredictionInterval,
         getModelConfidence,
-        predictionInsights: rawPredictionInsights,
-        renderChart
+        predictionInsights: rawPredictionInsights
     } = useArtDecoTimeSeriesAnalysis({
         data: toRef(props, 'data'),
         symbol: computed(() => props.symbol || ''),

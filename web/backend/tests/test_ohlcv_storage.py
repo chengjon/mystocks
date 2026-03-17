@@ -36,8 +36,8 @@ class TestOHLCVStorageInitialization:
 
     def test_storage_with_custom_params(self):
         """Test storage with custom parameters"""
-        storage = OHLCVStorage(host="192.168.1.1", port=5433, user="admin", database="testdb")
-        assert storage.host == "192.168.1.1"
+        storage = OHLCVStorage(host="example.local", port=5433, user="admin", database="testdb")
+        assert storage.host == "example.local"
         assert storage.port == 5433
         assert storage.user == "admin"
         assert storage.database == "testdb"

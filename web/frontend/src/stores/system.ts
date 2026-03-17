@@ -2,7 +2,7 @@
 // 负责监控面板、系统设置、系统健康状态等系统相关数据
 
 import { defineStore } from 'pinia'
-import { ref, reactive } from 'vue'
+import { reactive } from 'vue'
 import { tradingApiManager } from '@/services/TradingApiManager'
 import type {
     MonitoringDashboardData,

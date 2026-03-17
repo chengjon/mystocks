@@ -27,9 +27,11 @@
 </script>
 
 <style scoped lang="scss">
+    @import '@/styles/artdeco-tokens';
+
     .attribution-controls {
         display: flex;
-        gap: 12px;
-        margin-bottom: 16px;
+        gap: calc(var(--artdeco-spacing-px) * 12);
+        margin-bottom: var(--artdeco-spacing-4);
     }
 </style>

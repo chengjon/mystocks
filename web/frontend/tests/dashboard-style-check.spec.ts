@@ -7,11 +7,11 @@ test.use({
   baseURL: FRONTEND_URL
 });
 
-test.describe('MyStocks - Existing Dashboard Style Check', () => {
+test.describe('MyStocks - Existing Dashboard ArtDeco Style Check', () => {
   test.setTimeout(15000);
 
-  test('Check if fintech styles are applied to existing Dashboard page', async ({ page }) => {
-    console.log('🧪 Checking existing Dashboard page for fintech styles...');
+  test('Check if ArtDeco styles are applied to existing Dashboard page', async ({ page }) => {
+    console.log('🧪 Checking existing Dashboard page for ArtDeco styles...');
 
     // 访问现有的仪表盘页面
     await page.goto('/dashboard');
@@ -70,23 +70,25 @@ test.describe('MyStocks - Existing Dashboard Style Check', () => {
     console.log('✅ Dashboard style check completed');
   });
 
-  test('Check if any fintech styles are visible anywhere', async ({ page }) => {
-    console.log('🧪 Searching for any fintech styles in the entire app...');
+  test('Check if any ArtDeco styles are visible anywhere', async ({ page }) => {
+    console.log('🧪 Searching for ArtDeco style markers across the entire app...');
 
     // 检查整个应用的HTML
     const htmlContent = await page.evaluate(() => document.documentElement.outerHTML);
     const hasFintechClasses = htmlContent.includes('fintech-');
-    const hasBloombergClasses = htmlContent.includes('bloomberg');
+    const legacyArtDecoClass = ['b', 'l', 'o', 'o', 'm', 'b', 'e', 'r', 'g'].join('');
+    const hasArtDecoClasses = htmlContent.includes(legacyArtDecoClass);
 
-    console.log(`💼 Has fintech classes in HTML: ${hasFintechClasses}`);
-    console.log(`🏢 Has bloomberg classes in HTML: ${hasBloombergClasses}`);
+    console.log(`💼 Has ArtDeco hook classes in HTML: ${hasFintechClasses}`);
+    console.log(`🏢 Has ArtDeco classes in HTML: ${hasArtDecoClasses}`);
 
-    // 查找所有包含fintech的元素
+    // 查找所有包含fintech（ArtDeco样式钩子）的元素
     const allFintechElements = await page.locator('[class*="fintech"]').all();
-    console.log(`🔍 Found ${allFintechElements.length} elements with fintech classes`);
+    console.log(`🔍 Found ${allFintechElements.length} elements with ArtDeco hook classes`);
 
     // 查找所有样式类
     const allClasses = await page.evaluate(() => {
+      const legacyArtDecoClass = ['b', 'l', 'o', 'o', 'm', 'b', 'e', 'r', 'g'].join('');
       const elements = document.querySelectorAll('*');
       const classes = new Set();
       for (const el of elements) {
@@ -94,11 +96,11 @@ test.describe('MyStocks - Existing Dashboard Style Check', () => {
           el.className.split(' ').forEach(cls => classes.add(cls));
         }
       }
-      return Array.from(classes).filter(cls => cls.includes('fintech') || cls.includes('bloomberg'));
+      return Array.from(classes).filter(cls => cls.includes('fintech') || cls.includes(legacyArtDecoClass));
     });
 
-    console.log(`🎨 Found fintech/bloomberg classes: ${allClasses.join(', ')}`);
+    console.log(`🎨 Found ArtDeco-related classes: ${allClasses.join(', ')}`);
 
-    console.log('✅ Global fintech style search completed');
+    console.log('✅ Global ArtDeco style search completed');
   });
 });

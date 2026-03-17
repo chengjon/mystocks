@@ -441,7 +441,47 @@
 import HealthRadarChart from '@/components/chart/HealthRadarChart.vue'
 import { usePortfolioManagement } from './composables/usePortfolioManagement'
 
-const { loading, activeTab, watchlists, selectedWatchlist, watchlistStocks, portfolioSummary, radarScores, allAlerts, alertSummary, rebalanceSuggestions, createDialogVisible, addStockDialogVisible, healthDetailVisible, editingWatchlist, currentStock, currentStockHealth, watchlistForm, stockForm, riskTolerance, API_BASE, loadWatchlists, res, data, avgScore, selectWatchlist, loadWatchlistDetails, res, data, loadPortfolioAnalysis, showCreateWatchlist, handleCreateWatchlist, url, method, res, data, deleteWatchlist, res, data, manageStocks, showAddStock, handleAddStock, res, data, removeStock, res, data, calculateHealth, res, data, getHealthColor, getRiskColor, getAlertColor, total, getTypeTagType, types, getTypeText, texts, getScoreClass, getProgressColor, getPriorityTagType, types, getAlertType, types, getAlertTypeText, texts, getHealthResultIcon, getScoresTableData, labels } = usePortfolioManagement()
+const {
+  loading,
+  activeTab,
+  watchlists,
+  selectedWatchlist,
+  watchlistStocks,
+  portfolioSummary,
+  radarScores,
+  allAlerts,
+  alertSummary,
+  rebalanceSuggestions,
+  createDialogVisible,
+  addStockDialogVisible,
+  healthDetailVisible,
+  editingWatchlist,
+  currentStock,
+  currentStockHealth,
+  watchlistForm,
+  stockForm,
+  riskTolerance,
+  showCreateWatchlist,
+  handleCreateWatchlist,
+  deleteWatchlist,
+  manageStocks,
+  showAddStock,
+  handleAddStock,
+  removeStock,
+  calculateHealth,
+  getHealthColor,
+  getRiskColor,
+  getAlertColor,
+  getTypeTagType,
+  getTypeText,
+  getScoreClass,
+  getProgressColor,
+  getPriorityTagType,
+  getAlertType,
+  getAlertTypeText,
+  getHealthResultIcon,
+  getScoresTableData
+} = usePortfolioManagement()
 </script>
 
 <style scoped lang="scss">

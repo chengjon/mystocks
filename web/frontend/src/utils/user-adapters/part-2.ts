@@ -10,7 +10,7 @@ import type {
   UserProfileResponse,
   WatchlistResponse,
   NotificationResponse
-} from '@/api/types/generated-types'
+} from '@/api/types/generated-types.ts'
 
 export class UserAdapter {
   /**

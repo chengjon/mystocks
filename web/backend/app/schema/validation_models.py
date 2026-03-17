@@ -68,8 +68,7 @@ class MarketDataQueryModel(BaseModel):
         default="daily",
         pattern=r"^(1m|5m|15m|30m|hourly|daily|weekly|monthly)$",
         description=(
-            "时间间隔: 1m(1分钟), 5m(5分钟), 15m(15分钟), 30m(30分钟), "
-            "hourly(小时), daily(日), weekly(周), monthly(月)"
+            "时间间隔: 1m(1分钟), 5m(5分钟), 15m(15分钟), 30m(30分钟), hourly(小时), daily(日), weekly(周), monthly(月)"
         ),
     )
 
@@ -91,8 +90,8 @@ class TechnicalIndicatorQueryModel(BaseModel):
     symbol: str = Field(..., min_length=1, max_length=20, description="股票代码")
     indicators: List[str] = Field(
         ...,
-        min_items=1,
-        max_items=20,
+        min_length=1,
+        max_length=20,
         description="技术指标列表（如: MA, RSI, MACD等）",
     )
     period: Optional[int] = Field(default=20, ge=1, le=500, description="周期长度")

@@ -657,3 +657,34 @@ try {
 - Files: (none)
 - Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/24633564-5346-4abf-afa7-f297681c2759.jsonl`
 
+
+## [AUTO] 2026-03-07 19:30:28 Session 4c528131-30d2-4005-98e6-14535d2ec75e
+- Completion: true
+- Summary: 继续完成了上次的“前端测试 TS 诊断修复”收尾验证，结果如下：
+- Model: `claude-sonnet-4-6`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/4c528131-30d2-4005-98e6-14535d2ec75e.jsonl`
+
+
+## [AUTO] 2026-03-07 20:07:35 Session 4c528131-30d2-4005-98e6-14535d2ec75e
+- Completion: true
+- Summary: 继续完成了，当前状态如下：
+- Model: `claude-sonnet-4-6`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/4c528131-30d2-4005-98e6-14535d2ec75e.jsonl`
+
+
+## [AUTO] 2026-03-07 20:15:05 Session 4c528131-30d2-4005-98e6-14535d2ec75e
+- Completion: true
+- Summary: 已完成你上一个任务，结果如下：
+- Model: `claude-sonnet-4-6`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/4c528131-30d2-4005-98e6-14535d2ec75e.jsonl`
+
+
+## [MANUAL] 2026-03-08 23:33:10 Session interactive-2026-03-08-dealing-room-governance
+- Completion: true
+- Summary: 已完成首页 `dealing-room` 语义收口、旧 `/dashboard` 兼容跳转、前端冒烟校验与治理文档同步。关键结果：`build:no-types` 通过、PM2 `mystocks-backend`/`mystocks-frontend` 在线、E2E smoke `15/15` 通过；技术债基线更新为 `frontend_type_errors=90`，并将 E2E 门禁文案改为按实际执行套件报告。
+- Model: `claude-sonnet-4-6`
+- Files: `src/router/index.ts`, `src/router/homeRoute.ts`, `src/config/pageConfig.ts`, `../../scripts/dev/tools/generate-page-config.js`, `../backend/app/services/email_notification_service.py`, `../../AGENTS.md`, `../../docs/guides/technical-debt-governance-charter-v1.md`, `../../reports/analysis/tech-debt-baseline.json`, `../../docs/guides/MULTI_CLI_PROMPT_STRATEGIES.md`
+- Transcript: `N/A (interactive session summary recorded manually)`

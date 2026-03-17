@@ -172,7 +172,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed , onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 // ArtDeco component imports
 import {
   ArtDecoHeader,
@@ -344,11 +344,6 @@ const realtimeUpdates = ref([
     isNew: false
   }
 ])
-
-// Computed properties
-const activeUpdates = computed(() =>
-  realtimeUpdates.value.filter(update => update.isNew)
-)
 
 // Methods
 const handleFilterChange = (newFilters: unknown) => {

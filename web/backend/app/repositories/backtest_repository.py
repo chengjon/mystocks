@@ -24,8 +24,7 @@ from sqlalchemy import (
     UniqueConstraint,
 )
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session, relationship
+from sqlalchemy.orm import Session, declarative_base, relationship
 
 from app.models.strategy_schemas import (
     BacktestExecuteRequest,

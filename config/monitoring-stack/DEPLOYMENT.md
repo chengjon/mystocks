@@ -58,7 +58,7 @@ grafana/tempo       latest    xxxxx
 ### 步骤 3: 运行部署脚本
 
 ```bash
-cd /opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack
+cd /opt/claude/mystocks_phase6_monitoring/monitoring-stack
 ./deploy-loki-tempo.sh
 ```
 
@@ -128,9 +128,9 @@ URL: http://localhost:3000
 
 ```bash
 # 触发一些 API 请求
-curl http://localhost:8020/health
-curl http://localhost:8020/api/v1/market/symbols
-curl http://localhost:8020/api/system/health
+curl http://localhost:8000/health
+curl http://localhost:8000/api/v1/market/symbols
+curl http://localhost:8000/api/system/health
 ```
 
 ### 2. 在 Prometheus 中查询指标

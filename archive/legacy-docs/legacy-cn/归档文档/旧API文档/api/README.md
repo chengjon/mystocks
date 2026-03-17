@@ -325,7 +325,7 @@ X-CSRF-Token: abc123...
 
 ```http
 GET /api/market/realtime/000001
-Authorization: Bearer eyJhbGc...
+Authorization: Bearer <jwt-token>
 ```
 
 ---

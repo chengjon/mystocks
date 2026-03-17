@@ -5,16 +5,16 @@
  * Implements fallback to mock data on API failures.
  */
 
-import type { UnifiedResponse } from '../types/common';
+import type { UnifiedResponse } from '../types/common.ts';
 import type {
   StrategyVM as Strategy,
   StrategyPerformanceVM as StrategyPerformance,
   BacktestRequestVM as BacktestTask,
   BacktestResultVM,
   StrategyListResponseVM as StrategyListResponse,
-} from '../types/extensions';
-import type { BacktestRequest } from '../types/strategy';
-import { mockStrategyList, mockStrategyDetail } from '@/mock/strategyMock';
+} from '../types/extensions/index.ts';
+import type { BacktestRequest } from '../types/strategy.ts';
+import { mockStrategyList, mockStrategyDetail } from '@/mock/strategyMock.ts';
 
 export class StrategyAdapter {
   /**
@@ -32,7 +32,10 @@ export class StrategyAdapter {
     }
 
     try {
-      return (apiResponse.data.strategies || []).map((s: unknown) => this.adaptStrategy(s));
+      const strategies = Array.isArray(apiResponse.data.items)
+        ? apiResponse.data.items
+        : (apiResponse.data.strategies || []);
+      return strategies.map((s: unknown) => this.adaptStrategy(s));
     } catch (error) {
       console.error('[StrategyAdapter] Failed to adapt strategy list:', error);
       return mockStrategyList.strategies as unknown as Strategy[];
@@ -47,21 +50,29 @@ export class StrategyAdapter {
    */
   static adaptStrategy(apiStrategy: unknown): Strategy {
     const strategy = apiStrategy as Partial<Strategy> & {
+      strategy_id?: number | string;
+      strategy_name?: string;
+      strategy_type?: string;
       type?: string;
       status?: string;
       created_at?: string | Date;
       updated_at?: string | Date;
+      last_updated?: string | Date;
       performance?: unknown;
     };
 
     return {
-      id: strategy.id || '',
-      name: strategy.name || 'Unnamed Strategy',
+      id:
+        strategy.id ||
+        (strategy.strategy_id !== undefined && strategy.strategy_id !== null
+          ? String(strategy.strategy_id)
+          : ''),
+      name: strategy.name || strategy.strategy_name || 'Unnamed Strategy',
       description: strategy.description || '',
-      type: this.translateType(strategy.type || ''),
+      type: this.translateType(strategy.type || strategy.strategy_type || ''),
       status: this.translateStatus(strategy.status || ''),
-      created_at: this.parseDateToString(strategy.created_at || ''),
-      updated_at: this.parseDateToString(strategy.updated_at || ''),
+      created_at: this.parseDateToString(strategy.created_at || strategy.updated_at || strategy.last_updated || ''),
+      updated_at: this.parseDateToString(strategy.updated_at || strategy.last_updated || strategy.created_at || ''),
       parameters: strategy.parameters || {},
       performance: strategy.performance
         ? this.adaptPerformance(strategy.performance)

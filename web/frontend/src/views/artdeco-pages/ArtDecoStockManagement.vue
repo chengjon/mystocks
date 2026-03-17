@@ -72,13 +72,70 @@ interface StockRow {
   [key: string]: unknown
 }
 
+interface PositionRow {
+  symbol?: string
+  name?: string
+  quantity?: number
+  cost?: number
+  price?: number
+  pnl?: number
+  marketValue?: number
+  positionPercent?: number
+}
+
 const activeWatchlistId = ref('')
 const watchlists = ref<WatchlistItem[]>([])
-const positions = ref<unknown[]>([])
+const positions = ref<PositionRow[]>([])
 
 const currentWatchlistStocks = computed(() => {
   return watchlists.value.find((l) => l.id === activeWatchlistId.value)?.stocks || []
 })
+
+function parseOptionalNumber(value: unknown): number | undefined {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : undefined
+  }
+
+  if (typeof value === 'string' && value.trim()) {
+    const parsed = Number.parseFloat(value.replace(/,/g, ''))
+    return Number.isFinite(parsed) ? parsed : undefined
+  }
+
+  return undefined
+}
+
+function parseOptionalString(value: unknown): string | undefined {
+  return typeof value === 'string' && value.trim() ? value : undefined
+}
+
+function normalizePercent(value: number | undefined): number | undefined {
+  if (value === undefined) {
+    return undefined
+  }
+
+  return Math.abs(value) <= 1 ? value * 100 : value
+}
+
+function normalizePositions(payload: unknown): PositionRow[] {
+  if (!Array.isArray(payload)) {
+    return []
+  }
+
+  return payload.map((item) => {
+    const record = typeof item === 'object' && item !== null ? item as Record<string, unknown> : {}
+
+    return {
+      symbol: parseOptionalString(record.symbol),
+      name: parseOptionalString(record.name ?? record.symbol_name),
+      quantity: parseOptionalNumber(record.quantity),
+      cost: parseOptionalNumber(record.average_cost ?? record.cost_price ?? record.cost),
+      price: parseOptionalNumber(record.current_price ?? record.price),
+      pnl: parseOptionalNumber(record.unrealized_pnl ?? record.profit_loss ?? record.pnl),
+      marketValue: parseOptionalNumber(record.market_value ?? record.marketValue),
+      positionPercent: normalizePercent(parseOptionalNumber(record.weight ?? record.position_percent ?? record.positionPercent))
+    }
+  })
+}
 
 const fetchData = async () => {
   try {
@@ -95,7 +152,7 @@ const fetchData = async () => {
     }
 
     if (portRes.data?.success) {
-      positions.value = portRes.data.data.positions
+      positions.value = normalizePositions(portRes.data?.data?.positions)
     }
   } catch (e) {
     console.error('Failed to fetch stock management data', e)
@@ -122,11 +179,11 @@ onMounted(fetchData)
   display: flex;
   gap: var(--artdeco-spacing-2);
   margin: var(--artdeco-spacing-6) 0;
-  border-bottom: 2px solid var(--artdeco-border-gold-subtle);
+  border-bottom: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-border-gold-subtle);
 }
 
 .main-tab {
-  padding: 12px 24px;
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-6);
   background: transparent;
   border: none;
   color: var(--artdeco-fg-muted);
@@ -134,18 +191,18 @@ onMounted(fetchData)
   text-transform: uppercase;
   font-family: var(--artdeco-font-display);
   letter-spacing: var(--artdeco-tracking-wide);
-  transition: all 0.3s;
+  transition: all var(--artdeco-transition-base);
 
   &:hover, &.active {
     color: var(--artdeco-accent-gold);
   }
 
   &.active {
-    border-bottom: 2px solid var(--artdeco-accent-gold);
-    margin-bottom: -2px;
+    border-bottom: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-accent-gold);
+    margin-bottom: calc(var(--artdeco-spacing-2) * -0.25);
   }
 }
 
-.fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
+.fade-enter-active, .fade-leave-active { transition: opacity var(--artdeco-transition-base); }
 .fade-enter-from, .fade-leave-to { opacity: 0%; }
 </style>

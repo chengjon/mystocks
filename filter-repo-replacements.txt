@@ -1,0 +1,8 @@
+literal:__OLD_PROVIDER_API_KEY__==>REDACTED_PROVIDER_API_KEY
+literal:__OLD_FUCAI_API_KEY__==>REDACTED_FUCAI_API_KEY
+literal:__OLD_MODEL_CATALOG_API_KEY__==>REDACTED_MODEL_CATALOG_API_KEY
+literal:__OLD_WEB_READER_TOKEN__==>REDACTED_WEB_READER_TOKEN
+literal:Bearer __OLD_WEB_READER_TOKEN__==>Bearer <web-reader-token>
+literal:__OLD_JWT_TOKEN__==><jwt-token>
+literal:__OLD_POSTGRES_PASSWORD__==>your-postgresql-password
+literal:__OLD_INTERNAL_HOST__==>localhost

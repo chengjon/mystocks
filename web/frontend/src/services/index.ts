@@ -14,7 +14,7 @@ export {
   type APIResponse,
   type APIErrorResponse,
   type RequestConfig,
-} from './api-client';
+} from './api-client.ts';
 
 // 导出Market Service
 export {
@@ -24,7 +24,7 @@ export {
   type StockQuote,
   type KlineData,
   type WatchlistItem,
-} from './market.service';
+} from './market.service.ts';
 
 // 导出Technical Service
 export {
@@ -35,7 +35,7 @@ export {
   type MACDData,
   type KDJData,
   type BOLLData,
-} from './technical.service';
+} from './technical.service.ts';
 
 // 导出Trade Service
 export {
@@ -48,12 +48,12 @@ export {
   type Position,
   type AccountBalance,
   type TradeRecord,
-} from './trade.service';
+} from './trade.service.ts';
 
 /**
  * 使用示例:
  *
- * import { marketService, technicalService, tradeService } from '@/services';
+ * import { marketService, technicalService, tradeService } from '@/services/index.ts';
  *
  * // 获取股票列表
  * const stocks = await marketService.getStockList({ market: 'SZ' });

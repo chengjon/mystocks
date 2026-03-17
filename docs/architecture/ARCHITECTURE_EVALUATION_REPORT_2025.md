@@ -258,7 +258,7 @@ DataClassification.TRADING_ORDERS       # 交易订单（ACID保证）
 ```python
 # 建议为PostgreSQL配置主从复制
 POSTGRESQL_MASTER_HOST=localhost
-POSTGRESQL_SLAVE_HOST=192.168.123.105
+POSTGRESQL_SLAVE_HOST=example.local
 
 # 查询自动路由到从库
 def get_stock_daily(symbol):
@@ -1136,7 +1136,7 @@ class MLCachePrewarmer:
 # 当前问题：PostgreSQL单实例读写
 # 改进方案：
 POSTGRESQL_MASTER_HOST=localhost  # 写操作
-POSTGRESQL_SLAVE_HOST=192.168.123.105   # 读操作
+POSTGRESQL_SLAVE_HOST=example.local   # 读操作
 
 class DatabaseRouter:
     def get_engine(self, operation):

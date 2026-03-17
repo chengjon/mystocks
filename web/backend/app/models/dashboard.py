@@ -10,7 +10,7 @@
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 # ============================================================================
 # 请求模型
@@ -27,8 +27,8 @@ class DashboardRequest(BaseModel):
     include_portfolio: bool = Field(True, description="是否包含持仓数据")
     include_risk_alerts: bool = Field(True, description="是否包含风险预警")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "user_id": 1001,
                 "trade_date": "2025-11-21",
@@ -38,6 +38,7 @@ class DashboardRequest(BaseModel):
                 "include_risk_alerts": True,
             }
         }
+    )
 
 
 # ============================================================================
@@ -173,8 +174,8 @@ class DashboardResponse(BaseModel):
     data_source: str = Field("composite", description="数据源类型")
     cache_hit: bool = Field(False, description="是否命中缓存")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "user_id": 1001,
                 "trade_date": "2025-11-21",
@@ -215,6 +216,7 @@ class DashboardResponse(BaseModel):
                 "cache_hit": False,
             }
         }
+    )
 
 
 # ============================================================================
@@ -230,8 +232,8 @@ class ErrorResponse(BaseModel):
     details: Optional[Dict[str, Any]] = Field(None, description="错误详情")
     timestamp: datetime = Field(default_factory=datetime.now, description="错误时间")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "error_code": "INVALID_USER_ID",
                 "error_message": "用户ID无效",
@@ -239,3 +241,4 @@ class ErrorResponse(BaseModel):
                 "timestamp": "2025-11-21T10:30:00",
             }
         }
+    )

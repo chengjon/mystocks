@@ -281,16 +281,6 @@ const filteredIndicators: ComputedRef<IndicatorData[]> = computed(() => {
   return indicators as IndicatorData[]
 })
 
-const handleFilterChange = (filters: Record<string, unknown> | string) => {
-  if (typeof filters === 'string') {
-    // Called from @input event with just the value
-    // In this case, the filters are already bound by v-model
-    return
-  }
-  searchQuery.value = (filters.search as string) || ''
-  selectedCategory.value = (filters.category as string) || ''
-}
-
 const getCategoryLabel = (category: string | undefined): string => {
   if (!category) return ''
   const labelMap: Record<string, string> = {

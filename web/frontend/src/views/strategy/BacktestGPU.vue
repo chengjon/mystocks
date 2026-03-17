@@ -25,10 +25,6 @@
             </div>
         </div>
 
-        <div class="analysis-blocker" role="status" aria-live="polite">
-            GPU 接口真值待确认，当前页面仅保留监控壳层，不作为后端联调结果。
-        </div>
-
         <!-- GPU Status Cards -->
         <div class="status-cards-grid">
             <!-- GPU Availability Card -->

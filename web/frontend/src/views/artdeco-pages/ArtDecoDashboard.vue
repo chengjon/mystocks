@@ -11,15 +11,23 @@
             <template #actions>
                 <div class="header-metrics">
                     <ArtDecoSkeleton v-if="loading.strategies" variant="button" width="120px" />
-                    <ArtDecoBadge v-else variant="primary" pulse>
+                    <ArtDecoBadge v-else-if="activeStrategiesCount !== null" variant="primary" pulse>
                         <ArtDecoIcon name="activity" />
                         {{ activeStrategiesCount }} 策略运行中
                     </ArtDecoBadge>
+                    <ArtDecoBadge v-else variant="primary">
+                        <ArtDecoIcon name="activity" />
+                        策略状态待接入真实接口
+                    </ArtDecoBadge>
                     
                     <ArtDecoSkeleton v-if="loading.pnl" variant="button" width="120px" />
-                    <ArtDecoBadge v-else variant="success" pulse>
+                    <ArtDecoBadge v-else-if="todayPnLValue !== null" variant="success" pulse>
                         <ArtDecoIcon name="trending-up" />
                         {{ todayPnLValue }}
+                    </ArtDecoBadge>
+                    <ArtDecoBadge v-else variant="success">
+                        <ArtDecoIcon name="trending-up" />
+                        收益数据待接入真实接口
                     </ArtDecoBadge>
                 </div>
 
@@ -37,6 +45,12 @@
                 </div>
             </template>
         </ArtDecoHeader>
+
+        <div class="request-meta-bar">
+            <span>DATA: REAL</span>
+            <span>REQ: {{ lastRequestId || 'N/A' }}</span>
+            <span>TIME: {{ displayProcessTime }}</span>
+        </div>
 
         <!-- 市场全景仪表盘 - 增强功能展示 -->
         <div class="market-panorama">
@@ -157,7 +171,9 @@
                 <!-- Market Trend Chart -->
                 <section class="chart-section" v-if="!loading.market">
                     <div class="trend-chart-title">上证指数分时趋势</div>
+                    <p v-if="!marketTrendOption" class="integration-note">分时趋势待接入真实行情时间序列接口。</p>
                     <ArtDecoChart 
+                        v-else
                         :option="marketTrendOption" 
                         :loading="loading.market" 
                         height="200px" 
@@ -219,15 +235,13 @@
                         <ArtDecoStatCard
                             label="涨跌家数"
                             :value="`${marketData.stocks.up}↑/${marketData.stocks.down}↓`"
-                            :change="2.1"
-                            change-percent
+                            :show-change="false"
                             variant="gold"
                         />
                         <ArtDecoStatCard
                             label="成交金额"
                             :value="marketData.volume.amount"
-                            :change="15.8"
-                            change-percent
+                            :show-change="false"
                             variant="gold"
                         />
                     </template>
@@ -239,7 +253,9 @@
         <!-- Technical Indicators Overview - Collapsible -->
         <div class="indicators-section">
             <ArtDecoCollapsible v-model="indicatorsExpanded" title="技术指标概览" @toggle="handleIndicatorsToggle">
-                <section class="charts-section">
+                <p v-if="loading.indicators" class="integration-note">技术指标链路加载中...</p>
+                <p v-else-if="indicatorList.length === 0" class="integration-note">技术指标真实接口待接入，当前页面不再展示 fallback 指标建议。</p>
+                <section v-else class="charts-section">
                     <div v-for="ind in indicatorList" :key="ind.name" class="indicator-item">
                         <div class="indicator-name">{{ ind.name }}</div>
                         <div class="indicator-value">{{ ind.value }}</div>
@@ -252,7 +268,9 @@
         <!-- System Monitoring - Collapsible -->
         <div class="monitoring-section">
             <ArtDecoCollapsible v-model="monitoringExpanded" title="系统监控状态" @toggle="handleMonitoringToggle">
-                <section class="charts-section">
+                <p v-if="loading.monitoring" class="integration-note">系统监控链路加载中...</p>
+                <p v-else-if="systemHealth.length === 0" class="integration-note">系统监控真实接口待接入，当前页面不再展示 mock / fallback 健康状态。</p>
+                <section v-else class="charts-section">
                     <div v-for="m in systemHealth" :key="m.label" class="monitor-item">
                         <div class="monitor-label">{{ m.label }}</div>
                         <div class="monitor-value">{{ m.value }}</div>
@@ -303,20 +321,21 @@
             <ArtDecoCard title="一键压力测试" hoverable class="stress-test-card">
                 <div class="stress-test-actions">
                     <button class="stress-test-btn" @click="runOneClickStressTest">立即执行压力测试</button>
-                    <span class="stress-test-time" v-if="stressTestResult.timestamp">{{ stressTestResult.timestamp }}</span>
+                    <span class="stress-test-time" v-if="stressTestResult?.timestamp">{{ stressTestResult.timestamp }}</span>
                 </div>
+                <p v-if="!stressTestResult" class="integration-note">压力测试待执行，点击后基于当前页面已加载的真实行情数据做本地估算。</p>
                 <div class="stress-test-metrics">
                     <div class="stress-metric-item">
                         <span class="metric-label">预估最大回撤</span>
-                        <span class="metric-value">{{ stressTestResult.drawdown }}%</span>
+                        <span class="metric-value">{{ stressTestResult ? `${stressTestResult.drawdown}%` : '--' }}</span>
                     </div>
                     <div class="stress-metric-item">
                         <span class="metric-label">VaR(95%)</span>
-                        <span class="metric-value">{{ stressTestResult.var95 }}%</span>
+                        <span class="metric-value">{{ stressTestResult ? `${stressTestResult.var95}%` : '--' }}</span>
                     </div>
                     <div class="stress-metric-item">
                         <span class="metric-label">集中度风险</span>
-                        <span class="metric-value">{{ stressTestResult.concentrationRisk }}%</span>
+                        <span class="metric-value">{{ stressTestResult ? `${stressTestResult.concentrationRisk}%` : '--' }}</span>
                     </div>
                 </div>
             </ArtDecoCard>
@@ -376,25 +395,8 @@
                         {{ tab.label }}
                     </button>
                 </div>
-                <div class="pool-stats">
-                    <div class="pool-stat">
-                        <div class="stat-label">总收益率</div>
-                        <div class="stat-value rise">+12.5%</div>
-                    </div>
-                    <div class="pool-stat">
-                        <div class="stat-label">今日收益</div>
-                        <div class="stat-value rise">+0.8%</div>
-                    </div>
-                    <div class="pool-stat">
-                        <div class="stat-label">持仓股票</div>
-                        <div class="stat-value">25只</div>
-                    </div>
-                    <div class="pool-stat">
-                        <div class="stat-label">最大回撤</div>
-                        <div class="stat-value fall">-3.2%</div>
-                    </div>
-                </div>
-                <section class="pool-section">
+                <p v-if="topStocks.length === 0" class="integration-note">{{ stockPoolNotice }}</p>
+                <section v-else class="pool-section">
                     <div class="stock-item" v-for="stock in topStocks" :key="stock.code">
                         <div class="stock-info">
                             <div class="stock-name">{{ stock.name }}</div>
@@ -418,14 +420,14 @@
                         <div class="nav-label">市场行情</div>
                         <div class="nav-desc">实时报价与技术分析</div>
                     </router-link>
-                    <router-link to="/stocks" class="nav-item">
+                    <router-link to="/watchlist" class="nav-item">
                         <div class="nav-icon">📋</div>
-                        <div class="nav-label">股票管理</div>
+                        <div class="nav-label">自选管理</div>
                         <div class="nav-desc">自选股与投资组合</div>
                     </router-link>
-                    <router-link to="/analysis" class="nav-item">
+                    <router-link to="/data" class="nav-item">
                         <div class="nav-icon">🔍</div>
-                        <div class="nav-label">投资分析</div>
+                        <div class="nav-label">数据分析</div>
                         <div class="nav-desc">深度数据分析工具</div>
                     </router-link>
                     <router-link to="/trade" class="nav-item">
@@ -468,6 +470,8 @@ const {
   refreshing,
   activeStrategiesCount,
   todayPnLValue,
+  lastRequestId,
+  displayProcessTime,
   indicatorList,
   systemHealth,
   loading,
@@ -477,6 +481,7 @@ const {
   flowTabs,
   poolTabs,
   topStocks,
+  stockPoolNotice,
   indicatorsExpanded,
   monitoringExpanded,
   toNumber,
@@ -494,4 +499,19 @@ const {
 
 <style scoped lang="scss">
 @import './styles/ArtDecoDashboard';
+
+.request-meta-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  color: var(--artdeco-fg-muted);
+  font-family: var(--artdeco-font-mono);
+  font-size: 12px;
+}
+
+.integration-note {
+  margin: 0;
+  color: var(--artdeco-fg-muted);
+  line-height: 1.6;
+}
 </style>

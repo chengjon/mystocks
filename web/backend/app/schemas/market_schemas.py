@@ -12,7 +12,7 @@
 from datetime import date, datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 # ==================== 资金流向 (Fund Flow) ====================
 
@@ -69,8 +69,7 @@ class FundFlowResponse(BaseModel):
     small_net_inflow: float = Field(description="小单净流入(元)")
     created_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ==================== ETF数据 (ETF Spot) ====================
@@ -112,8 +111,7 @@ class ETFDataResponse(BaseModel):
     circulating_market_cap: float = Field(description="流通市值")
     created_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ==================== 竞价抢筹 (Chip Race) ====================
@@ -154,8 +152,7 @@ class ChipRaceResponse(BaseModel):
     race_ratio: float = Field(description="抢筹占比(%)")
     created_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ==================== 龙虎榜 (Long Hu Bang) ====================
@@ -187,8 +184,7 @@ class LongHuBangResponse(BaseModel):
     institution_sell: Optional[float] = Field(description="机构卖出额")
     created_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ==================== 通用响应模型 ====================
@@ -360,8 +356,8 @@ class MarketOverviewResponse(BaseModel):
     hot_sectors: List[HotSector] = Field(description="热门板块")
     market_sentiment: str = Field(description="市场情绪 (up/down/neutral)")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "date": "2024-12-29",
                 "indices": [
@@ -379,6 +375,7 @@ class MarketOverviewResponse(BaseModel):
                 "market_sentiment": "up",
             }
         }
+    )
 
 
 # ==================== Enhanced KLine Models ====================
@@ -427,8 +424,8 @@ class KLineCandleV2(BaseModel):
     volume: int = Field(..., ge=0, description="成交量")
     amount: Optional[float] = Field(None, ge=0, description="成交额")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "timestamp": 1640995200000,
                 "open": 10.5,
@@ -439,6 +436,7 @@ class KLineCandleV2(BaseModel):
                 "amount": 10800000.0,
             }
         }
+    )
 
 
 class KLineResponseV2(BaseModel):
@@ -449,8 +447,8 @@ class KLineResponseV2(BaseModel):
     symbol: str = Field(description="股票代码")
     interval: str = Field(description="K线周期")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "klines": [
                     {
@@ -467,3 +465,4 @@ class KLineResponseV2(BaseModel):
                 "interval": "1d",
             }
         }
+    )

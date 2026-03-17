@@ -78,10 +78,19 @@ class WatchlistDataMigrator:
 
     def _get_postgres_dsn(self) -> str:
         """获取 PostgreSQL 连接字符串"""
-        return os.getenv(
-            "POSTGRESQL_DSN",
-            "postgresql://postgres:your-postgresql-password@localhost:5438/mystocks",
-        )
+        postgres_dsn = os.getenv("POSTGRESQL_DSN")
+        if postgres_dsn:
+            return postgres_dsn
+
+        password = os.getenv("POSTGRESQL_PASSWORD")
+        if not password:
+            raise MigrationError("POSTGRESQL_DSN or POSTGRESQL_PASSWORD environment variable must be set")
+
+        host = os.getenv("POSTGRESQL_HOST", "localhost")
+        port = os.getenv("POSTGRESQL_PORT", "5438")
+        user = os.getenv("POSTGRESQL_USER", "postgres")
+        database = os.getenv("POSTGRESQL_DATABASE", "mystocks")
+        return f"postgresql://{user}:{password}@{host}:{port}/{database}"
 
     def backup_sqlite(self) -> str:
         """备份 SQLite 数据库"""

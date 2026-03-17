@@ -224,9 +224,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted } from 'vue'
 import { ElCard } from 'element-plus'
-import { ElTable, ElTableColumn } from 'element-plus'
+import { ElTable } from 'element-plus'
 
 interface Summary {
   total_stocks: number

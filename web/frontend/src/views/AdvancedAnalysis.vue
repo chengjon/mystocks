@@ -468,13 +468,7 @@ const {
   overviewMetrics,
   getAnalysisTitle,
   getOverallSignalType,
-  getSignalClass,
   runAnalysis,
   runBatchAnalysis,
-  startRealtimeUpdates,
-  stopRealtimeUpdates,
-  connectWebSocket,
-  disconnectWebSocket,
-  checkSystemHealth
 } = useAdvancedAnalysis()
 </script>

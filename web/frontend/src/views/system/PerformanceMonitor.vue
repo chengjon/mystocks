@@ -191,7 +191,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, onMounted, onUnmounted } from 'vue'
+    import { ref, onMounted } from 'vue'
     import { ElMessage } from 'element-plus'
     import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
     import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'

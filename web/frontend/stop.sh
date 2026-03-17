@@ -2,7 +2,7 @@
 
 ###############################################################################
 # MyStocks Frontend - PM2 Stop Script
-# Phase 3: Bloomberg Terminal Style Deployment
+# Phase 3: ArtDeco Style Deployment
 #
 # Usage:
 #   ./stop.sh [options]
@@ -42,7 +42,7 @@ done
 
 echo -e "${BLUE}╔════════════════════════════════════════════════════════════╗${NC}"
 echo -e "${BLUE}║   MyStocks Frontend - PM2 Stop Script                     ║${NC}"
-echo -e "${BLUE}║   Phase 3: Bloomberg Terminal Style Verification          ║${NC}"
+echo -e "${BLUE}║   Phase 3: ArtDeco Style Verification                     ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 

@@ -1,17 +1,6 @@
 import { ref, onMounted, onUnmounted, computed, type Ref } from 'vue'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import {
-    VideoPlay,
-    VideoPause,
-    RefreshRight,
-    Setting,
-    Warning,
-    DataAnalysis,
-    TrendCharts,
-    ArrowUp,
-    ArrowDown
-} from '@element-plus/icons-vue'
 import { tradingDashboardActions } from './tradingDashboardActions'
 
 // Type definitions

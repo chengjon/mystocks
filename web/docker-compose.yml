@@ -19,7 +19,7 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: your-postgresql-password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
       POSTGRES_DB: mystocks
       TZ: "Asia/Shanghai"
     volumes:
@@ -40,12 +40,12 @@ services:
       POSTGRESQL_HOST: postgresql
       POSTGRESQL_PORT: 5432
       POSTGRESQL_USER: postgres
-      POSTGRESQL_PASSWORD: your-postgresql-password
+      POSTGRESQL_PASSWORD: ${POSTGRESQL_PASSWORD:?Set POSTGRESQL_PASSWORD}
       POSTGRESQL_DATABASE: mystocks
       TDENGINE_HOST: tdengine
       TDENGINE_PORT: 6030
       TDENGINE_USER: root
-      TDENGINE_PASSWORD: taosdata
+      TDENGINE_PASSWORD: ${TDENGINE_PASSWORD:?Set TDENGINE_PASSWORD}
       TDENGINE_DATABASE: market_data
     command: >
       uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT:-8020}

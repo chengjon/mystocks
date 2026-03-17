@@ -174,7 +174,7 @@ Port02=7709
 ```python
 # 使用自定义服务器
 tdx = TdxDataSource(
-    tdx_host='192.168.1.100',
+    tdx_host='example.local',
     tdx_port=7709,
     max_retries=5,
     retry_delay=2,

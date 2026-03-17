@@ -299,7 +299,7 @@
 <script setup>
 import { useStopLossMonitoringTab } from './composables/useStopLossMonitoringTab'
 
-const { loading, historyLoading, saving, positionDialogVisible, isEditing, historyPeriod, stats, positions, executionHistory, positionForm, positionFormRules, loadData, loadExecutionHistory, addPosition, editPosition, removePosition, savePosition, resetPositionForm, refreshData, getPriceClass, change, getStrategyTagType, formatStrategyName, getDistanceClass, formatDateTime, truncateText, handleStopLossUpdate } = useStopLossMonitoringTab()
+const { loading, historyLoading, saving, positionDialogVisible, isEditing, historyPeriod, stats, positions, executionHistory, positionForm, positionFormRules, loadExecutionHistory, addPosition, editPosition, removePosition, savePosition, refreshData, getPriceClass, getStrategyTagType, formatStrategyName, getDistanceClass, formatDateTime, truncateText } = useStopLossMonitoringTab()
 </script>
 
 <style scoped>

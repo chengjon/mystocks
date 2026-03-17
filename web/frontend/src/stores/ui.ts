@@ -2,7 +2,7 @@
 // 负责界面功能切换、节点展开状态、加载状态、缓存管理等UI相关状态
 
 import { defineStore } from 'pinia'
-import { ref, reactive, computed, watch } from 'vue'
+import { reactive, computed, watch } from 'vue'
 
 interface CachedData<T = unknown> {
     data: T

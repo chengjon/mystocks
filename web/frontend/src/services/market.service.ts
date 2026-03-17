@@ -3,7 +3,7 @@
  * 封装所有市场数据相关的API调用
  */
 
-import { apiClient, APIResponse } from './api-client';
+import { apiClient, APIResponse } from './api-client.ts';
 
 /**
  * 股票基本信息

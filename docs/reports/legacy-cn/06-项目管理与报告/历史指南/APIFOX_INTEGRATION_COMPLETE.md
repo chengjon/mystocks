@@ -367,7 +367,7 @@ X-CSRF-Token: abc123...
 #### 步骤 3: 使用 Token 调用 API
 ```http
 GET http://localhost:8000/api/market/realtime/000001
-Authorization: Bearer eyJhbGc...
+Authorization: Bearer <jwt-token>
 ```
 
 ---

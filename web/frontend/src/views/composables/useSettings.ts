@@ -33,6 +33,32 @@ interface LogSummary {
   level_counts: Record<string, number>
 }
 
+interface ApiResponseEnvelope<T = unknown> {
+  data?: T
+  success?: boolean
+  message?: string
+  error?: string
+  total?: number
+  logs?: LogEntry[]
+}
+
+interface ApiErrorEnvelope {
+  response?: {
+    data?: {
+      detail?: string
+    }
+  }
+  message?: string
+}
+
+interface LogSummaryPayload {
+  total_logs?: number
+  total?: number
+  recent_errors_1h?: number
+  errors?: number
+  level_counts?: Record<string, number>
+}
+
 export function useSettings() {
 
 const defaultDbHost =
@@ -156,7 +182,9 @@ const testConnection = async (database: DatabaseInfo): Promise<void> => {
       port: parseInt(database.port)
     })
 
-    const result = (response as unknown as Record<string, any>)?.data || response
+    const result =
+      (response as ApiResponseEnvelope<Record<string, unknown>>).data ||
+      (response as Record<string, unknown>)
     if (result && result.success !== false) {
       database.status = 'success'
       database.message = result.message || 'CONNECTION SUCCESSFUL'
@@ -168,7 +196,7 @@ const testConnection = async (database: DatabaseInfo): Promise<void> => {
     }
   } catch (error: unknown) {
     database.status = 'error'
-    const err = error as Record<string, any>
+    const err = error as ApiErrorEnvelope
     database.message = err?.response?.data?.detail || err?.message || 'NETWORK ERROR'
     ElMessage.error(`${database.name} CONNECTION FAILED`)
   }
@@ -210,7 +238,9 @@ const fetchLogs = async (): Promise<void> => {
     if (selectedCategory.value) params.category = selectedCategory.value
 
     const response = await apiClient.get('/api/system/logs', { params })
-    const data = (response as unknown as Record<string, any>)?.data || response
+    const data =
+      (response as ApiResponseEnvelope<LogEntry[] | { logs?: LogEntry[]; total?: number }>).data ||
+      response
 
     if (Array.isArray(data)) {
       logs.value = data
@@ -252,10 +282,10 @@ const generateMockLogs = (): LogEntry[] => {
 const fetchLogSummary = async (): Promise<void> => {
   try {
     const response = await apiClient.get('/api/system/logs/summary')
-    const data = (response as unknown as Record<string, any>)?.data || response
+    const data = (response as ApiResponseEnvelope<LogSummaryPayload>).data || response
 
     if (typeof data === 'object' && data !== null) {
-      const d = data as Record<string, any>
+      const d = data as LogSummaryPayload
       logSummary.value = {
         total_logs: d.total_logs || d.total || 0,
         recent_errors_1h: d.recent_errors_1h || d.errors || 0,

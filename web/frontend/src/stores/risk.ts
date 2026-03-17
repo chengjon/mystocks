@@ -2,7 +2,7 @@
 // 负责风险监控、公告监控、风险告警等风险相关数据
 
 import { defineStore } from 'pinia'
-import { ref, reactive } from 'vue'
+import { reactive } from 'vue'
 import { tradingApiManager } from '@/services/TradingApiManager'
 import type {
     RiskMonitorData,

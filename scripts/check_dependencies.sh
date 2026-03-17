@@ -45,7 +45,9 @@ echo ""
 echo "3. 数据库连接:"
 
 # PostgreSQL
-if PGPASSWORD="${POSTGRESQL_PASSWORD:-your-postgresql-password}" psql -h "${POSTGRESQL_HOST:-localhost}" -U "${POSTGRESQL_USER:-mystocks_user}" -d "${POSTGRESQL_DATABASE:-mystocks}" -c "SELECT 1;" > /dev/null 2>&1; then
+if [ -z "${POSTGRESQL_PASSWORD:-}" ]; then
+    echo "   ⚠️  POSTGRESQL_PASSWORD 未设置，跳过 PostgreSQL 直连检查"
+elif PGPASSWORD="${POSTGRESQL_PASSWORD}" psql -h "${POSTGRESQL_HOST:-localhost}" -U "${POSTGRESQL_USER:-mystocks_user}" -d "${POSTGRESQL_DATABASE:-mystocks}" -c "SELECT 1;" > /dev/null 2>&1; then
     echo "   ✅ PostgreSQL 可连接"
 else
     echo "   ⚠️  PostgreSQL 连接失败（检查.env配置）"

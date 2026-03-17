@@ -773,7 +773,7 @@ class Data(BaseModel):
 
 ```http
 GET /api/users/profile HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Authorization: Bearer <jwt-token>
 ```
 
 **Token 格式**:

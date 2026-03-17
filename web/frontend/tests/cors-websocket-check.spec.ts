@@ -3,7 +3,7 @@
  * CORS和WebSocket错误自动检测
  *
  * 目的：自动化检测前端与后端通信中的CORS和WebSocket错误
- * 使用方法：npx playwright test tests/cors-websocket-check.spec.ts --reporter=list
+ * 使用方法：npm run test:e2e；单文件补充可用 npx playwright test tests/cors-websocket-check.spec.ts --reporter=list
  */
 
 import { test, expect } from '@playwright/test';

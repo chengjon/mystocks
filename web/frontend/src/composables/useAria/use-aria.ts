@@ -36,6 +36,13 @@
 
 import { computed, type ComputedRef } from 'vue'
 import type { AriaProps, HtmlProps } from './unknown'
+import {
+    createDecorativeAria,
+    createHintId,
+    createMainAria,
+    createNavigationAria,
+    createSearchAria
+} from './use-aria.landmarks'
 
 // Re-export types for external use
 export type { AriaProps, HtmlProps }
@@ -428,12 +435,7 @@ export function useAria() {
      * 隐藏装饰性元素
      * Hide decorative elements from screen readers
      */
-    const decorative = (): ComputedRef<AriaProps> => {
-        return computed(() => ({
-            'aria-hidden': true,
-            role: 'presentation'
-        }))
-    }
+    const decorative = (): ComputedRef<AriaProps> => createDecorativeAria()
 
     /**
      * 导航ARIA标签
@@ -441,12 +443,7 @@ export function useAria() {
      *
      * @param label - 导航区域标签
      */
-    const navigation = (label: string): ComputedRef<AriaProps> => {
-        return computed(() => ({
-            role: 'navigation',
-            'aria-label': label
-        }))
-    }
+    const navigation = (label: string): ComputedRef<AriaProps> => createNavigationAria(label)
 
     /**
      * 主要内容ARIA标签
@@ -454,12 +451,7 @@ export function useAria() {
      *
      * @param label - 主要内容标签
      */
-    const main = (label: string): ComputedRef<AriaProps> => {
-        return computed(() => ({
-            role: 'main',
-            'aria-label': label
-        }))
-    }
+    const main = (label: string): ComputedRef<AriaProps> => createMainAria(label)
 
     /**
      * 搜索ARIA标签
@@ -467,12 +459,7 @@ export function useAria() {
      *
      * @param label - 搜索框标签
      */
-    const search = (label: string = '搜索'): ComputedRef<AriaProps> => {
-        return computed(() => ({
-            role: 'search',
-            'aria-label': label
-        }))
-    }
+    const search = (label: string = '搜索'): ComputedRef<AriaProps> => createSearchAria(label)
 
     /**
      * 辅助技术提示文本ID生成器
@@ -481,9 +468,8 @@ export function useAria() {
      * @param fieldName - 字段名
      * @param hintType - 提示类型（hint/error/description）
      */
-    const hintId = (fieldName: string, hintType: 'hint' | 'error' | 'description' = 'hint'): string => {
-        return `${fieldName}-${hintType}`
-    }
+    const hintId = (fieldName: string, hintType: 'hint' | 'error' | 'description' = 'hint'): string =>
+        createHintId(fieldName, hintType)
 
     return {
         button,
@@ -504,4 +490,3 @@ export function useAria() {
         hintId
     }
 }
-

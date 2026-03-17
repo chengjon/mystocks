@@ -27,6 +27,14 @@ from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel, Field, validator
 
+from app.api._data_source_config_old_reload import (
+    get_current_user_impl,
+    handle_config_error_impl,
+    reload_config_impl,
+    shutdown_event_impl,
+    startup_event_impl,
+)
+
 # 导入统一响应格式
 from app.core.responses import (
     BusinessCode,
@@ -181,43 +189,12 @@ def get_config_manager():
 
 def get_current_user() -> str:
     """获取当前用户（从JWT token或其他认证机制）"""
-    # TODO: 实现真正的用户认证
-    return "system"
+    return get_current_user_impl()
 
 
 def handle_config_error(error: str, request_id: Optional[str] = None) -> UnifiedResponse:
-    """
-    处理配置错误并返回统一响应格式
-
-    Args:
-        error: 错误消息
-        request_id: 请求ID
-
-    Returns:
-        UnifiedResponse: 统一格式的错误响应
-    """
-    # 判断错误类型
-    if "already exists" in error:
-        return create_unified_error_response(
-            code=BusinessCode.CONFLICT,
-            message="数据源配置已存在",
-            error_code="DUPLICATE_ENDPOINT",
-            request_id=request_id,
-        )
-    elif "not found" in error:
-        return create_unified_error_response(
-            code=BusinessCode.NOT_FOUND,
-            message="数据源配置不存在",
-            error_code="ENDPOINT_NOT_FOUND",
-            request_id=request_id,
-        )
-    else:
-        return create_unified_error_response(
-            code=BusinessCode.INTERNAL_ERROR,
-            message=error,
-            error_code="CONFIG_ERROR",
-            request_id=request_id,
-        )
+    """处理配置错误并返回统一响应格式"""
+    return handle_config_error_impl(error, request_id)
 
 
 # ==================== API Endpoints ====================
@@ -699,22 +676,7 @@ async def reload_config(request: ReloadRequest, current_user: str = Depends(get_
     Example:
         POST /api/v1/data-sources/config/reload
     """
-    try:
-        manager = get_config_manager()
-
-        result = manager.reload_config(changed_by=current_user)
-
-        return {
-            "success": True,
-            "message": "配置热重载成功",
-            "old_count": result["old_count"],
-            "new_count": result["new_count"],
-            "duration": result["duration"],
-            "reloaded_at": result["reloaded_at"],
-        }
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"配置热重载失败: {str(e)}")
+    return await reload_config_impl(current_user, get_config_manager)
 
 
 # ==================== Startup/Shutdown Events ====================
@@ -723,10 +685,10 @@ async def reload_config(request: ReloadRequest, current_user: str = Depends(get_
 @router.on_event("startup")
 async def startup_event():
     """API启动事件"""
-    print("✅ 数据源配置CRUD API已启动")
+    await startup_event_impl()
 
 
 @router.on_event("shutdown")
 async def shutdown_event():
     """API关闭事件"""
-    print("👋 数据源配置CRUD API已关闭")
+    await shutdown_event_impl()

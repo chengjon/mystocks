@@ -26,7 +26,7 @@ const { chromium } = require('playwright');
   try {
     await page.waitForSelector('#app', { timeout: 5000 });
     console.log('=== #app found ===');
-  } catch (e) {
+  } catch (_error) {
     console.log('=== #app NOT found ===');
   }
 

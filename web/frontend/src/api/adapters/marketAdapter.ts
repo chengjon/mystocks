@@ -5,15 +5,15 @@
  * Implements fallback to mock data on API failures.
  */
 
-import type { UnifiedResponse } from '../types/common';
+import type { UnifiedResponse } from '../types/common.ts';
 import type {
   MarketOverviewVM,
   FundFlowChartPoint,
-} from '../types/extensions';
+} from '../types/extensions/index.ts';
 import type {
   ChipRaceItem,
   LongHuBangItem,
-} from '../types/common';
+} from '../types/common.ts';
 
 // Import new API types
 import type {
@@ -22,12 +22,12 @@ import type {
   KlineResponse as KLineDataResponse,
   ChipRaceResponse,
   LongHuBangResponse,
-} from '../types/common';
+} from '../types/common.ts';
 
 // Import Mock data as fallback
-// import mockMarketOverview from '@/mock/marketOverview';  // Unused - using inline mock
-import mockFundFlow from '@/mock/fundFlow';
-import mockKLineData from '@/mock/klineData';
+// import mockMarketOverview from '@/mock/marketOverview.ts';  // Unused - using inline mock
+import mockFundFlow from '@/mock/fundFlow.ts';
+import mockKLineData from '@/mock/klineData.ts';
 
 interface AdaptedKLineData {
   categoryData: string[];

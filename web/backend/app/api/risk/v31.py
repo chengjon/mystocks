@@ -273,6 +273,9 @@ async def setup_risk_event_broadcasting():
 
 
 try:
-    asyncio.create_task(setup_risk_event_broadcasting())
-except Exception:
-    pass
+    loop = asyncio.get_running_loop()
+except RuntimeError:
+    loop = None
+
+if loop is not None:
+    loop.create_task(setup_risk_event_broadcasting())

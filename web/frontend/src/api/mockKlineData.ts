@@ -1,4 +1,4 @@
-import type { KLineData, IntervalType, AdjustType } from '../types/kline';
+import type { KLineData, IntervalType, AdjustType } from '../types/kline.ts';
 
 const generateMockCandles = (
   basePrice: number,
@@ -72,7 +72,7 @@ export const loadMockKlineData = async (
 };
 
 export const mockIndicators = {
-  MA: (candles: KLineData[], periods: number[] = [5, 10, 20]) => {
+  MA: (candles: KLineData[], periods: number[] = [5, 10, 20]): Record<string, number[]> => {
     const result: Record<string, number[]> = {};
     periods.forEach(p => {
       result[`MA${p}`] = [];
@@ -87,7 +87,11 @@ export const mockIndicators = {
     });
     return result;
   },
-  BOLL: (candles: KLineData[], period: number = 20, stdDev: number = 2) => {
+  BOLL: (
+    candles: KLineData[],
+    period: number = 20,
+    stdDev: number = 2
+  ): { upper: number[]; middle: number[]; lower: number[] } => {
     const upper: number[] = [];
     const middle: number[] = [];
     const lower: number[] = [];
@@ -111,7 +115,7 @@ export const mockIndicators = {
     }
     return { upper, middle, lower };
   },
-  RSI: (candles: KLineData[], period: number = 14) => {
+  RSI: (candles: KLineData[], period: number = 14): number[] => {
     const values: number[] = [];
     let gains = 0;
     let losses = 0;
@@ -143,7 +147,12 @@ export const mockIndicators = {
     values.unshift(NaN);
     return values;
   },
-  MACD: (candles: KLineData[], fast: number = 12, slow: number = 26, signal: number = 9) => {
+  MACD: (
+    candles: KLineData[],
+    fast: number = 12,
+    slow: number = 26,
+    signal: number = 9
+  ): { dif: number[]; dea: number[]; macd: number[] } => {
     const ema = (data: number[], period: number): number[] => {
       const result: number[] = [];
       const k = 2 / (period + 1);
@@ -173,7 +182,7 @@ export const loadMockIndicators = async (
   interval: IntervalType,
   type: 'overlay' | 'oscillator',
   indicatorNames: string[]
-) => {
+): Promise<Record<string, unknown>> => {
   await new Promise(resolve => setTimeout(resolve, 200));
 
   const candles = mockKlineData[symbol] || generateMockCandles(10.5, 500, interval);
@@ -204,7 +213,10 @@ export const mockStopLimit = {
   'default': { limit_up: 0, limit_down: 0, limit_pct: 0.10 }
 };
 
-export const loadMockStopLimit = async (symbol: string, prevClose: number) => {
+export const loadMockStopLimit = async (
+  symbol: string,
+  prevClose: number
+): Promise<{ limit_up: number; limit_down: number; limit_pct: number }> => {
   await new Promise(resolve => setTimeout(resolve, 100));
   // ✅ 修复：使用keyof typeof确保索引访问类型安全
   const limit = mockStopLimit[symbol as keyof typeof mockStopLimit] || mockStopLimit.default;

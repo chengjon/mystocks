@@ -419,7 +419,7 @@ New-NetFirewallRule -DisplayName "Chrome Remote Debugging 9230" `
 |----------|------|----------|
 | `10.255.255.254:9230` | ❌ 连接拒绝 | Windows 防火墙对 WSL2 的 NAT 网关网段（10.255.255.0/24）存在隐式深层拦截 |
 | `localhost:9230` | ❌ 连接拒绝 | WSL2 的 localhost 仅映射到自身回环，未默认映射到 Windows 的 localhost |
-| `192.168.123.74:9230` | ✅ **成功访问** | **直接访问 Windows 物理网卡 IP，绕开 NAT 网段拦截，端口转发规则正常生效** |
+| `example.local:9230` | ✅ **成功访问** | **直接访问 Windows 物理网卡 IP，绕开 NAT 网段拦截，端口转发规则正常生效** |
 
 **成功方法（推荐）**:
 
@@ -427,18 +427,18 @@ New-NetFirewallRule -DisplayName "Chrome Remote Debugging 9230" `
 # 1. 在 Windows 侧获取物理网卡 IP（PowerShell）
 ipconfig | findstr "IPv4"
 
-# 示例输出: 192.168.123.74
+# 示例输出: example.local
 
 # 2. 在 WSL2 中测试连接
-curl http://192.168.123.74:9230/json
+curl http://example.local:9230/json
 
 # 3. 使用 Chrome DevTools MCP 或脚本访问
 # 获取所有页面列表
-curl -s http://192.168.123.74:9230/json | python3 -m json.tool
+curl -s http://example.local:9230/json | python3 -m json.tool
 ```
 
 **为什么物理网卡 IP 可以访问？**
-- Windows 防火墙对物理网卡网段（如 192.168.123.0/24）的入站连接更为宽松
+- Windows 防火墙对物理网卡网段（如 private-network/24）的入站连接更为宽松
 - 绕过了 WSL2 NAT 网段的隐式拦截规则
 - Chrome 的 `--remote-debugging-address=0.0.0.0` 在物理网卡上正常生效
 
@@ -446,17 +446,17 @@ curl -s http://192.168.123.74:9230/json | python3 -m json.tool
 
 ```bash
 # 获取所有打开的页面
-curl http://192.168.123.74:9230/json
+curl http://example.local:9230/json
 
 # 获取版本信息
-curl http://192.168.123.74:9230/json/version
+curl http://example.local:9230/json/version
 
 # 打开新页面（需要 URL 编码）
-# curl "http://192.168.123.74:9230/json/new?url=http://localhost:3020"
+# curl "http://example.local:9230/json/new?url=http://localhost:3020"
 ```
 
 **注意事项**:
-- ✅ 优先使用物理网卡 IP（如 192.168.123.74）
+- ✅ 优先使用物理网卡 IP（如 example.local）
 - ❌ 避免使用 NAT 网关 IP（10.255.255.254）
 - ❌ 避免使用 localhost（WSL2 和 Windows 的 localhost 不互通）
 - ⚠️ 每次重启 Windows 后 IP 可能变化，需要重新确认

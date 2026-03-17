@@ -10,16 +10,19 @@
  * - Memory management and cleanup
  */
 
-import {
+export {
   WorkerMessageType,
   MessagePriority,
-  WorkerMessageUtils,
-  type WorkerMessage,
-  type WorkerResponse,
-  type WorkerProgress,
-  type WorkerError,
-  type WorkerConfig
-} from '@/workers/protocol'
+  WorkerMessageUtils
+} from '@/workers/protocol.ts'
+
+export type {
+  WorkerMessage,
+  WorkerResponse,
+  WorkerProgress,
+  WorkerError,
+  WorkerConfig
+} from '@/workers/protocol.ts'
 
 export interface TechnicalIndicatorResult {
   indicator: string
@@ -45,4 +48,3 @@ export interface WorkerHealthStatus {
   errorCount: number
   uptime: number
 }
-

@@ -469,56 +469,10 @@ export interface FundFlowData {
   endDate: string;
 }
 
-// ============================================
-// 类型守卫和工具函数
-// ============================================
-
-/**
- * 判断是否为上涨
- */
-export function isUp(colorType: MarketColorType): boolean {
-  return colorType === 'up';
-}
-
-/**
- * 判断是否为下跌
- */
-export function isDown(colorType: MarketColorType): boolean {
-  return colorType === 'down';
-}
-
-/**
- * 判断是否为平盘
- */
-export function isFlat(colorType: MarketColorType): boolean {
-  return colorType === 'flat';
-}
-
-/**
- * 计算市场颜色类型
- */
-export function calculateColorType(changePercent: number): MarketColorType {
-  if (changePercent > 0) return 'up';
-  if (changePercent < 0) return 'down';
-  return 'flat';
-}
-
-/**
- * 格式化K线数据为图表格式
- */
-export function formatKLineForChart(kline: KLineData): {
-  categoryData: string[];
-  values: number[][];
-  volumes: number[];
-} {
-  return {
-    categoryData: kline.data.map((candle) => candle.datetime),
-    values: kline.data.map((candle) => [
-      candle.open,
-      candle.close,
-      candle.low,
-      candle.high,
-    ]),
-    volumes: kline.data.map((candle) => candle.volume),
-  };
-}
+export {
+  calculateColorType,
+  formatKLineForChart,
+  isDown,
+  isFlat,
+  isUp,
+} from './market.utils';

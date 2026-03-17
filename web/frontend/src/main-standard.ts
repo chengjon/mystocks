@@ -18,7 +18,6 @@ import './styles/fintech-design-system.scss'
 import './styles/element-plus-override.scss'
 import './styles/visual-optimization.scss'
 import './styles/pro-fintech-optimization.scss'
-import './styles/bloomberg-terminal-override.scss'
 
 // 性能优化: ECharts按需引入
 import './utils/echarts.ts'

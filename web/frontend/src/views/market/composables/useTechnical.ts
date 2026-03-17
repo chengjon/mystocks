@@ -1,20 +1,5 @@
 import { ref, reactive, onMounted } from 'vue'
-import { DataLine, RefreshRight, Setting, Search } from '@element-plus/icons-vue'
-import {
-    ElCard,
-    ElButton,
-    ElInput,
-    ElDatePicker,
-    ElRadioGroup,
-    ElRadioButton,
-    ElSelect,
-    ElOption,
-    ElTag,
-    ElDrawer,
-    ElCheckbox,
-    ElEmpty,
-    ElMessage
-} from 'element-plus'
+import { ElMessage } from 'element-plus'
 
 interface Indicator {
     name: string

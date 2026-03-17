@@ -186,7 +186,7 @@ username=admin&password=admin123
 ### 使用示例
 ```bash
 curl http://localhost:8000/api/stocks/industries \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  -H "Authorization: Bearer <jwt-token>"
 ```
 
 ## 📌 总结

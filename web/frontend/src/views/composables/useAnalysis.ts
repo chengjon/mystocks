@@ -1,15 +1,4 @@
 import { ref, computed, onMounted , onUnmounted } from 'vue'
-import {
-  ArtDecoHeader,
-  ArtDecoCard,
-  ArtDecoInput,
-  ArtDecoSelect,
-  ArtDecoButton,
-  ArtDecoBadge,
-  ArtDecoTable,
-  ArtDecoSidebar
-} from '@/components/artdeco'
-import TimeSeriesChart from '@/components/artdeco/charts/TimeSeriesChart.vue'
 
 // Types - exported for use in components
 export interface AnalysisForm {

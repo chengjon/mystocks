@@ -125,6 +125,7 @@ import { ArtDecoCard } from '@/components/artdeco'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import type { StrategySnapshot } from '@/composables/strategy/useStrategyCrossTabContext'
 import { useStrategyCrossTabContext } from '@/composables/strategy/useStrategyCrossTabContext'
+import { createMockStrategyManagementList } from '@/mock/strategyTabsMock'
 import {
   buildQuickBacktestRoute,
   buildStrategyCrossTabRoute,
@@ -132,6 +133,7 @@ import {
 } from './strategyCrossTabNavigation'
 import {
   buildOptimizationRows,
+  createMockOptimizationRows,
   type StrategyOptimizationRow,
   type OptimizationDataSource,
   type OptimizationStatusLabel
@@ -248,10 +250,13 @@ function extractStrategiesFromPayload(payload: unknown): StrategyConfig[] | null
   return null
 }
 
-function resetOptimizationRows() {
-  strategyRecords.value = []
-  optimizationRows.value = []
-  dataSource.value = 'real'
+function applyMockFallback() {
+  strategyRecords.value = createMockStrategyManagementList()
+  dataSource.value = 'mock'
+  rebuildRowsFromContext('mock')
+  if (optimizationRows.value.length === 0) {
+    optimizationRows.value = createMockOptimizationRows()
+  }
 }
 
 async function refreshOptimizationRows() {
@@ -261,13 +266,13 @@ async function refreshOptimizationRows() {
   })
 
   if (!payload) {
-    resetOptimizationRows()
+    applyMockFallback()
     return
   }
 
   const realStrategies = extractStrategiesFromPayload(payload)
   if (realStrategies === null) {
-    resetOptimizationRows()
+    applyMockFallback()
     return
   }
 

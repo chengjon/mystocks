@@ -8,11 +8,14 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from ._watchlist_data import get_watchlist_mock_data
+
 logger = logging.getLogger(__name__)
 
 
 class MockDataCoreMixin:
     """Mock 数据核心：初始化、路由、数据生成"""
+
 
 class UnifiedMockDataManager:
     """统一Mock数据管理器"""
@@ -634,100 +637,7 @@ class UnifiedMockDataManager:
                     }
 
             elif data_type == "watchlist":
-                # 生成自选股Mock数据
-                user_id = kwargs.get("user_id", 1)
-                action = kwargs.get("action", "list")
-
-                if action == "list" or action == "/list":
-                    # 获取自选股列表
-                    watchlist_data = self._generate_watchlist_data(user_id)
-                    return {
-                        "success": True,
-                        "data": watchlist_data,
-                        "total": len(watchlist_data),
-                        "message": "获取自选股列表成功",
-                        "timestamp": datetime.now().isoformat(),
-                    }
-
-                elif action == "symbols" or action == "/symbols":
-                    # 获取自选股代码列表
-                    watchlist_data = self._generate_watchlist_data(user_id)
-                    symbols = [item["symbol"] for item in watchlist_data]
-                    return {
-                        "success": True,
-                        "data": symbols,
-                        "total": len(symbols),
-                        "message": "获取自选股代码列表成功",
-                        "timestamp": datetime.now().isoformat(),
-                    }
-
-                elif action == "count" or action == "/count":
-                    # 获取自选股数量
-                    watchlist_data = self._generate_watchlist_data(user_id)
-                    return {
-                        "success": True,
-                        "data": {"count": len(watchlist_data)},
-                        "message": "获取自选股数量成功",
-                        "timestamp": datetime.now().isoformat(),
-                    }
-
-                elif action.startswith("add/"):
-                    # 添加自选股
-                    symbol = kwargs.get("symbol", "")
-                    result = {
-                        "success": True,
-                        "message": f"成功添加 {symbol} 到自选股",
-                        "symbol": symbol,
-                        "timestamp": datetime.now().isoformat(),
-                    }
-                    return result
-
-                elif action.startswith("remove/"):
-                    # 移除自选股
-                    symbol = kwargs.get("symbol", "")
-                    result = {
-                        "success": True,
-                        "message": f"成功从自选股移除 {symbol}",
-                        "symbol": symbol,
-                        "timestamp": datetime.now().isoformat(),
-                    }
-                    return result
-
-                elif action == "check":
-                    # 检查股票是否在自选股中
-                    symbol = kwargs.get("symbol", "")
-                    watchlist_data = self._generate_watchlist_data(user_id)
-                    is_in_watchlist = any(item["symbol"] == symbol for item in watchlist_data)
-                    return {
-                        "success": True,
-                        "data": {"symbol": symbol, "is_in_watchlist": is_in_watchlist},
-                        "timestamp": datetime.now().isoformat(),
-                    }
-
-                elif action == "update_notes":
-                    # 更新自选股备注
-                    symbol = kwargs.get("symbol", "")
-                    notes = kwargs.get("notes", "")
-                    result = {
-                        "success": True,
-                        "message": f"成功更新 {symbol} 的备注",
-                        "symbol": symbol,
-                        "notes": notes,
-                        "timestamp": datetime.now().isoformat(),
-                    }
-                    return result
-
-                elif action == "clear":
-                    # 清空自选股
-                    result = {
-                        "success": True,
-                        "message": "自选股列表已清空",
-                        "timestamp": datetime.now().isoformat(),
-                    }
-                    return result
-
-                else:
-                    raise ValueError(f"不支持的watchlist操作: {action}")
+                return get_watchlist_mock_data(self, **kwargs)
 
             elif data_type == "fund-flow":
                 return self._generate_mock_fund_flow(**kwargs)
@@ -746,4 +656,3 @@ class UnifiedMockDataManager:
             logger.error("获取Mock数据失败 {data_type}: {str(e)}", exc_info=True)
             # 返回默认数据而不是抛出异常
             return self._get_default_data(data_type, **kwargs)
-

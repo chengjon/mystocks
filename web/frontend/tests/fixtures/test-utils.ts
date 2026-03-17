@@ -2,17 +2,17 @@ import { expect, Page } from '@playwright/test';
 
 /**
  * MyStocks Frontend - Playwright Test Utilities
- * Phase 3: Bloomberg Terminal Style Verification
+ * Phase 3: ArtDeco Style Verification
  *
  * Reusable helper functions for Design Token validation,
- * style assertions, and Bloomberg compliance checks.
+ * style assertions, and ArtDeco compliance checks.
  */
 
 /**
- * Bloomberg Design Token Constants
+ * ArtDeco Design Token Constants
  * Expected values from theme-tokens.scss
  */
-export const BLOOMBERG_TOKENS = {
+export const ARTDECO_TOKENS = {
   // Color tokens
   colorAccent: '#D4AF37', // Gold
   colorBgPrimary: '#1A1A1A', // Main dark background
@@ -130,9 +130,9 @@ export async function expectComputedStyle(
 }
 
 /**
- * Assert element uses Bloomberg color palette
+ * Assert element uses ArtDeco color palette
  */
-export async function expectBloombergColor(
+export async function expectArtDecoColor(
   page: Page,
   selector: string,
   property: 'color' | 'backgroundColor' | 'borderColor' | 'borderTopColor'
@@ -144,8 +144,8 @@ export async function expectBloombergColor(
   // Convert to lowercase for comparison
   const color = actualValue.toLowerCase();
 
-  // Check if it's one of the Bloomberg colors (hex or rgb)
-  const isBloombergColor =
+  // Check if it's one of the ArtDeco colors (hex or rgb)
+  const isArtDecoColor =
     color.includes('212, 175, 55') || // Gold #D4AF37
     color.includes('26, 26, 26') || // #1A1A1A
     color.includes('10, 10, 10') || // #0A0A0A
@@ -155,7 +155,7 @@ export async function expectBloombergColor(
     color.includes('235, 68, 54') || // Stock down (red)
     color.includes('16, 185, 129'); // Stock up (green)
 
-  expect(isBloombergColor, `${selector} ${property}=${actualValue} should use Bloomberg color palette`).toBeTruthy();
+  expect(isArtDecoColor, `${selector} ${property}=${actualValue} should use ArtDeco color palette`).toBeTruthy();
 }
 
 /**

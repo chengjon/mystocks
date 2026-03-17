@@ -15,6 +15,10 @@ from typing import Optional
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Path, Query, Header
 from sqlalchemy.orm import Session
 
+from app.api.strategy_management.backtest_status_contract import (
+    BacktestStatusResponse,
+    build_backtest_status_response,
+)
 from app.core.config import settings
 from app.core.database import get_db
 from app.core.responses import ErrorCodes, create_error_response
@@ -528,14 +532,20 @@ async def health_check(db: Session = Depends(get_db), data_source=Depends(get_da
 
 
 @router.get(
-    "/backtest/status/{backtest_id}", summary="获取回测任务状态", description="获取回测任务的当前执行状态和进度"
+    "/backtest/status/{backtest_id}",
+    response_model=BacktestStatusResponse,
+    summary="获取回测任务状态",
+    description="兼容旧版回测状态查询接口，推荐改用 /api/v1/strategy/backtest/status/{backtest_id}",
+    deprecated=True,
 )
 async def get_backtest_status(
     backtest_id: int = Path(..., description="回测ID", ge=1),
     backtest_repo: BacktestRepository = Depends(get_backtest_repository),
-):
+) -> BacktestStatusResponse:
     """
-    获取回测任务状态
+    获取回测任务状态。
+
+    兼容保留接口，前端契约应迁移到 `/api/v1/strategy/backtest/status/{backtest_id}`。
 
     **路径参数**:
     - backtest_id: 回测ID
@@ -550,16 +560,7 @@ async def get_backtest_status(
         if backtest is None:
             raise HTTPException(status_code=404, detail=f"回测不存在: backtest_id={backtest_id}")
 
-        # 返回状态信息
-        return {
-            "backtest_id": backtest_id,
-            "status": backtest.status.value if hasattr(backtest.status, "value") else backtest.status,
-            "created_at": backtest.created_at,
-            "started_at": backtest.started_at,
-            "completed_at": backtest.completed_at,
-            "error_message": backtest.error_message,
-            "has_results": backtest.performance_metrics is not None,
-        }
+        return build_backtest_status_response(backtest_id, backtest)
 
     except HTTPException:
         raise

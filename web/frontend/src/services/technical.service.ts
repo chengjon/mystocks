@@ -3,7 +3,7 @@
  * 封装所有技术分析相关的API调用
  */
 
-import { apiClient, APIResponse } from './api-client';
+import { apiClient, APIResponse } from './api-client.ts';
 
 /**
  * 技术指标数据

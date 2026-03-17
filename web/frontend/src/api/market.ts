@@ -4,19 +4,19 @@
  * Provides methods for fetching market data from the backend.
  */
 
-import { request } from '@/utils/request'
-import { DataAdapter } from '@/utils/adapters'
+import { request } from '@/utils/request.ts'
+import { DataAdapter } from '@/utils/adapters.ts'
 import type {
   MarketOverviewResponse,
   FundFlowResponse,
   KlineResponse
-} from '@/api/types/generated-types'
+} from '@/api/types/generated-types.ts'
 import type {
   MarketOverviewVM,
   FundFlowChartPoint,
   KLineChartData,
   StockSearchVM
-} from '@/utils/adapters'
+} from '@/utils/adapters.ts'
 
 interface StockSearchResult {
   symbol?: string
@@ -81,7 +81,7 @@ class MarketApiService {
   /**
    * Get real-time quote
    */
-  async getRealtimeQuote(symbol: string) {
+  async getRealtimeQuote(symbol: string): Promise<unknown> {
     return request.get(`${this.baseUrl}/quote`, {
       params: { symbol }
     })
@@ -90,28 +90,28 @@ class MarketApiService {
   /**
    * Get market heatmap data
    */
-  async getMarketHeatmap() {
+  async getMarketHeatmap(): Promise<unknown> {
     return request.get(`${this.baseUrl}/heatmap`)
   }
 
   /**
    * Get sector performance
    */
-  async getSectorPerformance() {
+  async getSectorPerformance(): Promise<unknown> {
     return request.get(`${this.baseUrl}/sectors`)
   }
 
   /**
    * Get market statistics
    */
-  async getMarketStatistics() {
+  async getMarketStatistics(): Promise<unknown> {
     return request.get(`${this.baseUrl}/statistics`)
   }
 
   /**
    * Refresh market data
    */
-  async refreshMarketData(dataType: string) {
+  async refreshMarketData(dataType: string): Promise<unknown> {
     return request.post(`${this.baseUrl}/refresh`, { dataType })
   }
 }

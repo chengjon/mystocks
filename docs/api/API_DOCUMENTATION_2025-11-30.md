@@ -343,7 +343,7 @@ curl -X POST "http://localhost:8020/api/auth/login" \
 #### 第2步: 使用 Token 获取用户信息
 ```bash
 curl -X GET "http://localhost:8020/api/auth/user" \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  -H "Authorization: Bearer <jwt-token>"
 ```
 
 **响应:**
@@ -419,7 +419,7 @@ curl -X GET "http://localhost:8020/api/auth/user" \
 ### Token 格式
 使用 JWT (JSON Web Token) 格式:
 ```
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP1THsR8U
+<jwt-token>
 ```
 
 ---

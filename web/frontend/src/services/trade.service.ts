@@ -3,7 +3,7 @@
  * 封装所有交易相关的API调用
  */
 
-import { apiClient, APIResponse } from './api-client';
+import { apiClient, APIResponse } from './api-client.ts';
 
 /**
  * 订单类型

@@ -116,9 +116,9 @@
         gap: var(--artdeco-spacing-4);
         position: relative;
 
-        @include artdeco-geometric-corners(var(--artdeco-gold-primary), 16px, 2px);
+        @include artdeco-geometric-corners(var(--artdeco-gold-primary), calc(var(--artdeco-spacing-px) * 16), calc(var(--artdeco-spacing-px) * 2));
 
-        @media (width <= 900px) {
+        @media (width <= calc(var(--artdeco-spacing-px) * 900)) {
             grid-template-columns: 1fr;
         }
     }
@@ -163,7 +163,7 @@
                     }
 
                     .category-bar {
-                        height: 8px;
+                        height: calc(var(--artdeco-spacing-px) * 8);
                         background: color-mix(in srgb, var(--artdeco-fg-primary) 10%, transparent);
                         border-radius: var(--artdeco-radius-sm);
                         overflow: hidden;
@@ -184,7 +184,7 @@
         .key-trades-list {
             .trade-analysis-item {
                 padding: var(--artdeco-spacing-3) 0;
-                border-bottom: 1px solid var(--artdeco-border-default);
+                border-bottom: calc(var(--artdeco-spacing-px) * 1) solid var(--artdeco-border-default);
 
                 &:last-child {
                     border-bottom: none;
@@ -202,7 +202,7 @@
                     }
 
                     .trade-type {
-                        padding: 2px 8px;
+                        padding: calc(var(--artdeco-spacing-px) * 2) calc(var(--artdeco-spacing-px) * 8);
                         border-radius: var(--artdeco-radius-sm);
                         font-size: var(--artdeco-text-xs);
                         font-weight: var(--artdeco-font-bold);
@@ -255,7 +255,7 @@
                     .reason-label {
                         font-size: var(--artdeco-text-xs);
                         color: var(--artdeco-fg-muted);
-                        margin-bottom: 2px;
+                        margin-bottom: calc(var(--artdeco-spacing-px) * 2);
                         text-transform: uppercase;
                         letter-spacing: var(--artdeco-tracking-wide);
                     }

@@ -19,6 +19,7 @@ from typing import Any, Callable, Dict, List, Optional
 import aiofiles
 import aiohttp
 import yaml
+from config.data_sources_loader import JSON_DATA_SOURCES_CONFIG_PATH
 
 from app.services.data_adapter import (
     DashboardDataSourceAdapter,
@@ -51,9 +52,9 @@ logger = logging.getLogger(__name__)
 class DataSourceFactory:
     """数据源工厂 - 核心工厂类"""
 
-    def __init__(self, config_file: str = "config/data_sources.json"):
-        self.config_file = config_file
-        self.config_manager = DynamicConfigManager(config_file)
+    def __init__(self, config_file: str = JSON_DATA_SOURCES_CONFIG_PATH):
+        self.config_file = config_file or JSON_DATA_SOURCES_CONFIG_PATH
+        self.config_manager = DynamicConfigManager(self.config_file)
         self._data_sources: Dict[str, IDataSource] = {}
         self._source_configs: Dict[str, DataSourceConfig] = {}
         self._initialized = False
@@ -345,5 +346,3 @@ def get_data_source_mode() -> DataSourceMode:
 def is_fallback_enabled() -> bool:
     """检查是否启用fallback"""
     return os.getenv("FALLBACK_ENABLED", "true").lower() == "true"
-
-

@@ -17,13 +17,12 @@ import { ref, reactive, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import echarts from '@/utils/echarts'
 import { artDecoTheme } from '@/utils/echarts'
-import ArtDecoCardCompact from '@/components/artdeco/base/ArtDecoCardCompact.vue'
 import _BloombergStatCard from '@/components/BloombergStatCard.vue'
 import _MarketDataView from '@/views/market/MarketDataView.vue'
 import { useTradingDataStore } from '@/stores/tradingData'
 
 // Tab definitions
-const decisionTabs = [
+const _decisionTabs = [
   { id: 'overview', label: '总览' },
   { id: 'positions', label: '持仓' },
   { id: 'orders', label: '委托' },
@@ -37,7 +36,7 @@ const autoRefreshInterval = ref<NodeJS.Timeout | null>(null)
 // Trading stats (computed from stores)
 const tradingDataStore = useTradingDataStore()
 
-const tradingStats = computed(() => {
+const _tradingStats = computed(() => {
   const perf = tradingDataStore.state.performanceAnalysis
   const pos = tradingDataStore.state.positionMonitor
 
@@ -72,7 +71,7 @@ interface OrderHistoryItem {
   time: string
 }
 
-const orderHistory = ref<OrderHistoryItem[]>([
+const _orderHistory = ref<OrderHistoryItem[]>([
   {
     id: '1',
     symbol: '600000',
@@ -86,7 +85,7 @@ const orderHistory = ref<OrderHistoryItem[]>([
 ])
 
 // Current price
-const currentPrice = computed(() => {
+const _currentPrice = computed(() => {
   // TODO: Fetch from API or store
   return '10.50'
 })
@@ -101,7 +100,7 @@ const _marketTabs = [
 const _activeMarketTab = ref('fund-flow')
 
 // Quick action handlers
-const handleQuickAction = (action: string) => {
+const _handleQuickAction = (action: string) => {
   switch (action) {
     case 'new-trade':
       ElMessage.info('新建交易功能开发中...')
@@ -120,7 +119,7 @@ const handleQuickAction = (action: string) => {
   }
 }
 
-const handleQuickBuy = () => {
+const _handleQuickBuy = () => {
   if (!orderForm.symbol) {
     ElMessage.warning('请输入股票代码')
     return
@@ -129,7 +128,7 @@ const handleQuickBuy = () => {
   // TODO: Call trading API
 }
 
-const handleQuickSell = () => {
+const _handleQuickSell = () => {
   if (!orderForm.symbol) {
     ElMessage.warning('请输入股票代码')
     return
@@ -147,7 +146,7 @@ const _handleSearchStock = async () => {
   // TODO: Call API to fetch stock info
 }
 
-const getStatusVariant = (status: string): 'success' | 'warning' | 'info' | 'danger' | 'primary' => {
+const _getStatusVariant = (status: string): 'success' | 'warning' | 'info' | 'danger' | 'primary' => {
   const statusMap: Record<string, 'success' | 'warning' | 'info' | 'danger' | 'primary'> = {
     'filled': 'success',
     'pending': 'warning',
@@ -240,7 +239,7 @@ onMounted(() => {
   }
 })
 
-const toggleAutoRefresh = () => {
+const _toggleAutoRefresh = () => {
   autoRefreshEnabled.value = !autoRefreshEnabled.value
   if (autoRefreshEnabled.value) {
     autoRefreshInterval.value = setInterval(refreshMarketData, 5000)
@@ -260,12 +259,12 @@ const refreshMarketData = () => {
 }
 
 // Refresh handlers for each panel
-const handleRefreshPositions = () => {
+const _handleRefreshPositions = () => {
   ElMessage.success('持仓数据刷新成功')
   // TODO: Refresh positions panel
 }
 
-const handleRefreshOrders = () => {
+const _handleRefreshOrders = () => {
   ElMessage.success('委托数据刷新成功')
   // TODO: Refresh orders panel
 }

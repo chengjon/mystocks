@@ -412,19 +412,12 @@
         time: string
     }
 
-    const {
-        radarTimeframe,
-        showHistorical,
-        radarCanvas,
-        sentimentData,
-        researchData,
-        newsData,
-        popularityData,
-        overallSentimentIndex,
-        bullishPercentage,
-        bearishPercentage,
-        neutralPercentage,
-        totalReports,
+	    const {
+	        radarTimeframe,
+	        showHistorical,
+	        radarCanvas,
+	        overallSentimentIndex,
+	        totalReports,
         avgRating: rawAvgRating,
         avgTargetPrice: rawAvgTargetPrice,
         avgUpside: rawAvgUpside,
@@ -449,13 +442,12 @@
         formatPrice,
         formatDate,
         formatTime,
-        getSentimentColor,
-        getSentimentTypeText,
-        getSentimentClass,
-        getHeatClass,
-        getAttentionTrend,
-        renderRadarChart
-    } = useArtDecoSentimentAnalysis()
+	        getSentimentColor,
+	        getSentimentTypeText,
+	        getSentimentClass,
+	        getHeatClass,
+	        getAttentionTrend
+	    } = useArtDecoSentimentAnalysis()
 
     const avgRating = computed((): number => Number(rawAvgRating.value || 0))
     const avgTargetPrice = computed((): number => Number(rawAvgTargetPrice.value || 0))

@@ -408,7 +408,26 @@
 <script setup>
 import { useRiskDashboard } from './composables/useRiskDashboard'
 
-const { props, loading, summary, alerts, suggestions, criticalAlerts, warningAlerts, infoAlerts, activePositions, inactivePositions, _getScoreColor, getScoreTrend, getScoreChange, change, sign, getActionClass, classes, getSectorColor, colors, index, formatCurrency, formatTime, date, refresh, exportReport, handleAlert, applySuggestion, dismissSuggestion, index, fetchData, data, data, data } = useRiskDashboard()
+const {
+  summary,
+  suggestions,
+  criticalAlerts,
+  warningAlerts,
+  infoAlerts,
+  activePositions,
+  inactivePositions,
+  getScoreTrend,
+  getScoreChange,
+  getActionClass,
+  getSectorColor,
+  formatCurrency,
+  formatTime,
+  refresh,
+  exportReport,
+  handleAlert,
+  applySuggestion,
+  dismissSuggestion
+} = useRiskDashboard()
 </script>
 
 <style scoped>

@@ -110,7 +110,7 @@ sudo ufw allow 443/tcp   # HTTPS
 sudo ufw allow 80/tcp    # HTTP (重定向到 HTTPS)
 
 # 监控端口限制（可选）
-sudo ufw allow from 192.168.1.0/24 to any port 3000
+sudo ufw allow from private-network/24 to any port 3000
 sudo ufw allow from 10.0.0.0/8 to any port 9090
 
 # 数据库端口（仅内网）

@@ -476,7 +476,7 @@ class PerformanceSecurityValidator:
             invalid_tokens = [
                 "invalid.token.here",
                 "Bearer invalid",
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid.signature",
+                "<jwt-token>",
             ]
 
             for token in invalid_tokens:

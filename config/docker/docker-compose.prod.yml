@@ -123,6 +123,11 @@ services:
       WORKERS: ${WORKERS:-4}
       WORKER_TIMEOUT: ${WORKER_TIMEOUT:-30}
 
+      # 外部数据源凭据（只从本地 env 注入，不提交到 Git）
+      BYAPI_KEY: ${BYAPI_KEY:-}
+      BYAPI_BASE_URL: ${BYAPI_BASE_URL:-https://api.biyingapi.com}
+      TUSHARE_TOKEN: ${TUSHARE_TOKEN:-}
+
     ports:
       - "127.0.0.1:8000:8000"
     networks:

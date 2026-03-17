@@ -159,10 +159,17 @@ export class TitleGenerator {
 export const titleGenerator = new TitleGenerator()
 
 // 便捷函数
-export const generateTitle = (template: string, context?: TitleContext) => titleGenerator.generate(template, context)
-export const generateConditionalTitle = (rules: ConditionalTitleRule[], context?: TitleContext) =>
+export const generateTitle = (template: string, context?: TitleContext): ReturnType<TitleGenerator['generate']> =>
+    titleGenerator.generate(template, context)
+export const generateConditionalTitle = (
+    rules: ConditionalTitleRule[],
+    context?: TitleContext
+): ReturnType<TitleGenerator['generateConditional']> =>
     titleGenerator.generateConditional(rules, context)
-export const generateAdvancedTitle = (template: string, context?: TitleContext) =>
+export const generateAdvancedTitle = (
+    template: string,
+    context?: TitleContext
+): ReturnType<TitleGenerator['generateAdvanced']> =>
     titleGenerator.generateAdvanced(template, context)
 
 export default titleGenerator

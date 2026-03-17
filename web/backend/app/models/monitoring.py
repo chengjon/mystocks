@@ -6,6 +6,7 @@ Real-time Monitoring System
 from datetime import date, datetime
 from typing import Dict, Optional
 
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from sqlalchemy import (
     DECIMAL,
     BigInteger,
@@ -226,8 +227,6 @@ class MonitoringStatistics(Base):
 
 from enum import Enum
 
-from pydantic import BaseModel, Field, validator
-
 
 class AlertRuleType(str, Enum):
     """告警规则类型枚举"""
@@ -262,7 +261,8 @@ class AlertRuleCreate(BaseModel):
     priority: int = Field(default=1, ge=1, le=5)
     is_active: bool = True
 
-    @validator("rule_name")
+    @field_validator("rule_name")
+    @classmethod
     def validate_rule_name(cls, v):
         if not v or not v.strip():
             raise ValueError("规则名称不能为空")
@@ -298,8 +298,7 @@ class AlertRuleResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AlertRecordResponse(BaseModel):
@@ -321,8 +320,7 @@ class AlertRecordResponse(BaseModel):
     is_handled: bool
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RealtimeMonitoringResponse(BaseModel):
@@ -342,8 +340,7 @@ class RealtimeMonitoringResponse(BaseModel):
     is_limit_up: bool
     is_limit_down: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class DragonTigerListResponse(BaseModel):
@@ -363,8 +360,7 @@ class DragonTigerListResponse(BaseModel):
     detail_data: Optional[Dict]
     impact_score: Optional[int]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class MonitoringSummaryResponse(BaseModel):

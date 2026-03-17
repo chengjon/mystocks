@@ -57,8 +57,8 @@ ipconfig | findstr "IPv4"
 
 示例输出：
 ```
-IPv4 Address. . . . . . . . . . . : 192.168.123.74
-IPv4 Address. . . . . . . . . . . : 192.168.1.100
+IPv4 Address. . . . . . . . . . . : example.local
+IPv4 Address. . . . . . . . . . . : example.local
 ```
 
 **选择物理网卡 IP**：通常是 `192.168.xxx.xxx` 格式的地址。
@@ -68,8 +68,8 @@ IPv4 Address. . . . . . . . . . . : 192.168.1.100
 在 **WSL2 终端** 中执行：
 
 ```bash
-# 假设 Windows IP 为 192.168.123.74
-CHROME_IP="192.168.123.74"
+# 假设 Windows IP 为 example.local
+CHROME_IP="example.local"
 CHROME_PORT="9230"
 
 # 测试连接
@@ -99,7 +99,7 @@ curl http://${CHROME_IP}:${CHROME_PORT}/json
 |----------|------|----------|--------|
 | `10.255.255.254:9230` | ❌ 连接拒绝 | Windows 防火墙对 WSL2 NAT 网段的隐式拦截 | ❌ 不推荐 |
 | `localhost:9230` | ❌ 连接拒绝 | WSL2 和 Windows 的 localhost 不互通 | ❌ 不推荐 |
-| `192.168.123.74:9230` | ✅ **成功访问** | 直接访问物理网卡，绕过 NAT 拦截 | ✅ **强烈推荐** |
+| `example.local:9230` | ✅ **成功访问** | 直接访问物理网卡，绕过 NAT 拦截 | ✅ **强烈推荐** |
 
 ### 技术原因详解
 
@@ -112,7 +112,7 @@ WSL2 和 Windows 有独立的网络 namespace：
 - Windows 的 `localhost` → 仅指向 Windows 自身（127.0.0.1）
 - 需要使用 IP 地址才能跨系统访问
 
-#### 3. 物理网卡 IP 成功（192.168.123.74）
+#### 3. 物理网卡 IP 成功（example.local）
 - Windows 防火墙对物理网卡网段的入站连接更为宽松
 - Chrome 的 `--remote-debugging-address=0.0.0.0` 在物理网卡上正常生效
 - 完全绕过了 NAT 网段的隐式拦截规则
@@ -138,13 +138,13 @@ WSL2 和 Windows 有独立的网络 namespace：
 
 ```bash
 # 获取所有打开的页面
-curl -s http://192.168.123.74:9230/json | python3 -m json.tool
+curl -s http://example.local:9230/json | python3 -m json.tool
 
 # 获取 Chrome 版本信息
-curl -s http://192.168.123.74:9230/json/version
+curl -s http://example.local:9230/json/version
 
 # 打开新的调试页面（需要 URL 编码）
-curl "http://192.168.123.74:9230/json/new?url=http%3A//localhost%3A3000"
+curl "http://example.local:9230/json/new?url=http%3A//localhost%3A3000"
 ```
 
 ### 方法三：自动化脚本
@@ -156,7 +156,7 @@ curl "http://192.168.123.74:9230/json/new?url=http%3A//localhost%3A3000"
 # Chrome DevTools WSL2 连接脚本
 
 # 配置参数
-CHROME_IP="192.168.123.74"  # 请根据实际情况修改
+CHROME_IP="example.local"  # 请根据实际情况修改
 CHROME_PORT="9230"
 
 echo "=== Chrome DevTools 连接测试 ==="
@@ -217,7 +217,7 @@ fi
 在项目根目录创建 `.env` 文件：
 ```bash
 # Chrome DevTools 远程调试配置
-CHROME_DEBUG_IP=192.168.123.74
+CHROME_DEBUG_IP=example.local
 CHROME_DEBUG_PORT=9230
 ```
 

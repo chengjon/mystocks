@@ -8,27 +8,14 @@
  */
 
 import {
-  SMA,
   EMA,
   _MACD,
   RSI,
-  Stochastic,
   BollingerBands,
   ATR,
-  WMA,
-  ADL,
-  ADX,
-  AwesomeOscillator,
-  CCI,
   MFI,
   // MOM 已移除 - technicalindicators v3.1.0 不存在，使用 ROC 替代
   OBV,
-  PSAR,
-  ROC,
-  StochasticRSI,
-  TRIX,
-  VWAP,
-  WilliamsR,
   _KST,
   ForceIndex
   // VWMA 已移除 - technicalindicators v3.1.0 不存在，使用自定义实现
@@ -391,4 +378,3 @@ export function calculateIndicator(
     return null
   }
 }
-

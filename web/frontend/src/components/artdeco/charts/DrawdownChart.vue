@@ -233,7 +233,7 @@
         const padding = { top: 20, right: 20, bottom: 40, left: 60 }
 
         // Non-null assertion after check (TypeScript control flow analysis limitation)
-        const context = ctx!
+        const context = ctx
 
         // Clear canvas
         context.clearRect(0, 0, width, height)

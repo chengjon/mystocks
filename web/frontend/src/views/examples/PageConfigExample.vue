@@ -61,7 +61,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { getPageConfig, isRouteName, isStandardConfig, type PageConfig, type StandardPageConfig } from '@/config/pageConfig'
+import { getPageConfig, isRouteName, isStandardConfig, type StandardPageConfig } from '@/config/pageConfig'
 import { wsUrl } from '@/config/runtime-endpoints'
 import axios from 'axios'
 

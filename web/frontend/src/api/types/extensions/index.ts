@@ -12,10 +12,10 @@
  */
 
 // ========== Strategy Domain Types ==========
-export * from './strategy';
+export * from './strategy.ts';
 
 // ========== Market Domain Types ==========
-export * from './market';
+export * from './market/index.ts';
 
 // ========== Common Utility Types (ViewModel) ==========
-export * from './common';
+export * from './common.ts';

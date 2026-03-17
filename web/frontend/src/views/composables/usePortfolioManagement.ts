@@ -116,9 +116,12 @@ const loadWatchlists = async () => {
       watchlists.value = data.data
       // Calculate portfolio summary
       if (data.data && data.data.length > 0) {
-        const avgScore = data.data.reduce((sum: number, w: Record<string, any>) => sum + (w.total_score || 0), 0) / data.data.length
+        const avgScore = data.data.reduce((sum: number, w: Watchlist) => sum + (w.total_score || 0), 0) / data.data.length
         portfolioSummary.value.total_score = avgScore
-        portfolioSummary.value.position_count = data.data.reduce((sum: number, w: Record<string, any>) => sum + (w.stocks_count || 0), 0)
+        portfolioSummary.value.position_count = data.data.reduce(
+          (sum: number, w: Watchlist) => sum + (w.stocks_count || 0),
+          0
+        )
       }
     }
   } catch (error) {

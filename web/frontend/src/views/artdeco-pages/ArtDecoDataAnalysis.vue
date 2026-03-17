@@ -56,11 +56,6 @@
             </button>
         </nav>
 
-        <div class="analysis-blocker artdeco-card-shell">
-            <strong>指标接口真值待确认</strong>
-            <span>本页当前优先保证路由壳层、编辑器占位和筛选流程可见；真实指标接口待 API 分支复核后再接入。</span>
-        </div>
-
         <!-- Tab Content -->
         <div class="tab-content artdeco-card-shell">
             <div v-if="loading" class="loading-overlay">
@@ -247,25 +242,6 @@ function handleRowClick(row) {
     display: flex;
     gap: var(--artdeco-spacing-2);
     padding: var(--artdeco-spacing-2);
-}
-
-.analysis-blocker {
-    display: grid;
-    gap: var(--artdeco-spacing-2);
-    padding: var(--artdeco-spacing-4);
-    color: var(--artdeco-fg-primary);
-
-    strong {
-        font-family: var(--font-display);
-        letter-spacing: var(--artdeco-tracking-wide);
-        color: var(--artdeco-gold-primary);
-        text-transform: uppercase;
-    }
-
-    span {
-        color: var(--artdeco-fg-muted);
-        font-size: var(--artdeco-text-sm);
-    }
 }
 
 .main-tab {

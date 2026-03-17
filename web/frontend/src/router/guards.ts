@@ -2,6 +2,14 @@ import { useAuthStore } from '@/stores/auth'
 import type { RouteLocationNormalized } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getActivePinia } from 'pinia'
+import { HOME_ROUTE_NAME } from './homeRoute'
+
+interface AuthErrorLike {
+  response?: {
+    status?: number
+  }
+  code?: string
+}
 
 /**
  * Authentication guard for Vue Router
@@ -42,7 +50,7 @@ export const authGuard = (to: RouteLocationNormalized) => {
 
   // If user is authenticated and trying to access login page, redirect to main page
   if (authStore.isAuthenticated && to.name === 'login') {
-    return { name: 'dealing-room' }
+    return { name: HOME_ROUTE_NAME }
   }
 
   // Allow navigation
@@ -54,7 +62,8 @@ export const authGuard = (to: RouteLocationNormalized) => {
  */
 export const handleAuthError = (error: unknown) => {
   const authStore = useAuthStore()
-  const err = error as Record<string, any>
+  const err: AuthErrorLike =
+    typeof error === 'object' && error !== null ? (error as AuthErrorLike) : {}
 
   // Handle 401 Unauthorized
   if (err?.response?.status === 401) {

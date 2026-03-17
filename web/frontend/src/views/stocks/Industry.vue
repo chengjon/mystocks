@@ -92,7 +92,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, reactive, onUnmounted } from 'vue'
+    import { ref, onUnmounted } from 'vue'
     import { ElCard, ElButton, ElTable, ElTableColumn, ElMessage } from 'element-plus'
     import { Box, RefreshRight } from '@element-plus/icons-vue'
 

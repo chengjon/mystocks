@@ -1,15 +1,26 @@
 import { test, expect } from '@playwright/test';
-import { BLOOMBERG_TOKENS } from './fixtures/test-utils';
 
 /**
  * MyStocks Frontend - China Stock Market Color Adaptation Tests
- * Phase 3: Bloomberg Terminal Style Verification
+ * Phase 3: ArtDeco Style Verification
  *
  * Tests for verifying China A-Share stock color conventions:
  * - Red for up (上涨 - 红涨)
  * - Green for down (下跌 - 绿跌)
  * - Proper application in stock displays and charts
  */
+
+const STOCK_RED_RGB_PATTERNS = ['255, 71, 87', '235, 68, 54', '220, 38, 38', '239, 68, 68'];
+const STOCK_GREEN_RGB_PATTERNS = ['0, 217, 36', '16, 185, 129', '34, 197, 94', '76, 175, 80'];
+
+const hasAnyRgbPattern = (color: string, patterns: string[]) => {
+  const normalized = color.toLowerCase();
+  return patterns.some(pattern => normalized.includes(pattern));
+};
+
+const isStockUpColor = (color: string) => hasAnyRgbPattern(color, STOCK_RED_RGB_PATTERNS);
+const isStockDownColor = (color: string) => hasAnyRgbPattern(color, STOCK_GREEN_RGB_PATTERNS);
+const isAnyStockColor = (color: string) => isStockUpColor(color) || isStockDownColor(color);
 
 test.describe('China Stock Colors: Token Definitions', () => {
   test.beforeEach(async ({ page }) => {
@@ -26,13 +37,8 @@ test.describe('China Stock Colors: Token Definitions', () => {
       return color;
     });
 
-    // Should be RED for up (红涨) - #ff4757 or similar red
-    const colorLower = stockUpColor.toLowerCase();
-    const isRed =
-      colorLower.includes('255, 71, 87') ||  // #ff4757 (our new color)
-      colorLower.includes('235, 68, 54') ||   // #EB4436 (variant)
-      colorLower.includes('220, 38, 38') ||   // Alternative red
-      colorLower.includes('239, 68, 68');     // Material red
+    // Should be RED for up (红涨)
+    const isRed = hasAnyRgbPattern(stockUpColor, STOCK_RED_RGB_PATTERNS);
 
     expect(isRed, `stock-up should be red for China market, got ${stockUpColor}`).toBeTruthy();
   });
@@ -48,12 +54,7 @@ test.describe('China Stock Colors: Token Definitions', () => {
     });
 
     // Should be GREEN for down (绿跌) - #00d924 or similar green
-    const colorLower = stockDownColor.toLowerCase();
-    const isGreen =
-      colorLower.includes('0, 217, 36') ||     // #00d924 (our new color)
-      colorLower.includes('16, 185, 129') ||   // #10B981 (variant)
-      colorLower.includes('34, 197, 94') ||    // Alternative green
-      colorLower.includes('76, 175, 80');      // Material green
+    const isGreen = isStockDownColor(stockDownColor);
 
     expect(isGreen, `stock-down should be green for China market, got ${stockDownColor}`).toBeTruthy();
   });
@@ -67,19 +68,15 @@ test.describe('China Stock Colors: Stocks Page', () => {
 
   test('should display positive changes in red', async ({ page }) => {
     // Find elements with positive change class
-    const positiveElements = page.locator('.positive, [class*="up"], [class*="rise"]').all();
+    const positiveElements = await page.locator('.positive, [class*="up"], [class*="rise"]').all();
 
     for (const el of positiveElements.slice(0, 5)) {
-      const color = await el.evaluate((element) => {
+      const color = await el.evaluate((element: Element) => {
         return getComputedStyle(element).color;
       });
 
       // Should be red (RGB: 235, 68, 54 or similar)
-      const colorLower = color.toLowerCase();
-      const isRed =
-        colorLower.includes('235, 68, 54') || // #EB4436
-        colorLower.includes('220, 38, 38') || // Variant red
-        colorLower.includes('239, 68, 68');   // Material red
+      const isRed = isStockUpColor(color);
 
       expect(isRed, `Positive change should be red, got ${color}`).toBeTruthy();
     }
@@ -87,19 +84,15 @@ test.describe('China Stock Colors: Stocks Page', () => {
 
   test('should display negative changes in green', async ({ page }) => {
     // Find elements with negative change class
-    const negativeElements = page.locator('.negative, [class*="down"], [class*="fall"]').all();
+    const negativeElements = await page.locator('.negative, [class*="down"], [class*="fall"]').all();
 
     for (const el of negativeElements.slice(0, 5)) {
-      const color = await el.evaluate((element) => {
+      const color = await el.evaluate((element: Element) => {
         return getComputedStyle(element).color;
       });
 
       // Should be green (RGB: 16, 185, 129 or similar)
-      const colorLower = color.toLowerCase();
-      const isGreen =
-        colorLower.includes('16, 185, 129') || // #10B981
-        colorLower.includes('34, 197, 94') ||  // Variant green
-        colorLower.includes('76, 175, 80');    // Material green
+      const isGreen = isStockDownColor(color);
 
       expect(isGreen, `Negative change should be green, got ${color}`).toBeTruthy();
     }
@@ -114,18 +107,15 @@ test.describe('China Stock Colors: Stocks Page', () => {
       if (!text || text === '--') continue;
 
       // Check if color matches the sign
-      const color = await el.evaluate((element) => {
+      const color = await el.evaluate((element: Element) => {
         return getComputedStyle(element).color;
       });
 
-      const colorLower = color.toLowerCase();
       const hasSign = (text.includes('+') || text.match(/\d/));
 
       if (hasSign) {
-        // Should have color (either red or green)
-        const hasColor =
-          colorLower.includes('235, 68, 54') || // Red
-          colorLower.includes('16, 185, 129');   // Green
+        // Should have stock color (either red or green)
+        const hasColor = isAnyStockColor(color);
 
         expect(hasColor, `Percentage change should have stock color, got ${color}`).toBeTruthy();
       }
@@ -140,37 +130,39 @@ test.describe('China Stock Colors: Market Page', () => {
   });
 
   test('should use red for stock price increases', async ({ page }) => {
-    const priceElements = page.locator('.price, .stock-price').all();
+    const priceElements = await page.locator('.price, .stock-price').all();
 
     for (const el of priceElements.slice(0, 5)) {
       const text = await el.textContent();
 
       // If price has upward indicator or is in positive context
       if (text && (text.includes('↑') || text.includes('+'))) {
-        const color = await el.evaluate((element) => {
+        const color = await el.evaluate((element: Element) => {
           return getComputedStyle(element).color;
         });
 
         // Should be red for up
-        expect(color.toLowerCase()).toContain('235, 68, 54');
+        const isRed = isStockUpColor(color);
+        expect(isRed, `Upward price should be red, got ${color}`).toBeTruthy();
       }
     }
   });
 
   test('should use green for stock price decreases', async ({ page }) => {
-    const priceElements = page.locator('.price, .stock-price').all();
+    const priceElements = await page.locator('.price, .stock-price').all();
 
     for (const el of priceElements.slice(0, 5)) {
       const text = await el.textContent();
 
       // If price has downward indicator or is in negative context
       if (text && (text.includes('↓') || text.includes('-'))) {
-        const color = await el.evaluate((element) => {
+        const color = await el.evaluate((element: Element) => {
           return getComputedStyle(element).color;
         });
 
         // Should be green for down
-        expect(color.toLowerCase()).toContain('16, 185, 129');
+        const isGreen = isStockDownColor(color);
+        expect(isGreen, `Downward price should be green, got ${color}`).toBeTruthy();
       }
     }
   });
@@ -184,36 +176,36 @@ test.describe('China Stock Colors: Trade Management Page', () => {
 
   test('should apply stock colors to profit/loss display', async ({ page }) => {
     // Find profit/loss elements
-    const pnlElements = page.locator('[class*="profit"], [class*="loss"], [class*="pnl"]').all();
+    const pnlElements = await page.locator('[class*="profit"], [class*="loss"], [class*="pnl"]').all();
 
     for (const el of pnlElements.slice(0, 5)) {
-      const color = await el.evaluate((element) => {
+      const color = await el.evaluate((element: Element) => {
         return getComputedStyle(element).color;
       });
 
       // Should be either red (profit) or green (loss)
-      const colorLower = color.toLowerCase();
-      const isStockColor =
-        colorLower.includes('235, 68, 54') || // Red
-        colorLower.includes('16, 185, 129');   // Green
+      const isStockColor = isAnyStockColor(color);
 
       expect(isStockColor, `Profit/Loss should use stock color, got ${color}`).toBeTruthy();
     }
   });
 
   test('should display portfolio summary with correct colors', async ({ page }) => {
-    const portfolioCards = page.locator('.portfolio-overview, .account-summary').all();
+    const portfolioCards = await page.locator('.portfolio-overview, .account-summary').all();
 
     for (const card of portfolioCards) {
-      const hasStockColors = await card.evaluate((element) => {
+      const hasStockColors = await card.evaluate((element: Element) => {
+        const hasAnyPattern = (value: string, patterns: string[]) =>
+          patterns.some((pattern) => value.includes(pattern));
+
         const allElements = element.querySelectorAll('*');
         let hasRed = false;
         let hasGreen = false;
 
         for (const el of allElements) {
           const color = getComputedStyle(el).color.toLowerCase();
-          if (color.includes('235, 68, 54')) hasRed = true;
-          if (color.includes('16, 185, 129')) hasGreen = true;
+          if (hasAnyPattern(color, STOCK_RED_RGB_PATTERNS)) hasRed = true;
+          if (hasAnyPattern(color, STOCK_GREEN_RGB_PATTERNS)) hasGreen = true;
         }
 
         return hasRed && hasGreen;
@@ -231,14 +223,14 @@ test.describe('China Stock Colors: Dashboard Page', () => {
   });
 
   test('should display watchlist with stock colors', async ({ page }) => {
-    const watchlistItems = page.locator('.watchlist-item, .stock-item').all();
+    const watchlistItems = await page.locator('.watchlist-item, .stock-item').all();
 
     for (const item of watchlistItems.slice(0, 3)) {
-      const hasStockColor = await item.evaluate((element) => {
+      const hasStockColor = await item.evaluate((element: Element) => {
         const allElements = element.querySelectorAll('*');
         for (const el of allElements) {
-          const color = getComputedStyle(el).color.toLowerCase();
-          if (color.includes('235, 68, 54') || color.includes('16, 185, 129')) {
+          const color = getComputedStyle(el).color;
+          if (isAnyStockColor(color)) {
             return true;
           }
         }
@@ -250,18 +242,15 @@ test.describe('China Stock Colors: Dashboard Page', () => {
   });
 
   test('should apply colors to market indices', async ({ page }) => {
-    const indexElements = page.locator('.market-index, .index-value').all();
+    const indexElements = await page.locator('.market-index, .index-value').all();
 
     for (const el of indexElements.slice(0, 3)) {
-      const color = await el.evaluate((element) => {
+      const color = await el.evaluate((element: Element) => {
         return getComputedStyle(element).color;
       });
 
       // Should have stock color (red or green)
-      const colorLower = color.toLowerCase();
-      const hasColor =
-        colorLower.includes('235, 68, 54') ||
-        colorLower.includes('16, 185, 129');
+      const hasColor = isAnyStockColor(color);
 
       expect(hasColor, 'Market indices should use stock colors').toBeTruthy();
     }
@@ -282,30 +271,30 @@ test.describe('China Stock Colors: Color Consistency', () => {
         await page.goto(pageInfo.path);
         await page.waitForLoadState('networkidle');
 
-        const redElements = await page.locator('*').filter(async (el) => {
-          const color = await el.evaluate((element) => {
-            return getComputedStyle(element).color;
-          });
-          return color.toLowerCase().includes('235, 68, 54');
-        }).all();
+        const redElementsCount = await page.evaluate(() => {
+          const allElements = Array.from(document.querySelectorAll('*'));
+          return allElements.filter((element: Element) =>
+            isStockUpColor(getComputedStyle(element).color)
+          ).length;
+        });
 
         // Should have at least some red elements for positive values
-        expect(redElements.length).toBeGreaterThan(0);
+        expect(redElementsCount).toBeGreaterThan(0);
       });
 
       test('should consistently use green for down', async ({ page }) => {
         await page.goto(pageInfo.path);
         await page.waitForLoadState('networkidle');
 
-        const greenElements = await page.locator('*').filter(async (el) => {
-          const color = await el.evaluate((element) => {
-            return getComputedStyle(element).color;
-          });
-          return color.toLowerCase().includes('16, 185, 129');
-        }).all();
+        const greenElementsCount = await page.evaluate(() => {
+          const allElements = Array.from(document.querySelectorAll('*'));
+          return allElements.filter((element: Element) =>
+            isStockDownColor(getComputedStyle(element).color)
+          ).length;
+        });
 
         // Should have at least some green elements for negative values
-        expect(greenElements.length).toBeGreaterThan(0);
+        expect(greenElementsCount).toBeGreaterThan(0);
       });
     });
   }
@@ -318,8 +307,8 @@ test.describe('China Stock Colors: Visual Clarity', () => {
     // Test red (up) contrast
     const redElement = page.locator('.positive').first();
     if (await redElement.count() > 0) {
-      const redColor = await redElement.evaluate((el) => getComputedStyle(el).color);
-      const bgColor = await redElement.evaluate((el) => {
+      const redColor = await redElement.evaluate((el: Element) => getComputedStyle(el).color);
+      const bgColor = await redElement.evaluate((el: Element) => {
         const parent = el.parentElement || document.body;
         return getComputedStyle(parent).backgroundColor;
       });
@@ -342,8 +331,8 @@ test.describe('China Stock Colors: Visual Clarity', () => {
           };
         };
 
-        const fgRgb = parse(rgbToHex(fgColor));
-        const bgRgb = parse(rgbToHex(bgColor));
+        const fgRgb = parse(rgbToHex(fg));
+        const bgRgb = parse(rgbToHex(bg));
 
         const lum = (c: { r: number; g: number; b: number }) => {
           const [r, g, b] = [c.r / 255, c.g / 255, c.b / 255].map((v) =>
@@ -374,7 +363,7 @@ test.describe('China Stock Colors: Visual Clarity', () => {
 
         // Check if positive text has green color (Western style - WRONG)
         if (text.includes('+') || text.includes('↑') || text.includes('涨')) {
-          if (color.includes('16, 185, 129') || color.includes('34, 197, 94')) {
+          if (isStockDownColor(color)) {
             return true; // Found Western style
           }
         }

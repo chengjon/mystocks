@@ -111,7 +111,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const props = defineProps({
   stockCode: {
@@ -167,7 +167,7 @@ onMounted(() => {
 
 <style scoped>
 .fund-flow-panel {
-  padding: 20px;
+  padding: var(--artdeco-spacing-5);
   background: linear-gradient(
     135deg,
     color-mix(in srgb, var(--artdeco-gold-primary) 8%, var(--artdeco-bg-primary)) 0%,
@@ -176,29 +176,29 @@ onMounted(() => {
 }
 
 .panel-title {
-  font-size: 24px;
+  font-size: var(--artdeco-text-xl);
   font-weight: 600;
   color: var(--artdeco-gold-primary);
-  margin-bottom: 20px;
+  margin-bottom: var(--artdeco-spacing-5);
   text-align: center;
 }
 
 .fund-overview {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-bottom: 30px;
+  gap: var(--artdeco-spacing-4);
+  margin-bottom: var(--artdeco-spacing-8);
 }
 
 .chart-card {
   grid-column: span 2;
   background: color-mix(in srgb, var(--artdeco-fg-primary) 5%, transparent);
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: var(--artdeco-radius-lg);
+  padding: var(--artdeco-spacing-5);
 }
 
 .chart-placeholder {
-  height: 250px;
+  height: var(--artdeco-spacing-20);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -206,51 +206,51 @@ onMounted(() => {
 }
 
 .chart-title {
-  font-size: 16px;
+  font-size: var(--artdeco-text-base);
   color: var(--artdeco-gold-primary);
-  margin-bottom: 10px;
+  margin-bottom: var(--artdeco-spacing-2);
 }
 
 .chart-area {
   flex: 1;
   background: color-mix(in srgb, var(--artdeco-fg-primary) 2%, transparent);
-  border-radius: 8px;
-  padding: 15px;
+  border-radius: var(--artdeco-radius-md);
+  padding: var(--artdeco-spacing-4);
   overflow: hidden;
 }
 
 .ranking-card {
   grid-column: span 2;
   background: color-mix(in srgb, var(--artdeco-fg-primary) 5%, transparent);
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: var(--artdeco-radius-lg);
+  padding: var(--artdeco-spacing-5);
 }
 
 .ranking-controls {
   display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: var(--artdeco-spacing-3);
+  margin-bottom: var(--artdeco-spacing-5);
 }
 
 .time-filters {
   display: flex;
-  gap: 8px;
+  gap: var(--artdeco-spacing-2);
 }
 
 .filter-btn {
-  padding: 8px 16px;
+  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
   background: color-mix(in srgb, var(--artdeco-fg-primary) 10%, transparent);
   border: 1px solid var(--artdeco-border-default);
-  border-radius: 8px;
+  border-radius: var(--artdeco-spacing-2);
   color: var(--artdeco-gold-primary);
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all var(--artdeco-transition-quick);
 }
 
 .filter-btn:hover {
   background: var(--artdeco-gold-primary);
   color: var(--artdeco-bg-primary);
-  transform: translateY(-2px);
+  transform: translateY(calc(var(--artdeco-spacing-px) * -2));
 }
 
 .filter-btn.active {
@@ -259,38 +259,38 @@ onMounted(() => {
 }
 
 .ranking-select {
-  width: 200px;
-  padding: 8px 12px;
+  width: calc(var(--artdeco-spacing-20) * 2.5);
+  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
   background: color-mix(in srgb, var(--artdeco-fg-primary) 5%, transparent);
   border: 1px solid var(--artdeco-border-default);
-  border-radius: 8px;
+  border-radius: var(--artdeco-spacing-2);
   color: var(--artdeco-gold-primary);
 }
 
 .ranking-table {
   background: color-mix(in srgb, var(--artdeco-fg-primary) 2%, transparent);
-  border-radius: 8px;
+  border-radius: var(--artdeco-spacing-2);
   overflow: hidden;
 }
 
 .table-header {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  padding: 12px;
+  grid-template-columns: repeat(7, 1fr);
+  padding: var(--artdeco-spacing-3);
   background: var(--artdeco-gold-opacity-10);
   font-weight: 600;
   color: var(--artdeco-gold-primary);
-  border-radius: 8px 8px 8px 0 0;
+  border-radius: var(--artdeco-spacing-2) var(--artdeco-spacing-2) var(--artdeco-spacing-2) 0 0;
 }
 
 .table-body {
-  max-height: 400px;
+  max-height: calc(var(--artdeco-spacing-20) * 5);
   overflow-y: auto;
 }
 
 .table-row {
   display: contents;
-  padding: 12px;
+  padding: var(--artdeco-spacing-3);
   border-bottom: 1px solid var(--artdeco-gold-opacity-10);
 }
 
@@ -310,11 +310,11 @@ onMounted(() => {
 .stock-name {
   font-weight: 600;
   color: var(--artdeco-gold-primary);
-  margin-bottom: 4px;
+  margin-bottom: var(--artdeco-spacing-1);
 }
 
 .stock-code {
-  font-size: 12px;
+  font-size: var(--artdeco-text-xs);
   color: var(--artdeco-fg-muted);
 }
 

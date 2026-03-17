@@ -7,6 +7,7 @@ import logging
 import os
 import secrets
 import time
+import asyncio
 from contextlib import asynccontextmanager
 
 import structlog
@@ -255,6 +256,15 @@ async def lifespan(app: FastAPI):
 
     except Exception as e:
         logger.error(f"❌ Failed to initialize Indicator System: {e}")
+
+    # Dashboard market-overview 预热（异步，不阻塞启动）
+    try:
+        from .api.dashboard_data_source import prewarm_dashboard_market_overview_cache
+
+        asyncio.create_task(asyncio.to_thread(prewarm_dashboard_market_overview_cache))
+        logger.info("✅ Scheduled dashboard market-overview prewarm")
+    except Exception as e:
+        logger.warning(f"⚠️ Failed to schedule dashboard market-overview prewarm: {e}")
 
     yield  # 应用运行期间
 

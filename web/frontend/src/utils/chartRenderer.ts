@@ -1,4 +1,4 @@
-import type { KLineData } from '@/types/kline';
+import type { KLineData } from '@/types/kline.ts';
 
 export interface RenderOptions {
   canvas: HTMLCanvasElement;
@@ -37,9 +37,22 @@ export class ChartRenderer {
   constructor(options: RenderOptions) {
     this.options = options;
     const canvas = options.canvas;
-    this.ctx = canvas.getContext('2d')!;
+    const context = canvas.getContext('2d');
+    if (!context) {
+      throw new Error('Failed to get 2D canvas context');
+    }
+
+    this.ctx = context;
     canvas.width = options.width;
     canvas.height = options.height;
+  }
+
+  private getMetrics(): ChartMetrics {
+    if (!this.metrics) {
+      return this.calculateMetrics();
+    }
+
+    return this.metrics;
   }
 
   calculateMetrics(): ChartMetrics {
@@ -89,30 +102,30 @@ export class ChartRenderer {
   }
 
   priceToY(price: number): number {
-    if (!this.metrics) this.calculateMetrics();
+    const metrics = this.getMetrics();
     const { padding = { top: 20, right: 60, bottom: 30, left: 10 } } = this.options;
     const chartHeight = this.options.height - padding.top - padding.bottom;
-    const ratio = (price - this.metrics!.minPrice) / this.metrics!.priceRange;
+    const ratio = (price - metrics.minPrice) / metrics.priceRange;
     return this.options.height - padding.bottom - ratio * chartHeight;
   }
 
   volumeToY(volume: number): number {
-    if (!this.metrics) this.calculateMetrics();
+    const metrics = this.getMetrics();
     const { padding = { top: 20, right: 60, bottom: 30, left: 10 } } = this.options;
     const chartHeight = this.options.height - padding.top - padding.bottom;
     const volumeHeight = chartHeight * 0.2;
-    const ratio = volume / this.metrics!.maxVolume;
+    const ratio = volume / metrics.maxVolume;
     return this.options.height - padding.bottom - ratio * volumeHeight;
   }
 
   indexToX(index: number): number {
-    if (!this.metrics) this.calculateMetrics();
+    const metrics = this.getMetrics();
     const { padding = { left: 10 } } = this.options;
-    return padding.left + index * this.metrics!.candleSpacing + this.metrics!.candleWidth / 2;
+    return padding.left + index * metrics.candleSpacing + metrics.candleWidth / 2;
   }
 
   render(): void {
-    const { data, padding = { top: 20, right: 60, bottom: 30, left: 10 }, colors } = this.options;
+    const { padding = { top: 20, right: 60, bottom: 30, left: 10 }, colors } = this.options;
 
     this.calculateMetrics();
     this.clear();
@@ -158,27 +171,25 @@ export class ChartRenderer {
 
   drawVolume(padding: { top: number; right: number; bottom: number; left: number }, colors?: RenderOptions['colors']): void {
     const { data } = this.options;
+    const metrics = this.getMetrics();
     const upColor = colors?.upColor || '#26a69a';
     const downColor = colors?.downColor || '#ef5350';
-
-    const chartHeight = this.options.height - padding.top - padding.bottom;
-    const volumeHeight = chartHeight * 0.2;
-    const _volumeTop = this.options.height - padding.bottom - volumeHeight;
 
     this.ctx.fillStyle = upColor;
 
     for (let i = 0; i < data.length; i++) {
-      const x = this.indexToX(i) - this.metrics!.candleWidth / 2;
+      const x = this.indexToX(i) - metrics.candleWidth / 2;
       const y = this.volumeToY(data[i].volume);
       const barHeight = this.options.height - padding.bottom - y;
 
       this.ctx.fillStyle = data[i].close >= data[i].open ? upColor : downColor;
-      this.ctx.fillRect(x, y, this.metrics!.candleWidth, barHeight);
+      this.ctx.fillRect(x, y, metrics.candleWidth, barHeight);
     }
   }
 
   drawCandles(padding: { top: number; right: number; bottom: number; left: number }, colors?: RenderOptions['colors']): void {
     const { data } = this.options;
+    const metrics = this.getMetrics();
     const upColor = colors?.upColor || '#26a69a';
     const downColor = colors?.downColor || '#ef5350';
     const upBorderColor = colors?.upBorderColor || upColor;
@@ -187,7 +198,7 @@ export class ChartRenderer {
     const downWickColor = colors?.downWickColor || downColor;
 
     for (let i = 0; i < data.length; i++) {
-      const x = this.indexToX(i) - this.metrics!.candleWidth / 2;
+      const x = this.indexToX(i) - metrics.candleWidth / 2;
       const openY = this.priceToY(data[i].open);
       const closeY = this.priceToY(data[i].close);
       const highY = this.priceToY(data[i].high);
@@ -202,8 +213,8 @@ export class ChartRenderer {
       this.ctx.lineWidth = 1;
 
       const bodyHeight = Math.max(1, Math.abs(closeY - openY));
-      this.ctx.fillRect(x, Math.min(openY, closeY), this.metrics!.candleWidth, bodyHeight);
-      this.ctx.strokeRect(x, Math.min(openY, closeY), this.metrics!.candleWidth, bodyHeight);
+      this.ctx.fillRect(x, Math.min(openY, closeY), metrics.candleWidth, bodyHeight);
+      this.ctx.strokeRect(x, Math.min(openY, closeY), metrics.candleWidth, bodyHeight);
 
       this.ctx.strokeStyle = wickColor;
       this.ctx.beginPath();
@@ -215,15 +226,13 @@ export class ChartRenderer {
 
   drawAxes(padding: { top: number; right: number; bottom: number; left: number }): void {
     const { width, height, colors } = this.options;
+    const { minPrice, maxPrice } = this.getMetrics();
     const axisColor = colors?.axisColor || '#888888';
 
     this.ctx.fillStyle = axisColor;
     this.ctx.font = '10px monospace';
     this.ctx.textAlign = 'right';
 
-    if (!this.metrics) this.calculateMetrics();
-
-    const { minPrice, maxPrice } = this.metrics!;
     const priceStep = (maxPrice - minPrice) / 4;
     const chartHeight = height - padding.top - padding.bottom;
 

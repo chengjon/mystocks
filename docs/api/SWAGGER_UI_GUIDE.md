@@ -161,7 +161,7 @@ start http://localhost:8020/api/docs
 
 2. **在弹出窗口中填写**:
    ```
-   Value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+   Value: Bearer <jwt-token>
    ```
 
    **注意**: 必须包含 "Bearer " 前缀
@@ -255,7 +255,7 @@ start http://localhost:8020/api/docs
 curl -X 'GET' \
   'http://localhost:8020/api/market/realtime?symbols=000001.SZ' \
   -H 'accept: application/json' \
-  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+  -H 'Authorization: Bearer <jwt-token>'
 ```
 
 ### 6. 按模块筛选 API

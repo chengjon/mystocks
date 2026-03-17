@@ -1,4 +1,4 @@
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { TableColumn } from '@/components/shared'
 import {
@@ -36,7 +36,12 @@ interface CategoryData {
 interface StockItem {
   code: string
   name: string
+  change_percent?: number
   [key: string]: unknown
+}
+
+interface IndustryConceptError {
+  message?: string
 }
 
 export function useIndustryConceptAnalysis() {
@@ -160,7 +165,7 @@ const tableColumns = computed((): TableColumn[] => [
     label: '涨跌幅',
     width: 120,
     align: 'right',
-    colorClass: (row: Record<string, any>) => getChangeColorClass(row.change_percent),
+    colorClass: (row: StockItem) => getChangeColorClass(row.change_percent),
     formatter: (value: number) => formatPercent(value)
   },
   {
@@ -186,8 +191,8 @@ const paginatedStocks = computed(() => {
 
   if (searchKeyword.value) {
     const keyword = searchKeyword.value.toLowerCase()
-    result = stocks.value.filter((stock: Record<string, any>) =>
-      stock.symbol.toLowerCase().includes(keyword) ||
+    result = stocks.value.filter((stock: StockItem) =>
+      stock.code.toLowerCase().includes(keyword) ||
       (stock.name && stock.name.toLowerCase().includes(keyword))
     )
   }
@@ -252,7 +257,7 @@ const refreshData = async () => {
     ElMessage.success('数据刷新成功')
   } catch (error: unknown) {
     console.error('数据刷新失败:', error)
-    const err = error as Record<string, any>
+    const err = error as IndustryConceptError
     ElMessage.error('数据刷新失败: ' + (err?.message || 'Unknown error'))
   } finally {
     loading.value = false

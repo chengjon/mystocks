@@ -120,7 +120,7 @@ const openTradeDialog = (type: 'buy' | 'sell') => {
   tradeDialogVisible.value = true
 }
 
-const handleQuickSell = (position: unknown) => {
+const handleQuickSell = (_position: unknown) => {
   tradeType.value = 'sell'
   tradeDialogVisible.value = true
 }

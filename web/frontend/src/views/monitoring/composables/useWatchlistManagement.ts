@@ -1,34 +1,15 @@
 import { ref, reactive, computed, onMounted, type Ref } from 'vue'
 import { ElMessage as message } from 'element-plus'
 import {
-  PlusOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  SettingOutlined,
-  CloseOutlined,
-  FolderOpenOutlined,
-  StockOutlined,
-  AlertOutlined,
-  ReloadOutlined
-} from '@ant-design/icons-vue'
+  watchlistService,
+  type AddWatchlistStockPayload,
+  type CreateWatchlistPayload,
+  type WatchlistRecord,
+  type WatchlistStockRecord
+} from '@/api/services/watchlistService'
 
-// Type definitions
-interface Watchlist {
-  id: number
-  name: string
-  watchlist_type: string
-  stocks_count?: number
-  risk_profile?: { risk_tolerance?: number }
-}
-
-interface WatchlistStock {
-  id: number
-  stock_code: string
-  entry_price?: number
-  current_price?: number
-  weight?: number
-  entry_reason?: string
-}
+type Watchlist = WatchlistRecord
+type WatchlistStock = WatchlistStockRecord
 
 interface WatchlistForm {
   name: string
@@ -145,7 +126,7 @@ const getPnlPercent = (stock: WatchlistStock): string => {
   return `${pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}%`
 }
 
-const getReasonClass = (reason: string): string => {
+const getReasonClass = (reason: string | null | undefined): string => {
   const classes: Record<string, string> = {
     'macd_gold_cross': 'reason-technical',
     'rsi_oversold': 'reason-technical',
@@ -153,10 +134,11 @@ const getReasonClass = (reason: string): string => {
     'manual_pick': 'reason-manual',
     'value_investment': 'reason-value'
   }
+  if (!reason) return 'reason-manual'
   return classes[reason] || 'reason-manual'
 }
 
-const getReasonText = (reason: string): string => {
+const getReasonText = (reason: string | null | undefined): string => {
   const texts: Record<string, string> = {
     'macd_gold_cross': 'MACD CROSS',
     'rsi_oversold': 'RSI OVERSOLD',
@@ -164,7 +146,8 @@ const getReasonText = (reason: string): string => {
     'manual_pick': 'MANUAL',
     'value_investment': 'VALUE'
   }
-  return texts[reason] || reason || 'UNKNOWN'
+  if (!reason) return 'UNKNOWN'
+  return texts[reason] || reason
 }
 
 const formatCurrency = (value: number): string => {
@@ -183,10 +166,11 @@ const formatPrice = (price: number | undefined | null): string => {
 const fetchWatchlists = async (): Promise<void> => {
   loading.value = true
   try {
-    const res = await fetch('/api/monitoring/watchlists')
-    const data = await res.json()
-    if (data.success) {
-      watchlists.value = data.data
+    const response = await watchlistService.listWatchlists()
+    if (response.success) {
+      watchlists.value = response.data
+    } else {
+      message.error(response.message || '获取清单列表失败')
     }
   } catch (error) {
     console.error('获取清单列表失败:', error)
@@ -198,10 +182,9 @@ const fetchWatchlists = async (): Promise<void> => {
 
 const fetchWatchlistStocks = async (watchlistId: number): Promise<void> => {
   try {
-    const res = await fetch(`/api/monitoring/watchlists/${watchlistId}/stocks`)
-    const data = await res.json()
-    if (data.success) {
-      watchlistStocks.value = data.data
+    const response = await watchlistService.listWatchlistStocks(watchlistId)
+    if (response.success) {
+      watchlistStocks.value = response.data
     }
   } catch (error) {
     console.error('获取股票列表失败:', error)
@@ -233,35 +216,29 @@ const showCreateModal = (): void => {
 
 const editWatchlist = (record: Watchlist): void => {
   editingWatchlist.value = record
-  watchlistForm.name = record.name
-  watchlistForm.watchlist_type = record.watchlist_type
-  riskTolerance.value = record.risk_profile?.risk_tolerance || 50
-  createModalVisible.value = true
+  message.warning('编辑组合功能待接线，当前仅开放创建、删除与成分股管理')
 }
 
 const handleCreateOrUpdate = async (): Promise<void> => {
+  if (editingWatchlist.value) {
+    message.warning('编辑组合功能待接线，当前仅开放创建、删除与成分股管理')
+    return
+  }
+
   try {
     watchlistForm.risk_profile = { risk_tolerance: riskTolerance.value }
+    const response = await watchlistService.createWatchlist({
+      name: watchlistForm.name,
+      watchlist_type: watchlistForm.watchlist_type,
+      risk_profile: watchlistForm.risk_profile
+    } satisfies CreateWatchlistPayload)
 
-    const url = editingWatchlist.value
-      ? `/api/monitoring/watchlists/${editingWatchlist.value.id}`
-      : '/api/monitoring/watchlists'
-
-    const method = editingWatchlist.value ? 'PUT' : 'POST'
-
-    const res = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(watchlistForm)
-    })
-
-    const data = await res.json()
-    if (data.success) {
-      message.success(editingWatchlist.value ? '更新成功' : '创建成功')
+    if (response.success) {
+      message.success('创建成功')
       createModalVisible.value = false
       await fetchWatchlists()
     } else {
-      message.error(data.message || '操作失败')
+      message.error(response.message || '操作失败')
     }
   } catch (error) {
     console.error('保存清单失败:', error)
@@ -276,15 +253,14 @@ const confirmDelete = (portfolio: Watchlist): void => {
 
 const deleteWatchlist = async (id: number): Promise<void> => {
   try {
-    const res = await fetch(`/api/monitoring/watchlists/${id}`, { method: 'DELETE' })
-    const data = await res.json()
-    if (data.success) {
+    const response = await watchlistService.deleteWatchlist(id)
+    if (response.success) {
       message.success('删除成功')
       deleteConfirmVisible.value = false
       portfolioToDelete.value = null
       await fetchWatchlists()
     } else {
-      message.error(data.message || '删除失败')
+      message.error(response.message || '删除失败')
     }
   } catch (error) {
     console.error('删除清单失败:', error)
@@ -311,20 +287,22 @@ const showAddStockModal = (): void => {
 const handleAddStock = async (): Promise<void> => {
   if (!currentWatchlist.value) return
   try {
-    const res = await fetch(`/api/monitoring/watchlists/${currentWatchlist.value.id}/stocks`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(stockForm)
-    })
+    const response = await watchlistService.addStockToWatchlist(currentWatchlist.value.id, {
+      stock_code: stockForm.stock_code,
+      entry_price: stockForm.entry_price,
+      entry_reason: stockForm.entry_reason,
+      stop_loss_price: stockForm.stop_loss_price,
+      target_price: stockForm.target_price,
+      weight: stockForm.weight
+    } satisfies AddWatchlistStockPayload)
 
-    const data = await res.json()
-    if (data.success) {
+    if (response.success) {
       message.success('添加成功')
       addStockModalVisible.value = false
       await fetchWatchlistStocks(currentWatchlist.value.id)
       await fetchWatchlists()
     } else {
-      message.error(data.message || '添加失败')
+      message.error(response.message || '添加失败')
     }
   } catch (error) {
     console.error('添加股票失败:', error)
@@ -333,24 +311,19 @@ const handleAddStock = async (): Promise<void> => {
 }
 
 const confirmRemoveStock = (stock: WatchlistStock): void => {
-  // 简化版：直接删除
-  removeStock(stock.id)
+  removeStock(stock.stock_code)
 }
 
-const removeStock = async (stockId: number): Promise<void> => {
+const removeStock = async (stockCode: string): Promise<void> => {
   if (!currentWatchlist.value) return
   try {
-    const res = await fetch(`/api/monitoring/watchlists/${currentWatchlist.value.id}/stocks/${stockId}`, {
-      method: 'DELETE'
-    })
-
-    const data = await res.json()
-    if (data.success) {
+    const response = await watchlistService.removeStockFromWatchlist(currentWatchlist.value.id, stockCode)
+    if (response.success) {
       message.success('移除成功')
       await fetchWatchlistStocks(currentWatchlist.value.id)
       await fetchWatchlists()
     } else {
-      message.error(data.message || '移除失败')
+      message.error(response.message || '移除失败')
     }
   } catch (error) {
     console.error('移除股票失败:', error)

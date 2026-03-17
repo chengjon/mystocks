@@ -121,7 +121,7 @@ class AuthenticationTesterCoreMixin:
         bypass_headers = [
             {"Authorization": "Bearer invalid_token"},
             {"Authorization": "Bearer " + "a" * 1000},  # 超长令牌
-            {"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid"},
+            {"Authorization": "Bearer <jwt-token>"},
             {"Authorization": "Basic " + ("admin:admin").encode().decode("utf-8")},
         ]
 

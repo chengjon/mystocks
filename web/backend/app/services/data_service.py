@@ -34,26 +34,20 @@ except ImportError:
     CACHE_AVAILABLE = False
     logger.warning("Cache integration not available")
 
-# Import Akshare adapter for automatic data fetching
-AKSHARE_AVAILABLE = False
-AkshareDataSource = None
 
-try:
-    # Try to import from parent directory
-    import os
-    import sys
+def _load_akshare_adapter():
+    try:
+        parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+        if parent_dir not in sys.path:
+            sys.path.insert(0, parent_dir)
 
-    parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-    if parent_dir not in sys.path:
-        sys.path.insert(0, parent_dir)
+        from src.adapters.akshare_adapter import AkshareDataSource
 
-    from src.adapters.akshare_adapter import AkshareDataSource
-
-    AKSHARE_AVAILABLE = True
-    logger.info("Akshare adapter imported successfully")
-except ImportError:
-    AKSHARE_AVAILABLE = False
-    logger.warning("Akshare adapter not available: %(e)s")
+        logger.info("Akshare adapter imported successfully")
+        return True, AkshareDataSource
+    except ImportError:
+        logger.warning("Akshare adapter not available: %(e)s")
+        return False, None
 
 
 class StockDataNotFoundError(Exception):
@@ -87,12 +81,17 @@ class DataService:
             self.unified_manager = None
 
         # Initialize Akshare adapter if auto_fetch enabled
-        self.auto_fetch = auto_fetch and AKSHARE_AVAILABLE
+        akshare_available = False
+        akshare_adapter_cls = None
+        if auto_fetch:
+            akshare_available, akshare_adapter_cls = _load_akshare_adapter()
+
+        self.auto_fetch = auto_fetch and akshare_available
         self.akshare_adapter = None
 
         if self.auto_fetch:
             try:
-                self.akshare_adapter = AkshareDataSource()
+                self.akshare_adapter = akshare_adapter_cls()
                 logger.info("Akshare adapter initialized for automatic data fetching")
             except Exception:
                 logger.warning("Failed to initialize Akshare adapter: %(e)s")
@@ -157,7 +156,7 @@ class DataService:
             # Convert to TA-Lib format
             ohlcv_data = self._dataframe_to_ohlcv_arrays(df)
 
-            logger.info("Loaded {len(df)} records for {symbol} " f"from {start_date.date()} to {end_date.date()}")
+            logger.info(f"Loaded {{len(df)}} records for {{symbol}} from {start_date.date()} to {end_date.date()}")
 
             return df, ohlcv_data
 

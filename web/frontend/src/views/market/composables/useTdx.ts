@@ -1,16 +1,5 @@
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
-import { Connection, RefreshRight, Timer, DataLine, Search } from '@element-plus/icons-vue'
-import {
-    ElCard,
-    ElButton,
-    ElInput,
-    ElSelect,
-    ElOption,
-    ElDatePicker,
-    ElTag,
-    ElEmpty,
-    ElMessage
-} from 'element-plus'
+import { ref, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
 
 interface TdxQuote {
     code: string

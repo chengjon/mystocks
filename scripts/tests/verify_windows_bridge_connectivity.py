@@ -12,8 +12,8 @@ from datetime import datetime
 
 # 配置对齐
 NODES = {
-    "WIND_QMT_CHOICE": "http://192.168.123.109:8001",
-    "TDX": "http://192.168.123.74:8001"
+    "WIND_QMT_CHOICE": "http://example.local:8001",
+    "TDX": "http://example.local:8001"
 }
 NAS_POSTGRES = "postgresql://postgres:password@localhost:5438/mystocks"
 

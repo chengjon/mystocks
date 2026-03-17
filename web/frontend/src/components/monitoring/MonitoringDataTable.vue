@@ -301,7 +301,7 @@ const getCellValue = (row, column) => {
   return row[column.key]
 }
 
-const getCellClass = (column, row) => {
+const getCellClass = (column, _row) => {
   const classes = []
   if (column.class) classes.push(column.class)
   return classes

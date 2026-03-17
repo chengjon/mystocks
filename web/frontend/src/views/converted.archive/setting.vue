@@ -379,10 +379,6 @@ const hasUnsavedChanges = computed(() => {
   return true // Simplified for demo
 })
 
-const isFormValid = computed(() => {
-  return !validationErrors.email && !validationErrors.username
-})
-
 // Methods
 const validateEmail = (email: string) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -450,17 +446,6 @@ const cancelChanges = () => {
   } else {
     // TODO: Go back or close
     console.log('No changes to cancel')
-  }
-}
-
-// Watch for form changes to enable validation
-const watchSettings = () => {
-  // Clear validation errors when user starts typing
-  if (validationErrors.email && settings.email) {
-    validationErrors.email = ''
-  }
-  if (validationErrors.username && settings.username) {
-    validationErrors.username = ''
   }
 }
 

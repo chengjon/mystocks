@@ -1,0 +1,6 @@
+glob:.config/oh-my-opencode*.json.bak*
+glob:.config/opencode.json.bak*
+literal:.config/opencode-opimized.json
+literal:.claude-trace/log-2025-11-06-11-23-22.jsonl
+literal:.archive/sensitive-backups/_.env.backup.20251124_232409
+glob:archive/legacy-root-archived/services/a-stock-risk-management/.parcel-cache/*

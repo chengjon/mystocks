@@ -11,87 +11,13 @@ import { StrategyAdapter } from '@/utils/strategy-adapters';
 import type { StrategyVM as Strategy } from '@/api/types/extensions';
 import type { StrategyListItemVM } from '@/utils/strategy-adapters';
 import type { CreateStrategyRequestVM as CreateStrategyRequest, UpdateStrategyRequestVM as UpdateStrategyRequest } from '@/api/types/extensions';
-import type { BacktestRequestVM } from '@/api/types/extensions/strategy';
-import type { StrategyConfig } from '@/api/types/common';
-
-type StrategyDataSource = 'real';
-
-function normalizeStrategyStatus(status: unknown): StrategyListItemVM['status'] {
-  if (typeof status !== 'string') {
-    return 'stopped';
-  }
-
-  const normalized = status.toLowerCase();
-  if (normalized === 'running' || normalized === 'active' || normalized === 'enabled') {
-    return 'running';
-  }
-  if (normalized === 'paused') {
-    return 'paused';
-  }
-  if (normalized === 'error' || normalized === 'failed') {
-    return 'error';
-  }
-  return 'stopped';
-}
-
-function toStrategyListItemVM(strategy: StrategyConfig, index: number): StrategyListItemVM {
-  return {
-    id: strategy.strategy_id != null ? String(strategy.strategy_id) : `strategy-${index + 1}`,
-    code: strategy.strategy_type || '',
-    name: strategy.strategy_name || `策略 ${index + 1}`,
-    type: strategy.strategy_type || 'custom',
-    status: normalizeStrategyStatus(strategy.status),
-    lastRunTime: strategy.updated_at || '-',
-    nextRunTime: '-',
-    totalReturn: '-',
-    sharpeRatio: '-',
-    maxDrawdown: '-',
-    winRate: '-',
-    description: strategy.description || '',
-  };
-}
-
-function extractStrategyConfigs(payload: unknown): StrategyConfig[] | null {
-  if (Array.isArray(payload)) {
-    return payload as StrategyConfig[];
-  }
-
-  if (payload && typeof payload === 'object') {
-    const candidate = payload as Record<string, unknown>;
-    if (Array.isArray(candidate.strategies)) {
-      return candidate.strategies as StrategyConfig[];
-    }
-    if (Array.isArray(candidate.items)) {
-      return candidate.items as StrategyConfig[];
-    }
-    if (Array.isArray(candidate.data)) {
-      return candidate.data as StrategyConfig[];
-    }
-  }
-
-  return null;
-}
-
-function parseProcessTimeMs(processTime?: string): string {
-  if (!processTime) {
-    return 'N/A';
-  }
-
-  const normalized = processTime.trim().toLowerCase();
-  const rawNumber = Number.parseFloat(normalized);
-
-  if (!Number.isFinite(rawNumber)) {
-    return 'N/A';
-  }
-
-  if (normalized.endsWith('ms')) {
-    return rawNumber.toFixed(2);
-  }
-  if (normalized.endsWith('s')) {
-    return (rawNumber * 1000).toFixed(2);
-  }
-  return rawNumber.toFixed(2);
-}
+import { useBacktest } from './useStrategy.backtest';
+import {
+  extractStrategyConfigs,
+  parseProcessTimeMs,
+  toStrategyListItemVM,
+  type StrategyDataSource
+} from './useStrategy.shared';
 
 /**
  * Strategy management composable
@@ -103,6 +29,7 @@ export function useStrategy(autoFetch = true) {
   const strategies = ref<StrategyListItemVM[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
+  const listError = ref<string | null>(null);
   const dataSource = ref<StrategyDataSource>('real');
   const lastRequestId = ref<string>('N/A');
   const lastProcessTimeMs = ref<string>('N/A');
@@ -110,10 +37,12 @@ export function useStrategy(autoFetch = true) {
   // Service instance
   const strategyService = new StrategyApiService();
 
-  const applyEmptyFallback = (errorMessage: string) => {
-    strategies.value = [];
-    dataSource.value = 'real';
+  const resolveDataSource = (): StrategyDataSource => strategyService.getDataSource();
+
+  const applyListFailure = (errorMessage: string) => {
     error.value = errorMessage;
+    listError.value = errorMessage;
+    dataSource.value = resolveDataSource();
   };
 
   /**
@@ -122,6 +51,7 @@ export function useStrategy(autoFetch = true) {
   const fetchStrategies = async () => {
     loading.value = true;
     error.value = null;
+    listError.value = null;
 
     try {
       const response = await strategyService.getStrategyList();
@@ -129,27 +59,29 @@ export function useStrategy(autoFetch = true) {
       lastProcessTimeMs.value = parseProcessTimeMs(response.process_time);
 
       if (!response.success) {
-        applyEmptyFallback(response.message || '获取策略列表失败');
+        applyListFailure(response.message || '获取策略列表失败');
         return;
       }
 
       const strategyList = extractStrategyConfigs(response.data);
       if (strategyList === null) {
-        applyEmptyFallback('策略数据格式异常');
+        applyListFailure('策略数据格式异常');
         return;
       }
 
       if (strategyList.length === 0) {
         strategies.value = [];
-        dataSource.value = 'real';
+        listError.value = null;
+        dataSource.value = resolveDataSource();
         return;
       }
 
       strategies.value = strategyList.map((item, index) => toStrategyListItemVM(item, index));
-      dataSource.value = 'real';
+      listError.value = null;
+      dataSource.value = resolveDataSource();
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
-      applyEmptyFallback(`获取策略列表失败: ${errorMsg}`);
+      applyListFailure(`获取策略列表失败: ${errorMsg}`);
       console.error('[useStrategy] fetchStrategies error:', err);
     } finally {
       loading.value = false;
@@ -461,6 +393,7 @@ export function useStrategy(autoFetch = true) {
    */
   const clearError = () => {
     error.value = null;
+    listError.value = null;
   };
 
   // Auto-fetch on mount
@@ -475,6 +408,7 @@ export function useStrategy(autoFetch = true) {
     strategies: readonly(strategies),
     loading: readonly(loading),
     error: readonly(error),
+    listError: readonly(listError),
     dataSource: readonly(dataSource),
     lastRequestId: readonly(lastRequestId),
     lastProcessTimeMs: readonly(lastProcessTimeMs),
@@ -493,116 +427,6 @@ export function useStrategy(autoFetch = true) {
   };
 }
 
-/**
- * Backtest management composable
- */
-export function useBacktest() {
-  // State
-  const backtestTasks = ref<unknown[]>([]);
-  const loading = ref(false);
-  const error = ref<string | null>(null);
-
-  // Service instance
-  const strategyService = new StrategyApiService();
-
-  /**
-   * Start backtest
-   *
-   * @param strategyId - Strategy ID
-   * @param params - Backtest parameters
-   * @returns Backtest task or null
-   */
-  const startBacktest = async (
-    strategyId: string,
-    params: {
-      startDate: string;
-      endDate: string;
-      initialCapital: number;
-      symbols?: string[];
-    }
-  ) => {
-    loading.value = true;
-    error.value = null;
-
-    try {
-      // Convert camelCase params to snake_case for API
-      const backtestParams: BacktestRequestVM = {
-        strategy_id: strategyId,
-        start_date: params.startDate,
-        end_date: params.endDate,
-        initial_capital: params.initialCapital,
-        symbol: params.symbols?.[0] ?? '',
-        parameters: {
-          symbols: params.symbols ?? [],
-        },
-        symbols: params.symbols,
-      };
-      const response = await strategyService.startBacktest(strategyId, backtestParams);
-      const task = StrategyAdapter.adaptBacktestTask(response);
-
-      if (task) {
-        backtestTasks.value.push(task);
-        return task;
-      } else {
-        error.value = '启动回测失败';
-        return null;
-      }
-    } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Unknown error';
-      error.value = `启动回测失败: ${errorMsg}`;
-      console.error('[useBacktest] startBacktest error:', err);
-      return null;
-    } finally {
-      loading.value = false;
-    }
-  };
-
-  /**
-   * Poll backtest status
-   *
-   * @param taskId - Backtest task ID
-   * @param interval - Polling interval in ms (default: 2000)
-   * @returns Promise that resolves when backtest completes
-   */
-  const pollBacktestStatus = async (
-    taskId: string,
-    interval = 2000
-  ): Promise<unknown> => {
-    return new Promise((resolve, reject) => {
-      const poll = async () => {
-        try {
-          const response = await strategyService.getBacktestStatus(taskId);
-          const task = StrategyAdapter.adaptBacktestTask(response);
-
-          if (!task) {
-            reject(new Error('Failed to get backtest status'));
-            return;
-          }
-
-          if (task.status === 'completed') {
-            resolve(task);
-          } else if (task.status === 'failed') {
-            reject(new Error(task.error || 'Backtest failed'));
-          } else {
-            // Continue polling
-            setTimeout(poll, interval);
-          }
-        } catch (err) {
-          reject(err);
-        }
-      };
-
-      poll();
-    });
-  };
-
-  return {
-    backtestTasks: readonly(backtestTasks),
-    loading: readonly(loading),
-    error: readonly(error),
-    startBacktest,
-    pollBacktestStatus,
-  };
-}
+export { useBacktest };
 
 export default useStrategy;

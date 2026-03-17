@@ -1,10 +1,25 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import {
-  Document, Calendar, Warning, Bell, Search, Refresh,
-  Setting, Plus, Collection, Lightning
-} from '@element-plus/icons-vue'
 import axios from 'axios'
+
+interface AnnouncementMonitorRule {
+  id?: number | null
+  rule_name?: string
+  stock_codes?: string[]
+  keywords?: string[]
+  min_importance_level?: number
+  notify_enabled?: boolean
+  is_active?: boolean
+}
+
+interface AnnouncementMonitorError {
+  response?: {
+    data?: {
+      detail?: string
+    }
+  }
+  message?: string
+}
 
 export function useAnnouncementMonitor() {
 
@@ -199,7 +214,7 @@ const evaluateRules = async () => {
 }
 
 // 编辑规则
-const editRule = (rule: Record<string, any>): void => {
+const editRule = (rule: AnnouncementMonitorRule): void => {
   editingRule.value = {
     id: rule.id || null,
     rule_name: rule.rule_name || '',
@@ -274,7 +289,7 @@ const saveRule = async () => {
     showRuleDialog.value = false
   } catch (error: unknown) {
     console.error('保存规则失败:', error)
-    const errorObj = error as Record<string, any>
+    const errorObj = error as AnnouncementMonitorError
     ElMessage.error('保存规则失败: ' + (errorObj?.response?.data?.detail || errorObj?.message || 'Unknown error'))
   }
 }

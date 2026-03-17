@@ -44,47 +44,47 @@ router = APIRouter(prefix="/api/efinance", tags=["efinance"])
 class StockKlineRequest(BaseModel):
     """股票K线请求"""
 
-    symbol: str = Field(..., description="股票代码", example="600519")
-    start_date: str = Field(..., description="开始日期", example="2024-01-01")
-    end_date: str = Field(..., description="结束日期", example="2024-12-31")
-    klt: int = Field(101, description="K线周期: 1/5/15/30/60分钟, 101日线", example=101)
+    symbol: str = Field(..., description="股票代码", json_schema_extra={"example": "600519"})
+    start_date: str = Field(..., description="开始日期", json_schema_extra={"example": "2024-01-01"})
+    end_date: str = Field(..., description="结束日期", json_schema_extra={"example": "2024-12-31"})
+    klt: int = Field(101, description="K线周期: 1/5/15/30/60分钟, 101日线", json_schema_extra={"example": 101})
 
 
 class FundNavRequest(BaseModel):
     """基金净值请求"""
 
-    fund_code: str = Field(..., description="基金代码", example="161725")
+    fund_code: str = Field(..., description="基金代码", json_schema_extra={"example": "161725"})
 
 
 class FundBasicRequest(BaseModel):
     """基金基本信息请求"""
 
-    fund_codes: List[str] = Field(..., description="基金代码列表", example=["161725", "005827"])
+    fund_codes: List[str] = Field(..., description="基金代码列表", json_schema_extra={"example": ["161725", "005827"]})
 
 
 class BondKlineRequest(BaseModel):
     """可转债K线请求"""
 
-    bond_code: str = Field(..., description="债券代码", example="123111")
+    bond_code: str = Field(..., description="债券代码", json_schema_extra={"example": "123111"})
 
 
 class FuturesHistoryRequest(BaseModel):
     """期货历史行情请求"""
 
-    quote_id: str = Field(..., description="期货行情ID", example="115.ZCM")
+    quote_id: str = Field(..., description="期货行情ID", json_schema_extra={"example": "115.ZCM"})
 
 
 class DragonTigerRequest(BaseModel):
     """龙虎榜请求"""
 
-    start_date: Optional[str] = Field(None, description="开始日期", example="2024-01-01")
-    end_date: Optional[str] = Field(None, description="结束日期", example="2024-01-05")
+    start_date: Optional[str] = Field(None, description="开始日期", json_schema_extra={"example": "2024-01-01"})
+    end_date: Optional[str] = Field(None, description="结束日期", json_schema_extra={"example": "2024-01-05"})
 
 
 class FundFlowRequest(BaseModel):
     """资金流向请求"""
 
-    symbol: str = Field(..., description="股票代码", example="300750")
+    symbol: str = Field(..., description="股票代码", json_schema_extra={"example": "300750"})
 
 
 # ============================================================================
@@ -94,9 +94,9 @@ class FundFlowRequest(BaseModel):
 
 @router.get("/stock/kline", summary="获取股票历史K线数据")
 async def get_stock_kline(
-    symbol: str = Query(..., description="股票代码", example="600519"),
-    start_date: str = Query(..., description="开始日期", example="2024-01-01"),
-    end_date: str = Query(..., description="结束日期", example="2024-12-31"),
+    symbol: str = Query(..., description="股票代码", examples=["600519"]),
+    start_date: str = Query(..., description="开始日期", examples=["2024-01-01"]),
+    end_date: str = Query(..., description="结束日期", examples=["2024-12-31"]),
     klt: int = Query(101, description="K线周期: 1/5/15/30/60分钟, 101日线"),
     current_user: User = Depends(get_current_user),
 ):
@@ -180,8 +180,8 @@ async def get_single_stock_realtime(
 
 @router.get("/stock/dragon-tiger", summary="获取龙虎榜数据")
 async def get_dragon_tiger_list(
-    start_date: Optional[str] = Query(None, description="开始日期", example="2024-01-01"),
-    end_date: Optional[str] = Query(None, description="结束日期", example="2024-01-05"),
+    start_date: Optional[str] = Query(None, description="开始日期", examples=["2024-01-01"]),
+    end_date: Optional[str] = Query(None, description="结束日期", examples=["2024-01-05"]),
     current_user: User = Depends(get_current_user),
 ):
     """

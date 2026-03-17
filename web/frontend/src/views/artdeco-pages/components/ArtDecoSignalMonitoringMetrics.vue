@@ -109,8 +109,8 @@
         width: 100%;
         margin-bottom: var(--artdeco-spacing-4);
 
-        @include artdeco-stepped-corners(8px);
-        @include artdeco-geometric-corners($color: var(--artdeco-gold-primary), $size: 16px, $border-width: 2px);
+        @include artdeco-stepped-corners(calc(var(--artdeco-spacing-px) * 8));
+        @include artdeco-geometric-corners($color: var(--artdeco-gold-primary), $size: calc(var(--artdeco-spacing-px) * 16), $border-width: calc(var(--artdeco-spacing-px) * 2));
         @include artdeco-hover-lift-glow;
     }
 
@@ -120,7 +120,7 @@
         gap: var(--artdeco-spacing-4);
         padding: var(--artdeco-spacing-4);
 
-        @media (width <= 900px) {
+        @media (width <= calc(var(--artdeco-spacing-px) * 900)) {
             grid-template-columns: 1fr;
         }
     }
@@ -130,7 +130,7 @@
             display: flex;
             justify-content: space-between;
             padding: var(--artdeco-spacing-3) 0;
-            border-bottom: 1px solid var(--artdeco-border-default);
+            border-bottom: calc(var(--artdeco-spacing-px) * 1) solid var(--artdeco-border-default);
 
             &:last-child {
                 border-bottom: none;
@@ -171,7 +171,7 @@
             justify-content: space-between;
             align-items: center;
             padding: var(--artdeco-spacing-3) 0;
-            border-bottom: 1px solid var(--artdeco-border-default);
+            border-bottom: calc(var(--artdeco-spacing-px) * 1) solid var(--artdeco-border-default);
 
             &:last-child {
                 border-bottom: none;
@@ -191,7 +191,7 @@
             font-family: var(--artdeco-font-body);
             font-size: var(--artdeco-text-xs);
             color: var(--artdeco-fg-muted);
-            margin-top: 2px;
+            margin-top: calc(var(--artdeco-spacing-px) * 2);
         }
 
         .artdeco-signal-monitoring-metrics__type-stats {
@@ -214,8 +214,8 @@
 
     .artdeco-signal-monitoring-metrics__corner {
         position: absolute;
-        width: 16px;
-        height: 16px;
+        width: calc(var(--artdeco-spacing-px) * 16);
+        height: calc(var(--artdeco-spacing-px) * 16);
         border-color: var(--artdeco-gold-primary);
         border-style: solid;
         opacity: 40%;
@@ -224,14 +224,14 @@
     }
 
     .artdeco-signal-monitoring-metrics__corner--tl {
-        top: -1px;
-        left: -1px;
-        border-width: 2px 0 0 2px;
+        top: calc(var(--artdeco-spacing-px) * -1);
+        left: calc(var(--artdeco-spacing-px) * -1);
+        border-width: calc(var(--artdeco-spacing-px) * 2) 0 0 calc(var(--artdeco-spacing-px) * 2);
     }
 
     .artdeco-signal-monitoring-metrics__corner--br {
-        bottom: -1px;
-        right: -1px;
-        border-width: 0 2px 2px 0;
+        bottom: calc(var(--artdeco-spacing-px) * -1);
+        right: calc(var(--artdeco-spacing-px) * -1);
+        border-width: 0 calc(var(--artdeco-spacing-px) * 2) calc(var(--artdeco-spacing-px) * 2) 0;
     }
 </style>

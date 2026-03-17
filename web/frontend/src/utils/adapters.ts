@@ -9,9 +9,8 @@
 import type {
   MarketOverviewResponse,
   FundFlowResponse,
-  KlineResponse,
-  FundFlowItem
-} from '@/api/types/generated-types'
+  KlineResponse
+} from '@/api/types/generated-types.ts'
 
 // Type definitions for API response items
 interface IndexQuoteItem {

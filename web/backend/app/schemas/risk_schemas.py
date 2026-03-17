@@ -11,7 +11,7 @@ from datetime import date as date_type
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 # ============================================================================
 # 请求模型
@@ -25,14 +25,15 @@ class VaRCVaRRequest(BaseModel):
     entity_id: int = Field(..., description="实体ID", ge=1)
     confidence_level: float = Field(0.95, description="置信水平 (e.g., 0.90, 0.95, 0.99)", ge=0.01, le=0.9999)
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "entity_type": "portfolio",
                 "entity_id": 101,
                 "confidence_level": 0.95,
             }
         }
+    )
 
 
 class BetaRequest(BaseModel):
@@ -42,14 +43,15 @@ class BetaRequest(BaseModel):
     entity_id: int = Field(..., description="实体ID", ge=1)
     market_index: str = Field("000001", description="市场指数代码 (默认上证指数)")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "entity_type": "portfolio",
                 "entity_id": 101,
                 "market_index": "000300.SH",
             }
         }
+    )
 
 
 class RiskAlertCreate(BaseModel):
@@ -64,8 +66,8 @@ class RiskAlertCreate(BaseModel):
     is_active: bool = Field(True, description="是否启用")
     notification_channels: List[str] = Field(default_factory=list, description="通知渠道 (e.g., 'email', 'webhook')")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "name": "组合VaR超限预警",
                 "metric_type": "VaR",
@@ -77,6 +79,7 @@ class RiskAlertCreate(BaseModel):
                 "notification_channels": ["email"],
             }
         }
+    )
 
 
 class RiskAlertUpdate(BaseModel):
@@ -91,14 +94,15 @@ class RiskAlertUpdate(BaseModel):
     is_active: Optional[bool] = Field(None, description="是否启用")
     notification_channels: Optional[List[str]] = Field(None, description="通知渠道")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "name": "组合VaR超限预警 (更新)",
                 "threshold_value": 0.06,
                 "is_active": False,
             }
         }
+    )
 
 
 class NotificationTestRequest(BaseModel):
@@ -107,13 +111,14 @@ class NotificationTestRequest(BaseModel):
     notification_type: str = Field(..., description="通知类型 (e.g., 'email', 'webhook')")
     config_data: Dict[str, Any] = Field(..., description="通知配置数据 (e.g., {'email': 'test@example.com'})")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "notification_type": "email",
                 "config_data": {"email": "test@example.com", "subject": "Test", "message": "Hello"},
             }
         }
+    )
 
 
 # ============================================================================
@@ -133,8 +138,8 @@ class VaRCVaRResult(BaseModel):
     entity_id: Optional[int] = Field(None, description="实体ID")
     confidence_level: Optional[float] = Field(None, description="置信水平")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "var_95_hist": -0.0289,
                 "var_95_param": -0.0309,
@@ -143,6 +148,7 @@ class VaRCVaRResult(BaseModel):
                 "cvar_99": -0.0432,
             }
         }
+    )
 
 
 class BetaResult(BaseModel):
@@ -154,13 +160,14 @@ class BetaResult(BaseModel):
     entity_id: Optional[int] = Field(None, description="实体ID")
     market_index: Optional[str] = Field(None, description="市场指数代码")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "beta": 1.23,
                 "correlation": 0.85,
             }
         }
+    )
 
 
 class RiskMetricsSummary(BaseModel):
@@ -196,8 +203,8 @@ class RiskDashboardResponse(BaseModel):
     active_alerts: List[ActiveAlert] = Field(default_factory=list, description="活跃预警列表")
     risk_history: List[RiskHistoryPoint] = Field(default_factory=list, description="风险历史数据")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "metrics": {
                     "var_95_hist": -0.025,
@@ -218,6 +225,7 @@ class RiskDashboardResponse(BaseModel):
                 ],
             }
         }
+    )
 
 
 class RiskMetricsHistoryResponse(BaseModel):
@@ -225,8 +233,8 @@ class RiskMetricsHistoryResponse(BaseModel):
 
     metrics_history: List[RiskHistoryPoint] = Field(default_factory=list, description="单个实体风险指标历史数据")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "metrics_history": [
                     {"date": "2024-01-01", "var_95_hist": -0.01, "cvar_95": -0.015, "beta": 1.0},
@@ -234,6 +242,7 @@ class RiskMetricsHistoryResponse(BaseModel):
                 ]
             }
         }
+    )
 
 
 class RiskAlertResponse(BaseModel):
@@ -251,8 +260,8 @@ class RiskAlertResponse(BaseModel):
     created_at: datetime = Field(..., description="创建时间")
     updated_at: Optional[datetime] = Field(None, description="更新时间")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "id": 1,
                 "name": "组合VaR超限预警",
@@ -267,6 +276,7 @@ class RiskAlertResponse(BaseModel):
                 "updated_at": "2024-12-26T11:00:00",
             }
         }
+    )
 
 
 class RiskAlertListResponse(BaseModel):
@@ -274,8 +284,8 @@ class RiskAlertListResponse(BaseModel):
 
     alerts: List[RiskAlertResponse] = Field(default_factory=list, description="风险预警规则列表")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "alerts": [
                     {
@@ -294,6 +304,7 @@ class RiskAlertListResponse(BaseModel):
                 ]
             }
         }
+    )
 
 
 class NotificationTestResponse(BaseModel):
@@ -302,10 +313,11 @@ class NotificationTestResponse(BaseModel):
     success: bool = Field(..., description="是否成功发送")
     message: str = Field(..., description="消息")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "success": True,
                 "message": "测试通知发送成功",
             }
         }
+    )

@@ -9,6 +9,10 @@
           </div>
 
           <div class="modal-body">
+            <div v-if="backtestError" class="backtest-error" role="alert">
+              {{ backtestError }}
+            </div>
+
             <!-- 回测配置 -->
             <div v-if="!hasStarted" class="backtest-config">
               <h3>回测参数配置</h3>
@@ -154,7 +158,7 @@ const emit = defineEmits<{
 
 const show = computed(() => !!props.strategy);
 
-const { startBacktest, pollBacktestStatus: _pollBacktestStatus } = useBacktest();
+const { startBacktest, pollBacktestStatus, error: backtestErrorState } = useBacktest();
 
 // Result type
 interface BacktestResult {
@@ -171,6 +175,7 @@ const hasStarted = ref(false);
 const isRunning = ref(false);
 const isCompleted = ref(false);
 const isStarting = ref(false);
+const backtestError = ref<string | null>(null);
 const progress = ref(0);
 const statusText = ref('正在初始化...');
 const logs = ref<string[]>([]);
@@ -194,51 +199,38 @@ const isConfigValid = computed(() => {
   );
 });
 
-// Mock progress simulation
-const simulateProgress = () => {
-  isRunning.value = true;
-  const stages = [
-    { progress: 20, text: '正在加载数据...' },
-    { progress: 40, text: '正在执行回测...' },
-    { progress: 70, text: '正在计算指标...' },
-    { progress: 90, text: '正在生成报告...' },
-    { progress: 100, text: '回测完成！' },
+function appendLog(message: string) {
+  logs.value = [
+    `[${new Date().toLocaleTimeString()}] ${message}`,
+    ...logs.value,
   ];
+}
 
-  let stageIndex = 0;
+function applyStatusText(status: 'queued' | 'running' | 'completed' | 'failed', message: string) {
+  statusText.value = message;
 
-  const interval = setInterval(() => {
-    if (stageIndex >= stages.length) {
-      clearInterval(interval);
-      return;
-    }
+  if (status === 'queued') {
+    progress.value = 15;
+    return;
+  }
 
-    const stage = stages[stageIndex];
-    progress.value = stage.progress;
-    statusText.value = stage.text;
-    logs.value.push(`[${new Date().toLocaleTimeString()}] ${stage.text}`);
+  if (status === 'running') {
+    progress.value = 60;
+    return;
+  }
 
-    stageIndex++;
-  }, 1000);
+  if (status === 'completed') {
+    progress.value = 100;
+    return;
+  }
 
-  // Simulate completion after 5 seconds
-  setTimeout(() => {
-    clearInterval(interval);
-    isRunning.value = false;
-    isCompleted.value = true;
-    result.value = {
-      totalReturn: 0.256,
-      annualReturn: 0.312,
-      sharpeRatio: 1.85,
-      maxDrawdown: -0.124,
-      winRate: 0.68,
-      totalTrades: 156,
-    };
-  }, 5000);
-};
+  progress.value = 0;
+}
 
 const handleStartBacktest = async () => {
   isStarting.value = true;
+  backtestError.value = null;
+  result.value = null;
 
   try {
     const symbols = config.value.symbols
@@ -252,11 +244,36 @@ const handleStartBacktest = async () => {
       symbols,
     });
 
-    if (task) {
-      hasStarted.value = true;
-      // In real implementation, you would poll the status
-      simulateProgress();
+    if (!task) {
+      backtestError.value = backtestErrorState.value || '启动回测失败';
+      return;
     }
+
+    hasStarted.value = true;
+    isRunning.value = true;
+    isCompleted.value = false;
+    applyStatusText(task.status, task.message);
+    appendLog(task.message);
+
+    const finalTask = await pollBacktestStatus(task.taskId, {
+      onUpdate: (nextTask) => {
+        applyStatusText(nextTask.status, nextTask.message);
+        appendLog(nextTask.message);
+      }
+    });
+
+    isRunning.value = false;
+    isCompleted.value = finalTask.status === 'completed';
+    hasStarted.value = finalTask.status === 'completed';
+  } catch (error) {
+    isRunning.value = false;
+    isCompleted.value = false;
+    hasStarted.value = false;
+    progress.value = 0;
+    const message = error instanceof Error ? error.message : '启动回测失败';
+    backtestError.value = message;
+    statusText.value = message;
+    appendLog(message);
   } finally {
     isStarting.value = false;
   }
@@ -273,6 +290,7 @@ watch(
     hasStarted.value = false;
     isRunning.value = false;
     isCompleted.value = false;
+    backtestError.value = null;
     progress.value = 0;
     logs.value = [];
     result.value = null;
@@ -287,6 +305,15 @@ watch(
 
 .modal-body {
   padding: 24px;
+}
+
+.backtest-error {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #b91c1c;
 }
 
 .backtest-config h3,

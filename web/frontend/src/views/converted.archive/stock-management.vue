@@ -23,7 +23,6 @@ const menuItems = ref([
 
 // Reactive data
 const tableData = ref([])
-const chartData = ref({})
 
 // Methods
 const loadData = async () => {

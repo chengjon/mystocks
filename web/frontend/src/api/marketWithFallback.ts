@@ -16,9 +16,9 @@
  * @deprecated Use useMarket() composable instead
  */
 
-import { MarketApiService as MarketApiServiceClass } from './services/marketService';
-import { MarketAdapter } from './adapters/marketAdapter';
-import type { MarketOverviewVM, FundFlowChartPoint, KLineChartData } from './types/market';
+import { MarketApiService as MarketApiServiceClass } from './services/marketService.ts';
+import { MarketAdapter } from './adapters/marketAdapter.ts';
+import type { MarketOverviewVM, FundFlowChartPoint, KLineChartData } from './types/market.ts';
 
 // Re-export types for backward compatibility
 export type {
@@ -140,7 +140,7 @@ class MarketApiServiceWithFallback {
    *
    * @deprecated Use useMarket().getCacheStats() instead
    */
-  getCacheStats() {
+  getCacheStats(): { size: number; hits: number; misses: number } {
     console.warn('[DEPRECATED] getCacheStats() - use useMarket() composable instead');
     // Cache is now managed by the composable
     return {
@@ -158,6 +158,6 @@ export const legacyMarketApiService = new MarketApiServiceWithFallback();
 export default MarketApiServiceWithFallback;
 
 // Export new architecture for migration
-export { marketApiService } from './services/marketService';
-export { MarketAdapter } from './adapters/marketAdapter';
-export { useMarket } from '../composables/useMarket';
+export { marketApiService } from './services/marketService.ts';
+export { MarketAdapter } from './adapters/marketAdapter.ts';
+export { useMarket } from '../composables/useMarket.ts';

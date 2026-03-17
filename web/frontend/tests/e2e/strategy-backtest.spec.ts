@@ -16,6 +16,20 @@ const STRATEGY_LIST_ENDPOINTS = [
   "**/api/api/v1/strategy/strategies**",
   "**/api/api/mock/strategy/strategies**",
 ]
+const BACKTEST_RUN_ENDPOINTS = [
+  "**/api/v1/strategy/backtest/run**",
+  "**/api/api/v1/strategy/backtest/run**",
+]
+
+const backtestStatusEndpoints = (taskId: string) => [
+  `**/api/v1/strategy/backtest/status/${taskId}**`,
+  `**/api/api/v1/strategy/backtest/status/${taskId}**`,
+]
+
+const backtestResultEndpoints = (taskId: string) => [
+  `**/api/v1/strategy/backtest/results/${taskId}**`,
+  `**/api/api/v1/strategy/backtest/results/${taskId}**`,
+]
 
 function buildUnifiedResponse<T>(data: T, overrides?: Partial<Record<string, unknown>>) {
   return {
@@ -52,12 +66,78 @@ async function routeStrategyList(
   }
 }
 
+async function routeBacktestRun(
+  page: Parameters<typeof test>[0]["page"],
+  handler: Parameters<typeof page.route>[1]
+) {
+  for (const endpoint of BACKTEST_RUN_ENDPOINTS) {
+    await page.route(endpoint, handler)
+  }
+}
+
+async function routeBacktestStatus(
+  page: Parameters<typeof test>[0]["page"],
+  taskId: string,
+  handler: Parameters<typeof page.route>[1]
+) {
+  for (const endpoint of backtestStatusEndpoints(taskId)) {
+    await page.route(endpoint, handler)
+  }
+}
+
+async function routeBacktestResult(
+  page: Parameters<typeof test>[0]["page"],
+  taskId: string,
+  handler: Parameters<typeof page.route>[1]
+) {
+  for (const endpoint of backtestResultEndpoints(taskId)) {
+    await page.route(endpoint, handler)
+  }
+}
+
+async function mockSupportEndpoints(page: Parameters<typeof test>[0]["page"]) {
+  for (const endpoint of ["**/api/health/ready", "**/health/ready"]) {
+    await page.route(endpoint, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(
+          buildUnifiedResponse(
+            {
+              status: "ready",
+            },
+            { request_id: "req-backtest-ready", message: "backend ready" }
+          )
+        ),
+      })
+    })
+  }
+
+  await page.route("**/api/csrf-token", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(
+        buildUnifiedResponse(
+          {
+            csrf_token: "e2e-csrf-token",
+            token_type: "bearer",
+            expires_in: 3600,
+          },
+          { request_id: "req-backtest-csrf" }
+        )
+      ),
+    })
+  })
+}
+
 test.describe("Strategy Management - Backtesting", () => {
   test.describe.configure({ mode: "serial", timeout: 120000 })
 
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await setupAuthenticatedSession(page)
+    await mockSupportEndpoints(page)
     await routeStrategyList(page, async (route) => {
       await route.fulfill({
         status: 200,
@@ -116,20 +196,156 @@ test.describe("Strategy Management - Backtesting", () => {
     await expect(page.locator(".tab-panel")).toContainText("回测报告")
   })
 
-  test("runs backtest action and appends execution log", async ({ page }) => {
+  test("runs the real v1 backtest chain through run, status, and results", async ({ page }) => {
+    let runPayload: Record<string, unknown> | null = null
+    let statusCalls = 0
+    let resultCalls = 0
+    const apiRequests: string[] = []
+
+    page.on("request", (request) => {
+      if (request.url().includes("/api/")) {
+        apiRequests.push(`${request.method()} ${request.url()}`)
+      }
+    })
+
+    await routeBacktestRun(page, async (route) => {
+      runPayload = route.request().postDataJSON() as Record<string, unknown>
+      await route.fulfill({
+        status: 202,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-backtest-run",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(
+            {
+              backtest_id: "bt-101",
+              status: "pending",
+              message: "回测任务已提交",
+            },
+            { request_id: "req-backtest-run" }
+          )
+        ),
+      })
+    })
+
+    await routeBacktestStatus(page, "bt-101", async (route) => {
+      statusCalls += 1
+      const statusPayload = statusCalls === 1
+        ? {
+            backtest_id: "bt-101",
+            status: "running",
+            message: "回测执行中",
+          }
+        : {
+            backtest_id: "bt-101",
+            status: "completed",
+            message: "回测完成",
+          }
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": `req-backtest-status-${statusCalls}`,
+        },
+        body: JSON.stringify(buildUnifiedResponse(statusPayload, { request_id: `req-backtest-status-${statusCalls}` })),
+      })
+    })
+
+    await routeBacktestResult(page, "bt-101", async (route) => {
+      resultCalls += 1
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-backtest-result",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(
+            {
+              backtest_id: 101,
+              strategy_id: 101,
+              start_date: "2026-01-01",
+              end_date: "2026-03-01",
+              completed_at: "2026-03-10T09:30:00Z",
+              status: "completed",
+              performance: {
+                total_return: 15.2,
+                annual_return: 12.3,
+                max_drawdown: -4.5,
+                win_rate: 62.5,
+                sharpe_ratio: 1.8,
+                volatility: 8.1,
+                total_trades: 18,
+                profit_factor: 1.6,
+              },
+            },
+            { request_id: "req-backtest-result" }
+          )
+        ),
+      })
+    })
+
     await page.goto(`${FRONTEND_BASE_URL}/strategy/backtest`)
 
-    const phaseValue = page.locator(".progress-main .value").first()
-    const phaseBefore = ((await phaseValue.textContent()) ?? "").trim()
-    const initialCount = await page.locator(".log-list .log-item").count()
+    await page.getByRole("button", { name: "启动回测" }).click()
+    await page.waitForTimeout(500)
+    console.log("[backtest-e2e-api]", apiRequests.join("\n"))
+
+    await expect.poll(() => runPayload?.strategy_id ?? null).toBe("101")
+    await expect.poll(() => statusCalls).toBe(2)
+    await expect.poll(() => resultCalls).toBe(1)
+    await expect(page.locator(".progress-panel")).toContainText("回测完成")
+    await expect(page.locator(".log-panel")).toContainText("回测结果已同步到报告中心")
+    await page.getByRole("button", { name: "报告中心" }).click()
+    await expect(page.locator(".hybrid-table__content")).toContainText("Momentum Alpha")
+    await expect(page.locator(".hybrid-table__content")).toContainText("+15.2%")
+  })
+
+  test("shows the real backend error when v1 backtest run fails", async ({ page }) => {
+    let statusCalls = 0
+    let resultCalls = 0
+
+    await routeBacktestRun(page, async (route) => {
+      await route.fulfill({
+        status: 400,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-backtest-run-error",
+        },
+        body: JSON.stringify({
+          success: false,
+          code: 400,
+          message: "风控校验未通过",
+          data: null,
+          request_id: "req-backtest-run-error",
+          timestamp: "2026-03-10T09:10:00Z",
+        }),
+      })
+    })
+
+    await routeBacktestStatus(page, "bt-101", async (route) => {
+      statusCalls += 1
+      await route.abort("failed")
+    })
+
+    await routeBacktestResult(page, "bt-101", async (route) => {
+      resultCalls += 1
+      await route.abort("failed")
+    })
+
+    await page.goto(`${FRONTEND_BASE_URL}/strategy/backtest`)
     await page.getByRole("button", { name: "启动回测" }).click()
 
-    await expect(phaseValue).toContainText(/任务排队中|回测执行中|回测完成|回测失败/)
-    const phaseAfter = ((await phaseValue.textContent()) ?? "").trim()
-    expect(phaseAfter).not.toBe(phaseBefore)
-
-    const nextCount = await page.locator(".log-list .log-item").count()
-    expect(nextCount).toBeGreaterThanOrEqual(initialCount)
+    await expect(page.locator(".progress-panel")).toContainText("回测失败")
+    await expect(page.locator(".log-panel")).toContainText("风控校验未通过")
+    await expect(page.locator(".log-panel")).not.toContainText("结果已载入报告中心")
+    await expect(page.locator(".progress-panel")).not.toContainText("回测完成")
+    await page.getByRole("button", { name: "回测任务" }).click()
+    await expect(page.locator(".task-list")).toContainText("风控校验未通过")
+    expect(statusCalls).toBe(0)
+    expect(resultCalls).toBe(0)
   })
 
   test("resets execution config to defaults", async ({ page }) => {

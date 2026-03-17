@@ -4,6 +4,7 @@ import { useStrategy } from '@/composables/useStrategy'
 import type { StrategyConfig } from '@/api/types/common'
 
 const strategyServiceMock = {
+  getDataSource: vi.fn(() => 'real'),
   getStrategyList: vi.fn(),
   getStrategy: vi.fn(),
   createStrategy: vi.fn(),
@@ -19,6 +20,7 @@ const strategyServiceMock = {
 
 vi.mock('@/api/services/strategyService', () => ({
   StrategyApiService: class StrategyApiServiceMock {
+    getDataSource = strategyServiceMock.getDataSource
     getStrategyList = strategyServiceMock.getStrategyList
     getStrategy = strategyServiceMock.getStrategy
     createStrategy = strategyServiceMock.createStrategy
@@ -63,14 +65,14 @@ describe('useStrategy', () => {
     expect(lastProcessTimeMs.value).toBe('250.00')
   })
 
-  it('falls back to MOCK when API returns non-success response', async () => {
+  it('keeps REAL source and surfaces error when API returns non-success response', async () => {
     strategyServiceMock.getStrategyList.mockResolvedValue(createListResponse(null, false))
 
     const { fetchStrategies, strategies, dataSource, error } = useStrategy(false)
     await fetchStrategies()
 
-    expect(dataSource.value).toBe('mock')
-    expect(strategies.value.length).toBeGreaterThan(0)
+    expect(dataSource.value).toBe('real')
+    expect(strategies.value).toEqual([])
     expect(error.value).toBe('failed')
   })
 

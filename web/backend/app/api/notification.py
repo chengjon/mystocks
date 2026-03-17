@@ -470,7 +470,7 @@ async def send_test_email(current_user: User = Depends(get_current_user)) -> Dic
     ```bash
     # 发送测试邮件（需要认证Token）
     curl -X POST "http://localhost:${BACKEND_PORT}/api/notification/test-email" \\
-      -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      -H "Authorization: Bearer <jwt-token>"
     ```
 
     **成功响应示例**:

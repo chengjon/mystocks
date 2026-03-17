@@ -5,8 +5,8 @@
  * 包括版本检测、兼容性检查、版本切换、弃用警告等功能
  */
 
-import { apiClient } from '@/api/apiClient'
-import { ElMessage, ElNotification } from 'element-plus'
+import { ElNotification } from 'element-plus'
+import { apiClient } from '@/api/apiClient.ts'
 
 interface _ApiVersion {
   name: string
@@ -135,8 +135,9 @@ class ApiVersionNegotiator {
 
   public checkCompatibility(apiName: string, requiredVersion?: string): VersionCompatibility {
     const cacheKey = `${apiName}:${requiredVersion || 'auto'}`
-    if (this.compatibilityCache.has(cacheKey)) {
-      return this.compatibilityCache.get(cacheKey)!
+    const cachedCompatibility = this.compatibilityCache.get(cacheKey)
+    if (cachedCompatibility) {
+      return cachedCompatibility
     }
 
     const currentVersion = this.detectedVersions.get(apiName) || this.detectedVersions.get('system') || '1.0.0'
@@ -150,12 +151,12 @@ class ApiVersionNegotiator {
       deprecationWarnings: []
     }
 
-    if (VERSION_CONFIG.deprecationWarnings[currentVersion]) {
-      compatibility.deprecationWarnings!.push(VERSION_CONFIG.deprecationWarnings[currentVersion])
+    if (VERSION_CONFIG.deprecationWarnings[currentVersion] && compatibility.deprecationWarnings) {
+      compatibility.deprecationWarnings.push(VERSION_CONFIG.deprecationWarnings[currentVersion])
     }
 
-    if (!compatibility.isCompatible) {
-      compatibility.breakingChanges!.push(`API版本${currentVersion}与所需版本${required}不兼容`)
+    if (!compatibility.isCompatible && compatibility.breakingChanges) {
+      compatibility.breakingChanges.push(`API版本${currentVersion}与所需版本${required}不兼容`)
     }
 
     this.compatibilityCache.set(cacheKey, compatibility)
@@ -291,8 +292,9 @@ class ApiVersionNegotiator {
   }
 
   public getEndpointVersion(endpoint: string): string {
-    if (this.detectedVersions.has(endpoint)) {
-      return this.detectedVersions.get(endpoint)!
+    const detectedVersion = this.detectedVersions.get(endpoint)
+    if (detectedVersion) {
+      return detectedVersion
     }
 
     for (const [apiEndpoint, version] of this.detectedVersions) {
@@ -323,22 +325,28 @@ class ApiVersionNegotiator {
 
 export const versionNegotiator = new ApiVersionNegotiator()
 
-export const negotiateApiVersion = (apiName: string, preferredVersion?: string) =>
+export const negotiateApiVersion = (
+  apiName: string,
+  preferredVersion?: string
+): Promise<NegotiationResult> =>
   versionNegotiator.negotiateVersion(apiName, preferredVersion)
 
-export const checkApiCompatibility = (apiName: string, requiredVersion?: string) =>
+export const checkApiCompatibility = (
+  apiName: string,
+  requiredVersion?: string
+): VersionCompatibility =>
   versionNegotiator.checkCompatibility(apiName, requiredVersion)
 
-export const getEndpointVersion = (endpoint: string) =>
+export const getEndpointVersion = (endpoint: string): string =>
   versionNegotiator.getEndpointVersion(endpoint)
 
-export const showVersionNotifications = () =>
+export const showVersionNotifications = (): void =>
   versionNegotiator.showCompatibilityNotifications()
 
-export const getVersionSummary = () =>
+export const getVersionSummary = (): ReturnType<ApiVersionNegotiator['getVersionSummary']> =>
   versionNegotiator.getVersionSummary()
 
-export const refreshApiVersions = () =>
+export const refreshApiVersions = (): Promise<void> =>
   versionNegotiator.refreshVersions()
 
 export default versionNegotiator

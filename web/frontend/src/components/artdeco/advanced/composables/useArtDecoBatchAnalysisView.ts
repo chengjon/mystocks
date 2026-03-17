@@ -1,10 +1,5 @@
 import { ref, computed, onMounted, watch, type Ref } from 'vue'
-import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
-import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
 import _ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
-import ArtDecoSelect from '@/components/artdeco/base/ArtDecoSelect.vue'
-import ArtDecoSwitch from '@/components/artdeco/base/ArtDecoSwitch.vue'
-import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
 
 interface AnalysisResult {
     id?: string

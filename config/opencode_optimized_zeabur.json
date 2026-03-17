@@ -57,7 +57,7 @@
       "name": "cliproxyapi-claude",
       "options": {
         "baseURL": "https://johncpa.zeabur.app/v1",
-        "apiKey": "REDACTED_PROVIDER_API_KEY",
+        "apiKey": "REPLACE_WITH_PROVIDER_API_KEY",
         "timeout": 300000
       },
       "models": {
@@ -112,7 +112,7 @@
       "name": "cliproxyapi-gemini",
       "options": {
         "baseURL": "https://johncpa.zeabur.app/v1beta",
-        "apiKey": "REDACTED_PROVIDER_API_KEY",
+        "apiKey": "REPLACE_WITH_PROVIDER_API_KEY",
         "timeout": 300000
       },
       "models": {
@@ -162,7 +162,7 @@
       "name": "cliproxyapi-oai",
       "options": {
         "baseURL": "https://johncpa.zeabur.app/v1",
-        "apiKey": "REDACTED_PROVIDER_API_KEY",
+        "apiKey": "REPLACE_WITH_PROVIDER_API_KEY",
         "setCacheKey": true,
         "timeout": 300000
       },
@@ -193,7 +193,7 @@
       "name": "cliproxyapi",
       "options": {
         "baseURL": "https://johncpa.zeabur.app/v1",
-        "apiKey": "REDACTED_PROVIDER_API_KEY",
+        "apiKey": "REPLACE_WITH_PROVIDER_API_KEY",
         "timeout": 300000
       },
       "models": {

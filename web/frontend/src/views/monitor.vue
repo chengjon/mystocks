@@ -306,10 +306,25 @@
 
 <script setup lang="ts">
 import { PageHeader, StockListTable } from '@/components/shared'
-import type { TableColumn } from '@/components/shared'
 import { usemonitor } from './composables/usemonitor'
 
-const { autoRefresh, refreshInterval, isLoading, error, services, servicesData, historyData, FRONTEND_URL, API_BASE_URL, historyColumns, isSystemHealthy, systemStatusMessage, issues, formatDateTime, date, getStatusText, getServiceStatusText, checkService, healthData, refreshData, healthData, addToHistory, toggleAutoRefresh, refreshTimer, startAutoRefresh, stopAutoRefresh, timestamp, healthData } = usemonitor()
+const {
+  autoRefresh,
+  isLoading,
+  error,
+  services,
+  servicesData,
+  historyData,
+  FRONTEND_URL,
+  API_BASE_URL,
+  historyColumns,
+  isSystemHealthy,
+  systemStatusMessage,
+  getServiceStatusText,
+  checkService,
+  refreshData,
+  toggleAutoRefresh
+} = usemonitor()
 </script>
 
 <style scoped lang="scss">

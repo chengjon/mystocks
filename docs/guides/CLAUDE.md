@@ -517,6 +517,7 @@ python test_performance_comparison.py
 
 - **[File Organization Rules](./docs/standards/FILE_ORGANIZATION_RULES.md)** - 文件组织规范
 - **[Python Quality Assurance Workflow](./docs/guides/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md)** - 代码质量保证流程
+- **[GitNexus Workflow](./docs/guides/GITNEXUS_WORKFLOW.md)** - `mystocks_spec` 仓库的 GitNexus 稳定工作流、CLI/MCP 分工与 freshness gate
 
 ---
 

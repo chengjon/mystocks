@@ -131,7 +131,7 @@
         disabled?: boolean
     }
 
-    type FilterValue = any
+    type FilterValue = string | number | boolean | null | string[] | number[]
 
     interface Filter {
         key: string
@@ -185,7 +185,7 @@
     const expanded = ref(props.defaultExpanded)
     const activeQuickFilter = ref<string>('')
 
-    const filterValues = reactive<Record<string, any>>({})
+    const filterValues = reactive<Record<string, FilterValue>>({})
 
     props.filters.forEach(filter => {
         if (filter.type === 'number') {
@@ -208,7 +208,7 @@
         return count
     })
 
-    const handleFilterChange = (key: string) => {
+    const handleFilterChange = (_key: string) => {
         activeQuickFilter.value = ''
         emit('filterChange', filterValues)
     }

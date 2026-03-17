@@ -276,7 +276,26 @@
 <script setup lang="ts">
 import { useEtf } from './composables/useEtf'
 
-const { loading, autoRefresh, activeCategory, searchQuery, sortBy, refreshInterval, etfMarketOverview, etfCategories, etfDataByCategory, topGainers, topVolume, currentETFs, filteredETFs, etfs, refreshAllData, loadETFData, priceChange, loadTopPerformers, change, change, changeCategory, filterETFs, sortETFs, toggleAutoRefresh, formatCurrency, formatVolume, formatAmount } = useEtf()
+const {
+  loading,
+  autoRefresh,
+  activeCategory,
+  searchQuery,
+  sortBy,
+  etfMarketOverview,
+  etfCategories,
+  topGainers,
+  topVolume,
+  filteredETFs,
+  refreshAllData,
+  changeCategory,
+  filterETFs,
+  sortETFs,
+  toggleAutoRefresh,
+  formatCurrency,
+  formatVolume,
+  formatAmount
+} = useEtf()
 </script>
 
 <style scoped lang="scss">

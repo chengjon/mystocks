@@ -244,7 +244,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch , onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 // ArtDeco Components
 import {
@@ -277,9 +277,6 @@ interface Order {
   status: 'pending' | 'executed' | 'cancelled' | 'failed'
   timestamp: string
 }
-
-// Reactive Data
-const pageTitle = ref('交易管理 - MyStocks 量化交易平台')
 
 // Sidebar Menu
 const menuItems = ref([

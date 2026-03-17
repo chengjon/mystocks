@@ -45,8 +45,8 @@ export interface StandardPageConfig {
   routePath: string;
   title: string;
   description: string;
-  apiEndpoint: string;
-  wsChannel: string;
+  apiEndpoint?: string;
+  wsChannel?: string;
   component: string;
   requiresAuth?: boolean;
 }

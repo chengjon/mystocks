@@ -14,8 +14,8 @@
  */
 
 import axios from 'axios';
-import type { components } from '@/types/market-data-api/types-1';
-import { API_BASE_URL } from '@/config/runtime-endpoints';
+import type { components } from '@/types/market-data-api/types-1.ts';
+import { API_BASE_URL } from '@/config/runtime-endpoints.ts';
 
 // Extract type aliases for convenience
 type UnifiedResponse<_T> = components['schemas']['UnifiedResponse'];
@@ -118,6 +118,16 @@ class MarketApiService {
     return `req_${Date.now()}_${Math.random().toString(36).substring(7)}`;
   }
 
+  private unwrapResponseData<T>(response: { data: APIResponse<T> }, endpoint: string): T {
+    const payload = response.data.data;
+
+    if (payload == null) {
+      throw new Error(`Empty response data from ${endpoint}`);
+    }
+
+    return payload;
+  }
+
   /**
    * 获取市场概览数据
    *
@@ -133,7 +143,7 @@ class MarketApiService {
    */
   async getMarketOverview(): Promise<MarketOverviewData> {
     const response = await this.client.get<APIResponse<MarketOverviewData>>('/overview');
-    return response.data.data!;
+    return this.unwrapResponseData(response, '/overview');
   }
 
   /**
@@ -167,7 +177,7 @@ class MarketApiService {
         end_date: params.end_date,
       },
     });
-    return response.data.data!;
+    return this.unwrapResponseData(response, '/fund-flow');
   }
 
   /**
@@ -204,7 +214,7 @@ class MarketApiService {
         limit: params.limit,
       },
     });
-    return response.data.data!;
+    return this.unwrapResponseData(response, '/kline');
   }
 
   /**
@@ -241,7 +251,7 @@ class MarketApiService {
         offset: params?.offset,
       },
     });
-    return response.data.data!;
+    return this.unwrapResponseData(response, '/etf/list');
   }
 
   /**
@@ -269,7 +279,7 @@ class MarketApiService {
         market: params?.market,
       },
     });
-    return response.data.data!;
+    return this.unwrapResponseData(response, '/longhubang');
   }
 
   /**
@@ -294,7 +304,7 @@ class MarketApiService {
         date: params?.date,
       },
     });
-    return response.data.data!;
+    return this.unwrapResponseData(response, '/chip-race');
   }
 }
 
@@ -303,7 +313,7 @@ class MarketApiService {
  *
  * 使用示例:
  * ```typescript
- * import { marketService } from '@/services/api/marketService';
+ * import { marketService } from '@/services/api/marketService.ts';
  *
  * // 获取市场概览
  * const overview = await marketService.getMarketOverview();

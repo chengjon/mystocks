@@ -156,7 +156,7 @@ Content-Type: application/json
 ```
 请求:
 GET /api/auth/user
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Authorization: Bearer <jwt-token>
 
 响应 (200 OK):
 {

@@ -116,7 +116,7 @@
                     role: user.role
                 }
             }
-        } catch (e) {
+        } catch {
             // 忽略解析错误
         }
         return null

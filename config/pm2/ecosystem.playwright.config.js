@@ -1,9 +1,6 @@
 // PM2 Playwright Testing Configuration
 // 用于运行前端E2E测试的PM2配置
 
-const path = require("node:path");
-const projectRoot = path.resolve(__dirname, "..", "..");
-
 module.exports = {
   apps: [
     {
@@ -12,7 +9,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_portfolio_playwright.py',
       interpreter: 'none',
-      cwd: projectRoot,
+      cwd: '/opt/claude/mystocks_spec',
       instances: 1,
       exec_mode: 'fork',
 
@@ -50,7 +47,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/debug_portfolio.py',
       interpreter: 'none',
-      cwd: projectRoot,
+      cwd: '/opt/claude/mystocks_spec',
       instances: 1,
       exec_mode: 'fork',
 
@@ -75,7 +72,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/check_console_errors.py',
       interpreter: 'none',
-      cwd: projectRoot,
+      cwd: '/opt/claude/mystocks_spec',
       instances: 1,
       exec_mode: 'fork',
 
@@ -99,7 +96,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_dashboard_playwright.py',
       interpreter: 'none',
-      cwd: projectRoot,
+      cwd: '/opt/claude/mystocks_spec',
       instances: 1,
       exec_mode: 'fork',
 

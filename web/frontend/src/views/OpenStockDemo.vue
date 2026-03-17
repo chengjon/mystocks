@@ -141,11 +141,6 @@ interface StockGroup {
   stock_count: number
 }
 
-interface WatchlistGroup {
-  id: number
-  group_name: string
-}
-
 const groups = ref<StockGroup[]>([])
 
 // 获取分组列表

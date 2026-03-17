@@ -2,7 +2,7 @@
 
 **最后更新**: 2026-01-10 22:15:42
 
-**文档数量**: 109
+**文档数量**: 110
 
 
 ---
@@ -180,6 +180,9 @@
 
 - [MYSTOCKS_WORKTREE_MANAGEMENT](guides/MYSTOCKS_WORKTREE_MANAGEMENT.md)
   - *MyStocks项目 Worktree 管理方法*
+
+- [OBJECT_STABLE_BOUNDARY_CATALOG](guides/OBJECT_STABLE_BOUNDARY_CATALOG.md)
+  - *单对象收口后的稳定边界目录*
 
 - [NEW_API_SOURCE_INTEGRATION_GUIDE](guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md)
   - *新增数据源/API 接口开发指引*

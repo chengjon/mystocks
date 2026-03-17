@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import {
-  BLOOMBERG_TOKENS,
+  ARTDECO_TOKENS,
   OLD_SYSTEM_COLORS,
   expectCSSVariable,
   getCSSVariable,
@@ -10,7 +10,7 @@ import {
 
 /**
  * MyStocks Frontend - Design Token System Validation
- * Phase 3: Bloomberg Terminal Style Verification
+ * Phase 3: ArtDeco Terminal Style Verification
  *
  * Comprehensive tests for Design Token system effectiveness:
  * - CSS variable injection

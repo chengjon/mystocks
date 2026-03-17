@@ -210,7 +210,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed , onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { ElCard, ElButton, ElTable, ElTableColumn, ElTag } from 'element-plus'
 import BloombergStatCard from '@/components/BloombergStatCard.vue'
 

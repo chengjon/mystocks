@@ -419,97 +419,31 @@
 </template>
 
 <script setup lang="ts">
-    import { toRef, computed } from 'vue'
     import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
     import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
     import ArtDecoSelect from '@/components/artdeco/base/ArtDecoSelect.vue'
     import ArtDecoSwitch from '@/components/artdeco/base/ArtDecoSwitch.vue'
-    import { useArtDecoCapitalFlow } from './composables/useArtDecoCapitalFlow'
+    import {
+        useArtDecoCapitalFlowViewModel,
+        type ArtDecoCapitalFlowProps
+    } from './composables/useArtDecoCapitalFlowViewModel'
 
-    // Type definitions for template data
-    interface SectorFlowItem {
-        name: string
-        flow: number
-    }
+    const props = defineProps<ArtDecoCapitalFlowProps>()
 
-    interface ClusteredStockItem {
-        code: string
-        name: string
-        volume: number
-        flow: number
-        cluster: number
-    }
-
-    interface ClusterItem {
-        id: number
-        stocks: { length: number }
-        totalFlow: number
-        avgFlow: number
-        avgVolume: number
-        representative: string
-    }
-
-    interface RankingItem {
-        rank: number
-        code: string
-        name: string
-        controlLevel: number
-        mainPosition: number
-    }
-
-    interface HotSectorItem {
-        name: string
-        opportunityScore: number
-        flow: number
-        leadingStock: string
-        duration: number
-        opportunityReason: string
-    }
-
-    interface InsightItem {
-        id: number
-        type: string
-        title: string
-        description: string
-    }
-
-    // Define props
-    interface Props {
-        data: Record<string, unknown>
-        symbol?: string
-        loading?: boolean
-    }
-
-    const props = defineProps<Props>()
-
-    // Use composable with props converted to refs
     const {
         heatmapPeriod,
         flowType,
         showLabels,
-        capitalFlows,
-        clusteringData,
-        mainForceData,
-        opportunityData,
-        northboundFlow,
-        southboundFlow,
-        mainForceFlow,
-        retailFlow,
-        sectorFlows,
         minFlow,
         maxFlow,
         clusters,
-        clusteredStocks,
         mainForceControl,
         top5Concentration,
         top10Concentration,
-        mainForceRanking,
         marketSentiment,
         fundAttention,
         sectorRotation,
         opportunityWindow,
-        hotSectors,
-        investmentInsights,
         periodOptions,
         flowTypeOptions,
         getNorthboundFlow,
@@ -530,57 +464,14 @@
         getSentimentClass,
         getAttentionClass,
         getRotationClass,
-        getWindowClass
-    } = useArtDecoCapitalFlow({
-        data: toRef(props, 'data'),
-        symbol: computed(() => props.symbol || ''),
-        loading: computed(() => props.loading || false)
-    })
-
-    // Typed computed properties for template
-    const typedSectorFlows = computed((): SectorFlowItem[] => {
-        return sectorFlows.value.map((sector) => ({
-            name: String((sector as Record<string, unknown>).name || ''),
-            flow: Number((sector as Record<string, unknown>).flow || 0)
-        }))
-    })
-
-    const typedClusteredStocks = computed((): ClusteredStockItem[] => {
-        return clusteredStocks.value.map((stock, index) => ({
-            code: String((stock as Record<string, unknown>).code || `S${index + 1}`),
-            name: String((stock as Record<string, unknown>).name || ''),
-            volume: Number((stock as Record<string, unknown>).volume || 0),
-            flow: Number((stock as Record<string, unknown>).flow || 0),
-            cluster: Number((stock as Record<string, unknown>).cluster || 0)
-        }))
-    })
-
-    const typedClusters = computed((): ClusterItem[] => {
-        return clusters.value.map((cluster, index) => ({
-            id: Number((cluster as Record<string, unknown>).id || index),
-            stocks: {
-                length: Array.isArray((cluster as Record<string, unknown>).stocks)
-                    ? ((cluster as Record<string, unknown>).stocks as unknown[]).length
-                    : 0
-            },
-            totalFlow: Number((cluster as Record<string, unknown>).totalFlow || 0),
-            avgFlow: Number((cluster as Record<string, unknown>).avgFlow || 0),
-            avgVolume: Number((cluster as Record<string, unknown>).avgVolume || 0),
-            representative: String((cluster as Record<string, unknown>).representative || '')
-        }))
-    })
-
-    const typedMainForceRanking = computed((): RankingItem[] => {
-        return mainForceRanking.value as RankingItem[]
-    })
-
-    const typedHotSectors = computed((): HotSectorItem[] => {
-        return hotSectors.value as HotSectorItem[]
-    })
-
-    const typedInvestmentInsights = computed((): InsightItem[] => {
-        return investmentInsights.value as InsightItem[]
-    })
+        getWindowClass,
+        typedSectorFlows,
+        typedClusteredStocks,
+        typedClusters,
+        typedMainForceRanking,
+        typedHotSectors,
+        typedInvestmentInsights
+    } = useArtDecoCapitalFlowViewModel(props)
 </script>
 
 <style scoped lang="scss">

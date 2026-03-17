@@ -10,6 +10,8 @@ interface MarketAnalysis {
   sentiment?: number
   volatility?: number
   volume?: number
+  lastUpdate?: string
+  lastUpdateTime?: string
   [key: string]: unknown
 }
 
@@ -41,7 +43,7 @@ export const useMarketStoreExtended = () => {
     ).then(result => {
       // 更新最后更新时间（仅当result中有时）
       if (baseStore.state.data && result?.lastUpdate) {
-        ;(baseStore.state.data as Record<string, any>).lastUpdateTime = result.lastUpdate
+        ;(baseStore.state.data as _MarketData).lastUpdateTime = result.lastUpdate
       }
       return result
     })
@@ -58,9 +60,9 @@ export const useMarketStoreExtended = () => {
       }
     ).then(result => {
       // 更新最后更新时间
-      const resultData = result as Record<string, any> | null
+      const resultData = result as MarketAnalysis | null
       if (baseStore.state.data && resultData?.lastUpdateTime) {
-        ;(baseStore.state.data as Record<string, any>).lastUpdateTime = resultData.lastUpdateTime
+        ;(baseStore.state.data as _MarketData).lastUpdateTime = resultData.lastUpdateTime
       }
       return result
     })

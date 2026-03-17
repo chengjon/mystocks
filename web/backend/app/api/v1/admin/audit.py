@@ -52,7 +52,7 @@ async def list_audit_logs(
             "resource_type": "session",
             "resource_id": "session_001",
             "details": {"method": "password"},
-            "ip_address": "192.168.1.100",
+            "ip_address": "example.local",
             "user_agent": "Mozilla/5.0",
             "timestamp": "2025-01-20T10:30:00Z",
         },
@@ -80,7 +80,7 @@ async def get_audit_log(log_id: str):
         resource_type="session",
         resource_id="session_001",
         details={"method": "password"},
-        ip_address="192.168.1.100",
+        ip_address="example.local",
         user_agent="Mozilla/5.0",
         timestamp=datetime.now(),
     )

@@ -268,7 +268,35 @@
 <script setup>
 import { useWencaiPanelV2 } from './composables/useWencaiPanelV2'
 
-const { queries, loadingQueries, customQueryText, executingCustomQuery, currentQueryName, currentQueryText, tableData, loadingResults, currentPage, pageSize, total, groupDialogVisible, selectedStock, groupForm, treeProps, treeData, data, defaultFolder, paginatedTableData, loadQueries, response, data, handleNodeClick, executeQuery, response, errorData, data, executeCustomQuery, response, data, processCustomQueryResults, queryDate, loadResults, response, data, processQueryResults, queryDate, formatNumber, num, formatPercent, num, getPriceChangeClass, num, handlePageChange, exportData, headers, csvContent, value, blob, link, url, showGroupDialog, confirmAddToGroup } = useWencaiPanelV2()
+const {
+  loadingQueries,
+  customQueryText,
+  executingCustomQuery,
+  currentQueryName,
+  currentQueryText,
+  tableData,
+  loadingResults,
+  currentPage,
+  pageSize,
+  total,
+  groupDialogVisible,
+  selectedStock,
+  groupForm,
+  treeProps,
+  treeData,
+  paginatedTableData,
+  loadQueries,
+  handleNodeClick,
+  executeQuery,
+  executeCustomQuery,
+  formatNumber,
+  formatPercent,
+  getPriceChangeClass,
+  handlePageChange,
+  exportData,
+  showGroupDialog,
+  confirmAddToGroup
+} = useWencaiPanelV2()
 </script>
 
 <style scoped lang="scss">

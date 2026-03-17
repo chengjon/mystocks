@@ -5,8 +5,8 @@
  * Load initial 1000 points, then load more on scroll/zoom
  */
 
-import type { KLineDataPoint } from './indicators'
-import { downsampleData, DownsamplingMethod } from './data-sampling'
+import type { KLineDataPoint } from './indicators.ts'
+import { downsampleData, DownsamplingMethod } from './data-sampling.ts'
 
 /**
  * 数据加载状态

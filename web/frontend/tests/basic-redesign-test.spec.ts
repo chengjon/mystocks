@@ -7,7 +7,7 @@ test.use({
   baseURL: FRONTEND_URL
 });
 
-test.describe('MyStocks Web Redesign - Basic Functionality', () => {
+test.describe('MyStocks Web ArtDeco - Basic Functionality', () => {
   test.setTimeout(30000); // 30秒超时
 
   test('1. Frontend Service Health Check', async ({ page }) => {
@@ -85,8 +85,8 @@ test.describe('MyStocks Web Redesign - Basic Functionality', () => {
     console.log('✅ Dashboard page loaded');
   });
 
-  test('4. Bloomberg Terminal Styling Verification', async ({ page }) => {
-    console.log('🧪 Testing Bloomberg terminal styling...');
+  test('4. ArtDeco Style Verification', async ({ page }) => {
+    console.log('🧪 Testing ArtDeco styling...');
 
     // 访问仪表盘
     await page.goto('/dashboard');
@@ -98,10 +98,10 @@ test.describe('MyStocks Web Redesign - Basic Functionality', () => {
     const darkThemeCount = await darkThemeElements.count();
     console.log(`🌙 Found ${darkThemeCount} dark theme elements`);
 
-    // 检查金融科技样式类
+    // 检查ArtDeco样式钩子类
     const fintechElements = page.locator('[class*="fintech"]');
     const fintechCount = await fintechElements.count();
-    console.log(`💼 Found ${fintechCount} fintech style elements`);
+    console.log(`💼 Found ${fintechCount} ArtDeco hook style elements`);
 
     // 检查按钮样式
     const buttons = page.locator('.fintech-btn, .el-button');
@@ -110,11 +110,11 @@ test.describe('MyStocks Web Redesign - Basic Functionality', () => {
 
     // 截图: 样式验证
     await page.screenshot({
-      path: 'test-results/screenshots/bloomberg-styling-verification.png',
+      path: 'test-results/screenshots/artdeco-styling-verification.png',
       fullPage: true
     });
 
-    console.log('✅ Bloomberg terminal styling verified');
+    console.log('✅ ArtDeco styling verified');
   });
 
   test('5. Responsive Design Test - Desktop', async ({ page }) => {

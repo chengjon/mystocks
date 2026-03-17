@@ -58,7 +58,7 @@ class MockDatabaseConnection:
                     "action": "login",
                     "resource_type": "user",
                     "resource_id": "user-uuid-1",
-                    "ip_address": "192.168.1.100",
+                    "ip_address": "example.local",
                     "user_agent": "Mozilla/5.0",
                     "request_method": "POST",
                     "request_path": "/api/auth/login",
@@ -115,7 +115,7 @@ async def test_structured_logger():
         logger_instance.log_security_event(
             event_type="failed_login",
             severity="medium",
-            details={"ip_address": "192.168.1.100", "username": "testuser", "attempt_count": 3},
+            details={"ip_address": "example.local", "username": "testuser", "attempt_count": 3},
             user_id="test-user-123",
         )
 
@@ -171,7 +171,7 @@ async def test_audit_manager():
             action="create_strategy",
             resource_type="strategy",
             resource_id="strategy-456",
-            ip_address="192.168.1.100",
+            ip_address="example.local",
             user_agent="Mozilla/5.0 (Test Browser)",
             status="success",
             details={"strategy_name": "Test Strategy", "strategy_type": "momentum"},
@@ -214,17 +214,17 @@ async def test_security_monitor():
     security_monitor = SecurityMonitor(mock_audit_manager)
 
     # 测试失败登录记录
-    security_monitor.record_failed_login(ip_address="192.168.1.100", username="testuser")
+    security_monitor.record_failed_login(ip_address="example.local", username="testuser")
 
     # 记录多次失败登录
     for _ in range(4):
-        security_monitor.record_failed_login(ip_address="192.168.1.100", username="testuser")
+        security_monitor.record_failed_login(ip_address="example.local", username="testuser")
 
     # 记录可疑活动
     security_monitor.record_suspicious_activity(
         activity_type="unusual_trading_pattern",
         details={"symbol": "AAPL", "volume": 1000000, "frequency": "high"},
-        ip_address="192.168.1.100",
+        ip_address="example.local",
         user_id="test-user-123",
     )
 
@@ -233,8 +233,8 @@ async def test_security_monitor():
 
     # 验证报告内容
     assert "failed_login_attempts" in report, "安全报告缺少失败登录信息"
-    assert "192.168.1.100" in report["failed_login_attempts"], "未记录失败登录IP"
-    assert report["failed_login_attempts"]["192.168.1.100"] >= 5, "失败登录次数记录不正确"
+    assert "example.local" in report["failed_login_attempts"], "未记录失败登录IP"
+    assert report["failed_login_attempts"]["example.local"] >= 5, "失败登录次数记录不正确"
 
     assert "suspicious_activities" in report, "安全报告缺少可疑活动信息"
     assert len(report["suspicious_activities"]) >= 2, "可疑活动记录不完整"  # 暴力破解 + 异常交易

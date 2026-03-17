@@ -80,6 +80,23 @@ async function mockCsrfEndpoint(page: Parameters<typeof test>[0]['page']) {
   })
 }
 
+async function mockBackendReadiness(page: Parameters<typeof test>[0]['page']) {
+  await page.route('**/api/health/ready', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(
+        buildUnifiedResponse(
+          {
+            status: 'ready'
+          },
+          { request_id: 'req-readiness-chain' }
+        )
+      )
+    })
+  })
+}
+
 async function routeStrategyList(
   page: Parameters<typeof test>[0]['page'],
   handler: Parameters<typeof page.route>[1]
@@ -114,6 +131,7 @@ test.describe('Strategy Management Chain E2E', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await setupAuthenticatedSession(page)
+    await mockBackendReadiness(page)
     await mockCsrfEndpoint(page)
   })
 
@@ -373,7 +391,7 @@ test.describe('Strategy Management Chain E2E', () => {
     await expect(page.locator('.strategy-table tbody tr', { hasText: 'Gamma Strategy V2' })).toHaveCount(0)
   })
 
-  test('shows REAL empty-state and error when list API fails', async ({ page }) => {
+  test('shows REAL error state and no fake rows when list API fails', async ({ page }) => {
     await routeStrategyList(page, async (route) => {
       await route.fulfill({
         status: 200,
@@ -398,6 +416,6 @@ test.describe('Strategy Management Chain E2E', () => {
     await expect(page.locator('.source-badge.real')).toContainText('SOURCE: REAL')
     await expect(page.locator('.error-tip')).toContainText(/strategy-service-unavailable|获取策略列表失败/)
     await expect(page.locator('.strategy-table tbody tr')).toHaveCount(0)
-    await expect(page.locator('.empty-state')).toContainText('REAL 数据为空')
+    await expect(page.locator('.empty-state')).toContainText('REAL 请求失败')
   })
 })

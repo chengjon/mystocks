@@ -159,10 +159,14 @@ class TitleManager {
 export const titleManager = new TitleManager()
 
 // 便捷函数
-export const setPageTitle = (config: Partial<TitleConfig> | string) => titleManager.setTitle(config)
-export const setPageMeta = (config: MetaConfig) => titleManager.setMeta(config)
-export const resetPageTitle = () => titleManager.reset()
-export const setSEOOptimized = (config: Parameters<typeof titleManager.setSEOOptimized>[0]) =>
+export const setPageTitle = (
+    config: Partial<TitleConfig> | string
+): ReturnType<TitleManager['setTitle']> => titleManager.setTitle(config)
+export const setPageMeta = (config: MetaConfig): ReturnType<TitleManager['setMeta']> => titleManager.setMeta(config)
+export const resetPageTitle = (): ReturnType<TitleManager['reset']> => titleManager.reset()
+export const setSEOOptimized = (
+    config: Parameters<typeof titleManager.setSEOOptimized>[0]
+): ReturnType<TitleManager['setSEOOptimized']> =>
     titleManager.setSEOOptimized(config)
 
 export default titleManager

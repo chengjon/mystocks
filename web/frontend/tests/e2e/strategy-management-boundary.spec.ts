@@ -76,6 +76,23 @@ async function mockCsrfEndpoint(page: Parameters<typeof test>[0]["page"]) {
   })
 }
 
+async function mockBackendReadiness(page: Parameters<typeof test>[0]["page"]) {
+  await page.route("**/api/health/ready", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(
+        buildUnifiedResponse(
+          {
+            status: "ready",
+          },
+          { request_id: "req-readiness-boundary" }
+        )
+      ),
+    })
+  })
+}
+
 async function routeStrategyList(
   page: Parameters<typeof test>[0]["page"],
   handler: Parameters<typeof page.route>[1]
@@ -91,7 +108,24 @@ test.describe("Strategy Management - Boundary and Edge Cases", () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1920, height: 1080 })
     await setupAuthenticatedSession(page)
+    await mockBackendReadiness(page)
     await mockCsrfEndpoint(page)
+  })
+
+  test("redirects legacy qm strategy route to strategy/repo and preserves query/hash", async ({ page }) => {
+    await routeStrategyList(page, async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: { "content-type": "application/json", "x-request-id": "req-legacy-route", "x-process-time": "16ms" },
+        body: JSON.stringify(buildUnifiedResponse(buildStrategyDataset(3), { request_id: "req-legacy-route" })),
+      })
+    })
+
+    await page.goto(`${FRONTEND_BASE_URL}/qm/strategy/repo?from=legacy#trace-anchor`)
+
+    await page.waitForURL(`${FRONTEND_BASE_URL}/strategy/repo?from=legacy#trace-anchor`)
+    await expect(page.locator(".strategy-management")).toBeVisible()
+    await expect(page).toHaveURL(`${FRONTEND_BASE_URL}/strategy/repo?from=legacy#trace-anchor`)
   })
 
   test("shows empty-state when search has no matches", async ({ page }) => {
@@ -144,7 +178,7 @@ test.describe("Strategy Management - Boundary and Edge Cases", () => {
     await expect(page.locator(".strategy-table tbody tr")).toHaveCount(1)
   })
 
-  test("shows REAL empty-state with error when strategy API fails", async ({ page }) => {
+  test("shows REAL error state when strategy API fails", async ({ page }) => {
     await routeStrategyList(page, async (route) => {
       await route.abort("failed")
     })
@@ -152,6 +186,21 @@ test.describe("Strategy Management - Boundary and Edge Cases", () => {
     await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
     await expect(page.locator(".source-badge.real")).toContainText("SOURCE: REAL")
     await expect(page.locator(".error-tip")).toContainText(/Network Error|获取策略列表失败/)
+    await expect(page.locator(".strategy-table tbody tr")).toHaveCount(0)
+    await expect(page.locator(".empty-state")).toContainText("REAL 请求失败")
+  })
+
+  test("keeps REAL empty-state when strategy API returns an empty list", async ({ page }) => {
+    await routeStrategyList(page, async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: { "content-type": "application/json", "x-request-id": "req-empty-real", "x-process-time": "14ms" },
+        body: JSON.stringify(buildUnifiedResponse([], { request_id: "req-empty-real" })),
+      })
+    })
+
+    await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
+    await expect(page.locator(".source-badge.real")).toContainText("SOURCE: REAL")
     await expect(page.locator(".strategy-table tbody tr")).toHaveCount(0)
     await expect(page.locator(".empty-state")).toContainText("REAL 数据为空")
   })
@@ -174,7 +223,9 @@ test.describe("Strategy Management - Boundary and Edge Cases", () => {
 
     await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
     await expect(page.locator(".source-badge.real")).toContainText("SOURCE: REAL")
+    await expect(page.locator(".error-tip")).toContainText(/Network Error|获取策略列表失败/)
     await expect(page.locator(".strategy-table tbody tr")).toHaveCount(0)
+    await expect(page.locator(".empty-state")).toContainText("REAL 请求失败")
 
     await page.getByRole("button", { name: "刷新" }).click()
     await expect(page.locator(".source-badge.real")).toContainText("SOURCE: REAL")
@@ -232,7 +283,9 @@ test.describe("Strategy Management - Boundary and Edge Cases", () => {
 
     for (const url of urls) {
       await page.goto(url, { waitUntil: "domcontentloaded" })
-      await expect(page.locator(".strategy-management")).toBeVisible()
+      await page.waitForLoadState("networkidle", { timeout: 10000 }).catch(() => {})
+      expect(new URL(page.url()).pathname).not.toBe("/login")
+      await expect(page.locator("main.artdeco-main, .strategy-management").first()).toBeVisible()
       await expect(page.getByRole("heading", { name: "策略管理" })).toBeVisible()
     }
   })

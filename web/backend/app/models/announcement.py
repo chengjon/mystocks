@@ -6,7 +6,7 @@ Multi-data Source Support
 from datetime import date, datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import (
     DECIMAL,
     Boolean,
@@ -162,8 +162,7 @@ class AnnouncementResponse(AnnouncementBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AnnouncementMonitorRuleBase(BaseModel):
@@ -204,8 +203,7 @@ class AnnouncementMonitorRuleResponse(AnnouncementMonitorRuleBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AnnouncementMonitorRecordResponse(BaseModel):
@@ -224,8 +222,7 @@ class AnnouncementMonitorRecordResponse(BaseModel):
     rule_name: Optional[str] = None
     announcement_title: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AnnouncementSearchRequest(BaseModel):

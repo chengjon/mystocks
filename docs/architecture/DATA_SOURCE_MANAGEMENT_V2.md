@@ -280,7 +280,7 @@ data_sources:
     source_type: "database"
     endpoint_name: "tdx.get_security_quotes"
     call_method: "tcp"
-    endpoint_url: "tcp://192.168.1.100:7709"
+    endpoint_url: "tcp://example.local:7709"
 
     data_category: "REALTIME_QUOTE"
     data_classification: "market_data"
@@ -307,7 +307,7 @@ data_sources:
 
     source_config:
       connection_type: "tcp"
-      host: "192.168.1.100"
+      host: "example.local"
       port: 7709
       timeout: 5
 

@@ -1,9 +1,4 @@
 <template>
-    <div class="screener-shell">
-        <div class="analysis-blocker">
-            <strong>选股接口真值待确认</strong>
-            <span>当前保留筛选器壳层和结果表结构；真实选股接口待 API 分支复核后接入。</span>
-        </div>
     <div class="screener-container">
         <div class="page-header">
             <div class="header-title-section">
@@ -169,7 +164,6 @@
                 </el-table>
             </el-card>
         </div>
-    </div>
     </div>
 </template>
 
@@ -377,28 +371,4 @@
         align-items: stretch;
       }
     }
-.screener-shell {
-  display: grid;
-  gap: var(--spacing-md);
-}
-
-.analysis-blocker {
-  display: grid;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-lg);
-  border: 1px solid var(--color-border);
-  background: color-mix(in srgb, var(--color-primary) 6%, transparent);
-
-  strong {
-    color: var(--color-primary);
-    font-size: var(--font-size-base);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  span {
-    color: var(--color-text-secondary);
-    font-size: var(--font-size-sm);
-  }
-}
 </style>

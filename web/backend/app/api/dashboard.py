@@ -21,12 +21,14 @@ from app.api.dashboard_builders import (
     build_watchlist_summary,
 )
 from app.api.dashboard_cache import cache_dashboard_data, try_get_cached_dashboard
-from app.api.dashboard_data_source import get_business_source, get_data_source
+from app.api.dashboard_data_source import get_data_source
 from app.core.cache_manager import CacheManager, get_cache_manager_async
 from app.core.responses import (
     ErrorCodes,
+    UnifiedResponse,
     create_error_response,
     create_health_response,
+    create_unified_success_response,
 )
 from app.models.dashboard import (
     DashboardResponse,
@@ -183,27 +185,41 @@ async def get_dashboard_summary(
 
 @router.get(
     "/market-overview",
-    response_model=MarketOverview,
+    response_model=UnifiedResponse[MarketOverview],
     summary="获取市场概览",
     description="获取市场指数、涨跌家数、榜单等市场概览信息（使用真实API数据）",
 )
 async def get_market_overview(
-    limit: int = Query(10, description="榜单数量限制", ge=1, le=100), data_source=Depends(get_data_source)
+    request: Request,
+    limit: int = Query(10, description="榜单数量限制", ge=1, le=100),
+    data_source=Depends(get_data_source),
 ):
     """获取市场概览数据（使用真实API）"""
     try:
-        # 调用真实业务数据源
-        raw_data = data_source.get_dashboard_summary(user_id=0)  # 市场数据不需要user_id
+        if hasattr(data_source, "get_market_overview_data"):
+            raw_market_data = data_source.get_market_overview_data()
+        elif hasattr(data_source, "get_market_overview"):
+            raw_market_data = data_source.get_market_overview()
+        else:
+            raise HTTPException(status_code=503, detail="市场概览数据源未实现专用接口")
 
-        if "market_overview" not in raw_data:
+        if not raw_market_data:
             raise HTTPException(status_code=404, detail="市场概览数据不可用")
 
-        market_data = build_market_overview(raw_data["market_overview"])
+        market_data = build_market_overview(raw_market_data)
 
         if not market_data:
             raise HTTPException(status_code=500, detail="市场概览数据解析失败")
 
-        return market_data
+        market_data.top_gainers = market_data.top_gainers[:limit]
+        market_data.top_losers = market_data.top_losers[:limit]
+        market_data.most_active = market_data.most_active[:limit]
+
+        return create_unified_success_response(
+            data=market_data,
+            message="获取市场概览成功",
+            request_id=getattr(request.state, "request_id", None),
+        )
 
     except HTTPException:
         raise

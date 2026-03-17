@@ -103,7 +103,25 @@
 <script setup>
 import { useHealthRadarChart } from './composables/useHealthRadarChart'
 
-const { props, emit, chartRef, chart, resizeObserver, showComparison, hoveredDimension, tooltip, chartHeight, hasComparison, averageScore, scores, values, validValues, dimensionKeys, dimensionNames, dimensionDescriptions, legendItems, items, colors, currentValue, previousValue, change, bestDimension, best, worstDimension, worst, overallTrend, colorSchemes, getChangeClass, getChangeText, sign, getOption, scores, data, colors, seriesData, comparisonData, dimension, description, initChart, rect, dimensionKey, updateChart, highlightDimension, option, clearHighlight, toggleView, exportChart, dataURL, link, handleResize } = useHealthRadarChart()
+const {
+  chartRef,
+  showComparison,
+  hoveredDimension,
+  tooltip,
+  chartHeight,
+  hasComparison,
+  averageScore,
+  legendItems,
+  bestDimension,
+  worstDimension,
+  overallTrend,
+  getChangeClass,
+  getChangeText,
+  highlightDimension,
+  clearHighlight,
+  toggleView,
+  exportChart
+} = useHealthRadarChart()
 </script>
 
 <style scoped>

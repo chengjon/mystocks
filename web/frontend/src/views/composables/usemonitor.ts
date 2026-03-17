@@ -1,17 +1,7 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useApiService } from '@/composables/useApiService'
-import { PageHeader, StockListTable } from '@/components/shared'
 import type { TableColumn } from '@/components/shared'
 import { API_BASE_URL as RUNTIME_API_BASE_URL } from '@/config/runtime-endpoints'
-
-// Define service status type instead of using any
-interface ServiceStatus {
-  frontend: 'normal' | 'warning'
-  api: 'normal' | 'warning'
-  postgresql: 'normal' | 'warning'
-  tdengine: 'normal' | 'warning'
-  overallStatus: 'normal' | 'warning'
-}
 
 interface HealthData {
   frontend: number

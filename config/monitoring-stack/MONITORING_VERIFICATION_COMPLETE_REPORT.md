@@ -9,7 +9,7 @@
 ## ✅ 已完成任务
 
 ### 1. GPU监控Dashboard创建
-- ✅ 创建 `/opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack/provisioning/dashboards/gpu-monitoring-dashboard.json`
+- ✅ 创建 `/opt/claude/mystocks_spec/monitoring-stack/provisioning/dashboards/gpu-monitoring-dashboard.json`
 - 包含以下面板:
   - GPU利用率 (%) - 时间序列图
   - 显存利用率 (%) - 时间序列图
@@ -30,7 +30,7 @@
   - `gpu_memory_speedup{device_id}`
 
 ### 2. API性能Dashboard创建
-- ✅ 创建 `/opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack/provisioning/dashboards/api-performance-dashboard.json`
+- ✅ 创建 `/opt/claude/mystocks_spec/monitoring-stack/provisioning/dashboards/api-performance-dashboard.json`
 - 包含以下面板:
   - API请求延迟 (P50, P95, P99) - 毫秒单位
   - API请求速率 (RPS) - 每秒请求数
@@ -45,7 +45,7 @@
   - `sum(rate(http_requests_total{status=~"5.."}[5m]))` for error rate
 
 ### 3. 系统资源Dashboard创建
-- ✅ 创建 `/opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack/provisioning/dashboards/system-resource-dashboard.json`
+- ✅ 创建 `/opt/claude/mystocks_spec/monitoring-stack/provisioning/dashboards/system-resource-dashboard.json`
 - 包含以下面板:
   - 系统内存使用率 (%)
   - 磁盘使用率 (%)
@@ -63,7 +63,7 @@
   - `node_network_transmit_bytes_total`
 
 ### 4. 验证脚本创建
-- ✅ 创建 `/opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack/verify_monitoring.sh`
+- ✅ 创建 `/opt/claude/mystocks_spec/monitoring-stack/verify_monitoring.sh`
 - 自动化验证功能:
   - 服务健康检查（Prometheus, Grafana, Loki, Tempo, Node Exporter）
   - Grafana数据源验证
@@ -154,9 +154,9 @@ line 47: field split_queries_by_interval not found in type queryrange.Config
 3. 进入: **Dashboards** → **Import**
 4. 选择 **Upload JSON file**
 5. 分别上传以下文件:
-   - `/opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack/provisioning/dashboards/gpu-monitoring-dashboard.json`
-   - `/opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack/provisioning/dashboards/api-performance-dashboard.json`
-   - `/opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack/provisioning/dashboards/system-resource-dashboard.json`
+   - `/opt/claude/mystocks_spec/monitoring-stack/provisioning/dashboards/gpu-monitoring-dashboard.json`
+   - `/opt/claude/mystocks_spec/monitoring-stack/provisioning/dashboards/api-performance-dashboard.json`
+   - `/opt/claude/mystocks_spec/monitoring-stack/provisioning/dashboards/system-resource-dashboard.json`
 
 ### 手动配置数据源
 
@@ -190,7 +190,7 @@ line 47: field split_queries_by_interval not found in type queryrange.Config
    - 测试Loki日志查询功能
 
 2. **启动MyStocks后端服务**
-   - 确保FastAPI后端在8020端口运行
+   - 确保FastAPI后端在8000端口运行
    - 验证 `/metrics` 端点可访问
    - 确保各组件健康检查端点返回正确响应
 
@@ -221,17 +221,17 @@ line 47: field split_queries_by_interval not found in type queryrange.Config
 ## 📁 相关文件
 
 ### Dashboard文件
-- `/opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack/provisioning/dashboards/gpu-monitoring-dashboard.json`
-- `/opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack/provisioning/dashboards/api-performance-dashboard.json`
-- `/opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack/provisioning/dashboards/system-resource-dashboard.json`
+- `/opt/claude/mystocks_spec/monitoring-stack/provisioning/dashboards/gpu-monitoring-dashboard.json`
+- `/opt/claude/mystocks_spec/monitoring-stack/provisioning/dashboards/api-performance-dashboard.json`
+- `/opt/claude/mystocks_spec/monitoring-stack/provisioning/dashboards/system-resource-dashboard.json`
 
 ### 配置文件
-- `/opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack/docker-compose.yml`
-- `/opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack/provisioning/datasources/monitoring.yml`
-- `/opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack/config/loki-config.yaml`
+- `/opt/claude/mystocks_spec/monitoring-stack/docker-compose.yml`
+- `/opt/claude/mystocks_spec/monitoring-stack/provisioning/datasources/monitoring.yml`
+- `/opt/claude/mystocks_spec/monitoring-stack/config/loki-config.yaml`
 
 ### 验证脚本
-- `/opt/claude/mystocks_spec-data-db-audit/config/monitoring-stack/verify_monitoring.sh`
+- `/opt/claude/mystocks_spec/monitoring-stack/verify_monitoring.sh`
 
 ---
 
@@ -245,10 +245,10 @@ line 47: field split_queries_by_interval not found in type queryrange.Config
 - **Node Exporter**: http://localhost:9100
 
 ### API端点（需启动后端）
-- **MyStocks后端**: http://localhost:8020
-- **后端Metrics**: http://localhost:8020/metrics
-- **GPU监控Metrics**: http://localhost:8020/api/gpu/metrics
-- **健康检查**: http://localhost:8020/health
+- **MyStocks后端**: http://localhost:8000
+- **后端Metrics**: http://localhost:8000/metrics
+- **GPU监控Metrics**: http://localhost:8000/api/gpu/metrics
+- **健康检查**: http://localhost:8000/health
 
 ---
 

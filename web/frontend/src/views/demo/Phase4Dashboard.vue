@@ -227,7 +227,23 @@
 <script setup>
 import { usePhase4Dashboard } from './composables/usePhase4Dashboard'
 
-const { loading, activeTab, marketTabs, marketOverview, watchlist, portfolio, riskAlerts, marketStats, watchlistStats, portfolioStats, riskStats, indicesChartRef, distributionChartRef, portfolioChartRef, indicesChart, distributionChart, portfolioChart, formatCurrency, numericValue, getAlertBadgeClass, classes, loadDashboardData, response, data, errorMessage, updateCharts, updateIndicesChart, option, updateDistributionChart, option, updatePortfolioChart, option, chartData, initCharts, _refreshDashboard, _handleMarkAllRead, intervalId } = usePhase4Dashboard()
+const {
+  loading,
+  activeTab,
+  marketTabs,
+  marketOverview,
+  watchlist,
+  riskAlerts,
+  marketStats,
+  watchlistStats,
+  portfolioStats,
+  riskStats,
+  indicesChartRef,
+  distributionChartRef,
+  portfolioChartRef,
+  getAlertBadgeClass,
+  loadDashboardData
+} = usePhase4Dashboard()
 </script>
 
 <style scoped lang="scss">

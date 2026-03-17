@@ -166,6 +166,13 @@ interface StockRow {
   market?: string;
 }
 
+interface StocksResponse {
+  success?: boolean;
+  data?: StockRow[];
+  total?: number;
+  msg?: string;
+}
+
 const filters = reactive({
   search: '',
   industry: '',
@@ -181,7 +188,7 @@ const pagination = reactive({
   pageSize: 20
 })
 
-const stocks = ref<any[]>([])
+const stocks = ref<StockRow[]>([])
 const total = ref(0)
 
 // Filter config type - matches ArtDecoFilterBar's Filter interface
@@ -290,12 +297,12 @@ const loadData = async () => {
       params.market = filters.market
     }
 
-    const response = await dataApi.getStocksBasic(params)
+    const response = await dataApi.getStocksBasic(params) as StocksResponse
     if (response.success && response.data) {
-      stocks.value = response.data as unknown as any[]
-      total.value = (response as unknown as { total?: number }).total || (response.data as unknown as any[]).length
+      stocks.value = response.data
+      total.value = response.total || response.data.length
     } else {
-      throw new Error((response as unknown as { msg?: string }).msg || 'API返回数据格式错误')
+      throw new Error(response.msg || 'API返回数据格式错误')
     }
   } catch (error: unknown) {
     console.error('加载数据失败:', error)

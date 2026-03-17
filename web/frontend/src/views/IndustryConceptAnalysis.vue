@@ -163,7 +163,6 @@
 </template>
 
 <script setup lang="ts">
-import type { TableColumn } from '@/components/shared'
 import { useIndustryConceptAnalysis } from './composables/useIndustryConceptAnalysis'
 
 const {
@@ -186,17 +185,7 @@ const {
   barChartOptions,
   tableColumns,
   paginatedStocks,
-  formatPercent,
-  formatPrice,
-  formatVolume,
-  formatAmount,
-  getChangeColor,
-  getChangeColorClass,
   refreshData,
-  loadIndustryList,
-  loadConceptList,
-  loadIndustryStocks,
-  loadConceptStocks,
   handleTabChange,
   handleIndustryChange,
   handleConceptChange,

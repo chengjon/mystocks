@@ -41,7 +41,7 @@ export interface IndicatorItem {
 }
 
 export interface SystemHealthItem {
-  name: string
+  label: string
   status: string
   value: string
 }

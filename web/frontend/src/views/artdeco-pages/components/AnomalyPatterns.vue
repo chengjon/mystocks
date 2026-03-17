@@ -24,27 +24,30 @@ defineProps({
 </script>
 
 <style scoped lang="scss">
+@import '@/styles/artdeco-tokens';
+
 .patterns-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(calc(var(--artdeco-spacing-px) * 250), 1fr));
+    gap: var(--artdeco-spacing-5);
 }
+
 .pattern-card {
     background: var(--artdeco-gold-opacity-05);
-    padding: 15px;
-    border: 1px solid var(--artdeco-gold-opacity-10);
+    padding: calc(var(--artdeco-spacing-px) * 15);
+    border: var(--artdeco-spacing-px) solid var(--artdeco-gold-opacity-10);
     .pattern-header {
         display: flex;
         justify-content: space-between;
         font-weight: bold;
-        margin-bottom: 10px;
+        margin-bottom: calc(var(--artdeco-spacing-px) * 10);
         color: var(--artdeco-gold-primary);
     }
     .pattern-body {
-        font-size: 14px;
+        font-size: var(--artdeco-text-sm);
         color: var(--artdeco-fg-muted);
         .count {
-          margin-top: 10px;
+          margin-top: calc(var(--artdeco-spacing-px) * 10);
           color: var(--artdeco-gold-primary);
         }
     }

@@ -8,7 +8,7 @@
  * - 自动缓存和重试
  */
 
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, readonly } from 'vue'
 import { dataApi } from '@/api'
 import { useLoadingStore } from '@/stores/loading'
 import { getUserFriendlyErrorMessage } from '@/api/unifiedApiClient'

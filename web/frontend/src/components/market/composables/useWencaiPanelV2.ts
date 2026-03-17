@@ -1,14 +1,6 @@
 import { ref, computed, onMounted, type Ref, type ComputedRef } from 'vue'
 import { ElMessage } from 'element-plus'
 import { API_ENDPOINTS } from '@/config/api'
-import {
-  Search,
-  Refresh,
-  Edit,
-  Folder,
-  Document,
-  Download
-} from '@element-plus/icons-vue'
 
 // Type definitions
 interface WencaiQuery {

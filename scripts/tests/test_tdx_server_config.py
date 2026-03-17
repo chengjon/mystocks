@@ -125,13 +125,13 @@ class TestLoadConfig:
 HostNum=3
 PrimaryHost=2
 HostName01=主服务器
-IPAddress01=192.168.1.100
+IPAddress01=example.local
 Port01=7709
 HostName02=备用服务器1
-IPAddress02=192.168.1.101
+IPAddress02=example.local
 Port02=7710
 HostName03=备用服务器2
-IPAddress03=192.168.1.102
+IPAddress03=example.local
 Port03=7711
 """
 
@@ -141,9 +141,9 @@ Port03=7711
         config = TdxServerConfig(self.config_file)
 
         assert len(config.servers) == 3
-        assert config.servers[0] == ("192.168.1.100", 7709, "主服务器")
-        assert config.servers[1] == ("192.168.1.101", 7710, "备用服务器1")
-        assert config.servers[2] == ("192.168.1.102", 7711, "备用服务器2")
+        assert config.servers[0] == ("example.local", 7709, "主服务器")
+        assert config.servers[1] == ("example.local", 7710, "备用服务器1")
+        assert config.servers[2] == ("example.local", 7711, "备用服务器2")
         assert config.primary_index == 1  # PrimaryHost=2，所以索引为1
 
     def test_load_valid_config_utf8_encoding(self):
@@ -152,10 +152,10 @@ Port03=7711
 HostNum=2
 PrimaryHost=1
 HostName01=主服务器
-IPAddress01=192.168.1.100
+IPAddress01=example.local
 Port01=7709
 HostName02=备用服务器
-IPAddress02=192.168.1.101
+IPAddress02=example.local
 Port02=7710
 """
 
@@ -208,10 +208,10 @@ PrimaryHost=1
         config_content = """[HQHOST]
 HostNum=2
 HostName01=服务器1
-IPAddress01=192.168.1.100
+IPAddress01=example.local
 Port01=7709
 HostName02=服务器2
-IPAddress02=192.168.1.101
+IPAddress02=example.local
 Port02=7710
 """
         with open(self.config_file, "w", encoding="gbk") as f:
@@ -228,10 +228,10 @@ Port02=7710
 HostNum=2
 PrimaryHost=5
 HostName01=服务器1
-IPAddress01=192.168.1.100
+IPAddress01=example.local
 Port01=7709
 HostName02=服务器2
-IPAddress02=192.168.1.101
+IPAddress02=example.local
 Port02=7710
 """
         with open(self.config_file, "w", encoding="gbk") as f:
@@ -248,16 +248,16 @@ Port02=7710
 HostNum=4
 PrimaryHost=1
 HostName01=有效服务器
-IPAddress01=192.168.1.100
+IPAddress01=example.local
 Port01=7709
 HostName02=空IP服务器
 IPAddress02=
 Port02=7710
 HostName03=零端口服务器
-IPAddress03=192.168.1.102
+IPAddress03=example.local
 Port03=0
 HostName04=有效服务器2
-IPAddress04=192.168.1.103
+IPAddress04=example.local
 Port04=7711
 """
         with open(self.config_file, "w", encoding="gbk") as f:
@@ -267,8 +267,8 @@ Port04=7711
 
         # 只有2个有效服务器（空IP和端口0的被过滤）
         assert len(config.servers) == 2
-        assert config.servers[0] == ("192.168.1.100", 7709, "有效服务器")
-        assert config.servers[1] == ("192.168.1.103", 7711, "有效服务器2")
+        assert config.servers[0] == ("example.local", 7709, "有效服务器")
+        assert config.servers[1] == ("example.local", 7711, "有效服务器2")
 
     def test_load_config_exception_handling(self):
         """测试配置加载异常处理"""
@@ -287,7 +287,7 @@ Port04=7711
 HostNum=2
 PrimaryHost=1
 HostName01=完整服务器
-IPAddress01=192.168.1.100
+IPAddress01=example.local
 Port01=7709
 HostName02=不完整服务器
 # 缺少IPAddress02和Port02
@@ -299,7 +299,7 @@ HostName02=不完整服务器
 
         # 只有1个完整的服务器
         assert len(config.servers) == 1
-        assert config.servers[0] == ("192.168.1.100", 7709, "完整服务器")
+        assert config.servers[0] == ("example.local", 7709, "完整服务器")
 
 
 class TestServerSelectionMethods:
@@ -315,13 +315,13 @@ class TestServerSelectionMethods:
 HostNum=3
 PrimaryHost=2
 HostName01=主服务器
-IPAddress01=192.168.1.100
+IPAddress01=example.local
 Port01=7709
 HostName02=首选服务器
-IPAddress02=192.168.1.101
+IPAddress02=example.local
 Port02=7710
 HostName03=备用服务器
-IPAddress03=192.168.1.102
+IPAddress03=example.local
 Port03=7711
 """
         with open(self.config_file, "w", encoding="gbk") as f:
@@ -340,7 +340,7 @@ Port03=7711
         """测试获取主服务器"""
         host, port = self.config.get_primary_server()
 
-        assert host == "192.168.1.101"
+        assert host == "example.local"
         assert port == 7710
 
     def test_get_primary_server_empty_list(self):
@@ -364,9 +364,9 @@ Port03=7711
         # 所有结果应该是有效的服务器
         for host, port in results:
             assert (host, port) in [
-                ("192.168.1.100", 7709),
-                ("192.168.1.101", 7710),
-                ("192.168.1.102", 7711),
+                ("example.local", 7709),
+                ("example.local", 7710),
+                ("example.local", 7711),
             ]
 
     def test_get_random_server_empty_list(self):
@@ -382,9 +382,9 @@ Port03=7711
         all_servers = self.config.get_all_servers()
 
         assert len(all_servers) == 3
-        assert all_servers[0] == ("192.168.1.100", 7709, "主服务器")
-        assert all_servers[1] == ("192.168.1.101", 7710, "首选服务器")
-        assert all_servers[2] == ("192.168.1.102", 7711, "备用服务器")
+        assert all_servers[0] == ("example.local", 7709, "主服务器")
+        assert all_servers[1] == ("example.local", 7710, "首选服务器")
+        assert all_servers[2] == ("example.local", 7711, "备用服务器")
 
         # 确保返回的是副本
         all_servers.append(("test", 1234, "test"))
@@ -394,7 +394,7 @@ Port03=7711
         """测试根据索引获取服务器（有效索引）"""
         host, port = self.config.get_server_by_index(1)
 
-        assert host == "192.168.1.101"
+        assert host == "example.local"
         assert port == 7710
 
     def test_get_server_by_index_invalid(self):
@@ -414,7 +414,7 @@ Port03=7711
         assert len(servers) <= 3
         # 第一个应该是主服务器
         primary_host, primary_port = servers[0]
-        assert primary_host == "192.168.1.101"
+        assert primary_host == "example.local"
         assert primary_port == 7710
 
     def test_get_failover_servers_custom_count(self):
@@ -423,17 +423,17 @@ Port03=7711
 
         assert len(servers) <= 2
         # 第一个应该是主服务器
-        assert servers[0] == ("192.168.1.101", 7710)
+        assert servers[0] == ("example.local", 7710)
 
     def test_get_failover_servers_single_server(self):
         """测试单个服务器的故障转移列表"""
-        self.config.servers = [("192.168.1.100", 7709, "唯一服务器")]
+        self.config.servers = [("example.local", 7709, "唯一服务器")]
         self.config.primary_index = 0
 
         servers = self.config.get_failover_servers(max_count=3)
 
         assert len(servers) == 1
-        assert servers[0] == ("192.168.1.100", 7709)
+        assert servers[0] == ("example.local", 7709)
 
     def test_get_failover_servers_empty_list(self):
         """测试空服务器列表的故障转移"""
@@ -471,10 +471,10 @@ class TestStringRepresentation:
 HostNum=2
 PrimaryHost=1
 HostName01=主服务器
-IPAddress01=192.168.1.100
+IPAddress01=example.local
 Port01=7709
 HostName02=备用服务器
-IPAddress02=192.168.1.101
+IPAddress02=example.local
 Port02=7710
 """
             with open(config_file, "w", encoding="gbk") as f:
@@ -486,7 +486,7 @@ Port02=7710
             assert "TdxServerConfig" in str_repr
             assert "2个服务器" in str_repr
             assert "主服务器" in str_repr
-            assert "192.168.1.100:7709" in str_repr
+            assert "example.local:7709" in str_repr
 
         finally:
             import shutil

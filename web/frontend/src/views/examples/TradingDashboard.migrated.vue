@@ -119,7 +119,22 @@
 <script setup lang="ts">
 import { useTradingDashboardMigrated } from './composables/useTradingDashboard.migrated'
 
-const { TRADING_PAGE_CONFIG, getTradingConfig, isRunning, loading, activeTab, configDialogVisible, tradingData, strategyPerformance, marketData, riskData, usedConfigs, loadTradingData, loadStrategyPerformance, loadMarketData, loadRiskData, toggleTradingSession, loadAllData, showConfigInfo, getRiskLevelType, getRiskLevelText } = useTradingDashboardMigrated()
+const {
+  isRunning,
+  loading,
+  activeTab,
+  configDialogVisible,
+  tradingData,
+  strategyPerformance,
+  marketData,
+  riskData,
+  usedConfigs,
+  toggleTradingSession,
+  loadAllData,
+  showConfigInfo,
+  getRiskLevelType,
+  getRiskLevelText
+} = useTradingDashboardMigrated()
 </script>
 
 <style scoped>

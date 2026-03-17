@@ -10,7 +10,7 @@
  * - Memory management and cleanup
  */
 
-import type { TechnicalIndicatorResult, WorkerHealthStatus } from './types-1'
+import type { TechnicalIndicatorResult, WorkerHealthStatus } from './types-1.ts'
 
 export class WorkersManager {
   private static instance: WorkersManager

@@ -18,7 +18,7 @@ class MultiSourceBridgeAdapter(IDataSource):
     def __init__(self, config: Dict[str, Any]):
         self.config = config
         self.source_type = "distributed_bridge"
-        # 节点注册表: { "wind": "http://192.168.123.50:8001", "qmt": "http://192.168.123.51:8001" }
+        # 节点注册表: { "wind": "http://example.local:8001", "qmt": "http://example.local:8001" }
         self.providers = config.get("providers", {})
         self.timeout = config.get("timeout", 30.0) # 采集可能较慢，增加超时
 

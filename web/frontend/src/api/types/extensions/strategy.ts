@@ -1,3 +1,5 @@
+import type { StrategyConfig } from '../common.ts';
+
 /**
  * Strategy Domain Types
  *
@@ -284,17 +286,11 @@ export interface UpdateStrategyRequestVM {
 }
 
 export interface StrategyListResponseVM {
-  strategies: Array<{
-    id: string;
-    name: string;
-    type: StrategyTypeVM;
-    status: StrategyStatusVM;
-    performance: StrategyPerformanceVM;
-    last_updated: string;
-  }>;
+  items: StrategyConfig[];
   total: number;
   page: number;
   page_size: number;
+  strategies?: StrategyConfig[];
 }
 
 export interface StrategyComparisonDataVM {

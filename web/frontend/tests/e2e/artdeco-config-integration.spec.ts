@@ -107,16 +107,41 @@ test.describe("ArtDeco Configuration Integration", () => {
 
   test("loads key route shells with expected components", async ({ page }) => {
     const routeChecks = [
-      { path: "/market/realtime", selector: ".market-realtime-tab" },
-      { path: "/market/technical", selector: ".market-kline-tab" },
-      { path: "/strategy/repo", selector: ".strategy-management" },
-      { path: "/strategy/backtest", selector: ".backtest-analysis-page" },
-      { path: "/watchlist/manage", selector: ".watchlist-manager, .watchlist-page, .page-enter" },
+      {
+        path: "/market/realtime",
+        verify: async () => {
+          await expect(page.getByRole("heading", { name: "实时行情流" })).toBeVisible()
+        },
+      },
+      {
+        path: "/market/technical",
+        verify: async () => {
+          await expect(page.locator(".market-kline-tab, .artdeco-technical-analysis").first()).toBeVisible()
+        },
+      },
+      {
+        path: "/strategy/repo",
+        verify: async () => {
+          await expect(page.locator(".strategy-management").first()).toBeVisible()
+        },
+      },
+      {
+        path: "/strategy/backtest",
+        verify: async () => {
+          await expect(page.locator(".backtest-analysis-page").first()).toBeVisible()
+        },
+      },
+      {
+        path: "/watchlist/manage",
+        verify: async () => {
+          await expect(page.locator(".watchlist-manager, .watchlist-page, .page-enter").first()).toBeVisible()
+        },
+      },
     ]
 
     for (const item of routeChecks) {
       await page.goto(`${FRONTEND_BASE_URL}${item.path}`, { waitUntil: "domcontentloaded" })
-      await expect(page.locator(item.selector).first()).toBeVisible()
+      await item.verify()
     }
   })
 

@@ -1,18 +1,5 @@
 import { ref, onMounted, onUnmounted, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
-import {
-    Cpu,
-    VideoPlay,
-    TrendCharts,
-    Memo,
-    HotWater,
-    Lightning,
-    Top,
-    Setting,
-    Refresh,
-    RefreshRight,
-    Document
-} from '@element-plus/icons-vue'
 import axios from 'axios'
 import { deriveGpuDashboardSummary, mapGpuStatusPayload } from './gpuMonitorData'
 

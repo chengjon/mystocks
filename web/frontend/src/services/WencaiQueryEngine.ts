@@ -5,7 +5,7 @@
  * 支持9种预定义查询模式和AI回退机制
  */
 
-import { apiClient } from '@/services/api-client'
+import { apiClient } from '@/services/api-client.ts'
 
 // Query Pattern Types
 export enum QueryPattern {
@@ -154,10 +154,12 @@ export class WencaiQueryEngine {
 
         // Check cache first
         if (options.useCache !== false && this.queryCache.has(cacheKey)) {
-            const cached = this.queryCache.get(cacheKey)!
-            return {
-                ...cached,
-                executionTime: Date.now() - startTime
+            const cached = this.queryCache.get(cacheKey)
+            if (cached) {
+                return {
+                    ...cached,
+                    executionTime: Date.now() - startTime
+                }
             }
         }
 
@@ -165,12 +167,13 @@ export class WencaiQueryEngine {
             // Try pattern matching first
             const patternResult = await this.tryPatternMatching(query, options.maxResults || 50)
 
-            if (patternResult.success) {
+            const matchedData = patternResult.data
+            if (patternResult.success && matchedData) {
                 const result: QueryResult = {
                     success: true,
-                    data: patternResult.data,
+                    data: matchedData,
                     executionTime: Date.now() - startTime,
-                    patternUsed: patternResult.data!.pattern
+                    patternUsed: matchedData.pattern
                 }
 
                 // Cache result
@@ -235,11 +238,12 @@ export class WencaiQueryEngine {
                     const filters = patternConfig.template(matches)
                     const result = await this.executeBackendQuery(patternKey as QueryPattern, filters, maxResults)
 
-                    if (result.success) {
+                    const queryData = result.data
+                    if (result.success && queryData) {
                         return {
                             success: true,
                             data: {
-                                ...result.data!,
+                                ...queryData,
                                 query,
                                 pattern: patternKey as QueryPattern,
                                 filters: this.buildFilterList(filters)

@@ -29,7 +29,7 @@
                     <div class="indicator-filters">
                         <div v-for="(item, index) in filters.indicators" :key="index" class="indicator-filter-row">
                             <ArtDecoSelect v-model="item.indicator" :options="availableIndicators" placeholder="选择指标" />
-                            <ArtDecoSelect v-model="item.operator" :options="operators" style="width: 100px" />
+                            <ArtDecoSelect v-model="item.operator" :options="operators" class="indicator-operator" />
                             <ArtDecoInput v-model="item.value" placeholder="数值" />
                             <ArtDecoButton variant="outline" size="sm" @click="$emit('remove-indicator', index)">-</ArtDecoButton>
                         </div>
@@ -59,10 +59,12 @@ defineEmits(['add-indicator', 'remove-indicator', 'reset', 'run'])
 </script>
 
 <style scoped lang="scss">
+@import '@/styles/artdeco-tokens';
+
 .filter-section {
-    margin-bottom: 30px;
+    margin-bottom: calc(var(--artdeco-spacing-px) * 30);
     h4 {
-        margin-bottom: 15px;
+        margin-bottom: calc(var(--artdeco-spacing-px) * 15);
         color: var(--artdeco-gold-primary);
     }
 }
@@ -70,25 +72,30 @@ defineEmits(['add-indicator', 'remove-indicator', 'reset', 'run'])
 .filter-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: var(--artdeco-spacing-5);
 }
 
 .range-input {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: calc(var(--artdeco-spacing-px) * 10);
 }
 
 .indicator-filter-row {
     display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
+    gap: calc(var(--artdeco-spacing-px) * 10);
+    margin-bottom: calc(var(--artdeco-spacing-px) * 10);
+}
+
+.indicator-operator {
+    width: calc(var(--artdeco-spacing-px) * 100);
 }
 
 .form-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 15px;
-    margin-top: 30px;
+    gap: calc(var(--artdeco-spacing-px) * 15);
+    margin-top: calc(var(--artdeco-spacing-px) * 30);
 }
 </style>
+

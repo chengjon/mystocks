@@ -2000,10 +2000,10 @@ data_sources:
     priority: 1
     source_config:
       providers:
-        choice: http://192.168.123.109:8001
-        qmt: http://192.168.123.109:8001
-        tdx: http://192.168.123.74:8001
-        wind: http://192.168.123.109:8001
+        choice: http://example.local:8001
+        qmt: http://example.local:8001
+        tdx: http://example.local:8001
+        wind: http://example.local:8001
       timeout: 30.0
       write_to_nas: true
     source_name: windows_nodes

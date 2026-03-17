@@ -185,7 +185,7 @@ async function runTests() {
   console.log(''.repeat(80));
 
   // 检查依赖
-  const hasPuppeteer = await checkDependencies();
+  await checkDependencies();
 
   // 测试所有页面
   for (const page of PAGES) {

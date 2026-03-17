@@ -213,7 +213,7 @@
 <script setup lang="ts">
 import { usePhase4Dashboard } from './composables/usePhase4Dashboard'
 
-const { loading, activeTab, tabs, marketOverview, watchlist, portfolio, riskAlerts, marketStats, watchlistStats, portfolioStats, riskStats, indicesChartRef, distributionChartRef, portfolioChartRef, gainersColumns, losersColumns, watchlistColumns, alertColumns, formatVolume, formatCurrency, getAlertLevelText, getAlertLevelVariant, initCharts, updateIndicesChart, updateDistributionChart, updatePortfolioChart, loadDashboardData, refreshDashboard, handleMarkAllRead } = usePhase4Dashboard()
+const { loading, marketStats, watchlistStats, portfolioStats, riskStats, refreshDashboard } = usePhase4Dashboard()
 </script>
 
 <style scoped lang="scss">

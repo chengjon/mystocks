@@ -1,10 +1,9 @@
-import { ref, computed, type Ref } from 'vue'
+import { ref, type Ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import {
   RENDER_BATCH_SIZE,
   ENABLE_DATA_CACHING,
-  CACHE_MAX_SIZE,
-  DEBOUNCE_DELAY
+  CACHE_MAX_SIZE
 } from '@/components/technical/config/klineChartConfig'
 
 interface OHLCVData {

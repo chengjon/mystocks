@@ -2,8 +2,6 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { ElMessage } from 'element-plus'
 import echarts from '@/utils/echarts'
 import { artDecoTheme } from '@/utils/echarts'
-import ArtDecoCardCompact from '@/components/artdeco/base/ArtDecoCardCompact.vue'
-import { TrendCharts } from '@element-plus/icons-vue'
 
 interface StrategyTemplate {
   id: string

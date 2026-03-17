@@ -1,4 +1,4 @@
-import type { KLineData } from '@/types/kline';
+import type { KLineData } from '@/types/kline.ts';
 
 export interface CrosshairPosition {
   x: number;
@@ -34,7 +34,11 @@ export class CrosshairHandler {
 
   constructor(options: CrosshairOptions) {
     this.canvas = options.canvas;
-    this.ctx = this.canvas.getContext('2d')!;
+    const context = this.canvas.getContext('2d');
+    if (!context) {
+      throw new Error('Failed to initialize crosshair canvas context');
+    }
+    this.ctx = context;
     this.chartContainer = options.chartContainer;
     this.data = options.data;
     this.callbacks = {

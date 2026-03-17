@@ -1,6 +1,6 @@
 // web/frontend/src/composables/useChart.ts
 
-import { ref, onMounted, onUnmounted, nextTick, watch, type Ref } from 'vue'
+import { ref, onMounted, onUnmounted, type Ref } from 'vue'
 import echarts from '@/utils/echarts'
 
 

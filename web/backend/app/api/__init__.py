@@ -26,7 +26,7 @@ from . import (  # trade,  # 临时注释: APIResponse泛型问题待修复
     monitoring,
     multi_source,
     notification,
-    risk_management,
+    risk,
     sse_endpoints,
     stock_search,
     strategy,
@@ -62,7 +62,7 @@ __all__ = [
     "monitoring_watchlists",  # 智能量化监控 - 清单管理 API
     "multi_source",
     "notification",
-    "risk_management",
+    "risk",
     "signal_monitoring",  # 信号监控 API - 信号历史、质量报告、实时监控
     "sse_endpoints",
     "stock_search",

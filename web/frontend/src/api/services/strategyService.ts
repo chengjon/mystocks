@@ -16,6 +16,12 @@ import type {
   StrategyListResponseVM as StrategyListResponse,
 } from '../types/extensions/index.ts';
 
+type StrategyApiDataSource = 'real' | 'mock';
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object';
+}
+
 export class StrategyApiService {
   /**
    * 根据 APP_MODE 环境变量决定使用哪个API端点
@@ -23,6 +29,7 @@ export class StrategyApiService {
    * - real/production: 使用 /v1/strategy (最终请求: /api/v1/strategy)
    */
   private readonly baseUrl: string;
+  private readonly dataSource: StrategyApiDataSource;
 
   constructor() {
     // 从环境变量读取模式，默认为real
@@ -31,28 +38,76 @@ export class StrategyApiService {
     // 根据模式选择API端点
     if (appMode === 'mock') {
       this.baseUrl = '/mock/strategy';
+      this.dataSource = 'mock';
       console.log('[Strategy API] Using Mock endpoint:', this.baseUrl);
     } else {
       this.baseUrl = '/v1/strategy';
+      this.dataSource = 'real';
       console.log('[Strategy API] Using Real endpoint:', this.baseUrl);
     }
+  }
+
+  getDataSource(): StrategyApiDataSource {
+    return this.dataSource;
+  }
+
+  private normalizeResponse<T>(
+    payload: unknown,
+    fallbackMessage: string
+  ): UnifiedResponse<T> {
+    if (isRecord(payload) && typeof payload.success === 'boolean' && 'data' in payload) {
+      return payload as unknown as UnifiedResponse<T>;
+    }
+
+    const rawPayload = isRecord(payload) ? payload : {};
+
+    return {
+      success: true,
+      code: 200,
+      message:
+        typeof rawPayload.message === 'string' && rawPayload.message.trim().length > 0
+          ? rawPayload.message
+          : fallbackMessage,
+      data: (('data' in rawPayload ? rawPayload.data : payload) as T),
+      timestamp:
+        typeof rawPayload.timestamp === 'string' && rawPayload.timestamp.trim().length > 0
+          ? rawPayload.timestamp
+          : new Date().toISOString(),
+      request_id: typeof rawPayload.request_id === 'string' ? rawPayload.request_id : '',
+      process_time: typeof rawPayload.process_time === 'string' ? rawPayload.process_time : undefined,
+      errors: null
+    };
   }
 
   /**
    * Get strategy list
    *
-   * @param params - Query parameters (page, pageSize, status, type)
+   * @param params - Query parameters supported by `/api/v1/strategy/strategies`
    * @returns UnifiedResponse with strategy list
    */
-  async getStrategyList(_params?: {
+  async getStrategyList(params?: {
     page?: number;
     pageSize?: number;
     status?: string;
-    type?: string;
   }): Promise<UnifiedResponse<StrategyListResponse>> {
-    return apiGet<UnifiedResponse<StrategyListResponse>>(
-      `${this.baseUrl}/strategies`  // Task 2.3.3: 使用Mock端点
+    const queryParams: Record<string, number | string> = {};
+
+    if (typeof params?.page === 'number') {
+      queryParams.page = params.page;
+    }
+    if (typeof params?.pageSize === 'number') {
+      queryParams.page_size = params.pageSize;
+    }
+    if (typeof params?.status === 'string' && params.status.trim().length > 0) {
+      queryParams.status = params.status;
+    }
+
+    const response = await apiGet<unknown>(
+      `${this.baseUrl}/strategies`,
+      Object.keys(queryParams).length > 0 ? queryParams : undefined
     );
+
+    return this.normalizeResponse<StrategyListResponse>(response, 'ok');
   }
 
   /**
@@ -62,7 +117,8 @@ export class StrategyApiService {
    * @returns UnifiedResponse with strategy details
    */
   async getStrategy(id: string): Promise<UnifiedResponse<Strategy>> {
-    return apiGet<UnifiedResponse<Strategy>>(`${this.baseUrl}/strategies/${id}`);
+    const response = await apiGet<unknown>(`${this.baseUrl}/strategies/${id}`);
+    return this.normalizeResponse<Strategy>(response, 'ok');
   }
 
   /**
@@ -72,7 +128,8 @@ export class StrategyApiService {
    * @returns UnifiedResponse with strategy configuration
    */
   async getStrategyConfig(id: string): Promise<UnifiedResponse<Strategy>> {
-    return apiGet<UnifiedResponse<Strategy>>(`${this.baseUrl}/${id}/config`);
+    const response = await apiGet<unknown>(`${this.baseUrl}/${id}/config`);
+    return this.normalizeResponse<Strategy>(response, 'ok');
   }
 
   /**
@@ -84,7 +141,8 @@ export class StrategyApiService {
   async createStrategy(
     data: CreateStrategyRequest
   ): Promise<UnifiedResponse<Strategy>> {
-    return apiPost<UnifiedResponse<Strategy>>(`${this.baseUrl}/strategies`, data);
+    const response = await apiPost<unknown>(`${this.baseUrl}/strategies`, data);
+    return this.normalizeResponse<Strategy>(response, '策略创建成功');
   }
 
   /**
@@ -98,7 +156,8 @@ export class StrategyApiService {
     id: string,
     data: UpdateStrategyRequest
   ): Promise<UnifiedResponse<Strategy>> {
-    return apiPut<UnifiedResponse<Strategy>>(`${this.baseUrl}/strategies/${id}`, data);
+    const response = await apiPut<unknown>(`${this.baseUrl}/strategies/${id}`, data);
+    return this.normalizeResponse<Strategy>(response, '策略更新成功');
   }
 
   /**
@@ -108,7 +167,8 @@ export class StrategyApiService {
    * @returns UnifiedResponse (data is null for delete)
    */
   async deleteStrategy(id: string): Promise<UnifiedResponse<void>> {
-    return apiDelete<UnifiedResponse<void>>(`${this.baseUrl}/strategies/${id}`);
+    const response = await apiDelete<unknown>(`${this.baseUrl}/strategies/${id}`);
+    return this.normalizeResponse<void>(response, '策略已归档');
   }
 
   /**
@@ -122,7 +182,8 @@ export class StrategyApiService {
     id: string,
     config?: Record<string, unknown>
   ): Promise<UnifiedResponse<unknown>> {
-    return apiPost<UnifiedResponse<unknown>>(`${this.baseUrl}/${id}/start`, config);
+    const response = await apiPost<unknown>(`${this.baseUrl}/${id}/start`, config);
+    return this.normalizeResponse<unknown>(response, '策略启动成功');
   }
 
   /**
@@ -132,7 +193,8 @@ export class StrategyApiService {
    * @returns UnifiedResponse with stop confirmation
    */
   async stopStrategy(id: string): Promise<UnifiedResponse<unknown>> {
-    return apiPost<UnifiedResponse<unknown>>(`${this.baseUrl}/${id}/stop`);
+    const response = await apiPost<unknown>(`${this.baseUrl}/${id}/stop`);
+    return this.normalizeResponse<unknown>(response, '策略停止成功');
   }
 
   /**
@@ -142,7 +204,8 @@ export class StrategyApiService {
    * @returns UnifiedResponse with pause confirmation
    */
   async pauseStrategy(id: string): Promise<UnifiedResponse<unknown>> {
-    return apiPost<UnifiedResponse<unknown>>(`${this.baseUrl}/${id}/pause`);
+    const response = await apiPost<unknown>(`${this.baseUrl}/${id}/pause`);
+    return this.normalizeResponse<unknown>(response, '策略暂停成功');
   }
 
   /**
@@ -152,7 +215,8 @@ export class StrategyApiService {
    * @returns UnifiedResponse with resume confirmation
    */
   async resumeStrategy(id: string): Promise<UnifiedResponse<unknown>> {
-    return apiPost<UnifiedResponse<unknown>>(`${this.baseUrl}/${id}/resume`);
+    const response = await apiPost<unknown>(`${this.baseUrl}/${id}/resume`);
+    return this.normalizeResponse<unknown>(response, '策略恢复成功');
   }
 
   /**

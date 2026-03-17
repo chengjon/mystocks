@@ -40,7 +40,7 @@
 
 .source-badge {
   border: 1px solid var(--artdeco-border-default);
-  padding: 2px 8px;
+  padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
   font-family: var(--artdeco-font-mono);
   font-size: var(--artdeco-text-xs);
   letter-spacing: 0.04em;
@@ -66,7 +66,7 @@
 .toolbar-input,
 .toolbar-select,
 .toolbar-button {
-  height: 34px;
+  height: var(--artdeco-spacing-3);
   border: 1px solid var(--artdeco-border-default);
   background: var(--artdeco-surface-primary);
   color: var(--artdeco-fg-primary);
@@ -149,7 +149,7 @@
 .status-chip {
   display: inline-flex;
   align-items: center;
-  padding: 2px 8px;
+  padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
   border: 1px solid;
   font-size: var(--artdeco-text-xs);
   font-family: var(--artdeco-font-mono);
@@ -181,7 +181,7 @@
 }
 
 .desc-cell {
-  margin-top: 4px;
+  margin-top: var(--artdeco-spacing-1);
   color: var(--artdeco-fg-muted);
   font-size: var(--artdeco-text-xs);
 }
@@ -191,13 +191,13 @@
 }
 
 .row-feedback {
-  margin: 4px 0 0;
+  margin: var(--artdeco-spacing-1) 0 0;
   color: var(--artdeco-fg-muted);
   font-size: var(--artdeco-text-xs);
 }
 
 .row-backtest-status {
-  margin: 4px 0 0;
+  margin: var(--artdeco-spacing-1) 0 0;
   font-size: var(--artdeco-text-xs);
   color: var(--artdeco-fg-muted);
 
@@ -219,7 +219,7 @@
 }
 
 .row-optimization-status {
-  margin: 4px 0 0;
+  margin: var(--artdeco-spacing-1) 0 0;
   color: var(--artdeco-gold-primary);
   font-size: var(--artdeco-text-xs);
 }
@@ -227,7 +227,7 @@
 .action-button {
   margin-right: 6px;
   margin-bottom: 6px;
-  padding: 4px 8px;
+  padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
   border: 1px solid var(--artdeco-border-default);
   background: transparent;
   color: var(--artdeco-fg-primary);
@@ -326,7 +326,7 @@
 .editor-label {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--artdeco-spacing-2);
   margin-bottom: var(--artdeco-spacing-3);
   color: var(--artdeco-fg-muted);
   font-size: var(--artdeco-text-xs);
@@ -340,7 +340,7 @@
   color: var(--artdeco-fg-primary);
   padding: var(--artdeco-spacing-2);
   resize: vertical;
-  min-height: 84px;
+  min-height: var(--artdeco-spacing-8);
 }
 
 .parameter-section {

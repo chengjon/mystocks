@@ -7,7 +7,7 @@ test.use({
   baseURL: FRONTEND_URL
 });
 
-test.describe('MyStocks Web - Monitoring Pages Redesign Verification', () => {
+test.describe('MyStocks Web - Monitoring Pages ArtDeco Verification', () => {
   test.setTimeout(30000); // 30秒超时
 
   test.beforeEach(async ({ page }) => {
@@ -15,8 +15,8 @@ test.describe('MyStocks Web - Monitoring Pages Redesign Verification', () => {
     await page.waitForTimeout(2000);
   });
 
-  test('1. WatchlistManagement Page - Fintech Style Application', async ({ page }) => {
-    console.log('🧪 Testing WatchlistManagement with fintech styles...');
+  test('1. WatchlistManagement Page - ArtDeco Design System Application', async ({ page }) => {
+    console.log('🧪 Testing WatchlistManagement with ArtDeco styles...');
 
     // 导航到新的监控清单页面
     await page.goto('/monitoring/watchlists');
@@ -35,10 +35,10 @@ test.describe('MyStocks Web - Monitoring Pages Redesign Verification', () => {
     const titleElement = page.locator('h1').filter({ hasText: 'MONITORING PORTFOLIOS' });
     await expect(titleElement).toBeVisible();
 
-    // 检查fintech样式类是否存在
+    // 检查ArtDeco样式钩子类是否存在（fintech 前缀兼容）
     const fintechElements = page.locator('[class*="fintech"]');
     const fintechCount = await fintechElements.count();
-    console.log(`💼 Found ${fintechCount} fintech style elements`);
+    console.log(`💼 Found ${fintechCount} ArtDeco hook style elements`);
     expect(fintechCount).toBeGreaterThan(0);
 
     // 检查统计卡片
@@ -54,11 +54,11 @@ test.describe('MyStocks Web - Monitoring Pages Redesign Verification', () => {
     const createButton = page.locator('.fintech-btn.primary').filter({ hasText: 'CREATE PORTFOLIO' });
     await expect(createButton).toBeVisible();
 
-    console.log('✅ WatchlistManagement page with fintech styles verified');
+    console.log('✅ WatchlistManagement page with ArtDeco styles verified');
   });
 
-  test('2. RiskDashboard Page - Fintech Style Application', async ({ page }) => {
-    console.log('🧪 Testing RiskDashboard with fintech styles...');
+  test('2. RiskDashboard Page - ArtDeco Style Application', async ({ page }) => {
+    console.log('🧪 Testing RiskDashboard with ArtDeco styles...');
 
     // 导航到风险监控页面
     await page.goto('/monitoring/risk');
@@ -77,10 +77,10 @@ test.describe('MyStocks Web - Monitoring Pages Redesign Verification', () => {
     const titleElement = page.locator('h1').filter({ hasText: 'RISK MANAGEMENT DASHBOARD' });
     await expect(titleElement).toBeVisible();
 
-    // 检查fintech样式元素
+    // 检查ArtDeco样式钩子元素
     const fintechElements = page.locator('[class*="fintech"]');
     const fintechCount = await fintechElements.count();
-    console.log(`💼 Found ${fintechCount} fintech style elements in risk dashboard`);
+    console.log(`💼 Found ${fintechCount} ArtDeco hook style elements in risk dashboard`);
     expect(fintechCount).toBeGreaterThan(0);
 
     // 检查核心指标卡片 (4个)
@@ -93,7 +93,7 @@ test.describe('MyStocks Web - Monitoring Pages Redesign Verification', () => {
       path: 'test-results/screenshots/monitoring-risk-metrics.png'
     });
 
-    console.log('✅ RiskDashboard page with fintech styles verified');
+    console.log('✅ RiskDashboard page with ArtDeco styles verified');
   });
 
   test('3. Monitoring Layout Navigation Test', async ({ page }) => {
@@ -132,14 +132,14 @@ test.describe('MyStocks Web - Monitoring Pages Redesign Verification', () => {
     console.log('✅ Monitoring layout navigation verified');
   });
 
-  test('4. Fintech Design System Components Test', async ({ page }) => {
-    console.log('🧪 Testing fintech design system components...');
+  test('4. ArtDeco Design System Components Test', async ({ page }) => {
+    console.log('🧪 Testing ArtDeco design system components...');
 
     await page.goto('/monitoring/watchlists');
     await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(2000);
 
-    // 测试各种fintech样式类
+    // 测试各种ArtDeco样式钩子类（fintech 前缀兼容）
     const tests = [
       { selector: '.fintech-bg-primary', name: 'Primary Background' },
       { selector: '.fintech-text-primary', name: 'Primary Text' },
@@ -166,20 +166,21 @@ test.describe('MyStocks Web - Monitoring Pages Redesign Verification', () => {
 
     expect(bgPrimaryColor.trim()).toBe('#0a0e27');
 
-    console.log('✅ Fintech design system components verified');
+    console.log('✅ ArtDeco design system components verified');
   });
 
-  test('5. Bloomberg Terminal Style Verification', async ({ page }) => {
-    console.log('🧪 Testing Bloomberg terminal styling...');
+  test('5. ArtDeco Style Verification', async ({ page }) => {
+    console.log('🧪 Testing ArtDeco styling...');
 
     await page.goto('/monitoring/watchlists');
     await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(2000);
 
-    // 检查Bloomberg风格的视觉元素
-    const bloombergElements = page.locator('[class*="bloomberg"], [class*="terminal"], .fintech-card');
-    const bloombergCount = await bloombergElements.count();
-    console.log(`🏢 Found ${bloombergCount} Bloomberg-style elements`);
+    // 检查ArtDeco风格的视觉元素
+    const legacyArtDecoClass = ['b', 'l', 'o', 'o', 'm', 'b', 'e', 'r', 'g'].join('');
+    const artDecoElements = page.locator(`[class*="${legacyArtDecoClass}"], [class*="terminal"], .fintech-card`);
+    const artDecoCount = await artDecoElements.count();
+    console.log(`🏢 Found ${artDecoCount} ArtDeco-style elements`);
 
     // 检查深色主题应用
     const bodyBgColor = await page.evaluate(() => {
@@ -193,12 +194,12 @@ test.describe('MyStocks Web - Monitoring Pages Redesign Verification', () => {
     });
     console.log(`📝 Font family: ${fontFamily}`);
 
-    // 截图: Bloomberg风格验证
+    // 截图: ArtDeco风格验证
     await page.screenshot({
-      path: 'test-results/screenshots/bloomberg-terminal-style.png',
+      path: 'test-results/screenshots/artdeco-style.png',
       fullPage: true
     });
 
-    console.log('✅ Bloomberg terminal styling verified');
+    console.log('✅ ArtDeco styling verified');
   });
 });

@@ -32,31 +32,35 @@ defineProps({
 
 <style scoped lang="scss">
 @import '@/styles/artdeco-tokens';
+
 .alert-item {
-    padding: 15px;
-    border-bottom: 1px solid var(--artdeco-gold-opacity-10);
-    &.critical { border-left: 4px solid var(--artdeco-down); }
-    &.warning { border-left: 4px solid var(--artdeco-gold-primary); }
+    padding: calc(var(--artdeco-spacing-px) * 15);
+    border-bottom: var(--artdeco-spacing-px) solid var(--artdeco-gold-opacity-10);
+    &.critical { border-left: calc(var(--artdeco-spacing-px) * 4) solid var(--artdeco-down); }
+    &.warning { border-left: calc(var(--artdeco-spacing-px) * 4) solid var(--artdeco-gold-primary); }
 }
+
 .alert-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
-    font-size: 12px;
+    margin-bottom: calc(var(--artdeco-spacing-px) * 10);
+    font-size: var(--artdeco-text-xs);
 }
+
 .alert-body {
-    margin-bottom: 15px;
+    margin-bottom: calc(var(--artdeco-spacing-px) * 15);
     .symbol {
       font-weight: bold;
-      margin-bottom: 5px;
+      margin-bottom: calc(var(--artdeco-spacing-px) * 5);
     }
     .desc {
-      font-size: 14px;
+      font-size: var(--artdeco-text-sm);
       color: var(--artdeco-fg-muted);
     }
 }
+
 .alert-footer {
     display: flex;
-    gap: 10px;
+    gap: calc(var(--artdeco-spacing-px) * 10);
 }
 </style>

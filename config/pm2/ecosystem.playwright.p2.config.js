@@ -1,6 +1,3 @@
-const path = require("node:path");
-const projectRoot = path.resolve(__dirname, "..", "..");
-
 module.exports = {
   apps: [
     {
@@ -8,7 +5,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_indicator_library_p2.py',
       interpreter: 'none',
-      cwd: projectRoot,
+      cwd: '/opt/claude/mystocks_spec',
       error_file: '/var/log/pm2/p2-indicator_library-error.log',
       out_file: '/var/log/pm2/p2-indicator_library-out.log',
       env: {
@@ -23,7 +20,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_task_management_p2.py',
       interpreter: 'none',
-      cwd: projectRoot,
+      cwd: '/opt/claude/mystocks_spec',
       error_file: '/var/log/pm2/p2-task_management-error.log',
       out_file: '/var/log/pm2/p2-task_management-out.log',
       env: {
@@ -38,7 +35,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_openstock_demo_p2.py',
       interpreter: 'none',
-      cwd: projectRoot,
+      cwd: '/opt/claude/mystocks_spec',
       error_file: '/var/log/pm2/p2-openstock_demo-error.log',
       out_file: '/var/log/pm2/p2-openstock_demo-out.log',
       env: {
@@ -53,7 +50,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_pyprofiling_demo_p2.py',
       interpreter: 'none',
-      cwd: projectRoot,
+      cwd: '/opt/claude/mystocks_spec',
       error_file: '/var/log/pm2/p2-pyprofiling_demo-error.log',
       out_file: '/var/log/pm2/p2-pyprofiling_demo-out.log',
       env: {
@@ -68,7 +65,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_freqtrade_demo_p2.py',
       interpreter: 'none',
-      cwd: projectRoot,
+      cwd: '/opt/claude/mystocks_spec',
       error_file: '/var/log/pm2/p2-freqtrade_demo-error.log',
       out_file: '/var/log/pm2/p2-freqtrade_demo-out.log',
       env: {
@@ -83,7 +80,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_stock_analysis_demo_p2.py',
       interpreter: 'none',
-      cwd: projectRoot,
+      cwd: '/opt/claude/mystocks_spec',
       error_file: '/var/log/pm2/p2-stock_analysis_demo-error.log',
       out_file: '/var/log/pm2/p2-stock_analysis_demo-out.log',
       env: {
@@ -98,7 +95,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_tdxpy_demo_p2.py',
       interpreter: 'none',
-      cwd: projectRoot,
+      cwd: '/opt/claude/mystocks_spec',
       error_file: '/var/log/pm2/p2-tdxpy_demo-error.log',
       out_file: '/var/log/pm2/p2-tdxpy_demo-out.log',
       env: {
@@ -113,7 +110,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_smart_data_source_test_p2.py',
       interpreter: 'none',
-      cwd: projectRoot,
+      cwd: '/opt/claude/mystocks_spec',
       error_file: '/var/log/pm2/p2-smart_data_source_test-error.log',
       out_file: '/var/log/pm2/p2-smart_data_source_test-out.log',
       env: {
@@ -128,7 +125,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_tdx_market_p2.py',
       interpreter: 'none',
-      cwd: projectRoot,
+      cwd: '/opt/claude/mystocks_spec',
       error_file: '/var/log/pm2/p2-tdx_market-error.log',
       out_file: '/var/log/pm2/p2-tdx_market-out.log',
       env: {
@@ -143,7 +140,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_fund_flow_p2.py',
       interpreter: 'none',
-      cwd: projectRoot,
+      cwd: '/opt/claude/mystocks_spec',
       error_file: '/var/log/pm2/p2-fund_flow-error.log',
       out_file: '/var/log/pm2/p2-fund_flow-out.log',
       env: {
@@ -158,7 +155,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_etf_data_p2.py',
       interpreter: 'none',
-      cwd: projectRoot,
+      cwd: '/opt/claude/mystocks_spec',
       error_file: '/var/log/pm2/p2-etf_data-error.log',
       out_file: '/var/log/pm2/p2-etf_data-out.log',
       env: {
@@ -173,7 +170,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_chip_race_p2.py',
       interpreter: 'none',
-      cwd: projectRoot,
+      cwd: '/opt/claude/mystocks_spec',
       error_file: '/var/log/pm2/p2-chip_race-error.log',
       out_file: '/var/log/pm2/p2-chip_race-out.log',
       env: {
@@ -188,7 +185,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_longhubang_p2.py',
       interpreter: 'none',
-      cwd: projectRoot,
+      cwd: '/opt/claude/mystocks_spec',
       error_file: '/var/log/pm2/p2-longhubang-error.log',
       out_file: '/var/log/pm2/p2-longhubang-out.log',
       env: {
@@ -203,7 +200,7 @@ module.exports = {
       script: '/root/miniconda3/envs/stock/bin/python',
       args: '/tmp/test_wencai_p2.py',
       interpreter: 'none',
-      cwd: projectRoot,
+      cwd: '/opt/claude/mystocks_spec',
       error_file: '/var/log/pm2/p2-wencai-error.log',
       out_file: '/var/log/pm2/p2-wencai-out.log',
       env: {

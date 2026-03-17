@@ -13,8 +13,11 @@ OMO_PATH = Path("/opt/claude/mystocks_spec/.config/oh-my-opencode.noco.json")
 
 MODEL_MAIN_FILE_REF = "{file:/opt/claude/mystocks_spec/.config/opencode/model/main.model}"
 MODEL_SMALL_FILE_REF = "{file:/opt/claude/mystocks_spec/.config/opencode/model/small.model}"
-FUCAI_BASE_URL_FILE_REF = "{file:/opt/claude/mystocks_spec/.config/opencode/model/fucai.base_url}"
-FUCAI_API_KEY_FILE_REF = "{file:/opt/claude/mystocks_spec/.config/opencode/model/fucai.api_key}"
+GMN_BASE_URL_FILE_REF = "{file:/opt/claude/mystocks_spec/.config/opencode/model/gmn.base_url}"
+GLM_BASE_URL_FILE_REF = "{file:/opt/claude/mystocks_spec/.config/opencode/model/glm.base_url}"
+GMN_API_KEY_FILE_REF = "{file:~/.config/opencode/secrets/gmn_key}"
+HOME_GLM_API_KEY_FILE_REF = "{file:~/.config/opencode/secrets/glm_key}"
+LOCAL_GLM_API_KEY_FILE_REF = "{file:/opt/claude/mystocks_spec/.config/opencode/model/glm.api_key}"
 
 AGENT_MODEL_FILE_REFS = {
     "sisyphus": "{file:/opt/claude/mystocks_spec/.config/opencode/model/omo.sisyphus.model}",
@@ -26,6 +29,90 @@ AGENT_MODEL_FILE_REFS = {
     "multimodal_looker": "{file:/opt/claude/mystocks_spec/.config/opencode/model/omo.multimodal_looker.model}",
 }
 
+GMN_MODEL_DEFS: dict[str, dict[str, Any]] = {
+    "gpt-5-codex": {
+        "name": "GPT-5 Codex",
+        "limit": {"context": 400000, "output": 128000},
+        "options": {"store": False},
+        "variants": {"low": {}, "medium": {}, "high": {}},
+    },
+    "gpt-5.1-codex": {
+        "name": "GPT-5.1 Codex",
+        "limit": {"context": 400000, "output": 128000},
+        "options": {"store": False},
+        "variants": {"low": {}, "medium": {}, "high": {}},
+    },
+    "gpt-5.1-codex-max": {
+        "name": "GPT-5.1 Codex Max",
+        "limit": {"context": 400000, "output": 128000},
+        "options": {"store": False},
+        "variants": {"low": {}, "medium": {}, "high": {}},
+    },
+    "gpt-5.1-codex-mini": {
+        "name": "GPT-5.1 Codex Mini",
+        "limit": {"context": 400000, "output": 128000},
+        "options": {"store": False},
+        "variants": {"low": {}, "medium": {}, "high": {}},
+    },
+    "gpt-5.2": {
+        "name": "GPT-5.2",
+        "limit": {"context": 400000, "output": 128000},
+        "options": {"store": False},
+        "variants": {"low": {}, "medium": {}, "high": {}, "xhigh": {}},
+    },
+    "gpt-5.4": {
+        "name": "GPT-5.4",
+        "limit": {"context": 1050000, "output": 128000},
+        "options": {"store": False},
+        "variants": {"low": {}, "medium": {}, "high": {}, "xhigh": {}},
+    },
+    "gpt-5.3-codex-spark": {
+        "name": "GPT-5.3 Codex Spark",
+        "limit": {"context": 128000, "output": 32000},
+        "options": {"store": False},
+        "variants": {"low": {}, "medium": {}, "high": {}, "xhigh": {}},
+    },
+    "gpt-5.3-codex": {
+        "name": "GPT-5.3 Codex",
+        "limit": {"context": 400000, "output": 128000},
+        "options": {"store": False},
+        "variants": {"low": {}, "medium": {}, "high": {}, "xhigh": {}},
+    },
+    "gpt-5.2-codex": {
+        "name": "GPT-5.2 Codex",
+        "limit": {"context": 400000, "output": 128000},
+        "options": {"store": False},
+        "variants": {"low": {}, "medium": {}, "high": {}, "xhigh": {}},
+    },
+    "codex-mini-latest": {
+        "name": "Codex Mini",
+        "limit": {"context": 200000, "output": 100000},
+        "options": {"store": False},
+        "variants": {"low": {}, "medium": {}, "high": {}},
+    },
+}
+
+GLM_MODEL_DEFS: dict[str, dict[str, Any]] = {
+    "glm-5": {
+        "name": "GLM-5",
+        "thinking": True,
+    }
+}
+
+MAIN_PLUGIN_LIST = [
+    "oh-my-opencode@3.11.2",
+    "@tarquinen/opencode-dcp@latest",
+    "opencode-antigravity-auth@1.6.0",
+]
+
+OMO_PLUGIN_LIST = [
+    "oh-my-opencode@3.11.2",
+    "@tarquinen/opencode-dcp@latest",
+]
+
+OMO_XHIGH_MODEL = "gmn/gpt-5.4"
+OMO_XHIGH_VARIANT = "xhigh"
+
 
 def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
@@ -36,7 +123,6 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def parse_file_ref(file_ref: str) -> Path:
-    """Resolve {file:/path/to/file} references used by OpenCode."""
     if not file_ref.startswith("{file:") or not file_ref.endswith("}"):
         raise ValueError(f"Unsupported file ref: {file_ref}")
     raw_path = file_ref[len("{file:") : -1]
@@ -51,6 +137,13 @@ def write_model_ref_file(file_ref: str, value: str) -> None:
     path.write_text(value.strip() + "\n", encoding="utf-8")
 
 
+def resolve_glm_api_key_file_ref() -> str:
+    # Prefer the standard global secret location when it already exists.
+    if parse_file_ref(HOME_GLM_API_KEY_FILE_REF).exists():
+        return HOME_GLM_API_KEY_FILE_REF
+    return LOCAL_GLM_API_KEY_FILE_REF
+
+
 def join_csv(values: list[str]) -> str:
     return ",".join(v.strip() for v in values if v and v.strip())
 
@@ -60,23 +153,20 @@ def sync_catalog_to_env_file(catalog: dict[str, Any]) -> None:
     external = catalog.get("external_models", {})
     omo_agents = catalog.get("omo_agents", {})
 
-    catalog_path = CATALOG_PATH
-    env_path = catalog_path.parent / "model-stack.env"
-
+    env_path = CATALOG_PATH.parent / "model-stack.env"
     lines = [
         "# OpenCode default model selection",
         f"OPENCODE_DEFAULT_MODEL={defaults.get('main_model', '')}",
         f"OPENCODE_SMALL_MODEL={defaults.get('small_model', '')}",
-        f"FUCAI_BASE_URL={defaults.get('fucai_base_url', '')}",
+        f"GMN_BASE_URL={defaults.get('gmn_base_url', '')}",
+        f"GLM_BASE_URL={defaults.get('glm_base_url', '')}",
         "",
         "# OpenCode free models (ordered)",
         f"OPENCODE_FREE_MODELS={join_csv(catalog.get('opencode_free_models', []))}",
         "",
-        "# External endpoint models (ordered, GEMINI excluded, fucai groups)",
-        f"FUCAI_GPT_MODELS={join_csv(external.get('fucai-gpt', []))}",
-        f"FUCAI_CLAUDE_MODELS={join_csv(external.get('fucai-claude', []))}",
-        f"FUCAI_MINI_MODELS={join_csv(external.get('fucai-mini', []))}",
-        f"FUCAI_MODELS={join_csv(external.get('fucai', []))}",
+        "# External endpoint models (ordered)",
+        f"GMN_MODELS={join_csv(external.get('gmn', []))}",
+        f"GLM_MODELS={join_csv(external.get('glm', []))}",
         "",
         "# oh-my-opencode agents (ordered by priority)",
         f"OMO_AGENT_SISYPHUS={omo_agents.get('sisyphus', '')}",
@@ -98,11 +188,10 @@ def sync_catalog_to_ref_files(catalog: dict[str, Any]) -> None:
         write_model_ref_file(MODEL_MAIN_FILE_REF, str(defaults["main_model"]))
     if "small_model" in defaults:
         write_model_ref_file(MODEL_SMALL_FILE_REF, str(defaults["small_model"]))
-    base_url = defaults.get("fucai_base_url")
-    if base_url:
-        write_model_ref_file(FUCAI_BASE_URL_FILE_REF, str(base_url))
-    if "fucai_api_key" in defaults:
-        write_model_ref_file(FUCAI_API_KEY_FILE_REF, str(defaults["fucai_api_key"]))
+    if "gmn_base_url" in defaults:
+        write_model_ref_file(GMN_BASE_URL_FILE_REF, str(defaults["gmn_base_url"]))
+    if "glm_base_url" in defaults:
+        write_model_ref_file(GLM_BASE_URL_FILE_REF, str(defaults["glm_base_url"]))
 
     for agent_name, model in omo_agents.items():
         if agent_name in AGENT_MODEL_FILE_REFS:
@@ -113,7 +202,7 @@ def infer_model_entry(model_id: str) -> dict[str, Any]:
     lowered = model_id.lower()
     entry: dict[str, Any] = {"name": model_id}
 
-    if any(keyword in lowered for keyword in ["thinking", "codex", "deepseek-r1"]):
+    if any(keyword in lowered for keyword in ["thinking", "codex", "glm-5"]):
         entry["thinking"] = True
 
     if any(keyword in lowered for keyword in ["vl", "imagine", "vision", "image", "video"]):
@@ -122,63 +211,67 @@ def infer_model_entry(model_id: str) -> dict[str, Any]:
     return entry
 
 
-def build_models(model_ids: list[str]) -> dict[str, dict[str, Any]]:
+def build_models(provider_id: str, model_ids: list[str]) -> dict[str, dict[str, Any]]:
     models: dict[str, dict[str, Any]] = {}
+    provider_defs = {"gmn": GMN_MODEL_DEFS, "glm": GLM_MODEL_DEFS}.get(provider_id, {})
     for model_id in model_ids:
-        models[model_id] = infer_model_entry(model_id)
+        models[model_id] = dict(provider_defs.get(model_id, infer_model_entry(model_id)))
     return models
 
 
-def upsert_provider(config: dict[str, Any], provider_id: str, npm: str, set_cache_key: bool = False) -> None:
-    providers = config.setdefault("provider", {})
-    provider = providers.setdefault(provider_id, {})
-    provider["npm"] = npm
-    provider["name"] = provider_id
+def provider_file_refs(provider_id: str) -> tuple[str, str]:
+    if provider_id == "gmn":
+        return GMN_BASE_URL_FILE_REF, GMN_API_KEY_FILE_REF
+    if provider_id == "glm":
+        return GLM_BASE_URL_FILE_REF, resolve_glm_api_key_file_ref()
+    raise ValueError(f"Unsupported provider: {provider_id}")
 
-    options: dict[str, Any] = {
-        "baseURL": FUCAI_BASE_URL_FILE_REF,
-        "apiKey": FUCAI_API_KEY_FILE_REF,
-        "timeout": 300000,
+
+def desired_omo_variant(model_name: str) -> str | None:
+    if model_name == OMO_XHIGH_MODEL:
+        return OMO_XHIGH_VARIANT
+    return None
+
+
+def build_provider_configs(catalog: dict[str, Any]) -> dict[str, Any]:
+    external = catalog.get("external_models", {})
+    providers: dict[str, Any] = {}
+    provider_packages = {
+        # GPT/Codex models behind gmn now require the OpenAI Responses API.
+        "gmn": "@ai-sdk/openai",
+        "glm": "@ai-sdk/openai-compatible",
     }
-    if set_cache_key:
-        options["setCacheKey"] = True
-    provider["options"] = options
+
+    for provider_id in ("gmn", "glm"):
+        base_url_ref, api_key_ref = provider_file_refs(provider_id)
+        providers[provider_id] = {
+            "npm": provider_packages[provider_id],
+            "name": provider_id,
+            "options": {
+                "baseURL": base_url_ref,
+                "apiKey": api_key_ref,
+                "timeout": 300000,
+            },
+            "models": build_models(provider_id, external.get(provider_id, [])),
+        }
+
+    providers["opencode"] = {
+        "whitelist": [
+            model.split("/", 1)[1]
+            for model in catalog.get("opencode_free_models", [])
+            if model.startswith("opencode/")
+        ]
+    }
+    return providers
 
 
-def apply_provider_models(config: dict[str, Any], catalog: dict[str, Any]) -> None:
-    upsert_provider(config, "fucai", "@ai-sdk/openai-compatible")
-    upsert_provider(config, "fucai-gpt", "@ai-sdk/openai", set_cache_key=True)
-    upsert_provider(config, "fucai-claude", "@ai-sdk/anthropic")
-    upsert_provider(config, "fucai-mini", "@ai-sdk/openai-compatible")
-
-    external = catalog["external_models"]
-    config["provider"]["fucai"]["models"] = build_models(external.get("fucai", []))
-    config["provider"]["fucai-gpt"]["models"] = build_models(external.get("fucai-gpt", []))
-    config["provider"]["fucai-claude"]["models"] = build_models(external.get("fucai-claude", []))
-    config["provider"]["fucai-mini"]["models"] = build_models(external.get("fucai-mini", []))
-
-    # Remove legacy provider groups to prevent merge contamination.
-    for legacy in ["cpap", "cpap-oai", "cpap-claude", "cpap-gemini", "cpap-mini", "google"]:
-        config["provider"].pop(legacy, None)
-
-
-def apply_common(config: dict[str, Any], catalog: dict[str, Any]) -> None:
-    config["enabled_providers"] = catalog.get(
-        "enabled_providers", ["opencode", "fucai", "fucai-gpt", "fucai-claude", "fucai-mini"]
-    )
+def apply_common(config: dict[str, Any], catalog: dict[str, Any], plugin_list: list[str] | None = None) -> None:
+    config["enabled_providers"] = catalog["enabled_providers"]
     config["model"] = MODEL_MAIN_FILE_REF
     config["small_model"] = MODEL_SMALL_FILE_REF
-
-    server = config.get("server")
-    if not isinstance(server, dict):
-        server = {}
-        config["server"] = server
-
-    port = server.get("port")
-    if isinstance(port, bool) or not isinstance(port, int):
-        server["port"] = 11000
-
-    apply_provider_models(config, catalog)
+    config["provider"] = build_provider_configs(catalog)
+    if plugin_list is not None:
+        config["plugin"] = plugin_list
 
 
 def apply_omo_specific(config: dict[str, Any], catalog: dict[str, Any]) -> None:
@@ -186,43 +279,39 @@ def apply_omo_specific(config: dict[str, Any], catalog: dict[str, Any]) -> None:
     agents = omo.setdefault("agents", {})
     omo_agents = catalog.get("omo_agents", {})
 
-    # Keep existing descriptions/capabilities while externalizing model bindings.
     for agent_name, model_ref in AGENT_MODEL_FILE_REFS.items():
         agent = agents.setdefault(agent_name, {})
         agent["model"] = model_ref
+        desired_variant = desired_omo_variant(str(omo_agents.get(agent_name, "")))
+        if desired_variant is None:
+            agent.pop("variant", None)
+        else:
+            agent["variant"] = desired_variant
 
     background_task = omo.setdefault("background_task", {})
     background_task["providerConcurrency"] = {
         "opencode": 12,
-        "fucai": 8,
-        "fucai-gpt": 4,
-        "fucai-claude": 4,
-        "fucai-mini": 6,
+        "gmn": 4,
+        "glm": 6,
     }
 
     model_concurrency: dict[str, int] = {}
-    for model in catalog["opencode_free_models"]:
+    for model in catalog.get("opencode_free_models", []):
         model_concurrency[model] = 10
 
-    # Prefer selected OMO agents for external model concurrency budget.
     for model_ref in sorted(set(str(v) for v in omo_agents.values())):
-        if model_ref.startswith("fucai-claude/"):
+        if model_ref.startswith("gmn/"):
             model_concurrency[model_ref] = 2
-        elif model_ref.startswith("fucai-gpt/"):
-            model_concurrency[model_ref] = 2
-        elif model_ref.startswith("fucai-mini/"):
-            model_concurrency[model_ref] = 3
-        elif model_ref.startswith("fucai/"):
-            # Keep heavyweight xAI-compatible models conservative by default.
-            model_concurrency[model_ref] = 2
+        elif model_ref.startswith("glm/"):
+            model_concurrency[model_ref] = 4
 
     background_task["modelConcurrency"] = model_concurrency
 
-    # Ensure no GEMINI/legacy-group references remain in OMO agent bindings.
     for agent in agents.values():
         model = str(agent.get("model", ""))
-        lowered = model.lower()
-        if "gemini" in lowered or lowered.startswith("cpap"):
+        if not model or model.startswith("{file:"):
+            continue
+        if not (model.startswith("gmn/") or model.startswith("glm/") or model.startswith("opencode/")):
             agent["model"] = AGENT_MODEL_FILE_REFS["librarian"]
 
 
@@ -231,16 +320,15 @@ def main() -> None:
     sync_catalog_to_ref_files(catalog)
     sync_catalog_to_env_file(catalog)
 
-    # Generate project-level config (higher precedence than global config).
     if GLOBAL_OPENCODE_PATH.exists():
         opencode_config = load_json(GLOBAL_OPENCODE_PATH)
     else:
         opencode_config = {"$schema": "https://opencode.ai/config.json"}
-    apply_common(opencode_config, catalog)
+    apply_common(opencode_config, catalog, MAIN_PLUGIN_LIST)
     write_json(PROJECT_OPENCODE_PATH, opencode_config)
 
     omo_config = load_json(OMO_PATH)
-    apply_common(omo_config, catalog)
+    apply_common(omo_config, catalog, OMO_PLUGIN_LIST)
     apply_omo_specific(omo_config, catalog)
     write_json(OMO_PATH, omo_config)
 

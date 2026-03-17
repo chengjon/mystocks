@@ -11,31 +11,22 @@ import {
   SMA,
   EMA,
   _MACD,
-  RSI,
   Stochastic,
-  BollingerBands,
-  ATR,
   WMA,
   ADL,
   ADX,
   AwesomeOscillator,
   CCI,
-  MFI,
   // MOM 已移除 - technicalindicators v3.1.0 不存在，使用 ROC 替代
-  OBV,
   PSAR,
   ROC,
   StochasticRSI,
   TRIX,
   VWAP,
   WilliamsR,
-  _KST,
-  ForceIndex
+  _KST
   // VWMA 已移除 - technicalindicators v3.1.0 不存在，使用自定义实现
 } from 'technicalindicators'
-
-// 导入自定义实现函数
-import { calculateMACD } from './technicalIndicators.js'
 
 // Re-export basic types and functions from indicators.ts
 export * from './indicators'
@@ -498,4 +489,3 @@ export function calculateStochastic(
     d: stochData.map(d => isFinite(d.d) ? d.d : 0)
   }
 }
-

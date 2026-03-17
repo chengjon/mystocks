@@ -8,18 +8,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-// ArtDeco component imports
-import { ArtDecoHeader, ArtDecoCard, ArtDecoTable } from '@/components/artdeco'
 
 // Component logic
-const pageTitle = ref('风险管理 - MyStocks 量化交易平台')
 const menuItems = ref([
   // Menu items based on HTML navigation
 ])
-
-// Reactive data
-const tableData = ref([])
-const chartData = ref({})
 
 // Methods
 const loadData = async () => {

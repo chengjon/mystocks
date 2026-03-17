@@ -4,13 +4,13 @@
  * 负责从后端API获取菜单项的数据，集成API映射表
  *
  * @example
- * import { fetchMenuItemData } from '@/services/menuDataFetcher'
+ * import { fetchMenuItemData } from '@/services/menuDataFetcher.ts'
  *
  * const data = await fetchMenuItemData(menuItem)
  */
 
-import { apiClient } from '@/api/apiClient'
-import type { UnifiedResponse } from '@/api/types/common'
+import { apiClient } from '@/api/apiClient.ts'
+import type { UnifiedResponse } from '@/api/types/common.ts'
 
 export interface MenuDataItem {
   path: string
@@ -107,7 +107,8 @@ export async function fetchMenuItemData<T = unknown>(
   }
 
   const method = item.apiMethod || 'GET'
-  const cacheKey = generateCacheKey(item.apiEndpoint, method)
+  const apiEndpoint = item.apiEndpoint
+  const cacheKey = generateCacheKey(apiEndpoint, method)
 
   // 尝试从缓存获取
   if (useCache && method === 'GET') {
@@ -127,19 +128,19 @@ export async function fetchMenuItemData<T = unknown>(
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      console.log(`[MenuDataFetcher] Fetching: ${method} ${item.apiEndpoint} (attempt ${attempt + 1}/${retries + 1})`)
+      console.log(`[MenuDataFetcher] Fetching: ${method} ${apiEndpoint} (attempt ${attempt + 1}/${retries + 1})`)
 
       const response = await executeWithTimeout<UnifiedResponse<T>>(
         async () => {
           switch (method.toUpperCase()) {
             case 'GET':
-              return await apiClient.get<UnifiedResponse<T>>(item.apiEndpoint!)
+              return await apiClient.get<UnifiedResponse<T>>(apiEndpoint)
             case 'POST':
-              return await apiClient.post<UnifiedResponse<T>>(item.apiEndpoint!, {})
+              return await apiClient.post<UnifiedResponse<T>>(apiEndpoint, {})
             case 'PUT':
-              return await apiClient.put<UnifiedResponse<T>>(item.apiEndpoint!, {})
+              return await apiClient.put<UnifiedResponse<T>>(apiEndpoint, {})
             case 'DELETE':
-              return await apiClient.delete<UnifiedResponse<T>>(item.apiEndpoint!)
+              return await apiClient.delete<UnifiedResponse<T>>(apiEndpoint)
             default:
               throw new Error(`不支持的HTTP方法: ${method}`)
           }

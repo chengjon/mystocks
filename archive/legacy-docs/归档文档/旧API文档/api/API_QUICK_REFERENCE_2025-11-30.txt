@@ -58,7 +58,7 @@
 
    示例:
    $ curl -X GET "http://localhost:8020/api/auth/user" \
-     -H "Authorization: Bearer eyJ..."
+     -H "Authorization: Bearer <jwt-token>"
 
 
 🏥 系统端点
@@ -116,7 +116,7 @@ $ curl -X POST "http://localhost:8020/api/auth/login" \
 --------
 
 $ curl -X GET "http://localhost:8020/api/auth/user" \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  -H "Authorization: Bearer <jwt-token>"
 
 响应示例:
 {

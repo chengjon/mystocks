@@ -2,6 +2,17 @@ import { ref, type Ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { ZOOM_LEVELS, ANIMATION_DURATION, PAN_DISTANCE } from '@/components/technical/config/klineChartConfig'
 
+interface KLineChartInstance {
+  zoomAtCoordinate: (scale: number, coordinate: { x: number; y: number }, duration: number) => void
+  scrollByDistance: (distance: { x: number; y: number }, duration: number) => void
+  scrollToRealTime: (duration: number) => void
+  setStyles: (styles: { candle: { type: string } }) => void
+}
+
+interface PerformanceMonitorInstance {
+  updateMetrics: (metrics: { calculationTime: number }) => void
+}
+
 /**
  * Composable for K-Line chart controls and interactions
  * Handles zoom, pan, reset, chart type changes, and performance monitoring
@@ -9,7 +20,10 @@ import { ZOOM_LEVELS, ANIMATION_DURATION, PAN_DISTANCE } from '@/components/tech
  * @param {Ref} performanceMonitorRef - Reference to performance monitor component
  * @returns {Object} Chart control functions and state
  */
-export function useKLineControls(chartRef: Ref<any>, performanceMonitorRef: Ref<any>) {
+export function useKLineControls(
+  chartRef: Ref<KLineChartInstance | null>,
+  performanceMonitorRef: Ref<PerformanceMonitorInstance | null>
+) {
   const currentZoomIndex = ref(2)
   const showPerformanceMonitor = ref(false)
 

@@ -12,8 +12,8 @@
  * - System administration
  * 
  * Usage:
- *   npm run test:e2e:comprehensive
- *   npx playwright test comprehensive-all-pages.spec.ts --project=chromium
+ *   Preferred: npm run test:e2e:comprehensive
+ *   Temporary single-file only: npx playwright test tests/e2e/comprehensive-all-pages.spec.ts --project=chromium
  */
 
 import { test, expect, request as playwrightRequest, type Page } from '@playwright/test';

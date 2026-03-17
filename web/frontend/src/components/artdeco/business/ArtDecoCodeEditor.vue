@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, computed, watch, nextTick } from 'vue'
+    import { ref, computed } from 'vue'
 
     interface Props {
         modelValue: string
@@ -75,7 +75,7 @@
         }
     }
 
-    function insertTab(e: KeyboardEvent) {
+    function insertTab(_event: KeyboardEvent) {
         if (props.readonly) return
 
         const textarea = textareaRef.value

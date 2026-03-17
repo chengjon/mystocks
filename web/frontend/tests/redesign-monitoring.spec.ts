@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import path from 'path';
 
 const FRONTEND_PORT = process.env.FRONTEND_PORT || '3020';
 const FRONTEND_URL = process.env.FRONTEND_URL || `http://localhost:${FRONTEND_PORT}`;
@@ -8,7 +7,7 @@ test.use({
   baseURL: FRONTEND_URL
 });
 
-test.describe('MyStocks Web Redesign - Monitoring Pages', () => {
+test.describe('MyStocks Web ArtDeco - Monitoring Pages', () => {
   test.setTimeout(60000); // 60秒超时
 
   test.beforeEach(async ({ page }) => {
@@ -16,7 +15,7 @@ test.describe('MyStocks Web Redesign - Monitoring Pages', () => {
     await page.waitForTimeout(2000);
   });
 
-  test('1. WatchlistManagement Page - Bloomberg Redesign Test', async ({ page }) => {
+  test('1. WatchlistManagement Page - ArtDeco Interface Test', async ({ page }) => {
     console.log('🧪 Testing WatchlistManagement page...');
 
     // 导航到监控清单页面
@@ -68,7 +67,7 @@ test.describe('MyStocks Web Redesign - Monitoring Pages', () => {
     console.log('✅ WatchlistManagement page test completed');
   });
 
-  test('2. RiskDashboard Page - Bloomberg Redesign Test', async ({ page }) => {
+  test('2. RiskDashboard Page - ArtDeco Interface Test', async ({ page }) => {
     console.log('🧪 Testing RiskDashboard page...');
 
     // 导航到风险监控页面
@@ -167,7 +166,7 @@ test.describe('MyStocks Web Redesign - Monitoring Pages', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
-    // 检查fintech-btn类是否存在
+    // 检查ArtDeco样式钩子按钮类是否存在（fintech 前缀兼容）
     const fintechButtons = page.locator('.fintech-btn');
     await expect(fintechButtons.first()).toBeVisible();
 

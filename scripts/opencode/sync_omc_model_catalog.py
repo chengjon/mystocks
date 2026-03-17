@@ -188,7 +188,7 @@ def extract_default_endpoint(defaults: dict[str, Any]) -> tuple[str, str]:
     base_url = ""
     api_key = ""
 
-    for key in ("fucai_base_url", "cpap_base_url"):
+    for key in ("gmn_base_url", "glm_base_url"):
         value = str(defaults.get(key, "")).strip()
         if value:
             base_url = value
@@ -201,7 +201,7 @@ def extract_default_endpoint(defaults: dict[str, Any]) -> tuple[str, str]:
                     base_url = text
                     break
 
-    for key in ("fucai_api_key", "cpap_api_key"):
+    for key in ("gmn_api_key", "glm_api_key"):
         value = str(defaults.get(key, "")).strip()
         if value:
             api_key = value

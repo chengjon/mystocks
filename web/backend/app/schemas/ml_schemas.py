@@ -12,8 +12,8 @@ from pydantic import BaseModel, Field
 class TdxDataRequest(BaseModel):
     """通达信数据请求"""
 
-    stock_code: str = Field(..., description="股票代码", example="000001")
-    market: str = Field(default="sh", description="市场代码（sh/sz）", example="sh")
+    stock_code: str = Field(..., description="股票代码", json_schema_extra={"example": "000001"})
+    market: str = Field(default="sh", description="市场代码（sh/sz）", json_schema_extra={"example": "sh"})
 
 
 class TdxDataResponse(BaseModel):
@@ -155,10 +155,12 @@ class HyperparameterSearchRequest(BaseModel):
     param_grid: Optional[Dict[str, List[Any]]] = Field(
         None,
         description="参数网格",
-        example={
-            "num_leaves": [5, 10, 15, 20, 25],
-            "n_estimators": [10, 40, 70, 100],
-            "learning_rate": [0.01, 0.1, 0.2],
+        json_schema_extra={
+            "example": {
+                "num_leaves": [5, 10, 15, 20, 25],
+                "n_estimators": [10, 40, 70, 100],
+                "learning_rate": [0.01, 0.1, 0.2],
+            }
         },
     )
 

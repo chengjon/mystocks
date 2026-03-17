@@ -17,16 +17,17 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
 from app.core.security import User, get_current_user
-from .signal_history_response_schemas import (
-    ActiveSignalItem,
+from .signal_history_response import (
     ActiveSignalsResponse,
     SignalStatisticsResponse,
     StrategyDetailedHealthResponse,
 )
+from .signal_history_response_schemas import ActiveSignalItem
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
 
 @router.get("/signals/statistics", response_model=List[SignalStatisticsResponse])
 async def get_signal_statistics(
@@ -398,4 +399,3 @@ async def get_strategy_detailed_health(
     except Exception as e:
         logger.error("查询策略详细健康状态失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"查询失败: {str(e)}")
-

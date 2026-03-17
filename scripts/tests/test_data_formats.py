@@ -553,7 +553,7 @@ def test_http_header_formats():
     """Test HTTPHeaderFormats validation"""
     try:
         # Valid Bearer token format
-        valid_token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9"
+        valid_token = "Bearer <jwt-token>"
         assert HTTPHeaderFormats.validate_bearer_token(valid_token)
 
         results.add_pass("HTTPHeaderFormats Bearer token validation")

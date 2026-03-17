@@ -1,8 +1,14 @@
-import { marketDataWebSocket, tradingWebSocket, riskWebSocket } from '@/utils/webSocketManager'
-import { useTradingSignalsStore, useRiskAlertsStore } from '@/stores/apiStores'
+import { marketDataWebSocket, tradingWebSocket, riskWebSocket } from '@/utils/webSocketManager.ts'
+import { useTradingSignalsStore, useRiskAlertsStore } from '@/stores/apiStores.ts'
+
+type WebSocketStatus = {
+  marketData: ReturnType<typeof marketDataWebSocket.getState>
+  trading: ReturnType<typeof tradingWebSocket.getState>
+  risk: ReturnType<typeof riskWebSocket.getState>
+}
 
 // Initialize WebSocket connections for real-time data
-export const initializeWebSocketConnections = () => {
+export const initializeWebSocketConnections = (): void => {
   // Connect market data WebSocket
   marketDataWebSocket.connect().catch(error => {
     console.warn('Market data WebSocket connection failed:', error)
@@ -20,7 +26,7 @@ export const initializeWebSocketConnections = () => {
 }
 
 // Handle real-time data integration with stores
-export const setupRealtimeDataIntegration = () => {
+export const setupRealtimeDataIntegration = (): void => {
   const tradingSignalsStore = useTradingSignalsStore()
   const riskAlertsStore = useRiskAlertsStore()
 
@@ -38,13 +44,13 @@ export const setupRealtimeDataIntegration = () => {
 }
 
 // Utility functions for WebSocket connection status
-export const getWebSocketStatus = () => ({
+export const getWebSocketStatus = (): WebSocketStatus => ({
   marketData: marketDataWebSocket.getState(),
   trading: tradingWebSocket.getState(),
   risk: riskWebSocket.getState()
 })
 
-export const isAnyWebSocketConnected = () =>
+export const isAnyWebSocketConnected = (): boolean =>
   marketDataWebSocket.isConnected() ||
   tradingWebSocket.isConnected() ||
   riskWebSocket.isConnected()

@@ -6,11 +6,11 @@
  * Transforms API responses into ViewModels for UI components.
  */
 
-import type {
+export type {
   UserProfileResponse,
   WatchlistResponse,
   NotificationResponse
-} from '@/api/types/generated-types'
+} from '@/api/types/generated-types.ts'
 
 // ViewModel interfaces
 export interface UserProfileVM {
@@ -203,4 +203,3 @@ export interface NotificationVM {
   icon?: string
   category: string
 }
-

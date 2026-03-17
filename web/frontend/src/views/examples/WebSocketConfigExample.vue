@@ -123,7 +123,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useWebSocketWithConfig } from '@/composables/useWebSocketWithConfig'
-import type { PageConfig } from '@/config/pageConfig'
 
 // WebSocket功能
 const {

@@ -53,7 +53,6 @@ import { ArtDecoHeader, ArtDecoBadge } from '@/components/artdeco'
 import KLineAnalysis from './analysis-tabs/KLineAnalysis.vue'
 import BacktestAnalysis from './analysis-tabs/BacktestAnalysis.vue'
 import dashboardService from '@/api/services/dashboardService'
-import { marketService } from '@/api/services/marketService'
 
 const activeTab = ref('analysis')
 const tabs = [
@@ -61,10 +60,9 @@ const tabs = [
   { key: 'backtest', label: '回测验证' }
 ]
 
-// Use any for indicators and equityData to avoid type conflicts
-const indicators = ref<any[]>([])
-const trendData = ref<any[]>([])
-const equityData = ref<any[]>([])
+const indicators = ref<unknown[]>([])
+const trendData = ref<unknown[]>([])
+const equityData = ref<unknown[]>([])
 const backtestStats = ref({
   totalReturn: '0%',
   sharpe: '0',
@@ -136,11 +134,11 @@ onUnmounted(() => {
   display: flex;
   gap: var(--artdeco-spacing-2);
   margin: var(--artdeco-spacing-6) 0;
-  border-bottom: 2px solid var(--artdeco-border-gold-subtle);
+  border-bottom: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-border-gold-subtle);
 }
 
 .main-tab {
-  padding: 12px 24px;
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-6);
   background: transparent;
   border: none;
   color: var(--artdeco-fg-muted);
@@ -148,18 +146,18 @@ onUnmounted(() => {
   text-transform: uppercase;
   font-family: var(--artdeco-font-display);
   letter-spacing: var(--artdeco-tracking-wide);
-  transition: all 0.3s;
+  transition: all var(--artdeco-transition-base);
 
   &:hover, &.active {
     color: var(--artdeco-accent-gold);
   }
 
   &.active {
-    border-bottom: 2px solid var(--artdeco-accent-gold);
-    margin-bottom: -2px;
+    border-bottom: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-accent-gold);
+    margin-bottom: calc(var(--artdeco-spacing-2) * -0.25);
   }
 }
 
-.fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
+.fade-enter-active, .fade-leave-active { transition: opacity var(--artdeco-transition-base); }
 .fade-enter-from, .fade-leave-to { opacity: 0%; }
 </style>

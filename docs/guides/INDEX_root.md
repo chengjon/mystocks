@@ -1,8 +1,8 @@
 # Guides
 
-**最后更新**: 2026-02-02 22:10:38
+**最后更新**: 2026-03-11 19:12:00
 
-**文档数量**: 226
+**文档数量**: 246
 
 
 ---
@@ -223,6 +223,9 @@
 - [GEMINI](guides/GEMINI.md)
   - *Gemini CLI: Python Quality Assurance Guidelines*
 
+- [GITNEXUS_WORKFLOW](guides/GITNEXUS_WORKFLOW.md)
+  - *mystocks_spec 仓库 GitNexus 稳定工作流指南*
+
 - [GIT_REMOTE_NAME_STANDARD](guides/.multi-cli-tasks/GIT_REMOTE_NAME_STANDARD.md)
   - *Git 远程仓库名称标准化规范*
 
@@ -312,6 +315,9 @@
 
 - [MYSTOCKS_WORKTREE_MANAGEMENT](guides/MYSTOCKS_WORKTREE_MANAGEMENT.md)
   - *MyStocks项目 Worktree 管理方法*
+
+- [OBJECT_STABLE_BOUNDARY_CATALOG](guides/OBJECT_STABLE_BOUNDARY_CATALOG.md)
+  - *单对象收口后的稳定边界目录*
 
 - [NEW_API_SOURCE_INTEGRATION_GUIDE](guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md)
   - *新增数据源/API 接口开发指引*

@@ -220,7 +220,7 @@ class IntelligentDataSourceAdapter {
   generateMockData(endpoint, options) {
     const mockDataGenerators = {
       // Dashboard相关
-      '/api/dashboard/summary': () => ({
+      '/api/dashboard/market-overview': () => ({
         market_overview: {
           indices: [
             { symbol: '000001', name: '上证指数', current_price: 3200.15, change_percent: 1.2 },
@@ -404,7 +404,12 @@ class IntelligentDataSourceAdapter {
 
   // Dashboard数据
   async getDashboardSummary(userId, options = {}) {
-    return this.fetchData(`/api/dashboard/summary?user_id=${userId}`, options)
+    return this.fetchData('/api/dashboard/market-overview', {
+      params: {
+        user_id: userId,
+        ...options
+      }
+    })
   }
 
   // Market数据

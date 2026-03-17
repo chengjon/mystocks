@@ -4,6 +4,7 @@ Strategy Repository Layer
 提供策略数据的数据库访问接口，使用SQLAlchemy ORM操作PostgreSQL
 """
 
+import logging
 from datetime import datetime, timezone
 from typing import List, Optional
 
@@ -20,8 +21,7 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, declarative_base
 
 from app.models.strategy_schemas import (
     StrategyConfig,
@@ -34,6 +34,7 @@ from app.models.strategy_schemas import (
 
 
 Base = declarative_base()
+logger = logging.getLogger(__name__)
 
 
 # ============================================================

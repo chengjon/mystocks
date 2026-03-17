@@ -29,7 +29,7 @@ class TestEdgeCasesAndErrorHandling:
 HostNum=1
 PrimaryHost=1
 HostName01=测试🚀服务器
-IPAddress01=192.168.1.100
+IPAddress01=example.local
 Port01=7709
 """
 
@@ -54,10 +54,10 @@ Port01=7709
 HostNum=2
 PrimaryHost=1
 HostName01=正常服务器
-IPAddress01=192.168.1.100
+IPAddress01=example.local
 Port01=7709
 HostName02=格式错误服务器
-IPAddress02=192.168.1.101
+IPAddress02=example.local
 Port02=invalid_port
 """
 
@@ -75,7 +75,7 @@ Port02=invalid_port
 HostNum=99999
 PrimaryHost=1
 HostName01=唯一服务器
-IPAddress01=192.168.1.100
+IPAddress01=example.local
 Port01=7709
 """
 
@@ -113,10 +113,10 @@ Port01=7709
 HostNum=2
 PrimaryHost=1
 HostName01=服务器&特殊字符@#%%
-IPAddress01=192.168.1.100
+IPAddress01=example.local
 Port01=7709
 HostName02=服务器"引号'单引号
-IPAddress02=192.168.1.101
+IPAddress02=example.local
 Port02=7710
 """
 
@@ -136,10 +136,10 @@ Port02=7710
 HostNum=2
 PrimaryHost=1
 HostName01=空白IP服务器
-IPAddress01=  192.168.1.100
+IPAddress01=  example.local
 Port01= 7709
 HostName02=正常服务器
-IPAddress02=192.168.1.101
+IPAddress02=example.local
 Port02=7710
 """
 
@@ -149,9 +149,9 @@ Port02=7710
         config = TdxServerConfig(config_file)
 
         assert len(config.servers) == 2
-        assert config.servers[0][0] == "192.168.1.100"
+        assert config.servers[0][0] == "example.local"
         assert config.servers[0][1] == 7709
-        assert config.servers[1][0] == "192.168.1.101"
+        assert config.servers[1][0] == "example.local"
 
 
 class TestIntegrationScenarios:
@@ -225,16 +225,16 @@ Port05=7709
 HostNum=4
 PrimaryHost=1
 HostName01=主服务器
-IPAddress01=192.168.1.100
+IPAddress01=example.local
 Port01=7709
 HostName02=备用1
-IPAddress02=192.168.1.101
+IPAddress02=example.local
 Port02=7710
 HostName03=备用2
-IPAddress03=192.168.1.102
+IPAddress03=example.local
 Port03=7711
 HostName04=备用3
-IPAddress04=192.168.1.103
+IPAddress04=example.local
 Port04=7712
 """
 
@@ -252,8 +252,8 @@ Port04=7712
                 break
             connection_attempts.append("连接失败，尝试下一个...")
 
-        assert any("192.168.1.100:7709" in attempt for attempt in connection_attempts)
-        assert any("192.168.1.103:7712" in attempt for attempt in connection_attempts)
+        assert any("example.local:7709" in attempt for attempt in connection_attempts)
+        assert any("example.local:7712" in attempt for attempt in connection_attempts)
         assert "连接成功！" in connection_attempts[-1]
 
     def test_load_balancing_workflow(self):
@@ -263,13 +263,13 @@ Port04=7712
 HostNum=3
 PrimaryHost=1
 HostName01=服务器1
-IPAddress01=192.168.1.100
+IPAddress01=example.local
 Port01=7709
 HostName02=服务器2
-IPAddress02=192.168.1.101
+IPAddress02=example.local
 Port02=7709
 HostName03=服务器3
-IPAddress03=192.168.1.102
+IPAddress03=example.local
 Port03=7709
 """
 
@@ -289,7 +289,7 @@ Port03=7709
             unique_servers.add(ip)
 
         assert len(unique_servers) >= 1
-        assert all(ip in ["192.168.1.100", "192.168.1.101", "192.168.1.102"] for ip in unique_servers)
+        assert all(ip in ["example.local", "example.local", "example.local"] for ip in unique_servers)
 
     def test_configuration_validation_workflow(self):
         """测试配置验证工作流"""

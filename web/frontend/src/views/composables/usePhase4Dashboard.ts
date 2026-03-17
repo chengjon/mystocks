@@ -2,9 +2,6 @@ import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import echarts from '@/utils/echarts'
 import type { EChartsOption } from 'echarts'
 import { artDecoTheme } from '@/utils/echarts'
-import { ElCard } from 'element-plus'
-import { ElButton } from 'element-plus'
-import { ElTable, ElTableColumn } from 'element-plus'
 
 interface MarketOverview {
   indices: Array<{ name: string; current_price: number; change_percent: number }>

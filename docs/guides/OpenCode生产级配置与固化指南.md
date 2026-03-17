@@ -63,7 +63,7 @@
 ### 1. 端点与密钥
 
 - BaseURL：`https://fucaixie.xyz/v1`
-- API Key：`REDACTED_FUCAI_API_KEY`
+- API Key：`REPLACE_WITH_FUCAI_API_KEY`
 
 建议通过文件引用注入：
 - `{file:/opt/claude/mystocks_spec/.config/opencode/model/fucai.base_url}`

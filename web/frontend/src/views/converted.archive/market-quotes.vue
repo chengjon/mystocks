@@ -523,7 +523,7 @@ const startRealtimeUpdates = () => {
   updateInterval = setInterval(() => {
     if (isConnected.value) {
       // Simulate price updates
-      tickerData.value.forEach((ticker, index) => {
+      tickerData.value.forEach((ticker, _index) => {
         const randomChange = (Math.random() - 0.5) * 0.1
         ticker.price += randomChange
         ticker.change += randomChange

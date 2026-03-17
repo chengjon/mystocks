@@ -3,7 +3,7 @@
  * Task 2.1.2: 应用启动时验证并恢复session
  */
 
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '@/stores/auth.ts'
 
 /**
  * 恢复用户session

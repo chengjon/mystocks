@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 /**
  * MyStocks Frontend - Mobile Code Cleanup Verification Tests
- * Phase 3: Bloomberg Terminal Style Verification
+ * Phase 3: ArtDeco Terminal Style Verification
  *
  * Tests for verifying mobile responsive code has been removed:
  * - No @media queries for mobile breakpoints

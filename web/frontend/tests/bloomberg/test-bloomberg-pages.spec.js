@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
-test.describe('Bloomberg Terminal Style Pages', () => {
+test.describe('ArtDeco Terminal Style Pages', () => {
   test.beforeEach(async ({ page }) => {
     // Set viewport size for desktop testing
     await page.setViewportSize({ width: 1920, height: 1080 });
@@ -19,12 +19,12 @@ test.describe('Bloomberg Terminal Style Pages', () => {
       fullPage: false
     });
 
-    // Check for Bloomberg-style elements
+    // Check for ArtDeco-style elements
     const h1Elements = await page.$$('h1');
     console.log('H1 elements found:', h1Elements.length);
 
     // Check for stat cards
-    const statCards = await page.$$('.stats-grid .bloomberg-stat-card, .stats-grid > div');
+    const statCards = await page.$$('.stats-grid .artdeco-stat-card, .stats-grid .stat-card, .stats-grid > div');
     console.log('Stat cards found:', statCards.length);
 
     // Verify page has content
@@ -46,12 +46,12 @@ test.describe('Bloomberg Terminal Style Pages', () => {
       fullPage: false
     });
 
-    // Check for Bloomberg-style elements
+    // Check for ArtDeco-style elements
     const h1Elements = await page.$$('h1');
     console.log('H1 elements found:', h1Elements.length);
 
     // Check for stat cards using a more specific selector
-    const statCards = await page.$$('.stats-grid .bloomberg-stat-card, .stats-grid > div');
+    const statCards = await page.$$('.stats-grid .artdeco-stat-card, .stats-grid .stat-card, .stats-grid > div');
     console.log('Stat cards found:', statCards.length);
 
     // Verify page has content
@@ -73,12 +73,12 @@ test.describe('Bloomberg Terminal Style Pages', () => {
       fullPage: false
     });
 
-    // Check for Bloomberg-style elements
+    // Check for ArtDeco-style elements
     const h1Elements = await page.$$('h1');
     console.log('H1 elements found:', h1Elements.length);
 
     // Check for tabs
-    const tabs = await page.$$('.bloomberg-tab, .el-tab-pane, .tab');
+    const tabs = await page.$$('.artdeco-tab, .el-tab-pane, .tab');
     console.log('Tabs found:', tabs.length);
 
     // Verify page has content
@@ -135,7 +135,7 @@ test.describe('Bloomberg Terminal Style Pages', () => {
         scrollWidth: document.documentElement.scrollWidth,
         bodyChildren: document.body.children.length,
         h1Count: document.querySelectorAll('h1').length,
-        statCardCount: document.querySelectorAll('.bloomberg-stat-card, .stat-card').length
+        statCardCount: document.querySelectorAll('.artdeco-stat-card, .stat-card').length
       };
     });
 
@@ -171,7 +171,7 @@ test.describe('Bloomberg Terminal Style Pages', () => {
         scrollWidth: document.documentElement.scrollWidth,
         bodyChildren: document.body.children.length,
         h1Count: document.querySelectorAll('h1').length,
-        statCardCount: document.querySelectorAll('.bloomberg-stat-card, .stat-card').length
+        statCardCount: document.querySelectorAll('.artdeco-stat-card, .stat-card').length
       };
     });
 

@@ -272,7 +272,7 @@ export class ChartDataCache {
         let keyToRemove: string | null = null
 
         switch (this.strategy) {
-            case 'lru': // Least Recently Used
+            case 'lru': { // Least Recently Used
                 let oldestTime = Date.now()
                 for (const [key, item] of this.cache) {
                     if (item.timestamp < oldestTime) {
@@ -281,8 +281,9 @@ export class ChartDataCache {
                     }
                 }
                 break
+            }
 
-            case 'lfu': // Least Frequently Used
+            case 'lfu': { // Least Frequently Used
                 let minAccess = Infinity
                 for (const [key, item] of this.cache) {
                     if (item.accessCount < minAccess) {
@@ -291,6 +292,7 @@ export class ChartDataCache {
                     }
                 }
                 break
+            }
 
             case 'fifo': // First In First Out
                 keyToRemove = this.cache.keys().next().value ?? null

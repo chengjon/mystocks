@@ -61,7 +61,15 @@
                   @mouseenter="selectedIndex = index"
                 >
                   <span class="result-icon">{{ item.icon }}</span>
-                  <span class="result-label" v-html="highlightMatch(item.label)"></span>
+                  <span class="result-label">
+                    <template
+                      v-for="(part, partIndex) in highlightMatch(item.label)"
+                      :key="`${item.path}-${partIndex}`"
+                    >
+                      <mark v-if="part.highlight">{{ part.text }}</mark>
+                      <template v-else>{{ part.text }}</template>
+                    </template>
+                  </span>
                   <span class="result-category">{{ item.category }}</span>
                 </li>
               </ul>
@@ -247,11 +255,20 @@ const addToRecent = (path: string) => {
 }
 
 // 高亮匹配文本
-const highlightMatch = (text: string): string => {
-  if (!searchQuery.value) return text
-  
-  const regex = new RegExp(`(${searchQuery.value})`, 'gi')
-  return text.replace(regex, '<mark>$1</mark>')
+const highlightMatch = (text: string): Array<{ text: string; highlight: boolean }> => {
+  if (!searchQuery.value) {
+    return [{ text, highlight: false }]
+  }
+
+  const escapedQuery = searchQuery.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const regex = new RegExp(`(${escapedQuery})`, 'gi')
+  const segments = text.split(regex).filter(segment => segment.length > 0)
+  const query = searchQuery.value.toLowerCase()
+
+  return segments.map(segment => ({
+    text: segment,
+    highlight: segment.toLowerCase() === query
+  }))
 }
 
 // 从localStorage加载最近访问

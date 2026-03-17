@@ -1,6 +1,5 @@
 import { ref, reactive, onMounted, nextTick, computed, type Ref } from 'vue'
 import { ElMessage, ElNotification } from 'element-plus'
-import { TrendCharts, DataAnalysis, Odometer } from '@element-plus/icons-vue'
 import { technicalApi } from '@/api'
 import echarts from '@/utils/echarts'
 import { artDecoTheme } from '@/utils/echarts'
@@ -366,7 +365,10 @@ const renderChart = (): void => {
     ]
   }
 
-  chartInstance.value!.setOption(option)
+  const chart = chartInstance.value
+  if (!chart) return
+
+  chart.setOption(option)
 
   window.addEventListener('resize', () => {
     chartInstance.value?.resize()

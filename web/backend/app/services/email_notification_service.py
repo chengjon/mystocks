@@ -242,7 +242,7 @@ class EmailNotificationService:
                     {news_content}
 
                     <p style="margin-top: 30px;">
-                        <a href="https://mystocks.com/dashboard"
+                        <a href="https://mystocks.com/dealing-room"
                            style="background-color: #2563eb; color: white;
                                   padding: 10px 20px; text-decoration: none;
                                   border-radius: 5px;">

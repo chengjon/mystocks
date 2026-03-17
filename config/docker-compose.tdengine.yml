@@ -52,7 +52,7 @@ services:
     container_name: mystocks_postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: your-postgresql-password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
       POSTGRES_DB: mystocks
       TZ: "Asia/Shanghai"
     ports:

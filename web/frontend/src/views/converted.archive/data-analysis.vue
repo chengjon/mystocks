@@ -25,13 +25,9 @@ import { ArtDecoHeader, ArtDecoCard, ArtDecoTable } from '@/components/artdeco'
 
 // Component logic
 const pageTitle = ref('数据分析 - MyStocks Web3 DeFi')
-const menuItems = ref([
-  // Menu items based on HTML navigation
-])
 
 // Reactive data
 const tableData = ref([])
-const chartData = ref({})
 
 // Methods
 const loadData = async () => {

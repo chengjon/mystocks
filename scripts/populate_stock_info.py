@@ -170,12 +170,16 @@ def populate_stock_info(stocks: List[Dict], db_config: Dict):
 def main():
     """主函数"""
 
+    password = os.getenv("POSTGRESQL_PASSWORD")
+    if not password:
+        raise ValueError("POSTGRESQL_PASSWORD environment variable must be set")
+
     # Database configuration (from environment variables)
     db_config = {
         "host": os.getenv("POSTGRESQL_HOST", "localhost"),
         "port": int(os.getenv("POSTGRESQL_PORT", "5438")),
         "user": os.getenv("POSTGRESQL_USER", "postgres"),
-        "password": os.getenv("POSTGRESQL_PASSWORD", "your-postgresql-password"),
+        "password": password,
         "database": os.getenv("POSTGRESQL_DATABASE", "mystocks"),
     }
 

@@ -78,7 +78,7 @@ use([
   CanvasRenderer
 ])
 
-// 注意：组件中应该使用 import echarts from '@/utils/echarts'
+// 注意：组件中应该使用 import echarts from '@/utils/echarts.ts'
 // Vite 会自动使用我们已注册的按需引入版本
 
 // ============================================
@@ -258,6 +258,6 @@ export function getStockIcon(value: number): string {
 }
 
 // Re-export echarts core as default for backward compatibility
-// 使用方式: import echarts from '@/utils/echarts'
+// 使用方式: import echarts from '@/utils/echarts.ts'
 import * as echartsCore from 'echarts/core'
 export default echartsCore

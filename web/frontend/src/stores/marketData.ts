@@ -4,7 +4,7 @@
  */
 
 import { defineStore } from 'pinia'
-import { ref, reactive, computed } from 'vue'
+import { reactive, computed } from 'vue'
 import { indexedDB } from '@/utils/indexedDB'
 import { tradingApiManager } from '@/services/TradingApiManager'
 import { workersManager, type TechnicalIndicatorResult } from '@/utils/workersManager/index'

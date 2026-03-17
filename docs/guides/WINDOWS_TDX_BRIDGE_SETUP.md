@@ -34,13 +34,13 @@ if __name__ == "__main__":
   tdx_node_01:
     source_name: "tdx_remote"
     source_type: "remote_bridge"
-    endpoint_url: "http://192.168.123.50:8001" # Windows 机器 A
+    endpoint_url: "http://example.local:8001" # Windows 机器 A
     priority: 1
 
   tdx_node_02:
     source_name: "tdx_remote"
     source_type: "remote_bridge"
-    endpoint_url: "http://192.168.123.51:8001" # Windows 机器 B
+    endpoint_url: "http://example.local:8001" # Windows 机器 B
     priority: 2
 ```
 

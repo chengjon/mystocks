@@ -4,7 +4,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getPageConfig, isRouteName, isStandardConfig } from '@/config/pageConfig'
-import type { PageConfig } from '@/config/pageConfig'
 import axios from 'axios'
 
 // 路由名称类型
@@ -96,6 +95,12 @@ export const usePageConfigExampleStore = defineStore('pageConfigExample', () => 
     if (!isStandardConfig(config)) {
       error.value = '该路由不支持直接加载数据（Monolithic 类型）'
       console.warn('⚠️ Monolithic 类型路由需要通过 tab 加载数据')
+      return
+    }
+
+    if (!config.apiEndpoint) {
+      error.value = '该路由为聚合页，请通过专用服务而不是 pageConfig.apiEndpoint 加载数据'
+      console.warn(`⚠️ 路由 ${config.routePath} 未声明单一 apiEndpoint`)
       return
     }
 

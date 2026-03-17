@@ -2,8 +2,8 @@
     @import '@/styles/artdeco-patterns';
 
     .artdeco-trading-management {
-        padding: 2rem;
-        max-width: 1600px;
+        padding: var(--artdeco-spacing-8);
+        max-width: calc(var(--artdeco-spacing-px) * 1600);
         margin: 0 auto;
         position: relative;
 
@@ -11,10 +11,10 @@
         &::before {
             content: '';
             position: absolute;
-            inset: 0 0 0 0;
+            inset: 0;
             background:
-                radial-gradient(circle at 20% 80%, rgb(255 215 0 / 3%) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgb(255 165 0 / 3%) 0%, transparent 50%);
+                radial-gradient(circle at 20% 80%, var(--artdeco-gold-opacity-05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, var(--artdeco-gold-opacity-05) 0%, transparent 50%);
             pointer-events: none;
             z-index: -1;
         }
@@ -23,17 +23,17 @@
     .trading-management-content {
         display: flex;
         flex-direction: column;
-        gap: 2rem;
+        gap: var(--artdeco-spacing-8);
     }
 
     // 状态栏
     .status-bar {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-px) * 250), 1fr));
+        gap: var(--artdeco-spacing-6);
+        margin-bottom: var(--artdeco-spacing-4);
 
-        @media (width <= 768px) {
+        @media (width <= calc(var(--artdeco-spacing-px) * 768)) {
             grid-template-columns: 1fr;
         }
     }
@@ -42,11 +42,11 @@
     .artdeco-content-grid {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 2rem;
+        gap: var(--artdeco-spacing-8);
 
-        @media (width >= 1200px) {
+        @media (width >= calc(var(--artdeco-spacing-px) * 1200)) {
             grid-template-columns: 1fr 1fr;
-            gap: 3rem;
+            gap: var(--artdeco-spacing-12);
         }
     }
 
@@ -63,8 +63,8 @@
             content: '';
             position: absolute;
             inset: 0 0 0 0;
-            border: 2px solid transparent;
-            border-image: linear-gradient(45deg, #ffd700, #ffa500, #ffd700) 1;
+            border: calc(var(--artdeco-spacing-px) * 2) solid transparent;
+            border-image: linear-gradient(45deg, var(--artdeco-gold-primary), var(--artdeco-bronze), var(--artdeco-gold-primary)) 1;
             border-radius: inherit;
             pointer-events: none;
             opacity: 70%;
@@ -73,13 +73,13 @@
         // 悬停效果
         &:hover::before {
             opacity: 100%;
-            box-shadow: 0 0 30px rgb(255 215 0 / 30%);
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 0 30px var(--artdeco-gold-opacity-shadow);
+            transition: all var(--artdeco-transition-base) cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
     }
 
     .overview-card {
-        background: linear-gradient(135deg, rgb(255 215 0 / 5%), rgb(255 165 0 / 2%));
+        background: linear-gradient(135deg, var(--artdeco-gold-opacity-05), rgb(255 165 0 / 2%));
     }
 
     .controls-card {
@@ -94,11 +94,11 @@
         &::after {
             content: '';
             position: absolute;
-            top: 1rem;
-            right: 1rem;
-            width: 8px;
-            height: 8px;
-            background: #22c55e;
+            top: var(--artdeco-spacing-4);
+            right: var(--artdeco-spacing-4);
+            width: var(--artdeco-spacing-2);
+            height: var(--artdeco-spacing-2);
+            background: var(--artdeco-down);
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
@@ -112,34 +112,34 @@
     .card-header {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
+        gap: var(--artdeco-spacing-4);
+        margin-bottom: var(--artdeco-spacing-6);
 
         &.dramatic {
-            background: linear-gradient(90deg, rgb(255 215 0 / 10%), rgb(255 165 0 / 5%));
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            border: 1px solid rgb(255 215 0 / 20%);
+            background: linear-gradient(90deg, var(--artdeco-gold-opacity-10), var(--artdeco-gold-opacity-05));
+            padding: var(--artdeco-spacing-4) var(--artdeco-spacing-6);
+            border-radius: var(--artdeco-radius-md);
+            border: calc(var(--artdeco-spacing-px) * 1) solid var(--artdeco-gold-opacity-20);
         }
 
         &.elegant {
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 1rem;
+            border-bottom: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-border-default);
+            padding-bottom: var(--artdeco-spacing-4);
         }
 
         h3 {
             margin: 0;
-            font-size: 1.5rem;
+            font-size: var(--artdeco-text-xl);
             font-weight: 700;
             letter-spacing: 0.05em;
             text-transform: uppercase;
-            color: #1f2937;
+            color: var(--artdeco-bg-global);
         }
 
         p {
             margin: 0;
             font-size: 0.9rem;
-            color: #6b7280;
+            color: var(--artdeco-gold-dim);
             font-style: italic;
         }
     }
@@ -148,11 +148,11 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 3rem;
-        height: 3rem;
-        background: linear-gradient(135deg, #ffd700, #ffa500);
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgb(255 215 0 / 30%);
+        width: var(--artdeco-spacing-12);
+        height: var(--artdeco-spacing-12);
+        background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-bronze));
+        border-radius: var(--artdeco-radius-md);
+        box-shadow: 0 calc(var(--artdeco-spacing-px) * 4) calc(var(--artdeco-spacing-px) * 12) var(--artdeco-gold-opacity-shadow);
     }
 
     .header-content {
@@ -168,47 +168,47 @@
     .panel-grid {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 2rem;
+        gap: var(--artdeco-spacing-8);
 
-        @media (width >= 1024px) {
+        @media (width >= var(--artdeco-breakpoint-md)) {
             grid-template-columns: 1fr 1fr;
         }
     }
 
     .panel-section {
         background: rgb(255 255 255 / 80%);
-        border-radius: 12px;
-        padding: 1.5rem;
-        border: 1px solid rgb(255 215 0 / 20%);
-        transition: all 0.3s ease;
+        border-radius: var(--artdeco-radius-lg);
+        padding: var(--artdeco-spacing-6);
+        border: calc(var(--artdeco-spacing-px) * 1) solid var(--artdeco-gold-opacity-20);
+        transition: all var(--artdeco-transition-base) var(--artdeco-ease-out);
 
         &:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgb(255 215 0 / 15%);
+            transform: translateY(calc(var(--artdeco-spacing-px) * -2));
+            box-shadow: 0 8px 25px var(--artdeco-gold-opacity-15);
         }
     }
 
     .section-header {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        margin-bottom: 1.5rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid rgb(0 0 0 / 10%);
+        gap: var(--artdeco-spacing-3);
+        margin-bottom: var(--artdeco-spacing-6);
+        padding-bottom: var(--artdeco-spacing-4);
+        border-bottom: calc(var(--artdeco-spacing-px) * 1) solid rgb(0 0 0 / 10%);
 
         h4 {
             margin: 0;
             font-size: 1.2rem;
             font-weight: 600;
             letter-spacing: 0.02em;
-            color: #374151;
+            color: var(--artdeco-bg-base);
         }
 
         .count-badge {
-            background: linear-gradient(135deg, #ffd700, #ffa500);
-            color: #000;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
+            background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-bronze));
+            color: var(--artdeco-bg-global);
+            padding: var(--artdeco-spacing-1) var(--artdeco-spacing-3);
+            border-radius: var(--artdeco-radius-full);
             font-size: 0.8rem;
             font-weight: 600;
             letter-spacing: 0.02em;
@@ -218,7 +218,7 @@
     // 历史区域布局
     .history-controls,
     .history-data {
-        margin-bottom: 1.5rem;
+        margin-bottom: var(--artdeco-spacing-6);
 
         &:last-child {
             margin-bottom: 0;
@@ -238,9 +238,9 @@
     }
 
     // 响应式设计
-    @media (width <= 1024px) {
+    @media (width <= var(--artdeco-breakpoint-md)) {
         .artdeco-trading-management {
-            padding: 1rem;
+            padding: var(--artdeco-spacing-4);
         }
 
         .artdeco-content-grid {
@@ -252,7 +252,7 @@
         }
     }
 
-    @media (width <= 768px) {
+    @media (width <= calc(var(--artdeco-spacing-px) * 768)) {
         .status-bar {
             grid-template-columns: 1fr;
         }
@@ -260,12 +260,12 @@
         .card-header.dramatic {
             flex-direction: column;
             text-align: center;
-            gap: 0.5rem;
+            gap: var(--artdeco-spacing-2);
         }
 
         .section-header {
             flex-direction: column;
             align-items: flex-start;
-            gap: 0.5rem;
+            gap: var(--artdeco-spacing-2);
         }
     }

@@ -87,7 +87,6 @@ async function main() {
       await page.waitForTimeout(2000);
       
       const title = await page.title();
-      const url = page.url();
       const screenshotPath = `${outputDir}/${pageInfo.name}.png`;
       
       await page.screenshot({ path: screenshotPath, fullPage: false });

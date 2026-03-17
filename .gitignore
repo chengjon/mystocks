@@ -19,6 +19,11 @@
 # OpenCode config (may contain API keys)
 opencode.json
 config/opencode.json
+.config/opencode*.json*
+.config/oh-my-opencode*.json*
+.config/opencode/model/*.api_key
+.config/opencode/model/model-catalog.json
+.config/opencode/model/*.env
 
 # Database Credentials and Backups
 config/.env
@@ -121,6 +126,7 @@ Thumbs.db
 /build/
 /dist/
 /htmlcov/
+**/.parcel-cache/
 
 # Temporary Development Directories
 /temp/

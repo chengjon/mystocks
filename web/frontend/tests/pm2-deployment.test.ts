@@ -5,7 +5,7 @@ import { join } from 'path';
 
 /**
  * MyStocks Frontend - PM2 Deployment Verification Tests
- * Phase 3: Bloomberg Terminal Style Deployment
+ * Phase 3: ArtDeco Terminal Style Deployment
  *
  * Tests for verifying PM2 deployment configuration and runtime status.
  * These tests ensure the frontend application is properly deployed and accessible.

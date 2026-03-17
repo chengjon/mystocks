@@ -250,9 +250,13 @@ class WebSocketManager {
     }
 
     // Add callback to subscribers
-    this.subscribers.get(messageType)!.add(callback)
+    const subscribers = this.subscribers.get(messageType)
+    if (!subscribers) {
+      return () => {}
+    }
+    subscribers.add(callback)
 
-    console.log(`📝 Subscribed to "${messageType}" (total: ${this.subscribers.get(messageType)!.size})`)
+    console.log(`📝 Subscribed to "${messageType}" (total: ${subscribers.size})`)
 
     // Return unsubscribe function
     return () => {

@@ -4,17 +4,7 @@
         <div class="artdeco-trading-positions__corner artdeco-trading-positions__corner--tl"></div>
         <div class="artdeco-trading-positions__corner artdeco-trading-positions__corner--br"></div>
 
-        <div class="artdeco-trading-positions__meta" v-if="lastRequestId">REQ: {{ lastRequestId }}</div>
-
-        <div v-if="showErrorState" class="artdeco-trading-positions__state artdeco-trading-positions__state--error">
-            持仓接口加载失败：{{ error }}
-        </div>
-
-        <div v-else-if="showEmptyState" class="artdeco-trading-positions__state">
-            当前暂无持仓数据。
-        </div>
-
-        <ArtDecoCard v-else title="持仓明细" hoverable>
+        <ArtDecoCard title="持仓明细" hoverable>
             <div class="artdeco-trading-positions__table">
                 <div class="artdeco-trading-positions__header">
                     <div class="artdeco-trading-positions__col artdeco-trading-positions__col--symbol">股票</div>
@@ -108,7 +98,7 @@
     }>()
 
     const internalPositions = ref<Position[]>([])
-    const { error, lastRequestId, exec } = useArtDecoApi()
+    const { exec } = useArtDecoApi()
 
     const displayPositions = computed(() => {
         if (Array.isArray(props.positions) && props.positions.length > 0) {
@@ -116,9 +106,6 @@
         }
         return internalPositions.value
     })
-
-    const showErrorState = computed(() => Boolean(error.value) && displayPositions.value.length === 0)
-    const showEmptyState = computed(() => !error.value && displayPositions.value.length === 0)
 
     const loadPositions = async () => {
         const responseData = await exec(() => apiClient.get('/v1/trade/positions'), { silent: true })
@@ -143,25 +130,6 @@
         @include artdeco-stepped-corners(8px);
         @include artdeco-geometric-corners($color: var(--artdeco-gold-primary), $size: 16px, $border-width: 2px);
         @include artdeco-hover-lift-glow;
-    }
-
-    .artdeco-trading-positions__meta {
-        margin-bottom: var(--artdeco-spacing-3);
-        color: var(--artdeco-fg-muted);
-        font-family: var(--artdeco-font-mono);
-        font-size: var(--artdeco-text-xs);
-    }
-
-    .artdeco-trading-positions__state {
-        padding: var(--artdeco-spacing-5);
-        border: thin solid var(--artdeco-border-default);
-        background: linear-gradient(145deg, var(--artdeco-gold-opacity-05), transparent 65%);
-        color: var(--artdeco-fg-primary);
-        margin-bottom: var(--artdeco-spacing-4);
-
-        &--error {
-            color: var(--artdeco-rise);
-        }
     }
 
     .artdeco-trading-positions__table {

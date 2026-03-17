@@ -317,7 +317,7 @@ def create_adapter(api_key: str) -> NewMarketDataAdapter:
         print("=" * 50)
 
         # 选择一个需要重构的模块（模拟）
-        refactor_module = "archive/code-compatibility/examples/legacy_adapter.py"
+        refactor_module = "src/adapters/legacy_adapter.py"
 
         # 创建模拟的遗留代码模块
         self._create_legacy_module(refactor_module)
@@ -703,3 +703,4 @@ class LegacyAdapter:
             "团队质量监控",
             f"团队使用次数: {usage_stats['total_usage']}, 成功率: {usage_stats['success_rate']:.1f}%, 异常数: {len(anomalies) if 'anomalies' in locals() else 0}",
         )
+

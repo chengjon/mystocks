@@ -109,7 +109,7 @@ test.describe("Strategy Management - Monitoring & UI", () => {
       })
     })
 
-    await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
+    await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`, { waitUntil: "domcontentloaded" })
     await expect(page.locator(".strategy-table tbody tr")).toHaveCount(8)
 
     await page.getByPlaceholder("搜索策略名称 / 类型").fill("Strategy-03")
@@ -127,7 +127,7 @@ test.describe("Strategy Management - Monitoring & UI", () => {
       })
     })
 
-    await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
+    await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`, { waitUntil: "domcontentloaded" })
     await page.locator(".toolbar-select").selectOption("paused")
 
     const rows = page.locator(".strategy-table tbody tr")
@@ -145,7 +145,7 @@ test.describe("Strategy Management - Monitoring & UI", () => {
       })
     })
 
-    await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
+    await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`, { waitUntil: "domcontentloaded" })
     const paginationText = page.locator(".pagination-text")
     const nextPageButton = page.locator(".pagination-row .toolbar-button").last()
     await expect(paginationText).toContainText("第 1 / 3 页")
@@ -177,7 +177,7 @@ test.describe("Strategy Management - Monitoring & UI", () => {
       })
     })
 
-    await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
+    await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`, { waitUntil: "domcontentloaded" })
     await expect(page.locator(".strategy-table")).toBeVisible()
 
     const refreshButton = page.getByRole("button", { name: "刷新" })
@@ -201,7 +201,7 @@ test.describe("Strategy Management - Monitoring & UI", () => {
 
     for (const viewport of desktopViewports) {
       await page.setViewportSize({ width: viewport.width, height: viewport.height })
-      await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
+      await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`, { waitUntil: "domcontentloaded" })
       await expect(page.locator("main.artdeco-main")).toBeVisible()
       await expect(page.locator(".strategy-management")).toBeVisible()
     }
@@ -217,7 +217,7 @@ test.describe("Strategy Management - Monitoring & UI", () => {
       })
     })
 
-    await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`)
+    await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`, { waitUntil: "domcontentloaded" })
     await expect(page.locator(".strategy-management")).toBeVisible()
     await expect.poll(async () => page.locator("button").count()).toBeGreaterThan(0)
 

@@ -47,18 +47,18 @@ class TestInMemoryRateLimiter:
         request = MagicMock(spec=Request)
         request.headers = {}
         request.client = MagicMock()
-        request.client.host = "192.168.1.1"
+        request.client.host = "example.local"
 
         ip = limiter._get_client_ip(request)
-        assert ip == "192.168.1.1"
+        assert ip == "example.local"
 
     def test_get_client_ip_forwarded(self):
         """Test getting client IP from X-Forwarded-For header"""
         limiter = InMemoryRateLimiter()
         request = MagicMock(spec=Request)
-        request.headers = {"X-Forwarded-For": "10.0.0.1, 192.168.1.1"}
+        request.headers = {"X-Forwarded-For": "10.0.0.1, example.local"}
         request.client = MagicMock()
-        request.client.host = "192.168.1.1"
+        request.client.host = "example.local"
 
         ip = limiter._get_client_ip(request)
         assert ip == "10.0.0.1"
@@ -66,7 +66,7 @@ class TestInMemoryRateLimiter:
     def test_check_rate_limit_allows_requests(self):
         """Test that requests under limit are allowed"""
         limiter = InMemoryRateLimiter()
-        allowed, error = limiter._check_rate_limit("192.168.1.1")
+        allowed, error = limiter._check_rate_limit("example.local")
         assert allowed is True
         assert error is None
 
@@ -76,11 +76,11 @@ class TestInMemoryRateLimiter:
         limiter = InMemoryRateLimiter(config)
 
         # First two requests should be allowed
-        limiter._check_rate_limit("192.168.1.1")
-        limiter._check_rate_limit("192.168.1.1")
+        limiter._check_rate_limit("example.local")
+        limiter._check_rate_limit("example.local")
 
         # Third request should be blocked
-        allowed, error = limiter._check_rate_limit("192.168.1.1")
+        allowed, error = limiter._check_rate_limit("example.local")
         assert allowed is False
         assert "too many requests per minute" in error.lower()
 
@@ -90,10 +90,10 @@ class TestInMemoryRateLimiter:
 
         # Record 5 failed attempts
         for _ in range(5):
-            limiter.record_failed_auth("192.168.1.1")
+            limiter.record_failed_auth("example.local")
 
         # Next request should be blocked
-        allowed, error = limiter._check_rate_limit("192.168.1.1")
+        allowed, error = limiter._check_rate_limit("example.local")
         assert allowed is False
         assert "blocked" in error.lower() or "too many" in error.lower()
 
@@ -102,14 +102,14 @@ class TestInMemoryRateLimiter:
         limiter = InMemoryRateLimiter()
 
         # Record some failed attempts
-        limiter.record_failed_auth("192.168.1.1")
-        limiter.record_failed_auth("192.168.1.1")
+        limiter.record_failed_auth("example.local")
+        limiter.record_failed_auth("example.local")
 
         # Reset on successful auth
-        limiter.reset_failed_auth("192.168.1.1")
+        limiter.reset_failed_auth("example.local")
 
         # Should still have remaining attempts
-        allowed, _ = limiter._check_rate_limit("192.168.1.1")
+        allowed, _ = limiter._check_rate_limit("example.local")
         assert allowed is True
 
     def test_different_clients_tracked_separately(self):
@@ -118,15 +118,15 @@ class TestInMemoryRateLimiter:
         limiter = InMemoryRateLimiter(config)
 
         # Client 1 uses up their limit
-        limiter._check_rate_limit("192.168.1.1")
-        limiter._check_rate_limit("192.168.1.1")
+        limiter._check_rate_limit("example.local")
+        limiter._check_rate_limit("example.local")
 
         # Client 2 should still be allowed
-        allowed, _ = limiter._check_rate_limit("192.168.1.2")
+        allowed, _ = limiter._check_rate_limit("example.local")
         assert allowed is True
 
         # Client 1 should be blocked
-        allowed, _ = limiter._check_rate_limit("192.168.1.1")
+        allowed, _ = limiter._check_rate_limit("example.local")
         assert allowed is False
 
 

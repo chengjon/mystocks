@@ -13,7 +13,6 @@ const e2eFrontendPort = e2eFrontendPortRaw ? Number.parseInt(e2eFrontendPortRaw,
 const frontendPort = Number.isInteger(e2eFrontendPort) ? e2eFrontendPort : resolvedFrontend.port;
 const baseURL = process.env.FRONTEND_BASE_URL || `http://127.0.0.1:${frontendPort}`;
 const isLinux = process.platform === "linux";
-const reuseExistingServer = process.env.PW_REUSE_EXISTING_SERVER === "true";
 
 // Ensure helper utilities that read FRONTEND_PORT/FRONTEND_BASE_URL use the same dedicated E2E server.
 process.env.FRONTEND_PORT = String(frontendPort);
@@ -88,10 +87,10 @@ module.exports = defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: `PLAYWRIGHT_TEST=true VITE_E2E_LIGHT=true vite --config tests/config/playwright.vite.config.mts --host 127.0.0.1 --port ${frontendPort} --strictPort`,
+    command: `npm run dev:no-types -- --host 127.0.0.1 --port ${frontendPort} --strictPort`,
     port: frontendPort,
-    // Default to a fresh Vite server. Tests may opt into reuse for existing local preview/PM2 environments.
-    reuseExistingServer,
+    // Never reuse an existing server: PM2 preview on 3020 can cause stale assets and false negatives.
+    reuseExistingServer: false,
     timeout: 120 * 1000,
   },
 });

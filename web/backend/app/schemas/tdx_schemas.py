@@ -4,7 +4,7 @@ TDX数据API的Pydantic模型定义
 
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class RealTimeQuoteResponse(BaseModel):
@@ -29,8 +29,8 @@ class RealTimeQuoteResponse(BaseModel):
     change: Optional[float] = Field(None, description="涨跌额")
     change_pct: Optional[float] = Field(None, description="涨跌幅(%)")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "code": "600519",
                 "name": "贵州茅台",
@@ -50,6 +50,7 @@ class RealTimeQuoteResponse(BaseModel):
                 "change_pct": 0.30,
             }
         }
+    )
 
 
 class KlineDataPoint(BaseModel):
@@ -63,8 +64,8 @@ class KlineDataPoint(BaseModel):
     volume: int = Field(..., description="成交量")
     amount: Optional[float] = Field(None, description="成交额")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "date": "2025-10-15 09:30:00",
                 "open": 1845.00,
@@ -75,6 +76,7 @@ class KlineDataPoint(BaseModel):
                 "amount": 22800000.00,
             }
         }
+    )
 
 
 class KlineResponse(BaseModel):
@@ -85,8 +87,8 @@ class KlineResponse(BaseModel):
     data: List[KlineDataPoint] = Field(..., description="K线数据列表")
     count: int = Field(..., description="数据条数")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "code": "600519",
                 "period": "5m",
@@ -104,6 +106,7 @@ class KlineResponse(BaseModel):
                 "count": 1,
             }
         }
+    )
 
 
 class IndexQuoteResponse(BaseModel):
@@ -122,8 +125,8 @@ class IndexQuoteResponse(BaseModel):
     change_pct: Optional[float] = Field(None, description="涨跌幅(%)")
     timestamp: str = Field(..., description="查询时间戳")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "code": "000001",
                 "name": "上证指数",
@@ -139,6 +142,7 @@ class IndexQuoteResponse(BaseModel):
                 "timestamp": "2025-10-15 14:30:00",
             }
         }
+    )
 
 
 class ErrorResponse(BaseModel):
@@ -148,14 +152,15 @@ class ErrorResponse(BaseModel):
     message: str = Field(..., description="错误消息")
     detail: Optional[str] = Field(None, description="详细信息")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "error": "InvalidParameter",
                 "message": "无效的股票代码",
                 "detail": "股票代码必须为6位数字",
             }
         }
+    )
 
 
 class TdxHealthResponse(BaseModel):

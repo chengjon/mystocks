@@ -35,6 +35,8 @@ export interface CachedData<T> {
   expiresAt?: number;
 }
 
+type StoreName = 'market_data' | 'technical_indicators' | 'user_preferences' | 'api_cache';
+
 export class IndexedDBManager {
   private db: IDBDatabase | null = null;
   private readonly dbName = 'MyStocksDB';
@@ -105,6 +107,18 @@ export class IndexedDBManager {
     }
   }
 
+  private getDatabase(): IDBDatabase {
+    if (!this.db) {
+      throw new Error('IndexedDB is not initialized');
+    }
+
+    return this.db;
+  }
+
+  private getObjectStore(storeName: StoreName, mode: IDBTransactionMode = 'readonly'): IDBObjectStore {
+    return this.getDatabase().transaction([storeName], mode).objectStore(storeName);
+  }
+
   // ============ Market Data Operations ============
 
   /**
@@ -114,8 +128,7 @@ export class IndexedDBManager {
     await this.ensureInitialized();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['market_data'], 'readwrite');
-      const store = transaction.objectStore('market_data');
+      const store = this.getObjectStore('market_data', 'readwrite');
 
       const request = store.put(data);
 
@@ -131,8 +144,7 @@ export class IndexedDBManager {
     await this.ensureInitialized();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['market_data'], 'readonly');
-      const store = transaction.objectStore('market_data');
+      const store = this.getObjectStore('market_data');
 
       const request = store.get(symbol);
 
@@ -148,8 +160,7 @@ export class IndexedDBManager {
     await this.ensureInitialized();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['market_data'], 'readonly');
-      const store = transaction.objectStore('market_data');
+      const store = this.getObjectStore('market_data');
 
       const request = store.getAll();
 
@@ -165,8 +176,7 @@ export class IndexedDBManager {
     await this.ensureInitialized();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['market_data'], 'readwrite');
-      const store = transaction.objectStore('market_data');
+      const store = this.getObjectStore('market_data', 'readwrite');
 
       const request = store.delete(symbol);
 
@@ -184,8 +194,7 @@ export class IndexedDBManager {
     await this.ensureInitialized();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['technical_indicators'], 'readwrite');
-      const store = transaction.objectStore('technical_indicators');
+      const store = this.getObjectStore('technical_indicators', 'readwrite');
 
       const request = store.put(data);
 
@@ -201,8 +210,7 @@ export class IndexedDBManager {
     await this.ensureInitialized();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['technical_indicators'], 'readonly');
-      const store = transaction.objectStore('technical_indicators');
+      const store = this.getObjectStore('technical_indicators');
 
       const request = store.get([symbol, indicator, timestamp]);
 
@@ -218,8 +226,7 @@ export class IndexedDBManager {
     await this.ensureInitialized();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['technical_indicators'], 'readonly');
-      const store = transaction.objectStore('technical_indicators');
+      const store = this.getObjectStore('technical_indicators');
       const index = store.index('symbol');
 
       const request = index.getAll(symbol);
@@ -238,8 +245,7 @@ export class IndexedDBManager {
     await this.ensureInitialized();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['user_preferences'], 'readwrite');
-      const store = transaction.objectStore('user_preferences');
+      const store = this.getObjectStore('user_preferences', 'readwrite');
 
       const request = store.put(prefs);
 
@@ -255,8 +261,7 @@ export class IndexedDBManager {
     await this.ensureInitialized();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['user_preferences'], 'readonly');
-      const store = transaction.objectStore('user_preferences');
+      const store = this.getObjectStore('user_preferences');
 
       const request = store.get(userId);
 
@@ -281,8 +286,7 @@ export class IndexedDBManager {
     };
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['api_cache'], 'readwrite');
-      const store = transaction.objectStore('api_cache');
+      const store = this.getObjectStore('api_cache', 'readwrite');
 
       const request = store.put(cacheData);
 
@@ -298,8 +302,7 @@ export class IndexedDBManager {
     await this.ensureInitialized();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['api_cache'], 'readonly');
-      const store = transaction.objectStore('api_cache');
+      const store = this.getObjectStore('api_cache');
 
       const request = store.get(key);
 
@@ -332,8 +335,7 @@ export class IndexedDBManager {
     await this.ensureInitialized();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['api_cache'], 'readwrite');
-      const store = transaction.objectStore('api_cache');
+      const store = this.getObjectStore('api_cache', 'readwrite');
 
       const request = store.delete(key);
 
@@ -349,8 +351,7 @@ export class IndexedDBManager {
     await this.ensureInitialized();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['api_cache'], 'readwrite');
-      const store = transaction.objectStore('api_cache');
+      const store = this.getObjectStore('api_cache', 'readwrite');
       const index = store.index('expiresAt');
 
       const now = Date.now();
@@ -382,12 +383,11 @@ export class IndexedDBManager {
   async clearAllData(): Promise<void> {
     await this.ensureInitialized();
 
-    const storeNames = ['market_data', 'technical_indicators', 'user_preferences', 'api_cache'];
+    const storeNames: StoreName[] = ['market_data', 'technical_indicators', 'user_preferences', 'api_cache'];
 
     const promises = storeNames.map(storeName => {
       return new Promise<void>((resolve, reject) => {
-        const transaction = this.db!.transaction([storeName], 'readwrite');
-        const store = transaction.objectStore(storeName);
+        const store = this.getObjectStore(storeName, 'readwrite');
 
         const request = store.clear();
 
@@ -407,12 +407,11 @@ export class IndexedDBManager {
     await this.ensureInitialized();
 
     const stats: Record<string, number> = {};
-    const storeNames = ['market_data', 'technical_indicators', 'user_preferences', 'api_cache'];
+    const storeNames: StoreName[] = ['market_data', 'technical_indicators', 'user_preferences', 'api_cache'];
 
     for (const storeName of storeNames) {
       await new Promise<void>((resolve, reject) => {
-        const transaction = this.db!.transaction([storeName], 'readonly');
-        const store = transaction.objectStore(storeName);
+        const store = this.getObjectStore(storeName);
 
         const request = store.count();
 

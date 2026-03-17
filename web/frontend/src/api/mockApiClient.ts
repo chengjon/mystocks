@@ -20,6 +20,19 @@ const createMockResponse = <T>(data: T): UnifiedResponse<T> => ({
   errors: null,
 });
 
+const normalizeMockPath = (url = '') => url.replace(/^\/api(?=\/)/, '');
+
+const matchesMockRoute = (url: string, route: string): boolean => {
+  const normalizedUrl = normalizeMockPath(url);
+  const normalizedRoute = normalizeMockPath(route);
+
+  if (normalizedRoute.endsWith('/')) {
+    return normalizedUrl.startsWith(normalizedRoute);
+  }
+
+  return normalizedUrl === normalizedRoute;
+};
+
 export const mockApiClient = {
   async get<T = UnifiedResponse>(url: string, config?: unknown): Promise<T> {
     await simulateNetworkDelay();
@@ -29,7 +42,37 @@ export const mockApiClient = {
 
     // --- Dashboard & Market Routes ---
 
-    // 1. Market Overview (ETF List / Indices)
+    // 1. Dashboard Root Object
+    if (matchesMockRoute(url, '/dashboard/market-overview')) {
+      const requestedLimit = Number(params.limit || 10);
+      const safeLimit = Number.isFinite(requestedLimit) && requestedLimit > 0 ? requestedLimit : 10;
+
+      const indices = [
+        { symbol: '000001.SH', name: '上证指数', current_price: 3128.45, change_percent: 0.85, volume: 1000000 },
+        { symbol: '399001.SZ', name: '深证成指', current_price: 10245.67, change_percent: 1.23, volume: 2000000 },
+        { symbol: '399006.SZ', name: '创业板指', current_price: 2156.89, change_percent: -0.45, volume: 500000 },
+        { symbol: '899050.BJ', name: '北证50', current_price: 980.15, change_percent: 0.38, volume: 180000 }
+      ].slice(0, safeLimit);
+
+      const response = createMockResponse({
+        indices,
+        up_count: 3120,
+        down_count: 1456,
+        flat_count: 210,
+        total_volume: 1280000000,
+        total_turnover: 128960000000,
+        top_gainers: [],
+        top_losers: [],
+        most_active: []
+      });
+
+      return {
+        ...response,
+        process_time: '0.00'
+      } as unknown;
+    }
+
+    // 2. Market Overview (ETF List / Indices)
     if (url.includes('/api/market/v2/etf/list')) {
       // Mocking indices based on limit or sort
       const indices = [
@@ -41,7 +84,17 @@ export const mockApiClient = {
       return createMockResponse(indices) as unknown;
     }
 
-    // 2. Fund Flow
+    // 3. Fund Flow
+    if (matchesMockRoute(url, '/akshare/market/fund-flow/hsgt-summary')) {
+      const flowData = {
+        hgt: { amount: 28.6, change: 5.2 },
+        sgt: { amount: 30.2, change: 8.9 },
+        northTotal: { amount: 58.8, monthly: 1256 },
+        mainForce: { amount: 126.5, percentage: 68 }
+      };
+      return createMockResponse(flowData) as unknown;
+    }
+
     if (url.includes('/api/market/fund-flow')) {
       // Use mockDashboard data or generate consistent structure
       const flowData = {
@@ -53,14 +106,33 @@ export const mockApiClient = {
       return createMockResponse(flowData) as unknown;
     }
 
-    // 3. Industry Flow
+    // 4. Industry Flow
+    if (matchesMockRoute(url, '/v2/market/sector/fund-flow')) {
+      const sectors = mockDashboard.getLeadingSectors().map((sector, index) => ({
+        ...sector,
+        amount: Number((150 - index * 12.5).toFixed(1))
+      }));
+      return createMockResponse(sectors) as unknown;
+    }
+
     if (url.includes('/api/market/industry/flow')) {
       // Use mockDashboard logic
       const sectors = mockDashboard.getLeadingSectors();
       return createMockResponse(sectors) as unknown;
     }
 
-    // 4. Stock Flow Ranking
+    // 5. Stock Flow Ranking
+    if (matchesMockRoute(url, '/akshare/market/fund-flow/big-deal')) {
+      const stocks = [
+        { code: '600519', name: '贵州茅台', amount: 12.5, change: 2.1 },
+        { code: '300750', name: '宁德时代', amount: 8.9, change: 3.5 },
+        { code: '600028', name: '中国石化', amount: -5.2, change: -1.8 },
+        { code: '600036', name: '招商银行', amount: 6.7, change: 1.2 },
+        { code: '000002', name: '万科A', amount: -3.1, change: -0.9 }
+      ];
+      return createMockResponse(stocks) as unknown;
+    }
+
     if (url.includes('/api/monitoring/stock/flow/ranking')) {
       const stocks = [
         { code: '600519', name: '贵州茅台', amount: 12.5, change: 2.1 },
@@ -72,7 +144,7 @@ export const mockApiClient = {
       return createMockResponse(stocks) as unknown;
     }
 
-    // 5. Long Hu Bang (Dragon Tiger List)
+    // 6. Long Hu Bang (Dragon Tiger List)
     if (url.includes('/api/market/long-hu-bang')) {
       const lhb = [
         { code: '000001', name: '平安银行', reason: '日涨幅偏离值达7%', amount: 12000, change_percent: 10.01 },
@@ -81,7 +153,7 @@ export const mockApiClient = {
       return createMockResponse(lhb) as unknown;
     }
 
-    // 6. Block Trading
+    // 7. Block Trading
     if (url.includes('/api/market/v2/block-trading')) {
       const block = [
         { code: '600519', name: '贵州茅台', price: 1800.00, amount: 5000, buyer: '机构专用', seller: '中信证券北京总部' },
@@ -90,7 +162,7 @@ export const mockApiClient = {
       return createMockResponse(block) as unknown;
     }
 
-    // 7. K-Line Data
+    // 8. K-Line Data
     if (url.includes('/api/market/kline')) {
         const symbol = params.symbol || '000001.SH';
         const period = params.period || '1d';
@@ -98,7 +170,7 @@ export const mockApiClient = {
         return createMockResponse(kline.candles) as unknown;
     }
 
-    // 8. Real-time Quote
+    // 9. Real-time Quote
     if (url.includes('/api/market/quote/')) {
         const symbol = url.split('/').pop() || '000001.SH';
         const quote = {
@@ -112,7 +184,7 @@ export const mockApiClient = {
         return createMockResponse(quote) as unknown;
     }
 
-    // 9. Intraday Trend
+    // 10. Intraday Trend
     if (url.includes('/api/market/trend/')) {
         const symbol = url.split('/').pop() || '000001.SH';
         // Use 1m kline as trend data source
@@ -135,7 +207,7 @@ export const mockApiClient = {
         }) as unknown;
     }
 
-    // 10. Technical Indicators
+    // 11. Technical Indicators
     if (url.includes('/api/strategy/v2/indicators')) {
       return createMockResponse([
         { name: 'RSI', value: '65.2', signal: '超买', signalType: 'fall' },
@@ -145,7 +217,7 @@ export const mockApiClient = {
       ]) as unknown;
     }
 
-    // 11. Portfolio Summary & Positions
+    // 12. Portfolio Summary & Positions
     if (url.includes('/api/portfolio/v2/summary')) {
       return createMockResponse({
         total_assets: 1256789,
@@ -160,7 +232,7 @@ export const mockApiClient = {
       }) as unknown;
     }
 
-    // 12. Watchlist Data
+    // 13. Watchlist Data
     if (url.includes('/api/portfolio/v2/watchlist')) {
       return createMockResponse([
         { 
@@ -182,7 +254,7 @@ export const mockApiClient = {
       ]) as unknown;
     }
 
-    // 13. Data Quality Monitoring
+    // 14. Data Quality Monitoring
     if (url.includes('/api/monitoring/v2/data-quality')) {
       return createMockResponse({
         metrics: { integrity: 99.8, accuracy: 99.5, timeliness: 98.2, consistency: 99.1 },

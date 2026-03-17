@@ -50,17 +50,19 @@
 </script>
 
 <style scoped lang="scss">
+    @import '@/styles/artdeco-tokens';
+
     .performance-overview {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 16px;
-        margin-bottom: 24px;
+        gap: var(--artdeco-spacing-4);
+        margin-bottom: var(--artdeco-spacing-6);
 
-        @media (width <= 1200px) {
+        @media (width <= calc(var(--artdeco-spacing-px) * 1200)) {
             grid-template-columns: repeat(2, 1fr);
         }
 
-        @media (width <= 600px) {
+        @media (width <= calc(var(--artdeco-spacing-px) * 600)) {
             grid-template-columns: 1fr;
         }
     }

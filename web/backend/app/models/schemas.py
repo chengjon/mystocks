@@ -7,7 +7,7 @@
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class IndustryInfo(BaseModel):
@@ -66,8 +66,8 @@ class IndustryListResponse(BaseModel):
     data: Dict[str, Any] = Field(..., description="响应数据")
     timestamp: str = Field(..., description="响应时间戳")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "success": True,
                 "data": {
@@ -94,6 +94,7 @@ class IndustryListResponse(BaseModel):
                 "timestamp": "2025-11-17T10:30:00",
             }
         }
+    )
 
 
 class ConceptListResponse(BaseModel):
@@ -103,8 +104,8 @@ class ConceptListResponse(BaseModel):
     data: Dict[str, Any] = Field(..., description="响应数据")
     timestamp: str = Field(..., description="响应时间戳")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "success": True,
                 "data": {
@@ -131,6 +132,7 @@ class ConceptListResponse(BaseModel):
                 "timestamp": "2025-11-17T10:30:00",
             }
         }
+    )
 
 
 class StockListResponse(BaseModel):
@@ -140,8 +142,8 @@ class StockListResponse(BaseModel):
     data: Dict[str, Any] = Field(..., description="响应数据")
     timestamp: str = Field(..., description="响应时间戳")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "success": True,
                 "data": {
@@ -161,6 +163,7 @@ class StockListResponse(BaseModel):
                 "timestamp": "2025-11-17T10:30:00",
             }
         }
+    )
 
 
 class IndustryPerformanceResponse(BaseModel):
@@ -170,8 +173,8 @@ class IndustryPerformanceResponse(BaseModel):
     data: Dict[str, Any] = Field(..., description="响应数据")
     timestamp: str = Field(..., description="响应时间戳")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "success": True,
                 "data": {
@@ -209,6 +212,7 @@ class IndustryPerformanceResponse(BaseModel):
                 "timestamp": "2025-11-17T10:30:00",
             }
         }
+    )
 
 
 class APIResponse(BaseModel):

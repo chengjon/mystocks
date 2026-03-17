@@ -390,7 +390,7 @@ def log_security_event(event_type: str, user_id: str, details: dict = None):
     )
 
 # 使用示例
-log_security_event("failed_login", user_id="user123", details={"ip_address": "192.168.1.100"})
+log_security_event("failed_login", user_id="user123", details={"ip_address": "example.local"})
 ```
 
 ### 10.2 访问日志记录

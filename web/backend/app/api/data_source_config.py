@@ -28,6 +28,7 @@ Contract Version: 1.0
 import logging
 from typing import Optional
 
+from config.data_sources_loader import YAML_DATA_SOURCES_REGISTRY_PATH
 from fastapi import APIRouter, Depends, Query, Request, Header, HTTPException
 
 # 导入统一响应格式
@@ -73,7 +74,7 @@ def get_config_manager():
     """获取ConfigManager实例"""
     from src.core.data_source.config_manager import ConfigManager
 
-    yaml_config_path = "config/data_sources_registry.yaml"
+    yaml_config_path = YAML_DATA_SOURCES_REGISTRY_PATH
 
     postgresql_access = None
     try:

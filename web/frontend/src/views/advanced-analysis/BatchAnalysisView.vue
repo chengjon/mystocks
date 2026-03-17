@@ -73,10 +73,13 @@
         () => Object.values(results.value).filter((result) => result.success).length
     )
 
+    const hasOverallScore = (result: AnalysisResult): result is AnalysisResult & { data: { overall_score: number } } =>
+        result.success && typeof result.data?.overall_score === 'number'
+
     const avgScore = computed(() => {
         const scores = Object.values(results.value)
-            .filter((result) => result.success && result.data?.overall_score)
-            .map((result) => result.data!.overall_score!)
+            .filter(hasOverallScore)
+            .map((result) => result.data.overall_score)
 
         if (scores.length === 0) return 'N/A'
         return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)

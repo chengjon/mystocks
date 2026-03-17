@@ -8,7 +8,7 @@
  * Date: 2026-01-09
  */
 
-import { ref, computed } from 'vue'
+import { ref, computed, type ComputedRef } from 'vue'
 
 const API_BASE = '/api'
 
@@ -301,7 +301,11 @@ class RealtimeMarketService {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, new Set())
     }
-    this.listeners.get(event)!.add(callback)
+
+    const eventListeners = this.listeners.get(event)
+    if (eventListeners) {
+      eventListeners.add(callback)
+    }
   }
 
   off(event: string, callback: (data: unknown) => void): void {
@@ -339,7 +343,32 @@ class RealtimeMarketService {
 
 export const realtimeMarketService = new RealtimeMarketService()
 
-export function useRealtimeMarket() {
+export interface RealtimeMarketBindings {
+  service: RealtimeMarketService
+  connectionStatus: RealtimeMarketService['connectionStatus']
+  lastSnapshot: RealtimeMarketService['lastSnapshot']
+  lastPrice: RealtimeMarketService['lastPrice']
+  isConnected: ComputedRef<boolean>
+  getQuote: RealtimeMarketService['getQuote']
+  getQuotes: RealtimeMarketService['getQuotes']
+  getPortfolioMTM: RealtimeMarketService['getPortfolioMTM']
+  getPositionMTM: RealtimeMarketService['getPositionMTM']
+  getMTMStats: RealtimeMarketService['getMTMStats']
+  connectWebSocket: RealtimeMarketService['connectWebSocket']
+  disconnect: RealtimeMarketService['disconnect']
+  subscribe: RealtimeMarketService['subscribe']
+  unsubscribe: RealtimeMarketService['unsubscribe']
+  registerPosition: RealtimeMarketService['registerPosition']
+  updatePrice: RealtimeMarketService['updatePrice']
+  requestSnapshot: RealtimeMarketService['requestSnapshot']
+  ping: RealtimeMarketService['ping']
+  on: RealtimeMarketService['on']
+  off: RealtimeMarketService['off']
+  getLastPrice: RealtimeMarketService['getLastPrice']
+  getPriceChange: RealtimeMarketService['getPriceChange']
+}
+
+export function useRealtimeMarket(): RealtimeMarketBindings {
   const service = realtimeMarketService
 
   return {

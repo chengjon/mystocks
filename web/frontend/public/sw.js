@@ -123,12 +123,17 @@ self.addEventListener('fetch', (event) => {
   )
 })
 
+function shouldCacheApiRequest(request) {
+  const url = new URL(request.url)
+  return API_CACHE_PATTERNS.some((pattern) => pattern.test(url.pathname))
+}
+
 // Handle API requests (Network First)
 async function handleApiRequest(request) {
   try {
     // Try network first
     const networkResponse = await fetch(request)
-    if (networkResponse.ok) {
+    if (networkResponse.ok && shouldCacheApiRequest(request)) {
       // Cache successful responses
       const cache = await caches.open(API_CACHE_NAME)
       cache.put(request, networkResponse.clone())
@@ -400,12 +405,18 @@ function isStaticAsset(request) {
 
 async function doBackgroundSync() {
   console.log('🔄 Performing background sync...')
-
-  // Get pending requests from IndexedDB or similar
-  // For now, this is a placeholder for future implementation
-  // This would typically sync failed API requests
-
+  await syncQueue.processQueue()
   console.log('✅ Background sync completed')
+}
+
+async function syncMarketData() {
+  console.log('📈 Syncing market data queue...')
+  await syncQueue.processQueue()
+}
+
+async function syncUserPreferences() {
+  console.log('⚙️ Syncing user preferences queue...')
+  await syncQueue.processQueue()
 }
 
 // Enhanced cache versioning and cleanup system
@@ -457,7 +468,7 @@ class CacheManager {
                 }
               }
             }
-          } catch (error) {
+          } catch (_error) {
             // If we can't check the entry, consider it for removal if over limit
             expiredEntries.push(request)
           }
@@ -527,7 +538,7 @@ class CacheManager {
             totalSize += 1024 // Rough estimate for responses without size header
           }
         }
-      } catch (error) {
+      } catch (_error) {
         totalSize += 512 // Fallback estimate
       }
     }
