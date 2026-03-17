@@ -242,11 +242,11 @@ jobs:
 
     - name: Validate performance test suite
       run: |
-        python scripts/tools/performance_test_suite.py --baseline || true
+        python scripts/dev/tools/performance_test_suite.py --baseline || true
 
     - name: Run basic performance validation
       run: |
-        python scripts/tools/performance_test_suite.py --load-test --users 5 --run-time 10s || true
+        python scripts/dev/tools/performance_test_suite.py --load-test --users 5 --run-time 10s || true
 
     - name: Upload performance validation results
       uses: actions/upload-artifact@v4

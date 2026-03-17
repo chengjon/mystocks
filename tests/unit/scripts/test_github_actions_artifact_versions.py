@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import yaml
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 WORKFLOW_ROOT = PROJECT_ROOT / ".github" / "workflows"
@@ -84,3 +86,24 @@ def test_security_enhancement_workflow_does_not_reference_missing_helper_scripts
     assert "scripts/generate_security_report.py" not in content
     assert "scripts/check_security_thresholds.py" not in content
     assert "../bandit-report.json" not in content
+
+
+def test_ci_cd_workflow_uses_existing_performance_suite_script() -> None:
+    workflow = WORKFLOW_ROOT / "ci-cd.yml"
+    content = workflow.read_text(encoding="utf-8", errors="ignore")
+
+    assert "scripts/tools/performance_test_suite.py" not in content
+    assert "scripts/dev/tools/performance_test_suite.py" in content
+
+
+def test_quant_strategy_validation_workflow_uses_existing_strategy_validation_script() -> None:
+    workflow = WORKFLOW_ROOT / "quant-strategy-validation.yml"
+    content = workflow.read_text(encoding="utf-8", errors="ignore")
+
+    assert "scripts/ci/quant_strategy_validation.py" not in content
+    assert "scripts/dev/ci/quant_strategy_validation.py" in content
+
+
+def test_quant_strategy_validation_workflow_is_valid_yaml() -> None:
+    workflow = WORKFLOW_ROOT / "quant-strategy-validation.yml"
+    yaml.safe_load(workflow.read_text(encoding="utf-8", errors="ignore"))

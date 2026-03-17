@@ -88,8 +88,8 @@ jobs:
         export PYTHONPATH="${PYTHONPATH}:$(pwd)/src"
 
         # 运行验证脚本
-        chmod +x scripts/ci/quant_strategy_validation.py
-        python scripts/ci/quant_strategy_validation.py
+        chmod +x scripts/dev/ci/quant_strategy_validation.py
+        python scripts/dev/ci/quant_strategy_validation.py
 
       env:
         VALIDATION_TYPE: ${{ matrix.validation_type }}
@@ -362,27 +362,30 @@ jobs:
         echo "🚨 发现策略验证失败，创建问题跟踪..."
 
         # 创建详细的问题报告
-        ISSUE_BODY="## 🚨 量化策略验证失败
+        ISSUE_BODY=$(cat <<EOF
+        ## 🚨 量化策略验证失败
 
-**验证时间**: $(date '+%Y-%m-%d %H:%M:%S')
-**Commit**: ${{ github.sha }}
-**分支**: ${{ github.ref }}
+        **验证时间**: $(date '+%Y-%m-%d %H:%M:%S')
+        **Commit**: ${{ github.sha }}
+        **分支**: ${{ github.ref }}
 
-### 失败详情
+        ### 失败详情
 
-$(cat $GITHUB_STEP_SUMMARY | grep -A 20 "### 🔍 验证阶段结果")
+        $(cat "$GITHUB_STEP_SUMMARY" | grep -A 20 "### 🔍 验证阶段结果")
 
-### 建议措施
+        ### 建议措施
 
-1. 检查失败的验证项目
-2. 查看详细的验证日志
-3. 修复相关问题后重新提交
+        1. 检查失败的验证项目
+        2. 查看详细的验证日志
+        3. 修复相关问题后重新提交
 
-### 相关文件
-- 验证结果: strategy-validation-*.zip
-- 详细日志: 查看Actions运行日志
+        ### 相关文件
+        - 验证结果: strategy-validation-*.zip
+        - 详细日志: 查看Actions运行日志
 
-/cc @quant-team"
+        /cc @quant-team
+        EOF
+        )
 
         gh issue create \
           --title "🚨 量化策略验证失败 - $(date +%Y%m%d)" \
