@@ -7,13 +7,15 @@
 import os
 import subprocess
 import sys
+from pathlib import Path
 
 # 设置项目根目录的Python路径
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, project_root)
+backend_dir = Path(__file__).resolve().parent
+project_root = backend_dir.parent.parent
+sys.path.insert(0, str(project_root))
 
 # 设置环境变量
-os.environ["PYTHONPATH"] = project_root
+os.environ["PYTHONPATH"] = str(project_root)
 
 # 启动命令
 backend_port = os.environ.get("BACKEND_PORT")
@@ -33,7 +35,6 @@ cmd = [
 ]
 
 # 切换到后端目录
-backend_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(backend_dir)
 
 print("🚀 启动 MyStocks Web 后端服务...")
