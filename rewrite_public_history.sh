@@ -9,6 +9,7 @@ REPLACE_FILE="${3:-$REPO_ROOT/filter-repo-replacements.txt}"
 REMOVE_PATHS_FILE="${4:-$REPO_ROOT/filter-repo-remove-paths.txt}"
 TMP_REPLACE_FILE=""
 TMP_GITCONFIG_FILE=""
+SOURCE_ORIGIN_URL=""
 
 usage() {
     cat <<'EOF'
@@ -82,6 +83,7 @@ trap 'rm -f "$TMP_REPLACE_FILE" "$TMP_GITCONFIG_FILE"' EXIT
 
 git config --file "$TMP_GITCONFIG_FILE" --add safe.directory "$SOURCE_REPO"
 git config --file "$TMP_GITCONFIG_FILE" --add safe.directory "$SOURCE_REPO/.git"
+SOURCE_ORIGIN_URL="$(GIT_CONFIG_GLOBAL="$TMP_GITCONFIG_FILE" git -C "$SOURCE_REPO" config --get remote.origin.url || true)"
 
 sed \
     -e "s|__OLD_PROVIDER_API_KEY__|$OLD_PROVIDER_API_KEY|g" \
@@ -95,6 +97,9 @@ sed \
 
 echo "[1/4] Creating mirror clone: $TARGET_REPO"
 GIT_CONFIG_GLOBAL="$TMP_GITCONFIG_FILE" git clone --mirror "$SOURCE_REPO" "$TARGET_REPO"
+if [[ -n "$SOURCE_ORIGIN_URL" ]]; then
+    git -C "$TARGET_REPO" remote set-url origin "$SOURCE_ORIGIN_URL"
+fi
 
 echo "[2/4] Rewriting history"
 git -C "$TARGET_REPO" filter-repo \
