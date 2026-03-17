@@ -75,24 +75,5 @@ jobs:
         if: always()
         run: |
           if [ -f governance/mainline/reports/mainline-governance-report.json ]; then
-            python - <<'PY'
-            import json
-            import os
-            from pathlib import Path
-
-            report = json.loads(Path("governance/mainline/reports/mainline-governance-report.json").read_text(encoding="utf-8"))
-            summary_path = Path(os.environ["GITHUB_STEP_SUMMARY"])
-
-            summary_path.write_text("\n".join([
-                "# Mainline Governance Report",
-                "",
-                f"- pass: `{report.get('pass')}`",
-                f"- changed_files: `{len(report.get('changed_files', []))}`",
-                f"- drift_rate_percent: `{report.get('drift_rate_percent', 'N/A')}`",
-                f"- drift_threshold_percent: `{report.get('drift_threshold_percent', 'N/A')}`",
-                f"- secondary_type: `{report.get('secondary_type', 'N/A')}`",
-                f"- secondary_ratio_percent: `{report.get('secondary_ratio_percent', 'N/A')}`",
-                f"- violations: `{len(report.get('violations', []))}`",
-            ]), encoding="utf-8")
-            PY
+            python -c 'import json, os; from pathlib import Path; report = json.loads(Path("governance/mainline/reports/mainline-governance-report.json").read_text(encoding="utf-8")); summary_path = Path(os.environ["GITHUB_STEP_SUMMARY"]); lines = ["# Mainline Governance Report", "", "- pass: {}".format(report.get("pass")), "- changed_files: {}".format(len(report.get("changed_files", []))), "- drift_rate_percent: {}".format(report.get("drift_rate_percent", "N/A")), "- drift_threshold_percent: {}".format(report.get("drift_threshold_percent", "N/A")), "- secondary_type: {}".format(report.get("secondary_type", "N/A")), "- secondary_ratio_percent: {}".format(report.get("secondary_ratio_percent", "N/A")), "- violations: {}".format(len(report.get("violations", [])))]; summary_path.write_text("\n".join(lines), encoding="utf-8")'
           fi
