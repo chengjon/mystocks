@@ -1,24 +1,48 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
-import { apiClient } from '@/api/apiClient';
-import { buildConceptRequest, extractConceptRows, type ConceptRow } from './marketConceptData';
+import { computed, onMounted, ref } from 'vue'
+import { marketService } from '@/api/services/marketService'
+import { extractConceptFlowRows } from './marketConceptContract'
+import { summarizeConceptRows, toConceptRows, type ConceptRow } from './marketConceptViewModel'
 
-const { loading, lastRequestId, exec } = useArtDecoApi();
-const concepts = ref<ConceptRow[]>([]);
+const loading = ref(false)
+const lastRequestId = ref('')
+const errorMessage = ref('')
+const concepts = ref<ConceptRow[]>([])
+
+const summary = computed(() => summarizeConceptRows(concepts.value))
 
 const fetchConcepts = async () => {
-  const request = buildConceptRequest()
-  const data = await exec(() => apiClient.get(request.path, { params: request.params }), {
-    silent: true
-  });
+  loading.value = true
+  errorMessage.value = ''
 
-  concepts.value = extractConceptRows(data)
-};
+  try {
+    const response = await marketService.getConceptFundFlow({
+      timeframe: '今日',
+      limit: 8
+    })
+
+    if (response && typeof response === 'object') {
+      lastRequestId.value = typeof response.request_id === 'string' ? response.request_id : ''
+    }
+
+    if (!response?.success) {
+      errorMessage.value = '概念数据加载失败'
+      concepts.value = []
+      return
+    }
+
+    concepts.value = toConceptRows(extractConceptFlowRows(response))
+  } catch {
+    errorMessage.value = '概念数据加载失败'
+    concepts.value = []
+  } finally {
+    loading.value = false
+  }
+}
 
 onMounted(() => {
-  fetchConcepts();
-});
+  fetchConcepts()
+})
 </script>
 
 <template>
@@ -29,7 +53,18 @@ onMounted(() => {
     </div>
 
     <div class="concept-table-container artdeco-card" v-loading="loading">
+      <div v-if="errorMessage" class="empty-state">
+        <p class="empty-title">{{ errorMessage }}</p>
+        <p class="empty-description">暂无概念资金流向数据</p>
+      </div>
+      <div v-else-if="concepts.length === 0" class="empty-state">
+        <p class="empty-title">暂无概念资金流向数据</p>
+        <p class="empty-description">等待真实概念板块资金流接口返回数据</p>
+      </div>
       <table class="artdeco-table">
+        <caption class="sr-only">
+          概念板块资金流向，活跃概念 {{ summary.activeConcepts }} 个
+        </caption>
         <thead>
           <tr>
             <th>SECTOR NAME</th>
@@ -39,18 +74,18 @@ onMounted(() => {
             <th>TREND</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody v-if="!errorMessage && concepts.length > 0">
           <tr v-for="c in concepts" :key="c.name">
             <td class="concept-name">{{ c.name }}</td>
-            <td :class="['change', c.change_pct >= 0 ? 'rise' : 'down']">
-              {{ c.change_pct >= 0 ? '+' : '' }}{{ c.change_pct }}%
+            <td :class="['change', c.changePct >= 0 ? 'rise' : 'down']">
+              {{ c.changePct >= 0 ? '+' : '' }}{{ c.changePct.toFixed(2) }}%
             </td>
-            <td class="inflow">{{ c.main_inflow }}</td>
+            <td class="inflow">{{ c.mainInflow }}</td>
             <td class="leader">{{ c.leader }}</td>
             <td>
               <div class="mini-chart">
                 <!-- 简易趋势示意图 -->
-                <div class="trend-bar" :style="{ height: `${Math.abs(c.change_pct) * 5}px`, background: c.change_pct >= 0 ? 'var(--artdeco-rise)' : 'var(--artdeco-down)' }"></div>
+                <div class="trend-bar" :style="{ height: `${Math.abs(c.changePct) * 5}px`, background: c.changePct >= 0 ? 'var(--artdeco-rise)' : 'var(--artdeco-down)' }"></div>
               </div>
             </td>
           </tr>
@@ -89,6 +124,22 @@ onMounted(() => {
   background: var(--artdeco-bg-card);
 
   @include artdeco-stepped-corners(10px);
+}
+
+.empty-state {
+  padding: var(--artdeco-spacing-6);
+  text-align: center;
+  color: var(--artdeco-fg-muted);
+}
+
+.empty-title {
+  color: var(--artdeco-gold-light);
+  font-family: var(--artdeco-font-display);
+  margin-bottom: var(--artdeco-spacing-2);
+}
+
+.empty-description {
+  margin: 0;
 }
 
 .artdeco-table {

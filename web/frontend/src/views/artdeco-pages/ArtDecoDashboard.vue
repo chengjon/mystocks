@@ -51,6 +51,7 @@
             <span>REQ: {{ lastRequestId || 'N/A' }}</span>
             <span>TIME: {{ displayProcessTime }}</span>
         </div>
+        <p class="request-meta-note">当前页面仅保留真实生产链路，股票池表现待接入独立持仓/自选接口。</p>
 
         <!-- 市场全景仪表盘 - 增强功能展示 -->
         <div class="market-panorama">
@@ -507,6 +508,13 @@ const {
   color: var(--artdeco-fg-muted);
   font-family: var(--artdeco-font-mono);
   font-size: 12px;
+}
+
+.request-meta-note {
+  margin: 0 0 24px;
+  color: var(--artdeco-fg-muted);
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 .integration-note {

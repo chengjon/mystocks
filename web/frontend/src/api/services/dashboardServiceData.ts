@@ -23,7 +23,14 @@ function extractRows(payload: unknown): Record<string, unknown>[] {
 
   if (unwrapped && typeof unwrapped === "object") {
     const candidate = unwrapped as Record<string, unknown>
-    const collections = [candidate.data, candidate.items, candidate.records, candidate.quotes, candidate.positions]
+    const collections = [
+      candidate.data,
+      candidate.items,
+      candidate.records,
+      candidate.quotes,
+      candidate.positions,
+      candidate.indices,
+    ]
 
     for (const collection of collections) {
       if (Array.isArray(collection)) {
@@ -69,9 +76,9 @@ export function normalizeDashboardMarketOverview(payload: unknown): MarketOvervi
       row.display_name ??
       `指数-${index + 1}`
     ),
-    latest_price: toNumber(row.latest_price ?? row.price),
+    latest_price: toNumber(row.latest_price ?? row.current_price ?? row.price),
     change_percent: toNumber(row.change_percent ?? row.change),
-    volume: toNumber(row.volume ?? row.amount),
+    volume: toNumber(row.volume ?? row.amount ?? row.total_turnover),
   }))
 }
 

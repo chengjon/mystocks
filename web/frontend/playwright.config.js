@@ -13,6 +13,7 @@ const e2eFrontendPort = e2eFrontendPortRaw ? Number.parseInt(e2eFrontendPortRaw,
 const frontendPort = Number.isInteger(e2eFrontendPort) ? e2eFrontendPort : resolvedFrontend.port;
 const baseURL = process.env.FRONTEND_BASE_URL || `http://127.0.0.1:${frontendPort}`;
 const isLinux = process.platform === "linux";
+const chromiumExecutablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
 
 // Ensure helper utilities that read FRONTEND_PORT/FRONTEND_BASE_URL use the same dedicated E2E server.
 process.env.FRONTEND_PORT = String(frontendPort);
@@ -59,7 +60,14 @@ module.exports = defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices["Desktop Chrome"] },
+      use: {
+        ...devices["Desktop Chrome"],
+        launchOptions: chromiumExecutablePath
+          ? {
+              executablePath: chromiumExecutablePath,
+            }
+          : undefined,
+      },
     },
     {
       name: 'firefox',
