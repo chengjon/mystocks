@@ -673,6 +673,7 @@ domains:
       - id: "meta-governance-mainline"
         label: "Mainline Governance And Function-Tree Gate"
         coverage_paths:
+          - ".github/workflows/**"
           - "governance/mainline/**"
           - "governance/function-tree/**"
           - ".github/pull_request_template.md"
@@ -680,12 +681,14 @@ domains:
           - "docs/guides/AI_QUICK_START.md"
         entrypoints:
           governance:
+            - ".github/workflows/**"
             - "governance/mainline/**"
             - "governance/function-tree/**"
             - ".github/pull_request_template.md"
             - "docs/guides/FEATURE_MANAGEMENT_WORKFLOW.md"
             - "docs/guides/AI_QUICK_START.md"
           tests:
+            - "tests/unit/scripts/**"
             - "tests/unit/governance/**"
             - "tests/fixtures/governance/**"
           operations:
