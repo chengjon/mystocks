@@ -35,20 +35,26 @@ function_tree:
 scope:
   allowed_paths:
     - ".github/workflows/**"
+    - "requirements.txt"
+    - "config/requirements.txt"
     - "governance/function-tree/catalog.yaml"
     - "governance/mainline/task-cards/pr-12.yaml"
     - "tests/unit/governance/test_function_tree_catalog.py"
     - "tests/unit/scripts/test_github_actions_artifact_versions.py"
+    - "tests/unit/scripts/test_python_dependency_constraints.py"
   forbidden_paths: []
 
 non_goals:
   - "No backend or frontend business logic changes."
-  - "No broad CI cleanup outside governance summary and directory compliance baseline budget."
+  - "No broad CI cleanup outside workflow unblock and dependency constraint baseline fixes."
 
 acceptance:
   checks:
     - id: "workflow-script-tests"
       command: "PYTHONPATH=. pytest -o addopts='' --no-cov --confcutdir=tests/unit/scripts tests/unit/scripts/test_github_actions_artifact_versions.py -q"
+      required: true
+    - id: "dependency-constraint-tests"
+      command: "PYTHONPATH=. pytest -o addopts='' --no-cov --confcutdir=tests/unit/scripts tests/unit/scripts/test_python_dependency_constraints.py -q"
       required: true
     - id: "catalog-tests"
       command: "PYTHONPATH=. pytest -o addopts='' --no-cov --confcutdir=tests/unit/governance tests/unit/governance/test_function_tree_catalog.py -q"

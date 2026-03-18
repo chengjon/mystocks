@@ -54,6 +54,14 @@ def test_ai_test_optimization_uses_multiline_github_output_for_changed_python_fi
     assert 'echo "files<<EOF"' in content
 
 
+def test_ci_cd_with_type_checking_uses_explicit_installable_type_stubs() -> None:
+    workflow = WORKFLOW_ROOT / "ci-cd-with-type-checking.yml"
+    content = workflow.read_text(encoding="utf-8", errors="ignore")
+
+    assert "pip install mypy types-all" not in content
+    assert "pip install mypy types-requests types-PyYAML" in content
+
+
 def test_ci_cd_workflow_references_existing_test_chain_scripts() -> None:
     workflow = WORKFLOW_ROOT / "ci-cd.yml"
     content = workflow.read_text(encoding="utf-8", errors="ignore")
