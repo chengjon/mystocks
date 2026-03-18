@@ -119,6 +119,34 @@
   - `npx playwright test tests/simple-test.spec.ts tests/env-test.spec.ts tests/ultra-simple.spec.ts tests/playwright-tests/basic-chrome-test.spec.ts --config=playwright.config.ts --reporter=list,html`
     - 结果：`7 passed`
 
+## [WORK] 2026-03-19 PR #11 CI Triage Refresh（Round 4）
+- Scope:
+  - 回看 `MyStocks CI/CD Pipeline` 上一轮日志，确认 `basic-tests` 与 `code-quality` 是否仍属于低成本配置修复
+- Root Cause:
+  - `basic-tests`
+    - workflow 缺少 `pytest-asyncio / pytest-cov / pytest-xdist`
+    - 同时命令继承了全局覆盖率门禁，不符合“basic smoke”定位
+    - `tests/unit/test_data_classification.py` 本身断言锁定了旧枚举契约
+  - `code-quality`
+    - workflow 依赖一个仓库中已不存在的 `requirements-dev.txt`
+- Triage Decision:
+  - `salvage-partially`
+  - 保留两个 job，但把它们拉回当前仓库可运行的最小口径
+- Completed:
+  - `.github/workflows/ci-cd.yml`
+    - `code-quality` 改为显式安装当前实际使用的 Python 工具：
+      - `pytest-asyncio pytest-cov pytest-xdist ruff bandit safety`
+    - `basic-tests` 增加 pytest 插件安装
+    - `basic-tests` 执行命令改为：
+      - `python -m pytest tests/unit/test_data_classification.py -v --tb=short -o addopts='' --no-cov`
+  - `tests/unit/test_data_classification.py`
+    - 更新到当前 `DataClassification` / `DatabaseTarget` 契约
+    - 将分类总数断言更新为当前实现的 `46`
+- Verification:
+  - `.github/workflows/ci-cd.yml` YAML 解析通过
+  - `python -m pytest tests/unit/test_data_classification.py -v --tb=short -o addopts='' --no-cov`
+    - 结果：`4 passed`
+
 ## [WORK] 2026-03-13 ArtDeco Pages Gate-0 + P0-A（dev-artdeco-pages-codex）
 - Scope:
   - 完成 `optimize-artdeco-pages` 的 `Gate-0` 首轮 SSOT 纠偏。
