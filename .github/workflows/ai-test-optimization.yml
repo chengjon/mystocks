@@ -444,6 +444,7 @@ jobs:
         path: .
 
     - name: Comment on PR
+      continue-on-error: true
       uses: actions/github-script@v6
       with:
         script: |
