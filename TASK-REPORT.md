@@ -38,6 +38,57 @@
   - 当前临时克隆未纳入 GitNexus 索引，无法对该克隆直接运行 `detect_changes`；本轮以 `git diff` + 语法校验替代
   - 若后续继续推进 `api-file-tests`，应先重建真实文件级测试框架，再决定是否恢复为阻塞门禁
 
+## [WORK] 2026-03-19 PR #11 CI Triage Refresh（Round 2）
+- Scope:
+  - 基于 `52ef96504` 之后的实际 CI 结果，继续只处理低回归风险、当前仍有净收益的失败项
+  - 目标项：
+    - `api-file-tests`
+    - `api-discovery-test`
+    - `check-compliance`
+- Root Cause:
+  - `api-file-tests`
+    - 失败点不在真实 runner，而在 workflow 覆盖率步骤直接调用 pytest 时仍受全局 `pytest.ini` 影响
+  - `api-discovery-test`
+    - 失败点不在脚本入口，而在 backend 启动前即缺失 `structlog` 等 backend 专属依赖
+    - 同时该 workflow 缺少与现有成功 backend workflow 一致的 `PYTHONPATH` / PostgreSQL / backend port 环境
+  - `check-compliance`
+    - 根因是此前为兼容旧 workflow 临时添加的根目录 `run-api-tests.sh` 包装器增加了 root file 数量
+- Completed:
+  - `tests/api/file_tests/run_file_tests.py`
+    - 修复控制台摘要输出中错误的占位字符串，改为真实 success/coverage/duration 输出
+  - `.github/workflows/api-file-tests.yml`
+    - 覆盖率步骤固定为 `tests/api/file_tests`
+    - 显式 `-q -o addopts=''`，避免再次被全局 pytest 参数污染
+  - `.github/workflows/api-automation-discovery.yml`
+    - backend 依赖安装补充 `web/backend/requirements.txt`
+    - backend 启动环境补齐 `PYTHONPATH`、`POSTGRESQL_USER`、`POSTGRESQL_DATABASE`、`BACKEND_PORT`、`BACKEND_BACKUP_PORT`
+    - uvicorn 启动改为 `app.main:app`
+    - API 自动化脚本调用改为直接执行 `scripts/tests/run-api-tests.sh`
+  - `run-api-tests.sh`
+    - 删除此前新增的根目录包装器，恢复 root file 预算
+  - `scripts/tests/run-api-tests.sh`
+    - Playwright 调用显式指定 `playwright.config.js`，减少 CI 下的配置歧义
+- Verification Evidence:
+  - `pytest -q tests/unit/test_api_file_tests_runner.py --no-cov -o addopts=`
+    - 结果：`3 passed`
+  - `python tests/api/file_tests/run_file_tests.py --report json`
+    - 结果：`49/49 passed`
+  - `python -m pytest tests/api/file_tests -q -o addopts='' --cov=web/backend/app/api --cov-report=xml --cov-report=html`
+    - 结果：`854 passed`
+  - `bash -n scripts/tests/run-api-tests.sh`
+  - `python` + `yaml.safe_load`
+    - `.github/workflows/api-file-tests.yml`
+    - `.github/workflows/api-automation-discovery.yml`
+- Current Triage Position:
+  - 仍视为仓库既有债，不在本轮继续硬救：
+    - `frontend-test`
+    - `frontend-security`
+    - `Security Scan` / `security-report`
+    - `Code Formatting Check`
+    - `Pylint Errors (Critical)`
+    - `Type Checking (Python & TypeScript)`
+    - 大范围 E2E / visual / data-sync 失败
+
 ## [WORK] 2026-03-13 ArtDeco Pages Gate-0 + P0-A（dev-artdeco-pages-codex）
 - Scope:
   - 完成 `optimize-artdeco-pages` 的 `Gate-0` 首轮 SSOT 纠偏。

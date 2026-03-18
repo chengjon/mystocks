@@ -56,6 +56,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install -r web/backend/requirements.txt
         pip install uvicorn
 
     - name: Install Frontend Dependencies
@@ -68,13 +69,18 @@ jobs:
       run: |
         echo "Starting backend with REAL data configuration"
         # 注入必需的数据库配置环境变量
+        export PYTHONPATH="$PWD/web/backend"
+        export POSTGRESQL_USER=postgres
         export POSTGRESQL_PASSWORD=password
+        export POSTGRESQL_DATABASE=mystocks
         export JWT_SECRET_KEY=$(openssl rand -hex 32)
+        export BACKEND_PORT=8000
+        export BACKEND_BACKUP_PORT=8001
         export ADMIN_INITIAL_PASSWORD=admin_pass
         export POSTGRESQL_HOST=localhost
         export POSTGRESQL_PORT=5438
 
-        python -m uvicorn web.backend.app.main:app --host 0.0.0.0 --port 8000 &
+        python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
 
         # Wait for service to be ready
         for i in {1..30}; do
@@ -88,8 +94,7 @@ jobs:
 
     - name: Run API Automation Tests
       run: |
-        chmod +x run-api-tests.sh
-        ./run-api-tests.sh -u http://localhost:8000
+        bash scripts/tests/run-api-tests.sh -u http://localhost:8000
 
     - name: Upload Test Results
       if: always()

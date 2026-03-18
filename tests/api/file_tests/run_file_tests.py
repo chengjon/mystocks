@@ -106,10 +106,10 @@ class FileTestRunnerCLI:
         print(f"Passed Endpoints: {result.passed_endpoints}")
         print(f"Failed Endpoints: {result.failed_endpoints}")
         print()
-        print(".1f")
-        print(".1f")
+        print(f"Overall Success Rate: {result.overall_success_rate:.1f}%")
+        print(f"Overall Coverage Rate: {result.overall_coverage_rate:.1f}%")
         print()
-        print(".2f")
+        print(f"Total Duration: {result.total_duration:.2f}s")
 
         # Show priority breakdown
         print("\n📋 Results by Priority:")
