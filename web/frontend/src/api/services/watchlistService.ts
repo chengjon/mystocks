@@ -1,5 +1,5 @@
-import { apiDelete, apiGet, apiPost } from '@/api/apiClient'
-import type { UnifiedResponse } from '@/api/types/common'
+import { apiDelete, apiGet, apiPost } from '@/api/apiClient.ts'
+import type { UnifiedResponse } from '@/api/types/common.ts'
 
 export const WATCHLIST_MANAGEMENT_API_ROOT = '/v1/monitoring/watchlists'
 

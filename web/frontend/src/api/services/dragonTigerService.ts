@@ -1,5 +1,5 @@
-import { apiClient } from '@/api/apiClient'
-import type { UnifiedResponse } from '@/api/types/common'
+import { apiClient } from '@/api/apiClient.ts'
+import type { UnifiedResponse } from '@/api/types/common.ts'
 
 export const MARKET_DRAGON_TIGER_API_ROOT = '/v1/market/lhb'
 
