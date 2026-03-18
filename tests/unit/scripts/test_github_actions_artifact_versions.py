@@ -104,6 +104,25 @@ def test_e2e_testing_workflow_uses_explicit_pm2_orchestration() -> None:
     assert "pm2 delete all || true" in content
 
 
+def test_code_quality_workflow_downloads_v4_artifacts_to_explicit_paths() -> None:
+    workflow = WORKFLOW_ROOT / "code-quality.yml"
+    content = workflow.read_text(encoding="utf-8", errors="ignore")
+
+    assert "uses: actions/download-artifact@v4" in content
+    assert "path: quality-artifacts/" in content
+    assert "path: quality-reports/" in content
+    assert "path: ci-artifacts/" in content
+
+
+def test_code_quality_final_report_needs_existing_jobs_only() -> None:
+    workflow = WORKFLOW_ROOT / "code-quality.yml"
+    content = workflow.read_text(encoding="utf-8", errors="ignore")
+
+    assert "needs: [security-gate, quality-gate]" not in content
+    assert "needs: [hardcoding-governance, quality-gate]" in content
+    assert "needs.hardcoding-governance.result" in content
+
+
 def test_visual_baseline_update_workflow_uses_pm2_and_job_outputs() -> None:
     workflow = WORKFLOW_ROOT / "visual-baseline-update.yml"
     content = workflow.read_text(encoding="utf-8", errors="ignore")
