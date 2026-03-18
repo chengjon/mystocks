@@ -38,28 +38,38 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          pip install -r requirements.txt
+          pip install -r requirements.txt -r web/backend/requirements.txt
           pip install pydantic openapi-spec-validator
+
+      - name: Configure backend import environment
+        run: |
+          echo "PYTHONPATH=$PWD/web/backend" >> "$GITHUB_ENV"
+          echo "POSTGRESQL_HOST=localhost" >> "$GITHUB_ENV"
+          echo "POSTGRESQL_USER=testuser" >> "$GITHUB_ENV"
+          echo "POSTGRESQL_PASSWORD=testpassword" >> "$GITHUB_ENV"
+          echo "JWT_SECRET_KEY=test_secret_key_for_ci_only" >> "$GITHUB_ENV"
+          echo "BACKEND_PORT=8020" >> "$GITHUB_ENV"
+          echo "BACKEND_BACKUP_PORT=8021" >> "$GITHUB_ENV"
 
       - name: Validate contract models and services
         run: |
           python -c "
           # Test contract model imports
-          from web.backend.app.api.contract.models import ContractVersion, ContractDiff, ContractValidation
-          from web.backend.app.api.contract.schemas import ContractVersionCreate, ContractVersionResponse
+          from app.api.contract.models import ContractVersion, ContractDiff, ContractValidation
+          from app.api.contract.schemas import ContractVersionCreate, ContractVersionResponse
           print('✅ Contract models validation passed')
 
           # Test contract services
-          from web.backend.app.api.contract.services.contract_validator import ContractValidator
-          from web.backend.app.api.contract.services.diff_engine import ContractDiffEngine
+          from app.api.contract.services.contract_validator import ContractValidator
+          from app.api.contract.services.diff_engine import DiffEngine
           print('✅ Contract services validation passed')
           "
 
       - name: Validate OpenAPI generation
         run: |
           python -c "
-          from web.backend.app.api.contract.services.openapi_generator import OpenAPIGenerator
-          from web.backend.app.main import app
+          from app.api.contract.services.openapi_generator import OpenAPIGenerator
+          from app.main import app
           import json
 
           generator = OpenAPIGenerator(title='MyStocks API', version='1.0.0')
@@ -117,7 +127,7 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          pip install -r requirements.txt
+          pip install -r requirements.txt -r web/backend/requirements.txt
 
       - name: Install Node.js dependencies
         working-directory: web/frontend
@@ -177,6 +187,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download generated OpenAPI spec
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: generated-openapi-spec
@@ -190,12 +201,22 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          pip install -r requirements.txt
+          pip install -r requirements.txt -r web/backend/requirements.txt
+
+      - name: Configure backend import environment
+        run: |
+          echo "PYTHONPATH=$PWD/web/backend" >> "$GITHUB_ENV"
+          echo "POSTGRESQL_HOST=localhost" >> "$GITHUB_ENV"
+          echo "POSTGRESQL_USER=testuser" >> "$GITHUB_ENV"
+          echo "POSTGRESQL_PASSWORD=testpassword" >> "$GITHUB_ENV"
+          echo "JWT_SECRET_KEY=test_secret_key_for_ci_only" >> "$GITHUB_ENV"
+          echo "BACKEND_PORT=8020" >> "$GITHUB_ENV"
+          echo "BACKEND_BACKUP_PORT=8021" >> "$GITHUB_ENV"
 
       - name: Detect breaking changes
         run: |
           python -c "
-          from web.backend.app.api.contract.services.diff_engine import ContractDiffEngine
+          from app.api.contract.services.diff_engine import DiffEngine
           import json
           import subprocess
 
@@ -210,7 +231,7 @@ jobs:
 
               # For now, just validate the spec structure
               # TODO: Implement full diff against base branch
-              diff_engine = ContractDiffEngine()
+              diff_engine = DiffEngine()
               print('✅ Breaking change detection framework ready')
 
               # Create a basic report

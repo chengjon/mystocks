@@ -1,0 +1,110 @@
+version: "v0.2"
+
+task:
+  id: "pr-9"
+  title: "restore clean post-rewrite migration slices and stabilize frontend readiness"
+  owner: "main"
+  created_at: "2026-03-18"
+
+mainline:
+  id: "L1-migration-repair"
+  objective: "recover the clean post-rewrite migration branch, stabilize frontend readiness, and unblock its governance and contract checks"
+  milestone_id: "L2-post-rewrite-clean-branch"
+  slice_id: "L3-dashboard-strategy-market-readiness"
+
+classification:
+  task_type: "fix"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "domain-03"
+  node_id: "domain-03-node-01"
+  affected_entrypoints:
+    - "governance"
+    - "api"
+    - "frontend"
+    - "core"
+    - "tests"
+  update_status: "required"
+  secondary_domains:
+    - "domain-01"
+    - "domain-02"
+    - "domain-04"
+    - "domain-05"
+    - "domain-06"
+    - "domain-07"
+    - "domain-08"
+    - "domain-09"
+    - "domain-10"
+  exemption_reason: "post-rewrite migration recovery spans multiple business domains plus governance and CI unblockers in one bounded repair branch"
+
+scope:
+  allowed_paths:
+    - ".github/workflows/api-contract-validation.yml"
+    - ".github/workflows/directory-compliance.yml"
+    - ".github/workflows/mainline-governance.yml"
+    - "TASK-REPORT.md"
+    - "docs/plans/2026-03-17-old-main-migration-shortlist.md"
+    - "governance/mainline/task-cards/pr-9.yaml"
+    - "src/adapters/efinance_adapter/**"
+    - "src/core/**"
+    - "src/data_sources/real/postgresql_relational/**"
+    - "src/governance/risk_management/**"
+    - "src/gpu/**"
+    - "src/monitoring/**"
+    - "src/storage/database/**"
+    - "tests/unit/api/test_dashboard_market_overview.py"
+    - "web/backend/**"
+    - "web/frontend/**"
+  forbidden_paths: []
+
+non_goals:
+  - "No unrelated CI workflow redesign outside contract validation, directory compliance, and governance gate unblockers"
+  - "No new product surface beyond restoring the clean migration branch and its readiness/test stability"
+
+acceptance:
+  checks:
+    - id: "frontend-type-check"
+      command: "./node_modules/.bin/vue-tsc --noEmit --pretty false"
+      required: true
+    - id: "frontend-regression-suite"
+      command: "npm -s run test -- --run src/composables/__tests__/useBackendReadiness.spec.ts src/components/artdeco/business/__tests__/ArtDecoFilterBar.spec.ts tests/unit/Stocks.spec.ts src/api/__tests__/monitoringApi.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoDataManagement.spec.ts tests/unit/dashboard-service.spec.ts tests/unit/data-fund-flow-service.spec.ts tests/unit/market-lhb-service.spec.ts tests/unit/strategy-position-service.spec.ts tests/unit/watchlist-management-service.spec.ts tests/unit/config/dashboard-page-config.spec.ts tests/unit/config/data-concept-page-config.spec.ts tests/unit/config/data-fund-flow-page-config.spec.ts tests/unit/config/market-lhb-page-config.spec.ts tests/unit/config/strategy-pos-page-config.spec.ts tests/unit/config/watchlist-manage-page-config.spec.ts tests/unit/use-strategy.spec.ts"
+      required: true
+    - id: "market-e2e-regression"
+      command: "npx playwright test --config playwright.config.js --project=chromium tests/e2e/market-data.spec.ts tests/e2e/kline-chart.spec.ts tests/e2e/critical/menu-navigation-fixed.spec.ts"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Contract validation workflow may reveal additional missing Python dependencies after the first import blocker is fixed"
+    - "Governance task-card scope may still need refinement if PR scope changes again"
+    - "Directory compliance threshold remains baseline-aware rather than an architectural reduction in root files"
+  rollback_plan: "git revert <merge-commit-sha> for the workflow/task-card fixes if governance or CI regress unexpectedly"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "restore the clean migration branch and unblock readiness, type-safety, and CI governance around it"
+    modified_scope: "migration slice frontend/backend files, focused CI workflows, governance task card, and verification reporting"
+    dependency_changes: "contract validation workflow now installs backend requirements before importing backend contract modules"
+    legacy_logic_impact: "existing routes and readiness gate remain in place, but readiness now tolerates transient abort races and tests wait for the gate explicitly"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the workflow and governance commits if CI gating behavior regresses or PR scope must be re-cut"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-03-18T00:00:00Z"
+    approval_note: "approved"
+    secondary_approved: false
