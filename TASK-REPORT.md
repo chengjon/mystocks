@@ -3110,5 +3110,7 @@
   - 本地 worktree 已 clean
   - 当前 commit：`21f2299dc`
   - 远端分支：`origin/migration/post-rewrite-dashboard-slices-clean-2026-03-17`
+  - Pull Request：`#9`
+  - PR URL：`https://github.com/chengjon/mystocks/pull/9`
 - Push / Commit:
   - `21f2299dc` `fix(frontend): stabilize readiness and type-safe market flows`
