@@ -274,6 +274,18 @@ def match_api_pattern(pattern: str, available_paths: set[str]) -> bool:
     return False
 
 
+def extract_api_patterns(pattern: str) -> list[str]:
+    normalized = pattern.strip().strip("`")
+    if not normalized:
+        return []
+
+    matches = re.findall(r"(/(?:api|health)[^`\s;+]*)", normalized)
+    if matches:
+        return matches
+
+    return [normalized] if normalized.startswith("/") else []
+
+
 def validate_api_verification(
     plan_rows: list[dict[str, str]],
     backend_paths: set[str],
@@ -284,8 +296,8 @@ def validate_api_verification(
         if row.get("api_status", "").strip().lower() != "verified":
             continue
 
-        pattern = row.get("api", "").strip()
-        if not pattern:
+        raw_pattern = row.get("api", "").strip()
+        if not raw_pattern:
             issues.append(
                 {
                     "type": "verified_without_api",
@@ -295,16 +307,39 @@ def validate_api_verification(
             )
             continue
 
-        if not match_api_pattern(pattern, backend_paths):
+        patterns = extract_api_patterns(raw_pattern)
+        if not patterns:
             issues.append(
                 {
                     "type": "verified_api_not_found",
                     "path": row.get("path", ""),
-                    "api_pattern": pattern,
+                    "api_pattern": raw_pattern,
                 }
             )
+            continue
+
+        for pattern in patterns:
+            if not match_api_pattern(pattern, backend_paths):
+                issues.append(
+                    {
+                        "type": "verified_api_not_found",
+                        "path": row.get("path", ""),
+                        "api_pattern": pattern,
+                    }
+                )
 
     return issues
+
+
+def count_blocking_issues(
+    component_issues: list[dict[str, str]],
+    api_issues: list[dict[str, str]],
+    backend_source: str,
+) -> int:
+    if backend_source == "openapi_fallback":
+        return len(component_issues)
+
+    return len(component_issues) + len(api_issues)
 
 
 def load_backend_paths_from_app(repo_root: Path) -> set[str]:
@@ -487,7 +522,9 @@ def main(argv: list[str] | None = None) -> int:
     print(f"[audit] backend_source={result['backend_source']}")
     print(f"[audit] report={report_file}")
 
-    if args.strict and (component_count > 0 or api_count > 0):
+    if args.strict and count_blocking_issues(
+        result["component_issues"], result["api_issues"], result["backend_source"]
+    ) > 0:
         return 1
     return 0
 

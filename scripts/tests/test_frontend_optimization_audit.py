@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from scripts.dev.frontend_optimization_audit import (
+    count_blocking_issues,
     extract_plan_rows,
     extract_router_page_map,
     match_api_pattern,
@@ -75,3 +76,29 @@ def test_validate_api_verification_only_checks_verified_rows() -> None:
 
     issues = validate_api_verification(rows, backend_paths)
     assert issues == []
+
+
+def test_validate_api_verification_supports_compound_api_fields() -> None:
+    rows = [
+        {
+            "path": "/dashboard",
+            "api": "primary-family: /api/v1/market/quotes + /api/v1/trade/positions ; stats-family: /health",
+            "api_status": "verified",
+        }
+    ]
+    backend_paths = {
+        "/api/v1/market/quotes",
+        "/api/v1/trade/positions",
+        "/health",
+    }
+
+    issues = validate_api_verification(rows, backend_paths)
+    assert issues == []
+
+
+def test_count_blocking_issues_ignores_api_misses_for_openapi_fallback() -> None:
+    component_issues = []
+    api_issues = [{"type": "verified_api_not_found", "path": "/dashboard", "api_pattern": "/api/v1/market/quotes"}]
+
+    assert count_blocking_issues(component_issues, api_issues, backend_source="openapi_fallback") == 0
+    assert count_blocking_issues(component_issues, api_issues, backend_source="backend_app") == 1
