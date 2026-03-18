@@ -147,6 +147,27 @@
   - `python -m pytest tests/unit/test_data_classification.py -v --tb=short -o addopts='' --no-cov`
     - 结果：`4 passed`
 
+## [WORK] 2026-03-19 PR #11 CI Triage Refresh（Round 5）
+- Scope:
+  - 基于 `6e90ab5ff` 这轮真实 CI 结果，继续只处理仍明显属于门禁/依赖配置问题的失败项
+- Root Cause:
+  - `basic-tests`
+    - 已不再卡 pytest 插件与旧断言，但在 GitHub runner 上仍通过 `src.core.__init__` 间接导入大量重依赖
+    - 对这类枚举 smoke 来说，这不是合理的测试耦合
+  - `api-discovery-test`
+    - 失败点从 backend 启动迁移到 backend 依赖安装
+    - `web/backend/requirements.txt` 里含 `TA-Lib`，workflow 未预装系统库
+- Completed:
+  - `tests/unit/test_data_classification.py`
+    - 改为直接加载 `src/core/data_classification.py`
+    - 避免被 `src.core.__init__` 的重依赖链拖入 `sqlalchemy` 等与该测试无关的模块
+  - `.github/workflows/api-automation-discovery.yml`
+    - 增加系统依赖安装步骤：`sudo apt-get install -y ta-lib`
+- Verification:
+  - `python -m pytest tests/unit/test_data_classification.py -v --tb=short -o addopts='' --no-cov`
+    - 结果：`4 passed`
+  - `.github/workflows/api-automation-discovery.yml` YAML 解析通过
+
 ## [WORK] 2026-03-13 ArtDeco Pages Gate-0 + P0-A（dev-artdeco-pages-codex）
 - Scope:
   - 完成 `optimize-artdeco-pages` 的 `Gate-0` 首轮 SSOT 纠偏。

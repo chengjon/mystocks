@@ -3,15 +3,18 @@ DataClassification测试文件
 用于测试数据分类枚举功能
 """
 
-import os
-import sys
-
-# 添加项目根目录到Python路径
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
-
+from importlib.util import module_from_spec, spec_from_file_location
+from pathlib import Path
 import unittest
 
-from src.core.data_classification import DatabaseTarget, DataClassification
+MODULE_PATH = Path(__file__).resolve().parents[2] / "src" / "core" / "data_classification.py"
+SPEC = spec_from_file_location("mystocks_data_classification_test_module", MODULE_PATH)
+assert SPEC is not None and SPEC.loader is not None
+MODULE = module_from_spec(SPEC)
+SPEC.loader.exec_module(MODULE)
+
+DatabaseTarget = MODULE.DatabaseTarget
+DataClassification = MODULE.DataClassification
 
 
 class TestDataClassification(unittest.TestCase):
