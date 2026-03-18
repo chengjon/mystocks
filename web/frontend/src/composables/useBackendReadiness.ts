@@ -21,7 +21,21 @@ interface BackendReadinessResult {
   requestId: string
 }
 
-const READINESS_TIMEOUT_MS = 5000
+// Backend readiness can legitimately exceed 5s when optional probes (for example MongoDB)
+// time out before reporting an optional_unavailable state.
+const READINESS_TIMEOUT_MS = 10000
+
+function isAbortLikeError(error: unknown): boolean {
+  if (error instanceof DOMException && error.name === 'AbortError') {
+    return true
+  }
+
+  if (error instanceof Error) {
+    return error.message.toLowerCase().includes('aborted')
+  }
+
+  return false
+}
 
 export function resolveReadinessEndpoint(apiBaseUrl = String(import.meta.env.VITE_API_BASE_URL || '/api')): string {
   const normalizedBase = apiBaseUrl.trim().replace(/\/+$/, '') || '/api'
@@ -36,11 +50,13 @@ export function resolveReadinessEndpoint(apiBaseUrl = String(import.meta.env.VIT
 export async function requestBackendReadiness(
   fetchImpl: typeof fetch = fetch,
   apiBaseUrl?: string,
-  mockModeEnabled = Boolean(import.meta.env.VITE_USE_MOCK_DATA)
+  mockModeEnabled = Boolean(import.meta.env.VITE_USE_MOCK_DATA),
+  remainingRetries = 1
 ): Promise<BackendReadinessResult> {
   const endpoint = resolveReadinessEndpoint(apiBaseUrl)
   const controller = new AbortController()
   const timeoutId = globalThis.setTimeout(() => controller.abort(), READINESS_TIMEOUT_MS)
+  const startedAt = globalThis.performance?.now?.() ?? Date.now()
 
   try {
     const response = await fetchImpl(endpoint, {
@@ -85,6 +101,11 @@ export async function requestBackendReadiness(
       requestId
     }
   } catch (error) {
+    const elapsedMs = (globalThis.performance?.now?.() ?? Date.now()) - startedAt
+    if (remainingRetries > 0 && isAbortLikeError(error) && elapsedMs < READINESS_TIMEOUT_MS) {
+      return requestBackendReadiness(fetchImpl, apiBaseUrl, mockModeEnabled, remainingRetries - 1)
+    }
+
     const failureMessage = error instanceof Error ? error.message : 'readiness probe request failed'
 
     if (mockModeEnabled) {

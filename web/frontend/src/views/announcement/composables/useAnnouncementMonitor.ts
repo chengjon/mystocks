@@ -21,6 +21,16 @@ interface AnnouncementMonitorError {
   message?: string
 }
 
+interface EditingRuleForm {
+  id: number | null
+  rule_name: string
+  stock_codes_str: string
+  keywords_str: string
+  min_importance_level: number
+  notify_enabled: boolean
+  is_active: boolean
+}
+
 export function useAnnouncementMonitor() {
 
 // API base URL
@@ -57,7 +67,7 @@ const pagination = reactive({
 // 规则对话框
 const showRuleDialog = ref(false)
 const ruleFormRef = ref(null)
-const editingRule = ref({
+const editingRule = ref<EditingRuleForm>({
   id: null,
   rule_name: '',
   stock_codes_str: '',

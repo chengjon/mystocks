@@ -7,11 +7,13 @@ import {
     buildDataAnalysisStats,
     extractDataAnalysisIndicators,
     toDataAnalysisResults,
+    type DataAnalysisIndicatorItem,
 } from './dataAnalysisData'
 import {
     extractStockScreenerRows,
     filterStockScreenerRows,
     resolveStocksBasicEndpoint,
+    type StockScreenerRow,
 } from '@/views/stocks/stockScreenerData'
 
 function buildAuthHeaders(): Record<string, string> {
@@ -24,6 +26,25 @@ function buildAuthHeaders(): Record<string, string> {
 }
 
 export function useDataAnalysis() {
+    type DataAnalysisStats = ReturnType<typeof buildDataAnalysisStats>
+    type ScreeningResultRow = ReturnType<typeof toDataAnalysisResults>[number]
+
+    interface ScreeningFiltersState {
+        priceMin?: number
+        priceMax?: number
+        changeMin?: number
+        changeMax?: number
+        volumeMin?: number
+        volumeMax?: number
+        turnoverMin?: number
+        turnoverMax?: number
+        marketCapMin?: number
+        marketCapMax?: number
+        peMin?: number
+        peMax?: number
+        indicators: string[]
+    }
+
     const activeTab = ref('indicators')
     const activeCategory = ref('trend')
     const activeFile = ref('main')
@@ -34,8 +55,8 @@ export function useDataAnalysis() {
     const lastUpdateTime = ref(new Date().toLocaleString('zh-CN'))
 
     const screeningTimes = ref(0)
-    const allStocks = ref([])
-    const stats = ref(
+    const allStocks = ref<StockScreenerRow[]>([])
+    const stats = ref<DataAnalysisStats>(
         buildDataAnalysisStats({
             indicators: [],
             stockUniverseSize: 0,
@@ -53,29 +74,29 @@ export function useDataAnalysis() {
         { key: 'candlestick', label: '形态指标', icon: '🕯️' }
     ]
 
-    const indicators = ref([])
+    const indicators = ref<DataAnalysisIndicatorItem[]>([])
 
     const filteredIndicators = computed(() => {
         return indicators.value.filter(ind => ind.category === activeCategory.value)
     })
 
-    const screeningFilters = ref({
-        priceMin: null,
-        priceMax: null,
-        changeMin: null,
-        changeMax: null,
-        volumeMin: null,
-        volumeMax: null,
-        turnoverMin: null,
-        turnoverMax: null,
-        marketCapMin: null,
-        marketCapMax: null,
-        peMin: null,
-        peMax: null,
+    const screeningFilters = ref<ScreeningFiltersState>({
+        priceMin: undefined,
+        priceMax: undefined,
+        changeMin: undefined,
+        changeMax: undefined,
+        volumeMin: undefined,
+        volumeMax: undefined,
+        turnoverMin: undefined,
+        turnoverMax: undefined,
+        marketCapMin: undefined,
+        marketCapMax: undefined,
+        peMin: undefined,
+        peMax: undefined,
         indicators: []
     })
 
-    const screeningResults = ref([])
+    const screeningResults = ref<ScreeningResultRow[]>([])
 
     const metrics = ref({
         riseCount: 0,
@@ -167,9 +188,9 @@ export function useDataAnalysis() {
 
     const resetFilters = () => {
         screeningFilters.value = {
-            priceMin: null, priceMax: null, changeMin: null, changeMax: null,
-            volumeMin: null, volumeMax: null, turnoverMin: null, turnoverMax: null,
-            marketCapMin: null, marketCapMax: null, peMin: null, peMax: null,
+            priceMin: undefined, priceMax: undefined, changeMin: undefined, changeMax: undefined,
+            volumeMin: undefined, volumeMax: undefined, turnoverMin: undefined, turnoverMax: undefined,
+            marketCapMin: undefined, marketCapMax: undefined, peMin: undefined, peMax: undefined,
             indicators: []
         }
         applyScreening()

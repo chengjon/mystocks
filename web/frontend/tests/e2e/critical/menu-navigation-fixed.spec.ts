@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test"
 const { loadPortEnv, resolveFrontendConfig } = require("../helpers/port-env.js")
+import { waitForAppReady } from "../helpers/readiness"
 
 loadPortEnv(process.cwd())
 
@@ -44,6 +45,20 @@ test.describe("Critical Menu Navigation - Fixed", { tag: "@critical" }, () => {
         return
       }
 
+      if (url.pathname === "/api/health/ready") {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({
+            success: true,
+            message: "系统就绪检查完成",
+            request_id: "e2e-menu-ready",
+            data: { status: "ready" },
+          }),
+        })
+        return
+      }
+
       await route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -52,6 +67,7 @@ test.describe("Critical Menu Navigation - Fixed", { tag: "@critical" }, () => {
     })
 
     await page.goto(`${FRONTEND_BASE_URL}/dashboard`, { waitUntil: "domcontentloaded" })
+    await waitForAppReady(page)
   })
 
   test("navigates to dealing room shell without errors", async ({ page }) => {
@@ -71,6 +87,7 @@ test.describe("Critical Menu Navigation - Fixed", { tag: "@critical" }, () => {
   test("keeps market page usable when a key API fails", async ({ page }) => {
     await page.route("**/api/v1/data/markets/overview", (route) => route.abort("failed"))
     await page.goto(`${FRONTEND_BASE_URL}/market/realtime`, { waitUntil: "domcontentloaded" })
+    await waitForAppReady(page)
     await expect(page.locator(".market-realtime-tab")).toBeVisible()
     await expect(page.locator("h2.section-title")).toContainText("实时行情流")
   })

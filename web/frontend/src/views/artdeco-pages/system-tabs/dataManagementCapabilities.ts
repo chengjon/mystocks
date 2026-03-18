@@ -1,6 +1,6 @@
 import type { NormalizedDataSourceConfigItem } from "./dataManagementData"
 
-interface DataSourceConfigBatchUpdate {
+interface DataSourceConfigBatchUpdate extends Record<string, unknown> {
   operations: Array<{
     action: "update"
     endpoint_name: string

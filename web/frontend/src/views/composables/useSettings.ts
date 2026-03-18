@@ -59,6 +59,25 @@ interface LogSummaryPayload {
   level_counts?: Record<string, number>
 }
 
+interface ConnectionTestPayload {
+  success?: boolean
+  message?: string
+  error?: string
+}
+
+interface LogsPayload {
+  logs?: LogEntry[]
+  total?: number
+}
+
+const extractApiData = <T>(response: unknown): T | undefined => {
+  if (response && typeof response === 'object' && 'data' in response) {
+    return (response as ApiResponseEnvelope<T>).data
+  }
+
+  return response as T
+}
+
 export function useSettings() {
 
 const defaultDbHost =
@@ -182,16 +201,15 @@ const testConnection = async (database: DatabaseInfo): Promise<void> => {
       port: parseInt(database.port)
     })
 
-    const result =
-      (response as ApiResponseEnvelope<Record<string, unknown>>).data ||
-      (response as Record<string, unknown>)
+    const result = extractApiData<ConnectionTestPayload>(response)
+
     if (result && result.success !== false) {
       database.status = 'success'
       database.message = result.message || 'CONNECTION SUCCESSFUL'
       ElMessage.success(`${database.name} CONNECTED`)
     } else {
       database.status = 'error'
-      database.message = result.error || 'CONNECTION FAILED'
+      database.message = result?.error || 'CONNECTION FAILED'
       ElMessage.error(`${database.name} CONNECTION FAILED`)
     }
   } catch (error: unknown) {
@@ -238,15 +256,13 @@ const fetchLogs = async (): Promise<void> => {
     if (selectedCategory.value) params.category = selectedCategory.value
 
     const response = await apiClient.get('/api/system/logs', { params })
-    const data =
-      (response as ApiResponseEnvelope<LogEntry[] | { logs?: LogEntry[]; total?: number }>).data ||
-      response
+    const data = extractApiData<LogEntry[] | LogsPayload>(response)
 
     if (Array.isArray(data)) {
       logs.value = data
       totalLogs.value = data.length
     } else {
-      logs.value = data?.logs || data || []
+      logs.value = data?.logs || []
       totalLogs.value = data?.total || logs.value.length
     }
   } catch (error: unknown) {
@@ -282,7 +298,7 @@ const generateMockLogs = (): LogEntry[] => {
 const fetchLogSummary = async (): Promise<void> => {
   try {
     const response = await apiClient.get('/api/system/logs/summary')
-    const data = (response as ApiResponseEnvelope<LogSummaryPayload>).data || response
+    const data = extractApiData<LogSummaryPayload>(response)
 
     if (typeof data === 'object' && data !== null) {
       const d = data as LogSummaryPayload

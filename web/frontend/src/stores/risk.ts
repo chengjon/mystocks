@@ -6,9 +6,9 @@ import { reactive } from 'vue'
 import { tradingApiManager } from '@/services/TradingApiManager'
 import type {
     RiskMonitorData,
-    AnnouncementMonitorData,
     RiskAlertsData
 } from '@/services/TradingApiManager'
+import type { AnnouncementMonitorData } from '@/services/TradingApiManager.types'
 
 interface RiskState {
     riskMonitor: RiskMonitorData | null

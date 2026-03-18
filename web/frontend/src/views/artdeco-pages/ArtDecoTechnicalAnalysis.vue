@@ -54,15 +54,32 @@ import KLineAnalysis from './analysis-tabs/KLineAnalysis.vue'
 import BacktestAnalysis from './analysis-tabs/BacktestAnalysis.vue'
 import dashboardService from '@/api/services/dashboardService'
 
+interface IndicatorItem {
+  name: string
+  value: string | number
+  signal: string
+  signalType: 'rise' | 'fall' | 'neutral'
+}
+
+interface TrendDataPoint {
+  time: string | number
+  value: number
+}
+
+interface EquityDataPoint {
+  time: string
+  value: number
+}
+
 const activeTab = ref('analysis')
 const tabs = [
   { key: 'analysis', label: '实时分析' },
   { key: 'backtest', label: '回测验证' }
 ]
 
-const indicators = ref<unknown[]>([])
-const trendData = ref<unknown[]>([])
-const equityData = ref<unknown[]>([])
+const indicators = ref<IndicatorItem[]>([])
+const trendData = ref<TrendDataPoint[]>([])
+const equityData = ref<EquityDataPoint[]>([])
 const backtestStats = ref({
   totalReturn: '0%',
   sharpe: '0',
@@ -80,7 +97,7 @@ const handleAnalyze = async (params: { symbol: string, period: string }) => {
       indicators.value = rawIndicators.map(item => ({
         name: item.name,
         value: item.value,
-        signal: item.signal,
+        signal: item.signal ?? '',
         signalType: item.signalType || 'neutral'
       }))
     }
@@ -105,7 +122,10 @@ const handleRunBacktest = async () => {
       maxDrawdown: '-8.5%',
       winRate: '62%'
     }
-    equityData.value = Array.from({length: 50}, (_, i) => ({ time: i, value: 100 + Math.random() * 20 }))
+    equityData.value = Array.from({ length: 50 }, (_, i) => ({
+      time: `${i + 1}`,
+      value: 100 + Math.random() * 20
+    }))
   }, 1000)
 }
 

@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test"
 const { loadPortEnv, resolveFrontendConfig } = require("./helpers/port-env.js")
+import { waitForAppReady } from "./helpers/readiness"
 
 loadPortEnv(process.cwd())
 
@@ -73,6 +74,7 @@ test.describe("K-line Chart E2E", () => {
     })
 
     await page.goto(`${FRONTEND_BASE_URL}/market/technical`, { waitUntil: "domcontentloaded" })
+    await waitForAppReady(page)
   })
 
   test("loads technical page shell", async ({ page }) => {
@@ -101,6 +103,7 @@ test.describe("K-line Chart E2E", () => {
   test("keeps layout stable on mobile viewport", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 })
     await page.reload({ waitUntil: "domcontentloaded" })
+    await waitForAppReady(page)
     await expect(page.locator("main.artdeco-main")).toBeVisible()
     await expect(page.locator(".market-kline-tab")).toBeVisible()
   })
@@ -108,6 +111,7 @@ test.describe("K-line Chart E2E", () => {
   test("keeps layout stable on tablet viewport", async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1024 })
     await page.reload({ waitUntil: "domcontentloaded" })
+    await waitForAppReady(page)
     await expect(page.locator("main.artdeco-main")).toBeVisible()
     await expect(page.locator(".market-kline-tab")).toBeVisible()
   })
@@ -123,6 +127,7 @@ test.describe("K-line Chart E2E", () => {
     page.on("console", onConsole)
 
     await page.reload({ waitUntil: "domcontentloaded" })
+    await waitForAppReady(page)
     await expect(page.locator(".market-kline-tab")).toBeVisible()
     await page.waitForTimeout(400)
     page.off("console", onConsole)
