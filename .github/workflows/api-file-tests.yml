@@ -108,7 +108,7 @@ jobs:
     - name: Generate coverage report
       run: |
         python tests/api/file_tests/run_file_tests.py --report json
-        python -m pytest --cov=web/backend/app/api --cov-report=xml --cov-report=html
+        python -m pytest tests/api/file_tests -o addopts='' --cov=web/backend/app/api --cov-report=xml --cov-report=html
 
     - name: Enforce file test coverage threshold
       run: |
