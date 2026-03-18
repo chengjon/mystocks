@@ -1,0 +1,106 @@
+version: "v0.2"
+
+task:
+  id: "pr-11"
+  title: "promote CI baseline repairs and clean migration slices to main"
+  owner: "main"
+  created_at: "2026-03-18"
+
+mainline:
+  id: "L1-ci-migration-promotion"
+  objective: "merge the CI baseline repair chain and the clean post-rewrite migration recovery set into main with governance coverage intact"
+  milestone_id: "L2-post-rewrite-mainline-stabilization"
+  slice_id: "L3-ci-baseline-plus-clean-migration"
+
+classification:
+  task_type: "fix"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "tests"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "domain-01"
+    - "domain-02"
+    - "domain-03"
+    - "domain-04"
+    - "domain-05"
+    - "domain-06"
+    - "domain-07"
+    - "domain-08"
+    - "domain-09"
+    - "domain-10"
+  exemption_reason: "promotion branch combines governance and CI baseline repairs with already-reviewed clean migration recovery across multiple business domains"
+
+scope:
+  allowed_paths:
+    - ".github/workflows/**"
+    - "TASK-REPORT.md"
+    - "config/requirements.txt"
+    - "docs/plans/2026-03-17-old-main-migration-shortlist.md"
+    - "governance/function-tree/catalog.yaml"
+    - "governance/mainline/task-cards/pr-8.yaml"
+    - "governance/mainline/task-cards/pr-9.yaml"
+    - "governance/mainline/task-cards/pr-11.yaml"
+    - "requirements.txt"
+    - "src/**"
+    - "tests/**"
+    - "web/backend/**"
+    - "web/frontend/**"
+  forbidden_paths: []
+
+non_goals:
+  - "No additional feature development beyond the CI baseline chain and merged clean migration recovery"
+  - "No attempt to reconcile unrelated dirty local main worktree state in this PR"
+
+acceptance:
+  checks:
+    - id: "ci-baseline-guards"
+      command: "PYTHONPATH=. pytest -o addopts='' --no-cov tests/unit/scripts/test_github_actions_artifact_versions.py tests/unit/scripts/test_python_dependency_constraints.py tests/unit/governance/test_function_tree_catalog.py -q"
+      required: true
+    - id: "frontend-type-check"
+      command: "./node_modules/.bin/vue-tsc --noEmit --pretty false"
+      required: true
+    - id: "frontend-regression-suite"
+      command: "npm -s run test -- --run src/composables/__tests__/useBackendReadiness.spec.ts src/components/artdeco/business/__tests__/ArtDecoFilterBar.spec.ts tests/unit/Stocks.spec.ts src/api/__tests__/monitoringApi.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoDataManagement.spec.ts tests/unit/dashboard-service.spec.ts tests/unit/data-fund-flow-service.spec.ts tests/unit/market-lhb-service.spec.ts tests/unit/strategy-position-service.spec.ts tests/unit/watchlist-management-service.spec.ts tests/unit/config/dashboard-page-config.spec.ts tests/unit/config/data-concept-page-config.spec.ts tests/unit/config/data-fund-flow-page-config.spec.ts tests/unit/config/market-lhb-page-config.spec.ts tests/unit/config/strategy-pos-page-config.spec.ts tests/unit/config/watchlist-manage-page-config.spec.ts tests/unit/use-strategy.spec.ts"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "The promotion branch still packages a large CI baseline chain together with the clean migration recovery set"
+    - "Mainline governance and directory compliance gates may expose additional repository-level policy debt after merge"
+    - "The API contract validation workflow now intentionally short-circuits outside contract scope, which should stay aligned with repository expectations"
+  rollback_plan: "revert the merge commit on main if this promotion branch introduces CI or governance regressions"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "promote the repaired CI baseline branch and the clean migration recovery set to main"
+    modified_scope: "workflow definitions, governance task cards, backend recovery files, frontend migration slices, and supporting tests"
+    dependency_changes: "contract validation workflow installs backend-only dependencies and tolerates missing PR comment permissions when generating reports"
+    legacy_logic_impact: "no new product surface is introduced; this consolidates already-validated CI and migration repairs onto main"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the promotion merge if mainline checks regress or if post-rewrite migration fixes need to be re-cut"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-03-18T00:00:00Z"
+    approval_note: "approved"
+    secondary_approved: false
