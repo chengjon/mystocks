@@ -271,6 +271,7 @@ jobs:
         run: |
           cd web/frontend
           npm ci
+          npm install -g pm2
           npm install @playwright/test@1.48.1
           npx playwright install ${{ matrix.browser }} --with-deps
 
@@ -280,16 +281,22 @@ jobs:
 
       - name: Start Services
         run: |
-          # 启动后端服务
-          cd web/backend
+          cat > .env <<'EOF'
+          BACKEND_PORT=8000
+          BACKEND_BACKUP_PORT=8001
+          FRONTEND_PORT=5173
+          FRONTEND_BACKUP_PORT=4173
+          VITE_API_BASE_URL=http://localhost:8000
+          VITE_WS_URL=ws://localhost:8000
+          EOF
+
           export USE_MOCK_DATA=true
           export DATA_SOURCE=mock
-          python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
-
-          # 启动前端开发服务器
-          cd ../../web/frontend
           export VITE_API_BASE_URL=http://localhost:8000
-          npm run dev &
+          export VITE_WS_URL=ws://localhost:8000
+          pm2 delete all || true
+          pm2 start ecosystem.test.config.js
+          pm2 status
 
           echo "Services started - Backend:8000, Frontend:5173"
 
@@ -314,6 +321,11 @@ jobs:
             --trace=on \
             --video=retain-on-failure \
             --screenshot=only-on-failure
+
+      - name: Stop PM2 Services
+        if: always()
+        run: |
+          pm2 delete all || true
 
       - name: Upload E2E Test Results
         uses: actions/upload-artifact@v4

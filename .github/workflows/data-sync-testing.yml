@@ -73,6 +73,7 @@ jobs:
       run: |
         cd web/frontend
         npm ci
+        npm install -g pm2
 
     - name: Set up test databases
       run: |
@@ -125,22 +126,26 @@ jobs:
     - name: Start Services for E2E Tests
       run: |
         echo "🚀 Starting Services for E2E Tests..."
-        # Start backend in background
-        cd web/backend
-        python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &
-        BACKEND_PID=$!
+        cat > .env <<'EOF'
+        BACKEND_PORT=8020
+        BACKEND_BACKUP_PORT=8021
+        FRONTEND_PORT=3020
+        FRONTEND_BACKUP_PORT=3021
+        VITE_API_BASE_URL=http://localhost:8020
+        VITE_WS_URL=ws://localhost:8020
+        EOF
 
-        # Start frontend in background
-        cd ../frontend
-        npm run dev -- --port 3001 --host 0.0.0.0 &
-        FRONTEND_PID=$!
+        export USE_MOCK_DATA=true
+        export DATA_SOURCE=mock
+        export VITE_API_BASE_URL=http://localhost:8020
+        export VITE_WS_URL=ws://localhost:8020
 
-        # Wait for services to be ready
-        sleep 30
+        pm2 delete all || true
+        pm2 start ecosystem.test.config.js
+        pm2 status
 
-        # Store PIDs for cleanup
-        echo $BACKEND_PID > /tmp/backend_pid
-        echo $FRONTEND_PID > /tmp/frontend_pid
+        timeout 60 bash -c 'until curl -f http://localhost:8020/health; do sleep 2; done'
+        timeout 60 bash -c 'until curl -f http://localhost:3020; do sleep 2; done'
 
     - name: Run E2E Data Flow Tests
       run: |
@@ -191,13 +196,7 @@ jobs:
     - name: Cleanup Services
       if: always()
       run: |
-        # Stop background services
-        if [ -f /tmp/backend_pid ]; then
-          kill $(cat /tmp/backend_pid) 2>/dev/null || true
-        fi
-        if [ -f /tmp/frontend_pid ]; then
-          kill $(cat /tmp/frontend_pid) 2>/dev/null || true
-        fi
+        pm2 delete all || true
 
   # Quality Gate Check
   quality-gate:
@@ -207,9 +206,10 @@ jobs:
 
     steps:
     - name: Download Test Results
-      uses: actions/upload-artifact@v4
+      uses: actions/download-artifact@v4
       with:
         name: test-results-${{ github.run_number }}
+        path: test-results/
 
     - name: Quality Gate Check
       run: |

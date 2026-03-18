@@ -81,3 +81,24 @@ def test_ci_cd_workflow_uses_existing_performance_suite_script() -> None:
 
     assert "scripts/tools/performance_test_suite.py" not in content
     assert "scripts/dev/tools/performance_test_suite.py" in content
+
+
+def test_data_sync_testing_workflow_uses_pm2_and_downloads_artifacts() -> None:
+    workflow = WORKFLOW_ROOT / "data-sync-testing.yml"
+    content = workflow.read_text(encoding="utf-8", errors="ignore")
+
+    assert "npm install -g pm2" in content
+    assert "pm2 start ecosystem.test.config.js" in content
+    assert "pm2 status" in content
+    assert "uses: actions/download-artifact@v4" in content
+    assert "uses: actions/upload-artifact@v4" in content
+
+
+def test_e2e_testing_workflow_uses_explicit_pm2_orchestration() -> None:
+    workflow = WORKFLOW_ROOT / "e2e-testing.yml"
+    content = workflow.read_text(encoding="utf-8", errors="ignore")
+
+    assert "npm install -g pm2" in content
+    assert "pm2 start ecosystem.test.config.js" in content
+    assert "pm2 status" in content
+    assert "pm2 delete all || true" in content
