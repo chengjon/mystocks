@@ -68,6 +68,17 @@ def test_catalog_nodes_define_coverage_paths_and_entrypoints() -> None:
             assert node["entrypoints"], f"node {node['id']} must declare entrypoints"
 
 
+def test_meta_governance_mainline_covers_workflows_and_script_regression_tests() -> None:
+    catalog = load_catalog()
+
+    meta_domain = next(domain for domain in catalog["domains"] if domain["id"] == "meta-governance")
+    mainline_node = next(node for node in meta_domain["nodes"] if node["id"] == "meta-governance-mainline")
+
+    assert ".github/workflows/**" in mainline_node["coverage_paths"]
+    assert ".github/workflows/**" in mainline_node["entrypoints"]["governance"]
+    assert "tests/unit/scripts/**" in mainline_node["entrypoints"]["tests"]
+
+
 def test_load_function_tree_catalog_rejects_duplicate_domain_ids(tmp_path: Path) -> None:
     module = load_scope_gate_module()
     catalog = load_catalog()
