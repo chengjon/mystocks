@@ -58,6 +58,19 @@ test.describe("K-line Chart E2E", () => {
       })
     })
 
+    await page.route("**/api/health/ready", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          success: true,
+          message: "system ready",
+          request_id: "e2e-kline-ready",
+          data: { status: "ready" },
+        }),
+      })
+    })
+
     await page.route("**/api/v1/market/kline**", async (route) => {
       await route.fulfill({
         status: 200,
