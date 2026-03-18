@@ -350,6 +350,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: ai-optimization-report
+        path: .
 
     - name: Quality Gate Evaluation
       id: gate
@@ -420,12 +421,14 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: ai-optimization-report
+        path: .
 
     - name: Download test results
       uses: actions/download-artifact@v4
       if: needs.ai-optimization.outputs.optimizer-tests-generated > 0
       with:
         name: generated-tests-results
+        path: .
 
     - name: Comment on PR
       uses: actions/github-script@v6
@@ -535,6 +538,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: ai-optimization-report
+        path: .
 
     - name: Generate Summary
       run: |

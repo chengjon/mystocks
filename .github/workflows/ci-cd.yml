@@ -537,6 +537,8 @@ jobs:
 
     - name: Download all artifacts
       uses: actions/download-artifact@v4
+      with:
+        path: .
 
     - name: Generate CI/CD summary
       run: |
