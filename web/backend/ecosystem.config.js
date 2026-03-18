@@ -1,6 +1,10 @@
 const fs = require("node:fs")
 const path = require("node:path")
 
+const backendRoot = __dirname
+const repoRoot = path.resolve(backendRoot, "..", "..")
+const sourceRepoRoot = path.resolve(repoRoot, "..", "..")
+
 function loadEnvFile(envPath) {
   if (!fs.existsSync(envPath)) return
 
@@ -24,7 +28,11 @@ function loadEnvFile(envPath) {
   }
 }
 
-for (const envPath of [path.join(__dirname, ".env"), path.join(__dirname, "..", "..", ".env")]) {
+for (const envPath of [
+  path.join(backendRoot, ".env"),
+  path.join(repoRoot, ".env"),
+  path.join(sourceRepoRoot, ".env"),
+]) {
   if (typeof process.loadEnvFile === "function") {
     try {
       process.loadEnvFile(envPath)
@@ -53,10 +61,10 @@ module.exports = {
       name: 'mystocks-backend',
       script: 'uvicorn',
       args: `app.main:app --host 0.0.0.0 --port ${backendPort}`,
-      cwd: '/opt/claude/mystocks_spec/web/backend',
+      cwd: backendRoot,
       interpreter: 'python3',
       env: {
-        PYTHONPATH: '/opt/claude/mystocks_spec/web/backend',
+        PYTHONPATH: repoRoot,
         NODE_ENV: 'development',
         BACKEND_PORT: backendPort,
         BACKEND_BACKUP_PORT: backendBackupPort,

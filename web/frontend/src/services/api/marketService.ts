@@ -18,7 +18,7 @@ import type { components } from '@/types/market-data-api/types-1.ts';
 import { API_BASE_URL } from '@/config/runtime-endpoints.ts';
 
 // Extract type aliases for convenience
-type UnifiedResponse<_T> = components['schemas']['UnifiedResponse'];
+type UnifiedResponseBase = components['schemas']['UnifiedResponse'];
 type MarketOverviewData = components['schemas']['MarketOverviewData'];
 type FundFlowData = components['schemas']['FundFlowData'];
 type KlineData = components['schemas']['KlineData'];
@@ -29,7 +29,9 @@ type ChipRaceData = components['schemas']['ChipRaceData'];
 /**
  * API响应类型包装
  */
-type APIResponse<T> = UnifiedResponse<T>;
+type APIResponse<T> = UnifiedResponseBase & {
+  data?: T | null;
+};
 
 /**
  * 配置

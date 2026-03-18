@@ -35,8 +35,10 @@ export function useArtDecoDashboard() {
     const activePoolTab: Ref<string> = ref('watchlist')
     const refreshing: Ref<boolean> = ref(false)
     const trendData: Ref<number[]> = ref([])
-    const activeStrategiesCount: Ref<number> = ref(0)
-    const todayPnLValue: Ref<string> = ref('¥0.00')
+    const activeStrategiesCount: Ref<number | null> = ref(null)
+    const todayPnLValue: Ref<string | null> = ref(null)
+    const lastRequestId: Ref<string> = ref('')
+    const displayProcessTime: Ref<string> = ref('')
     const indicatorList: Ref<IndicatorItem[]> = ref([
         { name: 'RSI', value: '--', trend: 'neutral', signal: '--' },
         { name: 'MACD', value: '--', trend: 'neutral', signal: '--' },
@@ -171,13 +173,33 @@ export function useArtDecoDashboard() {
         error.value.market = ''
 
         try {
+            const rawResponse = await dashboardService.getDashboardMarketOverview(20) as Record<string, unknown> | null
+            if (rawResponse && typeof rawResponse === 'object') {
+                lastRequestId.value = typeof rawResponse.request_id === 'string' ? rawResponse.request_id : lastRequestId.value
+                const processTime = rawResponse.process_time
+                displayProcessTime.value =
+                    typeof processTime === 'string' && processTime.trim().length > 0 ? processTime : displayProcessTime.value
+
+                const payload = rawResponse.data
+                if (payload && typeof payload === 'object') {
+                    const candidate = payload as Record<string, unknown>
+                    marketData.value.stocks = {
+                        up: toNumber(candidate.up_count),
+                        down: toNumber(candidate.down_count)
+                    }
+                    marketData.value.volume = {
+                        amount: `${(toNumber(candidate.total_turnover) / 100000000).toFixed(1)}亿`
+                    }
+                }
+            }
+
             const response = await dashboardService.getMarketOverview(20)
             const marketList = Array.isArray(response?.data)
                 ? response.data
                 : (Array.isArray(response) ? response : [])
 
             const formatIndex = (item: Record<string, unknown>): { index: string; change: string } => ({
-                index: toNumber(item?.latest_price ?? item?.price).toFixed(2),
+                index: toNumber(item?.latest_price ?? item?.current_price ?? item?.price).toFixed(2),
                 change: toNumber(item?.change_percent ?? item?.change).toFixed(2)
             })
 
@@ -287,11 +309,16 @@ export function useArtDecoDashboard() {
         try {
             // 1. 获取策略数
             const stratRes = await dashboardService.getActiveStrategies(1) // mock uid
-            activeStrategiesCount.value = stratRes.data?.length || 0
+            activeStrategiesCount.value = Array.isArray(stratRes.data) && stratRes.data.length > 0
+                ? stratRes.data.length
+                : null
 
             // 2. 获取收益与风险
             const riskRes = await dashboardService.getPositionRisk(1)
-            todayPnLValue.value = `¥${riskRes.data?.totalPnL?.toLocaleString() || '0.00'}`
+            const totalValue = toNumber(riskRes.data?.totalValue)
+            const totalPnL = toNumber(riskRes.data?.totalPnL)
+            todayPnLValue.value =
+                totalValue > 0 || totalPnL !== 0 ? `¥${totalPnL.toLocaleString()}` : null
 
             // 3. 获取系统健康度
             const healthRes = await dashboardService.getSystemHealth()
@@ -383,6 +410,7 @@ export function useArtDecoDashboard() {
     onMounted(() => {
         updateTime()
         timeInterval = setInterval(updateTime, 1000)
+        displayProcessTime.value = 'N/A'
 
         // 获取P0优先级数据
         fetchMarketOverview()
@@ -415,6 +443,8 @@ export function useArtDecoDashboard() {
     trendData,
     activeStrategiesCount,
     todayPnLValue,
+    lastRequestId,
+    displayProcessTime,
     indicatorList,
     systemHealth,
     loading,

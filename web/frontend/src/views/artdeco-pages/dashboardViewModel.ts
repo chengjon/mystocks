@@ -35,7 +35,9 @@ function pickIndex(
   fallbackIndex: number
 ) {
   return (
-    indices.find((item) => matcher(String(item.name ?? ''), String(item.symbol ?? ''))) ??
+    indices.find((item: DashboardMarketOverviewRecord['indices'][number]) =>
+      matcher(String(item.name ?? ''), String(item.symbol ?? ''))
+    ) ??
     indices[fallbackIndex] ??
     null
   )

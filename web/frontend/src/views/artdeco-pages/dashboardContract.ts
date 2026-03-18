@@ -1,6 +1,16 @@
-import type { DashboardMarketOverviewData } from '@/api/services/dashboardService'
+export interface DashboardMarketOverviewIndex {
+  symbol?: string
+  name?: string
+  current_price?: number | string
+  change_percent?: number | string
+}
 
-export type DashboardMarketOverviewRecord = DashboardMarketOverviewData
+export interface DashboardMarketOverviewRecord {
+  indices: DashboardMarketOverviewIndex[]
+  up_count?: number
+  down_count?: number
+  total_turnover?: number
+}
 
 function isDashboardMarketOverviewRecord(value: unknown): value is DashboardMarketOverviewRecord {
   if (!value || typeof value !== 'object') {

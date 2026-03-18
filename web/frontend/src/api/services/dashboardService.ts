@@ -6,7 +6,7 @@
  * 按优先级分为：核心市场数据(P0)、专业交易数据(P1)、技术分析(P2)
  */
 
-import apiClient from '../apiClient.ts'
+import { apiGet } from '../apiClient.ts'
 import {
   normalizeDashboardActiveStrategies,
   normalizeDashboardFundFlow,
@@ -96,6 +96,13 @@ export interface SystemHealthData {
   status: 'good' | 'warning' | 'error'
 }
 
+export const DASHBOARD_REAL_API_ENDPOINTS = Object.freeze({
+  marketOverview: '/dashboard/market-overview',
+  fundFlow: '/akshare/market/fund-flow/hsgt-summary',
+  industryFlow: '/v2/market/sector/fund-flow',
+  stockFlowRanking: '/akshare/market/fund-flow/big-deal'
+})
+
 /**
  * Dashboard API服务
  */
@@ -104,18 +111,17 @@ export const dashboardService = {
   // P0: 核心市场数据
   // ============================================
 
+  async getDashboardMarketOverview(limit = 100): Promise<unknown> {
+    return apiGet(DASHBOARD_REAL_API_ENDPOINTS.marketOverview, { limit })
+  },
+
   /**
    * 获取市场概览数据（主要指数）
    * API: GET /api/v1/market/quotes
    * 用途: 获取上证、深证、创业板等主要指数数据
    */
   async getMarketOverview(limit = 100): Promise<{ data: MarketOverviewData[] }> {
-    const response = await apiClient.get('/v1/market/quotes', {
-      params: {
-        limit,
-        symbols: '000001.SH,399001.SZ,399006.SZ'
-      }
-    })
+    const response = await this.getDashboardMarketOverview(limit)
     return { data: normalizeDashboardMarketOverview(response) }
   },
 
@@ -131,8 +137,8 @@ export const dashboardService = {
       end_date: targetDate
     }
     const [summaryResponse, bigDealResponse] = await Promise.all([
-      apiClient.get('/akshare/market/fund-flow/hsgt-summary', { params }),
-      apiClient.get('/akshare/market/fund-flow/big-deal')
+      apiGet(DASHBOARD_REAL_API_ENDPOINTS.fundFlow, params),
+      apiGet(DASHBOARD_REAL_API_ENDPOINTS.stockFlowRanking)
     ])
     return { data: normalizeDashboardFundFlow(summaryResponse, bigDealResponse) }
   },
@@ -146,18 +152,16 @@ export const dashboardService = {
     sort = 'change_percent',
     limit = 10
   ): Promise<{ data: IndustryFlowData[] }> {
-    const response = await apiClient.get('/v2/market/sector/fund-flow', {
-      params: { sort, limit, sector_type: '行业', timeframe: '今日' }
-    })
+    const response = await apiGet(DASHBOARD_REAL_API_ENDPOINTS.industryFlow, { sort, limit })
     let rows = normalizeDashboardIndustryFlow(response)
 
     if (rows.length === 0) {
-      const fallbackResponse = await apiClient.get('/akshare/market/sector/fund-flow-ranking')
+      const fallbackResponse = await apiGet('/akshare/market/sector/fund-flow-ranking')
       rows = normalizeDashboardIndustryFlow(fallbackResponse)
     }
 
     if (rows.length === 0) {
-      const hotRankingResponse = await apiClient.get('/akshare/market/sector/hot-ranking')
+      const hotRankingResponse = await apiGet('/akshare/market/sector/hot-ranking')
       rows = normalizeDashboardIndustryFlow(hotRankingResponse)
     }
 
@@ -179,8 +183,8 @@ export const dashboardService = {
   ): Promise<{ data: LongHuBangData[] }> {
     const params: Record<string, unknown> = { limit }
     if (date) params.date = date
-    const response = await apiClient.get('/v1/market/lhb', { params })
-    return response.data
+    const response = await apiGet<{ data: LongHuBangData[] }>('/v1/market/lhb', params)
+    return response
   },
 
   /**
@@ -194,8 +198,8 @@ export const dashboardService = {
   ): Promise<{ data: BlockTradingData[] }> {
     const params: Record<string, unknown> = { limit }
     if (date) params.date = date
-    const response = await apiClient.get('/v2/market/blocktrade', { params })
-    return response.data
+    const response = await apiGet<{ data: BlockTradingData[] }>('/v2/market/blocktrade', params)
+    return response
   },
 
   /**
@@ -207,9 +211,7 @@ export const dashboardService = {
     period = '1day',
     limit = 10
   ): Promise<{ data: StockFlowRankingData[] }> {
-    const response = await apiClient.get('/akshare/market/fund-flow/big-deal', {
-      params: { period, limit }
-    })
+    const response = await apiGet(DASHBOARD_REAL_API_ENDPOINTS.stockFlowRanking, { period, limit })
     return { data: normalizeDashboardStockFlowRanking(response) }
   },
 
@@ -222,10 +224,8 @@ export const dashboardService = {
     sort = 'change_percent',
     limit = 20
   ): Promise<{ data: MarketOverviewData[] }> {
-    const response = await apiClient.get('/api/market/v2/etf/list', {
-      params: { sort, limit }
-    })
-    return response.data
+    const response = await apiGet<{ data: MarketOverviewData[] }>('/api/market/v2/etf/list', { sort, limit })
+    return response
   },
 
   // ============================================
@@ -241,13 +241,14 @@ export const dashboardService = {
     symbols: string[],
     indicators: string[]
   ): Promise<{ data: Record<string, TechnicalIndicatorData[]> }> {
-    const response = await apiClient.get('/api/indicators/calculate/batch', {
-      params: {
+    const response = await apiGet<{ data: Record<string, TechnicalIndicatorData[]> }>(
+      '/api/indicators/calculate/batch',
+      {
         symbols: symbols.join(','),
         indicators: indicators.join(',')
       }
-    })
-    return response.data
+    )
+    return response
   },
 
   /**
@@ -256,9 +257,7 @@ export const dashboardService = {
    * 用途: 获取用户持仓的风险指标
    */
   async getPositionRisk(userId: number): Promise<{ data: PositionRiskData }> {
-    const response = await apiClient.get('/v1/trade/positions', {
-      params: { user_id: userId }
-    })
+    const response = await apiGet('/v1/trade/positions', { user_id: userId })
     return { data: normalizeDashboardPositionRisk(response) }
   },
 
@@ -268,9 +267,7 @@ export const dashboardService = {
    * 用途: 获取用户的活跃策略数量
    */
   async getActiveStrategies(userId: number): Promise<{ data: unknown[] }> {
-    const response = await apiClient.get('/v1/strategy/strategies', {
-      params: { user_id: userId, status: 'active' }
-    })
+    const response = await apiGet('/v1/strategy/strategies', { user_id: userId, status: 'active' })
     return {
       data: normalizeDashboardActiveStrategies(response).filter((item) => {
         const status = String(item.status ?? '').toLowerCase()
@@ -285,7 +282,7 @@ export const dashboardService = {
    * 用途: 获取API响应时间、CPU、内存等系统指标
    */
   async getSystemHealth(): Promise<{ data: SystemHealthData[] }> {
-    const response = await apiClient.get('/health')
+    const response = await apiGet('/health')
     return { data: normalizeDashboardSystemHealth(response) }
   },
 

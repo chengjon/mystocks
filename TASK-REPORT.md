@@ -3056,3 +3056,61 @@
 - Files: (none)
 - Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/4e52ecb7-69f2-48ea-80a4-8aa9cc3dc3d8.jsonl`
 
+## [WORK] 2026-03-18 Post-Rewrite Frontend Stabilization（migration/post-rewrite-dashboard-slices-clean-2026-03-17）
+- Scope:
+  - 收敛 clean worktree 迁移分支上的前端类型错误、运行态稳定性与对应测试基线。
+  - 修复 App readiness 与 market 相关 E2E 在真实就绪探针下的竞态问题。
+- Completed:
+  - 前端类型债清零：
+    - `web/frontend/src/components/artdeco/business/ArtDecoFilterBar.vue`
+    - `web/frontend/src/composables/market/useDataAnalysis.ts`
+    - `web/frontend/src/services/api/marketService.ts`
+    - `web/frontend/src/views/Stocks.vue`
+    - `web/frontend/src/views/market/Tdx.vue`
+    - `web/frontend/src/views/Phase4Dashboard.vue`
+    - 以及 dashboard / settings / announcement / technical-analysis / risk store 等相关类型修复
+  - 补齐 clean branch 迁移依赖文件：
+    - `web/frontend/src/composables/useStrategy.backtest.ts`
+    - `web/frontend/src/composables/useStrategy.shared.ts`
+    - `web/frontend/src/types/market.utils.ts`
+    - `web/frontend/src/views/market/composables/useEtf.data.ts`
+  - 修复 `ArtDecoFilterBar` 事件兼容层：
+    - 过滤变更同时发出 `filterChange` 与 legacy `change`
+  - 稳定后端就绪探针：
+    - `web/frontend/src/composables/useBackendReadiness.ts`
+    - readiness timeout 从 `5000ms` 提升到 `10000ms`
+    - 对“明显早于超时阈值的 abort-like 失败”增加一次重试
+  - 新增 / 修复前端测试：
+    - `web/frontend/src/components/artdeco/business/__tests__/ArtDecoFilterBar.spec.ts`
+    - `web/frontend/src/composables/__tests__/useBackendReadiness.spec.ts`
+    - `web/frontend/tests/unit/Stocks.spec.ts`
+    - `web/frontend/src/views/artdeco-pages/system-tabs/__tests__/ArtDecoDataManagement.spec.ts`
+  - 更新 market 相关 Playwright 基线，使其显式等待 App readiness：
+    - `web/frontend/tests/e2e/helpers/readiness.ts`
+    - `web/frontend/tests/e2e/market-data.spec.ts`
+    - `web/frontend/tests/e2e/kline-chart.spec.ts`
+    - `web/frontend/tests/e2e/critical/menu-navigation-fixed.spec.ts`
+- Verification Evidence:
+  - `./node_modules/.bin/vue-tsc --noEmit --pretty false`
+    - 结果：通过，前端类型错误 `0`
+  - `npm -s run test -- --run src/composables/__tests__/useBackendReadiness.spec.ts src/components/artdeco/business/__tests__/ArtDecoFilterBar.spec.ts tests/unit/Stocks.spec.ts src/api/__tests__/monitoringApi.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoDataManagement.spec.ts tests/unit/dashboard-service.spec.ts tests/unit/data-fund-flow-service.spec.ts tests/unit/market-lhb-service.spec.ts tests/unit/strategy-position-service.spec.ts tests/unit/watchlist-management-service.spec.ts tests/unit/config/dashboard-page-config.spec.ts tests/unit/config/data-concept-page-config.spec.ts tests/unit/config/data-fund-flow-page-config.spec.ts tests/unit/config/market-lhb-page-config.spec.ts tests/unit/config/strategy-pos-page-config.spec.ts tests/unit/config/watchlist-manage-page-config.spec.ts tests/unit/use-strategy.spec.ts`
+    - 结果：`17 files passed`, `39 tests passed`
+  - `npx playwright test --config playwright.config.js --project=chromium tests/e2e/market-data.spec.ts`
+    - 结果：`18 passed`
+  - `npx playwright test --config playwright.config.js --project=chromium tests/e2e/kline-chart.spec.ts tests/e2e/critical/menu-navigation-fixed.spec.ts`
+    - 结果：`10 passed`
+  - `pm2 list`
+    - 结果：`mystocks-backend` / `mystocks-frontend` / `mystocks-frontend-static` 均为 `online`
+  - `curl -I http://localhost:3020`
+    - 结果：`HTTP 200`
+  - `curl http://localhost:8020/health/ready`
+    - 结果：`status=ready`，MongoDB 为 `optional_unavailable`
+- Current Status:
+  - clean migration branch 已完成前端收口并推送远端
+  - 本地 worktree 已 clean
+  - 当前 commit：`21f2299dc`
+  - 远端分支：`origin/migration/post-rewrite-dashboard-slices-clean-2026-03-17`
+  - Pull Request：`#9`
+  - PR URL：`https://github.com/chengjon/mystocks/pull/9`
+- Push / Commit:
+  - `21f2299dc` `fix(frontend): stabilize readiness and type-safe market flows`

@@ -54,7 +54,10 @@ describe('ArtDecoDataManagement', () => {
         },
         stubs: {
           ArtDecoCard: { template: '<div><slot name="header" /><slot /></div>' },
-          ArtDecoButton: { template: '<button><slot /></button>' }
+          ArtDecoButton: {
+            emits: ['click'],
+            template: '<button @click="$emit(\'click\')"><slot /></button>'
+          }
         }
       }
     })
@@ -74,16 +77,24 @@ describe('ArtDecoDataManagement', () => {
         },
         stubs: {
           ArtDecoCard: { template: '<div><slot name="header" /><slot /></div>' },
-          ArtDecoButton: { template: '<button @click="$emit(\'click\')"><slot /></button>' }
+          ArtDecoButton: {
+            emits: ['click'],
+            template: '<button @click="$emit(\'click\')"><slot /></button>'
+          }
         }
       }
     })
 
     await flushPromises()
 
-    const buttons = wrapper.findAll('button')
-    await buttons[0].trigger('click')
-    await buttons[2].trigger('click')
+    const toggleButton = wrapper.findAll('button').find((button) => button.text() === '禁用')
+    expect(toggleButton).toBeDefined()
+    await toggleButton!.trigger('click')
+    await flushPromises()
+
+    const saveButton = wrapper.findAll('button').find((button) => button.text() === '保存配置')
+    expect(saveButton).toBeDefined()
+    await saveButton!.trigger('click')
     await flushPromises()
 
     expect(updateDataSourceConfigMock).toHaveBeenCalledWith({

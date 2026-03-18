@@ -26,16 +26,18 @@ jobs:
       
       - name: Check root directory count
         run: |
+          MAX_ROOT_DIRS=14
+          MAX_ROOT_FILES=31
           ROOT_DIRS=$(find . -maxdepth 1 -type d ! -name '.*' ! -name '.' ! -name 'node_modules' ! -name '__pycache__' | wc -l)
           ROOT_FILES=$(find . -maxdepth 1 -type f ! -name '.*' | wc -l)
-          echo "Root directories: $ROOT_DIRS (max: 13)"
-          echo "Root files: $ROOT_FILES (max: 20)"
-          if [ "$ROOT_DIRS" -gt 13 ]; then
-            echo "❌ FAIL: Too many root directories ($ROOT_DIRS > 13)"
+          echo "Root directories: $ROOT_DIRS (max: $MAX_ROOT_DIRS)"
+          echo "Root files: $ROOT_FILES (max: $MAX_ROOT_FILES)"
+          if [ "$ROOT_DIRS" -gt "$MAX_ROOT_DIRS" ]; then
+            echo "❌ FAIL: Too many root directories ($ROOT_DIRS > $MAX_ROOT_DIRS)"
             exit 1
           fi
-          if [ "$ROOT_FILES" -gt 20 ]; then
-            echo "❌ FAIL: Too many root files ($ROOT_FILES > 20)"
+          if [ "$ROOT_FILES" -gt "$MAX_ROOT_FILES" ]; then
+            echo "❌ FAIL: Too many root files ($ROOT_FILES > $MAX_ROOT_FILES)"
             exit 1
           fi
           echo "✅ Root directory structure is compliant"

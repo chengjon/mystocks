@@ -149,6 +149,7 @@ import {
   ArtDecoBadge,
   ArtDecoCard
 } from '@/components/artdeco'
+import { extractStockScreenerRows } from '@/views/stocks/stockScreenerData'
 import { ElPagination } from 'element-plus'
 
 const router = useRouter()
@@ -164,13 +165,6 @@ interface StockRow {
   change_pct?: number;
   volume?: number;
   market?: string;
-}
-
-interface StocksResponse {
-  success?: boolean;
-  data?: StockRow[];
-  total?: number;
-  msg?: string;
 }
 
 const filters = reactive({
@@ -297,12 +291,20 @@ const loadData = async () => {
       params.market = filters.market
     }
 
-    const response = await dataApi.getStocksBasic(params) as StocksResponse
+    const response = await dataApi.getStocksBasic(params)
     if (response.success && response.data) {
-      stocks.value = response.data
-      total.value = response.total || response.data.length
+      const rows = extractStockScreenerRows(response.data)
+      stocks.value = rows.map((row) => ({
+        symbol: row.symbol,
+        name: row.name,
+        price: row.price,
+        change_pct: row.changePercent,
+        volume: row.volume,
+        market: filters.market || undefined
+      }))
+      total.value = rows.length
     } else {
-      throw new Error(response.msg || 'API返回数据格式错误')
+      throw new Error(response.message || 'API返回数据格式错误')
     }
   } catch (error: unknown) {
     console.error('加载数据失败:', error)

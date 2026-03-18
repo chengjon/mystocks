@@ -7,6 +7,7 @@
 
 import { test, expect, request as playwrightRequest, type Page } from "@playwright/test"
 const { loadPortEnv, resolveFrontendConfig, resolveBackendConfig } = require("./helpers/port-env.js")
+import { waitForAppReady } from "./helpers/readiness"
 
 loadPortEnv(process.cwd())
 
@@ -46,6 +47,7 @@ async function seedAuth(page: Page): Promise<void> {
 async function gotoRealtime(page: Page): Promise<void> {
   await page.goto(`${FRONTEND_BASE_URL}${MARKET_ROUTES.root}`, { waitUntil: "domcontentloaded" })
   await page.waitForURL("**/market/realtime", { timeout: 15000 })
+  await waitForAppReady(page)
   await expect(page.locator(".market-realtime-tab")).toBeVisible()
 }
 
@@ -192,17 +194,20 @@ test.describe("Market Data Module - E2E Tests", () => {
     test("should redirect /market to /market/realtime", async ({ page }) => {
       await page.goto(`${FRONTEND_BASE_URL}${MARKET_ROUTES.root}`)
       await page.waitForURL("**/market/realtime")
+      await waitForAppReady(page)
       await expect(page).toHaveURL(/\/market\/realtime/)
     })
 
     test("should open market technical page", async ({ page }) => {
       await page.goto(`${FRONTEND_BASE_URL}${MARKET_ROUTES.technical}`)
+      await waitForAppReady(page)
       await expect(page.locator(".market-kline-tab")).toBeVisible()
       await expect(page.locator("h2.section-title")).toContainText("K-Line Analysis")
     })
 
     test("should open market lhb page", async ({ page }) => {
       await page.goto(`${FRONTEND_BASE_URL}${MARKET_ROUTES.lhb}`)
+      await waitForAppReady(page)
       await expect(page.locator("main.artdeco-main")).toBeVisible()
       await expect(page).toHaveURL(/\/market\/lhb/)
     })
@@ -228,8 +233,10 @@ test.describe("Market Data Module - E2E Tests", () => {
     test("should keep route stable on revisit", async ({ page }) => {
       await gotoRealtime(page)
       await page.goto(`${FRONTEND_BASE_URL}/dashboard`)
+      await waitForAppReady(page)
       await page.goto(`${FRONTEND_BASE_URL}${MARKET_ROUTES.realtime}`)
       await expect(page).toHaveURL(/\/market\/realtime/)
+      await waitForAppReady(page)
       await expect(page.locator(".market-realtime-tab")).toBeVisible()
     })
   })

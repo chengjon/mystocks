@@ -8,7 +8,6 @@ import type {
   ChartData,
   ConfigListResponse,
   ConfigOption,
-  IndicatorConfig,
   KlineApiResponse,
   SelectedIndicator
 } from './useTechnicalAnalysis.types'
@@ -318,8 +317,8 @@ const handleLoadConfig = async (): Promise<void> => {
           }
 
           indicatorService.getConfig(parseInt(selectedConfigId))
-            .then((config: IndicatorConfig): void => {
-              selectedIndicators.value = config.indicators
+            .then((config): void => {
+              selectedIndicators.value = config.indicators as SelectedIndicator[]
               ElMessage.success(`Config "${config.name}" loaded`)
 
               if (chartData.ohlcv) {
