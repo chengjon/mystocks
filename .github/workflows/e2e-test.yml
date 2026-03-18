@@ -8,6 +8,12 @@ on:
   schedule:
     - cron: '0 2 * * *'
 
+env:
+  FRONTEND_PORT: '3020'
+  FRONTEND_BACKUP_PORT: '3021'
+  BACKEND_PORT: '8020'
+  BACKEND_BACKUP_PORT: '8021'
+
 jobs:
   stable-suite:
     if: github.event_name != 'schedule'
