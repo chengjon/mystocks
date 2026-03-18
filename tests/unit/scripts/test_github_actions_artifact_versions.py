@@ -27,7 +27,17 @@ def test_directory_compliance_uses_budgeted_root_file_threshold_variable() -> No
     workflow = WORKFLOW_ROOT / "directory-compliance.yml"
     content = workflow.read_text(encoding="utf-8", errors="ignore")
 
-    assert 'MAX_ROOT_FILES=40' in content
+    assert "MAX_ROOT_FILES=40" in content
     assert 'echo "Root files: $ROOT_FILES (max: $MAX_ROOT_FILES)"' in content
     assert 'if [ "$ROOT_FILES" -gt "$MAX_ROOT_FILES" ]' in content
     assert 'if [ "$ROOT_FILES" -gt 20 ]' not in content
+
+
+def test_ai_test_optimization_uses_multiline_github_output_for_changed_python_files() -> None:
+    workflow = WORKFLOW_ROOT / "ai-test-optimization.yml"
+    content = workflow.read_text(encoding="utf-8", errors="ignore")
+
+    assert 'echo "python-files=$CHANGED_FILES" >> $GITHUB_OUTPUT' not in content
+    assert 'echo "files=$FILES" >> $GITHUB_OUTPUT' not in content
+    assert 'echo "python-files<<EOF"' in content
+    assert 'echo "files<<EOF"' in content

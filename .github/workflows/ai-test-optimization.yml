@@ -64,7 +64,11 @@ jobs:
 
           # 获取变更的Python文件
           CHANGED_FILES=$(git diff --name-only origin/$BASE_BRANCH...HEAD | grep '\.py$' || echo "")
-          echo "python-files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+          {
+            echo "python-files<<EOF"
+            echo "$CHANGED_FILES"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
           # 检查是否有Python文件变更
           if [ -n "$CHANGED_FILES" ]; then
@@ -94,7 +98,11 @@ jobs:
         else
           # Push模式：比较当前提交与上一个提交
           CHANGED_FILES=$(git diff --name-only HEAD~1 | grep '\.py$' || echo "")
-          echo "python-files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+          {
+            echo "python-files<<EOF"
+            echo "$CHANGED_FILES"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
           echo "has-python-changes=$(if [ -n "$CHANGED_FILES" ]; then echo "true"; else echo "false"; fi)" >> $GITHUB_OUTPUT
         fi
 
@@ -171,7 +179,11 @@ jobs:
         esac
 
         echo "scope=$SCOPE" >> $GITHUB_OUTPUT
-        echo "files=$FILES" >> $GITHUB_OUTPUT
+        {
+          echo "files<<EOF"
+          echo "$FILES"
+          echo "EOF"
+        } >> "$GITHUB_OUTPUT"
         echo "Analysis scope: $SCOPE"
         echo "Files to analyze: $FILES"
 
