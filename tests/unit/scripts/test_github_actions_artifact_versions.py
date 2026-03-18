@@ -52,3 +52,24 @@ def test_ai_test_optimization_uses_multiline_github_output_for_changed_python_fi
     assert 'echo "files=$FILES" >> $GITHUB_OUTPUT' not in content
     assert 'echo "python-files<<EOF"' in content
     assert 'echo "files<<EOF"' in content
+
+
+def test_ci_cd_workflow_references_existing_test_chain_scripts() -> None:
+    workflow = WORKFLOW_ROOT / "ci-cd.yml"
+    content = workflow.read_text(encoding="utf-8", errors="ignore")
+
+    assert "ls -la scripts/test-runner/run-orchestration.sh" not in content
+    assert "ls -la scripts/tools/run-performance-suite.sh" not in content
+    assert 'python -c "import sys; sys.path.append(\'.\'); from scripts.tools import ai_test_assistant"' not in content
+
+    assert "scripts/tests/test-runner/run-orchestration.sh" in content
+    assert "scripts/dev/tools/run-performance-suite.sh" in content
+    assert "python -m py_compile scripts/dev/tools/ai_test_assistant.py" in content
+
+
+def test_ci_cd_workflow_uses_existing_performance_suite_script() -> None:
+    workflow = WORKFLOW_ROOT / "ci-cd.yml"
+    content = workflow.read_text(encoding="utf-8", errors="ignore")
+
+    assert "scripts/tools/performance_test_suite.py" not in content
+    assert "scripts/dev/tools/performance_test_suite.py" in content
