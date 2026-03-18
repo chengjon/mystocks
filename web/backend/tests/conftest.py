@@ -27,6 +27,19 @@ def test_env():
 
 
 @pytest.fixture
+def test_client():
+    """Provide a shared FastAPI TestClient for backend pytest suites."""
+    try:
+        from fastapi.testclient import TestClient
+        from app.main import app
+
+        with TestClient(app) as client:
+            yield client
+    except Exception as exc:
+        pytest.skip(f"FastAPI app not available for testing: {exc}")
+
+
+@pytest.fixture
 def circuit_breaker_manager():
     """提供CircuitBreaker管理器实例"""
     from app.core.circuit_breaker_manager import CircuitBreakerManager

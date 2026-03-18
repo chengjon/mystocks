@@ -54,6 +54,7 @@ scope:
     - "web/backend/app/mock/mock_data/_watchlist_data.py"
     - "web/backend/app/services/_watchlist_group_queries.py"
     - "web/backend/app/strategies/_stock_strategies_tail.py"
+    - "web/backend/tests/conftest.py"
   forbidden_paths: []
 
 non_goals:
@@ -68,6 +69,9 @@ acceptance:
     - id: "app-import"
       command: "PYTHONPATH=.:web/backend POSTGRESQL_HOST=localhost POSTGRESQL_PORT=5432 POSTGRESQL_USER=testuser POSTGRESQL_PASSWORD=testpassword POSTGRESQL_DATABASE=testdb JWT_SECRET_KEY=test_secret_key_for_ci_cd_purposes_only BACKEND_PORT=8000 BACKEND_BACKUP_PORT=8001 python -c \"import app.main\""
       required: true
+    - id: "api-compliance-smoke"
+      command: "PYTHONPATH=.:web/backend POSTGRESQL_HOST=localhost POSTGRESQL_PORT=5432 POSTGRESQL_USER=testuser POSTGRESQL_PASSWORD=testpassword POSTGRESQL_DATABASE=testdb JWT_SECRET_KEY=test_secret_key_for_ci_cd_purposes_only BACKEND_PORT=8000 BACKEND_BACKUP_PORT=8001 pytest -o addopts='' web/backend/tests/test_api_compliance.py -q"
+      required: true
 
 risk_and_rollback:
   risks:
@@ -78,7 +82,7 @@ delivery:
   six_line_summary_required: true
   six_line_summary:
     change_purpose: "Restore rewrite-lost helper modules and syntax tails required for backend import stability."
-    modified_scope: "Only the restored src split helpers and backend support files listed in scope.allowed_paths."
+    modified_scope: "Only the restored src split helpers plus the backend test fixture support file listed in scope.allowed_paths."
     dependency_changes: "none"
     legacy_logic_impact: "Restores pre-rewrite helper availability without introducing new behavior."
     rollback_ready: "yes"
