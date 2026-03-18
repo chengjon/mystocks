@@ -157,6 +157,17 @@ def test_code_quality_final_report_needs_existing_jobs_only() -> None:
     assert "needs.hardcoding-governance.result" in content
 
 
+def test_security_enhancement_workflow_does_not_reference_missing_helper_scripts() -> None:
+    workflow = WORKFLOW_ROOT / "security-enhancement.yml"
+    content = workflow.read_text(encoding="utf-8", errors="ignore")
+
+    assert "scripts/check_license_headers.py" not in content
+    assert "scripts/generate_security_report.py" not in content
+    assert "scripts/check_security_thresholds.py" not in content
+    assert "../bandit-report.json" not in content
+    assert "name: code-security-results" in content
+
+
 def test_visual_baseline_update_workflow_uses_pm2_and_job_outputs() -> None:
     workflow = WORKFLOW_ROOT / "visual-baseline-update.yml"
     content = workflow.read_text(encoding="utf-8", errors="ignore")
