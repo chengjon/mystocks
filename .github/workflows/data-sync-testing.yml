@@ -28,6 +28,8 @@ jobs:
         env:
           POSTGRES_PASSWORD: test_password
           POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -81,7 +83,8 @@ jobs:
 
         # Configure PostgreSQL
         export PGPASSWORD=test_password
-        psql -h localhost -U postgres -d test_db -c "CREATE DATABASE IF NOT EXISTS mystocks_test;"
+        psql -h localhost -U postgres -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'mystocks_test'" | grep -q 1 \
+          || psql -h localhost -U postgres -d postgres -c "CREATE DATABASE mystocks_test;"
 
         # Configure TDengine
         # Note: TDengine setup would require additional configuration
@@ -207,9 +210,10 @@ jobs:
 
     steps:
     - name: Download Test Results
-      uses: actions/upload-artifact@v4
+      uses: actions/download-artifact@v4
       with:
         name: test-results-${{ github.run_number }}
+        path: test-results
 
     - name: Quality Gate Check
       run: |
