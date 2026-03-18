@@ -168,6 +168,27 @@
     - 结果：`4 passed`
   - `.github/workflows/api-automation-discovery.yml` YAML 解析通过
 
+## [WORK] 2026-03-19 PR #11 CI Triage Refresh（Round 6）
+- Scope:
+  - 基于 `ab8ae37c2` 这轮真实日志，继续处理 `api-discovery-test`
+- Root Cause:
+  - Ubuntu runner 上 `apt-get install ta-lib` 失败，包名不存在于该镜像源
+  - 但这条 workflow的目标是启动 backend 做 API 自动发现，并不要求在 CI 上具备完整 TA-Lib 计算能力
+- Decision:
+  - `salvage-partially`
+  - 对这条 workflow，优先安装“启动 backend 与跑自动发现脚本所必需”的依赖，而不是强行补齐所有可选技术分析依赖
+- Completed:
+  - `.github/workflows/api-automation-discovery.yml`
+    - 删除不可用的 `apt-get install ta-lib`
+    - 改为过滤 `web/backend/requirements.txt` 中当前对这条 workflow 非必需且易失败的条目：
+      - `TA-Lib`
+      - `xlwings`
+    - 使用过滤后的临时 requirements 文件安装 backend 依赖
+- Verification:
+  - `.github/workflows/api-automation-discovery.yml` YAML 解析通过
+  - 本地验证过滤结果：
+    - `grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>=' web/backend/requirements.txt`
+
 ## [WORK] 2026-03-13 ArtDeco Pages Gate-0 + P0-A（dev-artdeco-pages-codex）
 - Scope:
   - 完成 `optimize-artdeco-pages` 的 `Gate-0` 首轮 SSOT 纠偏。
