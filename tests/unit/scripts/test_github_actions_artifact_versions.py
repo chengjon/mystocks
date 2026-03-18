@@ -155,6 +155,7 @@ def test_code_quality_final_report_needs_existing_jobs_only() -> None:
     assert "needs: [security-gate, quality-gate]" not in content
     assert "needs: [hardcoding-governance, quality-gate]" in content
     assert "needs.hardcoding-governance.result" in content
+    assert "fetch-depth: 0" in content
 
 
 def test_security_enhancement_workflow_does_not_reference_missing_helper_scripts() -> None:
