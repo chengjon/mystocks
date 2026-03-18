@@ -102,3 +102,24 @@ def test_e2e_testing_workflow_uses_explicit_pm2_orchestration() -> None:
     assert "pm2 start ecosystem.test.config.js" in content
     assert "pm2 status" in content
     assert "pm2 delete all || true" in content
+
+
+def test_visual_baseline_update_workflow_uses_pm2_and_job_outputs() -> None:
+    workflow = WORKFLOW_ROOT / "visual-baseline-update.yml"
+    content = workflow.read_text(encoding="utf-8", errors="ignore")
+
+    assert "npm install -g pm2" in content
+    assert "pm2 start ecosystem.test.config.js" in content
+    assert "outputs:\n      has_changes: ${{ steps.changed.outputs.has_changes }}" in content
+    assert "needs.update-baselines.outputs.has_changes" in content
+    assert "pm2 delete all || true" in content
+
+
+def test_visual_testing_workflow_uses_explicit_pm2_orchestration() -> None:
+    workflow = WORKFLOW_ROOT / "visual-testing.yml"
+    content = workflow.read_text(encoding="utf-8", errors="ignore")
+
+    assert "npm install -g pm2" in content
+    assert "pm2 start ecosystem.test.config.js" in content
+    assert "pm2 status" in content
+    assert "pm2 delete all || true" in content
