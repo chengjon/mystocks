@@ -23,6 +23,8 @@ jobs:
   validate-contracts:
     name: Validate API Contracts
     runs-on: ubuntu-latest
+    outputs:
+      contract_scope_changed: ${{ steps.scope.outputs.changed }}
 
     steps:
       - name: Checkout code
@@ -30,23 +32,57 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Detect contract scope changes
+        id: scope
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE_SHA="${{ github.event.before }}"
+          fi
+
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "${{ github.sha }}")
+          else
+            mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+          fi
+
+          changed=false
+          for changed_file in "${changed_files[@]}"; do
+            case "$changed_file" in
+              web/backend/app/api/contract/*|web/backend/app/api/contract/**|scripts/generate_frontend_types.py)
+                changed=true
+                break
+                ;;
+            esac
+          done
+
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+          if [ "$changed" != "true" ]; then
+            echo "No contract-specific changes detected; skipping deep validation."
+          fi
+
       - name: Set up Python
+        if: steps.scope.outputs.changed == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 
       - name: Install system dependencies
+        if: steps.scope.outputs.changed == 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y ta-lib
 
       - name: Install Python dependencies
+        if: steps.scope.outputs.changed == 'true'
         run: |
           pip install -r web/backend/requirements.txt
           pip install pydantic openapi-spec-validator
 
       - name: Configure backend import environment
+        if: steps.scope.outputs.changed == 'true'
         run: |
           echo "PYTHONPATH=$PWD/web/backend" >> "$GITHUB_ENV"
           echo "POSTGRESQL_HOST=localhost" >> "$GITHUB_ENV"
@@ -57,6 +93,7 @@ jobs:
           echo "BACKEND_BACKUP_PORT=8021" >> "$GITHUB_ENV"
 
       - name: Validate contract models and services
+        if: steps.scope.outputs.changed == 'true'
         run: |
           python -c "
           # Test contract model imports
@@ -96,6 +133,7 @@ jobs:
           "
 
       - name: Upload generated OpenAPI spec
+        if: steps.scope.outputs.changed == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: generated-openapi-spec
@@ -106,6 +144,7 @@ jobs:
     name: Generate TypeScript Types
     runs-on: ubuntu-latest
     needs: validate-contracts
+    if: needs.validate-contracts.outputs.contract_scope_changed == 'true'
 
     steps:
       - name: Checkout code
@@ -183,7 +222,7 @@ jobs:
     name: Detect Breaking Changes
     runs-on: ubuntu-latest
     needs: validate-contracts
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && needs.validate-contracts.outputs.contract_scope_changed == 'true'
 
     steps:
       - name: Checkout code
