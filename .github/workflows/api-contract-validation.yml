@@ -108,6 +108,7 @@ jobs:
           "
 
       - name: Validate OpenAPI generation
+        if: steps.scope.outputs.changed == 'true'
         run: |
           python -c "
           from app.api.contract.services.openapi_generator import OpenAPIGenerator
