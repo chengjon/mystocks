@@ -1,7 +1,7 @@
 version: "v0.2"
 
 task:
-  id: "pr-11"
+  id: "pr-12"
   title: "unblock governance summary and directory compliance workflow baseline"
   owner: "JohnC"
   created_at: "2026-03-19"
@@ -37,7 +37,7 @@ scope:
     - ".github/workflows/mainline-governance.yml"
     - ".github/workflows/directory-compliance.yml"
     - "governance/function-tree/catalog.yaml"
-    - "governance/mainline/task-cards/pr-11.yaml"
+    - "governance/mainline/task-cards/pr-12.yaml"
     - "tests/unit/governance/test_function_tree_catalog.py"
     - "tests/unit/scripts/test_github_actions_artifact_versions.py"
   forbidden_paths: []
@@ -55,7 +55,7 @@ acceptance:
       command: "PYTHONPATH=. pytest -o addopts='' --no-cov --confcutdir=tests/unit/governance tests/unit/governance/test_function_tree_catalog.py -q"
       required: true
     - id: "mainline-gate"
-      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-11.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr11-governance-report.json --fail-on-empty-diff"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-12.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr12-governance-report.json --fail-on-empty-diff"
       required: true
 
 risk_and_rollback:
