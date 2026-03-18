@@ -34,7 +34,8 @@ const API_TOKEN = process.env.API_TOKEN || ''; // 默认不提供令牌，由环
 
 
 
-const REPORT_DIR = '/opt/claude/mystocks_spec/docs/reports/test-results';
+const PROJECT_ROOT = path.resolve(__dirname, '../../../../');
+const REPORT_DIR = path.join(PROJECT_ROOT, 'docs', 'reports', 'test-results');
 
 
 

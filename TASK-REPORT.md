@@ -1,5 +1,43 @@
 # TASK REPORT
 
+## [WORK] 2026-03-19 PR #11 CI Triage Refresh（fix/ci-baseline-actions-v6）
+- Scope:
+  - 按 `AGENTS.md` 新增的 `Branch Value Triage Standard` 重新审视 `PR #11`
+  - 只处理“当前仍有净收益”的 CI 漏配/过时工作流门控问题
+  - 不把分支推进误导成仓库历史质量债修复
+- Triage Outcome:
+  - `merge-as-is / current-value fixes`:
+    - `api-automation-discovery` 的入口路径失配
+    - `contract-testing` 对缺失框架与全局 pytest 参数的硬依赖
+  - `superseded / repository debt`:
+    - `frontend-test` 当前失败源于大量既存 ArtDeco token lint 违规，不是本分支新回归
+    - `security-report` 当前失败源于 Bandit 高危既有问题，不应伪装成该分支局部问题
+  - `abandon for this branch`:
+    - `api-file-tests` 当前文件级框架仍是 placeholder/mock 形态，继续硬救收益低于成本
+- Completed:
+  - `contract-testing.yml`
+    - 增加 `contract-framework-readiness` 前置门
+    - 仅在 `src/contract_testing` 存在时执行 matrix job
+    - 测试命令改为 `-o addopts=''`，绕过当前仓库全局 `pytest.ini` 对旧插件参数的强依赖
+    - 补齐 `pytest-html`
+    - PR comment 改为 `continue-on-error`
+  - API 自动化链
+    - 新增根目录包装器 `run-api-tests.sh`
+    - 修正 `scripts/tests/run-api-tests.sh` 的仓库根定位、默认 URL、测试入口和报告路径
+    - 修正 `web/frontend/tests/api-automation/legacy-suite.js` 的报告目录硬编码
+- Verification Evidence:
+  - `python` + `yaml.safe_load` 校验：
+    - `.github/workflows/contract-testing.yml`
+    - `.github/workflows/api-file-tests.yml`
+  - `bash -n run-api-tests.sh`
+  - `bash -n scripts/tests/run-api-tests.sh`
+  - `bash run-api-tests.sh -h`
+  - `node --check web/frontend/tests/api-automation/legacy-suite.js`
+  - `git diff --check`
+- Notes:
+  - 当前临时克隆未纳入 GitNexus 索引，无法对该克隆直接运行 `detect_changes`；本轮以 `git diff` + 语法校验替代
+  - 若后续继续推进 `api-file-tests`，应先重建真实文件级测试框架，再决定是否恢复为阻塞门禁
+
 ## [WORK] 2026-03-13 ArtDeco Pages Gate-0 + P0-A（dev-artdeco-pages-codex）
 - Scope:
   - 完成 `optimize-artdeco-pages` 的 `Gate-0` 首轮 SSOT 纠偏。
