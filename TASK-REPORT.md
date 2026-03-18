@@ -89,6 +89,36 @@
     - `Type Checking (Python & TypeScript)`
     - 大范围 E2E / visual / data-sync 失败
 
+## [WORK] 2026-03-19 PR #11 CI Triage Refresh（Round 3）
+- Scope:
+  - 评估 `Playwright Tests / test` 是否仍有当前业务/工程价值
+- Root Cause:
+  - `.github/workflows/playwright.yml` 直接使用根目录 `playwright.config.ts` 扫描整个 `tests/`
+  - 当前 `tests/` 下混有大量历史失效 Playwright / Vitest /示例文件，导致 workflow 被历史垃圾测试面污染
+  - 失败表现包括：
+    - 缺失历史 `fixtures/api-client`
+    - 多个旧 API spec 的语法错误
+    - Vitest 测试被 Playwright workflow 误执行
+- Triage Decision:
+  - `salvage-partially`
+  - 保留该 workflow 作为“Playwright 基础运行健康检查”，但不再把全仓历史测试残留作为它的执行范围
+- Completed:
+  - `.github/workflows/playwright.yml`
+    - 浏览器安装收敛为 `chromium`
+    - 执行范围收敛为当前可独立成立的 smoke specs：
+      - `tests/simple-test.spec.ts`
+      - `tests/env-test.spec.ts`
+      - `tests/ultra-simple.spec.ts`
+      - `tests/playwright-tests/basic-chrome-test.spec.ts`
+    - 显式使用 `playwright.config.ts`
+    - 报告器改为 `list,html`
+- Verification:
+  - `npm ci`
+  - `.github/workflows/playwright.yml` YAML 解析通过
+  - `npx playwright install --with-deps chromium`
+  - `npx playwright test tests/simple-test.spec.ts tests/env-test.spec.ts tests/ultra-simple.spec.ts tests/playwright-tests/basic-chrome-test.spec.ts --config=playwright.config.ts --reporter=list,html`
+    - 结果：`7 passed`
+
 ## [WORK] 2026-03-13 ArtDeco Pages Gate-0 + P0-A（dev-artdeco-pages-codex）
 - Scope:
   - 完成 `optimize-artdeco-pages` 的 `Gate-0` 首轮 SSOT 纠偏。
