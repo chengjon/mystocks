@@ -38,7 +38,7 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          pip install -r requirements.txt -r web/backend/requirements.txt
+          pip install -r web/backend/requirements.txt
           pip install pydantic openapi-spec-validator
 
       - name: Configure backend import environment
@@ -127,7 +127,7 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          pip install -r requirements.txt -r web/backend/requirements.txt
+          pip install -r web/backend/requirements.txt
 
       - name: Install Node.js dependencies
         working-directory: web/frontend
