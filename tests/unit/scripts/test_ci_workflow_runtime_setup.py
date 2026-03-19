@@ -342,7 +342,19 @@ def test_cicd_monthly_review_uses_job_output_for_report_month() -> None:
     assert "report_month: ${{ steps.report_month.outputs.report_month }}" in workflow
     assert "id: report_month" in workflow
     assert "needs.monthly-review.outputs.report_month" in workflow
+    assert "needs: [archive-historical-data, monthly-review]" in workflow
     assert "format(" not in workflow
+
+
+def test_python_and_security_type_report_comments_use_repo_repo() -> None:
+    python_workflow = _read_workflow("python-type-check.yml")
+    security_workflow = _read_workflow("security-testing.yml")
+
+    assert "repo: context.repo.repo" in python_workflow
+    assert "repo: context.repo.name" not in python_workflow
+
+    assert "repo: context.repo.repo" in security_workflow
+    assert "repo: context.repo.name" not in security_workflow
 
 
 def test_python_and_typescript_type_check_workflows_download_artifacts_into_workspace() -> None:

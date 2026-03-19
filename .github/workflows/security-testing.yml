@@ -393,7 +393,7 @@ print(count)
           github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
-            repo: context.repo.name,
+            repo: context.repo.repo,
             body: '⚠️ 安全质量门禁失败！请修复以下安全问题后再合并：\n- 检查安全扫描报告\n- 修复严重安全问题\n- 更新依赖包\n\n详细信息请查看安全测试报告。'
           })
 
