@@ -1,6 +1,6 @@
+#!/usr/bin/env python3
 from __future__ import annotations
 
-#!/usr/bin/env python3
 """
 # 功能：GPU加速特征计算引擎
 # 作者：MyStocks AI开发团队
@@ -8,8 +8,6 @@ from __future__ import annotations
 # 版本：1.0.0
 # 说明：GPU加速的金融特征计算和技术指标引擎
 """
-
-from __future__ import annotations
 
 import logging
 import time
