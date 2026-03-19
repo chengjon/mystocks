@@ -109,3 +109,11 @@ def test_security_enhancement_pr_comment_is_non_blocking() -> None:
 
     assert "Comment security summary on PR" in workflow
     assert "continue-on-error: true" in workflow
+
+
+def test_ai_test_optimization_uses_repo_repo_for_new_pr_comments() -> None:
+    workflow = _read_workflow("ai-test-optimization.yml")
+
+    assert "await github.rest.issues.createComment" in workflow
+    assert "repo: context.repo.repo" in workflow
+    assert "repo: context.repo.name" not in workflow
