@@ -16,9 +16,6 @@ on:
         type: boolean
         default: false
 
-env:
-  REPORT_MONTH: ${{ github.event.inputs.force_run == 'true' && 'manual' || format('{0}-{1:02d}', github.event.schedule && fromJSON('["' + github.event.schedule + '"]')[0] || github.event.head_commit.timestamp || github.event.repository.updated_at || '2024-01', github.event.schedule && fromJSON('["' + github.event.schedule + '"]')[1] || github.event.head_commit.timestamp && fromJSON('["' + github.event.head_commit.timestamp + '"]')[1] || github.event.repository.updated_at && fromJSON('["' + github.event.repository.updated_at + '"]')[1] || '01') }}
-
 jobs:
   # ============================================================================
   # 月度审查执行
@@ -26,6 +23,8 @@ jobs:
   monthly-review:
     name: Execute Monthly CI/CD Review
     runs-on: ubuntu-latest
+    outputs:
+      report_month: ${{ steps.report_month.outputs.report_month }}
 
     steps:
     - name: Checkout code
@@ -56,12 +55,16 @@ jobs:
         echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
 
     - name: Set report month
+      id: report_month
       run: |
         if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
-          echo "REPORT_MONTH=manual-$(date +%Y-%m)" >> $GITHUB_ENV
+          report_month="manual-$(date +%Y-%m)"
         else
-          echo "REPORT_MONTH=$(date +%Y-%m)" >> $GITHUB_ENV
+          report_month="$(date +%Y-%m)"
         fi
+
+        echo "report_month=$report_month" >> $GITHUB_OUTPUT
+        echo "REPORT_MONTH=$report_month" >> $GITHUB_ENV
 
     - name: Execute monthly review script
       run: |
@@ -71,8 +74,8 @@ jobs:
     - name: Upload review artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: monthly-review-${{ env.REPORT_MONTH }}
-        path: reports/cicd-optimization/${{ env.REPORT_MONTH }}/
+        name: monthly-review-${{ steps.report_month.outputs.report_month }}
+        path: reports/cicd-optimization/${{ steps.report_month.outputs.report_month }}/
         retention-days: 90  # 保留90天
 
   # ============================================================================
@@ -85,11 +88,11 @@ jobs:
     if: success()
 
     steps:
-    - name: Download review artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: monthly-review-${{ env.REPORT_MONTH }}
-        path: monthly-report
+      - name: Download review artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: monthly-review-${{ needs.monthly-review.outputs.report_month }}
+          path: monthly-report
 
     - name: Create GitHub Issue with report
       run: |
@@ -99,7 +102,7 @@ jobs:
 
           # 创建GitHub Issue
           gh issue create \
-            --title "📊 CI/CD月度优化报告 - ${{ env.REPORT_MONTH }}" \
+            --title "📊 CI/CD月度优化报告 - ${{ needs.monthly-review.outputs.report_month }}" \
             --body "$REPORT_CONTENT" \
             --label "monthly-review,optimization,report" \
             --assignee ${{ github.actor }}
@@ -116,7 +119,7 @@ jobs:
           curl -X POST "${{ secrets.TEAM_WEBHOOK_URL }}" \
             -H "Content-Type: application/json" \
             -d "{
-              \"text\": \"📊 MyStocks ${{ env.REPORT_MONTH }} CI/CD优化报告已生成\\n查看: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\\n\\n$(head -20 monthly-report/monthly_optimization_report.md 2>/dev/null || echo '报告生成失败')\"
+              \"text\": \"📊 MyStocks ${{ needs.monthly-review.outputs.report_month }} CI/CD优化报告已生成\\n查看: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\\n\\n$(head -20 monthly-report/monthly_optimization_report.md 2>/dev/null || echo '报告生成失败')\"
             }"
         fi
 
@@ -130,11 +133,11 @@ jobs:
     if: success()
 
     steps:
-    - name: Download review artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: monthly-review-${{ env.REPORT_MONTH }}
-        path: monthly-report
+      - name: Download review artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: monthly-review-${{ needs.monthly-review.outputs.report_month }}
+          path: monthly-report
 
     - name: Parse optimization recommendations
       id: parse-recommendations
@@ -172,7 +175,7 @@ $category
 - $actions
 
 ## 报告月份
-${{ env.REPORT_MONTH }}
+${{ needs.monthly-review.outputs.report_month }}
 
 ---
 *此任务由月度优化审查自动生成*"
@@ -209,24 +212,24 @@ ${{ env.REPORT_MONTH }}
     steps:
     - name: Create archive directory
       run: |
-        mkdir -p archive/cicd-reviews/${{ env.REPORT_MONTH }}
+        mkdir -p archive/cicd-reviews/${{ needs.monthly-review.outputs.report_month }}
 
     - name: Download and archive all artifacts
       uses: actions/download-artifact@v4
       with:
-        path: archive/cicd-reviews/${{ env.REPORT_MONTH }}
+        path: archive/cicd-reviews/${{ needs.monthly-review.outputs.report_month }}
 
     - name: Compress archive
       run: |
         cd archive/cicd-reviews
-        tar -czf ${{ env.REPORT_MONTH }}.tar.gz ${{ env.REPORT_MONTH }}
-        rm -rf ${{ env.REPORT_MONTH }}
+        tar -czf ${{ needs.monthly-review.outputs.report_month }}.tar.gz ${{ needs.monthly-review.outputs.report_month }}
+        rm -rf ${{ needs.monthly-review.outputs.report_month }}
 
     - name: Upload archive to releases
       uses: actions/upload-artifact@v4
       with:
-        name: cicd-review-archive-${{ env.REPORT_MONTH }}
-        path: archive/cicd-reviews/${{ env.REPORT_MONTH }}.tar.gz
+        name: cicd-review-archive-${{ needs.monthly-review.outputs.report_month }}
+        path: archive/cicd-reviews/${{ needs.monthly-review.outputs.report_month }}.tar.gz
         retention-days: 365  # 保留一年
 
   # ============================================================================
@@ -249,7 +252,7 @@ ${{ env.REPORT_MONTH }}
     - name: Send completion notification
       if: success()
       run: |
-        echo "✅ MyStocks ${{ env.REPORT_MONTH }} CI/CD月度优化审查完成"
+        echo "✅ MyStocks ${{ needs.monthly-review.outputs.report_month }} CI/CD月度优化审查完成"
         echo "📊 报告已生成并发布"
         echo "🎯 优化任务已创建"
         echo "📦 历史数据已归档"

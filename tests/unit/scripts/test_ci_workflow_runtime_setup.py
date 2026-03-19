@@ -323,6 +323,28 @@ def test_ci_cd_with_type_checking_scopes_pipeline_to_type_relevant_changes() -> 
     assert "mypy --config-file=config/mypy.ini ${{ needs.type-check-scope-detect.outputs.python_files }}" in type_check_section
 
 
+def test_typescript_type_check_uses_explicit_path_filters_and_repo_repo_comments() -> None:
+    workflow = _read_workflow("typescript-type-check.yml")
+
+    assert "'web/frontend/src/**/*.ts'" in workflow
+    assert "'web/frontend/src/**/*.tsx'" in workflow
+    assert "'web/frontend/src/**/*.vue'" in workflow
+    assert "'web/frontend/src/**/*.{ts,tsx,vue}'" not in workflow
+    assert "repo: context.repo.repo" in workflow
+    assert "repo: context.repo.name" not in workflow
+
+
+def test_cicd_monthly_review_uses_job_output_for_report_month() -> None:
+    workflow = _read_workflow("cicd-monthly-review.yml")
+
+    assert "REPORT_MONTH:" not in workflow
+    assert "outputs:" in workflow
+    assert "report_month: ${{ steps.report_month.outputs.report_month }}" in workflow
+    assert "id: report_month" in workflow
+    assert "needs.monthly-review.outputs.report_month" in workflow
+    assert "format(" not in workflow
+
+
 def test_python_and_typescript_type_check_workflows_download_artifacts_into_workspace() -> None:
     python_workflow = _read_workflow("python-type-check.yml")
     typescript_workflow = _read_workflow("typescript-type-check.yml")

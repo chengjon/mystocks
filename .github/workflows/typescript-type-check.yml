@@ -7,14 +7,18 @@ on:
   push:
     branches: [ main, develop ]
     paths:
-      - 'web/frontend/src/**/*.{ts,tsx,vue}'
+      - 'web/frontend/src/**/*.ts'
+      - 'web/frontend/src/**/*.tsx'
+      - 'web/frontend/src/**/*.vue'
       - 'web/frontend/tsconfig.json'
       - 'web/frontend/vite.config.ts'
       - 'web/frontend/package.json'
   pull_request:
     branches: [ main, develop ]
     paths:
-      - 'web/frontend/src/**/*.{ts,tsx,vue}'
+      - 'web/frontend/src/**/*.ts'
+      - 'web/frontend/src/**/*.tsx'
+      - 'web/frontend/src/**/*.vue'
       - 'web/frontend/tsconfig.json'
       - 'web/frontend/vite.config.ts'
       - 'web/frontend/package.json'
@@ -203,7 +207,7 @@ jobs:
               github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
-                repo: context.repo.name,
+                repo: context.repo.repo,
                 body: report
               });
             }
