@@ -174,7 +174,7 @@ class FeatureCalculationGPUCalculatePriceVolumeMixin:
 
         # 使用数据形状、列名、最后一行数据等生成唯一键
         key_data = f"{data.shape}_{list(data.columns)}_{feature_types}_{data.iloc[-1].to_dict()}"
-        return hashlib.md5(key_data.encode()).hexdigest()
+        return hashlib.md5(key_data.encode(), usedforsecurity=False).hexdigest()
 
     def clear_cache(self) -> None:
         """清除特征缓存"""
