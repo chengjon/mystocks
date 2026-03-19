@@ -46,10 +46,11 @@ try:
     from src.utils.gpu_utils import GPUResourceManager
 
     GPU_BACKTEST_AVAILABLE = True
-except ImportError:
+except Exception as exc:  # pylint: disable=broad-exception-caught
     GPU_BACKTEST_AVAILABLE = False
     BacktestEngineGPU = None
     GPUResourceManager = None
+    logger.warning("GPU backtest result dependencies unavailable, falling back to CPU/mock mode: %s", exc)
 
 router = APIRouter(prefix="/api/v1/strategy", tags=["策略管理-Week1"])
 
@@ -194,5 +195,4 @@ async def get_backtest_chart_data(backtest_id: int) -> Dict[str, List]:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取图表数据失败: {str(e)}")
-
 

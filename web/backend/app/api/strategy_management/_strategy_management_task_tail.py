@@ -24,10 +24,11 @@ try:
     from src.utils.gpu_utils import GPUResourceManager
 
     GPU_BACKTEST_AVAILABLE = True
-except ImportError:
+except Exception as exc:  # pylint: disable=broad-exception-caught
     GPU_BACKTEST_AVAILABLE = False
     BacktestEngineGPU = None
     GPUResourceManager = None
+    logger.warning("GPU backtest dependencies unavailable, falling back to CPU/mock mode: %s", exc)
 
 
 async def train_model_task(model_id: int, config: Dict[str, Any]) -> None:

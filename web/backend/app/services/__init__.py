@@ -4,55 +4,13 @@
 整合所有已创建的服务模块：风险管理、市场数据、交易数据、分析数据、数据适配等
 """
 
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
 from datetime import datetime
 import logging
+from typing import Any, Dict, List, Optional
 
 logger = __import__("logging").getLogger(__name__)
-
-# 风险管理模块
-from .risk_management.risk_base import RiskBase, RiskMetrics, RiskLevel, RiskEventType, RiskProfile
-from .risk_management.risk_monitoring import RiskMonitoring, MonitoringThreshold, MonitoringEvent, MonitoringStatistics
-from .risk_management.risk_alerts import AlertManager, AlertRule, AlertHistory, AlertChannel
-from .risk_management.risk_settings import RiskSettingsManager, RiskSettings, ModelType, TimeHorizon
-from .risk_management.risk_calculator import RiskCalculator, CalculationConfig, CalculationResult
-from .risk_management.risk_dashboard import (
-    RiskDashboard,
-    DashboardChartType,
-    DashboardTimeRange,
-    RiskOverview,
-    PortfolioRiskSummary,
-    ChartDataPoint,
-)
-
-# 市场数据模块
-from .market_api import MarketDataService
-
-# 交易数据模块
-from .trading_api import TradingDataService, OrderStatus, OrderType, OrderSide, Order, Position, Trade
-
-# 分析数据模块
-from .analysis_api import (
-    AnalysisDataService,
-    IndicatorType,
-    TimePeriod,
-    AnalysisType,
-    IndicatorData,
-    FundamentalData,
-    AnalysisResult,
-)
-
-# 数据适配模块
-from .data_api_new import DataApiService
-
-# 数据库服务模块
-from .database_service import DatabaseService
-
-# WebSocket服务模块
-from .websocket_service import WebSocketService
-
-# 缓存服务模块
-from .cache_service import CacheService
 
 
 class IntegratedServices:
@@ -63,6 +21,17 @@ class IntegratedServices:
     """
 
     def __init__(self):
+        from .analysis_api import AnalysisDataService
+        from .data_api_new import DataApiService
+        from .market_api import MarketDataService
+        from .risk_management.risk_alerts import AlertManager
+        from .risk_management.risk_base import RiskBase, RiskProfile
+        from .risk_management.risk_calculator import RiskCalculator
+        from .risk_management.risk_dashboard import RiskDashboard
+        from .risk_management.risk_monitoring import RiskMonitoring
+        from .risk_management.risk_settings import RiskSettingsManager
+        from .trading_api import TradingDataService
+
         self.logger = logging.getLogger(__name__)
 
         # 初始化风险管理服务
