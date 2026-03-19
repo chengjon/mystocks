@@ -129,7 +129,8 @@ def test_data_sync_workflow_starts_backend_before_contract_tests_and_tolerates_m
     workflow = _read_workflow("data-sync-testing.yml")
 
     install_section = workflow.split("- name: Install Python dependencies", 1)[1].split("- name: Install frontend dependencies", 1)[0]
-    assert "python -m pip install -r web/backend/requirements.txt" in install_section
+    assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in install_section
+    assert "python -m pip install -r /tmp/backend-requirements-ci.txt" in install_section
 
     assert "Start backend for API Contract Tests" in workflow
     contract_setup_section = workflow.split("- name: Start backend for API Contract Tests", 1)[1].split(
@@ -298,7 +299,8 @@ def test_ci_cd_basic_tests_install_backend_runtime_dependencies() -> None:
     basic_section = workflow.split("# 基础测试", 1)[1].split("# 前端测试", 1)[0]
 
     assert "pip install -r requirements.txt" in basic_section
-    assert "pip install -r web/backend/requirements.txt" in basic_section
+    assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in basic_section
+    assert "pip install -r /tmp/backend-requirements-ci.txt" in basic_section
 
 
 def test_comprehensive_testing_only_installs_requirements_dev_when_present() -> None:
