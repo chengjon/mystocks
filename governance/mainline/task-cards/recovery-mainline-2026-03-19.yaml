@@ -23,8 +23,8 @@ openspec:
   approval_status: "not_required"
 
 function_tree:
-  domain_id: "meta-governance"
-  node_id: "meta-governance-mainline"
+  domain_id: "domain-03"
+  node_id: "domain-03-node-02"
   affected_entrypoints:
     - "governance"
     - "api"
@@ -32,13 +32,15 @@ function_tree:
     - "core"
     - "tests"
     - "operations"
-  update_status: "not-needed"
+  update_status: "required"
   secondary_domains:
-    - "domain-01"
     - "domain-02"
-    - "domain-03"
+    - "domain-01"
     - "domain-04"
-  exemption_reason: "recovery branch intentionally spans governance, CI, backend import stability, and frontend verification fixes across multiple domains to restore a usable mainline baseline"
+    - "domain-07"
+    - "domain-08"
+    - "domain-09"
+  exemption_reason: "recovery branch intentionally spans strategy/gpu recovery plus CI and verification fixes across multiple business domains to restore a usable mainline baseline"
 
 scope:
   allowed_paths:
