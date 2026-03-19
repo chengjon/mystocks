@@ -217,6 +217,24 @@ def test_frontend_testing_uses_repo_root_relative_compliance_script_paths() -> N
     assert "python ../../scripts/compliance/request_id_visibility_gate.py" in workflow
 
 
+def test_frontend_testing_scopes_artdeco_and_security_gates_to_relevant_changes() -> None:
+    workflow = _read_workflow("frontend-testing.yml")
+
+    assert "frontend-gate-scope-detect" in workflow
+    assert "artdeco_scope_changed" in workflow
+    assert "dependency_audit_required" in workflow
+    assert "optimization_audit_required" in workflow
+    assert "Run frontend optimization scope detection" in workflow
+
+    optimization_section = workflow.split("jobs:", 1)[1].split("route-layout-pm2-detect:", 1)[0]
+    frontend_test_section = workflow.split("frontend-test:", 1)[1].split("frontend-security:", 1)[0]
+    frontend_security_section = workflow.split("frontend-security:", 1)[1]
+
+    assert "needs.frontend-gate-scope-detect.outputs.optimization_audit_required == 'true'" in optimization_section
+    assert "needs.frontend-gate-scope-detect.outputs.artdeco_scope_changed == 'true'" in frontend_test_section
+    assert "needs.frontend-gate-scope-detect.outputs.dependency_audit_required == 'true'" in frontend_security_section
+
+
 def test_ci_cd_basic_tests_install_backend_runtime_dependencies() -> None:
     workflow = _read_workflow("ci-cd.yml")
     basic_section = workflow.split("# 基础测试", 1)[1].split("# 前端测试", 1)[0]

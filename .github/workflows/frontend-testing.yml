@@ -16,8 +16,69 @@ on:
       - 'scripts/dev/frontend_optimization_audit.py'
 
 jobs:
+  frontend-gate-scope-detect:
+    runs-on: ubuntu-latest
+    outputs:
+      artdeco_scope_changed: ${{ steps.detect.outputs.artdeco_scope_changed }}
+      dependency_audit_required: ${{ steps.detect.outputs.dependency_audit_required }}
+      optimization_audit_required: ${{ steps.detect.outputs.optimization_audit_required }}
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Run frontend optimization scope detection
+      id: detect
+      run: |
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+        else
+          BASE_SHA="${{ github.event.before }}"
+        fi
+
+        if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+          if git rev-parse HEAD^ >/dev/null 2>&1; then
+            mapfile -t changed_files < <(git diff --name-only HEAD^ HEAD)
+          else
+            mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "${{ github.sha }}")
+          fi
+        else
+          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+        fi
+
+        artdeco_scope_changed=false
+        dependency_audit_required=false
+        optimization_audit_required=false
+
+        for changed_file in "${changed_files[@]}"; do
+          case "$changed_file" in
+            web/frontend/src/views/artdeco-pages/*|web/frontend/src/views/artdeco-pages/**|web/frontend/src/styles/*|web/frontend/src/styles/**|web/frontend/scripts/check-artdeco-tokens.js)
+              artdeco_scope_changed=true
+              ;;
+          esac
+
+          case "$changed_file" in
+            web/frontend/package.json|web/frontend/package-lock.json|web/frontend/audit-ci.json)
+              dependency_audit_required=true
+              ;;
+          esac
+
+          case "$changed_file" in
+            docs/plans/frontend-page-optimization-list.md|scripts/dev/frontend_optimization_audit.py|web/frontend/src/views/artdeco-pages/*|web/frontend/src/views/artdeco-pages/**)
+              optimization_audit_required=true
+              ;;
+          esac
+        done
+
+        echo "artdeco_scope_changed=$artdeco_scope_changed" >> "$GITHUB_OUTPUT"
+        echo "dependency_audit_required=$dependency_audit_required" >> "$GITHUB_OUTPUT"
+        echo "optimization_audit_required=$optimization_audit_required" >> "$GITHUB_OUTPUT"
+
   frontend-optimization-audit:
     runs-on: ubuntu-latest
+    needs: frontend-gate-scope-detect
+    if: needs.frontend-gate-scope-detect.outputs.optimization_audit_required == 'true'
 
     steps:
     - uses: actions/checkout@v4
@@ -154,6 +215,7 @@ jobs:
 
   frontend-test:
     runs-on: ubuntu-latest
+    needs: frontend-gate-scope-detect
     defaults:
       run:
         working-directory: web/frontend
@@ -208,6 +270,7 @@ jobs:
         cat request-id-visibility-gate-report.json
 
     - name: Run ArtDeco token lint
+      if: needs.frontend-gate-scope-detect.outputs.artdeco_scope_changed == 'true'
       run: npm run lint:artdeco
 
     - name: Type check
@@ -230,6 +293,8 @@ jobs:
 
   frontend-security:
     runs-on: ubuntu-latest
+    needs: frontend-gate-scope-detect
+    if: needs.frontend-gate-scope-detect.outputs.dependency_audit_required == 'true'
     defaults:
       run:
         working-directory: web/frontend
