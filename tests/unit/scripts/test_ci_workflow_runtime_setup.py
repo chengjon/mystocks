@@ -131,3 +131,19 @@ def test_frontend_testing_uses_repo_root_relative_compliance_script_paths() -> N
 
     assert "python ../../scripts/compliance/app_route_purity_gate.py" in workflow
     assert "python ../../scripts/compliance/request_id_visibility_gate.py" in workflow
+
+
+def test_python_and_typescript_type_check_workflows_download_artifacts_into_workspace() -> None:
+    python_workflow = _read_workflow("python-type-check.yml")
+    typescript_workflow = _read_workflow("typescript-type-check.yml")
+
+    python_section = python_workflow.split("Download all type check artifacts", 1)[1].split("Generate consolidated report", 1)[0]
+    typescript_section = typescript_workflow.split("Download all type check artifacts", 1)[1].split(
+        "Generate consolidated report", 1
+    )[0]
+
+    assert "uses: actions/download-artifact@v4" in python_section
+    assert "path: ." in python_section
+
+    assert "uses: actions/download-artifact@v4" in typescript_section
+    assert "path: ." in typescript_section
