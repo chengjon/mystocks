@@ -73,7 +73,7 @@ jobs:
           visual_test_required=false
           for changed_file in "${changed_files[@]}"; do
             case "$changed_file" in
-              web/frontend/src/*|web/frontend/src/**|web/frontend/**/*.vue|web/frontend/**/*.ts|web/frontend/**/*.scss|web/frontend/**/*.css|tests/visual/*|tests/visual/**)
+              web/frontend/src/*|web/frontend/src/**|tests/visual/*|tests/visual/**)
                 visual_test_required=true
                 break
                 ;;

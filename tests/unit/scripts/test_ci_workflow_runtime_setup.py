@@ -255,6 +255,11 @@ def test_visual_testing_scopes_pipeline_and_uses_full_frontend_dependencies() ->
     assert "npm ci" in setup_section
     assert "--only=production" not in setup_section
 
+    scope_section = workflow.split("visual-scope-detect:", 1)[1].split("visual-test-setup:", 1)[0]
+    assert "web/frontend/src/*|web/frontend/src/**" in scope_section
+    assert "tests/visual/*|tests/visual/**" in scope_section
+    assert "web/frontend/**/*.ts" not in scope_section
+
     assert "needs: [visual-scope-detect, visual-test-setup]" in visual_test_section
     assert "needs.visual-scope-detect.outputs.visual_test_required == 'true'" in visual_test_section
     assert "npm ci" in visual_test_section
