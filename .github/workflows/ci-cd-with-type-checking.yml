@@ -15,6 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       type_check_required: ${{ steps.detect.outputs.type_check_required }}
+      python_type_check_required: ${{ steps.detect.outputs.python_type_check_required }}
+      frontend_type_check_required: ${{ steps.detect.outputs.frontend_type_check_required }}
+      python_files: ${{ steps.detect.outputs.python_files }}
 
     steps:
     - name: Checkout code
@@ -42,16 +45,35 @@ jobs:
         fi
 
         type_check_required=false
+        python_type_check_required=false
+        frontend_type_check_required=false
+        python_files=""
+
         for changed_file in "${changed_files[@]}"; do
           case "$changed_file" in
-            src/*|src/**|web/frontend/src/*|web/frontend/src/**|config/mypy.ini|requirements.txt|requirements-mock.txt|web/frontend/package.json|web/frontend/package-lock.json|web/frontend/tsconfig.json|web/frontend/tsconfig.*.json)
+            src/*.py|src/**/*.py|config/mypy.ini|requirements.txt|requirements-mock.txt)
               type_check_required=true
-              break
+              python_type_check_required=true
+              if [[ "$changed_file" == src/*.py || "$changed_file" == src/**/*.py ]]; then
+                python_files="$python_files $changed_file"
+              fi
+              ;;
+            web/frontend/src/*|web/frontend/src/**|web/frontend/package.json|web/frontend/package-lock.json|web/frontend/tsconfig.json|web/frontend/tsconfig.*.json)
+              type_check_required=true
+              ;;
+          esac
+
+          case "$changed_file" in
+            web/frontend/src/*|web/frontend/src/**|web/frontend/package.json|web/frontend/package-lock.json|web/frontend/tsconfig.json|web/frontend/tsconfig.*.json)
+              frontend_type_check_required=true
               ;;
           esac
         done
 
         echo "type_check_required=$type_check_required" >> "$GITHUB_OUTPUT"
+        echo "python_type_check_required=$python_type_check_required" >> "$GITHUB_OUTPUT"
+        echo "frontend_type_check_required=$frontend_type_check_required" >> "$GITHUB_OUTPUT"
+        echo "python_files=$(echo "$python_files" | xargs)" >> "$GITHUB_OUTPUT"
 
   # Type Checking Job
   type-check:
@@ -112,20 +134,22 @@ jobs:
       run: npm ci
 
     - name: Run Python type checking (mypy)
+      if: needs.type-check-scope-detect.outputs.python_type_check_required == 'true'
       run: |
         echo "Running Python type checking..."
         mkdir -p mypy-reports
-        mypy --config-file=config/mypy.ini --package src \
+        mypy --config-file=config/mypy.ini ${{ needs.type-check-scope-detect.outputs.python_files }} \
           --html-report mypy-reports \
           --xml-report mypy-reports \
           || (echo "MyPy found type errors" && exit 1)
 
     - name: Generate type coverage report
+      if: needs.type-check-scope-detect.outputs.python_type_check_required == 'true'
       run: |
         echo "Generating type coverage metrics..."
         # Calculate type coverage percentage
-        TOTAL_FILES=$(find src -name "*.py" | wc -l)
-        TYPED_FILES=$(mypy --config-file=config/mypy.ini --package src 2>/dev/null | grep -c "Success" || echo "0")
+        TOTAL_FILES=$(printf '%s\n' ${{ needs.type-check-scope-detect.outputs.python_files }} | sed '/^$/d' | wc -l)
+        TYPED_FILES=$(mypy --config-file=config/mypy.ini ${{ needs.type-check-scope-detect.outputs.python_files }} 2>/dev/null | grep -c "Success" || echo "0")
         COVERAGE=$(( TYPED_FILES * 100 / TOTAL_FILES ))
         echo "Type coverage: ${COVERAGE}% (${TYPED_FILES}/${TOTAL_FILES} files)"
 
@@ -137,6 +161,7 @@ jobs:
         echo "- **Generated**: $(date)" >> mypy-reports/coverage.md
 
     - name: Run TypeScript type checking (tsc)
+      if: needs.type-check-scope-detect.outputs.frontend_type_check_required == 'true'
       working-directory: web/frontend
       run: |
         echo "Running TypeScript type checking..."

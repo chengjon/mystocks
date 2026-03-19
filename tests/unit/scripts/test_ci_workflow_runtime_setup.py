@@ -298,18 +298,24 @@ def test_ci_cd_with_type_checking_scopes_pipeline_to_type_relevant_changes() -> 
 
     assert "type-check-scope-detect" in workflow
     assert "type_check_required" in workflow
+    assert "python_type_check_required" in workflow
+    assert "frontend_type_check_required" in workflow
+    assert "python_files" in workflow
     assert "Run type-check scope detection" in workflow
 
     scope_section = workflow.split("type-check-scope-detect:", 1)[1].split("# Type Checking Job", 1)[0]
     type_check_section = workflow.split("type-check:", 1)[1].split("# Code Quality Job", 1)[0]
 
-    assert "src/*|src/**" in scope_section
+    assert "src/*.py|src/**/*.py" in scope_section
     assert "web/frontend/src/*|web/frontend/src/**" in scope_section
     assert "config/mypy.ini" in scope_section
     assert "web/frontend/package.json" in scope_section
     assert "web/frontend/package-lock.json" in scope_section
     assert "needs: type-check-scope-detect" in type_check_section
     assert "needs.type-check-scope-detect.outputs.type_check_required == 'true'" in type_check_section
+    assert "needs.type-check-scope-detect.outputs.python_type_check_required == 'true'" in type_check_section
+    assert "needs.type-check-scope-detect.outputs.frontend_type_check_required == 'true'" in type_check_section
+    assert "mypy --config-file=config/mypy.ini ${{ needs.type-check-scope-detect.outputs.python_files }}" in type_check_section
 
 
 def test_python_and_typescript_type_check_workflows_download_artifacts_into_workspace() -> None:
