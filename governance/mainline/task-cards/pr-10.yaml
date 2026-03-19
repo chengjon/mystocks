@@ -2,13 +2,13 @@ version: "v0.2"
 
 task:
   id: "pr-10"
-  title: "restore post-rewrite backend split helper modules"
+  title: "restore post-rewrite backend helpers and carry stacked ci unblock"
   owner: "JohnC"
   created_at: "2026-03-18"
 
 mainline:
   id: "L1-post-rewrite-baseline"
-  objective: "Restore rewrite-lost backend helper modules so FastAPI startup and backend API test setup no longer fail during import."
+  objective: "Restore rewrite-lost backend helper modules and include the stacked CI unblock set required to make this branch reviewable against main."
   milestone_id: "L2-backend-baseline"
   slice_id: "L3-missing-split-helpers"
 
@@ -28,16 +28,21 @@ function_tree:
   affected_entrypoints:
     - "api"
     - "core"
+    - "tests"
   update_status: "required"
   secondary_domains:
     - "domain-01"
     - "domain-04"
     - "domain-07"
+    - "domain-08"
     - "domain-09"
   exemption_reason: ""
 
 scope:
   allowed_paths:
+    - ".github/workflows/**"
+    - "config/requirements.txt"
+    - "governance/function-tree/catalog.yaml"
     - "src/adapters/efinance_adapter/efinance_data_source_methods/part3.py"
     - "src/core/deduplication_strategy_methods/part3.py"
     - "src/data_sources/real/postgresql_relational/postgre_sql_relational_data_source_methods/part3.py"
@@ -50,6 +55,12 @@ scope:
     - "src/gpu/acceleration/optimization_gpu_methods/part3.py"
     - "src/gpu/api_system/services/resource_scheduler/resource_scheduler_methods/part3.py"
     - "src/storage/database/database_manager/database_table_manager_methods/part3.py"
+    - "governance/mainline/task-cards/pr-10.yaml"
+    - "governance/mainline/task-cards/pr-12.yaml"
+    - "requirements.txt"
+    - "tests/unit/governance/test_function_tree_catalog.py"
+    - "tests/unit/scripts/test_github_actions_artifact_versions.py"
+    - "tests/unit/scripts/test_python_dependency_constraints.py"
     - "web/backend/app/api/strategy_management/backtest_status_contract.py"
     - "web/backend/app/mock/mock_data/_watchlist_data.py"
     - "web/backend/app/services/_watchlist_group_queries.py"
@@ -58,8 +69,8 @@ scope:
   forbidden_paths: []
 
 non_goals:
-  - "No new CI, workflow, or dependency policy changes."
-  - "No business feature expansion beyond restoring files lost by the rewrite."
+  - "No new product features beyond the backend baseline repair and already-merged CI unblock changes."
+  - "No expansion into unrelated backend modules outside the listed helper, governance, and workflow files."
 
 acceptance:
   checks:
@@ -72,21 +83,24 @@ acceptance:
     - id: "api-compliance-smoke"
       command: "PYTHONPATH=.:web/backend POSTGRESQL_HOST=localhost POSTGRESQL_PORT=5432 POSTGRESQL_USER=testuser POSTGRESQL_PASSWORD=testpassword POSTGRESQL_DATABASE=testdb JWT_SECRET_KEY=test_secret_key_for_ci_cd_purposes_only BACKEND_PORT=8000 BACKEND_BACKUP_PORT=8001 pytest -o addopts='' web/backend/tests/test_api_compliance.py -q"
       required: true
+    - id: "workflow-regressions"
+      command: "PYTHONPATH=. pytest -o addopts='' --no-cov --confcutdir=tests/unit/scripts tests/unit/scripts/test_github_actions_artifact_versions.py tests/unit/scripts/test_python_dependency_constraints.py -q"
+      required: true
 
 risk_and_rollback:
   risks:
-    - "If these restored split helpers are removed before the rewrite baseline lands, FastAPI import and backend route loading regress immediately."
+    - "If the restored split helpers or stacked CI unblock changes are removed before landing, backend import stability and PR-level governance signals regress immediately."
   rollback_plan: "git revert 57810624b"
 
 delivery:
   six_line_summary_required: true
   six_line_summary:
-    change_purpose: "Restore rewrite-lost helper modules and syntax tails required for backend import stability."
-    modified_scope: "Only the restored src split helpers plus the backend test fixture support file listed in scope.allowed_paths."
+    change_purpose: "Restore rewrite-lost helper modules and carry the already-merged stacked CI unblock set needed for this branch to integrate cleanly."
+    modified_scope: "Restored backend split helpers plus the stacked governance/workflow files now present on this branch."
     dependency_changes: "none"
-    legacy_logic_impact: "Restores pre-rewrite helper availability without introducing new behavior."
+    legacy_logic_impact: "Restores pre-rewrite helper availability and preserves previously validated CI workflow behavior without adding new product behavior."
     rollback_ready: "yes"
-    risk_and_rollback_point: "Revert the baseline repair commit if import stability regresses elsewhere."
+    risk_and_rollback_point: "Revert the baseline repair merge chain if backend import stability or governance checks regress."
 
 governance:
   phase: "phase_a_pr_hard_gate"
