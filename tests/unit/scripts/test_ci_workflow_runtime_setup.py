@@ -80,3 +80,12 @@ def test_kline_e2e_mocks_readiness_endpoint_before_navigation() -> None:
 
     assert "**/api/health/ready" in spec
     assert "e2e-kline-ready" in spec
+
+
+def test_contract_testing_workflow_skips_when_framework_is_absent() -> None:
+    workflow = _read_workflow("contract-testing.yml")
+
+    assert "contract-framework-readiness" in workflow
+    assert "if [ -d \"src/contract_testing\" ]" in workflow
+    assert "needs: contract-framework-readiness" in workflow
+    assert "needs.contract-framework-readiness.outputs.ready == 'true'" in workflow
