@@ -21,9 +21,22 @@ def test_api_automation_discovery_uses_python_module_pip_and_backend_runtime_dep
     assert "scripts/run-api-tests.sh" in workflow
 
 
+def test_api_contract_validation_uses_backend_import_environment_and_scope_gate() -> None:
+    workflow = _read_workflow("api-contract-validation.yml")
+
+    assert "contract_scope_changed" in workflow
+    assert "Detect contract scope changes" in workflow
+    assert "PYTHONPATH=$PWD/web/backend" in workflow
+    assert "from app.api.contract.models import ContractVersion, ContractDiff, ContractValidation" in workflow
+    assert "from app.main import app" in workflow
+    assert "continue-on-error: true" in workflow
+
+
 def test_api_contract_and_api_file_workflows_install_backend_runtime_dependencies() -> None:
     contract_workflow = _read_workflow("api-contract-validation.yml")
     api_file_workflow = _read_workflow("api-file-tests.yml")
+
+    assert "pip install -r web/backend/requirements.txt" in contract_workflow
 
     for package_name in (
         "structlog",
@@ -37,7 +50,6 @@ def test_api_contract_and_api_file_workflows_install_backend_runtime_dependencie
         "pydantic-settings",
         "psutil",
     ):
-        assert package_name in contract_workflow
         assert package_name in api_file_workflow
 
     assert "ports:" in api_file_workflow
