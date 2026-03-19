@@ -225,10 +225,10 @@ jobs:
             exit 0
           fi
 
-          safety check "${SAFETY_ARGS[@]}" --json > safety-report.json || {
+          safety check "${SAFETY_ARGS[@]}" || {
             echo "❌ P0质量门禁失败：发现依赖漏洞"
             echo "💡 修复建议："
-            echo "   1. 查看safety-report.json了解漏洞详情"
+            echo "   1. 查看上面的Safety输出了解漏洞详情"
             echo "   2. 更新有漏洞的依赖包"
             echo "   3. 运行: pip install --upgrade <package>"
             exit 1

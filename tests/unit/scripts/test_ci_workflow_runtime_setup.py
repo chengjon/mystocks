@@ -479,6 +479,8 @@ def test_p0_quality_gate_scopes_pr_checks_to_changed_files() -> None:
 
     assert "needs: p0-scope-detect" in dependency_section
     assert "needs.p0-scope-detect.outputs.dependency_check_required == 'true'" in dependency_section
+    assert 'safety check "${SAFETY_ARGS[@]}" --json > safety-report.json' not in dependency_section
+    assert 'safety check "${SAFETY_ARGS[@]}" || {' in dependency_section
 
     assert "needs: p0-scope-detect" in syntax_section
     assert "needs.p0-scope-detect.outputs.python_quality_required == 'true'" in syntax_section
