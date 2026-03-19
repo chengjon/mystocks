@@ -37,7 +37,7 @@ class FileTestRunnerCLI:
     def _discover_api_files(self) -> List[str]:
         """Discover all API files that need testing"""
         # Use absolute path from project root
-        project_root = Path(__file__).parent.parent.parent
+        project_root = Path(__file__).parent.parent.parent.parent
         api_dir = project_root / "web" / "backend" / "app" / "api"
 
         if not api_dir.exists():
