@@ -242,7 +242,7 @@ jobs:
         "
 
     - name: Upload monitoring data
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: monitoring-data
         path: monitoring_data.json
@@ -334,7 +334,7 @@ jobs:
         cat quality_report.md
 
     - name: Upload quality report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: quality-report
         path: quality_report.md
@@ -454,7 +454,7 @@ jobs:
         "
 
     - name: Upload improvement plan
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: improvement-plan
         path: improvement_plan.md

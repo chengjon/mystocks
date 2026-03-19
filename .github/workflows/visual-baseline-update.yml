@@ -27,6 +27,8 @@ jobs:
     name: Update Visual Baselines
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    outputs:
+      has_changes: ${{ steps.changed.outputs.has_changes }}
 
     steps:
       - name: Checkout Code
@@ -56,6 +58,7 @@ jobs:
         run: |
           cd web/frontend
           npm ci --only=production
+          npm install -g pm2
           npm install @playwright/test@${{ env.PLAYWRIGHT_VERSION }}
           npx playwright install --with-deps chromium
 
@@ -69,9 +72,21 @@ jobs:
 
       - name: Start Frontend Server
         run: |
-          cd web/frontend
-          npm run dev -- --port 5173 &
-          echo "Frontend server started"
+          cat > .env <<'EOF'
+          BACKEND_PORT=8000
+          BACKEND_BACKUP_PORT=8001
+          FRONTEND_PORT=5173
+          FRONTEND_BACKUP_PORT=4173
+          VITE_API_BASE_URL=http://localhost:8000
+          VITE_WS_URL=ws://localhost:8000
+          EOF
+
+          export USE_MOCK_DATA=true
+          export VITE_API_BASE_URL=http://localhost:8000
+          export VITE_WS_URL=ws://localhost:8000
+          pm2 delete all || true
+          pm2 start ecosystem.test.config.js
+          pm2 status
           timeout 30 bash -c 'until curl -f http://localhost:5173; do sleep 1; done'
 
       - name: Update Visual Baselines
@@ -103,6 +118,11 @@ jobs:
           else
             echo "has_changes=false" >> $GITHUB_OUTPUT
           fi
+
+      - name: Stop PM2 Services
+        if: always()
+        run: |
+          pm2 delete all || true
 
       - name: Commit and Push Changes
         if: steps.changed.outputs.has_changes == 'true'
@@ -164,7 +184,7 @@ jobs:
           echo "- Strategy template charts (2 instances)" >> visual-baseline-update-report.md
 
       - name: Upload Update Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: visual-baseline-update-report
           path: visual-baseline-update-report.md
@@ -198,7 +218,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download Update Report
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: visual-baseline-update-report
           path: .

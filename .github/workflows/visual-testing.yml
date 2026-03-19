@@ -79,6 +79,7 @@ jobs:
         run: |
           cd web/frontend
           npm ci --only=production
+          npm install -g pm2
           npm install @playwright/test@${{ env.PLAYWRIGHT_VERSION }}
           npx playwright install --with-deps chromium
 
@@ -136,9 +137,21 @@ jobs:
 
       - name: Start Frontend Server
         run: |
-          cd web/frontend
-          npm run dev -- --port 5173 &
-          echo "Frontend server started"
+          cat > .env <<'EOF'
+          BACKEND_PORT=8000
+          BACKEND_BACKUP_PORT=8001
+          FRONTEND_PORT=5173
+          FRONTEND_BACKUP_PORT=4173
+          VITE_API_BASE_URL=http://localhost:8000
+          VITE_WS_URL=ws://localhost:8000
+          EOF
+
+          export USE_MOCK_DATA=true
+          export VITE_API_BASE_URL=http://localhost:8000
+          export VITE_WS_URL=ws://localhost:8000
+          pm2 delete all || true
+          pm2 start ecosystem.test.config.js
+          pm2 status
           timeout 30 bash -c 'until curl -f http://localhost:5173; do sleep 1; done'
 
       - name: Run Visual Tests
@@ -163,7 +176,7 @@ jobs:
             --update-snapshots
 
       - name: Upload Visual Test Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: visual-test-results-${{ matrix.browser }}-${{ matrix.shard }}
@@ -173,12 +186,17 @@ jobs:
           retention-days: 30
 
       - name: Upload Playwright Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: visual-playwright-report-${{ matrix.browser }}-${{ matrix.shard }}
           path: web/frontend/playwright-report/
           retention-days: 30
+
+      - name: Stop PM2 Services
+        if: always()
+        run: |
+          pm2 delete all || true
 
   visual-test-results:
     name: Visual Test Results Summary
@@ -192,7 +210,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download All Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: test-results/
 
@@ -220,7 +238,7 @@ jobs:
           echo "Failed: $failed_tests"
 
       - name: Upload Test Summary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: visual-test-summary
           path: visual-test-summary.json

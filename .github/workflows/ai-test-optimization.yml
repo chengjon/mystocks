@@ -3,6 +3,11 @@
 
 name: AI Test Optimization
 
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
 on:
   pull_request:
     branches: [ main, develop ]
@@ -64,7 +69,11 @@ jobs:
 
           # 获取变更的Python文件
           CHANGED_FILES=$(git diff --name-only origin/$BASE_BRANCH...HEAD | grep '\.py$' || echo "")
-          echo "python-files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+          {
+            echo "python-files<<EOF"
+            echo "$CHANGED_FILES"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
           # 检查是否有Python文件变更
           if [ -n "$CHANGED_FILES" ]; then
@@ -94,7 +103,11 @@ jobs:
         else
           # Push模式：比较当前提交与上一个提交
           CHANGED_FILES=$(git diff --name-only HEAD~1 | grep '\.py$' || echo "")
-          echo "python-files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+          {
+            echo "python-files<<EOF"
+            echo "$CHANGED_FILES"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
           echo "has-python-changes=$(if [ -n "$CHANGED_FILES" ]; then echo "true"; else echo "false"; fi)" >> $GITHUB_OUTPUT
         fi
 
@@ -171,7 +184,11 @@ jobs:
         esac
 
         echo "scope=$SCOPE" >> $GITHUB_OUTPUT
-        echo "files=$FILES" >> $GITHUB_OUTPUT
+        {
+          echo "files<<EOF"
+          echo "$FILES"
+          echo "EOF"
+        } >> "$GITHUB_OUTPUT"
         echo "Analysis scope: $SCOPE"
         echo "Files to analyze: $FILES"
 
@@ -287,7 +304,7 @@ jobs:
         pytest ai_generated_tests/ --cov=src --cov-report=xml --cov-report=html || echo "Coverage report generation completed with warnings"
 
     - name: Upload Optimization Report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: ai-optimization-report
@@ -297,7 +314,7 @@ jobs:
         retention-days: 30
 
     - name: Upload Generated Tests
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: steps.optimizer.outputs.optimizer-tests-generated > 0
       with:
         name: ai-generated-tests
@@ -305,7 +322,7 @@ jobs:
         retention-days: 7
 
     - name: Upload Test Results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: steps.optimizer.outputs.optimizer-tests-generated > 0
       with:
         name: generated-tests-results
@@ -335,9 +352,10 @@ jobs:
 
     steps:
     - name: Download optimization report
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: ai-optimization-report
+        path: .
 
     - name: Quality Gate Evaluation
       id: gate
@@ -405,18 +423,21 @@ jobs:
 
     steps:
     - name: Download optimization report
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: ai-optimization-report
+        path: .
 
     - name: Download test results
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       if: needs.ai-optimization.outputs.optimizer-tests-generated > 0
       with:
         name: generated-tests-results
+        path: .
 
     - name: Comment on PR
       uses: actions/github-script@v6
+      continue-on-error: true
       with:
         script: |
           const fs = require('fs');
@@ -505,7 +526,7 @@ jobs:
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
-              repo: context.repo.name,
+              repo: context.repo.repo,
               body: comment
             });
             console.log('Created new AI optimization comment');
@@ -520,9 +541,10 @@ jobs:
 
     steps:
     - name: Download reports
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: ai-optimization-report
+        path: .
 
     - name: Generate Summary
       run: |

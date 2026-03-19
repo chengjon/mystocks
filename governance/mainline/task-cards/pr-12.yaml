@@ -1,0 +1,91 @@
+version: "v0.2"
+
+task:
+  id: "pr-12"
+  title: "unblock governance summary and directory compliance workflow baseline"
+  owner: "JohnC"
+  created_at: "2026-03-19"
+
+mainline:
+  id: "L1-ci-baseline-unblock"
+  objective: "Remove global CI workflow self-failures so PR governance and directory compliance checks reflect real branch signal."
+  milestone_id: "L2-ci-governance"
+  slice_id: "L3-global-workflow-unblock"
+
+classification:
+  task_type: "fix"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-ci-workflow-baseline-unblock"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "meta-governance-self-fix"
+
+scope:
+  allowed_paths:
+    - ".github/workflows/**"
+    - "requirements.txt"
+    - "config/requirements.txt"
+    - "governance/function-tree/catalog.yaml"
+    - "governance/mainline/task-cards/pr-12.yaml"
+    - "tests/unit/governance/test_function_tree_catalog.py"
+    - "tests/unit/scripts/test_github_actions_artifact_versions.py"
+    - "tests/unit/scripts/test_python_dependency_constraints.py"
+  forbidden_paths: []
+
+non_goals:
+  - "No backend or frontend business logic changes."
+  - "No broad CI cleanup outside workflow unblock and dependency constraint baseline fixes."
+
+acceptance:
+  checks:
+    - id: "workflow-script-tests"
+      command: "PYTHONPATH=. pytest -o addopts='' --no-cov --confcutdir=tests/unit/scripts tests/unit/scripts/test_github_actions_artifact_versions.py -q"
+      required: true
+    - id: "dependency-constraint-tests"
+      command: "PYTHONPATH=. pytest -o addopts='' --no-cov --confcutdir=tests/unit/scripts tests/unit/scripts/test_python_dependency_constraints.py -q"
+      required: true
+    - id: "catalog-tests"
+      command: "PYTHONPATH=. pytest -o addopts='' --no-cov --confcutdir=tests/unit/governance tests/unit/governance/test_function_tree_catalog.py -q"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-12.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr12-governance-report.json --fail-on-empty-diff"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "A too-loose root file threshold could hide real directory sprawl if set far above current baseline."
+  rollback_plan: "git revert <merge-commit-sha>"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Unblock two global CI workflows that are failing before they evaluate real branch signal."
+    modified_scope: "Only mainline governance workflow, directory compliance workflow, and governance/tests needed to cover them."
+    dependency_changes: "none"
+    legacy_logic_impact: "Tightens workflow reliability without touching product code."
+    rollback_ready: "yes"
+    risk_and_rollback_point: "Revert this PR if workflow results stop matching local targeted regression tests."
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "JohnC"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "JohnC"
+    approved_at: "2026-03-19T00:00:00Z"
+    approval_note: "global workflow unblock"
+    secondary_approved: false

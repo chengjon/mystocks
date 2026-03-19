@@ -69,7 +69,7 @@ jobs:
         ./scripts/cicd-monthly-review.sh
 
     - name: Upload review artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: monthly-review-${{ env.REPORT_MONTH }}
         path: reports/cicd-optimization/${{ env.REPORT_MONTH }}/
@@ -86,7 +86,7 @@ jobs:
 
     steps:
     - name: Download review artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: monthly-review-${{ env.REPORT_MONTH }}
         path: monthly-report
@@ -131,7 +131,7 @@ jobs:
 
     steps:
     - name: Download review artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: monthly-review-${{ env.REPORT_MONTH }}
         path: monthly-report
@@ -212,7 +212,7 @@ ${{ env.REPORT_MONTH }}
         mkdir -p archive/cicd-reviews/${{ env.REPORT_MONTH }}
 
     - name: Download and archive all artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         path: archive/cicd-reviews/${{ env.REPORT_MONTH }}
 
@@ -223,7 +223,7 @@ ${{ env.REPORT_MONTH }}
         rm -rf ${{ env.REPORT_MONTH }}
 
     - name: Upload archive to releases
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: cicd-review-archive-${{ env.REPORT_MONTH }}
         path: archive/cicd-reviews/${{ env.REPORT_MONTH }}.tar.gz
