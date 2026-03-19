@@ -310,6 +310,27 @@ def test_comprehensive_testing_only_installs_requirements_dev_when_present() -> 
     assert 'pip install -r requirements-dev.txt' in workflow
 
 
+def test_comprehensive_testing_scopes_heavy_jobs_to_relevant_test_areas() -> None:
+    workflow = _read_workflow("comprehensive-testing.yml")
+
+    assert "comprehensive-scope-detect" in workflow
+    assert "run_ai_tests" in workflow
+    assert "run_contract_tests" in workflow
+    assert "run_performance_tests" in workflow
+    assert "run_security_tests" in workflow
+    assert "run_chaos_tests" in workflow
+    assert "run_data_tests" in workflow
+
+    ai_section = workflow.split("ai-tests:", 1)[1].split("# Contract Tests", 1)[0]
+    contract_section = workflow.split("contract-tests:", 1)[1].split("# Performance Tests", 1)[0]
+    performance_section = workflow.split("performance-tests:", 1)[1].split("# Security Tests", 1)[0]
+
+    assert "needs: comprehensive-scope-detect" in ai_section
+    assert "needs.comprehensive-scope-detect.outputs.run_ai_tests == 'true'" in ai_section
+    assert "needs.comprehensive-scope-detect.outputs.run_contract_tests == 'true'" in contract_section
+    assert "needs.comprehensive-scope-detect.outputs.run_performance_tests == 'true'" in performance_section
+
+
 def test_test_coverage_drops_unavailable_pytest_timing_dependency() -> None:
     workflow = _read_workflow("test-coverage.yml")
 
