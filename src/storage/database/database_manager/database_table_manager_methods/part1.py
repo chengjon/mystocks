@@ -10,6 +10,7 @@
 """
 
 import json
+import importlib
 import logging
 import os
 from datetime import datetime, timezone
@@ -32,14 +33,27 @@ from .._build_monitor_db_url import Base, DatabaseType, _build_monitor_db_url
 # Build the monitor database URL
 MONITOR_DB_URL = _build_monitor_db_url()
 
+
+def _detect_taos_runtime():
+    """Best-effort TDengine runtime detection.
+
+    taospy may raise runtime errors during import when the native client
+    library is absent. In those environments, the module should degrade to
+    "TDengine unavailable" instead of crashing import chains that only need
+    PostgreSQL-backed features.
+    """
+
+    try:
+        taos_module = importlib.import_module("taos")
+    except Exception:
+        return None, False, None
+
+    module_type = "taosws" if hasattr(taos_module, "connect") else "taosrest"
+    return taos_module, True, module_type
+
+
 # TDengine availability check
-try:
-    import taos
-    TAOS_AVAILABLE = True
-    TAOS_MODULE_TYPE = "taosws" if hasattr(taos, 'connect') else "taosrest"
-except ImportError:
-    TAOS_AVAILABLE = False
-    TAOS_MODULE_TYPE = None
+taos, TAOS_AVAILABLE, TAOS_MODULE_TYPE = _detect_taos_runtime()
 
 # 加载环境变量
 load_dotenv()
@@ -764,4 +778,3 @@ class DatabaseTableManagerCoreMixin:
         except Exception as e:
             logger.error("Failed to get table info for %s: %s", table_name, str(e))
             return None
-
