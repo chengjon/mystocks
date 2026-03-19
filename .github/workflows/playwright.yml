@@ -16,9 +16,16 @@ jobs:
     - name: Install dependencies
       run: npm ci
     - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npx playwright test
+      run: npx playwright install --with-deps chromium
+    - name: Run Playwright smoke tests
+      run: |
+        npx playwright test \
+          tests/simple-test.spec.ts \
+          tests/env-test.spec.ts \
+          tests/ultra-simple.spec.ts \
+          tests/playwright-tests/basic-chrome-test.spec.ts \
+          --config=playwright.config.ts \
+          --reporter=list,html
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:

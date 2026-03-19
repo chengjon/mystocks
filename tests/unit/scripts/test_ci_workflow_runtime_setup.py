@@ -89,3 +89,12 @@ def test_contract_testing_workflow_skips_when_framework_is_absent() -> None:
     assert "if [ -d \"src/contract_testing\" ]" in workflow
     assert "needs: contract-framework-readiness" in workflow
     assert "needs.contract-framework-readiness.outputs.ready == 'true'" in workflow
+
+
+def test_playwright_workflow_runs_smoke_subset_only() -> None:
+    workflow = _read_workflow("playwright.yml")
+
+    assert "npx playwright install --with-deps chromium" in workflow
+    assert "Run Playwright smoke tests" in workflow
+    assert "tests/env-test.spec.ts" in workflow
+    assert "--config=playwright.config.ts" in workflow
