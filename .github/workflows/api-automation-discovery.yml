@@ -61,6 +61,7 @@ jobs:
           structlog \
           sqlalchemy \
           pymysql \
+          PyJWT \
           python-jose[cryptography] \
           passlib[bcrypt] \
           openpyxl \
@@ -79,12 +80,15 @@ jobs:
         echo "Starting backend with REAL data configuration"
         # 注入必需的数据库配置环境变量
         export POSTGRESQL_PASSWORD=password
+        export POSTGRESQL_USER=postgres
         export JWT_SECRET_KEY=$(openssl rand -hex 32)
         export ADMIN_INITIAL_PASSWORD=admin_pass
         export POSTGRESQL_HOST=localhost
         export POSTGRESQL_PORT=5438
+        export BACKEND_PORT=8000
+        export BACKEND_BACKUP_PORT=8001
 
-        python -m uvicorn web.backend.app.main:app --host 0.0.0.0 --port 8000 &
+        PYTHONPATH=.:web/backend python -m uvicorn web.backend.app.main:app --host 0.0.0.0 --port 8000 &
 
         # Wait for service to be ready
         for i in {1..30}; do

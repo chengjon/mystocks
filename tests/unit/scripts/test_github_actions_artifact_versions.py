@@ -113,6 +113,8 @@ def test_api_automation_discovery_workflow_uses_existing_runner_and_backend_runt
     assert "chmod +x scripts/run-api-tests.sh" in content
     assert "BACKEND_PORT=8000 API_BASE_URL=http://localhost:8000 ./scripts/run-api-tests.sh all" in content
     assert "structlog" in content
+    assert "PyJWT" in content
+    assert "PYTHONPATH=.:web/backend python -m uvicorn web.backend.app.main:app" in content
 
 
 def test_ci_cd_workflow_references_existing_test_chain_scripts() -> None:
