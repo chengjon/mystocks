@@ -192,3 +192,12 @@ def test_security_testing_merges_downloaded_artifacts_into_workspace() -> None:
 
     assert "uses: actions/download-artifact@v4" in final_section
     assert "path: ." in final_section
+
+
+def test_quant_strategy_validation_uses_existing_script_path_and_safe_issue_body_heredoc() -> None:
+    workflow = _read_workflow("quant-strategy-validation.yml")
+
+    assert "chmod +x scripts/dev/ci/quant_strategy_validation.py" in workflow
+    assert "python scripts/dev/ci/quant_strategy_validation.py" in workflow
+    assert 'ISSUE_BODY=$(cat <<EOF' in workflow
+    assert '$(cat "$GITHUB_STEP_SUMMARY"' in workflow
