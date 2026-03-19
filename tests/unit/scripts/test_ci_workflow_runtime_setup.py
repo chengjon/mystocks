@@ -41,6 +41,14 @@ def test_api_contract_validation_report_job_tolerates_missing_generated_spec() -
     assert "if: needs.validate-contracts.outputs.contract_scope_changed == 'true'" in download_section
 
 
+def test_api_contract_validation_pr_comment_is_non_blocking() -> None:
+    workflow = _read_workflow("api-contract-validation.yml")
+    report_section = workflow.split("name: Generate Contract Validation Report", 1)[1]
+    comment_section = report_section.split("- name: Comment on PR", 1)[1].split("uses: actions/github-script@v7", 1)[0]
+
+    assert "continue-on-error: true" in comment_section
+
+
 def test_api_contract_and_api_file_workflows_install_backend_runtime_dependencies() -> None:
     contract_workflow = _read_workflow("api-contract-validation.yml")
     api_file_workflow = _read_workflow("api-file-tests.yml")
@@ -159,6 +167,13 @@ def test_ai_test_optimization_normalizes_changed_file_outputs_and_tolerates_miss
 
     assert "continue-on-error: true" in quality_gate_section
     assert "continue-on-error: true" in summary_section
+
+
+def test_ai_test_optimization_pr_comment_is_non_blocking() -> None:
+    workflow = _read_workflow("ai-test-optimization.yml")
+    comment_section = workflow.split("- name: Comment on PR", 1)[1].split("uses: actions/github-script@v6", 1)[0]
+
+    assert "continue-on-error: true" in comment_section
 
 
 def test_frontend_testing_uses_repo_root_relative_compliance_script_paths() -> None:
