@@ -201,3 +201,11 @@ def test_quant_strategy_validation_uses_existing_script_path_and_safe_issue_body
     assert "python scripts/dev/ci/quant_strategy_validation.py" in workflow
     assert 'ISSUE_BODY=$(cat <<EOF' in workflow
     assert '$(cat "$GITHUB_STEP_SUMMARY"' in workflow
+
+
+def test_mainline_governance_summary_uses_single_line_python_command() -> None:
+    workflow = _read_workflow("mainline-governance.yml")
+
+    assert "Add workflow summary" in workflow
+    assert "python -c 'import json, os; from pathlib import Path;" in workflow
+    assert "python - <<'PY'" not in workflow
