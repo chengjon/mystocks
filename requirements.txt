@@ -32,6 +32,7 @@ python-socketio>=5.10.0
 python-engineio>=4.8.0
 aiofiles>=25.1.0
 python-multipart>=0.0.6
+PyJWT>=2.10.1
 
 # GPU加速依赖 (可选安装，用于量化交易回测和AI策略)
 # RTX 2080 GPU加速支持

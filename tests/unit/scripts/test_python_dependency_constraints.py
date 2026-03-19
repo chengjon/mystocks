@@ -42,3 +42,13 @@ def test_runtime_requirements_use_installable_datamodel_code_generator_package()
         content = requirement_path.read_text(encoding="utf-8")
         assert "datamodel-codegen==0.0.1" not in content
         assert "datamodel-code-generator" in content
+
+
+def test_runtime_requirements_explicitly_declare_pyjwt_for_backend_auth() -> None:
+    runtime_requirements = [
+        PROJECT_ROOT / "requirements.txt",
+        PROJECT_ROOT / "web" / "backend" / "requirements.txt",
+    ]
+
+    for requirement_path in runtime_requirements:
+        _extract_requirement(requirement_path, "PyJWT")
