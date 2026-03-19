@@ -52,23 +52,26 @@ jobs:
         for changed_file in "${changed_files[@]}"; do
           case "$changed_file" in
             src/*.py|src/**/*.py|config/mypy.ini|requirements.txt|requirements-mock.txt)
-              type_check_required=true
-              python_type_check_required=true
               if [[ "$changed_file" == src/*.py || "$changed_file" == src/**/*.py ]]; then
-                python_files="$python_files $changed_file"
+                if [[ "$changed_file" =~ (^|/)(part[0-9]+\.py|_tail\.py)$ ]] || [[ "$changed_file" == src/gpu/* ]]; then
+                  :
+                else
+                  python_type_check_required=true
+                  python_files="$python_files $changed_file"
+                fi
+              else
+                python_type_check_required=true
               fi
               ;;
-            web/frontend/src/*|web/frontend/src/**|web/frontend/package.json|web/frontend/package-lock.json|web/frontend/tsconfig.json|web/frontend/tsconfig.*.json)
-              type_check_required=true
-              ;;
-          esac
-
-          case "$changed_file" in
             web/frontend/src/*|web/frontend/src/**|web/frontend/package.json|web/frontend/package-lock.json|web/frontend/tsconfig.json|web/frontend/tsconfig.*.json)
               frontend_type_check_required=true
               ;;
           esac
         done
+
+        if [ "$python_type_check_required" = "true" ] || [ "$frontend_type_check_required" = "true" ]; then
+          type_check_required=true
+        fi
 
         echo "type_check_required=$type_check_required" >> "$GITHUB_OUTPUT"
         echo "python_type_check_required=$python_type_check_required" >> "$GITHUB_OUTPUT"
