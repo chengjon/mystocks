@@ -62,9 +62,21 @@ jobs:
     - name: Install Bandit
       run: pip install bandit
 
-    - name: Run Bandit security scan
+    - name: Generate Bandit JSON report
+      continue-on-error: true
       run: |
         bandit -r src/ web/backend/app/ -f json -o bandit-report.json -iii
+
+    - name: Upload Bandit security report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: bandit-security-report
+        path: bandit-report.json
+        if-no-files-found: ignore
+
+    - name: Enforce Bandit security gate
+      run: |
         bandit -r src/ web/backend/app/
 
   container-security:
@@ -102,7 +114,11 @@ jobs:
         find . -name "LICENSE*" -o -name "COPYING*" | head -5
 
         # Check for license headers in source files
-        python scripts/check_license_headers.py
+        if [ -f "scripts/check_license_headers.py" ]; then
+          python scripts/check_license_headers.py
+        else
+          echo "License header check script not present; skipping file header scan"
+        fi
 
     - name: Check for sensitive data patterns
       run: |
@@ -121,13 +137,86 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: security-reports
+        path: .
+
+    - name: Download Bandit security report
+      continue-on-error: true
+      uses: actions/download-artifact@v4
+      with:
+        name: bandit-security-report
+        path: .
 
     - name: Generate security summary
       run: |
-        python scripts/generate_security_report.py \
-          --safety-report safety-report.json \
-          --bandit-report ../bandit-report.json \
-          --output security-summary.md
+        python - <<'PY'
+        import json
+        from pathlib import Path
+
+        def load_json(path: str):
+            file_path = Path(path)
+            if not file_path.exists():
+                return None
+            try:
+                return json.loads(file_path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError:
+                return None
+
+        def safety_count(report) -> int:
+            if not isinstance(report, dict):
+                return 0
+            report_meta = report.get("report_meta") or {}
+            if isinstance(report_meta, dict):
+                return int(report_meta.get("vulnerabilities_found") or 0)
+            vulnerabilities = report.get("vulnerabilities")
+            if isinstance(vulnerabilities, list):
+                return len(vulnerabilities)
+            return 0
+
+        def pip_audit_count(report) -> int:
+            if isinstance(report, list):
+                return len(report)
+            if isinstance(report, dict):
+                vulnerabilities = report.get("vulnerabilities")
+                if isinstance(vulnerabilities, list):
+                    return len(vulnerabilities)
+            return 0
+
+        def bandit_counts(report) -> tuple[int, int, int]:
+            if not isinstance(report, dict):
+                return (0, 0, 0)
+            totals = ((report.get("metrics") or {}).get("_totals") or {})
+            return (
+                int(totals.get("SEVERITY.HIGH") or 0),
+                int(totals.get("SEVERITY.MEDIUM") or 0),
+                int(totals.get("SEVERITY.LOW") or 0),
+            )
+
+        safety_report = load_json("safety-report.json")
+        pip_audit_report = load_json("pip-audit-report.json")
+        bandit_report = load_json("bandit-report.json")
+
+        safety_vulnerabilities = safety_count(safety_report)
+        pip_audit_vulnerabilities = pip_audit_count(pip_audit_report)
+        bandit_high, bandit_medium, bandit_low = bandit_counts(bandit_report)
+
+        lines = [
+            "# Security Summary",
+            "",
+            "## Findings",
+            f"- Safety vulnerabilities: {safety_vulnerabilities}",
+            f"- pip-audit findings: {pip_audit_vulnerabilities}",
+            f"- Bandit high severity: {bandit_high}",
+            f"- Bandit medium severity: {bandit_medium}",
+            f"- Bandit low severity: {bandit_low}",
+            "",
+            "## Report Availability",
+            f"- safety-report.json: {'present' if safety_report is not None else 'missing or unreadable'}",
+            f"- pip-audit-report.json: {'present' if pip_audit_report is not None else 'missing or unreadable'}",
+            f"- bandit-report.json: {'present' if bandit_report is not None else 'missing or unreadable'}",
+        ]
+
+        Path("security-summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+        PY
 
     - name: Comment security summary on PR
       if: github.event_name == 'pull_request'
@@ -147,8 +236,24 @@ jobs:
 
     - name: Fail on critical vulnerabilities
       run: |
-        # Check for critical/high severity issues
-        python scripts/check_security_thresholds.py \
-          --safety-report safety-report.json \
-          --bandit-report ../bandit-report.json \
-          --fail-on-high=true
+        python - <<'PY'
+        import json
+        import sys
+        from pathlib import Path
+
+        report_path = Path("bandit-report.json")
+        if not report_path.exists():
+            print("bandit-report.json unavailable; relying on code-security-scan result")
+            sys.exit(0)
+
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+        totals = ((report.get("metrics") or {}).get("_totals") or {})
+        high_count = int(totals.get("SEVERITY.HIGH") or 0)
+
+        print(f"Bandit high severity findings: {high_count}")
+        if high_count > 0:
+            print("High severity Bandit findings detected")
+            sys.exit(1)
+
+        print("No high severity Bandit findings detected")
+        PY

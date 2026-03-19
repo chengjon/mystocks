@@ -147,6 +147,25 @@ def test_security_enhancement_fetches_full_history_for_secret_scanning() -> None
     assert "fetch-depth: 0" in workflow
 
 
+def test_security_enhancement_skips_missing_license_header_script_and_uploads_bandit_artifact() -> None:
+    workflow = _read_workflow("security-enhancement.yml")
+
+    assert 'if [ -f "scripts/check_license_headers.py" ]; then' in workflow
+    assert "License header check script not present; skipping file header scan" in workflow
+    assert "Generate Bandit JSON report" in workflow
+    assert "continue-on-error: true" in workflow
+    assert "name: bandit-security-report" in workflow
+
+
+def test_security_enhancement_uses_inline_security_summary_and_threshold_checks() -> None:
+    workflow = _read_workflow("security-enhancement.yml")
+
+    assert "Download Bandit security report" in workflow
+    assert "bandit-report.json" in workflow
+    assert "scripts/generate_security_report.py" not in workflow
+    assert "scripts/check_security_thresholds.py" not in workflow
+
+
 def test_ai_test_optimization_uses_repo_repo_for_new_pr_comments() -> None:
     workflow = _read_workflow("ai-test-optimization.yml")
 
