@@ -390,6 +390,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download generated OpenAPI spec
+        if: needs.validate-contracts.outputs.contract_scope_changed == 'true'
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: generated-openapi-spec
@@ -406,20 +408,27 @@ jobs:
           CONTRACTS_STATUS="${{ needs.validate-contracts.result }}"
           TYPES_STATUS="${{ needs.generate-types.result }}"
           BREAKING_STATUS="${{ needs.detect-breaking-changes.result }}"
+          CONTRACT_SCOPE_CHANGED="${{ needs.validate-contracts.outputs.contract_scope_changed }}"
 
-          if [ "$CONTRACTS_STATUS" == "success" ]; then
+          if [ "$CONTRACT_SCOPE_CHANGED" != "true" ]; then
+              echo '- ℹ️ **Contract Validation**: SKIPPED (no contract-specific changes detected)' >> contract_validation_report.md
+          elif [ "$CONTRACTS_STATUS" == "success" ]; then
               echo '- ✅ **Contract Validation**: PASSED' >> contract_validation_report.md
           else
               echo '- ❌ **Contract Validation**: FAILED' >> contract_validation_report.md
           fi
 
-          if [ "$TYPES_STATUS" == "success" ]; then
+          if [ "$CONTRACT_SCOPE_CHANGED" != "true" ]; then
+              echo '- ℹ️ **Type Generation**: SKIPPED' >> contract_validation_report.md
+          elif [ "$TYPES_STATUS" == "success" ]; then
               echo '- ✅ **Type Generation**: PASSED' >> contract_validation_report.md
           else
               echo '- ❌ **Type Generation**: FAILED' >> contract_validation_report.md
           fi
 
-          if [ "$BREAKING_STATUS" == "success" ]; then
+          if [ "$CONTRACT_SCOPE_CHANGED" != "true" ]; then
+              echo '- ℹ️ **Breaking Change Detection**: SKIPPED' >> contract_validation_report.md
+          elif [ "$BREAKING_STATUS" == "success" ]; then
               echo '- ✅ **Breaking Change Detection**: PASSED' >> contract_validation_report.md
           else
               echo '- ⚠️ **Breaking Change Detection**: WARNING' >> contract_validation_report.md

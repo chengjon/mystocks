@@ -32,6 +32,15 @@ def test_api_contract_validation_uses_backend_import_environment_and_scope_gate(
     assert "continue-on-error: true" in workflow
 
 
+def test_api_contract_validation_report_job_tolerates_missing_generated_spec() -> None:
+    workflow = _read_workflow("api-contract-validation.yml")
+    report_section = workflow.split("name: Generate Contract Validation Report", 1)[1]
+    download_section = report_section.split("- name: Generate comprehensive report", 1)[0]
+
+    assert "continue-on-error: true" in download_section
+    assert "if: needs.validate-contracts.outputs.contract_scope_changed == 'true'" in download_section
+
+
 def test_api_contract_and_api_file_workflows_install_backend_runtime_dependencies() -> None:
     contract_workflow = _read_workflow("api-contract-validation.yml")
     api_file_workflow = _read_workflow("api-file-tests.yml")
@@ -136,6 +145,20 @@ def test_ai_test_optimization_uses_repo_repo_for_new_pr_comments() -> None:
     assert "await github.rest.issues.createComment" in workflow
     assert "repo: context.repo.repo" in workflow
     assert "repo: context.repo.name" not in workflow
+
+
+def test_ai_test_optimization_normalizes_changed_file_outputs_and_tolerates_missing_reports() -> None:
+    workflow = _read_workflow("ai-test-optimization.yml")
+
+    assert "NORMALIZED_CHANGED_FILES=" in workflow
+    assert 'tr "\\n" " "' in workflow or "tr '\\n' ' '" in workflow
+    assert 'echo "python-files=$NORMALIZED_CHANGED_FILES" >> $GITHUB_OUTPUT' in workflow
+
+    quality_gate_section = workflow.split("name: Quality Gate", 1)[1].split("- name: Quality Gate Evaluation", 1)[0]
+    summary_section = workflow.split("name: AI Optimization Summary", 1)[1].split("- name: Generate Summary", 1)[0]
+
+    assert "continue-on-error: true" in quality_gate_section
+    assert "continue-on-error: true" in summary_section
 
 
 def test_frontend_testing_uses_repo_root_relative_compliance_script_paths() -> None:
