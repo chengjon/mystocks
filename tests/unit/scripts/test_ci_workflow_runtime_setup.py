@@ -102,6 +102,9 @@ def test_data_sync_workflow_uses_python_module_pip_and_ci_safe_pytest_invocation
 def test_data_sync_workflow_starts_backend_before_contract_tests_and_tolerates_missing_quality_artifacts() -> None:
     workflow = _read_workflow("data-sync-testing.yml")
 
+    install_section = workflow.split("- name: Install Python dependencies", 1)[1].split("- name: Install frontend dependencies", 1)[0]
+    assert "python -m pip install -r web/backend/requirements.txt" in install_section
+
     assert "Start backend for API Contract Tests" in workflow
     contract_setup_section = workflow.split("- name: Start backend for API Contract Tests", 1)[1].split(
         "- name: Run API Contract Tests", 1
@@ -223,6 +226,7 @@ def test_frontend_testing_scopes_artdeco_and_security_gates_to_relevant_changes(
     assert "frontend-gate-scope-detect" in workflow
     assert "artdeco_scope_changed" in workflow
     assert "dependency_audit_required" in workflow
+    assert "frontend_source_changed" in workflow
     assert "optimization_audit_required" in workflow
     assert "Run frontend optimization scope detection" in workflow
 
@@ -232,7 +236,30 @@ def test_frontend_testing_scopes_artdeco_and_security_gates_to_relevant_changes(
 
     assert "needs.frontend-gate-scope-detect.outputs.optimization_audit_required == 'true'" in optimization_section
     assert "needs.frontend-gate-scope-detect.outputs.artdeco_scope_changed == 'true'" in frontend_test_section
+    assert "needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'" in frontend_test_section
     assert "needs.frontend-gate-scope-detect.outputs.dependency_audit_required == 'true'" in frontend_security_section
+
+
+def test_visual_testing_scopes_pipeline_and_uses_full_frontend_dependencies() -> None:
+    workflow = _read_workflow("visual-testing.yml")
+
+    assert "visual-scope-detect" in workflow
+    assert "visual_test_required" in workflow
+    assert "Run visual scope detection" in workflow
+
+    setup_section = workflow.split("visual-test-setup:", 1)[1].split("visual-tests:", 1)[0]
+    visual_test_section = workflow.split("visual-tests:", 1)[1].split("visual-test-results:", 1)[0]
+
+    assert "needs: visual-scope-detect" in setup_section
+    assert "needs.visual-scope-detect.outputs.visual_test_required == 'true'" in setup_section
+    assert "npm ci" in setup_section
+    assert "--only=production" not in setup_section
+
+    assert "needs: [visual-scope-detect, visual-test-setup]" in visual_test_section
+    assert "needs.visual-scope-detect.outputs.visual_test_required == 'true'" in visual_test_section
+    assert "npm ci" in visual_test_section
+    assert "--only=production" not in visual_test_section
+    assert "npm run dev -- --host 0.0.0.0 --port 5173" in visual_test_section
 
 
 def test_ci_cd_basic_tests_install_backend_runtime_dependencies() -> None:

@@ -21,6 +21,7 @@ jobs:
     outputs:
       artdeco_scope_changed: ${{ steps.detect.outputs.artdeco_scope_changed }}
       dependency_audit_required: ${{ steps.detect.outputs.dependency_audit_required }}
+      frontend_source_changed: ${{ steps.detect.outputs.frontend_source_changed }}
       optimization_audit_required: ${{ steps.detect.outputs.optimization_audit_required }}
 
     steps:
@@ -49,6 +50,7 @@ jobs:
 
         artdeco_scope_changed=false
         dependency_audit_required=false
+        frontend_source_changed=false
         optimization_audit_required=false
 
         for changed_file in "${changed_files[@]}"; do
@@ -65,6 +67,12 @@ jobs:
           esac
 
           case "$changed_file" in
+            web/frontend/src/*|web/frontend/src/**|web/frontend/index.html|web/frontend/vite.config.*|web/frontend/tsconfig.json|web/frontend/tsconfig.*.json|web/frontend/package.json|web/frontend/package-lock.json)
+              frontend_source_changed=true
+              ;;
+          esac
+
+          case "$changed_file" in
             docs/plans/frontend-page-optimization-list.md|scripts/dev/frontend_optimization_audit.py|web/frontend/src/views/artdeco-pages/*|web/frontend/src/views/artdeco-pages/**)
               optimization_audit_required=true
               ;;
@@ -73,6 +81,7 @@ jobs:
 
         echo "artdeco_scope_changed=$artdeco_scope_changed" >> "$GITHUB_OUTPUT"
         echo "dependency_audit_required=$dependency_audit_required" >> "$GITHUB_OUTPUT"
+        echo "frontend_source_changed=$frontend_source_changed" >> "$GITHUB_OUTPUT"
         echo "optimization_audit_required=$optimization_audit_required" >> "$GITHUB_OUTPUT"
 
   frontend-optimization-audit:
@@ -274,15 +283,19 @@ jobs:
       run: npm run lint:artdeco
 
     - name: Type check
+      if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
       run: npm run type-check
 
     - name: Run unit tests
+      if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
       run: npm run test:unit
 
     - name: Run e2e tests
+      if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
       run: npm run test:e2e
 
     - name: Build for production
+      if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
       run: npm run build
 
     - name: Upload build artifacts
