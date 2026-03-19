@@ -179,6 +179,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install -r web/backend/requirements.txt
         pip install pytest-asyncio pytest-cov pytest-xdist
 
     - name: Run basic unit tests
@@ -188,7 +189,7 @@ jobs:
 
     - name: Run AI test analysis
       run: |
-        python scripts/tools/ai_test_assistant.py --output test-reports/ai_basic_analysis.md || true
+        python scripts/dev/tools/ai_test_assistant.py --output test-reports/ai_basic_analysis.md || true
 
     - name: Upload basic test results
       uses: actions/upload-artifact@v4
@@ -243,11 +244,11 @@ jobs:
 
     - name: Validate performance test suite
       run: |
-        python scripts/tools/performance_test_suite.py --baseline || true
+        python scripts/dev/tools/performance_test_suite.py --baseline || true
 
     - name: Run basic performance validation
       run: |
-        python scripts/tools/performance_test_suite.py --load-test --users 5 --run-time 10s || true
+        python scripts/dev/tools/performance_test_suite.py --load-test --users 5 --run-time 10s || true
 
     - name: Upload performance validation results
       uses: actions/upload-artifact@v4
@@ -265,21 +266,21 @@ jobs:
     - name: Validate test orchestration scripts
       run: |
         # 验证脚本存在性和可执行性
-        ls -la scripts/test-runner/run-orchestration.sh
-        ls -la scripts/tools/run-performance-suite.sh
-        ls -la scripts/tools/ai_test_assistant.py
+        ls -la scripts/tests/test-runner/run-orchestration.sh
+        ls -la scripts/dev/tools/run-performance-suite.sh
+        ls -la scripts/dev/tools/ai_test_assistant.py
 
         # 验证脚本语法
-        bash -n scripts/test-runner/run-orchestration.sh || echo "Orchestration script has syntax issues"
-        bash -n scripts/tools/run-performance-suite.sh || echo "Performance suite script has syntax issues"
+        bash -n scripts/tests/test-runner/run-orchestration.sh || echo "Orchestration script has syntax issues"
+        bash -n scripts/dev/tools/run-performance-suite.sh || echo "Performance suite script has syntax issues"
 
         # 验证Python脚本导入
-        python -c "import sys; sys.path.append('.'); from scripts.tools import ai_test_assistant" 2>/dev/null || echo "AI assistant import failed"
+        python -c "import sys; sys.path.append('.'); from scripts.dev.tools import ai_test_assistant" 2>/dev/null || echo "AI assistant import failed"
 
     - name: Test orchestration dry-run
       run: |
         # 测试编排脚本的dry-run模式
-        bash scripts/test-runner/run-orchestration.sh --dry-run || echo "Orchestration dry-run failed"
+        bash scripts/tests/test-runner/run-orchestration.sh --dry-run || echo "Orchestration dry-run failed"
 
     - name: Upload validation results
       uses: actions/upload-artifact@v4
@@ -685,7 +686,7 @@ jobs:
         bash .github/workflows/ci-cd.yml --dry-run
 
         # 运行本地测试
-        python scripts/tools/run-performance-suite.sh --all
+        bash scripts/dev/tools/run-performance-suite.sh --all
         \`\`\`
 
         ### 部署配置

@@ -202,6 +202,28 @@ def test_frontend_testing_uses_repo_root_relative_compliance_script_paths() -> N
     assert "python ../../scripts/compliance/request_id_visibility_gate.py" in workflow
 
 
+def test_ci_cd_basic_tests_install_backend_runtime_dependencies() -> None:
+    workflow = _read_workflow("ci-cd.yml")
+    basic_section = workflow.split("# 基础测试", 1)[1].split("# 前端测试", 1)[0]
+
+    assert "pip install -r requirements.txt" in basic_section
+    assert "pip install -r web/backend/requirements.txt" in basic_section
+
+
+def test_ci_cd_test_chain_validation_uses_current_script_locations() -> None:
+    workflow = _read_workflow("ci-cd.yml")
+    chain_section = workflow.split("# 测试链路验证", 1)[1].split("# 持续优化数据收集", 1)[0]
+
+    assert "scripts/tests/test-runner/run-orchestration.sh" in chain_section
+    assert "scripts/dev/tools/run-performance-suite.sh" in chain_section
+    assert "scripts/dev/tools/ai_test_assistant.py" in chain_section
+    assert "from scripts.dev.tools import ai_test_assistant" in chain_section
+
+    assert "scripts/test-runner/run-orchestration.sh" not in chain_section
+    assert "scripts/tools/run-performance-suite.sh" not in chain_section
+    assert "from scripts.tools import ai_test_assistant" not in chain_section
+
+
 def test_python_and_typescript_type_check_workflows_download_artifacts_into_workspace() -> None:
     python_workflow = _read_workflow("python-type-check.yml")
     typescript_workflow = _read_workflow("typescript-type-check.yml")
