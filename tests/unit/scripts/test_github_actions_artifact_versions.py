@@ -114,7 +114,11 @@ def test_api_automation_discovery_workflow_uses_existing_runner_and_backend_runt
     assert "BACKEND_PORT=8000 API_BASE_URL=http://localhost:8000 ./scripts/run-api-tests.sh all" in content
     assert "structlog" in content
     assert "PyJWT" in content
-    assert "PYTHONPATH=.:web/backend python -m uvicorn web.backend.app.main:app" in content
+    assert "pip uninstall -y taospy || true" in content
+    assert "export POSTGRESQL_DATABASE=mystocks" in content
+    assert "Prepare TDengine CI shim" in content
+    assert "mkdir -p /tmp/ci-python-shims" in content
+    assert "PYTHONPATH=/tmp/ci-python-shims:.:web/backend python -m uvicorn web.backend.app.main:app" in content
 
 
 def test_ci_cd_workflow_references_existing_test_chain_scripts() -> None:
@@ -199,3 +203,33 @@ def test_visual_testing_workflow_uses_explicit_pm2_orchestration() -> None:
     assert "pm2 start ecosystem.test.config.js" in content
     assert "pm2 status" in content
     assert "pm2 delete all || true" in content
+
+
+def test_api_contract_validation_workflow_installs_backend_import_runtime_dependencies() -> None:
+    workflow = WORKFLOW_ROOT / "api-contract-validation.yml"
+    content = workflow.read_text(encoding="utf-8", errors="ignore")
+
+    assert "openapi-spec-validator" in content
+    assert "sqlalchemy" in content
+    assert "pip uninstall -y taospy || true" in content
+    assert "POSTGRESQL_DATABASE: mystocks" in content
+    assert "JWT_SECRET_KEY: ci_contract_validation_secret" in content
+    assert "Prepare TDengine CI shim" in content
+    assert "PYTHONPATH: /tmp/ci-python-shims:.:web/backend" in content
+
+
+def test_api_file_tests_workflow_targets_supported_python_and_downloads_reports_for_quality_gate() -> None:
+    workflow = WORKFLOW_ROOT / "api-file-tests.yml"
+    content = workflow.read_text(encoding="utf-8", errors="ignore")
+
+    assert "python-version: [3.9, 3.11]" not in content
+    assert "python-version: '3.12'" in content
+    assert "pip uninstall -y taospy || true" in content
+    assert "POSTGRESQL_DATABASE=mystocks_test" in content
+    assert "JWT_SECRET_KEY=test_secret_key_for_ci" in content
+    assert "Prepare TDengine CI shim" in content
+    assert "PYTHONPATH=/tmp/ci-python-shims:.:web/backend python -m uvicorn web.backend.app.main:app" in content
+    assert "name: api-file-test-results" in content
+    assert "name: Download API file test results" in content
+    assert "path: quality-artifacts/" in content
+    assert "quality-artifacts/reports/api_file_tests.json" in content

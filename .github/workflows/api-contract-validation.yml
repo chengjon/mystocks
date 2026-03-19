@@ -23,6 +23,16 @@ jobs:
   validate-contracts:
     name: Validate API Contracts
     runs-on: ubuntu-latest
+    env:
+      POSTGRESQL_HOST: localhost
+      POSTGRESQL_PORT: "5432"
+      POSTGRESQL_USER: postgres
+      POSTGRESQL_PASSWORD: password
+      POSTGRESQL_DATABASE: mystocks
+      BACKEND_PORT: "8000"
+      BACKEND_BACKUP_PORT: "8001"
+      JWT_SECRET_KEY: ci_contract_validation_secret
+      PYTHONPATH: /tmp/ci-python-shims:.:web/backend
 
     steps:
       - name: Checkout code
@@ -39,7 +49,21 @@ jobs:
       - name: Install Python dependencies
         run: |
           pip install -r requirements.txt
-          pip install pydantic openapi-spec-validator
+          # GitHub hosted runners do not provide libtaos.so; use the app's ImportError fallback path.
+          pip uninstall -y taospy || true
+          pip install pydantic openapi-spec-validator sqlalchemy
+
+      - name: Prepare TDengine CI shim
+        run: |
+          mkdir -p /tmp/ci-python-shims
+          cat > /tmp/ci-python-shims/taos.py <<'PY'
+          class TaosConnection:
+              pass
+
+
+          def connect(*args, **kwargs):
+              raise RuntimeError("TDengine client unavailable in GitHub Actions CI")
+          PY
 
       - name: Validate contract models and services
         run: |
