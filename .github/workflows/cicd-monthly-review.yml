@@ -94,34 +94,34 @@ jobs:
           name: monthly-review-${{ needs.monthly-review.outputs.report_month }}
           path: monthly-report
 
-    - name: Create GitHub Issue with report
-      run: |
-        # 读取报告内容
-        if [ -f "monthly-report/monthly_optimization_report.md" ]; then
-          REPORT_CONTENT=$(cat monthly-report/monthly_optimization_report.md)
+      - name: Create GitHub Issue with report
+        run: |
+          # 读取报告内容
+          if [ -f "monthly-report/monthly_optimization_report.md" ]; then
+            REPORT_CONTENT=$(cat monthly-report/monthly_optimization_report.md)
 
-          # 创建GitHub Issue
-          gh issue create \
-            --title "📊 CI/CD月度优化报告 - ${{ needs.monthly-review.outputs.report_month }}" \
-            --body "$REPORT_CONTENT" \
-            --label "monthly-review,optimization,report" \
-            --assignee ${{ github.actor }}
-        else
-          echo "报告文件不存在，跳过Issue创建"
-        fi
+            # 创建GitHub Issue
+            gh issue create \
+              --title "📊 CI/CD月度优化报告 - ${{ needs.monthly-review.outputs.report_month }}" \
+              --body "$REPORT_CONTENT" \
+              --label "monthly-review,optimization,report" \
+              --assignee ${{ github.actor }}
+          else
+            echo "报告文件不存在，跳过Issue创建"
+          fi
 
-    - name: Send notification to team
-      run: |
-        # 这里可以集成团队通知
-        # Slack、微信、企业微信等
+      - name: Send notification to team
+        run: |
+          # 这里可以集成团队通知
+          # Slack、微信、企业微信等
 
-        if [ -n "${{ secrets.TEAM_WEBHOOK_URL }}" ]; then
-          curl -X POST "${{ secrets.TEAM_WEBHOOK_URL }}" \
-            -H "Content-Type: application/json" \
-            -d "{
-              \"text\": \"📊 MyStocks ${{ needs.monthly-review.outputs.report_month }} CI/CD优化报告已生成\\n查看: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\\n\\n$(head -20 monthly-report/monthly_optimization_report.md 2>/dev/null || echo '报告生成失败')\"
-            }"
-        fi
+          if [ -n "${{ secrets.TEAM_WEBHOOK_URL }}" ]; then
+            curl -X POST "${{ secrets.TEAM_WEBHOOK_URL }}" \
+              -H "Content-Type: application/json" \
+              -d "{
+                \"text\": \"📊 MyStocks ${{ needs.monthly-review.outputs.report_month }} CI/CD优化报告已生成\\n查看: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\\n\\n$(head -20 monthly-report/monthly_optimization_report.md 2>/dev/null || echo '报告生成失败')\"
+              }"
+          fi
 
   # ============================================================================
   # 优化任务跟踪
@@ -139,66 +139,69 @@ jobs:
           name: monthly-review-${{ needs.monthly-review.outputs.report_month }}
           path: monthly-report
 
-    - name: Parse optimization recommendations
-      id: parse-recommendations
-      run: |
-        # 解析优化建议JSON
-        if [ -f "monthly-report/optimization_recommendations.json" ]; then
-          # 统计各类建议数量
-          high_priority=$(jq '.[] | select(.priority == "high") | .title' monthly-report/optimization_recommendations.json | wc -l)
-          medium_priority=$(jq '.[] | select(.priority == "medium") | .title' monthly-report/optimization_recommendations.json | wc -l)
-          low_priority=$(jq '.[] | select(.priority == "low") | .title' monthly-report/optimization_recommendations.json | wc -l)
+      - name: Parse optimization recommendations
+        id: parse-recommendations
+        run: |
+          # 解析优化建议JSON
+          if [ -f "monthly-report/optimization_recommendations.json" ]; then
+            # 统计各类建议数量
+            high_priority=$(jq '.[] | select(.priority == "high") | .title' monthly-report/optimization_recommendations.json | wc -l)
+            medium_priority=$(jq '.[] | select(.priority == "medium") | .title' monthly-report/optimization_recommendations.json | wc -l)
+            low_priority=$(jq '.[] | select(.priority == "low") | .title' monthly-report/optimization_recommendations.json | wc -l)
 
-          echo "high_priority=$high_priority" >> $GITHUB_OUTPUT
-          echo "medium_priority=$medium_priority" >> $GITHUB_OUTPUT
-          echo "low_priority=$low_priority" >> $GITHUB_OUTPUT
+            echo "high_priority=$high_priority" >> $GITHUB_OUTPUT
+            echo "medium_priority=$medium_priority" >> $GITHUB_OUTPUT
+            echo "low_priority=$low_priority" >> $GITHUB_OUTPUT
 
-          # 为高优先级建议创建GitHub Issues
-          if [ "$high_priority" -gt 0 ]; then
-            echo "创建 $high_priority 个高优先级优化任务..."
+            # 为高优先级建议创建GitHub Issues
+            if [ "$high_priority" -gt 0 ]; then
+              echo "创建 $high_priority 个高优先级优化任务..."
 
-            jq -r '.[] | select(.priority == "high") | @base64' monthly-report/optimization_recommendations.json | while read -r item; do
-              item_data=$(echo "$item" | base64 -d)
+              jq -r '.[] | select(.priority == "high") | @base64' monthly-report/optimization_recommendations.json | while read -r item; do
+                item_data=$(echo "$item" | base64 -d)
 
-              title=$(echo "$item_data" | jq -r '.title')
-              description=$(echo "$item_data" | jq -r '.description')
-              category=$(echo "$item_data" | jq -r '.category')
-              actions=$(echo "$item_data" | jq -r '.actions | join("\\n- ")')
+                title=$(echo "$item_data" | jq -r '.title')
+                description=$(echo "$item_data" | jq -r '.description')
+                category=$(echo "$item_data" | jq -r '.category')
+                actions=$(echo "$item_data" | jq -r '.actions | join("\\n- ")')
 
-              issue_body="## 问题描述
-$description
+                issue_body=$(cat <<EOF
+                ## 问题描述
+                $description
 
-## 分类
-$category
+                ## 分类
+                $category
 
-## 建议措施
-- $actions
+                ## 建议措施
+                - $actions
 
-## 报告月份
-${{ needs.monthly-review.outputs.report_month }}
+                ## 报告月份
+                ${{ needs.monthly-review.outputs.report_month }}
 
----
-*此任务由月度优化审查自动生成*"
+                ---
+                *此任务由月度优化审查自动生成*
+                EOF
+                )
 
-              # 创建Issue
-              gh issue create \
-                --title "🔴 高优先级: $title" \
-                --body "$issue_body" \
-                --label "optimization,high-priority,monthly-review" \
-                --milestone "CI/CD优化"
-            done
+                # 创建Issue
+                gh issue create \
+                  --title "🔴 高优先级: $title" \
+                  --body "$issue_body" \
+                  --label "optimization,high-priority,monthly-review" \
+                  --milestone "CI/CD优化"
+              done
+            fi
           fi
-        fi
 
-    - name: Create optimization project board card
-      if: steps.parse-recommendations.outputs.high_priority > 0
-      run: |
-        # 如果有高优先级任务，在项目面板中创建卡片
-        # 这里可以集成GitHub Projects API
+      - name: Create optimization project board card
+        if: steps.parse-recommendations.outputs.high_priority > 0
+        run: |
+          # 如果有高优先级任务，在项目面板中创建卡片
+          # 这里可以集成GitHub Projects API
 
-        echo "📋 已创建 ${{ steps.parse-recommendations.outputs.high_priority }} 个高优先级优化任务"
-        echo "📋 ${{ steps.parse-recommendations.outputs.medium_priority }} 个中优先级建议"
-        echo "📋 ${{ steps.parse-recommendations.outputs.low_priority }} 个低优先级建议"
+          echo "📋 已创建 ${{ steps.parse-recommendations.outputs.high_priority }} 个高优先级优化任务"
+          echo "📋 ${{ steps.parse-recommendations.outputs.medium_priority }} 个中优先级建议"
+          echo "📋 ${{ steps.parse-recommendations.outputs.low_priority }} 个低优先级建议"
 
   # ============================================================================
   # 历史数据归档

@@ -230,34 +230,36 @@ jobs:
         # 添加扫描结果摘要
         if [ -f bandit-report.json ]; then
           echo "### Bandit 扫描结果" >> security-reports/security-summary.md
-          python -c "
-import json
-with open('bandit-report.json') as f:
-    data = json.load(f)
-if 'results' in data:
-    severities = {}
-    for issue in data['results']:
-        severity = issue.get('issue_severity', 'UNSPECIFIED')
-        severities[severity] = severities.get(severity, 0) + 1
-    print(f'- 严重问题: {severities.get(\"HIGH\", 0)}')
-    print(f'- 中等问题: {severities.get(\"MEDIUM\", 0)}')
-    print(f'- 低危问题: {severities.get(\"LOW\", 0)}')
-    print(f'- 无危问题: {severities.get(\"UNSPECIFIED\", 0)}')
-" >> security-reports/security-summary.md
+          python - <<'PY' >> security-reports/security-summary.md
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path("bandit-report.json").read_text(encoding="utf-8"))
+          if "results" in data:
+              severities = {}
+              for issue in data["results"]:
+                  severity = issue.get("issue_severity", "UNSPECIFIED")
+                  severities[severity] = severities.get(severity, 0) + 1
+              print(f'- 严重问题: {severities.get("HIGH", 0)}')
+              print(f'- 中等问题: {severities.get("MEDIUM", 0)}')
+              print(f'- 低危问题: {severities.get("LOW", 0)}')
+              print(f'- 无危问题: {severities.get("UNSPECIFIED", 0)}')
+          PY
         fi
 
         if [ -f safety-report.json ]; then
           echo "### Safety 依赖扫描结果" >> security-reports/security-summary.md
-          python -c "
-import json
-with open('safety-report.json') as f:
-    data = json.load(f)
-if data:
-    print(f'- 漏洞依赖: {len([d for d in data if d.get(\"vulnerable_spec\")])}')
-    print(f'- 已修复: {len([d for d in data if \"\" == d.get(\"vulnerable_spec\")])}')
-else:
-    print('- 未发现漏洞依赖')
-" >> security-reports/security-summary.md
+          python - <<'PY' >> security-reports/security-summary.md
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path("safety-report.json").read_text(encoding="utf-8"))
+          if data:
+              print(f'- 漏洞依赖: {len([d for d in data if d.get("vulnerable_spec")])}')
+              print(f'- 已修复: {len([d for d in data if "" == d.get("vulnerable_spec")])}')
+          else:
+              print("- 未发现漏洞依赖")
+          PY
         fi
 
         # 添加测试结果
@@ -339,13 +341,15 @@ else:
 
         # 检查Bandit结果
         if [ -f bandit-report.json ]; then
-          HIGH_COUNT=$(python -c "
-import json
-with open('bandit-report.json') as f:
-    data = json.load(f)
-high_count = len([r for r in data.get('results', []) if r.get('issue_severity') == 'HIGH'])
-print(high_count)
-")
+          HIGH_COUNT=$(python - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path("bandit-report.json").read_text(encoding="utf-8"))
+          high_count = len([r for r in data.get("results", []) if r.get("issue_severity") == "HIGH"])
+          print(high_count)
+          PY
+          )
           if [ "$HIGH_COUNT" -gt 0 ]; then
             SECURITY_PASS=false
             ISSUES_SUMMARY="$ISSUES_SUMMARY 严重安全问题: $HIGH_COUNT 个"
@@ -354,13 +358,15 @@ print(high_count)
 
         # 检查Safety结果
         if [ -f safety-report.json ]; then
-          VULNERABLE_COUNT=$(python -c "
-import json
-with open('safety-report.json') as f:
-    data = json.load(f)
-count = len([d for d in data if d.get('vulnerable_spec')])
-print(count)
-")
+          VULNERABLE_COUNT=$(python - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path("safety-report.json").read_text(encoding="utf-8"))
+          count = len([d for d in data if d.get("vulnerable_spec")])
+          print(count)
+          PY
+          )
           if [ "$VULNERABLE_COUNT" -gt 5 ]; then  # 超过5个漏洞依赖
             SECURITY_PASS=false
             ISSUES_SUMMARY="$ISSUES_SUMMARY 漏洞依赖过多: $VULNERABLE_COUNT 个"
@@ -415,40 +421,38 @@ print(count)
         echo "🔐 最终安全验证..."
 
         # 运行关键安全测试
-        python -c "
-import sys
-import subprocess
-import json
+        python - <<'PY'
+        import os
+        import sys
 
-# 测试1: 检查是否有硬编码密钥
-print('1. 检查硬编码密钥...')
-with open('src/core/config_loader.py', 'r') as f:
-    content = f.read()
-    if 'password' in content.lower() and 'getenv' not in content:
-        print('❌ 发现硬编码密码风险')
-        sys.exit(1)
-print('✅ 未发现硬编码密码')
+        print("1. 检查硬编码密钥...")
+        with open("src/core/config_loader.py", "r", encoding="utf-8") as f:
+            content = f.read()
+            if "password" in content.lower() and "getenv" not in content:
+                print("❌ 发现硬编码密码风险")
+                sys.exit(1)
+        print("✅ 未发现硬编码密码")
 
-# 测试2: 检查SQL注入风险
-print('2. 检查SQL注入风险...')
-sql_files = []
-for root, dirs, files in os.walk('src'):
-    for file in files:
-        if file.endswith('.py') and ('sql' in file.lower() or 'query' in file.lower()):
-            sql_files.append(os.path.join(root, file))
+        print("2. 检查SQL注入风险...")
+        sql_files = []
+        for root, _, files in os.walk("src"):
+            for file in files:
+                if file.endswith(".py") and ("sql" in file.lower() or "query" in file.lower()):
+                    sql_files.append(os.path.join(root, file))
 
-for file_path in sql_files[:5]:  # 检查前5个相关文件
-    try:
-        with open(file_path, 'r') as f:
-            content = f.read().lower()
-            if ('+' in content and 'select' in content and ('where' in content or 'set' in content)) or \
-               ('format' in content and 'select' in content):
-                print(f'⚠️  {file_path} 可能存在SQL注入风险')
-    except:
-        pass
+        for file_path in sql_files[:5]:
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    content = f.read().lower()
+                    if ("+" in content and "select" in content and ("where" in content or "set" in content)) or (
+                        "format" in content and "select" in content
+                    ):
+                        print(f"⚠️  {file_path} 可能存在SQL注入风险")
+            except Exception:
+                pass
 
-print('✅ 最终安全验证通过')
-"
+        print("✅ 最终安全验证通过")
+        PY
 
     - name: Approve for deployment
       run: |

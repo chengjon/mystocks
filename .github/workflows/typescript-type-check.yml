@@ -300,54 +300,44 @@ jobs:
       - name: Analyze type coverage
         run: |
           # 统计 TypeScript 文件和类型注解覆盖率
-          python -c "
-import os
-import re
-from pathlib import Path
+          python - <<'PY'
+          import json
+          import re
+          from datetime import datetime
+          from pathlib import Path
 
-def analyze_ts_coverage(directory):
-    '''分析 TypeScript 代码的类型覆盖率'''
-    total_files = 0
-    total_interfaces = 0
-    total_types = 0
+          def analyze_ts_coverage(directory: str) -> None:
+              total_files = 0
+              total_interfaces = 0
+              total_types = 0
 
-    for ts_file in Path(directory).rglob('*.ts'):
-        if 'node_modules' in str(ts_file) or '.test.' in str(ts_file):
-            continue
-        total_files += 1
+              for ts_file in Path(directory).rglob("*.ts"):
+                  if "node_modules" in str(ts_file) or ".test." in str(ts_file):
+                      continue
+                  total_files += 1
 
-        try:
-            with open(ts_file, 'r', encoding='utf-8') as f:
-                content = f.read()
+                  try:
+                      content = ts_file.read_text(encoding="utf-8")
+                      total_interfaces += len(re.findall(r"interface\s+\w+", content))
+                      total_types += len(re.findall(r"type\s+\w+", content))
+                  except Exception as exc:
+                      print(f"Error processing {ts_file}: {exc}")
 
-            # 统计接口定义
-            interfaces = len(re.findall(r'interface\s+\w+', content))
-            total_interfaces += interfaces
+              print(f"TypeScript 文件数: {total_files}")
+              print(f"接口定义数: {total_interfaces}")
+              print(f"类型别名数: {total_types}")
 
-            # 统计类型别名
-            types = len(re.findall(r'type\s+\w+', content))
-            total_types += types
+              report = {
+                  "timestamp": datetime.utcnow().isoformat(),
+                  "total_files": total_files,
+                  "total_interfaces": total_interfaces,
+                  "total_types": total_types,
+              }
 
-        except Exception as e:
-            print(f'Error processing {ts_file}: {e}')
+              Path("type-coverage.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
 
-    # 输出结果
-    print(f'TypeScript 文件数: {total_files}')
-    print(f'接口定义数: {total_interfaces}')
-    print(f'类型别名数: {total_types}')
-
-    # 写入 JSON 报告
-    import json
-    report = {
-        'timestamp': '$(date -Iseconds)',
-        'total_files': total_files,
-        'total_interfaces': total_interfaces,
-        'total_types': total_types
-    }
-
-    with open('type-coverage.json', 'w') as f:
-        json.dump(report, f, indent=2)
-          "
+          analyze_ts_coverage(".")
+          PY
         working-directory: src/
 
       - name: Upload type coverage results
@@ -473,17 +463,18 @@ def analyze_ts_coverage(directory):
           BASELINE_FRONTEND_ERRORS=""
           if [ -f "$BASELINE_FILE" ]; then
             BASELINE_FRONTEND_ERRORS=$(python - <<'PY'
-import json
-from pathlib import Path
-p = Path("${{ env.TECH_DEBT_BASELINE_FILE }}")
-try:
-    data = json.loads(p.read_text(encoding="utf-8"))
-    value = data.get("frontend_type_errors", "")
-    print(value if isinstance(value, int) and value >= 0 else "")
-except Exception:
-    print("")
-PY
-)
+            import json
+            from pathlib import Path
+
+            p = Path("${{ env.TECH_DEBT_BASELINE_FILE }}")
+            try:
+                data = json.loads(p.read_text(encoding="utf-8"))
+                value = data.get("frontend_type_errors", "")
+                print(value if isinstance(value, int) and value >= 0 else "")
+            except Exception:
+                print("")
+            PY
+            )
           fi
 
           if [ -z "$BASELINE_FRONTEND_ERRORS" ]; then

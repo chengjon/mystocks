@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import yaml
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
@@ -9,6 +10,18 @@ WORKFLOW_ROOT = PROJECT_ROOT / ".github" / "workflows"
 
 def _read_workflow(name: str) -> str:
     return (WORKFLOW_ROOT / name).read_text(encoding="utf-8")
+
+
+def test_key_workflows_are_valid_yaml_documents() -> None:
+    for workflow_name in (
+        "cicd-monthly-review.yml",
+        "python-type-check.yml",
+        "security-testing.yml",
+        "comprehensive-testing.yml",
+        "typescript-type-check.yml",
+    ):
+        workflow_text = _read_workflow(workflow_name)
+        assert yaml.safe_load(workflow_text) is not None
 
 
 def test_api_automation_discovery_uses_python_module_pip_and_backend_runtime_dependencies() -> None:

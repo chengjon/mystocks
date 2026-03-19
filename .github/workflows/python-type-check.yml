@@ -193,59 +193,50 @@ jobs:
       - name: Analyze type coverage
         run: |
           # 统计带有类型注解的函数比例
-          python -c "
-import os
-import re
-from pathlib import Path
+          python - <<'PY'
+          import json
+          import re
+          from datetime import datetime
+          from pathlib import Path
 
-def analyze_type_coverage(directory):
-    '''分析 Python 代码的类型覆盖率'''
-    total_funcs = 0
-    typed_funcs = 0
-    total_classes = 0
-    typed_classes = 0
+          def analyze_type_coverage(directory: str) -> None:
+              total_funcs = 0
+              typed_funcs = 0
+              total_classes = 0
 
-    for py_file in Path(directory).rglob('*.py'):
-        if 'test' in str(py_file) or '__pycache__' in str(py_file):
-            continue
+              for py_file in Path(directory).rglob("*.py"):
+                  if "test" in str(py_file) or "__pycache__" in str(py_file):
+                      continue
 
-        try:
-            with open(py_file, 'r', encoding='utf-8') as f:
-                content = f.read()
+                  try:
+                      content = py_file.read_text(encoding="utf-8")
+                      funcs = re.findall(r"^def\s+(\w+)\s*\((.*?)\)\s*(?:->\s*([^:]+))?:", content, re.MULTILINE)
+                      for _, params, return_type in funcs:
+                          total_funcs += 1
+                          if return_type or any(": " in param for param in params.split(",")):
+                              typed_funcs += 1
 
-            # 统计函数定义
-            funcs = re.findall(r'^def\s+(\w+)\s*\((.*?)\)\s*(?:->\s*([^:]+))?:', content, re.MULTILINE)
-            for func_name, params, return_type in funcs:
-                total_funcs += 1
-                # 检查是否有类型注解
-                if return_type or any(': ' in param for param in params.split(',')):
-                    typed_funcs += 1
+                      classes = re.findall(r"^class\s+(\w+).*?:", content, re.MULTILINE)
+                      total_classes += len(classes)
+                  except Exception as exc:
+                      print(f"Error processing {py_file}: {exc}")
 
-            # 统计类定义
-            classes = re.findall(r'^class\s+(\w+).*?:', content, re.MULTILINE)
-            total_classes += len(classes)
+              func_coverage = (typed_funcs / total_funcs * 100) if total_funcs > 0 else 0
+              print(f"函数类型覆盖率: {func_coverage:.1f}% ({typed_funcs}/{total_funcs})")
+              print(f"类总数: {total_classes}")
 
-        except Exception as e:
-            print(f'Error processing {py_file}: {e}')
+              report = {
+                  "timestamp": datetime.utcnow().isoformat(),
+                  "total_functions": total_funcs,
+                  "typed_functions": typed_funcs,
+                  "function_coverage_percent": round(func_coverage, 2),
+                  "total_classes": total_classes,
+              }
 
-    # 输出结果
-    func_coverage = (typed_funcs / total_funcs * 100) if total_funcs > 0 else 0
-    print(f'函数类型覆盖率: {func_coverage:.1f}% ({typed_funcs}/{total_funcs})')
-    print(f'类总数: {total_classes}')
+              Path("type-coverage.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
 
-    # 写入 JSON 报告
-    import json
-    report = {
-        'timestamp': '$(date -Iseconds)',
-        'total_functions': total_funcs,
-        'typed_functions': typed_funcs,
-        'function_coverage_percent': round(func_coverage, 2),
-        'total_classes': total_classes
-    }
-
-    with open('type-coverage.json', 'w') as f:
-        json.dump(report, f, indent=2)
-          "
+          analyze_type_coverage(".")
+          PY
         working-directory: src/
 
       - name: Upload type coverage results
