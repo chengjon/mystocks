@@ -114,6 +114,7 @@ def test_api_automation_discovery_workflow_uses_existing_runner_and_backend_runt
     assert "BACKEND_PORT=8000 API_BASE_URL=http://localhost:8000 ./scripts/run-api-tests.sh all" in content
     assert "structlog" in content
     assert "PyJWT" in content
+    assert "email-validator" in content
     assert "pip uninstall -y taospy || true" in content
     assert "export POSTGRESQL_DATABASE=mystocks" in content
     assert "Prepare TDengine CI shim" in content
@@ -211,6 +212,9 @@ def test_api_contract_validation_workflow_installs_backend_import_runtime_depend
 
     assert "openapi-spec-validator" in content
     assert "sqlalchemy" in content
+    assert "structlog" in content
+    assert "PyJWT" in content
+    assert "email-validator" in content
     assert "pip uninstall -y taospy || true" in content
     assert "POSTGRESQL_DATABASE: mystocks" in content
     assert "JWT_SECRET_KEY: ci_contract_validation_secret" in content
@@ -225,8 +229,13 @@ def test_api_file_tests_workflow_targets_supported_python_and_downloads_reports_
     assert "python-version: [3.9, 3.11]" not in content
     assert "python-version: '3.12'" in content
     assert "pip uninstall -y taospy || true" in content
+    assert "structlog" in content
+    assert "PyJWT" in content
+    assert "email-validator" in content
     assert "POSTGRESQL_DATABASE=mystocks_test" in content
     assert "JWT_SECRET_KEY=test_secret_key_for_ci" in content
+    assert "- 5432:5432" in content
+    assert "- 6379:6379" in content
     assert "Prepare TDengine CI shim" in content
     assert "PYTHONPATH=/tmp/ci-python-shims:.:web/backend python -m uvicorn web.backend.app.main:app" in content
     assert "name: api-file-test-results" in content
