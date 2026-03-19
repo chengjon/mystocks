@@ -146,13 +146,14 @@ class DatabaseTableManagerDDLInfoMixin:
                     columns.append({"name": row[0], "type": row[1], "length": row[2], "nullable": row[4] == "YES"})
             elif db_type == DatabaseType.POSTGRESQL:
                 cursor.execute(
-                    f"""
+                    """
                     SELECT column_name, data_type, is_nullable, column_default,
                            character_maximum_length, numeric_precision, numeric_scale
                     FROM information_schema.columns
-                    WHERE table_name = '{table_name}'
+                    WHERE table_name = %s
                     ORDER BY ordinal_position
-                """
+                    """,
+                    (table_name,),
                 )
                 result = cursor.fetchall()
                 for row in result:

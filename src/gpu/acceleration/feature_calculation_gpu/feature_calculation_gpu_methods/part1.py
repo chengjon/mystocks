@@ -625,7 +625,7 @@ class FeatureCalculationGPUCoreMixin:
             return float(np.clip(wr, -100, 0))
 
         except Exception as e:
-            logger.error("Williams %R计算失败: %s", e)
+            logger.error("Williams %%R计算失败: %s", e)
             return -50.0
 
     def _calculate_volatility_clustering(self, returns: Union[cudf.Series, pd.Series]) -> float:

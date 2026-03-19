@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
+from psycopg2 import sql
+
 from .part1 import logger
 
 
@@ -63,31 +65,32 @@ class PostgreSQLRelationalDataSourcePreferencesMixin:
             params = []
 
             if "display_settings" in preferences:
-                set_clauses.append("display_settings = display_settings || %s::jsonb")
+                set_clauses.append(sql.SQL("display_settings = display_settings || %s::jsonb"))
                 params.append(json.dumps(preferences["display_settings"]))
             if "notification_settings" in preferences:
-                set_clauses.append("notification_settings = notification_settings || %s::jsonb")
+                set_clauses.append(sql.SQL("notification_settings = notification_settings || %s::jsonb"))
                 params.append(json.dumps(preferences["notification_settings"]))
             if "trading_settings" in preferences:
-                set_clauses.append("trading_settings = trading_settings || %s::jsonb")
+                set_clauses.append(sql.SQL("trading_settings = trading_settings || %s::jsonb"))
                 params.append(json.dumps(preferences["trading_settings"]))
 
             if not set_clauses:
                 return False
 
-            set_clauses.append("updated_at = CURRENT_TIMESTAMP")
-            set_sql = ", ".join(set_clauses)
+            set_clauses.append(sql.SQL("updated_at = CURRENT_TIMESTAMP"))
             params.append(user_id)
 
-            sql = f"""
+            upsert_sql = sql.SQL(
+                """
                 INSERT INTO user_preferences
                 (user_id, display_settings, notification_settings, trading_settings, updated_at)
                 VALUES (%s, '{{}}'::jsonb, '{{}}'::jsonb, '{{}}'::jsonb, CURRENT_TIMESTAMP)
-                ON CONFLICT (user_id) DO UPDATE SET {set_sql}
-            """
+                ON CONFLICT (user_id) DO UPDATE SET {set_clauses}
+                """
+            ).format(set_clauses=sql.SQL(", ").join(set_clauses))
 
             insert_params = [user_id] + params
-            cursor.execute(sql, tuple(insert_params))
+            cursor.execute(upsert_sql, tuple(insert_params))
 
             conn.commit()
             cursor.close()
