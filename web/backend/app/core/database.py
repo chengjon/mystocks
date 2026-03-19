@@ -176,9 +176,14 @@ try:
 
     logger.info("MyStocks PostgreSQLDataAccess loaded successfully")
 
-except (ImportError, OSError, EnvironmentError) as e:
+except Exception as e:
     # Week 3 简化: 如果MyStocks核心模块不可用，跳过（web backend可独立运行）
-    logger.warning("MyStocks data access modules not available (expected in Week 3 simplified mode): %s", e)
+    logger.warning(
+        "MyStocks data access modules not available (expected in Week 3 simplified mode): %s (%s)",
+        type(e).__name__,
+        e,
+    )
+    monitoring_db = None
     postgresql_access = None
 
 

@@ -189,6 +189,24 @@
   - 本地验证过滤结果：
     - `grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>=' web/backend/requirements.txt`
 
+## [WORK] 2026-03-19 PR #11 CI Triage Refresh（Round 7）
+- Scope:
+  - 基于 `087f6430c` 这轮真实日志，继续处理 `api-discovery-test` 的 backend 启动失败
+- Root Cause:
+  - 即使跳过 `TA-Lib/xlwings`，backend 启动时仍会通过可选的 `src.data_access -> src.storage... -> taos` 链路触发 `taos.error.InterfaceError`
+  - 该错误本质上属于“可选旧 MyStocks 数据访问模块不可用”，但 `web/backend/app/core/database.py` 的降级兜底只捕获了 `ImportError/OSError/EnvironmentError`
+  - `taos.error.InterfaceError` 未被兜底，导致整个 backend 启动失败
+- Completed:
+  - `web/backend/app/core/database.py`
+    - 将可选 `src` 数据访问模块加载的兜底扩展为 `Exception`
+    - 记录异常类型
+    - 在降级路径下显式设置 `monitoring_db = None`
+- Verification:
+  - `python -m py_compile web/backend/app/core/database.py`
+  - 本地导入验证：
+    - `PYTHONPATH=$PWD/web/backend ... python -c 'import app.main'`
+    - 结果：`app.main` 导入成功，optional `src` 数据访问链路以 warning 降级
+
 ## [WORK] 2026-03-13 ArtDeco Pages Gate-0 + P0-A（dev-artdeco-pages-codex）
 - Scope:
   - 完成 `optimize-artdeco-pages` 的 `Gate-0` 首轮 SSOT 纠偏。
