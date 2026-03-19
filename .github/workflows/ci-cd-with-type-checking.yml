@@ -11,10 +11,54 @@ env:
   NODE_VERSION: '18'
 
 jobs:
+  type-check-scope-detect:
+    runs-on: ubuntu-latest
+    outputs:
+      type_check_required: ${{ steps.detect.outputs.type_check_required }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Run type-check scope detection
+      id: detect
+      run: |
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+        else
+          BASE_SHA="${{ github.event.before }}"
+        fi
+
+        if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+          if git rev-parse HEAD^ >/dev/null 2>&1; then
+            mapfile -t changed_files < <(git diff --name-only HEAD^ HEAD)
+          else
+            mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "${{ github.sha }}")
+          fi
+        else
+          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+        fi
+
+        type_check_required=false
+        for changed_file in "${changed_files[@]}"; do
+          case "$changed_file" in
+            src/*|src/**|web/frontend/src/*|web/frontend/src/**|config/mypy.ini|requirements.txt|requirements-mock.txt|web/frontend/package.json|web/frontend/package-lock.json|web/frontend/tsconfig.json|web/frontend/tsconfig.*.json)
+              type_check_required=true
+              break
+              ;;
+          esac
+        done
+
+        echo "type_check_required=$type_check_required" >> "$GITHUB_OUTPUT"
+
   # Type Checking Job
   type-check:
     name: Type Checking (Python & TypeScript)
     runs-on: ubuntu-latest
+    needs: type-check-scope-detect
+    if: needs.type-check-scope-detect.outputs.type_check_required == 'true'
 
     steps:
     - name: Checkout code
