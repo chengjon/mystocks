@@ -38,8 +38,21 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          pip install -r requirements.txt
-          pip install pydantic openapi-spec-validator
+          python -m pip install -r requirements.txt
+          pip uninstall -y taospy || true
+          python -m pip install \
+            pydantic \
+            openapi-spec-validator \
+            structlog \
+            email-validator \
+            sqlalchemy \
+            PyJWT \
+            python-jose[cryptography] \
+            passlib[bcrypt] \
+            openpyxl \
+            prometheus-client \
+            pydantic-settings \
+            psutil
 
       - name: Validate contract models and services
         run: |

@@ -66,8 +66,8 @@ jobs:
 
     - name: Install Python dependencies
       run: |
-        pip install -r requirements.txt
-        pip install pytest pytest-asyncio pytest-mock schemathesis locust
+        python -m pip install -r requirements.txt
+        python -m pip install pytest pytest-asyncio pytest-cov pytest-mock schemathesis locust
 
     - name: Install frontend dependencies
       run: |
@@ -89,14 +89,14 @@ jobs:
     - name: Run API Contract Tests
       run: |
         echo "🔍 Running API Contract Tests..."
-        python -m pytest tests/real_data_synchronization_test.py::test_market_data_real_availability -v
-        python -m pytest tests/real_data_synchronization_test.py::test_strategy_api_real_availability -v
-        python -m pytest tests/real_data_synchronization_test.py::test_data_routing_real_correctness -v
+        BASE_URL=http://localhost:8000 python -m pytest -o addopts='' tests/real_data_synchronization_test.py::test_market_data_real_availability -v
+        BASE_URL=http://localhost:8000 python -m pytest -o addopts='' tests/real_data_synchronization_test.py::test_strategy_api_real_availability -v
+        BASE_URL=http://localhost:8000 python -m pytest -o addopts='' tests/real_data_synchronization_test.py::test_data_routing_real_correctness -v
 
     - name: Run Data Mapping Tests
       run: |
         echo "🔄 Running Data Mapping Tests..."
-        python -m pytest tests/data_mapping_tests.py -v
+        python -m pytest -o addopts='' tests/data_mapping_tests.py -v
 
     - name: Run Type Generation Validation
       run: |
@@ -151,7 +151,7 @@ jobs:
     - name: Run Real Data Synchronization Tests
       run: |
         echo "🔬 Running Real Data Synchronization Tests..."
-        python tests/real_data_synchronization_test.py
+        BASE_URL=http://localhost:8000 python tests/real_data_synchronization_test.py
 
     - name: Generate Test Reports
       run: |
