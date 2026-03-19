@@ -86,6 +86,9 @@ def test_ai_test_optimization_uses_multiline_github_output_for_changed_python_fi
     assert 'echo "files=$FILES" >> $GITHUB_OUTPUT' not in content
     assert 'echo "python-files<<EOF"' in content
     assert 'echo "files<<EOF"' in content
+    assert "repo: context.repo.name" not in content
+    assert "repo: context.repo.repo" in content
+    assert "continue-on-error: true" in content
 
 
 def test_ci_cd_with_type_checking_uses_explicit_installable_type_stubs() -> None:
@@ -167,6 +170,7 @@ def test_security_enhancement_workflow_does_not_reference_missing_helper_scripts
     assert "scripts/check_security_thresholds.py" not in content
     assert "../bandit-report.json" not in content
     assert "name: code-security-results" in content
+    assert "continue-on-error: true" in content
 
 
 def test_visual_baseline_update_workflow_uses_pm2_and_job_outputs() -> None:
