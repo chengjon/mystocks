@@ -39,7 +39,7 @@ jobs:
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pytest pytest-cov pytest-timing
+        pip install pytest pytest-cov
         pip install pandas numpy
         pip install python-dateutil
 

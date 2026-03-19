@@ -24,7 +24,9 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-        pip install -r requirements-dev.txt
+        if [ -f requirements-dev.txt ]; then
+          pip install -r requirements-dev.txt
+        fi
 
     - name: Run AI-Assisted Tests
       run: |
@@ -55,7 +57,9 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-        pip install -r requirements-dev.txt
+        if [ -f requirements-dev.txt ]; then
+          pip install -r requirements-dev.txt
+        fi
 
     - name: Run Contract Tests
       run: |
@@ -86,7 +90,9 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-        pip install -r requirements-dev.txt
+        if [ -f requirements-dev.txt ]; then
+          pip install -r requirements-dev.txt
+        fi
         pip install psutil
 
     - name: Run Performance Tests
@@ -169,7 +175,9 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-        pip install -r requirements-dev.txt
+        if [ -f requirements-dev.txt ]; then
+          pip install -r requirements-dev.txt
+        fi
 
     - name: Run Chaos Tests
       run: |
@@ -200,7 +208,9 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-        pip install -r requirements-dev.txt
+        if [ -f requirements-dev.txt ]; then
+          pip install -r requirements-dev.txt
+        fi
 
     - name: Run Data Quality Tests
       run: |
@@ -305,7 +315,9 @@ jobs:
     - name: Install all dependencies
       run: |
         pip install -r requirements.txt
-        pip install -r requirements-dev.txt
+        if [ -f requirements-dev.txt ]; then
+          pip install -r requirements-dev.txt
+        fi
         pip install -r requirements-security.txt
 
     - name: Run Full Test Suite

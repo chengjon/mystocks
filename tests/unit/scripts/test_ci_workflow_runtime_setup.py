@@ -39,6 +39,14 @@ def test_api_automation_discovery_uses_python_module_pip_and_backend_runtime_dep
     assert "scripts/run-api-tests.sh" in workflow
 
 
+def test_api_automation_discovery_sets_required_backend_runtime_env_vars() -> None:
+    workflow = _read_workflow("api-automation-discovery.yml")
+
+    assert "export POSTGRESQL_USER=postgres" in workflow
+    assert "export BACKEND_PORT=8000" in workflow
+    assert "export BACKEND_BACKUP_PORT=8001" in workflow
+
+
 def test_api_contract_validation_uses_backend_import_environment_and_scope_gate() -> None:
     workflow = _read_workflow("api-contract-validation.yml")
 
@@ -291,6 +299,20 @@ def test_ci_cd_basic_tests_install_backend_runtime_dependencies() -> None:
 
     assert "pip install -r requirements.txt" in basic_section
     assert "pip install -r web/backend/requirements.txt" in basic_section
+
+
+def test_comprehensive_testing_only_installs_requirements_dev_when_present() -> None:
+    workflow = _read_workflow("comprehensive-testing.yml")
+
+    assert 'if [ -f requirements-dev.txt ]; then' in workflow
+    assert 'pip install -r requirements-dev.txt' in workflow
+
+
+def test_test_coverage_drops_unavailable_pytest_timing_dependency() -> None:
+    workflow = _read_workflow("test-coverage.yml")
+
+    assert "pip install pytest pytest-cov" in workflow
+    assert "pytest-timing" not in workflow
 
 
 def test_ci_cd_test_chain_validation_uses_current_script_locations() -> None:
