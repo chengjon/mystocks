@@ -155,3 +155,40 @@ def test_directory_compliance_uses_current_root_budget_and_excludes_api_wrapper(
     assert "MAX_ROOT_DIRS=15" in workflow
     assert "MAX_ROOT_FILES=32" in workflow
     assert "! -name 'run-api-tests.sh'" in workflow
+
+
+def test_coverage_and_performance_workflows_download_artifacts_into_workspace() -> None:
+    coverage_workflow = _read_workflow("coverage-expansion.yml")
+    performance_workflow = _read_workflow("performance-testing.yml")
+
+    coverage_section = coverage_workflow.split("Download coverage report", 1)[1].split("Generate test expansion plan", 1)[0]
+    performance_section = performance_workflow.split("Download performance results", 1)[1].split(
+        "Check for performance regressions", 1
+    )[0]
+
+    assert "uses: actions/download-artifact@v4" in coverage_section
+    assert "path: ." in coverage_section
+
+    assert "uses: actions/download-artifact@v4" in performance_section
+    assert "path: ." in performance_section
+
+
+def test_security_testing_merges_downloaded_artifacts_into_workspace() -> None:
+    workflow = _read_workflow("security-testing.yml")
+
+    all_security_section = workflow.split("Download all security artifacts", 1)[1].split(
+        "Generate consolidated security report", 1
+    )[0]
+    quality_gate_section = workflow.split("Download security reports", 1)[1].split("Security Quality Gate Check", 1)[0]
+    final_section = workflow.split("Download final security reports", 1)[1].split("Final security verification", 1)[0]
+
+    assert "uses: actions/download-artifact@v4" in all_security_section
+    assert "path: ." in all_security_section
+    assert "merge-multiple: true" in all_security_section
+
+    assert "uses: actions/download-artifact@v4" in quality_gate_section
+    assert "path: ." in quality_gate_section
+    assert "merge-multiple: true" in quality_gate_section
+
+    assert "uses: actions/download-artifact@v4" in final_section
+    assert "path: ." in final_section
