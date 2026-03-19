@@ -99,6 +99,21 @@ def test_data_sync_workflow_uses_python_module_pip_and_ci_safe_pytest_invocation
     assert "uses: actions/download-artifact@v4" in workflow
 
 
+def test_data_sync_workflow_starts_backend_before_contract_tests_and_tolerates_missing_quality_artifacts() -> None:
+    workflow = _read_workflow("data-sync-testing.yml")
+
+    assert "Start backend for API Contract Tests" in workflow
+    contract_setup_section = workflow.split("- name: Start backend for API Contract Tests", 1)[1].split(
+        "- name: Run API Contract Tests", 1
+    )[0]
+    assert "python -m uvicorn app.main:app --host 0.0.0.0 --port 8000" in contract_setup_section
+    assert "/tmp/contract_backend_pid" in contract_setup_section
+
+    quality_gate_section = workflow.split("# Quality Gate Check", 1)[1]
+    download_section = quality_gate_section.split("- name: Download Test Results", 1)[1].split("- name: Quality Gate Check", 1)[0]
+    assert "continue-on-error: true" in download_section
+
+
 def test_legacy_e2e_workflow_declares_stable_port_defaults() -> None:
     workflow = _read_workflow("e2e-test.yml")
 
