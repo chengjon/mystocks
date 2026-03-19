@@ -147,3 +147,11 @@ def test_python_and_typescript_type_check_workflows_download_artifacts_into_work
 
     assert "uses: actions/download-artifact@v4" in typescript_section
     assert "path: ." in typescript_section
+
+
+def test_directory_compliance_uses_current_root_budget_and_excludes_api_wrapper() -> None:
+    workflow = _read_workflow("directory-compliance.yml")
+
+    assert "MAX_ROOT_DIRS=15" in workflow
+    assert "MAX_ROOT_FILES=32" in workflow
+    assert "! -name 'run-api-tests.sh'" in workflow
