@@ -446,6 +446,45 @@ def test_directory_compliance_uses_current_root_budget_and_excludes_api_wrapper(
     assert "! -name 'run-api-tests.sh'" in workflow
 
 
+def test_p0_quality_gate_scopes_pr_checks_to_changed_files() -> None:
+    workflow = _read_workflow("p0-quality-gate.yml")
+
+    assert "p0-scope-detect" in workflow
+    assert "python_quality_required" in workflow
+    assert "dependency_check_required" in workflow
+    assert "python_files" in workflow
+
+    scope_section = workflow.split("p0-scope-detect:", 1)[1].split("# P0-1", 1)[0]
+    pylint_section = workflow.split("pylint-errors:", 1)[1].split("# P0-2", 1)[0]
+    formatting_section = workflow.split("formatting-check:", 1)[1].split("# P0-3", 1)[0]
+    security_section = workflow.split("security-scan:", 1)[1].split("# P0-4", 1)[0]
+    dependency_section = workflow.split("dependency-check:", 1)[1].split("# P0-5", 1)[0]
+    syntax_section = workflow.split("syntax-check:", 1)[1].split("# P0-6", 1)[0]
+
+    assert "git diff --name-only" in scope_section
+    assert "src/*.py|src/**/*.py" in scope_section
+    assert "requirements.txt|requirements-mock.txt|config/requirements.txt|pyproject.toml" in scope_section
+
+    assert "needs: p0-scope-detect" in pylint_section
+    assert "needs.p0-scope-detect.outputs.python_quality_required == 'true'" in pylint_section
+    assert "${{ needs.p0-scope-detect.outputs.python_files }}" in pylint_section
+
+    assert "needs: p0-scope-detect" in formatting_section
+    assert "needs.p0-scope-detect.outputs.python_quality_required == 'true'" in formatting_section
+    assert "${{ needs.p0-scope-detect.outputs.python_files }}" in formatting_section
+
+    assert "needs: p0-scope-detect" in security_section
+    assert "needs.p0-scope-detect.outputs.python_quality_required == 'true'" in security_section
+    assert "${{ needs.p0-scope-detect.outputs.python_files }}" in security_section
+
+    assert "needs: p0-scope-detect" in dependency_section
+    assert "needs.p0-scope-detect.outputs.dependency_check_required == 'true'" in dependency_section
+
+    assert "needs: p0-scope-detect" in syntax_section
+    assert "needs.p0-scope-detect.outputs.python_quality_required == 'true'" in syntax_section
+    assert "${{ needs.p0-scope-detect.outputs.python_files }}" in syntax_section
+
+
 def test_coverage_and_performance_workflows_download_artifacts_into_workspace() -> None:
     coverage_workflow = _read_workflow("coverage-expansion.yml")
     performance_workflow = _read_workflow("performance-testing.yml")
