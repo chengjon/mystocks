@@ -118,24 +118,27 @@ jobs:
         script: |
           const fs = require('fs');
           const report = fs.readFileSync('performance-report.html', 'utf8');
+          const body = [
+            '## 📊 Performance Test Results',
+            '',
+            `### Test Type: ${{ inputs.test_type || 'load' }}`,
+            '',
+            `**Performance Report:** [View Full Report](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
+            '',
+            'Key Metrics:',
+            '- API Response Time (p95): Check report',
+            '- Database Query Time: Check report',
+            '- Memory Usage: Check report',
+            '- CPU Usage: Check report',
+            '',
+            `${report.substring(0, 1000)}...`
+          ].join('\n');
 
           await github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `## 📊 Performance Test Results
-
-### Test Type: ${{ inputs.test_type || 'load' }}
-
-**Performance Report:** [View Full Report](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
-
-Key Metrics:
-- API Response Time (p95): Check report
-- Database Query Time: Check report
-- Memory Usage: Check report
-- CPU Usage: Check report
-
-${report.substring(0, 1000)}...`
+            body
           });
 
   regression-check:

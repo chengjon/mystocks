@@ -80,10 +80,9 @@ jobs:
         echo "🎯 Checking coverage thresholds..."
 
         # Extract coverage percentages
-        BASE_ADAPTER_COV=$(python -c "
-        import sys
+        BASE_ADAPTER_COV=$(python - <<'PY'
+        import xml.etree.ElementTree as ET
         try:
-            import xml.etree.ElementTree as ET
             tree = ET.parse('coverage.xml')
             root = tree.getroot()
             for package in root.findall('.//package'):
@@ -93,11 +92,12 @@ jobs:
                     break
             else:
                 print('0')
-        except:
+        except Exception:
             print('0')
-        ")
+        PY
+        )
 
-        DATA_VALIDATOR_COV=$(python -c "
+        DATA_VALIDATOR_COV=$(python - <<'PY'
         import xml.etree.ElementTree as ET
         try:
             tree = ET.parse('coverage.xml')
@@ -109,11 +109,12 @@ jobs:
                     break
             else:
                 print('0')
-        except:
+        except Exception:
             print('0')
-        ")
+        PY
+        )
 
-        EXCEPTIONS_COV=$(python -c "
+        EXCEPTIONS_COV=$(python - <<'PY'
         import xml.etree.ElementTree as ET
         try:
             tree = ET.parse('coverage.xml')
@@ -125,9 +126,10 @@ jobs:
                     break
             else:
                 print('0')
-        except:
+        except Exception:
             print('0')
-        ")
+        PY
+        )
 
         echo "📈 Phase 6 Coverage Results:"
         echo "  - base_adapter.py: ${BASE_ADAPTER_COV}% (target: ≥95%)"
@@ -162,37 +164,37 @@ jobs:
 
         # Create performance test script
         cat > performance_test.py << 'EOF'
-import time
-import sys
-from pathlib import Path
+        import time
+        import sys
+        from pathlib import Path
 
-# Add project root to path
-sys.path.insert(0, str(Path('.').absolute()))
+        # Add project root to path
+        sys.path.insert(0, str(Path('.').absolute()))
 
-def test_base_adapter_performance():
-    """Test base_adapter performance"""
-    try:
-        from src.adapters.data_validator import DataValidator
-        validator = DataValidator()
+        def test_base_adapter_performance():
+            """Test base_adapter performance"""
+            try:
+                from src.adapters.data_validator import DataValidator
+                validator = DataValidator()
 
-        start = time.time()
-        for i in range(1000):
-            validator.validate_stock_symbol(f"00000{i%6}")
-        duration = time.time() - start
+                start = time.time()
+                for i in range(1000):
+                    validator.validate_stock_symbol(f"00000{i%6}")
+                duration = time.time() - start
 
-        assert duration < 1.0, f"Stock symbol validation too slow: {duration:.3f}s"
-        print(f"✅ Stock symbol validation: {duration:.3f}s for 1000 calls")
+                assert duration < 1.0, f"Stock symbol validation too slow: {duration:.3f}s"
+                print(f"✅ Stock symbol validation: {duration:.3f}s for 1000 calls")
 
-    except Exception as e:
-        print(f"❌ Performance test failed: {e}")
-        return False
+            except Exception as e:
+                print(f"❌ Performance test failed: {e}")
+                return False
 
-    return True
+            return True
 
-if __name__ == "__main__":
-    success = test_base_adapter_performance()
-    sys.exit(0 if success else 1)
-EOF
+        if __name__ == "__main__":
+            success = test_base_adapter_performance()
+            sys.exit(0 if success else 1)
+        EOF
 
         python performance_test.py
 

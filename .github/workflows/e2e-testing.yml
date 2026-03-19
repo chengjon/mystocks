@@ -391,51 +391,51 @@ jobs:
 
           # 保存摘要到文件
           cat > test-summary.json << EOF
-{
-  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-  "total_tests": $total_tests,
-  "passed_tests": $passed_tests,
-  "failed_tests": $failed_tests,
-  "success_rate": "$(echo "scale=2; $passed_tests * 100 / $total_tests" | bc 2>/dev/null || echo "0")",
-  "commit": "${{ github.sha }}",
-  "branch": "${{ github.ref_name }}",
-  "workflow": "${{ github.workflow }}",
-  "run_id": "${{ github.run_id }}"
-}
-EOF
+          {
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "total_tests": $total_tests,
+            "passed_tests": $passed_tests,
+            "failed_tests": $failed_tests,
+            "success_rate": "$(echo "scale=2; $passed_tests * 100 / $total_tests" | bc 2>/dev/null || echo "0")",
+            "commit": "${{ github.sha }}",
+            "branch": "${{ github.ref_name }}",
+            "workflow": "${{ github.workflow }}",
+            "run_id": "${{ github.run_id }}"
+          }
+          EOF
 
           echo "✅ Test summary saved to test-summary.json"
 
       - name: Generate Test Report
         run: |
           cat > test-report.md << 'EOF'
-# E2E Test Report
+          # E2E Test Report
 
-**Run ID:** ${{ github.run_id }}
-**Commit:** ${{ github.sha }}
-**Branch:** ${{ github.ref_name }}
-**Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%SZ)
+          **Run ID:** ${{ github.run_id }}
+          **Commit:** ${{ github.sha }}
+          **Branch:** ${{ github.ref_name }}
+          **Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-## Test Summary
+          ## Test Summary
 
-| Browser | Tests | Passed | Failed | Success Rate |
-|---------|-------|---------|---------|-------------|
-$(for browser in chromium firefox webkit; do
-  echo "| $browser | - | - | - | - |"
-done)
+          | Browser | Tests | Passed | Failed | Success Rate |
+          |---------|-------|---------|---------|-------------|
+          $(for browser in chromium firefox webkit; do
+            echo "| $browser | - | - | - | - |"
+          done)
 
-## Artifacts
+          ## Artifacts
 
-- [E2E Test Results](./artifacts)
-- [Playwright Reports](./artifacts)
-- [Test Summary](./test-summary.json)
+          - [E2E Test Results](./artifacts)
+          - [Playwright Reports](./artifacts)
+          - [Test Summary](./test-summary.json)
 
-## Next Steps
+          ## Next Steps
 
-- Review failed tests in the Playwright report
-- Check console logs for any runtime errors
-- Monitor test flakiness across runs
-EOF
+          - Review failed tests in the Playwright report
+          - Check console logs for any runtime errors
+          - Monitor test flakiness across runs
+          EOF
 
           echo "📋 Test report generated"
 
