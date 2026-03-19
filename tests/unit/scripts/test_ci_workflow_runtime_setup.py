@@ -64,6 +64,10 @@ def test_data_sync_workflow_uses_python_module_pip_and_ci_safe_pytest_invocation
     assert "BASE_URL=http://localhost:8000 python -m pytest -o addopts=''" in workflow
     assert "python -m pytest -o addopts='' tests/data_mapping_tests.py -v" in workflow
     assert "BASE_URL=http://localhost:8000 python tests/real_data_synchronization_test.py" in workflow
+    assert "ports:" in workflow
+    assert "- 5432:5432" in workflow
+    assert "psql -h localhost -U postgres -d postgres -tc" in workflow
+    assert "uses: actions/download-artifact@v4" in workflow
 
 
 def test_legacy_e2e_workflow_declares_stable_port_defaults() -> None:
