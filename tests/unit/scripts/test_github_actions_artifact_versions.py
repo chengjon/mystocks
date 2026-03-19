@@ -104,6 +104,17 @@ def test_ci_cd_with_type_checking_uses_explicit_installable_type_stubs() -> None
     assert "pip install mypy types-requests types-PyYAML" in content
 
 
+def test_api_automation_discovery_workflow_uses_existing_runner_and_backend_runtime_packages() -> None:
+    workflow = WORKFLOW_ROOT / "api-automation-discovery.yml"
+    content = workflow.read_text(encoding="utf-8", errors="ignore")
+
+    assert "chmod +x run-api-tests.sh" not in content
+    assert "./run-api-tests.sh -u http://localhost:8000" not in content
+    assert "chmod +x scripts/run-api-tests.sh" in content
+    assert "BACKEND_PORT=8000 API_BASE_URL=http://localhost:8000 ./scripts/run-api-tests.sh all" in content
+    assert "structlog" in content
+
+
 def test_ci_cd_workflow_references_existing_test_chain_scripts() -> None:
     workflow = WORKFLOW_ROOT / "ci-cd.yml"
     content = workflow.read_text(encoding="utf-8", errors="ignore")
