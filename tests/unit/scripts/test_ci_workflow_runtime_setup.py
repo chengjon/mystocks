@@ -224,6 +224,15 @@ def test_ci_cd_test_chain_validation_uses_current_script_locations() -> None:
     assert "from scripts.tools import ai_test_assistant" not in chain_section
 
 
+def test_ci_cd_with_type_checking_avoids_types_all_meta_package() -> None:
+    workflow = _read_workflow("ci-cd-with-type-checking.yml")
+    install_section = workflow.split("- name: Install Python dependencies", 1)[1].split("- name: Install frontend dependencies", 1)[0]
+
+    assert "pip install mypy" in install_section
+    assert "pip install mypy types-all" not in install_section
+    assert "requirements-mock.txt" in install_section
+
+
 def test_python_and_typescript_type_check_workflows_download_artifacts_into_workspace() -> None:
     python_workflow = _read_workflow("python-type-check.yml")
     typescript_workflow = _read_workflow("typescript-type-check.yml")
