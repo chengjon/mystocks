@@ -68,8 +68,8 @@ jobs:
 
     - name: Install Python dependencies
       run: |
-        pip install -r requirements.txt
-        pip install pytest pytest-asyncio pytest-cov pytest-mock schemathesis locust
+        python -m pip install -r requirements.txt
+        python -m pip install pytest pytest-asyncio pytest-cov pytest-mock schemathesis locust
 
     - name: Install frontend dependencies
       run: |
