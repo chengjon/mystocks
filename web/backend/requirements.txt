@@ -1,7 +1,7 @@
 # Web Framework
 fastapi==0.115.0
 uvicorn[standard]==0.30.0
-python-multipart==0.0.9
+python-multipart==0.0.22
 
 # Database and ORM
 sqlalchemy==2.0.35
@@ -31,7 +31,7 @@ structlog==24.4.0
 # Utils
 pydantic==2.9.0
 pydantic-settings==2.5.0
-requests==2.32.3
+requests==2.32.4
 celery==5.4.0
 psutil>=5.9.0
 

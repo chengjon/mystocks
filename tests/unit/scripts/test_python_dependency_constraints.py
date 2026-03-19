@@ -52,3 +52,27 @@ def test_runtime_requirements_explicitly_declare_pyjwt_for_backend_auth() -> Non
 
     for requirement_path in runtime_requirements:
         _extract_requirement(requirement_path, "PyJWT")
+
+
+def test_runtime_requirements_raise_requests_to_safe_floor() -> None:
+    runtime_requirements = [
+        PROJECT_ROOT / "requirements.txt",
+        PROJECT_ROOT / "config" / "requirements.txt",
+        PROJECT_ROOT / "web" / "backend" / "requirements.txt",
+    ]
+
+    for requirement_path in runtime_requirements:
+        requests_line = _extract_requirement(requirement_path, "requests")
+        assert requests_line in {"requests>=2.32.4", "requests==2.32.4"}
+
+
+def test_runtime_requirements_raise_python_multipart_to_safe_floor() -> None:
+    runtime_requirements = [
+        PROJECT_ROOT / "requirements.txt",
+        PROJECT_ROOT / "config" / "requirements.txt",
+        PROJECT_ROOT / "web" / "backend" / "requirements.txt",
+    ]
+
+    for requirement_path in runtime_requirements:
+        multipart_line = _extract_requirement(requirement_path, "python-multipart")
+        assert multipart_line in {"python-multipart>=0.0.22", "python-multipart==0.0.22"}
