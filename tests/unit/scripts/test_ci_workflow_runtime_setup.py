@@ -111,9 +111,23 @@ def test_security_enhancement_pr_comment_is_non_blocking() -> None:
     assert "continue-on-error: true" in workflow
 
 
+def test_security_enhancement_fetches_full_history_for_secret_scanning() -> None:
+    workflow = _read_workflow("security-enhancement.yml")
+
+    assert "Scan for secrets" in workflow
+    assert "fetch-depth: 0" in workflow
+
+
 def test_ai_test_optimization_uses_repo_repo_for_new_pr_comments() -> None:
     workflow = _read_workflow("ai-test-optimization.yml")
 
     assert "await github.rest.issues.createComment" in workflow
     assert "repo: context.repo.repo" in workflow
     assert "repo: context.repo.name" not in workflow
+
+
+def test_frontend_testing_uses_repo_root_relative_compliance_script_paths() -> None:
+    workflow = _read_workflow("frontend-testing.yml")
+
+    assert "python ../../scripts/compliance/app_route_purity_gate.py" in workflow
+    assert "python ../../scripts/compliance/request_id_visibility_gate.py" in workflow

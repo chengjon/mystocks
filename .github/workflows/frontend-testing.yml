@@ -178,7 +178,7 @@ jobs:
 
     - name: App Route Purity Gate
       run: |
-        python scripts/compliance/app_route_purity_gate.py --format json > app-route-purity-gate-report.json
+        python ../../scripts/compliance/app_route_purity_gate.py --format json > app-route-purity-gate-report.json
         cat app-route-purity-gate-report.json
 
     - name: Request ID Visibility Gate
@@ -199,7 +199,7 @@ jobs:
           mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
         fi
 
-        cmd=(python scripts/compliance/request_id_visibility_gate.py --format json)
+        cmd=(python ../../scripts/compliance/request_id_visibility_gate.py --format json)
         for changed_file in "${changed_files[@]}"; do
           cmd+=(--path "$changed_file")
         done
