@@ -64,3 +64,19 @@ def test_data_sync_workflow_uses_python_module_pip_and_ci_safe_pytest_invocation
     assert "BASE_URL=http://localhost:8000 python -m pytest -o addopts=''" in workflow
     assert "python -m pytest -o addopts='' tests/data_mapping_tests.py -v" in workflow
     assert "BASE_URL=http://localhost:8000 python tests/real_data_synchronization_test.py" in workflow
+
+
+def test_legacy_e2e_workflow_declares_stable_port_defaults() -> None:
+    workflow = _read_workflow("e2e-test.yml")
+
+    assert "FRONTEND_PORT: '3020'" in workflow
+    assert "FRONTEND_BACKUP_PORT: '3021'" in workflow
+    assert "BACKEND_PORT: '8020'" in workflow
+    assert "BACKEND_BACKUP_PORT: '8021'" in workflow
+
+
+def test_kline_e2e_mocks_readiness_endpoint_before_navigation() -> None:
+    spec = (PROJECT_ROOT / "web" / "frontend" / "tests" / "e2e" / "kline-chart.spec.ts").read_text(encoding="utf-8")
+
+    assert "**/api/health/ready" in spec
+    assert "e2e-kline-ready" in spec
