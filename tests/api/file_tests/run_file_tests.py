@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import List, Optional
 
 # Add project root to path
-project_root = Path(__file__).parent.parent.parent.parent
+project_root = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(project_root))
 
 from tests.api.file_tests import FileTestRunner, TestPriority
@@ -31,49 +31,23 @@ class FileTestRunnerCLI:
     """Command-line interface for file-level API testing"""
 
     def __init__(self):
-        self.runner = FileTestRunner(max_workers=8)
+        self.project_root = project_root
+        self.runner = FileTestRunner(max_workers=8, base_dir=self.project_root)
         self.api_files = self._discover_api_files()
 
     def _discover_api_files(self) -> List[str]:
-        """Discover all API files that need testing"""
-        # Use absolute path from project root
-        project_root = Path(__file__).parent.parent.parent
-        api_dir = project_root / "web" / "backend" / "app" / "api"
+        """Discover logical file-level test units from existing pytest modules."""
+        tests_dir = self.project_root / "tests" / "api" / "file_tests"
 
-        if not api_dir.exists():
-            print(f"Warning: API directory {api_dir} not found")
-            # Return mock file list for demonstration
-            return [
-                "web/backend/app/api/market.py",
-                "web/backend/app/api/trade/routes.py",
-                "web/backend/app/api/technical_analysis.py",
-                "web/backend/app/api/strategy_management.py",
-                "web/backend/app/api/risk_management.py",
-                "web/backend/app/api/announcement.py",
-                "web/backend/app/api/auth.py",
-            ]
+        if not tests_dir.exists():
+            print(f"Warning: file-level tests directory {tests_dir} not found")
+            return []
 
-        api_files = []
-
-        # Find all Python files with router decorators
-        for py_file in api_dir.rglob("*.py"):
-            if py_file.name.startswith("__"):
-                continue
-
-            try:
-                with open(py_file, "r", encoding="utf-8") as f:
-                    content = f.read()
-                    if "@router." in content:
-                        api_files.append(str(py_file.relative_to(Path.cwd())))
-            except Exception as e:
-                print(f"Warning: Could not read {py_file}: {e}")
-
-        return sorted(api_files)
+        return sorted(str(test_file.relative_to(self.project_root)) for test_file in tests_dir.glob("test_*_api.py"))
 
     def filter_files_by_priority(self, files: List[str], priority: TestPriority) -> List[str]:
         """Filter files by test priority"""
-        priority_map = self.runner.file_priorities
-        return [f for f in files if priority_map.get(f, TestPriority.P2_UTILITY) == priority]
+        return [file_path for file_path in files if self.runner.get_priority(file_path) == priority]
 
     async def run_tests(
         self, files: Optional[List[str]] = None, priority: Optional[TestPriority] = None, report_format: str = "console"

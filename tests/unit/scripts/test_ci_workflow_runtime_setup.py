@@ -45,6 +45,17 @@ def test_api_contract_and_api_file_workflows_install_backend_runtime_dependencie
     assert "- 6379:6379" in api_file_workflow
 
 
+def test_api_file_workflow_uses_readiness_gate_and_real_pytest_modules() -> None:
+    workflow = _read_workflow("api-file-tests.yml")
+
+    assert "api-file-tests-readiness" in workflow
+    assert "needs: api-file-tests-readiness" in workflow
+    assert "needs.api-file-tests-readiness.outputs.ready == 'true'" in workflow
+    assert "python-version: [3.11, 3.12]" in workflow
+    assert "python -m pytest tests/api/file_tests -q -o addopts=''" in workflow
+    assert "Enforce file test coverage threshold" in workflow
+
+
 def test_data_sync_workflow_uses_python_module_pip_and_ci_safe_pytest_invocations() -> None:
     workflow = _read_workflow("data-sync-testing.yml")
 
