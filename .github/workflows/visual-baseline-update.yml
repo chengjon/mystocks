@@ -164,7 +164,7 @@ jobs:
           echo "- Strategy template charts (2 instances)" >> visual-baseline-update-report.md
 
       - name: Upload Update Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: visual-baseline-update-report
           path: visual-baseline-update-report.md
@@ -198,7 +198,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download Update Report
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: visual-baseline-update-report
           path: .

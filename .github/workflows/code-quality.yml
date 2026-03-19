@@ -348,7 +348,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload code quality results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: code-quality-results
@@ -390,7 +390,7 @@ jobs:
         coverage html
 
     - name: Upload coverage reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: test-coverage-results
@@ -448,7 +448,7 @@ jobs:
         PY
 
     - name: Upload performance results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: performance-results
@@ -491,7 +491,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload complexity results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: complexity-results
@@ -550,7 +550,7 @@ jobs:
         semgrep --config=p/ci --json -o semgrep-compliance.json src/ || true
 
     - name: Upload compliance results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: compliance-results
@@ -566,7 +566,7 @@ jobs:
 
     steps:
     - name: Download all quality artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
 
     - name: Generate consolidated quality report
       run: |
@@ -660,7 +660,7 @@ jobs:
         echo "质量报告已生成: quality-reports/"
 
     - name: Upload quality reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: quality-reports
         path: quality-reports/
@@ -676,7 +676,7 @@ jobs:
 
     steps:
     - name: Download quality reports
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
 
     - name: Quality Gate Evaluation
       id: gate
@@ -835,7 +835,7 @@ jobs:
         PY
 
     - name: Upload hardcoding artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: hardcoding-governance-results
@@ -853,7 +853,7 @@ jobs:
 
     steps:
     - name: Download all artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
 
     - name: Generate final CI/CD report
       run: |
@@ -888,7 +888,7 @@ jobs:
         fi
 
     - name: Upload final report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ci-cd-final-report
         path: |
