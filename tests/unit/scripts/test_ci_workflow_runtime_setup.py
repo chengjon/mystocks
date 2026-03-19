@@ -102,3 +102,10 @@ def test_playwright_workflow_runs_smoke_subset_only() -> None:
     assert "Run Playwright smoke tests" in workflow
     assert "tests/env-test.spec.ts" in workflow
     assert "--config=playwright.config.ts" in workflow
+
+
+def test_security_enhancement_pr_comment_is_non_blocking() -> None:
+    workflow = _read_workflow("security-enhancement.yml")
+
+    assert "Comment security summary on PR" in workflow
+    assert "continue-on-error: true" in workflow
