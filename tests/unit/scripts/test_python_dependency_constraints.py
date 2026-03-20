@@ -54,6 +54,12 @@ def test_runtime_requirements_explicitly_declare_pyjwt_for_backend_auth() -> Non
         _extract_requirement(requirement_path, "PyJWT")
 
 
+def test_backend_runtime_requirements_declare_apscheduler_for_cache_eviction() -> None:
+    backend_requirements = PROJECT_ROOT / "web" / "backend" / "requirements.txt"
+
+    _extract_requirement(backend_requirements, "APScheduler")
+
+
 def test_runtime_requirements_raise_requests_to_safe_floor() -> None:
     runtime_requirements = [
         PROJECT_ROOT / "requirements.txt",
