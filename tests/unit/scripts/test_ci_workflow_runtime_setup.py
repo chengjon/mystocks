@@ -165,6 +165,17 @@ def test_legacy_e2e_workflow_declares_stable_port_defaults() -> None:
     assert "BACKEND_BACKUP_PORT: '8021'" in workflow
 
 
+def test_legacy_e2e_workflow_starts_services_before_stable_suite() -> None:
+    workflow = _read_workflow("e2e-test.yml")
+
+    assert "Start backend service" in workflow
+    assert "Start frontend service" in workflow
+    assert "curl -fsS http://localhost:${BACKEND_PORT}/api/announcement/health" in workflow
+    assert "curl -fsS http://localhost:${BACKEND_PORT}/health/ready" in workflow
+    assert "curl -fsS http://localhost:${FRONTEND_PORT}/" in workflow
+    assert "Stop services" in workflow
+
+
 def test_kline_e2e_mocks_readiness_endpoint_before_navigation() -> None:
     spec = (PROJECT_ROOT / "web" / "frontend" / "tests" / "e2e" / "kline-chart.spec.ts").read_text(encoding="utf-8")
 
