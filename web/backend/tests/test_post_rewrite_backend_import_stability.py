@@ -114,3 +114,48 @@ import app.main
     )
 
     assert completed.returncode == 0, completed.stdout + completed.stderr
+
+
+def test_app_main_imports_when_talib_is_unavailable() -> None:
+    env = os.environ.copy()
+    env.update(
+        {
+            "POSTGRESQL_HOST": "localhost",
+            "POSTGRESQL_PORT": "5438",
+            "POSTGRESQL_USER": "postgres",
+            "POSTGRESQL_PASSWORD": "password",
+            "POSTGRESQL_DATABASE": "mystocks",
+            "JWT_SECRET_KEY": "test-secret-key",
+            "BACKEND_PORT": "8000",
+            "BACKEND_BACKUP_PORT": "8001",
+            "TESTING": "true",
+            "PYTHONPATH": ".:web/backend",
+        }
+    )
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            """
+import builtins
+
+_real_import = builtins.__import__
+
+def _guarded_import(name, globals=None, locals=None, fromlist=(), level=0):
+    if name == "talib" or name.startswith("talib."):
+        raise ModuleNotFoundError("No module named 'talib'")
+    return _real_import(name, globals, locals, fromlist, level)
+
+builtins.__import__ = _guarded_import
+import app.main
+""",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+        cwd=PROJECT_ROOT,
+        env=env,
+    )
+
+    assert completed.returncode == 0, completed.stdout + completed.stderr

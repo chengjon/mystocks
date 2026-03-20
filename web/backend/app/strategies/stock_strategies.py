@@ -20,7 +20,19 @@ from datetime import datetime
 from typing import Dict, Optional
 
 import pandas as pd
-import talib as tl
+try:
+    import talib as tl
+except ImportError as exc:
+    _TALIB_IMPORT_ERROR = exc
+
+    class _TalibProxy:
+        def __getattr__(self, name: str):
+            raise RuntimeError(
+                "TA-Lib runtime is unavailable. Install TA-Lib before executing stock strategies "
+                f"that require indicator function '{name}'."
+            ) from _TALIB_IMPORT_ERROR
+
+    tl = _TalibProxy()
 
 from web.backend.app.strategies._stock_strategies_tail import create_low_atr_growth_strategy
 

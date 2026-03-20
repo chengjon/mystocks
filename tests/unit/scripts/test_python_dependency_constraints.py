@@ -71,6 +71,28 @@ def test_runtime_requirements_explicitly_declare_aiohttp_for_backend_startup() -
         _extract_requirement(requirement_path, "aiohttp")
 
 
+def test_runtime_requirements_explicitly_declare_sse_starlette_for_sse_routes() -> None:
+    runtime_requirements = [
+        PROJECT_ROOT / "requirements.txt",
+        PROJECT_ROOT / "config" / "requirements.txt",
+        PROJECT_ROOT / "web" / "backend" / "requirements.txt",
+    ]
+
+    for requirement_path in runtime_requirements:
+        _extract_requirement(requirement_path, "sse-starlette")
+
+
+def test_runtime_requirements_explicitly_declare_swagger_ui_py_for_local_docs_assets() -> None:
+    runtime_requirements = [
+        PROJECT_ROOT / "requirements.txt",
+        PROJECT_ROOT / "config" / "requirements.txt",
+        PROJECT_ROOT / "web" / "backend" / "requirements.txt",
+    ]
+
+    for requirement_path in runtime_requirements:
+        _extract_requirement(requirement_path, "swagger-ui-py")
+
+
 def test_runtime_requirements_raise_requests_to_safe_floor() -> None:
     runtime_requirements = [
         PROJECT_ROOT / "requirements.txt",
