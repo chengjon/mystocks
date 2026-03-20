@@ -249,12 +249,35 @@ def test_playwright_workflow_runs_smoke_subset_only() -> None:
     assert "--config=playwright.config.ts" in workflow
 
 
+def test_e2e_tests_workflow_installs_backend_runtime_dependencies_and_downloads_gate_inputs() -> None:
+    workflow = _read_workflow("e2e-tests.yml")
+    install_section = workflow.split("- name: Install dependencies", 1)[1].split("- name: Start application", 1)[0]
+    start_section = workflow.split("- name: Start application", 1)[1].split("- name: Run E2E tests", 1)[0]
+    quality_gate_section = workflow.split("quality-gate:", 1)[1]
+
+    assert "pip install -r requirements.txt" in install_section
+    assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in install_section
+    assert "pip install -r /tmp/backend-requirements-ci.txt" in install_section
+    assert "export POSTGRESQL_HOST=${POSTGRESQL_HOST}" in start_section
+    assert "export POSTGRESQL_USER=${POSTGRESQL_USER}" in start_section
+    assert "export POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}" in start_section
+    assert "export POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE}" in start_section
+    assert "export JWT_SECRET_KEY=$(openssl rand -hex 32)" in start_section
+    assert "PYTHONPATH=$PWD:$PWD/web/backend" in start_section
+    assert "python -m uvicorn app.main:app" in start_section
+    assert "actions/download-artifact@v4" in quality_gate_section
+    assert "name: e2e-test-results" in workflow
+    assert "test-results/e2e-results.json" in quality_gate_section
+
+
 def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking_pr_comment() -> None:
     workflow = _read_workflow("e2e-testing.yml")
+    backend_install_section = workflow.split("- name: Install Backend Dependencies", 1)[1].split("- name: Run Backend Tests", 1)[0]
     backend_test_section = workflow.split("- name: Run Backend Tests", 1)[1].split("- name: Start Backend Server", 1)[0]
 
     assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in workflow
     assert "pip install -r /tmp/backend-requirements-ci.txt" in workflow
+    assert "python -m pip install -r requirements.txt" in backend_install_section
     assert "tests/test_post_rewrite_backend_import_stability.py" in workflow
     assert "tests/test_trading_runtime_routes.py" in workflow
     assert "curl -f http://localhost:8000/api/announcement/health" in workflow
@@ -413,6 +436,10 @@ def test_frontend_testing_uses_ci_safe_frontend_commands_instead_of_repo_wide_ts
     workflow = _read_workflow("frontend-testing.yml")
     frontend_test_section = workflow.split("frontend-test:", 1)[1].split("frontend-security:", 1)[0]
 
+    assert "FRONTEND_PORT: '3020'" in frontend_test_section
+    assert "FRONTEND_BACKUP_PORT: '3021'" in frontend_test_section
+    assert "BACKEND_PORT: '8020'" in frontend_test_section
+    assert "BACKEND_BACKUP_PORT: '8021'" in frontend_test_section
     assert "npm run type-check" not in frontend_test_section
     assert "npm run test:unit" not in frontend_test_section
     assert "npx vitest run" in frontend_test_section
@@ -447,6 +474,8 @@ def test_visual_testing_scopes_pipeline_and_uses_full_frontend_dependencies() ->
     assert "--only=production" not in visual_test_section
     assert 'echo "FRONTEND_PORT=5173" >> $GITHUB_ENV' in visual_test_section
     assert 'echo "FRONTEND_BACKUP_PORT=5174" >> $GITHUB_ENV' in visual_test_section
+    assert 'echo "BACKEND_PORT=8000" >> $GITHUB_ENV' in visual_test_section
+    assert 'echo "BACKEND_BACKUP_PORT=8001" >> $GITHUB_ENV' in visual_test_section
     assert "npm run dev -- --host 0.0.0.0 --port 5173" in visual_test_section
 
 

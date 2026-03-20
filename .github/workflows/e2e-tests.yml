@@ -9,9 +9,30 @@ on:
 env:
   E2E_BASE_URL: http://localhost:8000
   E2E_HEADLESS: "true"
+  BACKEND_PORT: "8000"
+  BACKEND_BACKUP_PORT: "8001"
+  POSTGRESQL_HOST: "localhost"
+  POSTGRESQL_PORT: "5432"
+  POSTGRESQL_USER: "postgres"
+  POSTGRESQL_PASSWORD: "postgres"
+  POSTGRESQL_DATABASE: "mystocks_test"
 
 jobs:
   e2e-tests:
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: mystocks_test
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,14 +46,24 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+          grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>=' web/backend/requirements.txt > /tmp/backend-requirements-ci.txt
+          pip install -r /tmp/backend-requirements-ci.txt
           pip install playwright
           playwright install --with-deps chromium
 
       - name: Start application
         run: |
-          python -m uvicorn web.backend.app.main:app --host 0.0.0.0 --port 8000 &
+          export POSTGRESQL_HOST=${POSTGRESQL_HOST}
+          export POSTGRESQL_PORT=${POSTGRESQL_PORT}
+          export POSTGRESQL_USER=${POSTGRESQL_USER}
+          export POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
+          export POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE}
+          export BACKEND_PORT=${BACKEND_PORT}
+          export BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT}
+          export JWT_SECRET_KEY=$(openssl rand -hex 32)
+          PYTHONPATH=$PWD:$PWD/web/backend python -m uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT} &
           sleep 10
-          curl -f http://localhost:8000/health || exit 1
+          curl -f http://localhost:${BACKEND_PORT}/api/announcement/health || curl -f http://localhost:${BACKEND_PORT}/health/ready
 
       - name: Run E2E tests
         run: |
@@ -82,6 +113,11 @@ jobs:
     needs: [e2e-tests, performance-tests]
     if: always()
     steps:
+      - name: Download e2e results
+        uses: actions/download-artifact@v4
+        with:
+          name: e2e-test-results
+          path: test-results
       - name: Check results
         run: |
           E2E_PASSED=$(cat test-results/e2e-results.json | python -c "import sys, json; data=json.load(sys.stdin); print('pass' if data.get('summary',{}).get('passed',0) > 0 else 'fail')" 2>/dev/null || echo "fail")

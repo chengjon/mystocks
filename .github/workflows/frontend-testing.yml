@@ -225,6 +225,11 @@ jobs:
   frontend-test:
     runs-on: ubuntu-latest
     needs: frontend-gate-scope-detect
+    env:
+      FRONTEND_PORT: '3020'
+      FRONTEND_BACKUP_PORT: '3021'
+      BACKEND_PORT: '8020'
+      BACKEND_BACKUP_PORT: '8021'
     defaults:
       run:
         working-directory: web/frontend

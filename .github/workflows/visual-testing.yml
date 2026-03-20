@@ -181,6 +181,8 @@ jobs:
           echo "USE_MOCK_DATA=true" >> $GITHUB_ENV
           echo "FRONTEND_PORT=5173" >> $GITHUB_ENV
           echo "FRONTEND_BACKUP_PORT=5174" >> $GITHUB_ENV
+          echo "BACKEND_PORT=8000" >> $GITHUB_ENV
+          echo "BACKEND_BACKUP_PORT=8001" >> $GITHUB_ENV
 
       - name: Start Frontend Server
         run: |
