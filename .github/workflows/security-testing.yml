@@ -17,10 +17,59 @@ env:
   NODE_VERSION: '20'
 
 jobs:
+  security-test-scope-detect:
+    runs-on: ubuntu-latest
+    outputs:
+      bandit_required: ${{ steps.detect.outputs.bandit_required }}
+      bandit_args: ${{ steps.detect.outputs.bandit_args }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Detect security test scope
+      id: detect
+      shell: bash
+      run: |
+        bandit_required=false
+        bandit_args=""
+
+        if [ "${{ github.event_name }}" != "pull_request" ]; then
+          bandit_required=true
+          bandit_args="-r src/ web/backend/app/"
+        else
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            if git rev-parse HEAD^ >/dev/null 2>&1; then
+              mapfile -t changed_files < <(git diff --name-only HEAD^ HEAD)
+            else
+              mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "${{ github.sha }}")
+            fi
+          else
+            mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+          fi
+
+          for changed_file in "${changed_files[@]}"; do
+            case "$changed_file" in
+              src/*.py|src/**/*.py|web/backend/app/*.py|web/backend/app/**/*.py)
+                bandit_required=true
+                bandit_args="$bandit_args $changed_file"
+                ;;
+            esac
+          done
+        fi
+
+        echo "bandit_required=$bandit_required" >> "$GITHUB_OUTPUT"
+        echo "bandit_args=$(echo "$bandit_args" | xargs)" >> "$GITHUB_OUTPUT"
+
   # 安全扫描阶段 - 检查代码中的安全漏洞
   security-scan:
     name: Security Scan (SAST)
     runs-on: ubuntu-latest
+    needs: security-test-scope-detect
+    if: needs.security-test-scope-detect.outputs.bandit_required == 'true'
 
     steps:
     - name: Checkout code
@@ -41,7 +90,7 @@ jobs:
 
     - name: Run Bandit security scan
       run: |
-        bandit -r src/ -f json -o bandit-report.json -q || true
+        bandit ${{ needs.security-test-scope-detect.outputs.bandit_args }} -f json -o bandit-report.json -q || true
       continue-on-error: true
 
     - name: Run Safety dependency check

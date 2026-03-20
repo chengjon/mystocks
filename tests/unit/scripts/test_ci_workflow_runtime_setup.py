@@ -600,6 +600,24 @@ def test_security_testing_uses_parseable_report_generation_and_non_blocking_slac
     assert "continue-on-error: true" in notification_section
 
 
+def test_security_testing_scopes_sast_gate_to_relevant_python_changes() -> None:
+    workflow = _read_workflow("security-testing.yml")
+
+    assert "security-test-scope-detect" in workflow
+    assert "bandit_required" in workflow
+    assert "bandit_args" in workflow
+
+    scope_section = workflow.split("security-test-scope-detect:", 1)[1].split("security-scan:", 1)[0]
+    scan_section = workflow.split("security-scan:", 1)[1].split("dependency-check:", 1)[0]
+
+    assert "git diff --name-only" in scope_section
+    assert "src/*.py|src/**/*.py|web/backend/app/*.py|web/backend/app/**/*.py" in scope_section
+    assert "needs: security-test-scope-detect" in scan_section
+    assert "needs.security-test-scope-detect.outputs.bandit_required == 'true'" in scan_section
+    assert "${{ needs.security-test-scope-detect.outputs.bandit_args }}" in scan_section
+    assert "bandit -r src/" not in scan_section
+
+
 def test_quant_strategy_validation_uses_existing_script_path_and_safe_issue_body_heredoc() -> None:
     workflow = _read_workflow("quant-strategy-validation.yml")
 
