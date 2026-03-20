@@ -132,10 +132,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install mypy
+        pip install mypy types-PyYAML
         if [ -f requirements-mock.txt ]; then
           pip install -r requirements-mock.txt
         fi
+        pip install -e .
 
     - name: Install frontend dependencies
       working-directory: web/frontend
@@ -146,7 +147,13 @@ jobs:
       run: |
         echo "Running Python type checking..."
         mkdir -p mypy-reports
-        mypy --config-file=config/mypy.ini ${{ needs.type-check-scope-detect.outputs.python_files }} \
+        mypy --config-file=config/mypy.ini \
+          --explicit-package-bases \
+          --non-interactive \
+          --pretty \
+          --show-error-codes \
+          --show-column-numbers \
+          ${{ needs.type-check-scope-detect.outputs.python_files }} \
           --html-report mypy-reports \
           --xml-report mypy-reports \
           || (echo "MyPy found type errors" && exit 1)

@@ -35,6 +35,7 @@ def __getattr__(name: str):
     except ImportError as exc:
         raise AttributeError(f"optional TDX export {name!r} is unavailable") from exc
 
+
 __all__ = [
     "BaseTdxAdapter",
     "tdx_retry",

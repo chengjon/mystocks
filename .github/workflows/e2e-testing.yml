@@ -178,7 +178,7 @@ jobs:
             tests/test_post_rewrite_backend_import_stability.py \
             tests/test_trading_runtime_routes.py \
             tests/strategy_management/test_backtest_runtime_fallback.py \
-            -v --tb=short --no-cov
+            -v --tb=short
 
       - name: Start Backend Server
         run: |

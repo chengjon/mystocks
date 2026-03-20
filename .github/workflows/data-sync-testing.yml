@@ -162,13 +162,13 @@ jobs:
       run: |
         echo "🎨 Building Frontend..."
         cd web/frontend
-        npm run build
+        npm run build:no-types
 
     - name: Run UI Binding Tests
       run: |
         echo "🎯 Running UI Binding Tests..."
         cd web/frontend
-        npm run test:unit -- --run tests/ui_binding_tests.spec.ts --reporter=verbose
+        npx vitest run tests/unit/config/pageConfig.test.ts --reporter=verbose
 
     - name: Start Services for E2E Tests
       run: |

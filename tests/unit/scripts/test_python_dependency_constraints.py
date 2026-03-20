@@ -159,3 +159,10 @@ def test_runtime_requirements_raise_python_multipart_to_safe_floor() -> None:
     for requirement_path in runtime_requirements:
         multipart_line = _extract_requirement(requirement_path, "python-multipart")
         assert multipart_line in {"python-multipart>=0.0.22", "python-multipart==0.0.22"}
+
+
+def test_backend_runtime_requirements_raise_python_jose_to_safe_floor() -> None:
+    backend_requirements = PROJECT_ROOT / "web" / "backend" / "requirements.txt"
+
+    jose_line = _extract_requirement(backend_requirements, "python-jose[cryptography]")
+    assert jose_line in {"python-jose[cryptography]>=3.4.0", "python-jose[cryptography]==3.4.0"}

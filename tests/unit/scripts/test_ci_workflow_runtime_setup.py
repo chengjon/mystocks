@@ -166,6 +166,23 @@ def test_data_sync_workflow_starts_backend_before_contract_tests_and_tolerates_m
     assert "bash ./scripts/ci_type_check.sh" in workflow
 
 
+def test_data_sync_workflow_uses_ci_safe_frontend_build_without_repo_wide_type_gate() -> None:
+    workflow = _read_workflow("data-sync-testing.yml")
+    build_section = workflow.split("- name: Build Frontend", 1)[1].split("- name: Run UI Binding Tests", 1)[0]
+
+    assert "npm run build:no-types" in build_section
+    assert "npm run build\n" not in build_section
+
+
+def test_data_sync_workflow_runs_existing_frontend_contract_smoke_instead_of_missing_ui_binding_script() -> None:
+    workflow = _read_workflow("data-sync-testing.yml")
+    ui_section = workflow.split("- name: Run UI Binding Tests", 1)[1].split("- name: Start Services for E2E Tests", 1)[0]
+
+    assert "npm run test:unit" not in ui_section
+    assert "npx vitest run" in ui_section
+    assert "tests/unit/config/pageConfig.test.ts" in ui_section
+
+
 def test_legacy_e2e_workflow_declares_stable_port_defaults() -> None:
     workflow = _read_workflow("e2e-test.yml")
 
@@ -230,9 +247,21 @@ def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking
     assert "curl -f http://localhost:8000/health/ready" in workflow
     assert "npm run build:no-types" in workflow
     assert "export PLAYWRIGHT_EXTERNAL_FRONTEND=1" in workflow
+    assert "--no-cov" not in workflow
 
     comment_section = workflow.split("- name: Comment PR with Results", 1)[1].split("# 第六阶段", 1)[0]
     assert "continue-on-error: true" in comment_section
+
+
+def test_ci_cd_type_workflow_matches_recovery_mypy_baseline() -> None:
+    workflow = _read_workflow("ci-cd-with-type-checking.yml")
+    install_section = workflow.split("- name: Install Python dependencies", 1)[1].split("- name: Install frontend dependencies", 1)[0]
+    mypy_section = workflow.split("- name: Run Python type checking (mypy)", 1)[1].split("- name: Generate type coverage report", 1)[0]
+
+    assert "types-PyYAML" in install_section
+    assert "pip install -e ." in install_section
+    assert "--explicit-package-bases" in mypy_section
+    assert "--non-interactive" in mypy_section
 
 
 def test_e2e_enhanced_workflow_uses_existing_pm2_configs_and_non_blocking_pr_comment() -> None:

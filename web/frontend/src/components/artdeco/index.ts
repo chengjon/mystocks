@@ -15,7 +15,7 @@ export * from './base'
 export * from './core'
 
 // 高级分析组件
-export * from './advanced'
+// 直接从 ./advanced 按需导入，避免顶层基础 barrel 被可选高级组件的历史断链拖垮。
 
 // 业务组件 (NEW - Phase 3 reorganization)
 export * from './business'
