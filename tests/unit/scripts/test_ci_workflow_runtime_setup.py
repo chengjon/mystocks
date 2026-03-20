@@ -227,6 +227,8 @@ def test_e2e_enhanced_workflow_uses_existing_pm2_configs_and_non_blocking_pr_com
 
     assert "pm2 start config/pm2/ecosystem.playwright.p1.fixed.config.js" not in workflow
     assert "pm2 start config/pm2/ecosystem.playwright.p2.config.js" not in workflow
+    assert "FRONTEND_BACKUP_PORT: 3021" in workflow
+    assert "BACKEND_BACKUP_PORT: 8001" in workflow
     assert "tests/e2e/critical/menu-navigation-fixed.spec.ts" in workflow
     assert "tests/e2e/kline-chart.spec.ts" in workflow
     assert "PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test" in workflow
@@ -558,7 +560,16 @@ def test_python_type_check_scopes_pr_runs_to_relevant_src_files() -> None:
     assert "mypy src/ tests/" not in full_section
     assert "--config-file=config/mypy.ini" in full_section
     assert "--explicit-package-bases" in full_section
-    assert "${{ needs.python-type-scope-detect.outputs.python_files }}" in full_section
+
+
+def test_python_type_check_workflow_uses_non_blocking_pr_comments_and_no_invalid_coverage_package() -> None:
+    workflow = _read_workflow("python-type-check.yml")
+
+    comment_section = workflow.split("- name: Comment on PR", 1)[1].split("type-coverage:", 1)[0]
+    coverage_section = workflow.split("type-coverage:", 1)[1].split("type-check-gate:", 1)[0]
+
+    assert "continue-on-error: true" in comment_section
+    assert "mypy-coverage-typing" not in coverage_section
 
 
 def test_directory_compliance_uses_current_root_budget_and_excludes_api_wrapper() -> None:

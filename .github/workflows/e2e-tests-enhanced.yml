@@ -13,7 +13,9 @@ on:
 env:
   PYTHONPATH: /opt/claude/mystocks_spec
   FRONTEND_PORT: 3020
+  FRONTEND_BACKUP_PORT: 3021
   BACKEND_PORT: 8000
+  BACKEND_BACKUP_PORT: 8001
 
 jobs:
   e2e-tests-p1-p2:
