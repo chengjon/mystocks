@@ -18,6 +18,20 @@ jobs:
   stable-suite:
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: mystocks_test
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v3
@@ -55,7 +69,9 @@ jobs:
           export POSTGRESQL_PORT=5432
           export POSTGRESQL_USER=postgres
           export POSTGRESQL_PASSWORD=test_password
+          export POSTGRESQL_DATABASE=mystocks_test
           export JWT_SECRET_KEY=$(openssl rand -hex 32)
+          export TESTING=true
           export BACKEND_PORT=${BACKEND_PORT}
           export BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT}
           PYTHONPATH=$PWD:$PWD/web/backend nohup python -m uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT} >/tmp/e2e_stable_backend.log 2>&1 &
@@ -94,6 +110,20 @@ jobs:
   nightly-full:
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: mystocks_test
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     
     steps:
       - uses: actions/checkout@v3
@@ -131,7 +161,9 @@ jobs:
           export POSTGRESQL_PORT=5432
           export POSTGRESQL_USER=postgres
           export POSTGRESQL_PASSWORD=test_password
+          export POSTGRESQL_DATABASE=mystocks_test
           export JWT_SECRET_KEY=$(openssl rand -hex 32)
+          export TESTING=true
           export BACKEND_PORT=${BACKEND_PORT}
           export BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT}
           PYTHONPATH=$PWD:$PWD/web/backend nohup python -m uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT} >/tmp/e2e_nightly_backend.log 2>&1 &
