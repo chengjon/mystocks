@@ -91,7 +91,7 @@ jobs:
         export BACKEND_PORT=8000
         export BACKEND_BACKUP_PORT=8001
 
-        nohup python -m uvicorn web.backend.app.main:app --host 0.0.0.0 --port 8000 >/tmp/api_automation_backend.log 2>&1 &
+        PYTHONPATH=$PWD:$PWD/web/backend nohup python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 >/tmp/api_automation_backend.log 2>&1 &
         API_AUTOMATION_BACKEND_PID=$!
         echo $API_AUTOMATION_BACKEND_PID > /tmp/api_automation_backend_pid
 

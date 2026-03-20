@@ -46,6 +46,8 @@ def test_api_automation_discovery_sets_required_backend_runtime_env_vars() -> No
     assert "export BACKEND_PORT=8000" in workflow
     assert "export BACKEND_BACKUP_PORT=8001" in workflow
     start_section = workflow.split("- name: Start Backend Service", 1)[1].split("- name: Run API Automation Tests", 1)[0]
+    assert 'PYTHONPATH=$PWD:$PWD/web/backend' in start_section
+    assert "python -m uvicorn app.main:app" in start_section
     assert "nohup" in start_section
     assert "/tmp/api_automation_backend_pid" in start_section
     assert "curl -fsS http://localhost:8000/api/announcement/health" in start_section
@@ -147,8 +149,9 @@ def test_data_sync_workflow_starts_backend_before_contract_tests_and_tolerates_m
     assert "export JWT_SECRET_KEY=$(openssl rand -hex 32)" in contract_setup_section
     assert "export BACKEND_PORT=8000" in contract_setup_section
     assert "export BACKEND_BACKUP_PORT=8001" in contract_setup_section
+    assert 'PYTHONPATH=$PWD:$PWD/web/backend' in contract_setup_section
+    assert "python -m uvicorn app.main:app" in contract_setup_section
     assert "nohup" in contract_setup_section
-    assert "python -m uvicorn app.main:app --host 0.0.0.0 --port 8000" in contract_setup_section
     assert "/tmp/contract_backend_pid" in contract_setup_section
 
     quality_gate_section = workflow.split("# Quality Gate Check", 1)[1]

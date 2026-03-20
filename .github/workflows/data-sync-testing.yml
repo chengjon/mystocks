@@ -101,10 +101,8 @@ jobs:
         export JWT_SECRET_KEY=$(openssl rand -hex 32)
         export BACKEND_PORT=8000
         export BACKEND_BACKUP_PORT=8001
-        cd web/backend
-        nohup python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 >/tmp/contract_backend.log 2>&1 &
+        PYTHONPATH=$PWD:$PWD/web/backend nohup python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 >/tmp/contract_backend.log 2>&1 &
         CONTRACT_BACKEND_PID=$!
-        cd ../..
 
         echo $CONTRACT_BACKEND_PID > /tmp/contract_backend_pid
 
