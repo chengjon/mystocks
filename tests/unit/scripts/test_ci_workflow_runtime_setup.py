@@ -157,6 +157,7 @@ def test_data_sync_workflow_starts_backend_before_contract_tests_and_tolerates_m
     quality_gate_section = workflow.split("# Quality Gate Check", 1)[1]
     download_section = quality_gate_section.split("- name: Download Test Results", 1)[1].split("- name: Quality Gate Check", 1)[0]
     assert "continue-on-error: true" in download_section
+    assert "bash ./scripts/ci_type_check.sh" in workflow
 
 
 def test_legacy_e2e_workflow_declares_stable_port_defaults() -> None:
@@ -231,6 +232,7 @@ def test_e2e_enhanced_workflow_uses_existing_pm2_configs_and_non_blocking_pr_com
     assert "BACKEND_BACKUP_PORT: 8001" in workflow
     assert "tests/e2e/critical/menu-navigation-fixed.spec.ts" in workflow
     assert "tests/e2e/kline-chart.spec.ts" in workflow
+    assert "npx playwright install --with-deps chromium" in workflow
     assert "PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test" in workflow
     assert "curl -s http://localhost:8000/api/announcement/health" in workflow
     assert "curl -s http://localhost:8000/health/ready" in workflow

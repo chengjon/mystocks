@@ -140,7 +140,7 @@ jobs:
     - name: Run Type Generation Validation
       run: |
         echo "📝 Running Type Generation Validation..."
-        ./scripts/ci_type_check.sh
+        bash ./scripts/ci_type_check.sh
 
     - name: Stop backend after API Contract Tests
       if: always()
