@@ -98,6 +98,7 @@ jobs:
         export POSTGRESQL_PORT=5432
         export POSTGRESQL_USER=postgres
         export POSTGRESQL_PASSWORD=test_password
+        export POSTGRESQL_DATABASE=mystocks_test
         export JWT_SECRET_KEY=$(openssl rand -hex 32)
         export BACKEND_PORT=8000
         export BACKEND_BACKUP_PORT=8001

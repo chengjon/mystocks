@@ -46,6 +46,7 @@ def test_api_automation_discovery_sets_required_backend_runtime_env_vars() -> No
     workflow = _read_workflow("api-automation-discovery.yml")
 
     assert "export POSTGRESQL_USER=postgres" in workflow
+    assert "export POSTGRESQL_DATABASE=mystocks" in workflow
     assert "export BACKEND_PORT=8000" in workflow
     assert "export BACKEND_BACKUP_PORT=8001" in workflow
     start_section = workflow.split("- name: Start Backend Service", 1)[1].split("- name: Run API Automation Tests", 1)[0]
@@ -149,6 +150,7 @@ def test_data_sync_workflow_starts_backend_before_contract_tests_and_tolerates_m
     assert "export POSTGRESQL_HOST=localhost" in contract_setup_section
     assert "export POSTGRESQL_USER=postgres" in contract_setup_section
     assert "export POSTGRESQL_PASSWORD=test_password" in contract_setup_section
+    assert "export POSTGRESQL_DATABASE=mystocks_test" in contract_setup_section
     assert "export JWT_SECRET_KEY=$(openssl rand -hex 32)" in contract_setup_section
     assert "export BACKEND_PORT=8000" in contract_setup_section
     assert "export BACKEND_BACKUP_PORT=8001" in contract_setup_section
