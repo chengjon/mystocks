@@ -403,6 +403,8 @@ def test_ci_cd_with_type_checking_scopes_pipeline_to_type_relevant_changes() -> 
     assert "needs.type-check-scope-detect.outputs.frontend_type_check_required == 'true'" in type_check_section
     assert "part[0-9]+\\.py|_tail\\.py" in scope_section
     assert '[[ "$changed_file" == src/gpu/* ]]' in scope_section
+    assert 'if [ -z "$python_files" ]; then' in scope_section
+    assert "python_type_check_required=false" in scope_section
     assert "mypy --config-file=config/mypy.ini ${{ needs.type-check-scope-detect.outputs.python_files }}" in type_check_section
 
 

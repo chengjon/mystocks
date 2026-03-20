@@ -69,6 +69,11 @@ jobs:
           esac
         done
 
+        python_files="$(echo "$python_files" | xargs)"
+        if [ -z "$python_files" ]; then
+          python_type_check_required=false
+        fi
+
         if [ "$python_type_check_required" = "true" ] || [ "$frontend_type_check_required" = "true" ]; then
           type_check_required=true
         fi
@@ -76,7 +81,7 @@ jobs:
         echo "type_check_required=$type_check_required" >> "$GITHUB_OUTPUT"
         echo "python_type_check_required=$python_type_check_required" >> "$GITHUB_OUTPUT"
         echo "frontend_type_check_required=$frontend_type_check_required" >> "$GITHUB_OUTPUT"
-        echo "python_files=$(echo "$python_files" | xargs)" >> "$GITHUB_OUTPUT"
+        echo "python_files=$python_files" >> "$GITHUB_OUTPUT"
 
   # Type Checking Job
   type-check:
