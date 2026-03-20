@@ -46,6 +46,9 @@ def test_legacy_api_automation_suite_uses_repo_relative_report_dir() -> None:
     content = suite.read_text(encoding="utf-8")
 
     assert "const CI_MODE = process.env.CI === 'true' || process.env.API_AUTOMATION_MODE === 'ci';" in content
+    assert "const CI_ENDPOINT_ALLOWLIST = [" in content
+    assert "function selectEndpointsForRun(endpoints)" in content
+    assert "开始测试 ${CI_MODE ? 'CI smoke 子集' : '所有'}端点" in content
     assert "const PROJECT_ROOT = path.resolve(__dirname, '../../../../');" in content
     assert "const REPORT_DIR = path.join(PROJECT_ROOT, 'docs', 'reports', 'test-results');" in content
     assert "test.afterAll(async () => {" in content
