@@ -178,7 +178,7 @@ jobs:
       run: |
         echo "🎯 Running UI Binding Tests..."
         cd web/frontend
-        npx vitest run tests/unit/config/pageConfig.test.ts --reporter=verbose
+        npx vitest run tests/unit/port-config-consistency.spec.ts --reporter=verbose
 
     - name: Start Services for E2E Tests
       run: |

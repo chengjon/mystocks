@@ -184,7 +184,7 @@ def test_data_sync_workflow_runs_existing_frontend_contract_smoke_instead_of_mis
 
     assert "npm run test:unit" not in ui_section
     assert "npx vitest run" in ui_section
-    assert "tests/unit/config/pageConfig.test.ts" in ui_section
+    assert "tests/unit/port-config-consistency.spec.ts" in ui_section
 
 
 def test_legacy_e2e_workflow_declares_stable_port_defaults() -> None:
@@ -262,6 +262,7 @@ def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking
     assert "npm run build:no-types" in workflow
     assert "export PLAYWRIGHT_EXTERNAL_FRONTEND=1" in workflow
     assert "--no-cov" not in workflow
+    assert "BACKEND_BACKUP_PORT: 8001" in workflow
     assert "export POSTGRESQL_HOST=localhost" in backend_test_section
     assert "export POSTGRESQL_USER=postgres" in backend_test_section
     assert "export POSTGRESQL_PASSWORD=postgres" in backend_test_section
