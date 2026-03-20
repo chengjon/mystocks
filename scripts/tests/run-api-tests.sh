@@ -17,11 +17,16 @@ NC='\033[0m' # No Color
 # 配置
 BASE_URL="${BASE_URL:-http://localhost:8020}"
 API_TOKEN="${API_TOKEN:-}"
+FRONTEND_PORT="${FRONTEND_PORT:-3020}"
+FRONTEND_BACKUP_PORT="${FRONTEND_BACKUP_PORT:-3021}"
 TEST_DIR="${PROJECT_ROOT}/web/frontend/tests"
 TEST_FILE="api-automation.spec.js"
 TEST_PATH="tests/${TEST_FILE}"
 REPORT_DIR="${PROJECT_ROOT}/docs/reports/test-results"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+
+export FRONTEND_PORT
+export FRONTEND_BACKUP_PORT
 
 # 打印带颜色的消息
 print_message() {

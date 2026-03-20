@@ -2,6 +2,8 @@
 fastapi==0.115.0
 uvicorn[standard]==0.30.0
 python-multipart==0.0.22
+python-socketio>=5.10.0
+aiofiles>=25.1.0
 
 # Database and ORM
 sqlalchemy==2.0.35
@@ -10,6 +12,7 @@ pymysql==1.1.1
 redis==5.1.0
 pandas==2.2.3
 numpy==1.26.4
+jsonschema>=4.20.0
 
 # Technical Analysis
 TA-Lib==0.4.28

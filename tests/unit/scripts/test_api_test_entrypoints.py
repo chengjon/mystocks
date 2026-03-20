@@ -20,6 +20,8 @@ def test_scripts_api_test_runner_uses_repo_relative_paths() -> None:
 
     assert 'PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"' in content
     assert 'BASE_URL="${BASE_URL:-http://localhost:8020}"' in content
+    assert 'FRONTEND_PORT="${FRONTEND_PORT:-3020}"' in content
+    assert 'FRONTEND_BACKUP_PORT="${FRONTEND_BACKUP_PORT:-3021}"' in content
     assert 'TEST_DIR="${PROJECT_ROOT}/web/frontend/tests"' in content
     assert 'TEST_PATH="tests/${TEST_FILE}"' in content
     assert 'REPORT_DIR="${PROJECT_ROOT}/docs/reports/test-results"' in content

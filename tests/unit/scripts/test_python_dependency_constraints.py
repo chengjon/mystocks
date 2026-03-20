@@ -104,6 +104,39 @@ def test_runtime_requirements_explicitly_declare_email_validator_for_pydantic_em
         _extract_requirement(requirement_path, "email-validator")
 
 
+def test_runtime_requirements_explicitly_declare_python_socketio_for_backend_startup() -> None:
+    runtime_requirements = [
+        PROJECT_ROOT / "requirements.txt",
+        PROJECT_ROOT / "config" / "requirements.txt",
+        PROJECT_ROOT / "web" / "backend" / "requirements.txt",
+    ]
+
+    for requirement_path in runtime_requirements:
+        _extract_requirement(requirement_path, "python-socketio")
+
+
+def test_runtime_requirements_explicitly_declare_aiofiles_for_async_file_access() -> None:
+    runtime_requirements = [
+        PROJECT_ROOT / "requirements.txt",
+        PROJECT_ROOT / "config" / "requirements.txt",
+        PROJECT_ROOT / "web" / "backend" / "requirements.txt",
+    ]
+
+    for requirement_path in runtime_requirements:
+        _extract_requirement(requirement_path, "aiofiles")
+
+
+def test_runtime_requirements_explicitly_declare_jsonschema_for_contract_routes() -> None:
+    runtime_requirements = [
+        PROJECT_ROOT / "requirements.txt",
+        PROJECT_ROOT / "config" / "requirements.txt",
+        PROJECT_ROOT / "web" / "backend" / "requirements.txt",
+    ]
+
+    for requirement_path in runtime_requirements:
+        _extract_requirement(requirement_path, "jsonschema")
+
+
 def test_runtime_requirements_raise_requests_to_safe_floor() -> None:
     runtime_requirements = [
         PROJECT_ROOT / "requirements.txt",

@@ -172,6 +172,8 @@ def test_legacy_e2e_workflow_declares_stable_port_defaults() -> None:
 def test_legacy_e2e_workflow_starts_services_before_stable_suite() -> None:
     workflow = _read_workflow("e2e-test.yml")
 
+    assert "python -m pip install -r requirements.txt" in workflow
+    assert "python -m pip install -r /tmp/backend-requirements-ci.txt" in workflow
     assert "Start backend service" in workflow
     assert "Start frontend service" in workflow
     assert 'PYTHONPATH=$PWD:$PWD/web/backend' in workflow
