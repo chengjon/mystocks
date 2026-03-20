@@ -585,6 +585,21 @@ def test_security_testing_merges_downloaded_artifacts_into_workspace() -> None:
     assert "path: ." in final_section
 
 
+def test_security_testing_uses_parseable_report_generation_and_non_blocking_slack() -> None:
+    workflow = _read_workflow("security-testing.yml")
+
+    report_section = workflow.split("Generate consolidated security report", 1)[1].split("Upload security reports", 1)[0]
+    notification_section = workflow.split("security-notification:", 1)[1]
+
+    assert "cat > security-reports/security-summary.md << 'EOF'" not in report_section
+    assert "python - <<'PY'" in report_section
+    assert "security-results.json" in report_section
+
+    assert "if: always() && secrets.SLACK_WEBHOOK_URL != ''" in notification_section
+    assert "webhook_url:" not in notification_section
+    assert "continue-on-error: true" in notification_section
+
+
 def test_quant_strategy_validation_uses_existing_script_path_and_safe_issue_body_heredoc() -> None:
     workflow = _read_workflow("quant-strategy-validation.yml")
 
