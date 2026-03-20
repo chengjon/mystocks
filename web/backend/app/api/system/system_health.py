@@ -9,7 +9,6 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import psycopg2
-import taos
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
@@ -280,6 +279,8 @@ async def test_database_connection(request: ConnectionTestRequest):
             connection = None
             cursor = None
             try:
+                import taos
+
                 connection = taos.connect(
                     host=host,
                     port=port,

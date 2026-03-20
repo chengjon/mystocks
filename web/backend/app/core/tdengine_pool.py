@@ -20,7 +20,16 @@ from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 import structlog
-from taos import TaosConnection, connect
+try:
+    from taos import TaosConnection, connect
+
+    TDENGINE_RUNTIME_AVAILABLE = True
+    TDENGINE_IMPORT_ERROR: Optional[Exception] = None
+except Exception as exc:
+    TaosConnection = Any  # type: ignore[assignment]
+    connect = None
+    TDENGINE_RUNTIME_AVAILABLE = False
+    TDENGINE_IMPORT_ERROR = exc
 
 logger = structlog.get_logger()
 
@@ -85,6 +94,9 @@ class TDengineConnectionPool:
             max_idle_time: 最大空闲时间（秒）
             health_check_interval: 健康检查间隔（秒）
         """
+        if not TDENGINE_RUNTIME_AVAILABLE or connect is None:
+            raise RuntimeError("TDengine runtime is unavailable for connection pool initialization") from TDENGINE_IMPORT_ERROR
+
         self.host = host
         self.port = port
         self.user = user

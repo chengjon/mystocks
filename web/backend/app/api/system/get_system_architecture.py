@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import psycopg2
-import taos
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
@@ -481,4 +480,3 @@ async def database_stats():
     }
 
     return {"success": True, "message": "数据库统计信息获取成功", "data": stats_data}
-

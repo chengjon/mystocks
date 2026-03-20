@@ -93,6 +93,17 @@ def test_runtime_requirements_explicitly_declare_swagger_ui_py_for_local_docs_as
         _extract_requirement(requirement_path, "swagger-ui-py")
 
 
+def test_runtime_requirements_explicitly_declare_email_validator_for_pydantic_email_fields() -> None:
+    runtime_requirements = [
+        PROJECT_ROOT / "requirements.txt",
+        PROJECT_ROOT / "config" / "requirements.txt",
+        PROJECT_ROOT / "web" / "backend" / "requirements.txt",
+    ]
+
+    for requirement_path in runtime_requirements:
+        _extract_requirement(requirement_path, "email-validator")
+
+
 def test_runtime_requirements_raise_requests_to_safe_floor() -> None:
     runtime_requirements = [
         PROJECT_ROOT / "requirements.txt",
