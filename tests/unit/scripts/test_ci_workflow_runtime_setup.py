@@ -190,6 +190,30 @@ def test_playwright_workflow_runs_smoke_subset_only() -> None:
     assert "--config=playwright.config.ts" in workflow
 
 
+def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking_pr_comment() -> None:
+    workflow = _read_workflow("e2e-testing.yml")
+
+    assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in workflow
+    assert "pip install -r /tmp/backend-requirements-ci.txt" in workflow
+    assert "curl -f http://localhost:8000/api/announcement/health" in workflow
+    assert "curl -f http://localhost:8000/health/ready" in workflow
+
+    comment_section = workflow.split("- name: Comment PR with Results", 1)[1].split("# 第六阶段", 1)[0]
+    assert "continue-on-error: true" in comment_section
+
+
+def test_e2e_enhanced_workflow_uses_existing_pm2_configs_and_non_blocking_pr_comment() -> None:
+    workflow = _read_workflow("e2e-tests-enhanced.yml")
+
+    assert "config/pm2/ecosystem.playwright.p1.fixed.config.js" in workflow
+    assert "config/pm2/ecosystem.playwright.p2.config.js" in workflow
+    assert "curl -s http://localhost:8000/api/announcement/health" in workflow
+    assert "curl -s http://localhost:8000/health/ready" in workflow
+
+    comment_section = workflow.split("- name: Comment PR with results", 1)[1].split("final-summary:", 1)[0]
+    assert "continue-on-error: true" in comment_section
+
+
 def test_security_enhancement_pr_comment_is_non_blocking() -> None:
     workflow = _read_workflow("security-enhancement.yml")
 

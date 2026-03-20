@@ -55,9 +55,13 @@ check_dependencies() {
 check_backend() {
     print_info "检查后端服务..."
 
-    if ! curl -s "${BACKEND_BASE_URL}/health" > /dev/null 2>&1; then
+    if ! curl -fsS "${BACKEND_BASE_URL}/api/announcement/health" > /dev/null 2>&1 && \
+       ! curl -fsS "${BACKEND_BASE_URL}/health/ready" > /dev/null 2>&1; then
         print_warn "后端服务未启动或无法访问"
         print_warn "请先启动后端服务: cd web/backend && python -m uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT}"
+        if [ ! -t 0 ] || [ -n "${CI:-}" ]; then
+            exit 1
+        fi
         read -p "是否继续测试? (y/n) " -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then

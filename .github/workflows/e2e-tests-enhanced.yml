@@ -79,7 +79,8 @@ jobs:
         run: |
           echo "Waiting for backend to be ready..."
           for i in {1..30}; do
-            if curl -s http://localhost:8000/health > /dev/null; then
+            if curl -s http://localhost:8000/api/announcement/health > /dev/null || \
+               curl -s http://localhost:8000/health/ready > /dev/null; then
               echo "Backend is ready!"
               break
             fi
@@ -109,7 +110,7 @@ jobs:
       - name: Verify services
         run: |
           echo "Checking services..."
-          curl -s http://localhost:8000/health || echo "Backend health check failed"
+          curl -s http://localhost:8000/api/announcement/health || curl -s http://localhost:8000/health/ready || echo "Backend health check failed"
           curl -s http://localhost:3020/ || echo "Frontend check failed"
           ps aux | grep -E "uvicorn|npm run dev" || echo "No services running"
 
@@ -117,7 +118,7 @@ jobs:
         if: matrix.test_group == 'P1'
         run: |
           echo "Running P1 important features tests (8 pages)..."
-          pm2 start ecosystem.playwright.p1.fixed.config.js
+          pm2 start config/pm2/ecosystem.playwright.p1.fixed.config.js
           echo "Waiting for P1 tests to complete..."
           sleep 90  # 等待测试完成
           pm2 list
@@ -127,7 +128,7 @@ jobs:
         if: matrix.test_group == 'P2'
         run: |
           echo "Running P2 auxiliary features tests (14 pages)..."
-          pm2 start ecosystem.playwright.p2.config.js
+          pm2 start config/pm2/ecosystem.playwright.p2.config.js
           echo "Waiting for P2 tests to complete..."
           sleep 90  # 等待测试完成
           pm2 list
@@ -254,6 +255,7 @@ jobs:
 
       - name: Comment PR with results
         if: always() && github.event_name == 'pull_request'
+        continue-on-error: true
         uses: actions/github-script@v7
         with:
           script: |

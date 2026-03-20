@@ -27,6 +27,15 @@ def test_scripts_api_test_runner_uses_repo_relative_paths() -> None:
     assert '--reporter=html' in content
 
 
+def test_legacy_scripts_api_test_runner_accepts_modern_health_probes() -> None:
+    runner = PROJECT_ROOT / "scripts" / "run-api-tests.sh"
+    content = runner.read_text(encoding="utf-8")
+
+    assert 'curl -fsS "${BACKEND_BASE_URL}/api/announcement/health"' in content
+    assert 'curl -fsS "${BACKEND_BASE_URL}/health/ready"' in content
+    assert 'if [ ! -t 0 ] || [ -n "${CI:-}" ]; then' in content
+
+
 def test_legacy_api_automation_suite_uses_repo_relative_report_dir() -> None:
     suite = PROJECT_ROOT / "web" / "frontend" / "tests" / "api-automation" / "legacy-suite.js"
     content = suite.read_text(encoding="utf-8")
