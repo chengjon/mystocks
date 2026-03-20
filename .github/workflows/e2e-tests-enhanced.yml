@@ -119,7 +119,7 @@ jobs:
         run: |
           echo "Running P1 important features tests (8 pages)..."
           cd web/frontend
-          npx playwright test \
+          PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test \
             --config playwright.config.js \
             --project=chromium \
             tests/e2e/critical/menu-navigation-fixed.spec.ts \
@@ -131,7 +131,7 @@ jobs:
         run: |
           echo "Running P2 auxiliary features tests (14 pages)..."
           cd web/frontend
-          npx playwright test \
+          PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test \
             --config playwright.config.js \
             --project=chromium \
             tests/e2e/kline-chart.spec.ts \

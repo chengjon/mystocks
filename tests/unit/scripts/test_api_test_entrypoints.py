@@ -42,3 +42,12 @@ def test_legacy_api_automation_suite_uses_repo_relative_report_dir() -> None:
 
     assert "const PROJECT_ROOT = path.resolve(__dirname, '../../../../');" in content
     assert "const REPORT_DIR = path.join(PROJECT_ROOT, 'docs', 'reports', 'test-results');" in content
+
+
+def test_frontend_playwright_config_can_skip_managed_webserver() -> None:
+    config = PROJECT_ROOT / "web" / "frontend" / "playwright.config.js"
+    content = config.read_text(encoding="utf-8")
+
+    assert 'process.env.PLAYWRIGHT_EXTERNAL_FRONTEND === "1"' in content
+    assert "webServer: useManagedServer" in content
+    assert "? undefined" in content
