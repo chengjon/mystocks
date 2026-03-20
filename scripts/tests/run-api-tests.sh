@@ -63,11 +63,13 @@ check_env() {
 check_backend() {
     print_message "${BLUE}" "🔍 检查后端服务状态..."
 
-    if curl -s -f "${BASE_URL}/health" > /dev/null 2>&1; then
+    if curl -fsS "${BASE_URL}/api/announcement/health" > /dev/null 2>&1 || \
+       curl -fsS "${BASE_URL}/health/ready" > /dev/null 2>&1 || \
+       curl -fsS "${BASE_URL}/health" > /dev/null 2>&1; then
         print_message "${GREEN}" "✅ 后端服务运行正常"
         return 0
     else
-        print_message "${RED}" "❌ 后端服务未响应或不可用 (${BASE_URL}/health)"
+        print_message "${RED}" "❌ 后端服务未响应或不可用 (${BASE_URL}/api/announcement/health or /health/ready)"
         print_message "${YELLOW}" "请确保后端服务已启动并使用 REAL 数据源。"
         return 1
     fi

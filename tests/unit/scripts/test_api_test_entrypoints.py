@@ -25,6 +25,8 @@ def test_scripts_api_test_runner_uses_repo_relative_paths() -> None:
     assert 'TEST_DIR="${PROJECT_ROOT}/web/frontend/tests"' in content
     assert 'TEST_PATH="tests/${TEST_FILE}"' in content
     assert 'REPORT_DIR="${PROJECT_ROOT}/docs/reports/test-results"' in content
+    assert 'curl -fsS "${BASE_URL}/api/announcement/health"' in content
+    assert 'curl -fsS "${BASE_URL}/health/ready"' in content
     assert 'npx playwright test "${TEST_PATH}"' in content
     assert '--config=playwright.config.ts' in content
     assert '--reporter=html' in content
