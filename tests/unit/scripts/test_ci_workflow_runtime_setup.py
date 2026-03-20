@@ -36,6 +36,9 @@ def test_api_automation_discovery_uses_python_module_pip_and_backend_runtime_dep
     assert "python -m pip install -r /tmp/backend-requirements-ci.txt" in workflow
     assert "uvicorn" in workflow
     assert "email-validator" in workflow
+    assert "FRONTEND_PORT=3020" in workflow
+    assert "FRONTEND_BACKUP_PORT=3021" in workflow
+    assert "BASE_URL=http://localhost:8000" in workflow
     assert "bash ./run-api-tests.sh" in workflow
 
 

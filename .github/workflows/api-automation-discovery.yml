@@ -121,7 +121,10 @@ jobs:
 
     - name: Run API Automation Tests
       run: |
-        BASE_URL=http://localhost:8000 bash ./run-api-tests.sh
+        FRONTEND_PORT=3020 \
+        FRONTEND_BACKUP_PORT=3021 \
+        BASE_URL=http://localhost:8000 \
+        bash ./run-api-tests.sh
 
     - name: Upload Test Results
       if: always()
