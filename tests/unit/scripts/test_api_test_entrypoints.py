@@ -45,8 +45,12 @@ def test_legacy_api_automation_suite_uses_repo_relative_report_dir() -> None:
     suite = PROJECT_ROOT / "web" / "frontend" / "tests" / "api-automation" / "legacy-suite.js"
     content = suite.read_text(encoding="utf-8")
 
+    assert "const CI_MODE = process.env.CI === 'true' || process.env.API_AUTOMATION_MODE === 'ci';" in content
     assert "const PROJECT_ROOT = path.resolve(__dirname, '../../../../');" in content
     assert "const REPORT_DIR = path.join(PROJECT_ROOT, 'docs', 'reports', 'test-results');" in content
+    assert "test.afterAll(async () => {" in content
+    assert "const summaryPath = path.join(REPORT_DIR, 'api-test-summary.json');" in content
+    assert "CI mode skips duplicate tag replay after the primary discovery scan." in content
 
 
 def test_frontend_playwright_config_can_skip_managed_webserver() -> None:
