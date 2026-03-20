@@ -56,6 +56,7 @@ def test_api_automation_discovery_sets_required_backend_runtime_env_vars() -> No
     assert "/tmp/api_automation_backend_pid" in start_section
     assert "curl -fsS http://localhost:8000/api/announcement/health" in start_section
     assert "curl -fsS http://localhost:8000/health/ready" in start_section
+    assert workflow.index("- name: Run API Automation Tests") < workflow.index("- name: Stop Backend Service")
 
 
 def test_api_contract_validation_uses_backend_import_environment_and_scope_gate() -> None:

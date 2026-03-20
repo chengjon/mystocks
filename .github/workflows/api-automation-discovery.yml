@@ -112,6 +112,13 @@ jobs:
           sleep 2
         done
 
+    - name: Run API Automation Tests
+      run: |
+        FRONTEND_PORT=3020 \
+        FRONTEND_BACKUP_PORT=3021 \
+        BASE_URL=http://localhost:8000 \
+        bash ./run-api-tests.sh
+
     - name: Stop Backend Service
       if: always()
       run: |
@@ -119,13 +126,6 @@ jobs:
           kill $(cat /tmp/api_automation_backend_pid) 2>/dev/null || true
           rm -f /tmp/api_automation_backend_pid
         fi
-
-    - name: Run API Automation Tests
-      run: |
-        FRONTEND_PORT=3020 \
-        FRONTEND_BACKUP_PORT=3021 \
-        BASE_URL=http://localhost:8000 \
-        bash ./run-api-tests.sh
 
     - name: Upload Test Results
       if: always()
