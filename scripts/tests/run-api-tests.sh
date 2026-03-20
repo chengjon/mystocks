@@ -112,6 +112,7 @@ run_tests() {
     # 运行测试并保存输出
     # 使用 PIPESTATUS 获取管道中第一个命令的退出状态
     BASE_URL="${BASE_URL}" API_TOKEN="${API_TOKEN}" npx playwright test "${TEST_PATH}" \
+        --config=playwright.config.ts \
         --reporter=list \
         --reporter=json \
         --reporter=html \
