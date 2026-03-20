@@ -118,31 +118,32 @@ jobs:
         if: matrix.test_group == 'P1'
         run: |
           echo "Running P1 important features tests (8 pages)..."
-          pm2 start config/pm2/ecosystem.playwright.p1.fixed.config.js
-          echo "Waiting for P1 tests to complete..."
-          sleep 90  # 等待测试完成
-          pm2 list
-          pm2 logs p1-fixed- --lines 20 --nostream || true
+          cd web/frontend
+          npx playwright test \
+            --config playwright.config.js \
+            --project=chromium \
+            tests/e2e/critical/menu-navigation-fixed.spec.ts \
+            --reporter=list,json \
+            --output=/tmp/e2e-results-${{ matrix.test_group }}
 
       - name: Run P2 tests
         if: matrix.test_group == 'P2'
         run: |
           echo "Running P2 auxiliary features tests (14 pages)..."
-          pm2 start config/pm2/ecosystem.playwright.p2.config.js
-          echo "Waiting for P2 tests to complete..."
-          sleep 90  # 等待测试完成
-          pm2 list
-          pm2 logs p2- --lines 20 --nostream || true
+          cd web/frontend
+          npx playwright test \
+            --config playwright.config.js \
+            --project=chromium \
+            tests/e2e/kline-chart.spec.ts \
+            --reporter=list,json \
+            --output=/tmp/e2e-results-${{ matrix.test_group }}
 
       - name: Collect test results
         if: always()
         run: |
           mkdir -p /tmp/e2e-results-${{ matrix.test_group }}
-          # 收集JSON结果
-          find /tmp -name "*_fixed_report.json" -exec cp {} /tmp/e2e-results-${{ matrix.test_group }}/ \; 2>/dev/null || true
-          find /tmp -name "*_p2_report.json" -exec cp {} /tmp/e2e-results-${{ matrix.test_group }}/ \; 2>/dev/null || true
-          # 收集截图
-          find /tmp -name "*.png" -exec cp {} /tmp/e2e-results-${{ matrix.test_group }}/ \; 2>/dev/null || true
+          find web/frontend -maxdepth 1 -name "*.json" -exec cp {} /tmp/e2e-results-${{ matrix.test_group }}/ \; 2>/dev/null || true
+          find web/frontend/playwright-report -name "*.png" -exec cp {} /tmp/e2e-results-${{ matrix.test_group }}/ \; 2>/dev/null || true
           ls -lh /tmp/e2e-results-${{ matrix.test_group }}/
 
       - name: Generate summary

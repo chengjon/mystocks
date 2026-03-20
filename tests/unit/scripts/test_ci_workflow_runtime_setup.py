@@ -173,6 +173,7 @@ def test_legacy_e2e_workflow_starts_services_before_stable_suite() -> None:
 
     assert "Start backend service" in workflow
     assert "Start frontend service" in workflow
+    assert 'PYTHONPATH=$PWD:$PWD/web/backend' in workflow
     assert "curl -fsS http://localhost:${BACKEND_PORT}/api/announcement/health" in workflow
     assert "curl -fsS http://localhost:${BACKEND_PORT}/health/ready" in workflow
     assert "curl -fsS http://localhost:${FRONTEND_PORT}/" in workflow
@@ -222,8 +223,11 @@ def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking
 def test_e2e_enhanced_workflow_uses_existing_pm2_configs_and_non_blocking_pr_comment() -> None:
     workflow = _read_workflow("e2e-tests-enhanced.yml")
 
-    assert "config/pm2/ecosystem.playwright.p1.fixed.config.js" in workflow
-    assert "config/pm2/ecosystem.playwright.p2.config.js" in workflow
+    assert "pm2 start config/pm2/ecosystem.playwright.p1.fixed.config.js" not in workflow
+    assert "pm2 start config/pm2/ecosystem.playwright.p2.config.js" not in workflow
+    assert "tests/e2e/critical/menu-navigation-fixed.spec.ts" in workflow
+    assert "tests/e2e/kline-chart.spec.ts" in workflow
+    assert "npx playwright test" in workflow
     assert "curl -s http://localhost:8000/api/announcement/health" in workflow
     assert "curl -s http://localhost:8000/health/ready" in workflow
 

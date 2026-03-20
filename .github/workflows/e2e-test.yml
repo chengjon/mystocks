@@ -50,7 +50,6 @@ jobs:
 
       - name: Start backend service
         run: |
-          cd web/backend
           export POSTGRESQL_HOST=localhost
           export POSTGRESQL_PORT=5432
           export POSTGRESQL_USER=postgres
@@ -58,7 +57,7 @@ jobs:
           export JWT_SECRET_KEY=$(openssl rand -hex 32)
           export BACKEND_PORT=${BACKEND_PORT}
           export BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT}
-          nohup python -m uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT} >/tmp/e2e_stable_backend.log 2>&1 &
+          PYTHONPATH=$PWD:$PWD/web/backend nohup python -m uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT} >/tmp/e2e_stable_backend.log 2>&1 &
           echo $! > /tmp/e2e_stable_backend.pid
 
       - name: Start frontend service
@@ -126,7 +125,6 @@ jobs:
 
       - name: Start backend service
         run: |
-          cd web/backend
           export POSTGRESQL_HOST=localhost
           export POSTGRESQL_PORT=5432
           export POSTGRESQL_USER=postgres
@@ -134,7 +132,7 @@ jobs:
           export JWT_SECRET_KEY=$(openssl rand -hex 32)
           export BACKEND_PORT=${BACKEND_PORT}
           export BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT}
-          nohup python -m uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT} >/tmp/e2e_nightly_backend.log 2>&1 &
+          PYTHONPATH=$PWD:$PWD/web/backend nohup python -m uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT} >/tmp/e2e_nightly_backend.log 2>&1 &
           echo $! > /tmp/e2e_nightly_backend.pid
 
       - name: Start frontend service
