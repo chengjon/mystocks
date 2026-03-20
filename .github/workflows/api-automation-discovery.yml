@@ -91,17 +91,33 @@ jobs:
         export BACKEND_PORT=8000
         export BACKEND_BACKUP_PORT=8001
 
-        python -m uvicorn web.backend.app.main:app --host 0.0.0.0 --port 8000 &
+        nohup python -m uvicorn web.backend.app.main:app --host 0.0.0.0 --port 8000 >/tmp/api_automation_backend.log 2>&1 &
+        API_AUTOMATION_BACKEND_PID=$!
+        echo $API_AUTOMATION_BACKEND_PID > /tmp/api_automation_backend_pid
 
         # Wait for service to be ready
         for i in {1..30}; do
-          if curl -s http://localhost:8000/health > /dev/null; then
+          if curl -fsS http://localhost:8000/api/announcement/health > /dev/null 2>&1 || \
+             curl -fsS http://localhost:8000/health/ready > /dev/null 2>&1; then
             echo "Backend is ready!"
             break
+          fi
+          if ! kill -0 "$API_AUTOMATION_BACKEND_PID" >/dev/null 2>&1; then
+            echo "Backend exited before becoming ready"
+            cat /tmp/api_automation_backend.log || true
+            exit 1
           fi
           echo "Waiting for backend... ($i/30)"
           sleep 2
         done
+
+    - name: Stop Backend Service
+      if: always()
+      run: |
+        if [ -f /tmp/api_automation_backend_pid ]; then
+          kill $(cat /tmp/api_automation_backend_pid) 2>/dev/null || true
+          rm -f /tmp/api_automation_backend_pid
+        fi
 
     - name: Run API Automation Tests
       run: |

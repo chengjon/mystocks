@@ -94,8 +94,15 @@ jobs:
     - name: Start backend for API Contract Tests
       run: |
         echo "🚀 Starting backend for API Contract Tests..."
+        export POSTGRESQL_HOST=localhost
+        export POSTGRESQL_PORT=5432
+        export POSTGRESQL_USER=postgres
+        export POSTGRESQL_PASSWORD=test_password
+        export JWT_SECRET_KEY=$(openssl rand -hex 32)
+        export BACKEND_PORT=8000
+        export BACKEND_BACKUP_PORT=8001
         cd web/backend
-        python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+        nohup python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 >/tmp/contract_backend.log 2>&1 &
         CONTRACT_BACKEND_PID=$!
         cd ../..
 
@@ -110,6 +117,7 @@ jobs:
 
           if ! kill -0 "$CONTRACT_BACKEND_PID" >/dev/null 2>&1; then
             echo "❌ Backend exited before becoming ready"
+            cat /tmp/contract_backend.log || true
             exit 1
           fi
 
