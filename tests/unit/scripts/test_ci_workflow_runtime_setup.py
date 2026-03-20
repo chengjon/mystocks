@@ -211,6 +211,24 @@ def test_security_enhancement_uses_inline_security_summary_and_threshold_checks(
     assert "scripts/check_security_thresholds.py" not in workflow
 
 
+def test_security_enhancement_scopes_bandit_to_relevant_python_changes() -> None:
+    workflow = _read_workflow("security-enhancement.yml")
+
+    assert "security-scope-detect" in workflow
+    assert "bandit_required" in workflow
+    assert "bandit_args" in workflow
+
+    scope_section = workflow.split("security-scope-detect:", 1)[1].split("code-security-scan:", 1)[0]
+    bandit_section = workflow.split("code-security-scan:", 1)[1].split("container-security:", 1)[0]
+
+    assert "git diff --name-only" in scope_section
+    assert "src/*.py|src/**/*.py|web/backend/app/*.py|web/backend/app/**/*.py" in scope_section
+    assert "needs: security-scope-detect" in bandit_section
+    assert "needs.security-scope-detect.outputs.bandit_required == 'true'" in bandit_section
+    assert "${{ needs.security-scope-detect.outputs.bandit_args }}" in bandit_section
+    assert "bandit -r src/ web/backend/app/" not in bandit_section
+
+
 def test_ai_test_optimization_uses_repo_repo_for_new_pr_comments() -> None:
     workflow = _read_workflow("ai-test-optimization.yml")
 
