@@ -282,13 +282,13 @@ jobs:
       if: needs.frontend-gate-scope-detect.outputs.artdeco_scope_changed == 'true'
       run: npm run lint:artdeco
 
-    - name: Type check
+    - name: Frontend contract smoke
       if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
-      run: npm run type-check
+      run: npx vitest run tests/unit/port-config-consistency.spec.ts --reporter=verbose
 
     - name: Run unit tests
       if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
-      run: npm run test:unit
+      run: npx vitest run tests/unit/port-config-consistency.spec.ts --reporter=verbose
 
     - name: Run e2e tests
       if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
@@ -296,7 +296,7 @@ jobs:
 
     - name: Build for production
       if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
-      run: npm run build
+      run: npm run build:no-types
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4

@@ -149,7 +149,6 @@ jobs:
         mkdir -p mypy-reports
         mypy --config-file=config/mypy.ini \
           --explicit-package-bases \
-          --non-interactive \
           --pretty \
           --show-error-codes \
           --show-column-numbers \

@@ -179,6 +179,8 @@ jobs:
           cd web/frontend
           echo "VITE_API_BASE_URL=http://localhost:8000" >> $GITHUB_ENV
           echo "USE_MOCK_DATA=true" >> $GITHUB_ENV
+          echo "FRONTEND_PORT=5173" >> $GITHUB_ENV
+          echo "FRONTEND_BACKUP_PORT=5174" >> $GITHUB_ENV
 
       - name: Start Frontend Server
         run: |

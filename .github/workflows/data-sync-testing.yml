@@ -18,6 +18,12 @@ on:
       - 'scripts/ci_data_sync_tests.sh'
       - 'scripts/ci_type_check.sh'
 
+env:
+  FRONTEND_PORT: '3020'
+  FRONTEND_BACKUP_PORT: '3021'
+  BACKEND_PORT: '8020'
+  BACKEND_BACKUP_PORT: '8021'
+
 jobs:
   data-sync-testing:
     runs-on: ubuntu-latest
@@ -162,6 +168,10 @@ jobs:
       run: |
         echo "🎨 Building Frontend..."
         cd web/frontend
+        FRONTEND_PORT=${FRONTEND_PORT} \
+        FRONTEND_BACKUP_PORT=${FRONTEND_BACKUP_PORT} \
+        BACKEND_PORT=${BACKEND_PORT} \
+        BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT} \
         npm run build:no-types
 
     - name: Run UI Binding Tests

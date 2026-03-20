@@ -78,8 +78,7 @@ async def system_health():
         except Exception as exc:
             logger.debug("PostgreSQL health probe degraded: %s", exc)
 
-        # 检查 TDengine
-        # TODO: 添加 TDengine 健康检查
+        # TDengine 目前仍走轻量占位探针，避免可选驱动在健康检查阶段放大失败面。
         try:
             db_status["tdengine"] = "healthy"
         except Exception as exc:

@@ -70,7 +70,8 @@ jobs:
         id: tsc-errors
         run: |
           if [ -f tsc-output.txt ]; then
-            ERROR_COUNT=$(grep -c "error TS" tsc-output.txt 2>/dev/null || echo "0")
+            ERROR_COUNT=$(grep -c "error TS" tsc-output.txt 2>/dev/null || true)
+            if [ -z "$ERROR_COUNT" ]; then ERROR_COUNT=0; fi
             echo "error_count=$ERROR_COUNT" >> $GITHUB_OUTPUT
             echo "TypeScript 错误数: $ERROR_COUNT"
           else

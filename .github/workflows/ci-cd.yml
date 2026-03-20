@@ -186,7 +186,7 @@ jobs:
     - name: Run basic unit tests
       run: |
         # 运行不需要数据库的单元测试
-        PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/unit/test_data_classification.py -v --tb=short -o addopts='' --no-cov
+        PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/unit/test_data_classification.py -v --tb=short -o addopts=''
 
     - name: Run AI test analysis
       run: |

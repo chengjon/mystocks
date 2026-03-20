@@ -26,7 +26,7 @@ try:
     TDENGINE_RUNTIME_AVAILABLE = True
     TDENGINE_IMPORT_ERROR: Optional[Exception] = None
 except Exception as exc:
-    TaosConnection = Any  # type: ignore[assignment]
+    TaosConnection = Any
     connect = None
     TDENGINE_RUNTIME_AVAILABLE = False
     TDENGINE_IMPORT_ERROR = exc

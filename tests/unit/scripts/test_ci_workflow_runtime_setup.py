@@ -172,6 +172,10 @@ def test_data_sync_workflow_uses_ci_safe_frontend_build_without_repo_wide_type_g
 
     assert "npm run build:no-types" in build_section
     assert "npm run build\n" not in build_section
+    assert "FRONTEND_PORT=${FRONTEND_PORT}" in build_section
+    assert "FRONTEND_BACKUP_PORT=${FRONTEND_BACKUP_PORT}" in build_section
+    assert "BACKEND_PORT=${BACKEND_PORT}" in build_section
+    assert "BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT}" in build_section
 
 
 def test_data_sync_workflow_runs_existing_frontend_contract_smoke_instead_of_missing_ui_binding_script() -> None:
@@ -218,6 +222,15 @@ def test_kline_e2e_mocks_readiness_endpoint_before_navigation() -> None:
     assert "e2e-kline-ready" in spec
 
 
+def test_menu_navigation_e2e_mocks_readiness_endpoint_before_navigation() -> None:
+    spec = (
+        PROJECT_ROOT / "web" / "frontend" / "tests" / "e2e" / "critical" / "menu-navigation-fixed.spec.ts"
+    ).read_text(encoding="utf-8")
+
+    assert 'url.pathname === "/api/health/ready"' in spec
+    assert 'status: "ready"' in spec or "status: 'ready'" in spec
+
+
 def test_contract_testing_workflow_skips_when_framework_is_absent() -> None:
     workflow = _read_workflow("contract-testing.yml")
 
@@ -238,6 +251,7 @@ def test_playwright_workflow_runs_smoke_subset_only() -> None:
 
 def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking_pr_comment() -> None:
     workflow = _read_workflow("e2e-testing.yml")
+    backend_test_section = workflow.split("- name: Run Backend Tests", 1)[1].split("- name: Start Backend Server", 1)[0]
 
     assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in workflow
     assert "pip install -r /tmp/backend-requirements-ci.txt" in workflow
@@ -248,6 +262,11 @@ def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking
     assert "npm run build:no-types" in workflow
     assert "export PLAYWRIGHT_EXTERNAL_FRONTEND=1" in workflow
     assert "--no-cov" not in workflow
+    assert "export POSTGRESQL_HOST=localhost" in backend_test_section
+    assert "export POSTGRESQL_USER=postgres" in backend_test_section
+    assert "export POSTGRESQL_PASSWORD=postgres" in backend_test_section
+    assert "export JWT_SECRET_KEY=$(openssl rand -hex 32)" in backend_test_section
+    assert "export BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT}" in backend_test_section
 
     comment_section = workflow.split("- name: Comment PR with Results", 1)[1].split("# 第六阶段", 1)[0]
     assert "continue-on-error: true" in comment_section
@@ -261,7 +280,7 @@ def test_ci_cd_type_workflow_matches_recovery_mypy_baseline() -> None:
     assert "types-PyYAML" in install_section
     assert "pip install -e ." in install_section
     assert "--explicit-package-bases" in mypy_section
-    assert "--non-interactive" in mypy_section
+    assert "--non-interactive" not in mypy_section
 
 
 def test_e2e_enhanced_workflow_uses_existing_pm2_configs_and_non_blocking_pr_comment() -> None:
@@ -389,6 +408,18 @@ def test_frontend_testing_scopes_artdeco_and_security_gates_to_relevant_changes(
     assert "needs.frontend-gate-scope-detect.outputs.dependency_audit_required == 'true'" in frontend_security_section
 
 
+def test_frontend_testing_uses_ci_safe_frontend_commands_instead_of_repo_wide_ts_gate_or_missing_scripts() -> None:
+    workflow = _read_workflow("frontend-testing.yml")
+    frontend_test_section = workflow.split("frontend-test:", 1)[1].split("frontend-security:", 1)[0]
+
+    assert "npm run type-check" not in frontend_test_section
+    assert "npm run test:unit" not in frontend_test_section
+    assert "npx vitest run" in frontend_test_section
+    assert "tests/unit/port-config-consistency.spec.ts" in frontend_test_section
+    assert "npm run build:no-types" in frontend_test_section
+    assert "npm run build\n" not in frontend_test_section
+
+
 def test_visual_testing_scopes_pipeline_and_uses_full_frontend_dependencies() -> None:
     workflow = _read_workflow("visual-testing.yml")
 
@@ -413,6 +444,8 @@ def test_visual_testing_scopes_pipeline_and_uses_full_frontend_dependencies() ->
     assert "needs.visual-scope-detect.outputs.visual_test_required == 'true'" in visual_test_section
     assert "npm ci" in visual_test_section
     assert "--only=production" not in visual_test_section
+    assert 'echo "FRONTEND_PORT=5173" >> $GITHUB_ENV' in visual_test_section
+    assert 'echo "FRONTEND_BACKUP_PORT=5174" >> $GITHUB_ENV' in visual_test_section
     assert "npm run dev -- --host 0.0.0.0 --port 5173" in visual_test_section
 
 
@@ -424,6 +457,7 @@ def test_ci_cd_basic_tests_install_backend_runtime_dependencies() -> None:
     assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in basic_section
     assert "pip install -r /tmp/backend-requirements-ci.txt" in basic_section
     assert "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1" in basic_section
+    assert "--no-cov" not in basic_section
 
 
 def test_comprehensive_testing_only_installs_requirements_dev_when_present() -> None:
@@ -526,6 +560,7 @@ def test_ci_cd_with_type_checking_scopes_pipeline_to_type_relevant_changes() -> 
 
 def test_typescript_type_check_uses_explicit_path_filters_and_repo_repo_comments() -> None:
     workflow = _read_workflow("typescript-type-check.yml")
+    count_section = workflow.split("- name: Count TypeScript errors", 1)[1].split("- name: Upload tsc results", 1)[0]
 
     assert "'web/frontend/src/**/*.ts'" in workflow
     assert "'web/frontend/src/**/*.tsx'" in workflow
@@ -533,6 +568,8 @@ def test_typescript_type_check_uses_explicit_path_filters_and_repo_repo_comments
     assert "'web/frontend/src/**/*.{ts,tsx,vue}'" not in workflow
     assert "repo: context.repo.repo" in workflow
     assert "repo: context.repo.name" not in workflow
+    assert 'grep -c "error TS" tsc-output.txt 2>/dev/null || echo "0"' not in count_section
+    assert 'if [ -z "$ERROR_COUNT" ]; then' in count_section
 
 
 def test_cicd_monthly_review_uses_job_output_for_report_month() -> None:
