@@ -48,16 +48,16 @@ jobs:
         echo "🔍 Running Phase 6 optimized tests..."
 
         # base_adapter.py (95% coverage)
-        python -m pytest scripts/tests/test_base_adapter_simple.py --cov=src.adapters.base_adapter --cov-report=xml --cov-report=term-missing --tb=short -q
+        python -m pytest -o addopts='' scripts/tests/test_base_adapter_simple.py --cov=src.adapters.base_adapter --cov-report=xml --cov-report=term-missing --tb=short -q
 
         # data_validator.py (92% coverage)
-        python -m pytest scripts/tests/test_data_validator_phase6.py --cov=src.adapters.data_validator --cov-report=xml --cov-report=term-missing --tb=short -q
+        python -m pytest -o addopts='' scripts/tests/test_data_validator_phase6.py --cov=src.adapters.data_validator --cov-report=xml --cov-report=term-missing --tb=short -q
 
         # exceptions.py (99% coverage)
-        python -m pytest scripts/tests/test_exceptions_simple.py --cov=src.core.exceptions --cov-report=xml --cov-report=term-missing --tb=short -q
+        python -m pytest -o addopts='' scripts/tests/test_exceptions_simple.py --cov=src.core.exceptions --cov-report=xml --cov-report=term-missing --tb=short -q
 
         # core.config.py (100% coverage)
-        python -m pytest scripts/tests/ -k "config" --cov=src.core.config --cov-report=xml --cov-report=term-missing --tb=short -q
+        python -m pytest -o addopts='' scripts/tests/ -k "config" --cov=src.core.config --cov-report=xml --cov-report=term-missing --tb=short -q
 
     - name: Generate Coverage Report
       run: |

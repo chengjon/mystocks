@@ -354,6 +354,7 @@ def test_test_coverage_drops_unavailable_pytest_timing_dependency() -> None:
 
     assert "pip install pytest pytest-cov" in workflow
     assert "pytest-timing" not in workflow
+    assert "python -m pytest -o addopts=''" in workflow
 
 
 def test_ci_cd_test_chain_validation_uses_current_script_locations() -> None:
