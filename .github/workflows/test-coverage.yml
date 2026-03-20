@@ -40,7 +40,7 @@ jobs:
 
           for changed_file in "${changed_files[@]}"; do
             case "$changed_file" in
-              src/adapters/base_adapter.py|src/adapters/data_validator.py|src/core/exceptions/__init__.py|src/core/config.py|scripts/tests/test_base_adapter_simple.py|scripts/tests/test_data_validator_phase6.py|scripts/tests/test_exceptions_simple.py|.github/workflows/test-coverage.yml)
+              src/adapters/base_adapter.py|src/adapters/data_validator.py|src/core/exceptions/__init__.py|src/core/config.py|scripts/tests/test_base_adapter_simple.py|scripts/tests/test_data_validator_phase6.py|scripts/tests/test_exceptions_simple.py)
                 coverage_required=true
                 ;;
             esac

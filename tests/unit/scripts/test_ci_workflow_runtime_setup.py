@@ -369,6 +369,7 @@ def test_ci_cd_basic_tests_install_backend_runtime_dependencies() -> None:
     assert "pip install -r requirements.txt" in basic_section
     assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in basic_section
     assert "pip install -r /tmp/backend-requirements-ci.txt" in basic_section
+    assert "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1" in basic_section
 
 
 def test_comprehensive_testing_only_installs_requirements_dev_when_present() -> None:
@@ -401,6 +402,7 @@ def test_comprehensive_testing_scopes_heavy_jobs_to_relevant_test_areas() -> Non
 
 def test_test_coverage_drops_unavailable_pytest_timing_dependency() -> None:
     workflow = _read_workflow("test-coverage.yml")
+    scope_section = workflow.split("coverage-scope-detect:", 1)[1].split("test-coverage:", 1)[0]
 
     assert "coverage-scope-detect" in workflow
     assert "coverage_required" in workflow
@@ -413,6 +415,7 @@ def test_test_coverage_drops_unavailable_pytest_timing_dependency() -> None:
     assert "src/core/config.py" in workflow
     assert "needs: coverage-scope-detect" in workflow
     assert "needs.coverage-scope-detect.outputs.coverage_required == 'true'" in workflow
+    assert ".github/workflows/test-coverage.yml" not in scope_section
 
 
 def test_ci_cd_test_chain_validation_uses_current_script_locations() -> None:
