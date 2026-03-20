@@ -209,8 +209,11 @@ def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking
 
     assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in workflow
     assert "pip install -r /tmp/backend-requirements-ci.txt" in workflow
+    assert "tests/test_post_rewrite_backend_import_stability.py" in workflow
+    assert "tests/test_trading_runtime_routes.py" in workflow
     assert "curl -f http://localhost:8000/api/announcement/health" in workflow
     assert "curl -f http://localhost:8000/health/ready" in workflow
+    assert "npm run build:no-types" in workflow
 
     comment_section = workflow.split("- name: Comment PR with Results", 1)[1].split("# 第六阶段", 1)[0]
     assert "continue-on-error: true" in comment_section
