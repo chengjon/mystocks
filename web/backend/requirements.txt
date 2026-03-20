@@ -28,6 +28,7 @@ xlwings==0.30.0
 prometheus-client==0.20.0
 structlog==24.4.0
 APScheduler>=3.10.4
+aiohttp>=3.13.0
 
 # Utils
 pydantic==2.9.0

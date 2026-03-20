@@ -60,6 +60,17 @@ def test_backend_runtime_requirements_declare_apscheduler_for_cache_eviction() -
     _extract_requirement(backend_requirements, "APScheduler")
 
 
+def test_runtime_requirements_explicitly_declare_aiohttp_for_backend_startup() -> None:
+    runtime_requirements = [
+        PROJECT_ROOT / "requirements.txt",
+        PROJECT_ROOT / "config" / "requirements.txt",
+        PROJECT_ROOT / "web" / "backend" / "requirements.txt",
+    ]
+
+    for requirement_path in runtime_requirements:
+        _extract_requirement(requirement_path, "aiohttp")
+
+
 def test_runtime_requirements_raise_requests_to_safe_floor() -> None:
     runtime_requirements = [
         PROJECT_ROOT / "requirements.txt",
