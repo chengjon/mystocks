@@ -463,19 +463,13 @@ jobs:
           BASELINE_FILE="${{ github.workspace }}/${{ env.TECH_DEBT_BASELINE_FILE }}"
           BASELINE_FRONTEND_ERRORS=""
           if [ -f "$BASELINE_FILE" ]; then
-            BASELINE_FRONTEND_ERRORS=$(python - <<'PY'
-            import json
-            from pathlib import Path
-
-            p = Path("${{ env.TECH_DEBT_BASELINE_FILE }}")
-            try:
-                data = json.loads(p.read_text(encoding="utf-8"))
-                value = data.get("frontend_type_errors", "")
-                print(value if isinstance(value, int) and value >= 0 else "")
-            except Exception:
-                print("")
-            PY
-            )
+            BASELINE_FRONTEND_ERRORS=$(python -c "import json, pathlib; p = pathlib.Path('${{ env.TECH_DEBT_BASELINE_FILE }}'); \
+try: \
+    data = json.loads(p.read_text(encoding='utf-8')); \
+    value = data.get('frontend_type_errors', ''); \
+    print(value if isinstance(value, int) and value >= 0 else ''); \
+except Exception: \
+    print('')")
           fi
 
           if [ -z "$BASELINE_FRONTEND_ERRORS" ]; then

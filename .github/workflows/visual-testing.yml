@@ -184,13 +184,6 @@ jobs:
           echo "BACKEND_PORT=8000" >> $GITHUB_ENV
           echo "BACKEND_BACKUP_PORT=8001" >> $GITHUB_ENV
 
-      - name: Start Frontend Server
-        run: |
-          cd web/frontend
-          npm run dev -- --host 0.0.0.0 --port 5173 >/tmp/visual-frontend.log 2>&1 &
-          echo "Frontend server started"
-          timeout 30 bash -c 'until curl -f http://localhost:5173; do sleep 1; done'
-
       - name: Run Visual Tests
         if: inputs.update_baselines != true
         run: |
@@ -216,7 +209,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: visual-test-results-${{ matrix.browser }}-${{ matrix.shard }}
+          name: visual-test-results-${{ matrix.browser }}
           path: |
             web/frontend/test-results/visual/
             !web/frontend/test-results/visual/**/*.zip
@@ -226,7 +219,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: visual-playwright-report-${{ matrix.browser }}-${{ matrix.shard }}
+          name: visual-playwright-report-${{ matrix.browser }}
           path: web/frontend/playwright-report/
           retention-days: 30
 

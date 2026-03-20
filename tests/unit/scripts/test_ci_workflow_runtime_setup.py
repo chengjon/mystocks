@@ -258,6 +258,8 @@ def test_e2e_tests_workflow_installs_backend_runtime_dependencies_and_downloads_
     assert "pip install -r requirements.txt" in install_section
     assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in install_section
     assert "pip install -r /tmp/backend-requirements-ci.txt" in install_section
+    assert "services:" in workflow
+    assert "image: postgres:15" in workflow
     assert "export POSTGRESQL_HOST=${POSTGRESQL_HOST}" in start_section
     assert "export POSTGRESQL_USER=${POSTGRESQL_USER}" in start_section
     assert "export POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}" in start_section
@@ -476,7 +478,10 @@ def test_visual_testing_scopes_pipeline_and_uses_full_frontend_dependencies() ->
     assert 'echo "FRONTEND_BACKUP_PORT=5174" >> $GITHUB_ENV' in visual_test_section
     assert 'echo "BACKEND_PORT=8000" >> $GITHUB_ENV' in visual_test_section
     assert 'echo "BACKEND_BACKUP_PORT=8001" >> $GITHUB_ENV' in visual_test_section
-    assert "npm run dev -- --host 0.0.0.0 --port 5173" in visual_test_section
+    assert "Start Frontend Server" not in visual_test_section
+    assert "npm run dev -- --host 0.0.0.0 --port 5173" not in visual_test_section
+    assert "visual-test-results-${{ matrix.browser }}-${{ matrix.shard }}" not in workflow
+    assert "visual-playwright-report-${{ matrix.browser }}-${{ matrix.shard }}" not in workflow
 
 
 def test_ci_cd_basic_tests_install_backend_runtime_dependencies() -> None:
@@ -591,6 +596,7 @@ def test_ci_cd_with_type_checking_scopes_pipeline_to_type_relevant_changes() -> 
 def test_typescript_type_check_uses_explicit_path_filters_and_repo_repo_comments() -> None:
     workflow = _read_workflow("typescript-type-check.yml")
     count_section = workflow.split("- name: Count TypeScript errors", 1)[1].split("- name: Upload tsc results", 1)[0]
+    quality_gate_section = workflow.split("type-check-gate:", 1)[1].split("# ============================================================", 1)[0]
 
     assert "'web/frontend/src/**/*.ts'" in workflow
     assert "'web/frontend/src/**/*.tsx'" in workflow
@@ -600,6 +606,8 @@ def test_typescript_type_check_uses_explicit_path_filters_and_repo_repo_comments
     assert "repo: context.repo.name" not in workflow
     assert 'grep -c "error TS" tsc-output.txt 2>/dev/null || echo "0"' not in count_section
     assert 'if [ -z "$ERROR_COUNT" ]; then' in count_section
+    assert "<<'PY'" not in quality_gate_section
+    assert "python -c" in quality_gate_section
 
 
 def test_cicd_monthly_review_uses_job_output_for_report_month() -> None:
