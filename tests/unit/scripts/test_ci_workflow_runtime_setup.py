@@ -458,6 +458,38 @@ def test_python_and_typescript_type_check_workflows_download_artifacts_into_work
     assert "path: ." in typescript_section
 
 
+def test_python_type_check_scopes_pr_runs_to_relevant_src_files() -> None:
+    workflow = _read_workflow("python-type-check.yml")
+
+    assert "python-type-scope-detect" in workflow
+    assert "python_type_required" in workflow
+    assert "python_files" in workflow
+
+    scope_section = workflow.split("python-type-scope-detect:", 1)[1].split("type-check-incremental:", 1)[0]
+    incremental_section = workflow.split("type-check-incremental:", 1)[1].split("type-check-full:", 1)[0]
+    full_section = workflow.split("type-check-full:", 1)[1].split("type-coverage:", 1)[0]
+
+    assert "git diff --name-only" in scope_section
+    assert "src/*.py|src/**/*.py|pyproject.toml|config/mypy.ini" in scope_section
+    assert "part[0-9]+\\.py|_tail\\.py" in scope_section
+    assert '[[ "$changed_file" == src/gpu/* ]]' in scope_section
+    assert 'if [ -z "$python_files" ]; then' in scope_section
+
+    assert "needs: python-type-scope-detect" in incremental_section
+    assert "needs.python-type-scope-detect.outputs.python_type_required == 'true'" in incremental_section
+    assert "mypy src/" not in incremental_section
+    assert "--config-file=config/mypy.ini" in incremental_section
+    assert "--explicit-package-bases" in incremental_section
+    assert "${{ needs.python-type-scope-detect.outputs.python_files }}" in incremental_section
+
+    assert "needs: python-type-scope-detect" in full_section
+    assert "needs.python-type-scope-detect.outputs.python_type_required == 'true'" in full_section
+    assert "mypy src/ tests/" not in full_section
+    assert "--config-file=config/mypy.ini" in full_section
+    assert "--explicit-package-bases" in full_section
+    assert "${{ needs.python-type-scope-detect.outputs.python_files }}" in full_section
+
+
 def test_directory_compliance_uses_current_root_budget_and_excludes_api_wrapper() -> None:
     workflow = _read_workflow("directory-compliance.yml")
 

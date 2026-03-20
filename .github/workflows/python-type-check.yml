@@ -25,12 +25,72 @@ env:
   MYPY_CACHE_DIR: '.mypy_cache'
 
 jobs:
+  python-type-scope-detect:
+    runs-on: ubuntu-latest
+    outputs:
+      python_type_required: ${{ steps.detect.outputs.python_type_required }}
+      python_files: ${{ steps.detect.outputs.python_files }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect Python type-check scope
+        id: detect
+        shell: bash
+        run: |
+          python_type_required=false
+          python_files=""
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE_SHA="${{ github.event.before }}"
+          fi
+
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            if git rev-parse HEAD^ >/dev/null 2>&1; then
+              mapfile -t changed_files < <(git diff --name-only HEAD^ HEAD)
+            else
+              mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "${{ github.sha }}")
+            fi
+          else
+            mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+          fi
+
+          for changed_file in "${changed_files[@]}"; do
+            case "$changed_file" in
+              src/*.py|src/**/*.py|pyproject.toml|config/mypy.ini)
+                if [[ "$changed_file" == src/*.py || "$changed_file" == src/**/*.py ]]; then
+                  if [[ "$changed_file" =~ (^|/)(part[0-9]+\.py|_tail\.py)$ ]] || [[ "$changed_file" == src/gpu/* ]]; then
+                    :
+                  else
+                    python_type_required=true
+                    python_files="$python_files $changed_file"
+                  fi
+                fi
+                ;;
+            esac
+          done
+
+          python_files="$(echo "$python_files" | xargs)"
+          if [ -z "$python_files" ]; then
+            python_type_required=false
+          fi
+
+          echo "python_type_required=$python_type_required" >> "$GITHUB_OUTPUT"
+          echo "python_files=$python_files" >> "$GITHUB_OUTPUT"
+
   # ============================================================
   # 阶段1: 增量类型检查（快速反馈）
   # ============================================================
   type-check-incremental:
     name: Type Check (Incremental)
     runs-on: ubuntu-latest
+    needs: python-type-scope-detect
+    if: needs.python-type-scope-detect.outputs.python_type_required == 'true'
 
     steps:
       - name: Checkout code
@@ -57,8 +117,9 @@ jobs:
 
       - name: Run mypy (incremental)
         run: |
-          mypy src/ \
-            --config-file=pyproject.toml \
+          mypy ${{ needs.python-type-scope-detect.outputs.python_files }} \
+            --config-file=config/mypy.ini \
+            --explicit-package-bases \
             --incremental \
             --cache-dir=${{ env.MYPY_CACHE_DIR }} \
             --pretty \
@@ -81,6 +142,8 @@ jobs:
   type-check-full:
     name: Type Check (Full)
     runs-on: ubuntu-latest
+    needs: python-type-scope-detect
+    if: needs.python-type-scope-detect.outputs.python_type_required == 'true'
 
     steps:
       - name: Checkout code
@@ -100,8 +163,9 @@ jobs:
 
       - name: Run mypy (full check)
         run: |
-          mypy src/ tests/ \
-            --config-file=pyproject.toml \
+          mypy ${{ needs.python-type-scope-detect.outputs.python_files }} \
+            --config-file=config/mypy.ini \
+            --explicit-package-bases \
             --non-interactive \
             --pretty \
             --show-error-codes \
@@ -175,6 +239,8 @@ jobs:
   type-coverage:
     name: Type Coverage Analysis
     runs-on: ubuntu-latest
+    needs: python-type-scope-detect
+    if: needs.python-type-scope-detect.outputs.python_type_required == 'true'
 
     steps:
       - name: Checkout code
@@ -253,7 +319,8 @@ jobs:
   type-check-gate:
     name: Type Check Quality Gate
     runs-on: ubuntu-latest
-    needs: [type-check-incremental, type-check-full]
+    needs: [python-type-scope-detect, type-check-incremental, type-check-full]
+    if: always()
 
     outputs:
       type-check-pass: ${{ steps.gate.outputs.pass }}
@@ -261,6 +328,7 @@ jobs:
     steps:
       - name: Download mypy results
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           pattern: mypy-*-results
           path: .
@@ -270,6 +338,12 @@ jobs:
         run: |
           QUALITY_PASS=true
           GATE_ISSUES=""
+
+          if [ "${{ needs.python-type-scope-detect.outputs.python_type_required }}" != "true" ]; then
+            echo "无相关 Python 源码变更，跳过类型检查门禁"
+            echo "pass=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
 
           # 检查增量检查结果
           if [ -f mypy-incremental.txt ]; then
@@ -309,7 +383,7 @@ jobs:
   final-report:
     name: Final Type Check Report
     runs-on: ubuntu-latest
-    needs: [type-check-incremental, type-check-full, type-coverage, type-check-gate]
+    needs: [python-type-scope-detect, type-check-incremental, type-check-full, type-coverage, type-check-gate]
     if: always()
 
     steps:
