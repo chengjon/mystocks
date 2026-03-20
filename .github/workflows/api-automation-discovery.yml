@@ -121,8 +121,7 @@ jobs:
 
     - name: Run API Automation Tests
       run: |
-        chmod +x scripts/run-api-tests.sh
-        BACKEND_PORT=8000 API_BASE_URL=http://localhost:8000 ./scripts/run-api-tests.sh all
+        BASE_URL=http://localhost:8000 bash ./run-api-tests.sh
 
     - name: Upload Test Results
       if: always()

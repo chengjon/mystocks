@@ -36,7 +36,7 @@ def test_api_automation_discovery_uses_python_module_pip_and_backend_runtime_dep
     assert "python -m pip install -r /tmp/backend-requirements-ci.txt" in workflow
     assert "uvicorn" in workflow
     assert "email-validator" in workflow
-    assert "scripts/run-api-tests.sh" in workflow
+    assert "bash ./run-api-tests.sh" in workflow
 
 
 def test_api_automation_discovery_sets_required_backend_runtime_env_vars() -> None:
