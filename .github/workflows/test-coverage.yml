@@ -7,8 +7,52 @@ on:
     branches: [ main ]
 
 jobs:
+  coverage-scope-detect:
+    runs-on: ubuntu-latest
+    outputs:
+      coverage_required: ${{ steps.detect.outputs.coverage_required }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Detect coverage scope
+      id: detect
+      shell: bash
+      run: |
+        coverage_required=false
+
+        if [ "${{ github.event_name }}" != "pull_request" ]; then
+          coverage_required=true
+        else
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            if git rev-parse HEAD^ >/dev/null 2>&1; then
+              mapfile -t changed_files < <(git diff --name-only HEAD^ HEAD)
+            else
+              mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "${{ github.sha }}")
+            fi
+          else
+            mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+          fi
+
+          for changed_file in "${changed_files[@]}"; do
+            case "$changed_file" in
+              src/adapters/base_adapter.py|src/adapters/data_validator.py|src/core/exceptions/__init__.py|src/core/config.py|scripts/tests/test_base_adapter_simple.py|scripts/tests/test_data_validator_phase6.py|scripts/tests/test_exceptions_simple.py|.github/workflows/test-coverage.yml)
+                coverage_required=true
+                ;;
+            esac
+          done
+        fi
+
+        echo "coverage_required=$coverage_required" >> "$GITHUB_OUTPUT"
+
   test-coverage:
     runs-on: ubuntu-latest
+    needs: coverage-scope-detect
+    if: needs.coverage-scope-detect.outputs.coverage_required == 'true'
 
     strategy:
       matrix:

@@ -352,9 +352,17 @@ def test_comprehensive_testing_scopes_heavy_jobs_to_relevant_test_areas() -> Non
 def test_test_coverage_drops_unavailable_pytest_timing_dependency() -> None:
     workflow = _read_workflow("test-coverage.yml")
 
+    assert "coverage-scope-detect" in workflow
+    assert "coverage_required" in workflow
     assert "pip install pytest pytest-cov" in workflow
     assert "pytest-timing" not in workflow
     assert "python -m pytest -o addopts=''" in workflow
+    assert "src/adapters/base_adapter.py" in workflow
+    assert "src/adapters/data_validator.py" in workflow
+    assert "src/core/exceptions/__init__.py" in workflow
+    assert "src/core/config.py" in workflow
+    assert "needs: coverage-scope-detect" in workflow
+    assert "needs.coverage-scope-detect.outputs.coverage_required == 'true'" in workflow
 
 
 def test_ci_cd_test_chain_validation_uses_current_script_locations() -> None:
