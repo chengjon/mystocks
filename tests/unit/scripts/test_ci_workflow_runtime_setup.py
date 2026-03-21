@@ -534,7 +534,8 @@ def test_frontend_testing_uses_ci_safe_frontend_commands_instead_of_repo_wide_ts
     assert "npm run build:no-types" in frontend_test_section
     assert "npm run build\n" not in frontend_test_section
     assert "npx playwright install --with-deps chromium" in frontend_test_section
-    assert "PLAYWRIGHT_EXTERNAL_FRONTEND=1 npm run test:e2e:stable" in frontend_test_section
+    assert "npm run test:e2e:stable" in frontend_test_section
+    assert "PLAYWRIGHT_EXTERNAL_FRONTEND=1 npm run test:e2e:stable" not in frontend_test_section
     assert "npm run test:e2e\n" not in frontend_test_section
 
 

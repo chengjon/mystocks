@@ -301,7 +301,7 @@ jobs:
 
     - name: Run e2e tests
       if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
-      run: PLAYWRIGHT_EXTERNAL_FRONTEND=1 npm run test:e2e:stable
+      run: npm run test:e2e:stable
 
     - name: Build for production
       if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
