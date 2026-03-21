@@ -254,7 +254,8 @@ jobs:
     - name: Run Real Data Synchronization Tests
       run: |
         echo "🔬 Running Real Data Synchronization Tests..."
-        BASE_URL=http://localhost:${BACKEND_PORT} python tests/real_data_synchronization_test.py
+        BASE_URL=http://localhost:${BACKEND_PORT} \
+        python -m pytest -o addopts='' tests/real_data_synchronization_test.py::test_backtest_real_functionality -v
 
     - name: Generate Test Reports
       run: |

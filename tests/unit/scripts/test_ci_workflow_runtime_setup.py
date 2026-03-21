@@ -11,7 +11,6 @@ WORKFLOW_ROOT = PROJECT_ROOT / ".github" / "workflows"
 def _read_workflow(name: str) -> str:
     return (WORKFLOW_ROOT / name).read_text(encoding="utf-8")
 
-
     def test_key_workflows_are_valid_yaml_documents() -> None:
         for workflow_name in (
             "cicd-monthly-review.yml",
@@ -49,8 +48,10 @@ def test_api_automation_discovery_sets_required_backend_runtime_env_vars() -> No
     assert "export POSTGRESQL_DATABASE=mystocks" in workflow
     assert "export BACKEND_PORT=8000" in workflow
     assert "export BACKEND_BACKUP_PORT=8001" in workflow
-    start_section = workflow.split("- name: Start Backend Service", 1)[1].split("- name: Run API Automation Tests", 1)[0]
-    assert 'PYTHONPATH=$PWD:$PWD/web/backend' in start_section
+    start_section = workflow.split("- name: Start Backend Service", 1)[1].split("- name: Run API Automation Tests", 1)[
+        0
+    ]
+    assert "PYTHONPATH=$PWD:$PWD/web/backend" in start_section
     assert "python -m uvicorn app.main:app" in start_section
     assert "nohup" in start_section
     assert "/tmp/api_automation_backend_pid" in start_section
@@ -130,7 +131,10 @@ def test_data_sync_workflow_uses_python_module_pip_and_ci_safe_pytest_invocation
     assert "python -m pip install pytest pytest-asyncio pytest-cov pytest-mock schemathesis locust" in workflow
     assert "BASE_URL=http://localhost:8000 python -m pytest -o addopts=''" in workflow
     assert "python -m pytest -o addopts='' tests/data_mapping_tests.py -v" in workflow
-    assert "BASE_URL=http://localhost:${BACKEND_PORT} python tests/real_data_synchronization_test.py" in workflow
+    assert (
+        "python -m pytest -o addopts='' tests/real_data_synchronization_test.py::test_backtest_real_functionality -v"
+        in workflow
+    )
     assert "ports:" in workflow
     assert "- 5432:5432" in workflow
     assert "psql -h localhost -U postgres -d postgres -tc" in workflow
@@ -140,7 +144,9 @@ def test_data_sync_workflow_uses_python_module_pip_and_ci_safe_pytest_invocation
 def test_data_sync_workflow_starts_backend_before_contract_tests_and_tolerates_missing_quality_artifacts() -> None:
     workflow = _read_workflow("data-sync-testing.yml")
 
-    install_section = workflow.split("- name: Install Python dependencies", 1)[1].split("- name: Install frontend dependencies", 1)[0]
+    install_section = workflow.split("- name: Install Python dependencies", 1)[1].split(
+        "- name: Install frontend dependencies", 1
+    )[0]
     assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in install_section
     assert "python -m pip install -r /tmp/backend-requirements-ci.txt" in install_section
 
@@ -155,13 +161,15 @@ def test_data_sync_workflow_starts_backend_before_contract_tests_and_tolerates_m
     assert "export JWT_SECRET_KEY=$(openssl rand -hex 32)" in contract_setup_section
     assert "export BACKEND_PORT=8000" in contract_setup_section
     assert "export BACKEND_BACKUP_PORT=8001" in contract_setup_section
-    assert 'PYTHONPATH=$PWD:$PWD/web/backend' in contract_setup_section
+    assert "PYTHONPATH=$PWD:$PWD/web/backend" in contract_setup_section
     assert "python -m uvicorn app.main:app" in contract_setup_section
     assert "nohup" in contract_setup_section
     assert "/tmp/contract_backend_pid" in contract_setup_section
 
     quality_gate_section = workflow.split("# Quality Gate Check", 1)[1]
-    download_section = quality_gate_section.split("- name: Download Test Results", 1)[1].split("- name: Quality Gate Check", 1)[0]
+    download_section = quality_gate_section.split("- name: Download Test Results", 1)[1].split(
+        "- name: Quality Gate Check", 1
+    )[0]
     assert "continue-on-error: true" in download_section
     assert "bash ./scripts/ci_type_check.sh" in workflow
 
@@ -180,7 +188,9 @@ def test_data_sync_workflow_uses_ci_safe_frontend_build_without_repo_wide_type_g
 
 def test_data_sync_workflow_runs_existing_frontend_contract_smoke_instead_of_missing_ui_binding_script() -> None:
     workflow = _read_workflow("data-sync-testing.yml")
-    ui_section = workflow.split("- name: Run UI Binding Tests", 1)[1].split("- name: Start Services for E2E Tests", 1)[0]
+    ui_section = workflow.split("- name: Run UI Binding Tests", 1)[1].split("- name: Start Services for E2E Tests", 1)[
+        0
+    ]
 
     assert "npm run test:unit" not in ui_section
     assert "npx vitest run" in ui_section
@@ -189,7 +199,9 @@ def test_data_sync_workflow_runs_existing_frontend_contract_smoke_instead_of_mis
 
 def test_data_sync_workflow_uses_aligned_service_ports_and_frontend_stable_e2e_suite() -> None:
     workflow = _read_workflow("data-sync-testing.yml")
-    start_section = workflow.split("- name: Start Services for E2E Tests", 1)[1].split("- name: Run E2E Data Flow Tests", 1)[0]
+    start_section = workflow.split("- name: Start Services for E2E Tests", 1)[1].split(
+        "- name: Run E2E Data Flow Tests", 1
+    )[0]
     e2e_section = workflow.split("- name: Run E2E Data Flow Tests", 1)[1].split(
         "- name: Run Real Data Synchronization Tests", 1
     )[0]
@@ -235,7 +247,7 @@ def test_legacy_e2e_workflow_starts_services_before_stable_suite() -> None:
     assert "export TESTING=true" in workflow
     assert "Start backend service" in workflow
     assert "Start frontend service" in workflow
-    assert 'PYTHONPATH=$PWD:$PWD/web/backend' in workflow
+    assert "PYTHONPATH=$PWD:$PWD/web/backend" in workflow
     assert "PLAYWRIGHT_EXTERNAL_FRONTEND=1 npm run test:e2e:stable" in workflow
     assert "curl -fsS http://localhost:${BACKEND_PORT}/api/announcement/health" in workflow
     assert "curl -fsS http://localhost:${BACKEND_PORT}/health/ready" in workflow
@@ -275,7 +287,7 @@ def test_contract_testing_workflow_skips_when_framework_is_absent() -> None:
     workflow = _read_workflow("contract-testing.yml")
 
     assert "contract-framework-readiness" in workflow
-    assert "if [ -d \"src/contract_testing\" ]" in workflow
+    assert 'if [ -d "src/contract_testing" ]' in workflow
     assert "needs: contract-framework-readiness" in workflow
     assert "needs.contract-framework-readiness.outputs.ready == 'true'" in workflow
 
@@ -314,7 +326,9 @@ def test_e2e_tests_workflow_installs_backend_runtime_dependencies_and_downloads_
 
 def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking_pr_comment() -> None:
     workflow = _read_workflow("e2e-testing.yml")
-    backend_install_section = workflow.split("- name: Install Backend Dependencies", 1)[1].split("- name: Run Backend Tests", 1)[0]
+    backend_install_section = workflow.split("- name: Install Backend Dependencies", 1)[1].split(
+        "- name: Run Backend Tests", 1
+    )[0]
     backend_test_section = workflow.split("- name: Run Backend Tests", 1)[1].split("- name: Start Backend Server", 1)[0]
 
     assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in workflow
@@ -340,8 +354,12 @@ def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking
 
 def test_ci_cd_type_workflow_matches_recovery_mypy_baseline() -> None:
     workflow = _read_workflow("ci-cd-with-type-checking.yml")
-    install_section = workflow.split("- name: Install Python dependencies", 1)[1].split("- name: Install frontend dependencies", 1)[0]
-    mypy_section = workflow.split("- name: Run Python type checking (mypy)", 1)[1].split("- name: Generate type coverage report", 1)[0]
+    install_section = workflow.split("- name: Install Python dependencies", 1)[1].split(
+        "- name: Install frontend dependencies", 1
+    )[0]
+    mypy_section = workflow.split("- name: Run Python type checking (mypy)", 1)[1].split(
+        "- name: Generate type coverage report", 1
+    )[0]
 
     assert "types-PyYAML" in install_section
     assert "pip install -e ." in install_section
@@ -361,6 +379,9 @@ def test_ci_cd_type_workflow_uses_baseline_safe_frontend_validation() -> None:
     assert "BACKEND_PORT=8020" in frontend_section
     assert "BACKEND_BACKUP_PORT=8021" in frontend_section
     assert "npm run build:no-types" in frontend_section
+    assert "FRONTEND_PORT=3020 \\" in frontend_section
+    assert "npx vitest run tests/unit/port-config-consistency.spec.ts --reporter=verbose" in frontend_section
+    assert "BACKEND_PORT=8020 \\" in frontend_section
     assert "npx vitest run tests/unit/port-config-consistency.spec.ts --reporter=verbose" in frontend_section
 
 
@@ -558,8 +579,8 @@ def test_ci_cd_basic_tests_install_backend_runtime_dependencies() -> None:
 def test_comprehensive_testing_only_installs_requirements_dev_when_present() -> None:
     workflow = _read_workflow("comprehensive-testing.yml")
 
-    assert 'if [ -f requirements-dev.txt ]; then' in workflow
-    assert 'pip install -r requirements-dev.txt' in workflow
+    assert "if [ -f requirements-dev.txt ]; then" in workflow
+    assert "pip install -r requirements-dev.txt" in workflow
 
 
 def test_comprehensive_testing_scopes_heavy_jobs_to_relevant_test_areas() -> None:
@@ -617,7 +638,9 @@ def test_ci_cd_test_chain_validation_uses_current_script_locations() -> None:
 
 def test_ci_cd_with_type_checking_avoids_types_all_meta_package() -> None:
     workflow = _read_workflow("ci-cd-with-type-checking.yml")
-    install_section = workflow.split("- name: Install Python dependencies", 1)[1].split("- name: Install frontend dependencies", 1)[0]
+    install_section = workflow.split("- name: Install Python dependencies", 1)[1].split(
+        "- name: Install frontend dependencies", 1
+    )[0]
 
     assert "pip install mypy" in install_section
     assert "pip install mypy types-all" not in install_section
@@ -650,13 +673,18 @@ def test_ci_cd_with_type_checking_scopes_pipeline_to_type_relevant_changes() -> 
     assert '[[ "$changed_file" == src/gpu/* ]]' in scope_section
     assert 'if [ -z "$python_files" ]; then' in scope_section
     assert "python_type_check_required=false" in scope_section
-    assert "mypy --config-file=config/mypy.ini ${{ needs.type-check-scope-detect.outputs.python_files }}" in type_check_section
+    assert (
+        "mypy --config-file=config/mypy.ini ${{ needs.type-check-scope-detect.outputs.python_files }}"
+        in type_check_section
+    )
 
 
 def test_typescript_type_check_uses_explicit_path_filters_and_repo_repo_comments() -> None:
     workflow = _read_workflow("typescript-type-check.yml")
     count_section = workflow.split("- name: Count TypeScript errors", 1)[1].split("- name: Upload tsc results", 1)[0]
-    quality_gate_section = workflow.split("type-check-gate:", 1)[1].split("# ============================================================", 1)[0]
+    quality_gate_section = workflow.split("type-check-gate:", 1)[1].split(
+        "# ============================================================", 1
+    )[0]
 
     assert "'web/frontend/src/**/*.ts'" in workflow
     assert "'web/frontend/src/**/*.tsx'" in workflow
@@ -697,7 +725,9 @@ def test_python_and_typescript_type_check_workflows_download_artifacts_into_work
     python_workflow = _read_workflow("python-type-check.yml")
     typescript_workflow = _read_workflow("typescript-type-check.yml")
 
-    python_section = python_workflow.split("Download all type check artifacts", 1)[1].split("Generate consolidated report", 1)[0]
+    python_section = python_workflow.split("Download all type check artifacts", 1)[1].split(
+        "Generate consolidated report", 1
+    )[0]
     typescript_section = typescript_workflow.split("Download all type check artifacts", 1)[1].split(
         "Generate consolidated report", 1
     )[0]
@@ -784,6 +814,7 @@ def test_p0_quality_gate_scopes_pr_checks_to_changed_files() -> None:
     assert "needs: p0-scope-detect" in formatting_section
     assert "needs.p0-scope-detect.outputs.python_quality_required == 'true'" in formatting_section
     assert "${{ needs.p0-scope-detect.outputs.python_files }}" in formatting_section
+    assert "pip install black==25.11.0 isort" in formatting_section
 
     assert "needs: p0-scope-detect" in security_section
     assert "needs.p0-scope-detect.outputs.python_quality_required == 'true'" in security_section
@@ -803,7 +834,9 @@ def test_coverage_and_performance_workflows_download_artifacts_into_workspace() 
     coverage_workflow = _read_workflow("coverage-expansion.yml")
     performance_workflow = _read_workflow("performance-testing.yml")
 
-    coverage_section = coverage_workflow.split("Download coverage report", 1)[1].split("Generate test expansion plan", 1)[0]
+    coverage_section = coverage_workflow.split("Download coverage report", 1)[1].split(
+        "Generate test expansion plan", 1
+    )[0]
     performance_section = performance_workflow.split("Download performance results", 1)[1].split(
         "Check for performance regressions", 1
     )[0]
@@ -839,7 +872,9 @@ def test_security_testing_merges_downloaded_artifacts_into_workspace() -> None:
 def test_security_testing_uses_parseable_report_generation_and_non_blocking_slack() -> None:
     workflow = _read_workflow("security-testing.yml")
 
-    report_section = workflow.split("Generate consolidated security report", 1)[1].split("Upload security reports", 1)[0]
+    report_section = workflow.split("Generate consolidated security report", 1)[1].split("Upload security reports", 1)[
+        0
+    ]
     notification_section = workflow.split("security-notification:", 1)[1]
 
     assert "cat > security-reports/security-summary.md << 'EOF'" not in report_section
@@ -874,7 +909,7 @@ def test_quant_strategy_validation_uses_existing_script_path_and_safe_issue_body
 
     assert "chmod +x scripts/dev/ci/quant_strategy_validation.py" in workflow
     assert "python scripts/dev/ci/quant_strategy_validation.py" in workflow
-    assert 'ISSUE_BODY=$(cat <<EOF' in workflow
+    assert "ISSUE_BODY=$(cat <<EOF" in workflow
     assert '$(cat "$GITHUB_STEP_SUMMARY"' in workflow
 
 

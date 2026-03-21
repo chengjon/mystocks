@@ -42,6 +42,12 @@ def _akshare_unavailable(feature: str) -> bool:
     return True
 
 
+def _get_akshare_module(feature: str):
+    if _akshare_unavailable(feature):
+        return None
+    return ak
+
+
 class MonitoringService:
     """实时监控服务 (单例模式)"""
 
@@ -182,18 +188,17 @@ class MonitoringService:
 
     def fetch_realtime_data(self, symbols: List[str] = None) -> pd.DataFrame:
         """获取实时行情数据"""
-        if _akshare_unavailable("realtime monitoring fetch"):
+        ak_module = _get_akshare_module("realtime monitoring fetch")
+        if ak_module is None:
             return pd.DataFrame()
-
-        assert ak is not None
         try:
             if symbols and len(symbols) > 0:
                 # 获取指定股票的实时数据
-                df = ak.stock_zh_a_spot_em()
+                df = ak_module.stock_zh_a_spot_em()
                 df = df[df["代码"].isin(symbols)]
             else:
                 # 获取全市场实时数据
-                df = ak.stock_zh_a_spot_em()
+                df = ak_module.stock_zh_a_spot_em()
 
             if df.empty:
                 logger.warning("No realtime data fetched")
@@ -546,16 +551,15 @@ class MonitoringService:
 
     def fetch_dragon_tiger_list(self, trade_date: Optional[date] = None) -> pd.DataFrame:
         """获取龙虎榜数据"""
-        if _akshare_unavailable("dragon tiger monitoring fetch"):
+        ak_module = _get_akshare_module("dragon tiger monitoring fetch")
+        if ak_module is None:
             return pd.DataFrame()
-
-        assert ak is not None
         try:
             if trade_date is None:
                 trade_date = date.today()
 
             date_str = trade_date.strftime("%Y%m%d")
-            df = ak.stock_lhb_detail_daily_sina(date=date_str)
+            df = ak_module.stock_lhb_detail_daily_sina(date=date_str)
 
             if df.empty:
                 logger.info("No dragon tiger data for %(date_str)s")

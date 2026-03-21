@@ -34,6 +34,12 @@ def _akshare_unavailable(feature: str) -> bool:
     return True
 
 
+def _get_akshare_module(feature: str):
+    if _akshare_unavailable(feature):
+        return None
+    return ak
+
+
 class TechnicalAnalysisService:
     """
     技术分析服务 (单例模式)
@@ -88,10 +94,9 @@ class TechnicalAnalysisService:
 
         返回: DataFrame with columns: date, open, close, high, low, volume, amount
         """
-        if _akshare_unavailable("technical analysis history fetch"):
+        ak_module = _get_akshare_module("technical analysis history fetch")
+        if ak_module is None:
             return pd.DataFrame()
-
-        assert ak is not None
         try:
             # 缓存键
             cache_key = f"{symbol}_{period}_{start_date}_{end_date}_{adjust}"
@@ -115,7 +120,7 @@ class TechnicalAnalysisService:
                 start_date = start_date.replace("-", "")
 
             # 获取数据
-            df = ak.stock_zh_a_hist(
+            df = ak_module.stock_zh_a_hist(
                 symbol=symbol,
                 period=period,
                 start_date=start_date,

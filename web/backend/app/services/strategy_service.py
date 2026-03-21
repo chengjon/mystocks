@@ -39,6 +39,12 @@ def _akshare_unavailable(feature: str) -> bool:
     return True
 
 
+def _get_akshare_module(feature: str):
+    if _akshare_unavailable(feature):
+        return None
+    return ak
+
+
 class StrategyService:
     """股票策略服务"""
 
@@ -81,10 +87,9 @@ class StrategyService:
         Returns:
             DataFrame with columns: date, open, high, low, close, volume, amount, p_change
         """
-        if _akshare_unavailable("strategy history fetch"):
+        ak_module = _get_akshare_module("strategy history fetch")
+        if ak_module is None:
             return pd.DataFrame()
-
-        assert ak is not None
         try:
             if start_date is None:
                 start_date = (datetime.now() - timedelta(days=365)).strftime("%Y%m%d")
@@ -92,7 +97,7 @@ class StrategyService:
                 end_date = datetime.now().strftime("%Y%m%d")
 
             # 使用akshare获取A股历史数据
-            df = ak.stock_zh_a_hist(
+            df = ak_module.stock_zh_a_hist(
                 symbol=symbol,
                 period=period,
                 start_date=start_date,
@@ -145,13 +150,12 @@ class StrategyService:
         Returns:
             List of dict with keys: symbol, name
         """
-        if _akshare_unavailable("strategy stock list fetch"):
+        ak_module = _get_akshare_module("strategy stock list fetch")
+        if ak_module is None:
             return []
-
-        assert ak is not None
         try:
             # 获取A股实时行情
-            df = ak.stock_zh_a_spot_em()
+            df = ak_module.stock_zh_a_spot_em()
 
             if df is None or df.empty:
                 logger.warning("未获取到股票列表")

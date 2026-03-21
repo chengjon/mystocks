@@ -184,6 +184,10 @@ jobs:
         BACKEND_PORT=8020 \
         BACKEND_BACKUP_PORT=8021 \
         npm run build:no-types
+        FRONTEND_PORT=3020 \
+        FRONTEND_BACKUP_PORT=3021 \
+        BACKEND_PORT=8020 \
+        BACKEND_BACKUP_PORT=8021 \
         npx vitest run tests/unit/port-config-consistency.spec.ts --reporter=verbose
 
     - name: Upload type check results
