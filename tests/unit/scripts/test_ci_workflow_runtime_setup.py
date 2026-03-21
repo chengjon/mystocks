@@ -674,6 +674,7 @@ def test_ci_cd_with_type_checking_scopes_pipeline_to_type_relevant_changes() -> 
     scope_section = workflow.split("type-check-scope-detect:", 1)[1].split("# Type Checking Job", 1)[0]
     type_check_section = workflow.split("type-check:", 1)[1].split("# Code Quality Job", 1)[0]
     code_quality_section = workflow.split("code-quality:", 1)[1].split("# Unit Tests Job", 1)[0]
+    unit_test_section = workflow.split("unit-tests:", 1)[1].split("# Integration Tests Job", 1)[0]
 
     assert "src/*.py|src/**/*.py" in scope_section
     assert "web/frontend/src/*|web/frontend/src/**" in scope_section
@@ -690,6 +691,9 @@ def test_ci_cd_with_type_checking_scopes_pipeline_to_type_relevant_changes() -> 
     assert "ruff check ${{ needs.type-check-scope-detect.outputs.python_files }}" in code_quality_section
     assert "bandit -f json -o bandit-report.json ${{ needs.type-check-scope-detect.outputs.python_files }}" in code_quality_section
     assert "black --check --diff src/ scripts/" not in code_quality_section
+    assert "needs.type-check-scope-detect.outputs.python_type_check_required == 'true'" in unit_test_section
+    assert "tests/unit/scripts/test_ci_workflow_runtime_setup.py -q" in unit_test_section
+    assert 'pytest tests/ -m "unit"' not in unit_test_section
     assert '[[ "$changed_file" == src/gpu/* ]]' in scope_section
     assert 'if [ -z "$python_files" ]; then' in scope_section
     assert "python_type_check_required=false" in scope_section
