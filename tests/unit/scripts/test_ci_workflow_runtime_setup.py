@@ -231,6 +231,18 @@ def test_menu_navigation_e2e_mocks_readiness_endpoint_before_navigation() -> Non
     assert 'status: "ready"' in spec or "status: 'ready'" in spec
 
 
+def test_visual_chart_specs_use_existing_fixture_and_helper_paths() -> None:
+    chart_specs = [
+        PROJECT_ROOT / "web" / "frontend" / "tests" / "visual" / "components" / "charts" / "backtest.spec.ts",
+        PROJECT_ROOT / "web" / "frontend" / "tests" / "visual" / "components" / "charts" / "technical-analysis.spec.ts",
+    ]
+
+    for spec_path in chart_specs:
+        spec = spec_path.read_text(encoding="utf-8")
+        assert "../../fixtures/visual.fixture" in spec
+        assert "../../utils/helpers" in spec
+
+
 def test_contract_testing_workflow_skips_when_framework_is_absent() -> None:
     workflow = _read_workflow("contract-testing.yml")
 
@@ -452,6 +464,9 @@ def test_frontend_testing_uses_ci_safe_frontend_commands_instead_of_repo_wide_ts
 
 def test_visual_testing_scopes_pipeline_and_uses_full_frontend_dependencies() -> None:
     workflow = _read_workflow("visual-testing.yml")
+    visual_config = (PROJECT_ROOT / "web" / "frontend" / "tests" / "visual" / "config" / "visual.config.ts").read_text(
+        encoding="utf-8"
+    )
 
     assert "visual-scope-detect" in workflow
     assert "visual_test_required" in workflow
@@ -482,6 +497,8 @@ def test_visual_testing_scopes_pipeline_and_uses_full_frontend_dependencies() ->
     assert "npm run dev -- --host 0.0.0.0 --port 5173" not in visual_test_section
     assert "visual-test-results-${{ matrix.browser }}-${{ matrix.shard }}" not in workflow
     assert "visual-playwright-report-${{ matrix.browser }}-${{ matrix.shard }}" not in workflow
+    assert "testDir: '..'" in visual_config
+    assert "testDir: '../visual'" not in visual_config
 
 
 def test_ci_cd_basic_tests_install_backend_runtime_dependencies() -> None:

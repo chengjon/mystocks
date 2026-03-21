@@ -1,5 +1,5 @@
-import { test, expect } from '../fixtures/visual.fixture';
-import { waitForEChartsRender, validateGoldTheme } from '../utils/helpers';
+import { test, expect } from '../../fixtures/visual.fixture';
+import { waitForEChartsRender, validateGoldTheme } from '../../utils/helpers';
 
 test.describe('Technical Analysis Charts - ArtDeco V3.0 Theme', () => {
   test.beforeEach(async ({ page }) => {

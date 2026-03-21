@@ -7,7 +7,7 @@ const FRONTEND_PORT = process.env.FRONTEND_PORT || '3020';
 const FRONTEND_URL = process.env.FRONTEND_URL || `http://localhost:${FRONTEND_PORT}`;
 
 export default defineConfig({
-  testDir: '../visual',
+  testDir: '..',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
