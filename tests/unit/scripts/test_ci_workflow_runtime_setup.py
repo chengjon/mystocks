@@ -322,6 +322,7 @@ def test_e2e_tests_workflow_installs_backend_runtime_dependencies_and_downloads_
     assert "actions/download-artifact@v4" in quality_gate_section
     assert "name: e2e-test-results" in workflow
     assert "test-results/e2e-results.json" in quality_gate_section
+    assert "locust -f tests/performance/locustfile.py --host=http://localhost:8000 --headless" in workflow
 
 
 def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking_pr_comment() -> None:

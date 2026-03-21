@@ -99,7 +99,7 @@ jobs:
 
       - name: Run performance tests
         run: |
-          locust -f tests/performance/locustfile.py --host=http://localhost:8000 --users=50 --spawn-rate=10 --run-time=5m --html=/tmp/performance-report.html 2>&1 || true
+          locust -f tests/performance/locustfile.py --host=http://localhost:8000 --headless --users=50 --spawn-rate=10 --run-time=5m --html=/tmp/performance-report.html 2>&1 || true
 
       - name: Upload performance report
         uses: actions/upload-artifact@v4
