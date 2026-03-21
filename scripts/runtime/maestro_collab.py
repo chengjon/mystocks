@@ -30,6 +30,12 @@ from src.services.maestro.profiles.mystocks import COLLAB_CONTROL_PLANE_DEFAULTS
 from src.utils.mongo_runtime_config import get_mongo_connection_kwargs
 from scripts.runtime.export_collab_snapshots import render_task_markdown, render_task_report_markdown
 
+GRAPHITI_CLI_EXAMPLES = """Examples:
+  python scripts/runtime/coordctl.py graphiti preflight --work-item-id MT-100 --actor-cli cli-1 --task-path TASK.md --output json
+  python scripts/runtime/coordctl.py graphiti remember --actor-cli cli-1 --group-id mystocks_spec_docs --name "Architecture Note" --body "Document the Graphiti flow." --output json
+  python scripts/runtime/coordctl.py graphiti search --actor-cli cli-1 --query "Graphiti workflow guide" --group-id mystocks_spec_docs --output json
+"""
+
 
 @dataclass(frozen=True)
 class _IssueRef:
@@ -279,7 +285,11 @@ class _GraphitiFacade:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Manage Maestro collaboration state.")
+    parser = argparse.ArgumentParser(
+        description="Manage Maestro collaboration state.",
+        epilog=GRAPHITI_CLI_EXAMPLES,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     parser.add_argument("--sqlite-path", default=".symphony/tracker.db", help="Path to the local tracker sqlite DB.")
     parser.add_argument(
         "--mongo-uri",

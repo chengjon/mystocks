@@ -453,6 +453,28 @@ python scripts/runtime/coordctl.py graphiti search \
   --output json
 ```
 
+### Smoke Verification
+
+如果需要一条更接近真实操作流的 repo-local smoke，可直接跑共享 CLI 的 smoke runner：
+
+```bash
+python scripts/runtime/smoke_graphiti_cli.py \
+  --actor-cli <CLI_NAME> \
+  --group-id <TEMP_GROUP_ID> \
+  --name "Graphiti Smoke" \
+  --body "Smoke verification for shared Graphiti CLI." \
+  --query "Graphiti Smoke"
+```
+
+说明：
+
+- 这条脚本会顺序执行：
+  - `coordctl.py graphiti remember`
+  - `coordctl.py graphiti search`
+- 它适合验证共享 CLI 本身是否通，而不是验证某个 assistant-specific hook
+- 建议使用临时 `group_id`
+- 验证完成后，如需清理，可对该临时 group 执行 `clear_graph`
+
 ### Pattern 1: 开工前读取历史上下文
 
 适用：

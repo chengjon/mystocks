@@ -114,6 +114,7 @@ repo-local canonical 命令：
 - `python scripts/runtime/coordctl.py graphiti preflight ...`
 - `python scripts/runtime/coordctl.py graphiti remember ...`
 - `python scripts/runtime/coordctl.py graphiti search ...`
+- `python scripts/runtime/smoke_graphiti_cli.py ...`
 
 说明：
 

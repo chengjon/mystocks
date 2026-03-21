@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import contextlib
+import io
+
 import scripts.runtime.maestro_collab as maestro_collab
 
 
@@ -275,3 +278,13 @@ def test_maestro_collab_cli_can_run_graphiti_search(monkeypatch, capsys) -> None
     output = capsys.readouterr().out
     assert "search_outcome" in output
     assert "nodes hit=1, facts hit=1" in output
+
+
+def test_maestro_collab_cli_help_includes_graphiti_examples(capsys) -> None:
+    with contextlib.suppress(SystemExit):
+        maestro_collab.main(["--help"])
+
+    output = capsys.readouterr().out
+    assert "coordctl.py graphiti preflight" in output
+    assert "coordctl.py graphiti remember" in output
+    assert "coordctl.py graphiti search" in output
