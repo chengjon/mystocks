@@ -320,9 +320,12 @@ def test_e2e_tests_workflow_installs_backend_runtime_dependencies_and_downloads_
     assert "PYTHONPATH=$PWD:$PWD/web/backend" in start_section
     assert "python -m uvicorn app.main:app" in start_section
     assert "actions/download-artifact@v4" in quality_gate_section
+    assert "continue-on-error: true" in quality_gate_section
     assert "name: e2e-test-results" in workflow
     assert "test-results/e2e-results.json" in quality_gate_section
     assert "locust -f tests/performance/locustfile.py --host=http://localhost:8000 --headless" in workflow
+    assert 'if [ -f "test-results/e2e-results.json" ]' in quality_gate_section
+    assert 'E2E_PASSED="pass"' in quality_gate_section
 
 
 def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking_pr_comment() -> None:

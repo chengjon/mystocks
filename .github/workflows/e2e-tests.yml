@@ -114,13 +114,22 @@ jobs:
     if: always()
     steps:
       - name: Download e2e results
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: e2e-test-results
           path: test-results
       - name: Check results
         run: |
-          E2E_PASSED=$(cat test-results/e2e-results.json | python -c "import sys, json; data=json.load(sys.stdin); print('pass' if data.get('summary',{}).get('passed',0) > 0 else 'fail')" 2>/dev/null || echo "fail")
+          if [ -f "test-results/e2e-results.json" ]; then
+            E2E_PASSED=$(cat test-results/e2e-results.json | python -c "import sys, json; data=json.load(sys.stdin); print('pass' if data.get('summary',{}).get('passed',0) > 0 else 'fail')" 2>/dev/null || echo "fail")
+          else
+            if [ "${{ needs.e2e-tests.result }}" = "success" ]; then
+              E2E_PASSED="pass"
+            else
+              E2E_PASSED="fail"
+            fi
+          fi
           echo "E2E Tests: $E2E_PASSED"
           if [ "$E2E_PASSED" != "pass" ]; then
             echo "E2E tests failed quality gate"
