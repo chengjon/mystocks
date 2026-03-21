@@ -327,6 +327,10 @@ jobs:
 
       - name: Start Services
         run: |
+          until PGPASSWORD=postgres psql -h localhost -U postgres -d mystocks_test -c 'SELECT 1' >/dev/null 2>&1; do
+            sleep 2
+          done
+
           # 启动后端服务
           cd web/backend
           export USE_MOCK_DATA=true

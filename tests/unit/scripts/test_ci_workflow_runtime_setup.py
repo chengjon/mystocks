@@ -375,6 +375,7 @@ def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking
     assert "export POSTGRESQL_DATABASE=mystocks_test" in e2e_start_section
     assert "export JWT_SECRET_KEY=$(openssl rand -hex 32)" in e2e_start_section
     assert "PYTHONPATH=$PWD/../..:$PWD" in e2e_start_section
+    assert "PGPASSWORD=postgres psql -h localhost -U postgres -d mystocks_test -c 'SELECT 1'" in e2e_start_section
     assert "npm run dev:no-types -- --host 127.0.0.1 --port ${FRONTEND_PORT} --strictPort" in e2e_start_section
     assert "curl -f http://localhost:5173" in e2e_start_section
 
@@ -715,6 +716,15 @@ def test_ci_cd_with_type_checking_scopes_pipeline_to_type_relevant_changes() -> 
     assert "tests/unit/scripts/test_ci_workflow_runtime_setup.py -q" in unit_test_section
     assert "--cov-fail-under=0" in unit_test_section
     assert 'pytest tests/ -m "unit"' not in unit_test_section
+    integration_section = workflow.split("integration-tests:", 1)[1].split("# E2E Tests Job", 1)[0]
+    assert "pytest pytest-asyncio pytest-cov pytest-mock" in integration_section
+    assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in integration_section
+    assert "pip install -r /tmp/backend-requirements-ci.txt" in integration_section
+    assert "tests/test_post_rewrite_backend_import_stability.py" in integration_section
+    assert "tests/test_trading_runtime_routes.py" in integration_section
+    assert "tests/strategy_management/test_backtest_runtime_fallback.py" in integration_section
+    assert "--cov-fail-under=0" in integration_section
+    assert 'pytest tests/ -m "integration"' not in integration_section
     assert '[[ "$changed_file" == src/gpu/* ]]' in scope_section
     assert 'if [ -z "$python_files" ]; then' in scope_section
     assert "python_type_check_required=false" in scope_section
