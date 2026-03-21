@@ -369,11 +369,7 @@ jobs:
           npx playwright test \
             --project=${{ matrix.browser }} \
             --shard=${{ matrix.shard }} \
-            --reporter=html,json,junit \
-            --output=test-results/ \
-            --trace=on \
-            --video=retain-on-failure \
-            --screenshot=only-on-failure
+            --output=test-results/
 
       - name: Upload E2E Test Results
         uses: actions/upload-artifact@v4
@@ -392,13 +388,6 @@ jobs:
           name: playwright-report-${{ matrix.browser }}-${{ matrix.shard }}
           path: web/frontend/playwright-report/
           retention-days: 30
-
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        continue-on-error: true
-        with:
-          files: web/frontend/test-results/junit.xml
 
   # 第五阶段：测试结果汇总和报告
   test-results:

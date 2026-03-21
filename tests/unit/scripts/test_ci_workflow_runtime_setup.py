@@ -383,6 +383,17 @@ def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking
     assert "continue-on-error: true" in comment_section
 
 
+def test_e2e_testing_workflow_relies_on_playwright_config_outputs_and_skips_pr_check_publish() -> None:
+    workflow = _read_workflow("e2e-testing.yml")
+    run_section = workflow.split("- name: Run E2E Tests", 1)[1].split("- name: Upload E2E Test Results", 1)[0]
+
+    assert "--reporter=html,json,junit" not in run_section
+    assert "--trace=on" not in run_section
+    assert "--video=retain-on-failure" not in run_section
+    assert "--screenshot=only-on-failure" not in run_section
+    assert "Publish Test Results" not in workflow
+
+
 def test_ci_cd_type_workflow_matches_recovery_mypy_baseline() -> None:
     workflow = _read_workflow("ci-cd-with-type-checking.yml")
     install_section = workflow.split("- name: Install Python dependencies", 1)[1].split(
@@ -732,6 +743,18 @@ def test_ci_cd_with_type_checking_scopes_pipeline_to_type_relevant_changes() -> 
         "mypy --config-file=config/mypy.ini ${{ needs.type-check-scope-detect.outputs.python_files }}"
         in type_check_section
     )
+
+
+def test_ci_cd_with_type_checking_reinstalls_pytest_after_backend_requirements_for_integration_smoke() -> None:
+    workflow = _read_workflow("ci-cd-with-type-checking.yml")
+    integration_section = workflow.split("integration-tests:", 1)[1].split("# E2E Tests Job", 1)[0]
+    integration_install_section = integration_section.split("- name: Install Python dependencies", 1)[1].split(
+        "- name: Set up test database", 1
+    )[0]
+
+    assert "pip install -r /tmp/backend-requirements-ci.txt" in integration_install_section
+    assert "pip install pytest==9.0.2 pytest-asyncio==1.3.0 pytest-cov pytest-mock" in integration_install_section
+
 
 
 def test_typescript_type_check_uses_explicit_path_filters_and_repo_repo_comments() -> None:
