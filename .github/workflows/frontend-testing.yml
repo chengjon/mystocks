@@ -295,9 +295,13 @@ jobs:
       if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
       run: npx vitest run tests/unit/port-config-consistency.spec.ts --reporter=verbose
 
+    - name: Install Playwright browser
+      if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
+      run: npx playwright install --with-deps chromium
+
     - name: Run e2e tests
       if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
-      run: npm run test:e2e
+      run: PLAYWRIGHT_EXTERNAL_FRONTEND=1 npm run test:e2e:stable
 
     - name: Build for production
       if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
