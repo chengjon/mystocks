@@ -295,6 +295,7 @@ jobs:
           npm ci
           npm install @playwright/test@1.48.1
           npx playwright install ${{ matrix.browser }} --with-deps
+          cd ../..
 
           grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>=' web/backend/requirements.txt > /tmp/backend-requirements-ci.txt
           pip install -r /tmp/backend-requirements-ci.txt
@@ -306,12 +307,20 @@ jobs:
           cd web/backend
           export USE_MOCK_DATA=true
           export DATA_SOURCE=mock
-          python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+          export POSTGRESQL_HOST=localhost
+          export POSTGRESQL_PORT=5432
+          export POSTGRESQL_USER=postgres
+          export POSTGRESQL_PASSWORD=postgres
+          export POSTGRESQL_DATABASE=mystocks_test
+          export JWT_SECRET_KEY=$(openssl rand -hex 32)
+          export BACKEND_PORT=${BACKEND_PORT}
+          export BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT}
+          PYTHONPATH=$PWD/../..:$PWD python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
 
           # 启动前端开发服务器
           cd ../../web/frontend
           export VITE_API_BASE_URL=http://localhost:8000
-          npm run dev &
+          npm run dev:no-types -- --host 127.0.0.1 --port ${FRONTEND_PORT} --strictPort &
 
           echo "Services started - Backend:8000, Frontend:5173"
 

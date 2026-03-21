@@ -335,6 +335,8 @@ def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking
     )[0]
     backend_test_section = workflow.split("- name: Run Backend Tests", 1)[1].split("- name: Start Backend Server", 1)[0]
     backend_start_section = workflow.split("- name: Start Backend Server", 1)[1].split("- name: Test Backend API", 1)[0]
+    e2e_install_section = workflow.split("- name: Install Dependencies", 1)[1].split("- name: Start Services", 1)[0]
+    e2e_start_section = workflow.split("- name: Start Services", 1)[1].split("- name: Run E2E Tests", 1)[0]
 
     assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in workflow
     assert "pip install -r /tmp/backend-requirements-ci.txt" in workflow
@@ -361,6 +363,18 @@ def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking
     assert "export BACKEND_PORT=${BACKEND_PORT}" in backend_start_section
     assert "export BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT}" in backend_start_section
     assert "PYTHONPATH=$PWD/../..:$PWD" in backend_start_section
+    assert "cd web/frontend" in e2e_install_section
+    assert "cd .." in e2e_install_section
+    assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in e2e_install_section
+    assert "npx playwright install ${{ matrix.browser }} --with-deps" in e2e_install_section
+    assert "export POSTGRESQL_HOST=localhost" in e2e_start_section
+    assert "export POSTGRESQL_USER=postgres" in e2e_start_section
+    assert "export POSTGRESQL_PASSWORD=postgres" in e2e_start_section
+    assert "export POSTGRESQL_DATABASE=mystocks_test" in e2e_start_section
+    assert "export JWT_SECRET_KEY=$(openssl rand -hex 32)" in e2e_start_section
+    assert "PYTHONPATH=$PWD/../..:$PWD" in e2e_start_section
+    assert "npm run dev:no-types -- --host 127.0.0.1 --port ${FRONTEND_PORT} --strictPort" in e2e_start_section
+    assert "curl -f http://localhost:5173" in e2e_start_section
 
     comment_section = workflow.split("- name: Comment PR with Results", 1)[1].split("# 第六阶段", 1)[0]
     assert "continue-on-error: true" in comment_section
