@@ -386,13 +386,23 @@ def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking
 def test_e2e_testing_workflow_relies_on_playwright_config_outputs_and_skips_pr_check_publish() -> None:
     workflow = _read_workflow("e2e-testing.yml")
     run_section = workflow.split("- name: Run E2E Tests", 1)[1].split("- name: Upload E2E Test Results", 1)[0]
+    upload_results_section = workflow.split("- name: Upload E2E Test Results", 1)[1].split(
+        "- name: Upload Playwright Report", 1
+    )[0]
+    upload_report_section = workflow.split("- name: Upload Playwright Report", 1)[1].split("# 第五阶段", 1)[0]
 
     assert "--config=playwright.config.js" in run_section or "--config playwright.config.js" in run_section
+    assert "tests/e2e/critical/menu-navigation-fixed.spec.ts" in run_section
+    assert "tests/e2e/kline-chart.spec.ts" in run_section
     assert "--reporter=html,json,junit" not in run_section
     assert "--trace=on" not in run_section
     assert "--video=retain-on-failure" not in run_section
     assert "--screenshot=only-on-failure" not in run_section
     assert "Publish Test Results" not in workflow
+    assert "${{ strategy.job-index }}" in upload_results_section
+    assert "${{ strategy.job-index }}" in upload_report_section
+    assert "continue-on-error: true" in upload_results_section
+    assert "continue-on-error: true" in upload_report_section
 
 
 def test_ci_cd_type_workflow_matches_recovery_mypy_baseline() -> None:

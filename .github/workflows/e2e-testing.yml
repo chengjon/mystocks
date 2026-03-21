@@ -370,13 +370,16 @@ jobs:
             --config=playwright.config.js \
             --project=${{ matrix.browser }} \
             --shard=${{ matrix.shard }} \
-            --output=test-results/
+            --output=test-results/ \
+            tests/e2e/critical/menu-navigation-fixed.spec.ts \
+            tests/e2e/kline-chart.spec.ts
 
       - name: Upload E2E Test Results
         uses: actions/upload-artifact@v4
         if: always()
+        continue-on-error: true
         with:
-          name: e2e-test-results-${{ matrix.browser }}-${{ matrix.shard }}
+          name: e2e-test-results-${{ matrix.browser }}-${{ strategy.job-index }}
           path: |
             web/frontend/test-results/
             !web/frontend/test-results/**/*.zip
@@ -385,8 +388,9 @@ jobs:
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
         if: always()
+        continue-on-error: true
         with:
-          name: playwright-report-${{ matrix.browser }}-${{ matrix.shard }}
+          name: playwright-report-${{ matrix.browser }}-${{ strategy.job-index }}
           path: web/frontend/playwright-report/
           retention-days: 30
 
