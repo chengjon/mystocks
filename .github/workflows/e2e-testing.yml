@@ -196,6 +196,14 @@ jobs:
           cd web/backend
           export USE_MOCK_DATA=true
           export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/mystocks_test
+          export POSTGRESQL_HOST=localhost
+          export POSTGRESQL_PORT=5432
+          export POSTGRESQL_USER=postgres
+          export POSTGRESQL_PASSWORD=postgres
+          export POSTGRESQL_DATABASE=mystocks_test
+          export JWT_SECRET_KEY=$(openssl rand -hex 32)
+          export BACKEND_PORT=${BACKEND_PORT}
+          export BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT}
           python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &
           echo "Backend server started on port 8000"
 

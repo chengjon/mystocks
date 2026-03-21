@@ -132,7 +132,7 @@ def test_data_sync_workflow_uses_python_module_pip_and_ci_safe_pytest_invocation
     assert "BASE_URL=http://localhost:8000 python -m pytest -o addopts=''" in workflow
     assert "python -m pytest -o addopts='' tests/data_mapping_tests.py -v" in workflow
     assert (
-        "python -m pytest -o addopts='' tests/real_data_synchronization_test.py::test_backtest_real_functionality -v"
+        "python -m pytest -o addopts='' tests/real_data_synchronization_test.py::test_data_routing_real_correctness -v"
         in workflow
     )
     assert "ports:" in workflow
@@ -330,6 +330,7 @@ def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking
         "- name: Run Backend Tests", 1
     )[0]
     backend_test_section = workflow.split("- name: Run Backend Tests", 1)[1].split("- name: Start Backend Server", 1)[0]
+    backend_start_section = workflow.split("- name: Start Backend Server", 1)[1].split("- name: Test Backend API", 1)[0]
 
     assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in workflow
     assert "pip install -r /tmp/backend-requirements-ci.txt" in workflow
@@ -347,6 +348,13 @@ def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking
     assert "export POSTGRESQL_PASSWORD=postgres" in backend_test_section
     assert "export JWT_SECRET_KEY=$(openssl rand -hex 32)" in backend_test_section
     assert "export BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT}" in backend_test_section
+    assert "export POSTGRESQL_HOST=localhost" in backend_start_section
+    assert "export POSTGRESQL_USER=postgres" in backend_start_section
+    assert "export POSTGRESQL_PASSWORD=postgres" in backend_start_section
+    assert "export POSTGRESQL_DATABASE=mystocks_test" in backend_start_section
+    assert "export JWT_SECRET_KEY=$(openssl rand -hex 32)" in backend_start_section
+    assert "export BACKEND_PORT=${BACKEND_PORT}" in backend_start_section
+    assert "export BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT}" in backend_start_section
 
     comment_section = workflow.split("- name: Comment PR with Results", 1)[1].split("# 第六阶段", 1)[0]
     assert "continue-on-error: true" in comment_section
@@ -659,6 +667,7 @@ def test_ci_cd_with_type_checking_scopes_pipeline_to_type_relevant_changes() -> 
 
     scope_section = workflow.split("type-check-scope-detect:", 1)[1].split("# Type Checking Job", 1)[0]
     type_check_section = workflow.split("type-check:", 1)[1].split("# Code Quality Job", 1)[0]
+    code_quality_section = workflow.split("code-quality:", 1)[1].split("# Unit Tests Job", 1)[0]
 
     assert "src/*.py|src/**/*.py" in scope_section
     assert "web/frontend/src/*|web/frontend/src/**" in scope_section
@@ -670,6 +679,11 @@ def test_ci_cd_with_type_checking_scopes_pipeline_to_type_relevant_changes() -> 
     assert "needs.type-check-scope-detect.outputs.python_type_check_required == 'true'" in type_check_section
     assert "needs.type-check-scope-detect.outputs.frontend_type_check_required == 'true'" in type_check_section
     assert "part[0-9]+\\.py|_tail\\.py" in scope_section
+    assert "needs.type-check-scope-detect.outputs.python_type_check_required == 'true'" in code_quality_section
+    assert "black --check --diff ${{ needs.type-check-scope-detect.outputs.python_files }}" in code_quality_section
+    assert "ruff check ${{ needs.type-check-scope-detect.outputs.python_files }}" in code_quality_section
+    assert "bandit -f json -o bandit-report.json ${{ needs.type-check-scope-detect.outputs.python_files }}" in code_quality_section
+    assert "black --check --diff src/ scripts/" not in code_quality_section
     assert '[[ "$changed_file" == src/gpu/* ]]' in scope_section
     assert 'if [ -z "$python_files" ]; then' in scope_section
     assert "python_type_check_required=false" in scope_section

@@ -245,13 +245,22 @@ jobs:
       run: npm install
 
     - name: Run Python formatting check (Black)
-      run: black --check --diff src/ scripts/ || (echo "Code formatting issues found" && exit 1)
+      if: needs.type-check-scope-detect.outputs.python_type_check_required == 'true'
+      run: |
+        black --check --diff ${{ needs.type-check-scope-detect.outputs.python_files }} \
+          || (echo "Code formatting issues found" && exit 1)
 
     - name: Run Python linting (Ruff)
-      run: ruff check src/ scripts/ || (echo "Linting errors found" && exit 1)
+      if: needs.type-check-scope-detect.outputs.python_type_check_required == 'true'
+      run: |
+        ruff check ${{ needs.type-check-scope-detect.outputs.python_files }} \
+          || (echo "Linting errors found" && exit 1)
 
     - name: Run Python security check (Bandit)
-      run: bandit -r src/ -f json -o bandit-report.json || (echo "Security issues found" && exit 1)
+      if: needs.type-check-scope-detect.outputs.python_type_check_required == 'true'
+      run: |
+        bandit -f json -o bandit-report.json ${{ needs.type-check-scope-detect.outputs.python_files }} \
+          || (echo "Security issues found" && exit 1)
 
     - name: Run Python dependency security check (Safety)
       run: safety check || (echo "Vulnerable dependencies found" && exit 1)
