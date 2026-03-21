@@ -65,6 +65,11 @@ class CoordinationService:
         self._authorizer.require_can_view_work_item(actor, work_item)
         return self._store.list_work_requests(work_item_id)
 
+    def list_work_events(self, actor: ActorIdentity, work_item_id: str) -> list[WorkEventRecord]:
+        work_item = self._require_work_item(work_item_id)
+        self._authorizer.require_can_view_work_item(actor, work_item)
+        return self._store.list_work_events(work_item_id)
+
     def get_worker_status_view(self, actor: ActorIdentity, work_item_id: str) -> WorkerStatusViewRecord | None:
         work_item = self._require_work_item(work_item_id)
         self._authorizer.require_can_view_work_item(actor, work_item)
@@ -133,6 +138,26 @@ class CoordinationService:
             event_type="audit.worker_status_view_upserted",
         )
         return stored
+
+    def record_automation_event(
+        self,
+        actor: ActorIdentity,
+        *,
+        work_item_id: str,
+        event_type: str,
+        payload: dict,
+    ) -> WorkEventRecord:
+        work_item = self._require_work_item(work_item_id)
+        self._authorizer.require_can_view_work_item(actor, work_item)
+        event = WorkEventRecord(
+            work_item_id=work_item_id,
+            event_id=f"automation-{self._event_id_factory()}",
+            actor_cli=actor.cli_name,
+            event_type=event_type,
+            payload=payload,
+            created_at=self._clock(),
+        )
+        return self._store.append_work_event(event)
 
     def _require_work_item(self, work_item_id: str) -> WorkItemRecord:
         work_item = self._store.get_work_item(work_item_id)

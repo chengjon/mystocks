@@ -138,10 +138,12 @@ def render_task_report_markdown(
     updates: list[dict[str, Any]],
     requests: list[dict[str, Any]],
     status_view: dict[str, Any] | None = None,
+    events: list[dict[str, Any]] | None = None,
 ) -> str:
     current_status = status_view["status"] if status_view else work_item["status"]
     latest_progress = status_view.get("latest_update") if status_view else None
     pending_request = status_view["has_pending_request"] if status_view else "(unknown)"
+    graphiti_projection = _extract_graphiti_projection(events or [])
 
     lines = [
         "# TASK-REPORT",
@@ -175,8 +177,41 @@ def render_task_report_markdown(
     else:
         lines.append("- (none)")
 
+    lines.extend(
+        [
+            "",
+            "## Graphiti",
+            "",
+            f"- server_status: `{graphiti_projection['server_status']}`",
+            f"- ingest_status: `{graphiti_projection['ingest_status']}`",
+            f"- search_summary: `{graphiti_projection['search_summary']}`",
+        ]
+    )
+
     lines.append("")
     return "\n".join(lines)
+
+
+def _extract_graphiti_projection(events: list[dict[str, Any]]) -> dict[str, str]:
+    latest_event: dict[str, Any] | None = None
+    for event in events:
+        if event.get("event_type") != "automation.graphiti_preflight_checked":
+            continue
+        latest_event = event
+
+    if latest_event is None:
+        return {
+            "server_status": "(none)",
+            "ingest_status": "(none)",
+            "search_summary": "(none)",
+        }
+
+    payload = latest_event.get("payload", {})
+    return {
+        "server_status": str(payload.get("server_status", "(none)")),
+        "ingest_status": str(payload.get("ingest_status", "(none)")),
+        "search_summary": str(payload.get("search_summary", "(none)")),
+    }
 
 
 if __name__ == "__main__":

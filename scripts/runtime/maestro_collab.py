@@ -24,7 +24,7 @@ from src.services.maestro.collab import (
 )
 from src.services.maestro.collab.authz import ActorIdentity, AuthorizationError
 from src.services.maestro.collab.backends.mongo import MongoCollaborationStore
-from src.services.maestro.collab.services import CoordinationService
+from src.services.maestro.collab.services import CoordinationService, GraphitiPreflightService
 from src.services.maestro.collab.store.models import WorkItemRecord, WorkRequestRecord, WorkUpdateRecord
 from src.services.maestro.profiles.mystocks import COLLAB_CONTROL_PLANE_DEFAULTS
 from src.utils.mongo_runtime_config import get_mongo_connection_kwargs
@@ -40,6 +40,7 @@ class _IssueRef:
 class _MongoCoordinationFacade:
     def __init__(self, service: CoordinationService) -> None:
         self._service = service
+        self._graphiti_preflight = GraphitiPreflightService(service=service)
 
     def create_work_item(self, payload: dict) -> dict:
         now = _utcnow()
@@ -80,6 +81,12 @@ class _MongoCoordinationFacade:
         return [
             item.model_dump(mode="json")
             for item in self._service.list_work_requests(ActorIdentity(cli_name="main", role="main_cli"), work_item_id)
+        ]
+
+    def list_work_events(self, work_item_id: str) -> list[dict]:
+        return [
+            item.model_dump(mode="json")
+            for item in self._service.list_work_events(ActorIdentity(cli_name="main", role="main_cli"), work_item_id)
         ]
 
     def get_worker_status_view(self, work_item_id: str) -> dict | None:
@@ -133,6 +140,142 @@ class _MongoCoordinationFacade:
             status=status,
         )
         return reviewed.model_dump(mode="json")
+
+    def run_graphiti_preflight(
+        self,
+        work_item_id: str,
+        actor_cli: str,
+        task_path: str | None = None,
+        write_memory: bool = False,
+        max_wait_seconds: int = 60,
+    ) -> dict:
+        role = "main_cli" if actor_cli == "main" else "worker_cli"
+        result = self._graphiti_preflight.run(
+            actor=ActorIdentity(cli_name=actor_cli, role=role),
+            work_item_id=work_item_id,
+            task_path=Path(task_path) if task_path else None,
+            write_memory=write_memory,
+            max_wait_seconds=max_wait_seconds,
+        )
+        payload = result.to_dict()
+        payload["actor_cli"] = actor_cli
+        payload["task_path"] = task_path
+        payload["write_memory"] = write_memory
+        payload["max_wait_seconds"] = max_wait_seconds
+        return payload
+
+    def run_graphiti_remember(
+        self,
+        work_item_id: str,
+        actor_cli: str,
+        task_path: str | None = None,
+        max_wait_seconds: int = 60,
+    ) -> dict:
+        role = "main_cli" if actor_cli == "main" else "worker_cli"
+        result = self._graphiti_preflight.remember(
+            actor=ActorIdentity(cli_name=actor_cli, role=role),
+            work_item_id=work_item_id,
+            task_path=Path(task_path) if task_path else None,
+            max_wait_seconds=max_wait_seconds,
+        )
+        payload = result.to_dict()
+        payload["actor_cli"] = actor_cli
+        payload["task_path"] = task_path
+        payload["max_wait_seconds"] = max_wait_seconds
+        return payload
+
+
+class _GraphitiFacade:
+    def __init__(self, service: CoordinationService | None = None) -> None:
+        self._graphiti = GraphitiPreflightService(service=service)
+
+    def run_graphiti_preflight(
+        self,
+        work_item_id: str,
+        actor_cli: str,
+        task_path: str | None = None,
+        write_memory: bool = False,
+        max_wait_seconds: int = 60,
+    ) -> dict:
+        role = "main_cli" if actor_cli == "main" else "worker_cli"
+        result = self._graphiti.run(
+            actor=ActorIdentity(cli_name=actor_cli, role=role),
+            work_item_id=work_item_id,
+            task_path=Path(task_path) if task_path else None,
+            write_memory=write_memory,
+            max_wait_seconds=max_wait_seconds,
+        )
+        payload = result.to_dict()
+        payload["actor_cli"] = actor_cli
+        payload["task_path"] = task_path
+        payload["write_memory"] = write_memory
+        payload["max_wait_seconds"] = max_wait_seconds
+        return payload
+
+    def run_graphiti_remember(
+        self,
+        work_item_id: str,
+        actor_cli: str,
+        task_path: str | None = None,
+        max_wait_seconds: int = 60,
+    ) -> dict:
+        role = "main_cli" if actor_cli == "main" else "worker_cli"
+        result = self._graphiti.remember(
+            actor=ActorIdentity(cli_name=actor_cli, role=role),
+            work_item_id=work_item_id,
+            task_path=Path(task_path) if task_path else None,
+            max_wait_seconds=max_wait_seconds,
+        )
+        payload = result.to_dict()
+        payload["actor_cli"] = actor_cli
+        payload["task_path"] = task_path
+        payload["max_wait_seconds"] = max_wait_seconds
+        return payload
+
+    def run_graphiti_generic_remember(
+        self,
+        *,
+        actor_cli: str,
+        group_id: str,
+        name: str,
+        body: str,
+        max_wait_seconds: int = 60,
+    ) -> dict:
+        result = self._graphiti.remember_generic(
+            actor_cli=actor_cli,
+            group_id=group_id,
+            name=name,
+            body=body,
+            max_wait_seconds=max_wait_seconds,
+        )
+        payload = result.to_dict()
+        payload["actor_cli"] = actor_cli
+        payload["name"] = name
+        payload["body"] = body
+        payload["max_wait_seconds"] = max_wait_seconds
+        return payload
+
+    def run_graphiti_generic_search(
+        self,
+        *,
+        actor_cli: str,
+        query: str,
+        group_ids: list[str],
+        query_type: str = "all",
+        max_nodes: int = 5,
+        max_facts: int = 5,
+    ) -> dict:
+        result = self._graphiti.search_generic(
+            actor_cli=actor_cli,
+            query=query,
+            group_ids=group_ids,
+            query_type=query_type,
+            max_nodes=max_nodes,
+            max_facts=max_facts,
+        )
+        payload = result.to_dict()
+        payload["actor_cli"] = actor_cli
+        return payload
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -194,6 +337,21 @@ def build_parser() -> argparse.ArgumentParser:
     work_show.add_argument("work_item_id")
     work_show.add_argument("--output", choices=("json", "text"), default="json")
 
+    work_preflight = work_subparsers.add_parser("preflight", help="Run repo-local Graphiti preflight for a work item")
+    work_preflight.add_argument("work_item_id")
+    work_preflight.add_argument("--actor-cli", required=True)
+    work_preflight.add_argument("--task-path", default=None)
+    work_preflight.add_argument("--write-memory", action="store_true")
+    work_preflight.add_argument("--max-wait-seconds", type=int, default=60)
+    work_preflight.add_argument("--output", choices=("json", "text"), default="json")
+
+    work_remember = work_subparsers.add_parser("remember", help="Record an explicit Graphiti memory for a work item")
+    work_remember.add_argument("work_item_id")
+    work_remember.add_argument("--actor-cli", required=True)
+    work_remember.add_argument("--task-path", default=None)
+    work_remember.add_argument("--max-wait-seconds", type=int, default=60)
+    work_remember.add_argument("--output", choices=("json", "text"), default="json")
+
     work_export_task = work_subparsers.add_parser("export-task", help="Export TASK.md snapshot from Mongo state")
     work_export_task.add_argument("work_item_id")
     work_export_task.add_argument("--output-path", default=None)
@@ -243,6 +401,37 @@ def build_parser() -> argparse.ArgumentParser:
     request_review.add_argument("--status", required=True)
     request_review.add_argument("--output", choices=("json", "text"), default="json")
 
+    graphiti_parser = subparsers.add_parser("graphiti", help="Run Graphiti memory operations")
+    graphiti_subparsers = graphiti_parser.add_subparsers(dest="graphiti_command", required=True)
+
+    graphiti_preflight = graphiti_subparsers.add_parser("preflight", help="Run Mongo-backed Graphiti preflight")
+    graphiti_preflight.add_argument("--work-item-id", required=True)
+    graphiti_preflight.add_argument("--actor-cli", required=True)
+    graphiti_preflight.add_argument("--task-path", default=None)
+    graphiti_preflight.add_argument("--write-memory", action="store_true")
+    graphiti_preflight.add_argument("--max-wait-seconds", type=int, default=60)
+    graphiti_preflight.add_argument("--output", choices=("json", "text"), default="json")
+
+    graphiti_remember = graphiti_subparsers.add_parser("remember", help="Record Graphiti memory")
+    graphiti_remember.add_argument("--work-item-id", default=None)
+    graphiti_remember.add_argument("--actor-cli", default="main")
+    graphiti_remember.add_argument("--task-path", default=None)
+    graphiti_remember.add_argument("--group-id", default=None)
+    graphiti_remember.add_argument("--name", default=None)
+    graphiti_remember.add_argument("--body", default=None)
+    graphiti_remember.add_argument("--body-file", default=None)
+    graphiti_remember.add_argument("--max-wait-seconds", type=int, default=60)
+    graphiti_remember.add_argument("--output", choices=("json", "text"), default="json")
+
+    graphiti_search = graphiti_subparsers.add_parser("search", help="Search Graphiti memory directly")
+    graphiti_search.add_argument("--actor-cli", default="main")
+    graphiti_search.add_argument("--query", required=True)
+    graphiti_search.add_argument("--group-id", dest="group_ids", action="append", default=[])
+    graphiti_search.add_argument("--query-type", choices=("all", "nodes", "facts"), default="all")
+    graphiti_search.add_argument("--max-nodes", type=int, default=5)
+    graphiti_search.add_argument("--max-facts", type=int, default=5)
+    graphiti_search.add_argument("--output", choices=("json", "text"), default="json")
+
     return parser
 
 
@@ -263,6 +452,11 @@ def main(argv: list[str] | None = None) -> int:
         if args.command in {"work", "update", "request"}:
             service = _build_coordination_service(args)
             payload, output = _handle_coordination_command(args, service)
+            _emit(payload, output=output)
+            return 0
+        if args.command == "graphiti":
+            service = _build_graphiti_facade(args)
+            payload, output = _handle_graphiti_command(args, service)
             _emit(payload, output=output)
             return 0
 
@@ -309,6 +503,20 @@ def _build_coordination_service(args: argparse.Namespace) -> _MongoCoordinationF
     return _MongoCoordinationFacade(service)
 
 
+def _build_graphiti_facade(args: argparse.Namespace) -> _GraphitiFacade:
+    needs_coordination = args.graphiti_command == "preflight" or (
+        args.graphiti_command == "remember" and getattr(args, "work_item_id", None)
+    )
+    if not needs_coordination:
+        return _GraphitiFacade()
+
+    client = _build_mongo_client(args.mongo_uri)
+    database = client[args.mongo_db]
+    store = MongoCollaborationStore(database)
+    service = CoordinationService(store)
+    return _GraphitiFacade(service)
+
+
 def _build_mongo_client(mongo_uri: str | None) -> MongoClient:
     if mongo_uri:
         return MongoClient(mongo_uri)
@@ -344,6 +552,27 @@ def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordi
             if payload is None:
                 raise KeyError(f"Unknown work item: {args.work_item_id}")
             return payload, args.output
+        if args.work_command == "preflight":
+            return (
+                service.run_graphiti_preflight(
+                    args.work_item_id,
+                    actor_cli=args.actor_cli,
+                    task_path=args.task_path,
+                    write_memory=args.write_memory,
+                    max_wait_seconds=args.max_wait_seconds,
+                ),
+                args.output,
+            )
+        if args.work_command == "remember":
+            return (
+                service.run_graphiti_remember(
+                    args.work_item_id,
+                    actor_cli=args.actor_cli,
+                    task_path=args.task_path,
+                    max_wait_seconds=args.max_wait_seconds,
+                ),
+                args.output,
+            )
         if args.work_command == "export-task":
             work_item = service.get_work_item(args.work_item_id)
             if work_item is None:
@@ -366,11 +595,13 @@ def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordi
             status_view = service.get_worker_status_view(args.work_item_id)
             updates = service.list_work_updates(args.work_item_id)
             requests = service.list_work_requests(args.work_item_id)
+            events = service.list_work_events(args.work_item_id)
             markdown = render_task_report_markdown(
                 work_item=work_item,
                 updates=updates,
                 requests=requests,
                 status_view=status_view,
+                events=events,
             )
             if args.output_path:
                 output_path = Path(args.output_path)
@@ -409,6 +640,68 @@ def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordi
             )
 
     raise ValueError("Unsupported coordination command")
+
+
+def _handle_graphiti_command(args: argparse.Namespace, service: _GraphitiFacade) -> tuple[dict | list[dict] | str, str]:
+    if args.graphiti_command == "preflight":
+        return (
+            service.run_graphiti_preflight(
+                args.work_item_id,
+                actor_cli=args.actor_cli,
+                task_path=args.task_path,
+                write_memory=args.write_memory,
+                max_wait_seconds=args.max_wait_seconds,
+            ),
+            args.output,
+        )
+
+    if args.graphiti_command == "remember":
+        if args.work_item_id:
+            return (
+                service.run_graphiti_remember(
+                    args.work_item_id,
+                    actor_cli=args.actor_cli,
+                    task_path=args.task_path,
+                    max_wait_seconds=args.max_wait_seconds,
+                ),
+                args.output,
+            )
+
+        if not args.group_id:
+            raise ValueError("Generic Graphiti remember requires --group-id")
+        if not args.name:
+            raise ValueError("Generic Graphiti remember requires --name")
+        body = args.body
+        if args.body_file:
+            body = Path(args.body_file).read_text(encoding="utf-8")
+        if not body:
+            raise ValueError("Generic Graphiti remember requires --body or --body-file")
+
+        return (
+            service.run_graphiti_generic_remember(
+                actor_cli=args.actor_cli,
+                group_id=args.group_id,
+                name=args.name,
+                body=body,
+                max_wait_seconds=args.max_wait_seconds,
+            ),
+            args.output,
+        )
+
+    if args.graphiti_command == "search":
+        return (
+            service.run_graphiti_generic_search(
+                actor_cli=args.actor_cli,
+                query=args.query,
+                group_ids=args.group_ids,
+                query_type=args.query_type,
+                max_nodes=args.max_nodes,
+                max_facts=args.max_facts,
+            ),
+            args.output,
+        )
+
+    raise ValueError("Unsupported graphiti command")
 
 
 def _emit(payload: dict | list[dict] | str, *, output: str) -> None:

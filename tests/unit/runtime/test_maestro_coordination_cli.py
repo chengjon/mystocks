@@ -375,5 +375,8 @@ class _FakeCoordinationService:
     def list_work_requests(self, work_item_id: str) -> list[dict]:
         return [request for request in self.requests.values() if request["work_item_id"] == work_item_id]
 
+    def list_work_events(self, work_item_id: str) -> list[dict]:
+        return []
+
     def get_worker_status_view(self, work_item_id: str) -> dict | None:
         return self.status_views.get(work_item_id)
