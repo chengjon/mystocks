@@ -677,7 +677,7 @@ jobs:
     name: Deploy to Test Environment
     runs-on: ubuntu-latest
     needs: [type-check, code-quality, unit-tests, integration-tests, e2e-tests, performance-tests]
-    if: github.ref == 'refs/heads/develop' || github.event_name == 'pull_request'
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
 
     steps:
     - name: Checkout code

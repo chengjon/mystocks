@@ -783,6 +783,14 @@ def test_ci_cd_with_type_checking_uses_baseline_safe_e2e_smoke() -> None:
     assert 'pytest tests/ -m "e2e"' not in e2e_section
 
 
+def test_ci_cd_with_type_checking_skips_test_deploy_on_pull_requests() -> None:
+    workflow = _read_workflow("ci-cd-with-type-checking.yml")
+    deploy_section = workflow.split("deploy-test:", 1)[1].split("# Deploy to Production", 1)[0]
+
+    assert "github.event_name == 'pull_request'" not in deploy_section
+    assert "github.ref == 'refs/heads/develop' && github.event_name == 'push'" in deploy_section
+
+
 
 def test_typescript_type_check_uses_explicit_path_filters_and_repo_repo_comments() -> None:
     workflow = _read_workflow("typescript-type-check.yml")
