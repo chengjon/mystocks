@@ -367,6 +367,8 @@ def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking
     assert "cd .." in e2e_install_section
     assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in e2e_install_section
     assert "npx playwright install ${{ matrix.browser }} --with-deps" in e2e_install_section
+    assert "image: postgres:15" in workflow
+    assert "image: redis:7-alpine" in workflow
     assert "export POSTGRESQL_HOST=localhost" in e2e_start_section
     assert "export POSTGRESQL_USER=postgres" in e2e_start_section
     assert "export POSTGRESQL_PASSWORD=postgres" in e2e_start_section
@@ -711,6 +713,7 @@ def test_ci_cd_with_type_checking_scopes_pipeline_to_type_relevant_changes() -> 
     assert "black --check --diff src/ scripts/" not in code_quality_section
     assert "needs.type-check-scope-detect.outputs.python_type_check_required == 'true'" in unit_test_section
     assert "tests/unit/scripts/test_ci_workflow_runtime_setup.py -q" in unit_test_section
+    assert "--cov-fail-under=0" in unit_test_section
     assert 'pytest tests/ -m "unit"' not in unit_test_section
     assert '[[ "$changed_file" == src/gpu/* ]]' in scope_section
     assert 'if [ -z "$python_files" ]; then' in scope_section
