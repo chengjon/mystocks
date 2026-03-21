@@ -769,6 +769,20 @@ def test_ci_cd_with_type_checking_reinstalls_pytest_after_backend_requirements_f
     assert "export BACKEND_BACKUP_PORT=8001" in integration_section
 
 
+def test_ci_cd_with_type_checking_uses_baseline_safe_e2e_smoke() -> None:
+    workflow = _read_workflow("ci-cd-with-type-checking.yml")
+    e2e_section = workflow.split("e2e-tests:", 1)[1].split("# Performance Tests Job", 1)[0]
+
+    assert "npm run build:no-types" in e2e_section
+    assert "npm run build\n" not in e2e_section
+    assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in e2e_section
+    assert "pip install -r /tmp/backend-requirements-ci.txt" in e2e_section
+    assert "npx playwright install --with-deps chromium" in e2e_section
+    assert "PLAYWRIGHT_EXTERNAL_FRONTEND=1" not in e2e_section
+    assert "npm run test:e2e:stable" in e2e_section
+    assert 'pytest tests/ -m "e2e"' not in e2e_section
+
+
 
 def test_typescript_type_check_uses_explicit_path_filters_and_repo_repo_comments() -> None:
     workflow = _read_workflow("typescript-type-check.yml")

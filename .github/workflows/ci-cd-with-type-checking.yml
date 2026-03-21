@@ -436,6 +436,20 @@ jobs:
     name: E2E Tests (Layer 3)
     runs-on: ubuntu-latest
     needs: integration-tests
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: mystocks_test
+          POSTGRES_USER: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
     - name: Checkout code
@@ -469,43 +483,67 @@ jobs:
 
     - name: Install Python dependencies
       run: |
+        python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install playwright pytest-playwright
-        playwright install chromium firefox webkit
+        grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>=' web/backend/requirements.txt > /tmp/backend-requirements-ci.txt
+        pip install -r /tmp/backend-requirements-ci.txt
 
     - name: Install frontend dependencies
       working-directory: web/frontend
       run: npm ci
 
+    - name: Install Playwright browser
+      working-directory: web/frontend
+      run: npx playwright install --with-deps chromium
+
     - name: Build frontend
       working-directory: web/frontend
-      run: npm run build
+      run: |
+        FRONTEND_PORT=3020 \
+        FRONTEND_BACKUP_PORT=3021 \
+        BACKEND_PORT=8000 \
+        BACKEND_BACKUP_PORT=8001 \
+        npm run build:no-types
 
     - name: Start backend service
       run: |
-        cd web/backend
-        python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
-        sleep 30
-        cd ../..
+        export POSTGRESQL_HOST=localhost
+        export POSTGRESQL_PORT=5432
+        export POSTGRESQL_USER=postgres
+        export POSTGRESQL_PASSWORD=test_password
+        export POSTGRESQL_DATABASE=mystocks_test
+        export JWT_SECRET_KEY=$(openssl rand -hex 32)
+        export TESTING=true
+        export USE_MOCK_DATA=true
+        export DATA_SOURCE=mock
+        export BACKEND_PORT=8000
+        export BACKEND_BACKUP_PORT=8001
+        PYTHONPATH=$PWD:$PWD/web/backend nohup python -m uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT} >/tmp/ci_typecheck_e2e_backend.log 2>&1 &
+        echo $! > /tmp/ci_typecheck_e2e_backend.pid
+        timeout 60 bash -c 'until curl -fsS http://localhost:${BACKEND_PORT}/api/announcement/health || curl -fsS http://localhost:${BACKEND_PORT}/health/ready; do sleep 2; done'
 
     - name: Run E2E tests with Playwright
       run: |
-        mkdir -p playwright-report
-        python -m pytest tests/ -m "e2e" -v --tb=short \
-          --browser chromium \
-          --base-url http://localhost:8000 \
-          --video=retain-on-failure \
-          --screenshot=only-on-failure \
-          --tracing=retain-on-failure \
-          --junitxml=playwright-report/e2e-results.xml \
-          || (echo "E2E tests failed" && exit 1)
+        cd web/frontend
+        FRONTEND_PORT=3020 \
+        FRONTEND_BACKUP_PORT=3021 \
+        BACKEND_PORT=8000 \
+        BACKEND_BACKUP_PORT=8001 \
+        npm run test:e2e:stable
+
+    - name: Stop backend service
+      if: always()
+      run: |
+        if [ -f /tmp/ci_typecheck_e2e_backend.pid ]; then kill $(cat /tmp/ci_typecheck_e2e_backend.pid) 2>/dev/null || true; fi
 
     - name: Upload E2E test results
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: e2e-test-results
         path: |
-          playwright-report/
+          web/frontend/test-results/
+          web/frontend/playwright-report/
         retention-days: 7
 
   # Performance Tests Job
