@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test"
 const { loadPortEnv, resolveFrontendConfig } = require("./helpers/port-env.js")
 
+// Canonical stable E2E smoke coverage for the technical shell.
 loadPortEnv(process.cwd())
 
 const FRONTEND_BASE_URL = resolveFrontendConfig().baseUrl
