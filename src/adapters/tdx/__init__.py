@@ -6,11 +6,15 @@
 # 说明：TDX数据源适配器的模块化实现
 """
 
+from __future__ import annotations
+
+from typing import Any
+
 from .base_tdx_adapter import BaseTdxAdapter, tdx_retry
 from .config import TdxConfigManager, get_tdx_config, get_tdx_path, get_tdx_server_list
 from .tdx_adapter import TdxDataSource
 
-_OPTIONAL_EXPORTS = {
+_OPTIONAL_EXPORTS: dict[str, tuple[str, str]] = {
     "KlineDataService": ("kline_data_service", "KlineDataService"),
     "RealtimeService": ("realtime_service", "RealtimeService"),
     "TdxBlockReader": ("tdx_block_reader", "TdxBlockReader"),
@@ -18,7 +22,7 @@ _OPTIONAL_EXPORTS = {
 }
 
 
-def _load_optional_export(name: str):
+def _load_optional_export(name: str) -> Any:
     module_name, attr_name = _OPTIONAL_EXPORTS[name]
     module = __import__(f"{__name__}.{module_name}", fromlist=[attr_name])
     value = getattr(module, attr_name)
@@ -26,7 +30,7 @@ def _load_optional_export(name: str):
     return value
 
 
-def __getattr__(name: str):
+def __getattr__(name: str) -> Any:
     if name not in _OPTIONAL_EXPORTS:
         raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
@@ -52,21 +56,21 @@ __author__ = "MyStocks Project"
 
 
 # 模块级别的便捷函数
-def create_tdx_data_source():
+def create_tdx_data_source() -> TdxDataSource:
     """创建TDX数据源实例的便捷函数"""
     # pylint: disable=abstract-class-instantiated
     return TdxDataSource()
 
 
-def create_kline_service():
+def create_kline_service() -> Any:
     """创建K线数据服务实例的便捷函数"""
     # pylint: disable=abstract-class-instantiated
-    KlineDataService = _load_optional_export("KlineDataService")
-    return KlineDataService()
+    kline_data_service = _load_optional_export("KlineDataService")
+    return kline_data_service()
 
 
-def create_realtime_service():
+def create_realtime_service() -> Any:
     """创建实时数据服务实例的便捷函数"""
     # pylint: disable=abstract-class-instantiated
-    RealtimeService = _load_optional_export("RealtimeService")
-    return RealtimeService()
+    realtime_service = _load_optional_export("RealtimeService")
+    return realtime_service()
