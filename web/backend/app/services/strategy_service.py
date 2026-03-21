@@ -13,7 +13,6 @@ import os
 from datetime import date, datetime, timedelta
 from typing import Any, Dict, List
 
-import akshare as ak
 import pandas as pd
 from sqlalchemy import and_, create_engine, desc
 from sqlalchemy.orm import sessionmaker
@@ -22,6 +21,22 @@ from app.models.strategy import StrategyDefinition, StrategyResult
 from app.strategies.stock_strategies import get_strategy
 
 logger = logging.getLogger(__name__)
+
+try:
+    import akshare as ak
+except ModuleNotFoundError as exc:
+    ak = None
+    _AKSHARE_IMPORT_ERROR: ModuleNotFoundError | None = exc
+else:
+    _AKSHARE_IMPORT_ERROR = None
+
+
+def _akshare_unavailable(feature: str) -> bool:
+    if _AKSHARE_IMPORT_ERROR is None:
+        return False
+
+    logger.warning("Akshare unavailable, %s disabled: %s", feature, _AKSHARE_IMPORT_ERROR)
+    return True
 
 
 class StrategyService:
@@ -66,6 +81,10 @@ class StrategyService:
         Returns:
             DataFrame with columns: date, open, high, low, close, volume, amount, p_change
         """
+        if _akshare_unavailable("strategy history fetch"):
+            return pd.DataFrame()
+
+        assert ak is not None
         try:
             if start_date is None:
                 start_date = (datetime.now() - timedelta(days=365)).strftime("%Y%m%d")
@@ -126,6 +145,10 @@ class StrategyService:
         Returns:
             List of dict with keys: symbol, name
         """
+        if _akshare_unavailable("strategy stock list fetch"):
+            return []
+
+        assert ak is not None
         try:
             # 获取A股实时行情
             df = ak.stock_zh_a_spot_em()

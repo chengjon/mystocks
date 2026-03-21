@@ -130,7 +130,7 @@ def test_data_sync_workflow_uses_python_module_pip_and_ci_safe_pytest_invocation
     assert "python -m pip install pytest pytest-asyncio pytest-cov pytest-mock schemathesis locust" in workflow
     assert "BASE_URL=http://localhost:8000 python -m pytest -o addopts=''" in workflow
     assert "python -m pytest -o addopts='' tests/data_mapping_tests.py -v" in workflow
-    assert "BASE_URL=http://localhost:8000 python tests/real_data_synchronization_test.py" in workflow
+    assert "BASE_URL=http://localhost:${BACKEND_PORT} python tests/real_data_synchronization_test.py" in workflow
     assert "ports:" in workflow
     assert "- 5432:5432" in workflow
     assert "psql -h localhost -U postgres -d postgres -tc" in workflow
@@ -185,6 +185,34 @@ def test_data_sync_workflow_runs_existing_frontend_contract_smoke_instead_of_mis
     assert "npm run test:unit" not in ui_section
     assert "npx vitest run" in ui_section
     assert "tests/unit/port-config-consistency.spec.ts" in ui_section
+
+
+def test_data_sync_workflow_uses_aligned_service_ports_and_frontend_stable_e2e_suite() -> None:
+    workflow = _read_workflow("data-sync-testing.yml")
+    start_section = workflow.split("- name: Start Services for E2E Tests", 1)[1].split("- name: Run E2E Data Flow Tests", 1)[0]
+    e2e_section = workflow.split("- name: Run E2E Data Flow Tests", 1)[1].split(
+        "- name: Run Real Data Synchronization Tests", 1
+    )[0]
+
+    assert "export POSTGRESQL_HOST=localhost" in start_section
+    assert "export POSTGRESQL_USER=postgres" in start_section
+    assert "export POSTGRESQL_PASSWORD=test_password" in start_section
+    assert "export POSTGRESQL_DATABASE=mystocks_test" in start_section
+    assert "export JWT_SECRET_KEY=$(openssl rand -hex 32)" in start_section
+    assert "export BACKEND_PORT=${BACKEND_PORT}" in start_section
+    assert "export BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT}" in start_section
+    assert "PYTHONPATH=$PWD/../..:$PWD" in start_section
+    assert "nohup python -m uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT}" in start_section
+    assert "npm run dev:no-types -- --host 0.0.0.0 --port ${FRONTEND_PORT} --strictPort" in start_section
+    assert "curl -fsS http://localhost:${BACKEND_PORT}/api/announcement/health" in start_section
+    assert "curl -fsS http://localhost:${BACKEND_PORT}/health/ready" in start_section
+    assert "curl -fsS http://localhost:${FRONTEND_PORT}/" in start_section
+
+    assert "cd web/frontend" in e2e_section
+    assert "npx playwright install --with-deps chromium" in e2e_section
+    assert "PLAYWRIGHT_EXTERNAL_FRONTEND=1 npm run test:e2e:stable" in e2e_section
+    assert "tests/e2e_data_flow.spec.ts" not in e2e_section
+    assert "--headed=false" not in e2e_section
 
 
 def test_legacy_e2e_workflow_declares_stable_port_defaults() -> None:
@@ -319,6 +347,21 @@ def test_ci_cd_type_workflow_matches_recovery_mypy_baseline() -> None:
     assert "pip install -e ." in install_section
     assert "--explicit-package-bases" in mypy_section
     assert "--non-interactive" not in mypy_section
+
+
+def test_ci_cd_type_workflow_uses_baseline_safe_frontend_validation() -> None:
+    workflow = _read_workflow("ci-cd-with-type-checking.yml")
+    frontend_section = workflow.split("- name: Run frontend baseline validation", 1)[1].split(
+        "- name: Upload type check results", 1
+    )[0]
+
+    assert "npx vue-tsc --noEmit" not in workflow
+    assert "FRONTEND_PORT=3020" in frontend_section
+    assert "FRONTEND_BACKUP_PORT=3021" in frontend_section
+    assert "BACKEND_PORT=8020" in frontend_section
+    assert "BACKEND_BACKUP_PORT=8021" in frontend_section
+    assert "npm run build:no-types" in frontend_section
+    assert "npx vitest run tests/unit/port-config-consistency.spec.ts --reporter=verbose" in frontend_section
 
 
 def test_e2e_enhanced_workflow_uses_existing_pm2_configs_and_non_blocking_pr_comment() -> None:

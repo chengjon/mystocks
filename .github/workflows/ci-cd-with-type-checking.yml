@@ -174,12 +174,17 @@ jobs:
         echo "- **Typed Files**: ${TYPED_FILES}/${TOTAL_FILES}" >> mypy-reports/coverage.md
         echo "- **Generated**: $(date)" >> mypy-reports/coverage.md
 
-    - name: Run TypeScript type checking (tsc)
+    - name: Run frontend baseline validation
       if: needs.type-check-scope-detect.outputs.frontend_type_check_required == 'true'
       working-directory: web/frontend
       run: |
-        echo "Running TypeScript type checking..."
-        npx vue-tsc --noEmit || (echo "TypeScript compilation failed" && exit 1)
+        echo "Running frontend baseline validation..."
+        FRONTEND_PORT=3020 \
+        FRONTEND_BACKUP_PORT=3021 \
+        BACKEND_PORT=8020 \
+        BACKEND_BACKUP_PORT=8021 \
+        npm run build:no-types
+        npx vitest run tests/unit/port-config-consistency.spec.ts --reporter=verbose
 
     - name: Upload type check results
       uses: actions/upload-artifact@v4

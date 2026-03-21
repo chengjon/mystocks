@@ -10,7 +10,6 @@ import logging
 from datetime import date, datetime, timedelta
 from typing import Dict, List, Optional, Tuple
 
-import akshare as ak
 import pandas as pd
 from sqlalchemy import and_, create_engine, desc
 from sqlalchemy.orm import Session, sessionmaker
@@ -25,6 +24,22 @@ from app.models.monitoring import (
 # 配置日志
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+try:
+    import akshare as ak
+except ModuleNotFoundError as exc:
+    ak = None
+    _AKSHARE_IMPORT_ERROR: ModuleNotFoundError | None = exc
+else:
+    _AKSHARE_IMPORT_ERROR = None
+
+
+def _akshare_unavailable(feature: str) -> bool:
+    if _AKSHARE_IMPORT_ERROR is None:
+        return False
+
+    logger.warning("Akshare unavailable, %s disabled: %s", feature, _AKSHARE_IMPORT_ERROR)
+    return True
 
 
 class MonitoringService:
@@ -167,6 +182,10 @@ class MonitoringService:
 
     def fetch_realtime_data(self, symbols: List[str] = None) -> pd.DataFrame:
         """获取实时行情数据"""
+        if _akshare_unavailable("realtime monitoring fetch"):
+            return pd.DataFrame()
+
+        assert ak is not None
         try:
             if symbols and len(symbols) > 0:
                 # 获取指定股票的实时数据
@@ -527,6 +546,10 @@ class MonitoringService:
 
     def fetch_dragon_tiger_list(self, trade_date: Optional[date] = None) -> pd.DataFrame:
         """获取龙虎榜数据"""
+        if _akshare_unavailable("dragon tiger monitoring fetch"):
+            return pd.DataFrame()
+
+        assert ak is not None
         try:
             if trade_date is None:
                 trade_date = date.today()

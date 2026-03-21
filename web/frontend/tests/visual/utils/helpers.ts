@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 
 export async function waitForEChartsRender(page: Page, containerSelector: string): Promise<void> {
   await page.waitForSelector(`${containerSelector} canvas`, { timeout: 10000 });

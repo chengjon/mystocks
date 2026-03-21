@@ -183,33 +183,78 @@ jobs:
     - name: Start Services for E2E Tests
       run: |
         echo "🚀 Starting Services for E2E Tests..."
-        # Start backend in background
         cd web/backend
-        python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &
+        export POSTGRESQL_HOST=localhost
+        export POSTGRESQL_PORT=5432
+        export POSTGRESQL_USER=postgres
+        export POSTGRESQL_PASSWORD=test_password
+        export POSTGRESQL_DATABASE=mystocks_test
+        export JWT_SECRET_KEY=$(openssl rand -hex 32)
+        export BACKEND_PORT=${BACKEND_PORT}
+        export BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT}
+        PYTHONPATH=$PWD/../..:$PWD nohup python -m uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT} >/tmp/data_sync_backend.log 2>&1 &
         BACKEND_PID=$!
-
-        # Start frontend in background
-        cd ../frontend
-        npm run dev -- --port 3001 --host 0.0.0.0 &
-        FRONTEND_PID=$!
-
-        # Wait for services to be ready
-        sleep 30
-
-        # Store PIDs for cleanup
         echo $BACKEND_PID > /tmp/backend_pid
+
+        for _ in $(seq 1 30); do
+          if curl -fsS http://localhost:${BACKEND_PORT}/api/announcement/health >/dev/null 2>&1 || \
+             curl -fsS http://localhost:${BACKEND_PORT}/health/ready >/dev/null 2>&1; then
+            echo "✅ Backend is ready for E2E tests"
+            break
+          fi
+
+          if ! kill -0 "$BACKEND_PID" >/dev/null 2>&1; then
+            echo "❌ Backend exited before becoming ready"
+            cat /tmp/data_sync_backend.log || true
+            exit 1
+          fi
+
+          sleep 2
+        done
+
+        cd ../frontend
+        FRONTEND_PORT=${FRONTEND_PORT} \
+        FRONTEND_BACKUP_PORT=${FRONTEND_BACKUP_PORT} \
+        BACKEND_PORT=${BACKEND_PORT} \
+        BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT} \
+        nohup npm run dev:no-types -- --host 0.0.0.0 --port ${FRONTEND_PORT} --strictPort >/tmp/data_sync_frontend.log 2>&1 &
+        FRONTEND_PID=$!
         echo $FRONTEND_PID > /tmp/frontend_pid
+
+        for _ in $(seq 1 30); do
+          if curl -fsS http://localhost:${FRONTEND_PORT}/ >/dev/null 2>&1; then
+            echo "✅ Frontend is ready for E2E tests"
+            break
+          fi
+
+          if ! kill -0 "$FRONTEND_PID" >/dev/null 2>&1; then
+            echo "❌ Frontend exited before becoming ready"
+            cat /tmp/data_sync_frontend.log || true
+            exit 1
+          fi
+
+          sleep 2
+        done
+
+        curl -fsS http://localhost:${BACKEND_PORT}/api/announcement/health >/dev/null 2>&1 || \
+          curl -fsS http://localhost:${BACKEND_PORT}/health/ready >/dev/null 2>&1
+        curl -fsS http://localhost:${FRONTEND_PORT}/ >/dev/null 2>&1
 
     - name: Run E2E Data Flow Tests
       run: |
         echo "🌐 Running E2E Data Flow Tests..."
-        npx playwright install
-        npx playwright test tests/e2e_data_flow.spec.ts --headed=false
+        cd web/frontend
+        npx playwright install --with-deps chromium
+        FRONTEND_PORT=${FRONTEND_PORT} \
+        FRONTEND_BACKUP_PORT=${FRONTEND_BACKUP_PORT} \
+        BACKEND_PORT=${BACKEND_PORT} \
+        BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT} \
+        PLAYWRIGHT_EXTERNAL_FRONTEND=1 npm run test:e2e:stable
 
     - name: Run Real Data Synchronization Tests
       run: |
         echo "🔬 Running Real Data Synchronization Tests..."
-        BASE_URL=http://localhost:8000 python tests/real_data_synchronization_test.py
+        BASE_URL=http://localhost:${BACKEND_PORT} python tests/real_data_synchronization_test.py
 
     - name: Generate Test Reports
       run: |

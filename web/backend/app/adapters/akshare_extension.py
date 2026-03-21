@@ -13,10 +13,25 @@ Akshare适配器扩展模块
 import logging
 from typing import Dict, Optional
 
-import akshare as ak
 import pandas as pd
 
+try:
+    import akshare as ak
+except ModuleNotFoundError as exc:
+    ak = None
+    _AKSHARE_IMPORT_ERROR: ModuleNotFoundError | None = exc
+else:
+    _AKSHARE_IMPORT_ERROR = None
+
 logger = logging.getLogger(__name__)
+
+
+def _akshare_unavailable(feature: str) -> bool:
+    if _AKSHARE_IMPORT_ERROR is None:
+        return False
+
+    logger.warning("Akshare unavailable, %s disabled: %s", feature, _AKSHARE_IMPORT_ERROR)
+    return True
 
 
 class AkshareExtension:
@@ -33,6 +48,10 @@ class AkshareExtension:
                         volume, amount, open_price, high_price, low_price, prev_close,
                         turnover_rate, total_market_cap, circulating_market_cap
         """
+        if _akshare_unavailable("ETF spot data"):
+            return pd.DataFrame()
+
+        assert ak is not None
         try:
             df = ak.fund_etf_spot_em()
             if df is not None and not df.empty:
@@ -80,6 +99,10 @@ class AkshareExtension:
                     "small_net_inflow": 小单净流入额
                 }
         """
+        if _akshare_unavailable("stock fund flow"):
+            return {}
+
+        assert ak is not None
         try:
             # 将数字转换为中文（akshare需要中文参数）
             timeframe_map = {"1": "今日", "3": "3日", "5": "5日", "10": "10日"}
@@ -129,6 +152,10 @@ class AkshareExtension:
                 columns: symbol, name, reason, buy_amount, sell_amount, net_amount,
                         turnover_rate, institution_buy, institution_sell
         """
+        if _akshare_unavailable("dragon tiger detail"):
+            return pd.DataFrame()
+
+        assert ak is not None
         try:
             # 格式化日期(移除连字符)
             date_str = date.replace("-", "")
@@ -181,6 +208,10 @@ class AkshareExtension:
                         dividend_ratio, bonus_share_ratio, transfer_ratio,
                         allotment_ratio, allotment_price
         """
+        if _akshare_unavailable("dividend data"):
+            return pd.DataFrame()
+
+        assert ak is not None
         try:
             # 处理股票代码格式
             stock_code = symbol.split(".")[0] if "." in symbol else symbol
@@ -222,6 +253,10 @@ class AkshareExtension:
         Returns:
             pd.DataFrame: 板块资金流向数据
         """
+        if _akshare_unavailable("sector fund flow"):
+            return pd.DataFrame()
+
+        assert ak is not None
         try:
             # 获取行业板块资金流向
             df = ak.stock_sector_fund_flow_rank(indicator="今日")

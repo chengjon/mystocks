@@ -1,73 +1,141 @@
 import { test, expect } from '../fixtures/visual.fixture';
-import { waitForEChartsRender, validateGoldTheme, validateMarketColors, scrollToChart } from '../utils/helpers';
+import { validateGoldTheme, validateMarketColors } from '../utils/helpers';
 
 const ARTDECO_GOLD_PRIMARY = '#D4AF37';
 const MARKET_UP = '#FF5252';
 const MARKET_DOWN = '#00E676';
 
-test.describe('Dashboard Charts - ArtDeco V3.0 Theme', () => {
+const DASHBOARD_ROOT = '.artdeco-dashboard';
+const FUND_FLOW_CARD = '.fund-flow-overview';
+const MARKET_INDICATORS_CARD = '.market-indicators';
+const SENTIMENT_CARD = '.sentiment-card';
+const STATUS_CARD = '.market-status-card';
+
+const VISUAL_USER = {
+  id: 1,
+  username: 'visual-admin',
+  email: 'visual-admin@example.com',
+  role: 'admin',
+  permissions: [],
+};
+
+test.describe('Dashboard Panels - ArtDeco V3.0 Theme', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/dashboard', { waitUntil: 'networkidle' });
+    await page.addInitScript(({ user }) => {
+      localStorage.setItem('auth_token', 'visual-dashboard-token');
+      localStorage.setItem('auth_user', JSON.stringify(user));
+    }, { user: VISUAL_USER });
+
+    await page.route(/https?:\/\/[^/]+\/api\/.*/, async (route) => {
+      const url = new URL(route.request().url());
+
+      if (url.pathname === '/api/health/ready') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            success: true,
+            message: 'system ready',
+            request_id: 'visual-dashboard-ready',
+            data: { status: 'ready' },
+          }),
+        });
+        return;
+      }
+
+      if (url.pathname === '/api/csrf-token') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: true, data: { csrf_token: 'visual-dashboard-csrf' } }),
+        });
+        return;
+      }
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true, data: [] }),
+      });
+    });
+
+    await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(2500);
+    await expect(page.locator(DASHBOARD_ROOT)).toBeVisible({ timeout: 15000 });
     await validateGoldTheme(page);
   });
 
-  test('K-Line Chart renders with ArtDeco theme', async ({ page }) => {
-    const chartSelector = '.kline-chart-container, .echarts-container, [class*="k-line"]';
-    await waitForEChartsRender(page, chartSelector);
+  test('Fund flow overview renders key metrics and chart shell', async ({ page }) => {
+    const card = page.locator(FUND_FLOW_CARD);
 
-    await expect(page).toHaveScreenshot('dashboard-kline-chart.png', {
-      animations: 'disabled',
-      fullPage: false,
-      threshold: 0.2
-    });
+    await expect(card).toBeVisible();
+    await expect(card).toContainText('市场资金流向概览');
+    await expect(card).toContainText('沪股通净流入');
+    await expect(card.locator('.artdeco-chart-container')).toBeVisible();
   });
 
-  test('MA Cross Panel displays correctly', async ({ page }) => {
-    const panelSelector = '.ma-cross-panel, [class*="ma-cross"]';
-    await waitForEChartsRender(page, panelSelector);
+  test('Market indicators panel renders major indexes and trend chart shell', async ({ page }) => {
+    const card = page.locator(MARKET_INDICATORS_CARD);
 
-    await expect(page).toHaveScreenshot('dashboard-ma-cross-panel.png', {
-      animations: 'disabled',
-      fullPage: false,
-      threshold: 0.2
-    });
+    await expect(card).toBeVisible();
+    await expect(card).toContainText('主要市场指标');
+    await expect(card).toContainText('上证指数');
+    await expect(card).toContainText('深证成指');
+    await expect(card.locator('.artdeco-chart-container')).toBeVisible();
   });
 
-  test('RSI Chart renders correctly', async ({ page }) => {
-    await page.goto('/technical', { waitUntil: 'networkidle' });
-    const rsiSelector = '.rsi-chart, [class*="rsi"]';
-    await waitForEChartsRender(page, rsiSelector);
+  test('Sentiment and market status cards render together', async ({ page }) => {
+    const sentimentCard = page.locator(SENTIMENT_CARD);
+    const statusCard = page.locator(STATUS_CARD);
 
-    await expect(page).toHaveScreenshot('dashboard-rsi-chart.png', {
-      animations: 'disabled',
-      fullPage: false,
-      threshold: 0.2
-    });
+    await expect(sentimentCard).toBeVisible();
+    await expect(sentimentCard).toContainText('资金流向');
+    await expect(statusCard).toBeVisible();
+    await expect(statusCard).toContainText('市场状态');
+
+    await validateMarketColors(page);
   });
 
-  test('Volume Chart displays with correct market colors', async ({ page }) => {
-    await scrollToChart(page, '.volume-chart');
-    await waitForEChartsRender(page, '.volume-chart');
-
-    const pageContent = await page.content();
-    expect(pageContent).toContain(MARKET_UP);
-    expect(pageContent).toContain(MARKET_DOWN);
-  });
-
-  test('Dashboard full layout with all charts', async ({ page }) => {
+  test('Dashboard full layout shows all primary panels', async ({ page }) => {
     await page.setViewportSize({ width: 1920, height: 1080 });
-    await page.goto('/dashboard', { waitUntil: 'networkidle' });
-    await page.waitForTimeout(2000);
+    await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(2500);
+    await expect(page.locator(DASHBOARD_ROOT)).toBeVisible({ timeout: 15000 });
 
-    await expect(page).toHaveScreenshot('dashboard-full-layout.png', {
-      animations: 'disabled',
-      fullPage: true,
-      threshold: 0.25
-    });
+    await expect(page.locator(FUND_FLOW_CARD)).toBeVisible();
+    await expect(page.locator(MARKET_INDICATORS_CARD)).toBeVisible();
+    await expect(page.locator(SENTIMENT_CARD)).toBeVisible();
+    await expect(page.locator(STATUS_CARD)).toBeVisible();
   });
 });
 
 test.describe('ArtDeco Theme Colors', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(({ user }) => {
+      localStorage.setItem('auth_token', 'visual-dashboard-token');
+      localStorage.setItem('auth_user', JSON.stringify(user));
+    }, { user: VISUAL_USER });
+
+    await page.route(/https?:\/\/[^/]+\/api\/.*/, async (route) => {
+      const url = new URL(route.request().url());
+
+      if (url.pathname === '/api/health/ready') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: true, data: { status: 'ready' } }),
+        });
+        return;
+      }
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true, data: [] }),
+      });
+    });
+  });
+
   test('Gold primary color is applied', async ({ page }) => {
     await page.goto('/dashboard', { waitUntil: 'networkidle' });
     const pageContent = await page.content();
