@@ -339,6 +339,7 @@ def test_e2e_testing_workflow_uses_ci_safe_backend_dependencies_and_non_blocking
     assert "tests/test_trading_runtime_routes.py" in workflow
     assert "curl -f http://localhost:8000/api/announcement/health" in workflow
     assert "curl -f http://localhost:8000/health/ready" in workflow
+    assert "curl -f http://localhost:8000/api/csrf-token" in workflow
     assert "npm run build:no-types" in workflow
     assert "export PLAYWRIGHT_EXTERNAL_FRONTEND=1" in workflow
     assert "--no-cov" not in workflow

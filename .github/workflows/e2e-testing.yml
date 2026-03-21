@@ -214,7 +214,7 @@ jobs:
         run: |
           # 测试关键API端点
           curl -f http://localhost:8000/api/announcement/health || curl -f http://localhost:8000/health/ready
-          curl -f http://localhost:8000/api/auth/csrf-token
+          curl -f http://localhost:8000/api/csrf-token
           echo "✅ Backend API endpoints tested successfully"
 
   # 第三阶段：前端构建
