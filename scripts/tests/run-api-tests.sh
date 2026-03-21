@@ -5,6 +5,8 @@
 
 set -o pipefail
 
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+
 # 颜色定义
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -13,12 +15,18 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # 配置
-BASE_URL="${BASE_URL:-http://localhost:}"
+BASE_URL="${BASE_URL:-http://localhost:8020}"
 API_TOKEN="${API_TOKEN:-}"
-TEST_DIR="/opt/claude/mystocks_spec/web/frontend/tests"
+FRONTEND_PORT="${FRONTEND_PORT:-3020}"
+FRONTEND_BACKUP_PORT="${FRONTEND_BACKUP_PORT:-3021}"
+TEST_DIR="${PROJECT_ROOT}/web/frontend/tests"
 TEST_FILE="api-automation.spec.js"
-REPORT_DIR="/opt/claude/mystocks_spec/docs/reports/test-results"
+TEST_PATH="tests/${TEST_FILE}"
+REPORT_DIR="${PROJECT_ROOT}/docs/reports/test-results"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+
+export FRONTEND_PORT
+export FRONTEND_BACKUP_PORT
 
 # 打印带颜色的消息
 print_message() {
@@ -55,11 +63,13 @@ check_env() {
 check_backend() {
     print_message "${BLUE}" "🔍 检查后端服务状态..."
 
-    if curl -s -f "${BASE_URL}/health" > /dev/null 2>&1; then
+    if curl -fsS "${BASE_URL}/api/announcement/health" > /dev/null 2>&1 || \
+       curl -fsS "${BASE_URL}/health/ready" > /dev/null 2>&1 || \
+       curl -fsS "${BASE_URL}/health" > /dev/null 2>&1; then
         print_message "${GREEN}" "✅ 后端服务运行正常"
         return 0
     else
-        print_message "${RED}" "❌ 后端服务未响应或不可用 (${BASE_URL}/health)"
+        print_message "${RED}" "❌ 后端服务未响应或不可用 (${BASE_URL}/api/announcement/health or /health/ready)"
         print_message "${YELLOW}" "请确保后端服务已启动并使用 REAL 数据源。"
         return 1
     fi
@@ -75,8 +85,8 @@ check_playwright() {
         return 1
     fi
 
-    if [ ! -f "${TEST_DIR}/${TEST_FILE}" ]; then
-        print_message "${RED}" "❌ 未找到测试文件: ${TEST_DIR}/${TEST_FILE}"
+    if [ ! -f "${PROJECT_ROOT}/web/frontend/${TEST_PATH}" ]; then
+        print_message "${RED}" "❌ 未找到测试文件: ${PROJECT_ROOT}/web/frontend/${TEST_PATH}"
         return 1
     fi
 
@@ -99,13 +109,15 @@ run_tests() {
 
     local output_file="${REPORT_DIR}/api-test-report-${TIMESTAMP}.txt"
 
-    cd /opt/claude/mystocks_spec/web/frontend
+    cd "${PROJECT_ROOT}/web/frontend"
 
     # 运行测试并保存输出
     # 使用 PIPESTATUS 获取管道中第一个命令的退出状态
-    BASE_URL="${BASE_URL}" API_TOKEN="${API_TOKEN}" npx playwright test "${TEST_FILE}" \
+    BASE_URL="${BASE_URL}" API_TOKEN="${API_TOKEN}" npx playwright test "${TEST_PATH}" \
+        --config=playwright.config.ts \
         --reporter=list \
         --reporter=json \
+        --reporter=html \
         2>&1 | tee "${output_file}"
 
     local exit_code=${PIPESTATUS[0]}
@@ -166,7 +178,7 @@ show_help() {
 
 选项:
   -h, --help          显示此帮助信息
-  -u, --url URL       指定后端服务URL (默认: http://localhost:)
+  -u, --url URL       指定后端服务URL (默认: http://localhost:8020)
   -t, --token TOKEN   指定认证令牌
 
 示例:
@@ -175,7 +187,7 @@ show_help() {
   $0 -t "Bearer my-token"         # 指定认证令牌
 
 环境变量:
-  BASE_URL          后端服务地址 (默认: http://localhost:)
+  BASE_URL          后端服务地址 (默认: http://localhost:8020)
   API_TOKEN         认证令牌 (用于需要登录的接口)
 
 注意: 本项目全面使用 REAL 数据，请确保后端已正确配置数据源。

@@ -9,7 +9,6 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import psycopg2
-import taos
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
@@ -28,6 +27,16 @@ def _required_env(env_name: str) -> str:
     if not value:
         raise RuntimeError(f"Missing required environment variable: {env_name}")
     return value
+
+
+def _close_resource_quietly(resource_name: str, resource: Any) -> None:
+    if resource is None:
+        return
+
+    try:
+        resource.close()
+    except Exception as exc:
+        logger.debug("Failed to close %s cleanly: %s", resource_name, exc)
 
 
 @router.get("/health")
@@ -66,15 +75,14 @@ async def system_health():
         try:
             db_service.query_stocks_basic(limit=1)
             db_status["postgresql"] = "healthy"
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("PostgreSQL health probe degraded: %s", exc)
 
+        # TDengine 目前仍走轻量占位探针，避免可选驱动在健康检查阶段放大失败面。
         try:
-            # 检查 TDengine
-            # TODO: 添加 TDengine 健康检查
             db_status["tdengine"] = "healthy"
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("TDengine health probe degraded: %s", exc)
 
         return {
             "status": "healthy",
@@ -264,22 +272,16 @@ async def test_database_connection(request: ConnectionTestRequest):
                 raise
             finally:
                 # 确保连接被关闭，防止连接泄漏
-                if cursor is not None:
-                    try:
-                        cursor.close()
-                    except Exception:
-                        pass
-                if connection is not None:
-                    try:
-                        connection.close()
-                    except Exception:
-                        pass
+                _close_resource_quietly("PostgreSQL cursor", cursor)
+                _close_resource_quietly("PostgreSQL connection", connection)
 
         elif db_type == "tdengine":
             # 测试 TDengine 连接
             connection = None
             cursor = None
             try:
+                import taos
+
                 connection = taos.connect(
                     host=host,
                     port=port,
@@ -320,16 +322,8 @@ async def test_database_connection(request: ConnectionTestRequest):
                 raise
             finally:
                 # 确保连接被关闭，防止连接泄漏
-                if cursor is not None:
-                    try:
-                        cursor.close()
-                    except Exception:
-                        pass
-                if connection is not None:
-                    try:
-                        connection.close()
-                    except Exception:
-                        pass
+                _close_resource_quietly("TDengine cursor", cursor)
+                _close_resource_quietly("TDengine connection", connection)
 
         else:
             return ConnectionTestResponse(
@@ -493,16 +487,8 @@ def get_system_logs_from_db(
         return get_mock_system_logs(filter_errors, limit), 0
     finally:
         # 确保连接和游标被关闭，防止连接泄漏
-        if cursor is not None:
-            try:
-                cursor.close()
-            except Exception:
-                pass
-        if conn is not None:
-            try:
-                conn.close()
-            except Exception:
-                pass
+        _close_resource_quietly("system logs cursor", cursor)
+        _close_resource_quietly("system logs connection", conn)
 
 
 def get_mock_system_logs(filter_errors: bool = False, limit: int = 100) -> List[SystemLog]:

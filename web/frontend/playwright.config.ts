@@ -52,7 +52,7 @@ if (!Number.isInteger(frontendPort) || frontendPort <= 0) {
 
 export default defineConfig({
   testDir: "./tests",
-  testMatch: "**/*.spec.ts",
+  testMatch: /.*\.spec\.(ts|js)$/,
   timeout: 60000,
   use: {
     headless: true,

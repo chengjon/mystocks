@@ -7,7 +7,15 @@ import logging
 from typing import Any, Dict, List, Optional
 
 import numpy as np
-import talib
+try:
+    import talib
+
+    TALIB_AVAILABLE = True
+    TALIB_IMPORT_ERROR: Optional[Exception] = None
+except ImportError as exc:
+    talib = None
+    TALIB_AVAILABLE = False
+    TALIB_IMPORT_ERROR = exc
 
 from .indicator_registry import get_indicator_registry
 
@@ -33,6 +41,16 @@ class IndicatorCalculator:
     def __init__(self):
         """初始化计算器"""
         self.registry = get_indicator_registry()
+
+    @staticmethod
+    def _ensure_runtime_available() -> None:
+        """在真正执行计算时再要求 TA-Lib，可避免启动期硬失败。"""
+        if TALIB_AVAILABLE:
+            return
+
+        raise IndicatorCalculationError(
+            "TA-Lib runtime is unavailable. Install TA-Lib or disable indicator calculation routes."
+        ) from TALIB_IMPORT_ERROR
 
     def calculate_indicator(
         self,
@@ -62,6 +80,8 @@ class IndicatorCalculator:
             InsufficientDataError: 数据点不足
             IndicatorCalculationError: 计算失败
         """
+        self._ensure_runtime_available()
+
         # 获取指标元数据
         indicator_meta = self.registry.get_indicator(abbreviation)
         if not indicator_meta:

@@ -10,13 +10,34 @@ import logging
 from datetime import datetime, timedelta
 from typing import Dict, Optional
 
-import akshare as ak
 import pandas as pd
 import talib
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+try:
+    import akshare as ak
+except ModuleNotFoundError as exc:
+    ak = None
+    _AKSHARE_IMPORT_ERROR: ModuleNotFoundError | None = exc
+else:
+    _AKSHARE_IMPORT_ERROR = None
+
+
+def _akshare_unavailable(feature: str) -> bool:
+    if _AKSHARE_IMPORT_ERROR is None:
+        return False
+
+    logger.warning("Akshare unavailable, %s disabled: %s", feature, _AKSHARE_IMPORT_ERROR)
+    return True
+
+
+def _get_akshare_module(feature: str):
+    if _akshare_unavailable(feature):
+        return None
+    return ak
 
 
 class TechnicalAnalysisService:
@@ -73,6 +94,9 @@ class TechnicalAnalysisService:
 
         返回: DataFrame with columns: date, open, close, high, low, volume, amount
         """
+        ak_module = _get_akshare_module("technical analysis history fetch")
+        if ak_module is None:
+            return pd.DataFrame()
         try:
             # 缓存键
             cache_key = f"{symbol}_{period}_{start_date}_{end_date}_{adjust}"
@@ -96,7 +120,7 @@ class TechnicalAnalysisService:
                 start_date = start_date.replace("-", "")
 
             # 获取数据
-            df = ak.stock_zh_a_hist(
+            df = ak_module.stock_zh_a_hist(
                 symbol=symbol,
                 period=period,
                 start_date=start_date,

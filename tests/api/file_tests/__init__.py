@@ -24,6 +24,8 @@ Architecture:
 
 import asyncio
 import json
+import re
+import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
@@ -222,7 +224,7 @@ class FileTestRunner:
 
     def _load_file_priorities(self) -> Dict[str, TestPriority]:
         """Load file priority mapping based on business criticality"""
-        return {
+        raw_priorities = {
             # P0: Contract-managed files (16 files)
             "market.py": TestPriority.P0_CONTRACT,
             "trade/routes.py": TestPriority.P0_CONTRACT,
@@ -257,6 +259,43 @@ class FileTestRunner:
             "realtime_market.py": TestPriority.P1_CORE,
             # P2: Utility files (32 files) - default priority
         }
+        return {self._normalize_file_key(path): priority for path, priority in raw_priorities.items()}
+
+    def _normalize_file_key(self, file_path: str) -> str:
+        """Normalize API or file-test paths to a stable logical identifier."""
+        normalized = file_path.replace("\\", "/")
+        file_name = Path(normalized).name
+
+        if file_name.startswith("test_") and file_name.endswith("_api.py"):
+            return file_name[len("test_") : -len("_api.py")]
+
+        if "web/backend/app/api/" in normalized:
+            normalized = normalized.split("web/backend/app/api/", 1)[1]
+        elif "/" in normalized:
+            normalized = normalized.lstrip("./")
+        else:
+            normalized = file_name
+
+        return normalized.removesuffix(".py").replace("/", "_")
+
+    def get_priority(self, file_path: str) -> TestPriority:
+        """Return the configured priority for a logical file test unit."""
+        return self.file_priorities.get(self._normalize_file_key(file_path), TestPriority.P2_UTILITY)
+
+    def _resolve_test_file(self, file_path: str) -> Optional[Path]:
+        """Resolve a logical API unit or file-test path to the backing pytest module."""
+        direct_path = Path(file_path)
+        if not direct_path.is_absolute():
+            direct_path = self.base_dir / direct_path
+        if direct_path.exists():
+            return direct_path
+
+        normalized_key = self._normalize_file_key(file_path)
+        candidate = self.base_dir / "tests" / "api" / "file_tests" / f"test_{normalized_key}_api.py"
+        if candidate.exists():
+            return candidate
+
+        return None
 
     async def run_file_tests(self, file_paths: List[str]) -> FileTestSuiteResult:
         """Run file-level tests for specified API files"""
@@ -324,7 +363,7 @@ class FileTestRunner:
         result = FileTestResult(
             file_path=file_path,
             file_name=Path(file_path).name,
-            priority=self.file_priorities.get(file_path, TestPriority.P2_UTILITY),
+            priority=self.get_priority(file_path),
             endpoint_count=self._count_endpoints(file_path),
             status=TestStatus.RUNNING,
             duration=0.0,
@@ -376,13 +415,15 @@ class FileTestRunner:
         return result
 
     def _count_endpoints(self, file_path: str) -> int:
-        """Count endpoints in a file (simplified implementation)"""
+        """Count executable file-level tests in the backing pytest module."""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                content = f.read()
-                # Count @router. decorators (simplified)
-                return content.count("@router.")
-        except:
+            test_file = self._resolve_test_file(file_path)
+            if test_file is None:
+                return 0
+
+            content = test_file.read_text(encoding="utf-8")
+            return len(re.findall(r"^\s*(?:async\s+def|def)\s+test_", content, flags=re.MULTILINE))
+        except Exception:
             return 0
 
     def _resolve_dependencies(self, file_paths: List[str]) -> List[str]:
@@ -391,39 +432,59 @@ class FileTestRunner:
         # In real implementation, this would analyze import relationships
         priority_order = {TestPriority.P0_CONTRACT: 0, TestPriority.P1_CORE: 1, TestPriority.P2_UTILITY: 2}
 
-        return sorted(
-            file_paths, key=lambda x: priority_order.get(self.file_priorities.get(x, TestPriority.P2_UTILITY), 2)
-        )
+        return sorted(file_paths, key=lambda x: priority_order.get(self.get_priority(x), 2))
+
+    @staticmethod
+    def _parse_pytest_summary(output: str) -> Dict[str, int]:
+        """Extract pytest pass/fail/skip counts from stdout/stderr."""
+        counts = {"passed": 0, "failed": 0, "skipped": 0}
+        for key in counts:
+            match = re.search(rf"(\d+)\s+{key}", output)
+            if match:
+                counts[key] = int(match.group(1))
+        return counts
 
     async def _execute_file_tests(self, file_path: str, fixtures: Dict[str, Any]) -> Dict[str, Any]:
-        """Execute actual file tests (placeholder for real test execution)"""
-        # This is a placeholder - in real implementation, this would:
-        # 1. Load the actual file test cases
-        # 2. Execute pytest or custom test runner
-        # 3. Collect results
+        """Execute the real pytest module for a logical file-level test unit."""
+        test_file = self._resolve_test_file(file_path)
+        if test_file is None:
+            return {"passed": 0, "failed": 0, "skipped": 0, "errors": [f"No file test found for {file_path}"]}
 
-        # Simulate test execution
-        await asyncio.sleep(0.1)  # Simulate async test execution
+        process = await asyncio.create_subprocess_exec(
+            sys.executable,
+            "-m",
+            "pytest",
+            str(test_file),
+            "-q",
+            "--no-cov",
+            "-o",
+            "addopts=",
+            cwd=str(self.base_dir),
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        stdout, stderr = await process.communicate()
 
-        endpoint_count = self._count_endpoints(file_path)
+        output = "\n".join(
+            chunk for chunk in (stdout.decode("utf-8", errors="replace"), stderr.decode("utf-8", errors="replace")) if chunk
+        )
+        summary = self._parse_pytest_summary(output)
 
-        # Mock test results based on file type
-        if "contract" in file_path:
-            # Contract files have higher success rates
-            passed = int(endpoint_count * 0.95)
-            failed = endpoint_count - passed
-            return {"passed": passed, "failed": failed, "skipped": 0, "errors": []}
-        else:
-            # Regular files
-            passed = int(endpoint_count * 0.85)
-            failed = int(endpoint_count * 0.10)
-            skipped = endpoint_count - passed - failed
-            return {
-                "passed": passed,
-                "failed": failed,
-                "skipped": skipped,
-                "errors": [f"Mock error in {file_path}"] if failed > 0 else [],
-            }
+        errors: List[str] = []
+        if process.returncode not in {0, 1, 5}:
+            errors.append(output.strip() or f"pytest exited with code {process.returncode}")
+        elif process.returncode == 1 and summary["failed"] == 0:
+            errors.append(output.strip() or "pytest failed without reporting test failures")
+
+        if process.returncode == 5:
+            return {"passed": 0, "failed": 0, "skipped": 0, "errors": errors}
+
+        return {
+            "passed": summary["passed"],
+            "failed": summary["failed"],
+            "skipped": summary["skipped"],
+            "errors": errors,
+        }
 
 
 class ContractValidator:

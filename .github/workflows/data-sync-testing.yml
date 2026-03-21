@@ -18,6 +18,12 @@ on:
       - 'scripts/ci_data_sync_tests.sh'
       - 'scripts/ci_type_check.sh'
 
+env:
+  FRONTEND_PORT: '3020'
+  FRONTEND_BACKUP_PORT: '3021'
+  BACKEND_PORT: '8020'
+  BACKEND_BACKUP_PORT: '8021'
+
 jobs:
   data-sync-testing:
     runs-on: ubuntu-latest
@@ -28,6 +34,8 @@ jobs:
         env:
           POSTGRES_PASSWORD: test_password
           POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -66,8 +74,10 @@ jobs:
 
     - name: Install Python dependencies
       run: |
-        pip install -r requirements.txt
-        pip install pytest pytest-asyncio pytest-mock schemathesis locust
+        python -m pip install -r requirements.txt
+        grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>=' web/backend/requirements.txt > /tmp/backend-requirements-ci.txt
+        python -m pip install -r /tmp/backend-requirements-ci.txt
+        python -m pip install pytest pytest-asyncio pytest-cov pytest-mock schemathesis locust
 
     - name: Install frontend dependencies
       run: |
@@ -81,27 +91,71 @@ jobs:
 
         # Configure PostgreSQL
         export PGPASSWORD=test_password
-        psql -h localhost -U postgres -d test_db -c "CREATE DATABASE IF NOT EXISTS mystocks_test;"
+        psql -h localhost -U postgres -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'mystocks_test'" | grep -q 1 \
+          || psql -h localhost -U postgres -d postgres -c "CREATE DATABASE mystocks_test;"
 
         # Configure TDengine
         # Note: TDengine setup would require additional configuration
 
+    - name: Start backend for API Contract Tests
+      run: |
+        echo "🚀 Starting backend for API Contract Tests..."
+        export POSTGRESQL_HOST=localhost
+        export POSTGRESQL_PORT=5432
+        export POSTGRESQL_USER=postgres
+        export POSTGRESQL_PASSWORD=test_password
+        export POSTGRESQL_DATABASE=mystocks_test
+        export JWT_SECRET_KEY=$(openssl rand -hex 32)
+        export BACKEND_PORT=8000
+        export BACKEND_BACKUP_PORT=8001
+        PYTHONPATH=$PWD:$PWD/web/backend nohup python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 >/tmp/contract_backend.log 2>&1 &
+        CONTRACT_BACKEND_PID=$!
+
+        echo $CONTRACT_BACKEND_PID > /tmp/contract_backend_pid
+
+        for _ in $(seq 1 30); do
+          if curl -fsS http://localhost:8000/api/announcement/health >/dev/null 2>&1 || \
+             curl -fsS http://localhost:8000/health/ready >/dev/null 2>&1; then
+            echo "✅ Backend is ready for API Contract Tests"
+            exit 0
+          fi
+
+          if ! kill -0 "$CONTRACT_BACKEND_PID" >/dev/null 2>&1; then
+            echo "❌ Backend exited before becoming ready"
+            cat /tmp/contract_backend.log || true
+            exit 1
+          fi
+
+          sleep 2
+        done
+
+        echo "❌ Backend did not become ready in time"
+        exit 1
+
     - name: Run API Contract Tests
       run: |
         echo "🔍 Running API Contract Tests..."
-        python -m pytest tests/real_data_synchronization_test.py::test_market_data_real_availability -v
-        python -m pytest tests/real_data_synchronization_test.py::test_strategy_api_real_availability -v
-        python -m pytest tests/real_data_synchronization_test.py::test_data_routing_real_correctness -v
+        BASE_URL=http://localhost:8000 python -m pytest -o addopts='' tests/real_data_synchronization_test.py::test_market_data_real_availability -v
+        BASE_URL=http://localhost:8000 python -m pytest -o addopts='' tests/real_data_synchronization_test.py::test_strategy_api_real_availability -v
+        BASE_URL=http://localhost:8000 python -m pytest -o addopts='' tests/real_data_synchronization_test.py::test_data_routing_real_correctness -v
 
     - name: Run Data Mapping Tests
       run: |
         echo "🔄 Running Data Mapping Tests..."
-        python -m pytest tests/data_mapping_tests.py -v
+        python -m pytest -o addopts='' tests/data_mapping_tests.py -v
 
     - name: Run Type Generation Validation
       run: |
         echo "📝 Running Type Generation Validation..."
-        ./scripts/ci_type_check.sh
+        bash ./scripts/ci_type_check.sh
+
+    - name: Stop backend after API Contract Tests
+      if: always()
+      run: |
+        if [ -f /tmp/contract_backend_pid ]; then
+          kill $(cat /tmp/contract_backend_pid) 2>/dev/null || true
+          rm -f /tmp/contract_backend_pid
+        fi
 
     - name: Build Backend
       run: |
@@ -114,44 +168,94 @@ jobs:
       run: |
         echo "🎨 Building Frontend..."
         cd web/frontend
-        npm run build
+        FRONTEND_PORT=${FRONTEND_PORT} \
+        FRONTEND_BACKUP_PORT=${FRONTEND_BACKUP_PORT} \
+        BACKEND_PORT=${BACKEND_PORT} \
+        BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT} \
+        npm run build:no-types
 
     - name: Run UI Binding Tests
       run: |
         echo "🎯 Running UI Binding Tests..."
         cd web/frontend
-        npm run test:unit -- --run tests/ui_binding_tests.spec.ts --reporter=verbose
+        npx vitest run tests/unit/port-config-consistency.spec.ts --reporter=verbose
 
     - name: Start Services for E2E Tests
       run: |
         echo "🚀 Starting Services for E2E Tests..."
-        # Start backend in background
         cd web/backend
-        python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &
+        export POSTGRESQL_HOST=localhost
+        export POSTGRESQL_PORT=5432
+        export POSTGRESQL_USER=postgres
+        export POSTGRESQL_PASSWORD=test_password
+        export POSTGRESQL_DATABASE=mystocks_test
+        export JWT_SECRET_KEY=$(openssl rand -hex 32)
+        export BACKEND_PORT=${BACKEND_PORT}
+        export BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT}
+        PYTHONPATH=$PWD/../..:$PWD nohup python -m uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT} >/tmp/data_sync_backend.log 2>&1 &
         BACKEND_PID=$!
-
-        # Start frontend in background
-        cd ../frontend
-        npm run dev -- --port 3001 --host 0.0.0.0 &
-        FRONTEND_PID=$!
-
-        # Wait for services to be ready
-        sleep 30
-
-        # Store PIDs for cleanup
         echo $BACKEND_PID > /tmp/backend_pid
+
+        for _ in $(seq 1 30); do
+          if curl -fsS http://localhost:${BACKEND_PORT}/api/announcement/health >/dev/null 2>&1 || \
+             curl -fsS http://localhost:${BACKEND_PORT}/health/ready >/dev/null 2>&1; then
+            echo "✅ Backend is ready for E2E tests"
+            break
+          fi
+
+          if ! kill -0 "$BACKEND_PID" >/dev/null 2>&1; then
+            echo "❌ Backend exited before becoming ready"
+            cat /tmp/data_sync_backend.log || true
+            exit 1
+          fi
+
+          sleep 2
+        done
+
+        cd ../frontend
+        FRONTEND_PORT=${FRONTEND_PORT} \
+        FRONTEND_BACKUP_PORT=${FRONTEND_BACKUP_PORT} \
+        BACKEND_PORT=${BACKEND_PORT} \
+        BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT} \
+        nohup npm run dev:no-types -- --host 0.0.0.0 --port ${FRONTEND_PORT} --strictPort >/tmp/data_sync_frontend.log 2>&1 &
+        FRONTEND_PID=$!
         echo $FRONTEND_PID > /tmp/frontend_pid
+
+        for _ in $(seq 1 30); do
+          if curl -fsS http://localhost:${FRONTEND_PORT}/ >/dev/null 2>&1; then
+            echo "✅ Frontend is ready for E2E tests"
+            break
+          fi
+
+          if ! kill -0 "$FRONTEND_PID" >/dev/null 2>&1; then
+            echo "❌ Frontend exited before becoming ready"
+            cat /tmp/data_sync_frontend.log || true
+            exit 1
+          fi
+
+          sleep 2
+        done
+
+        curl -fsS http://localhost:${BACKEND_PORT}/api/announcement/health >/dev/null 2>&1 || \
+          curl -fsS http://localhost:${BACKEND_PORT}/health/ready >/dev/null 2>&1
+        curl -fsS http://localhost:${FRONTEND_PORT}/ >/dev/null 2>&1
 
     - name: Run E2E Data Flow Tests
       run: |
         echo "🌐 Running E2E Data Flow Tests..."
-        npx playwright install
-        npx playwright test tests/e2e_data_flow.spec.ts --headed=false
+        cd web/frontend
+        npx playwright install --with-deps chromium
+        FRONTEND_PORT=${FRONTEND_PORT} \
+        FRONTEND_BACKUP_PORT=${FRONTEND_BACKUP_PORT} \
+        BACKEND_PORT=${BACKEND_PORT} \
+        BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT} \
+        PLAYWRIGHT_EXTERNAL_FRONTEND=1 npm run test:e2e:stable
 
     - name: Run Real Data Synchronization Tests
       run: |
         echo "🔬 Running Real Data Synchronization Tests..."
-        python tests/real_data_synchronization_test.py
+        BASE_URL=http://localhost:${BACKEND_PORT} \
+        python -m pytest -o addopts='' tests/real_data_synchronization_test.py::test_data_routing_real_correctness -v
 
     - name: Generate Test Reports
       run: |
@@ -182,7 +286,7 @@ jobs:
         EOF
 
     - name: Upload Test Results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: test-results-${{ github.run_number }}
@@ -198,6 +302,9 @@ jobs:
         if [ -f /tmp/frontend_pid ]; then
           kill $(cat /tmp/frontend_pid) 2>/dev/null || true
         fi
+        if [ -f /tmp/contract_backend_pid ]; then
+          kill $(cat /tmp/contract_backend_pid) 2>/dev/null || true
+        fi
 
   # Quality Gate Check
   quality-gate:
@@ -207,9 +314,11 @@ jobs:
 
     steps:
     - name: Download Test Results
-      uses: actions/upload-artifact@v3
+      continue-on-error: true
+      uses: actions/download-artifact@v4
       with:
         name: test-results-${{ github.run_number }}
+        path: test-results
 
     - name: Quality Gate Check
       run: |

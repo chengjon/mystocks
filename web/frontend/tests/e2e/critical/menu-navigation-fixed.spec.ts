@@ -23,6 +23,20 @@ test.describe("Critical Menu Navigation - Fixed", { tag: "@critical" }, () => {
     await page.route(/https?:\/\/[^/]+\/api\/.*/, async (route) => {
       const url = new URL(route.request().url())
 
+      if (url.pathname === "/api/health/ready") {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({
+            success: true,
+            message: "system ready",
+            request_id: "e2e-menu-ready",
+            data: { status: "ready" },
+          }),
+        })
+        return
+      }
+
       if (url.pathname === "/api/csrf-token") {
         await route.fulfill({
           status: 200,
@@ -32,7 +46,7 @@ test.describe("Critical Menu Navigation - Fixed", { tag: "@critical" }, () => {
         return
       }
 
-      if (url.pathname === "/api/v1/data/markets/overview") {
+      if (url.pathname === "/api/v1/data/markets/overview" || url.pathname === "/api/v1/market/overview") {
         await route.fulfill({
           status: 200,
           contentType: "application/json",

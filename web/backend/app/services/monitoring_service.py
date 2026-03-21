@@ -10,7 +10,6 @@ import logging
 from datetime import date, datetime, timedelta
 from typing import Dict, List, Optional, Tuple
 
-import akshare as ak
 import pandas as pd
 from sqlalchemy import and_, create_engine, desc
 from sqlalchemy.orm import Session, sessionmaker
@@ -25,6 +24,28 @@ from app.models.monitoring import (
 # 配置日志
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+try:
+    import akshare as ak
+except ModuleNotFoundError as exc:
+    ak = None
+    _AKSHARE_IMPORT_ERROR: ModuleNotFoundError | None = exc
+else:
+    _AKSHARE_IMPORT_ERROR = None
+
+
+def _akshare_unavailable(feature: str) -> bool:
+    if _AKSHARE_IMPORT_ERROR is None:
+        return False
+
+    logger.warning("Akshare unavailable, %s disabled: %s", feature, _AKSHARE_IMPORT_ERROR)
+    return True
+
+
+def _get_akshare_module(feature: str):
+    if _akshare_unavailable(feature):
+        return None
+    return ak
 
 
 class MonitoringService:
@@ -167,14 +188,17 @@ class MonitoringService:
 
     def fetch_realtime_data(self, symbols: List[str] = None) -> pd.DataFrame:
         """获取实时行情数据"""
+        ak_module = _get_akshare_module("realtime monitoring fetch")
+        if ak_module is None:
+            return pd.DataFrame()
         try:
             if symbols and len(symbols) > 0:
                 # 获取指定股票的实时数据
-                df = ak.stock_zh_a_spot_em()
+                df = ak_module.stock_zh_a_spot_em()
                 df = df[df["代码"].isin(symbols)]
             else:
                 # 获取全市场实时数据
-                df = ak.stock_zh_a_spot_em()
+                df = ak_module.stock_zh_a_spot_em()
 
             if df.empty:
                 logger.warning("No realtime data fetched")
@@ -527,12 +551,15 @@ class MonitoringService:
 
     def fetch_dragon_tiger_list(self, trade_date: Optional[date] = None) -> pd.DataFrame:
         """获取龙虎榜数据"""
+        ak_module = _get_akshare_module("dragon tiger monitoring fetch")
+        if ak_module is None:
+            return pd.DataFrame()
         try:
             if trade_date is None:
                 trade_date = date.today()
 
             date_str = trade_date.strftime("%Y%m%d")
-            df = ak.stock_lhb_detail_daily_sina(date=date_str)
+            df = ak_module.stock_lhb_detail_daily_sina(date=date_str)
 
             if df.empty:
                 logger.info("No dragon tiger data for %(date_str)s")

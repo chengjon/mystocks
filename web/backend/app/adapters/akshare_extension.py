@@ -13,10 +13,31 @@ Akshare适配器扩展模块
 import logging
 from typing import Dict, Optional
 
-import akshare as ak
 import pandas as pd
 
+try:
+    import akshare as ak
+except ModuleNotFoundError as exc:
+    ak = None
+    _AKSHARE_IMPORT_ERROR: ModuleNotFoundError | None = exc
+else:
+    _AKSHARE_IMPORT_ERROR = None
+
 logger = logging.getLogger(__name__)
+
+
+def _akshare_unavailable(feature: str) -> bool:
+    if _AKSHARE_IMPORT_ERROR is None:
+        return False
+
+    logger.warning("Akshare unavailable, %s disabled: %s", feature, _AKSHARE_IMPORT_ERROR)
+    return True
+
+
+def _get_akshare_module(feature: str):
+    if _akshare_unavailable(feature):
+        return None
+    return ak
 
 
 class AkshareExtension:
@@ -33,8 +54,11 @@ class AkshareExtension:
                         volume, amount, open_price, high_price, low_price, prev_close,
                         turnover_rate, total_market_cap, circulating_market_cap
         """
+        ak_module = _get_akshare_module("ETF spot data")
+        if ak_module is None:
+            return pd.DataFrame()
         try:
-            df = ak.fund_etf_spot_em()
+            df = ak_module.fund_etf_spot_em()
             if df is not None and not df.empty:
                 # 标准化列名
                 column_mapping = {
@@ -80,13 +104,16 @@ class AkshareExtension:
                     "small_net_inflow": 小单净流入额
                 }
         """
+        ak_module = _get_akshare_module("stock fund flow")
+        if ak_module is None:
+            return {}
         try:
             # 将数字转换为中文（akshare需要中文参数）
             timeframe_map = {"1": "今日", "3": "3日", "5": "5日", "10": "10日"}
             indicator = timeframe_map.get(timeframe, "今日")
 
             # 使用akshare的stock_individual_fund_flow_rank接口
-            df = ak.stock_individual_fund_flow_rank(indicator=indicator)
+            df = ak_module.stock_individual_fund_flow_rank(indicator=indicator)
             if df is None or df.empty:
                 logger.warning("未获取到%(indicator)s资金流向数据")
                 return {}
@@ -129,12 +156,15 @@ class AkshareExtension:
                 columns: symbol, name, reason, buy_amount, sell_amount, net_amount,
                         turnover_rate, institution_buy, institution_sell
         """
+        ak_module = _get_akshare_module("dragon tiger detail")
+        if ak_module is None:
+            return pd.DataFrame()
         try:
             # 格式化日期(移除连字符)
             date_str = date.replace("-", "")
 
             # akshare API使用start_date和end_date参数
-            df = ak.stock_lhb_detail_em(start_date=date_str, end_date=date_str)
+            df = ak_module.stock_lhb_detail_em(start_date=date_str, end_date=date_str)
             if df is not None and not df.empty:
                 # 标准化列名
                 column_mapping = {
@@ -181,12 +211,15 @@ class AkshareExtension:
                         dividend_ratio, bonus_share_ratio, transfer_ratio,
                         allotment_ratio, allotment_price
         """
+        ak_module = _get_akshare_module("dividend data")
+        if ak_module is None:
+            return pd.DataFrame()
         try:
             # 处理股票代码格式
             stock_code = symbol.split(".")[0] if "." in symbol else symbol
 
             # 使用akshare的stock_fhps_detail_em接口
-            df = ak.stock_fhps_detail_em(symbol=stock_code)
+            df = ak_module.stock_fhps_detail_em(symbol=stock_code)
             if df is not None and not df.empty:
                 # 标准化列名
                 column_mapping = {
@@ -222,9 +255,12 @@ class AkshareExtension:
         Returns:
             pd.DataFrame: 板块资金流向数据
         """
+        ak_module = _get_akshare_module("sector fund flow")
+        if ak_module is None:
+            return pd.DataFrame()
         try:
             # 获取行业板块资金流向
-            df = ak.stock_sector_fund_flow_rank(indicator="今日")
+            df = ak_module.stock_sector_fund_flow_rank(indicator="今日")
             if df is not None and not df.empty:
                 column_mapping = {
                     "序号": "rank",

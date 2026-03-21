@@ -1,6 +1,6 @@
+#!/usr/bin/env python3
 from __future__ import annotations
 
-#!/usr/bin/env python3
 """
 # 功能：GPU加速特征计算引擎
 # 作者：MyStocks AI开发团队
@@ -8,8 +8,6 @@ from __future__ import annotations
 # 版本：1.0.0
 # 说明：GPU加速的金融特征计算和技术指标引擎
 """
-
-from __future__ import annotations
 
 import logging
 from typing import Any, Dict, List, Union
@@ -176,7 +174,7 @@ class FeatureCalculationGPUCalculatePriceVolumeMixin:
 
         # 使用数据形状、列名、最后一行数据等生成唯一键
         key_data = f"{data.shape}_{list(data.columns)}_{feature_types}_{data.iloc[-1].to_dict()}"
-        return hashlib.md5(key_data.encode()).hexdigest()
+        return hashlib.md5(key_data.encode(), usedforsecurity=False).hexdigest()
 
     def clear_cache(self) -> None:
         """清除特征缓存"""

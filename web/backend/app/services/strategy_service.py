@@ -13,7 +13,6 @@ import os
 from datetime import date, datetime, timedelta
 from typing import Any, Dict, List
 
-import akshare as ak
 import pandas as pd
 from sqlalchemy import and_, create_engine, desc
 from sqlalchemy.orm import sessionmaker
@@ -22,6 +21,28 @@ from app.models.strategy import StrategyDefinition, StrategyResult
 from app.strategies.stock_strategies import get_strategy
 
 logger = logging.getLogger(__name__)
+
+try:
+    import akshare as ak
+except ModuleNotFoundError as exc:
+    ak = None
+    _AKSHARE_IMPORT_ERROR: ModuleNotFoundError | None = exc
+else:
+    _AKSHARE_IMPORT_ERROR = None
+
+
+def _akshare_unavailable(feature: str) -> bool:
+    if _AKSHARE_IMPORT_ERROR is None:
+        return False
+
+    logger.warning("Akshare unavailable, %s disabled: %s", feature, _AKSHARE_IMPORT_ERROR)
+    return True
+
+
+def _get_akshare_module(feature: str):
+    if _akshare_unavailable(feature):
+        return None
+    return ak
 
 
 class StrategyService:
@@ -66,6 +87,9 @@ class StrategyService:
         Returns:
             DataFrame with columns: date, open, high, low, close, volume, amount, p_change
         """
+        ak_module = _get_akshare_module("strategy history fetch")
+        if ak_module is None:
+            return pd.DataFrame()
         try:
             if start_date is None:
                 start_date = (datetime.now() - timedelta(days=365)).strftime("%Y%m%d")
@@ -73,7 +97,7 @@ class StrategyService:
                 end_date = datetime.now().strftime("%Y%m%d")
 
             # 使用akshare获取A股历史数据
-            df = ak.stock_zh_a_hist(
+            df = ak_module.stock_zh_a_hist(
                 symbol=symbol,
                 period=period,
                 start_date=start_date,
@@ -126,9 +150,12 @@ class StrategyService:
         Returns:
             List of dict with keys: symbol, name
         """
+        ak_module = _get_akshare_module("strategy stock list fetch")
+        if ak_module is None:
+            return []
         try:
             # 获取A股实时行情
-            df = ak.stock_zh_a_spot_em()
+            df = ak_module.stock_zh_a_spot_em()
 
             if df is None or df.empty:
                 logger.warning("未获取到股票列表")

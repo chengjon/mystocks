@@ -9,9 +9,92 @@ on:
     - cron: '0 2 * * 0'  # Weekly Sunday at 2 AM
 
 jobs:
+  comprehensive-scope-detect:
+    runs-on: ubuntu-latest
+    outputs:
+      run_ai_tests: ${{ steps.detect.outputs.run_ai_tests }}
+      run_contract_tests: ${{ steps.detect.outputs.run_contract_tests }}
+      run_performance_tests: ${{ steps.detect.outputs.run_performance_tests }}
+      run_security_tests: ${{ steps.detect.outputs.run_security_tests }}
+      run_chaos_tests: ${{ steps.detect.outputs.run_chaos_tests }}
+      run_data_tests: ${{ steps.detect.outputs.run_data_tests }}
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Run comprehensive scope detection
+      id: detect
+      run: |
+        if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          echo "run_ai_tests=true" >> "$GITHUB_OUTPUT"
+          echo "run_contract_tests=true" >> "$GITHUB_OUTPUT"
+          echo "run_performance_tests=true" >> "$GITHUB_OUTPUT"
+          echo "run_security_tests=true" >> "$GITHUB_OUTPUT"
+          echo "run_chaos_tests=true" >> "$GITHUB_OUTPUT"
+          echo "run_data_tests=true" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+        else
+          BASE_SHA="${{ github.event.before }}"
+        fi
+
+        if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+          if git rev-parse HEAD^ >/dev/null 2>&1; then
+            mapfile -t changed_files < <(git diff --name-only HEAD^ HEAD)
+          else
+            mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "${{ github.sha }}")
+          fi
+        else
+          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+        fi
+
+        run_ai_tests=false
+        run_contract_tests=false
+        run_performance_tests=false
+        run_security_tests=false
+        run_chaos_tests=false
+        run_data_tests=false
+
+        for changed_file in "${changed_files[@]}"; do
+          case "$changed_file" in
+            tests/ai/*|tests/ai/**)
+              run_ai_tests=true
+              ;;
+            tests/contract/*|tests/contract/**)
+              run_contract_tests=true
+              ;;
+            tests/performance/*|tests/performance/**)
+              run_performance_tests=true
+              ;;
+            tests/security/*|tests/security/**|requirements-security.txt)
+              run_security_tests=true
+              ;;
+            tests/chaos/*|tests/chaos/**)
+              run_chaos_tests=true
+              ;;
+            tests/data/*|tests/data/**)
+              run_data_tests=true
+              ;;
+          esac
+        done
+
+        echo "run_ai_tests=$run_ai_tests" >> "$GITHUB_OUTPUT"
+        echo "run_contract_tests=$run_contract_tests" >> "$GITHUB_OUTPUT"
+        echo "run_performance_tests=$run_performance_tests" >> "$GITHUB_OUTPUT"
+        echo "run_security_tests=$run_security_tests" >> "$GITHUB_OUTPUT"
+        echo "run_chaos_tests=$run_chaos_tests" >> "$GITHUB_OUTPUT"
+        echo "run_data_tests=$run_data_tests" >> "$GITHUB_OUTPUT"
+
   # AI-Assisted Tests
   ai-tests:
     runs-on: ubuntu-latest
+    needs: comprehensive-scope-detect
+    if: needs.comprehensive-scope-detect.outputs.run_ai_tests == 'true'
     steps:
     - uses: actions/checkout@v4
 
@@ -24,7 +107,9 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-        pip install -r requirements-dev.txt
+        if [ -f requirements-dev.txt ]; then
+          pip install -r requirements-dev.txt
+        fi
 
     - name: Run AI-Assisted Tests
       run: |
@@ -43,6 +128,8 @@ jobs:
   # Contract Tests
   contract-tests:
     runs-on: ubuntu-latest
+    needs: comprehensive-scope-detect
+    if: needs.comprehensive-scope-detect.outputs.run_contract_tests == 'true'
     steps:
     - uses: actions/checkout@v4
 
@@ -55,7 +142,9 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-        pip install -r requirements-dev.txt
+        if [ -f requirements-dev.txt ]; then
+          pip install -r requirements-dev.txt
+        fi
 
     - name: Run Contract Tests
       run: |
@@ -74,6 +163,8 @@ jobs:
   # Performance Tests
   performance-tests:
     runs-on: ubuntu-latest
+    needs: comprehensive-scope-detect
+    if: needs.comprehensive-scope-detect.outputs.run_performance_tests == 'true'
     steps:
     - uses: actions/checkout@v4
 
@@ -86,7 +177,9 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-        pip install -r requirements-dev.txt
+        if [ -f requirements-dev.txt ]; then
+          pip install -r requirements-dev.txt
+        fi
         pip install psutil
 
     - name: Run Performance Tests
@@ -118,6 +211,8 @@ jobs:
   # Security Tests
   security-tests:
     runs-on: ubuntu-latest
+    needs: comprehensive-scope-detect
+    if: needs.comprehensive-scope-detect.outputs.run_security_tests == 'true'
     steps:
     - uses: actions/checkout@v4
 
@@ -157,6 +252,8 @@ jobs:
   # Chaos Engineering Tests
   chaos-tests:
     runs-on: ubuntu-latest
+    needs: comprehensive-scope-detect
+    if: needs.comprehensive-scope-detect.outputs.run_chaos_tests == 'true'
     steps:
     - uses: actions/checkout@v4
 
@@ -169,7 +266,9 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-        pip install -r requirements-dev.txt
+        if [ -f requirements-dev.txt ]; then
+          pip install -r requirements-dev.txt
+        fi
 
     - name: Run Chaos Tests
       run: |
@@ -188,6 +287,8 @@ jobs:
   # Data Quality Tests
   data-quality-tests:
     runs-on: ubuntu-latest
+    needs: comprehensive-scope-detect
+    if: needs.comprehensive-scope-detect.outputs.run_data_tests == 'true'
     steps:
     - uses: actions/checkout@v4
 
@@ -200,7 +301,9 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-        pip install -r requirements-dev.txt
+        if [ -f requirements-dev.txt ]; then
+          pip install -r requirements-dev.txt
+        fi
 
     - name: Run Data Quality Tests
       run: |
@@ -262,28 +365,28 @@ jobs:
         echo "📊 Generating Summary Report..."
 
         cat > test-summary.md << EOF
-# Test Summary Report
+          # Test Summary Report
 
-**Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-**Branch**: ${{ github.ref_name }}
-**Commit**: ${{ github.sha }}
+          **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Branch**: ${{ github.ref_name }}
+          **Commit**: ${{ github.sha }}
 
-## Test Results
+          ## Test Results
 
-| Test Category | Status |
-|---------------|--------|
-| AI Tests | ${{ needs.ai-tests.result }} |
-| Contract Tests | ${{ needs.contract-tests.result }} |
-| Performance Tests | ${{ needs.performance-tests.result }} |
-| Security Tests | ${{ needs.security-tests.result }} |
-| Chaos Tests | ${{ needs.chaos-tests.result }} |
-| Data Quality Tests | ${{ needs.data-quality-tests.result }} |
+          | Test Category | Status |
+          |---------------|--------|
+          | AI Tests | ${{ needs.ai-tests.result }} |
+          | Contract Tests | ${{ needs.contract-tests.result }} |
+          | Performance Tests | ${{ needs.performance-tests.result }} |
+          | Security Tests | ${{ needs.security-tests.result }} |
+          | Chaos Tests | ${{ needs.chaos-tests.result }} |
+          | Data Quality Tests | ${{ needs.data-quality-tests.result }} |
 
-## Overall Status: ${{ needs.quality-gate.result }}
+          ## Overall Status: ${{ needs.quality-gate.result }}
 
----
-Generated by Comprehensive Testing Solution
-EOF
+          ---
+          Generated by Comprehensive Testing Solution
+          EOF
 
         echo "✅ Summary report generated"
 
@@ -305,7 +408,9 @@ EOF
     - name: Install all dependencies
       run: |
         pip install -r requirements.txt
-        pip install -r requirements-dev.txt
+        if [ -f requirements-dev.txt ]; then
+          pip install -r requirements-dev.txt
+        fi
         pip install -r requirements-security.txt
 
     - name: Run Full Test Suite

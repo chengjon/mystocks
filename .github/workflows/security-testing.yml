@@ -17,10 +17,59 @@ env:
   NODE_VERSION: '20'
 
 jobs:
+  security-test-scope-detect:
+    runs-on: ubuntu-latest
+    outputs:
+      bandit_required: ${{ steps.detect.outputs.bandit_required }}
+      bandit_args: ${{ steps.detect.outputs.bandit_args }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Detect security test scope
+      id: detect
+      shell: bash
+      run: |
+        bandit_required=false
+        bandit_args=""
+
+        if [ "${{ github.event_name }}" != "pull_request" ]; then
+          bandit_required=true
+          bandit_args="-r src/ web/backend/app/"
+        else
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            if git rev-parse HEAD^ >/dev/null 2>&1; then
+              mapfile -t changed_files < <(git diff --name-only HEAD^ HEAD)
+            else
+              mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "${{ github.sha }}")
+            fi
+          else
+            mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+          fi
+
+          for changed_file in "${changed_files[@]}"; do
+            case "$changed_file" in
+              src/*.py|src/**/*.py|web/backend/app/*.py|web/backend/app/**/*.py)
+                bandit_required=true
+                bandit_args="$bandit_args $changed_file"
+                ;;
+            esac
+          done
+        fi
+
+        echo "bandit_required=$bandit_required" >> "$GITHUB_OUTPUT"
+        echo "bandit_args=$(echo "$bandit_args" | xargs)" >> "$GITHUB_OUTPUT"
+
   # 安全扫描阶段 - 检查代码中的安全漏洞
   security-scan:
     name: Security Scan (SAST)
     runs-on: ubuntu-latest
+    needs: security-test-scope-detect
+    if: needs.security-test-scope-detect.outputs.bandit_required == 'true'
 
     steps:
     - name: Checkout code
@@ -41,7 +90,7 @@ jobs:
 
     - name: Run Bandit security scan
       run: |
-        bandit -r src/ -f json -o bandit-report.json -q || true
+        bandit ${{ needs.security-test-scope-detect.outputs.bandit_args }} -f json -o bandit-report.json -q || true
       continue-on-error: true
 
     - name: Run Safety dependency check
@@ -55,7 +104,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload security scan results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: security-scan-results
@@ -88,7 +137,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload dependency check results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: dependency-check-results
@@ -131,7 +180,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload security test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: security-test-results
@@ -179,7 +228,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload frontend security results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: frontend-security-results
@@ -195,118 +244,119 @@ jobs:
 
     steps:
     - name: Download all security artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
+      with:
+        path: .
+        merge-multiple: true
 
     - name: Generate consolidated security report
       run: |
-        # 创建安全报告目录
         mkdir -p security-reports
+        python - <<'PY'
+        import json
+        from datetime import datetime
+        from pathlib import Path
 
-        # 生成总体安全报告
-        cat > security-reports/security-summary.md << 'EOF'
-        # MyStocks 安全测试报告
+        root = Path(".")
+        reports = root / "security-reports"
+        reports.mkdir(parents=True, exist_ok=True)
 
-        ## 测试执行时间
-        $(date)
+        summary_lines = [
+            "# MyStocks 安全测试报告",
+            "",
+            "## 测试执行时间",
+            datetime.utcnow().isoformat() + "Z",
+            "",
+            "## 测试覆盖范围",
+            "",
+            "### 执行的测试套件",
+            "- ✅ Bandit 静态代码分析",
+            "- ✅ Safety 依赖漏洞扫描",
+            "- ✅ Semgrep 深度安全扫描",
+            "- ✅ Pip-audit 依赖安全审计",
+            "- ✅ OWASP Top 10 安全测试",
+            "- ✅ 认证安全测试",
+            "- ✅ 前端依赖安全检查",
+            "- ✅ npm audit",
+            "",
+            "## 安全扫描结果",
+        ]
 
-        ## 测试覆盖范围
+        bandit_path = root / "bandit-report.json"
+        if bandit_path.exists():
+            data = json.loads(bandit_path.read_text(encoding="utf-8"))
+            severities = {}
+            for issue in data.get("results", []):
+                severity = issue.get("issue_severity", "UNSPECIFIED")
+                severities[severity] = severities.get(severity, 0) + 1
+            summary_lines.extend(
+                [
+                    "### Bandit 扫描结果",
+                    f"- 严重问题: {severities.get('HIGH', 0)}",
+                    f"- 中等问题: {severities.get('MEDIUM', 0)}",
+                    f"- 低危问题: {severities.get('LOW', 0)}",
+                    f"- 无危问题: {severities.get('UNSPECIFIED', 0)}",
+                ]
+            )
 
-        ### 执行的测试套件
-        - ✅ Bandit 静态代码分析
-        - ✅ Safety 依赖漏洞扫描
-        - ✅ Semgrep 深度安全扫描
-        - ✅ Pip-audit 依赖安全审计
-        - ✅ OWASP Top 10 安全测试
-        - ✅ 认证安全测试
-        - ✅ 前端依赖安全检查
-        - ✅ npm audit
+        safety_path = root / "safety-report.json"
+        if safety_path.exists():
+            data = json.loads(safety_path.read_text(encoding="utf-8"))
+            if data:
+                vulnerable = len([d for d in data if isinstance(d, dict) and d.get("vulnerable_spec")])
+                fixed = len([d for d in data if isinstance(d, dict) and "" == d.get("vulnerable_spec")])
+                summary_lines.extend(
+                    [
+                        "### Safety 依赖扫描结果",
+                        f"- 漏洞依赖: {vulnerable}",
+                        f"- 已修复: {fixed}",
+                    ]
+                )
+            else:
+                summary_lines.extend(["### Safety 依赖扫描结果", "- 未发现漏洞依赖"])
 
-        ## 安全扫描结果
-        EOF
+        security_summary_path = root / "security-test-summary.txt"
+        if security_summary_path.exists():
+            matched_lines = [
+                line
+                for line in security_summary_path.read_text(encoding="utf-8", errors="ignore").splitlines()
+                if any(token in line for token in ("状态", "得分", "测试项", "失败项"))
+            ]
+            if matched_lines:
+                summary_lines.extend(["### 安全功能测试结果", *matched_lines])
 
-        # 添加扫描结果摘要
-        if [ -f bandit-report.json ]; then
-          echo "### Bandit 扫描结果" >> security-reports/security-summary.md
-          python -c "
-import json
-with open('bandit-report.json') as f:
-    data = json.load(f)
-if 'results' in data:
-    severities = {}
-    for issue in data['results']:
-        severity = issue.get('issue_severity', 'UNSPECIFIED')
-        severities[severity] = severities.get(severity, 0) + 1
-    print(f'- 严重问题: {severities.get(\"HIGH\", 0)}')
-    print(f'- 中等问题: {severities.get(\"MEDIUM\", 0)}')
-    print(f'- 低危问题: {severities.get(\"LOW\", 0)}')
-    print(f'- 无危问题: {severities.get(\"UNSPECIFIED\", 0)}')
-" >> security-reports/security-summary.md
-        fi
-
-        if [ -f safety-report.json ]; then
-          echo "### Safety 依赖扫描结果" >> security-reports/security-summary.md
-          python -c "
-import json
-with open('safety-report.json') as f:
-    data = json.load(f)
-if data:
-    print(f'- 漏洞依赖: {len([d for d in data if d.get(\"vulnerable_spec\")])}')
-    print(f'- 已修复: {len([d for d in data if \"\" == d.get(\"vulnerable_spec\")])}')
-else:
-    print('- 未发现漏洞依赖')
-" >> security-reports/security-summary.md
-        fi
-
-        # 添加测试结果
-        if [ -f security-test-summary.txt ]; then
-          echo "### 安全功能测试结果" >> security-reports/security-summary.md
-          grep -E "(状态|得分|测试项|失败项)" security-test-summary.txt >> security-reports/security-summary.md
-        fi
-
-        # 生成JSON格式报告
-        cat > security-reports/security-results.json << 'JSON_EOF'
-        {
-          "timestamp": "$(date -Iseconds)",
-          "tests": {
-            "bandit": {
-              "status": "completed",
-              "report": "bandit-report.json"
-            },
-            "safety": {
-              "status": "completed",
-              "report": "safety-report.json"
-            },
-            "semgrep": {
-              "status": "completed",
-              "report": "semgrep-report.json"
-            },
-            "pip-audit": {
-              "status": "completed",
-              "report": "pip-audit-report.json"
-            },
-            "owasp-tests": {
-              "status": "completed",
-              "report": "security-test-summary.txt"
-            },
-            "frontend-audit": {
-              "status": "completed",
-              "report": "npm-audit-report.json"
-            }
-          },
-          "summary": {
-            "total_issues": 0,
-            "critical": 0,
-            "high": 0,
-            "medium": 0,
-            "low": 0
-          }
-        }
-        JSON_EOF
+        (reports / "security-summary.md").write_text("\n".join(summary_lines) + "\n", encoding="utf-8")
+        (reports / "security-results.json").write_text(
+            json.dumps(
+                {
+                    "timestamp": datetime.utcnow().isoformat() + "Z",
+                    "tests": {
+                        "bandit": {"status": "completed", "report": "bandit-report.json"},
+                        "safety": {"status": "completed", "report": "safety-report.json"},
+                        "semgrep": {"status": "completed", "report": "semgrep-report.json"},
+                        "pip-audit": {"status": "completed", "report": "pip-audit-report.json"},
+                        "owasp-tests": {"status": "completed", "report": "security-test-summary.txt"},
+                        "frontend-audit": {"status": "completed", "report": "npm-audit-report.json"},
+                    },
+                    "summary": {
+                        "total_issues": 0,
+                        "critical": 0,
+                        "high": 0,
+                        "medium": 0,
+                        "low": 0,
+                    },
+                },
+                ensure_ascii=False,
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+        PY
 
         echo "安全测试报告已生成: security-reports/"
 
     - name: Upload security reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: security-reports
         path: security-reports/
@@ -322,7 +372,10 @@ else:
 
     steps:
     - name: Download security reports
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
+      with:
+        path: .
+        merge-multiple: true
 
     - name: Security Quality Gate Check
       id: gate
@@ -333,13 +386,15 @@ else:
 
         # 检查Bandit结果
         if [ -f bandit-report.json ]; then
-          HIGH_COUNT=$(python -c "
-import json
-with open('bandit-report.json') as f:
-    data = json.load(f)
-high_count = len([r for r in data.get('results', []) if r.get('issue_severity') == 'HIGH'])
-print(high_count)
-")
+          HIGH_COUNT=$(python - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path("bandit-report.json").read_text(encoding="utf-8"))
+          high_count = len([r for r in data.get("results", []) if r.get("issue_severity") == "HIGH"])
+          print(high_count)
+          PY
+          )
           if [ "$HIGH_COUNT" -gt 0 ]; then
             SECURITY_PASS=false
             ISSUES_SUMMARY="$ISSUES_SUMMARY 严重安全问题: $HIGH_COUNT 个"
@@ -348,13 +403,15 @@ print(high_count)
 
         # 检查Safety结果
         if [ -f safety-report.json ]; then
-          VULNERABLE_COUNT=$(python -c "
-import json
-with open('safety-report.json') as f:
-    data = json.load(f)
-count = len([d for d in data if d.get('vulnerable_spec')])
-print(count)
-")
+          VULNERABLE_COUNT=$(python - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path("safety-report.json").read_text(encoding="utf-8"))
+          count = len([d for d in data if d.get("vulnerable_spec")])
+          print(count)
+          PY
+          )
           if [ "$VULNERABLE_COUNT" -gt 5 ]; then  # 超过5个漏洞依赖
             SECURITY_PASS=false
             ISSUES_SUMMARY="$ISSUES_SUMMARY 漏洞依赖过多: $VULNERABLE_COUNT 个"
@@ -387,7 +444,7 @@ print(count)
           github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
-            repo: context.repo.name,
+            repo: context.repo.repo,
             body: '⚠️ 安全质量门禁失败！请修复以下安全问题后再合并：\n- 检查安全扫描报告\n- 修复严重安全问题\n- 更新依赖包\n\n详细信息请查看安全测试报告。'
           })
 
@@ -400,47 +457,47 @@ print(count)
 
     steps:
     - name: Download final security reports
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
+      with:
+        path: .
 
     - name: Final security verification
       run: |
         echo "🔐 最终安全验证..."
 
         # 运行关键安全测试
-        python -c "
-import sys
-import subprocess
-import json
+        python - <<'PY'
+        import os
+        import sys
 
-# 测试1: 检查是否有硬编码密钥
-print('1. 检查硬编码密钥...')
-with open('src/core/config_loader.py', 'r') as f:
-    content = f.read()
-    if 'password' in content.lower() and 'getenv' not in content:
-        print('❌ 发现硬编码密码风险')
-        sys.exit(1)
-print('✅ 未发现硬编码密码')
+        print("1. 检查硬编码密钥...")
+        with open("src/core/config_loader.py", "r", encoding="utf-8") as f:
+            content = f.read()
+            if "password" in content.lower() and "getenv" not in content:
+                print("❌ 发现硬编码密码风险")
+                sys.exit(1)
+        print("✅ 未发现硬编码密码")
 
-# 测试2: 检查SQL注入风险
-print('2. 检查SQL注入风险...')
-sql_files = []
-for root, dirs, files in os.walk('src'):
-    for file in files:
-        if file.endswith('.py') and ('sql' in file.lower() or 'query' in file.lower()):
-            sql_files.append(os.path.join(root, file))
+        print("2. 检查SQL注入风险...")
+        sql_files = []
+        for root, _, files in os.walk("src"):
+            for file in files:
+                if file.endswith(".py") and ("sql" in file.lower() or "query" in file.lower()):
+                    sql_files.append(os.path.join(root, file))
 
-for file_path in sql_files[:5]:  # 检查前5个相关文件
-    try:
-        with open(file_path, 'r') as f:
-            content = f.read().lower()
-            if ('+' in content and 'select' in content and ('where' in content or 'set' in content)) or \
-               ('format' in content and 'select' in content):
-                print(f'⚠️  {file_path} 可能存在SQL注入风险')
-    except:
-        pass
+        for file_path in sql_files[:5]:
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    content = f.read().lower()
+                    if ("+" in content and "select" in content and ("where" in content or "set" in content)) or (
+                        "format" in content and "select" in content
+                    ):
+                        print(f"⚠️  {file_path} 可能存在SQL注入风险")
+            except Exception:
+                pass
 
-print('✅ 最终安全验证通过')
-"
+        print("✅ 最终安全验证通过")
+        PY
 
     - name: Approve for deployment
       run: |
@@ -452,15 +509,15 @@ print('✅ 最终安全验证通过')
     name: Security Notification
     runs-on: ubuntu-latest
     needs: [security-gate]
-    if: always()
+    if: always() && secrets.SLACK_WEBHOOK_URL != ''
 
     steps:
     - name: Send security notification
       uses: 8398a7/action-slack@v3
+      continue-on-error: true
       with:
         status: ${{ needs.security-gate.outputs.security-pass == 'true' && 'success' || 'failure' }}
         channel: '#security-alerts'
-        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
         fields: |
           {"repository": "${{ github.repository }}",
            "branch": "${{ github.ref_name }}",

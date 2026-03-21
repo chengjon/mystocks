@@ -39,10 +39,55 @@ env:
   PLAYWRIGHT_VERSION: '1.48.1'
 
 jobs:
+  visual-scope-detect:
+    name: Visual Scope Detect
+    runs-on: ubuntu-latest
+    outputs:
+      visual_test_required: ${{ steps.detect.outputs.visual_test_required }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run visual scope detection
+        id: detect
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE_SHA="${{ github.event.before }}"
+          fi
+
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            if git rev-parse HEAD^ >/dev/null 2>&1; then
+              mapfile -t changed_files < <(git diff --name-only HEAD^ HEAD)
+            else
+              mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "${{ github.sha }}")
+            fi
+          else
+            mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+          fi
+
+          visual_test_required=false
+          for changed_file in "${changed_files[@]}"; do
+            case "$changed_file" in
+              web/frontend/src/*|web/frontend/src/**|tests/visual/*|tests/visual/**)
+                visual_test_required=true
+                break
+                ;;
+            esac
+          done
+
+          echo "visual_test_required=$visual_test_required" >> "$GITHUB_OUTPUT"
+
   visual-test-setup:
     name: Visual Test Setup
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    needs: visual-scope-detect
+    if: needs.visual-scope-detect.outputs.visual_test_required == 'true'
 
     outputs:
       cache_key: ${{ steps.cache_key.outputs.cache_key }}
@@ -78,7 +123,7 @@ jobs:
       - name: Install Dependencies
         run: |
           cd web/frontend
-          npm ci --only=production
+          npm ci
           npm install @playwright/test@${{ env.PLAYWRIGHT_VERSION }}
           npx playwright install --with-deps chromium
 
@@ -91,7 +136,8 @@ jobs:
     name: Visual Regression Tests
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    needs: visual-test-setup
+    needs: [visual-scope-detect, visual-test-setup]
+    if: needs.visual-scope-detect.outputs.visual_test_required == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -124,7 +170,7 @@ jobs:
       - name: Install Playwright
         run: |
           cd web/frontend
-          npm ci --only=production
+          npm ci
           npm install @playwright/test@${{ env.PLAYWRIGHT_VERSION }}
           npx playwright install --with-deps chromium
 
@@ -133,13 +179,10 @@ jobs:
           cd web/frontend
           echo "VITE_API_BASE_URL=http://localhost:8000" >> $GITHUB_ENV
           echo "USE_MOCK_DATA=true" >> $GITHUB_ENV
-
-      - name: Start Frontend Server
-        run: |
-          cd web/frontend
-          npm run dev -- --port 5173 &
-          echo "Frontend server started"
-          timeout 30 bash -c 'until curl -f http://localhost:5173; do sleep 1; done'
+          echo "FRONTEND_PORT=5173" >> $GITHUB_ENV
+          echo "FRONTEND_BACKUP_PORT=5174" >> $GITHUB_ENV
+          echo "BACKEND_PORT=8000" >> $GITHUB_ENV
+          echo "BACKEND_BACKUP_PORT=8001" >> $GITHUB_ENV
 
       - name: Run Visual Tests
         if: inputs.update_baselines != true
@@ -163,20 +206,20 @@ jobs:
             --update-snapshots
 
       - name: Upload Visual Test Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: visual-test-results-${{ matrix.browser }}-${{ matrix.shard }}
+          name: visual-test-results-${{ matrix.browser }}
           path: |
             web/frontend/test-results/visual/
             !web/frontend/test-results/visual/**/*.zip
           retention-days: 30
 
       - name: Upload Playwright Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: visual-playwright-report-${{ matrix.browser }}-${{ matrix.shard }}
+          name: visual-playwright-report-${{ matrix.browser }}
           path: web/frontend/playwright-report/
           retention-days: 30
 
@@ -192,7 +235,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download All Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: test-results/
 
@@ -220,7 +263,7 @@ jobs:
           echo "Failed: $failed_tests"
 
       - name: Upload Test Summary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: visual-test-summary
           path: visual-test-summary.json

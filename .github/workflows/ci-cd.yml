@@ -58,7 +58,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install -r requirements-dev.txt
+        pip install pytest-asyncio pytest-cov pytest-xdist ruff bandit safety
 
     - name: Install Node.js dependencies
       run: |
@@ -154,7 +154,7 @@ jobs:
         echo "🔍 代码质量评分: ${quality_score}/100"
 
     - name: Upload quality reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: quality-reports-${{ github.run_id }}
         path: |
@@ -179,18 +179,21 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>=' web/backend/requirements.txt > /tmp/backend-requirements-ci.txt
+        pip install -r /tmp/backend-requirements-ci.txt
+        pip install pytest-asyncio pytest-cov pytest-xdist
 
     - name: Run basic unit tests
       run: |
         # 运行不需要数据库的单元测试
-        python -m pytest tests/unit/test_data_classification.py -v --tb=short
+        PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/unit/test_data_classification.py -v --tb=short -o addopts=''
 
     - name: Run AI test analysis
       run: |
-        python scripts/tools/ai_test_assistant.py --output test-reports/ai_basic_analysis.md || true
+        python scripts/dev/tools/ai_test_assistant.py --output test-reports/ai_basic_analysis.md || true
 
     - name: Upload basic test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: basic-test-results
         path: test-reports/
@@ -218,7 +221,7 @@ jobs:
         npm run test:unit -- --run --reporter=verbose || true
 
     - name: Upload frontend test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: frontend-test-results
         path: web/frontend/
@@ -242,14 +245,14 @@ jobs:
 
     - name: Validate performance test suite
       run: |
-        python scripts/tools/performance_test_suite.py --baseline || true
+        python scripts/dev/tools/performance_test_suite.py --baseline || true
 
     - name: Run basic performance validation
       run: |
-        python scripts/tools/performance_test_suite.py --load-test --users 5 --run-time 10s || true
+        python scripts/dev/tools/performance_test_suite.py --load-test --users 5 --run-time 10s || true
 
     - name: Upload performance validation results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: performance-validation
         path: test-reports/
@@ -264,24 +267,24 @@ jobs:
     - name: Validate test orchestration scripts
       run: |
         # 验证脚本存在性和可执行性
-        ls -la scripts/test-runner/run-orchestration.sh
-        ls -la scripts/tools/run-performance-suite.sh
-        ls -la scripts/tools/ai_test_assistant.py
+        ls -la scripts/tests/test-runner/run-orchestration.sh
+        ls -la scripts/dev/tools/run-performance-suite.sh
+        ls -la scripts/dev/tools/ai_test_assistant.py
 
         # 验证脚本语法
-        bash -n scripts/test-runner/run-orchestration.sh || echo "Orchestration script has syntax issues"
-        bash -n scripts/tools/run-performance-suite.sh || echo "Performance suite script has syntax issues"
+        bash -n scripts/tests/test-runner/run-orchestration.sh || echo "Orchestration script has syntax issues"
+        bash -n scripts/dev/tools/run-performance-suite.sh || echo "Performance suite script has syntax issues"
 
         # 验证Python脚本导入
-        python -c "import sys; sys.path.append('.'); from scripts.tools import ai_test_assistant" 2>/dev/null || echo "AI assistant import failed"
+        python -c "import sys; sys.path.append('.'); from scripts.dev.tools import ai_test_assistant" 2>/dev/null || echo "AI assistant import failed"
 
     - name: Test orchestration dry-run
       run: |
         # 测试编排脚本的dry-run模式
-        bash scripts/test-runner/run-orchestration.sh --dry-run || echo "Orchestration dry-run failed"
+        bash scripts/tests/test-runner/run-orchestration.sh --dry-run || echo "Orchestration dry-run failed"
 
     - name: Upload validation results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: test-chain-validation
         path: .
@@ -520,7 +523,7 @@ jobs:
         echo "✅ 优化总结报告已生成"
 
     - name: Upload optimization data
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: continuous-optimization-data-${{ github.run_id }}
         path: optimization-data/
@@ -536,7 +539,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Download all artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
 
     - name: Generate CI/CD summary
       run: |
@@ -576,7 +579,7 @@ jobs:
         echo "- 部署流程自动化" >> cicd_summary.md
 
     - name: Upload CI/CD summary
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: cicd-summary
         path: cicd-summary.md
@@ -684,7 +687,7 @@ jobs:
         bash .github/workflows/ci-cd.yml --dry-run
 
         # 运行本地测试
-        python scripts/tools/run-performance-suite.sh --all
+        bash scripts/dev/tools/run-performance-suite.sh --all
         \`\`\`
 
         ### 部署配置

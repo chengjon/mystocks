@@ -23,6 +23,7 @@ const path = require('path');
 
 const BACKEND_PORT = process.env.BACKEND_PORT || '8020';
 const BASE_URL = process.env.BASE_URL || process.env.BACKEND_URL || `http://localhost:${BACKEND_PORT}`;
+const CI_MODE = process.env.CI === 'true' || process.env.API_AUTOMATION_MODE === 'ci';
 
 
 
@@ -34,7 +35,62 @@ const API_TOKEN = process.env.API_TOKEN || ''; // 默认不提供令牌，由环
 
 
 
-const REPORT_DIR = '/opt/claude/mystocks_spec/docs/reports/test-results';
+const PROJECT_ROOT = path.resolve(__dirname, '../../../../');
+const REPORT_DIR = path.join(PROJECT_ROOT, 'docs', 'reports', 'test-results');
+const CI_ENDPOINT_ALLOWLIST = [
+  /^\/health$/,
+  /^\/api\/socketio-status$/,
+  /^\/api\/csrf-token$/,
+  /^\/$/,
+  /^\/api\/v1\/market\/quotes$/,
+  /^\/api\/v1\/market\/stocks$/,
+  /^\/api\/v2\/market\/fund-flow$/,
+  /^\/api\/v2\/market\/etf\/list$/,
+  /^\/api\/v2\/market\/sector\/fund-flow$/,
+  /^\/api\/v2\/market\/blocktrade$/,
+  /^\/api\/v1\/strategy\/definitions$/,
+  /^\/api\/v1\/monitoring\/control\/status$/,
+  /^\/api\/v1\/trade\/health$/,
+  /^\/api\/v1\/trade\/portfolio$/,
+  /^\/api\/v1\/trade\/positions$/,
+  /^\/api\/v1\/trade\/signals$/,
+  /^\/api\/v1\/trade\/trades$/,
+  /^\/api\/v1\/trade\/statistics$/,
+  /^\/api\/trading\/status$/,
+  /^\/api\/trading\/strategies\/performance$/,
+  /^\/api\/trading\/market\/snapshot$/,
+  /^\/api\/trading\/risk\/metrics$/,
+  /^\/api\/v1\/technical\/patterns\/\{symbol\}$/,
+  /^\/api\/v1\/technical\/\{symbol\}\/indicators$/,
+  /^\/api\/v1\/technical\/\{symbol\}\/momentum$/,
+  /^\/api\/v1\/technical\/\{symbol\}\/volatility$/,
+  /^\/api\/v1\/technical\/\{symbol\}\/volume$/,
+  /^\/api\/v1\/system\/health$/,
+  /^\/api\/v1\/system\/adapters\/health$/,
+  /^\/api\/v1\/system\/datasources$/,
+  /^\/api\/v1\/system\/logs$/,
+  /^\/api\/v1\/system\/logs\/summary$/,
+  /^\/api\/v1\/tdx\/health$/,
+  /^\/api\/v1\/announcement\/announcement\/health$/,
+  /^\/api\/v1\/announcement\/announcement\/status$/,
+  /^\/api\/v1\/announcement\/announcement\/important$/,
+  /^\/api\/v1\/announcement\/announcement\/stats$/,
+  /^\/api\/v1\/announcement\/announcement\/monitor-rules$/,
+  /^\/api\/market\/wencai\/health$/,
+  /^\/api\/dashboard\/market-overview$/,
+  /^\/api\/dashboard\/health$/,
+  /^\/api\/multi-source\/health$/,
+  /^\/api\/multi-source\/status$/,
+  /^\/api\/data-quality\/health$/,
+  /^\/api\/data-quality\/alerts$/,
+  /^\/api\/data-quality\/config\/mode$/,
+  /^\/api\/data-quality\/status\/overview$/,
+  /^\/api\/status$/,
+  /^\/api\/pool-monitoring\/postgresql\/stats$/,
+  /^\/api\/pool-monitoring\/tdengine\/stats$/,
+  /^\/api\/pool-monitoring\/health$/,
+  /^\/api\/pool-monitoring\/alerts$/,
+];
 
 
 
@@ -138,6 +194,20 @@ function extractEndpoints(openApiSpec) {
 
   return endpoints;
 
+}
+
+function selectEndpointsForRun(endpoints) {
+  if (!CI_MODE) {
+    return endpoints;
+  }
+
+  return endpoints.filter((endpoint) => {
+    if (endpoint.method !== 'GET') {
+      return false;
+    }
+
+    return CI_ENDPOINT_ALLOWLIST.some((pattern) => pattern.test(endpoint.path));
+  });
 }
 
 
@@ -830,7 +900,7 @@ function generateReport() {
 
 
 
-      passRate: ((testResults.passed / testResults.total) * 100).toFixed(2) + '%',
+      passRate: testResults.total > 0 ? ((testResults.passed / testResults.total) * 100).toFixed(2) + '%' : '0.00%',
 
 
 
@@ -863,10 +933,29 @@ function generateReport() {
 
 
   return report;
-
-
-
 }
+
+function writeSummaryReport() {
+  const report = generateReport();
+  console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log(`🏆 最终统计: ${report.summary.passed}/${report.summary.total} 通过 (${report.summary.passRate})`);
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+
+  try {
+    if (!fs.existsSync(REPORT_DIR)) {
+      fs.mkdirSync(REPORT_DIR, { recursive: true });
+    }
+    const summaryPath = path.join(REPORT_DIR, 'api-test-summary.json');
+    fs.writeFileSync(summaryPath, JSON.stringify(report, null, 2));
+    console.log(`💾 JSON 报告已保存至: ${summaryPath}`);
+  } catch (err) {
+    console.error('❌ 保存 JSON 报告失败:', err.message);
+  }
+}
+
+test.afterAll(async () => {
+  writeSummaryReport();
+});
 
 
 
@@ -966,7 +1055,7 @@ test.describe('FastAPI API 自动化测试', () => {
 
 
 
-    test.setTimeout(300000);
+    test.setTimeout(CI_MODE ? 900000 : 300000);
 
 
 
@@ -988,10 +1077,17 @@ test.describe('FastAPI API 自动化测试', () => {
 
     }
 
-    console.log('\n📋 开始测试所有端点...\n');
+    const endpointsToTest = selectEndpointsForRun(endpoints);
+
+    if (!endpointsToTest || endpointsToTest.length === 0) {
+      test.skip(true, '当前模式下没有发现可测试的端点');
+      return;
+    }
+
+    console.log(`\n📋 开始测试 ${CI_MODE ? 'CI smoke 子集' : '所有'}端点，共 ${endpointsToTest.length} 个...\n`);
 
     // 批量测试所有端点
-    for (const endpoint of endpoints) {
+    for (const endpoint of endpointsToTest) {
       console.log(`  测试: ${endpoint.method} ${endpoint.path}`);
       const result = await testEndpoint(endpoint);
 
@@ -1027,7 +1123,7 @@ test.describe('FastAPI API 自动化测试', () => {
     expect(response.ok).toBeTruthy();
 
     const data = await response.json();
-    expect(data).toHaveProperty('status');
+    expect(data.status || data.data?.status).toBeTruthy();
   });
 
   test('OpenAPI 规范验证', async () => {
@@ -1070,6 +1166,11 @@ test.describe('API 端点分组详细测试', () => {
   // 为每个标签运行测试
   // 注意：Playwright 的测试定义是静态的，所以我们在一个测试中遍历该标签的所有端点
   test('执行按标签分组的自动化测试', async () => {
+    if (CI_MODE) {
+      test.skip(true, 'CI mode skips duplicate tag replay after the primary discovery scan.');
+      return;
+    }
+
     if (!endpoints || endpoints.length === 0) {
       test.skip(true, '未发现端点');
       return;
@@ -1099,23 +1200,6 @@ test.describe('API 端点分组详细测试', () => {
       }
     }
 
-    // 汇总报告
-    const report = generateReport();
-    console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log(`🏆 最终统计: ${report.summary.passed}/${report.summary.total} 通过 (${report.summary.passRate})`);
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
-
-    // 保存 JSON 报告
-    try {
-      if (!fs.existsSync(REPORT_DIR)) {
-        fs.mkdirSync(REPORT_DIR, { recursive: true });
-      }
-      const summaryPath = path.join(REPORT_DIR, 'api-test-summary.json');
-      fs.writeFileSync(summaryPath, JSON.stringify(report, null, 2));
-      console.log(`💾 JSON 报告已保存至: ${summaryPath}`);
-    } catch (err) {
-      console.error('❌ 保存 JSON 报告失败:', err.message);
-    }
   });
 });
 

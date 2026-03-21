@@ -1,0 +1,103 @@
+version: "v0.2"
+
+task:
+  id: "recovery-mainline-2026-03-19"
+  title: "stabilize post-rewrite backend and CI baseline on recovery branch"
+  owner: "main"
+  created_at: "2026-03-20"
+
+mainline:
+  id: "L1-recovery-mainline-2026-03-19"
+  objective: "promote the post-rewrite backend recovery and CI baseline fixes to main without merging stacked PRs as-is"
+  milestone_id: "L2-post-rewrite-mainline-stabilization"
+  slice_id: "L3-recovery-baseline-ci-and-backend"
+
+classification:
+  task_type: "fix"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "domain-03"
+  node_id: "domain-03-node-02"
+  affected_entrypoints:
+    - "governance"
+    - "api"
+    - "frontend"
+    - "core"
+    - "tests"
+    - "operations"
+  update_status: "required"
+  secondary_domains:
+    - "domain-02"
+    - "domain-01"
+    - "domain-04"
+    - "domain-07"
+    - "domain-08"
+    - "domain-09"
+  exemption_reason: "recovery branch intentionally spans strategy/gpu recovery plus CI and verification fixes across multiple business domains to restore a usable mainline baseline"
+
+scope:
+  allowed_paths:
+    - ".github/workflows/**"
+    - "config/requirements.txt"
+    - "governance/mainline/task-cards/*.yaml"
+    - "pyproject.toml"
+    - "requirements.txt"
+    - "run-api-tests.sh"
+    - "scripts/tests/run-api-tests.sh"
+    - "src/**"
+    - "tests/**"
+    - "web/backend/**"
+    - "web/frontend/**"
+  forbidden_paths: []
+
+non_goals:
+  - "No new product feature work beyond backend recovery and CI baseline stabilization"
+  - "No merge-as-is of stacked PR #7, #8, #10, or #11"
+
+acceptance:
+  checks:
+    - id: "focused-regression-suite"
+      command: "pytest -o addopts='' --no-cov tests/unit/scripts/test_api_test_entrypoints.py tests/unit/scripts/test_ci_workflow_runtime_setup.py tests/unit/test_api_file_tests_runner.py tests/unit/test_data_classification.py tests/unit/scripts/test_python_dependency_constraints.py tests/unit/storage/database/test_tdengine_import_guard.py tests/unit/test_real_data_sync_base_url.py -q"
+      required: true
+    - id: "backend-import"
+      command: "PYTHONPATH=.:web/backend POSTGRESQL_HOST=localhost POSTGRESQL_PORT=5432 POSTGRESQL_USER=testuser POSTGRESQL_PASSWORD=testpassword POSTGRESQL_DATABASE=testdb JWT_SECRET_KEY=test_secret_key_for_ci_cd_purposes_only BACKEND_PORT=8000 BACKEND_BACKUP_PORT=8001 python -c \"import app.main\""
+      required: true
+    - id: "frontend-lint"
+      command: "cd web/frontend && npm run lint"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Recovery branch still carries a broad set of CI and runtime stabilizations that must be reviewed as a coherent promotion line"
+    - "Workflow-only fixes may expose additional repository-level policy debt once the remaining checks run against GitHub Actions"
+    - "Backend import stability still relies on graceful degradation around optional GPU and TDengine runtime dependencies"
+  rollback_plan: "git revert <merge-commit-sha> on main if the recovery promotion introduces new CI or runtime regressions"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "restore a promotable mainline baseline after the rewrite by recovering backend imports and reducing CI false-red conditions"
+    modified_scope: "workflow definitions, dependency manifests, backend recovery files, focused regression tests, and automation helper entrypoints"
+    dependency_changes: "PyJWT is explicitly declared and workflow dependency installs are aligned with actual runtime requirements"
+    legacy_logic_impact: "existing product behavior is preserved while optional runtime failures are downgraded to non-blocking paths where possible"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the recovery promotion if GitHub Actions or backend startup regress relative to the verified recovery branch"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-03-20T00:00:00Z"
+    approval_note: "approved"
+    secondary_approved: false

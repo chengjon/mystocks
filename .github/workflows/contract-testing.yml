@@ -16,10 +16,33 @@ on:
       - 'web/backend/app/**'
 
 jobs:
+  contract-framework-readiness:
+    name: Contract Framework Readiness
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check framework presence
+        id: check
+        run: |
+          if [ -d "src/contract_testing" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+            echo "Contract testing framework detected."
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Skipping contract-testing jobs because src/contract_testing is not present on this branch."
+          fi
+
   contract-testing:
     name: Contract Testing
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    needs: contract-framework-readiness
+    if: needs.contract-framework-readiness.outputs.ready == 'true'
 
     strategy:
       matrix:
@@ -39,17 +62,17 @@ jobs:
         run: |
           python -m pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
-          pip install pytest pytest-cov pytest-mock
+          pip install pytest pytest-cov pytest-html pytest-mock
 
       - name: Run contract testing test suite
         run: |
-          python -m pytest scripts/tests/test_contract_testing.py -v --tb=short --cov=src/contract_testing --cov-report=xml --cov-report=html
+          python -m pytest -o addopts='' scripts/tests/test_contract_testing.py -v --tb=short --cov=src/contract_testing --cov-report=xml --cov-report=html
 
       - name: Generate test report
         if: always()
         run: |
           mkdir -p reports
-          python -m pytest scripts/tests/test_contract_testing.py -v --html=reports/contract-test-report.html --self-contained-html
+          python -m pytest -o addopts='' scripts/tests/test_contract_testing.py -v --html=reports/contract-test-report.html --self-contained-html
 
       - name: Upload coverage reports to Codecov
         if: always()
@@ -62,13 +85,14 @@ jobs:
 
       - name: Upload test reports
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-reports-${{ matrix.python-version }}
           path: reports/
 
       - name: Comment on PR with test results
         if: always() && github.event_name == 'pull_request'
+        continue-on-error: true
         uses: actions/github-script@v6
         with:
           script: |
@@ -129,7 +153,8 @@ jobs:
     name: API Consistency Check
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: contract-testing
+    needs: [contract-framework-readiness, contract-testing]
+    if: needs.contract-framework-readiness.outputs.ready == 'true'
 
     steps:
       - name: Checkout code
@@ -211,7 +236,7 @@ jobs:
 
       - name: Upload consistency report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: consistency-report
           path: reports/consistency-check.json

@@ -54,7 +54,7 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'lhb',
             name: 'market-lhb',
-            component: () => import('@/views/market/MarketDragonTigerPage.vue'),
+            component: () => import('@/views/artdeco-pages/market-data-tabs/DragonTigerAnalysis.vue'),
             meta: { title: '龙虎榜', requiresAuth: true, api: '/api/v1/market/lhb' }
           }
         ]
@@ -81,7 +81,7 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'fund-flow',
             name: 'data-fund-flow',
-            component: () => import('@/views/data/DataFundFlowPage.vue'),
+            component: () => import('@/views/artdeco-pages/market-data-tabs/FundFlowAnalysis.vue'),
             meta: { title: '资金流向', requiresAuth: true, api: '/api/akshare/market/fund-flow' }
           },
           {
@@ -102,7 +102,7 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'manage',
             name: 'watchlist-manage',
-            component: () => import('@/views/monitoring/WatchlistManagement.vue'),
+            component: () => import('@/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue'),
             meta: { title: '组合管理', requiresAuth: true, api: '/api/v1/monitoring/watchlists' }
           },
           {
@@ -165,7 +165,7 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'pos',
             name: 'strategy-pos',
-            component: () => import('@/views/strategy/StrategyPositionPage.vue'),
+            component: () => import('@/views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue'),
             meta: { title: '仓位管理', requiresAuth: true, api: '/api/v1/trade/positions' }
           }
         ]

@@ -3,12 +3,12 @@
 提供系统设置、数据库连接测试、运行日志查询等功能
 """
 
+import logging
 import os
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import psycopg2
-import taos
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
@@ -16,6 +16,18 @@ from pydantic import BaseModel
 use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
+
+
+def _close_resource_quietly(resource_name: str, resource: Any) -> None:
+    if resource is None:
+        return
+
+    try:
+        resource.close()
+    except Exception as exc:
+        logger.debug("Failed to close %s cleanly: %s", resource_name, exc)
+
 
 @router.get("/architecture")
 async def get_system_architecture():
@@ -321,11 +333,7 @@ async def database_health():
         health_data["summary"]["unhealthy"] += 1
     finally:
         # 确保连接被关闭，防止连接泄漏
-        if conn is not None:
-            try:
-                conn.close()
-            except Exception:
-                pass
+        _close_resource_quietly("TDengine connection", conn)
 
     # Check PostgreSQL
     conn = None
@@ -363,16 +371,8 @@ async def database_health():
         health_data["summary"]["unhealthy"] += 1
     finally:
         # 确保连接被关闭，防止连接泄漏
-        if cursor is not None:
-            try:
-                cursor.close()
-            except Exception:
-                pass
-        if conn is not None:
-            try:
-                conn.close()
-            except Exception:
-                pass
+        _close_resource_quietly("PostgreSQL cursor", cursor)
+        _close_resource_quietly("PostgreSQL connection", conn)
 
     # Format databases array for E2E tests
     databases = []
@@ -481,4 +481,3 @@ async def database_stats():
     }
 
     return {"success": True, "message": "数据库统计信息获取成功", "data": stats_data}
-

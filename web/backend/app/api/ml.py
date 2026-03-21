@@ -27,8 +27,15 @@ from app.schemas.ml_schemas import (
     TdxDataResponse,
 )
 from app.services.feature_engineering_service import FeatureEngineeringService
-from app.services.ml_prediction_service import MLPredictionService
 from app.services.tdx_parser_service import TdxDataService
+
+try:
+    from app.services.ml_prediction_service import MLPredictionService
+except ModuleNotFoundError as exc:
+    MLPredictionService = None
+    _ML_PREDICTION_IMPORT_ERROR: ModuleNotFoundError | None = exc
+else:
+    _ML_PREDICTION_IMPORT_ERROR = None
 
 router = APIRouter(prefix="/ml", tags=["Machine Learning"])
 
@@ -38,6 +45,15 @@ feature_service = FeatureEngineeringService()
 
 # 模型存储目录
 MODEL_DIR = os.getenv("ML_MODEL_DIR", "./models")
+
+
+def _build_ml_service() -> "MLPredictionService":
+    if MLPredictionService is None:
+        raise HTTPException(
+            status_code=503,
+            detail=f"ML prediction service unavailable: {_ML_PREDICTION_IMPORT_ERROR}",
+        )
+    return MLPredictionService(model_dir=MODEL_DIR)
 
 
 # ==================== 通达信数据相关 ====================
@@ -159,7 +175,7 @@ async def train_model(request: ModelTrainRequest, current_user: User = Depends(g
         X, y, metadata = feature_service.prepare_model_data(df, step=request.step)
 
         # 创建ML服务
-        ml_service = MLPredictionService(model_dir=MODEL_DIR)
+        ml_service = _build_ml_service()
 
         # 训练模型
         metrics = ml_service.train(X, y, test_size=request.test_size, model_params=request.model_params)
@@ -193,7 +209,7 @@ async def predict_with_model(request: ModelPredictRequest, current_user: User = 
     """
     try:
         # 加载模型
-        ml_service = MLPredictionService(model_dir=MODEL_DIR)
+        ml_service = _build_ml_service()
         loaded = ml_service.load_model(request.model_name)
 
         if not loaded:
@@ -251,7 +267,7 @@ async def predict_with_model(request: ModelPredictRequest, current_user: User = 
 async def list_models(current_user: User = Depends(get_current_user)):
     """列出所有已保存的模型"""
     try:
-        ml_service = MLPredictionService(model_dir=MODEL_DIR)
+        ml_service = _build_ml_service()
         models = ml_service.list_saved_models()
 
         return ModelListResponse(total=len(models), models=[ModelInfo(**model) for model in models])
@@ -264,7 +280,7 @@ async def list_models(current_user: User = Depends(get_current_user)):
 async def get_model_detail(model_name: str, current_user: User = Depends(get_current_user)):
     """获取模型详情"""
     try:
-        ml_service = MLPredictionService(model_dir=MODEL_DIR)
+        ml_service = _build_ml_service()
         loaded = ml_service.load_model(model_name)
 
         if not loaded:
@@ -317,7 +333,7 @@ async def hyperparameter_search(request: HyperparameterSearchRequest, current_us
         X, y, _ = feature_service.prepare_model_data(df, step=request.step)
 
         # 创建ML服务
-        ml_service = MLPredictionService(model_dir=MODEL_DIR)
+        ml_service = _build_ml_service()
 
         # 执行超参数搜索
         result = ml_service.hyperparameter_search(X, y, param_grid=request.param_grid, cv=request.cv)
@@ -349,7 +365,7 @@ async def evaluate_model(request: ModelEvaluationRequest, current_user: User = D
     """
     try:
         # 加载模型
-        ml_service = MLPredictionService(model_dir=MODEL_DIR)
+        ml_service = _build_ml_service()
         loaded = ml_service.load_model(request.model_name)
 
         if not loaded:

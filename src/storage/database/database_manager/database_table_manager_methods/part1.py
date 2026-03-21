@@ -9,6 +9,7 @@
 # 版权：MyStocks Project © 2025
 """
 
+import importlib
 import json
 import logging
 import os
@@ -23,23 +24,44 @@ from sqlalchemy import (
     create_engine,
 )
 from sqlalchemy.orm import sessionmaker
-from src.utils.redis_runtime_config import get_redis_db_for_role
+
 from src.utils.redis_runtime_config import get_redis_db_for_role
 
 # Import from parent module
-from .._build_monitor_db_url import Base, DatabaseType, _build_monitor_db_url
+from .._build_monitor_db_url import (
+    Base,
+    ColumnDefinitionLog,
+    DatabaseType,
+    TableCreationLog,
+    TableOperationLog,
+    TableValidationLog,
+    _build_monitor_db_url,
+)
 
 # Build the monitor database URL
 MONITOR_DB_URL = _build_monitor_db_url()
 
+
+def _detect_taos_runtime():
+    """Best-effort TDengine runtime detection.
+
+    taospy may raise runtime errors during import when the native client
+    library is absent. In those environments, the module should degrade to
+    "TDengine unavailable" instead of crashing import chains that only need
+    PostgreSQL-backed features.
+    """
+
+    try:
+        taos_module = importlib.import_module("taos")
+    except Exception:
+        return None, False, None
+
+    module_type = "taosws" if hasattr(taos_module, "connect") else "taosrest"
+    return taos_module, True, module_type
+
+
 # TDengine availability check
-try:
-    import taos
-    TAOS_AVAILABLE = True
-    TAOS_MODULE_TYPE = "taosws" if hasattr(taos, 'connect') else "taosrest"
-except ImportError:
-    TAOS_AVAILABLE = False
-    TAOS_MODULE_TYPE = None
+taos, TAOS_AVAILABLE, TAOS_MODULE_TYPE = _detect_taos_runtime()
 
 # 加载环境变量
 load_dotenv()
@@ -565,25 +587,6 @@ class DatabaseTableManagerCoreMixin:
             logger.error("Failed to batch create tables: %s", str(e))
             return {"error": str(e)}
 
-        """生成ALTER TABLE语句"""
-        ddl_parts = []
-
-        for alteration in alterations:
-            operation = alteration.get("operation")  # ADD, DROP, MODIFY, RENAME
-
-            if operation == "ADD":
-                col_def = self._generate_column_definition(alteration)
-                ddl_parts.append(f"ADD COLUMN {col_def}")
-            elif operation == "DROP":
-                ddl_parts.append(f"DROP COLUMN {alteration['column_name']}")
-            elif operation == "MODIFY":
-                col_def = self._generate_column_definition(alteration)
-                ddl_parts.append(f"MODIFY COLUMN {col_def}")
-            elif operation == "RENAME":
-                ddl_parts.append(f"RENAME COLUMN {alteration['old_name']} TO {alteration['new_name']}")
-
-        return f"ALTER TABLE {table_name} {', '.join(ddl_parts)}"
-
     def _generate_column_definition(self, col_def: Dict) -> str:
         """生成列定义字符串"""
         definition = f"{col_def['name']} {col_def['type']}"
@@ -735,13 +738,14 @@ class DatabaseTableManagerCoreMixin:
 
             elif db_type == DatabaseType.POSTGRESQL:
                 cursor.execute(
-                    f"""
+                    """
                     SELECT column_name, data_type, is_nullable, column_default,
                            character_maximum_length, numeric_precision, numeric_scale
                     FROM information_schema.columns
-                    WHERE table_name = '{table_name}'
+                    WHERE table_name = %s
                     ORDER BY ordinal_position
-                """
+                    """,
+                    (table_name,),
                 )
                 result = cursor.fetchall()
                 for row in result:
@@ -764,4 +768,3 @@ class DatabaseTableManagerCoreMixin:
         except Exception as e:
             logger.error("Failed to get table info for %s: %s", table_name, str(e))
             return None
-

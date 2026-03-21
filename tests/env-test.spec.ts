@@ -38,8 +38,11 @@ test.describe('环境验证测试', () => {
   });
 
   test('Playwright基本功能验证', async ({ page }) => {
-    // 设置页面内容
-    await page.setContent('<div id="result"></div>');
+    // 使用有 origin 的页面上下文，避免 about:blank 下访问 storage 触发 SecurityError
+    await page.goto('https://example.com');
+    await page.evaluate(() => {
+      document.body.innerHTML = '<div id="result"></div>';
+    });
 
     // 测试JavaScript执行
     const result = await page.evaluate(() => {
@@ -71,8 +74,12 @@ test.describe('环境验证测试', () => {
   });
 
   test('Mock数据系统验证', async ({ page }) => {
-    // 设置页面内容
-    await page.setContent('<div id="mock-test"></div>');
+    // 使用有 origin 的页面上下文，确保 localStorage 可用
+    await page.goto('https://example.com');
+    await page.evaluate(() => {
+      document.body.innerHTML = '<div id="mock-test"></div>';
+      localStorage.clear();
+    });
 
     // 设置Mock数据环境变量
     await page.evaluate(() => {

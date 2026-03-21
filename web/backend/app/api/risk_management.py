@@ -10,9 +10,21 @@ Split into:
 Remove after deprecation period (4-8 weeks).
 """
 
+import logging
 import warnings
 
-from app.api.risk import router  # noqa: F401
+from fastapi import APIRouter
+
+logger = logging.getLogger(__name__)
+
+try:
+    from app.api.risk import router as _risk_router
+except Exception as exc:  # pylint: disable=broad-exception-caught
+    # Keep unrelated API startup paths alive when optional risk/GPU imports fail.
+    logger.warning("Risk API unavailable during startup, falling back to empty compatibility router: %s", exc)
+    router = APIRouter()
+else:
+    router = _risk_router
 
 warnings.warn(
     "app.api.risk_management is deprecated. "

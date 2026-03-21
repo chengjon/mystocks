@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test"
 const { loadPortEnv, resolveFrontendConfig } = require("./helpers/port-env.js")
 
+// Canonical stable E2E smoke coverage for the technical shell.
 loadPortEnv(process.cwd())
 
 const FRONTEND_BASE_URL = resolveFrontendConfig().baseUrl
@@ -53,6 +54,19 @@ test.describe("K-line Chart E2E", () => {
         body: JSON.stringify({
           success: true,
           data: { csrf_token: "e2e-kline-csrf" },
+        }),
+      })
+    })
+
+    await page.route("**/api/health/ready", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          success: true,
+          message: "system ready",
+          request_id: "e2e-kline-ready",
+          data: { status: "ready" },
         }),
       })
     })

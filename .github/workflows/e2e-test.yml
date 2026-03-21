@@ -8,37 +8,101 @@ on:
   schedule:
     - cron: '0 2 * * *'
 
+env:
+  FRONTEND_PORT: '3020'
+  FRONTEND_BACKUP_PORT: '3021'
+  BACKEND_PORT: '8020'
+  BACKEND_BACKUP_PORT: '8021'
+
 jobs:
   stable-suite:
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: mystocks_test
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Install dependencies
+      - name: Install frontend dependencies
         run: |
           cd web/frontend
           npm ci
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>=' web/backend/requirements.txt > /tmp/backend-requirements-ci.txt
+          python -m pip install -r /tmp/backend-requirements-ci.txt
 
       - name: Install Playwright
         run: |
           cd web/frontend
           npx playwright install --with-deps chromium
 
+      - name: Start backend service
+        run: |
+          export POSTGRESQL_HOST=localhost
+          export POSTGRESQL_PORT=5432
+          export POSTGRESQL_USER=postgres
+          export POSTGRESQL_PASSWORD=test_password
+          export POSTGRESQL_DATABASE=mystocks_test
+          export JWT_SECRET_KEY=$(openssl rand -hex 32)
+          export TESTING=true
+          export BACKEND_PORT=${BACKEND_PORT}
+          export BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT}
+          PYTHONPATH=$PWD:$PWD/web/backend nohup python -m uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT} >/tmp/e2e_stable_backend.log 2>&1 &
+          echo $! > /tmp/e2e_stable_backend.pid
+
+      - name: Start frontend service
+        run: |
+          cd web/frontend
+          export VITE_API_BASE_URL=http://localhost:${BACKEND_PORT}
+          nohup npm run dev -- --host 0.0.0.0 --port ${FRONTEND_PORT} >/tmp/e2e_stable_frontend.log 2>&1 &
+          echo $! > /tmp/e2e_stable_frontend.pid
+
+      - name: Wait for services
+        run: |
+          timeout 60 bash -c 'until curl -fsS http://localhost:${BACKEND_PORT}/api/announcement/health || curl -fsS http://localhost:${BACKEND_PORT}/health/ready; do sleep 2; done'
+          timeout 60 bash -c 'until curl -fsS http://localhost:${FRONTEND_PORT}/; do sleep 2; done'
+
       - name: Run Stable E2E Subset
         run: |
           cd web/frontend
-          npm run test:e2e:stable
+          PLAYWRIGHT_EXTERNAL_FRONTEND=1 npm run test:e2e:stable
+
+      - name: Stop services
+        if: always()
+        run: |
+          if [ -f /tmp/e2e_stable_frontend.pid ]; then kill $(cat /tmp/e2e_stable_frontend.pid) 2>/dev/null || true; fi
+          if [ -f /tmp/e2e_stable_backend.pid ]; then kill $(cat /tmp/e2e_stable_backend.pid) 2>/dev/null || true; fi
 
       - name: Upload stable test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results-stable
           path: web/frontend/test-results/
@@ -46,33 +110,91 @@ jobs:
   nightly-full:
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: mystocks_test
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     
     steps:
       - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
       
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
       
-      - name: Install dependencies
+      - name: Install frontend dependencies
         run: |
           cd web/frontend
           npm ci
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>=' web/backend/requirements.txt > /tmp/backend-requirements-ci.txt
+          python -m pip install -r /tmp/backend-requirements-ci.txt
       
       - name: Install Playwright
         run: |
           cd web/frontend
           npx playwright install --with-deps
+
+      - name: Start backend service
+        run: |
+          export POSTGRESQL_HOST=localhost
+          export POSTGRESQL_PORT=5432
+          export POSTGRESQL_USER=postgres
+          export POSTGRESQL_PASSWORD=test_password
+          export POSTGRESQL_DATABASE=mystocks_test
+          export JWT_SECRET_KEY=$(openssl rand -hex 32)
+          export TESTING=true
+          export BACKEND_PORT=${BACKEND_PORT}
+          export BACKEND_BACKUP_PORT=${BACKEND_BACKUP_PORT}
+          PYTHONPATH=$PWD:$PWD/web/backend nohup python -m uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT} >/tmp/e2e_nightly_backend.log 2>&1 &
+          echo $! > /tmp/e2e_nightly_backend.pid
+
+      - name: Start frontend service
+        run: |
+          cd web/frontend
+          export VITE_API_BASE_URL=http://localhost:${BACKEND_PORT}
+          nohup npm run dev -- --host 0.0.0.0 --port ${FRONTEND_PORT} >/tmp/e2e_nightly_frontend.log 2>&1 &
+          echo $! > /tmp/e2e_nightly_frontend.pid
+
+      - name: Wait for services
+        run: |
+          timeout 60 bash -c 'until curl -fsS http://localhost:${BACKEND_PORT}/api/announcement/health || curl -fsS http://localhost:${BACKEND_PORT}/health/ready; do sleep 2; done'
+          timeout 60 bash -c 'until curl -fsS http://localhost:${FRONTEND_PORT}/; do sleep 2; done'
       
       - name: Run E2E tests
         run: |
           cd web/frontend
-          npm run test:e2e:nightly
+          PLAYWRIGHT_EXTERNAL_FRONTEND=1 npm run test:e2e:nightly
+
+      - name: Stop services
+        if: always()
+        run: |
+          if [ -f /tmp/e2e_nightly_frontend.pid ]; then kill $(cat /tmp/e2e_nightly_frontend.pid) 2>/dev/null || true; fi
+          if [ -f /tmp/e2e_nightly_backend.pid ]; then kill $(cat /tmp/e2e_nightly_backend.pid) 2>/dev/null || true; fi
       
       - name: Upload nightly test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results-nightly
           path: web/frontend/test-results/
