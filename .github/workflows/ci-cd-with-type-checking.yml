@@ -412,6 +412,8 @@ jobs:
         export POSTGRESQL_PASSWORD=test123
         export POSTGRESQL_DATABASE=test_db
         export JWT_SECRET_KEY=$(openssl rand -hex 32)
+        export BACKEND_PORT=8000
+        export BACKEND_BACKUP_PORT=8001
         python -m pytest -o addopts='' \
           tests/test_post_rewrite_backend_import_stability.py \
           tests/test_trading_runtime_routes.py \

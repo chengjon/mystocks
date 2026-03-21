@@ -387,6 +387,7 @@ def test_e2e_testing_workflow_relies_on_playwright_config_outputs_and_skips_pr_c
     workflow = _read_workflow("e2e-testing.yml")
     run_section = workflow.split("- name: Run E2E Tests", 1)[1].split("- name: Upload E2E Test Results", 1)[0]
 
+    assert "--config=playwright.config.js" in run_section or "--config playwright.config.js" in run_section
     assert "--reporter=html,json,junit" not in run_section
     assert "--trace=on" not in run_section
     assert "--video=retain-on-failure" not in run_section
@@ -754,6 +755,8 @@ def test_ci_cd_with_type_checking_reinstalls_pytest_after_backend_requirements_f
 
     assert "pip install -r /tmp/backend-requirements-ci.txt" in integration_install_section
     assert "pip install pytest==9.0.2 pytest-asyncio==1.3.0 pytest-cov pytest-mock" in integration_install_section
+    assert "export BACKEND_PORT=8000" in integration_section
+    assert "export BACKEND_BACKUP_PORT=8001" in integration_section
 
 
 

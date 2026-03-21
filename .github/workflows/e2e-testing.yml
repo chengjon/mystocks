@@ -367,6 +367,7 @@ jobs:
 
           # 运行指定分片的E2E测试
           npx playwright test \
+            --config=playwright.config.js \
             --project=${{ matrix.browser }} \
             --shard=${{ matrix.shard }} \
             --output=test-results/
