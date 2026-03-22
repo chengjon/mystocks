@@ -157,6 +157,10 @@ logs/
 test-results/
 .coverage
 htmlcov/
+web/frontend/.lighthouseci/
+web/frontend/dist-lighthouse/
+web/frontend/\\wsl.localhost*
+web/frontend/undefined:
 
 # ========================================
 # PROJECT-SPECIFIC TEMPORARY FILES

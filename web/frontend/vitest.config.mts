@@ -19,6 +19,8 @@ export default defineConfig({
       "node_modules",
       "dist",
       "tests/e2e",
+      "src/**/__node_tests__/**",
+      "src/tests/**",
     ],
     coverage: {
       provider: "v8",
@@ -42,7 +44,7 @@ export default defineConfig({
       functions: 80, // 目标函数覆盖率 80%
       lines: 80, // 目标行覆盖率 80%
     },
-    setupFiles: [],
+    setupFiles: ["./vitest.setup.ts"],
   },
   resolve: {
     alias: {

@@ -230,6 +230,8 @@ jobs:
       FRONTEND_BACKUP_PORT: '3021'
       BACKEND_PORT: '8020'
       BACKEND_BACKUP_PORT: '8021'
+      PLAYWRIGHT_EXTERNAL_FRONTEND: '0'
+      TYPE_ERROR_CEILING: '0'
     defaults:
       run:
         working-directory: web/frontend
@@ -287,21 +289,56 @@ jobs:
       if: needs.frontend-gate-scope-detect.outputs.artdeco_scope_changed == 'true'
       run: npm run lint:artdeco
 
+    - name: Enforce E2E user-facing locator policy
+      if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
+      run: npm run test:e2e:selectors
+
+    - name: Enforce zero type error ceiling
+      if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
+      run: npm run test:type-ceiling
+
     - name: Frontend contract smoke
       if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
       run: npx vitest run tests/unit/port-config-consistency.spec.ts --reporter=verbose
 
-    - name: Run unit tests
+    - name: Run stable unit tests
       if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
-      run: npx vitest run tests/unit/port-config-consistency.spec.ts --reporter=verbose
+      run: npm run test:unit:stable
+
+    - name: Run full unit tests
+      if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
+      run: npm run test
 
     - name: Install Playwright browser
       if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
       run: npx playwright install --with-deps chromium
 
+    - name: Validate e2e setup
+      if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
+      run: npm run test:e2e:validate
+
     - name: Run e2e tests
       if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
-      run: npm run test:e2e:stable
+      run: |
+        if [ "${PLAYWRIGHT_EXTERNAL_FRONTEND:-0}" = "1" ]; then
+          export FRONTEND_BASE_URL="${FRONTEND_BASE_URL:-http://127.0.0.1:${FRONTEND_PORT}}"
+          export E2E_FRONTEND_URL="${E2E_FRONTEND_URL:-$FRONTEND_BASE_URL}"
+          echo "Using external frontend server: ${FRONTEND_BASE_URL}"
+        else
+          echo "Using Playwright-managed frontend server"
+        fi
+
+        npm run test:e2e:stable
+
+    - name: Run axe accessibility smoke
+      if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
+      run: npm run test:e2e:axe
+
+    - name: Run Lighthouse CI smoke
+      if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
+      env:
+        LIGHTHOUSE_BASE_URL: http://127.0.0.1:4273
+      run: npm run test:e2e:lighthouse
 
     - name: Build for production
       if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'

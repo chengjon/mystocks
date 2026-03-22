@@ -8,6 +8,40 @@
 const fs = require('fs');
 const path = require('path');
 
+const README_REQUIRED_SECTIONS = [
+  'MyStocks 端到端自动化测试套件',
+  'Phase 1: 前置校验',
+  'Phase 2: 页面加载完整性',
+  'Phase 3: 前后端联动',
+  'Phase 4: 基础交互',
+  'npm run test:e2e:validate',
+  'npm run test:e2e:stable',
+  'npm run test:e2e:axe',
+  'npm run test:e2e:lighthouse',
+  'npm run test:e2e:comprehensive'
+];
+
+const PACKAGE_SCRIPT_REQUIREMENTS = {
+  'test:e2e:validate': 'validate-e2e-setup.js',
+  'test:e2e:stable': 'playwright test --config playwright.config.js --project=chromium',
+  'test:e2e:axe': 'accessibility-smoke.spec.ts',
+  'test:e2e:lighthouse': 'lhci autorun',
+  'test:e2e:comprehensive': 'run-comprehensive-e2e.js'
+};
+
+function buildSuccessNextSteps() {
+  return [
+    '1. Start MyStocks services via PM2 (or reuse existing shared PM2 services)',
+    '2. Run: npm run test:e2e:validate',
+    '3. Run shared-PM2 stable suite with:',
+    '   PLAYWRIGHT_EXTERNAL_FRONTEND=1 \\',
+    '   FRONTEND_BASE_URL=http://127.0.0.1:3020 \\',
+    '   E2E_FRONTEND_URL=http://127.0.0.1:3020 \\',
+    '   npm run test:e2e:stable',
+    '4. Check results in test-results/ directory'
+  ];
+}
+
 function validateTestFile() {
   const testFile = path.join(__dirname, 'tests', 'comprehensive-e2e-validation.spec.ts');
 
@@ -112,14 +146,21 @@ function validatePackageJson() {
 
   const packageJson = JSON.parse(fs.readFileSync(packageFile, 'utf-8'));
 
-  if (!packageJson.scripts || !packageJson.scripts['test:e2e:comprehensive']) {
-    console.error('❌ Missing test:e2e:comprehensive script in package.json');
+  if (!packageJson.scripts) {
+    console.error('❌ Missing scripts section in package.json');
     return false;
   }
 
-  if (!packageJson.scripts['test:e2e:comprehensive'].includes('run-comprehensive-e2e.js')) {
-    console.error('❌ test:e2e:comprehensive script not pointing to runner');
-    return false;
+  for (const [scriptName, requiredSnippet] of Object.entries(PACKAGE_SCRIPT_REQUIREMENTS)) {
+    if (!packageJson.scripts[scriptName]) {
+      console.error(`❌ Missing ${scriptName} script in package.json`);
+      return false;
+    }
+
+    if (!packageJson.scripts[scriptName].includes(requiredSnippet)) {
+      console.error(`❌ ${scriptName} script not pointing to expected command snippet: ${requiredSnippet}`);
+      return false;
+    }
   }
 
   console.log('✅ Package.json validation passed');
@@ -138,16 +179,7 @@ function validateReadme() {
 
   const content = fs.readFileSync(readmeFile, 'utf-8');
 
-  const requiredSections = [
-    'MyStocks 端到端自动化测试套件',
-    'Phase 1: 前置校验',
-    'Phase 2: 页面加载完整性',
-    'Phase 3: 前后端联动',
-    'Phase 4: 基础交互',
-    'npm run test:e2e:comprehensive'
-  ];
-
-  for (const section of requiredSections) {
+  for (const section of README_REQUIRED_SECTIONS) {
     if (!content.includes(section)) {
       console.error(`❌ Missing documentation section: ${section}`);
       return false;
@@ -174,9 +206,9 @@ function main() {
   if (allPassed) {
     console.log('✅ All validations passed! E2E test suite is ready.');
     console.log('\n📋 Next steps:');
-    console.log('1. Start MyStocks services via PM2');
-    console.log('2. Run: npm run test:e2e:comprehensive');
-    console.log('3. Check results in test-results/ directory');
+    for (const step of buildSuccessNextSteps()) {
+      console.log(step);
+    }
   } else {
     console.log('❌ Validation failed. Please fix the issues above.');
     process.exit(1);
@@ -187,4 +219,12 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { validateTestFile, validateRunnerScript, validatePackageJson, validateReadme };
+module.exports = {
+  PACKAGE_SCRIPT_REQUIREMENTS,
+  README_REQUIRED_SECTIONS,
+  buildSuccessNextSteps,
+  validateTestFile,
+  validateRunnerScript,
+  validatePackageJson,
+  validateReadme
+};

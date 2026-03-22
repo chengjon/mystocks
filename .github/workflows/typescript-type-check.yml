@@ -28,6 +28,7 @@ env:
   NODE_VERSION: '20'
   WORKING_DIRECTORY: 'web/frontend'
   TECH_DEBT_BASELINE_FILE: 'reports/analysis/tech-debt-baseline.json'
+  TYPE_ERROR_CEILING: '0'
 
 jobs:
   # ============================================================
@@ -125,23 +126,6 @@ jobs:
             2>&1 | tee vue-tsc-output.txt
         continue-on-error: true
 
-      - name: Filter type errors
-        id: filter-errors
-        run: |
-          # 过滤已知的误报错误（与本地 quality gate hook 一致）
-          cat vue-tsc-output.txt | grep -v \
-            -e "src/components/artdeco" \
-            -e "src/utils/cache.ts" \
-            -e "src/api/types/generated-types.ts" \
-            -e "Could not find a declaration file for module" \
-            -e "is declared but its value is never read" \
-            > vue-tsc-filtered.txt || true
-
-          # 统计过滤后的错误
-          ERROR_COUNT=$(wc -l < vue-tsc-filtered.txt | tr -d ' ')
-          echo "error_count=$ERROR_COUNT" >> $GITHUB_OUTPUT
-          echo "过滤后的类型错误数: $ERROR_COUNT"
-
       - name: Generate type error report
         if: always()
         run: |
@@ -156,12 +140,12 @@ jobs:
 
           ### 原始错误数
           \`\`\`
-          $(wc -l < vue-tsc-output.txt | tr -d ' ') 个错误
+          $(grep -c "error TS" vue-tsc-output.txt 2>/dev/null || echo 0) 个错误
           \`\`\`
 
-          ### 过滤后错误数（排除 ArtDeco、cache.ts 等）
+          ### 当前门禁口径
           \`\`\`
-          ${{ steps.filter-errors.outputs.error_count }} 个错误（最终门禁阈值由 type-check-gate 读取技术债基线文件）
+          原始 vue-tsc 输出，零错误硬门禁；最终由 type-check-gate 结合 `TYPE_ERROR_CEILING=0` 与 `reports/analysis/tech-debt-baseline.json` 判定
           \`\`\`
 
           ### 质量门禁状态
@@ -170,16 +154,8 @@ jobs:
           ## 主要错误（前20个）
 
           \`\`\`
-          $(head -20 vue-tsc-filtered.txt)
+          $(grep "error TS" vue-tsc-output.txt | head -20 || true)
           \`\`\`
-
-          ## 过滤规则
-
-          已排除以下误报：
-          - ArtDeco 组件（已知问题）
-          - cache.ts（缓存持久化错误）
-          - generated-types.ts（自动生成文件）
-          - 模块声明缺失（第三方库）
 
           EOF
 
@@ -192,7 +168,6 @@ jobs:
           name: vue-tsc-results
           path: |
             vue-tsc-output.txt
-            vue-tsc-filtered.txt
             type-check-report.md
           retention-days: 30
 
@@ -442,17 +417,27 @@ jobs:
   type-check-gate:
     name: Type Check Quality Gate
     runs-on: ubuntu-latest
-    needs: [type-check-vue, eslint-typescript, no-new-debt]
+    needs: [type-check-typescript, type-check-vue, eslint-typescript, no-new-debt]
 
     outputs:
       type-check-pass: ${{ steps.gate.outputs.pass }}
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Download type check artifacts
         uses: actions/download-artifact@v4
         with:
           pattern: '*-results'
           path: .
+
+      - name: Enforce zero type error ceiling
+        env:
+          TYPE_ERROR_CEILING: ${{ env.TYPE_ERROR_CEILING }}
+        run: |
+          cd "${{ env.WORKING_DIRECTORY }}"
+          node scripts/check-type-error-ceiling.js --input-file "${{ github.workspace }}/vue-tsc-results/vue-tsc-output.txt"
 
       - name: Evaluate quality gate
         id: gate
@@ -478,15 +463,38 @@ except Exception: \
             GATE_ISSUES="$GATE_ISSUES 缺少有效技术债基线(frontend_type_errors)"
           fi
 
-          # 检查 vue-tsc 错误（对比技术债基线文件）
-          if [ -f vue-tsc-results/vue-tsc-filtered.txt ]; then
-            ERROR_COUNT=$(wc -l < vue-tsc-results/vue-tsc-filtered.txt | tr -d ' ')
-            echo "Vue-tsc 错误数: $ERROR_COUNT (基线: ${BASELINE_FRONTEND_ERRORS:-N/A})"
+          # 检查 tsc 错误
+          if [ -f tsc-results/tsc-output.txt ]; then
+            TSC_ERROR_COUNT=$(grep -c "error TS" tsc-results/tsc-output.txt 2>/dev/null || true)
+            if [ -z "$TSC_ERROR_COUNT" ]; then TSC_ERROR_COUNT=0; fi
+            echo "TSC 错误数: $TSC_ERROR_COUNT (当前上限: ${TYPE_ERROR_CEILING:-N/A})"
 
-            if [ -n "$BASELINE_FRONTEND_ERRORS" ] && [ "$ERROR_COUNT" -gt "$BASELINE_FRONTEND_ERRORS" ]; then
+            if [ -n "${TYPE_ERROR_CEILING:-}" ] && [ "$TSC_ERROR_COUNT" -gt "${TYPE_ERROR_CEILING}" ]; then
               QUALITY_PASS=false
-              GATE_ISSUES="$GATE_ISSUES Vue-tsc 错误高于基线: $ERROR_COUNT > $BASELINE_FRONTEND_ERRORS"
+              GATE_ISSUES="$GATE_ISSUES TSC 错误高于当前上限: $TSC_ERROR_COUNT > ${TYPE_ERROR_CEILING}"
             fi
+          else
+            echo "❌ 缺少 tsc 结果工件"
+            QUALITY_PASS=false
+            GATE_ISSUES="$GATE_ISSUES 缺少 tsc 结果工件"
+          fi
+
+          # 检查 vue-tsc 错误（对比技术债基线文件）
+          if [ -f vue-tsc-results/vue-tsc-output.txt ]; then
+            ERROR_COUNT=$(grep -c "error TS" vue-tsc-results/vue-tsc-output.txt 2>/dev/null || true)
+            if [ -z "$ERROR_COUNT" ]; then ERROR_COUNT=0; fi
+            echo "Vue-tsc 错误数: $ERROR_COUNT (长期基线: ${BASELINE_FRONTEND_ERRORS:-N/A}, 当前上限: ${TYPE_ERROR_CEILING:-N/A})"
+
+            if [ -n "${TYPE_ERROR_CEILING:-}" ] && [ "$ERROR_COUNT" -gt "${TYPE_ERROR_CEILING}" ]; then
+              QUALITY_PASS=false
+              GATE_ISSUES="$GATE_ISSUES Vue-tsc 错误高于当前上限: $ERROR_COUNT > ${TYPE_ERROR_CEILING}"
+            elif [ -n "$BASELINE_FRONTEND_ERRORS" ] && [ "$ERROR_COUNT" -gt "$BASELINE_FRONTEND_ERRORS" ]; then
+              echo "::warning::Vue-tsc 错误仍高于长期基线: $ERROR_COUNT > $BASELINE_FRONTEND_ERRORS，但未超过当前上限 ${TYPE_ERROR_CEILING}"
+            fi
+          else
+            echo "❌ 缺少 vue-tsc 结果工件"
+            QUALITY_PASS=false
+            GATE_ISSUES="$GATE_ISSUES 缺少 vue-tsc 结果工件"
           fi
 
           # 检查 ESLint 错误
@@ -494,10 +502,14 @@ except Exception: \
             ESLINT_COUNT=$(cat eslint-results/eslint-count.txt)
             echo "ESLint 问题数: $ESLINT_COUNT"
 
-            if [ "$ESLINT_COUNT" -gt 100 ]; then
+            if [ "$ESLINT_COUNT" -gt 0 ]; then
               QUALITY_PASS=false
-              GATE_ISSUES="$GATE_ISSUES ESLint 问题过多: $ESLINT_COUNT"
+              GATE_ISSUES="$GATE_ISSUES ESLint 问题必须为 0: $ESLINT_COUNT"
             fi
+          else
+            echo "❌ 缺少 ESLint 结果工件"
+            QUALITY_PASS=false
+            GATE_ISSUES="$GATE_ISSUES 缺少 ESLint 结果工件"
           fi
 
           # 输出结果
@@ -553,9 +565,9 @@ except Exception: \
           $(cat tsc-results/tsc-output.txt 2>/dev/null || echo "无错误")
           \`\`\`
 
-          ### Vue + TypeScript 错误（过滤后）
+          ### Vue + TypeScript 错误
           \`\`\`
-          $(cat vue-tsc-results/vue-tsc-filtered.txt 2>/dev/null | head -20 || echo "无错误")
+          $(grep "error TS" vue-tsc-results/vue-tsc-output.txt 2>/dev/null | head -20 || echo "无错误")
           \`\`\`
 
           EOF
