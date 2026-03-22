@@ -688,3 +688,27 @@ try {
 - Model: `claude-sonnet-4-6`
 - Files: `src/router/index.ts`, `src/router/homeRoute.ts`, `src/config/pageConfig.ts`, `../../scripts/dev/tools/generate-page-config.js`, `../backend/app/services/email_notification_service.py`, `../../AGENTS.md`, `../../docs/guides/technical-debt-governance-charter-v1.md`, `../../reports/analysis/tech-debt-baseline.json`, `../../docs/guides/MULTI_CLI_PROMPT_STRATEGIES.md`
 - Transcript: `N/A (interactive session summary recorded manually)`
+
+
+## [MANUAL] 2026-03-22 13:56:30 Session interactive-2026-03-22-frontend-test-hardening
+- Completion: true
+- Summary: 已完成前端测试门禁第二轮硬化与一致性收口。关键结果：前端与 TypeScript workflow 均切到 `TYPE_ERROR_CEILING=0`；canonical E2E 用户级定位门禁已纳入 CI；`npm run test` 由非阻塞改为阻塞；`typescript-type-check` 汇总口径统一回到原始 `vue-tsc`/`tsc` 输出，不再保留过滤后错误视图；技术债基线刷新为 `frontend_type_errors=0`。实测验证：`lint`、`type-check`、`test:type-ceiling`、`test:unit:stable`、全量 Vitest、`build:no-types`、`test:e2e:selectors`、`test:e2e:validate`、以及复用 PM2 的 `test:e2e:stable`（`chromium 10/10`）均通过。
+- Model: `gpt-5`
+- Files: `../../.github/workflows/frontend-testing.yml`, `../../.github/workflows/typescript-type-check.yml`, `../../reports/analysis/tech-debt-baseline.json`, `scripts/check-type-error-ceiling.js`, `tests/unit/workflows/ci-workflow-gates.spec.ts`, `tests/unit/scripts/check-type-error-ceiling.spec.ts`, `src/components/artdeco/business/ArtDecoFilterBar.vue`, `src/api/services/watchlistService.ts`, `src/utils/astock/stopLimit.ts`
+- Transcript: `N/A (interactive session summary recorded manually)`
+
+
+## [MANUAL] 2026-03-22 17:10:12 Session interactive-2026-03-22-msw-axe-lhci
+- Completion: true
+- Summary: 已完成前端测试能力补齐的第三轮收口。关键结果：`MSW` 已接入 Vitest（共享 `vitest.setup.ts` + `tests/mocks/server.ts`），并新增真实网络拦截用例验证 `StrategyApiService` 的 GET/POST+CSRF 链路；`axe` 已接入 Playwright smoke，并纳入 `frontend-testing.yml`；`Lighthouse CI` 已接入隔离 mock build 流程（`dist-lighthouse` + `preview:lighthouse` + `lighthouserc.cjs`），不再依赖共享 PM2 前端。附带修复：补齐旧 E2E 的 readiness probe stub、开放策略 lifecycle 动作前后端链路、修正策略页失败态 empty-state 文案与 a11y 属性。实测验证：`test:unit:stable` 现为 `29 files / 322 tests` 通过；全量 Vitest 为 `300 suites / 574 tests / 0 failed`；`test:e2e:axe` 为 `chromium 2/2`；`test:e2e:lighthouse` 成功完成 4 个 URL 的采集与断言；共享 PM2 模式下 `test:e2e:chromium` 为 `109/109`。
+- Model: `gpt-5`
+- Files: `package.json`, `package-lock.json`, `vitest.config.mts`, `vitest.setup.ts`, `tests/mocks/handlers.ts`, `tests/mocks/server.ts`, `src/api/services/__tests__/strategyService.msw.spec.ts`, `tests/unit/config/vitest-msw-gates.spec.ts`, `tests/e2e/accessibility-smoke.spec.ts`, `lighthouserc.cjs`, `tests/README-E2E.md`, `../../.github/workflows/frontend-testing.yml`, `src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue`, `src/views/artdeco-pages/strategy-tabs/styles/ArtDecoStrategyManagement.scss`, `src/views/artdeco-pages/strategy-tabs/strategyLifecycleAvailability.ts`, `../backend/app/api/strategy_management/get_monitoring_db.py`
+- Transcript: `N/A (interactive session summary recorded manually)`
+
+
+## [MANUAL] 2026-03-22 19:25:30 Session interactive-2026-03-22-testing-mainline-cleanup
+- Completion: true
+- Summary: 已完成 Web 测试“单主线”收口的活跃入口清理。关键结果：删除 `cypress.config.ts`、`cypress/e2e/my-app.cy.ts`、`test_all_pages.js`、`scripts/diagnose-pages.js`，并从前端依赖中移除 `puppeteer`；新增 `testing-mainline-gates.spec.ts`，确保 Playwright 是唯一标准浏览器自动化主线；旧 `e2e-testing.yml` 已对齐到新的 `test:e2e:lighthouse` 主线，不再直接引用 `.lighthouserc.json`。活跃文档已统一到“Playwright 主线，Cypress/Puppeteer 为 legacy”口径。实测验证：`lint`、`type-check`、`test:unit:stable` 全部通过，其中稳定单测现为 `30 files / 326 tests`。
+- Model: `gpt-5`
+- Files: `../../.github/workflows/e2e-testing.yml`, `../../docs/guides/CLAUDE_AGENTS_SUMMARY.md`, `../../docs/guides/WEB_TESTING_TOOLS_SETUP.md`, `../../docs/guides/前后端整合与部署完整方案.md`, `package.json`, `package-lock.json`, `scripts/test-pages.mjs`, `tests/unit/config/testing-mainline-gates.spec.ts`, `tests/unit/port-config-consistency.spec.ts`, `scripts/stable-unit-suite.js`, `FRONTEND_IMPLEMENTATION_SUMMARY.md`, `FRONTEND_SSE_INTEGRATION_COMPLETE.md`, `README_SSE_INTEGRATION.md`, `cypress.config.ts`, `cypress/e2e/my-app.cy.ts`, `test_all_pages.js`, `scripts/diagnose-pages.js`
+- Transcript: `N/A (interactive session summary recorded manually)`

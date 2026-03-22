@@ -61,7 +61,53 @@ pm2 list | grep mystocks-frontend
 pm2 list | grep mystocks-backend
 ```
 
+注意：
+- `scripts/run_e2e_pm2.sh` 只适合隔离的 CI / 测试环境，不适合复用当前共享 PM2 会话；它会执行 `pm2 delete all` 清空进程。
+- 如果你已经有在线 PM2 服务，优先复用现有前端服务并启用 `PLAYWRIGHT_EXTERNAL_FRONTEND=1`。
+
 ### 运行测试
+
+#### 共享 PM2 环境（当前推荐）
+如果 `mystocks-frontend` / `mystocks-backend` 已经在线，优先使用下面这组命令，不要再执行会清空进程的 `scripts/run_e2e_pm2.sh`：
+
+```bash
+cd web/frontend
+
+# 先校验 Playwright / README / package.json 入口是否完整
+npm run test:e2e:validate
+
+# 复用当前已在线的 PM2 前端（标准端口 3020）
+PLAYWRIGHT_EXTERNAL_FRONTEND=1 \
+FRONTEND_BASE_URL=http://127.0.0.1:3020 \
+E2E_FRONTEND_URL=http://127.0.0.1:3020 \
+npm run test:e2e:stable
+```
+
+说明：
+- `test:e2e:validate` 只做套件完整性校验，不会改 PM2 进程。
+- `test:e2e:stable` 当前执行 `chromium` stable 子集，适合作为共享环境下的安全回归入口。
+- 若要报告结果，必须注明这是 stable 子集，不得表述为“全量 E2E 已通过”。
+
+#### 可访问性与性能 Smoke
+新增的无障碍与性能入口和业务 E2E 分开执行：
+
+```bash
+cd web/frontend
+
+# axe-core + Playwright：复用当前 PM2 前端，检查 serious/critical 级问题
+PLAYWRIGHT_EXTERNAL_FRONTEND=1 \
+FRONTEND_BASE_URL=http://127.0.0.1:3020 \
+E2E_FRONTEND_URL=http://127.0.0.1:3020 \
+npm run test:e2e:axe
+
+# Lighthouse CI：使用 mock build + 独立 preview，不复用当前 PM2 服务
+npm run test:e2e:lighthouse
+```
+
+说明：
+- `test:e2e:axe` 当前跑 `chromium` 两页 smoke：`/login` 和 `/strategy/repo`。
+- `test:e2e:lighthouse` 会先执行 `build:lighthouse:mock`，再在隔离端口 `4273` 启一个 `dist-lighthouse` preview。
+- `test:e2e:lighthouse` 不会改动 `3020/8020` 的共享 PM2 会话，适合作为 CI 中的独立性能门禁。
 
 #### 方法 1: npm 脚本 (推荐)
 ```bash
@@ -74,6 +120,12 @@ VITE_USE_MOCK_DATA=true npm run dev:sandbox-safe
 
 # 运行完整 E2E 测试套件
 npm run test:e2e:comprehensive
+
+# 运行 a11y smoke
+npm run test:e2e:axe
+
+# 运行 Lighthouse CI smoke（隔离 mock build）
+npm run test:e2e:lighthouse
 
 # 运行 API availability 最小 smoke（Data-Indicator + Watchlist-Screener）
 # 如当前 backend 未启动，可让脚本自动拉起当前 worktree backend
@@ -101,6 +153,12 @@ cd web/frontend
 npm run test:e2e
 npm run test:e2e:chromium
 npm run test:e2e:debug
+
+# 复用当前已在线的 PM2 前端（例如 localhost:3020）
+PLAYWRIGHT_EXTERNAL_FRONTEND=1 \
+FRONTEND_BASE_URL=http://127.0.0.1:3020 \
+E2E_FRONTEND_URL=http://127.0.0.1:3020 \
+npm run test:e2e:stable
 
 # npx 补充：单文件临时运行
 npx playwright test tests/comprehensive-e2e-validation.spec.ts --project=chromium
@@ -148,6 +206,18 @@ const BACKEND_CONFIG = {
 - **截图**: 失败时自动截图
 - **录屏**: 失败时录制视频
 
+### AXE / Lighthouse 配置
+- `test:e2e:axe`: 只拦截 `serious` / `critical` 级 axe 违规，`color-contrast` 当前作为后续治理项保留在 Lighthouse/设计治理里处理
+- `test:e2e:lighthouse`: 使用 `lighthouserc.cjs`，当前采集 `login`、`dashboard`、`market/realtime`、`strategy/repo`
+- `LHCI` 端口：`4273`
+- `LHCI` 浏览器：显式使用 Playwright Chromium 可执行文件，避免系统 Chrome / profile 锁冲突
+
+### Selector Policy
+- `tests/e2e/**` 的新增或修改用例必须使用用户级定位：`getByRole`、`getByLabel`、`getByPlaceholder`、`getByText`、`getByTestId`
+- 禁止在 canonical E2E 用例中继续引入原始 CSS 选择器，如 `page.locator(...)`
+- 临时遗留例外由 `npm run test:e2e:selectors` 的显式 allowlist 管理，范围只能缩小，不能扩张
+- 遇到图表 `canvas/svg` 等无语义节点时，优先补 `data-testid`；确实无法避免时，必须行内标注 `e2e-selector-exception`
+
 ## 测试验证标准
 
 ### ✅ 通过标准
@@ -194,6 +264,19 @@ npx playwright test --grep "DOM元素存在性验证"
 - 检查前端构建是否完整 (`npm run build`)
 - 验证静态资源路径
 - 检查网络连接和 CDN 访问
+
+### Lighthouse 启动失败
+```bash
+# 检查隔离 preview 端口是否被占用
+lsof -i :4273
+
+# 重新执行隔离性能 smoke
+npm run test:e2e:lighthouse
+```
+
+说明：
+- 若 `LHCI` 失败且日志包含 Chrome profile / ProcessSingleton 错误，优先确认脚本是否仍使用 Playwright Chromium 路径。
+- 若 `LHCI` 失败且日志包含端口占用，优先释放 `4273`，不要停共享 PM2 的 `3020/8020` 服务。
 
 ## 性能指标
 
