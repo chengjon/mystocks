@@ -138,10 +138,17 @@ const getSelectValue = (key: string): string | number | string[] | number[] | un
   return val as string | number | string[] | number[]
 }
 
-const getDateValue = (key: string): string | Date | (string | Date)[] | undefined => {
+const getDateValue = (key: string): string | Date | string[] | Date[] | undefined => {
   const val = formData[key]
   if (val === null || typeof val === 'number') return undefined
-  return val as string | Date | (string | Date)[]
+  if (Array.isArray(val)) {
+    const arrayValue = val as unknown[]
+    if (arrayValue.every((item): item is Date => item instanceof Date)) {
+      return arrayValue
+    }
+    return arrayValue.filter((item): item is string => typeof item === 'string')
+  }
+  return val as string | Date
 }
 
 // Initialize form data with defaults

@@ -33,7 +33,7 @@
         modelValue: (Date | string)[] | null
     }
 
-    type DatePickerModelValue = string | Date | (string | Date)[] | undefined
+    type DatePickerModelValue = string | Date | string[] | Date[] | undefined
 
     const props = withDefaults(defineProps<Props>(), {
         modelValue: null
@@ -47,7 +47,17 @@
     const isPickerVisible = ref(false)
 
     const internalValue = computed<DatePickerModelValue>({
-        get: () => props.modelValue ?? undefined,
+        get: () => {
+            if (!Array.isArray(props.modelValue)) {
+                return props.modelValue ?? undefined
+            }
+
+            if (props.modelValue.every(item => item instanceof Date)) {
+                return props.modelValue as Date[]
+            }
+
+            return props.modelValue.map(item => String(item))
+        },
         set: val => {
             if (Array.isArray(val)) {
                 emit('update:modelValue', val as (Date | string)[])

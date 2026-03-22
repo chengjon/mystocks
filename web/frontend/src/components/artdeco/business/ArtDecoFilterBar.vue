@@ -134,7 +134,7 @@
     type FilterValue = string | number | null | Array<string | number | Date>
     type SelectValue = string | number
     type MultiSelectValue = string[] | number[] | undefined
-    type DateRangeValue = Array<string | Date> | undefined
+    type DateRangeValue = string[] | Date[] | undefined
 
     interface Filter {
         key: string
@@ -256,9 +256,12 @@
             return undefined
         }
 
-        return value.filter(
-            (item): item is string | Date => typeof item === 'string' || item instanceof Date
-        )
+        if (value.every(item => item instanceof Date)) {
+            return value as Date[]
+        }
+
+        return value
+            .filter((item): item is string => typeof item === 'string')
     }
 
     const handleDateRangeChange = (key: string, value: DateRangeValue) => {
