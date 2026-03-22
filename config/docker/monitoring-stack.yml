@@ -75,6 +75,47 @@ services:
       retries: 3
       start_period: 60s
 
+  # Redis - Runtime Cache / Coordination
+  redis:
+    image: redis:7-alpine
+    container_name: mystocks-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    volumes:
+      - redis_data:/data
+    command:
+      - /bin/sh
+      - -lc
+      - |
+        if [ -n "${REDIS_PASSWORD:-}" ]; then
+          exec redis-server --appendonly yes --requirepass "${REDIS_PASSWORD}"
+        fi
+        exec redis-server --appendonly yes
+    networks:
+      - mystocks-network
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - |
+          if [ -n "${REDIS_PASSWORD:-}" ]; then
+            redis-cli -a "${REDIS_PASSWORD}" ping | grep PONG
+          else
+            redis-cli ping | grep PONG
+          fi
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
   # MongoDB - Document Database
   mongodb:
     image: mongo:7.0.5
@@ -133,6 +174,8 @@ volumes:
   prometheus_data:
     driver: local
   grafana_data:
+    driver: local
+  redis_data:
     driver: local
   mongodb_data:
     driver: local

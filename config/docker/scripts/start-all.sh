@@ -262,6 +262,23 @@ wait_for_services() {
             ((attempt++))
         done
     done
+
+    log_info "等待 Redis 就绪..."
+    local redis_attempt=1
+    local redis_max_attempts=30
+    while [[ $redis_attempt -le $redis_max_attempts ]]; do
+        if "$PROJECT_ROOT/scripts/dev/check_redis_runtime_health.sh" &> /dev/null; then
+            log_success "Redis 已就绪"
+            break
+        fi
+
+        if [[ $redis_attempt -eq $redis_max_attempts ]]; then
+            log_warning "Redis 启动超时，但继续启动其他服务"
+        fi
+
+        sleep 2
+        ((redis_attempt++))
+    done
 }
 
 # 显示服务状态
@@ -274,7 +291,8 @@ show_status() {
     log_info "服务访问地址："
     echo -e "${GREEN}• Prometheus:${NC}  http://localhost:9090"
     echo -e "${GREEN}• Grafana:${NC}     http://localhost:3000 (admin/mystocks2025)"
-    echo -e "${GREEN}• MongoDB:${NC}     localhost:27018 (admin/mystocks2025)"
+    echo -e "${GREEN}• Redis:${NC}       localhost:6379"
+    echo -e "${GREEN}• MongoDB:${NC}     localhost:27017 (admin/mystocks2025)"
     echo -e "${GREEN}• AlertManager:${NC} http://localhost:9093"
     echo
     log_info "查看日志命令: docker-compose -f docker/monitoring-stack.yml logs [service_name]"
