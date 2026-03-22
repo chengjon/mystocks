@@ -41,11 +41,11 @@ def get_mongo_port(default: int = DEFAULT_MONGODB_PORT) -> int:
 
 
 def get_mongo_username() -> str | None:
-    return os.getenv('MONGODB_ROOT_USERNAME') or os.getenv('USERNAME') or None
+    return os.getenv('MONGODB_ROOT_USERNAME') or None
 
 
 def get_mongo_password() -> str | None:
-    return _normalize_secret(os.getenv('MONGODB_ROOT_PASSWORD') or os.getenv('PASSWORD'))
+    return _normalize_secret(os.getenv('MONGODB_ROOT_PASSWORD'))
 
 
 def get_mongo_database(default: str = DEFAULT_MONGODB_DATABASE) -> str:

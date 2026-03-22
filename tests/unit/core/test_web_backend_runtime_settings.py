@@ -87,7 +87,7 @@ def test_settings_prefers_standard_mongo_env_names(monkeypatch: pytest.MonkeyPat
     }
 
 
-def test_settings_falls_back_to_legacy_mongo_env_names(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_settings_ignore_generic_username_password_for_mongo_runtime(monkeypatch: pytest.MonkeyPatch) -> None:
     _set_minimum_env(monkeypatch)
     monkeypatch.setenv('MONGODB_IP', 'localhost:27017')
     monkeypatch.setenv('USERNAME', 'mongo')
@@ -97,8 +97,8 @@ def test_settings_falls_back_to_legacy_mongo_env_names(monkeypatch: pytest.Monke
 
     assert module.settings.mongodb_runtime_host == 'localhost'
     assert module.settings.mongodb_runtime_port == 27017
-    assert module.settings.mongodb_root_username == 'mongo'
-    assert module.settings.mongodb_root_password == 'secret'
+    assert module.settings.mongodb_root_username == ''
+    assert module.settings.mongodb_root_password == ''
     assert module.settings.mongodb_auth_source == 'admin'
 
 

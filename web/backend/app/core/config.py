@@ -62,12 +62,8 @@ class Settings(BaseSettings):
     # MongoDB 配置（默认可选基础设施）
     mongodb_host: str = Field(default="", validation_alias="MONGODB_HOST")
     mongodb_port: int = Field(default=0, validation_alias="MONGODB_PORT")
-    mongodb_root_username: str = Field(
-        default="", validation_alias=AliasChoices("MONGODB_ROOT_USERNAME", "USERNAME")
-    )
-    mongodb_root_password: str = Field(
-        default="", validation_alias=AliasChoices("MONGODB_ROOT_PASSWORD", "PASSWORD")
-    )
+    mongodb_root_username: str = Field(default="", validation_alias="MONGODB_ROOT_USERNAME")
+    mongodb_root_password: str = Field(default="", validation_alias="MONGODB_ROOT_PASSWORD")
     mongodb_database: str = Field(default="mystocks", validation_alias="MONGODB_DATABASE")
     mongodb_auth_source: str = Field(default="admin", validation_alias="MONGODB_AUTH_SOURCE")
     mongodb_ip: str = Field(default="", validation_alias="MONGODB_IP")

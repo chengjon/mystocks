@@ -75,7 +75,7 @@ def test_mongo_connection_kwargs_prefers_standard_env_names(monkeypatch: pytest.
     }
 
 
-def test_mongo_connection_kwargs_falls_back_to_legacy_aliases(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_mongo_connection_kwargs_ignores_generic_username_password_aliases(monkeypatch: pytest.MonkeyPatch) -> None:
     for key in [
         'MONGODB_HOST', 'MONGODB_PORT', 'MONGODB_ROOT_USERNAME', 'MONGODB_ROOT_PASSWORD', 'MONGODB_AUTH_SOURCE'
     ]:
@@ -90,8 +90,8 @@ def test_mongo_connection_kwargs_falls_back_to_legacy_aliases(monkeypatch: pytes
 
     assert kwargs['host'] == 'localhost'
     assert kwargs['port'] == 27017
-    assert kwargs['username'] == 'mongo'
-    assert kwargs['password'] == 'secret'
+    assert kwargs['username'] is None
+    assert kwargs['password'] is None
     assert kwargs['authSource'] == 'admin'
 
 
