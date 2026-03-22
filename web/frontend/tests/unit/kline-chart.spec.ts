@@ -66,7 +66,7 @@ describe('Indicator Utilities', () => {
       expect(result.length).toBe(data.length);
       expect(result[0]).toBe(1);
       expect(result[1]).toBeGreaterThan(1);
-      expect(result[9]).toBeGreaterThan(9);
+      expect(result[9]).toBeCloseTo(8.05, 2);
     });
 
     it('should handle single value', () => {

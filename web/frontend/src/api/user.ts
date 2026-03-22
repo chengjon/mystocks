@@ -7,6 +7,11 @@
 import { request } from '@/utils/request.ts'
 import { UserAdapter } from '@/utils/user-adapters.ts'
 import type {
+  NotificationResponse,
+  UserProfileResponse,
+  WatchlistResponse,
+} from '@/api/types/generated-types.ts'
+import type {
   NotificationVM,
   UserPreferencesVM,
   UserProfileVM,
@@ -41,6 +46,11 @@ import type {
   WatchlistPerformance,
 } from './user.types.ts'
 
+const asUserProfileResponse = (value: unknown): UserProfileResponse => value as UserProfileResponse
+const asWatchlistResponseArray = (value: unknown): WatchlistResponse[] => value as WatchlistResponse[]
+const asSingleWatchlistResponse = (value: unknown): WatchlistResponse => value as WatchlistResponse
+const asNotificationResponseArray = (value: unknown): NotificationResponse[] => value as NotificationResponse[]
+
 class UserApiService {
   private baseUrl = '/api/user'
   private watchlistUrl = '/api/watchlist'
@@ -51,7 +61,7 @@ class UserApiService {
    */
   async getProfile(): Promise<UserProfileVM> {
     const rawData = await request.get(`${this.baseUrl}/profile`)
-    return UserAdapter.toUserProfileVM(rawData)
+    return UserAdapter.toUserProfileVM(asUserProfileResponse(rawData))
   }
 
   /**
@@ -59,7 +69,7 @@ class UserApiService {
    */
   async updateProfile(profileData: UpdateProfilePayload): Promise<UserProfileVM> {
     const rawData = await request.put(`${this.baseUrl}/profile`, profileData)
-    return UserAdapter.toUserProfileVM(rawData)
+    return UserAdapter.toUserProfileVM(asUserProfileResponse(rawData))
   }
 
   /**
@@ -67,7 +77,8 @@ class UserApiService {
    */
   async getPreferences(): Promise<UserPreferencesVM> {
     const rawData = await request.get(`${this.baseUrl}/preferences`)
-    return UserAdapter.toUserProfileVM({ ...rawData, userId: '', username: '', email: '' }).preferences
+    const profilePayload = typeof rawData === 'object' && rawData !== null ? rawData as Record<string, unknown> : {}
+    return UserAdapter.toUserProfileVM({ ...profilePayload, userId: '', username: '', email: '' }).preferences
   }
 
   /**
@@ -98,7 +109,7 @@ class UserApiService {
    */
   async getWatchlists(params?: GetWatchlistsParams): Promise<WatchlistVM[]> {
     const rawData = await request.get(`${this.watchlistUrl}`, { params })
-    return UserAdapter.toWatchlistVM(rawData)
+    return UserAdapter.toWatchlistVM(asWatchlistResponseArray(rawData))
   }
 
   /**
@@ -106,7 +117,7 @@ class UserApiService {
    */
   async getWatchlist(watchlistId: string): Promise<WatchlistVM> {
     const rawData = await request.get(`${this.watchlistUrl}/${watchlistId}`)
-    const watchlists = UserAdapter.toWatchlistVM([rawData])
+    const watchlists = UserAdapter.toWatchlistVM([asSingleWatchlistResponse(rawData)])
     return watchlists[0]
   }
 
@@ -115,7 +126,7 @@ class UserApiService {
    */
   async createWatchlist(watchlistData: CreateWatchlistPayload): Promise<WatchlistVM> {
     const rawData = await request.post(`${this.watchlistUrl}`, watchlistData)
-    const watchlists = UserAdapter.toWatchlistVM([rawData])
+    const watchlists = UserAdapter.toWatchlistVM([asSingleWatchlistResponse(rawData)])
     return watchlists[0]
   }
 
@@ -124,7 +135,7 @@ class UserApiService {
    */
   async updateWatchlist(watchlistId: string, updates: UpdateWatchlistPayload): Promise<WatchlistVM> {
     const rawData = await request.put(`${this.watchlistUrl}/${watchlistId}`, updates)
-    const watchlists = UserAdapter.toWatchlistVM([rawData])
+    const watchlists = UserAdapter.toWatchlistVM([asSingleWatchlistResponse(rawData)])
     return watchlists[0]
   }
 
@@ -201,7 +212,7 @@ class UserApiService {
    */
   async copyWatchlist(watchlistId: string, newData?: CopyWatchlistPayload): Promise<WatchlistVM> {
     const rawData = await request.post(`${this.watchlistUrl}/${watchlistId}/copy`, newData)
-    const watchlists = UserAdapter.toWatchlistVM([rawData])
+    const watchlists = UserAdapter.toWatchlistVM([asSingleWatchlistResponse(rawData)])
     return watchlists[0]
   }
 
@@ -224,7 +235,7 @@ class UserApiService {
    */
   async getFollowingWatchlists(): Promise<WatchlistVM[]> {
     const rawData = await request.get(`${this.watchlistUrl}/following`)
-    return UserAdapter.toWatchlistVM(rawData)
+    return UserAdapter.toWatchlistVM(asWatchlistResponseArray(rawData))
   }
 
   /**
@@ -232,7 +243,7 @@ class UserApiService {
    */
   async getPopularWatchlists(params?: GetPopularWatchlistsParams): Promise<WatchlistVM[]> {
     const rawData = await request.get(`${this.watchlistUrl}/popular`, { params })
-    return UserAdapter.toWatchlistVM(rawData)
+    return UserAdapter.toWatchlistVM(asWatchlistResponseArray(rawData))
   }
 
   /**
@@ -240,7 +251,7 @@ class UserApiService {
    */
   async searchWatchlists(query: SearchWatchlistsPayload): Promise<WatchlistVM[]> {
     const rawData = await request.post(`${this.watchlistUrl}/search`, query)
-    return UserAdapter.toWatchlistVM(rawData)
+    return UserAdapter.toWatchlistVM(asWatchlistResponseArray(rawData))
   }
 
   /**
@@ -248,7 +259,7 @@ class UserApiService {
    */
   async getNotifications(params?: GetNotificationsParams): Promise<NotificationVM[]> {
     const rawData = await request.get(`${this.notificationUrl}`, { params })
-    return UserAdapter.toNotificationVM(rawData)
+    return UserAdapter.toNotificationVM(asNotificationResponseArray(rawData))
   }
 
   /**
@@ -315,7 +326,7 @@ class UserApiService {
       params: { format },
       responseType: 'blob'
     })
-    return response
+    return response as Blob
   }
 
   /**
@@ -339,7 +350,7 @@ class UserApiService {
         'Content-Type': 'multipart/form-data'
       }
     })
-    const watchlists = UserAdapter.toWatchlistVM([rawData])
+    const watchlists = UserAdapter.toWatchlistVM([asSingleWatchlistResponse(rawData)])
     return watchlists[0]
   }
 

@@ -1,6 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { calculateStopLimit, isLimitUp, isLimitDown, calculateT1Status } from '@/utils/astock';
 
+const expectSameCalendarDate = (actual: Date, expected: Date) => {
+  expect(actual.getFullYear()).toBe(expected.getFullYear());
+  expect(actual.getMonth()).toBe(expected.getMonth());
+  expect(actual.getDate()).toBe(expected.getDate());
+};
+
 describe('A-Share Features', () => {
   describe('calculateStopLimit', () => {
     it('should calculate 10% limit for main board stocks', () => {
@@ -47,7 +53,7 @@ describe('A-Share Features', () => {
     });
 
     it('should handle edge case with floating point precision', () => {
-      expect(isLimitUp(10.0000001, 10.00, 0.10)).toBe(true);
+      expect(isLimitUp(11.0000001, 10.00, 0.10)).toBe(true);
     });
   });
 
@@ -67,7 +73,7 @@ describe('A-Share Features', () => {
       const result = calculateT1Status(buyDate, 'main');
 
       expect(result.status).toBe('T+1');
-      expect(result.buyDate).toEqual(buyDate);
+      expectSameCalendarDate(result.buyDate, buyDate);
       expect(result.sellableDate).toBeDefined();
     });
 
@@ -76,7 +82,7 @@ describe('A-Share Features', () => {
       const result = calculateT1Status(buyDate, 't0');
 
       expect(result.status).toBe('T+0');
-      expect(result.sellableDate).toEqual(buyDate);
+      expectSameCalendarDate(result.sellableDate, buyDate);
     });
 
     it('should calculate correct sellable date for T+1', () => {

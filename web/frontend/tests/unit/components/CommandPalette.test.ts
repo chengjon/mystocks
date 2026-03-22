@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount, VueWrapper } from '@vue/test-utils'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { mount, VueWrapper, flushPromises } from '@vue/test-utils'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import { nextTick } from 'vue'
 import CommandPalette, { type CommandItem } from '@/components/shared/command-palette/CommandPalette.vue'
@@ -26,14 +26,23 @@ describe('CommandPalette.vue', () => {
   let wrapper: VueWrapper<InstanceType<typeof CommandPalette>>
 
   beforeEach(() => {
+    localStorage.clear()
     wrapper = mount(CommandPalette, {
       global: {
-        plugins: [router]
+        plugins: [router],
+        stubs: {
+          teleport: true
+        }
       },
       props: {
         items: mockCommandItems
       }
     })
+  })
+
+  afterEach(() => {
+    localStorage.clear()
+    wrapper.unmount()
   })
 
   describe('组件初始化', () => {
@@ -169,7 +178,7 @@ describe('CommandPalette.vue', () => {
 
       // 输入搜索查询以生成结果
       const input = wrapper.find('.search-input')
-      await input.setValue('data')
+      await input.setValue('a')
       await nextTick()
     })
 
@@ -186,12 +195,14 @@ describe('CommandPalette.vue', () => {
     })
 
     it('应该能够使用Enter键选择结果', async () => {
-      const navigateSpy = vi.spyOn(wrapper.vm, 'navigateTo')
+      const pushSpy = vi.spyOn(router, 'push')
       const input = wrapper.find('.search-input') as any
 
       await input.trigger('keydown', { key: 'Enter' })
+      await flushPromises()
 
-      expect(navigateSpy).toHaveBeenCalled()
+      expect(pushSpy).toHaveBeenCalled()
+      expect(wrapper.emitted('navigate')).toBeTruthy()
     })
 
     it('应该能够使用Esc键关闭', async () => {
@@ -210,7 +221,7 @@ describe('CommandPalette.vue', () => {
       await nextTick()
 
       const input = wrapper.find('.search-input')
-      await input.setValue('market')
+      await input.setValue('a')
       await nextTick()
     })
 
@@ -228,11 +239,10 @@ describe('CommandPalette.vue', () => {
 
     it('鼠标悬停应该更新selectedIndex', async () => {
       const resultItems = wrapper.findAll('.result-item')
-      
-      if (resultItems.length > 1) {
-        await resultItems[1].trigger('mouseenter')
-        expect(wrapper.vm.selectedIndex).toBe(1)
-      }
+
+      expect(resultItems.length).toBeGreaterThan(1)
+      await resultItems[1].trigger('mouseenter')
+      expect(wrapper.vm.selectedIndex).toBe(1)
     })
   })
 
@@ -269,11 +279,11 @@ describe('CommandPalette.vue', () => {
     })
 
     it('重复路径应该移到开头', () => {
-      wrapper.vm.addToRecent('/path1')
-      wrapper.vm.addToRecent('/path2')
-      wrapper.vm.addToRecent('/path1') // 重复添加
+      wrapper.vm.addToRecent('/dashboard')
+      wrapper.vm.addToRecent('/market')
+      wrapper.vm.addToRecent('/dashboard') // 重复添加
 
-      expect(wrapper.vm.recentItems[0].path).toBe('/path1')
+      expect(wrapper.vm.recentItems[0].path).toBe('/dashboard')
     })
   })
 
@@ -282,21 +292,24 @@ describe('CommandPalette.vue', () => {
       wrapper.vm.searchQuery = 'dash'
 
       const highlighted = wrapper.vm.highlightMatch('Dashboard')
-      expect(highlighted).toContain('<mark>dash</mark>')
+      expect(highlighted).toEqual([
+        { text: 'Dash', highlight: true },
+        { text: 'board', highlight: false }
+      ])
     })
 
     it('无匹配时不应该高亮', () => {
       wrapper.vm.searchQuery = 'xyz'
 
       const highlighted = wrapper.vm.highlightMatch('Dashboard')
-      expect(highlighted).toBe('Dashboard')
+      expect(highlighted).toEqual([{ text: 'Dashboard', highlight: false }])
     })
 
     it('空搜索时不应该高亮', () => {
       wrapper.vm.searchQuery = ''
 
       const highlighted = wrapper.vm.highlightMatch('Dashboard')
-      expect(highlighted).toBe('Dashboard')
+      expect(highlighted).toEqual([{ text: 'Dashboard', highlight: false }])
     })
   })
 

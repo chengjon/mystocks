@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import { authGuard } from '@/router/guards'
+import { authApi } from '@/api/index.js'
 
 // Mock localStorage
 const localStorageMock = {
@@ -20,6 +21,14 @@ vi.mock('element-plus', () => ({
     success: vi.fn()
   }
 }))
+
+vi.mock('@/api/index.js', () => ({
+  authApi: {
+    login: vi.fn()
+  }
+}))
+
+const mockAuthApi = vi.mocked(authApi)
 
 describe('Authentication Guards', () => {
   let authStore: ReturnType<typeof useAuthStore>
@@ -58,13 +67,21 @@ describe('Authentication Guards', () => {
     })
 
     it('should handle login success', async () => {
-      // Mock successful API response
-      global.fetch = vi.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({
-          access_token: 'test-token',
-          user: { id: '1', username: 'testuser' }
-        })
+      mockAuthApi.login.mockResolvedValue({
+        success: true,
+        code: 200,
+        message: 'OK',
+        data: {
+          token: 'test-token',
+          token_type: 'bearer',
+          user: {
+            id: 1,
+            username: 'testuser',
+            email: 'test@example.com',
+            role: 'user',
+            permissions: []
+          }
+        }
       })
 
       const result = await authStore.login('testuser', 'password')
@@ -75,17 +92,12 @@ describe('Authentication Guards', () => {
     })
 
     it('should handle login failure', async () => {
-      // Mock failed API response
-      global.fetch = vi.fn().mockResolvedValue({
-        ok: false,
-        status: 401,
-        json: () => Promise.resolve({ message: 'Invalid credentials' })
-      })
+      mockAuthApi.login.mockRejectedValue(new Error('Invalid credentials'))
 
       const result = await authStore.login('testuser', 'wrongpassword')
 
       expect(result.success).toBe(false)
-      expect(result.message).toContain('Invalid credentials')
+      expect(result.message).toBe('Invalid credentials')
     })
 
     it('should logout and clear data', () => {

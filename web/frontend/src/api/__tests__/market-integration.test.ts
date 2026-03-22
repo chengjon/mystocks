@@ -1,91 +1,78 @@
 /**
- * Market API Integration Test
+ * Market API legacy compatibility tests
  *
- * Tests the real API integration with fallback to Mock data
+ * Verifies the deprecated wrapper delegates to the modern market service
+ * without requiring a live backend.
  */
 
-import { describe, it, expect, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+const {
+  getMarketOverviewMock,
+  getFundFlowMock,
+  getKLineDataMock
+} = vi.hoisted(() => ({
+  getMarketOverviewMock: vi.fn(),
+  getFundFlowMock: vi.fn(),
+  getKLineDataMock: vi.fn()
+}))
+
+vi.mock('../market.ts', () => ({
+  default: class MockMarketApiService {
+    getMarketOverview = getMarketOverviewMock
+    getFundFlow = getFundFlowMock
+    getKLineData = getKLineDataMock
+  }
+}))
+
 import { marketApiService } from '../marketWithFallback'
 
-describe('Market API Integration', () => {
+describe('Market API legacy compatibility layer', () => {
   beforeEach(() => {
-    // Clear cache before each test
+    vi.clearAllMocks()
+  })
+
+  it('delegates market overview requests to the modern market service', async () => {
+    const overview = {
+      marketStats: {
+        totalStocks: 5300
+      },
+      topEtfs: []
+    }
+
+    getMarketOverviewMock.mockResolvedValueOnce(overview)
+
+    await expect(marketApiService.getMarketOverview()).resolves.toEqual(overview)
+    expect(getMarketOverviewMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('delegates force refresh requests without changing the response shape', async () => {
+    const overview = {
+      marketStats: {
+        totalStocks: 5200
+      },
+      topEtfs: [{ symbol: '510300' }]
+    }
+
+    getMarketOverviewMock.mockResolvedValueOnce(overview)
+
+    await expect(marketApiService.getMarketOverview(true)).resolves.toEqual(overview)
+    expect(getMarketOverviewMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('exposes no-op cache management for backward compatibility', () => {
     marketApiService.clearCache()
-  })
 
-  describe('Market Overview', () => {
-    it('should fetch market overview from real API', async () => {
-      const data = await marketApiService.getMarketOverview()
-
-      expect(data).toBeDefined()
-      expect(data.marketStats).toBeDefined()
-      expect(data.marketStats.totalStocks).toBeGreaterThan(0)
-      expect(data.topEtfs).toBeDefined()
-      expect(Array.isArray(data.topEtfs)).toBe(true)
-
-      console.log('✅ Market Overview API Test Passed')
-      console.log(`   Total stocks: ${data.marketStats.totalStocks}`)
-      console.log(`   Top ETFs: ${data.topEtfs.length}`)
-    })
-
-    it('should use cached data on second call', async () => {
-      // First call - should hit API
-      const data1 = await marketApiService.getMarketOverview()
-
-      // Second call - should use cache
-      const data2 = await marketApiService.getMarketOverview()
-
-      expect(data1).toEqual(data2)
-
-      const stats = marketApiService.getCacheStats()
-      expect(stats.keys).toContain('market:overview')
-
-      console.log('✅ Cache Test Passed')
-    })
-
-    it('should force refresh when requested', async () => {
-      // First call
-      await marketApiService.getMarketOverview()
-
-      // Force refresh
-      const data = await marketApiService.getMarketOverview(true)
-
-      expect(data).toBeDefined()
-      console.log('✅ Force Refresh Test Passed')
+    expect(marketApiService.getCacheStats()).toEqual({
+      size: 0,
+      hits: 0,
+      misses: 0
     })
   })
 
-  describe('Cache Management', () => {
-    it('should clear cache', () => {
-      marketApiService.clearCache()
-
-      const stats = marketApiService.getCacheStats()
-      expect(stats.keys.length).toBe(0)
-
-      console.log('✅ Cache Clear Test Passed')
-    })
-
-    it('should track cache statistics', () => {
-      marketApiService.getMarketOverview()
-
-      const stats = marketApiService.getCacheStats()
-      expect(stats).toBeDefined()
-      expect(stats.size).toBeGreaterThan(0)
-
-      console.log('📊 Cache Stats:', stats)
-      console.log('✅ Cache Stats Test Passed')
-    })
-  })
-
-  describe('Error Handling', () => {
-    it('should fallback to Mock data on API failure', async () => {
-      // This test requires mocking the request utility to simulate failure
-      // For now, we just verify the service exists and has the method
-
-      expect(marketApiService.getMarketOverview).toBeDefined()
-      console.log('✅ Error Handling Test Structure Verified')
-    })
+  it('keeps the deprecated market API surface available', () => {
+    expect(marketApiService.getMarketOverview).toBeDefined()
+    expect(marketApiService.getFundFlow).toBeDefined()
+    expect(marketApiService.getKLineData).toBeDefined()
   })
 })
-
-console.log('🧪 Market API Integration Tests Loaded')

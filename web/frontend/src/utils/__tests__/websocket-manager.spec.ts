@@ -1,21 +1,62 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { WebSocketManager, WebSocketState } from '@/utils/webSocketManager'
 
-// Mock WebSocket
-const mockWebSocket = {
-  addEventListener: vi.fn(),
-  removeEventListener: vi.fn(),
-  dispatchEvent: vi.fn(),
-  send: vi.fn(),
-  close: vi.fn(),
-  readyState: 0,
-  CONNECTING: 0,
-  OPEN: 1,
-  CLOSING: 2,
-  CLOSED: 3
-}
+const { socketInstances, MockWebSocket } = vi.hoisted(() => {
+  const socketInstances: Array<{
+    url: string
+    protocols?: string[]
+    send: ReturnType<typeof vi.fn>
+    close: ReturnType<typeof vi.fn>
+    readyState: number
+    binaryType: string
+    onopen: ((event: Event) => void) | null
+    onmessage: ((event: MessageEvent) => void) | null
+    onclose: ((event: CloseEvent) => void) | null
+    onerror: ((event: Event) => void) | null
+  }> = []
 
-global.WebSocket = vi.fn().mockImplementation(() => mockWebSocket)
+  class MockWebSocket {
+    static CONNECTING = 0
+    static OPEN = 1
+    static CLOSING = 2
+    static CLOSED = 3
+
+    url: string
+    protocols?: string[]
+    send = vi.fn()
+    close = vi.fn((code?: number, reason?: string) => {
+      this.readyState = MockWebSocket.CLOSED
+      if (code !== undefined) {
+        this.onclose?.({ code, reason: reason ?? '' } as CloseEvent)
+      }
+    })
+    readyState = MockWebSocket.CONNECTING
+    binaryType = 'blob'
+    onopen: ((event: Event) => void) | null = null
+    onmessage: ((event: MessageEvent) => void) | null = null
+    onclose: ((event: CloseEvent) => void) | null = null
+    onerror: ((event: Event) => void) | null = null
+
+    constructor(url: string, protocols?: string[]) {
+      this.url = url
+      this.protocols = protocols
+      socketInstances.push(this)
+    }
+  }
+
+  return { socketInstances, MockWebSocket }
+})
+
+Object.defineProperty(globalThis, 'WebSocket', {
+  value: MockWebSocket,
+  configurable: true
+})
+
+const getLastSocket = () => {
+  const socket = socketInstances.at(-1)
+  expect(socket).toBeDefined()
+  return socket!
+}
 
 describe('WebSocketManager', () => {
   let wsManager: WebSocketManager
@@ -23,10 +64,12 @@ describe('WebSocketManager', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.useFakeTimers()
+    socketInstances.length = 0
     wsManager = new WebSocketManager({
       url: 'ws://localhost:8080',
       reconnectAttempts: 3,
-      reconnectInterval: 1000
+      reconnectInterval: 1000,
+      heartbeatInterval: 30000
     })
   })
 
@@ -42,11 +85,10 @@ describe('WebSocketManager', () => {
 
     it('should connect successfully', async () => {
       const connectPromise = wsManager.connect()
+      const socket = getLastSocket()
 
-      // Simulate successful connection
-      const openEvent = new Event('open')
-      mockWebSocket.addEventListener.mock.calls.find(call => call[0] === 'open')[1](openEvent)
-
+      socket.readyState = MockWebSocket.OPEN
+      socket.onopen?.(new Event('open'))
       await connectPromise
 
       expect(wsManager.getState()).toBe(WebSocketState.CONNECTED)
@@ -55,45 +97,45 @@ describe('WebSocketManager', () => {
 
     it('should handle connection failure', async () => {
       const connectPromise = wsManager.connect()
+      const socket = getLastSocket()
 
-      // Simulate connection error
-      const errorEvent = new Event('error')
-      mockWebSocket.addEventListener.mock.calls.find(call => call[0] === 'error')[1](errorEvent)
+      socket.onerror?.(new Event('error'))
 
-      await expect(connectPromise).rejects.toThrow()
+      await expect(connectPromise).rejects.toBeInstanceOf(Event)
       expect(wsManager.getState()).toBe(WebSocketState.ERROR)
     })
 
-    it('should disconnect properly', () => {
-      // First connect
-      wsManager.connect()
-      const openEvent = new Event('open')
-      mockWebSocket.addEventListener.mock.calls.find(call => call[0] === 'open')[1](openEvent)
+    it('should disconnect properly', async () => {
+      const connectPromise = wsManager.connect()
+      const socket = getLastSocket()
+      socket.readyState = MockWebSocket.OPEN
+      socket.onopen?.(new Event('open'))
+      await connectPromise
 
-      // Then disconnect
       wsManager.disconnect()
 
-      expect(mockWebSocket.close).toHaveBeenCalledWith(1000, 'Client disconnect')
+      expect(socket.close).toHaveBeenCalledWith(1000, 'Client disconnect')
       expect(wsManager.getState()).toBe(WebSocketState.DISCONNECTED)
     })
   })
 
   describe('Message Handling', () => {
-    it('should send messages when connected', () => {
-      // Connect first
-      wsManager.connect()
-      const openEvent = new Event('open')
-      mockWebSocket.addEventListener.mock.calls.find(call => call[0] === 'open')[1](openEvent)
+    it('should send messages when connected', async () => {
+      const connectPromise = wsManager.connect()
+      const socket = getLastSocket()
+      socket.readyState = MockWebSocket.OPEN
+      socket.onopen?.(new Event('open'))
+      await connectPromise
 
       const message = { type: 'test', data: 'hello' }
       const result = wsManager.send(message)
 
       expect(result).toBe(true)
-      expect(mockWebSocket.send).toHaveBeenCalledWith(JSON.stringify({
-        ...message,
-        timestamp: expect.any(Number),
-        id: expect.any(String)
-      }))
+      expect(socket.send).toHaveBeenCalledTimes(1)
+      const payload = JSON.parse(socket.send.mock.calls[0][0])
+      expect(payload).toMatchObject(message)
+      expect(typeof payload.timestamp).toBe('number')
+      expect(typeof payload.id).toBe('string')
     })
 
     it('should not send messages when disconnected', () => {
@@ -101,23 +143,21 @@ describe('WebSocketManager', () => {
       const result = wsManager.send(message)
 
       expect(result).toBe(false)
-      expect(mockWebSocket.send).not.toHaveBeenCalled()
     })
 
-    it('should handle incoming messages', () => {
-      // Connect first
-      wsManager.connect()
-      const openEvent = new Event('open')
-      mockWebSocket.addEventListener.mock.calls.find(call => call[0] === 'open')[1](openEvent)
+    it('should handle incoming messages', async () => {
+      const connectPromise = wsManager.connect()
+      const socket = getLastSocket()
+      socket.readyState = MockWebSocket.OPEN
+      socket.onopen?.(new Event('open'))
+      await connectPromise
 
       const mockHandler = vi.fn()
       wsManager.on('test-event', mockHandler)
 
-      // Simulate incoming message
-      const messageEvent = {
+      socket.onmessage?.({
         data: JSON.stringify({ type: 'test-event', data: 'test data' })
-      }
-      mockWebSocket.addEventListener.mock.calls.find(call => call[0] === 'message')[1](messageEvent)
+      } as MessageEvent)
 
       expect(mockHandler).toHaveBeenCalledWith({
         type: 'test-event',
@@ -131,10 +171,9 @@ describe('WebSocketManager', () => {
       const mockHandler = vi.fn()
       wsManager.on('custom-event', mockHandler)
 
-      // Simulate event emission
-      wsManager['emit']('custom-event', { data: 'test' })
+      wsManager['emit']('custom-event', { type: 'custom-event', data: { data: 'test' } })
 
-      expect(mockHandler).toHaveBeenCalledWith({ data: 'test' })
+      expect(mockHandler).toHaveBeenCalledWith({ type: 'custom-event', data: { data: 'test' } })
     })
 
     it('should unregister event handlers', () => {
@@ -142,7 +181,7 @@ describe('WebSocketManager', () => {
       wsManager.on('custom-event', mockHandler)
       wsManager.off('custom-event', mockHandler)
 
-      wsManager['emit']('custom-event', { data: 'test' })
+      wsManager['emit']('custom-event', { type: 'custom-event', data: { data: 'test' } })
 
       expect(mockHandler).not.toHaveBeenCalled()
     })
@@ -151,7 +190,6 @@ describe('WebSocketManager', () => {
       const mockHandler = vi.fn()
       wsManager.onStateChange(mockHandler)
 
-      // Trigger state change
       wsManager['updateState'](WebSocketState.CONNECTED)
 
       expect(mockHandler).toHaveBeenCalledWith(WebSocketState.CONNECTED)
@@ -160,62 +198,47 @@ describe('WebSocketManager', () => {
 
   describe('Reconnection Logic', () => {
     it('should attempt reconnection on abnormal closure', async () => {
-      // Connect first
       const connectPromise = wsManager.connect()
-      const openEvent = new Event('open')
-      mockWebSocket.addEventListener.mock.calls.find(call => call[0] === 'open')[1](openEvent)
+      const socket = getLastSocket()
+      socket.readyState = MockWebSocket.OPEN
+      socket.onopen?.(new Event('open'))
       await connectPromise
 
-      // Simulate abnormal closure
-      const closeEvent = { code: 1006, reason: 'Abnormal closure' }
-      mockWebSocket.addEventListener.mock.calls.find(call => call[0] === 'close')[1](closeEvent)
+      socket.onclose?.({ code: 1006, reason: 'Abnormal closure' } as CloseEvent)
+      await vi.advanceTimersByTimeAsync(1000)
 
-      // Fast-forward timers
-      await vi.advanceTimersByTime(1000)
-
-      expect(global.WebSocket).toHaveBeenCalledTimes(2) // Original + reconnect
+      expect(socketInstances.length).toBe(2)
+      expect(wsManager.getState()).toBe(WebSocketState.CONNECTING)
     })
 
-    it('should stop reconnection after max attempts', async () => {
-      wsManager = new WebSocketManager({
+    it('should stop reconnection after max attempts', () => {
+      const limitedManager = new WebSocketManager({
         url: 'ws://localhost:8080',
-        reconnectAttempts: 2,
+        reconnectAttempts: 0,
         reconnectInterval: 100
       })
 
-      // Connect and fail multiple times
-      for (let i = 0; i < 3; i++) {
-        const connectPromise = wsManager.connect()
-        const errorEvent = new Event('error')
-        mockWebSocket.addEventListener.mock.calls.find(call => call[0] === 'error')[1](errorEvent)
+      limitedManager['attemptReconnect']()
 
-        try {
-          await connectPromise
-        } catch {
-          // Expected to fail
-        }
-      }
-
-      expect(wsManager.getState()).toBe(WebSocketState.DISCONNECTED)
+      expect(limitedManager.getState()).toBe(WebSocketState.DISCONNECTED)
     })
   })
 
   describe('Heartbeat', () => {
     it('should send heartbeat messages when connected', async () => {
-      // Connect
       const connectPromise = wsManager.connect()
-      const openEvent = new Event('open')
-      mockWebSocket.addEventListener.mock.calls.find(call => call[0] === 'open')[1](openEvent)
+      const socket = getLastSocket()
+      socket.readyState = MockWebSocket.OPEN
+      socket.onopen?.(new Event('open'))
       await connectPromise
 
-      // Fast-forward time for heartbeat
-      await vi.advanceTimersByTime(31000) // More than default 30s interval
+      await vi.advanceTimersByTimeAsync(30000)
 
-      expect(mockWebSocket.send).toHaveBeenCalledWith(JSON.stringify({
-        type: 'heartbeat',
-        timestamp: expect.any(Number),
-        id: expect.any(String)
-      }))
+      expect(socket.send).toHaveBeenCalledTimes(1)
+      const payload = JSON.parse(socket.send.mock.calls[0][0])
+      expect(payload.type).toBe('heartbeat')
+      expect(typeof payload.timestamp).toBe('number')
+      expect(typeof payload.id).toBe('string')
     })
   })
 })

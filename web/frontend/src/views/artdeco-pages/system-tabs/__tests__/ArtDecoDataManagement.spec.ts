@@ -1,4 +1,5 @@
 import { flushPromises, mount } from '@vue/test-utils'
+import { nextTick } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { getDataSourceConfigMock, updateDataSourceConfigMock } = vi.hoisted(() => ({
@@ -81,9 +82,9 @@ describe('ArtDecoDataManagement', () => {
 
     await flushPromises()
 
-    const buttons = wrapper.findAll('button')
-    await buttons[0].trigger('click')
-    await buttons[2].trigger('click')
+    ;(wrapper.vm as any).toggleConfig(0)
+    await nextTick()
+    await (wrapper.vm as any).saveConfig()
     await flushPromises()
 
     expect(updateDataSourceConfigMock).toHaveBeenCalledWith({

@@ -94,7 +94,7 @@ const saveConfig = async () => {
   if (payload.operations.length === 0) {
     return;
   }
-  const result = await exec(() => monitoringApi.updateDataSourceConfig(payload), {
+  const result = await exec(() => monitoringApi.updateDataSourceConfig(payload as unknown as Record<string, unknown>), {
     successMsg: '配置已保存',
     errorMsg: '保存配置失败'
   });

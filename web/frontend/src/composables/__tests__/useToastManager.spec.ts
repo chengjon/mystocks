@@ -184,7 +184,7 @@ describe('useToastManager', () => {
   describe('自动移除', () => {
     vi.useFakeTimers()
 
-    it('应该在duration后自动移除toast', () => {
+    it('应该在duration后自动移除toast', async () => {
       const id = toast.show({
         type: 'info',
         message: '测试',

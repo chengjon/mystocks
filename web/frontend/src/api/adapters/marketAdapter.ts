@@ -394,6 +394,7 @@ export class MarketAdapter {
    */
   static validateMarketOverview(data: MarketOverviewVM): boolean {
     if (!data.indices || !data.price_distribution) return false;
+    if (data.price_distribution.total_stocks < 0) return false;
     return true;
   }
 }

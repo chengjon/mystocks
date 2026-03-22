@@ -171,7 +171,7 @@ export const mockIndicators = {
     const slowEma = ema(closes, slow);
     const dif = fastEma.map((f, i) => Number((f - slowEma[i]).toFixed(4)));
     const dea = ema(dif, signal);
-    const macd = dif.map((d, i) => Number((d - dea[i]) * 2).toFixed(4));
+    const macd = dif.map((d, i) => Number(((d - dea[i]) * 2).toFixed(4)));
 
     return { dif, dea, macd };
   }

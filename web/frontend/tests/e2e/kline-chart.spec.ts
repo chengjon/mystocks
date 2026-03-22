@@ -90,40 +90,39 @@ test.describe("K-line Chart E2E", () => {
   })
 
   test("loads technical page shell", async ({ page }) => {
-    await expect(page.locator(".market-kline-tab")).toBeVisible()
-    await expect(page.locator("h2.section-title")).toContainText("K-Line Analysis")
+    await expect(page.getByRole("heading", { level: 2, name: "K-Line Analysis" })).toBeVisible()
+    await expect(page.getByText("Real-time K-Line Data Stream Active")).toBeVisible()
     await expect(page).toHaveURL(/\/market\/technical/)
   })
 
   test("renders chart placeholder and latest summary", async ({ page }) => {
-    await expect(page.locator(".kline-container")).toBeVisible()
-    await expect(page.locator(".chart-placeholder")).toContainText("Real-time K-Line Data Stream Active")
-    await expect(page.locator(".data-summary")).toContainText("Data Points: 12")
+    await expect(page.getByText("Real-time K-Line Data Stream Active")).toBeVisible()
+    await expect(page.getByText(/Data Points:\s*12/)).toBeVisible()
   })
 
   test("renders recent K-line rows", async ({ page }) => {
-    const rows = page.locator(".artdeco-table tbody tr")
-    await expect(rows).toHaveCount(5)
-    await expect(rows.first()).toBeVisible()
-    await expect(rows.first().locator("td").nth(1)).toContainText(/^\d+/)
+    const rows = page.getByRole("table").getByRole("row")
+    await expect(rows).toHaveCount(6)
+    await expect(rows.nth(1)).toBeVisible()
+    await expect(rows.nth(1).getByRole("cell").nth(1)).toContainText(/^\d+/)
   })
 
   test("shows request trace metadata when available", async ({ page }) => {
-    await expect(page.locator(".trace-id")).toContainText("REQ:")
+    await expect(page.getByText(/^REQ:/)).toBeVisible()
   })
 
   test("keeps layout stable on mobile viewport", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 })
     await page.reload({ waitUntil: "domcontentloaded" })
-    await expect(page.locator("main.artdeco-main")).toBeVisible()
-    await expect(page.locator(".market-kline-tab")).toBeVisible()
+    await expect(page.getByRole("main")).toBeVisible()
+    await expect(page.getByRole("heading", { level: 2, name: "K-Line Analysis" })).toBeVisible()
   })
 
   test("keeps layout stable on tablet viewport", async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1024 })
     await page.reload({ waitUntil: "domcontentloaded" })
-    await expect(page.locator("main.artdeco-main")).toBeVisible()
-    await expect(page.locator(".market-kline-tab")).toBeVisible()
+    await expect(page.getByRole("main")).toBeVisible()
+    await expect(page.getByRole("heading", { level: 2, name: "K-Line Analysis" })).toBeVisible()
   })
 
   test("does not emit critical console errors", async ({ page, browserName }) => {
@@ -137,7 +136,7 @@ test.describe("K-line Chart E2E", () => {
     page.on("console", onConsole)
 
     await page.reload({ waitUntil: "domcontentloaded" })
-    await expect(page.locator(".market-kline-tab")).toBeVisible()
+    await expect(page.getByRole("heading", { level: 2, name: "K-Line Analysis" })).toBeVisible()
     await page.waitForTimeout(400)
     page.off("console", onConsole)
     expect(consoleErrors).toHaveLength(0)

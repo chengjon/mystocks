@@ -125,7 +125,7 @@ class MarketApiService {
       throw new Error(`Empty response data from ${endpoint}`);
     }
 
-    return payload;
+    return payload as T;
   }
 
   /**

@@ -59,6 +59,58 @@ interface LogSummaryPayload {
   level_counts?: Record<string, number>
 }
 
+interface TestConnectionResult {
+  success?: boolean
+  message?: string
+  error?: string
+}
+
+interface LogsPayload {
+  logs?: LogEntry[]
+  total?: number
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
+}
+
+function toTestConnectionResult(value: unknown): TestConnectionResult {
+  if (!isRecord(value)) {
+    return {}
+  }
+
+  return {
+    success: typeof value.success === 'boolean' ? value.success : undefined,
+    message: typeof value.message === 'string' ? value.message : undefined,
+    error: typeof value.error === 'string' ? value.error : undefined,
+  }
+}
+
+function toLogsPayload(value: unknown): LogsPayload {
+  if (!isRecord(value)) {
+    return {}
+  }
+
+  return {
+    logs: Array.isArray(value.logs) ? value.logs as LogEntry[] : undefined,
+    total: typeof value.total === 'number' ? value.total : undefined,
+  }
+}
+
+function toLogSummaryPayload(value: unknown): LogSummaryPayload {
+  if (!isRecord(value)) {
+    return {}
+  }
+
+  return {
+    total_logs: typeof value.total_logs === 'number' ? value.total_logs : undefined,
+    total: typeof value.total === 'number' ? value.total : undefined,
+    recent_errors_1h: typeof value.recent_errors_1h === 'number' ? value.recent_errors_1h : undefined,
+    errors: typeof value.errors === 'number' ? value.errors : undefined,
+    level_counts: isRecord(value.level_counts) ? value.level_counts as Record<string, number> : undefined,
+  }
+}
+
 export function useSettings() {
 
 const defaultDbHost =
@@ -182,9 +234,8 @@ const testConnection = async (database: DatabaseInfo): Promise<void> => {
       port: parseInt(database.port)
     })
 
-    const result =
-      (response as ApiResponseEnvelope<Record<string, unknown>>).data ||
-      (response as Record<string, unknown>)
+    const envelope = response as ApiResponseEnvelope<unknown>
+    const result = toTestConnectionResult(envelope.data ?? response)
     if (result && result.success !== false) {
       database.status = 'success'
       database.message = result.message || 'CONNECTION SUCCESSFUL'
@@ -238,16 +289,16 @@ const fetchLogs = async (): Promise<void> => {
     if (selectedCategory.value) params.category = selectedCategory.value
 
     const response = await apiClient.get('/api/system/logs', { params })
-    const data =
-      (response as ApiResponseEnvelope<LogEntry[] | { logs?: LogEntry[]; total?: number }>).data ||
-      response
+    const envelope = response as ApiResponseEnvelope<unknown>
+    const data = envelope.data ?? response
 
     if (Array.isArray(data)) {
-      logs.value = data
+      logs.value = data as LogEntry[]
       totalLogs.value = data.length
     } else {
-      logs.value = data?.logs || data || []
-      totalLogs.value = data?.total || logs.value.length
+      const payload = toLogsPayload(data)
+      logs.value = payload.logs || []
+      totalLogs.value = payload.total || logs.value.length
     }
   } catch (error: unknown) {
     console.error('Error fetching logs:', error)
@@ -282,10 +333,11 @@ const generateMockLogs = (): LogEntry[] => {
 const fetchLogSummary = async (): Promise<void> => {
   try {
     const response = await apiClient.get('/api/system/logs/summary')
-    const data = (response as ApiResponseEnvelope<LogSummaryPayload>).data || response
+    const envelope = response as ApiResponseEnvelope<unknown>
+    const data = toLogSummaryPayload(envelope.data ?? response)
 
     if (typeof data === 'object' && data !== null) {
-      const d = data as LogSummaryPayload
+      const d = data
       logSummary.value = {
         total_logs: d.total_logs || d.total || 0,
         recent_errors_1h: d.recent_errors_1h || d.errors || 0,

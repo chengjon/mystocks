@@ -14,9 +14,12 @@ describe('pageConfig current contract', () => {
   describe('route guards', () => {
     it('accepts current route names and rejects retired legacy route names', () => {
       expect(isRouteName('dashboard')).toBe(true)
-      expect(isRouteName('market-fund-flow')).toBe(true)
-      expect(isRouteName('stock-management')).toBe(true)
+      expect(isRouteName('market-realtime')).toBe(true)
+      expect(isRouteName('data-fund-flow')).toBe(true)
+      expect(isRouteName('strategy-repo')).toBe(true)
 
+      expect(isRouteName('market-fund-flow')).toBe(false)
+      expect(isRouteName('stock-management')).toBe(false)
       expect(isRouteName('artdeco-market-data')).toBe(false)
       expect(isRouteName('artdeco-stock-management')).toBe(false)
       expect(isRouteName('invalid-route')).toBe(false)
@@ -35,46 +38,39 @@ describe('pageConfig current contract', () => {
       expect(config?.component).toBe('ArtDecoDashboard.vue')
     })
 
-    it('returns current monolithic config for market fund flow', () => {
-      const config = getPageConfig('market-fund-flow')
+    it('returns current standard page config for market realtime', () => {
+      const config = getPageConfig('market-realtime')
 
       expect(config).toBeDefined()
-      expect(config && isMonolithicConfig(config)).toBe(true)
-      expect(config?.type).toBe('monolithic')
-      expect(config?.routePath).toBe('fund-flow')
-      expect(config?.component).toBe('ArtDecoMarketData.vue')
-      expect(config?.tabs.length).toBeGreaterThan(0)
+      expect(config && isStandardConfig(config)).toBe(true)
+      expect(config?.type).toBe('page')
+      expect(config?.routePath).toBe('realtime')
+      expect(config?.apiEndpoint).toBe('/api/market/realtime')
+      expect(config?.wsChannel).toBe('market:realtime')
+      expect(config?.component).toBe('MarketRealtimeTab.vue')
     })
 
     it('does not expose retired legacy keys in PAGE_CONFIG', () => {
       expect(PAGE_CONFIG['artdeco-market-data']).toBeUndefined()
       expect(PAGE_CONFIG['artdeco-stock-management']).toBeUndefined()
       expect(PAGE_CONFIG['artdeco-trading-management']).toBeUndefined()
+      expect(PAGE_CONFIG['market-fund-flow']).toBeUndefined()
     })
   })
 
   describe('tab lookups', () => {
-    it('returns current tab config for a monolithic route', () => {
-      const tabConfig = getTabConfig('market-fund-flow', 'fund-flow')
-
-      expect(tabConfig).toBeDefined()
-      expect(tabConfig?.id).toBe('fund-flow')
-      expect(tabConfig?.apiEndpoint).toBe('/api/market/fund-flow')
-      expect(tabConfig?.wsChannel).toBe('market:fund-flow')
-    })
-
-    it('returns undefined for standard routes or invalid tabs', () => {
+    it('returns undefined for standard routes, invalid tabs, and invalid routes', () => {
       expect(getTabConfig('dashboard', 'overview')).toBeUndefined()
-      expect(getTabConfig('market-fund-flow', 'nonexistent-tab')).toBeUndefined()
+      expect(getTabConfig('market-realtime', 'nonexistent-tab')).toBeUndefined()
       expect(getTabConfig('invalid-route', 'fund-flow')).toBeUndefined()
     })
 
-    it('returns tabs by component for the generated monolithic components', () => {
-      const marketTabs = getTabsForComponent('ArtDecoMarketData.vue')
-      const stockTabs = getTabsForComponent('ArtDecoStockManagement.vue')
+    it('returns no generated tabs for the current split-page components', () => {
+      const marketTabs = getTabsForComponent('MarketRealtimeTab.vue')
+      const technicalTabs = getTabsForComponent('MarketKLineTab.vue')
 
-      expect(marketTabs.map(tab => tab.id)).toEqual(['fund-flow', 'etf', 'concepts', 'lhb', 'auction', 'institution'])
-      expect(stockTabs.map(tab => tab.id)).toEqual(['overview', 'watchlist', 'positions', 'attribution', 'history', 'strategy'])
+      expect(marketTabs).toEqual([])
+      expect(technicalTabs).toEqual([])
       expect(getTabsForComponent('UnknownComponent.vue')).toEqual([])
     })
   })

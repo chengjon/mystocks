@@ -39,7 +39,7 @@ describe('StrategyAdapter', () => {
       expect(result[0].id).toBe('1');
       expect(result[0].name).toBe('双均线趋势跟踪');
       expect(result[0].type).toBe('trend_following');
-      expect(result[0].performance?.totalReturn).toBe(0.256);
+      expect(result[0].performance?.total_return).toBe(0.256);
     });
 
     it('should fallback to mock data on API failure', () => {
@@ -97,7 +97,7 @@ describe('StrategyAdapter', () => {
       expect(result.id).toBe('1');
       expect(result.name).toBe('双均线趋势跟踪');
       expect(result.performance).toBeDefined();
-      expect(result.performance?.totalReturn).toBe(0.256);
+      expect(result.performance?.total_return).toBe(0.256);
     });
 
     it('should fallback to mock on error', () => {
@@ -129,17 +129,17 @@ describe('StrategyAdapter', () => {
         sharpe_ratio: 1.85,
         max_drawdown: -0.124,
         win_rate: 0.68,
-        profit_loss_ratio: 2.15,
+        profit_factor: 2.15,
       };
 
       const result = StrategyAdapter.adaptPerformance(apiPerf);
 
-      expect(result.totalReturn).toBe(0.256);
-      expect(result.annualReturn).toBe(0.312);
-      expect(result.sharpeRatio).toBe(1.85);
-      expect(result.maxDrawdown).toBe(-0.124);
-      expect(result.winRate).toBe(0.68);
-      expect(result.profitLossRatio).toBe(2.15);
+      expect(result.total_return).toBe(0.256);
+      expect(result.annualized_return).toBe(0.312);
+      expect(result.sharpe_ratio).toBe(1.85);
+      expect(result.max_drawdown).toBe(-0.124);
+      expect(result.win_rate).toBe(0.68);
+      expect(result.profit_factor).toBe(2.15);
     });
 
     it('should handle camelCase and snake_case variants', () => {
@@ -154,8 +154,8 @@ describe('StrategyAdapter', () => {
 
       const result = StrategyAdapter.adaptPerformance(apiPerf);
 
-      expect(result.totalReturn).toBe(0.3);
-      expect(result.sharpeRatio).toBe(2.0);
+      expect(result.total_return).toBe(0.3);
+      expect(result.sharpe_ratio).toBe(2.0);
     });
   });
 
@@ -174,9 +174,10 @@ describe('StrategyAdapter', () => {
       const result = StrategyAdapter.adaptBacktestTask(apiResponse);
 
       expect(result).not.toBeNull();
-      expect(result?.taskId).toBe('bt_20250125_001');
-      expect(result?.strategyId).toBe('1');
+      expect(result?.strategy_id).toBe('1');
+      expect(result?.start_date).toBe('2024-01-01');
       expect(result?.status).toBe('completed');
+      expect(result?.result?.strategy_id).toBe('1');
     });
 
     it('should return null on API failure', () => {

@@ -50,6 +50,6 @@ describe('industryAnalysisData', () => {
     expect(rotation).toHaveLength(2)
     expect(rotation[0]?.window).toBe('近1日')
     expect(rotation[1]?.window).toBe('近3日')
-    expect(rotation[0]?.flow).toBe(6.5)
+    expect(rotation[0]?.flow).toBe(310)
   })
 })

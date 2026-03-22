@@ -11,6 +11,36 @@ describe('Chart Interaction', () => {
     mockCanvas = document.createElement('canvas');
     mockCanvas.width = 800;
     mockCanvas.height = 600;
+    mockCanvas.getBoundingClientRect = vi.fn(() => ({
+      left: 0,
+      top: 0,
+      right: 800,
+      bottom: 600,
+      width: 800,
+      height: 600,
+      x: 0,
+      y: 0,
+      toJSON: () => ({})
+    }));
+    mockCanvas.getContext = vi.fn(() => ({
+      clearRect: vi.fn(),
+      setLineDash: vi.fn(),
+      beginPath: vi.fn(),
+      moveTo: vi.fn(),
+      lineTo: vi.fn(),
+      stroke: vi.fn(),
+      roundRect: vi.fn(),
+      fill: vi.fn(),
+      fillText: vi.fn(),
+      save: vi.fn(),
+      restore: vi.fn(),
+      strokeStyle: '',
+      lineWidth: 1,
+      fillStyle: '',
+      font: '',
+      textAlign: 'left',
+      textBaseline: 'alphabetic'
+    })) as typeof mockCanvas.getContext;
 
     mockContainer = document.createElement('div');
     mockContainer.appendChild(mockCanvas);

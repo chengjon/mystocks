@@ -3,6 +3,7 @@ import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
 import { createPinia, setActivePinia } from 'pinia';
 import SidebarMenu from '@/components/layout/SidebarMenu.vue';
+import SidebarMenuItem from '@/components/layout/SidebarMenuItem.vue';
 import * as ElementPlus from 'element-plus';
 import menuConfig from '@/config/menu.config.js';
 
@@ -99,51 +100,58 @@ describe('SidebarMenuItem.vue', () => {
 
     it('renders a simple menu item', async () => {
         const item = { id: 'dashboard', title: 'Dashboard', path: '/dashboard', icon: 'Monitor' };
-        const wrapper = mount(SidebarMenu, { // Mount the parent to provide context
+        const wrapper = mount(SidebarMenuItem, {
+            props: { item },
             global: {
               plugins: [router, ElementPlus],
+              stubs: {
+                ElMenuItem: { template: '<div class="el-menu-item-stub"><slot /><slot name="title" /></div>' },
+                ElIcon: { template: '<span class="el-icon-stub"><slot /></span>' }
+              }
             },
           });
-        
-        await router.isReady();
 
-        const menuItem = wrapper.find(`[index="${item.path}"]`);
-        expect(menuItem.exists()).toBe(true);
-        expect(menuItem.text()).toContain(item.title);
+        expect(wrapper.text()).toContain(item.title);
     });
 
     it('renders a submenu with children', async () => {
         const item = menuConfig.find(m => m.id === 'market');
-        const wrapper = mount(SidebarMenu, {
+        const wrapper = mount(SidebarMenuItem, {
+            props: { item },
             global: {
               plugins: [router, ElementPlus],
+              stubs: {
+                ElSubMenu: { template: '<div class="el-sub-menu-stub"><slot name="title" /><slot /></div>' },
+                ElIcon: { template: '<span class="el-icon-stub"><slot /></span>' },
+                SidebarMenuItem: {
+                  props: ['item'],
+                  template: '<div class="sidebar-menu-item-child">{{ item.title }}</div>'
+                }
+              }
             },
           });
-    
-        await router.isReady();
-    
-        const subMenu = wrapper.find(`[index="${item.id}"]`);
-        expect(subMenu.exists()).toBe(true);
-        expect(subMenu.text()).toContain(item.title);
-        
-        // Check for children within the submenu
-        const childItems = subMenu.findAllComponents({ name: 'ElMenuItem' });
+
+        expect(wrapper.text()).toContain(item.title);
+        const childItems = wrapper.findAll('.sidebar-menu-item-child');
         expect(childItems.length).toBe(item.children.length);
         expect(childItems[0].text()).toContain(item.children[0].title);
     });
 
     it('navigates on menu item click', async () => {
         const push = vi.spyOn(router, 'push');
-        const wrapper = mount(SidebarMenu, {
+        const item = { id: 'dashboard', title: 'Dashboard', path: '/dashboard', icon: 'Monitor' };
+        const wrapper = mount(SidebarMenuItem, {
+          props: { item },
           global: {
             plugins: [router, ElementPlus],
+            stubs: {
+              ElMenuItem: { template: '<div class="el-menu-item-stub" @click="$emit(\'click\')"><slot /><slot name="title" /></div>' },
+              ElIcon: { template: '<span class="el-icon-stub"><slot /></span>' }
+            }
           },
         });
-    
-        await router.isReady();
-    
-        const dashboardItem = wrapper.find('[index="/dashboard"]');
-        await dashboardItem.trigger('click');
+
+        await wrapper.find('.el-menu-item-stub').trigger('click');
     
         expect(push).toHaveBeenCalledWith('/dashboard');
     });
