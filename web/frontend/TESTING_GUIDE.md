@@ -5,8 +5,10 @@
 This project has a comprehensive testing setup including unit tests, E2E tests, and CI/CD automation.
 
 **Test Infrastructure**:
-- **Unit Tests**: Vitest + Happy DOM
+- **Unit/Integration Tests**: Vitest + Happy DOM + Vue Test Utils + MSW
 - **E2E Tests**: Playwright (Chromium, Firefox, WebKit)
+- **Accessibility Smoke**: `@axe-core/playwright`
+- **Performance Gate**: Lighthouse CI (`lhci`)
 - **CI/CD**: GitHub Actions
 - **Coverage**: V8 (built into Vitest)
 
@@ -29,11 +31,20 @@ Testing scripts should read ports from `.env` first, then use these defaults.
 # Install dependencies
 npm install
 
-# Run unit tests
+# Run stable unit/integration gate
+npm run test:unit:stable
+
+# Run full unit suite
 npm run test
 
-# Run E2E tests (Chromium only)
+# Run full E2E tests (Chromium only)
 npm run test:e2e:chromium
+
+# Run accessibility smoke
+PLAYWRIGHT_EXTERNAL_FRONTEND=1 FRONTEND_BASE_URL=http://127.0.0.1:3020 E2E_FRONTEND_URL=http://127.0.0.1:3020 npm run test:e2e:axe
+
+# Run Lighthouse CI smoke (isolated mock build, does not reuse PM2 frontend)
+npm run test:e2e:lighthouse
 
 # Run tests with coverage
 npm run test:coverage
@@ -87,6 +98,7 @@ web/frontend/
 **File**: `vitest.config.mts`
 
 - **Environment**: Happy DOM (lightweight DOM implementation)
+- **Network Mocking**: MSW (`vitest.setup.ts` + `tests/mocks/server.ts`)
 - **Coverage Provider**: V8
 - **Reporters**: Text, JSON, HTML, LCOV
 
@@ -95,6 +107,9 @@ web/frontend/
 ```bash
 # Run once
 npm run test
+
+# Stable gate
+npm run test:unit:stable
 
 # Watch mode
 npm run test:watch
@@ -135,6 +150,7 @@ describe('MarketAdapter', () => {
 - Automatic dev server startup
 - Screenshot/video on failure
 - GitHub Actions annotations
+- Canonical user-facing locator policy (`getByRole/getByText/getByTestId`)
 
 **Test Timeouts**:
 - Dev server startup: 120 seconds
@@ -147,10 +163,19 @@ describe('MarketAdapter', () => {
 # All browsers
 npm run test:e2e
 
+# Stable shared-PM2 subset
+PLAYWRIGHT_EXTERNAL_FRONTEND=1 FRONTEND_BASE_URL=http://127.0.0.1:3020 E2E_FRONTEND_URL=http://127.0.0.1:3020 npm run test:e2e:stable
+
 # Specific browser
 npm run test:e2e:chromium
 npm run test:e2e:firefox
 npm run test:e2e:webkit
+
+# Accessibility smoke
+PLAYWRIGHT_EXTERNAL_FRONTEND=1 FRONTEND_BASE_URL=http://127.0.0.1:3020 E2E_FRONTEND_URL=http://127.0.0.1:3020 npm run test:e2e:axe
+
+# Lighthouse CI smoke
+npm run test:e2e:lighthouse
 
 # With UI (debugging)
 npx playwright test --ui
@@ -183,6 +208,10 @@ npx playwright test --headed
 # Specific test
 npx playwright test --grep "should display market"
 ```
+
+### Legacy Playwright Scripts
+
+`web/frontend/playwright.config.ts` 仍保留给历史 PM2 / 视觉专项脚本使用，但它不是标准 Web E2E 主线。新增浏览器回归用例一律进入 `tests/e2e/**` 并由 `playwright.config.js` 执行。
 
 ## CI/CD Pipeline
 

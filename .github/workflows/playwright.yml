@@ -8,27 +8,25 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web/frontend
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
+        cache: npm
+        cache-dependency-path: web/frontend/package-lock.json
     - name: Install dependencies
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps chromium
-    - name: Run Playwright smoke tests
-      run: |
-        npx playwright test \
-          tests/simple-test.spec.ts \
-          tests/env-test.spec.ts \
-          tests/ultra-simple.spec.ts \
-          tests/playwright-tests/basic-chrome-test.spec.ts \
-          --config=playwright.config.ts \
-          --reporter=list,html
+    - name: Run Playwright stable E2E
+      run: npm run test:e2e:stable
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
         name: playwright-report
-        path: playwright-report/
+        path: web/frontend/playwright-report/
         retention-days: 30

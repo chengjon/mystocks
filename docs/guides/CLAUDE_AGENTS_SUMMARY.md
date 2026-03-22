@@ -89,7 +89,7 @@ color: yellow
 
 **功能**:
 - ✅ API 文档和 Mock 服务设置
-- ✅ 自动化测试配置 (Puppeteer/Playwright)
+- ✅ 自动化测试配置 (Playwright 主线 + Mock 服务)
 - ✅ CI/CD 管道设计 (GitHub Actions)
 - ✅ 前后端并行开发支持
 - ✅ 小团队资源优化

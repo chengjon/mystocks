@@ -38,17 +38,15 @@ describe("Port configuration consistency", () => {
 
   it("uses 3020 as default e2e base URL", () => {
     const playwrightConfigPath = path.join(frontendRoot, "playwright.config.js");
-    const cypressConfigPath = path.join(frontendRoot, "cypress.config.ts");
     const portHelperPath = path.join(frontendRoot, "tests/e2e/helpers/port-env.js");
 
     const playwrightConfigText = fs.readFileSync(playwrightConfigPath, "utf8");
-    const cypressConfigText = fs.readFileSync(cypressConfigPath, "utf8");
     const { loadPortEnv, resolveFrontendConfig } = require(portHelperPath);
 
     loadPortEnv(frontendRoot);
 
     expect(resolveFrontendConfig().port).toBe(3020);
     expect(playwrightConfigText).toContain("const baseURL = process.env.FRONTEND_BASE_URL || `http://127.0.0.1:${frontendPort}`;");
-    expect(cypressConfigText).toContain("baseUrl: 'http://localhost:3020'");
+    expect(fs.existsSync(path.join(frontendRoot, "cypress.config.ts"))).toBe(false);
   });
 });

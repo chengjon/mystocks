@@ -13,13 +13,22 @@
 
 ## 2. 自动化工具链 (Toolchain)
 ### 2.1 Playwright (Primary)
-- **用途**: 导航一致性校验、视觉回归。
-- **配置**: `playwright.config.ts` (Viewport: 1920x1080)。
+- **用途**: 标准 Web E2E 主线；负责导航一致性校验、跨浏览器验证、视觉回归与 axe smoke。
+- **配置**: `playwright.config.js`（标准 E2E）/ `playwright.config.ts`（legacy 专项脚本）。
 
-### 2.2 Cypress (Compatible)
-- **兼容性提示**: 系统支持 Cypress 挂载。如需执行单元组件测试（Component Testing），可复用 Playwright 的 BASE_URL。
+### 2.2 Vitest + Vue Test Utils (Primary Unit/Integration)
+- **用途**: 组件单测、组合式函数测试、MSW 驱动的前端 API 集成测试。
+- **配置**: `vitest.config.mts` + `vitest.setup.ts`。
 
-### 2.3 lnav (Observability)
+### 2.3 Lighthouse CI / MSW / axe (Supporting)
+- **MSW**: Vitest 网络层 Mock。
+- **axe**: Playwright 可访问性 smoke。
+- **Lighthouse CI**: 隔离 `mock build + preview:lighthouse` 的性能门禁。
+
+### 2.4 Cypress / Puppeteer (Legacy)
+- **状态**: 不再作为标准 Web 测试主线，仅允许保留在归档脚本或历史文档中，不再新增依赖和用例。
+
+### 2.5 lnav (Observability)
 - **命令**: `lnav /root/.pm2/logs/mystocks-backend-error.log`。
 
 ---

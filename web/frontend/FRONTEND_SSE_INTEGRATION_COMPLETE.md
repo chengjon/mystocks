@@ -626,26 +626,18 @@ describe('useTrainingProgress', () => {
 
 ### 3. E2E测试
 
-**工具**: Cypress / Playwright
+**工具**: Playwright（标准主线）
 
 ```javascript
+// 当前片段为历史示意，实际 E2E 请使用 Playwright 主线实现
 describe('SSE Real-time Monitor', () => {
   it('loads the page and shows all components', () => {
-    cy.visit('/realtime')
-
-    // Check all components are present
-    cy.contains('实时监控中心').should('be.visible')
-    cy.contains('模型训练进度').should('be.visible')
-    cy.contains('回测执行进度').should('be.visible')
-    cy.contains('风险告警').should('be.visible')
-    cy.contains('实时指标').should('be.visible')
+    // await page.goto('/realtime')
+    // await expect(page.getByText('实时监控中心')).toBeVisible()
   })
 
   it('connects to SSE endpoints', () => {
-    cy.visit('/realtime')
-
-    // Wait for connections
-    cy.contains('已连接', { timeout: 10000 }).should('be.visible')
+    // await expect(page.getByText('已连接')).toBeVisible()
   })
 })
 ```

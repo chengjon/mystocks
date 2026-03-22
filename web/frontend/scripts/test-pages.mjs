@@ -3,7 +3,7 @@
 /**
  * MyStocks Frontend Page Tester
  *
- * 功能: 使用Puppeteer访问所有页面并检测JavaScript错误
+ * 功能: 使用轻量HTTP探针访问页面并检测基础错误
  * 循环: Ralph Wiggum模式 - 持续测试直到所有页面无错误
  */
 
@@ -47,7 +47,7 @@ let testResults = [];
  */
 async function checkDependencies() {
   console.log('🔍 使用HTTP测试模式');
-  console.log('ℹ️  如需完整测试，请安装 puppeteer: npm install puppeteer');
+  console.log('ℹ️  如需完整浏览器回归，请运行 Playwright 主线命令: npm run test:e2e:chromium');
   return false;
 }
 

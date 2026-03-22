@@ -638,19 +638,10 @@ describe('TrainingProgress', () => {
 ### E2E测试
 
 ```javascript
-// 使用Cypress或Playwright
+// 使用Playwright
 describe('SSE Integration', () => {
   it('should connect to SSE and receive events', () => {
-    cy.visit('/realtime')
-
-    // 检查连接状态
-    cy.contains('已连接').should('be.visible')
-
-    // 模拟后端推送事件（需要测试API支持）
-    cy.request('POST', '/api/test/training-progress')
-
-    // 验证UI更新
-    cy.contains('训练进度').should('be.visible')
+    // 当前文档片段为历史示意，标准实现请使用 Playwright E2E 主线
   })
 })
 ```

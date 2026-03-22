@@ -561,7 +561,6 @@ jobs:
         run: |
           cd web/frontend
           npm ci
-          npm install @playwright/test@1.48.1 lighthouse @lhci/cli
           npx playwright install chromium --with-deps
 
           grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>=' web/backend/requirements.txt > /tmp/backend-requirements-ci.txt
@@ -586,12 +585,8 @@ jobs:
       - name: Run Lighthouse Performance Tests
         run: |
           cd web/frontend
-
-          # 运行Lighthouse性能测试
-          npx lhci autorun \
-            --config=.lighthouserc.json \
-            --upload.target=temporary-public-storage \
-            --collect.numberOfRuns=3
+          export LIGHTHOUSE_BASE_URL=http://127.0.0.1:4273
+          npm run test:e2e:lighthouse
 
       - name: Run Playwright Performance Tests
         run: |

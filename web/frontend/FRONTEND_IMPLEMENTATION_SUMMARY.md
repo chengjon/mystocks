@@ -406,7 +406,7 @@ export const indicatorService = {
 
 ### **Testing Requirements:**
 - Unit tests for each component (Vitest/Jest)
-- E2E tests with Cypress/Playwright
+- E2E tests with Playwright (standard mainline)
 - Performance testing (Lighthouse)
 - Cross-browser testing (Chrome, Firefox, Safari)
 
