@@ -23,7 +23,7 @@ export const DEFAULT_INDICATORS: IndicatorConfig[] = [
   { name: '考夫曼自适应', shortName: 'KAMA', type: 'KAMA', params: [10, 2, 30], colors: ['#2DC08E'], visible: false }
 ];
 
-const calculateSMA = (data: number[], period: number): number[] => {
+export const calculateSMA = (data: number[], period: number): number[] => {
   const result: number[] = [];
   for (let i = 0; i < data.length; i++) {
     if (i < period - 1) {
@@ -37,7 +37,7 @@ const calculateSMA = (data: number[], period: number): number[] => {
   return result;
 };
 
-const calculateEMA = (data: number[], period: number): number[] => {
+export const calculateEMA = (data: number[], period: number): number[] => {
   const result: number[] = [];
   const k = 2 / (period + 1);
 
@@ -51,7 +51,7 @@ const calculateEMA = (data: number[], period: number): number[] => {
   return result;
 };
 
-const calculateBOLL = (data: number[], period: number, stdDev: number): { upper: number[]; middle: number[]; lower: number[] } => {
+export const calculateBOLL = (data: number[], period: number, stdDev: number): { upper: number[]; middle: number[]; lower: number[] } => {
   const upper: number[] = [];
   const middle: number[] = [];
   const lower: number[] = [];
@@ -75,7 +75,7 @@ const calculateBOLL = (data: number[], period: number, stdDev: number): { upper:
   return { upper, middle, lower };
 };
 
-const calculateSAR = (high: number[], low: number[], af: number = 0.02, maxAf: number = 0.2): number[] => {
+export const calculateSAR = (high: number[], low: number[], af: number = 0.02, maxAf: number = 0.2): number[] => {
   const result: number[] = [];
   const n = high.length;
 

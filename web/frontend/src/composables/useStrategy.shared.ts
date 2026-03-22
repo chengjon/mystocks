@@ -56,22 +56,47 @@ export function parseProcessTimeMs(rawValue: unknown): string {
 
 export function toStrategyListItemVM(item: unknown, index: number): StrategyListItemVM {
   const adapted = StrategyAdapter.toStrategyListVM([item as never])[0];
-  if (adapted) {
+  const record = toRecord(item);
+  const hasMeaningfulAdaptedCore =
+    !!adapted &&
+    adapted.id.trim().length > 0 &&
+    adapted.name.trim().length > 0 &&
+    adapted.type.trim().length > 0 &&
+    adapted.type !== "custom";
+
+  if (hasMeaningfulAdaptedCore) {
     return adapted;
   }
 
-  const record = toRecord(item);
-  const fallbackId = typeof record?.id === "string" && record.id.trim().length > 0 ? record.id : `strategy-${index + 1}`;
+  const fallbackId =
+    typeof record?.id === "string" && record.id.trim().length > 0
+      ? record.id
+      : record?.strategy_id !== undefined && record?.strategy_id !== null
+        ? String(record.strategy_id)
+        : `strategy-${index + 1}`;
   const fallbackName =
-    typeof record?.name === "string" && record.name.trim().length > 0 ? record.name : `策略 ${index + 1}`;
+    typeof record?.name === "string" && record.name.trim().length > 0
+      ? record.name
+      : typeof record?.strategy_name === "string" && record.strategy_name.trim().length > 0
+        ? record.strategy_name
+        : `策略 ${index + 1}`;
   const fallbackCode =
-    typeof record?.code === "string" && record.code.trim().length > 0 ? record.code : fallbackId;
+    typeof record?.code === "string" && record.code.trim().length > 0
+      ? record.code
+      : typeof record?.strategy_code === "string" && record.strategy_code.trim().length > 0
+        ? record.strategy_code
+        : fallbackId;
 
   return {
     id: fallbackId,
     code: fallbackCode,
     name: fallbackName,
-    type: typeof record?.type === "string" && record.type.trim().length > 0 ? record.type : "custom",
+    type:
+      typeof record?.type === "string" && record.type.trim().length > 0
+        ? record.type
+        : typeof record?.strategy_type === "string" && record.strategy_type.trim().length > 0
+          ? record.strategy_type
+          : "custom",
     status: toStatus(record?.status),
     lastRunTime: typeof record?.last_run_time === "string" ? record.last_run_time : "从未运行",
     nextRunTime: typeof record?.next_run_time === "string" ? record.next_run_time : "未设置",

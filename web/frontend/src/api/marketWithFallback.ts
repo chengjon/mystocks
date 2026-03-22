@@ -16,8 +16,7 @@
  * @deprecated Use useMarket() composable instead
  */
 
-import { MarketApiService as MarketApiServiceClass } from './services/marketService.ts';
-import { MarketAdapter } from './adapters/marketAdapter.ts';
+import MarketApiServiceClass from './market.ts';
 import type { MarketOverviewVM, FundFlowChartPoint, KLineChartData } from './types/market.ts';
 
 // Re-export types for backward compatibility
@@ -55,8 +54,7 @@ class MarketApiServiceWithFallback {
   async getMarketOverview(_forceRefresh = false): Promise<MarketOverviewVM> {
     console.warn('[DEPRECATED] getMarketOverview() - use useMarket() composable instead');
 
-    const response = await this.marketService.getMarketOverview();
-    return MarketAdapter.adaptMarketOverview(response);
+    return this.marketService.getMarketOverview();
   }
 
   /**
@@ -77,12 +75,11 @@ class MarketApiServiceWithFallback {
   ): Promise<FundFlowChartPoint[]> {
     console.warn('[DEPRECATED] getFundFlow() - use useMarket() composable instead');
 
-    const response = await this.marketService.getFundFlow({
+    return this.marketService.getFundFlow({
       symbol: params?.market || 'sh000001', // Default to Shanghai index
       start_date: params?.startDate,
       end_date: params?.endDate,
     });
-    return MarketAdapter.adaptFundFlow(response);
   }
 
   /**
@@ -116,13 +113,12 @@ class MarketApiServiceWithFallback {
       console.warn(`[MarketApiServiceWithFallback] Interval '${params.interval}' not supported by new API, using '1d' instead`);
     }
 
-    const response = await this.marketService.getKLineData({
+    return this.marketService.getKLineData({
       symbol: params.symbol,
       interval: interval as typeof supportedIntervals[number],
       start_date: params.startDate,
       end_date: params.endDate,
     });
-    return MarketAdapter.adaptKLineData(response);
   }
 
   /**
@@ -153,11 +149,10 @@ class MarketApiServiceWithFallback {
 
 // Export singleton instance for backward compatibility
 export const legacyMarketApiService = new MarketApiServiceWithFallback();
+export const marketApiService = legacyMarketApiService;
 
 // Export the class for testing
 export default MarketApiServiceWithFallback;
 
 // Export new architecture for migration
-export { marketApiService } from './services/marketService.ts';
-export { MarketAdapter } from './adapters/marketAdapter.ts';
 export { useMarket } from '../composables/useMarket.ts';

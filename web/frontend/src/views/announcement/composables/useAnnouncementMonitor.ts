@@ -21,6 +21,16 @@ interface AnnouncementMonitorError {
   message?: string
 }
 
+interface EditingRuleState {
+  id: number | null
+  rule_name: string
+  stock_codes_str: string
+  keywords_str: string
+  min_importance_level: number
+  notify_enabled: boolean
+  is_active: boolean
+}
+
 export function useAnnouncementMonitor() {
 
 // API base URL
@@ -57,7 +67,7 @@ const pagination = reactive({
 // 规则对话框
 const showRuleDialog = ref(false)
 const ruleFormRef = ref(null)
-const editingRule = ref({
+const editingRule = ref<EditingRuleState>({
   id: null,
   rule_name: '',
   stock_codes_str: '',
@@ -216,7 +226,7 @@ const evaluateRules = async () => {
 // 编辑规则
 const editRule = (rule: AnnouncementMonitorRule): void => {
   editingRule.value = {
-    id: rule.id || null,
+    id: rule.id ?? null,
     rule_name: rule.rule_name || '',
     stock_codes_str: rule.stock_codes ? rule.stock_codes.join(',') : '',
     keywords_str: rule.keywords ? rule.keywords.join(',') : '',

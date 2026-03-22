@@ -318,9 +318,10 @@ const handleLoadConfig = async (): Promise<void> => {
           }
 
           indicatorService.getConfig(parseInt(selectedConfigId))
-            .then((config: IndicatorConfig): void => {
-              selectedIndicators.value = config.indicators
-              ElMessage.success(`Config "${config.name}" loaded`)
+            .then((config): void => {
+              const typedConfig = config as IndicatorConfig
+              selectedIndicators.value = typedConfig.indicators
+              ElMessage.success(`Config "${typedConfig.name}" loaded`)
 
               if (chartData.ohlcv) {
                 fetchKlineData()

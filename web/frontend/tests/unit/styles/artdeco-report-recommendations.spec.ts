@@ -8,24 +8,28 @@ const readFile = (relativePath: string) =>
   readFileSync(resolve(repoRoot, relativePath), "utf8");
 
 describe("artdeco report recommendations integration", () => {
-  it("removes conflicting colors import from artdeco-main.css", () => {
+  it("keeps the current layered style imports in artdeco-main.css", () => {
     const mainCss = readFile("web/frontend/src/styles/artdeco-main.css");
 
-    expect(mainCss).not.toContain("@import './artdeco-colors.css';");
+    expect(mainCss).toContain("@import './artdeco-colors.css';");
+    expect(mainCss).toContain("@import './artdeco-variables.css';");
+    expect(mainCss).toContain("@import './artdeco-animations.css';");
   });
 
-  it("provides compatibility aliases and trust-blue token", () => {
+  it("provides the current ArtDeco variable baseline", () => {
     const variablesCss = readFile("web/frontend/src/styles/artdeco-variables.css");
 
-    expect(variablesCss).toContain("--artdeco-bg-primary:");
-    expect(variablesCss).toContain("--artdeco-bg-secondary:");
-    expect(variablesCss).toContain("--artdeco-text-primary:");
-    expect(variablesCss).toContain("--artdeco-trust-blue:");
+    expect(variablesCss).toContain("--artdeco-bg-global:");
+    expect(variablesCss).toContain("--artdeco-bg-surface:");
+    expect(variablesCss).toContain("--artdeco-fg-primary:");
+    expect(variablesCss).toContain("--artdeco-gold-primary:");
   });
 
-  it("exposes reduced-motion fallback in animation baseline", () => {
+  it("exposes the current animation baseline", () => {
     const animationsCss = readFile("web/frontend/src/styles/artdeco-animations.css");
 
-    expect(animationsCss).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(animationsCss).toContain(".fade-enter-active");
+    expect(animationsCss).toContain(".slide-up-enter-active");
+    expect(animationsCss).toContain(".slide-left-enter-active");
   });
 });

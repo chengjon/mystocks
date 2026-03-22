@@ -47,10 +47,10 @@ class WebSocketManager {
     this.config = {
       url: config.url,
       protocols: config.protocols || [],
-      reconnectAttempts: config.reconnectAttempts || 5,
-      reconnectInterval: config.reconnectInterval || 3000,
-      heartbeatInterval: config.heartbeatInterval || 30000,
-      timeout: config.timeout || 10000
+      reconnectAttempts: config.reconnectAttempts ?? 5,
+      reconnectInterval: config.reconnectInterval ?? 3000,
+      heartbeatInterval: config.heartbeatInterval ?? 30000,
+      timeout: config.timeout ?? 10000
     }
   }
 

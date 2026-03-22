@@ -4,8 +4,10 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest'
-import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { flushPromises, mount } from '@vue/test-utils'
+import { nextTick, onMounted, ref } from 'vue'
+import { pathToFileURL } from 'node:url'
+import { resolve } from 'node:path'
 
 // 测试ESM导入是否正常工作
 describe('ESM模块兼容性测试', () => {
@@ -23,9 +25,12 @@ describe('ESM模块兼容性测试', () => {
 
   it('dayjs插件ESM导入应该正常工作', async () => {
     // 测试动态导入插件
+    const utcPluginPath = pathToFileURL(
+      resolve(process.cwd(), 'node_modules/dayjs/esm/plugin/utc/index.js')
+    ).href
     const [dayjs, utcPlugin] = await Promise.all([
       import('dayjs'),
-      import('dayjs/plugin/utc')
+      import(/* @vite-ignore */ utcPluginPath)
     ])
 
     // 注册插件
@@ -107,7 +112,8 @@ describe('ESM性能和可靠性测试', () => {
     // 测试ESM模块加载错误处理
     try {
       // 尝试导入不存在的模块
-      await import('non-existent-module-dayjs-test')
+      const missingModule = 'non-existent-module-dayjs-test'
+      await import(/* @vite-ignore */ missingModule)
       expect.fail('应该抛出错误')
     } catch (error) {
       expect(error).toBeDefined()
@@ -142,7 +148,7 @@ describe('ESM与Vue组件集成测试', () => {
     const wrapper = mount(TestComponent)
 
     // 等待异步操作完成
-    await nextTick()
+    await flushPromises()
 
     // 验证组件能正确渲染
     expect(wrapper.exists()).toBe(true)
@@ -150,6 +156,8 @@ describe('ESM与Vue组件集成测试', () => {
   })
 
   it('Vue组件ESM错误应该被正确处理', async () => {
+    const failingLoader = async () => Promise.reject(new Error('ESM module error'))
+
     // 创建一个会遇到ESM错误的组件
     const ErrorComponent = {
       template: '<div>{{ errorMessage }}</div>',
@@ -158,8 +166,7 @@ describe('ESM与Vue组件集成测试', () => {
 
         onMounted(async () => {
           try {
-            // 尝试导入不存在的ESM模块
-            await import('dayjs/esm/non-existent-plugin')
+            await failingLoader()
             errorMessage.value = '意外成功'
           } catch (error) {
             errorMessage.value = 'ESM错误已处理'
@@ -171,18 +178,9 @@ describe('ESM与Vue组件集成测试', () => {
     }
 
     const wrapper = mount(ErrorComponent)
+    await flushPromises()
     await nextTick()
 
     expect(wrapper.text()).toBe('ESM错误已处理')
   })
 })
-
-// 辅助函数
-function ref(value) {
-  return { value }
-}
-
-function onMounted(callback) {
-  // 在测试环境中模拟onMounted
-  callback()
-}

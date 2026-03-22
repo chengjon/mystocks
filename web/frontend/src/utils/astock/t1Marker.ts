@@ -28,48 +28,29 @@ export const addTradeDays = (startDate: Date, days: number): Date => {
   return current;
 };
 
-export const calculateT1Status = (buyDate: Date, symbol: string): T1Status => {
-  const isNewStock = symbol.startsWith('0') && parseInt(symbol.substring(0, 6)) >= 202300000;
-
-  const sellableDate = isNewStock
-    ? addTradeDays(buyDate, TRADE_DAYS_CYCLE + 1)
-    : addTradeDays(buyDate, TRADE_DAYS_CYCLE);
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
+export const calculateT1Status = (buyDate: Date, marketTypeOrSymbol: string): T1Status => {
   const buyOnlyDate = new Date(buyDate);
   buyOnlyDate.setHours(0, 0, 0, 0);
 
-  if (today.getTime() === buyOnlyDate.getTime()) {
+  const normalized = marketTypeOrSymbol.trim().toLowerCase();
+  const isT0Eligible = normalized === 't0';
+
+  if (isT0Eligible) {
     return {
       isT1: false,
       buyDate: buyOnlyDate,
-      sellableDate,
+      sellableDate: buyOnlyDate,
       status: 'T+0'
     };
   }
 
-  const sellableOnlyDate = new Date(sellableDate);
-  sellableOnlyDate.setHours(0, 0, 0, 0);
-
-  if (today >= sellableOnlyDate) {
-    return {
-      isT1: false,
-      buyDate: buyOnlyDate,
-      sellableDate,
-      status: 'T+0'
-    };
-  }
-
-  const daysDiff = Math.ceil((sellableOnlyDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-  const status = `T+${daysDiff}` as 'T+1' | 'T+2' | 'T+3';
+  const sellableDate = addTradeDays(buyOnlyDate, 1);
 
   return {
     isT1: true,
     buyDate: buyOnlyDate,
     sellableDate,
-    status
+    status: 'T+1'
   };
 };
 
@@ -146,12 +127,13 @@ export const drawT1Marker = (
 
 export const getT1StatusForDate = (date: Date, symbol: string): 'T+0' | 'T+1' | 'T+2' | 'T+3' | '可卖' => {
   const status = calculateT1Status(date, symbol);
-  if (status.status === 'T+0') {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const sellableOnlyDate = new Date(status.sellableDate);
-    sellableOnlyDate.setHours(0, 0, 0, 0);
-    return today >= sellableOnlyDate ? '可卖' : status.status;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const sellableOnlyDate = new Date(status.sellableDate);
+  sellableOnlyDate.setHours(0, 0, 0, 0);
+
+  if (today >= sellableOnlyDate) {
+    return '可卖';
   }
   return status.status;
 };

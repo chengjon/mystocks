@@ -297,12 +297,12 @@ const loadData = async () => {
       params.market = filters.market
     }
 
-    const response = await dataApi.getStocksBasic(params) as StocksResponse
+    const response = await dataApi.getStocksBasic(params) as unknown as StocksResponse
     if (response.success && response.data) {
       stocks.value = response.data
       total.value = response.total || response.data.length
     } else {
-      throw new Error(response.msg || 'API返回数据格式错误')
+      throw new Error((response as StocksResponse & { message?: string }).message || response.msg || 'API返回数据格式错误')
     }
   } catch (error: unknown) {
     console.error('加载数据失败:', error)

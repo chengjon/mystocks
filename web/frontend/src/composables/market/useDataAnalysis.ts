@@ -7,11 +7,14 @@ import {
     buildDataAnalysisStats,
     extractDataAnalysisIndicators,
     toDataAnalysisResults,
+    type DataAnalysisIndicatorItem,
+    type StockScreeningResultRow,
 } from './dataAnalysisData'
 import {
     extractStockScreenerRows,
     filterStockScreenerRows,
     resolveStocksBasicEndpoint,
+    type StockScreenerRow,
 } from '@/views/stocks/stockScreenerData'
 
 function buildAuthHeaders(): Record<string, string> {
@@ -27,15 +30,15 @@ export function useDataAnalysis() {
     const activeTab = ref('indicators')
     const activeCategory = ref('trend')
     const activeFile = ref('main')
-    const selectedIndicator = ref(null)
-    const selectedStock = ref(null)
-    const selectedTemplate = ref(null)
+    const selectedIndicator = ref<DataAnalysisIndicatorItem | null>(null)
+    const selectedStock = ref<StockScreenerRow | null>(null)
+    const selectedTemplate = ref<string | null>(null)
     const loading = ref(false)
     const lastUpdateTime = ref(new Date().toLocaleString('zh-CN'))
 
     const screeningTimes = ref(0)
-    const allStocks = ref([])
-    const stats = ref(
+    const allStocks = ref<StockScreenerRow[]>([])
+    const stats = ref<ReturnType<typeof buildDataAnalysisStats>>(
         buildDataAnalysisStats({
             indicators: [],
             stockUniverseSize: 0,
@@ -53,13 +56,27 @@ export function useDataAnalysis() {
         { key: 'candlestick', label: '形态指标', icon: '🕯️' }
     ]
 
-    const indicators = ref([])
+    const indicators = ref<DataAnalysisIndicatorItem[]>([])
 
     const filteredIndicators = computed(() => {
         return indicators.value.filter(ind => ind.category === activeCategory.value)
     })
 
-    const screeningFilters = ref({
+    const screeningFilters = ref<{
+        priceMin: number | null
+        priceMax: number | null
+        changeMin: number | null
+        changeMax: number | null
+        volumeMin: number | null
+        volumeMax: number | null
+        turnoverMin: number | null
+        turnoverMax: number | null
+        marketCapMin: number | null
+        marketCapMax: number | null
+        peMin: number | null
+        peMax: number | null
+        indicators: string[]
+    }>({
         priceMin: null,
         priceMax: null,
         changeMin: null,
@@ -75,7 +92,7 @@ export function useDataAnalysis() {
         indicators: []
     })
 
-    const screeningResults = ref([])
+    const screeningResults = ref<ReturnType<typeof toDataAnalysisResults>>([])
 
     const metrics = ref({
         riseCount: 0,
@@ -88,7 +105,7 @@ export function useDataAnalysis() {
         avgTurnover: 0,
         avgMarketCap: 0,
         limitUpCount: 0,
-        industryDistribution: []
+        industryDistribution: [] as StockScreeningResultRow[]
     })
 
     const availableIndicatorsForFilter = computed(() =>
@@ -123,16 +140,16 @@ export function useDataAnalysis() {
 
     function applyScreening() {
         const filteredRows = filterStockScreenerRows(allStocks.value, {
-            priceMin: screeningFilters.value.priceMin,
-            priceMax: screeningFilters.value.priceMax,
-            peMin: screeningFilters.value.peMin,
-            peMax: screeningFilters.value.peMax,
-            volumeMin: screeningFilters.value.volumeMin,
-            volumeMax: screeningFilters.value.volumeMax,
-            amountMin: screeningFilters.value.turnoverMin,
-            amountMax: screeningFilters.value.turnoverMax,
-            changePercentMin: screeningFilters.value.changeMin,
-            changePercentMax: screeningFilters.value.changeMax,
+            priceMin: screeningFilters.value.priceMin ?? undefined,
+            priceMax: screeningFilters.value.priceMax ?? undefined,
+            peMin: screeningFilters.value.peMin ?? undefined,
+            peMax: screeningFilters.value.peMax ?? undefined,
+            volumeMin: screeningFilters.value.volumeMin ?? undefined,
+            volumeMax: screeningFilters.value.volumeMax ?? undefined,
+            amountMin: screeningFilters.value.turnoverMin ?? undefined,
+            amountMax: screeningFilters.value.turnoverMax ?? undefined,
+            changePercentMin: screeningFilters.value.changeMin ?? undefined,
+            changePercentMax: screeningFilters.value.changeMax ?? undefined,
             changeType: 'any',
             marketCapRange: 'any',
         })

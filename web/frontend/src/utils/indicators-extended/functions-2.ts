@@ -22,7 +22,52 @@ import {
 } from 'technicalindicators'
 
 // 导入自定义实现函数
-import { calculateMACD } from './technicalIndicators.js'
+import { calculateMACD } from '../technicalIndicators.js'
+import {
+  calculateADX,
+  calculateAO,
+  calculateCCI,
+  calculateCMO,
+  calculateDEMA,
+  calculateEMA,
+  calculateHMA,
+  calculateKAMA,
+  calculateMOM,
+  calculatePSAR,
+  calculateROC,
+  calculateSMA,
+  calculateStochastic,
+  calculateStochRSI,
+  calculateTEMA,
+  calculateTRIMA,
+  calculateTRIX,
+  calculateVWAP,
+  calculateVWMA,
+  calculateWMA,
+  calculateWilliamsR,
+  calculateADL,
+  type ExtendedKLineDataPoint
+} from './part-1.ts'
+
+function calculateAverage(values: number[], divisors: number[], period: number): number[] {
+  const result: number[] = []
+
+  for (let index = 0; index < values.length; index += 1) {
+    if (index < period - 1) {
+      result.push(0)
+      continue
+    }
+
+    const valueSlice = values.slice(index - period + 1, index + 1)
+    const divisorSlice = divisors.slice(index - period + 1, index + 1)
+    const numerator = valueSlice.reduce((sum, value) => sum + value, 0)
+    const denominator = divisorSlice.reduce((sum, value) => sum + value, 0)
+
+    result.push(denominator === 0 ? 0 : numerator / denominator)
+  }
+
+  return result
+}
 
 /**
  * 多空力量 (Bull/Bear Power)

@@ -60,9 +60,26 @@ const tabs = [
   { key: 'backtest', label: '回测验证' }
 ]
 
-const indicators = ref<unknown[]>([])
-const trendData = ref<unknown[]>([])
-const equityData = ref<unknown[]>([])
+type IndicatorItem = {
+  name: string
+  value: string | number
+  signal: string
+  signalType: 'rise' | 'fall' | 'neutral'
+}
+
+type TrendDataPoint = {
+  time: string | number
+  value: number
+}
+
+type EquityDataPoint = {
+  time: string
+  value: number
+}
+
+const indicators = ref<IndicatorItem[]>([])
+const trendData = ref<TrendDataPoint[]>([])
+const equityData = ref<EquityDataPoint[]>([])
 const backtestStats = ref({
   totalReturn: '0%',
   sharpe: '0',
@@ -80,7 +97,7 @@ const handleAnalyze = async (params: { symbol: string, period: string }) => {
       indicators.value = rawIndicators.map(item => ({
         name: item.name,
         value: item.value,
-        signal: item.signal,
+        signal: item.signal || '',
         signalType: item.signalType || 'neutral'
       }))
     }
@@ -105,7 +122,7 @@ const handleRunBacktest = async () => {
       maxDrawdown: '-8.5%',
       winRate: '62%'
     }
-    equityData.value = Array.from({length: 50}, (_, i) => ({ time: i, value: 100 + Math.random() * 20 }))
+    equityData.value = Array.from({length: 50}, (_, i) => ({ time: String(i), value: 100 + Math.random() * 20 }))
   }, 1000)
 }
 

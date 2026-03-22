@@ -28,9 +28,6 @@ import {
   // VWMA 已移除 - technicalindicators v3.1.0 不存在，使用自定义实现
 } from 'technicalindicators'
 
-// Re-export basic types and functions from indicators.ts
-export * from './indicators'
-
 /**
  * K线数据点接口 (扩展)
  */

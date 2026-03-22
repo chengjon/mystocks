@@ -28,23 +28,23 @@
 
                     <div v-else-if="filter.type === 'select'" class="filter-input-wrapper">
                         <ArtDecoSelect
-                            v-model="filterValues[filter.key]"
+                            :model-value="selectModelValue(filter.key)"
                             :placeholder="filter.placeholder || `Select ${filter.label}`"
                             :options="filter.options || []"
                             :clearable="filter.clearable !== false"
-                            @update:modelValue="handleFilterChange(filter.key)"
+                            @update:modelValue="handleSelectChange(filter.key, $event)"
                         />
                     </div>
 
                     <div v-else-if="filter.type === 'multi-select'" class="filter-input-wrapper">
                         <el-select
-                            v-model="filterValues[filter.key]"
+                            :model-value="multiSelectModelValue(filter.key)"
                             :placeholder="filter.placeholder || `Select ${filter.label}`"
                             :multiple="true"
                             :collapse-tags="true"
                             :clearable="filter.clearable !== false"
                             class="artdeco-multi-select"
-                            @change="handleFilterChange(filter.key)"
+                            @update:modelValue="handleMultiSelectChange(filter.key, $event)"
                         >
                             <el-option
                                 v-for="(option, _idx) in filter.options"
@@ -57,7 +57,7 @@
 
                     <div v-else-if="filter.type === 'date-range'" class="filter-input-wrapper">
                         <el-date-picker
-                            v-model="filterValues[filter.key]"
+                            :model-value="dateRangeModelValue(filter.key)"
                             type="daterange"
                             :range-separator="filter.rangeSeparator || 'TO'"
                             :start-placeholder="filter.startPlaceholder || 'Start'"
@@ -65,7 +65,7 @@
                             :format="filter.dateFormat || 'YYYY-MM-DD'"
                             :value-format="filter.valueFormat || 'YYYY-MM-DD'"
                             class="artdeco-date-picker"
-                            @change="handleFilterChange(filter.key)"
+                            @update:modelValue="handleDateRangeChange(filter.key, $event)"
                         />
                     </div>
 
@@ -131,7 +131,10 @@
         disabled?: boolean
     }
 
-    type FilterValue = string | number | boolean | null | string[] | number[]
+    type FilterValue = string | number | null | Array<string | number | Date>
+    type SelectValue = string | number
+    type MultiSelectValue = string[] | number[] | undefined
+    type DateRangeValue = Array<string | Date> | undefined
 
     interface Filter {
         key: string
@@ -152,7 +155,7 @@
     interface QuickFilter {
         key: string
         label: string
-        filters: Record<string, unknown>
+        filters: Record<string, FilterValue>
     }
 
     interface Props {
@@ -211,6 +214,56 @@
     const handleFilterChange = (_key: string) => {
         activeQuickFilter.value = ''
         emit('filterChange', filterValues)
+    }
+
+    const selectModelValue = (key: string): SelectValue => {
+        const value = filterValues[key]
+        return typeof value === 'string' || typeof value === 'number' ? value : ''
+    }
+
+    const handleSelectChange = (key: string, value: SelectValue) => {
+        filterValues[key] = value === '' ? null : value
+        handleFilterChange(key)
+    }
+
+    const multiSelectModelValue = (key: string): MultiSelectValue => {
+        const value = filterValues[key]
+        if (!Array.isArray(value)) {
+            return []
+        }
+
+        if (value.every(item => typeof item === 'string')) {
+            return value as string[]
+        }
+
+        if (value.every(item => typeof item === 'number')) {
+            return value as number[]
+        }
+
+        return value
+            .filter((item): item is string | number => typeof item === 'string' || typeof item === 'number')
+            .map(item => String(item))
+    }
+
+    const handleMultiSelectChange = (key: string, value: MultiSelectValue) => {
+        filterValues[key] = value ?? []
+        handleFilterChange(key)
+    }
+
+    const dateRangeModelValue = (key: string): DateRangeValue => {
+        const value = filterValues[key]
+        if (!Array.isArray(value)) {
+            return undefined
+        }
+
+        return value.filter(
+            (item): item is string | Date => typeof item === 'string' || item instanceof Date
+        )
+    }
+
+    const handleDateRangeChange = (key: string, value: DateRangeValue) => {
+        filterValues[key] = value ?? null
+        handleFilterChange(key)
     }
 
     const handleQuickFilter = (quick: QuickFilter) => {

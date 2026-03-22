@@ -1,4 +1,4 @@
 export { BOARD_CONFIGS, type BoardType, type LimitConfig } from './stopLimit.ts';
-export { calculateLimitPrice, analyzeStopLimit, isLimitUpKLine, isLimitDownKLine, drawLimitOverlay, formatLimitLabel } from './stopLimit.ts';
+export { calculateLimitPrice, calculateStopLimit, analyzeStopLimit, isLimitUp, isLimitDown, isLimitUpKLine, isLimitDownKLine, drawLimitOverlay, formatLimitLabel, type StopLimitBoardType } from './stopLimit.ts';
 export { calculateT1Status, findT1Marks, drawT1Marker, getT1StatusForDate, type T1Status, type T1Mark, TRADE_DAYS_CYCLE, isTradeDay, addTradeDays } from './t1Marker.ts';
 export { ADJUST_CONFIGS, getAdjustConfig, type AdjustInfo, calculateAdjustFactor, applyAdjustFactor, generateAdjustLabel, validateAdjustData } from './adjust.ts';

@@ -1,11 +1,18 @@
 import type { KLineData } from '@/types/kline.ts';
 
 export type BoardType = 'main' | 'sm' | 'gem' | 'bj';
+export type StopLimitBoardType = BoardType | 'st' | 'star' | 'bse';
 
 export interface LimitConfig {
   limitPct: number;
   name: string;
   color: string;
+}
+
+export interface StopLimitRange {
+  limitUp: number;
+  limitDown: number;
+  limitPct: number;
 }
 
 export const BOARD_CONFIGS: Record<BoardType, LimitConfig> = {
@@ -35,6 +42,33 @@ export const calculateLimitPrice = (
     return Number((prevClose * (1 + limitPct)).toFixed(2));
   }
   return Number((prevClose * (1 - limitPct)).toFixed(2));
+};
+
+function resolveLimitPct(boardType: StopLimitBoardType): number {
+  if (boardType === 'st') {
+    return 0.05;
+  }
+  if (boardType === 'star') {
+    return 0.20;
+  }
+  if (boardType === 'bse') {
+    return 0.30;
+  }
+
+  return BOARD_CONFIGS[boardType].limitPct;
+}
+
+export const calculateStopLimit = (
+  prevClose: number,
+  boardType: StopLimitBoardType
+): StopLimitRange => {
+  const limitPct = resolveLimitPct(boardType);
+
+  return {
+    limitUp: calculateLimitPrice(prevClose, limitPct, 'up'),
+    limitDown: calculateLimitPrice(prevClose, limitPct, 'down'),
+    limitPct
+  };
 };
 
 export interface StopLimitInfo {
@@ -90,6 +124,16 @@ export const isLimitUpKLine = (kline: KLineData, limitUp: number, tolerance = 0.
 
 export const isLimitDownKLine = (kline: KLineData, limitDown: number, tolerance = 0.02): boolean => {
   return kline.close <= limitDown + tolerance;
+};
+
+export const isLimitUp = (price: number, prevClose: number, limitPct: number, tolerance = 0.02): boolean => {
+  const limitUp = calculateLimitPrice(prevClose, limitPct, 'up');
+  return price >= limitUp - tolerance;
+};
+
+export const isLimitDown = (price: number, prevClose: number, limitPct: number, tolerance = 0.02): boolean => {
+  const limitDown = calculateLimitPrice(prevClose, limitPct, 'down');
+  return price <= limitDown + tolerance;
 };
 
 export const drawLimitOverlay = (

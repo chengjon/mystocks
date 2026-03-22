@@ -418,7 +418,7 @@ function generateConfigFileContent(configs) {
   lines.push('')
   lines.push(`export function getTabConfig(routeName: string, tabId: string): TabConfig | undefined {`)
   lines.push(`  const config = PAGE_CONFIG[routeName]`)
-  lines.push(`  if (isMonolithicConfig(config)) {`)
+  lines.push(`  if (config && isMonolithicConfig(config)) {`)
   lines.push(`    return config.tabs.find(tab => tab.id === tabId)`)
   lines.push(`  }`)
   lines.push(`  return undefined`)

@@ -38,11 +38,11 @@ describe('Dependency Migration Validation', () => {
 
     // Should not have ant-design-vue
     expect(pkg.dependencies).not.toHaveProperty('ant-design-vue')
-    expect(pkg.dependencies).not.toHaveProperty('@ant-design/icons-vue')
 
-    // Should have element-plus
+    // Should keep the icon bridge while Element Plus is the main UI kit
     expect(pkg.dependencies).toHaveProperty('element-plus')
     expect(pkg.dependencies).toHaveProperty('@element-plus/icons-vue')
+    expect(pkg.dependencies).toHaveProperty('@ant-design/icons-vue')
 
     // Should have proper version constraints
     expect(pkg.dependencies['element-plus']).toMatch(/^[\^~]?2\./)

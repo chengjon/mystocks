@@ -5,7 +5,7 @@
  * To make permanent changes, update the generation script and run:
  *   npm run generate-page-config
  * 
- * Generated at: 2026-03-11T12:03:55.518Z
+ * Generated at: 2026-03-22T02:31:38.549Z
  * Routes processed: 35
  */
 
@@ -51,7 +51,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     title: '龙虎榜',
     description: '龙虎榜',
     apiEndpoint: '/api/v1/market/lhb',
-    component: 'MarketDragonTigerPage.vue',
+    component: 'DragonTigerAnalysis.vue',
     requiresAuth: true,
   },
   'data-industry': {
@@ -79,7 +79,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     title: '资金流向',
     description: '资金流向',
     apiEndpoint: '/api/akshare/market/fund-flow',
-    component: 'DataFundFlowPage.vue',
+    component: 'FundFlowAnalysis.vue',
     requiresAuth: true,
   },
   'data-indicator': {
@@ -98,7 +98,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     title: '组合管理',
     description: '组合管理',
     apiEndpoint: '/api/v1/monitoring/watchlists',
-    component: 'WatchlistManagement.vue',
+    component: 'WatchlistManager.vue',
     requiresAuth: true,
   },
   'watchlist-signals': {
@@ -185,7 +185,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     title: '仓位管理',
     description: '仓位管理',
     apiEndpoint: '/api/v1/trade/positions',
-    component: 'StrategyPositionPage.vue',
+    component: 'ArtDecoTradingPositions.vue',
     requiresAuth: true,
   },
   'trade-positions': {
@@ -390,7 +390,7 @@ export function getPageConfig(routeName: string): PageConfig | undefined {
 
 export function getTabConfig(routeName: string, tabId: string): TabConfig | undefined {
   const config = PAGE_CONFIG[routeName]
-  if (isMonolithicConfig(config)) {
+  if (config && isMonolithicConfig(config)) {
     return config.tabs.find(tab => tab.id === tabId)
   }
   return undefined
