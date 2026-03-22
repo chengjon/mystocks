@@ -198,3 +198,43 @@ def test_http_strategy_crud_responses_use_unified_response_shape(monkeypatch):
     assert list_response.status_code == 200
     assert list_payload["success"] is True
     assert list_payload["data"]["total"] == 1
+
+
+def test_http_strategy_lifecycle_endpoints_update_runtime_fallback_status(monkeypatch):
+    monkeypatch.setenv("USE_MOCK_DATA", "false")
+    monkeypatch.setenv("TESTING", "true")
+
+    with _build_client(monkeypatch, _FailingManager) as client:
+        create_response = client.post(
+            "/api/v1/strategy/strategies",
+            json={
+                "name": "Lifecycle Contract Strategy",
+                "description": "Lifecycle probe",
+                "strategy_type": "trend_following",
+                "status": "archived",
+            },
+        )
+
+        created_payload = create_response.json()
+        strategy_id = created_payload["data"]["strategy_id"]
+
+        start_response = client.post(f"/api/v1/strategy/{strategy_id}/start")
+        pause_response = client.post(f"/api/v1/strategy/{strategy_id}/pause")
+        resume_response = client.post(f"/api/v1/strategy/{strategy_id}/resume")
+        stop_response = client.post(f"/api/v1/strategy/{strategy_id}/stop")
+
+    assert start_response.status_code == 200
+    assert start_response.json()["success"] is True
+    assert start_response.json()["data"]["status"] == "active"
+
+    assert pause_response.status_code == 200
+    assert pause_response.json()["success"] is True
+    assert pause_response.json()["data"]["status"] == "paused"
+
+    assert resume_response.status_code == 200
+    assert resume_response.json()["success"] is True
+    assert resume_response.json()["data"]["status"] == "active"
+
+    assert stop_response.status_code == 200
+    assert stop_response.json()["success"] is True
+    assert stop_response.json()["data"]["status"] == "archived"

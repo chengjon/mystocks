@@ -47,6 +47,23 @@ async function setupAuthenticatedSession(page: Parameters<typeof test>[0]["page"
   )
 }
 
+async function stubReadinessProbe(page: Parameters<typeof test>[0]["page"]) {
+  for (const endpoint of ["**/api/health/ready", "**/health/ready"]) {
+    await page.route(endpoint, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          success: true,
+          message: "system ready",
+          request_id: "e2e-artdeco-ready",
+          data: { status: "ready" },
+        }),
+      })
+    })
+  }
+}
+
 test.describe("ArtDeco Configuration Integration", () => {
   test.describe.configure({ mode: "serial", timeout: 120000 })
 
@@ -80,6 +97,7 @@ test.describe("ArtDeco Configuration Integration", () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await setupAuthenticatedSession(page)
+    await stubReadinessProbe(page)
     await page.route("**/api/v1/strategy/strategies**", async (route) => {
       await route.fulfill({
         status: 200,

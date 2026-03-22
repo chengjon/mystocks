@@ -13,13 +13,16 @@
       </template>
 
       <div class="toolbar">
+        <label class="sr-only" for="strategy-keyword-search">搜索策略</label>
         <input
+          id="strategy-keyword-search"
           v-model.trim="keyword"
           class="toolbar-input"
           type="text"
           placeholder="搜索策略名称 / 类型"
         />
-        <select v-model="statusFilter" class="toolbar-select">
+        <label class="sr-only" for="strategy-status-filter">策略状态筛选</label>
+        <select v-model="statusFilter" id="strategy-status-filter" class="toolbar-select">
           <option value="all">全部状态</option>
           <option value="running">运行中</option>
           <option value="paused">已暂停</option>
@@ -45,7 +48,13 @@
         </div>
       </div>
 
-      <div class="table-wrap" v-loading="loading">
+      <div
+        class="table-wrap"
+        v-loading="loading"
+        role="region"
+        tabindex="0"
+        aria-label="策略列表"
+      >
         <table class="strategy-table" v-if="pagedStrategies.length">
           <thead>
             <tr>
@@ -165,7 +174,8 @@
 
           <label class="editor-label">
             <span>策略类型</span>
-            <select v-model="formState.type" class="toolbar-select">
+            <label class="sr-only" for="strategy-form-type">策略类型</label>
+            <select v-model="formState.type" id="strategy-form-type" class="toolbar-select">
               <option v-for="item in strategyTypeOptions" :key="item.value" :value="item.value">
                 {{ item.label }}
               </option>
@@ -352,6 +362,14 @@ const pagedStrategies = computed(() => {
 })
 
 const emptyStateText = computed(() => {
+  if (error.value) {
+    return 'REAL 请求失败，请稍后重试。'
+  }
+
+  if (keyword.value.trim().length > 0 || statusFilter.value !== 'all') {
+    return '暂无符合条件的策略。'
+  }
+
   return 'REAL 数据为空，请先创建策略。'
 })
 

@@ -32,6 +32,23 @@ let cachedToken = ""
 let cachedUser: Record<string, unknown> = {}
 let usingFallbackAuth = false
 
+async function stubReadinessProbe(page: Page): Promise<void> {
+  for (const endpoint of ["**/api/health/ready", "**/health/ready"]) {
+    await page.route(endpoint, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          success: true,
+          message: "system ready",
+          request_id: "e2e-market-ready",
+          data: { status: "ready" },
+        }),
+      })
+    })
+  }
+}
+
 async function seedAuth(page: Page): Promise<void> {
   expect(Boolean(cachedToken)).toBeTruthy()
   await page.addInitScript(
@@ -94,6 +111,7 @@ test.describe("Market Data Module - E2E Tests", () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1920, height: 1080 })
     await seedAuth(page)
+    await stubReadinessProbe(page)
 
     if (usingFallbackAuth) {
       await page.route("**/api/csrf-token", async (route) => {

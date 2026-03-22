@@ -81,6 +81,25 @@ async function mockCsrfEndpoint(page: Parameters<typeof test>[0]["page"]) {
   })
 }
 
+async function stubReadinessProbe(page: Parameters<typeof test>[0]["page"]) {
+  for (const endpoint of ["**/api/health/ready", "**/health/ready"]) {
+    await page.route(endpoint, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(
+          buildUnifiedResponse(
+            {
+              status: "ready",
+            },
+            { request_id: "req-ready-1" }
+          )
+        ),
+      })
+    })
+  }
+}
+
 async function routeStrategyList(
   page: Parameters<typeof test>[0]["page"],
   handler: Parameters<typeof page.route>[1]
@@ -96,6 +115,7 @@ test.describe("Strategy Management - Monitoring & UI", () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1920, height: 1080 })
     await setupAuthenticatedSession(page)
+    await stubReadinessProbe(page)
     await mockCsrfEndpoint(page)
   })
 

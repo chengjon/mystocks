@@ -137,6 +137,23 @@ async function seedAuthSession(page: Page): Promise<void> {
   }, [cachedAuthToken, cachedAuthUser]);
 }
 
+async function setupReadinessRoute(page: Page): Promise<void> {
+  for (const endpoint of ['**/api/health/ready', '**/health/ready']) {
+    await page.route(endpoint, async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          message: 'system ready',
+          request_id: 'e2e-comprehensive-ready',
+          data: { status: 'ready' },
+        }),
+      });
+    });
+  }
+}
+
 async function bootstrapAuthSession(): Promise<void> {
   const loginPaths = ['/api/v1/auth/login', '/api/auth/login'];
   const api = await playwrightRequest.newContext();
@@ -237,6 +254,8 @@ async function setupFallbackRoutes(page: Page): Promise<void> {
 test.describe('Authentication', () => {
   test('Login page loads without critical errors', async ({ page }) => {
     const errors: string[] = [];
+
+    await setupReadinessRoute(page);
     
     page.on('console', msg => {
       if (msg.type() === 'error' && !isIgnoredError(msg.text())) {
@@ -288,6 +307,7 @@ test.describe('All Pages (Authenticated)', async () => {
 
   test.beforeEach(async ({ page }) => {
     await seedAuthSession(page);
+    await setupReadinessRoute(page);
 
     if (usingFallbackAuth) {
       await setupFallbackRoutes(page);

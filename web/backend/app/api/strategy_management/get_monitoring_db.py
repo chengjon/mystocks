@@ -156,6 +156,25 @@ def _delete_runtime_strategy(strategy_id: int) -> bool:
     return False
 
 
+def _set_runtime_strategy_status(strategy_id: int, status: str) -> Optional[Dict[str, Any]]:
+    existing = _find_runtime_strategy(strategy_id)
+    if existing is None:
+        return None
+
+    updated = _build_runtime_strategy_record(
+        {
+            **existing,
+            "id": strategy_id,
+            "strategy_id": strategy_id,
+            "status": status,
+            "updated_at": datetime.now(),
+        },
+        strategy_id=strategy_id,
+    )
+    _store_runtime_strategy(updated)
+    return updated
+
+
 def _list_runtime_strategies(status: Optional[str], page: int, page_size: int) -> Dict[str, Any]:
     strategies = list(_runtime_strategy_store)
 
@@ -265,6 +284,103 @@ def _list_runtime_backtests(strategy_id: Optional[int], page: int, page_size: in
     start = (page - 1) * page_size
     end = start + page_size
     return {"items": records[start:end], "total": total, "page": page, "page_size": page_size}
+
+
+async def _handle_strategy_lifecycle_action(
+    strategy_id: int,
+    *,
+    status: str,
+    action_name: str,
+    success_message: str,
+) -> Any:
+    operation_start = datetime.now()
+    source = "database"
+    updated_strategy: Optional[Dict[str, Any]] = None
+
+    try:
+        try:
+            manager = MyStocksUnifiedManager()
+
+            strategies = manager.load_data_by_classification(
+                classification=DataClassification.MODEL_OUTPUT,
+                table_name="strategies",
+                filters={"id": strategy_id},
+            )
+
+            if strategies is None or len(strategies) == 0:
+                if not _runtime_fallback_enabled():
+                    raise HTTPException(status_code=404, detail="策略不存在")
+
+                updated_strategy = _set_runtime_strategy_status(strategy_id, status)
+                if updated_strategy is None:
+                    raise HTTPException(status_code=404, detail="策略不存在")
+                source = "runtime-fallback"
+            else:
+                strategy_record = strategies.iloc[0].to_dict()
+                strategy_record["id"] = strategy_id
+                strategy_record["strategy_id"] = strategy_id
+                strategy_record["status"] = status
+                strategy_record["updated_at"] = datetime.now()
+
+                import pandas as pd
+
+                update_df = pd.DataFrame([strategy_record])
+                result = manager.save_data_by_classification(
+                    data=update_df,
+                    classification=DataClassification.MODEL_OUTPUT,
+                    table_name="strategies",
+                    upsert=True,
+                )
+
+                if not result:
+                    if not _runtime_fallback_enabled():
+                        raise HTTPException(status_code=500, detail=f"{success_message}失败")
+
+                    updated_strategy = _set_runtime_strategy_status(strategy_id, status)
+                    if updated_strategy is None:
+                        raise HTTPException(status_code=500, detail=f"{success_message}失败")
+                    source = "runtime-fallback"
+                else:
+                    updated_strategy = _normalize_strategy_record(strategy_record)
+        except HTTPException:
+            raise
+        except Exception as db_error:
+            if not _runtime_fallback_enabled():
+                raise
+
+            updated_strategy = _set_runtime_strategy_status(strategy_id, status)
+            if updated_strategy is None:
+                raise HTTPException(status_code=500, detail=f"{success_message}失败: {str(db_error)}")
+            source = "runtime-fallback"
+            logger.warning("策略生命周期动作降级到 runtime fallback: %(e)s", e=str(db_error))
+
+        operation_time = (datetime.now() - operation_start).total_seconds() * 1000
+        get_monitoring_db().log_operation(
+            operation_type="UPDATE",
+            table_name="strategies",
+            operation_name=action_name,
+            rows_affected=1,
+            operation_time_ms=operation_time,
+            success=True,
+            details=f"strategy_id={strategy_id}, status={status}, source={source}",
+        )
+
+        return create_unified_success_response(data=updated_strategy, message=success_message)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        operation_time = (datetime.now() - operation_start).total_seconds() * 1000
+        get_monitoring_db().log_operation(
+            operation_type="UPDATE",
+            table_name="strategies",
+            operation_name=action_name,
+            rows_affected=0,
+            operation_time_ms=operation_time,
+            success=False,
+            error_message=str(e),
+        )
+        raise HTTPException(status_code=500, detail=f"{success_message}失败: {str(e)}")
 
 def get_monitoring_db():
     """获取监控数据库实例（延迟初始化）"""
@@ -645,6 +761,50 @@ async def delete_strategy(strategy_id: int) -> Any:
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"删除策略失败: {str(e)}")
+
+
+@router.post("/{strategy_id}/start")
+async def start_strategy(strategy_id: int) -> Any:
+    """启动策略。"""
+    return await _handle_strategy_lifecycle_action(
+        strategy_id,
+        status="active",
+        action_name="start_strategy",
+        success_message="策略启动成功",
+    )
+
+
+@router.post("/{strategy_id}/pause")
+async def pause_strategy(strategy_id: int) -> Any:
+    """暂停策略。"""
+    return await _handle_strategy_lifecycle_action(
+        strategy_id,
+        status="paused",
+        action_name="pause_strategy",
+        success_message="策略暂停成功",
+    )
+
+
+@router.post("/{strategy_id}/resume")
+async def resume_strategy(strategy_id: int) -> Any:
+    """恢复策略。"""
+    return await _handle_strategy_lifecycle_action(
+        strategy_id,
+        status="active",
+        action_name="resume_strategy",
+        success_message="策略恢复成功",
+    )
+
+
+@router.post("/{strategy_id}/stop")
+async def stop_strategy(strategy_id: int) -> Any:
+    """停止策略。"""
+    return await _handle_strategy_lifecycle_action(
+        strategy_id,
+        status="archived",
+        action_name="stop_strategy",
+        success_message="策略停止成功",
+    )
 
 
 @router.post("/models/train")
