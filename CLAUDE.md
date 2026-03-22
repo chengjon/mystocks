@@ -399,9 +399,9 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **mystocks_spec** (84366 symbols, 208788 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **agent-docs-sync-20260322-215443** (59977 symbols, 141109 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
-> If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
+> If any GitNexus tool warns the index is stale, run `gitnexus analyze` in terminal first.
 
 ## Always Do
 
@@ -415,7 +415,7 @@ This project is indexed by GitNexus as **mystocks_spec** (84366 symbols, 208788 
 
 1. `gitnexus_query({query: "<error or symptom>"})` — find execution flows related to the issue
 2. `gitnexus_context({name: "<suspect function>"})` — see all callers, callees, and process participation
-3. `READ gitnexus://repo/mystocks_spec/process/{processName}` — trace the full execution flow step by step
+3. `READ gitnexus://repo/agent-docs-sync-20260322-215443/process/{processName}` — trace the full execution flow step by step
 4. For regressions: `gitnexus_detect_changes({scope: "compare", base_ref: "main"})` — see what your branch changed
 
 ## When Refactoring
@@ -454,10 +454,10 @@ This project is indexed by GitNexus as **mystocks_spec** (84366 symbols, 208788 
 
 | Resource | Use for |
 |----------|---------|
-| `gitnexus://repo/mystocks_spec/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/mystocks_spec/clusters` | All functional areas |
-| `gitnexus://repo/mystocks_spec/processes` | All execution flows |
-| `gitnexus://repo/mystocks_spec/process/{name}` | Step-by-step execution trace |
+| `gitnexus://repo/agent-docs-sync-20260322-215443/context` | Codebase overview, check index freshness |
+| `gitnexus://repo/agent-docs-sync-20260322-215443/clusters` | All functional areas |
+| `gitnexus://repo/agent-docs-sync-20260322-215443/processes` | All execution flows |
+| `gitnexus://repo/agent-docs-sync-20260322-215443/process/{name}` | Step-by-step execution trace |
 
 ## Self-Check Before Finishing
 
@@ -472,13 +472,29 @@ Before completing any code modification task, verify:
 After committing code changes, the GitNexus index becomes stale. Re-run analyze to update it:
 
 ```bash
-npx gitnexus analyze
+gitnexus analyze
 ```
+
+If you have modified the local GitNexus source code under `/opt/claude/GitNexus/gitnexus/src`, rebuild first so the CLI picks up the updated `dist` files:
+
+```bash
+cd /opt/claude/GitNexus/gitnexus
+npm run build
+gitnexus analyze
+```
+
+Use plain `gitnexus analyze` when you want the fastest refresh and exact symbol, file, or keyword search is enough.
+
+Graph tools, BM25/FTS search, impact analysis, and context lookups still work without embeddings.
+
+Use `gitnexus analyze --embeddings` when natural-language, concept, or fuzzy code search matters.
+
+This enables hybrid retrieval (`BM25 + semantic + RRF`) but takes longer and requires an embedding provider such as Ollama or Hugging Face.
 
 If the index previously included embeddings, preserve them by adding `--embeddings`:
 
 ```bash
-npx gitnexus analyze --embeddings
+gitnexus analyze --embeddings
 ```
 
 To check whether embeddings exist, inspect `.gitnexus/meta.json` — the `stats.embeddings` field shows the count (0 means no embeddings). **Running analyze without `--embeddings` will delete any previously generated embeddings.**
@@ -486,9 +502,10 @@ To check whether embeddings exist, inspect `.gitnexus/meta.json` — the `stats.
 If embedding generation is enabled, these environment variables control the provider and runtime behavior:
 
 ```bash
-# Raise the CLI safety limit and reduce batch size for large repos
+# Raise the CLI safety limit for large repos.
+# Start with 64 on a local Ollama GPU setup; use 32 as a conservative fallback.
 GITNEXUS_EMBEDDING_NODE_LIMIT=90000
-GITNEXUS_EMBEDDING_BATCH_SIZE=8
+GITNEXUS_EMBEDDING_BATCH_SIZE=64
 
 # Use a Hugging Face mirror / custom endpoint
 HF_ENDPOINT=https://hf-mirror.com
@@ -515,8 +532,34 @@ GITNEXUS_EMBEDDING_PROVIDER=ollama \
 GITNEXUS_OLLAMA_BASE_URL=http://localhost:11434 \
 GITNEXUS_OLLAMA_MODEL=qwen3-embedding:0.6b \
 GITNEXUS_EMBEDDING_NODE_LIMIT=90000 \
-GITNEXUS_EMBEDDING_BATCH_SIZE=8 \
-gitnexus analyze --force --embeddings
+GITNEXUS_EMBEDDING_BATCH_SIZE=64 \
+gitnexus analyze --embeddings
+```
+
+Use `--force` only for intentional full rebuilds or corrupted indexes.
+
+The same settings can also be stored in `~/.gitnexus/config.json`:
+
+```json
+{
+  "embeddings": {
+    "provider": "ollama",
+    "ollamaBaseUrl": "http://localhost:11434",
+    "ollamaModel": "qwen3-embedding:0.6b",
+    "nodeLimit": 90000,
+    "batchSize": 64
+  }
+}
+```
+
+Priority is: environment variables > `~/.gitnexus/config.json` > built-in defaults.
+
+You can inspect or update this without editing JSON manually:
+
+```bash
+gitnexus config embeddings show
+gitnexus config embeddings set --provider ollama --ollama-base-url http://localhost:11434 --ollama-model qwen3-embedding:0.6b --node-limit 90000 --batch-size 64
+gitnexus config embeddings clear
 ```
 
 > Claude Code users: A PostToolUse hook handles this automatically after `git commit` and `git merge`.
