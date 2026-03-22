@@ -190,8 +190,6 @@ EOF
         cat > "$mongodb_config" << 'EOF'
 storage:
   dbPath: /data/db
-  journal:
-    enabled: true
 
 systemLog:
   destination: file

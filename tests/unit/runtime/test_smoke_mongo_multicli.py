@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import os
 
+import pytest
+
 from scripts.runtime.smoke_mongo_multicli import run_smoke
 
 
@@ -36,6 +38,17 @@ def test_run_smoke_can_use_env_driven_mongo_connection(monkeypatch) -> None:
     assert calls
 
 
+def test_run_smoke_skips_drop_database_when_mongo_setup_fails(monkeypatch) -> None:
+    fake_client = _FailingMongoClient()
+    monkeypatch.setattr("scripts.runtime.smoke_mongo_multicli.MongoClient", lambda *_args, **_kwargs: fake_client)
+
+    with pytest.raises(RuntimeError, match="mongo unavailable"):
+        run_smoke(mongo_uri="mongodb://localhost:27017", mongo_db="smoke_fail_db")
+
+    assert fake_client.drop_attempts == 0
+    assert fake_client.closed is True
+
+
 class _FakeMongoClient:
     def __init__(self) -> None:
         self.databases: dict[str, _FakeDatabase] = {}
@@ -54,6 +67,22 @@ class _FakeMongoClient:
 
     def close(self) -> None:
         return None
+
+
+class _FailingMongoClient:
+    def __init__(self) -> None:
+        self.drop_attempts = 0
+        self.closed = False
+
+    def __getitem__(self, name: str):
+        raise RuntimeError("mongo unavailable")
+
+    def drop_database(self, name: str) -> None:
+        self.drop_attempts += 1
+        raise AssertionError("drop_database should not run when setup never succeeded")
+
+    def close(self) -> None:
+        self.closed = True
 
 
 class _FakeDatabase:

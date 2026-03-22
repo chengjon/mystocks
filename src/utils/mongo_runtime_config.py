@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from typing import Any, Dict, Tuple
+from urllib.parse import quote_plus
 
 
 DEFAULT_MONGODB_HOST = 'localhost'
@@ -55,14 +56,49 @@ def get_mongo_auth_source(default: str = DEFAULT_MONGODB_AUTH_SOURCE) -> str:
     return os.getenv('MONGODB_AUTH_SOURCE', default)
 
 
+def get_mongo_connection_uri() -> str | None:
+    for key in ('MAESTRO_COLLAB_MONGO_URI', 'COLLAB_MONGO_URI', 'MONGODB_URI', 'MONGO_URI'):
+        value = os.getenv(key)
+        if value:
+            return value
+    return None
+
+
+def build_mongo_connection_uri(*, default_database: str = 'admin') -> str:
+    explicit_uri = get_mongo_connection_uri()
+    if explicit_uri:
+        return explicit_uri
+
+    host = get_mongo_host()
+    port = get_mongo_port()
+    username = get_mongo_username()
+    password = get_mongo_password()
+    auth_source = get_mongo_auth_source()
+
+    auth_prefix = ''
+    if username:
+        auth_prefix = quote_plus(username)
+        if password:
+            auth_prefix = f'{auth_prefix}:{quote_plus(password)}'
+        auth_prefix = f'{auth_prefix}@'
+
+    return f'mongodb://{auth_prefix}{host}:{port}/{default_database}?authSource={quote_plus(auth_source)}'
+
+
 def get_mongo_connection_kwargs(*, server_selection_timeout_ms: int | None = None) -> Dict[str, Any]:
-    kwargs: Dict[str, Any] = {
-        'host': get_mongo_host(),
-        'port': get_mongo_port(),
-        'username': get_mongo_username(),
-        'password': get_mongo_password(),
-        'authSource': get_mongo_auth_source(),
-    }
+    mongo_uri = get_mongo_connection_uri()
+    if mongo_uri:
+        kwargs: Dict[str, Any] = {
+            'host': mongo_uri,
+        }
+    else:
+        kwargs = {
+            'host': get_mongo_host(),
+            'port': get_mongo_port(),
+            'username': get_mongo_username(),
+            'password': get_mongo_password(),
+            'authSource': get_mongo_auth_source(),
+        }
     if server_selection_timeout_ms is not None:
         kwargs['serverSelectionTimeoutMS'] = server_selection_timeout_ms
     return kwargs

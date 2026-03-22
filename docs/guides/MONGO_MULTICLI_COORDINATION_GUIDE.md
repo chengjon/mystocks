@@ -166,11 +166,21 @@ python scripts/runtime/smoke_mongo_multicli.py \
 
 若不传 `--mongo-uri`，脚本会自动读取项目现有 Mongo 环境配置：
 
+- `MAESTRO_COLLAB_MONGO_URI`
+- `COLLAB_MONGO_URI`
+- `MONGODB_URI`
+- `MONGO_URI`
 - `MONGODB_HOST` / `MONGODB_PORT`
 - 或遗留 `MONGODB_IP`
 - `MONGODB_ROOT_USERNAME` / `MONGODB_ROOT_PASSWORD`
 - 或遗留 `USERNAME` / `PASSWORD`
 - `MONGODB_AUTH_SOURCE`
+
+优先级规则：
+
+- 显式 `--mongo-uri` 最高优先
+- 未显式传入时，先按 URI 环境变量顺序解析
+- 只有 URI 环境变量都不存在时，才回落到 host/port + username/password + authSource
 
 当前仓库实测可直接无参运行：
 

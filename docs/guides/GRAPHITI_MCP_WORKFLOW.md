@@ -360,6 +360,22 @@ mcp__graphiti-memory__get_episodes(
 - `server_status=ok` 且 `search_outcome=miss`
   - 仅说明当前查询未命中，不代表服务异常
 
+### Scoped Preflight Mongo Resolution
+
+`scripts/runtime/smoke_graphiti_preflight.py` 当前会先在父进程解析 Mongo 目标，再把解析后的 `--mongo-uri` 显式传给共享 `coordctl.py graphiti preflight` 子命令。
+
+这样做的目的：
+
+- 避免父进程和子进程各自重新读取 `.env` 后落到不同的 Mongo 目标
+- 让 Mongo 连接失败点更集中，日志更容易解释
+- 保持 smoke preflight 与普通 `coordctl.py graphiti preflight --mongo-uri ...` 的行为一致
+
+另外，repo-local smoke 默认数据库名使用唯一前缀：
+
+- `graphiti_preflight_smoke_<8位随机后缀>`
+
+这样可以降低并发执行或异常中断时的临时库互踩风险。
+
 ### 判断规则速查
 
 | 问题类型 | 查询目标 | 工具 |
@@ -474,6 +490,22 @@ python scripts/runtime/smoke_graphiti_cli.py \
 - 它适合验证共享 CLI 本身是否通，而不是验证某个 assistant-specific hook
 - 建议使用临时 `group_id`
 - 验证完成后，如需清理，可对该临时 group 执行 `clear_graph`
+
+如果需要验证 Mongo-backed scoped mode，可运行：
+
+```bash
+python scripts/runtime/smoke_graphiti_preflight.py \
+  --mongo-uri <MONGO_URI> \
+  --mongo-db <TEMP_DB_NAME> \
+  --actor-cli <CLI_NAME>
+```
+
+说明：
+
+- 这条脚本会创建临时 Mongo work item
+- 然后调用共享 CLI 的 `coordctl.py graphiti preflight --write-memory`
+- 最后删除临时 Mongo 数据库
+- 它适合验证 task-aware preflight 路径，而不是 direct generic memory
 
 ### Pattern 1: 开工前读取历史上下文
 

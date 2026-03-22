@@ -95,6 +95,51 @@ def test_mongo_connection_kwargs_falls_back_to_legacy_aliases(monkeypatch: pytes
     assert kwargs['authSource'] == 'admin'
 
 
+def test_mongo_connection_kwargs_prefers_coordination_uri_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    for key in [
+        'MONGODB_HOST',
+        'MONGODB_PORT',
+        'MONGODB_ROOT_USERNAME',
+        'MONGODB_ROOT_PASSWORD',
+        'MONGODB_AUTH_SOURCE',
+        'MONGODB_IP',
+        'USERNAME',
+        'PASSWORD',
+        'MONGODB_URI',
+        'MONGO_URI',
+        'COLLAB_MONGO_URI',
+    ]:
+        monkeypatch.delenv(key, raising=False)
+
+    monkeypatch.setenv('MAESTRO_COLLAB_MONGO_URI', 'mongodb://coord-user:coord-pass@mongo-host:27018/admin?authSource=admin')
+    monkeypatch.setenv('MONGODB_HOST', 'legacy-host-should-not-win')
+    monkeypatch.setenv('MONGODB_PORT', '27099')
+
+    from src.utils.mongo_runtime_config import get_mongo_connection_kwargs
+
+    kwargs = get_mongo_connection_kwargs(server_selection_timeout_ms=5000)
+
+    assert kwargs == {
+        'host': 'mongodb://coord-user:coord-pass@mongo-host:27018/admin?authSource=admin',
+        'serverSelectionTimeoutMS': 5000,
+    }
+
+
+def test_build_mongo_connection_uri_constructs_uri_from_standard_env_names(monkeypatch: pytest.MonkeyPatch) -> None:
+    for key in ['MAESTRO_COLLAB_MONGO_URI', 'COLLAB_MONGO_URI', 'MONGODB_URI', 'MONGO_URI', 'MONGODB_IP', 'USERNAME', 'PASSWORD']:
+        monkeypatch.delenv(key, raising=False)
+
+    monkeypatch.setenv('MONGODB_HOST', 'mongo-host')
+    monkeypatch.setenv('MONGODB_PORT', '27019')
+    monkeypatch.setenv('MONGODB_ROOT_USERNAME', 'root-user')
+    monkeypatch.setenv('MONGODB_ROOT_PASSWORD', 'root-pass')
+    monkeypatch.setenv('MONGODB_AUTH_SOURCE', 'admin')
+
+    from src.utils.mongo_runtime_config import build_mongo_connection_uri
+
+    assert build_mongo_connection_uri() == 'mongodb://root-user:root-pass@mongo-host:27019/admin?authSource=admin'
+
+
 def test_database_connection_manager_uses_role_aware_redis_kwargs() -> None:
     with patch('dotenv.load_dotenv', return_value=True):
         module = importlib.import_module('src.storage.database.connection_manager')

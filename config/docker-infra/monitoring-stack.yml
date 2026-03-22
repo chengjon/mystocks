@@ -92,7 +92,7 @@ services:
           memory: 2G
     volumes:
       - mongodb_data:/data/db
-      - ${MONGODB_CONFIG_PATH:-./config/mongodb}/mongod.conf:/etc/mongod.conf
+      - ${MONGODB_CONFIG_PATH:-../mongodb}/mongod.conf:/etc/mongod.conf
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGODB_ROOT_USERNAME:-admin}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD}

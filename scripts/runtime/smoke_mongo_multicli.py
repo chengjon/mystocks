@@ -49,9 +49,11 @@ def main(argv: list[str] | None = None) -> int:
 def run_smoke(*, mongo_uri: str | None, mongo_db: str | None = None) -> dict[str, object]:
     db_name = mongo_db or f"mystocks_coord_smoke_{uuid4().hex[:8]}"
     client = _build_mongo_client(mongo_uri)
+    should_drop_database = False
 
     try:
         database = client[db_name]
+        should_drop_database = True
         service = CoordinationService(database_store := __import__(
             "src.services.maestro.collab.backends.mongo.store",
             fromlist=["MongoCollaborationStore"],
@@ -128,8 +130,11 @@ def run_smoke(*, mongo_uri: str | None, mongo_db: str | None = None) -> dict[str
             "status_api_control_plane_count": state_payload["control_plane"]["count"],
         }
     finally:
-        client.drop_database(db_name)
-        client.close()
+        try:
+            if should_drop_database:
+                client.drop_database(db_name)
+        finally:
+            client.close()
 
 
 def _build_mongo_client(mongo_uri: str | None) -> MongoClient:
