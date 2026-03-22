@@ -1,1000 +1,539 @@
-# MyStocks 项目文件目录整理方案
+# MyStocks 项目目录整理方案 v2.0
 
-**版本**: v1.4（根据用户建议修改）
-**创建日期**: 2026-01-13
-**审核日期**: 2026-01-13
-**审核人**: Gemini CLI Agent, 用户
+**版本**: v2.0
+**创建日期**: 2026-03-22
+**基于规范**: [目录与文件整理通用规则](../standards/DIRECTORY_AND_FILE_ORGANIZATION_RULES.md)
 **状态**: 待审批
 
 ---
 
-## 目录
+## 一、执行摘要
 
-1. [执行摘要](#1-执行摘要)
-2. [Phase 1 回顾](#2-phase-1-回顾)
-3. [__init__.py 规范](#3-__initpy-规范)
-4. [Phase 2: src/ 目录整理方案](#4-phase-2-src-目录整理方案)
-5. [Phase 3: docs/ 目录整理方案](#5-phase-3-docs-目录整理方案)
-6. [Phase 4: scripts/ 目录整理方案](#6-phase-4-scripts-目录整理方案)
-7. [文件/文件夹迁移映射表](#7-文件文件夹迁移映射表)
-8. [禁止移动列表](#8-禁止移动列表)
-9. [缺失文件处理流程](#9-缺失文件处理流程)
-10. [文件删除规则](#10-文件删除规则)
-11. [持续合规监控](#11-持续合规监控)
-12. [风险评估与回滚策略](#12-风险评估与回滚策略)
-13. [验收标准](#13-验收标准)
-14. [执行规范](#14-执行规范)
-15. [时间估算](#15-时间估算)
+### 1.1 当前问题诊断
 
----
+| 问题类别 | 当前状态 | 目标状态 |
+|----------|----------|----------|
+| **根目录** | 22个非必要文件/目录 | 仅保留允许清单文件 |
+| **docs/** | 40+ 子目录，命名混乱 | 8-10 个规范子目录 |
+| **归档目录** | `archive/` + `archived/` 重复 | 统一为 `archive/` |
+| **scripts/** | 40+ 子目录，职责不清 | 10-12 个分类目录 |
+| **配置文件** | 散落各处 | 统一到 `config/` |
 
-## 1. 执行摘要
+### 1.2 整理目标
 
-### 背景
-项目经过长期开发，目录结构变得臃肿混乱：
-- `src/` 目录包含 40+ 子目录，职责边界模糊
-- `docs/` 目录有 44 个子目录，文档组织无章法
-- `scripts/` 目录有 40+ 子目录，脚本用途不明确
+基于 [目录与文件整理通用规则](../standards/DIRECTORY_AND_FILE_ORGANIZATION_RULES.md)，实现：
 
-### 目标
-通过分阶段整理，建立清晰的目录结构，降低维护成本，提高开发效率。
+1. **根目录极简化**: 仅保留核心入口文件
+2. **目录结构标准化**: 按9大顶层目录组织
+3. **命名规范化**: 统一使用英文 kebab-case
+4. **归档统一化**: 合并重复归档目录
 
-### 范围
+### 1.3 整理范围
 
-| Phase | 内容 | 状态 |
-|-------|------|------|
-| Phase 1 | 根目录基准文件恢复 | ✅ 已完成 |
-| Phase 2 | src/ 目录整理 | ⏳ 待审批 |
-| Phase 3 | docs/ 目录整理 | ⏳ 待审批 |
-| Phase 4 | scripts/ 目录整理 | ⏳ 待审批 |
-
-### 用户建议采纳情况
-
-| 建议 | 采纳情况 |
-|------|---------|
-| `__init__.py` 使用规范 | ✅ 已采纳 |
-| 缺失文件处理流程（查找→历史→优化→新建） | ✅ 已采纳 |
-| 文件夹/文件迁移映射表 | ✅ 已采纳 |
-| 禁止移动的文件/文件夹列表 | ✅ 已采纳 |
-| 删除文件需审批 | ✅ 已采纳 |
-| 空目录可清除 | ✅ 已采纳 |
-| 持续合规监控 | ✅ 已采纳 |
+| Phase | 内容 | 优先级 | 预估时间 |
+|-------|------|--------|----------|
+| Phase 0 | 根目录清理 | P0 | 2h |
+| Phase 1 | docs/ 目录重组 | P1 | 4h |
+| Phase 2 | 归档目录合并 | P1 | 2h |
+| Phase 3 | scripts/ 目录整理 | P2 | 3h |
+| Phase 4 | config/ 目录统一 | P2 | 1h |
+| Phase 5 | 持续合规监控部署 | P3 | 2h |
 
 ---
 
-## 2. Phase 1 回顾
+## 二、当前目录结构分析
 
-### 已完成工作
+### 2.1 根目录现状
 
-| 文件 | 操作 | 来源 |
-|------|------|------|
-| GEMINI.md | 恢复 | docs/guides/ → 根目录 |
-| AGENTS.md | 恢复 | docs/guides/ → 根目录 |
-| core.py | 创建 | 入口文件 (重导出 src.core) |
-| data_access.py | 创建 | 入口文件 (重导出 src.data_access) |
-| monitoring.py | 创建 | 入口文件 (重导出 src.monitoring) |
-| unified_manager.py | 创建 | 入口文件 (重导出 src.core.unified_manager) |
-
-### Phase 1 验证结果
+**实际存在的非必要文件/目录**:
 
 ```
-✅ src.* 导入 - 全部正常
-✅ 根目录入口点导入 - 全部正常
-✅ 所有导入验证通过
+根目录/
+├── .FILE_OWNERSHIP          # → docs/guides/ 或删除
+├── .agent/                  # → .claude/ 下或删除
+├── .aider.conf.yml          # → config/tools/
+├── .aider.model.*.json      # → config/tools/
+├── .amazonq/                # → 删除或归档
+├── .archive/                # → 合并到 archive/
+├── .benchmarks/             # → reports/benchmarks/
+├── .config/                 # → config/
+├── .coverage                # → 删除 (应 gitignore)
+├── .cursor/                 # 保留 (工具配置)
+├── .env                     # 保留 (已在 gitignore)
+├── .gemini/                 # 保留 (工具配置)
+├── .githooks/               # → scripts/hooks/ 或保留
+├── .gitnexus/               # 保留 (索引数据)
+├── .migration/              # → docs/migration/ 或 archive/
+├── .mypy_cache/             # → 删除 (应 gitignore)
+├── .omc/                    # 保留 (OMC 状态)
+├── .pytest_cache/           # → 删除 (应 gitignore)
+├── .roo/                    # → 删除或归档
+├── .shared/                 # → 评估后决定
+├── .specify/                # 保留 (规范系统)
+├── .symphony/               # → 删除或归档
+├── .taskmaster/             # 保留 (任务管理)
+├── .vscode/                 # 保留 (IDE配置)
+├── .windsurf/               # → 删除或归档
+├── .worktrees/              # 保留 (Git worktree)
+├── .zenflow/                # → 删除或归档
+├── .zencoder/               # → 删除或归档
+├── FUNCTION_MAP.md          # → docs/architecture/
+├── TASK.md                  # 保留 (Multi-CLI 约定)
+├── TASK-REPORT.md           # 保留 (Multi-CLI 约定)
+├── tui.json                 # → config/
+├── opencode.json            # 保留 (工具配置)
+└── ...
 ```
 
-### Phase 1 教训
+### 2.2 docs/ 目录现状
 
-- ❌ 问题：未提前检查是否存在同名文件
-- ❌ 问题：未使用 git 历史中的原始模板
-- ❌ 问题：直接执行而未先出方案审批
+**当前子目录 (40+)**:
+
+| 目录 | 建议 |
+|------|------|
+| `docs/04-测试/` | 重命名为 `docs/testing/` |
+| `docs/ai_tools/` | 合并到 `docs/guides/` |
+| `docs/api/` | ✅ 保留 |
+| `docs/architecture/` | ✅ 保留 |
+| `docs/ci-cd/` | 合并到 `docs/operations/` |
+| `docs/cli_reports/` | 合并到 `docs/reports/` |
+| `docs/code_quality/` | 合并到 `docs/standards/` |
+| `docs/deployment/` | 合并到 `docs/operations/` |
+| `docs/design/` | 合并到 `docs/architecture/` |
+| `docs/design-references/` | 合并到 `docs/references/` |
+| `docs/docs/` | ❌ 删除 (空聚合目录) |
+| `docs/e2e/` | 合并到 `docs/testing/` |
+| `docs/examples/` | ✅ 保留 |
+| `docs/features/` | 合并到 `docs/guides/` |
+| `docs/frontend/` | 合并到 `docs/guides/` |
+| `docs/function-classification-manual/` | 合并到 `docs/references/` |
+| `docs/guides/` | ✅ 保留 |
+| `docs/legacy/` | 合并到 `archive/docs/` |
+| `docs/media/` | 合并到 `docs/references/` |
+| `docs/monitoring/` | 合并到 `docs/operations/` |
+| `docs/openspec_cmd/` | 合并到 `docs/guides/` |
+| `docs/operations/` | ✅ 保留 |
+| `docs/overview/` | ✅ 保留 |
+| `docs/performance/` | 合并到 `docs/reports/` |
+| `docs/plans/` | 合并到 `docs/references/` |
+| `docs/quality/` | 合并到 `docs/standards/` |
+| `docs/reports/` | ✅ 保留 |
+| `docs/reviews/` | 合并到 `docs/reports/` |
+| `docs/security/` | 合并到 `docs/standards/` |
+| `docs/standards/` | ✅ 保留 |
+| `docs/superpowers/` | 合并到 `docs/guides/` |
+| `docs/tasks/` | 合并到 `docs/reports/` |
+| `docs/tdx_integration/` | 合并到 `docs/guides/` |
+| `docs/technical_debt/` | 合并到 `docs/reports/` |
+| `docs/testing/` | ✅ 保留 |
+| `docs/ui-ux-pro-max/` | 合并到 `docs/guides/` |
+| `docs/web/` | 合并到 `docs/guides/` |
+| `docs/web-dev/` | 合并到 `docs/guides/` |
+| `docs/worklogs/` | 合并到 `docs/reports/` |
+
+### 2.3 归档目录重复问题
+
+**当前状态**:
+```
+archive/          # 正确的归档目录
+├── backups/
+├── docs/
+├── legacy-docs/
+└── legacy-root-archived/
+
+archived/         # ❌ 重复的归档目录
+├── backtesting/
+├── gpu_migration_backups_*/
+├── services/
+└── tools/
+```
+
+**目标状态**:
+```
+archive/
+├── backups/           # 运维备份
+├── code/              # 归档代码 (原 archived/*)
+├── docs/              # 归档文档
+├── legacy/            # 历史文件
+└── migrations/        # 迁移记录
+```
 
 ---
 
-## 3. __init__.py 规范
+## 三、目标目录结构
 
-### 3.1 使用原则
-
-| 场景 | 是否需要 __init__.py | 说明 |
-|------|---------------------|------|
-| 独立功能模块（需被导入） | ✅ 必须 | 作为子包管理，有专属初始化逻辑 |
-| 存放辅助模块（仅存放，不独立导入） | ❌ 可选 | 仅作为普通文件夹 |
-| 顶层包目录 | ✅ 推荐 | 保证兼容性，控制公共 API |
-
-### 3.2 最佳实践
-
-**推荐**：即使 Python 3.3+ 支持无 `__init__.py` 的命名空间包，普通项目仍推荐显式添加。
-
-### 3.3 __init__.py 模板
-
-```python
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-[模块名称]
-
-模块职责说明...
-
-创建日期: YYYY-MM-DD
-版本: X.X.X
-作者: JohnC& AI Dev Team (Claude, OpenCode, Gemini, IFLOW)
-"""
-
-# 版本信息
-__version__ = "1.0.0"
-
-# 作者信息
-AUTHOR = "JohnC& AI Dev Team (Claude, OpenCode, Gemini, IFLOW)"
-
-# 公共 API 定义
-__all__ = [
-    "ClassName",
-    "function_name",
-    "CONSTANT_NAME",
-]
-
-# 初始化逻辑（如需要）
-def _init_module():
-    """模块初始化逻辑"""
-    pass
-
-_init_module()
-```
-
-### 3.4 各 Phase __init__.py 要求
-
-| Phase | 目录 | __init__.py 要求 |
-|-------|------|-----------------|
-| Phase 2 | src/*/ | ✅ 所有子目录必须有 |
-| Phase 4 | scripts/*/ | ✅ 所有子目录必须有 |
-
----
-
-## 4. Phase 2: src/ 目录整理方案
-
-### 4.1 目标结构
+### 3.1 标准九大顶层目录
 
 ```
-src/
-├── domain/                     # 领域层
-│   ├── market_data/
-│   ├── trading/
-│   ├── portfolio/
-│   ├── monitoring/
-│   └── __init__.py
-├── application/                # 应用层
-│   ├── services/
-│   ├── workflows/
-│   ├── coordinators/
-│   └── __init__.py
-├── interfaces/                 # 接口层
-│   ├── adapters/
-│   ├── api/
-│   ├── cli/
-│   └── __init__.py
-├── infrastructure/             # 基础设施层
-│   ├── data_access/
-│   ├── storage/
-│   ├── messaging/
-│   ├── logging/
-│   ├── cache/
-│   └── __init__.py
-├── core/                       # 核心模块
-│   ├── config/
-│   ├── security/
-│   ├── exceptions/
-│   ├── patterns/
-│   └── __init__.py
-├── utils/                      # 工具层
-│   ├── helpers/
-│   ├── validators/
-│   ├── converters/
-│   └── __init__.py
-├── ml_strategy/                # ML策略
-│   ├── models/
-│   ├── training/
-│   ├── backtesting/
-│   └── __init__.py
-├── gpu/                        # GPU加速
-│   ├── acceleration/
-│   ├── resources/
-│   └── __init__.py
-└── __init__.py
+Project_Root/
+├── src/                    # 源代码 (已有)
+├── tests/                  # 测试文件 (已有)
+├── scripts/                # 脚本工具 (需整理)
+├── config/                 # 配置文件 (需整合)
+├── docs/                   # 文档 (需重组)
+├── architecture/           # 架构文档 (已有)
+├── reports/                # 生成报告 (需整合)
+├── archive/                # 归档文件 (需合并)
+└── data/                   # 数据文件 (已有)
 ```
 
-### 4.2 迁移映射表
-
-见第 7 节。
-
----
-
-## 5. Phase 3: docs/ 目录整理方案
-
-### 5.1 目标结构
+### 3.2 docs/ 目标结构
 
 ```
 docs/
-├── getting-started/            # 入门指南
-├── architecture/               # 架构设计
-├── api/                        # API参考
-├── guides/                     # 使用指南
-├── references/                 # 参考文档
-├── security/                   # 安全文档
-├── deployment/                 # 部署文档
-├── testing/                    # 测试文档
-├── legacy/                     # 归档文档 (只读)
-└── README.md
+├── INDEX.md                # 文档总索引
+├── overview/               # 项目概述
+│   ├── README.md
+│   └── QUICKSTART.md
+├── guides/                 # 开发指南
+│   ├── DEVELOPMENT.md
+│   ├── DEPLOYMENT.md
+│   └── TROUBLESHOOTING.md
+├── api/                    # API文档
+│   └── REFERENCE.md
+├── architecture/           # 架构设计
+│   └── DATABASE.md
+├── standards/              # 标准规范
+│   ├── CODING_STANDARDS.md
+│   └── SECURITY.md
+├── testing/                # 测试文档
+│   └── STRATEGY.md
+├── operations/             # 运维文档
+│   ├── MONITORING.md
+│   └── CI_CD.md
+├── reports/                # 项目报告
+│   ├── performance/
+│   └── technical_debt/
+├── references/             # 参考文档
+│   └── examples/
+└── examples/               # 示例代码
 ```
 
----
-
-## 6. Phase 4: scripts/ 目录整理方案
-
-### 6.1 目标结构
+### 3.3 scripts/ 目标结构
 
 ```
 scripts/
-├── runtime/                    # 运行时脚本
-├── maintenance/                # 维护脚本
-├── database/                   # 数据库脚本
-├── deployment/                 # 部署脚本
-├── testing/                    # 测试脚本
-├── development/                # 开发工具
-├── analysis/                   # 分析脚本
-├── data-operations/            # 数据操作
-├── security/                   # 安全脚本
-├── archive/                    # 归档脚本
-└── utils/                      # 实用工具
+├── runtime/                # 运行脚本 (run_*, save_*, monitor_*)
+├── database/               # 数据库脚本 (check_*, verify_*, create_*)
+├── dev/                    # 开发工具 (validate_*, analyze_*, generate_*)
+├── maintenance/            # 维护脚本
+├── deployment/             # 部署脚本
+├── testing/                # 测试脚本
+├── hooks/                  # Git hooks
+├── tools/                  # 实用工具
+└── utils/                  # 通用工具函数
 ```
 
 ---
 
-## 7. 文件/文件夹迁移映射表
+## 四、详细迁移计划
 
-### 7.1 Phase 2 完整迁移映射表（src/）
+### 4.1 Phase 0: 根目录清理
 
-#### 7.1.1 保留目录（无需操作）
+**操作清单**:
 
-| 原路径 | 新路径 | 操作 | 风险 | 回滚方法 |
-|--------|--------|------|------|---------|
-| src/domain/ | src/domain/ | 保留 | 低 | 无需回滚 |
-| src/application/services/ | src/application/services/ | 保留 | 低 | 无需回滚 |
-| src/core/ | src/core/ | 保留 | 低 | 无需回滚 |
-| src/utils/ | src/utils/ | 保留 | 低 | 无需回滚 |
-| src/ml_strategy/ | src/ml_strategy/ | 保留 | 低 | 无需回滚 |
-| src/gpu/ | src/gpu/ | 保留 | 低 | 无需回滚 |
+| 当前位置 | 目标位置 | 操作 | 风险 |
+|----------|----------|------|------|
+| `FUNCTION_MAP.md` | `docs/architecture/` | 移动 | 低 |
+| `tui.json` | `config/` | 移动 | 低 |
+| `.aider.conf.yml` | `config/tools/` | 移动 | 低 |
+| `.aider.model.*.json` | `config/tools/` | 移动 | 低 |
+| `.benchmarks/` | `reports/benchmarks/` | 移动 | 低 |
+| `.archive/` | 合并到 `archive/` | 合并 | 低 |
+| `.config/` | 合并到 `config/` | 合并 | 中 |
+| `.migration/` | `docs/migration/` | 移动 | 低 |
+| `.agent/`, `.amazonq/` | `archive/tools/` | 归档 | 低 |
+| `.roo/`, `.symphony/` | `archive/tools/` | 归档 | 低 |
+| `.windsurf/`, `.zenflow/` | `archive/tools/` | 归档 | 低 |
+| `.coverage` | 删除 | 删除 | 无 |
 
-#### 7.1.2 移动目录
+**验证命令**:
+```bash
+# 清理后验证
+ls -la *.md *.py *.json *.yaml *.yml 2>/dev/null | grep -v -E '(README|CLAUDE|AGENTS|LICENSE|CHANGELOG|requirements|package)'
+```
 
-| 原路径 | 新路径 | 操作 | 风险 | 回滚方法 |
-|--------|--------|------|------|---------|
-| src/adapters/ | src/interfaces/adapters/ | 移动 | 中 | `mv src/interfaces/adapters/ src/adapters/` |
-| src/data_access/ | src/infrastructure/data_access/ | 移动 | 中 | `mv src/infrastructure/data_access/ src/data_access/` |
-| src/monitoring/ | src/domain/monitoring/ | 移动 | 高 | `mv src/domain/monitoring/ src/monitoring/` |
-| src/backtesting/ | src/ml_strategy/backtesting/ | 移动 | 中 | `mv src/ml_strategy/backtesting/ src/backtesting/` |
-| src/db_manager/ | src/infrastructure/storage/ | 移动 | 高 | `mv src/infrastructure/storage/db_manager/ src/db_manager/` |
+### 4.2 Phase 1: docs/ 目录重组
 
-#### 7.1.3 合并目录
+**迁移映射表**:
 
-| 原路径 | 目标目录 | 操作 | 风险 | 回滚方法 |
-|--------|---------|------|------|---------|
-| src/interface/ | src/interfaces/api/ | 合并 | 高 | 需手动从 git 恢复 |
-| src/interfaces/ | src/interfaces/ | 合并 | 中 | 需手动合并 |
-| src/database/ | src/infrastructure/data_access/ | 合并 | 高 | 需手动合并 |
-| src/api/ | src/interfaces/api/ | 合并 | 中 | 需手动合并 |
+| 原目录 | 目标目录 | 文件数 | 优先级 |
+|--------|----------|--------|--------|
+| `docs/04-测试/` | `docs/testing/` | ~5 | P0 |
+| `docs/ci-cd/` | `docs/operations/` | ~3 | P1 |
+| `docs/deployment/` | `docs/operations/` | ~5 | P1 |
+| `docs/monitoring/` | `docs/operations/` | ~4 | P1 |
+| `docs/code_quality/` | `docs/standards/` | ~3 | P1 |
+| `docs/quality/` | `docs/standards/` | ~5 | P1 |
+| `docs/security/` | `docs/standards/` | ~6 | P1 |
+| `docs/design/` | `docs/architecture/` | ~4 | P1 |
+| `docs/performance/` | `docs/reports/` | ~3 | P2 |
+| `docs/reviews/` | `docs/reports/` | ~4 | P2 |
+| `docs/technical_debt/` | `docs/reports/` | ~3 | P2 |
+| `docs/worklogs/` | `docs/reports/` | ~10 | P2 |
+| `docs/legacy/` | `archive/docs/` | ~20 | P3 |
+| `docs/docs/` | 删除 | 0 | P3 |
 
-### 7.2 Phase 3 迁移映射表（docs/）
+**执行脚本**:
+```bash
+#!/bin/bash
+# docs/reorganization_phase1.sh
 
-见完整文档。
+# 1. 创建目标目录
+mkdir -p docs/{operations,testing,reports/{performance,reviews,technical_debt}}
 
-### 7.3 Phase 4 迁移映射表（scripts/）
+# 2. 移动文件 (使用 git mv 保留历史)
+git mv docs/04-测试/* docs/testing/
+git mv docs/ci-cd/* docs/operations/
+git mv docs/deployment/* docs/operations/
+git mv docs/monitoring/* docs/operations/
+git mv docs/code_quality/* docs/standards/
+git mv docs/quality/* docs/standards/
+git mv docs/security/* docs/standards/
 
-见完整文档。
+# 3. 删除空目录
+find docs -type d -empty -delete
+
+# 4. 更新文档索引
+python scripts/tools/docs_indexer.py --categories
+```
+
+### 4.3 Phase 2: 归档目录合并
+
+**操作**:
+
+```bash
+# 1. 将 archived/* 移动到 archive/
+git mv archived/backtesting archive/code/
+git mv archived/services archive/code/
+git mv archived/tools archive/code/
+
+# 2. 处理带时间戳的备份目录
+git mv archived/gpu_migration_backups_* archive/migrations/
+
+# 3. 删除空的 archived/ 目录
+rmdir archived/
+
+# 4. 合并 .archive/ 内容
+git mv .archive/* archive/
+rmdir .archive/
+```
+
+**目标结构**:
+```
+archive/
+├── backups/               # 运维备份
+├── code/                  # 归档代码
+│   ├── backtesting/
+│   ├── services/
+│   └── tools/
+├── docs/                  # 归档文档
+│   └── legacy-docs/
+├── legacy/                # 历史文件
+│   └── legacy-root-archived/
+├── migrations/            # 迁移记录
+│   └── gpu_migration_*/
+└── tools/                 # 归档工具配置
+```
+
+### 4.4 Phase 3: scripts/ 目录整理
+
+**当前问题**: 40+ 子目录，职责边界模糊
+
+**目标**: 整理为 10-12 个分类目录
+
+| 原目录 | 目标目录 | 说明 |
+|--------|----------|------|
+| `scripts/runtime/` | ✅ 保留 | 运行脚本 |
+| `scripts/database/` | ✅ 保留 | 数据库脚本 |
+| `scripts/dev/` | ✅ 保留 | 开发工具 |
+| `scripts/hooks/` | ✅ 保留 | Git hooks |
+| `scripts/tools/` | ✅ 保留 | 通用工具 |
+| `scripts/tests/` | → `tests/` | 测试文件迁移 |
+| `scripts/maintenance/` | ✅ 保留 | 维护脚本 |
+| 散落的脚本 | 按功能分类 | 逐一评估 |
+
+### 4.5 Phase 4: config/ 目录统一
+
+**操作**:
+
+```bash
+# 1. 合并 .config/ 到 config/
+git mv .config/* config/
+
+# 2. 移动根目录配置文件
+git mv tui.json config/
+
+# 3. 移动工具配置
+mkdir -p config/tools
+git mv .aider.conf.yml config/tools/
+git mv .aider.model.*.json config/tools/
+```
 
 ---
 
-## 8. 禁止移动列表
+## 五、禁止操作清单
 
-### 8.1 禁止移动规则
+### 5.1 禁止移动的目录/文件
 
-| 路径 | 原因 | 备注 |
-|------|------|------|
-| `src/temp/` | 临时文件目录 | 但需审批是否删除 |
-| `src/mock/` | 符号链接到根目录 | 保持链接 |
-| `.git/` | Git 版本控制 | 永远不要移动 |
-| `.github/` | CI/CD 配置 | 永远不要移动 |
-| `.claude/` | Claude Code 配置 | 永远不要移动 |
-| `.opencode/` | OpenCode 配置 | 永远不要移动 |
-
----
-
-## 9. 缺失文件处理流程
-
-### 9.1 处理优先级
-
-| 优先级 | 步骤 | 说明 |
-|--------|------|------|
-| **1** | 项目内查找 | 从项目其他目录寻找相似文件 |
-| **2** | Git 历史查找 | 从 git 历史中恢复历史版本 |
-| **3** | 历史版本优化 | 结合当前项目状况优化历史版本 |
-| **4** | AI 新建 | 仅当前三步都失败时才允许新建 |
-
----
-
-## 10. 文件删除规则
-
-### 10.1 核心原则
-
-| 规则 | 说明 |
+| 路径 | 原因 |
 |------|------|
-| **禁止删除** | 不得随意删除文件，所有删除需审批 |
-| **空目录可清** | 空目录（确认无用后）可直接清除 |
-| **审批流程** | 删除文件需列成列表，说明原因，审批后执行 |
-| **保留备份** | 删除前建议备份到 archive/ 目录 |
+| `.git/` | Git 版本控制核心 |
+| `.github/` | CI/CD 配置 |
+| `.claude/` | Claude Code 配置 |
+| `.gemini/` | Gemini CLI 配置 |
+| `.cursor/` | Cursor IDE 配置 |
+| `.vscode/` | VS Code 配置 |
+| `.gitnexus/` | GitNexus 索引数据 |
+| `.omc/` | OMC 状态数据 |
+| `.specify/` | 规范系统数据 |
+| `.taskmaster/` | Task Master 数据 |
+| `.worktrees/` | Git worktree 数据 |
+| `.multi-cli-tasks/` | Multi-CLI 协作数据 |
+| `TASK.md` | Multi-CLI 约定文件 |
+| `TASK-REPORT.md` | Multi-CLI 约定文件 |
+| `web/` | 独立子模块 |
+| `services/` | 独立子模块 |
+| `openspec/` | OpenSpec 规范系统 |
+| `monitoring-stack/` | 监控栈配置 |
 
-### 10.2 删除审批清单
+### 5.2 删除前需审批的文件
 
-| Phase | 路径 | 类型 | 原因 | 建议操作 |
-|-------|------|------|------|---------|
-| Phase 2 | src/temp/ | 目录 | 临时文件目录 | 删除 |
-| | src/backup_recovery/ | 目录 | 功能重复 | 删除 |
-| | src/contract_testing/ | 目录 | 已迁移 | 删除 |
-| | src/backup/ | 目录 | 功能重复 | 合并或删除 |
-| Phase 3 | docs/docs/ | 目录 | 空聚合 | 删除 |
-| | docs/reports/ | 目录 | 空聚合 | 删除 |
-| | docs/archived/ | 目录 | 重复 | 合并后删除 |
-| | docs/归档文档/ | 目录 | 中文目录 | 删除 |
-| Phase 4 | scripts/feedback/ | 目录 | 已废弃 | 删除 |
-| | scripts/generate-types/ | 目录 | 已迁移 | 删除 |
+| 路径 | 类型 | 审批原因 |
+|------|------|----------|
+| `docs/docs/` | 空目录 | 确认无隐藏文件 |
+| `src/temp/` | 临时目录 | 确认无重要文件 |
+| `.coverage` | 覆盖率文件 | 确认已入库 gitignore |
+| 任何 `.py` 文件 | 代码 | 需代码审查 |
 
 ---
 
-## 11. 持续合规监控
+## 六、持续合规监控
 
-### 11.1 监控策略概述
+### 6.1 Pre-commit Hooks 配置
 
-清理完成后，需要建立自动化监控机制，确保新生成的文件符合项目规则。
+**已存在**: `.pre-commit-config.yaml`
 
-### 11.2 监控手段矩阵
-
-| 手段 | 时机 | 检测内容 | 自动化程度 |
-|------|------|---------|-----------|
-| **Pre-commit Hooks** | git commit 前 | 文件命名、目录结构、__init__.py | ✅ 全自动 |
-| **CI/CD 检查** | PR/Merge 时 | 目录结构、导入路径、测试 | ✅ 全自动 |
-| **定时任务** | 每日/每周 | 目录合规性、文件统计 | ✅ 全自动 |
-| **GitHub Actions** | 定时/事件触发 | 综合检查报告 | ✅ 全自动 |
-| **文件监控** | 实时 | 文件变化监控 | ✅ 全自动 |
-
-### 11.3 Pre-commit Hooks 配置
+**需新增检查项**:
 
 ```yaml
-# .pre-commit-hooks.yaml
-# 在 git commit 前自动检查
-
+# 添加到 .pre-commit-config.yaml
 - id: check-directory-structure
   name: 检查目录结构
-  description: 验证新文件是否符合项目目录规范
   entry: python scripts/hooks/check_directory_structure.py
   language: system
   stages: [pre-commit]
   pass_filenames: false
-
-- id: check-init-py
-  name: 检查 __init__.py
-  description: 验证新子目录是否包含 __init__.py
-  entry: python scripts/hooks/check_init_py.py
-  language: system
-  stages: [pre-commit]
-  pass_filenames: false
-
-- id: check-file-naming
-  name: 检查文件命名
-  description: 验证文件名是否符合命名规范（英文、snake_case）
-  entry: python scripts/hooks/check_file_naming.py
-  language: system
-  stages: [pre-commit]
-  pass_filenames: false
 ```
 
-### 11.4 监控检查脚本
+### 6.2 目录结构检查脚本
 
-#### 11.4.1 目录结构检查脚本
+**已存在**: `scripts/hooks/check_directory_structure.py`
 
-```python
-# scripts/hooks/check_directory_structure.py
-#!/usr/bin/env python3
-"""
-目录结构合规性检查脚本
+**配置文件**: `governance/mainline/policies/directory-structure.yaml`
 
-检查新创建的文件/目录是否符合项目规范：
-1. 新文件必须在允许的目录范围内
-2. 新子目录必须包含 __init__.py
-3. 不允许在禁止目录中创建文件
-"""
+### 6.3 定期合规扫描
 
-import os
-import sys
-from pathlib import Path
+**建议频率**: 每周一
 
-# 允许的顶层目录
-ALLOWED_TOP_DIRS = [
-    "src/",
-    "scripts/",
-    "docs/",
-    "tests/",
-    "config/",
-]
+```bash
+# 运行目录结构检查
+python scripts/hooks/check_directory_structure.py --format json --output reports/compliance/
 
-# 禁止创建文件的目录
-FORBIDDEN_DIRS = [
-    "src/temp/",
-    "docs/docs/",
-    "docs/reports/",
-]
-
-# 允许的目录结构模板
-DIRECTORY_TEMPLATE = {
-    "src/": [
-        "domain/",
-        "application/",
-        "interfaces/",
-        "infrastructure/",
-        "core/",
-        "utils/",
-        "ml_strategy/",
-        "gpu/",
-    ],
-    "scripts/": [
-        "runtime/",
-        "maintenance/",
-        "database/",
-        "deployment/",
-        "testing/",
-        "development/",
-        "analysis/",
-        "data-operations/",
-        "security/",
-        "archive/",
-        "utils/",
-    ],
-    "docs/": [
-        "getting-started/",
-        "architecture/",
-        "api/",
-        "guides/",
-        "references/",
-        "security/",
-        "deployment/",
-        "testing/",
-        "legacy/",
-    ],
-}
-
-
-def get_staged_changes():
-    """获取暂存的变更"""
-    result = os.popen("git diff --cached --name-only").read()
-    return [Path(f) for f in result.strip().split("\n") if f]
-
-
-def check_file_location(file_path):
-    """检查文件是否在允许的位置"""
-    file_str = str(file_path)
-    
-    # 检查是否在允许的顶层目录下
-    in_allowed_dir = any(file_str.startswith(d) for d in ALLOWED_TOP_DIRS)
-    if not in_allowed_dir:
-        print(f"❌ 文件 {file_path} 不在允许的目录范围内")
-        print(f"   允许的顶层目录: {ALLOWED_TOP_DIRS}")
-        return False
-    
-    return True
-
-
-def check_init_py(file_path):
-    """检查新子目录是否包含 __init__.py"""
-    file_str = str(file_path)
-    
-    # 如果创建的是目录
-    if file_path.is_dir():
-        init_file = file_path / "__init__.py"
-        if not init_file.exists():
-            print(f"❌ 新目录 {file_path} 缺少 __init__.py")
-            return False
-    
-    return True
-
-
-def check_forbidden_dir(file_path):
-    """检查是否在禁止的目录中创建文件"""
-    file_str = str(file_path)
-    
-    for forbidden in FORBIDDEN_DIRS:
-        if file_str.startswith(forbidden):
-            print(f"❌ 不允许在 {forbidden} 中创建文件")
-            return False
-    
-    return True
-
-
-def main():
-    """主函数"""
-    staged_files = get_staged_changes()
-    
-    if not staged_files:
-        print("✅ 没有暂存的变更")
-        return 0
-    
-    errors = []
-    
-    for file_path in staged_files:
-        # 检查文件位置
-        if not check_file_location(file_path):
-            errors.append(f"位置违规: {file_path}")
-        
-        # 检查禁止目录
-        if not check_forbidden_dir(file_path):
-            errors.append(f"禁止目录: {file_path}")
-        
-        # 检查 __init__.py
-        if file_path.is_dir():
-            if not check_init_py(file_path):
-                errors.append(f"缺少 __init__.py: {file_path}")
-    
-    if errors:
-        print("\n❌ 目录结构检查未通过")
-        for error in errors:
-            print(f"   - {error}")
-        print("\n请修复上述问题后重新提交")
-        return 1
-    
-    print("✅ 目录结构检查通过")
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
+# 生成合规报告
+python scripts/tools/docs_indexer.py --categories
 ```
-
-#### 11.4.2 文件命名检查脚本
-
-```python
-# scripts/hooks/check_file_naming.py
-#!/usr/bin/env python3
-"""
-文件命名规范检查脚本
-
-检查文件名是否符合规范：
-1. 必须使用英文
-2. Python 文件使用 snake_case
-3. 不允许使用中文、空格、特殊字符
-"""
-
-import os
-import sys
-import re
-from pathlib import Path
-
-
-def get_staged_changes():
-    """获取暂存的变更"""
-    result = os.popen("git diff --cached --name-only").read()
-    return [Path(f) for f in result.strip().split("\n") if f]
-
-
-def is_valid_filename(filename):
-    """检查文件名是否规范"""
-    # 允许的字符：英文、数字、下划线、连字符、点
-    pattern = r'^[a-zA-Z0-9_\-\.]+$'
-    
-    # 禁止使用中文
-    if re.search(r'[\u4e00-\u9fff]', str(filename)):
-        return False, "文件名包含中文字符"
-    
-    # 检查是否包含空格
-    if ' ' in str(filename):
-        return False, "文件名包含空格"
-    
-    # Python 文件必须使用 snake_case
-    if str(filename).endswith('.py'):
-        if not re.match(r'^[a-z][a-z0-9_]*\.py$', str(filename)):
-            return False, "Python 文件应使用 snake_case 命名"
-    
-    return True, None
-
-
-def main():
-    """主函数"""
-    staged_files = get_staged_changes()
-    
-    if not staged_files:
-        print("✅ 没有暂存的变更")
-        return 0
-    
-    errors = []
-    
-    for file_path in staged_files:
-        valid, reason = is_valid_filename(file_path.name)
-        if not valid:
-            errors.append(f"{file_path}: {reason}")
-    
-    if errors:
-        print("\n❌ 文件命名检查未通过")
-        for error in errors:
-            print(f"   - {error}")
-        print("\n请修复上述问题后重新提交")
-        return 1
-    
-    print("✅ 文件命名检查通过")
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
-```
-
-#### 11.4.3 __init__.py 检查脚本
-
-```python
-# scripts/hooks/check_init_py.py
-#!/usr/bin/env python3
-"""
-__init__.py 规范检查脚本
-
-检查新子目录是否包含规范的 __init__.py：
-1. 必须包含 __version__
-2. 必须包含 AUTHOR
-3. 必须包含 __all__
-"""
-
-import os
-import sys
-from pathlib import Path
-
-
-def get_staged_changes():
-    """获取暂存的变更"""
-    result = os.popen("git diff --cached --name-only").read()
-    return [Path(f) for f in result.strip().split("\n") if f]
-
-
-def check_init_py_content(init_file):
-    """检查 __init__.py 内容是否规范"""
-    if not init_file.exists():
-        return False, "文件不存在"
-    
-    content = init_file.read_text()
-    
-    errors = []
-    
-    if "__version__" not in content:
-        errors.append("缺少 __version__")
-    
-    if "AUTHOR" not in content:
-        errors.append("缺少 AUTHOR")
-    
-    if "__all__" not in content:
-        errors.append("缺少 __all__")
-    
-    if errors:
-        return False, "; ".join(errors)
-    
-    return True, None
-
-
-def main():
-    """主函数"""
-    staged_files = get_staged_changes()
-    
-    if not staged_files:
-        print("✅ 没有暂存的变更")
-        return 0
-    
-    errors = []
-    
-    for file_path in staged_files:
-        if file_path.is_dir():
-            init_file = file_path / "__init__.py"
-            if init_file.exists():
-                valid, reason = check_init_py_content(init_file)
-                if not valid:
-                    errors.append(f"{file_path}/__init__.py: {reason}")
-    
-    if errors:
-        print("\n❌ __init__.py 检查未通过")
-        for error in errors:
-            print(f"   - {error}")
-        print("\n请修复上述问题后重新提交")
-        return 1
-    
-    print("✅ __init__.py 检查通过")
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
-```
-
-### 11.5 CI/CD 检查配置
-
-```yaml
-# .github/workflows/directory-compliance.yml
-name: Directory Compliance Check
-
-on:
-  pull_request:
-    paths:
-      - 'src/**'
-      - 'scripts/**'
-      - 'docs/**'
-  schedule:
-    # 每周日凌晨 2 点执行全面检查
-    - cron: '0 2 * * 0'
-
-jobs:
-  check-compliance:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      
-      - name: Check directory structure
-        run: |
-          echo "=== 目录结构检查 ==="
-          python scripts/hooks/check_directory_structure.py || exit 1
-      
-      - name: Check file naming
-        run: |
-          echo "=== 文件命名检查 ==="
-          python scripts/hooks/check_file_naming.py || exit 1
-      
-      - name: Check __init__.py
-        run: |
-          echo "=== __init__.py 检查 ==="
-          python scripts/hooks/check_init_py.py || exit 1
-      
-      - name: Check for orphaned files
-        run: |
-          echo "=== 孤立文件检查 ==="
-          python scripts/hooks/check_orphaned_files.py || exit 1
-      
-      - name: Generate compliance report
-        run: |
-          python scripts/hooks/generate_compliance_report.py
-          
-      - name: Upload compliance report
-        uses: actions/upload-artifact@v4
-        with:
-          name: compliance-report
-          path: reports/compliance/
-
-  weekly-full-scan:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'schedule'
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      
-      - name: Full directory scan
-        run: |
-          python scripts/hooks/full_directory_scan.py --output reports/compliance/full_scan_$(date +%Y%m%d).json
-      
-      - name: Upload full scan report
-        uses: actions/upload-artifact@v4
-        with:
-          name: full-scan-report
-          path: reports/compliance/full_scan_*.json
-```
-
-### 11.6 定时合规报告
-
-```python
-# scripts/hooks/generate_compliance_report.py
-#!/usr/bin/env python3
-"""
-合规报告生成脚本
-
-生成项目目录结构合规报告：
-1. 目录结构合规性
-2. __init__.py 完整性
-3. 文件命名规范性
-4. 禁止目录检测
-"""
-
-import json
-from datetime import datetime
-from pathlib import Path
-
-
-def generate_report():
-    """生成合规报告"""
-    report = {
-        "timestamp": datetime.now().isoformat(),
-        "project_root": "/opt/claude/mystocks_spec",
-        "checks": {},
-        "summary": {
-            "total_issues": 0,
-            "critical_issues": 0,
-            "warning_issues": 0,
-        }
-    }
-    
-    # 检查 1: 目录结构
-    report["checks"]["directory_structure"] = check_directory_structure()
-    
-    # 检查 2: __init__.py 完整性
-    report["checks"]["init_py"] = check_init_py_completeness()
-    
-    # 检查 3: 文件命名
-    report["checks"]["file_naming"] = check_file_naming()
-    
-    # 检查 4: 禁止目录
-    report["checks"]["forbidden_dirs"] = check_forbidden_dirs()
-    
-    # 汇总
-    for check_name, check_result in report["checks"].items():
-        if not check_result["passed"]:
-            report["summary"]["total_issues"] += check_result["issue_count"]
-            if check_result["severity"] == "critical":
-                report["summary"]["critical_issues"] += check_result["issue_count"]
-            else:
-                report["summary"]["warning_issues"] += check_result["issue_count"]
-    
-    return report
-
-
-def check_directory_structure():
-    """检查目录结构"""
-    # 实现细节...
-    pass
-
-
-def check_init_py_completeness():
-    """检查 __init__.py 完整性"""
-    # 实现细节...
-    pass
-
-
-def check_file_naming():
-    """检查文件命名"""
-    # 实现细节...
-    pass
-
-
-def check_forbidden_dirs():
-    """检查禁止目录"""
-    # 实现细节...
-    pass
-
-
-def main():
-    """主函数"""
-    report = generate_report()
-    
-    # 保存报告
-    report_path = Path("/opt/claude/mystocks_spec/reports/compliance")
-    report_path.mkdir(parents=True, exist_ok=True)
-    
-    report_file = report_path / f"compliance_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-    report_file.write_text(json.dumps(report, indent=2, ensure_ascii=False))
-    
-    # 输出摘要
-    print(f"合规报告已生成: {report_file}")
-    print(f"问题总数: {report['summary']['total_issues']}")
-    print(f"严重问题: {report['summary']['critical_issues']}")
-    print(f"警告问题: {report['summary']['warning_issues']}")
-    
-    return 0
-
-
-if __name__ == "__main__":
-    main()
-```
-
-### 11.7 监控效果矩阵
-
-| 监控手段 | 防止问题 | 自动化程度 | 拦截位置 |
-|---------|---------|-----------|---------|
-| Pre-commit Hooks | 新文件命名不规范 | ✅ 全自动 | git commit 前 |
-| Pre-commit Hooks | 新目录缺少 __init__.py | ✅ 全自动 | git commit 前 |
-| CI/CD 检查 | 目录结构混乱 | ✅ 全自动 | PR 时 |
-| CI/CD 检查 | 导入路径错误 | ✅ 全自动 | PR 时 |
-| 定时任务 | 规则遗漏 | ✅ 全自动 | 每日/每周 |
-| GitHub Actions | 综合合规性 | ✅ 全自动 | 定时/事件 |
 
 ---
 
-## 12. 风险评估与回滚策略
+## 七、验收标准
 
-### 12.1 整体风险矩阵
+### 7.1 根目录验收
 
-| Phase | 风险等级 | 主要风险 | 影响范围 |
-|-------|---------|---------|---------|
-| Phase 1 | 低 | 导入路径变更 | 根目录脚本 |
-| Phase 2 | 高 | 导入路径、循环依赖、误删 | 整个项目 |
-| Phase 3 | 中 | 文档链接失效 | 文档站点 |
-| Phase 4 | 中 | CI/CD 失效、cron 失效 | 部署流水线 |
+- [ ] 根目录仅包含允许清单中的文件
+- [ ] 无中文命名的文件/目录
+- [ ] 无临时文件 (`.log`, `.tmp`, `.bak`)
+- [ ] 无覆盖率文件 (`.coverage`, `coverage.xml`)
 
-### 12.2 通用回滚策略
+### 7.2 docs/ 目录验收
+
+- [ ] 子目录数量 ≤ 15 个
+- [ ] 所有目录使用英文 kebab-case 命名
+- [ ] 每个目录有明确的职责定义
+- [ ] `INDEX.md` 索引文件已更新
+
+### 7.3 整体验收
+
+- [ ] 所有移动使用 `git mv` (保留历史)
+- [ ] 所有文档链接已更新
+- [ ] `git status` 显示移动而非删除+新增
+- [ ] 测试通过
+- [ ] CI/CD 流水线通过
+
+---
+
+## 八、执行规范
+
+### 8.1 自动化优先
+
+- 使用脚本执行批量操作
+- 避免 `rm -rf`，使用 `rmdir` 删除空目录
+- 每次操作后验证 `git status`
+
+### 8.2 分阶段执行
+
+1. **Phase 0-1**: 根目录 + docs/ (高优先级)
+2. **Phase 2-3**: 归档 + scripts/ (中优先级)
+3. **Phase 4-5**: 配置 + 监控 (低优先级)
+
+### 8.3 回滚策略
 
 ```bash
 # Git 回滚（推荐）
-git checkout HEAD~1 -- src/ docs/ scripts/
+git checkout HEAD~1 -- docs/ scripts/ config/ archive/
 
-# 使用迁移映射表回滚
+# 或使用迁移映射表
 python scripts/dev/rollback_migration.py --input migration_map.csv
 ```
 
 ---
 
-## 13. 验收标准
+## 九、时间估算
 
-### 13.1 __init__.py 规范（强制）
-
-- 所有功能子目录必须包含 `__init__.py`
-- `__init__.py` 必须包含：`__version__`、`AUTHOR`、`__all__`
-
-### 13.2 Phase 2-4 验收标准
-
-| 标准 | Phase 2 | Phase 3 | Phase 4 |
-|------|---------|---------|---------|
-| 目录数量 | 10-12 个 | 12-15 个 | 10-12 个 |
-| 职责清晰 | ✅ | ✅ | ✅ |
-| 无 temp/ 目录 | ✅ | - | - |
-| 无聚合目录 | - | ✅ | - |
-| 无时间标记 | - | - | ✅ |
-| __init__.py 规范 | ✅ | - | ✅ |
-| CI 通过 | ✅ | ✅ | ✅ |
-| 无误删文件 | ✅ | ✅ | ✅ |
-| 监控脚本就位 | ✅ | ✅ | ✅ |
+| Phase | 内容 | 预估时间 | 执行者 |
+|-------|------|----------|--------|
+| Phase 0 | 根目录清理 | 2h | AI Agent |
+| Phase 1 | docs/ 重组 | 4h | AI Agent |
+| Phase 2 | 归档合并 | 2h | AI Agent |
+| Phase 3 | scripts/ 整理 | 3h | AI Agent |
+| Phase 4 | config/ 统一 | 1h | AI Agent |
+| Phase 5 | 监控部署 | 2h | AI Agent |
+| **总计** | | **14h** | |
 
 ---
 
-## 14. 执行规范
+## 十、审批确认
 
-### 14.1 自动化优先原则
+### 10.1 待审批事项
 
-所有重构操作应使用自动化脚本执行，减少手动错误。
+- [ ] Phase 0: 根目录清理方案
+- [ ] Phase 1: docs/ 重组方案
+- [ ] Phase 2: 归档目录合并方案
+- [ ] Phase 3: scripts/ 整理方案
+- [ ] Phase 4: config/ 统一方案
+- [ ] Phase 5: 持续合规监控方案
+- [ ] 禁止移动清单确认
+- [ ] 删除审批清单确认
 
-### 14.2 全面测试验证
+### 10.2 审批人签字
 
-每完成一个小范围重构任务后，立即运行完整测试套件。
-
----
-
-## 15. 时间估算
-
-| Phase | 估算时间 |
-|-------|---------|
-| Phase 2: src/ 整理 | 22.5 小时 |
-| Phase 3: docs/ 整理 | 9.5 小时 |
-| Phase 4: scripts/ 整理 | 10.5 小时 |
-| **总计** | **42.5 小时** |
+**审批人**: ________________
+**审批日期**: ________________
+**审批状态**: ☐ 批准 ☐ 批准但有修改 ☐ 拒绝
 
 ---
 
-## 审批意见
-
-请审批以下内容：
-
-1. **是否同意 Phase 1 作为已完成工作？**
-2. **是否批准 Phase 2 方案？**
-3. **是否批准 Phase 3 方案？**
-4. **是否批准 Phase 4 方案？**
-5. **是否批准删除审批清单中的待删除项？**
-6. **是否批准持续合规监控方案？**
-
----
-
-**文档版本**: v1.4
-**作者**: Sisyphus AI Agent
-**审核人**: Gemini CLI Agent, 用户
-**创建日期**: 2026-01-13
+**文档版本**: v2.0
+**基于规范**: [目录与文件整理通用规则](../standards/DIRECTORY_AND_FILE_ORGANIZATION_RULES.md)
+**创建日期**: 2026-03-22
+**维护者**: Project Team
