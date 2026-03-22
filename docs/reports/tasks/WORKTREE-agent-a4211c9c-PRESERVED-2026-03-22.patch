@@ -1,0 +1,547 @@
+diff --git a/web/backend/app/api/health.py b/web/backend/app/api/health.py
+index 4e0b49525..89a8721e2 100644
+--- a/web/backend/app/api/health.py
++++ b/web/backend/app/api/health.py
+@@ -56,6 +56,34 @@ def _resolve_ports(*env_keys: str) -> list[int]:
+     return ports
+ 
+ 
++@router.get("/health/ready")
++async def readiness_check(request: Request):
++    """就绪探针：检查关键依赖是否可用。"""
++    request_id = getattr(request.state, "request_id", None)
++    postgres_status = await check_postgresql_service()
++    tdengine_status = await check_tdengine_service()
++
++    services = {
++        "postgresql": postgres_status,
++        "tdengine": tdengine_status,
++    }
++    not_ready_services = [name for name, status in services.items() if status.status == "error"]
++    is_ready = len(not_ready_services) == 0
++
++    details = {
++        "ready": is_ready,
++        "services": {name: status.model_dump() for name, status in services.items()},
++        "timestamp": datetime.now(timezone.utc).isoformat(),
++    }
++
++    return create_health_response(
++        service="mystocks-web-api",
++        status="healthy" if is_ready else "unhealthy",
++        details=details,
++        request_id=request_id,
++    )
++
++
+ @router.get("/health")
+ async def check_system_health(request: Request):
+     """
+diff --git a/web/backend/app/api/market/market_data_request.py b/web/backend/app/api/market/market_data_request.py
+index 15dc957ef..e18e80753 100644
+--- a/web/backend/app/api/market/market_data_request.py
++++ b/web/backend/app/api/market/market_data_request.py
+@@ -36,6 +36,9 @@ from app.services.market_data_service import MarketDataService, get_market_data_
+ router = APIRouter()
+ logger = logging.getLogger(__name__)
+ 
++ALLOWED_EXCHANGES = {"SSE", "SZSE"}
++ALLOWED_SECURITY_TYPES = {"stock", "etf", "index", "fund", "bond"}
++
+ class MarketDataRequest(BaseModel):
+     """市场数据请求基类"""
+ 
+@@ -515,6 +518,20 @@ async def get_stock_list(
+     **返回**: 股票列表
+     """
+     try:
++        normalized_exchange = exchange.upper() if exchange else None
++        if normalized_exchange and normalized_exchange not in ALLOWED_EXCHANGES:
++            raise ValidationException(
++                detail=f"不支持的交易所参数: {exchange}，仅支持 {sorted(ALLOWED_EXCHANGES)}",
++                field="exchange",
++            )
++
++        normalized_security_type = security_type.lower() if security_type else None
++        if normalized_security_type and normalized_security_type not in ALLOWED_SECURITY_TYPES:
++            raise ValidationException(
++                detail=f"不支持的证券类型参数: {security_type}，仅支持 {sorted(ALLOWED_SECURITY_TYPES)}",
++                field="security_type",
++            )
++
+         # 检查是否使用Mock数据
+         use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
+ 
+@@ -524,7 +541,11 @@ async def get_stock_list(
+ 
+             mock_manager = get_mock_data_manager()
+             mock_data = mock_manager.get_data(
+-                "stock_list", limit=limit, search=search, exchange=exchange, security_type=security_type
++                "stock_list",
++                limit=limit,
++                search=search,
++                exchange=normalized_exchange,
++                security_type=normalized_security_type,
+             )
+             return create_success_response(
+                 data={
+@@ -532,8 +553,8 @@ async def get_stock_list(
+                     "total": len(mock_data.get("data", [])),
+                     "source": "mock",
+                     "search": search,
+-                    "exchange": exchange,
+-                    "security_type": security_type,
++                    "exchange": normalized_exchange,
++                    "security_type": normalized_security_type,
+                 },
+                 message="获取股票列表成功（Mock数据）",
+             )
+@@ -545,26 +566,9 @@ async def get_stock_list(
+ 
+             session = get_postgresql_session()
+ 
+-            # 构建查询SQL
+-            where_clauses = []
+-            params = {}
+-
+-            if search:
+-                where_clauses.append("(symbol LIKE :search OR name LIKE :search)")
+-                params["search"] = f"%{search}%"
+-
+-            if exchange:
+-                where_clauses.append("exchange = :exchange")
+-                params["exchange"] = exchange
+-
+-            if security_type:
+-                where_clauses.append("security_type = :security_type")
+-                params["security_type"] = security_type
+-
+-            where_sql = " AND ".join(where_clauses) if where_clauses else "1=1"
+-
++            # 使用固定SQL模板 + 参数绑定，避免动态拼接SQL
+             sql = text(
+-                f"""
++                """
+                 SELECT
+                     symbol,
+                     name,
+@@ -576,12 +580,30 @@ async def get_stock_list(
+                     market_cap,
+                     circulating_market_cap
+                 FROM stock_info
+-                WHERE {where_sql}
++                WHERE (
++                    :search IS NULL
++                    OR symbol LIKE :search
++                    OR name LIKE :search
++                )
++                AND (
++                    :exchange IS NULL
++                    OR exchange = :exchange
++                )
++                AND (
++                    :security_type IS NULL
++                    OR security_type = :security_type
++                )
+                 ORDER BY symbol
+                 LIMIT :limit
+             """
+             )
+-            params["limit"] = limit
++
++            params = {
++                "search": f"%{search}%" if search else None,
++                "exchange": normalized_exchange,
++                "security_type": normalized_security_type,
++                "limit": limit,
++            }
+ 
+             result = session.execute(sql, params)
+             stocks = [dict(row._mapping) for row in result]
+@@ -594,8 +616,8 @@ async def get_stock_list(
+                     "total": len(stocks),
+                     "source": "real",
+                     "search": search,
+-                    "exchange": exchange,
+-                    "security_type": security_type,
++                    "exchange": normalized_exchange,
++                    "security_type": normalized_security_type,
+                 },
+                 message=f"获取股票列表成功，共{len(stocks)}条记录",
+             )
+diff --git a/web/backend/app/api/system/system_health.py b/web/backend/app/api/system/system_health.py
+index e3776aa6a..26bb32c43 100644
+--- a/web/backend/app/api/system/system_health.py
++++ b/web/backend/app/api/system/system_health.py
+@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional
+ import psycopg2
+ import taos
+ from fastapi import APIRouter, HTTPException, Query
++from psycopg2 import sql
+ from pydantic import BaseModel
+ 
+ # Mock数据支持
+@@ -17,6 +18,9 @@ use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
+ 
+ router = APIRouter()
+ 
++ALLOWED_LOG_LEVELS = {"INFO", "WARNING", "ERROR", "CRITICAL"}
++ALLOWED_LOG_CATEGORIES = {"database", "api", "adapter", "system"}
++
+ 
+ def _required_env(env_name: str) -> str:
+     value = os.getenv(env_name, "").strip()
+@@ -394,6 +398,9 @@ def get_system_logs_from_db(
+     Returns:
+         系统日志列表
+     """
++    normalized_level = level.upper() if level else None
++    normalized_category = category.lower() if category else None
++
+     conn = None
+     cursor = None
+     try:
+@@ -412,25 +419,26 @@ def get_system_logs_from_db(
+         )
+         cursor = conn.cursor()
+ 
+-        # 构建查询SQL
++        # 构建查询条件（参数化）
+         where_clauses = []
+-        params = []
++        params: List[Any] = []
+ 
+         if filter_errors:
+-            where_clauses.append("level IN ('WARNING', 'ERROR', 'CRITICAL')")
++            where_clauses.append(sql.SQL("level IN ('WARNING', 'ERROR', 'CRITICAL')"))
+ 
+-        if level:
+-            where_clauses.append("level = %s")
+-            params.append(level.upper())
++        if normalized_level:
++            where_clauses.append(sql.SQL("level = %s"))
++            params.append(normalized_level)
+ 
+-        if category:
+-            where_clauses.append("category = %s")
+-            params.append(category)
++        if normalized_category:
++            where_clauses.append(sql.SQL("category = %s"))
++            params.append(normalized_category)
+ 
+-        where_sql = " AND ".join(where_clauses) if where_clauses else "1=1"
++        where_clause = sql.SQL(" AND ").join(where_clauses) if where_clauses else sql.SQL("1=1")
+ 
+         # 查询operation_log表
+-        query = f"""
++        query = sql.SQL(
++            """
+             SELECT
+                 id,
+                 timestamp,
+@@ -441,14 +449,13 @@ def get_system_logs_from_db(
+                 execution_time_ms as duration_ms,
+                 CASE WHEN status IN ('failed', 'error') THEN true ELSE false END as has_error
+             FROM operation_log
+-            WHERE {where_sql}
++            WHERE {where_clause}
+             ORDER BY timestamp DESC
+             LIMIT %s OFFSET %s
+-        """
++            """
++        ).format(where_clause=where_clause)
+ 
+-        params.extend([limit, offset])
+-
+-        cursor.execute(query, params)
++        cursor.execute(query, params + [limit, offset])
+         rows = cursor.fetchall()
+ 
+         # 转换为SystemLog对象
+@@ -468,10 +475,12 @@ def get_system_logs_from_db(
+             logs.append(log)
+ 
+         # 获取总数
+-        count_query = f"""
+-            SELECT COUNT(*) FROM operation_log WHERE {where_sql}
+-        """
+-        cursor.execute(count_query, params[:-2])  # 不包括limit和offset
++        count_query = sql.SQL(
++            """
++            SELECT COUNT(*) FROM operation_log WHERE {where_clause}
++            """
++        ).format(where_clause=where_clause)
++        cursor.execute(count_query, params)
+         total = cursor.fetchone()[0]
+ 
+         return logs, total
+@@ -634,14 +643,29 @@ async def get_system_logs(
+     - GET /api/system/logs?level=ERROR - 只获取ERROR级别日志
+     - GET /api/system/logs?category=database - 只获取数据库相关日志
+     """
++    normalized_level = level.upper() if level else None
++    normalized_category = category.lower() if category else None
++
++    if normalized_level and normalized_level not in ALLOWED_LOG_LEVELS:
++        raise HTTPException(
++            status_code=400,
++            detail=f"不支持的日志级别: {level}，仅支持 {sorted(ALLOWED_LOG_LEVELS)}",
++        )
++
++    if normalized_category and normalized_category not in ALLOWED_LOG_CATEGORIES:
++        raise HTTPException(
++            status_code=400,
++            detail=f"不支持的日志分类: {category}，仅支持 {sorted(ALLOWED_LOG_CATEGORIES)}",
++        )
++
+     try:
+         # 首先尝试从数据库获取
+         logs, total = get_system_logs_from_db(
+             filter_errors=filter_errors,
+             limit=limit,
+             offset=offset,
+-            level=level,
+-            category=category,
++            level=normalized_level,
++            category=normalized_category,
+         )
+ 
+         # 如果数据库查询失败或没有数据，使用模拟数据
+diff --git a/web/backend/app/core/security.py b/web/backend/app/core/security.py
+index f1bc3dac0..0588fe270 100644
+--- a/web/backend/app/core/security.py
++++ b/web/backend/app/core/security.py
+@@ -191,8 +191,7 @@ def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
+     """
+     验证用户身份
+ 
+-    从数据库查询用户信息并验证密码。
+-    如果数据库连接失败，回退到模拟用户数据。
++    仅通过数据库查询用户信息并验证密码，严格 fail-closed。
+ 
+     Args:
+         username: 用户名
+@@ -202,37 +201,22 @@ def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
+         UserInDB: 验证成功的用户信息，验证失败返回None
+ 
+     Process:
+-        1. 如果是测试环境，直接使用mock数据
+-        2. 否则尝试从PostgreSQL数据库查询用户
+-        3. 如果数据库连接失败，回退到环境变量配置的模拟用户数据
+-        4. 返回验证成功的用户或None
++        1. 仅使用数据库认证
++        2. 数据库异常或认证失败：直接返回 None（fail-closed）
+     """
+-    from app.core.config import settings
+-
+-    # 测试环境：直接使用mock数据，跳过数据库
+-    if settings.testing:
+-        print(f"[Test Mode] Using mock authentication for user: {username}")
+-        return _authenticate_with_mock(username, password)
+-
+-    # 生产环境：首先尝试从数据库查询用户
++    # 仅允许数据库认证，禁止回退mock
+     try:
+         user = get_user_from_database(username)
+         if user and verify_password(password, user.hashed_password):
+             return user
+-        # 如果数据库中找不到用户或密码不匹配，继续尝试模拟数据
+-        if user:
+-            # 用户存在但密码错误
+-            return None
+-
++        return None
+     except Exception as e:
+-        # 捕获所有异常，回退到模拟用户数据
+         print(
+-            f"Database authentication failed (will use fallback mock data): "
++            f"Database authentication failed (fail-closed): "
+             f"{type(e).__name__}: {e.message if hasattr(e, 'message') else str(e)}"
+         )
++        return None
+ 
+-    # 回退到mock数据
+-    return _authenticate_with_mock(username, password)
+ 
+ 
+ def authenticate_user_by_id(user_id: int) -> Optional[UserInDB]:
+@@ -416,56 +400,3 @@ async def get_current_active_user(
+         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
+     return current_user
+ 
+-
+-def _authenticate_with_mock(username: str, password: str) -> Optional[UserInDB]:
+-    """
+-    使用Mock用户数据进行认证
+-
+-    Args:
+-        username: 用户名
+-        password: 密码（明文）
+-
+-    Returns:
+-        UserInDB: 验证成功的用户信息，验证失败返回None
+-    """
+-    from app.core.config import settings
+-
+-    # SECURITY: Only allow mock auth if explicitly enabled
+-    if not getattr(settings, "mock_auth_enabled", False):
+-        print("[Security] Mock authentication attempt blocked (MOCK_AUTH_ENABLED=False)")
+-        return None
+-
+-    # 获取管理员初始密码
+-    getattr(settings, "admin_initial_password", "admin123")
+-
+-    # 生成固定的哈希值（避免每次调用get_password_hash都生成新哈希）
+-    users_db = {
+-        "admin": {
+-            "id": 1,
+-            "username": "admin",
+-            "email": "admin@mystocks.com",
+-            "hashed_password": get_password_hash("admin123"),  # 固定密码
+-            "role": "admin",
+-            "is_active": True,
+-        },
+-        "user": {
+-            "id": 2,
+-            "username": "user",
+-            "email": "user@mystocks.com",
+-            "hashed_password": get_password_hash("user123"),  # 固定密码
+-            "role": "user",
+-            "is_active": True,
+-        },
+-    }
+-
+-    user = users_db.get(username)
+-    if not user:
+-        return None
+-
+-    user_in_db = UserInDB(**user)
+-
+-    # 验证密码
+-    if not verify_password(password, user_in_db.hashed_password):
+-        return None
+-
+-    return user_in_db
+diff --git a/web/backend/app/tasks/wencai_tasks.py b/web/backend/app/tasks/wencai_tasks.py
+index a4f2bffa7..548e8c680 100644
+--- a/web/backend/app/tasks/wencai_tasks.py
++++ b/web/backend/app/tasks/wencai_tasks.py
+@@ -17,7 +17,7 @@ from datetime import datetime, timedelta
+ from typing import Any, Dict
+ 
+ from celery import shared_task
+-from sqlalchemy import create_engine, text
++from sqlalchemy import MetaData, Table, create_engine, delete, func, select, text
+ 
+ from app.core.config import settings
+ from app.core.database import SessionLocal
+@@ -225,16 +225,24 @@ def cleanup_old_wencai_data(days: int = 30, dry_run: bool = False) -> Dict[str,
+         for table_name in tables:
+             try:
+                 with engine.connect() as conn:
++                    metadata = MetaData()
++                    table = Table(table_name, metadata, autoload_with=conn)
++                    fetch_time_col = table.c.get("fetch_time")
++
++                    if fetch_time_col is None:
++                        results["details"].append({"table": table_name, "error": "Missing fetch_time column"})
++                        continue
++
+                     # 统计将被删除的记录数
+-                    count_query = text(f"SELECT COUNT(*) as cnt FROM {table_name} " f"WHERE fetch_time < :cutoff_date")
+-                    count_result = conn.execute(count_query, {"cutoff_date": cutoff_date})
+-                    delete_count = count_result.scalar()
++                    count_query = select(func.count()).select_from(table).where(fetch_time_col < cutoff_date)
++                    count_result = conn.execute(count_query)
++                    delete_count = count_result.scalar() or 0
+ 
+                     if delete_count > 0:
+                         if not dry_run:
+                             # 实际删除
+-                            delete_query = text(f"DELETE FROM {table_name} " f"WHERE fetch_time < :cutoff_date")
+-                            conn.execute(delete_query, {"cutoff_date": cutoff_date})
++                            delete_query = delete(table).where(fetch_time_col < cutoff_date)
++                            conn.execute(delete_query)
+                             conn.commit()
+ 
+                             logger.info("✅ %(table_name)s: Deleted %(delete_count)s records")
+@@ -315,12 +323,26 @@ def get_wencai_stats() -> Dict[str, Any]:
+                     exists = conn.execute(check_query, {"table_name": table_name}).scalar() > 0
+ 
+                     if exists:
++                        metadata = MetaData()
++                        table = Table(table_name, metadata, autoload_with=conn)
++                        fetch_time_col = table.c.get("fetch_time")
++
++                        if fetch_time_col is None:
++                            stats["tables"].append(
++                                {
++                                    "query_name": query_name,
++                                    "table_name": table_name,
++                                    "error": "Missing fetch_time column",
++                                }
++                            )
++                            continue
++
+                         # 统计记录数
+-                        count_query = text(f"SELECT COUNT(*) as cnt FROM {table_name}")
+-                        record_count = conn.execute(count_query).scalar()
++                        count_query = select(func.count()).select_from(table)
++                        record_count = conn.execute(count_query).scalar() or 0
+ 
+                         # 获取最新fetch_time
+-                        latest_query = text(f"SELECT MAX(fetch_time) as latest FROM {table_name}")
++                        latest_query = select(func.max(fetch_time_col))
+                         latest_fetch = conn.execute(latest_query).scalar()
+ 
+                         stats["total_records"] += record_count
+diff --git a/web/frontend/src/composables/useKLineData.ts b/web/frontend/src/composables/useKLineData.ts
+index 704827d28..d7182f174 100644
+--- a/web/frontend/src/composables/useKLineData.ts
++++ b/web/frontend/src/composables/useKLineData.ts
+@@ -120,8 +120,10 @@ export function useKLineData(chartRef: Ref<ChartRef | null>, _props: Props) {
+     if (!ENABLE_DATA_CACHING) return
+ 
+     if (dataCache.value.size >= CACHE_MAX_SIZE) {
+-      const firstKey = dataCache.value.keys().next().value
+-      dataCache.value.delete(firstKey)
++      const firstEntry = dataCache.value.keys().next()
++      if (!firstEntry.done) {
++        dataCache.value.delete(firstEntry.value)
++      }
+     }
+ 
+     dataCache.value.set(hash, data)
+diff --git a/web/frontend/src/utils/cache/part-1.ts b/web/frontend/src/utils/cache/part-1.ts
+index 07fa7fb62..c290f69c8 100644
+--- a/web/frontend/src/utils/cache/part-1.ts
++++ b/web/frontend/src/utils/cache/part-1.ts
+@@ -446,8 +446,10 @@ export function memoize<T extends (...args: unknown[]) => unknown>(
+       const result = fn(...args)
+       cache.set(key, result)
+       if (options.maxSize && cache.size > options.maxSize) {
+-        const firstKey = cache.keys().next().value
+-        cache.delete(firstKey)
++        const firstEntry = cache.keys().next()
++        if (!firstEntry.done) {
++          cache.delete(firstEntry.value)
++        }
+       }
+       return result
+     }) as T
+diff --git a/web/frontend/src/utils/chartPerformanceUtils.ts b/web/frontend/src/utils/chartPerformanceUtils.ts
+index 557c55ce9..ddc068129 100644
+--- a/web/frontend/src/utils/chartPerformanceUtils.ts
++++ b/web/frontend/src/utils/chartPerformanceUtils.ts
+@@ -293,7 +293,10 @@ export class ChartDataCache {
+                 break
+ 
+             case 'fifo': // First In First Out
+-                keyToRemove = this.cache.keys().next().value
++                {
++                    const firstEntry = this.cache.keys().next()
++                    keyToRemove = firstEntry.done ? null : firstEntry.value
++                }
+                 break
+         }
+ 

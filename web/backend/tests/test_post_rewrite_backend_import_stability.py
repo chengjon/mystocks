@@ -1,12 +1,47 @@
 from __future__ import annotations
 
 import os
+import json
 import subprocess
 import sys
 from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
+
+
+def test_backend_pm2_config_includes_project_root_in_pythonpath() -> None:
+    env = os.environ.copy()
+    env.update(
+        {
+            "BACKEND_PORT": "8888",
+            "BACKEND_BACKUP_PORT": "8889",
+        }
+    )
+
+    completed = subprocess.run(
+        [
+            "node",
+            "-e",
+            """
+const config = require('./web/backend/ecosystem.config.js');
+const backend = config.apps.find((app) => app.name === 'mystocks-backend');
+process.stdout.write(JSON.stringify(backend.env));
+""",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+        cwd=PROJECT_ROOT,
+        env=env,
+    )
+
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    backend_env = json.loads(completed.stdout)
+    pythonpath_entries = backend_env["PYTHONPATH"].split(":")
+
+    assert str(PROJECT_ROOT) in pythonpath_entries
+    assert str(PROJECT_ROOT / "web" / "backend") in pythonpath_entries
 
 
 def test_app_main_imports_on_origin_main_recovery_path() -> None:

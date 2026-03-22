@@ -26,6 +26,13 @@ config/opencode.json
 .config/opencode/model/*.api_key
 .config/opencode/model/model-catalog.json
 .config/opencode/model/*.env
+.config/opencode/model/*.base_url
+.config/opencode/model/*.model
+.config/opencode/model/README.md
+.config/opencode/model/*.bak.*
+opencode.json.bak.*
+scripts/opencode/*.bak.*
+tests/unit/*.bak.*
 
 # Database Credentials and Backups
 config/.env
@@ -300,7 +307,22 @@ bak/
 coverage.xml
 coverage.json
 
+# Path-scoped generated reports still emitted by local tools
+config/coverage.json
+scripts/tests/coverage.xml
+scripts/tests/test-directory-org/coverage.json
+src/gpu/api_system/coverage.xml
+tests/coverage.json
+tests/test-directory-org/coverage.json
+tests/e2e/test-results-realtime.json
+web/backend/coverage.json
+web/backend/coverage.xml
+
 # Test timing artifacts
 test_timing.csv
 .aider*
 .gitnexus
+
+# Local tool runtime state
+.playwright-mcp/
+.omc/

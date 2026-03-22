@@ -46,6 +46,8 @@ function requireEnv(name) {
 
 const backendPort = requireEnv("BACKEND_PORT")
 const backendBackupPort = requireEnv("BACKEND_BACKUP_PORT")
+const projectRoot = path.join(__dirname, "..", "..")
+const backendRoot = path.join(projectRoot, "web", "backend")
 
 module.exports = {
   apps: [
@@ -56,7 +58,7 @@ module.exports = {
       cwd: '/opt/claude/mystocks_spec/web/backend',
       interpreter: 'python3',
       env: {
-        PYTHONPATH: '/opt/claude/mystocks_spec/web/backend',
+        PYTHONPATH: `${projectRoot}:${backendRoot}`,
         NODE_ENV: 'development',
         BACKEND_PORT: backendPort,
         BACKEND_BACKUP_PORT: backendBackupPort,
