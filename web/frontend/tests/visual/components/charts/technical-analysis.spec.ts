@@ -1,117 +1,85 @@
-import { test, expect } from '../../fixtures/visual.fixture';
-import { waitForEChartsRender, validateGoldTheme } from '../../utils/helpers';
+import { expect, test } from '../../fixtures/visual.fixture';
+import { validateGoldTheme } from '../../utils/helpers';
 
-test.describe.fixme('Technical analysis visual fixtures require refresh after the frontend rewrite', () => {
-test.describe('Technical Analysis Charts - ArtDeco V3.0 Theme', () => {
+const VISUAL_USER = {
+  id: 1,
+  username: 'visual-admin',
+  email: 'visual-admin@example.com',
+  role: 'admin',
+  permissions: ['*'],
+};
+
+const MOCK_KLINE = [
+  { datetime: '2026-03-01 15:00:00', open: 100, high: 102, low: 99, close: 101, volume: 1000000 },
+  { datetime: '2026-03-02 15:00:00', open: 101, high: 103, low: 100, close: 102, volume: 1100000 },
+  { datetime: '2026-03-03 15:00:00', open: 102, high: 104, low: 101, close: 103, volume: 1200000 },
+];
+
+async function seedVisualSession(page: Parameters<typeof test>[0]['page']) {
+  await page.goto('/login', { waitUntil: 'domcontentloaded' });
+  await page.evaluate((user) => {
+    localStorage.setItem('auth_token', 'visual-technical-token');
+    localStorage.setItem('auth_user', JSON.stringify(user));
+  }, VISUAL_USER);
+}
+
+async function stubReadiness(page: Parameters<typeof test>[0]['page']) {
+  for (const endpoint of ['**/api/health/ready', '**/health/ready']) {
+    await page.route(endpoint, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          code: 200,
+          message: 'ready',
+          data: { status: 'ready' },
+        }),
+      });
+    });
+  }
+}
+
+async function stubKline(page: Parameters<typeof test>[0]['page']) {
+  await page.route('**/api/v1/market/kline**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        data: { data: MOCK_KLINE },
+        request_id: 'visual-kline',
+      }),
+    });
+  });
+}
+
+test.describe('Technical Analysis Visual Charts', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/technical', { waitUntil: 'networkidle' });
+    await seedVisualSession(page);
+    await stubReadiness(page);
+    await stubKline(page);
+    await page.goto('/market/technical', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(1200);
     await validateGoldTheme(page);
   });
 
-  test('Main Chart renders with indicators', async ({ page }) => {
-    const mainChartSelector = '.technical-main-chart, .main-chart-container';
-    await waitForEChartsRender(page, mainChartSelector);
+  test('kline hero panel remains visually stable', async ({ page }) => {
+    await expect(page.getByRole('heading', { name: 'K-Line Analysis' })).toBeVisible();
+    await expect(page.locator('.kline-container')).toBeVisible();
 
-    await expect(page).toHaveScreenshot('technical-main-chart.png', {
+    await expect(page.locator('.kline-container')).toHaveScreenshot('technical-kline-container.png', {
       animations: 'disabled',
-      fullPage: false,
-      threshold: 0.2
+      threshold: 0.2,
     });
   });
 
-  test('Indicator Panel displays all 26 indicators', async ({ page }) => {
-    const indicatorPanel = '.indicator-panel, .indicators-container';
-    await expect(page.locator(indicatorPanel)).toBeVisible({ timeout: 10000 });
+  test('kline data table remains visually stable', async ({ page }) => {
+    await expect(page.locator('.data-table-section')).toContainText('DATE');
 
-    await expect(page).toHaveScreenshot('technical-indicator-panel.png', {
+    await expect(page.locator('.data-table-section')).toHaveScreenshot('technical-kline-table.png', {
       animations: 'disabled',
-      fullPage: false,
-      threshold: 0.2
+      threshold: 0.2,
     });
   });
-
-  test('Trend indicators (MA, EMA, Bollinger) render correctly', async ({ page }) => {
-    const trendSection = '.trend-indicators, [class*="trend"]';
-    await waitForEChartsRender(page, trendSection);
-
-    await expect(page).toHaveScreenshot('technical-trend-indicators.png', {
-      animations: 'disabled',
-      fullPage: false,
-      threshold: 0.2
-    });
-  });
-
-  test('Momentum indicators (RSI, MACD, Stochastic) render correctly', async ({ page }) => {
-    const momentumSection = '.momentum-indicators, [class*="momentum"]';
-    await waitForEChartsRender(page, momentumSection);
-
-    await expect(page).toHaveScreenshot('technical-momentum-indicators.png', {
-      animations: 'disabled',
-      fullPage: false,
-      threshold: 0.2
-    });
-  });
-
-  test('Volatility indicators (ATR, Bollinger Bands) render correctly', async ({ page }) => {
-    const volatilitySection = '.volatility-indicators, [class*="volatility"]';
-    await waitForEChartsRender(page, volatilitySection);
-
-    await expect(page).toHaveScreenshot('technical-volatility-indicators.png', {
-      animations: 'disabled',
-      fullPage: false,
-      threshold: 0.2
-    });
-  });
-
-  test('Volume indicator renders with market colors', async ({ page }) => {
-    const volumeIndicator = '.volume-indicator, [class*="volume"]';
-    await waitForEChartsRender(page, volumeIndicator);
-
-    await expect(page).toHaveScreenshot('technical-volume-indicator.png', {
-      animations: 'disabled',
-      fullPage: false,
-      threshold: 0.2
-    });
-  });
-
-  test('Trading Signals panel displays correctly', async ({ page }) => {
-    const signalsPanel = '.trading-signals, .signals-panel';
-    await expect(page.locator(signalsPanel)).toBeVisible({ timeout: 10000 });
-
-    await expect(page).toHaveScreenshot('technical-trading-signals.png', {
-      animations: 'disabled',
-      fullPage: false,
-      threshold: 0.2
-    });
-  });
-});
-
-test.describe('Technical Analysis - Interactive Features', () => {
-  test('Indicator selection updates chart', async ({ page }) => {
-    await page.goto('/technical', { waitUntil: 'networkidle' });
-
-    const rsiButton = page.locator('button:has-text("RSI")');
-    if (await rsiButton.isVisible()) {
-      await rsiButton.click();
-      await page.waitForTimeout(500);
-    }
-
-    await expect(page.locator('.technical-main-chart')).toBeVisible();
-  });
-
-  test('Timeframe selection works', async ({ page }) => {
-    await page.goto('/technical', { waitUntil: 'networkidle' });
-
-    const timeframeSelector = '[class*="timeframe"], [class*="period"]';
-    const timeframeButtons = page.locator(timeframeSelector).locator('button');
-    const count = await timeframeButtons.count();
-
-    if (count > 0) {
-      await timeframeButtons.nth(1).click();
-      await page.waitForTimeout(500);
-    }
-
-    await expect(page.locator('.technical-main-chart')).toBeVisible();
-  });
-});
 });

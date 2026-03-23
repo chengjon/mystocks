@@ -1,5 +1,15 @@
 import { expect, Page } from '@playwright/test';
 
+function rgbToHex(value: string): string {
+  const matched = value.match(/\d+/g);
+  if (!matched || matched.length < 3) {
+    return value.trim().toUpperCase();
+  }
+
+  const [red, green, blue] = matched.slice(0, 3).map((part) => Number(part));
+  return `#${[red, green, blue].map((part) => part.toString(16).padStart(2, '0')).join('')}`.toUpperCase();
+}
+
 export async function waitForEChartsRender(page: Page, containerSelector: string): Promise<void> {
   await page.waitForSelector(`${containerSelector} canvas`, { timeout: 10000 });
   await page.waitForTimeout(1500);
@@ -12,19 +22,31 @@ export async function getChartContainerSize(page: Page, containerSelector: strin
 }
 
 export async function validateMarketColors(page: Page): Promise<void> {
-  const upColor = '#FF5252';
-  const downColor = '#00E676';
-  const pageContent = await page.content();
-  expect(pageContent).toContain(upColor);
-  expect(pageContent).toContain(downColor);
+  const palette = await page.evaluate(() => {
+    const rootStyle = getComputedStyle(document.documentElement);
+
+    return {
+      rise: rootStyle.getPropertyValue('--artdeco-rise').trim() || rootStyle.getPropertyValue('--artdeco-up').trim(),
+      down: rootStyle.getPropertyValue('--artdeco-down').trim(),
+    };
+  });
+
+  expect(palette.rise.toUpperCase()).toBe('#FF5252');
+  expect(palette.down.toUpperCase()).toBe('#00E676');
 }
 
 export async function validateGoldTheme(page: Page): Promise<void> {
-  const goldColors = ['#D4AF37', '#F0E68C', '#CD7F32', '#F7E7CE'];
-  const pageContent = await page.content();
-  for (const color of goldColors) {
-    expect(pageContent).toContain(color);
-  }
+  const palette = await page.evaluate(() => {
+    const rootStyle = getComputedStyle(document.documentElement);
+    const goldElement = document.querySelector('.brand-text, .divider-text, .nav-icon, .domain-label');
+    return {
+      goldPrimary: rootStyle.getPropertyValue('--artdeco-gold-primary').trim(),
+      goldElementColor: goldElement ? getComputedStyle(goldElement).color : '',
+    };
+  });
+
+  expect(palette.goldPrimary.toUpperCase()).toBe('#D4AF37');
+  expect(rgbToHex(palette.goldElementColor)).toBe('#D4AF37');
 }
 
 export function generateChartTestName(chartType: string, variant: string): string {

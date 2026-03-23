@@ -67,7 +67,7 @@ test.describe("Critical Menu Navigation - Fixed", { tag: "@critical" }, () => {
 
     await page.goto(`${FRONTEND_BASE_URL}/dashboard`, { waitUntil: "domcontentloaded" })
     // Cold-start Vite runs can take >10s on the first dashboard render.
-    await expect(page.locator(".artdeco-layout")).toBeVisible({ timeout: 20000 })
+    await expect(page.getByRole("main")).toBeVisible({ timeout: 20000 })
     await expect(page.getByText("QUANTIX")).toBeVisible({ timeout: 20000 })
   })
 

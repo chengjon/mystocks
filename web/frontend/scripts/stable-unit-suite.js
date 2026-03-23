@@ -4,7 +4,9 @@ const { spawnSync } = require("node:child_process");
 
 const STABLE_UNIT_TEST_FILES = [
   "tests/unit/config/pageConfig.test.ts",
+  "tests/unit/config/lighthouse-mainline-gates.spec.ts",
   "tests/unit/config/testing-mainline-gates.spec.ts",
+  "tests/unit/config/visual-chart-gates.spec.ts",
   "tests/unit/config/vitest-msw-gates.spec.ts",
   "tests/unit/components/CommandPalette.test.ts",
   "tests/unit/config/menu-config-strategy-routes.test.ts",
@@ -21,6 +23,7 @@ const STABLE_UNIT_TEST_FILES = [
   "tests/unit/kline-chart.spec.ts",
   "src/api/adapters/marketAdapter.spec.ts",
   "src/api/__tests__/strategy.test.ts",
+  "src/api/services/__tests__/dashboardService.spec.ts",
   "src/api/services/__tests__/strategyService.msw.spec.ts",
   "src/api/__tests__/unifiedApiClient.contract.test.ts",
   "tests/unit/scripts/check-artdeco-tokens.spec.ts",

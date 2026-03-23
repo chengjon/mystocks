@@ -6,7 +6,8 @@
  * 按优先级分为：核心市场数据(P0)、专业交易数据(P1)、技术分析(P2)
  */
 
-import apiClient from '../apiClient.ts'
+import { apiClient } from '../apiClient.ts'
+import type { UnifiedResponse } from '../types/common.ts'
 import {
   normalizeDashboardActiveStrategies,
   normalizeDashboardFundFlow,
@@ -179,8 +180,8 @@ export const dashboardService = {
   ): Promise<{ data: LongHuBangData[] }> {
     const params: Record<string, unknown> = { limit }
     if (date) params.date = date
-    const response = await apiClient.get('/v1/market/lhb', { params })
-    return response.data
+    const response = await apiClient.get<UnifiedResponse<LongHuBangData[]>>('/v1/market/lhb', { params })
+    return { data: response.data ?? [] }
   },
 
   /**
@@ -194,8 +195,8 @@ export const dashboardService = {
   ): Promise<{ data: BlockTradingData[] }> {
     const params: Record<string, unknown> = { limit }
     if (date) params.date = date
-    const response = await apiClient.get('/v2/market/blocktrade', { params })
-    return response.data
+    const response = await apiClient.get<UnifiedResponse<BlockTradingData[]>>('/v2/market/blocktrade', { params })
+    return { data: response.data ?? [] }
   },
 
   /**
@@ -222,10 +223,10 @@ export const dashboardService = {
     sort = 'change_percent',
     limit = 20
   ): Promise<{ data: MarketOverviewData[] }> {
-    const response = await apiClient.get('/api/market/v2/etf/list', {
+    const response = await apiClient.get<UnifiedResponse<MarketOverviewData[]>>('/api/market/v2/etf/list', {
       params: { sort, limit }
     })
-    return response.data
+    return { data: response.data ?? [] }
   },
 
   // ============================================
@@ -241,13 +242,13 @@ export const dashboardService = {
     symbols: string[],
     indicators: string[]
   ): Promise<{ data: Record<string, TechnicalIndicatorData[]> }> {
-    const response = await apiClient.get('/api/indicators/calculate/batch', {
+    const response = await apiClient.get<UnifiedResponse<Record<string, TechnicalIndicatorData[]>>>('/api/indicators/calculate/batch', {
       params: {
         symbols: symbols.join(','),
         indicators: indicators.join(',')
       }
     })
-    return response.data
+    return { data: response.data ?? {} }
   },
 
   /**

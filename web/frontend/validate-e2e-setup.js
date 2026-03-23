@@ -15,6 +15,8 @@ const README_REQUIRED_SECTIONS = [
   'Phase 3: 前后端联动',
   'Phase 4: 基础交互',
   'npm run test:e2e:validate',
+  'npm run test:e2e:auth',
+  'npm run test:e2e:business-smoke',
   'npm run test:e2e:stable',
   'npm run test:e2e:axe',
   'npm run test:e2e:lighthouse',
@@ -23,6 +25,8 @@ const README_REQUIRED_SECTIONS = [
 
 const PACKAGE_SCRIPT_REQUIREMENTS = {
   'test:e2e:validate': 'validate-e2e-setup.js',
+  'test:e2e:auth': 'tests/e2e/auth-login.spec.ts',
+  'test:e2e:business-smoke': 'tests/e2e/auth-login.spec.ts',
   'test:e2e:stable': 'playwright test --config playwright.config.js --project=chromium',
   'test:e2e:axe': 'accessibility-smoke.spec.ts',
   'test:e2e:lighthouse': 'lhci autorun',
@@ -33,12 +37,13 @@ function buildSuccessNextSteps() {
   return [
     '1. Start MyStocks services via PM2 (or reuse existing shared PM2 services)',
     '2. Run: npm run test:e2e:validate',
-    '3. Run shared-PM2 stable suite with:',
+    '3. Run: npm run test:e2e:auth',
+    '4. Run shared-PM2 business smoke with:',
     '   PLAYWRIGHT_EXTERNAL_FRONTEND=1 \\',
     '   FRONTEND_BASE_URL=http://127.0.0.1:3020 \\',
     '   E2E_FRONTEND_URL=http://127.0.0.1:3020 \\',
-    '   npm run test:e2e:stable',
-    '4. Check results in test-results/ directory'
+    '   npm run test:e2e:business-smoke',
+    '5. Check results in test-results/ directory'
   ];
 }
 

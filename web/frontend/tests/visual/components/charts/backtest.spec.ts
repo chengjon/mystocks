@@ -1,116 +1,120 @@
-import { test, expect } from '../../fixtures/visual.fixture';
-import { waitForEChartsRender, validateGoldTheme } from '../../utils/helpers';
+import { expect, test } from '../../fixtures/visual.fixture';
+import { validateGoldTheme } from '../../utils/helpers';
 
-test.describe.fixme('Backtest visual fixtures require refresh after the frontend rewrite', () => {
-test.describe('Backtest Results Charts - ArtDeco V3.0 Theme', () => {
+const VISUAL_USER = {
+  id: 1,
+  username: 'visual-admin',
+  email: 'visual-admin@example.com',
+  role: 'admin',
+  permissions: ['*'],
+};
+
+const STRATEGY_LIST_ENDPOINTS = [
+  '**/api/v1/strategy/strategies**',
+  '**/api/mock/strategy/strategies**',
+  '**/api/api/v1/strategy/strategies**',
+  '**/api/api/mock/strategy/strategies**',
+];
+
+async function seedVisualSession(page: Parameters<typeof test>[0]['page']) {
+  await page.goto('/login', { waitUntil: 'domcontentloaded' });
+  await page.evaluate((user) => {
+    localStorage.setItem('auth_token', 'visual-backtest-token');
+    localStorage.setItem('auth_user', JSON.stringify(user));
+  }, VISUAL_USER);
+}
+
+async function stubReadiness(page: Parameters<typeof test>[0]['page']) {
+  for (const endpoint of ['**/api/health/ready', '**/health/ready']) {
+    await page.route(endpoint, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          code: 200,
+          message: 'ready',
+          data: { status: 'ready' },
+        }),
+      });
+    });
+  }
+}
+
+async function stubStrategyEndpoints(page: Parameters<typeof test>[0]['page']) {
+  await page.route('**/api/csrf-token', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        data: { csrf_token: 'visual-backtest-csrf' },
+      }),
+    });
+  });
+
+  for (const endpoint of STRATEGY_LIST_ENDPOINTS) {
+    await page.route(endpoint, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          code: 200,
+          message: 'ok',
+          data: [
+            {
+              strategy_id: 101,
+              strategy_name: 'Momentum Alpha',
+              strategy_type: 'momentum',
+              status: 'active',
+              description: 'alpha',
+              updated_at: '2026-03-01T09:00:00Z',
+            },
+            {
+              strategy_id: 102,
+              strategy_name: 'Mean Reversion Beta',
+              strategy_type: 'mean_reversion',
+              status: 'paused',
+              description: 'beta',
+              updated_at: '2026-03-01T09:05:00Z',
+            },
+          ],
+          request_id: 'visual-backtest-list',
+        }),
+      });
+    });
+  }
+}
+
+test.describe('Backtest Visual Charts', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/backtest', { waitUntil: 'networkidle' });
+    await seedVisualSession(page);
+    await stubReadiness(page);
+    await stubStrategyEndpoints(page);
+    await page.goto('/strategy/backtest', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(1500);
     await validateGoldTheme(page);
   });
 
-  test('Equity Curve Chart renders correctly', async ({ page }) => {
-    const equityChartSelector = '.equity-curve, [class*="equity"]';
-    await waitForEChartsRender(page, equityChartSelector);
+  test('execution hub keeps progress and logs readable', async ({ page }) => {
+    await expect(page.getByRole('heading', { name: '策略回测管理中心' })).toBeVisible();
+    await expect(page.locator('.progress-panel')).toBeVisible();
+    await expect(page.locator('.log-panel')).toBeVisible();
 
-    await expect(page).toHaveScreenshot('backtest-equity-curve.png', {
+    await expect(page.locator('.hub-grid')).toHaveScreenshot('backtest-execution-hub.png', {
       animations: 'disabled',
-      fullPage: false,
-      threshold: 0.25
+      threshold: 0.2,
     });
   });
 
-  test('Drawdown Chart displays correctly', async ({ page }) => {
-    const drawdownChart = '.drawdown-chart, [class*="drawdown"]';
-    await waitForEChartsRender(page, drawdownChart);
+  test('report tab keeps summary layout stable', async ({ page }) => {
+    await page.getByRole('button', { name: '报告中心' }).click();
+    await expect(page.locator('.tab-panel')).toContainText('回测报告');
 
-    await expect(page).toHaveScreenshot('backtest-drawdown-chart.png', {
+    await expect(page.locator('.tab-panel')).toHaveScreenshot('backtest-report-tab.png', {
       animations: 'disabled',
-      fullPage: false,
-      threshold: 0.25
+      threshold: 0.2,
     });
   });
-
-  test('Return Distribution Chart renders correctly', async ({ page }) => {
-    const distributionChart = '.return-distribution, [class*="distribution"]';
-    await waitForEChartsRender(page, distributionChart);
-
-    await expect(page).toHaveScreenshot('backtest-return-distribution.png', {
-      animations: 'disabled',
-      fullPage: false,
-      threshold: 0.25
-    });
-  });
-
-  test('Trades Chart displays entry/exit signals', async ({ page }) => {
-    const tradesChart = '.trades-chart, [class*="trades"]';
-    await waitForEChartsRender(page, tradesChart);
-
-    await expect(page).toHaveScreenshot('backtest-trades-chart.png', {
-      animations: 'disabled',
-      fullPage: false,
-      threshold: 0.25
-    });
-  });
-
-  test('Backtest Results Summary renders with correct metrics', async ({ page }) => {
-    const summaryPanel = '.backtest-summary, .results-summary';
-    await expect(page.locator(summaryPanel)).toBeVisible({ timeout: 10000 });
-
-    await expect(page).toHaveScreenshot('backtest-summary-panel.png', {
-      animations: 'disabled',
-      fullPage: false,
-      threshold: 0.2
-    });
-  });
-});
-
-test.describe('Backtest Results - Strategy Templates', () => {
-  test('MA Cross Strategy renders correctly', async ({ page }) => {
-    await page.goto('/backtest?strategy=ma_cross', { waitUntil: 'networkidle' });
-    await validateGoldTheme(page);
-
-    await waitForEChartsRender(page, '.equity-curve');
-    await expect(page).toHaveScreenshot('backtest-ma-cross-strategy.png', {
-      animations: 'disabled',
-      fullPage: false,
-      threshold: 0.25
-    });
-  });
-
-  test('RSI Strategy renders correctly', async ({ page }) => {
-    await page.goto('/backtest?strategy=rsi', { waitUntil: 'networkidle' });
-    await validateGoldTheme(page);
-
-    await waitForEChartsRender(page, '.equity-curve');
-    await expect(page).toHaveScreenshot('backtest-rsi-strategy.png', {
-      animations: 'disabled',
-      fullPage: false,
-      threshold: 0.25
-    });
-  });
-
-  test('MACD Strategy renders correctly', async ({ page }) => {
-    await page.goto('/backtest?strategy=macd', { waitUntil: 'networkidle' });
-    await validateGoldTheme(page);
-
-    await waitForEChartsRender(page, '.equity-curve');
-    await expect(page).toHaveScreenshot('backtest-macd-strategy.png', {
-      animations: 'disabled',
-      fullPage: false,
-      threshold: 0.25
-    });
-  });
-
-  test('Bollinger Bands Strategy renders correctly', async ({ page }) => {
-    await page.goto('/backtest?strategy=bollinger', { waitUntil: 'networkidle' });
-    await validateGoldTheme(page);
-
-    await waitForEChartsRender(page, '.equity-curve');
-    await expect(page).toHaveScreenshot('backtest-bollinger-strategy.png', {
-      animations: 'disabled',
-      fullPage: false,
-      threshold: 0.25
-    });
-  });
-});
 });
