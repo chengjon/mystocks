@@ -1,0 +1,10 @@
+# Directory Organization Legacy Drafts
+
+## Archived In-Progress Materials
+
+- [DIRECTORY_ORGANIZATION_PLAN_OPTIMIZED](DIRECTORY_ORGANIZATION_PLAN_OPTIMIZED.md)
+- [DIRECTORY_ORGANIZATION_PLAN_REVIEW_SUGGESTIONS](DIRECTORY_ORGANIZATION_PLAN_REVIEW_SUGGESTIONS.md)
+- [PROJECT_DIRECTORY_MANAGEMENT_PLAN](PROJECT_DIRECTORY_MANAGEMENT_PLAN.md)
+- [deliverable](deliverable.md)
+- [task_plan](task_plan.md)
+- [目录管理解决方案总结](目录管理解决方案总结.md)
