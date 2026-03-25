@@ -22,7 +22,7 @@ on:
 env:
   # 全局环境变量
   NODE_VERSION: '18'
-  PYTHON_VERSION: '3.11'
+  PYTHON_VERSION: '3.12'
   FRONTEND_PORT: 5173
   FRONTEND_BACKUP_PORT: 5174
   BACKEND_PORT: 8000
@@ -96,8 +96,7 @@ jobs:
       - name: Install Frontend Dependencies
         run: |
           cd web/frontend
-          npm ci --only=production
-          npm install @playwright/test@1.48.1
+          npm ci
           npx playwright install --with-deps
 
       - name: Install Backend Dependencies
@@ -317,7 +316,6 @@ jobs:
         run: |
           cd web/frontend
           npm ci
-          npm install @playwright/test@1.48.1
           npx playwright install ${{ matrix.browser }} --with-deps
           cd ../..
 
@@ -371,6 +369,7 @@ jobs:
             --project=${{ matrix.browser }} \
             --shard=${{ matrix.shard }} \
             --output=test-results/ \
+            tests/e2e/auth-login.spec.ts \
             tests/e2e/critical/menu-navigation-fixed.spec.ts \
             tests/e2e/kline-chart.spec.ts
 

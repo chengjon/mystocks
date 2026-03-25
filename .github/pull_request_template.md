@@ -30,6 +30,23 @@
 - verification_evidence: `<commands/results/key paths>`
 - risk_and_rollback: `<impact/risk/rollback steps>`
 
+## Frontend Gate Evidence (Required when `web/frontend/**`, `.github/workflows/frontend-testing.yml`, `.github/workflows/e2e-testing.yml`, `.github/workflows/visual-testing.yml` change)
+
+> 如不涉及前端/UI/视觉/前端 CI，请写 `N/A`。如涉及，请按实际执行结果填写，不允许写“同前”“已跑过”“应该通过”。
+> reviewer 速查可参考 [docs/guides/frontend/PR_GATE_QUICK_REFERENCE.md](/opt/claude/mystocks_spec/docs/guides/frontend/PR_GATE_QUICK_REFERENCE.md)。
+
+- frontend_gate_scope: `<none|unit-only|frontend-mainline|frontend-mainline+visual|N/A>`
+- pm2_status: `<mystocks-backend online @ http://localhost:8020 ; mystocks-frontend online @ http://localhost:3020 | N/A>`
+- unit_gate: `<npm run test:unit:stable => 33 files / 343 tests passed | N/A>`
+- selector_gate: `<npm run test:e2e:selectors => pass/fail + details | N/A>`
+- business_smoke_gate: `<npm run test:e2e:business-smoke => browser/project + passed/failed/skipped | N/A>`
+- a11y_gate: `<npm run test:e2e:axe => browser/project + passed/failed/skipped | N/A>`
+- lighthouse_gate: `<npm run test:e2e:lighthouse => urls + finalDisplayedUrl summary + score summary | N/A>`
+- visual_gate_dashboard: `<npm run test:visual:dashboard => browser/project + passed/failed | N/A>`
+- visual_gate_charts: `<npm run test:visual:charts => browser/project + passed/failed | N/A>`
+- cross_browser_evidence: `<firefox/webkit smoke results or workflow run id | N/A>`
+- type_ceiling_evidence: `<npm run test:type-ceiling => current errors / ceiling / baseline | N/A>`
+
 ## Large File Governance (Required)
 
 > 适用于本次改动涉及 `src/` 或 `web/backend/app/` 的情况；如不适用请明确写 `N/A`。

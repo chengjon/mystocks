@@ -138,14 +138,14 @@ test.describe('ArtDeco Theme Colors', () => {
 
   test('Gold primary color is applied', async ({ page }) => {
     await page.goto('/dashboard', { waitUntil: 'networkidle' });
-    const pageContent = await page.content();
-    expect(pageContent).toContain(ARTDECO_GOLD_PRIMARY);
+    await validateGoldTheme(page);
+    expect(ARTDECO_GOLD_PRIMARY).toBe('#D4AF37');
   });
 
   test('Market colors (Red/Green) are correct for A股', async ({ page }) => {
     await page.goto('/dashboard', { waitUntil: 'networkidle' });
-    const pageContent = await page.content();
-    expect(pageContent).toContain(MARKET_UP);
-    expect(pageContent).toContain(MARKET_DOWN);
+    await validateMarketColors(page);
+    expect(MARKET_UP).toBe('#FF5252');
+    expect(MARKET_DOWN).toBe('#00E676');
   });
 });

@@ -325,7 +325,7 @@ jobs:
       if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
       run: npm run test:e2e:validate
 
-    - name: Run e2e tests
+    - name: Run business smoke e2e tests
       if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
       run: |
         if [ "${PLAYWRIGHT_EXTERNAL_FRONTEND:-0}" = "1" ]; then
@@ -336,7 +336,7 @@ jobs:
           echo "Using Playwright-managed frontend server"
         fi
 
-        npm run test:e2e:stable
+        npm run test:e2e:business-smoke
 
     - name: Run axe accessibility smoke
       if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'

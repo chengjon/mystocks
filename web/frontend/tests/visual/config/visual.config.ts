@@ -5,6 +5,9 @@ const ARTDECO_TOKENS_PATH = path.resolve(__dirname, '../../src/styles/artdeco-to
 const ECHARTS_THEME_PATH = path.resolve(__dirname, '../../src/utils/echarts.ts');
 const FRONTEND_PORT = process.env.FRONTEND_PORT || '3020';
 const FRONTEND_URL = process.env.FRONTEND_URL || `http://localhost:${FRONTEND_PORT}`;
+const VISUAL_HTML_REPORT_DIR = process.env.VISUAL_HTML_REPORT_DIR || 'playwright-report';
+const VISUAL_JSON_REPORT_FILE = process.env.VISUAL_JSON_REPORT_FILE || 'test-results/visual/test-results.json';
+const VISUAL_JUNIT_REPORT_FILE = process.env.VISUAL_JUNIT_REPORT_FILE || 'test-results/visual/junit.xml';
 
 export default defineConfig({
   testDir: '..',
@@ -13,9 +16,9 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: [
-    ['html', { outputFolder: 'playwright-report', templatePath: undefined }],
-    ['json', { outputFile: 'test-results/visual/test-results.json' }],
-    ['junit', { outputFile: 'test-results/visual/junit.xml' }]
+    ['html', { outputFolder: VISUAL_HTML_REPORT_DIR, templatePath: undefined }],
+    ['json', { outputFile: VISUAL_JSON_REPORT_FILE }],
+    ['junit', { outputFile: VISUAL_JUNIT_REPORT_FILE }]
   ],
   use: {
     baseURL: FRONTEND_URL,
@@ -42,7 +45,7 @@ export default defineConfig({
       animations: 'disabled'
     }
   },
-  snapshotDir: '../visual/baselines',
+  snapshotDir: path.resolve(__dirname, '../baselines'),
   snapshotPathTemplate: '{snapshotDir}/{testFilePath}/{arg}{ext}',
   webServer: {
     command: `npm run dev -- --port ${FRONTEND_PORT}`,

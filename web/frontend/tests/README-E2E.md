@@ -3,6 +3,7 @@
 > 2026-03 基线：标准 E2E 入口为 `npm run test:e2e`，使用 `playwright.config.js`（`tests/e2e`）。
 > `playwright.config.ts` 仅用于历史 legacy 专项脚本。
 > 端口优先由 `.env` 注入；若缺失，当前 helper / smoke runner 会回落到标准端口：前端 `3020`（备份 `3021`），后端 `8020`（备份 `8021`）。
+> CI 阻塞主线已收敛为：`Vitest stable unit` + `selector gate` + `test:e2e:business-smoke` + `test:e2e:axe` + `test:e2e:lighthouse`。
 
 ## 概述
 
@@ -76,17 +77,29 @@ cd web/frontend
 # 先校验 Playwright / README / package.json 入口是否完整
 npm run test:e2e:validate
 
-# 复用当前已在线的 PM2 前端（标准端口 3020）
+# 先跑登录鉴权 smoke（UI 登录 + 受保护路由跳转）
 PLAYWRIGHT_EXTERNAL_FRONTEND=1 \
 FRONTEND_BASE_URL=http://127.0.0.1:3020 \
 E2E_FRONTEND_URL=http://127.0.0.1:3020 \
-npm run test:e2e:stable
+BACKEND_BASE_URL=http://127.0.0.1:8020 \
+E2E_BACKEND_URL=http://127.0.0.1:8020 \
+npm run test:e2e:auth
+
+# 再跑 Chromium 业务主线 smoke（登录/菜单/行情/策略/回测/图表）
+PLAYWRIGHT_EXTERNAL_FRONTEND=1 \
+FRONTEND_BASE_URL=http://127.0.0.1:3020 \
+E2E_FRONTEND_URL=http://127.0.0.1:3020 \
+BACKEND_BASE_URL=http://127.0.0.1:8020 \
+E2E_BACKEND_URL=http://127.0.0.1:8020 \
+npm run test:e2e:business-smoke
 ```
 
 说明：
 - `test:e2e:validate` 只做套件完整性校验，不会改 PM2 进程。
+- `test:e2e:auth` 验证未登录重定向和真实后端登录响应。
+- `test:e2e:business-smoke` 是当前 PR 阻塞主线，覆盖登录鉴权、菜单/路由、行情页、策略管理、回测链路、K 线图表。
 - `test:e2e:stable` 当前执行 `chromium` stable 子集，适合作为共享环境下的安全回归入口。
-- 若要报告结果，必须注明这是 stable 子集，不得表述为“全量 E2E 已通过”。
+- 若只跑 `test:e2e:stable`，必须注明这是 stable 子集，不得表述为“全量 E2E 已通过”。
 
 #### 可访问性与性能 Smoke
 新增的无障碍与性能入口和业务 E2E 分开执行：
@@ -102,12 +115,19 @@ npm run test:e2e:axe
 
 # Lighthouse CI：使用 mock build + 独立 preview，不复用当前 PM2 服务
 npm run test:e2e:lighthouse
+
+# Dashboard visual smoke
+npm run test:visual:dashboard
+
+# Chart visual smoke
+npm run test:visual:charts
 ```
 
 说明：
 - `test:e2e:axe` 当前跑 `chromium` 两页 smoke：`/login` 和 `/strategy/repo`。
 - `test:e2e:lighthouse` 会先执行 `build:lighthouse:mock`，再在隔离端口 `4273` 启一个 `dist-lighthouse` preview。
 - `test:e2e:lighthouse` 不会改动 `3020/8020` 的共享 PM2 会话，适合作为 CI 中的独立性能门禁。
+- `test:visual:dashboard` 和 `test:visual:charts` 当前都跑 `chromium` visual baselines，适合作为视觉回归的独立入口。
 
 #### 方法 1: npm 脚本 (推荐)
 ```bash
@@ -151,8 +171,12 @@ cd web/frontend
 
 # 标准入口（优先）
 npm run test:e2e
+npm run test:e2e:auth
+npm run test:e2e:business-smoke
 npm run test:e2e:chromium
 npm run test:e2e:debug
+npm run test:visual:dashboard
+npm run test:visual:charts
 
 # 复用当前已在线的 PM2 前端（例如 localhost:3020）
 PLAYWRIGHT_EXTERNAL_FRONTEND=1 \
@@ -211,6 +235,11 @@ const BACKEND_CONFIG = {
 - `test:e2e:lighthouse`: 使用 `lighthouserc.cjs`，当前采集 `login`、`dashboard`、`market/realtime`、`strategy/repo`
 - `LHCI` 端口：`4273`
 - `LHCI` 浏览器：显式使用 Playwright Chromium 可执行文件，避免系统 Chrome / profile 锁冲突
+
+### Visual 配置
+- `test:visual:dashboard`: 当前覆盖 dashboard 主题/布局视觉基线
+- `test:visual:charts`: 当前覆盖 `market/technical` 与 `strategy/backtest` 的最小图表视觉基线
+- `test:visual:charts:update`: 用于刷新 chart baselines
 
 ### Selector Policy
 - `tests/e2e/**` 的新增或修改用例必须使用用户级定位：`getByRole`、`getByLabel`、`getByPlaceholder`、`getByText`、`getByTestId`

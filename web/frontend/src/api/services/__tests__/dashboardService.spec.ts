@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import apiClient from '../../apiClient'
+import { apiClient } from '../../apiClient'
 import { dashboardService } from '../dashboardService'
 
 vi.mock('../../apiClient', () => ({
-  default: {
+  apiClient: {
     get: vi.fn()
   }
 }))

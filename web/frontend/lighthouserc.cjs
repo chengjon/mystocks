@@ -10,6 +10,10 @@ module.exports = {
   ci: {
     collect: {
       chromePath: process.env.LIGHTHOUSE_CHROME_PATH,
+      puppeteerScript: "./scripts/lighthouse-auth.cjs",
+      puppeteerLaunchOptions: {
+        args: ["--no-sandbox"],
+      },
       startServerCommand: "npm run preview:lighthouse",
       startServerReadyPattern: "http://",
       startServerReadyTimeout: 30000,
@@ -22,7 +26,7 @@ module.exports = {
       numberOfRuns: 1,
       settings: {
         preset: "desktop",
-        chromeFlags: "--no-sandbox --headless=new",
+        disableStorageReset: true,
       },
     },
     assert: {

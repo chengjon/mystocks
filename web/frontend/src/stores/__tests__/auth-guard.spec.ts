@@ -133,6 +133,23 @@ describe('Authentication Guards', () => {
       expect(freshStore.user?.username).toBe('storeduser')
       expect(freshStore.isAuthenticated).toBe(true)
     })
+
+    it('should bootstrap lighthouse auth for protected mock pages when enabled', () => {
+      const freshStore = useAuthStore()
+      const originalFlag = import.meta.env.VITE_LHCI_AUTH_BYPASS
+
+      localStorageMock.getItem.mockReturnValue(null)
+      window.history.replaceState({}, '', 'http://localhost:3000/dashboard')
+      import.meta.env.VITE_LHCI_AUTH_BYPASS = 'true'
+
+      freshStore.initializeAuth()
+
+      expect(freshStore.token).toBe('lhci-auth-token')
+      expect(freshStore.user?.username).toBe('lhci-admin')
+      expect(freshStore.isAuthenticated).toBe(true)
+
+      import.meta.env.VITE_LHCI_AUTH_BYPASS = originalFlag
+    })
   })
 
   describe('authGuard', () => {
@@ -190,6 +207,18 @@ describe('Authentication Guards', () => {
         name: 'login',
         query: { redirect: '/someroute' }
       })
+    })
+
+    it('should keep the login route reachable when lighthouse auth bypass is enabled', () => {
+      const originalFlag = import.meta.env.VITE_LHCI_AUTH_BYPASS
+      import.meta.env.VITE_LHCI_AUTH_BYPASS = 'true'
+
+      const to = { name: 'login', meta: { requiresAuth: false } }
+      const result = authGuard(to)
+
+      expect(result).toBe(true)
+
+      import.meta.env.VITE_LHCI_AUTH_BYPASS = originalFlag
     })
   })
 })

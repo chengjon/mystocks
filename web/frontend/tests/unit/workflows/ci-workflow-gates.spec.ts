@@ -27,6 +27,20 @@ describe("CI workflow gates", () => {
     expect(packageJson.scripts["test:e2e:lighthouse"]).toBeDefined();
   });
 
+  it("defines visual regression package scripts for workflow reuse", () => {
+    expect(packageJson.scripts["test:visual"]).toBeDefined();
+    expect(packageJson.scripts["test:visual:update"]).toBeDefined();
+    expect(packageJson.scripts["test:visual:dashboard"]).toBeDefined();
+    expect(packageJson.scripts["test:visual:dashboard:update"]).toBeDefined();
+    expect(packageJson.scripts["test:visual:charts"]).toBeDefined();
+    expect(packageJson.scripts["test:visual:charts:update"]).toBeDefined();
+  });
+
+  it("defines a blocking Chromium business-smoke command", () => {
+    expect(packageJson.scripts["test:e2e:business-smoke"]).toBeDefined();
+    expect(packageJson.scripts["test:e2e:auth"]).toBeDefined();
+  });
+
   it("runs the full frontend unit suite as a blocking frontend-testing gate", () => {
     const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
     const stableUnitStepMatch = workflowText.match(
@@ -41,6 +55,13 @@ describe("CI workflow gates", () => {
     expect(workflowText).not.toMatch(
       /- name: Run full unit tests[\s\S]*?continue-on-error:\s*true/u,
     );
+  });
+
+  it("runs the Chromium business-smoke suite in frontend-testing", () => {
+    const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
+    const e2eStepMatch = workflowText.match(/- name: Run business smoke e2e tests[\s\S]*?npm run test:e2e:business-smoke/u);
+
+    expect(e2eStepMatch?.[0]).toContain("npm run test:e2e:business-smoke");
   });
 
   it("runs the axe accessibility smoke in frontend-testing", () => {
@@ -61,10 +82,13 @@ describe("CI workflow gates", () => {
     expect(lighthouseStepMatch?.[1]?.trim()).toBe("npm run test:e2e:lighthouse");
   });
 
-  it("keeps the legacy e2e-testing workflow aligned with the Lighthouse mainline", () => {
+  it("keeps the dedicated cross-browser workflow aligned with the Playwright mainline", () => {
     const workflowText = readWorkflow(".github/workflows/e2e-testing.yml");
 
     expect(workflowText).toContain("npm run test:e2e:lighthouse");
+    expect(workflowText).toContain("tests/e2e/auth-login.spec.ts");
+    expect(workflowText).toContain("tests/e2e/critical/menu-navigation-fixed.spec.ts");
+    expect(workflowText).toContain("tests/e2e/kline-chart.spec.ts");
     expect(workflowText).not.toContain(".lighthouserc.json");
   });
 
@@ -102,5 +126,36 @@ describe("CI workflow gates", () => {
     );
 
     expect(baseline.frontend_type_errors).toBe(0);
+  });
+
+  it("watches the real frontend visual test tree in the visual workflow", () => {
+    const workflowText = readWorkflow(".github/workflows/visual-testing.yml");
+
+    expect(workflowText).toContain("web/frontend/tests/visual/**");
+    expect(workflowText).not.toContain("'tests/visual/**'");
+  });
+
+  it("uses package scripts instead of inline playwright commands in the visual workflow", () => {
+    const workflowText = readWorkflow(".github/workflows/visual-testing.yml");
+
+    expect(workflowText).toContain("npm run test:visual:dashboard --");
+    expect(workflowText).toContain("npm run test:visual:charts --");
+    expect(workflowText).toContain("npm run test:visual:dashboard:update");
+    expect(workflowText).toContain("npm run test:visual:charts:update");
+    expect(workflowText).toContain("VISUAL_HTML_REPORT_DIR=playwright-report/dashboard");
+    expect(workflowText).toContain("VISUAL_HTML_REPORT_DIR=playwright-report/charts");
+    expect(workflowText).toContain("visual-dashboard-results-${{ matrix.browser }}");
+    expect(workflowText).toContain("visual-chart-results-${{ matrix.browser }}");
+    expect(workflowText).not.toContain("npx playwright test \\");
+  });
+
+  it("writes a grouped visual summary for dashboard and chart suites", () => {
+    const workflowText = readWorkflow(".github/workflows/visual-testing.yml");
+
+    expect(workflowText).toContain("visual-test-summary.json");
+    expect(workflowText).toContain("dashboard_tests");
+    expect(workflowText).toContain("dashboard_passed");
+    expect(workflowText).toContain("chart_tests");
+    expect(workflowText).toContain("chart_passed");
   });
 });
