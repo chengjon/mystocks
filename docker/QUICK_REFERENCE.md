@@ -1,5 +1,7 @@
 # MyStocks Docker 配置快速参考
 
+> 当前 canonical 路径为根级 `docker/`。`config/docker/` 与 `config/docker-infra/` 为兼容层。
+
 ## 🚀 一键启动
 
 ```bash
@@ -87,7 +89,7 @@ MONGODB_DATA_PATH=./data/mongodb
 初始化本地数据源凭据文件：
 
 ```bash
-cp config/docker/data-source-credentials.env.example .env.data-sources.local
+cp docker/data-source-credentials.env.example .env.data-sources.local
 vim .env.data-sources.local
 ```
 

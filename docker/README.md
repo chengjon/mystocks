@@ -1,5 +1,7 @@
 # MyStocks Docker Compose 配置
 
+> 当前 canonical 路径为根级 `docker/`。`config/docker/` 与 `config/docker-infra/` 仅作为兼容 symlink 保留。
+
 本目录包含 MyStocks 监控基础设施的 Docker Compose 配置文件。
 
 当前 Redis 运行时基线：
@@ -21,7 +23,6 @@ docker/
 ├── grafana.yml                 # Grafana 独立配置
 ├── mongodb.yml                 # MongoDB 独立配置
 ├── monitoring-stack.yml        # 完整监控栈配置
-├── docker-compose.yml          # 主项目配置（链接到上面文件）
 └── scripts/
     ├── start-all.sh           # 启动所有服务
     ├── stop-all.sh            # 停止所有服务
@@ -36,7 +37,7 @@ docker/
 cp ../.env.example .env
 
 # 复制数据源本地凭据模板（不会提交到 Git）
-cp config/docker/data-source-credentials.env.example .env.data-sources.local
+cp docker/data-source-credentials.env.example .env.data-sources.local
 
 # 编辑配置文件（根据需要修改密码和端口）
 vim .env
@@ -133,7 +134,7 @@ DOCKER_NETWORK_SUBNET=172.20.0.0/16
 
 - `BYAPI_KEY`、`BYAPI_BASE_URL`、`TUSHARE_TOKEN` 只应放在本地 `--env-file` 或部署平台 secrets 中。
 - 不要把有效凭据提交进 Git。
-- compose 资产只保留占位变量。
+- `docker-compose.prod.yml` 只保留占位变量，不固化真实值。
 
 ### 数据持久化
 
