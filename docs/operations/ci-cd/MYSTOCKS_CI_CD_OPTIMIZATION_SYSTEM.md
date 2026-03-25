@@ -100,7 +100,6 @@ graph TB
     GH --> GA
     GA --> UT
     GA --> IT
-    GA --> TC
     GA --> E2E
     GA --> PERF
 
@@ -124,55 +123,51 @@ graph TB
     LNAV --> WEB
 ```
 
-### 核心组件详解
+---
 
-#### 1. GitHub Actions工作流
+## 🔧 核心实现方案
+
+### 1. GitHub Actions CI/CD工作流
+
+#### 主要工作流文件架构
+
+```
+.github/
+├── workflows/
+│   ├── ci-cd-pipeline.yml      # 主CI/CD流水线
+│   ├── e2e-tests.yml           # 端到端测试专用
+│   ├── performance-test.yml    # 性能测试
+│   ├── security-scan.yml       # 安全扫描
+│   └── deploy.yml              # 部署工作流
+├── actions/
+│   └── setup-monitoring/       # 自定义监控设置action
+└── ISSUE_TEMPLATE/
+    └── ci-cd-failure.md        # CI/CD失败问题模板
+```
+
+#### 主CI/CD流水线配置
 
 ```yaml
-# .github/workflows/ci-cd-pipeline.yml
 name: MyStocks CI/CD Pipeline
-
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
-
-env:
-  PYTHON_VERSION: '3.8'
-  NODE_VERSION: '16'
+    branches: [main]
 
 jobs:
-  # 代码质量检查
   quality-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/pip
-            ~/.npm
-          key: ${{ runner.os }}-deps-${{ hashFiles('**/requirements*.txt', '**/package*.json') }}
-
-      # 类型检查集成
+      # Python类型检查
       - name: Python Type Check (mypy)
         run: |
           pip install mypy
-          mypy src/ --config-file mypy.ini
+          mypy src/ --config-file mypy.ini --show-error-codes
 
+      # TypeScript类型检查
       - name: TypeScript Type Check
         run: |
           cd web/frontend
@@ -182,55 +177,26 @@ jobs:
       # 代码质量检查
       - name: Code Quality
         run: |
-          pip install black ruff
+          pip install black ruff bandit safety
           black --check src/
           ruff check src/
+          bandit -r src/
+          safety check
 
-  # 三层测试架构
   test-suite:
     needs: quality-check
-    runs-on: ubuntu-latest
     strategy:
       matrix:
-        test-type: [unit, integration, e2e]
-        include:
-          - test-type: unit
-            command: pytest tests/unit/ -v --cov=src --cov-report=xml
-          - test-type: integration
-            command: pytest tests/integration/ -v --cov=src --cov-report=xml
-          - test-type: e2e
-            command: |
-              playwright install chromium firefox webkit
-              pytest tests/e2e/ -v --browser chromium --browser firefox
-
+        test-type: [unit, integration]
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Install dependencies
+      - name: Run ${{ matrix.test-type }} tests
         run: |
           pip install -r requirements.txt
-          pip install pytest pytest-cov pytest-playwright
+          pytest tests/${{ matrix.test-type }}/ -v --cov=src --cov-report=xml
+      - uses: codecov/codecov-action@v3
 
-      - name: Run ${{ matrix.test-type }} tests
-        run: ${{ matrix.command }}
-
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
-        with:
-          file: ./coverage.xml
-
-  # 端到端测试专用
-  e2e-full:
+  e2e-tests:
     needs: test-suite
     runs-on: ubuntu-latest
     services:
@@ -242,191 +208,182 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_PASSWORD: test123
-        ports:
-          - 5432:5432
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup environment
+      - name: Setup E2E Environment
         run: |
           # 启动后端服务
           cd web/backend
           pip install -r requirements.txt
           python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 &
-          BACKEND_PID=$!
-
-          # 等待服务启动
+          # 等待服务就绪
           timeout 60 bash -c 'until curl -f http://localhost:8020/health; do sleep 2; done'
 
-      - name: Install Playwright
+      - name: Run Playwright E2E Tests
         run: |
           cd web/frontend
           npm ci
           npx playwright install chromium firefox webkit
+          npx playwright test --config=playwright.config.ts
 
-      - name: Run E2E tests
-        run: |
-          cd web/frontend
-          npx playwright test --config=playwright.config.ts --reporter=github
-
-      - name: Upload test results
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: playwright-report
-          path: web/frontend/playwright-report/
-
-  # 性能测试
   performance-test:
-    needs: e2e-full
-    runs-on: ubuntu-latest
-
+    needs: e2e-tests
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Lighthouse
-        run: npm install -g lighthouse @lhci/cli
-
-      - name: Run Lighthouse
+      - name: Lighthouse Performance Test
         run: |
-          # 启动应用
-          cd web/backend
-          python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 &
-          BACKEND_PID=$!
-
-          # 等待服务启动
-          sleep 10
-
-          # 运行性能测试
-          lighthouse http://localhost:8020/docs --output json --output html --output-path ./lighthouse-report.html
-
-      - name: Upload performance report
-        uses: actions/upload-artifact@v3
+          npm install -g lighthouse
+          lighthouse http://localhost:8020/docs --output json --output html
+      - uses: actions/upload-artifact@v3
         with:
           name: lighthouse-report
-          path: ./lighthouse-report.html
+          path: ./*.html
 
-  # 部署到测试环境
-  deploy-test:
-    needs: [test-suite, e2e-full, performance-test]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Deploy to test environment
-        run: |
-          echo "Deploying to test environment..."
-          # 这里添加实际的部署脚本
-
-  # 部署到生产环境
-  deploy-prod:
-    needs: deploy-test
-    runs-on: ubuntu-latest
+  deploy:
+    needs: [test-suite, e2e-tests, performance-test]
     if: github.ref == 'refs/heads/main'
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Deploy to production
+      - name: Deploy to Production
         run: |
-          echo "Deploying to production..."
-          # 这里添加实际的生产部署脚本
+          # PM2部署逻辑
+          pm2 deploy ecosystem.config.js production
 ```
 
-#### 2. Jaeger + Prometheus 协同监控体系
+### 2. Jaeger + Prometheus 监控集成
+
+#### Jaeger分布式追踪配置
 
 ```yaml
-# docker-compose.monitoring.yml
-version: '3.8'
+# jaeger-config.yml
+service:
+  name: mystocks-tracing
+  version: "1.0.0"
 
-services:
-  # Jaeger分布式追踪
+tracing:
   jaeger:
-    image: jaegertracing/all-in-one:1.41
-    ports:
-      - "16686:16686"  # Jaeger UI
-      - "14268:14268"  # Jaeger接收端点
-    environment:
-      COLLECTOR_OTLP_ENABLED: true
-    networks:
-      - monitoring
+    service-name: mystocks-app
+    sampler:
+      type: probabilistic
+      param: 0.1  # 10%采样率
+    reporter:
+      log-spans: true
+      collector:
+        endpoint: "http://jaeger:14268/api/traces"
+        user: ""
+        password: ""
 
-  # Prometheus指标监控
-  prometheus:
-    image: prom/prometheus:latest
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=200h'
-      - '--web.enable-lifecycle'
-    networks:
-      - monitoring
+# Python应用集成
+from jaeger_client import Config
+from flask_opentracing import FlaskTracing
 
-  # Grafana可视化
-  grafana:
-    image: grafana/grafana:latest
-    ports:
-      - "3001:3000"
-    volumes:
-      - grafana_data:/var/lib/grafana
-    environment:
-      GF_SECURITY_ADMIN_PASSWORD: admin
-    networks:
-      - monitoring
-
-  # OpenTelemetry Collector (可选，用于收集应用指标)
-  otel-collector:
-    image: otel/opentelemetry-collector:latest
-    command: ["--config=/etc/otel-collector-config.yaml"]
-    volumes:
-      - ./monitoring/otel-collector-config.yaml:/etc/otel-collector-config.yaml
-    ports:
-      - "4317:4317"  # OTLP gRPC
-      - "4318:4318"  # OTLP HTTP
-    networks:
-      - monitoring
-
-networks:
-  monitoring:
-    driver: bridge
-
-volumes:
-  prometheus_data:
-  grafana_data:
+def init_tracing(app):
+    config = Config(
+        config={
+            'sampler': {'type': 'probabilistic', 'param': 0.1},
+            'local_agent': {'reporting_host': 'jaeger', 'reporting_port': 6831},
+            'logging': True,
+        },
+        service_name='mystocks-backend',
+    )
+    jaeger_tracer = config.initialize_tracer()
+    tracing = FlaskTracing(jaeger_tracer, True, app)
+    return tracing
 ```
 
-#### 3. PM2 + tmux + lnav 运维框架
+#### Prometheus指标监控配置
+
+```yaml
+# prometheus.yml
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'mystocks-backend'
+    static_configs:
+      - targets: ['localhost:8020']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+
+  - job_name: 'mystocks-frontend'
+    static_configs:
+      - targets: ['localhost:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['localhost:9100']
+
+  - job_name: 'pm2'
+    static_configs:
+      - targets: ['localhost:9615']
+    metrics_path: '/metrics'
+```
+
+#### 应用指标暴露
+
+```python
+# web/backend/app/metrics.py
+from prometheus_client import Counter, Histogram, Gauge, generate_latest
+from fastapi import Request, Response
+from fastapi.responses import PlainTextResponse
+
+# 定义指标
+REQUEST_COUNT = Counter('http_requests_total', 'Total HTTP requests', ['method', 'endpoint', 'status'])
+REQUEST_LATENCY = Histogram('http_request_duration_seconds', 'HTTP request latency', ['method', 'endpoint'])
+ACTIVE_CONNECTIONS = Gauge('active_connections', 'Number of active connections')
+
+@app.middleware("http")
+async def metrics_middleware(request: Request, call_next):
+    start_time = time.time()
+
+    response = await call_next(request)
+
+    # 记录指标
+    REQUEST_COUNT.labels(
+        method=request.method,
+        endpoint=request.url.path,
+        status=response.status_code
+    ).inc()
+
+    REQUEST_LATENCY.labels(
+        method=request.method,
+        endpoint=request.url.path
+    ).observe(time.time() - start_time)
+
+    return response
+
+@app.get("/metrics")
+async def metrics():
+    return PlainTextResponse(generate_latest())
+```
+
+### 3. PM2 + tmux + lnav 运维框架
+
+#### 增强版PM2配置
 
 ```javascript
-// ecosystem.config.js - 增强版PM2配置
+// ecosystem.config.js
 module.exports = {
   apps: [
     {
       name: 'mystocks-backend',
       script: 'web/backend/main.py',
-      instances: 2,
+      instances: 'max',
       exec_mode: 'cluster',
       env: {
-        NODE_ENV: 'production',
         JAEGER_ENDPOINT: 'http://jaeger:14268/api/traces',
         PROMETHEUS_PORT: 8001
       },
-      // 集成tmux会话管理
+      // tmux集成
       args: '--tmux-session mystocks-backend',
-      // 集成lnav日志分析
+      // lnav日志格式
       log_file: '/var/log/pm2/mystocks-backend.log',
-      out_file: '/var/log/pm2/mystocks-backend-out.log',
-      error_file: '/var/log/pm2/mystocks-backend-error.log'
+      error_file: '/var/log/pm2/mystocks-backend-error.log',
+      // 监控集成
+      merge_logs: true,
+      time: true
     },
     {
       name: 'mystocks-frontend',
@@ -436,126 +393,317 @@ module.exports = {
         PM2_SERVE_PORT: 3000,
         PM2_SERVE_SPA: 'true'
       }
-    },
-    {
-      name: 'mystocks-websocket',
-      script: 'web/backend/websocket_server.py',
-      instances: 1,
-      env: {
-        JAEGER_SERVICE_NAME: 'websocket-service'
-      }
     }
-  ],
+  ]
+}
+```
 
-  // 部署配置
-  deploy: {
-    production: {
-      user: 'deploy',
-      host: 'your-server.com',
-      ref: 'origin/main',
-      repo: 'git@github.com:your-org/mystocks.git',
-      path: '/home/deploy/mystocks',
-      'pre-deploy-local': '',
-      'post-deploy': 'npm install && pm2 reload ecosystem.config.js',
-      'pre-setup': ''
+#### tmux自动化脚本
+
+```bash
+#!/bin/bash
+# scripts/dev-environment.sh
+
+SESSION_NAME="mystocks-dev"
+
+# 创建tmux会话
+tmux new-session -d -s $SESSION_NAME -n "main"
+
+# 分割窗格
+tmux split-window -h
+tmux split-window -v
+tmux select-pane -t 0
+tmux split-window -v
+
+# 启动服务
+tmux send-keys -t "${SESSION_NAME}:0.0" "cd web/backend && python -m uvicorn app.main:app --reload" C-m
+tmux send-keys -t "${SESSION_NAME}:0.1" "cd web/frontend && npm run dev" C-m
+tmux send-keys -t "${SESSION_NAME}:0.2" "cd monitoring && docker-compose up" C-m
+tmux send-keys -t "${SESSION_NAME}:0.3" "lnav /var/log/pm2/*.log" C-m
+
+# 设置布局
+tmux select-layout tiled
+
+# 附加会话
+tmux attach-session -t $SESSION_NAME
+```
+
+#### lnav日志分析配置
+
+```json
+// ~/.lnav/formats/mystocks.json
+{
+  "mystocks": {
+    "title": "MyStocks Application Logs",
+    "description": "Log format for MyStocks application",
+    "regex": {
+      "backend": {
+        "pattern": "^(?<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}) (?<level>\\w+) (?<module>[^:]+): (?<message>.+)$"
+      },
+      "frontend": {
+        "pattern": "^\\[(?<timestamp>\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2})\\] (?<level>\\w+) (?<message>.+)$"
+      }
+    },
+    "level": {
+      "field": "level",
+      "values": {
+        "DEBUG": "debug",
+        "INFO": "info",
+        "WARNING": "warning",
+        "ERROR": "error",
+        "CRITICAL": "critical"
+      }
     }
   }
 }
 ```
 
-#### 4. tmux + lnav 集成脚本
+### 4. 增强的Playwright测试框架
 
-```bash
-#!/bin/bash
-# scripts/setup-dev-environment.sh
+#### 多浏览器并行配置
 
-# 创建tmux开发环境
-create_tmux_session() {
-    local session_name="mystocks-dev"
+```typescript
+// web/frontend/playwright.config.ts
+import { defineConfig, devices } from '@playwright/test'
 
-    # 检查是否已存在会话
-    if tmux has-session -t "$session_name" 2>/dev/null; then
-        echo "Session $session_name already exists. Attaching..."
-        tmux attach-session -t "$session_name"
-        return
-    fi
+export default defineConfig({
+  testDir: './tests',
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: process.env.CI ? 'github' : 'html',
 
-    # 创建新会话
-    tmux new-session -d -s "$session_name" -n "main"
+  use: {
+    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+  },
 
-    # 创建多个窗格
-    tmux split-window -h
-    tmux split-window -v
-    tmux select-pane -t 0
-    tmux split-window -v
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+    {
+      name: 'Mobile Chrome',
+      use: { ...devices['Pixel 5'] },
+    },
+    {
+      name: 'Mobile Safari',
+      use: { ...devices['iPhone 12'] },
+    },
+  ],
+})
+```
 
-    # 启动服务
-    tmux send-keys -t "$session_name:0.0" "cd web/backend && python -m uvicorn app.main:app --reload --port 8020" C-m
-    tmux send-keys -t "$session_name:0.1" "cd web/frontend && npm run dev" C-m
-    tmux send-keys -t "$session_name:0.2" "cd monitoring && docker-compose up" C-m
-    tmux send-keys -t "$session_name:0.3" "lnav /var/log/pm2/*.log" C-m
+#### Chrome DevTools集成
 
-    # 设置窗格布局
-    tmux select-layout tiled
+```typescript
+// tests/utils/chrome-devtools.ts
+import { chromium, BrowserContext, Page } from '@playwright/test'
 
-    # 附加到会话
-    tmux attach-session -t "$session_name"
+export class ChromeDevTools {
+  private context: BrowserContext
+  private page: Page
+
+  async setup() {
+    this.context = await chromium.launchPersistentContext('', {
+      headless: false,
+      args: [
+        '--remote-debugging-port=9222',
+        '--disable-web-security',
+        '--disable-features=VizDisplayCompositor'
+      ]
+    })
+    this.page = await this.context.newPage()
+  }
+
+  async capturePerformanceMetrics() {
+    const client = await this.page.context().newCDPSession(this.page)
+    await client.send('Performance.enable')
+
+    const metrics = await client.send('Performance.getMetrics')
+    return metrics.metrics
+  }
+
+  async captureNetworkRequests() {
+    const requests: any[] = []
+
+    this.page.on('request', request => {
+      requests.push({
+        url: request.url(),
+        method: request.method(),
+        headers: request.headers(),
+        timestamp: Date.now()
+      })
+    })
+
+    return requests
+  }
+
+  async teardown() {
+    await this.context.close()
+  }
 }
+```
 
-# 启动lnav日志监控
-start_lnav_monitoring() {
-    echo "Starting lnav log monitoring..."
+### 5. 类型检查集成
 
-    # 创建lnav配置文件
-    cat > ~/.lnav/formats/mystocks.json << EOF
+#### Python mypy配置
+
+```ini
+# mypy.ini
+[mypy]
+python_version = 3.8
+warn_return_any = True
+warn_unused_configs = True
+disallow_untyped_defs = True
+disallow_incomplete_defs = True
+check_untyped_defs = True
+disallow_untyped_decorators = True
+no_implicit_optional = True
+warn_redundant_casts = True
+warn_unused_ignores = True
+warn_no_return = True
+warn_unreachable = True
+strict_equality = True
+
+[mypy-tests.*]
+ignore_errors = True
+
+[mypy-scripts.*]
+ignore_errors = True
+```
+
+#### TypeScript配置优化
+
+```json
+// web/frontend/tsconfig.json
 {
-    "mystocks": {
-        "title": "MyStocks Application Logs",
-        "description": "Log format for MyStocks application",
-        "regex": {
-            "basic": {
-                "pattern": "^(?<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}) (?<level>\\w+) (?<module>[^:]+): (?<message>.+)$"
-            }
-        },
-        "level": {
-            "field": "level",
-            "values": {
-                "DEBUG": "debug",
-                "INFO": "info",
-                "WARNING": "warning",
-                "ERROR": "error",
-                "CRITICAL": "critical"
-            }
-        }
-    }
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
 }
-EOF
+```
 
-    # 启动lnav
-    lnav -c "open /var/log/pm2/*.log" -c "switch-to-view log"
-}
+---
 
-# 主函数
-main() {
-    case "$1" in
-        "tmux")
-            create_tmux_session
-            ;;
-        "lnav")
-            start_lnav_monitoring
-            ;;
-        "all")
-            create_tmux_session &
-            sleep 5
-            start_lnav_monitoring
-            ;;
-        *)
-            echo "Usage: $0 {tmux|lnav|all}"
-            echo "  tmux  - Create tmux development session"
-            echo "  lnav  - Start lnav log monitoring"
-            echo "  all   - Start both tmux and lnav"
-            exit 1
-    esac
-}
+## 📋 实施计划
 
-main "$@"
+### Phase 1: 基础设施搭建 (1周)
+
+#### Week 1: 核心CI/CD框架
+- [ ] 创建GitHub Actions工作流文件
+- [ ] 设置基础的测试和构建流程
+- [ ] 集成代码质量检查
+- [ ] 配置自动部署到测试环境
+
+#### Week 1: 类型检查集成
+- [ ] 配置Python mypy
+- [ ] 配置TypeScript严格模式
+- [ ] 集成到CI/CD流水线
+- [ ] 建立类型检查门禁
+
+### Phase 2: 测试增强 (2周)
+
+#### Week 2: Playwright增强
+- [ ] 配置多浏览器并行测试
+- [ ] 集成Chrome DevTools
+- [ ] 实现视觉回归测试
+- [ ] 优化测试执行时间
+
+#### Week 3: 端到端测试深度集成
+- [ ] 创建完整的E2E测试场景
+- [ ] 集成数据库和外部服务
+- [ ] 实现测试数据管理
+- [ ] 配置测试环境自动部署
+
+### Phase 3: 监控体系 (2周)
+
+#### Week 4: Jaeger + Prometheus集成
+- [ ] 部署Jaeger追踪服务
+- [ ] 配置Prometheus指标收集
+- [ ] 集成应用指标暴露
+- [ ] 创建Grafana监控面板
+
+#### Week 5: 运维框架完善
+- [ ] 增强PM2配置
+- [ ] 完善tmux会话管理
+- [ ] 配置lnav日志分析
+- [ ] 创建运维自动化脚本
+
+### Phase 4: 优化和验证 (1周)
+
+#### Week 6: 性能优化和验证
+- [ ] 优化CI/CD执行时间
+- [ ] 实现智能测试选择
+- [ ] 完善错误处理和重试机制
+- [ ] 端到端流程验证
+
+---
+
+## 🎯 成功指标
+
+### 技术指标
+- **CI/CD执行时间**: <15分钟 (从当前的30分钟优化)
+- **测试覆盖率**: >90% (当前约70%)
+- **类型检查通过率**: 100% (新增指标)
+- **E2E测试稳定性**: >95% 通过率
+
+### 业务指标
+- **部署频率**: 从每周1次提升到每日多次
+- **故障恢复时间**: 从1小时降低到10分钟
+- **代码质量**: 类型错误从142个降低到<10个
+- **开发效率**: 新功能上线时间减少50%
+
+### 监控指标
+- **请求追踪覆盖率**: 100% 用户请求
+- **指标收集完整性**: >95% 关键指标
+- **告警响应时间**: <5分钟
+
+---
+
+## 🔗 相关文档
+
+- [CI/CD脚本详解](./scripts/cicd_pipeline.sh)
+- [Playwright测试配置](./web/frontend/playwright.config.ts)
+- [PM2配置详解](./ecosystem.config.js)
+- [监控配置](../operations/monitoring/)
+- [类型检查配置](./mypy.ini, ./web/frontend/tsconfig.json)
+
+---
+
+**实施负责人**: CI/CD优化团队
+**技术支持**: DevOps + QA + 开发团队
+**预期完成时间**: 6周
+**优先级**: 高 (影响开发效率和产品质量)
