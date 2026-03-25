@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
+import subprocess
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
@@ -122,3 +123,24 @@ def test_scope_gate_rejects_not_needed_for_mirrored_business_entrypoint_change()
     violations, _ = module.validate_function_tree_mapping(card, ["web/backend/app/api/market.py"])
 
     assert any("cannot use update_status=not-needed" in item for item in violations)
+
+
+def test_run_git_diff_normalizes_git_quoted_utf8_paths(monkeypatch) -> None:
+    module = load_scope_gate_module()
+    encoded_name = "".join(f"\\{byte:03o}" for byte in "超长文档拆分办法".encode("utf-8"))
+    quoted_path = f'"docs/guides/documentation/{encoded_name}.md"'
+
+    def fake_run(*_args, **_kwargs):
+        return subprocess.CompletedProcess(
+            args=["git", "diff"],
+            returncode=0,
+            stdout=f"{quoted_path}\ndocs/INDEX.md\n",
+            stderr="",
+        )
+
+    monkeypatch.setattr(module.subprocess, "run", fake_run)
+
+    assert module.run_git_diff("base", "head") == [
+        "docs/INDEX.md",
+        "docs/guides/documentation/超长文档拆分办法.md",
+    ]

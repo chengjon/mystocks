@@ -1,0 +1,97 @@
+version: "v0.2"
+
+task:
+  id: "pr-15"
+  title: "tighten directory governance and archive legacy cleanup drafts"
+  owner: "main"
+  created_at: "2026-03-26"
+
+mainline:
+  id: "L1-governance"
+  objective: "keep root governance, local-only config handling, and directory cleanup baselines machine-readable and reviewable"
+  milestone_id: "L2-governance"
+  slice_id: "L3-directory-governance"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "tests"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "governance-self-bootstrap"
+
+scope:
+  allowed_paths:
+    - ".github/workflows/frontend-testing.yml"
+    - ".github/workflows/playwright.yml"
+    - ".gitignore"
+    - "AGENTS.md"
+    - "CLAUDE.md"
+    - "docs/**"
+    - "governance/mainline/**"
+    - "mypy.ini"
+    - "pyproject.toml"
+    - "pytest.ini"
+    - "scripts/hooks/check_directory_structure.py"
+    - "scripts/maintenance/check_structure.py"
+    - "scripts/tests/run_e2e_tests.sh"
+    - "scripts/tree-lint.sh"
+    - "tests/**"
+    - "tui.json"
+    - "web/frontend/tests/unit/workflows/ci-workflow-gates.spec.ts"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No business-domain behavior changes"
+  - "No unrelated frontend feature work"
+
+acceptance:
+  checks:
+    - id: "workflow-tests"
+      command: "pytest tests/unit/scripts/test_ci_workflow_runtime_setup.py -q --no-cov"
+      required: true
+    - id: "governance-checks"
+      command: "python -m scripts.maintenance.check_structure --format text ."
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Workflow scope tightening could accidentally skip legitimate frontend gates if path rules are under-specified"
+    - "Task card path enforcement may fail again if PR-specific governance cards are not maintained per PR"
+  rollback_plan: "git revert <merge-commit-sha>"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "keep directory governance and CI scope checks aligned to the actual cleanup scope"
+    modified_scope: "governance, workflow definitions, cleanup documentation, and governance-oriented tests"
+    dependency_changes: "none"
+    legacy_logic_impact: "existing frontend and governance gates are narrowed to relevant PR scope only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the governance cleanup line if CI gating behavior regresses"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-03-26T00:00:00Z"
+    approval_note: "approved"
+    secondary_approved: false

@@ -295,10 +295,18 @@ def test_contract_testing_workflow_skips_when_framework_is_absent() -> None:
 def test_playwright_workflow_runs_smoke_subset_only() -> None:
     workflow = _read_workflow("playwright.yml")
 
+    assert "paths:" in workflow
+    assert "'web/frontend/**'" in workflow or '"web/frontend/**"' in workflow
+    assert "'/.github/workflows/playwright.yml'" not in workflow
+    assert "'.github/workflows/playwright.yml'" in workflow or '".github/workflows/playwright.yml"' in workflow
+    assert "FRONTEND_PORT: '3020'" in workflow
+    assert "FRONTEND_BACKUP_PORT: '3021'" in workflow
+    assert "BACKEND_PORT: '8020'" in workflow
+    assert "BACKEND_BACKUP_PORT: '8021'" in workflow
     assert "npx playwright install --with-deps chromium" in workflow
     assert "Run Playwright smoke tests" in workflow
-    assert "tests/env-test.spec.ts" in workflow
-    assert "--config=playwright.config.ts" in workflow
+    assert "npm run test:e2e:stable" in workflow
+    assert "playwright.config.js" not in workflow or "--config playwright.config.js" not in workflow
 
 
 def test_e2e_tests_workflow_installs_backend_runtime_dependencies_and_downloads_gate_inputs() -> None:
@@ -563,6 +571,23 @@ def test_frontend_testing_scopes_artdeco_and_security_gates_to_relevant_changes(
     assert "needs.frontend-gate-scope-detect.outputs.dependency_audit_required == 'true'" in frontend_security_section
 
 
+def test_frontend_testing_uses_pr_head_sha_for_pull_request_diff_scope() -> None:
+    workflow = _read_workflow("frontend-testing.yml")
+
+    assert 'HEAD_SHA="${{ github.event.pull_request.head.sha }}"' in workflow
+    assert 'git diff --name-only "$BASE_SHA" "$HEAD_SHA"' in workflow or 'git diff --name-only "$BASE_SHA...$HEAD_SHA"' in workflow
+    assert 'git diff --name-only "$BASE_SHA" "${{ github.sha }}"' not in workflow
+
+
+def test_frontend_testing_skips_frontend_test_job_when_no_frontend_scope_changed() -> None:
+    workflow = _read_workflow("frontend-testing.yml")
+    frontend_test_section = workflow.split("frontend-test:", 1)[1].split("frontend-security:", 1)[0]
+
+    assert "if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true' || needs.frontend-gate-scope-detect.outputs.artdeco_scope_changed == 'true'" in frontend_test_section
+    assert "needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'" in frontend_test_section
+    assert "needs.frontend-gate-scope-detect.outputs.artdeco_scope_changed == 'true'" in frontend_test_section
+
+
 def test_frontend_testing_uses_ci_safe_frontend_commands_instead_of_repo_wide_ts_gate_or_missing_scripts() -> None:
     workflow = _read_workflow("frontend-testing.yml")
     frontend_test_section = workflow.split("frontend-test:", 1)[1].split("frontend-security:", 1)[0]
@@ -572,7 +597,8 @@ def test_frontend_testing_uses_ci_safe_frontend_commands_instead_of_repo_wide_ts
     assert "BACKEND_PORT: '8020'" in frontend_test_section
     assert "BACKEND_BACKUP_PORT: '8021'" in frontend_test_section
     assert "npm run type-check" not in frontend_test_section
-    assert "npm run test:unit" not in frontend_test_section
+    assert "npm run test:unit:stable" in frontend_test_section
+    assert "run: npm run test:unit\n" not in frontend_test_section
     assert "npx vitest run" in frontend_test_section
     assert "tests/unit/port-config-consistency.spec.ts" in frontend_test_section
     assert "npm run build:no-types" in frontend_test_section
