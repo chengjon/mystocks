@@ -2,10 +2,19 @@ version: 1
 
 root:
   allowed_files:
+    - .env.example
+    - .gitattributes
+    - .gitignore
+    - .mcp.json
+    - .pre-commit-config.yaml
+    - .pre-commit-hooks.yaml
+    - .pylint.test.rc
+    - .pylintrc
     - README.md
     - LICENSE
     - AGENTS.md
     - CLAUDE.md
+    - CHANGELOG.md
     - IFLOW.md
     - requirements.txt
     - pyproject.toml
@@ -19,7 +28,6 @@ root:
     - docker-compose.prod.yml
     - docker-compose.test.yml
     - monitoring-stack.yml
-    - tui.json
     - __init__.py
     - core.py
     - data_access.py
@@ -31,8 +39,10 @@ root:
     - architecture
     - config
     - data
+    - docker
     - docs
     - governance
+    - monitoring-stack
     - openspec
     - reports
     - scripts
@@ -41,6 +51,8 @@ root:
     - var
     - web
   workflow_exception_files:
+    - path: .FILE_OWNERSHIP
+      reason: root ownership contract remains in the repository root by workflow design
     - path: TASK.md
       reason: worktree and main-CLI task contract remains in the repository root by workflow design
     - path: TASK-REPORT.md
@@ -77,7 +89,7 @@ root:
   forbidden_file_patterns:
     - pattern: "*.log"
       message: runtime log files must not live in the project root
-      recommendation: move into var/log/ or logs/ and ignore from git
+      recommendation: move into var/log/ and ignore from git
     - pattern: "*.csv"
       message: generated CSV artifacts must not live in the project root
       recommendation: move into reports/ or var/reports/

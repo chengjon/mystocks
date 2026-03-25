@@ -4,6 +4,9 @@ import shutil
 from pathlib import Path
 
 CANONICAL_COVERAGE_JSON = "reports/coverage/coverage.json"
+CANONICAL_COVERAGE_DATA_FILE = "var/reports/coverage/.coverage"
+CANONICAL_COVERAGE_HTML_DIR = "var/reports/coverage/htmlcov"
+CANONICAL_COVERAGE_XML = "var/reports/coverage/coverage.xml"
 CANONICAL_TIMING_FILE = "var/reports/test_timing.csv"
 
 
@@ -35,8 +38,12 @@ def ensure_canonical_timing_output(config, *, project_root: Path | None = None) 
 def cleanup_root_runtime_artifacts(project_root: Path | None = None) -> None:
     root = project_root or Path.cwd()
     canonical_coverage_path = root / CANONICAL_COVERAGE_JSON
+    canonical_coverage_xml = root / CANONICAL_COVERAGE_XML
     canonical_path = root / CANONICAL_TIMING_FILE
     root_coverage_file = root / "coverage.json"
+    root_coverage_data_file = root / ".coverage"
+    root_coverage_xml = root / "coverage.xml"
+    root_htmlcov_dir = root / "htmlcov"
     root_timing_file = root / "test_timing.csv"
 
     if root_coverage_file.exists():
@@ -67,6 +74,17 @@ def cleanup_root_runtime_artifacts(project_root: Path | None = None) -> None:
             canonical_path.write_text(root_content, encoding="utf-8")
 
         root_timing_file.unlink()
+
+    if root_coverage_xml.exists():
+        canonical_coverage_xml.parent.mkdir(parents=True, exist_ok=True)
+        canonical_coverage_xml.write_text(root_coverage_xml.read_text(encoding="utf-8"), encoding="utf-8")
+        root_coverage_xml.unlink()
+
+    if root_coverage_data_file.exists():
+        root_coverage_data_file.unlink()
+
+    if root_htmlcov_dir.exists():
+        shutil.rmtree(root_htmlcov_dir)
 
     root_cache_dir = root / "__pycache__"
     if root_cache_dir.exists():

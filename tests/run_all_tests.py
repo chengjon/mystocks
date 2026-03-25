@@ -15,6 +15,10 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
+CANONICAL_HTML_COVERAGE = Path("var/reports/coverage/htmlcov")
+CANONICAL_HTML_COVERAGE_INDEX = CANONICAL_HTML_COVERAGE / "index.html"
+CANONICAL_XML_COVERAGE = Path("var/reports/coverage/coverage.xml")
+
 # 测试配置
 TEST_CONFIG = {
     "verbose": True,
@@ -54,8 +58,8 @@ def run_tests_with_coverage():
         "--strict-config",
         f"--cov={TEST_CONFIG['cov_source']}",
         "--cov-report=term-missing",
-        "--cov-report=html:htmlcov",
-        "--cov-report=xml:coverage.xml",
+        f"--cov-report=html:{CANONICAL_HTML_COVERAGE}",
+        f"--cov-report=xml:{CANONICAL_XML_COVERAGE}",
         f"--cov-fail-under={TEST_CONFIG['cov_fail_under']}",
         "--durations=10",  # 显示最慢的10个测试
         "--maxfail=5",  # 最多允许5个失败
@@ -96,14 +100,14 @@ def generate_test_summary():
         print("📁 测试结果文件: test-results/.last-run.json")
 
     # 检查覆盖率报告
-    html_coverage = Path("htmlcov/index.html")
+    html_coverage = CANONICAL_HTML_COVERAGE_INDEX
     if html_coverage.exists():
-        print("📊 HTML覆盖率报告: htmlcov/index.html")
+        print(f"📊 HTML覆盖率报告: {html_coverage}")
 
     # 检查覆盖率XML
-    xml_coverage = Path("coverage.xml")
+    xml_coverage = CANONICAL_XML_COVERAGE
     if xml_coverage.exists():
-        print("📊 XML覆盖率报告: coverage.xml")
+        print(f"📊 XML覆盖率报告: {xml_coverage}")
 
     print("\n🎯 建议:")
     print("1. 查看HTML覆盖率报告了解覆盖率详情")
@@ -201,7 +205,7 @@ def main():
             "pytest",
             "tests/",
             f"--cov={TEST_CONFIG['cov_source']}",
-            "--cov-report=html:htmlcov",
+            f"--cov-report=html:{CANONICAL_HTML_COVERAGE}",
             "--cov-report=term",
         ]
         result = subprocess.run(cmd)

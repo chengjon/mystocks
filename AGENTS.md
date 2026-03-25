@@ -347,7 +347,7 @@ from web.backend.app.api import trading_signals_api, monitoring_api
 - 状态确认中必须包含服务访问地址：
   - `mystocks-backend`: `http://localhost:8020`
   - `mystocks-frontend`: `http://localhost:3020`
-- 技术债治理执行章程统一参考 `docs/guides/technical-debt-governance-charter-v1.md`，门禁、基线、豁免与周报模板以该文档为准，并与 `CLAUDE.md` 保持一致。
+- 技术债治理执行章程统一参考 `docs/standards/technical-debt-governance-charter-v1.md`，门禁、基线、豁免与周报模板以该文档为准，并与 `CLAUDE.md` 保持一致。
 
 类型推断债务治理（长期工作，非单次会话可完成）：
 
@@ -394,7 +394,7 @@ tests/
 - “零、统一治理与审批门禁”（含 `Proposal-First Rule`）
 - “一、推荐开发流程：六步走战略”
 - “二、技术工程红线 -> 3. 环境一致性”（Docker/PM2 一等公民）
-- 前端变更卫生 / 微提交规范：`docs/guides/frontend-change-hygiene-and-micro-commit-guide.md`
+- 前端变更卫生 / 微提交规范：`docs/guides/frontend/frontend-change-hygiene-and-micro-commit-guide.md`
 
 ---
 
@@ -555,9 +555,11 @@ python scripts/database/check_postgresql_tables.py
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **agent-docs-sync-20260322-215443** (59977 symbols, 141109 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **mystocks_spec** (91043 symbols, 224595 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `gitnexus analyze` in terminal first.
+
+> If GitNexus behaves differently across machines or CI, run `gitnexus doctor --json` to inspect `native-runtime`, `language-support`, and host configuration checks.
 
 ## Always Do
 
@@ -567,11 +569,17 @@ This project is indexed by GitNexus as **agent-docs-sync-20260322-215443** (5997
 - When exploring unfamiliar code, use `gitnexus_query({query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
 - When you need full context on a specific symbol — callers, callees, which execution flows it participates in — use `gitnexus_context({name: "symbolName"})`.
 
+## Dirty Worktree Rule
+
+- In a dirty worktree, `gitnexus_detect_changes({scope: "unstaged"})` reflects the whole worktree and MUST NOT be used as the risk verdict for the current micro-batch.
+- Stage the intended batch first with `git add <paths>`, then run `gitnexus_detect_changes({scope: "staged"})` for the precise pre-commit scope check.
+- If no files are staged yet, report that staged scope is empty instead of falling back to `unstaged`.
+
 ## When Debugging
 
 1. `gitnexus_query({query: "<error or symptom>"})` — find execution flows related to the issue
 2. `gitnexus_context({name: "<suspect function>"})` — see all callers, callees, and process participation
-3. `READ gitnexus://repo/agent-docs-sync-20260322-215443/process/{processName}` — trace the full execution flow step by step
+3. `READ gitnexus://repo/mystocks_spec/process/{processName}` — trace the full execution flow step by step
 4. For regressions: `gitnexus_detect_changes({scope: "compare", base_ref: "main"})` — see what your branch changed
 
 ## When Refactoring
@@ -610,10 +618,10 @@ This project is indexed by GitNexus as **agent-docs-sync-20260322-215443** (5997
 
 | Resource | Use for |
 |----------|---------|
-| `gitnexus://repo/agent-docs-sync-20260322-215443/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/agent-docs-sync-20260322-215443/clusters` | All functional areas |
-| `gitnexus://repo/agent-docs-sync-20260322-215443/processes` | All execution flows |
-| `gitnexus://repo/agent-docs-sync-20260322-215443/process/{name}` | Step-by-step execution trace |
+| `gitnexus://repo/mystocks_spec/context` | Codebase overview, check index freshness |
+| `gitnexus://repo/mystocks_spec/clusters` | All functional areas |
+| `gitnexus://repo/mystocks_spec/processes` | All execution flows |
+| `gitnexus://repo/mystocks_spec/process/{name}` | Step-by-step execution trace |
 
 ## Self-Check Before Finishing
 
@@ -646,6 +654,10 @@ Graph tools, BM25/FTS search, impact analysis, and context lookups still work wi
 Use `gitnexus analyze --embeddings` when natural-language, concept, or fuzzy code search matters.
 
 This enables hybrid retrieval (`BM25 + semantic + RRF`) but takes longer and requires an embedding provider such as Ollama or Hugging Face.
+
+During `gitnexus analyze`, GitNexus automatically detects and stops local `gitnexus mcp` processes that are holding the target repo's `.gitnexus/kuzu` file open. This avoids the common KuzuDB lock conflict when you have multiple CLI or editor sessions open.
+
+Use `gitnexus doctor --json` when you need to verify whether optional grammars such as Kotlin / Swift are actually available in the current environment.
 
 If the index previously included embeddings, preserve them by adding `--embeddings`:
 

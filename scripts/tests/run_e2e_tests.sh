@@ -139,16 +139,18 @@ echo ""
 echo -e "${YELLOW}[5/6] 生成测试覆盖率报告${NC}"
 echo "-------------------------------------"
 
+COVERAGE_HTML_DIR="var/reports/coverage/htmlcov"
+
 cd /opt/claude/mystocks_phase6_e2e
 
 echo "生成后端测试覆盖率..."
-if pytest --cov=src --cov-report=html --cov-report=json:reports/coverage/coverage.json 2>&1 | tee /tmp/coverage_output.txt; then
+if pytest --cov=src --cov-report=html:${COVERAGE_HTML_DIR} --cov-report=json:reports/coverage/coverage.json 2>&1 | tee /tmp/coverage_output.txt; then
     if [ -f "reports/coverage/coverage.json" ]; then
         COVERAGE=$(python -c "import json; data=json.load(open('reports/coverage/coverage.json')); print(f'{data[\"totals\"][\"percent_covered\"]:.2f}%')")
         echo -e "${GREEN}✓ 测试覆盖率: ${COVERAGE}${NC}"
 
-        if [ -f "htmlcov/index.html" ]; then
-            echo "覆盖率报告: file://$(pwd)/htmlcov/index.html"
+        if [ -f "${COVERAGE_HTML_DIR}/index.html" ]; then
+            echo "覆盖率报告: file://$(pwd)/${COVERAGE_HTML_DIR}/index.html"
         fi
     fi
 else
@@ -228,7 +230,7 @@ EOF
 if [ -f "reports/coverage/coverage.json" ]; then
     cat >> ${REPORT_FILE} << EOF
   Overall Coverage: ${COVERAGE}
-  HTML Report: file://$(pwd)/htmlcov/index.html
+  HTML Report: file://$(pwd)/${COVERAGE_HTML_DIR}/index.html
   JSON Report: $(pwd)/reports/coverage/coverage.json
 EOF
 else
