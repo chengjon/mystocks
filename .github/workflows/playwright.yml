@@ -2,12 +2,23 @@ name: Playwright Tests
 on:
   push:
     branches: [ main, master ]
+    paths:
+      - 'web/frontend/**'
+      - '.github/workflows/playwright.yml'
   pull_request:
     branches: [ main, master ]
+    paths:
+      - 'web/frontend/**'
+      - '.github/workflows/playwright.yml'
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    env:
+      FRONTEND_PORT: '3020'
+      FRONTEND_BACKUP_PORT: '3021'
+      BACKEND_PORT: '8020'
+      BACKEND_BACKUP_PORT: '8021'
     defaults:
       run:
         working-directory: web/frontend
@@ -22,7 +33,7 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps chromium
-    - name: Run Playwright stable E2E
+    - name: Run Playwright smoke tests
       run: npm run test:e2e:stable
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}

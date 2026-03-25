@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import fnmatch
 import json
 import os
@@ -363,10 +364,29 @@ def run_git_diff(base_sha: str, head_sha: str) -> list[str]:
 
     files = []
     for line in diff_proc.stdout.splitlines():
-        candidate = line.strip()
+        candidate = normalize_git_diff_path(line)
         if candidate:
             files.append(PurePosixPath(candidate).as_posix())
     return sorted(set(files))
+
+
+def normalize_git_diff_path(raw_path: str) -> str:
+    candidate = raw_path.strip()
+    if not candidate:
+        return ""
+
+    if len(candidate) >= 2 and candidate[0] == candidate[-1] == '"':
+        try:
+            unescaped = ast.literal_eval(candidate)
+        except (SyntaxError, ValueError):
+            unescaped = candidate[1:-1]
+
+        try:
+            candidate = unescaped.encode("latin-1").decode("utf-8")
+        except (AttributeError, UnicodeEncodeError, UnicodeDecodeError):
+            candidate = str(unescaped)
+
+    return candidate
 
 
 def path_matches(path: str, pattern: str) -> bool:

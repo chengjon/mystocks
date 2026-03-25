@@ -304,15 +304,15 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
 #### 文档与维护工作流
 
 - 文档放在 `docs/{guides,api,architecture,operations,testing,reports,archive}/`，命名使用 `kebab-case`
-- 前端变更卫生 / 微提交规范：`docs/guides/frontend-change-hygiene-and-micro-commit-guide.md`
+- 前端变更卫生 / 微提交规范：`docs/guides/frontend/frontend-change-hygiene-and-micro-commit-guide.md`
 - 运行索引更新：`python scripts/tools/docs_indexer.py --categories`
-- 技术债治理执行章程：`docs/guides/technical-debt-governance-charter-v1.md`（门禁、基线、豁免与周报模板）
+- 技术债治理执行章程：`docs/standards/technical-debt-governance-charter-v1.md`（门禁、基线、豁免与周报模板）
 - TypeScript 修复遵循三原则，并参考：
   - `docs/reports/TYPESCRIPT_FIX_BEST_PRACTICES.md`
   - `docs/reports/TYPESCRIPT_TECHNICAL_DEBT_MANAGEMENT.md`
   - `docs/reports/TYPESCRIPT_TECHNICAL_DEBTS.md`
   - `docs/reports/TYPESCRIPT_FIX_REFLECTION.md`
-- **CSS/SCSS 开发必须遵循 `docs/guides/css-scss-development-guide.md`（强制执行）**：
+- **CSS/SCSS 开发必须遵循 `docs/guides/frontend/css-scss-development-guide.md`（强制执行）**：
   - **禁止内联样式**：Vue 组件 `<style>` 块仅允许 `@import` 引用外部 SCSS 文件，不得直接编写 CSS
   - **样式文件位置**：组件样式放在同级 `styles/` 目录，全局样式放在 `src/styles/`
   - **组件体积红线**：单个 `.vue` 文件不得超过 800 行，超过时必须提取 CSS 到独立 SCSS 或拆分 composables
@@ -325,7 +325,7 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
   - **定期扫描要求**：每月至少执行一次扫描，检查代码复杂度趋势和Mock使用情况
   - 报告位置：`reports/code_inventory_report_*.md`
   - 发现问题处理：如发现超过阈值文件或异常Mock使用，需在相应模块下创建治理任务
-- BUG 登记按模板 `docs/standards/bug-report-template.json`，输出到 `docs/quality/bugs/` 并更新 `docs/guides/BUG_LESSONS_LEARNED.md`
+- BUG 登记按模板 `docs/standards/bug-report-template.json`，输出到 `docs/reports/quality/bugs/` 并更新 `docs/reports/quality/BUG_LESSONS_LEARNED.md`
 - 多 CLI/Worktree 协作核心索引 (必读):
   - **`.multi-cli-tasks/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md` (总手册，强制遵守)**
   - 链接文档：
@@ -399,9 +399,11 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **agent-docs-sync-20260322-215443** (59977 symbols, 141109 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **mystocks_spec** (91043 symbols, 224595 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `gitnexus analyze` in terminal first.
+
+> If GitNexus behaves differently across machines or CI, run `gitnexus doctor --json` to inspect `native-runtime`, `language-support`, and host configuration checks.
 
 ## Always Do
 
@@ -411,11 +413,17 @@ This project is indexed by GitNexus as **agent-docs-sync-20260322-215443** (5997
 - When exploring unfamiliar code, use `gitnexus_query({query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
 - When you need full context on a specific symbol — callers, callees, which execution flows it participates in — use `gitnexus_context({name: "symbolName"})`.
 
+## Dirty Worktree Rule
+
+- In a dirty worktree, `gitnexus_detect_changes({scope: "unstaged"})` reflects the whole worktree and MUST NOT be used as the risk verdict for the current micro-batch.
+- Stage the intended batch first with `git add <paths>`, then run `gitnexus_detect_changes({scope: "staged"})` for the precise pre-commit scope check.
+- If no files are staged yet, report that staged scope is empty instead of falling back to `unstaged`.
+
 ## When Debugging
 
 1. `gitnexus_query({query: "<error or symptom>"})` — find execution flows related to the issue
 2. `gitnexus_context({name: "<suspect function>"})` — see all callers, callees, and process participation
-3. `READ gitnexus://repo/agent-docs-sync-20260322-215443/process/{processName}` — trace the full execution flow step by step
+3. `READ gitnexus://repo/mystocks_spec/process/{processName}` — trace the full execution flow step by step
 4. For regressions: `gitnexus_detect_changes({scope: "compare", base_ref: "main"})` — see what your branch changed
 
 ## When Refactoring
@@ -454,10 +462,10 @@ This project is indexed by GitNexus as **agent-docs-sync-20260322-215443** (5997
 
 | Resource | Use for |
 |----------|---------|
-| `gitnexus://repo/agent-docs-sync-20260322-215443/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/agent-docs-sync-20260322-215443/clusters` | All functional areas |
-| `gitnexus://repo/agent-docs-sync-20260322-215443/processes` | All execution flows |
-| `gitnexus://repo/agent-docs-sync-20260322-215443/process/{name}` | Step-by-step execution trace |
+| `gitnexus://repo/mystocks_spec/context` | Codebase overview, check index freshness |
+| `gitnexus://repo/mystocks_spec/clusters` | All functional areas |
+| `gitnexus://repo/mystocks_spec/processes` | All execution flows |
+| `gitnexus://repo/mystocks_spec/process/{name}` | Step-by-step execution trace |
 
 ## Self-Check Before Finishing
 
@@ -490,6 +498,10 @@ Graph tools, BM25/FTS search, impact analysis, and context lookups still work wi
 Use `gitnexus analyze --embeddings` when natural-language, concept, or fuzzy code search matters.
 
 This enables hybrid retrieval (`BM25 + semantic + RRF`) but takes longer and requires an embedding provider such as Ollama or Hugging Face.
+
+During `gitnexus analyze`, GitNexus automatically detects and stops local `gitnexus mcp` processes that are holding the target repo's `.gitnexus/kuzu` file open. This avoids the common KuzuDB lock conflict when you have multiple CLI or editor sessions open.
+
+Use `gitnexus doctor --json` when you need to verify whether optional grammars such as Kotlin / Swift are actually available in the current environment.
 
 If the index previously included embeddings, preserve them by adding `--embeddings`:
 

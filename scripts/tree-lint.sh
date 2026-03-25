@@ -25,13 +25,14 @@ ALLOWED_ROOT_FILES=(
   ".coveragerc"
   ".FILE_OWNERSHIP"
   ".env.example"
-  "opencode.json"
   "pyproject.toml"
   "mypy.ini"
   "pytest.ini"
   "conftest.py"
   "package.json"
   "package-lock.json"
+  "TASK.md"
+  "TASK-REPORT.md"
   "pm2.config.js"
   "monitoring-stack.yml"
   "core.py"
@@ -60,6 +61,11 @@ error=0
 echo "[tree-lint] Checking root files..."
 while IFS= read -r file_path; do
   file_name=$(basename "$file_path")
+
+  if git -C "$PROJECT_ROOT" check-ignore -q "$file_name"; then
+    continue
+  fi
+
   allowed=false
   for allowed_name in "${ALLOWED_ROOT_FILES[@]}"; do
     if [[ "$file_name" == "$allowed_name" ]]; then

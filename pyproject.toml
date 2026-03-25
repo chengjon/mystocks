@@ -108,6 +108,7 @@ asyncio_mode = "auto"
 
 [tool.coverage.run]
 source = ["src"]
+data_file = "var/reports/coverage/.coverage"
 omit = [
     "*/tests/*",
     "*/test_*",
@@ -130,6 +131,12 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
+
+[tool.coverage.html]
+directory = "var/reports/coverage/htmlcov"
+
+[tool.coverage.xml]
+output = "var/reports/coverage/coverage.xml"
 
 [tool.black]
 line-length = 120

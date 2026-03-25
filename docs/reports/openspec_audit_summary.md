@@ -10,7 +10,7 @@ Scope: Task completion checks against repository state. Items below are fact-che
 Evidence found:
 - Route/page config types and data: `web/frontend/src/types/pageConfig.ts`, `web/frontend/src/config/pageConfig.ts`
 - Page config generation/check scripts: `scripts/tools/generate-page-config.js`, `scripts/hooks/check-page-config.mjs`
-- Docs: `docs/guides/PAGE_CONFIG_USAGE_GUIDE.md`, `docs/architecture/PAGE_CONFIG_MODEL.md`
+- Docs: `docs/architecture/PAGE_CONFIG_USAGE_GUIDE.md`, `docs/architecture/PAGE_CONFIG_MODEL.md`
 - Unit/E2E tests: `web/frontend/tests/unit/config/pageConfig.test.ts`, `web/frontend/tests/e2e/artdeco-config-integration.spec.ts`
 - Config usage in ArtDeco pages: `web/frontend/src/views/artdeco-pages/ArtDecoMarketQuotes.vue`, `ArtDecoStockManagement.vue`, `ArtDecoTradingManagement.vue`, `ArtDecoTechnicalAnalysis.vue`, `ArtDecoRiskManagement.vue`
 
@@ -24,7 +24,7 @@ Gaps / mismatches:
 
 Evidence found:
 - ArtDeco components + styles exist: `web/frontend/src/components/artdeco/`, `web/frontend/src/styles/artdeco-*.scss`
-- Conversion docs: `docs/reports/HTML_TO_VUE_CONVERSION_GAP_ANALYSIS.md`, `docs/guides/MYSTOCKS_HTML_TO_VUE_CONVERSION_STRATEGY.md`
+- Conversion docs: `docs/reports/HTML_TO_VUE_CONVERSION_GAP_ANALYSIS.md`, `docs/guides/web/MYSTOCKS_HTML_TO_VUE_CONVERSION_STRATEGY.md`
 
 Gaps / mismatches:
 - Many task claims not reflected in code. Example: `web/frontend/src/views/Market.vue` still uses Element Plus, not ArtDeco tables; several ArtDeco pages are placeholders.
@@ -327,7 +327,7 @@ Evidence found:
 - Prometheus alert rules exist: `monitoring-stack/config/rules/data-source-alerts.yml`.
 - Docs/reports exist: `docs/reports/DATA_SOURCE_OPTIMIZATION_PHASE1_COMPLETION_REPORT.md`,
   `docs/reports/DATA_SOURCE_OPTIMIZATION_FINAL_SUMMARY.md`,
-  `docs/guides/DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md`.
+  `docs/guides/data-source/DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md`.
 
 Gaps / mismatches:
 - SmartCache/CircuitBreaker not actually used in DataSourceManagerV2 calls; `_call_endpoint` does not reference cache
@@ -586,7 +586,8 @@ Evidence found:
 - Tree linting script exists: `scripts/tree-lint.sh`.
 - Pre-commit hook for tree-lint is configured: `.pre-commit-config.yaml` (tree-lint entry).
 - Doc hooks exist for organizer usage: `.claude/hooks/post-tool-use-document-organizer.sh`,
-  `docs/目录管理解决方案总结.md`, `docs/guides/task_plan.md`.
+  `docs/reports/cleanup/directory-organization/legacy/目录管理解决方案总结.md`,
+  `docs/reports/cleanup/directory-organization/legacy/task_plan.md`.
 
 Gaps / mismatches:
 - Root directory is far from minimal (dozens of files/dirs in repo root), violating the

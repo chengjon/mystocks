@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import ast
 import json
+import re
+import subprocess
+from fnmatch import fnmatch
 from pathlib import Path
 
 import yaml
@@ -14,6 +18,39 @@ from scripts.maintenance.check_structure import (
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 PROJECT_POLICY_PATH = PROJECT_ROOT / "governance" / "mainline" / "policies" / "directory-structure.yaml"
+CHECK_DIRECTORY_STRUCTURE_PATH = PROJECT_ROOT / "scripts" / "hooks" / "check_directory_structure.py"
+TREE_LINT_PATH = PROJECT_ROOT / "scripts" / "tree-lint.sh"
+
+
+def load_literal_collection(module_path: Path, assignment_name: str) -> list[str]:
+    tree = ast.parse(module_path.read_text(encoding="utf-8"))
+
+    for node in tree.body:
+        if not isinstance(node, ast.Assign):
+            continue
+        for target in node.targets:
+            if isinstance(target, ast.Name) and target.id == assignment_name:
+                return ast.literal_eval(node.value)
+
+    raise AssertionError(f"{assignment_name} not found in {module_path}")
+
+
+def load_literal_collection_or_default(
+    module_path: Path, assignment_name: str, default: list[str] | None = None
+) -> list[str]:
+    try:
+        return load_literal_collection(module_path, assignment_name)
+    except AssertionError:
+        return [] if default is None else default
+
+
+def load_shell_array(script_path: Path, array_name: str) -> list[str]:
+    text = script_path.read_text(encoding="utf-8")
+    match = re.search(rf"{array_name}=\(\n(.*?)\n\)", text, re.DOTALL)
+    if not match:
+        raise AssertionError(f"{array_name} not found in {script_path}")
+
+    return re.findall(r'"([^"]+)"', match.group(1))
 
 
 def write_policy(path: Path) -> None:
@@ -156,6 +193,155 @@ def test_project_policy_treats_task_artifacts_as_workflow_exceptions(tmp_path: P
     assert result["summary"]["warnings"] == 0
 
 
+def test_project_policy_treats_hidden_workflow_exception_files_as_allowed(tmp_path: Path) -> None:
+    project_root = tmp_path / "repo"
+    project_root.mkdir()
+    (project_root / "README.md").write_text("ok", encoding="utf-8")
+    (project_root / "docs").mkdir()
+    (project_root / ".FILE_OWNERSHIP").write_text("main", encoding="utf-8")
+
+    result = analyze_project(project_root, load_policy(PROJECT_POLICY_PATH))
+
+    assert result["summary"]["errors"] == 0
+    assert result["summary"]["warnings"] == 0
+
+
+def test_check_directory_structure_root_allowlist_covers_all_governed_explicit_root_entries() -> None:
+    policy = load_policy(PROJECT_POLICY_PATH)
+    hook_allowed_files = set(load_literal_collection(CHECK_DIRECTORY_STRUCTURE_PATH, "ALLOWED_ROOT_FILES"))
+    hook_allowed_patterns = load_literal_collection_or_default(CHECK_DIRECTORY_STRUCTURE_PATH, "ALLOWED_ROOT_PATTERNS")
+
+    governed_explicit_root_entries = set(policy["root"]["allowed_files"]) | {
+        item["path"] for item in policy["root"].get("workflow_exception_files", [])
+    }
+
+    missing = sorted(
+        entry
+        for entry in governed_explicit_root_entries
+        if entry not in hook_allowed_files and not any(fnmatch(entry, pattern) for pattern in hook_allowed_patterns)
+    )
+
+    assert missing == []
+
+
+def test_project_policy_explicitly_governs_tracked_root_hidden_files() -> None:
+    policy = load_policy(PROJECT_POLICY_PATH)
+
+    completed = __import__("subprocess").run(
+        ["git", "-C", str(PROJECT_ROOT), "ls-files", "--stage"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0
+
+    tracked_root_hidden_files = {
+        line.split("\t", 1)[1]
+        for line in completed.stdout.splitlines()
+        if "\t" in line
+        and "/" not in line.split("\t", 1)[1]
+        and line.split("\t", 1)[1].startswith(".")
+    }
+
+    explicitly_governed = set(policy["root"]["allowed_files"]) | {
+        item["path"] for item in policy["root"].get("workflow_exception_files", [])
+    } | {
+        item["path"] for item in policy["root"].get("tolerated_files", [])
+    }
+
+    missing = sorted(tracked_root_hidden_files - explicitly_governed)
+
+    assert missing == []
+
+
+def test_tree_lint_allowlist_covers_governed_root_entries_relevant_to_runtime_scan() -> None:
+    policy = load_policy(PROJECT_POLICY_PATH)
+    tree_lint_allowed_files = set(load_shell_array(TREE_LINT_PATH, "ALLOWED_ROOT_FILES"))
+    tree_lint_allowed_patterns = load_shell_array(TREE_LINT_PATH, "ALLOWED_ROOT_PATTERNS")
+
+    governed_runtime_scanned_entries = (
+        set(policy["root"]["allowed_files"])
+        | {item["path"] for item in policy["root"].get("workflow_exception_files", [])}
+    ) - {".gitignore", ".gitattributes"}
+
+    missing = sorted(
+        entry
+        for entry in governed_runtime_scanned_entries
+        if entry not in tree_lint_allowed_files and not any(fnmatch(entry, pattern) for pattern in tree_lint_allowed_patterns)
+    )
+
+    assert missing == []
+
+
+def test_tree_lint_has_no_root_warnings_in_current_repo() -> None:
+    completed = subprocess.run(
+        ["bash", str(TREE_LINT_PATH)],
+        check=False,
+        capture_output=True,
+        text=True,
+        cwd=PROJECT_ROOT,
+    )
+
+    assert completed.returncode == 0
+    assert "[WARN] Root file" not in completed.stdout
+    assert "[tree-lint] No violations detected." in completed.stdout
+
+
+def test_gitignored_local_only_root_files_stay_outside_explicit_policy_governance() -> None:
+    policy = load_policy(PROJECT_POLICY_PATH)
+    hook_allowed_files = set(load_literal_collection(CHECK_DIRECTORY_STRUCTURE_PATH, "ALLOWED_ROOT_FILES"))
+    tree_lint_allowed_files = set(load_shell_array(TREE_LINT_PATH, "ALLOWED_ROOT_FILES"))
+    gitignore_text = (PROJECT_ROOT / ".gitignore").read_text(encoding="utf-8")
+    explicitly_governed = set(policy["root"]["allowed_files"]) | {
+        item["path"] for item in policy["root"].get("workflow_exception_files", [])
+    } | {
+        item["path"] for item in policy["root"].get("tolerated_files", [])
+    }
+
+    local_only_root_files = {
+        ".aider.conf.yml": ".aider*",
+        ".aider.model.metadata.json": ".aider*",
+        ".aider.model.settings.yml": ".aider*",
+        ".aiderignore": ".aider*",
+        ".env.async_monitoring": ".env.*",
+        ".env.data-sources.local": ".env.*.local",
+        "opencode.json": "opencode.json",
+        "tui.json": "tui.json",
+    }
+
+    for rel, ignore_pattern in local_only_root_files.items():
+        local_path = PROJECT_ROOT / rel
+        if local_path.exists():
+            completed = subprocess.run(
+                ["git", "-C", str(PROJECT_ROOT), "check-ignore", "-q", rel],
+                check=False,
+            )
+            assert completed.returncode == 0, f"{rel} should stay gitignored as a local-only root file"
+        else:
+            assert ignore_pattern in gitignore_text, f"{rel} should keep a matching .gitignore rule"
+        assert rel not in explicitly_governed, f"{rel} should not enter explicit root policy governance"
+        assert rel not in hook_allowed_files, f"{rel} should not enter hook root allowlist"
+        assert rel not in tree_lint_allowed_files, f"{rel} should not enter tree-lint root allowlist"
+
+
+def test_analyze_project_skips_gitignored_root_local_only_file(tmp_path: Path) -> None:
+    policy = load_policy(PROJECT_POLICY_PATH)
+    project_root = tmp_path / "repo"
+    project_root.mkdir()
+    (project_root / ".git").mkdir()
+    (project_root / ".gitignore").write_text("opencode.json\n", encoding="utf-8")
+    (project_root / "README.md").write_text("ok", encoding="utf-8")
+    (project_root / "docs").mkdir()
+    (project_root / "opencode.json").write_text('{"local": true}\n', encoding="utf-8")
+
+    subprocess.run(["git", "init"], cwd=project_root, check=False, capture_output=True, text=True)
+
+    result = analyze_project(project_root, policy)
+
+    assert result["summary"]["errors"] == 0
+    assert result["summary"]["warnings"] == 0
+
+
 def test_analyze_project_reports_root_runtime_artifact_as_error(tmp_path: Path) -> None:
     policy_path = tmp_path / "policy.yaml"
     project_root = tmp_path / "repo"
@@ -170,6 +356,20 @@ def test_analyze_project_reports_root_runtime_artifact_as_error(tmp_path: Path) 
     assert result["summary"]["errors"] == 1
     assert result["errors"][0]["path"] == "server.log"
     assert result["errors"][0]["recommendation"] == "move to var/log/"
+
+
+def test_analyze_project_reports_hidden_root_runtime_artifact_as_error(tmp_path: Path) -> None:
+    project_root = tmp_path / "repo"
+    project_root.mkdir()
+    (project_root / "README.md").write_text("ok", encoding="utf-8")
+    (project_root / "docs").mkdir()
+    (project_root / ".coverage").write_text("coverage", encoding="utf-8")
+
+    result = analyze_project(project_root, load_policy(PROJECT_POLICY_PATH))
+
+    assert result["summary"]["errors"] == 1
+    assert result["errors"][0]["path"] == ".coverage"
+    assert result["errors"][0]["rule_id"] == "root-forbidden-file"
 
 
 def test_analyze_project_applies_recursive_rules(tmp_path: Path) -> None:

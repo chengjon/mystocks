@@ -151,6 +151,16 @@ def staged_paths(project_root: Path) -> list[str]:
     return [line.strip() for line in completed.stdout.splitlines() if line.strip()]
 
 
+def is_gitignored(project_root: Path, relative_path: str) -> bool:
+    completed = subprocess.run(
+        ["git", "-C", str(project_root), "check-ignore", "-q", relative_path],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return completed.returncode == 0
+
+
 def append_finding(result: dict[str, Any], finding: dict[str, Any]) -> None:
     bucket = SEVERITY_TO_BUCKET[finding["severity"]]
     result[bucket].append(finding)
@@ -175,7 +185,29 @@ def analyze_root_entries(
     scoped_root_entries = current_scope_root_entries(paths)
 
     for entry in sorted(project_root.iterdir(), key=lambda item: item.name):
-        if entry.name.startswith("."):
+        is_hidden_entry = entry.name.startswith(".")
+        root_file_is_explicitly_governed = (
+            entry.name in allowed_files
+            or entry.name in workflow_exception_files
+            or entry.name in tolerated_files
+            or matches_any(entry.name, [rule["pattern"] for rule in forbidden_file_patterns])
+        )
+        root_dir_is_explicitly_governed = (
+            entry.name in allowed_directories
+            or entry.name in tolerated_directories
+            or matches_any(entry.name, [rule["pattern"] for rule in forbidden_directory_patterns])
+        )
+        hidden_file_is_explicitly_governed = (
+            root_file_is_explicitly_governed
+        )
+
+        if is_gitignored(project_root, entry.name):
+            if entry.is_dir() and not root_dir_is_explicitly_governed:
+                continue
+            if entry.is_file() and not root_file_is_explicitly_governed:
+                continue
+
+        if is_hidden_entry and (entry.is_dir() or not hidden_file_is_explicitly_governed):
             continue
         if scoped_root_entries is not None and entry.name not in scoped_root_entries:
             continue

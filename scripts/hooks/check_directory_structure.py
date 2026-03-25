@@ -11,10 +11,12 @@
 import os
 import subprocess
 import sys
+from fnmatch import fnmatch
 from pathlib import Path
 
 # 允许的顶层目录
 ALLOWED_TOP_DIRS = [
+    "docker/",
     "src/",
     "scripts/",
     "docs/",
@@ -41,6 +43,9 @@ ALLOWED_ROOT_FILES = {
     "IFLOW.md",
     "LICENSE",
     "CHANGELOG.md",
+    ".FILE_OWNERSHIP",
+    "TASK.md",
+    "TASK-REPORT.md",
     # Git / 开发工具
     ".gitignore",
     ".gitattributes",
@@ -48,23 +53,37 @@ ALLOWED_ROOT_FILES = {
     ".env.example",
     ".pre-commit-config.yaml",
     ".pre-commit-hooks.yaml",
+    ".pylint.test.rc",
+    ".pylintrc",
     # Python 工具链
     "pyproject.toml",
+    "requirements.txt",
     "pytest.ini",
     "mypy.ini",
     "conftest.py",
+    "__init__.py",
     # Node / E2E 工具链
     "package.json",
     "package-lock.json",
     # OpenSpec / OpenCode
-    "opencode.json",
     ".mcp.json",
+    "monitoring-stack.yml",
     # 兼容入口点
     "core.py",
     "data_access.py",
     "monitoring.py",
     "unified_manager.py",
 }
+
+# Root-level auto-discovery configs are allowed via explicit patterns.
+ALLOWED_ROOT_PATTERNS = (
+    ".env*",
+    "docker-compose*.yml",
+    "docker-compose*.yaml",
+    "ecosystem*.config.js",
+    "playwright.config.*",
+    "vitest.config.*",
+)
 
 # `.claude/` is a special top-level directory: it often contains local tooling and
 # user-specific files that should not be committed. For new files, we enforce a
@@ -134,8 +153,11 @@ def check_file_location(file_path: Path) -> bool:
     if file_path.parent == Path("."):
         if file_path.name in ALLOWED_ROOT_FILES:
             return True
+        if any(fnmatch(file_path.name, pattern) for pattern in ALLOWED_ROOT_PATTERNS):
+            return True
         print(f"❌ 文件 {file_path} 不在允许的根目录文件 allowlist 内")
         print(f"   允许的根目录文件: {sorted(ALLOWED_ROOT_FILES)}")
+        print(f"   允许的根目录文件模式: {sorted(ALLOWED_ROOT_PATTERNS)}")
         return False
 
     # `.claude/` is allowed at top-level, but only a small subset of files should be committed.
