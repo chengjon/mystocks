@@ -266,7 +266,7 @@ manager.save_data_by_classification(
 
 - **Full Details**: `docs/US3_CORE_REFACTORING_COMPLETION.md`
 - **Phase 1-2 Summary**: `docs/US3_PHASE1_2_COMPLETION.md`
-- **Implementation Plan**: `docs/US3_ARCHITECTURE_SIMPLIFICATION_PLAN.md`
+- **Implementation Plan**: `docs/plans/US3_ARCHITECTURE_SIMPLIFICATION_PLAN.md`
 
 ---
 

@@ -12,7 +12,7 @@
 - ✅ 分析 PyProf 项目结构和功能
 - ✅ 编写集成分析文档
   - `docs/PYPROF_INTEGRATION_ANALYSIS.md` - 详细分析 (10000 字)
-  - `docs/PYPROF_INTEGRATION_ROADMAP.md` - 实施路线图 (8000 字)
+  - `docs/plans/PYPROF_INTEGRATION_ROADMAP.md` - 实施路线图 (8000 字)
   - `docs/PYPROF_INTEGRATION_SUMMARY.md` - 执行概览 (3000 字)
 - ✅ 创建开发分支 `feature/ml-integration`
 - ✅ 安装新增依赖
@@ -184,7 +184,7 @@ y.shape: (90,)
 ```
 docs/
 ├── PYPROF_INTEGRATION_ANALYSIS.md     ✅ 完成
-├── PYPROF_INTEGRATION_ROADMAP.md      ✅ 完成
+├── plans/PYPROF_INTEGRATION_ROADMAP.md      ✅ 完成
 ├── PYPROF_INTEGRATION_SUMMARY.md      ✅ 完成
 └── ML_INTEGRATION_PROGRESS.md         ✅ 本文档
 

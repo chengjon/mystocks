@@ -54,8 +54,8 @@
 
 ---
 
-### 3. 集成完成总结
-**文件**: [WENCAI_INTEGRATION_SUMMARY.md](./WENCAI_INTEGRATION_SUMMARY.md)
+### 3. Phase 1 实施完成报告
+**文件**: [WENCAI_PHASE1_COMPLETED.md](../../reports/wencai/WENCAI_PHASE1_COMPLETED.md)
 
 **大小**: ~15KB
 **阅读时间**: 15-20分钟
@@ -116,7 +116,7 @@
 ---
 
 ### 路径C: 全面理解（1小时）
-1. 阅读 [集成完成总结](./WENCAI_INTEGRATION_SUMMARY.md) (20分钟)
+1. 阅读 [Phase 1 实施完成报告](../../reports/wencai/WENCAI_PHASE1_COMPLETED.md) (20分钟)
 2. 阅读 [完整集成规划](./WENCAI_INTEGRATION_PLAN.md) (30分钟)
 3. 参考 [快速参考指南](./WENCAI_INTEGRATION_QUICKREF.md) (10分钟)
 
@@ -125,7 +125,7 @@
 ---
 
 ### 路径D: 项目管理（20分钟）
-1. 阅读 [集成完成总结](./WENCAI_INTEGRATION_SUMMARY.md) 的以下部分:
+1. 阅读 [Phase 1 实施完成报告](../../reports/wencai/WENCAI_PHASE1_COMPLETED.md) 的以下部分:
    - 实施阶段 (5分钟)
    - 时间估算 (3分钟)
    - 验收标准 (5分钟)
@@ -189,7 +189,7 @@
 ### Q1: 我应该先读哪个文档？
 **A**: 根据你的角色选择：
 - **开发人员**: 先读[快速参考](./WENCAI_INTEGRATION_QUICKREF.md)，再读[完整规划](./WENCAI_INTEGRATION_PLAN.md)
-- **项目经理**: 直接读[完成总结](./WENCAI_INTEGRATION_SUMMARY.md)
+- **项目经理**: 直接读 [Phase 1 实施完成报告](../../reports/wencai/WENCAI_PHASE1_COMPLETED.md)
 - **架构师**: 读[完整规划](./WENCAI_INTEGRATION_PLAN.md)
 
 ### Q2: 这些文档之间有什么区别？
@@ -294,7 +294,7 @@ Phase 4: 前端集成（可选，4-6小时）
 ### 文档相关
 - **缺少信息**: 查阅[完整规划](./WENCAI_INTEGRATION_PLAN.md)
 - **快速查询**: 使用[快速参考](./WENCAI_INTEGRATION_QUICKREF.md)
-- **整体理解**: 阅读[完成总结](./WENCAI_INTEGRATION_SUMMARY.md)
+- **整体理解**: 阅读 [Phase 1 实施完成报告](../../reports/wencai/WENCAI_PHASE1_COMPLETED.md)
 
 ### 技术支持
 - **代码问题**: 参考原始项目 `/opt/claude/mystocks_spec/temp/`

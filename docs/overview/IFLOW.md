@@ -1,3 +1,22 @@
+<!-- OPENSPEC:START -->
+# OpenSpec Instructions
+
+These instructions are for AI assistants working in this project.
+
+Always open `@/openspec/AGENTS.md` when the request:
+- Mentions planning or proposals (words like proposal, spec, change, plan)
+- Introduces new capabilities, breaking changes, architecture shifts, or big performance/security work
+- Sounds ambiguous and you need the authoritative spec before coding
+
+Use `@/openspec/AGENTS.md` to learn:
+- How to create and apply change proposals
+- Spec format and conventions
+- Project structure and guidelines
+
+Keep this managed block so 'openspec update' can refresh the instructions.
+
+<!-- OPENSPEC:END -->
+
 # MyStocks 量化交易数据管理系统 - iFlow 交互指南
 
 ## 项目概述
@@ -196,7 +215,7 @@ MyStocks 是一个专业的企业级量化交易数据管理系统和 Web 管理
 │   └── 端到端测试                    # Playwright E2E测试
 │
 ├── 📖 examples/                      # 示例代码
-├── 📝 logs/                          # 日志目录
+├── 📝 var/log/                       # 日志目录
 ├── 💾 data/                          # 数据文件
 ├── 📊 reports/                       # 分析报告
 ├── 🎯 load_test_reports/             # 性能测试报告
@@ -821,7 +840,7 @@ ab -n 1000 -c 10 http://localhost:8020/api/market/wencai/queries
 | `web/backend/app/mock/` | 后端统一 Mock 管理 |
 | `scripts/dev/start_with_mock.sh` | Mock 环境启动脚本 |
 | `scripts/tests/test_mock_*.py` | Mock 测试脚本 |
-| `docs/guides/MOCK_DATA_USAGE_RULES.md` | Mock 数据使用详细规则 |
+| `docs/guides/mock-data/MOCK_DATA_USAGE_RULES.md` | Mock 数据使用详细规则 |
 | `docs/MOCK_DATA_SYSTEM_GUIDE.md` | Mock 数据系统完整指南 |
 
 ## 构建和运行
@@ -993,10 +1012,7 @@ pytest tests/ -v --cov=src --cov-report=html
 pytest tests/test_core/ -v
 pytest tests/test_gpu/ -v
 
-# 端到端测试（补充场景：临时运行Playwright测试，# 注意： 这是补充场景，应在临时需要运行Playwright测试时使用
-npm run test:e2e
-
-# 或者直接运行（不推荐）
+# 端到端测试（补充场景：临时运行Playwright测试）
 npx playwright test
 
 # 代码质量检查
@@ -1210,9 +1226,9 @@ health_status = response.json()
 5. **数据源 API 限流**: 调整请求频率和重试策略
 
 ### 日志位置
-- **系统日志**: `mystocks_system.log`
-- **适配器日志**: `adapters/*.log`
-- **Web 日志**: `web/backend/logs/`
+- **系统日志**: `var/log/mystocks_system.log`
+- **适配器日志**: `var/log/adapter.log`
+- **Web 日志**: `var/log/`
 - **GPU 日志**: `gpu_api_system/logs/`
 - **Hooks 日志**: `.claude/logs/`
 

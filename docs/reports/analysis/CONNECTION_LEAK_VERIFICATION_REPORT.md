@@ -712,7 +712,7 @@ grep -n "finally:" src/utils/check_db_health.py
 ### 7.3 相关文档
 
 - [连接泄漏分析报告](./CONNECTION_LEAK_ANALYSIS.md)
-- [项目开发指南](../IFLOW.md)
+- [项目开发指南](../../overview/IFLOW.md)
 - [代码规范文档](../.pylintrc)
 
 ---

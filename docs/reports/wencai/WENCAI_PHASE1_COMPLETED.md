@@ -320,9 +320,9 @@ open http://localhost:8020/api/docs
 
 ## 📚 相关文档
 
-- **完整规划**: [WENCAI_INTEGRATION_PLAN.md](./WENCAI_INTEGRATION_PLAN.md)
-- **快速参考**: [WENCAI_INTEGRATION_QUICKREF.md](./WENCAI_INTEGRATION_QUICKREF.md)
-- **文档索引**: [WENCAI_INTEGRATION_INDEX.md](./WENCAI_INTEGRATION_INDEX.md)
+- **完整规划**: [WENCAI_INTEGRATION_PLAN.md](../../guides/wencai/WENCAI_INTEGRATION_PLAN.md)
+- **快速参考**: [WENCAI_INTEGRATION_QUICKREF.md](../../guides/wencai/WENCAI_INTEGRATION_QUICKREF.md)
+- **文档索引**: [WENCAI_INTEGRATION_INDEX.md](../../guides/wencai/WENCAI_INTEGRATION_INDEX.md)
 
 ---
 

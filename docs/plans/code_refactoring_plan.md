@@ -1,6 +1,6 @@
 # MyStocks项目超长文件拆分方案
 
-> **参考文档**: `/opt/claude/mystocks_spec/docs/03-API与功能文档/超长文档拆分办法.md`
+> **参考文档**: `/opt/claude/mystocks_spec/docs/guides/documentation/超长文档拆分办法.md`
 > **拆分原则**: 功能内聚 + 低耦合 + 粒度适中（控制在500行以内）
 > **三大层面**: 模板层面（子组件） + 脚本层面（API/工具/Composables） + 样式层面（隔离）
 

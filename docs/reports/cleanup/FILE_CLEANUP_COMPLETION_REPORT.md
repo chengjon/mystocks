@@ -235,7 +235,7 @@ logs/
 ---
 
 #### 2. 当前项目目录文件整理任务
-- **文件路径**: `docs/FILE_CLEANUP_TASK.md`
+- **文件路径**: `docs/reports/cleanup/FILE_CLEANUP_TASK.md`
 - **文档版本**: v1.0
 - **文档内容**:
   - 项目特定分析

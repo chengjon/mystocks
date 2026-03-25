@@ -26,7 +26,7 @@ lnav --version
 ## 日志目录结构
 
 ```
-logs/
+var/log/
 ├── api/              # API 测试日志
 ├── e2e/              # E2E 测试日志
 ├── frontend/         # 前端日志
@@ -283,7 +283,7 @@ cd web/backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8020
 ./scripts/lnav-monitor.sh api
 
 # 终端3：运行测试
-./scripts/run-api-tests.sh all
+./scripts/tests/run-api-tests.sh all
 
 # 终端4：分析日志
 ./scripts/analyze-test-logs.sh analyze
@@ -301,7 +301,7 @@ cd web/backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8020
 
 ## 报告输出
 
-分析完成后，将在 `logs/` 目录下生成以下文件：
+分析完成后，将在 `var/log/tests/` 目录下生成以下文件：
 - `test_analysis.log` - 完整的分析日志
 - `errors.log` - 错误详情
 - `performance.log` - 性能数据
@@ -331,10 +331,10 @@ brew install lnav           # macOS
 
 ```bash
 # 检查日志目录权限
-ls -la logs/
+ls -la var/log/
 
 # 检查日志文件是否正在被写入
-tail -f logs/api/*.log
+tail -f var/log/api/*.log
 ```
 
 ### 问题：筛选不生效

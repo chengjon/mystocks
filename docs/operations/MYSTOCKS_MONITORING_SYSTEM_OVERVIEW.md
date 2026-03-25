@@ -166,8 +166,8 @@ metrics_generator:
 
 | 文档名称 | 路径 | 重要程度 | 主要内容 |
 |----------|------|----------|----------|
-| **深度优化部署指南** | `docs/guides/MYSTOCKS_MONITORING_OPTIMIZATION_DEPLOYMENT.md` | ⭐⭐⭐⭐⭐ | 完整优化配置、验证清单、故障排查、性能提升量化 |
-| **CI/CD优化系统** | `docs/guides/MYSTOCKS_CI_CD_OPTIMIZATION_SYSTEM.md` | ⭐⭐⭐⭐⭐ | GitHub Actions流水线、质量门禁、测试框架集成 |
+| **深度优化部署指南** | `docs/operations/monitoring/MYSTOCKS_MONITORING_OPTIMIZATION_DEPLOYMENT.md` | ⭐⭐⭐⭐⭐ | 完整优化配置、验证清单、故障排查、性能提升量化 |
+| **CI/CD优化系统** | `docs/operations/ci-cd/MYSTOCKS_CI_CD_OPTIMIZATION_SYSTEM.md` | ⭐⭐⭐⭐⭐ | GitHub Actions流水线、质量门禁、测试框架集成 |
 | **质量门禁分析** | `docs/reports/QUALITY_GATE_DESIGN_ANALYSIS.md` | ⭐⭐⭐⭐ | 双语言质量检查、340+忽略规则、自动化验证 |
 
 ### 4.2 **技术实现文档**

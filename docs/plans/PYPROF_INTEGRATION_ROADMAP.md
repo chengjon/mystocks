@@ -970,7 +970,7 @@ curl http://localhost:8020/health
 
 ### B. 参考资料
 
-- [PyProf 集成分析文档](./PYPROF_INTEGRATION_ANALYSIS.md)
+- PyProf 集成分析结论已并入本文档，无单独分析文档保留
 - [LightGBM 官方文档](https://lightgbm.readthedocs.io/)
 - [scikit-learn 特征选择指南](https://scikit-learn.org/stable/modules/feature_selection.html)
 

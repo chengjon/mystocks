@@ -202,8 +202,8 @@ MyStocks根目录/
 ├── CLAUDE.md                      # ✅ 保留（AI助手配置）
 ├── AGENTS.md                      # ✅ 保留（OpenSpec配置）
 ├── GEMINI.md                      # ✅ 保留（AI配置）
-├── PHASE6_E2E_STATUS_SUMMARY.md   # ✅ 保留（E2E测试状态）
-├── PHASE6_E2E_TEST_TASK_COMPLETION.md # ✅ 保留（E2E测试完成）
+├── docs/reports/completion_reports/PHASE6_E2E_STATUS_SUMMARY.md   # ✅ 保留（E2E测试状态）
+├── docs/reports/completion_reports/PHASE6_E2E_TEST_TASK_COMPLETION.md # ✅ 保留（E2E测试完成）
 └── __init__.py                    # ✅ 保留（Python包）
 ```
 

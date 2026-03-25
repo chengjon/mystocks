@@ -116,13 +116,13 @@
   - `reports/governance/2026-03-09-batch-3-root-doc-inventory.md`
 - 已迁移的根目录文档：
   - `E2E_TEST_EXECUTION_SUCCESS_REPORT.md` → `archive/docs/e2e/E2E_TEST_EXECUTION_SUCCESS_REPORT_2026-03-01.md`
-  - `E2E_TEST_QUICK_REFERENCE.md` → `docs/guides/E2E_TEST_QUICK_REFERENCE_COMPATIBILITY.md`
+  - `E2E_TEST_QUICK_REFERENCE.md` → `docs/testing/E2E_TEST_QUICK_REFERENCE_COMPATIBILITY.md`
   - `GEMINI_设置相关文件迁移清单.md` → `archive/docs/tooling/GEMINI_SETTINGS_FILE_MIGRATION_CHECKLIST_2026-03.md`
-  - `Gemini代理配置成功经验与固化指南.updated.md` → `docs/guides/GEMINI_PROXY_CONFIGURATION_GUIDE.md`
-  - `OMC_README.md` → `docs/guides/OMC_WORKFLOW_GUIDE.md`
+  - `Gemini代理配置成功经验与固化指南.updated.md` → `docs/guides/ai-tools/GEMINI_PROXY_CONFIGURATION_GUIDE.md`
+  - `OMC_README.md` → `docs/guides/ai-tools/OMC_WORKFLOW_GUIDE.md`
 - 索引/入口更新：
   - `README.md`
-  - `docs/guides/INDEX_root.md`
+  - `docs/reports/cleanup/index-artifacts/INDEX_root.md`
 - `python scripts/maintenance/check_structure.py --format text`
   - 结果：
     - `errors: 0`

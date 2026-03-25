@@ -236,7 +236,7 @@ cleanup_interval = 30  # 更频繁的清理
 
 - **测试脚本**: `/opt/claude/mystocks_spec/scripts/tests/websocket_stress_test.py`
 - **简化测试**: `/opt/claude/mystocks_spec/scripts/tests/simple_websocket_test.py`
-- **性能报告**: `/opt/claude/mystocks_spec/logs/websocket_stress_test_report_*.json`
+- **性能报告**: `/opt/claude/mystocks_spec/var/log/tests/websocket_stress_test_report_*.json`
 - **WebSocket管理器**: `/opt/claude/mystocks_spec/web/backend/app/core/socketio_manager.py`
 - **性能优化器**: `/opt/claude/mystocks_spec/web/backend/app/core/socketio_performance.py`
 

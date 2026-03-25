@@ -79,10 +79,10 @@ pkill -f "mystocks"
 ### 查看日志
 ```bash
 # 后端日志
-tail -f /opt/claude/mystocks_spec/logs/backend.log
+tail -f /opt/claude/mystocks_spec/var/log/backend.log
 
 # 前端日志
-tail -f /opt/claude/mystocks_spec/logs/frontend.log
+tail -f /opt/claude/mystocks_spec/var/log/frontend.log
 
 # PM2日志（如果使用）
 pm2 logs
@@ -184,7 +184,7 @@ cp -r /opt/claude/mystocks_spec/config /opt/mystocks/config_backup_$(date +%Y%m%
    curl -I http://localhost:3020/
 
    # 检查前端日志
-   tail -f /opt/claude/mystocks_spec/logs/frontend.log
+   tail -f /opt/claude/mystocks_spec/var/log/frontend.log
 
    # 重启前端服务
    pkill -f "npm.*preview"
@@ -194,7 +194,7 @@ cp -r /opt/claude/mystocks_spec/config /opt/mystocks/config_backup_$(date +%Y%m%
 4. **API响应异常**
    ```bash
    # 检查后端日志
-   tail -f /opt/claude/mystocks_spec/logs/backend.log
+   tail -f /opt/claude/mystocks_spec/var/log/backend.log
 
    # 检查进程状态
    ps aux | grep uvicorn
