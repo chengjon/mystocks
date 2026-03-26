@@ -1,17 +1,33 @@
-# Reviews
+# MyStocks 文档索引
 
-**最后更新**: 2026-02-02 22:10:38
-
-**文档数量**: 3
+**生成时间**: 2026-03-24 13:50:07
 
 
 ---
 
-- [PHASE_2_PLAN_REVIEW](reviews/PHASE_2_PLAN_REVIEW.md)
-  - *Phase 2 Real Data Integration Plan Review*
+## 🚀 快速导航
 
-- [WEB_FRONTEND_MENU_ARCHITECTURE_REVIEW](reviews/WEB_FRONTEND_MENU_ARCHITECTURE_REVIEW.md)
-  - *Web前端菜单架构优化方案评审报告*
 
-- [frontend_routing_optimization_report](reviews/frontend_routing_optimization_report.md)
-  - *Web Frontend Routing Optimization Report*
+---
+
+## 📊 统计信息
+
+
+- **总文档数**: 8
+- **总目录数**: 0
+- **最后更新**: 2026-03-24
+
+---
+
+
+## 📁 项目根目录
+
+- 📄 [README](./INDEX.md)
+- 📄 [DIRECTORY_ORGANIZATION_REVIEW](DIRECTORY_ORGANIZATION_REVIEW.md)
+- 📄 [P2_P3_PLAN_REVIEW](P2_P3_PLAN_REVIEW.md)
+- 📄 [PHASE1_GOVERNANCE_APPROVAL](PHASE1_GOVERNANCE_APPROVAL.md)
+- 📄 [PHASE_2_PLAN_REVIEW](PHASE_2_PLAN_REVIEW.md)
+- 📄 [PROJECT_STRUCTURE_PLAN_REVIEW](PROJECT_STRUCTURE_PLAN_REVIEW.md)
+- 📄 [VUE3_OPTIMIZATION_PLAN](VUE3_OPTIMIZATION_PLAN.md)
+- 📄 [WEB_FRONTEND_MENU_ARCHITECTURE_REVIEW](WEB_FRONTEND_MENU_ARCHITECTURE_REVIEW.md)
+- 📄 [frontend_routing_optimization_report](frontend_routing_optimization_report.md)

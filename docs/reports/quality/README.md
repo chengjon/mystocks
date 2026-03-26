@@ -10,13 +10,13 @@
 docs/
 ├── standards/
 │   └── bug-report-template.json          # BUG报告模板
-├── guides/
-│   └── BUG_LESSONS_LEARNED.md             # 经验教训索引
-└── quality/
-    └── bugs/                              # BUG报告存储目录
-        ├── BUG-20260108-ERR_DDD_IMPORT_001.json
-        ├── BUG-20260108-ERR_FLOAT_PRECISION_001.json
-        └── ...
+└── reports/
+    └── quality/
+        ├── BUG_LESSONS_LEARNED.md         # 经验教训索引
+        └── bugs/                          # BUG报告存储目录
+            ├── BUG-20260108-ERR_DDD_IMPORT_001.json
+            ├── BUG-20260108-ERR_FLOAT_PRECISION_001.json
+            └── ...
 ```
 
 ---
@@ -37,7 +37,7 @@ docs/
 Claude Code将自动：
 1. 读取BUG报告模板
 2. 填写BUG信息
-3. 保存到 `docs/quality/bugs/BUG-YYYYMMDD-{errorCode}.json`
+3. 保存到 `docs/reports/quality/bugs/BUG-YYYYMMDD-{errorCode}.json`
 4. 更新经验教训索引
 
 ### 2. 查阅经验教训
@@ -46,7 +46,7 @@ Claude Code将自动：
 
 ```bash
 # 查看常见BUG类型和预防措施
-cat docs/guides/BUG_LESSONS_LEARNED.md
+cat docs/reports/quality/BUG_LESSONS_LEARNED.md
 ```
 
 ### 3. 手动登记BUG
@@ -61,7 +61,7 @@ cp docs/standards/bug-report-template.json temp-bug.json
 vim temp-bug.json
 
 # 3. 保存到正确位置
-mv temp-bug.json docs/quality/bugs/BUG-YYYYMMDD-{errorCode}.json
+mv temp-bug.json docs/reports/quality/bugs/BUG-YYYYMMDD-{errorCode}.json
 ```
 
 ---
@@ -145,7 +145,7 @@ mv temp-bug.json docs/quality/bugs/BUG-YYYYMMDD-{errorCode}.json
 
 ## 📚 经验教训索引
 
-**文档位置**: `docs/guides/BUG_LESSONS_LEARNED.md`
+**文档位置**: `docs/reports/quality/BUG_LESSONS_LEARNED.md`
 
 ### 核心功能
 
@@ -158,10 +158,10 @@ mv temp-bug.json docs/quality/bugs/BUG-YYYYMMDD-{errorCode}.json
 
 ```bash
 # 开发前查阅
-cat docs/guides/BUG_LESSONS_LEARNED.md
+cat docs/reports/quality/BUG_LESSONS_LEARNED.md
 
 # 搜索特定类型的BUG
-grep "ERR_DDD" docs/guides/BUG_LESSONS_LEARNED.md
+grep "ERR_DDD" docs/reports/quality/BUG_LESSONS_LEARNED.md
 ```
 
 ---
@@ -170,7 +170,7 @@ grep "ERR_DDD" docs/guides/BUG_LESSONS_LEARNED.md
 
 在开始开发前，请确认：
 
-- [ ] **查阅经验教训索引**: `docs/guides/BUG_LESSONS_LEARNED.md`
+- [ ] **查阅经验教训索引**: `docs/reports/quality/BUG_LESSONS_LEARNED.md`
 - [ ] **读取现有实现**: 使用Glob/Grep查找相关代码
 - [ ] **理解现有API**: 检查方法签名、参数、返回值
 - [ ] **验证导入路径**: 确保`__init__.py`正确导出
@@ -218,8 +218,8 @@ grep "ERR_DDD" docs/guides/BUG_LESSONS_LEARNED.md
 
 **项目内部**:
 - BUG报告模板: `docs/standards/bug-report-template.json`
-- 经验教训索引: `docs/guides/BUG_LESSONS_LEARNED.md`
-- BUG报告目录: `docs/quality/bugs/`
+- 经验教训索引: `docs/reports/quality/BUG_LESSONS_LEARNED.md`
+- BUG报告目录: `docs/reports/quality/bugs/`
 - 项目开发指南: `CLAUDE.md` - BUG登记章节
 
 **外部参考**:
@@ -246,7 +246,7 @@ git commit -m "fix: 修复DDD模块导入路径错误"
 # Hook将自动：
 # 1. 检测到"fix:"前缀
 # 2. 生成BUG报告
-# 3. 保存到 docs/quality/bugs/
+# 3. 保存到 docs/reports/quality/bugs/
 # 4. 更新经验教训索引
 ```
 
@@ -272,5 +272,5 @@ git commit -m "fix: 修复DDD模块导入路径错误"
 ---
 
 **文档维护**: 定期更新经验教训索引，确保包含最新的BUG和预防措施
-**问题反馈**: 发现新问题请按模板登记到`docs/quality/bugs/`目录
+**问题反馈**: 发现新问题请按模板登记到`docs/reports/quality/bugs/`目录
 **最后更新**: 2026-01-08

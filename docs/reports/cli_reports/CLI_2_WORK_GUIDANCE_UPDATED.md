@@ -160,7 +160,7 @@ echo "✅ Syntax check passed"
 
 ### 📍 问题定位
 
-**测试期望** (来自 `PHASE6_E2E_STATUS_SUMMARY.md`):
+**测试期望** (来自 `docs/reports/completion_reports/PHASE6_E2E_STATUS_SUMMARY.md`):
 ```json
 {
   "databases": [
@@ -563,7 +563,7 @@ curl -s http://localhost:8020/api/system/database/health | jq '.'
 
 ## ✅ 完成后汇报
 
-修复完成后,请更新 `PHASE6_E2E_STATUS_SUMMARY.md`:
+修复完成后,请更新 `docs/reports/completion_reports/PHASE6_E2E_STATUS_SUMMARY.md`:
 
 ```markdown
 ## 问题修复情况 (T+4h)

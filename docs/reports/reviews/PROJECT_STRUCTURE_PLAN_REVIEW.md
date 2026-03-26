@@ -2,7 +2,7 @@
 
 > 审查日期：2026-02-13
 > 审查对象：`docs/plans/项目文件目录整理具体方案.md`
-> 参照标准：`docs/guides/文件目录整理方法论指南.md`
+> 参照标准：`docs/guides/documentation/文件目录整理方法论指南.md`
 
 ## 1. 总体评价 (Overall Assessment)
 

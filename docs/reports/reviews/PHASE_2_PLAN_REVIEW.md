@@ -2,7 +2,7 @@
 
 **Review Date**: 2026-01-02
 **Reviewer**: Gemini CLI Agent
-**Target Document**: `docs/guides/PHASE_2_REAL_DATA_INTEGRATION_PLAN.md`
+**Target Document**: `docs/guides/mock-data/PHASE_2_REAL_DATA_INTEGRATION_PLAN.md`
 **Status**: ✅ **APPROVED** with minor recommendations
 
 ---
