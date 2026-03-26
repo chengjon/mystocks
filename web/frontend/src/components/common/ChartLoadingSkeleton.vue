@@ -110,30 +110,30 @@ const progressText = computed(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  background: #fff;
+  padding: var(--artdeco-spacing-5);
+  background: var(--artdeco-bg-card);
   position: relative;
 
   .loading-progress {
     width: 100%;
-    max-width: 400px;
-    margin-bottom: 24px;
+    max-width: calc(var(--artdeco-spacing-32) * 3 + var(--artdeco-spacing-4));
+    margin-bottom: var(--artdeco-spacing-6);
 
     .progress-text {
-      font-size: 14px;
-      color: #606266;
+      font-size: var(--artdeco-text-sm);
+      color: var(--artdeco-fg-muted);
       font-weight: 500;
     }
   }
 
   .skeleton-content {
     width: 100%;
-    max-width: 800px;
-    height: 400px;
+    max-width: calc(var(--artdeco-spacing-32) * 5 + var(--artdeco-spacing-16));
+    height: calc(var(--artdeco-spacing-32) * 3 + var(--artdeco-spacing-4));
     position: relative;
-    background: #f5f7fa;
-    border-radius: 8px;
-    padding: 20px;
+    background: var(--artdeco-bg-elevated);
+    border-radius: var(--artdeco-radius-md);
+    padding: var(--artdeco-spacing-5);
     overflow: hidden;
 
     .skeleton-chart {
@@ -141,33 +141,33 @@ const progressText = computed(() => {
       display: flex;
       align-items: flex-end;
       justify-content: space-around;
-      padding: 20px;
-      height: 300px;
+      padding: var(--artdeco-spacing-5);
+      height: calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-10));
 
       .skeleton-candle {
         display: flex;
         flex-direction: column;
         align-items: center;
-        width: 40px;
-        height: 200px;
+        width: var(--artdeco-spacing-10);
+        height: calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-2));
         position: relative;
         animation: pulse 1.5s ease-in-out infinite;
 
         .skeleton-candle-wick {
-          width: 2px;
-          height: 30px;
-          background: linear-gradient(180deg, #e0e0e0 25%, #f5f5f5 25%, #f5f5f5 50%, #e0e0e0 50%, #e0e0e0 75%, #f5f5f5 75%, #f5f5f5);
+          width: calc(var(--artdeco-spacing-px) * 2);
+          height: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-2));
+          background: linear-gradient(180deg, var(--artdeco-silver-light) 25%, var(--artdeco-bg-card) 25%, var(--artdeco-bg-card) 50%, var(--artdeco-silver-light) 50%, var(--artdeco-silver-light) 75%, var(--artdeco-bg-card) 75%, var(--artdeco-bg-card));
           background-size: 200% 100%;
           animation: shimmer 1.5s infinite;
         }
 
         .skeleton-candle-body {
-          width: 20px;
-          height: 150px;
-          background: linear-gradient(180deg, #e0e0e0 25%, #f5f5f5 25%, #f5f5f5 50%, #e0e0e0 50%, #e0e0e0 75%, #f5f5f5 75%, #f5f5f5);
+          width: var(--artdeco-spacing-5);
+          height: calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-6) + var(--artdeco-spacing-2));
+          background: linear-gradient(180deg, var(--artdeco-silver-light) 25%, var(--artdeco-bg-card) 25%, var(--artdeco-bg-card) 50%, var(--artdeco-silver-light) 50%, var(--artdeco-silver-light) 75%, var(--artdeco-bg-card) 75%, var(--artdeco-bg-card));
           background-size: 200% 100%;
           animation: shimmer 1.5s infinite;
-          border-radius: 2px;
+          border-radius: var(--artdeco-radius-sm);
         }
       }
     }
@@ -175,35 +175,35 @@ const progressText = computed(() => {
     .skeleton-x-axis {
       display: flex;
       justify-content: space-around;
-      padding: 0 20px;
-      margin-top: 10px;
+      padding: 0 var(--artdeco-spacing-5);
+      margin-top: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
 
       .skeleton-label {
-        width: 60px;
-        height: 16px;
-        background: linear-gradient(90deg, #e0e0e0 25%, #f5f5f5 25%, #f5f5f5 50%, #e0e0e0 50%, #e0e0e0 75%, #f5f5f5 75%, #f5f5f5);
+        width: calc(var(--artdeco-spacing-12) + var(--artdeco-spacing-3));
+        height: var(--artdeco-spacing-4);
+        background: linear-gradient(90deg, var(--artdeco-silver-light) 25%, var(--artdeco-bg-card) 25%, var(--artdeco-bg-card) 50%, var(--artdeco-silver-light) 50%, var(--artdeco-silver-light) 75%, var(--artdeco-bg-card) 75%, var(--artdeco-bg-card));
         background-size: 200% 100%;
         animation: shimmer 1.5s infinite;
-        border-radius: 2px;
+        border-radius: var(--artdeco-radius-sm);
       }
     }
 
     .skeleton-y-axis {
       position: absolute;
-      right: 20px;
-      top: 20px;
-      bottom: 50px;
+      right: var(--artdeco-spacing-5);
+      top: var(--artdeco-spacing-5);
+      bottom: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-2));
       display: flex;
       flex-direction: column;
       justify-content: space-between;
 
       .skeleton-label {
-        width: 40px;
-        height: 14px;
-        background: linear-gradient(90deg, #e0e0e0 25%, #f5f5f5 25%, #f5f5f5 50%, #e0e0e0 50%, #e0e0e0 75%, #f5f5f5 75%, #f5f5f5);
+        width: var(--artdeco-spacing-10);
+        height: var(--artdeco-text-sm);
+        background: linear-gradient(90deg, var(--artdeco-silver-light) 25%, var(--artdeco-bg-card) 25%, var(--artdeco-bg-card) 50%, var(--artdeco-silver-light) 50%, var(--artdeco-silver-light) 75%, var(--artdeco-bg-card) 75%, var(--artdeco-bg-card));
         background-size: 200% 100%;
         animation: shimmer 1.5s infinite;
-        border-radius: 2px;
+        border-radius: var(--artdeco-radius-sm);
       }
     }
 
@@ -212,39 +212,39 @@ const progressText = computed(() => {
       bottom: 0;
       left: 0;
       right: 0;
-      height: 60px;
+      height: calc(var(--artdeco-spacing-12) + var(--artdeco-spacing-3));
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
-      background: #fff;
-      border-top: 1px solid #e4e7ed;
+      gap: var(--artdeco-spacing-3);
+      background: var(--artdeco-bg-card);
+      border-top: 1px solid var(--artdeco-border-default);
 
       .skeleton-button {
-        width: 80px;
-        height: 32px;
-        background: linear-gradient(90deg, #e0e0e0 25%, #f5f5f5 25%, #f5f5f5 50%, #e0e0e0 50%, #e0e0e0 75%, #f5f5f5 75%, #f5f5f5);
+        width: var(--artdeco-spacing-20);
+        height: var(--artdeco-spacing-8);
+        background: linear-gradient(90deg, var(--artdeco-silver-light) 25%, var(--artdeco-bg-card) 25%, var(--artdeco-bg-card) 50%, var(--artdeco-silver-light) 50%, var(--artdeco-silver-light) 75%, var(--artdeco-bg-card) 75%, var(--artdeco-bg-card));
         background-size: 200% 100%;
         animation: shimmer 1.5s infinite;
-        border-radius: 4px;
+        border-radius: var(--artdeco-radius-sm);
       }
     }
   }
 
   .loading-message {
-    margin-top: 24px;
+    margin-top: var(--artdeco-spacing-6);
     text-align: center;
 
     p {
-      font-size: 16px;
-      color: #303133;
+      font-size: var(--artdeco-text-base);
+      color: var(--artdeco-fg-primary);
       font-weight: 500;
-      margin: 0 0 8px 0;
+      margin: 0 0 var(--artdeco-spacing-2) 0;
     }
 
     .sub-text {
-      font-size: 14px;
-      color: #909399;
+      font-size: var(--artdeco-text-sm);
+      color: var(--artdeco-fg-muted);
       font-weight: normal;
     }
   }
@@ -270,33 +270,33 @@ const progressText = computed(() => {
 }
 
 // 响应式设计
-@media (width <= 768px) {
+@media (width <= var(--artdeco-breakpoint-md)) {
   .chart-loading-skeleton {
-    padding: 12px;
+    padding: var(--artdeco-spacing-3);
 
     .skeleton-content {
-      height: 300px;
-      padding: 12px;
+      height: calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-10));
+      padding: var(--artdeco-spacing-3);
 
       .skeleton-chart {
-        height: 220px;
+        height: calc(var(--artdeco-spacing-32) * 2 - var(--artdeco-spacing-3));
 
         .skeleton-candle {
-          width: 30px;
-          height: 150px;
+          width: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
+          height: calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-6) + var(--artdeco-spacing-2));
 
           .skeleton-candle-body {
-            height: 100px;
+            height: calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-4));
           }
         }
       }
 
       .skeleton-toolbar {
-        height: 50px;
+        height: calc(var(--artdeco-spacing-12) + var(--artdeco-spacing-px) * 2);
 
         .skeleton-button {
-          width: 60px;
-          height: 28px;
+          width: calc(var(--artdeco-spacing-12) + var(--artdeco-spacing-3));
+          height: var(--artdeco-text-2xl);
         }
       }
     }

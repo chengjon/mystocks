@@ -12,28 +12,28 @@ import './styles/index.scss'
 // ⚡ 性能优化: ECharts按需引入（减少80%体积）
 import './utils/echarts.ts'
 
-// 🎨 ArtDeco全局样式（Google Fonts + 全局重置 + 基础样式）
+// 🎨 ArtDeco全局真值入口（字体/重置/基础排版/背景）
 import './styles/artdeco-global.scss'
 
-// 🎨 ArtDeco金融专用令牌（技术指标、风险等级、数据质量等）
+// 🎨 ArtDeco金融语义真值层（技术指标、风险等级、数据质量等）
 import './styles/artdeco-financial.scss'
 
-// 🎨 ArtDeco设计令牌（核心CSS变量定义 - 已在global中导入）
+// 🎨 ArtDeco核心 token 真值已由 artdeco-global.scss 导入
 // import './styles/artdeco-tokens.scss' // ⚠️ 已通过artdeco-global.scss导入
 
-// 🎨 金融数据终端设计系统 v2.0（统一所有样式）
+// ⚙️ 历史 Fintech 兼容层（仍在主运行链路中，非新 ArtDeco 真值）
 import './styles/fintech-design-system.scss'
 
-// ELEMENT PLUS OVERRIDE: Bloomberg Terminal主题（使用Design Tokens）
+// ⚙️ Element Plus 兼容映射层（第三方组件对齐）
 import './styles/element-plus-override.scss'
 
-// VISUAL OPTIMIZATION v2.0: 视觉优化规范（解决按钮对齐、卡片比例、组件间距问题）
+// ⚙️ 历史视觉兼容层（按钮/卡片/间距旧覆盖）
 import './styles/visual-optimization.scss'
 
-// PRO FINTECH OPTIMIZATION: 专业金融终端优化（Bloomberg级别）
+// ⚙️ 历史专业终端兼容层（旧 Fintech/Bloomberg 风格增强）
 import './styles/pro-fintech-optimization.scss'
 
-// BLOOMBERG TERMINAL OVERRIDE: 强制应用专业金融终端样式（!important 规则）
+// ⚙️ Bloomberg 兼容硬覆盖层（旧终端链路，非新 ArtDeco 真值）
 import './styles/bloomberg-terminal-override.scss'
 
 // SECURITY FIX 1.2: 导入CSRF初始化函数

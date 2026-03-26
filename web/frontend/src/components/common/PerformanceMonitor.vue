@@ -31,36 +31,36 @@ const fpsColor = computed(() => {
 
 .performance-monitor {
   position: fixed;
-  bottom: 8px;
-  right: 8px;
-  background: rgb(0 0 0 / 70%);
-  padding: 6px 10px;
-  border-radius: 4px;
-  color: #fff;
-  font-family: monospace;
-  font-size: 10px;
-  z-index: 9999;
+  bottom: var(--artdeco-spacing-2);
+  right: var(--artdeco-spacing-2);
+  background: color-mix(in srgb, var(--artdeco-bg-global) 70%, transparent);
+  padding: calc(var(--artdeco-spacing-px) * 6) calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
+  border-radius: var(--artdeco-radius-sm);
+  color: var(--artdeco-fg-primary);
+  font-family: var(--font-mono);
+  font-size: calc(var(--artdeco-text-xs) - var(--artdeco-spacing-px) * 2);
+  z-index: calc(var(--artdeco-z-fixed) + 10);
   pointer-events: none;
   display: flex;
-  gap: 12px;
-  border: 1px solid rgb(255 255 255 / 10%);
-  backdrop-filter: blur(2px);
+  gap: var(--artdeco-spacing-3);
+  border: 1px solid var(--artdeco-gold-opacity-10);
+  backdrop-filter: blur(var(--artdeco-spacing-px) * 2);
 }
 
 .metric-row {
   display: flex;
-  gap: 4px;
+  gap: var(--artdeco-spacing-1);
 }
 
 .label {
-  color: #aaa;
+  color: var(--artdeco-fg-muted);
 }
 
 .value {
   font-weight: bold;
   
-  &.good { color: #4caf50; }
-  &.ok { color: #ff9800; }
-  &.bad { color: #f44336; }
+  &.good { color: var(--artdeco-success); }
+  &.ok { color: var(--artdeco-warning); }
+  &.bad { color: var(--artdeco-error); }
 }
 </style>

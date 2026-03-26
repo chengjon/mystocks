@@ -14,14 +14,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: var(--header-height, 56px);
+  height: var(--header-height, calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-6)));
   padding: 0 var(--artdeco-spacing-md); /* Use ArtDeco spacing */
   background: var(--artdeco-bg-elevated); /* Use ArtDeco elevated background */
   border-bottom: 1px solid var(--artdeco-border-default); /* Use ArtDeco border */
   flex-shrink: 0;
   z-index: var(--artdeco-z-header, 100); /* Use ArtDeco z-index */
 
-  @include artdeco-geometric-corners(var(--artdeco-gold-dim), 12px, 1px); /* Add geometric corners */
+  @include artdeco-geometric-corners(var(--artdeco-gold-dim), var(--artdeco-spacing-3), var(--artdeco-spacing-px)); /* Add geometric corners */
 }
 
 .header-left {
@@ -81,7 +81,7 @@
   }
 
   kbd {
-    padding: 2px 6px;
+    padding: calc(var(--artdeco-spacing-1) / 2) calc(var(--artdeco-spacing-3) / 2);
     background: var(--artdeco-bg-secondary); /* Use ArtDeco secondary background */
     border: 1px solid var(--artdeco-border-default); /* Use ArtDeco border */
     border-radius: var(--artdeco-radius-sm); /* Use ArtDeco border-radius */
@@ -107,14 +107,14 @@
     position: absolute;
     top: 0;
     right: 0;
-    min-width: 16px;
-    height: 16px;
-    padding: 0 4px;
+    min-width: var(--artdeco-spacing-4);
+    height: var(--artdeco-spacing-4);
+    padding: 0 var(--artdeco-spacing-1);
     background: var(--artdeco-up); /* Use ArtDeco up color */
     border-radius: var(--artdeco-radius-full); /* Use ArtDeco full radius */
     font-size: var(--artdeco-text-xs); /* Use ArtDeco text size */
     font-weight: var(--artdeco-font-semibold); /* Use ArtDeco font weight */
-    line-height: 16px;
+    line-height: var(--artdeco-spacing-4);
     text-align: center;
     color: var(--artdeco-fg-primary);
   }
@@ -136,9 +136,9 @@
 
 // ========== 侧边栏 ==========
 .layout-sidebar {
-  width: var(--sidebar-width, 240px);
+  width: var(--sidebar-width, calc(var(--artdeco-spacing-20) * 3));
   background: var(--artdeco-bg-base); /* Use ArtDeco base background */
-  border-right: 2px solid var(--artdeco-gold-primary); /* Use ArtDeco gold border */
+  border-right: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-primary); /* Use ArtDeco gold border */
   overflow-y: auto;
   transition: width var(--artdeco-transition-base) ease; /* Use ArtDeco transition */
   flex-shrink: 0;
@@ -146,7 +146,8 @@
   @include artdeco-corner-brackets; /* Add corner brackets */
 
   .sidebar-collapsed & {
-    width: var(--sidebar-collapsed-width, 64px);
+    width: var(--sidebar-collapsed-width, var(--artdeco-spacing-16));
+    
 
     .nav-label,
     .nav-badge {
@@ -171,7 +172,7 @@
 }
 
 .nav-item {
-  margin-bottom: 2px;
+  margin-bottom: calc(var(--artdeco-spacing-1) / 2);
 }
 
 .nav-link {
@@ -196,12 +197,12 @@
     background: linear-gradient(90deg, var(--artdeco-gold-dim) 0%, transparent 100%); /* ArtDeco gradient */
     color: var(--artdeco-gold-primary); /* Use ArtDeco gold primary */
     box-shadow: var(--artdeco-glow-subtle); /* Apply subtle glow */
-    border-left: 4px solid var(--artdeco-gold-primary);
+    border-left: var(--artdeco-spacing-1) solid var(--artdeco-gold-primary);
   }
 }
 
 .nav-icon {
-  font-size: 20px;
+  font-size: var(--artdeco-spacing-5);
   color: var(--artdeco-gold-primary); /* ArtDeco icon color */
 }
 
@@ -212,7 +213,7 @@
 }
 
 .nav-badge {
-  padding: 2px 8px;
+  padding: calc(var(--artdeco-spacing-1) / 2) var(--artdeco-spacing-2);
   background: var(--artdeco-up); /* Use ArtDeco up color */
   border-radius: var(--artdeco-radius-full); /* Use ArtDeco full radius */
   font-size: var(--artdeco-text-xs); /* Use ArtDeco text size */
@@ -231,7 +232,7 @@
   padding: var(--artdeco-spacing-lg); /* Use ArtDeco spacing */
   min-height: calc(100vh - var(--header-height) - var(--artdeco-spacing-xl)); /* Use ArtDeco spacing */
 
-  @include artdeco-geometric-corners(var(--artdeco-gold-muted), 16px, 1px); /* Add subtle geometric corners */
+  @include artdeco-geometric-corners(var(--artdeco-gold-muted), var(--artdeco-spacing-4), var(--artdeco-spacing-px)); /* Add subtle geometric corners */
 
   background: var(--artdeco-bg-card);
   border-radius: var(--artdeco-radius-sm);
@@ -245,12 +246,12 @@
 }
 
 // ========== 桌面端优化 (1280px+) ==========
-@media (width >= 1280px) {
+@media (width >= calc(var(--artdeco-spacing-32) * 10)) {
   .layout-sidebar {
-    width: 280px;
+    width: calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-6));
 
     &.sidebar-collapsed {
-      width: var(--sidebar-collapsed-width, 64px);
+      width: var(--sidebar-collapsed-width, var(--artdeco-spacing-16));
     }
   }
 
@@ -260,12 +261,12 @@
 }
 
 // ========== 大屏幕优化 (1920px+) ==========
-@media (width >= 1920px) {
+@media (width >= calc(var(--artdeco-spacing-32) * 15)) {
   .layout-sidebar {
-    width: 320px;
+    width: calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-16));
 
     &.sidebar-collapsed {
-      width: 80px;
+      width: var(--artdeco-spacing-20);
     }
   }
 
@@ -274,7 +275,7 @@
   }
 
   .content-wrapper {
-    max-width: 1800px;
+    max-width: calc(var(--artdeco-spacing-20) * 22 + var(--artdeco-spacing-10));
     margin: 0 auto;
   }
 }
