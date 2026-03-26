@@ -34,7 +34,7 @@
 
 ### Current Architecture Issues
 
-基于 `docs/reports/WEB_FRONTEND_MENU_ARCHITECTURE_OPTIMIZATION_V2.md` 和评审报告 `docs/reviews/WEB_FRONTEND_MENU_ARCHITECTURE_REVIEW.md` 的分析：
+基于 `docs/reports/WEB_FRONTEND_MENU_ARCHITECTURE_OPTIMIZATION_V2.md` 和评审报告 `docs/reports/reviews/WEB_FRONTEND_MENU_ARCHITECTURE_REVIEW.md` 的分析：
 
 #### 1. 菜单结构混乱 (P0 - Critical)
 
@@ -91,7 +91,7 @@
 
 ### Opportunity
 
-**评审建议**（来源：`docs/reviews/WEB_FRONTEND_MENU_ARCHITECTURE_REVIEW.md`）：
+**评审建议**（来源：`docs/reports/reviews/WEB_FRONTEND_MENU_ARCHITECTURE_REVIEW.md`）：
 1. ⚡ Command Palette：Ctrl+K快速导航，提升30%专家用户效率
 2. 🎨 Design Token：全局CSS变量系统，减少90%样式冲突
 3. 🔌 WebSocket管理：单例模式，避免连接数爆炸
@@ -609,7 +609,7 @@ npm install && npm run build
 ## Related Documentation
 
 - **V2优化方案**: `docs/reports/WEB_FRONTEND_MENU_ARCHITECTURE_OPTIMIZATION_V2.md`
-- **评审报告**: `docs/reviews/WEB_FRONTEND_MENU_ARCHITECTURE_REVIEW.md`
+- **评审报告**: `docs/reports/reviews/WEB_FRONTEND_MENU_ARCHITECTURE_REVIEW.md`
 - **评审建议实施指南**: `docs/reports/WEB_FRONTEND_OPTIMIZATION_REVIEW_RECOMMENDATIONS.md`
 - **页面结构文档**: `docs/reports/WEB_FRONTEND_PAGE_STRUCTURE.md`
 - **API映射表**: `docs/reports/WEB_FRONTEND_API_MAPPING_TABLE.md`

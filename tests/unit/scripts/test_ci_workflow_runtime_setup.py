@@ -38,7 +38,7 @@ def test_api_automation_discovery_uses_python_module_pip_and_backend_runtime_dep
     assert "FRONTEND_PORT=3020" in workflow
     assert "FRONTEND_BACKUP_PORT=3021" in workflow
     assert "BASE_URL=http://localhost:8000" in workflow
-    assert "bash ./run-api-tests.sh" in workflow
+    assert "bash ./scripts/tests/run-api-tests.sh" in workflow
 
 
 def test_api_automation_discovery_sets_required_backend_runtime_env_vars() -> None:
@@ -919,12 +919,12 @@ def test_python_type_check_workflow_uses_non_blocking_pr_comments_and_no_invalid
     assert "mypy-coverage-typing" not in coverage_section
 
 
-def test_directory_compliance_uses_current_root_budget_and_excludes_api_wrapper() -> None:
+def test_directory_compliance_uses_current_root_budget_without_api_wrapper_exception() -> None:
     workflow = _read_workflow("directory-compliance.yml")
 
     assert "MAX_ROOT_DIRS=15" in workflow
     assert "MAX_ROOT_FILES=32" in workflow
-    assert "! -name 'run-api-tests.sh'" in workflow
+    assert "! -name 'run-api-tests.sh'" not in workflow
 
 
 def test_p0_quality_gate_scopes_pr_checks_to_changed_files() -> None:

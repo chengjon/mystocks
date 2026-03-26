@@ -232,7 +232,7 @@ This document breaks down the six-phase optimization plan into small, verifiable
     - Created migration record document
   - **Files Modified**:
     - web/frontend/src/router/index.js (+285, -231 lines)
-    - docs/guides/WEB_ROUTER_MIGRATION_RECORD.md (new)
+    - docs/guides/web/WEB_ROUTER_MIGRATION_RECORD.md (new)
   - **Routes Affected**:
     - MainLayout: 17 routes (dashboard, analysis, stocks, settings, etc.)
     - MarketLayout: 3 routes (market/list, tdx-market, realtime)

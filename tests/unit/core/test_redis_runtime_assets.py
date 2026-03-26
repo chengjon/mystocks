@@ -8,6 +8,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 
 def test_monitoring_stack_assets_include_host_reachable_redis() -> None:
     for rel in [
+        "docker/monitoring-stack.yml",
         "config/docker/monitoring-stack.yml",
         "config/docker-infra/monitoring-stack.yml",
     ]:
@@ -19,6 +20,7 @@ def test_monitoring_stack_assets_include_host_reachable_redis() -> None:
 
 def test_docker_start_scripts_wait_for_redis_runtime_health() -> None:
     for rel in [
+        "docker/scripts/start-all.sh",
         "config/docker/scripts/start-all.sh",
         "config/docker-infra/scripts/start-all.sh",
     ]:

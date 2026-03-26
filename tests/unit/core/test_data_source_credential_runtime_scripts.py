@@ -8,6 +8,7 @@ REPO_ROOT = Path('/opt/claude/mystocks_spec')
 
 def test_start_scripts_load_local_data_source_env_file() -> None:
     for rel in [
+        'docker/scripts/start-all.sh',
         'config/docker/scripts/start-all.sh',
         'config/docker-infra/scripts/start-all.sh',
     ]:
