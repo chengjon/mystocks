@@ -1,27 +1,27 @@
 
-  padding: 24px;
+  padding: var(--spacing-lg);
   background: var(--bg-primary);
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgb(212 175 55 / 2%) 10px, rgb(212 175 55 / 2%) 11px);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent calc(var(--spacing-sm) + var(--radius-md)), color-mix(in srgb, var(--gold-primary) 2%, transparent) calc(var(--spacing-sm) + var(--radius-md)), color-mix(in srgb, var(--gold-primary) 2%, transparent) calc(var(--spacing-sm) + var(--radius-md) + var(--radius-sm)));
   min-height: 100vh;
 
   .page-header {
-    margin-bottom: 32px;
+    margin-bottom: var(--spacing-xl);
   }
 
   .error-message {
-    background: rgb(255 82 82 / 10%);
+    background: color-mix(in srgb, var(--rise) 10%, transparent);
     border: 1px solid var(--rise);
     color: var(--rise);
-    padding: 16px;
-    border-left: 4px solid var(--rise);
-    margin-bottom: 24px;
+    padding: var(--spacing-md);
+    border-left: var(--spacing-xs) solid var(--rise);
+    margin-bottom: var(--spacing-lg);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: calc(var(--spacing-sm) + var(--spacing-xs));
 
     .error-icon {
-      width: 24px;
-      height: 24px;
+      width: var(--spacing-lg);
+      height: var(--spacing-lg);
       flex-shrink: 0;
     }
   }
@@ -29,41 +29,41 @@
   .loading-indicator {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--spacing-sm);
     color: var(--gold-primary);
     font-family: var(--font-body);
-    font-size: 14px;
+    font-size: var(--font-size-sm);
     font-weight: 600;
 
     .loading-icon {
-      width: 20px;
-      height: 20px;
+      width: calc(var(--spacing-md) + var(--spacing-xs));
+      height: calc(var(--spacing-md) + var(--spacing-xs));
       animation: spin 2s linear infinite;
     }
   }
 
   .monitor-summary {
-    margin-bottom: 32px;
+    margin-bottom: var(--spacing-xl);
 
     .summary-card {
-      margin-bottom: 24px;
+      margin-bottom: var(--spacing-lg);
 
       &.status-normal {
         border-color: var(--fall);
       }
 
       &.status-warning {
-        border-color: #e6a23c;
+        border-color: var(--gold-primary);
       }
 
       .summary-content {
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: calc(var(--spacing-md) + var(--spacing-xs));
 
         .summary-icon {
-          width: 64px;
-          height: 64px;
+          width: var(--spacing-3xl);
+          height: var(--spacing-3xl);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -80,7 +80,7 @@
         }
 
         &.status-warning .summary-icon svg {
-          color: #e6a23c;
+          color: var(--gold-primary);
         }
 
         .summary-info {
@@ -88,17 +88,17 @@
 
           .summary-title {
             font-family: var(--font-display);
-            font-size: 24px;
+            font-size: var(--font-size-2xl);
             font-weight: 700;
             color: var(--gold-primary);
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
+            letter-spacing: var(--radius-md);
+            margin-bottom: var(--spacing-sm);
           }
 
           .summary-description {
             font-family: var(--font-body);
-            font-size: 14px;
+            font-size: var(--font-size-sm);
             color: var(--text-secondary);
           }
         }
@@ -107,26 +107,26 @@
 
     .summary-details {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(calc(var(--spacing-2xl) * 4 + var(--spacing-xs) * 2), 1fr));
+      gap: var(--spacing-md);
 
       .detail-card {
         .detail-content {
           text-align: center;
-          padding: 20px;
+          padding: calc(var(--spacing-md) + var(--spacing-xs));
 
           .detail-label {
             font-family: var(--font-body);
-            font-size: 12px;
+            font-size: var(--font-size-xs);
             color: var(--gold-muted);
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 12px;
+            letter-spacing: var(--radius-md);
+            margin-bottom: calc(var(--spacing-sm) + var(--spacing-xs));
           }
 
           .detail-value {
             font-family: var(--font-mono);
-            font-size: 28px;
+            font-size: calc(var(--spacing-lg) + var(--spacing-xs));
             font-weight: 700;
 
             &.status-normal {
@@ -134,7 +134,7 @@
             }
 
             &.status-warning {
-              color: #e6a23c;
+              color: var(--gold-primary);
             }
           }
         }
@@ -144,55 +144,55 @@
 
   .section-title {
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: var(--spacing-lg);
 
     span {
       font-family: var(--font-display);
-      font-size: 28px;
+      font-size: calc(var(--spacing-lg) + var(--spacing-xs));
       font-weight: 700;
       color: var(--gold-primary);
       text-transform: uppercase;
-      letter-spacing: 3px;
+      letter-spacing: calc(var(--radius-md) + var(--radius-sm));
       display: block;
     }
 
     .subtitle {
       font-family: var(--font-body);
-      font-size: 11px;
+      font-size: calc(var(--font-size-xs) - var(--radius-sm));
       color: var(--artde-gold-muted);
-      letter-spacing: 6px;
+      letter-spacing: calc(var(--spacing-sm) - var(--radius-md));
       text-transform: uppercase;
-      margin-top: 4px;
+      margin-top: var(--spacing-xs);
     }
   }
 
   .services-section {
-    margin-bottom: 32px;
+    margin-bottom: var(--spacing-xl);
 
     .services-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(calc(var(--spacing-2xl) * 8 + var(--spacing-md)), 1fr));
+      gap: calc(var(--spacing-md) + var(--spacing-xs));
 
       .service-card {
         .card-header {
           .service-status {
             font-family: var(--font-body);
-            font-size: 11px;
-            padding: 6px 16px;
+            font-size: calc(var(--font-size-xs) - var(--radius-sm));
+            padding: calc(var(--spacing-sm) - var(--radius-md)) var(--spacing-md);
             text-transform: uppercase;
             letter-spacing: 1px;
 
             &.status-normal {
-              background: rgb(0 230 118 / 10%);
+              background: color-mix(in srgb, var(--fall) 10%, transparent);
               color: var(--fall);
               border: 1px solid var(--fall);
             }
 
             &.status-warning {
-              background: rgb(230 162 60 / 10%);
-              color: #e6a23c;
-              border: 1px solid #e6a23c;
+              background: color-mix(in srgb, var(--gold-primary) 10%, transparent);
+              color: var(--gold-primary);
+              border: 1px solid var(--gold-primary);
             }
           }
         }
@@ -200,20 +200,20 @@
         .service-content {
           display: flex;
           justify-content: space-between;
-          gap: 20px;
+          gap: calc(var(--spacing-md) + var(--spacing-xs));
 
           .service-info {
             flex: 1;
 
             .info-item {
-              margin-bottom: 12px;
+              margin-bottom: calc(var(--spacing-sm) + var(--spacing-xs));
               display: flex;
               align-items: center;
-              gap: 8px;
+              gap: var(--spacing-sm);
 
               .info-label {
                 font-family: var(--font-body);
-                font-size: 12px;
+                font-size: var(--font-size-xs);
                 color: var(--gold-muted);
                 text-transform: uppercase;
                 letter-spacing: 1px;
@@ -222,7 +222,7 @@
 
               .info-value {
                 font-family: var(--font-body);
-                font-size: 14px;
+                font-size: var(--font-size-sm);
                 color: var(--artde-text-primary);
                 word-break: break-all;
 
@@ -236,7 +236,7 @@
           .service-actions {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: calc(var(--spacing-sm) + var(--spacing-xs));
 
             .button,
             a.button {
@@ -251,7 +251,7 @@
   .history-section {
     .history-table-card {
       .card-body {
-        min-height: 200px;
+        min-height: calc(var(--spacing-2xl) * 4 + var(--spacing-xs) * 2);
       }
     }
   }
@@ -265,84 +265,84 @@
     &::after {
       content: '';
       position: absolute;
-      width: 16px;
-      height: 16px;
-      border: 2px solid var(--gold-primary);
+      width: var(--spacing-md);
+      height: var(--spacing-md);
+      border: var(--radius-md) solid var(--gold-primary);
       z-index: 1;
     }
 
     &::before {
-      top: 12px;
-      left: 12px;
+      top: calc(var(--spacing-sm) + var(--spacing-xs));
+      left: calc(var(--spacing-sm) + var(--spacing-xs));
       border-right: none;
       border-bottom: none;
     }
 
     &::after {
-      bottom: 12px;
-      right: 12px;
+      bottom: calc(var(--spacing-sm) + var(--spacing-xs));
+      right: calc(var(--spacing-sm) + var(--spacing-xs));
       border-left: none;
       border-top: none;
     }
 
     .card-header {
-      padding: 16px 24px;
+      padding: var(--spacing-md) var(--spacing-lg);
       border-bottom: 1px solid var(--gold-dim);
 
       .header-title {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 12px;
+        gap: calc(var(--spacing-sm) + var(--spacing-xs));
 
         .title-text {
           font-family: var(--font-body);
-          font-size: 16px;
+          font-size: var(--font-size-base);
           font-weight: 600;
           color: var(--gold-primary);
           text-transform: uppercase;
-          letter-spacing: 2px;
+          letter-spacing: var(--radius-md);
         }
 
         .title-sub {
           font-family: var(--font-body);
-          font-size: 10px;
+          font-size: calc(var(--font-size-xs) - var(--radius-md));
           color: var(--gold-muted);
           text-transform: uppercase;
-          letter-spacing: 3px;
+          letter-spacing: calc(var(--radius-md) + var(--radius-sm));
           display: block;
-          margin-top: 2px;
+          margin-top: var(--radius-md);
         }
       }
     }
 
     .card-body {
-      padding: 24px;
+      padding: var(--spacing-lg);
     }
   }
 
   .button {
-    padding: 12px 24px;
+    padding: calc(var(--spacing-sm) + var(--spacing-xs)) var(--spacing-lg);
     font-family: var(--font-body);
-    font-size: 14px;
+    font-size: var(--font-size-sm);
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    border: 2px solid var(--gold-primary);
+    letter-spacing: var(--radius-md);
+    border: var(--radius-md) solid var(--gold-primary);
     background: transparent;
     color: var(--gold-primary);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: var(--spacing-sm);
     transition: all 0.3s ease;
     position: relative;
     text-decoration: none;
 
     svg {
-      width: 18px;
-      height: 18px;
+      width: calc(var(--font-size-base) + var(--radius-md));
+      height: calc(var(--font-size-base) + var(--radius-md));
     }
 
     &:hover:not(:disabled) {
@@ -376,23 +376,23 @@
     }
 
     &.button-sm {
-      padding: 8px 16px;
-      font-size: 12px;
+      padding: var(--spacing-sm) var(--spacing-md);
+      font-size: var(--font-size-xs);
       letter-spacing: 1px;
 
       svg {
-        width: 16px;
-        height: 16px;
+        width: var(--spacing-md);
+        height: var(--spacing-md);
       }
     }
 
     &::before {
       content: '';
       position: absolute;
-      top: 4px;
-      left: 4px;
-      width: 8px;
-      height: 8px;
+      top: var(--spacing-xs);
+      left: var(--spacing-xs);
+      width: var(--spacing-sm);
+      height: var(--spacing-sm);
       border-left: 1px solid currentColor;
       border-top: 1px solid currentColor;
     }
@@ -407,8 +407,8 @@
     }
   }
 
-  @media (width <= 768px) {
-    padding: 16px;
+  @media (width <= calc(var(--breakpoint-sm) - var(--spacing-3xl) * 8)) {
+    padding: var(--spacing-md);
 
     .services-section {
       .services-grid {

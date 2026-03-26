@@ -16,9 +16,9 @@
     repeating-linear-gradient(
       45deg,
       transparent,
-      transparent 10px,
-      rgb(212 175 55 / 2%) 10px,
-      rgb(212 175 55 / 2%) 11px
+      transparent calc(var(--artdeco-spacing-5) / 2),
+      color-mix(in srgb, var(--artdeco-gold-primary) 2%, transparent) calc(var(--artdeco-spacing-5) / 2),
+      color-mix(in srgb, var(--artdeco-gold-primary) 2%, transparent) calc(var(--artdeco-spacing-5) / 2 + var(--artdeco-spacing-px))
     );
   pointer-events: none;
   z-index: -1;
@@ -38,7 +38,7 @@
   text-transform: uppercase;
   letter-spacing: 0.2em;
   margin: 0 0 var(--space-md) 0;
-  text-shadow: 0 0 20px rgb(212 175 55 / 30%);
+  text-shadow: 0 0 var(--artdeco-spacing-5) var(--artdeco-gold-opacity-shadow);
 }
 
 .page-subtitle {
@@ -51,22 +51,22 @@
 
 /* Toolbar Section */
 .toolbar-section {
-  background: rgb(15 17 21 / 80%);
-  border: 1px solid rgb(247 147 26 / 30%);
-  padding: 20px;
+  background: color-mix(in srgb, var(--artdeco-bg-base) 80%, transparent);
+  border: 1px solid var(--artdeco-gold-opacity-30);
+  padding: var(--artdeco-spacing-5);
   position: relative;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: var(--artdeco-radius-md);
 }
 
 .toolbar-section::before {
   content: '';
   position: absolute;
-  inset: 4px 4px 4px 4px;
-  border: 1px solid rgb(247 147 26 / 20%);
+  inset: var(--artdeco-spacing-1) var(--artdeco-spacing-1) var(--artdeco-spacing-1) var(--artdeco-spacing-1);
+  border: 1px solid var(--artdeco-gold-opacity-20);
   pointer-events: none;
   opacity: 30%;
-  border-radius: 4px;
+  border-radius: var(--artdeco-spacing-1);
 }
 
 .toolbar-actions {
@@ -84,11 +84,11 @@
 }
 
 .stock-selector {
-  width: 300px;
+  width: calc(var(--artdeco-spacing-20) * 3 + var(--artdeco-spacing-10));
 }
 
 .date-selector {
-  width: 320px;
+  width: calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-16));
 }
 
 .period-selector {
@@ -98,46 +98,46 @@
 
 .button-group {
   display: flex;
-  gap: 12px;
+  gap: var(--artdeco-spacing-3);
   margin-left: auto;
 }
 
 .web3-radio-group {
   display: flex;
-  gap: 4px;
-  background: rgb(247 147 26 / 5%);
-  border: 1px solid rgb(247 147 26 / 20%);
-  border-radius: 6px;
-  padding: 2px;
+  gap: var(--artdeco-spacing-1);
+  background: var(--artdeco-gold-opacity-05);
+  border: 1px solid var(--artdeco-gold-opacity-20);
+  border-radius: calc(var(--artdeco-spacing-3) / 2);
+  padding: calc(var(--artdeco-spacing-1) / 2);
 }
 
 .period-btn {
-  min-width: 60px;
+  min-width: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
 }
 
 /* Chart Section */
 .chart-section {
   flex: 1;
-  min-height: 600px;
+  min-height: calc(var(--artdeco-spacing-32) * 4 + var(--artdeco-spacing-20) + var(--artdeco-spacing-2));
 }
 
 /* Stats Section */
 .stats-section {
-  background: rgb(15 17 21 / 80%);
-  border: 1px solid rgb(247 147 26 / 30%);
+  background: color-mix(in srgb, var(--artdeco-bg-base) 80%, transparent);
+  border: 1px solid var(--artdeco-gold-opacity-30);
   position: relative;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: var(--artdeco-radius-md);
 }
 
 .stats-section::before {
   content: '';
   position: absolute;
-  inset: 4px 4px 4px 4px;
-  border: 1px solid rgb(247 147 26 / 20%);
+  inset: var(--artdeco-spacing-1) var(--artdeco-spacing-1) var(--artdeco-spacing-1) var(--artdeco-spacing-1);
+  border: 1px solid var(--artdeco-gold-opacity-20);
   pointer-events: none;
   opacity: 30%;
-  border-radius: 4px;
+  border-radius: var(--artdeco-spacing-1);
 }
 
 .stats-grid {
@@ -182,16 +182,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgb(247 147 26 / 30%);
+  margin-bottom: var(--artdeco-spacing-4);
+  padding-bottom: var(--artdeco-spacing-3);
+  border-bottom: 1px solid var(--artdeco-gold-opacity-30);
 
   .card-title {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
+    font-size: var(--artdeco-text-sm);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #F7931A;
+    color: var(--artdeco-gold-primary);
   }
 }

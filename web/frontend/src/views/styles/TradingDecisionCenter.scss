@@ -3,7 +3,7 @@
 .decision-header {
   padding: var(--artdeco-spacing-4);
   text-align: center;
-  border-bottom: 2px solid var(--artdeco-border-gold);
+  border-bottom: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px)) solid var(--artdeco-border-gold);
   margin-bottom: var(--artdeco-spacing-4);
   background: var(--artdeco-bg-elevated);
   
@@ -53,17 +53,17 @@
 
   &:hover {
     color: var(--artdeco-gold-primary);
-    border-bottom: 3px solid var(--artdeco-border-gold);
+    border-bottom: calc(var(--artdeco-radius-sm) + var(--artdeco-spacing-px)) solid var(--artdeco-border-gold);
   }
 
   &.active {
     color: var(--artdeco-gold-primary);
-    border-bottom: 3px solid var(--artdeco-border-gold);
+    border-bottom: calc(var(--artdeco-radius-sm) + var(--artdeco-spacing-px)) solid var(--artdeco-border-gold);
   }
 }
 
 .decision-content {
-  min-height: calc(100vh - 180px);  // 减去header高度
+  min-height: calc(100vh - (var(--artdeco-spacing-20) + var(--artdeco-spacing-20) + var(--artdeco-spacing-6) - var(--artdeco-spacing-1)));  // 减去header高度
   padding: var(--artdeco-spacing-4);
   background-color: var(--artdeco-bg-global);
 }
@@ -71,12 +71,12 @@
 // Tab Content Areas
 .overview-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-20) + var(--artdeco-spacing-20) + var(--artdeco-spacing-20) + var(--artdeco-spacing-20)), 1fr));
   gap: var(--artdeco-spacing-compact-md);
 }
 
 .tab-content {
-  min-height: calc(100vh - 250px);
+  min-height: calc(100vh - (var(--artdeco-spacing-32) * 2 - var(--artdeco-spacing-4) + var(--artdeco-spacing-2) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px)));
 }
 
 // Quick Actions Grid
@@ -99,7 +99,7 @@
   &:hover {
     border-color: var(--artdeco-border-gold);
     box-shadow: var(--artdeco-shadow-md), var(--artdeco-glow-subtle);
-    transform: translateY(-4px);
+    transform: translateY(calc(var(--artdeco-spacing-1) * -1));
   }
 }
 
@@ -124,8 +124,8 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border: 1px solid var(--artdeco-border-gold);
-  padding: 6px 16px;
-  height: 32px;
+  padding: calc(var(--artdeco-spacing-1) + var(--artdeco-radius-sm)) var(--artdeco-spacing-4);
+  height: var(--artdeco-spacing-8);
   cursor: pointer;
   box-shadow: var(--artdeco-shadow-sm), var(--artdeco-glow-subtle);
   transition: all var(--artdeco-transition-base);
@@ -134,7 +134,7 @@
     background-color: var(--artdeco-bronze) !important;
     border-color: var(--artdeco-bronze) !important;
     box-shadow: var(--artdeco-shadow-md), var(--artdeco-glow-intense);
-    transform: translateY(-2px);
+    transform: translateY(calc(var(--artdeco-radius-sm) * -1));
   }
 
   &:active {
@@ -145,7 +145,7 @@
 
 // Chart Container
 .chart-container {
-  min-height: 400px;
+  min-height: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-20) + var(--artdeco-spacing-20) + var(--artdeco-spacing-20) + var(--artdeco-spacing-20));
   background-color: var(--artdeco-bg-card);
   border: 1px solid var(--artdeco-border-default);
   border-radius: var(--artdeco-radius-md);
@@ -194,6 +194,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 400px;
+  min-height: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-20) + var(--artdeco-spacing-20) + var(--artdeco-spacing-20) + var(--artdeco-spacing-20));
   color: var(--artdeco-fg-muted);
 }

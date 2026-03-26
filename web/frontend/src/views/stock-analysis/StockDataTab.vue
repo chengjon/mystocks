@@ -216,13 +216,13 @@ const { activeTab, fileFormatData, dayStructureData, dayParserCode } = props
 
 /* Obsidian Table Theme */
 .obsidian-table {
-  --el-table-bg-color: #0A0A0A;
-  --el-table-tr-bg-color: #0A0A0A;
-  --el-table-header-bg-color: #141414;
+  --el-table-bg-color: var(--artdeco-bg-global);
+  --el-table-tr-bg-color: var(--artdeco-bg-global);
+  --el-table-header-bg-color: var(--artdeco-bg-card);
   --el-table-border-color: var(--artdeco-border-default);
   --el-table-text-color: var(--artdeco-fg-primary);
   --el-table-header-text-color: var(--artdeco-gold-primary);
-  --el-table-row-hover-bg-color: rgb(212 175 55 / 5%);
+  --el-table-row-hover-bg-color: var(--artdeco-gold-opacity-05);
   
   border: 1px solid var(--artdeco-border-default);
   border-radius: var(--artdeco-radius-none);
@@ -241,11 +241,11 @@ const { activeTab, fileFormatData, dayStructureData, dayParserCode } = props
 }
 
 .artdeco-tabs {
-  background: #141414;
+  background: var(--artdeco-bg-card);
   border: 1px solid var(--artdeco-border-default);
   
   :deep(.el-tabs__header) {
-    background-color: #0A0A0A;
+    background-color: var(--artdeco-bg-global);
     border-bottom: 1px solid var(--artdeco-border-default);
   }
   
@@ -256,16 +256,16 @@ const { activeTab, fileFormatData, dayStructureData, dayParserCode } = props
     
     &.is-active {
       color: var(--artdeco-gold-primary);
-      background-color: #141414;
+      background-color: var(--artdeco-bg-card);
     }
   }
 }
 
 .code-block {
   width: 100%;
-  height: 300px;
-  background-color: #050505;
-  color: #D4AF37;
+  height: calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-10));
+  background-color: var(--artdeco-bg-global);
+  color: var(--artdeco-gold-primary);
   border: 1px solid var(--artdeco-border-default);
   padding: var(--artdeco-spacing-4);
   font-family: var(--font-mono);
@@ -276,7 +276,7 @@ const { activeTab, fileFormatData, dayStructureData, dayParserCode } = props
 }
 
 .artdeco-alert {
-  background-color: rgb(212 175 55 / 5%);
+  background-color: var(--artdeco-gold-opacity-05);
   border: 1px solid var(--artdeco-gold-dim);
   color: var(--artdeco-gold-primary);
   
@@ -299,4 +299,3 @@ const { activeTab, fileFormatData, dayStructureData, dayParserCode } = props
   }
 }
 </style>
-

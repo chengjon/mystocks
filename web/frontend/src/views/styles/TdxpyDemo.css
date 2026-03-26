@@ -1,7 +1,7 @@
 
 .tdxpy-demo {
   padding: var(--spacing-6);
-  max-width: 1400px;
+  max-width: calc(var(--artdeco-spacing-32) * 10 + var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
   margin: 0 auto;
   min-height: 100vh;
   position: relative;
@@ -23,14 +23,14 @@
       var(--accent-gold) 0px,
       var(--accent-gold) 1px,
       transparent 1px,
-      transparent 10px
+      transparent calc(var(--artdeco-spacing-5) / 2)
     ),
     repeating-linear-gradient(
       -45deg,
       var(--accent-gold) 0px,
       var(--accent-gold) 1px,
       transparent 1px,
-      transparent 10px
+      transparent calc(var(--artdeco-spacing-5) / 2)
     );
 }
 
@@ -141,7 +141,7 @@
 }
 
 .profiling-section :deep(.el-descriptions__label) {
-  background: rgb(212 175 55 / 10%) !important;
+  background: var(--artdeco-gold-opacity-10) !important;
   color: var(--fg-muted) !important;
   font-family: var(--font-display);
   font-size: var(--font-size-xs);
@@ -157,38 +157,38 @@
 }
 
 .content-section p {
-  color: #606266;
+  color: var(--artdeco-fg-muted);
 }
 
 .content-section ul {
-  padding-left: 25px;
-  margin: 10px 0;
+  padding-left: calc(var(--artdeco-spacing-12) + calc(var(--artdeco-spacing-1) / 2));
+  margin: calc(var(--artdeco-spacing-5) / 2) 0;
 }
 
 .content-section ul li {
-  margin: 5px 0;
+  margin: calc(var(--artdeco-spacing-5) / 4) 0;
 }
 
 .code-block {
-  background: #f5f7fa;
-  border: 1px solid #e4e7ed;
-  border-radius: 4px;
-  padding: 15px;
+  background: var(--artdeco-bg-elevated);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-spacing-1);
+  padding: calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-5) / 4);
   font-family: 'Courier New', monospace;
-  font-size: 13px;
+  font-size: calc(var(--artdeco-spacing-6) - calc(var(--artdeco-spacing-1) / 2));
   line-height: 1.6;
   overflow-x: auto;
   white-space: pre;
-  color: #303133;
+  color: var(--artdeco-fg-primary);
 }
 
 .tab-content,
 .api-content {
-  padding: 15px;
+  padding: calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-5) / 4);
 }
 
 :deep(.el-card__body) {
-  padding: 15px;
+  padding: calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-5) / 4);
 }
 
 :deep(.el-collapse-item__content) {
@@ -197,5 +197,5 @@
 
 :deep(.el-timeline-item__timestamp) {
   font-weight: bold;
-  color: #409eff;
+  color: var(--artdeco-info);
 }

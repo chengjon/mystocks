@@ -23,14 +23,14 @@
         var(--accent-gold) 0px,
         var(--accent-gold) 1px,
         transparent 1px,
-        transparent 10px
+        transparent calc(var(--spacing-sm) + var(--radius-md))
       ),
       repeating-linear-gradient(
         -45deg,
         var(--accent-gold) 0px,
         var(--accent-gold) 1px,
         transparent 1px,
-        transparent 10px
+        transparent calc(var(--spacing-sm) + var(--radius-md))
       );
   }
 
@@ -62,7 +62,7 @@
 
   .settings-card {
     background: var(--bg-card);
-    border: 1px solid rgb(212 175 55 / 30%);
+    border: 1px solid var(--color-accent-alpha-70);
     border-radius: var(--radius-none);
     padding: var(--spacing-6);
     position: relative;
@@ -70,7 +70,7 @@
   }
 
   .settings-container {
-    max-width: 600px;
+    max-width: calc(var(--spacing-2xl) * 12 + var(--spacing-lg));
     margin: 0 auto;
 
     .form-group {
@@ -84,28 +84,28 @@
         color: var(--fg-primary);
         background: transparent;
         border: none;
-        border-bottom: 2px solid var(--accent-gold);
+        border-bottom: var(--radius-md) solid var(--accent-gold);
         border-radius: var(--radius-none);
         transition: all var(--transition-base);
 
         &[readonly] {
           color: var(--fg-muted);
-          background: rgb(212 175 55 / 5%);
-          border-bottom-color: rgb(212 175 55 / 20%);
+          background: color-mix(in srgb, var(--color-accent) 5%, transparent);
+          border-bottom-color: var(--color-accent-alpha-80);
         }
 
         &:focus {
           outline: none;
           border-bottom-color: var(--accent-gold-light);
-          box-shadow: 0 4px 10px rgb(212 175 55 / 20%);
+          box-shadow: 0 var(--spacing-xs) calc(var(--spacing-sm) + var(--radius-md)) var(--color-accent-alpha-80);
         }
       }
 
       .font-preview {
         padding: var(--spacing-5);
-        border: 1px solid rgb(212 175 55 / 30%);
+        border: 1px solid var(--color-accent-alpha-70);
         border-radius: var(--radius-none);
-        background: rgb(212 175 55 / 5%);
+        background: color-mix(in srgb, var(--color-accent) 5%, transparent);
 
         p {
           margin: var(--spacing-2) 0;
@@ -129,8 +129,8 @@
   }
 
   .stats-grid {
-    background: rgb(212 175 55 / 5%);
-    border: 1px solid rgb(212 175 55 / 20%);
+    background: color-mix(in srgb, var(--color-accent) 5%, transparent);
+    border: 1px solid var(--color-accent-alpha-80);
     border-radius: var(--radius-none);
     padding: var(--spacing-5);
     margin-bottom: var(--spacing-4);
@@ -171,7 +171,7 @@
   .tabs {
     :deep(.el-tabs__nav-wrap) {
       &::after {
-        background: rgb(212 175 55 / 30%);
+        background: var(--color-accent-alpha-70);
       }
     }
 
@@ -188,7 +188,7 @@
 
       &.is-active {
         color: var(--accent-gold);
-        border-bottom: 2px solid var(--accent-gold) !important;
+        border-bottom: var(--radius-md) solid var(--accent-gold) !important;
       }
     }
 
@@ -202,13 +202,13 @@
 
     :deep(.el-table__header) {
       th {
-        background: rgb(212 175 55 / 10%) !important;
+        background: var(--color-accent-alpha-90) !important;
         color: var(--accent-gold) !important;
         font-family: var(--font-display);
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: var(--tracking-wider);
-        border-bottom: 2px solid var(--accent-gold) !important;
+        border-bottom: var(--radius-md) solid var(--accent-gold) !important;
       }
     }
 
@@ -218,11 +218,11 @@
         transition: background var(--transition-base);
 
         &:hover {
-          background: rgb(212 175 55 / 5%) !important;
+          background: color-mix(in srgb, var(--color-accent) 5%, transparent) !important;
         }
 
         td {
-          border-bottom: 1px solid rgb(212 175 55 / 20%) !important;
+          border-bottom: 1px solid var(--color-accent-alpha-80) !important;
           color: var(--fg-primary);
         }
       }
@@ -239,7 +239,7 @@
       .btn-next,
       .el-pager li {
         background: transparent !important;
-        border: 1px solid rgb(212 175 55 / 30%) !important;
+        border: 1px solid var(--color-accent-alpha-70) !important;
         border-radius: var(--radius-none) !important;
         color: var(--fg-primary) !important;
         font-family: var(--font-display) !important;
@@ -247,7 +247,7 @@
         font-weight: 600 !important;
 
         &:hover {
-          background: rgb(212 175 55 / 10%) !important;
+          background: var(--color-accent-alpha-90) !important;
           border-color: var(--accent-gold) !important;
         }
 
@@ -278,7 +278,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: var(--tracking-widest);
-    border: 2px solid var(--accent-gold);
+    border: var(--radius-md) solid var(--accent-gold);
     border-radius: var(--radius-none);
     background: transparent;
     color: var(--accent-gold);
@@ -304,11 +304,11 @@
   .btn-success {
     background: var(--color-up);
     border-color: var(--color-up);
-    color: white;
+    color: var(--color-text-primary);
 
     &:hover {
-      background: #D94F51;
-      box-shadow: 0 0 20px rgb(255 82 82 / 40%);
+      background: color-mix(in srgb, var(--color-stock-up) 85%, var(--color-bg-primary));
+      box-shadow: 0 0 calc(var(--spacing-md) + var(--spacing-xs)) color-mix(in srgb, var(--color-stock-up) 40%, transparent);
     }
   }
 
@@ -319,7 +319,7 @@
 
   .badge {
     display: inline-block;
-    padding: 4px 12px;
+    padding: var(--spacing-xs) calc(var(--spacing-sm) + var(--spacing-xs));
     font-family: var(--font-display);
     font-size: var(--font-size-xs);
     font-weight: 600;
@@ -329,45 +329,45 @@
   }
 
   .badge-success {
-    background: rgb(39 174 96 / 15%);
-    color: #27AE60;
-    border: 1px solid #27AE60;
+    background: color-mix(in srgb, var(--color-success) 15%, transparent);
+    color: var(--color-success);
+    border: 1px solid var(--color-success);
   }
 
   .badge-danger {
-    background: rgb(231 76 60 / 15%);
-    color: #E74C3C;
-    border: 1px solid #E74C3C;
+    background: color-mix(in srgb, var(--color-danger) 15%, transparent);
+    color: var(--color-danger);
+    border: 1px solid var(--color-danger);
   }
 
   .badge-warning {
-    background: rgb(230 126 34 / 15%);
-    color: #E67E22;
-    border: 1px solid #E67E22;
+    background: color-mix(in srgb, var(--color-warning) 15%, transparent);
+    color: var(--color-warning);
+    border: 1px solid var(--color-warning);
   }
 
   .badge-info {
-    background: rgb(74 144 226 / 15%);
-    color: #4A90E2;
-    border: 1px solid #4A90E2;
+    background: color-mix(in srgb, var(--color-info) 15%, transparent);
+    color: var(--color-info);
+    border: 1px solid var(--color-info);
   }
 
     :deep(.el-descriptions__label) {
-      background: rgb(212 175 55 / 10%) !important;
+      background: var(--color-accent-alpha-90) !important;
       color: var(--fg-muted) !important;
       font-family: var(--font-display);
       font-size: var(--font-size-xs);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: var(--tracking-wider);
-      border-color: rgb(212 175 55 / 30%) !important;
+      border-color: var(--color-accent-alpha-70) !important;
     }
 
     :deep(.el-descriptions__content) {
       background: transparent !important;
       color: var(--fg-primary) !important;
       font-family: var(--font-body);
-      border-color: rgb(212 175 55 / 30%) !important;
+      border-color: var(--color-accent-alpha-70) !important;
     }
   }
 

@@ -119,9 +119,9 @@ defineProps<{
   align-items: center;
   gap: var(--artdeco-spacing-3);
   padding: var(--artdeco-spacing-2) 0;
-  border-bottom: 1px solid rgb(212 175 55 / 10%);
+  border-bottom: 1px solid var(--artdeco-gold-opacity-10);
 
-  &.muted { opacity: 60%; }
+  &.muted { opacity: 0.6; }
 
   .label {
     flex: 1;
@@ -133,16 +133,16 @@ defineProps<{
 }
 
 .diamond-marker {
-  width: 10px;
-  height: 10px;
+  width: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
+  height: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
   background: var(--artdeco-gold-primary);
   transform: rotate(45deg);
   border: 1px solid var(--artdeco-gold-light);
-  box-shadow: 0 0 8px rgb(212 175 55 / 40%);
+  box-shadow: var(--artdeco-glow-subtle);
 
   &.gray {
     background: var(--artdeco-fg-muted);
-    border-color: #555;
+    border-color: color-mix(in srgb, var(--artdeco-fg-muted) 55%, var(--artdeco-bg-global));
     box-shadow: none;
   }
 }
@@ -183,9 +183,9 @@ defineProps<{
 }
 
 .path-box {
-  background: rgb(0 0 0 / 30%);
+  background: color-mix(in srgb, var(--artdeco-bg-global) 30%, transparent);
   padding: var(--artdeco-spacing-3);
-  border-left: 3px solid var(--artdeco-gold-primary);
+  border-left: calc(var(--artdeco-spacing-px) * 3) solid var(--artdeco-gold-primary);
   font-family: var(--font-mono);
   font-size: var(--artdeco-text-xs);
   color: var(--artdeco-gold-light);
@@ -193,7 +193,7 @@ defineProps<{
 
 .artdeco-timeline :deep(.el-timeline-item__node) {
   background-color: var(--artdeco-gold-primary);
-  border: 2px solid var(--artdeco-bg-base);
+  border: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-bg-base);
 }
 
 .artdeco-timeline :deep(.el-timeline-item__timestamp) {
