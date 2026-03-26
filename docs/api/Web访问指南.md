@@ -176,10 +176,10 @@ psql -h localhost -p 5438 -U postgres -d mystocks
 **A**:
 ```bash
 # 前端日志
-tail -f /opt/claude/mystocks_spec/web/frontend/frontend.log
+tail -f /opt/claude/mystocks_spec/var/log/frontend.log
 
 # 后端日志
-tail -f /opt/claude/mystocks_spec/web/backend/backend.log
+tail -f /opt/claude/mystocks_spec/var/log/backend.log
 ```
 
 ---

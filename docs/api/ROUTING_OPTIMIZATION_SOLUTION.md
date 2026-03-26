@@ -672,8 +672,8 @@ VITE_USE_MOCK_DATA=false
 ### 核心参考
 - [API集成优化计划](docs/api/guides/integration/api_integration_optimization_plan.md)
 - [API集成实施状态](docs/api/guides/integration/api_integration_implementation_status.md)
-- [前端路由优化报告](docs/reviews/frontend_routing_optimization_report.md)
-- [API对齐核心流程](docs/guides/API对齐核心流程.md)
+- [前端路由优化报告](../reports/reviews/frontend_routing_optimization_report.md)
+- [API对齐核心流程](docs/api/guides/integration/API对齐核心流程.md)
 
 ### 技术规范
 - [Vue Router 4 文档](https://router.vuejs.org/)

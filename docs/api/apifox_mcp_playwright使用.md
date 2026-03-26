@@ -2,7 +2,7 @@
 >
 > - 本文是旧方案评估文档，保留用于历史参考。
 > - 当前项目已停用 `Apifox MCP`，活动记忆 MCP 已切换为 `Graphiti MCP`。
-> - 若你的目标是 AI CLI 长期记忆、handoff、事实检索，请改看 `docs/guides/GRAPHITI_MCP_WORKFLOW.md`。
+> - 若你的目标是 AI CLI 长期记忆、handoff、事实检索，请改看 `docs/guides/ai-tools/GRAPHITI_MCP_WORKFLOW.md`。
 > - 若你的目标仍然是 API 调试 / OpenAPI 导入 / 平台侧接口管理，Apifox 平台本身仍可独立使用，但不再作为本项目活动 MCP。
 
 结合你的项目场景（FastAPI 模块化单体架构的量化 Web 应用）、目标工具（Apifox-API-Docs MCP + Playwright），以及核心需求（API 测试 / 修复 / 优化），以下是可行性评估、功能覆盖分析、实施路径及注意事项，帮你判断该工具组合是否适配：

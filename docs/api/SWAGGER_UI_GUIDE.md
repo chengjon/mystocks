@@ -348,7 +348,7 @@ Ctrl+Shift+Del → 清除缓存
 **解决方案**:
 ```bash
 # 1. 检查后端日志
-tail -f /opt/claude/mystocks_spec/web/backend/logs/*.log
+tail -f /opt/claude/mystocks_spec/var/log/backend*.log
 
 # 2. 检查数据库连接
 # PostgreSQL

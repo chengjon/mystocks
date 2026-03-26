@@ -78,7 +78,7 @@
 
 ## 📖 更多信息
 
-详细指南: `docs/guides/CLAUDE_AGENTS_SUMMARY.md`
+详细指南: `docs/guides/ai-tools/CLAUDE_AGENTS_SUMMARY.md`
 完整审查: `docs/api/AGENTS_AUDIT_REPORT.md`
 官方文档: `/opt/mydoc/Anthropic/Claude-code/sub-agents.md`
 

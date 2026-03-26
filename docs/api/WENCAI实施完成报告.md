@@ -355,15 +355,15 @@ bash scripts/test_wencai_api.sh
 **文档位置**:
 - 主文档目录: `/opt/claude/mystocks_spec/docs/`
 - 配置指南: `web/backend/WENCAI_CONFIG_UPDATE_GUIDE.md`
-- Phase 1报告: `docs/WENCAI_PHASE1_COMPLETED.md`
+- Phase 1报告: `docs/reports/wencai/WENCAI_PHASE1_COMPLETED.md`
 
 **关键命令**:
 ```bash
 # 查看文档索引
-cat docs/WENCAI_INTEGRATION_INDEX.md
+cat docs/guides/wencai/WENCAI_INTEGRATION_INDEX.md
 
 # 查看快速参考
-cat docs/WENCAI_INTEGRATION_QUICKREF.md
+cat docs/guides/wencai/WENCAI_INTEGRATION_QUICKREF.md
 
 # 运行部署脚本
 bash scripts/deploy_wencai.sh
@@ -384,11 +384,11 @@ bash scripts/test_wencai_api.sh
 
 ```
 docs/
-├── WENCAI_INTEGRATION_PLAN.md           # 完整技术方案（24KB）
-├── WENCAI_INTEGRATION_QUICKREF.md       # 快速参考（5KB）
+├── guides/wencai/WENCAI_INTEGRATION_PLAN.md      # 完整技术方案（24KB）
+├── guides/wencai/WENCAI_INTEGRATION_QUICKREF.md  # 快速参考（5KB）
 ├── WENCAI_INTEGRATION_SUMMARY.md        # 综合总结（17KB）
-├── WENCAI_INTEGRATION_INDEX.md          # 文档导航（9KB）
-├── WENCAI_PHASE1_COMPLETED.md           # Phase 1报告（7KB）
+├── guides/wencai/WENCAI_INTEGRATION_INDEX.md     # 文档导航（9KB）
+├── reports/wencai/WENCAI_PHASE1_COMPLETED.md     # Phase 1报告（7KB）
 └── WENCAI_IMPLEMENTATION_COMPLETE.md    # 本文件（完整实施报告）
 ```
 
