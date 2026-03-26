@@ -27,6 +27,23 @@ describe("CI workflow gates", () => {
     expect(packageJson.scripts["test:e2e:lighthouse"]).toBeDefined();
   });
 
+  it("defines ArtDeco documentation governance commands for full and changed-only checks", () => {
+    expect(packageJson.scripts["lint:artdeco:guidance"]).toBeDefined();
+    expect(packageJson.scripts["lint:artdeco:guidance:changed"]).toBeDefined();
+    expect(packageJson.scripts["lint:artdeco:changed"]).toBeDefined();
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/layouts");
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/components/layout");
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/components/menu");
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/components/common");
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/views/styles");
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/components/shared/ui");
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/components/shared/ui/VirtualStockList.vue");
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/views/SkeletonUsage.vue");
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/views/ArtDecoTest.vue");
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/views/Stocks.vue");
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/views/system/styles/PerformanceMonitor.css");
+  });
+
   it("defines visual regression package scripts for workflow reuse", () => {
     expect(packageJson.scripts["test:visual"]).toBeDefined();
     expect(packageJson.scripts["test:visual:update"]).toBeDefined();
@@ -80,6 +97,48 @@ describe("CI workflow gates", () => {
     );
 
     expect(lighthouseStepMatch?.[1]?.trim()).toBe("npm run test:e2e:lighthouse");
+  });
+
+  it("runs the changed-only ArtDeco guidance gate in frontend-testing", () => {
+    const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
+    const guidanceStepMatch = workflowText.match(
+      /- name: Run ArtDeco guidance changed-file gate[\s\S]*?run:\s*([^\n]+)/u,
+    );
+
+    expect(guidanceStepMatch?.[1]?.trim()).toBe("npm run lint:artdeco:guidance:changed");
+  });
+
+  it("runs the changed-only ArtDeco source gate in frontend-testing", () => {
+    const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
+    const sourceStepMatch = workflowText.match(
+      /- name: Run ArtDeco token changed-file gate[\s\S]*?run:\s*([^\n]+)/u,
+    );
+
+    expect(sourceStepMatch?.[1]?.trim()).toBe("npm run lint:artdeco:changed");
+  });
+
+  it("treats ArtDeco components as ArtDeco scope inputs during workflow detection", () => {
+    const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
+
+    expect(workflowText).toContain("web/frontend/src/components/artdeco/*");
+    expect(workflowText).toContain("web/frontend/src/components/artdeco/**");
+    expect(workflowText).toContain("web/frontend/src/layouts/*");
+    expect(workflowText).toContain("web/frontend/src/layouts/**");
+    expect(workflowText).toContain("web/frontend/src/components/layout/*");
+    expect(workflowText).toContain("web/frontend/src/components/layout/**");
+    expect(workflowText).toContain("web/frontend/src/components/menu/*");
+    expect(workflowText).toContain("web/frontend/src/components/menu/**");
+    expect(workflowText).toContain("web/frontend/src/components/common/*");
+    expect(workflowText).toContain("web/frontend/src/components/common/**");
+    expect(workflowText).toContain("web/frontend/src/views/styles/*");
+    expect(workflowText).toContain("web/frontend/src/views/styles/**");
+    expect(workflowText).toContain("web/frontend/src/components/shared/ui/*");
+    expect(workflowText).toContain("web/frontend/src/components/shared/ui/**");
+    expect(workflowText).toContain("web/frontend/src/components/shared/ui/VirtualStockList.vue");
+    expect(workflowText).toContain("web/frontend/src/views/SkeletonUsage.vue");
+    expect(workflowText).toContain("web/frontend/src/views/ArtDecoTest.vue");
+    expect(workflowText).toContain("web/frontend/src/views/Stocks.vue");
+    expect(workflowText).toContain("web/frontend/src/views/system/styles/PerformanceMonitor.css");
   });
 
   it("keeps the dedicated cross-browser workflow aligned with the Playwright mainline", () => {
