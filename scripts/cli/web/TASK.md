@@ -150,9 +150,9 @@ task-5.3 (性能优化) ← 最后优化
 
 ## 🔗 相关文档
 
-- Vue 3指南: `docs/frontend/VUE3_GUIDE.md`
-- 组件库文档: `docs/frontend/COMPONENT_LIBRARY.md`
-- 性能优化: `docs/frontend/PERFORMANCE_OPTIMIZATION.md`
+- 前端文档入口: `docs/guides/frontend/INDEX.md`
+- 组件目录: `docs/guides/web/ART_DECO_COMPONENTS_CATALOG.md`
+- 前端改进指南: `docs/guides/web/FRONTEND_IMPROVEMENT_GUIDE.md`
 
 ## 💬 协作要求
 

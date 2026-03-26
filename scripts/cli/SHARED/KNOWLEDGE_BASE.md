@@ -28,7 +28,7 @@ A: 使用Ralph Wiggum迭代方法（参见 `docs/reports/` 中的相关报告）
 
 **Q: 前端Mock数据切换到真实API时应该注意什么？**
 
-A: 参考 `docs/guides/MOCK_REAL_DATA_SWITCHING_GUIDE.md`:
+A: 参考 `docs/guides/mock-data/MOCK_REAL_DATA_SWITCHING_GUIDE.md`:
 1. 使用环境变量驱动数据源切换（`VITE_USE_MOCK=true/false`）
 2. API适配层统一处理数据格式转换
 3. 保留Mock数据用于离线开发和测试
@@ -55,7 +55,7 @@ A: 参考 `docs/guides/MOCK_REAL_DATA_SWITCHING_GUIDE.md`:
 - **提交前**: Pre-commit hooks自动运行9步检查
 - **定期审查**: 每周运行Pylint深度分析
 
-参考: `docs/guides/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md`
+参考: `docs/operations/ci-cd/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md`
 
 ---
 

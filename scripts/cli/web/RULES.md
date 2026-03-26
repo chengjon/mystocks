@@ -275,10 +275,10 @@
 
 ## 📚 参考文档
 
-- Vue 3指南: `docs/frontend/VUE3_GUIDE.md`
-- 组件库文档: `docs/frontend/COMPONENT_LIBRARY.md`
-- 性能优化: `docs/frontend/PERFORMANCE_OPTIMIZATION.md`
-- API集成: `docs/frontend/API_INTEGRATION.md`
+- 前端文档入口: `docs/guides/frontend/INDEX.md`
+- 组件目录: `docs/guides/web/ART_DECO_COMPONENTS_CATALOG.md`
+- 前端改进指南: `docs/guides/web/FRONTEND_IMPROVEMENT_GUIDE.md`
+- API集成指南: `docs/guides/frontend/DASHBOARD_API_INTEGRATION_GUIDE.md`
 
 ---
 

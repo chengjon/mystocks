@@ -260,7 +260,7 @@
 - TDengine指南: `docs/database/TDENGINE_GUIDE.md`
 - PostgreSQL优化: `docs/database/POSTGRESQL_OPTIMIZATION.md`
 - 迁移系统: `docs/database/MIGRATION_DESIGN.md`
-- 监控配置: `docs/monitoring/DATABASE_MONITORING.md`
+- 监控配置: `docs/operations/monitoring/MONITORING_GUIDE.md`
 
 ---
 
