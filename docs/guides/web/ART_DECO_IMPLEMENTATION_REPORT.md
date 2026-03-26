@@ -7,6 +7,12 @@
 **Status**: ✅ **Phase 1-4 Complete**
 **Component Count**: 66 components (6 categories)
 
+> Governance note
+>
+> - This document is an implementation snapshot, not the active SCSS source of truth.
+> - Active styling truth lives in [ARTDECO_SCSS_GOVERNANCE_BASELINE.md](./ARTDECO_SCSS_GOVERNANCE_BASELINE.md) and the current `web/frontend/src/styles/artdeco-*.scss` files.
+> - Legacy examples in this report may still mention older token names, older fonts, or deprecated Sass patterns.
+
 ---
 
 ## 📊 Version History

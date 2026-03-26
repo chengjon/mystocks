@@ -4,6 +4,12 @@
 **Last Updated**: 2026-01-20
 **Version**: 2.0 (Phase 2-4 Enhancements)
 
+> Governance note
+>
+> - Active SCSS truth lives in [ARTDECO_SCSS_GOVERNANCE_BASELINE.md](./ARTDECO_SCSS_GOVERNANCE_BASELINE.md).
+> - This file is a quick reference and visual companion. When examples here conflict with the baseline or source files, the baseline wins.
+> - New SCSS examples should prefer `@use` over legacy `@import`.
+
 ---
 
 ## 🆕 What's New in v2.0
@@ -41,8 +47,8 @@ import { ArtDecoOrderBook, ArtDecoTradeForm } from '@/components/artdeco/trading
 ### Import Styles
 
 ```scss
-@import '@/styles/artdeco-tokens.scss';
-@import '@/styles/artdeco-patterns.scss';
+@use '@/styles/artdeco-tokens.scss' as *;
+@use '@/styles/artdeco-patterns.scss' as *;
 ```
 
 ### Quick Component Usage
@@ -71,19 +77,19 @@ import { ArtDecoOrderBook, ArtDecoTradeForm } from '@/components/artdeco/trading
 ### Primary Colors
 
 ```scss
-var(--artdeco-bg-primary)      // #0A0A0A - Obsidian Black
+var(--artdeco-bg-global)       // #0A0A0A - Obsidian Black
 var(--artdeco-bg-card)         // #141414 - Rich Charcoal
-var(--artdeco-accent-gold)     // #D4AF37 - Metallic Gold ⭐
+var(--artdeco-gold-primary)    // #D4AF37 - Metallic Gold ⭐
 var(--artdeco-fg-primary)      // #F2F0E4 - Champagne Cream
-var(--artdeco-fg-muted)        // #888888 - Pewter
+var(--artdeco-fg-muted)        // #A0A0A0 - Muted Foreground
 ```
 
 ### Market Colors (A-Share Convention)
 
 ```scss
-var(--artdeco-color-up)        // #FF5252 - Red (涨)
-var(--artdeco-color-down)      // #00E676 - Green (跌)
-var(--artdeco-color-flat)      // #B0B3B8 - Gray (平)
+var(--artdeco-rise)            // #FF5252 - Red (涨)
+var(--artdeco-down)            // #00E676 - Green (跌)
+var(--artdeco-flat)            // #B0B3B8 - Gray (平)
 ```
 
 ---
@@ -93,8 +99,9 @@ var(--artdeco-color-flat)      // #B0B3B8 - Gray (平)
 ### Font Families
 
 ```scss
-font-family: var(--artdeco-font-display);  // Marcellus (headings)
-font-family: var(--artdeco-font-body);     // Josefin Sans (body)
+font-family: var(--font-display);  // Cinzel (headings)
+font-family: var(--font-body);     // Barlow (body)
+font-family: var(--font-mono);     // JetBrains Mono (data)
 ```
 
 ### Heading Rules (MANDATORY)
@@ -102,16 +109,16 @@ font-family: var(--artdeco-font-body);     // Josefin Sans (body)
 ```scss
 // All headings MUST be:
 text-transform: uppercase;                    // All caps
-letter-spacing: var(--artdeco-tracking-widest); // 0.2em
-color: var(--artdeco-accent-gold);            // Gold
+letter-spacing: var(--artdeco-tracking-widest); // 0.1em
+color: var(--artdeco-gold-primary);            // Gold
 ```
 
 ### Font Sizes
 
 ```scss
---artdeco-text-6xl: 60px;   // H1
---artdeco-text-4xl: 36px;   // H2
---artdeco-text-2xl: 24px;   // H3
+--artdeco-text-6xl: 64px;   // H1
+--artdeco-text-4xl: 44px;   // H2
+--artdeco-text-2xl: 30px;   // H3
 --artdeco-text-base: 16px;  // Body
 ```
 
@@ -123,7 +130,7 @@ color: var(--artdeco-accent-gold);            // Gold
 
 ```scss
 .hero-section {
-  @include artdeco-crosshatch-bg();
+  @include artdeco-crosshatch-bg;
 }
 ```
 
@@ -132,8 +139,8 @@ color: var(--artdeco-accent-gold);            // Gold
 ```scss
 .my-card {
   background: var(--artdeco-bg-card);
-  border: 1px solid var(--artdeco-border-gold-subtle);
-  @include artdeco-corner-brackets(8px, 16px, 2px);
+  border: 1px solid var(--artdeco-border-default);
+  @include artdeco-corner-brackets;
 }
 ```
 
@@ -141,20 +148,20 @@ color: var(--artdeco-accent-gold);            // Gold
 
 ```scss
 .button {
-  transition: all var(--artdeco-duration-base);
+  transition: all var(--artdeco-transition-base);
 
   &:hover {
-    @include artdeco-glow(var(--artdeco-glow-md));
+    box-shadow: var(--artdeco-glow-intense);
   }
 }
 ```
 
 ### Section Divider
 
-```scss
-.section-header {
-  @include artdeco-section-divider(96px, 1px);
-}
+```html
+<div class="artdeco-section-divider">
+  <span>SECTION TITLE</span>
+</div>
 ```
 
 ---
@@ -384,7 +391,7 @@ const riskLabel = computed(() => {
 
 **Import**:
 ```scss
-@import '@/styles/artdeco-financial.scss';
+@use '@/styles/artdeco-financial.scss' as *;
 ```
 
 ---
@@ -481,9 +488,8 @@ const riskLabel = computed(() => {
 ### Borders & Glows
 
 ```html
-<div class="border-artdeco-gold">Gold border</div>
-<div class="artdeco-glow">Gold glow effect</div>
-<div class="artdeco-glow-hover">Glow on hover</div>
+<div class="artdeco-border-gold">Gold border</div>
+<div class="artdeco-hover-glow">Gold glow on hover</div>
 ```
 
 ---
@@ -495,10 +501,10 @@ const riskLabel = computed(() => {
 ✅ **CORRECT:**
 ```scss
 h1 {
-  font-family: var(--artdeco-font-display);
+  font-family: var(--font-display);
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--artdeco-accent-gold);
+  letter-spacing: var(--artdeco-tracking-widest);
+  color: var(--artdeco-gold-primary);
 }
 ```
 
@@ -517,8 +523,8 @@ h1 {
 ✅ **CORRECT:**
 ```scss
 .card {
-  border: 1px solid var(--artdeco-border-gold-subtle);
-  border-radius: 0; // Sharp corners
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none); // Sharp corners
 }
 ```
 
@@ -586,30 +592,30 @@ body {
 </template>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
-@import '@/styles/artdeco-patterns.scss';
+@use '@/styles/artdeco-tokens.scss' as *;
+@use '@/styles/artdeco-patterns.scss' as *;
 
 .page-container {
-  @include artdeco-crosshatch-bg();
+  @include artdeco-crosshatch-bg;
   padding: var(--artdeco-spacing-6);
 }
 
 .page-header {
-  @include artdeco-section-divider(120px, 1px);
+  @extend .artdeco-section-divider;
   text-align: center;
   margin-bottom: var(--artdeco-spacing-8);
 }
 
 h1 {
-  font-family: var(--artdeco-font-display);
+  font-family: var(--font-display);
   text-transform: uppercase;
   letter-spacing: var(--artdeco-tracking-widest);
-  color: var(--artdeco-accent-gold);
+  color: var(--artdeco-gold-primary);
 }
 
 .subtitle {
   color: var(--artdeco-fg-muted);
-  font-family: var(--artdeco-font-body);
+  font-family: var(--font-body);
 }
 </style>
 ```
@@ -639,17 +645,17 @@ h1 {
 </template>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .artdeco-table {
   width: 100%;
   border-collapse: collapse;
-  font-family: var(--artdeco-font-body);
+  font-family: var(--font-body);
 
   th {
     text-transform: uppercase;
     letter-spacing: var(--artdeco-tracking-wide);
-    color: var(--artdeco-accent-gold);
+    color: var(--artdeco-gold-primary);
     border-bottom: 2px solid var(--artdeco-border-gold);
     padding: var(--artdeco-spacing-3);
     text-align: left;
@@ -657,7 +663,7 @@ h1 {
 
   td {
     color: var(--artdeco-fg-primary);
-    border-bottom: 1px solid var(--artdeco-border-gold-muted);
+    border-bottom: 1px solid var(--artdeco-border-default);
     padding: var(--artdeco-spacing-3);
   }
 
@@ -671,13 +677,21 @@ h1 {
 ### Add Glow Effect to Elements
 
 ```scss
-// Method 1: Using mixin
+@use '@/styles/artdeco-patterns.scss' as *;
+
+// Method 1: Using utility class
 .highlight-box {
-  @include artdeco-glow(var(--artdeco-glow-base));
+  @extend .artdeco-hover-glow;
 }
 
-// Method 2: Using utility class
-<div class="artdeco-glow">Content</div>
+// Method 2: Direct box-shadow
+.highlight-box {
+  transition: box-shadow var(--artdeco-transition-base);
+
+  &:hover {
+    box-shadow: var(--artdeco-glow-intense);
+  }
+}
 
 // Method 3: Custom glow
 .custom-glow {
@@ -691,7 +705,7 @@ h1 {
 
 ### Fonts Not Loading
 
-**Problem**: Marcellus or Josefin Sans not displaying
+**Problem**: Cinzel or Barlow not displaying
 
 **Solution**:
 1. Check browser console for network errors
@@ -704,7 +718,7 @@ h1 {
 **Problem**: Art Deco colors not showing
 
 **Solution**:
-1. Verify CSS custom properties are loaded: `getComputedStyle(document.documentElement).getPropertyValue('--artdeco-accent-gold')`
+1. Verify CSS custom properties are loaded: `getComputedStyle(document.documentElement).getPropertyValue('--artdeco-gold-primary')`
 2. Check `artdeco-global.scss` import order (must be first)
 3. Clear browser cache and rebuild: `npm run dev`
 
@@ -725,8 +739,8 @@ h1 {
 ### DO's ✅
 
 - Use ArtDecoButton, ArtDecoCard, ArtDecoInput components
-- Apply `artdeco-crosshatch-bg()` to main containers
-- Make headings uppercase with 0.2em tracking
+- Apply `@include artdeco-crosshatch-bg;` or reuse the crosshatch utility/pattern layer
+- Make headings uppercase with `var(--artdeco-tracking-widest)` (current baseline: `0.1em`)
 - Use gold accent color sparingly but decisively
 - Add corner brackets to cards and containers
 - Include glow effects on interactive elements
@@ -740,7 +754,7 @@ h1 {
 - Don't use lowercase for headings (must be uppercase)
 - Don't use blue/purple/green for accents (gold only)
 - Don't skip diagonal crosshatch background
-- Don't use system fonts for headings (use Marcellus)
+- Don't use system fonts for headings (use the ArtDeco display font stack)
 - Don't mix Art Deco with other design systems
 - Don't override Art Deco tokens without good reason
 
@@ -793,12 +807,12 @@ h1 {
 </ArtDecoCard>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .stat-value {
-  font-family: var(--artdeco-font-display);
+  font-family: var(--font-display);
   font-size: var(--artdeco-text-4xl);
-  color: var(--artdeco-accent-gold);
+  color: var(--artdeco-gold-primary);
   text-transform: uppercase;
   letter-spacing: var(--artdeco-tracking-widest);
 }

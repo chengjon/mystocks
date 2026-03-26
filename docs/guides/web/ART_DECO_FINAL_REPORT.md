@@ -5,6 +5,12 @@
 **完成日期**: 2025-12-30
 **执行者**: Main CLI (Claude Code) + Frontend-Developer Agent
 
+> 治理说明
+>
+> - 本文档是历史实施总结，不是当前 SCSS 治理真值。
+> - 当前样式真值以 [ARTDECO_SCSS_GOVERNANCE_BASELINE.md](./ARTDECO_SCSS_GOVERNANCE_BASELINE.md) 和现行 `web/frontend/src/styles/artdeco-*.scss` 为准。
+> - 文档中的旧字体、旧 token 名、旧 Sass 示例仅代表当时阶段状态。
+
 ---
 
 ## 📋 执行摘要
@@ -266,7 +272,7 @@ export { default as ArtDecoInput } from './ArtDecoInput.vue'
 
 ### 文档文件
 
-**文件 13-16: `/docs/web/ART_DECO_*.md`**
+**文件 13-16: `/docs/guides/web/ART_DECO_*.md`**
 
 1. **`ART_DECO_IMPLEMENTATION_REPORT.md`** - 详细实施指南
 2. **`ART_DECO_QUICK_REFERENCE.md`** - 开发者快速参考
@@ -661,10 +667,10 @@ const handleSubmit = () => {
 
 ### 文档位置
 
-- **实施指南**: `/docs/web/ART_DECO_IMPLEMENTATION_REPORT.md`
-- **快速参考**: `/docs/web/ART_DECO_QUICK_REFERENCE.md`
-- **组件展示**: `/docs/web/ART_DECO_COMPONENT_SHOWCASE.md`
-- **最终报告**: `/docs/web/ART_DECO_FINAL_REPORT.md`（本文档）
+- **实施指南**: `/docs/guides/web/ART_DECO_IMPLEMENTATION_REPORT.md`
+- **快速参考**: `/docs/guides/web/ART_DECO_QUICK_REFERENCE.md`
+- **组件展示**: `/docs/guides/web/ART_DECO_COMPONENT_SHOWCASE.md`
+- **最终报告**: `/docs/guides/web/ART_DECO_FINAL_REPORT.md`（本文档）
 
 ### 代码位置
 

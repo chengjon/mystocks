@@ -3,6 +3,12 @@
 
 This document provides visual examples and code snippets for all Art Deco components and patterns.
 
+> Governance note
+>
+> - This showcase is for visual reference and example snippets.
+> - Active SCSS truth lives in [ARTDECO_SCSS_GOVERNANCE_BASELINE.md](./ARTDECO_SCSS_GOVERNANCE_BASELINE.md).
+> - If snippet code here conflicts with the baseline or current source files, follow the baseline and source files.
+
 ---
 
 ## 1. Button Components

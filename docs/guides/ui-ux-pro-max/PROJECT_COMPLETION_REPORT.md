@@ -114,7 +114,7 @@ python search.py "glassmorphism" --domain style
 ## 📁 **文件结构总览**
 
 ```
-docs/ui-ux-pro-max/
+docs/guides/ui-ux-pro-max/
 ├── README.md                    # 系统总览和使用指南
 ├── search-router.md             # 条件路由决策树
 ├── quick-reference.md           # 决策矩阵和速查表

@@ -6,6 +6,12 @@
 **组件总数**: 66 (从 v1.1 的 64 个增加)
 **适用范围**: MyStocks 量化交易平台前端
 
+> 治理说明
+>
+> - 本文档是组件展示与视觉参考，不是当前 SCSS 真值。
+> - 当前样式真值以 [ARTDECO_SCSS_GOVERNANCE_BASELINE.md](./ARTDECO_SCSS_GOVERNANCE_BASELINE.md) 为准。
+> - 若本文档中的 token 名、导入写法或视觉规则与基线冲突，以基线和源码为准。
+
 ---
 
 ## 🆕 What's New in v2.0
@@ -1809,4 +1815,4 @@ const demoInput = ref('')
 ---
 
 **版本**: v1.1 | **更新**: 2026-01-18 | **维护**: Frontend Team</content>
-<parameter name="filePath">/opt/claude/mystocks_spec/docs/web/ART_DECO_COMPONENT_SHOWCASE_V2.md
+<parameter name="filePath">/opt/claude/mystocks_spec/docs/guides/web/ART_DECO_COMPONENT_SHOWCASE_V2.md

@@ -3,6 +3,11 @@
 **日期**: 2025-12-30
 **状态**: ✅ 成功启动，可以访问
 
+> 治理说明
+>
+> - 本文档描述的是访问与启动状态，不是当前 SCSS 真值。
+> - 其中提到的字体名、token 名和视觉判断标准，应以 [ARTDECO_SCSS_GOVERNANCE_BASELINE.md](./ARTDECO_SCSS_GOVERNANCE_BASELINE.md) 和源码为准。
+
 ---
 
 ## 🌐 访问地址
@@ -152,10 +157,10 @@ npm run build
 ## 🎨 ArtDeco 设计系统文档
 
 完整的设计系统文档位于：
-- **实施指南**: `/docs/web/ART_DECO_IMPLEMENTATION_REPORT.md`
-- **快速参考**: `/docs/web/ART_DECO_QUICK_REFERENCE.md`
-- **组件展示**: `/docs/web/ART_DECO_COMPONENT_SHOWCASE.md`
-- **最终报告**: `/docs/web/ART_DECO_FINAL_REPORT.md`
+- **实施指南**: `/docs/guides/web/ART_DECO_IMPLEMENTATION_REPORT.md`
+- **快速参考**: `/docs/guides/web/ART_DECO_QUICK_REFERENCE.md`
+- **组件展示**: `/docs/guides/web/ART_DECO_COMPONENT_SHOWCASE.md`
+- **最终报告**: `/docs/guides/web/ART_DECO_FINAL_REPORT.md`
 
 ---
 

@@ -121,8 +121,8 @@ gh pr create --base dev --head [分支名] \
 
 1. 阅读 `TASK.md`（目标、范围、验收标准）
 2. 阅读：
-   - `docs/guides/MONGO_MULTICLI_OPERATION_CHECKLIST.md`
-   - `docs/guides/GRAPHITI_MCP_WORKFLOW.md`
+   - `docs/guides/multi-cli-tasks/MONGO_MULTICLI_OPERATION_CHECKLIST.md`
+   - `docs/guides/ai-tools/GRAPHITI_MCP_WORKFLOW.md`
 3. 在 Mongo control plane 中记录开工：
    - `work claim`
 4. 创建或更新 `TASK-REPORT.md`

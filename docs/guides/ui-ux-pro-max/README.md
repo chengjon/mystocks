@@ -20,7 +20,7 @@
 
 ### **文件结构**
 ```
-docs/ui-ux-pro-max/
+docs/guides/ui-ux-pro-max/
 ├── README.md                 # 主入口和使用指南
 ├── search-router.md          # 搜索路由器（条件判断）
 ├── domains/                  # 按领域组织的文档

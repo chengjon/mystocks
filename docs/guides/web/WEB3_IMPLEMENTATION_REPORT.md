@@ -434,7 +434,7 @@ web/frontend/src/
 │   └── MainLayout.vue            # 862 lines (redesigned)
 └── main.js                       # 63 lines (updated)
 
-docs/web/
+docs/guides/web/
 ├── WEB3_DESIGN_SYSTEM.md         # 650 lines
 └── WEB3_IMPLEMENTATION_REPORT.md # This file
 ```

@@ -260,7 +260,7 @@ document.documentElement.setAttribute('data-theme', 'light');
 ## 📦 相关文件
 
 - **主文件**: `/web/frontend/src/styles/techstyle-tokens.scss` (1,191行)
-- **文档**: `/docs/web/TECHSTYLE_THEME_IMPROVEMENT_REPORT.md`
+- **文档**: `/docs/guides/web/TECHSTYLE_THEME_IMPROVEMENT_REPORT.md`
 - **快速参考**: 本文件
 
 ---

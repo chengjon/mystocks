@@ -329,7 +329,7 @@ web/frontend/src/
 ### 文档文件
 
 ```
-docs/web/
+docs/guides/web/
 ├── WEB3_DESIGN_SYSTEM.md          ✅ 650行 - 设计令牌参考
 ├── WEB3_IMPLEMENTATION_REPORT.md  ✅ 详细实现报告
 ├── WEB3_QUICK_START.md            ✅ 快速参考指南
@@ -490,9 +490,9 @@ import { Web3Button, Web3Card, Web3Input } from '@/components/web3'
 ```
 
 ### 详细文档
-- **设计令牌**: `/docs/web/WEB3_DESIGN_SYSTEM.md`
-- **实施报告**: `/docs/web/WEB3_IMPLEMENTATION_REPORT.md`
-- **快速参考**: `/docs/web/WEB3_QUICK_START.md`
+- **设计令牌**: `/docs/guides/web/WEB3_DESIGN_SYSTEM.md`
+- **实施报告**: `/docs/guides/web/WEB3_IMPLEMENTATION_REPORT.md`
+- **快速参考**: `/docs/guides/web/WEB3_QUICK_START.md`
 
 ---
 

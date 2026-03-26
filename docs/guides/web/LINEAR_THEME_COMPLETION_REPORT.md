@@ -93,7 +93,7 @@
 
 ### ✅ 6. 文档
 
-**文件**: `/docs/guides/LINEAR_THEME_GUIDE.md`
+**文件**: `/docs/guides/web/LINEAR_THEME_GUIDE.md`
 
 **内容**:
 - ✅ 设计理念说明
@@ -251,7 +251,7 @@ console.log(isDark.value)
 
 ## 📚 相关文档
 
-- **完整使用指南**: `/docs/guides/LINEAR_THEME_GUIDE.md`
+- **完整使用指南**: `/docs/guides/web/LINEAR_THEME_GUIDE.md`
 - **设计规范**: `/opt/iflow/myhtml/prompts/modern_dark_style.md`
 - **主题配置**: `/src/config/themes/linear-*.json`
 - **主题管理器**: `/src/config/theme-manager.ts`

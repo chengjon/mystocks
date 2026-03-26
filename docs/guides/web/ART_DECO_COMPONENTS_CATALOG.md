@@ -394,9 +394,9 @@ const analyze = () => {
 - **[ART_DECO_QUICK_REFERENCE.md](./ART_DECO_QUICK_REFERENCE.md)** - Quick reference guide
 - **[ART_DECO_COMPONENT_SHOWCASE_V2.md](./ART_DECO_COMPONENT_SHOWCASE_V2.md)** - Component examples
 - **[ART_DECO_IMPLEMENTATION_REPORT.md](./ART_DECO_IMPLEMENTATION_REPORT.md)** - Implementation guide
-- **[ArtDeco_System_Architecture_Summary.md](../api/ArtDeco_System_Architecture_Summary.md)** - Architecture overview
-- **[ARTDECO_PHASE2_COMPLETION_REPORT.md](../reports/ARTDECO_PHASE2_COMPLETION_REPORT.md)** - Phase 2 enhancements
-- **[ARTDECO_PHASE3-4_COMPLETION_REPORT.md](../reports/ARTDECO_PHASE3-4_COMPLETION_REPORT.md)** - Phase 3-4 reorganization
+- **[ArtDeco_System_Architecture_Summary.md](../../api/ArtDeco_System_Architecture_Summary.md)** - Architecture overview
+- **[ARTDECO_PHASE2_COMPLETION_REPORT.md](../../reports/ARTDECO_PHASE2_COMPLETION_REPORT.md)** - Phase 2 enhancements
+- **[ARTDECO_PHASE3-4_COMPLETION_REPORT.md](../../reports/ARTDECO_PHASE3-4_COMPLETION_REPORT.md)** - Phase 3-4 reorganization
 
 ---
 

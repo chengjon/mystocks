@@ -355,8 +355,8 @@ npm run dev
 
 ## Documentation
 
-- **Design System**: `/docs/web/WEB3_DESIGN_SYSTEM.md` (650 lines)
-- **Implementation Report**: `/docs/web/WEB3_IMPLEMENTATION_REPORT.md` (detailed)
+- **Design System**: `/docs/guides/web/WEB3_DESIGN_SYSTEM.md` (650 lines)
+- **Implementation Report**: `/docs/guides/web/WEB3_IMPLEMENTATION_REPORT.md` (detailed)
 - **Quick Reference**: This file
 
 ---

@@ -3,6 +3,11 @@
 **日期**: 2025-12-30
 **状态**: ✅ 成功启动
 
+> 治理说明
+>
+> - 本文档记录的是一次启动状态快照，不是当前 ArtDeco 样式真值。
+> - 任何样式相关描述都应回到 [ARTDECO_SCSS_GOVERNANCE_BASELINE.md](./ARTDECO_SCSS_GOVERNANCE_BASELINE.md) 和现行源码校对。
+
 ---
 
 ## 🎉 成功解决

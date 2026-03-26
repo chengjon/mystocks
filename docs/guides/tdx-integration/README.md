@@ -8,6 +8,7 @@
 2. [数据分析功能说明](data_analysis.md) - 介绍选股策略执行和回测分析功能
 3. [数据呈现功能说明](data_visualization.md) - 介绍策略信号和回测结果的可视化功能
 4. [完整项目使用示例](complete_example.md) - 提供从数据准备到策略回测的完整流程示例
+5. [Windows TDX HTTP 桥接代理配置指南](./WINDOWS_TDX_BRIDGE_SETUP.md) - 介绍 WSL2 与 Windows 通达信桥接代理部署方法
 
 ## 项目特点
 

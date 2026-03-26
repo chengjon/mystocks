@@ -5,13 +5,11 @@
 ## 📁 目录结构
 
 ```
-docs/openspec_cmd/               # OpenSpec 命令扩展包
+docs/guides/openspec-cmd/        # OpenSpec 命令扩展包
 ├── README.md                    # 本指南文档
 ├── check.md                     # openspec-check 命令定义
-└── check-report-example.md      # 检查报告示例
-
-docs/guides/                     # 开发指南目录
-└── command-template.md          # OpenSpec 命令模板
+├── check-report-example.md      # 检查报告示例
+└── [command-template.md](./command-template.md)  # OpenSpec 命令模板
 ```
 
 ## 🎯 OpenSpec 命令系统概述
@@ -57,7 +55,7 @@ tags: [openspec, command-tag]
 
 ```bash
 # 使用模板创建命令文件
-cp docs/guides/command-template.md .claude/commands/openspec/your-command.md
+cp docs/guides/openspec-cmd/command-template.md .claude/commands/openspec/your-command.md
 # 然后根据需要编辑文件内容
 ```
 
@@ -219,7 +217,7 @@ head -20 .claude/commands/openspec/your-command.md
 #### 命令执行失败
 ```bash
 # 查看错误日志
-tail -f logs/openspec.log
+tail -f var/log/openspec.log
 
 # 检查依赖项
 openspec validate your-change-id
@@ -260,4 +258,4 @@ markdown-lint .claude/commands/openspec/your-command.md
 
 **文档维护者**: Claude Code
 **最后更新**: 2026-01-13</content>
-<parameter name="filePath">docs/openspec_cmd/README.md
+<parameter name="filePath">docs/guides/openspec-cmd/README.md
