@@ -52,8 +52,8 @@ const isEmbedded = computed(() => Boolean(props.functionKey))
 
 <style scoped lang="scss">
 /*
-@import '@/styles/artdeco-quant-extended';
-@import '@/styles/data-dense/index';
+// legacy-import '@/styles/artdeco-quant-extended';
+// legacy-import '@/styles/data-dense/index';
 
 .risk-monitor {
     min-height: calc(var(--artdeco-spacing-32) * 7 + var(--artdeco-spacing-1));
