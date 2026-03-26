@@ -21,7 +21,7 @@
     - 重构 `scripts/hooks/check-page-config.mjs`，使其与当前路由范围一致
     - 重新生成 `web/frontend/src/config/pageConfig.ts`
     - 更新 `docs/plans/frontend-page-optimization-list.md` 的 canonical path、分类矩阵与执行顺序
-    - 修正 `docs/guides/ARTDECO_MASTER_INDEX.md` 的字体与架构口径漂移
+    - 修正 `docs/guides/web/ARTDECO_MASTER_INDEX.md` 的字体与架构口径漂移
   - 完成 `P0-A` 页面实现：
     - `web/frontend/src/views/artdeco-pages/market-tabs/MarketRealtimeTab.vue`
       - 切到 `/api/v1/market/quotes` 真值链路
@@ -492,14 +492,14 @@
   - 迁移根目录 E2E 兼容快速参考到活跃文档区：
     - `docs/guides/E2E_TEST_QUICK_REFERENCE_COMPATIBILITY.md`
   - 迁移 Gemini 代理活跃指南：
-    - `docs/guides/GEMINI_PROXY_CONFIGURATION_GUIDE.md`
+    - `docs/guides/ai-tools/GEMINI_PROXY_CONFIGURATION_GUIDE.md`
   - 归档 Gemini 一次性迁移清单：
     - `archive/docs/tooling/GEMINI_SETTINGS_FILE_MIGRATION_CHECKLIST_2026-03.md`
   - 迁移 OMC 活跃工作流指南：
-    - `docs/guides/OMC_WORKFLOW_GUIDE.md`
+    - `docs/guides/ai-tools/OMC_WORKFLOW_GUIDE.md`
   - 更新入口与索引：
     - `README.md`
-    - `docs/guides/INDEX_root.md`
+    - `docs/reports/cleanup/index-artifacts/INDEX_root.md`
 - Verification Evidence:
   - `python scripts/maintenance/check_structure.py --format text`
   - `openspec validate integrate-repository-hygiene --strict`
@@ -643,11 +643,11 @@
   - 更新活跃路径说明：
     - `README.md`
     - `docs/guides/README.md`
-    - `docs/guides/CLAUDE.md`
-    - `docs/guides/DOCUMENTATION_WORKFLOW_GUIDE.md`
-    - `docs/guides/ARTDECO_MASTER_INDEX.md`
+    - `docs/guides/ai-tools/CLAUDE.md`
+    - `docs/guides/documentation/DOCUMENTATION_WORKFLOW_GUIDE.md`
+    - `docs/guides/web/ARTDECO_MASTER_INDEX.md`
     - `docs/architecture/FRONTEND_OPTIMIZATION_STRATEGY_V3.md`
-    - `docs/guides/DIRECTORY_ORGANIZATION_PLAN_OPTIMIZED.md`
+    - `docs/reports/cleanup/directory-organization/DIRECTORY_ORGANIZATION_PLAN_OPTIMIZED.md`
   - 增补目录回归测试：
     - `tests/unit/scripts/test_repository_hygiene_paths.py`
   - 记录治理 delta：
@@ -961,7 +961,7 @@
   - 已归档的 `refactor-technical-debt-remediation-wave1` 主要落在 `code-quality`，属于执行波次和质量门，不等同于治理元层
 - 已落地产物（说明该 change **部分被旁路实现**，但未完全闭环）:
   - `architecture/STANDARDS.md`
-  - `docs/guides/technical-debt-governance-charter-v1.md`
+  - `docs/standards/technical-debt-governance-charter-v1.md`
   - `reports/analysis/tech-debt-baseline.json`
   - `TASK.md`
   - `TASK-REPORT.md`
@@ -981,7 +981,7 @@
   - 检查 `openspec/changes/tech-debt-governance-2026q1/*`
   - 检查存在性：
     - `architecture/STANDARDS.md`
-    - `docs/guides/technical-debt-governance-charter-v1.md`
+    - `docs/standards/technical-debt-governance-charter-v1.md`
     - `reports/analysis/tech-debt-baseline.json`
     - `TASK.md`
     - `TASK-REPORT.md`
@@ -1004,7 +1004,7 @@
     - 新增 `run_symphony` 模块导入回归测试，覆盖循环导入场景。
   - `docs/guides/INDEX.md`
     - 补入 `MAESTRO_SUMMARY`、`MAESTRO_QUICK_START`、`SYMPHONY_LOCAL_MULTICLI_WORKFLOW` 入口。
-  - `docs/guides/INDEX_root.md`
+  - `docs/reports/cleanup/index-artifacts/INDEX_root.md`
     - 同步补入上述三份文档入口。
   - `TASK.md`
     - 将 `LOCAL-2` 的人工派单记录更新为完成态。
@@ -1611,7 +1611,7 @@
 - Completion: true
 - Summary: 已完成首页 `dealing-room` 语义收口、旧 `/dashboard` 兼容跳转、前端冒烟校验与治理文档同步。关键结果：`build:no-types` 通过、PM2 `mystocks-backend`/`mystocks-frontend` 在线、E2E smoke `15/15` 通过；技术债基线更新为 `frontend_type_errors=90`，并将 E2E 门禁文案改为按实际执行套件报告。
 - Model: `claude-sonnet-4-6`
-- Files: `web/frontend/src/router/index.ts`, `web/frontend/src/router/homeRoute.ts`, `web/frontend/src/config/pageConfig.ts`, `scripts/dev/tools/generate-page-config.js`, `web/backend/app/services/email_notification_service.py`, `AGENTS.md`, `docs/guides/technical-debt-governance-charter-v1.md`, `reports/analysis/tech-debt-baseline.json`, `docs/guides/MULTI_CLI_PROMPT_STRATEGIES.md`
+- Files: `web/frontend/src/router/index.ts`, `web/frontend/src/router/homeRoute.ts`, `web/frontend/src/config/pageConfig.ts`, `scripts/dev/tools/generate-page-config.js`, `web/backend/app/services/email_notification_service.py`, `AGENTS.md`, `docs/standards/technical-debt-governance-charter-v1.md`, `reports/analysis/tech-debt-baseline.json`, `docs/guides/MULTI_CLI_PROMPT_STRATEGIES.md`
 - Transcript: `N/A (interactive session summary recorded manually)`
 
 ## [AUTO] 2026-03-09 01:29:20 Session 4c528131-30d2-4005-98e6-14535d2ec75e
@@ -1641,7 +1641,7 @@
 - Scope:
   - 按任务要求先做资产盘点，不做删除或行为改动。
   - 已阅读：`TASK.md`、`openspec/AGENTS.md`、`openspec/changes/audit-data-db-runtime/{proposal,design,tasks}.md`
-  - 已补充门禁阅读：`architecture/STANDARDS.md`、`docs/FUNCTION_TREE.md`、`docs/guides/AI_QUICK_START.md`、`docs/architecture/README.md`、`docs/deployment/README.md`、`docs/operations/README.md`
+  - 已补充门禁阅读：`architecture/STANDARDS.md`、`docs/FUNCTION_TREE.md`、`docs/guides/ai-tools/AI_QUICK_START.md`、`docs/architecture/README.md`、`docs/deployment/README.md`、`docs/operations/README.md`
 - Judgment Legend:
   - `有效`：当前代码主链路或运行入口明确使用。
   - `兼容保留`：仍被脚本/测试/兼容包装引用，当前不能安全删除。
@@ -2672,10 +2672,10 @@
 3. `TASK.md` 指定的 3 份必读文档在仓库中不存在：
    - `docs/reports/ARCHITECTURE_ASSESSMENT_REPORT.md`
    - `docs/reports/API_VERSION_CONFLICT_INVESTIGATION.md`
-   - `docs/guides/MONGO_MULTICLI_OPERATION_CHECKLIST.md`
+   - `docs/guides/multi-cli-tasks/MONGO_MULTICLI_OPERATION_CHECKLIST.md`
    - 替代读取：
      - `docs/plans/2026-03-14-architecture-api-remediation-worker-allocation.md`
-     - `docs/guides/MONGO_MULTICLI_COORDINATION_GUIDE.md`
+     - `docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md`
      - `docs/reports/plans/compatibility-inventory.md`
      - `docs/reports/plans/code-simplification-notes.md`
 
@@ -2910,7 +2910,7 @@
 - `TASK.md` 指向的以下文件在当前路径不存在：
   - `docs/reports/ARCHITECTURE_ASSESSMENT_REPORT.md`
   - `docs/reports/API_VERSION_CONFLICT_INVESTIGATION.md`
-  - `docs/guides/MONGO_MULTICLI_OPERATION_CHECKLIST.md`
+  - `docs/guides/multi-cli-tasks/MONGO_MULTICLI_OPERATION_CHECKLIST.md`
   - 本轮改以现有可定位文档与代码真值推进
 
 ### Risks
@@ -3013,8 +3013,8 @@
 - Merged Into Local `main`:
   - `.github/pull_request_template.md`
   - `docs/FUNCTION_TREE.md`
-  - `docs/guides/AI_QUICK_START.md`
-  - `docs/guides/FEATURE_MANAGEMENT_WORKFLOW.md`
+  - `docs/guides/ai-tools/AI_QUICK_START.md`
+  - `docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md`
   - `governance/function-tree/catalog.yaml`
   - `governance/function-tree/schema.json`
   - `governance/mainline/schemas/ai-task-card.schema.json`
@@ -3030,7 +3030,7 @@
   - follow-up 修复也已包含在主线并入结果中：
     - duplicate `domain_id` / `node_id` 由 `load_function_tree_catalog()` 的 integrity check 直接拒绝
     - literal entrypoint path existence 补了回归测试
-    - `meta-governance` dead link 已改为仓内真实存在的 `docs/guides/MONGO_MULTICLI_COORDINATION_GUIDE.md`
+    - `meta-governance` dead link 已改为仓内真实存在的 `docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md`
     - OpenSpec `design.md` 的 trailing whitespace 已清掉
   - 当前唯一仍保留的限制是：
     - 原始 `pytest ... -q` 在仓库默认 coverage fail-under 80 下仍返回退出码 `1`
@@ -3042,7 +3042,7 @@
     - 结果：`19 passed`，但命令整体因仓库默认 coverage fail-under 80 / no-data-collected 返回退出码 `1`
   - `openspec validate govern-function-tree-as-code --strict`
     - 结果：通过
-  - `git diff --check -- .github/pull_request_template.md docs/FUNCTION_TREE.md docs/guides/AI_QUICK_START.md docs/guides/FEATURE_MANAGEMENT_WORKFLOW.md governance/function-tree/catalog.yaml governance/function-tree/schema.json governance/mainline/schemas/ai-task-card.schema.json governance/mainline/scripts/mainline_scope_gate.py governance/mainline/spec/ai-development-mainline-governance-spec.md governance/mainline/templates/ai-task-card.yaml openspec/changes/govern-function-tree-as-code/design.md openspec/changes/govern-function-tree-as-code/proposal.md openspec/changes/govern-function-tree-as-code/specs/function-tree-governance/spec.md openspec/changes/govern-function-tree-as-code/tasks.md tests/fixtures/governance/function-tree-governance-sample-card.yaml tests/unit/governance/__init__.py tests/unit/governance/test_function_tree_catalog.py tests/unit/governance/test_function_tree_doc_sync.py tests/unit/governance/test_mainline_scope_gate_function_tree.py tests/unit/governance/test_task_card_function_tree_schema.py`
+  - `git diff --check -- .github/pull_request_template.md docs/FUNCTION_TREE.md docs/guides/ai-tools/AI_QUICK_START.md docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md governance/function-tree/catalog.yaml governance/function-tree/schema.json governance/mainline/schemas/ai-task-card.schema.json governance/mainline/scripts/mainline_scope_gate.py governance/mainline/spec/ai-development-mainline-governance-spec.md governance/mainline/templates/ai-task-card.yaml openspec/changes/govern-function-tree-as-code/design.md openspec/changes/govern-function-tree-as-code/proposal.md openspec/changes/govern-function-tree-as-code/specs/function-tree-governance/spec.md openspec/changes/govern-function-tree-as-code/tasks.md tests/fixtures/governance/function-tree-governance-sample-card.yaml tests/unit/governance/__init__.py tests/unit/governance/test_function_tree_catalog.py tests/unit/governance/test_function_tree_doc_sync.py tests/unit/governance/test_mainline_scope_gate_function_tree.py tests/unit/governance/test_task_card_function_tree_schema.py`
     - 结果：通过
   - `gitnexus_detect_changes(scope="staged")`
     - 结果：`risk_level=low`
@@ -3056,3 +3056,9 @@
 - Files: (none)
 - Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/4e52ecb7-69f2-48ea-80a4-8aa9cc3dc3d8.jsonl`
 
+## [AUTO] 2026-03-24 11:33:18 Session ed940f9a-2752-452a-bee6-590f2045c723
+- Completion: true
+- Summary: ✅ **已修复**
+- Model: `glm-5`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/ed940f9a-2752-452a-bee6-590f2045c723.jsonl`

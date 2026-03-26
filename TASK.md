@@ -2,10 +2,10 @@
 
 <!-- AUTO_LAYER1_START -->
 ## Auto Layer 1 (Now/Next/Blocked)
-- Last Sync: 2026-03-16 22:19:21
-- Session: `4e52ecb7-69f2-48ea-80a4-8aa9cc3dc3d8`
-- Completion Detected: `true`
-- Summary: The OpenCode configuration is now valid. The `mcp list` command succeeded, showing 6 MCP servers configured.
+- Last Sync: 2026-03-25 23:43:57
+- Session: `92a75ed4-3eea-4313-a17f-aff051c4bae3`
+- Completion Detected: `false`
+- Summary: WSL2 本身没有标签页功能，取决于你使用的终端模拟器。最常用的是 **Windows Terminal**。
 - Changed Files (0): (none)
 - Next: Review and update task ownership/DDL if needed
 - Blocked: (manual fill if any)
@@ -48,8 +48,8 @@
 - `src/services/maestro/collab/suggester.py`
 - `src/services/maestro/collab/ownership.py`
 - `scripts/runtime/maestro_collab.py`
-- `docs/guides/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md`
-- `docs/guides/MULTI_CLI_PROMPT_STRATEGIES.md`
+- `docs/guides/multi-cli-tasks/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md`
+- `docs/guides/multi-cli-tasks/MULTI_CLI_PROMPT_STRATEGIES.md`
 - `docs/guides/multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md`
 - `TASK.md`
 
