@@ -15,8 +15,8 @@ from loguru import logger
 logger.remove()
 
 # 配置日志目录
-LOG_DIR = Path(__file__).parent.parent / "logs"
-LOG_DIR.mkdir(exist_ok=True)
+LOG_DIR = Path(__file__).resolve().parents[1] / "var" / "log"
+LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 # 配置格式
 LOG_FORMAT = (

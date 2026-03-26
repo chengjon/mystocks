@@ -105,9 +105,9 @@ module.exports = {
 
       // 日志配置
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
-      out_file: path.join(projectRoot, 'logs/frontend-access.log'),
-      error_file: path.join(projectRoot, 'logs/frontend-error.log'),
-      log_file: path.join(projectRoot, 'logs/frontend-combined.log'),
+      out_file: path.join(projectRoot, 'var/log/frontend-access.log'),
+      error_file: path.join(projectRoot, 'var/log/frontend-error.log'),
+      log_file: path.join(projectRoot, 'var/log/frontend-combined.log'),
 
       // 日志轮转
       log_type: 'json',
@@ -181,9 +181,9 @@ module.exports = {
 
       // 日志配置
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
-      out_file: path.join(projectRoot, 'logs/backend-access.log'),
-      error_file: path.join(projectRoot, 'logs/backend-error.log'),
-      log_file: path.join(projectRoot, 'logs/backend-combined.log'),
+      out_file: path.join(projectRoot, 'var/log/backend-access.log'),
+      error_file: path.join(projectRoot, 'var/log/backend-error.log'),
+      log_file: path.join(projectRoot, 'var/log/backend-combined.log'),
 
       // 日志轮转
       log_type: 'json',
@@ -239,9 +239,9 @@ module.exports = {
 };
 
 // 确保日志目录存在
-ensureLogDir(path.join(projectRoot, 'logs/frontend-access.log'));
-ensureLogDir(path.join(projectRoot, 'logs/frontend-error.log'));
-ensureLogDir(path.join(projectRoot, 'logs/backend-access.log'));
-ensureLogDir(path.join(projectRoot, 'logs/backend-error.log'));
-ensureLogDir(path.join(projectRoot, 'logs/db-monitor-access.log'));
-ensureLogDir(path.join(projectRoot, 'logs/db-monitor-error.log'));
+ensureLogDir(path.join(projectRoot, 'var/log/frontend-access.log'));
+ensureLogDir(path.join(projectRoot, 'var/log/frontend-error.log'));
+ensureLogDir(path.join(projectRoot, 'var/log/backend-access.log'));
+ensureLogDir(path.join(projectRoot, 'var/log/backend-error.log'));
+ensureLogDir(path.join(projectRoot, 'var/log/db-monitor-access.log'));
+ensureLogDir(path.join(projectRoot, 'var/log/db-monitor-error.log'));

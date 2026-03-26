@@ -3,8 +3,8 @@
     "title": "MyStocks Backend Logs",
     "description": "MyStocks FastAPI backend application logs with structured format",
     "url": [
-      "file:///opt/claude/mystocks_spec/logs/backend.log",
-      "file:///opt/claude/mystocks_spec/logs/backend-combined.log"
+      "file:///opt/claude/mystocks_spec/var/log/backend-access.log",
+      "file:///opt/claude/mystocks_spec/var/log/backend-combined.log"
     ],
     "sample": [
       "2025-11-16 10:00:00 [INFO] request_id=abc123 duration=200ms path=/api/strategy status=200",

@@ -4,6 +4,14 @@
 // 版本: 2.0 Enhanced
 // 作者: MyStocks开发团队
 // 创建日期: 2026-01-27
+const fs = require('fs');
+const path = require('path');
+
+const runtimeLogDir = '/opt/claude/mystocks_spec/var/log';
+const dataSyncLogDir = path.join(runtimeLogDir, 'data_sync');
+
+fs.mkdirSync(runtimeLogDir, { recursive: true });
+fs.mkdirSync(dataSyncLogDir, { recursive: true });
 
 module.exports = {
   apps: [{
@@ -45,9 +53,9 @@ module.exports = {
     },
     
     // 增强日志配置
-    log_file: '/tmp/pm2-mystocks-frontend.log',
-    out_file: '/tmp/pm2-mystocks-frontend-out.log',
-    error_file: '/tmp/pm2-mystocks-frontend-error.log',
+    log_file: path.join(runtimeLogDir, 'pm2-mystocks-frontend.log'),
+    out_file: path.join(runtimeLogDir, 'pm2-mystocks-frontend-out.log'),
+    error_file: path.join(runtimeLogDir, 'pm2-mystocks-frontend-error.log'),
     merge_logs: true,
     // 增强日志轮转
     log_rotation: {
@@ -140,9 +148,9 @@ module.exports = {
     },
 
     // 增强日志配置
-    log_file: '/tmp/pm2-mystocks-backend.log',
-    out_file: '/tmp/pm2-mystocks-backend-out.log',
-    error_file: '/tmp/pm2-mystocks-backend-error.log',
+    log_file: path.join(runtimeLogDir, 'pm2-mystocks-backend.log'),
+    out_file: path.join(runtimeLogDir, 'pm2-mystocks-backend-out.log'),
+    error_file: path.join(runtimeLogDir, 'pm2-mystocks-backend-error.log'),
     merge_logs: true,
     log_rotation: {
       enabled: true,
@@ -214,9 +222,9 @@ module.exports = {
     },
 
     // 日志配置
-    log_file: '/tmp/pm2-mystocks-monitoring.log',
-    out_file: '/tmp/pm2-mystocks-monitoring-out.log',
-    error_file: '/tmp/pm2-mystocks-monitoring-error.log',
+    log_file: path.join(runtimeLogDir, 'pm2-mystocks-monitoring.log'),
+    out_file: path.join(runtimeLogDir, 'pm2-mystocks-monitoring-out.log'),
+    error_file: path.join(runtimeLogDir, 'pm2-mystocks-monitoring-error.log'),
     merge_logs: false // 监控日志独立管理
   },
 
@@ -248,9 +256,9 @@ module.exports = {
     },
 
     // 日志配置
-    log_file: '/tmp/pm2-mystocks-gpu-api.log',
-    out_file: '/tmp/pm2-mystocks-gpu-api-out.log',
-    error_file: '/tmp/pm2-mystocks-gpu-api-error.log',
+    log_file: path.join(runtimeLogDir, 'pm2-mystocks-gpu-api.log'),
+    out_file: path.join(runtimeLogDir, 'pm2-mystocks-gpu-api-out.log'),
+    error_file: path.join(runtimeLogDir, 'pm2-mystocks-gpu-api-error.log'),
     merge_logs: true,
 
     // GPU资源监控
@@ -268,8 +276,8 @@ module.exports = {
     interpreter: "python3",
     cwd: "/opt/claude/mystocks_spec",
     cron_restart: "0 3 * * 0", // 每周日凌晨3点
-    out_file: "logs/data_sync/stock_basic_sync.log",
-    error_file: "logs/data_sync/stock_basic_sync_error.log",
+    out_file: path.join(dataSyncLogDir, 'stock_basic_sync.log'),
+    error_file: path.join(dataSyncLogDir, 'stock_basic_sync_error.log'),
     
     // 增强数据同步配置
     sync_config: {
@@ -295,8 +303,8 @@ module.exports = {
     interpreter: "python3",
     cwd: "/opt/claude/mystocks_spec",
     cron_restart: "0 2 * * *", // 每日凌晨2点
-    out_file: "logs/data_sync/stock_kline_sync.log",
-    error_file: "logs/data_sync/stock_kline_sync_error.log",
+    out_file: path.join(dataSyncLogDir, 'stock_kline_sync.log'),
+    error_file: path.join(dataSyncLogDir, 'stock_kline_sync_error.log'),
     sync_config: {
       retry_attempts: 3,
       retry_delay: 300000,
@@ -319,8 +327,8 @@ module.exports = {
     args: "--periods 1m 5m 15m 30m 60m",
     cwd: "/opt/claude/mystocks_spec",
     cron_restart: "0 17 * * 1-5", // 周一到周五17:00
-    out_file: "logs/data_sync/minute_kline_sync.log",
-    error_file: "logs/data_sync/minute_kline_sync.error.log",
+    out_file: path.join(dataSyncLogDir, 'minute_kline_sync.log'),
+    error_file: path.join(dataSyncLogDir, 'minute_kline_sync.error.log'),
     sync_config: {
       retry_attempts: 3,
       retry_delay: 300000,
