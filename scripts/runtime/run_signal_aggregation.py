@@ -131,8 +131,8 @@ def main():
 
     args = parser.parse_args()
 
-    # 确保logs目录存在
-    Path("logs").mkdir(exist_ok=True)
+    # 确保运行日志目录存在
+    Path("var/log").mkdir(parents=True, exist_ok=True)
 
     if args.scheduler:
         # 启动定时调度器

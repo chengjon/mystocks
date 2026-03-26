@@ -107,8 +107,8 @@ create_directories() {
 
     mkdir -p "${LOG_DIR}"
     mkdir -p "${REPORT_DIR}"
-    mkdir -p "${PROJECT_ROOT}/logs"
-    mkdir -p "${PROJECT_ROOT}/logs/archive"
+    mkdir -p "${PROJECT_ROOT}/var/log"
+    mkdir -p "${PROJECT_ROOT}/archive/logs"
 
     log_info "✅ 目录创建完成"
 }
@@ -131,7 +131,7 @@ cleanup_old_processes() {
     fi
 
     # 清理旧日志文件
-    find "${PROJECT_ROOT}/logs" -name "*.log" -mtime +7 -delete 2>/dev/null || true
+    find "${PROJECT_ROOT}/var/log" -name "*.log" -mtime +7 -delete 2>/dev/null || true
 
     log_info "✅ 清理完成"
 }
@@ -215,7 +215,7 @@ start_log_monitoring() {
     tmux send-keys -t mystocks-test:0.2 "echo '🔍 启动日志聚合监控...'" C-m
 
     # 启动lnav监控所有日志文件
-    tmux send-keys -t mystocks-test:0.2 "lnav logs/*.log ${LOG_DIR}/playwright-*.log ${LOG_DIR}/e2e-*.log" C-m
+    tmux send-keys -t mystocks-test:0.2 "lnav var/log/*.log ${LOG_DIR}/playwright-*.log ${LOG_DIR}/e2e-*.log" C-m
 
     log_info "✅ 日志监控启动完成"
 }
@@ -328,7 +328,7 @@ stop_services() {
     # 保存最终日志快照
     if command -v lnav &> /dev/null; then
         log_info "保存日志快照..."
-        lnav -w "${LOG_DIR}/lnav-snapshot-${TIMESTAMP}.log" logs/*.log ${LOG_DIR}/*.log &>/dev/null || true
+        lnav -w "${LOG_DIR}/lnav-snapshot-${TIMESTAMP}.log" var/log/*.log ${LOG_DIR}/*.log &>/dev/null || true
     fi
 
     # 停止PM2服务
@@ -361,7 +361,7 @@ show_final_status() {
     echo ""
     log_info "📁 日志文件:"
     log_info "  测试日志: ${LOG_DIR}/"
-    log_info "  服务日志: ${PROJECT_ROOT}/logs/"
+    log_info "  服务日志: ${PROJECT_ROOT}/var/log/"
     echo ""
     log_info "🔧 快捷命令:"
     log_info "  查看PM2状态: pm2 status"

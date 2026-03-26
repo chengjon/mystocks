@@ -18,7 +18,7 @@ SESSION_NAME="mystocks-test"
 PROJECT_DIR="/opt/claude/mystocks_spec"
 FRONTEND_DIR="${PROJECT_DIR}/web/frontend"
 BACKEND_DIR="${PROJECT_DIR}/web/backend"
-TEST_LOG_DIR="${PROJECT_DIR}/logs/tests"
+TEST_LOG_DIR="${PROJECT_DIR}/var/log/tests"
 
 # Colors
 GREEN='\033[0;32m'

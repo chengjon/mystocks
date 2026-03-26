@@ -10,6 +10,7 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
+LOG_DIR="var/log"
 
 # 打印带颜色的消息
 print_info() {
@@ -40,7 +41,7 @@ check_dependencies() {
 setup_log_dirs() {
     print_info "创建日志目录..."
 
-    mkdir -p logs/{api,e2e,frontend,backend,database}
+    mkdir -p "${LOG_DIR}"/{api,e2e,frontend,backend,database}
 
     print_info "日志目录创建完成"
 }
@@ -105,19 +106,19 @@ start_monitoring() {
 # 导出日志
 export_logs() {
     local format=${1:-json}
-    local output_file="logs/export_$(date +%Y%m%d_%H%M%S).${format}"
+    local output_file="${LOG_DIR}/export_$(date +%Y%m%d_%H%M%S).${format}"
 
     print_info "导出日志到: ${output_file}"
 
     case "$format" in
         json)
-            lnav -d -c ":export-to-json ${output_file}" logs/*/*
+            lnav -d -c ":export-to-json ${output_file}" ${LOG_DIR}/*/*
             ;;
         csv)
-            lnav -d -c ":export-to-csv ${output_file}" logs/*/*
+            lnav -d -c ":export-to-csv ${output_file}" ${LOG_DIR}/*/*
             ;;
         html)
-            lnav -d -c ":export-to-html ${output_file}" logs/*/*
+            lnav -d -c ":export-to-html ${output_file}" ${LOG_DIR}/*/*
             ;;
         *)
             print_error "不支持的导出格式: ${format}"
@@ -140,7 +141,7 @@ filter_logs() {
     print_info "筛选日志: ${pattern}"
     print_info "使用 :filter-out 退出筛选模式"
 
-    lnav -d -c ":filter-in ${pattern}" logs/*/*
+    lnav -d -c ":filter-in ${pattern}" ${LOG_DIR}/*/*
 }
 
 # 主逻辑
@@ -148,42 +149,42 @@ case "$1" in
     all)
         check_dependencies
         setup_log_dirs
-        start_monitoring "logs/*/*" "所有日志"
+        start_monitoring "${LOG_DIR}/*/*" "所有日志"
         ;;
     api)
         check_dependencies
         setup_log_dirs
-        start_monitoring "logs/api/*" "API测试日志"
+        start_monitoring "${LOG_DIR}/api/*" "API测试日志"
         ;;
     e2e)
         check_dependencies
         setup_log_dirs
-        start_monitoring "logs/e2e/*" "E2E测试日志"
+        start_monitoring "${LOG_DIR}/e2e/*" "E2E测试日志"
         ;;
     backend)
         check_dependencies
         setup_log_dirs
-        start_monitoring "logs/backend/*" "后端日志"
+        start_monitoring "${LOG_DIR}/backend/*" "后端日志"
         ;;
     frontend)
         check_dependencies
         setup_log_dirs
-        start_monitoring "logs/frontend/*" "前端日志"
+        start_monitoring "${LOG_DIR}/frontend/*" "前端日志"
         ;;
     database)
         check_dependencies
         setup_log_dirs
-        start_monitoring "logs/database/*" "数据库日志"
+        start_monitoring "${LOG_DIR}/database/*" "数据库日志"
         ;;
     errors)
         check_dependencies
         print_info "显示错误日志"
-        lnav -d -c ":filter-in log_level IN (ERROR, CRITICAL)" logs/*/*
+        lnav -d -c ":filter-in log_level IN (ERROR, CRITICAL)" ${LOG_DIR}/*/*
         ;;
     performance)
         check_dependencies
         print_info "显示性能日志 (响应时间 > 1s)"
-        lnav -d -c ":filter-in response_time > 1000" logs/api/*
+        lnav -d -c ":filter-in response_time > 1000" ${LOG_DIR}/api/*
         ;;
     export)
         check_dependencies

@@ -85,7 +85,7 @@ check_security_tools() {
 run_bandit_scan() {
     log_info "运行Bandit代码安全分析..."
 
-    local output_file="$PROJECT_ROOT/logs/security/bandit_report.json"
+    local output_file="$PROJECT_ROOT/var/log/security/bandit_report.json"
     mkdir -p "$(dirname "$output_file")"
 
     if bandit -r "$PROJECT_ROOT/src" \
@@ -103,7 +103,7 @@ run_bandit_scan() {
 run_safety_scan() {
     log_info "运行Safety依赖漏洞扫描..."
 
-    local output_file="$PROJECT_ROOT/logs/security/safety_report.json"
+    local output_file="$PROJECT_ROOT/var/log/security/safety_report.json"
     mkdir -p "$(dirname "$output_file")"
 
     if safety check --json --full-report --output "$output_file"; then
@@ -117,7 +117,7 @@ run_safety_scan() {
 run_pip_audit_scan() {
     log_info "运行pip-audit包安全审计..."
 
-    local output_file="$PROJECT_ROOT/logs/security/pip_audit_report.json"
+    local output_file="$PROJECT_ROOT/var/log/security/pip_audit_report.json"
     mkdir -p "$(dirname "$output_file")"
 
     if pip-audit --format=json --local --output "$output_file"; then
@@ -146,7 +146,7 @@ run_comprehensive_security_scan() {
 generate_security_summary() {
     log_info "生成安全报告摘要..."
 
-    local log_dir="$PROJECT_ROOT/logs/security"
+    local log_dir="$PROJECT_ROOT/var/log/security"
     local summary_file="$log_dir/security_summary_$(date +%Y%m%d_%H%M%S).txt"
 
     echo "MyStocks项目安全扫描摘要报告" > "$summary_file"

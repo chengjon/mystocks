@@ -1,7 +1,7 @@
 /**
  * Web Access Verification Script
  *
- * Implements the verification standard defined in docs/guides/WEB_ACCESS_VERIFICATION_STANDARD.md
+ * Implements the verification standard defined in docs/guides/web/WEB_ACCESS_VERIFICATION_STANDARD.md
  * 1. Parses Vue Router file to dynamically find all routes
  * 2. Checks backend health
  * 3. Runs Playwright tests for every route
@@ -19,7 +19,7 @@ const CONFIG = {
   backendPort: 8000,
   routerPath: 'web/frontend/src/router/index.ts',
   reportPath: 'docs/reports/WEB_ACCESS_VERIFICATION_REPORT.md',
-  standardDoc: 'docs/guides/WEB_ACCESS_VERIFICATION_STANDARD.md'
+  standardDoc: 'docs/guides/web/WEB_ACCESS_VERIFICATION_STANDARD.md'
 };
 
 // ANSI Colors
