@@ -6,65 +6,74 @@
 
 ## 📄 核心文档列表
 
-### 📋 测试策略文档
-- **[测试总纲.md](./测试总纲.md)** - 测试策略、流程、自动化测试实施指南
-- **[常见测试问题与解决方案.md](./常见测试问题与解决方案.md)** - 测试过程中的常见问题及解决方法
+### 📋 测试策略与方案
+- **[测试策略与规范.md](./测试策略与规范.md)** - 当前测试策略、流程与执行规范
+- **[test-system-plan.md](./test-system-plan.md)** - 测试系统规划
+- **[test-system-analysis.md](./test-system-analysis.md)** - 测试系统分析
+- **[phase4-plan.md](./phase4-plan.md)** - 阶段性测试计划
 
-### 📊 测试报告文档
-- **[测试覆盖率总报告.md](./测试覆盖率总报告.md)** - 整体覆盖率统计、模块覆盖率分析
-- **[E2E测试总报告.md](./E2E测试总报告.md)** - 端到端测试用例统计、结果分析
-- **[Bug统计与修复分析.md](./Bug统计与修复分析.md)** - Bug分类统计、修复周期分析
+### 📊 测试报告与复盘
+- **[测试价值分析报告.md](./测试价值分析报告.md)** - 测试投入产出分析
+- **[技术债务分析报告.md](./技术债务分析报告.md)** - 测试相关技术债分析
+- **[BUGFIX-signals-500-error-retrospective.md](./BUGFIX-signals-500-error-retrospective.md)** - 具体故障复盘
 
-### 📈 质量分析文档
-- **[测试价值分析报告.md](./测试价值分析报告.md)** - 测试驱动质量提升案例、投入产出分析
-- **[代码质量报告.md](./代码质量报告.md)** - 代码复杂度、重复代码、质量门禁执行
-
-### 🔧 测试工具文档
-- **[测试工具使用指南.md](./测试工具使用指南.md)** - Playwright、pytest等测试工具使用指南
-- **[自动化测试框架文档/](./自动化测试框架文档/)** - 自动化测试框架相关文档
+### 🔧 测试专项文档
+- **[E2E_TEST_GUIDE.md](./E2E_TEST_GUIDE.md)** - E2E测试指南
+- **[TESTING_GUIDE.md](./TESTING_GUIDE.md)** - 测试指南兼容入口
+- **[TESTING_EXAMPLES.md](./TESTING_EXAMPLES.md)** - 测试示例兼容入口
+- **[E2E_TEST_QUICK_REFERENCE_COMPATIBILITY.md](./E2E_TEST_QUICK_REFERENCE_COMPATIBILITY.md)** - 历史 E2E 快速参考兼容入口
+- **[WEB_E2E_TEST_QUICK_REFERENCE.md](./WEB_E2E_TEST_QUICK_REFERENCE.md)** - Web E2E 快速参考
+- **[WEB_E2E_TEST_QUICK_REFERENCE_V2.md](./WEB_E2E_TEST_QUICK_REFERENCE_V2.md)** - Web E2E 优化版快速参考
+- **[E2E_TEST_DEBUG_METHODS.md](./E2E_TEST_DEBUG_METHODS.md)** - E2E测试调试方法与实战指南
+- **[VISUAL_REGRESSION_TEST_PLAN.md](./VISUAL_REGRESSION_TEST_PLAN.md)** - 视觉回归测试方案
+- **[e2e/README.md](./e2e/README.md)** - E2E测试与CI/CD管道实现指南
+- **[e2e/e2e-testing-ci-cd-architecture.md](./e2e/e2e-testing-ci-cd-architecture.md)** - E2E/CI/CD 测试架构总结
+- **[TEST_ENVIRONMENT_REQUIREMENTS.md](./TEST_ENVIRONMENT_REQUIREMENTS.md)** - 测试环境依赖与初始化要求
+- **[常见测试问题与解决方案.md](./常见测试问题与解决方案.md)** - 常见问题排查
+- **[legacy-cn/04-测试/](./legacy-cn/04-测试/)** - 历史中文测试资料归档入口
 
 ## 🚀 快速导航
 
 ### 测试负责人
-1. 制定和更新 **[测试总纲.md](./测试总纲.md)**
+1. 制定和更新 **[测试策略与规范.md](./测试策略与规范.md)**
 2. 分析 **[测试价值分析报告.md](./测试价值分析报告.md)** 优化测试策略
-3. 监控 **[Bug统计与修复分析.md](./Bug统计与修复分析.md)** 驱动质量改进
+3. 结合 **[技术债务分析报告.md](./技术债务分析报告.md)** 驱动质量改进
 
 ### 开发人员
 - 参考 **[常见测试问题与解决方案.md](./常见测试问题与解决方案.md)** 解决测试问题
-- 关注 **[测试覆盖率总报告.md](./测试覆盖率总报告.md)** 提升代码覆盖率
-- 学习 **[测试工具使用指南.md](./测试工具使用指南.md)** 编写高质量测试
+- 参考 **[测试策略与规范.md](./测试策略与规范.md)** 编写和维护测试
+- 使用 **[E2E_TEST_GUIDE.md](./E2E_TEST_GUIDE.md)**、**[TESTING_GUIDE.md](./TESTING_GUIDE.md)**、**[TESTING_EXAMPLES.md](./TESTING_EXAMPLES.md)**、**[E2E_TEST_QUICK_REFERENCE_COMPATIBILITY.md](./E2E_TEST_QUICK_REFERENCE_COMPATIBILITY.md)**、**[WEB_E2E_TEST_QUICK_REFERENCE.md](./WEB_E2E_TEST_QUICK_REFERENCE.md)**、**[WEB_E2E_TEST_QUICK_REFERENCE_V2.md](./WEB_E2E_TEST_QUICK_REFERENCE_V2.md)**、**[E2E_TEST_DEBUG_METHODS.md](./E2E_TEST_DEBUG_METHODS.md)**、**[VISUAL_REGRESSION_TEST_PLAN.md](./VISUAL_REGRESSION_TEST_PLAN.md)**、**[e2e/README.md](./e2e/README.md)** 与 **[e2e/e2e-testing-ci-cd-architecture.md](./e2e/e2e-testing-ci-cd-architecture.md)** 处理 E2E 流程
 
 ### 项目管理人员
 - 查看 **[测试价值分析报告.md](./测试价值分析报告.md)** 了解测试投入产出
-- 关注 **[Bug统计与修复分析.md](./Bug统计与修复分析.md)** 掌握质量状况
-- 参考 **[代码质量报告.md](./代码质量报告.md)** 进行质量决策
+- 关注 **[技术债务分析报告.md](./技术债务分析报告.md)** 掌握风险状况
+- 参考 **[BUGFIX-signals-500-error-retrospective.md](./BUGFIX-signals-500-error-retrospective.md)** 了解具体问题复盘
 
 ### 新团队成员
-- 先学习 **[测试总纲.md](./测试总纲.md)** 了解测试流程
+- 先学习 **[测试策略与规范.md](./测试策略与规范.md)** 了解测试流程
 - 阅读 **[常见测试问题与解决方案.md](./常见测试问题与解决方案.md)** 避免常见问题
-- 使用 **[测试工具使用指南.md](./测试工具使用指南.md)** 快速上手测试工具
+- 使用 **[TEST_ENVIRONMENT_REQUIREMENTS.md](./TEST_ENVIRONMENT_REQUIREMENTS.md)** 完成环境准备，再结合 **[E2E_TEST_GUIDE.md](./E2E_TEST_GUIDE.md)** 和 **[e2e/README.md](./e2e/README.md)** 快速上手测试工具
+- 需要历史问题排查时，可参考 **[legacy-cn/04-测试/](./legacy-cn/04-测试/)** 中的旧方案
 
 ## 📝 文档维护规范
 
 ### 更新频率
-- **测试总纲.md**: 测试策略变更时更新
-- **测试覆盖率总报告.md**: 每周更新
-- **E2E测试总报告.md**: 每次测试后更新
-- **Bug统计与修复分析.md**: 每周更新
+- **测试策略与规范.md**: 测试策略变更时更新
+- **E2E_TEST_GUIDE.md / e2e/README.md**: E2E流程变更时更新
+- **技术债务分析报告.md**: 技术债变化时更新
 - **测试价值分析报告.md**: 每月更新
 - **常见测试问题与解决方案.md**: 实时补充新问题
 
 ### 责任人
-- **测试负责人**: 测试总纲、测试价值分析报告
-- **自动化测试工程师**: 测试工具使用指南、自动化测试框架
-- **各模块测试人员**: 对应模块的测试文档
-- **质量保障工程师**: Bug统计、代码质量报告
+- **测试负责人**: 测试策略与规范、测试价值分析报告
+- **自动化测试工程师**: E2E 指南、测试系统规划
+- **各模块测试人员**: 对应模块测试文档与复盘
+- **质量保障工程师**: 技术债务分析、问题复盘
 
 ### 质量要求
 1. **测试用例完整**: 覆盖核心功能和边界条件
 2. **测试数据准确**: 确保测试结果的可靠性
-3. **问题描述清晰**: Bug报告要包含复现步骤和预期结果
+3. **问题复盘清晰**: 问题文档要包含复现步骤和根因分析
 4. **解决方案有效**: 提供的问题解决方案要经过验证
 
 ## 🎯 质量目标
@@ -79,9 +88,9 @@
 
 ## 🔗 相关文档
 
-- 📋 [项目总览与核心规范](../01-项目总览与核心规范/)
-- 🔌 [API与功能文档](../03-API与功能文档/)
-- 🚀 [部署与运维监控文档](../05-部署与运维监控文档/)
+- 📋 [项目总览](../overview/)
+- 🔌 [API 文档](../api/)
+- 🚀 [运维文档](../operations/)
 
 ## 📞 问题反馈
 
