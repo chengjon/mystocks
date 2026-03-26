@@ -52,7 +52,7 @@
 
 ## Boundary Decision (与 MAESTRO 对齐)
 
-遵循 `docs/guides/MAESTRO_SUMMARY.md` 的边界，本方案采用“本项目优先、层内扩展”：
+遵循 `docs/guides/multi-cli-tasks/MAESTRO_SUMMARY.md` 的边界，本方案采用“本项目优先、层内扩展”：
 
 1. `maestro.kernel`
 - 保持现有 orchestration 主流程不变

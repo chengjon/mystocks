@@ -4,7 +4,7 @@
 
 **Goal:** 将 `docs/FUNCTION_TREE.md` 升级为业务能力总线，并补齐 AI 快速路由入口、功能管理维护规则和 PR 模板对齐字段。
 
-**Architecture:** 以 `FUNCTION_TREE` 为中心，新增 `docs/guides/AI_QUICK_START.md` 负责按任务类型路由，`docs/INDEX.md` 负责推荐阅读顺序，`docs/guides/FEATURE_MANAGEMENT_WORKFLOW.md` 负责维护和评审闭环，`.github/pull_request_template.md` 负责将功能域映射要求带入交付过程。
+**Architecture:** 以 `FUNCTION_TREE` 为中心，新增 `docs/guides/ai-tools/AI_QUICK_START.md` 负责按任务类型路由，`docs/INDEX.md` 负责推荐阅读顺序，`docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md` 负责维护和评审闭环，`.github/pull_request_template.md` 负责将功能域映射要求带入交付过程。
 
 **Tech Stack:** Markdown, repository docs, shell verification
 
@@ -33,7 +33,7 @@ Expected: 文档存在且包含目标、决策、验收标准。
 ### Task 2: 新增 AI 快速路由文档
 
 **Files:**
-- Create: `docs/guides/AI_QUICK_START.md`
+- Create: `docs/guides/ai-tools/AI_QUICK_START.md`
 
 **Step 1: 写入仓库定位与必读门禁**
 
@@ -49,7 +49,7 @@ Expected: 文档存在且包含目标、决策、验收标准。
 
 **Step 4: 自检**
 
-Run: `sed -n '1,260p' docs/guides/AI_QUICK_START.md`
+Run: `sed -n '1,260p' docs/guides/ai-tools/AI_QUICK_START.md`
 
 Expected: 存在任务路由、最小读取路径、文档优先级三部分。
 
@@ -87,7 +87,7 @@ Expected: 输出 10 条，分别对应 10 个一级功能域。
 
 **Files:**
 - Modify: `docs/INDEX.md`
-- Modify: `docs/guides/FEATURE_MANAGEMENT_WORKFLOW.md`
+- Modify: `docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md`
 
 **Step 1: 更新 Docs 首页**
 
@@ -142,26 +142,26 @@ Expected: 模板包含主线治理字段和功能域映射字段两部分。
 **Files:**
 - Modify: `docs/FUNCTION_TREE.md`
 - Modify: `docs/INDEX.md`
-- Modify: `docs/guides/FEATURE_MANAGEMENT_WORKFLOW.md`
-- Create: `docs/guides/AI_QUICK_START.md`
+- Modify: `docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md`
+- Create: `docs/guides/ai-tools/AI_QUICK_START.md`
 - Create: `docs/plans/2026-03-12-function-tree-doc-routing-design.md`
 - Create: `docs/plans/2026-03-12-function-tree-doc-routing-implementation-plan.md`
 - Modify: `.github/pull_request_template.md`
 
 **Step 1: 检查 diff**
 
-Run: `git diff -- docs/FUNCTION_TREE.md docs/INDEX.md docs/guides/FEATURE_MANAGEMENT_WORKFLOW.md docs/guides/AI_QUICK_START.md docs/plans/2026-03-12-function-tree-doc-routing-design.md docs/plans/2026-03-12-function-tree-doc-routing-implementation-plan.md .github/pull_request_template.md`
+Run: `git diff -- docs/FUNCTION_TREE.md docs/INDEX.md docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md docs/guides/ai-tools/AI_QUICK_START.md docs/plans/2026-03-12-function-tree-doc-routing-design.md docs/plans/2026-03-12-function-tree-doc-routing-implementation-plan.md .github/pull_request_template.md`
 
 Expected: 只包含本次文档导航和模板相关改动。
 
 **Step 2: 检查主要链接目标是否存在**
 
-Run: `test -e architecture/STANDARDS.md && test -e openspec/AGENTS.md && test -e docs/FUNCTION_TREE.md && test -e docs/guides/AI_QUICK_START.md && test -e docs/testing/E2E_TEST_GUIDE.md && test -e docs/operations/OPS_MANUAL.md && test -e .github/pull_request_template.md`
+Run: `test -e architecture/STANDARDS.md && test -e openspec/AGENTS.md && test -e docs/FUNCTION_TREE.md && test -e docs/guides/ai-tools/AI_QUICK_START.md && test -e docs/testing/E2E_TEST_GUIDE.md && test -e docs/operations/OPS_MANUAL.md && test -e .github/pull_request_template.md`
 
 Expected: 退出码为 `0`。
 
 **Step 3: 检查 markdown 语法风险**
 
-Run: `git diff --check -- docs/FUNCTION_TREE.md docs/INDEX.md docs/guides/FEATURE_MANAGEMENT_WORKFLOW.md docs/guides/AI_QUICK_START.md docs/plans/2026-03-12-function-tree-doc-routing-design.md docs/plans/2026-03-12-function-tree-doc-routing-implementation-plan.md .github/pull_request_template.md`
+Run: `git diff --check -- docs/FUNCTION_TREE.md docs/INDEX.md docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md docs/guides/ai-tools/AI_QUICK_START.md docs/plans/2026-03-12-function-tree-doc-routing-design.md docs/plans/2026-03-12-function-tree-doc-routing-implementation-plan.md .github/pull_request_template.md`
 
 Expected: 无 trailing whitespace、无冲突标记。

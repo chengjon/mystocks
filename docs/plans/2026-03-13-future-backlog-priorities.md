@@ -232,6 +232,6 @@
 ## 相关文档
 
 - [FUNCTION_TREE](../FUNCTION_TREE.md)
-- [AI Quick Start](../guides/AI_QUICK_START.md)
+- [AI Quick Start](../guides/ai-tools/AI_QUICK_START.md)
 - [Function Tree Doc Routing Design](./2026-03-12-function-tree-doc-routing-design.md)
 - [Parallel Worktree Allocation Design](./2026-03-12-parallel-worktree-allocation-design.md)

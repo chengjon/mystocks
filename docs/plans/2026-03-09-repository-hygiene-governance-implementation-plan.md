@@ -20,7 +20,7 @@
 
 ### Batch 1 Scope
 
-- 刷新 `docs/FILE_CLEANUP_TASK.md` 的真实基线与目标目录
+- 刷新 `docs/reports/cleanup/FILE_CLEANUP_TASK.md` 的真实基线与目标目录
 - 更新目录治理 policy，使 `docs/`、`reports/`、`archive/`、`var/` 成为正式 canonical targets
 - 为 `rotate_logs.sh`、`monitor_file_size.sh`、`auto_cleanup.sh` 建立 dry-run-first 的官方入口
 - 增加聚焦测试，确保这些入口先可验证、再可推广
@@ -34,14 +34,14 @@
 
 ### Batch 1 Suggested Commit Split
 
-1. `spec/policy`: 刷新 `docs/FILE_CLEANUP_TASK.md` 与 directory governance policy / tests
+1. `spec/policy`: 刷新 `docs/reports/cleanup/FILE_CLEANUP_TASK.md` 与 directory governance policy / tests
 2. `scripts/logs`: 收敛 `rotate_logs.sh`
 3. `scripts/size-monitor`: 新增 `monitor_file_size.sh` 并复用现有扫描逻辑
 4. `scripts/cleanup`: 新增或收敛 `auto_cleanup.sh` 与相关 dry-run 测试
 
 ### Batch 1 File Set
 
-- `docs/FILE_CLEANUP_TASK.md`
+- `docs/reports/cleanup/FILE_CLEANUP_TASK.md`
 - `governance/mainline/policies/directory-structure.yaml`
 - `scripts/maintenance/rotate_logs.sh`
 - `scripts/maintenance/monitor_file_size.sh`
@@ -92,7 +92,7 @@ Expected: change validates successfully with no schema or scenario errors.
 ### Task 2: 刷新清理任务基线
 
 **Files:**
-- Modify: `docs/FILE_CLEANUP_TASK.md`
+- Modify: `docs/reports/cleanup/FILE_CLEANUP_TASK.md`
 - Modify: `governance/mainline/policies/directory-structure.yaml`
 
 **Step 1: Write the failing test**
@@ -108,7 +108,7 @@ Expected: FAIL because the current policy does not yet allow the required rollou
 **Step 3: Write minimal implementation**
 
 - Update the policy allowlists and tolerated entries
-- Refresh `docs/FILE_CLEANUP_TASK.md` so its target directories and current baseline match reality
+- Refresh `docs/reports/cleanup/FILE_CLEANUP_TASK.md` so its target directories and current baseline match reality
 
 **Step 4: Run test to verify it passes**
 
@@ -234,8 +234,8 @@ Expected: targeted root `error` count is reduced without introducing new violati
 ### Task 7: 文档生命周期收敛
 
 **Files:**
-- Modify: `docs/FILE_CLEANUP_TASK.md`
-- Modify: `docs/guides/DOCUMENTATION_WORKFLOW_GUIDE.md`
+- Modify: `docs/reports/cleanup/FILE_CLEANUP_TASK.md`
+- Modify: `docs/guides/documentation/DOCUMENTATION_WORKFLOW_GUIDE.md`
 - Modify: `governance/mainline/policies/directory-structure.yaml`
 - Move: selected historical docs into `archive/docs/`
 - Move: selected evidence docs into `reports/`
