@@ -70,6 +70,9 @@
 | `web/frontend/src/views/artdeco-pages/market-tabs/MarketRealtimeTab.vue` | B+ | 已从独立数据页收敛到实时行情工作台骨架 |
 | `web/frontend/src/views/artdeco-pages/market-tabs/MarketKLineTab.vue` | B+ | 已从轻量 K 线页收敛到技术行情工作台骨架 |
 | `web/frontend/src/views/artdeco-pages/market-tabs/MarketConceptTab.vue` | B+ | 已从概念表格页收敛到板块动向工作台骨架 |
+| `web/frontend/src/views/artdeco-pages/market-tabs/MarketETFTab.vue` | B+ | 已从独立 ETF 数据页收敛到 ETF 市场工作台骨架 |
+| `web/frontend/src/views/artdeco-pages/technical-tabs/TechnicalScannerTab.vue` | B+ | 已从技术筛选页收敛到技术扫描工作台骨架 |
+| `web/frontend/src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue` | B+ | 已从资产页收敛到组合资产工作台骨架 |
 | `web/frontend/src/views/artdeco-pages/market-data-tabs/DragonTigerAnalysis.vue` | B+ | 已支持独立路由/ArtDecoMarketData 内嵌双态壳层，并收敛到龙虎榜工作台语法 |
 | `web/frontend/src/views/artdeco-pages/market-data-tabs/FundFlowAnalysis.vue` | B+ | 已支持独立路由/ArtDecoMarketData 内嵌双态壳层，并收敛到资金流向工作台语法 |
 | `web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue` | B+ | 已支持独立路由/TradingCenter 内嵌双态壳层，并收敛到板块动向工作台语法 |
@@ -234,6 +237,17 @@
 - 概念页现在明确暴露上涨/下跌概念数量和龙头股，板块表格不再裸露在单层页头之下。
 
 它们现在已经不再只是市场域的“子路由数据页”，而是具备标准 ArtDeco 工作台承载的市场入口节点。
+
+### 4.15 已整改样本: MarketETF / TechnicalScanner / PortfolioOverview
+
+`web/frontend/src/views/artdeco-pages/market-tabs/MarketETFTab.vue`、`web/frontend/src/views/artdeco-pages/technical-tabs/TechnicalScannerTab.vue` 与 `web/frontend/src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue` 原本都更偏向“独立数据页”或“功能页”；当前已完成：
+
+- 三页都补足了独立路由态的 `hero + stats + content shell` 工作台骨架。
+- ETF 页现在明确暴露样本数量、上涨数量、总成交量和头部产品。
+- Technical Scanner 页现在明确暴露多头信号、超买信号和平均趋势分值。
+- Portfolio Overview 页现在把资产规模、持仓数量和再平衡建议一起提升到页面级舞台。
+
+它们现在已经进入市场/技术/组合三个子域的独立工作台序列，不再停留在旧的轻量页头语法。
 
 ### 4.15 已整改样本: DragonTiger / FundFlow / IndustryAnalysis
 

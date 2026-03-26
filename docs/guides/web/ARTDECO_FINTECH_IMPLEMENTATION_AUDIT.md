@@ -313,6 +313,9 @@
    - `MarketRealtimeTab.vue`
    - `MarketKLineTab.vue`
    - `MarketConceptTab.vue`
+   - `MarketETFTab.vue`
+   - `TechnicalScannerTab.vue`
+   - `PortfolioOverviewTab.vue`
    - `DragonTigerAnalysis.vue`
    - `FundFlowAnalysis.vue`
    - `ArtDecoIndustryAnalysis.vue`
@@ -353,7 +356,7 @@
 1. **P0 已完成**：字体语义变量、glow 语义、主导入链路已统一。
 2. **P1 已完成主要目标**：活跃 ArtDeco/Fintech 链路中的旧字体引用已收敛，真值层/兼容层/历史层边界已显式定义。
 3. **P2 已完成第一轮**：关键页面、布局壳层与活跃占位页已完成 ArtDeco Fintech 工作站化收敛。
-4. **P3 已开始推进**：`ArtDecoStockManagement.vue`、`ArtDecoMarketQuotes.vue`、`ArtDecoTradingManagement.vue`、`ArtDecoStrategyManagement.vue`、`ArtDecoStrategyOptimization.vue`、`ArtDecoBacktestAnalysis.vue`、`StrategyParametersTab.vue`、`StrategySignalsTab.vue`、`ArtDecoSignalsView.vue`、`ArtDecoTradingHistory.vue`、`ArtDecoTradingPositions.vue`、`ArtDecoMonitoringDashboard.vue`、`ArtDecoDataManagement.vue`、`SystemHealthTab.vue`、`ArtDecoRiskAlerts.vue`、`ArtDecoAnnouncementMonitor.vue`、`RiskOverviewTab.vue`、`StopLossMonitorTab.vue`、`MarketRealtimeTab.vue`、`MarketKLineTab.vue`、`MarketConceptTab.vue`、`DragonTigerAnalysis.vue`、`FundFlowAnalysis.vue`、`ArtDecoIndustryAnalysis.vue` 与 `ArtDecoRiskManagement.vue` 已完成第二轮页面级补强。
+4. **P3 已开始推进**：`ArtDecoStockManagement.vue`、`ArtDecoMarketQuotes.vue`、`ArtDecoTradingManagement.vue`、`ArtDecoStrategyManagement.vue`、`ArtDecoStrategyOptimization.vue`、`ArtDecoBacktestAnalysis.vue`、`StrategyParametersTab.vue`、`StrategySignalsTab.vue`、`ArtDecoSignalsView.vue`、`ArtDecoTradingHistory.vue`、`ArtDecoTradingPositions.vue`、`ArtDecoMonitoringDashboard.vue`、`ArtDecoDataManagement.vue`、`SystemHealthTab.vue`、`ArtDecoRiskAlerts.vue`、`ArtDecoAnnouncementMonitor.vue`、`RiskOverviewTab.vue`、`StopLossMonitorTab.vue`、`MarketRealtimeTab.vue`、`MarketKLineTab.vue`、`MarketConceptTab.vue`、`MarketETFTab.vue`、`TechnicalScannerTab.vue`、`PortfolioOverviewTab.vue`、`DragonTigerAnalysis.vue`、`FundFlowAnalysis.vue`、`ArtDecoIndustryAnalysis.vue` 与 `ArtDecoRiskManagement.vue` 已完成第二轮页面级补强。
 5. **剩余工作**：历史兼容层的长期归档策略、剩余页面一致性审查、页面骨架模板化。
 
 ---
