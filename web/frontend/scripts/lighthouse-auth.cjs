@@ -1,6 +1,7 @@
 "use strict";
 
 const { URL } = require("node:url");
+const { setTimeout: delay } = require("node:timers/promises");
 
 const LHCI_USER = {
   id: 1,
@@ -9,8 +10,6 @@ const LHCI_USER = {
   role: "admin",
   permissions: ["*"],
 };
-
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 module.exports = async (browser, { url }) => {
   const page = await browser.newPage();
