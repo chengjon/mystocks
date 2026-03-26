@@ -350,7 +350,7 @@ jobs:
           echo "Using Playwright-managed frontend server"
         fi
 
-        npm run test:e2e:business-smoke
+        npm run test:e2e:stable
 
     - name: Run axe accessibility smoke
       if: needs.frontend-gate-scope-detect.outputs.frontend_source_changed == 'true'
