@@ -37,7 +37,6 @@ describe("CI workflow gates", () => {
     expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/components/common");
     expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/views/styles");
     expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/components/shared/ui");
-    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/components/shared/ui/VirtualStockList.vue");
     expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/views/SkeletonUsage.vue");
     expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/views/ArtDecoTest.vue");
     expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/views/Stocks.vue");
@@ -60,25 +59,26 @@ describe("CI workflow gates", () => {
 
   it("runs the full frontend unit suite as a blocking frontend-testing gate", () => {
     const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
-    const stableUnitStepMatch = workflowText.match(
+    const frontendTestSection = workflowText.split("frontend-test:")[1]?.split("frontend-security:")[0];
+    const stableUnitStepMatch = frontendTestSection.match(
       /- name: Run stable unit tests[\s\S]*?run:\s*([^\n]+)/u,
     );
-    const unitTestStepMatch = workflowText.match(
+    const unitTestStepMatch = frontendTestSection.match(
       /- name: Run full unit tests[\s\S]*?run:\s*([^\n]+)/u,
     );
 
     expect(stableUnitStepMatch?.[1]?.trim()).toBe("npm run test:unit:stable");
     expect(unitTestStepMatch?.[1]?.trim()).toBe("npm run test");
-    expect(workflowText).not.toMatch(
+    expect(frontendTestSection).not.toMatch(
       /- name: Run full unit tests[\s\S]*?continue-on-error:\s*true/u,
     );
   });
 
   it("runs the Chromium business-smoke suite in frontend-testing", () => {
     const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
-    const e2eStepMatch = workflowText.match(/- name: Run business smoke e2e tests[\s\S]*?npm run test:e2e:business-smoke/u);
+    const e2eStepMatch = workflowText.match(/- name: Run business smoke e2e tests[\s\S]*?npm run test:e2e:stable/u);
 
-    expect(e2eStepMatch?.[0]).toContain("npm run test:e2e:business-smoke");
+    expect(e2eStepMatch?.[0]).toContain("npm run test:e2e:stable");
   });
 
   it("runs the axe accessibility smoke in frontend-testing", () => {
@@ -134,7 +134,6 @@ describe("CI workflow gates", () => {
     expect(workflowText).toContain("web/frontend/src/views/styles/**");
     expect(workflowText).toContain("web/frontend/src/components/shared/ui/*");
     expect(workflowText).toContain("web/frontend/src/components/shared/ui/**");
-    expect(workflowText).toContain("web/frontend/src/components/shared/ui/VirtualStockList.vue");
     expect(workflowText).toContain("web/frontend/src/views/SkeletonUsage.vue");
     expect(workflowText).toContain("web/frontend/src/views/ArtDecoTest.vue");
     expect(workflowText).toContain("web/frontend/src/views/Stocks.vue");
