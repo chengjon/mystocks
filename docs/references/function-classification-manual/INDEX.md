@@ -7,32 +7,32 @@
 
 ---
 
-- [01-core-functions](function-classification-manual/01-core-functions.md)
+- [01-core-functions](01-core-functions.md)
   - *核心功能*
 
-- [02-auxiliary-functions](function-classification-manual/02-auxiliary-functions.md)
+- [02-auxiliary-functions](02-auxiliary-functions.md)
   - *辅助功能*
 
-- [03-infrastructure-functions](function-classification-manual/03-infrastructure-functions.md)
+- [03-infrastructure-functions](03-infrastructure-functions.md)
   - *基础设施功能*
 
-- [04-monitoring-functions](function-classification-manual/04-monitoring-functions.md)
+- [04-monitoring-functions](04-monitoring-functions.md)
   - *监控功能*
 
-- [05-utility-functions](function-classification-manual/05-utility-functions.md)
+- [05-utility-functions](05-utility-functions.md)
   - *工具功能*
 
-- [06-duplication-analysis](function-classification-manual/06-duplication-analysis.md)
+- [06-duplication-analysis](06-duplication-analysis.md)
   - *代码重复分析*
 
-- [07-optimization-roadmap](function-classification-manual/07-optimization-roadmap.md)
+- [07-optimization-roadmap](07-optimization-roadmap.md)
   - *优化路线图*
 
-- [08-consolidation-guide](function-classification-manual/08-consolidation-guide.md)
+- [08-consolidation-guide](08-consolidation-guide.md)
   - *模块合并指南*
 
-- [09-data-flow-maps](function-classification-manual/09-data-flow-maps.md)
+- [09-data-flow-maps](09-data-flow-maps.md)
   - *数据流图*
 
-- [duplication-summary](function-classification-manual/duplication-summary.md)
+- [duplication-summary](duplication-summary.md)
   - *代码重复分析摘要*

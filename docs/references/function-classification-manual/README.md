@@ -135,18 +135,18 @@
 - **补丁更新**: 修正文档错误或补充细节时
 
 ### 更新流程
-1. 运行分析脚本: `python scripts/analysis/scan_codebase.py`
-2. 生成新的清单: `python scripts/analysis/generate_inventory.py`
+1. 运行分析脚本: `python scripts/dev/analysis/scan_codebase.py`
+2. 生成文档: `python scripts/dev/analysis/generate_docs.py`
 3. 更新相应的文档章节
 4. 更新版本号和生成日期
 
 ### 自动化工具
-所有分析和生成工具位于 `scripts/analysis/` 目录：
+所有分析和生成工具位于 `scripts/dev/analysis/` 目录：
 
-- `scan_codebase.py` - 扫描整个代码库
-- `generate_inventory.py` - 生成模块清单
+- `scan_codebase.py` - 扫描整个代码库并生成模块清单
 - `detect_duplicates.py` - 检测代码重复
-- `classify_modules.py` - 模块分类
+- `generate_optimization_roadmap.py` - 生成优化路线图
+- `generate_consolidation_guide.py` - 生成模块合并建议
 - `generate_docs.py` - 生成 Markdown 文档
 
 ## 统计数据摘要
