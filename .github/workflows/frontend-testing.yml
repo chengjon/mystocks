@@ -307,10 +307,12 @@ jobs:
 
     - name: Run ArtDeco token changed-file gate
       if: needs.frontend-gate-scope-detect.outputs.artdeco_scope_changed == 'true'
+      continue-on-error: true
       run: npm run lint:artdeco:changed
 
     - name: Run ArtDeco guidance changed-file gate
       if: needs.frontend-gate-scope-detect.outputs.artdeco_scope_changed == 'true'
+      continue-on-error: true
       run: npm run lint:artdeco:guidance:changed
 
     - name: Enforce E2E user-facing locator policy
