@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 
 # 配置变量
 PROJECT_ROOT="/opt/claude/mystocks_spec"
-LOG_DIR="/opt/mystocks/logs"
+LOG_DIR="/var/log/mystocks"
 HEALTH_LOG="${LOG_DIR}/health_check.log"
 API_BASE_URL="http://localhost:8888"
 FRONTEND_URL="http://localhost:"

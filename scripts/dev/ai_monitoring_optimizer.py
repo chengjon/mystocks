@@ -93,7 +93,7 @@ class AIAlertManager:
                 "recipients": [],
             },
             "webhook": {"enabled": False, "url": "", "headers": {}},
-            "log": {"enabled": True, "file": "logs/ai_alerts.log"},
+            "log": {"enabled": True, "file": "var/log/ai_alerts.log"},
         }
 
     def check_alert_conditions(self, metrics: Dict[str, Any]) -> List[Dict[str, Any]]:

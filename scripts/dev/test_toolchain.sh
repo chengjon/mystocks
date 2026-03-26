@@ -75,7 +75,7 @@ test_directory_structure() {
 
     local required_dirs=(
         "/opt/claude/mystocks_spec/scripts/dev"
-        "/opt/claude/mystocks_spec/logs"
+        "/opt/claude/mystocks_spec/var/log"
         "/opt/claude/mystocks_spec/config/lnav"
         "/opt/claude/mystocks_spec/web/backend"
         "/opt/claude/mystocks_spec/web/frontend"

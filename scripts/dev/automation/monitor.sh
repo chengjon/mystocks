@@ -9,7 +9,7 @@
 # 配置
 PROJECT_ROOT="/opt/claude/mystocks_spec"
 HEALTH_SCRIPT="${PROJECT_ROOT}/scripts/automation/health_check_simple.sh"
-LOG_DIR="/opt/mystocks/logs"
+LOG_DIR="/var/log/mystocks"
 MONITOR_LOG="${LOG_DIR}/monitor.log"
 CHECK_INTERVAL=300  # 默认5分钟检查一次（300秒）
 

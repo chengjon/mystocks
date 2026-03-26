@@ -27,7 +27,7 @@ from collections import defaultdict
 class DocsSuggestionAnalyzer:
     """文档建议分析器"""
 
-    def __init__(self, log_dir: str = "logs/docs-audit"):
+    def __init__(self, log_dir: str = "var/log/docs-audit"):
         self.log_dir = Path(log_dir)
         self.suggestions = defaultdict(list)
         self.file_issues = defaultdict(int)

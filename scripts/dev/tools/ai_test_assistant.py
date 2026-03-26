@@ -83,7 +83,7 @@ class AITestAssistant:
 
         self.project_root = Path(project_root)
         self.test_reports_dir = self.project_root / "test-reports"
-        self.logs_dir = self.project_root / "logs"
+        self.logs_dir = self.project_root / "var" / "log"
         self.scripts_dir = self.project_root / "scripts"
 
         # 确保目录存在

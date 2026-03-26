@@ -18,7 +18,7 @@ NC='\033[0m' # No Color
 # 配置变量
 PROJECT_ROOT="/opt/claude/mystocks_spec"
 BACKUP_DIR="/opt/mystocks/backups"
-LOG_DIR="/opt/mystocks/logs"
+LOG_DIR="/var/log/mystocks"
 DATA_DIR="/opt/mystocks/data"
 ENV_FILE="${PROJECT_ROOT}/.env"
 CONFIG_FILE="${PROJECT_ROOT}/ecosystem.production.config.js"

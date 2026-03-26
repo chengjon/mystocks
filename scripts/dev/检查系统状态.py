@@ -87,10 +87,8 @@ def check_logs_directory():
     print(f"{'=' * 60}")
 
     log_dirs = [
-        "/opt/claude/mystocks_spec/logs",
-        "/opt/claude/mystocks_spec/web/backend/logs",
-        "/opt/claude/mystocks_spec/web/frontend/logs",
-        "/opt/claude/mystocks_spec/web/backend/logs",
+        "/opt/claude/mystocks_spec/var/log",
+        "/opt/claude/mystocks_spec/var/log/tests",
     ]
 
     for log_dir in log_dirs:

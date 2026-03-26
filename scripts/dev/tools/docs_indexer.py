@@ -74,7 +74,7 @@ class DocsIndexer:
             pass
         return md_file.stem
 
-    def generate_category_index(self, category: str, items: List[Dict]) -> str:
+    def generate_category_index(self, category: str, items: List[Dict], category_path: str) -> str:
         """生成分类索引"""
         lines = [
             f"# {category}\n",
@@ -85,9 +85,12 @@ class DocsIndexer:
 
         # 按名称排序
         items_sorted = sorted(items, key=lambda x: x["name"])
+        category_root = Path(category_path)
 
         for item in items_sorted:
-            lines.append(f"- [{item['name']}]({item['path']})")
+            item_path = Path(item["path"])
+            relative_item_path = item_path.relative_to(category_root).as_posix()
+            lines.append(f"- [{item['name']}]({relative_item_path})")
             if item.get("title"):
                 lines.append(f"  - *{item['title']}*")
             lines.append("")
@@ -226,7 +229,7 @@ class DocsIndexer:
 
         print(f"✅ 全局索引已保存到: {output_path}")
 
-    def save_category_indices(self, base_dir: Path):
+    def save_category_indices(self, _base_dir: Path):
         """为每个主目录生成索引"""
         index_data = self.generate()
 
@@ -248,10 +251,11 @@ class DocsIndexer:
 
             # 生成索引
             category_title = self._dir_to_title(category_name)
-            index_content = self.generate_category_index(category_title, all_files)
+            index_content = self.generate_category_index(category_title, all_files, category_data["path"])
 
-            # 保存
-            index_path = base_dir / category_data["path"] / "INDEX.md"
+            # category_data["path"] is already relative to self.root_path, so category
+            # indices must stay under the scanned subtree instead of its parent.
+            index_path = self.root_path / category_data["path"] / "INDEX.md"
             index_path.parent.mkdir(parents=True, exist_ok=True)
 
             with open(index_path, "w", encoding="utf-8") as f:

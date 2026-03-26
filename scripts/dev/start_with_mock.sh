@@ -80,7 +80,8 @@ start_backend() {
     # 启动服务
     info "在后台启动后端服务..."
     cd web/backend
-    nohup python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload > /opt/claude/mystocks_spec/logs/backend.log 2>&1 &
+    mkdir -p /opt/claude/mystocks_spec/var/log
+    nohup python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload > /opt/claude/mystocks_spec/var/log/backend.log 2>&1 &
     BACKEND_PID=$!
     echo $BACKEND_PID > /opt/claude/mystocks_spec/backend.pid
 
@@ -117,7 +118,8 @@ start_frontend() {
 
     # 启动服务
     info "在后台启动前端服务..."
-    nohup npm run dev -- --host 0.0.0.0 --port 5173 > /opt/claude/mystocks_spec/logs/frontend.log 2>&1 &
+    mkdir -p /opt/claude/mystocks_spec/var/log
+    nohup npm run dev -- --host 0.0.0.0 --port 5173 > /opt/claude/mystocks_spec/var/log/frontend.log 2>&1 &
     FRONTEND_PID=$!
     echo $FRONTEND_PID > /opt/claude/mystocks_spec/frontend.pid
 
@@ -180,8 +182,8 @@ show_startup_info() {
     echo -e "  USE_MOCK_DATA: ${GREEN}已启用${NC}"
     echo ""
     echo -e "${YELLOW}日志文件:${NC}"
-    echo -e "  后端日志: ${BLUE}/opt/claude/mystocks_spec/logs/backend.log${NC}"
-    echo -e "  前端日志: ${BLUE}/opt/claude/mystocks_spec/logs/frontend.log${NC}"
+    echo -e "  后端日志: ${BLUE}/opt/claude/mystocks_spec/var/log/backend.log${NC}"
+    echo -e "  前端日志: ${BLUE}/opt/claude/mystocks_spec/var/log/frontend.log${NC}"
     echo ""
     echo -e "${YELLOW}进程ID文件:${NC}"
     if [ -f /opt/claude/mystocks_spec/backend.pid ]; then

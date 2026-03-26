@@ -7,7 +7,7 @@
 # 会话配置
 SESSION_NAME="mystocks_dev"
 PROJECT_ROOT="/opt/claude/mystocks_spec"
-LOG_DIR="$PROJECT_ROOT/logs"
+LOG_DIR="$PROJECT_ROOT/var/log"
 
 # 颜色定义
 RED='\033[0;31m'
@@ -95,9 +95,9 @@ create_dev_session() {
     # 分割面板 - 数据库监控
     tmux split-window -h -t $SESSION_NAME -n databases -c "$PROJECT_ROOT"
     # 子面板1: TDengine监控
-    tmux send-keys -t $SESSION_NAME:databases.0 "echo 'TDengine数据库监控'; echo '执行: docker stats mystocks-tdengine'; echo '日志: tail -f logs/database/tdengine*.log'" C-m
+    tmux send-keys -t $SESSION_NAME:databases.0 "echo 'TDengine数据库监控'; echo '执行: docker stats mystocks-tdengine'; echo '日志: tail -f var/log/database/tdengine*.log'" C-m
     # 子面板2: PostgreSQL监控  
-    tmux send-keys -t $SESSION_NAME:databases.1 "echo 'PostgreSQL数据库监控'; echo '执行: docker stats mystocks-postgresql'; echo '日志: tail -f logs/database/postgresql*.log'" C-m
+    tmux send-keys -t $SESSION_NAME:databases.1 "echo 'PostgreSQL数据库监控'; echo '执行: docker stats mystocks-postgresql'; echo '日志: tail -f var/log/database/postgresql*.log'" C-m
     
     # 窗口2: 自动化监控面板
     tmux new-window -t $SESSION_NAME -n monitoring -c "$PROJECT_ROOT"
@@ -108,10 +108,10 @@ create_dev_session() {
     # 窗口3: 高级日志分析（如果lnav可用）
     if [ "$LNAV_AVAILABLE" = true ]; then
         tmux split-window -v -t $SESSION_NAME -n logs-analysis -c "$PROJECT_ROOT"
-        tmux send-keys -t $SESSION_NAME:logs-analysis.0 "echo 'lnav增强日志分析'; echo '执行: lnav -c config/lnav_formats.json logs/api/*/*'" C-m
-        tmux send-keys -t $SESSION_NAME:logs-analysis.1 "echo '实时错误日志'; echo '执行: lnav -c config/lnav_formats.json logs/api/*/* --filter-in log_level IN (ERROR, CRITICAL)'" C-m
-        tmux send-keys -t $SESSION_NAME:logs-analysis.2 "echo '性能监控日志'; echo '执行: lnav -c config/lnav_formats.json logs/api/*/* --filter-in response_time > 1000'" C-m
-        tmux send-keys -t $SESSION_NAME:logs-analysis.3 "echo '日志导出功能'; echo '执行: lnav -c config/lnav_formats.json logs/api/*/* :export-to-json'" C-m
+        tmux send-keys -t $SESSION_NAME:logs-analysis.0 "echo 'lnav增强日志分析'; echo '执行: lnav -c config/lnav_formats.json var/log/api/*/*'" C-m
+        tmux send-keys -t $SESSION_NAME:logs-analysis.1 "echo '实时错误日志'; echo '执行: lnav -c config/lnav_formats.json var/log/api/*/* --filter-in log_level IN (ERROR, CRITICAL)'" C-m
+        tmux send-keys -t $SESSION_NAME:logs-analysis.2 "echo '性能监控日志'; echo '执行: lnav -c config/lnav_formats.json var/log/api/*/* --filter-in response_time > 1000'" C-m
+        tmux send-keys -t $SESSION_NAME:logs-analysis.3 "echo '日志导出功能'; echo '执行: lnav -c config/lnav_formats.json var/log/api/*/* :export-to-json'" C-m
         tmux send-keys -t $SESSION_NAME:logs-analysis.4 "echo '搜索和过滤'; echo '命令: :filter-in <pattern>, :stats, :db <sql>'" C-m
     fi
     

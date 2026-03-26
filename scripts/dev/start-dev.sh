@@ -152,7 +152,7 @@ start_services() {
     tmux send-keys -t "$session_name:0.3" "if command -v lnav &> /dev/null; then" C-m
     tmux send-keys -t "$session_name:0.3" "  ./scripts/setup_lnav.sh dev" C-m
     tmux send-keys -t "$session_name:0.3" "else" C-m
-    tmux send-keys -t "$session_name:0.3" "  echo 'lnav 未安装，使用 tail -f 监控...' && tail -f logs/backend.log" C-m
+    tmux send-keys -t "$session_name:0.3" "  echo 'lnav 未安装，使用 tail -f 监控...' && tail -f var/log/backend.log" C-m
     tmux send-keys -t "$session_name:0.3" "fi" C-m
 
     info "服务启动完成"

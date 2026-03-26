@@ -47,11 +47,11 @@ ROOT_FILE_MAPPINGS = {
     "COMPREHENSIVE_CLEANUP_REPORT.md": "reports/comprehensive-cleanup.md",
     "FILE_ORGANIZATION_RULES.md": "standards/file-organization-rules.md",
     "DEPLOYMENT_GUIDE.md": "operations/deployment-guide.md",
-    "QUICK_START.md": "guides/quick-start.md",
-    "ENHANCED_UI_UX_GUIDE.md": "guides/enhanced-ui-ux-guide.md",
-    "IMPLEMENTATION_GUIDE.md": "guides/implementation-guide.md",
+    "QUICK_START.md": "operations/quick-start.md",
+    "ENHANCED_UI_UX_GUIDE.md": "guides/frontend/enhanced-ui-ux-guide.md",
+    "IMPLEMENTATION_GUIDE.md": "api/guides/integration/implementation-guide.md",
     "ARCHIVED.md": "overview/archived.md",
-    "INITIALIZATION_PROMPT.md": "overview/initialization-prompt.md",
+    "INITIALIZATION_PROMPT.md": "guides/templates/INITIALIZATION_PROMPT.md",
 }
 
 

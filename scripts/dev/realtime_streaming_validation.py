@@ -740,7 +740,7 @@ class RealtimeStreamingValidator:
             print(f"📉 平均丢失率: {statistics.mean(avg_loss_rates):.2f}%")
 
         # 保存详细报告
-        report_file = f"/opt/claude/mystocks_spec/logs/realtime_streaming_validation_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        report_file = f"/opt/claude/mystocks_spec/var/log/realtime_streaming_validation_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         with open(report_file, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2, ensure_ascii=False)
 

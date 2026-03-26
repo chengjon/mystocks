@@ -335,7 +335,7 @@ def main():
         "data_access/__init__.py",
         ".env.example",
         "docs/HOW_TO_ADD_NEW_DATA_CLASSIFICATION.md",
-        "docs/deployment/README.md",
+        "docs/operations/deployment/README.md",
         "T037_COMPLETION_SUMMARY.md",
     ]
 

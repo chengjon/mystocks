@@ -13,7 +13,7 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 # 日志文件
-LOG_DIR="logs"
+LOG_DIR="var/log/tests"
 TEST_LOG="${LOG_DIR}/test_analysis.log"
 ERROR_LOG="${LOG_DIR}/errors.log"
 PERFORMANCE_LOG="${LOG_DIR}/performance.log"

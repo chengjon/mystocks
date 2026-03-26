@@ -3,7 +3,7 @@
 # 持续监控localhost服务器状态，等待恢复
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
 
 # 颜色输出
 RED='\033[0;31m'
@@ -16,7 +16,9 @@ NC='\033[0m'
 # 配置
 SERVER_IP="localhost"
 CHECK_INTERVAL=30  # 30秒检查一次
-NOTIFICATION_FILE="${PROJECT_ROOT}/logs/server_monitor.log"
+LOG_DIR="${PROJECT_ROOT}/var/log"
+NOTIFICATION_FILE="${LOG_DIR}/server_monitor.log"
+RECOVERY_FLAG_FILE="${LOG_DIR}/server_recovered.flag"
 
 log_info() {
     echo -e "${BLUE}[MONITOR]${NC} $(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$NOTIFICATION_FILE"
@@ -39,7 +41,7 @@ log_critical() {
 }
 
 # 创建日志目录
-mkdir -p "${PROJECT_ROOT}/logs"
+mkdir -p "${LOG_DIR}"
 
 # 网络连通性检查
 check_network() {
@@ -177,8 +179,8 @@ send_recovery_notification() {
     log_critical "🔧 运行: ./scripts/tools/verify-database-connections.sh"
 
     # 创建恢复标记文件
-    echo "$(date '+%Y-%m-%d %H:%M:%S')" > "${PROJECT_ROOT}/logs/server_recovered.flag"
-    echo "服务器已恢复，所有数据库服务连接正常" >> "${PROJECT_ROOT}/logs/server_recovered.flag"
+    echo "$(date '+%Y-%m-%d %H:%M:%S')" > "${RECOVERY_FLAG_FILE}"
+    echo "服务器已恢复，所有数据库服务连接正常" >> "${RECOVERY_FLAG_FILE}"
 }
 
 # 主监控循环
@@ -192,9 +194,9 @@ main() {
     echo ""
 
     # 检查是否已经有恢复标记
-    if [ -f "${PROJECT_ROOT}/logs/server_recovered.flag" ]; then
+    if [ -f "${RECOVERY_FLAG_FILE}" ]; then
         log_warn "检测到服务器已恢复标记，退出监控"
-        cat "${PROJECT_ROOT}/logs/server_recovered.flag"
+        cat "${RECOVERY_FLAG_FILE}"
         exit 0
     fi
 
