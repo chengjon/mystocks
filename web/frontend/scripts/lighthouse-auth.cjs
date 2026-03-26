@@ -10,6 +10,8 @@ const LHCI_USER = {
   permissions: ["*"],
 };
 
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 module.exports = async (browser, { url }) => {
   const page = await browser.newPage();
 
@@ -25,7 +27,7 @@ module.exports = async (browser, { url }) => {
 
     if (targetUrl.pathname !== "/login") {
       await page.goto(targetUrl.href, { waitUntil: "domcontentloaded" });
-      await page.waitForTimeout(250);
+      await delay(250);
     }
   } finally {
     await page.close();
