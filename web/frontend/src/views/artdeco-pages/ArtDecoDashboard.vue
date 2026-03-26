@@ -1,5 +1,5 @@
 <template>
-    <main class="artdeco-dashboard" role="main">
+    <section class="artdeco-dashboard">
         <!-- 戏剧性的页面头部 -->
         <ArtDecoHeader
             title="QUANTIX"
@@ -449,7 +449,7 @@
                 </nav>
             </ArtDecoCard>
         </div>
-    </main>
+    </section>
 </template>
 
 <script setup>

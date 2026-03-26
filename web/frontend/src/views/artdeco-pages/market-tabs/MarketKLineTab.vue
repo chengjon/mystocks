@@ -35,7 +35,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <main class="market-kline-tab page-enter" role="main">
+  <section class="market-kline-tab page-enter">
     <section class="hero-shell artdeco-card-shell">
       <div class="hero-rail">
         <div class="hero-copy">
@@ -125,7 +125,7 @@ onMounted(() => {
         </table>
       </div>
     </section>
-  </main>
+  </section>
 </template>
 
 <style scoped lang="scss">

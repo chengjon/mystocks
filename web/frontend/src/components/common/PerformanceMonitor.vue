@@ -44,7 +44,7 @@ const fpsColor = computed(() => {
   display: flex;
   gap: var(--artdeco-spacing-3);
   border: 1px solid var(--artdeco-gold-opacity-10);
-  backdrop-filter: blur(var(--artdeco-spacing-px) * 2);
+  backdrop-filter: blur(calc(var(--artdeco-spacing-px) * 2));
 }
 
 .metric-row {
