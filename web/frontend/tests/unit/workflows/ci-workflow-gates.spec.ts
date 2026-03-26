@@ -27,20 +27,58 @@ describe("CI workflow gates", () => {
     expect(packageJson.scripts["test:e2e:lighthouse"]).toBeDefined();
   });
 
+  it("defines ArtDeco documentation governance commands for full and changed-only checks", () => {
+    expect(packageJson.scripts["lint:artdeco:guidance"]).toBeDefined();
+    expect(packageJson.scripts["lint:artdeco:guidance:changed"]).toBeDefined();
+    expect(packageJson.scripts["lint:artdeco:changed"]).toBeDefined();
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/layouts");
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/components/layout");
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/components/menu");
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/components/common");
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/views/styles");
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/components/shared/ui");
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/views/SkeletonUsage.vue");
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/views/ArtDecoTest.vue");
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/views/Stocks.vue");
+    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/views/system/styles/PerformanceMonitor.css");
+  });
+
+  it("defines visual regression package scripts for workflow reuse", () => {
+    expect(packageJson.scripts["test:visual"]).toBeDefined();
+    expect(packageJson.scripts["test:visual:update"]).toBeDefined();
+    expect(packageJson.scripts["test:visual:dashboard"]).toBeDefined();
+    expect(packageJson.scripts["test:visual:dashboard:update"]).toBeDefined();
+    expect(packageJson.scripts["test:visual:charts"]).toBeDefined();
+    expect(packageJson.scripts["test:visual:charts:update"]).toBeDefined();
+  });
+
+  it("defines a blocking Chromium business-smoke command", () => {
+    expect(packageJson.scripts["test:e2e:business-smoke"]).toBeDefined();
+    expect(packageJson.scripts["test:e2e:auth"]).toBeDefined();
+  });
+
   it("runs the full frontend unit suite as a blocking frontend-testing gate", () => {
     const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
-    const stableUnitStepMatch = workflowText.match(
+    const frontendTestSection = workflowText.split("frontend-test:")[1]?.split("frontend-security:")[0];
+    const stableUnitStepMatch = frontendTestSection.match(
       /- name: Run stable unit tests[\s\S]*?run:\s*([^\n]+)/u,
     );
-    const unitTestStepMatch = workflowText.match(
+    const unitTestStepMatch = frontendTestSection.match(
       /- name: Run full unit tests[\s\S]*?run:\s*([^\n]+)/u,
     );
 
     expect(stableUnitStepMatch?.[1]?.trim()).toBe("npm run test:unit:stable");
     expect(unitTestStepMatch?.[1]?.trim()).toBe("npm run test");
-    expect(workflowText).not.toMatch(
+    expect(frontendTestSection).not.toMatch(
       /- name: Run full unit tests[\s\S]*?continue-on-error:\s*true/u,
     );
+  });
+
+  it("runs the Chromium business-smoke suite in frontend-testing", () => {
+    const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
+    const e2eStepMatch = workflowText.match(/- name: Run business smoke e2e tests[\s\S]*?npm run test:e2e:stable/u);
+
+    expect(e2eStepMatch?.[0]).toContain("npm run test:e2e:stable");
   });
 
   it("runs the axe accessibility smoke in frontend-testing", () => {
@@ -61,10 +99,54 @@ describe("CI workflow gates", () => {
     expect(lighthouseStepMatch?.[1]?.trim()).toBe("npm run test:e2e:lighthouse");
   });
 
-  it("keeps the legacy e2e-testing workflow aligned with the Lighthouse mainline", () => {
+  it("runs the changed-only ArtDeco guidance gate in frontend-testing", () => {
+    const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
+    const guidanceStepMatch = workflowText.match(
+      /- name: Run ArtDeco guidance changed-file gate[\s\S]*?run:\s*([^\n]+)/u,
+    );
+
+    expect(guidanceStepMatch?.[1]?.trim()).toBe("npm run lint:artdeco:guidance:changed");
+  });
+
+  it("runs the changed-only ArtDeco source gate in frontend-testing", () => {
+    const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
+    const sourceStepMatch = workflowText.match(
+      /- name: Run ArtDeco token changed-file gate[\s\S]*?run:\s*([^\n]+)/u,
+    );
+
+    expect(sourceStepMatch?.[1]?.trim()).toBe("npm run lint:artdeco:changed");
+  });
+
+  it("treats ArtDeco components as ArtDeco scope inputs during workflow detection", () => {
+    const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
+
+    expect(workflowText).toContain("web/frontend/src/components/artdeco/*");
+    expect(workflowText).toContain("web/frontend/src/components/artdeco/**");
+    expect(workflowText).toContain("web/frontend/src/layouts/*");
+    expect(workflowText).toContain("web/frontend/src/layouts/**");
+    expect(workflowText).toContain("web/frontend/src/components/layout/*");
+    expect(workflowText).toContain("web/frontend/src/components/layout/**");
+    expect(workflowText).toContain("web/frontend/src/components/menu/*");
+    expect(workflowText).toContain("web/frontend/src/components/menu/**");
+    expect(workflowText).toContain("web/frontend/src/components/common/*");
+    expect(workflowText).toContain("web/frontend/src/components/common/**");
+    expect(workflowText).toContain("web/frontend/src/views/styles/*");
+    expect(workflowText).toContain("web/frontend/src/views/styles/**");
+    expect(workflowText).toContain("web/frontend/src/components/shared/ui/*");
+    expect(workflowText).toContain("web/frontend/src/components/shared/ui/**");
+    expect(workflowText).toContain("web/frontend/src/views/SkeletonUsage.vue");
+    expect(workflowText).toContain("web/frontend/src/views/ArtDecoTest.vue");
+    expect(workflowText).toContain("web/frontend/src/views/Stocks.vue");
+    expect(workflowText).toContain("web/frontend/src/views/system/styles/PerformanceMonitor.css");
+  });
+
+  it("keeps the dedicated cross-browser workflow aligned with the Playwright mainline", () => {
     const workflowText = readWorkflow(".github/workflows/e2e-testing.yml");
 
     expect(workflowText).toContain("npm run test:e2e:lighthouse");
+    expect(workflowText).toContain("tests/e2e/auth-login.spec.ts");
+    expect(workflowText).toContain("tests/e2e/critical/menu-navigation-fixed.spec.ts");
+    expect(workflowText).toContain("tests/e2e/kline-chart.spec.ts");
     expect(workflowText).not.toContain(".lighthouserc.json");
   });
 
@@ -102,5 +184,36 @@ describe("CI workflow gates", () => {
     );
 
     expect(baseline.frontend_type_errors).toBe(0);
+  });
+
+  it("watches the real frontend visual test tree in the visual workflow", () => {
+    const workflowText = readWorkflow(".github/workflows/visual-testing.yml");
+
+    expect(workflowText).toContain("web/frontend/tests/visual/**");
+    expect(workflowText).not.toContain("'tests/visual/**'");
+  });
+
+  it("uses package scripts instead of inline playwright commands in the visual workflow", () => {
+    const workflowText = readWorkflow(".github/workflows/visual-testing.yml");
+
+    expect(workflowText).toContain("npm run test:visual:dashboard --");
+    expect(workflowText).toContain("npm run test:visual:charts --");
+    expect(workflowText).toContain("npm run test:visual:dashboard:update");
+    expect(workflowText).toContain("npm run test:visual:charts:update");
+    expect(workflowText).toContain("VISUAL_HTML_REPORT_DIR=playwright-report/dashboard");
+    expect(workflowText).toContain("VISUAL_HTML_REPORT_DIR=playwright-report/charts");
+    expect(workflowText).toContain("visual-dashboard-results-${{ matrix.browser }}");
+    expect(workflowText).toContain("visual-chart-results-${{ matrix.browser }}");
+    expect(workflowText).not.toContain("npx playwright test \\");
+  });
+
+  it("writes a grouped visual summary for dashboard and chart suites", () => {
+    const workflowText = readWorkflow(".github/workflows/visual-testing.yml");
+
+    expect(workflowText).toContain("visual-test-summary.json");
+    expect(workflowText).toContain("dashboard_tests");
+    expect(workflowText).toContain("dashboard_passed");
+    expect(workflowText).toContain("chart_tests");
+    expect(workflowText).toContain("chart_passed");
   });
 });

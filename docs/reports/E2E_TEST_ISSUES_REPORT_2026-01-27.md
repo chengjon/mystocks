@@ -63,7 +63,7 @@ E2E_BASE_URL=http://localhost:3001 npx playwright test ...
 
 **现象**: PM2日志显示 `ImportError: attempted relative import with no known parent package`
 
-**解决方案**: 见 `WEB_FRONTEND_STARTUP_GUIDE.md` 第7节
+**解决方案**: 见 `docs/guides/web/WEB_FRONTEND_STARTUP_GUIDE.md` 第7节
 
 ---
 
@@ -145,5 +145,5 @@ E2E_BASE_URL=http://localhost:3001 npx playwright test ...
 
 - 测试文件: `web/frontend/tests/e2e/comprehensive-all-pages.spec.ts`
 - 测试脚本: `scripts/test/run-comprehensive-tests.sh`
-- 启动指南: `docs/guides/WEB_FRONTEND_STARTUP_GUIDE.md`
+- 启动指南: `docs/guides/web/WEB_FRONTEND_STARTUP_GUIDE.md`
 - 问题修复: `docs/reports/FRONTEND_JS_SYNTAX_FIX_REPORT.md`

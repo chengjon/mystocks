@@ -21,7 +21,7 @@
 
 **核心原则**: **专库专用，简洁胜于过度复杂**
 
-详细评估请参阅：[docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md](./docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md)
+详细评估请参阅：[docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md](../architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md)
 
 ---
 
@@ -347,7 +347,7 @@ mystocks_spec/
 │
 ├── tests/                    # 🧪 测试代码
 ├── examples/                 # 📖 示例代码
-├── logs/                     # 📝 日志目录
+├── var/log/                  # 📝 运行日志目录
 ├── temp/                     # 🗂️ 临时文件
 │
 ├── .archive/                 # 📦 归档内容 (历史代码/文档)
@@ -392,7 +392,7 @@ from adapters.akshare_adapter import AkshareDataSource
 - 完整保留了文件的Git历史记录
 - 可追溯每个文件的完整演进历史
 
-**详细报告**: 参见 [`REORGANIZATION_COMPLETION_REPORT.md`](./REORGANIZATION_COMPLETION_REPORT.md)
+**详细报告**: 参见 [`REORGANIZATION_COMPLETION_REPORT.md`](../reports/REORGANIZATION_COMPLETION_REPORT.md)
 
 ### 核心模块组织 (src/ 目录详解)
 
@@ -666,7 +666,7 @@ from src.adapters.akshare_adapter import AkshareDataSource
 from src.adapters.tdx_adapter import TdxDataSource
 ```
 
-详细特性对比: [`docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md`](./docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md)
+详细特性对比: [`docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md`](../architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md)
 
 #### src/core/ - 核心管理类
 
@@ -807,8 +807,8 @@ tables:
 
 ### 📚 docs/ 文档
 
-- `docs/guides/QUICKSTART.md` - 快速入门指南
-- `docs/guides/IFLOW.md` - 项目工作流程
+- `docs/operations/quick-start.md` - 快速入门指南
+- `docs/overview/IFLOW.md` - 项目工作流程
 - `docs/architecture/` - 架构设计文档
 - `docs/api/` - API文档
 - `docs/archived/` - 历史文档归档
@@ -899,7 +899,7 @@ POST /api/announcement/monitor/evaluate   # 评估监控规则
 
 ## 📚 更多信息
 
-- **项目模块清单**: [PROJECT_MODULES.md](./PROJECT_MODULES.md) - 详细的模块来源和分类
+- **项目模块清单**: [PROJECT_MODULES.md](../standards/PROJECT_MODULES.md) - 详细的模块来源和分类
 - **ValueCell Phase 1 完成报告**: [VALUECELL_PHASE1_COMPLETION.md](./VALUECELL_PHASE1_COMPLETION.md)
 - **ValueCell Phase 2 完成报告**: [VALUECELL_PHASE2_COMPLETION.md](./VALUECELL_PHASE2_COMPLETION.md)
 - **ValueCell Phase 3 完成报告**: [VALUECELL_PHASE3_COMPLETION.md](./VALUECELL_PHASE3_COMPLETION.md)
@@ -909,10 +909,10 @@ POST /api/announcement/monitor/evaluate   # 评估监控规则
 
 ### 📖 相关文档导航
 
-- **[完整架构文档索引](./docs/architecture/README.md)** - 技术架构、Phase报告、代码统计
-- **[开发指南](./docs/guides/)** - 详细的开发和使用指南
-- **[API文档](./docs/api/)** - API接口规范和使用说明
-- **[测试报告](./docs/reports/)** - 项目验证和测试结果
+- **[完整架构文档索引](../architecture/README.md)** - 技术架构、Phase报告、代码统计
+- **[开发指南](./README.md)** - 详细的开发和使用指南
+- **[API文档](../api/README.md)** - API接口规范和使用说明
+- **[测试报告](../reports/INDEX.md)** - 项目验证和测试结果
 
 ---
 
@@ -1039,15 +1039,15 @@ sources = search_data_sources(quality_score="<70")
 
 ### 文档链接
 
-📖 **[完整使用指南](./docs/guides/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md)** - 1000+行完整文档，包含所有功能说明
+📖 **[完整使用指南](./data-source/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md)** - 1000+行完整文档，包含所有功能说明
 
-📋 **[快速参考卡片](./docs/guides/DATA_SOURCE_TOOLS_QUICK_REFERENCE.md)** - 5分钟快速上手，常用命令和参数速查
+📋 **[快速参考卡片](./data-source/DATA_SOURCE_TOOLS_QUICK_REFERENCE.md)** - 5分钟快速上手，常用命令和参数速查
 
-🏗️ **[数据源V2.0架构文档](./docs/architecture/DATA_SOURCE_MANAGEMENT_V2.md)** - 系统架构、设计模式、扩展指南
+🏗️ **[数据源V2.0架构文档](../architecture/DATA_SOURCE_MANAGEMENT_V2.md)** - 系统架构、设计模式、扩展指南
 
-✅ **[最终验证报告](./docs/reports/DATA_SOURCE_V2_FINAL_VERIFICATION_REPORT.md)** - 功能验证、测试结果、性能指标
+✅ **[最终验证报告](../reports/DATA_SOURCE_V2_FINAL_VERIFICATION_REPORT.md)** - 功能验证、测试结果、性能指标
 
-🚀 **[功能增强提案](./docs/reports/DATA_SOURCE_V2_ENHANCEMENT_PROPOSAL.md)** - 未来规划、增强建议、改进方向
+🚀 **[功能增强提案](../reports/DATA_SOURCE_V2_ENHANCEMENT_PROPOSAL.md)** - 未来规划、增强建议、改进方向
 
 ### 与系统其他部分的关系
 
@@ -1318,9 +1318,9 @@ curl -X POST http://localhost:8020/backtest \
 ### 📚 文档导航
 
 **快速开始**:
-- [`QUICKSTART.md`](./docs/guides/QUICKSTART.md) - 快速入门指南
-- [`IFLOW.md`](./docs/guides/IFLOW.md) - 项目工作流程
-- [`.taskmaster/CLAUDE.md`](./.taskmaster/CLAUDE.md) - Task Master集成指南
+- [`quick-start.md`](../operations/quick-start.md) - 快速入门指南
+- [`IFLOW.md`](../overview/IFLOW.md) - 项目工作流程
+- [`.taskmaster/CLAUDE.md`](../../.taskmaster/CLAUDE.md) - Task Master集成指南
 
 **架构设计文档** (`docs/architecture/`):
 - 核心架构评估与设计决策
@@ -1340,7 +1340,7 @@ curl -X POST http://localhost:8020/backtest \
 - 数据工作流程
 - Web页面结构指南
 
-**特性实现** (`docs/features/`):
+**特性实现** (`docs/guides/features/`):
 - 股票热力图实现
 - 监控列表分组
 - TradingView集成修复

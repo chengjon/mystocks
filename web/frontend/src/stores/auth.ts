@@ -56,6 +56,14 @@ const useLoginStore = PiniaStoreFactory.createApiStore<{
   validate: (data: LoginResponse): boolean => !!(data && (data.access_token || data.token))
 })
 
+const LHCI_AUTH_USER: User = {
+  id: 1,
+  username: 'lhci-admin',
+  email: 'lhci-admin@mystocks.local',
+  role: 'admin',
+  permissions: ['*']
+}
+
 export const useAuthStore = defineStore('auth', () => {
   // State
   const user = ref<User | null>(null)
@@ -97,6 +105,7 @@ export const useAuthStore = defineStore('auth', () => {
   const initializeAuth = () => {
     const savedToken = localStorage.getItem('auth_token')
     const savedUser = localStorage.getItem('auth_user')
+    const shouldBootstrapLhciAuth = import.meta.env.VITE_LHCI_AUTH_BYPASS === 'true'
 
     if (savedToken) {
       token.value = savedToken
@@ -116,6 +125,12 @@ export const useAuthStore = defineStore('auth', () => {
           isAuthenticated.value = false
         }
       }
+      return
+    }
+
+    if (shouldBootstrapLhciAuth) {
+      setToken('lhci-auth-token')
+      setUser(LHCI_AUTH_USER)
     }
   }
 

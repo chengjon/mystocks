@@ -60,7 +60,7 @@
     // 网格视图
     .hybrid-heatmap-card__grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(var(--artdeco-spacing-20), 1fr));
         gap: var(--data-dense-gap-xs);
         padding: var(--data-dense-padding-sm);
     }
@@ -118,18 +118,18 @@
     .hybrid-heatmap-card__change {
         @include data-dense-typography;
 
-        font-size: 10px;
+        font-size: calc(var(--artdeco-spacing-5) / 2);
         font-weight: 600;
         color: var(--artdeco-fg-primary);
         text-shadow: 0 1px 2px color-mix(in srgb, var(--artdeco-bg-global) 50%, transparent);
-        margin-top: 2px;
+        margin-top: calc(var(--artdeco-spacing-1) / 2);
     }
 
     .hybrid-heatmap-card__volume-bar {
         position: absolute;
         bottom: 0;
         left: 0;
-        height: 3px;
+        height: calc(var(--artdeco-spacing-px) * 3);
         background-color: color-mix(in srgb, var(--artdeco-fg-primary) 30%, transparent);
         transition: width var(--data-dense-transition-fast);
     }
@@ -200,8 +200,8 @@
     }
 
     .hybrid-heatmap-card__legend-color {
-        width: 16px;
-        height: 16px;
+        width: var(--artdeco-spacing-4);
+        height: var(--artdeco-spacing-4);
         border-radius: 0px;
         border: 1px solid color-mix(in srgb, var(--artdeco-fg-primary) 20%, transparent);
     }
@@ -219,14 +219,14 @@
         pointer-events: none;
         z-index: 1000;
         transform: translate(-50%, -100%);
-        margin-top: -10px;
+        margin-top: calc(var(--artdeco-spacing-5) / -2);
     }
 
     .hybrid-heatmap-card__tooltip-content {
         @include hybrid-card;
 
         padding: var(--data-dense-padding-sm);
-        min-width: 180px;
+        min-width: calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-5));
         box-shadow: var(--data-dense-shadow-md);
     }
 
@@ -281,9 +281,9 @@
     }
 
     .hybrid-heatmap-card__spinner {
-        width: 24px;
-        height: 24px;
-        border: 2px solid var(--artdeco-gold-opacity-20);
+        width: var(--artdeco-spacing-6);
+        height: var(--artdeco-spacing-6);
+        border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-opacity-20);
         border-top-color: var(--artdeco-gold-primary);
         border-radius: 0px;
         animation: hybrid-spin 1s linear infinite;
@@ -307,14 +307,14 @@
     //   RESPONSIVE DESIGN - 响应式设计
     // ============================================
 
-    @media (width <= 768px) {
+    @media (width <= calc(var(--artdeco-spacing-32) * 6)) {
         .hybrid-heatmap-card {
             .hybrid-heatmap-card__title {
                 font-size: var(--data-dense-font-base);
             }
 
             .hybrid-heatmap-card__grid {
-                grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(calc(var(--artdeco-spacing-20) - var(--artdeco-spacing-5)), 1fr));
             }
 
             .hybrid-heatmap-card__legend {

@@ -495,8 +495,8 @@ def fetch_data(symbol: str):
 
 | 文档 | 路径 | 用途 |
 |------|------|------|
-| 快速参考指南 | `docs/guides/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md` | 开发者快速上手 |
-| 部署检查清单 | `docs/guides/DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md` | 生产部署步骤 |
+| 快速参考指南 | `docs/guides/data-source/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md` | 开发者快速上手 |
+| 部署检查清单 | `docs/guides/data-source/DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md` | 生产部署步骤 |
 
 ### 7.3 配置文件 (2个)
 
@@ -659,8 +659,8 @@ PROMETHEUS_ENABLED=true
 4. **收集反馈**: 记录用户反馈和问题
 
 **支持文档**:
-- 快速参考: `docs/guides/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md`
-- 部署清单: `docs/guides/DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md`
+- 快速参考: `docs/guides/data-source/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md`
+- 部署清单: `docs/guides/data-source/DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md`
 - 改进建议: `docs/reports/DATA_SOURCE_OPTIMIZATION_IMPROVEMENT_SUGGESTIONS.md`
 
 ---

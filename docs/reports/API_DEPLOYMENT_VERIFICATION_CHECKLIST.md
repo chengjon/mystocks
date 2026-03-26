@@ -613,7 +613,7 @@ pm2 restart mystocks-backend
 
 **4. 联系支持**
 - 📧 查看日志: `pm2 logs`
-- 📄 查看文档: `docs/guides/API_STANDARDIZATION_MASTER_PLAN.md`
+- 📄 查看文档: `docs/api/guides/integration/API_STANDARDIZATION_MASTER_PLAN.md`
 - 🔧 调试模式: 开启详细日志
 
 ---

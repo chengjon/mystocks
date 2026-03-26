@@ -50,36 +50,36 @@ const {
 @import '@/styles/artdeco-tokens';
 
 .artdeco-financial-valuation {
-    padding: 20px;
+    padding: var(--artdeco-spacing-5);
 }
 
 .valuation-overview {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 20px;
-    margin-bottom: 30px;
+    gap: var(--artdeco-spacing-5);
+    margin-bottom: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
 }
 
 .analysis-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 30px;
+    gap: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
 }
 
 .health-summary {
     display: flex;
     align-items: center;
-    gap: 50px;
-    padding: 20px;
+    gap: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-10));
+    padding: var(--artdeco-spacing-5);
     .score {
-        font-size: 64px;
+        font-size: var(--artdeco-spacing-16);
         font-weight: bold;
         color: var(--artdeco-gold-primary);
     }
     .factors {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
     }
 }
 </style>

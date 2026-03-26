@@ -530,7 +530,7 @@ pytest tests/ -v --tb=long --pdb
 ### Documentation
 
 - **Day 5+ Completion Report**: `docs/reports/DAY5_PLUS_COMPLETION_REPORT.md`
-- **Quality Assurance Workflow**: `docs/guides/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md`
+- **Quality Assurance Workflow**: `docs/operations/ci-cd/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md`
 - **Pylint Configuration**: `.pylintrc`
 - **Test Configuration**: `pytest.ini`, `pyproject.toml`
 

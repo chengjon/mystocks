@@ -60,7 +60,7 @@ const radius = computed(() => {
   }
   
   &.skeleton-button {
-    height: 32px;
+    height: var(--artdeco-spacing-8);
   }
   
   &.skeleton-animated {

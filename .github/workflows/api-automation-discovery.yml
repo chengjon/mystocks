@@ -117,7 +117,7 @@ jobs:
         FRONTEND_PORT=3020 \
         FRONTEND_BACKUP_PORT=3021 \
         BASE_URL=http://localhost:8000 \
-        bash ./run-api-tests.sh
+        bash ./scripts/tests/run-api-tests.sh
 
     - name: Stop Backend Service
       if: always()

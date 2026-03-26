@@ -136,7 +136,7 @@ bandit -r src/
 
 本指南定位为**应急处置流程补充**，不替代项目既有开发与部署规范：
 
-- 硬编码分级与长期治理：`docs/guides/HARDCODING_GOVERNANCE_TIERING_GUIDE.md`
+- 硬编码分级与长期治理：`docs/standards/security/HARDCODING_GOVERNANCE_TIERING_GUIDE.md`
 - 本地变量注入与启动校验：`docs/standards/LOCAL_ENV_SETUP.md`
 
 推荐落地顺序：

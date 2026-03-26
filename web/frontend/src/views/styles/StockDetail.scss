@@ -18,21 +18,21 @@
         var(--accent-gold) 0px,
         var(--accent-gold) 1px,
         transparent 1px,
-        transparent 10px
+        transparent calc(var(--spacing-2) + var(--radius-md))
       ),
       repeating-linear-gradient(
         -45deg,
         var(--accent-gold) 0px,
         var(--accent-gold) 1px,
         transparent 1px,
-        transparent 10px
+        transparent calc(var(--spacing-2) + var(--radius-md))
       );
   }
 
   .info-card {
     position: relative;
     background: var(--bg-card);
-    border: 1px solid rgb(212 175 55 / 30%);
+    border: 1px solid color-mix(in srgb, var(--accent-gold) 30%, transparent);
     border-radius: var(--radius-none);
     padding: var(--spacing-8);
     margin-bottom: var(--spacing-6);
@@ -42,24 +42,24 @@
 
   .corner-decoration {
     position: absolute;
-    width: 24px;
-    height: 24px;
+    width: var(--spacing-6);
+    height: var(--spacing-6);
     pointer-events: none;
     opacity: 60%;
   }
 
   .corner-tl {
-    top: 12px;
-    left: 12px;
-    border-top: 2px solid var(--accent-gold);
-    border-left: 2px solid var(--accent-gold);
+    top: var(--spacing-3);
+    left: var(--spacing-3);
+    border-top: var(--radius-md) solid var(--accent-gold);
+    border-left: var(--radius-md) solid var(--accent-gold);
   }
 
   .corner-br {
-    bottom: 12px;
-    right: 12px;
-    border-bottom: 2px solid var(--accent-gold);
-    border-right: 2px solid var(--accent-gold);
+    bottom: var(--spacing-3);
+    right: var(--spacing-3);
+    border-bottom: var(--radius-md) solid var(--accent-gold);
+    border-right: var(--radius-md) solid var(--accent-gold);
   }
 
   .stock-header-content {
@@ -136,7 +136,7 @@
 
   .card {
     background: var(--bg-card);
-    border: 1px solid rgb(212 175 55 / 30%);
+    border: 1px solid color-mix(in srgb, var(--accent-gold) 30%, transparent);
     border-radius: var(--radius-none);
     padding: var(--spacing-6);
     margin-bottom: var(--spacing-6);
@@ -145,33 +145,33 @@
     &:hover {
       border-color: var(--accent-gold);
       box-shadow: var(--glow-medium);
-      transform: translateY(-2px);
+      transform: translateY(calc(var(--radius-md) * -1));
     }
 
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgb(247 147 26 / 30%);
+      margin-bottom: var(--spacing-4);
+      padding-bottom: var(--spacing-3);
+      border-bottom: 1px solid color-mix(in srgb, var(--accent-gold) 30%, transparent);
 
       .card-title {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 14px;
+        font-family: var(--font-mono);
+        font-size: var(--font-size-small);
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.1em;
-        color: #F7931A;
+        color: var(--accent-gold);
       }
 
       .section-title {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 16px;
+        font-family: var(--font-mono);
+        font-size: var(--font-size-body);
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.1em;
-        color: #F7931A;
+        color: var(--accent-gold);
         margin: 0;
       }
 
@@ -193,13 +193,13 @@
     .kline-chart-wrapper,
     .intraday-chart {
       position: relative;
-      border: 1px solid rgb(212 175 55 / 20%);
+      border: 1px solid color-mix(in srgb, var(--accent-gold) 20%, transparent);
       border-radius: var(--radius-none);
       padding: var(--spacing-2);
     }
 
     .intraday-chart {
-      height: 400px;
+      height: calc(var(--spacing-8) * 12 + var(--spacing-4));
     }
 
     .analysis-content {
@@ -208,7 +208,7 @@
         justify-content: space-between;
         align-items: center;
         padding: var(--spacing-3) 0;
-        border-bottom: 1px solid rgb(212 175 55 / 20%);
+        border-bottom: 1px solid color-mix(in srgb, var(--accent-gold) 20%, transparent);
 
         &:last-child {
           border-bottom: none;
@@ -250,8 +250,8 @@
           flex: 1;
           text-align: center;
           padding: var(--spacing-3);
-          border: 1px solid rgb(212 175 55 / 20%);
-          background: rgb(212 175 55 / 5%);
+          border: 1px solid color-mix(in srgb, var(--accent-gold) 20%, transparent);
+          background: color-mix(in srgb, var(--accent-gold) 5%, transparent);
 
           .label {
             display: block;
@@ -289,7 +289,7 @@
 
   .badge {
     display: inline-block;
-    padding: 4px 12px;
+    padding: calc(var(--spacing-2) - var(--radius-md) - var(--radius-md)) var(--spacing-3);
     font-family: var(--font-display);
     font-size: var(--font-size-xs);
     font-weight: 600;
@@ -299,15 +299,15 @@
   }
 
   .badge-gold {
-    background: rgb(212 175 55 / 10%);
+    background: color-mix(in srgb, var(--accent-gold) 10%, transparent);
     color: var(--accent-gold);
     border: 1px solid var(--accent-gold);
   }
 
   .badge-blue {
-    background: rgb(74 144 226 / 10%);
-    color: #4A90E2;
-    border: 1px solid #4A90E2;
+    background: color-mix(in srgb, var(--color-info) 10%, transparent);
+    color: var(--color-info);
+    border: 1px solid var(--color-info);
   }
 
   .profit-up {
@@ -333,7 +333,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: var(--tracking-widest);
-    border: 2px solid var(--accent-gold);
+    border: var(--radius-md) solid var(--accent-gold);
     border-radius: var(--radius-none);
     background: transparent;
     color: var(--accent-gold);
@@ -348,27 +348,27 @@
 
   .info-section {
     :deep(.el-descriptions__label) {
-      background: rgb(212 175 55 / 10%) !important;
+      background: color-mix(in srgb, var(--accent-gold) 10%, transparent) !important;
       color: var(--fg-muted) !important;
       font-family: var(--font-display);
       font-size: var(--font-size-xs);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: var(--tracking-wider);
-      border-color: rgb(212 175 55 / 30%) !important;
+      border-color: color-mix(in srgb, var(--accent-gold) 30%, transparent) !important;
     }
 
     :deep(.el-descriptions__content) {
       background: transparent !important;
       color: var(--fg-primary) !important;
       font-family: var(--font-body);
-      border-color: rgb(212 175 55 / 30%) !important;
+      border-color: color-mix(in srgb, var(--accent-gold) 30%, transparent) !important;
     }
   }
 
   .content-grid {
     display: grid;
-    grid-template-columns: 1fr 340px;
+    grid-template-columns: 1fr calc(var(--spacing-8) * 10 + var(--spacing-5));
     gap: var(--spacing-6);
     position: relative;
     z-index: 1;
@@ -391,7 +391,7 @@
 
     .card {
       background: var(--bg-card);
-      border: 1px solid rgb(212 175 55 / 30%);
+      border: 1px solid color-mix(in srgb, var(--accent-gold) 30%, transparent);
       border-radius: var(--radius-none);
       padding: var(--spacing-6);
 
@@ -401,7 +401,7 @@
         align-items: center;
         margin-bottom: var(--spacing-6);
         padding-bottom: var(--spacing-4);
-        border-bottom: 1px solid rgb(212 175 55 / 20%);
+        border-bottom: 1px solid color-mix(in srgb, var(--accent-gold) 20%, transparent);
 
         .section-title {
           font-family: var(--font-display);
@@ -424,44 +424,44 @@
   }
 
   display: inline-flex;
-  background: rgb(247 147 26 / 5%);
-  border: 1px solid rgb(247 147 26 / 30%);
-  border-radius: 6px;
-  padding: 2px;
+  background: color-mix(in srgb, var(--accent-gold) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-gold) 30%, transparent);
+  border-radius: calc(var(--spacing-2) - var(--radius-md));
+  padding: var(--radius-md);
 
   .chart-btn {
-    min-width: 80px;
+    min-width: calc(var(--spacing-8) + var(--spacing-8) + var(--spacing-4));
   }
 
   .select-sm,
   .period-select {
     select {
-      padding: 6px 10px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
+      padding: calc(var(--spacing-2) - var(--radius-md)) calc(var(--spacing-2) + var(--radius-md));
+      font-family: var(--font-mono);
+      font-size: var(--font-size-xs);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: #E5E7EB;
-      background: rgb(15 17 21 / 80%);
-      border: 1px solid rgb(247 147 26 / 30%);
-      border-radius: 4px;
+      color: var(--fg-primary);
+      background: color-mix(in srgb, var(--bg-card) 80%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent-gold) 30%, transparent);
+      border-radius: calc(var(--spacing-2) - var(--radius-md) - var(--radius-md));
       cursor: pointer;
       transition: all 0.2s ease;
 
       &:hover {
-        border-color: #F7931A;
+        border-color: var(--accent-gold);
       }
 
       &:focus {
         outline: none;
-        border-color: #F7931A;
-        box-shadow: 0 0 0 2px rgb(247 147 26 / 20%);
+        border-color: var(--accent-gold);
+        box-shadow: 0 0 0 var(--radius-md) color-mix(in srgb, var(--accent-gold) 20%, transparent);
       }
 
       option {
-        background: rgb(15 17 21 / 80%);
-        color: #E5E7EB;
+        background: color-mix(in srgb, var(--bg-card) 80%, transparent);
+        color: var(--fg-primary);
       }
     }
   }
@@ -469,45 +469,45 @@
   .trade-form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--spacing-4);
   }
 
   .form-row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: var(--spacing-3);
   }
 
   .form-label {
-    min-width: 80px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
+    min-width: calc(var(--spacing-8) + var(--spacing-8) + var(--spacing-4));
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xs);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #94A3B8;
+    color: var(--fg-muted);
   }
 
   .form-select {
-    padding: 8px 12px;
-    background: rgb(15 17 21 / 80%);
-    border: 1px solid rgb(247 147 26 / 30%);
-    border-radius: 6px;
-    color: #E5E7EB;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
+    padding: var(--spacing-2) var(--spacing-3);
+    background: color-mix(in srgb, var(--bg-card) 80%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent-gold) 30%, transparent);
+    border-radius: calc(var(--spacing-2) - var(--radius-md));
+    color: var(--fg-primary);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xs);
     text-transform: uppercase;
     letter-spacing: 0.05em;
 
     &:focus {
       outline: none;
-      border-color: #F7931A;
-      box-shadow: 0 0 0 2px rgb(247 147 26 / 20%);
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 0 var(--radius-md) color-mix(in srgb, var(--accent-gold) 20%, transparent);
     }
 
     option {
-      background: rgb(15 17 21 / 80%);
-      color: #E5E7EB;
+      background: color-mix(in srgb, var(--bg-card) 80%, transparent);
+      color: var(--fg-primary);
     }
   }
 

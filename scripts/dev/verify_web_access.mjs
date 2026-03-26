@@ -2,7 +2,7 @@
 
 /**
  * Web 端访问验证脚本
- * 遵循 docs/guides/WEB_ACCESS_VERIFICATION_STANDARD.md v2.0
+ * 遵循 docs/guides/web/WEB_ACCESS_VERIFICATION_STANDARD.md v2.0
  *
  * 使用方法：
  *   node scripts/dev/verify_web_access.mjs
@@ -311,7 +311,7 @@ function generateReport() {
  */
 async function main() {
   console.log('🔍 Web 端访问验证工具 v2.0');
-  console.log('遵循标准: docs/guides/WEB_ACCESS_VERIFICATION_STANDARD.md\n');
+  console.log('遵循标准: docs/guides/web/WEB_ACCESS_VERIFICATION_STANDARD.md\n');
 
   // 1. 检查后端健康
   console.log('📡 检查后端健康状态...');

@@ -5,7 +5,7 @@
 
 # 配置变量
 PROJECT_ROOT="/opt/claude/mystocks_spec"
-LOG_DIR="$PROJECT_ROOT/logs"
+LOG_DIR="$PROJECT_ROOT/var/log"
 CONFIG_DIR="$PROJECT_ROOT/config"
 SCRIPTS_DIR="$PROJECT_ROOT/scripts"
 

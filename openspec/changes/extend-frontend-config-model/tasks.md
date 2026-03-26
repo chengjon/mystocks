@@ -25,7 +25,7 @@
 - Pre-commit hook configured in `.pre-commit-config.yaml`
 
 ### Documentation
-- `docs/guides/PAGE_CONFIG_USAGE_GUIDE.md` - Implementation guide
+- `docs/architecture/PAGE_CONFIG_USAGE_GUIDE.md` - Implementation guide
 - `docs/architecture/PAGE_CONFIG_MODEL.md` - Architecture documentation
 
 ### Tests
@@ -264,7 +264,7 @@ npm run validate-page-config -- --json
 - [x] Update component migration guidelines
 
 **Status**: ✅ COMPLETED (2026-01-28)
-**Output**: Created `docs/guides/PAGE_CONFIG_USAGE_GUIDE.md`
+**Output**: Created `docs/architecture/PAGE_CONFIG_USAGE_GUIDE.md`
 
 **Content**:
 - Configuration generation guide

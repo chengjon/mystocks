@@ -83,7 +83,7 @@ class OrderRequest(BaseModel):
 
 ### 3. 使用指南文档
 
-**文件**: `docs/guides/VALIDATION_GUIDE.md` (400行)
+**文件**: `docs/api/VALIDATION_GUIDE.md` (400行)
 
 完整的验证器使用指南，包含:
 

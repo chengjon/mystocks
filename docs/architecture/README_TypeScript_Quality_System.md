@@ -51,10 +51,10 @@
 - [完整文档与培训指南](./typescript_documentation.md) - 用户手册与培训材料
 
 ### 原始修复文档 (参考)
-- [TypeScript修复最佳实践](./../../../reports/TYPESCRIPT_FIX_BEST_PRACTICES.md)
-- [技术债务管理](./../../../reports/TYPESCRIPT_TECHNICAL_DEBT_MANAGEMENT.md)
-- [技术债务清单](./../../../reports/TYPESCRIPT_TECHNICAL_DEBTS.md)
-- [修复反思](./../../../reports/TYPESCRIPT_FIX_REFLECTION.md)
+- [TypeScript修复最佳实践](../reports/TYPESCRIPT_FIX_BEST_PRACTICES.md)
+- [技术债务管理](../reports/TYPESCRIPT_TECHNICAL_DEBT_MANAGEMENT.md)
+- [技术债务清单](../reports/TYPESCRIPT_TECHNICAL_DEBTS.md)
+- [修复反思](../reports/TYPESCRIPT_FIX_REFLECTION.md)
 
 ## 🛠️ 核心技术方案
 

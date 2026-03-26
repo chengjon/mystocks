@@ -9,7 +9,7 @@
 
 ## 📋 Executive Summary
 
-I have successfully created a comprehensive OpenSpec proposal for implementing **方案A (Recommended)**: Six-Phase Complete Implementation based on the detailed integration plan in `docs/guides/WEB_FRAMEWORK_INCREMENTAL_OPTIMIZATION_PLAN.md`.
+I have successfully created a comprehensive OpenSpec proposal for implementing **方案A (Recommended)**: Six-Phase Complete Implementation based on the detailed integration plan in `docs/guides/web/WEB_FRAMEWORK_INCREMENTAL_OPTIMIZATION_PLAN.md`.
 
 ### Documents Created
 
@@ -209,4 +209,3 @@ Please ask! I'm ready to adjust the plan based on your feedback.
 **Status**: ✅ Ready for your review and approval
 **Documents Location**: `openspec/changes/frontend-optimization-six-phase/`
 **Total Investment**: 122 tasks over 12-16 weeks (344 hours of development work)
-

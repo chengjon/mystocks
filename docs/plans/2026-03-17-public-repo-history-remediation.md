@@ -14,9 +14,9 @@ Clean the already-published git history after the working tree has been sanitize
 
 ## Files
 
-- Replacement rules: `filter-repo-replacements.txt`
-- Path removals: `filter-repo-remove-paths.txt`
-- Rewrite runner: `rewrite_public_history.sh`
+- Replacement rules: `scripts/maintenance/public-history/filter-repo-replacements.txt`
+- Path removals: `scripts/maintenance/public-history/filter-repo-remove-paths.txt`
+- Rewrite runner: `scripts/maintenance/public-history/rewrite_public_history.sh`
 
 ## Required Environment Variables
 
@@ -38,7 +38,7 @@ export OLD_INTERNAL_HOST='...'
 2. Run:
 
 ```bash
-./rewrite_public_history.sh /path/to/repo /tmp/mystocks_spec-public-sanitized.git
+./scripts/maintenance/public-history/rewrite_public_history.sh /path/to/repo /tmp/mystocks_spec-public-sanitized.git
 ```
 
 3. Inspect the rewritten mirror:

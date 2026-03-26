@@ -234,7 +234,7 @@ defineExpose({
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      border: 2px solid var(--color-accent);
+      border: calc(var(--artdeco-spacing-px) * 2) solid var(--color-accent);
       border-radius: 0;
 
       &.el-button--primary {

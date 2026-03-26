@@ -150,7 +150,7 @@
             &:hover {
                 border-color: var(--artdeco-gold-primary);
                 box-shadow: var(--artdeco-glow-subtle);
-                transform: translateY(-2px);
+                transform: translateY(calc(var(--artdeco-spacing-1) / -2));
             }
         }
     }
@@ -223,7 +223,7 @@
         font-family: var(--artdeco-font-body);
         font-size: var(--artdeco-text-sm);
         color: var(--artdeco-fg-muted);
-        max-width: 80px;
+        max-width: var(--artdeco-spacing-20);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -233,7 +233,7 @@
         font-family: var(--artdeco-font-mono);
         font-weight: 700;
         font-variant-numeric: tabular-nums;
-        min-width: 70px;
+        min-width: calc(var(--artdeco-spacing-16) + var(--artdeco-spacing-6));
         text-align: right;
 
         &.price-up {
@@ -255,8 +255,8 @@
         font-variant-numeric: tabular-nums;
         display: inline-flex;
         align-items: center;
-        gap: 2px;
-        padding: 2px 6px;
+        gap: calc(var(--artdeco-spacing-1) / 2);
+        padding: calc(var(--artdeco-spacing-1) / 2) calc(var(--artdeco-spacing-3) / 2);
         border-radius: var(--artdeco-radius-none);
 
         &.change-up {
@@ -294,19 +294,19 @@
     }
 
     .status-dot {
-        width: 8px;
-        height: 8px;
+        width: var(--artdeco-spacing-2);
+        height: var(--artdeco-spacing-2);
         border-radius: 50%;
         display: block;
 
         &.status-up {
             background: var(--artdeco-up);
-            box-shadow: 0 0 8px var(--artdeco-up);
+            box-shadow: 0 0 var(--artdeco-spacing-2) var(--artdeco-up);
         }
 
         &.status-down {
             background: var(--artdeco-down);
-            box-shadow: 0 0 8px var(--artdeco-down);
+            box-shadow: 0 0 var(--artdeco-spacing-2) var(--artdeco-down);
         }
 
         &.status-flat {

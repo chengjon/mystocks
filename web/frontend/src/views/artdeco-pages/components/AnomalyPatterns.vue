@@ -24,7 +24,7 @@ defineProps({
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .patterns-grid {
     display: grid;
@@ -50,6 +50,14 @@ defineProps({
           margin-top: calc(var(--artdeco-spacing-px) * 10);
           color: var(--artdeco-gold-primary);
         }
+    }
+}
+
+@media (width <= 48rem) {
+    .pattern-card .pattern-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--artdeco-spacing-2);
     }
 }
 </style>

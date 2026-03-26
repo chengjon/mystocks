@@ -1,5 +1,10 @@
 // PM2 多服务进程管理配置 (整合优化版)
 // 支持开发/生产环境自动切换
+const fs = require('fs');
+const path = require('path');
+
+fs.mkdirSync('/opt/claude/mystocks_spec/var/log/data_sync', { recursive: true });
+
 module.exports = {
   apps: [{
     // 前端服务: Vite开发服务器
@@ -97,8 +102,8 @@ module.exports = {
     interpreter: "python3",
     cwd: "/opt/claude/mystocks_spec",
     cron_restart: "0 3 * * 0", // 每周日凌晨3点
-    out_file: "logs/data_sync/stock_basic_sync.log",
-    error_file: "logs/data_sync/stock_basic_sync_error.log",
+    out_file: path.join('/opt/claude/mystocks_spec/var/log/data_sync', 'stock_basic_sync.log'),
+    error_file: path.join('/opt/claude/mystocks_spec/var/log/data_sync', 'stock_basic_sync_error.log'),
     env: {
       NODE_ENV: 'dev',
       PYTHONPATH: "/opt/claude/mystocks_spec"
@@ -111,8 +116,8 @@ module.exports = {
     interpreter: "python3",
     cwd: "/opt/claude/mystocks_spec",
     cron_restart: "0 2 * * *", // 每日凌晨2点
-    out_file: "logs/data_sync/stock_kline_sync.log",
-    error_file: "logs/data_sync/stock_kline_sync_error.log",
+    out_file: path.join('/opt/claude/mystocks_spec/var/log/data_sync', 'stock_kline_sync.log'),
+    error_file: path.join('/opt/claude/mystocks_spec/var/log/data_sync', 'stock_kline_sync_error.log'),
     env: {
       NODE_ENV: 'dev',
       PYTHONPATH: "/opt/claude/mystocks_spec"
@@ -126,8 +131,8 @@ module.exports = {
     args: "--periods 1m 5m 15m 30m 60m",
     cwd: "/opt/claude/mystocks_spec",
     cron_restart: "0 17 * * 1-5", // 周一到周五 17:00（交易日收盘后1小时）
-    out_file: "logs/data_sync/minute_kline_sync.log",
-    error_file: "logs/data_sync/minute_kline_sync_error.log",
+    out_file: path.join('/opt/claude/mystocks_spec/var/log/data_sync', 'minute_kline_sync.log'),
+    error_file: path.join('/opt/claude/mystocks_spec/var/log/data_sync', 'minute_kline_sync_error.log'),
     env: {
       NODE_ENV: 'dev',
       PYTHONPATH: "/opt/claude/mystocks_spec"
@@ -140,8 +145,8 @@ module.exports = {
     interpreter: "python3",
     cwd: "/opt/claude/mystocks_spec",
     cron_restart: "0 4 * * 1", // 每周一凌晨4点
-    out_file: "logs/data_sync/industry_classify_sync.log",
-    error_file: "logs/data_sync/industry_classify_sync_error.log",
+    out_file: path.join('/opt/claude/mystocks_spec/var/log/data_sync', 'industry_classify_sync.log'),
+    error_file: path.join('/opt/claude/mystocks_spec/var/log/data_sync', 'industry_classify_sync_error.log'),
     env: {
       NODE_ENV: 'dev',
       PYTHONPATH: "/opt/claude/mystocks_spec"
@@ -154,8 +159,8 @@ module.exports = {
     interpreter: "python3",
     cwd: "/opt/claude/mystocks_spec",
     cron_restart: "30 4 * * 1", // 每周一凌晨4:30（错开30分钟避免资源冲突）
-    out_file: "logs/data_sync/concept_classify_sync.log",
-    error_file: "logs/data_sync/concept_classify_sync_error.log",
+    out_file: path.join('/opt/claude/mystocks_spec/var/log/data_sync', 'concept_classify_sync.log'),
+    error_file: path.join('/opt/claude/mystocks_spec/var/log/data_sync', 'concept_classify_sync_error.log'),
     env: {
       NODE_ENV: 'dev',
       PYTHONPATH: "/opt/claude/mystocks_spec"
@@ -168,8 +173,8 @@ module.exports = {
     interpreter: "python3",
     cwd: "/opt/claude/mystocks_spec",
     cron_restart: "0 5 * * 1", // 每周一凌晨5:00（确保跟随行业概念分类同步）
-    out_file: "logs/data_sync/stock_industry_concept_sync.log",
-    error_file: "logs/data_sync/stock_industry_concept_sync_error.log",
+    out_file: path.join('/opt/claude/mystocks_spec/var/log/data_sync', 'stock_industry_concept_sync.log'),
+    error_file: path.join('/opt/claude/mystocks_spec/var/log/data_sync', 'stock_industry_concept_sync_error.log'),
     env: {
       NODE_ENV: 'dev',
       PYTHONPATH: "/opt/claude/mystocks_spec"

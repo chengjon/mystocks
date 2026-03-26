@@ -199,5 +199,5 @@
 
 - **设计文档**: `docs/api/ARTDECO_TRADING_CENTER_DESIGN.md`
 - **组件目录**: `web/frontend/ARTDECO_COMPONENTS_CATALOG.md`
-- **质量指南**: `docs/guides/Typescript_BEST_PRACTICES.md`
+- **质量指南**: `docs/guides/typescript/Typescript_BEST_PRACTICES.md`
 - **测试脚本**: `web/frontend/run-comprehensive-e2e.js`

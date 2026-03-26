@@ -1,6 +1,6 @@
 # Gemini CLI: Python Quality Assurance Guidelines
 
-This document outlines the Python code quality assurance workflow and tools that Gemini CLI must adhere to when working on Python projects. These guidelines are derived from the project's official quality assurance documentation (`docs/guides/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md`, `docs/guides/PYTHON_QUALITY_TOOLS_QUICK_REFERENCE.md`, and `CLAUDE.md`).
+This document outlines the Python code quality assurance workflow and tools that Gemini CLI must adhere to when working on Python projects. These guidelines are derived from the project's official quality assurance documentation (`docs/operations/ci-cd/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md`, `docs/operations/ci-cd/PYTHON_QUALITY_TOOLS_QUICK_REFERENCE.md`, and `CLAUDE.md`).
 
 ---
 

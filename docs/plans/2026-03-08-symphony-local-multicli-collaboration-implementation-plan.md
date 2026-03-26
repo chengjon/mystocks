@@ -11,7 +11,7 @@
 
 - Create: `docs/plans/2026-03-08-symphony-local-multicli-collaboration-design.md`
 - Create: `docs/plans/2026-03-08-symphony-local-multicli-collaboration-implementation-plan.md`
-- Create: `docs/guides/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md`
+- Create: `docs/guides/multi-cli-tasks/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md`
 - Create: `openspec/changes/align-symphony-local-multicli-collaboration/proposal.md`
 - Create: `openspec/changes/align-symphony-local-multicli-collaboration/design.md`
 - Create: `openspec/changes/align-symphony-local-multicli-collaboration/tasks.md`

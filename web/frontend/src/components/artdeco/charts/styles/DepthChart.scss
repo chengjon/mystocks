@@ -96,14 +96,14 @@
         pointer-events: none;
         z-index: 1000;
         transform: translate(-50%, -100%);
-        margin-top: -10px;
+        margin-top: calc((var(--data-dense-padding-sm) + var(--data-dense-border-width)) * -1);
     }
 
     .hybrid-depth-chart__tooltip-content {
         @include hybrid-card;
 
         padding: var(--data-dense-padding-sm);
-        min-width: 120px;
+        min-width: calc(var(--data-dense-padding-lg) * 5);
         box-shadow: var(--data-dense-shadow-md);
     }
 
@@ -151,9 +151,9 @@
     }
 
     .hybrid-depth-chart__spinner {
-        width: 24px;
-        height: 24px;
-        border: 2px solid var(--artdeco-gold-opacity-20);
+        width: var(--artdeco-spacing-6);
+        height: var(--artdeco-spacing-6);
+        border: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px)) solid var(--artdeco-gold-opacity-20);
         border-top-color: var(--artdeco-gold-primary);
         border-radius: 0px;
         animation: hybrid-spin 1s linear infinite;
@@ -177,7 +177,7 @@
     //   RESPONSIVE DESIGN - 响应式设计
     // ============================================
 
-    @media (width <= 768px) {
+    @media (width <= 48rem) {
         .hybrid-depth-chart {
             .hybrid-depth-chart__title {
                 font-size: var(--data-dense-font-base);

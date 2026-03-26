@@ -6,7 +6,7 @@
 # 会话配置
 SESSION_NAME="mystocks_dev"
 PROJECT_ROOT="/opt/claude/mystocks_spec"
-LOG_DIR="$PROJECT_ROOT/logs"
+LOG_DIR="$PROJECT_ROOT/var/log"
 
 # 颜色定义
 RED='\033[0;31m'

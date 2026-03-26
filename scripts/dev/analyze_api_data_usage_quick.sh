@@ -66,7 +66,7 @@ if [ $? -eq 0 ]; then
     echo "💡 提示:"
     echo "   - 查看详细报告: cat docs/reports/API_WEB_DATA_USAGE_REPORT.md"
     echo "   - 使用增量分析: ./analyze_api_data_usage_quick.sh --incremental"
-    echo "   - 查看使用文档: cat docs/guides/analyze_api_data_usage_README.md"
+    echo "   - 查看使用文档: cat docs/guides/data-interface/analyze_api_data_usage_README.md"
     echo ""
 else
     echo ""

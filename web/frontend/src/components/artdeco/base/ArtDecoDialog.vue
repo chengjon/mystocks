@@ -283,7 +283,7 @@
 <style scoped>
     .artdeco-trading-management {
         padding: 2rem;
-        max-width: 1400px;
+        max-width: calc(var(--artdeco-breakpoint-lg) + var(--artdeco-spacing-20) + var(--artdeco-spacing-6) + var(--artdeco-spacing-4));
         margin: 0 auto;
     }
 
@@ -309,7 +309,7 @@
 
     .artdeco-content-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-20) * 5), 1fr));
         gap: 2rem;
     }
 
@@ -319,14 +319,14 @@
 
     .trading-metrics {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-20) * 3 + var(--artdeco-spacing-10) - var(--artdeco-spacing-8)), 1fr));
         gap: 1.5rem;
     }
 
     .active-orders-card,
     .trading-history-card,
     .trading-controls-card {
-        min-height: 400px;
+        min-height: calc(var(--artdeco-spacing-20) * 5);
     }
 
     .orders-table,
@@ -351,7 +351,7 @@
         font-size: 1.1rem;
         font-weight: bold;
         color: var(--artdeco-fg-secondary);
-        border-bottom: 2px solid var(--artdeco-gold-primary);
+        border-bottom: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px)) solid var(--artdeco-gold-primary);
         padding-bottom: 0.5rem;
     }
 
@@ -374,7 +374,7 @@
         margin-top: 1rem;
     }
 
-    @media (width <= 768px) {
+    @media (width <= 48rem) {
         .artdeco-trading-management {
             padding: 1rem;
         }

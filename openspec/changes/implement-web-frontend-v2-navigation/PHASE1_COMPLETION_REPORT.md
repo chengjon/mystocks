@@ -107,7 +107,7 @@
 
 ### 路由设计最佳实践
 
-遵循**路由优化报告** (`docs/reviews/frontend_routing_optimization_report.md`) 的建议：
+遵循**路由优化报告** (`docs/reports/reviews/frontend_routing_optimization_report.md`) 的建议：
 
 1. **懒加载 (Lazy Loading)** ✅
    ```typescript
@@ -228,9 +228,9 @@
 
 ### 参考文档
 
-- **[路由优化报告](../docs/reviews/frontend_routing_optimization_report.md)**: 路由最佳实践
+- **[路由优化报告](../docs/reports/reviews/frontend_routing_optimization_report.md)**: 路由最佳实践
 - **[ArtDeco组件目录](../web/frontend/ARTDECO_COMPONENTS_CATALOG.md)**: 64个ArtDeco组件
-- **[TypeScript最佳实践](../docs/guides/Typescript_BEST_PRACTICES.md)**: 质量管理体系
+- **[TypeScript最佳实践](../docs/guides/typescript/Typescript_BEST_PRACTICES.md)**: 质量管理体系
 
 ---
 

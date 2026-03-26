@@ -144,9 +144,9 @@ defineProps<{
 
 .code-block {
   width: 100%;
-  height: 200px;
-  background: #1e1e1e;
-  color: #d4d4d4;
+  height: calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-2));
+  background: var(--artdeco-bg-global);
+  color: var(--artdeco-fg-primary);
   font-family: var(--font-mono);
   padding: var(--artdeco-spacing-4);
   border: none;
@@ -156,9 +156,9 @@ defineProps<{
 .metrics-summary-card {
   margin-top: var(--artdeco-spacing-4);
 
-  @include artdeco-stepped-corners(16px);
+  @include artdeco-stepped-corners(var(--artdeco-spacing-4));
 
-  border: 2px solid var(--artdeco-border-default) !important;
+  border: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-border-default) !important;
 }
 
 .artdeco-tabs {

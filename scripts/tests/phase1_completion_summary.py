@@ -113,9 +113,9 @@ def generate_phase1_summary():
             "领域": "安全修复",
             "文件": [
                 "创建安全测试文档",
-                "docs/guides/SECURITY_TESTING_GUIDELINES.md",
-                "docs/guides/SECURITY_CODING_STANDARDS.md",
-                "docs/guides/SECURITY_CI_CD_INTEGRATION.md",
+                "docs/standards/security/SECURITY_TESTING_GUIDELINES.md",
+                "docs/standards/security/SECURITY_CODING_STANDARDS.md",
+                "docs/standards/security/SECURITY_CI_CD_INTEGRATION.md",
             ],
             "描述": "建立了完整的安全测试和编码标准体系",
         },
@@ -271,9 +271,9 @@ def generate_phase1_summary():
         (
             "文档体系",
             [
-                "docs/guides/SECURITY_TESTING_GUIDELINES.md",
-                "docs/guides/SECURITY_CODING_STANDARDS.md",
-                "docs/guides/SECURITY_CI_CD_INTEGRATION.md",
+                "docs/standards/security/SECURITY_TESTING_GUIDELINES.md",
+                "docs/standards/security/SECURITY_CODING_STANDARDS.md",
+                "docs/standards/security/SECURITY_CI_CD_INTEGRATION.md",
             ],
         ),
         (

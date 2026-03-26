@@ -16,7 +16,7 @@ set -e  # Exit on error
 PROJECT_DIR="/opt/claude/mystocks_spec"
 FRONTEND_DIR="${PROJECT_DIR}/web/frontend"
 BACKEND_DIR="${PROJECT_DIR}/web/backend"
-TEST_LOG_DIR="${PROJECT_DIR}/logs/tests"
+TEST_LOG_DIR="${PROJECT_DIR}/var/log/tests"
 
 if [ -f "${PROJECT_DIR}/.env" ]; then
     set -a

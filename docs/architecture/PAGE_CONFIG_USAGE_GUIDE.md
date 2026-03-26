@@ -1,341 +1,387 @@
-# PageConfig 统一配置使用指南
+# 前端页面配置系统使用指南
 
-**版本**: v1.0
-**创建日期**: 2026-01-23
-**相关文档**:
-- `docs/architecture/FRONTEND_OPTIMIZATION_IMPLEMENTATION_PLAN_V2.md`
-- `docs/architecture/ROUTER_SIMPLIFICATION_EXPLANATION.md`
+## 📖 快速导航
 
----
-
-## 📋 目录
-
-1. [概述](#概述)
-2. [快速开始](#快速开始)
-3. [组件中使用](#组件中使用)
-4. [Store中使用](#store中使用)
-5. [类型安全](#类型安全)
-6. [最佳实践](#最佳实践)
-7. [迁移检查清单](#迁移检查清单)
+- **[配置生成](#配置生成)** - 生成和更新页面配置
+- **[配置验证](#配置验证)** - 验证配置与路由一致性
+- **[类型定义](#类型定义)** - TypeScript 类型参考
+- **[使用示例](#使用示例)** - 组件中如何使用配置
+- **[工具脚本](#工具脚本)** - 开发和 CI/CD 工具
 
 ---
 
 ## 概述
 
-`PAGE_CONFIG` 是统一页面配置对象，集中管理所有页面的：
-- API端点路径
-- WebSocket频道
-- 实时更新设置
-- 页面描述
+前端页面配置系统 (`web/frontend/src/config/pageConfig.ts`) 提供：
+- 集中化的路由配置管理
+- API 端点和 WebSocket 频道统一配置
+- 单体组件（monolithic）的多 Tab 配置
+- 类型安全的配置访问
 
-### 核心优势
+### 配置类型
 
-✅ **类型安全** - TypeScript编译时检查配置错误
-✅ **集中管理** - 所有配置在一个地方维护
-✅ **避免硬编码** - 组件不再硬编码API地址
-✅ **易于维护** - API变更只需修改配置文件
+| 类型 | 说明 | 使用场景 |
+|------|------|----------|
+| `page` | 标准页面配置 | 单页面路由 |
+| `monolithic` | 单体组件配置 | 多 Tab 组件（如 ArtDecoMarketData） |
 
 ---
 
-## 快速开始
+## 配置生成
 
-### 1. 基础用法
+### 自动生成配置
 
-```typescript
-import { PAGE_CONFIG, type RouteName } from '@/config/pageConfig'
+从路由配置自动生成页面配置：
 
-// 访问配置
-const config = PAGE_CONFIG['market-realtime']
+```bash
+cd web/frontend
 
-console.log(config.apiEndpoint)  // '/api/market/v2/realtime-summary'
-console.log(config.wsChannel)     // 'market:realtime'
-console.log(config.realtime)     // true
+# 预览生成（不写入文件）
+npm run generate-page-config -- --dry-run
+
+# 显示与当前配置的差异
+npm run generate-page-config -- --diff
+
+# 生成并写入文件
+npm run generate-page-config
 ```
 
-### 2. 类型安全访问
+### 生成脚本选项
+
+| 选项 | 说明 |
+|------|------|
+| `--dry-run` | 预览生成结果，不写入文件 |
+| `--diff` | 显示与当前配置的差异 |
+| `--verbose` | 显示详细输出 |
+| `--help` | 显示帮助信息 |
+
+---
+
+## 配置验证
+
+### 验证命令
+
+```bash
+cd web/frontend
+
+# 验证配置（失败时退出）
+npm run validate-page-config -- --fail
+
+# 详细输出
+npm run validate-page-config -- --verbose
+
+# JSON 输出（适合 CI/CD）
+npm run validate-page-config -- --json
+```
+
+### 验证检查项
+
+1. **路由覆盖检查** - 所有路由必须有对应配置
+2. **必需字段检查** - 配置必须包含 `apiEndpoint`, `wsChannel`, `component`
+3. **重复路由检查** - 检测重复的路由定义
+4. **残留配置检查** - 检测已删除路由的配置残留
+
+### 退出码
+
+| 码 | 含义 |
+|----|------|
+| 0 | 验证通过 |
+| 1 | 验证错误（配置缺失、字段缺失） |
+| 2 | 仅警告（无错误） |
+| 3 | 致命错误（文件不存在等） |
+
+---
+
+## 类型定义
+
+### PageConfigType
 
 ```typescript
-import { getPageConfig, isValidRouteName } from '@/config/pageConfig'
+type PageConfigType = 'page' | 'monolithic'
+```
 
-// 方式1: 使用getPageConfig（带验证）
+### TabConfig
+
+```typescript
+interface TabConfig {
+  /** Tab 唯一标识符 */
+  id: string
+  /** Tab 显示标签（可选） */
+  label?: string
+  /** API 端点 */
+  apiEndpoint?: string
+  /** WebSocket 频道 */
+  wsChannel?: string
+}
+```
+
+### StandardPageConfig（标准页面配置）
+
+```typescript
+interface StandardPageConfig {
+  /** 配置类型：标准页面 */
+  type: 'page'
+  /** 路由路径 */
+  routePath: string
+  /** 页面标题 */
+  title: string
+  /** 页面描述（可选） */
+  description?: string
+  /** API 端点 */
+  apiEndpoint: string
+  /** WebSocket 频道 */
+  wsChannel: string
+  /** 组件路径 */
+  component: string
+  /** 是否需要认证 */
+  requiresAuth: boolean
+}
+```
+
+### MonolithicPageConfig（单体组件配置）
+
+```typescript
+interface MonolithicPageConfig {
+  /** 配置类型：单体组件 */
+  type: 'monolithic'
+  /** 路由路径 */
+  routePath: string
+  /** 页面标题 */
+  title: string
+  /** 页面描述（可选） */
+  description?: string
+  /** 组件路径 */
+  component: string
+  /** Tab 配置列表 */
+  tabs: TabConfig[]
+  /** 是否需要认证 */
+  requiresAuth: boolean
+}
+```
+
+### PageConfig（联合类型）
+
+```typescript
+type PageConfig = StandardPageConfig | MonolithicPageConfig
+```
+
+---
+
+## 使用示例
+
+### 基本用法
+
+```typescript
+import { PAGE_CONFIG, getPageConfig, isRouteName } from '@/config/pageConfig'
+
+// 通过路由名称获取配置
 const config = getPageConfig('market-realtime')
+
 if (config) {
-  console.log(config.apiEndpoint)  // TypeScript知道这是string
+  console.log('API Endpoint:', config.apiEndpoint)
+  console.log('WebSocket Channel:', config.wsChannel)
 }
 
-// 方式2: 先验证再访问
-if (isValidRouteName('market-realtime')) {
-  const config = PAGE_CONFIG['market-realtime']  // 类型安全
+// 类型守卫
+if (isRouteName('market-realtime')) {
+  // TypeScript 知道这里 config 存在
+  const config = PAGE_CONFIG['market-realtime']
 }
 ```
 
----
+### 单体组件 Tab 配置
 
-## 组件中使用
+```typescript
+import { PAGE_CONFIG, isMonolithicConfig, getTabConfig } from '@/config/pageConfig'
 
-### 示例1: 基础页面组件
+const config = PAGE_CONFIG['market-fund-flow']
+
+if (isMonolithicConfig(config)) {
+  // config 是 MonolithicPageConfig 类型
+  console.log('Component:', config.component)
+  console.log('Tabs:', config.tabs)
+  
+  // 获取特定 Tab 的配置
+  const tabConfig = getTabConfig('market-fund-flow', 'fund-flow')
+  if (tabConfig) {
+    console.log('Tab API:', tabConfig.apiEndpoint)
+    console.log('Tab WS:', tabConfig.wsChannel)
+  }
+}
+```
+
+### 在组件中使用
 
 ```vue
-<template>
-  <div>
-    <h1>{{ pageConfig?.description }}</h1>
-    <div v-if="data">数据: {{ data }}</div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { PAGE_CONFIG, getPageConfig, isMonolithicConfig } from '@/config/pageConfig'
 import { useRoute } from 'vue-router'
-import { getPageConfig, type RouteName } from '@/config/pageConfig'
+import { marketService } from '@/services/marketService'
 
 const route = useRoute()
-const routeName = computed(() => route.name as string)
-const pageConfig = computed(() => getPageConfig(routeName.value))
-const data = ref<any>(null)
+const routeName = route.name as string
 
-onMounted(async () => {
-  if (!pageConfig.value) {
-    console.error(`未配置的路由: ${routeName.value}`)
+// 获取当前路由的配置
+const config = getPageConfig(routeName)
+
+const data = ref<any>(null)
+const loading = ref(false)
+const error = ref<string | null>(null)
+
+// 根据配置加载数据
+const loadData = async () => {
+  if (!config) {
+    error.value = 'Configuration not found'
     return
   }
+  
+  loading.value = true
+  error.value = null
+  
+  try {
+    if (isMonolithicConfig(config)) {
+      // 单体组件：从 Tab 配置获取 API
+      const activeTab = route.meta.activeTab
+      const tabConfig = config.tabs.find(t => t.id === activeTab)
+      
+      if (tabConfig?.apiEndpoint) {
+        data.value = await marketService.fetchFromEndpoint(tabConfig.apiEndpoint)
+      }
+    } else {
+      // 标准页面：从配置获取 API
+      if (config.apiEndpoint) {
+        data.value = await marketService.fetchFromEndpoint(config.apiEndpoint)
+      }
+    }
+  } catch (e: any) {
+    error.value = e.message
+  } finally {
+    loading.value = false
+  }
+}
 
-  // 使用统一配置的API端点
-  const response = await fetch(pageConfig.value.apiEndpoint)
-  data.value = await response.json()
-})
+onMounted(loadData)
 </script>
 ```
 
-### 示例2: 完整示例组件
-
-查看 `src/views/examples/PageConfigExample.vue` 获取完整示例。
-
----
-
-## Store中使用
-
-### 示例: 市场数据Store
+### WebSocket 订阅
 
 ```typescript
-import { defineStore } from 'pinia'
-import { getPageConfig, type RouteName } from '@/config/pageConfig'
-import { unifiedApiClient } from '@/api/unifiedApiClient'
+import { PAGE_CONFIG, getPageConfig } from '@/config/pageConfig'
+import { useWebSocket } from '@/composables/useWebSocket'
 
-export const useMarketStoreExtended = defineStore('market-extended', () => {
-  const data = ref<any>(null)
-  const loading = ref(false)
+const config = getPageConfig('market-realtime')
 
-  const fetchByRoute = async (routeName: RouteName) => {
-    const config = getPageConfig(routeName)
-
-    if (!config) {
-      throw new Error(`未配置的路由: ${routeName}`)
-    }
-
-    // 使用统一配置
-    const result = await unifiedApiClient.get(config.apiEndpoint, {
-      cache: config.cacheTTL ? { enabled: true, ttl: config.cacheTTL } : undefined
-    })
-
-    data.value = result
-    return result
-  }
-
-  return { data, loading, fetchByRoute }
-})
-```
-
-完整示例查看 `src/stores/marketStoreExtended.ts`。
-
----
-
-## 类型安全
-
-### TypeScript类型定义
-
-```typescript
-// 路由名称类型（所有PAGE_CONFIG的键）
-export type RouteName = keyof typeof PAGE_CONFIG
-
-// 页面配置类型
-export type PageConfig = typeof PAGE_CONFIG[RouteName]
-```
-
-### 类型断言示例
-
-```typescript
-// ✅ 类型安全
-function loadData(routeName: RouteName) {
-  const config = PAGE_CONFIG[routeName]  // TypeScript知道这是有效的
-  console.log(config.apiEndpoint)  // TypeScript知道这是string
-}
-
-// ❌ 类型不安全
-function loadDataBad(routeName: string) {
-  const config = PAGE_CONFIG[routeName]  // 可能有运行时错误
+if (config) {
+  // 使用配置的 WebSocket 频道
+  const { subscribe, unsubscribe } = useWebSocket()
+  
+  // 订阅实时数据
+  subscribe(config.wsChannel, (data) => {
+    console.log('Received:', data)
+  })
+  
+  // 离开时取消订阅
+  onUnmounted(() => {
+    unsubscribe(config.wsChannel)
+  })
 }
 ```
 
-### 编译时错误检测
+---
 
-```typescript
-// ✅ 编译通过
-const config = PAGE_CONFIG['market-realtime']
+## 预提交钩子
 
-// ❌ 编译错误（拼写错误）
-const config = PAGE_CONFIG['market-reatltime']  // TypeScript报错
+配置验证已集成到预提交钩子中：
+
+```yaml
+# .pre-commit-config.yaml
+- id: page-config-validator
+  name: Page Configuration Validator
+  entry: bash -c "cd web/frontend && node ../../scripts/hooks/check-page-config.mjs --warn || true"
+  language: system
+  files: ^web/frontend/src/(router/|config/)/
+  stages: [pre-commit]
+  always_run: true
+```
+
+### 钩子行为
+
+- **检测到问题**：输出警告，不阻塞提交
+- **文件不存在**：输出错误，不阻塞提交
+- **验证通过**：静默通过
+
+---
+
+## 工具脚本
+
+### 文件位置
+
+| 脚本 | 路径 |
+|------|------|
+| 配置生成 | `scripts/dev/tools/generate-page-config.js` |
+| 配置验证 | `scripts/hooks/check-page-config.mjs` |
+
+### 直接运行
+
+```bash
+# 生成配置
+node scripts/dev/tools/generate-page-config.js --dry-run
+
+# 验证配置
+node scripts/hooks/check-page-config.mjs --fail --verbose
 ```
 
 ---
 
 ## 最佳实践
 
-### 1. 总是使用类型安全的访问方式
+### 1. 添加新路由时
 
-```typescript
-// ✅ 推荐：使用getPageConfig
-const config = getPageConfig(routeName.value)
-if (config) {
-  // 使用配置
-}
+1. 在 `router/index.ts` 添加路由定义
+2. 运行 `npm run generate-page-config` 生成配置
+3. 运行 `npm run validate-page-config` 验证
+4. 提交更改
 
-// ❌ 避免：直接访问可能导致运行时错误
-const config = PAGE_CONFIG[routeName.value]
-```
+### 2. 修改 API 端点时
 
-### 2. 在组件onMounted中验证路由
+1. 更新对应路由的 API 端点配置
+2. 运行验证确保配置完整
+3. 提交更改
 
-```typescript
-onMounted(() => {
-  if (!isValidRouteName(routeName.value)) {
-    console.error(`未配置的路由: ${routeName.value}`)
-    // 可以重定向到404或显示错误页面
-    return
-  }
+### 3. 添加新单体组件时
 
-  // 继续加载数据
-})
-```
-
-### 3. 使用辅助函数获取特定路由集合
-
-```typescript
-import { getRealtimeRouteNames, getWebSocketRoutes } from '@/config/pageConfig'
-
-// 获取所有需要实时更新的路由
-const realtimeRoutes = getRealtimeRouteNames()
-// ['market-realtime', 'trading-signals', 'risk-alerts', 'system-monitoring']
-
-// 获取所有需要WebSocket的路由
-const wsRoutes = getWebSocketRoutes()
-// [{ name: 'market-realtime', channel: 'market:realtime' }, ...]
-```
-
-### 4. 扩展配置时的注意事项
-
-```typescript
-// ✅ 正确：添加新路由配置
-export const PAGE_CONFIG = {
-  ...existingConfig,
-  'new-page': {
-    apiEndpoint: '/api/new-endpoint',
-    wsChannel: null,
-    realtime: false,
-    description: '新页面描述'
-  }
-} as const
-
-// ❌ 错误：忘记添加到配置对象
-// 这样在组件中使用时会导致"未配置的路由"错误
-```
-
----
-
-## 迁移检查清单
-
-### 从硬编码迁移到统一配置
-
-#### 步骤1: 检查当前组件
-
-- [ ] 组件中是否有硬编码的API端点？
-- [ ] 组件中是否有硬编码的WebSocket频道？
-- [ ] 组件中是否有重复的配置逻辑？
-
-#### 步骤2: 添加配置到PAGE_CONFIG
-
-- [ ] 在 `src/config/pageConfig.ts` 中添加路由配置
-- [ ] 确保所有必需字段都已填写
-- [ ] 运行 TypeScript编译检查
-
-#### 步骤3: 更新组件代码
-
-- [ ] 导入 `getPageConfig` 和 `isValidRouteName`
-- [ ] 替换硬编码的API端点为 `pageConfig.apiEndpoint`
-- [ ] 添加路由验证逻辑
-- [ ] 测试组件功能
-
-#### 步骤4: 验证
-
-- [ ] 组件能正常加载
-- [ ] API调用正常
-- [ ] TypeScript无编译错误
-- [ ] 控制台无警告
-
----
-
-## 相关文件
-
-### 配置文件
-- `src/config/pageConfig.ts` - 统一配置对象
-
-### 示例代码
-- `src/views/examples/PageConfigExample.vue` - 组件示例
-- `src/stores/marketStoreExtended.ts` - Store示例
-
-### 文档
-- `docs/architecture/FRONTEND_OPTIMIZATION_IMPLEMENTATION_PLAN_V2.md` - 完整实施方案
-- `docs/architecture/ROUTER_SIMPLIFICATION_EXPLANATION.md` - 路由简化说明
+1. 在 `scripts/dev/tools/generate-page-config.js` 的 `CONFIG.routeConfigMap` 中添加配置
+2. 在 `CONFIG.monolithicTabs` 中添加 Tab 配置
+3. 生成并验证配置
 
 ---
 
 ## 常见问题
 
-### Q1: 如何添加新页面的配置？
+### Q: 配置生成后报错 "Configuration not found"
 
-在 `src/config/pageConfig.ts` 中添加新条目：
+**A**: 确保路由名称与配置键名一致。路由名称来自 `router/index.ts` 中的 `name` 字段。
 
-```typescript
-export const PAGE_CONFIG = {
-  // ...existing config
-  'new-page-name': {
-    apiEndpoint: '/api/endpoint',
-    wsChannel: null,  // 或 'channel:name'
-    realtime: false,
-    description: '页面描述'
-  }
-} as const
-```
+### Q: 单体组件的 Tab 切换不工作
 
-### Q2: 如何处理没有配置的路由？
+**A**: 确保在路由的 `meta.activeTab` 中正确定义 Tab ID，并在组件中使用 `route.meta.activeTab` 获取当前 Tab。
 
-使用 `getPageConfig` 函数，它会返回 `undefined`：
+### Q: 验证提示 "Missing Configurations"
 
-```typescript
-const config = getPageConfig(routeName)
-if (!config) {
-  console.error(`未配置的路由: ${routeName}`)
-  // 显示错误或重定向
-}
-```
-
-### Q3: 类型推断不工作怎么办？
-
-确保：
-1. 使用 `as const` 确保类型推断
-2. 使用 `isValidRouteName` 验证路由名
-3. 路由名使用字符串字面量，不是动态变量
+**A**: 运行 `npm run generate-page-config` 重新生成配置，然后检查生成的配置是否正确。
 
 ---
 
-**文档维护**: 本文档应与代码同步更新
-**问题反馈**: 请在项目issue中提出
+## 相关文档
+
+- [路由配置文档](../../web/frontend/src/router/index.ts)
+- [ArtDeco 组件集成指南](../guides/frontend/mystocks-artdeco-integration-fix.md)
+- [TypeScript 最佳实践](../guides/typescript/Typescript_BEST_PRACTICES.md)
+
+---
+
+**最后更新**: 2026-01-28
+**版本**: 1.0
+**状态**: ✅ 生产就绪

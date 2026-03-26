@@ -609,8 +609,8 @@ npm run dev
 
 ### 已有的文件
 1. `docs/api/API_INTEGRATION_GUIDE.md` - API集成指南
-2. `docs/guides/API对齐核心流程.md` - 对齐流程
-3. `docs/guides/API对齐方案.md` - 对齐方案
+2. `docs/api/guides/integration/API对齐核心流程.md` - 对齐流程
+3. `docs/api/guides/integration/API对齐方案.md` - 对齐方案
 
 ---
 

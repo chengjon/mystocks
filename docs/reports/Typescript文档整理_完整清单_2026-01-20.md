@@ -73,56 +73,56 @@
    - 状态: ⏳ 待读
 
 2. **TYPESCRIPT_ERROR_FIXING_GUIDE.md**
-   - 路径: `docs/guides/TYPESCRIPT_ERROR_FIXING_GUIDE.md`
+   - 路径: `docs/guides/typescript/TYPESCRIPT_ERROR_FIXING_GUIDE.md`
    - 描述: TypeScript错误修复完整指南
    - 状态: ⏳ 待读
 
 3. **TYPESCRIPT_SOURCE_FIX_GUIDE.md**
-   - 路径: `docs/guides/TYPESCRIPT_SOURCE_FIX_GUIDE.md`
+   - 路径: `docs/guides/typescript/TYPESCRIPT_SOURCE_FIX_GUIDE.md`
    - 描述: 源头修复指南
    - 状态: ⏳ 待读
 
 ### 优化方案
 4. **TypeScript_优化修复方案.md**
-   - 路径: `docs/guides/TypeScript_优化修复方案.md`
+   - 路径: `docs/guides/typescript/TypeScript_优化修复方案.md`
    - 描述: TypeScript优化修复方案
    - 状态: ⏳ 待读
 
 5. **TypeScript_快速修复指南.md**
-   - 路径: `docs/guides/TypeScript_快速修复指南.md`
+   - 路径: `docs/guides/typescript/TypeScript_快速修复指南.md`
    - 描述: 快速修复指南
    - 状态: ⏳ 待读
 
 ### CI/CD集成
 6. **CICD_TYPE_CHECK_INTEGRATION_GUIDE.md** ⭐
-   - 路径: `docs/guides/CICD_TYPE_CHECK_INTEGRATION_GUIDE.md`
+   - 路径: `docs/operations/ci-cd/CICD_TYPE_CHECK_INTEGRATION_GUIDE.md`
    - 描述: CI/CD类型检查集成指南
    - 状态: ⏳ 待读
 
 7. **CICD_TYPE_CHECK_QUICK_REFERENCE.md**
-   - 路径: `docs/guides/CICD_TYPE_CHECK_QUICK_REFERENCE.md`
+   - 路径: `docs/operations/ci-cd/CICD_TYPE_CHECK_QUICK_REFERENCE.md`
    - 描述: CI/CD类型检查快速参考
    - 状态: ⏳ 待读
 
 8. **TYPE_CHECKING_INTEGRATION.md**
-   - 路径: `docs/guides/TYPE_CHECKING_INTEGRATION.md`
+   - 路径: `docs/guides/typescript/TYPE_CHECKING_INTEGRATION.md`
    - 描述: 类型检查集成方案
    - 状态: ⏳ 待读
 
 ### 扩展系统
 9. **TYPESCRIPT_EXTENSION_SYSTEM_BALANCED_PLAN.md**
-   - 路径: `docs/guides/TYPESCRIPT_EXTENSION_SYSTEM_BALANCED_PLAN.md`
+   - 路径: `docs/guides/typescript/TYPESCRIPT_EXTENSION_SYSTEM_BALANCED_PLAN.md`
    - 描述: TypeScript扩展系统平衡计划
    - 状态: ⏳ 待读
 
 ### 完成报告
 10. **TYPESCRIPT_FIX_FINAL_REPORT.md**
-    - 路径: `docs/guides/TYPESCRIPT_FIX_FINAL_REPORT.md`
+    - 路径: `docs/reports/code_quality/TYPESCRIPT_FIX_FINAL_REPORT.md`
     - 描述: TypeScript修复最终报告
     - 状态: ⏳ 待读
 
 11. **TYPESCRIPT_ERROR_FIX_REPORT.md**
-    - 路径: `docs/guides/TYPESCRIPT_ERROR_FIX_REPORT.md`
+    - 路径: `docs/reports/code_quality/TYPESCRIPT_ERROR_FIX_REPORT.md`
     - 描述: 错误修复报告
     - 状态: ⏳ 待读
 

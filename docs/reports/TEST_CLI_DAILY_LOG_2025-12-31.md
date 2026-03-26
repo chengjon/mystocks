@@ -40,7 +40,7 @@
 
 ### 3. 创建E2E测试调试方法文档 ⭐
 
-**文档**: `docs/guides/E2E_TEST_DEBUG_METHODS.md`
+**文档**: `docs/testing/E2E_TEST_DEBUG_METHODS.md`
 
 **内容包括**:
 - 测试运行方法

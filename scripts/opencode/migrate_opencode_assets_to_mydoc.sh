@@ -9,7 +9,7 @@ SRC_OPENCODE_JSON="$SRC_ROOT/opencode.json"
 SRC_OMO_JSON="$SRC_ROOT/.config/oh-my-opencode.noco.json"
 SRC_MODEL_DEFAULTS_DIR="$SRC_ROOT/.config/opencode/model_defaults"
 SRC_SYNC_SCRIPT="$SRC_ROOT/scripts/opencode/sync_opencode_model_catalog.py"
-SRC_GUIDE="$SRC_ROOT/docs/guides/OMO_SETUP_GUIDE.md"
+SRC_GUIDE="$SRC_ROOT/docs/guides/ai-tools/OMO_SETUP_GUIDE.md"
 
 DST_OPENCODE_JSON="$DST_ROOT/mystocks-opencode.json"
 DST_OMO_JSON="$DST_ROOT/mystocks-oh-my-opencode.noco.json"

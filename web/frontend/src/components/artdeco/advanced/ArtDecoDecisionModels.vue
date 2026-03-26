@@ -69,41 +69,41 @@ const columns = [
 @import '@/styles/artdeco-tokens';
 
 .artdeco-decision-models {
-    padding: 20px;
+    padding: var(--artdeco-spacing-5);
 }
 
 .models-overview {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    margin-bottom: 30px;
+    gap: var(--artdeco-spacing-5);
+    margin-bottom: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
 }
 
 .comparison-section {
-    margin-bottom: 30px;
+    margin-bottom: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
 }
 
 .models-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 30px;
+    gap: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
 }
 
 .mining-metrics {
     display: flex;
     justify-content: space-around;
-    padding: 20px;
+    padding: var(--artdeco-spacing-5);
     .metric {
         display: flex;
         flex-direction: column;
         align-items: center;
         .label {
-          font-size: 12px;
+          font-size: var(--artdeco-text-xs);
           color: var(--artdeco-fg-muted);
-          margin-bottom: 10px;
+          margin-bottom: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
         }
         .value {
-          font-size: 20px;
+          font-size: calc(var(--artdeco-spacing-md) + var(--artdeco-spacing-xs));
           font-weight: bold;
           color: var(--artdeco-gold-primary);
         }

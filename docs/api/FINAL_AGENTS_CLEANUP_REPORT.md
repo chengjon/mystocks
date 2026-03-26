@@ -103,7 +103,7 @@
 
 | 文档 | 位置 | 用途 |
 |------|------|------|
-| **CLAUDE_AGENTS_SUMMARY.md** | docs/guides/ | 详细使用指南 |
+| **CLAUDE_AGENTS_SUMMARY.md** | docs/guides/ai-tools/ | 详细使用指南 |
 | **AGENTS_QUICK_REFERENCE.md** | docs/api/ | 快速参考卡片 |
 | **AGENTS_AUDIT_REPORT.md** | docs/api/ | 完整审查报告 |
 | **官方子代理文档** | /opt/mydoc/Anthropic/Claude-code/sub-agents.md | 官方标准参考 |
@@ -152,7 +152,7 @@
 
 ### 快速查阅
 - 快速参考: `docs/api/AGENTS_QUICK_REFERENCE.md`
-- 详细指南: `docs/guides/CLAUDE_AGENTS_SUMMARY.md`
+- 详细指南: `docs/guides/ai-tools/CLAUDE_AGENTS_SUMMARY.md`
 
 ---
 

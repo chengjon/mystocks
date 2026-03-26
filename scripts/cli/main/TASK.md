@@ -52,6 +52,6 @@
 
 ## 参考文档
 
-- Multi-CLI快速参考: `CLIS/README.md`
-- CLI报到指南: `docs/guides/CLI_REGISTRATION_GUIDE.md`
-- 任务池指南: `docs/guides/TASK_POOL_USAGE_GUIDE.md`
+- Multi-CLI快速参考: `scripts/cli/README.md`
+- CLI报到指南: `docs/guides/multi-cli-tasks/CLI_REGISTRATION_GUIDE.md`
+- 任务池指南: `docs/guides/multi-cli-tasks/TASK_POOL_USAGE_GUIDE.md`

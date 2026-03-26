@@ -305,7 +305,7 @@ git add docs/reports/API_DEPLOYMENT_VERIFICATION_CHECKLIST.md
 
 # Supporting documents
 git add docs/reports/API_STANDARDIZATION_NEXT_STEPS.md
-git add docs/guides/API_STANDARDIZATION_MASTER_PLAN.md
+git add docs/api/guides/integration/API_STANDARDIZATION_MASTER_PLAN.md
 
 # Commit message
 git commit -m "docs: API标准化验证完成 - E2E测试通过

@@ -1,6 +1,6 @@
 .pyprofiling-demo {
   padding: var(--spacing-6);
-  max-width: 1400px;
+  max-width: calc(var(--breakpoint-md) - var(--spacing-lg) - var(--spacing-md));
   margin: 0 auto;
   min-height: 100vh;
   position: relative;
@@ -22,14 +22,14 @@
       var(--accent-gold) 0px,
       var(--accent-gold) 1px,
       transparent 1px,
-      transparent 10px
+      transparent calc(var(--spacing-sm) + var(--radius-md))
     ),
     repeating-linear-gradient(
       -45deg,
       var(--accent-gold) 0px,
       var(--accent-gold) 1px,
       transparent 1px,
-      transparent 10px
+      transparent calc(var(--spacing-sm) + var(--radius-md))
     );
 }
 
@@ -178,17 +178,17 @@
 }
 
 .profiling-section code {
-  background: rgb(212 175 55 / 10%);
-  padding: 2px 6px;
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  padding: calc(var(--spacing-xs) - var(--radius-md)) calc(var(--spacing-sm) - var(--radius-md));
   border-radius: var(--radius-none);
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-family-mono);
   color: var(--accent-gold);
   display: block;
   margin-top: var(--spacing-2);
 }
 
 .profiling-section :deep(.el-descriptions__label) {
-  background: rgb(212 175 55 / 10%) !important;
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent) !important;
   color: var(--fg-muted) !important;
   font-family: var(--font-display);
   font-size: var(--font-size-xs);

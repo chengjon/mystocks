@@ -446,7 +446,7 @@ PM2测试日志保存在 `/var/log/pm2/` 目录：
 
 - 📖 [E2E优化完成报告](./E2E_OPTIMIZATION_COMPLETION_REPORT.md)
 - 📖 [E2E自动化测试完成报告](./E2E_AUTOMATED_TESTING_COMPLETION_REPORT.md)
-- 📖 [Python质量保证工作流程](../guides/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md)
+- 📖 [Python质量保证工作流程](../operations/ci-cd/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md)
 
 ---
 

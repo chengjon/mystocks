@@ -439,7 +439,7 @@ class ImprovedRealtimeValidator:
             )
 
         # 保存详细报告
-        report_file = f"/opt/claude/mystocks_spec/logs/improved_realtime_validation_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        report_file = f"/opt/claude/mystocks_spec/var/log/improved_realtime_validation_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         with open(report_file, "w", encoding="utf-8") as f:
             json.dump(summary, f, indent=2, ensure_ascii=False)
 

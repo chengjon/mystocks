@@ -430,7 +430,7 @@ python -c "from src.mock.mock_Wencai import get_wencai_queries; print(get_wencai
 export LOG_LEVEL=debug
 
 # 查看API请求日志
-tail -f web/backend/logs/api.log
+tail -f var/log/backend-access.log
 
 # 查看前端代理日志
 tail -f web/frontend/npm-debug.log

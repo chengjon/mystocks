@@ -1,13 +1,65 @@
 <template>
-  <div class="strategy-optimization page-enter">
-    <ArtDecoCard class="optimization-card" variant="bordered">
+  <div class="strategy-optimization page-enter" :class="{ 'is-embedded': isEmbedded }">
+    <section v-if="!isEmbedded" class="hero-shell artdeco-card-shell">
+      <div class="hero-rail">
+        <div class="hero-copy">
+          <span class="hero-eyebrow">optimization writeback desk</span>
+          <div class="hero-meta">
+            <span>REQ_ID: {{ traceRequestId }}</span>
+            <span>PROCESS: {{ traceProcessTimeMs }}</span>
+            <span>SOURCE: {{ sourceModeLabel }}</span>
+          </div>
+        </div>
+      </div>
+
+      <ArtDecoHeader
+        title="策略优化工作台"
+        subtitle="聚合优化候选、评分回写与跨标签联动，形成闭环的策略调优路径"
+        :show-status="true"
+        :status-text="pageStatusText"
+        :status-type="pageStatusType"
+      >
+        <template #actions>
+          <ArtDecoButton variant="outline" size="sm" :loading="loading" @click="refreshOptimizationRows">
+            <template #icon>
+              <ArtDecoIcon name="refresh" />
+            </template>
+            刷新候选
+          </ArtDecoButton>
+        </template>
+      </ArtDecoHeader>
+    </section>
+
+    <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell">
+      <ArtDecoStatCard label="候选总数" :value="optimizationRows.length" variant="gold" />
+      <ArtDecoStatCard label="当前筛选" :value="displayedRows.length" variant="gold" />
+      <ArtDecoStatCard label="异常策略" :value="errorCandidateCount" variant="fall" />
+      <ArtDecoStatCard label="当前焦点" :value="optimizationFocusLabel" variant="gold" />
+    </section>
+
+    <section :class="isEmbedded ? 'embedded-shell' : 'content-shell artdeco-card-shell'">
+      <div v-if="!isEmbedded" class="content-shell-header">
+        <div class="content-shell-copy">
+          <span class="content-shell-kicker">optimization propagation route</span>
+          <h3 class="content-shell-title">优化候选与回写面板</h3>
+        </div>
+        <div class="content-shell-meta">
+          <span>VISIBLE: {{ displayedRows.length }}</span>
+          <span>FOCUS: {{ optimizationFocusLabel }}</span>
+        </div>
+      </div>
+
+      <ArtDecoCard class="optimization-card" variant="bordered">
       <template #header>
         <div class="header-row">
-          <h2>策略优化</h2>
+          <div class="header-copy">
+            <span class="header-eyebrow">{{ isEmbedded ? 'optimization module' : 'optimization repository' }}</span>
+            <h2>{{ isEmbedded ? '策略优化模块' : '策略优化' }}</h2>
+          </div>
           <div class="header-meta">
-            <span class="trace-id">REQ_ID: {{ traceRequestId }}</span>
-            <span class="trace-id">PROCESS: {{ traceProcessTimeMs }} ms</span>
-            <span :class="['source-badge', dataSource]">SOURCE: {{ dataSource.toUpperCase() }}</span>
+            <span class="trace-id">VISIBLE: {{ displayedRows.length }}</span>
+            <span class="trace-id">TOTAL: {{ optimizationRows.length }}</span>
+            <span :class="['source-badge', dataSource]">SOURCE: {{ sourceModeLabel }}</span>
           </div>
         </div>
       </template>
@@ -111,7 +163,8 @@
           </ul>
         </aside>
       </div>
-    </ArtDecoCard>
+      </ArtDecoCard>
+    </section>
   </div>
 </template>
 
@@ -121,7 +174,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { strategyApi } from '@/api'
 import type { StrategyConfig } from '@/api/types/common'
-import { ArtDecoCard } from '@/components/artdeco'
+import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import type { StrategySnapshot } from '@/composables/strategy/useStrategyCrossTabContext'
 import { useStrategyCrossTabContext } from '@/composables/strategy/useStrategyCrossTabContext'
@@ -145,6 +198,17 @@ import {
 
 type StatusFilter = 'all' | OptimizationStatusLabel
 
+interface Props {
+  functionKey?: string
+  userPermissions?: string[]
+  systemConfig?: unknown
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  functionKey: '',
+  userPermissions: () => [],
+  systemConfig: undefined
+})
 const route = useRoute()
 const router = useRouter()
 const { loading, error, lastRequestId, lastProcessTime, exec } = useArtDecoApi()
@@ -169,9 +233,29 @@ const selectedSnapshot = computed(() => {
   return getSnapshot(selectedStrategyId.value)
 })
 
+const isEmbedded = computed(() => Boolean(props.functionKey))
 const traceRequestId = computed(() => (lastRequestId.value.trim().length > 0 ? lastRequestId.value : 'N/A'))
 const traceProcessTimeMs = computed(() => normalizeProcessTime(lastProcessTime.value))
+const sourceModeLabel = computed(() => dataSource.value.toUpperCase())
 const writebackPoints = OPTIMIZATION_WRITEBACK_POINTS
+const errorCandidateCount = computed(() => optimizationRows.value.filter((row) => row.statusLabel === 'ERROR').length)
+const optimizationFocusLabel = computed(() => {
+  if (selectedStrategyId.value) return `ID ${selectedStrategyId.value}`
+  if (statusFilter.value === 'RUNNING') return '运行中'
+  if (statusFilter.value === 'PAUSED') return '已暂停'
+  if (statusFilter.value === 'STOPPED') return '已停止'
+  if (statusFilter.value === 'ERROR') return '异常策略'
+  return '全部候选'
+})
+const pageStatusText = computed(() => {
+  if (loading.value) return '同步中'
+  if (error.value) return '接口异常'
+  return dataSource.value === 'real' ? '优化链路在线' : '本地保底视图'
+})
+const pageStatusType = computed(() => {
+  if (error.value) return 'warning'
+  return dataSource.value === 'real' ? 'success' : 'info'
+})
 
 const filteredRows = computed(() => {
   const searchKeyword = keyword.value.trim().toLowerCase()

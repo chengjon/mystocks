@@ -1,8 +1,19 @@
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--artdeco-spacing-4);
-  margin-bottom: var(--artdeco-spacing-5);
+}
+
+@media (width <= 75rem) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width <= 48rem) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
 }

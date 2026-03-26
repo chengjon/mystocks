@@ -58,12 +58,12 @@ class TestSecurityBestPractices:
 
     def test_security_best_practices_doc_exists(self):
         """测试安全最佳实践文档是否存在"""
-        doc_path = Path("docs/security/SECURITY_BEST_PRACTICES.md")
+        doc_path = Path("docs/standards/security/SECURITY_BEST_PRACTICES.md")
         assert doc_path.exists(), "安全最佳实践文档必须存在"
 
     def test_security_best_practices_content(self):
         """测试安全最佳实践文档内容"""
-        doc_path = Path("docs/security/SECURITY_BEST_PRACTICES.md")
+        doc_path = Path("docs/standards/security/SECURITY_BEST_PRACTICES.md")
 
         with open(doc_path, "r", encoding="utf-8") as f:
             content = f.read()
@@ -131,9 +131,11 @@ class TestSecurityScanning:
     """安全扫描功能测试类"""
 
     def test_security_logs_directory(self):
-        """测试安全日志目录存在"""
-        log_dir = Path("logs/security")
-        assert log_dir.exists(), "安全日志目录必须存在"
+        """测试安全日志目录契约"""
+        script_path = Path("scripts/security/run_security_scan.sh")
+        content = script_path.read_text(encoding="utf-8")
+
+        assert "var/log/security" in content, "安全扫描日志应写入 var/log/security"
 
     def test_security_scan_can_run(self):
         """测试安全扫描可以运行（不抛出异常）"""
@@ -197,12 +199,11 @@ class TestSecurityIntegration:
         # 检查所有安全相关文件是否存在
         security_files = [
             "config/.security.yml",
-            "docs/security/SECURITY_BEST_PRACTICES.md",
+            "docs/standards/security/SECURITY_BEST_PRACTICES.md",
             "scripts/security/security_scanner.py",
             "scripts/security/basic_security_check.py",
             "scripts/security/run_security_scan.sh",
             "requirements-security.txt",
-            "logs/security/",
         ]
 
         for file_path in security_files:
@@ -212,10 +213,13 @@ class TestSecurityIntegration:
             else:
                 assert path.exists(), f"安全文件 {file_path} 必须存在"
 
+        scan_script = Path("scripts/security/run_security_scan.sh").read_text(encoding="utf-8")
+        assert "var/log/security" in scan_script
+
     def test_security_documentation_links(self):
         """测试安全文档链接有效性"""
         # 验证最佳实践文档中的重要链接或引用
-        doc_path = Path("docs/security/SECURITY_BEST_PRACTICES.md")
+        doc_path = Path("docs/standards/security/SECURITY_BEST_PRACTICES.md")
 
         with open(doc_path, "r", encoding="utf-8") as f:
             content = f.read()

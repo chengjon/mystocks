@@ -9,6 +9,7 @@ import os
 import argparse
 import logging
 from datetime import datetime, timedelta
+from pathlib import Path
 
 # 添加项目根目录到Python路径
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../"))
@@ -19,11 +20,14 @@ from src.core.data_classification import DataClassification
 import pandas as pd
 
 # 配置日志
+LOG_DIR = Path(__file__).resolve().parents[3] / "var" / "log" / "data_sync"
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler("logs/data_sync/stock_kline_sync.log"),
+        logging.FileHandler(LOG_DIR / "stock_kline_sync.log"),
         logging.StreamHandler(sys.stdout),
     ],
 )
@@ -279,7 +283,7 @@ def main():
     args = parser.parse_args()
 
     # 确保日志目录存在
-    os.makedirs("logs/data_sync", exist_ok=True)
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
 
     try:
         stats = sync_stock_kline_data(full_sync=args.full, use_saga=not args.no_saga)

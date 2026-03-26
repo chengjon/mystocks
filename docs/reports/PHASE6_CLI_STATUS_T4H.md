@@ -82,9 +82,9 @@
 - ✅ API文档索引 (docs/api/API_INDEX.md)
 - ✅ 数据模型文档 (docs/api/DATA_MODELS.md)
 - ✅ 错误码参考 (docs/api/ERROR_CODES.md)
-- ✅ 部署指南 (docs/guides/DEPLOYMENT.md)
-- ✅ 故障排查手册 (docs/guides/TROUBLESHOOTING.md)
-- ✅ 用户使用指南 (docs/guides/USER_GUIDE.md)
+- ✅ 部署指南 (docs/operations/deployment/DEPLOYMENT.md)
+- ✅ 故障排查手册 (docs/operations/TROUBLESHOOTING.md)
+- ✅ 用户使用指南 (docs/guides/onboarding/USER_GUIDE.md)
 - ✅ OpenSpec变更提案 (phase6-documentation-tasks/)
 - ✅ 完成报告 (DOCUMENTATION_COMPLETION_REPORT.md)
 ```

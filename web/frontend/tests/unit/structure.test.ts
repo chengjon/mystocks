@@ -11,7 +11,7 @@ describe('Task T1.1 - Directory Structure Initialization', () => {
   });
 
   it('should have domain folders in artdeco-pages', () => {
-    const domains = ['market', 'trade', 'risk'];
+    const domains = ['market-tabs', 'trading-tabs', 'risk-tabs'];
     domains.forEach(domain => {
       const domainDir = path.join(rootDir, `views/artdeco-pages/${domain}`);
       expect(fs.existsSync(domainDir)).toBe(true);
@@ -19,7 +19,7 @@ describe('Task T1.1 - Directory Structure Initialization', () => {
   });
 
   it('should have the centralized api directory', () => {
-    const apiDir = path.join(rootDir, 'api/artdeco-api');
+    const apiDir = path.join(rootDir, 'api/artdeco');
     expect(fs.existsSync(apiDir)).toBe(true);
   });
 });

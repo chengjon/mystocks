@@ -1,0 +1,100 @@
+version: "v0.2"
+
+task:
+  id: "pr-16"
+  title: "salvage repository governance, docs taxonomy, docker convergence, and frontend cleanup batches"
+  owner: "main"
+  created_at: "2026-03-26"
+
+mainline:
+  id: "L1-repo-salvage"
+  objective: "promote the queued salvage batches onto main with explicit governance scope instead of inheriting a stale recovery task card"
+  milestone_id: "L2-repository-governance-salvage"
+  slice_id: "L3-clean-mainline-promotion"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "tests"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "repository-salvage-mainline-promotion"
+
+scope:
+  allowed_paths:
+    - ".claude/hooks/*.sh"
+    - ".github/**"
+    - "IFLOW.md"
+    - "README.md"
+    - "TASK.md"
+    - "TASK-REPORT.md"
+    - "archive/**"
+    - "config/**"
+    - "docker/**"
+    - "docker-compose*.yml"
+    - "docs/**"
+    - "governance/**"
+    - "monitoring-stack.yml"
+    - "openspec/**"
+    - "reports/**"
+    - "run-api-tests.sh"
+    - "scripts/**"
+    - "src/**"
+    - "tests/**"
+    - "web/**"
+  forbidden_paths: []
+
+non_goals:
+  - "No new product feature design beyond salvaging already-staged repository cleanup and frontend governance work"
+  - "No hidden scope under an unrelated recovery task card"
+
+acceptance:
+  checks:
+    - id: "structure-check"
+      command: "python -m scripts.maintenance.check_structure --format text ."
+      required: true
+    - id: "targeted-governance-and-workflow-tests"
+      command: "pytest tests/unit/core/test_docker_root_compatibility.py tests/unit/scripts/test_docs_indexer.py tests/unit/scripts/test_repository_hygiene_paths.py tests/unit/scripts/test_ci_workflow_runtime_setup.py tests/unit/governance/test_mainline_scope_gate_function_tree.py -q --no-cov"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "This PR intentionally promotes a large salvage batch and can surface existing governance, security, lint, or dependency debt that predates the final fix commit"
+    - "Workflow scope or advisory-mode adjustments can hide signal if they are not limited to known historical debt paths"
+    - "Repository-wide cleanup paths must stay inside the declared salvage scope so the mainline gate remains truthful"
+  rollback_plan: "git revert <merge-commit-sha> on main if the salvage promotion regresses CI or repository governance"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "promote the queued salvage line with an explicit PR task card and final CI/governance repair patches"
+    modified_scope: "repository governance, docs taxonomy, docker convergence, frontend test workflows, selected python utilities, and verification tests"
+    dependency_changes: "frontend package metadata already changed in the salvage line; this PR adds no new third-party package beyond that existing salvage scope"
+    legacy_logic_impact: "existing product behavior is preserved while stale governance pointers and overly strict historical gates are corrected"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the salvage promotion if mainline CI or governance behavior regresses after merge"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-03-26T00:00:00Z"
+    approval_note: "approved"
+    secondary_approved: false

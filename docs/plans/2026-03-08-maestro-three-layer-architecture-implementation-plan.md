@@ -11,7 +11,7 @@ runtime 与多 CLI 协作核心迁移出去，同时保留 MyStocks 自身 profi
 
 - Create: `docs/plans/2026-03-08-maestro-three-layer-architecture-design.md`
 - Create: `docs/plans/2026-03-08-maestro-three-layer-architecture-implementation-plan.md`
-- Modify: `docs/guides/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md`
+- Modify: `docs/guides/multi-cli-tasks/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md`
 - Modify: `WORKFLOW.md`
 
 **Steps**

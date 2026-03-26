@@ -369,7 +369,7 @@ describe('API映射验证', () => {
 
   describe('与文档映射表一致性验证', () => {
     /**
-     * 根据 docs/guides/ARTDECO_MENU_API_MAPPING.md 文档验证映射关系
+     * 根据 docs/guides/web/ARTDECO_MENU_API_MAPPING.md 文档验证映射关系
      */
 
     it('应该与文档中的44个菜单项映射一致', () => {

@@ -134,19 +134,19 @@ defineProps<{
 
 .obsidian-log-panel {
   margin-top: var(--artdeco-spacing-4);
-  border: 2px solid var(--artdeco-border-default);
+  border: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-border-default);
 
-  @include artdeco-stepped-corners(8px);
+  @include artdeco-stepped-corners(var(--artdeco-spacing-2));
 
   overflow: hidden;
 }
 
 .obsidian-code-block {
   width: 100%;
-  height: 300px;
-  background: #000; // Obsidian Deep Black
-  color: #a6acb9; // Obsidian Muted Text
-  font-family: 'JetBrains Mono', monospace;
+  height: calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-10));
+  background: var(--artdeco-bg-global);
+  color: var(--artdeco-fg-muted);
+  font-family: var(--font-mono);
   font-size: var(--artdeco-text-sm);
   padding: var(--artdeco-spacing-4);
   border: none;

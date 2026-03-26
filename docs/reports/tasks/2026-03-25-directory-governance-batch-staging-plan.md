@@ -187,3 +187,7 @@ gitnexus_detect_changes({scope: "staged"})
 如果要真正执行这两个批次，建议先在当前工作区外建立一个干净的提交视角，再按上面两批次逐个 `git add`。
 
 若继续留在当前工作区操作，也应先确认现有 `499` 个 staged 文件如何处理，否则 `scope="staged"` 仍然会混入它们。
+
+独立工作树执行说明：
+
+- [2026-03-25-directory-governance-isolated-execution-guide.md](./2026-03-25-directory-governance-isolated-execution-guide.md)

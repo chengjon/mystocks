@@ -208,7 +208,7 @@ verify_organization() {
 
     # 检查目录结构
     log_info "检查目录结构..."
-    if [[ -d "temp" && -d "logs" && -d "docs" && -d "scripts" && -d "reports" ]]; then
+    if [[ -d "temp" && -d "var/log" && -d "docs" && -d "scripts" && -d "reports" ]]; then
         log_success "标准目录结构已创建"
     else
         log_error "标准目录结构创建失败"
@@ -226,7 +226,7 @@ verify_organization() {
     fi
 
     # 检查日志文件
-    if [[ -f "logs/app/app.log" || -f "logs/app/error.log" ]]; then
+    if [[ -f "var/log/app/app.log" || -f "var/log/app/error.log" ]]; then
         log_success "日志文件已移动"
     else
         log_warning "日志文件移动可能有问题"

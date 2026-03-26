@@ -6,12 +6,10 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 
-def test_root_api_test_wrapper_exists_and_delegates_to_scripts_tests_runner() -> None:
+def test_root_api_test_wrapper_has_been_removed() -> None:
     wrapper = PROJECT_ROOT / "run-api-tests.sh"
 
-    assert wrapper.exists()
-    content = wrapper.read_text(encoding="utf-8")
-    assert 'exec bash "${PROJECT_ROOT}/scripts/tests/run-api-tests.sh" "$@"' in content
+    assert not wrapper.exists()
 
 
 def test_scripts_api_test_runner_uses_repo_relative_paths() -> None:

@@ -9,12 +9,15 @@
 ### 🎯 项目概览文档
 - **[项目总览.md](./项目总览.md)** - 项目简介、核心功能、当前状态
 - **[CHANGELOG.md](../../CHANGELOG.md)** - 版本变更日志（月度更新）
-- **[PROJECT_STATUS_REPORT.md](./PROJECT_STATUS_REPORT.md)** - 项目状态报告（月度更新）
-- **[项目执行摘要.md](./项目执行摘要.md)** - 最新版本执行摘要
+- **[INDEX.md](./INDEX.md)** - 总览目录索引
+- **[archived.md](./archived.md)** - 历史概览与迁移说明
 
 ### 📖 开发规范文档
 - **[开发与安全规范.md](./开发与安全规范.md)** - 代码规范、安全要求、文件组织规则
 - **[开发工具链指南.md](./开发工具链指南.md)** - Claude Code、APIFox、Playwright等工具使用指南
+- **[agents.md](./agents.md)** - Agent 相关总览
+- **[claude.md](./claude.md)** - Claude 入口文档摘要
+- **[initialization-prompt.md](./initialization-prompt.md)** - 初始化提示词说明
 
 ## 🚀 快速导航
 
@@ -29,8 +32,7 @@
 - 使用 **[开发工具链指南.md](./开发工具链指南.md)** 提升开发效率
 
 ### 项目管理人员
-- 查看 **[PROJECT_STATUS_REPORT.md](./PROJECT_STATUS_REPORT.md)** 了解项目进展
-- 参考 **[项目执行摘要.md](./项目执行摘要.md)** 掌握执行情况
+- 查看 **[INDEX.md](./INDEX.md)** 与 **[archived.md](./archived.md)** 了解当前入口与历史资料
 - 关注 **[CHANGELOG.md](../../CHANGELOG.md)** 了解功能交付
 
 ## 📝 文档维护规范
@@ -38,12 +40,11 @@
 ### 更新频率
 - **项目总览.md**: 项目重大变更时更新
 - **CHANGELOG.md**: 每月更新，记录当月所有变更
-- **PROJECT_STATUS_REPORT.md**: 每月第一周更新上月状态
 - **开发与安全规范.md**: 规范变更时更新
 - **开发工具链指南.md**: 工具升级时更新
 
 ### 责任人
-- **项目负责人**: 项目总览、状态报告、执行摘要
+- **项目负责人**: 项目总览、概览索引、历史概览
 - **技术负责人**: 开发规范、工具链指南
 - **全体成员**: CHANGELOG（按实际贡献更新）
 

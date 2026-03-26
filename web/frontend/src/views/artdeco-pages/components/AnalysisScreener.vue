@@ -59,7 +59,7 @@ defineEmits(['add-indicator', 'remove-indicator', 'reset', 'run'])
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .filter-section {
     margin-bottom: calc(var(--artdeco-spacing-px) * 30);
@@ -97,5 +97,19 @@ defineEmits(['add-indicator', 'remove-indicator', 'reset', 'run'])
     gap: calc(var(--artdeco-spacing-px) * 15);
     margin-top: calc(var(--artdeco-spacing-px) * 30);
 }
-</style>
 
+@media (width <= 48rem) {
+    .filter-grid,
+    .range-input,
+    .indicator-filter-row,
+    .form-actions {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .indicator-operator {
+        width: 100%;
+    }
+}
+</style>

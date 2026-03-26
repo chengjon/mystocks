@@ -1,544 +1,470 @@
-# 目录与文件整理通用规则 (Directory and File Organization Rules)
+# 目录与文件整理通用规则
 
-**版本**: 1.0
-**适用范围**: 通用软件项目
-**最后更新**: 2026-03-22
-
----
-
-## 一、核心理念 (Core Philosophy)
-
-### 1.1 根目录极简主义 (Root Directory Minimalism)
-
-**原则**: 项目根目录应保持最小化，仅保留核心入口文件。
-
-**根目录允许清单**:
-
-| 类别 | 允许的文件 |
-|------|-----------|
-| **项目入口** | `README.md`, `LICENSE`, `CHANGELOG.md` |
-| **AI助手配置** | `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `IFLOW.md` |
-| **Python工具链** | `pyproject.toml`, `requirements.txt`, `pytest.ini`, `mypy.ini`, `conftest.py` |
-| **Node/E2E工具链** | `package.json`, `package-lock.json`, `tsconfig.json`, `vitest.config.*`, `playwright.config.*` |
-| **部署配置** | `docker-compose*.yml`, `Dockerfile`, `pm2.config.js` |
-| **规范系统** | `.mcp.json`, `opencode.json` |
-
-**禁止在根目录出现**:
-- `*.log` - 运行时日志
-- `*.csv` - 生成的数据文件
-- `*.tmp`, `*.bak` - 临时/备份文件
-- `.coverage`, `coverage.xml` - 覆盖率报告
-- `node_modules/`, `__pycache__/` - 依赖/缓存目录
+**版本**: 2.0  
+**适用范围**: 通用软件项目  
+**最后更新**: 2026-03-23
 
 ---
 
-## 二、标准目录结构 (Standard Directory Structure)
+## 一、文档定位与优先级
 
-### 2.1 九大顶层目录
+本文件提供的是**通用基线**，用于指导目录整理、文件归类、归档与治理；它**不是**任何单个仓库的最终 allowlist。
 
-```
-Project_Root/
-├── src/                    # 源代码 (核心业务逻辑)
-├── tests/                  # 测试文件 (独立顶层)
-├── scripts/                # 脚本工具
-├── config/                 # 配置文件
-├── docs/                   # 文档
-├── architecture/           # 架构设计文档 (独立顶层)
-├── reports/                # 生成报告
-├── archive/                # 归档文件 (独立顶层)
-└── data/                   # 数据文件 (独立顶层)
-```
+当某个项目已经存在下列任一“更具体的治理入口”时，应按以下优先级解释和执行：
 
-### 2.2 各目录详细规则
+1. 仓库内已生效的治理策略、hook、CI 门禁
+2. 仓库级 `AGENTS.md` / `CLAUDE.md` / 工作流约定
+3. 本通用规则
 
-#### 1. `src/` - 源代码目录
+换言之：
 
-**规则**: 所有核心业务代码必须放入此目录。
-
-```
-src/
-├── core/           # 核心模块 (配置、日志、工具类)
-├── adapters/       # 适配器层 (外部接口封装)
-├── services/       # 业务服务层
-├── data_access/    # 数据访问层
-├── interfaces/     # 接口定义
-├── storage/        # 存储层
-├── monitoring/     # 监控模块
-└── utils/          # 工具函数
-```
-
-**命名规则**:
-- 模块名使用 `snake_case`
-- 每个目录必须包含 `__init__.py`
-
-#### 2. `tests/` - 测试目录 (独立顶层)
-
-**规则**: 所有测试文件统一放在此目录，与源代码物理隔离。
-
-```
-tests/
-├── unit/           # 单元测试
-├── integration/    # 集成测试
-├── e2e/            # 端到端测试
-└── conftest.py     # pytest 配置
-```
-
-**文件命名**:
-- 测试文件: `test_*.py` 或 `*_test.py`
-- 测试类: `TestClassName`
-- 测试方法: `test_method_name`
-
-#### 3. `scripts/` - 脚本工具目录
-
-**规则**: 按功能分类组织脚本。
-
-```
-scripts/
-├── runtime/        # 运行脚本 (run_*, save_*, monitor_*, *_demo.py)
-├── database/       # 数据库脚本 (check_*, verify_*, create_*, init_*, migrate_*)
-├── dev/            # 开发工具 (validate_*, analyze_*, generate_*)
-└── maintenance/    # 维护脚本
-```
-
-**脚本命名前缀规则**:
-
-| 前缀 | 含义 | 目标目录 |
-|------|------|----------|
-| `run_*` | 运行/启动脚本 | `scripts/runtime/` |
-| `save_*` | 数据保存脚本 | `scripts/runtime/` |
-| `monitor_*` | 监控脚本 | `scripts/runtime/` |
-| `*_demo.py` | 演示脚本 | `scripts/runtime/` |
-| `check_*` | 检查脚本 | `scripts/database/` |
-| `verify_*` | 验证脚本 | `scripts/database/` |
-| `create_*` | 创建脚本 | `scripts/database/` |
-| `init_*` | 初始化脚本 | `scripts/database/` |
-| `migrate_*` | 迁移脚本 | `scripts/database/` |
-| `validate_*` | 验证工具 | `scripts/dev/` |
-| `analyze_*` | 分析工具 | `scripts/dev/` |
-| `generate_*` | 生成工具 | `scripts/dev/` |
-
-#### 4. `config/` - 配置文件目录
-
-**规则**: 所有项目级配置文件统一存放。
-
-```
-config/
-├── *.yaml          # YAML 配置
-├── *.yml           # YAML 配置 (docker-compose 等)
-├── *.ini           # INI 配置
-├── *.toml          # TOML 配置
-└── *.json          # JSON 配置
-```
-
-**例外**: 工具链配置 (如 `pytest.ini`, `mypy.ini`) 可保留在根目录。
-
-#### 5. `docs/` - 文档目录
-
-**规则**: 按文档类型分类组织。
-
-```
-docs/
-├── INDEX.md            # 文档总索引 (必需)
-├── guides/             # 用户/开发者指南
-│   ├── QUICKSTART.md   # 快速开始
-│   ├── TUTORIALS.md    # 教程
-│   └── TROUBLESHOOTING.md  # 故障排查
-├── api/                # API 文档
-│   └── REFERENCE.md    # API 参考
-├── standards/          # 标准与规范
-│   └── CODING_STANDARDS.md
-├── operations/         # 运维文档
-│   ├── DEPLOYMENT.md   # 部署指南
-│   └── MONITORING.md   # 监控配置
-└── archive/            # 归档文档
-    └── deprecated/     # 废弃文档
-```
-
-**文档命名规则**:
-
-| 文档类型 | 关键词 | 目标目录 |
-|----------|--------|----------|
-| 用户指南 | `GUIDE`, `TUTORIAL`, `SETUP` | `docs/guides/` |
-| API文档 | `API`, `REFERENCE`, `ENDPOINT` | `docs/api/` |
-| 标准规范 | `STANDARD`, `POLICY`, `RULE` | `docs/standards/` |
-| 报告文档 | `REPORT`, `ANALYSIS`, `REVIEW` | `docs/reports/` 或 `reports/` |
-| 架构文档 | `ARCHITECTURE`, `DESIGN`, `ADR` | `architecture/` |
-| 归档文档 | 废弃/历史 | `docs/archive/` 或 `archive/` |
-
-#### 6. `architecture/` - 架构文档目录 (独立顶层)
-
-**规则**: 系统架构设计文档独立存放。
-
-```
-architecture/
-├── OVERVIEW.md         # 架构概述
-├── COMPONENTS.md       # 组件设计
-├── DATABASE.md         # 数据库设计
-├── PATTERNS.md         # 设计模式
-├── STANDARDS.md        # 架构红线
-└── adr/                # 架构决策记录 (ADR)
-    ├── 001-*.md
-    └── 002-*.md
-```
-
-#### 7. `reports/` - 生成报告目录
-
-**规则**: 脚本生成的报告文件统一存放。
-
-```
-reports/
-├── analysis/           # 分析报告
-├── coverage/           # 覆盖率报告
-├── performance/        # 性能报告
-├── security/           # 安全审计
-└── YYYYMMDD_HHMMSS_*.json  # 带时间戳的报告
-```
-
-**命名约定**: 时间戳格式 `YYYYMMDD_HHMMSS`
-
-#### 8. `archive/` - 归档目录 (独立顶层)
-
-**规则**: 不再使用但需保留的文件。
-
-```
-archive/
-├── deprecated/         # 废弃代码
-├── legacy/             # 历史版本
-├── migrations/         # 迁移记录
-└── tools/              # 旧工具
-```
-
-**归档标记**: 归档文件顶部应添加废弃声明。
-
-#### 9. `data/` - 数据目录 (独立顶层)
-
-**规则**: 项目数据文件存放。
-
-```
-data/
-├── datasets/           # 数据集
-├── backups/            # 备份
-├── exports/            # 导出数据
-└── samples/            # 示例数据
-```
-
-**注意**: 大型数据文件应通过 `.gitignore` 排除。
+- 本文定义“推荐结构与判断方法”
+- 仓库级策略定义“该仓库当前允许什么、禁止什么”
+- 两者冲突时，**以仓库级治理为准**
 
 ---
 
-## 三、文件放置决策树 (File Placement Decision Tree)
+## 二、核心原则
 
-```
-创建/移动文件?
-│
-├─ 在根目录允许清单中? (README/CLAUDE/LICENSE/pyproject.toml/...)
-│  ├─ 是 → 放置在根目录
-│  └─ 否 → 继续
-│
-├─ 是测试文件? (test_*.py, *_test.py)
-│  └─ → tests/ (unit/, integration/, e2e/)
-│
-├─ 是脚本文件? (.py, .sh)
-│  ├─ run_*, save_*, monitor_*, *_demo.py → scripts/runtime/
-│  ├─ check_*, verify_*, create_*, init_*, migrate_* → scripts/database/
-│  └─ 其他开发工具 → scripts/dev/
-│
-├─ 是文档文件? (.md, .rst)
-│  ├─ 用户/开发者指南 → docs/guides/
-│  ├─ API文档 → docs/api/
-│  ├─ 标准/规范 → docs/standards/
-│  ├─ 架构/设计 → architecture/
-│  └─ 废弃/历史 → archive/ 或 docs/archive/
-│
-├─ 是配置文件? (.yaml, .yml, .ini, .toml, .json)
-│  └─ → config/
-│
-├─ 是报告/分析? (.json, .txt 带时间戳)
-│  └─ → reports/
-│
-├─ 是归档/废弃文件?
-│  └─ → archive/
-│
-└─ 是数据文件?
-   └─ → data/
-```
+### 2.1 根目录应保持精简，但必须兼容真实入口
 
----
+根目录只应保留下列对象：
 
-## 四、自动化分类规则 (Automated Classification Rules)
+- 项目入口文档：`README.md`、`LICENSE`、`CHANGELOG.md`
+- 治理入口：`AGENTS.md`、`CLAUDE.md`、`IFLOW.md`、规范文件
+- 构建/测试/运行工具链的**自动发现入口**
+- 明确批准的工作流契约文件
+- 明确批准的兼容包装入口
 
-### 4.1 基于文件名关键词的分类
+如果某个工具、脚本、CI、PM2、Playwright、Vitest、Docker 或 IDE 依赖“根目录自动发现”，则在**完成调用方迁移前**，不得仅以“根目录应该更干净”为由移动该文件。
 
-| 关键词模式 | 目标目录 | 说明 |
-|------------|----------|------|
-| `API`, `ENDPOINT`, `REFERENCE` | `docs/api/` | API 相关文档 |
-| `GUIDE`, `TUTORIAL`, `SETUP`, `INTEGRATION` | `docs/guides/` | 指南类文档 |
-| `REPORT`, `SESSION`, `ANALYSIS`, `STATUS` | `reports/` | 报告类文件 |
-| `ARCHITECTURE`, `DESIGN`, `ADR` | `architecture/` | 架构设计文档 |
-| `TROUBLESHOOTING`, `NEXT_STEPS` | `docs/guides/` | 问题排查指南 |
-| `TEST_VALIDATION`, `TEST_PLAN` | `tests/` | 测试文档 |
-| `TASK_*`, `COMPLETION`, `VERIFICATION` | `reports/` | 任务报告 |
+### 2.2 例外必须显式登记，不能靠口头约定
 
-### 4.2 基于文件扩展名的分类
+所有“看起来违反极简主义，但实际上必须保留”的对象，都应写入仓库治理中，例如：
 
-| 扩展名 | 默认目录 | 例外 |
-|--------|----------|------|
-| `.py` (test) | `tests/` | - |
-| `.py` (script) | `scripts/` | `src/` 中的业务代码 |
-| `.md` | `docs/` | 根目录允许的入口文档 |
-| `.yaml`, `.yml` | `config/` | `.github/workflows/` |
-| `.json` (config) | `config/` | `reports/` 中的报告 |
-| `.json` (report) | `reports/` | - |
-| `.log`, `.tmp` | 不应入库 | 通过 `.gitignore` 排除 |
+- 工作流例外文件
+- 容忍的历史目录
+- 根目录自动发现的配置入口
+- 兼容期内的包装文件
+
+### 2.3 一个内容族群只能有一个主归属
+
+同一类内容应只有一个**主归属目录**。例如：
+
+- 架构文档主归属选择 `architecture/` 或 `docs/architecture/` 二选一
+- 生成报告主归属选择 `reports/` 或 `var/reports/`
+- 测试代码主归属选择 `tests/`
+
+兼容期内可以存在“旧位置 + 新位置”，但必须：
+
+- 明确主从关系
+- 有迁移计划
+- 有回收时间点或单独审批门槛
+
+### 2.4 区分源码、测试、脚本、配置、文档、报告、运行态
+
+目录整理的核心不是“统一放到看起来整齐的地方”，而是区分对象职责：
+
+- 源码：业务逻辑、领域模型、服务、前端代码
+- 测试：由测试框架收集或专门用于验证的代码/夹具
+- 脚本：运维、生成、迁移、检查、批处理工具
+- 配置：供系统、工具或部署使用的静态配置
+- 文档：面向人阅读的说明、标准、方案、设计
+- 报告：分析结论、交付记录、审计产物
+- 运行态：日志、覆盖率、缓存、临时文件、备份
+
+### 2.5 “未使用”不等于“可删除”
+
+在做整理、归档、删除前，必须同时判断：
+
+1. 是否仍被代码路径、构建流程、运行脚本、菜单、注册表、动态导入、字符串约定或文档流程使用
+2. 其功能树状态是：
+   - 有效
+   - 兼容保留
+   - 实验/灰度
+   - 重复冗余
+   - 待判定
+
+只有在“代码路径可安全移除”且“功能树状态明确为重复冗余或正式下线”时，才允许删除。
 
 ---
 
-## 五、Git 操作最佳实践 (Git Best Practices)
+## 三、推荐的顶层目录模型
 
-### 5.1 文件移动必须保留历史
+### 3.1 常见核心目录
 
-```bash
-# ✅ 正确: 使用 git mv 保留文件历史
-git mv old_location/file.md new_location/file.md
+下列目录是**常见推荐项**，不是强制要求每个仓库都必须同时具备：
 
-# ❌ 错误: 使用 mv 会断开历史
-mv old_location/file.md new_location/file.md
-git add new-location/file.md
-```
+| 目录 | 职责 |
+|------|------|
+| `src/` | 核心源代码 |
+| `tests/` | 测试代码与测试夹具 |
+| `scripts/` | 脚本与工具 |
+| `config/` | 非自动发现的项目配置 |
+| `docs/` | 指南、规范、方案、说明文档 |
+| `architecture/` | 架构规范、ADR、系统级设计 |
+| `reports/` | 可版本化的报告与审计结论 |
+| `archive/` | 归档保留物 |
+| `data/` | 项目数据、样例数据、导出数据 |
+| `var/` | 运行态输出、缓存、日志、临时文件 |
 
-### 5.2 移动文件后必须更新引用
+### 3.2 常见可选目录
 
-```bash
-# 1. 搜索所有引用
-grep -r "old-location/file" .
+部分项目还会显式保留：
 
-# 2. 更新文档链接
-# 3. 更新导入路径
-# 4. 提交时说明变更范围
-git commit -m "refactor: move file.md to docs/guides/ per organization rules"
-```
-
-### 5.3 提交信息规范
-
-```bash
-# 文件整理类提交
-git commit -m "refactor: organize files according to directory structure rules
-
-- Move test_*.py to tests/unit/
-- Move config files to config/
-- Archive deprecated documentation to docs/archive/"
-```
-
----
-
-## 六、合规检查清单 (Compliance Checklist)
-
-### 6.1 新文件创建前检查
-
-- [ ] 确认文件用途 (测试/脚本/文档/配置/报告)
-- [ ] 对照决策树确定正确目录
-- [ ] 确认命名符合规范
-- [ ] 直接在正确目录创建
-
-### 6.2 文件整理后验证
-
-- [ ] 根目录仅包含允许清单中的文件
-- [ ] 所有脚本分类正确 (`scripts/{runtime,database,dev}/`)
-- [ ] 所有文档分类正确 (`docs/{guides,api,standards}/`)
-- [ ] 所有配置文件在 `config/`
-- [ ] 所有报告在 `reports/`
-- [ ] 移动后的脚本导入路径已更新
-- [ ] 文档链接已更新
-- [ ] `git status` 显示移动 (非删除+新增)
-- [ ] 测试通过
-
----
-
-## 七、常见错误与纠正 (Common Mistakes)
-
-| 错误 | 正确做法 |
+| 目录 | 典型场景 |
 |------|----------|
-| 在根目录创建测试文件 | 放入 `tests/` |
-| 在根目录创建脚本 | 放入 `scripts/` 对应子目录 |
-| 使用 `mv` 而非 `git mv` | 始终用 `git mv` 保留历史 |
-| 移动后忘记更新引用 | 搜索并更新所有链接和导入 |
-| 测试文件与源码混放 | 物理隔离到 `tests/` |
-| 配置文件散落各处 | 集中到 `config/` |
-| 归档文件无标记 | 添加废弃声明和时间戳 |
+| `web/` | 前后端子应用或独立 Web 子模块 |
+| `openspec/` | 规范/提案系统 |
+| `services/` | 独立服务子模块 |
+| `monitoring-stack/` | 独立监控栈配置与部署单元 |
+
+对于这些目录，不应仅因为它们“不在九宫格里”就强行移动。
 
 ---
 
-## 八、治理策略配置示例 (Governance Policy Example)
+## 四、根目录放置规则
 
-### 8.1 YAML 格式的治理策略
+### 4.1 允许保留在根目录的类别
 
-```yaml
-version: 1
+#### 1. 项目入口与治理入口
 
-root:
-  allowed_files:
-    - README.md
-    - LICENSE
-    - CLAUDE.md
-    - AGENTS.md
-    - pyproject.toml
-    - requirements.txt
-    - package.json
-  allowed_directories:
-    - src
-    - tests
-    - scripts
-    - config
-    - docs
-    - architecture
-    - reports
-    - archive
-    - data
-  forbidden_file_patterns:
-    - pattern: "*.log"
-      message: "日志文件不应入库"
-      recommendation: "添加到 .gitignore"
-    - pattern: "*.tmp"
-      message: "临时文件不应入库"
-      recommendation: "使用后删除"
-    - pattern: ".coverage"
-      message: "覆盖率文件不应入库"
-      recommendation: "移至 reports/coverage/"
+- `README.md`
+- `LICENSE`
+- `CHANGELOG.md`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `IFLOW.md`
 
-rules:
-  - id: reports-convergence
-    severity: warning
-    match_any:
-      - docs/**/*_reports/**
-      - docs/**/completion_reports/**
-    message: "报告文件应集中存放"
-    recommendation: "移至 reports/"
-```
+#### 2. 自动发现的工具链配置
 
----
+例如：
 
-## 九、索引维护 (Index Maintenance)
+- `pyproject.toml`
+- `pytest.ini`
+- `mypy.ini`
+- `package.json`
+- `package-lock.json`
+- `playwright.config.*`
+- `vitest.config.*`
+- `tsconfig.*`
+- `docker-compose*.yml`
+- `ecosystem*.config.js`
 
-### 9.1 文档索引要求
+原则：
 
-每个主要目录应包含 `INDEX.md` 或 `README.md`:
+- 如果工具依赖根目录发现，则可以保留
+- 若未来迁移到 `config/`，必须先完成调用方改造，再保留根目录兼容入口或移除旧入口
+- 对 Docker / Compose 这类部署资产，可采用“专用目录为主、根目录 compose 文件为兼容入口”的方式，例如以 `docker/` 为 canonical 目录，根目录 `docker-compose*.yml`、`monitoring-stack.yml` 仅保留软链接或桥接包装
 
-```
-docs/INDEX.md          # 文档总索引
-docs/api/INDEX.md      # API 文档索引
-architecture/INDEX.md  # 架构文档索引
-scripts/README.md      # 脚本说明
-```
+#### 3. 明确批准的工作流契约
 
-### 9.2 新增文档时更新索引
+例如：
 
-- 新增 API 文档 → 更新 `docs/api/INDEX.md`
-- 新增架构文档 → 更新 `architecture/INDEX.md`
-- 新增标准文档 → 更新 `docs/standards/INDEX.md`
+- `TASK.md`
+- `TASK-REPORT.md`
+- `.FILE_OWNERSHIP`
 
----
+这类文件是否允许保留，应由项目级治理明确登记。
 
-## 十、生命周期管理 (Lifecycle Management)
+#### 4. 兼容包装入口
 
-### 10.1 文件生命周期
+某些仓库会在根目录保留兼容包装文件，例如旧版入口或桥接模块。保留前提：
 
-```
-创建 → 活跃使用 → 降级归档 → 最终删除
- │         │           │           │
- └─────────┴───────────┴───────────┴── 记录变更历史
-```
+- 有明确用途
+- 有引用方
+- 有迁移说明
 
-### 10.2 归档时机
+### 4.2 不应长期保留在根目录的内容
 
-- 6个月未修改的文档 → 考虑归档
-- 已废弃的功能代码 → 标记后归档
-- 一次性分析报告 → 保留3个月后归档
-- 版本迁移记录 → 永久保留
+- 运行日志：`*.log`
+- 临时文件：`*.tmp`
+- 备份文件：`*.bak`
+- 覆盖率产物：`.coverage`、`coverage.xml`、`htmlcov/`
+- 缓存目录：`__pycache__/`、`.pytest_cache/`、`.mypy_cache/`
+- 大型导出：`*.csv`、生成的 `*.json`、生成的 `*.html`
+- 无归属的实验文件、散装报告、随机命名文件
+
+这类对象应进入：
+
+- `reports/`
+- `var/reports/`
+- `var/log/`
+- `var/tmp/`
+- `archive/`
+
+或直接加入 `.gitignore`。
 
 ---
 
-## 附录 A: 目录结构模板
+## 五、目录放置细则
 
-```
-Project_Root/
-├── README.md
-├── CLAUDE.md
-├── LICENSE
-├── pyproject.toml
-├── requirements.txt
-├── package.json
-│
-├── src/
-│   ├── __init__.py
-│   ├── core/
-│   ├── adapters/
-│   ├── services/
-│   └── utils/
-│
-├── tests/
-│   ├── __init__.py
-│   ├── conftest.py
-│   ├── unit/
-│   ├── integration/
-│   └── e2e/
-│
-├── scripts/
-│   ├── runtime/
-│   ├── database/
-│   ├── dev/
-│   └── maintenance/
-│
-├── config/
-│   ├── app.yaml
-│   └── docker-compose.yml
-│
-├── docs/
-│   ├── INDEX.md
-│   ├── guides/
-│   ├── api/
-│   ├── standards/
-│   └── archive/
-│
-├── architecture/
-│   ├── OVERVIEW.md
-│   └── adr/
-│
-├── reports/
-│   ├── analysis/
-│   └── coverage/
-│
-├── archive/
-│   └── deprecated/
-│
-└── data/
-    └── samples/
-```
+### 5.1 `src/` 或业务源码目录
+
+适合放置：
+
+- 核心业务逻辑
+- 领域模型
+- 数据访问层
+- 业务服务
+- 公共库
+
+不建议把测试、一次性脚本、运行日志混入源码目录。
+
+### 5.2 `tests/`
+
+适合放置：
+
+- 被 pytest / vitest / Playwright 等测试框架收集的测试
+- 测试夹具
+- 测试专用示例数据
+
+不应把所有“和测试有关”的东西都机械搬进 `tests/`。例如：
+
+- 环境启动脚本
+- 批量 runner
+- 压测 orchestrator
+- 浏览器操作工具
+
+这些通常更接近 `scripts/testing/` 或 `scripts/` 下的专门目录。
+
+### 5.3 `scripts/`
+
+适合放置：
+
+- 运行脚本
+- 迁移脚本
+- 检查脚本
+- 索引生成工具
+- 批处理/运维脚本
+
+建议按职责分类，而不是按作者或临时阶段命名：
+
+- `scripts/runtime/`
+- `scripts/database/`
+- `scripts/dev/`
+- `scripts/testing/`
+- `scripts/maintenance/`
+- `scripts/compliance/`
+
+### 5.4 `config/`
+
+适合放置：
+
+- 应用配置
+- 部署配置
+- 监控规则
+- 子系统配置
+
+但需要注意：
+
+- 并非所有配置都必须移出根目录
+- 对根目录自动发现有要求的配置，可以以“`config/` 为主、根目录为兼容入口”的方式收敛
+- 若某一整类运行/部署资产已经形成稳定家族，也可以提升为专用顶层目录，例如 `docker/`、`monitoring-stack/`；此时不应再机械要求“所有配置都放进 `config/`”
+
+### 5.5 `docs/`
+
+`docs/` 用于面向人的说明性内容，建议分为稳定的家族目录，例如：
+
+- `docs/guides/`
+- `docs/api/`
+- `docs/standards/`
+- `docs/operations/`
+- `docs/testing/`
+- `docs/reports/`
+- `docs/examples/`
+- `docs/references/`
+- `docs/archive/`
+
+原则：
+
+- 指南类与报告类分开
+- 规范类与设计类分开
+- 归档类与现行文档分开
+
+### 5.6 `architecture/` 与 `docs/architecture/`
+
+一个仓库应尽量避免这两处都成为“主事实来源”。
+
+推荐做法：
+
+- 选择其一作为**主归属**
+- 另一处只作为兼容期目录或承载特定子类文档
+- 在计划文档里明确二者边界
+
+### 5.7 `reports/`
+
+建议放置：
+
+- 审计输出
+- 分析报告
+- 性能测试结果
+- 安全扫描结果
+- 机器生成但需要保留的报告
+
+进一步建议：
+
+- Markdown 叙述型报告可版本化
+- JSON/HTML/截图类生成物优先放 `reports/` 或 `var/reports/`
+- 若报告主要是“构建产物”，优先作为 artifact，不默认入库
+
+### 5.8 `archive/`
+
+建议放置：
+
+- 已下线但需保留的代码
+- 历史文档
+- 迁移记录
+- 废弃工具
+
+归档前应写明：
+
+- 归档原因
+- 原归属功能
+- 归档日期
+- 是否仍保留兼容职责
+
+### 5.9 `var/`
+
+建议放置运行态内容：
+
+- `var/log/`
+- `var/tmp/`
+- `var/cache/`
+- `var/reports/`
+- `var/backups/`
+
+如果仓库内已经出现 `logs/`、`htmlcov/`、散装覆盖率文件，优先考虑收敛到 `var/`。
 
 ---
 
-## 附录 B: 快速参考卡
+## 六、移动与删除前的决策清单
 
-| 文件类型 | 放置位置 | 示例 |
-|----------|----------|------|
-| 单元测试 | `tests/unit/` | `test_manager.py` |
-| 集成测试 | `tests/integration/` | `test_database.py` |
-| 运行脚本 | `scripts/runtime/` | `run_server.py` |
-| 数据库脚本 | `scripts/database/` | `check_tables.py` |
-| 开发工具 | `scripts/dev/` | `generate_types.py` |
-| 用户指南 | `docs/guides/` | `QUICKSTART.md` |
-| API文档 | `docs/api/` | `REFERENCE.md` |
-| 架构文档 | `architecture/` | `SYSTEM_DESIGN.md` |
-| 编码规范 | `docs/standards/` | `CODING_STANDARDS.md` |
-| 分析报告 | `reports/` | `analysis_20260322.json` |
-| 配置文件 | `config/` | `app_config.yaml` |
-| 归档文件 | `archive/` | `old_migration.md` |
+在移动、归档或删除任何对象前，至少检查以下问题：
+
+### 6.1 代码路径
+
+- 是否被 import、脚本、路由、构建流程、CI、PM2、Playwright、Vitest、Docker 使用
+- 是否被动态路径或字符串约定引用
+- 是否被 README、指南、运维脚本引用
+
+### 6.2 自动发现与运行入口
+
+- 工具是否通过固定根目录文件名发现配置
+- shell 脚本是否直接写死文件路径
+- package script / Makefile / CI workflow 是否依赖旧路径
+
+### 6.3 工作流契约
+
+- 是否属于团队协作流程的一部分
+- 是否被主/worker CLI、任务分配、审批流程依赖
+
+### 6.4 生命周期状态
+
+- 现行有效
+- 兼容保留
+- 历史归档
+- 待判定
+- 可删除
 
 ---
 
-**参考来源**: 本文档整理自 MyStocks 项目的目录治理规范，包括:
-- `openspec/specs/directory-governance/spec.md`
-- `openspec/specs/file-organization/spec.md`
-- `governance/mainline/policies/directory-structure.yaml`
-- `.claude/hooks/FILE_ORGANIZATION_GUIDE.md`
+## 七、整理实施建议
 
-**许可**: 本规则文档可自由复用于任何软件项目。
+### 7.1 先盘点，再移动
+
+推荐顺序：
+
+1. 清点现状
+2. 识别根目录例外
+3. 区分生成物与源文件
+4. 形成迁移映射表
+5. 再执行批量移动
+
+### 7.2 采用小批次分阶段迁移
+
+一个整理计划通常至少拆成以下阶段：
+
+1. 文档与治理对齐
+2. 根目录卫生清理
+3. 归档目录合并
+4. 文档家族收敛
+5. 脚本/测试分类
+6. 配置收敛与兼容入口改造
+
+### 7.3 文件移动必须保留历史
+
+使用：
+
+```bash
+git mv old/path new/path
+```
+
+不要把“删除 + 新建”伪装成移动。
+
+### 7.4 每个阶段独立提交，便于回滚
+
+推荐策略：
+
+- 每个 Phase 一个提交
+- 每个提交只处理一类变化
+- 回滚优先使用 `git revert <commit>`
+
+不要在计划中引用不存在的回滚脚本或未验证的命令。
+
+---
+
+## 八、验证清单
+
+整理完成后，至少验证：
+
+- 根目录没有新增无归属文件
+- 生成物不再散落在根目录
+- 兼容入口仍能被工具发现
+- 文档链接与脚本路径已更新
+- `git status` 体现为重命名/移动而不是大面积删除新增
+- 现有 hook、CI、测试脚本未因路径变化失效
+
+---
+
+## 九、索引与治理同步
+
+### 9.1 索引文件
+
+主要文档目录建议包含 `INDEX.md` 或 `README.md`，至少覆盖：
+
+- `docs/`
+- `docs/api/`
+- `docs/standards/`
+- `docs/guides/`
+- `architecture/`
+- `scripts/`
+
+### 9.2 规则变更时的同步要求
+
+若整理规则调整，至少同步更新：
+
+- 项目级治理策略
+- 对应 hook / pre-commit / CI 门禁
+- `AGENTS.md` / `CLAUDE.md` 中相关说明
+- 文档索引与执行指南
+
+---
+
+## 十、快速判断表
+
+| 对象 | 默认去向 | 备注 |
+|------|----------|------|
+| 业务源码 | `src/` / 业务源码目录 | 避免与脚本/测试混放 |
+| 单元/集成/E2E 测试 | `tests/` | 仅限真正的测试代码 |
+| 环境启动、批处理、检查脚本 | `scripts/` | 可进一步按职责分组 |
+| 非自动发现配置 | `config/` | 自动发现入口可保留根目录 |
+| Docker / Compose 运行资产 | `docker/` | 根目录 `docker-compose*.yml` 可作为兼容入口 |
+| 指南/规范/说明 | `docs/` | 按家族归类 |
+| 机器生成报告 | `reports/` 或 `var/reports/` | 默认不散落在根目录 |
+| 运行日志、缓存、覆盖率 | `var/` 或 `.gitignore` | 不应长期滞留根目录 |
+| 历史材料 | `archive/` | 需写明归档原因 |
+
+---
+
+**说明**: 本文件只定义通用基线。具体仓库在执行目录整理前，应先确认该仓库的治理策略、hook、CI 门禁、工作流契约和自动发现入口，再据此制定项目级实施方案。

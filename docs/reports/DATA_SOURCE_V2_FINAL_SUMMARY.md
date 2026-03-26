@@ -194,7 +194,7 @@ endpoints = manager.find_endpoints(data_category="DAILY_KLINE")
 - `src/monitoring/data_source_metrics.py` (400行)
 - `monitoring-stack/grafana-dashboards/data_source_monitoring.json` (12个面板)
 - `scripts/runtime/start_metrics_server.py` (200行)
-- `docs/guides/DATA_SOURCE_MONITORING_GUIDE.md`
+- `docs/guides/data-source/DATA_SOURCE_MONITORING_GUIDE.md`
 
 ---
 
@@ -253,7 +253,7 @@ endpoints = manager.find_endpoints(data_category="DAILY_KLINE")
 13. **docs/architecture/DATA_SOURCE_MANAGEMENT_V2.md** (完整设计文档)
 14. **docs/reports/DATA_SOURCE_V2_IMPLEMENTATION_REPORT.md** (实施报告)
 15. **docs/reports/PHASE3_SQURGICAL_REPLACEMENT_COMPLETION_REPORT.md** (Phase 3报告)
-16. **docs/guides/DATA_SOURCE_MONITORING_GUIDE.md** (监控集成指南)
+16. **docs/guides/data-source/DATA_SOURCE_MONITORING_GUIDE.md** (监控集成指南)
 
 **总计**: 16个文件，~4000行代码+文档
 
@@ -569,7 +569,7 @@ best = manager.get_best_endpoint("DAILY_KLINE")
 - **Phase 3报告**: `docs/reports/PHASE3_SQURGICAL_REPLACEMENT_COMPLETION_REPORT.md`
 
 ### 使用指南
-- **监控集成**: `docs/guides/DATA_SOURCE_MONITORING_GUIDE.md`
+- **监控集成**: `docs/guides/data-source/DATA_SOURCE_MONITORING_GUIDE.md`
 
 ### 配置文件
 - **YAML配置**: `config/data_sources_registry.yaml`

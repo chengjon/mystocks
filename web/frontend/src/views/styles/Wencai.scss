@@ -1,9 +1,9 @@
 
 .wencai-container {
-  padding: 20px;
+  padding: calc(var(--spacing-md) + var(--spacing-xs));
   min-height: 100vh;
   background: var(--bg-primary);
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgb(212 175 55 / 2%) 10px, rgb(212 175 55 / 2%) 11px);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent calc(var(--spacing-sm) + var(--radius-md)), color-mix(in srgb, var(--gold-primary) 2%, transparent) calc(var(--spacing-sm) + var(--radius-md)), color-mix(in srgb, var(--gold-primary) 2%, transparent) calc(var(--spacing-sm) + var(--radius-md) + var(--radius-sm)));
 }
 
   position: fixed;
@@ -20,42 +20,42 @@
 
 .page-header {
   text-align: center;
-  margin-bottom: 30px;
-  padding: 30px 0;
+  margin-bottom: calc(var(--spacing-lg) + var(--spacing-xs) + var(--radius-md));
+  padding: calc(var(--spacing-lg) + var(--spacing-xs) + var(--radius-md)) 0;
   position: relative;
 
   .page-title {
     font-family: var(--font-display);
-    font-size: 32px;
+    font-size: var(--spacing-xl);
     color: var(--gold-primary);
     text-transform: uppercase;
-    letter-spacing: 4px;
-    margin: 0 0 8px 0;
+    letter-spacing: var(--spacing-xs);
+    margin: 0 0 var(--spacing-sm) 0;
   }
 
   .page-subtitle {
     font-family: var(--font-body);
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--gold-muted);
-    letter-spacing: 3px;
+    letter-spacing: calc(var(--radius-md) + var(--radius-sm));
     text-transform: uppercase;
     margin: 0;
   }
 
   .decorative-line {
-    width: 200px;
-    height: 2px;
+    width: calc(var(--spacing-2xl) * 4 + var(--spacing-xs) * 2);
+    height: var(--radius-md);
     background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
-    margin: 20px auto 0;
+    margin: calc(var(--spacing-md) + var(--spacing-xs)) auto 0;
 
     &::before {
       content: '';
       position: absolute;
-      bottom: -6px;
+      bottom: calc((var(--spacing-sm) - var(--radius-md)) * -1);
       left: 50%;
       transform: translateX(-50%);
-      width: 60px;
-      height: 1px;
+      width: calc(var(--spacing-2xl) + var(--spacing-sm) + var(--spacing-xs));
+      height: var(--radius-sm);
       background: linear-gradient(90deg, transparent, var(--gold-muted), transparent);
     }
   }
@@ -72,51 +72,51 @@
   &::after {
     content: '';
     position: absolute;
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--gold-primary);
+    width: var(--spacing-md);
+    height: var(--spacing-md);
+    border: var(--radius-md) solid var(--gold-primary);
   }
 
   &::before {
-    top: 12px;
-    left: 12px;
+    top: calc(var(--spacing-sm) + var(--spacing-xs));
+    left: calc(var(--spacing-sm) + var(--spacing-xs));
     border-right: none;
     border-bottom: none;
   }
 
   &::after {
-    bottom: 12px;
-    right: 12px;
+    bottom: calc(var(--spacing-sm) + var(--spacing-xs));
+    right: calc(var(--spacing-sm) + var(--spacing-xs));
     border-left: none;
     border-top: none;
   }
 }
 
 .header-card {
-  padding: 25px;
-  margin-bottom: 20px;
+  padding: calc(var(--spacing-lg) + var(--radius-md) - var(--radius-sm));
+  margin-bottom: calc(var(--spacing-md) + var(--spacing-xs));
 
   .card-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 25px;
-    padding-bottom: 20px;
+    margin-bottom: calc(var(--spacing-lg) + var(--radius-md) - var(--radius-sm));
+    padding-bottom: calc(var(--spacing-md) + var(--spacing-xs));
     border-bottom: 1px solid var(--gold-dim);
 
     .header-content {
       h2 {
         font-family: var(--font-display);
-        font-size: 20px;
+        font-size: calc(var(--spacing-md) + var(--spacing-xs));
         color: var(--gold-primary);
         text-transform: uppercase;
-        letter-spacing: 2px;
-        margin: 0 0 8px 0;
+        letter-spacing: var(--radius-md);
+        margin: 0 0 var(--spacing-sm) 0;
       }
 
       .subtitle {
         font-family: var(--font-body);
-        font-size: 14px;
+        font-size: var(--font-size-sm);
         color: var(--text-muted);
         margin: 0;
       }
@@ -124,18 +124,18 @@
 
     .status-row {
       display: flex;
-      gap: 30px;
+      gap: calc(var(--spacing-lg) + var(--spacing-xs) + var(--radius-md));
     }
 
     .status-item {
       text-align: center;
-      padding: 12px 20px;
+      padding: calc(var(--spacing-sm) + var(--spacing-xs)) calc(var(--spacing-md) + var(--spacing-xs));
       background: var(--bg-primary);
       border: 1px solid var(--gold-dim);
 
       .status-value {
         font-family: var(--font-display);
-        font-size: 24px;
+        font-size: var(--font-size-2xl);
         color: var(--gold-primary);
         text-transform: uppercase;
         letter-spacing: 1px;
@@ -143,11 +143,11 @@
 
       .status-label {
         font-family: var(--font-body);
-        font-size: 11px;
+        font-size: calc(var(--font-size-xs) - var(--radius-sm));
         color: var(--gold-muted);
         text-transform: uppercase;
         letter-spacing: 1px;
-        margin-top: 4px;
+        margin-top: var(--spacing-xs);
       }
 
       &.success {
@@ -162,41 +162,41 @@
 
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(var(--spacing-2xl) * 6 + var(--spacing-sm) + var(--spacing-xs)), 1fr));
+  gap: calc(var(--spacing-md) + var(--spacing-xs));
 }
 
 .info-box {
-  padding: 20px;
+  padding: calc(var(--spacing-md) + var(--spacing-xs));
   background: var(--bg-primary);
   border: 1px solid var(--gold-dim);
 
   .info-title {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: calc(var(--spacing-sm) + var(--radius-md));
     font-family: var(--font-display);
-    font-size: 16px;
+    font-size: var(--font-size-base);
     color: var(--gold-primary);
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin: 0 0 15px 0;
+    margin: 0 0 calc(var(--spacing-sm) + var(--spacing-xs) + var(--radius-md) + var(--radius-sm)) 0;
 
     .info-icon {
-      font-size: 18px;
+      font-size: calc(var(--font-size-base) + var(--radius-md));
     }
   }
 
   .info-list {
     margin: 0;
-    padding-left: 20px;
+    padding-left: calc(var(--spacing-md) + var(--spacing-xs));
     list-style: none;
 
     li {
       position: relative;
-      padding: 6px 0 6px 20px;
+      padding: calc(var(--spacing-sm) - var(--radius-md)) 0 calc(var(--spacing-sm) - var(--radius-md)) calc(var(--spacing-md) + var(--spacing-xs));
       font-family: var(--font-body);
-      font-size: 14px;
+      font-size: var(--font-size-sm);
       color: var(--text-primary);
       line-height: 1.5;
 
@@ -214,8 +214,8 @@
 .tabs-card {
   .tabs-container {
     display: flex;
-    gap: 4px;
-    padding: 15px 20px 0;
+    gap: var(--spacing-xs);
+    padding: calc(var(--spacing-sm) + var(--spacing-xs) + var(--radius-md) + var(--radius-sm)) calc(var(--spacing-md) + var(--spacing-xs)) 0;
     border-bottom: 1px solid var(--gold-dim);
     flex-wrap: wrap;
   }
@@ -223,14 +223,14 @@
   .tab-button {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
+    gap: var(--spacing-sm);
+    padding: calc(var(--spacing-sm) + var(--spacing-xs)) calc(var(--spacing-md) + var(--spacing-xs));
     background: transparent;
     border: 1px solid var(--gold-dim);
     border-bottom: none;
     color: var(--text-muted);
     font-family: var(--font-display);
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     text-transform: uppercase;
     letter-spacing: 1px;
     cursor: pointer;
@@ -239,12 +239,12 @@
     margin-bottom: -1px;
 
     .tab-icon {
-      font-size: 14px;
+      font-size: var(--font-size-sm);
     }
 
     &:hover {
       color: var(--gold-primary);
-      background: rgb(212 175 55 / 5%);
+      background: color-mix(in srgb, var(--gold-primary) 5%, transparent);
     }
 
     &.active {
@@ -255,11 +255,11 @@
   }
 
   .tab-content {
-    padding: 25px;
+    padding: calc(var(--spacing-lg) + var(--radius-md) - var(--radius-sm));
   }
 
   .tab-pane {
-    min-height: 400px;
+    min-height: calc(var(--spacing-2xl) * 8 + var(--spacing-md));
   }
 }
 
@@ -268,8 +268,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 300px;
-  gap: 20px;
+  min-height: calc(var(--spacing-2xl) * 6 + var(--spacing-sm) + var(--spacing-xs));
+  gap: calc(var(--spacing-md) + var(--spacing-xs));
 
   svg {
     opacity: 40%;
@@ -277,7 +277,7 @@
 
   p {
     font-family: var(--font-body);
-    font-size: 14px;
+    font-size: var(--font-size-sm);
     color: var(--text-muted);
     margin: 0;
   }
@@ -285,27 +285,27 @@
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(var(--spacing-2xl) * 4 + var(--spacing-xs) * 2), 1fr));
+  gap: calc(var(--spacing-md) + var(--spacing-xs));
 
   .stat-box {
     text-align: center;
-    padding: 25px 20px;
+    padding: calc(var(--spacing-lg) + var(--radius-md) - var(--radius-sm)) calc(var(--spacing-md) + var(--spacing-xs));
     background: var(--bg-primary);
     border: 1px solid var(--gold-dim);
 
     .stat-value {
       font-family: var(--font-display);
-      font-size: 32px;
+      font-size: var(--spacing-xl);
       color: var(--gold-primary);
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-bottom: 8px;
+      margin-bottom: var(--spacing-sm);
     }
 
     .stat-label {
       font-family: var(--font-body);
-      font-size: 12px;
+      font-size: var(--font-size-xs);
       color: var(--gold-muted);
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -314,12 +314,12 @@
 }
 
 .guide-timeline {
-  padding: 20px;
+  padding: calc(var(--spacing-md) + var(--spacing-xs));
 
   .timeline-item {
     display: flex;
-    gap: 20px;
-    padding: 20px 0;
+    gap: calc(var(--spacing-md) + var(--spacing-xs));
+    padding: calc(var(--spacing-md) + var(--spacing-xs)) 0;
     border-bottom: 1px solid var(--gold-dim);
 
     &:last-child {
@@ -327,22 +327,22 @@
     }
 
     .timeline-marker {
-      width: 12px;
-      height: 12px;
+      width: calc(var(--spacing-sm) + var(--spacing-xs));
+      height: calc(var(--spacing-sm) + var(--spacing-xs));
       background: var(--gold-primary);
-      border: 2px solid var(--gold-primary);
+      border: var(--radius-md) solid var(--gold-primary);
       flex-shrink: 0;
-      margin-top: 4px;
+      margin-top: var(--spacing-xs);
       position: relative;
 
       &::before {
         content: '';
         position: absolute;
-        top: 12px;
+        top: calc(var(--spacing-sm) + var(--spacing-xs));
         left: 50%;
         transform: translateX(-50%);
-        width: 2px;
-        height: calc(100% + 16px);
+        width: var(--radius-md);
+        height: calc(100% + var(--spacing-md));
         background: var(--gold-dim);
       }
 
@@ -356,25 +356,25 @@
 
       .timeline-step {
         font-family: var(--font-display);
-        font-size: 11px;
+        font-size: calc(var(--font-size-xs) - var(--radius-sm));
         color: var(--gold-muted);
         text-transform: uppercase;
         letter-spacing: 1px;
-        margin-bottom: 8px;
+        margin-bottom: var(--spacing-sm);
       }
 
       .timeline-title {
         font-family: var(--font-display);
-        font-size: 16px;
+        font-size: var(--font-size-base);
         color: var(--gold-primary);
         text-transform: uppercase;
         letter-spacing: 1px;
-        margin: 0 0 8px 0;
+        margin: 0 0 var(--spacing-sm) 0;
       }
 
       .timeline-desc {
         font-family: var(--font-body);
-        font-size: 14px;
+        font-size: var(--font-size-sm);
         color: var(--text-primary);
         line-height: 1.6;
         margin: 0;
@@ -383,31 +383,31 @@
   }
 }
 
-@media (width <= 768px) {
+@media (width <= calc(var(--breakpoint-sm) - var(--spacing-3xl) * 8)) {
   .wencai-container {
-    padding: 10px;
+    padding: calc(var(--spacing-sm) + var(--radius-md));
   }
 
   .page-header {
-    padding: 20px 0;
+    padding: calc(var(--spacing-md) + var(--spacing-xs)) 0;
 
     .page-title {
-      font-size: 24px;
-      letter-spacing: 2px;
+      font-size: var(--font-size-2xl);
+      letter-spacing: var(--radius-md);
     }
 
     .page-subtitle {
-      font-size: 10px;
-      letter-spacing: 2px;
+      font-size: calc(var(--font-size-xs) - var(--radius-md));
+      letter-spacing: var(--radius-md);
     }
   }
 
   .header-card {
-    padding: 15px;
+    padding: calc(var(--spacing-sm) + var(--spacing-xs) + var(--radius-md) + var(--radius-sm));
 
     .card-header {
       flex-direction: column;
-      gap: 15px;
+      gap: calc(var(--spacing-sm) + var(--spacing-xs) + var(--radius-md) + var(--radius-sm));
 
       .status-row {
         width: 100%;

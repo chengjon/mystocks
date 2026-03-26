@@ -5,8 +5,8 @@ SRC_ROOT="/opt/claude/mystocks_spec/docs/guides"
 DST_ROOT="/opt/mydoc/cliproxyapi/opencode"
 STAMP="$(date +%Y%m%d-%H%M%S)"
 
-SRC_PROD_GUIDE="$SRC_ROOT/OpenCode生产级配置与固化指南.md"
-SRC_OMO_GUIDE="$SRC_ROOT/OMO_SETUP_GUIDE.md"
+SRC_PROD_GUIDE="$SRC_ROOT/ai-tools/OpenCode生产级配置与固化指南.md"
+SRC_OMO_GUIDE="$SRC_ROOT/ai-tools/OMO_SETUP_GUIDE.md"
 
 DST_PROD_GUIDE="$DST_ROOT/OpenCode生产级配置与固化指南.md"
 DST_OMO_GUIDE="$DST_ROOT/OMO_SETUP_GUIDE.mystocks.md"

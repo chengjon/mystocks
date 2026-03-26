@@ -13,8 +13,10 @@ describe("stable-unit-suite", () => {
 
     expect(STABLE_UNIT_TEST_FILES.length).toBeGreaterThan(5);
     expect(STABLE_UNIT_TEST_FILES).toContain("tests/unit/config/pageConfig.test.ts");
+    expect(STABLE_UNIT_TEST_FILES).toContain("tests/unit/config/lighthouse-mainline-gates.spec.ts");
     expect(STABLE_UNIT_TEST_FILES).toContain("tests/unit/config/vitest-msw-gates.spec.ts");
     expect(STABLE_UNIT_TEST_FILES).toContain("tests/unit/config/testing-mainline-gates.spec.ts");
+    expect(STABLE_UNIT_TEST_FILES).toContain("tests/unit/config/visual-chart-gates.spec.ts");
     expect(STABLE_UNIT_TEST_FILES).toContain("tests/unit/components/CommandPalette.test.ts");
     expect(STABLE_UNIT_TEST_FILES).toContain("tests/unit/layout/BaseLayout.test.ts");
     expect(STABLE_UNIT_TEST_FILES).toContain("tests/unit/layout/DomainLayouts.test.ts");
@@ -26,6 +28,7 @@ describe("stable-unit-suite", () => {
     expect(STABLE_UNIT_TEST_FILES).toContain("tests/unit/kline-chart.spec.ts");
     expect(STABLE_UNIT_TEST_FILES).toContain("src/api/adapters/marketAdapter.spec.ts");
     expect(STABLE_UNIT_TEST_FILES).toContain("src/api/__tests__/strategy.test.ts");
+    expect(STABLE_UNIT_TEST_FILES).toContain("src/api/services/__tests__/dashboardService.spec.ts");
     expect(STABLE_UNIT_TEST_FILES).toContain("src/api/services/__tests__/strategyService.msw.spec.ts");
     expect(STABLE_UNIT_TEST_FILES).toContain("src/api/__tests__/unifiedApiClient.contract.test.ts");
     expect(STABLE_UNIT_TEST_FILES).toContain("src/stores/__tests__/auth-guard.spec.ts");

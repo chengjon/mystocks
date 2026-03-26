@@ -7,7 +7,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
 def test_mongodb_runtime_assets_use_27017_and_mongosh() -> None:
-    for rel in ['config/docker/mongodb.yml', 'config/docker-infra/mongodb.yml']:
+    for rel in ['docker/mongodb.yml', 'config/docker/mongodb.yml', 'config/docker-infra/mongodb.yml']:
         text = (REPO_ROOT / rel).read_text()
         assert '${MONGODB_PORT:-27017}:27017' in text
         assert 'mongosh' in text
@@ -16,6 +16,8 @@ def test_mongodb_runtime_assets_use_27017_and_mongosh() -> None:
 
 def test_mongodb_compose_assets_pin_supported_image_version() -> None:
     for rel in [
+        'docker/mongodb.yml',
+        'docker/monitoring-stack.yml',
         'config/docker/mongodb.yml',
         'config/docker/monitoring-stack.yml',
         'config/docker-infra/mongodb.yml',
@@ -28,6 +30,8 @@ def test_mongodb_compose_assets_pin_supported_image_version() -> None:
 
 def test_mongodb_compose_assets_mount_repo_level_config_directory() -> None:
     for rel in [
+        'docker/mongodb.yml',
+        'docker/monitoring-stack.yml',
         'config/docker/mongodb.yml',
         'config/docker/monitoring-stack.yml',
         'config/docker-infra/mongodb.yml',
@@ -48,6 +52,7 @@ def test_mongodb_runtime_config_file_exists_with_expected_basics() -> None:
 
 def test_mongodb_bootstrap_scripts_do_not_emit_deprecated_journal_option() -> None:
     for rel in [
+        'docker/scripts/start-all.sh',
         'config/docker/scripts/start-all.sh',
         'config/docker-infra/scripts/start-all.sh',
     ]:
@@ -57,6 +62,8 @@ def test_mongodb_bootstrap_scripts_do_not_emit_deprecated_journal_option() -> No
 
 def test_mongodb_docs_reference_runtime_baseline() -> None:
     for rel in [
+        'docker/README.md',
+        'docker/QUICK_REFERENCE.md',
         'config/docker/README.md',
         'config/docker/QUICK_REFERENCE.md',
         'config/docker-infra/README.md',

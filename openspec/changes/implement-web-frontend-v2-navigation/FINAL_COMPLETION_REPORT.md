@@ -173,13 +173,13 @@ component: () => import('@/views/artdeco-pages/components/ArtDecoTradingSignals.
 ### 代码规范遵循
 
 **遵循的文档**:
-- ✅ **路由优化报告** (`docs/reviews/frontend_routing_optimization_report.md`)
+- ✅ **路由优化报告** (`docs/reports/reviews/frontend_routing_optimization_report.md`)
   - 懒加载
   - 嵌套路由
   - Hash模式（createWebHashHistory）
   - 路由元信息
 
-- ✅ **TypeScript最佳实践** (`docs/guides/Typescript_BEST_PRACTICES.md`)
+- ✅ **TypeScript最佳实践** (`docs/guides/typescript/Typescript_BEST_PRACTICES.md`)
   - 避免使用`any`类型
   - 精确类型定义
   - 泛型正确使用
@@ -363,9 +363,9 @@ Phase 3: ███████████████░░░░ 92% (目标)
 ### 相关文档
 
 - **OpenSpec文档**: `openspec/changes/implement-web-frontend-v2-navigation/`
-- **路由优化报告**: `docs/reviews/frontend_routing_optimization_report.md`
+- **路由优化报告**: `docs/reports/reviews/frontend_routing_optimization_report.md`
 - **ArtDeco组件目录**: `web/frontend/ARTDECO_COMPONENTS_CATALOG.md`
-- **TypeScript最佳实践**: `docs/guides/Typescript_BEST_PRACTICES.md`
+- **TypeScript最佳实践**: `docs/guides/typescript/Typescript_BEST_PRACTICES.md`
 
 ### 工作流程
 

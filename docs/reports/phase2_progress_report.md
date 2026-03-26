@@ -103,7 +103,7 @@
 |------|------|------|
 | `core/validation_messages.py` | 270 | 中文错误消息常量 |
 | `core/validators.py` | 430 | 通用自定义验证器 |
-| `docs/guides/VALIDATION_GUIDE.md` | 400 | 使用指南文档 |
+| `docs/api/VALIDATION_GUIDE.md` | 400 | 使用指南文档 |
 
 **核心验证器**:
 - ✅ `StockSymbolValidator` - 股票代码验证 (支持`600519.SH`格式)
@@ -336,7 +336,7 @@ TradeMessages.INSUFFICIENT_CASH  # "可用资金不足"
 
 - OpenAPI模板: `docs/api/openapi_template.yaml`
 - API清单: `docs/api/API_INVENTORY.md`
-- 验证指南: `docs/guides/VALIDATION_GUIDE.md`
+- 验证指南: `docs/api/VALIDATION_GUIDE.md`
 - 契约参考: `docs/api/contracts/`
 
 ### 快速命令

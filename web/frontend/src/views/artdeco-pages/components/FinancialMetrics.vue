@@ -25,35 +25,43 @@ defineProps({
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 .metrics-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(calc(var(--artdeco-spacing-20) * 3), 1fr));
+    gap: var(--artdeco-spacing-5);
 }
 .metric-item {
     background: var(--artdeco-gold-opacity-05);
-    padding: 15px;
+    padding: calc(var(--artdeco-spacing-sm) + var(--artdeco-spacing-xs) + var(--artdeco-radius-md) + var(--artdeco-radius-sm));
     border: 1px solid var(--artdeco-gold-opacity-10);
     .header {
         display: flex;
         justify-content: space-between;
-        font-size: 12px;
+        font-size: var(--artdeco-text-xs);
         color: var(--artdeco-fg-muted);
-        margin-bottom: 10px;
+        margin-bottom: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
     }
     .value {
-      font-size: 20px;
+      font-size: calc(var(--artdeco-spacing-md) + var(--artdeco-spacing-xs));
       font-weight: bold;
-      margin-bottom: 10px;
+      margin-bottom: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
     }
     .comparison {
         display: flex;
         justify-content: space-between;
-        font-size: 11px;
+        font-size: calc(var(--artdeco-text-xs) - var(--artdeco-spacing-px));
         color: var(--artdeco-fg-muted);
     }
     .trend.up { color: var(--artdeco-rise); }
     .trend.down { color: var(--artdeco-down); }
+}
+
+@media (width <= 48rem) {
+    .metric-item .comparison {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--artdeco-spacing-1);
+    }
 }
 </style>

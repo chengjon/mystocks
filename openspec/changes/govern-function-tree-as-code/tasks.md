@@ -22,8 +22,8 @@
 ## 4. Human-Readable Sync
 
 - [x] 4.1 为 `docs/FUNCTION_TREE.md` 中被镜像业务域补齐稳定 ID
-- [x] 4.2 更新 `docs/guides/FEATURE_MANAGEMENT_WORKFLOW.md`
-- [x] 4.3 更新 `docs/guides/AI_QUICK_START.md`
+- [x] 4.2 更新 `docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md`
+- [x] 4.3 更新 `docs/guides/ai-tools/AI_QUICK_START.md`
 - [x] 4.4 补齐文档同步 focused tests
 
 ## 5. Validation

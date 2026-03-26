@@ -1800,7 +1800,7 @@ Each phase must meet:
 
 ### D. Reference Documentation
 
-1. **Comprehensive Integration Plan**: `docs/guides/WEB_FRAMEWORK_INCREMENTAL_OPTIMIZATION_PLAN.md`
+1. **Comprehensive Integration Plan**: `docs/guides/web/WEB_FRAMEWORK_INCREMENTAL_OPTIMIZATION_PLAN.md`
 2. **Framework B Developer Guide**: `/opt/iflow/myhtml/DEVELOPER_GUIDE.md`
 3. **Phase 1-4 Technical Guides**: `docs/design/update/技术实施指南_第*.md`
 4. **Current Pages Documentation**: `docs/WEB_PAGES_DOCUMENTATION.md`

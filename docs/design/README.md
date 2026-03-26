@@ -1,434 +1,116 @@
-# MyStocks 设计系统文档
+# MyStocks 设计资料目录
 
-**版本**: v1.0.0
-**最后更新**: 2025-12-25
-**维护者**: UI Design Team
-
----
-
-## 📚 文档导航
-
-本文档体系提供完整的 MyStocks Web 界面设计规范、组件库和页面设计指南。
-
-### 🎯 快速开始
-
-如果你是**新加入的设计师/开发者**，建议按以下顺序阅读：
-
-1. **[设计总览](./00-design-overview.md)** - 了解项目背景、技术栈和核心功能
-2. **[设计系统](./01-design-system/README.md)** - 掌握颜色、字体、布局等基础设计规范
-3. **[组件库](./02-component-library/README.md)** - 熟悉可复用的 UI 组件
-4. **[页面设计](./03-page-designs/README.md)** - 查看具体页面的设计规范
-5. **[交互流程](./04-interaction-flows/README.md)** - 理解用户操作流程和交互逻辑
+**定位**: 设计规范、设计工具说明、HTML 原型样例、分阶段优化方案  
+**状态**: 特殊保留目录  
+**最后更新**: 2026-03-23
 
 ---
 
-## 📖 文档结构
+## 目录说明
 
-```
+`docs/design/` 当前不是普通的指南目录，也不适合直接并入单一目标家族。它同时承载：
+
+- 设计规范文档
+- Figma / Pixso / Sketch 工具说明
+- HTML 样例与原型资源
+- Web 设计更新方案与阶段性技术指南
+- 设计相关静态资源（如 `design-tokens.json`、自动化脚本）
+
+因此本目录当前按“特殊保留目录”管理，后续若要继续分流，应按子类分别处理，而不是整目录机械迁移。
+
+---
+
+## 当前结构
+
+```text
 docs/design/
-├── README.md                          # 本文档 - 总索引
-├── 00-design-overview.md              # 设计总览
-├── 01-design-system/                  # 设计系统
-│   ├── README.md
-│   ├── color-system.md                # 颜色系统
-│   ├── typography.md                  # 字体系统
-│   ├── layout-system.md               # 布局系统
-│   └── design-tokens.md               # 设计 Tokens
-├── 02-component-library/              # 组件库
-│   ├── README.md
-│   ├── base-components.md             # 基础组件
-│   ├── business-components.md         # 业务组件
-│   ├── chart-components.md            # 图表组件
-│   └── composite-components.md        # 复合组件
-├── 03-page-designs/                   # 页面设计 (9个页面)
-│   ├── README.md
-│   ├── 01-dashboard.md                # 仪表盘
-│   ├── 02-market-quotes.md            # 市场行情
-│   ├── 03-market-data.md              # 市场数据
-│   ├── 04-stock-management.md         # 股票管理
-│   ├── 05-data-analysis.md            # 数据分析
-│   ├── 06-risk-management.md          # 风险管理
-│   ├── 07-strategy-backtest.md        # 策略回测
-│   ├── 08-trading-management.md       # 交易管理
-│   └── 09-other-pages.md              # 其他页面
-└── 04-interaction-flows/              # 交互流程
-    ├── README.md
-    └── user-flows.md                  # 用户流程
+├── README.md
+├── INDEX.md
+├── 20251121-spec优化建议.md
+├── ARTDECO_CONVERSION_OPTIMIZATION_PROPOSAL.md
+├── AUTOMATION_GUIDE.md
+├── COMPONENT_LIBRARY_SPECIFICATION.md
+├── FIGMA_QUICK_START.md
+├── MYSTOCKS_DESIGN_SPECIFICATION.md
+├── PIXSO_IMPORT_GUIDE.md
+├── SKETCH_MANUAL_GUIDE.md
+├── design-tokens.json
+├── figma-automation-script.js
+├── grok_advice.md
+├── html_sample/
+├── new/
+└── update/
 ```
 
 ---
 
-## 🎨 设计原则
+## 推荐阅读顺序
 
-MyStocks 的设计遵循以下核心原则：
+### 了解总体设计规范
 
-### 1. **专业可信** (Professional & Trustworthy)
-- **颜色选择**: 使用沉稳的蓝灰色调，传达专业和稳定
-- **数据可视化**: 清晰准确的图表，避免过度装饰
-- **信息层次**: 严格的视觉层次，突出关键信息
+1. [MYSTOCKS_DESIGN_SPECIFICATION.md](./MYSTOCKS_DESIGN_SPECIFICATION.md)
+2. [COMPONENT_LIBRARY_SPECIFICATION.md](./COMPONENT_LIBRARY_SPECIFICATION.md)
+3. [20251121-spec优化建议.md](./20251121-spec优化建议.md)
 
-### 2. **高效操作** (Efficient Operations)
-- **减少点击**: 常用操作一步到位
-- **快捷键支持**: 为高频操作提供键盘快捷键
-- **批量操作**: 支持多选和批量处理
+### 使用设计工具与导入流程
 
-### 3. **实时响应** (Real-time Feedback)
-- **数据推送**: WebSocket 实时行情推送
-- **加载状态**: 明确的加载进度提示
-- **错误反馈**: 友好的错误信息和恢复建议
+1. [FIGMA_QUICK_START.md](./FIGMA_QUICK_START.md)
+2. [PIXSO_IMPORT_GUIDE.md](./PIXSO_IMPORT_GUIDE.md)
+3. [AUTOMATION_GUIDE.md](./AUTOMATION_GUIDE.md)
+4. [SKETCH_MANUAL_GUIDE.md](./SKETCH_MANUAL_GUIDE.md)
 
-### 4. **可访问性** (Accessibility)
-- **键盘导航**: 完整的键盘操作支持
-- **色彩对比**: 符合 WCAG 2.1 AA 标准
-- **屏幕阅读器**: 语义化 HTML 和 ARIA 标签
+### 查看页面原型与分阶段方案
+
+1. [new/index.md](./new/index.md)
+2. [html_sample/README.md](./html_sample/README.md)
+3. [update/执行摘要_四阶段优化方案.md](./update/执行摘要_四阶段优化方案.md)
 
 ---
 
-## 🛠️ 技术栈
+## 子目录定位
 
-### 前端框架
-- **Vue 3.4+**: 渐进式 JavaScript 框架
-- **TypeScript 5.3+**: 类型安全的 JavaScript
-- **Vite 5.4+**: 快速的构建工具
+### `new/`
 
-### UI 组件库
-- **Element Plus**: 基于 Vue 3 的企业级 UI 库
-  - [Element Plus 官网](https://element-plus.org/)
-  - [Element Plus 设计指南](https://element-plus.org/en-US/guide/design.html)
+承载较新的页面级设计稿与页面说明，包括仪表盘、行情中心、选股池、回测、交易台、风险中心等。
 
-### 状态管理
-- **Pinia**: Vue 3 官方推荐的状态管理库
+入口：
 
-### 图表库
-- **ECharts 5.x**: 专业数据可视化
-- **KlineChart**: 专业 K 线图组件
+- [new/index.md](./new/index.md)
 
-### 实时通信
-- **Socket.IO**: 双向实时通信
-- **SSE (Server-Sent Events)**: 服务器推送事件
+### `html_sample/`
 
----
+承载 HTML 原型、样例页面和打包示例，适合作为视觉参考和快速比对资源。
 
-## 🎯 设计决策说明
+入口：
 
-### 为什么选择 Vue 3 + Element Plus？
+- [html_sample/README.md](./html_sample/README.md)
 
-**Vue 3 优势**:
-- ✅ **Composition API**: 更好的逻辑复用和代码组织
-- ✅ **性能提升**: 相比 Vue 2 性能提升 1.5-2 倍
-- ✅ **TypeScript 支持**: 原生 TypeScript 类型定义
-- ✅ **生态成熟**: 丰富的插件和工具链
+### `update/`
 
-**Element Plus 优势**:
-- ✅ **企业级**: 专为后台管理系统设计
-- ✅ **组件丰富**: 60+ 高质量组件
-- ✅ **主题定制**: 支持深度主题定制
-- ✅ **国际化**: 完整的中文支持
-- ✅ **可访问性**: 符合 WAI-ARIA 标准
+承载面向实施的阶段性设计/优化方案，主要是 Web 功能优化的执行摘要与技术实施指南。
 
-### 为什么选择 TypeScript？
+入口：
 
-**类型安全**:
-```typescript
-// ✅ 编译时类型检查
-interface StockQuote {
-  symbol: string
-  name: string
-  price: number
-  change: number
-  changePercent: number
-}
-
-function updateQuote(quote: StockQuote) {
-  // 类型安全，IDE 智能提示
-  console.log(quote.price.toFixed(2))
-}
-```
-
-**更好的开发体验**:
-- IDE 智能提示和自动补全
-- 重构更安全（全局重命名）
-- 减少运行时错误
-
-### 为什么选择 ECharts？
-
-**金融数据可视化优势**:
-- ✅ **K 线图**: 专业蜡烛图支持
-- ✅ **实时更新**: 高性能增量渲染
-- ✅ **交互丰富**: 缩放、平移、十字线
-- ✅ **主题定制**: 深色/浅色主题切换
+- [update/执行摘要_四阶段优化方案.md](./update/执行摘要_四阶段优化方案.md)
 
 ---
 
-## 🌈 主题系统
+## 设计资料与其他家族的关系
 
-### 默认主题 - 专业蓝
-
-```scss
-// 主色调
-$primary-color: #409EFF      // Element Plus 默认蓝
-$success-color: #67C23A      // 成功绿
-$warning-color: #E6A23C      // 警告橙
-$danger-color: #F56C6C       // 危险红
-$info-color: #909399         // 信息灰
-
-// 涨跌颜色
-$rise-color: #F56C6C         // 涨 (红色)
-$fall-color: #67C23A         // 跌 (绿色)
-
-// 中性色
-$text-primary: #303133       // 主要文本
-$text-regular: #606266       // 常规文本
-$text-secondary: #909399     // 次要文本
-$text-placeholder: #C0C4CC   // 占位文本
-
-// 背景色
-$bg-color: #FFFFFF           // 白色背景
-$bg-page: #F2F3F5            // 页面背景
-$bg-overlay: #000000         // 遮罩层
-```
-
-### 深色主题 (Dark Mode)
-
-```scss
-// 深色主题
-$dark-bg-color: #141414
-$dark-bg-page: #0a0a0a
-$dark-text-primary: #E5EAF3
-$dark-text-regular: #CFD3DC
-$dark-border-color: #4C4D4F
-```
+- 若文档主要描述系统架构决策，应优先放入 `docs/architecture/`
+- 若文档主要作为长期参考资料，应优先放入 `docs/references/`
+- 若文档主要是阶段性执行计划或批次安排，应优先放入 `docs/plans/`
+- 若内容为设计资产、原型样例、设计工具说明，则当前保留在 `docs/design/`
 
 ---
 
-## 📐 响应式断点
+## 维护说明
 
-```scss
-// 断点定义
-$breakpoint-xs: 480px   // 超小屏幕
-$breakpoint-sm: 768px   // 小屏幕 (平板)
-$breakpoint-md: 992px   // 中屏幕 (桌面)
-$breakpoint-lg: 1200px  // 大屏幕
-$breakpoint-xl: 1920px  // 超大屏幕
+在继续整理本目录之前，建议先按以下四类做子级盘点：
 
-// 使用 Mixin
-@mixin respond-to($breakpoint) {
-  @if $breakpoint == 'sm' {
-    @media (max-width: $breakpoint-sm) { @content; }
-  }
-  @else if $breakpoint == 'md' {
-    @media (max-width: $breakpoint-md) { @content; }
-  }
-}
-```
+1. 设计规范类 Markdown
+2. 工具说明类 Markdown
+3. HTML / JSON / JS 设计资产
+4. 分阶段更新方案
 
-**响应式布局示例**:
-```vue
-<template>
-  <div class="dashboard" :class="{ 'mobile': isMobile }">
-    <el-row :gutter="20">
-      <el-col :xs="24" :sm="12" :md="8" :lg="6">
-        <!-- 卡片 -->
-      </el-col>
-    </el-row>
-  </div>
-</template>
-```
-
----
-
-## 🔧 设计 Tokens
-
-### 间距系统
-
-```scss
-// 8点网格系统
-$spacing-xs: 4px    // 0.25rem
-$spacing-sm: 8px    // 0.5rem
-$spacing-md: 16px   // 1rem
-$spacing-lg: 24px   // 1.5rem
-$spacing-xl: 32px   // 2rem
-$spacing-xxl: 48px  // 3rem
-```
-
-### 圆角系统
-
-```scss
-$radius-xs: 2px     // 小圆角
-$radius-sm: 4px     // 默认圆角
-$radius-md: 8px     // 中圆角
-$radius-lg: 12px    // 大圆角
-$radius-xl: 16px    // 超大圆角
-```
-
-### 阴影系统
-
-```scss
-$shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05)
-$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1)
-$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1)
-$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1)
-$shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15)
-```
-
----
-
-## 📱 页面布局
-
-### 标准页面结构
-
-```
-┌─────────────────────────────────────────────────────────┐
-│  顶部导航栏 (Header)                                      │
-│  Logo | 主菜单 | 用户信息                                 │
-├──────────┬──────────────────────────────────────────────┤
-│          │                                              │
-│  侧边栏   │            主内容区 (Content)                 │
-│ (Sidebar)│                                              │
-│          │  ┌────────────────────────────────────────┐  │
-│ 菜单      │  │ 面包屑 (Breadcrumb)                    │  │
-│ - 仪表盘  │  ├────────────────────────────────────────┤  │
-│ - 行情    │  │ 页面标题 (Page Title)                   │  │
-│ - 数据    │  ├────────────────────────────────────────┤  │
-│ - 分析    │  │                                        │  │
-│ - 风险    │  │  内容区域 (Main Content)                │  │
-│ - 策略    │  │                                        │  │
-│ - 交易    │  │                                        │  │
-│          │  └────────────────────────────────────────┘  │
-└──────────┴──────────────────────────────────────────────┘
-```
-
-### 布局组件
-
-```vue
-<template>
-  <el-container class="layout-default">
-    <!-- 顶部导航 -->
-    <el-header height="60px">
-      <app-header />
-    </el-header>
-
-    <el-container>
-      <!-- 侧边栏 -->
-      <el-aside width="240px">
-        <app-sidebar />
-      </el-aside>
-
-      <!-- 主内容区 -->
-      <el-main>
-        <el-breadcrumb />
-        <page-title />
-        <router-view />
-      </el-main>
-    </el-container>
-  </el-container>
-</template>
-```
-
----
-
-## 🎯 组件使用指南
-
-### Element Plus 常用组件
-
-| 组件 | 用途 | 文档链接 |
-|-----|------|---------|
-| `el-table` | 数据表格 | [文档](https://element-plus.org/en-US/component/table.html) |
-| `el-form` | 表单 | [文档](https://element-plus.org/en-US/component/form.html) |
-| `el-dialog` | 对话框 | [文档](https://element-plus.org/en-US/component/dialog.html) |
-| `el-message` | 消息提示 | [文档](https://element-plus.org/en-US/component/message.html) |
-| `el-card` | 卡片 | [文档](https://element-plus.org/en-US/component/card.html) |
-| `el-tabs` | 标签页 | [文档](https://element-plus.org/en-US/component/tabs.html) |
-| `el-select` | 下拉选择 | [文档](https://element-plus.org/en-US/component/select.html) |
-| `el-date-picker` | 日期选择 | [文档](https://element-plus.org/en-US/component/date-picker.html) |
-
-### 自定义业务组件
-
-详见 [组件库文档](./02-component-library/README.md)。
-
----
-
-## 🚀 开发工具
-
-### Figma 设计稿
-- **Figma 文件**: `docs/design/figo/` (如果存在)
-- **设计资源**: [Figma Community](https://www.figma.com/community)
-
-### 开发环境
-```bash
-# 安装依赖
-npm install
-
-# 启动开发服务器
-npm run dev
-
-# 访问地址
-http://localhost:3020
-```
-
-### 代码规范
-```bash
-# 代码格式化
-npm run format
-
-# 代码检查
-npm run lint
-
-# 类型检查
-npm run type-check
-```
-
----
-
-## 📝 设计规范更新日志
-
-### v1.0.0 (2025-12-25)
-- ✅ 初始版本
-- ✅ 建立文档结构
-- ✅ 定义设计系统基础
-- ✅ 组件库规范
-- ✅ 9个页面设计规范
-
----
-
-## 🤝 贡献指南
-
-### 设计规范更新流程
-
-1. **创建分支**: `git checkout -b design/update-component-name`
-2. **更新文档**: 修改对应的设计文档
-3. **提交 PR**: 说明变更内容和影响范围
-4. **代码审查**: 由设计团队审查
-5. **合并发布**: 更新版本号和变更日志
-
-### 文档编写规范
-
-1. **使用 Markdown**: 保持格式统一
-2. **提供示例**: 代码示例必须可运行
-3. **截图说明**: 关键界面提供截图
-4. **交叉引用**: 建立文档间的链接
-5. **版本控制**: 每次更新记录版本号
-
----
-
-## 📞 联系方式
-
-- **设计团队**: design@mystocks.com
-- **前端团队**: frontend@mystocks.com
-- **Issue 跟踪**: [GitHub Issues](https://github.com/chengjon/mystocks/issues)
-
----
-
-## 📚 相关资源
-
-- [前端开发者指南](../web/frontend/docs/DEVELOPER_GUIDE.md)
-- [Vue 3 官方文档](https://vuejs.org/)
-- [Element Plus 官方文档](https://element-plus.org/)
-- [ECharts 官方文档](https://echarts.apache.org/)
-- [Web Content Accessibility Guidelines (WCAG)](https://www.w3.org/WAI/WCAG21/quickref/)
-
----
-
-**文档版本**: v1.0.0
-**最后更新**: 2025-12-25
-**维护者**: UI Design Team
+只有完成这层拆分后，才适合进一步迁移。

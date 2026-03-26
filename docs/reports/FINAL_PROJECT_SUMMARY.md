@@ -307,7 +307,7 @@ except ImportError:
 
 ### 1. 用户指南
 
-- **用户使用指南**: `/tmp/A_STOCK_DASHBOARD_USER_GUIDE.md`
+- **用户使用指南**: `docs/guides/web/A_STOCK_DASHBOARD_USER_GUIDE.md`
 - **内容**: 25,000字
   - 快速开始
   - 功能使用教程
@@ -504,7 +504,7 @@ except ImportError:
 **2. 阅读用户指南**:
 ```bash
 # 打开用户使用指南
-cat /tmp/A_STOCK_DASHBOARD_USER_GUIDE.md
+cat docs/guides/web/A_STOCK_DASHBOARD_USER_GUIDE.md
 ```
 
 ### 对于开发者

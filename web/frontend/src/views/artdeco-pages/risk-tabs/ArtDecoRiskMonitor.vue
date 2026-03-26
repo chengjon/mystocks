@@ -1,19 +1,62 @@
 <template>
-  <div class="risk-monitor">
-    <p>Risk Monitor - Component under development</p>
+  <div class="risk-monitor page-enter" :class="{ 'is-embedded': isEmbedded }">
+    <section class="placeholder-shell artdeco-card-shell">
+      <div class="placeholder-copy">
+        <span class="placeholder-eyebrow">risk control route</span>
+        <h2 class="placeholder-title">风险监控主面板整理中</h2>
+        <p class="placeholder-subtitle">
+          当前风险监控能力正在从历史占位实现迁移到统一的 ArtDeco 风险工作台语法，后续会补齐组合暴露、集中度和告警联动主视图。
+        </p>
+      </div>
+
+      <div class="placeholder-meta">
+        <span>MODE: {{ isEmbedded ? 'TRADING CENTER' : 'RISK ROUTE' }}</span>
+        <span>STATUS: PLACEHOLDER</span>
+      </div>
+
+      <div class="placeholder-grid">
+        <article class="placeholder-card">
+          <span class="placeholder-card-label">下一步补齐</span>
+          <strong class="placeholder-card-value">组合暴露矩阵</strong>
+        </article>
+        <article class="placeholder-card">
+          <span class="placeholder-card-label">下一步补齐</span>
+          <strong class="placeholder-card-value">实时风险分布</strong>
+        </article>
+        <article class="placeholder-card">
+          <span class="placeholder-card-label">下一步补齐</span>
+          <strong class="placeholder-card-value">控制动作联动</strong>
+        </article>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-// Placeholder component - under development
+import { computed } from 'vue'
+
+interface Props {
+  functionKey?: string
+  userPermissions?: string[]
+  systemConfig?: unknown
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  functionKey: '',
+  userPermissions: () => [],
+  systemConfig: undefined
+})
+
+const isEmbedded = computed(() => Boolean(props.functionKey))
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-quant-extended';
-@import '@/styles/data-dense/index';
+/*
+// legacy-import '@/styles/artdeco-quant-extended';
+// legacy-import '@/styles/data-dense/index';
 
 .risk-monitor {
-    min-height: 900px;
+    min-height: calc(var(--artdeco-spacing-32) * 7 + var(--artdeco-spacing-1));
 
     .monitor-header {
         display: flex;
@@ -51,7 +94,10 @@
 
         .overview-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-10)), 1fr)
+            );
             gap: var(--artdeco-spacing-4);
         }
     }
@@ -61,7 +107,7 @@
 
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-20) * 5), 1fr));
             gap: var(--artdeco-spacing-6);
         }
     }
@@ -91,7 +137,10 @@
 
                 .control-items {
                     display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                    grid-template-columns: repeat(
+                        auto-fit,
+                        minmax(calc(var(--artdeco-spacing-20) * 3 + var(--artdeco-spacing-5) / 2), 1fr)
+                    );
                     gap: var(--artdeco-spacing-4);
                 }
 
@@ -178,7 +227,7 @@
                 font-family: var(--artdeco-font-body);
                 color: var(--artdeco-fg-muted);
                 font-size: var(--artdeco-text-xs);
-                margin-top: 2px;
+                margin-top: calc(var(--artdeco-spacing-1) / 2);
             }
         }
 
@@ -186,7 +235,7 @@
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            min-width: 120px;
+            min-width: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
 
             .weight-value {
                 font-family: var(--artdeco-font-mono);
@@ -225,12 +274,12 @@
         font-family: var(--artdeco-font-body);
         color: var(--artdeco-fg-muted);
         font-size: var(--artdeco-text-xs);
-        margin-top: 2px;
+        margin-top: calc(var(--artdeco-spacing-1) / 2);
     }
 }
 
 // 响应式设计（桌面端优先）
-@media (width <= 1200px) {
+@media (width <= calc(var(--artdeco-spacing-32) * 9 + var(--artdeco-spacing-12))) {
     .risk-monitor {
         .overview-grid {
             grid-template-columns: repeat(2, 1fr);
@@ -242,7 +291,7 @@
     }
 }
 
-@media (width <= 768px) {
+@media (width <= calc(var(--artdeco-spacing-32) * 6)) {
     .risk-monitor {
         .monitor-header {
             flex-direction: column;
@@ -299,7 +348,7 @@
 @keyframes fade-in-up {
     from {
         opacity: 0%;
-        transform: translateY(20px);
+        transform: translateY(var(--artdeco-spacing-5));
     }
     to {
         opacity: 100%;
@@ -313,9 +362,93 @@
         transition: all var(--artdeco-transition-base);
 
         &:hover {
-            transform: translateY(-2px);
+            transform: translateY(calc(var(--artdeco-spacing-1) / -2));
             box-shadow: var(--artdeco-glow-subtle);
         }
     }
+}
+*/
+
+@use '@/styles/artdeco-tokens.scss' as *;
+
+.risk-monitor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-6);
+}
+
+.placeholder-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-5);
+}
+
+.placeholder-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-2);
+}
+
+.placeholder-eyebrow,
+.placeholder-meta {
+  font-family: var(--artdeco-font-mono);
+  font-size: var(--artdeco-text-xs);
+  color: var(--artdeco-gold-dim);
+  letter-spacing: var(--artdeco-tracking-wide);
+  text-transform: uppercase;
+}
+
+.placeholder-meta {
+  display: flex;
+  gap: var(--artdeco-spacing-3);
+  flex-wrap: wrap;
+}
+
+.placeholder-title {
+  margin: 0;
+  font-family: var(--artdeco-font-display);
+  font-size: var(--artdeco-text-2xl);
+  color: var(--artdeco-fg-primary);
+}
+
+.placeholder-subtitle {
+  margin: 0;
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
+  line-height: var(--artdeco-leading-relaxed);
+}
+
+.placeholder-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--artdeco-spacing-4);
+}
+
+.placeholder-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-2);
+  padding: var(--artdeco-spacing-4);
+  border: 1px solid var(--artdeco-gold-opacity-10);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 5%, transparent);
+}
+
+.placeholder-card-label {
+  font-size: var(--artdeco-text-xs);
+  color: var(--artdeco-fg-muted);
+  letter-spacing: var(--artdeco-tracking-wide);
+  text-transform: uppercase;
+}
+
+.placeholder-card-value {
+  color: var(--artdeco-gold-primary);
+  font-family: var(--artdeco-font-display);
+  font-size: var(--artdeco-text-lg);
+}
+
+@media (width <= 75rem) {
+  .placeholder-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

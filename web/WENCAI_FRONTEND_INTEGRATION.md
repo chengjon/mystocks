@@ -232,7 +232,7 @@ fetch('http://localhost:8020/api/market/wencai/results/qs_9?limit=20&offset=0')
 curl http://localhost:8020/api/market/wencai/health
 
 # 查看后端日志
-tail -f /tmp/backend.log
+tail -f /opt/claude/mystocks_spec/var/log/backend.log
 ```
 
 ### 查看前端日志

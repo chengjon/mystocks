@@ -24,7 +24,7 @@ from models import (
     FunctionMetadata,
     severity_from_similarity,
 )
-from src.utils.ast_parser import tokenize_code, extract_code_block
+from utils.ast_parser import tokenize_code, extract_code_block
 
 
 class SimilarityDetector:

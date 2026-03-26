@@ -9,7 +9,11 @@ test("risk management helper module is present", () => {
   const helperPath = resolve(riskTabsDir, "riskManagementHelpers.ts")
 
   assert.equal(existsSync(helperPath), true)
-  assert.match(readFileSync(helperPath, "utf8"), /export const riskPageConfig/)
+  const helperContent = readFileSync(helperPath, "utf8")
+  assert.match(helperContent, /export const riskPageConfig/)
+  assert.match(helperContent, /icon:\s*'RiskManagement'/)
+  assert.match(helperContent, /icon:\s*'StockAnalysis'/)
+  assert.match(helperContent, /export function getRiskTabMeta/)
 })
 
 test("risk management panel modules are present", () => {

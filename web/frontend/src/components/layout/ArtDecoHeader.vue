@@ -85,13 +85,13 @@ const pageTitle = computed(() => {
   background: var(--artdeco-bg-elevated);
   border-bottom: 1px solid var(--artdeco-border-default);
   flex-shrink: 0;
-  height: 64px;
+  height: var(--artdeco-spacing-16);
   
   // Sticky header support
   position: sticky;
   top: 0;
-  z-index: 100;
-  backdrop-filter: blur(10px);
+  z-index: var(--artdeco-z-fixed);
+  backdrop-filter: blur(calc(var(--artdeco-spacing-px) * 10));
 }
 
 .header-left {
@@ -113,7 +113,7 @@ const pageTitle = computed(() => {
   transition: all var(--artdeco-transition-base);
 
   &:hover {
-    background: var(--artdeco-bg-hover);
+    background: var(--artdeco-bg-elevated);
     border-color: var(--artdeco-border-default);
   }
 }
@@ -143,7 +143,7 @@ const pageTitle = computed(() => {
   color: var(--artdeco-fg-muted);
   cursor: pointer;
   transition: all var(--artdeco-transition-base);
-  min-width: 140px;
+  min-width: calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-3));
 
   &:hover {
     background: var(--artdeco-bg-elevated);
@@ -153,7 +153,7 @@ const pageTitle = computed(() => {
 
   kbd {
     margin-left: auto;
-    padding: 2px 6px;
+    padding: calc(var(--artdeco-spacing-px) * 2) var(--artdeco-spacing-2);
     background: var(--artdeco-bg-secondary);
     border: 1px solid var(--artdeco-border-default);
     border-radius: var(--artdeco-radius-sm);
@@ -175,24 +175,24 @@ const pageTitle = computed(() => {
   cursor: pointer;
   color: var(--artdeco-fg-muted);
   transition: all var(--artdeco-transition-base);
-  width: 36px;
-  height: 36px;
+  width: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-1));
+  height: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-1));
 
   &:hover {
-    color: var(--artdeco-gold-hover);
-    background: var(--artdeco-bg-hover);
+    color: var(--artdeco-gold-light);
+    background: var(--artdeco-bg-elevated);
   }
 
   .badge {
     position: absolute;
-    top: 4px;
-    right: 4px;
-    min-width: 8px;
-    height: 8px;
+    top: var(--artdeco-spacing-1);
+    right: var(--artdeco-spacing-1);
+    min-width: var(--artdeco-spacing-2);
+    height: var(--artdeco-spacing-2);
     padding: 0;
     background: var(--artdeco-up);
     border-radius: var(--artdeco-radius-full);
-    border: 2px solid var(--artdeco-bg-elevated); // Border creates spacing from icon
+    border: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-bg-elevated); // Border creates spacing from icon
   }
 }
 
@@ -207,10 +207,10 @@ const pageTitle = computed(() => {
   color: var(--artdeco-fg-primary);
   cursor: pointer;
   transition: all var(--artdeco-transition-base);
-  height: 36px;
+  height: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-1));
 
   &:hover {
-    background: var(--artdeco-bg-hover);
+    background: var(--artdeco-bg-elevated);
     border-color: var(--artdeco-gold-primary);
   }
   
@@ -221,7 +221,7 @@ const pageTitle = computed(() => {
 }
 
 // Mobile Responsiveness
-@media (width <= 768px) {
+@media (width <= var(--artdeco-breakpoint-md)) {
   .page-title {
     display: none; // Hide title on mobile if needed or shrink
   }

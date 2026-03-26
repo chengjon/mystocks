@@ -67,29 +67,29 @@ test.describe("Critical Menu Navigation - Fixed", { tag: "@critical" }, () => {
 
     await page.goto(`${FRONTEND_BASE_URL}/dashboard`, { waitUntil: "domcontentloaded" })
     // Cold-start Vite runs can take >10s on the first dashboard render.
-    await expect(page.locator(".artdeco-layout")).toBeVisible({ timeout: 20000 })
-    await expect(page.getByText("QUANTIX")).toBeVisible({ timeout: 20000 })
+    await expect(page.getByRole("main")).toBeVisible({ timeout: 20000 })
+    await expect(page.getByRole("heading", { level: 1, name: "QUANTIX" })).toBeVisible({ timeout: 20000 })
   })
 
   test("navigates to dealing room shell without errors", async ({ page }) => {
     await expect(page).toHaveURL(/\/dashboard/)
     await expect(page.getByRole("main")).toBeVisible()
     await expect(page.getByRole("button", { name: "市场行情" })).toBeVisible()
-    await expect(page.getByText("QUANTIX")).toBeVisible()
+    await expect(page.getByRole("heading", { level: 1, name: "QUANTIX" })).toBeVisible()
   })
 
   test("navigates to market realtime via sidebar menu", async ({ page }) => {
     await page.getByRole("button", { name: "市场行情" }).click()
     await page.getByRole("link", { name: /实时行情流/i }).click()
     await expect(page).toHaveURL(/\/market\/realtime/)
-    await expect(page.getByRole("heading", { level: 2, name: "实时行情流" })).toBeVisible({ timeout: 10000 })
-    await expect(page.getByRole("button", { name: "刷新行情" })).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole("heading", { level: 1, name: "实时行情工作台" })).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole("button", { name: "刷新行情" }).first()).toBeVisible({ timeout: 10000 })
   })
 
   test("keeps market page usable when a key API fails", async ({ page }) => {
     await page.route("**/api/v1/data/markets/overview", (route) => route.abort("failed"))
     await page.goto(`${FRONTEND_BASE_URL}/market/realtime`, { waitUntil: "domcontentloaded" })
-    await expect(page.getByRole("heading", { level: 2, name: "实时行情流" })).toBeVisible()
-    await expect(page.getByRole("button", { name: "刷新行情" })).toBeVisible()
+    await expect(page.getByRole("heading", { level: 1, name: "实时行情工作台" })).toBeVisible()
+    await expect(page.getByRole("button", { name: "刷新行情" }).first()).toBeVisible()
   })
 })

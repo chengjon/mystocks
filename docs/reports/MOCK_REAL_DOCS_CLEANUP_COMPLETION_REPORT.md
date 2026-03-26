@@ -109,13 +109,15 @@
 
 ---
 
-## 📝 历史参考文档 (1个)
+## 📝 历史参考文档 (3个)
 
 ### 标记为历史文档
 
 | 文档名 | 位置 | 状态 | 说明 |
 |--------|------|------|------|
-| **`REAL_DATA_INTEGRATION_PRINCIPLES.md`** | docs/guides/ | ⚠️ 历史参考 | 添加弃用通知，保留架构原则参考 |
+| **`REAL_DATA_INTEGRATION_PRINCIPLES.md`** | docs/guides/mock-data/ | ⚠️ 历史参考 | 添加弃用通知，保留架构原则参考 |
+| **`REAL_DATA_INTEGRATION_ROADMAP.md`** | docs/guides/mock-data/ | ⚠️ 历史参考 | 保留过时路线图供历史追溯 |
+| **`PHASE_2_REAL_DATA_INTEGRATION_PLAN.md`** | docs/guides/mock-data/ | 📌 历史执行方案 | 保留 Phase 2 低风险接入实施计划 |
 
 ### 更新内容
 
@@ -125,7 +127,7 @@
 > **⚠️ 历史参考文档**
 >
 > 本文档已被更新的环境切换指南部分替代。建议优先阅读：
-> - **[Mock/Real数据切换指南](./MOCK_REAL_DATA_SWITCHING_GUIDE.md)** - 完整的环境切换方案
+> - **[Mock/Real数据切换指南](../guides/mock-data/MOCK_REAL_DATA_SWITCHING_GUIDE.md)** - 完整的环境切换方案
 > - **[环境切换实现报告](../reports/ENVIRONMENT_SWITCHING_IMPLEMENTATION_REPORT.md)** - 技术实现细节
 >
 > 本文档保留作为架构原则的历史参考。
@@ -139,7 +141,7 @@
 
 ### 1. MOCK_REAL_DATA_INDEX.md
 
-**位置**: `docs/guides/MOCK_REAL_DATA_INDEX.md`
+**位置**: `docs/guides/mock-data/MOCK_REAL_DATA_INDEX.md`
 **大小**: 约18KB
 **用途**: Mock/Real数据文档总索引
 
@@ -175,6 +177,8 @@
 
 ### REAL_DATA_INTEGRATION_PRINCIPLES.md
 
+**位置**: `docs/guides/mock-data/REAL_DATA_INTEGRATION_PRINCIPLES.md`
+
 **更新类型**: 标记为历史参考文档
 **变更内容**:
 1. 在文档顶部添加弃用通知
@@ -183,6 +187,18 @@
 
 **变更前**: 独立的操作指南
 **变更后**: 历史参考文档，链接到新指南
+
+### REAL_DATA_INTEGRATION_ROADMAP.md
+
+**位置**: `docs/guides/mock-data/REAL_DATA_INTEGRATION_ROADMAP.md`
+
+**变更类型**: 历史路线图保留
+
+### PHASE_2_REAL_DATA_INTEGRATION_PLAN.md
+
+**位置**: `docs/guides/mock-data/PHASE_2_REAL_DATA_INTEGRATION_PLAN.md`
+
+**变更类型**: 历史实施计划保留
 
 ---
 
@@ -234,21 +250,21 @@
 
 **前端开发者**:
 1. 先读: `web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md`
-2. 参考: `docs/guides/MOCK_REAL_DATA_INDEX.md`
-3. 规范: `docs/guides/MOCK_DATA_USAGE_RULES.md`
+2. 参考: `docs/guides/mock-data/MOCK_REAL_DATA_INDEX.md`
+3. 规范: `docs/guides/mock-data/MOCK_DATA_USAGE_RULES.md`
 
 **后端开发者**:
-1. 先读: `docs/guides/MOCK_REAL_DATA_SWITCHING_GUIDE.md`
-2. 参考: `docs/guides/MOCK_REAL_DATA_INDEX.md`
+1. 先读: `docs/guides/mock-data/MOCK_REAL_DATA_SWITCHING_GUIDE.md`
+2. 参考: `docs/guides/mock-data/MOCK_REAL_DATA_INDEX.md`
 3. 实现: `docs/reports/ENVIRONMENT_SWITCHING_IMPLEMENTATION_REPORT.md`
 
 **运维人员**:
-1. 先读: `docs/guides/MOCK_REAL_DATA_SWITCHING_GUIDE.md`
+1. 先读: `docs/guides/mock-data/MOCK_REAL_DATA_SWITCHING_GUIDE.md`
 2. 重点: 环境变量配置部分
 3. 参考: `.env.example` 文件
 
 **测试工程师**:
-1. 先读: `docs/guides/MOCK_DATA_USAGE_RULES.md`
+1. 先读: `docs/guides/mock-data/MOCK_DATA_USAGE_RULES.md`
 2. 参考: `web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md`
 3. 实施: E2E测试环境配置
 

@@ -289,7 +289,7 @@ python scripts/tools/manual_data_source_tester.py \
 
 ### 6.2 使用指南
 
-**完整文档**: `docs/guides/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md`
+**完整文档**: `docs/guides/data-source/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md`
 
 **核心功能**:
 - ✅ 数据源搜索和筛选（5层分类）

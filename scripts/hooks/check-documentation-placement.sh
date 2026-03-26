@@ -24,7 +24,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # 配置
-LOG_DIR="logs/docs-audit"
+LOG_DIR="var/log/docs-audit"
 LOG_FILE="$LOG_DIR/placement-suggestions-$(date +%Y%m%d-%H%M%S).log"
 SUGGESTIONS_COUNT=0
 

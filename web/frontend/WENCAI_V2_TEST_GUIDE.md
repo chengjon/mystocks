@@ -232,7 +232,7 @@ curl -X POST http://localhost:8020/api/market/wencai/custom-query \
 curl http://localhost:8020/api/market/wencai/health
 
 # 查看后端日志
-tail -f /tmp/backend.log
+tail -f /opt/claude/mystocks_spec/var/log/backend.log
 ```
 
 ### 问题 2：树形结构不显示

@@ -8,7 +8,7 @@
 
 ## 📋 执行总结
 
-### 1. 文档补充 (`docs/guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md`)
+### 1. 文档补充 (`docs/guides/data-source/NEW_API_SOURCE_INTEGRATION_GUIDE.md`)
 
 #### 新增内容（约300行）
 
@@ -61,7 +61,7 @@
 **核心内容**:
 
 1. **必须阅读完整开发指引**:
-   - 📖 链接到 `docs/guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md`
+   - 📖 链接到 `docs/guides/data-source/NEW_API_SOURCE_INTEGRATION_GUIDE.md`
    - 强调文档包含：8步流程 + 47项检查 + 实战经验 + 故障排除
 
 2. **必须通过完整验证流程**:
@@ -150,7 +150,7 @@
 ```
 ╔════════════════════════════════════════════════════════════╗
 ║     MyStocks 数据源集成验证脚本                          ║
-║     基于: docs/guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md  ║
+║     基于: docs/guides/data-source/NEW_API_SOURCE_INTEGRATION_GUIDE.md  ║
 ╚════════════════════════════════════════════════════════════╝
 
 ✅ YAML配置文件存在
@@ -220,7 +220,7 @@ CLAUDE.md (第11章)
   └─────────────────────────┼─┼────────────────┼┘
                             │ │
                             ▼ ▼
-       docs/guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md
+       docs/guides/data-source/NEW_API_SOURCE_INTEGRATION_GUIDE.md
        │
        ├── 第2章：数据库同步注意事项（⚠️ 新增）
        ├── 第4章：配置与注册检查（✅ 增强检查项）
@@ -255,7 +255,7 @@ CLAUDE.md (第11章)
 
 | 文件 | 状态 | 说明 |
 |------|------|------|
-| `docs/guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md` | ✅ 更新 | 新增300+行实战经验 |
+| `docs/guides/data-source/NEW_API_SOURCE_INTEGRATION_GUIDE.md` | ✅ 更新 | 新增300+行实战经验 |
 | `CLAUDE.md` | ✅ 更新 | 添加强制性开发指引 |
 | `scripts/verify_data_source_integration.sh` | ✅ 创建 | 5步验证脚本 |
 | `docs/quality/bugs/BUG-20260110-ERR_REGISTRY_JSONB_001.json` | 📄 引用 | JSONB解析错误BUG报告 |

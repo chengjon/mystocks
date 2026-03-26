@@ -1,5 +1,18 @@
 <template>
   <div class="kline-analysis">
+    <div class="module-header">
+      <div class="module-copy">
+        <span class="module-eyebrow">indicator and trend route</span>
+        <h3 class="module-title">K 线指标分析面板</h3>
+        <p class="module-subtitle">围绕分析输入、技术指标和趋势图表做快速研判。</p>
+      </div>
+      <div class="module-meta">
+        <span>SYMBOL: {{ symbol || 'N/A' }}</span>
+        <span>PERIOD: {{ period }}</span>
+        <span>POINTS: {{ props.trendData.length }}</span>
+      </div>
+    </div>
+
     <div class="analysis-controls">
       <ArtDecoInput v-model="symbol" label="股票代码" placeholder="如: 600519" />
       <ArtDecoSelect v-model="period" :options="periodOptions" label="分析周期" />
@@ -78,7 +91,53 @@ const trendOption = computed(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
+
+.module-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--artdeco-spacing-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--artdeco-spacing-5);
+}
+
+.module-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-2);
+}
+
+.module-eyebrow {
+  font-family: var(--artdeco-font-mono);
+  font-size: var(--artdeco-text-xs);
+  color: var(--artdeco-gold-dim);
+  letter-spacing: var(--artdeco-tracking-wide);
+  text-transform: uppercase;
+}
+
+.module-title {
+  margin: 0;
+  font-family: var(--artdeco-font-display);
+  font-size: var(--artdeco-text-xl);
+  color: var(--artdeco-fg-primary);
+}
+
+.module-subtitle {
+  margin: 0;
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
+  line-height: var(--artdeco-leading-relaxed);
+}
+
+.module-meta {
+  display: flex;
+  gap: var(--artdeco-spacing-3);
+  flex-wrap: wrap;
+  font-family: var(--artdeco-font-mono);
+  font-size: var(--artdeco-text-xs);
+  color: var(--artdeco-fg-muted);
+}
 
 .analysis-controls {
   display: flex;
@@ -121,6 +180,27 @@ const trendOption = computed(() => {
     &.rise { color: var(--artdeco-up); }
     &.fall { color: var(--artdeco-down); }
     &.neutral { color: var(--artdeco-flat); }
+  }
+}
+
+@media (width <= 75rem) {
+  .analysis-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (width <= 48rem) {
+  .module-meta,
+  .analysis-controls,
+  .indicators-grid {
+    width: 100%;
+  }
+
+  .analysis-controls,
+  .indicators-grid {
+    flex-direction: column;
+    grid-template-columns: 1fr;
+    align-items: stretch;
   }
 }
 </style>

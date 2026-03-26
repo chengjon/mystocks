@@ -14,6 +14,8 @@ import { join } from 'path';
 const APP_NAME = 'mystocks-frontend';
 const PORT = 8080;
 const BASE_URL = `http://localhost:${PORT}`;
+const PROJECT_ROOT = join(process.cwd(), '..', '..');
+const RUNTIME_LOG_DIR = join(PROJECT_ROOT, 'var', 'log');
 
 test.describe('PM2 Configuration File Validation', () => {
   test('should have valid ecosystem.config.js', () => {
@@ -170,7 +172,7 @@ test.describe('PM2 Logs Verification', () => {
   });
 
   test('should not have SCSS compilation errors', () => {
-    const logPath = join(process.cwd(), 'logs', 'pm2-error.log');
+    const logPath = join(RUNTIME_LOG_DIR, 'pm2-error.log');
 
     if (!require('fs').existsSync(logPath)) {
       test.skip('Log file does not exist yet');
@@ -195,7 +197,7 @@ test.describe('PM2 Logs Verification', () => {
   });
 
   test('should not have runtime crashes', () => {
-    const logPath = join(process.cwd(), 'logs', 'pm2-error.log');
+    const logPath = join(RUNTIME_LOG_DIR, 'pm2-error.log');
 
     if (!require('fs').existsSync(logPath)) {
       test.skip('Log file does not exist yet');
@@ -221,7 +223,7 @@ test.describe('PM2 Logs Verification', () => {
   });
 
   test('should have successful startup message', () => {
-    const logPath = join(process.cwd(), 'logs', 'pm2-out.log');
+    const logPath = join(RUNTIME_LOG_DIR, 'pm2-out.log');
 
     if (!require('fs').existsSync(logPath)) {
       test.skip('Log file does not exist yet');
@@ -261,7 +263,7 @@ test.describe('Build Artifacts Verification', () => {
   });
 
   test('should have no build errors in logs', () => {
-    const logPath = join(process.cwd(), 'logs', 'pm2-error.log');
+    const logPath = join(RUNTIME_LOG_DIR, 'pm2-error.log');
 
     if (!require('fs').existsSync(logPath)) {
       test.skip('Log file does not exist yet');

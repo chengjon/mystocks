@@ -467,9 +467,9 @@ web/frontend/
 
 ## 📚 相关文档
 
-- **测试指南**: `docs/guides/PM2_PLAYWRIGHT_TESTING_GUIDE.md`
-- **快速参考**: `docs/guides/WEB_E2E_TEST_QUICK_REFERENCE.md`
-- **用户反馈**: `docs/guides/PM2_PLAYWRIGHT_TESTING_GUIDE_REVIEW.md`
+- **测试指南**: `docs/guides/pm2/PM2_PLAYWRIGHT_TESTING_GUIDE.md`
+- **快速参考**: `docs/testing/WEB_E2E_TEST_QUICK_REFERENCE.md`
+- **用户反馈**: `docs/guides/pm2/PM2_PLAYWRIGHT_TESTING_GUIDE_REVIEW.md`
 
 ---
 

@@ -19,7 +19,7 @@
 | **8周优化计划** | 全面系统优化 | ✅ **已接受** | 100% | 计划已创建，等待开始实施 |
 
 **8周优化计划状态** (2026-01-28):
-- ✅ 优化方案已创建: `docs/guides/frontend_optimization_next_steps.md`
+- ✅ 优化方案已创建: `docs/guides/frontend/frontend_optimization_next_steps.md`
 - 🟢 Week 1任务: **准备开始** (待用户确认)
 - 📋 计划覆盖: 路由架构简化、统一配置系统、批量配置生成、质量保证系统
 - 🎯 目标覆盖率: 23% → 80%+ |

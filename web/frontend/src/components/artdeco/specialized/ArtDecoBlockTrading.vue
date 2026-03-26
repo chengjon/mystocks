@@ -242,7 +242,7 @@ onMounted(() => {
     &:hover {
       border-color: var(--artdeco-gold-primary);
       box-shadow: var(--artdeco-glow-subtle);
-      transform: translateX(4px);
+      transform: translateX(var(--artdeco-spacing-1));
     }
 
     .stock-info {
@@ -251,7 +251,7 @@ onMounted(() => {
         font-weight: var(--artdeco-font-semibold);
         font-size: var(--artdeco-text-data-sm);
         color: var(--artdeco-fg-primary);
-        margin-bottom: 2px;
+        margin-bottom: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
       }
 
       .stock-code {
@@ -268,7 +268,7 @@ onMounted(() => {
         font-family: var(--artdeco-font-body);
         font-size: var(--artdeco-text-data-xs);
         color: var(--artdeco-fg-muted);
-        margin-bottom: 2px;
+        margin-bottom: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
       }
 
       .price-value {
@@ -284,7 +284,7 @@ onMounted(() => {
         font-family: var(--artdeco-font-body);
         font-size: var(--artdeco-text-data-xs);
         color: var(--artdeco-fg-muted);
-        margin-bottom: 2px;
+        margin-bottom: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
       }
 
       .amount-value {
@@ -306,7 +306,7 @@ onMounted(() => {
           font-family: var(--artdeco-font-body);
           font-size: var(--artdeco-text-data-xs);
           color: var(--artdeco-fg-muted);
-          margin-bottom: 2px;
+          margin-bottom: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
         }
 
         .party-name {

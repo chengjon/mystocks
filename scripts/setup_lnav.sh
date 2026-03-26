@@ -87,7 +87,7 @@ EOF
 
 # 启动 lnav 监控
 start_lnav_monitoring() {
-    local log_file="${1:-/opt/claude/mystocks_spec/logs/backend.log}"
+    local log_file="${1:-/opt/claude/mystocks_spec/var/log/backend-access.log}"
 
     info "启动 lnav 监控: $log_file"
 
@@ -109,14 +109,16 @@ start_dev_lnav() {
     info "为开发环境启动 lnav 监控..."
 
     # 检查项目日志目录
-    local log_dir="/opt/claude/mystocks_spec/logs"
-    local backend_log="$log_dir/backend.log"
+    local log_dir="/opt/claude/mystocks_spec/var/log"
+    local backend_log="$log_dir/backend-access.log"
     local combined_log="$log_dir/backend-combined.log"
 
     if [ ! -d "$log_dir" ]; then
         warn "日志目录不存在: $log_dir"
         return 1
     fi
+
+    mkdir -p "$log_dir"
 
     # 创建后端日志文件（如果不存在）
     touch "$backend_log"
@@ -191,7 +193,7 @@ main() {
             echo ""
             echo "示例:"
             echo "  $0 dev                    # 监控开发环境日志"
-            echo "  $0 start backend.log      # 监控指定日志文件"
+            echo "  $0 start /opt/claude/mystocks_spec/var/log/backend-access.log"
             echo "  $0 test                   # 测试配置"
             echo ""
         fi

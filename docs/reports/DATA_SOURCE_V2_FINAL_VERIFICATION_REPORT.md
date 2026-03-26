@@ -322,7 +322,7 @@ connection_pool = pool.SimpleConnectionPool(
 13. **docs/architecture/DATA_SOURCE_MANAGEMENT_V2.md** (完整设计文档)
 14. **docs/reports/DATA_SOURCE_V2_IMPLEMENTATION_REPORT.md** (实施报告)
 15. **docs/reports/PHASE3_SQURGICAL_REPLACEMENT_COMPLETION_REPORT.md** (Phase 3报告)
-16. **docs/guides/DATA_SOURCE_MONITORING_GUIDE.md** (监控集成指南)
+16. **docs/guides/data-source/DATA_SOURCE_MONITORING_GUIDE.md** (监控集成指南)
 
 **总计**: 16个文件，~4000行代码+文档
 

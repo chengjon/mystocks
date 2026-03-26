@@ -19,14 +19,14 @@
         var(--accent-gold) 0px,
         var(--accent-gold) 1px,
         transparent 1px,
-        transparent 10px
+        transparent var(--spacing-2)
       ),
       repeating-linear-gradient(
         -45deg,
         var(--accent-gold) 0px,
         var(--accent-gold) 1px,
         transparent 1px,
-        transparent 10px
+        transparent var(--spacing-2)
       );
   }
 
@@ -139,7 +139,7 @@
   }
 
   .select-sm {
-    width: 120px;
+    width: calc(var(--spacing-6) + var(--spacing-24));
   }
 
   :deep(.el-button--danger) {
@@ -148,8 +148,8 @@
     color: white;
 
     &:hover {
-      background: #D94F51;
-      border-color: #D94F51;
+      background: color-mix(in srgb, var(--color-up) 85%, black);
+      border-color: color-mix(in srgb, var(--color-up) 85%, black);
     }
   }
 }

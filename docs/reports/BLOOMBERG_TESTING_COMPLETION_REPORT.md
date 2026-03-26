@@ -149,7 +149,7 @@ test('Performance Monitoring - Page Load Metrics', async ({ page }) => {
 **状态**: 已完成
 **时间**: 2026-01-09
 
-**文档位置**: `docs/guides/BLOOMBERG_TERMINAL_COMPONENT_GUIDE.md`
+**文档位置**: `docs/guides/web/BLOOMBERG_TERMINAL_COMPONENT_GUIDE.md`
 
 #### 文档结构
 
@@ -470,7 +470,7 @@ expect(await page.textContent('h1')).toBeTruthy();
 ### 文档
 
 1. **使用指南**
-   - `docs/guides/BLOOMBERG_TERMINAL_COMPONENT_GUIDE.md` (500+ 行)
+   - `docs/guides/web/BLOOMBERG_TERMINAL_COMPONENT_GUIDE.md` (500+ 行)
 
 2. **测试报告**
    - `docs/reports/BLOOMBERG_TESTING_COMPLETION_REPORT.md` (本文档)

@@ -325,7 +325,7 @@
 
 - **[代码文件长度优化规范](../standards/CODE_SIZE_OPTIMIZATION_REPORT.md)**
 - **[前端开发规范](../guides/FRONTEND_DEV_GUIDELINES.md)**
-- **[Python质量保障工作流程](../guides/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md)**
+- **[Python质量保障工作流程](../operations/ci-cd/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md)**
 
 ---
 

@@ -1,5 +1,5 @@
 <template>
-    <div class="artdeco-dashboard">
+    <section class="artdeco-dashboard">
         <!-- 戏剧性的页面头部 -->
         <ArtDecoHeader
             title="QUANTIX"
@@ -47,6 +47,7 @@
         </ArtDecoHeader>
 
         <div class="request-meta-bar">
+            <span class="brand-text dashboard-brand">QUANTIX</span>
             <span>DATA: REAL</span>
             <span>REQ: {{ lastRequestId || 'N/A' }}</span>
             <span>TIME: {{ displayProcessTime }}</span>
@@ -448,7 +449,7 @@
                 </nav>
             </ArtDecoCard>
         </div>
-    </div>
+    </section>
 </template>
 
 <script setup>
@@ -502,11 +503,11 @@ const {
 
 .request-meta-bar {
   display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: var(--artdeco-spacing-4);
+  margin-bottom: var(--artdeco-spacing-4);
   color: var(--artdeco-fg-muted);
   font-family: var(--artdeco-font-mono);
-  font-size: 12px;
+  font-size: var(--artdeco-text-xs);
 }
 
 .integration-note {

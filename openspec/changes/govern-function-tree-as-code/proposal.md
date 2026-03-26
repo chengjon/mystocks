@@ -37,8 +37,8 @@
   - `governance/mainline/scripts/mainline_scope_gate.py`
   - `governance/mainline/spec/ai-development-mainline-governance-spec.md`
   - `docs/FUNCTION_TREE.md`
-  - `docs/guides/FEATURE_MANAGEMENT_WORKFLOW.md`
-  - `docs/guides/AI_QUICK_START.md`
+  - `docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md`
+  - `docs/guides/ai-tools/AI_QUICK_START.md`
   - `.github/pull_request_template.md`
   - `tests/unit/governance/**`
   - `tests/fixtures/governance/**`

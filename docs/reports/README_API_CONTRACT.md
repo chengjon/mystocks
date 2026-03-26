@@ -53,9 +53,9 @@
 3. **关键成就**: 查看报告中的"关键成就"章节
 
 ### 深入了解技术细节
-1. **错误码体系**: `t28_completion_report.md` + `docs/guides/ERROR_CODE_GUIDE.md`
-2. **异常处理**: `t29_completion_report.md` + `docs/guides/EXCEPTION_HANDLER_GUIDE.md`
-3. **验证器**: `t26_completion_report.md` + `docs/guides/VALIDATION_GUIDE.md`
+1. **错误码体系**: `t28_completion_report.md` + `docs/api/ERROR_CODE_GUIDE.md`
+2. **异常处理**: `t29_completion_report.md` + `docs/api/EXCEPTION_HANDLER_GUIDE.md`
+3. **验证器**: `t26_completion_report.md` + `docs/api/VALIDATION_GUIDE.md`
 
 ### 开发参考
 - **错误码定义**: `web/backend/app/core/error_codes.py`
@@ -127,9 +127,9 @@
 ### 技术指南
 | 文件 | 位置 | 大小 | 内容 |
 |------|------|------|------|
-| 错误码指南 | docs/guides/ERROR_CODE_GUIDE.md | 400行 | 错误码使用指南 |
-| 异常处理指南 | docs/guides/EXCEPTION_HANDLER_GUIDE.md | 600行 | 异常处理指南 |
-| 验证器指南 | docs/guides/VALIDATION_GUIDE.md | 400行 | 验证器使用指南 |
+| 错误码指南 | docs/api/ERROR_CODE_GUIDE.md | 400行 | 错误码使用指南 |
+| 异常处理指南 | docs/api/EXCEPTION_HANDLER_GUIDE.md | 600行 | 异常处理指南 |
+| 验证器指南 | docs/api/VALIDATION_GUIDE.md | 400行 | 验证器使用指南 |
 
 ### 核心代码
 | 文件 | 位置 | 大小 | 内容 |

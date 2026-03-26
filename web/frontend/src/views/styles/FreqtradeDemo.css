@@ -1,6 +1,6 @@
 .freqtrade-demo {
   padding: var(--spacing-6);
-  max-width: 1400px;
+  max-width: calc(var(--artdeco-spacing-32) * 10 + var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
   margin: 0 auto;
   min-height: 100vh;
   position: relative;
@@ -22,14 +22,14 @@
       var(--accent-gold) 0px,
       var(--accent-gold) 1px,
       transparent 1px,
-      transparent 10px
+      transparent calc(var(--artdeco-spacing-5) / 2)
     ),
     repeating-linear-gradient(
       -45deg,
       var(--accent-gold) 0px,
       var(--accent-gold) 1px,
       transparent 1px,
-      transparent 10px
+      transparent calc(var(--artdeco-spacing-5) / 2)
     );
 }
 
@@ -137,8 +137,8 @@
 }
 
 .code-block {
-  background: rgb(212 175 55 / 5%);
-  border: 1px solid rgb(212 175 55 / 20%);
+  background: var(--artdeco-gold-opacity-05);
+  border: 1px solid var(--artdeco-gold-opacity-20);
   border-radius: var(--radius-none);
   padding: var(--spacing-4);
   font-family: 'Courier New', monospace;
@@ -152,8 +152,8 @@
 .exchange-list {
   margin-top: var(--spacing-4);
   padding: var(--spacing-4);
-  background: rgb(212 175 55 / 5%);
-  border: 1px solid rgb(212 175 55 / 20%);
+  background: var(--artdeco-gold-opacity-05);
+  border: 1px solid var(--artdeco-gold-opacity-20);
   border-radius: var(--radius-none);
   display: flex;
   flex-wrap: wrap;
@@ -192,7 +192,7 @@
 
 .indicator-category ul li {
   padding: var(--spacing-2) 0;
-  border-bottom: 1px solid rgb(212 175 55 / 10%);
+  border-bottom: 1px solid var(--artdeco-gold-opacity-10);
   font-size: var(--font-size-small);
 }
 
@@ -201,7 +201,7 @@
 }
 
 :deep(.el-card__body) {
-  padding: 15px;
+  padding: calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-5) / 4);
 }
 
 :deep(.el-steps) {
@@ -209,11 +209,11 @@
 }
 
 :deep(.el-alert__title) {
-  font-size: 14px;
+  font-size: var(--artdeco-text-sm);
   font-weight: bold;
 }
 
 :deep(.el-timeline-item__timestamp) {
   font-weight: bold;
-  color: #409eff;
+  color: var(--artdeco-info);
 }

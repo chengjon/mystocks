@@ -56,9 +56,9 @@ if [ $? != 0 ]; then
 
     # 在日志监控窗格中设置命令
     tmux send-keys -t $SESSION_NAME:4 "echo '日志监控控制台'" Enter
-    tmux send-keys -t $SESSION_NAME:4 "mkdir -p logs" Enter
-    tmux send-keys -t $SESSION_NAME:4 "touch logs/mystocks_system.log" Enter
-    tmux send-keys -t $SESSION_NAME:4 "# lnav logs/mystocks_system.log" Enter
+    tmux send-keys -t $SESSION_NAME:4 "mkdir -p var/log" Enter
+    tmux send-keys -t $SESSION_NAME:4 "touch var/log/mystocks_system.log" Enter
+    tmux send-keys -t $SESSION_NAME:4 "# lnav var/log/mystocks_system.log" Enter
 
     # 在性能监控窗格中设置命令
     tmux send-keys -t $SESSION_NAME:5 "echo '性能监控控制台'" Enter

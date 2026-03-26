@@ -21,11 +21,11 @@
 - `scripts/runtime/smoke_mongo_multicli.py` 已可做真实 Mongo smoke 验证
 
 关键入口：
-- 操作手册：`docs/guides/MONGO_MULTICLI_COORDINATION_GUIDE.md`
+- 操作手册：`docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md`
 - 设计文档：`docs/plans/2026-03-13-mongodb-multicli-coordination-design.md`
 - 实施计划：`docs/plans/2026-03-13-mongodb-multicli-coordination-implementation-plan.md`
 - 进展报告：`docs/reports/MONGODB_MULTICLI_COORDINATION_PROGRESS_2026-03-14.md`
-- 功能映射：`FUNCTION_MAP.md`
+- 功能映射：`docs/overview/FUNCTION_MAP.md`
 
 快速验证：
 
@@ -308,7 +308,7 @@ python3 /opt/claude/mystocks_spec/scripts/opencode/sync_omc_model_catalog.py --w
 - OMC 官方 README: <https://github.com/Yeachan-Heo/oh-my-claudecode/blob/main/README.md>
 - 项目内 OMC 指令集: `/root/.claude/CLAUDE.md`
 - 本项目 OMC 使用与故障排查（含 `Team "omc" does not exist`）:
-  [`docs/guides/OMC_WORKFLOW_GUIDE.md`](docs/guides/OMC_WORKFLOW_GUIDE.md)
+  [`docs/guides/ai-tools/OMC_WORKFLOW_GUIDE.md`](docs/guides/ai-tools/OMC_WORKFLOW_GUIDE.md)
 
 MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，采用科学的数据分类体系和智能路由策略，实现多数据库协同工作。系统基于适配器模式和工厂模式构建统一的数据访问层，提供配置驱动的自动化管理，确保数据的高效存储、快速查询和实时监控。
 
@@ -584,8 +584,8 @@ mystocks_spec/
 ├── conftest.py               # Pytest全局配置
 ├── __init__.py               # Python包标识
 ├── LICENSE                   # MIT许可证
-├── docker-compose.*.yml      # → config/docker/ 的符号链接
-└── monitoring-stack.yml      # → config/docker/ 的符号链接
+├── docker-compose.*.yml      # → docker/ 的符号链接
+└── monitoring-stack.yml      # → docker/ 的符号链接
 ```
 
 #### 📂 主要目录组织
@@ -1107,7 +1107,7 @@ tables:
 
 ### 📚 docs/ 文档
 
-- `docs/IFLOW.md` - 项目工作流程
+- `docs/overview/IFLOW.md` - 项目工作流程
 - `docs/architecture/` - 架构设计文档
 - `docs/api/` - API文档
 - `docs/archived/` - 历史文档归档
@@ -1325,9 +1325,9 @@ sources = search_data_sources(quality_score="<70")
 
 ### 文档链接
 
-📖 **[完整使用指南](./docs/guides/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md)** - 1000+行完整文档，包含所有功能说明
+📖 **[完整使用指南](./docs/guides/data-source/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md)** - 1000+行完整文档，包含所有功能说明
 
-📋 **[快速参考卡片](./docs/guides/DATA_SOURCE_TOOLS_QUICK_REFERENCE.md)** - 5分钟快速上手，常用命令和参数速查
+📋 **[快速参考卡片](./docs/guides/data-source/DATA_SOURCE_TOOLS_QUICK_REFERENCE.md)** - 5分钟快速上手，常用命令和参数速查
 
 🏗️ **[数据源V2.0架构文档](./docs/architecture/DATA_SOURCE_MANAGEMENT_V2.md)** - 系统架构、设计模式、扩展指南
 
@@ -1604,7 +1604,7 @@ curl -X POST http://localhost:8000/backtest \
 ### 📚 文档导航
 
 **快速开始**:
-- [`IFLOW.md`](./docs/IFLOW.md) - 项目工作流程
+- [`IFLOW.md`](./docs/overview/IFLOW.md) - 项目工作流程
 - [`.taskmaster/CLAUDE.md`](./.taskmaster/CLAUDE.md) - Task Master集成指南
 
 **架构设计文档** (`docs/architecture/`):
@@ -1625,7 +1625,7 @@ curl -X POST http://localhost:8000/backtest \
 - 数据工作流程
 - Web页面结构指南
 
-**特性实现** (`docs/features/`):
+**特性实现** (`docs/guides/features/`):
 - 股票热力图实现
 - 监控列表分组
 - TradingView集成修复

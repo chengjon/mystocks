@@ -177,7 +177,7 @@
 
     .gauge-title {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base);
       font-weight: 600;
       color: var(--artdeco-accent-gold);
       text-transform: uppercase;
@@ -194,8 +194,8 @@
 
     .gauge-chart {
       position: relative;
-      width: 200px;
-      height: 120px;
+      width: calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-10));
+      height: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
     }
 
     .gauge-svg {
@@ -209,7 +209,7 @@
 
     .gauge-value {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-xl); // 32px - Compact v3.1
+      font-size: var(--artdeco-font-size-xl);
       font-weight: 700;
     }
 
@@ -229,7 +229,7 @@
 
     .detail-label {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      font-size: var(--artdeco-font-size-sm);
       font-weight: 600;
       color: var(--artdeco-fg-muted);
       text-transform: uppercase;
@@ -238,7 +238,7 @@
 
     .detail-value {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-md); // 18px - Compact v3.1
+      font-size: var(--artdeco-font-size-md);
       font-weight: 700;
       color: var(--artdeco-fg-secondary);
     }
@@ -263,20 +263,20 @@
 
     .breakdown-item {
       display: grid;
-      grid-template-columns: 1fr 2fr 80px;
+      grid-template-columns: 1fr 2fr var(--artdeco-spacing-20);
       align-items: center;
       gap: var(--artdeco-spacing-3);
     }
 
     .breakdown-label {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      font-size: var(--artdeco-font-size-sm);
       color: var(--artdeco-fg-secondary);
       text-transform: uppercase;
     }
 
     .breakdown-bar {
-      height: 6px;
+      height: calc(var(--artdeco-spacing-3) / 2);
       background: var(--artdeco-bg-primary);
       border: 1px solid var(--artdeco-gold-opacity-20);
       overflow: hidden;
@@ -289,7 +289,7 @@
 
     .breakdown-value {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base);
       font-weight: 600;
       color: var(--artdeco-fg-secondary);
       text-align: right;
@@ -297,12 +297,12 @@
 
     /* Compact variant */
     .artdeco-risk-gauge.compact .gauge-chart {
-      width: 160px;
-      height: 96px;
+      width: calc(var(--artdeco-spacing-16) * 2 + var(--artdeco-spacing-8));
+      height: var(--artdeco-spacing-24);
     }
 
     .artdeco-risk-gauge.compact .gauge-value {
-      font-size: var(--artdeco-font-size-lg); // 24px - Compact v3.1
+      font-size: var(--artdeco-font-size-lg);
     }
 
     .artdeco-risk-gauge.compact .gauge-details {
@@ -310,10 +310,10 @@
     }
 
     .artdeco-risk-gauge.compact .detail-label {
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      font-size: var(--artdeco-font-size-sm);
     }
 
     .artdeco-risk-gauge.compact .detail-value {
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base);
     }
 </style>

@@ -199,7 +199,7 @@ python scripts/dev/verify_security_simple.py
 4. **docs/reports/SECURITY_FIX_SUMMARY.md**
    - 企业级总结（参考用）
 
-5. **docs/guides/SECURE_CODING_QUICK_REFERENCE.md**
+5. **docs/standards/security/SECURE_CODING_QUICK_REFERENCE.md**
    - 安全编码快速参考
 
 ---

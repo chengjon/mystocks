@@ -4,7 +4,7 @@
 **Date**: 2026-01-16
 **Author**: Business Design Master
 **Status**: Proposal for Approval
-**Reference**: `docs/guides/MYSTOCKS_HTML_TO_VUE_CONVERSION_STRATEGY.md`
+**Reference**: `docs/guides/web/MYSTOCKS_HTML_TO_VUE_CONVERSION_STRATEGY.md`
 
 ---
 

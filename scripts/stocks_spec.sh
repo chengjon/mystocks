@@ -11,6 +11,7 @@
 PROJECT_ROOT="/opt/claude/mystocks_spec"
 FRONTEND_DIR="$PROJECT_ROOT/web/frontend"
 BACKEND_DIR="$PROJECT_ROOT/web/backend"
+LOG_DIR="$PROJECT_ROOT/var/log"
 
 # 默认端口配置
 DEFAULT_BACKEND_PORT=8000
@@ -21,8 +22,8 @@ FRONTEND_PORT_RANGE_START=3000
 FRONTEND_PORT_RANGE_END=3009
 
 # 日志文件
-BACKEND_LOG="$BACKEND_DIR/backend.log"
-FRONTEND_LOG="$FRONTEND_DIR/frontend.log"
+BACKEND_LOG="$LOG_DIR/backend.log"
+FRONTEND_LOG="$LOG_DIR/frontend.log"
 
 # 颜色输出
 GREEN='\033[0;32m'
@@ -122,6 +123,7 @@ start_backend() {
     local port=${1:-$DEFAULT_BACKEND_PORT}
 
     print_info "启动后端服务 (FastAPI)..."
+    mkdir -p "$LOG_DIR"
 
     # 检查是否已经运行
     if check_port $port; then
@@ -226,6 +228,7 @@ start_frontend() {
     local port=${1:-$DEFAULT_FRONTEND_PORT}
 
     print_info "启动前端服务 (Vue.js)..."
+    mkdir -p "$LOG_DIR"
 
     # 检查是否已经运行
     if check_port $port; then

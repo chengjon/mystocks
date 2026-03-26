@@ -344,7 +344,7 @@ async def generate_health_report(services: Dict[str, HealthStatus]) -> Optional[
     """生成健康检查报告并返回URL"""
     try:
         # 创建报告目录
-        report_dir = "/opt/mystocks/logs/health_reports"
+        report_dir = "/var/log/mystocks/health_reports"
         os.makedirs(report_dir, exist_ok=True)
 
         # 生成报告文件名
@@ -415,7 +415,7 @@ async def get_health_report(timestamp: str, current_user: User = Depends(get_cur
     - timestamp: 报告时间戳
     """
     try:
-        report_file = f"/opt/mystocks/logs/health_reports/health_report_{timestamp}.json"
+        report_file = f"/var/log/mystocks/health_reports/health_report_{timestamp}.json"
 
         if not os.path.exists(report_file):
             raise NotFoundException(resource="健康检查报告", identifier=timestamp)

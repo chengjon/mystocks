@@ -12,7 +12,7 @@
   height: 100vh;
 
   // Desktop behavior
-  @media (width >= 768px) {
+  @media (width >= calc(var(--artdeco-spacing-32) * 6)) {
     position: sticky;
     top: 0;
     z-index: var(--z-index-sticky);
@@ -53,7 +53,7 @@
 
   // Custom scrollbar
   &::-webkit-scrollbar {
-    width: 6px;
+    width: calc(var(--artdeco-spacing-3) / 2);
   }
 
   &::-webkit-scrollbar-track {
@@ -62,7 +62,7 @@
 
   &::-webkit-scrollbar-thumb {
     background: var(--border-base);
-    border-radius: 3px;
+    border-radius: calc(var(--artdeco-spacing-px) * 3);
 
     &:hover {
       background: var(--border-light);
@@ -78,9 +78,9 @@
   inset: 0 0 0 0;
   background-color: var(--bg-overlay);
   z-index: calc(var(--z-index-modal) - 1);
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(calc(var(--artdeco-spacing-1) / 2));
 
-  @media (width >= 768px) {
+  @media (width >= calc(var(--artdeco-spacing-32) * 6)) {
     display: none;
   }
 }
@@ -99,7 +99,7 @@
 // Logo Area
 // ============================================
 .sidebar-logo {
-  height: 60px;
+  height: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -108,17 +108,17 @@
   flex-shrink: 0;
 
   .logo-text {
-    font-size: 24px;
+    font-size: var(--artdeco-spacing-6);
     font-weight: var(--font-weight-bold);
     color: var(--color-primary);
     margin: 0;
-    letter-spacing: 1px;
+    letter-spacing: var(--artdeco-spacing-px);
     display: block;
     white-space: nowrap;
   }
 
   .logo-text-short {
-    font-size: 20px;
+    font-size: var(--artdeco-spacing-5);
     font-weight: var(--font-weight-bold);
     color: var(--color-primary);
     margin: 0;
@@ -153,8 +153,8 @@
     border-radius: var(--radius-md);
     color: var(--text-secondary);
     transition: all var(--transition-fast);
-    height: 48px;
-    line-height: 48px;
+    height: var(--artdeco-spacing-12);
+    line-height: var(--artdeco-spacing-12);
 
     &:hover {
       background-color: var(--bg-hover);
@@ -174,17 +174,17 @@
     font-weight: var(--font-weight-medium);
     position: relative;
 
-    &::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 3px;
-      height: 60%;
-      background-color: var(--color-up);
-      border-radius: 0 2px 2px 0;
-    }
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: calc(var(--artdeco-spacing-px) * 3);
+        height: 60%;
+        background-color: var(--color-up);
+        border-radius: 0 calc(var(--artdeco-spacing-1) / 2) calc(var(--artdeco-spacing-1) / 2) 0;
+      }
   }
 
   // Submenu
@@ -192,18 +192,18 @@
     .el-sub-menu__title {
       margin: 0 var(--spacing-sm);
       border-radius: var(--radius-md);
-      height: 48px;
-      line-height: 48px;
+      height: var(--artdeco-spacing-12);
+      line-height: var(--artdeco-spacing-12);
     }
 
     .el-menu {
       background-color: var(--bg-card);
 
       .el-menu-item {
-        padding-left: 48px !important;
+        padding-left: var(--artdeco-spacing-12) !important;
         margin: 0 var(--spacing-sm);
-        height: 44px;
-        line-height: 44px;
+        height: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-3));
+        line-height: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-3));
 
         &:hover {
           background-color: var(--bg-hover);
@@ -219,10 +219,10 @@
 
   // Icon styling
   :deep(.el-icon) {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    margin-right: 8px;
+    font-size: calc(var(--artdeco-spacing-4) + calc(var(--artdeco-spacing-1) / 2));
+    width: calc(var(--artdeco-spacing-4) + calc(var(--artdeco-spacing-1) / 2));
+    height: calc(var(--artdeco-spacing-4) + calc(var(--artdeco-spacing-1) / 2));
+    margin-right: var(--artdeco-spacing-2);
   }
 
   // Collapsed mode icon adjustment
@@ -254,7 +254,7 @@
   flex-shrink: 0;
 
   .collapse-toggle {
-    font-size: 18px;
+    font-size: calc(var(--artdeco-spacing-4) + calc(var(--artdeco-spacing-1) / 2));
     color: var(--text-secondary);
     cursor: pointer;
     transition: all var(--transition-base);
@@ -267,8 +267,8 @@
     }
 
     &:focus {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 2px;
+      outline: calc(var(--artdeco-spacing-1) / 2) solid var(--color-primary);
+      outline-offset: calc(var(--artdeco-spacing-1) / 2);
     }
 
     &:active {
@@ -286,9 +286,9 @@
       // Larger touch targets for mobile
       :deep(.el-menu-item),
       :deep(.el-sub-menu__title) {
-        height: 52px;
-        line-height: 52px;
-        min-height: 52px;
+        height: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-3));
+        line-height: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-3));
+        min-height: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-3));
       }
     }
   }
@@ -297,7 +297,7 @@
 // ============================================
 // Responsive Breakpoints
 // ============================================
-@media (width <= 768px) {
+@media (width <= calc(var(--artdeco-spacing-32) * 6)) {
   .responsive-sidebar {
     // Full height on mobile
     height: 100vh;
@@ -310,28 +310,28 @@
   }
 
   .sidebar-logo {
-    height: 56px;
+    height: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-6));
 
     .logo-text {
-      font-size: 20px;
+      font-size: var(--artdeco-spacing-5);
     }
 
     .logo-text-short {
-      font-size: 18px;
+      font-size: calc(var(--artdeco-spacing-4) + calc(var(--artdeco-spacing-1) / 2));
     }
   }
 }
 
-@media (width <= 576px) {
+@media (width <= calc(var(--artdeco-spacing-32) * 4 + var(--artdeco-spacing-20))) {
   .sidebar-overlay {
     // More transparent overlay on small screens
-    background-color: rgb(11 15 25 / 70%);
+    background-color: color-mix(in srgb, var(--artdeco-bg-global) 70%, transparent);
   }
 
   .responsive-sidebar.is-mobile {
     // Full width menu on very small screens
     &.is-open {
-      width: 240px !important;
+      width: calc(var(--artdeco-spacing-20) * 3) !important;
     }
   }
 }
@@ -342,13 +342,13 @@
 // High contrast mode support
 @media (prefers-contrast: more) {
   .responsive-sidebar {
-    border-right: 2px solid var(--border-base);
+    border-right: calc(var(--artdeco-spacing-1) / 2) solid var(--border-base);
   }
 
   .sidebar-menu {
     :deep(.el-menu-item.is-active) {
       &::before {
-        width: 4px;
+        width: var(--artdeco-spacing-1);
       }
     }
   }
@@ -366,8 +366,8 @@
 
 // Focus visible for keyboard navigation
 *:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  outline: calc(var(--artdeco-spacing-1) / 2) solid var(--color-primary);
+  outline-offset: calc(var(--artdeco-spacing-1) / 2);
 }
 
 // ============================================

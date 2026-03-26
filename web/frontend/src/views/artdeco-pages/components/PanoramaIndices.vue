@@ -26,32 +26,40 @@ defineProps({
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 .indices-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(calc(var(--artdeco-spacing-20) * 3), 1fr));
+    gap: var(--artdeco-spacing-5);
 }
 .index-item {
     background: var(--artdeco-gold-opacity-05);
-    padding: 15px;
+    padding: calc(var(--artdeco-spacing-sm) + var(--artdeco-spacing-xs) + var(--artdeco-radius-md) + var(--artdeco-radius-sm));
     border: 1px solid var(--artdeco-gold-opacity-10);
     .header {
         display: flex;
         justify-content: space-between;
-        font-size: 12px;
-        margin-bottom: 8px;
+        font-size: var(--artdeco-text-xs);
+        margin-bottom: var(--artdeco-spacing-2);
     }
     .value {
-      font-size: 20px;
+      font-size: calc(var(--artdeco-spacing-md) + var(--artdeco-spacing-xs));
       font-weight: bold;
-      margin-bottom: 8px;
+      margin-bottom: var(--artdeco-spacing-2);
     }
     .footer {
-      font-size: 11px;
+      font-size: calc(var(--artdeco-text-xs) - var(--artdeco-spacing-px));
       color: var(--artdeco-fg-muted);
     }
     .change.rise { color: var(--artdeco-rise); }
     .change.fall { color: var(--artdeco-down); }
+}
+
+@media (width <= 48rem) {
+    .index-item .header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--artdeco-spacing-2);
+    }
 }
 </style>

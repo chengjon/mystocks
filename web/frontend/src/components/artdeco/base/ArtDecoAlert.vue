@@ -100,7 +100,7 @@ onUnmounted(() => {
   align-items: flex-start;
   gap: var(--artdeco-spacing-3);
   padding: var(--artdeco-spacing-4);
-  border: 2px solid;
+  border: calc(var(--artdeco-spacing-1) / 2) solid;
   border-radius: var(--artdeco-radius-none);
   background: var(--artdeco-bg-card);
   position: relative;
@@ -111,22 +111,22 @@ onUnmounted(() => {
   &::after {
     content: '';
     position: absolute;
-    width: 8px;
-    height: 8px;
+    width: var(--artdeco-spacing-2);
+    height: var(--artdeco-spacing-2);
     border: 1px solid currentColor;
     opacity: 30%;
   }
 
   &::before {
-    top: 6px;
-    left: 6px;
+    top: calc(var(--artdeco-spacing-3) / 2);
+    left: calc(var(--artdeco-spacing-3) / 2);
     border-right: none;
     border-bottom: none;
   }
 
   &::after {
-    bottom: 6px;
-    right: 6px;
+    bottom: calc(var(--artdeco-spacing-3) / 2);
+    right: calc(var(--artdeco-spacing-3) / 2);
     border-left: none;
     border-top: none;
   }
@@ -193,7 +193,7 @@ onUnmounted(() => {
 // Icon
 .artdeco-alert-icon {
   flex-shrink: 0;
-  margin-top: 2px;
+  margin-top: calc(var(--artdeco-spacing-1) / 2);
 }
 
 // Content
@@ -220,7 +220,7 @@ onUnmounted(() => {
 
 // Dismiss Button
 .artdeco-alert-dismissible {
-  padding-right: calc(var(--artdeco-spacing-4) + 32px);
+  padding-right: calc(var(--artdeco-spacing-4) + var(--artdeco-spacing-8));
 }
 
 .artdeco-alert-dismiss {
@@ -230,8 +230,8 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
+  height: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
   padding: 0;
   border: 1px solid currentColor;
   background: transparent;
@@ -260,11 +260,11 @@ onUnmounted(() => {
 
 .alert-fade-enter-from {
   opacity: 0%;
-  transform: translateY(-10px);
+  transform: translateY(calc(var(--artdeco-spacing-5) / -2));
 }
 
 .alert-fade-leave-to {
   opacity: 0%;
-  transform: translateY(-10px);
+  transform: translateY(calc(var(--artdeco-spacing-5) / -2));
 }
 </style>

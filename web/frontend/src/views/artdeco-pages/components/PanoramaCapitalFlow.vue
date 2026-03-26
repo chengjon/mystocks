@@ -36,22 +36,22 @@ defineProps({
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 .main-flows {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-bottom: 25px;
+    gap: var(--artdeco-spacing-5);
+    margin-bottom: calc(var(--artdeco-spacing-6) + var(--artdeco-radius-md) - var(--artdeco-radius-sm));
 }
 .flow-item {
     text-align: center;
     .label {
-      font-size: 12px;
+      font-size: var(--artdeco-text-xs);
       color: var(--artdeco-fg-muted);
-      margin-bottom: 5px;
+      margin-bottom: calc(var(--artdeco-spacing-xs) + var(--artdeco-spacing-px));
     }
     .value {
-      font-size: 18px;
+      font-size: calc(var(--artdeco-text-base) + var(--artdeco-radius-md));
       font-weight: bold;
     }
     .value.rise { color: var(--artdeco-rise); }
@@ -60,19 +60,25 @@ defineProps({
 .sector-flows {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
 }
 .sector-tag {
-    padding: 4px 12px;
-    font-size: 12px;
-    border-radius: 4px;
+    padding: var(--artdeco-spacing-1) var(--artdeco-spacing-3);
+    font-size: var(--artdeco-text-xs);
+    border-radius: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
     &.in {
       background: color-mix(in srgb, var(--artdeco-down) 10%, transparent);
       color: var(--artdeco-down);
     }
     &.out {
-      background: color-mix(in srgb, var(--artdeco-up) 10%, transparent);
+      background: color-mix(in srgb, var(--artdeco-down) 10%, transparent);
       color: var(--artdeco-down);
+    }
+}
+
+@media (width <= 48rem) {
+    .main-flows {
+      grid-template-columns: 1fr;
     }
 }
 </style>

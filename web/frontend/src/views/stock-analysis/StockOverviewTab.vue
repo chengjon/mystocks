@@ -115,17 +115,17 @@ defineProps<{
 
 .overview-header {
   :deep(.header-title) {
-    font-family: Cinzel, serif;
+    font-family: var(--font-display);
   }
 }
 
 .artdeco-sub-header {
-  font-family: Marcellus, serif;
+  font-family: var(--font-display);
   color: var(--artdeco-gold-primary);
   text-transform: uppercase;
   letter-spacing: var(--artdeco-tracking-wider);
   margin-bottom: var(--artdeco-spacing-4);
-  border-left: 3px solid var(--artdeco-gold-primary);
+  border-left: calc(var(--artdeco-spacing-px) * 3) solid var(--artdeco-gold-primary);
   padding-left: var(--artdeco-spacing-3);
 }
 
@@ -192,12 +192,12 @@ defineProps<{
 }
 
 .advantage-alert {
-  background: rgb(212 175 55 / 5%) !important;
+  background: var(--artdeco-gold-opacity-05) !important;
   border-color: var(--artdeco-border-default) !important;
   
   .alert-title {
     color: var(--artdeco-gold-primary);
-    font-family: Marcellus, serif;
+    font-family: var(--font-display);
     font-weight: bold;
     margin-bottom: var(--artdeco-spacing-2);
   }

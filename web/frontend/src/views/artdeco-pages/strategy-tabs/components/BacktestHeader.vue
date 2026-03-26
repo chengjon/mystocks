@@ -39,5 +39,5 @@ defineEmits<{
 </script>
 
 <style scoped lang="scss">
-@import './styles/BacktestHeader';
+@use './styles/BacktestHeader';
 </style>

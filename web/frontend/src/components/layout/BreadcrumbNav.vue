@@ -75,7 +75,7 @@ defineProps<Props>()
 .breadcrumb-item {
   display: flex;
   align-items: center;
-  font-size: var(--font-size-sm, 13px);
+  font-size: var(--artdeco-text-sm);
 }
 
 .breadcrumb-link {

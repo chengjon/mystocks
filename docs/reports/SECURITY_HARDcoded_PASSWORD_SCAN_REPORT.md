@@ -299,7 +299,7 @@ git check-ignore -v monitoring-stack/.env
 
 ## 📝 相关文档
 
-- **安全指南**: `docs/guides/SECURE_CODING_QUICK_REFERENCE.md`
+- **安全指南**: `docs/standards/security/SECURE_CODING_QUICK_REFERENCE.md`
 - **环境配置**: `.env.example`
 - **Git 规范**: `docs/standards/FILE_ORGANIZATION_RULES.md`
 - **密钥轮换指南**: `docs/guides/PHASE0_CREDENTIAL_ROTATION_GUIDE.md`

@@ -39,11 +39,41 @@ export function useArtDecoTradingManagement() {
         if (!isMonolithic.value) {
             // 对于非 monolithic，使用硬编码的 tabs（与路由的 activeTab 一致）
             return [
-                { key: 'overview', label: '交易概览', icon: '📊' },
-                { key: 'signals', label: '交易信号', icon: '📡' },
-                { key: 'positions', label: '持仓监控', icon: '💼' },
-                { key: 'history', label: '历史订单', icon: '📋' },
-                { key: 'attribution', label: '绩效归因', icon: '📈' }
+                {
+                    key: 'overview',
+                    label: '交易概览',
+                    icon: 'Analysis',
+                    eyebrow: 'command summary',
+                    description: '汇总市场状态、信号活跃度与收益归因的总览面板。'
+                },
+                {
+                    key: 'signals',
+                    label: '交易信号',
+                    icon: 'Signals',
+                    eyebrow: 'signal stream',
+                    description: '监控实时信号流、过滤条件和批量执行动作。'
+                },
+                {
+                    key: 'positions',
+                    label: '持仓监控',
+                    icon: 'Positions',
+                    eyebrow: 'portfolio watch',
+                    description: '查看活跃持仓、盈亏表现与仓位调整入口。'
+                },
+                {
+                    key: 'history',
+                    label: '历史订单',
+                    icon: 'TradeHistory',
+                    eyebrow: 'execution record',
+                    description: '查询历史订单、交易记录与执行明细。'
+                },
+                {
+                    key: 'attribution',
+                    label: '绩效归因',
+                    icon: 'Attribution',
+                    eyebrow: 'performance attribution',
+                    description: '拆解策略与个股层面的收益来源和贡献结构。'
+                }
             ]
         }
         const config = currentPageConfig.value as MonolithicPageConfig

@@ -40,8 +40,8 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens';
-    @import '@/styles/artdeco-patterns';
+    @use '@/styles/artdeco-tokens.scss' as *;
+    @use '@/styles/artdeco-patterns.scss' as *;
 
     .artdeco-trading-signals-controls {
         display: flex;
@@ -96,5 +96,12 @@
     .artdeco-trading-signals-controls__actions {
         display: flex;
         gap: var(--artdeco-spacing-2);
+    }
+
+    @media (width <= 48rem) {
+        .artdeco-trading-signals-controls__actions {
+            width: 100%;
+            flex-direction: column;
+        }
     }
 </style>

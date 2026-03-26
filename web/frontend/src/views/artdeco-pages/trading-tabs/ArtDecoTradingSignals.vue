@@ -18,7 +18,10 @@
                     <div class="artdeco-trading-signals__col artdeco-trading-signals__col--confidence">置信度</div>
                     <div class="artdeco-trading-signals__col artdeco-trading-signals__col--actions">操作</div>
                 </div>
-                <div class="artdeco-trading-signals__body">
+                <div v-if="signals.length === 0" class="artdeco-trading-signals__empty">
+                    暂无实时交易信号
+                </div>
+                <div v-else class="artdeco-trading-signals__body">
                     <div class="artdeco-trading-signals__row" v-for="signal in signals" :key="signal.id">
                         <div class="artdeco-trading-signals__col artdeco-trading-signals__col--select">
                             <input type="checkbox" v-model="signal.selected" />
@@ -104,18 +107,39 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens';
-    @import '@/styles/artdeco-patterns';
+    @use '@/styles/artdeco-tokens.scss' as *;
+    @use '@/styles/artdeco-patterns.scss' as *;
 
     .artdeco-trading-signals {
+        --artdeco-trading-signals-col-select: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
+        --artdeco-trading-signals-col-id: var(--artdeco-spacing-20);
+        --artdeco-trading-signals-col-time: calc(
+            var(--artdeco-spacing-24) + var(--artdeco-spacing-10) + var(--artdeco-spacing-3) + calc(var(--artdeco-spacing-1) / 2)
+        );
+        --artdeco-trading-signals-col-symbol: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
+        --artdeco-trading-signals-col-type: calc(
+            var(--artdeco-spacing-16) + var(--artdeco-spacing-1) + calc(var(--artdeco-spacing-1) / 2)
+        );
+        --artdeco-trading-signals-col-strength: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-5));
+        --artdeco-trading-signals-col-reason: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
+        --artdeco-trading-signals-table-width: calc(
+            var(--artdeco-spacing-32) * 8 + var(--artdeco-spacing-16) + var(--artdeco-spacing-3)
+        );
+        --artdeco-trading-signals-body-height: calc(var(--artdeco-spacing-20) * 5);
+        --artdeco-trading-signals-corner-size: var(--artdeco-spacing-4);
+        --artdeco-trading-signals-border-width: calc(var(--artdeco-spacing-1) / 2);
         position: relative;
         width: 100%;
 
         // Art Deco signature: stepped corners
-        @include artdeco-stepped-corners(8px);
+        @include artdeco-stepped-corners(var(--artdeco-spacing-2));
 
         // Geometric corner decorations
-        @include artdeco-geometric-corners($color: var(--artdeco-gold-primary), $size: 16px, $border-width: 2px);
+        @include artdeco-geometric-corners(
+            $color: var(--artdeco-gold-primary),
+            $size: var(--artdeco-trading-signals-corner-size),
+            $border-width: var(--artdeco-trading-signals-border-width)
+        );
 
         // Theatrical hover effect
         @include artdeco-hover-lift-glow;
@@ -128,7 +152,17 @@
 
     .artdeco-trading-signals__header {
         display: grid;
-        grid-template-columns: 60px 80px 150px 120px 70px 100px 80px 120px 120px 100px;
+        grid-template-columns:
+            var(--artdeco-trading-signals-col-select)
+            var(--artdeco-trading-signals-col-id)
+            var(--artdeco-trading-signals-col-time)
+            var(--artdeco-trading-signals-col-symbol)
+            var(--artdeco-trading-signals-col-type)
+            var(--artdeco-trading-signals-col-strength)
+            var(--artdeco-trading-signals-col-id)
+            var(--artdeco-trading-signals-col-reason)
+            var(--artdeco-trading-signals-col-reason)
+            var(--artdeco-trading-signals-col-strength);
         gap: var(--artdeco-spacing-2);
         padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
         background: var(--artdeco-bg-elevated);
@@ -139,24 +173,41 @@
         color: var(--artdeco-fg-muted);
         text-transform: uppercase;
         letter-spacing: var(--artdeco-tracking-wide);
-        min-width: 1100px;
+        min-width: var(--artdeco-trading-signals-table-width);
     }
 
     .artdeco-trading-signals__body {
-        max-height: 400px;
+        max-height: var(--artdeco-trading-signals-body-height);
         overflow-y: auto;
+    }
+
+    .artdeco-trading-signals__empty {
+        padding: var(--artdeco-spacing-6);
+        color: var(--artdeco-fg-muted);
+        font-size: var(--artdeco-text-sm);
+        text-align: center;
     }
 
     .artdeco-trading-signals__row {
         display: grid;
-        grid-template-columns: 60px 80px 150px 120px 70px 100px 80px 120px 120px 100px;
+        grid-template-columns:
+            var(--artdeco-trading-signals-col-select)
+            var(--artdeco-trading-signals-col-id)
+            var(--artdeco-trading-signals-col-time)
+            var(--artdeco-trading-signals-col-symbol)
+            var(--artdeco-trading-signals-col-type)
+            var(--artdeco-trading-signals-col-strength)
+            var(--artdeco-trading-signals-col-id)
+            var(--artdeco-trading-signals-col-reason)
+            var(--artdeco-trading-signals-col-reason)
+            var(--artdeco-trading-signals-col-strength);
         gap: var(--artdeco-spacing-2);
         padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
         border-bottom: 1px solid var(--artdeco-border-default);
         align-items: center;
         font-family: var(--artdeco-font-body);
         font-size: var(--artdeco-text-sm);
-        min-width: 1100px;
+        min-width: var(--artdeco-trading-signals-table-width);
         transition: all var(--artdeco-transition-base);
 
         &:hover {
@@ -186,7 +237,7 @@
 
     .artdeco-trading-signals__strength {
         display: flex;
-        gap: 2px;
+        gap: calc(var(--artdeco-spacing-1) / 2);
     }
 
     .artdeco-trading-signals__star {
@@ -201,7 +252,7 @@
     .artdeco-trading-signals__confidence-bar {
         position: relative;
         width: 100%;
-        height: 20px;
+        height: var(--artdeco-spacing-5);
         background: var(--artdeco-bg-elevated);
         border-radius: var(--artdeco-radius-none);
         overflow: hidden;
@@ -237,8 +288,8 @@
     // Corner decorations
     .artdeco-trading-signals__corner {
         position: absolute;
-        width: 16px;
-        height: 16px;
+        width: var(--artdeco-trading-signals-corner-size);
+        height: var(--artdeco-trading-signals-corner-size);
         border-color: var(--artdeco-gold-primary);
         border-style: solid;
         opacity: 40%;
@@ -247,14 +298,14 @@
     }
 
     .artdeco-trading-signals__corner--tl {
-        top: -1px;
-        left: -1px;
-        border-width: 2px 0 0 2px;
+        top: calc(var(--artdeco-spacing-px) * -1);
+        left: calc(var(--artdeco-spacing-px) * -1);
+        border-width: var(--artdeco-trading-signals-border-width) 0 0 var(--artdeco-trading-signals-border-width);
     }
 
     .artdeco-trading-signals__corner--br {
-        bottom: -1px;
-        right: -1px;
-        border-width: 0 2px 2px 0;
+        bottom: calc(var(--artdeco-spacing-px) * -1);
+        right: calc(var(--artdeco-spacing-px) * -1);
+        border-width: 0 var(--artdeco-trading-signals-border-width) var(--artdeco-trading-signals-border-width) 0;
     }
 </style>

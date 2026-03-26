@@ -415,7 +415,7 @@ location @rate_limited {
 
 #### Issue #6: Documentation Missing Pre-Deployment Checklist
 
-**File**: `docs/guides/history-mode-deployment-guide.md`  
+**File**: `docs/guides/frontend/history-mode-deployment-guide.md`  
 **Line**: 79-88  
 **Category**: Documentation  
 **Effort**: Trivial

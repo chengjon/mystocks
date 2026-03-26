@@ -586,7 +586,7 @@ http://localhost:8000/docs
 ## 📞 支持与联系
 
 **文档参考**:
-- 设计文档: `docs/guides/SIGNAL_MONITORING_METRICS_DESIGN.md`
+- 设计文档: `docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md`
 - 系统清单: `docs/reports/SIGNAL_MONITORING_SYSTEM_INVENTORY_20260108.md`
 
 **问题反馈**:

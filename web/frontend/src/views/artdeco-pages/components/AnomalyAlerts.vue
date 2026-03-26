@@ -31,7 +31,7 @@ defineProps({
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .alert-item {
     padding: calc(var(--artdeco-spacing-px) * 15);
@@ -62,5 +62,14 @@ defineProps({
 .alert-footer {
     display: flex;
     gap: calc(var(--artdeco-spacing-px) * 10);
+}
+
+@media (width <= 48rem) {
+    .alert-header,
+    .alert-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--artdeco-spacing-2);
+    }
 }
 </style>

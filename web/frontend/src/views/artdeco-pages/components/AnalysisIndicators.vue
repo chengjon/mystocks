@@ -55,7 +55,7 @@ defineEmits(['update:activeCategory', 'select'])
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .indicators-layout {
     display: grid;
@@ -103,6 +103,22 @@ defineEmits(['update:activeCategory', 'select'])
         display: flex;
         justify-content: space-between;
         align-items: center;
+    }
+}
+
+@media (width <= 48rem) {
+    .indicators-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .category-item,
+    .indicator-card .meta {
+        align-items: flex-start;
+    }
+
+    .indicator-card .meta {
+        flex-direction: column;
+        gap: var(--artdeco-spacing-2);
     }
 }
 </style>

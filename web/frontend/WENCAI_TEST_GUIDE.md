@@ -126,10 +126,10 @@ ps aux | grep vite
 ps aux | grep uvicorn
 
 # 查看前端日志
-tail -f /tmp/frontend.log
+tail -f /opt/claude/mystocks_spec/var/log/frontend.log
 
 # 查看后端日志
-tail -f /tmp/backend.log
+tail -f /opt/claude/mystocks_spec/var/log/backend.log
 ```
 
 ## 确认配置

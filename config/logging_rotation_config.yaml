@@ -2,9 +2,9 @@
 # 用于配置应用的日志轮转策略
 
 # 日志目录
-log_directory: /opt/claude/mystocks_spec/logs/app
-archive_directory: /opt/claude/mystocks_spec/logs/app/old
-final_archive_directory: /opt/claude/mystocks_spec/logs/archive
+log_directory: /opt/claude/mystocks_spec/var/log/app
+archive_directory: /opt/claude/mystocks_spec/var/log/app/old
+final_archive_directory: /opt/claude/mystocks_spec/archive/logs/app
 
 # 轮转策略
 rotation:

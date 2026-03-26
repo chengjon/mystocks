@@ -1,5 +1,5 @@
-@import '@/styles/artdeco-tokens';
-@import '@/styles/artdeco-grid';
+@use '@/styles/artdeco-tokens.scss' as *;
+@use '@/styles/artdeco-grid.scss' as *;
 
 .artdeco-page-template {
   width: 100%;

@@ -325,7 +325,7 @@ if (apiResponse?.success && apiResponse.data) {
 **关键文档**:
 - 本报告: P1任务完成报告
 - 最终验收报告: `openspec/changes/implement-web-frontend-v2-navigation/FINAL_ACCEPTANCE_REPORT.md`
-- 路由优化报告: `docs/reviews/frontend_routing_optimization_report.md`
+- 路由优化报告: `docs/reports/reviews/frontend_routing_optimization_report.md`
 
 **项目团队**: Claude Code (Main CLI)
 

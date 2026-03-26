@@ -107,8 +107,8 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens';
-    @import '@/styles/artdeco-patterns';
+    @use '@/styles/artdeco-tokens.scss' as *;
+    @use '@/styles/artdeco-patterns.scss' as *;
 
     .attribution-grid {
         display: grid;
@@ -263,6 +263,21 @@
                     .reason-text {
                         font-size: var(--artdeco-text-sm);
                         color: var(--artdeco-fg-muted);
+                    }
+                }
+            }
+        }
+    }
+
+    @media (width <= calc(var(--artdeco-spacing-px) * 700)) {
+        .key-trades-card {
+            .key-trades-list {
+                .trade-analysis-item {
+                    .trade-header,
+                    .trade-details {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: var(--artdeco-spacing-2);
                     }
                 }
             }

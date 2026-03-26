@@ -74,30 +74,30 @@ defineProps({
 .fund-overview {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    margin-bottom: 24px;
+    gap: var(--artdeco-spacing-5);
+    margin-bottom: var(--artdeco-spacing-6);
 }
 
 .fund-chart-card {
-    margin-bottom: 24px;
+    margin-bottom: var(--artdeco-spacing-6);
 }
 
 .chart-placeholder {
-    height: 200px;
+    height: calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-20));
     display: flex;
     flex-direction: column;
 }
 
 .chart-title {
-    font-size: 14px;
+    font-size: var(--artdeco-text-sm);
     color: var(--artdeco-fg-muted);
-    margin-bottom: 10px;
+    margin-bottom: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
 }
 
 .chart-area {
     flex: 1;
     background: color-mix(in srgb, var(--artdeco-bg-global) 90%, transparent);
-    border-radius: 4px;
+    border-radius: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
     overflow: hidden;
 }
 </style>

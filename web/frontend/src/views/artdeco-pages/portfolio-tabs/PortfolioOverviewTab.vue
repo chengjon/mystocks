@@ -1,15 +1,21 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
-import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi';
-import { apiClient } from '@/api/apiClient';
+import { computed, onMounted, ref } from 'vue'
+import { ArtDecoButton, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
+import { apiClient } from '@/api/apiClient'
 import {
   extractTradePositionsPayload,
   toPortfolioOverviewData,
   type PortfolioOverviewData
-} from './portfolioOverviewData';
+} from './portfolioOverviewData'
 
-const { loading, lastRequestId, exec } = useArtDecoApi();
-const portfolio = ref<PortfolioOverviewData>(toPortfolioOverviewData(null));
+const { loading, lastRequestId, exec } = useArtDecoApi()
+const portfolio = ref<PortfolioOverviewData>(toPortfolioOverviewData(null))
+const pageStatusText = computed(() => {
+  if (loading.value) return '同步中'
+  return (portfolio.value?.today_pnl ?? 0) >= 0 ? '组合偏强' : '组合承压'
+})
+const pageStatusType = computed(() => ((portfolio.value?.today_pnl ?? 0) >= 0 ? 'success' : 'warning'))
 
 const performanceAttribution = computed(() => {
   const positions = portfolio.value?.positions ?? [];
@@ -30,8 +36,8 @@ const performanceAttribution = computed(() => {
       };
     })
     .sort((a, b) => Math.abs(b.pnlContribution) - Math.abs(a.pnlContribution))
-    .slice(0, 8);
-});
+    .slice(0, 8)
+})
 
 const autoRebalanceSuggestions = computed(() => {
   const positions = portfolio.value?.positions ?? [];
@@ -63,28 +69,68 @@ const autoRebalanceSuggestions = computed(() => {
     })
     .filter((item) => Math.abs(item.gap) >= 3)
     .sort((a, b) => Math.abs(b.gap) - Math.abs(a.gap))
-    .slice(0, 6);
-});
+    .slice(0, 6)
+})
+
+const positionCount = computed(() => portfolio.value?.positions?.length || 0)
+const totalAssetsLabel = computed(() =>
+  portfolio.value?.total_assets?.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) || '0.00'
+)
+const todayPnlLabel = computed(() =>
+  `${(portfolio.value?.today_pnl ?? 0) >= 0 ? '+' : ''}${portfolio.value?.today_pnl?.toLocaleString() || 0}`
+)
 
 const fetchPortfolio = async () => {
   const responseData = await exec(() => apiClient.get('/v1/trade/positions'), {
     silent: true
-  });
+  })
 
-  portfolio.value = toPortfolioOverviewData(extractTradePositionsPayload(responseData));
-};
+  portfolio.value = toPortfolioOverviewData(extractTradePositionsPayload(responseData))
+}
 
 onMounted(() => {
-  fetchPortfolio();
-});
+  void fetchPortfolio()
+})
 </script>
 
 <template>
   <div class="portfolio-overview-tab page-enter">
-    <div class="artdeco-header-bar">
-      <h2 class="section-title">Portfolio Assets</h2>
-      <div class="trace-info" v-if="lastRequestId">REQ: {{ lastRequestId }}</div>
-    </div>
+    <section class="hero-shell artdeco-card-shell">
+      <div class="hero-rail">
+        <div class="hero-copy">
+          <span class="hero-eyebrow">portfolio assets desk</span>
+          <div class="hero-meta">
+            <span v-if="lastRequestId">REQ: {{ lastRequestId }}</span>
+            <span>POSITIONS: {{ positionCount }}</span>
+            <span>REBALANCE: {{ autoRebalanceSuggestions.length }}</span>
+          </div>
+        </div>
+      </div>
+
+      <ArtDecoHeader
+        title="组合资产工作台"
+        subtitle="统一查看资产规模、持仓分布、绩效归因和再平衡建议"
+        :show-status="true"
+        :status-text="pageStatusText"
+        :status-type="pageStatusType"
+      >
+        <template #actions>
+          <ArtDecoButton variant="outline" size="sm" :loading="loading" @click="fetchPortfolio">
+            <template #icon>
+              <ArtDecoIcon name="refresh" />
+            </template>
+            刷新资产
+          </ArtDecoButton>
+        </template>
+      </ArtDecoHeader>
+    </section>
+
+    <section class="stats-strip artdeco-card-shell">
+      <ArtDecoStatCard label="总资产" :value="totalAssetsLabel" variant="gold" />
+      <ArtDecoStatCard label="今日盈亏" :value="todayPnlLabel" :variant="(portfolio?.today_pnl ?? 0) >= 0 ? 'rise' : 'fall'" />
+      <ArtDecoStatCard label="持仓数量" :value="positionCount" variant="gold" />
+      <ArtDecoStatCard label="再平衡建议" :value="autoRebalanceSuggestions.length" variant="gold" />
+    </section>
 
     <!-- 资产大卡片 -->
     <div class="assets-hero artdeco-card" v-loading="loading">
@@ -183,32 +229,61 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .portfolio-overview-tab {
   padding: var(--artdeco-spacing-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-6);
 }
 
-.artdeco-header-bar {
+.hero-shell,
+.stats-strip {
+  width: 100%;
+}
+
+.hero-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-5);
+}
+
+.hero-rail {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--artdeco-spacing-8);
-  border-bottom: 2px solid var(--artdeco-gold-primary);
-  padding-bottom: var(--artdeco-spacing-2);
+  align-items: flex-start;
+  gap: var(--artdeco-spacing-4);
+  flex-wrap: wrap;
+}
 
-  .section-title {
-    margin: 0;
-    font-size: var(--artdeco-text-2xl);
-    color: var(--artdeco-gold-primary);
-    text-transform: uppercase;
-    letter-spacing: var(--artdeco-tracking-wide);
-  }
-  .trace-info {
-    font-family: var(--artdeco-font-mono);
-    font-size: var(--artdeco-text-xs);
-    color: var(--artdeco-fg-muted);
-  }
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-2);
+}
+
+.hero-eyebrow {
+  font-family: var(--artdeco-font-mono);
+  font-size: var(--artdeco-text-xs);
+  color: var(--artdeco-gold-dim);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-wide);
+}
+
+.hero-meta {
+  display: flex;
+  gap: var(--artdeco-spacing-3);
+  flex-wrap: wrap;
+  font-family: var(--artdeco-font-mono);
+  font-size: var(--artdeco-text-xs);
+  color: var(--artdeco-fg-muted);
+}
+
+.stats-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--artdeco-spacing-4);
 }
 
 .assets-hero {
@@ -217,7 +292,7 @@ onMounted(() => {
   margin-bottom: var(--artdeco-spacing-10);
   padding: var(--artdeco-spacing-8);
 
-  @include artdeco-stepped-corners(20px);
+  @include artdeco-stepped-corners(var(--artdeco-spacing-5));
 
   border: 1px solid var(--artdeco-gold-primary);
 
@@ -236,7 +311,7 @@ onMounted(() => {
     font-size: var(--artdeco-text-sm);
     letter-spacing: 0.1em;
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: var(--artdeco-spacing-2);
   }
   .value {
     font-family: var(--artdeco-font-mono);
@@ -258,14 +333,17 @@ onMounted(() => {
 
     .pct {
       font-size: var(--artdeco-text-lg);
-      margin-left: 10px;
+      margin-left: calc(var(--artdeco-spacing-5) / 2);
     }
   }
 }
 
 .positions-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-6)), 1fr)
+  );
   gap: var(--artdeco-spacing-6);
 }
 
@@ -296,10 +374,10 @@ onMounted(() => {
     justify-content: space-between;
     .data-group {
       label {
-        font-size: 10px;
+        font-size: calc(var(--artdeco-spacing-5) / 2);
         color: var(--artdeco-fg-muted);
         text-transform: uppercase;
-        margin-bottom: 4px;
+        margin-bottom: var(--artdeco-spacing-1);
         display: block;
       }
       .val {
@@ -324,8 +402,8 @@ onMounted(() => {
   margin-bottom: var(--artdeco-spacing-6);
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  border-left: 4px solid var(--artdeco-gold-primary);
-  padding-left: 12px;
+  border-left: var(--artdeco-spacing-1) solid var(--artdeco-gold-primary);
+  padding-left: var(--artdeco-spacing-3);
 }
 
 .attribution-section,
@@ -335,7 +413,10 @@ onMounted(() => {
 
 .attribution-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-12) + var(--artdeco-spacing-3)), 1fr)
+  );
   gap: var(--artdeco-spacing-4);
 }
 
@@ -400,7 +481,7 @@ onMounted(() => {
   .rebalance-main {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: calc(var(--artdeco-spacing-1) / 2);
 
     .name {
       color: var(--artdeco-gold-light);
@@ -431,6 +512,22 @@ onMounted(() => {
     &.down {
       color: var(--artdeco-down);
     }
+  }
+}
+
+@media (width <= 75rem) {
+  .stats-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width <= 48rem) {
+  .stats-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-meta {
+    width: 100%;
   }
 }
 </style>

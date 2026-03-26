@@ -12,7 +12,7 @@
     python scripts/runtime/start_metrics_server.py
 
     # 后台运行
-    nohup python scripts/runtime/start_metrics_server.py > logs/metrics_server.log 2>&1 &
+    nohup python scripts/runtime/start_metrics_server.py > var/log/metrics_server.log 2>&1 &
 
     # 使用PM2管理（推荐）
     pm2 start scripts/runtime/start_metrics_server.py --name mystocks-metrics
@@ -36,6 +36,8 @@ from pathlib import Path
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
+LOG_DIR = project_root / "var" / "log"
+LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 from src.monitoring.data_source_metrics import (
     DataSourceMetricsExporter,
@@ -51,7 +53,7 @@ def setup_logging():
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
             logging.StreamHandler(sys.stdout),
-            logging.FileHandler('logs/metrics_server.log')
+            logging.FileHandler(LOG_DIR / 'metrics_server.log')
         ]
     )
 

@@ -280,7 +280,7 @@ cat web/frontend/scripts/PRE_DEPLOYMENT_CHECKLIST.md
    - 通过/阻塞标准
 
 ### 文档更新
-1. **部署指南** (`docs/guides/history-mode-deployment-guide.md`)
+1. **部署指南** (`docs/guides/frontend/history-mode-deployment-guide.md`)
    - 阶段式实施指南
    - 性能优化配置说明
    - 监控集成示例

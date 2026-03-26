@@ -73,7 +73,7 @@ const handleClick = (event: MouseEvent) => {
   border-radius: 0;
   background: var(--artdeco-bg-card);
   border: 1px solid var(--artdeco-border-default);
-  padding: var(--artdeco-spacing-3);  // 紧凑：12px（原16px）
+  padding: var(--artdeco-spacing-3);
   position: relative;
   transition: border-color 0.2s ease;
 }
@@ -84,7 +84,7 @@ const handleClick = (event: MouseEvent) => {
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
+  height: calc(var(--artdeco-spacing-1) / 2);
   background: linear-gradient(
     90deg,
     transparent 0%,
@@ -96,9 +96,9 @@ const handleClick = (event: MouseEvent) => {
 // 悬停效果：ArtDeco V3.0 - 金色光晕和金色边框
 .artdeco-card-compact--hoverable:hover {
   border-color: var(--artdeco-gold-primary);
-  box-shadow: var(--artdeco-shadow-md), var(--artdeco-glow-subtle);  // 金色光晕
+  box-shadow: var(--artdeco-shadow-md), var(--artdeco-glow-subtle);
   cursor: pointer;
-  transform: translateY(-4px);  // 微抬升效果
+  transform: translateY(calc(var(--artdeco-spacing-1) * -1));
   transition: all var(--artdeco-transition-base) var(--artdeco-ease-out);
 }
 
@@ -107,12 +107,12 @@ const handleClick = (event: MouseEvent) => {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    var(--artdeco-gold-light) 40%,  // 浅金色高亮
+    var(--artdeco-gold-light) 40%,
     var(--artdeco-gold-primary) 50%,
     var(--artdeco-gold-light) 60%,
     transparent 100%
   );
-  height: 3px;  // 更粗的强调线
+  height: calc(var(--artdeco-spacing-px) * 3);
 }
 
 .artdeco-card-compact--clickable {
@@ -121,13 +121,13 @@ const handleClick = (event: MouseEvent) => {
 
 // Header 样式
 .artdeco-card-compact__header {
-  margin-bottom: var(--artdeco-spacing-2);  // 紧凑：8px
+  margin-bottom: var(--artdeco-spacing-2);
   padding-bottom: var(--artdeco-spacing-2);
   border-bottom: 1px solid var(--artdeco-border-default);
 
   h3 {
     font-family: var(--artdeco-font-heading);
-    font-size: var(--artdeco-text-base);  // 紧凑：16px（原20px）
+    font-size: var(--artdeco-text-base);
     font-weight: 600;
     color: var(--artdeco-gold-primary);
     text-transform: uppercase;
@@ -136,16 +136,16 @@ const handleClick = (event: MouseEvent) => {
   }
 
   .subtitle {
-    font-size: var(--artdeco-text-xs);  // 12px
+    font-size: var(--artdeco-text-xs);
     color: var(--artdeco-fg-muted);
-    margin: 4px 0 0 0;
+    margin: var(--artdeco-spacing-1) 0 0 0;
   }
 }
 
 // Body 样式
 .artdeco-card-compact__body {
   font-family: var(--artdeco-font-body);
-  font-size: var(--artdeco-text-sm);  // 紧凑：14px
+  font-size: var(--artdeco-text-sm);
   color: var(--artdeco-fg-primary);
   line-height: 1.5;
 }
@@ -162,10 +162,10 @@ const handleClick = (event: MouseEvent) => {
 // 变体：统计卡片
 .artdeco-card-compact--stat {
   text-align: center;
-  padding: var(--artdeco-spacing-4);  // 统计卡片稍大一点
+  padding: var(--artdeco-spacing-4);
 
   .artdeco-card-compact__body {
-    font-size: var(--artdeco-text-2xl);  // 24px 大数字
+    font-size: var(--artdeco-text-2xl);
     font-weight: 600;
     color: var(--artdeco-gold-primary);
   }
@@ -173,6 +173,6 @@ const handleClick = (event: MouseEvent) => {
 
 // 变体：图表卡片
 .artdeco-card-compact--chart {
-  padding: var(--artdeco-spacing-2);  // 图表卡片最紧凑：8px
+  padding: var(--artdeco-spacing-2);
 }
 </style>

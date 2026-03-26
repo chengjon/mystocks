@@ -213,15 +213,15 @@
       align-items: center;
       justify-content: center;
       z-index: 2000;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(var(--artdeco-spacing-1));
     }
 
     .artdeco-trade-form {
       background: var(--artdeco-bg-card);
       border: 1px solid var(--artdeco-gold-opacity-20);
       padding: var(--artdeco-spacing-5);
-      min-width: 500px;
-      max-width: 600px;
+      min-width: calc(var(--artdeco-spacing-20) * 6 + var(--artdeco-spacing-5));
+      max-width: calc(var(--artdeco-spacing-20) * 7 + var(--artdeco-spacing-10));
       position: relative;
       overflow: hidden;
       box-shadow: var(--artdeco-glow-medium);
@@ -231,24 +231,24 @@
     .artdeco-corner-tl,
     .artdeco-corner-br {
       position: absolute;
-      width: 16px;
-      height: 16px;
+      width: var(--artdeco-spacing-4);
+      height: var(--artdeco-spacing-4);
       pointer-events: none;
       opacity: 40%;
     }
 
     .artdeco-corner-tl {
-      top: 8px;
-      left: 8px;
-      border-top: 2px solid var(--artdeco-accent-gold);
-      border-left: 2px solid var(--artdeco-accent-gold);
+      top: var(--artdeco-spacing-2);
+      left: var(--artdeco-spacing-2);
+      border-top: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-accent-gold);
+      border-left: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-accent-gold);
     }
 
     .artdeco-corner-br {
-      bottom: 8px;
-      right: 8px;
-      border-bottom: 2px solid var(--artdeco-accent-gold);
-      border-right: 2px solid var(--artdeco-accent-gold);
+      bottom: var(--artdeco-spacing-2);
+      right: var(--artdeco-spacing-2);
+      border-bottom: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-accent-gold);
+      border-right: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-accent-gold);
     }
 
     /* Form header */
@@ -263,7 +263,7 @@
 
     .form-title {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-md); // 18px - Compact v3.1
+      font-size: var(--artdeco-font-size-md);
       font-weight: 600;
       color: var(--artdeco-accent-gold);
       text-transform: uppercase;
@@ -275,11 +275,11 @@
       background: transparent;
       border: none;
       color: var(--artdeco-fg-muted);
-      font-size: var(--artdeco-font-size-lg); // 24px - Compact v3.1
+      font-size: var(--artdeco-font-size-lg);
       cursor: pointer;
       padding: 0;
-      width: 32px;
-      height: 32px;
+      width: var(--artdeco-spacing-8);
+      height: var(--artdeco-spacing-8);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -306,7 +306,7 @@
 
     .artdeco-label {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base);
       font-weight: 600;
       color: var(--artdeco-accent-gold);
       text-transform: uppercase;
@@ -319,7 +319,7 @@
       border: 1px solid var(--artdeco-gold-opacity-20);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base);
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
       transition: all var(--artdeco-transition-base);
     }
@@ -339,12 +339,12 @@
 
     .artdeco-textarea {
       resize: vertical;
-      min-height: 60px;
+      min-height: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
     }
 
     .trade-amount-display {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-lg); // 24px - Compact v3.1
+      font-size: var(--artdeco-font-size-lg);
       font-weight: 700;
       padding: var(--artdeco-spacing-3);
       background: var(--artdeco-bg-primary);
@@ -366,7 +366,7 @@
 
     .max-quantity-display {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base);
       color: var(--artdeco-fg-muted);
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
       background: var(--artdeco-bg-primary);
@@ -389,7 +389,7 @@
       background: var(--artdeco-bg-card);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.1em;
@@ -406,7 +406,7 @@
     .artdeco-btn:not(:disabled):hover {
       border-color: var(--artdeco-accent-gold);
       box-shadow: var(--artdeco-glow-subtle);
-      transform: translateY(-1px);
+      transform: translateY(calc(var(--artdeco-spacing-px) * -1));
     }
 
     .artdeco-btn:disabled {
@@ -430,9 +430,9 @@
 
     /* Spinner */
     .artdeco-spinner {
-      width: 16px;
-      height: 16px;
-      border: 2px solid var(--artdeco-gold-opacity-20);
+      width: var(--artdeco-spacing-4);
+      height: var(--artdeco-spacing-4);
+      border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-opacity-20);
       border-top-color: var(--artdeco-accent-gold);
       border-radius: 50%;
       animation: spin 0.6s linear infinite;

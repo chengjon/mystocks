@@ -99,7 +99,7 @@
     @import '@/styles/artdeco-tokens';
 
     .artdeco-roman-numeral {
-        font-family: var(--artdeco-font-display); // Marcellus - classic Roman
+        font-family: var(--artdeco-font-display); // Display serif from the active ArtDeco token stack
         color: var(--artdeco-accent-gold);
         font-weight: 700;
         text-transform: uppercase;

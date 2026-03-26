@@ -159,12 +159,12 @@ defineProps<{
 }
 
 .strategy-item-card {
-  @include artdeco-stepped-corners($size: 12px);
+  @include artdeco-stepped-corners($size: var(--artdeco-spacing-3));
 
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #141414;
+  background: var(--artdeco-bg-card);
   border: 1px solid var(--artdeco-border-default);
 
   &:hover {
@@ -175,7 +175,7 @@ defineProps<{
 .strategy-name {
   margin: 0;
   color: var(--artdeco-gold-primary);
-  font-family: Marcellus, serif;
+  font-family: var(--font-display);
   font-size: var(--artdeco-text-lg);
   letter-spacing: normal;
   text-transform: none; // Reset uppercase from global h3
@@ -192,30 +192,30 @@ defineProps<{
   flex-grow: 1;
   margin: 0;
   color: var(--artdeco-fg-muted);
-  font-family: 'Josefin Sans', sans-serif;
+  font-family: var(--font-body);
   font-size: var(--artdeco-text-sm);
   line-height: 1.5;
 }
 
 .mini-code-block {
   width: 100%;
-  height: 120px;
+  height: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
   padding: var(--artdeco-spacing-2);
   outline: none;
-  background-color: #050505;
+  background-color: var(--artdeco-bg-global);
   color: var(--artdeco-gold-dim);
-  border: 1px solid rgb(212 175 55 / 10%);
+  border: 1px solid var(--artdeco-gold-opacity-10);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--artdeco-text-xs);
   line-height: 1.3;
   resize: none;
 }
 
 .code-block {
   width: 100%;
-  height: 400px;
-  background-color: #050505;
-  color: #D4AF37;
+  height: calc(var(--artdeco-spacing-32) * 3 + var(--artdeco-spacing-4));
+  background-color: var(--artdeco-bg-global);
+  color: var(--artdeco-gold-primary);
   border: 1px solid var(--artdeco-border-default);
   padding: var(--artdeco-spacing-4);
   font-family: var(--font-mono);
@@ -225,4 +225,3 @@ defineProps<{
   outline: none;
 }
 </style>
-

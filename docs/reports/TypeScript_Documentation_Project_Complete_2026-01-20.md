@@ -30,7 +30,7 @@
 
 ### 1. Typescript_QUICKSTART.md (快速开始)
 
-**位置**: `docs/guides/Typescript_QUICKSTART.md`
+**位置**: `docs/guides/typescript/Typescript_QUICKSTART.md`
 
 **内容**:
 - 5分钟快速上手
@@ -44,7 +44,7 @@
 
 ### 2. Typescript_BEST_PRACTICES.md (最佳实践)
 
-**位置**: `docs/guides/Typescript_BEST_PRACTICES.md`
+**位置**: `docs/guides/typescript/Typescript_BEST_PRACTICES.md`
 
 **内容**:
 - 核心原则(最小修改、从源头修复等)
@@ -61,7 +61,7 @@
 
 ### 3. Typescript_TROUBLESHOOTING.md (故障排除)
 
-**位置**: `docs/guides/Typescript_TROUBLESHOOTING.md`
+**位置**: `docs/guides/typescript/Typescript_TROUBLESHOOTING.md`
 
 **内容**:
 - 快速诊断流程
@@ -82,7 +82,7 @@
 
 ### 4. Typescript_CONFIG_REFERENCE.md (配置参考)
 
-**位置**: `docs/guides/Typescript_CONFIG_REFERENCE.md`
+**位置**: `docs/guides/typescript/Typescript_CONFIG_REFERENCE.md`
 
 **内容**:
 - tsconfig.json完整详解
@@ -104,7 +104,7 @@
 
 ### 5. Typescript_USER_GUIDE.md (用户手册)
 
-**位置**: `docs/guides/Typescript_USER_GUIDE.md`
+**位置**: `docs/guides/typescript/Typescript_USER_GUIDE.md`
 
 **内容**:
 - 30分钟快速入门
@@ -130,7 +130,7 @@
 
 ### 6. Typescript_TRAINING_BEGINNER.md (新手培训)
 
-**位置**: `docs/guides/Typescript_TRAINING_BEGINNER.md`
+**位置**: `docs/guides/typescript/Typescript_TRAINING_BEGINNER.md`
 
 **内容**:
 - TypeScript基础(30分钟)
@@ -144,7 +144,7 @@
 
 ### 7. Typescript_TRAINING_ADVANCED.md (高级培训)
 
-**位置**: `docs/guides/Typescript_TRAINING_ADVANCED.md`
+**位置**: `docs/guides/typescript/Typescript_TRAINING_ADVANCED.md`
 
 **内容**:
 - 高级类型(条件类型、映射类型、模板字面量类型)
@@ -159,7 +159,7 @@
 
 ### 8. Typescript_API_REFERENCE.md (API参考)
 
-**位置**: `docs/guides/Typescript_API_REFERENCE.md`
+**位置**: `docs/guides/typescript/Typescript_API_REFERENCE.md`
 
 **内容**:
 - TypeScript编译器API

@@ -31,8 +31,8 @@
 
 **Files:**
 - Modify: `docs/plans/2026-03-13-mongodb-multicli-coordination-design.md`
-- Modify: `docs/guides/MAESTRO_SUMMARY.md`
-- Modify: `docs/guides/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md`（补充过渡说明）
+- Modify: `docs/guides/multi-cli-tasks/MAESTRO_SUMMARY.md`
+- Modify: `docs/guides/multi-cli-tasks/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md`（补充过渡说明）
 - Modify: `TASK.md`（记录 cutover 决策）
 
 **Step 1: 固化架构原则**
@@ -236,9 +236,9 @@
 **Status:** `Completed`
 
 **Files:**
-- Create: `docs/guides/MONGO_MULTICLI_COORDINATION_GUIDE.md`
-- Modify: `docs/guides/MAESTRO_SUMMARY.md`（补 Mongo 期边界）
-- Modify: `docs/guides/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md`（补 cutover）
+- Create: `docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md`
+- Modify: `docs/guides/multi-cli-tasks/MAESTRO_SUMMARY.md`（补 Mongo 期边界）
+- Modify: `docs/guides/multi-cli-tasks/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md`（补 cutover）
 
 **Step 1: 编写操作手册**
 

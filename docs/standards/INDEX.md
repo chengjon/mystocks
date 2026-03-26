@@ -1,50 +1,125 @@
-# Code Quality
+# Standards
 
-**最后更新**: 2026-01-10 22:15:42
+**最后更新**: 2026-03-25 02:04:55
 
-**文档数量**: 14
+**文档数量**: 39
 
 
 ---
 
-- [backend_code_quality_final_summary](code_quality/backend_code_quality_final_summary.md)
-  - *Backend Code Quality改进 - 最终执行总结*
+- [00-DESIGN_OVERVIEW](00-DESIGN_OVERVIEW.md)
+  - *MyStocks 设计总览*
 
-- [backend_code_quality_phase_summary](code_quality/backend_code_quality_phase_summary.md)
-  - *Backend Code Quality改进 - Phase 1-3 执行总结*
+- [API_FILE_TESTING_STANDARDS](API_FILE_TESTING_STANDARDS.md)
+  - *API File-Level Testing Standards*
 
-- [coverage_fix_report](code_quality/coverage_fix_report.md)
-  - *测试覆盖率配置修复完成报告*
+- [API_RESPONSE_STANDARDIZATION](API_RESPONSE_STANDARDIZATION.md)
+  - *API 响应格式标准化规范*
 
-- [phase2_execution_plan](code_quality/phase2_execution_plan.md)
-  - *Phase 2: 测试提升 - 执行计划*
+- [CODE_SIZE_OPTIMIZATION_SAVED_20251125](CODE_SIZE_OPTIMIZATION_SAVED_20251125.md)
+  - *MyStocks项目代码文件长度优化规范*
 
-- [phase2_task2.1.1_progress_report](code_quality/phase2_task2.1.1_progress_report.md)
-  - *Phase 2.1.1: 修复TDengineDataAccess API不匹配 - 执行进展报告*
+- [CORE_CODING_PRINCIPLES](CORE_CODING_PRINCIPLES.md)
+  - *Core Coding Principles for File Size Control (< 1000 Lines)*
 
-- [phase2_task2.1.1_summary](code_quality/phase2_task2.1.1_summary.md)
-  - *Phase 2.1.1: TDengineDataAccess API修复 - 总结报告*
+- [DIRECTORY_AND_FILE_ORGANIZATION_RULES](DIRECTORY_AND_FILE_ORGANIZATION_RULES.md)
+  - *目录与文件整理通用规则*
 
-- [phase3_completion_report](code_quality/phase3_completion_report.md)
-  - *Phase 3: 结构优化 - 完成报告*
+- [HARDCODING_GOVERNANCE_TIERING_GUIDE](security/HARDCODING_GOVERNANCE_TIERING_GUIDE.md)
+  - *硬编码治理分级指南（通用版）*
 
-- [phase3_final_completion_report](code_quality/phase3_final_completion_report.md)
-  - *Phase 3: 结构优化 - 最终完成报告*
+- [IMPORT_STYLE_GUIDELINES](IMPORT_STYLE_GUIDELINES.md)
+  - *导入规范指南 (Import Style Guidelines)*
 
-- [phase3_refactored_plan](code_quality/phase3_refactored_plan.md)
-  - *Phase 3: 结构优化 - 修订计划*
+- [LOCAL_ENV_SETUP](LOCAL_ENV_SETUP.md)
+  - *本地开发环境配置指南（.env 设置）*
 
-- [phase3_task3.1_report](code_quality/phase3_task3.1_report.md)
-  - *Task 3.1: 拆分financial_adapter.py - 执行报告*
+- [MODULE_REGISTRY](MODULE_REGISTRY.md)
+  - *MyStocks 项目模块清单*
 
-- [phase3_task3.2_3.3_report](code_quality/phase3_task3.2_3.3_report.md)
-  - *Task 3.2 & 3.3 执行报告*
+- [NEXT_STEPS_SUMMARY](NEXT_STEPS_SUMMARY.md)
+  - *MyStocks 项目 - 下一步任务总结*
 
-- [ruff_fix_report](code_quality/ruff_fix_report.md)
-  - *Ruff问题修复完成报告*
+- [PHASE0_CREDENTIAL_ROTATION_GUIDE](PHASE0_CREDENTIAL_ROTATION_GUIDE.md)
+  - *PHASE0 凭据轮换指南（模板）*
 
-- [test_coverage_investigation](code_quality/test_coverage_investigation.md)
-  - *测试覆盖率下降调查报告*
+- [PROJECT_MODULES](PROJECT_MODULES.md)
+  - *MyStocks 项目模块清单*
 
-- [test_status_report](code_quality/test_status_report.md)
-  - *测试状态评估报告*
+- [PYLINT_BUGS_REPORT](PYLINT_BUGS_REPORT.md)
+  - *Pylint 代码质量问题 BUGer 上报*
+
+- [PYLINT_FIX_SUMMARY](PYLINT_FIX_SUMMARY.md)
+  - *Pylint 代码质量修复总结*
+
+- [RESOURCE_LEAK_AUDIT_REPORT](RESOURCE_LEAK_AUDIT_REPORT.md)
+  - *💧 资源泄漏综合审计报告*
+
+- [SECURE_CODING_QUICK_REFERENCE](security/SECURE_CODING_QUICK_REFERENCE.md)
+  - *Secure Coding Quick Reference*
+
+- [SECURITY_AUDIT_REPORT_2025-12-23](SECURITY_AUDIT_REPORT_2025-12-23.md)
+  - *🔒 MyStocks 项目安全审计报告*
+
+- [SECURITY_AUDIT_REPORT_20251130](SECURITY_AUDIT_REPORT_20251130.md)
+  - *Security Audit Report - MyStocks Project*
+
+- [SECURITY_BEST_PRACTICES](security/SECURITY_BEST_PRACTICES.md)
+  - *MyStocks 项目安全最佳实践指南*
+
+- [SECURITY_CI_CD_INTEGRATION](security/SECURITY_CI_CD_INTEGRATION.md)
+  - *MyStocks 安全CI/CD集成指南*
+
+- [SECURITY_CODING_STANDARDS](security/SECURITY_CODING_STANDARDS.md)
+  - *MyStocks 安全编码标准*
+
+- [SECURITY_FOLLOWUP_PLAN_20251130](SECURITY_FOLLOWUP_PLAN_20251130.md)
+  - *Security Fix Follow-up Implementation Plan*
+
+- [SECURITY_QUICK_REFERENCE](SECURITY_QUICK_REFERENCE.md)
+  - *Security Quick Reference Guide*
+
+- [SECURITY_REMEDIATION_GUIDE](SECURITY_REMEDIATION_GUIDE.md)
+  - *🔒 安全修复后续行动指南*
+
+- [SECURITY_TESTING_GUIDELINES](security/SECURITY_TESTING_GUIDELINES.md)
+  - *MyStocks 项目安全测试指南*
+
+- [TEST_COVERAGE_EXPANSION_PLAN](TEST_COVERAGE_EXPANSION_PLAN.md)
+  - *测试覆盖率扩展计划 (4-6小时目标: 80%)*
+
+- [TEST_COVERAGE_EXPANSION_PROGRESS](TEST_COVERAGE_EXPANSION_PROGRESS.md)
+  - *测试覆盖率扩展进度报告*
+
+- [UI_DESIGN_SYSTEM](UI_DESIGN_SYSTEM.md)
+  - *MyStocks UI 设计系统总索引*
+
+- [WEB_PAGE_STRUCTURE_GUIDE](WEB_PAGE_STRUCTURE_GUIDE.md)
+  - *MyStocks Web端页面结构详细文档*
+
+- [WEB_USABILITY_STANDARDS](WEB_USABILITY_STANDARDS.md)
+  - *MyStocks Web端"完全可用"衡量标准和测试方案*
+
+- [color-system](01-DESIGN_SYSTEM/color-system.md)
+  - *颜色系统*
+
+- [technical-debt-governance-charter-v1](technical-debt-governance-charter-v1.md)
+  - *技术债治理章程 v1（Technical Debt Governance Charter v1）*
+
+- [typography](01-DESIGN_SYSTEM/typography.md)
+  - *字体系统*
+
+- [代码修改规则](代码修改规则.md)
+  - *AI 代码修改规则与最佳实践*
+
+- [代码修改规则-new](代码修改规则-new.md)
+  - *代码修改规则-new*
+
+- [代码修改规则-合并](代码修改规则-合并.md)
+  - *AI 代码修改规则与最佳实践（通用版）*
+
+- [项目开发规范与指导文档](项目开发规范与指导文档.md)
+  - *项目开发规范与指导文档*
+
+- [项目数据工作流程](项目数据工作流程.md)
+  - *项目数据工作流程*

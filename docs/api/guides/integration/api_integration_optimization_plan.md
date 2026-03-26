@@ -399,8 +399,8 @@ npm run dev
 - [API集成指南](web/backend/docs/API_INTEGRATION_GUIDE.md)
 - [前端开发指南](web/frontend/docs/DEVELOPER_GUIDE.md)
 - [项目完成报告](openspec/changes/implement-api-web-alignment/FINAL_COMPLETION_REPORT.md)
-- [API对齐核心流程](docs/guides/API对齐核心流程.md)
-- [API对齐方案](docs/guides/API对齐方案.md)
+- [API对齐核心流程](docs/api/guides/integration/API对齐核心流程.md)
+- [API对齐方案](docs/api/guides/integration/API对齐方案.md)
 
 ---
 

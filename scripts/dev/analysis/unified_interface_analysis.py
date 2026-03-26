@@ -276,7 +276,7 @@ def create_implementation_plan():
             "deliverables": [
                 "tests/data_access/test_unified_interface.py",
                 "tests/performance/test_benchmark.py",
-                "docs/guides/UNIFIED_INTERFACE_GUIDE.md",
+                "docs/guides/data-interface/UNIFIED_INTERFACE_GUIDE.md",
                 "docs/migration/MIGRATION_GUIDE.md",
             ],
         },

@@ -10,6 +10,9 @@ BACKEND_PORT=8000
 FRONTEND_PORT=3000
 DB_HOST=localhost
 DB_PORT=6030  # TDengine default
+LOG_DIR="${PROJECT_ROOT}/var/log"
+BACKEND_LOG="${LOG_DIR}/backend.log"
+FRONTEND_LOG="${LOG_DIR}/frontend.log"
 
 # Color codes for output
 RED='\033[0;31m'
@@ -103,6 +106,7 @@ start_database() {
 
 start_backend() {
     log_info "Starting FastAPI backend..."
+    mkdir -p "${LOG_DIR}"
 
     # Check port availability
     check_port_available $BACKEND_PORT "backend"
@@ -135,7 +139,7 @@ start_backend() {
 
     # Start backend in background
     log_info "Starting FastAPI server on port $BACKEND_PORT..."
-    nohup python -m uvicorn app.main:app --host 0.0.0.0 --port $BACKEND_PORT --reload > backend.log 2>&1 &
+    nohup python -m uvicorn app.main:app --host 0.0.0.0 --port $BACKEND_PORT --reload > "${BACKEND_LOG}" 2>&1 &
     BACKEND_PID=$!
 
     # Wait for backend to be ready
@@ -147,6 +151,7 @@ start_backend() {
 
 start_frontend() {
     log_info "Starting Vue frontend..."
+    mkdir -p "${LOG_DIR}"
 
     # Check port availability
     check_port_available $FRONTEND_PORT "frontend"
@@ -179,7 +184,7 @@ EOF
 
     # Start frontend in background
     log_info "Starting Vite dev server on port $FRONTEND_PORT..."
-    nohup npm run dev -- --port $FRONTEND_PORT > frontend.log 2>&1 &
+    nohup npm run dev -- --port $FRONTEND_PORT > "${FRONTEND_LOG}" 2>&1 &
     FRONTEND_PID=$!
 
     # Wait for frontend to be ready
@@ -279,8 +284,8 @@ HEALTH CHECKS:
     - Frontend: http://localhost:$FRONTEND_PORT
 
 LOGS:
-    - Backend: web/backend/backend.log
-    - Frontend: web/frontend/frontend.log
+    - Backend: ${BACKEND_LOG}
+    - Frontend: ${FRONTEND_LOG}
 
 Press Ctrl+C to stop all services gracefully.
 

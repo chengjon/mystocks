@@ -426,6 +426,6 @@ python src/cron/transaction_cleaner.py --dry-run
 **报告生成时间**: 2026-01-03 23:46:00
 **报告生成者**: Claude Code (Main CLI)
 **相关文档**:
-- Saga架构设计: `/docs/CLAUDE.md`
+- Saga架构设计: `/docs/overview/claude.md`
 - TDengine修复报告: `/docs/reports/TDENGINE_SAGA_FIX_REPORT.md`
 - 测试用例: `/tests/test_saga_transaction.py`

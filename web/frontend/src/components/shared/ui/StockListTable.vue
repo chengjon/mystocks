@@ -272,40 +272,41 @@ const getCellClass = (row: Record<string, unknown>, column: TableColumn) => {
 </script>
 
 <style scoped lang="scss">
+@import '@/styles/artdeco-tokens';
 .stock-list-table {
   width: 100%;
-  background: #f5f7fa;
-  border: 1px solid rgb(212 175 55 / 20%);
-  border-radius: 4px;
+  background: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-gold-opacity-20);
+  border-radius: var(--artdeco-radius-sm);
 
   :deep(.el-table__header-wrapper) {
-    background: rgb(212 175 55 / 5%);
+    background: var(--artdeco-gold-opacity-05);
 
     th {
       background: transparent;
-      border-bottom: 2px solid #409eff;
+      border-bottom: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-gold-primary);
 
       .cell {
-        font-family: Inter, system-ui, sans-serif;
-        font-size: 12px;
+        font-family: var(--font-body);
+        font-size: var(--artdeco-text-xs);
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        color: #409eff;
+        letter-spacing: var(--artdeco-tracking-wide);
+        color: var(--artdeco-gold-primary);
       }
 
       .caret-wrapper {
         .sort-caret {
-          border-color: rgb(212 175 55 / 50%);
+          border-color: var(--artdeco-gold-opacity-shadow);
 
           &.ascending {
-            bottom: -2px;
-            border-top-color: #409eff;
+            bottom: calc(var(--artdeco-spacing-px) * -2);
+            border-top-color: var(--artdeco-gold-primary);
           }
 
           &.descending {
-            top: -2px;
-            border-bottom-color: #409eff;
+            top: calc(var(--artdeco-spacing-px) * -2);
+            border-bottom-color: var(--artdeco-gold-primary);
           }
         }
       }
@@ -319,24 +320,24 @@ const getCellClass = (row: Record<string, unknown>, column: TableColumn) => {
       cursor: pointer;
 
       &:hover {
-        background: rgb(212 175 55 / 5%);
+        background: var(--artdeco-gold-opacity-05);
       }
 
       &.el-table__row--striped {
-        background: rgb(0 0 0 / 20%);
+        background: color-mix(in srgb, var(--artdeco-bg-global) 20%, transparent);
 
         &:hover {
-          background: rgb(212 175 55 / 5%);
+          background: var(--artdeco-gold-opacity-05);
         }
       }
 
       td {
-        border-bottom: 1px solid rgb(212 175 55 / 10%);
+        border-bottom: 1px solid var(--artdeco-gold-opacity-10);
 
         .cell {
-          font-family: Inter, -apple-system, sans-serif;
-          font-size: 13px;
-          color: #303133;
+          font-family: var(--font-body);
+          font-size: var(--artdeco-text-sm);
+          color: var(--artdeco-fg-primary);
         }
       }
     }
@@ -352,97 +353,97 @@ const getCellClass = (row: Record<string, unknown>, column: TableColumn) => {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    padding: 32px;
-    color: #909399;
+    gap: var(--artdeco-spacing-3);
+    padding: var(--artdeco-spacing-8);
+    color: var(--artdeco-fg-muted);
 
     .el-icon {
-      font-size: 48px;
+      font-size: var(--artdeco-text-5xl);
       opacity: 50%;
     }
 
     p {
-      font-family: Inter, system-ui, sans-serif;
-      font-size: 14px;
+      font-family: var(--font-body);
+      font-size: var(--artdeco-text-sm);
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: calc(var(--artdeco-spacing-px) / 2);
       margin: 0;
     }
   }
 
   .table-actions {
     display: flex;
-    gap: 8px;
+    gap: var(--artdeco-spacing-2);
     justify-content: center;
     align-items: center;
 
     .el-button {
-      font-family: Inter, system-ui, sans-serif;
+      font-family: var(--font-body);
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      border: 1px solid rgb(212 175 55 / 30%);
-      border-radius: 0;
+      letter-spacing: var(--artdeco-tracking-wide);
+      border: 1px solid var(--artdeco-border-default);
+      border-radius: var(--artdeco-radius-none);
       transition: all 0.3s;
 
       &.el-button--primary {
-        background: #409eff;
-        border-color: #409eff;
-        color: #fff;
+        background: var(--artdeco-gold-primary);
+        border-color: var(--artdeco-gold-primary);
+        color: var(--artdeco-bg-global);
 
         &:hover {
-          background: #66b1ff;
-          border-color: #66b1ff;
+          background: var(--artdeco-gold-light);
+          border-color: var(--artdeco-gold-light);
         }
       }
 
       &.el-button--success {
-        background: #67c23a;
-        border-color: #67c23a;
-        color: #fff;
+        background: var(--artdeco-success);
+        border-color: var(--artdeco-success);
+        color: var(--artdeco-bg-global);
 
         &:hover {
-          background: #27AE60;
-          border-color: #27AE60;
+          background: color-mix(in srgb, var(--artdeco-success) 85%, var(--artdeco-bg-global));
+          border-color: color-mix(in srgb, var(--artdeco-success) 85%, var(--artdeco-bg-global));
         }
       }
 
       &.el-button--danger {
-        background: #f56c6c;
-        border-color: #f56c6c;
-        color: #fff;
+        background: var(--artdeco-error);
+        border-color: var(--artdeco-error);
+        color: var(--artdeco-bg-global);
 
         &:hover {
-          background: #C0392B;
-          border-color: #C0392B;
+          background: color-mix(in srgb, var(--artdeco-error) 85%, var(--artdeco-bg-global));
+          border-color: color-mix(in srgb, var(--artdeco-error) 85%, var(--artdeco-bg-global));
         }
       }
 
       &:not(.el-button--primary, .el-button--success, .el-button--danger) {
         background: transparent;
-        border-color: rgb(212 175 55 / 30%);
-        color: #409eff;
+        border-color: var(--artdeco-border-default);
+        color: var(--artdeco-gold-primary);
 
         &:hover {
-          background: rgb(212 175 55 / 5%);
-          border-color: #409eff;
+          background: var(--artdeco-gold-opacity-05);
+          border-color: var(--artdeco-gold-primary);
         }
       }
 
       &:disabled {
-        opacity: 30%;
+        opacity: 0.3;
         cursor: not-allowed;
       }
     }
 
     .el-tooltip {
       .el-button {
-        padding: 5px;
+        padding: calc(var(--artdeco-spacing-px) * 5);
 
         &.is-circle {
-          width: 28px;
-          height: 28px;
+          width: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
+          height: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
         }
       }
     }
@@ -450,44 +451,44 @@ const getCellClass = (row: Record<string, unknown>, column: TableColumn) => {
 
   /* Color utility classes */
   .color-up {
-    color: #67c23a;
+    color: var(--artdeco-success);
     font-weight: 600;
   }
 
   .color-down {
-    color: #f56c6c;
+    color: var(--artdeco-error);
     font-weight: 600;
   }
 
   .color-neutral {
-    color: #909399;
+    color: var(--artdeco-fg-muted);
   }
 }
 
-@media (width <= 768px) {
+@media (width <= var(--artdeco-breakpoint-md)) {
   .stock-list-table {
     :deep(.el-table__header-wrapper) {
       th .cell {
-        font-size: 12px;
-        padding: 0 4px;
+        font-size: var(--artdeco-text-xs);
+        padding: 0 var(--artdeco-spacing-1);
       }
     }
 
     :deep(.el-table__body-wrapper) {
       td .cell {
-        font-size: 11px;
-        padding: 0 4px;
+        font-size: var(--artdeco-text-xs);
+        padding: 0 var(--artdeco-spacing-1);
       }
     }
 
     .table-actions {
       flex-direction: column;
-      gap: 4px;
+      gap: var(--artdeco-spacing-1);
 
       .el-button {
         width: 100%;
-        font-size: 11px;
-        padding: 4px 8px;
+        font-size: var(--artdeco-text-xs);
+        padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
       }
     }
   }

@@ -51,16 +51,20 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens';
-    @import '@/styles/artdeco-patterns';
+    @use '@/styles/artdeco-tokens.scss' as *;
+    @use '@/styles/artdeco-patterns.scss' as *;
 
     .artdeco-trading-stats {
         position: relative;
         width: 100%;
         margin-bottom: var(--artdeco-spacing-6);
 
-        @include artdeco-stepped-corners(8px);
-        @include artdeco-geometric-corners($color: var(--artdeco-gold-primary), $size: 16px, $border-width: 2px);
+        @include artdeco-stepped-corners(var(--artdeco-spacing-2));
+        @include artdeco-geometric-corners(
+            $color: var(--artdeco-gold-primary),
+            $size: var(--artdeco-spacing-4),
+            $border-width: calc(var(--artdeco-spacing-1) / 2)
+        );
         @include artdeco-hover-lift-glow;
     }
 
@@ -70,23 +74,23 @@
         gap: var(--artdeco-spacing-4);
         padding: var(--artdeco-spacing-4);
 
-        @media (width <= 1400px) {
+        @media (width <= calc(var(--artdeco-spacing-32) * 10 + var(--artdeco-spacing-24) + var(--artdeco-spacing-6))) {
             grid-template-columns: repeat(3, 1fr);
         }
 
-        @media (width <= 900px) {
+        @media (width <= calc(var(--artdeco-spacing-32) * 7 + var(--artdeco-spacing-1))) {
             grid-template-columns: repeat(2, 1fr);
         }
 
-        @media (width <= 600px) {
+        @media (width <= calc(var(--artdeco-spacing-32) * 4 + var(--artdeco-spacing-20) + var(--artdeco-spacing-2))) {
             grid-template-columns: 1fr;
         }
     }
 
     .artdeco-trading-stats__corner {
         position: absolute;
-        width: 16px;
-        height: 16px;
+        width: var(--artdeco-spacing-4);
+        height: var(--artdeco-spacing-4);
         border-color: var(--artdeco-gold-primary);
         border-style: solid;
         opacity: 40%;
@@ -95,14 +99,14 @@
     }
 
     .artdeco-trading-stats__corner--tl {
-        top: -1px;
-        left: -1px;
-        border-width: 2px 0 0 2px;
+        top: calc(var(--artdeco-spacing-px) * -1);
+        left: calc(var(--artdeco-spacing-px) * -1);
+        border-width: calc(var(--artdeco-spacing-1) / 2) 0 0 calc(var(--artdeco-spacing-1) / 2);
     }
 
     .artdeco-trading-stats__corner--br {
-        bottom: -1px;
-        right: -1px;
-        border-width: 0 2px 2px 0;
+        bottom: calc(var(--artdeco-spacing-px) * -1);
+        right: calc(var(--artdeco-spacing-px) * -1);
+        border-width: 0 calc(var(--artdeco-spacing-1) / 2) calc(var(--artdeco-spacing-1) / 2) 0;
     }
 </style>

@@ -113,7 +113,7 @@ test.describe("Accessibility smoke", () => {
     await stubReadinessProbe(page)
     await seedStrategySession(page)
     await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`, { waitUntil: "domcontentloaded" })
-    await expect(page.getByRole("heading", { name: "策略管理" })).toBeVisible()
+    await expect(page.getByRole("heading", { level: 1, name: "策略仓库工作台" })).toBeVisible()
 
     const results = await new AxeBuilder({ page })
       .include("main")

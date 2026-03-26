@@ -358,7 +358,7 @@ const data: WatchlistItem[] = response.data.items || response.data || []
 - **[API端点统计](../../../../../docs/api/API_ENDPOINTS_STATISTICS_REPORT.md)**: API分布和状态
 
 ### 质量指南
-- **[TypeScript最佳实践](../../../../../docs/guides/Typescript_BEST_PRACTICES.md)**: TypeScript质量管理体系
+- **[TypeScript最佳实践](../../../../../docs/guides/typescript/Typescript_BEST_PRACTICES.md)**: TypeScript质量管理体系
 - **[前端测试指南](../../../../../docs/guides/web测试方法.md)**: 测试策略和工具
 
 ### 脚本和工具

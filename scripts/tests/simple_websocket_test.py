@@ -14,6 +14,7 @@ import time
 import json
 import statistics
 import os
+from pathlib import Path
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -257,9 +258,9 @@ async def main():
 
         # 保存结果
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = (
-            f"/opt/claude/mystocks_spec/logs/basic_websocket_test_{timestamp}.json"
-        )
+        output_dir = Path("/opt/claude/mystocks_spec/var/log/tests")
+        output_dir.mkdir(parents=True, exist_ok=True)
+        filename = output_dir / f"basic_websocket_test_{timestamp}.json"
 
         try:
             with open(filename, "w", encoding="utf-8") as f:

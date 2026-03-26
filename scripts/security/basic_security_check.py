@@ -348,7 +348,7 @@ class BasicSecurityChecker:
 
     def save_results(self, result: Dict[str, Any]):
         """保存扫描结果"""
-        log_dir = self.project_root / "logs" / "security"
+        log_dir = self.project_root / "var" / "log" / "security"
         log_dir.mkdir(parents=True, exist_ok=True)
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

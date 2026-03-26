@@ -108,7 +108,7 @@ const getIconForType = (type: ToastConfig['type'] = 'info') => {
   flex-direction: column;
   gap: var(--artdeco-spacing-md);
   pointer-events: none;
-  max-width: 420px;
+  max-width: calc(var(--artdeco-spacing-20) * 5 + var(--artdeco-spacing-5));
   width: 100%;
 
   &--top-right {
@@ -158,13 +158,13 @@ const getIconForType = (type: ToastConfig['type'] = 'info') => {
   gap: var(--artdeco-spacing-sm);
   padding: var(--artdeco-spacing-md);
   background: var(--artdeco-bg-card);
-  border: 2px solid var(--artdeco-border-default);
+  border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-border-default);
   border-radius: var(--artdeco-radius-sm);
   box-shadow: var(--artdeco-shadow-lg);
   pointer-events: auto;
   overflow: hidden;
-  min-width: 320px;
-  max-width: 420px;
+  min-width: calc(var(--artdeco-spacing-20) * 4);
+  max-width: calc(var(--artdeco-spacing-20) * 5 + var(--artdeco-spacing-5));
 
   // ArtDeco geometric decorations
   @include artdeco-corner-brackets;
@@ -244,37 +244,37 @@ const getIconForType = (type: ToastConfig['type'] = 'info') => {
 
   .corner {
     position: absolute;
-    width: 8px;
-    height: 8px;
-    border: 2px solid currentColor;
+    width: var(--artdeco-spacing-2);
+    height: var(--artdeco-spacing-2);
+    border: calc(var(--artdeco-spacing-1) / 2) solid currentColor;
 
     &--tl {
-      top: 4px;
-      left: 4px;
+      top: var(--artdeco-spacing-1);
+      left: var(--artdeco-spacing-1);
       border-right: none;
       border-bottom: none;
       color: var(--artdeco-gold-primary);
     }
 
     &--tr {
-      top: 4px;
-      right: 4px;
+      top: var(--artdeco-spacing-1);
+      right: var(--artdeco-spacing-1);
       border-left: none;
       border-bottom: none;
       color: var(--artdeco-gold-primary);
     }
 
     &--bl {
-      bottom: 4px;
-      left: 4px;
+      bottom: var(--artdeco-spacing-1);
+      left: var(--artdeco-spacing-1);
       border-right: none;
       border-top: none;
       color: var(--artdeco-gold-primary);
     }
 
     &--br {
-      bottom: 4px;
-      right: 4px;
+      bottom: var(--artdeco-spacing-1);
+      right: var(--artdeco-spacing-1);
       border-left: none;
       border-top: none;
       color: var(--artdeco-gold-primary);
@@ -285,8 +285,8 @@ const getIconForType = (type: ToastConfig['type'] = 'info') => {
 // ========== Icon ==========
 .artdeco-toast__icon {
   flex-shrink: 0;
-  width: 24px;
-  height: 24px;
+  width: var(--artdeco-spacing-6);
+  height: var(--artdeco-spacing-6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -321,8 +321,8 @@ const getIconForType = (type: ToastConfig['type'] = 'info') => {
 // ========== Close Button ==========
 .artdeco-toast__close {
   flex-shrink: 0;
-  width: 24px;
-  height: 24px;
+  width: var(--artdeco-spacing-6);
+  height: var(--artdeco-spacing-6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -345,7 +345,7 @@ const getIconForType = (type: ToastConfig['type'] = 'info') => {
   position: absolute;
   bottom: 0;
   left: 0;
-  height: 3px;
+  height: calc(var(--artdeco-spacing-px) * 3);
   width: 100%;
   transform-origin: left;
   animation: toast-progress linear forwards;
@@ -392,12 +392,12 @@ const getIconForType = (type: ToastConfig['type'] = 'info') => {
 .artdeco-toast-container--top-center,
 .artdeco-toast-container--bottom-center {
   .artdeco-toast-enter-from {
-    transform: translateY(-20px) scale(0.9);
+    transform: translateY(calc(var(--artdeco-spacing-5) * -1)) scale(0.9);
     opacity: 0%;
   }
 
   .artdeco-toast-leave-to {
-    transform: translateY(-20px) scale(0.9);
+    transform: translateY(calc(var(--artdeco-spacing-5) * -1)) scale(0.9);
     opacity: 0%;
   }
 }

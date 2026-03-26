@@ -51,42 +51,54 @@ function getPegPosition(v) {
 .metrics {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-bottom: 30px;
+    gap: var(--artdeco-spacing-5);
+    margin-bottom: calc(var(--artdeco-spacing-5) + var(--artdeco-spacing-5) / 2);
 }
 .metric-card {
     background: var(--artdeco-gold-opacity-05);
-    padding: 20px;
+    padding: var(--artdeco-spacing-5);
     text-align: center;
     .label {
-      font-size: 12px;
+      font-size: var(--artdeco-text-xs);
       color: var(--artdeco-fg-muted);
-      margin-bottom: 10px;
+      margin-bottom: calc(var(--artdeco-spacing-5) / 2);
     }
     .value {
-      font-size: 24px;
+      font-size: var(--artdeco-spacing-6);
       font-weight: bold;
     }
     .value.good { color: var(--artdeco-rise); }
 }
 .scale-track {
-    height: 10px;
+    height: calc(var(--artdeco-spacing-5) / 2);
     background: linear-gradient(to right, var(--artdeco-down), var(--artdeco-gold-light), var(--artdeco-up));
     position: relative;
-    border-radius: 5px;
+    border-radius: calc(var(--artdeco-spacing-5) / 4);
     .marker {
       position: absolute;
-      top: 15px;
-      font-size: 10px;
+      top: calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-5) / 4);
+      font-size: calc(var(--artdeco-spacing-5) / 2);
       transform: translateX(-50%);
     }
     .pointer {
         position: absolute;
-        top: -5px;
-        width: 4px;
-        height: 20px;
+        top: calc(var(--artdeco-spacing-5) / -4);
+        width: var(--artdeco-spacing-1);
+        height: var(--artdeco-spacing-5);
         background: var(--artdeco-fg-primary);
         border: 1px solid var(--artdeco-border-default);
+    }
+}
+
+@media (width <= 75rem) {
+    .metrics {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (width <= 48rem) {
+    .scale-track .marker {
+        font-size: calc(var(--artdeco-spacing-5) / 2 - var(--artdeco-spacing-px));
     }
 }
 </style>

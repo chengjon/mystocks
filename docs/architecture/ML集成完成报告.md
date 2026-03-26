@@ -15,7 +15,7 @@
 **交付物**:
 - 3 份详细文档 (~21,000 字)
   - PYPROF_INTEGRATION_ANALYSIS.md
-  - PYPROF_INTEGRATION_ROADMAP.md
+  - plans/PYPROF_INTEGRATION_ROADMAP.md
   - PYPROF_INTEGRATION_SUMMARY.md
 - 开发分支: `feature/ml-integration`
 - 依赖安装完成
@@ -192,7 +192,7 @@ def read_day_file(self, file_path: str) -> pd.DataFrame:
 mystocks_spec/
 ├── docs/
 │   ├── PYPROF_INTEGRATION_ANALYSIS.md      ✅ 10,000 字
-│   ├── PYPROF_INTEGRATION_ROADMAP.md       ✅ 8,000 字
+│   ├── plans/PYPROF_INTEGRATION_ROADMAP.md       ✅ 8,000 字
 │   ├── PYPROF_INTEGRATION_SUMMARY.md       ✅ 3,000 字
 │   ├── ML_INTEGRATION_PROGRESS.md          ✅ 进度追踪
 │   └── ML_INTEGRATION_COMPLETE.md          ✅ 本文档
@@ -447,9 +447,9 @@ predictions, lower, upper = predictor.predict_with_confidence(X_test)
 
 ### 文档位置
 - 详细分析: `docs/PYPROF_INTEGRATION_ANALYSIS.md`
-- 实施路线图: `docs/PYPROF_INTEGRATION_ROADMAP.md`
+- 实施路线图: `docs/plans/PYPROF_INTEGRATION_ROADMAP.md`
 - 快速参考: `docs/PYPROF_INTEGRATION_SUMMARY.md`
-- 进度追踪: `docs/ML_INTEGRATION_PROGRESS.md`
+- 进度追踪: `docs/reports/analysis/ML_INTEGRATION_PROGRESS.md`
 - 完成报告: `docs/ML_INTEGRATION_COMPLETE.md` (本文档)
 
 ### 示例代码

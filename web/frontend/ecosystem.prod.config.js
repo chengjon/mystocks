@@ -10,6 +10,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const runtimeLogDir = '/opt/claude/mystocks_spec/var/log';
 
 if (typeof process.loadEnvFile === 'function') {
   for (const envFile of [path.join(__dirname, '.env'), path.join(__dirname, '..', '..', '.env')]) {
@@ -18,6 +19,8 @@ if (typeof process.loadEnvFile === 'function') {
     }
   }
 }
+
+fs.mkdirSync(runtimeLogDir, { recursive: true });
 
 module.exports = {
   apps: [
@@ -47,8 +50,8 @@ module.exports = {
       max_memory_restart: '2G',
 
       // 日志配置
-      error_file: './logs/pm2-error.log',
-      out_file: './logs/pm2-out.log',
+      error_file: path.join(runtimeLogDir, 'pm2-error.log'),
+      out_file: path.join(runtimeLogDir, 'pm2-out.log'),
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       merge_logs: true,
 
@@ -70,7 +73,7 @@ module.exports = {
       watch: false,
       ignore_watch: [
         'node_modules',
-        'logs',
+        'var/log',
         'dist',
         '.git'
       ]

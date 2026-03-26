@@ -1,13 +1,71 @@
 <template>
-  <div class="strategy-management page-enter">
-    <ArtDecoCard class="management-card" variant="bordered">
+  <div class="strategy-management page-enter" :class="{ 'is-embedded': isEmbedded }">
+    <section v-if="!isEmbedded" class="hero-shell artdeco-card-shell">
+      <div class="hero-rail">
+        <div class="hero-copy">
+          <span class="hero-eyebrow">strategy repository desk</span>
+          <div class="hero-meta">
+            <span>REQ_ID: {{ traceRequestId }}</span>
+            <span>PROCESS: {{ traceProcessTimeMs }}</span>
+            <span>SOURCE: {{ sourceModeLabel }}</span>
+          </div>
+        </div>
+      </div>
+
+      <ArtDecoHeader
+        title="策略仓库工作台"
+        subtitle="策略编排、生命周期控制与跨标签研发链路的统一入口"
+        :show-status="true"
+        :status-text="pageStatusText"
+        :status-type="pageStatusType"
+      >
+        <template #actions>
+          <ArtDecoButton variant="outline" size="sm" :loading="loading" @click="refreshStrategies">
+            <template #icon>
+              <ArtDecoIcon name="refresh" />
+            </template>
+            刷新仓库
+          </ArtDecoButton>
+          <ArtDecoButton variant="solid" size="sm" :disabled="loading" @click="openCreateForm">
+            <template #icon>
+              <ArtDecoIcon name="plus" />
+            </template>
+            新建策略
+          </ArtDecoButton>
+        </template>
+      </ArtDecoHeader>
+    </section>
+
+    <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell">
+      <ArtDecoStatCard label="策略总数" :value="strategies.length" variant="gold" />
+      <ArtDecoStatCard label="运行中" :value="runningStrategyCount" variant="rise" />
+      <ArtDecoStatCard label="异常数" :value="issueStrategyCount" variant="fall" />
+      <ArtDecoStatCard label="当前焦点" :value="statusFilterLabel" variant="gold" />
+    </section>
+
+    <section :class="isEmbedded ? 'embedded-shell' : 'content-shell artdeco-card-shell'">
+      <div v-if="!isEmbedded" class="content-shell-header">
+        <div class="content-shell-copy">
+          <span class="content-shell-kicker">strategy execution route</span>
+          <h3 class="content-shell-title">策略仓库与生命周期面板</h3>
+        </div>
+        <div class="content-shell-meta">
+          <span>MATCHED: {{ filteredStrategies.length }}</span>
+          <span>PAGE: {{ currentPage }} / {{ totalPages }}</span>
+        </div>
+      </div>
+
+      <ArtDecoCard class="management-card" variant="bordered">
       <template #header>
         <div class="header-row">
-          <h2>策略管理</h2>
+          <div class="header-copy">
+            <span class="header-eyebrow">{{ isEmbedded ? 'strategy module' : 'strategy repository' }}</span>
+            <h2>{{ isEmbedded ? '策略仓库模块' : '策略仓库' }}</h2>
+          </div>
           <div class="header-meta">
-            <span class="trace-id">REQ_ID: {{ traceRequestId }}</span>
-            <span class="trace-id">PROCESS: {{ traceProcessTimeMs }} ms</span>
-            <span :class="['source-badge', dataSource]">SOURCE: {{ dataSource.toUpperCase() }}</span>
+            <span class="trace-id">MATCHED: {{ filteredStrategies.length }}</span>
+            <span class="trace-id">PAGE: {{ currentPage }} / {{ totalPages }}</span>
+            <span :class="['source-badge', dataSource]">SOURCE: {{ sourceModeLabel }}</span>
           </div>
         </div>
       </template>
@@ -218,7 +276,8 @@
           </button>
         </div>
       </div>
-    </ArtDecoCard>
+      </ArtDecoCard>
+    </section>
   </div>
 </template>
 
@@ -226,7 +285,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { ArtDecoCard } from '@/components/artdeco'
+import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
 import { useStrategy } from '@/composables/useStrategy'
 import { useStrategyCrossTabContext } from '@/composables/strategy/useStrategyCrossTabContext'
 import type { StrategyListItemVM } from '@/utils/strategy-adapters'
@@ -267,7 +326,18 @@ interface FailedOperation {
   action?: LifecycleAction
 }
 
+interface Props {
+  functionKey?: string
+  userPermissions?: string[]
+  systemConfig?: unknown
+}
+
 const PAGE_SIZE = 8
+const props = withDefaults(defineProps<Props>(), {
+  functionKey: '',
+  userPermissions: () => [],
+  systemConfig: undefined
+})
 const router = useRouter()
 const {
   upsertFromStrategyList,
@@ -339,8 +409,28 @@ const retrying = ref(false)
 const failedOperation = ref<FailedOperation | null>(null)
 const rowFeedback = ref<Record<string, string>>({})
 
+const isEmbedded = computed(() => Boolean(props.functionKey))
 const traceRequestId = computed(() => lastRequestId.value || 'N/A')
 const traceProcessTimeMs = computed(() => lastProcessTimeMs.value || 'N/A')
+const sourceModeLabel = computed(() => dataSource.value.toUpperCase())
+const runningStrategyCount = computed(() => strategies.value.filter((strategy) => strategy.status === 'running').length)
+const issueStrategyCount = computed(() => strategies.value.filter((strategy) => strategy.status === 'error').length)
+const statusFilterLabel = computed(() => {
+  if (statusFilter.value === 'running') return '运行中'
+  if (statusFilter.value === 'paused') return '已暂停'
+  if (statusFilter.value === 'stopped') return '已停止'
+  if (statusFilter.value === 'error') return '异常策略'
+  return '全部状态'
+})
+const pageStatusText = computed(() => {
+  if (loading.value) return '同步中'
+  if (error.value) return '接口异常'
+  return dataSource.value === 'real' ? '策略仓库在线' : '本地保底视图'
+})
+const pageStatusType = computed(() => {
+  if (error.value) return 'warning'
+  return dataSource.value === 'real' ? 'success' : 'info'
+})
 
 const filteredStrategies = computed(() => {
   const search = keyword.value.trim().toLowerCase()

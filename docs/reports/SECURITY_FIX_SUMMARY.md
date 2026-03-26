@@ -62,7 +62,7 @@ Comprehensive implementation plans have been created to address **5 critical sec
 - Security Tests (34 tasks)
 
 ### 3. Quick Reference Guide
-**File**: `docs/guides/SECURE_CODING_QUICK_REFERENCE.md`
+**File**: `docs/standards/security/SECURE_CODING_QUICK_REFERENCE.md`
 
 **Contents**:
 - Secure coding patterns
@@ -291,7 +291,7 @@ Before starting implementation:
 ### Documentation
 - **Implementation Plan**: `docs/reports/SECURITY_FIX_IMPLEMENTATION_PLAN.md`
 - **Task Checklist**: `docs/reports/SECURITY_FIX_CHECKLIST.md`
-- **Quick Reference**: `docs/guides/SECURE_CODING_QUICK_REFERENCE.md`
+- **Quick Reference**: `docs/standards/security/SECURE_CODING_QUICK_REFERENCE.md`
 - **Architecture Review**: `docs/reports/ARCHITECTURE_REVIEW_REPORT.md`
 
 ### Code Examples

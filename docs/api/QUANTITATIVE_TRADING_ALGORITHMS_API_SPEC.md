@@ -5,7 +5,7 @@
 基于MyStocks系统中已实现的11种量化交易算法，为每个算法提供专门的REST API接口。本文档遵循以下规范：
 
 - **合同管理API规范** (`docs/api/CONTRACT_MANAGEMENT_API.md`)
-- **新API源集成指南** (`docs/guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md`)
+- **新API源集成指南** (`docs/guides/data-source/NEW_API_SOURCE_INTEGRATION_GUIDE.md`)
 - **统一API响应格式** (code/message/data/request_id)
 
 ## 🎯 算法API架构

@@ -48,7 +48,7 @@
 - `web/frontend/scripts/test-pages.mjs` - 自动化测试脚本
 
 **更新文档**:
-- `docs/guides/WEB_FRONTEND_STARTUP_GUIDE.md` - 添加PM2启动方式和问题6
+- `docs/guides/web/WEB_FRONTEND_STARTUP_GUIDE.md` - 添加PM2启动方式和问题6
 
 ---
 

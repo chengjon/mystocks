@@ -10,7 +10,7 @@ on:
       - 'web/frontend/**/*.scss'
       - 'web/frontend/**/*.css'
       - '.github/workflows/visual-testing.yml'
-      - 'tests/visual/**'
+      - 'web/frontend/tests/visual/**'
   pull_request:
     branches: [main, develop]
     paths:
@@ -20,7 +20,7 @@ on:
       - 'web/frontend/**/*.scss'
       - 'web/frontend/**/*.css'
       - '.github/workflows/visual-testing.yml'
-      - 'tests/visual/**'
+      - 'web/frontend/tests/visual/**'
   workflow_dispatch:
     inputs:
       update_baselines:
@@ -73,7 +73,7 @@ jobs:
           visual_test_required=false
           for changed_file in "${changed_files[@]}"; do
             case "$changed_file" in
-              web/frontend/src/*|web/frontend/src/**|tests/visual/*|tests/visual/**)
+              web/frontend/src/*|web/frontend/src/**|web/frontend/tests/visual/*|web/frontend/tests/visual/**|tests/visual/*|tests/visual/**)
                 visual_test_required=true
                 break
                 ;;
@@ -101,7 +101,7 @@ jobs:
       - name: Generate Cache Key
         id: cache_key
         run: |
-          echo "cache_key=visual-${{ hashFiles('web/frontend/package-lock.json', 'web/frontend/package.json', 'tests/visual/**') }}" >> $GITHUB_OUTPUT
+          echo "cache_key=visual-${{ hashFiles('web/frontend/package-lock.json', 'web/frontend/package.json', 'web/frontend/tests/visual/**') }}" >> $GITHUB_OUTPUT
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -124,7 +124,6 @@ jobs:
         run: |
           cd web/frontend
           npm ci
-          npm install @playwright/test@${{ env.PLAYWRIGHT_VERSION }}
           npx playwright install --with-deps chromium
 
       - name: Verify Setup
@@ -171,7 +170,6 @@ jobs:
         run: |
           cd web/frontend
           npm ci
-          npm install @playwright/test@${{ env.PLAYWRIGHT_VERSION }}
           npx playwright install --with-deps chromium
 
       - name: Setup Test Environment
@@ -188,11 +186,15 @@ jobs:
         if: inputs.update_baselines != true
         run: |
           cd web/frontend
-          npx playwright test \
-            --config=tests/visual/config/visual.config.ts \
-            --project=${{ matrix.browser }} \
-            --reporter=html,json,junit \
-            --output=test-results/visual/ \
+          VISUAL_HTML_REPORT_DIR=playwright-report/dashboard \
+          VISUAL_JSON_REPORT_FILE=test-results/visual/dashboard/results.json \
+          VISUAL_JUNIT_REPORT_FILE=test-results/visual/dashboard/junit.xml \
+          npm run test:visual:dashboard -- \
+            --trace=on
+          VISUAL_HTML_REPORT_DIR=playwright-report/charts \
+          VISUAL_JSON_REPORT_FILE=test-results/visual/charts/results.json \
+          VISUAL_JUNIT_REPORT_FILE=test-results/visual/charts/junit.xml \
+          npm run test:visual:charts -- \
             --trace=on
 
       - name: Update Visual Baselines
@@ -200,27 +202,43 @@ jobs:
         run: |
           cd web/frontend
           echo "Updating visual baselines"
-          npx playwright test \
-            --config=tests/visual/config/visual.config.ts \
-            --project=${{ matrix.browser }} \
-            --update-snapshots
+          npm run test:visual:dashboard:update
+          npm run test:visual:charts:update
 
       - name: Upload Visual Test Results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: visual-test-results-${{ matrix.browser }}
+          name: visual-dashboard-results-${{ matrix.browser }}
           path: |
-            web/frontend/test-results/visual/
-            !web/frontend/test-results/visual/**/*.zip
+            web/frontend/test-results/visual/dashboard/
+            !web/frontend/test-results/visual/dashboard/**/*.zip
           retention-days: 30
 
-      - name: Upload Playwright Report
+      - name: Upload Dashboard Playwright Report
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: visual-playwright-report-${{ matrix.browser }}
-          path: web/frontend/playwright-report/
+          name: visual-dashboard-playwright-report-${{ matrix.browser }}
+          path: web/frontend/playwright-report/dashboard/
+          retention-days: 30
+
+      - name: Upload Chart Visual Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visual-chart-results-${{ matrix.browser }}
+          path: |
+            web/frontend/test-results/visual/charts/
+            !web/frontend/test-results/visual/charts/**/*.zip
+          retention-days: 30
+
+      - name: Upload Chart Playwright Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visual-chart-playwright-report-${{ matrix.browser }}
+          path: web/frontend/playwright-report/charts/
           retention-days: 30
 
   visual-test-results:
@@ -245,22 +263,74 @@ jobs:
           total_tests=0
           passed_tests=0
           failed_tests=0
+          dashboard_tests=0
+          dashboard_passed=0
+          dashboard_failed=0
+          chart_tests=0
+          chart_passed=0
+          chart_failed=0
+
+          collect_counts() {
+            local result_file="$1"
+            local tests=0
+            local passed=0
+            local failed=0
+
+            if [ -f "$result_file" ]; then
+              tests=$(jq '[.. | objects | select(has("outcome"))] | length' "$result_file" 2>/dev/null || echo "0")
+              passed=$(jq '[.. | objects | select(.outcome? == "expected" and (.status? == "passed" or .status? == "flaky"))] | length' "$result_file" 2>/dev/null || echo "0")
+              failed=$(jq '[.. | objects | select(.outcome? == "unexpected" or .status? == "failed")] | length' "$result_file" 2>/dev/null || echo "0")
+            fi
+
+            printf '%s %s %s\n' "$tests" "$passed" "$failed"
+          }
 
           for result_dir in test-results/*/; do
             if [ -f "${result_dir}results.json" ]; then
-              local_tests=$(jq '.suites[].tests | length' "${result_dir}results.json" 2>/dev/null || echo "0")
-              local_passed=$(jq '[.suites[].tests[] | select(.status == "passed")] | length' "${result_dir}results.json" 2>/dev/null || echo "0")
-              local_failed=$(jq '[.suites[].tests[] | select(.status == "failed")] | length' "${result_dir}results.json" 2>/dev/null || echo "0")
+              read -r local_tests local_passed local_failed < <(collect_counts "${result_dir}results.json")
 
               total_tests=$((total_tests + local_tests))
               passed_tests=$((passed_tests + local_passed))
               failed_tests=$((failed_tests + local_failed))
+
+              case "${result_dir}" in
+                *visual-dashboard-results-*)
+                  dashboard_tests=$((dashboard_tests + local_tests))
+                  dashboard_passed=$((dashboard_passed + local_passed))
+                  dashboard_failed=$((dashboard_failed + local_failed))
+                  ;;
+                *visual-chart-results-*)
+                  chart_tests=$((chart_tests + local_tests))
+                  chart_passed=$((chart_passed + local_passed))
+                  chart_failed=$((chart_failed + local_failed))
+                  ;;
+              esac
             fi
           done
 
           echo "Total Tests: $total_tests"
           echo "Passed: $passed_tests"
           echo "Failed: $failed_tests"
+          echo "Dashboard Tests: $dashboard_tests"
+          echo "Dashboard Passed: $dashboard_passed"
+          echo "Dashboard Failed: $dashboard_failed"
+          echo "Chart Tests: $chart_tests"
+          echo "Chart Passed: $chart_passed"
+          echo "Chart Failed: $chart_failed"
+
+          cat > visual-test-summary.json <<EOF
+          {
+            "total_tests": $total_tests,
+            "passed_tests": $passed_tests,
+            "failed_tests": $failed_tests,
+            "dashboard_tests": $dashboard_tests,
+            "dashboard_passed": $dashboard_passed,
+            "dashboard_failed": $dashboard_failed,
+            "chart_tests": $chart_tests,
+            "chart_passed": $chart_passed,
+            "chart_failed": $chart_failed
+          }
+          EOF
 
       - name: Upload Test Summary
         uses: actions/upload-artifact@v4

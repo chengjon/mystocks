@@ -1,5 +1,11 @@
 // MyStocks 生产环境 PM2 配置
 // 优化版：支持自动端口分配、健康检查、错误回滚
+const fs = require('fs');
+const path = require('path');
+
+const runtimeLogDir = '/var/log/mystocks';
+fs.mkdirSync(runtimeLogDir, { recursive: true });
+
 module.exports = {
   apps: [
     {
@@ -44,9 +50,9 @@ module.exports = {
       },
 
       // 日志配置
-      log_file: '/opt/mystocks/logs/backend.log',
-      out_file: '/opt/mystocks/logs/backend-out.log',
-      error_file: '/opt/mystocks/logs/backend-error.log',
+      log_file: path.join(runtimeLogDir, 'backend.log'),
+      out_file: path.join(runtimeLogDir, 'backend-out.log'),
+      error_file: path.join(runtimeLogDir, 'backend-error.log'),
       time: true,
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       merge_logs: true,
@@ -87,9 +93,9 @@ module.exports = {
         timeout: 3000
       },
 
-      log_file: '/opt/mystocks/logs/frontend.log',
-      out_file: '/opt/mystocks/logs/frontend-out.log',
-      error_file: '/opt/mystocks/logs/frontend-error.log',
+      log_file: path.join(runtimeLogDir, 'frontend.log'),
+      out_file: path.join(runtimeLogDir, 'frontend-out.log'),
+      error_file: path.join(runtimeLogDir, 'frontend-error.log'),
       time: true,
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       merge_logs: true,
@@ -122,8 +128,8 @@ module.exports = {
 
       max_memory_restart: '512M',
 
-      out_file: '/opt/mystocks/logs/data-sync-basic.log',
-      error_file: '/opt/mystocks/logs/data-sync-basic-error.log',
+      out_file: path.join(runtimeLogDir, 'data-sync-basic.log'),
+      error_file: path.join(runtimeLogDir, 'data-sync-basic-error.log'),
       time: true,
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
 
@@ -155,8 +161,8 @@ module.exports = {
 
       max_memory_restart: '512M',
 
-      out_file: '/opt/mystocks/logs/data-sync-kline.log',
-      error_file: '/opt/mystocks/logs/data-sync-kline-error.log',
+      out_file: path.join(runtimeLogDir, 'data-sync-kline.log'),
+      error_file: path.join(runtimeLogDir, 'data-sync-kline-error.log'),
       time: true,
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
 
@@ -188,8 +194,8 @@ module.exports = {
 
       max_memory_restart: '512M',
 
-      out_file: '/opt/mystocks/logs/data-sync-minute-kline.log',
-      error_file: '/opt/mystocks/logs/data-sync-minute-kline-error.log',
+      out_file: path.join(runtimeLogDir, 'data-sync-minute-kline.log'),
+      error_file: path.join(runtimeLogDir, 'data-sync-minute-kline-error.log'),
       time: true,
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
 
@@ -221,8 +227,8 @@ module.exports = {
 
       max_memory_restart: '256M',
 
-      out_file: '/opt/mystocks/logs/data-sync-industry.log',
-      error_file: '/opt/mystocks/logs/data-sync-industry-error.log',
+      out_file: path.join(runtimeLogDir, 'data-sync-industry.log'),
+      error_file: path.join(runtimeLogDir, 'data-sync-industry-error.log'),
       time: true,
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
 
@@ -254,8 +260,8 @@ module.exports = {
 
       max_memory_restart: '256M',
 
-      out_file: '/opt/mystocks/logs/data-sync-concept.log',
-      error_file: '/opt/mystocks/logs/data-sync-concept-error.log',
+      out_file: path.join(runtimeLogDir, 'data-sync-concept.log'),
+      error_file: path.join(runtimeLogDir, 'data-sync-concept-error.log'),
       time: true,
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
 
@@ -286,8 +292,8 @@ module.exports = {
 
       max_memory_restart: '256M',
 
-      out_file: '/opt/mystocks/logs/system-monitor.log',
-      error_file: '/opt/mystocks/logs/system-monitor-error.log',
+      out_file: path.join(runtimeLogDir, 'system-monitor.log'),
+      error_file: path.join(runtimeLogDir, 'system-monitor-error.log'),
       time: true,
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
 

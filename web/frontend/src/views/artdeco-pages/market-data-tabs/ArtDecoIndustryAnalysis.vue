@@ -1,55 +1,89 @@
 <template>
-  <div class="industry-analysis-page">
-    <div class="page-header">
-      <h2 class="section-title">板块动向分析</h2>
-      <div class="header-meta">
-        <span>DATA: {{ dataSource }}</span>
-        <span>REQ_ID: {{ displayRequestId }}</span>
-        <span>TIME: {{ displayProcessTime }}</span>
+  <div class="industry-analysis-page" :class="{ 'is-embedded': isEmbedded }">
+    <section v-if="!isEmbedded" class="hero-shell artdeco-card-shell">
+      <div class="hero-rail">
+        <div class="hero-copy">
+          <span class="hero-eyebrow">industry rotation desk</span>
+          <div class="hero-meta">
+            <span>DATA: {{ dataSource }}</span>
+            <span>REQ_ID: {{ displayRequestId }}</span>
+            <span>TIME: {{ displayProcessTime }}</span>
+          </div>
+        </div>
       </div>
-      <ArtDecoButton variant="outline" size="sm" @click="refreshBoards">刷新板块</ArtDecoButton>
-    </div>
 
-    <div class="stats-grid">
+      <ArtDecoHeader
+        title="板块动向工作台"
+        subtitle="统一审查板块热度、资金轮动和强弱结构，形成市场数据域的板块入口"
+        :show-status="true"
+        :status-text="pageStatusText"
+        :status-type="pageStatusType"
+      >
+        <template #actions>
+          <ArtDecoButton variant="outline" size="sm" @click="refreshBoards">
+            <template #icon>
+              <ArtDecoIcon name="refresh" />
+            </template>
+            刷新板块
+          </ArtDecoButton>
+        </template>
+      </ArtDecoHeader>
+    </section>
+
+    <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell">
       <ArtDecoStatCard label="活跃板块" :value="stats.activeBoards" variant="gold" />
       <ArtDecoStatCard label="上涨板块" :value="stats.risingBoards" variant="rise" />
       <ArtDecoStatCard label="领涨强度" :value="`${stats.leadStrength}%`" variant="gold" />
       <ArtDecoStatCard label="回撤板块" :value="stats.fallingBoards" variant="fall" />
-    </div>
+    </section>
 
-    <div v-if="showErrorState" class="error-state artdeco-card" role="alert">
-      <p>板块数据加载失败</p>
-      <span>{{ error }}</span>
-    </div>
+    <section :class="isEmbedded ? 'embedded-shell' : 'content-shell artdeco-card-shell'">
+      <div v-if="!isEmbedded" class="content-shell-header">
+        <div class="content-shell-copy">
+          <span class="content-shell-kicker">board rotation route</span>
+          <h3 class="content-shell-title">板块热度与轮动面板</h3>
+          <p class="content-shell-subtitle">聚合板块强弱排行和资金轮动快照，快速识别最强板块与回撤板块。</p>
+        </div>
+        <div class="content-shell-meta">
+          <span>ACTIVE: {{ stats.activeBoards }}</span>
+          <span>RISING: {{ stats.risingBoards }}</span>
+        </div>
+      </div>
 
-    <div v-else-if="showEmptyState" class="empty-state artdeco-card" role="status" aria-live="polite">
-      <p>暂无板块数据</p>
-      <span>当前环境未返回板块热度排行，可稍后刷新重试。</span>
-    </div>
+      <div v-if="showErrorState" class="error-state artdeco-card" role="alert">
+        <p>板块数据加载失败</p>
+        <span>{{ error }}</span>
+      </div>
 
-    <div v-else class="content-grid">
-      <ArtDecoCard title="板块热度排行" hoverable>
-        <ArtDecoTable :columns="boardColumns" :data="boardRows" />
-      </ArtDecoCard>
+      <div v-else-if="showEmptyState" class="empty-state artdeco-card" role="status" aria-live="polite">
+        <p>暂无板块数据</p>
+        <span>当前环境未返回板块热度排行，可稍后刷新重试。</span>
+      </div>
 
-      <ArtDecoCard title="资金轮动快照" hoverable>
-        <div class="rotation-list">
-          <div class="rotation-item" v-for="item in rotationRows" :key="item.name">
-            <div class="name">{{ item.name }}</div>
-            <div class="meta">{{ item.window }}</div>
-            <div class="value" :class="item.flow > 0 ? 'rise' : 'fall'">
-              {{ item.flow > 0 ? '+' : '' }}{{ item.flow }} 亿
+      <div v-else class="content-grid">
+        <ArtDecoCard title="板块热度排行" hoverable>
+          <ArtDecoTable :columns="boardColumns" :data="boardRows" />
+        </ArtDecoCard>
+
+        <ArtDecoCard title="资金轮动快照" hoverable>
+          <div class="rotation-list">
+            <div class="rotation-item" v-for="item in rotationRows" :key="item.name">
+              <div class="name">{{ item.name }}</div>
+              <div class="meta">{{ item.window }}</div>
+              <div class="value" :class="item.flow > 0 ? 'rise' : 'fall'">
+                {{ item.flow > 0 ? '+' : '' }}{{ item.flow }} 亿
+              </div>
             </div>
           </div>
-        </div>
-      </ArtDecoCard>
-    </div>
+        </ArtDecoCard>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { ArtDecoButton, ArtDecoCard, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
+import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { apiClient } from '@/api/apiClient'
 import type { UnifiedResponse } from '@/api/types/common'
@@ -61,6 +95,18 @@ import {
   type BoardRow,
   type RotationRow
 } from './industryAnalysisData'
+
+interface Props {
+  functionKey?: string
+  userPermissions?: string[]
+  systemConfig?: unknown
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  functionKey: '',
+  userPermissions: () => [],
+  systemConfig: undefined
+})
 
 const { loading, error, lastRequestId, lastProcessTime, exec } = useArtDecoApi()
 
@@ -75,6 +121,7 @@ const boardColumns = [
 const boardRows = ref<BoardRow[]>([])
 const rotationRows = ref<RotationRow[]>([])
 const dataSource = ref<'REAL'>('REAL')
+const isEmbedded = computed(() => Boolean(props.functionKey))
 
 const displayRequestId = computed(() => lastRequestId.value || 'N/A')
 const displayProcessTime = computed(() => {
@@ -104,6 +151,11 @@ const stats = computed(() => {
     leadStrength
   }
 })
+const pageStatusText = computed(() => {
+  if (loading.value) return '同步中'
+  return stats.value.risingBoards >= stats.value.fallingBoards ? '板块偏强' : '板块回撤'
+})
+const pageStatusType = computed(() => (stats.value.risingBoards >= stats.value.fallingBoards ? 'success' : 'warning'))
 
 const showErrorState = computed(() => Boolean(error.value) && boardRows.value.length === 0)
 const showEmptyState = computed(() => !loading.value && !error.value && boardRows.value.length === 0)
@@ -152,32 +204,86 @@ void loadIndustryFlow()
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .industry-analysis-page {
   padding: var(--artdeco-spacing-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-6);
 }
 
-.page-header {
+.industry-analysis-page.is-embedded {
+  padding: 0;
+}
+
+.hero-shell,
+.stats-strip,
+.content-shell,
+.embedded-shell {
+  width: 100%;
+}
+
+.hero-shell,
+.content-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-5);
+}
+
+.hero-rail,
+.content-shell-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--artdeco-spacing-6);
+  align-items: flex-start;
+  gap: var(--artdeco-spacing-4);
+  flex-wrap: wrap;
 }
 
-.section-title {
-  margin: 0;
-  font-size: var(--artdeco-text-2xl);
-  color: var(--artdeco-gold-primary);
+.hero-copy,
+.content-shell-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-2);
+}
+
+.hero-eyebrow,
+.content-shell-kicker {
+  font-family: var(--artdeco-font-mono);
+  font-size: var(--artdeco-text-xs);
+  color: var(--artdeco-gold-dim);
   text-transform: uppercase;
   letter-spacing: var(--artdeco-tracking-wide);
 }
 
-.stats-grid {
+.hero-meta,
+.content-shell-meta {
+  display: flex;
+  gap: var(--artdeco-spacing-3);
+  flex-wrap: wrap;
+  font-family: var(--artdeco-font-mono);
+  font-size: var(--artdeco-text-xs);
+  color: var(--artdeco-fg-muted);
+}
+
+.stats-strip {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--artdeco-spacing-4);
-  margin-bottom: var(--artdeco-spacing-6);
+}
+
+.content-shell-title {
+  margin: 0;
+  font-family: var(--artdeco-font-display);
+  font-size: var(--artdeco-text-xl);
+  color: var(--artdeco-fg-primary);
+}
+
+.content-shell-subtitle {
+  margin: 0;
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
+  line-height: var(--artdeco-leading-relaxed);
 }
 
 .content-grid {
@@ -240,6 +346,27 @@ void loadIndustryFlow()
 
   .value.fall {
     color: var(--artdeco-down);
+  }
+}
+
+@media (width <= 75rem) {
+  .stats-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (width <= 48rem) {
+  .stats-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-meta,
+  .content-shell-meta {
+    width: 100%;
   }
 }
 </style>

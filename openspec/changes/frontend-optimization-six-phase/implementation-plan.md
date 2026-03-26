@@ -141,7 +141,7 @@ CLI-6 (质量保证) → 主CLI (集成)
 - [x] E2E tests (Playwright)
 
 **文档**:
-- `docs/frontend/KLINE_COMPONENT_GUIDE.md`
+- `docs/guides/web/WEB_FRAMEWORK_INCREMENTAL_OPTIMIZATION_PLAN.md`
 - `README_CLI1.md`
 
 ### CLI-2: API Contract Standardization

@@ -70,7 +70,7 @@ tmux send-keys "psql --version" C-m
 tmux select-pane -t 4
 tmux send-keys "cd $PROJECT_ROOT" C-m
 tmux send-keys "echo '=== MyStocks Log Center ==='" C-m
-tmux send-keys "tail -f logs/backend.log" C-m
+tmux send-keys "tail -f var/log/backend.log" C-m
 
 # 重置选择到第一个窗格
 tmux select-pane -t 0

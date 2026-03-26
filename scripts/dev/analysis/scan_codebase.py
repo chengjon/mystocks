@@ -17,13 +17,18 @@ from datetime import datetime
 import json
 
 # 添加项目根目录到路径
-PROJECT_ROOT = Path(__file__).parent.parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(Path(__file__).parent))
 
+from manual_paths import get_manual_metadata_dir, get_manual_root
 from models import ModuleInventory, ManualMetadata, CategoryEnum
-from src.utils.ast_parser import ASTParser
+from utils.ast_parser import ASTParser
 from classifier import ModuleClassifier
+
+
+MANUAL_ROOT = get_manual_root(PROJECT_ROOT)
+MANUAL_METADATA_DIR = get_manual_metadata_dir(PROJECT_ROOT)
 
 
 def scan_project(project_root: str, exclude_patterns: list = None) -> ModuleInventory:
@@ -283,10 +288,7 @@ def main():
     print_summary(inventory)
 
     # 保存清单
-    output_path = (
-        PROJECT_ROOT
-        / "docs/function-classification-manual/metadata/module-inventory.json"
-    )
+    output_path = MANUAL_METADATA_DIR / "module-inventory.json"
     save_inventory(inventory, str(output_path))
 
     print("\n✓ 扫描完成!")

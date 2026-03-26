@@ -96,19 +96,19 @@ const formatVolume = (volume: number) => {
 .virtual-stock-list {
   border: 1px solid var(--artdeco-border-default);
   border-radius: var(--artdeco-radius-md);
-  background: var(--artdeco-bg-surface);
+  background: var(--artdeco-bg-card);
   overflow: hidden;
 }
 
 .list-header {
   display: flex;
-  height: 40px;
+  height: var(--artdeco-spacing-10);
   align-items: center;
   background: var(--artdeco-bg-elevated);
   border-bottom: 1px solid var(--artdeco-border-default);
   padding: 0 var(--artdeco-spacing-4);
   font-weight: 600;
-  font-size: 12px;
+  font-size: var(--artdeco-text-xs);
   color: var(--artdeco-fg-muted);
   text-transform: uppercase;
 }
@@ -116,14 +116,14 @@ const formatVolume = (volume: number) => {
 .stock-row {
   display: flex;
   align-items: center;
-  height: 48px; // Must match item-height prop
+  height: var(--artdeco-spacing-12); // Must match item-height prop
   padding: 0 var(--artdeco-spacing-4);
-  border-bottom: 1px solid var(--artdeco-border-subtle);
+  border-bottom: 1px solid var(--artdeco-gold-opacity-10);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background-color var(--artdeco-transition-quick) var(--artdeco-ease-out);
 
   &:hover {
-    background: var(--artdeco-bg-hover);
+    background: var(--artdeco-gold-opacity-05);
   }
 }
 
@@ -134,27 +134,27 @@ const formatVolume = (volume: number) => {
   text-overflow: ellipsis;
   
   &.symbol {
-    flex: 0 0 80px;
+    flex: 0 0 var(--artdeco-spacing-20);
     font-weight: 600;
   }
   &.name { flex: 2; }
   &.price {
-    flex: 0 0 100px;
+    flex: 0 0 calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-5));
     text-align: right;
     font-family: var(--artdeco-font-mono);
   }
   &.change {
-    flex: 0 0 80px;
+    flex: 0 0 var(--artdeco-spacing-20);
     text-align: right;
     font-family: var(--artdeco-font-mono);
   }
   &.volume {
-    flex: 0 0 100px;
+    flex: 0 0 calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-5));
     text-align: right;
     color: var(--artdeco-fg-muted);
   }
   &.actions {
-    flex: 0 0 80px;
+    flex: 0 0 var(--artdeco-spacing-20);
     text-align: right;
   }
 }
@@ -164,16 +164,16 @@ const formatVolume = (volume: number) => {
 .text-neutral { color: var(--artdeco-fg-muted); }
 
 button {
-  background: var(--artdeco-bg-secondary);
+  background: var(--artdeco-bg-base);
   border: 1px solid var(--artdeco-border-default);
   color: var(--artdeco-fg-primary);
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: calc(var(--artdeco-spacing-px) * 2) var(--artdeco-spacing-2);
+  border-radius: var(--artdeco-radius-sm);
   cursor: pointer;
-  font-size: 12px;
+  font-size: var(--artdeco-text-xs);
   
   &:hover {
-    background: var(--artdeco-bg-hover);
+    background: var(--artdeco-bg-elevated);
     border-color: var(--artdeco-gold-primary);
   }
 }

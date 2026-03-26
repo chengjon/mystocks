@@ -6,6 +6,7 @@
 SESSION_NAME="mystocks_test"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+LOG_DIR="$PROJECT_ROOT/var/log"
 
 # 显示帮助信息
 show_help() {
@@ -94,8 +95,8 @@ start_tmux() {
     tmux send-keys -t $SESSION_NAME:2 "cd $PROJECT_ROOT" Enter
     tmux send-keys -t $SESSION_NAME:2 "echo '📝 日志监控窗口 - lnav'" Enter
     tmux send-keys -t $SESSION_NAME:2 "echo ''" Enter
-    tmux send-keys -t $SESSION_NAME:2 "mkdir -p logs" Enter
-    tmux send-keys -t $SESSION_NAME:2 "# lnav logs/mystocks_system.log" Enter
+    tmux send-keys -t $SESSION_NAME:2 "mkdir -p var/log" Enter
+    tmux send-keys -t $SESSION_NAME:2 "# lnav var/log/mystocks_system.log" Enter
     tmux send-keys -t $SESSION_NAME:2 "echo '提示: 使用 :filter-in path=/api/market/ 筛选模块'" Enter
 
     # Window 3: 测试执行

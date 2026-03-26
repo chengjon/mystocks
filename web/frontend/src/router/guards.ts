@@ -16,6 +16,8 @@ interface AuthErrorLike {
  * Checks if user is authenticated before allowing access to protected routes
  */
 export const authGuard = (to: RouteLocationNormalized) => {
+  const isLhciBypass = import.meta.env.VITE_LHCI_AUTH_BYPASS === 'true'
+
   // 检查 Pinia 是否已初始化（使用官方 API）
   const pinia = getActivePinia()
   if (!pinia) {
@@ -31,6 +33,10 @@ export const authGuard = (to: RouteLocationNormalized) => {
     // Store 访问失败，允许导航
     console.warn('[authGuard] Failed to access auth store:', error)
     return true
+  }
+
+  if (isLhciBypass) {
+    authStore.initializeAuth()
   }
 
   // Check if route requires authentication (default: true)
@@ -49,6 +55,10 @@ export const authGuard = (to: RouteLocationNormalized) => {
   }
 
   // If user is authenticated and trying to access login page, redirect to main page
+  if (isLhciBypass && to.name === 'login') {
+    return true
+  }
+
   if (authStore.isAuthenticated && to.name === 'login') {
     return { name: HOME_ROUTE_NAME }
   }

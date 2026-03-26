@@ -42,7 +42,7 @@ pip install -r requirements.txt
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 
 # 或使用后台运行
-nohup python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload > server.log 2>&1 &
+nohup python -m uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload > /opt/claude/mystocks_spec/var/log/backend.log 2>&1 &
 ```
 
 ### 前端启动
@@ -56,7 +56,7 @@ npm install
 npm run dev
 
 # 或使用后台运行
-nohup npm run dev > /tmp/frontend.log 2>&1 &
+nohup npm run dev > /opt/claude/mystocks_spec/var/log/frontend.log 2>&1 &
 ```
 
 ### Docker 启动
@@ -264,7 +264,7 @@ username=admin&password=admin123
 4. 重启前端: `cd web/frontend && npm run dev`
 
 ### 后端API报错
-1. 检查后端日志: `tail -f web/backend/server.log`
+1. 检查后端日志: `tail -f /opt/claude/mystocks_spec/var/log/backend.log`
 2. 检查端口占用: `lsof -i :8020`
 3. 验证TDX连接: `curl http://localhost:8020/api/tdx/health`
 4. 重启后端: `cd web/backend && python -m uvicorn app.main:app --reload --port 8020`

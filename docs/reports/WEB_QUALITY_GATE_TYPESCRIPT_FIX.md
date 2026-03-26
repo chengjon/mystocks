@@ -186,7 +186,7 @@ npx vue-tsc --noEmit src/api/mockKlineData.ts
 
 ## 📝 相关文档
 
-1. **完整修复指南**: `docs/guides/TYPESCRIPT_ERROR_FIXING_GUIDE.md`
+1. **完整修复指南**: `docs/guides/typescript/TYPESCRIPT_ERROR_FIXING_GUIDE.md`
 2. **优化完成报告**: `docs/reports/FRONTEND_OPTION_C_COMPLETION_REPORT.md`
 3. **修复脚本**: `scripts/fix-typescript-errors.sh`
 

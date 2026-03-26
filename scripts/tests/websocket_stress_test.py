@@ -23,6 +23,7 @@ import time
 import json
 import statistics
 import os
+from pathlib import Path
 from typing import Dict, Any, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -371,13 +372,15 @@ class WebSocketStressTest:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"websocket_stress_test_{timestamp}.json"
 
-        filepath = f"/opt/claude/mystocks_spec/logs/{filename}"
+        output_dir = Path("/opt/claude/mystocks_spec/var/log/tests")
+        output_dir.mkdir(parents=True, exist_ok=True)
+        filepath = output_dir / filename
 
         try:
             with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(metrics.to_dict(), f, indent=2, ensure_ascii=False)
 
-            logger.info("💾 测试结果已保存", filepath=filepath)
+            logger.info("💾 测试结果已保存", filepath=str(filepath))
 
         except Exception as e:
             logger.error("❌ 保存测试结果失败", error=str(e))

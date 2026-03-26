@@ -59,7 +59,7 @@
 
     .matrix-container {
         position: relative;
-        min-height: 500px;
+        min-height: calc(var(--artdeco-spacing-20) * 6 + var(--artdeco-spacing-5));
         padding: var(--artdeco-spacing-6);
 
         &.loading {
@@ -115,22 +115,22 @@
     .matrix-wrapper {
         display: flex;
         gap: var(--artdeco-spacing-4);
-        max-height: 600px;
+        max-height: calc(var(--artdeco-spacing-20) * 7 + var(--artdeco-spacing-10));
         overflow: auto;
         padding: var(--artdeco-spacing-4);
         background: color-mix(in srgb, var(--artdeco-gold-primary) 2%, transparent);
         border: 1px solid var(--artdeco-gold-dim);
-        border-radius: 8px;
+        border-radius: var(--artdeco-radius-md);
     }
 
     // Row Headers
     .matrix-row-headers {
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: calc(var(--artdeco-spacing-1) / 2);
 
         .row-header {
-            height: 40px;
+            height: var(--artdeco-spacing-10);
             display: flex;
             align-items: center;
             justify-content: flex-end;
@@ -141,7 +141,7 @@
             color: var(--artdeco-fg-muted);
             cursor: pointer;
             transition: all var(--artdeco-transition-default);
-            border-right: 2px solid transparent;
+            border-right: calc(var(--artdeco-spacing-1) / 2) solid transparent;
 
             &:hover {
                 color: var(--artdeco-gold-primary);
@@ -165,13 +165,13 @@
     // Column Headers
     .matrix-column-headers {
         display: flex;
-        gap: 2px;
+        gap: calc(var(--artdeco-spacing-1) / 2);
         margin-bottom: var(--artdeco-spacing-2);
-        margin-left: 60px; // Align with cells
+        margin-left: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
 
         .column-header {
-            width: 40px;
-            height: 60px;
+            width: var(--artdeco-spacing-10);
+            height: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
             display: flex;
             align-items: flex-end;
             justify-content: center;
@@ -182,7 +182,7 @@
             color: var(--artdeco-fg-muted);
             cursor: pointer;
             transition: all var(--artdeco-transition-default);
-            border-bottom: 2px solid transparent;
+            border-bottom: calc(var(--artdeco-spacing-1) / 2) solid transparent;
             writing-mode: vertical-rl;
             text-orientation: mixed;
 
@@ -203,17 +203,17 @@
     .matrix-cells {
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: calc(var(--artdeco-spacing-1) / 2);
     }
 
     .matrix-row {
         display: flex;
-        gap: 2px;
+        gap: calc(var(--artdeco-spacing-1) / 2);
     }
 
     .matrix-cell {
-        width: 40px;
-        height: 40px;
+        width: var(--artdeco-spacing-10);
+        height: var(--artdeco-spacing-10);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -228,14 +228,14 @@
         &:hover {
             transform: scale(1.1);
             border-color: var(--artdeco-gold-primary);
-            box-shadow: 0 0 10px var(--artdeco-gold-opacity-30);
+            box-shadow: 0 0 calc(var(--artdeco-spacing-5) / 2) var(--artdeco-gold-opacity-30);
             z-index: 10;
         }
 
         // Cell intensity classes
         &.strong {
             color: var(--artdeco-fg-primary);
-            text-shadow: 0 1px 2px color-mix(in srgb, var(--artdeco-bg-global) 50%, transparent);
+            text-shadow: 0 var(--artdeco-spacing-px) calc(var(--artdeco-spacing-1) / 2) color-mix(in srgb, var(--artdeco-bg-global) 50%, transparent);
         }
 
         &.moderate {
@@ -260,11 +260,11 @@
         background: var(--artdeco-bg-card);
         border: 1px solid var(--artdeco-gold-dim);
         padding: var(--artdeco-spacing-4);
-        border-radius: 4px;
+        border-radius: var(--artdeco-spacing-1);
         pointer-events: none;
         z-index: 1000;
         box-shadow: var(--artdeco-shadow-md);
-        min-width: 200px;
+        min-width: calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-10));
 
         .tooltip-symbols {
             display: flex;
@@ -368,8 +368,8 @@
             }
 
             .gradient-bar {
-                width: 200px;
-                height: 12px;
+                width: calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-10));
+                height: var(--artdeco-spacing-3);
                 background: linear-gradient(
                     to right,
                     color-mix(in srgb, var(--artdeco-fall) 100%, transparent) 0%,
@@ -378,7 +378,7 @@
                     color-mix(in srgb, var(--artdeco-rise) 100%, transparent) 100%
                 );
                 border: 1px solid var(--artdeco-gold-dim);
-                border-radius: 2px;
+                border-radius: calc(var(--artdeco-spacing-1) / 2);
             }
         }
 

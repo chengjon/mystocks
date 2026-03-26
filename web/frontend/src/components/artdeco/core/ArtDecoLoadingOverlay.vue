@@ -31,24 +31,24 @@ defineProps<{
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(calc(var(--artdeco-spacing-1) / 2));
 
   .loading-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
-    padding: 24px;
+    gap: var(--artdeco-spacing-4);
+    padding: var(--artdeco-spacing-6);
     background-color: var(--artdeco-bg-card);
     border: 1px solid var(--artdeco-gold-opacity-20);
-    border-radius: 4px;
+    border-radius: var(--artdeco-spacing-1);
     box-shadow: var(--artdeco-shadow-lg);
-    min-width: 200px;
+    min-width: calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-10));
 
     .spinner {
-      width: 32px;
-      height: 32px;
-      border: 3px solid var(--artdeco-bg-secondary);
+      width: var(--artdeco-spacing-8);
+      height: var(--artdeco-spacing-8);
+      border: calc(var(--artdeco-spacing-px) * 3) solid var(--artdeco-bg-secondary);
       border-top-color: var(--artdeco-accent-gold);
       border-radius: 50%;
       animation: spin 1s linear infinite;
@@ -56,14 +56,14 @@ defineProps<{
 
     .message {
       color: var(--artdeco-fg-primary);
-      font-size: 14px;
+      font-size: var(--artdeco-text-sm);
     }
 
     .progress-bar {
       width: 100%;
-      height: 4px;
+      height: var(--artdeco-spacing-1);
       background-color: var(--artdeco-bg-secondary);
-      border-radius: 2px;
+      border-radius: calc(var(--artdeco-spacing-1) / 2);
       overflow: hidden;
 
       .progress-fill {

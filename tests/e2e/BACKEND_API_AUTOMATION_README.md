@@ -69,7 +69,7 @@ curl http://localhost:8020/health
 
 ```bash
 cd /opt/claude/mystocks_spec/web/frontend
-./run-api-tests.sh
+./scripts/tests/run-api-tests.sh
 ```
 
 #### 方法 2: 直接运行 Playwright

@@ -13,28 +13,28 @@
   }
 
   &--xs {
-    width: 14px;
-    height: 14px;
+    width: calc(var(--artdeco-spacing-3) + var(--artdeco-spacing-1) / 2);
+    height: calc(var(--artdeco-spacing-3) + var(--artdeco-spacing-1) / 2);
   }
 
   &--sm {
-    width: 16px;
-    height: 16px;
+    width: var(--artdeco-spacing-4);
+    height: var(--artdeco-spacing-4);
   }
 
   &--md {
-    width: 20px;
-    height: 20px;
+    width: var(--artdeco-spacing-5);
+    height: var(--artdeco-spacing-5);
   }
 
   &--lg {
-    width: 24px;
-    height: 24px;
+    width: var(--artdeco-spacing-6);
+    height: var(--artdeco-spacing-6);
   }
 
   &--xl {
-    width: 32px;
-    height: 32px;
+    width: var(--artdeco-spacing-8);
+    height: var(--artdeco-spacing-8);
   }
 
   &--spin {

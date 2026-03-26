@@ -1925,7 +1925,7 @@ Week 5-6: 自动调度
 
 1. **架构分析报告**: COMPREHENSIVE_ARCHITECTURE_ANALYSIS_2026-01-03.md
 2. **项目开发规范**: docs/standards/
-3. **代码质量工具**: docs/guides/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md
+3. **代码质量工具**: docs/operations/ci-cd/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md
 4. **GPU开发经验**: docs/api/GPU开发经验总结.md
 5. **监控栈文档**: monitoring-stack/MONITORING_STATUS.md
 

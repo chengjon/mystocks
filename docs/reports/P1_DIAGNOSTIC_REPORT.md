@@ -2,7 +2,7 @@
 
 **报告日期**: 2026-01-20
 **执行人**: Claude Code (Main CLI)
-**任务来源**: docs/guides/NEXT_WORK_TASKS.md (P1阶段)
+**任务来源**: docs/reports/tasks/NEXT_WORK_TASKS.md (P1阶段)
 **诊断范围**: web/frontend/tests/
 
 ---

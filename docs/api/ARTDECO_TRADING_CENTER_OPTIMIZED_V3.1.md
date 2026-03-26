@@ -2262,7 +2262,7 @@ npm run dev
 
 | 文档 | 路径 | 用途 |
 |------|------|------|
-| **Grid快速参考** | `docs/guides/ARTDECO_GRID_QUICK_REFERENCE.md` | 查找Grid类 |
+| **Grid快速参考** | `docs/guides/web/ARTDECO_GRID_QUICK_REFERENCE.md` | 查找Grid类 |
 | **Grid源码** | `web/frontend/src/styles/artdeco-grid.scss` | Grid实现 |
 | **架构分析** | `docs/reports/ARTDECO_SCSS_ARCHITECTURE_ANALYSIS.md` | 架构说明 |
 | **Grid完成报告** | `docs/reports/ARTDECO_GRID_SYSTEM_COMPLETION.md` | 实施总结 |

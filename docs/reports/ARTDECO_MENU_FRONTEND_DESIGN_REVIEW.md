@@ -3,11 +3,11 @@
 **审核时间**: 2026-01-19
 **审核工具**: frontend-design skill
 **审核文件**:
-1. `docs/guides/ARTDECO_MENU_STRUCTURE_REFACTOR_PLAN.md`
+1. `docs/guides/web/ARTDECO_MENU_STRUCTURE_REFACTOR_PLAN.md`
 2. `web/frontend/src/components/artdeco/core/ArtDecoIcon.vue`
 
 **参考文档**:
-- API端点统计报告: `docs/guides/API_ENDPOINTS_STATISTICS_REPORT.md`
+- API端点统计报告: `docs/api/API_ENDPOINTS_STATISTICS_REPORT.md`
 - ArtDeco组件目录: `web/frontend/ARTDECO_COMPONENTS_CATALOG.md`
 - 设计令牌: `web/frontend/src/styles/artdeco-tokens.scss`
 
@@ -976,7 +976,7 @@ interface ArtDecoIconProps {
 
 ```bash
 # 1. 创建API映射表
-touch docs/guides/ARTDECO_MENU_API_MAPPING.md
+touch docs/guides/web/ARTDECO_MENU_API_MAPPING.md
 
 # 2. 更新MenuConfig.ts，添加API信息
 # 3. 创建WebSocket集成composable
@@ -1034,7 +1034,7 @@ touch web/frontend/src/styles/artdeco-menu.scss
 - [WebSocket API - 实时通信](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
 
 ### MyStocks项目资源
-- API端点统计: `docs/guides/API_ENDPOINTS_STATISTICS_REPORT.md`
+- API端点统计: `docs/api/API_ENDPOINTS_STATISTICS_REPORT.md`
 - ArtDeco组件: `web/frontend/ARTDECO_COMPONENTS_CATALOG.md`
 - 设计令牌: `web/frontend/src/styles/artdeco-tokens.scss`
 

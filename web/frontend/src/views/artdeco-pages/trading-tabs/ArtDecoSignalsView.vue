@@ -1,40 +1,8 @@
-<template>
-  <div class="signals-view">
-    <div class="view-header">
-      <h3>交易信号监控中心</h3>
-      <div class="header-actions">
-        <span class="signals-count">当前 {{ filteredSignals.length }} 条信号</span>
-        <span class="trace-meta">DATA: {{ dataSource }}</span>
-        <span class="trace-meta">REQ_ID: {{ displayRequestId }}</span>
-        <span class="trace-meta">TIME: {{ displayProcessTime }}</span>
-      </div>
-    </div>
-
-    <ArtDecoSignalMonitoringOverview :metrics="overviewMetrics" />
-
-    <ArtDecoTradingSignalsControls
-      :signal-filters="signalFilters"
-      v-model:activeSignalFilter="activeSignalFilter"
-      @export-csv="exportSignals"
-      @batch-execute="batchExecute"
-    />
-
-    <div class="signals-list-section" v-loading="loading">
-      <ArtDecoTradingSignals :signals="filteredSignals" />
-    </div>
-
-    <ArtDecoSignalMonitoringMetrics :quality="qualityMetrics" :types="signalTypes" />
-
-    <div class="execution-history-section">
-      <ArtDecoSignalHistory :history="historySignals" />
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { strategyApi } from '@/api'
+import { ArtDecoButton, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import {
   createStrategySignalsFromResponse,
@@ -72,6 +40,18 @@ interface SignalHistoryRow {
   pnl: number
 }
 
+interface Props {
+  functionKey?: string
+  userPermissions?: string[]
+  systemConfig?: unknown
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  functionKey: '',
+  userPermissions: () => [],
+  systemConfig: undefined
+})
+
 const activeSignalFilter = ref('all')
 
 const signalFilters = [
@@ -85,6 +65,7 @@ const signals = ref<TradingSignalRow[]>([])
 const dataSource = ref<'REAL' | 'EMPTY'>('REAL')
 
 const { loading, lastRequestId, lastProcessTime, exec } = useArtDecoApi()
+const isEmbedded = computed(() => Boolean(props.functionKey))
 
 const historySignals = computed<SignalHistoryRow[]>(() => {
   return signals.value.slice(0, 6).map((item, index) => {
@@ -119,6 +100,19 @@ const displayProcessTime = computed(() => {
   }
 
   return `${value.toFixed(2)}ms`
+})
+
+const signalFilterLabel = computed(() => signalFilters.find((filter) => filter.key === activeSignalFilter.value)?.label ?? '全部')
+const buyCount = computed(() => signals.value.filter((signal) => signal.type === 'buy').length)
+const sellCount = computed(() => signals.value.filter((signal) => signal.type === 'sell').length)
+const highConfidenceCount = computed(() => signals.value.filter((signal) => signal.confidence >= 85).length)
+const pageStatusText = computed(() => {
+  if (loading.value) return '同步中'
+  return dataSource.value === 'REAL' ? '信号在线' : '暂无信号'
+})
+const pageStatusType = computed(() => {
+  if (loading.value) return 'info'
+  return dataSource.value === 'REAL' ? 'success' : 'warning'
 })
 
 const overviewMetrics = computed(() => {
@@ -278,56 +272,193 @@ onMounted(() => {
 })
 </script>
 
+<template>
+  <div class="signals-view" :class="{ 'is-embedded': isEmbedded }">
+    <section v-if="!isEmbedded" class="hero-shell artdeco-card-shell">
+      <div class="hero-rail">
+        <div class="hero-copy">
+          <span class="hero-eyebrow">signal execution desk</span>
+          <div class="hero-meta">
+            <span>COUNT: {{ filteredSignals.length }}</span>
+            <span>DATA: {{ dataSource }}</span>
+            <span>REQ_ID: {{ displayRequestId }}</span>
+            <span>TIME: {{ displayProcessTime }}</span>
+          </div>
+        </div>
+      </div>
+
+      <ArtDecoHeader
+        title="交易信号工作台"
+        subtitle="统一监控实时信号、质量评估和执行历史，形成交易域里的信号执行入口"
+        :show-status="true"
+        :status-text="pageStatusText"
+        :status-type="pageStatusType"
+      >
+        <template #actions>
+          <ArtDecoButton variant="outline" size="sm" :loading="loading" @click="loadSignals">
+            <template #icon>
+              <ArtDecoIcon name="refresh" />
+            </template>
+            刷新信号
+          </ArtDecoButton>
+        </template>
+      </ArtDecoHeader>
+    </section>
+
+    <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell">
+      <ArtDecoStatCard label="可见信号" :value="filteredSignals.length" variant="gold" />
+      <ArtDecoStatCard label="买入信号" :value="buyCount" variant="rise" />
+      <ArtDecoStatCard label="卖出信号" :value="sellCount" variant="fall" />
+      <ArtDecoStatCard label="高置信度" :value="highConfidenceCount" variant="gold" />
+    </section>
+
+    <section :class="isEmbedded ? 'embedded-shell' : 'content-shell artdeco-card-shell'">
+      <div v-if="!isEmbedded" class="content-shell-header">
+        <div class="content-shell-copy">
+          <span class="content-shell-kicker">signal review route</span>
+          <h3 class="content-shell-title">信号总览与执行面板</h3>
+          <p class="content-shell-subtitle">从信号过滤、实时列表到质量分布和执行历史，形成完整的信号工作流。</p>
+        </div>
+        <div class="content-shell-meta">
+          <span>FILTER: {{ signalFilterLabel }}</span>
+          <span>VISIBLE: {{ filteredSignals.length }}</span>
+        </div>
+      </div>
+
+      <ArtDecoSignalMonitoringOverview :metrics="overviewMetrics" />
+
+      <ArtDecoTradingSignalsControls
+        :signal-filters="signalFilters"
+        v-model:activeSignalFilter="activeSignalFilter"
+        @export-csv="exportSignals"
+        @batch-execute="batchExecute"
+      />
+
+      <div class="signals-list-section" v-loading="loading">
+        <ArtDecoTradingSignals :signals="filteredSignals" />
+      </div>
+
+      <ArtDecoSignalMonitoringMetrics :quality="qualityMetrics" :types="signalTypes" />
+
+      <div class="execution-history-section">
+        <ArtDecoSignalHistory :history="historySignals" />
+      </div>
+    </section>
+  </div>
+</template>
+
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .signals-view {
-  min-height: 900px;
+  min-height: calc(var(--artdeco-breakpoint-md) - var(--artdeco-spacing-20) - var(--artdeco-spacing-8));
   padding: var(--artdeco-spacing-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-6);
+}
 
-  .view-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: var(--artdeco-spacing-6);
+.signals-view.is-embedded {
+  min-height: auto;
+  padding: 0;
+  gap: var(--artdeco-spacing-4);
+}
 
-    h3 {
-      font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-text-xl);
-      font-weight: 700;
-      margin: 0;
-      text-transform: uppercase;
-      letter-spacing: var(--artdeco-tracking-wider);
-      color: var(--artdeco-gold-primary);
-    }
+.hero-shell,
+.stats-strip,
+.content-shell,
+.embedded-shell {
+  width: 100%;
+}
 
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: var(--artdeco-spacing-4);
+.hero-shell,
+.content-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-5);
+}
 
-      .signals-count {
-        font-size: var(--artdeco-text-xs);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: var(--artdeco-tracking-wide);
-      }
+.hero-rail,
+.content-shell-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--artdeco-spacing-4);
+  flex-wrap: wrap;
+}
 
-      .trace-meta {
-        font-size: var(--artdeco-text-xs);
-        color: var(--artdeco-fg-muted);
-        text-transform: uppercase;
-        letter-spacing: var(--artdeco-tracking-wide);
-      }
-    }
+.hero-copy,
+.content-shell-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-2);
+}
+
+.hero-eyebrow,
+.content-shell-kicker {
+  font-family: var(--artdeco-font-mono);
+  font-size: var(--artdeco-text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-wider);
+  color: var(--artdeco-gold-dim);
+}
+
+.hero-meta,
+.content-shell-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-3);
+  flex-wrap: wrap;
+  font-family: var(--artdeco-font-mono);
+  font-size: var(--artdeco-text-xs);
+  color: var(--artdeco-fg-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-wide);
+}
+
+.stats-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--artdeco-spacing-4);
+}
+
+.content-shell-title {
+  margin: 0;
+  font-family: var(--artdeco-font-display);
+  font-size: var(--artdeco-text-xl);
+  color: var(--artdeco-fg-primary);
+}
+
+.content-shell-subtitle {
+  margin: 0;
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
+  line-height: var(--artdeco-leading-relaxed);
+}
+
+.signals-list-section {
+  margin-bottom: var(--artdeco-spacing-6);
+}
+
+.execution-history-section {
+  margin-top: var(--artdeco-spacing-6);
+}
+
+@media (width <= 75rem) {
+  .stats-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width <= 48rem) {
+  .stats-strip {
+    grid-template-columns: 1fr;
   }
 
-  .signals-list-section {
-    margin-bottom: var(--artdeco-spacing-6);
-  }
-
-  .execution-history-section {
-    margin-top: var(--artdeco-spacing-6);
+  .hero-meta,
+  .content-shell-meta {
+    width: 100%;
   }
 }
 </style>

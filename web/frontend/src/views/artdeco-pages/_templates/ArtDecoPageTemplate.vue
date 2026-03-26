@@ -248,5 +248,5 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
-@import './styles/ArtDecoPageTemplate';
+@use './styles/ArtDecoPageTemplate';
 </style>

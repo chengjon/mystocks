@@ -32,6 +32,9 @@ from models import (
 )
 
 
+DEFAULT_OUTPUT_DIR = "/opt/claude/mystocks_spec/docs/references/function-classification-manual"
+
+
 class MarkdownWriter:
     """Markdown 文档生成器"""
 
@@ -508,6 +511,6 @@ class MarkdownWriter:
 
 if __name__ == "__main__":
     # 测试
-    output_dir = "/opt/claude/mystocks_spec/docs/function-classification-manual"
+    output_dir = DEFAULT_OUTPUT_DIR
     writer = MarkdownWriter(output_dir)
     print(f"Markdown writer initialized with output dir: {output_dir}")

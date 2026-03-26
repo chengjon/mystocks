@@ -449,7 +449,7 @@ def main():
             print(f"  {gap_type}: {len(items)} 个问题")
 
     # 生成补充文档
-    output_dir = "/opt/claude/mystocks_spec/logs/api_docs_gaps"
+    output_dir = "/opt/claude/mystocks_spec/var/log/api_docs_gaps"
     analyzer.generate_missing_docs(output_dir)
 
     # 保存详细结果
@@ -476,7 +476,7 @@ def main():
         "gaps": gaps,
     }
 
-    results_file = f"/opt/claude/mystocks_spec/logs/api_docs_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    results_file = f"/opt/claude/mystocks_spec/var/log/api_docs_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     with open(results_file, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
 

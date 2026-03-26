@@ -150,7 +150,7 @@ npm run dev -- --port 3021
 - `src/components/artdeco/core/ArtDecoBreadcrumb.vue` - 删除
 
 **参考文档**:
-- `docs/guides/SASS_DEPRECATION_FIX.md` - Sass 警告修复
+- `docs/guides/frontend/SASS_DEPRECATION_FIX.md` - Sass 警告修复
 - `docs/reports/TYPES_EXPORT_FIX_COMPLETION.md` - 类型导出修复
 
 ---

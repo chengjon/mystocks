@@ -1,41 +1,69 @@
 <template>
-  <div class="backtest-analysis-page">
-    <BacktestHeader
-      subtitle="面向策略设计、参数编排、任务调度与结果复盘的一体化工作台"
-      :status-text="systemStatus"
-      :last-updated="lastUpdated"
-      @reset="resetConfig"
-      @run="handleRunBacktest"
-    />
+  <div class="backtest-analysis-page" :class="{ 'is-embedded': isEmbedded }">
+    <section v-if="!isEmbedded" class="hero-shell artdeco-card-shell">
+      <BacktestHeader
+        subtitle="面向策略设计、参数编排、任务调度与结果复盘的一体化工作台"
+        :status-text="systemStatus"
+        :last-updated="lastUpdated"
+        @reset="resetConfig"
+        @run="handleRunBacktest"
+      />
+    </section>
 
-    <BacktestKpiGrid :items="kpiItems" />
+    <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell">
+      <BacktestKpiGrid :items="kpiItems" />
+    </section>
 
-    <section v-if="selectedStrategyId" class="context-strip artdeco-card">
-      <span class="context-label">当前策略上下文</span>
-      <strong class="context-value">ID {{ selectedStrategyId }}</strong>
-      <span v-if="selectedStrategySnapshot" class="context-meta">
-        {{ selectedStrategySnapshot.status.toUpperCase() }} · 参数 {{ Object.keys(selectedStrategySnapshot.parameters).length }} 项
-      </span>
-      <span
-        v-if="selectedStrategySnapshot?.backtest"
-        :class="['context-backtest', selectedStrategySnapshot.backtest.status]"
+    <section v-else class="embedded-summary artdeco-card">
+      <div class="embedded-summary-copy">
+        <span class="embedded-summary-eyebrow">backtest module</span>
+        <h2 class="embedded-summary-title">策略回测工作流</h2>
+        <p class="embedded-summary-subtitle">在 TradingCenter 内保持参数调度、任务推进和报告复盘的统一节奏。</p>
+      </div>
+      <div class="embedded-summary-meta">
+        <span>STATUS: {{ systemStatus }}</span>
+        <span>UPDATED: {{ lastUpdated }}</span>
+      </div>
+      <div class="embedded-summary-actions">
+        <ArtDecoButton variant="outline" size="sm" @click="resetConfig">重置参数</ArtDecoButton>
+        <ArtDecoButton variant="solid" size="sm" @click="handleRunBacktest">启动回测</ArtDecoButton>
+      </div>
+    </section>
+
+    <section :class="isEmbedded ? 'embedded-shell' : 'content-shell artdeco-card-shell'">
+      <section v-if="selectedStrategyId" class="context-strip artdeco-card">
+        <span class="context-label">当前策略上下文</span>
+        <strong class="context-value">ID {{ selectedStrategyId }}</strong>
+        <span v-if="selectedStrategySnapshot" class="context-meta">
+          {{ selectedStrategySnapshot.status.toUpperCase() }} · 参数 {{ Object.keys(selectedStrategySnapshot.parameters).length }} 项
+        </span>
+        <span
+          v-if="selectedStrategySnapshot?.backtest"
+          :class="['context-backtest', selectedStrategySnapshot.backtest.status]"
+        >
+          回测 {{ selectedStrategySnapshot.backtest.status.toUpperCase() }}
+        </span>
+        <span v-if="selectedStrategySnapshot?.optimization" class="context-meta">
+          优化评分 {{ selectedStrategySnapshot.optimization.score }}
+        </span>
+      </section>
+
+      <section class="ops-strip">
+        <article v-for="item in opsOverview" :key="item.label" class="ops-item artdeco-card">
+          <span class="label">{{ item.label }}</span>
+          <strong class="value" :class="item.variant">{{ item.value }}</strong>
+          <span class="meta">{{ item.meta }}</span>
+        </article>
+      </section>
+
+      <BacktestWorkbenchTabs
+        v-model:active-tab="activeTab"
+        :tabs="tabsWithIcons"
+        eyebrow="strategy validation route"
+        title="回测执行工作流"
+        :description="activeTabMeta.description"
+        :meta-items="backtestRailMeta"
       >
-        回测 {{ selectedStrategySnapshot.backtest.status.toUpperCase() }}
-      </span>
-      <span v-if="selectedStrategySnapshot?.optimization" class="context-meta">
-        优化评分 {{ selectedStrategySnapshot.optimization.score }}
-      </span>
-    </section>
-
-    <section class="ops-strip">
-      <article v-for="item in opsOverview" :key="item.label" class="ops-item artdeco-card">
-        <span class="label">{{ item.label }}</span>
-        <strong class="value" :class="item.variant">{{ item.value }}</strong>
-        <span class="meta">{{ item.meta }}</span>
-      </article>
-    </section>
-
-    <BacktestWorkbenchTabs v-model:active-tab="activeTab" :tabs="tabs">
       <section v-if="activeTab === 'designer'" class="tab-panel">
         <div class="panel-grid">
           <ArtDecoCard title="策略骨架" hoverable>
@@ -174,16 +202,58 @@
           </ArtDecoCard>
         </div>
       </section>
-    </BacktestWorkbenchTabs>
+      </BacktestWorkbenchTabs>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { ArtDecoButton, ArtDecoCard, ArtDecoInput, ArtDecoSelect, ArtDecoTable } from '@/components/artdeco'
 import BacktestHeader from './components/BacktestHeader.vue'
 import BacktestKpiGrid from './components/BacktestKpiGrid.vue'
 import BacktestWorkbenchTabs from './components/BacktestWorkbenchTabs.vue'
 import { useBacktestAnalysisViewModel } from './backtestAnalysisViewModel'
+
+interface Props {
+  functionKey?: string
+  userPermissions?: string[]
+  systemConfig?: unknown
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  functionKey: '',
+  userPermissions: () => [],
+  systemConfig: undefined
+})
+const isEmbedded = computed(() => Boolean(props.functionKey))
+
+const backtestTabMetaMap = {
+  designer: {
+    icon: 'StrategyDesign',
+    description: '梳理策略骨架、信号流程和研发输入，确保回测前的设计约束清晰可追踪。'
+  },
+  library: {
+    icon: 'StrategyManagement',
+    description: '查看策略库、历史模板和候选策略，作为回测任务的上游输入池。'
+  },
+  tasks: {
+    icon: 'Backtest',
+    description: '聚合回测任务状态、优先级和排队信息，形成当前执行队列视图。'
+  },
+  execution: {
+    icon: 'GPUBacktest',
+    description: '集中维护参数配置、进度跟踪和日志流，作为回测执行中枢。'
+  },
+  optimize: {
+    icon: 'CustomIndicator',
+    description: '从当前回测上下文切换到参数优化候选，识别可进一步提升的组合。'
+  },
+  reports: {
+    icon: 'Fundamental',
+    description: '沉淀回测报告、摘要和复盘结果，形成可回写的策略验证档案。'
+  }
+} as const
 
 const {
   activeTab,
@@ -213,6 +283,23 @@ const {
   systemStatus,
   tabs
 } = useBacktestAnalysisViewModel()
+
+const tabsWithIcons = computed(() =>
+  tabs.value.map((tab) => ({
+    ...tab,
+    icon: backtestTabMetaMap[tab.key as keyof typeof backtestTabMetaMap]?.icon ?? 'Backtest'
+  }))
+)
+
+const activeTabMeta = computed(
+  () => backtestTabMetaMap[activeTab.value as keyof typeof backtestTabMetaMap] ?? backtestTabMetaMap.execution
+)
+
+const backtestRailMeta = computed(() => [
+  `STATUS: ${systemStatus.value}`,
+  `UPDATED: ${lastUpdated.value}`,
+  `TABS: ${tabs.value.length}`
+])
 </script>
 
 <style scoped lang="scss">

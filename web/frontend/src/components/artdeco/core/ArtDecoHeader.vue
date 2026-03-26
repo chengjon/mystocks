@@ -34,7 +34,7 @@
         align-items: center;
         padding: var(--artdeco-spacing-4) var(--artdeco-spacing-6);
         background: var(--artdeco-bg-surface);
-        border-bottom: 2px solid var(--artdeco-border-default);
+        border-bottom: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px)) solid var(--artdeco-border-default);
         position: relative;
 
         &::after {
@@ -96,10 +96,10 @@
     }
 
     .status-dot {
-        width: 8px;
-        height: 8px;
+        width: var(--artdeco-spacing-2);
+        height: var(--artdeco-spacing-2);
         background: var(--artdeco-gold-primary);
-        box-shadow: 0 0 8px var(--artdeco-gold-primary);
+        box-shadow: 0 0 var(--artdeco-spacing-2) var(--artdeco-gold-primary);
     }
 
     .status-text {

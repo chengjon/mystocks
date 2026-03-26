@@ -39,26 +39,26 @@ defineProps({
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
-    padding: 20px;
+    gap: var(--artdeco-spacing-5);
+    padding: var(--artdeco-spacing-5);
 }
 .children {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: calc(var(--artdeco-spacing-sm) + var(--artdeco-spacing-xs) + var(--artdeco-radius-md) + var(--artdeco-radius-sm));
 }
 .node {
     background: var(--artdeco-gold-opacity-10);
     border: 1px solid var(--artdeco-gold-primary);
-    padding: 15px;
+    padding: calc(var(--artdeco-spacing-sm) + var(--artdeco-spacing-xs) + var(--artdeco-radius-md) + var(--artdeco-radius-sm));
     text-align: center;
-    min-width: 120px;
+    min-width: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-10));
     .label {
-      font-size: 12px;
-      margin-bottom: 5px;
+      font-size: var(--artdeco-text-xs);
+      margin-bottom: calc(var(--artdeco-spacing-xs) + var(--artdeco-spacing-px));
     }
     .value {
-      font-size: 18px;
+      font-size: calc(var(--artdeco-text-base) + var(--artdeco-radius-md));
       font-weight: bold;
       color: var(--artdeco-gold-primary);
     }
@@ -67,5 +67,16 @@ defineProps({
     background: var(--artdeco-gold-primary);
     color: var(--artdeco-bg-global);
     .value { color: var(--artdeco-bg-global); }
+}
+
+@media (width <= 75rem) {
+    .children {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .node {
+        width: 100%;
+    }
 }
 </style>

@@ -325,7 +325,7 @@ All criteria from optimization plan met:
 ## 📚 Documentation References
 
 - [ArtDeco Menu Optimization Review](./ARTDECO_MENU_OPTIMIZATION_REVIEW.md)
-- [ArtDeco Menu Structure Refactor Plan](../guides/ARTDECO_MENU_STRUCTURE_REFACTOR_PLAN.md)
+- [ArtDeco Menu Structure Refactor Plan](../guides/web/ARTDECO_MENU_STRUCTURE_REFACTOR_PLAN.md)
 - [ArtDeco Components Catalog](../../web/frontend/ARTDECO_COMPONENTS_CATALOG.md)
 
 ---

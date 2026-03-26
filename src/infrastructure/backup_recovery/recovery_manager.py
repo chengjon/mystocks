@@ -22,12 +22,37 @@ from src.data_access.tdengine_access import TDengineDataAccess
 from src.storage.database.connection_manager import DatabaseConnectionManager
 
 logger = logging.getLogger(__name__)
+RECOVERY_LOG_DIR = Path(__file__).resolve().parents[3] / "var" / "log"
+
+
+def _load_json_object(payload: str) -> Dict[str, Any]:
+    data = json.loads(payload)
+    return data if isinstance(data, dict) else {}
+
+
+def _validated_tar_members(members: list[tarfile.TarInfo], destination: Path) -> list[tarfile.TarInfo]:
+    base_dir = destination.resolve()
+    safe_members: list[tarfile.TarInfo] = []
+
+    for member in members:
+        target_path = (base_dir / member.name).resolve()
+        if base_dir not in (target_path, *target_path.parents):
+            raise ValueError(f"Unsafe path in tar file: {member.name}")
+
+        if member.issym() or member.islnk():
+            link_target = (target_path.parent / member.linkname).resolve()
+            if base_dir not in (link_target, *link_target.parents):
+                raise ValueError(f"Unsafe link target in tar file: {member.linkname}")
+
+        safe_members.append(member)
+
+    return safe_members
 
 
 class RecoveryManager:
     """备份恢复管理器"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.conn_manager = DatabaseConnectionManager()
         self.tdengine_access = TDengineDataAccess()
         self.postgresql_access = PostgreSQLDataAccess()
@@ -38,7 +63,7 @@ class RecoveryManager:
         self.tdengine_backup_dir.mkdir(parents=True, exist_ok=True)
         self.postgresql_backup_dir.mkdir(parents=True, exist_ok=True)
 
-    def restore_backup(self, backup_file: Path, recovery_id: str = None) -> Tuple[bool, str]:
+    def restore_backup(self, backup_file: Path, recovery_id: str | None = None) -> Tuple[bool, str]:
         """
         恢复备份
 
@@ -52,7 +77,8 @@ class RecoveryManager:
         if recovery_id is None:
             recovery_id = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-        log_file = Path(f"logs/recovery_{recovery_id}.log")
+        RECOVERY_LOG_DIR.mkdir(parents=True, exist_ok=True)
+        log_file = RECOVERY_LOG_DIR / f"recovery_{recovery_id}.log"
         self._log_recovery(log_file, f"开始恢复备份: {backup_file}")
 
         try:
@@ -72,26 +98,9 @@ class RecoveryManager:
 
             if backup_file.suffix == ".gz":
                 with tarfile.open(backup_file, "r:gz") as tar:
-                    # 安全地提取tar文件，防止路径遍历
-                    def is_safe_path(path, base_path):
-                        """检查tar文件中的路径是否安全，防止路径遍历"""
-                        import os
-
-                        # 规范化路径
-                        normalized_path = os.path.normpath(path)
-                        # 检查是否包含"../"或"..\"
-                        if ".." in normalized_path.split(os.sep) or ".." in normalized_path.split("/"):
-                            return False
-                        # 检查规范化后的路径是否以基础路径开头
-                        full_path = os.path.join(base_path, normalized_path)
-                        return os.path.commonpath([base_path, full_path]) == base_path
-
-                    # 验证所有成员路径
-                    for member in tar.getmembers():
-                        if not is_safe_path(member.name, str(backup_dir)):
-                            raise ValueError(f"Unsafe path in tar file: {member.name}")
-
-                    tar.extractall(backup_dir)
+                    safe_members = _validated_tar_members(tar.getmembers(), backup_dir)
+                    # `filter="data"` enables Python 3.12 tarfile hardening in addition to the path check above.
+                    tar.extractall(backup_dir, members=safe_members, filter="data")
             else:
                 # 已是解压目录
                 shutil.copytree(backup_file, backup_dir, dirs_exist_ok=True)
@@ -149,16 +158,16 @@ class RecoveryManager:
                     # 查找metadata.json文件
                     for member in tar.getmembers():
                         if "metadata.json" in member.name:
-                            f = tar.extractfile(member)
-                            if f:
-                                content = f.read().decode("utf-8")
-                                return json.loads(content)
+                            extracted_file = tar.extractfile(member)
+                            if extracted_file:
+                                content = extracted_file.read().decode("utf-8")
+                                return _load_json_object(content)
             elif backup_file.is_dir():
                 # 目录形式的备份
                 metadata_file = backup_file / "metadata.json"
                 if metadata_file.exists():
-                    with open(metadata_file, "r", encoding="utf-8") as f:
-                        return json.load(f)
+                    with open(metadata_file, "r", encoding="utf-8") as metadata_handle:
+                        return _load_json_object(metadata_handle.read())
 
         except Exception as e:
             logger.error("读取备份元数据失败: %s", e)
@@ -199,7 +208,7 @@ class RecoveryManager:
             logger.error("恢复到PostgreSQL失败 %s: %s", table_name, e)
             return False
 
-    def _log_recovery(self, log_file: Path, message: str):
+    def _log_recovery(self, log_file: Path, message: str) -> None:
         """记录恢复日志"""
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_entry = f"[{timestamp}] {message}\n"
@@ -209,7 +218,7 @@ class RecoveryManager:
 
     def get_recovery_status(self, recovery_id: str) -> Dict[str, Any]:
         """获取恢复状态"""
-        log_file = Path(f"logs/recovery_{recovery_id}.log")
+        log_file = RECOVERY_LOG_DIR / f"recovery_{recovery_id}.log"
         if not log_file.exists():
             return {"status": "not_found", "message": "恢复任务不存在"}
 
@@ -237,7 +246,7 @@ class RecoveryManager:
 
     def list_recovery_tasks(self) -> List[Dict[str, Any]]:
         """列出所有恢复任务"""
-        recovery_logs = list(Path("logs").glob("recovery_*.log"))
+        recovery_logs = list(RECOVERY_LOG_DIR.glob("recovery_*.log"))
         tasks = []
 
         for log_file in recovery_logs:
@@ -258,7 +267,7 @@ class RecoveryManager:
         return tasks
 
 
-def main():
+def main() -> None:
     """主函数 - 用于测试"""
     recovery_manager = RecoveryManager()
 

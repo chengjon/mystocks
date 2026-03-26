@@ -108,8 +108,8 @@ logs/
 - `CLAUDE.md`
 - `AGENTS.md`
 - `GEMINI.md`
-- `PHASE6_E2E_STATUS_SUMMARY.md`
-- `PHASE6_E2E_TEST_TASK_COMPLETION.md`
+- `docs/reports/completion_reports/PHASE6_E2E_STATUS_SUMMARY.md`
+- `docs/reports/completion_reports/PHASE6_E2E_TEST_TASK_COMPLETION.md`
 - `__init__.py`
 
 ---
@@ -169,8 +169,8 @@ MyStocks根目录/
 ├── CLAUDE.md                      # AI助手配置
 ├── AGENTS.md                      # OpenSpec配置
 ├── GEMINI.md                      # GEMINI配置
-├── PHASE6_E2E_STATUS_SUMMARY.md   # E2E测试状态
-├── PHASE6_E2E_TEST_TASK_COMPLETION.md # E2E测试完成
+├── docs/reports/completion_reports/PHASE6_E2E_STATUS_SUMMARY.md   # E2E测试状态
+├── docs/reports/completion_reports/PHASE6_E2E_TEST_TASK_COMPLETION.md # E2E测试完成
 └── __init__.py                    # Python包初始化
 ```
 

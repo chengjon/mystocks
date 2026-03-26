@@ -51,7 +51,7 @@ class SecurityScanner:
 
     def __init__(self, project_root: str = None):
         self.project_root = Path(project_root or os.getcwd())
-        self.results_dir = self.project_root / "logs" / "security"
+        self.results_dir = self.project_root / "var" / "log" / "security"
         self.results_dir.mkdir(parents=True, exist_ok=True)
 
         # 设置日志

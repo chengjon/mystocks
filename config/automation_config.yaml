@@ -298,7 +298,7 @@ monitoring:
   logging:
     level: INFO
     format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    file: "logs/automation.log"
+    file: "var/log/automation.log"
     max_bytes: 10485760  # 10MB
     backup_count: 5
 

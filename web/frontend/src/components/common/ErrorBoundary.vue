@@ -184,60 +184,60 @@ onUnmounted(() => {
         display: flex;
         align-items: center;
         justify-content: center;
-        background: var(--bg-primary);
+        background: var(--artdeco-bg-global);
         background-image: repeating-linear-gradient(
             45deg,
             transparent,
-            transparent 10px,
-            rgb(212 175 55 / 2%) 10px,
-            rgb(212 175 55 / 2%) 11px
+            transparent var(--artdeco-spacing-3),
+            color-mix(in srgb, var(--artdeco-gold-primary) 2%, transparent) var(--artdeco-spacing-3),
+            color-mix(in srgb, var(--artdeco-gold-primary) 2%, transparent) calc(var(--artdeco-spacing-3) + var(--artdeco-spacing-px))
         );
-        padding: 20px;
+        padding: var(--artdeco-spacing-5);
     }
 
     .error-content {
-        max-width: 600px;
+        max-width: calc(var(--artdeco-spacing-32) * 4 + var(--artdeco-spacing-10));
         width: 100%;
-        background: var(--bg-secondary);
-        border: 1px solid var(--gold-dim);
-        border-radius: 8px;
-        padding: 40px;
+        background: var(--artdeco-bg-card);
+        border: 1px solid var(--artdeco-border-default);
+        border-radius: var(--artdeco-radius-md);
+        padding: var(--artdeco-spacing-10);
         text-align: center;
-        box-shadow: 0 8px 32px rgb(0 0 0 / 10%);
+        box-shadow: var(--artdeco-shadow-xl);
 
         .error-icon {
-            font-size: 48px;
-            margin-bottom: 20px;
+            font-size: var(--artdeco-text-5xl);
+            margin-bottom: var(--artdeco-spacing-5);
         }
 
         .error-title {
             font-family: var(--font-display);
-            font-size: 28px;
-            color: var(--text-primary);
+            font-size: var(--artdeco-text-2xl);
+            color: var(--artdeco-fg-primary);
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 16px;
+            letter-spacing: calc(var(--artdeco-spacing-px) * 2);
+            margin-bottom: var(--artdeco-spacing-4);
             font-weight: 600;
         }
 
         .error-description {
             font-family: var(--font-body);
-            font-size: 16px;
-            color: var(--text-muted);
+            font-size: var(--artdeco-text-base);
+            color: var(--artdeco-fg-muted);
             line-height: 1.6;
-            margin-bottom: 30px;
+            margin-bottom: var(--artdeco-spacing-8);
         }
 
         .error-details {
-            margin-bottom: 30px;
+            margin-bottom: var(--artdeco-spacing-8);
             text-align: left;
 
             details {
                 summary {
                     cursor: pointer;
                     font-weight: 600;
-                    color: var(--gold-primary);
-                    margin-bottom: 10px;
+                    color: var(--artdeco-gold-primary);
+                    margin-bottom: var(--artdeco-spacing-2);
 
                     &:hover {
                         text-decoration: underline;
@@ -245,16 +245,16 @@ onUnmounted(() => {
                 }
 
                 .error-stack {
-                    background: rgb(0 0 0 / 5%);
-                    border: 1px solid var(--gold-dim);
-                    border-radius: 4px;
-                    padding: 15px;
-                    font-family: 'Courier New', monospace;
-                    font-size: 12px;
-                    color: var(--text-primary);
+                    background: color-mix(in srgb, var(--artdeco-bg-global) 35%, var(--artdeco-bg-card));
+                    border: 1px solid var(--artdeco-border-default);
+                    border-radius: var(--artdeco-radius-sm);
+                    padding: calc(var(--artdeco-spacing-3) + var(--artdeco-spacing-px) * 3);
+                    font-family: var(--font-mono);
+                    font-size: var(--artdeco-text-xs);
+                    color: var(--artdeco-fg-primary);
                     white-space: pre-wrap;
                     word-break: break-all;
-                    max-height: 300px;
+                    max-height: calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-10));
                     overflow-y: auto;
                     margin: 0;
                 }
@@ -263,56 +263,61 @@ onUnmounted(() => {
 
         .error-actions {
             display: flex;
-            gap: 12px;
+            gap: var(--artdeco-spacing-3);
             justify-content: center;
-            margin-bottom: 30px;
+            margin-bottom: var(--artdeco-spacing-8);
             flex-wrap: wrap;
 
             .button {
                 display: inline-flex;
                 align-items: center;
-                gap: 8px;
-                padding: 12px 24px;
+                gap: var(--artdeco-spacing-2);
+                padding: var(--artdeco-spacing-3) var(--artdeco-spacing-6);
                 border: none;
                 font-family: var(--font-display);
-                font-size: 14px;
+                font-size: var(--artdeco-text-sm);
                 text-transform: uppercase;
-                letter-spacing: 1px;
+                letter-spacing: var(--artdeco-tracking-wide);
                 cursor: pointer;
-                border-radius: 0;
-                transition: all 0.3s ease;
+                border-radius: var(--artdeco-radius-none);
+                transition:
+                    background-color var(--artdeco-transition-base) var(--artdeco-ease-out),
+                    color var(--artdeco-transition-base) var(--artdeco-ease-out),
+                    border-color var(--artdeco-transition-base) var(--artdeco-ease-out),
+                    box-shadow var(--artdeco-transition-base) var(--artdeco-ease-out),
+                    transform var(--artdeco-transition-base) var(--artdeco-ease-out);
                 font-weight: 600;
 
                 &.primary {
-                    background: var(--gold-primary);
-                    color: var(--bg-primary);
+                    background: var(--artdeco-gold-primary);
+                    color: var(--artdeco-bg-global);
 
                     &:hover {
-                        background: var(--gold-muted);
-                        box-shadow: 0 0 20px rgb(212 175 55 / 40%);
-                        transform: translateY(-2px);
+                        background: var(--artdeco-gold-dim);
+                        box-shadow: var(--artdeco-glow-intense);
+                        transform: translateY(calc(var(--artdeco-spacing-px) * -2));
                     }
                 }
 
                 &.secondary {
-                    background: var(--gold-secondary);
-                    color: var(--gold-primary);
-                    border: 2px solid var(--gold-primary);
+                    background: var(--artdeco-bg-card);
+                    color: var(--artdeco-gold-primary);
+                    border: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-gold-primary);
 
                     &:hover {
-                        background: var(--gold-primary);
-                        color: var(--bg-primary);
+                        background: var(--artdeco-gold-primary);
+                        color: var(--artdeco-bg-global);
                     }
                 }
 
                 &.tertiary {
                     background: transparent;
-                    color: var(--text-muted);
-                    border: 1px solid var(--text-muted);
+                    color: var(--artdeco-fg-muted);
+                    border: 1px solid var(--artdeco-fg-muted);
 
                     &:hover {
-                        color: var(--gold-primary);
-                        border-color: var(--gold-primary);
+                        color: var(--artdeco-gold-primary);
+                        border-color: var(--artdeco-gold-primary);
                     }
                 }
             }
@@ -320,23 +325,23 @@ onUnmounted(() => {
             .reported-message {
                 display: inline-flex;
                 align-items: center;
-                gap: 8px;
-                color: #67c23a;
+                gap: var(--artdeco-spacing-2);
+                color: var(--artdeco-success);
                 font-weight: 600;
-                font-size: 14px;
+                font-size: var(--artdeco-text-sm);
             }
         }
 
         .error-info {
-            border-top: 1px solid var(--gold-dim);
-            padding-top: 20px;
+            border-top: 1px solid var(--artdeco-border-default);
+            padding-top: var(--artdeco-spacing-5);
             text-align: left;
 
             .timestamp,
             .error-id {
-                margin: 0 0 8px 0;
-                font-size: 12px;
-                color: var(--text-muted);
+                margin: 0 0 var(--artdeco-spacing-2) 0;
+                font-size: var(--artdeco-text-xs);
+                color: var(--artdeco-fg-muted);
 
                 &:last-child {
                     margin-bottom: 0;
@@ -344,30 +349,30 @@ onUnmounted(() => {
             }
 
             .error-id {
-                font-family: 'Courier New', monospace;
-                background: rgb(0 0 0 / 5%);
-                padding: 2px 6px;
-                border-radius: 3px;
+                font-family: var(--font-mono);
+                background: color-mix(in srgb, var(--artdeco-bg-global) 20%, var(--artdeco-bg-card));
+                padding: calc(var(--artdeco-spacing-px) * 2) var(--artdeco-spacing-2);
+                border-radius: var(--artdeco-radius-sm);
                 display: inline-block;
             }
         }
     }
 
-    @media (width <= 768px) {
+    @media (width <= var(--artdeco-breakpoint-md)) {
         .error-content {
-            padding: 30px 20px;
+            padding: var(--artdeco-spacing-8) var(--artdeco-spacing-5);
 
             .error-icon {
-                font-size: 36px;
+                font-size: var(--artdeco-text-4xl);
             }
 
             .error-title {
-                font-size: 24px;
-                letter-spacing: 1px;
+                font-size: var(--artdeco-text-xl);
+                letter-spacing: var(--artdeco-tracking-wide);
             }
 
             .error-description {
-                font-size: 14px;
+                font-size: var(--artdeco-text-sm);
             }
 
             .error-actions {
@@ -380,8 +385,8 @@ onUnmounted(() => {
             }
 
             .error-details .error-stack {
-                font-size: 11px;
-                max-height: 200px;
+                font-size: var(--artdeco-text-xs);
+                max-height: calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-4));
             }
         }
     }

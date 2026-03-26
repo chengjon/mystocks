@@ -136,8 +136,8 @@ git add \
 - `/.github/workflows/e2e-testing.yml`
 - `/.github/workflows/playwright.yml`
 - `/docs/guides/CLAUDE_AGENTS_SUMMARY.md`
-- `/docs/guides/WEB_TESTING_TOOLS_SETUP.md`
-- `/docs/guides/前后端整合与部署完整方案.md`
+- `/docs/guides/web/WEB_TESTING_TOOLS_SETUP.md`
+- `/docs/api/guides/integration/前后端整合与部署完整方案.md`
 - `/web/frontend/FRONTEND_IMPLEMENTATION_SUMMARY.md`
 - `/web/frontend/FRONTEND_SSE_INTEGRATION_COMPLETE.md`
 - `/web/frontend/TESTING_GUIDE.md`
@@ -164,8 +164,8 @@ git add \
   .github/workflows/e2e-testing.yml \
   .github/workflows/playwright.yml \
   docs/guides/CLAUDE_AGENTS_SUMMARY.md \
-  docs/guides/WEB_TESTING_TOOLS_SETUP.md \
-  docs/guides/前后端整合与部署完整方案.md \
+  docs/guides/web/WEB_TESTING_TOOLS_SETUP.md \
+  docs/api/guides/integration/前后端整合与部署完整方案.md \
   web/frontend/FRONTEND_IMPLEMENTATION_SUMMARY.md \
   web/frontend/FRONTEND_SSE_INTEGRATION_COMPLETE.md \
   web/frontend/TESTING_GUIDE.md \

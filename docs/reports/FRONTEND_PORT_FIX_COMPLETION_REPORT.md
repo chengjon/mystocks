@@ -50,7 +50,7 @@ availablePort = await findAvailablePort(3000, 3009);
 
 | 文件 | 行数 | 状态 | 说明 |
 |------|------|------|------|
-| `docs/guides/WEB_FRONTEND_STARTUP_GUIDE.md` | 600+ | ✅ 已创建 | Web前端启动标准流程与问题排除指南 |
+| `docs/guides/web/WEB_FRONTEND_STARTUP_GUIDE.md` | 600+ | ✅ 已创建 | Web前端启动标准流程与问题排除指南 |
 
 **文档内容概要**:
 
@@ -183,10 +183,10 @@ lsof -i :3000-3009
 
 ```bash
 # 验证文档存在
-ls -lh docs/guides/WEB_FRONTEND_STARTUP_GUIDE.md
+ls -lh docs/guides/web/WEB_FRONTEND_STARTUP_GUIDE.md
 
 # 验证文档内容
-grep -E "快速启动|标准启动流程|环境检查清单" docs/guides/WEB_FRONTEND_STARTUP_GUIDE.md
+grep -E "快速启动|标准启动流程|环境检查清单" docs/guides/web/WEB_FRONTEND_STARTUP_GUIDE.md
 ```
 
 ---
@@ -236,11 +236,11 @@ grep -E "快速启动|标准启动流程|环境检查清单" docs/guides/WEB_FRO
 - `web/frontend/vite.config.ts` - Vite配置文件（端口查找逻辑修复）
 
 ### 新增的文档
-- `docs/guides/WEB_FRONTEND_STARTUP_GUIDE.md` - Web前端启动标准流程与问题排除指南
+- `docs/guides/web/WEB_FRONTEND_STARTUP_GUIDE.md` - Web前端启动标准流程与问题排除指南
 
 ### 参考文档
 - `CLAUDE.md` - 项目开发指南（端口分配规范）
-- `docs/guides/DASHBOARD_API_INTEGRATION_GUIDE.md` - Dashboard API集成指南
+- `docs/guides/frontend/DASHBOARD_API_INTEGRATION_GUIDE.md` - Dashboard API集成指南
 - `docs/reports/DASHBOARD_API_ENRICHMENT_COMPLETION_REPORT.md` - API集成完成报告
 
 ### 外部文档
@@ -279,4 +279,4 @@ grep -E "快速启动|标准启动流程|环境检查清单" docs/guides/WEB_FRO
 **实施状态**: ✅ 完成
 **下一步**: 启动前端服务，验证端口配置和文档准确性
 
-**准备就绪**: 可以按照 `WEB_FRONTEND_STARTUP_GUIDE.md` 启动前端服务！🚀
+**准备就绪**: 可以按照 `docs/guides/web/WEB_FRONTEND_STARTUP_GUIDE.md` 启动前端服务！🚀

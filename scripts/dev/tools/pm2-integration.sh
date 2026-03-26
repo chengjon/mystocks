@@ -3,7 +3,7 @@
 # Phase 6.2: 实施CI/CD集成优化 - 集成PM2服务管理和健康检查
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
 
 # 颜色输出
 RED='\033[0;31m'
@@ -113,9 +113,9 @@ module.exports = {
       env_production: {
         NODE_ENV: 'production'
       },
-      error_file: './logs/pm2-mystocks-backend-error.log',
-      out_file: './logs/pm2-mystocks-backend-out.log',
-      log_file: './logs/pm2-mystocks-backend.log',
+      error_file: './var/log/pm2-mystocks-backend-error.log',
+      out_file: './var/log/pm2-mystocks-backend-out.log',
+      log_file: './var/log/pm2-mystocks-backend.log',
       time: true,
       watch: false,
       max_memory_restart: '1G',
@@ -144,12 +144,12 @@ module.exports = {
         PORT: 3001,
         HOST: '0.0.0.0'
       },
-      error_file: './logs/pm2-mystocks-frontend-error.log',
-      out_file: './logs/pm2-mystocks-frontend-out.log',
-      log_file: './logs/pm2-mystocks-frontend.log',
+      error_file: './var/log/pm2-mystocks-frontend-error.log',
+      out_file: './var/log/pm2-mystocks-frontend-out.log',
+      log_file: './var/log/pm2-mystocks-frontend.log',
       time: true,
       watch: ['web/frontend/dist'],
-      ignore_watch: ['node_modules', 'logs'],
+      ignore_watch: ['node_modules', 'var/log'],
       max_memory_restart: '500M',
       restart_delay: 2000,
       // 健康检查配置
@@ -290,10 +290,10 @@ $(pm2 monit | grep -A 5 "MEM" | head -10 || echo "无法获取内存信息")
 
 ## 日志文件位置
 
-- 后端错误日志: logs/pm2-mystocks-backend-error.log
-- 后端输出日志: logs/pm2-mystocks-backend-out.log
-- 前端错误日志: logs/pm2-mystocks-frontend-error.log
-- 前端输出日志: logs/pm2-mystocks-frontend-out.log
+- 后端错误日志: var/log/pm2-mystocks-backend-error.log
+- 后端输出日志: var/log/pm2-mystocks-backend-out.log
+- 前端错误日志: var/log/pm2-mystocks-frontend-error.log
+- 前端输出日志: var/log/pm2-mystocks-frontend-out.log
 
 ## 配置信息
 
@@ -329,7 +329,7 @@ create_cicd_deployment_script() {
 set -e
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-LOG_FILE="${PROJECT_ROOT}/logs/pm2-deploy-$(date +%Y%m%d_%H%M%S).log"
+LOG_FILE="${PROJECT_ROOT}/var/log/pm2-deploy-$(date +%Y%m%d_%H%M%S).log"
 
 # 颜色输出
 RED='\033[0;31m'
@@ -351,6 +351,7 @@ log_error() {
 }
 
 cd "$PROJECT_ROOT"
+mkdir -p "$(dirname "$LOG_FILE")"
 
 # 验证环境
 log_info "验证部署环境..."
@@ -485,7 +486,7 @@ Phase 6.2: 实施CI/CD集成优化
 
 输出文件:
     配置: ecosystem.config.js
-    日志: logs/pm2-*.log
+    日志: var/log/pm2-*.log
     报告: test-reports/pm2-deployment-report.md
     脚本: scripts/deploy/pm2-deploy.sh
 EOF

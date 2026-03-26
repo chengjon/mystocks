@@ -63,8 +63,8 @@
 
 - `TASK.md`
 - `TASK-REPORT.md`
-- `docs/guides/MONGO_MULTICLI_OPERATION_CHECKLIST.md`
-- `docs/guides/GRAPHITI_MCP_WORKFLOW.md`
+- `docs/guides/multi-cli-tasks/MONGO_MULTICLI_OPERATION_CHECKLIST.md`
+- `docs/guides/ai-tools/GRAPHITI_MCP_WORKFLOW.md`
 
 边界要求：
 

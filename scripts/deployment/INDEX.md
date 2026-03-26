@@ -7,5 +7,5 @@
 
 ---
 
-- [SETUP_GRAFANA](deployment/SETUP_GRAFANA.md)
+- [SETUP_GRAFANA](../../docs/operations/deployment/SETUP_GRAFANA.md)
   - *Grafana 自动化配置说明*

@@ -45,14 +45,14 @@ const handleRoleChange = (role) => {
 .role-switcher {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 20px;
+  gap: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
+  padding: 0 var(--artdeco-spacing-5);
   height: 100%;
-  background-color: rgb(255 255 255 / 90%);
+  background-color: color-mix(in srgb, var(--artdeco-bg-card) 90%, var(--artdeco-fg-primary));
 }
 
 .role-label {
-  font-size: 14px;
-  color: #666;
+  font-size: var(--artdeco-text-sm);
+  color: var(--artdeco-fg-muted);
 }
 </style>

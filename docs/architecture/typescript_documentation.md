@@ -3,18 +3,18 @@
 ## 目录导航
 
 ### 📚 核心文档
-- [快速开始指南](./QUICKSTART.md) - 5分钟上手
-- [用户手册](./USER_GUIDE.md) - 完整使用指南
-- [配置参考](./CONFIG_REFERENCE.md) - 配置选项详解
-- [最佳实践](./BEST_PRACTICES.md) - 经验与建议
+- [快速开始指南](../guides/typescript/Typescript_QUICKSTART.md) - 5分钟上手
+- [用户手册](../guides/typescript/Typescript_USER_GUIDE.md) - 完整使用指南
+- [配置参考](../guides/typescript/Typescript_CONFIG_REFERENCE.md) - 配置选项详解
+- [最佳实践](../guides/typescript/Typescript_BEST_PRACTICES.md) - 经验与建议
 
 ### 🎓 培训材料
-- [新手培训](./TRAINING_BEGINNER.md) - 开发者入门培训
-- [高级培训](./TRAINING_ADVANCED.md) - 团队管理员培训
-- [故障排除](./TROUBLESHOOTING.md) - 常见问题解决
+- [新手培训](../guides/typescript/Typescript_TRAINING_BEGINNER.md) - 开发者入门培训
+- [高级培训](../guides/typescript/Typescript_TRAINING_ADVANCED.md) - 团队管理员培训
+- [故障排除](../guides/typescript/Typescript_TROUBLESHOOTING.md) - 常见问题解决
 
 ### 🔧 技术文档
-- [API参考](./API_REFERENCE.md) - 程序化接口文档
+- [API参考](../guides/typescript/Typescript_API_REFERENCE.md) - 程序化接口文档
 - [插件开发](./PLUGIN_DEVELOPMENT.md) - 扩展开发指南
 - [集成指南](./INTEGRATION_GUIDE.md) - 与现有工具集成
 
@@ -959,8 +959,8 @@ npx ts-quality-guard migrate-config
 
 ## 官方文档
 - [项目主页](https://github.com/ts-quality-guard/ts-quality-guard)
-- [API文档](./API_REFERENCE.md)
-- [配置参考](./CONFIG_REFERENCE.md)
+- [API文档](../guides/typescript/Typescript_API_REFERENCE.md)
+- [配置参考](../guides/typescript/Typescript_CONFIG_REFERENCE.md)
 
 ## 社区资源
 - [GitHub Issues](https://github.com/ts-quality-guard/ts-quality-guard/issues)

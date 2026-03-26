@@ -9,7 +9,7 @@
 .wizard-header {
   text-align: center;
   padding: var(--artdeco-spacing-4) 0;
-  border-bottom: 2px solid var(--artdeco-border-gold);
+  border-bottom: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-border-gold);
   margin-bottom: var(--artdeco-spacing-4);
   background: var(--artdeco-bg-elevated);
 
@@ -45,11 +45,11 @@
     gap: var(--artdeco-spacing-2);
 
     .step-number {
-      width: 32px;
-      height: 32px;
+      width: var(--artdeco-spacing-8);
+      height: var(--artdeco-spacing-8);
       border-radius: 50%;
       background: var(--artdeco-bg-elevated);
-      border: 2px solid var(--artdeco-border-default);
+      border: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-border-default);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -89,7 +89,7 @@
 }
 
 .wizard-content {
-  min-height: 500px;
+  min-height: calc(var(--artdeco-spacing-32) * 3 + var(--artdeco-spacing-20) + var(--artdeco-spacing-4));
   padding: var(--artdeco-spacing-4);
 }
 
@@ -104,7 +104,7 @@
 // Strategy Grid
 .strategy-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-10)), 1fr));
   gap: var(--artdeco-spacing-3);
 }
 
@@ -118,12 +118,12 @@
   &:hover {
     border-color: var(--artdeco-border-gold);
     box-shadow: var(--artdeco-shadow-md), var(--artdeco-glow-subtle);
-    transform: translateY(-4px);
+    transform: translateY(calc(var(--artdeco-spacing-px) * -4));
   }
 
   &.selected {
     border-color: var(--artdeco-border-gold);
-    background: rgb(212 175 55 / 5%);
+    background: var(--artdeco-gold-opacity-05);
   }
 
   .strategy-icon {
@@ -222,7 +222,7 @@
 }
 
 .backtest-chart {
-  min-height: 400px;
+  min-height: calc(var(--artdeco-spacing-32) * 3 + var(--artdeco-spacing-4));
   background: var(--artdeco-bg-card);
   border: 1px solid var(--artdeco-border-default);
   border-radius: var(--artdeco-radius-md);

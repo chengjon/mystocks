@@ -226,9 +226,9 @@ if (task.includes('build') || task.includes('error')) {
 
 ## 📚 相关文档
 
-- **Agent管理**: `docs/guides/CLAUDE_AGENTS_SUMMARY.md`
+- **Agent管理**: `docs/guides/ai-tools/CLAUDE_AGENTS_SUMMARY.md`
 - **Skill配置**: `.claude/skill-rules.json`
-- **使用指南**: `docs/guides/CLAUDE_CODE_AGENTS_MANAGEMENT_GUIDE.md`
+- **使用指南**: `docs/guides/ai-tools/CLAUDE_CODE_AGENTS_MANAGEMENT_GUIDE.md`
 - **插件列表**: `docs/api/plugin_list.md`
 
 ---

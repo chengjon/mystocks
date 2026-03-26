@@ -12,8 +12,8 @@
 
 | 文件路径 | 创建日期 | 大小 | 说明 |
 |---------|---------|------|------|
-| `docs/guides/MOCK_REAL_DATA_SWITCHING_GUIDE.md` | 2026-01-01 | 13KB | **核心指南** - Mock/Real数据切换完整指南 |
-| `docs/guides/MOCK_DATA_USAGE_RULES.md` | 2025-12-21 | 13KB | **使用规则** - Mock数据使用规范 |
+| `docs/guides/mock-data/MOCK_REAL_DATA_SWITCHING_GUIDE.md` | 2026-01-01 | 13KB | **核心指南** - Mock/Real数据切换完整指南 |
+| `docs/guides/mock-data/MOCK_DATA_USAGE_RULES.md` | 2025-12-21 | 13KB | **使用规则** - Mock数据使用规范 |
 | `web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md` | 2026-01-02 | 5KB | **前端指南** - 前端环境切换指南 |
 | `docs/reports/ENVIRONMENT_SWITCHING_IMPLEMENTATION_REPORT.md` | 2026-01-02 | 20KB | **实现报告** - 环境切换功能实现报告 |
 
@@ -21,8 +21,8 @@
 
 | 文件路径 | 问题 | 更新计划 |
 |---------|------|---------|
-| `docs/guides/REAL_DATA_INTEGRATION_PRINCIPLES.md` | 内容与新的环境切换系统部分重复 | 更新引用到MOCK_REAL_DATA_SWITCHING_GUIDE |
-| `docs/guides/REAL_DATA_INTEGRATION_ROADMAP.md` | 过时的路线图文档 | 标记为历史参考，添加归档说明 |
+| `docs/guides/mock-data/REAL_DATA_INTEGRATION_PRINCIPLES.md` | 内容与新的环境切换系统部分重复 | 更新引用到MOCK_REAL_DATA_SWITCHING_GUIDE |
+| `docs/guides/mock-data/REAL_DATA_INTEGRATION_ROADMAP.md` | 过时的路线图文档 | 标记为历史参考，添加归档说明 |
 | `docs/architecture/mock_real_data_mapping_specification.md` | 详细的映射规范，部分过时 | 更新映射逻辑，引用新配置 |
 | `docs/architecture/MOCK_DATA_QUICK_REFERENCE.md` | 快速参考，需要更新环境变量 | 更新环境变量部分 |
 
@@ -91,7 +91,7 @@ rm docs/reports/MOCK_REAL_GUIDE_CREATION_REPORT.md
 
 ### Phase 3: 创建文档索引
 
-**创建**: `docs/guides/MOCK_REAL_DATA_INDEX.md`
+**创建**: `docs/guides/mock-data/MOCK_REAL_DATA_INDEX.md`
 
 **内容**:
 - 所有Mock/Real数据相关文档的索引
@@ -146,16 +146,16 @@ docs/reports/
 ## 📚 快速查找指南
 
 ### 我想了解如何切换Mock/Real模式？
-→ 阅读: `docs/guides/MOCK_REAL_DATA_SWITCHING_GUIDE.md`
+→ 阅读: `docs/guides/mock-data/MOCK_REAL_DATA_SWITCHING_GUIDE.md`
 
 ### 我想了解前端如何切换环境？
 → 阅读: `web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md`
 
 ### 我想了解Mock数据使用规范？
-→ 阅读: `docs/guides/MOCK_DATA_USAGE_RULES.md`
+→ 阅读: `docs/guides/mock-data/MOCK_DATA_USAGE_RULES.md`
 
 ### 我想查看所有相关文档列表？
-→ 阅读: `docs/guides/MOCK_REAL_DATA_INDEX.md`
+→ 阅读: `docs/guides/mock-data/MOCK_REAL_DATA_INDEX.md`
 
 ### 我想了解实现细节？
 → 阅读: `docs/reports/ENVIRONMENT_SWITCHING_IMPLEMENTATION_REPORT.md`

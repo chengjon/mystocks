@@ -192,7 +192,7 @@ import ArtDecoCard from './base/ArtDecoCard.vue'
   transition: background-color var(--artdeco-transition-base);
 
   &:hover {
-    background-color: rgb(212 175 55 / 5%);
+    background-color: var(--artdeco-gold-opacity-05);
     border-radius: var(--artdeco-radius-sm);
   }
 }
@@ -200,15 +200,15 @@ import ArtDecoCard from './base/ArtDecoCard.vue'
 .shortcut-key {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--artdeco-spacing-1);
 
   kbd {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 32px;
-    height: 32px;
-    padding: 0 8px;
+    min-width: var(--artdeco-spacing-8);
+    height: var(--artdeco-spacing-8);
+    padding: 0 var(--artdeco-spacing-2);
     font-family: var(--font-mono);
     font-size: var(--artdeco-text-xs);
     font-weight: var(--artdeco-font-medium);

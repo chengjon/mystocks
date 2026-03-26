@@ -37,9 +37,9 @@
 - Modify: `docs/plans/frontend-page-optimization-list.md`
 - Review/Modify: `web/frontend/src/router/index.ts`
 - Review/Modify: `web/frontend/src/config/pageConfig.ts`
-- Review/Modify: `docs/guides/ARTDECO_MASTER_INDEX.md`
+- Review/Modify: `docs/guides/web/ARTDECO_MASTER_INDEX.md`
 - Review/Modify: `docs/api/ArtDeco_System_Architecture_Summary.md`
-- Review: `docs/guides/ARTDECO_COMPONENT_GUIDE.md`
+- Review: `docs/guides/web/ARTDECO_COMPONENT_GUIDE.md`
 - Review: `web/frontend/src/styles/artdeco-tokens.scss`
 
 **Step 1: 建立 P0/P1 页面分类矩阵**

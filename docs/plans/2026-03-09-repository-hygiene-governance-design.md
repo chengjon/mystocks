@@ -4,7 +4,7 @@
 
 当前仓库已经落地了策略清单驱动的目录治理检查器，但仓库卫生相关任务仍然分散在：
 
-- `docs/FILE_CLEANUP_TASK.md`
+- `docs/reports/cleanup/FILE_CLEANUP_TASK.md`
 - `scripts/maintenance/rotate_logs.sh`
 - `scripts/compliance/file_size_guardrail.py`
 - `scripts/dev/check_file_sizes.py`
@@ -79,7 +79,7 @@
 
 ### Phase 0
 
-- 刷新 `docs/FILE_CLEANUP_TASK.md`
+- 刷新 `docs/reports/cleanup/FILE_CLEANUP_TASK.md`
 - 更新策略允许的目标目录
 
 ### Phase 1

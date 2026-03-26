@@ -8,11 +8,13 @@ const scriptPath = resolve(process.cwd(), "validate-e2e-setup.js");
 const loadValidator = () => require(scriptPath);
 
 describe("validate-e2e-setup", () => {
-  it("treats validate, stable, axe, lighthouse, and comprehensive package scripts as required E2E entrypoints", () => {
+  it("treats validate, auth, business-smoke, stable, axe, lighthouse, and comprehensive package scripts as required E2E entrypoints", () => {
     const { PACKAGE_SCRIPT_REQUIREMENTS } = loadValidator();
 
     expect(PACKAGE_SCRIPT_REQUIREMENTS).toEqual({
       "test:e2e:validate": "validate-e2e-setup.js",
+      "test:e2e:auth": "tests/e2e/auth-login.spec.ts",
+      "test:e2e:business-smoke": "tests/e2e/auth-login.spec.ts",
       "test:e2e:stable": "playwright test --config playwright.config.js --project=chromium",
       "test:e2e:axe": "accessibility-smoke.spec.ts",
       "test:e2e:lighthouse": "lhci autorun",
@@ -24,6 +26,8 @@ describe("validate-e2e-setup", () => {
     const { README_REQUIRED_SECTIONS } = loadValidator();
 
     expect(README_REQUIRED_SECTIONS).toContain("npm run test:e2e:validate");
+    expect(README_REQUIRED_SECTIONS).toContain("npm run test:e2e:auth");
+    expect(README_REQUIRED_SECTIONS).toContain("npm run test:e2e:business-smoke");
     expect(README_REQUIRED_SECTIONS).toContain("npm run test:e2e:stable");
     expect(README_REQUIRED_SECTIONS).toContain("npm run test:e2e:axe");
     expect(README_REQUIRED_SECTIONS).toContain("npm run test:e2e:lighthouse");
@@ -35,8 +39,9 @@ describe("validate-e2e-setup", () => {
 
     expect(steps).toContain("1. Start MyStocks services via PM2 (or reuse existing shared PM2 services)");
     expect(steps).toContain("2. Run: npm run test:e2e:validate");
-    expect(steps).toContain("3. Run shared-PM2 stable suite with:");
-    expect(steps.join("\n")).toContain("npm run test:e2e:stable");
+    expect(steps).toContain("3. Run: npm run test:e2e:auth");
+    expect(steps).toContain("4. Run shared-PM2 business smoke with:");
+    expect(steps.join("\n")).toContain("npm run test:e2e:business-smoke");
     expect(steps.join("\n")).not.toContain("npm run test:e2e:comprehensive");
   });
 });

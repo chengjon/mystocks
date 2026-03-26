@@ -148,9 +148,9 @@ T+10h   ⏳ Phase 6 最终完成报告
 - docs/api/API_INDEX.md
 - docs/api/DATA_MODELS.md
 - docs/api/ERROR_CODES.md
-- docs/guides/DEPLOYMENT.md
-- docs/guides/TROUBLESHOOTING.md
-- docs/guides/USER_GUIDE.md
+- docs/operations/deployment/DEPLOYMENT.md
+- docs/operations/TROUBLESHOOTING.md
+- docs/guides/onboarding/USER_GUIDE.md
 - openspec/changes/phase6-documentation-tasks/ (新目录)
 ```
 

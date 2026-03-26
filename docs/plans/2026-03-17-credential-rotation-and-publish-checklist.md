@@ -42,7 +42,7 @@ export OLD_JWT_TOKEN='...'
 export OLD_POSTGRES_PASSWORD='...'
 export OLD_INTERNAL_HOST='...'
 
-./rewrite_public_history.sh /path/to/repo /tmp/mystocks_spec-public-sanitized.git
+./scripts/maintenance/public-history/rewrite_public_history.sh /path/to/repo /tmp/mystocks_spec-public-sanitized.git
 ```
 
 ## Before Force Push

@@ -30,7 +30,7 @@
 | `src/components/artdeco/core/ArtDecoLoading.vue` | 85 | ✅ 已创建 | Loading加载组件 |
 | `src/components/artdeco/specialized/ArtDecoLongHuBang.vue` | 200 | ✅ 已创建 | 龙虎榜卡片 |
 | `src/components/artdeco/specialized/ArtDecoBlockTrading.vue` | 220 | ✅ 已创建 | 大宗交易卡片 |
-| `docs/guides/DASHBOARD_API_INTEGRATION_GUIDE.md` | 300+ | ✅ 已创建 | 实施指南文档 |
+| `docs/guides/frontend/DASHBOARD_API_INTEGRATION_GUIDE.md` | 300+ | ✅ 已创建 | 实施指南文档 |
 
 **总新增代码**: 1085+行
 
@@ -454,8 +454,8 @@ curl http://localhost:8000/api/market/fund-flow
 ## 📚 相关文档
 
 ### 实施指南
-- `docs/guides/DASHBOARD_API_ENRICHMENT_GUIDE.md` - API丰富化指南（完整方案）
-- `docs/guides/DASHBOARD_API_INTEGRATION_GUIDE.md` - API集成实施指南（操作手册）
+- `docs/guides/frontend/DASHBOARD_API_ENRICHMENT_GUIDE.md` - API丰富化指南（完整方案）
+- `docs/guides/frontend/DASHBOARD_API_INTEGRATION_GUIDE.md` - API集成实施指南（操作手册）
 
 ### 设计文档
 - `docs/reports/UI_UX_DESIGN_ANALYSIS_REPORT.md` - UI/UX设计分析报告

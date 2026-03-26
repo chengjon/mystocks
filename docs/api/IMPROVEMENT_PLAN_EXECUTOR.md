@@ -154,13 +154,13 @@ python scripts/switch_data_mode.py --status
 ## 📞 支持和帮助
 
 ### 问题排查
-1. **服务启动失败**: 检查 `web/backend/backend.log`
+1. **服务启动失败**: 检查 `var/log/backend.log`
 2. **API错误**: 查看 FastAPI 日志和错误追踪
 3. **数据库问题**: 检查连接字符串和权限
 4. **前端问题**: 检查 Vite 配置和代理设置
 
 ### 日志位置
-- 后端日志: `web/backend/backend.log`
+- 后端日志: `var/log/backend.log`
 - 前端日志: 浏览器开发者工具控制台
 - 数据库日志: PostgreSQL/TDengine 日志文件
 - 系统日志: `/var/log/` 相关日志文件

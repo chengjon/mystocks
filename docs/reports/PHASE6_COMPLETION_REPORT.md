@@ -99,7 +99,7 @@
 ### 文档和报告
 - ✅ 环境分析报告 (`test-reports/environment-analysis-report.md`)
 - ✅ 数据库连接报告 (`test-reports/database-connection-report.md`)
-- ✅ 服务器恢复测试流程 (`docs/guides/PHASE6_SERVER_RECOVERY_TEST_PROCEDURE.md`)
+- ✅ 服务器恢复测试流程 (`docs/operations/PHASE6_SERVER_RECOVERY_TEST_PROCEDURE.md`)
 
 ### 工具和脚本
 - ✅ 数据库验证脚本 (`scripts/tools/verify-database-connections.sh`)

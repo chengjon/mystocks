@@ -223,7 +223,7 @@ git push origin phase2-shared-extraction-v2
 | **规范** | `openspec/changes/restructure-frontend-directory/specs/frontend-structure/spec.md` | 需求规范 |
 | **交接** | `openspec/changes/restructure-frontend-directory/HANDOFF_2026-03-02.md` | 前一个团队的交接 |
 | **进度** | `openspec/changes/restructure-frontend-directory/MIGRATION_PROGRESS.md` | 实时进度追踪 |
-| **治理** | `docs/guides/PHASE1_GOVERNANCE_APPROVAL.md` | 审批清单 |
+| **治理** | `docs/reports/reviews/PHASE1_GOVERNANCE_APPROVAL.md` | 审批清单 |
 
 ---
 
