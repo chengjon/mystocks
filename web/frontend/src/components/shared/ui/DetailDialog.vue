@@ -163,12 +163,13 @@ defineExpose({
 <style scoped lang="scss">
 // Phase 3.4: Design Token Migration
 @use 'sass:color';
+@import '@/styles/artdeco-tokens';
 @import '@/styles/theme-tokens';
 
 .detail-dialog {
   :deep(.el-dialog) {
     background: var(--color-bg-secondary);
-    border: 2px solid var(--color-accent);
+    border: calc(var(--artdeco-spacing-px) * 2) solid var(--color-accent);
     border-radius: var(--border-radius-sm);
     box-shadow: var(--shadow-lg);
 
@@ -229,8 +230,8 @@ defineExpose({
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
+      width: var(--spacing-xl);
+      height: var(--spacing-xl);
       background: transparent;
       border: 1px solid var(--color-accent-alpha-70);
       border-radius: 0;
@@ -251,13 +252,13 @@ defineExpose({
   }
 
   .dialog-body {
-    min-height: 100px;
+    min-height: calc(var(--spacing-3xl) + var(--spacing-xl));
     max-height: 60vh;
     overflow-y: auto;
 
     /* Scrollbar styling */
     &::-webkit-scrollbar {
-      width: 8px;
+      width: var(--spacing-sm);
     }
 
     &::-webkit-scrollbar-track {
@@ -282,7 +283,7 @@ defineExpose({
       align-items: center;
       justify-content: center;
       gap: var(--spacing-md);
-      min-height: 200px;
+      min-height: calc(var(--spacing-3xl) * 3 + var(--spacing-sm));
       padding: var(--spacing-2xl);
     }
 
@@ -326,7 +327,7 @@ defineExpose({
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      border: 2px solid var(--color-accent);
+      border: calc(var(--artdeco-spacing-px) * 2) solid var(--color-accent);
       border-radius: 0;
 
       &.el-button--primary {

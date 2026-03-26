@@ -62,37 +62,40 @@ const handleCurrentChange = (val: number) => {
 </script>
 
 <style scoped lang="scss">
+@import '@/styles/artdeco-tokens';
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 16px 0;
-  margin-top: 24px;
+  padding: var(--artdeco-spacing-4) 0;
+  margin-top: var(--artdeco-spacing-6);
 
   :deep(.el-pagination) {
     .el-pagination__total {
-      font-family: Inter, -apple-system, sans-serif;
-      font-size: 13px;
-      color: #909399;
+      font-family: var(--font-body);
+      font-size: var(--artdeco-text-sm);
+      color: var(--artdeco-fg-muted);
       font-weight: 500;
     }
 
     .el-pagination__sizes {
       .el-select .el-input__wrapper {
         background: transparent;
-        border: 1px solid rgb(212 175 55 / 30%);
-        border-radius: 0;
+        border: 1px solid var(--artdeco-border-default);
+        border-radius: var(--artdeco-radius-none);
         box-shadow: none;
-        transition: all 0.3s;
+        transition:
+          border-color var(--artdeco-transition-base) var(--artdeco-ease-out),
+          box-shadow var(--artdeco-transition-base) var(--artdeco-ease-out);
 
         &:hover {
-          border-color: #409eff;
-          box-shadow: 0 2px 4px rgb(64 158 255 / 10%);
+          border-color: var(--artdeco-gold-primary);
+          box-shadow: var(--artdeco-shadow-sm);
         }
 
         .el-input__inner {
-          font-family: Inter, system-ui, sans-serif;
-          color: #409eff;
+          font-family: var(--font-body);
+          color: var(--artdeco-gold-primary);
           font-weight: 600;
           text-transform: uppercase;
         }
@@ -102,91 +105,101 @@ const handleCurrentChange = (val: number) => {
     .btn-prev,
     .btn-next {
       background: transparent;
-      border: 2px solid rgb(212 175 55 / 30%);
-      border-radius: 0;
-      color: #409eff;
+      border: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-border-default);
+      border-radius: var(--artdeco-radius-none);
+      color: var(--artdeco-gold-primary);
       font-weight: 600;
-      font-family: Inter, system-ui, sans-serif;
-      transition: all 0.3s;
+      font-family: var(--font-body);
+      transition:
+        background-color var(--artdeco-transition-base) var(--artdeco-ease-out),
+        border-color var(--artdeco-transition-base) var(--artdeco-ease-out),
+        box-shadow var(--artdeco-transition-base) var(--artdeco-ease-out),
+        color var(--artdeco-transition-base) var(--artdeco-ease-out);
 
       &:hover {
-        background: rgb(212 175 55 / 10%);
-        border-color: #409eff;
-        box-shadow: 0 2px 4px rgb(64 158 255 / 10%);
+        background: var(--artdeco-gold-opacity-10);
+        border-color: var(--artdeco-gold-primary);
+        box-shadow: var(--artdeco-shadow-sm);
       }
 
       &:disabled {
-        opacity: 30%;
+        opacity: 0.3;
         cursor: not-allowed;
         background: transparent;
-        border-color: rgb(212 175 55 / 10%);
+        border-color: var(--artdeco-gold-opacity-10);
         box-shadow: none;
       }
 
       .el-icon {
-        font-size: 14px;
+        font-size: var(--artdeco-text-sm);
       }
     }
 
     .el-pager {
       .number {
         background: transparent;
-        border: 2px solid rgb(212 175 55 / 30%);
-        border-radius: 0;
-        color: #409eff;
+        border: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-border-default);
+        border-radius: var(--artdeco-radius-none);
+        color: var(--artdeco-gold-primary);
         font-weight: 600;
-        font-family: Inter, system-ui, sans-serif;
-        transition: all 0.3s;
+        font-family: var(--font-body);
+        transition:
+          background-color var(--artdeco-transition-base) var(--artdeco-ease-out),
+          border-color var(--artdeco-transition-base) var(--artdeco-ease-out),
+          box-shadow var(--artdeco-transition-base) var(--artdeco-ease-out),
+          color var(--artdeco-transition-base) var(--artdeco-ease-out);
 
         &:hover {
-          background: rgb(212 175 55 / 10%);
-          border-color: #409eff;
-          box-shadow: 0 2px 4px rgb(64 158 255 / 10%);
+          background: var(--artdeco-gold-opacity-10);
+          border-color: var(--artdeco-gold-primary);
+          box-shadow: var(--artdeco-shadow-sm);
         }
 
         &.is-active {
-          background: #409eff;
-          border-color: #409eff;
-          color: #fff;
-          box-shadow: 0 4px 8px rgb(64 158 255 / 20%);
+          background: var(--artdeco-gold-primary);
+          border-color: var(--artdeco-gold-primary);
+          color: var(--artdeco-bg-global);
+          box-shadow: var(--artdeco-shadow-md);
         }
       }
 
       .more {
         background: transparent;
-        color: #909399;
+        color: var(--artdeco-fg-muted);
         font-weight: 600;
 
         &:hover {
           background: transparent;
-          color: #409eff;
+          color: var(--artdeco-gold-primary);
         }
       }
     }
 
     .el-pagination__jump {
-      font-family: Inter, system-ui, sans-serif;
-      font-size: 13px;
-      color: #909399;
+      font-family: var(--font-body);
+      font-size: var(--artdeco-text-sm);
+      color: var(--artdeco-fg-muted);
       font-weight: 600;
       text-transform: uppercase;
 
       .el-input__wrapper {
         background: transparent;
-        border: 1px solid rgb(212 175 55 / 30%);
-        border-radius: 0;
+        border: 1px solid var(--artdeco-border-default);
+        border-radius: var(--artdeco-radius-none);
         box-shadow: none;
-        transition: all 0.3s;
-        margin: 0 8px;
+        transition:
+          border-color var(--artdeco-transition-base) var(--artdeco-ease-out),
+          box-shadow var(--artdeco-transition-base) var(--artdeco-ease-out);
+        margin: 0 var(--artdeco-spacing-2);
 
         &:hover {
-          border-color: #409eff;
-          box-shadow: 0 2px 4px rgb(64 158 255 / 10%);
+          border-color: var(--artdeco-gold-primary);
+          box-shadow: var(--artdeco-shadow-sm);
         }
 
         .el-input__inner {
-          font-family: Inter, system-ui, sans-serif;
-          color: #409eff;
+          font-family: var(--font-body);
+          color: var(--artdeco-gold-primary);
           font-weight: 600;
           text-align: center;
         }
@@ -195,7 +208,7 @@ const handleCurrentChange = (val: number) => {
   }
 }
 
-@media (width <= 768px) {
+@media (width <= var(--artdeco-breakpoint-md)) {
   .pagination {
     :deep(.el-pagination) {
       .el-pagination__sizes,
@@ -205,15 +218,15 @@ const handleCurrentChange = (val: number) => {
 
       .btn-prev,
       .btn-next {
-        padding: 0 8px;
-        min-width: 32px;
+        padding: 0 var(--artdeco-spacing-2);
+        min-width: var(--artdeco-spacing-8);
       }
 
       .el-pager .number {
-        min-width: 28px;
-        height: 28px;
-        line-height: 28px;
-        font-size: 12px;
+        min-width: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
+        height: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
+        line-height: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
+        font-size: var(--artdeco-text-xs);
       }
     }
   }

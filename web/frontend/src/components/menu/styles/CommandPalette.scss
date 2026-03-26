@@ -6,9 +6,9 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgb(0 0 0 / 60%);
-  backdrop-filter: blur(4px);
-  z-index: 9999;
+  background: color-mix(in srgb, var(--artdeco-bg-global) 60%, transparent);
+  backdrop-filter: blur(var(--artdeco-spacing-1));
+  z-index: calc(var(--artdeco-z-fixed) + 10);
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -17,11 +17,11 @@
 
 .command-palette {
   width: 100%;
-  max-width: 640px;
-  background: var(--artdeco-bg-surface);
-  border: 1px solid var(--artdeco-border-primary);
+  max-width: var(--artdeco-breakpoint-sm);
+  background: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-default);
   border-radius: var(--artdeco-radius-lg);
-  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 50%);
+  box-shadow: var(--artdeco-shadow-xl);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -32,7 +32,7 @@
   display: flex;
   align-items: center;
   padding: var(--artdeco-spacing-4);
-  border-bottom: 1px solid var(--artdeco-border-subtle);
+  border-bottom: 1px solid var(--artdeco-gold-opacity-10);
 }
 
 .search-icon {
@@ -42,7 +42,7 @@
 
 .command-input {
   flex: 1;
-  font-size: 16px;
+  font-size: var(--artdeco-text-base);
   color: var(--artdeco-fg-primary);
   background: transparent;
   border: none;
@@ -54,11 +54,11 @@
 }
 
 .shortcut-hint {
-  font-size: 12px;
+  font-size: var(--artdeco-text-xs);
   color: var(--artdeco-fg-muted);
-  border: 1px solid var(--artdeco-border-subtle);
-  border-radius: 4px;
-  padding: 2px 6px;
+  border: 1px solid var(--artdeco-gold-opacity-10);
+  border-radius: var(--artdeco-radius-sm);
+  padding: calc(var(--artdeco-spacing-px) * 2) var(--artdeco-spacing-2);
 }
 
 .command-body {
@@ -80,7 +80,7 @@
 
 .group-header {
   padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
-  font-size: 11px;
+  font-size: var(--artdeco-text-xs);
   font-weight: 600;
   text-transform: uppercase;
   color: var(--artdeco-fg-muted);
@@ -97,8 +97,8 @@
   align-items: center;
   padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
   cursor: pointer;
-  border-left: 2px solid transparent;
-  transition: background 0.1s;
+  border-left: calc(var(--artdeco-spacing-px) * 2) solid transparent;
+  transition: background-color var(--artdeco-transition-quick) var(--artdeco-ease-out);
   
   &.active {
     background: var(--artdeco-bg-elevated);
@@ -121,23 +121,23 @@
   }
   
   .command-label {
-    font-size: 14px;
+    font-size: var(--artdeco-text-sm);
     color: var(--artdeco-fg-primary);
   }
   
   .command-sublabel {
-    font-size: 12px;
+    font-size: var(--artdeco-text-xs);
     color: var(--artdeco-fg-muted);
   }
   
   .command-shortcut {
     kbd {
       font-family: var(--artdeco-font-mono);
-      font-size: 11px;
-      padding: 2px 4px;
+      font-size: var(--artdeco-text-xs);
+      padding: calc(var(--artdeco-spacing-px) * 2) var(--artdeco-spacing-1);
       background: var(--artdeco-bg-global);
-      border: 1px solid var(--artdeco-border-subtle);
-      border-radius: 3px;
+      border: 1px solid var(--artdeco-gold-opacity-10);
+      border-radius: var(--artdeco-radius-sm);
       color: var(--artdeco-fg-muted);
     }
   }
@@ -151,8 +151,8 @@
 .command-footer {
   padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
   background: var(--artdeco-bg-elevated);
-  border-top: 1px solid var(--artdeco-border-subtle);
-  font-size: 11px;
+  border-top: 1px solid var(--artdeco-gold-opacity-10);
+  font-size: var(--artdeco-text-xs);
   color: var(--artdeco-fg-muted);
   display: flex;
   justify-content: flex-end;
@@ -165,15 +165,15 @@
   .shortcut-item {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: var(--artdeco-spacing-1);
     
     kbd {
       font-family: var(--artdeco-font-mono);
-      background: var(--artdeco-bg-surface);
-      border: 1px solid var(--artdeco-border-subtle);
-      border-radius: 3px;
-      padding: 1px 4px;
-      min-width: 18px;
+      background: var(--artdeco-bg-card);
+      border: 1px solid var(--artdeco-gold-opacity-10);
+      border-radius: var(--artdeco-radius-sm);
+      padding: var(--artdeco-spacing-px) var(--artdeco-spacing-1);
+      min-width: calc(var(--artdeco-spacing-4) + calc(var(--artdeco-spacing-px) * 2));
       text-align: center;
     }
   }
@@ -182,7 +182,7 @@
 /* Transitions */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.2s ease;
+  transition: opacity var(--artdeco-transition-quick) var(--artdeco-ease-out);
 }
 
 .fade-enter-from,

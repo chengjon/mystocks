@@ -50,10 +50,11 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <style scoped lang="scss">
+@import '@/styles/artdeco-tokens';
 
 .page-header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: var(--artdeco-spacing-8);
   position: relative;
   z-index: 1;
 
@@ -61,8 +62,8 @@ withDefaults(defineProps<Props>(), {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 8px;
+    gap: var(--artdeco-spacing-4);
+    margin-bottom: var(--artdeco-spacing-2);
     flex-wrap: wrap;
   }
 
@@ -72,117 +73,121 @@ withDefaults(defineProps<Props>(), {
   }
 
   .page-title {
-    font-family: Inter, system-ui, sans-serif;
-    font-size: 24px;
+    font-family: var(--font-display);
+    font-size: var(--artdeco-text-xl);
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    color: #409eff;
-    margin: 0 0 8px 0;
+    letter-spacing: calc(var(--artdeco-spacing-px) * 2);
+    color: var(--artdeco-gold-primary);
+    margin: 0 0 var(--artdeco-spacing-2) 0;
   }
 
   .page-subtitle {
-    font-family: Inter, -apple-system, sans-serif;
-    font-size: 13px;
-    color: #909399;
+    font-family: var(--font-body);
+    font-size: var(--artdeco-text-sm);
+    color: var(--artdeco-fg-muted);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: var(--artdeco-tracking-wide);
     margin: 0;
   }
 
   .header-actions {
     display: flex;
-    gap: 12px;
+    gap: var(--artdeco-spacing-3);
     align-items: center;
 
     .action-button {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 12px 24px;
-      font-family: Inter, system-ui, sans-serif;
-      font-size: 14px;
+      gap: var(--artdeco-spacing-2);
+      padding: var(--artdeco-spacing-3) var(--artdeco-spacing-6);
+      font-family: var(--font-body);
+      font-size: var(--artdeco-text-sm);
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 2px;
-      border: 2px solid #409eff;
-      border-radius: 0;
+      letter-spacing: calc(var(--artdeco-spacing-px) * 2);
+      border: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-gold-primary);
+      border-radius: var(--artdeco-radius-none);
       cursor: pointer;
-      transition: all 0.3s;
+      transition:
+        background-color var(--artdeco-transition-base) var(--artdeco-ease-out),
+        border-color var(--artdeco-transition-base) var(--artdeco-ease-out),
+        color var(--artdeco-transition-base) var(--artdeco-ease-out),
+        box-shadow var(--artdeco-transition-base) var(--artdeco-ease-out);
       background: transparent;
-      color: #409eff;
+      color: var(--artdeco-gold-primary);
 
       &:hover {
-        background: rgb(212 175 55 / 10%);
-        border-color: #409eff;
-        box-shadow: 0 2px 4px rgb(64 158 255 / 10%);
+        background: var(--artdeco-gold-opacity-10);
+        border-color: var(--artdeco-gold-primary);
+        box-shadow: var(--artdeco-shadow-sm);
       }
 
       &.variant-primary {
-        background: #409eff;
-        color: #fff;
+        background: var(--artdeco-gold-primary);
+        color: var(--artdeco-bg-global);
 
         &:hover {
-          background: #66b1ff;
-          box-shadow: 0 4px 8px rgb(64 158 255 / 20%);
+          background: var(--artdeco-gold-light);
+          box-shadow: var(--artdeco-shadow-md);
         }
       }
 
       &.variant-danger {
-        border-color: #f56c6c;
-        color: #f56c6c;
+        border-color: var(--artdeco-error);
+        color: var(--artdeco-error);
 
         &:hover {
-          background: rgb(231 76 60 / 10%);
-          border-color: #E74C3C;
+          background: color-mix(in srgb, var(--artdeco-error) 10%, transparent);
+          border-color: var(--artdeco-error);
         }
       }
 
       &.variant-success {
-        border-color: #67c23a;
-        color: #67c23a;
+        border-color: var(--artdeco-success);
+        color: var(--artdeco-success);
 
         &:hover {
-          background: rgb(103 194 58 / 10%);
-          border-color: #67C23A;
+          background: color-mix(in srgb, var(--artdeco-success) 10%, transparent);
+          border-color: var(--artdeco-success);
         }
       }
 
       &.variant-warning {
-        border-color: #E6A23C;
-        color: #E6A23C;
+        border-color: var(--artdeco-warning);
+        color: var(--artdeco-warning);
 
         &:hover {
-          background: rgb(230 162 60 / 10%);
-          border-color: #E6A23C;
+          background: color-mix(in srgb, var(--artdeco-warning) 10%, transparent);
+          border-color: var(--artdeco-warning);
         }
       }
 
       &.variant-info {
-        border-color: #909399;
-        color: #909399;
+        border-color: var(--artdeco-fg-muted);
+        color: var(--artdeco-fg-muted);
 
         &:hover {
-          background: rgb(144 147 153 / 10%);
-          border-color: #909399;
+          background: color-mix(in srgb, var(--artdeco-fg-muted) 10%, transparent);
+          border-color: var(--artdeco-fg-muted);
         }
       }
 
       .action-icon {
-        font-size: 16px;
+        font-size: var(--artdeco-text-base);
       }
     }
   }
 
   .header-divider {
-    height: 1px;
-    width: 120px;
-    background: linear-gradient(90deg, transparent, #409eff, transparent);
-    margin: 8px auto 0;
+    height: var(--artdeco-spacing-px);
+    width: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
+    background: linear-gradient(90deg, transparent, var(--artdeco-gold-primary), transparent);
+    margin: var(--artdeco-spacing-2) auto 0;
   }
 }
 
-@media (width <= 768px) {
+@media (width <= var(--artdeco-breakpoint-md)) {
   .page-header {
     .header-content {
       flex-direction: column;
@@ -196,7 +201,7 @@ withDefaults(defineProps<Props>(), {
     }
 
     .page-title {
-      font-size: 18px;
+      font-size: var(--artdeco-text-lg);
     }
   }
 }

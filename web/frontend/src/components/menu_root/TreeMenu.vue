@@ -113,7 +113,11 @@ onMounted(() => {
   border: 1px solid var(--artdeco-border-primary);
   border-radius: var(--artdeco-radius-md);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    color var(--artdeco-transition-quick) var(--artdeco-ease-out),
+    border-color var(--artdeco-transition-quick) var(--artdeco-ease-out),
+    background-color var(--artdeco-transition-quick) var(--artdeco-ease-out),
+    transform var(--artdeco-transition-quick) var(--artdeco-ease-out);
   font-weight: 600;
   color: var(--artdeco-text-primary);
 
@@ -142,13 +146,13 @@ onMounted(() => {
 .toggle-icon {
   margin-left: var(--artdeco-spacing-3);
   font-size: var(--artdeco-font-size-sm);
-  transition: transform 0.2s ease;
+  transition: transform var(--artdeco-transition-quick) var(--artdeco-ease-out);
 }
 
 .domain-items {
   margin-top: var(--artdeco-spacing-2);
   margin-left: var(--artdeco-spacing-6);
-  border-left: 2px solid var(--artdeco-border-secondary);
+  border-left: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-border-secondary);
   padding-left: var(--artdeco-spacing-4);
 }
 
@@ -201,8 +205,10 @@ onMounted(() => {
 // Slide transition for menu items
 .slide-enter-active,
 .slide-leave-active {
-  transition: all 0.3s ease;
-  max-height: 500px;
+  transition:
+    max-height var(--artdeco-transition-base) var(--artdeco-ease-out),
+    opacity var(--artdeco-transition-base) var(--artdeco-ease-out);
+  max-height: calc(var(--artdeco-spacing-32) * 2);
   overflow: hidden;
 }
 
@@ -214,7 +220,7 @@ onMounted(() => {
 
 .slide-enter-to,
 .slide-leave-from {
-  max-height: 500px;
+  max-height: calc(var(--artdeco-spacing-32) * 2);
   opacity: 100%;
 }
 </style>

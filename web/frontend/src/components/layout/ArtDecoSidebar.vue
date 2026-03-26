@@ -54,18 +54,18 @@ const preferenceStore = usePreferenceStore()
 .artdeco-sidebar {
   display: flex;
   flex-direction: column;
-  width: 280px; // Standard width
+  width: calc(var(--artdeco-sidebar-width) + var(--artdeco-spacing-5));
   height: 100vh;
-  background: var(--artdeco-bg-surface);
+  background: var(--artdeco-bg-card);
   border-right: 1px solid var(--artdeco-border-default);
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width var(--artdeco-transition-base) var(--artdeco-ease-out);
   overflow: hidden;
   position: sticky;
   top: 0;
   z-index: 50;
 
   &.collapsed {
-    width: 64px; // Collapsed width
+    width: var(--artdeco-sidebar-collapsed-width);
 
     .brand-name, 
     .sidebar-footer,
@@ -90,7 +90,7 @@ const preferenceStore = usePreferenceStore()
   align-items: center;
   justify-content: space-between;
   padding: var(--artdeco-spacing-4) var(--artdeco-spacing-6);
-  height: 64px; // Match header height
+  height: var(--artdeco-spacing-16);
   border-bottom: 1px solid var(--artdeco-border-default);
   flex-shrink: 0;
 }
@@ -105,7 +105,7 @@ const preferenceStore = usePreferenceStore()
   font-size: var(--artdeco-text-lg);
   
   &:hover {
-    color: var(--artdeco-gold-hover);
+    color: var(--artdeco-gold-light);
   }
 }
 
@@ -134,12 +134,12 @@ const preferenceStore = usePreferenceStore()
   
   // Custom scrollbar
   &::-webkit-scrollbar {
-    width: 4px;
+    width: var(--artdeco-spacing-1);
   }
   
   &::-webkit-scrollbar-thumb {
-    background: var(--artdeco-bg-secondary);
-    border-radius: 2px;
+    background: var(--artdeco-bg-base);
+    border-radius: var(--artdeco-radius-sm);
   }
   
   &::-webkit-scrollbar-track {
@@ -172,7 +172,7 @@ const preferenceStore = usePreferenceStore()
   }
   
   .footer-version {
-    opacity: 60%;
+    opacity: 0.6;
     font-family: var(--artdeco-font-mono);
   }
 }

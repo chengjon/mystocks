@@ -207,24 +207,24 @@ export default {
 
 /* 折叠状态下的样式 */
 .nested-menu :deep(.el-menu--collapse) {
-  width: 64px;
+  width: var(--artdeco-sidebar-collapsed-width);
 }
 
 /* 菜单项悬停效果 */
 .nested-menu :deep(.el-menu-item:hover),
 .nested-menu :deep(.el-sub-menu__title:hover) {
-  background-color: rgb(255 255 255 / 10%) !important;
+  background-color: var(--artdeco-gold-opacity-10) !important;
 }
 
 /* 激活菜单项样式 */
 .nested-menu :deep(.el-menu-item.is-active) {
-  background-color: rgb(64 158 255 / 20%) !important;
+  background-color: var(--artdeco-gold-opacity-20) !important;
 }
 
 /* 图标样式 */
 .nested-menu :deep(.el-icon) {
-  margin-right: 8px;
-  font-size: 18px;
+  margin-right: var(--artdeco-spacing-2);
+  font-size: calc(var(--artdeco-spacing-4) + var(--artdeco-spacing-px) * 2);
 }
 
 /* 折叠时隐藏图标右侧间距 */
@@ -252,15 +252,15 @@ export default {
 
 .nested-menu :deep(.el-menu--horizontal .el-menu-item),
 .nested-menu :deep(.el-menu--horizontal .el-sub-menu__title) {
-  height: 60px;
-  line-height: 60px;
+  height: calc(var(--artdeco-spacing-12) + var(--artdeco-spacing-3));
+  line-height: calc(var(--artdeco-spacing-12) + var(--artdeco-spacing-3));
 }
 
 /* 响应式设计 */
-@media (width <= 768px) {
+@media (width <= var(--artdeco-breakpoint-md)) {
   .nested-menu :deep(.el-menu-item),
   .nested-menu :deep(.el-sub-menu__title) {
-    font-size: 14px;
+    font-size: var(--artdeco-text-sm);
   }
 }
 </style>

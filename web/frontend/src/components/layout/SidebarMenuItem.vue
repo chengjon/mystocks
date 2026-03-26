@@ -48,12 +48,12 @@ const navigateTo = (path: string) => {
   transition: all var(--artdeco-transition-base);
 
   &:hover {
-    background-color: rgba(212, 175, 55, 0.1); // Gold tint
+    background-color: var(--artdeco-gold-opacity-10);
     color: var(--artdeco-gold-primary);
   }
 
   &.is-active {
-    background-color: rgba(212, 175, 55, 0.15);
+    background-color: var(--artdeco-gold-opacity-15);
     color: var(--artdeco-gold-primary);
     position: relative;
 
@@ -63,7 +63,7 @@ const navigateTo = (path: string) => {
       left: 0;
       top: 50%;
       transform: translateY(-50%);
-      width: 3px;
+      width: calc(var(--artdeco-spacing-px) * 3);
       height: 60%;
       background-color: var(--artdeco-gold-primary);
     }

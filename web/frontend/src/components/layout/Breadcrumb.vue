@@ -169,10 +169,10 @@ export default {
   position: relative;
   display: flex;
   align-items: center;
-  height: 60px;
-  padding: 0 24px;
-  background: #fff;
-  border-bottom: 2px solid #409eff;
+  height: calc(var(--artdeco-spacing-12) + var(--artdeco-spacing-3));
+  padding: 0 var(--artdeco-spacing-6);
+  background: var(--artdeco-bg-card);
+  border-bottom: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-gold-primary);
   overflow: hidden;
 
   // L形角落装饰
@@ -180,26 +180,26 @@ export default {
   &::after {
     content: '';
     position: absolute;
-    background: #409eff;
-    opacity: 60%;
+    background: var(--artdeco-gold-primary);
+    opacity: 0.6;
   }
 
   // 左上角装饰
   &::before {
     top: 0;
     left: 0;
-    width: 20px;
-    height: 2px;
-    box-shadow: 0 0 10px rgb(212 175 55 / 50%);
+    width: var(--artdeco-spacing-5);
+    height: calc(var(--artdeco-spacing-px) * 2);
+    box-shadow: var(--artdeco-glow-subtle);
   }
 
   // 右上角装饰
   &::after {
     top: 0;
     right: 0;
-    width: 2px;
-    height: 20px;
-    box-shadow: 0 0 10px rgb(212 175 55 / 50%);
+    width: calc(var(--artdeco-spacing-px) * 2);
+    height: var(--artdeco-spacing-5);
+    box-shadow: var(--artdeco-glow-subtle);
   }
 }
 
@@ -212,10 +212,10 @@ export default {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    #409eff 50%,
+    var(--artdeco-gold-primary) 50%,
     transparent 100%
   );
-  opacity: 30%;
+  opacity: 0.3;
 }
 
 .breadcrumb {
@@ -225,31 +225,33 @@ export default {
   :deep(.el-breadcrumb__item) {
     display: inline-flex;
     align-items: center;
-    font-family: Inter, system-ui, sans-serif;
-    font-size: 13px;
+    font-family: var(--font-body);
+    font-size: var(--artdeco-text-sm);
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #909399;
+    letter-spacing: var(--artdeco-tracking-wide);
+    color: var(--artdeco-fg-muted);
 
     .el-breadcrumb__inner {
       display: inline-flex;
       align-items: center;
-      color: rgb(212 175 55 / 70%);
-      transition: all 0.3s;
+      color: color-mix(in srgb, var(--artdeco-gold-primary) 70%, transparent);
+      transition:
+        color var(--artdeco-transition-base) var(--artdeco-ease-out),
+        text-shadow var(--artdeco-transition-base) var(--artdeco-ease-out);
 
       &:hover {
-        color: #409eff;
-        text-shadow: 0 2px 4px rgb(64 158 255 / 10%);
+        color: var(--artdeco-gold-light);
+        text-shadow: var(--artdeco-shadow-sm);
       }
     }
 
     // 最后一个激活项
     &:last-child {
       .el-breadcrumb__inner {
-        color: #409eff;
+        color: var(--artdeco-gold-primary);
         font-weight: 700;
-        text-shadow: 0 4px 8px rgb(64 158 255 / 20%);
+        text-shadow: var(--artdeco-shadow-md);
         cursor: default;
       }
     }
@@ -257,106 +259,110 @@ export default {
 
   // 分隔符样式
   :deep(.el-breadcrumb__separator) {
-    color: #409eff;
-    opacity: 40%;
-    margin: 0 12px;
-    font-size: 12px;
+    color: var(--artdeco-gold-primary);
+    opacity: 0.4;
+    margin: 0 var(--artdeco-spacing-3);
+    font-size: var(--artdeco-text-xs);
   }
 }
 
 .breadcrumb-item-content {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--artdeco-spacing-1);
 }
 
 .breadcrumb-icon {
-  font-size: 16px;
-  color: #409eff;
-  opacity: 80%;
-  transition: all 0.3s;
+  font-size: var(--artdeco-text-base);
+  color: var(--artdeco-gold-primary);
+  opacity: 0.8;
+  transition:
+    opacity var(--artdeco-transition-base) var(--artdeco-ease-out),
+    filter var(--artdeco-transition-base) var(--artdeco-ease-out);
 
   &:hover {
-    opacity: 100%;
-    filter: drop-shadow(0 0 4px rgb(212 175 55 / 50%));
+    opacity: 1;
+    filter: drop-shadow(0 0 var(--artdeco-spacing-1) color-mix(in srgb, var(--artdeco-gold-primary) 50%, transparent));
   }
 }
 
 .breadcrumb-active {
-  color: #409eff;
+  color: var(--artdeco-gold-primary);
   font-weight: 700;
-  text-shadow: 0 2px 4px rgb(64 158 255 / 10%);
+  text-shadow: var(--artdeco-shadow-sm);
 }
 
 /* 面包屑过渡动画 */
 .breadcrumb-enter-active,
 .breadcrumb-leave-active {
-  transition: all 0.3s;
+  transition:
+    opacity var(--artdeco-transition-base) var(--artdeco-ease-out),
+    transform var(--artdeco-transition-base) var(--artdeco-ease-out);
 }
 
 .breadcrumb-enter-from {
   opacity: 0%;
-  transform: translateX(20px);
+  transform: translateX(var(--artdeco-spacing-5));
 }
 
 .breadcrumb-leave-to {
   opacity: 0%;
-  transform: translateX(-20px);
+  transform: translateX(calc(var(--artdeco-spacing-5) * -1));
 }
 
 /* 响应式设计 */
-@media (width <= 768px) {
+@media (width <= var(--artdeco-breakpoint-md)) {
   .breadcrumb-container {
-    height: 50px;
-    padding: 0 12px;
+    height: calc(var(--artdeco-spacing-12) + var(--artdeco-spacing-px) * 2);
+    padding: 0 var(--artdeco-spacing-3);
 
     &::before {
-      width: 15px;
+      width: var(--artdeco-spacing-4);
     }
 
     &::after {
-      height: 15px;
+      height: var(--artdeco-spacing-4);
     }
   }
 
   .breadcrumb {
     :deep(.el-breadcrumb__item) {
-      font-size: 12px;
-      letter-spacing: 0.5px;
+      font-size: var(--artdeco-text-xs);
+      letter-spacing: calc(var(--artdeco-spacing-px) / 2);
 
       .el-breadcrumb__inner {
-        padding: 4px 0;
+        padding: var(--artdeco-spacing-1) 0;
       }
     }
 
     :deep(.el-breadcrumb__separator) {
-      margin: 0 4px;
-      font-size: 10px;
+      margin: 0 var(--artdeco-spacing-1);
+      font-size: calc(var(--artdeco-text-xs) - var(--artdeco-spacing-px) * 2);
     }
   }
 
   .breadcrumb-icon {
-    font-size: 14px;
+    font-size: var(--artdeco-text-sm);
   }
 }
 
 /* 大屏幕优化 */
-@media (width >= 1440px) {
+@media (width >= 90rem) {
   .breadcrumb-container {
-    padding: 0 32px;
+    padding: 0 var(--artdeco-spacing-8);
 
     &::before {
-      width: 30px;
+      width: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
     }
 
     &::after {
-      height: 30px;
+      height: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
     }
   }
 
   .breadcrumb {
     :deep(.el-breadcrumb__item) {
-      font-size: 14px;
+      font-size: var(--artdeco-text-sm);
     }
   }
 }
@@ -364,8 +370,8 @@ export default {
 /* 打印样式 */
 @media print {
   .breadcrumb-container {
-    background: white;
-    border-bottom: 1px solid #000;
+    background: var(--artdeco-bg-card);
+    border-bottom: 1px solid var(--artdeco-gold-primary);
 
     &::before,
     &::after {
@@ -374,7 +380,7 @@ export default {
   }
 
   .breadcrumb :deep(.el-breadcrumb__item .el-breadcrumb__inner) {
-    color: #000;
+    color: var(--artdeco-fg-primary);
   }
 }
 </style>
