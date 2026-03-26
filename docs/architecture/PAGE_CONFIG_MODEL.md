@@ -397,8 +397,8 @@ A: 1. 运行 `npm run generate-page-config` 重新生成
 
 ## 相关文档
 
-- [使用指南](../guides/PAGE_CONFIG_USAGE_GUIDE.md)
-- [路由配置](../guides/ROUTER_SIMPLIFICATION_EXPLANATION.md)
+- [使用指南](./PAGE_CONFIG_USAGE_GUIDE.md)
+- [路由配置](./ROUTER_SIMPLIFICATION_EXPLANATION.md)
 - [配置生成脚本](../../scripts/dev/tools/generate-page-config.js)
 - [验证脚本](../../scripts/hooks/check-page-config.mjs)
 

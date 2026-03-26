@@ -26,7 +26,7 @@
 
 - **完整清单**: [docs/reports/WEB_PAGES_INVENTORY_REPORT.md](../../reports/WEB_PAGES_INVENTORY_REPORT.md)
 - **完成报告**: [docs/reports/WEB_HTML_SAMPLE_COMPLETION_SUMMARY.md](../../reports/WEB_HTML_SAMPLE_COMPLETION_SUMMARY.md)
-- **使用指南**: [docs/guides/WEB_HTML_SAMPLES_GUIDE.md](../../guides/WEB_HTML_SAMPLES_GUIDE.md)
+- **使用指南**: [docs/guides/web/WEB_HTML_SAMPLES_GUIDE.md](../../guides/web/WEB_HTML_SAMPLES_GUIDE.md)
 
 ---
 

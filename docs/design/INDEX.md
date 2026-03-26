@@ -1,77 +1,80 @@
 # Design
 
-**最后更新**: 2026-02-02 22:10:38
+**最后更新**: 2026-03-25 02:04:55
 
-**文档数量**: 23
+**文档数量**: 24
 
 
 ---
 
-- [01_dashboard](design/new/01_dashboard.md)
+- [01_dashboard](new/01_dashboard.md)
   - *01 主控仪表盘 (Dashboard)*
 
-- [02_market_center](design/new/02_market_center.md)
+- [02_market_center](new/02_market_center.md)
   - *02 市场行情中心 (Market Center)*
 
-- [03_stock_screener](design/new/03_stock_screener.md)
+- [03_stock_screener](new/03_stock_screener.md)
   - *03 智能选股池 (Stock Screener)*
 
-- [04_data_analysis](design/new/04_data_analysis.md)
+- [04_data_analysis](new/04_data_analysis.md)
   - *04 数据深度分析 (Data Analysis)*
 
-- [05_strategy_lab](design/new/05_strategy_lab.md)
+- [05_strategy_lab](new/05_strategy_lab.md)
   - *05 策略研配实验室 (Strategy Lab)*
 
-- [06_backtest_arena](design/new/06_backtest_arena.md)
+- [06_backtest_arena](new/06_backtest_arena.md)
   - *06 回测竞技场 (Backtest Arena)*
 
-- [07_trade_station](design/new/07_trade_station.md)
+- [07_trade_station](new/07_trade_station.md)
   - *07 实战交易台 (Trade Station)*
 
-- [08_risk_center](design/new/08_risk_center.md)
+- [08_risk_center](new/08_risk_center.md)
   - *08 风险监控中心 (Risk Center)*
 
-- [09_system_settings](design/new/09_system_settings.md)
+- [09_system_settings](new/09_system_settings.md)
   - *09 系统配置中心 (System Settings)*
 
-- [20251121-spec优化建议](design/20251121-spec优化建议.md)
+- [20251121-spec优化建议](20251121-spec优化建议.md)
   - *20251121-spec优化建议*
 
-- [ARTDECO_CONVERSION_OPTIMIZATION_PROPOSAL](design/ARTDECO_CONVERSION_OPTIMIZATION_PROPOSAL.md)
+- [ARTDECO_CONVERSION_OPTIMIZATION_PROPOSAL](ARTDECO_CONVERSION_OPTIMIZATION_PROPOSAL.md)
   - *ArtDeco Conversion Optimization Proposal*
 
-- [AUTOMATION_GUIDE](design/AUTOMATION_GUIDE.md)
+- [AUTOMATION_GUIDE](AUTOMATION_GUIDE.md)
   - *Figma 自动化脚本使用指南*
 
-- [COMPONENT_LIBRARY_SPECIFICATION](design/COMPONENT_LIBRARY_SPECIFICATION.md)
+- [COMPONENT_LIBRARY_SPECIFICATION](COMPONENT_LIBRARY_SPECIFICATION.md)
   - *MyStocks 组件库规范文档*
 
-- [FIGMA_QUICK_START](design/FIGMA_QUICK_START.md)
+- [FIGMA_QUICK_START](FIGMA_QUICK_START.md)
   - *Figma 快速上手指南 - MyStocks 设计导入 Pixso*
 
-- [MYSTOCKS_DESIGN_SPECIFICATION](design/MYSTOCKS_DESIGN_SPECIFICATION.md)
+- [MYSTOCKS_DESIGN_SPECIFICATION](MYSTOCKS_DESIGN_SPECIFICATION.md)
   - *MyStocks 量化交易平台 - Web 设计规范文档*
 
-- [PIXSO_IMPORT_GUIDE](design/PIXSO_IMPORT_GUIDE.md)
+- [PIXSO_IMPORT_GUIDE](PIXSO_IMPORT_GUIDE.md)
   - *Pixso 设计导入完整指南*
 
-- [SKETCH_MANUAL_GUIDE](design/SKETCH_MANUAL_GUIDE.md)
+- [SKETCH_MANUAL_GUIDE](SKETCH_MANUAL_GUIDE.md)
   - *Sketch 手动创建指南*
 
-- [Web功能优化四阶段实施计划](design/update/Web功能优化四阶段实施计划.md)
+- [Web功能优化四阶段实施计划](update/Web功能优化四阶段实施计划.md)
   - *MyStocks Web功能优化四阶段实施计划*
 
-- [执行摘要_四阶段优化方案](design/update/执行摘要_四阶段优化方案.md)
+- [grok_advice](grok_advice.md)
+  - *grok_advice*
+
+- [执行摘要_四阶段优化方案](update/执行摘要_四阶段优化方案.md)
   - *MyStocks Web功能优化方案 - 执行摘要*
 
-- [技术实施指南_第一阶段](design/update/技术实施指南_第一阶段.md)
+- [技术实施指南_第一阶段](update/技术实施指南_第一阶段.md)
   - *MyStocks Web功能优化 - 第一阶段技术实施指南*
 
-- [技术实施指南_第三阶段](design/update/技术实施指南_第三阶段.md)
+- [技术实施指南_第三阶段](update/技术实施指南_第三阶段.md)
   - *Web功能优化技术实施指南 - 第三阶段*
 
-- [技术实施指南_第二阶段](design/update/技术实施指南_第二阶段.md)
+- [技术实施指南_第二阶段](update/技术实施指南_第二阶段.md)
   - *Web功能优化技术实施指南 - 第二阶段*
 
-- [技术实施指南_第四阶段](design/update/技术实施指南_第四阶段.md)
+- [技术实施指南_第四阶段](update/技术实施指南_第四阶段.md)
   - *Web功能优化技术实施指南 - 第四阶段*

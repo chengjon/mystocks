@@ -232,7 +232,7 @@ features = gpu_calc.generate_technical_indicators(dataframe)
 
 ### 核心文档
 - **[指标计算系统深度分析](../INDICATOR_CALCULATION_SYSTEM_ANALYSIS.md)** - 2000+行的完整分析文档
-- **[数据源管理工具使用指南](../guides/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md)** - 数据源集成和指标支持
+- **[数据源管理工具使用指南](../guides/data-source/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md)** - 数据源集成和指标支持
 - **[GPU开发经验总结](../api/GPU开发经验总结.md)** - GPU加速实现经验
 
 ### 关键代码文件

@@ -125,7 +125,7 @@
 
 ### 项目级文档
 - \`CLAUDE.md\` - 项目开发总指南
-- \`docs/guides/WEB_FRONTEND_STARTUP_GUIDE.md\` - 前端启动指南
+- \`docs/guides/web/WEB_FRONTEND_STARTUP_GUIDE.md\` - 前端启动指南
 
 ### 技术文档
 - \`docs/api/\` - API文档
