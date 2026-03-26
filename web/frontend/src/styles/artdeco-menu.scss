@@ -1,5 +1,5 @@
 // web/frontend/src/styles/artdeco-menu.scss
-@import './artdeco-tokens'; // Assuming artdeco-tokens.scss is in the same directory
+@use './artdeco-tokens.scss' as *;
 
 .artdeco-sidebar {
   background: var(--artdeco-bg-global);

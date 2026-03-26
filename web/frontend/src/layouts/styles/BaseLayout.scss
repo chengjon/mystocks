@@ -1,5 +1,6 @@
-@import '@/styles/theme-tokens';
-@import '@/styles/artdeco-menu';
+@use '@/styles/theme-tokens.scss' as *;
+@use '@/styles/artdeco-menu.scss' as *;
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .base-layout {
   display: flex;
@@ -280,8 +281,4 @@
   }
 }
 
-// ArtDeco Mixins from artdeco-tokens.scss (if not globally available)
-// Assuming mixins are available via @import '../styles/artdeco-tokens.scss';
-// If not, they would need to be re-declared or imported differently.
-// For now, I'm assuming @import '../styles/artdeco-tokens.scss'; makes them available.
-@import '@/styles/artdeco-tokens';
+// ArtDeco mixins are now sourced via `@use` at the top of this file.
