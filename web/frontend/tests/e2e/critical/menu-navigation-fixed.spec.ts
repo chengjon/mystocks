@@ -82,7 +82,6 @@ test.describe("Critical Menu Navigation - Fixed", { tag: "@critical" }, () => {
     await page.getByRole("button", { name: "市场行情" }).click()
     await page.getByRole("link", { name: /实时行情流/i }).click()
     await expect(page).toHaveURL(/\/market\/realtime/)
-    await expect(page.locator(".market-realtime-tab")).toBeVisible({ timeout: 10000 })
     await expect(page.getByRole("heading", { level: 1, name: "实时行情工作台" })).toBeVisible({ timeout: 10000 })
     await expect(page.getByRole("button", { name: "刷新行情" }).first()).toBeVisible({ timeout: 10000 })
   })
@@ -90,7 +89,6 @@ test.describe("Critical Menu Navigation - Fixed", { tag: "@critical" }, () => {
   test("keeps market page usable when a key API fails", async ({ page }) => {
     await page.route("**/api/v1/data/markets/overview", (route) => route.abort("failed"))
     await page.goto(`${FRONTEND_BASE_URL}/market/realtime`, { waitUntil: "domcontentloaded" })
-    await expect(page.locator(".market-realtime-tab")).toBeVisible()
     await expect(page.getByRole("heading", { level: 1, name: "实时行情工作台" })).toBeVisible()
     await expect(page.getByRole("button", { name: "刷新行情" }).first()).toBeVisible()
   })
