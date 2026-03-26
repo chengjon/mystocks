@@ -22,6 +22,7 @@ from src.data_access.tdengine_access import TDengineDataAccess
 from src.storage.database.connection_manager import DatabaseConnectionManager
 
 logger = logging.getLogger(__name__)
+RECOVERY_LOG_DIR = Path(__file__).resolve().parents[3] / "var" / "log"
 
 
 class RecoveryManager:
@@ -52,7 +53,8 @@ class RecoveryManager:
         if recovery_id is None:
             recovery_id = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-        log_file = Path(f"logs/recovery_{recovery_id}.log")
+        RECOVERY_LOG_DIR.mkdir(parents=True, exist_ok=True)
+        log_file = RECOVERY_LOG_DIR / f"recovery_{recovery_id}.log"
         self._log_recovery(log_file, f"开始恢复备份: {backup_file}")
 
         try:
@@ -209,7 +211,7 @@ class RecoveryManager:
 
     def get_recovery_status(self, recovery_id: str) -> Dict[str, Any]:
         """获取恢复状态"""
-        log_file = Path(f"logs/recovery_{recovery_id}.log")
+        log_file = RECOVERY_LOG_DIR / f"recovery_{recovery_id}.log"
         if not log_file.exists():
             return {"status": "not_found", "message": "恢复任务不存在"}
 
@@ -237,7 +239,7 @@ class RecoveryManager:
 
     def list_recovery_tasks(self) -> List[Dict[str, Any]]:
         """列出所有恢复任务"""
-        recovery_logs = list(Path("logs").glob("recovery_*.log"))
+        recovery_logs = list(RECOVERY_LOG_DIR.glob("recovery_*.log"))
         tasks = []
 
         for log_file in recovery_logs:

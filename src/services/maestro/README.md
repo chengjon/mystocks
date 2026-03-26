@@ -24,6 +24,6 @@
 
 配套文档：
 
-- `docs/guides/MAESTRO_SUMMARY.md`
-- `docs/guides/MAESTRO_QUICK_START.md`
-- `docs/guides/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md`
+- `docs/guides/multi-cli-tasks/MAESTRO_SUMMARY.md`
+- `docs/guides/multi-cli-tasks/MAESTRO_QUICK_START.md`
+- `docs/guides/multi-cli-tasks/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md`
