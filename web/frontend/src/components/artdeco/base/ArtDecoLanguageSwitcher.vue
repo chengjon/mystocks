@@ -96,7 +96,7 @@
             &:hover {
                 border-color: var(--artdeco-gold-primary);
                 background: var(--artdeco-gold-opacity-05);
-                box-shadow: 0 0 10px var(--artdeco-gold-opacity-20);
+                box-shadow: 0 0 calc(var(--artdeco-spacing-5) / 2) var(--artdeco-gold-opacity-20);
             }
 
             &:active {
@@ -105,12 +105,12 @@
 
             // 焦点状态（键盘导航）
             &:focus-visible {
-                outline: 2px solid var(--artdeco-gold-primary);
-                outline-offset: 2px;
+                outline: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-primary);
+                outline-offset: calc(var(--artdeco-spacing-1) / 2);
                 box-shadow:
-                    0 0 0 2px var(--artdeco-bg-global),
-                    0 0 0 4px var(--artdeco-gold-primary),
-                    0 0 12px var(--artdeco-gold-opacity-40);
+                    0 0 0 calc(var(--artdeco-spacing-1) / 2) var(--artdeco-bg-global),
+                    0 0 0 var(--artdeco-spacing-1) var(--artdeco-gold-primary),
+                    0 0 var(--artdeco-spacing-3) var(--artdeco-gold-opacity-40);
             }
 
             .language-flag {
@@ -125,7 +125,7 @@
             }
 
             .language-icon {
-                font-size: 10px;
+                font-size: var(--artdeco-text-compact-xs);
                 color: var(--artdeco-gold-primary);
                 transition: transform var(--artdeco-transition-base);
             }
@@ -138,7 +138,7 @@
             border-radius: var(--artdeco-radius-md);
             padding: var(--artdeco-spacing-2);
             box-shadow: var(--artdeco-shadow-xl);
-            min-width: 180px;
+            min-width: calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-5));
 
             // ArtDeco 几何角落装饰
             @include artdeco-geometric-corners;
@@ -168,8 +168,8 @@
 
             // 焦点状态
             &:focus-visible {
-                outline: 2px solid var(--artdeco-gold-primary);
-                outline-offset: -2px;
+                outline: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-primary);
+                outline-offset: calc(var(--artdeco-spacing-1) / -2);
             }
 
             .locale-flag {

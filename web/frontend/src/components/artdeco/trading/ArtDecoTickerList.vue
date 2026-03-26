@@ -246,14 +246,14 @@
         font-size: var(--data-dense-font-base);
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: var(--data-dense-letter-spacing-normal);
         margin: 0;
         white-space: nowrap;
     }
 
     .hybrid-ticker-list__divider {
         flex: 1;
-        height: 1px;
+        height: var(--data-dense-border-width);
         background: linear-gradient(to right, var(--artdeco-gold-primary), transparent);
     }
 
@@ -269,12 +269,12 @@
     // 性能监控信息 (开发模式)
     .hybrid-ticker-list__perf {
         position: absolute;
-        top: 2px;
-        right: 2px;
-        font-size: 10px;
+        top: calc(var(--data-dense-border-width) + var(--data-dense-border-width));
+        right: calc(var(--data-dense-border-width) + var(--data-dense-border-width));
+        font-size: var(--data-dense-font-xs);
         color: color-mix(in srgb, var(--artdeco-fg-primary) 50%, transparent);
         background: color-mix(in srgb, var(--artdeco-bg-global) 80%, transparent);
-        padding: 2px 4px;
+        padding: calc(var(--data-dense-border-width) + var(--data-dense-border-width)) var(--data-dense-padding-xs);
         border-radius: 0px;
         font-family: var(--hybrid-font-mono);
         pointer-events: none;
@@ -285,7 +285,7 @@
     //   RESPONSIVE DESIGN - 响应式设计
     // ============================================
 
-    @media (width <= 768px) {
+    @media (width <= 48rem) {
         .hybrid-ticker-list {
             .hybrid-ticker-list__title {
                 font-size: var(--data-dense-font-sm);

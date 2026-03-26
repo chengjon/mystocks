@@ -28,7 +28,7 @@
 
     .artdeco-mechanical-switch__label {
         font-family: var(--artdeco-font-display);
-        font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+        font-size: var(--artdeco-font-size-sm);
         font-weight: 600;
         color: var(--artdeco-fg-muted);
         text-transform: uppercase;
@@ -56,8 +56,8 @@
     .artdeco-mechanical-switch__frame {
         position: relative;
         width: 100%;
-        height: 64px;
-        border: 2px solid var(--artdeco-gold-opacity-20);
+        height: var(--artdeco-spacing-16);
+        border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-opacity-20);
         background: var(--artdeco-bg-card);
         box-sizing: border-box;
         transition: all var(--artdeco-transition-base);
@@ -66,18 +66,18 @@
         &.is-active .artdeco-mechanical-switch__control &::after {
             content: '';
             position: absolute;
-            inset: 4px;
-            width: calc(100% - 8px);
-            height: calc(100% - 8px);
+            inset: var(--artdeco-spacing-1);
+            width: calc(100% - var(--artdeco-spacing-2));
+            height: calc(100% - var(--artdeco-spacing-2));
             background: radial-gradient(
                 circle at center,
                 var(--artdeco-gold-opacity-15) 0%,
                 color-mix(in srgb, var(--artdeco-gold-primary) 0%, transparent) 20%,
                 color-mix(in srgb, var(--artdeco-gold-primary) 0%, transparent)
             );
-            border-radius: 4px;
+            border-radius: var(--artdeco-spacing-1);
             z-index: -1;
-            filter: blur(8px);
+            filter: blur(var(--artdeco-spacing-2));
             animation: mechanical-glow 2s ease-in-out infinite;
         }
 
@@ -93,43 +93,43 @@
 
     .artdeco-mechanical-switch__decorator {
         position: absolute;
-        width: 12px;
-        height: 12px;
+        width: var(--artdeco-spacing-3);
+        height: var(--artdeco-spacing-3);
         background: var(--artdeco-bg-primary);
-        border: 2px solid var(--artdeco-gold-dim);
+        border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-dim);
         border-radius: var(--artdeco-radius-none);
     }
 
     .artdeco-mechanical-switch__decorator--top-left {
         top: 0;
         left: 0;
-        border-right: 2px solid var(--artdeco-gold-dim);
-        border-bottom: 2px solid var(--artde-gold-dim);
-        border-bottom-right-radius: 2px;
+        border-right: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-dim);
+        border-bottom: calc(var(--artdeco-spacing-1) / 2) solid var(--artde-gold-dim);
+        border-bottom-right-radius: calc(var(--artdeco-spacing-1) / 2);
     }
 
     .artdeco-mechanical-switch__decorator--top-right {
         top: 0;
         right: 0;
-        border-left: 2px solid var(--artde-gold-dim);
-        border-bottom: 2px solid var(--artde-gold-dim);
-        border-bottom-left-radius: 2px;
+        border-left: calc(var(--artdeco-spacing-1) / 2) solid var(--artde-gold-dim);
+        border-bottom: calc(var(--artdeco-spacing-1) / 2) solid var(--artde-gold-dim);
+        border-bottom-left-radius: calc(var(--artdeco-spacing-1) / 2);
     }
 
     .artdeco-mechanical-switch__decorator--bottom-left {
         bottom: 0;
         left: 0;
-        border-right: 2px solid var(--artde-gold-dim);
-        border-top: 2px solid var(--artde-gold-dim);
-        border-top-right-radius: 2px;
+        border-right: calc(var(--artdeco-spacing-1) / 2) solid var(--artde-gold-dim);
+        border-top: calc(var(--artdeco-spacing-1) / 2) solid var(--artde-gold-dim);
+        border-top-right-radius: calc(var(--artdeco-spacing-1) / 2);
     }
 
     .artdeco-mechanical-switch__decorator--bottom-right {
         bottom: 0;
         right: 0;
-        border-left: 2px solid var(--artde-gold-dim);
-        border-top: 2px solid var(--artde-gold-dim);
-        border-top-left-radius: 2px;
+        border-left: calc(var(--artdeco-spacing-1) / 2) solid var(--artde-gold-dim);
+        border-top: calc(var(--artdeco-spacing-1) / 2) solid var(--artde-gold-dim);
+        border-top-left-radius: calc(var(--artdeco-spacing-1) / 2);
     }
 
     .artdeco-mechanical-switch__frame:hover .artdeco-mechanical-switch__decorator {
@@ -144,13 +144,13 @@
 
     .artdeco-mechanical-switch__toggle {
         width: 100%;
-        height: 48px;
+        height: var(--artdeco-spacing-12);
         position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
         background: linear-gradient(to bottom, var(--artdeco-bg-primary) 0%, var(--artdeco-bg-primary) 100%);
-        border: 2px solid var(--artdeco-border-gold-subtle);
+        border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-border-gold-subtle);
         transition: all var(--artdeco-transition-base);
 
         // Click animation
@@ -209,7 +209,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 36px;
+        width: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-1));
         height: 100%;
         padding: 0 var(--artdeco-spacing-4);
     }
@@ -224,8 +224,8 @@
         left: 50%;
         top: 0;
         transform: translateX(-50%);
-        width: 20px;
-        height: 20px;
+        width: var(--artdeco-spacing-5);
+        height: var(--artdeco-spacing-5);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -235,8 +235,8 @@
             var(--artde-silver-light) 50%,
             var(--artde-silver-light) 100%
         );
-        border: 2px solid var(--artdeco-border-gold-subtle);
-        border-radius: 2px;
+        border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-border-gold-subtle);
+        border-radius: calc(var(--artdeco-spacing-1) / 2);
         box-shadow: var(--artde-glow-subtle);
         transition: all var(--artde-transition-base);
         cursor: pointer;
@@ -244,7 +244,7 @@
 
         // Active state - 滑到右侧、金色
         .is-active & {
-            left: calc(100% - 2px);
+            left: calc(100% - calc(var(--artdeco-spacing-1) / 2));
             transform: translateX(0);
             background: linear-gradient(
                 135deg,
@@ -260,9 +260,9 @@
         .is-active::after {
             content: '';
             position: absolute;
-            inset: -4px;
-            width: 28px;
-            height: 28px;
+            inset: calc(var(--artdeco-spacing-1) * -1);
+            width: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
+            height: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
             background: radial-gradient(
                 circle at center,
                 var(--artdeco-gold-light) 0%,
@@ -270,7 +270,7 @@
                 transparent
             );
             z-index: 3;
-            filter: blur(2px);
+            filter: blur(calc(var(--artdeco-spacing-1) / 2));
             animation: thumb-glow 2s ease-in-out infinite;
         }
     }
@@ -296,11 +296,11 @@
 
     .artdeco-mechanical-switch__thumb-screw {
         position: absolute;
-        top: 4px;
+        top: var(--artdeco-spacing-1);
         left: 50%;
-        width: 4px;
-        height: 16px;
-        border: 2px solid var(--artdeco-accent-gold);
+        width: var(--artdeco-spacing-1);
+        height: var(--artdeco-spacing-4);
+        border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-accent-gold);
         background: linear-gradient(90deg, var(--artdeco-gold-light) 30%, var(--artdeco-silver-light) 70%);
         border-radius: 50%;
         transform: translateX(-50%) rotate(0deg);
@@ -319,12 +319,12 @@
 
     .artdeco-mechanical-switch__thumb-slot {
         position: absolute;
-        top: 6px;
+        top: calc(var(--artdeco-spacing-3) / 2);
         left: 50%;
-        width: 8px;
-        height: 8px;
+        width: var(--artdeco-spacing-2);
+        height: var(--artdeco-spacing-2);
         background: var(--artdeco-bg-primary);
-        border: 2px solid var(--artdeco-gold-dim);
+        border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-dim);
         border-radius: 1px;
 
         .is-active & {
@@ -341,10 +341,10 @@
     .artdeco-mechanical-switch__track-lines {
         position: absolute;
         top: 50%;
-        left: 4px;
-        right: 4px;
-        height: 2px;
-        width: calc(100% - 24px);
+        left: var(--artdeco-spacing-1);
+        right: var(--artdeco-spacing-1);
+        height: calc(var(--artdeco-spacing-1) / 2);
+        width: calc(100% - var(--artdeco-spacing-6));
         display: flex;
         justify-content: space-between;
     }
@@ -354,7 +354,7 @@
         flex: 1;
         background: var(--artdeco-silver-dim);
         height: 100%;
-        width: 2px;
+        width: calc(var(--artdeco-spacing-1) / 2);
         transition: background var(--artde-transition-base);
 
         &::before {
@@ -365,19 +365,19 @@
             width: 1px;
             height: 100%;
             background: var(--artdeco-accent-gold);
-            box-shadow: 0 0 2px var(--artdeco-gold-opacity-20);
+            box-shadow: 0 0 calc(var(--artdeco-spacing-1) / 2) var(--artdeco-gold-opacity-20);
         }
 
         &--left {
-            width: 12px;
+            width: var(--artdeco-spacing-3);
         }
 
         &--right {
-            width: 12px;
+            width: var(--artdeco-spacing-3);
         }
 
         &--center {
-            width: 24px;
+            width: var(--artdeco-spacing-6);
         }
     }
 
@@ -408,7 +408,7 @@
     @keyframes thumb-glow {
         0%,
         100% {
-            box-shadow: 0 0 8px var(--artdeco-gold-opacity-20);
+            box-shadow: 0 0 var(--artdeco-spacing-2) var(--artdeco-gold-opacity-20);
         }
 
     }
@@ -424,7 +424,7 @@
         margin-left: var(--artdeco-spacing-4);
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        padding: 2px 6px;
+        padding: calc(var(--artdeco-spacing-1) / 2) calc(var(--artdeco-spacing-3) / 2);
         background: var(--artdeco-bg-card);
         border: 1px solid var(--artdeco-border-gold-subtle);
     }

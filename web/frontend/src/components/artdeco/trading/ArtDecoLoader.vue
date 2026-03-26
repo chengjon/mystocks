@@ -53,7 +53,7 @@
     }
 
     .artdeco-loader {
-      border: 2px solid var(--artdeco-gold-opacity-20);
+      border: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px)) solid var(--artdeco-gold-opacity-20);
       position: relative;
       animation: artdeco-spin 3s linear infinite;
     }
@@ -72,11 +72,11 @@
 
     .artdeco-loader-text {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      font-size: var(--artdeco-font-size-sm); // Compact small size
       color: var(--artdeco-accent-gold);
-      letter-spacing: 3px;
+      letter-spacing: calc(var(--artdeco-spacing-2) - var(--artdeco-spacing-px));
       text-transform: uppercase;
-      text-shadow: 0 0 10px var(--artdeco-gold-opacity-30);
+      text-shadow: 0 0 calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px)) var(--artdeco-gold-opacity-30);
     }
 
     @keyframes artdeco-spin {
@@ -92,7 +92,7 @@
       100% {
         opacity: 100%;
         transform: translate(-50%, -50%) scale(1.1) rotate(45deg);
-        box-shadow: 0 0 15px var(--artdeco-accent-gold);
+        box-shadow: 0 0 calc(var(--artdeco-spacing-3) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px)) var(--artdeco-accent-gold);
       }
     }
 </style>

@@ -112,7 +112,7 @@
 
     .chart-container {
         position: relative;
-        min-height: 400px;
+        min-height: calc(var(--artdeco-spacing-20) * 5);
         padding: var(--artdeco-spacing-4);
 
         &.loading {
@@ -177,11 +177,11 @@
         background: var(--artdeco-bg-card);
         border: 1px solid var(--artdeco-gold-dim);
         padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
-        border-radius: 4px;
+        border-radius: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
         pointer-events: none;
         z-index: 100;
         box-shadow: var(--artdeco-shadow-md);
-        min-width: 150px;
+        min-width: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-12) + var(--artdeco-spacing-6));
 
         .tooltip-date {
             font-family: var(--artdeco-font-mono);
@@ -269,9 +269,9 @@
             gap: var(--artdeco-spacing-2);
 
             .legend-color {
-                width: 16px;
-                height: 16px;
-                border-radius: 2px;
+                width: var(--artdeco-spacing-4);
+                height: var(--artdeco-spacing-4);
+                border-radius: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
                 border: 1px solid var(--artdeco-gold-dim);
 
                 &.severe {

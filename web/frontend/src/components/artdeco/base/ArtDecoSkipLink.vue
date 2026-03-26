@@ -88,7 +88,7 @@ onUnmounted(() => {
         --skip-link-focus: var(--artdeco-gold-hover);
 
         position: absolute;
-        top: -100px; // 默认隐藏在屏幕上方
+        top: calc(var(--artdeco-spacing-20) * -1); // 默认隐藏在屏幕上方
         left: 50%;
         transform: translateX(-50%);
         z-index: 9999;
@@ -103,7 +103,7 @@ onUnmounted(() => {
         letter-spacing: 0.15em;
         color: var(--skip-link-text);
         background: var(--skip-link-bg);
-        border: 2px solid var(--skip-link-border);
+        border: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px)) solid var(--skip-link-border);
         border-radius: 0; // ArtDeco风格：直角
         text-decoration: none;
         white-space: nowrap;
@@ -114,14 +114,14 @@ onUnmounted(() => {
         &:focus {
             top: var(--artdeco-spacing-md); // 从顶部滑入
             outline: none;
-            box-shadow: 0 0 0 4px var(--artdeco-gold-opacity-30);
+            box-shadow: 0 0 0 var(--artdeco-spacing-1) var(--artdeco-gold-opacity-30);
         }
 
         // 悬停效果
         &:hover {
             background: var(--skip-link-focus);
-            transform: translateX(-50%) translateY(-2px);
-            box-shadow: 0 6px 16px var(--artdeco-gold-opacity-40);
+            transform: translateX(-50%) translateY(calc(var(--artdeco-spacing-px) * -2));
+            box-shadow: 0 calc(var(--artdeco-spacing-sm) - var(--artdeco-radius-md)) var(--artdeco-spacing-4) var(--artdeco-gold-opacity-40);
         }
 
         // 激活状态
@@ -140,12 +140,12 @@ onUnmounted(() => {
         }
 
         &:hover .skip-link-icon {
-            transform: translateX(2px);
+            transform: translateX(calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px)));
         }
     }
 
     /* 响应式设计 */
-    @media (width <= 768px) {
+    @media (width <= 48rem) {
         .skip-link {
             left: var(--artdeco-spacing-md);
             transform: none;
@@ -158,7 +158,7 @@ onUnmounted(() => {
             }
 
             &:hover {
-                transform: translateY(-2px);
+                transform: translateY(calc(var(--artdeco-spacing-px) * -2));
             }
         }
     }
@@ -166,7 +166,7 @@ onUnmounted(() => {
     /* 高对比度模式 */
     @media (prefers-contrast: more) {
         .skip-link {
-            border-width: 3px;
+            border-width: calc(var(--artdeco-spacing-px) * 3);
             font-weight: 900;
         }
     }

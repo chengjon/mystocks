@@ -105,7 +105,7 @@
       border-radius: var(--artdeco-radius-none);
       transition: all var(--artdeco-transition-base);
       height: 100%;
-      min-height: 300px;
+      min-height: calc(var(--artdeco-spacing-20) * 3 + var(--artdeco-spacing-12) + var(--artdeco-spacing-3));
     }
 
     .artdeco-code-editor.is-focused {
@@ -117,21 +117,21 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 16px;
+      padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
       background: var(--artdeco-bg-header);
       border-bottom: 1px solid var(--artdeco-gold-opacity-20);
     }
 
     .editor-title {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      font-size: var(--artdeco-font-size-sm);
       color: var(--artdeco-accent-gold);
       letter-spacing: 1px;
     }
 
     .editor-lang {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      font-size: var(--artdeco-font-size-sm);
       color: var(--artdeco-fg-muted);
     }
 
@@ -143,22 +143,22 @@
     }
 
     .line-numbers {
-      width: 40px;
+      width: var(--artdeco-spacing-10);
       background: var(--artdeco-bg-card);
       border-right: 1px solid var(--artdeco-gold-opacity-20);
       color: var(--artdeco-fg-muted);
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base);
       line-height: 1.5; /* Match textarea line-height */
       text-align: right;
-      padding: 10px 8px 10px 0;
+      padding: calc(var(--artdeco-spacing-5) / 2) var(--artdeco-spacing-2) calc(var(--artdeco-spacing-5) / 2) 0;
       overflow: hidden;
       user-select: none;
       opacity: 50%;
     }
 
     .line-number {
-      height: 21px; /* 14px * 1.5 */
+      height: calc(var(--artdeco-spacing-5) + var(--artdeco-spacing-px));
     }
 
     .code-textarea {
@@ -167,9 +167,9 @@
       border: none;
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base);
       line-height: 1.5;
-      padding: 10px;
+      padding: calc(var(--artdeco-spacing-5) / 2);
       resize: none;
       outline: none;
       white-space: pre;

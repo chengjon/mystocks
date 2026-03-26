@@ -333,7 +333,7 @@
 
     .filter-title {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base); // Compact base size
       font-weight: 600;
       color: var(--artdeco-accent-gold);
       text-transform: uppercase;
@@ -354,7 +354,7 @@
       border: none;
       color: var(--artdeco-fg-muted);
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      font-size: var(--artdeco-font-size-sm); // Compact small size
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -378,7 +378,7 @@
 
     .filters-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(calc(var(--artdeco-spacing-20) * 3), 1fr));
       gap: var(--artdeco-spacing-3);
     }
 
@@ -390,7 +390,7 @@
 
     .filter-label {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      font-size: var(--artdeco-font-size-sm); // Compact small size
       font-weight: 600;
       color: var(--artdeco-accent-gold);
       text-transform: uppercase;
@@ -407,7 +407,7 @@
       border: 1px solid var(--artdeco-gold-opacity-20);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base); // Compact base size
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
       transition: all var(--artdeco-transition-base);
     }
@@ -448,7 +448,7 @@
       align-items: center;
       gap: var(--artdeco-spacing-2);
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base); // Compact base size
       color: var(--artdeco-fg-secondary);
       cursor: pointer;
     }
@@ -468,7 +468,7 @@
 
     .quick-filters-label {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      font-size: var(--artdeco-font-size-sm); // Compact small size
       font-weight: 600;
       color: var(--artdeco-fg-muted);
       text-transform: uppercase;
@@ -481,7 +481,7 @@
       border: 1px solid var(--artdeco-gold-opacity-20);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      font-size: var(--artdeco-font-size-sm); // Compact small size
       text-transform: uppercase;
       letter-spacing: 0.05em;
       cursor: pointer;

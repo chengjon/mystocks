@@ -229,12 +229,12 @@
 
         // 焦点状态（键盘导航）
         &:focus-visible {
-            outline: 2px solid var(--artdeco-gold-primary);
-            outline-offset: 2px;
+            outline: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-primary);
+            outline-offset: calc(var(--artdeco-spacing-1) / 2);
             box-shadow:
-                0 0 0 2px var(--artdeco-bg-global),
-                0 0 0 4px var(--artdeco-gold-primary),
-                0 0 12px var(--artdeco-gold-opacity-40);
+                0 0 0 calc(var(--artdeco-spacing-1) / 2) var(--artdeco-bg-global),
+                0 0 0 var(--artdeco-spacing-1) var(--artdeco-gold-primary),
+                0 0 var(--artdeco-spacing-3) var(--artdeco-gold-opacity-40);
         }
 
         // 悬停状态
@@ -261,9 +261,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 24px;
-        height: 24px;
-        font-size: 12px;
+        width: var(--artdeco-spacing-6);
+        height: var(--artdeco-spacing-6);
+        font-size: var(--artdeco-text-xs);
         color: var(--artdeco-gold-primary);
         transition: transform var(--artdeco-transition-slow);
 
@@ -281,22 +281,22 @@
     // 几何装饰
     .artdeco-collapsible-decoration {
         position: absolute;
-        width: 8px;
-        height: 8px;
-        border: 2px solid var(--artdeco-gold-dim);
+        width: var(--artdeco-spacing-2);
+        height: var(--artdeco-spacing-2);
+        border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-dim);
         opacity: 60%;
         transition: all var(--artdeco-transition-base);
 
         &--left {
-            top: 8px;
-            left: 8px;
+            top: var(--artdeco-spacing-2);
+            left: var(--artdeco-spacing-2);
             border-right: none;
             border-bottom: none;
         }
 
         &--right {
-            top: 8px;
-            right: 8px;
+            top: var(--artdeco-spacing-2);
+            right: var(--artdeco-spacing-2);
             border-left: none;
             border-bottom: none;
         }

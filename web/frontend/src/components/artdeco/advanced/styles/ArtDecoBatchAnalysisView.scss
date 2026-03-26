@@ -3,6 +3,21 @@
     .artdeco-batch-analysis-view {
         display: grid;
         gap: var(--artdeco-spacing-6);
+        --batch-overview-min: calc(var(--artdeco-spacing-20) * 3 + var(--artdeco-spacing-10));
+        --batch-section-icon-size: var(--artdeco-spacing-12);
+        --batch-section-icon-radius: var(--artdeco-spacing-2);
+        --batch-section-icon-glyph: var(--artdeco-spacing-6);
+        --batch-dashboard-side: calc(var(--artdeco-spacing-20) * 3 + var(--artdeco-spacing-10));
+        --batch-summary-side: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-16) + calc(var(--artdeco-spacing-3) / 2));
+        --batch-card-min: calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-10));
+        --batch-insight-min: calc(var(--artdeco-spacing-20) * 3 + var(--artdeco-spacing-10));
+        --batch-gauge-size: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-10));
+        --batch-panel-height: calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-10));
+        --batch-label-min: var(--artdeco-spacing-20);
+        --batch-value-min: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-px) * 0 + var(--artdeco-spacing-10) / 2);
+        --batch-radius-sm: calc(var(--artdeco-spacing-3) / 2);
+        --batch-border-strong: calc(var(--artdeco-spacing-px) * 3);
+        --batch-glow-md: calc(var(--artdeco-spacing-5) - calc(var(--artdeco-spacing-5) / 4));
     }
 
     // ============================================
@@ -11,7 +26,7 @@
 
     .batch-overview {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(var(--batch-overview-min), 1fr));
         gap: var(--artdeco-spacing-4);
     }
 
@@ -27,18 +42,18 @@
             margin-bottom: var(--artdeco-spacing-4);
 
             .header-icon {
-                width: 48px;
-                height: 48px;
+                width: var(--batch-section-icon-size);
+                height: var(--batch-section-icon-size);
                 background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-secondary));
-                border-radius: 8px;
+                border-radius: var(--batch-section-icon-radius);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 color: var(--artdeco-bg-dark);
 
                 svg {
-                    width: 24px;
-                    height: 24px;
+                    width: var(--batch-section-icon-glyph);
+                    height: var(--batch-section-icon-glyph);
                 }
             }
 
@@ -74,19 +89,19 @@
 
         .progress-dashboard {
             display: grid;
-            grid-template-columns: 300px 1fr;
+            grid-template-columns: var(--batch-dashboard-side) 1fr;
             gap: var(--artdeco-spacing-5);
 
             .overall-progress {
                 display: grid;
-                grid-template-columns: 150px 1fr;
+                grid-template-columns: var(--batch-summary-side) 1fr;
                 gap: var(--artdeco-spacing-4);
 
                 .progress-gauge {
                     .gauge-container {
                         position: relative;
-                        width: 120px;
-                        height: 120px;
+                        width: var(--batch-gauge-size);
+                        height: var(--batch-gauge-size);
                         margin: 0 auto;
 
                         .gauge-background {
@@ -190,7 +205,7 @@
                         align-items: center;
                         padding: var(--artdeco-spacing-2);
                         background: var(--artdeco-bg-muted);
-                        border-radius: 4px;
+                        border-radius: var(--batch-radius-sm);
 
                         .label {
                             font-family: var(--artdeco-font-body);
@@ -227,13 +242,13 @@
                         }
 
                         .status-pie {
-                            height: 200px;
+                            height: var(--batch-card-min);
                             position: relative;
 
                             .pie-chart {
                                 position: relative;
-                                width: 150px;
-                                height: 150px;
+                                width: var(--batch-summary-side);
+                                height: var(--batch-summary-side);
                                 margin: 0 auto;
                                 border-radius: 50%;
 
@@ -287,14 +302,14 @@
                                     font-size: var(--artdeco-font-size-sm);
                                     color: var(--artdeco-fg-primary);
                                     font-weight: 600;
-                                    min-width: 80px;
+                                    min-width: var(--batch-label-min);
                                 }
 
                                 .bar-container {
                                     flex: 1;
-                                    height: 12px;
+                                    height: var(--artdeco-spacing-3);
                                     background: var(--artdeco-bg-muted);
-                                    border-radius: 6px;
+                                    border-radius: var(--batch-radius-sm);
                                     overflow: hidden;
 
                                     .bar-fill {
@@ -304,7 +319,7 @@
                                             var(--artdeco-gold-primary),
                                             var(--artdeco-gold-secondary)
                                         );
-                                        border-radius: 6px;
+                                        border-radius: var(--batch-radius-sm);
                                         transition: width var(--artdeco-transition-base);
                                     }
                                 }
@@ -314,7 +329,7 @@
                                     font-size: var(--artdeco-font-size-sm);
                                     color: var(--artdeco-fg-muted);
                                     font-weight: 600;
-                                    min-width: 40px;
+                                    min-width: var(--artdeco-spacing-10);
                                     text-align: right;
                                 }
                             }
@@ -337,18 +352,18 @@
             margin-bottom: var(--artdeco-spacing-4);
 
             .header-icon {
-                width: 48px;
-                height: 48px;
+                width: var(--batch-section-icon-size);
+                height: var(--batch-section-icon-size);
                 background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-secondary));
-                border-radius: 8px;
+                border-radius: var(--batch-section-icon-radius);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 color: var(--artdeco-bg-dark);
 
                 svg {
-                    width: 24px;
-                    height: 24px;
+                    width: var(--batch-section-icon-glyph);
+                    height: var(--batch-section-icon-glyph);
                 }
             }
 
@@ -388,7 +403,7 @@
 
                 .summary-stats {
                     display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    grid-template-columns: repeat(auto-fit, minmax(var(--batch-card-min), 1fr));
                     gap: var(--artdeco-spacing-4);
 
                     .stat-item {
@@ -396,7 +411,7 @@
                         padding: var(--artdeco-spacing-3);
                         background: var(--artdeco-bg-card);
                         border: 1px solid var(--artdeco-border-default);
-                        border-radius: 6px;
+                        border-radius: var(--batch-radius-sm);
 
                         .stat-label {
                             font-family: var(--artdeco-font-body);
@@ -459,15 +474,15 @@
                             }
 
                             &.buy-signal {
-                                border-left: 3px solid var(--artdeco-up);
+                                border-left: var(--batch-border-strong) solid var(--artdeco-up);
                             }
 
                             &.sell-signal {
-                                border-left: 3px solid var(--artdeco-down);
+                                border-left: var(--batch-border-strong) solid var(--artdeco-down);
                             }
 
                             &.hold-signal {
-                                border-left: 3px solid var(--artdeco-gold-primary);
+                                border-left: var(--batch-border-strong) solid var(--artdeco-gold-primary);
                             }
 
                             .col-symbol {
@@ -492,7 +507,7 @@
                                     padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
                                     background: var(--artdeco-gold-primary);
                                     color: var(--artdeco-bg-dark);
-                                    border-radius: 4px;
+                                    border-radius: var(--batch-radius-sm);
                                     font-size: var(--artdeco-font-size-xs);
                                     font-weight: 600;
                                     text-transform: uppercase;
@@ -503,7 +518,7 @@
                             .col-signal {
                                 span {
                                     padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
-                                    border-radius: 4px;
+                                    border-radius: var(--batch-radius-sm);
                                     font-size: var(--artdeco-font-size-sm);
                                     font-weight: 600;
                                     text-transform: uppercase;
@@ -528,10 +543,10 @@
 
                             .col-confidence {
                                 .confidence-bar {
-                                    width: 60px;
-                                    height: 6px;
+                                    width: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
+                                    height: calc(var(--artdeco-spacing-3) / 2);
                                     background: var(--artdeco-bg-muted);
-                                    border-radius: 3px;
+                                    border-radius: calc(var(--artdeco-spacing-px) * 3);
                                     overflow: hidden;
                                     margin-bottom: var(--artdeco-spacing-1);
 
@@ -542,7 +557,7 @@
                                             var(--artdeco-gold-primary),
                                             var(--artdeco-gold-secondary)
                                         );
-                                        border-radius: 3px;
+                                        border-radius: calc(var(--artdeco-spacing-px) * 3);
                                         transition: width var(--artdeco-transition-base);
                                     }
                                 }
@@ -579,18 +594,18 @@
             margin-bottom: var(--artdeco-spacing-4);
 
             .header-icon {
-                width: 48px;
-                height: 48px;
+                width: var(--batch-section-icon-size);
+                height: var(--batch-section-icon-size);
                 background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-secondary));
-                border-radius: 8px;
+                border-radius: var(--batch-section-icon-radius);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 color: var(--artdeco-bg-dark);
 
                 svg {
-                    width: 24px;
-                    height: 24px;
+                    width: var(--batch-section-icon-glyph);
+                    height: var(--batch-section-icon-glyph);
                 }
             }
 
@@ -647,14 +662,14 @@
 
                     .summary-grid {
                         display: grid;
-                        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                        grid-template-columns: repeat(auto-fit, minmax(var(--batch-card-min), 1fr));
                         gap: var(--artdeco-spacing-4);
 
                         .summary-item {
                             padding: var(--artdeco-spacing-3);
                             background: var(--artdeco-bg-card);
                             border: 1px solid var(--artdeco-border-default);
-                            border-radius: 6px;
+                            border-radius: var(--batch-radius-sm);
                             text-align: center;
 
                             .item-label {
@@ -692,7 +707,7 @@
 
                 .insights-list {
                     display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                    grid-template-columns: repeat(auto-fit, minmax(var(--batch-insight-min), 1fr));
                     gap: var(--artdeco-spacing-4);
 
                     .insight-item {
@@ -701,30 +716,30 @@
                         padding: var(--artdeco-spacing-4);
                         background: var(--artdeco-bg-card);
                         border: 1px solid var(--artdeco-border-default);
-                        border-radius: 6px;
+                        border-radius: var(--batch-radius-sm);
                         transition: all var(--artdeco-transition-base);
 
                         &:hover {
                             border-color: var(--artdeco-gold-primary);
-                            box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
+                            box-shadow: 0 0 var(--batch-glow-md) var(--artdeco-gold-opacity-10);
                         }
 
                         &.success {
-                            border-left: 3px solid var(--artdeco-up);
+                            border-left: var(--batch-border-strong) solid var(--artdeco-up);
                         }
 
                         &.warning {
-                            border-left: 3px solid var(--artdeco-warning);
+                            border-left: var(--batch-border-strong) solid var(--artdeco-warning);
                         }
 
                         &.info {
-                            border-left: 3px solid var(--artdeco-gold-primary);
+                            border-left: var(--batch-border-strong) solid var(--artdeco-gold-primary);
                         }
 
                         .insight-icon {
                             flex-shrink: 0;
-                            width: 24px;
-                            height: 24px;
+                            width: var(--batch-section-icon-glyph);
+                            height: var(--batch-section-icon-glyph);
                             display: flex;
                             align-items: center;
                             justify-content: center;
@@ -768,7 +783,7 @@
     //   RESPONSIVE DESIGN - 响应式设计
     // ============================================
 
-    @media (width <= 768px) {
+    @media (width <= calc(var(--artdeco-spacing-32) * 6)) {
         .artdeco-batch-analysis-view {
             gap: var(--artdeco-spacing-4);
         }

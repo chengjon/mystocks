@@ -171,12 +171,12 @@ onUnmounted(() => {
   z-index: 5;
   
   .empty-icon {
-    margin-bottom: 8px;
+    margin-bottom: var(--artdeco-spacing-2);
     opacity: 50%;
   }
   
   .empty-text {
-    font-size: 12px;
+    font-size: var(--artdeco-text-xs);
     letter-spacing: 0.05em;
   }
 }

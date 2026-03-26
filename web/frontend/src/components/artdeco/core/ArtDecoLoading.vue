@@ -33,7 +33,7 @@ const sizeClass = computed(() => `artdeco-loading-${props.size}`)
   justify-content: center;
   gap: var(--artdeco-spacing-4);
   padding: var(--artdeco-spacing-8);
-  min-height: 200px;
+  min-height: calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-20));
 
   .loading-spinner {
     display: flex;
@@ -42,9 +42,9 @@ const sizeClass = computed(() => `artdeco-loading-${props.size}`)
     justify-content: center;
   }
 
-  .spinner-ring {
-    width: 12px;
-    height: 12px;
+    .spinner-ring {
+      width: var(--artdeco-spacing-3);
+      height: var(--artdeco-spacing-3);
     border-radius: 50%;
     background: var(--artdeco-gold-primary);
     animation: artdeco-loading-bounce 1.4s ease-in-out infinite both;
@@ -72,12 +72,12 @@ const sizeClass = computed(() => `artdeco-loading-${props.size}`)
   }
 
   &.sm {
-    min-height: 100px;
+    min-height: calc(var(--artdeco-spacing-20));
     padding: var(--artdeco-spacing-4);
 
     .spinner-ring {
-      width: 8px;
-      height: 8px;
+      width: var(--artdeco-spacing-2);
+      height: var(--artdeco-spacing-2);
     }
 
     .loading-text {
@@ -86,12 +86,12 @@ const sizeClass = computed(() => `artdeco-loading-${props.size}`)
   }
 
   &.lg {
-    min-height: 300px;
+    min-height: calc(var(--artdeco-spacing-20) * 3);
     padding: var(--artdeco-spacing-12);
 
     .spinner-ring {
-      width: 16px;
-      height: 16px;
+      width: var(--artdeco-spacing-4);
+      height: var(--artdeco-spacing-4);
     }
 
     .loading-text {

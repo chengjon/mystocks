@@ -253,7 +253,7 @@
         justify-content: space-between;
         align-items: center;
         font-family: var(--artdeco-font-display);
-        font-size: var(--artdeco-font-size-sm); // 12px
+        font-size: var(--artdeco-font-size-sm); // Compact small size
         color: var(--artdeco-fg-muted);
         text-transform: uppercase;
         letter-spacing: var(--artdeco-tracking-wide);
@@ -268,12 +268,12 @@
 
     // ============================================
     // SLIDER CONTROL - 滑块控制器
-    //   100%宽度、24px高度（机械设计）
+    //   100%宽度、机械感高度
     // ============================================
 
     .artdeco-slider {
         width: 100%;
-        height: 24px;
+        height: var(--artdeco-spacing-6);
         display: flex;
         align-items: center;
         cursor: pointer;
@@ -287,7 +287,7 @@
 
     // ============================================
     // TRACK - 金色轨道
-    //   2px高、金色渐变背景
+    //   细轨道、金色渐变背景
     // ============================================
 
     .artdeco-slider-track {
@@ -327,15 +327,15 @@
         position: absolute;
         top: 50%;
         transform: translate(-50%, -50%);
-        width: 20px;
-        height: 20px;
+        width: var(--artdeco-spacing-5);
+        height: var(--artdeco-spacing-5);
         background: linear-gradient(
             135deg,
             var(--artdeco-gold-primary) 0%,
             var(--artdeco-silver-light) 50%,
             var(--artdeco-silver-light) 100%
         );
-        border: 2px solid var(--artdeco-gold-border);
+        border: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px)) solid var(--artdeco-gold-border);
         box-shadow: var(--artdeco-glow-subtle);
         transition: transform var(--artdeco-transition-base);
         cursor: pointer;
@@ -371,8 +371,8 @@
     .artdeco-slider-marker {
         position: absolute;
         top: 50%;
-        width: 12px;
-        height: 12px;
+        width: var(--artdeco-spacing-3);
+        height: var(--artdeco-spacing-3);
         background: var(--artdeco-bg-primary);
         border: 1px solid var(--artdeco-gold-border);
         transform: rotate(45deg) translateX(-50%);
@@ -428,14 +428,14 @@
         position: absolute;
         top: calc(50% - 1px);
         left: 0;
-        width: 2px;
+        width: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
         height: 100%;
         background: var(--artdeco-gold-primary);
         transform: translateX(-50%);
     }
 
     .artdeco-slider-tick-mark {
-        width: 2px;
+        width: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
         height: 100%;
         background: var(--artdeco-bg-primary);
     }

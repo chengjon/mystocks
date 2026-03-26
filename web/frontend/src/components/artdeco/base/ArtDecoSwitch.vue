@@ -60,7 +60,7 @@
 
     .artdeco-switch-label {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      font-size: var(--artdeco-font-size-sm);
       letter-spacing: 1px;
       color: var(--artdeco-fg-muted);
       text-transform: uppercase;
@@ -68,8 +68,8 @@
 
     .artdeco-switch {
       display: inline-block;
-      width: 48px;
-      height: 24px;
+      width: var(--artdeco-spacing-12);
+      height: var(--artdeco-spacing-6);
       position: relative;
     }
 
@@ -83,14 +83,14 @@
 
     .artdeco-switch-thumb {
       position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 18px;
-      height: 18px;
+      top: calc(var(--artdeco-spacing-1) / 2);
+      left: calc(var(--artdeco-spacing-1) / 2);
+      width: calc(var(--artdeco-spacing-4) + calc(var(--artdeco-spacing-1) / 2));
+      height: calc(var(--artdeco-spacing-4) + calc(var(--artdeco-spacing-1) / 2));
       background: var(--artdeco-silver-dim);
       border: 1px solid var(--artdeco-bg-global);
       transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-      box-shadow: 0 0 5px color-mix(in srgb, var(--artdeco-bg-global) 50%, transparent);
+      box-shadow: 0 0 calc(var(--artdeco-spacing-5) / 4) color-mix(in srgb, var(--artdeco-bg-global) 50%, transparent);
       z-index: 2;
     }
 
@@ -101,16 +101,16 @@
     }
 
     .artdeco-switch.active .artdeco-switch-thumb {
-      left: 26px;
+      left: calc(var(--artdeco-spacing-6) + calc(var(--artdeco-spacing-1) / 2));
       background: var(--artdeco-accent-gold);
-      box-shadow: 0 0 10px var(--artdeco-accent-gold);
+      box-shadow: 0 0 calc(var(--artdeco-spacing-5) / 2) var(--artdeco-accent-gold);
     }
 
     .artdeco-switch-status {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      font-size: var(--artdeco-font-size-sm);
       font-weight: 600;
-      min-width: 25px;
+      min-width: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-px));
     }
 
     .text-gold { color: var(--artdeco-accent-gold); }

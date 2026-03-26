@@ -203,11 +203,11 @@
     }
 
     .hybrid-table__spinner {
-        width: 24px;
-        height: 24px;
-        border: 2px solid var(--artdeco-gold-opacity-20);
+        width: var(--artdeco-spacing-6);
+        height: var(--artdeco-spacing-6);
+        border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-opacity-20);
         border-top-color: var(--artdeco-gold-primary);
-        border-radius: 0px; // Art Deco sharp corners
+        border-radius: var(--artdeco-radius-none);
         animation: hybrid-spin 1s linear infinite;
     }
 
@@ -242,13 +242,13 @@
     // 性能监控
     .hybrid-table__perf {
         position: absolute;
-        top: 2px;
-        right: 2px;
-        font-size: 10px;
+        top: calc(var(--artdeco-spacing-1) / 2);
+        right: calc(var(--artdeco-spacing-1) / 2);
+        font-size: var(--artdeco-text-compact-xs);
         color: color-mix(in srgb, var(--artdeco-fg-primary) 50%, transparent);
         background: color-mix(in srgb, var(--artdeco-bg-global) 80%, transparent);
-        padding: 2px 4px;
-        border-radius: 0px;
+        padding: calc(var(--artdeco-spacing-1) / 2) var(--artdeco-spacing-1);
+        border-radius: var(--artdeco-radius-none);
         font-family: var(--hybrid-font-mono);
         pointer-events: none;
         z-index: 10;
@@ -258,7 +258,7 @@
     .hybrid-table--sm {
         .hybrid-table__cell--head,
         .hybrid-table__cell {
-            padding: 4px 8px;
+            padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
             font-size: var(--data-dense-font-xs);
         }
     }
@@ -266,7 +266,7 @@
     .hybrid-table--lg {
         .hybrid-table__cell--head,
         .hybrid-table__cell {
-            padding: 8px 16px;
+            padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
             font-size: var(--data-dense-font-base);
         }
     }
@@ -275,7 +275,7 @@
     //   RESPONSIVE DESIGN - 响应式设计
     // ============================================
 
-    @media (width <= 768px) {
+    @media (width <= calc(var(--artdeco-spacing-32) * 6)) {
         .hybrid-table {
             .hybrid-table__title {
                 font-size: var(--data-dense-font-base);

@@ -129,7 +129,7 @@
 
     .artdeco-stat-label {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      font-size: var(--artdeco-font-size-sm);
       font-weight: 600;
       color: var(--artdeco-fg-muted);
       text-transform: uppercase;
@@ -137,13 +137,13 @@
     }
 
     .artdeco-stat-icon {
-      font-size: var(--artdeco-font-size-md); // 18px - Compact v3.1
+      font-size: var(--artdeco-font-size-md);
       color: var(--artdeco-gold-opacity-20);
     }
 
     .artdeco-stat-value {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-xl); // 32px - Compact v3.1
+      font-size: var(--artdeco-font-size-xl);
       font-weight: 600;
       line-height: 1;
       margin-bottom: var(--artdeco-spacing-2);
@@ -166,17 +166,17 @@
     .artdeco-stat-change {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: var(--artdeco-spacing-1);
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base);
       font-weight: 600;
-      padding: 4px 12px;
+      padding: var(--artdeco-spacing-1) var(--artdeco-spacing-3);
       border-radius: var(--artdeco-radius-none);
       transition: all var(--artdeco-transition-base);
     }
 
     .artdeco-stat-arrow {
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      font-size: var(--artdeco-font-size-sm);
     }
 
     .artdeco-stat-change-rise {
@@ -197,7 +197,7 @@
     .artdeco-stat-description {
       margin-top: var(--artdeco-spacing-3);
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      font-size: var(--artdeco-font-size-sm);
       color: var(--artdeco-silver-dim);
       line-height: 1.4;
     }
@@ -212,17 +212,17 @@
 
     .artdeco-stat-card-gold:hover .artdeco-stat-value {
       color: var(--artdeco-gold-light);
-      text-shadow: 0 0 15px var(--artdeco-gold-opacity-50);
+      text-shadow: 0 0 calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-5) / 4) var(--artdeco-gold-opacity-50);
     }
 
     .artdeco-stat-card-rise:hover .artdeco-stat-value {
       color: var(--artdeco-up);
-      text-shadow: 0 0 15px color-mix(in srgb, var(--artdeco-up) 50%, transparent);
+      text-shadow: 0 0 calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-5) / 4) color-mix(in srgb, var(--artdeco-up) 50%, transparent);
     }
 
     .artdeco-stat-card-fall:hover .artdeco-stat-value {
       color: var(--artdeco-down);
-      text-shadow: 0 0 15px color-mix(in srgb, var(--artdeco-down) 50%, transparent);
+      text-shadow: 0 0 calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-5) / 4) color-mix(in srgb, var(--artdeco-down) 50%, transparent);
     }
 
     // ============================================

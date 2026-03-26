@@ -255,32 +255,32 @@
     .artdeco-strategy-card.clickable:hover {
       border-color: var(--artdeco-accent-gold);
       box-shadow: var(--artdeco-glow-subtle);
-      transform: translateY(-2px);
+      transform: translateY(calc(var(--artdeco-spacing-1) / -2));
     }
 
     /* Corner decorations */
     .artdeco-corner-tl,
     .artdeco-corner-br {
       position: absolute;
-      width: 16px;
-      height: 16px;
+      width: var(--artdeco-spacing-4);
+      height: var(--artdeco-spacing-4);
       pointer-events: none;
       opacity: 40%;
       transition: opacity var(--artdeco-transition-base);
     }
 
     .artdeco-corner-tl {
-      top: 8px;
-      left: 8px;
-      border-top: 2px solid var(--artdeco-accent-gold);
-      border-left: 2px solid var(--artdeco-accent-gold);
+      top: var(--artdeco-spacing-2);
+      left: var(--artdeco-spacing-2);
+      border-top: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-accent-gold);
+      border-left: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-accent-gold);
     }
 
     .artdeco-corner-br {
-      bottom: 8px;
-      right: 8px;
-      border-bottom: 2px solid var(--artdeco-accent-gold);
-      border-right: 2px solid var(--artdeco-accent-gold);
+      bottom: var(--artdeco-spacing-2);
+      right: var(--artdeco-spacing-2);
+      border-bottom: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-accent-gold);
+      border-right: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-accent-gold);
     }
 
     .artdeco-strategy-card:hover .artdeco-corner-tl,
@@ -304,7 +304,7 @@
 
     .strategy-code {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-md); // 18px - Compact v3.1
+      font-size: var(--artdeco-font-size-md);
       font-weight: 700;
       color: var(--artdeco-accent-gold);
       text-transform: uppercase;
@@ -325,7 +325,7 @@
 
     .strategy-name {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base);
       font-weight: 600;
       color: var(--artdeco-fg-secondary);
       margin: 0;
@@ -333,7 +333,7 @@
 
     .strategy-description {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base);
       color: var(--artdeco-fg-muted);
       line-height: 1.6;
       margin: 0;
@@ -353,7 +353,7 @@
 
     .item-label {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      font-size: var(--artdeco-font-size-sm);
       font-weight: 600;
       color: var(--artdeco-fg-muted);
       text-transform: uppercase;
@@ -362,7 +362,7 @@
 
     .item-value {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base);
       font-weight: 600;
       color: var(--artdeco-fg-secondary);
     }
@@ -385,7 +385,7 @@
 
     /* Strategy chart */
     .strategy-chart {
-      height: 100px;
+      height: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-5));
       margin-top: var(--artdeco-spacing-3);
       padding-top: var(--artdeco-spacing-3);
       border-top: 1px solid var(--artdeco-gold-opacity-10);
@@ -412,7 +412,7 @@
       background: var(--artdeco-bg-primary);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      font-size: var(--artdeco-font-size-sm);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -423,7 +423,7 @@
     .artdeco-btn-mini:hover:not(:disabled) {
       border-color: var(--artdeco-accent-gold);
       box-shadow: var(--artdeco-glow-subtle);
-      transform: translateY(-1px);
+      transform: translateY(calc(var(--artdeco-spacing-px) * -1));
     }
 
     .artdeco-btn-mini:disabled {
@@ -452,18 +452,18 @@
     }
 
     .artdeco-strategy-card.compact .strategy-code {
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base);
     }
 
     .artdeco-strategy-card.compact .strategy-name {
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base);
     }
 
     .artdeco-strategy-card.compact .item-label {
-      font-size: var(--artdeco-font-size-xs); // 10px - Compact v3.1
+      font-size: var(--artdeco-font-size-xs);
     }
 
     .artdeco-strategy-card.compact .item-value {
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base);
     }
 </style>

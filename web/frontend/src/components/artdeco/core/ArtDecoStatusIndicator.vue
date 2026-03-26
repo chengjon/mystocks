@@ -29,20 +29,20 @@ const _props = withDefaults(defineProps<Props>(), {
 .artdeco-status-indicator {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--artdeco-spacing-2);
   font-family: var(--artdeco-font-mono);
-  font-size: 12px;
+  font-size: var(--artdeco-text-xs);
 
   .label {
     color: var(--artdeco-fg-muted);
   }
 
   .indicator-dot {
-    width: 6px;
-    height: 6px;
+    width: calc(var(--artdeco-spacing-3) / 2);
+    height: calc(var(--artdeco-spacing-3) / 2);
     border-radius: 50%;
     background-color: var(--status-color, var(--artdeco-fg-muted));
-    box-shadow: 0 0 4px var(--status-color, var(--artdeco-fg-muted));
+    box-shadow: 0 0 var(--artdeco-spacing-1) var(--status-color, var(--artdeco-fg-muted));
   }
 
   .value {
@@ -52,42 +52,42 @@ const _props = withDefaults(defineProps<Props>(), {
 
   // Size variants
   &.xs {
-    font-size: 10px;
-    gap: 4px;
+    font-size: calc(var(--artdeco-spacing-5) / 2);
+    gap: var(--artdeco-spacing-1);
 
     .indicator-dot {
-      width: 4px;
-      height: 4px;
+      width: var(--artdeco-spacing-1);
+      height: var(--artdeco-spacing-1);
     }
   }
 
   &.sm {
-    font-size: 11px;
-    gap: 6px;
+    font-size: var(--artdeco-text-compact-xs);
+    gap: calc(var(--artdeco-spacing-3) / 2);
 
     .indicator-dot {
-      width: 5px;
-      height: 5px;
+      width: calc(var(--artdeco-spacing-5) / 4);
+      height: calc(var(--artdeco-spacing-5) / 4);
     }
   }
 
   &.md {
-    font-size: 12px;
-    gap: 8px;
+    font-size: var(--artdeco-text-xs);
+    gap: var(--artdeco-spacing-2);
 
     .indicator-dot {
-      width: 6px;
-      height: 6px;
+      width: calc(var(--artdeco-spacing-3) / 2);
+      height: calc(var(--artdeco-spacing-3) / 2);
     }
   }
 
   &.lg {
-    font-size: 14px;
-    gap: 10px;
+    font-size: var(--artdeco-text-sm);
+    gap: calc(var(--artdeco-spacing-5) / 2);
 
     .indicator-dot {
-      width: 8px;
-      height: 8px;
+      width: var(--artdeco-spacing-2);
+      height: var(--artdeco-spacing-2);
     }
   }
 

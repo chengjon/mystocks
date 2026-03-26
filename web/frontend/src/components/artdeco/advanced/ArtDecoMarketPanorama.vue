@@ -53,28 +53,28 @@ const {
 @import '@/styles/artdeco-tokens';
 
 .artdeco-market-panorama {
-    padding: 20px;
+    padding: var(--artdeco-spacing-5);
 }
 
 .panorama-overview {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 20px;
-    margin-bottom: 30px;
+    gap: var(--artdeco-spacing-5);
+    margin-bottom: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
 }
 
 .panorama-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 30px;
+    gap: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
 }
 
 .activity-summary {
-    padding: 20px;
+    padding: var(--artdeco-spacing-5);
     .activity-bar {
-        height: 6px;
+        height: calc(var(--artdeco-spacing-sm) - var(--artdeco-radius-md));
         background: var(--artdeco-gold-opacity-10);
-        margin-top: 15px;
+        margin-top: calc(var(--artdeco-spacing-sm) + var(--artdeco-spacing-xs) + var(--artdeco-radius-md) + var(--artdeco-radius-sm));
         .fill {
           height: 100%;
           background: var(--artdeco-gold-primary);

@@ -102,7 +102,7 @@
         display: flex;
         align-items: center;
         gap: var(--artdeco-spacing-3);
-        padding: 8px 16px;
+        padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
         background: var(--artdeco-bg-header);
         border: 1px solid var(--artdeco-gold-opacity-20);
         cursor: pointer;
@@ -115,13 +115,13 @@
     }
 
     .date-icon {
-        font-size: var(--artdeco-font-size-base);; // 14px - Compact v3.1
+        font-size: var(--artdeco-font-size-base); // Compact base size
     }
 
     .date-text {
         font-family: var(--artdeco-font-mono);
         color: var(--artdeco-fg-secondary);
-        font-size: var(--artdeco-font-size-base);; // 14px - Compact v3.1
+        font-size: var(--artdeco-font-size-base); // Compact base size
     }
 
     .date-separator {
@@ -145,7 +145,7 @@
     .artdeco-date-popper.el-picker__popper {
         background: var(--artdeco-bg-card) !important;
         border: 1px solid var(--artdeco-gold-primary) !important;
-        box-shadow: 0 4px 20px color-mix(in srgb, var(--artdeco-bg-global) 50%, transparent) !important;
+        box-shadow: 0 var(--artdeco-spacing-1) var(--artdeco-spacing-5) color-mix(in srgb, var(--artdeco-bg-global) 50%, transparent) !important;
     }
 
     .artdeco-date-popper .el-date-table th {

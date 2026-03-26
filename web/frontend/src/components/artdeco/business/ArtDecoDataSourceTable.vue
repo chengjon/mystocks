@@ -185,7 +185,7 @@ const getQualityColor = (quality: number) => {
 @import '@/styles/artdeco-tokens';
 
 .status-section {
-  margin-bottom: var(--artdeco-spacing-8); // 32px
+  margin-bottom: var(--artdeco-spacing-8);
 }
 
 .section-title {
@@ -193,7 +193,7 @@ const getQualityColor = (quality: number) => {
   align-items: center;
   gap: var(--artdeco-spacing-2);
   font-family: var(--artdeco-font-heading);
-  font-size: var(--artdeco-text-xl); // 20px
+  font-size: var(--artdeco-text-xl);
   font-weight: var(--artdeco-font-bold);
   color: var(--artdeco-gold-primary);
   text-transform: uppercase;
@@ -215,7 +215,7 @@ const getQualityColor = (quality: number) => {
 .status-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--artdeco-text-sm); // 14px
+  font-size: var(--artdeco-text-sm);
 }
 
 .status-table thead {
@@ -230,7 +230,7 @@ const getQualityColor = (quality: number) => {
   color: var(--artdeco-gold-primary);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  border-bottom: 2px solid var(--artdeco-border-accent);
+  border-bottom: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-border-accent);
 }
 
 .status-table td {
@@ -257,18 +257,18 @@ const getQualityColor = (quality: number) => {
 .col-status {
   display: flex;
   align-items: center;
-  gap: var(--artde-spacing-2);
+  gap: var(--artdeco-spacing-2);
 }
 
 .status-dot {
-  width: 8px;
-  height: 8px;
+  width: var(--artdeco-spacing-2);
+  height: var(--artdeco-spacing-2);
   border-radius: 50%;
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 
   &.online {
     background: var(--artdeco-quality-excellent);
-    box-shadow: 0 0 8px var(--artdeco-quality-excellent);
+    box-shadow: 0 0 var(--artdeco-spacing-2) var(--artdeco-quality-excellent);
   }
 
   &.offline {
@@ -310,30 +310,30 @@ const getQualityColor = (quality: number) => {
 }
 
 .quality-bar {
-  width: 60px;
-  height: 4px;
+  width: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
+  height: var(--artdeco-spacing-1);
   background: var(--artdeco-bg-elevated);
-  border-radius: 2px;
+  border-radius: calc(var(--artdeco-spacing-1) / 2);
   overflow: hidden;
 }
 
 .quality-fill {
   height: 100%;
   transition: width var(--artdeco-transition-base);
-  border-radius: 2px;
+  border-radius: calc(var(--artdeco-spacing-1) / 2);
 }
 
 .quality-value {
   font-family: var(--artdeco-font-mono);
   font-weight: 600;
-  min-width: 35px;
+  min-width: calc(var(--artdeco-spacing-8) + calc(var(--artdeco-spacing-3) / 4));
   text-align: right;
 }
 
 // 响应式
-@media (width <= 768px) {
+@media (width <= calc(var(--artdeco-spacing-32) * 6)) {
   .status-table {
-    font-size: var(--artdeco-text-xs); // 12px
+    font-size: var(--artdeco-text-xs);
   }
 
   .status-table th,
@@ -347,11 +347,11 @@ const getQualityColor = (quality: number) => {
   }
 
   .quality-bar {
-    width: 40px;
+    width: var(--artdeco-spacing-10);
   }
 
   .quality-value {
-    min-width: 30px;
+    min-width: calc(var(--artdeco-spacing-5) + var(--artdeco-spacing-5) / 2);
   }
 }
 </style>

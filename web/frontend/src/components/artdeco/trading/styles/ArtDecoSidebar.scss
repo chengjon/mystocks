@@ -4,9 +4,9 @@
    SIDEBAR CONTAINER
    ==================== */
     .artdeco-sidebar {
-        width: 280px;
+        width: calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-6));
         background: var(--artdeco-bg-header);
-        border-right: 2px solid var(--artdeco-gold-dim);
+        border-right: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-dim);
         position: fixed;
         height: 100vh;
         overflow: hidden auto;
@@ -21,9 +21,9 @@
         background-image: repeating-linear-gradient(
             45deg,
             transparent,
-            transparent 10px,
-            color-mix(in srgb, var(--artdeco-gold-primary) 2%, transparent) 10px,
-            color-mix(in srgb, var(--artdeco-gold-primary) 2%, transparent) 20px
+            transparent calc(var(--artdeco-spacing-5) / 2),
+            color-mix(in srgb, var(--artdeco-gold-primary) 2%, transparent) calc(var(--artdeco-spacing-5) / 2),
+            color-mix(in srgb, var(--artdeco-gold-primary) 2%, transparent) var(--artdeco-spacing-5)
         );
         pointer-events: none;
         z-index: 0;
@@ -33,8 +33,8 @@
    HEADER SECTION
    ==================== */
     .artdeco-sidebar-header {
-        padding: var(--artdeco-spacing-5) var(--artdeco-spacing-4); // 40px 32px
-        border-bottom: 2px solid var(--artdeco-gold-opacity-20);
+        padding: var(--artdeco-spacing-5) var(--artdeco-spacing-4);
+        border-bottom: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-opacity-20);
         text-align: center;
         position: relative;
         background: var(--artdeco-bg-header);
@@ -45,22 +45,22 @@
     .artdeco-corner-tl,
     .artdeco-corner-tr {
         position: absolute;
-        width: 30px;
-        height: 30px;
-        border: 2px solid var(--artdeco-gold-opacity-20);
+        width: calc(var(--artdeco-spacing-5) + var(--artdeco-spacing-5) / 2);
+        height: calc(var(--artdeco-spacing-5) + var(--artdeco-spacing-5) / 2);
+        border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-opacity-20);
         pointer-events: none;
     }
 
     .artdeco-corner-tl {
-        top: 10px;
-        left: 10px;
+        top: calc(var(--artdeco-spacing-5) / 2);
+        left: calc(var(--artdeco-spacing-5) / 2);
         border-right: none;
         border-bottom: none;
     }
 
     .artdeco-corner-tr {
-        top: 10px;
-        right: 10px;
+        top: calc(var(--artdeco-spacing-5) / 2);
+        right: calc(var(--artdeco-spacing-5) / 2);
         border-left: none;
         border-bottom: none;
     }
@@ -71,14 +71,14 @@
         text-decoration: none;
         position: relative;
         z-index: 1;
-        margin-top: var(--artdeco-spacing-2); // 16px
+        margin-top: var(--artdeco-spacing-2);
     }
 
     .artdeco-logo-frame {
-        border: 2px solid var(--artdeco-accent-gold);
-        padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4); // 24px 32px
+        border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-accent-gold);
+        padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
         background: var(--artdeco-bg-card);
-        box-shadow: 0 4px 12px var(--artdeco-gold-opacity-10);
+        box-shadow: 0 var(--artdeco-spacing-1) var(--artdeco-spacing-3) var(--artdeco-gold-opacity-10);
         transition: all var(--artdeco-transition-slow);
     }
 
@@ -90,15 +90,15 @@
 
     .artdeco-logo-text {
         font-family: var(--artdeco-font-display);
-        font-size: var(--artdeco-font-size-md); // 18px - 紧凑设计（原28px，-36%）
+        font-size: var(--artdeco-font-size-md);
         font-weight: 700;
         color: var(--artdeco-accent-gold);
         letter-spacing: 0.25em; /* Changed from 6px to relative unit */
         text-transform: uppercase;
         display: block;
-        margin-bottom: 4px;
+        margin-bottom: var(--artdeco-spacing-1);
         transition: color var(--artdeco-transition-slow);
-        line-height: 1.2; /* Better vertical spacing */
+        line-height: 1.2;
     }
 
     .artdeco-logo:hover .artdeco-logo-text {
@@ -107,17 +107,17 @@
 
     .artdeco-logo-subtitle {
         font-family: var(--artdeco-font-body);
-        font-size: var(--artdeco-font-size-sm); // 12px - 紧凑设计（保持不变）
+        font-size: var(--artdeco-font-size-sm);
         font-weight: 500;
-        color: var(--artdeco-fg-muted); /* Use theme variable */
-        letter-spacing: 0.15em; /* Changed from 3px to relative unit */
+        color: var(--artdeco-fg-muted);
+        letter-spacing: 0.15em;
         text-transform: uppercase;
         display: block;
     }
 
     /* Decorative divider with ornament */
     .artdeco-header-divider {
-        height: 1px;
+        height: var(--artdeco-spacing-px);
         background: linear-gradient(
             to right,
             transparent,
@@ -125,7 +125,7 @@
             var(--artdeco-accent-gold) 60%,
             transparent
         );
-        margin: var(--artdeco-spacing-3) auto 0; // 24px
+        margin: var(--artdeco-spacing-3) auto 0;
         position: relative;
         opacity: 60%;
     }
@@ -134,75 +134,75 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        width: 8px;
-        height: 8px;
+        width: var(--artdeco-spacing-2);
+        height: var(--artdeco-spacing-2);
         background: var(--artdeco-accent-gold);
         transform: translate(-50%, -50%) rotate(45deg);
-        box-shadow: 0 0 8px var(--artdeco-accent-gold);
+        box-shadow: 0 0 var(--artdeco-spacing-2) var(--artdeco-accent-gold);
     }
 
     /* ====================
    NAVIGATION MENU
    ==================== */
     .artdeco-nav {
-        padding: var(--artdeco-spacing-4); // 32px
+        padding: var(--artdeco-spacing-4);
         position: relative;
         z-index: 1;
     }
 
     /* Navigation Section */
     .artdeco-nav-section {
-        margin-bottom: var(--artdeco-spacing-6); // 48px
+        margin-bottom: var(--artdeco-spacing-6);
     }
 
     /* Section Header with Icon */
     .artdeco-nav-section-header {
         display: flex;
         align-items: center;
-        gap: var(--artdeco-spacing-2); // 16px
-        margin-bottom: var(--artdeco-spacing-3); // 24px
-        padding-bottom: var(--artdeco-spacing-2); // 16px
+        gap: var(--artdeco-spacing-2);
+        margin-bottom: var(--artdeco-spacing-3);
+        padding-bottom: var(--artdeco-spacing-2);
         border-bottom: 1px solid var(--artdeco-gold-opacity-20);
     }
 
     .artdeco-nav-section-icon {
-        font-size: var(--artdeco-font-size-base); // 14px - 紧凑设计（原16px，-12.5%）
+        font-size: var(--artdeco-font-size-base);
         color: var(--artdeco-accent-gold);
-        text-shadow: 0 0 8px var(--artdeco-gold-opacity-30);
+        text-shadow: 0 0 var(--artdeco-spacing-2) var(--artdeco-gold-opacity-30);
     }
 
     .artdeco-nav-section-title {
         font-family: var(--artdeco-font-display);
-        font-size: var(--artdeco-font-size-sm); // 12px - 紧凑设计（保持不变）
+        font-size: var(--artdeco-font-size-sm);
         font-weight: 600;
-        color: var(--artdeco-accent-gold); /* Changed to gold for better contrast */
+        color: var(--artdeco-accent-gold);
         text-transform: uppercase;
-        letter-spacing: var(--artdeco-tracking-wide); // 0.05em
+        letter-spacing: var(--artdeco-tracking-wide);
         flex: 1;
-        opacity: 80%; /* Slightly muted for hierarchy */
+        opacity: 80%;
     }
 
     .artdeco-nav-section-line {
         flex: 1;
-        height: 1px;
+        height: var(--artdeco-spacing-px);
         background: linear-gradient(to right, var(--artdeco-gold-opacity-20), transparent);
     }
 
-    /* Navigation Item - IMPROVED: Better spacing and visibility */
+    /* Navigation Item */
     .artdeco-nav-item {
         display: flex;
         align-items: center;
-        gap: var(--artdeco-spacing-3); // 24px
-        padding: 18px var(--artdeco-spacing-3); /* Increased from 16px for better touch targets */
-        color: var(--artdeco-fg-primary); /* Champagne cream - excellent contrast */
+        gap: var(--artdeco-spacing-3);
+        padding: calc(var(--artdeco-spacing-6) - calc(var(--artdeco-spacing-6) / 4)) var(--artdeco-spacing-3);
+        color: var(--artdeco-fg-primary);
         text-decoration: none;
-        border-left: 3px solid transparent;
+        border-left: calc(var(--artdeco-spacing-px) * 3) solid transparent;
         background: transparent;
         transition: all var(--artdeco-transition-slow);
-        margin-bottom: var(--artdeco-spacing-2); /* Increased from xs for better spacing */
+        margin-bottom: var(--artdeco-spacing-2);
         position: relative;
         overflow: hidden;
-        min-height: 60px; /* Ensure consistent height */
+        min-height: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
     }
 
     .artdeco-nav-item::before {
@@ -218,10 +218,10 @@
 
     .artdeco-nav-number {
         font-family: var(--artdeco-font-display);
-        font-size: var(--artdeco-font-size-md); // 18px - 紧凑设计（原20px，-10%）
+        font-size: var(--artdeco-font-size-md);
         font-weight: 700;
         color: var(--artdeco-gold-opacity-20);
-        min-width: 32px;
+        min-width: var(--artdeco-spacing-8);
         text-align: center;
         transition: all var(--artdeco-transition-slow);
     }
@@ -230,37 +230,35 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: calc(var(--artdeco-spacing-1) / 2);
     }
 
-    /* IMPROVED: Better readability and contrast */
     .artdeco-nav-label {
         font-family: var(--artdeco-font-body);
         font-weight: 600;
-        font-size: var(--artdeco-font-size-base); // 14px - 紧凑设计（原16px，-12.5%）
-        color: var(--artdeco-fg-primary); /* Champagne cream */
-        letter-spacing: 0.05em; /* Slightly wider for readability */
+        font-size: var(--artdeco-font-size-base);
+        color: var(--artdeco-fg-primary);
+        letter-spacing: 0.05em;
         transition: all var(--artdeco-transition-slow);
-        line-height: 1.3; /* Better vertical spacing */
+        line-height: 1.3;
     }
 
-    /* IMPROVED: Better contrast and visibility */
     .artdeco-nav-subtitle {
         font-family: var(--artdeco-font-body);
         font-weight: 400;
-        font-size: var(--artdeco-font-size-sm); // 12px - 紧凑设计（保持不变）
-        color: var(--artdeco-fg-muted); /* Pewter - defined in theme */
-        letter-spacing: 1px;
+        font-size: var(--artdeco-font-size-sm);
+        color: var(--artdeco-fg-muted);
+        letter-spacing: var(--artdeco-spacing-px);
         text-transform: uppercase;
         transition: all var(--artdeco-transition-slow);
         line-height: 1.2;
     }
 
-    /* Hover State - IMPROVED: Better visual feedback */
+    /* Hover State */
     .artdeco-nav-item:hover {
-        background: color-mix(in srgb, var(--artdeco-gold-primary) 8%, transparent); /* Subtle gold tint */
-        border-left-color: var(--artdeco-accent-gold); /* Full gold for visibility */
-        padding-left: calc(var(--artdeco-spacing-3) + 4px); // 24px + 4px
+        background: color-mix(in srgb, var(--artdeco-gold-primary) 8%, transparent);
+        border-left-color: var(--artdeco-accent-gold);
+        padding-left: calc(var(--artdeco-spacing-3) + var(--artdeco-spacing-1));
     }
 
     .artdeco-nav-item:hover::before {
@@ -270,28 +268,28 @@
     .artdeco-nav-item:hover .artdeco-nav-number {
         color: var(--artdeco-accent-gold);
         transform: scale(1.1);
-        text-shadow: 0 0 12px color-mix(in srgb, var(--artdeco-gold-primary) 50%, transparent);
+        text-shadow: 0 0 var(--artdeco-spacing-3) color-mix(in srgb, var(--artdeco-gold-primary) 50%, transparent);
     }
 
     .artdeco-nav-item:hover .artdeco-nav-label {
-        color: var(--artdeco-accent-gold); /* Gold on hover */
-        text-shadow: 0 0 8px var(--artdeco-gold-opacity-20); /* Subtle glow */
+        color: var(--artdeco-accent-gold);
+        text-shadow: 0 0 var(--artdeco-spacing-2) var(--artdeco-gold-opacity-20);
     }
 
     .artdeco-nav-item:hover .artdeco-nav-subtitle {
-        color: var(--artdeco-fg-primary); /* Full brightness on hover */
+        color: var(--artdeco-fg-primary);
     }
 
-    /* Active State - IMPROVED: Better visibility and contrast */
+    /* Active State */
     .artdeco-nav-item.active {
         background: linear-gradient(
             90deg,
             var(--artdeco-gold-opacity-20),
-            /* Increased opacity for better visibility */ color-mix(in srgb, var(--artdeco-gold-primary) 8%, transparent)
+            color-mix(in srgb, var(--artdeco-gold-primary) 8%, transparent)
         );
         border-left-color: var(--artdeco-accent-gold);
-        border-left-width: 4px; /* Thicker for emphasis */
-        box-shadow: inset 0 0 30px color-mix(in srgb, var(--artdeco-gold-primary) 15%, transparent); /* More intense glow */
+        border-left-width: var(--artdeco-spacing-1);
+        box-shadow: inset 0 0 calc(var(--artdeco-spacing-5) + var(--artdeco-spacing-5) / 2) color-mix(in srgb, var(--artdeco-gold-primary) 15%, transparent);
     }
 
     .artdeco-nav-item.active .artdeco-nav-number {
@@ -301,20 +299,20 @@
     }
 
     .artdeco-nav-item.active .artdeco-nav-label {
-        color: var(--artdeco-accent-gold); /* Full gold for maximum visibility */
+        color: var(--artdeco-accent-gold);
         font-weight: 700;
-        text-shadow: 0 0 10px var(--artdeco-gold-opacity-30); /* Add glow for emphasis */
+        text-shadow: 0 0 calc(var(--artdeco-spacing-5) / 2) var(--artdeco-gold-opacity-30);
     }
 
     .artdeco-nav-item.active .artdeco-nav-subtitle {
-        color: var(--artdeco-fg-secondary); /* Secondary text - better contrast */
+        color: var(--artdeco-fg-secondary);
     }
 
     /* ====================
    FOOTER SECTION
    ==================== */
     .artdeco-sidebar-footer {
-        padding: var(--artdeco-spacing-4); // 32px
+        padding: var(--artdeco-spacing-4);
         text-align: center;
         border-top: 1px solid var(--artdeco-gold-opacity-20);
         background: var(--artdeco-bg-header);
@@ -323,18 +321,18 @@
     }
 
     .artdeco-footer-ornament {
-        font-size: var(--artdeco-font-size-lg); // 24px - 紧凑设计（保持不变）
+        font-size: var(--artdeco-font-size-lg);
         color: var(--artdeco-gold-opacity-20);
-        margin-bottom: var(--artdeco-spacing-1); // 8px
-        text-shadow: 0 0 8px var(--artdeco-gold-opacity-20);
+        margin-bottom: var(--artdeco-spacing-1);
+        text-shadow: 0 0 var(--artdeco-spacing-2) var(--artdeco-gold-opacity-20);
     }
 
     .artdeco-footer-text {
         font-family: var(--artdeco-font-display);
-        font-size: var(--artdeco-font-size-xs); // 10px - 紧凑设计（原10.4px，-4%）
+        font-size: var(--artdeco-font-size-xs);
         font-weight: 600;
         color: var(--artdeco-fg-muted);
-        letter-spacing: 2px;
+        letter-spacing: calc(var(--artdeco-spacing-1) / 2);
         text-transform: uppercase;
     }
 
@@ -344,7 +342,7 @@
     @keyframes fade-in-up {
         from {
             opacity: 0%;
-            transform: translateY(20px);
+            transform: translateY(var(--artdeco-spacing-5));
         }
         to {
             opacity: 100%;

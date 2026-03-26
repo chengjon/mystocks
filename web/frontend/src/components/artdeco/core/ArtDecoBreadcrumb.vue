@@ -201,8 +201,8 @@
             position: absolute;
             top: 0;
             right: 0;
-            width: 20px;
-            height: 20px;
+            width: var(--artdeco-spacing-5);
+            height: var(--artdeco-spacing-5);
             opacity: 15%;
             z-index: 1;
 
@@ -245,14 +245,14 @@
 
         &:hover {
             color: var(--artdeco-breadcrumb-text-hover);
-            text-shadow: 0 0 10px color-mix(in srgb, var(--artdeco-gold-primary) 30%, transparent);
+            text-shadow: 0 0 calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px)) color-mix(in srgb, var(--artdeco-gold-primary) 30%, transparent);
         }
 
         &--active {
             color: var(--artdeco-breadcrumb-text-active);
             font-weight: var(--artdeco-font-weight-bold);
             cursor: default;
-            text-shadow: 0 0 15px color-mix(in srgb, var(--artdeco-gold-primary) 40%, transparent);
+            text-shadow: 0 0 calc(var(--artdeco-spacing-3) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px)) color-mix(in srgb, var(--artdeco-gold-primary) 40%, transparent);
         }
     }
 
@@ -274,8 +274,8 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 20px;
-        height: 20px;
+        width: var(--artdeco-spacing-5);
+        height: var(--artdeco-spacing-5);
         margin: 0 var(--artdeco-spacing-sm);
         color: var(--artdeco-gold-primary);
         opacity: 40%;
@@ -288,7 +288,7 @@
     }
 
     /* 响应式设计 */
-    @media (width <= 768px) {
+    @media (width <= 48rem) {
         .artdeco-breadcrumb {
             height: var(--artdeco-spacing-lg);
             padding: 0 var(--artdeco-spacing-md);
@@ -298,8 +298,8 @@
             }
 
             .breadcrumb-corner-decoration {
-                width: 15px;
-                height: 15px;
+                width: calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
+                height: calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
             }
         }
 
@@ -309,13 +309,13 @@
         }
 
         .breadcrumb-divider {
-            width: 16px;
-            height: 16px;
+            width: var(--artdeco-spacing-4);
+            height: var(--artdeco-spacing-4);
             margin: 0 var(--artdeco-spacing-xs);
         }
     }
 
-    @media (width <= 480px) {
+    @media (width <= 30rem) {
         // 移动端：隐藏中间面包屑，只显示首页和当前页
         .breadcrumb-item:not(:first-child, :last-child) {
             display: none;
@@ -329,7 +329,7 @@
     }
 
     /* 大屏幕优化 */
-    @media (width >= 1440px) {
+    @media (width >= 90rem) {
         .artdeco-breadcrumb {
             padding: 0 var(--artdeco-spacing-xl);
         }
@@ -367,12 +367,12 @@
     /* 高对比度模式 */
     @media (prefers-contrast: more) {
         .artdeco-breadcrumb {
-            border-bottom: 2px solid var(--artdeco-gold-primary);
+            border-bottom: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px)) solid var(--artdeco-gold-primary);
         }
 
         .breadcrumb-link {
             text-decoration: underline;
-            text-underline-offset: 2px;
+            text-underline-offset: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
         }
 
         .breadcrumb-link--active {

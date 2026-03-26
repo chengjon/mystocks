@@ -64,9 +64,13 @@
 
     .artdeco-select select {
       width: 100%;
-      padding: 10px 40px 10px 12px;
+      padding:
+        calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px))
+        var(--artdeco-spacing-10)
+        calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px))
+        var(--artdeco-spacing-3);
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      font-size: var(--artdeco-font-size-base); // Compact base size
       font-weight: 500;
       color: var(--artdeco-fg-secondary);
       background: var(--artdeco-bg-card);
@@ -101,11 +105,11 @@
 
     .artdeco-select-icon {
       position: absolute;
-      right: 12px;
+      right: var(--artdeco-spacing-3);
       top: 50%;
       transform: translateY(-50%);
-      width: 16px;
-      height: 16px;
+      width: var(--artdeco-spacing-4);
+      height: var(--artdeco-spacing-4);
       color: var(--artdeco-accent-gold);
       pointer-events: none;
       transition: transform var(--artdeco-transition-base);
@@ -117,24 +121,32 @@
 
     /* Size Variants */
     .artdeco-select-sm select {
-      padding: 6px 32px 6px 10px;
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      padding:
+        calc(var(--artdeco-spacing-2) - var(--artdeco-radius-sm))
+        var(--artdeco-spacing-8)
+        calc(var(--artdeco-spacing-2) - var(--artdeco-radius-sm))
+        calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
+      font-size: var(--artdeco-font-size-sm); // Compact small size
     }
 
     .artdeco-select-sm .artdeco-select-icon {
-      width: 14px;
-      height: 14px;
-      right: 10px;
+      width: calc(var(--artdeco-spacing-3) + var(--artdeco-radius-sm));
+      height: calc(var(--artdeco-spacing-3) + var(--artdeco-radius-sm));
+      right: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
     }
 
     .artdeco-select-lg select {
-      padding: 14px 48px 14px 16px;
-      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
+      padding:
+        calc(var(--artdeco-spacing-3) + var(--artdeco-radius-sm))
+        calc(var(--artdeco-spacing-12) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px))
+        calc(var(--artdeco-spacing-3) + var(--artdeco-radius-sm))
+        var(--artdeco-spacing-4);
+      font-size: var(--artdeco-font-size-base); // Compact base size
     }
 
     .artdeco-select-lg .artdeco-select-icon {
-      width: 18px;
-      height: 18px;
-      right: 16px;
+      width: calc(var(--artdeco-spacing-4) + var(--artdeco-radius-sm));
+      height: calc(var(--artdeco-spacing-4) + var(--artdeco-radius-sm));
+      right: var(--artdeco-spacing-4);
     }
 </style>

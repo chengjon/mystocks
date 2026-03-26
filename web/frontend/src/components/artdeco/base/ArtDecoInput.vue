@@ -55,7 +55,7 @@
     //
     //   Design Philosophy:
     //   - Transparent background
-    //   - Bottom border only (2px gold)
+    //   - Bottom border only (accent underline)
     //   - No side/top borders
     //   - Focus: brighter gold + glow shadow
     //   - Minimalist within maximalism
@@ -322,7 +322,7 @@
 
     .artdeco-input__required {
         color: var(--artdeco-color-up); // Red asterisk
-        margin-left: 2px;
+        margin-left: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
     }
 
     // ============================================
@@ -335,14 +335,14 @@
         display: flex;
         align-items: center;
 
-        // MANDATORY: Bottom border only (2px gold)
+        // MANDATORY: Bottom border only (accent underline)
         &::after {
             content: '';
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
-            height: 2px;
+            height: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
             background-color: var(--artdeco-border-gold-subtle);
             transition: all var(--artdeco-duration-base);
         }
@@ -350,7 +350,7 @@
         // Focus state: Border brightens + glow
         .artdeco-input--focused &::after {
             background-color: var(--artdeco-accent-gold);
-            box-shadow: 0 4px 10px var(--artdeco-gold-opacity-20);
+            box-shadow: 0 var(--artdeco-spacing-1) calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px)) var(--artdeco-gold-opacity-20);
         }
 
         // Error state
@@ -360,7 +360,7 @@
 
         // BORDERED VARIANT OVERRIDES
         .artdeco-input--bordered & {
-            border: 2px solid var(--artdeco-gold-dim);
+            border: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px)) solid var(--artdeco-gold-dim);
             background-color: var(--artdeco-bg-card);
             transition: all var(--artdeco-duration-base);
         }
@@ -426,11 +426,11 @@
 
         // With prefix/suffix padding adjustment
         &--has-prefix {
-            padding-left: calc(var(--artdeco-input-padding-x) * 2 + 16px);
+            padding-left: calc(var(--artdeco-input-padding-x) * 2 + var(--artdeco-spacing-4));
         }
 
         &--has-suffix {
-            padding-right: calc(var(--artdeco-input-padding-x) * 2 + 16px);
+            padding-right: calc(var(--artdeco-input-padding-x) * 2 + var(--artdeco-spacing-4));
         }
     }
 
@@ -461,7 +461,7 @@
 
     .artdeco-input__helper {
         margin-top: var(--artdeco-spacing-2);
-        min-height: 18px;
+        min-height: calc(var(--artdeco-spacing-4) + var(--artdeco-radius-sm));
         font-size: var(--artdeco-text-xs);
     }
 

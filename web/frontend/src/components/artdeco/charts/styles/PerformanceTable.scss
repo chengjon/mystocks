@@ -63,7 +63,7 @@
             gap: var(--artdeco-spacing-3);
 
             .period-select {
-                width: 120px;
+                width: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-10));
             }
         }
     }
@@ -74,7 +74,7 @@
 
     .table-container {
         position: relative;
-        min-height: 400px;
+        min-height: calc(var(--artdeco-spacing-20) * 5);
         padding: var(--artdeco-spacing-4);
 
         &.loading {

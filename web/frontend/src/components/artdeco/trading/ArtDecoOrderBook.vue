@@ -101,9 +101,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 4px 8px;
+      padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
       position: relative;
-      height: 24px;
+      height: var(--artdeco-spacing-6);
       z-index: 1;
     }
 
@@ -112,14 +112,14 @@
     }
 
     .row-label {
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
-      width: 40px;
+      font-size: var(--artdeco-font-size-sm); // Compact small size
+      width: var(--artdeco-spacing-10);
     }
 
     .row-price {
       flex: 1;
       text-align: left;
-      padding-left: 10px;
+      padding-left: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
       font-weight: 600;
       color: var(--artdeco-fg-secondary);
     }
@@ -127,13 +127,13 @@
     .row-volume {
       text-align: right;
       color: var(--artdeco-silver-dim);
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      font-size: var(--artdeco-font-size-sm); // Compact small size
     }
 
     .artdeco-depth-bar {
       position: absolute;
-      top: 2px;
-      bottom: 2px;
+      top: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
+      bottom: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
       right: 0;
       opacity: 15%;
       z-index: -1;
@@ -144,31 +144,31 @@
     .depth-rise { background: var(--artdeco-up); }
 
     .artdeco-orderbook-meta {
-      margin: 12px 0;
-      padding: 8px;
+      margin: var(--artdeco-spacing-3) 0;
+      padding: var(--artdeco-spacing-2);
       border-top: 1px solid var(--artdeco-gold-opacity-20);
       border-bottom: 1px solid var(--artdeco-gold-opacity-20);
       text-align: center;
     }
 
     .current-price {
-      font-size: var(--artdeco-font-size-md); // 18px - Compact v3.1
+      font-size: var(--artdeco-font-size-md); // Compact emphasis size
       font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: var(--artdeco-spacing-2);
     }
 
     .price-details {
-      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
+      font-size: var(--artdeco-font-size-sm); // Compact small size
       color: var(--artdeco-fg-muted);
-      margin-top: 4px;
+      margin-top: var(--artdeco-spacing-1);
     }
 
     .text-rise { color: var(--artdeco-up); }
     .text-fall { color: var(--artdeco-down); }
     .text-flat { color: var(--artdeco-fg-muted); }
 
-    .price-arrow { font-size: var(--artdeco-font-size-sm); } // 12px - Compact v3.1
+    .price-arrow { font-size: var(--artdeco-font-size-sm); } // Compact small size
 </style>

@@ -16,20 +16,20 @@
 @import '@/styles/artdeco-tokens';
 
 .artdeco-footer {
-  height: 32px;
+  height: var(--artdeco-spacing-8);
   background-color: var(--artdeco-bg-secondary);
   border-top: 1px solid var(--artdeco-border-default);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
-  font-size: 12px;
+  padding: 0 var(--artdeco-spacing-4);
+  font-size: var(--artdeco-text-xs);
   color: var(--artdeco-fg-muted);
 
   .footer-left, .footer-right {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: var(--artdeco-spacing-4);
   }
 }
 </style>
