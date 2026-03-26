@@ -325,7 +325,7 @@
 6. 04-INTERACTION_FLOWS/ (交互流程)
 
 **第二步**: 前端开发规范:
-1. [前端开发者指南](../../web/frontend/docs/DEVELOPER_GUIDE.md)
+1. [前端开发者指南](../guides/onboarding/DEVELOPER_GUIDE.md)
 2. WEB_PAGE_STRUCTURE_GUIDE.md (页面结构)
 
 ---
@@ -496,7 +496,7 @@ pytest tests/unit/ --cov=src --cov-report=html
 - 📖 [CLAUDE.md](../../CLAUDE.md) - Claude Code 集成指南
 - 📖 [开发指南](../guides/) - 详细的操作指南
 - 📖 [架构文档](../architecture/) - 系统架构设计
-- 📖 [前端开发者指南](../../web/frontend/docs/DEVELOPER_GUIDE.md)
+- 📖 [前端开发者指南](../guides/onboarding/DEVELOPER_GUIDE.md)
 
 ---
 

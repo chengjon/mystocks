@@ -3,7 +3,7 @@
  *
  * 用法说明：
  * 1. 在修复BUG后，填写此模板记录BUG信息
- * 2. 将填写完成的 .json 文件保存到 docs/quality/bugs/ 目录
+ * 2. 将填写完成的 .json 文件保存到 docs/reports/quality/bugs/ 目录
  * 3. 定期（每周/每月）汇总BUG报告，更新经验教训文档
  *
  * 支持两种格式：

@@ -312,7 +312,7 @@ repos:
 ## 📞 联系信息
 
 如有疑问或需要协助，请查看：
-- 项目安全文档: `docs/security/SECURITY_BEST_PRACTICES.md`
+- 项目安全文档: `docs/standards/security/SECURITY_BEST_PRACTICES.md`
 - 环境配置指南: `config/.env.example`
 
 ---

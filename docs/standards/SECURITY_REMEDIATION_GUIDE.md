@@ -324,7 +324,7 @@ git gc --prune=now --aggressive
 ## 📖 参考文档
 
 - **完整安全审计报告**: `docs/standards/SECURITY_AUDIT_REPORT_2025-12-23.md`
-- **安全最佳实践**: `docs/security/SECURITY_BEST_PRACTICES.md`
+- **安全最佳实践**: `docs/standards/security/SECURITY_BEST_PRACTICES.md`
 - **环境配置示例**: `config/.env.example`
 
 ---

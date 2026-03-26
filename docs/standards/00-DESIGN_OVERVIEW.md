@@ -502,7 +502,7 @@ Level 4: 组件/元素 (按钮、表单、图表等)
 - [组件库](./02-COMPONENT_LIBRARY/README.md)
 
 ### 前端开发者
-- [前端开发者指南](../../web/frontend/docs/DEVELOPER_GUIDE.md)
+- [前端开发者指南](../guides/onboarding/DEVELOPER_GUIDE.md)
 - [布局系统](./01-DESIGN_SYSTEM/layout-system.md)
 - [设计 Tokens](./01-DESIGN_SYSTEM/design-tokens.md)
 

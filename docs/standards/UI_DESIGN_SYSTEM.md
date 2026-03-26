@@ -434,8 +434,8 @@ npm run preview
 ## 📚 相关资源
 
 ### 项目内部文档
-- [前端开发者指南](../../web/frontend/docs/DEVELOPER_GUIDE.md)
-- [项目交互指南](../guides/IFLOW.md)
+- [前端开发者指南](../guides/onboarding/DEVELOPER_GUIDE.md)
+- [项目交互指南](../overview/IFLOW.md)
 - [API 文档](../api/README.md)
 
 ### 外部资源
@@ -459,7 +459,7 @@ npm run preview
 3. [页面设计](./03-PAGE_DESIGNS/README.md) - 浏览页面设计规范
 
 ### 前端开发者
-1. [前端开发者指南](../../web/frontend/docs/DEVELOPER_GUIDE.md) - 开发规范
+1. [前端开发者指南](../guides/onboarding/DEVELOPER_GUIDE.md) - 开发规范
 2. [组件库](./02-COMPONENT_LIBRARY/README.md) - 组件使用方法
 3. [交互流程](./04-INTERACTION_FLOWS/README.md) - 用户交互逻辑
 
