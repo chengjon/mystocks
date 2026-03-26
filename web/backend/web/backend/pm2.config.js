@@ -16,7 +16,7 @@ module.exports = {
         BACKEND_HOST: "0.0.0.0",
         BACKEND_PORT: backendPort
       },
-      log_file: "/opt/claude/mystocks_spec/web/backend/logs/pm2.log",
+      log_file: "/opt/claude/mystocks_spec/var/log/backend-pm2.log",
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       interpreter: "python"
     }

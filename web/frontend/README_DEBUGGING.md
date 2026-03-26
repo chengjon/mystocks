@@ -203,8 +203,8 @@ curl http://localhost:3020  # 前端
 curl http://localhost:8020/docs  # 后端API文档
 
 # 查看实时日志
-tail -f /tmp/frontend.log
-tail -f /tmp/backend.log
+tail -f /opt/claude/mystocks_spec/var/log/frontend.log
+tail -f /opt/claude/mystocks_spec/var/log/backend.log
 
 # 验证图标是否存在
 grep "export.*IconName" node_modules/@element-plus/icons-vue/dist/index.js

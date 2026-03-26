@@ -316,8 +316,8 @@ curl http://localhost:3020        # 前端
 curl http://localhost:8020/docs   # 后端
 
 # 5. 查看日志
-tail -f /tmp/frontend.log         # 前端日志
-tail -f /tmp/backend.log          # 后端日志
+tail -f /opt/claude/mystocks_spec/var/log/frontend.log  # 前端日志
+tail -f /opt/claude/mystocks_spec/var/log/backend.log   # 后端日志
 ```
 
 ---

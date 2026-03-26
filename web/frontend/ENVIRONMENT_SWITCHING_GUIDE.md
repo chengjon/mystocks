@@ -154,8 +154,8 @@ pm2 restart mystocks-backend
 
 ## 📚 相关文档
 
-- [Mock/Real数据切换指南](../../guides/MOCK_REAL_DATA_SWITCHING_GUIDE.md) - 后端数据源切换
-- [Mock数据使用规则](../../guides/MOCK_DATA_USAGE_RULES.md) - Mock数据规范
+- [Mock/Real数据切换指南](../../guides/mock-data/MOCK_REAL_DATA_SWITCHING_GUIDE.md) - 后端数据源切换
+- [Mock数据使用规则](../../guides/mock-data/MOCK_DATA_USAGE_RULES.md) - Mock数据规范
 - [API验证报告](../../reports/api_verification/) - API可用性验证
 
 ---

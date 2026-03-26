@@ -49,6 +49,9 @@ const frontendBackupPort = requireEnv("FRONTEND_BACKUP_PORT")
 const backendPort = requireEnv("BACKEND_PORT")
 const backendBackupPort = requireEnv("BACKEND_BACKUP_PORT")
 const viteApiBaseUrl = process.env.VITE_API_BASE_URL || `http://localhost:${backendPort}`
+const runtimeLogDir = "/opt/claude/mystocks_spec/var/log"
+
+fs.mkdirSync(runtimeLogDir, { recursive: true })
 
 module.exports = {
   apps: [
@@ -73,8 +76,8 @@ module.exports = {
       watch: false,
       ignore_watch: ["node_modules", "dist", ".git"],
       max_memory_restart: "1G",
-      error_file: "/opt/claude/mystocks_spec/web/frontend/logs/pm2-dev-error.log",
-      out_file: "/opt/claude/mystocks_spec/web/frontend/logs/pm2-dev-out.log",
+      error_file: path.join(runtimeLogDir, "frontend-dev-error.log"),
+      out_file: path.join(runtimeLogDir, "frontend-dev-out.log"),
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       merge_logs: true,
       min_uptime: "5s",
@@ -99,8 +102,8 @@ module.exports = {
       exec_mode: "fork",
       autorestart: true,
       max_memory_restart: "1G",
-      error_file: "/opt/claude/mystocks_spec/web/backend/logs/pm2-error.log",
-      out_file: "/opt/claude/mystocks_spec/web/backend/logs/pm2-out.log",
+      error_file: path.join(runtimeLogDir, "backend-error.log"),
+      out_file: path.join(runtimeLogDir, "backend-out.log"),
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       merge_logs: true,
       min_uptime: "10s",

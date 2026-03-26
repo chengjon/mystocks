@@ -54,6 +54,9 @@ const frontendBackupPort = requireEnv("FRONTEND_BACKUP_PORT")
 const backendPort = requireEnv("BACKEND_PORT")
 const backendBackupPort = requireEnv("BACKEND_BACKUP_PORT")
 const viteApiBaseUrl = process.env.VITE_API_BASE_URL || `http://localhost:${backendPort}`
+const runtimeLogDir = "/opt/claude/mystocks_spec/var/log"
+
+fs.mkdirSync(runtimeLogDir, { recursive: true })
 
 module.exports = {
   apps: [
@@ -77,9 +80,9 @@ module.exports = {
       autorestart: true,
       max_restarts: 10,
       min_uptime: "5s",
-      log_file: "./logs/frontend-access.log",
-      error_file: "./logs/frontend-error.log",
-      out_file: "./logs/frontend-out.log",
+      log_file: path.join(runtimeLogDir, "frontend-access.log"),
+      error_file: path.join(runtimeLogDir, "frontend-error.log"),
+      out_file: path.join(runtimeLogDir, "frontend-out.log"),
       merge_logs: true,
       exp_backoff_restart_delay: 1000
     },
@@ -100,9 +103,9 @@ module.exports = {
         HOST: "0.0.0.0",
         VITE_API_BASE_URL: viteApiBaseUrl
       },
-      log_file: "./logs/frontend-frontend-static-error.log",
-      error_file: "./logs/frontend-frontend-static-error.log",
-      out_file: "./logs/frontend-frontend-static-out.log",
+      log_file: path.join(runtimeLogDir, "frontend-static.log"),
+      error_file: path.join(runtimeLogDir, "frontend-static-error.log"),
+      out_file: path.join(runtimeLogDir, "frontend-static-out.log"),
       autorestart: true,
       max_restarts: 5,
       min_uptime: "30s"

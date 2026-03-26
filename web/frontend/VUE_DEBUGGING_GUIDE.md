@@ -53,7 +53,7 @@ const handleMenuSelect = (index) => {
 npm run build
 
 # 或者在开发服务器日志中查找错误
-tail -f /tmp/frontend.log
+tail -f /opt/claude/mystocks_spec/var/log/frontend.log
 ```
 
 **关键错误识别**:

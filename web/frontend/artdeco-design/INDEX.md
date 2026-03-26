@@ -30,7 +30,7 @@ cd web/frontend/artdeco-design
 ### Documentation
 
 #### 1. System Guide (完整系统指南)
-**Location**: `docs/design-references/artdeco-system-guide.md`
+**Location**: `docs/references/artdeco-system-guide.md`
 
 **Contents**:
 - Complete design system specification
@@ -94,7 +94,7 @@ open web/frontend/artdeco-design/03-stock-screener.html
 ### 3. Read Documentation
 ```bash
 # Complete system guide
-cat docs/design-references/artdeco-system-guide.md
+cat docs/references/artdeco-system-guide.md
 
 # Implementation summary
 cat docs/reports/design/artdeco-implementation-summary.md
@@ -167,7 +167,7 @@ Interactive showcase of all design elements:
 | 8 | Risk Center | Medium | 4-6h | ✅ Yes |
 | 9 | System Settings | Low | 3-4h | ✅ Yes |
 
-**All templates are provided in** `docs/design-references/artdeco-system-guide.md`
+**All templates are provided in** `docs/references/artdeco-system-guide.md`
 
 ---
 
@@ -278,7 +278,7 @@ web/frontend/artdeco-design/
     └── css/
         └── artdeco-theme.css         # Core theme (400+ lines)
 
-docs/design-references/
+docs/references/
 └── artdeco-system-guide.md           # Complete system guide
 
 docs/reports/design/
@@ -319,7 +319,7 @@ docs/reports/design/
 ## 📞 Support
 
 **Questions?** Reference:
-- `docs/design-references/artdeco-system-guide.md` - Complete guide
+- `docs/references/artdeco-system-guide.md` - Complete guide
 - `web/frontend/artdeco-design/COMPONENT_LIBRARY.html` - Visual reference
 - `web/frontend/artdeco-design/assets/css/artdeco-theme.css` - Theme source
 

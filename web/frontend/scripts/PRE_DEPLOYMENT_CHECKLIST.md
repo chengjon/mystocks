@@ -439,7 +439,7 @@
 
 如遇到问题，请参考：
 
-1. **故障排除指南**: `docs/guides/history-mode-deployment-guide.md`
+1. **故障排除指南**: `docs/guides/frontend/history-mode-deployment-guide.md`
 2. **代码审查报告**: `docs/reports/CODE_REVIEW_HTML5_HISTORY_MIGRATION.md`
 3. **阶段1修复报告**: `docs/reports/STAGE1_MEDIUM_PRIORITY_FIXES_COMPLETION_REPORT.md`
 

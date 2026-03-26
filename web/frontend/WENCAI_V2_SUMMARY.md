@@ -330,7 +330,7 @@ const getPriceChangeClass = (value) => {
 ```bash
 # 后端
 cd /opt/claude/mystocks_spec/web/backend
-nohup python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8020 > /tmp/backend.log 2>&1 &
+nohup python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8020 > /opt/claude/mystocks_spec/var/log/backend.log 2>&1 &
 
 # 前端
 cd /opt/claude/mystocks_spec/web/frontend
@@ -399,7 +399,7 @@ npm run dev
 1. 查看测试指南中的"常见问题排查"
 2. 运行 `./quick-debug.sh src/components/market/WencaiPanelV2.vue`
 3. 检查浏览器 Console 错误
-4. 查看后端日志：`tail -f /tmp/backend.log`
+4. 查看后端日志：`tail -f /opt/claude/mystocks_spec/var/log/backend.log`
 
 ---
 

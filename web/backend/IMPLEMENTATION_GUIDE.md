@@ -328,7 +328,7 @@ tmux send-keys -t "mystocks-test:1" "npm run dev" Enter
 
 # 窗口 2: 日志监控
 tmux new-window -t "mystocks-test" -n 'Logs'
-tmux send-keys -t "mystocks-test:2" "lnav -q /opt/claude/mystocks_spec/logs/" Enter
+tmux send-keys -t "mystocks-test:2" "lnav -q /opt/claude/mystocks_spec/var/log/" Enter
 
 # 窗口 3: 测试执行
 tmux new-window -t "mystocks-test" -n 'Test'
@@ -358,7 +358,7 @@ pytest tests/api/ --html=playwright-report/api/test_report.html
 
 ```bash
 # 使用 lnav 分析日志
-lnav /opt/claude/mystocks_spec/logs/api.log
+lnav /opt/claude/mystocks_spec/var/log/backend-access.log
 
 # 筛选错误
 :filter-in ERROR
@@ -591,8 +591,8 @@ module.exports = {
       env: { PYTHONPATH: '/opt/claude/mystocks_spec/web/backend' },
       watch: false,
       max_memory_restart: '500M',
-      log_file: '/opt/claude/mystocks_spec/logs/api.log',
-      error_file: '/opt/claude/mystocks_spec/logs/api_error.log'
+      log_file: '/opt/claude/mystocks_spec/var/log/backend-access.log',
+      error_file: '/opt/claude/mystocks_spec/var/log/backend-error.log'
     },
     {
       name: 'mystocks-web',

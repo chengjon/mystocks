@@ -694,7 +694,7 @@ curl -X DELETE "http://localhost:8020/api/tasks/executions/cleanup?days=7"
 tail -f /tmp/mystocks_tasks/*.log
 
 # 应用日志
-tail -f /tmp/backend.log | grep "task"
+tail -f /opt/claude/mystocks_spec/var/log/backend.log | grep "task"
 ```
 
 #### 日志级别
