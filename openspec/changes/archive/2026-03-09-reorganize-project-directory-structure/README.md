@@ -46,7 +46,7 @@
 
 ## 参考文档
 
-- [方法论指南](../../docs/guides/文件目录整理方法论指南.md)
+- [方法论指南](../../docs/guides/documentation/文件目录整理方法论指南.md)
 - [具体方案](../../docs/plans/项目文件目录整理具体方案.md)
 - [审查报告](../../docs/reviews/PROJECT_STRUCTURE_PLAN_REVIEW.md)
 - [文件组织规则](../../docs/standards/FILE_ORGANIZATION_RULES.md)

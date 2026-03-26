@@ -401,4 +401,4 @@ pm2 logs mystocks-frontend-prod --lines 50
 - **设计文档**: `docs/api/ARTDECO_TRADING_CENTER_DESIGN.md`
 - **API文档**: `docs/api/README_PLATFORM.md`
 - **测试脚本**: `web/frontend/run-comprehensive-e2e.js`
-- **TypeScript最佳实践**: `docs/guides/Typescript_BEST_PRACTICES.md`
+- **TypeScript最佳实践**: `docs/guides/typescript/Typescript_BEST_PRACTICES.md`

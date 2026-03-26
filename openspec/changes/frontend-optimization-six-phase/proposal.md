@@ -12,7 +12,7 @@
 
 ## Executive Summary
 
-This proposal implements **方案A (Recommended)** from the comprehensive evaluation documented in `docs/guides/WEB_FRAMEWORK_INCREMENTAL_OPTIMIZATION_PLAN.md`. The plan integrates two complementary design approaches:
+This proposal implements **方案A (Recommended)** from the comprehensive evaluation documented in `docs/guides/web/WEB_FRAMEWORK_INCREMENTAL_OPTIMIZATION_PLAN.md`. The plan integrates two complementary design approaches:
 
 1. **方案1: Web功能优化** - Focus on professional K-line charts, 161 technical indicators, GPU acceleration, and AI smart screening
 2. **方案2: 框架A+B整合** - Focus on modern dark theme, TypeScript migration, and layout components
@@ -376,7 +376,7 @@ Note: `klinecharts` already at v9.6.0 in dependencies.
 
 ## Related Documentation
 
-- Comprehensive Integration Plan: `docs/guides/WEB_FRAMEWORK_INCREMENTAL_OPTIMIZATION_PLAN.md`
+- Comprehensive Integration Plan: `docs/guides/web/WEB_FRAMEWORK_INCREMENTAL_OPTIMIZATION_PLAN.md`
 - Framework B Developer Guide: `/opt/iflow/myhtml/DEVELOPER_GUIDE.md`
 - Phase 1-4 Technical Guides: `docs/design/update/技术实施指南_第*.md`
 - Current Pages Documentation: `docs/WEB_PAGES_DOCUMENTATION.md`

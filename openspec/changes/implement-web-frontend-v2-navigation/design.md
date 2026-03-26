@@ -897,7 +897,7 @@ export async function healthCheck() {
 - **[组件目录](../../../../../web/frontend/ARTDECO_COMPONENTS_CATALOG.md)**: 64个ArtDeco组件完整清单
 - **[设计文档](../../../../../docs/api/ARTDECO_TRADING_CENTER_DESIGN.md)**: ArtDeco设计系统详解
 - **[API文档](../../../../../docs/api/README_PLATFORM.md)**: 后端API完整文档
-- **[TypeScript最佳实践](../../../../../docs/guides/Typescript_BEST_PRACTICES.md)**: TypeScript质量管理体系
+- **[TypeScript最佳实践](../../../../../docs/guides/typescript/Typescript_BEST_PRACTICES.md)**: TypeScript质量管理体系
 
 ### 工具和脚本
 

@@ -19,5 +19,5 @@ Without an explicit project decision, switching the MCP server alone would leave
 - Affected code/config:
   - `.mcp.json`
   - `config/.mcp.json`
-  - `docs/guides/MONGO_MULTICLI_COORDINATION_GUIDE.md`
-  - `docs/guides/GRAPHITI_MCP_WORKFLOW.md`
+  - `docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md`
+  - `docs/guides/ai-tools/GRAPHITI_MCP_WORKFLOW.md`

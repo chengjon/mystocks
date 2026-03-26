@@ -8,7 +8,7 @@
 - **创建日期**: 2025-07-25
 - **关联文档**:
   - [项目文件目录整理具体方案](../../docs/plans/项目文件目录整理具体方案.md)
-  - [文件目录整理方法论指南 v2.1](../../docs/guides/文件目录整理方法论指南.md)
+  - [文件目录整理方法论指南 v2.1](../../docs/guides/documentation/文件目录整理方法论指南.md)
   - [FILE_ORGANIZATION_RULES v1.3](../../docs/standards/FILE_ORGANIZATION_RULES.md)
 - **前序变更**: `implement-file-directory-migration`（已完成，本次为其后续深度治理）
 
