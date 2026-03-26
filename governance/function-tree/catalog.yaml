@@ -387,7 +387,7 @@ domains:
             - "tests/unit/monitoring/test_monitoring_service.py"
           operations:
             - "config/monitoring-stack/README.md"
-            - "docs/deployment/SETUP_GRAFANA.md"
+            - "docs/operations/deployment/SETUP_GRAFANA.md"
             - "docs/operations/OPS_MANUAL.md"
       - id: "domain-06-node-02"
         label: "6.2 数据质量"
@@ -514,7 +514,7 @@ domains:
             - "tests/api/auth.spec.ts"
             - "tests/security/test_jwt_authentication.py"
           operations:
-            - "docs/deployment/README.md"
+            - "docs/operations/deployment/README.md"
             - "docs/operations/deployment-guide.md"
       - id: "domain-08-node-02"
         label: "8.2 系统配置"
@@ -534,8 +534,8 @@ domains:
           tests:
             - "tests/api/system.spec.ts"
           operations:
-            - "docs/deployment/README.md"
-            - "config/docker/README.md"
+            - "docs/operations/deployment/README.md"
+            - "docker/README.md"
       - id: "domain-08-node-03"
         label: "8.3 备份恢复"
         coverage_paths:
@@ -554,7 +554,7 @@ domains:
             - "tests/api/system.spec.ts"
           operations:
             - "docs/operations/deployment-guide.md"
-            - "config/docker/README.md"
+            - "docker/README.md"
 
   - id: "domain-09"
     label: "09-数据存储与管理"
@@ -565,7 +565,7 @@ domains:
         label: "9.1 数据库架构"
         coverage_paths:
           - "src/storage/database/**"
-          - "config/docker-infra/**"
+          - "docker/**"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
@@ -581,7 +581,7 @@ domains:
             - "tests/api/test_data_file.py"
             - "tests/integration/test_api_integration.py"
           operations:
-            - "config/docker-infra/README.md"
+            - "docker/README.md"
             - "docs/operations/README.md"
             - "docs/architecture/README.md"
       - id: "domain-09-node-02"
@@ -689,4 +689,4 @@ domains:
             - "tests/unit/governance/**"
             - "tests/fixtures/governance/**"
           operations:
-            - "docs/guides/MONGO_MULTICLI_COORDINATION_GUIDE.md"
+            - "docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md"

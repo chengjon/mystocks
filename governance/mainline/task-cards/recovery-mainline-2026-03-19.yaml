@@ -49,7 +49,6 @@ scope:
     - "governance/mainline/task-cards/*.yaml"
     - "pyproject.toml"
     - "requirements.txt"
-    - "run-api-tests.sh"
     - "scripts/tests/run-api-tests.sh"
     - "src/**"
     - "tests/**"
