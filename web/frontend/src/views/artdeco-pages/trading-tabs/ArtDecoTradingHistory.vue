@@ -213,6 +213,14 @@
         display: flex;
         flex-direction: column;
         gap: var(--artdeco-spacing-6);
+
+        @include artdeco-stepped-corners(var(--artdeco-spacing-2));
+        @include artdeco-geometric-corners(
+            $color: var(--artdeco-gold-primary),
+            $size: var(--artdeco-trading-history-corner-size),
+            $border-width: var(--artdeco-trading-history-border-width)
+        );
+        @include artdeco-hover-lift-glow;
     }
 
     .artdeco-trading-history.is-embedded {
@@ -290,15 +298,6 @@
         color: var(--artdeco-fg-muted);
         font-size: var(--artdeco-text-sm);
         line-height: var(--artdeco-leading-relaxed);
-    }
-
-        @include artdeco-stepped-corners(var(--artdeco-spacing-2));
-        @include artdeco-geometric-corners(
-            $color: var(--artdeco-gold-primary),
-            $size: var(--artdeco-trading-history-corner-size),
-            $border-width: var(--artdeco-trading-history-border-width)
-        );
-        @include artdeco-hover-lift-glow;
     }
 
     .artdeco-trading-history__table {

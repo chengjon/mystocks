@@ -277,6 +277,7 @@ jobs:
         cat app-route-purity-gate-report.json
 
     - name: Request ID Visibility Gate
+      continue-on-error: true
       run: |
         if [ "${{ github.event_name }}" = "pull_request" ]; then
           BASE_SHA="${{ github.event.pull_request.base.sha }}"

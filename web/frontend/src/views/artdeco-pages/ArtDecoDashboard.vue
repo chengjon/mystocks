@@ -1,5 +1,5 @@
 <template>
-    <div class="artdeco-dashboard">
+    <main class="artdeco-dashboard" role="main">
         <!-- 戏剧性的页面头部 -->
         <ArtDecoHeader
             title="QUANTIX"
@@ -47,6 +47,7 @@
         </ArtDecoHeader>
 
         <div class="request-meta-bar">
+            <span class="brand-text dashboard-brand">QUANTIX</span>
             <span>DATA: REAL</span>
             <span>REQ: {{ lastRequestId || 'N/A' }}</span>
             <span>TIME: {{ displayProcessTime }}</span>
@@ -448,7 +449,7 @@
                 </nav>
             </ArtDecoCard>
         </div>
-    </div>
+    </main>
 </template>
 
 <script setup>

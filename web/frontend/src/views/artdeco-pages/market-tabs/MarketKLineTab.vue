@@ -35,7 +35,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="market-kline-tab page-enter">
+  <main class="market-kline-tab page-enter" role="main">
     <section class="hero-shell artdeco-card-shell">
       <div class="hero-rail">
         <div class="hero-copy">
@@ -77,7 +77,7 @@ onMounted(() => {
       <div class="content-shell-header">
         <div class="content-shell-copy">
           <span class="content-shell-kicker">price and candle route</span>
-          <h3 class="content-shell-title">图形占位与样本面板</h3>
+          <h2 class="content-shell-title">K-Line Analysis</h2>
           <p class="content-shell-subtitle">从实时 K 线数据中提取最新价格、样本点和近期蜡烛图摘要，作为后续图形引擎接入的统一舞台。</p>
         </div>
         <div class="content-shell-meta">
@@ -125,7 +125,7 @@ onMounted(() => {
         </table>
       </div>
     </section>
-  </div>
+  </main>
 </template>
 
 <style scoped lang="scss">

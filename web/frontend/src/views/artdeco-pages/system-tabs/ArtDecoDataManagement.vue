@@ -348,7 +348,6 @@ onMounted(fetchConfig)
       color: var(--artdeco-gold-primary);
     }
   }
-}
 
 @media (width <= 75rem) {
   .stats-strip {
