@@ -1,67 +1,107 @@
 <template>
     <div class="artdeco-trading-management">
-        <!-- ArtDeco 页面头部 -->
-        <ArtDecoHeader
-            title="量化交易管理中心"
-            subtitle="智能交易执行、风险控制与订单管理"
-            :show-status="true"
-            :status-text="connectionStatus"
-            :status-type="connectionStatusType"
-        >
-            <template #actions>
-                <ArtDecoButton variant="outline" size="sm" @click="refreshData" :loading="refreshing">
-                    <template #icon>
-                        <ArtDecoIcon name="refresh" />
-                    </template>
-                    刷新数据
-                </ArtDecoButton>
-
-                <ArtDecoButton variant="default" size="sm" @click="openSettings">
-                    <template #icon>
-                        <ArtDecoIcon name="settings" />
-                    </template>
-                    系统设置
-                </ArtDecoButton>
-            </template>
-        </ArtDecoHeader>
-
-        <!-- Main Tabs -->
-        <nav class="main-tabs">
-            <button
-                v-for="(tab, _idx) in mainTabs"
-                :key="'key' in tab ? tab.key : tab.id"
-                class="main-tab"
-                :class="{ active: activeTab === ('key' in tab ? tab.key : tab.id) }"
-                @click="switchTab('key' in tab ? tab.key : tab.id)"
-            >
-                <span class="tab-icon">{{ 'icon' in tab ? tab.icon : '' }}</span>
-                <span class="tab-label">{{ 'label' in tab ? tab.label : '' }}</span>
-            </button>
-        </nav>
-
-        <!-- 主内容区域 -->
-        <div class="trading-management-content">
-            <!-- 实时状态栏 - 仅在概览显示 -->
-            <div v-if="activeTab === 'overview'" class="status-bar">
-                <ArtDecoStatCard
-                    label="市场状态"
-                    :value="marketStatus"
-                    :trend="marketTrend"
-                    :variant="marketStatusColor"
-                />
-                <ArtDecoStatCard
-                    label="活跃信号"
-                    :value="activeSignalsCount"
-                    :variant="'gold'"
-                />
-                <ArtDecoStatCard
-                    label="今日盈亏"
-                    :value="todayPnL"
-                    :trend="todayPnLTrend"
-                    :variant="todayPnLColor"
-                />
+        <section class="hero-shell artdeco-card-shell">
+            <div class="hero-rail">
+                <div class="hero-copy">
+                    <span class="hero-eyebrow">execution command stage</span>
+                    <div class="hero-meta">
+                        <span>REQ_ID: {{ requestTraceId }}</span>
+                        <span>SYNC: {{ syncLabel }}</span>
+                        <span>FOCUS: {{ activeTabMeta.label }}</span>
+                    </div>
+                </div>
             </div>
 
+            <ArtDecoHeader
+                title="量化交易管理中心"
+                subtitle="智能交易执行、风险控制与订单管理"
+                :show-status="true"
+                :status-text="connectionStatus"
+                :status-type="connectionStatusType"
+            >
+                <template #actions>
+                    <ArtDecoButton variant="outline" size="sm" @click="refreshData" :loading="refreshing">
+                        <template #icon>
+                            <ArtDecoIcon name="refresh" />
+                        </template>
+                        刷新数据
+                    </ArtDecoButton>
+
+                    <ArtDecoButton variant="default" size="sm" @click="openSettings">
+                        <template #icon>
+                            <ArtDecoIcon name="settings" />
+                        </template>
+                        系统设置
+                    </ArtDecoButton>
+                </template>
+            </ArtDecoHeader>
+        </section>
+
+        <section class="stats-strip artdeco-card-shell">
+            <ArtDecoStatCard
+                label="市场状态"
+                :value="marketStatus"
+                :trend="marketTrend"
+                :variant="marketStatusColor"
+            />
+            <ArtDecoStatCard
+                label="活跃信号"
+                :value="activeSignalsCount"
+                :variant="'gold'"
+            />
+            <ArtDecoStatCard
+                label="今日盈亏"
+                :value="todayPnL"
+                :trend="todayPnLTrend"
+                :variant="todayPnLColor"
+            />
+            <ArtDecoStatCard
+                label="当前焦点"
+                :value="activeTabMeta.label"
+                :variant="'gold'"
+            />
+        </section>
+
+        <section class="tabs-shell artdeco-card-shell">
+            <div class="tabs-shell-header">
+                <div class="tabs-shell-copy">
+                    <span class="tabs-shell-eyebrow">trading route</span>
+                    <h2 class="tabs-shell-title">交易执行工作流</h2>
+                    <p class="tabs-shell-subtitle">{{ activeTabMeta.description }}</p>
+                </div>
+                <div class="tabs-shell-trace">
+                    <span>TABS: {{ mainTabs.length }}</span>
+                    <span>STATUS: {{ connectionStatus }}</span>
+                </div>
+            </div>
+
+            <nav class="main-tabs">
+                <button
+                    v-for="(tab, _idx) in mainTabs"
+                    :key="'key' in tab ? tab.key : tab.id"
+                    class="main-tab"
+                    :class="{ active: activeTab === ('key' in tab ? tab.key : tab.id) }"
+                    @click="switchTab('key' in tab ? tab.key : tab.id)"
+                >
+                    <ArtDecoIcon v-if="'icon' in tab && tab.icon" :name="tab.icon" size="sm" class="tab-icon" />
+                    <span class="tab-label">{{ 'label' in tab ? tab.label : '' }}</span>
+                </button>
+            </nav>
+        </section>
+
+        <section class="content-shell artdeco-card-shell">
+            <div class="content-shell-header">
+                <div class="content-shell-copy">
+                    <span class="content-shell-kicker">{{ activeTabMeta.eyebrow }}</span>
+                    <h3 class="content-shell-title">{{ activeTabMeta.label }}</h3>
+                </div>
+                <div class="content-shell-meta">
+                    <span>MODE: {{ syncLabel }}</span>
+                    <span>SIGNALS: {{ activeSignalsCount }}</span>
+                </div>
+            </div>
+
+            <div class="trading-management-content">
             <!-- 核心功能区域 -->
             <div class="tab-content">
                 <!-- 交易概览 -->
@@ -225,11 +265,13 @@
                     </ArtDecoCard>
                 </div>
             </div>
-        </div>
+            </div>
+        </section>
     </div>
 </template>
 
 <script setup lang="ts">
+    import { computed } from 'vue'
     import ArtDecoHeader from '@/components/artdeco/core/ArtDecoHeader.vue'
     import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
     import ArtDecoIcon from '@/components/artdeco/core/ArtDecoIcon.vue'
@@ -239,6 +281,18 @@
 import { useArtDecoTradingManagement } from './composables/useArtDecoTradingManagement'
 
 const { _router, activeTab, mainTabs, switchTab, tradingStats, signalFilters, activeSignalFilter, symbolOptions, tradeTypeOptions, startDate, endDate, selectedSymbol, selectedType, connectionStatus, connectionStatusType, marketStatus, marketTrend, marketStatusColor, activeSignalsCount, todayPnL, todayPnLTrend, todayPnLColor, refreshing, attributionDateRange, selectedPortfolio, attributionLoading, strategyBreakdown, stockBreakdown, activePositions, tradingSignals, tradingHistory, historyLoading, handleExportCsv, handleBatchExecute, refreshData, openSettings, handleClosePosition, handleAdjustPosition, handleExecuteSignal, handleCancelSignal, handleHistoryFilter, handleLoadMoreHistory, handleAttributionAnalysis } = useArtDecoTradingManagement()
+
+const activeTabMeta = computed(() => {
+    const tabs = mainTabs.value as Array<Record<string, string>>
+    return tabs.find((tab) => tab.key === activeTab.value) || tabs[0] || {
+        key: 'overview',
+        label: '交易概览',
+        eyebrow: 'command summary',
+        description: '汇总市场状态、信号活跃度与收益归因的总览面板。'
+    }
+})
+const requestTraceId = computed(() => 'N/A')
+const syncLabel = computed(() => refreshing.value ? '同步中' : '实时工作流')
 </script>
 
 <style scoped lang="scss">

@@ -14,7 +14,7 @@
 .artdeco-dashboard {
     min-height: 100vh;
     padding: 2rem;
-    max-width: 1800px;
+    max-width: calc(var(--artdeco-spacing-32) * 14 + var(--artdeco-spacing-2));
     margin: 0 auto;
     position: relative;
 
@@ -37,9 +37,9 @@
         position: absolute;
         inset: 0 0 0 0;
         background:
-            radial-gradient(circle at 30% 20%, rgb(255 215 0 / 4%) 0%, transparent 40%),
-            radial-gradient(circle at 70% 80%, rgb(255 165 0 / 3%) 0%, transparent 40%),
-            linear-gradient(135deg, rgb(0 0 0 / 2%) 0%, transparent 100%);
+            radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--artdeco-gold-primary) 4%, transparent) 0%, transparent 40%),
+            radial-gradient(circle at 70% 80%, color-mix(in srgb, var(--artdeco-bronze) 3%, transparent) 0%, transparent 40%),
+            linear-gradient(135deg, color-mix(in srgb, var(--artdeco-bg-global) 2%, transparent) 0%, transparent 100%);
         pointer-events: none;
         z-index: -1;
     }
@@ -51,10 +51,10 @@
         top: 0;
         left: 50%;
         transform: translateX(-50%);
-        width: 200px;
-        height: 2px;
+        width: calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-10));
+        height: calc(var(--artdeco-spacing-1) / 2);
         background: linear-gradient(90deg, transparent, var(--artdeco-gold-primary), var(--artdeco-bronze), var(--artdeco-gold-primary), transparent);
-        box-shadow: 0 0 20px rgb(255 215 0 / 50%);
+        box-shadow: 0 0 var(--artdeco-spacing-5) color-mix(in srgb, var(--artdeco-gold-primary) 50%, transparent);
     }
 }
 
@@ -118,14 +118,14 @@
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-6)), 1fr));
     gap: var(--artdeco-spacing-6);
 }
 
 .content-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr); // 从2列改为3列，提升数据密度
-    gap: var(--artdeco-dense-gap-sm);      // 使用紧凑间距(8px)
+    gap: var(--artdeco-dense-gap-sm);
 }
 
 .heat-map-card,
@@ -153,13 +153,13 @@
     border: 1px solid var(--artdeco-gold-opacity-10);
     border-radius: var(--artdeco-radius-none);
     transition: all var(--artdeco-transition-base);
-    min-height: 100px;
+    min-height: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-5));
     text-align: center;
 
     &:hover {
         border-color: var(--artdeco-gold-primary);
         box-shadow: var(--artdeco-glow-subtle);
-        transform: translateY(-2px);
+        transform: translateY(calc(var(--artdeco-spacing-1) / -2));
     }
 
     .sector-name {
@@ -188,7 +188,7 @@
 
     .heat-bar {
         width: 100%;
-        height: 6px;
+        height: calc(var(--artdeco-spacing-3) / 2);
         background: var(--artdeco-bg-base);
         border-radius: var(--artdeco-radius-sm);
         overflow: hidden;
@@ -227,10 +227,10 @@
     &::after {
         content: '';
         position: absolute;
-        bottom: -3px;
+        bottom: calc(var(--artdeco-spacing-px) * -3);
         left: 0;
         width: 100%;
-        height: 2px;
+        height: calc(var(--artdeco-spacing-1) / 2);
         background: var(--artdeco-gold-primary);
         transform: scaleX(0);
         transition: transform var(--artdeco-transition-base);
@@ -277,7 +277,7 @@
             font-family: var(--artdeco-font-body);
             font-weight: 600;
             color: var(--artdeco-fg-primary);
-            margin-bottom: 2px;
+            margin-bottom: calc(var(--artdeco-spacing-1) / 2);
         }
 
         .item-code {
@@ -291,7 +291,7 @@
         font-family: var(--artdeco-font-mono);
         font-weight: 700;
         margin-right: var(--artdeco-spacing-4);
-        min-width: 80px;
+        min-width: var(--artdeco-spacing-20);
         text-align: right;
 
         &.inflow {
@@ -306,7 +306,7 @@
     .item-change {
         font-family: var(--artdeco-font-mono);
         font-weight: 600;
-        min-width: 60px;
+        min-width: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
         text-align: right;
 
         &.rise {
@@ -394,7 +394,7 @@
             font-family: var(--artdeco-font-body);
             font-weight: 600;
             color: var(--artdeco-fg-primary);
-            margin-bottom: 2px;
+            margin-bottom: calc(var(--artdeco-spacing-1) / 2);
         }
 
         .stock-code {
@@ -412,7 +412,7 @@
             font-family: var(--artdeco-font-mono);
             font-weight: 600;
             color: var(--artdeco-fg-primary);
-            margin-bottom: 2px;
+            margin-bottom: calc(var(--artdeco-spacing-1) / 2);
         }
 
         .stock-change {
@@ -452,7 +452,7 @@
     &:hover {
         border-color: var(--artdeco-gold-primary);
         box-shadow: var(--artdeco-glow-subtle);
-        transform: translateY(-2px);
+        transform: translateY(calc(var(--artdeco-spacing-1) / -2));
     }
 
     .nav-icon {
@@ -480,7 +480,7 @@
 }
 
 // 响应式设计（桌面端优先）
-@media (width <= 1200px) {
+@media (width <= calc(var(--artdeco-spacing-32) * 9 + var(--artdeco-spacing-12))) {
     .content-grid {
         grid-template-columns: 1fr;
     }
@@ -497,7 +497,7 @@
 
 .indicators-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-10)), 1fr));
     gap: var(--artdeco-spacing-4);
 }
 
@@ -560,7 +560,7 @@
 
 .monitoring-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-20) * 3 + var(--artdeco-spacing-5) / 2), 1fr));
     gap: var(--artdeco-spacing-4);
 }
 
@@ -603,8 +603,8 @@
         letter-spacing: var(--artdeco-tracking-wide);
 
         &.good {
-            background: rgb(0 230 118 / 10%);
-            color: var(--artdeco-up);
+            background: color-mix(in srgb, var(--artdeco-down) 10%, transparent);
+            color: var(--artdeco-down);
         }
 
         &.warning {
@@ -680,7 +680,7 @@
     padding: var(--artdeco-spacing-4);
 
     &:hover {
-        transform: translateY(-1px);
+        transform: translateY(calc(var(--artdeco-spacing-px) * -1));
     }
 }
 
@@ -688,16 +688,16 @@
     gap: var(--artdeco-spacing-2);
 
     &:hover {
-        transform: translateY(-1px);
+        transform: translateY(calc(var(--artdeco-spacing-px) * -1));
     }
 }
 
 .nav-item {
     justify-content: center;
-    min-height: 168px;
+    min-height: calc(var(--artdeco-spacing-16) * 2 + var(--artdeco-spacing-8) + var(--artdeco-spacing-2));
 
     &:hover {
-        transform: translateY(-3px);
+        transform: translateY(calc(var(--artdeco-spacing-px) * -3));
         box-shadow: 0 0 0 1px var(--artdeco-border-default), var(--artdeco-glow-subtle);
     }
 }

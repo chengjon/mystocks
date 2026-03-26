@@ -1,17 +1,70 @@
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .workbench-tabs {
   border: 1px solid var(--artdeco-border-default);
   background: var(--artdeco-bg-card);
 }
 
+.tabs-rail {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--artdeco-spacing-4);
+  padding: var(--artdeco-spacing-4);
+  border-bottom: 1px solid var(--artdeco-border-default);
+}
+
+.tabs-rail-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-2);
+}
+
+.tabs-rail-eyebrow {
+  font-family: var(--artdeco-font-mono);
+  font-size: var(--artdeco-text-xs);
+  color: var(--artdeco-gold-dim);
+  letter-spacing: var(--artdeco-tracking-wide);
+  text-transform: uppercase;
+}
+
+.tabs-rail-title {
+  margin: 0;
+  font-family: var(--artdeco-font-display);
+  font-size: var(--artdeco-text-xl);
+  color: var(--artdeco-fg-primary);
+}
+
+.tabs-rail-description {
+  margin: 0;
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
+  line-height: var(--artdeco-leading-relaxed);
+}
+
+.tabs-rail-meta {
+  display: flex;
+  gap: var(--artdeco-spacing-2);
+  flex-wrap: wrap;
+}
+
+.tabs-rail-meta-item {
+  font-family: var(--artdeco-font-mono);
+  font-size: var(--artdeco-text-xs);
+  color: var(--artdeco-fg-muted);
+}
+
 .tabs-header {
   display: flex;
   border-bottom: 1px solid var(--artdeco-border-default);
-  background: rgb(212 175 55 / 6%);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 6%, transparent);
+  flex-wrap: wrap;
 }
 
 .tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-2);
   padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
   border: 0;
   border-right: 1px solid var(--artdeco-border-default);
@@ -27,7 +80,7 @@
 
   &:hover {
     color: var(--artdeco-gold-primary);
-    background: rgb(212 175 55 / 10%);
+    background: color-mix(in srgb, var(--artdeco-gold-primary) 10%, transparent);
   }
 
   &.active {
@@ -38,4 +91,16 @@
 
 .tabs-content {
   padding: var(--artdeco-spacing-4);
+}
+
+@media (width <= 48rem) {
+  .tabs-rail,
+  .tabs-rail-meta {
+    width: 100%;
+  }
+
+  .tab-btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
 }

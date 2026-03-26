@@ -502,11 +502,11 @@ const {
 
 .request-meta-bar {
   display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: var(--artdeco-spacing-4);
+  margin-bottom: var(--artdeco-spacing-4);
   color: var(--artdeco-fg-muted);
   font-family: var(--artdeco-font-mono);
-  font-size: 12px;
+  font-size: var(--artdeco-text-xs);
 }
 
 .integration-note {

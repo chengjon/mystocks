@@ -1,500 +1,118 @@
 <template>
-  <div class="position-monitor"></div>
+  <div class="position-monitor page-enter">
+    <section class="placeholder-shell artdeco-card-shell">
+      <div class="placeholder-copy">
+        <span class="placeholder-eyebrow">position oversight route</span>
+        <h3 class="placeholder-title">头寸监控主面板整理中</h3>
+        <p class="placeholder-subtitle">
+          当前头寸监控能力正在从旧占位实现迁移到统一的 ArtDeco 工作台语法，后续会补齐持仓总览、风险分层和明细抽屉。
+        </p>
+      </div>
+
+      <div class="placeholder-meta">
+        <span>MODE: TRADING CENTER</span>
+        <span>STATUS: PLACEHOLDER</span>
+      </div>
+
+      <div class="placeholder-grid">
+        <article class="placeholder-card">
+          <span class="placeholder-card-label">下一步补齐</span>
+          <strong class="placeholder-card-value">持仓总览矩阵</strong>
+        </article>
+        <article class="placeholder-card">
+          <span class="placeholder-card-label">下一步补齐</span>
+          <strong class="placeholder-card-value">风险分层面板</strong>
+        </article>
+        <article class="placeholder-card">
+          <span class="placeholder-card-label">下一步补齐</span>
+          <strong class="placeholder-card-value">头寸详情抽屉</strong>
+        </article>
+      </div>
+    </section>
+  </div>
 </template>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-quant-extended';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .position-monitor {
-    min-height: 1000px;
-
-    .monitor-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: var(--artdeco-spacing-6);
-
-        h3 {
-            @include artdeco-gold-accent;
-
-            font-family: var(--artdeco-font-display);
-            font-size: var(--artdeco-text-xl);
-            font-weight: 700;
-            margin: 0;
-            text-transform: uppercase;
-            letter-spacing: var(--artdeco-tracking-wider);
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: var(--artdeco-spacing-4);
-
-            .portfolio-value {
-                font-size: var(--artdeco-text-sm);
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: var(--artdeco-tracking-wide);
-            }
-        }
-    }
-
-    .portfolio-overview {
-        margin-bottom: var(--artdeco-spacing-6);
-
-        .overview-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--artdeco-spacing-4);
-        }
-    }
-
-    .position-filters {
-        margin-bottom: var(--artdeco-spacing-6);
-    }
-
-    .positions-section {
-        margin-bottom: var(--artdeco-spacing-6);
-    }
-
-    .risk-monitoring-section {
-        // 折叠面板样式已在组件内部处理
-    }
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-6);
 }
 
-// 单元格样式
-.symbol-cell {
-    .symbol-code {
-        font-family: var(--artdeco-font-mono);
-        font-weight: 600;
-        color: var(--artdeco-gold-primary);
-        font-size: var(--artdeco-text-sm);
-        display: block;
-    }
-
-    .symbol-name {
-        font-family: var(--artdeco-font-body);
-        color: var(--artdeco-fg-muted);
-        font-size: var(--artdeco-text-xs);
-        margin-top: 2px;
-    }
+.placeholder-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-5);
 }
 
-.shares-cell {
-    text-align: right;
-
-    .shares-count {
-        font-family: var(--artdeco-font-mono);
-        font-weight: 600;
-        color: var(--artdeco-fg-primary);
-        font-size: var(--artdeco-text-base);
-    }
-
-    .shares-unit {
-        font-family: var(--artdeco-font-body);
-        font-size: var(--artdeco-text-xs);
-        color: var(--artdeco-fg-muted);
-        margin-left: 2px;
-    }
+.placeholder-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-2);
 }
 
-.cost-cell {
-    text-align: right;
-
-    .avg-cost {
-        font-family: var(--artdeco-font-mono);
-        font-weight: 600;
-        color: var(--artdeco-fg-primary);
-        font-size: var(--artdeco-text-sm);
-        display: block;
-    }
-
-    .current-price {
-        font-family: var(--artdeco-font-body);
-        font-size: var(--artdeco-text-xs);
-        color: var(--artdeco-fg-muted);
-        margin-top: 2px;
-    }
+.placeholder-eyebrow,
+.placeholder-meta {
+  font-family: var(--artdeco-font-mono);
+  font-size: var(--artdeco-text-xs);
+  color: var(--artdeco-gold-dim);
+  letter-spacing: var(--artdeco-tracking-wide);
+  text-transform: uppercase;
 }
 
-.value-cell {
-    text-align: right;
-
-    .market-value {
-        font-family: var(--artdeco-font-mono);
-        font-weight: 700;
-        color: var(--artdeco-fg-primary);
-        font-size: var(--artdeco-text-sm);
-        display: block;
-    }
-
-    .portfolio-percent {
-        font-family: var(--artdeco-font-body);
-        font-size: var(--artdeco-text-xs);
-        color: var(--artdeco-gold-primary);
-        margin-top: 2px;
-    }
+.placeholder-meta {
+  display: flex;
+  gap: var(--artdeco-spacing-3);
+  flex-wrap: wrap;
 }
 
-.pnl-cell {
-    text-align: right;
-
-    &.positive {
-        .pnl-value, .pnl-percent {
-            color: var(--artdeco-up);
-        }
-    }
-
-    &.negative {
-        .pnl-value, .pnl-percent {
-            color: var(--artdeco-down);
-        }
-    }
-
-    .pnl-value {
-        font-family: var(--artdeco-font-mono);
-        font-weight: 700;
-        font-size: var(--artdeco-text-sm);
-        display: block;
-    }
-
-    .pnl-percent {
-        font-family: var(--artdeco-font-body);
-        font-size: var(--artdeco-text-xs);
-        margin-top: 2px;
-    }
+.placeholder-title {
+  margin: 0;
+  font-family: var(--artdeco-font-display);
+  font-size: var(--artdeco-text-2xl);
+  color: var(--artdeco-fg-primary);
 }
 
-.change-cell {
-    text-align: right;
-
-    &.positive .change-value {
-        color: var(--artdeco-up);
-    }
-
-    &.negative .change-value {
-        color: var(--artdeco-down);
-    }
-
-    .change-value {
-        font-family: var(--artdeco-font-mono);
-        font-weight: 600;
-        color: var(--artdeco-fg-primary);
-        font-size: var(--artdeco-text-sm);
-    }
+.placeholder-subtitle {
+  margin: 0;
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
+  line-height: var(--artdeco-leading-relaxed);
 }
 
-.action-buttons {
-    display: flex;
-    gap: var(--artdeco-spacing-2);
-    flex-wrap: wrap;
+.placeholder-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--artdeco-spacing-4);
 }
 
-// 风险监控样式
-.risk-content {
-    .risk-indicators {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: var(--artdeco-spacing-6);
-        margin-bottom: var(--artdeco-spacing-6);
-    }
-
-    .concentration-risk {
-        display: flex;
-        flex-direction: column;
-        gap: var(--artdeco-spacing-4);
-
-        .risk-item {
-            .risk-level {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: var(--artdeco-spacing-2);
-
-                .level-label {
-                    font-family: var(--artdeco-font-body);
-                    font-weight: 500;
-                    color: var(--artdeco-fg-primary);
-                    font-size: var(--artdeco-text-sm);
-                }
-
-                .level-value {
-                    font-family: var(--artdeco-font-mono);
-                    font-weight: 600;
-                    color: var(--artdeco-gold-primary);
-                    font-size: var(--artdeco-text-sm);
-                }
-            }
-        }
-    }
-
-    .sector-distribution {
-        display: flex;
-        flex-direction: column;
-        gap: var(--artdeco-spacing-4);
-
-        .sector-item {
-            .sector-info {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: var(--artdeco-spacing-2);
-
-                .sector-name {
-                    font-family: var(--artdeco-font-body);
-                    font-weight: 500;
-                    color: var(--artdeco-fg-primary);
-                    font-size: var(--artdeco-text-sm);
-                }
-
-                .sector-percent {
-                    font-family: var(--artdeco-font-mono);
-                    font-weight: 600;
-                    color: var(--artdeco-gold-primary);
-                    font-size: var(--artdeco-text-sm);
-                }
-            }
-        }
-    }
-
-    .risk-alerts {
-        .alerts-list {
-            display: flex;
-            flex-direction: column;
-            gap: var(--artdeco-spacing-4);
-
-            .alert-item {
-                display: flex;
-                align-items: center;
-                gap: var(--artdeco-spacing-3);
-                padding: var(--artdeco-spacing-3);
-                background: var(--artdeco-bg-card);
-                border: 1px solid var(--artdeco-gold-opacity-10);
-                border-radius: var(--artdeco-radius-none);
-
-                .alert-content {
-                    flex: 1;
-
-                    .alert-title {
-                        font-family: var(--artdeco-font-body);
-                        font-weight: 600;
-                        color: var(--artdeco-fg-primary);
-                        font-size: var(--artdeco-text-sm);
-                        display: block;
-                        margin-bottom: var(--artdeco-spacing-1);
-                    }
-
-                    .alert-description {
-                        font-family: var(--artdeco-font-body);
-                        color: var(--artdeco-fg-muted);
-                        font-size: var(--artdeco-text-xs);
-                    }
-                }
-            }
-        }
-    }
+.placeholder-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-2);
+  padding: var(--artdeco-spacing-4);
+  border: 1px solid var(--artdeco-gold-opacity-10);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 5%, transparent);
 }
 
-// 持仓详情弹窗样式
-.position-detail {
-    .detail-header {
-        margin-bottom: var(--artdeco-spacing-6);
-        padding-bottom: var(--artdeco-spacing-4);
-        border-bottom: 1px solid var(--artdeco-gold-opacity-20);
-
-        .detail-meta {
-            display: flex;
-            gap: var(--artdeco-spacing-3);
-            margin-bottom: var(--artdeco-spacing-3);
-        }
-
-        .detail-time {
-            font-family: var(--artdeco-font-body);
-            color: var(--artdeco-fg-muted);
-            font-size: var(--artdeco-text-sm);
-        }
-    }
-
-    .detail-content {
-        .position-metrics {
-            margin-bottom: var(--artdeco-spacing-6);
-
-            .metrics-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: var(--artdeco-spacing-4);
-
-                .metric-item {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: var(--artdeco-spacing-3);
-                    background: var(--artdeco-bg-card);
-                    border: 1px solid var(--artdeco-gold-opacity-10);
-                    border-radius: var(--artdeco-radius-none);
-
-                    .metric-label {
-                        font-family: var(--artdeco-font-body);
-                        font-weight: 500;
-                        color: var(--artdeco-fg-primary);
-                    }
-
-                    .metric-value {
-                        font-family: var(--artdeco-font-mono);
-                        font-weight: 600;
-                        color: var(--artdeco-gold-primary);
-
-                        &.positive {
-                            color: var(--artdeco-up);
-                        }
-
-                        &.negative {
-                            color: var(--artdeco-down);
-                        }
-                    }
-                }
-            }
-        }
-
-        h4 {
-            @include artdeco-gold-accent;
-
-            font-family: var(--artdeco-font-display);
-            font-size: var(--artdeco-text-lg);
-            font-weight: 600;
-            margin: var(--artdeco-spacing-4) 0 var(--artdeco-spacing-3) 0;
-            text-transform: uppercase;
-            letter-spacing: var(--artdeco-tracking-wide);
-        }
-
-        .position-chart {
-            .chart-placeholder {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                padding: var(--artdeco-spacing-8);
-                text-align: center;
-                color: var(--artdeco-fg-muted);
-
-                p {
-                    font-family: var(--artdeco-font-body);
-                    font-size: var(--artdeco-text-base);
-                    margin: var(--artdeco-spacing-2) 0;
-                }
-
-                small {
-                    font-family: var(--artdeco-font-body);
-                    font-size: var(--artdeco-text-xs);
-                    opacity: 70%;
-                }
-            }
-        }
-    }
+.placeholder-card-label {
+  font-size: var(--artdeco-text-xs);
+  color: var(--artdeco-fg-muted);
+  letter-spacing: var(--artdeco-tracking-wide);
+  text-transform: uppercase;
 }
 
-// 响应式设计（桌面端优先）
-@media (width <= 1200px) {
-    .position-monitor {
-        .overview-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        .risk-indicators {
-            grid-template-columns: 1fr !important;
-        }
-    }
+.placeholder-card-value {
+  color: var(--artdeco-gold-primary);
+  font-family: var(--artdeco-font-display);
+  font-size: var(--artdeco-text-lg);
 }
 
-@media (width <= 768px) {
-    .position-monitor {
-        .monitor-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: var(--artdeco-spacing-4);
-
-            .header-actions {
-                width: 100%;
-                justify-content: space-between;
-            }
-        }
-
-        .overview-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .metrics-grid {
-            grid-template-columns: 1fr !important;
-        }
-
-        .action-buttons {
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-        .alert-item {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: var(--artdeco-spacing-2);
-        }
-
-        .detail-meta {
-            flex-wrap: wrap;
-        }
-    }
-}
-
-// 动画效果
-.position-monitor {
-    .portfolio-overview,
-    .positions-section,
-    .risk-monitoring-section {
-        animation: fade-in-up 0.6s ease-out;
-    }
-
-    .portfolio-overview {
-        animation-delay: 0.1s;
-    }
-
-    .positions-section {
-        animation-delay: 0.2s;
-    }
-
-    .risk-monitoring-section {
-        animation-delay: 0.3s;
-    }
-}
-
-@keyframes fade-in-up {
-    from {
-        opacity: 0%;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 100%;
-        transform: translateY(0);
-    }
-}
-
-// 持仓行颜色区分
-.positions-section {
-    .artdeco-table__row {
-        &:has(.pnl-cell.positive) {
-            border-left: 3px solid var(--artdeco-up);
-        }
-
-        &:has(.pnl-cell.negative) {
-            border-left: 3px solid var(--artdeco-down);
-        }
-    }
-}
-
-// 正负值颜色类
-.positive {
-    color: var(--artdeco-up) !important;
-}
-
-.negative {
-    color: var(--artdeco-down) !important;
+@media (width <= 75rem) {
+  .placeholder-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

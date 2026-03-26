@@ -60,7 +60,7 @@ defineProps<{
 </template>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .stats-grid {
   display: grid;

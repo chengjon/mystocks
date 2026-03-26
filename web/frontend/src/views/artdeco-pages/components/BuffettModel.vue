@@ -38,31 +38,31 @@ defineProps({
 <style scoped lang="scss">
 .buffett-analysis {
     display: grid;
-    grid-template-columns: 1fr 200px;
-    gap: 30px;
+    grid-template-columns: 1fr calc(var(--artdeco-spacing-20) * 3);
+    gap: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
 }
 .criteria-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: var(--artdeco-spacing-5);
 }
 .criterion-item {
     .criterion-header {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 8px;
+        margin-bottom: var(--artdeco-spacing-2);
     }
     .score-bar {
-        height: 4px;
+        height: var(--artdeco-spacing-1);
         background: var(--artdeco-gold-opacity-10);
-        margin-bottom: 8px;
+        margin-bottom: var(--artdeco-spacing-2);
         .score-fill {
             height: 100%;
             background: var(--artdeco-gold-primary);
         }
     }
     .criterion-details {
-        font-size: 12px;
+        font-size: var(--artdeco-text-xs);
         color: var(--artdeco-fg-muted);
         display: flex;
         justify-content: space-between;
@@ -76,10 +76,30 @@ defineProps({
     .gauge {
         text-align: center;
         .value {
-            font-size: 48px;
+            font-size: var(--artdeco-spacing-12);
             font-family: var(--artdeco-font-display);
             color: var(--artdeco-gold-primary);
         }
+    }
+}
+
+@media (width <= 75rem) {
+    .buffett-analysis,
+    .criteria-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .overall-score {
+        border-left: none;
+        border-top: 1px solid var(--artdeco-gold-opacity-20);
+        padding-top: var(--artdeco-spacing-5);
+    }
+}
+
+@media (width <= 48rem) {
+    .criterion-item .criterion-details {
+        flex-direction: column;
+        gap: var(--artdeco-spacing-1);
     }
 }
 </style>

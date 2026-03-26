@@ -88,8 +88,8 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens';
-    @import '@/styles/artdeco-patterns';
+    @use '@/styles/artdeco-tokens.scss' as *;
+    @use '@/styles/artdeco-patterns.scss' as *;
 
     .artdeco-trading-history-controls {
         display: flex;
@@ -102,8 +102,8 @@
         border: 1px solid var(--artdeco-border-default);
         border-radius: var(--artdeco-radius-none);
 
-        @include artdeco-stepped-corners(8px);
-        @include artdeco-geometric-corners($color: var(--artdeco-gold-primary), $size: 12px, $border-width: 1px);
+        @include artdeco-stepped-corners(var(--artdeco-spacing-2));
+        @include artdeco-geometric-corners($color: var(--artdeco-gold-primary), $size: var(--artdeco-spacing-3), $border-width: var(--artdeco-spacing-px));
     }
 
     .artdeco-trading-history-controls__range {
@@ -121,5 +121,17 @@
         display: flex;
         gap: var(--artdeco-spacing-3);
         flex: 1;
+    }
+
+    @media (width <= 48rem) {
+        .artdeco-trading-history-controls__range,
+        .artdeco-trading-history-controls__filters {
+            width: 100%;
+            flex-direction: column;
+        }
+
+        .artdeco-trading-history-controls > :last-child {
+            width: 100%;
+        }
     }
 </style>

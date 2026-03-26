@@ -25,5 +25,5 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
-@import './styles/BacktestKpiGrid';
+@use './styles/BacktestKpiGrid';
 </style>

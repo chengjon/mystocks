@@ -1,14 +1,13 @@
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .backtest-header {
   display: grid;
   grid-template-columns: 1.4fr 1fr;
   gap: var(--artdeco-spacing-6);
   padding: var(--artdeco-spacing-6);
-  margin-bottom: var(--artdeco-spacing-5);
   border: 1px solid var(--artdeco-border-default);
   background:
-    linear-gradient(120deg, rgb(212 175 55 / 6%), transparent 40%),
+    linear-gradient(120deg, color-mix(in srgb, var(--artdeco-gold-primary) 6%, transparent), transparent 40%),
     var(--artdeco-bg-card);
 }
 
@@ -45,7 +44,7 @@
   .status-block {
     padding: var(--artdeco-spacing-3);
     border: 1px solid var(--artdeco-border-default);
-    background: rgb(212 175 55 / 4%);
+    background: color-mix(in srgb, var(--artdeco-gold-primary) 4%, transparent);
 
     .label {
       display: block;
@@ -68,4 +67,20 @@
   grid-column: span 2;
   justify-content: flex-end;
   gap: var(--artdeco-spacing-3);
+}
+
+@media (width <= 62rem) {
+  .backtest-header {
+    grid-template-columns: 1fr;
+  }
+
+  .header-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .header-actions {
+    grid-column: span 1;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
 }

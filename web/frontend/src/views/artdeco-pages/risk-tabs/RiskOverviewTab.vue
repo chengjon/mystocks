@@ -3,11 +3,29 @@ import { computed, onMounted, ref } from 'vue'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { monitoringApi } from '@/api/index'
 import type { AlertRuleResponse } from '@/api/types/common'
-import { ArtDecoButton, ArtDecoCard, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
+import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
 
 const { loading, lastRequestId, exec } = useArtDecoApi()
 const rules = ref<AlertRuleResponse[]>([])
 const activeTab = ref<'overview' | 'rules' | 'alerts'>('overview')
+
+const riskOverviewTabMeta = {
+  overview: {
+    icon: 'RiskManagement',
+    label: '风险概览',
+    description: '汇总组合核心风险指标，观察 Beta、波动率和 VaR 等关键指标的即时状态。'
+  },
+  rules: {
+    icon: 'AlertConfig',
+    label: '规则清单',
+    description: '审查当前风险规则、优先级和启用状态，确认治理约束是否完整在线。'
+  },
+  alerts: {
+    icon: 'Alert',
+    label: '预警消息',
+    description: '聚合当日预警与提示信息，识别当前最需要关注的风险触发点。'
+  }
+} as const
 
 const alertMessages = ref([
   { level: '高', content: '组合波动率超过阈值 18%', time: '09:42' },
@@ -47,6 +65,13 @@ const statCards = computed(() => {
   }
 })
 
+const activeTabMeta = computed(() => riskOverviewTabMeta[activeTab.value])
+const pageStatusText = computed(() => {
+  if (loading.value) return '同步中'
+  return alertMessages.value.length > 0 ? '预警在线' : '观察中'
+})
+const pageStatusType = computed(() => (alertMessages.value.some((item) => item.level === '高') ? 'warning' : 'success'))
+
 const normalizedRuleRows = computed(() => rules.value.map((r) => ({
   ...r,
   symbol: r.symbol || 'Global',
@@ -63,122 +88,216 @@ onMounted(fetchRules)
 
 <template>
   <div class="risk-overview-tab page-enter">
-    <div class="artdeco-header-bar">
-      <h2 class="section-title">风险概览中心</h2>
-      <div class="trace-id" v-if="lastRequestId">REQ_ID: {{ lastRequestId }}</div>
-    </div>
+    <section class="hero-shell artdeco-card-shell">
+      <div class="hero-rail">
+        <div class="hero-copy">
+          <span class="hero-eyebrow">portfolio guard desk</span>
+          <div class="hero-meta">
+            <span v-if="lastRequestId">REQ_ID: {{ lastRequestId }}</span>
+            <span>ACTIVE TAB: {{ activeTabMeta.label }}</span>
+            <span>ALERTS: {{ alertMessages.length }}</span>
+          </div>
+        </div>
+      </div>
 
-    <div class="stats-grid">
+      <ArtDecoHeader
+        title="风险概览工作台"
+        subtitle="统一审查风险指标、治理规则与预警消息，形成风险治理的总览入口"
+        :show-status="true"
+        :status-text="pageStatusText"
+        :status-type="pageStatusType"
+      >
+        <template #actions>
+          <ArtDecoButton variant="outline" size="sm" :loading="loading" @click="fetchRules">
+            <template #icon>
+              <ArtDecoIcon name="refresh" />
+            </template>
+            刷新概览
+          </ArtDecoButton>
+        </template>
+      </ArtDecoHeader>
+    </section>
+
+    <section class="stats-strip artdeco-card-shell">
       <ArtDecoStatCard label="规则总数" :value="statCards.total" variant="gold" />
       <ArtDecoStatCard label="启用规则" :value="statCards.active" variant="rise" />
       <ArtDecoStatCard label="今日告警" :value="statCards.alerts" variant="fall" />
       <ArtDecoStatCard label="仓位集中度" :value="statCards.concentration" variant="gold" />
-    </div>
+    </section>
 
-    <div class="tabs">
-      <button class="tab" :class="{ active: activeTab === 'overview' }" @click="activeTab = 'overview'">风险概览</button>
-      <button class="tab" :class="{ active: activeTab === 'rules' }" @click="activeTab = 'rules'">规则清单</button>
-      <button class="tab" :class="{ active: activeTab === 'alerts' }" @click="activeTab = 'alerts'">预警消息</button>
-      <ArtDecoButton variant="outline" size="sm" @click="fetchRules">刷新</ArtDecoButton>
-    </div>
-
-    <div class="tab-panel" v-loading="loading">
-      <ArtDecoCard v-if="activeTab === 'overview'" title="组合风险摘要" hoverable>
-        <ArtDecoTable :columns="overviewColumns" :data="overviewRows" />
-      </ArtDecoCard>
-
-      <ArtDecoCard v-else-if="activeTab === 'rules'" title="风险规则" hoverable>
-        <ArtDecoTable :columns="ruleColumns" :data="normalizedRuleRows" />
-      </ArtDecoCard>
-
-      <ArtDecoCard v-else title="实时预警" hoverable>
-        <div class="alerts-list">
-          <div class="alert-item" v-for="item in alertMessages" :key="item.content">
-            <div class="left">
-              <span class="level" :class="`level-${item.level}`">{{ item.level }}风险</span>
-              <span class="content">{{ item.content }}</span>
-            </div>
-            <span class="time">{{ item.time }}</span>
-          </div>
+    <section class="content-shell artdeco-card-shell">
+      <div class="content-shell-header">
+        <div class="content-shell-copy">
+          <span class="content-shell-kicker">risk review route</span>
+          <h3 class="content-shell-title">{{ activeTabMeta.label }}</h3>
+          <p class="content-shell-subtitle">{{ activeTabMeta.description }}</p>
         </div>
-      </ArtDecoCard>
-    </div>
+        <div class="content-shell-meta">
+          <span>TAB: {{ activeTabMeta.label }}</span>
+          <span>RULES: {{ rules.length }}</span>
+        </div>
+      </div>
+
+      <div class="tabs-shell">
+        <button class="tab" :class="{ active: activeTab === 'overview' }" @click="activeTab = 'overview'">
+          <ArtDecoIcon :name="riskOverviewTabMeta.overview.icon" size="sm" />
+          风险概览
+        </button>
+        <button class="tab" :class="{ active: activeTab === 'rules' }" @click="activeTab = 'rules'">
+          <ArtDecoIcon :name="riskOverviewTabMeta.rules.icon" size="sm" />
+          规则清单
+        </button>
+        <button class="tab" :class="{ active: activeTab === 'alerts' }" @click="activeTab = 'alerts'">
+          <ArtDecoIcon :name="riskOverviewTabMeta.alerts.icon" size="sm" />
+          预警消息
+        </button>
+      </div>
+
+      <div class="tab-panel" v-loading="loading">
+        <ArtDecoCard v-if="activeTab === 'overview'" title="组合风险摘要" hoverable>
+          <ArtDecoTable :columns="overviewColumns" :data="overviewRows" />
+        </ArtDecoCard>
+
+        <ArtDecoCard v-else-if="activeTab === 'rules'" title="风险规则" hoverable>
+          <ArtDecoTable :columns="ruleColumns" :data="normalizedRuleRows" />
+        </ArtDecoCard>
+
+        <ArtDecoCard v-else title="实时预警" hoverable>
+          <div class="alerts-list">
+            <div class="alert-item" v-for="item in alertMessages" :key="item.content">
+              <div class="left">
+                <span class="level" :class="`level-${item.level}`">{{ item.level }}风险</span>
+                <span class="content">{{ item.content }}</span>
+              </div>
+              <span class="time">{{ item.time }}</span>
+            </div>
+          </div>
+        </ArtDecoCard>
+      </div>
+    </section>
   </div>
 </template>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .risk-overview-tab {
   padding: var(--artdeco-spacing-6);
-}
-
-.artdeco-header-bar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--artdeco-spacing-6);
-  border-bottom: 2px solid var(--artdeco-gold-primary);
-  padding-bottom: var(--artdeco-spacing-2);
-
-  .section-title {
-    margin: 0;
-    font-size: var(--artdeco-text-2xl);
-    color: var(--artdeco-gold-primary);
-    text-transform: uppercase;
-    letter-spacing: var(--artdeco-tracking-wide);
-  }
-
-  .trace-id {
-    font-family: var(--artdeco-font-mono);
-    font-size: var(--artdeco-text-xs);
-    letter-spacing: var(--artdeco-tracking-wide);
-    color: var(--artdeco-fg-muted);
-  }
+  flex-direction: column;
+  gap: var(--artdeco-spacing-6);
 }
 
-.stats-grid {
+.hero-shell,
+.stats-strip,
+.content-shell {
+  width: 100%;
+}
+
+.hero-shell,
+.content-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-5);
+}
+
+.hero-rail,
+.content-shell-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--artdeco-spacing-4);
+  flex-wrap: wrap;
+}
+
+.hero-copy,
+.content-shell-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-2);
+}
+
+.hero-eyebrow,
+.content-shell-kicker {
+  font-family: var(--artdeco-font-mono);
+  font-size: var(--artdeco-text-xs);
+  color: var(--artdeco-gold-dim);
+  letter-spacing: var(--artdeco-tracking-wide);
+  text-transform: uppercase;
+}
+
+.hero-meta,
+.content-shell-meta {
+  display: flex;
+  gap: var(--artdeco-spacing-3);
+  flex-wrap: wrap;
+  font-family: var(--artdeco-font-mono);
+  font-size: var(--artdeco-text-xs);
+  letter-spacing: var(--artdeco-tracking-wide);
+  color: var(--artdeco-fg-muted);
+}
+
+.content-shell-title {
+  margin: 0;
+  font-family: var(--artdeco-font-display);
+  font-size: var(--artdeco-text-xl);
+  color: var(--artdeco-fg-primary);
+}
+
+.content-shell-subtitle {
+  margin: 0;
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
+  line-height: var(--artdeco-leading-relaxed);
+}
+
+.stats-strip {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--artdeco-spacing-4);
-  margin-bottom: var(--artdeco-spacing-5);
 }
 
-.tabs {
+.tabs-shell {
   display: flex;
   align-items: center;
   gap: var(--artdeco-spacing-2);
-  margin-bottom: var(--artdeco-spacing-4);
   padding: var(--artdeco-spacing-2);
   border: 1px solid var(--artdeco-border-default);
   background: var(--artdeco-gold-opacity-05);
+  flex-wrap: wrap;
 }
 
 .tab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-2);
   border: 1px solid var(--artdeco-border-default);
   background: transparent;
   color: var(--artdeco-fg-muted);
   padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
   cursor: pointer;
-  transition: border-color var(--artdeco-transition-base), background-color var(--artdeco-transition-base), color var(--artdeco-transition-base);
+  transition:
+    border-color var(--artdeco-transition-base),
+    background-color var(--artdeco-transition-base),
+    color var(--artdeco-transition-base);
+}
 
-  &:hover {
-    border-color: var(--artdeco-border-accent);
-    color: var(--artdeco-gold-light);
-    background: var(--artdeco-gold-opacity-08);
-  }
+.tab:hover {
+  border-color: var(--artdeco-border-accent);
+  color: var(--artdeco-gold-light);
+  background: var(--artdeco-gold-opacity-08);
+}
 
-  &:focus-visible {
-    outline: none;
-    border-color: var(--artdeco-border-hover);
-    box-shadow: 0 0 0 1px var(--artdeco-border-hover);
-  }
+.tab:focus-visible {
+  outline: none;
+  border-color: var(--artdeco-border-hover);
+  box-shadow: 0 0 0 var(--artdeco-spacing-px) var(--artdeco-border-hover);
+}
 
-  &.active {
-    border-color: var(--artdeco-gold-primary);
-    color: var(--artdeco-gold-primary);
-    background: var(--artdeco-gold-opacity-08);
-  }
+.tab.active {
+  border-color: var(--artdeco-gold-primary);
+  color: var(--artdeco-gold-primary);
+  background: var(--artdeco-gold-opacity-08);
 }
 
 .alerts-list {
@@ -193,25 +312,54 @@ onMounted(fetchRules)
   align-items: center;
   border: 1px solid var(--artdeco-border-default);
   padding: var(--artdeco-spacing-3);
+}
 
-  .left {
-    display: flex;
-    gap: var(--artdeco-spacing-3);
+.alert-item .left {
+  display: flex;
+  gap: var(--artdeco-spacing-3);
+}
+
+.alert-item .level {
+  font-size: var(--artdeco-text-xs);
+  font-weight: 600;
+}
+
+.alert-item .level-高 { color: var(--artdeco-down); }
+.alert-item .level-中 { color: var(--artdeco-warning); }
+.alert-item .level-低 { color: var(--artdeco-rise); }
+
+.alert-item .content {
+  color: var(--artdeco-fg-primary);
+}
+
+.alert-item .time {
+  color: var(--artdeco-fg-muted);
+  font-family: var(--artdeco-font-mono);
+}
+
+@media (width <= 75rem) {
+  .stats-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width <= 48rem) {
+  .stats-strip {
+    grid-template-columns: 1fr;
   }
 
-  .level {
-    font-size: var(--artdeco-text-xs);
-    font-weight: 600;
+  .hero-meta,
+  .content-shell-meta {
+    width: 100%;
   }
 
-  .level-高 { color: var(--artdeco-down); }
-  .level-中 { color: var(--artdeco-warning); }
-  .level-低 { color: var(--artdeco-rise); }
+  .tabs-shell {
+    align-items: stretch;
+  }
 
-  .content { color: var(--artdeco-fg-primary); }
-  .time {
-    color: var(--artdeco-fg-muted);
-    font-family: var(--artdeco-font-mono);
+  .tab {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>

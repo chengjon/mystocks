@@ -32,30 +32,30 @@ defineProps({
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 .concepts-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--artdeco-spacing-3);
 }
 
 .concept-item {
     display: flex;
     align-items: center;
-    padding: 12px;
+    padding: var(--artdeco-spacing-3);
     background: color-mix(in srgb, var(--artdeco-fg-primary) 3%, transparent);
-    border-radius: 8px;
+    border-radius: var(--artdeco-radius-md);
     transition: all 0.3s ease;
 }
 
 .concept-item:hover {
     background: color-mix(in srgb, var(--artdeco-fg-primary) 5%, transparent);
-    transform: translateX(5px);
+    transform: translateX(calc(var(--artdeco-spacing-5) / 4));
 }
 
 .concept-rank {
-    width: 30px;
-    height: 30px;
+    width: calc(var(--artdeco-spacing-5) + var(--artdeco-spacing-5) / 2);
+    height: calc(var(--artdeco-spacing-5) + var(--artdeco-spacing-5) / 2);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -63,7 +63,7 @@ defineProps({
     color: var(--artdeco-bg-global);
     border-radius: 50%;
     font-weight: bold;
-    margin-right: 15px;
+    margin-right: calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-5) / 4);
 }
 
 .concept-info {
@@ -71,23 +71,36 @@ defineProps({
 }
 
 .concept-name {
-    font-size: 16px;
+    font-size: var(--artdeco-text-base);
     font-weight: bold;
-    margin-bottom: 4px;
+    margin-bottom: var(--artdeco-spacing-1);
 }
 
 .concept-stats {
-    font-size: 12px;
+    font-size: var(--artdeco-text-xs);
     color: var(--artdeco-fg-muted);
     display: flex;
-    gap: 10px;
+    gap: calc(var(--artdeco-spacing-5) / 2);
 }
 
 .concept-change {
     font-weight: bold;
-    font-size: 16px;
+    font-size: var(--artdeco-text-base);
 }
 
 .rise { color: var(--artdeco-up); }
 .fall { color: var(--artdeco-down); }
+
+@media (width <= 48rem) {
+    .concept-item,
+    .concept-stats {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--artdeco-spacing-2);
+    }
+
+    .concept-rank {
+        margin-right: 0;
+    }
+}
 </style>

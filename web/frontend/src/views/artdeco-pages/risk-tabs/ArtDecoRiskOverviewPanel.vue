@@ -146,7 +146,7 @@ const emit = defineEmits<{
 </template>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .tab-panel {
   animation: fade-in 0.3s ease;

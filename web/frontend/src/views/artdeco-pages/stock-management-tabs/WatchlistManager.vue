@@ -234,7 +234,7 @@ const columns = [
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .watchlist-manager {
   display: flex;
@@ -273,8 +273,8 @@ const columns = [
   }
 
   .count {
-    margin-left: 8px;
-    font-size: 12px;
+    margin-left: var(--artdeco-spacing-2);
+    font-size: var(--artdeco-text-xs);
     opacity: 60%;
   }
 }
@@ -282,8 +282,8 @@ const columns = [
 .add-list-btn {
   @extend .watchlist-tab;
 
-  width: 40px;
-  padding: 8px 0;
+  width: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-2));
+  padding: var(--artdeco-spacing-2) 0;
 }
 
 .actions {
@@ -293,5 +293,23 @@ const columns = [
 
 .hidden-import {
   display: none;
+}
+
+@media (width <= 48rem) {
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .watchlist-header,
+  .watchlist-tabs,
+  .actions {
+    width: 100%;
+  }
+
+  .watchlist-header,
+  .watchlist-tabs,
+  .actions {
+    flex-wrap: wrap;
+  }
 }
 </style>

@@ -1,73 +1,82 @@
 <template>
     <div class="artdeco-market-quotes">
-        <!-- Page Header -->
-        <div class="page-header">
-            <button @click="fetchRealtimeQuotes" style="background: red; color: white; padding: 10px; position: fixed; top: 10px; right: 10px; z-index: 9999;">
-                FORCE REFRESH DEBUG
-            </button>
-            <div class="header-content">
-                <h1 class="page-title">市场行情中心</h1>
-                <p class="page-subtitle">全方位实时行情监控与技术分析平台</p>
-                <div class="header-actions">
-                    <div class="time-display">
-                        <span class="time-label">市场状态</span>
-                        <span class="time-value">交易中</span>
+        <section class="hero-shell artdeco-card-shell">
+            <div class="hero-rail">
+                <div class="hero-copy">
+                    <span class="hero-eyebrow">live market observatory</span>
+                    <div class="hero-meta">
+                        <span>REQ_ID: {{ requestTraceId }}</span>
+                        <span>SYNC: {{ syncLabel }}</span>
+                        <span>FOCUS: {{ activeTabMeta.label }}</span>
                     </div>
-                    <ArtDecoButton variant="outline" size="sm" @click="refreshData">刷新行情</ArtDecoButton>
                 </div>
             </div>
-        </div>
 
-        <!-- Quick Stats Bar -->
-        <div class="quick-stats">
-            <div class="stat-item">
-                <div class="stat-label">上证指数</div>
-                <div class="stat-value">3128.45</div>
-                <div class="stat-change rise">+0.85%</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">深证成指</div>
-                <div class="stat-value">10245.67</div>
-                <div class="stat-change rise">+1.23%</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">创业板指</div>
-                <div class="stat-value">2156.89</div>
-                <div class="stat-change fall">-0.45%</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">北向资金</div>
-                <div class="stat-value">58.8亿</div>
-                <div class="stat-change rise">+15.6%</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">成交金额</div>
-                <div class="stat-value">8956亿</div>
-                <div class="stat-change rise">+15.8%</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">涨跌家数</div>
-                <div class="stat-value">2856↑/1689↓</div>
-                <div class="stat-change neutral">净涨</div>
-            </div>
-        </div>
-
-        <!-- Main Tabs -->
-        <nav class="main-tabs">
-            <button
-                v-for="(tab, _idx) in mainTabs"
-                :key="tab.key"
-                class="main-tab"
-                :class="{ active: activeTab === tab.key }"
-                @click="switchTab(tab.key)"
+            <ArtDecoHeader
+                title="市场行情中心"
+                subtitle="全方位实时行情监控与技术分析平台"
+                :show-status="true"
+                :status-text="marketStatusLabel"
             >
-                <span class="tab-icon">{{ tab.icon }}</span>
-                <span class="tab-label">{{ tab.label }}</span>
-            </button>
-        </nav>
+                <template #actions>
+                    <div class="hero-actions">
+                        <div class="time-display">
+                            <span class="time-label">当前市场</span>
+                            <span class="time-value">{{ selectedMarketLabel }}</span>
+                        </div>
+                        <ArtDecoButton variant="outline" size="sm" @click="refreshData">刷新行情</ArtDecoButton>
+                    </div>
+                </template>
+            </ArtDecoHeader>
+        </section>
 
-        <!-- Tab Content -->
-        <div class="tab-content">
+        <section class="stats-strip artdeco-card-shell">
+            <ArtDecoStatCard label="行情条目" :value="quoteCountLabel" variant="gold" />
+            <ArtDecoStatCard label="上涨家数" :value="risingCountLabel" variant="rise" />
+            <ArtDecoStatCard label="下跌家数" :value="fallingCountLabel" variant="fall" />
+            <ArtDecoStatCard label="接口端点" :value="apiStatusLabel" variant="gold" />
+        </section>
+
+        <section class="tabs-shell artdeco-card-shell">
+            <div class="tabs-shell-header">
+                <div class="tabs-shell-copy">
+                    <span class="tabs-shell-eyebrow">market route</span>
+                    <h2 class="tabs-shell-title">行情与技术工作流</h2>
+                    <p class="tabs-shell-subtitle">{{ activeTabMeta.description }}</p>
+                </div>
+                <div class="tabs-shell-trace">
+                    <span>TABS: {{ mainTabs.length }}</span>
+                    <span>CHANNEL: {{ wsChannelLabel }}</span>
+                </div>
+            </div>
+
+            <nav class="main-tabs">
+                <button
+                    v-for="(tab, _idx) in mainTabs"
+                    :key="tab.key"
+                    class="main-tab"
+                    :class="{ active: activeTab === tab.key }"
+                    @click="switchTab(tab.key)"
+                >
+                    <ArtDecoIcon :name="tab.icon" size="sm" class="tab-icon" />
+                    <span class="tab-label">{{ tab.label }}</span>
+                </button>
+            </nav>
+        </section>
+
+        <section class="content-shell artdeco-card-shell">
+            <div class="content-shell-header">
+                <div class="content-shell-copy">
+                    <span class="content-shell-kicker">{{ activeTabMeta.eyebrow }}</span>
+                    <h3 class="content-shell-title">{{ activeTabMeta.label }}</h3>
+                </div>
+                <div class="content-shell-meta">
+                    <span>SORT: {{ activeSortLabel }}</span>
+                    <span>API: {{ apiStatusLabel }}</span>
+                </div>
+            </div>
+
+            <div class="tab-content">
             <!-- 实时行情 -->
             <div v-if="activeTab === 'realtime'" class="tab-panel">
                 <div class="realtime-controls">
@@ -111,10 +120,10 @@
                                     <div class="col-pe"><ArtDecoSkeleton variant="text" width="40px" /></div>
                                 </div>
                             </template>
-                            <template v-else-if="realtimeQuotes.length > 0">
+                            <template v-else-if="displayQuotes.length > 0">
                                 <div
                                     class="table-row"
-                                    v-for="(stock, _idx) in realtimeQuotes"
+                                    v-for="(stock, _idx) in displayQuotes"
                                     :key="stock.code"
                                     :class="{ 'price-up': stock.change > 0, 'price-down': stock.change < 0 }"
                                 >
@@ -220,7 +229,8 @@
                     </ArtDecoCard>
                 </div>
             </div>
-        </div>
+            </div>
+        </section>
     </div>
 </template>
 
@@ -228,8 +238,8 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import {
-    ArtDecoCard, ArtDecoButton, ArtDecoIcon,
-    ArtDecoSelect, ArtDecoInput
+    ArtDecoCard, ArtDecoButton, ArtDecoHeader, ArtDecoIcon,
+    ArtDecoSelect, ArtDecoInput, ArtDecoStatCard
 } from '@/components/artdeco'
 import ArtDecoSkeleton from '@/components/artdeco/core/ArtDecoSkeleton.vue'
 import { marketService } from '@/api/services/marketService'
@@ -261,6 +271,8 @@ interface TabOption {
     key: string
     label: string
     icon: string
+    eyebrow?: string
+    description?: string
 }
 
 interface SelectOption {
@@ -300,20 +312,6 @@ const wsChannel = computed(() => {
     return typeof channel === 'string' ? channel : ''
 })
 
-// 组件名称
-const _componentName = computed(() => {
-    return currentPageConfig.value?.component || ''
-})
-
-// Tab 配置（如果有）
-const _tabConfig = computed(() => {
-    const config = currentPageConfig.value
-    if (config && 'tabs' in config) {
-        return (config as unknown as Record<string, unknown>).tabs || []
-    }
-    return []
-})
-
 const activeTab = ref('realtime')
 const selectedMarket = ref('sh')
 const analysisSymbol = ref('')
@@ -328,8 +326,20 @@ const abnormalStocks = ref<AbnormalStock[]>([])
 
 // 主标签配置
 const mainTabs: TabOption[] = [
-    { key: 'realtime', label: '实时行情', icon: '📊' },
-    { key: 'technical', label: '技术分析', icon: '📈' }
+    {
+        key: 'realtime',
+        label: '实时行情',
+        icon: 'Realtime',
+        eyebrow: 'live tape',
+        description: '监控实时行情、成交结构与市场横截面的最新变化。'
+    },
+    {
+        key: 'technical',
+        label: '技术分析',
+        icon: 'TechnicalAnalysis',
+        eyebrow: 'signal study',
+        description: '围绕指标、形态与异动样本做快速技术研判。'
+    }
 ]
 
 // 市场选项
@@ -359,6 +369,28 @@ const periodOptions: SelectOption[] = [
     { label: '60分钟', value: '60m' }
 ]
 
+const activeTabMeta = computed(() => mainTabs.find((tab) => tab.key === activeTab.value) || mainTabs[0])
+const requestTraceId = computed(() => 'N/A')
+const syncLabel = computed(() => loading.value ? '行情同步中' : '实时快照')
+const marketStatusLabel = computed(() => loading.value ? '同步中' : '交易中')
+const selectedMarketLabel = computed(() => marketOptions.find((item) => item.value === selectedMarket.value)?.label || '上海')
+const quoteCountLabel = computed(() => `${realtimeQuotes.value.length}`)
+const risingCountLabel = computed(() => `${realtimeQuotes.value.filter((item) => item.change > 0).length}`)
+const fallingCountLabel = computed(() => `${realtimeQuotes.value.filter((item) => item.change < 0).length}`)
+const apiStatusLabel = computed(() => apiEndpoint.value || 'N/A')
+const wsChannelLabel = computed(() => wsChannel.value || 'N/A')
+const activeSortLabel = computed(() => sortOptions.find((item) => item.key === activeSort.value)?.label || '代码')
+const displayQuotes = computed(() => {
+    const rows = [...realtimeQuotes.value]
+
+    switch (activeSort.value) {
+        case 'change':
+            return rows.sort((a, b) => b.change - a.change)
+        default:
+            return rows.sort((a, b) => String(a.code).localeCompare(String(b.code)))
+    }
+})
+
 // 根据路由 meta.activeTab 设置初始 tab
 onMounted(() => {
     const metaTab = route.meta.activeTab as string | undefined
@@ -370,7 +402,9 @@ onMounted(() => {
 
 // 监听排序或市场变化
 watch([selectedMarket, activeSort], () => {
-    fetchRealtimeQuotes()
+    if (activeTab.value === 'realtime') {
+        void fetchRealtimeQuotes()
+    }
 })
 
 async function fetchRealtimeQuotes() {
@@ -412,7 +446,7 @@ function switchTab(tabKey: string) {
 }
 
 function refreshData() {
-    fetchRealtimeQuotes()
+    void fetchRealtimeQuotes()
 }
 
 function analyzeStock() {
@@ -434,3 +468,363 @@ const _subscribeWebSocket = () => {
     // TODO: 使用 wsChannel 订阅 WebSocket
 }
 </script>
+
+<style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
+.artdeco-market-quotes {
+    background: var(--artdeco-bg-global);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: var(--artdeco-spacing-5);
+    position: relative;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background:
+            radial-gradient(circle at 18% 10%, color-mix(in srgb, var(--artdeco-gold-primary) 5%, transparent) 0%, transparent 34%),
+            radial-gradient(circle at 84% 14%, color-mix(in srgb, var(--artdeco-bronze) 4%, transparent) 0%, transparent 28%);
+        z-index: 0;
+    }
+}
+
+.hero-shell,
+.stats-strip,
+.tabs-shell,
+.content-shell {
+    position: relative;
+    z-index: 1;
+}
+
+.artdeco-card-shell {
+    border: 1px solid var(--artdeco-border-default);
+    background: linear-gradient(
+        145deg,
+        var(--artdeco-gold-opacity-05),
+        color-mix(in srgb, var(--artdeco-bg-global) 92%, transparent)
+    );
+    box-shadow:
+        inset 0 1px 0 color-mix(in srgb, var(--artdeco-fg-primary) 3%, transparent),
+        0 var(--artdeco-spacing-2) var(--artdeco-spacing-6) color-mix(in srgb, var(--artdeco-bg-global) 82%, transparent);
+}
+
+.hero-shell {
+    padding: var(--artdeco-spacing-5);
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-10));
+        height: calc(var(--artdeco-spacing-1) / 2);
+        background: linear-gradient(
+            90deg,
+            transparent,
+            var(--artdeco-gold-primary),
+            var(--artdeco-bronze),
+            var(--artdeco-gold-primary),
+            transparent
+        );
+        box-shadow: 0 0 var(--artdeco-spacing-5) color-mix(in srgb, var(--artdeco-gold-primary) 45%, transparent);
+    }
+}
+
+.hero-rail,
+.tabs-shell-header,
+.content-shell-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--artdeco-spacing-4);
+    flex-wrap: wrap;
+}
+
+.hero-copy,
+.tabs-shell-copy,
+.content-shell-copy,
+.header-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--artdeco-spacing-2);
+}
+
+.hero-eyebrow,
+.tabs-shell-eyebrow,
+.content-shell-kicker {
+    font-size: var(--artdeco-text-xs);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--artdeco-fg-muted);
+    font-family: var(--artdeco-font-mono);
+}
+
+.hero-meta,
+.tabs-shell-trace,
+.content-shell-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--artdeco-spacing-3);
+    flex-wrap: wrap;
+    font-family: var(--artdeco-font-mono);
+    font-size: var(--artdeco-text-xs);
+    color: var(--artdeco-fg-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wide);
+}
+
+.hero-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--artdeco-spacing-3);
+}
+
+.time-display {
+    display: flex;
+    flex-direction: column;
+    gap: var(--artdeco-spacing-1);
+}
+
+.time-label {
+    font-size: var(--artdeco-text-xs);
+    text-transform: uppercase;
+    color: var(--artdeco-fg-muted);
+    letter-spacing: var(--artdeco-tracking-wide);
+}
+
+.time-value {
+    font-family: var(--artdeco-font-mono);
+    color: var(--artdeco-gold-primary);
+}
+
+.stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--artdeco-spacing-3);
+    padding: var(--artdeco-spacing-4);
+}
+
+.tabs-shell {
+    padding: var(--artdeco-spacing-4);
+}
+
+.tabs-shell-title,
+.content-shell-title {
+    margin: 0;
+    color: var(--artdeco-gold-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wide);
+}
+
+.tabs-shell-title {
+    font-family: var(--artdeco-font-display);
+    font-size: var(--artdeco-text-2xl);
+}
+
+.tabs-shell-subtitle {
+    margin: 0;
+    color: var(--artdeco-fg-muted);
+    font-size: var(--artdeco-text-sm);
+    max-width: calc(var(--artdeco-spacing-32) * 3 + var(--artdeco-spacing-20));
+    line-height: var(--artdeco-leading-relaxed);
+}
+
+.main-tabs {
+    display: flex;
+    gap: var(--artdeco-spacing-2);
+    margin-top: var(--artdeco-spacing-4);
+    border-bottom: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-gold-opacity-10);
+    padding-bottom: var(--artdeco-spacing-2);
+    flex-wrap: wrap;
+}
+
+.main-tab {
+    display: flex;
+    align-items: center;
+    gap: var(--artdeco-spacing-2);
+    padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+    background: var(--artdeco-bg-card);
+    border: 1px solid var(--artdeco-border-default);
+    color: var(--artdeco-fg-primary);
+    cursor: pointer;
+    transition:
+        border-color var(--artdeco-transition-base),
+        background-color var(--artdeco-transition-base),
+        color var(--artdeco-transition-base),
+        box-shadow var(--artdeco-transition-base),
+        transform var(--artdeco-transition-base);
+
+    .tab-icon {
+        flex-shrink: 0;
+    }
+
+    &:hover {
+        color: var(--artdeco-gold-light);
+        border-color: var(--artdeco-gold-primary);
+        background: var(--artdeco-gold-opacity-05);
+        transform: translateY(calc(var(--artdeco-spacing-1) / -2));
+    }
+
+    &:focus-visible {
+        outline: none;
+        border-color: var(--artdeco-border-hover);
+        box-shadow: 0 0 0 1px var(--artdeco-border-hover);
+    }
+
+    &.active {
+        color: var(--artdeco-gold-primary);
+        border-color: var(--artdeco-border-accent);
+        background: var(--artdeco-gold-opacity-08);
+        box-shadow: var(--artdeco-glow-subtle);
+    }
+}
+
+.content-shell {
+    padding: var(--artdeco-spacing-5);
+}
+
+.content-shell-title {
+    font-family: var(--artdeco-font-display);
+    font-size: var(--artdeco-text-xl);
+}
+
+.tab-content {
+    margin-top: var(--artdeco-spacing-4);
+}
+
+.tab-panel {
+    min-height: calc(var(--artdeco-spacing-px) * 520);
+}
+
+.realtime-controls,
+.technical-controls {
+    display: flex;
+    gap: var(--artdeco-spacing-4);
+    align-items: flex-end;
+    margin-bottom: var(--artdeco-spacing-6);
+    background: var(--artdeco-bg-card);
+    padding: var(--artdeco-spacing-4);
+    border: 1px solid var(--artdeco-border-gold-subtle);
+}
+
+.sort-controls {
+    display: flex;
+    gap: var(--artdeco-spacing-2);
+    flex-wrap: wrap;
+}
+
+.sort-btn {
+    padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
+    background: var(--artdeco-bg-base);
+    border: 1px solid var(--artdeco-border-default);
+    color: var(--artdeco-fg-muted);
+    cursor: pointer;
+    transition: all var(--artdeco-transition-base);
+
+    &.active,
+    &:hover {
+        color: var(--artdeco-gold-primary);
+        border-color: var(--artdeco-gold-primary);
+    }
+}
+
+.analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--artdeco-spacing-4);
+}
+
+.indicators-grid,
+.patterns-list,
+.abnormal-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--artdeco-spacing-3);
+}
+
+.indicator-item,
+.pattern-item,
+.abnormal-item {
+    padding: var(--artdeco-spacing-3);
+    border: 1px solid var(--artdeco-gold-opacity-10);
+    background: var(--artdeco-bg-card);
+}
+
+.indicator-name,
+.pattern-name,
+.stock-name {
+    color: var(--artdeco-fg-primary);
+}
+
+.indicator-value,
+.stock-code {
+    color: var(--artdeco-gold-primary);
+    font-family: var(--artdeco-font-mono);
+}
+
+.indicator-signal.rise,
+.abnormal-change.rise {
+    color: var(--artdeco-rise);
+}
+
+.indicator-signal.fall,
+.abnormal-change.fall {
+    color: var(--artdeco-down);
+}
+
+.empty-state {
+    min-height: calc(var(--artdeco-spacing-px) * 280);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--artdeco-spacing-3);
+    color: var(--artdeco-fg-muted);
+}
+
+.error-detail {
+    color: var(--artdeco-down);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity var(--artdeco-transition-base);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0%;
+}
+
+@media (width <= var(--artdeco-breakpoint-lg)) {
+    .stats-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .analysis-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (width <= var(--artdeco-breakpoint-md)) {
+    .stats-strip {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .main-tab {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .realtime-controls,
+    .technical-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+</style>

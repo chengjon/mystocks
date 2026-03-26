@@ -32,6 +32,16 @@ export interface ConcentrationMetric {
   variant: 'gold' | 'success' | 'warning'
 }
 
+export type RiskTabKey = 'overview' | 'stock'
+
+export interface RiskTabDefinition {
+  key: RiskTabKey
+  label: string
+  icon: string
+  eyebrow: string
+  description: string
+}
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null
 
@@ -51,10 +61,26 @@ export const riskPageConfig = {
   cacheTime: 300000
 }
 
-export const riskTabs: Array<{ key: string; label: string; icon: string }> = [
-  { key: 'overview', label: '风险概览', icon: 'grid' },
-  { key: 'stock', label: '个股分析', icon: 'chart' }
+export const riskTabs: RiskTabDefinition[] = [
+  {
+    key: 'overview',
+    label: '风险概览',
+    icon: 'RiskManagement',
+    eyebrow: 'portfolio shield',
+    description: '聚合组合预警、仓位集中度与行业暴露，作为风险控制的主监控台。'
+  },
+  {
+    key: 'stock',
+    label: '个股分析',
+    icon: 'StockAnalysis',
+    eyebrow: 'single-name lens',
+    description: '下钻单一标的的仓位、止损与波动特征，形成可执行的个股风控动作。'
+  }
 ]
+
+export function getRiskTabMeta(tabKey: string | undefined): RiskTabDefinition {
+  return riskTabs.find((tab) => tab.key === tabKey) ?? riskTabs[0]
+}
 
 export const sectorDistribution: SectorDistributionItem[] = [
   { name: '科技股', percent: 35 },

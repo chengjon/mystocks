@@ -7,7 +7,7 @@
       <ArtDecoStatCard label="持仓市值" :value="stats.totalMarketValue" variant="gold" />
     </div>
 
-    <ArtDecoCard title="持仓明细" class="positions-card" style="margin-top: 24px;">
+    <ArtDecoCard title="持仓明细" class="positions-card">
       <ArtDecoTable :columns="columns" :data="displayPositions" />
     </ArtDecoCard>
   </div>
@@ -67,11 +67,21 @@ const columns = [
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .portfolio-stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--artdeco-spacing-4);
+}
+
+.positions-card {
+  margin-top: var(--artdeco-spacing-6);
+}
+
+@media (width <= 48rem) {
+  .portfolio-stats {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

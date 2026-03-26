@@ -35,32 +35,32 @@ defineProps({
 <style scoped lang="scss">
 .oneil-analysis {
     display: grid;
-    grid-template-columns: 1fr 200px;
-    gap: 30px;
+    grid-template-columns: 1fr calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-10));
+    gap: calc(var(--artdeco-spacing-5) + var(--artdeco-spacing-5) / 2);
 }
 .factors-grid {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--artdeco-spacing-3);
 }
 .factor-item {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-5) / 4);
     .letter {
-        font-size: 24px;
+        font-size: var(--artdeco-spacing-6);
         font-weight: bold;
         color: var(--artdeco-gold-primary);
-        width: 30px;
+        width: calc(var(--artdeco-spacing-5) + var(--artdeco-spacing-5) / 2);
     }
     .content {
         flex: 1;
         .name {
-          font-size: 14px;
-          margin-bottom: 4px;
+          font-size: var(--artdeco-text-sm);
+          margin-bottom: var(--artdeco-spacing-1);
         }
         .score-bar {
-            height: 4px;
+            height: var(--artdeco-spacing-1);
             background: var(--artdeco-gold-opacity-10);
             .score-fill {
               height: 100%;
@@ -77,9 +77,28 @@ defineProps({
     .gauge {
         text-align: center;
         .value {
-            font-size: 48px;
+            font-size: var(--artdeco-spacing-12);
             color: var(--artdeco-gold-primary);
         }
+    }
+}
+
+@media (width <= 75rem) {
+    .oneil-analysis {
+        grid-template-columns: 1fr;
+    }
+
+    .signal-strength {
+        border-left: none;
+        border-top: 1px solid var(--artdeco-gold-opacity-20);
+        padding-top: var(--artdeco-spacing-5);
+    }
+}
+
+@media (width <= 48rem) {
+    .factor-item {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
 </style>

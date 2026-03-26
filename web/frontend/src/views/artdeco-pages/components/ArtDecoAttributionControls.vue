@@ -27,11 +27,17 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens';
+    @use '@/styles/artdeco-tokens.scss' as *;
 
     .attribution-controls {
         display: flex;
         gap: calc(var(--artdeco-spacing-px) * 12);
         margin-bottom: var(--artdeco-spacing-4);
+    }
+
+    @media (width <= 48rem) {
+        .attribution-controls {
+            flex-direction: column;
+        }
     }
 </style>

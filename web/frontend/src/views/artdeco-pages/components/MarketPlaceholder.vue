@@ -22,14 +22,14 @@ defineProps({
 
 <style scoped>
 .placeholder-content {
-    padding: 40px;
+    padding: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-8));
     text-align: center;
     color: var(--artdeco-fg-muted);
 }
 .debug-data {
-    margin-top: 20px;
-    font-family: monospace;
-    font-size: 12px;
+    margin-top: var(--artdeco-spacing-5);
+    font-family: var(--artdeco-font-mono);
+    font-size: var(--artdeco-text-xs);
     opacity: 50%;
 }
 </style>
