@@ -17,10 +17,11 @@ from pathlib import Path
 from datetime import datetime
 
 # 添加项目根目录到路径
-PROJECT_ROOT = Path(__file__).parent.parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(Path(__file__).parent))
 
+from manual_paths import get_manual_metadata_dir, get_manual_root
 from models import (
     ModuleInventory,
     ModuleMetadata,
@@ -31,7 +32,11 @@ from models import (
     ManualMetadata,
     DataFlow,
 )
-from src.utils.markdown_writer import MarkdownWriter
+from utils.markdown_writer import MarkdownWriter
+
+
+MANUAL_ROOT = get_manual_root(PROJECT_ROOT)
+MANUAL_METADATA_DIR = get_manual_metadata_dir(PROJECT_ROOT)
 
 
 def load_inventory(json_path: str) -> ModuleInventory:
@@ -391,10 +396,7 @@ def main():
     print("=" * 60)
 
     # 加载清单
-    inventory_path = (
-        PROJECT_ROOT
-        / "docs/function-classification-manual/metadata/module-inventory.json"
-    )
+    inventory_path = MANUAL_METADATA_DIR / "module-inventory.json"
 
     if not inventory_path.exists():
         print(f"\n✗ 错误: 清单文件不存在: {inventory_path}")
@@ -406,7 +408,7 @@ def main():
     print(f"✓ 加载完成，共 {len(inventory.modules)} 个模块")
 
     # 创建文档生成器
-    output_dir = PROJECT_ROOT / "docs/function-classification-manual"
+    output_dir = MANUAL_ROOT
     writer = MarkdownWriter(str(output_dir))
 
     # 生成类别文档
@@ -435,7 +437,7 @@ def main():
 
 def update_readme_stats(inventory: ModuleInventory):
     """更新 README 中的统计表"""
-    readme_path = PROJECT_ROOT / "docs/function-classification-manual/README.md"
+    readme_path = MANUAL_ROOT / "README.md"
 
     with open(readme_path, "r", encoding="utf-8") as f:
         content = f.read()

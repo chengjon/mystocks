@@ -18,18 +18,19 @@ from typing import Dict
 from collections import defaultdict
 
 # 添加项目根目录到路径
-PROJECT_ROOT = Path(__file__).parent.parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(Path(__file__).parent))
 
-from models import (
-    DuplicationIndex,
-    SeverityEnum,
-    ModuleInventory,
-)
-from src.utils.similarity import SimilarityDetector
-from src.utils.ast_parser import extract_code_block
+from manual_paths import get_manual_metadata_dir, get_manual_root
+from models import DuplicationIndex, SeverityEnum, ModuleInventory
+from utils.similarity import SimilarityDetector
+from utils.ast_parser import extract_code_block
 from generate_docs import load_inventory
+
+
+MANUAL_ROOT = get_manual_root(PROJECT_ROOT)
+MANUAL_METADATA_DIR = get_manual_metadata_dir(PROJECT_ROOT)
 
 
 def detect_function_duplicates(inventory: ModuleInventory) -> DuplicationIndex:
@@ -327,10 +328,7 @@ def main():
     print("=" * 60)
 
     # 加载清单
-    inventory_path = (
-        PROJECT_ROOT
-        / "docs/function-classification-manual/metadata/module-inventory.json"
-    )
+    inventory_path = MANUAL_METADATA_DIR / "module-inventory.json"
 
     if not inventory_path.exists():
         print(f"\n✗ 错误: 清单文件不存在: {inventory_path}")
@@ -362,23 +360,21 @@ def main():
     print(f"\n重复集群: {cluster_analysis['total_clusters']}")
 
     # 保存结果
-    output_dir = PROJECT_ROOT / "docs/function-classification-manual/metadata"
+    output_dir = MANUAL_METADATA_DIR
     output_path = output_dir / "duplication-index.json"
     save_duplication_index(dup_index, str(output_path))
 
     # 生成摘要报告
     summary = generate_duplication_summary(dup_index)
-    summary_path = (
-        PROJECT_ROOT / "docs/function-classification-manual/duplication-summary.md"
-    )
+    summary_path = MANUAL_ROOT / "duplication-summary.md"
     with open(summary_path, "w", encoding="utf-8") as f:
         f.write(summary)
     print(f"✓ 摘要报告已保存: {summary_path}")
 
     # 使用 markdown_writer 生成完整文档
-    from src.utils.markdown_writer import MarkdownWriter
+    from utils.markdown_writer import MarkdownWriter
 
-    writer = MarkdownWriter(str(PROJECT_ROOT / "docs/function-classification-manual"))
+    writer = MarkdownWriter(str(MANUAL_ROOT))
     doc_path = writer.generate_duplication_analysis(dup_index)
     print(f"✓ 完整文档已生成: {doc_path}")
 
