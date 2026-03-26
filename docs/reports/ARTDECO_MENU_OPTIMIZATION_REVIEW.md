@@ -755,6 +755,6 @@ onMounted(() => {
 
 **相关文档**:
 - 原审核报告: `docs/reports/ARTDECO_MENU_FRONTEND_DESIGN_REVIEW.md`
-- 重构方案: `docs/guides/ARTDECO_MENU_STRUCTURE_REFACTOR_PLAN.md`
+- 重构方案: `docs/guides/web/ARTDECO_MENU_STRUCTURE_REFACTOR_PLAN.md`
 - API端点统计: `docs/api/reports/analysis/api_endpoints_statistics_report.md`
 - ArtDeco组件目录: `web/frontend/ARTDECO_COMPONENTS_CATALOG.md`

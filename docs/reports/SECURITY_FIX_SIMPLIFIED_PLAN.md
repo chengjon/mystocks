@@ -468,7 +468,7 @@ openssl rand -base64 16
 1. **查看代码示例**: 本文档包含所有需要的代码
 2. **运行测试**: `pytest tests/ -v` 确保没有破坏功能
 3. **参考文档**:
-   - `docs/guides/SECURE_CODING_QUICK_REFERENCE.md`（已创建）
+   - `docs/standards/security/SECURE_CODING_QUICK_REFERENCE.md`（已创建）
    - Python安全最佳实践
 
 ---

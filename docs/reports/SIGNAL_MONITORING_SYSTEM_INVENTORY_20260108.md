@@ -27,8 +27,8 @@
 
 ### 1.1 核心设计文档
 
-#### 📄 [信号监控指标系统设计方案](./SIGNAL_MONITORING_METRICS_DESIGN.md)
-**位置**: `docs/SIGNAL_MONITORING_METRICS_DESIGN.md`
+#### 📄 [信号监控指标系统设计方案](../operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md)
+**位置**: `docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md`
 **状态**: 📋 设计方案 (待评审)
 **版本**: v1.0 | **日期**: 2026-01-08
 
@@ -549,7 +549,7 @@ CREATE TABLE signal_statistics_hourly (
 
 ## 9️⃣ 相关文档
 
-- [信号监控指标系统设计](./SIGNAL_MONITORING_METRICS_DESIGN.md)
+- [信号监控指标系统设计](../operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md)
 - [监控功能分类手册](../function-classification-manual/04-monitoring-functions.md)
 - [监控快速参考](./MONITORING_QUICK_REFERENCE.md)
 - [指标管理系统设计文档](../03-API与功能文档/指标管理系统设计文档.md)

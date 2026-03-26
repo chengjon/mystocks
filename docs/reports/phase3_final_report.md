@@ -58,7 +58,7 @@
   - `get_error_category()` - 获取错误类别
   - `is_success()` / `is_client_error()` / `is_server_error()` - 判断错误类型
 
-**文档**: `docs/guides/ERROR_CODE_GUIDE.md` (400行)
+**文档**: `docs/api/ERROR_CODE_GUIDE.md` (400行)
 
 ---
 
@@ -101,7 +101,7 @@
 - 注册异常处理器到FastAPI应用
 - 删除旧的异常处理器(19行代码)
 
-**文档**: `docs/guides/EXCEPTION_HANDLER_GUIDE.md` (600行)
+**文档**: `docs/api/EXCEPTION_HANDLER_GUIDE.md` (600行)
 
 ---
 
@@ -402,9 +402,9 @@ CI/CD集成:
 
 ### 文档资源
 
-- 错误码指南: `docs/guides/ERROR_CODE_GUIDE.md`
-- 异常处理器指南: `docs/guides/EXCEPTION_HANDLER_GUIDE.md`
-- 验证器指南: `docs/guides/VALIDATION_GUIDE.md`
+- 错误码指南: `docs/api/ERROR_CODE_GUIDE.md`
+- 异常处理器指南: `docs/api/EXCEPTION_HANDLER_GUIDE.md`
+- 验证器指南: `docs/api/VALIDATION_GUIDE.md`
 - OpenAPI模板: `docs/api/openapi_template.yaml`
 - 统一响应格式: `web/backend/app/schemas/common_schemas.py`
 
@@ -422,8 +422,8 @@ cat web/backend/app/core/error_codes.py
 cat web/backend/app/core/exception_handler.py
 
 # 查看使用指南
-cat docs/guides/ERROR_CODE_GUIDE.md
-cat docs/guides/EXCEPTION_HANDLER_GUIDE.md
+cat docs/api/ERROR_CODE_GUIDE.md
+cat docs/api/EXCEPTION_HANDLER_GUIDE.md
 ```
 
 ---

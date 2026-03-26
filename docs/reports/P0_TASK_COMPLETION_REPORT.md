@@ -2,8 +2,8 @@
 
 **报告日期**: 2026-01-20
 **执行人**: Claude Code (Main CLI)
-**任务来源**: docs/guides/NEXT_WORK_TASKS.md
-**参考计划**: docs/guides/WEB_CLIENT_OPERATION_PLAN.md
+**任务来源**: docs/reports/tasks/NEXT_WORK_TASKS.md
+**参考计划**: docs/guides/web/WEB_CLIENT_OPERATION_PLAN.md
 
 ---
 
@@ -297,7 +297,7 @@ async def websocket_events(websocket: WebSocket, ...):
 
 ## 🎯 P0阶段预期结果达成情况
 
-根据 `NEXT_WORK_TASKS.md` 中的预期结果：
+根据 `docs/reports/tasks/NEXT_WORK_TASKS.md` 中的预期结果：
 
 | 预期结果 | 实际情况 | 状态 |
 |---------|---------|------|

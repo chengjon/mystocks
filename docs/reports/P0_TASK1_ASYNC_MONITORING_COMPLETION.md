@@ -34,7 +34,7 @@
 - 信号处理（SIGINT/SIGTERM）
 - 日志记录
 
-**文件5**: `docs/guides/ASYNC_MONITORING_GUIDE.md`
+**文件5**: `docs/operations/monitoring/ASYNC_MONITORING_GUIDE.md`
 - 完整使用指南（500+行）
 - 快速开始教程
 - API参考

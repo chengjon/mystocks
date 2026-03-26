@@ -1,17 +1,44 @@
 # Completion Reports
 
-**最后更新**: 2026-02-02 22:10:38
+**最后更新**: 2026-03-24 10:03:09
 
-**文档数量**: 3
+**文档数量**: 12
 
 
 ---
 
-- [DOCUMENTATION_COMPLETION_REPORT](completion_reports/DOCUMENTATION_COMPLETION_REPORT.md)
-  - *Phase 6 文档任务完成报告*
+- [AGENTS_CLEANUP_COMPLETION_SUMMARY](AGENTS_CLEANUP_COMPLETION_SUMMARY.md)
+  - *Claude Code Agents Cleanup - Final Completion Summary*
 
-- [IMPLEMENTATION_REPORT](completion_reports/IMPLEMENTATION_REPORT.md)
-  - *Implementation Report: Backtesting & Risk Control API Endpoints*
+- [AGENTS_CLEANUP_FINAL_STATUS](AGENTS_CLEANUP_FINAL_STATUS.md)
+  - *Claude Code Agents Cleanup - Final Status Report*
 
-- [PHASE6_COMPLETION_SUMMARY](completion_reports/PHASE6_COMPLETION_SUMMARY.md)
-  - *Phase 6 监控系统验证 - 完成总结*
+- [DATABASE_SERVICE_TDD_REFACTORING_REPORT](DATABASE_SERVICE_TDD_REFACTORING_REPORT.md)
+  - *数据库服务TDD重构完成报告*
+
+- [MYSTOCKS_HTML_VUE_CONVERSION_SUMMARY](MYSTOCKS_HTML_VUE_CONVERSION_SUMMARY.md)
+  - *MyStocks HTML到Vue转换项目总结*
+
+- [P1_TESTING_COMPLETION_REPORT](P1_TESTING_COMPLETION_REPORT.md)
+  - *P1核心文件测试执行报告*
+
+- [PHASE1_UI_UX_FOUNDATION_COMPLETION_REPORT](PHASE1_UI_UX_FOUNDATION_COMPLETION_REPORT.md)
+  - *Phase 1: UI/UX Foundation - Completion Report*
+
+- [PHASE4_API_INTEGRATION_REPORT](PHASE4_API_INTEGRATION_REPORT.md)
+  - *Phase 4 - Web Page API Integration Report*
+
+- [PHASE6_E2E_STATUS_SUMMARY](PHASE6_E2E_STATUS_SUMMARY.md)
+  - *Phase 6 E2E Testing - 状态总结*
+
+- [PHASE6_E2E_TEST_TASK_COMPLETION](PHASE6_E2E_TEST_TASK_COMPLETION.md)
+  - *Phase 6 E2E Testing Task Completion Report*
+
+- [REAL_STATUS_REPORT](REAL_STATUS_REPORT.md)
+  - *MyStocks 真实状态报告*
+
+- [TDD_REFACTORING_COMPLETION_REPORT](TDD_REFACTORING_COMPLETION_REPORT.md)
+  - *TDD 驱动财务适配器重构完成报告*
+
+- [TECHNICAL_DEBT_PHASE_3_COMPLETION_REPORT](TECHNICAL_DEBT_PHASE_3_COMPLETION_REPORT.md)
+  - *Technical Debt Remediation - Phase 3 Completion Report*

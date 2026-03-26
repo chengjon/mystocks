@@ -97,7 +97,7 @@
 ### 4. 文档系统
 
 #### 使用指南
-**文件**: `docs/guides/BLOOMBERG_TERMINAL_COMPONENT_GUIDE.md`
+**文件**: `docs/guides/web/BLOOMBERG_TERMINAL_COMPONENT_GUIDE.md`
 
 **内容结构** (500+行):
 1. **概述** - 设计理念、技术栈
@@ -215,7 +215,7 @@ $spacing-xl: 32px;
 ### 文档文件
 
 #### 使用指南
-- ✅ `docs/guides/BLOOMBERG_TERMINAL_COMPONENT_GUIDE.md` (500+行)
+- ✅ `docs/guides/web/BLOOMBERG_TERMINAL_COMPONENT_GUIDE.md` (500+行)
 
 #### 完成报告
 - ✅ `docs/reports/BLOOMBERG_TESTING_COMPLETION_REPORT.md`
@@ -493,7 +493,7 @@ $spacing-xl: 32px;
 **文档页数**: 3个（1500+行）
 
 **相关链接**:
-- 使用指南: `docs/guides/BLOOMBERG_TERMINAL_COMPONENT_GUIDE.md`
+- 使用指南: `docs/guides/web/BLOOMBERG_TERMINAL_COMPONENT_GUIDE.md`
 - 测试报告: `docs/reports/BLOOMBERG_TESTING_COMPLETION_REPORT.md`
 - 测试文件: `tests/bloomberg/test-bloomberg-pages.spec.js`
 

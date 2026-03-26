@@ -171,19 +171,20 @@ assignment_rules:
 ```
 docs/
 ├── guides/                          # ✅ 用户指南
-│   ├── CLI_REGISTRATION_GUIDE.md     # CLI报到指南
-│   ├── TASK_POOL_USAGE_GUIDE.md      # 任务池使用指南
-│   └── CONFIG_SYSTEM_GUIDE.md         # 配置系统指南 ⭐ 新增
+│   └── multi-cli-tasks/              # ✅ Multi-CLI 专题指南
+│       ├── CLI_REGISTRATION_GUIDE.md  # CLI报到指南
+│       ├── TASK_POOL_USAGE_GUIDE.md   # 任务池使用指南
+│       └── CONFIG_SYSTEM_GUIDE.md     # 配置系统指南 ⭐ 新增
 ├── architecture/                     # ✅ 架构文档
 │   └── MULTI_CLI_COLLABORATION_V2_IMPLEMENTATION.md
-└── 06-项目管理与报告/                # ✅ 项目报告
+└── reports/                          # ✅ 项目报告
     ├── MULTI_CLI_IMPLEMENTATION_COMPLETION_REPORT.md
     └── MULTI_CLI_V2_FIX_SUMMARY.md
 
 archived/                            # ✅ 归档
 └── MULTI_CLI_MIGRATION_NOTICE.md     # 迁移说明
 
-CLIS/
+scripts/cli/
 ├── config.yaml                        # ⭐ 配置文件（新增）
 └── README.md                          # 快速参考（已更新链接）
 ```
@@ -371,10 +372,10 @@ cli_definitions:
 
 | 文档 | 位置 | 说明 |
 |------|------|------|
-| **配置系统指南** | [`docs/guides/CONFIG_SYSTEM_GUIDE.md`](../docs/guides/CONFIG_SYSTEM_GUIDE.md) | 配置系统完整使用指南 ⭐ |
-| **CLI报到指南** | [`docs/guides/CLI_REGISTRATION_GUIDE.md`](../docs/guides/CLI_REGISTRATION_GUIDE.md) | CLI报到流程 |
-| **任务池指南** | [`docs/guides/TASK_POOL_USAGE_GUIDE.md`](../docs/guides/TASK_POOL_USAGE_GUIDE.md) | 任务池使用 |
-| **快速参考** | [`CLIS/README.md`](../CLIS/README.md) | 命令速查 |
+| **配置系统指南** | [`docs/guides/multi-cli-tasks/CONFIG_SYSTEM_GUIDE.md`](../docs/guides/multi-cli-tasks/CONFIG_SYSTEM_GUIDE.md) | 配置系统完整使用指南 ⭐ |
+| **CLI报到指南** | [`docs/guides/multi-cli-tasks/CLI_REGISTRATION_GUIDE.md`](../docs/guides/multi-cli-tasks/CLI_REGISTRATION_GUIDE.md) | CLI报到流程 |
+| **任务池指南** | [`docs/guides/multi-cli-tasks/TASK_POOL_USAGE_GUIDE.md`](../docs/guides/multi-cli-tasks/TASK_POOL_USAGE_GUIDE.md) | 任务池使用 |
+| **快速参考** | [`scripts/cli/README.md`](../scripts/cli/README.md) | 命令速查 |
 
 ---
 

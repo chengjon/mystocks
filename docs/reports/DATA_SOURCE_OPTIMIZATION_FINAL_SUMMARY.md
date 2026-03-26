@@ -52,7 +52,7 @@
 |------|------|------|
 | Phase 1 完成报告 | `docs/reports/DATA_SOURCE_OPTIMIZATION_PHASE1_COMPLETION_REPORT.md` | 完成报告 |
 | Phase 2 完成报告 | `docs/reports/DATA_SOURCE_OPTIMIZATION_PHASE2_COMPLETION_REPORT.md` | 完成报告 |
-| 快速参考指南 | `docs/guides/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md` | 用户指南 |
+| 快速参考指南 | `docs/guides/data-source/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md` | 用户指南 |
 | 项目总结报告 | `docs/reports/DATA_SOURCE_OPTIMIZATION_FINAL_SUMMARY.md` | 项目总结 |
 
 ---
@@ -443,7 +443,7 @@ PROMETHEUS_ENABLED=true
 
 - [Phase 1 完成报告](./DATA_SOURCE_OPTIMIZATION_PHASE1_COMPLETION_REPORT.md)
 - [Phase 2 完成报告](./DATA_SOURCE_OPTIMIZATION_PHASE2_COMPLETION_REPORT.md)
-- [快速参考指南](../guides/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md)
+- [快速参考指南](../guides/data-source/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md)
 - [项目提案](../../openspec/changes/optimize-data-source-v2/proposal.md)
 - [设计文档](../../openspec/changes/optimize-data-source-v2/design.md)
 - [任务清单](../../openspec/changes/optimize-data-source-v2/tasks.md)
@@ -470,7 +470,7 @@ PROMETHEUS_ENABLED=true
 **文档文件** (4 个):
 - `docs/reports/DATA_SOURCE_OPTIMIZATION_PHASE1_COMPLETION_REPORT.md`
 - `docs/reports/DATA_SOURCE_OPTIMIZATION_PHASE2_COMPLETION_REPORT.md`
-- `docs/guides/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md`
+- `docs/guides/data-source/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md`
 - `docs/reports/DATA_SOURCE_OPTIMIZATION_FINAL_SUMMARY.md` (本文档)
 
 ### C. 联系方式

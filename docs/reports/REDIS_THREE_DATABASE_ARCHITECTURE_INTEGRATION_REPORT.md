@@ -270,7 +270,7 @@ from .redis_lock import redis_lock, RedisLockService
 
 ### 5. 文档更新 (`CLAUDE.md`) ✅
 
-**位置**: `/opt/claude/mystocks_spec/docs/CLAUDE.md`
+**位置**: `/opt/claude/mystocks_spec/docs/overview/claude.md`
 
 **更新内容**:
 1. **Week 4更新说明**:
@@ -618,4 +618,3 @@ with redis_lock.indicator_calculation_lock(stock_code, indicator_code, params):
 **生成时间**: 2026-01-10
 **架构版本**: V2.1 (三数据库)
 **状态**: ✅ 完成并验证
-

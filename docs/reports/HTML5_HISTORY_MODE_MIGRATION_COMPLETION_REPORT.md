@@ -279,7 +279,7 @@ systemctl reload apache2
    - 内容: Hash 模式 vs HTML5 History 模式对比分析
 
 2. **History 模式部署指南**
-   - 文件: `docs/guides/history-mode-deployment-guide.md`
+   - 文件: `docs/guides/frontend/history-mode-deployment-guide.md`
    - 内容: 生产环境 Nginx/Apache 配置详解
 
 3. **前端 History 迁移任务**

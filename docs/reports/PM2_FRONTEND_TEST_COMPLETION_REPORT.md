@@ -168,11 +168,11 @@ node scripts/test-pages.mjs
 ### 问题修复报告
 - **JavaScript语法错误**: `docs/reports/FRONTEND_JS_SYNTAX_FIX_REPORT.md`
 - **端口配置修复**: `docs/reports/FRONTEND_PORT_FIX_COMPLETION_REPORT.md`
-- **启动指南更新**: `docs/guides/WEB_FRONTEND_STARTUP_GUIDE.md`
+- **启动指南更新**: `docs/guides/web/WEB_FRONTEND_STARTUP_GUIDE.md`
 
 ### API集成报告
 - **Dashboard API丰富化**: `docs/reports/DASHBOARD_API_ENRICHMENT_COMPLETION_REPORT.md`
-- **API集成指南**: `docs/guides/DASHBOARD_API_INTEGRATION_GUIDE.md`
+- **API集成指南**: `docs/guides/frontend/DASHBOARD_API_INTEGRATION_GUIDE.md`
 
 ---
 

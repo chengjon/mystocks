@@ -66,7 +66,7 @@ register_exception_handlers(app)        # 一键注册所有异常处理器
 
 ### 2. 异常处理器使用指南文档
 
-**文件**: `docs/guides/EXCEPTION_HANDLER_GUIDE.md` (600行)
+**文件**: `docs/api/EXCEPTION_HANDLER_GUIDE.md` (600行)
 
 完整的异常处理器使用指南,包含:
 

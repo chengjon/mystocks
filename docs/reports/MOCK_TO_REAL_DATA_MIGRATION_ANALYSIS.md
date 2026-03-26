@@ -406,9 +406,9 @@ def get_market_statistics(self) -> Dict:
 
 ## 🔗 相关文档
 
-- API端点统计报告: `docs/guides/API_ENDPOINTS_STATISTICS_REPORT.md`
-- 数据源管理工具: `docs/guides/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md`
-- Mock数据使用规则: `docs/guides/MOCK_DATA_USAGE_RULES.md`
+- API端点统计报告: `docs/api/API_ENDPOINTS_STATISTICS_REPORT.md`
+- 数据源管理工具: `docs/guides/data-source/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md`
+- Mock数据使用规则: `docs/guides/mock-data/MOCK_DATA_USAGE_RULES.md`
 - 前端API文档: `web/frontend/src/api/types/`
 
 ---

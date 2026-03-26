@@ -498,7 +498,7 @@ python scripts/quality_gate/generate_test_template.py src/adapters/tdx/tdx_adapt
 
 ### 内部文档
 - [测试覆盖率分析报告](test_coverage_analysis.json)
-- [Python质量保证工作流](../guides/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md)
+- [Python质量保证工作流](../operations/ci-cd/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md)
 - [TDD实践指南](../guides/TDD_BEST_PRACTICES.md)
 
 ### 外部资源

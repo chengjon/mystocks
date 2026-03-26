@@ -394,7 +394,7 @@ pm2 logs mystocks-frontend-prod --lines 50
 ### 完成报告
 - **菜单优化报告**: `docs/reports/MENU_DESCRIPTION_OPTIMIZATION_REPORT.md`
 - **PM2测试报告**: `docs/reports/PM2_FRONTEND_TEST_COMPLETION_REPORT.md`
-- **启动指南**: `docs/guides/WEB_FRONTEND_STARTUP_GUIDE.md`
+- **启动指南**: `docs/guides/web/WEB_FRONTEND_STARTUP_GUIDE.md`
 
 ---
 

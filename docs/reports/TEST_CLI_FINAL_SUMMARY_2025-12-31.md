@@ -54,7 +54,7 @@
 
 ### 成就3: 创建E2E调试方法文档 ⭐⭐⭐
 
-**文档**: `docs/guides/E2E_TEST_DEBUG_METHODS.md`
+**文档**: `docs/testing/E2E_TEST_DEBUG_METHODS.md`
 
 **内容**:
 - 10+测试运行命令
@@ -104,7 +104,7 @@
 ## 📚 创建的文档清单
 
 ### 调试指南 (1份)
-1. ✅ `docs/guides/E2E_TEST_DEBUG_METHODS.md`
+1. ✅ `docs/testing/E2E_TEST_DEBUG_METHODS.md`
    - 6种常见问题解决方案
    - 完整调试工作流程
    - 实战案例: 认证问题排查

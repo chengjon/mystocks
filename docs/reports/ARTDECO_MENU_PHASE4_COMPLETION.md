@@ -652,7 +652,7 @@ const unsubscribe = subscribeMarketSummary((data) => {
 ## 📚 Documentation References
 
 - [ArtDeco Menu Optimization Review](./ARTDECO_MENU_OPTIMIZATION_REVIEW.md)
-- [ArtDeco Menu Structure Refactor Plan](../guides/ARTDECO_MENU_STRUCTURE_REFACTOR_PLAN.md)
+- [ArtDeco Menu Structure Refactor Plan](../guides/web/ARTDECO_MENU_STRUCTURE_REFACTOR_PLAN.md)
 - [Phase 1 Completion Report](./ARTDECO_MENU_PHASE1_COMPLETION.md)
 - [Phase 2 Completion Report](./ARTDECO_MENU_PHASE2_COMPLETION.md)
 - [Phase 3 Completion Report](./ARTDECO_MENU_PHASE3_COMPLETION.md)

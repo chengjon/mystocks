@@ -522,7 +522,7 @@ crontab -e
 
 ## 📚 相关文档
 
-- **Saga 架构设计**: `/docs/CLAUDE.md`
+- **Saga 架构设计**: `/docs/overview/claude.md`
 - **TDengine 修复报告**: `/docs/reports/TDENGINE_SAGA_FIX_REPORT.md`
 - **Phase 2/3 初始报告**: `/docs/reports/PHASE2_3_SAGA_MIGRATION_COMPLETION_REPORT.md`
 - **测试用例**: `/tests/test_saga_transaction.py`

@@ -458,7 +458,7 @@ EOF
 ### 相关文档
 
 - **[TASK_TEMPLATE.md](../docs/guides/.multi-cli-tasks/TASK_TEMPLATE.md)** - 完整模板参考
-- **[MULTI_CLI_PROMPT_STRATEGIES.md](../docs/guides/MULTI_CLI_PROMPT_STRATEGIES.md)** - Prompt策略
+- **[MULTI_CLI_PROMPT_STRATEGIES.md](../docs/guides/multi-cli-tasks/MULTI_CLI_PROMPT_STRATEGIES.md)** - Prompt策略
 
 ---
 
@@ -1950,9 +1950,9 @@ git commit -m "docs: T+2h进度报告"
 ### 相关文档 (v2.0方法论)
 
 **核心指导文档**:
-- **[MULTI_CLI_WORKTREE_MANAGEMENT.md](../docs/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md)** ⭐ - Version 2.0 完整工作指南 (2735行)
-- **[MULTI_CLI_PROMPT_STRATEGIES.md](../docs/guides/MULTI_CLI_PROMPT_STRATEGIES.md)** - Prompt策略与10个模板 (1328行)
-- **[MULTI_CLI_MAIN_CLI_LESSONS_LEARNED.md](../docs/guides/MULTI_CLI_MAIN_CLI_LESSONS_LEARNED.md)** - Phase 6经验总结 (861行)
+- **[MULTI_CLI_WORKTREE_MANAGEMENT.md](../docs/guides/multi-cli-tasks/MULTI_CLI_WORKTREE_MANAGEMENT.md)** ⭐ - Version 2.0 完整工作指南 (2735行)
+- **[MULTI_CLI_PROMPT_STRATEGIES.md](../docs/guides/multi-cli-tasks/MULTI_CLI_PROMPT_STRATEGIES.md)** - Prompt策略与10个模板 (1328行)
+- **[MULTI_CLI_MAIN_CLI_LESSONS_LEARNED.md](../reports/worklogs/MULTI_CLI_MAIN_CLI_LESSONS_LEARNED.md)** - Phase 6经验总结 (861行)
 - **[TASK_TEMPLATE.md](../docs/guides/.multi-cli-tasks/TASK_TEMPLATE.md)** - 任务文档模板 (692行)
 
 **Phase 7实施文档**:
@@ -1960,7 +1960,7 @@ git commit -m "docs: T+2h进度报告"
 - **[PHASE6_FINAL_COMPLETION_REPORT.md](../reports/PHASE6_FINAL_COMPLETION_REPORT.md)** - Phase 6完成报告
 
 **质量保证文档**:
-- **[PYTHON_QUALITY_ASSURANCE_WORKFLOW.md](../docs/guides/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md)** - Python质量保证流程
+- **[PYTHON_QUALITY_ASSURANCE_WORKFLOW.md](../docs/operations/ci-cd/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md)** - Python质量保证流程
 - **[FILE_ORGANIZATION_RULES.md](../docs/standards/FILE_ORGANIZATION_RULES.md)** - 文件组织规范
 
 ### Git命令速查

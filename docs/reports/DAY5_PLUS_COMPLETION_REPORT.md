@@ -813,7 +813,7 @@ for file_path in MIXIN_FILES:
 
 ### C. Related Documentation
 
-- **Phase 2 Plan**: `docs/guides/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md`
+- **Phase 2 Plan**: `docs/operations/ci-cd/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md`
 - **Next Steps**: `NEXT_STEPS_DETAILED_PLAN.md` (to be updated)
 - **Pylint Configuration**: `.pylintrc`
 - **Test Configuration**: `pytest.ini`, `pyproject.toml`

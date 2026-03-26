@@ -427,9 +427,9 @@ kill $(cat CLIS/main/.coordinator_pid)
 
 ## 📝 相关文档
 
-- **V2实施方案**: `/opt/claude/mystocks_spec/docs/guides/MULTI_CLI_COLLABORATION_V2_IMPLEMENTATION.md`
+- **V2实施方案**: `/opt/claude/mystocks_spec/docs/architecture/MULTI_CLI_COLLABORATION_V2_IMPLEMENTATION.md`
 - **V2.1修复报告**: `/opt/claude/mystocks_spec/docs/reports/MULTI_CLI_V2_FIX_SUMMARY.md`
-- **V1方法文档**: `/opt/claude/mystocks_spec/docs/guides/MULTI_CLI_COLLABORATION_METHOD.md`
+- **V1方法文档**: `/opt/claude/mystocks_spec/docs/guides/multi-cli-tasks/MULTI_CLI_COLLABORATION_METHOD.md`
 
 ---
 

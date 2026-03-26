@@ -342,8 +342,8 @@ MyStocks 数据源管理 V2.0 采用**四层架构**实现集中式治理：
 ## 📚 相关文档
 
 - **架构设计**: `docs/architecture/DATA_SOURCE_MANAGEMENT_V2.md`
-- **使用指南**: `docs/guides/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md`
-- **快速参考**: `docs/guides/DATA_SOURCE_TOOLS_QUICK_REFERENCE.md`
+- **使用指南**: `docs/guides/data-source/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md`
+- **快速参考**: `docs/guides/data-source/DATA_SOURCE_TOOLS_QUICK_REFERENCE.md`
 - **验证报告**: `docs/reports/DATA_SOURCE_V2_FINAL_VERIFICATION_REPORT.md`
 - **增强提案**: `docs/reports/DATA_SOURCE_V2_ENHANCEMENT_PROPOSAL.md`
 

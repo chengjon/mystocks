@@ -67,7 +67,7 @@ is_client_error(error_code)        # 判断是否客户端错误
 is_server_error(error_code)        # 判断是否服务器错误
 ```
 
-**文档**: `docs/guides/ERROR_CODE_GUIDE.md` (400行)
+**文档**: `docs/api/ERROR_CODE_GUIDE.md` (400行)
 
 完整的错误码体系使用指南:
 - 📦 模块概览
@@ -321,8 +321,8 @@ docs/guides/
 
 ### 文档资源
 
-- 错误码指南: `docs/guides/ERROR_CODE_GUIDE.md`
-- 验证器指南: `docs/guides/VALIDATION_GUIDE.md`
+- 错误码指南: `docs/api/ERROR_CODE_GUIDE.md`
+- 验证器指南: `docs/api/VALIDATION_GUIDE.md`
 - OpenAPI模板: `docs/api/openapi_template.yaml`
 - 统一响应格式: `web/backend/app/schemas/common_schemas.py`
 
@@ -336,7 +336,7 @@ python -m py_compile web/backend/app/core/error_codes.py
 cat web/backend/app/core/error_codes.py
 
 # 查看使用指南
-cat docs/guides/ERROR_CODE_GUIDE.md
+cat docs/api/ERROR_CODE_GUIDE.md
 ```
 
 ---

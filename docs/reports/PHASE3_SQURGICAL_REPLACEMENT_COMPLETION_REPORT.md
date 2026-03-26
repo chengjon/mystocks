@@ -523,4 +523,4 @@ endpoints = manager.find_endpoints(data_category="DAILY_KLINE")
 **相关文档**:
 - `docs/architecture/DATA_SOURCE_MANAGEMENT_V2.md`
 - `docs/reports/DATA_SOURCE_V2_IMPLEMENTATION_REPORT.md`
-- `docs/guides/DATA_SOURCE_MONITORING_GUIDE.md`
+- `docs/guides/data-source/DATA_SOURCE_MONITORING_GUIDE.md`

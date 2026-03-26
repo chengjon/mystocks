@@ -523,7 +523,7 @@ pm2 restart mystocks-backend
 ### C. 参考文档
 
 - **E2E测试方法**: `/opt/mydoc/mymd/E2E_TEST_DEBUG_METHODS.md`
-- **API标准化计划**: `docs/guides/API_STANDARDIZATION_MASTER_PLAN.md`
+- **API标准化计划**: `docs/api/guides/integration/API_STANDARDIZATION_MASTER_PLAN.md`
 - **部署验证清单**: `docs/reports/API_DEPLOYMENT_VERIFICATION_CHECKLIST.md`
 - **快速验证摘要**: `docs/reports/API_VERIFICATION_QUICK_SUMMARY.md`
 

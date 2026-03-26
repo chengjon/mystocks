@@ -71,7 +71,7 @@ is_server_error(error_code)        # 判断是否服务器错误
 
 ### 2. 错误码使用指南文档
 
-**文件**: `docs/guides/ERROR_CODE_GUIDE.md` (400行)
+**文件**: `docs/api/ERROR_CODE_GUIDE.md` (400行)
 
 完整的错误码体系使用指南,包含:
 

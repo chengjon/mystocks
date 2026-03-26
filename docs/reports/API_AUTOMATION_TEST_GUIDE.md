@@ -246,7 +246,7 @@ nvm install 18
 - [FastAPI 官方文档](https://fastapi.tiangolo.com/)
 - [Playwright 官方文档](https://playwright.dev/)
 - [OpenAPI 规范](https://swagger.io/specification/)
-- [项目测试指南](./../guides/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md)
+- [项目测试指南](./../operations/ci-cd/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md)
 
 ## 更新日志
 

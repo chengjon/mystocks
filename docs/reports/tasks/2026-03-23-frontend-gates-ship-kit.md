@@ -5,6 +5,7 @@
 - current_branch: `main`
 - note: the worktree contains many unrelated pre-existing changes outside this frontend gate scope
 - recommendation: create a dedicated branch before staging only the files listed below
+- additional_note: current git index also contains unrelated staged changes; avoid plain `git commit` from this checkout
 
 ## Suggested Branch
 
@@ -51,6 +52,20 @@ git add -- \
   web/frontend/tests/visual/pages/dashboard.spec.ts \
   web/frontend/tests/visual/utils/helpers.ts \
   web/frontend/validate-e2e-setup.js
+```
+
+## Patch Export
+
+A scoped patch for this change set has been exported to:
+
+```text
+/tmp/frontend-gates.patch
+```
+
+This is the safest route if you want to apply the frontend gate changes in a clean worktree or another clone:
+
+```bash
+git apply /tmp/frontend-gates.patch
 ```
 
 ## Suggested Commit Message

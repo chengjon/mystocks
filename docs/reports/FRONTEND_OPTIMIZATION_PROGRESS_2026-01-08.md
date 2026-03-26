@@ -322,7 +322,7 @@ import { use } from '@/utils/echarts'
 - **[P0 TypeScript修复完成报告](./TYPESCRIPT_P0_FIX_COMPLETION_2026-01-08.md)** - 详细修复方案
 - **[前端架构设计评估](./FRONTEND_ARCHITECTURE_DESIGN_EVALUATION_2026-01-08.md)** - web-fullstack-architect评估
 - **[选项C全面优化报告](./FRONTEND_OPTION_C_COMPLETION_REPORT.md)** - 完整优化方案
-- **[TypeScript错误快速修复指南](../guides/TYPESCRIPT_ERROR_FIXING_GUIDE.md)** - 错误分类和方案
+- **[TypeScript错误快速修复指南](../guides/typescript/TYPESCRIPT_ERROR_FIXING_GUIDE.md)** - 错误分类和方案
 
 ---
 

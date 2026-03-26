@@ -159,8 +159,8 @@ docs/
 
 - 整理前的分析: [文档整理分析方案]
 - 项目主文档: [README.md](./README.md)
-- 快速入门: [QUICKSTART.md](./QUICKSTART.md)
-- 工作流程: [IFLOW.md](./IFLOW.md)
+- 快速入门: [quick-start.md](../operations/quick-start.md)
+- 工作流程: [IFLOW.md](../overview/IFLOW.md)
 
 ---
 

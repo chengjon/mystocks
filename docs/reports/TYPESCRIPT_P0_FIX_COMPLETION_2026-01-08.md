@@ -306,7 +306,7 @@ cd web/frontend && npm run dev
 
 ## 📚 相关文档
 
-- **[TypeScript错误快速修复指南](./guides/TYPESCRIPT_ERROR_FIXING_GUIDE.md)** - 错误分类和修复方案
+- **[TypeScript错误快速修复指南](../guides/typescript/TYPESCRIPT_ERROR_FIXING_GUIDE.md)** - 错误分类和修复方案
 - **[TypeScript紧急修复说明](./reports/TYPESCRIPT_EMERGENCY_FIX_2026-01-08.md)** - 紧急修复配置
 - **[前端架构设计评估](./reports/FRONTEND_ARCHITECTURE_DESIGN_EVALUATION_2026-01-08.md)** - web-fullstack-architect评估
 - **[选项C全面优化报告](./reports/FRONTEND_OPTION_C_COMPLETION_REPORT.md)** - 完整优化方案

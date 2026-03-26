@@ -205,10 +205,10 @@ result = validate_data('stocks_daily', test_data)
 
 | 文档 | 路径 | 状态 |
 |------|------|------|
-| 快速开始指南 | docs/guides/DATA_CLEANING_QUICK_START.md | ✅ |
+| 快速开始指南 | docs/guides/data-source/DATA_CLEANING_QUICK_START.md | ✅ |
 | 实施总结 | docs/reports/DATA_CLEANING_IMPLEMENTATION_SUMMARY.md | ✅ |
 | 增强提案 | docs/reports/DATA_SOURCE_V2_ENHANCEMENT_PROPOSAL.md | ✅ |
-| 数据源管理指南 | docs/guides/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md | ✅ |
+| 数据源管理指南 | docs/guides/data-source/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md | ✅ |
 | 本验证报告 | docs/reports/DATA_CLEANING_VERIFICATION_REPORT.md | ✅ |
 
 ### 6.2 文档内容验证
@@ -391,14 +391,14 @@ class DataManager:
 - config/data_governance_rules.json
 
 **文档**:
-- docs/guides/DATA_CLEANING_QUICK_START.md
+- docs/guides/data-source/DATA_CLEANING_QUICK_START.md
 - docs/reports/DATA_CLEANING_IMPLEMENTATION_SUMMARY.md
 - docs/reports/DATA_SOURCE_V2_ENHANCEMENT_PROPOSAL.md
 - docs/reports/DATA_CLEANING_VERIFICATION_REPORT.md
 
 ### B. 使用示例
 
-详见 `docs/guides/DATA_CLEANING_QUICK_START.md`
+详见 `docs/guides/data-source/DATA_CLEANING_QUICK_START.md`
 
 ---
 

@@ -195,7 +195,7 @@ python scripts/tools/docs_indexer.py --categories
   git mv "01-项目总览与核心规范/" overview/
 
   # 示例：清理根目录
-  git mv HANDOVER_TASK.md overview/handover-tasks.md
+  git mv HANDOVER_TASK.md reports/tasks/HANDOVER_TASK.md
   git mv TASK.md overview/task-tracker.md
   ```
 

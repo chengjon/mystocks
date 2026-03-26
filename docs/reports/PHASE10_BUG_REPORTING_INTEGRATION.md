@@ -177,20 +177,20 @@ curl -H "X-API-Key: YOUR_API_KEY" \
 
 ### BUGer Integration Documentation
 
-- **`docs/buger/B项目接入指南.md`** - Complete BUGer integration guide (Chinese)
+- **`docs/guides/buger/B项目接入指南.md`** - Complete BUGer integration guide (Chinese)
   - Architecture overview
   - API reference
   - Code examples (Node.js, Python)
   - Troubleshooting guide
   - FAQ section
 
-- **`docs/buger/CLIENT_INTEGRATION_GUIDE.md`** - BUGer client integration details
+- **`docs/guides/buger/客户端集成指南.md`** - BUGer client integration details
   - Field specifications
   - Batch reporting
   - Hierarchical search (layered queries)
   - Error handling and fallback strategies
 
-- **`docs/buger/CLIENT_CONNECTION_GUIDE.md`** - Connection configuration guide
+- **`docs/guides/buger/客户端连接指南.md`** - Connection configuration guide
   - Port auto-selection mechanism
   - Configuration validation
   - Connection troubleshooting
@@ -277,10 +277,11 @@ docs/
 │   └── WEEK1_OPTIMIZATION_GUIDE.md
 ├── standards/
 │   └── API_RESPONSE_STANDARDIZATION.md
-└── buger/
-    ├── B项目接入指南.md
-    ├── CLIENT_INTEGRATION_GUIDE.md
-    └── CLIENT_CONNECTION_GUIDE.md
+└── guides/
+    └── buger/
+        ├── B项目接入指南.md
+        ├── 客户端集成指南.md
+        └── 客户端连接指南.md
 
 scripts/tests/
 └── report_phase10_bugs.py (bug reporting automation)
@@ -318,7 +319,7 @@ fi
 
 - **Phase 10 Bug Report**: `docs/reports/PHASE10_BUG_REPORT.md`
 - **Best Practices Guide**: `docs/guides/关键经验和成功做法.md`
-- **BUGer Documentation**: `docs/buger/B项目接入指南.md`
+- **BUGer Documentation**: `docs/guides/buger/B项目接入指南.md`
 - **Implementation Script**: `scripts/tests/report_phase10_bugs.py`
 - **Bug Backup Data**: `bug-reports-backup.jsonl`
 

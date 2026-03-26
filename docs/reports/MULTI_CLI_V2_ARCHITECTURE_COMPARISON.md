@@ -430,8 +430,8 @@ CLI完成REPORT.md → 提取经验 → KNOWLEDGE_BASE.md
 ## 📚 参考文档
 
 - **v2实施方案**: `docs/architecture/MULTI_CLI_COLLABORATION_V2_IMPLEMENTATION.md`
-- **使用指南**: `docs/guides/MULTI_CLI_COLLABORATION_METHOD.md`
-- **README**: `CLIS/README.md`
+- **使用指南**: `docs/guides/multi-cli-tasks/MULTI_CLI_COLLABORATION_METHOD.md`
+- **README**: `scripts/cli/README.md`
 
 ---
 

@@ -51,7 +51,7 @@
 - 信号处理
 - 日志记录
 
-**docs/guides/ASYNC_MONITORING_GUIDE.md** (500+行)
+**docs/operations/monitoring/ASYNC_MONITORING_GUIDE.md** (500+行)
 - 快速开始教程
 - API参考
 - 性能对比数据
@@ -253,7 +253,7 @@ pylint src/ --errors-only --disable=import-error,no-member
 
 ## 📚 相关文档
 
-- [异步监控使用指南](../guides/ASYNC_MONITORING_GUIDE.md)
+- [异步监控使用指南](../operations/monitoring/ASYNC_MONITORING_GUIDE.md)
 - [综合架构分析报告](../reports/COMPREHENSIVE_ARCHITECTURE_ANALYSIS_2026-01-03.md)
 - [多角色评估报告](../reports/MULTI_ROLE_COMPREHENSIVE_ASSESSMENT_2026-01-03.md)
 

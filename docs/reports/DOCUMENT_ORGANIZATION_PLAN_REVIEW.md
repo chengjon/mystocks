@@ -284,7 +284,7 @@
 | 源路径 | 目标路径 | 操作 | 理由 |
 |--------|----------|------|------|
 | `docs/01-项目总览与核心规范/*` | `docs/overview/` | git mv + rename | 核心文档，优先迁移 |
-| `HANDOVER_TASK.md` | `docs/overview/handover-tasks.md` | git mv | 根目录清理 |
+| `HANDOVER_TASK.md` | `docs/reports/tasks/HANDOVER_TASK.md` | git mv | 根目录清理 |
 | `TASK.md` | `docs/overview/task-tracker.md` | git mv | 根目录清理 |
 | `AGENTS.md` | `docs/overview/agents.md` | git mv | 根目录清理（保留副本） |
 | `CLAUDE.md` | （保留根目录） | - | 核心配置文件 |

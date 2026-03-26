@@ -1,7 +1,7 @@
 # Web前端优化方案 - 评审建议实施指南
 
 **文档性质**: V2方案补充实施指南
-**评审来源**: `docs/reviews/WEB_FRONTEND_MENU_ARCHITECTURE_REVIEW.md`
+**评审来源**: `docs/reports/reviews/WEB_FRONTEND_MENU_ARCHITECTURE_REVIEW.md`
 **评审时间**: 2026-01-09
 **评审人**: Gemini CLI (系统架构师)
 **评审结论**: ⭐⭐⭐⭐⭐ (优) - **通过 (Approved)**

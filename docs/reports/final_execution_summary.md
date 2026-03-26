@@ -226,7 +226,7 @@ src/adapters/akshare/modules/
 3. `docs/reports/project_final_completion_summary.md`
 4. `docs/reports/project_final_acceptance_report.md`
 5. `docs/plans/execution_guide.md`
-6. `docs/plans/pre_commit_hook_setup_guide.md`
+6. `docs/guides/hooks/pre_commit_hook_setup_guide.md`
 7. `docs/plans/artdeco_market_data_split_plan.md`
 8. `docs/reports/final_project_summary.md`
 
