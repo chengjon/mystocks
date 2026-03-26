@@ -6,7 +6,7 @@
 import sys
 from pathlib import Path
 
-from loguru import logger as loguru_logger
+from loguru import logger as loguru_logger  # type: ignore[import-not-found]
 
 # 移除默认的handler
 loguru_logger.remove()

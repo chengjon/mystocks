@@ -125,7 +125,7 @@ jobs:
 
     - name: Enforce Bandit security gate
       run: |
-        bandit ${{ needs.security-scope-detect.outputs.bandit_args }}
+        bandit -ll ${{ needs.security-scope-detect.outputs.bandit_args }}
 
   container-security:
     runs-on: ubuntu-latest

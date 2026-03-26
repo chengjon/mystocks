@@ -1,5 +1,7 @@
 "use strict";
 
+const { URL } = require("node:url");
+
 const LHCI_USER = {
   id: 1,
   username: "lhci-admin",
@@ -17,13 +19,13 @@ module.exports = async (browser, { url }) => {
 
     await page.goto(loginUrl.href, { waitUntil: "domcontentloaded" });
     await page.evaluate((user) => {
-      localStorage.setItem("auth_token", "lhci-auth-token");
-      localStorage.setItem("auth_user", JSON.stringify(user));
+      globalThis.localStorage.setItem("auth_token", "lhci-auth-token");
+      globalThis.localStorage.setItem("auth_user", JSON.stringify(user));
     }, LHCI_USER);
 
     if (targetUrl.pathname !== "/login") {
       await page.goto(targetUrl.href, { waitUntil: "domcontentloaded" });
-      await new Promise((resolve) => setTimeout(resolve, 250));
+      await page.waitForTimeout(250);
     }
   } finally {
     await page.close();
