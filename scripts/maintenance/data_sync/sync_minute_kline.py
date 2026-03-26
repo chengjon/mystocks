@@ -9,6 +9,7 @@ import os
 import argparse
 import logging
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import List
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -22,11 +23,14 @@ from src.core.data_classification import DataClassification
 from src.unified_manager import MyStocksUnifiedManager
 
 # 配置日志
+LOG_DIR = Path(__file__).resolve().parents[3] / "var" / "log" / "data_sync"
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler("logs/data_sync/minute_kline_sync.log"),
+        logging.FileHandler(LOG_DIR / "minute_kline_sync.log"),
         logging.StreamHandler(sys.stdout),
     ],
 )
@@ -357,7 +361,7 @@ def main():
     args = parser.parse_args()
 
     # 确保日志目录存在
-    os.makedirs("logs/data_sync", exist_ok=True)
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
 
     try:
         stats = sync_minute_kline_data(

@@ -10,7 +10,7 @@
 
 用法:
     # 启动调度器（后台运行）
-    nohup python scripts/data_cleaning/auto_clean_scheduler.py > logs/auto_clean.log 2>&1 &
+    nohup python scripts/data_cleaning/auto_clean_scheduler.py > var/log/auto_clean.log 2>&1 &
 
     # 测试单次执行
     python scripts/data_cleaning/auto_clean_scheduler.py --test
@@ -47,18 +47,20 @@ class AutoCleanScheduler:
         参数:
             log_level: 日志级别
         """
+        log_dir = project_root / "var" / "log"
+        log_dir.mkdir(parents=True, exist_ok=True)
+        log_file = log_dir / "auto_clean.log"
+
         # 配置日志
         log_format = "%(asctime)s - %(levelname)s - %(message)s"
         logging.basicConfig(
             level=getattr(logging, log_level),
             format=log_format,
-            handlers=[logging.StreamHandler(), logging.FileHandler("logs/auto_clean.log", encoding="utf-8")],
+            handlers=[logging.StreamHandler(), logging.FileHandler(log_file, encoding="utf-8")],
         )
 
         self.logger = logging.getLogger(__name__)
 
-        # 确保日志目录存在
-        Path("logs").mkdir(exist_ok=True)
         Path("reports/data_cleaning").mkdir(parents=True, exist_ok=True)
 
         # 初始化验证器
@@ -363,7 +365,7 @@ def main():
         epilog="""
 示例:
   # 启动调度器（后台运行）
-  nohup python auto_clean_scheduler.py > logs/auto_clean.log 2>&1 &
+  nohup python auto_clean_scheduler.py > var/log/auto_clean.log 2>&1 &
 
   # 测试单次K线检查
   python auto_clean_scheduler.py --test-kline

@@ -256,7 +256,7 @@ organize_files() {
     # 创建基本目录结构
     local dirs=(
         "temp/cache"
-        "logs/app"
+        "var/log/app"
         "reports/metrics"
         "reports/analysis"
         "reports/coverage"
@@ -311,7 +311,7 @@ organize_files() {
 
     # 移动深层的日志文件
     find . -mindepth 2 -maxdepth 3 -name "*.log" | while read -r file; do
-        move_file "$file" "logs/app"
+        move_file "$file" "var/log/app"
         moved_files=$((moved_files + 1))
     done
 
