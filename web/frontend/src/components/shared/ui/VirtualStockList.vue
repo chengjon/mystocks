@@ -91,7 +91,7 @@ const formatVolume = (volume: number) => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .virtual-stock-list {
   border: 1px solid var(--artdeco-border-default);

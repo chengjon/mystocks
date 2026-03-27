@@ -272,7 +272,7 @@ const getCellClass = (row: Record<string, unknown>, column: TableColumn) => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 .stock-list-table {
   width: 100%;
   background: var(--artdeco-bg-card);

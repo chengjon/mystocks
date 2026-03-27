@@ -34,7 +34,7 @@ const activeMenu = computed(() => route.path);
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .artdeco-menu {
   border-right: none;

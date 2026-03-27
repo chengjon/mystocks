@@ -50,7 +50,7 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .page-header {
   text-align: center;

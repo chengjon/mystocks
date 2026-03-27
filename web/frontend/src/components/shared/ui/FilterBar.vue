@@ -200,7 +200,7 @@ defineExpose({
 <style scoped lang="scss">
 // Phase 3.4: Design Token Migration
 @use 'sass:color';
-@import '@/styles/theme-tokens';
+@use '@/styles/theme-tokens.scss' as *;
 
 .filter-bar {
   margin-bottom: var(--spacing-xl);

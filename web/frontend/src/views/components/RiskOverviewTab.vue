@@ -391,6 +391,6 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped>
-@import "./styles/RiskOverviewTab.css";
+<style scoped lang="scss">
+@use "./styles/RiskOverviewTab.css";
 </style>

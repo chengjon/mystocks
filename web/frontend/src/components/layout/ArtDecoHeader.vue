@@ -75,7 +75,7 @@ const pageTitle = computed(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .artdeco-header {
   display: flex;

@@ -91,7 +91,7 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .tree-menu {
   padding: var(--artdeco-spacing-4);

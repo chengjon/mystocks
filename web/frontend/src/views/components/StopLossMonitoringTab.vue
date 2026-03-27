@@ -302,6 +302,6 @@ import { useStopLossMonitoringTab } from './composables/useStopLossMonitoringTab
 const { loading, historyLoading, saving, positionDialogVisible, isEditing, historyPeriod, stats, positions, executionHistory, positionForm, positionFormRules, loadExecutionHistory, addPosition, editPosition, removePosition, savePosition, refreshData, getPriceClass, getStrategyTagType, formatStrategyName, getDistanceClass, formatDateTime, truncateText } = useStopLossMonitoringTab()
 </script>
 
-<style scoped>
-@import "./styles/StopLossMonitoringTab.css";
+<style scoped lang="scss">
+@use "./styles/StopLossMonitoringTab.css";
 </style>

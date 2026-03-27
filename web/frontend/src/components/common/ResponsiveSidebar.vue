@@ -307,5 +307,5 @@ watch(() => route.path, () => {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/ResponsiveSidebar.scss";
+@use "./styles/ResponsiveSidebar.scss" as *;
 </style>

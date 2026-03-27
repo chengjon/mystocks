@@ -49,7 +49,7 @@ const preferenceStore = usePreferenceStore()
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .artdeco-sidebar {
   display: flex;

@@ -38,7 +38,7 @@ const navigateTo = (path: string) => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 // Menu item styles are mostly handled by Element Plus and the parent theme
 // However, we can add specific overrides here if needed.

@@ -140,7 +140,7 @@ import ArtDecoCard from './base/ArtDecoCard.vue'
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .card-header {
   h3 {

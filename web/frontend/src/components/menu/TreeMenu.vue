@@ -367,5 +367,5 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/TreeMenu.scss";
+@use "./styles/TreeMenu.scss" as *;
 </style>

@@ -200,5 +200,5 @@
 </script>
 
 <style scoped lang="scss">
-@import "./styles/ServiceUnavailable";
+@use "./styles/ServiceUnavailable.scss" as *;
 </style>

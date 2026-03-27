@@ -364,5 +364,5 @@ watch(searchQuery, () => {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/CommandPalette.scss";
+@use "./styles/CommandPalette.scss" as *;
 </style>

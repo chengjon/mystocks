@@ -62,7 +62,7 @@ const handleCurrentChange = (val: number) => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 .pagination {
   display: flex;
   justify-content: center;

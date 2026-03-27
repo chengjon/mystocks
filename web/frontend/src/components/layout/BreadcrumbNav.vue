@@ -56,7 +56,7 @@ defineProps<Props>()
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/theme-tokens';
+@use '@/styles/theme-tokens.scss' as *;
 
 .breadcrumb-nav {
   display: flex;
