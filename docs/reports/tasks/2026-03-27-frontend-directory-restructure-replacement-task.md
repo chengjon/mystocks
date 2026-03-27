@@ -77,6 +77,16 @@
 - 一份活跃页/历史页/共享资产分类表
 - 一份新的迁移批次计划
 
+当前已完成的第一份输出物：
+
+- [2026-03-27-frontend-directory-current-inventory.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-03-27-frontend-directory-current-inventory.md)
+- [2026-03-27-frontend-directory-restructure-batch-plan.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-03-27-frontend-directory-restructure-batch-plan.md)
+- [2026-03-27-frontend-directory-batch-a-active-route-truth-table.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-03-27-frontend-directory-batch-a-active-route-truth-table.md)
+- [2026-03-27-frontend-directory-batch-b-risk-classification.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-03-27-frontend-directory-batch-b-risk-classification.md)
+- [2026-03-27-frontend-directory-batch-b-freeze-list.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-03-27-frontend-directory-batch-b-freeze-list.md)
+- [2026-03-27-frontend-directory-batch-b-migration-white-list.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-03-27-frontend-directory-batch-b-migration-white-list.md)
+- [2026-03-27-frontend-directory-batch-c-pilot-design.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-03-27-frontend-directory-batch-c-pilot-design.md)
+
 ## 建议审批口径
 
-`同意创建 frontend directory restructure 现状盘点与新批次任务，不沿用旧 92 项清单`
+`同意执行 Batch C：白名单试点迁移方案设计`
