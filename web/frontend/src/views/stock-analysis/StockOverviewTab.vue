@@ -106,8 +106,8 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
-@import '@/styles/artdeco-grid';
+@use '@/styles/artdeco-tokens.scss' as *;
+@use '@/styles/artdeco-grid.scss' as *;
 
 .monolithic-overview-card {
   margin-bottom: var(--artdeco-spacing-8);

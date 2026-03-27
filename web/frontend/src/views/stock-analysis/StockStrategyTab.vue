@@ -136,8 +136,8 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
-@import '@/styles/artdeco-grid';
+@use '@/styles/artdeco-tokens.scss' as *;
+@use '@/styles/artdeco-grid.scss' as *;
 
 .monolithic-strategy-card {
   border-color: var(--artdeco-border-default); // 30% transparency by token

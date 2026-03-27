@@ -66,8 +66,8 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
-@import '@/styles/artdeco-grid';
+@use '@/styles/artdeco-tokens.scss' as *;
+@use '@/styles/artdeco-grid.scss' as *;
 
 .realtime-tab-container {
   background: var(--artdeco-bg-base);

@@ -108,7 +108,7 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .backtest-tab-container {
   background: var(--artdeco-bg-base);

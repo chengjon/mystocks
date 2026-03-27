@@ -189,7 +189,7 @@ const { activeTab, fileFormatData, dayStructureData, dayParserCode } = props
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .monolithic-data-card {
   border-color: var(--artdeco-border-default); // 30% transparency by token
