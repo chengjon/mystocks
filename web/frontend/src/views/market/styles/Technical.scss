@@ -1,4 +1,4 @@
-@import '@/styles/theme-tokens';
+@use '@/styles/theme-tokens.scss' as *;
 
 .technical-analysis {
   display: flex;
@@ -15,7 +15,7 @@
   align-items: center;
   justify-content: space-between;
   padding-bottom: var(--spacing-lg);
-  border-bottom: 2px solid var(--color-border);
+  border-bottom: var(--radius-md) solid var(--color-border);
 
   .header-title-section {
     flex: 1;
@@ -71,13 +71,13 @@
 
     .search-section {
       .symbol-input {
-        width: 200px;
+        width: calc(var(--spacing-3xl) * 3 + var(--spacing-sm));
       }
     }
 
     .date-section {
       .date-picker {
-        width: 280px;
+        width: calc(var(--spacing-3xl) * 4 + var(--spacing-lg));
       }
     }
 
@@ -91,7 +91,7 @@
 
     .chart-type-section {
       .chart-type-select {
-        width: 140px;
+        width: calc(var(--spacing-2xl) * 2 + var(--spacing-lg) + var(--spacing-md) + var(--spacing-xs));
       }
     }
   }
@@ -151,13 +151,13 @@
 
   .chart-container {
     position: relative;
-    min-height: 400px;
+    min-height: calc(var(--spacing-3xl) * 6 + var(--spacing-md));
 
     .no-data-placeholder {
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 400px;
+      min-height: calc(var(--spacing-3xl) * 6 + var(--spacing-md));
 
       .placeholder-icon {
         color: var(--color-text-tertiary);
@@ -209,7 +209,13 @@
 
   .indicators-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(
+        calc(var(--spacing-3xl) * 4 + var(--spacing-xl) + var(--spacing-sm) + var(--radius-md) + var(--radius-md)),
+        1fr
+      )
+    );
     gap: var(--spacing-md);
   }
 
@@ -273,7 +279,7 @@
 
   .summary-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(calc(var(--spacing-3xl) * 3 + var(--spacing-sm)), 1fr));
     gap: var(--spacing-lg);
   }
 
@@ -353,7 +359,7 @@
 }
 
 // Responsive Design
-@media (width <= 1200px) {
+@media (width <= calc(var(--spacing-3xl) * 18 + var(--spacing-xl) + var(--spacing-md))) {
   .toolbar-content {
     flex-direction: column;
     align-items: stretch;
@@ -383,7 +389,7 @@
   }
 }
 
-@media (width <= 768px) {
+@media (width <= calc(var(--spacing-3xl) * 12)) {
   .technical-analysis {
     padding: var(--spacing-md);
     gap: var(--spacing-md);

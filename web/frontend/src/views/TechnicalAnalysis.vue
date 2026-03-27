@@ -162,6 +162,6 @@ const {
 } = useTechnicalAnalysis()
 </script>
 
-<style scoped>
-@import "./styles/TechnicalAnalysis.css";
+<style scoped lang="scss">
+@use "./styles/TechnicalAnalysis.css";
 </style>

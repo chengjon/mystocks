@@ -294,5 +294,5 @@ const {
 </script>
 
 <style scoped lang="scss">
-@import './styles/Tdx';
+@use './styles/Tdx.scss' as *;
 </style>

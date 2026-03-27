@@ -1,4 +1,4 @@
-    @import '@/styles/theme-tokens';
+    @use '@/styles/theme-tokens.scss' as *;
 
     .concept-container {
       display: flex;
@@ -6,7 +6,7 @@
       gap: var(--spacing-lg);
       padding: var(--spacing-lg);
       background: var(--color-bg-primary);
-      min-height: 100vh);
+      min-height: 100vh;
     }
 
     .page-header {
@@ -14,7 +14,7 @@
       align-items: center;
       justify-content: space-between;
       padding-bottom: var(--spacing-lg);
-      border-bottom: 2px solid var(--color-border);
+      border-bottom: var(--radius-md) solid var(--color-border);
 
       .page-title {
         display: flex;
@@ -69,7 +69,13 @@
 
     .concepts-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      grid-template-columns: repeat(
+        auto-fill,
+        minmax(
+          calc(var(--spacing-3xl) * 5 + var(--spacing-lg) + var(--spacing-xs) + var(--radius-md)),
+          1fr
+        )
+      );
       gap: var(--spacing-lg);
     }
 
@@ -78,12 +84,12 @@
       transition: all 0.2s ease;
 
       &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px var(--color-accent-alpha-50);
+        transform: translateY(calc(-1 * var(--radius-md)));
+        box-shadow: 0 var(--spacing-xs) calc(var(--spacing-md) - var(--spacing-xs)) var(--color-accent-alpha-50);
       }
 
       &.hot-concept {
-        border: 2px solid var(--color-stock-up);
+        border: var(--radius-md) solid var(--color-stock-up);
         background: linear-gradient(135deg, var(--color-stock-up-alpha-95), var(--color-bg-secondary));
       }
 
@@ -101,15 +107,15 @@
 
     .concept-badge {
       font-size: var(--font-size-2xl);
-      width: 50px;
-      height: 50px;
+      width: calc(var(--spacing-2xl) + var(--radius-md));
+      height: calc(var(--spacing-2xl) + var(--radius-md));
       display: flex;
       align-items: center;
       justify-content: center;
       border-radius: 50%;
 
       &.hot {
-        background: linear-gradient(135deg, #ff6b6b, #ffa726);
+        background: linear-gradient(135deg, var(--color-stock-up), var(--color-warning));
         color: white;
       }
     }
@@ -173,16 +179,16 @@
 
     .concept-trend {
       .trend-bar {
-        height: 6px;
+        height: calc(var(--spacing-sm) - var(--radius-md));
         background: var(--color-bg-secondary);
-        border-radius: 3px;
+        border-radius: calc(var(--spacing-xs) - var(--radius-sm));
         overflow: hidden;
         margin-bottom: var(--spacing-xs);
       }
 
       .trend-fill {
         height: 100%;
-        border-radius: 3px;
+        border-radius: calc(var(--spacing-xs) - var(--radius-sm));
 
         &.rising { background: var(--color-stock-up); }
         &.falling { background: var(--color-stock-down); }
@@ -267,11 +273,19 @@
     .positive { color: var(--color-stock-up); }
     .negative { color: var(--color-stock-down); }
 
-    @media (width <= 1200px) {
-      .concepts-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+    @media (width <= calc(var(--spacing-3xl) * 18 + var(--spacing-xl) + var(--spacing-md))) {
+      .concepts-grid {
+        grid-template-columns: repeat(
+          auto-fill,
+          minmax(
+            calc(var(--spacing-3xl) * 4 + var(--spacing-xl) + var(--spacing-sm) + var(--radius-md) + var(--radius-md)),
+            1fr
+          )
+        );
+      }
     }
 
-    @media (width <= 768px) {
+    @media (width <= calc(var(--spacing-3xl) * 12)) {
       .concept-container { padding: var(--spacing-md); }
             .page-header {
         flex-direction: column;

@@ -99,7 +99,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/theme-tokens';
+    @use '@/styles/theme-tokens.scss' as *;
 
     .activity-container {
         display: flex;
@@ -115,7 +115,7 @@ onUnmounted(() => {
         align-items: center;
         justify-content: space-between;
         padding-bottom: var(--spacing-lg);
-        border-bottom: 2px solid var(--color-border);
+        border-bottom: var(--radius-md) solid var(--color-border);
 
         .page-title {
             display: flex;
@@ -192,7 +192,7 @@ onUnmounted(() => {
         background: var(--color-bg-secondary);
     }
 
-    @media (width <= 768px) {
+    @media (width <= calc(var(--spacing-3xl) * 12)) {
         .activity-container {
             padding: var(--spacing-md);
         }

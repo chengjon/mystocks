@@ -189,5 +189,5 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/Wencai";
+@use "./styles/Wencai.scss" as *;
 </style>

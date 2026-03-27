@@ -298,5 +298,5 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/CapitalFlow";
+@use "./styles/CapitalFlow.scss" as *;
 </style>

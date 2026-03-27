@@ -1,4 +1,4 @@
-@import '@/styles/theme-tokens';
+@use '@/styles/theme-tokens.scss' as *;
 
 .tdx-interface-container {
     display: flex;
@@ -15,7 +15,7 @@
     align-items: center;
     justify-content: space-between;
     padding-bottom: var(--spacing-lg);
-    border-bottom: 2px solid var(--color-border);
+    border-bottom: var(--radius-md) solid var(--color-border);
 
     .header-title-section {
         flex: 1;
@@ -67,7 +67,13 @@
 
     .status-content {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: repeat(
+            auto-fit,
+            minmax(
+                calc(var(--spacing-3xl) * 3 + var(--spacing-xl) + var(--spacing-md) + var(--spacing-sm) + var(--radius-md)),
+                1fr
+            )
+        );
         gap: var(--spacing-lg);
     }
 
@@ -81,8 +87,8 @@
 
         .status-icon {
             flex-shrink: 0;
-            width: 40px;
-            height: 40px;
+            width: calc(var(--spacing-xl) + var(--spacing-sm));
+            height: calc(var(--spacing-xl) + var(--spacing-sm));
             display: flex;
             align-items: center;
             justify-content: center;
@@ -134,7 +140,7 @@
     grid-template-columns: 1fr 2fr;
     gap: var(--spacing-lg);
 
-    @media (width <= 1200px) {
+    @media (width <= calc(var(--spacing-3xl) * 18 + var(--spacing-xl) + var(--spacing-md))) {
         grid-template-columns: 1fr;
     }
 }
@@ -174,12 +180,12 @@
         gap: var(--spacing-md);
 
         .symbol-input {
-            width: 200px;
+            width: calc(var(--spacing-3xl) * 3 + var(--spacing-sm));
         }
 
         .period-select,
         .date-picker {
-            width: 120px;
+            width: calc(var(--spacing-2xl) * 2 + var(--spacing-lg));
         }
     }
 }
@@ -317,13 +323,13 @@
             border-radius: var(--border-radius-sm);
 
             &.ask {
-                background: rgb(239 68 68 / 10%);
-                border: 1px solid rgb(239 68 68 / 20%);
+                background: var(--color-stock-up-alpha-90);
+                border: 1px solid var(--color-stock-up-alpha-80);
             }
 
             &.bid {
-                background: rgb(34 197 94 / 10%);
-                border: 1px solid rgb(34 197 94 / 20%);
+                background: var(--color-stock-down-alpha-90);
+                border: 1px solid var(--color-stock-down-alpha-80);
             }
 
             .level {
@@ -352,13 +358,13 @@
 // Chart Container
 .chart-container {
     position: relative;
-    min-height: 300px;
+    min-height: calc(var(--spacing-3xl) * 4 + var(--spacing-xl) + var(--spacing-sm) + var(--radius-md) + var(--radius-md));
 
     .no-chart-placeholder {
         display: flex;
         justify-content: center;
         align-items: center;
-        min-height: 300px;
+        min-height: calc(var(--spacing-3xl) * 4 + var(--spacing-xl) + var(--spacing-sm) + var(--radius-md) + var(--radius-md));
     }
 
     .kline-chart {
@@ -372,7 +378,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 300px;
+    min-height: calc(var(--spacing-3xl) * 4 + var(--spacing-xl) + var(--spacing-sm) + var(--radius-md) + var(--radius-md));
 
     .placeholder-icon {
         color: var(--color-text-tertiary);
@@ -395,7 +401,13 @@
 
     .server-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: repeat(
+            auto-fit,
+            minmax(
+                calc(var(--spacing-3xl) * 3 + var(--spacing-xl) + var(--spacing-md) + var(--spacing-sm) + var(--radius-md)),
+                1fr
+            )
+        );
         gap: var(--spacing-lg);
     }
 
@@ -424,7 +436,7 @@
 }
 
 // Responsive Design
-@media (width <= 1200px) {
+@media (width <= calc(var(--spacing-3xl) * 18 + var(--spacing-xl) + var(--spacing-md))) {
     .tdx-interface-container {
         padding: var(--spacing-lg);
         gap: var(--spacing-lg);
@@ -443,7 +455,7 @@
     }
 }
 
-@media (width <= 768px) {
+@media (width <= calc(var(--spacing-3xl) * 12)) {
     .tdx-interface-container {
         padding: var(--spacing-md);
         gap: var(--spacing-md);

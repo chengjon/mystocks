@@ -227,7 +227,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/theme-tokens';
+    @use '@/styles/theme-tokens.scss' as *;
 
     .industry-container {
       display: flex;
@@ -235,7 +235,7 @@
       gap: var(--spacing-lg);
       padding: var(--spacing-lg);
       background: var(--color-bg-primary);
-      min-height: 100vh);
+      min-height: 100vh;
     }
 
     .page-header {
@@ -243,7 +243,7 @@
       align-items: center;
       justify-content: space-between;
       padding-bottom: var(--spacing-lg);
-      border-bottom: 2px solid var(--color-border);
+      border-bottom: var(--radius-md) solid var(--color-border);
 
       .page-title {
         display: flex;
@@ -274,7 +274,13 @@
 
     .industries-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      grid-template-columns: repeat(
+        auto-fill,
+        minmax(
+          calc(var(--spacing-3xl) * 5 + var(--spacing-lg) + var(--spacing-xs) + var(--radius-md)),
+          1fr
+        )
+      );
       gap: var(--spacing-lg);
     }
 
@@ -283,8 +289,8 @@
       transition: all 0.2s ease;
 
       &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px var(--color-accent-alpha-50);
+        transform: translateY(calc(-1 * var(--radius-md)));
+        box-shadow: 0 var(--spacing-xs) calc(var(--spacing-md) - var(--spacing-xs)) var(--color-accent-alpha-50);
       }
 
       :deep(.el-card__body) {
@@ -301,8 +307,8 @@
 
     .industry-icon {
       font-size: var(--font-size-3xl);
-      width: 60px;
-      height: 60px;
+      width: calc(var(--spacing-2xl) + var(--spacing-sm) + var(--spacing-xs));
+      height: calc(var(--spacing-2xl) + var(--spacing-sm) + var(--spacing-xs));
       display: flex;
       align-items: center;
       justify-content: center;
@@ -361,15 +367,15 @@
 
     .industry-performance {
       .performance-bar {
-        height: 8px;
+        height: var(--spacing-sm);
         background: var(--color-bg-secondary);
-        border-radius: 4px;
+        border-radius: var(--spacing-xs);
         overflow: hidden;
       }
 
       .performance-fill {
         height: 100%;
-        border-radius: 4px;
+        border-radius: var(--spacing-xs);
 
         &.positive { background: var(--color-stock-up); }
         &.negative { background: var(--color-stock-down); }
@@ -410,11 +416,19 @@
     .positive { color: var(--color-stock-up); }
     .negative { color: var(--color-stock-down); }
 
-    @media (width <= 1200px) {
-      .industries-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+    @media (width <= calc(var(--spacing-3xl) * 18 + var(--spacing-xl) + var(--spacing-md))) {
+      .industries-grid {
+        grid-template-columns: repeat(
+          auto-fill,
+          minmax(
+            calc(var(--spacing-3xl) * 4 + var(--spacing-xl) + var(--spacing-sm) + var(--radius-md) + var(--radius-md)),
+            1fr
+          )
+        );
+      }
     }
 
-    @media (width <= 768px) {
+    @media (width <= calc(var(--spacing-3xl) * 12)) {
       .industry-container { padding: var(--spacing-md); }
             .page-header {
         flex-direction: column;

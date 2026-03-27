@@ -4,7 +4,7 @@
     <div class="card header-card">
       <div class="header-content">
         <button class="back-button" @click="goBack">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="'var(--gold-primary)'" stroke-width="2">
+          <svg class="market-data-icon back-button__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12,19 5,12 12,5"></polyline>
           </svg>
@@ -12,7 +12,7 @@
 
         <div class="header-title-section">
           <div class="header-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" :stroke="'var(--gold-primary)'" stroke-width="2">
+            <svg class="market-data-icon header-icon__glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path d="M3 3v18h18"></path>
               <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
             </svg>
@@ -36,7 +36,7 @@
           :class="{ active: activeTab === tab.name }"
           @click="activeTab = tab.name"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" :stroke="'currentColor'" stroke-width="2">
+          <svg class="market-data-icon tab-button__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path v-if="tab.name === 'fund-flow'" d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
             <polyline v-else-if="tab.name === 'etf-data'" points="22,12 18,12 15,21 9,3 6,12 2,12"></polyline>
             <path v-else-if="tab.name === 'chip-race'" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -107,92 +107,115 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .market-data-view {
+  @include artdeco-crosshatch-bg;
+  position: relative;
   min-height: 100vh;
-  padding: 20px;
-  background: var(--bg-primary);
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgb(212 175 55 / 2%) 10px, rgb(212 175 55 / 2%) 11px);
+  padding: var(--artdeco-spacing-5);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.04;
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2),
+        color-mix(in srgb, var(--artdeco-gold-primary) 2%, transparent) calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2),
+        color-mix(in srgb, var(--artdeco-gold-primary) 2%, transparent) calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 3)
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        var(--artdeco-gold-primary) 0,
+        var(--artdeco-gold-primary) var(--artdeco-spacing-px),
+        transparent var(--artdeco-spacing-px),
+        transparent calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2)
+      );
+  }
 }
 
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 4%;
-  background-image:
-    repeating-linear-gradient(45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px),
-    repeating-linear-gradient(-45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px);
+.market-data-icon {
+  flex-shrink: 0;
+  stroke-width: calc(var(--artdeco-spacing-px) * 2);
+}
 
 .card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--gold-dim);
   position: relative;
-  border-radius: 0;
+  z-index: 1;
+  background: var(--artdeco-bg-card);
+  border: var(--artdeco-spacing-px) solid var(--artdeco-gold-dim);
+  border-radius: var(--artdeco-radius-none);
 
   &::before,
   &::after {
     content: '';
     position: absolute;
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--gold-primary);
+    width: var(--artdeco-spacing-4);
+    height: var(--artdeco-spacing-4);
+    border: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-gold-primary);
   }
 
   &::before {
-    top: 12px;
-    left: 12px;
+    top: var(--artdeco-spacing-3);
+    left: var(--artdeco-spacing-3);
     border-right: none;
     border-bottom: none;
   }
 
   &::after {
-    bottom: 12px;
-    right: 12px;
-    border-left: none;
+    right: var(--artdeco-spacing-3);
+    bottom: var(--artdeco-spacing-3);
     border-top: none;
+    border-left: none;
   }
 }
 
 .header-card {
-  position: relative;
-  z-index: 1;
-  margin-bottom: 20px;
-  padding: 20px 30px;
+  margin-bottom: var(--artdeco-spacing-5);
+  padding:
+    var(--artdeco-spacing-5)
+    calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1) + var(--artdeco-spacing-px) * 2);
 
   .header-content {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: var(--artdeco-spacing-5);
   }
 
   .back-button {
-    width: 40px;
-    height: 40px;
+    width: var(--artdeco-spacing-10);
+    height: var(--artdeco-spacing-10);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgb(212 175 55 / 10%);
-    border: 1px solid var(--gold-dim);
+    color: var(--artdeco-gold-primary);
+    background: var(--artdeco-gold-opacity-10);
+    border: var(--artdeco-spacing-px) solid var(--artdeco-gold-dim);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all var(--artdeco-transition-base) var(--artdeco-ease-out);
 
     &:hover {
-      background: var(--gold-primary);
-
-      svg {
-        stroke: var(--bg-primary);
-      }
+      color: var(--artdeco-bg-global);
+      background: var(--artdeco-gold-primary);
     }
+  }
+
+  .back-button__icon {
+    width: var(--artdeco-spacing-5);
+    height: var(--artdeco-spacing-5);
   }
 
   .header-title-section {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: var(--artdeco-spacing-3);
     flex: 1;
   }
 
@@ -200,163 +223,164 @@ onBeforeUnmount(() => {
     display: flex;
     align-items: center;
     justify-content: center;
+    color: var(--artdeco-gold-primary);
+  }
+
+  .header-icon__glyph {
+    width: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
+    height: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
   }
 
   .header-title {
-    font-family: var(--font-display);
-    font-size: 24px;
-    color: var(--gold-primary);
-    text-transform: uppercase;
-    letter-spacing: 2px;
     margin: 0;
-    font-weight: 600;
+    color: var(--artdeco-gold-primary);
+    font-family: var(--artdeco-font-display);
+    font-size: var(--artdeco-text-xl);
+    font-weight: var(--artdeco-font-semibold);
+    letter-spacing: calc(var(--artdeco-spacing-px) * 2);
+    text-transform: uppercase;
   }
 
   .header-info {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: var(--artdeco-spacing-4);
+  }
 
-    .status-badge {
-      padding: 6px 14px;
-      background: rgb(0 230 118 / 15%);
-      border: 1px solid var(--fall);
-      color: var(--fall);
-      font-family: var(--font-display);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+  .status-badge {
+    padding:
+      calc(var(--artdeco-spacing-1) + var(--artdeco-spacing-px) * 2)
+      calc(var(--artdeco-spacing-3) + var(--artdeco-spacing-px) * 2);
+    background: color-mix(in srgb, var(--artdeco-down) 15%, transparent);
+    border: var(--artdeco-spacing-px) solid var(--artdeco-down);
+    color: var(--artdeco-down);
+    font-family: var(--artdeco-font-display);
+    font-size: var(--artdeco-text-compact-xs);
+    letter-spacing: var(--artdeco-spacing-px);
+    text-transform: uppercase;
 
-      &.live {
-        background: rgb(0 230 118 / 15%);
-        border-color: var(--fall);
-        color: var(--fall);
-      }
+    &.live {
+      background: color-mix(in srgb, var(--artdeco-down) 15%, transparent);
+      border-color: var(--artdeco-down);
+      color: var(--artdeco-down);
     }
+  }
 
-    .time-display {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      color: var(--text-muted);
-    }
+  .time-display {
+    color: var(--artdeco-fg-muted);
+    font-family: var(--artdeco-font-mono);
+    font-size: calc(var(--artdeco-text-compact-xs) + var(--artdeco-spacing-px) * 2);
   }
 }
 
 .main-card {
   position: relative;
-  z-index: 1;
 }
 
 .tabs-container {
   display: flex;
-  gap: 2px;
-  border-bottom: 1px solid var(--gold-dim);
-  padding: 0 20px;
+  gap: calc(var(--artdeco-spacing-px) * 2);
+  padding: 0 var(--artdeco-spacing-5);
   overflow-x: auto;
+  border-bottom: var(--artdeco-spacing-px) solid var(--artdeco-gold-dim);
 }
 
 .tab-button {
+  position: relative;
+  top: var(--artdeco-spacing-px);
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 15px 25px;
+  gap: var(--artdeco-spacing-2);
+  padding:
+    calc(var(--artdeco-spacing-3) + var(--artdeco-spacing-px) * 3)
+    calc(var(--artdeco-spacing-5) + var(--artdeco-spacing-1) + var(--artdeco-spacing-px));
+  color: var(--artdeco-fg-muted);
   background: transparent;
   border: none;
-  border-bottom: 3px solid transparent;
-  color: var(--text-muted);
-  font-family: var(--font-display);
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  border-bottom: calc(var(--artdeco-spacing-px) * 3) solid transparent;
   cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  top: 1px;
+  font-family: var(--artdeco-font-display);
+  font-size: calc(var(--artdeco-text-compact-xs) + var(--artdeco-spacing-px) * 2);
+  letter-spacing: var(--artdeco-spacing-px);
+  text-transform: uppercase;
+  transition: all var(--artdeco-transition-base) var(--artdeco-ease-out);
   white-space: nowrap;
 
-  svg {
-    stroke: var(--text-muted);
-  }
-
   &:hover {
-    color: var(--gold-primary);
-
-    svg {
-      stroke: var(--gold-primary);
-    }
-
-    background: rgb(212 175 55 / 5%);
+    color: var(--artdeco-gold-primary);
+    background: var(--artdeco-gold-opacity-05);
   }
 
   &.active {
-    color: var(--gold-primary);
-    border-bottom-color: var(--gold-primary);
-    background: rgb(212 175 55 / 8%);
-
-    svg {
-      stroke: var(--gold-primary);
-    }
+    color: var(--artdeco-gold-primary);
+    background: var(--artdeco-gold-opacity-08);
+    border-bottom-color: var(--artdeco-gold-primary);
   }
+}
+
+.tab-button__icon {
+  width: var(--artdeco-spacing-4);
+  height: var(--artdeco-spacing-4);
 }
 
 .tab-content {
-  padding: 20px;
-  min-height: 500px;
+  position: relative;
+  z-index: 1;
+  padding: var(--artdeco-spacing-5);
+  min-height: calc(var(--artdeco-spacing-24) * 5 + var(--artdeco-spacing-5));
 }
 
-@media (width <= 768px) {
+@media (width <= calc(var(--artdeco-spacing-16) * 12)) {
   .market-data-view {
-    padding: 10px;
+    padding: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
   }
 
   .header-card {
-    padding: 15px;
+    padding: calc(var(--artdeco-spacing-3) + var(--artdeco-spacing-px) * 3);
 
     .header-content {
       flex-wrap: wrap;
-      gap: 12px;
+      gap: var(--artdeco-spacing-3);
     }
 
     .back-button {
-      width: 36px;
-      height: 36px;
+      width: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-1));
+      height: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-1));
     }
 
-    .header-title-section {
-      .header-title {
-        font-size: 18px;
-        letter-spacing: 1px;
-      }
+    .header-title {
+      font-size: var(--artdeco-text-compact-lg);
+      letter-spacing: var(--artdeco-spacing-px);
     }
 
     .header-info {
-      flex-wrap: wrap;
-      gap: 8px;
       width: 100%;
+      flex-wrap: wrap;
+      gap: var(--artdeco-spacing-2);
+    }
 
-      .time-display {
-        font-size: 11px;
-      }
+    .time-display {
+      font-size: var(--artdeco-text-compact-xs);
     }
   }
 
   .main-card {
-    padding: 15px;
+    padding: calc(var(--artdeco-spacing-3) + var(--artdeco-spacing-px) * 3);
   }
 
   .tabs-container {
-    padding: 0 10px;
+    padding: 0 calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
+  }
 
-    .tab-button {
-      padding: 12px 16px;
-      font-size: 11px;
-      letter-spacing: 0.5px;
-    }
+  .tab-button {
+    padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+    font-size: var(--artdeco-text-compact-xs);
+    letter-spacing: calc(var(--artdeco-spacing-px) / 2);
   }
 
   .tab-content {
-    padding: 15px;
-    min-height: 400px;
+    padding: calc(var(--artdeco-spacing-3) + var(--artdeco-spacing-px) * 3);
+    min-height: calc(var(--artdeco-spacing-24) * 4 + var(--artdeco-spacing-4));
   }
 }
 </style>

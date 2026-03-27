@@ -405,5 +405,5 @@
 </script>
 
 <style scoped lang="scss">
-@import "./styles/Concepts";
+@use "./styles/Concepts.scss" as *;
 </style>

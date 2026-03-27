@@ -312,5 +312,5 @@
 </script>
 
 <style scoped lang="scss">
-@import "./styles/Concept";
+@use "./styles/Concept.scss" as *;
 </style>

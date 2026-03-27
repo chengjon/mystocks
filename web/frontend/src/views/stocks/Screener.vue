@@ -255,7 +255,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/theme-tokens';
+    @use '@/styles/theme-tokens.scss' as *;
 
     .screener-container {
       display: flex;
@@ -271,7 +271,7 @@
       align-items: center;
       justify-content: space-between;
       padding-bottom: var(--spacing-lg);
-      border-bottom: 2px solid var(--color-border);
+      border-bottom: var(--radius-md) solid var(--color-border);
 
       .page-title {
         display: flex;
@@ -355,11 +355,11 @@
     .positive { color: var(--color-stock-up); }
     .negative { color: var(--color-stock-down); }
 
-    @media (width <= 1200px) {
+    @media (width <= calc(var(--spacing-3xl) * 18 + var(--spacing-xl) + var(--spacing-md))) {
       .filters-grid { grid-template-columns: 1fr; }
     }
 
-    @media (width <= 768px) {
+    @media (width <= calc(var(--spacing-3xl) * 12)) {
       .screener-container { padding: var(--spacing-md); }
             .page-header {
         flex-direction: column;

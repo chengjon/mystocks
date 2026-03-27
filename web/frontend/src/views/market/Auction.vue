@@ -137,7 +137,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/theme-tokens';
+    @use '@/styles/theme-tokens.scss' as *;
 
     .auction-container {
       display: flex;
@@ -145,7 +145,7 @@ onUnmounted(() => {
       gap: var(--spacing-lg);
       padding: var(--spacing-lg);
       background: var(--color-bg-primary);
-      min-height: 100vh);
+      min-height: 100vh;
     }
 
     .page-header {
@@ -153,7 +153,7 @@ onUnmounted(() => {
       align-items: center;
       justify-content: space-between;
       padding-bottom: var(--spacing-lg);
-      border-bottom: 2px solid var(--color-border);
+      border-bottom: var(--radius-md) solid var(--color-border);
 
       .page-title {
         display: flex;

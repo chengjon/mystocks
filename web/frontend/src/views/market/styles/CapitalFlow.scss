@@ -1,4 +1,4 @@
-    @import '@/styles/theme-tokens';
+    @use '@/styles/theme-tokens.scss' as *;
 
     .capital-flow-container {
         display: flex;
@@ -15,7 +15,7 @@
         align-items: center;
         justify-content: space-between;
         padding-bottom: var(--spacing-lg);
-        border-bottom: 2px solid var(--color-border);
+        border-bottom: var(--radius-md) solid var(--color-border);
 
         .header-title-section {
             flex: 1;
@@ -62,11 +62,11 @@
         grid-template-columns: repeat(4, 1fr);
         gap: var(--spacing-lg);
 
-        @media (width <= 1200px) {
+        @media (width <= calc(var(--spacing-3xl) * 18 + var(--spacing-xl) + var(--spacing-md))) {
             grid-template-columns: repeat(2, 1fr);
         }
 
-        @media (width <= 768px) {
+        @media (width <= calc(var(--spacing-3xl) * 12)) {
             grid-template-columns: 1fr;
         }
     }
@@ -84,8 +84,8 @@
 
         .card-icon {
             font-size: var(--font-size-2xl);
-            width: 48px;
-            height: 48px;
+            width: var(--spacing-2xl);
+            height: var(--spacing-2xl);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -165,7 +165,7 @@
             grid-template-columns: repeat(2, 1fr);
             gap: var(--spacing-lg);
 
-            @media (width <= 1200px) {
+            @media (width <= calc(var(--spacing-3xl) * 18 + var(--spacing-xl) + var(--spacing-md))) {
                 grid-template-columns: 1fr;
             }
         }
@@ -240,7 +240,7 @@
     }
 
     // Responsive Design
-    @media (width <= 1200px) {
+    @media (width <= calc(var(--spacing-3xl) * 18 + var(--spacing-xl) + var(--spacing-md))) {
         .capital-flow-container {
             padding: var(--spacing-lg);
             gap: var(--spacing-lg);
@@ -262,7 +262,7 @@
         }
     }
 
-    @media (width <= 768px) {
+    @media (width <= calc(var(--spacing-3xl) * 12)) {
         .capital-flow-container {
             padding: var(--spacing-md);
             gap: var(--spacing-md);

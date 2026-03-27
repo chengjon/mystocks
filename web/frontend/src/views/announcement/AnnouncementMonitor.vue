@@ -450,5 +450,5 @@ const {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/AnnouncementMonitor";
+@use "./styles/AnnouncementMonitor.scss" as *;
 </style>

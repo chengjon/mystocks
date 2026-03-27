@@ -1,4 +1,4 @@
-    @import '@/styles/theme-tokens';
+    @use '@/styles/theme-tokens.scss' as *;
 
     .portfolio-container {
       display: flex;
@@ -6,7 +6,7 @@
       gap: var(--spacing-lg);
       padding: var(--spacing-lg);
       background: var(--color-bg-primary);
-      min-height: 100vh);
+      min-height: 100vh;
     }
 
     // Header
@@ -15,7 +15,7 @@
       align-items: center;
       justify-content: space-between;
       padding-bottom: var(--spacing-lg);
-      border-bottom: 2px solid var(--color-border);
+      border-bottom: var(--radius-md) solid var(--color-border);
 
       .page-title {
         display: flex;
@@ -51,11 +51,11 @@
         grid-template-columns: repeat(4, 1fr);
         gap: var(--spacing-lg);
 
-        @media (width <= 1200px) {
+        @media (width <= calc(var(--spacing-3xl) * 18 + var(--spacing-xl) + var(--spacing-md))) {
           grid-template-columns: repeat(2, 1fr);
         }
 
-        @media (width <= 768px) {
+        @media (width <= calc(var(--spacing-3xl) * 12)) {
           grid-template-columns: 1fr;
         }
       }
@@ -73,8 +73,8 @@
 
         .metric-icon {
           font-size: var(--font-size-2xl);
-          width: 48px;
-          height: 48px;
+          width: var(--spacing-2xl);
+          height: var(--spacing-2xl);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -149,7 +149,7 @@
     .positions-table {
       :deep(.el-table__header th) {
         background: var(--color-bg-secondary);
-        border-bottom: 2px solid var(--color-border);
+        border-bottom: var(--radius-md) solid var(--color-border);
         color: var(--color-text-secondary);
         font-family: var(--font-family-sans);
         font-size: var(--font-size-xs);
@@ -208,7 +208,7 @@
       }
 
       .chart-placeholder {
-        min-height: 300px;
+        min-height: calc(var(--spacing-3xl) * 4 + var(--spacing-xl) + var(--spacing-sm) + var(--radius-md) + var(--radius-md));
         display: flex;
         align-items: center;
         justify-content: center;
@@ -216,7 +216,7 @@
     }
 
     // Responsive Design
-    @media (width <= 1200px) {
+    @media (width <= calc(var(--spacing-3xl) * 18 + var(--spacing-xl) + var(--spacing-md))) {
       .portfolio-container {
         padding: var(--spacing-lg);
         gap: var(--spacing-lg);
@@ -227,7 +227,7 @@
       }
     }
 
-    @media (width <= 768px) {
+    @media (width <= calc(var(--spacing-3xl) * 12)) {
       .portfolio-container {
         padding: var(--spacing-md);
         gap: var(--spacing-md);

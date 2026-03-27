@@ -328,5 +328,5 @@ const {
 </script>
 
 <style scoped lang="scss">
-@import './styles/monitor';
+@use './styles/monitor.scss' as *;
 </style>

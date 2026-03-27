@@ -299,5 +299,5 @@ const {
 </script>
 
 <style scoped lang="scss">
-@import './styles/Etf';
+@use './styles/Etf.scss' as *;
 </style>
