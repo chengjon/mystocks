@@ -47,6 +47,10 @@ Batch C 不直接迁移，而是完成“试点迁移方案设计”。
 
 ## C1：首批试点页
 
+### 当前状态
+
+`已完成`
+
 ### 建议纳入
 
 1. [MarketRealtimeTab.vue](/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-tabs/MarketRealtimeTab.vue)
@@ -79,7 +83,17 @@ Batch C 不直接迁移，而是完成“试点迁移方案设计”。
 | `artdeco-pages/market-tabs/MarketKLineTab.vue` | `views/market/Technical.vue` |
 | `artdeco-pages/market-data-tabs/DragonTigerAnalysis.vue` | `views/market/LHB.vue` |
 
+### 已落地结果
+
+已按薄包装入口方案完成主线路由切换，对应提交：
+
+- `5137ab0e1` `refactor(frontend): remap market pilot routes to domain views`
+
 ## C2：第二批试点候选
+
+### 当前状态
+
+`已完成`
 
 在 C1 通过后，才考虑进入：
 
@@ -93,6 +107,12 @@ Batch C 不直接迁移，而是完成“试点迁移方案设计”。
 - `ArtDecoDataAnalysis.vue` 有多个相对依赖组件
 - `FundFlowAnalysis.vue` 体量更大
 - 这几页更适合作为“方法验证后”的第二波，而不是试点起步页
+
+### 已落地结果
+
+已按与 C1 相同的薄包装入口方案完成主线路由切换，对应提交：
+
+- `b4053a357` `refactor(frontend): remap data routes to domain views`
 
 ## 4. 本批次明确不碰的页面
 
@@ -180,6 +200,12 @@ Batch C 不直接迁移，而是完成“试点迁移方案设计”。
 - Batch D：共享资产盘点
 - 然后才决定是否把 `market/data` 第二批推进，或切换到其它域
 
+当前状态：
+
+- Batch D 已完成
+- `market/data` 试点的路由入口归属已经覆盖 C1 + C2 共 7 页
+- 下一步不建议直接继续迁页，应先评估是否值得做主体实现内迁
+
 ## 8. 本批次输出结论
 
 ### 已形成的设计结论
@@ -193,8 +219,9 @@ Batch C 不直接迁移，而是完成“试点迁移方案设计”。
 
 如果继续推进目录治理，建议下一步审批为：
 
-`同意执行 Batch C1：3 个 market/data 试点页迁移准备`
+`同意执行 market/data 试点主体实现内迁评估`
 
-当前已完成的准备输出物：
+当前已完成的输出物：
 
 - [2026-03-27-frontend-directory-batch-c1-preparation-checklist.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-03-27-frontend-directory-batch-c1-preparation-checklist.md)
+- [2026-03-27-frontend-directory-batch-d-shared-assets-inventory.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-03-27-frontend-directory-batch-d-shared-assets-inventory.md)

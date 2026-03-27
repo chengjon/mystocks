@@ -86,7 +86,18 @@
 - [2026-03-27-frontend-directory-batch-b-freeze-list.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-03-27-frontend-directory-batch-b-freeze-list.md)
 - [2026-03-27-frontend-directory-batch-b-migration-white-list.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-03-27-frontend-directory-batch-b-migration-white-list.md)
 - [2026-03-27-frontend-directory-batch-c-pilot-design.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-03-27-frontend-directory-batch-c-pilot-design.md)
+- [2026-03-27-frontend-directory-batch-d-shared-assets-inventory.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-03-27-frontend-directory-batch-d-shared-assets-inventory.md)
+
+当前已完成的实施节点：
+
+- C1 路由入口归位：`market` 3 页已切到 `views/market/*`
+- C2 路由入口归位：`data` 4 页已切到 `views/data/*`
+
+当前未完成但仍需单独判断的事项：
+
+- 是否值得继续把这 7 个页面的主体实现从 `artdeco-pages` 内迁到目标域目录
+- 是否要在下一阶段切换到 `risk` 或 `system` 白名单域
 
 ## 建议审批口径
 
-`同意执行 Batch C：白名单试点迁移方案设计`
+`同意执行 market/data 试点主体实现内迁评估`
