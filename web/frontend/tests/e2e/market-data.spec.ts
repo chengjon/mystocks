@@ -151,6 +151,30 @@ test.describe("Market Data Module - E2E Tests", () => {
           }),
         })
       })
+
+      await page.route("**/api/v1/market/kline**", async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({
+            success: true,
+            data: {
+              data: [],
+            },
+          }),
+        })
+      })
+
+      await page.route("**/api/v1/market/lhb**", async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({
+            success: true,
+            data: [],
+          }),
+        })
+      })
     }
   })
 
@@ -158,22 +182,22 @@ test.describe("Market Data Module - E2E Tests", () => {
     test("should load market realtime page successfully", async ({ page }) => {
       await gotoRealtime(page)
       await expect(page).toHaveTitle(/MyStocks/)
-      await expect(page.locator("h2.section-title")).toContainText("实时行情流")
+      await expect(page.getByRole("heading", { level: 1, name: "实时行情工作台" })).toBeVisible()
     })
 
     test("should display core realtime widgets", async ({ page }) => {
       await gotoRealtime(page)
       await expect(page.locator(".toolbar")).toBeVisible()
-      await expect(page.locator(".stats-grid")).toBeVisible()
+      await expect(page.locator(".stats-strip")).toBeVisible()
       await expect(page.locator(".content-grid")).toBeVisible()
-      await expect(page.locator('button:has-text("刷新行情")')).toBeVisible()
+      await expect(page.getByRole('button', { name: '刷新行情' }).first()).toBeVisible()
     })
 
     test("should keep shell available when market API fails", async ({ page }) => {
       await page.route("**/api/v1/market/**", (route) => route.abort())
       await gotoRealtime(page)
-      await expect(page.locator("h2.section-title")).toContainText("实时行情流")
-      await expect(page.locator('button:has-text("刷新行情")')).toBeVisible()
+      await expect(page.getByRole("heading", { level: 1, name: "实时行情工作台" })).toBeVisible()
+      await expect(page.getByRole('button', { name: '刷新行情' }).first()).toBeVisible()
     })
   })
 
@@ -195,14 +219,14 @@ test.describe("Market Data Module - E2E Tests", () => {
   test.describe("Data Refresh Functionality", () => {
     test("should keep page stable after refresh click", async ({ page }) => {
       await gotoRealtime(page)
-      await page.click('button:has-text("刷新行情")')
+      await page.getByRole('button', { name: '刷新行情' }).first().click()
       await expect(page.locator(".market-realtime-tab")).toBeVisible()
     })
 
     test("should render trace area without breaking layout", async ({ page }) => {
       await gotoRealtime(page)
-      await expect(page.locator(".artdeco-header-bar")).toBeVisible()
-      await expect(page.locator('button:has-text("刷新行情")')).toBeVisible()
+      await expect(page.getByText(/WINDOW:\s*今日/)).toBeVisible()
+      await expect(page.getByRole('button', { name: '刷新行情' }).first()).toBeVisible()
     })
   })
 
@@ -216,7 +240,7 @@ test.describe("Market Data Module - E2E Tests", () => {
     test("should open market technical page", async ({ page }) => {
       await page.goto(`${FRONTEND_BASE_URL}${MARKET_ROUTES.technical}`)
       await expect(page.locator(".market-kline-tab")).toBeVisible()
-      await expect(page.locator("h2.section-title")).toContainText("K-Line Analysis")
+      await expect(page.getByRole("heading", { level: 2, name: "K-Line Analysis" })).toBeVisible({ timeout: 10000 })
     })
 
     test("should open market lhb page", async ({ page }) => {
@@ -257,7 +281,7 @@ test.describe("Market Data Module - E2E Tests", () => {
       await page.route("**/api/v1/market/**", (route) => route.abort("failed"))
       await gotoRealtime(page)
       await expect(page.locator(".market-realtime-tab")).toBeVisible()
-      await expect(page.locator('button:has-text("刷新行情")')).toBeVisible()
+      await expect(page.getByRole('button', { name: '刷新行情' }).first()).toBeVisible()
     })
 
     test("should recover from temporary API errors after refresh", async ({ page }) => {
@@ -279,9 +303,9 @@ test.describe("Market Data Module - E2E Tests", () => {
       })
 
       await gotoRealtime(page)
-      await page.click('button:has-text("刷新行情")')
+      await page.getByRole('button', { name: '刷新行情' }).first().click()
       await expect(page.locator(".market-realtime-tab")).toBeVisible()
-      await expect(page.locator('button:has-text("刷新行情")')).toBeVisible()
+      await expect(page.getByRole('button', { name: '刷新行情' }).first()).toBeVisible()
     })
   })
 

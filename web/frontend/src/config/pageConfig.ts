@@ -32,7 +32,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: '实时行情',
     apiEndpoint: '/api/market/realtime',
     wsChannel: 'market:realtime',
-    component: 'MarketRealtimeTab.vue',
+    component: 'Realtime.vue',
     requiresAuth: true,
   },
   'market-technical': {
@@ -42,7 +42,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: '技术指标',
     apiEndpoint: '/api/technical/indicators',
     wsChannel: 'market:technical',
-    component: 'MarketKLineTab.vue',
+    component: 'Technical.vue',
     requiresAuth: true,
   },
   'market-lhb': {
@@ -51,7 +51,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     title: '龙虎榜',
     description: '龙虎榜',
     apiEndpoint: '/api/v1/market/lhb',
-    component: 'DragonTigerAnalysis.vue',
+    component: 'LHB.vue',
     requiresAuth: true,
   },
   'data-industry': {

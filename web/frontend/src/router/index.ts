@@ -42,19 +42,19 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'realtime',
             name: 'market-realtime',
-            component: () => import('@/views/artdeco-pages/market-tabs/MarketRealtimeTab.vue'),
+            component: () => import('@/views/market/Realtime.vue'),
             meta: { title: '实时行情', requiresAuth: true, api: '/api/v1/market/quotes' }
           },
           {
             path: 'technical',
             name: 'market-technical',
-            component: () => import('@/views/artdeco-pages/market-tabs/MarketKLineTab.vue'),
+            component: () => import('@/views/market/Technical.vue'),
             meta: { title: 'K线分析', requiresAuth: true, api: '/api/v1/market/kline' }
           },
           {
             path: 'lhb',
             name: 'market-lhb',
-            component: () => import('@/views/artdeco-pages/market-data-tabs/DragonTigerAnalysis.vue'),
+            component: () => import('@/views/market/LHB.vue'),
             meta: { title: '龙虎榜', requiresAuth: true, api: '/api/v1/market/lhb' }
           }
         ]

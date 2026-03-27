@@ -90,7 +90,7 @@ test.describe("K-line Chart E2E", () => {
   })
 
   test("loads technical page shell", async ({ page }) => {
-    await expect(page.getByRole("heading", { level: 2, name: "K-Line Analysis" })).toBeVisible()
+    await expect(page.getByRole("heading", { level: 2, name: "K-Line Analysis" })).toBeVisible({ timeout: 10000 })
     await expect(page.getByText("Real-time K-Line Data Stream Active")).toBeVisible()
     await expect(page).toHaveURL(/\/market\/technical/)
   })

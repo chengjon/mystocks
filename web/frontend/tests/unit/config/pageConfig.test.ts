@@ -47,7 +47,15 @@ describe('pageConfig current contract', () => {
       expect(config?.routePath).toBe('realtime')
       expect(config?.apiEndpoint).toBe('/api/market/realtime')
       expect(config?.wsChannel).toBe('market:realtime')
-      expect(config?.component).toBe('MarketRealtimeTab.vue')
+      expect(config?.component).toBe('Realtime.vue')
+    })
+
+    it('returns current standard page config for market technical and lhb using canonical domain filenames', () => {
+      const technicalConfig = getPageConfig('market-technical')
+      const lhbConfig = getPageConfig('market-lhb')
+
+      expect(technicalConfig?.component).toBe('Technical.vue')
+      expect(lhbConfig?.component).toBe('LHB.vue')
     })
 
     it('does not expose retired legacy keys in PAGE_CONFIG', () => {
@@ -66,8 +74,8 @@ describe('pageConfig current contract', () => {
     })
 
     it('returns no generated tabs for the current split-page components', () => {
-      const marketTabs = getTabsForComponent('MarketRealtimeTab.vue')
-      const technicalTabs = getTabsForComponent('MarketKLineTab.vue')
+      const marketTabs = getTabsForComponent('Realtime.vue')
+      const technicalTabs = getTabsForComponent('Technical.vue')
 
       expect(marketTabs).toEqual([])
       expect(technicalTabs).toEqual([])
