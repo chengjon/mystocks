@@ -1,5 +1,5 @@
-@import '@/styles/web3-tokens';
-@import '@/styles/web3-global';
+@use '../../../styles/web3-tokens.scss' as *;
+@use '../../../styles/web3-global.scss' as *;
 
 .web3-technical-analysis {
   @include web3-grid-bg;
@@ -62,8 +62,8 @@
           margin-bottom: var(--web3-spacing-4);
 
           .icon-wrapper {
-            width: 64px;
-            height: 64px;
+            width: var(--web3-spacing-16);
+            height: var(--web3-spacing-16);
             border-radius: var(--web3-radius-lg);
             display: flex;
             align-items: center;
@@ -135,14 +135,19 @@
   }
 
   .web3-chart-container {
-    height: 500px;
+    height: calc(
+      var(--web3-spacing-16) * 7 +
+      var(--web3-spacing-10) +
+      var(--web3-spacing-6) +
+      var(--web3-spacing-4)
+    );
     width: 100%;
   }
 
   .web3-table {
     :deep(.el-table__header) {
       th {
-        background: rgb(255 255 255 / 2%) !important;
+        background: color-mix(in srgb, var(--web3-fg-primary) 2%, transparent) !important;
         color: var(--web3-fg-secondary) !important;
         font-family: var(--web3-font-heading);
         font-weight: var(--web3-weight-semibold);
@@ -157,7 +162,7 @@
         transition: background var(--web3-duration-fast);
 
         &:hover {
-          background: rgb(247 147 26 / 5%) !important;
+          background: color-mix(in srgb, var(--web3-fg-primary) 5%, transparent) !important;
         }
 
         td {
@@ -179,7 +184,7 @@
     margin-top: var(--web3-spacing-4);
 
     .el-alert {
-      background: rgb(247 147 26 / 5%);
+      background: color-mix(in srgb, var(--web3-fg-primary) 5%, transparent);
       border: 1px solid var(--web3-border-subtle);
       color: var(--web3-fg-primary);
 
@@ -198,7 +203,7 @@
   }
 
   .text-up {
-    color: #F7931A !important;
+    color: var(--web3-fg-primary) !important;
     font-weight: var(--web3-weight-semibold);
   }
 

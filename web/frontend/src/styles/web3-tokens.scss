@@ -1,0 +1,36 @@
+@use './theme-tokens.scss' as *;
+
+:root {
+  --web3-spacing-2: var(--spacing-sm);
+  --web3-spacing-3: calc(var(--spacing-sm) + var(--radius-md));
+  --web3-spacing-4: var(--spacing-md);
+  --web3-spacing-6: var(--spacing-lg);
+  --web3-spacing-8: var(--spacing-xl);
+  --web3-spacing-10: calc(var(--spacing-xl) + var(--spacing-sm));
+  --web3-spacing-16: var(--spacing-3xl);
+
+  --web3-text-xs: var(--font-size-xs);
+  --web3-text-sm: var(--font-size-sm);
+  --web3-text-base: var(--font-size-base);
+  --web3-text-xl: calc(var(--font-size-lg) + var(--radius-md));
+  --web3-text-2xl: var(--font-size-2xl);
+  --web3-text-4xl: calc(var(--font-size-3xl) + var(--font-size-xs) + var(--radius-md));
+
+  --web3-font-heading: var(--font-family-sans);
+  --web3-font-body: var(--font-family-sans);
+  --web3-font-mono: var(--font-family-mono);
+
+  --web3-fg-primary: var(--color-text-primary);
+  --web3-fg-secondary: var(--color-text-secondary);
+  --web3-fg-muted: var(--color-text-tertiary);
+
+  --web3-gradient-orange: linear-gradient(135deg, var(--color-warning), var(--color-accent));
+  --web3-border-subtle: var(--color-border);
+  --web3-radius-lg: var(--spacing-sm);
+
+  --web3-leading-tight: var(--line-height-tight);
+  --web3-tracking-wide: 0.1em;
+  --web3-weight-bold: var(--font-weight-bold);
+  --web3-weight-semibold: var(--font-weight-semibold);
+  --web3-duration-fast: var(--transition-fast);
+}

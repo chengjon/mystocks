@@ -1,0 +1,35 @@
+@use './web3-tokens.scss' as *;
+
+@mixin web3-grid-bg {
+  position: relative;
+  background:
+    radial-gradient(
+      circle at top,
+      color-mix(in srgb, var(--color-warning) 12%, transparent),
+      transparent 45%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-bg-primary) 85%, black 15%),
+      var(--color-bg-primary)
+    );
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(
+        color-mix(in srgb, var(--color-text-primary) 8%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--color-text-primary) 8%, transparent) 1px,
+        transparent 1px
+      );
+    background-size: var(--spacing-lg) var(--spacing-lg);
+    opacity: 0.12;
+  }
+}
