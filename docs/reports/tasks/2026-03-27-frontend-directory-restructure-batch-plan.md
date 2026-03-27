@@ -263,9 +263,14 @@
 
 基于当前进度，建议下一步批准为：
 
-`同意执行 market/data 试点主体实现内迁评估`
+`同意执行 market/data 主体实现内迁 M1：先迁 5 个单依赖页面`
 
-评估后再决定：
+当前评估结论已形成：
 
-- 继续把 7 个试点页的主体实现内迁到目标域目录
-- 或停止在“入口归位”层，转去其它低风险域
+- 5 个页面适合继续内迁
+- 1 个页面建议延后
+- 1 个页面建议止步于入口归位
+
+参考文档：
+
+- [2026-03-27-frontend-directory-market-data-body-migration-assessment.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-03-27-frontend-directory-market-data-body-migration-assessment.md)

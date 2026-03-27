@@ -87,6 +87,7 @@
 - [2026-03-27-frontend-directory-batch-b-migration-white-list.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-03-27-frontend-directory-batch-b-migration-white-list.md)
 - [2026-03-27-frontend-directory-batch-c-pilot-design.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-03-27-frontend-directory-batch-c-pilot-design.md)
 - [2026-03-27-frontend-directory-batch-d-shared-assets-inventory.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-03-27-frontend-directory-batch-d-shared-assets-inventory.md)
+- [2026-03-27-frontend-directory-market-data-body-migration-assessment.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-03-27-frontend-directory-market-data-body-migration-assessment.md)
 
 当前已完成的实施节点：
 
@@ -100,4 +101,4 @@
 
 ## 建议审批口径
 
-`同意执行 market/data 试点主体实现内迁评估`
+`同意执行 market/data 主体实现内迁 M1：先迁 5 个单依赖页面`
