@@ -69,25 +69,25 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'industry',
             name: 'data-industry',
-            component: () => import('@/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue'),
+            component: () => import('@/views/data/Industry.vue'),
             meta: { title: '板块动向', requiresAuth: true, api: '/api/akshare_market/boards' }
           },
           {
             path: 'concept',
             name: 'data-concept',
-            component: () => import('@/views/artdeco-pages/market-tabs/MarketConceptTab.vue'),
+            component: () => import('@/views/data/Concepts.vue'),
             meta: { title: '概念动向', requiresAuth: true, api: '/api/v2/market/sector/fund-flow?sector_type=概念' }
           },
           {
             path: 'fund-flow',
             name: 'data-fund-flow',
-            component: () => import('@/views/artdeco-pages/market-data-tabs/FundFlowAnalysis.vue'),
+            component: () => import('@/views/data/FundFlow.vue'),
             meta: { title: '资金流向', requiresAuth: true, api: '/api/akshare/market/fund-flow' }
           },
           {
             path: 'indicator',
             name: 'data-indicator',
-            component: () => import('@/views/artdeco-pages/ArtDecoDataAnalysis.vue'),
+            component: () => import('@/views/data/Advanced.vue'),
             meta: { title: '指标分析', requiresAuth: true, api: '/api/v1/indicators/registry' }
           }
         ]

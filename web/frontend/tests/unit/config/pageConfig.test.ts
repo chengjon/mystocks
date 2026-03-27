@@ -58,6 +58,18 @@ describe('pageConfig current contract', () => {
       expect(lhbConfig?.component).toBe('LHB.vue')
     })
 
+    it('returns current standard page config for data routes using canonical domain filenames', () => {
+      const industryConfig = getPageConfig('data-industry')
+      const conceptConfig = getPageConfig('data-concept')
+      const fundFlowConfig = getPageConfig('data-fund-flow')
+      const indicatorConfig = getPageConfig('data-indicator')
+
+      expect(industryConfig?.component).toBe('Industry.vue')
+      expect(conceptConfig?.component).toBe('Concepts.vue')
+      expect(fundFlowConfig?.component).toBe('FundFlow.vue')
+      expect(indicatorConfig?.component).toBe('Advanced.vue')
+    })
+
     it('does not expose retired legacy keys in PAGE_CONFIG', () => {
       expect(PAGE_CONFIG['artdeco-market-data']).toBeUndefined()
       expect(PAGE_CONFIG['artdeco-stock-management']).toBeUndefined()

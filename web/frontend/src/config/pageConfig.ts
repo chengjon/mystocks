@@ -61,7 +61,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: '板块动向',
     apiEndpoint: '/api/data/industry',
     wsChannel: 'data:industry',
-    component: 'ArtDecoIndustryAnalysis.vue',
+    component: 'Industry.vue',
     requiresAuth: true,
   },
   'data-concept': {
@@ -70,7 +70,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     title: '概念动向',
     description: '概念动向',
     apiEndpoint: '/api/v2/market/sector/fund-flow?sector_type=概念',
-    component: 'MarketConceptTab.vue',
+    component: 'Concepts.vue',
     requiresAuth: true,
   },
   'data-fund-flow': {
@@ -79,7 +79,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     title: '资金流向',
     description: '资金流向',
     apiEndpoint: '/api/akshare/market/fund-flow',
-    component: 'FundFlowAnalysis.vue',
+    component: 'FundFlow.vue',
     requiresAuth: true,
   },
   'data-indicator': {
@@ -89,7 +89,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: '指标分析',
     apiEndpoint: '/api/data/indicator',
     wsChannel: 'data:indicator',
-    component: 'ArtDecoDataAnalysis.vue',
+    component: 'Advanced.vue',
     requiresAuth: true,
   },
   'watchlist-manage': {
