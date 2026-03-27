@@ -56,4 +56,14 @@ describe('domain body migration ownership', () => {
     expect(canonicalSource).not.toContain("@/views/artdeco-pages/market-tabs/MarketConceptTab.vue")
     expect(legacySource).toContain("from '@/views/data/Concepts.vue'")
   })
+
+  it('owns the fund flow page body in the data domain', () => {
+    const canonicalSource = readSource('src/views/data/FundFlow.vue')
+    const legacySource = readSource('src/views/artdeco-pages/market-data-tabs/FundFlowAnalysis.vue')
+
+    expect(existsSync(resolve(process.cwd(), 'src/views/data/fundFlowPageData.ts'))).toBe(true)
+    expect(canonicalSource).toContain("from './fundFlowPageData'")
+    expect(canonicalSource).not.toContain("@/views/artdeco-pages/market-data-tabs/FundFlowAnalysis.vue")
+    expect(legacySource).toContain("from '@/views/data/FundFlow.vue'")
+  })
 })
