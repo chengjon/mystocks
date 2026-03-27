@@ -305,32 +305,34 @@ watch(() => props.modelValue, (newValue) => {
 </script>
 
 <style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
 .indicator-selector {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--artdeco-spacing-2);
 
   .indicator-badge {
-    margin-left: 4px;
+    margin-left: var(--artdeco-spacing-1);
   }
 
   .indicator-panel {
     .indicator-tabs {
       :deep(.el-tabs__content) {
-        max-height: 300px;
+        max-height: calc(var(--artdeco-spacing-24) * 3 + var(--artdeco-spacing-1));
         overflow-y: auto;
       }
 
       .indicator-list {
         display: flex;
         flex-direction: column;
-        gap: 8px;
-        padding: 8px 0;
+        gap: var(--artdeco-spacing-2);
+        padding: var(--artdeco-spacing-2) 0;
 
         .indicator-item {
           display: flex;
           flex-direction: column;
-          gap: 2px;
+          gap: calc(var(--artdeco-spacing-px) * 2);
 
           .indicator-name {
             font-weight: 500;
@@ -338,7 +340,7 @@ watch(() => props.modelValue, (newValue) => {
           }
 
           .indicator-desc {
-            font-size: 12px;
+            font-size: var(--artdeco-text-compact-sm);
             color: var(--el-text-color-secondary);
           }
         }
@@ -349,7 +351,7 @@ watch(() => props.modelValue, (newValue) => {
 
           .el-checkbox__label {
             width: 100%;
-            padding-left: 8px;
+            padding-left: var(--artdeco-spacing-2);
           }
         }
       }
@@ -358,7 +360,7 @@ watch(() => props.modelValue, (newValue) => {
     .indicator-actions {
       display: flex;
       justify-content: space-between;
-      padding-top: 16px;
+      padding-top: var(--artdeco-spacing-4);
       border-top: 1px solid var(--el-border-color);
     }
   }
@@ -366,10 +368,10 @@ watch(() => props.modelValue, (newValue) => {
   .selected-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 4px;
+    gap: var(--artdeco-spacing-1);
 
     .el-tag {
-      max-width: 120px;
+      max-width: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;

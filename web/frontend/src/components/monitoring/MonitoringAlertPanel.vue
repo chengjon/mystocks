@@ -192,6 +192,6 @@ const formatTime = (timestamp) => {
 }
 </script>
 
-<style scoped>
-@import "./styles/MonitoringAlertPanel.css";
+<style scoped lang="scss">
+@use "./styles/MonitoringAlertPanel.css";
 </style>

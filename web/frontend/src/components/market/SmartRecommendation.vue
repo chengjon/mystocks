@@ -273,6 +273,6 @@
     })
 </script>
 
-<style scoped>
-@import "./styles/SmartRecommendation.css";
+<style scoped lang="scss">
+@use "./styles/SmartRecommendation.css";
 </style>

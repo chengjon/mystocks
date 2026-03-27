@@ -33,7 +33,7 @@
         placeholder="搜索查询名称或描述..."
         clearable
         @input="filterQueries"
-        style="max-width: 400px"
+        class="wencai-search-input"
       >
         <template #prefix>
           <el-icon><Search /></el-icon>
@@ -160,7 +160,7 @@
             :total="total"
             layout="total, sizes, prev, pager, next, jumper"
             @change="loadResults"
-            style="text-align: right"
+            class="stats-pagination"
           />
         </div>
 
@@ -481,5 +481,5 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/WencaiPanel.scss";
+@use "./styles/WencaiPanel.scss" as *;
 </style>

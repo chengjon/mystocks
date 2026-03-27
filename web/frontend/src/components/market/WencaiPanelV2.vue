@@ -242,7 +242,7 @@
     <el-dialog
       v-model="groupDialogVisible"
       title="加入分组"
-      width="400px"
+      :width="groupDialogWidth"
     >
       <el-form :model="groupForm" label-width="80px">
         <el-form-item label="股票">
@@ -297,8 +297,11 @@ const {
   showGroupDialog,
   confirmAddToGroup
 } = useWencaiPanelV2()
+
+const groupDialogWidth =
+  'calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-24) + var(--artdeco-spacing-16) * 2 + var(--artdeco-spacing-8) + var(--artdeco-spacing-4))'
 </script>
 
 <style scoped lang="scss">
-@import "./styles/WencaiPanelV2.scss";
+@use "./styles/WencaiPanelV2.scss" as *;
 </style>

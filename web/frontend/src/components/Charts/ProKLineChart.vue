@@ -168,6 +168,6 @@ const {
 } = useProKLineChart()
 </script>
 
-<style scoped>
-@import "./styles/ProKLineChart.css";
+<style scoped lang="scss">
+@use "./styles/ProKLineChart.css";
 </style>

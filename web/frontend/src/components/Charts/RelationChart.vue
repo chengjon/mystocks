@@ -442,5 +442,5 @@
 </script>
 
 <style scoped lang="scss">
-@import "./styles/RelationChart.scss";
+@use "./styles/RelationChart.scss" as *;
 </style>

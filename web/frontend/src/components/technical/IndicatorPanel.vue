@@ -423,5 +423,5 @@ const formatParameters = (parameters) => {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/IndicatorPanel.scss";
+@use "./styles/IndicatorPanel.scss" as *;
 </style>

@@ -397,6 +397,6 @@ watch(() => props.data, () => {
 })
 </script>
 
-<style scoped>
-@import "./styles/MonitoringDataTable.css";
+<style scoped lang="scss">
+@use "./styles/MonitoringDataTable.css";
 </style>

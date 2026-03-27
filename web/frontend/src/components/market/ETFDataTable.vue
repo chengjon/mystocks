@@ -7,7 +7,7 @@
           <el-input
             v-model="queryForm.symbol"
             placeholder="如: 510300"
-            style="width: 140px"
+            class="etf-symbol-input"
             clearable
           />
         </el-form-item>
@@ -16,7 +16,7 @@
           <el-input
             v-model="queryForm.keyword"
             placeholder="名称/代码搜索"
-            style="width: 160px"
+            class="etf-keyword-input"
             clearable
           />
         </el-form-item>
@@ -27,7 +27,7 @@
             :min="10"
             :max="500"
             :step="10"
-            style="width: 120px"
+            class="etf-limit-input"
           />
         </el-form-item>
 
@@ -307,13 +307,15 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
 .etf-data-table {
-  padding: 20px;
+  padding: var(--artdeco-spacing-5);
 }
 
 .search-card {
-  margin-bottom: 20px;
+  margin-bottom: var(--artdeco-spacing-5);
 }
 
 .card-header {
@@ -323,7 +325,7 @@ onMounted(() => {
 }
 
 .title {
-  font-size: 16px;
+  font-size: var(--artdeco-text-base);
   font-weight: 600;
 }
 
@@ -332,22 +334,22 @@ onMounted(() => {
 }
 
 .price-large {
-  font-size: 18px;
+  font-size: var(--artdeco-text-compact-lg);
   font-weight: 600;
 }
 
 .change-up {
-  color: #F56C6C;
+  color: var(--artdeco-rise);
   font-weight: 500;
 }
 
 .change-down {
-  color: #67C23A;
+  color: var(--artdeco-down);
   font-weight: 500;
 }
 
 .change-neutral {
-  color: #909399;
+  color: var(--artdeco-fg-muted);
 }
 
 .search-form {
@@ -355,7 +357,19 @@ onMounted(() => {
 }
 
 .etf-detail {
-  padding: 20px;
+  padding: var(--artdeco-spacing-5);
+}
+
+.etf-symbol-input {
+  width: calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-2) + var(--artdeco-spacing-1));
+}
+
+.etf-keyword-input {
+  width: calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-8));
+}
+
+.etf-limit-input {
+  width: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
 }
 
 :deep(.el-table__row) {
@@ -363,6 +377,6 @@ onMounted(() => {
 }
 
 :deep(.el-table__row:hover) {
-  background-color: #f5f7fa;
+  background-color: var(--artdeco-bg-elevated);
 }
 </style>

@@ -124,6 +124,6 @@ const {
 } = useHealthRadarChart()
 </script>
 
-<style scoped>
-@import "./styles/HealthRadarChart.css";
+<style scoped lang="scss">
+@use "./styles/HealthRadarChart.css";
 </style>

@@ -447,5 +447,5 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
-@import "./styles/RealtimePositionPanel.scss";
+@use "./styles/RealtimePositionPanel.scss" as *;
 </style>

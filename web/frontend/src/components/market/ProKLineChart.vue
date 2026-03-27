@@ -98,27 +98,29 @@ const periods = props.periods
 </script>
 
 <style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
 .pro-kline-chart {
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
   background: var(--color-bg-primary);
-  border-radius: 4px;
+  border-radius: var(--artdeco-spacing-1);
   overflow: hidden;
 
   .chart-toolbar {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
+    gap: var(--artdeco-spacing-3);
+    padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
     background: var(--color-bg-secondary);
     border-bottom: 1px solid var(--color-border);
 
     .a-share-features {
       margin-left: auto;
       display: flex;
-      gap: 12px;
+      gap: var(--artdeco-spacing-3);
     }
   }
 

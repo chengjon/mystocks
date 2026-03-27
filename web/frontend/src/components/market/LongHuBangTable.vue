@@ -7,7 +7,7 @@
           <el-input
             v-model="queryForm.symbol"
             placeholder="如: 600519"
-            style="width: 140px"
+            class="lhb-symbol-input"
             clearable
           />
         </el-form-item>
@@ -20,7 +20,7 @@
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             value-format="YYYY-MM-DD"
-            style="width: 240px"
+            class="lhb-date-range-input"
           />
         </el-form-item>
 
@@ -30,7 +30,7 @@
             :min="0"
             :step="10000000"
             placeholder="单位:元"
-            style="width: 180px"
+            class="lhb-net-amount-input"
           />
         </el-form-item>
 
@@ -40,7 +40,7 @@
             :min="10"
             :max="500"
             :step="10"
-            style="width: 120px"
+            class="lhb-limit-input"
           />
         </el-form-item>
 
@@ -172,7 +172,7 @@
             suffix="亿元"
           >
             <template #prefix>
-              <el-icon :color="totalNetAmount > 0 ? '#F56C6C' : '#67C23A'">
+              <el-icon :color="getTrendIconColor(totalNetAmount)">
                 <TrendCharts v-if="totalNetAmount > 0" />
                 <Bottom v-else />
               </el-icon>
@@ -366,6 +366,10 @@ const getAmountClass = (value) => {
   return 'amount-neutral'
 }
 
+const getTrendIconColor = (value) => {
+  return value > 0 ? 'var(--artdeco-rise)' : 'var(--artdeco-down)'
+}
+
 // 组件挂载
 onMounted(() => {
   // 默认查询最近7天
@@ -379,21 +383,23 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
 .longhubang-table {
-  padding: 20px;
+  padding: var(--artdeco-spacing-5);
 }
 
 .search-card {
-  margin-bottom: 20px;
+  margin-bottom: var(--artdeco-spacing-5);
 }
 
 .data-card {
-  margin-bottom: 20px;
+  margin-bottom: var(--artdeco-spacing-5);
 }
 
 .stats-card {
-  margin-bottom: 20px;
+  margin-bottom: var(--artdeco-spacing-5);
 }
 
 .card-header {
@@ -403,7 +409,7 @@ onMounted(() => {
 }
 
 .title {
-  font-size: 16px;
+  font-size: var(--artdeco-text-base);
   font-weight: 600;
 }
 
@@ -412,28 +418,28 @@ onMounted(() => {
 }
 
 .amount-positive {
-  color: #f56c6c;
+  color: var(--artdeco-rise);
 }
 
 .amount-negative {
-  color: #67c23a;
+  color: var(--artdeco-down);
 }
 
 .amount-neutral {
-  color: #909399;
+  color: var(--artdeco-fg-muted);
 }
 
 .amount-large {
-  font-size: 18px;
+  font-size: var(--artdeco-text-compact-lg);
   font-weight: 600;
 }
 
 .buy-amount {
-  color: #f56c6c;
+  color: var(--artdeco-rise);
 }
 
 .sell-amount {
-  color: #67c23a;
+  color: var(--artdeco-down);
 }
 
 .search-form {
@@ -441,7 +447,33 @@ onMounted(() => {
 }
 
 .lhb-detail {
-  padding: 20px;
+  padding: var(--artdeco-spacing-5);
+}
+
+.lhb-symbol-input {
+  width: calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-2) + var(--artdeco-spacing-1));
+}
+
+.lhb-date-range-input {
+  width: calc(
+    var(--artdeco-spacing-32) +
+    var(--artdeco-spacing-16) +
+    var(--artdeco-spacing-8) +
+    var(--artdeco-spacing-4)
+  );
+}
+
+.lhb-net-amount-input {
+  width: calc(
+    var(--artdeco-spacing-32) +
+    var(--artdeco-spacing-8) +
+    var(--artdeco-spacing-4) +
+    var(--artdeco-spacing-1)
+  );
+}
+
+.lhb-limit-input {
+  width: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
 }
 
 :deep(.el-table__row) {
@@ -449,6 +481,6 @@ onMounted(() => {
 }
 
 :deep(.el-table__row:hover) {
-  background-color: #f5f7fa;
+  background-color: var(--artdeco-bg-elevated);
 }
 </style>

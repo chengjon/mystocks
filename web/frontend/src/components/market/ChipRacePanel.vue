@@ -3,13 +3,19 @@
     <el-card class="search-card">
       <el-form :inline="true">
         <el-form-item label="抢筹类型">
-          <el-select v-model="raceType" style="width: 130px">
+          <el-select v-model="raceType" class="chip-race-type-select">
             <el-option label="早盘抢筹" value="open" />
             <el-option label="尾盘抢筹" value="end" />
           </el-select>
         </el-form-item>
         <el-form-item label="交易日期">
-          <el-date-picker v-model="tradeDate" type="date" placeholder="选择日期" value-format="YYYY-MM-DD" style="width: 160px" />
+          <el-date-picker
+            v-model="tradeDate"
+            type="date"
+            placeholder="选择日期"
+            value-format="YYYY-MM-DD"
+            class="chip-race-date-picker"
+          />
         </el-form-item>
         <el-form-item label="最小抢筹金额">
           <el-input-number v-model="minAmount" :min="0" :step="10000000" placeholder="单位:元" />
@@ -115,11 +121,13 @@ queryData()
 </script>
 
 <style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
 .chip-race-panel {
-  padding: 20px;
+  padding: var(--artdeco-spacing-5);
 
   .search-card {
-    margin-bottom: 20px;
+    margin-bottom: var(--artdeco-spacing-5);
   }
 
   .card-header {
@@ -129,13 +137,21 @@ queryData()
   }
 
   .text-red {
-    color: #f56c6c;
+    color: var(--artdeco-rise);
     font-weight: 500;
   }
 
   .text-green {
-    color: #67c23a;
+    color: var(--artdeco-down);
     font-weight: 500;
   }
+}
+
+.chip-race-type-select {
+  width: calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-px) * 2);
+}
+
+.chip-race-date-picker {
+  width: calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-8));
 }
 </style>

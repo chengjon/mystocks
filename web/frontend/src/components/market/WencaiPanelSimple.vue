@@ -48,8 +48,8 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .wencai-panel {
-  padding: 20px;
+  padding: var(--artdeco-spacing-5);
 }
 </style>

@@ -3,7 +3,12 @@
     <el-card class="search-card">
       <el-form :inline="true">
         <el-form-item label="股票代码">
-          <el-input v-model="symbol" placeholder="输入股票代码" clearable style="width: 150px" />
+          <el-input
+            v-model="symbol"
+            placeholder="输入股票代码"
+            clearable
+            class="lhb-symbol-input"
+          />
         </el-form-item>
         <el-form-item label="日期范围">
           <el-date-picker
@@ -13,7 +18,7 @@
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             value-format="YYYY-MM-DD"
-            style="width: 240px"
+            class="lhb-date-range"
           />
         </el-form-item>
         <el-form-item label="最小净买入额">
@@ -140,11 +145,13 @@ queryData()
 </script>
 
 <style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
 .lhb-panel {
-  padding: 20px;
+  padding: var(--artdeco-spacing-5);
 
   .search-card {
-    margin-bottom: 20px;
+    margin-bottom: var(--artdeco-spacing-5);
   }
 
   .card-header {
@@ -154,13 +161,26 @@ queryData()
   }
 
   .text-red {
-    color: #f56c6c;
+    color: var(--artdeco-rise);
     font-weight: 500;
   }
 
   .text-green {
-    color: #67c23a;
+    color: var(--artdeco-down);
     font-weight: 500;
   }
+}
+
+.lhb-symbol-input {
+  width: calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-4) + var(--artdeco-spacing-1) + var(--artdeco-spacing-px) * 2);
+}
+
+.lhb-date-range {
+  width: calc(
+    var(--artdeco-spacing-32) +
+    var(--artdeco-spacing-16) +
+    var(--artdeco-spacing-8) +
+    var(--artdeco-spacing-4)
+  );
 }
 </style>

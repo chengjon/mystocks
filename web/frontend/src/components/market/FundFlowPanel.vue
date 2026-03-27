@@ -7,13 +7,13 @@
           <el-input
             v-model="queryForm.symbol"
             placeholder="如: 600519.SH"
-            style="width: 160px"
+            class="fund-flow-symbol-input"
             clearable
           />
         </el-form-item>
 
         <el-form-item label="时间维度">
-          <el-select v-model="queryForm.timeframe" style="width: 120px">
+          <el-select v-model="queryForm.timeframe" class="fund-flow-timeframe-select">
             <el-option label="今日" value="1" />
             <el-option label="3日" value="3" />
             <el-option label="5日" value="5" />
@@ -29,7 +29,7 @@
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             value-format="YYYY-MM-DD"
-            style="width: 240px"
+            class="fund-flow-date-range"
           />
         </el-form-item>
 
@@ -128,7 +128,7 @@
       <template #header>
         <span class="title">资金流向趋势图</span>
       </template>
-      <div ref="chartRef" style="width: 100%; height: 400px"></div>
+      <div ref="chartRef" class="fund-flow-chart"></div>
     </el-card>
   </div>
 </template>
@@ -174,6 +174,10 @@ const loading: Ref<boolean> = ref(false)
 const refreshing: Ref<boolean> = ref(false)
 const chartRef: Ref<HTMLDivElement | null> = ref(null)
 let chartInstance: ECharts | null = null
+const chartPalette = Array.isArray(artDecoTheme.color) ? artDecoTheme.color : []
+const chartGridColor = Array.isArray(artDecoTheme.splitLine?.lineStyle?.color)
+  ? artDecoTheme.splitLine.lineStyle.color[0]
+  : 'var(--artdeco-border-default)'
 
 // 使用配置好的request实例，baseURL已经在api/index.js中配置
 
@@ -295,7 +299,7 @@ const renderChart = (): void => {
         let result = paramsArr[0].axisValue + '<br/>'
         paramsArr.forEach((param) => {
           const value = parseFloat(param.value)
-          const color = value >= 0 ? '#67C23A' : '#F56C6C'
+          const color = value >= 0 ? 'var(--artdeco-rise)' : 'var(--artdeco-down)'
           result += `<span style="color: ${color}">${param.seriesName}: ${value} 万元</span><br/>`
         })
         return result
@@ -327,7 +331,7 @@ const renderChart = (): void => {
           return value + '万'
         }
       },
-      splitLine: { show: true, lineStyle: { type: 'dashed', color: '#E4E7ED' } }
+      splitLine: { show: true, lineStyle: { type: 'dashed', color: chartGridColor } }
     },
     series: [
       {
@@ -335,7 +339,7 @@ const renderChart = (): void => {
         type: 'line',
         data: mainFlow,
         smooth: true,
-        itemStyle: { color: '#409EFF' },
+        itemStyle: { color: chartPalette[1] },
         lineStyle: { width: 3 },
         symbol: 'circle',
         symbolSize: 8,
@@ -346,7 +350,7 @@ const renderChart = (): void => {
         type: 'line',
         data: superLargeFlow,
         smooth: true,
-        itemStyle: { color: '#F56C6C' },
+        itemStyle: { color: chartPalette[3] },
         lineStyle: { width: 3 },
         symbol: 'triangle',
         symbolSize: 8,
@@ -357,7 +361,7 @@ const renderChart = (): void => {
         type: 'line',
         data: largeFlow,
         smooth: true,
-        itemStyle: { color: '#E6A23C' },
+        itemStyle: { color: chartPalette[4] },
         lineStyle: { width: 3 },
         symbol: 'diamond',
         symbolSize: 8,
@@ -410,17 +414,19 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
 .fund-flow-panel {
-  padding: 20px;
+  padding: var(--artdeco-spacing-5);
 }
 
 .search-card {
-  margin-bottom: 20px;
+  margin-bottom: var(--artdeco-spacing-5);
 }
 
 .data-card {
-  margin-bottom: 20px;
+  margin-bottom: var(--artdeco-spacing-5);
 }
 
 .card-header {
@@ -430,25 +436,47 @@ onUnmounted(() => {
 }
 
 .title {
-  font-size: 16px;
+  font-size: var(--artdeco-text-base);
   font-weight: 600;
 }
 
 .amount-positive {
-  color: #F56C6C;
+  color: var(--artdeco-rise);
   font-weight: 500;
 }
 
 .amount-negative {
-  color: #67C23A;
+  color: var(--artdeco-down);
   font-weight: 500;
 }
 
 .amount-neutral {
-  color: #909399;
+  color: var(--artdeco-fg-muted);
 }
 
 .search-form {
   margin-bottom: 0;
+}
+
+.fund-flow-symbol-input {
+  width: calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-8));
+}
+
+.fund-flow-timeframe-select {
+  width: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
+}
+
+.fund-flow-date-range {
+  width: calc(
+    var(--artdeco-spacing-32) +
+    var(--artdeco-spacing-16) +
+    var(--artdeco-spacing-8) +
+    var(--artdeco-spacing-4)
+  );
+}
+
+.fund-flow-chart {
+  width: 100%;
+  height: calc(var(--artdeco-spacing-24) * 4 + var(--artdeco-spacing-4));
 }
 </style>

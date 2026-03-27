@@ -3,7 +3,12 @@
     <el-card class="search-card">
       <el-form :inline="true">
         <el-form-item label="ETF代码/名称">
-          <el-input v-model="keyword" placeholder="输入关键词搜索" clearable style="width: 200px" />
+          <el-input
+            v-model="keyword"
+            placeholder="输入关键词搜索"
+            clearable
+            class="etf-keyword-input"
+          />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="queryData" :loading="loading">查询</el-button>
@@ -114,11 +119,13 @@ queryData()
 </script>
 
 <style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
 .etf-data-panel {
-  padding: 20px;
+  padding: var(--artdeco-spacing-5);
 
   .search-card {
-    margin-bottom: 20px;
+    margin-bottom: var(--artdeco-spacing-5);
   }
 
   .card-header {
@@ -128,13 +135,17 @@ queryData()
   }
 
   .text-red {
-    color: #f56c6c;
+    color: var(--artdeco-rise);
     font-weight: 500;
   }
 
   .text-green {
-    color: #67c23a;
+    color: var(--artdeco-down);
     font-weight: 500;
   }
+}
+
+.etf-keyword-input {
+  width: calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-16) + var(--artdeco-spacing-2));
 }
 </style>

@@ -16,7 +16,7 @@
             type="date"
             placeholder="选择日期"
             value-format="YYYY-MM-DD"
-            style="width: 160px"
+            class="chip-race-date-input"
           />
         </el-form-item>
 
@@ -26,7 +26,7 @@
             :min="0"
             :step="10000000"
             placeholder="单位:元"
-            style="width: 180px"
+            class="chip-race-amount-input"
           />
         </el-form-item>
 
@@ -36,7 +36,7 @@
             :min="10"
             :max="500"
             :step="10"
-            style="width: 120px"
+            class="chip-race-limit-input"
           />
         </el-form-item>
 
@@ -314,9 +314,9 @@ const getChangeClass = (value) => {
 
 // 获取进度条颜色
 const getProgressColor = (value) => {
-  if (value >= 20) return '#F56C6C'
-  if (value >= 10) return '#E6A23C'
-  return '#409EFF'
+  if (value >= 20) return 'var(--artdeco-rise)'
+  if (value >= 10) return 'var(--artdeco-warning)'
+  return 'var(--artdeco-info)'
 }
 
 // 组件挂载
@@ -325,21 +325,23 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
 .chip-race-table {
-  padding: 20px;
+  padding: var(--artdeco-spacing-5);
 }
 
 .search-card {
-  margin-bottom: 20px;
+  margin-bottom: var(--artdeco-spacing-5);
 }
 
 .data-card {
-  margin-bottom: 20px;
+  margin-bottom: var(--artdeco-spacing-5);
 }
 
 .stats-card {
-  margin-bottom: 20px;
+  margin-bottom: var(--artdeco-spacing-5);
 }
 
 .card-header {
@@ -349,30 +351,47 @@ onMounted(() => {
 }
 
 .title {
-  font-size: 16px;
+  font-size: var(--artdeco-text-base);
   font-weight: 600;
 }
 
 .highlight-amount {
-  color: #E6A23C;
+  color: var(--artdeco-warning);
   font-weight: 600;
 }
 
 .change-up {
-  color: #f56c6c;
+  color: var(--artdeco-rise);
   font-weight: 500;
 }
 
 .change-down {
-  color: #67c23a;
+  color: var(--artdeco-down);
   font-weight: 500;
 }
 
 .change-neutral {
-  color: #909399;
+  color: var(--artdeco-fg-muted);
 }
 
 .search-form {
   margin-bottom: 0;
+}
+
+.chip-race-date-input {
+  width: calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-8));
+}
+
+.chip-race-amount-input {
+  width: calc(
+    var(--artdeco-spacing-32) +
+    var(--artdeco-spacing-8) +
+    var(--artdeco-spacing-4) +
+    var(--artdeco-spacing-1)
+  );
+}
+
+.chip-race-limit-input {
+  width: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
 }
 </style>

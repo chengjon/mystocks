@@ -319,5 +319,5 @@ const isPercentageMetric = (key) => {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/DashboardMetrics.scss";
+@use "./styles/DashboardMetrics.scss" as *;
 </style>

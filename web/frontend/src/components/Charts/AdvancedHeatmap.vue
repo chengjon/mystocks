@@ -473,5 +473,5 @@ import { View, Refresh, Download, Loading } from '@element-plus/icons-vue'
 </script>
 
 <style scoped lang="scss">
-@import "./styles/AdvancedHeatmap.scss";
+@use "./styles/AdvancedHeatmap.scss" as *;
 </style>
