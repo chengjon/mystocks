@@ -95,7 +95,8 @@ const inputClasses = computed(() => [
   'form-field-input',
   {
     'form-field-input--has-prefix': !!slots.prefix,
-    'form-field-input--has-suffix': !!slots.suffix
+    'form-field-input--has-suffix': !!slots.suffix,
+    'form-field-input--error': !!_props.errorMessage
   }
 ])
 
@@ -122,91 +123,93 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
 .form-field-wrapper {
   width: 100%;
 }
 
 .form-field-label {
   display: block;
-  font-family: Inter, system-ui, sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  color: #E5E5E5;
-  margin-bottom: 6px;
+  font-family: var(--artdeco-font-body, var(--font-body));
+  font-size: var(--artdeco-text-compact-sm);
+  font-weight: var(--artdeco-font-medium);
+  color: var(--artdeco-gold-primary);
+  margin-bottom: calc(var(--artdeco-spacing-1) + (var(--artdeco-spacing-px) * 2));
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-wide);
 }
 
 .form-field-required {
-  color: #FF5252;
-  margin-left: 2px;
+  color: var(--artdeco-rise);
+  margin-left: var(--artdeco-spacing-px);
 }
 
 .form-field-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--artdeco-bg-elevated) 55%, var(--artdeco-bg-card)) 0%,
+    var(--artdeco-bg-card) 100%
+  );
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none);
+  transition:
+    border-color var(--artdeco-transition-quick) var(--artdeco-ease-out),
+    box-shadow var(--artdeco-transition-quick) var(--artdeco-ease-out),
+    background var(--artdeco-transition-quick) var(--artdeco-ease-out);
 
-  // 底部边框
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background-color: #2A2A2A;
-    transition: background-color 150ms ease;
+  &:focus-within {
+    border-color: var(--artdeco-border-hover);
+    box-shadow: var(--artdeco-glow-subtle);
   }
 
-  // Focus state
-  .form-field-input:focus ~ &::after {
-    background-color: #3B82F6;
-  }
-
-  // Error state
-  .form-field-input--error ~ &::after {
-    background-color: #FF5252;
+  &:has(.form-field-input--error) {
+    border-color: color-mix(in srgb, var(--artdeco-rise) 60%, var(--artdeco-border-default));
+    box-shadow: 0 0 var(--artdeco-spacing-3) color-mix(in srgb, var(--artdeco-rise) 16%, transparent);
   }
 }
 
 .form-field-input {
   width: 100%;
-  height: 32px; // 紧凑高度
-  padding: 0 12px;
-  font-family: Inter, system-ui, sans-serif;
-  font-size: 13px;
-  color: #E5E5E5;
-  background: #0A0A0A;
-  border: 1px solid #2A2A2A;
-  border-radius: 4px;
+  height: var(--artdeco-spacing-8);
+  padding: 0 var(--artdeco-spacing-3);
+  font-family: var(--artdeco-font-body, var(--font-body));
+  font-size: var(--artdeco-text-compact-base);
+  color: var(--artdeco-fg-primary);
+  background: transparent;
+  border: none;
+  border-radius: var(--artdeco-radius-none);
   outline: none;
-  transition: border-color 150ms ease, background 150ms ease;
+  line-height: var(--artdeco-leading-normal);
+  transition: color var(--artdeco-transition-quick) var(--artdeco-ease-out);
 
   &::placeholder {
-    color: #666;
+    color: var(--artdeco-fg-subtle);
   }
 
   &:focus {
-    border-color: #3B82F6;
-    background: #0F0F0F;
+    background: transparent;
   }
 
   &:disabled {
-    color: #666;
+    color: var(--artdeco-fg-muted);
     cursor: not-allowed;
-    background: #0A0A0A;
+    background: transparent;
   }
 
   &:read-only {
-    color: #A0A0A0;
+    color: var(--artdeco-fg-muted);
   }
 
-  // With prefix/suffix
   &--has-prefix {
-    padding-left: 36px;
+    padding-left: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-1));
   }
 
   &--has-suffix {
-    padding-right: 36px;
+    padding-right: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-1));
   }
 }
 
@@ -215,29 +218,30 @@ defineExpose({
   position: absolute;
   display: flex;
   align-items: center;
-  color: #A0A0A0;
+  color: var(--artdeco-gold-dim);
   pointer-events: none;
 }
 
 .form-field-prefix {
-  left: 12px;
+  left: var(--artdeco-spacing-3);
 }
 
 .form-field-suffix {
-  right: 12px;
+  right: var(--artdeco-spacing-3);
 }
 
 .form-field-helper {
-  margin-top: 6px;
-  min-height: 16px;
-  font-size: 12px;
+  margin-top: calc(var(--artdeco-spacing-1) + (var(--artdeco-spacing-px) * 2));
+  min-height: var(--artdeco-spacing-4);
+  font-size: var(--artdeco-text-compact-sm);
+  letter-spacing: var(--artdeco-tracking-normal);
 }
 
 .form-field-helpertext {
-  color: #A0A0A0;
+  color: var(--artdeco-fg-muted);
 }
 
 .form-field-error {
-  color: #FF5252;
+  color: var(--artdeco-rise);
 }
 </style>

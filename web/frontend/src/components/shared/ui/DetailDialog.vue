@@ -163,8 +163,8 @@ defineExpose({
 <style scoped lang="scss">
 // Phase 3.4: Design Token Migration
 @use 'sass:color';
-@import '@/styles/artdeco-tokens';
-@import '@/styles/theme-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
+@use '@/styles/theme-tokens.scss' as *;
 
 .detail-dialog {
   :deep(.el-dialog) {

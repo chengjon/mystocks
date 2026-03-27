@@ -20,7 +20,7 @@
     <div v-if="!taskId && isConnected" class="empty-state">
       <el-empty description="等待训练任务...">
         <template #image>
-          <el-icon :size="80" color="#409eff"><Loading /></el-icon>
+          <el-icon :size="emptyIconSize" :color="emptyIconColor"><Loading /></el-icon>
         </template>
       </el-empty>
     </div>
@@ -44,7 +44,7 @@
         <el-progress
           :percentage="progress"
           :status="getProgressStatus"
-          :stroke-width="20"
+          :stroke-width="progressStrokeWidth"
           :text-inside="true"
         >
           <template #default="{ percentage }">
@@ -74,13 +74,13 @@
           <el-icon><DataAnalysis /></el-icon>
           训练指标
         </el-divider>
-        <el-row :gutter="16">
+        <el-row :gutter="metricGutter">
           <el-col :span="12" v-for="(value, key) in metrics" :key="key">
             <el-statistic :title="getMetricLabel(key)" :value="value" :precision="4">
               <template #prefix>
-                <el-icon v-if="key === 'loss'" color="#f56c6c"><TrendCharts /></el-icon>
-                <el-icon v-else-if="key === 'accuracy'" color="#67c23a"><SuccessFilled /></el-icon>
-                <el-icon v-else><DataLine /></el-icon>
+                <el-icon v-if="key === 'loss'" :size="metricIconSize" :color="lossIconColor"><TrendCharts /></el-icon>
+                <el-icon v-else-if="key === 'accuracy'" :size="metricIconSize" :color="accuracyIconColor"><SuccessFilled /></el-icon>
+                <el-icon v-else :size="metricIconSize"><DataLine /></el-icon>
               </template>
             </el-statistic>
           </el-col>
@@ -135,6 +135,14 @@ const {
   autoConnect: props.autoConnect
 })
 
+const progressStrokeWidth = 20
+const metricGutter = 16
+const emptyIconSize = 'var(--artdeco-spacing-20)'
+const metricIconSize = 24
+const emptyIconColor = 'var(--artdeco-gold-primary)'
+const lossIconColor = 'var(--artdeco-rise)'
+const accuracyIconColor = 'var(--artdeco-down)'
+
 // Computed properties
 const getProgressStatus = computed(() => {
   if (status.value === 'completed') return 'success'
@@ -178,8 +186,27 @@ const getMetricLabel = (key) => {
 </script>
 
 <style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
 .training-progress-card {
-  margin-bottom: 20px;
+  margin-bottom: var(--artdeco-spacing-5);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none);
+  background: var(--artdeco-bg-card);
+
+  :deep(.el-card__header) {
+    padding: var(--artdeco-spacing-4);
+    border-bottom: 1px solid var(--artdeco-border-default);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--artdeco-gold-primary) 6%, var(--artdeco-bg-card)) 0%,
+      var(--artdeco-bg-card) 100%
+    );
+  }
+
+  :deep(.el-card__body) {
+    padding: var(--artdeco-spacing-4);
+  }
 
   .card-header {
     display: flex;
@@ -189,98 +216,114 @@ const getMetricLabel = (key) => {
     .title {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      color: #303133;
+      gap: var(--artdeco-spacing-2);
+      font-family: var(--artdeco-font-heading, var(--font-display));
+      font-size: var(--artdeco-text-base);
+      font-weight: var(--artdeco-font-semibold);
+      color: var(--artdeco-gold-primary);
+      text-transform: uppercase;
+      letter-spacing: var(--artdeco-tracking-wide);
 
       .el-icon {
-        font-size: 18px;
+        font-size: var(--artdeco-text-lg);
       }
     }
 
-    .connection-status {
-      .el-tag {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
+    .connection-status .el-tag {
+      display: flex;
+      align-items: center;
+      gap: var(--artdeco-spacing-1);
     }
   }
 
   .empty-state {
-    padding: 40px 20px;
+    padding: var(--artdeco-spacing-10) var(--artdeco-spacing-5);
     text-align: center;
 
-    :deep(.el-empty__image) {
-      .el-icon {
-        animation: spin 2s linear infinite;
-      }
+    :deep(.el-empty__image .el-icon) {
+      animation: spin 2s linear infinite;
     }
   }
 
   .error-state {
-    padding: 20px;
+    padding: var(--artdeco-spacing-5);
   }
 
   .training-content {
     .progress-section {
-      margin-bottom: 20px;
+      margin-bottom: var(--artdeco-spacing-5);
+
+      :deep(.el-progress-bar__outer) {
+        border-radius: var(--artdeco-radius-none);
+        background: color-mix(in srgb, var(--artdeco-gold-primary) 8%, var(--artdeco-bg-elevated));
+      }
+
+      :deep(.el-progress-bar__inner) {
+        border-radius: var(--artdeco-radius-none);
+      }
 
       .percentage-text {
-        color: #fff;
-        font-weight: 600;
-        font-size: 14px;
+        color: var(--artdeco-fg-primary);
+        font-family: var(--artdeco-font-accent, var(--font-mono));
+        font-weight: var(--artdeco-font-semibold);
+        font-size: var(--artdeco-text-compact-base);
       }
     }
 
     .status-section {
-      margin-bottom: 20px;
+      margin-bottom: var(--artdeco-spacing-5);
 
       :deep(.el-descriptions__label) {
-        width: 80px;
+        width: var(--artdeco-spacing-20);
       }
     }
 
     .metrics-section {
-      margin-top: 20px;
+      margin-top: var(--artdeco-spacing-5);
 
       .el-divider {
-        margin: 16px 0;
+        margin: var(--artdeco-spacing-4) 0;
 
         :deep(.el-divider__text) {
           display: flex;
           align-items: center;
-          gap: 6px;
-          font-weight: 600;
-          color: #303133;
+          gap: calc(var(--artdeco-spacing-3) / 2);
+          font-family: var(--artdeco-font-heading, var(--font-display));
+          font-weight: var(--artdeco-font-semibold);
+          color: var(--artdeco-gold-primary);
+          letter-spacing: var(--artdeco-tracking-wide);
+          text-transform: uppercase;
         }
       }
 
       .el-statistic {
         :deep(.el-statistic__head) {
-          font-size: 13px;
-          color: #606266;
-          margin-bottom: 8px;
+          font-family: var(--artdeco-font-body, var(--font-body));
+          font-size: var(--artdeco-text-compact-base);
+          color: var(--artdeco-fg-muted);
+          margin-bottom: var(--artdeco-spacing-2);
+          letter-spacing: var(--artdeco-tracking-normal);
         }
 
         :deep(.el-statistic__content) {
-          font-size: 20px;
-          font-weight: 600;
+          font-family: var(--artdeco-font-accent, var(--font-mono));
+          font-size: var(--artdeco-text-lg);
+          font-weight: var(--artdeco-font-semibold);
+          color: var(--artdeco-fg-primary);
         }
       }
     }
 
     .connection-info {
-      margin-top: 16px;
-      padding-top: 12px;
-      border-top: 1px solid #ebeef5;
+      margin-top: var(--artdeco-spacing-4);
+      padding-top: var(--artdeco-spacing-3);
+      border-top: 1px solid var(--artdeco-border-default);
       text-align: center;
 
       .el-text {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: var(--artdeco-spacing-1);
       }
     }
   }

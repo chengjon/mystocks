@@ -20,7 +20,7 @@
     <div v-if="!backtestId && isConnected" class="empty-state">
       <el-empty description="等待回测任务...">
         <template #image>
-          <el-icon :size="80" color="#67c23a"><Timer /></el-icon>
+          <el-icon :size="emptyIconSize" :color="emptyIconColor"><Timer /></el-icon>
         </template>
       </el-empty>
     </div>
@@ -44,7 +44,7 @@
         <el-progress
           :percentage="progress"
           :status="getProgressStatus"
-          :stroke-width="20"
+          :stroke-width="progressStrokeWidth"
           :text-inside="true"
         >
           <template #default="{ percentage }">
@@ -80,7 +80,7 @@
           <el-icon><TrendCharts /></el-icon>
           实时结果
         </el-divider>
-        <el-row :gutter="16">
+        <el-row :gutter="resultsGutter">
           <el-col :span="8" v-for="(value, key) in results" :key="key">
             <el-card shadow="never" class="result-card">
               <el-statistic
@@ -104,11 +104,11 @@
 
       <!-- 性能指标卡片 -->
       <div v-if="hasPerformanceMetrics" class="performance-section">
-        <el-row :gutter="12" class="performance-cards">
+        <el-row :gutter="performanceGutter" class="performance-cards">
           <el-col :span="8">
             <div class="metric-card return-card">
               <div class="metric-icon">
-                <el-icon :size="24"><TrendCharts /></el-icon>
+                <el-icon :size="metricCardIconSize"><TrendCharts /></el-icon>
               </div>
               <div class="metric-info">
                 <div class="metric-label">总收益率</div>
@@ -121,7 +121,7 @@
           <el-col :span="8">
             <div class="metric-card sharpe-card">
               <div class="metric-icon">
-                <el-icon :size="24"><Histogram /></el-icon>
+                <el-icon :size="metricCardIconSize"><Histogram /></el-icon>
               </div>
               <div class="metric-info">
                 <div class="metric-label">夏普比率</div>
@@ -132,7 +132,7 @@
           <el-col :span="8">
             <div class="metric-card drawdown-card">
               <div class="metric-icon">
-                <el-icon :size="24"><Sort /></el-icon>
+                <el-icon :size="metricCardIconSize"><Sort /></el-icon>
               </div>
               <div class="metric-info">
                 <div class="metric-label">最大回撤</div>
@@ -193,6 +193,17 @@ const {
   clientId: props.clientId,
   autoConnect: props.autoConnect
 })
+
+const progressStrokeWidth = 20
+const resultsGutter = 16
+const performanceGutter = 12
+const emptyIconSize = 'var(--artdeco-spacing-20)'
+const metricCardIconSize = 24
+const emptyIconColor = 'var(--artdeco-gold-primary)'
+const metricPositiveColor = 'var(--artdeco-rise)'
+const metricNegativeColor = 'var(--artdeco-down)'
+const metricWarningColor = 'var(--artdeco-warning)'
+const metricInfoColor = 'var(--artdeco-info)'
 
 // Computed properties
 const getProgressStatus = computed(() => {
@@ -272,15 +283,15 @@ const getResultIcon = (key) => {
 
 const getResultColor = (key, value) => {
   if (key === 'total_return' || key === 'annual_return') {
-    return value > 0 ? '#67c23a' : '#f56c6c'
+    return value > 0 ? metricPositiveColor : metricNegativeColor
   }
   if (key === 'max_drawdown') {
-    return '#f56c6c'
+    return metricNegativeColor
   }
   if (key === 'sharpe_ratio') {
-    return value > 1 ? '#67c23a' : value > 0 ? '#e6a23c' : '#f56c6c'
+    return value > 1 ? metricPositiveColor : value > 0 ? metricWarningColor : metricNegativeColor
   }
-  return '#409eff'
+  return metricInfoColor
 }
 
 const isPercentageMetric = (key) => {
@@ -296,8 +307,27 @@ const formatPercentage = (value) => {
 </script>
 
 <style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
 .backtest-progress-card {
-  margin-bottom: 20px;
+  margin-bottom: var(--artdeco-spacing-5);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none);
+  background: var(--artdeco-bg-card);
+
+  :deep(.el-card__header) {
+    padding: var(--artdeco-spacing-4);
+    border-bottom: 1px solid var(--artdeco-border-default);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--artdeco-gold-primary) 6%, var(--artdeco-bg-card)) 0%,
+      var(--artdeco-bg-card) 100%
+    );
+  }
+
+  :deep(.el-card__body) {
+    padding: var(--artdeco-spacing-4);
+  }
 
   .card-header {
     display: flex;
@@ -307,169 +337,209 @@ const formatPercentage = (value) => {
     .title {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      color: #303133;
+      gap: var(--artdeco-spacing-2);
+      font-family: var(--artdeco-font-heading, var(--font-display));
+      font-size: var(--artdeco-text-base);
+      font-weight: var(--artdeco-font-semibold);
+      color: var(--artdeco-gold-primary);
+      text-transform: uppercase;
+      letter-spacing: var(--artdeco-tracking-wide);
 
       .el-icon {
-        font-size: 18px;
+        font-size: var(--artdeco-text-lg);
       }
     }
 
-    .connection-status {
-      .el-tag {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
+    .connection-status .el-tag {
+      display: flex;
+      align-items: center;
+      gap: var(--artdeco-spacing-1);
     }
   }
 
   .empty-state {
-    padding: 40px 20px;
+    padding: var(--artdeco-spacing-10) var(--artdeco-spacing-5);
     text-align: center;
   }
 
   .error-state {
-    padding: 20px;
+    padding: var(--artdeco-spacing-5);
   }
 
   .backtest-content {
     .progress-section {
-      margin-bottom: 20px;
+      margin-bottom: var(--artdeco-spacing-5);
+
+      :deep(.el-progress-bar__outer) {
+        border-radius: var(--artdeco-radius-none);
+        background: color-mix(in srgb, var(--artdeco-gold-primary) 8%, var(--artdeco-bg-elevated));
+      }
+
+      :deep(.el-progress-bar__inner) {
+        border-radius: var(--artdeco-radius-none);
+      }
 
       .percentage-text {
-        color: #fff;
-        font-weight: 600;
-        font-size: 14px;
+        color: var(--artdeco-fg-primary);
+        font-family: var(--artdeco-font-accent, var(--font-mono));
+        font-weight: var(--artdeco-font-semibold);
+        font-size: var(--artdeco-text-compact-base);
       }
     }
 
     .status-section {
-      margin-bottom: 20px;
+      margin-bottom: var(--artdeco-spacing-5);
 
       :deep(.el-descriptions__label) {
-        width: 90px;
+        width: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-2) + (var(--artdeco-spacing-px) * 2));
       }
     }
 
     .results-section {
-      margin-top: 20px;
+      margin-top: var(--artdeco-spacing-5);
 
       .el-divider {
-        margin: 16px 0;
+        margin: var(--artdeco-spacing-4) 0;
 
         :deep(.el-divider__text) {
           display: flex;
           align-items: center;
-          gap: 6px;
-          font-weight: 600;
-          color: #303133;
+          gap: calc(var(--artdeco-spacing-3) / 2);
+          font-family: var(--artdeco-font-heading, var(--font-display));
+          font-weight: var(--artdeco-font-semibold);
+          color: var(--artdeco-gold-primary);
+          letter-spacing: var(--artdeco-tracking-wide);
+          text-transform: uppercase;
         }
       }
 
       .result-card {
-        background: #f5f7fa;
-        border: none;
+        background: color-mix(in srgb, var(--artdeco-gold-primary) 4%, var(--artdeco-bg-card));
+        border: 1px solid var(--artdeco-border-default);
+        border-radius: var(--artdeco-radius-none);
 
         :deep(.el-card__body) {
-          padding: 12px;
+          padding: var(--artdeco-spacing-3);
         }
 
         .el-statistic {
           :deep(.el-statistic__head) {
-            font-size: 12px;
-            color: #606266;
-            margin-bottom: 6px;
+            font-family: var(--artdeco-font-body, var(--font-body));
+            font-size: var(--artdeco-text-compact-sm);
+            color: var(--artdeco-fg-muted);
+            margin-bottom: calc(var(--artdeco-spacing-3) / 2);
           }
 
           :deep(.el-statistic__content) {
-            font-size: 18px;
-            font-weight: 600;
+            font-family: var(--artdeco-font-accent, var(--font-mono));
+            font-size: var(--artdeco-text-lg);
+            font-weight: var(--artdeco-font-semibold);
+            color: var(--artdeco-fg-primary);
           }
         }
       }
     }
 
     .performance-section {
-      margin-top: 20px;
+      margin-top: var(--artdeco-spacing-5);
 
       .performance-cards {
         .metric-card {
           display: flex;
           align-items: center;
-          gap: 12px;
-          padding: 16px;
-          border-radius: 8px;
-          background: linear-gradient(135deg, #f5f7fa 0%, #fff 100%);
-          border: 1px solid #ebeef5;
-          transition: all 0.3s;
+          gap: var(--artdeco-spacing-3);
+          padding: var(--artdeco-spacing-4);
+          border-radius: var(--artdeco-radius-none);
+          background: linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--artdeco-gold-primary) 5%, var(--artdeco-bg-card)) 0%,
+            var(--artdeco-bg-card) 100%
+          );
+          border: 1px solid var(--artdeco-border-default);
+          transition:
+            transform var(--artdeco-transition-quick) var(--artdeco-ease-out),
+            box-shadow var(--artdeco-transition-quick) var(--artdeco-ease-out),
+            border-color var(--artdeco-transition-quick) var(--artdeco-ease-out);
 
           &:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+            transform: translateY(calc(var(--artdeco-spacing-px) * -2));
+            border-color: var(--artdeco-border-hover);
+            box-shadow: var(--artdeco-glow-subtle);
           }
 
           .metric-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
+            width: var(--artdeco-spacing-12);
+            height: var(--artdeco-spacing-12);
+            border-radius: var(--artdeco-radius-none);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: var(--artdeco-fg-primary);
           }
 
           .metric-info {
             flex: 1;
 
             .metric-label {
-              font-size: 12px;
-              color: #909399;
-              margin-bottom: 4px;
+              font-family: var(--artdeco-font-body, var(--font-body));
+              font-size: var(--artdeco-text-compact-sm);
+              color: var(--artdeco-fg-muted);
+              margin-bottom: var(--artdeco-spacing-1);
             }
 
             .metric-value {
-              font-size: 22px;
-              font-weight: 700;
-              color: #303133;
+              font-family: var(--artdeco-font-accent, var(--font-mono));
+              font-size: var(--artdeco-text-xl);
+              font-weight: var(--artdeco-font-bold);
+              color: var(--artdeco-fg-primary);
 
               &.positive {
-                color: #67c23a;
+                color: var(--artdeco-rise);
               }
 
               &.negative {
-                color: #f56c6c;
+                color: var(--artdeco-down);
               }
             }
           }
 
           &.return-card .metric-icon {
-            background: linear-gradient(135deg, #67c23a 0%, #85ce61 100%);
+            background: linear-gradient(
+              135deg,
+              color-mix(in srgb, var(--artdeco-rise) 80%, var(--artdeco-bg-card)) 0%,
+              var(--artdeco-rise) 100%
+            );
           }
 
           &.sharpe-card .metric-icon {
-            background: linear-gradient(135deg, #409eff 0%, #66b1ff 100%);
+            background: linear-gradient(
+              135deg,
+              color-mix(in srgb, var(--artdeco-warning) 80%, var(--artdeco-bg-card)) 0%,
+              var(--artdeco-gold-primary) 100%
+            );
           }
 
           &.drawdown-card .metric-icon {
-            background: linear-gradient(135deg, #f56c6c 0%, #f78989 100%);
+            background: linear-gradient(
+              135deg,
+              color-mix(in srgb, var(--artdeco-down) 80%, var(--artdeco-bg-card)) 0%,
+              var(--artdeco-down) 100%
+            );
           }
         }
       }
     }
 
     .connection-info {
-      margin-top: 16px;
-      padding-top: 12px;
-      border-top: 1px solid #ebeef5;
+      margin-top: var(--artdeco-spacing-4);
+      padding-top: var(--artdeco-spacing-3);
+      border-top: 1px solid var(--artdeco-border-default);
       text-align: center;
 
       .el-text {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: var(--artdeco-spacing-1);
       }
     }
   }

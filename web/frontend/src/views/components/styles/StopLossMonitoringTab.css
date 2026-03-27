@@ -1,13 +1,13 @@
 .stop-loss-monitoring-tab {
-  padding: 20px;
+  padding: var(--spacing-lg);
 }
 
 .control-panel {
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-lg);
 }
 
 .positions-card, .history-card {
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-lg);
 }
 
 .card-header {
@@ -18,57 +18,57 @@
 
 .header-actions {
   display: flex;
-  gap: 10px;
+  gap: calc(var(--spacing-sm) + var(--radius-md));
 }
 
 .price-up {
-  color: #67C23A;
+  color: var(--color-stock-down);
   font-weight: bold;
 }
 
 .price-down {
-  color: #F56C6C;
+  color: var(--color-stock-up);
   font-weight: bold;
 }
 
 .distance-danger {
-  color: #F56C6C;
+  color: var(--color-stock-up);
   font-weight: bold;
 }
 
 .distance-warning {
-  color: #E6A23C;
+  color: var(--color-warning);
   font-weight: bold;
 }
 
 .distance-safe {
-  color: #67C23A;
+  color: var(--color-stock-down);
 }
 
 .loss-amount, .loss-percentage {
-  color: #F56C6C;
+  color: var(--color-stock-up);
   font-weight: bold;
 }
 
 .slider-hint {
-  font-size: 12px;
-  color: #909399;
-  margin-top: 5px;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  margin-top: calc(var(--spacing-xs) + var(--radius-sm));
   text-align: center;
 }
 
 :deep(.el-dialog) {
-  border-radius: 8px;
+  border-radius: var(--spacing-sm);
 }
 
 :deep(.el-dialog__header) {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--color-info) 0%, var(--color-accent) 100%);
+  color: var(--color-text-primary);
   margin: 0;
-  padding: 20px;
+  padding: var(--spacing-lg);
 }
 
 :deep(.el-dialog__title) {
-  color: white;
+  color: var(--color-text-primary);
   font-weight: 600;
 }

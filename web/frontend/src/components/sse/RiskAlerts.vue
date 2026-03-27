@@ -41,7 +41,7 @@
     <div v-if="alerts.length === 0 && isConnected" class="empty-state">
       <el-empty description="暂无风险告警">
         <template #image>
-          <el-icon :size="80" color="#67c23a"><CircleCheck /></el-icon>
+          <el-icon :size="emptyIconSize" :color="emptyIconColor"><CircleCheck /></el-icon>
         </template>
         <template #description>
           <p class="empty-desc">系统运行正常，暂无风险告警</p>
@@ -83,7 +83,7 @@
           >
             <div class="alert-header">
               <div class="alert-title">
-                <el-icon :size="18" :color="getSeverityColor(alert.severity)">
+                <el-icon :size="severityIconSize" :color="getSeverityColor(alert.severity)">
                   <component :is="getSeverityIcon(alert.severity)" />
                 </el-icon>
                 <span>{{ alert.alert_type || '风险告警' }}</span>
@@ -93,8 +93,8 @@
               </div>
               <el-icon
                 v-if="!alert.read"
-                :size="10"
-                color="#409eff"
+                :size="unreadDotSize"
+                :color="unreadDotColor"
                 class="unread-dot"
               >
                 <CircleFilled />
@@ -184,6 +184,16 @@ const {
   maxAlerts: props.maxAlerts
 })
 
+const emptyIconSize = 'var(--artdeco-spacing-20)'
+const emptyIconColor = 'var(--artdeco-down)'
+const severityIconSize = 18
+const unreadDotSize = 10
+const unreadDotColor = 'var(--artdeco-info)'
+const severityLowColor = 'var(--artdeco-fg-muted)'
+const severityMediumColor = 'var(--artdeco-warning)'
+const severityHighColor = 'var(--artdeco-rise)'
+const severityCriticalColor = 'var(--artdeco-rise)'
+
 // Watch for new alerts and show notifications
 if (props.showNotification) {
   addEventListener('risk_alert', (data) => {
@@ -221,12 +231,12 @@ const getSeverityTagType = (severity) => {
 
 const getSeverityColor = (severity) => {
   const colorMap = {
-    'low': '#909399',
-    'medium': '#e6a23c',
-    'high': '#f56c6c',
-    'critical': '#c41e3a'
+    'low': severityLowColor,
+    'medium': severityMediumColor,
+    'high': severityHighColor,
+    'critical': severityCriticalColor
   }
-  return colorMap[severity] || '#909399'
+  return colorMap[severity] || severityLowColor
 }
 
 const getSeverityIcon = (severity) => {
@@ -298,8 +308,27 @@ const getValueClass = (value, threshold) => {
 </script>
 
 <style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
 .risk-alerts-card {
-  margin-bottom: 20px;
+  margin-bottom: var(--artdeco-spacing-5);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none);
+  background: var(--artdeco-bg-card);
+
+  :deep(.el-card__header) {
+    padding: var(--artdeco-spacing-4);
+    border-bottom: 1px solid var(--artdeco-border-default);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--artdeco-gold-primary) 6%, var(--artdeco-bg-card)) 0%,
+      var(--artdeco-bg-card) 100%
+    );
+  }
+
+  :deep(.el-card__body) {
+    padding: var(--artdeco-spacing-4);
+  }
 
   .card-header {
     display: flex;
@@ -309,51 +338,54 @@ const getValueClass = (value, threshold) => {
     .title {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      color: #303133;
+      gap: var(--artdeco-spacing-2);
+      font-family: var(--artdeco-font-heading, var(--font-display));
+      font-size: var(--artdeco-text-base);
+      font-weight: var(--artdeco-font-semibold);
+      color: var(--artdeco-gold-primary);
       position: relative;
+      text-transform: uppercase;
+      letter-spacing: var(--artdeco-tracking-wide);
 
       .el-icon {
-        font-size: 18px;
+        font-size: var(--artdeco-text-lg);
       }
 
       .alert-badge {
-        margin-left: 4px;
+        margin-left: var(--artdeco-spacing-1);
       }
     }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--artdeco-spacing-2);
 
       .el-tag {
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: var(--artdeco-spacing-1);
       }
     }
   }
 
   .empty-state {
-    padding: 40px 20px;
+    padding: var(--artdeco-spacing-10) var(--artdeco-spacing-5);
     text-align: center;
 
     .empty-desc {
-      color: #67c23a;
-      font-weight: 500;
-      margin-top: 12px;
+      color: var(--artdeco-down);
+      font-weight: var(--artdeco-font-medium);
+      margin-top: var(--artdeco-spacing-3);
     }
   }
 
   .error-state {
-    padding: 20px;
+    padding: var(--artdeco-spacing-5);
   }
 
   .alerts-content {
-    max-height: 600px;
+    max-height: calc((var(--artdeco-spacing-24) * 6) + var(--artdeco-spacing-6));
     overflow-y: auto;
 
     .el-timeline {
@@ -361,52 +393,62 @@ const getValueClass = (value, threshold) => {
 
       .alert-item {
         cursor: pointer;
-        transition: all 0.3s;
-        border-left: 4px solid transparent;
+        transition:
+          transform var(--artdeco-transition-quick) var(--artdeco-ease-out),
+          box-shadow var(--artdeco-transition-quick) var(--artdeco-ease-out),
+          border-color var(--artdeco-transition-quick) var(--artdeco-ease-out),
+          background var(--artdeco-transition-quick) var(--artdeco-ease-out);
+        border-left: var(--artdeco-spacing-1) solid transparent;
+        border-radius: var(--artdeco-radius-none);
+        background: color-mix(in srgb, var(--artdeco-bg-elevated) 35%, var(--artdeco-bg-card));
+        border-color: transparent;
 
         &.unread {
-          background: #f0f9ff;
-          border-left-color: #409eff;
+          background: color-mix(in srgb, var(--artdeco-info) 8%, var(--artdeco-bg-card));
+          border-left-color: var(--artdeco-info);
         }
 
         &:hover {
-          transform: translateX(4px);
-          box-shadow: 0 4px 12px rgb(0 0 0 / 12%);
+          transform: translateX(var(--artdeco-spacing-1));
+          box-shadow: var(--artdeco-glow-subtle);
         }
 
         &.severity-low {
-          border-left-color: #909399;
+          border-left-color: var(--artdeco-fg-muted);
         }
 
         &.severity-medium {
-          border-left-color: #e6a23c;
+          border-left-color: var(--artdeco-warning);
         }
 
         &.severity-high {
-          border-left-color: #f56c6c;
+          border-left-color: var(--artdeco-rise);
         }
 
         &.severity-critical {
-          border-left-color: #c41e3a;
-          background: #fef0f0;
+          border-left-color: var(--artdeco-rise);
+          background: color-mix(in srgb, var(--artdeco-rise) 10%, var(--artdeco-bg-card));
         }
 
         :deep(.el-card__body) {
-          padding: 12px;
+          padding: var(--artdeco-spacing-3);
         }
 
         .alert-header {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 12px;
+          margin-bottom: var(--artdeco-spacing-3);
 
           .alert-title {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-weight: 600;
-            color: #303133;
+            gap: var(--artdeco-spacing-2);
+            font-family: var(--artdeco-font-heading, var(--font-display));
+            font-weight: var(--artdeco-font-semibold);
+            color: var(--artdeco-gold-primary);
+            letter-spacing: var(--artdeco-tracking-wide);
+            text-transform: uppercase;
           }
 
           .unread-dot {
@@ -416,30 +458,30 @@ const getValueClass = (value, threshold) => {
 
         .alert-body {
           .alert-message {
-            margin: 0 0 12px 0;
-            color: #606266;
-            font-size: 14px;
+            margin: 0 0 var(--artdeco-spacing-3) 0;
+            color: var(--artdeco-fg-muted);
+            font-size: var(--artdeco-text-compact-base);
             line-height: 1.6;
           }
 
           .alert-details {
             :deep(.el-descriptions__label) {
-              width: 70px;
-              font-size: 12px;
+              width: calc(var(--artdeco-spacing-16) + var(--artdeco-spacing-1) + (var(--artdeco-spacing-px) * 2));
+              font-size: var(--artdeco-text-compact-sm);
             }
 
             :deep(.el-descriptions__content) {
-              font-size: 12px;
+              font-size: var(--artdeco-text-compact-sm);
             }
 
             .value-exceeded {
-              color: #f56c6c;
-              font-weight: 600;
+              color: var(--artdeco-rise);
+              font-weight: var(--artdeco-font-semibold);
             }
 
             .value-normal {
-              color: #67c23a;
-              font-weight: 600;
+              color: var(--artdeco-down);
+              font-weight: var(--artdeco-font-semibold);
             }
           }
         }
@@ -447,15 +489,15 @@ const getValueClass = (value, threshold) => {
     }
 
     .connection-info {
-      margin-top: 16px;
-      padding-top: 12px;
-      border-top: 1px solid #ebeef5;
+      margin-top: var(--artdeco-spacing-4);
+      padding-top: var(--artdeco-spacing-3);
+      border-top: 1px solid var(--artdeco-border-default);
       text-align: center;
 
       .el-text {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: var(--artdeco-spacing-1);
       }
     }
   }

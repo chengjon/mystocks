@@ -44,15 +44,20 @@ const chartRef = ref<HTMLElement>()
 let chartInstance: EChartsInstance | null = null
 const error = ref<string>('')
 
+const tooltipTheme = artDecoTheme.tooltip as { backgroundColor?: string; borderColor?: string; textStyle?: { color?: string } } | undefined
+const axisLineTheme = artDecoTheme.axisLine as { lineStyle?: { color?: string } } | undefined
+const axisLabelTheme = artDecoTheme.axisLabel as { color?: string } | undefined
+const splitLineTheme = artDecoTheme.splitLine as { lineStyle?: { color?: string[] } } | undefined
+
 const getChartOption = (): EChartsOption => {
   const baseOption: EChartsOption = {
     backgroundColor: 'transparent',
     tooltip: {
       trigger: props.chartType === 'pie' ? 'item' : 'axis',
-      backgroundColor: 'rgb(26 26 26 / 95%)', // Matches --color-bg-elevated
-      borderColor: '#D4AF37', // Matches --color-accent (gold)
+      backgroundColor: tooltipTheme?.backgroundColor,
+      borderColor: tooltipTheme?.borderColor,
       textStyle: {
-        color: '#E5E5E5' // Matches --color-text-primary
+        color: tooltipTheme?.textStyle?.color
       }
     },
     grid: {
@@ -64,14 +69,14 @@ const getChartOption = (): EChartsOption => {
     },
     xAxis: props.chartType !== 'pie' ? {
       type: 'category',
-      axisLine: { lineStyle: { color: 'rgb(212 175 55 / 30%)' } }, // Gold accent
-      axisLabel: { color: '#A0A0A0' } // Matches --color-text-secondary
+      axisLine: { lineStyle: { color: axisLineTheme?.lineStyle?.color } },
+      axisLabel: { color: axisLabelTheme?.color }
     } : undefined,
     yAxis: props.chartType !== 'pie' ? {
       type: 'value',
-      axisLine: { lineStyle: { color: 'rgb(212 175 55 / 30%)' } }, // Gold accent
-      axisLabel: { color: '#A0A0A0' }, // Matches --color-text-secondary
-      splitLine: { lineStyle: { color: 'rgb(212 175 55 / 10%)' } } // Gold with low opacity
+      axisLine: { lineStyle: { color: axisLineTheme?.lineStyle?.color } },
+      axisLabel: { color: axisLabelTheme?.color },
+      splitLine: { lineStyle: { color: splitLineTheme?.lineStyle?.color?.[0] } }
     } : undefined
   }
 
@@ -152,19 +157,19 @@ defineExpose({
 
 <style scoped lang="scss">
 // Phase 3.4: Design Token Migration
-@import '@/styles/theme-tokens';
+@use '@/styles/theme-tokens.scss' as *;
 
 .chart-container {
   position: relative;
   width: 100%;
-  min-height: 200px;
+  min-height: calc(var(--spacing-3xl) * 3 + var(--spacing-sm));
 
   .chart-loading {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100%;
-    min-height: 200px;
+    min-height: calc(var(--spacing-3xl) * 3 + var(--spacing-sm));
     color: var(--color-info);
     font-size: var(--font-size-3xl);
   }
@@ -175,7 +180,7 @@ defineExpose({
     align-items: center;
     justify-content: center;
     height: 100%;
-    min-height: 200px;
+    min-height: calc(var(--spacing-3xl) * 3 + var(--spacing-sm));
     gap: var(--spacing-sm);
     color: var(--color-error);
     font-size: var(--font-size-sm);

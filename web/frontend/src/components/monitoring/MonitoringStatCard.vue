@@ -150,10 +150,18 @@ const formattedValue = computed(() => {
   position: relative;
   transition: all var(--fintech-transition-base);
   overflow: hidden;
+  --monitoring-stat-lift: calc(var(--fintech-space-1) / 2);
+  --monitoring-stat-icon-size: var(--fintech-space-10);
+  --monitoring-stat-icon-font-size: var(--fintech-font-size-xl);
+  --monitoring-stat-progress-height: var(--fintech-space-2);
+  --monitoring-stat-progress-label-width: var(--fintech-space-10);
+  --monitoring-stat-gauge-width: calc(var(--fintech-space-10) * 2);
+  --monitoring-stat-gauge-height: var(--fintech-space-10);
+  --monitoring-stat-gauge-center-size: var(--fintech-space-1);
 }
 
 .monitoring-stat-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(calc(var(--monitoring-stat-lift) * -1));
   box-shadow: var(--fintech-shadow-md);
 }
 
@@ -166,14 +174,14 @@ const formattedValue = computed(() => {
 }
 
 .stat-icon {
-  width: 40px;
-  height: 40px;
+  width: var(--monitoring-stat-icon-size);
+  height: var(--monitoring-stat-icon-size);
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--fintech-bg-elevated);
   border-radius: var(--fintech-radius-base);
-  font-size: 18px;
+  font-size: var(--monitoring-stat-icon-font-size);
   color: var(--fintech-accent-primary);
 }
 
@@ -230,12 +238,12 @@ const formattedValue = computed(() => {
 
 .stat-change.positive {
   background: var(--fintech-accent-success);
-  color: white;
+  color: var(--fintech-gray-1);
 }
 
 .stat-change.negative {
   background: var(--fintech-accent-danger);
-  color: white;
+  color: var(--fintech-gray-1);
 }
 
 .stat-trend {
@@ -257,7 +265,7 @@ const formattedValue = computed(() => {
 
 .progress-track {
   flex: 1;
-  height: 8px;
+  height: var(--monitoring-stat-progress-height);
   background: var(--fintech-bg-tertiary);
   border-radius: var(--fintech-radius-sm);
   overflow: hidden;
@@ -273,14 +281,14 @@ const formattedValue = computed(() => {
 .progress-label {
   font-size: var(--fintech-font-size-sm);
   font-family: var(--fintech-font-family-data);
-  min-width: 40px;
+  min-width: var(--monitoring-stat-progress-label-width);
   text-align: right;
 }
 
 .gauge-container {
   position: relative;
-  width: 80px;
-  height: 40px;
+  width: var(--monitoring-stat-gauge-width);
+  height: var(--monitoring-stat-gauge-height);
   margin: 0 auto;
 }
 
@@ -288,7 +296,7 @@ const formattedValue = computed(() => {
   position: relative;
   width: 100%;
   height: 100%;
-  border-radius: 40px 40px 0 0;
+  border-radius: var(--monitoring-stat-gauge-height) var(--monitoring-stat-gauge-height) 0 0;
   background: var(--fintech-bg-tertiary);
   overflow: hidden;
 }
@@ -308,8 +316,8 @@ const formattedValue = computed(() => {
   position: absolute;
   bottom: 0;
   left: 50%;
-  width: 4px;
-  height: 4px;
+  width: var(--monitoring-stat-gauge-center-size);
+  height: var(--monitoring-stat-gauge-center-size);
   background: var(--fintech-text-primary);
   border-radius: 50%;
   transform: translateX(-50%);
@@ -353,23 +361,23 @@ const formattedValue = computed(() => {
 }
 
 .size-small .stat-icon {
-  width: 32px;
-  height: 32px;
-  font-size: 16px;
+  width: var(--fintech-space-8);
+  height: var(--fintech-space-8);
+  font-size: var(--fintech-font-size-lg);
 }
 
 .size-large .stat-value {
-  font-size: 48px;
+  font-size: calc(var(--fintech-font-size-3xl) * 2);
 }
 
 .size-large .stat-icon {
-  width: 48px;
-  height: 48px;
-  font-size: 20px;
+  width: var(--fintech-space-12);
+  height: var(--fintech-space-12);
+  font-size: var(--fintech-font-size-2xl);
 }
 
 /* 响应式 */
-@media (width <= 768px) {
+@media (width <= 48rem) {
   .stat-header {
     flex-direction: column;
     align-items: flex-start;

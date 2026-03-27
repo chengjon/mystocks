@@ -1,88 +1,111 @@
+@use '../../../styles/artdeco-tokens.scss' as *;
+
 .dashboard-metrics-card {
-  margin-bottom: 20px;
+  margin-bottom: var(--artdeco-spacing-5);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none);
+  background: var(--artdeco-bg-card);
+
+  :deep(.el-card__header) {
+    padding: var(--artdeco-spacing-4);
+    border-bottom: 1px solid var(--artdeco-border-default);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--artdeco-gold-primary) 6%, var(--artdeco-bg-card)) 0%,
+      var(--artdeco-bg-card) 100%
+    );
+  }
+
+  :deep(.el-card__body) {
+    padding: var(--artdeco-spacing-4);
+  }
 
   .card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: var(--artdeco-spacing-3);
 
     .title {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      color: #303133;
+      gap: var(--artdeco-spacing-2);
+      font-family: var(--artdeco-font-heading, var(--font-display));
+      font-size: var(--artdeco-text-base);
+      font-weight: var(--artdeco-font-semibold);
+      color: var(--artdeco-gold-primary);
+      letter-spacing: var(--artdeco-tracking-wide);
+      text-transform: uppercase;
 
       .el-icon {
-        font-size: 18px;
+        font-size: var(--artdeco-text-lg);
       }
     }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: var(--artdeco-spacing-3);
 
-      .el-tag {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
-
+      .el-tag,
       .el-text {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: var(--artdeco-spacing-1);
       }
     }
   }
 
   .empty-state {
-    padding: 40px 20px;
+    padding: var(--artdeco-spacing-10) var(--artdeco-spacing-5);
     text-align: center;
 
-    :deep(.el-empty__image) {
-      .el-icon {
-        animation: spin 2s linear infinite;
-      }
+    :deep(.el-empty__image .el-icon) {
+      animation: spin 2s linear infinite;
     }
   }
 
   .error-state {
-    padding: 20px;
+    padding: var(--artdeco-spacing-5);
   }
 
   .metrics-content {
     .core-metrics {
-      margin-bottom: 20px;
+      margin-bottom: var(--artdeco-spacing-5);
 
       .metric-card {
         display: flex;
         align-items: center;
-        gap: 16px;
-        padding: 20px;
-        border-radius: 12px;
-        background: linear-gradient(135deg, #f5f7fa 0%, #fff 100%);
-        border: 2px solid #ebeef5;
-        transition: all 0.3s;
-        min-height: 120px;
+        gap: var(--artdeco-spacing-4);
+        padding: var(--artdeco-spacing-5);
+        border-radius: var(--artdeco-radius-none);
+        background: linear-gradient(
+          135deg,
+          color-mix(in srgb, var(--artdeco-gold-primary) 5%, var(--artdeco-bg-card)) 0%,
+          var(--artdeco-bg-card) 100%
+        );
+        border: 1px solid var(--artdeco-border-default);
+        transition:
+          transform var(--artdeco-transition-quick) var(--artdeco-ease-out),
+          box-shadow var(--artdeco-transition-quick) var(--artdeco-ease-out),
+          border-color var(--artdeco-transition-quick) var(--artdeco-ease-out);
+        min-height: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
 
         &:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 8px 16px rgb(0 0 0 / 10%);
+          transform: translateY(calc(var(--artdeco-spacing-px) * -4));
+          border-color: var(--artdeco-border-hover);
+          box-shadow: var(--artdeco-glow-subtle);
         }
 
         .metric-icon {
-          width: 64px;
-          height: 64px;
-          border-radius: 12px;
+          width: var(--artdeco-spacing-16);
+          height: var(--artdeco-spacing-16);
+          border-radius: var(--artdeco-radius-none);
           display: flex;
           align-items: center;
           justify-content: center;
-          color: white;
+          color: var(--artdeco-fg-primary);
           flex-shrink: 0;
         }
 
@@ -90,111 +113,136 @@
           flex: 1;
 
           .metric-label {
-            font-size: 13px;
-            color: #909399;
-            margin-bottom: 8px;
+            font-family: var(--artdeco-font-body, var(--font-body));
+            font-size: var(--artdeco-text-compact-base);
+            color: var(--artdeco-fg-muted);
+            margin-bottom: var(--artdeco-spacing-2);
           }
 
           .metric-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #303133;
-            margin-bottom: 4px;
+            font-family: var(--artdeco-font-accent, var(--font-mono));
+            font-size: var(--artdeco-text-xl);
+            font-weight: var(--artdeco-font-bold);
+            color: var(--artdeco-fg-primary);
+            margin-bottom: var(--artdeco-spacing-1);
 
             &.positive {
-              color: #67c23a;
+              color: var(--artdeco-rise);
             }
 
             &.negative {
-              color: #f56c6c;
+              color: var(--artdeco-down);
             }
           }
 
           .metric-change {
-            font-size: 14px;
+            font-size: var(--artdeco-text-compact-base);
 
             span {
               display: inline-flex;
               align-items: center;
-              gap: 2px;
-              font-weight: 600;
+              gap: calc(var(--artdeco-spacing-1) / 2);
+              font-weight: var(--artdeco-font-semibold);
 
               &.positive {
-                color: #67c23a;
+                color: var(--artdeco-rise);
               }
 
               &.negative {
-                color: #f56c6c;
+                color: var(--artdeco-down);
               }
             }
           }
         }
 
         &.value-card .metric-icon {
-          background: linear-gradient(135deg, #409eff 0%, #66b1ff 100%);
+          background: linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--artdeco-info) 80%, var(--artdeco-bg-card)) 0%,
+            var(--artdeco-info) 100%
+          );
         }
 
         &.return-card .metric-icon {
-          background: linear-gradient(135deg, #67c23a 0%, #85ce61 100%);
+          background: linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--artdeco-rise) 80%, var(--artdeco-bg-card)) 0%,
+            var(--artdeco-rise) 100%
+          );
         }
 
         &.positions-card .metric-icon {
-          background: linear-gradient(135deg, #e6a23c 0%, #f0c78a 100%);
+          background: linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--artdeco-warning) 80%, var(--artdeco-bg-card)) 0%,
+            var(--artdeco-gold-primary) 100%
+          );
         }
 
         &.orders-card .metric-icon {
-          background: linear-gradient(135deg, #909399 0%, #b1b3b8 100%);
+          background: linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--artdeco-fg-muted) 85%, var(--artdeco-bg-card)) 0%,
+            var(--artdeco-gold-dim) 100%
+          );
         }
       }
     }
 
     .more-metrics {
-      margin-top: 24px;
+      margin-top: var(--artdeco-spacing-6);
 
       .el-divider {
-        margin: 16px 0 20px;
+        margin: var(--artdeco-spacing-4) 0 var(--artdeco-spacing-5);
 
         :deep(.el-divider__text) {
           display: flex;
           align-items: center;
-          gap: 6px;
-          font-weight: 600;
-          color: #303133;
+          gap: calc(var(--artdeco-spacing-3) / 2);
+          font-family: var(--artdeco-font-heading, var(--font-display));
+          font-weight: var(--artdeco-font-semibold);
+          color: var(--artdeco-gold-primary);
+          letter-spacing: var(--artdeco-tracking-wide);
+          text-transform: uppercase;
         }
       }
 
       .metric-statistic {
-        margin-bottom: 16px;
-        padding: 16px;
-        background: #f5f7fa;
-        border-radius: 8px;
+        margin-bottom: var(--artdeco-spacing-4);
+        padding: var(--artdeco-spacing-4);
+        background: color-mix(in srgb, var(--artdeco-gold-primary) 4%, var(--artdeco-bg-card));
+        border: 1px solid var(--artdeco-border-default);
+        border-radius: var(--artdeco-radius-none);
 
         :deep(.el-statistic__head) {
-          font-size: 12px;
-          color: #606266;
-          margin-bottom: 8px;
+          font-family: var(--artdeco-font-body, var(--font-body));
+          font-size: var(--artdeco-text-compact-sm);
+          color: var(--artdeco-fg-muted);
+          margin-bottom: var(--artdeco-spacing-2);
         }
 
         :deep(.el-statistic__content) {
-          font-size: 20px;
-          font-weight: 600;
+          font-family: var(--artdeco-font-accent, var(--font-mono));
+          font-size: var(--artdeco-text-lg);
+          font-weight: var(--artdeco-font-semibold);
+          color: var(--artdeco-fg-primary);
         }
       }
     }
 
     .footer-info {
-      margin-top: 20px;
-      padding-top: 16px;
-      border-top: 1px solid #ebeef5;
+      margin-top: var(--artdeco-spacing-5);
+      padding-top: var(--artdeco-spacing-4);
+      border-top: 1px solid var(--artdeco-border-default);
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: var(--artdeco-spacing-3);
 
       .el-text {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: var(--artdeco-spacing-1);
       }
     }
   }
@@ -209,25 +257,24 @@
   }
 }
 
-// Responsive adjustments
-@media (width <= 768px) {
+@media (width <= 48rem) {
   .dashboard-metrics-card {
     .core-metrics .metric-card {
-      min-height: 100px;
-      padding: 16px;
+      min-height: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-1));
+      padding: var(--artdeco-spacing-4);
 
       .metric-icon {
-        width: 48px;
-        height: 48px;
+        width: var(--artdeco-spacing-12);
+        height: var(--artdeco-spacing-12);
 
         .el-icon {
-          font-size: 24px !important;
+          font-size: var(--artdeco-text-lg) !important;
         }
       }
 
       .metric-info {
         .metric-value {
-          font-size: 20px;
+          font-size: var(--artdeco-text-lg);
         }
       }
     }

@@ -3,6 +3,11 @@
   flex-direction: column;
   background: var(--fintech-bg-secondary);
   border: 1px solid var(--fintech-border-base);
+  --monitoring-alert-icon-box-size: var(--fintech-space-10);
+  --monitoring-alert-icon-font-size: var(--fintech-font-size-xl);
+  --monitoring-alert-priority-padding-y: var(--fintech-radius-sm);
+  --monitoring-alert-empty-icon-size: var(--fintech-space-12);
+  --monitoring-alert-accent-width: calc(var(--fintech-space-3) / 4);
 }
 
 .panel-header {
@@ -15,38 +20,38 @@
 }
 
 .panel-icon {
-  width: 40px;
-  height: 40px;
+  width: var(--monitoring-alert-icon-box-size);
+  height: var(--monitoring-alert-icon-box-size);
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: var(--fintech-radius-base);
-  font-size: 18px;
+  font-size: var(--monitoring-alert-icon-font-size);
 }
 
 .icon-critical {
   background: var(--fintech-accent-danger);
-  color: white;
+  color: var(--fintech-gray-1);
 }
 
 .icon-warning {
   background: var(--fintech-accent-warning);
-  color: white;
+  color: var(--fintech-gray-1);
 }
 
 .icon-info {
   background: var(--fintech-accent-info);
-  color: white;
+  color: var(--fintech-gray-1);
 }
 
 .icon-success {
   background: var(--fintech-accent-success);
-  color: white;
+  color: var(--fintech-gray-1);
 }
 
 .icon-default {
   background: var(--fintech-accent-primary);
-  color: white;
+  color: var(--fintech-gray-1);
 }
 
 .panel-info h3 {
@@ -75,7 +80,7 @@
 
 .badge-critical {
   background: var(--fintech-accent-danger);
-  color: white;
+  color: var(--fintech-gray-1);
 }
 
 .badge-warning {
@@ -85,17 +90,17 @@
 
 .badge-info {
   background: var(--fintech-accent-info);
-  color: white;
+  color: var(--fintech-gray-1);
 }
 
 .badge-success {
   background: var(--fintech-accent-success);
-  color: white;
+  color: var(--fintech-gray-1);
 }
 
 .badge-default {
   background: var(--fintech-accent-primary);
-  color: white;
+  color: var(--fintech-gray-1);
 }
 
 /* 告警容器 */
@@ -124,7 +129,7 @@
 }
 
 .alert-icon {
-  font-size: 20px;
+  font-size: var(--fintech-font-size-2xl);
   margin-top: var(--fintech-space-1);
   flex-shrink: 0;
 }
@@ -181,7 +186,7 @@
 }
 
 .alert-priority {
-  padding: 2px 8px;
+  padding: var(--monitoring-alert-priority-padding-y) var(--fintech-space-2);
   border-radius: var(--fintech-radius-sm);
   font-size: var(--fintech-font-size-xs);
   font-weight: 500;
@@ -191,7 +196,7 @@
 
 .priority-high {
   background: var(--fintech-accent-danger);
-  color: white;
+  color: var(--fintech-gray-1);
 }
 
 .priority-medium {
@@ -229,7 +234,7 @@
 }
 
 .empty-icon {
-  font-size: 48px;
+  font-size: var(--monitoring-alert-empty-icon-size);
   color: var(--fintech-gray-6);
   margin-bottom: var(--fintech-space-4);
   opacity: 50%;
@@ -255,19 +260,19 @@
 
 /* 变体样式覆盖 */
 .variant-critical .panel-header {
-  border-left: 3px solid var(--fintech-accent-danger);
+  border-left: var(--monitoring-alert-accent-width) solid var(--fintech-accent-danger);
 }
 
 .variant-warning .panel-header {
-  border-left: 3px solid var(--fintech-accent-warning);
+  border-left: var(--monitoring-alert-accent-width) solid var(--fintech-accent-warning);
 }
 
 .variant-info .panel-header {
-  border-left: 3px solid var(--fintech-accent-info);
+  border-left: var(--monitoring-alert-accent-width) solid var(--fintech-accent-info);
 }
 
 .variant-success .panel-header {
-  border-left: 3px solid var(--fintech-accent-success);
+  border-left: var(--monitoring-alert-accent-width) solid var(--fintech-accent-success);
 }
 
 /* 优先级动画 */
@@ -282,7 +287,7 @@
 }
 
 /* 响应式设计 */
-@media (width <= 768px) {
+@media (width <= 48rem) {
   .alert-item {
     flex-direction: column;
     gap: var(--fintech-space-3);
@@ -306,7 +311,7 @@
 }
 
 /* 高分辨率优化 */
-@media (width >= 1920px) {
+@media (width >= 120rem) {
   .panel-info h3 {
     font-size: var(--fintech-font-size-xl);
   }

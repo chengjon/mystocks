@@ -1,70 +1,77 @@
 .realtime-position-panel {
-  background: #fff;
-  border-radius: 8px;
-  padding: 16px;
+  background: var(--fintech-gray-1);
+  border-radius: var(--fintech-radius-lg);
+  padding: var(--fintech-space-4);
+  color: var(--fintech-gray-8);
+  --realtime-position-panel-gap: var(--fintech-space-2);
+  --realtime-position-panel-padding: var(--fintech-space-4);
+  --realtime-position-panel-section-gap: var(--fintech-space-3);
+  --realtime-position-panel-summary-surface: color-mix(in srgb, var(--fintech-gray-2) 70%, var(--fintech-gray-1));
+  --realtime-position-panel-success-tint: color-mix(in srgb, var(--fintech-accent-success) 5%, transparent);
+  --realtime-position-panel-danger-tint: color-mix(in srgb, var(--fintech-accent-danger) 5%, transparent);
 
   .panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #eee;
+    margin-bottom: var(--realtime-position-panel-padding);
+    padding-bottom: var(--realtime-position-panel-section-gap);
+    border-bottom: 1px solid var(--fintech-gray-2);
 
     h3 {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--realtime-position-panel-gap);
       margin: 0;
-      font-size: 16px;
+      font-size: var(--fintech-font-size-lg);
       font-weight: 600;
     }
 
     .header-actions {
       display: flex;
-      gap: 8px;
+      gap: var(--realtime-position-panel-gap);
     }
   }
 
   .portfolio-summary {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 16px;
-    padding: 16px;
-    background: #f5f7fa;
-    border-radius: 8px;
+    gap: var(--realtime-position-panel-padding);
+    margin-bottom: var(--realtime-position-panel-padding);
+    padding: var(--realtime-position-panel-padding);
+    background: var(--realtime-position-panel-summary-surface);
+    border-radius: var(--fintech-radius-lg);
 
     .summary-item {
       text-align: center;
 
       .label {
         display: block;
-        font-size: 12px;
-        color: #909399;
-        margin-bottom: 4px;
+        font-size: var(--fintech-font-size-sm);
+        color: var(--fintech-gray-5);
+        margin-bottom: var(--fintech-space-1);
       }
 
       .value {
-        font-size: 20px;
+        font-size: var(--fintech-font-size-2xl);
         font-weight: 600;
 
         small {
-          font-size: 12px;
+          font-size: var(--fintech-font-size-sm);
           font-weight: normal;
         }
 
-        &.positive { color: #67c23a; }
-        &.negative { color: #f56c6c; }
+        &.positive { color: var(--fintech-accent-success); }
+        &.negative { color: var(--fintech-accent-danger); }
       }
 
       &.total-value .value {
-        font-size: 24px;
+        font-size: var(--fintech-font-size-3xl);
       }
 
       &.profit .value {
-        &.profit-up { color: #67c23a; }
-        &.profit-down { color: #f56c6c; }
+        &.profit-up { color: var(--fintech-accent-success); }
+        &.profit-down { color: var(--fintech-accent-danger); }
       }
     }
   }
@@ -73,37 +80,37 @@
     .code {
       display: block;
       font-weight: 600;
-      color: #303133;
+      color: var(--fintech-gray-8);
     }
 
     .name {
-      font-size: 12px;
-      color: #909399;
+      font-size: var(--fintech-font-size-sm);
+      color: var(--fintech-gray-5);
     }
   }
 
-  .price-up { color: #f56c6c; }
-  .price-down { color: #67c23a; }
-  .change-up { color: #f56c6c; }
-  .change-down { color: #67c23a; }
+  .price-up { color: var(--fintech-accent-danger); }
+  .price-down { color: var(--fintech-accent-success); }
+  .change-up { color: var(--fintech-accent-danger); }
+  .change-down { color: var(--fintech-accent-success); }
 
-  .profit-up { color: #67c23a; }
-  .profit-down { color: #f56c6c; }
+  .profit-up { color: var(--fintech-accent-success); }
+  .profit-down { color: var(--fintech-accent-danger); }
 
   :deep(.profit-row) {
-    background-color: rgb(103 194 58 / 5%);
+    background-color: var(--realtime-position-panel-success-tint);
   }
 
   :deep(.loss-row) {
-    background-color: rgb(245 108 108 / 5%);
+    background-color: var(--realtime-position-panel-danger-tint);
   }
 
   .panel-footer {
-    margin-top: 16px;
-    padding-top: 12px;
-    border-top: 1px solid #eee;
+    margin-top: var(--realtime-position-panel-padding);
+    padding-top: var(--realtime-position-panel-section-gap);
+    border-top: 1px solid var(--fintech-gray-2);
     display: flex;
     justify-content: flex-end;
-    gap: 8px;
+    gap: var(--realtime-position-panel-gap);
   }
 }

@@ -57,31 +57,48 @@ const handleClick = (event: MouseEvent) => {
 </script>
 
 <style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
 .action-button {
-  // 紧凑设计：最小化 padding
-  padding: 0 16px;
-  height: 36px; // md size
-  font-family: Inter, system-ui, sans-serif;
-  font-size: 13px; // 紧凑字体
-  font-weight: 500;
-  background: #1A1A1A;
-  border: 1px solid #2A2A2A;
-  border-radius: 4px;
-  color: #E5E5E5;
+  padding: 0 var(--artdeco-spacing-4);
+  height: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-1));
+  font-family: var(--artdeco-font-body, var(--font-body));
+  font-size: var(--artdeco-text-compact-base);
+  font-weight: var(--artdeco-font-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-wide);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--artdeco-bg-elevated) 55%, var(--artdeco-bg-card)) 0%,
+    var(--artdeco-bg-card) 100%
+  );
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none);
+  color: var(--artdeco-fg-primary);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+  gap: var(--artdeco-spacing-2);
+  box-shadow: inset 0 0 0 var(--artdeco-spacing-px) color-mix(in srgb, var(--artdeco-gold-opacity-10) 70%, transparent);
+  transition:
+    transform var(--artdeco-transition-quick) var(--artdeco-ease-out),
+    background var(--artdeco-transition-quick) var(--artdeco-ease-out),
+    border-color var(--artdeco-transition-quick) var(--artdeco-ease-out),
+    box-shadow var(--artdeco-transition-quick) var(--artdeco-ease-out),
+    color var(--artdeco-transition-quick) var(--artdeco-ease-out);
+
+  --data-action-success: var(--artdeco-down);
+  --data-action-danger: var(--artdeco-rise);
 
   &:hover:not(:disabled) {
-    background: #252525;
-    border-color: #3A3A3A;
+    border-color: var(--artdeco-border-hover);
+    color: var(--artdeco-gold-light);
+    box-shadow: var(--artdeco-glow-subtle);
   }
 
   &:active:not(:disabled) {
-    transform: translateY(1px);
+    transform: translateY(var(--artdeco-spacing-px));
   }
 
   &.action-button-block {
@@ -91,58 +108,72 @@ const handleClick = (event: MouseEvent) => {
   &.action-button-disabled {
     opacity: 50%;
     cursor: not-allowed;
+    box-shadow: none;
   }
 
-  // Sizes
   &.action-button-sm {
-    height: 28px; // sm
-    padding: 0 12px;
-    font-size: 12px;
+    height: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-px));
+    padding: 0 var(--artdeco-spacing-3);
+    font-size: var(--artdeco-text-compact-sm);
   }
 
   &.action-button-lg {
-    height: 40px; // lg
-    padding: 0 20px;
-    font-size: 14px;
+    height: var(--artdeco-spacing-10);
+    padding: 0 var(--artdeco-spacing-5);
+    font-size: var(--artdeco-text-sm);
   }
 
-  // Variants
   &.action-button-primary {
-    background: #3B82F6;
-    border-color: #3B82F6;
+    background: linear-gradient(
+      135deg,
+      var(--artdeco-gold-light) 0%,
+      var(--artdeco-gold-primary) 55%,
+      var(--artdeco-bronze) 100%
+    );
+    border-color: var(--artdeco-gold-light);
+    color: var(--artdeco-bg-global);
+    box-shadow: 0 0 var(--artdeco-spacing-4) color-mix(in srgb, var(--artdeco-gold-primary) 26%, transparent);
 
     &:hover:not(:disabled) {
-      background: #2563EB;
-      border-color: #2563EB;
+      background: linear-gradient(
+        135deg,
+        var(--artdeco-champagne) 0%,
+        var(--artdeco-gold-light) 50%,
+        var(--artdeco-gold-primary) 100%
+      );
+      border-color: var(--artdeco-champagne);
+      color: var(--artdeco-bg-global);
     }
   }
 
   &.action-button-danger {
-    background: #FF5252;
-    border-color: #FF5252;
+    background: color-mix(in srgb, var(--data-action-danger) 12%, var(--artdeco-bg-card));
+    border-color: color-mix(in srgb, var(--data-action-danger) 55%, var(--artdeco-border-default));
+    color: var(--data-action-danger);
 
     &:hover:not(:disabled) {
-      background: #E53935;
-      border-color: #E53935;
+      background: color-mix(in srgb, var(--data-action-danger) 18%, var(--artdeco-bg-card));
+      border-color: var(--data-action-danger);
+      color: var(--artdeco-fg-primary);
     }
   }
 
   &.action-button-success {
-    background: #00E676;
-    border-color: #00E676;
-    color: #000;
+    background: color-mix(in srgb, var(--data-action-success) 12%, var(--artdeco-bg-card));
+    border-color: color-mix(in srgb, var(--data-action-success) 55%, var(--artdeco-border-default));
+    color: var(--data-action-success);
 
     &:hover:not(:disabled) {
-      background: #00C853;
-      border-color: #00C853;
+      background: color-mix(in srgb, var(--data-action-success) 18%, var(--artdeco-bg-card));
+      border-color: var(--data-action-success);
+      color: var(--artdeco-fg-primary);
     }
   }
 
-  // Loading spinner
   .button-spinner {
-    width: 12px;
-    height: 12px;
-    border: 2px solid transparent;
+    width: var(--artdeco-spacing-3);
+    height: var(--artdeco-spacing-3);
+    border: var(--artdeco-spacing-px) solid transparent;
     border-top-color: currentColor;
     border-radius: 50%;
     animation: spin 0.6s linear infinite;
