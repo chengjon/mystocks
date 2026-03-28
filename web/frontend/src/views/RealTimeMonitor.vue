@@ -318,5 +318,5 @@ onMounted((): void => {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/RealTimeMonitor";
+@use "./styles/RealTimeMonitor.scss" as *;
 </style>

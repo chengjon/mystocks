@@ -1,6 +1,6 @@
 @use 'sass:color';
-@import '@/styles/theme-tokens';
-@import '@/styles/artdeco-tokens';
+@use '@/styles/theme-tokens.scss' as *;
+@use '@/styles/artdeco-tokens.scss' as *;
 
 // ============================================
 //   Bloomberg Terminal Style Dashboard

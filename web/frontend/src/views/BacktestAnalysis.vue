@@ -434,6 +434,6 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped>
-@import "./styles/BacktestAnalysis.css";
+<style scoped lang="scss">
+@use "./styles/BacktestAnalysis.css";
 </style>

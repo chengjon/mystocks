@@ -415,6 +415,6 @@ import { usePyprofilingDemo } from './composables/usePyprofilingDemo'
 const { activeTab, tabs, modelStep, modelLoading, modelResults, runModelDemo, viewModelCode, featureSelectionMethods, profilingTools, profilingCommands, dataFiles, suggestedAPIs, dependencies, _timer_1 } = usePyprofilingDemo()
 </script>
 
-<style scoped>
-@import "./styles/PyprofilingDemo.css";
+<style scoped lang="scss">
+@use "./styles/PyprofilingDemo.css";
 </style>

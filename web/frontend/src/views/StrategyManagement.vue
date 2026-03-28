@@ -330,6 +330,6 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped>
-@import "./styles/StrategyManagement.css";
+<style scoped lang="scss">
+@use "./styles/StrategyManagement.css";
 </style>

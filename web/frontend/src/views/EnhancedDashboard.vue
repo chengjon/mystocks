@@ -337,5 +337,5 @@ const {
 </script>
 
 <style scoped lang="scss">
-@import './styles/EnhancedDashboard';
+@use './styles/EnhancedDashboard.scss' as *;
 </style>

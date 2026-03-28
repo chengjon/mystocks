@@ -258,5 +258,5 @@ const {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/BacktestWizard";
+@use "./styles/BacktestWizard.scss" as *;
 </style>

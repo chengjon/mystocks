@@ -398,6 +398,6 @@ export default {
 }
 </script>
 
-<style scoped>
-@import "./styles/SmartDataSourceTest.css";
+<style scoped lang="scss">
+@use "./styles/SmartDataSourceTest.css";
 </style>

@@ -485,5 +485,5 @@ const {
 </script>
 
 <style scoped lang="scss">
-@import './styles/PortfolioManagement';
+@use './styles/PortfolioManagement.scss' as *;
 </style>

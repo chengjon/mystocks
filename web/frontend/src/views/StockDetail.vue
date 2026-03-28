@@ -473,5 +473,5 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-@import './styles/StockDetail';
+@use './styles/StockDetail.scss' as *;
 </style>

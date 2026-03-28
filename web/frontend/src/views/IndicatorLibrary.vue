@@ -343,6 +343,6 @@ const applyQuickFilter = (filter: QuickFilter): void => {
 }
 </script>
 
-<style scoped>
-@import "./styles/IndicatorLibrary.css";
+<style scoped lang="scss">
+@use "./styles/IndicatorLibrary.css";
 </style>

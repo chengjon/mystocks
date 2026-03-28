@@ -344,6 +344,6 @@ const {
 } = useTradingDashboard()
 </script>
 
-<style scoped>
-@import "./styles/TradingDashboard.css";
+<style scoped lang="scss">
+@use "./styles/TradingDashboard.css";
 </style>

@@ -243,5 +243,5 @@ const {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/Settings";
+@use "./styles/Settings.scss" as *;
 </style>

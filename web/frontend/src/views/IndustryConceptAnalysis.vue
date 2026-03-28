@@ -197,5 +197,5 @@ const {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/IndustryConceptAnalysis";
+@use "./styles/IndustryConceptAnalysis.scss" as *;
 </style>

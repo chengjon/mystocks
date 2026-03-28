@@ -247,5 +247,5 @@ const {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/Phase4Dashboard";
+@use "./styles/Phase4Dashboard.scss" as *;
 </style>

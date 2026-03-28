@@ -1,5 +1,5 @@
 // Phase 3.3: Design Token Migration
-@import '@/styles/theme-tokens';
+@use '@/styles/theme-tokens.scss' as *;
 
 .industry-concept-analysis {
   padding: var(--spacing-lg);

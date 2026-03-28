@@ -1,4 +1,4 @@
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .backtest-wizard {
   min-height: 100vh;
