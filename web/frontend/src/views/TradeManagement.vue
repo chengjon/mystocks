@@ -136,7 +136,7 @@ const handleTradeSubmitted = async () => {
 <style scoped lang="scss">
 // Phase 3.3: Design Token Migration
 @use 'sass:color';
-@import '@/styles/theme-tokens';
+@use '@/styles/theme-tokens.scss' as *;
 
 // ============================================
 //   Bloomberg Terminal Style Trade Management
@@ -157,7 +157,7 @@ const handleTradeSubmitted = async () => {
   align-items: center;
   justify-content: space-between;
   padding-bottom: var(--spacing-lg);
-  border-bottom: 2px solid var(--color-border);
+  border-bottom: var(--radius-md) solid var(--color-border);
 
   .header-title-section {
     flex: 1;
@@ -205,8 +205,8 @@ const handleTradeSubmitted = async () => {
   // Bloomberg-style Tabs Wrapper
   .bloomberg-tabs-wrapper {
     display: flex;
-    gap: 2px;
-    border-bottom: 2px solid var(--color-border);
+    gap: var(--radius-md);
+    border-bottom: var(--radius-md) solid var(--color-border);
     margin-bottom: var(--spacing-lg);
   }
 
@@ -216,7 +216,7 @@ const handleTradeSubmitted = async () => {
     padding: var(--spacing-md) var(--spacing-lg);
     background: transparent;
     border: none;
-    border-bottom: 3px solid transparent;
+    border-bottom: calc(var(--spacing-xs) - var(--radius-sm)) solid transparent;
     color: var(--color-text-secondary);
     font-family: var(--font-family-sans);
     font-size: var(--font-size-xs);
@@ -240,12 +240,12 @@ const handleTradeSubmitted = async () => {
 
   // Tab Content
   .tab-content {
-    min-height: 500px;
+    min-height: calc(var(--spacing-3xl) * 7 + var(--spacing-xl) + var(--spacing-md) + var(--spacing-xs));
   }
 }
 
 // Responsive Design
-@media (width <= 1440px) {
+@media (width <= calc(var(--spacing-3xl) * 22 + var(--spacing-xl))) {
   .trade-management-container {
     padding: var(--spacing-lg);
     gap: var(--spacing-lg);
@@ -263,7 +263,7 @@ const handleTradeSubmitted = async () => {
   }
 }
 
-@media (width <= 768px) {
+@media (width <= calc(var(--spacing-3xl) * 12)) {
   .trade-management-container {
     padding: var(--spacing-md);
     gap: var(--spacing-md);
@@ -286,7 +286,7 @@ const handleTradeSubmitted = async () => {
       flex-wrap: wrap;
 
       .bloomberg-tab {
-        padding: 10px var(--spacing-md);
+        padding: calc(var(--spacing-sm) + var(--radius-md)) var(--spacing-md);
         font-size: var(--font-size-xs);
       }
     }
