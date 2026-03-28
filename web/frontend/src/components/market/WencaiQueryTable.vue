@@ -104,7 +104,7 @@
     <el-dialog
       v-model="detailsVisible"
       title="股票详情"
-      width="600px"
+      :width="detailsDialogWidth"
     >
       <div class="details-content" v-if="selectedStock">
         <div class="detail-item" v-for="(value, key) in selectedStock" :key="key">
@@ -138,6 +138,7 @@ const total = ref(0)
 const tableData = ref([])
 const detailsVisible = ref(false)
 const selectedStock = ref(null)
+const detailsDialogWidth = 'calc((var(--artdeco-spacing-20) * 7) + var(--artdeco-spacing-10))'
 
 // 计算动态列（排除 code 和 name）
 const dynamicColumns = computed(() => {
@@ -219,25 +220,30 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
 .wencai-query-table {
   .toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    padding: 0 10px;
+    margin-bottom: var(--artdeco-spacing-5);
+    padding: 0 calc(var(--artdeco-spacing-5) / 2);
 
     .left {
       .title {
-        font-size: 16px;
-        font-weight: bold;
-        color: #333;
+        font-family: var(--artdeco-font-heading, var(--font-display));
+        font-size: var(--artdeco-text-base);
+        font-weight: var(--artdeco-font-semibold);
+        color: var(--artdeco-gold-primary);
+        letter-spacing: var(--artdeco-tracking-wide);
+        text-transform: uppercase;
       }
     }
 
     .right {
       display: flex;
-      gap: 10px;
+      gap: calc(var(--artdeco-spacing-5) / 2);
     }
   }
 
@@ -245,33 +251,39 @@ onMounted(() => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
-    padding: 10px;
-    background: #f5f7fa;
-    border-radius: 4px;
-    font-size: 14px;
+    margin-bottom: calc(var(--artdeco-spacing-6) - var(--artdeco-spacing-px));
+    padding: calc(var(--artdeco-spacing-5) / 2);
+    background: color-mix(in srgb, var(--artdeco-gold-primary) 5%, var(--artdeco-bg-card));
+    border: 1px solid var(--artdeco-border-default);
+    border-radius: var(--artdeco-radius-none);
+    font-size: var(--artdeco-text-sm);
+    color: var(--artdeco-fg-primary);
   }
 
   .details-content {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    max-height: 400px;
+    gap: calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
+    max-height: calc(var(--artdeco-spacing-20) * 5);
     overflow-y: auto;
 
     .detail-item {
-      padding: 8px;
-      background: #f9f9f9;
-      border-radius: 4px;
+      padding: var(--artdeco-spacing-2);
+      background: color-mix(in srgb, var(--artdeco-gold-primary) 4%, var(--artdeco-bg-card));
+      border: 1px solid var(--artdeco-border-default);
+      border-radius: var(--artdeco-radius-none);
 
       .label {
-        font-weight: bold;
-        color: #666;
-        margin-right: 8px;
+        font-family: var(--artdeco-font-heading, var(--font-display));
+        font-weight: var(--artdeco-font-semibold);
+        color: var(--artdeco-fg-muted);
+        margin-right: var(--artdeco-spacing-2);
+        text-transform: uppercase;
+        letter-spacing: var(--artdeco-tracking-wide);
       }
 
       .value {
-        color: #333;
+        color: var(--artdeco-fg-primary);
         word-break: break-all;
       }
     }

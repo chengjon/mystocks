@@ -21,19 +21,23 @@ const testApi = async () => {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .test-page {
-  padding: 40px;
+  padding: var(--artdeco-spacing-10);
   text-align: center;
 }
 
 h1 {
-  color: #409eff;
-  margin-bottom: 20px;
+  color: var(--artdeco-gold-primary);
+  margin-bottom: var(--artdeco-spacing-5);
+  font-family: var(--artdeco-font-heading, var(--font-display));
+  letter-spacing: var(--artdeco-tracking-wide);
+  text-transform: uppercase;
 }
 
 p {
-  font-size: 16px;
-  margin: 10px 0;
+  font-size: var(--artdeco-text-base);
+  margin: calc(var(--artdeco-spacing-5) / 2) 0;
+  color: var(--artdeco-fg-primary);
 }
 </style>

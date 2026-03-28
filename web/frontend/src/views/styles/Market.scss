@@ -1,6 +1,6 @@
 // Phase 3.3: Design Token Migration
 @use 'sass:color';
-@import '@/styles/theme-tokens';
+@use '@/styles/theme-tokens.scss' as *;
 
 // ============================================
 //   Bloomberg Terminal Style Market Page
