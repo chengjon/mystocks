@@ -4,8 +4,50 @@
 
 .risk-dashboard {
   min-height: 100vh;
-  padding: var(--fintech-space-4);
-  background: var(--fintech-bg-primary);
+  padding: var(--artdeco-spacing-4);
+  background: var(--artdeco-bg-global);
+  --fintech-space-1: var(--artdeco-spacing-1);
+  --fintech-space-2: var(--artdeco-spacing-2);
+  --fintech-space-3: var(--artdeco-spacing-3);
+  --fintech-space-4: var(--artdeco-spacing-4);
+  --fintech-space-5: var(--artdeco-spacing-5);
+  --fintech-space-6: var(--artdeco-spacing-6);
+  --fintech-space-8: var(--artdeco-spacing-8);
+  --fintech-space-10: var(--artdeco-spacing-10);
+  --fintech-space-12: var(--artdeco-spacing-12);
+  --fintech-bg-primary: var(--artdeco-bg-global);
+  --fintech-bg-secondary: var(--artdeco-bg-card);
+  --fintech-bg-tertiary: var(--artdeco-bg-elevated);
+  --fintech-bg-elevated: color-mix(in srgb, var(--artdeco-gold-primary) 5%, var(--artdeco-bg-card));
+  --fintech-text-primary: var(--artdeco-fg-primary);
+  --fintech-text-secondary: var(--artdeco-fg-muted);
+  --fintech-text-tertiary: var(--artdeco-gold-dim);
+  --fintech-text-disabled: color-mix(in srgb, var(--artdeco-fg-muted) 65%, transparent);
+  --fintech-border-base: var(--artdeco-border-default);
+  --fintech-border-dark: color-mix(in srgb, var(--artdeco-border-default) 70%, transparent);
+  --fintech-border-light: var(--artdeco-border-hover);
+  --fintech-accent-primary: var(--artdeco-gold-primary);
+  --fintech-accent-success: var(--artdeco-down);
+  --fintech-accent-danger: var(--artdeco-rise);
+  --fintech-accent-warning: var(--artdeco-warning);
+  --fintech-accent-info: var(--artdeco-info);
+  --fintech-gray-6: var(--artdeco-gold-dim);
+  --fintech-radius-sm: var(--artdeco-radius-none);
+  --fintech-radius-base: var(--artdeco-radius-none);
+  --fintech-shadow-base: var(--artdeco-shadow-md);
+  --fintech-font-size-xs: var(--artdeco-text-xs);
+  --fintech-font-size-sm: var(--artdeco-text-sm);
+  --fintech-font-size-base: var(--artdeco-text-base);
+  --fintech-font-size-md: var(--artdeco-text-base);
+  --fintech-font-size-lg: var(--artdeco-text-lg);
+  --fintech-font-size-xl: var(--artdeco-text-xl);
+  --fintech-font-size-2xl: var(--artdeco-text-2xl);
+  --fintech-font-size-3xl: var(--artdeco-text-3xl);
+  --fintech-font-family-data: var(--artdeco-font-accent, var(--font-mono));
+  --fintech-font-family-ui: var(--artdeco-font-body, var(--font-body));
+  --fintech-transition-fast: var(--artdeco-transition-quick);
+  --fintech-transition-base: var(--artdeco-transition-base);
+  --fintech-transition-slow: var(--artdeco-transition-slow);
 }
 
 /* 标题栏样式 */
@@ -42,7 +84,7 @@
 /* 核心指标网格 */
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-20) * 3 + var(--artdeco-spacing-10)), 1fr));
   gap: var(--fintech-space-4);
   margin-bottom: var(--fintech-space-6);
 }
@@ -55,7 +97,7 @@
 }
 
 .metric-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(calc(var(--artdeco-spacing-px) * -2));
   box-shadow: var(--fintech-shadow-base);
 }
 
@@ -67,14 +109,14 @@
 }
 
 .metric-icon {
-  width: 48px;
-  height: 48px;
+  width: var(--artdeco-spacing-12);
+  height: var(--artdeco-spacing-12);
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--fintech-bg-elevated);
   border-radius: var(--fintech-radius-base);
-  font-size: 20px;
+  font-size: var(--artdeco-text-lg);
   color: var(--fintech-accent-primary);
 }
 
@@ -137,7 +179,7 @@
 
 .gauge-container {
   width: 100%;
-  height: 8px;
+  height: var(--artdeco-spacing-2);
   background: var(--fintech-bg-tertiary);
   border-radius: var(--fintech-radius-sm);
   overflow: hidden;
@@ -195,8 +237,8 @@
 }
 
 .level-dot {
-  width: 8px;
-  height: 8px;
+  width: var(--artdeco-spacing-2);
+  height: var(--artdeco-spacing-2);
   border-radius: 50%;
 }
 
@@ -221,7 +263,7 @@
 /* 主内容网格 */
 .content-grid {
   display: grid;
-  grid-template-columns: 1fr 400px;
+  grid-template-columns: 1fr calc(var(--artdeco-spacing-20) * 5);
   gap: var(--fintech-space-6);
   align-items: start;
 }
@@ -255,14 +297,14 @@
 }
 
 .panel-icon {
-  width: 40px;
-  height: 40px;
+  width: var(--artdeco-spacing-10);
+  height: var(--artdeco-spacing-10);
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--fintech-bg-elevated);
   border-radius: var(--fintech-radius-base);
-  font-size: 18px;
+  font-size: var(--artdeco-text-lg);
   color: var(--fintech-accent-primary);
 }
 
@@ -292,7 +334,7 @@
 
 .count-badge.critical {
   background: var(--fintech-accent-danger);
-  color: white;
+  color: var(--artdeco-fg-primary);
 }
 
 .count-badge.warning {
@@ -302,13 +344,13 @@
 
 .count-badge.info {
   background: var(--fintech-accent-info);
-  color: white;
+  color: var(--artdeco-fg-primary);
 }
 
 /* 告警列表 */
 .alerts-list {
   padding: var(--fintech-space-5);
-  max-height: 400px;
+  max-height: calc(var(--artdeco-spacing-20) * 5);
   overflow-y: auto;
 }
 
@@ -335,7 +377,7 @@
 }
 
 .alert-icon {
-  font-size: 20px;
+  font-size: var(--artdeco-text-lg);
   color: var(--fintech-accent-danger);
   margin-top: var(--fintech-space-1);
 }
@@ -394,7 +436,7 @@
 }
 
 .empty-icon {
-  font-size: 48px;
+  font-size: var(--artdeco-spacing-12);
   color: var(--fintech-gray-6);
   margin-bottom: var(--fintech-space-4);
   opacity: 50%;
@@ -414,7 +456,7 @@
 /* 建议列表 */
 .suggestions-list {
   padding: var(--fintech-space-5);
-  max-height: 400px;
+  max-height: calc(var(--artdeco-spacing-20) * 5);
   overflow-y: auto;
 }
 
@@ -460,12 +502,12 @@
 
 .action-buy {
   background: var(--fintech-accent-success);
-  color: white;
+  color: var(--artdeco-fg-primary);
 }
 
 .action-sell {
   background: var(--fintech-accent-danger);
-  color: white;
+  color: var(--artdeco-fg-primary);
 }
 
 .action-hold {
@@ -475,7 +517,7 @@
 
 .action-rebalance {
   background: var(--fintech-accent-info);
-  color: white;
+  color: var(--artdeco-fg-primary);
 }
 
 .suggestion-content {
@@ -554,7 +596,7 @@
 
 .bar-track {
   width: 100%;
-  height: 8px;
+  height: var(--artdeco-spacing-2);
   background: var(--fintech-bg-tertiary);
   border-radius: var(--fintech-radius-sm);
   overflow: hidden;
@@ -590,7 +632,7 @@
 .risk-metrics {
   padding: var(--fintech-space-5);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-10) + var(--artdeco-spacing-5)), 1fr));
   gap: var(--fintech-space-4);
 }
 
@@ -616,7 +658,7 @@
 }
 
 /* 响应式设计 */
-@media (width <= 1400px) {
+@media (width <= calc(var(--artdeco-spacing-20) * 17 + var(--artdeco-spacing-10))) {
   .content-grid {
     grid-template-columns: 1fr;
   }
@@ -626,9 +668,9 @@
   }
 }
 
-@media (width <= 1280px) {
+@media (width <= calc(var(--artdeco-spacing-20) * 16)) {
   .metrics-grid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-20) * 3), 1fr));
   }
 
   .risk-metrics {
@@ -637,13 +679,13 @@
 }
 
 /* 高分辨率优化 */
-@media (width >= 1920px) {
+@media (width >= calc(var(--artdeco-spacing-20) * 24)) {
   .risk-dashboard {
     padding: var(--fintech-space-6);
   }
 
   .value-number {
-    font-size: 48px;
+    font-size: var(--artdeco-spacing-12);
   }
 
   .panel-info h3 {

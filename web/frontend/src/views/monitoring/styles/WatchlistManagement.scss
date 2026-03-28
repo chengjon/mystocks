@@ -4,8 +4,49 @@
 
 .watchlist-management {
   min-height: 100vh;
-  padding: var(--fintech-space-4);
-  background: var(--fintech-bg-primary);
+  padding: var(--artdeco-spacing-4);
+  background: var(--artdeco-bg-global);
+  --fintech-space-1: var(--artdeco-spacing-1);
+  --fintech-space-2: var(--artdeco-spacing-2);
+  --fintech-space-3: var(--artdeco-spacing-3);
+  --fintech-space-4: var(--artdeco-spacing-4);
+  --fintech-space-5: var(--artdeco-spacing-5);
+  --fintech-space-6: var(--artdeco-spacing-6);
+  --fintech-space-8: var(--artdeco-spacing-8);
+  --fintech-space-10: var(--artdeco-spacing-10);
+  --fintech-space-12: var(--artdeco-spacing-12);
+  --fintech-bg-primary: var(--artdeco-bg-global);
+  --fintech-bg-secondary: var(--artdeco-bg-card);
+  --fintech-bg-tertiary: var(--artdeco-bg-elevated);
+  --fintech-bg-elevated: color-mix(in srgb, var(--artdeco-gold-primary) 5%, var(--artdeco-bg-card));
+  --fintech-text-primary: var(--artdeco-fg-primary);
+  --fintech-text-secondary: var(--artdeco-fg-muted);
+  --fintech-text-tertiary: var(--artdeco-gold-dim);
+  --fintech-border-base: var(--artdeco-border-default);
+  --fintech-border-dark: color-mix(in srgb, var(--artdeco-border-default) 70%, transparent);
+  --fintech-accent-primary: var(--artdeco-gold-primary);
+  --fintech-accent-success: var(--artdeco-down);
+  --fintech-accent-danger: var(--artdeco-rise);
+  --fintech-accent-warning: var(--artdeco-warning);
+  --fintech-accent-info: var(--artdeco-info);
+  --fintech-gray-6: var(--artdeco-gold-dim);
+  --fintech-radius-sm: var(--artdeco-radius-none);
+  --fintech-radius-base: var(--artdeco-radius-none);
+  --fintech-radius-lg: var(--artdeco-radius-none);
+  --fintech-shadow-base: var(--artdeco-shadow-md);
+  --fintech-shadow-sm: var(--artdeco-shadow-sm);
+  --fintech-shadow-xl: var(--artdeco-shadow-xl);
+  --fintech-font-size-xs: var(--artdeco-text-xs);
+  --fintech-font-size-sm: var(--artdeco-text-sm);
+  --fintech-font-size-base: var(--artdeco-text-base);
+  --fintech-font-size-md: var(--artdeco-text-base);
+  --fintech-font-size-lg: var(--artdeco-text-lg);
+  --fintech-font-size-xl: var(--artdeco-text-xl);
+  --fintech-font-size-3xl: var(--artdeco-text-3xl);
+  --fintech-font-family-data: var(--artdeco-font-accent, var(--font-mono));
+  --fintech-font-family-ui: var(--artdeco-font-body, var(--font-body));
+  --fintech-transition-fast: var(--artdeco-transition-quick);
+  --fintech-transition-base: var(--artdeco-transition-base);
 }
 
 /* 标题栏样式 */
@@ -45,7 +86,7 @@
 /* 统计面板网格 */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-20) * 3 + var(--artdeco-spacing-10)), 1fr));
   gap: var(--fintech-space-4);
   margin-bottom: var(--fintech-space-6);
 }
@@ -61,7 +102,7 @@
 }
 
 .stat-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(calc(var(--artdeco-spacing-px) * -2));
   box-shadow: var(--fintech-shadow-base);
   border-color: var(--fintech-accent-primary);
 }
@@ -86,7 +127,7 @@
 }
 
 .stat-icon {
-  font-size: 32px;
+  font-size: var(--artdeco-spacing-8);
   opacity: 60%;
   color: var(--fintech-accent-primary);
 }
@@ -94,7 +135,7 @@
 /* 主内容网格 */
 .content-grid {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 1fr calc(var(--artdeco-spacing-20) * 4);
   gap: var(--fintech-space-6);
   align-items: start;
 }
@@ -136,7 +177,7 @@
 
 /* 组合列表 */
 .portfolio-list {
-  max-height: 600px;
+  max-height: calc(var(--artdeco-spacing-20) * 7 + var(--artdeco-spacing-10));
   overflow-y: auto;
 }
 
@@ -244,7 +285,7 @@
 }
 
 .empty-content .empty-icon {
-  font-size: 64px;
+  font-size: var(--artdeco-spacing-16);
   color: var(--fintech-gray-6);
   margin-bottom: var(--fintech-space-4);
   opacity: 50%;
@@ -294,17 +335,17 @@
 .stock-drawer-overlay {
   position: fixed;
   inset: 0 0 0 0;
-  background: rgb(0 0 0 / 80%);
+  background: color-mix(in srgb, var(--artdeco-bg-global) 80%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(var(--artdeco-spacing-1));
 }
 
 .stock-drawer {
   width: 90vw;
-  max-width: 1200px;
+  max-width: calc(var(--artdeco-spacing-20) * 15);
   max-height: 90vh;
   overflow: hidden;
   background: var(--fintech-bg-secondary);
@@ -332,7 +373,7 @@
 
 .drawer-content {
   padding: var(--fintech-space-5);
-  max-height: calc(90vh - 120px);
+  max-height: calc(90vh - (var(--artdeco-spacing-20) + var(--artdeco-spacing-10)));
   overflow-y: auto;
 }
 
@@ -403,17 +444,17 @@
 .modal-overlay {
   position: fixed;
   inset: 0 0 0 0;
-  background: rgb(0 0 0 / 80%);
+  background: color-mix(in srgb, var(--artdeco-bg-global) 80%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(var(--artdeco-spacing-1));
 }
 
 .modal {
   width: 90vw;
-  max-width: 600px;
+  max-width: calc(var(--artdeco-spacing-20) * 7 + var(--artdeco-spacing-10));
   background: var(--fintech-bg-secondary);
   border: 1px solid var(--fintech-border-base);
   border-radius: var(--fintech-radius-lg);
@@ -505,7 +546,7 @@
 .form-select:focus {
   outline: none;
   border-color: var(--fintech-accent-primary);
-  box-shadow: 0 0 0 2px rgb(0 128 255 / 20%);
+  box-shadow: 0 0 0 calc(var(--artdeco-spacing-px) * 2) color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
 }
 
 .slider-container {
@@ -516,7 +557,7 @@
 
 .form-slider {
   flex: 1;
-  height: 6px;
+  height: calc(var(--artdeco-spacing-3) / 2);
   background: var(--fintech-bg-tertiary);
   border-radius: var(--fintech-radius-sm);
   outline: none;
@@ -525,8 +566,8 @@
 
 .form-slider::-webkit-slider-thumb {
   appearance: none;
-  width: 20px;
-  height: 20px;
+  width: var(--artdeco-spacing-5);
+  height: var(--artdeco-spacing-5);
   background: var(--fintech-accent-primary);
   border-radius: 50%;
   cursor: pointer;
@@ -534,8 +575,8 @@
 }
 
 .form-slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
+  width: var(--artdeco-spacing-5);
+  height: var(--artdeco-spacing-5);
   background: var(--fintech-accent-primary);
   border-radius: 50%;
   cursor: pointer;
@@ -546,7 +587,7 @@
 .slider-labels {
   display: flex;
   justify-content: space-between;
-  width: 120px;
+  width: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-10));
   font-size: var(--fintech-font-size-xs);
   text-transform: uppercase;
   letter-spacing: 0.02em;
@@ -567,7 +608,7 @@
 }
 
 /* 响应式设计 */
-@media (width <= 1280px) {
+@media (width <= calc(var(--artdeco-spacing-20) * 16)) {
   .content-grid {
     grid-template-columns: 1fr;
   }
@@ -577,12 +618,12 @@
   }
 
   .stats-grid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-20) * 3), 1fr));
   }
 }
 
 /* 高分辨率优化 */
-@media (width >= 1920px) {
+@media (width >= calc(var(--artdeco-spacing-20) * 24)) {
   .watchlist-management {
     padding: var(--fintech-space-6);
   }
@@ -592,6 +633,6 @@
   }
 
   .stat-value {
-    font-size: 48px;
+    font-size: var(--artdeco-spacing-12);
   }
 }
