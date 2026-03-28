@@ -14,10 +14,23 @@
     <div class="demo-section">
       <h2>Profile Card</h2>
       <div class="card profile-card">
-        <ArtDecoSkeleton variant="circle" width="64px" height="64px" />
+        <ArtDecoSkeleton
+          variant="circle"
+          :width="'var(--artdeco-spacing-16)'"
+          :height="'var(--artdeco-spacing-16)'"
+        />
         <div class="profile-info">
-          <ArtDecoSkeleton variant="text" width="120px" style="height: 24px; margin-bottom: 8px;" />
-          <ArtDecoSkeleton variant="text" width="180px" />
+          <div class="profile-name-skeleton">
+            <ArtDecoSkeleton
+              variant="text"
+              :width="'calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6))'"
+              :height="'var(--artdeco-spacing-6)'"
+            />
+          </div>
+          <ArtDecoSkeleton
+            variant="text"
+            :width="'calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-8) + var(--artdeco-spacing-4) + var(--artdeco-spacing-2))'"
+          />
         </div>
       </div>
     </div>
@@ -26,13 +39,21 @@
       <h2>Chart Placeholder</h2>
       <div class="card">
         <div class="chart-header">
-          <ArtDecoSkeleton variant="text" width="200px" style="height: 28px;" />
+          <ArtDecoSkeleton
+            variant="text"
+            :width="'calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-16) + var(--artdeco-spacing-8))'"
+            :height="'calc(var(--artdeco-spacing-6) - var(--artdeco-spacing-px) * 2)'"
+          />
           <div class="actions">
-            <ArtDecoSkeleton variant="button" width="80px" />
-            <ArtDecoSkeleton variant="button" width="80px" />
+            <ArtDecoSkeleton variant="button" :width="'calc(var(--artdeco-spacing-16) + var(--artdeco-spacing-4))'" />
+            <ArtDecoSkeleton variant="button" :width="'calc(var(--artdeco-spacing-16) + var(--artdeco-spacing-4))'" />
           </div>
         </div>
-        <ArtDecoSkeleton variant="rect" width="100%" height="300px" />
+        <ArtDecoSkeleton
+          variant="rect"
+          width="100%"
+          :height="'calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-24) + var(--artdeco-spacing-4))'"
+        />
       </div>
     </div>
 
@@ -40,10 +61,10 @@
       <h2>Table Loading</h2>
       <div class="card">
         <div class="table-row" v-for="i in 5" :key="i">
-          <ArtDecoSkeleton variant="text" width="40px" />
-          <ArtDecoSkeleton variant="text" width="120px" />
-          <ArtDecoSkeleton variant="text" width="80px" />
-          <ArtDecoSkeleton variant="text" width="60px" />
+          <ArtDecoSkeleton variant="text" :width="'calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-2))'" />
+          <ArtDecoSkeleton variant="text" :width="'calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6))'" />
+          <ArtDecoSkeleton variant="text" :width="'calc(var(--artdeco-spacing-16) + var(--artdeco-spacing-4))'" />
+          <ArtDecoSkeleton variant="text" :width="'calc(var(--artdeco-spacing-12) + var(--artdeco-spacing-3))'" />
         </div>
       </div>
     </div>
@@ -55,19 +76,19 @@ import ArtDecoSkeleton from '@/components/artdeco/core/ArtDecoSkeleton.vue'
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .skeleton-demo {
-  padding: 32px;
+  padding: var(--artdeco-spacing-8);
   color: var(--artdeco-fg-primary);
 }
 
 .demo-section {
-  margin-bottom: 40px;
+  margin-bottom: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-2));
   
   h2 {
-    margin-bottom: 16px;
-    font-size: 18px;
+    margin-bottom: var(--artdeco-spacing-4);
+    font-size: calc(var(--artdeco-font-size-base) + var(--artdeco-spacing-1) - var(--artdeco-spacing-px));
     color: var(--artdeco-gold-primary);
   }
 }
@@ -75,31 +96,35 @@ import ArtDecoSkeleton from '@/components/artdeco/core/ArtDecoSkeleton.vue'
 .card {
   background: var(--artdeco-bg-surface);
   border: 1px solid var(--artdeco-border-default);
-  border-radius: 8px;
-  padding: 24px;
+  border-radius: var(--artdeco-spacing-2);
+  padding: var(--artdeco-spacing-6);
 }
 
 .profile-card {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: var(--artdeco-spacing-5);
+}
+
+.profile-name-skeleton {
+  margin-bottom: var(--artdeco-spacing-2);
 }
 
 .chart-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: var(--artdeco-spacing-5);
   
   .actions {
     display: flex;
-    gap: 10px;
+    gap: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
   }
 }
 
 .table-row {
   display: flex;
   justify-content: space-between;
-  padding: 12px 0;
+  padding: var(--artdeco-spacing-3) 0;
   border-bottom: 1px solid var(--artdeco-border-subtle);
   
   &:last-child {
