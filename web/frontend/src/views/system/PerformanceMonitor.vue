@@ -456,6 +456,6 @@
     })
 </script>
 
-<style scoped>
-@import "./styles/PerformanceMonitor.css";
+<style scoped lang="scss">
+@use "./styles/PerformanceMonitor.css";
 </style>

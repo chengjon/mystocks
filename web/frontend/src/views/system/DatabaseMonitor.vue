@@ -267,5 +267,5 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/DatabaseMonitor";
+@use "./styles/DatabaseMonitor.scss" as *;
 </style>

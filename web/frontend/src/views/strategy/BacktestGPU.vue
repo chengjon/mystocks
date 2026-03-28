@@ -320,5 +320,5 @@ const { gpuStatus, autoRefresh, refreshing, accelerationRatio, performanceGain, 
 </script>
 
 <style scoped lang="scss">
-@import "./styles/BacktestGPU";
+@use "./styles/BacktestGPU.scss" as *;
 </style>

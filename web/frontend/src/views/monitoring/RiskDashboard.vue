@@ -430,6 +430,6 @@ const {
 } = useRiskDashboard()
 </script>
 
-<style scoped>
-@import './styles/RiskDashboard';
+<style scoped lang="scss">
+@use './styles/RiskDashboard.scss' as *;
 </style>

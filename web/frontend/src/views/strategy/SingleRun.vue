@@ -243,5 +243,5 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "./styles/SingleRun";
+@use "./styles/SingleRun.scss" as *;
 </style>

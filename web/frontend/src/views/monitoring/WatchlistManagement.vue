@@ -441,5 +441,5 @@ const {
 </script>
 
 <style scoped lang="scss">
-@import './styles/WatchlistManagement.scss';
+@use './styles/WatchlistManagement.scss' as *;
 </style>
