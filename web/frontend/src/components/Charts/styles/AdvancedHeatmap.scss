@@ -1,3 +1,5 @@
+    @use '../../../styles/artdeco-tokens.scss' as *;
+
     .advanced-heatmap-container {
         position: relative;
         width: 100%;
@@ -7,52 +9,55 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: var(--artdeco-spacing-4);
+            padding-bottom: var(--artdeco-spacing-3);
+            border-bottom: 1px solid var(--artdeco-border-default);
             flex-wrap: wrap;
-            gap: 12px;
+            gap: var(--artdeco-spacing-3);
 
             .chart-title {
                 margin: 0;
-                font-size: 18px;
-                font-weight: 600;
-                color: #333;
+                font-family: var(--artdeco-font-heading, var(--font-display));
+                font-size: var(--artdeco-text-lg);
+                font-weight: var(--artdeco-font-semibold);
+                color: var(--artdeco-gold-primary);
+                text-transform: uppercase;
+                letter-spacing: var(--artdeco-tracking-wide);
             }
 
             .chart-toolbar {
                 display: flex;
-                gap: 8px;
+                gap: var(--artdeco-spacing-2);
                 align-items: center;
             }
         }
 
         .chart-stats {
             display: flex;
-            gap: 24px;
-            margin-bottom: 16px;
-            padding: 12px 16px;
-            background: rgb(255 255 255 / 80%);
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
+            gap: var(--artdeco-spacing-6);
+            margin-bottom: var(--artdeco-spacing-4);
+            padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+            background: color-mix(in srgb, var(--artdeco-gold-primary) 5%, var(--artdeco-bg-card));
+            border-radius: var(--artdeco-radius-none);
+            border: 1px solid var(--artdeco-border-default);
             flex-wrap: wrap;
 
             .stat-item {
                 display: flex;
                 align-items: center;
-                gap: 8px;
+                gap: var(--artdeco-spacing-2);
 
                 .stat-label {
-                    font-size: 14px;
-                    color: #666;
-                    font-weight: 500;
+                    font-size: var(--artdeco-text-sm);
+                    color: var(--artdeco-fg-muted);
+                    font-weight: var(--artdeco-font-medium);
                 }
 
                 .stat-value {
-                    font-size: 14px;
-                    color: #333;
-                    font-weight: 600;
-                    font-family: Monaco, Menlo, monospace;
+                    font-size: var(--artdeco-text-sm);
+                    color: var(--artdeco-fg-primary);
+                    font-weight: var(--artdeco-font-semibold);
+                    font-family: var(--artdeco-font-accent, var(--font-mono));
                 }
             }
         }
@@ -67,73 +72,74 @@
             z-index: 10;
 
             .el-icon {
-                font-size: 24px;
-                margin-bottom: 8px;
+                font-size: var(--artdeco-spacing-6);
+                margin-bottom: var(--artdeco-spacing-2);
             }
         }
 
         .chart-loading {
-            color: #666;
+            color: var(--artdeco-fg-muted);
 
             span {
                 display: block;
-                font-size: 14px;
+                font-size: var(--artdeco-text-sm);
             }
         }
 
         .chart-error {
-            background: rgb(255 255 255 / 90%);
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+            background: color-mix(in srgb, var(--artdeco-bg-global) 92%, var(--artdeco-bg-card));
+            padding: var(--artdeco-spacing-5);
+            border-radius: var(--artdeco-radius-none);
+            border: 1px solid var(--artdeco-border-default);
+            box-shadow: var(--artdeco-shadow-lg), var(--artdeco-glow-subtle);
 
             .el-alert {
-                margin-bottom: 12px;
+                margin-bottom: var(--artdeco-spacing-3);
             }
         }
 
         .chart-tooltip {
             position: fixed;
-            background: rgb(0 0 0 / 80%);
-            color: white;
-            padding: 12px 16px;
-            border-radius: 6px;
-            font-size: 14px;
+            background: var(--artdeco-bg-global);
+            color: var(--artdeco-fg-primary);
+            padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+            border-radius: var(--artdeco-radius-none);
+            font-size: var(--artdeco-text-sm);
             pointer-events: none;
             z-index: 1000;
-            box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
-            max-width: 200px;
+            box-shadow: var(--artdeco-shadow-lg), var(--artdeco-glow-subtle);
+            max-width: calc(var(--artdeco-spacing-20) * 2);
 
             .tooltip-header {
-                font-weight: 600;
-                margin-bottom: 8px;
-                font-size: 13px;
+                font-weight: var(--artdeco-font-semibold);
+                margin-bottom: var(--artdeco-spacing-2);
+                font-size: var(--artdeco-text-compact-base);
             }
 
             .tooltip-value {
-                font-size: 16px;
-                font-weight: 700;
-                color: #4fc3f7;
-                margin-bottom: 4px;
+                font-size: var(--artdeco-text-base);
+                font-weight: var(--artdeco-font-bold);
+                color: var(--artdeco-gold-primary);
+                margin-bottom: var(--artdeco-spacing-1);
             }
 
             .tooltip-percentage {
-                font-size: 12px;
-                color: #81c784;
-                font-weight: 500;
+                font-size: var(--artdeco-text-xs);
+                color: var(--artdeco-down);
+                font-weight: var(--artdeco-font-medium);
             }
         }
     }
 
     // 响应式设计
-    @media (width <= 768px) {
+    @media (width <= 48rem) {
         .advanced-heatmap-container {
             .chart-header {
                 flex-direction: column;
                 align-items: flex-start;
 
                 .chart-title {
-                    font-size: 16px;
+                    font-size: var(--artdeco-text-base);
                 }
 
                 .chart-toolbar {
@@ -147,7 +153,7 @@
 
             .chart-stats {
                 .stat-item {
-                    font-size: 12px;
+                    font-size: var(--artdeco-text-xs);
                 }
             }
         }
