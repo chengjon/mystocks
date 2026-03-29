@@ -291,13 +291,4 @@ watch(() => props.modelValue, (newVal) => {
     }
   }
 }
-
-// 响应式设计
-@media (width <= 48rem) {
-  .stock-search-bar {
-    .stock-search-input {
-      width: 100%;
-    }
-  }
-}
 </style>
