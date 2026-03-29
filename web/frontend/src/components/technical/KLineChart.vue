@@ -374,13 +374,15 @@ watch(
 </script>
 
 <style scoped lang="scss">
+@use '../../styles/artdeco-tokens.scss' as *;
+
 .kline-chart-container {
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
   position: relative;
-  background: #fff;
+  background: var(--artdeco-bg-global);
 
   .chart-loading {
     display: flex;
@@ -388,44 +390,44 @@ watch(
     align-items: center;
     justify-content: center;
     height: 100%;
-    color: #909399;
+    color: var(--artdeco-fg-muted);
 
     .el-icon {
-      font-size: 48px;
-      margin-bottom: 16px;
+      font-size: var(--artdeco-text-4xl);
+      margin-bottom: var(--artdeco-spacing-4);
     }
 
     p {
-      font-size: 14px;
+      font-size: var(--artdeco-text-sm);
     }
   }
 
   .chart-canvas {
     flex: 1;
     width: 100%;
-    min-height: 400px;
+    min-height: 25rem;
   }
 
   .chart-toolbar {
-    padding: 12px;
-    border-top: 1px solid #e4e7ed;
-    background: #f5f7fa;
+    padding: var(--artdeco-spacing-3);
+    border-top: 1px solid var(--artdeco-gold-dim);
+    background: color-mix(in srgb, var(--artdeco-gold-primary) 6%, var(--artdeco-bg-card));
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: var(--artdeco-spacing-3);
     flex-wrap: wrap;
   }
 }
 
 // Responsive design
-@media (width <= 768px) {
+@media (width <= 48rem) {
   .kline-chart-container {
     .chart-canvas {
-      min-height: 300px;
+      min-height: 18.75rem;
     }
 
     .chart-toolbar {
-      padding: 8px;
+      padding: var(--artdeco-spacing-2);
 
       :deep(.el-radio-group) {
         flex-wrap: wrap;
