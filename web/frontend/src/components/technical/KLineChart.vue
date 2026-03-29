@@ -58,7 +58,7 @@
         >
           <el-icon
             :size="14"
-            style="margin-right: 4px; cursor: pointer;"
+            class="indicator-toggle-icon"
             @click.stop="handleToggleIndicator(indicator)"
           >
             <component :is="indicator.visible ? View : Hide" />
@@ -193,7 +193,6 @@ const {
   handleChartTypeChange: handleChartTypeChangeControl,
   handlePeriodChange: handlePeriodChangeControl,
   togglePerformanceMonitor,
-  _measurePerformance
 } = useKLineControls(chart, performanceMonitor)
 
 const initChart = async () => {
@@ -226,13 +225,8 @@ const subscribeToChartActions = () => {
   if (!chart.value) return
 
   try {
-    const zoomUnsub = chart.value.subscribeAction('onZoom', (data) => {
-      console.log('[KLineChart] Zoom event:', data)
-    })
-
-    const scrollUnsub = chart.value.subscribeAction('onScroll', (data) => {
-      console.log('[KLineChart] Scroll event:', data)
-    })
+    const zoomUnsub = chart.value.subscribeAction('onZoom', () => {})
+    const scrollUnsub = chart.value.subscribeAction('onScroll', () => {})
 
     actionSubscriptions.value.push(zoomUnsub, scrollUnsub)
   } catch (error) {
@@ -416,6 +410,11 @@ watch(
     align-items: center;
     gap: var(--artdeco-spacing-3);
     flex-wrap: wrap;
+
+    .indicator-toggle-icon {
+      margin-right: var(--artdeco-spacing-1);
+      cursor: pointer;
+    }
   }
 }
 

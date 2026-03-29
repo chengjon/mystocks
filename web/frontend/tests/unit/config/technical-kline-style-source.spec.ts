@@ -9,6 +9,8 @@ describe('KLineChart style source', () => {
     expect(source).toContain('var(--artdeco-bg-global)')
     expect(source).toContain('var(--artdeco-gold-primary)')
     expect(source).toContain('var(--artdeco-fg-muted)')
+    expect(source).toContain('class="indicator-toggle-icon"')
+    expect(source).toContain('.indicator-toggle-icon')
 
     expect(source).not.toContain('background: #fff')
     expect(source).not.toContain('#909399')
