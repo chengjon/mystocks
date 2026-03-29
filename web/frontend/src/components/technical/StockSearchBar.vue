@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
@@ -192,28 +192,55 @@ const validateStockSymbol = (symbol) => {
   return true
 }
 
-// 监听外部值变化
-import { watch } from 'vue'
 watch(() => props.modelValue, (newVal) => {
   searchInput.value = newVal
 })
 </script>
 
 <style scoped lang="scss">
+@use '../../styles/artdeco-tokens.scss' as *;
+
 .stock-search-bar {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--artdeco-spacing-2);
 
   .stock-search-input {
-    width: 400px;
+    width: 100%;
+
+    :deep(.el-input__wrapper) {
+      background: color-mix(in srgb, var(--artdeco-bg-global) 88%, var(--artdeco-bg-card));
+      box-shadow: inset 0 0 0 var(--artdeco-spacing-px) var(--artdeco-border-default);
+    }
+
+    :deep(.el-input__inner) {
+      color: var(--artdeco-fg-primary);
+    }
+
+    :deep(.el-input__inner::placeholder) {
+      color: var(--artdeco-fg-muted);
+    }
+
+    :deep(.el-input__icon) {
+      color: var(--artdeco-gold-primary);
+    }
 
     :deep(.el-input-group__append) {
       padding: 0;
+      background: transparent;
+      border: none;
 
       .el-button {
         margin: 0;
-        border-radius: 0 4px 4px 0;
+        border-radius: 0 var(--artdeco-radius-none) var(--artdeco-radius-none) 0;
+        border-color: var(--artdeco-gold-primary);
+        background: var(--artdeco-gold-primary);
+        color: var(--artdeco-bg-global);
+      }
+
+      .el-button:hover {
+        border-color: var(--artdeco-gold-light);
+        background: var(--artdeco-gold-light);
       }
     }
   }
@@ -221,19 +248,19 @@ watch(() => props.modelValue, (newVal) => {
   .stock-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 4px 0;
+    gap: var(--artdeco-spacing-2);
+    padding: var(--artdeco-spacing-1) 0;
 
     .stock-symbol {
-      font-weight: 600;
-      color: #303133;
-      min-width: 100px;
+      min-width: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-5));
+      color: var(--artdeco-fg-primary);
+      font-weight: var(--artdeco-font-semibold);
     }
 
     .stock-name {
       flex: 1;
-      color: #606266;
-      font-size: 14px;
+      color: var(--artdeco-fg-muted);
+      font-size: var(--artdeco-text-sm);
     }
 
     .exchange-tag {
@@ -242,22 +269,31 @@ watch(() => props.modelValue, (newVal) => {
   }
 
   .quick-select {
-    padding: 8px 0;
+    padding: var(--artdeco-spacing-2) 0;
 
     .quick-select-tag {
       cursor: pointer;
-      transition: all 0.3s;
+      color: var(--artdeco-fg-primary);
+      border-color: var(--artdeco-border-default);
+      background: color-mix(in srgb, var(--artdeco-gold-primary) 8%, var(--artdeco-bg-card));
+      transition:
+        transform var(--artdeco-transition-quick) var(--artdeco-ease-out),
+        box-shadow var(--artdeco-transition-quick) var(--artdeco-ease-out),
+        color var(--artdeco-transition-quick) var(--artdeco-ease-out),
+        border-color var(--artdeco-transition-quick) var(--artdeco-ease-out);
 
       &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+        transform: translateY(calc(var(--artdeco-spacing-px) * -2));
+        box-shadow: var(--artdeco-shadow-md);
+        color: var(--artdeco-gold-primary);
+        border-color: var(--artdeco-gold-primary);
       }
     }
   }
 }
 
 // 响应式设计
-@media (width <= 768px) {
+@media (width <= 48rem) {
   .stock-search-bar {
     .stock-search-input {
       width: 100%;

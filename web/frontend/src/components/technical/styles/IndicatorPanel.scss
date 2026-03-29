@@ -1,8 +1,10 @@
+@use '../../../styles/artdeco-tokens.scss' as *;
+
 .indicator-panel {
-  padding: 0 4px;
+  padding: 0 var(--artdeco-spacing-1);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--artdeco-spacing-5);
 
   .search-section {
     padding: 0;
@@ -12,39 +14,40 @@
     :deep(.el-radio-group) {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: var(--artdeco-spacing-2);
     }
   }
 
   .selected-section {
-    background: #f5f7fa;
-    padding: 16px;
-    border-radius: 8px;
+    padding: var(--artdeco-spacing-4);
+    background: color-mix(in srgb, var(--artdeco-gold-primary) 6%, var(--artdeco-bg-card));
+    border: var(--artdeco-spacing-px) solid var(--artdeco-border-default);
+    border-radius: var(--artdeco-radius-none);
 
     .section-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
+      margin-bottom: var(--artdeco-spacing-3);
 
       h4 {
         margin: 0;
-        font-size: 14px;
-        font-weight: 600;
-        color: #303133;
+        font-size: var(--artdeco-text-sm);
+        font-weight: var(--artdeco-font-semibold);
+        color: var(--artdeco-fg-primary);
       }
     }
 
     .selected-list {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: var(--artdeco-spacing-2);
 
       .selected-indicator-tag {
         cursor: pointer;
 
         .indicator-name {
-          font-weight: 600;
+          font-weight: var(--artdeco-font-semibold);
         }
       }
     }
@@ -52,28 +55,30 @@
 
   .indicators-section {
     .section-header {
-      margin-bottom: 12px;
+      margin-bottom: var(--artdeco-spacing-3);
 
       h4 {
         margin: 0;
-        font-size: 14px;
-        font-weight: 600;
-        color: #303133;
+        font-size: var(--artdeco-text-sm);
+        font-weight: var(--artdeco-font-semibold);
+        color: var(--artdeco-fg-primary);
       }
     }
 
     .indicators-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 12px;
+      gap: var(--artdeco-spacing-3);
 
       .indicator-card {
         cursor: pointer;
-        transition: all 0.3s;
+        transition:
+          transform var(--artdeco-transition-quick) var(--artdeco-ease-out),
+          box-shadow var(--artdeco-transition-quick) var(--artdeco-ease-out);
 
         &:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+          transform: translateY(calc(var(--artdeco-spacing-px) * -2));
+          box-shadow: var(--artdeco-shadow-lg);
         }
 
         .indicator-card-header {
@@ -82,38 +87,38 @@
           justify-content: space-between;
 
           .indicator-abbr {
-            font-size: 16px;
-            font-weight: 700;
-            color: #409eff;
+            font-size: var(--artdeco-text-base);
+            font-weight: var(--artdeco-font-bold);
+            color: var(--artdeco-gold-primary);
           }
         }
 
         .indicator-info {
-          padding: 8px 0;
+          padding: var(--artdeco-spacing-2) 0;
 
           .indicator-full-name {
-            font-size: 14px;
-            font-weight: 600;
-            color: #303133;
-            margin: 0 0 4px 0;
+            font-size: var(--artdeco-text-sm);
+            font-weight: var(--artdeco-font-semibold);
+            color: var(--artdeco-fg-primary);
+            margin: 0 0 var(--artdeco-spacing-1) 0;
           }
 
           .indicator-chinese-name {
-            font-size: 13px;
-            color: #606266;
-            margin: 0 0 8px 0;
+            font-size: calc(var(--artdeco-text-sm) - var(--artdeco-spacing-px));
+            color: var(--artdeco-fg-muted);
+            margin: 0 0 var(--artdeco-spacing-2) 0;
           }
 
           .indicator-description {
-            font-size: 12px;
-            color: #909399;
-            line-height: 1.6;
-            margin: 0 0 8px 0;
+            font-size: var(--artdeco-text-xs);
+            color: var(--artdeco-fg-muted);
+            line-height: var(--artdeco-leading-relaxed);
+            margin: 0 0 var(--artdeco-spacing-2) 0;
           }
 
           .indicator-params {
-            padding-top: 8px;
-            border-top: 1px solid #ebeef5;
+            padding-top: var(--artdeco-spacing-2);
+            border-top: var(--artdeco-spacing-px) solid color-mix(in srgb, var(--artdeco-gold-primary) 12%, transparent);
           }
         }
       }
@@ -124,17 +129,17 @@
 // 增强: 参数配置对话框样式
 .config-dialog-content {
   .indicator-desc {
-    margin: 8px 0 0 0;
-    font-size: 14px;
-    line-height: 1.6;
-    color: #606266;
+    margin: var(--artdeco-spacing-2) 0 0 0;
+    font-size: var(--artdeco-text-sm);
+    line-height: var(--artdeco-leading-relaxed);
+    color: var(--artdeco-fg-muted);
   }
 
   .param-description {
     .el-text {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: var(--artdeco-spacing-1);
 
       .el-icon {
         flex-shrink: 0;
