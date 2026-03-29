@@ -232,32 +232,32 @@ onUnmounted(() => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--art-deco-bg-secondary);
+  background: var(--artdeco-bg-card);
 }
 
 .oscillator-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 10px;
-  border-bottom: 1px solid var(--art-deco-border);
+  padding: calc(var(--artdeco-spacing-3) / 2) calc(var(--artdeco-spacing-5) / 2);
+  border-bottom: 1px solid var(--artdeco-border-default);
 }
 
 .oscillator-title {
-  font-family: var(--art-deco-font-mono);
-  font-size: 11px;
-  color: var(--art-deco-gold);
+  font-family: var(--artdeco-font-accent, var(--font-mono));
+  font-size: var(--artdeco-text-compact-xs);
+  color: var(--artdeco-gold-primary);
   text-transform: uppercase;
 }
 
 .oscillator-values {
   display: flex;
-  gap: 12px;
+  gap: var(--artdeco-spacing-3);
 }
 
 .oscillator-value {
-  font-family: var(--art-deco-font-mono);
-  font-size: 10px;
+  font-family: var(--artdeco-font-accent, var(--font-mono));
+  font-size: calc(var(--artdeco-spacing-5) / 4);
 }
 
 .chart-area {

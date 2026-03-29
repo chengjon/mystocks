@@ -194,229 +194,229 @@ watch(() => props.modelValue, (newVal) => {
 
 <style scoped>
 .indicator-selector {
-  background: var(--art-deco-bg-secondary);
-  border: 1px solid var(--art-deco-border);
+  background: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-default);
 }
 
 .selector-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--art-deco-border);
+  padding: calc(var(--artdeco-spacing-5) / 2) var(--artdeco-spacing-3);
+  border-bottom: 1px solid var(--artdeco-border-default);
 }
 
 .selector-title {
-  font-family: var(--art-deco-font-body);
-  font-size: 12px;
-  color: var(--art-deco-fg-primary);
+  font-family: var(--artdeco-font-body, var(--font-body));
+  font-size: var(--artdeco-text-xs);
+  color: var(--artdeco-fg-primary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--artdeco-tracking-wide);
 }
 
 .selector-toggle {
   background: transparent;
   border: none;
-  color: var(--art-deco-gold);
-  font-family: var(--art-deco-font-body);
-  font-size: 11px;
+  color: var(--artdeco-gold-primary);
+  font-family: var(--artdeco-font-body, var(--font-body));
+  font-size: var(--artdeco-text-compact-xs);
   cursor: pointer;
 }
 
 .selector-content {
-  padding: 12px;
+  padding: var(--artdeco-spacing-3);
 }
 
 .indicator-groups {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--artdeco-spacing-3);
 }
 
 .indicator-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--artdeco-spacing-2);
 }
 
 .group-title {
-  font-family: var(--art-deco-font-body);
-  font-size: 11px;
-  color: var(--art-deco-fg-muted);
+  font-family: var(--artdeco-font-body, var(--font-body));
+  font-size: var(--artdeco-text-compact-xs);
+  color: var(--artdeco-fg-muted);
   text-transform: uppercase;
 }
 
 .indicator-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: calc(var(--artdeco-spacing-3) / 2);
 }
 
 .indicator-btn {
-  height: 26px;
-  padding: 0 10px;
-  background: var(--art-deco-bg-tertiary);
-  border: 1px solid var(--art-deco-border);
-  color: var(--art-deco-fg-secondary);
-  font-family: var(--art-deco-font-mono);
-  font-size: 11px;
+  height: calc(var(--artdeco-spacing-6) + calc(var(--artdeco-spacing-1) / 2));
+  padding: 0 calc(var(--artdeco-spacing-5) / 2);
+  background: var(--artdeco-bg-elevated);
+  border: 1px solid var(--artdeco-border-default);
+  color: var(--artdeco-fg-muted);
+  font-family: var(--artdeco-font-accent, var(--font-mono));
+  font-size: var(--artdeco-text-compact-xs);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .indicator-btn:hover {
-  border-color: var(--art-deco-gold);
-  color: var(--art-deco-gold);
+  border-color: var(--artdeco-gold-primary);
+  color: var(--artdeco-gold-primary);
 }
 
 .indicator-btn.active {
-  background: rgb(212 175 55 / 15%);
-  border-color: var(--art-deco-gold);
-  color: var(--art-deco-gold);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 15%, var(--artdeco-bg-card));
+  border-color: var(--artdeco-gold-primary);
+  color: var(--artdeco-gold-primary);
 }
 
 .indicator-settings {
-  margin-top: 12px;
-  padding: 12px;
-  background: var(--art-deco-bg-tertiary);
-  border: 1px solid var(--art-deco-border);
+  margin-top: var(--artdeco-spacing-3);
+  padding: var(--artdeco-spacing-3);
+  background: var(--artdeco-bg-elevated);
+  border: 1px solid var(--artdeco-border-default);
 }
 
 .settings-title {
-  font-family: var(--art-deco-font-body);
-  font-size: 12px;
-  color: var(--art-deco-gold);
-  margin-bottom: 10px;
+  font-family: var(--artdeco-font-body, var(--font-body));
+  font-size: var(--artdeco-text-xs);
+  color: var(--artdeco-gold-primary);
+  margin-bottom: calc(var(--artdeco-spacing-5) / 2);
 }
 
 .settings-content {
   display: flex;
-  gap: 10px;
+  gap: calc(var(--artdeco-spacing-5) / 2);
   flex-wrap: wrap;
 }
 
 .setting-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--artdeco-spacing-1);
 }
 
 .setting-label {
-  font-family: var(--art-deco-font-body);
-  font-size: 10px;
-  color: var(--art-deco-fg-muted);
+  font-family: var(--artdeco-font-body, var(--font-body));
+  font-size: calc(var(--artdeco-spacing-5) / 4);
+  color: var(--artdeco-fg-muted);
 }
 
 .setting-input {
-  width: 60px;
-  height: 28px;
-  padding: 0 8px;
-  background: var(--art-deco-bg-primary);
-  border: 1px solid var(--art-deco-border);
-  color: var(--art-deco-fg-primary);
-  font-family: var(--art-deco-font-mono);
-  font-size: 12px;
+  width: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
+  height: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
+  padding: 0 var(--artdeco-spacing-2);
+  background: var(--artdeco-bg-global);
+  border: 1px solid var(--artdeco-border-default);
+  color: var(--artdeco-fg-primary);
+  font-family: var(--artdeco-font-accent, var(--font-mono));
+  font-size: var(--artdeco-text-xs);
   text-align: center;
 }
 
 .setting-input:focus {
   outline: none;
-  border-color: var(--art-deco-gold);
+  border-color: var(--artdeco-gold-primary);
 }
 
 .settings-actions {
   display: flex;
-  gap: 8px;
-  margin-top: 10px;
+  gap: var(--artdeco-spacing-2);
+  margin-top: calc(var(--artdeco-spacing-5) / 2);
 }
 
 .settings-btn {
-  height: 28px;
-  padding: 0 14px;
-  border: 1px solid var(--art-deco-border);
-  font-family: var(--art-deco-font-body);
-  font-size: 11px;
+  height: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
+  padding: 0 calc(var(--artdeco-spacing-3) + calc(var(--artdeco-spacing-1) / 2));
+  border: 1px solid var(--artdeco-border-default);
+  font-family: var(--artdeco-font-body, var(--font-body));
+  font-size: var(--artdeco-text-compact-xs);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .settings-btn.apply {
-  background: rgb(212 175 55 / 15%);
-  border-color: var(--art-deco-gold);
-  color: var(--art-deco-gold);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 15%, var(--artdeco-bg-card));
+  border-color: var(--artdeco-gold-primary);
+  color: var(--artdeco-gold-primary);
 }
 
 .settings-btn.apply:hover {
-  background: rgb(212 175 55 / 25%);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 25%, var(--artdeco-bg-card));
 }
 
 .settings-btn.reset {
   background: transparent;
-  border-color: var(--art-deco-border);
-  color: var(--art-deco-fg-muted);
+  border-color: var(--artdeco-border-default);
+  color: var(--artdeco-fg-muted);
 }
 
 .settings-btn.reset:hover {
-  border-color: var(--art-deco-fg-muted);
-  color: var(--art-deco-fg-secondary);
+  border-color: var(--artdeco-fg-muted);
+  color: var(--artdeco-fg-primary);
 }
 
 .active-indicators {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--art-deco-border);
+  margin-top: var(--artdeco-spacing-3);
+  padding-top: var(--artdeco-spacing-3);
+  border-top: 1px solid var(--artdeco-border-default);
 }
 
 .active-title {
-  font-family: var(--art-deco-font-body);
-  font-size: 11px;
-  color: var(--art-deco-fg-muted);
-  margin-bottom: 8px;
+  font-family: var(--artdeco-font-body, var(--font-body));
+  font-size: var(--artdeco-text-compact-xs);
+  color: var(--artdeco-fg-muted);
+  margin-bottom: var(--artdeco-spacing-2);
 }
 
 .active-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(var(--artdeco-spacing-3) / 2);
 }
 
 .active-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  background: var(--art-deco-bg-tertiary);
-  border: 1px solid var(--art-deco-border);
+  gap: var(--artdeco-spacing-2);
+  padding: calc(var(--artdeco-spacing-3) / 2) calc(var(--artdeco-spacing-5) / 2);
+  background: var(--artdeco-bg-elevated);
+  border: 1px solid var(--artdeco-border-default);
 }
 
 .active-name {
-  font-family: var(--art-deco-font-mono);
-  font-size: 12px;
-  color: var(--art-deco-gold);
+  font-family: var(--artdeco-font-accent, var(--font-mono));
+  font-size: var(--artdeco-text-xs);
+  color: var(--artdeco-gold-primary);
 }
 
 .active-params {
-  font-family: var(--art-deco-font-mono);
-  font-size: 11px;
-  color: var(--art-deco-fg-muted);
+  font-family: var(--artdeco-font-accent, var(--font-mono));
+  font-size: var(--artdeco-text-compact-xs);
+  color: var(--artdeco-fg-muted);
 }
 
 .active-remove {
   margin-left: auto;
-  width: 18px;
-  height: 18px;
+  width: var(--artdeco-text-lg);
+  height: var(--artdeco-text-lg);
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   border: none;
-  color: var(--art-deco-fg-muted);
-  font-size: 14px;
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
   cursor: pointer;
   transition: color 0.2s;
 }
 
 .active-remove:hover {
-  color: var(--art-deco-red);
+  color: var(--artdeco-rise);
 }
 </style>

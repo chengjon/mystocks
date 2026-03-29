@@ -332,6 +332,8 @@
 </script>
 
 <style scoped lang="scss">
+    @use '@/styles/artdeco-tokens.scss' as *;
+
     .sankey-chart-container {
         position: relative;
         width: 100%;
@@ -341,20 +343,23 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: var(--artdeco-spacing-4);
+            padding-bottom: var(--artdeco-spacing-3);
+            border-bottom: 1px solid var(--artdeco-border-default);
 
             .chart-title {
                 margin: 0;
-                font-size: 18px;
-                font-weight: 600;
-                color: #333;
+                font-family: var(--artdeco-font-heading, var(--font-display));
+                font-size: var(--artdeco-text-lg);
+                font-weight: var(--artdeco-font-semibold);
+                color: var(--artdeco-gold-primary);
+                text-transform: uppercase;
+                letter-spacing: var(--artdeco-tracking-wide);
             }
 
             .chart-toolbar {
                 display: flex;
-                gap: 8px;
+                gap: var(--artdeco-spacing-2);
             }
         }
 
@@ -368,42 +373,43 @@
             z-index: 10;
 
             .el-icon {
-                font-size: 24px;
-                margin-bottom: 8px;
+                font-size: var(--artdeco-spacing-6);
+                margin-bottom: var(--artdeco-spacing-2);
             }
         }
 
         .chart-loading {
-            color: #666;
+            color: var(--artdeco-fg-muted);
 
             span {
                 display: block;
-                font-size: 14px;
+                font-size: var(--artdeco-text-sm);
+                color: var(--artdeco-fg-muted);
             }
         }
 
         .chart-error {
-            background: rgb(255 255 255 / 90%);
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+            background: color-mix(in srgb, var(--artdeco-bg-global) 92%, var(--artdeco-bg-card));
+            padding: var(--artdeco-spacing-5);
+            border: 1px solid var(--artdeco-border-default);
+            border-radius: var(--artdeco-radius-none);
+            box-shadow: var(--artdeco-shadow-lg), var(--artdeco-glow-subtle);
 
             .el-alert {
-                margin-bottom: 12px;
+                margin-bottom: var(--artdeco-spacing-3);
             }
         }
     }
 
-    // 响应式设计
-    @media (width <= 768px) {
+    @media (width <= 48rem) {
         .sankey-chart-container {
             .chart-header {
                 flex-direction: column;
-                gap: 12px;
+                gap: var(--artdeco-spacing-3);
                 align-items: flex-start;
 
                 .chart-title {
-                    font-size: 16px;
+                    font-size: var(--artdeco-text-base);
                 }
 
                 .chart-toolbar {
