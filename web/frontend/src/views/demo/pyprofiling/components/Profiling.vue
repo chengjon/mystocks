@@ -71,40 +71,41 @@ const getLevelBadgeClass = (level: string) => {
 </script>
 
 <style scoped lang="scss">
+@use '../../../../styles/artdeco-tokens.scss' as *;
 
 .demo-card {
-  padding: var(--spacing-5);
-  margin-bottom: var(--spacing-4);
+  padding: var(--artdeco-spacing-5);
+  margin-bottom: var(--artdeco-spacing-4);
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-5);
-  padding-bottom: var(--spacing-4);
-  border-bottom: 1px solid rgb(212 175 55 / 30%);
+  margin-bottom: var(--artdeco-spacing-5);
+  padding-bottom: var(--artdeco-spacing-4);
+  border-bottom: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 30%, transparent);
 }
 
 .card-title {
-  font-family: var(--font-display);
-  font-size: var(--font-size-h5);
-  font-weight: 600;
+  color: var(--artdeco-fg-primary);
+  font-family: var(--artdeco-font-heading, var(--font-display));
+  font-size: var(--artdeco-text-lg);
+  font-weight: var(--artdeco-font-semibold);
+  letter-spacing: var(--artdeco-tracking-wider);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-wider);
-  color: var(--fg-primary);
 }
 
 .profiling-section {
-  padding: var(--spacing-2) 0;
+  padding: var(--artdeco-spacing-2) 0;
 
   h3 {
-    font-family: var(--font-display);
-    font-size: var(--font-size-body);
-    color: var(--accent-gold);
+    margin-bottom: var(--artdeco-spacing-4);
+    color: var(--artdeco-gold-primary);
+    font-family: var(--artdeco-font-heading, var(--font-display));
+    font-size: var(--artdeco-text-base);
+    letter-spacing: var(--artdeco-tracking-wider);
     text-transform: uppercase;
-    letter-spacing: var(--tracking-wider);
-    margin-bottom: var(--spacing-4);
   }
 }
 
@@ -113,169 +114,166 @@ const getLevelBadgeClass = (level: string) => {
   border-collapse: collapse;
 
   th {
-    background: rgb(212 175 55 / 10%);
-    color: var(--accent-gold);
-    font-family: var(--font-display);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-wider);
-    padding: var(--spacing-3) var(--spacing-4);
-    border-bottom: 2px solid var(--accent-gold);
+    padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+    border-bottom: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-gold-primary);
+    background: color-mix(in srgb, var(--artdeco-gold-primary) 10%, var(--artdeco-bg-card));
+    color: var(--artdeco-gold-primary);
+    font-family: var(--artdeco-font-heading, var(--font-display));
+    font-weight: var(--artdeco-font-semibold);
+    letter-spacing: var(--artdeco-tracking-wider);
     text-align: left;
+    text-transform: uppercase;
   }
 
   td {
-    padding: var(--spacing-3) var(--spacing-4);
-    border-bottom: 1px solid rgb(212 175 55 / 20%);
-    color: var(--fg-secondary);
-    font-size: var(--font-size-small);
+    padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+    border-bottom: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+    color: var(--artdeco-fg-muted);
+    font-size: var(--artdeco-text-sm);
   }
 
   tr:hover td {
-    background: rgb(212 175 55 / 3%);
+    background: color-mix(in srgb, var(--artdeco-gold-primary) 3%, transparent);
   }
 
   .tool-name {
-    font-family: var(--font-display);
-    color: var(--accent-gold);
-    font-weight: 600;
+    color: var(--artdeco-gold-primary);
+    font-family: var(--artdeco-font-heading, var(--font-display));
+    font-weight: var(--artdeco-font-semibold);
   }
 
   .usage-text {
-    font-family: var(--font-mono);
-    font-size: var(--font-size-xs);
+    font-family: var(--artdeco-font-accent, var(--font-mono));
+    font-size: var(--artdeco-text-xs);
   }
 }
 
 .command-examples {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--spacing-4);
-  margin-top: var(--spacing-4);
+  gap: var(--artdeco-spacing-4);
+  margin-top: var(--artdeco-spacing-4);
 }
 
 .command-card {
-  padding: var(--spacing-4);
-  background: rgb(212 175 55 / 3%);
-  border: 1px solid rgb(212 175 55 / 20%);
+  padding: var(--artdeco-spacing-4);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 3%, var(--artdeco-bg-card));
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
 
   h4 {
-    font-family: var(--font-display);
-    color: var(--accent-gold);
+    margin: 0 0 var(--artdeco-spacing-3) 0;
+    color: var(--artdeco-gold-primary);
+    font-family: var(--artdeco-font-heading, var(--font-display));
+    letter-spacing: var(--artdeco-tracking-wider);
     text-transform: uppercase;
-    letter-spacing: var(--tracking-wider);
-    margin: 0 0 var(--spacing-3) 0;
   }
 }
 
 .command-box {
-  margin-top: var(--spacing-3);
+  margin-top: var(--artdeco-spacing-3);
 }
 
 .command-label {
-  font-family: var(--font-display);
-  font-size: var(--font-size-xs);
-  color: var(--fg-muted);
+  margin-bottom: var(--artdeco-spacing-2);
+  color: var(--artdeco-fg-muted);
+  font-family: var(--artdeco-font-heading, var(--font-display));
+  font-size: var(--artdeco-text-xs);
+  letter-spacing: var(--artdeco-tracking-wider);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-wider);
-  margin-bottom: var(--spacing-2);
 }
 
 .command-code {
-  background: rgb(0 0 0 / 30%);
-  border: 1px solid rgb(212 175 55 / 20%);
-  border-radius: 0;
-  padding: var(--spacing-3);
-  font-family: var(--font-mono);
-  font-size: var(--font-size-small);
-  line-height: 1.6;
-  color: var(--fg-primary);
-  white-space: pre-wrap;
   margin: 0;
+  padding: var(--artdeco-spacing-3);
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
+  background: color-mix(in srgb, var(--artdeco-bg-global) 85%, transparent);
+  color: var(--artdeco-fg-primary);
+  font-family: var(--artdeco-font-accent, var(--font-mono));
+  font-size: var(--artdeco-text-sm);
+  line-height: 1.6;
+  white-space: pre-wrap;
 }
 
 .command-desc {
-  margin-top: var(--spacing-3);
-  font-family: var(--font-body);
-  font-size: var(--font-size-small);
-  color: var(--fg-muted);
+  margin-top: var(--artdeco-spacing-3);
+  color: var(--artdeco-fg-muted);
+  font-family: var(--artdeco-font-body, var(--font-body));
+  font-size: var(--artdeco-text-sm);
   line-height: 1.5;
 }
 
-  padding: var(--spacing-4);
-  border: 1px solid;
+.alert-card {
+  padding: var(--artdeco-spacing-4);
+  border: 1px solid color-mix(in srgb, var(--artdeco-success) 40%, transparent);
+  background: color-mix(in srgb, var(--artdeco-success) 10%, var(--artdeco-bg-card));
 
   .alert-title {
-    font-family: var(--font-display);
-    font-weight: 600;
+    margin-bottom: var(--artdeco-spacing-3);
+    color: var(--artdeco-success);
+    font-family: var(--artdeco-font-heading, var(--font-display));
+    font-weight: var(--artdeco-font-semibold);
+    letter-spacing: var(--artdeco-tracking-wider);
     text-transform: uppercase;
-    letter-spacing: var(--tracking-wider);
-    margin-bottom: var(--spacing-3);
   }
 
   .alert-content {
-    font-family: var(--font-body);
-    font-size: var(--font-size-small);
+    font-family: var(--artdeco-font-body, var(--font-body));
+    font-size: var(--artdeco-text-sm);
     line-height: 1.8;
 
     ol {
-      margin: var(--spacing-2) 0;
-      padding-left: var(--spacing-5);
+      margin: var(--artdeco-spacing-2) 0;
+      padding-left: var(--artdeco-spacing-5);
     }
 
     li {
-      margin: var(--spacing-2) 0;
+      margin: var(--artdeco-spacing-2) 0;
     }
   }
-
-  background: rgb(39 174 96 / 10%);
-  border-color: rgb(39 174 96 / 40%);
-
-  .alert-title {
-    color: #27AE60;
-  }
+}
 
 .badge {
   display: inline-block;
-  padding: 4px 10px;
-  font-family: var(--font-display);
-  font-size: var(--font-size-xs);
-  font-weight: 600;
+  padding: var(--artdeco-spacing-1) var(--artdeco-spacing-3);
+  border-radius: var(--artdeco-radius-none);
+  font-family: var(--artdeco-font-heading, var(--font-display));
+  font-size: var(--artdeco-text-xs);
+  font-weight: var(--artdeco-font-semibold);
+  letter-spacing: var(--artdeco-tracking-wider);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-wider);
-  border-radius: 0;
 }
 
 .badge-info {
-  background: rgb(74 144 226 / 15%);
-  color: #4A90E2;
-  border: 1px solid #4A90E2;
+  border: 1px solid color-mix(in srgb, var(--artdeco-info) 40%, transparent);
+  background: color-mix(in srgb, var(--artdeco-info) 15%, var(--artdeco-bg-card));
+  color: var(--artdeco-info);
 }
 
 .badge-warning {
-  background: rgb(230 126 34 / 15%);
-  color: #E67E22;
-  border: 1px solid #E67E22;
+  border: 1px solid color-mix(in srgb, var(--artdeco-warning) 40%, transparent);
+  background: color-mix(in srgb, var(--artdeco-warning) 15%, var(--artdeco-bg-card));
+  color: var(--artdeco-warning);
 }
 
 .badge-success {
-  background: rgb(39 174 96 / 15%);
-  color: #27AE60;
-  border: 1px solid #27AE60;
+  border: 1px solid color-mix(in srgb, var(--artdeco-success) 40%, transparent);
+  background: color-mix(in srgb, var(--artdeco-success) 15%, var(--artdeco-bg-card));
+  color: var(--artdeco-success);
 }
 
 .badge-danger {
-  background: rgb(231 76 60 / 15%);
-  color: #E74C3C;
-  border: 1px solid #E74C3C;
+  border: 1px solid color-mix(in srgb, var(--artdeco-down) 40%, transparent);
+  background: color-mix(in srgb, var(--artdeco-down) 15%, var(--artdeco-bg-card));
+  color: var(--artdeco-down);
 }
 
 code {
-  background: rgb(212 175 55 / 10%);
-  padding: 2px 6px;
-  border-radius: 0;
-  font-family: var(--font-mono);
-  color: var(--accent-gold);
   display: inline;
+  padding: calc(var(--artdeco-spacing-px) * 2) var(--artdeco-spacing-2);
+  border-radius: var(--artdeco-radius-none);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 10%, var(--artdeco-bg-card));
+  color: var(--artdeco-gold-primary);
+  font-family: var(--artdeco-font-accent, var(--font-mono));
 }
 </style>

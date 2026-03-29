@@ -70,45 +70,46 @@ const dependencies = DEPENDENCIES
 </script>
 
 <style scoped lang="scss">
+@use '../../../../styles/artdeco-tokens.scss' as *;
 
 .tech-section {
-  padding: 10px 0;
+  padding: var(--artdeco-spacing-3) 0;
 }
 
 .section {
-  margin-bottom: 24px;
+  margin-bottom: var(--artdeco-spacing-6);
 
   h3 {
-    margin: 0 0 16px 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
-    border-left: 3px solid var(--primary);
-    padding-left: 12px;
+    margin: 0 0 var(--artdeco-spacing-4) 0;
+    padding-left: var(--artdeco-spacing-3);
+    border-left: calc(var(--artdeco-spacing-px) * 3) solid var(--artdeco-gold-primary);
+    color: var(--artdeco-fg-primary);
+    font-size: var(--artdeco-text-base);
+    font-weight: var(--artdeco-font-semibold);
   }
 }
 
 .install-card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
-  padding: 20px;
+  padding: var(--artdeco-spacing-5);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 3%, var(--artdeco-bg-card));
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
 
   h4 {
-    margin: 0 0 12px 0;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--primary);
+    margin: 0 0 var(--artdeco-spacing-3) 0;
+    color: var(--artdeco-gold-primary);
+    font-size: var(--artdeco-text-sm);
+    font-weight: var(--artdeco-font-semibold);
   }
 
   .req-list {
     margin: 0;
-    padding-left: 20px;
+    padding-left: var(--artdeco-spacing-5);
+    color: var(--artdeco-fg-muted);
     line-height: 1.8;
-    color: var(--text-secondary);
 
     li {
-      margin-bottom: 4px;
+      margin-bottom: var(--artdeco-spacing-1);
     }
   }
 }
@@ -116,71 +117,71 @@ const dependencies = DEPENDENCIES
 .command-box {
   display: flex;
   align-items: center;
-  background: var(--bg-dark);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
   overflow: hidden;
-  margin-top: 12px;
+  margin-top: var(--artdeco-spacing-3);
+  background: color-mix(in srgb, var(--artdeco-bg-global) 85%, transparent);
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
 
   .cmd-label {
-    background: var(--primary);
-    color: white;
-    padding: 8px 14px;
-    font-size: 12px;
-    font-weight: 600;
+    padding: var(--artdeco-spacing-2) calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
+    background: var(--artdeco-gold-primary);
+    color: var(--artdeco-bg-global);
+    font-size: var(--artdeco-text-xs);
+    font-weight: var(--artdeco-font-semibold);
   }
 
   .cmd-value {
     flex: 1;
-    padding: 8px 14px;
-    font-family: 'SF Mono', Monaco, Consolas, monospace;
-    font-size: 13px;
-    color: var(--text-primary);
     margin: 0;
+    padding: var(--artdeco-spacing-2) calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
+    color: var(--artdeco-fg-primary);
+    font-family: var(--artdeco-font-accent, var(--font-mono));
+    font-size: calc(var(--artdeco-text-sm) - var(--artdeco-spacing-px));
   }
 }
 
 .help-text {
-  margin: 12px 0 0 0;
-  font-size: 13px;
-  color: var(--text-muted);
+  margin: var(--artdeco-spacing-3) 0 0 0;
+  color: var(--artdeco-fg-muted);
+  font-size: calc(var(--artdeco-text-sm) - var(--artdeco-spacing-px));
   line-height: 1.6;
 
   .inline-cmd {
     display: inline-block;
-    margin-top: 6px;
-    padding: 4px 8px;
-    background: var(--bg-dark);
-    border-radius: var(--radius-sm);
-    font-size: 12px;
+    margin-top: var(--artdeco-spacing-2);
+    padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
+    background: color-mix(in srgb, var(--artdeco-bg-global) 85%, transparent);
+    border-radius: var(--artdeco-radius-none);
+    font-size: var(--artdeco-text-xs);
   }
 }
 
 .alert-content {
   strong {
     display: block;
-    margin-bottom: 8px;
-    color: var(--text-primary);
+    margin-bottom: var(--artdeco-spacing-2);
+    color: var(--artdeco-fg-primary);
   }
 
   p {
-    margin: 0 0 10px 0;
-    color: var(--text-secondary);
+    margin: 0 0 var(--artdeco-spacing-2) 0;
+    color: var(--artdeco-fg-muted);
   }
 }
 
 .code-block {
-  background: var(--bg-dark);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 16px;
-  margin: 10px 0 0 0;
+  margin: var(--artdeco-spacing-2) 0 0 0;
+  padding: var(--artdeco-spacing-3) calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
   overflow-x: auto;
+  background: color-mix(in srgb, var(--artdeco-bg-global) 85%, transparent);
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
 
   code {
-    font-family: 'SF Mono', Monaco, Consolas, monospace;
-    font-size: 13px;
-    color: var(--text-primary);
+    color: var(--artdeco-fg-primary);
+    font-family: var(--artdeco-font-accent, var(--font-mono));
+    font-size: calc(var(--artdeco-text-sm) - var(--artdeco-spacing-px));
     line-height: 1.5;
   }
 }
