@@ -7,7 +7,7 @@
 
     <div class="data-section">
       <h3>PROJECT DATA FILES</h3>
-      <table class="table" style="margin-top: 15px">
+      <table class="table table-block">
         <thead>
           <tr>
             <th>FILE PATH</th>
@@ -26,8 +26,8 @@
         </tbody>
       </table>
 
-      <h3 style="margin-top: 30px">TONGDAXIN BINARY FORMAT</h3>
-      <div class="info-grid" style="margin-top: 15px">
+      <h3 class="binary-format-heading">TONGDAXIN BINARY FORMAT</h3>
+      <div class="info-grid info-grid-offset">
         <div class="info-item">
           <div class="info-label">FILE FORMAT</div>
           <div class="info-value">32-byte fixed structure (struct)</div>
@@ -69,40 +69,41 @@ const dataFiles = DATA_FILES
 </script>
 
 <style scoped lang="scss">
+@use '../../../../styles/artdeco-tokens.scss' as *;
 
 .demo-card {
-  padding: var(--spacing-5);
-  margin-bottom: var(--spacing-4);
+  padding: var(--artdeco-spacing-5);
+  margin-bottom: var(--artdeco-spacing-4);
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-5);
-  padding-bottom: var(--spacing-4);
-  border-bottom: 1px solid rgb(212 175 55 / 30%);
+  margin-bottom: var(--artdeco-spacing-5);
+  padding-bottom: var(--artdeco-spacing-4);
+  border-bottom: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 30%, transparent);
 }
 
 .card-title {
-  font-family: var(--font-display);
-  font-size: var(--font-size-h5);
-  font-weight: 600;
+  color: var(--artdeco-fg-primary);
+  font-family: var(--artdeco-font-heading, var(--font-display));
+  font-size: var(--artdeco-text-lg);
+  font-weight: var(--artdeco-font-semibold);
+  letter-spacing: var(--artdeco-tracking-wider);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-wider);
-  color: var(--fg-primary);
 }
 
 .data-section {
-  padding: var(--spacing-2) 0;
+  padding: var(--artdeco-spacing-2) 0;
 
   h3 {
-    font-family: var(--font-display);
-    font-size: var(--font-size-body);
-    color: var(--accent-gold);
+    margin-bottom: var(--artdeco-spacing-4);
+    color: var(--artdeco-gold-primary);
+    font-family: var(--artdeco-font-heading, var(--font-display));
+    font-size: var(--artdeco-text-base);
+    letter-spacing: var(--artdeco-tracking-wider);
     text-transform: uppercase;
-    letter-spacing: var(--tracking-wider);
-    margin-bottom: var(--spacing-4);
   }
 }
 
@@ -111,128 +112,149 @@ const dataFiles = DATA_FILES
   border-collapse: collapse;
 
   th {
-    background: rgb(212 175 55 / 10%);
-    color: var(--accent-gold);
-    font-family: var(--font-display);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-wider);
-    padding: var(--spacing-3) var(--spacing-4);
-    border-bottom: 2px solid var(--accent-gold);
+    padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+    border-bottom: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-gold-primary);
+    background: color-mix(in srgb, var(--artdeco-gold-primary) 10%, var(--artdeco-bg-card));
+    color: var(--artdeco-gold-primary);
+    font-family: var(--artdeco-font-heading, var(--font-display));
+    font-weight: var(--artdeco-font-semibold);
+    letter-spacing: var(--artdeco-tracking-wider);
     text-align: left;
+    text-transform: uppercase;
   }
 
   td {
-    padding: var(--spacing-3) var(--spacing-4);
-    border-bottom: 1px solid rgb(212 175 55 / 20%);
-    color: var(--fg-secondary);
-    font-size: var(--font-size-small);
+    padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+    border-bottom: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+    color: var(--artdeco-fg-muted);
+    font-size: var(--artdeco-text-sm);
   }
 
   tr:hover td {
-    background: rgb(212 175 55 / 3%);
+    background: color-mix(in srgb, var(--artdeco-gold-primary) 3%, transparent);
   }
 
   .file-path {
-    font-family: var(--font-mono);
-    color: var(--accent-gold);
+    color: var(--artdeco-gold-primary);
+    font-family: var(--artdeco-font-accent, var(--font-mono));
   }
+}
+
+.table-block {
+  margin-top: var(--artdeco-spacing-4);
+}
+
+.binary-format-heading {
+  margin-top: var(--artdeco-spacing-8);
+}
+
+.info-grid-offset {
+  margin-top: var(--artdeco-spacing-4);
 }
 
 .info-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-4);
+  gap: var(--artdeco-spacing-4);
 }
 
 .info-item {
-  padding: var(--spacing-4);
-  background: rgb(212 175 55 / 3%);
-  border: 1px solid rgb(212 175 55 / 20%);
+  padding: var(--artdeco-spacing-4);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 3%, var(--artdeco-bg-card));
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
 }
 
 .info-label {
-  font-family: var(--font-display);
-  font-size: var(--font-size-xs);
-  color: var(--fg-muted);
+  margin-bottom: var(--artdeco-spacing-2);
+  color: var(--artdeco-fg-muted);
+  font-family: var(--artdeco-font-heading, var(--font-display));
+  font-size: var(--artdeco-text-xs);
+  letter-spacing: var(--artdeco-tracking-wider);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-wider);
-  margin-bottom: var(--spacing-2);
 }
 
 .info-value {
-  font-family: var(--font-body);
-  color: var(--fg-primary);
-  font-size: var(--font-size-small);
+  color: var(--artdeco-fg-primary);
+  font-family: var(--artdeco-font-body, var(--font-body));
+  font-size: var(--artdeco-text-sm);
 
   &.code {
-    font-family: var(--font-mono);
-    color: var(--accent-gold);
+    color: var(--artdeco-gold-primary);
+    font-family: var(--artdeco-font-accent, var(--font-mono));
   }
 }
 
-  padding: var(--spacing-4);
-  border: 1px solid;
+.alert-card {
+  padding: var(--artdeco-spacing-4);
+  border: 1px solid color-mix(in srgb, var(--artdeco-info) 40%, transparent);
+  background: color-mix(in srgb, var(--artdeco-info) 10%, var(--artdeco-bg-card));
 
   .alert-title {
-    font-family: var(--font-display);
-    font-weight: 600;
+    margin-bottom: var(--artdeco-spacing-3);
+    color: var(--artdeco-info);
+    font-family: var(--artdeco-font-heading, var(--font-display));
+    font-weight: var(--artdeco-font-semibold);
+    letter-spacing: var(--artdeco-tracking-wider);
     text-transform: uppercase;
-    letter-spacing: var(--tracking-wider);
-    margin-bottom: var(--spacing-3);
   }
 
   .alert-content {
-    font-family: var(--font-body);
-    font-size: var(--font-size-small);
+    font-family: var(--artdeco-font-body, var(--font-body));
+    font-size: var(--artdeco-text-sm);
     line-height: 1.8;
 
     ol {
-      margin: var(--spacing-3) 0;
-      padding-left: var(--spacing-5);
+      margin: var(--artdeco-spacing-3) 0;
+      padding-left: var(--artdeco-spacing-5);
     }
 
     li {
-      margin: var(--spacing-2) 0;
+      margin: var(--artdeco-spacing-2) 0;
     }
   }
-
-  background: rgb(74 144 226 / 10%);
-  border-color: rgb(74 144 226 / 40%);
-
-  .alert-title {
-    color: #4A90E2;
-  }
+}
 
 .badge {
   display: inline-block;
-  padding: 4px 10px;
-  font-family: var(--font-display);
-  font-size: var(--font-size-xs);
-  font-weight: 600;
+  padding: var(--artdeco-spacing-1) var(--artdeco-spacing-3);
+  border-radius: var(--artdeco-radius-none);
+  font-family: var(--artdeco-font-heading, var(--font-display));
+  font-size: var(--artdeco-text-xs);
+  font-weight: var(--artdeco-font-semibold);
+  letter-spacing: var(--artdeco-tracking-wider);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-wider);
-  border-radius: 0;
 }
 
 .badge-info {
-  background: rgb(74 144 226 / 15%);
-  color: #4A90E2;
-  border: 1px solid #4A90E2;
+  border: 1px solid color-mix(in srgb, var(--artdeco-info) 40%, transparent);
+  background: color-mix(in srgb, var(--artdeco-info) 15%, var(--artdeco-bg-card));
+  color: var(--artdeco-info);
 }
 
 .badge-warning {
-  background: rgb(230 126 34 / 15%);
-  color: #E67E22;
-  border: 1px solid #E67E22;
+  border: 1px solid color-mix(in srgb, var(--artdeco-warning) 40%, transparent);
+  background: color-mix(in srgb, var(--artdeco-warning) 15%, var(--artdeco-bg-card));
+  color: var(--artdeco-warning);
 }
 
 code {
-  background: rgb(212 175 55 / 10%);
-  padding: 2px 6px;
-  border-radius: 0;
-  font-family: var(--font-mono);
-  color: var(--accent-gold);
   display: inline;
+  padding: calc(var(--artdeco-spacing-px) * 2) var(--artdeco-spacing-2);
+  border-radius: var(--artdeco-radius-none);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 10%, var(--artdeco-bg-card));
+  color: var(--artdeco-gold-primary);
+  font-family: var(--artdeco-font-accent, var(--font-mono));
+}
+
+@media (width <= 48rem) {
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--artdeco-spacing-2);
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
