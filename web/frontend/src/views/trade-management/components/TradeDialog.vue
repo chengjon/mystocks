@@ -2,11 +2,11 @@
   <el-dialog
     v-model="dialogVisible"
     :title="form.type === 'buy' ? 'BUY STOCK' : 'SELL STOCK'"
-    width="600px"
+    :width="dialogWidth"
     :close-on-click-modal="false"
     class="bloomberg-trade-dialog"
   >
-    <el-form :model="form" label-width="120px" label-position="left">
+    <el-form :model="form" :label-width="labelWidth" label-position="left">
       <el-form-item label="SYMBOL">
         <el-input
           v-model="form.symbol"
@@ -106,6 +106,8 @@ const emit = defineEmits<{
 }>()
 
 const submitting = ref(false)
+const dialogWidth = 'calc((var(--artdeco-spacing-20) * 7) + var(--artdeco-spacing-10))'
+const labelWidth = 'calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-10))'
 
 const form = reactive<TradeForm>({
   type: props.tradeType,
@@ -188,94 +190,97 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
-// ============================================
-//   Bloomberg Terminal Style Trade Dialog
-// ============================================
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .bloomberg-trade-dialog {
   :deep(.el-dialog) {
-    background: linear-gradient(135deg, #0F1115 0%, #141A24 100%);
-    border: 1px solid #1E293B;
-    border-radius: 8px;
-    box-shadow:
-      0 4px 20px rgb(0 0 0 / 60%),
-      0 0 40px rgb(0 128 255 / 10%);
+    background: linear-gradient(
+      135deg,
+      var(--artdeco-bg-global) 0%,
+      var(--artdeco-bg-card) 100%
+    );
+    border: 1px solid var(--artdeco-border-default);
+    border-radius: var(--artdeco-radius-none);
+    box-shadow: var(--artdeco-shadow-xl), var(--artdeco-glow-subtle);
   }
 
   :deep(.el-dialog__header) {
     background: transparent;
-    border-bottom: 1px solid #1E293B;
-    padding: 20px 24px;
+    border-bottom: 1px solid var(--artdeco-border-default);
+    padding: var(--artdeco-spacing-5) var(--artdeco-spacing-6);
 
     .el-dialog__title {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 18px;
-      font-weight: 600;
+      font-family: var(--artdeco-font-heading, var(--font-display));
+      font-size: var(--artdeco-text-lg);
+      font-weight: var(--artdeco-font-semibold);
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #0080FF;
+      letter-spacing: var(--artdeco-tracking-widest);
+      color: var(--artdeco-gold-primary);
     }
   }
 
   :deep(.el-dialog__body) {
-    padding: 24px;
+    padding: var(--artdeco-spacing-6);
   }
 
   :deep(.el-dialog__footer) {
-    border-top: 1px solid #1E293B;
-    padding: 16px 24px;
+    border-top: 1px solid var(--artdeco-border-default);
+    padding: var(--artdeco-spacing-4) var(--artdeco-spacing-6);
   }
 
   :deep(.el-form) {
     .el-form-item {
-      margin-bottom: 20px;
+      margin-bottom: var(--artdeco-spacing-5);
 
       .el-form-item__label {
-        font-family: 'IBM Plex Sans', sans-serif;
-        font-size: 12px;
-        font-weight: 500;
+        font-family: var(--artdeco-font-heading, var(--font-display));
+        font-size: var(--artdeco-text-xs);
+        font-weight: var(--artdeco-font-medium);
         text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: #94A3B8;
+        letter-spacing: var(--artdeco-tracking-wider);
+        color: var(--artdeco-fg-muted);
       }
     }
   }
 
   :deep(.el-input) {
     .el-input__wrapper {
-      background: rgb(0 0 0 / 30%);
-      border: 1px solid #1E293B;
-      border-radius: 4px;
+      background: color-mix(in srgb, var(--artdeco-bg-elevated) 55%, var(--artdeco-bg-card));
+      border: 1px solid var(--artdeco-border-default);
+      border-radius: var(--artdeco-radius-none);
       box-shadow: none;
-      transition: all 0.3s ease;
+      transition:
+        border-color var(--artdeco-transition-quick) var(--artdeco-ease-out),
+        box-shadow var(--artdeco-transition-quick) var(--artdeco-ease-out),
+        background var(--artdeco-transition-quick) var(--artdeco-ease-out);
 
       &:hover {
-        border-color: #0080FF;
+        border-color: var(--artdeco-border-hover);
       }
 
       &.is-focus {
-        border-color: #0080FF;
-        box-shadow: 0 0 0 2px rgb(0 128 255 / 10%);
+        border-color: var(--artdeco-border-hover);
+        box-shadow: var(--artdeco-glow-subtle);
       }
 
       .el-input__inner {
-        color: #FFF;
-        font-family: 'Roboto Mono', monospace;
-        font-size: 14px;
+        color: var(--artdeco-fg-primary);
+        font-family: var(--artdeco-font-accent, var(--font-mono));
+        font-size: var(--artdeco-text-compact-base);
 
         &::placeholder {
-          color: #64748B;
+          color: var(--artdeco-fg-subtle);
           text-transform: uppercase;
-          letter-spacing: 0.05em;
+          letter-spacing: var(--artdeco-tracking-wide);
         }
       }
 
       &.is-disabled {
-        background: rgb(0 0 0 / 50%);
-        border-color: #1E293B;
+        background: color-mix(in srgb, var(--artdeco-bg-global) 75%, var(--artdeco-bg-card));
+        border-color: var(--artdeco-border-default);
 
         .el-input__inner {
-          color: #64748B;
+          color: var(--artdeco-fg-muted);
         }
       }
     }
@@ -285,25 +290,28 @@ defineExpose({
     width: 100%;
 
     .el-input__wrapper {
-      background: rgb(0 0 0 / 30%);
-      border: 1px solid #1E293B;
-      border-radius: 4px;
+      background: color-mix(in srgb, var(--artdeco-bg-elevated) 55%, var(--artdeco-bg-card));
+      border: 1px solid var(--artdeco-border-default);
+      border-radius: var(--artdeco-radius-none);
       box-shadow: none;
-      transition: all 0.3s ease;
+      transition:
+        border-color var(--artdeco-transition-quick) var(--artdeco-ease-out),
+        box-shadow var(--artdeco-transition-quick) var(--artdeco-ease-out),
+        background var(--artdeco-transition-quick) var(--artdeco-ease-out);
 
       &:hover {
-        border-color: #0080FF;
+        border-color: var(--artdeco-border-hover);
       }
 
       &.is-focus {
-        border-color: #0080FF;
-        box-shadow: 0 0 0 2px rgb(0 128 255 / 10%);
+        border-color: var(--artdeco-border-hover);
+        box-shadow: var(--artdeco-glow-subtle);
       }
 
       .el-input__inner {
-        color: #FFF;
-        font-family: 'Roboto Mono', monospace;
-        font-size: 14px;
+        color: var(--artdeco-fg-primary);
+        font-family: var(--artdeco-font-accent, var(--font-mono));
+        font-size: var(--artdeco-text-compact-base);
         text-align: left;
       }
     }
@@ -311,72 +319,73 @@ defineExpose({
     .el-input-number__decrease,
     .el-input-number__increase {
       background: transparent;
-      border-left: 1px solid #1E293B;
-      color: #94A3B8;
+      border-left: 1px solid var(--artdeco-border-default);
+      color: var(--artdeco-fg-muted);
 
       &:hover {
-        color: #0080FF;
+        color: var(--artdeco-gold-primary);
       }
     }
   }
 
   :deep(.el-textarea) {
     .el-textarea__inner {
-      background: rgb(0 0 0 / 30%);
-      border: 1px solid #1E293B;
-      border-radius: 4px;
-      color: #FFF;
-      font-family: 'Roboto Mono', monospace;
-      font-size: 14px;
+      background: color-mix(in srgb, var(--artdeco-bg-elevated) 55%, var(--artdeco-bg-card));
+      border: 1px solid var(--artdeco-border-default);
+      border-radius: var(--artdeco-radius-none);
+      color: var(--artdeco-fg-primary);
+      font-family: var(--artdeco-font-accent, var(--font-mono));
+      font-size: var(--artdeco-text-compact-base);
       resize: none;
-      transition: all 0.3s ease;
+      transition:
+        border-color var(--artdeco-transition-quick) var(--artdeco-ease-out),
+        box-shadow var(--artdeco-transition-quick) var(--artdeco-ease-out),
+        background var(--artdeco-transition-quick) var(--artdeco-ease-out);
 
       &:hover {
-        border-color: #0080FF;
+        border-color: var(--artdeco-border-hover);
       }
 
       &:focus {
-        border-color: #0080FF;
-        box-shadow: 0 0 0 2px rgb(0 128 255 / 10%);
+        border-color: var(--artdeco-border-hover);
+        box-shadow: var(--artdeco-glow-subtle);
       }
 
       &::placeholder {
-        color: #64748B;
+        color: var(--artdeco-fg-subtle);
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: var(--artdeco-tracking-wide);
       }
     }
   }
 }
 
-// Trade Amount Display
 .trade-amount-display {
   display: block;
-  font-family: 'Roboto Mono', monospace;
-  font-size: 24px;
-  font-weight: 700;
-  color: #0080FF;
-  padding: 12px 16px;
-  background: rgb(0 128 255 / 5%);
-  border: 1px solid rgb(0 128 255 / 20%);
-  border-radius: 4px;
+  font-family: var(--artdeco-font-accent, var(--font-mono));
+  font-size: var(--artdeco-text-xl);
+  font-weight: var(--artdeco-font-bold);
+  color: var(--artdeco-gold-primary);
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 5%, var(--artdeco-bg-card));
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none);
   text-align: center;
 }
 
-// Dialog Footer
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  gap: var(--artdeco-spacing-3);
 
   :deep(.el-button) {
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
+    font-family: var(--artdeco-font-heading, var(--font-display));
+    font-size: var(--artdeco-text-compact-base);
+    font-weight: var(--artdeco-font-semibold);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    border-radius: 4px;
-    padding: 10px 24px;
+    letter-spacing: var(--artdeco-tracking-wider);
+    border-radius: var(--artdeco-radius-none);
+    padding: var(--artdeco-spacing-2) var(--artdeco-spacing-6);
   }
 }
 </style>

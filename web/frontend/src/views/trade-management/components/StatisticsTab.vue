@@ -1,12 +1,12 @@
 <template>
   <div>
-    <el-row :gutter="24">
+    <el-row :gutter="chartRowGutter">
       <el-col :span="12">
         <div class="subcard">
           <div class="subcard-header">
             <h4 class="subcard-title">ASSET TREND</h4>
           </div>
-          <div ref="assetsChartRef" style="height: 300px"></div>
+          <div ref="assetsChartRef" :style="{ height: chartHeight }"></div>
         </div>
       </el-col>
       <el-col :span="12">
@@ -14,12 +14,12 @@
           <div class="subcard-header">
             <h4 class="subcard-title">PROFIT DISTRIBUTION</h4>
           </div>
-          <div ref="profitChartRef" style="height: 300px"></div>
+          <div ref="profitChartRef" :style="{ height: chartHeight }"></div>
         </div>
       </el-col>
     </el-row>
 
-    <el-row :gutter="24" style="margin-top: 24px">
+    <el-row :gutter="chartRowGutter" :style="{ marginTop: chartSectionSpacing }">
       <el-col :span="24">
         <div class="subcard">
           <div class="subcard-header">
@@ -69,6 +69,16 @@ const profitChartRef = ref<HTMLElement>()
 
 let assetsChartInstance: EChartsType | null = null
 let profitChartInstance: EChartsType | null = null
+
+const chartRowGutter = 24
+const chartHeight = 'calc((var(--artdeco-spacing-20) * 3) + var(--artdeco-spacing-10) + var(--artdeco-spacing-5))'
+const chartSectionSpacing = 'var(--artdeco-spacing-6)'
+
+const getCssVar = (name: string, fallback: string): string => {
+  if (typeof window === 'undefined') return fallback
+  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+  return value || fallback
+}
 
 const statistics = reactive<Statistics>({
   total_trades: 2,
@@ -123,6 +133,11 @@ const renderAssetsChart = () => {
     values.push(1000000 + Math.random() * 100000)
   }
 
+  const artDecoGold = getCssVar('--artdeco-gold-primary', '#D4AF37')
+  const artDecoFgPrimary = getCssVar('--artdeco-fg-primary', '#F2F0E4')
+  const artDecoGoldOpacity10 = getCssVar('--artdeco-gold-opacity-10', 'rgb(212 175 55 / 10%)')
+  const artDecoGoldOpacity30 = getCssVar('--artdeco-gold-opacity-30', 'rgb(212 175 55 / 30%)')
+
   const option = {
     tooltip: {
       trigger: 'axis',
@@ -138,14 +153,14 @@ const renderAssetsChart = () => {
       type: 'category',
       boundaryGap: false,
       data: dates,
-      axisLine: { lineStyle: { color: '#D4AF37' } },
-      axisLabel: { color: '#F2F0E4' }
+      axisLine: { lineStyle: { color: artDecoGold } },
+      axisLabel: { color: artDecoFgPrimary }
     },
     yAxis: {
       type: 'value',
-      axisLine: { lineStyle: { color: '#D4AF37' } },
-      axisLabel: { color: '#F2F0E4', formatter: '¥{value}' },
-      splitLine: { lineStyle: { color: 'rgb(212 175 55 / 10%)' } }
+      axisLine: { lineStyle: { color: artDecoGold } },
+      axisLabel: { color: artDecoFgPrimary, formatter: '¥{value}' },
+      splitLine: { lineStyle: { color: artDecoGoldOpacity10 } }
     },
     series: [
       {
@@ -153,7 +168,7 @@ const renderAssetsChart = () => {
         type: 'line',
         data: values,
         smooth: true,
-        itemStyle: { color: '#D4AF37' },
+        itemStyle: { color: artDecoGold },
         areaStyle: {
           color: {
             type: 'linear',
@@ -162,8 +177,8 @@ const renderAssetsChart = () => {
             x2: 0,
             y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgb(212 175 55 / 30%)' },
-              { offset: 1, color: 'rgb(212 175 55 / 10%)' }
+              { offset: 0, color: artDecoGoldOpacity30 },
+              { offset: 1, color: artDecoGoldOpacity10 }
             ]
           }
         }
@@ -181,6 +196,10 @@ const renderProfitChart = () => {
     profitChartInstance = echarts.init(profitChartRef.value, artDecoTheme)
   }
 
+  const artDecoFgPrimary = getCssVar('--artdeco-fg-primary', '#F2F0E4')
+  const artDecoGoldOpacityShadow = getCssVar('--artdeco-gold-opacity-shadow', 'rgb(212 175 55 / 30%)')
+  const artDecoBgCard = getCssVar('--artdeco-bg-card', '#141414')
+
   const option = {
     tooltip: {
       trigger: 'item',
@@ -189,7 +208,7 @@ const renderProfitChart = () => {
     legend: {
       orient: 'vertical',
       left: 'left',
-      textStyle: { color: '#F2F0E4' }
+      textStyle: { color: artDecoFgPrimary }
     },
     series: [
       {
@@ -204,11 +223,11 @@ const renderProfitChart = () => {
           itemStyle: {
             shadowBlur: 10,
             shadowOffsetX: 0,
-            shadowColor: 'rgb(212 175 55 / 50%)'
+            shadowColor: artDecoGoldOpacityShadow
           }
         },
         itemStyle: {
-          borderColor: '#141414',
+          borderColor: artDecoBgCard,
           borderWidth: 2
         }
       }
@@ -259,54 +278,55 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .subcard {
-  background: rgb(212 175 55 / 5%);
-  border: 1px solid rgb(212 175 55 / 20%);
-  border-radius: var(--radius-none);
-  padding: var(--spacing-6);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 5%, var(--artdeco-bg-card));
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none);
+  padding: var(--artdeco-spacing-6);
   height: 100%;
 
   .subcard-header {
-    margin-bottom: var(--spacing-4);
-    padding-bottom: var(--spacing-3);
-    border-bottom: 1px solid rgb(212 175 55 / 20%);
+    margin-bottom: var(--artdeco-spacing-4);
+    padding-bottom: var(--artdeco-spacing-3);
+    border-bottom: 1px solid var(--artdeco-border-default);
 
     .subcard-title {
-      font-family: var(--font-display);
-      font-size: var(--font-size-base);
-      font-weight: 600;
+      font-family: var(--artdeco-font-heading, var(--font-display));
+      font-size: var(--artdeco-text-base);
+      font-weight: var(--artdeco-font-semibold);
       text-transform: uppercase;
-      letter-spacing: var(--tracking-widest);
-      color: var(--accent-gold);
+      letter-spacing: var(--artdeco-tracking-widest);
+      color: var(--artdeco-gold-primary);
       margin: 0;
     }
   }
 
   :deep(.el-descriptions__label) {
-    background: rgb(212 175 55 / 10%) !important;
-    color: var(--fg-muted) !important;
-    font-family: var(--font-display);
-    font-size: var(--font-size-xs);
-    font-weight: 600;
+    background: color-mix(in srgb, var(--artdeco-gold-primary) 10%, var(--artdeco-bg-card)) !important;
+    color: var(--artdeco-fg-muted) !important;
+    font-family: var(--artdeco-font-heading, var(--font-display));
+    font-size: var(--artdeco-text-xs);
+    font-weight: var(--artdeco-font-semibold);
     text-transform: uppercase;
-    letter-spacing: var(--tracking-wider);
-    border-color: rgb(212 175 55 / 30%) !important;
+    letter-spacing: var(--artdeco-tracking-wider);
+    border-color: var(--artdeco-border-default) !important;
   }
 
   :deep(.el-descriptions__content) {
     background: transparent !important;
-    color: var(--fg-primary) !important;
-    font-family: var(--font-body);
-    border-color: rgb(212 175 55 / 30%) !important;
+    color: var(--artdeco-fg-primary) !important;
+    font-family: var(--artdeco-font-body, var(--font-body));
+    border-color: var(--artdeco-border-default) !important;
   }
 }
 
 .profit-up {
-  color: var(--color-up) !important;
+  color: var(--artdeco-rise) !important;
 }
 
 .profit-down {
-  color: var(--color-down) !important;
+  color: var(--artdeco-down) !important;
 }
 </style>

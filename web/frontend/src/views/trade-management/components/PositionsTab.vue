@@ -195,55 +195,58 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
-// ============================================
-//   Bloomberg Terminal Style Positions Tab
-// ============================================
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .positions-tab {
   width: 100%;
 }
 
-// Action Bar
 .action-bar {
-  margin-bottom: 20px;
-  padding: 16px;
-  background: rgb(0 128 255 / 3%);
-  border: 1px solid rgb(0 128 255 / 20%);
-  border-radius: 4px;
+  margin-bottom: var(--artdeco-spacing-5);
+  padding: var(--artdeco-spacing-4);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 3%, var(--artdeco-bg-card));
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none);
 }
 
 .action-buttons {
   display: flex;
-  gap: 12px;
+  gap: var(--artdeco-spacing-3);
   flex-wrap: wrap;
 }
 
-// Table Container
 .table-container {
   overflow-x: auto;
-  border: 1px solid #1E293B;
-  background: linear-gradient(135deg, #0A0C10 0%, #0F1115 100%);
-  border-radius: 6px;
+  border: 1px solid var(--artdeco-border-default);
+  background: linear-gradient(
+    135deg,
+    var(--artdeco-bg-global) 0%,
+    var(--artdeco-bg-card) 100%
+  );
+  border-radius: var(--artdeco-radius-none);
 }
 
-// Bloomberg Table Styling
 .bloomberg-table {
   background: transparent !important;
 
+  :deep(.el-table__inner-wrapper::before) {
+    background-color: var(--artdeco-border-default) !important;
+  }
+
   :deep(.el-table__header-wrapper) {
-    background: #0F1115;
-    border-bottom: 2px solid #1E293B;
+    background: color-mix(in srgb, var(--artdeco-gold-primary) 5%, var(--artdeco-bg-card));
+    border-bottom: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-border-default);
 
     th {
-      background: #0F1115 !important;
-      border-bottom: 1px solid #1E293B;
-      color: #94A3B8;
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 11px;
-      font-weight: 600;
+      background: color-mix(in srgb, var(--artdeco-gold-primary) 5%, var(--artdeco-bg-card)) !important;
+      border-bottom: 1px solid var(--artdeco-border-default);
+      color: var(--artdeco-gold-primary);
+      font-family: var(--artdeco-font-heading, var(--font-display));
+      font-size: var(--artdeco-text-compact-xs);
+      font-weight: var(--artdeco-font-semibold);
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      padding: 12px 0;
+      letter-spacing: var(--artdeco-tracking-widest);
+      padding: var(--artdeco-spacing-3) 0;
     }
   }
 
@@ -252,41 +255,41 @@ defineExpose({
 
     tr {
       background: transparent !important;
-      transition: background 0.2s ease;
+      transition: background var(--artdeco-transition-quick) var(--artdeco-ease-out);
 
-      &:hover {
-        background: rgb(0 128 255 / 5%) !important;
+      &:hover > td {
+        background: color-mix(in srgb, var(--artdeco-gold-primary) 5%, var(--artdeco-bg-card)) !important;
       }
 
       td {
-        border-bottom: 1px solid #1E293B;
-        color: #E2E8F0;
-        font-family: 'Roboto Mono', monospace;
-        font-size: 13px;
-        padding: 12px 0;
+        border-bottom: 1px solid color-mix(in srgb, var(--artdeco-border-default) 80%, transparent);
+        color: var(--artdeco-fg-primary);
+        font-family: var(--artdeco-font-accent, var(--font-mono));
+        font-size: var(--artdeco-text-compact-base);
+        padding: var(--artdeco-spacing-3) 0;
+        background: transparent !important;
       }
     }
   }
 
   .mono-text {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 13px;
-    color: #FFF;
+    font-family: var(--artdeco-font-accent, var(--font-mono));
+    font-size: var(--artdeco-text-compact-base);
+    color: var(--artdeco-fg-primary);
   }
 
   .profit-up {
-    color: #FF3B30 !important;
+    color: var(--artdeco-rise) !important;
   }
 
   .profit-down {
-    color: #00E676 !important;
+    color: var(--artdeco-down) !important;
   }
 }
 
-// Responsive Design
-@media (width <= 768px) {
+@media (width <= 48rem) {
   .action-bar {
-    padding: 12px;
+    padding: var(--artdeco-spacing-3);
 
     .action-buttons {
       flex-direction: column;

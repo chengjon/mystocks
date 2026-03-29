@@ -1,44 +1,60 @@
 <template>
   <div class="portfolio-overview">
     <div class="stats-grid">
-      <BloombergStatCard
+      <ArtDecoStatCard
         label="TOTAL ASSETS"
-        :value="portfolio.total_assets"
-        icon="wallet"
-        format="currency"
-      />
+        :value="formatCurrency(portfolio.total_assets)"
+        variant="gold"
+        :show-change="false"
+      >
+        <template #icon>
+          <el-icon><Wallet /></el-icon>
+        </template>
+      </ArtDecoStatCard>
 
-      <BloombergStatCard
+      <ArtDecoStatCard
         label="AVAILABLE CASH"
-        :value="portfolio.available_cash"
-        icon="coin"
-        trend="down"
-        format="currency"
-      />
+        :value="formatCurrency(portfolio.available_cash)"
+        variant="gold"
+        :show-change="false"
+      >
+        <template #icon>
+          <el-icon><Coin /></el-icon>
+        </template>
+      </ArtDecoStatCard>
 
-      <BloombergStatCard
+      <ArtDecoStatCard
         label="POSITION VALUE"
-        :value="portfolio.position_value"
-        icon="chart"
-        trend="neutral"
-        format="currency"
-      />
+        :value="formatCurrency(portfolio.position_value)"
+        variant="gold"
+        :show-change="false"
+      >
+        <template #icon>
+          <el-icon><DataLine /></el-icon>
+        </template>
+      </ArtDecoStatCard>
 
-      <BloombergStatCard
+      <ArtDecoStatCard
         label="TOTAL PROFIT"
-        :value="portfolio.total_profit"
+        :value="formatCurrency(portfolio.total_profit)"
         :change="portfolio.profit_rate"
-        :icon="portfolio.total_profit >= 0 ? 'trending-up' : 'trending-down'"
-        :trend="portfolio.total_profit >= 0 ? 'up' : 'down'"
-        format="currency"
-      />
+        :variant="portfolio.total_profit >= 0 ? 'rise' : 'fall'"
+      >
+        <template #icon>
+          <el-icon>
+            <TrendCharts v-if="portfolio.total_profit >= 0" />
+            <DataAnalysis v-else />
+          </el-icon>
+        </template>
+      </ArtDecoStatCard>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { reactive } from 'vue'
-import BloombergStatCard from '@/components/BloombergStatCard.vue'
+import { Coin, DataAnalysis, DataLine, TrendCharts, Wallet } from '@element-plus/icons-vue'
+import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
 
 interface Portfolio {
   total_assets: number
@@ -56,6 +72,12 @@ const portfolio = reactive<Portfolio>({
   profit_rate: 5.0
 })
 
+const formatCurrency = (value: number) =>
+  `¥${value.toLocaleString('zh-CN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })}`
+
 defineExpose({
   setPortfolio: (data: Portfolio) => {
     Object.assign(portfolio, data)
@@ -64,21 +86,19 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
-// ============================================
-//   Bloomberg Terminal Style Portfolio Overview
-// ============================================
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .portfolio-overview {
   width: 100%;
-  margin-bottom: 8px;
+  margin-bottom: var(--artdeco-spacing-2);
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: var(--artdeco-spacing-5);
 
-  @media (width <= 1440px) {
+  @media (width <= 90rem) {
     grid-template-columns: repeat(2, 1fr);
   }
 }
