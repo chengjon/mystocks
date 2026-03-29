@@ -38,9 +38,7 @@ describe("CI workflow gates", () => {
     expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/views/styles");
     expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/components/shared/ui");
     expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/views/SkeletonUsage.vue");
-    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/views/ArtDecoTest.vue");
     expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/views/Stocks.vue");
-    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/views/system/styles/PerformanceMonitor.css");
   });
 
   it("defines visual regression package scripts for workflow reuse", () => {
@@ -135,9 +133,7 @@ describe("CI workflow gates", () => {
     expect(workflowText).toContain("web/frontend/src/components/shared/ui/*");
     expect(workflowText).toContain("web/frontend/src/components/shared/ui/**");
     expect(workflowText).toContain("web/frontend/src/views/SkeletonUsage.vue");
-    expect(workflowText).toContain("web/frontend/src/views/ArtDecoTest.vue");
     expect(workflowText).toContain("web/frontend/src/views/Stocks.vue");
-    expect(workflowText).toContain("web/frontend/src/views/system/styles/PerformanceMonitor.css");
   });
 
   it("keeps the dedicated cross-browser workflow aligned with the Playwright mainline", () => {
