@@ -284,8 +284,6 @@ const renderChart = (): void => {
   const superLargeFlow = fundFlowData.value.map(d => d.super_large_net_inflow.toFixed(2))
   const largeFlow = fundFlowData.value.map(d => d.large_net_inflow.toFixed(2))
 
-  console.log('Chart data:', { dates, mainFlow, superLargeFlow, largeFlow })
-
   const option: EChartsOption = {
     title: {
       text: `${queryForm.symbol} 资金流向趋势`,
