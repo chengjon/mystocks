@@ -329,17 +329,11 @@ const getStrengthClass = (strength: number) => {
   return 'strength-low'
 }
 
-const exportToPDF = () => {
-  console.log('Exporting to PDF...')
-}
+const exportToPDF = () => {}
 
-const exportToExcel = () => {
-  console.log('Exporting to Excel...')
-}
+const exportToExcel = () => {}
 
-const exportToJSON = () => {
-  console.log('Exporting to JSON...')
-}
+const exportToJSON = () => {}
 
 // Lifecycle
 onMounted(() => {
