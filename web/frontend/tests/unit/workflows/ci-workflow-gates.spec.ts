@@ -168,8 +168,10 @@ describe("CI workflow gates", () => {
   it("treats tsc and eslint diagnostics as zero-error gates in the TypeScript workflow", () => {
     const typeWorkflowText = readWorkflow(".github/workflows/typescript-type-check.yml");
 
-    expect(typeWorkflowText).toContain('if [ -f tsc-results/tsc-output.txt ]');
-    expect(typeWorkflowText).toContain('TSC_ERROR_COUNT=$(grep -c "error TS" tsc-results/tsc-output.txt');
+    expect(typeWorkflowText).toContain('if [ -f type-check-artifacts/tsc-results/tsc-output.txt ]');
+    expect(typeWorkflowText).toContain('TSC_ERROR_COUNT=$(grep -c "error TS" type-check-artifacts/tsc-results/tsc-output.txt');
+    expect(typeWorkflowText).toContain('ARTIFACT_DIR="${{ github.workspace }}/type-check-artifacts/tsc-results"');
+    expect(typeWorkflowText).toContain('path: type-check-artifacts');
     expect(typeWorkflowText).toContain('if [ "$ESLINT_COUNT" -gt 0 ]');
     expect(typeWorkflowText).not.toContain('if [ "$ESLINT_COUNT" -gt 100 ]');
   });

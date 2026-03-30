@@ -1,0 +1,95 @@
+version: "v0.2"
+
+task:
+  id: "pr-17"
+  title: "validate and harden repository CI governance workflows on GitHub-hosted runners"
+  owner: "main"
+  created_at: "2026-03-30"
+
+mainline:
+  id: "L1-ci-governance-validation"
+  objective: "bring the repository CI governance workflows to a runner-verified state without leaving workflow-only failures in the PR path"
+  milestone_id: "L2-ci-governance"
+  slice_id: "L3-runner-verification"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "frontend"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "frontend-quality"
+  exemption_reason: "ci-governance-runner-validation"
+
+scope:
+  allowed_paths:
+    - ".github/workflows/code-quality.yml"
+    - ".github/workflows/deploy.yml"
+    - ".github/workflows/security-testing.yml"
+    - ".github/workflows/typescript-type-check.yml"
+    - ".github/workflows/visual-baseline-update.yml"
+    - "governance/mainline/task-cards/pr-17.yaml"
+    - "web/frontend/src/composables/useWebSocketWithConfig.ts"
+    - "web/frontend/src/utils/sessionRestore.js"
+    - "web/frontend/tests/unit/config/console-log-cleanup-batch-11.spec.ts"
+    - "web/frontend/tests/unit/config/pyprofiling-mainline-gate.spec.ts"
+    - "web/frontend/tests/unit/workflows/ci-workflow-gates.spec.ts"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No product feature work beyond clearing CI governance and frontend quality blockers"
+  - "No unrelated refactor outside the declared workflow and lint-fix scope"
+
+acceptance:
+  checks:
+    - id: "workflow-lint"
+      command: "actionlint .github/workflows/code-quality.yml .github/workflows/deploy.yml .github/workflows/typescript-type-check.yml .github/workflows/visual-baseline-update.yml"
+      required: true
+    - id: "frontend-stable-suite"
+      command: "FRONTEND_PORT=3020 FRONTEND_BACKUP_PORT=3021 BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 npm --prefix web/frontend run test:unit:stable"
+      required: true
+    - id: "runner-verification"
+      command: "gh run view <latest-run-id>"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Workflow hardening can hide genuine CI signal if permission failures are converted into silent success without explicit warnings"
+    - "PR-specific governance task cards must stay aligned with the actual touched paths or the mainline gate becomes untrustworthy"
+  rollback_plan: "git revert <merge-commit-sha> if CI governance or frontend stable suite behavior regresses after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "convert the CI governance branch from static-only cleanup into runner-verified workflow fixes"
+    modified_scope: "workflow YAMLs, one PR task card, and two frontend lint blockers plus governance-alignment tests"
+    dependency_changes: "none"
+    legacy_logic_impact: "existing CI gates stay in place, but workflow-only permission and artifact issues are removed"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the CI governance branch if runner verification reveals new hidden regressions after merge"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-03-30T00:00:00Z"
+    approval_note: "runner verification task card created for PR gate compliance"
+    secondary_approved: false
