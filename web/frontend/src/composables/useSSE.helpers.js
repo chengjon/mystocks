@@ -1,10 +1,6 @@
-export const createChannelConnectedLogger = (channelLabel, channelName) => (data) => {
-  console.log(`[${channelLabel}] Connected to ${channelName} channel:`, data)
-}
+export const createChannelConnectedLogger = (_channelLabel, _channelName) => (_data) => {}
 
-export const createKeepaliveLogger = (channelLabel) => (_data) => {
-  console.log(`[${channelLabel}] Keepalive ping received`)
-}
+export const createKeepaliveLogger = (_channelLabel) => (_data) => {}
 
 export const unwrapSSEPayload = (data) => data.data || data
 
