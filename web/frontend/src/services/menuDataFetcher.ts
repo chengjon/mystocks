@@ -114,7 +114,6 @@ export async function fetchMenuItemData<T = unknown>(
   if (useCache && method === 'GET') {
     const cachedData = getFromCache(cacheKey)
     if (cachedData !== null) {
-      console.log(`[MenuDataFetcher] Cache hit for: ${cacheKey}`)
       return {
         success: true,
         data: cachedData as T,
@@ -128,8 +127,6 @@ export async function fetchMenuItemData<T = unknown>(
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      console.log(`[MenuDataFetcher] Fetching: ${method} ${apiEndpoint} (attempt ${attempt + 1}/${retries + 1})`)
-
       const response = await executeWithTimeout<UnifiedResponse<T>>(
         async () => {
           switch (method.toUpperCase()) {
@@ -156,8 +153,6 @@ export async function fetchMenuItemData<T = unknown>(
         if (useCache && method === 'GET' && data !== undefined) {
           saveToCache(cacheKey, data)
         }
-
-        console.log(`[MenuDataFetcher] Success: ${method} ${item.apiEndpoint}`)
 
         return {
           success: true,
@@ -247,7 +242,6 @@ setInterval(() => {
   for (const [key, value] of cache.entries()) {
     if (now - value.timestamp > CACHE_DURATION) {
       cache.delete(key)
-      console.log(`[MenuDataFetcher] Expired cache removed: ${key}`)
     }
   }
 }, 60000) // 每分钟清理一次

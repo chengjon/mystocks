@@ -49,11 +49,7 @@ class TitleManager {
 
         const title = parts.join(finalConfig.separator)
         document.title = title
-
-        // 在开发环境下输出标题变化日志
-        if (import.meta.env.DEV) {
-            console.log(`📄 Page title updated: "${title}"`, finalConfig.dynamic ? '(dynamic)' : '(static)')
-        }
+        void finalConfig.dynamic
     }
 
     // 设置Meta标签
@@ -79,10 +75,7 @@ class TitleManager {
         this.updateMetaTag('twitter:description', config.twitterDescription, 'name')
         this.updateMetaTag('twitter:image', config.twitterImage, 'name')
 
-        // 开发环境下输出Meta变化日志
-        if (import.meta.env.DEV) {
-            console.log('🏷️ Meta tags updated:', Object.keys(config))
-        }
+        void Object.keys(config)
     }
 
     // 更新或创建Meta标签
