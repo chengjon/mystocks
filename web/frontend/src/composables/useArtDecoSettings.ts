@@ -189,12 +189,10 @@ export function useArtDecoSettings() {
 
       const saveSettings = () => {
           // 保存设置逻辑
-          console.log('Saving settings:', settings.value)
       }
 
       const resetToDefaults = () => {
           // 重置默认设置逻辑
-          console.log('Resetting to defaults')
       }
 
   // Return all reactive state and methods for template binding
