@@ -384,25 +384,23 @@ function getAlertLevelVariant(level: string): 'warning' | 'danger' | 'info' | 's
 }
 
 function handleRealtimeSort(key: string, order: 'asc' | 'desc') {
-  console.log('Sort realtime:', key, order)
+  void key
+  void order
 }
 
 function handleDragonTigerSort(key: string, order: 'asc' | 'desc') {
-  console.log('Sort dragon tiger:', key, order)
+  void key
+  void order
 }
 
 function refreshAll() {
-  console.log('Refreshing all data...')
 }
 
 function toggleMonitoring() {
   isMonitoring.value = !isMonitoring.value
-  console.log('Monitoring:', isMonitoring.value ? 'started' : 'stopped')
 }
 
-onMounted(() => {
-  console.log('Monitoring dashboard mounted')
-})
+onMounted(() => {})
 </script>
 
 <style scoped lang="scss">

@@ -454,7 +454,6 @@ function analyzeStock() {
         console.warn('未配置的API端点:', currentRouteName.value)
         return
     }
-    console.log('开始分析 - API端点:', apiEndpoint.value)
     // TODO: 使用 apiEndpoint 调用 API
 }
 
@@ -464,7 +463,6 @@ const _subscribeWebSocket = () => {
         console.warn('未配置的WebSocket频道:', currentRouteName.value)
         return
     }
-    console.log('订阅WebSocket频道:', wsChannel.value)
     // TODO: 使用 wsChannel 订阅 WebSocket
 }
 </script>
