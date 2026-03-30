@@ -90,12 +90,13 @@ jobs:
         id: changed
         run: |
           git add web/frontend/tests/visual/baselines/
+          git diff --cached --name-only > visual-baseline-changed-files.txt
 
           echo "Changed files:" >> $GITHUB_STEP_SUMMARY
           git diff --cached --name-only >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          changed_count=$(git diff --cached --name-only | wc -l)
+          changed_count=$(wc -l < visual-baseline-changed-files.txt)
           echo "Files changed: $changed_count"
 
           if [ $changed_count -gt 0 ]; then
@@ -156,7 +157,7 @@ jobs:
           echo "" >> visual-baseline-update-report.md
           echo "## Files Updated" >> visual-baseline-update-report.md
           echo "" >> visual-baseline-update-report.md
-          git status --short >> visual-baseline-update-report.md
+          cat visual-baseline-changed-files.txt >> visual-baseline-update-report.md
           echo "" >> visual-baseline-update-report.md
           echo "## ArtDeco V3.0 Components" >> visual-baseline-update-report.md
           echo "" >> visual-baseline-update-report.md
