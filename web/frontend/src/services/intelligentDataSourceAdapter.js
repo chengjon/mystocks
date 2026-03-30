@@ -42,7 +42,6 @@ class IntelligentDataSourceAdapter {
     try {
       await this.detectDataSourceMode()
       this.startHealthMonitoring()
-      console.log('✅ Intelligent Data Source Adapter initialized')
     } catch (error) {
       console.error('❌ Failed to initialize Data Source Adapter:', error)
     }
@@ -58,9 +57,6 @@ class IntelligentDataSourceAdapter {
 
       this.currentMode = config.current_mode
       this.fallbackEnabled = config.fallback_enabled
-
-      console.log(`📊 Data Source Mode: ${this.currentMode}`)
-      console.log(`🔄 Fallback Enabled: ${this.fallbackEnabled}`)
 
       // 通知观察者模式变更
       this.notifyModeChange(this.currentMode)
@@ -314,7 +310,7 @@ class IntelligentDataSourceAdapter {
    */
   recordRequestMetrics(endpoint, success, responseTime, error = null) {
     // 这里可以发送到监控服务或本地存储
-    const metrics = {
+    const _metrics = {
       endpoint,
       success,
       responseTime,
@@ -322,8 +318,6 @@ class IntelligentDataSourceAdapter {
       timestamp: new Date(),
       mode: this.currentMode
     }
-
-    console.debug('📊 Request Metrics:', metrics)
   }
 
   /**
@@ -379,7 +373,6 @@ class IntelligentDataSourceAdapter {
    */
   clearCache() {
     this.cache.clear()
-    console.log('🧹 Cache cleared')
   }
 
   /**
