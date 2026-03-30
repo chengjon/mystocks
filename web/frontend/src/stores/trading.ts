@@ -73,8 +73,7 @@ export const useTradingStore = defineStore('trading', () => {
     orders.value = [];
   };
 
-  const switchActiveFunction = (funcName: string) => {
-    console.log('Switching to function:', funcName);
+  const switchActiveFunction = (_funcName: string) => {
   };
 
   const fetchSystemStatus = async () => {
@@ -119,7 +118,6 @@ export const useTradingStore = defineStore('trading', () => {
   };
 
   const refreshAllData = async () => {
-    console.log('Refreshing all trading data and system status...');
     await fetchSystemStatus();
     // Potentially add other data refresh calls here later
   };
@@ -166,4 +164,3 @@ export const useTradingStore = defineStore('trading', () => {
     updateLastUpdateTime,
   };
 });
-
