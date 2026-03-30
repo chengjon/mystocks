@@ -245,7 +245,6 @@ const fetchData = async () => {
 }
 
 const handleAddStock = () => {
-  console.log('Opening add stock dialog...')
 }
 
 onMounted(fetchData)
