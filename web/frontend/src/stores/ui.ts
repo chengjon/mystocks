@@ -112,12 +112,11 @@ export const useUiStore = defineStore('ui', () => {
         }
     }
 
-    const setupRealtimeUpdates = (updates: RealtimeUpdate[]): unknown => {
+    const setupRealtimeUpdates = (_updates: RealtimeUpdate[]): unknown => {
         // 这里可以实现实时更新逻辑
-        console.log('Setting up realtime updates:', updates)
         return {
-            start: () => console.log('Started realtime updates'),
-            stop: () => console.log('Stopped realtime updates')
+            start: () => {},
+            stop: () => {}
         }
     }
 
