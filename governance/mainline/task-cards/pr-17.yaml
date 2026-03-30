@@ -44,6 +44,8 @@ scope:
     - "governance/mainline/task-cards/pr-17.yaml"
     - "web/frontend/src/composables/useWebSocketWithConfig.ts"
     - "web/frontend/src/utils/sessionRestore.js"
+    - "web/frontend/tests/unit/config/console-log-cleanup-batch-11.spec.ts"
+    - "web/frontend/tests/unit/config/pyprofiling-mainline-gate.spec.ts"
     - "web/frontend/tests/unit/workflows/ci-workflow-gates.spec.ts"
   forbidden_paths:
     - "web/frontend/src/App.vue"
