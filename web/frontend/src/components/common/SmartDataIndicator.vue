@@ -151,20 +151,17 @@ export default {
         this.fallbackEnabled = status.fallbackEnabled
         this.lastHealthCheck = status.lastHealthCheck
 
-        console.debug('📊 Smart Data Indicator updated:', status)
       } catch (error) {
         console.error('❌ Failed to update status:', error)
       }
     },
 
     handleModeChange(mode) {
-      console.log('🔄 Mode changed to:', mode)
       this.currentMode = mode
       this.$emit('mode-change', mode)
     },
 
     handleHealthChange(isHealthy) {
-      console.log('💚 Health status changed:', isHealthy)
       this.updateStatus()
       this.$emit('health-change', isHealthy)
     },

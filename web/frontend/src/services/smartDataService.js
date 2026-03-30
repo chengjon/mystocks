@@ -21,12 +21,10 @@ class SmartDataService {
    */
   setupEventListeners() {
     this.adapter.onModeChange((mode) => {
-      console.log(`📊 Smart Data Service: Mode changed to ${mode}`)
       this.emit('mode-change', mode)
     })
 
     this.adapter.onHealthChange((isHealthy) => {
-      console.log(`💚 Smart Data Service: Health status ${isHealthy ? 'improved' : 'degraded'}`)
       this.emit('health-change', isHealthy)
     })
   }
@@ -43,7 +41,6 @@ class SmartDataService {
       // 等待适配器初始化完成
       await new Promise(resolve => setTimeout(resolve, 1000))
       this.isInitialized = true
-      console.log('✅ Smart Data Service initialized')
     } catch (error) {
       console.error('❌ Smart Data Service initialization failed:', error)
       throw error
