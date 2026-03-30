@@ -274,13 +274,11 @@
         })
     }
 
-    const handleFundFlowData = (data: unknown): void => {
-        console.log('Fund flow data loaded:', data)
+    const handleFundFlowData = (_data: unknown): void => {
         // Handle data loaded event from FundFlowPanel
     }
 
     const handleFundFlowRefresh = (): void => {
-        console.log('Fund flow refresh requested')
         // Handle refresh event from FundFlowPanel
     }
 
