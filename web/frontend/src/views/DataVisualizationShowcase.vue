@@ -333,9 +333,8 @@
     } = mockData
 
     // 事件处理
-    const onChartReady = (chartType, instance) => {
+    const onChartReady = (chartType, _instance) => {
         addLog('success', `${chartType}图表初始化完成`)
-        console.log(`${chartType} chart ready:`, instance)
     }
 
     const onNodeClick = data => {
