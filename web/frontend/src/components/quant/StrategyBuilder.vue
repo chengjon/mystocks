@@ -187,7 +187,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { _TrendChartUp, _TrendChartDown } from '@element-plus/icons-vue'
 import axios from 'axios'
@@ -311,9 +311,6 @@ const handleRunStrategy = async () => {
   }
 }
 
-onMounted(() => {
-  console.log('StrategyBuilder组件已挂载')
-})
 </script>
 
 <style scoped>
