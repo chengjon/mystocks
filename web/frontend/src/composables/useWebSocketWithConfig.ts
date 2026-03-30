@@ -118,8 +118,6 @@ export function useWebSocketWithConfig() {
 
     const channel = config.wsChannel
 
-    console.log(`[WebSocket] 订阅路由 ${routeName} 的频道: ${channel}`)
-
     // 调用底层subscribe函数
     return activateSubscription(subscribe(channel, callback))
   }
@@ -150,8 +148,6 @@ export function useWebSocketWithConfig() {
 
     const channel = config.wsChannel
 
-    console.log(`[WebSocket] 取消订阅路由 ${routeName} 的频道: ${channel}`)
-
     // 调用底层unsubscribe函数
     unsubscribe(channel, callback)
   }
@@ -174,20 +170,16 @@ export function useWebSocketWithConfig() {
     // ✅ 从统一配置获取所有需要WebSocket的路由
     const wsRoutes = getWebSocketRoutes()
 
-    console.log(`[WebSocket] 批量订阅 ${wsRoutes.length} 个路由的WebSocket频道`)
-
     const unsubscribers: Array<() => void> = []
 
     // 为每个路由订阅
     wsRoutes.forEach(({ routeName, channel }: { routeName: RouteName; channel: string }) => {
-      console.log(`[WebSocket] 订阅 ${routeName} -> ${channel}`)
       const unsubscribe = activateSubscription(subscribe(channel, callback))
       unsubscribers.push(unsubscribe)
     })
 
     // 返回取消所有订阅的函数
     return () => {
-      console.log(`[WebSocket] 取消所有 ${unsubscribers.length} 个订阅`)
       unsubscribers.forEach(unsub => unsub())
     }
   }
@@ -223,7 +215,6 @@ export function useWebSocketWithConfig() {
 
     // ✅ 检查是否需要WebSocket
     if (!isStandardConfig(config) || !config.wsChannel) {
-      console.log(`[WebSocket] 路由 ${routeName} 不需要WebSocket`)
       return () => {}
     }
 
