@@ -73,7 +73,6 @@ export function useWebSocket(config: WebSocketConfig = {}) {
    */
   const connect = () => {
     if (globalState.value.ws?.readyState === WebSocket.OPEN) {
-      console.log('[WebSocket] Already connected')
       return
     }
 
@@ -83,7 +82,7 @@ export function useWebSocket(config: WebSocketConfig = {}) {
       globalState.value.ws = new WebSocket(url)
 
       globalState.value.ws.onopen = () => {
-        console.log('[WebSocket] Connected to', url)
+        void url
         globalState.value.connectionState = 'connected'
         globalState.value.reconnectAttempts = 0
 
@@ -135,7 +134,6 @@ export function useWebSocket(config: WebSocketConfig = {}) {
       }
 
       globalState.value.ws.onclose = () => {
-        console.log('[WebSocket] Disconnected')
         globalState.value.connectionState = 'disconnected'
         globalState.value.ws = null
 
@@ -179,8 +177,7 @@ export function useWebSocket(config: WebSocketConfig = {}) {
 
     globalState.value.reconnectAttempts++
     const delay = reconnectInterval * globalState.value.reconnectAttempts
-
-    console.log(`[WebSocket] Scheduling reconnect in ${delay}ms (attempt ${globalState.value.reconnectAttempts}/${maxReconnectAttempts})`)
+    void delay
 
     globalState.value.reconnectTimer = window.setTimeout(() => {
       globalState.value.reconnectTimer = null
@@ -246,8 +243,6 @@ export function useWebSocket(config: WebSocketConfig = {}) {
       }))
     }
 
-    console.log(`[WebSocket] Subscribed to channel: ${channel}`)
-
     // 返回取消订阅函数
     return () => unsubscribe(channel, callback)
   }
@@ -271,7 +266,6 @@ export function useWebSocket(config: WebSocketConfig = {}) {
           }))
         }
 
-        console.log(`[WebSocket] Unsubscribed from channel: ${channel}`)
       }
     }
   }
