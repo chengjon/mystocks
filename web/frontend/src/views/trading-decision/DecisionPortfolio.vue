@@ -117,7 +117,6 @@ const tradingStats = reactive({
   profitRate: 0.05
 })
 
-const handleQuickAction = (action: string): void => {
-  console.log('Quick action:', action)
+const handleQuickAction = (_action: string): void => {
 }
 </script>
