@@ -206,7 +206,7 @@ class WebSocketManager {
   private updateState(newState: WebSocketState): void {
     if (this.state === newState) return
 
-    const oldState = this.state
+    const _oldState = this.state
     this.state = newState
 
     // Notify state change handlers
@@ -218,7 +218,6 @@ class WebSocketManager {
       }
     })
 
-    console.log(`WebSocket state changed: ${oldState} -> ${newState}`)
   }
 
   private handleMessage(event: MessageEvent): void {
@@ -271,8 +270,6 @@ class WebSocketManager {
 
     this.reconnectAttempts++
     this.updateState(WebSocketState.RECONNECTING)
-
-    console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.config.reconnectAttempts})...`)
 
     this.reconnectTimer = window.setTimeout(async () => {
       try {
