@@ -88,6 +88,17 @@ def test_api_contract_validation_pr_comment_is_non_blocking() -> None:
     assert "continue-on-error: true" in comment_section
 
 
+def test_api_compliance_workflow_uses_supported_actions_and_safe_python_matrix_expansion() -> None:
+    workflow = _read_workflow("api-compliance-testing.yml")
+
+    assert "uses: actions/setup-python@v5" in workflow
+    assert "uses: actions/cache@v4" in workflow
+    assert "uses: actions/github-script@v7" in workflow
+    assert 'MATRIX_PYTHON_VERSION: ${{ matrix.python-version }}' in workflow
+    assert "print(f\"Python Version: {os.getenv('MATRIX_PYTHON_VERSION', 'unknown')}\")" in workflow
+    assert "${{{{ matrix.python-version }}}}" not in workflow
+
+
 def test_api_contract_and_api_file_workflows_install_backend_runtime_dependencies() -> None:
     contract_workflow = _read_workflow("api-contract-validation.yml")
     api_file_workflow = _read_workflow("api-file-tests.yml")
