@@ -217,8 +217,12 @@ describe("CI workflow gates", () => {
 
   it("uses staged baseline diffs instead of raw worktree status in the visual baseline update workflow", () => {
     const workflowText = readWorkflow(".github/workflows/visual-baseline-update.yml");
+    const changedSection = workflowText
+      .split("- name: Check Changed Files", 2)[1]
+      .split("- name: Commit and Push Changes", 2)[0];
 
-    expect(workflowText).toContain("git add tests/visual/baselines/");
+    expect(changedSection).toContain("git add web/frontend/tests/visual/baselines/");
+    expect(changedSection).not.toContain("git add tests/visual/baselines/");
     expect(workflowText).toContain("changed_count=$(git diff --cached --name-only | wc -l)");
     expect(workflowText).not.toContain("changed_count=$(git status --short | wc -l)");
     expect(workflowText).toContain("git diff --cached --name-only >> $GITHUB_STEP_SUMMARY");

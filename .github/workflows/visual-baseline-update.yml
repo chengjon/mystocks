@@ -89,7 +89,7 @@ jobs:
       - name: Check Changed Files
         id: changed
         run: |
-          git add tests/visual/baselines/
+          git add web/frontend/tests/visual/baselines/
 
           echo "Changed files:" >> $GITHUB_STEP_SUMMARY
           git diff --cached --name-only >> $GITHUB_STEP_SUMMARY
