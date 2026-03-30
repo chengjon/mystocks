@@ -143,23 +143,17 @@ const handleNodeClick = (nodeData: TreeNode): void => {
 
 // 执行预定义查询
 const executeQuery = async (queryData: WencaiQuery): Promise<void> => {
-  console.log('executeQuery called with:', queryData)
-
   loadingResults.value = true
   currentQueryName.value = queryData.query_name
   currentQueryText.value = queryData.query_text
 
   try {
     // 1. 执行查询
-    console.log('Calling API with query_name:', queryData.query_name)
-
     const response = await fetch(API_ENDPOINTS.wencai.query, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query_name: queryData.query_name, pages: 1 })
     })
-
-    console.log('Response status:', response.status)
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ detail: '未知错误' }))
@@ -167,8 +161,6 @@ const executeQuery = async (queryData: WencaiQuery): Promise<void> => {
     }
 
     const data = await response.json()
-    console.log('Query response:', data)
-
     ElMessage.success(`查询完成：${data.total_records || 0} 条数据`)
 
     // 2. 获取结果
