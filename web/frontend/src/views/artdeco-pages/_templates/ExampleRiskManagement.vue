@@ -142,19 +142,15 @@ const handleTabChange = (tabKey: string) => {
 }
 
 const handleExport = () => {
-  console.log('导出风险报告')
 }
 
 const handleSettings = () => {
-  console.log('打开设置')
 }
 
-const handleAction = (stock: RiskAlertItem) => {
-  console.log('执行操作:', stock)
+const handleAction = (_stock: RiskAlertItem) => {
 }
 
 const openStockModal = () => {
-  console.log('打开股票选择弹窗')
 }
 </script>
 
