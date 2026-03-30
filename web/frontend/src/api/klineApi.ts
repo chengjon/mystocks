@@ -29,8 +29,6 @@ apiClient.interceptors.response.use(
 
 apiClient.interceptors.request.use(
   config => {
-    const timestamp = new Date().toISOString();
-    console.log(`[KLINE API] ${config.method?.toUpperCase()} ${config.url} [${timestamp}]`);
     return config;
   },
   error => Promise.reject(error)
@@ -56,7 +54,6 @@ export const klineApi = {
     if (useCache) {
       const cached = klineCache.get<KLineResponse>(cacheKey);
       if (cached) {
-        console.log('[KLINE API] Cache hit:', cacheKey);
         return cached;
       }
     }
@@ -103,7 +100,6 @@ export const klineApi = {
 
   clearCache(): void {
     klineCache.clear();
-    console.log('[KLINE API] Cache cleared');
   }
 };
 
