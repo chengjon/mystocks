@@ -20,17 +20,14 @@ const loaded = ref(false)
 const testLoad = async () => {
   try {
     ElMessage.info('开始加载查询列表...')
-    console.log('API endpoint:', API_ENDPOINTS.wencai.queries)
 
     const response = await fetch(API_ENDPOINTS.wencai.queries)
-    console.log('Response status:', response.status)
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`)
     }
 
     const data = await response.json()
-    console.log('Response data:', data)
 
     queries.value = data.queries || []
     loaded.value = true
