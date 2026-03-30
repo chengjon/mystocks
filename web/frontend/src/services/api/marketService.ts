@@ -69,11 +69,6 @@ class MarketApiService {
         const requestId = this.generateRequestId();
         config.headers['X-Request-ID'] = requestId;
 
-        console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, {
-          params: config.params,
-          requestId,
-        });
-
         return config;
       },
       (error) => {
@@ -85,10 +80,6 @@ class MarketApiService {
     // 响应拦截器
     this.client.interceptors.response.use(
       (response) => {
-        console.log(`[API Response] ${response.config.method?.toUpperCase()} ${response.config.url}`, {
-          status: response.status,
-          requestId: response.config.headers['X-Request-ID'],
-        });
         return response;
       },
       (error) => {
