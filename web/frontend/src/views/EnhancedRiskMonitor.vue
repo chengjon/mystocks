@@ -255,9 +255,8 @@ const showGpuStatus = () => {
   gpuStatusDialogVisible.value = true
 }
 
-const handleTabClick = (tab) => {
+const handleTabClick = (_tab) => {
   // 切换标签页时的处理逻辑
-  console.log('Tab changed to:', tab.props.name)
 }
 
 const handlePositionUpdated = () => {
@@ -319,7 +318,6 @@ const initWebSocket = () => {
     wsConnection = new WebSocket(wsUrl)
 
     wsConnection.onopen = () => {
-      console.log('WebSocket connected for real-time risk updates')
       ElMessage.success('实时数据连接已建立')
     }
 
@@ -337,7 +335,6 @@ const initWebSocket = () => {
     }
 
     wsConnection.onclose = () => {
-      console.log('WebSocket disconnected')
       ElMessage.warning('实时数据连接已断开')
     }
 
