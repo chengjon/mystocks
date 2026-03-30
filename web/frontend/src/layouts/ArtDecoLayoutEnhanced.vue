@@ -88,11 +88,9 @@ const openCommandPalette = () => {
 }
 
 const toggleNotifications = () => {
-  console.log('Toggle notifications')
 }
 
 const toggleUserMenu = () => {
-  console.log('Toggle user menu')
 }
 
 </script>
