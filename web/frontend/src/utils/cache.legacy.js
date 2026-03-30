@@ -57,8 +57,6 @@ class CacheManager {
     this.cleanupIntervalId = setInterval(() => {
       this.cleanup()
     }, this.config.autoCleanupInterval)
-
-    console.log('🗂️ 前端缓存管理器初始化完成')
   }
 
   /**
