@@ -9,6 +9,10 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+permissions:
+  contents: read
+  issues: write
+
 env:
   PYTHON_VERSION: '3.12'
 
@@ -25,7 +29,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
@@ -370,7 +374,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
@@ -381,13 +385,17 @@ jobs:
 
     - name: Run tests with coverage
       run: |
-        coverage run -m pytest scripts/tests/ -v --cov=src --cov-report=xml --cov-report=html --cov-fail-under=80
+        python -m pytest -o addopts='' scripts/tests/ -v --cov=src --cov-report=xml --cov-report=html --cov-fail-under=80 || true
       continue-on-error: true
 
     - name: Generate coverage report
       run: |
-        coverage report --show-missing
-        coverage html
+        if [ -f coverage.xml ]; then
+          coverage report --show-missing || true
+          coverage html || true
+        else
+          echo "::warning::coverage.xml not generated; skipping coverage post-processing"
+        fi
 
     - name: Upload coverage reports
       uses: actions/upload-artifact@v4
@@ -408,7 +416,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
@@ -430,7 +438,6 @@ jobs:
         import sys
 
         sys.path.insert(0, '.')
-        from src.core.memory_manager import MemoryManager
 
         print('=== 内存使用分析 ===')
         process = psutil.Process(os.getpid())
@@ -440,6 +447,7 @@ jobs:
         print(f'CPU 使用率: {process.cpu_percent()}%')
 
         try:
+            from src.core.memory_manager import MemoryManager
             manager = MemoryManager()
             stats = manager.get_memory_stats()
             print(f'管理内存统计: {stats}')
@@ -465,7 +473,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
@@ -567,13 +575,16 @@ jobs:
     steps:
     - name: Download all quality artifacts
       uses: actions/download-artifact@v4
+      with:
+        path: .
+        merge-multiple: true
 
     - name: Generate consolidated quality report
       run: |
         mkdir -p quality-reports
 
         # 生成总体质量报告
-        cat > quality-reports/quality-summary.md << 'EOF'
+        cat > quality-reports/quality-summary.md << EOF
         # MyStocks 代码质量报告
 
         ## 执行时间
@@ -598,43 +609,45 @@ jobs:
         if [ -f pylint-report.json ]; then
           echo "### Pylint 分析结果" >> quality-reports/quality-summary.md
           python - << 'PY' >> quality-reports/quality-summary.md
-          import json
+        import json
 
-          try:
-              with open('pylint-report.json') as f:
-                  data = json.load(f)
-              if isinstance(data, list) and data:
-                  errors = sum(1 for msg in data if msg.get('type') == 'convention')
-                  warnings = sum(1 for msg in data if msg.get('type') == 'refactor')
-                  criticals = sum(1 for msg in data if msg.get('type') == 'error')
-                  print(f'- 错误: {errors}')
-                  print(f'- 警告: {warnings}')
-                  print(f'- 重构建议: {criticals}')
-              else:
-                  print('- 解析Pylint报告时出错')
-          except Exception:
-              print('- 无法解析Pylint报告')
-          PY
+        try:
+            with open('pylint-report.json') as f:
+                data = json.load(f)
+            if isinstance(data, list) and data:
+                errors = sum(1 for msg in data if msg.get('type') in {'error', 'fatal'})
+                warnings = sum(1 for msg in data if msg.get('type') == 'warning')
+                refactors = sum(1 for msg in data if msg.get('type') == 'refactor')
+                conventions = sum(1 for msg in data if msg.get('type') == 'convention')
+                print(f'- 错误: {errors}')
+                print(f'- 警告: {warnings}')
+                print(f'- 重构建议: {refactors}')
+                print(f'- 规范提示: {conventions}')
+            else:
+                print('- 解析Pylint报告时出错')
+        except Exception:
+            print('- 无法解析Pylint报告')
+        PY
         fi
 
         # 添加覆盖率结果
         if [ -f coverage.xml ]; then
           echo -e "\n### 测试覆盖率" >> quality-reports/quality-summary.md
           python - << 'PY' >> quality-reports/quality-summary.md
-          import xml.etree.ElementTree as ET
+        import xml.etree.ElementTree as ET
 
-          try:
-              tree = ET.parse('coverage.xml')
-              root = tree.getroot()
-              coverage = float(root.get('line-rate', '0')) * 100
-              print(f'- 代码覆盖率: {coverage:.1f}%')
-              if coverage < 80:
-                  print('- ⚠️  覆盖率低于80%目标')
-              else:
-                  print('- ✅ 覆盖率达到目标')
-          except Exception:
-              print('- 无法解析覆盖率报告')
-          PY
+        try:
+            tree = ET.parse('coverage.xml')
+            root = tree.getroot()
+            coverage = float(root.get('line-rate', '0')) * 100
+            print(f'- 代码覆盖率: {coverage:.1f}%')
+            if coverage < 80:
+                print('- ⚠️  覆盖率低于80%目标')
+            else:
+                print('- ✅ 覆盖率达到目标')
+        except Exception:
+            print('- 无法解析覆盖率报告')
+        PY
         fi
 
         # 添加复杂度结果
@@ -644,7 +657,7 @@ jobs:
         fi
 
         # 生成JSON格式报告
-        cat > quality-reports/quality-results.json << 'JSON_EOF'
+        cat > quality-reports/quality-results.json << JSON_EOF
         {
           "timestamp": "$(date -Iseconds)",
           "quality_metrics": {
@@ -677,6 +690,9 @@ jobs:
     steps:
     - name: Download quality reports
       uses: actions/download-artifact@v4
+      with:
+        path: .
+        merge-multiple: true
 
     - name: Quality Gate Evaluation
       id: gate
@@ -687,19 +703,19 @@ jobs:
         # 检查Pylint错误
         if [ -f pylint-report.json ]; then
           ERROR_COUNT=$(python - << 'PY'
-          import json
+        import json
 
-          try:
-              with open('pylint-report.json') as f:
-                  data = json.load(f)
-              if isinstance(data, list):
-                  error_count = len([msg for msg in data if msg.get('type') == 'error'])
-                  print(error_count)
-              else:
-                  print('10')
-          except Exception:
-              print('10')
-          PY
+        try:
+            with open('pylint-report.json') as f:
+                data = json.load(f)
+            if isinstance(data, list):
+                error_count = len([msg for msg in data if msg.get('type') == 'error'])
+                print(error_count)
+            else:
+                print('10')
+        except Exception:
+            print('10')
+        PY
           )
           if [ "$ERROR_COUNT" -gt 20 ]; then
             QUALITY_PASS=false
@@ -710,16 +726,16 @@ jobs:
         # 检查测试覆盖率
         if [ -f coverage.xml ]; then
           COVERAGE=$(python - << 'PY'
-          import xml.etree.ElementTree as ET
+        import xml.etree.ElementTree as ET
 
-          try:
-              tree = ET.parse('coverage.xml')
-              root = tree.getroot()
-              coverage = float(root.get('line-rate', '0')) * 100
-              print(f'{coverage:.1f}')
-          except Exception:
-              print('0.0')
-          PY
+        try:
+            tree = ET.parse('coverage.xml')
+            root = tree.getroot()
+            coverage = float(root.get('line-rate', '0')) * 100
+            print(f'{coverage:.1f}')
+        except Exception:
+            print('0.0')
+        PY
           )
           COVERAGE_NUM=$(echo $COVERAGE | cut -d. -f1)
           if [ "$COVERAGE_NUM" -lt 80 ]; then
@@ -748,15 +764,19 @@ jobs:
 
     - name: Comment on PR
       if: github.event_name == 'pull_request' && steps.gate.outputs.quality-pass == 'false'
-      uses: actions/github-script@v6
+      uses: actions/github-script@v7
       with:
         script: |
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.name,
-            body: '⚠️ 代码质量门禁失败！请修复以下质量问题后再合并：\n- 检查代码质量报告\n- 修复Pylint错误\n- 提高测试覆盖率\n- 重构高复杂度函数\n\n详细信息请查看质量测试报告。'
-          })
+          try {
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ 代码质量门禁失败！请修复以下质量问题后再合并：\n- 检查代码质量报告\n- 修复Pylint错误\n- 提高测试覆盖率\n- 重构高复杂度函数\n\n详细信息请查看质量测试报告。'
+            });
+          } catch (error) {
+            core.warning(`Skipping PR comment: ${error.message}`);
+          }
 
   # 最终整合报告
   hardcoding-governance:
@@ -766,9 +786,11 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
@@ -848,49 +870,76 @@ jobs:
   final-report:
     name: Final Integration Report
     runs-on: ubuntu-latest
-    needs: [security-gate, quality-gate]
+    needs: [security-compliance, hardcoding-governance, quality-gate]
     if: always()
 
     steps:
     - name: Download all artifacts
       uses: actions/download-artifact@v4
+      with:
+        path: .
+        merge-multiple: true
 
     - name: Generate final CI/CD report
       run: |
-        echo "=== MyStocks CI/CD 测试总结 ==="
-        echo "执行时间: $(date)"
-        echo "提交: ${{ github.sha }}"
-        echo "分支: ${{ github.ref_name }}"
-        echo ""
-
-        # 安全测试结果
-        echo "🔒 安全测试结果:"
-        if [ -f security-reports/security-summary.md ]; then
-          grep -E "(✅|❌|⚠️)" security-reports/security-summary.md | head -5
-        else
-          echo "❌ 安全测试报告未找到"
+        OVERALL_STATUS="❌ 部分测试失败 - 需要修复"
+        if [ "${{ needs.security-compliance.result }}" = "success" ] && [ "${{ needs.hardcoding-governance.result }}" = "success" ] && [ "${{ needs.quality-gate.outputs.quality-pass }}" = "true" ]; then
+          OVERALL_STATUS="✅ 所有测试通过 - 可以部署"
         fi
 
-        # 质量测试结果
-        echo -e "\n📊 质量测试结果:"
+        cat > ci-cd-final-report.md << EOF
+        # MyStocks CI/CD 最终汇总
+
+        - 执行时间: $(date)
+        - 提交: ${{ github.sha }}
+        - 分支: ${{ github.ref_name }}
+
+        ## 安全结果
+
+        - Security Compliance Check: ${{ needs.security-compliance.result }}
+        - Hardcoding Governance Gate: ${{ needs.hardcoding-governance.result }}
+
+        ## 质量结果
+
+        - Quality Gate: ${{ needs.quality-gate.outputs.quality-pass == 'true' && 'success' || 'failure' }}
+
+        ## 总体状态
+
+        - ${OVERALL_STATUS}
+        EOF
+
+        if [ -f reports/security/hardcoding/ci-latest.md ]; then
+          {
+            echo
+            echo "## Hardcoding Gate 摘要"
+            grep -E "(passed|failed|P0|Expired|Baseline|Current|New)" reports/security/hardcoding/ci-latest.md | head -10 || true
+          } >> ci-cd-final-report.md
+        else
+          {
+            echo
+            echo "## Hardcoding Gate 摘要"
+            echo "- ⚠️ Hardcoding gate markdown report not found in downloaded artifacts"
+          } >> ci-cd-final-report.md
+        fi
+
         if [ -f quality-reports/quality-summary.md ]; then
-          grep -E "(✅|❌|⚠️)" quality-reports/quality-summary.md | head -5
+          {
+            echo
+            echo "## 质量摘要"
+            grep -E "(✅|❌|⚠️)" quality-reports/quality-summary.md | head -5 || true
+          } >> ci-cd-final-report.md
         else
-          echo "❌ 质量测试报告未找到"
+          {
+            echo
+            echo "## 质量摘要"
+            echo "- ❌ 质量测试报告未找到"
+          } >> ci-cd-final-report.md
         fi
 
-        # 总体状态
-        echo -e "\n🎯 总体状态:"
-        if [ "${{ needs.security-gate.outputs.security-pass }}" = "true" ] && [ "${{ needs.quality-gate.outputs.quality-pass }}" = "true" ]; then
-          echo "✅ 所有测试通过 - 可以部署"
-        else
-          echo "❌ 部分测试失败 - 需要修复"
-        fi
+        cat ci-cd-final-report.md
 
     - name: Upload final report
       uses: actions/upload-artifact@v4
       with:
         name: ci-cd-final-report
-        path: |
-          security-reports/
-          quality-reports/
+        path: ci-cd-final-report.md

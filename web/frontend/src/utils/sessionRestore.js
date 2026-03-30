@@ -38,8 +38,7 @@ export async function restoreSession() {
     // 从localStorage恢复token和用户信息
     authStore.initializeAuth()
 
-    if (authStore.isAuthenticated) {
-    } else {
+    if (!authStore.isAuthenticated) {
       console.warn('⚠️ Token invalid or missing, clearing session')
       authStore.logout()
     }
