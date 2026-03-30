@@ -260,12 +260,6 @@ export function useTrainingProgress(options = {}) {
     status.value = progressData.status || ''
     message.value = progressData.message || ''
     metrics.value = progressData.metrics || {}
-
-    console.log('[Training] Progress update:', {
-      taskId: taskId.value,
-      progress: progress.value,
-      status: status.value
-    })
   })
 
   // Handle ping event (keepalive)
@@ -318,13 +312,6 @@ export function useBacktestProgress(options = {}) {
     message.value = progressData.message || ''
     currentDate.value = progressData.current_date || ''
     results.value = progressData.results || {}
-
-    console.log('[Backtest] Progress update:', {
-      backtestId: backtestId.value,
-      progress: progress.value,
-      status: status.value,
-      currentDate: currentDate.value
-    })
   })
 
   // Handle ping event (keepalive)
@@ -375,8 +362,6 @@ export function useRiskAlerts(options = {}) {
     // Update latest alert
     latestAlert.value = alert
     unreadCount.value++
-
-    console.log('[Alerts] New risk alert:', alert)
   })
 
   // Handle ping event (keepalive)
@@ -447,11 +432,6 @@ export function useDashboardUpdates(options = {}) {
     updateType.value = updateData.update_type || ''
     metrics.value = updateData.data || {}
     lastUpdate.value = new Date()
-
-    console.log('[Dashboard] Metrics update:', {
-      updateType: updateType.value,
-      metrics: metrics.value
-    })
   })
 
   // Handle ping event (keepalive)
