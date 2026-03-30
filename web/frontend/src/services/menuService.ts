@@ -60,7 +60,6 @@ class WebSocketManager {
       this.ws = new WebSocket(`${WS_BASE_URL}/ws`)
 
       this.ws.onopen = () => {
-        console.log('[WebSocket] Connected')
         this.reconnectAttempts = 0
 
         // 订阅所有频道
@@ -79,7 +78,6 @@ class WebSocketManager {
       }
 
       this.ws.onclose = () => {
-        console.log('[WebSocket] Disconnected')
         this.scheduleReconnect()
       }
 
