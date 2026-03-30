@@ -16,6 +16,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
   pull-requests: write
 
 env:
@@ -27,6 +28,8 @@ jobs:
     name: Update Visual Baselines
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    outputs:
+      has_changes: ${{ steps.changed.outputs.has_changes }}
 
     steps:
       - name: Checkout Code
@@ -43,7 +46,7 @@ jobs:
           cache-dependency-path: web/frontend/package-lock.json
 
       - name: Cache Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             web/frontend/node_modules
@@ -55,8 +58,7 @@ jobs:
       - name: Install Dependencies
         run: |
           cd web/frontend
-          npm ci --only=production
-          npm install @playwright/test@${{ env.PLAYWRIGHT_VERSION }}
+          npm ci
           npx playwright install --with-deps chromium
 
       - name: Setup Environment
@@ -107,6 +109,9 @@ jobs:
       - name: Commit and Push Changes
         if: steps.changed.outputs.has_changes == 'true'
         run: |
+          BRANCH_NAME="visual-baseline-update"
+          git checkout -B "$BRANCH_NAME"
+
           cd web/frontend
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -128,7 +133,7 @@ jobs:
             Commit: ${{ github.sha }}"
 
             echo "✅ Changes committed"
-            git push
+            git push --force-with-lease origin HEAD:"$BRANCH_NAME"
             echo "✅ Changes pushed to repository"
           fi
         env:
@@ -204,32 +209,50 @@ jobs:
           path: .
 
       - name: Create Pull Request
-        uses: actions/github-script@v6
+        id: create_pr
+        uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
             const report = fs.readFileSync('visual-baseline-update-report.md', 'utf8');
             const prTitle = 'chore: Update Visual Regression Baselines';
             const prBody = 'Visual baseline update for ArtDeco V3.0 design system.\n\nChanges:\n' + report;
-
-            const pr = await github.rest.pulls.create({
+            const headBranch = 'visual-baseline-update';
+            const existing = await github.rest.pulls.list({
               owner: context.repo.owner,
-              repo: context.repo.name,
-              title: prTitle,
-              body: prBody,
-              head: 'visual-baseline-update',
+              repo: context.repo.repo,
+              state: 'open',
+              head: `${context.repo.owner}:${headBranch}`,
               base: 'main'
             });
 
-            console.log('PR created:', pr.data.html_url);
+            let pr;
+            if (existing.data.length > 0) {
+              pr = existing.data[0];
+              console.log('Reusing existing PR:', pr.html_url);
+            } else {
+              const created = await github.rest.pulls.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: prTitle,
+                body: prBody,
+                head: headBranch,
+                base: 'main'
+              });
+              pr = created.data;
+              console.log('PR created:', pr.html_url);
+            }
+
+            core.setOutput('pr_number', String(pr.number));
 
       - name: Comment PR
-        uses: actions/github-script@v6
+        if: steps.create_pr.outputs.pr_number != ''
+        uses: actions/github-script@v7
         with:
           script: |
             github.rest.issues.createComment({
-              issue_number: context.issue.number,
+              issue_number: Number('${{ steps.create_pr.outputs.pr_number }}'),
               owner: context.repo.owner,
-              repo: context.repo.name,
+              repo: context.repo.repo,
               body: '🎨 Visual baseline update PR created. Please review the changes and merge when ready.'
             });

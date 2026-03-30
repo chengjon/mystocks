@@ -24,6 +24,10 @@ on:
       - 'web/frontend/package.json'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  issues: write
+
 env:
   NODE_VERSION: '20'
   WORKING_DIRECTORY: 'web/frontend'
@@ -51,7 +55,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: web/frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -110,7 +114,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: web/frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -122,14 +126,13 @@ jobs:
         run: |
           npx vue-tsc --noEmit \
             --pretty \
-            --force \
             2>&1 | tee vue-tsc-output.txt
         continue-on-error: true
 
       - name: Generate type error report
         if: always()
         run: |
-          cat > type-check-report.md << 'EOF'
+          cat > type-check-report.md << EOF
           # Vue + TypeScript 类型检查报告
 
           **执行时间**: $(date)
@@ -208,7 +211,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: web/frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -448,13 +451,19 @@ jobs:
           BASELINE_FILE="${{ github.workspace }}/${{ env.TECH_DEBT_BASELINE_FILE }}"
           BASELINE_FRONTEND_ERRORS=""
           if [ -f "$BASELINE_FILE" ]; then
-            BASELINE_FRONTEND_ERRORS=$(python -c "import json, pathlib; p = pathlib.Path('${{ env.TECH_DEBT_BASELINE_FILE }}'); \
-try: \
-    data = json.loads(p.read_text(encoding='utf-8')); \
-    value = data.get('frontend_type_errors', ''); \
-    print(value if isinstance(value, int) and value >= 0 else ''); \
-except Exception: \
-    print('')")
+            BASELINE_FRONTEND_ERRORS=$(python - <<'PY'
+          import json
+          from pathlib import Path
+
+          baseline_path = Path("reports/analysis/tech-debt-baseline.json")
+          try:
+              data = json.loads(baseline_path.read_text(encoding="utf-8"))
+              value = data.get("frontend_type_errors", "")
+              print(value if isinstance(value, int) and value >= 0 else "")
+          except Exception:
+              print("")
+          PY
+            )
           fi
 
           if [ -z "$BASELINE_FRONTEND_ERRORS" ]; then
@@ -539,7 +548,7 @@ except Exception: \
 
       - name: Generate consolidated report
         run: |
-          cat > type-check-summary.md << 'EOF'
+          cat > type-check-summary.md << EOF
           # TypeScript 类型检查总结
 
           **执行时间**: $(date)
