@@ -1016,6 +1016,17 @@ def test_code_quality_quality_gate_fails_when_coverage_report_is_missing() -> No
     assert 'QUALITY_ISSUES="$QUALITY_ISSUES 覆盖率报告缺失"' in quality_gate_section
 
 
+def test_code_quality_quality_gate_hard_fails_but_keeps_pr_comment_path() -> None:
+    workflow = _read_workflow("code-quality.yml")
+    quality_gate_section = workflow.split("Quality Gate Evaluation", 1)[1].split("- name: Comment on PR", 1)[0]
+    comment_section = workflow.split("- name: Comment on PR", 1)[1].split("uses: actions/github-script@v7", 1)[0]
+
+    failure_tail = quality_gate_section.split('echo "quality-pass=false" >> $GITHUB_OUTPUT', 1)[1]
+
+    assert "exit 1" in failure_tail
+    assert "if: always() && github.event_name == 'pull_request' && steps.gate.outputs.quality-pass == 'false'" in comment_section
+
+
 def test_security_testing_merges_downloaded_artifacts_into_workspace() -> None:
     workflow = _read_workflow("security-testing.yml")
 
