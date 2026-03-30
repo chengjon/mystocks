@@ -155,8 +155,7 @@ function getCategoryCount(_key) {
     return indicators.value.filter((item) => item.category === _key).length
 }
 
-function selectIndicator(ind) {
-    console.log('Selected:', ind.name)
+function selectIndicator(_ind) {
 }
 
 function addIndicatorFilter() {
@@ -167,8 +166,7 @@ function removeIndicatorFilter(index) {
     screeningFilters.value.indicators.splice(index, 1)
 }
 
-function handleRowClick(row) {
-    console.log('Clicked:', row.symbol)
+function handleRowClick(_row) {
 }
 </script>
 
