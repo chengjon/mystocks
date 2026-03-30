@@ -212,15 +212,12 @@ const openCommandPalette = () => {
 }
 
 const onCommandPaletteOpen = () => {
-  console.log('Command Palette opened')
 }
 
 const onCommandPaletteClose = () => {
-  console.log('Command Palette closed')
 }
 
-const onCommandPaletteNavigate = (path: string) => {
-  console.log('Navigated to:', path)
+const onCommandPaletteNavigate = (_path: string) => {
 }
 
 // ============================================
