@@ -39,11 +39,9 @@ export class StrategyApiService {
     if (appMode === 'mock') {
       this.baseUrl = '/mock/strategy';
       this.dataSource = 'mock';
-      console.log('[Strategy API] Using Mock endpoint:', this.baseUrl);
     } else {
       this.baseUrl = '/v1/strategy';
       this.dataSource = 'real';
-      console.log('[Strategy API] Using Real endpoint:', this.baseUrl);
     }
   }
 
