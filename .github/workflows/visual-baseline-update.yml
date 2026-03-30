@@ -63,18 +63,14 @@ jobs:
 
       - name: Setup Environment
         run: |
-          cd web/frontend
+          echo "FRONTEND_PORT=5173" >> $GITHUB_ENV
+          echo "PORT=5173" >> $GITHUB_ENV
+          echo "FRONTEND_URL=http://127.0.0.1:5173" >> $GITHUB_ENV
+          echo "BACKEND_PORT=8000" >> $GITHUB_ENV
           export VITE_API_BASE_URL=http://localhost:8000
-          export USE_MOCK_DATA=true
+          export VITE_USE_MOCK_DATA=true
           echo "VITE_API_BASE_URL=http://localhost:8000" >> $GITHUB_ENV
-          echo "USE_MOCK_DATA=true" >> $GITHUB_ENV
-
-      - name: Start Frontend Server
-        run: |
-          cd web/frontend
-          npm run dev -- --port 5173 &
-          echo "Frontend server started"
-          timeout 30 bash -c 'until curl -f http://localhost:5173; do sleep 1; done'
+          echo "VITE_USE_MOCK_DATA=true" >> $GITHUB_ENV
 
       - name: Update Visual Baselines
         run: |

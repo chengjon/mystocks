@@ -84,14 +84,23 @@ jobs:
             echo "TypeScript 错误数: 0"
           fi
 
+      - name: Prepare tsc artifacts
+        if: always()
+        run: |
+          ARTIFACT_DIR="${{ github.workspace }}/type-check-artifacts/tsc-results"
+          rm -rf "$ARTIFACT_DIR"
+          mkdir -p "$ARTIFACT_DIR"
+          cp tsc-output.txt "$ARTIFACT_DIR/"
+          if [ -f .tsbuildinfo ]; then
+            cp .tsbuildinfo "$ARTIFACT_DIR/"
+          fi
+
       - name: Upload tsc results
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: tsc-results
-          path: |
-            tsc-output.txt
-            .tsbuildinfo
+          path: ${{ github.workspace }}/type-check-artifacts/tsc-results
           retention-days: 7
 
   # ============================================================
@@ -164,14 +173,21 @@ jobs:
 
           cat type-check-report.md
 
+      - name: Prepare vue-tsc artifacts
+        if: always()
+        run: |
+          ARTIFACT_DIR="${{ github.workspace }}/type-check-artifacts/vue-tsc-results"
+          rm -rf "$ARTIFACT_DIR"
+          mkdir -p "$ARTIFACT_DIR"
+          cp vue-tsc-output.txt "$ARTIFACT_DIR/"
+          cp type-check-report.md "$ARTIFACT_DIR/"
+
       - name: Upload vue-tsc results
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: vue-tsc-results
-          path: |
-            vue-tsc-output.txt
-            type-check-report.md
+          path: ${{ github.workspace }}/type-check-artifacts/vue-tsc-results
           retention-days: 30
 
       - name: Comment on PR
@@ -180,7 +196,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const reportPath = 'type-check-report.md';
+            const reportPath = 'web/frontend/type-check-report.md';
             if (fs.existsSync(reportPath)) {
               const report = fs.readFileSync(reportPath, 'utf8');
               github.rest.issues.createComment({
@@ -246,14 +262,23 @@ jobs:
             echo "0" > eslint-count.txt
           fi
 
+      - name: Prepare ESLint artifacts
+        if: always()
+        run: |
+          ARTIFACT_DIR="${{ github.workspace }}/type-check-artifacts/eslint-results"
+          rm -rf "$ARTIFACT_DIR"
+          mkdir -p "$ARTIFACT_DIR"
+          cp eslint-count.txt "$ARTIFACT_DIR/"
+          if [ -f eslint-report.json ]; then
+            cp eslint-report.json "$ARTIFACT_DIR/"
+          fi
+
       - name: Upload ESLint results
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: eslint-results
-          path: |
-            eslint-report.json
-            eslint-count.txt
+          path: ${{ github.workspace }}/type-check-artifacts/eslint-results
           retention-days: 7
 
   # ============================================================
@@ -433,14 +458,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: '*-results'
-          path: .
+          path: type-check-artifacts
 
       - name: Enforce zero type error ceiling
         env:
           TYPE_ERROR_CEILING: ${{ env.TYPE_ERROR_CEILING }}
         run: |
           cd "${{ env.WORKING_DIRECTORY }}"
-          node scripts/check-type-error-ceiling.js --input-file "${{ github.workspace }}/vue-tsc-results/vue-tsc-output.txt"
+          node scripts/check-type-error-ceiling.js --input-file "${{ github.workspace }}/type-check-artifacts/vue-tsc-results/vue-tsc-output.txt"
 
       - name: Evaluate quality gate
         id: gate
@@ -473,8 +498,8 @@ jobs:
           fi
 
           # 检查 tsc 错误
-          if [ -f tsc-results/tsc-output.txt ]; then
-            TSC_ERROR_COUNT=$(grep -c "error TS" tsc-results/tsc-output.txt 2>/dev/null || true)
+          if [ -f type-check-artifacts/tsc-results/tsc-output.txt ]; then
+            TSC_ERROR_COUNT=$(grep -c "error TS" type-check-artifacts/tsc-results/tsc-output.txt 2>/dev/null || true)
             if [ -z "$TSC_ERROR_COUNT" ]; then TSC_ERROR_COUNT=0; fi
             echo "TSC 错误数: $TSC_ERROR_COUNT (当前上限: ${TYPE_ERROR_CEILING:-N/A})"
 
@@ -489,8 +514,8 @@ jobs:
           fi
 
           # 检查 vue-tsc 错误（对比技术债基线文件）
-          if [ -f vue-tsc-results/vue-tsc-output.txt ]; then
-            ERROR_COUNT=$(grep -c "error TS" vue-tsc-results/vue-tsc-output.txt 2>/dev/null || true)
+          if [ -f type-check-artifacts/vue-tsc-results/vue-tsc-output.txt ]; then
+            ERROR_COUNT=$(grep -c "error TS" type-check-artifacts/vue-tsc-results/vue-tsc-output.txt 2>/dev/null || true)
             if [ -z "$ERROR_COUNT" ]; then ERROR_COUNT=0; fi
             echo "Vue-tsc 错误数: $ERROR_COUNT (长期基线: ${BASELINE_FRONTEND_ERRORS:-N/A}, 当前上限: ${TYPE_ERROR_CEILING:-N/A})"
 
@@ -507,8 +532,8 @@ jobs:
           fi
 
           # 检查 ESLint 错误
-          if [ -f eslint-results/eslint-count.txt ]; then
-            ESLINT_COUNT=$(cat eslint-results/eslint-count.txt)
+          if [ -f type-check-artifacts/eslint-results/eslint-count.txt ]; then
+            ESLINT_COUNT=$(cat type-check-artifacts/eslint-results/eslint-count.txt)
             echo "ESLint 问题数: $ESLINT_COUNT"
 
             if [ "$ESLINT_COUNT" -gt 0 ]; then
@@ -544,7 +569,7 @@ jobs:
       - name: Download all type check artifacts
         uses: actions/download-artifact@v4
         with:
-          path: .
+          path: type-check-artifacts
 
       - name: Generate consolidated report
         run: |
@@ -571,12 +596,12 @@ jobs:
 
           ### TypeScript 错误
           \`\`\`
-          $(cat tsc-results/tsc-output.txt 2>/dev/null || echo "无错误")
+          $(cat type-check-artifacts/tsc-results/tsc-output.txt 2>/dev/null || echo "无错误")
           \`\`\`
 
           ### Vue + TypeScript 错误
           \`\`\`
-          $(grep "error TS" vue-tsc-results/vue-tsc-output.txt 2>/dev/null | head -20 || echo "无错误")
+          $(grep "error TS" type-check-artifacts/vue-tsc-results/vue-tsc-output.txt 2>/dev/null | head -20 || echo "无错误")
           \`\`\`
 
           EOF
