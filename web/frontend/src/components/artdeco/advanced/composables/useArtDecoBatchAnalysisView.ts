@@ -294,32 +294,26 @@ export function useArtDecoBatchAnalysisView(options?: Partial<UseArtDecoBatchAna
 
     // 事件处理
     const refreshProgress = () => {
-        console.log('Refreshing batch progress...')
         // 这里可以调用API刷新进度
     }
 
     const exportReport = () => {
-        console.log('Exporting batch report...')
         // 这里可以调用API导出报告
     }
 
     const generateReport = () => {
-        console.log('Generating batch report...')
         // 这里可以调用API生成报告
     }
 
     const saveReport = () => {
-        console.log('Saving batch report...')
         // 这里可以调用API保存报告
     }
 
     const shareReport = () => {
-        console.log('Sharing batch report...')
         // 这里可以调用API分享报告
     }
 
     const scheduleReport = () => {
-        console.log('Scheduling batch report...')
         // 这里可以调用API设置定时报告
     }
 
