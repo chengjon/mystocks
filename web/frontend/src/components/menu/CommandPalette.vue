@@ -172,7 +172,6 @@ const generateActionCommands = (): CommandItem[] => {
       icon: 'Moon', // Assuming Moon icon exists
       handler: () => {
         // Implement theme toggle logic here
-        console.log('Toggle theme')
         close()
       },
       keywords: ['theme', 'dark', 'light', 'mode']
