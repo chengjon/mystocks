@@ -451,8 +451,7 @@ const handleTrade = (): void => {
   tradeForm.value.quantity = ''
 }
 
-const handleKLineDataLoaded = (data: unknown[]): void => {
-  console.log('K-line data loaded:', data.length, 'records')
+const handleKLineDataLoaded = (_data: unknown[]): void => {
 }
 
 const handleChartError = (error: Error): void => {
