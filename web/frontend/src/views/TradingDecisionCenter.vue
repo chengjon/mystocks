@@ -115,7 +115,6 @@ const _handleQuickAction = (action: string) => {
       ElMessage.info('重新平衡功能开发中...')
       break
     default:
-      console.log('Unknown action:', action)
   }
 }
 
