@@ -102,7 +102,6 @@
     const routeName = 'artdeco-trading-center'
     const _pageConfig = ref(getPageConfig(routeName))
 
-    console.log('Trading Center - 配置系统已就绪')
     // 导入所有功能组件（均为@ts-ignore状态）
     // @ts-ignore - Component not implemented yet
     import ArtDecoMarketOverview from './market-data-tabs/ArtDecoMarketOverview.vue'
@@ -365,9 +364,8 @@
         activeFunction.value = breadcrumbKey
     }
 
-    const handleComponentAction = (action: unknown) => {
+    const handleComponentAction = (_action: unknown) => {
         // 处理子组件的动作
-        console.log('Component action:', action)
     }
 
     const handleInternalNavigate = (target: string) => {
@@ -420,7 +418,6 @@
             totalProgress = 100
             globalLoadingProgress.value = totalProgress
             
-            console.log('✅ Trading Center 数据刷新完成')
         } catch (error) {
             console.error('Failed to refresh data:', error)
         } finally {
