@@ -293,12 +293,10 @@ export function useArtDecoTradingManagement() {
 
     // 事件处理函数
     const handleExportCsv = () => {
-        console.log('导出CSV')
         // TODO: 实现CSV导出逻辑
     }
 
     const handleBatchExecute = () => {
-        console.log('批量执行')
         // TODO: 实现批量执行逻辑
     }
 
@@ -309,59 +307,48 @@ export function useArtDecoTradingManagement() {
             return
         }
         
-        console.log('刷新数据 - API端点:', apiEndpoint.value)
         // TODO: 使用 apiEndpoint 调用 API
         refreshing.value = false
     }
 
     const openSettings = () => {
-        console.log('打开设置')
         // TODO: 实现设置弹窗逻辑
     }
 
     const _handleStopSignals = () => {
-        console.log('停止交易信号')
         // TODO: 实现停止信号逻辑
     }
 
-    const _handleUpdateConfig = (config: unknown) => {
-        console.log('更新配置:', config)
+    const _handleUpdateConfig = (_config: unknown) => {
         // TODO: 实现配置更新逻辑
     }
 
-    const handleClosePosition = (positionId: string) => {
-        console.log('关闭持仓:', positionId)
+    const handleClosePosition = (_positionId: string) => {
         // TODO: 实现关闭持仓逻辑
     }
 
-    const handleAdjustPosition = (positionId: string, adjustment: unknown) => {
-        console.log('调整持仓:', positionId, adjustment)
+    const handleAdjustPosition = (_positionId: string, _adjustment: unknown) => {
         // TODO: 实现调整持仓逻辑
     }
 
-    const handleExecuteSignal = (signalId: string) => {
-        console.log('执行信号:', signalId)
+    const handleExecuteSignal = (_signalId: string) => {
         // TODO: 实现执行信号逻辑
     }
 
-    const handleCancelSignal = (signalId: string) => {
-        console.log('取消信号:', signalId)
+    const handleCancelSignal = (_signalId: string) => {
         // TODO: 实现取消信号逻辑
     }
 
-    const handleHistoryFilter = (filters: unknown) => {
-        console.log('历史筛选:', filters)
+    const handleHistoryFilter = (_filters: unknown) => {
         // TODO: 实现历史筛选逻辑
     }
 
-    const _handleExportHistory = (format: string) => {
-        console.log('导出历史:', format)
+    const _handleExportHistory = (_format: string) => {
         // TODO: 实现导出历史逻辑
     }
 
     const handleLoadMoreHistory = () => {
         // 加载更多历史数据
-        console.log('Loading more history...')
     }
 
     // 收益归因分析方法 - 从HTML功能扩展
