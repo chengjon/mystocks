@@ -45,7 +45,6 @@ export function createBaseStore(
       const { skipCache = false, forceRefresh = false, errorContext = storeId } = options
 
       if (!skipCache && !forceRefresh && canUseCache.value) {
-        console.log(`📦 使用缓存数据: ${storeId}`)
         return state.data as R
       }
 
@@ -60,7 +59,6 @@ export function createBaseStore(
         state.cacheValid = true
         state.loading = false
 
-        console.log(`✅ API调用成功: ${storeId}`)
         return result
 
       } catch (error) {

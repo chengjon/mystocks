@@ -88,7 +88,6 @@ export const useMarketDataStore = defineStore('marketData', () => {
                     if (cachedData && isCacheValid.value) {
                         data = cachedData
                         source = 'indexeddb'
-                        console.log('📦 Loaded market overview from IndexedDB cache')
                     }
                 } catch (error) {
                     console.warn('⚠️ IndexedDB cache read failed:', error)
@@ -100,12 +99,10 @@ export const useMarketDataStore = defineStore('marketData', () => {
                 try {
                     data = await tradingApiManager.getMarketOverview()
                     source = 'network'
-                    console.log('🌐 Fetched market overview from network')
 
                     // Cache the fresh data
                     if (canUseCache.value && data) {
                         await indexedDB.setCache('market_overview', data, 300) // 5 minutes TTL
-                        console.log('💾 Cached market overview to IndexedDB')
                     }
                 } catch (error) {
                     console.warn('❌ Network fetch failed:', error)
@@ -117,7 +114,6 @@ export const useMarketDataStore = defineStore('marketData', () => {
                             if (staleData) {
                                 data = staleData
                                 source = 'cache'
-                                console.log('📋 Using stale cache as fallback')
                             }
                         } catch (staleError) {
                             console.warn('⚠️ Stale cache fallback failed:', staleError)
@@ -243,7 +239,6 @@ export const useMarketDataStore = defineStore('marketData', () => {
             if (canUseCache.value) {
                 const cached = await indexedDB.getCache<TechnicalIndicatorResult>(`indicator_${cacheKey}`)
                 if (cached) {
-                    console.log(`📦 Loaded ${indicator} for ${symbol} from IndexedDB cache`)
                     return cached
                 }
             }
@@ -254,8 +249,6 @@ export const useMarketDataStore = defineStore('marketData', () => {
                 throw new Error(`No historical data available for ${symbol}`)
             }
 
-            console.log(`🔢 Calculating ${indicator} for ${symbol} using Web Worker...`)
-
             // Calculate indicators using Web Worker
             const result: TechnicalIndicatorResult = await workersManager.calculateIndicator(
                 indicator,
@@ -263,8 +256,6 @@ export const useMarketDataStore = defineStore('marketData', () => {
                 params,
                 symbol
             )
-
-            console.log(`✅ Successfully calculated ${indicator} for ${symbol} (${result.metadata.calculationTime}ms)`)
 
             // Cache result
             if (canUseCache.value) {
@@ -279,7 +270,6 @@ export const useMarketDataStore = defineStore('marketData', () => {
                     timestamp: result.metadata.timestamp
                 }
                 await indexedDB.saveTechnicalIndicator(indicatorData)
-                console.log(`💾 Cached ${indicator} result for ${symbol}`)
             }
 
             return result
@@ -315,7 +305,6 @@ export const useMarketDataStore = defineStore('marketData', () => {
                     .slice(-requiredPoints) // Get the most recent N points
 
                 if (symbolData && symbolData.length >= (period as number)) {
-                    console.log(`📊 Using cached historical data for ${symbol} (${symbolData.length} points)`)
                     return symbolData
                 }
             }
@@ -393,7 +382,6 @@ export const useMarketDataStore = defineStore('marketData', () => {
             state.marketOverview = null
             state.marketAnalysis = null
             state.cacheMetadata = null
-            console.log('🗑️ All cached market data cleared')
         } catch (error) {
             console.error('❌ Failed to clear cache:', error)
         }

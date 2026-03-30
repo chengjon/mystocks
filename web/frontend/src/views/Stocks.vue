@@ -370,9 +370,7 @@ const handleRowClick = (row: StockRow) => {
   handleView(row)
 }
 
-const handleSelectionChange = (selection: unknown[]) => {
-  console.log('Selection changed:', selection)
-}
+const handleSelectionChange = (_selection: unknown[]) => {}
 
 // Legacy change class function (for backward compatibility)
 const _getChangeClass = (value: number | string | null | undefined) => {
