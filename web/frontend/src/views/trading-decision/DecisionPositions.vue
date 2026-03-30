@@ -20,15 +20,12 @@ defineProps<{
   activeTab?: string
 }>()
 
-const handleQuickBuy = (stock: { code: string }): void => {
-  console.log('Quick buy:', stock.code)
+const handleQuickBuy = (_stock: { code: string }): void => {
 }
 
-const handleQuickSell = (stock: { code: string }): void => {
-  console.log('Quick sell:', stock.code)
+const handleQuickSell = (_stock: { code: string }): void => {
 }
 
 const handleRefreshPositions = (): void => {
-  console.log('Refresh positions')
 }
 </script>
