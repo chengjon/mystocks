@@ -66,13 +66,10 @@ export function useMarket(options?: {
       if (enableCache && !forceRefresh) {
         const cached = cache.get(cacheKey) as MarketOverviewVM | undefined;
         if (cached) {
-          console.log('[useMarket] ✅ Market Overview from cache');
           marketOverview.value = cached;
           return;
         }
       }
-
-      console.log('[useMarket] 🔄 Fetching Market Overview from API...');
 
       // TODO: Implement these methods in marketService
       // For now, return mock data with minimal required fields
@@ -156,7 +153,6 @@ export function useMarket(options?: {
       // Cache the result
       if (enableCache) {
         cache.set(cacheKey, vm, { ttl: CACHE_TTL.MARKET_OVERVIEW });
-        console.log('[useMarket] ✅ Market Overview from API - cached for 5min');
       }
 
       marketOverview.value = vm;
@@ -198,13 +194,10 @@ export function useMarket(options?: {
       if (enableCache && !forceRefresh) {
         const cached = cache.get(cacheKey) as FundFlowChartPoint[] | undefined;
         if (cached) {
-          console.log('[useMarket] ✅ Fund Flow from cache');
           fundFlowData.value = cached;
           return;
         }
       }
-
-      console.log('[useMarket] 🔄 Fetching Fund Flow from API...');
 
       // TODO: Implement getFundFlow in marketService
       // For now, return mock data
@@ -213,7 +206,6 @@ export function useMarket(options?: {
       // Cache the result
       if (enableCache) {
         cache.set(cacheKey, vm, { ttl: CACHE_TTL.FUND_FLOW });
-        console.log('[useMarket] ✅ Fund Flow from API - cached for 10min');
       }
 
       fundFlowData.value = vm;
@@ -252,7 +244,6 @@ export function useMarket(options?: {
       if (enableCache && !forceRefresh) {
         const cached = cache.get(cacheKey) as KLineChartData[] | undefined;
         if (cached) {
-          console.log('[useMarket] ✅ K-Line from cache');
           klineData.value = cached;
           return;
         }
@@ -266,8 +257,6 @@ export function useMarket(options?: {
         end_date: params.endDate,
         limit: params.limit
       };
-
-      console.log(`[useMarket] 🔄 Fetching K-Line for ${params.symbol} from API...`);
 
       // Use getKline instead of getKLine
       const response = await marketService.getKline({
@@ -302,7 +291,6 @@ export function useMarket(options?: {
       // Cache the result
       if (enableCache) {
         cache.set(cacheKey, vm, { ttl: CACHE_TTL.K_LINE });
-        console.log(`[useMarket] ✅ K-Line from API - cached for 3min`);
       }
 
       klineData.value = vm;
@@ -320,7 +308,6 @@ export function useMarket(options?: {
    */
   const clearCache = () => {
     cache.clear();
-    console.log('[useMarket] 🗑️ Market data cache cleared');
   };
 
   /**
