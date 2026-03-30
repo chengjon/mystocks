@@ -88,7 +88,6 @@ const backtestStats = ref({
 })
 
 const handleAnalyze = async (params: { symbol: string, period: string }) => {
-  console.log('Analyzing stock:', params)
   try {
     const indRes = await dashboardService.getTechnicalIndicators([params.symbol], ['RSI', 'MACD', 'KDJ', 'BOLL'])
 
@@ -113,7 +112,6 @@ const handleAnalyze = async (params: { symbol: string, period: string }) => {
 }
 
 const handleRunBacktest = async () => {
-  console.log('Running backtest task...')
   // Mocking backtest results through service-like delay
   setTimeout(() => {
     backtestStats.value = {
