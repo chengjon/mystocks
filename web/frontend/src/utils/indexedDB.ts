@@ -64,7 +64,6 @@ export class IndexedDBManager {
       request.onsuccess = () => {
         this.db = request.result;
         this.isInitialized = true;
-        console.log('✅ IndexedDB initialized successfully');
         resolve();
       };
 
@@ -92,8 +91,6 @@ export class IndexedDBManager {
           const cacheStore = db.createObjectStore('api_cache', { keyPath: 'key' });
           cacheStore.createIndex('expiresAt', 'expiresAt', { unique: false });
         }
-
-        console.log('📦 IndexedDB schema created/updated');
       };
     });
   }
@@ -397,7 +394,6 @@ export class IndexedDBManager {
     });
 
     await Promise.all(promises);
-    console.log('🗑️ All IndexedDB data cleared');
   }
 
   /**
@@ -435,7 +431,6 @@ export class IndexedDBManager {
       this.db.close();
       this.db = null;
       this.isInitialized = false;
-      console.log('🔒 IndexedDB connection closed');
     }
   }
 }
