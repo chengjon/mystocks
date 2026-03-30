@@ -168,13 +168,11 @@
     // Methods
     const selectStock = (stock: HotStock) => {
         // Navigate to stock detail or emit event
-        console.log('Selected stock:', stock)
         ElMessage.success(`已选择股票: ${stock.name}`)
     }
 
     const applyStrategy = (strategy: StrategyRecommendation) => {
         // Apply strategy or emit event
-        console.log('Applied strategy:', strategy)
         ElMessage.success(`已应用策略: ${strategy.name}`)
     }
 
