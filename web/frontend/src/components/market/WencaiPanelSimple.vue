@@ -43,7 +43,6 @@ const testLoad = async () => {
 }
 
 onMounted(() => {
-  console.log('WencaiPanelSimple mounted')
   testLoad()
 })
 </script>
