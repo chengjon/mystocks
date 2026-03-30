@@ -79,8 +79,7 @@ const decisionTabs = [
   { id: 'orders', label: '委托下单' }
 ]
 
-const handleQuickAction = (action: string): void => {
-  console.log('Quick action:', action)
+const handleQuickAction = (_action: string): void => {
 }
 
 const toggleAutoRefresh = (): void => {
