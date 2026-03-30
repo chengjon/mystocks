@@ -75,13 +75,12 @@ export function useSSE(url, options = {}) {
 
     try {
       const sseUrl = buildUrl()
-      console.log('[SSE] Connecting to SSE endpoint:', sseUrl)
+      void sseUrl
 
       eventSource = new globalThis.EventSource(sseUrl)
 
       // Connection opened
       eventSource.onopen = () => {
-        console.log('[SSE] Connection opened')
         isConnected.value = true
         error.value = null
         connectionCount.value++
@@ -109,7 +108,6 @@ export function useSSE(url, options = {}) {
         // Attempt reconnection with exponential backoff
         if (retryCount.value < maxRetries) {
           retryCount.value++
-          console.log(`[SSE] Reconnecting in ${currentReconnectDelay}ms (attempt ${retryCount.value}/${maxRetries})`)
 
           reconnectTimer = globalThis.setTimeout(() => {
             currentReconnectDelay = Math.min(currentReconnectDelay * 2, maxReconnectDelay)
@@ -137,8 +135,6 @@ export function useSSE(url, options = {}) {
    * Disconnect from SSE endpoint
    */
   const disconnect = () => {
-    console.log('[SSE] Disconnecting...')
-
     if (reconnectTimer) {
       globalThis.clearTimeout(reconnectTimer)
       reconnectTimer = null
