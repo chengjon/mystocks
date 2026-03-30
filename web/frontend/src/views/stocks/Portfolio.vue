@@ -264,7 +264,6 @@
 
     const updatePerformanceChart = () => {
         // TODO: Update chart based on selected period
-        console.log('Update performance chart for period:', performancePeriod.value)
     }
 
     const formatCurrency = (amount: number): string => {
