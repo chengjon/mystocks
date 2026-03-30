@@ -130,20 +130,9 @@ export class PerformanceMonitor {
     const observer = new PerformanceObserver((list) => {
       list.getEntries().forEach((entry) => {
         if (entry.entryType === 'navigation') {
-          const navEntry = entry as PerformanceNavigationTiming
-          console.log('Navigation Performance:', {
-            domContentLoaded: navEntry.domContentLoadedEventEnd - navEntry.domContentLoadedEventStart,
-            loadComplete: navEntry.loadEventEnd - navEntry.loadEventStart,
-            firstPaint: this.getMetric('first-paint'),
-            firstContentfulPaint: this.getMetric('first-contentful-paint')
-          })
+          const _navEntry = entry as PerformanceNavigationTiming
         } else if (entry.entryType === 'resource') {
-          const resourceEntry = entry as PerformanceResourceTiming
-          console.log('Resource Performance:', {
-            name: resourceEntry.name,
-            duration: resourceEntry.duration,
-            size: resourceEntry.transferSize
-          })
+          const _resourceEntry = entry as PerformanceResourceTiming
         }
       })
     })
