@@ -14,12 +14,9 @@ mainline:
 
 classification:
   task_type: "cleanup"
-  secondary_type: "fix"
-  secondary_change_budget_percent: 20
-  secondary_allowed_paths:
-    - "web/frontend/src/composables/useWebSocketWithConfig.ts"
-    - "web/frontend/src/utils/sessionRestore.js"
-    - "web/frontend/tests/unit/workflows/ci-workflow-gates.spec.ts"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
 
 openspec:
   change_id: "not-required"
@@ -27,7 +24,7 @@ openspec:
 
 function_tree:
   domain_id: "meta-governance"
-  node_id: "meta-governance-ci-mainline"
+  node_id: "meta-governance-mainline"
   affected_entrypoints:
     - "governance"
     - "frontend"
@@ -41,6 +38,7 @@ scope:
   allowed_paths:
     - ".github/workflows/code-quality.yml"
     - ".github/workflows/deploy.yml"
+    - ".github/workflows/security-testing.yml"
     - ".github/workflows/typescript-type-check.yml"
     - ".github/workflows/visual-baseline-update.yml"
     - "governance/mainline/task-cards/pr-17.yaml"
