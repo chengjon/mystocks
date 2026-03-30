@@ -19,11 +19,10 @@ class PerformanceMonitor {
     return PerformanceMonitor.instance
   }
 
-  measureRender(name: string): () => void {
-    const start = performance.now()
+  measureRender(_name: string): () => void {
+    const _start = performance.now()
     return () => {
-      const end = performance.now()
-      console.log(`${name} took ${end - start}ms`)
+      const _end = performance.now()
     }
   }
 
@@ -214,8 +213,7 @@ export function initPerformanceMonitoring(): void {
   // Log performance metrics
   if (import.meta.env.DEV) {
     setInterval(() => {
-      const metrics = monitor.getAllMetrics()
-      console.log('Performance Metrics:', metrics)
+      void monitor.getAllMetrics()
     }, 30000)
   }
 }
