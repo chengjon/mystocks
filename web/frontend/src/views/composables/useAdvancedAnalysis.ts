@@ -264,7 +264,6 @@ export function useAdvancedAnalysis() {
         websocket = new WebSocket(wsUrl)
 
         websocket.onopen = () => {
-            console.log('WebSocket connected for advanced analysis')
         }
 
         websocket.onmessage = event => {
@@ -277,7 +276,6 @@ export function useAdvancedAnalysis() {
         }
 
         websocket.onclose = () => {
-            console.log('WebSocket disconnected')
             websocket = null
         }
 
@@ -306,8 +304,6 @@ export function useAdvancedAnalysis() {
 
     const updateAnalysisProgress = (data: WebSocketMessage) => {
         // 更新UI显示分析进度
-        console.log('Analysis progress:', data)
-
         // 可以在这里更新进度条或状态指示器
         if (data.status === 'completed') {
             // 分析完成，更新结果
@@ -322,8 +318,6 @@ export function useAdvancedAnalysis() {
 
     const updateAnalysisResult = (data: WebSocketMessage) => {
         // 更新分析结果
-        console.log('Analysis complete:', data)
-
         if (data.result) {
             analysisResult.value = {
                 ...analysisResult.value,
