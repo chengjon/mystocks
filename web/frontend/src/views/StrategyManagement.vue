@@ -286,9 +286,9 @@ const _mapStrategyToCard = (strategy: Strategy) => ({
   win_rate: 0
 })
 
-const handleView = (strategy: Strategy) => console.log('View:', strategy)
-const _handleStart = (strategy: Strategy) => console.log('Start:', strategy)
-const _handleStop = (strategy: Strategy) => console.log('Stop:', strategy)
+const handleView = (_strategy: Strategy) => {}
+const _handleStart = (_strategy: Strategy) => {}
+const _handleStop = (_strategy: Strategy) => {}
 const _handleEdit = (strategy: Strategy) => {
   editingStrategy.value = strategy
   strategyForm.value = {
