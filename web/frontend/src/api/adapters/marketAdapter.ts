@@ -252,7 +252,6 @@ export class MarketAdapter {
    * Get mock market overview data
    */
   private static getMockMarketOverview(): MarketOverviewVM {
-    console.log('[MarketAdapter] 📦 Using Mock Market Overview data');
     // Basic fallback that matches VM structure
     return {
         market_status: 'sideways',
@@ -346,8 +345,6 @@ export class MarketAdapter {
    * Get mock fund flow data
    */
   private static getMockFundFlow(): FundFlowChartPoint[] {
-    console.log('[MarketAdapter] 📦 Using Mock Fund Flow data');
-
     // mockFundFlow is in UnifiedResponse format - extract the data part and wrap properly
     const mockResponse: UnifiedResponse<FundFlowAPIResponse> = {
       success: mockFundFlow.success,
@@ -366,8 +363,6 @@ export class MarketAdapter {
    * Get mock K-line data
    */
   private static getMockKLineData(): AdaptedKLineData {
-    console.log('[MarketAdapter] 📦 Using Mock K-Line data');
-
     // Wrap mock data in KlineResponse structure
     const mockWrappedResponse: UnifiedResponse<KLineDataResponse> = {
       success: true,
