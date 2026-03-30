@@ -230,7 +230,6 @@ export function useTradingData() {
     ]
 
     const refreshData = () => {
-        console.log('Refreshing trading data...')
     }
 
     const switchTab = (tabKey: string) => {
@@ -238,12 +237,6 @@ export function useTradingData() {
     }
 
     const searchHistory = () => {
-        console.log('Searching history:', {
-            startDate: historyStartDate.value,
-            endDate: historyEndDate.value,
-            symbol: historySymbol.value,
-            type: historyType.value
-        })
     }
 
     return {
