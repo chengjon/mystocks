@@ -23,7 +23,6 @@ export async function restoreSession() {
 
   // 如果没有token，无需恢复
   if (!token) {
-    console.log('📭 No token found in localStorage')
     return
   }
 
@@ -33,7 +32,6 @@ export async function restoreSession() {
 
     // 如果已经有用户信息，说明已经恢复过了
     if (authStore.user) {
-      console.log('✅ Session already restored')
       return
     }
 
@@ -41,7 +39,6 @@ export async function restoreSession() {
     authStore.initializeAuth()
 
     if (authStore.isAuthenticated) {
-      console.log('✅ Session restored successfully')
     } else {
       console.warn('⚠️ Token invalid or missing, clearing session')
       authStore.logout()

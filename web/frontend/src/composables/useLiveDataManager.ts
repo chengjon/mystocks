@@ -38,7 +38,6 @@ export function useLiveDataManager(_menus: MenuItem[]) {
     })
     
     isConnected.value = true
-    console.log(`[LiveDataManager] Setup complete. ${liveMenus.length} channels active.`)
   }
 
   // Cleanup all subscriptions
