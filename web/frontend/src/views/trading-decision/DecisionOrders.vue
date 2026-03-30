@@ -140,20 +140,16 @@ interface OrderHistoryItem {
 
 const orderHistory = ref<OrderHistoryItem[]>([])
 
-const handleQuickAction = (action: string): void => {
-  console.log('Quick action:', action)
+const handleQuickAction = (_action: string): void => {
 }
 
 const handleQuickBuy = (): void => {
-  console.log('Quick buy:', orderForm)
 }
 
 const handleQuickSell = (): void => {
-  console.log('Quick sell:', orderForm)
 }
 
 const handleRefreshOrders = (): void => {
-  console.log('Refresh orders')
 }
 
 const getStatusVariant = (status: string): 'success' | 'info' | 'warning' | 'danger' | 'primary' | undefined => {
