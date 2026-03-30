@@ -136,7 +136,6 @@ export function useKLineData(chartRef: Ref<ChartRef | null>, _props: Props) {
    */
   const renderDataInBatches = async (klineData: KLineDataItem[], totalPoints: number): Promise<void> => {
     showLoadingProgress.value = true
-    console.log(`[useKLineData] Rendering ${totalPoints} data points in batches...`)
 
     const startTime = performance.now()
     const totalBatches = Math.ceil(totalPoints / RENDER_BATCH_SIZE)
@@ -164,8 +163,7 @@ export function useKLineData(chartRef: Ref<ChartRef | null>, _props: Props) {
 
     const endTime = performance.now()
     const renderTime = endTime - startTime
-
-    console.log(`[useKLineData] Rendered ${totalPoints} points in ${renderTime.toFixed(2)}ms`)
+    void renderTime
 
     loadingProgress.value = 100
     loadingSubText.value = '渲染完成'
@@ -188,7 +186,6 @@ export function useKLineData(chartRef: Ref<ChartRef | null>, _props: Props) {
       const dataHash = generateDataHash(ohlcvData)
 
       if (ENABLE_DATA_CACHING && dataHash === lastDataHash.value) {
-        console.log('[useKLineData] Using cached data, skipping update')
         return
       }
 

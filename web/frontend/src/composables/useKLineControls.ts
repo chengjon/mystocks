@@ -160,7 +160,7 @@ export function useKLineControls(
    * @param {string} period - Period identifier
    */
   const handlePeriodChange = (period: string) => {
-    console.log('[useKLineControls] Period changed to:', period)
+    void period
     ElMessage.info('周期切换功能即将实现')
   }
 
@@ -169,7 +169,6 @@ export function useKLineControls(
    */
   const togglePerformanceMonitor = () => {
     showPerformanceMonitor.value = !showPerformanceMonitor.value
-    console.log('[useKLineControls] Performance monitor:', showPerformanceMonitor.value ? 'enabled' : 'disabled')
   }
 
   /**
@@ -184,8 +183,7 @@ export function useKLineControls(
       const result = await fn()
       const endTime = performance.now()
       const executionTime = endTime - startTime
-
-      console.log(`[useKLineControls] ${metricName} took ${executionTime.toFixed(2)}ms`)
+      void metricName
 
       if (performanceMonitorRef.value && showPerformanceMonitor.value) {
         performanceMonitorRef.value.updateMetrics({
