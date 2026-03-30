@@ -343,7 +343,6 @@
 
     const viewConceptStocks = (): void => {
         // Navigate to stocks view with concept filter
-        console.log('View concept stocks:', selectedConcept.value?.name)
     }
 
     const toggleAutoRefresh = (): void => {
