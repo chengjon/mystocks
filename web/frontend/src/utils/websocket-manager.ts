@@ -256,8 +256,6 @@ class WebSocketManager {
     }
     subscribers.add(callback)
 
-    console.log(`📝 Subscribed to "${messageType}" (total: ${subscribers.size})`)
-
     // Return unsubscribe function
     return () => {
       this.unsubscribe(messageType, callback)
@@ -278,9 +276,6 @@ class WebSocketManager {
       // Clean up if no more subscribers for this message type
       if (handlers.size === 0) {
         this.subscribers.delete(messageType)
-        console.log(`🗑️  Cleaned up "${messageType}" (no more subscribers)`)
-      } else {
-        console.log(`📝 Unsubscribed from "${messageType}" (remaining: ${handlers.size})`)
       }
     }
   }
@@ -330,8 +325,6 @@ class WebSocketManager {
    * Manually close the WebSocket connection
    */
   close(): void {
-    console.log('🔌 Closing WebSocket connection...')
-
     this.stopHeartbeat()
 
     if (this.ws) {
@@ -354,8 +347,6 @@ class WebSocketManager {
    * Force reconnection (useful for recovering from errors)
    */
   forceReconnect(): void {
-    console.log('🔄 Force reconnecting...')
-
     this.close()
     this.reconnectAttempts = 0 // Reset attempts
     this.connect()
