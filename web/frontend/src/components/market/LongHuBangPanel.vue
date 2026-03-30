@@ -82,7 +82,6 @@ import { API_BASE_URL } from '@/config/runtime-endpoints'
 
 // 显性标记：告知Vite该代码有用，不进行Tree Shaking删除
 /* vite-ignore-tree-shaking */
-console.log('dayjs imported in LongHuBangPanel')
 
 const symbol = ref('')
 const dateRange = ref([])
