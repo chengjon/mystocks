@@ -1,0 +1,88 @@
+version: "v0.2"
+
+task:
+  id: "pr-19"
+  title: "isolate a safe CI governance workflow slice with independent frontend lint fixes"
+  owner: "main"
+  created_at: "2026-03-30"
+
+mainline:
+  id: "L1-ci-governance-safe-slice"
+  objective: "land a runner-safe CI governance slice that avoids overlapping with the separate task-card and frontend gate repair branch"
+  milestone_id: "L2-ci-governance"
+  slice_id: "L3-safe-slice"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "ci-governance-safe-slice"
+
+scope:
+  allowed_paths:
+    - ".github/workflows/code-quality.yml"
+    - ".github/workflows/deploy.yml"
+    - ".github/workflows/typescript-type-check.yml"
+    - ".github/workflows/visual-baseline-update.yml"
+    - "governance/mainline/task-cards/pr-19.yaml"
+    - "web/frontend/src/composables/useWebSocketWithConfig.ts"
+    - "web/frontend/src/utils/sessionRestore.js"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No task-card or failing full-unit-suite repair work from the separate ci-governance-runner-verify line"
+  - "No product feature work outside the isolated workflow and lint slice"
+
+acceptance:
+  checks:
+    - id: "workflow-lint"
+      command: "actionlint .github/workflows/code-quality.yml .github/workflows/deploy.yml .github/workflows/typescript-type-check.yml .github/workflows/visual-baseline-update.yml"
+      required: true
+    - id: "frontend-types"
+      command: "npm --prefix web/frontend run generate-types && npx --prefix web/frontend tsc --noEmit --pretty --incremental --tsBuildInfoFile .tsbuildinfo && npx --prefix web/frontend vue-tsc --noEmit --pretty && npx --prefix web/frontend eslint src --ext .ts,.tsx,.vue"
+      required: true
+    - id: "dispatch-verification"
+      command: "gh run view 23752595276"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Workflow hardening can hide genuine failures if permission errors are silently swallowed without explicit warning summaries"
+    - "The two frontend lint fixes must stay limited to no-behavior-change cleanup"
+  rollback_plan: "git revert <merge-commit-sha> if the isolated workflow slice regresses mainline CI"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "extract a non-overlapping CI governance slice into its own shippable PR"
+    modified_scope: "four workflow files and two frontend lint-only files"
+    dependency_changes: "none"
+    legacy_logic_impact: "existing runtime behavior is preserved while CI wiring and lint compliance are tightened"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the isolated workflow slice if CI behavior regresses after merge"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-03-30T00:00:00Z"
+    approval_note: "approved as isolated safe slice"
+    secondary_approved: false
