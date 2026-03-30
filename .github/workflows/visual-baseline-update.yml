@@ -89,11 +89,13 @@ jobs:
       - name: Check Changed Files
         id: changed
         run: |
+          git add tests/visual/baselines/
+
           echo "Changed files:" >> $GITHUB_STEP_SUMMARY
-          git status --short >> $GITHUB_STEP_SUMMARY
+          git diff --cached --name-only >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          changed_count=$(git status --short | wc -l)
+          changed_count=$(git diff --cached --name-only | wc -l)
           echo "Files changed: $changed_count"
 
           if [ $changed_count -gt 0 ]; then

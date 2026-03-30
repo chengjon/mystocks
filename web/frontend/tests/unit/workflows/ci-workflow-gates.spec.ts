@@ -214,4 +214,13 @@ describe("CI workflow gates", () => {
     expect(workflowText).toContain("chart_tests");
     expect(workflowText).toContain("chart_passed");
   });
+
+  it("uses staged baseline diffs instead of raw worktree status in the visual baseline update workflow", () => {
+    const workflowText = readWorkflow(".github/workflows/visual-baseline-update.yml");
+
+    expect(workflowText).toContain("git add tests/visual/baselines/");
+    expect(workflowText).toContain("changed_count=$(git diff --cached --name-only | wc -l)");
+    expect(workflowText).not.toContain("changed_count=$(git status --short | wc -l)");
+    expect(workflowText).toContain("git diff --cached --name-only >> $GITHUB_STEP_SUMMARY");
+  });
 });

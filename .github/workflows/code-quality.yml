@@ -384,17 +384,23 @@ jobs:
         pip install pytest pytest-cov coverage[toml]
 
     - name: Run tests with coverage
+      id: coverage-tests
       run: |
-        python -m pytest -o addopts='' scripts/tests/ -v --cov=src --cov-report=xml --cov-report=html --cov-fail-under=80 || true
-      continue-on-error: true
+        set +e
+        python -m pytest -o addopts='' scripts/tests/ -v --cov=src --cov-report=xml --cov-report=html --cov-fail-under=80
+        exit_code=$?
+        echo "exit_code=$exit_code" >> $GITHUB_OUTPUT
+        exit 0
 
     - name: Generate coverage report
+      if: always()
       run: |
         if [ -f coverage.xml ]; then
           coverage report --show-missing || true
           coverage html || true
         else
-          echo "::warning::coverage.xml not generated; skipping coverage post-processing"
+          echo "❌ coverage.xml not generated"
+          exit 1
         fi
 
     - name: Upload coverage reports
@@ -405,6 +411,14 @@ jobs:
         path: |
           coverage.xml
           htmlcov/
+
+    - name: Enforce coverage gate
+      if: always()
+      run: |
+        if [ "${{ steps.coverage-tests.outputs.exit_code }}" != "0" ]; then
+          echo "❌ Coverage test run failed"
+          exit 1
+        fi
 
   # 性能基准测试阶段
   performance-benchmark:
@@ -742,6 +756,9 @@ jobs:
             QUALITY_PASS=false
             QUALITY_ISSUES="$QUALITY_ISSUES 测试覆盖率不足: ${COVERAGE_NUM}%"
           fi
+        else
+          QUALITY_PASS=false
+          QUALITY_ISSUES="$QUALITY_ISSUES 覆盖率报告缺失"
         fi
 
         # 检查代码复杂度

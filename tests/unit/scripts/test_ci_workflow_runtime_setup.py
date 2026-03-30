@@ -998,6 +998,24 @@ def test_coverage_and_performance_workflows_download_artifacts_into_workspace() 
     assert "path: ." in performance_section
 
 
+def test_code_quality_workflow_keeps_coverage_generation_as_a_real_gate() -> None:
+    workflow = _read_workflow("code-quality.yml")
+    coverage_section = workflow.split("test-coverage:", 1)[1].split("# 性能基准测试阶段", 1)[0]
+
+    assert "python -m pytest -o addopts='' scripts/tests/ -v --cov=src --cov-report=xml --cov-report=html --cov-fail-under=80" in coverage_section
+    assert "python -m pytest -o addopts='' scripts/tests/ -v --cov=src --cov-report=xml --cov-report=html --cov-fail-under=80 || true" not in coverage_section
+    assert 'echo "::warning::coverage.xml not generated; skipping coverage post-processing"' not in coverage_section
+    assert 'echo "❌ coverage.xml not generated"' in coverage_section
+    assert "exit 1" in coverage_section
+
+
+def test_code_quality_quality_gate_fails_when_coverage_report_is_missing() -> None:
+    workflow = _read_workflow("code-quality.yml")
+    quality_gate_section = workflow.split("Quality Gate Evaluation", 1)[1].split("- name: Comment on PR", 1)[0]
+
+    assert 'QUALITY_ISSUES="$QUALITY_ISSUES 覆盖率报告缺失"' in quality_gate_section
+
+
 def test_security_testing_merges_downloaded_artifacts_into_workspace() -> None:
     workflow = _read_workflow("security-testing.yml")
 
