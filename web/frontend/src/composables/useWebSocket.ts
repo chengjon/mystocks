@@ -12,7 +12,6 @@ export function useWebSocket() {
 
     ws.value.onopen = () => {
       isConnected.value = true
-      console.log('WebSocket connected')
     }
 
     ws.value.onmessage = (event) => {
@@ -30,7 +29,6 @@ export function useWebSocket() {
 
     ws.value.onclose = () => {
       isConnected.value = false
-      console.log('WebSocket disconnected')
     }
   }
 
