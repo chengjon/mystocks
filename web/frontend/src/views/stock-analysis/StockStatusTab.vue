@@ -7,9 +7,9 @@
       </template>
     </ArtDecoHeader>
 
-    <div class="content-section" :style="{ padding: 'var(--artdeco-spacing-6)' }">
+    <div class="content-section content-section-padded">
       <h3 class="section-title">📦 INTEGRATED MODULES</h3>
-      <ArtDecoCard variant="bordered" style="margin-top: var(--artdeco-spacing-4);">
+      <ArtDecoCard variant="bordered" class="status-card-spaced">
         <div class="status-list">
           <div class="status-item">
             <span class="diamond-marker"></span>
@@ -39,8 +39,8 @@
         </div>
       </ArtDecoCard>
 
-      <h3 class="section-title" style="margin-top: var(--artdeco-spacing-8);">🎯 ROADMAP</h3>
-      <el-timeline class="artdeco-timeline" style="margin-top: var(--artdeco-spacing-6);">
+      <h3 class="section-title section-title-spaced">🎯 ROADMAP</h3>
+      <el-timeline class="artdeco-timeline timeline-spaced">
         <el-timeline-item timestamp="PHASE I" placement="top">
           <ArtDecoCard variant="bordered" title="STRATEGY MANAGEMENT">
             <p class="timeline-desc">Manage and execute screening strategies within the ArtDeco interface.</p>
@@ -58,7 +58,7 @@
         </el-timeline-item>
       </el-timeline>
 
-      <ArtDecoCard variant="elevated" class="data-source-info" style="margin-top: var(--artdeco-spacing-8);">
+      <ArtDecoCard variant="elevated" class="data-source-info data-source-info-spaced">
         <template #header>
           <div class="info-header">
             <span class="diamond-marker"></span>
@@ -108,6 +108,22 @@ defineProps<{
   text-transform: uppercase;
 }
 
+.content-section-padded {
+  padding: var(--artdeco-spacing-6);
+}
+
+.status-card-spaced {
+  margin-top: var(--artdeco-spacing-4);
+}
+
+.section-title-spaced {
+  margin-top: var(--artdeco-spacing-8);
+}
+
+.timeline-spaced {
+  margin-top: var(--artdeco-spacing-6);
+}
+
 .status-list {
   display: flex;
   flex-direction: column;
@@ -154,6 +170,10 @@ defineProps<{
 
 .data-source-info {
   border: 1px solid var(--artdeco-border-default) !important;
+}
+
+.data-source-info-spaced {
+  margin-top: var(--artdeco-spacing-8);
 }
 
 .info-header {

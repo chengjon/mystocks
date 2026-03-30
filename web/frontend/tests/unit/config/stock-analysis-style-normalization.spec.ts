@@ -37,4 +37,20 @@ describe('stock-analysis style normalization', () => {
       expect(source).not.toContain("@import '@/styles/artdeco-grid';")
     }
   })
+
+  it('moves static ArtDeco token inline styles into CSS classes for stock analysis tabs', () => {
+    const files = [
+      'src/views/stock-analysis/StockBacktestTab.vue',
+      'src/views/stock-analysis/StockRealtimeTab.vue',
+      'src/views/stock-analysis/StockStatusTab.vue',
+    ]
+
+    for (const file of files) {
+      const source = readSource(file)
+      expect(source).not.toContain(":style=\"{ padding: 'var(--artdeco-spacing-6)' }\"")
+      expect(source).not.toContain('style="margin-top: var(--artdeco-spacing-8);"')
+      expect(source).not.toContain('style="margin-top: var(--artdeco-spacing-6);"')
+      expect(source).not.toContain('style="margin-top: var(--artdeco-spacing-4);"')
+    }
+  })
 })

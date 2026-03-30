@@ -6,11 +6,11 @@
       </template>
     </ArtDecoHeader>
 
-    <div class="content-section" :style="{ padding: 'var(--artdeco-spacing-6)' }">
+    <div class="content-section content-section-padded">
       <h3 class="section-title">🔧 BACKTEST FRAMEWORK: RQALPHA</h3>
       <p class="description">Stock-Analysis integrates RQAlpha for professional strategy backtesting:</p>
 
-      <div class="artdeco-grid-2" style="margin-top: var(--artdeco-spacing-6);">
+      <div class="artdeco-grid-2 section-grid-spaced">
         <ArtDecoCard title="✨ RQAlpha Features" variant="bordered">
           <ul class="feature-list">
             <li>Event-driven engine</li>
@@ -32,8 +32,8 @@
         </ArtDecoCard>
       </div>
 
-      <h3 class="section-title" style="margin-top: var(--artdeco-spacing-8);">💻 CODE EXAMPLES</h3>
-      <el-tabs type="border-card" class="artdeco-tabs" style="margin-top: var(--artdeco-spacing-4);">
+      <h3 class="section-title section-title-spaced">💻 CODE EXAMPLES</h3>
+      <el-tabs type="border-card" class="artdeco-tabs tabs-spaced">
         <el-tab-pane label="SIMPLE STRATEGY" name="simple">
           <textarea readonly class="code-block">
 from rqalpha.api import *
@@ -81,7 +81,7 @@ rqalpha run \
         </el-tab-pane>
       </el-tabs>
 
-      <h3 class="section-title" style="margin-top: var(--artdeco-spacing-8);">📊 PERFORMANCE METRICS</h3>
+      <h3 class="section-title section-title-spaced">📊 PERFORMANCE METRICS</h3>
       <ArtDecoCard class="metrics-summary-card" variant="bordered">
         <el-table :data="backtestMetrics" stripe class="artdeco-table">
           <el-table-column prop="metric" label="METRIC" width="200" />
@@ -125,6 +125,22 @@ defineProps<{
 .description {
   color: var(--artdeco-fg-muted);
   margin-top: var(--artdeco-spacing-2);
+}
+
+.content-section-padded {
+  padding: var(--artdeco-spacing-6);
+}
+
+.section-grid-spaced {
+  margin-top: var(--artdeco-spacing-6);
+}
+
+.section-title-spaced {
+  margin-top: var(--artdeco-spacing-8);
+}
+
+.tabs-spaced {
+  margin-top: var(--artdeco-spacing-4);
 }
 
 .feature-list {

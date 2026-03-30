@@ -6,11 +6,11 @@
       </template>
     </ArtDecoHeader>
 
-    <div class="content-section" :style="{ padding: 'var(--artdeco-spacing-6)' }">
+    <div class="content-section content-section-padded">
       <h3 class="section-title">📡 LIVE DATA STREAM</h3>
       <p class="description">Stock-Analysis supports intra-day real-time monitoring and screening:</p>
 
-      <div class="artdeco-grid-4 ticker-grid" style="margin-top: var(--artdeco-spacing-6);">
+      <div class="artdeco-grid-4 ticker-grid ticker-grid-spaced">
         <ArtDecoCard v-for="i in 4" :key="i" :title="'TICKER 000' + i" variant="stat" class="ticker-card">
           <div class="ticker-content">
             <span class="price" :class="i % 2 === 0 ? 'rise' : 'fall'">{{ (10.50 + i * 0.1).toFixed(2) }}</span>
@@ -19,7 +19,7 @@
         </ArtDecoCard>
       </div>
 
-      <div class="artdeco-grid-2" style="margin-top: var(--artdeco-spacing-8);">
+      <div class="artdeco-grid-2 section-grid-spaced">
         <ArtDecoCard title="🔄 UPDATE MECHANISM" variant="bordered">
           <ul class="feature-list">
             <li>TDX Real-time direct feed</li>
@@ -41,7 +41,7 @@
         </ArtDecoCard>
       </div>
 
-      <h3 class="section-title" style="margin-top: var(--artdeco-spacing-8);">📜 MONITORING LOGS</h3>
+      <h3 class="section-title section-title-spaced">📜 MONITORING LOGS</h3>
       <div class="obsidian-log-panel">
         <textarea readonly class="obsidian-code-block">
 [2026-02-16 10:00:01] INFO: Initializing Real-time Monitor...
@@ -84,6 +84,22 @@ defineProps<{
 .description {
   color: var(--artdeco-fg-muted);
   margin-top: var(--artdeco-spacing-2);
+}
+
+.content-section-padded {
+  padding: var(--artdeco-spacing-6);
+}
+
+.ticker-grid-spaced {
+  margin-top: var(--artdeco-spacing-6);
+}
+
+.section-grid-spaced {
+  margin-top: var(--artdeco-spacing-8);
+}
+
+.section-title-spaced {
+  margin-top: var(--artdeco-spacing-8);
 }
 
 .feature-list {
