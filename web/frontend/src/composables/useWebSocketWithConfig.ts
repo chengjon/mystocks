@@ -173,7 +173,7 @@ export function useWebSocketWithConfig() {
     const unsubscribers: Array<() => void> = []
 
     // 为每个路由订阅
-    wsRoutes.forEach(({ routeName, channel }: { routeName: RouteName; channel: string }) => {
+    wsRoutes.forEach(({ routeName: _routeName, channel }: { routeName: RouteName; channel: string }) => {
       const unsubscribe = activateSubscription(subscribe(channel, callback))
       unsubscribers.push(unsubscribe)
     })
