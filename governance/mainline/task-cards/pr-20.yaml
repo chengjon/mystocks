@@ -1,0 +1,81 @@
+version: "v0.2"
+
+task:
+  id: "pr-20"
+  title: "repair api compliance workflow metadata for runner compatibility"
+  owner: "main"
+  created_at: "2026-03-31"
+
+mainline:
+  id: "L1-api-compliance-workflow-repair"
+  objective: "restore runner-compatible metadata for the api compliance workflow without overlapping the separate ci governance slices"
+  milestone_id: "L2-ci-governance"
+  slice_id: "L3-api-compliance-metadata"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "api-compliance-workflow-metadata-fix"
+
+scope:
+  allowed_paths:
+    - ".github/workflows/api-compliance-testing.yml"
+    - "governance/mainline/task-cards/pr-20.yaml"
+    - "tests/unit/scripts/test_ci_workflow_runtime_setup.py"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No broader security-testing or task-card remediation from the other active CLI lines"
+  - "No product feature changes outside API compliance workflow metadata and its regression test"
+
+acceptance:
+  checks:
+    - id: "workflow-lint"
+      command: "actionlint .github/workflows/api-compliance-testing.yml"
+      required: true
+    - id: "runtime-test"
+      command: "pytest tests/unit/scripts/test_ci_workflow_runtime_setup.py -q -o addopts='' -k api_compliance_workflow_uses_supported_actions_and_safe_python_matrix_expansion"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Workflow metadata fixes can hide parser issues if matrix interpolation is not converted to a runner-safe form"
+    - "Regression coverage must stay limited to the API compliance workflow so this slice does not sprawl into unrelated CI files"
+  rollback_plan: "git revert <merge-commit-sha> if API compliance workflow behavior regresses after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "fix deprecated action versions and invalid workflow interpolation in api-compliance-testing"
+    modified_scope: "api-compliance-testing workflow plus one workflow runtime regression test and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "existing API compliance behavior stays the same while workflow metadata becomes runner-compatible"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this slice if the API compliance workflow regresses after merge"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-03-31T00:00:00Z"
+    approval_note: "approved as isolated api compliance workflow repair"
+    secondary_approved: false
