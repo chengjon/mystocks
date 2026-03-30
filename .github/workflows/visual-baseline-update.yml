@@ -222,33 +222,42 @@ jobs:
               base: 'main'
             });
 
-            let pr;
-            if (existing.data.length > 0) {
-              pr = existing.data[0];
-              console.log('Reusing existing PR:', pr.html_url);
-            } else {
-              const created = await github.rest.pulls.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title: prTitle,
-                body: prBody,
-                head: headBranch,
-                base: 'main'
-              });
-              pr = created.data;
-              console.log('PR created:', pr.html_url);
-            }
+            try {
+              let pr;
+              if (existing.data.length > 0) {
+                pr = existing.data[0];
+                console.log('Reusing existing PR:', pr.html_url);
+              } else {
+                const created = await github.rest.pulls.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: prTitle,
+                  body: prBody,
+                  head: headBranch,
+                  base: 'main'
+                });
+                pr = created.data;
+                console.log('PR created:', pr.html_url);
+              }
 
-            core.setOutput('pr_number', String(pr.number));
+              core.setOutput('pr_number', String(pr.number));
+            } catch (error) {
+              core.warning(`Skipping PR creation: ${error.message}`);
+              core.setOutput('pr_number', '');
+            }
 
       - name: Comment PR
         if: steps.create_pr.outputs.pr_number != ''
         uses: actions/github-script@v7
         with:
           script: |
-            github.rest.issues.createComment({
-              issue_number: Number('${{ steps.create_pr.outputs.pr_number }}'),
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '🎨 Visual baseline update PR created. Please review the changes and merge when ready.'
-            });
+            try {
+              await github.rest.issues.createComment({
+                issue_number: Number('${{ steps.create_pr.outputs.pr_number }}'),
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '🎨 Visual baseline update PR created. Please review the changes and merge when ready.'
+              });
+            } catch (error) {
+              core.warning(`Skipping PR comment: ${error.message}`);
+            }
