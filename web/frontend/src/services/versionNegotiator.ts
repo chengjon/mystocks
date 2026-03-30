@@ -80,11 +80,6 @@ class ApiVersionNegotiator {
     try {
       await this.detectSystemVersion()
       await this.detectApiVersions()
-
-      console.log('✅ API版本检测完成', {
-        detectedVersions: Object.fromEntries(this.detectedVersions),
-        compatibilityCache: Object.fromEntries(this.compatibilityCache)
-      })
     } catch (error) {
       console.error('❌ API版本检测失败:', error)
     }
@@ -124,8 +119,7 @@ class ApiVersionNegotiator {
     const results = await Promise.allSettled(versionPromises)
     results.forEach((result, index) => {
       if (result.status === 'fulfilled' && result.value) {
-        const { endpoint, version, source } = result.value
-        console.log(`📋 ${endpoint}: ${version} (${source})`)
+        void result.value
       } else if (result.status === 'rejected') {
         const endpoint = endpoints[index]
         console.warn(`⚠️ 版本检测失败 ${endpoint}:`, result.reason)
