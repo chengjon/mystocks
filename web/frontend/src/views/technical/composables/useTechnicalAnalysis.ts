@@ -1,4 +1,4 @@
-import { ref, reactive, onMounted, nextTick, computed, type Ref } from 'vue'
+import { ref, reactive, nextTick, computed, type Ref } from 'vue'
 import { ElMessage, ElNotification } from 'element-plus'
 import { technicalApi } from '@/api'
 import echarts from '@/utils/echarts'
@@ -454,10 +454,6 @@ const calculateBatchIndicators = async (): Promise<void> => {
     loading.batch = false
   }
 }
-
-onMounted(() => {
-  console.log('Technical Analysis page mounted')
-})
 
   return {
     searchForm,
