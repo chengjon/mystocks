@@ -38,10 +38,6 @@ class MarketApiServiceWithFallback {
 
   constructor() {
     this.marketService = new MarketApiServiceClass();
-    console.log('📊 MarketApiServiceWithFallback initialized');
-    console.log('   ⚠️  This is a legacy compatibility layer');
-    console.log('   ℹ️  New code should use: useMarket() composable');
-    console.log(`   Real data available: ${this.useRealData}`);
   }
 
   /**
