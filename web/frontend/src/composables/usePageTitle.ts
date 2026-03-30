@@ -159,17 +159,11 @@ export function usePageTitle() {
 
     // 生命周期管理
     onMounted(() => {
-        // 组件挂载时可以执行一些初始化逻辑
-        if (import.meta.env.DEV) {
-            console.log('📄 PageTitle composable mounted for route:', route.name)
-        }
+        void route.name
     })
 
     onUnmounted(() => {
-        // 组件卸载时可以清理状态
-        if (isDynamic.value && import.meta.env.DEV) {
-            console.log('📄 PageTitle composable unmounted, title was dynamic')
-        }
+        void isDynamic.value
     })
 
     return {

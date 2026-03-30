@@ -169,7 +169,5 @@ export const toastManager = useToastManager()
 
 // 监听toasts变化，可用于调试
 if (import.meta.env.DEV) {
-  watch(toasts, (newToasts) => {
-    console.log('[useToastManager] Active toasts:', newToasts.length)
-  }, { deep: true })
+  watch(toasts, () => {}, { deep: true })
 }
