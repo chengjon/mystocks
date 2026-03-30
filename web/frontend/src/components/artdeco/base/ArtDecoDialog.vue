@@ -260,18 +260,11 @@
     ])
 
     const updateTradingSettings = () => {
-        console.log('更新交易设置:', {
-            maxOrderAmount: maxOrderAmount.value,
-            slippageLimit: slippageLimit.value,
-            dailyTradingLimit: dailyTradingLimit.value,
-            singleStockLimit: singleStockLimit.value
-        })
         // TODO: 实现交易设置更新逻辑
     }
 
     const pauseTrading = () => {
         tradingPaused.value = !tradingPaused.value
-        console.log(tradingPaused.value ? '交易已暂停' : '交易已恢复')
         // TODO: 实现交易暂停/恢复逻辑
     }
 
