@@ -29,13 +29,7 @@ export function useNetworkStatus() {
         const wasOnline = isOnline.value
         isOnline.value = navigator.onLine
         lastStatusChange.value = Date.now()
-
-        // 如果状态发生变化，记录日志
-        if (wasOnline !== isOnline.value) {
-            console.log(
-                `Network status changed: ${wasOnline ? 'online' : 'offline'} → ${isOnline.value ? 'online' : 'offline'}`
-            )
-        }
+        void wasOnline
 
         // 更新连接类型
         updateConnectionType()
