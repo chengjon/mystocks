@@ -399,7 +399,7 @@ jobs:
       id: coverage-tests
       run: |
         set +e
-        python -m pytest -o addopts='' tests/unit/core/test_simple_calculator_ci_sentinel.py --cov=src.core.simple_calculator --cov-report=xml:coverage.xml --cov-report=html:htmlcov --cov-fail-under=80 -q
+        python -m pytest -o addopts='' tests/unit/core/test_simple_calculator_ci_sentinel.py --cov=src.core.simple_calculator --cov-report=xml:var/reports/coverage/coverage.xml --cov-report=html:var/reports/coverage/htmlcov --cov-fail-under=80 -q
         exit_code=$?
         echo "exit_code=$exit_code" >> $GITHUB_OUTPUT
         exit 0
@@ -407,11 +407,11 @@ jobs:
     - name: Generate coverage report
       if: always()
       run: |
-        if [ -f coverage.xml ]; then
+        if [ -f var/reports/coverage/coverage.xml ]; then
           coverage report --show-missing || true
           coverage html || true
         else
-          echo "❌ coverage.xml not generated"
+          echo "❌ var/reports/coverage/coverage.xml not generated"
           exit 1
         fi
 
@@ -421,8 +421,8 @@ jobs:
       with:
         name: test-coverage-results
         path: |
-          coverage.xml
-          htmlcov/
+          var/reports/coverage/coverage.xml
+          var/reports/coverage/htmlcov/
 
     - name: Enforce coverage gate
       if: always()
@@ -658,13 +658,13 @@ jobs:
         fi
 
         # 添加覆盖率结果
-        if [ -f coverage.xml ]; then
+        if [ -f var/reports/coverage/coverage.xml ]; then
           echo -e "\n### 测试覆盖率" >> quality-reports/quality-summary.md
           python - << 'PY' >> quality-reports/quality-summary.md
         import xml.etree.ElementTree as ET
 
         try:
-            tree = ET.parse('coverage.xml')
+            tree = ET.parse('var/reports/coverage/coverage.xml')
             root = tree.getroot()
             coverage = float(root.get('line-rate', '0')) * 100
             print(f'- 代码覆盖率: {coverage:.1f}%')
@@ -751,12 +751,12 @@ jobs:
         fi
 
         # 检查测试覆盖率
-        if [ -f coverage.xml ]; then
+        if [ -f var/reports/coverage/coverage.xml ]; then
           COVERAGE=$(python - << 'PY'
         import xml.etree.ElementTree as ET
 
         try:
-            tree = ET.parse('coverage.xml')
+            tree = ET.parse('var/reports/coverage/coverage.xml')
             root = tree.getroot()
             coverage = float(root.get('line-rate', '0')) * 100
             print(f'{coverage:.1f}')

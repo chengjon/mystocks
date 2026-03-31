@@ -1054,11 +1054,11 @@ def test_code_quality_workflow_keeps_coverage_generation_as_a_real_gate() -> Non
     coverage_section = workflow.split("test-coverage:", 1)[1].split("# 性能基准测试阶段", 1)[0]
 
     assert "pip install pytest pytest-cov coverage[toml] pytest-asyncio python-dotenv" in coverage_section
-    assert "python -m pytest -o addopts='' tests/unit/core/test_simple_calculator_ci_sentinel.py --cov=src.core.simple_calculator --cov-report=xml:coverage.xml --cov-report=html:htmlcov --cov-fail-under=80 -q" in coverage_section
+    assert "python -m pytest -o addopts='' tests/unit/core/test_simple_calculator_ci_sentinel.py --cov=src.core.simple_calculator --cov-report=xml:var/reports/coverage/coverage.xml --cov-report=html:var/reports/coverage/htmlcov --cov-fail-under=80 -q" in coverage_section
     assert "python -m pytest -o addopts='' scripts/tests/" not in coverage_section
-    assert "python -m pytest -o addopts='' tests/unit/core/test_simple_calculator_ci_sentinel.py --cov=src.core.simple_calculator --cov-report=xml:coverage.xml --cov-report=html:htmlcov --cov-fail-under=80 -q || true" not in coverage_section
+    assert "python -m pytest -o addopts='' tests/unit/core/test_simple_calculator_ci_sentinel.py --cov=src.core.simple_calculator --cov-report=xml:var/reports/coverage/coverage.xml --cov-report=html:var/reports/coverage/htmlcov --cov-fail-under=80 -q || true" not in coverage_section
     assert 'echo "::warning::coverage.xml not generated; skipping coverage post-processing"' not in coverage_section
-    assert 'echo "❌ coverage.xml not generated"' in coverage_section
+    assert 'echo "❌ var/reports/coverage/coverage.xml not generated"' in coverage_section
     assert "exit 1" in coverage_section
 
 
@@ -1071,6 +1071,21 @@ def test_code_quality_workflow_uses_ci_safe_calculator_coverage_sentinel() -> No
     assert "tests/unit/core/test_simple_calculator.py" not in coverage_section
     assert "importlib.util.spec_from_file_location" in sentinel_test.read_text(encoding="utf-8")
     assert "from src.core.simple_calculator import" not in sentinel_test.read_text(encoding="utf-8")
+
+
+def test_code_quality_workflow_uses_canonical_coverage_artifact_paths() -> None:
+    workflow = _read_workflow("code-quality.yml")
+    coverage_section = workflow.split("test-coverage:", 1)[1].split("# 性能基准测试阶段", 1)[0]
+    quality_report_section = workflow.split("quality-report:", 1)[1].split("quality-gate:", 1)[0]
+    quality_gate_section = workflow.split("Quality Gate Evaluation", 1)[1].split("- name: Comment on PR", 1)[0]
+
+    assert "var/reports/coverage/coverage.xml" in coverage_section
+    assert "var/reports/coverage/htmlcov/" in coverage_section
+    assert "if [ -f coverage.xml ]" not in coverage_section
+    assert "if [ -f var/reports/coverage/coverage.xml ]" in quality_report_section
+    assert "ET.parse('var/reports/coverage/coverage.xml')" in quality_report_section
+    assert "if [ -f var/reports/coverage/coverage.xml ]" in quality_gate_section
+    assert "ET.parse('var/reports/coverage/coverage.xml')" in quality_gate_section
 
 
 def test_code_quality_quality_gate_fails_when_coverage_report_is_missing() -> None:
