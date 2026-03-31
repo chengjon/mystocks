@@ -767,7 +767,7 @@ jobs:
         fi
 
         if [ -n "$COVERAGE_XML_PATH" ]; then
-          COVERAGE_XML_PATH="$COVERAGE_XML_PATH" COVERAGE=$(python - << 'PY'
+          COVERAGE=$(COVERAGE_XML_PATH="$COVERAGE_XML_PATH" python - << 'PY'
         import os
         import xml.etree.ElementTree as ET
 

@@ -1104,6 +1104,14 @@ def test_code_quality_quality_gate_keeps_legacy_repo_wide_pylint_and_complexity_
     assert 'echo "::warning::非阻塞仓库级质量债务:$QUALITY_WARNINGS"' in quality_gate_section
 
 
+def test_code_quality_quality_gate_passes_coverage_path_env_into_python_parser() -> None:
+    workflow = _read_workflow("code-quality.yml")
+    quality_gate_section = workflow.split("Quality Gate Evaluation", 1)[1].split("- name: Comment on PR", 1)[0]
+
+    assert 'COVERAGE=$(COVERAGE_XML_PATH="$COVERAGE_XML_PATH" python - << \'PY\'' in quality_gate_section
+    assert 'COVERAGE_XML_PATH="$COVERAGE_XML_PATH" COVERAGE=$(python - << \'PY\'' not in quality_gate_section
+
+
 def test_code_quality_quality_gate_fails_when_coverage_report_is_missing() -> None:
     workflow = _read_workflow("code-quality.yml")
     quality_gate_section = workflow.split("Quality Gate Evaluation", 1)[1].split("- name: Comment on PR", 1)[0]
