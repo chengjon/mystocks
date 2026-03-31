@@ -21,7 +21,7 @@
             <div class="control-content">
               <div class="stat-number">{{ stopLossStats.activePositions }}</div>
               <div class="stat-label">ACTIVE POSITIONS</div>
-              <el-button type="primary" size="small" @click="showStopLossDialog" style="margin-top: 10px;">
+              <el-button type="primary" size="small" @click="showStopLossDialog" class="control-action-button">
                 MANAGE POSITIONS
               </el-button>
             </div>
@@ -39,7 +39,7 @@
             <div class="control-content">
               <div class="stat-number">{{ alertStats.total_alerts_sent }}</div>
               <div class="stat-label">ALERTS SENT (24H)</div>
-              <el-button type="warning" size="small" @click="showAlertRulesDialog" style="margin-top: 10px;">
+              <el-button type="warning" size="small" @click="showAlertRulesDialog" class="control-action-button">
                 MANAGE RULES
               </el-button>
             </div>
@@ -57,7 +57,7 @@
             <div class="control-content">
               <div class="stat-number">{{ wsStats.total_connections }}</div>
               <div class="stat-label">ACTIVE WEBSOCKETS</div>
-              <el-button type="success" size="small" @click="showWebSocketStatus" style="margin-top: 10px;">
+              <el-button type="success" size="small" @click="showWebSocketStatus" class="control-action-button">
                 CONNECTION STATUS
               </el-button>
             </div>
@@ -74,11 +74,11 @@
             </template>
             <div class="control-content">
               <div class="stat-number">
-                <i class="fas fa-check-circle" style="color: #67C23A;" v-if="gpuStatus.available"></i>
-                <i class="fas fa-times-circle" style="color: #F56C6C;" v-else></i>
+                <i class="fas fa-check-circle gpu-status-icon gpu-status-icon--available" v-if="gpuStatus.available"></i>
+                <i class="fas fa-times-circle gpu-status-icon gpu-status-icon--unavailable" v-else></i>
               </div>
               <div class="stat-label">{{ gpuStatus.status.toUpperCase() }}</div>
-              <el-button type="info" size="small" @click="showGpuStatus" style="margin-top: 10px;">
+              <el-button type="info" size="small" @click="showGpuStatus" class="control-action-button">
                 PERFORMANCE
               </el-button>
             </div>
@@ -438,11 +438,23 @@ onMounted(() => {
   padding: 10px 0;
 }
 
+.control-action-button {
+  margin-top: 10px;
+}
+
 .stat-number {
   font-size: 28px;
   font-weight: bold;
   color: #303133;
   margin-bottom: 5px;
+}
+
+.gpu-status-icon--available {
+  color: #67C23A;
+}
+
+.gpu-status-icon--unavailable {
+  color: #F56C6C;
 }
 
 .stat-label {
