@@ -136,6 +136,22 @@
   border-radius: var(--artdeco-radius-none);
 }
 
+.stat-icon-market {
+  background: linear-gradient(45deg, var(--artdeco-gold-primary), var(--artdeco-gold-light));
+}
+
+.stat-icon-rise {
+  background: linear-gradient(45deg, var(--artdeco-rise), color-mix(in srgb, var(--artdeco-rise) 65%, white));
+}
+
+.stat-icon-fall {
+  background: linear-gradient(45deg, var(--artdeco-down), color-mix(in srgb, var(--artdeco-down) 65%, white));
+}
+
+.stat-icon-warning {
+  background: linear-gradient(45deg, var(--artdeco-warning), color-mix(in srgb, var(--artdeco-warning) 65%, white));
+}
+
 .stat-content {
   flex: 1;
 }
@@ -149,6 +165,18 @@
   color: var(--artdeco-gold-primary);
   text-transform: uppercase;
   letter-spacing: var(--artdeco-tracking-tight);
+}
+
+.stat-value-rise {
+  color: var(--artdeco-rise);
+}
+
+.stat-value-fall {
+  color: var(--artdeco-down);
+}
+
+.stat-value-warning {
+  color: var(--artdeco-warning);
 }
 
 .stat-label {

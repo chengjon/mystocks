@@ -37,7 +37,7 @@
     <!-- Summary Stats -->
     <div class="stats-grid">
       <el-card :hoverable="true" class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(45deg, var(--gold-primary), #E5C158);">
+        <div class="stat-icon stat-icon-market">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
             <path d="M3 3v18h18"></path>
             <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
@@ -50,38 +50,38 @@
       </el-card>
 
       <el-card :hoverable="true" class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(45deg, var(--rise), #FF8A80);">
+        <div class="stat-icon stat-icon-rise">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
             <polyline points="18,15 12,9 6,15"></polyline>
           </svg>
         </div>
         <div class="stat-content">
-          <div class="stat-value" style="color: var(--rise);">{{ summary.limit_up_count || 0 }}</div>
+          <div class="stat-value stat-value-rise">{{ summary.limit_up_count || 0 }}</div>
           <div class="stat-label">涨停数</div>
         </div>
       </el-card>
 
       <el-card :hoverable="true" class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(45deg, var(--fall), #69F0AE);">
+        <div class="stat-icon stat-icon-fall">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
             <polyline points="6,9 12,15 18,9"></polyline>
           </svg>
         </div>
         <div class="stat-content">
-          <div class="stat-value" style="color: var(--fall);">{{ summary.limit_down_count || 0 }}</div>
+          <div class="stat-value stat-value-fall">{{ summary.limit_down_count || 0 }}</div>
           <div class="stat-label">跌停数</div>
         </div>
       </el-card>
 
       <el-card :hoverable="true" class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(45deg, var(--warning), #FFD54F);">
+        <div class="stat-icon stat-icon-warning">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
             <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
           </svg>
         </div>
         <div class="stat-content">
-          <div class="stat-value" style="color: var(--warning);">{{ summary.unread_alerts || 0 }}</div>
+          <div class="stat-value stat-value-warning">{{ summary.unread_alerts || 0 }}</div>
           <div class="stat-label">未读告警</div>
         </div>
       </el-card>
