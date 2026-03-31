@@ -79,7 +79,7 @@
           </template>
           <div class="chart-container">
             <div id="risk-distribution-chart" class="chart">
-              <div style="text-align: center; padding: 40px; color: #666;">
+              <div class="chart-placeholder">
                 Risk Distribution Chart<br/>
                 <small>Market Risk: 45% | Credit Risk: 25% | Liquidity Risk: 20% | Operational Risk: 10%</small>
               </div>
@@ -99,7 +99,7 @@
           </template>
           <div class="chart-container">
             <div id="var-trend-chart" class="chart">
-              <div style="text-align: center; padding: 40px; color: #666;">
+              <div class="chart-placeholder">
                 VaR Trend Chart (30 Days)<br/>
                 <small>Historical VaR values over the past month</small>
               </div>
@@ -448,6 +448,12 @@ onUnmounted(() => {
 .chart {
   width: 100%;
   height: 100%;
+}
+
+.chart-placeholder {
+  text-align: center;
+  padding: 40px;
+  color: #666;
 }
 
 .positive {
