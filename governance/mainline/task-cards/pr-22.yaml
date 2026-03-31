@@ -1,0 +1,90 @@
+version: "v0.2"
+
+task:
+  id: "pr-22"
+  title: "close the maestro local acceptance loop and align PR governance metadata"
+  owner: "main"
+  created_at: "2026-04-01"
+
+mainline:
+  id: "L1-maestro-local-acceptance"
+  objective: "land the one-command Maestro / Mongo / Graphiti acceptance entrypoint on main with matching documentation and governance metadata"
+  milestone_id: "L2-maestro-governance-closeout"
+  slice_id: "L3-local-acceptance-entrypoint"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "tests"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "meta-governance-doc-and-runtime-acceptance-closeout"
+
+scope:
+  allowed_paths:
+    - "docs/guides/ai-tools/GRAPHITI_MCP_WORKFLOW.md"
+    - "docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md"
+    - "docs/guides/multi-cli-tasks/MONGO_MULTICLI_OPERATION_CHECKLIST.md"
+    - "scripts/runtime/run_local_maestro_acceptance.sh"
+    - "tests/unit/docs/test_maestro_doc_sync.py"
+    - "tests/unit/runtime/test_local_maestro_acceptance_script.py"
+    - "governance/mainline/task-cards/pr-22.yaml"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No product feature work beyond the local acceptance entrypoint and its discoverability guardrails"
+  - "No scope expansion outside the declared docs, script, tests, and governance task card"
+
+acceptance:
+  checks:
+    - id: "doc-sync-and-script-tests"
+      command: "pytest tests/unit/docs/test_maestro_doc_sync.py tests/unit/runtime/test_local_maestro_acceptance_script.py -q --no-cov"
+      required: true
+    - id: "doc-sync-lint"
+      command: "ruff check tests/unit/docs/test_maestro_doc_sync.py"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-22.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the task card paths drift from the actual PR diff, the mainline governance gate will remain red"
+    - "If the one-command acceptance script and docs fall out of sync again, reviewers will see a discoverability regression instead of a runtime regression"
+  rollback_plan: "git revert <merge-commit-sha> if the acceptance entrypoint or governance card causes unexpected mainline gate regressions"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close the Maestro / Mongo / Graphiti acceptance line with one canonical local entrypoint and matching governance metadata"
+    modified_scope: "three documentation guides, one runtime acceptance script, two focused regression tests, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "existing collaboration CLI behavior stays unchanged; only discoverability, validation, and governance reporting are tightened"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the PR if governance scope enforcement or acceptance-script discoverability regresses after merge"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-01T00:00:00Z"
+    approval_note: "doc-and-runtime acceptance cleanup does not require a separate OpenSpec proposal"
+    secondary_approved: false
