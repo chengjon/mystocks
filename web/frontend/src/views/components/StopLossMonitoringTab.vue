@@ -59,7 +59,7 @@
 
       <el-table
         :data="positions"
-        style="width: 100%"
+        class="monitoring-table"
         :loading="loading"
         stripe
         max-height="400"
@@ -119,7 +119,7 @@
               type="danger"
               size="small"
               @click="removePosition(scope.row)"
-              style="margin-left: 8px;"
+              class="action-button-spaced"
             >
               REMOVE
             </el-button>
@@ -145,7 +145,7 @@
 
       <el-table
         :data="executionHistory"
-        style="width: 100%"
+        class="monitoring-table"
         :loading="historyLoading"
         stripe
         max-height="300"
@@ -219,7 +219,7 @@
             v-model="positionForm.entry_price"
             :precision="2"
             :min="0"
-            style="width: 100%;"
+            class="position-form-control"
           />
         </el-form-item>
 
@@ -227,12 +227,12 @@
           <el-input-number
             v-model="positionForm.quantity"
             :min="1"
-            style="width: 100%;"
+            class="position-form-control"
           />
         </el-form-item>
 
         <el-form-item label="Stop Loss Type" prop="stop_loss_type">
-          <el-select v-model="positionForm.stop_loss_type" style="width: 100%;">
+          <el-select v-model="positionForm.stop_loss_type" class="position-form-control">
             <el-option label="Volatility Adaptive" value="volatility_adaptive" />
             <el-option label="Trailing Stop" value="trailing_stop" />
           </el-select>
@@ -249,7 +249,7 @@
             :max="4.0"
             :step="0.1"
             show-input
-            style="width: 100%;"
+            class="position-form-control"
           />
           <div class="slider-hint">
             Conservative (2.5) ← → Aggressive (1.5)
@@ -267,7 +267,7 @@
             :max="0.15"
             :step="0.01"
             show-input
-            style="width: 100%;"
+            class="position-form-control"
           />
           <div class="slider-hint">
             Tight (2%) ← → Loose (15%)
@@ -280,7 +280,7 @@
             :precision="2"
             :min="0"
             placeholder="Optional: override calculated stop price"
-            style="width: 100%;"
+            class="position-form-control"
           />
         </el-form-item>
       </el-form>

@@ -21,6 +21,15 @@
   gap: calc(var(--spacing-sm) + var(--radius-md));
 }
 
+.monitoring-table,
+.position-form-control {
+  width: 100%;
+}
+
+.action-button-spaced {
+  margin-left: var(--spacing-sm);
+}
+
 .price-up {
   color: var(--color-stock-down);
   font-weight: bold;
