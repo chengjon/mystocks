@@ -57,7 +57,7 @@
         :data="etfData"
         stripe
         border
-        style="width: 100%"
+        class="etf-table-full"
         :default-sort="{ prop: 'change_percent', order: 'descending' }"
         @row-click="handleRowClick"
       >
@@ -370,6 +370,10 @@ onMounted(() => {
 
 .etf-limit-input {
   width: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
+}
+
+.etf-table-full {
+  width: 100%;
 }
 
 :deep(.el-table__row) {

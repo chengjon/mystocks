@@ -68,7 +68,7 @@
         :data="chipRaceData"
         stripe
         border
-        style="width: 100%"
+        class="chip-race-table-full"
         :default-sort="{ prop: 'race_amount', order: 'descending' }"
       >
         <el-table-column type="index" label="排名" width="60" align="center" />
@@ -393,5 +393,9 @@ onMounted(() => {
 
 .chip-race-limit-input {
   width: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
+}
+
+.chip-race-table-full {
+  width: 100%;
 }
 </style>

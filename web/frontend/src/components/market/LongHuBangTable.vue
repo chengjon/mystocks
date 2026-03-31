@@ -70,7 +70,7 @@
         :data="lhbData"
         stripe
         border
-        style="width: 100%"
+        class="lhb-table-full"
         :default-sort="{ prop: 'trade_date', order: 'descending' }"
         @row-click="handleRowClick"
       >
@@ -474,6 +474,10 @@ onMounted(() => {
 
 .lhb-limit-input {
   width: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
+}
+
+.lhb-table-full {
+  width: 100%;
 }
 
 :deep(.el-table__row) {
