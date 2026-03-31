@@ -4,7 +4,7 @@
     <!-- Stats Cards -->
     <div class="stats-grid">
       <el-card :hoverable="true" class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(45deg, var(--gold-primary), #E5C158);">
+        <div class="stat-icon phase4-stat-icon-market">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
             <path d="M3 3v18h18"></path>
             <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
@@ -20,7 +20,7 @@
       </el-card>
 
       <el-card :hoverable="true" class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(45deg, var(--fall), #69F0AE);">
+        <div class="stat-icon phase4-stat-icon-watchlist">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
           </svg>
@@ -35,7 +35,7 @@
       </el-card>
 
       <el-card :hoverable="true" class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(45deg, var(--warning), #FFD54F);">
+        <div class="stat-icon phase4-stat-icon-portfolio">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
             <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
@@ -51,7 +51,7 @@
       </el-card>
 
       <el-card :hoverable="true" class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(45deg, var(--rise), #FF8A80);">
+        <div class="stat-icon phase4-stat-icon-risk">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
             <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
             <line x1="12" y1="9" x2="12" y2="13"></line>
@@ -59,7 +59,7 @@
           </svg>
         </div>
         <div class="stat-content">
-          <div class="stat-value" style="color: var(--warning);">{{ riskStats.total }}</div>
+          <div class="stat-value phase4-stat-value-warning">{{ riskStats.total }}</div>
           <div class="stat-label">风险预警</div>
           <div class="stat-trend data-fall">
             未读: {{ riskStats.unread }}
@@ -241,4 +241,24 @@ const {
 
 <style scoped lang="scss">
 @use "./styles/Phase4Dashboard.scss" as *;
+
+.phase4-stat-icon-market {
+  background: linear-gradient(45deg, var(--gold-primary), #E5C158);
+}
+
+.phase4-stat-icon-watchlist {
+  background: linear-gradient(45deg, var(--fall), #69F0AE);
+}
+
+.phase4-stat-icon-portfolio {
+  background: linear-gradient(45deg, var(--warning), #FFD54F);
+}
+
+.phase4-stat-icon-risk {
+  background: linear-gradient(45deg, var(--rise), #FF8A80);
+}
+
+.phase4-stat-value-warning {
+  color: var(--warning);
+}
 </style>
