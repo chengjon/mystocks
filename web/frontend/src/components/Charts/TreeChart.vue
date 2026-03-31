@@ -3,7 +3,7 @@
         <div class="chart-header" v-if="title">
             <h3 class="chart-title">{{ title }}</h3>
             <div class="chart-toolbar">
-                <el-select v-model="layoutType" size="small" @change="updateLayout" style="width: 120px">
+                <el-select v-model="layoutType" size="small" @change="updateLayout" class="tree-layout-select">
                     <el-option label="自顶向下" value="TB" />
                     <el-option label="自左向右" value="LR" />
                     <el-option label="自右向左" value="RL" />
@@ -412,6 +412,10 @@
                 display: flex;
                 gap: var(--artdeco-spacing-2);
                 align-items: center;
+            }
+
+            .tree-layout-select {
+                width: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-10));
             }
         }
 
