@@ -10,7 +10,7 @@
       <div class="content-section">
         <h3>📊 常用 API 示例</h3>
 
-        <el-collapse accordion style="margin-top: 20px;">
+        <el-collapse accordion class="api-collapse-offset">
           <el-collapse-item title="1️⃣ 获取实时行情" name="1">
             <div class="api-content">
               <h4>get_security_quotes() - 获取多只股票的实时行情</h4>
@@ -35,8 +35,8 @@ with api.connect('119.147.212.81', 7709):
         print(f"  成交量: {quote['vol']}")
         print(f"  成交额: {quote['amount']}")</pre>
 
-              <h4 style="margin-top: 15px;">返回字段说明</h4>
-              <el-table :data="quoteFields" stripe size="small" style="margin-top: 10px;">
+              <h4 class="api-subsection-heading">返回字段说明</h4>
+              <el-table :data="quoteFields" stripe size="small" class="api-table-offset">
                 <el-table-column prop="field" label="字段" width="120" />
                 <el-table-column prop="description" label="说明" />
               </el-table>
@@ -71,8 +71,8 @@ with api.connect('119.147.212.81', 7709):
               f"收:{bar['close']} "
               f"量:{bar['vol']}")</pre>
 
-              <h4 style="margin-top: 15px;">K线类型代码</h4>
-              <el-table :data="klineTypes" stripe size="small" style="margin-top: 10px;">
+              <h4 class="api-subsection-heading">K线类型代码</h4>
+              <el-table :data="klineTypes" stripe size="small" class="api-table-offset">
                 <el-table-column prop="code" label="代码" width="80" />
                 <el-table-column prop="type" label="类型" width="120" />
                 <el-table-column prop="description" label="说明" />
@@ -228,3 +228,19 @@ interface Props {
 
 defineProps<Props>()
 </script>
+
+<style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
+.api-collapse-offset {
+  margin-top: var(--artdeco-spacing-5);
+}
+
+.api-subsection-heading {
+  margin-top: calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-px) * 5);
+}
+
+.api-table-offset {
+  margin-top: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
+}
+</style>
