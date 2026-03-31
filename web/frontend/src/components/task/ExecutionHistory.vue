@@ -35,7 +35,7 @@
           <el-tag v-if="row.retry_count > 0" type="warning" size="small">
             {{ row.retry_count }}
           </el-tag>
-          <span v-else style="color: #909399">0</span>
+          <span v-else class="execution-fallback-text">0</span>
         </template>
       </el-table-column>
       <el-table-column label="结果" min-width="200" v-if="showDetails">
@@ -48,7 +48,7 @@
               <pre>{{ JSON.stringify(row.result, null, 2) }}</pre>
             </el-popover>
           </div>
-          <span v-else style="color: #909399">无</span>
+          <span v-else class="execution-fallback-text">无</span>
         </template>
       </el-table-column>
       <el-table-column label="错误信息" min-width="250" v-if="showDetails">
@@ -56,7 +56,7 @@
           <el-tooltip v-if="row.error_message" :content="row.error_message" placement="top">
             <span class="error-text">{{ truncate(row.error_message, 50) }}</span>
           </el-tooltip>
-          <span v-else style="color: #909399">无</span>
+          <span v-else class="execution-fallback-text">无</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="120" fixed="right" v-if="showDetails">
@@ -74,7 +74,7 @@
           type="textarea"
           :rows="20"
           readonly
-          style="font-family: 'Courier New', monospace"
+          class="execution-log-input"
         />
       </div>
       <template #footer>
@@ -204,6 +204,14 @@ const handleDownloadLog = () => {
 
 <style scoped lang="scss">
 .execution-history {
+  .execution-fallback-text {
+    color: var(--color-text-tertiary);
+  }
+
+  .execution-log-input {
+    font-family: var(--font-family-mono);
+  }
+
   .toolbar {
     margin-bottom: 16px;
     display: flex;
