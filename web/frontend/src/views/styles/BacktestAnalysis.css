@@ -61,6 +61,12 @@
   width: 100%;
 }
 
+.chart-placeholder {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
 .metric-item {
   text-align: center;
   padding: var(--artdeco-spacing-5);

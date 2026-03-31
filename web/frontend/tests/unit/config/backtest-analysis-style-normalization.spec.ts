@@ -13,11 +13,14 @@ describe('BacktestAnalysis style normalization', () => {
 
     expect(viewSource).toContain('class="section-offset"')
     expect(viewSource).toContain('class="trade-history-table"')
+    expect(viewSource).toContain('class="chart-placeholder"')
 
     expect(viewSource).not.toContain('style="margin-top: 20px;"')
     expect(viewSource).not.toContain('style="width: 100%"')
+    expect(viewSource).not.toContain('style="text-align: center; padding: 40px; color: #666;"')
 
     expect(styleSource).toContain('.section-offset')
     expect(styleSource).toContain('.trade-history-table')
+    expect(styleSource).toContain('.chart-placeholder')
   })
 })

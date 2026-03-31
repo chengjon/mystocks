@@ -195,7 +195,7 @@
         </template>
         <div class="chart-container">
           <div id="equity-chart" class="chart">
-            <div v-if="backtestResult" style="text-align: center; padding: 40px; color: #666;">
+            <div v-if="backtestResult" class="chart-placeholder">
               Equity curve chart would be rendered here using a charting library like Chart.js or ECharts
             </div>
           </div>
