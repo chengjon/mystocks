@@ -72,7 +72,7 @@
             <el-table
               :data="compatibilityTableData"
               stripe
-              style="width: 100%"
+              class="compatibility-table"
             >
               <el-table-column prop="apiName" label="API端点" width="200">
                 <template #default="scope">
@@ -334,6 +334,10 @@ onUnmounted(() => {
 
 .compatibility-list {
   margin-top: var(--artdeco-spacing-4);
+}
+
+.compatibility-table {
+  width: 100%;
 }
 
 .status-info {
