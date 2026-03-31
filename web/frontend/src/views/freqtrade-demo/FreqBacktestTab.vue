@@ -11,15 +11,15 @@
         <h3>🔍 回测流程</h3>
         <p>Freqtrade 提供强大的回测功能,可以在历史数据上测试策略表现:</p>
 
-        <el-steps :active="3" align-center style="margin: 30px 0;">
+        <el-steps :active="3" align-center class="backtest-steps">
           <el-step title="下载数据" description="freqtrade download-data" />
           <el-step title="编写策略" description="实现 IStrategy 接口" />
           <el-step title="运行回测" description="freqtrade backtesting" />
           <el-step title="分析结果" description="查看报告和图表" />
         </el-steps>
 
-        <h3 style="margin-top: 30px;">⚙️ 回测命令示例</h3>
-        <el-tabs type="border-card" style="margin-top: 20px;">
+        <h3 class="backtest-section-heading">⚙️ 回测命令示例</h3>
+        <el-tabs type="border-card" class="backtest-tabs">
           <el-tab-pane name="basic-backtest" label="基础回测">
             <pre v-pre class="code-block"># 回测单个策略
 freqtrade backtesting \
@@ -82,8 +82,8 @@ freqtrade plot-profit \
           </el-tab-pane>
         </el-tabs>
 
-        <h3 style="margin-top: 30px;">📊 回测性能指标</h3>
-        <el-table :data="metricsData" stripe style="margin-top: 15px;">
+        <h3 class="backtest-section-heading">📊 回测性能指标</h3>
+        <el-table :data="metricsData" stripe class="backtest-metrics-table">
           <el-table-column prop="metric" label="指标" width="200" />
           <el-table-column prop="description" label="说明" />
           <el-table-column prop="target" label="目标值" width="150" />
@@ -93,9 +93,9 @@ freqtrade plot-profit \
           type="info"
           title="💡 回测结果解读"
           :closable="false"
-          style="margin-top: 20px;"
+          class="backtest-info-alert"
         >
-          <ul style="margin-top: 10px;">
+          <ul class="backtest-info-list">
             <li><strong>总收益率</strong>: 策略在回测期间的总收益,需考虑复利效应</li>
             <li><strong>胜率</strong>: 盈利交易占总交易的比例,≥ 50% 较好</li>
             <li><strong>盈亏比</strong>: 平均盈利 / 平均亏损,≥ 1.5 较好</li>
@@ -115,3 +115,28 @@ defineProps<{
   metricsData: Array<{ metric: string; description: string; target: string }>;
 }>()
 </script>
+
+<style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
+.backtest-steps {
+  margin: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-3) / 2) 0;
+}
+
+.backtest-section-heading {
+  margin-top: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-3) / 2);
+}
+
+.backtest-tabs,
+.backtest-info-alert {
+  margin-top: var(--artdeco-spacing-5);
+}
+
+.backtest-metrics-table {
+  margin-top: calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-px) * 5);
+}
+
+.backtest-info-list {
+  margin-top: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
+}
+</style>
