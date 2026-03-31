@@ -178,6 +178,15 @@
   margin-bottom: var(--artdeco-spacing-1);
 }
 
+.importance-rate {
+  line-height: var(--artdeco-spacing-6);
+}
+
+.announcement-pagination {
+  margin-top: var(--artdeco-spacing-5);
+  text-align: right;
+}
+
 .text-important {
   color: var(--artdeco-rise);
   font-weight: var(--artdeco-font-bold);

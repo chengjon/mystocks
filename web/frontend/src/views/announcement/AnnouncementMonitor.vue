@@ -189,7 +189,7 @@
               :show-text="false"
               :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
               disabled
-              style="line-height: 24px;"
+              class="importance-rate"
             />
           </template>
         </el-table-column>
@@ -234,7 +234,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        style="margin-top: 20px; text-align: right;"
+        class="announcement-pagination"
       />
     </el-card>
 
