@@ -16,7 +16,7 @@
             v-model="searchForm.symbol"
             placeholder="ENTER STOCK SYMBOL"
             clearable
-            style="width: 180px"
+            class="technical-symbol-input"
           />
         </el-form-item>
 
@@ -25,7 +25,7 @@
             v-model="searchForm.indicators"
             multiple
             placeholder="SELECT INDICATORS"
-            style="width: 320px"
+            class="technical-indicators-select"
           >
             <el-option
               v-for="(indicator, _idx) in availableIndicators"
@@ -204,7 +204,7 @@
           <Web3Input
             v-model="batchForm.symbols"
             placeholder="ENTER STOCK SYMBOLS, COMMA-SEPARATED"
-            style="width: 440px"
+            class="technical-batch-symbols-input"
           />
         </el-form-item>
 
@@ -213,7 +213,7 @@
             v-model="batchForm.indicators"
             multiple
             placeholder="SELECT INDICATORS TO CALCULATE"
-            style="width: 320px"
+            class="technical-indicators-select"
           >
             <el-option
               v-for="(indicator, _idx) in availableIndicators"

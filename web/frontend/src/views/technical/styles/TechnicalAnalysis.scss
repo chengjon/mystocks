@@ -39,6 +39,19 @@
   .search-card {
     margin-bottom: var(--web3-spacing-6);
 
+    .technical-symbol-input {
+      width: calc(
+        var(--web3-spacing-16) * 2 +
+        var(--spacing-xl) +
+        var(--spacing-md) +
+        var(--spacing-xs)
+      );
+    }
+
+    .technical-indicators-select {
+      width: calc(var(--web3-spacing-16) * 5);
+    }
+
     .web3-search-form {
       .el-form-item {
         margin-right: var(--web3-spacing-4);
@@ -174,6 +187,10 @@
   }
 
   .web3-batch-form {
+    .technical-batch-symbols-input {
+      width: calc(var(--web3-spacing-16) * 6 + var(--spacing-xl) + var(--web3-spacing-6));
+    }
+
     .el-form-item {
       margin-right: var(--web3-spacing-4);
       margin-bottom: 0;
