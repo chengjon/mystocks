@@ -117,6 +117,19 @@
   margin-bottom: var(--artdeco-spacing-6);
 }
 
+.announcement-filter-input {
+  width: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
+}
+
+.announcement-filter-type {
+  width: calc(
+    var(--artdeco-spacing-24) +
+    var(--artdeco-spacing-10) +
+    var(--artdeco-spacing-3) +
+    var(--artdeco-spacing-px) * 2
+  );
+}
+
 .search-form :deep(.el-form-item) {
   margin-right: var(--artdeco-spacing-5);
   margin-bottom: 0;
@@ -154,6 +167,15 @@
 .rules-card,
 .records-card {
   margin-bottom: var(--artdeco-spacing-5);
+}
+
+.announcement-table {
+  width: 100%;
+}
+
+.keyword-tag {
+  margin-right: var(--artdeco-spacing-1);
+  margin-bottom: var(--artdeco-spacing-1);
 }
 
 .text-important {

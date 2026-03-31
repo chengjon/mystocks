@@ -89,7 +89,7 @@
             v-model="searchForm.stock_code"
             placeholder="请输入股票代码"
             clearable
-            style="width: 120px"
+            class="announcement-filter-input"
           />
         </el-form-item>
 
@@ -97,7 +97,7 @@
           <el-select
             v-model="searchForm.announcement_type"
             placeholder="请选择公告类型"
-            style="width: 150px"
+            class="announcement-filter-type"
           >
             <el-option value="" label="全部类型" />
             <el-option value="业绩预告" label="业绩预告" />
@@ -111,7 +111,7 @@
           <el-select
             v-model="searchForm.min_importance"
             placeholder="重要性级别"
-            style="width: 120px"
+            class="announcement-filter-input"
           >
             <el-option :value="0" label="全部" />
             <el-option :value="1" label="1级" />
@@ -168,7 +168,7 @@
 
       <el-table
         :data="announcements"
-        style="width: 100%"
+        class="announcement-table"
         v-loading="loading.announcements"
         row-key="id"
       >
@@ -255,7 +255,7 @@
 
       <el-table
         :data="monitorRules"
-        style="width: 100%"
+        class="announcement-table"
         v-loading="loading.rules"
       >
         <el-table-column prop="rule_name" label="规则名称" width="150" />
@@ -274,7 +274,7 @@
               v-for="(keyword, _idx) in row.keywords.slice(0, 3)"
               :key="keyword"
               size="small"
-              style="margin-right: 4px; margin-bottom: 4px;"
+              class="keyword-tag"
             >
               {{ keyword }}
             </el-tag>
@@ -393,7 +393,7 @@
 
       <el-table
         :data="triggeredRecords"
-        style="width: 100%"
+        class="announcement-table"
         v-loading="loading.records"
       >
         <el-table-column prop="rule_name" label="规则名称" width="150" />
@@ -405,7 +405,7 @@
               v-for="(keyword, _idx) in row.matched_keywords"
               :key="keyword"
               size="small"
-              style="margin-right: 4px; margin-bottom: 4px;"
+              class="keyword-tag"
             >
               {{ keyword }}
             </el-tag>
