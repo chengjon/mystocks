@@ -41,7 +41,7 @@
 
     <el-table
       :data="positionList"
-      style="width: 100%"
+      class="realtime-position-table"
       :row-class-name="tableRowClassName"
       v-loading="loading"
     >
