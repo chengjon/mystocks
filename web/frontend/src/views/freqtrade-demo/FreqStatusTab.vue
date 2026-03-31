@@ -9,7 +9,7 @@
 
       <div class="content-section">
         <h3>📦 已集成功能</h3>
-        <el-descriptions :column="1" border style="margin-top: 15px;">
+        <el-descriptions :column="1" border class="status-descriptions">
           <el-descriptions-item label="项目文档">
             <el-tag type="success">✅ 已整理</el-tag>
           </el-descriptions-item>
@@ -30,8 +30,8 @@
           </el-descriptions-item>
         </el-descriptions>
 
-        <h3 style="margin-top: 30px;">🎯 后续集成计划</h3>
-        <el-timeline style="margin-top: 20px;">
+        <h3 class="status-section-heading">🎯 后续集成计划</h3>
+        <el-timeline class="status-timeline">
           <el-timeline-item timestamp="Phase 1" placement="top">
             <el-card>
               <h4>数据接口集成</h4>
@@ -62,9 +62,9 @@
           type="warning"
           title="⚠️ 重要提醒"
           :closable="false"
-          style="margin-top: 20px;"
+          class="status-alert"
         >
-          <ul style="margin-top: 10px;">
+          <ul class="status-alert-list">
             <li><strong>风险警示</strong>: 加密货币交易存在高风险,请务必充分了解风险后再使用</li>
             <li><strong>模拟交易</strong>: 建议先在模拟模式下充分测试策略</li>
             <li><strong>资金管理</strong>: 只投入您能承受损失的资金</li>
@@ -80,3 +80,24 @@
 <script setup lang="ts">
 defineProps<{ activeTab: string }>()
 </script>
+
+<style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
+.status-descriptions {
+  margin-top: calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-px) * 5);
+}
+
+.status-section-heading {
+  margin-top: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-3) / 2);
+}
+
+.status-timeline,
+.status-alert {
+  margin-top: var(--artdeco-spacing-5);
+}
+
+.status-alert-list {
+  margin-top: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
+}
+</style>
