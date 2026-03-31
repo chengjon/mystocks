@@ -285,7 +285,7 @@
             <ArtDecoCard title="市场热度板块" hoverable class="heat-map-card">
                 <section class="heatmap-section dashboard-heatmap-panel">
                     <template v-if="loading.industry">
-                         <div class="skeleton-chart" style="height: 100%; display: flex; align-items: center; justify-content: center;">
+                         <div class="skeleton-chart dashboard-skeleton-chart">
                              <ArtDecoSkeleton variant="rect" width="90%" height="90%" />
                          </div>
                     </template>

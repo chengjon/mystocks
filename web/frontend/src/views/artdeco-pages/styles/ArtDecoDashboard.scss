@@ -136,6 +136,13 @@
     height: calc(var(--artdeco-spacing-20) * 3 + var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
 }
 
+.dashboard-skeleton-chart {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .heat-map-card,
 .long-hu-bang-card,      // 新增: 龙虎榜卡片
 .block-trading-card,    // 新增: 大宗交易卡片

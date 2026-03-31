@@ -13,11 +13,14 @@ describe('ArtDecoDashboard style normalization', () => {
 
     expect(viewSource).toContain('class="dashboard-skeleton-offset"')
     expect(viewSource).toContain('class="heatmap-section dashboard-heatmap-panel"')
+    expect(viewSource).toContain('class="skeleton-chart dashboard-skeleton-chart"')
 
     expect(viewSource).not.toContain('style="margin-top: 10px;"')
     expect(viewSource).not.toContain('style="height: 300px;"')
+    expect(viewSource).not.toContain('style="height: 100%; display: flex; align-items: center; justify-content: center;"')
 
     expect(styleSource).toContain('.dashboard-skeleton-offset')
     expect(styleSource).toContain('.dashboard-heatmap-panel')
+    expect(styleSource).toContain('.dashboard-skeleton-chart')
   })
 })
