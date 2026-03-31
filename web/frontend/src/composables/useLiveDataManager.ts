@@ -28,10 +28,6 @@ export function useLiveDataManager(_menus: MenuItem[]) {
         // For now we just log, but this could dispatch to a Pinia store
         // or emit an event bus
         lastUpdate.value = Date.now()
-        
-        if (import.meta.env.DEV) {
-          // console.debug(`[LiveDataManager] Update for ${menu.path}:`, data)
-        }
       })
       
       activeUnsubscribes.value.push(unsubscribe)
