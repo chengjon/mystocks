@@ -59,7 +59,7 @@
             >
               <el-icon
                 :size="14"
-                style="margin-right: 6px; cursor: pointer;"
+                class="toggle-indicator-icon"
                 @click.stop="handleToggleIndicator(index)"
               >
                 <component :is="indicator.enabled !== false ? View : Hide" />
@@ -144,7 +144,7 @@
           :title="`${currentIndicatorConfig.chinese_name ?? currentIndicatorConfig.chineseName} (${currentIndicatorConfig.abbreviation})`"
           type="info"
           :closable="false"
-          style="margin-bottom: 20px;"
+          class="config-info-alert"
         >
           <p class="indicator-desc">{{ currentIndicatorConfig.description }}</p>
         </el-alert>
@@ -156,7 +156,7 @@
             :key="param.name"
             :label="param.displayName"
           >
-            <el-space direction="vertical" :size="8" style="width: 100%;">
+            <el-space direction="vertical" :size="8" class="param-stack">
               <el-space>
                 <el-input-number
                   v-model="parameterValues[param.name]"
@@ -165,7 +165,7 @@
                   :step="param.step || 1"
                   :precision="param.step && param.step < 1 ? 2 : 0"
                   controls-position="right"
-                  style="width: 200px;"
+                  class="param-input"
                 />
 
                 <!-- 快速预设按钮 -->
@@ -184,7 +184,7 @@
                   <el-icon><InfoFilled /></el-icon>
                   {{ param.description }}
                 </el-text>
-                <el-text size="small" type="warning" style="display: block; margin-top: 4px;">
+                <el-text size="small" type="warning" class="param-range-hint">
                   范围: {{ param.min }} - {{ param.max }} (默认: {{ param.default }})
                 </el-text>
               </div>

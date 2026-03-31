@@ -46,6 +46,11 @@
       .selected-indicator-tag {
         cursor: pointer;
 
+        .toggle-indicator-icon {
+          margin-right: calc(var(--artdeco-spacing-1) + var(--artdeco-spacing-px) * 2);
+          cursor: pointer;
+        }
+
         .indicator-name {
           font-weight: var(--artdeco-font-semibold);
         }
@@ -128,6 +133,18 @@
 
 // 增强: 参数配置对话框样式
 .config-dialog-content {
+  .config-info-alert {
+    margin-bottom: var(--artdeco-spacing-5);
+  }
+
+  .param-stack {
+    width: 100%;
+  }
+
+  .param-input {
+    width: calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-10));
+  }
+
   .indicator-desc {
     margin: var(--artdeco-spacing-2) 0 0 0;
     font-size: var(--artdeco-text-sm);
@@ -136,6 +153,11 @@
   }
 
   .param-description {
+    .param-range-hint {
+      display: block;
+      margin-top: var(--artdeco-spacing-1);
+    }
+
     .el-text {
       display: flex;
       align-items: center;
