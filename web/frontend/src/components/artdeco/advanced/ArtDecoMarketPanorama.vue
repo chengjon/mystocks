@@ -27,7 +27,7 @@
                 <div class="activity-summary">
                     <p>全市场活跃度：处于历史高位 (85%)</p>
                     <div class="activity-bar">
-                        <div class="fill" style="width: 85%"></div>
+                        <div class="fill activity-fill-default"></div>
                     </div>
                 </div>
             </ArtDecoCard>
@@ -78,6 +78,10 @@ const {
         .fill {
           height: 100%;
           background: var(--artdeco-gold-primary);
+        }
+
+        .activity-fill-default {
+          width: 85%;
         }
     }
 }
