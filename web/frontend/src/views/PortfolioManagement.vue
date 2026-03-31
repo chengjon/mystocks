@@ -334,7 +334,7 @@
           <el-input v-model="watchlistForm.name" placeholder="请输入清单名称" />
         </el-form-item>
         <el-form-item label="类型">
-          <el-select v-model="watchlistForm.watchlist_type" style="width: 100%">
+          <el-select v-model="watchlistForm.watchlist_type" class="portfolio-form-control">
             <el-option label="手动" value="manual" />
             <el-option label="策略" value="strategy" />
             <el-option label="基准" value="benchmark" />
@@ -363,10 +363,10 @@
           <el-input v-model="stockForm.stock_code" placeholder="如: 600519.SH" />
         </el-form-item>
         <el-form-item label="入库价格" required>
-          <el-input-number v-model="stockForm.entry_price" :precision="2" :min="0" style="width: 100%" />
+          <el-input-number v-model="stockForm.entry_price" :precision="2" :min="0" class="portfolio-form-control" />
         </el-form-item>
         <el-form-item label="入库理由">
-          <el-select v-model="stockForm.entry_reason" style="width: 100%">
+          <el-select v-model="stockForm.entry_reason" class="portfolio-form-control">
             <el-option label="MACD金叉" value="macd_gold_cross" />
             <el-option label="RSI超卖" value="rsi_oversold" />
             <el-option label="量能突破" value="volume_breakout" />
@@ -375,10 +375,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="止损价格">
-          <el-input-number v-model="stockForm.stop_loss_price" :precision="2" :min="0" style="width: 100%" />
+          <el-input-number v-model="stockForm.stop_loss_price" :precision="2" :min="0" class="portfolio-form-control" />
         </el-form-item>
         <el-form-item label="止盈价格">
-          <el-input-number v-model="stockForm.target_price" :precision="2" :min="0" style="width: 100%" />
+          <el-input-number v-model="stockForm.target_price" :precision="2" :min="0" class="portfolio-form-control" />
         </el-form-item>
         <el-form-item label="权重">
           <el-slider v-model="stockForm.weight" :min="0" :max="1" :step="0.01" />

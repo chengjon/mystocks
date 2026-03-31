@@ -1,6 +1,10 @@
 .portfolio-management {
   padding: calc(var(--spacing-md) + var(--spacing-xs));
 
+  .portfolio-form-control {
+    width: 100%;
+  }
+
   .page-header {
     margin-bottom: var(--spacing-lg);
 
