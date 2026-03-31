@@ -84,7 +84,6 @@ class WebSocketManager {
       this.ws = new WebSocket(wsUrl)
 
       this.ws.onopen = () => {
-        console.log('✅ WebSocket connected')
         this.status.isConnected = true
         this.status.isConnecting = false
         this.reconnectAttempts = 0
@@ -98,8 +97,7 @@ class WebSocketManager {
         this.handleMessage(event)
       }
 
-      this.ws.onclose = (event: CloseEvent) => {
-        console.log('❌ WebSocket disconnected:', event.code, event.reason)
+      this.ws.onclose = (_event: CloseEvent) => {
         this.status.isConnected = false
         this.status.isConnecting = false
         this.notifyStatusChange()
@@ -187,10 +185,6 @@ class WebSocketManager {
 
     this.reconnectAttempts++
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1)
-
-    console.log(
-      `🔄 Reconnecting... (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}, delay: ${delay}ms)`
-    )
 
     this.status.reconnectAttempts = this.reconnectAttempts
     this.notifyStatusChange()
