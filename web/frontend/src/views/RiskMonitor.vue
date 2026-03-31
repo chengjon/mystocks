@@ -67,7 +67,7 @@
     </div>
 
     <!-- Risk Charts and Analysis -->
-    <el-row :gutter="20" style="margin-top: 30px;">
+    <el-row :gutter="20" class="section-gap-large">
       <!-- Portfolio Risk Distribution -->
       <el-col :span="12">
         <el-card class="analysis-card">
@@ -110,7 +110,7 @@
     </el-row>
 
     <!-- Position Risk Table -->
-    <el-card class="positions-card" style="margin-top: 30px;">
+    <el-card class="positions-card section-gap-large">
       <template #header>
         <div class="card-header">
           <el-icon class="card-icon"><List /></el-icon>
@@ -118,7 +118,7 @@
         </div>
       </template>
 
-      <el-table :data="positionRisks" style="width: 100%">
+      <el-table :data="positionRisks" class="full-width-table">
         <el-table-column prop="symbol" label="Symbol" width="100" />
         <el-table-column prop="position" label="Position" width="120">
           <template #default="scope">
@@ -160,7 +160,7 @@
     </el-card>
 
     <!-- Risk Alerts -->
-    <el-card class="alerts-card" style="margin-top: 30px;">
+    <el-card class="alerts-card section-gap-large">
       <template #header>
         <div class="card-header">
           <el-icon class="card-icon"><Warning /></el-icon>
@@ -175,7 +175,7 @@
         :description="alert.description"
         :type="alert.type"
         show-icon
-        style="margin-bottom: 10px;"
+        class="risk-alert-item"
       />
     </el-card>
   </div>
@@ -415,6 +415,18 @@ onUnmounted(() => {
 .analysis-card, .positions-card, .alerts-card {
   border-radius: 8px;
   box-shadow: 0 2px 12px rgb(0 0 0 / 10%);
+}
+
+.section-gap-large {
+  margin-top: 30px;
+}
+
+.full-width-table {
+  width: 100%;
+}
+
+.risk-alert-item {
+  margin-bottom: 10px;
 }
 
 .card-header {
