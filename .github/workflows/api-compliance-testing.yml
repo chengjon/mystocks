@@ -69,15 +69,14 @@ jobs:
         sudo apt-get install -y \
           postgresql-client \
           build-essential \
-          libpq-dev \
-          libta libta-dev \
-          libta-lib0
+          libpq-dev
 
     - name: Install Python dependencies
       run: |
         cd web/backend
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>=' requirements.txt > /tmp/backend-requirements-ci.txt
+        python -m pip install -r /tmp/backend-requirements-ci.txt
         pip install pytest-cov pytest-html pytest-json-report
 
     - name: Set up environment variables

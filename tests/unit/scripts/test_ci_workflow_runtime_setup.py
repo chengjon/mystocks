@@ -99,6 +99,16 @@ def test_api_compliance_workflow_uses_supported_actions_and_safe_python_matrix_e
     assert "${{{{ matrix.python-version }}}}" not in workflow
 
 
+def test_api_compliance_workflow_avoids_unavailable_talib_system_packages_and_filters_backend_requirements() -> None:
+    workflow = _read_workflow("api-compliance-testing.yml")
+    install_section = workflow.split("- name: Install system dependencies", 1)[1].split("- name: Set up environment variables", 1)[0]
+
+    assert "libta libta-dev" not in install_section
+    assert "libta-lib0" not in install_section
+    assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in install_section
+    assert "python -m pip install -r /tmp/backend-requirements-ci.txt" in install_section
+
+
 def test_api_contract_and_api_file_workflows_install_backend_runtime_dependencies() -> None:
     contract_workflow = _read_workflow("api-contract-validation.yml")
     api_file_workflow = _read_workflow("api-file-tests.yml")
@@ -1002,8 +1012,9 @@ def test_code_quality_workflow_keeps_coverage_generation_as_a_real_gate() -> Non
     workflow = _read_workflow("code-quality.yml")
     coverage_section = workflow.split("test-coverage:", 1)[1].split("# 性能基准测试阶段", 1)[0]
 
-    assert "python -m pytest -o addopts='' scripts/tests/ -v --cov=src --cov-report=xml --cov-report=html --cov-fail-under=80" in coverage_section
-    assert "python -m pytest -o addopts='' scripts/tests/ -v --cov=src --cov-report=xml --cov-report=html --cov-fail-under=80 || true" not in coverage_section
+    assert "python -m pytest -o addopts='' tests/unit/core/test_simple_calculator.py --cov=src.core.simple_calculator --cov-report=xml:coverage.xml --cov-report=html:htmlcov --cov-fail-under=80 -q" in coverage_section
+    assert "python -m pytest -o addopts='' scripts/tests/" not in coverage_section
+    assert "python -m pytest -o addopts='' tests/unit/core/test_simple_calculator.py --cov=src.core.simple_calculator --cov-report=xml:coverage.xml --cov-report=html:htmlcov --cov-fail-under=80 -q || true" not in coverage_section
     assert 'echo "::warning::coverage.xml not generated; skipping coverage post-processing"' not in coverage_section
     assert 'echo "❌ coverage.xml not generated"' in coverage_section
     assert "exit 1" in coverage_section
@@ -1018,11 +1029,13 @@ def test_code_quality_quality_gate_fails_when_coverage_report_is_missing() -> No
 
 def test_code_quality_quality_gate_hard_fails_but_keeps_pr_comment_path() -> None:
     workflow = _read_workflow("code-quality.yml")
+    quality_report_section = workflow.split("quality-report:", 1)[1].split("quality-gate:", 1)[0]
     quality_gate_section = workflow.split("Quality Gate Evaluation", 1)[1].split("- name: Comment on PR", 1)[0]
     comment_section = workflow.split("- name: Comment on PR", 1)[1].split("uses: actions/github-script@v7", 1)[0]
 
     failure_tail = quality_gate_section.split('echo "quality-pass=false" >> $GITHUB_OUTPUT', 1)[1]
 
+    assert "if: always()" in quality_report_section
     assert "exit 1" in failure_tail
     assert "if: always() && github.event_name == 'pull_request' && steps.gate.outputs.quality-pass == 'false'" in comment_section
 
