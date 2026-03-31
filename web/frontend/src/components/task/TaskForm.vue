@@ -9,7 +9,7 @@
     </el-form-item>
 
     <el-form-item label="任务类型" prop="task_type">
-      <el-select v-model="formData.task_type" style="width: 100%">
+      <el-select v-model="formData.task_type" class="task-form-control">
         <el-option label="定时任务" value="cron" />
         <el-option label="进程管理" value="supervisor" />
         <el-option label="手动任务" value="manual" />
@@ -32,7 +32,7 @@
     </el-form-item>
 
     <el-form-item label="优先级" prop="priority">
-      <el-select v-model="formData.priority" style="width: 100%">
+      <el-select v-model="formData.priority" class="task-form-control">
         <el-option label="关键 (100)" :value="100" />
         <el-option label="高 (200)" :value="200" />
         <el-option label="普通 (500)" :value="500" />
@@ -44,7 +44,7 @@
     <el-divider content-position="left">调度配置</el-divider>
 
     <el-form-item label="调度类型">
-      <el-select v-model="scheduleType" style="width: 100%" @change="handleScheduleTypeChange">
+      <el-select v-model="scheduleType" class="task-form-control" @change="handleScheduleTypeChange">
         <el-option label="无调度（手动）" value="none" />
         <el-option label="Cron表达式" value="cron" />
         <el-option label="固定间隔" value="interval" />
@@ -54,7 +54,7 @@
 
     <el-form-item label="Cron表达式" v-if="scheduleType === 'cron'">
       <el-input v-model="formData.schedule.cron_expression" placeholder="如：0 0 * * *（每天零点）" />
-      <div style="margin-top: 8px; color: #909399; font-size: 12px">
+      <div class="task-form-hint">
         示例: 0 0 * * * (每天零点) | 0 * * * * (每小时) | */5 * * * * (每5分钟)
       </div>
     </el-form-item>
@@ -68,7 +68,7 @@
         v-model="formData.schedule.start_time"
         type="datetime"
         placeholder="选择开始时间"
-        style="width: 100%"
+        class="task-form-control"
       />
     </el-form-item>
 
@@ -77,12 +77,12 @@
     <el-row :gutter="16">
       <el-col :span="12">
         <el-form-item label="超时时间(秒)">
-          <el-input-number v-model="formData.timeout" :min="1" :max="86400" style="width: 100%" />
+          <el-input-number v-model="formData.timeout" :min="1" :max="86400" class="task-form-control" />
         </el-form-item>
       </el-col>
       <el-col :span="12">
         <el-form-item label="重试次数">
-          <el-input-number v-model="formData.retry_count" :min="0" :max="10" style="width: 100%" />
+          <el-input-number v-model="formData.retry_count" :min="0" :max="10" class="task-form-control" />
         </el-form-item>
       </el-col>
     </el-row>
@@ -90,7 +90,7 @@
     <el-row :gutter="16">
       <el-col :span="12">
         <el-form-item label="重试延迟(秒)">
-          <el-input-number v-model="formData.retry_delay" :min="1" :max="3600" style="width: 100%" />
+          <el-input-number v-model="formData.retry_delay" :min="1" :max="3600" class="task-form-control" />
         </el-form-item>
       </el-col>
       <el-col :span="12">
@@ -101,7 +101,7 @@
     </el-row>
 
     <el-form-item label="任务标签">
-      <el-select v-model="formData.tags" multiple filterable allow-create style="width: 100%">
+      <el-select v-model="formData.tags" multiple filterable allow-create class="task-form-control">
         <el-option label="每日" value="daily" />
         <el-option label="实时" value="realtime" />
         <el-option label="批处理" value="batch" />
@@ -234,6 +234,16 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped lang="scss">
+.task-form-control {
+  width: 100%;
+}
+
+.task-form-hint {
+  margin-top: var(--spacing-sm);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
+}
+
 :deep(.el-divider__text) {
   font-weight: 600;
   color: #409eff;
