@@ -11,7 +11,7 @@
         <h3>INTRODUCTION</h3>
         <p>Freqtrade is a free open source crypto trading bot written in Python, designed for the cryptocurrency market. It features a highly customizable strategy engine, complete backtesting framework and advanced machine learning support.</p>
 
-        <h3 style="margin-top: 30px;">CORE FEATURES</h3>
+        <h3 class="section-heading-spaced">CORE FEATURES</h3>
         <div class="features-grid">
           <el-card :hoverable="true">
             <h4>TRADING</h4>
@@ -58,15 +58,15 @@
           </el-card>
         </div>
 
-        <h3 style="margin-top: 30px;">SUPPORTED EXCHANGES</h3>
+        <h3 class="section-heading-spaced">SUPPORTED EXCHANGES</h3>
         <div class="exchange-list">
           <el-tag v-for="exchange in exchanges" :key="exchange" type="info">
             {{ exchange }}
           </el-tag>
         </div>
 
-        <h3 style="margin-top: 30px;">OFFICIAL RESOURCES</h3>
-        <ul style="margin-top: 10px; line-height: 1.8;">
+        <h3 class="section-heading-spaced">OFFICIAL RESOURCES</h3>
+        <ul class="resource-list">
           <li>Website: <el-link href="https://www.freqtrade.io" target="_blank" type="primary">https://www.freqtrade.io</el-link></li>
           <li>Docs: <el-link href="https://www.freqtrade.io/en/stable/" target="_blank" type="primary">https://www.freqtrade.io/en/stable/</el-link></li>
           <li>GitHub: <el-link href="https://github.com/freqtrade/freqtrade" target="_blank" type="primary">https://github.com/freqtrade/freqtrade</el-link></li>
@@ -84,3 +84,16 @@ defineProps<{
   exchanges: string[];
 }>()
 </script>
+
+<style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
+.section-heading-spaced {
+  margin-top: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-3) / 2);
+}
+
+.resource-list {
+  margin-top: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
+  line-height: 1.8;
+}
+</style>
