@@ -12,7 +12,7 @@
  * @example
  * const { connect, disconnect, subscribe, unsubscribe } = useWebSocket()
  * connect('/api/ws')
- * subscribe('market:realtime', (data) => console.log(data))
+ * subscribe('market:realtime', (data) => handleRealtimeMessage(data))
  */
 
 import { ref, computed, onMounted, onUnmounted } from 'vue'

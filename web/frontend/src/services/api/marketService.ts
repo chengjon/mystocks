@@ -308,7 +308,7 @@ class MarketApiService {
  *
  * // 获取市场概览
  * const overview = await marketService.getMarketOverview();
- * console.log(overview.market_index);
+ * inspect(overview.market_index);
  *
  * // 获取资金流向
  * const fundFlow = await marketService.getFundFlow({

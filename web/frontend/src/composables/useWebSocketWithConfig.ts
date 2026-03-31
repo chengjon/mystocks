@@ -12,12 +12,12 @@
  * @example
  * // 基础用法：根据路由名订阅
  * const { subscribeByRoute, unsubscribeByRoute } = useWebSocketWithConfig()
- * subscribeByRoute('market-realtime', (data) => console.log(data))
+ * subscribeByRoute('market-realtime', (data) => handleRealtimeMessage(data))
  *
  * @example
  * // 批量订阅所有WebSocket路由
  * const { subscribeAllWebSocketRoutes } = useWebSocketWithConfig()
- * subscribeAllWebSocketRoutes((data) => console.log(data))
+ * subscribeAllWebSocketRoutes((data) => handleRealtimeMessage(data))
  *
  * @see docs/architecture/FRONTEND_OPTIMIZATION_IMPLEMENTATION_PLAN_V2.md Phase 3
  */
@@ -97,7 +97,7 @@ export function useWebSocketWithConfig() {
    *
    * @example
    * const unsubscribe = subscribeByRoute('market-realtime', (data) => {
-   *   console.log('收到市场实时数据:', data)
+   *   handleRealtimeMessage(data)
    * })
    */
   const subscribeByRoute = (routeName: RouteName, callback: MessageCallback) => {
@@ -160,7 +160,7 @@ export function useWebSocketWithConfig() {
    *
    * @example
    * const unsubscribeAll = subscribeAllWebSocketRoutes((data) => {
-   *   console.log('收到WebSocket消息:', data)
+   *   handleRealtimeMessage(data)
    * })
    *
    * // 稍后取消所有订阅
@@ -197,7 +197,7 @@ export function useWebSocketWithConfig() {
    *
    * const unsubscribe = autoSubscribeByCurrentRoute(
    *   route.name as string,
-   *   (data) => console.log(data)
+   *   (data) => handleRealtimeMessage(data)
    * )
    */
   const autoSubscribeByCurrentRoute = (
@@ -230,7 +230,7 @@ export function useWebSocketWithConfig() {
    *
    * @example
    * const channelInfo = getRouteChannelInfo('market-realtime')
-   * console.log(channelInfo)
+   * inspect(channelInfo)
    * // { routeName: 'market-realtime', channel: 'market:realtime' }
    */
   const getRouteChannelInfo = (routeName: RouteName) => {
@@ -254,7 +254,7 @@ export function useWebSocketWithConfig() {
    *
    * @example
    * const allChannels = getAllWebSocketChannels()
-   * console.log(allChannels)
+   * inspect(allChannels)
    * // [
    * //   { routeName: 'market-realtime', channel: 'market:realtime', description: '...' },
    * //   { routeName: 'trading-signals', channel: 'trading:signals', description: '...' },
@@ -277,7 +277,7 @@ export function useWebSocketWithConfig() {
    *
    * @example
    * if (routeNeedsWebSocket('market-realtime')) {
-   *   console.log('需要WebSocket连接')
+   *   notify('需要WebSocket连接')
    * }
    */
   const routeNeedsWebSocket = (routeName: RouteName): boolean => {
@@ -351,7 +351,7 @@ export function useWebSocketWithConfig() {
  * const { autoSubscribeByCurrentRoute } = useWebSocketWithConfig()
  *
  * const handleMessage = (data: unknown) => {
- *   console.log('收到WebSocket消息:', data)
+ *   notifyRealtimeMessage(data)
  * }
  *
  * let unsubscribe: (() => void) | null = null

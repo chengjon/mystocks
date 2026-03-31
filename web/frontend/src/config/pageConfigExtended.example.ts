@@ -98,12 +98,12 @@ export function getExtendedPageConfig(routeName: string): ExtendedPageConfig | n
  *
  * // 方式1: 直接访问配置
  * const config = PAGE_CONFIG_EXTENDED['trading-status']
- * console.log(config.apiEndpoint)  // '/api/trading/status'
+ * inspect(config.apiEndpoint)  // '/api/trading/status'
  *
  * // 方式2: 使用辅助函数
  * const config = getExtendedPageConfig('trading-status')
  * if (config) {
- *   console.log(config.apiEndpoint)
+ *   inspect(config.apiEndpoint)
  * }
  *
  * // 方式3: 类型安全的访问
