@@ -28,7 +28,6 @@
           v-model="form.quantity"
           :min="100"
           :step="100"
-          style="width: 100%"
         />
       </el-form-item>
 
@@ -39,7 +38,6 @@
           :step="0.01"
           :precision="2"
           placeholder="MARKET PRICE"
-          style="width: 100%"
         />
       </el-form-item>
 
