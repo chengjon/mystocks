@@ -100,9 +100,9 @@ def filter_bottom_volume(df, lookback=60):
           </ArtDecoCard>
         </div>
 
-        <section class="composite-strategy" style="margin-top: var(--artdeco-spacing-8);">
+        <section class="composite-strategy composite-strategy-spaced">
           <ArtDecoHeader title="组合筛选示例" subtitle="COMPOSITE SCREENING EXAMPLE" />
-          <textarea readonly class="code-block" style="margin-top: var(--artdeco-spacing-4);">
+          <textarea readonly class="code-block code-block-spaced">
 def comprehensive_filter(stock_code):
     """
     综合筛选策略:
@@ -223,5 +223,13 @@ defineProps<{
   line-height: 1.5;
   resize: vertical;
   outline: none;
+}
+
+.composite-strategy-spaced {
+  margin-top: var(--artdeco-spacing-8);
+}
+
+.code-block-spaced {
+  margin-top: var(--artdeco-spacing-4);
 }
 </style>

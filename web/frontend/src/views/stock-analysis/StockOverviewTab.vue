@@ -12,7 +12,7 @@
       <h3 class="artdeco-sub-header">INTRODUCTION</h3>
       <p class="artdeco-body-text">Stock-Analysis is a Chinese A-share stock screening and backtesting system based on Tongdaxin data. It leverages Tongdaxin's powerful local data advantages combined with Python flexibility to provide efficient stock screening strategies and complete backtesting framework.</p>
 
-      <h3 class="artdeco-sub-header" style="margin-top: var(--artdeco-spacing-8);">CORE FEATURES</h3>
+      <h3 class="artdeco-sub-header section-heading-spaced">CORE FEATURES</h3>
       <div class="artdeco-grid-4 features-grid">
         <ArtDecoCard hoverable title="TONGDAXIN DATA PARSING" class="feature-item">
           <ul class="artdeco-list">
@@ -55,7 +55,7 @@
         </ArtDecoCard>
       </div>
 
-      <h3 class="artdeco-sub-header" style="margin-top: var(--artdeco-spacing-8);">TECHNICAL ARCHITECTURE</h3>
+      <h3 class="artdeco-sub-header section-heading-spaced">TECHNICAL ARCHITECTURE</h3>
       <div class="architecture-details">
         <el-descriptions :column="2" border class="descriptions artdeco-descriptions">
           <el-descriptions-item label="DATA SOURCE">Tongdaxin Local Data (.day/.lc1/.lc5)</el-descriptions-item>
@@ -67,15 +67,14 @@
         </el-descriptions>
       </div>
 
-      <h3 class="artdeco-sub-header" style="margin-top: var(--artdeco-spacing-8);">REPOSITORY</h3>
+      <h3 class="artdeco-sub-header section-heading-spaced">REPOSITORY</h3>
       <p class="artdeco-body-text">This project is a functional demonstration. The complete source code is available in the <code>stock-analysis/</code> directory.</p>
 
       <ArtDecoAlert
         type="success"
         message=""
-        style="margin-top: var(--artdeco-spacing-6);"
         :dismissible="false"
-        class="advantage-alert"
+        class="advantage-alert advantage-alert-spaced"
       >
         <template #title>
           <div class="alert-title">💡 项目优势</div>
@@ -191,6 +190,10 @@ defineProps<{
   }
 }
 
+.section-heading-spaced {
+  margin-top: var(--artdeco-spacing-8);
+}
+
 .advantage-alert {
   background: var(--artdeco-gold-opacity-05) !important;
   border-color: var(--artdeco-border-default) !important;
@@ -211,5 +214,9 @@ defineProps<{
       color: var(--artdeco-gold-light);
     }
   }
+}
+
+.advantage-alert-spaced {
+  margin-top: var(--artdeco-spacing-6);
 }
 </style>

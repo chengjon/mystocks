@@ -43,6 +43,8 @@ describe('stock-analysis style normalization', () => {
       'src/views/stock-analysis/StockBacktestTab.vue',
       'src/views/stock-analysis/StockRealtimeTab.vue',
       'src/views/stock-analysis/StockStatusTab.vue',
+      'src/views/stock-analysis/StockOverviewTab.vue',
+      'src/views/stock-analysis/StockStrategyTab.vue',
     ]
 
     for (const file of files) {
