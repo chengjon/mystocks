@@ -261,8 +261,6 @@ export class TypeValidator {
 
 // CLI interface for running validations
 export async function runValidation(): Promise<void> {
-  console.log('🔍 Running TypeScript type validation...\n');
-
   const result = await TypeValidator.validateTypeSystem();
 
   if (result.errors.length > 0) {
@@ -283,6 +281,4 @@ export async function runValidation(): Promise<void> {
     });
   }
 
-  console.log('✅ Type validation passed!');
-  console.log(`📊 Stats: ${result.stats.totalTypes} total types (${result.stats.coverage.toFixed(1)}% coverage)`);
 }
