@@ -89,6 +89,8 @@ jobs:
         POSTGRESQL_PASSWORD=testpassword
         POSTGRESQL_DATABASE=testdb
         JWT_SECRET_KEY=test_secret_key_for_ci_cd_purposes_only
+        BACKEND_PORT=8000
+        BACKEND_BACKUP_PORT=8001
         CORS_ORIGINS_STR=http://localhost:3000,http://localhost:8080
         DEBUG=true
         LOG_LEVEL=INFO

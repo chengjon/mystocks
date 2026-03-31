@@ -112,6 +112,14 @@ def test_api_compliance_workflow_avoids_unavailable_talib_system_packages_and_fi
     assert "python -m pip install -r /tmp/backend-requirements-ci.txt" in install_section
 
 
+def test_api_compliance_workflow_sets_backend_runtime_ports_in_env_file() -> None:
+    workflow = _read_workflow("api-compliance-testing.yml")
+    env_section = workflow.split("- name: Set up environment variables", 1)[1].split("- name: Wait for PostgreSQL", 1)[0]
+
+    assert "BACKEND_PORT=8000" in env_section
+    assert "BACKEND_BACKUP_PORT=8001" in env_section
+
+
 def test_api_compliance_pr_comment_is_non_blocking() -> None:
     workflow = _read_workflow("api-compliance-testing.yml")
     comment_section = workflow.split("- name: Comment PR with Results", 1)[1].split("- name: Update Badge", 1)[0]
