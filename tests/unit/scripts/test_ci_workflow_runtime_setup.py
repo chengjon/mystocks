@@ -91,7 +91,8 @@ def test_api_contract_validation_pr_comment_is_non_blocking() -> None:
 def test_api_compliance_workflow_uses_supported_actions_and_safe_python_matrix_expansion() -> None:
     workflow = _read_workflow("api-compliance-testing.yml")
 
-    assert "python-version: ['3.9', '3.10', '3.11']" in workflow
+    assert "python-version: ['3.10', '3.11']" in workflow
+    assert "python-version: ['3.9', '3.10', '3.11']" not in workflow
     assert "python-version: [3.9, 3.10, 3.11]" not in workflow
     assert "uses: actions/setup-python@v5" in workflow
     assert "uses: actions/cache@v4" in workflow
