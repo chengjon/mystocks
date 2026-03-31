@@ -41,7 +41,7 @@
 
 - work item creation
 - assignment / dispatch
-- claim / plan / submit
+- mark / update / request / transition
 - ready_for_review / verified / merged
 - worker progress percentage and review lifecycle
 
@@ -169,10 +169,61 @@ worker CLI 适合在这些时机调用 Graphiti MCP：
 worker 不应把以下内容只写入 Graphiti 而不写 Mongo：
 
 - 开工回执状态
-- plan item 完成状态
+- 进度更新与审批状态
 - ready_for_review 申请
 
 这些仍必须走 Mongo control plane。
+
+补充：
+
+- 相关 Graphiti smoke / shared CLI 在失败时会返回结构化 JSON，至少包含 `error_code` 与 `message`
+
+## Local Smoke Commands
+
+当前仓库里与 Graphiti 相关、已在本机环境验证过的命令：
+
+```bash
+python scripts/runtime/smoke_graphiti_cli.py \
+  --actor-cli cli-smoke \
+  --group-id mystocks_spec_smoke \
+  --name "Smoke Memory" \
+  --body "Graphiti smoke body" \
+  --query "Smoke Memory"
+
+python scripts/runtime/smoke_graphiti_preflight.py --actor-cli cli-preflight
+```
+
+预期：
+
+- `smoke_graphiti_cli.py` 成功时返回 remember/search 的结构化 JSON 摘要
+- `smoke_graphiti_preflight.py --actor-cli cli-preflight` 成功时返回 `server_status=ok`
+- 若外部命令失败、无输出或返回非法 JSON，脚本会返回带 `error_code` 与 `message` 的结构化 JSON
+
+### One-Command Repo-Local Acceptance
+
+若需要把 Graphiti preflight 放回完整的 repo-local 协作验收链，而不是单独跑 smoke，统一使用：
+
+```bash
+python scripts/runtime/run_local_maestro_acceptance.sh
+```
+
+这条一键验收会顺序执行：
+
+- `python scripts/runtime/coordctl.py work list --output json`
+- `python scripts/runtime/smoke_mongo_multicli.py`
+- `python scripts/runtime/smoke_graphiti_preflight.py --actor-cli cli-preflight`
+- `python scripts/runtime/export_collab_snapshots.py --output-dir /tmp/mongo-collab-snapshots-codex`
+
+其中 Graphiti 相关的核心验收物是：
+
+- `/tmp/maestro_graphiti_preflight.json`
+- `/tmp/mongo-collab-snapshots-codex`
+
+推荐使用场景：
+
+- 交付前确认 Mongo control plane 与 Graphiti preflight 仍然协同一致
+- cleanup / convergence 收尾时提供可复跑证据
+- 排查 “单个 Graphiti smoke 能过，但整条本地协作链未验证” 的情况
 
 ## Graphiti API Status
 
