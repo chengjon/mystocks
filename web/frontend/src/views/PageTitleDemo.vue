@@ -9,7 +9,7 @@
         <div class="demo-section">
             <h2>1. 基本标题设置</h2>
             <div class="demo-controls">
-                <el-input v-model="basicTitle" placeholder="输入标题" style="width: 300px" />
+                <el-input v-model="basicTitle" placeholder="输入标题" class="demo-input-300" />
                 <el-button @click="setBasicTitle" type="primary">设置标题</el-button>
                 <el-button @click="resetTitle" type="warning">重置标题</el-button>
             </div>
@@ -25,7 +25,7 @@
                 <el-input
                     v-model="template"
                     placeholder="输入模板，如: {{user.username}}的{{data.type}}页面"
-                    style="width: 400px"
+                    class="demo-input-400"
                 />
                 <el-button @click="generateDynamicTitle" type="primary">生成标题</el-button>
             </div>
@@ -41,20 +41,20 @@
                 <el-input
                     v-model="metaDescription"
                     placeholder="输入页面描述"
-                    style="width: 400px; margin-bottom: 10px"
+                    class="demo-input-400 demo-input-with-gap"
                 />
                 <br />
                 <el-input
                     v-model="metaKeywords"
                     placeholder="输入关键词，用逗号分隔"
-                    style="width: 400px; margin-bottom: 10px"
+                    class="demo-input-400 demo-input-with-gap"
                 />
                 <br />
                 <el-button @click="setMetaTags" type="primary">设置Meta标签</el-button>
             </div>
             <div class="demo-result">
                 <strong>当前Meta:</strong>
-                <div style="margin-top: 10px">
+                <div class="demo-result-spacer">
                     <div>
                         <strong>Description:</strong>
                         {{ currentMeta.description || '未设置' }}
@@ -70,8 +70,8 @@
         <div class="demo-section">
             <h2>4. 数据驱动标题更新</h2>
             <div class="demo-controls">
-                <el-input v-model="stockSymbol" placeholder="输入股票代码" style="width: 200px; margin-right: 10px" />
-                <el-input v-model="stockName" placeholder="输入股票名称" style="width: 200px; margin-right: 10px" />
+                <el-input v-model="stockSymbol" placeholder="输入股票代码" class="demo-stock-input" />
+                <el-input v-model="stockName" placeholder="输入股票名称" class="demo-stock-input" />
                 <el-button @click="updateFromData" type="primary">基于数据更新标题</el-button>
             </div>
             <div class="demo-result">
@@ -83,7 +83,7 @@
         <div class="demo-section">
             <h2>5. 预定义模板</h2>
             <div class="demo-controls">
-                <el-select v-model="selectedTemplate" placeholder="选择预定义模板" style="width: 300px">
+                <el-select v-model="selectedTemplate" placeholder="选择预定义模板" class="demo-input-300">
                     <el-option
                         v-for="(template, _idx) in templateOptions"
                         :key="template.value"
@@ -102,11 +102,11 @@
         <div class="demo-section">
             <h2>6. SEO优化设置</h2>
             <div class="demo-controls">
-                <el-input v-model="seoTitle" placeholder="SEO标题" style="width: 300px; margin-bottom: 10px" />
+                <el-input v-model="seoTitle" placeholder="SEO标题" class="demo-input-300 demo-input-with-gap" />
                 <br />
-                <el-input v-model="seoDescription" placeholder="SEO描述" style="width: 300px; margin-bottom: 10px" />
+                <el-input v-model="seoDescription" placeholder="SEO描述" class="demo-input-300 demo-input-with-gap" />
                 <br />
-                <el-input v-model="seoImage" placeholder="图片URL (可选)" style="width: 300px; margin-bottom: 10px" />
+                <el-input v-model="seoImage" placeholder="图片URL (可选)" class="demo-input-300 demo-input-with-gap" />
                 <br />
                 <el-button @click="setSEOOptimized" type="primary">设置SEO优化</el-button>
             </div>
@@ -321,6 +321,27 @@
         }
     }
 
+    .demo-input-300 {
+        width: 300px;
+    }
+
+    .demo-input-400 {
+        width: 400px;
+    }
+
+    .demo-input-with-gap {
+        margin-bottom: 10px;
+    }
+
+    .demo-result-spacer {
+        margin-top: 10px;
+    }
+
+    .demo-stock-input {
+        width: 200px;
+        margin-right: 10px;
+    }
+
     .history-item {
         display: flex;
         align-items: center;
@@ -375,8 +396,14 @@
             flex-direction: column;
             align-items: stretch;
 
-            .el-input {
+            .demo-input-300,
+            .demo-input-400,
+            .demo-stock-input {
                 width: 100% !important;
+            }
+
+            .demo-stock-input {
+                margin-right: 0;
             }
 
             .el-button {
