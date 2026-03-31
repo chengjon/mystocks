@@ -633,6 +633,14 @@ def test_frontend_testing_uses_pr_head_sha_for_pull_request_diff_scope() -> None
     assert 'git diff --name-only "$BASE_SHA" "${{ github.sha }}"' not in workflow
 
 
+def test_code_quality_uses_pr_head_sha_for_pull_request_diff_scope() -> None:
+    workflow = _read_workflow("code-quality.yml")
+
+    assert 'HEAD_SHA="${{ github.event.pull_request.head.sha }}"' in workflow
+    assert 'git diff --name-only "$BASE_SHA" "$HEAD_SHA"' in workflow
+    assert 'git diff --name-only "$BASE_SHA" "${{ github.sha }}"' not in workflow
+
+
 def test_frontend_testing_skips_frontend_test_job_when_no_frontend_scope_changed() -> None:
     workflow = _read_workflow("frontend-testing.yml")
     frontend_test_section = workflow.split("frontend-test:", 1)[1].split("frontend-security:", 1)[0]

@@ -42,14 +42,16 @@ jobs:
       run: |
         if [ "${{ github.event_name }}" = "pull_request" ]; then
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
         else
           BASE_SHA="${{ github.event.before }}"
+          HEAD_SHA="${{ github.sha }}"
         fi
 
         if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
           mapfile -t changed_files < <(git ls-files)
         else
-          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
         fi
 
         if [ "${#changed_files[@]}" -eq 0 ]; then
@@ -82,14 +84,16 @@ jobs:
       run: |
         if [ "${{ github.event_name }}" = "pull_request" ]; then
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
         else
           BASE_SHA="${{ github.event.before }}"
+          HEAD_SHA="${{ github.sha }}"
         fi
 
         if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
           mapfile -t changed_files < <(git ls-files)
         else
-          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
         fi
 
         cmd=(python scripts/compliance/production_python_guardrails.py --format json)
@@ -150,14 +154,16 @@ jobs:
       run: |
         if [ "${{ github.event_name }}" = "pull_request" ]; then
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
         else
           BASE_SHA="${{ github.event.before }}"
+          HEAD_SHA="${{ github.sha }}"
         fi
 
         if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
           mapfile -t changed_files < <(git ls-files)
         else
-          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
         fi
 
         cmd=(python scripts/compliance/backend_singleton_none_guard.py --format json --root-dir "$PWD")
@@ -196,14 +202,16 @@ jobs:
       run: |
         if [ "${{ github.event_name }}" = "pull_request" ]; then
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
         else
           BASE_SHA="${{ github.event.before }}"
+          HEAD_SHA="${{ github.sha }}"
         fi
 
         if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
-          mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "${{ github.sha }}")
+          mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "$HEAD_SHA")
         else
-          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
         fi
 
         cmd=(python scripts/compliance/unified_response_contract_guard.py --format json --root-dir "$PWD")
@@ -242,14 +250,16 @@ jobs:
       run: |
         if [ "${{ github.event_name }}" = "pull_request" ]; then
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
         else
           BASE_SHA="${{ github.event.before }}"
+          HEAD_SHA="${{ github.sha }}"
         fi
 
         if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
-          mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "${{ github.sha }}")
+          mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "$HEAD_SHA")
         else
-          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
         fi
 
         cmd=(python scripts/compliance/file_size_guardrail.py --format json --root-dir "$PWD" --scope-root web/frontend --scope-root tests)
@@ -287,14 +297,16 @@ jobs:
       run: |
         if [ "${{ github.event_name }}" = "pull_request" ]; then
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
         else
           BASE_SHA="${{ github.event.before }}"
+          HEAD_SHA="${{ github.sha }}"
         fi
 
         if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
-          mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "${{ github.sha }}")
+          mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "$HEAD_SHA")
         else
-          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}")
+          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
         fi
 
         cmd=(python scripts/compliance/pm2_first_class_gate.py --format json --root-dir "$PWD")
