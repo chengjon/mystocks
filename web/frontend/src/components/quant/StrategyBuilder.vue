@@ -114,7 +114,7 @@
     </el-card>
 
     <!-- 结果展示 -->
-    <el-card v-if="hasResults" class="results-card" style="margin-top: 20px;">
+    <el-card v-if="hasResults" class="results-card strategy-results-offset">
       <template #header>
         <span class="title">📈 回测结果</span>
       </template>
@@ -155,7 +155,7 @@
 
         <!-- 交易记录 -->
         <el-tab-pane label="交易记录" name="trades">
-          <el-table :data="trades" stripe style="width: 100%">
+          <el-table :data="trades" stripe class="strategy-trades-table">
             <el-table-column prop="date" label="日期" width="120"></el-table-column>
             <el-table-column prop="symbol" label="股票" width="100"></el-table-column>
             <el-table-column prop="action" label="操作" width="80">
@@ -179,7 +179,7 @@
 
         <!-- 图表 -->
         <el-tab-pane label="可视化" name="charts">
-          <div ref="chartContainer" style="width: 100%; height: 500px;"></div>
+          <div ref="chartContainer" class="strategy-chart-container"></div>
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -343,6 +343,19 @@ const handleRunStrategy = async () => {
 
 .results-card {
   animation: fade-in 0.5s;
+}
+
+.strategy-results-offset {
+  margin-top: calc(var(--spacing-md) + var(--spacing-xs));
+}
+
+.strategy-trades-table {
+  width: 100%;
+}
+
+.strategy-chart-container {
+  width: 100%;
+  height: calc(var(--spacing-3xl) * 7 + var(--spacing-xl) + var(--spacing-md) + var(--spacing-xs));
 }
 
 @keyframes fade-in {
