@@ -17,9 +17,9 @@
             </div>
             <div class="valuation-scale">
                 <div class="scale-track">
-                    <div class="marker undervaluated" style="left: 25%">低估</div>
-                    <div class="marker fair" style="left: 50%">合理</div>
-                    <div class="marker overvaluated" style="left: 75%">高估</div>
+                    <div class="marker undervaluated">低估</div>
+                    <div class="marker fair">合理</div>
+                    <div class="marker overvaluated">高估</div>
                     <div class="pointer" :style="{ left: getPegPosition(peg) + '%' }"></div>
                 </div>
             </div>
@@ -80,6 +80,19 @@ function getPegPosition(v) {
       font-size: calc(var(--artdeco-spacing-5) / 2);
       transform: translateX(-50%);
     }
+
+    .marker.undervaluated {
+      left: 25%;
+    }
+
+    .marker.fair {
+      left: 50%;
+    }
+
+    .marker.overvaluated {
+      left: 75%;
+    }
+
     .pointer {
         position: absolute;
         top: calc(var(--artdeco-spacing-5) / -4);
