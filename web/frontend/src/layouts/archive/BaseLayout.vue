@@ -212,15 +212,12 @@ const openCommandPalette = () => {
 }
 
 const onCommandPaletteOpen = () => {
-  console.log('Command Palette opened')
 }
 
 const onCommandPaletteClose = () => {
-  console.log('Command Palette closed')
 }
 
-const onCommandPaletteNavigate = (path: string) => {
-  console.log('Navigated to:', path)
+const onCommandPaletteNavigate = (_path: string) => {
 }
 
 // ============================================
@@ -256,8 +253,6 @@ const fetchItemData = async (item: MenuItem) => {
     return null
   }
 
-  console.log(`[BaseLayout] Fetching data for: ${item.label} from ${item.apiEndpoint}`)
-
   try {
     // 使用fetchMenuItemData服务获取数据
     const result = await fetchMenuItemData(item, {
@@ -267,8 +262,6 @@ const fetchItemData = async (item: MenuItem) => {
     })
 
     if (result.success) {
-      console.log(`[BaseLayout] Successfully fetched data for: ${item.label}`)
-
       // 更新MenuItem的lastUpdate时间戳
       if (result.cached === false) {
         item.lastUpdate = Math.floor(Date.now() / 1000)
@@ -292,8 +285,6 @@ const handleNavigationError = (event: Event, item: MenuItem) => {
 }
 
 const retryApiCall = async (item: MenuItem) => {
-  console.log('Retrying API call for:', item.label);
-
   try {
     // 清除该菜单项的缓存
     clearMenuDataCache(item.apiEndpoint)
