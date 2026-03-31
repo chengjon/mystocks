@@ -24,7 +24,7 @@
             <el-icon><Clock /></el-icon>
             {{ formatSchedule(row.schedule) }}
           </span>
-          <span v-else style="color: #909399">手动</span>
+          <span v-else class="schedule-manual">手动</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" width="100">
@@ -175,6 +175,10 @@ const formatSchedule = (schedule) => {
 
 <style scoped lang="scss">
 .task-table {
+  .schedule-manual {
+    color: var(--color-text-tertiary);
+  }
+
   :deep(.el-button) {
     margin-left: 0;
     margin-right: 4px;
