@@ -11,7 +11,7 @@
         <h3>🎯 策略结构</h3>
         <p>Freqtrade 策略基于 IStrategy 接口,主要包含以下核心方法:</p>
 
-        <el-tabs type="border-card" style="margin-top: 20px;">
+        <el-tabs type="border-card" class="strategy-tabs-offset">
           <el-tab-pane name="basic-strategy" label="基础策略示例">
             <pre v-pre class="code-block">from freqtrade.strategy import IStrategy
 from pandas import DataFrame
@@ -94,7 +94,7 @@ class FreqAIStrategy(IStrategy):
           </el-tab-pane>
 
           <el-tab-pane name="common-indicators" label="常用技术指标">
-            <div style="padding: 15px;">
+            <div class="strategy-indicators-panel">
               <h4>TECHNICAL INDICATORS</h4>
               <div class="indicators-grid">
                 <div class="indicator-category">
@@ -133,9 +133,9 @@ class FreqAIStrategy(IStrategy):
           type="warning"
           title="⚠️ 策略开发注意事项"
           :closable="false"
-          style="margin-top: 20px;"
+          class="strategy-warning-alert"
         >
-          <ul style="margin-top: 10px;">
+          <ul class="strategy-warning-list">
             <li><strong>过拟合风险</strong>: 避免策略过度优化历史数据,导致实盘表现不佳</li>
             <li><strong>滑点和手续费</strong>: 回测时务必考虑交易成本</li>
             <li><strong>样本外测试</strong>: 使用未参与优化的数据进行验证</li>
@@ -152,3 +152,20 @@ class FreqAIStrategy(IStrategy):
 <script setup lang="ts">
 defineProps<{ activeTab: string }>()
 </script>
+
+<style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
+.strategy-tabs-offset,
+.strategy-warning-alert {
+  margin-top: var(--artdeco-spacing-5);
+}
+
+.strategy-indicators-panel {
+  padding: calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-px) * 5);
+}
+
+.strategy-warning-list {
+  margin-top: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
+}
+</style>
