@@ -11,7 +11,7 @@
         <h3>📝 配置文件结构</h3>
         <p>Freqtrade 使用 JSON 格式配置文件 (config.json):</p>
 
-        <el-tabs type="border-card" style="margin-top: 20px;">
+        <el-tabs type="border-card" class="config-tabs-offset">
           <el-tab-pane name="base-config" label="基础配置">
             <pre v-pre class="code-block">{
   "max_open_trades": 3,
@@ -101,8 +101,8 @@
           </el-tab-pane>
         </el-tabs>
 
-        <h3 style="margin-top: 30px;">🔑 关键配置参数说明</h3>
-        <el-descriptions :column="1" border style="margin-top: 15px;">
+        <h3 class="config-section-heading">🔑 关键配置参数说明</h3>
+        <el-descriptions :column="1" border class="config-descriptions">
           <el-descriptions-item label="max_open_trades">
             最大同时持仓数量,控制风险分散
           </el-descriptions-item>
@@ -131,3 +131,19 @@
 <script setup lang="ts">
 defineProps<{ activeTab: string }>()
 </script>
+
+<style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
+.config-tabs-offset {
+  margin-top: var(--artdeco-spacing-5);
+}
+
+.config-section-heading {
+  margin-top: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-3) / 2);
+}
+
+.config-descriptions {
+  margin-top: calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-1) - var(--artdeco-spacing-px));
+}
+</style>
