@@ -14,7 +14,7 @@
           <ArtDecoHeader title="通达信数据文件格式" subtitle="DATA FILE FORMATS" />
           <p class="description">通达信将股票数据存储为二进制文件, 不同周期对应不同的文件扩展名:</p>
 
-          <el-table :data="fileFormatData" class="obsidian-table" style="margin-top: var(--artdeco-spacing-4);">
+          <el-table :data="fileFormatData" class="obsidian-table data-table-spaced">
             <el-table-column prop="type" label="数据类型" width="120" />
             <el-table-column prop="extension" label="文件扩展名" width="120" />
             <el-table-column prop="recordSize" label="记录大小" width="120" />
@@ -26,7 +26,7 @@
           <ArtDecoHeader title="日线数据结构 (.day 文件)" subtitle="DAILY DATA STRUCTURE" />
           <p class="description">每条日K线记录占用 32 字节, 结构如下:</p>
 
-          <el-table :data="dayStructureData" class="obsidian-table" style="margin-top: var(--artdeco-spacing-4);">
+          <el-table :data="dayStructureData" class="obsidian-table data-table-spaced">
             <el-table-column prop="offset" label="偏移量" width="100" />
             <el-table-column prop="size" label="字节数" width="100" />
             <el-table-column prop="type" label="数据类型" width="120" />
@@ -37,7 +37,7 @@
 
         <section class="data-group">
           <ArtDecoHeader title="数据解析代码示例" subtitle="CODE EXAMPLES" />
-          <el-tabs type="border-card" class="artdeco-tabs" style="margin-top: var(--artdeco-spacing-4);">
+          <el-tabs type="border-card" class="artdeco-tabs tabs-spaced">
             <el-tab-pane label="日线数据解析" name="daily">
               <textarea readonly class="code-block" v-text="dayParserCode"></textarea>
             </el-tab-pane>
@@ -143,8 +143,7 @@ print(f"深圳市场: {len(sz_stocks)} 只股票")</textarea>
           type="warning"
           title="⚠️ 注意事项"
           :closable="false"
-          class="artdeco-alert"
-          style="margin-top: var(--artdeco-spacing-6);"
+          class="artdeco-alert artdeco-alert-spaced"
         >
           <ul class="alert-list">
             <li><strong>数据路径</strong>: 需要正确配置通达信数据目录路径</li>
@@ -238,6 +237,15 @@ const { activeTab, fileFormatData, dayStructureData, dayParserCode } = props
     text-transform: uppercase;
     letter-spacing: var(--artdeco-tracking-wider);
   }
+}
+
+.data-table-spaced,
+.tabs-spaced {
+  margin-top: var(--artdeco-spacing-4);
+}
+
+.artdeco-alert-spaced {
+  margin-top: var(--artdeco-spacing-6);
 }
 
 .artdeco-tabs {

@@ -41,6 +41,7 @@ describe('stock-analysis style normalization', () => {
   it('moves static ArtDeco token inline styles into CSS classes for stock analysis tabs', () => {
     const files = [
       'src/views/stock-analysis/StockBacktestTab.vue',
+      'src/views/stock-analysis/StockDataTab.vue',
       'src/views/stock-analysis/StockRealtimeTab.vue',
       'src/views/stock-analysis/StockStatusTab.vue',
       'src/views/stock-analysis/StockOverviewTab.vue',
