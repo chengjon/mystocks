@@ -230,7 +230,7 @@
                     
                     <template v-if="loading.market">
                         <ArtDecoSkeleton variant="text" width="100%" height="40px" />
-                        <ArtDecoSkeleton variant="text" width="100%" height="40px" style="margin-top: 10px;" />
+                        <ArtDecoSkeleton variant="text" width="100%" height="40px" class="dashboard-skeleton-offset" />
                     </template>
                     <template v-else>
                         <ArtDecoStatCard
@@ -283,7 +283,7 @@
         <div class="content-grid">
             <!-- Market Heat Map -->
             <ArtDecoCard title="市场热度板块" hoverable class="heat-map-card">
-                <section class="heatmap-section" style="height: 300px;">
+                <section class="heatmap-section dashboard-heatmap-panel">
                     <template v-if="loading.industry">
                          <div class="skeleton-chart" style="height: 100%; display: flex; align-items: center; justify-content: center;">
                              <ArtDecoSkeleton variant="rect" width="90%" height="90%" />
@@ -300,7 +300,7 @@
             </ArtDecoCard>
 
             <ArtDecoCard title="资金流向热力图" hoverable class="capital-heatmap-card">
-                <section class="heatmap-section" style="height: 300px;">
+                <section class="heatmap-section dashboard-heatmap-panel">
                     <ArtDecoChart
                         :option="capitalFlowHeatmapOption"
                         :loading="loading.fundFlow"
@@ -310,7 +310,7 @@
             </ArtDecoCard>
 
             <ArtDecoCard title="行业轮动雷达" hoverable class="sector-radar-card">
-                <section class="heatmap-section" style="height: 300px;">
+                <section class="heatmap-section dashboard-heatmap-panel">
                     <ArtDecoChart
                         :option="sectorRotationRadarOption"
                         :loading="loading.industry"

@@ -128,6 +128,14 @@
     gap: var(--artdeco-dense-gap-sm);
 }
 
+.dashboard-skeleton-offset {
+    margin-top: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
+}
+
+.dashboard-heatmap-panel {
+    height: calc(var(--artdeco-spacing-20) * 3 + var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
+}
+
 .heat-map-card,
 .long-hu-bang-card,      // 新增: 龙虎榜卡片
 .block-trading-card,    // 新增: 大宗交易卡片
