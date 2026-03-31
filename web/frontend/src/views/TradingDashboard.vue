@@ -131,7 +131,7 @@
                     <!-- 策略性能表格 -->
                     <div class="strategy-performance">
                         <h4>策略性能监控</h4>
-                        <el-table :data="strategyPerformance" stripe style="width: 100%">
+                        <el-table :data="strategyPerformance" stripe class="strategy-performance-table">
                             <el-table-column prop="strategy_name" label="策略名称" width="150"></el-table-column>
                             <el-table-column prop="status" label="状态" width="100">
                                 <template #default="scope">

@@ -104,8 +104,7 @@
                 <el-table
                     v-if="viewMode === 'table'"
                     :data="paginatedStocks"
-                    class="watchlist-table"
-                    style="width: 100%"
+                    class="watchlist-table watchlist-table-full"
                 >
                     <el-table-column prop="symbol" label="Symbol" width="120">
                         <template #default="{ row }">

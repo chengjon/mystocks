@@ -168,6 +168,10 @@
         color: #303133;
     }
 
+    .strategy-performance-table {
+        width: 100%;
+    }
+
     .performance-metrics {
         display: flex;
         flex-wrap: wrap;
