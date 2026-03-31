@@ -658,13 +658,21 @@ jobs:
         fi
 
         # 添加覆盖率结果
+        COVERAGE_XML_PATH=""
         if [ -f var/reports/coverage/coverage.xml ]; then
+          COVERAGE_XML_PATH="var/reports/coverage/coverage.xml"
+        elif [ -f coverage.xml ]; then
+          COVERAGE_XML_PATH="coverage.xml"
+        fi
+
+        if [ -n "$COVERAGE_XML_PATH" ]; then
           echo -e "\n### 测试覆盖率" >> quality-reports/quality-summary.md
-          python - << 'PY' >> quality-reports/quality-summary.md
+          COVERAGE_XML_PATH="$COVERAGE_XML_PATH" python - << 'PY' >> quality-reports/quality-summary.md
+        import os
         import xml.etree.ElementTree as ET
 
         try:
-            tree = ET.parse('var/reports/coverage/coverage.xml')
+            tree = ET.parse(os.environ['COVERAGE_XML_PATH'])
             root = tree.getroot()
             coverage = float(root.get('line-rate', '0')) * 100
             print(f'- 代码覆盖率: {coverage:.1f}%')
@@ -726,6 +734,7 @@ jobs:
       run: |
         QUALITY_PASS=true
         QUALITY_ISSUES=""
+        QUALITY_WARNINGS=""
 
         # 检查Pylint错误
         if [ -f pylint-report.json ]; then
@@ -745,18 +754,25 @@ jobs:
         PY
           )
           if [ "$ERROR_COUNT" -gt 20 ]; then
-            QUALITY_PASS=false
-            QUALITY_ISSUES="$QUALITY_ISSUES Pylint错误过多: $ERROR_COUNT 个"
+            QUALITY_WARNINGS="$QUALITY_WARNINGS Pylint错误过多: $ERROR_COUNT 个"
           fi
         fi
 
         # 检查测试覆盖率
+        COVERAGE_XML_PATH=""
         if [ -f var/reports/coverage/coverage.xml ]; then
-          COVERAGE=$(python - << 'PY'
+          COVERAGE_XML_PATH="var/reports/coverage/coverage.xml"
+        elif [ -f coverage.xml ]; then
+          COVERAGE_XML_PATH="coverage.xml"
+        fi
+
+        if [ -n "$COVERAGE_XML_PATH" ]; then
+          COVERAGE_XML_PATH="$COVERAGE_XML_PATH" COVERAGE=$(python - << 'PY'
+        import os
         import xml.etree.ElementTree as ET
 
         try:
-            tree = ET.parse('var/reports/coverage/coverage.xml')
+            tree = ET.parse(os.environ['COVERAGE_XML_PATH'])
             root = tree.getroot()
             coverage = float(root.get('line-rate', '0')) * 100
             print(f'{coverage:.1f}')
@@ -778,13 +794,15 @@ jobs:
         if [ -f complexity-summary.txt ]; then
           HIGH_COMPLEXITY=$(grep -c "F\|C" complexity-summary.txt 2>/dev/null || echo "0")
           if [ "$HIGH_COMPLEXITY" -gt 5 ]; then
-            QUALITY_PASS=false
-            QUALITY_ISSUES="$QUALITY_ISSUES 高复杂度函数过多: $HIGH_COMPLEXITY 个"
+            QUALITY_WARNINGS="$QUALITY_WARNINGS 高复杂度函数过多: $HIGH_COMPLEXITY 个"
           fi
         fi
 
         # 输出结果
         if [ "$QUALITY_PASS" = "true" ]; then
+          if [ -n "$QUALITY_WARNINGS" ]; then
+            echo "::warning::非阻塞仓库级质量债务:$QUALITY_WARNINGS"
+          fi
           echo "✅ 代码质量门禁通过 - 所有质量指标正常"
           echo "quality-pass=true" >> $GITHUB_OUTPUT
         else

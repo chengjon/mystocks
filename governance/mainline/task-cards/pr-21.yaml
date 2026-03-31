@@ -50,7 +50,7 @@ non_goals:
 acceptance:
   checks:
     - id: "workflow-runtime-tests"
-      command: "python -m pytest tests/unit/scripts/test_ci_workflow_runtime_setup.py -q -o addopts='' -k \"api_compliance_workflow_uses_supported_actions_and_safe_python_matrix_expansion or api_compliance_workflow_avoids_unavailable_talib_system_packages_and_filters_backend_requirements or code_quality_workflow_keeps_coverage_generation_as_a_real_gate or code_quality_workflow_uses_ci_safe_calculator_coverage_sentinel or code_quality_workflow_uses_canonical_coverage_artifact_paths or code_quality_quality_gate_fails_when_coverage_report_is_missing or code_quality_quality_gate_hard_fails_but_keeps_pr_comment_path\""
+      command: "python -m pytest tests/unit/scripts/test_ci_workflow_runtime_setup.py -q -o addopts='' -k \"api_compliance_workflow_uses_supported_actions_and_safe_python_matrix_expansion or api_compliance_workflow_avoids_unavailable_talib_system_packages_and_filters_backend_requirements or code_quality_workflow_keeps_coverage_generation_as_a_real_gate or code_quality_workflow_uses_ci_safe_calculator_coverage_sentinel or code_quality_workflow_uses_canonical_coverage_artifact_paths or code_quality_quality_gate_keeps_legacy_repo_wide_pylint_and_complexity_non_blocking or code_quality_quality_gate_fails_when_coverage_report_is_missing or code_quality_quality_gate_hard_fails_but_keeps_pr_comment_path\""
       required: true
     - id: "frontend-workflow-tests"
       command: "npx vitest run tests/unit/workflows/ci-workflow-gates.spec.ts"

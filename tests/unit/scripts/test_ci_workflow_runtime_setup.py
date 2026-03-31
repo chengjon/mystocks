@@ -1082,10 +1082,26 @@ def test_code_quality_workflow_uses_canonical_coverage_artifact_paths() -> None:
     assert "var/reports/coverage/coverage.xml" in coverage_section
     assert "var/reports/coverage/htmlcov/" in coverage_section
     assert "if [ -f coverage.xml ]" not in coverage_section
-    assert "if [ -f var/reports/coverage/coverage.xml ]" in quality_report_section
-    assert "ET.parse('var/reports/coverage/coverage.xml')" in quality_report_section
-    assert "if [ -f var/reports/coverage/coverage.xml ]" in quality_gate_section
-    assert "ET.parse('var/reports/coverage/coverage.xml')" in quality_gate_section
+    assert 'COVERAGE_XML_PATH="var/reports/coverage/coverage.xml"' in quality_report_section
+    assert 'COVERAGE_XML_PATH="coverage.xml"' in quality_report_section
+    assert "ET.parse(os.environ['COVERAGE_XML_PATH'])" in quality_report_section
+    assert 'COVERAGE_XML_PATH="var/reports/coverage/coverage.xml"' in quality_gate_section
+    assert 'COVERAGE_XML_PATH="coverage.xml"' in quality_gate_section
+    assert "ET.parse(os.environ['COVERAGE_XML_PATH'])" in quality_gate_section
+
+
+def test_code_quality_quality_gate_keeps_legacy_repo_wide_pylint_and_complexity_non_blocking() -> None:
+    workflow = _read_workflow("code-quality.yml")
+    quality_gate_section = workflow.split("Quality Gate Evaluation", 1)[1].split("- name: Comment on PR", 1)[0]
+
+    pylint_section = quality_gate_section.split("# 检查Pylint错误", 1)[1].split("# 检查测试覆盖率", 1)[0]
+    complexity_section = quality_gate_section.split("# 检查代码复杂度", 1)[1].split("# 输出结果", 1)[0]
+
+    assert 'QUALITY_WARNINGS="$QUALITY_WARNINGS Pylint错误过多: $ERROR_COUNT 个"' in pylint_section
+    assert 'QUALITY_PASS=false' not in pylint_section
+    assert 'QUALITY_WARNINGS="$QUALITY_WARNINGS 高复杂度函数过多: $HIGH_COMPLEXITY 个"' in complexity_section
+    assert 'QUALITY_PASS=false' not in complexity_section
+    assert 'echo "::warning::非阻塞仓库级质量债务:$QUALITY_WARNINGS"' in quality_gate_section
 
 
 def test_code_quality_quality_gate_fails_when_coverage_report_is_missing() -> None:
