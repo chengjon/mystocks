@@ -95,7 +95,7 @@
                                 <ArtDecoStatCard label="减持评级" :value="institutionData.reduceRating.count" variant="fall" />
                             </div>
                         </ArtDecoCard>
-                        <ArtDecoCard title="最新机构评级" hoverable style="margin-top: 24px;">
+                        <ArtDecoCard title="最新机构评级" hoverable class="tab-card-offset">
                             <ArtDecoTable :data="latestRatings" :columns="ratingColumns" />
                         </ArtDecoCard>
                     </div>
@@ -112,7 +112,7 @@
                                 </div>
                             </div>
                         </ArtDecoCard>
-                        <ArtDecoCard v-if="wencaiResults.length" title="搜索结果" style="margin-top: 24px;">
+                        <ArtDecoCard v-if="wencaiResults.length" title="搜索结果" class="tab-card-offset">
                             <ArtDecoTable :data="wencaiResults" :columns="wencaiColumns" />
                         </ArtDecoCard>
                     </div>
@@ -328,6 +328,10 @@ watch(activeTab, refreshData)
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
+}
+
+.tab-card-offset {
+    margin-top: var(--artdeco-spacing-6);
 }
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
