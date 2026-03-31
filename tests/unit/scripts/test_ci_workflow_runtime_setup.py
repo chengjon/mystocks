@@ -91,12 +91,55 @@ def test_api_contract_validation_pr_comment_is_non_blocking() -> None:
 def test_api_compliance_workflow_uses_supported_actions_and_safe_python_matrix_expansion() -> None:
     workflow = _read_workflow("api-compliance-testing.yml")
 
+    assert "python-version: ['3.10', '3.11']" in workflow
+    assert "python-version: ['3.9', '3.10', '3.11']" not in workflow
+    assert "python-version: [3.9, 3.10, 3.11]" not in workflow
     assert "uses: actions/setup-python@v5" in workflow
     assert "uses: actions/cache@v4" in workflow
     assert "uses: actions/github-script@v7" in workflow
     assert 'MATRIX_PYTHON_VERSION: ${{ matrix.python-version }}' in workflow
     assert "print(f\"Python Version: {os.getenv('MATRIX_PYTHON_VERSION', 'unknown')}\")" in workflow
     assert "${{{{ matrix.python-version }}}}" not in workflow
+
+
+def test_api_compliance_workflow_avoids_unavailable_talib_system_packages_and_filters_backend_requirements() -> None:
+    workflow = _read_workflow("api-compliance-testing.yml")
+    install_section = workflow.split("- name: Install system dependencies", 1)[1].split("- name: Set up environment variables", 1)[0]
+
+    assert "libta libta-dev" not in install_section
+    assert "libta-lib0" not in install_section
+    assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in install_section
+    assert "python -m pip install -r /tmp/backend-requirements-ci.txt" in install_section
+
+
+def test_api_compliance_workflow_sets_backend_runtime_ports_in_env_file() -> None:
+    workflow = _read_workflow("api-compliance-testing.yml")
+    env_section = workflow.split("- name: Set up environment variables", 1)[1].split("- name: Wait for PostgreSQL", 1)[0]
+
+    assert "BACKEND_PORT=8000" in env_section
+    assert "BACKEND_BACKUP_PORT=8001" in env_section
+
+
+def test_api_compliance_pr_comment_is_non_blocking() -> None:
+    workflow = _read_workflow("api-compliance-testing.yml")
+    comment_section = workflow.split("- name: Comment PR with Results", 1)[1].split("- name: Update Badge", 1)[0]
+
+    assert "continue-on-error: true" in comment_section
+
+
+def test_api_compliance_workflow_scopes_heavy_suite_and_keeps_runtime_validation_for_workflow_only_changes() -> None:
+    workflow = _read_workflow("api-compliance-testing.yml")
+
+    assert "- name: Detect API compliance execution scope" in workflow
+    assert "api_suite_required" in workflow
+    assert "workflow_validation_required" in workflow
+    assert ".github/workflows/api-compliance-testing.yml" in workflow
+    assert "tests/unit/scripts/test_ci_workflow_runtime_setup.py" in workflow
+    assert "web/backend/app/" in workflow
+    assert "if: steps.scope.outputs.workflow_validation_required == 'true'" in workflow
+    assert "if: steps.scope.outputs.api_suite_required == 'true'" in workflow
+    assert "Run workflow runtime validation" in workflow
+    assert "Scope detection skipped heavy API compliance suites" in workflow
 
 
 def test_api_contract_and_api_file_workflows_install_backend_runtime_dependencies() -> None:
@@ -590,6 +633,14 @@ def test_frontend_testing_uses_pr_head_sha_for_pull_request_diff_scope() -> None
     assert 'git diff --name-only "$BASE_SHA" "${{ github.sha }}"' not in workflow
 
 
+def test_code_quality_uses_pr_head_sha_for_pull_request_diff_scope() -> None:
+    workflow = _read_workflow("code-quality.yml")
+
+    assert 'HEAD_SHA="${{ github.event.pull_request.head.sha }}"' in workflow
+    assert 'git diff --name-only "$BASE_SHA" "$HEAD_SHA"' in workflow
+    assert 'git diff --name-only "$BASE_SHA" "${{ github.sha }}"' not in workflow
+
+
 def test_frontend_testing_skips_frontend_test_job_when_no_frontend_scope_changed() -> None:
     workflow = _read_workflow("frontend-testing.yml")
     frontend_test_section = workflow.split("frontend-test:", 1)[1].split("frontend-security:", 1)[0]
@@ -996,6 +1047,89 @@ def test_coverage_and_performance_workflows_download_artifacts_into_workspace() 
 
     assert "uses: actions/download-artifact@v4" in performance_section
     assert "path: ." in performance_section
+
+
+def test_code_quality_workflow_keeps_coverage_generation_as_a_real_gate() -> None:
+    workflow = _read_workflow("code-quality.yml")
+    coverage_section = workflow.split("test-coverage:", 1)[1].split("# 性能基准测试阶段", 1)[0]
+
+    assert "pip install pytest pytest-cov coverage[toml] pytest-asyncio python-dotenv" in coverage_section
+    assert "python -m pytest -o addopts='' tests/unit/core/test_simple_calculator_ci_sentinel.py --cov=src.core.simple_calculator --cov-report=xml:var/reports/coverage/coverage.xml --cov-report=html:var/reports/coverage/htmlcov --cov-fail-under=80 -q" in coverage_section
+    assert "python -m pytest -o addopts='' scripts/tests/" not in coverage_section
+    assert "python -m pytest -o addopts='' tests/unit/core/test_simple_calculator_ci_sentinel.py --cov=src.core.simple_calculator --cov-report=xml:var/reports/coverage/coverage.xml --cov-report=html:var/reports/coverage/htmlcov --cov-fail-under=80 -q || true" not in coverage_section
+    assert 'echo "::warning::coverage.xml not generated; skipping coverage post-processing"' not in coverage_section
+    assert 'echo "❌ var/reports/coverage/coverage.xml not generated"' in coverage_section
+    assert "exit 1" in coverage_section
+
+
+def test_code_quality_workflow_uses_ci_safe_calculator_coverage_sentinel() -> None:
+    workflow = _read_workflow("code-quality.yml")
+    coverage_section = workflow.split("test-coverage:", 1)[1].split("# 性能基准测试阶段", 1)[0]
+    sentinel_test = PROJECT_ROOT / "tests/unit/core/test_simple_calculator_ci_sentinel.py"
+
+    assert "tests/unit/core/test_simple_calculator_ci_sentinel.py" in coverage_section
+    assert "tests/unit/core/test_simple_calculator.py" not in coverage_section
+    assert "importlib.util.spec_from_file_location" in sentinel_test.read_text(encoding="utf-8")
+    assert "from src.core.simple_calculator import" not in sentinel_test.read_text(encoding="utf-8")
+
+
+def test_code_quality_workflow_uses_canonical_coverage_artifact_paths() -> None:
+    workflow = _read_workflow("code-quality.yml")
+    coverage_section = workflow.split("test-coverage:", 1)[1].split("# 性能基准测试阶段", 1)[0]
+    quality_report_section = workflow.split("quality-report:", 1)[1].split("quality-gate:", 1)[0]
+    quality_gate_section = workflow.split("Quality Gate Evaluation", 1)[1].split("- name: Comment on PR", 1)[0]
+
+    assert "var/reports/coverage/coverage.xml" in coverage_section
+    assert "var/reports/coverage/htmlcov/" in coverage_section
+    assert "if [ -f coverage.xml ]" not in coverage_section
+    assert 'COVERAGE_XML_PATH="var/reports/coverage/coverage.xml"' in quality_report_section
+    assert 'COVERAGE_XML_PATH="coverage.xml"' in quality_report_section
+    assert "ET.parse(os.environ['COVERAGE_XML_PATH'])" in quality_report_section
+    assert 'COVERAGE_XML_PATH="var/reports/coverage/coverage.xml"' in quality_gate_section
+    assert 'COVERAGE_XML_PATH="coverage.xml"' in quality_gate_section
+    assert "ET.parse(os.environ['COVERAGE_XML_PATH'])" in quality_gate_section
+
+
+def test_code_quality_quality_gate_keeps_legacy_repo_wide_pylint_and_complexity_non_blocking() -> None:
+    workflow = _read_workflow("code-quality.yml")
+    quality_gate_section = workflow.split("Quality Gate Evaluation", 1)[1].split("- name: Comment on PR", 1)[0]
+
+    pylint_section = quality_gate_section.split("# 检查Pylint错误", 1)[1].split("# 检查测试覆盖率", 1)[0]
+    complexity_section = quality_gate_section.split("# 检查代码复杂度", 1)[1].split("# 输出结果", 1)[0]
+
+    assert 'QUALITY_WARNINGS="$QUALITY_WARNINGS Pylint错误过多: $ERROR_COUNT 个"' in pylint_section
+    assert 'QUALITY_PASS=false' not in pylint_section
+    assert 'QUALITY_WARNINGS="$QUALITY_WARNINGS 高复杂度函数过多: $HIGH_COMPLEXITY 个"' in complexity_section
+    assert 'QUALITY_PASS=false' not in complexity_section
+    assert 'echo "::warning::非阻塞仓库级质量债务:$QUALITY_WARNINGS"' in quality_gate_section
+
+
+def test_code_quality_quality_gate_passes_coverage_path_env_into_python_parser() -> None:
+    workflow = _read_workflow("code-quality.yml")
+    quality_gate_section = workflow.split("Quality Gate Evaluation", 1)[1].split("- name: Comment on PR", 1)[0]
+
+    assert 'COVERAGE=$(COVERAGE_XML_PATH="$COVERAGE_XML_PATH" python - << \'PY\'' in quality_gate_section
+    assert 'COVERAGE_XML_PATH="$COVERAGE_XML_PATH" COVERAGE=$(python - << \'PY\'' not in quality_gate_section
+
+
+def test_code_quality_quality_gate_fails_when_coverage_report_is_missing() -> None:
+    workflow = _read_workflow("code-quality.yml")
+    quality_gate_section = workflow.split("Quality Gate Evaluation", 1)[1].split("- name: Comment on PR", 1)[0]
+
+    assert 'QUALITY_ISSUES="$QUALITY_ISSUES 覆盖率报告缺失"' in quality_gate_section
+
+
+def test_code_quality_quality_gate_hard_fails_but_keeps_pr_comment_path() -> None:
+    workflow = _read_workflow("code-quality.yml")
+    quality_report_section = workflow.split("quality-report:", 1)[1].split("quality-gate:", 1)[0]
+    quality_gate_section = workflow.split("Quality Gate Evaluation", 1)[1].split("- name: Comment on PR", 1)[0]
+    comment_section = workflow.split("- name: Comment on PR", 1)[1].split("uses: actions/github-script@v7", 1)[0]
+
+    failure_tail = quality_gate_section.split('echo "quality-pass=false" >> $GITHUB_OUTPUT', 1)[1]
+
+    assert "if: always()" in quality_report_section
+    assert "exit 1" in failure_tail
+    assert "if: always() && github.event_name == 'pull_request' && steps.gate.outputs.quality-pass == 'false'" in comment_section
 
 
 def test_security_testing_merges_downloaded_artifacts_into_workspace() -> None:

@@ -214,4 +214,23 @@ describe("CI workflow gates", () => {
     expect(workflowText).toContain("chart_tests");
     expect(workflowText).toContain("chart_passed");
   });
+
+  it("uses staged baseline diffs instead of raw worktree status in the visual baseline update workflow", () => {
+    const workflowText = readWorkflow(".github/workflows/visual-baseline-update.yml");
+    const changedSection = workflowText
+      .split("- name: Check Changed Files", 2)[1]
+      .split("- name: Commit and Push Changes", 2)[0];
+    const reportSection = workflowText
+      .split("- name: Generate Update Report", 2)[1]
+      .split("- name: Upload Update Report", 2)[0];
+
+    expect(changedSection).toContain("git add web/frontend/tests/visual/baselines/");
+    expect(changedSection).not.toContain("git add tests/visual/baselines/");
+    expect(changedSection).toContain("git diff --cached --name-only > visual-baseline-changed-files.txt");
+    expect(changedSection).toContain("changed_count=$(wc -l < visual-baseline-changed-files.txt)");
+    expect(workflowText).not.toContain("changed_count=$(git status --short | wc -l)");
+    expect(workflowText).toContain("git diff --cached --name-only >> $GITHUB_STEP_SUMMARY");
+    expect(reportSection).not.toContain("git status --short >> visual-baseline-update-report.md");
+    expect(reportSection).toContain("cat visual-baseline-changed-files.txt >> visual-baseline-update-report.md");
+  });
 });
