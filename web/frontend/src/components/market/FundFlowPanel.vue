@@ -62,7 +62,7 @@
       </template>
 
       <!-- 数据表格 -->
-      <el-table :data="fundFlowData" stripe border style="width: 100%">
+      <el-table :data="fundFlowData" stripe border class="fund-flow-table-full">
         <el-table-column prop="trade_date" label="交易日期" width="120" sortable />
         <el-table-column prop="timeframe" label="时间维度" width="90" align="center">
           <template #default="{ row }">
@@ -471,6 +471,10 @@ onUnmounted(() => {
     var(--artdeco-spacing-8) +
     var(--artdeco-spacing-4)
   );
+}
+
+.fund-flow-table-full {
+  width: 100%;
 }
 
 .fund-flow-chart {
