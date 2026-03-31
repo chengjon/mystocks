@@ -9,7 +9,7 @@
 
       <div class="content-section">
         <h3>📦 已集成功能</h3>
-        <el-descriptions :column="1" border style="margin-top: 15px;">
+        <el-descriptions :column="1" border class="status-descriptions">
           <el-descriptions-item label="pytdx 库">
             <el-tag type="success">✅ 已安装</el-tag>
           </el-descriptions-item>
@@ -30,8 +30,8 @@
           </el-descriptions-item>
         </el-descriptions>
 
-        <h3 style="margin-top: 30px;">🎯 后续集成计划</h3>
-        <el-timeline style="margin-top: 20px;">
+        <h3 class="status-section-heading">🎯 后续集成计划</h3>
+        <el-timeline class="status-timeline">
           <el-timeline-item timestamp="Phase 1" placement="top">
             <el-card>
               <h4>后端 API 开发</h4>
@@ -58,8 +58,8 @@
           </el-timeline-item>
         </el-timeline>
 
-        <h3 style="margin-top: 30px;">💡 应用场景</h3>
-        <el-row :gutter="20" style="margin-top: 20px;">
+        <h3 class="status-section-heading">💡 应用场景</h3>
+        <el-row :gutter="20" class="status-row">
           <el-col :span="12">
             <el-card shadow="hover">
               <h4>🎯 实时行情监控</h4>
@@ -74,7 +74,7 @@
           </el-col>
         </el-row>
 
-        <el-row :gutter="20" style="margin-top: 20px;">
+        <el-row :gutter="20" class="status-row">
           <el-col :span="12">
             <el-card shadow="hover">
               <h4>💾 数据采集系统</h4>
@@ -93,9 +93,9 @@
           type="warning"
           title="⚠️ 使用注意事项"
           :closable="false"
-          style="margin-top: 20px;"
+          class="status-alert"
         >
-          <ul style="margin-top: 10px;">
+          <ul class="status-alert-list">
             <li><strong>频率限制</strong>: 避免过于频繁请求,建议间隔至少1秒</li>
             <li><strong>数据延迟</strong>: 通达信免费数据有3-5秒延迟</li>
             <li><strong>服务器稳定性</strong>: 服务器可能不稳定,需要实现重连机制</li>
@@ -111,3 +111,25 @@
 <script setup lang="ts">
 defineProps<{ activeTab: string }>()
 </script>
+
+<style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
+.status-descriptions {
+  margin-top: calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-px) * 5);
+}
+
+.status-section-heading {
+  margin-top: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-3) / 2);
+}
+
+.status-timeline,
+.status-row,
+.status-alert {
+  margin-top: var(--artdeco-spacing-5);
+}
+
+.status-alert-list {
+  margin-top: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
+}
+</style>
