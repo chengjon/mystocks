@@ -39,12 +39,12 @@
                     <svg width="100%" height="200" viewBox="0 0 800 200" preserveAspectRatio="none">
                         <defs>
                             <linearGradient id="fundPositive" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" style="stop-color: var(--artdeco-up); stop-opacity: 60%" />
-                                <stop offset="100%" style="stop-color: var(--artdeco-up); stop-opacity: 10%" />
+                                <stop offset="0%" class="fund-positive-start" />
+                                <stop offset="100%" class="fund-positive-end" />
                             </linearGradient>
                             <linearGradient id="fundNegative" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" style="stop-color: var(--artdeco-down); stop-opacity: 60%" />
-                                <stop offset="100%" style="stop-color: var(--artdeco-down); stop-opacity: 10%" />
+                                <stop offset="0%" class="fund-negative-start" />
+                                <stop offset="100%" class="fund-negative-end" />
                             </linearGradient>
                         </defs>
                         <!-- 模拟资金流向柱状图 (Simplified) -->
@@ -99,5 +99,25 @@ defineProps({
     background: color-mix(in srgb, var(--artdeco-bg-global) 90%, transparent);
     border-radius: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
     overflow: hidden;
+}
+
+.fund-positive-start {
+    stop-color: var(--artdeco-up);
+    stop-opacity: 0.6;
+}
+
+.fund-positive-end {
+    stop-color: var(--artdeco-up);
+    stop-opacity: 0.1;
+}
+
+.fund-negative-start {
+    stop-color: var(--artdeco-down);
+    stop-opacity: 0.6;
+}
+
+.fund-negative-end {
+    stop-color: var(--artdeco-down);
+    stop-opacity: 0.1;
 }
 </style>
