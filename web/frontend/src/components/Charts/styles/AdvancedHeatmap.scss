@@ -30,6 +30,10 @@
                 gap: var(--artdeco-spacing-2);
                 align-items: center;
             }
+
+            .heatmap-color-select {
+                width: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-10));
+            }
         }
 
         .chart-stats {

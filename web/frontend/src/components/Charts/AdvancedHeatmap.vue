@@ -3,7 +3,7 @@
         <div class="chart-header" v-if="title">
             <h3 class="chart-title">{{ title }}</h3>
             <div class="chart-toolbar">
-                <el-select v-model="colorScheme" size="small" @change="updateColorScheme" style="width: 120px">
+                <el-select v-model="colorScheme" size="small" @change="updateColorScheme" class="heatmap-color-select">
                     <el-option label="金融配色" value="financial" />
                     <el-option label="经典配色" value="classic" />
                     <el-option label="冷暖配色" value="coolwarm" />
