@@ -389,7 +389,6 @@ const loadTradingSummary = async (): Promise<void> => {
 
     // TODO: Implement getTradingSummary API endpoint
     // For now, use mock data as the API is not yet available
-    console.info('Trading summary API not implemented, using mock data for:', symbol)
     tradingSummary.value = {
       price_change: parseFloat((Math.random() * 20 - 10).toFixed(2)),
       price_change_pct: parseFloat((Math.random() * 10 - 5).toFixed(2)),
