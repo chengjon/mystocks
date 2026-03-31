@@ -26,7 +26,7 @@
         <!-- Navigation Menu -->
         <div class="artdeco-nav">
             <!-- Section 1: Market Data -->
-            <div class="artdeco-nav-section artdeco-fade-in" style="animation-delay: 0.1s">
+            <div class="artdeco-nav-section artdeco-fade-in artdeco-nav-section-delay-1">
                 <div class="artdeco-nav-section-header">
                     <div class="artdeco-nav-section-icon">◈</div>
                     <div class="artdeco-nav-section-title">MARKET DATA</div>
@@ -59,7 +59,7 @@
             </div>
 
             <!-- Section 2: Analysis Tools -->
-            <div class="artdeco-nav-section artdeco-fade-in" style="animation-delay: 0.2s">
+            <div class="artdeco-nav-section artdeco-fade-in artdeco-nav-section-delay-2">
                 <div class="artdeco-nav-section-header">
                     <div class="artdeco-nav-section-icon">◇</div>
                     <div class="artdeco-nav-section-title">ANALYSIS TOOLS</div>
@@ -92,7 +92,7 @@
             </div>
 
             <!-- Section 3: Trade Management -->
-            <div class="artdeco-nav-section artdeco-fade-in" style="animation-delay: 0.3s">
+            <div class="artdeco-nav-section artdeco-fade-in artdeco-nav-section-delay-3">
                 <div class="artdeco-nav-section-header">
                     <div class="artdeco-nav-section-icon">◆</div>
                     <div class="artdeco-nav-section-title">TRADE MANAGEMENT</div>
@@ -117,7 +117,7 @@
             </div>
 
             <!-- Section 4: System -->
-            <div class="artdeco-nav-section artdeco-fade-in" style="animation-delay: 0.4s">
+            <div class="artdeco-nav-section artdeco-fade-in artdeco-nav-section-delay-4">
                 <div class="artdeco-nav-section-header">
                     <div class="artdeco-nav-section-icon">◈</div>
                     <div class="artdeco-nav-section-title">SYSTEM</div>

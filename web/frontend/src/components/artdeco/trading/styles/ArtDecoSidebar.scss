@@ -155,6 +155,22 @@
         margin-bottom: var(--artdeco-spacing-6);
     }
 
+    .artdeco-nav-section-delay-1 {
+        animation-delay: 0.1s;
+    }
+
+    .artdeco-nav-section-delay-2 {
+        animation-delay: 0.2s;
+    }
+
+    .artdeco-nav-section-delay-3 {
+        animation-delay: 0.3s;
+    }
+
+    .artdeco-nav-section-delay-4 {
+        animation-delay: 0.4s;
+    }
+
     /* Section Header with Icon */
     .artdeco-nav-section-header {
         display: flex;
