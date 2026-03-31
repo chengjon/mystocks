@@ -11,7 +11,7 @@
         <h3>INTRODUCTION</h3>
         <p>pytdx is a pure Python implementation of Tongdaxin network protocol interface library. It provides a complete Python API for obtaining real-time and historical market data by reverse engineering Tongdaxin's network protocol, without requiring Tongdaxin client installation.</p>
 
-        <h3 style="margin-top: 30px;">CORE FEATURES</h3>
+        <h3 class="overview-section-heading">CORE FEATURES</h3>
         <div class="features-grid">
           <el-card :hoverable="true">
             <h4>MARKET DATA API</h4>
@@ -58,8 +58,8 @@
           </el-card>
         </div>
 
-        <h3 style="margin-top: 30px;">PROJECT ADVANTAGES</h3>
-        <el-descriptions :column="2" border style="margin-top: 15px;" class="descriptions">
+        <h3 class="overview-section-heading">PROJECT ADVANTAGES</h3>
+        <el-descriptions :column="2" border class="overview-descriptions descriptions">
           <el-descriptions-item label="PURE PYTHON">
             No Tongdaxin client required, cross-platform support
           </el-descriptions-item>
@@ -73,16 +73,16 @@
             Complete historical K-line data support</el-descriptions-item>
         </el-descriptions>
 
-        <h3 style="margin-top: 30px;">LIBRARY REPOSITORY</h3>
+        <h3 class="overview-section-heading">LIBRARY REPOSITORY</h3>
         <el-alert
           type="info"
           :closable="false"
-          style="margin-top: 20px;"
+          class="overview-resource-alert"
         >
           <template #title>
-            <div style="font-weight: bold;">📚 项目资源</div>
+            <div class="overview-resource-title">📚 项目资源</div>
           </template>
-          <ul style="margin-top: 10px;">
+          <ul class="overview-resource-list">
             <li>GitHub: <el-link href="https://github.com/rainx/pytdx" target="_blank" type="primary">https://github.com/rainx/pytdx</el-link></li>
             <li>PyPI: <el-link href="https://pypi.org/project/pytdx/" target="_blank" type="primary">https://pypi.org/project/pytdx/</el-link></li>
             <li>Documentation: <el-link href="https://pytdx.readthedocs.io/" target="_blank" type="primary">https://pytdx.readthedocs.io/</el-link></li>
@@ -100,3 +100,27 @@
 <script setup lang="ts">
 defineProps<{ activeTab: string }>()
 </script>
+
+<style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
+.overview-section-heading {
+  margin-top: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-3) / 2);
+}
+
+.overview-descriptions {
+  margin-top: calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-px) * 5);
+}
+
+.overview-resource-alert {
+  margin-top: var(--artdeco-spacing-5);
+}
+
+.overview-resource-title {
+  font-weight: var(--artdeco-font-bold);
+}
+
+.overview-resource-list {
+  margin-top: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
+}
+</style>
