@@ -7,7 +7,7 @@
 
       <el-alert v-if="!isAuthenticated" type="warning" :closable="false" show-icon>
         Please log in to use the search functionality
-        <el-button type="primary" size="small" @click="goToLogin" style="margin-top: 10px;">
+        <el-button type="primary" size="small" @click="goToLogin" class="login-alert-button">
           GO TO LOGIN
         </el-button>
       </el-alert>
@@ -235,6 +235,10 @@ onMounted(() => {
   margin-bottom: var(--spacing-8);
   position: relative;
   z-index: 1;
+
+  .login-alert-button {
+    margin-top: var(--spacing-3);
+  }
 
   .page-title {
     font-family: var(--font-display);
