@@ -48,9 +48,17 @@
   margin-top: calc(var(--artdeco-spacing-5) + var(--artdeco-spacing-5) / 2);
 }
 
+.section-offset {
+  margin-top: var(--artdeco-spacing-5);
+}
+
 .metrics-card, .chart-card, .trades-card {
   border-radius: var(--artdeco-radius-md);
   box-shadow: 0 calc(var(--artdeco-spacing-1) / 2) var(--artdeco-spacing-3) color-mix(in srgb, var(--artdeco-bg-global) 10%, transparent);
+}
+
+.trade-history-table {
+  width: 100%;
 }
 
 .metric-item {

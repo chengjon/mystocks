@@ -146,7 +146,7 @@
           </el-col>
         </el-row>
 
-        <el-row :gutter="20" style="margin-top: 20px;">
+        <el-row :gutter="20" class="section-offset">
           <el-col :span="6">
             <div class="metric-item">
               <div class="metric-label">Win Rate</div>
@@ -186,7 +186,7 @@
       </el-card>
 
       <!-- Equity Curve Chart -->
-      <el-card class="chart-card" style="margin-top: 20px;">
+      <el-card class="chart-card section-offset">
         <template #header>
           <div class="card-header">
             <el-icon class="card-icon"><TrendCharts /></el-icon>
@@ -203,7 +203,7 @@
       </el-card>
 
       <!-- Trade History -->
-      <el-card class="trades-card" style="margin-top: 20px;">
+      <el-card class="trades-card section-offset">
         <template #header>
           <div class="card-header">
             <el-icon class="card-icon"><List /></el-icon>
@@ -211,7 +211,7 @@
           </div>
         </template>
 
-        <el-table :data="backtestResult.trades" style="width: 100%">
+        <el-table :data="backtestResult.trades" class="trade-history-table">
           <el-table-column prop="date" label="Date" width="120" />
           <el-table-column prop="type" label="Type" width="80">
             <template #default="scope">
