@@ -11,7 +11,7 @@
         <h3>🎨 FreqUI 功能</h3>
         <p>FreqUI 是 Freqtrade 的官方 Web 管理界面,提供直观的可视化管理功能:</p>
 
-        <el-row :gutter="20" style="margin-top: 20px;">
+        <el-row :gutter="20" class="webui-feature-grid">
           <el-col :span="12">
             <el-card shadow="hover">
               <h4>📊 实时监控</h4>
@@ -38,7 +38,7 @@
           </el-col>
         </el-row>
 
-        <h3 style="margin-top: 30px;">🚀 启动 Web UI</h3>
+        <h3 class="webui-section-heading">🚀 启动 Web UI</h3>
         <pre v-pre class="code-block"># 启动 Freqtrade 并开启 API
 freqtrade trade --config config.json --strategy SampleStrategy
 
@@ -49,19 +49,19 @@ freqtrade trade --config config.json --strategy SampleStrategy
           type="info"
           title="💡 Web UI 访问"
           :closable="false"
-          style="margin-top: 20px;"
+          class="webui-info-alert"
         >
-          <p style="margin-top: 10px;">默认访问地址: <code>http://127.0.0.1:8080</code></p>
+          <p class="webui-info-note">默认访问地址: <code>http://127.0.0.1:8080</code></p>
           <p>默认账号: 在 config.json 的 api_server 部分配置</p>
-          <p style="margin-top: 10px;">
+          <p class="webui-link-row">
             <el-link href="https://github.com/freqtrade/frequi" target="_blank" type="primary">
               FreqUI GitHub 仓库
             </el-link>
           </p>
         </el-alert>
 
-        <h3 style="margin-top: 30px;">🔌 REST API 端点</h3>
-        <el-table :data="apiEndpoints" stripe style="margin-top: 15px;">
+        <h3 class="webui-section-heading">🔌 REST API 端点</h3>
+        <el-table :data="apiEndpoints" stripe class="webui-api-table">
           <el-table-column prop="method" label="方法" width="100" />
           <el-table-column prop="endpoint" label="端点" width="250" />
           <el-table-column prop="description" label="说明" />
@@ -78,3 +78,25 @@ defineProps<{
   apiEndpoints: Array<{ method: string; endpoint: string; description: string }>;
 }>()
 </script>
+
+<style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
+.webui-feature-grid,
+.webui-info-alert {
+  margin-top: var(--artdeco-spacing-5);
+}
+
+.webui-section-heading {
+  margin-top: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-3) / 2);
+}
+
+.webui-info-note,
+.webui-link-row {
+  margin-top: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
+}
+
+.webui-api-table {
+  margin-top: calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
+}
+</style>
