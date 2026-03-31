@@ -127,6 +127,21 @@ def test_api_compliance_pr_comment_is_non_blocking() -> None:
     assert "continue-on-error: true" in comment_section
 
 
+def test_api_compliance_workflow_scopes_heavy_suite_and_keeps_runtime_validation_for_workflow_only_changes() -> None:
+    workflow = _read_workflow("api-compliance-testing.yml")
+
+    assert "- name: Detect API compliance execution scope" in workflow
+    assert "api_suite_required" in workflow
+    assert "workflow_validation_required" in workflow
+    assert ".github/workflows/api-compliance-testing.yml" in workflow
+    assert "tests/unit/scripts/test_ci_workflow_runtime_setup.py" in workflow
+    assert "web/backend/app/" in workflow
+    assert "if: steps.scope.outputs.workflow_validation_required == 'true'" in workflow
+    assert "if: steps.scope.outputs.api_suite_required == 'true'" in workflow
+    assert "Run workflow runtime validation" in workflow
+    assert "Scope detection skipped heavy API compliance suites" in workflow
+
+
 def test_api_contract_and_api_file_workflows_install_backend_runtime_dependencies() -> None:
     contract_workflow = _read_workflow("api-contract-validation.yml")
     api_file_workflow = _read_workflow("api-file-tests.yml")
