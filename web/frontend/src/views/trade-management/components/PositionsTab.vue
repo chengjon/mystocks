@@ -22,7 +22,6 @@
         class="bloomberg-table"
         stripe
         border
-        style="width: 100%"
       >
         <el-table-column prop="symbol" label="CODE" width="120" />
         <el-table-column prop="stock_name" label="NAME" width="180" />
@@ -227,6 +226,7 @@ defineExpose({
 }
 
 .bloomberg-table {
+  width: 100%;
   background: transparent !important;
 
   :deep(.el-table__inner-wrapper::before) {
