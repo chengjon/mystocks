@@ -40,10 +40,10 @@
           <svg width="100%" height="200" viewBox="0 0 800 200" preserveAspectRatio="none">
             <defs>
               <linearGradient id="fundPositive" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" style="stop-color: var(--artdeco-up); stop-opacity: 60%" />
+                <stop offset="0%" class="fund-positive-start" />
               </linearGradient>
               <linearGradient id="fundNegative" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="100%" style="stop-color: var(--artdeco-down); stop-opacity: 60%" />
+                <stop offset="100%" class="fund-negative-end" />
               </linearGradient>
               <rect x="20" y="60" width="25" height="80" fill="url(#fundPositive)" stroke="var(--artdeco-up)" stroke-width="1" />
               <rect x="55" y="40" width="25" height="80" fill="url(#fundPositive)" stroke="var(--artdeco-up)" stroke-width="1" />
@@ -217,6 +217,16 @@ onMounted(() => {
   border-radius: var(--artdeco-radius-md);
   padding: var(--artdeco-spacing-4);
   overflow: hidden;
+}
+
+.fund-positive-start {
+  stop-color: var(--artdeco-up);
+  stop-opacity: 0.6;
+}
+
+.fund-negative-end {
+  stop-color: var(--artdeco-down);
+  stop-opacity: 0.6;
 }
 
 .ranking-card {
