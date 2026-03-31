@@ -5,7 +5,7 @@
 本指南说明如何在 MyStocks 当前仓库内使用 `Maestro` 的 MongoDB 多 CLI 协作控制面。
 
 操作层的命名规范、主/从 CLI 命令分工、以及当前有效开工顺序，统一以
-`docs/guides/MONGO_MULTICLI_OPERATION_CHECKLIST.md` 为准。
+`docs/guides/multi-cli-tasks/MONGO_MULTICLI_OPERATION_CHECKLIST.md` 为准。
 本文件保留为控制面能力说明；不要再以 `MT-*` 作为新的正式任务命名。
 
 当前定位：
@@ -113,46 +113,54 @@ python scripts/runtime/coordctl.py work create \
 ```bash
 python scripts/runtime/coordctl.py work list --output json
 python scripts/runtime/coordctl.py work show 2026-03-14-api-route-governance-mystocks-spec1 --output json
-python scripts/runtime/coordctl.py work show 2026-03-14-api-route-governance-mystocks-spec1 --include-plan --output json
-python scripts/runtime/coordctl.py work board --active-only --output json
 python scripts/runtime/coordctl.py work transition 2026-03-14-api-route-governance-mystocks-spec1 --to merged --output json
 ```
 
 ```bash
-python scripts/runtime/coordctl.py work claim 2026-03-14-api-route-governance-mystocks-spec1 \
+python scripts/runtime/coordctl.py work mark 2026-03-14-api-route-governance-mystocks-spec1 \
   --actor-cli mystocks_spec1 \
-  --summary "Accepted task and started execution"
-```
-
-```bash
-python scripts/runtime/coordctl.py plan add 2026-03-14-api-route-governance-mystocks-spec1 \
-  --actor-cli mystocks_spec1 \
-  --title "Inspect current router state" \
-  --order 10
-```
-
-```bash
-python scripts/runtime/coordctl.py plan mark 2026-03-14-api-route-governance-mystocks-spec1 plan-abc123 \
-  --actor-cli mystocks_spec1 \
-  --status done \
-  --evidence "Verified scoped prefixes and duplicate registrations"
+  --status in_progress \
+  --summary "Accepted task and started execution" \
+  --output json
 ```
 
 ```bash
 python scripts/runtime/coordctl.py update add 2026-03-14-api-route-governance-mystocks-spec1 \
   --actor-cli mystocks_spec1 \
-  --summary "Implemented CLI command surface" \
-  --status in_progress
+  --summary "Verified scoped prefixes and duplicate registrations" \
+  --status in_progress \
+  --output json
 ```
 
 ```bash
-python scripts/runtime/coordctl.py work submit 2026-03-14-api-route-governance-mystocks-spec1 \
+python scripts/runtime/coordctl.py request create 2026-03-14-api-route-governance-mystocks-spec1 \
+  --actor-cli mystocks_spec1 \
+  --request-id req-scope-1 \
+  --request-type definition_change \
+  --summary "Need broader allowed path coverage" \
+  --output json
+```
+
+```bash
+python scripts/runtime/coordctl.py work preflight 2026-03-14-api-route-governance-mystocks-spec1 \
+  --actor-cli mystocks_spec1 \
+  --task-path TASK.md \
+  --output json
+```
+
+```bash
+python scripts/runtime/coordctl.py update add 2026-03-14-api-route-governance-mystocks-spec1 \
   --actor-cli mystocks_spec1 \
   --summary "Code, verification, and TASK-REPORT are ready for review" \
-  --commit abc123def \
-  --branch mystocks_spec1 \
-  --remote origin \
-  --verify "pytest tests/unit/runtime -q"
+  --status ready_for_review \
+  --output json
+```
+
+```bash
+python scripts/runtime/coordctl.py work transition 2026-03-14-api-route-governance-mystocks-spec1 \
+  --to ready_for_review \
+  --actor-cli mystocks_spec1 \
+  --output json
 ```
 
 ## Real Smoke Verification
@@ -181,8 +189,10 @@ python scripts/runtime/smoke_mongo_multicli.py \
 - 显式 `--mongo-uri` 最高优先
 - 未显式传入时，先按 URI 环境变量顺序解析
 - 只有 URI 环境变量都不存在时，才回落到 host/port + username/password + authSource
+- 若上述路径仍未提供账号密码，且本机存在 `mystocks-mongodb` 容器，脚本会尝试从容器初始化环境中读取 root 凭据作为 local-only fallback
+- 同样的 local-only fallback 也适用于共享 CLI 入口 `coordctl.py` / `maestro_collab.py` 的 Mongo control-plane 命令
 
-当前仓库实测可直接无参运行：
+只有在当前会话已经提供可写 Mongo 凭据时，才建议无参运行：
 
 ```bash
 python scripts/runtime/smoke_mongo_multicli.py
@@ -190,7 +200,8 @@ python scripts/runtime/smoke_mongo_multicli.py
 
 前提：
 
-- 项目根目录 `.env` 已提供可写 Mongo 凭据
+- 项目根目录 `.env` 或当前 shell 环境已提供可写 Mongo 凭据
+- 或本机 Docker 中存在可访问的 `mystocks-mongodb` 容器，并保留了初始化 root 凭据
 - 本机会话允许访问该 Mongo 实例
 
 输出示例：
@@ -211,6 +222,53 @@ python scripts/runtime/smoke_mongo_multicli.py
 - 执行 control-plane -> runtime -> status API 的 smoke 链路
 - 执行结束后自动删除临时数据库
 - 本地 Mongo 若开启鉴权，必须传入可写认证 URI
+- 若凭据无效或无写权限，相关 CLI / smoke / 导出 / 迁移脚本会返回结构化 JSON 错误，至少包含 `error_code` 与 `message`
+
+## Validated Local Commands
+
+在当前本机 WSL + Docker 环境下，以下命令已实际验证：
+
+```bash
+python scripts/runtime/coordctl.py work list --output json
+python scripts/runtime/smoke_mongo_multicli.py
+python scripts/runtime/smoke_graphiti_preflight.py --actor-cli cli-preflight
+python scripts/runtime/export_collab_snapshots.py --output-dir /tmp/mongo-collab-snapshots-codex
+```
+
+预期：
+
+- `coordctl.py work list --output json` 返回 Mongo control plane 中的 work item 列表
+- `smoke_mongo_multicli.py` 返回 `work_item_id=SMOKE-1` 与 `control_plane_status=ready_for_review`
+- `smoke_graphiti_preflight.py --actor-cli cli-preflight` 返回 `server_status=ok` 与 `search_outcome=hit`
+- `export_collab_snapshots.py --output-dir /tmp/mongo-collab-snapshots-codex` 在目标目录生成快照文件
+
+### One-Command Local Acceptance
+
+如果需要把 Mongo control plane、Graphiti preflight、以及快照导出串成一条本机验收链路，统一使用：
+
+```bash
+python scripts/runtime/run_local_maestro_acceptance.sh
+```
+
+该脚本会顺序执行并落盘：
+
+- `python scripts/runtime/coordctl.py work list --output json`
+- `python scripts/runtime/smoke_mongo_multicli.py`
+- `python scripts/runtime/smoke_graphiti_preflight.py --actor-cli cli-preflight`
+- `python scripts/runtime/export_collab_snapshots.py --output-dir /tmp/mongo-collab-snapshots-codex`
+
+默认输出位置：
+
+- `/tmp/maestro_work_list.json`
+- `/tmp/maestro_mongo_smoke.json`
+- `/tmp/maestro_graphiti_preflight.json`
+- `/tmp/mongo-collab-snapshots-codex`
+
+适用场景：
+
+- cleanup wave 收尾时做本机一键回归
+- 向主 CLI / reviewer 证明当前 Mongo + Graphiti 收敛线可复跑
+- 需要快速确认共享 CLI 入口与导出快照没有漂移
 
 ## Migration Scripts
 
@@ -257,6 +315,7 @@ python scripts/runtime/export_collab_snapshots.py \
 - 从 Mongo control plane 导出 Markdown 快照
 - 供主 CLI 审阅、归档、回放
 - 供 worker worktree 生成只读 `TASK.md` / `TASK-REPORT.md`
+- 在当前本机 WSL + Docker 环境下，若未显式传 `--mongo-uri`，该脚本同样会复用 `mystocks-mongodb` 容器的 local-only 凭据 fallback
 
 ### 2B. Export Worktree Task Artifacts
 
@@ -280,10 +339,10 @@ python scripts/runtime/coordctl.py work export-task-report <WORK_ITEM_ID> \
 
 - worker 不能直接改 `work_item` 定义
 - worker 只能读取/写入自己 owner 的任务范围
-- `work claim` / `plan add` / `plan mark` / `work submit` 已作为正式命令面提供
+- `work mark` / `update add` / `request create|review` / `work transition` 已作为正式命令面提供
 - `work_update` / `work_request` 会自动触发审计事件
-- `worker_status_views` 会在任务、claim、plan、update、request、submit 变化后自动刷新
-- `worker_status_views` 当前已汇总 claim、plan progress、delivery metadata
+- `worker_status_views` 会在任务、update、request 变化后自动刷新
+- `worker_status_views` 当前已汇总最新状态、最近更新、pending request 标记
 - 旧的 `assign/state/suggest` CLI 仍兼容
 - `tracker.kind: mongo` 已可直接驱动 runtime candidate dispatch
 

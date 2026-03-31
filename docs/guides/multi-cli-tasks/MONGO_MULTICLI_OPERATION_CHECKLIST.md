@@ -47,10 +47,10 @@ python scripts/runtime/coordctl.py work export-task-report <WORK_ITEM_ID> --outp
 ### 复核时
 
 1. 查 Mongo：
-   - `claim`
-   - `plan`
-   - `submit`
-   - `ready_for_review`
+   - `work show`
+   - `work export-task-report`
+   - `request review`
+   - `work transition`
 2. 查 Graphiti：
    - handoff 摘要
    - 历史事实
@@ -65,7 +65,7 @@ python scripts/runtime/coordctl.py work export-task-report <WORK_ITEM_ID> --outp
    - `docs/guides/ai-tools/GRAPHITI_MCP_WORKFLOW.md`
    - 涉及的 `openspec` / `docs` / ownership 文件
 3. 先在 Mongo control plane 中开工留痕：
-   - `work claim`
+   - `work mark --status in_progress`
 4. 如需要历史上下文，再查 Graphiti：
    - 优先运行 `graphiti preflight`
    - 或手工执行 `get_status` / `search_nodes` / `search_memory_facts`
@@ -73,9 +73,10 @@ python scripts/runtime/coordctl.py work export-task-report <WORK_ITEM_ID> --outp
 ### 执行中
 
 1. 只修改任务范围内文件
-2. 任务分解走 Mongo：
-   - `plan add`
-   - `plan mark`
+2. 批次进展走 Mongo：
+   - `work mark`
+   - `update add`
+   - 如需审批或扩边界，使用 `request create`
 3. 每完成一个批次：
    - 在 `TASK-REPORT.md` 记录证据
    - 必要时向 Graphiti 写入 handoff / fact summary
@@ -85,9 +86,11 @@ python scripts/runtime/coordctl.py work export-task-report <WORK_ITEM_ID> --outp
 
 1. 做最小必要验证
 2. 更新 `TASK-REPORT.md`
-3. 在 Mongo control plane 中提交：
-   - `work submit`
+3. 在 Mongo control plane 中提审：
+   - `update add --status ready_for_review`
+   - `work transition --to ready_for_review`
 4. 不要只把状态写到 Graphiti 而跳过 Mongo
+5. 若 Mongo 凭据无效或无写权限，相关共享 CLI 会返回结构化 JSON 错误，至少包含 `error_code` 与 `message`
 
 ## Boundary Summary
 
@@ -97,7 +100,7 @@ python scripts/runtime/coordctl.py work export-task-report <WORK_ITEM_ID> --outp
 
 - work item lifecycle
 - owner / worker
-- claim / plan / submit
+- mark / update / request / transition
 - ready_for_review / verified / merged
 
 ### Graphiti
@@ -137,10 +140,22 @@ repo-local canonical 命令：
 ### Worker CLI
 
 ```text
-开工留痕 -> Mongo claim
+开工留痕 -> Mongo work mark --status in_progress
 Graphiti 预检 -> coordctl graphiti preflight
-做任务分解 -> Mongo plan
+记录批次进展 -> Mongo work mark / update add
 导出快照 -> coordctl work export-task / export-task-report
 写长期记忆 -> coordctl graphiti remember
-提审 -> Mongo submit
+提审 -> update add --status ready_for_review + work transition --to ready_for_review
 ```
+
+### One-Command Local Acceptance
+
+```bash
+python scripts/runtime/run_local_maestro_acceptance.sh
+```
+
+用途：
+
+- 串联 `coordctl work list`、Mongo smoke、Graphiti preflight、快照导出
+- 在本机快速复跑当前 Mongo / Graphiti 收敛线
+- 生成 `/tmp/maestro_work_list.json`、`/tmp/maestro_mongo_smoke.json`、`/tmp/maestro_graphiti_preflight.json` 与 `/tmp/mongo-collab-snapshots-codex`
