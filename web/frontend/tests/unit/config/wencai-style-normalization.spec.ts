@@ -14,8 +14,11 @@ describe('wencai style normalization', () => {
     const marketStyle = readSource('src/views/styles/Market.scss')
 
     expect(queryTable).toContain("@use '@/styles/artdeco-tokens.scss' as *;")
+    expect(queryTable).toContain('class="stats-pagination"')
+    expect(queryTable).toContain('.stats-pagination {')
     expect(queryTable).not.toContain('color: #333')
     expect(queryTable).not.toContain('background: #f5f7fa')
+    expect(queryTable).not.toContain('style="text-align: right"')
 
     expect(testPage).toContain('<style scoped lang="scss">')
     expect(testPage).toContain('var(--artdeco-gold-primary)')

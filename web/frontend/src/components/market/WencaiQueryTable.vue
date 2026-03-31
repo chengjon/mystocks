@@ -41,7 +41,7 @@
         :total="total"
         layout="total, sizes, prev, pager, next, jumper"
         @change="loadResults"
-        style="text-align: right"
+        class="stats-pagination"
       />
     </div>
 
@@ -258,6 +258,10 @@ onMounted(() => {
     border-radius: var(--artdeco-radius-none);
     font-size: var(--artdeco-text-sm);
     color: var(--artdeco-fg-primary);
+  }
+
+  .stats-pagination {
+    text-align: right;
   }
 
   .details-content {
