@@ -1053,7 +1053,7 @@ def test_code_quality_workflow_keeps_coverage_generation_as_a_real_gate() -> Non
     workflow = _read_workflow("code-quality.yml")
     coverage_section = workflow.split("test-coverage:", 1)[1].split("# 性能基准测试阶段", 1)[0]
 
-    assert "pip install pytest pytest-cov coverage[toml] pytest-asyncio" in coverage_section
+    assert "pip install pytest pytest-cov coverage[toml] pytest-asyncio python-dotenv" in coverage_section
     assert "python -m pytest -o addopts='' tests/unit/core/test_simple_calculator.py --cov=src.core.simple_calculator --cov-report=xml:coverage.xml --cov-report=html:htmlcov --cov-fail-under=80 -q" in coverage_section
     assert "python -m pytest -o addopts='' scripts/tests/" not in coverage_section
     assert "python -m pytest -o addopts='' tests/unit/core/test_simple_calculator.py --cov=src.core.simple_calculator --cov-report=xml:coverage.xml --cov-report=html:htmlcov --cov-fail-under=80 -q || true" not in coverage_section
