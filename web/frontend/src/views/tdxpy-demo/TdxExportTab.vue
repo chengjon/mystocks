@@ -11,7 +11,7 @@
         <h3>📤 数据导出功能</h3>
         <p>pytdx 可以方便地将获取的数据导出为多种格式:</p>
 
-        <el-tabs type="border-card" style="margin-top: 20px;">
+        <el-tabs type="border-card" class="export-tabs-offset">
           <el-tab-pane name="export-csv" label="导出到 CSV">
             <pre v-pre class="code-block">from pytdx.hq import TdxHq_API
 import pandas as pd
@@ -142,3 +142,11 @@ while True:
 <script setup lang="ts">
 defineProps<{ activeTab: string }>()
 </script>
+
+<style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
+.export-tabs-offset {
+  margin-top: var(--artdeco-spacing-5);
+}
+</style>
