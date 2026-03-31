@@ -107,11 +107,11 @@
             <div class="traditional-charts">
                 <div class="chart-item">
                     <h4>K线图示例</h4>
-                    <div ref="klineChartRef" style="height: 300px"></div>
+                    <div ref="klineChartRef" class="traditional-chart-canvas"></div>
                 </div>
                 <div class="chart-item">
                     <h4>标准热力图</h4>
-                    <div ref="standardHeatmapRef" style="height: 300px"></div>
+                    <div ref="standardHeatmapRef" class="traditional-chart-canvas"></div>
                 </div>
             </div>
         </el-card>
