@@ -112,6 +112,13 @@ def test_api_compliance_workflow_avoids_unavailable_talib_system_packages_and_fi
     assert "python -m pip install -r /tmp/backend-requirements-ci.txt" in install_section
 
 
+def test_api_compliance_pr_comment_is_non_blocking() -> None:
+    workflow = _read_workflow("api-compliance-testing.yml")
+    comment_section = workflow.split("- name: Comment PR with Results", 1)[1].split("- name: Update Badge", 1)[0]
+
+    assert "continue-on-error: true" in comment_section
+
+
 def test_api_contract_and_api_file_workflows_install_backend_runtime_dependencies() -> None:
     contract_workflow = _read_workflow("api-contract-validation.yml")
     api_file_workflow = _read_workflow("api-file-tests.yml")
