@@ -19,10 +19,10 @@ git clone https://github.com/rainx/pytdx.git
 cd pytdx
 python setup.py install</pre>
 
-        <h3 style="margin-top: 30px;">🔧 基础配置</h3>
+        <h3 class="install-section-heading">🔧 基础配置</h3>
         <p>pytdx 提供了两种主要的 API 类型:</p>
 
-        <el-tabs type="border-card" style="margin-top: 20px;">
+        <el-tabs type="border-card" class="install-tabs-offset">
           <el-tab-pane name="standard-api" label="标准行情 API">
             <div class="tab-content">
               <h4>📊 TdxHq_API - 标准行情接口</h4>
@@ -44,8 +44,8 @@ if api.connect('119.147.212.81', 7709):
 else:
     print("连接失败")</pre>
 
-              <h4 style="margin-top: 20px;">🌐 可用服务器列表</h4>
-              <el-table :data="standardServers" stripe size="small" style="margin-top: 10px;">
+              <h4 class="install-subsection-heading">🌐 可用服务器列表</h4>
+              <el-table :data="standardServers" stripe size="small" class="install-table-offset">
                 <el-table-column prop="ip" label="IP地址" width="150" />
                 <el-table-column prop="port" label="端口" width="80" />
                 <el-table-column prop="location" label="位置" />
@@ -73,8 +73,8 @@ if api.connect('106.14.95.149', 7727):
 else:
     print("连接失败")</pre>
 
-              <h4 style="margin-top: 20px;">🌐 扩展服务器列表</h4>
-              <el-table :data="extendedServers" stripe size="small" style="margin-top: 10px;">
+              <h4 class="install-subsection-heading">🌐 扩展服务器列表</h4>
+              <el-table :data="extendedServers" stripe size="small" class="install-table-offset">
                 <el-table-column prop="ip" label="IP地址" width="150" />
                 <el-table-column prop="port" label="端口" width="80" />
                 <el-table-column prop="location" label="位置" />
@@ -100,14 +100,14 @@ if api.connect(best_ip['ip'], best_ip['port']):
     print("连接成功!")
     api.disconnect()</pre>
 
-              <el-alert type="info" :closable="false" style="margin-top: 15px;">
+              <el-alert type="info" :closable="false" class="install-info-alert">
                 <p><strong>💡 建议:</strong> 在生产环境中使用自动服务器选择功能,可以提高连接成功率和数据获取速度。</p>
               </el-alert>
             </div>
           </el-tab-pane>
         </el-tabs>
 
-        <h3 style="margin-top: 30px;">🔐 with 语句管理连接</h3>
+        <h3 class="install-section-heading">🔐 with 语句管理连接</h3>
         <p>推荐使用 with 语句管理连接,自动处理连接和断开:</p>
 
         <pre v-pre class="code-block">from pytdx.hq import TdxHq_API
@@ -132,3 +132,27 @@ defineProps<{
   extendedServers: Array<{ ip: string; port: string; location: string }>
 }>()
 </script>
+
+<style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
+
+.install-section-heading {
+  margin-top: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-3) / 2);
+}
+
+.install-tabs-offset {
+  margin-top: var(--artdeco-spacing-5);
+}
+
+.install-subsection-heading {
+  margin-top: var(--artdeco-spacing-5);
+}
+
+.install-table-offset {
+  margin-top: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
+}
+
+.install-info-alert {
+  margin-top: calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-px) * 5);
+}
+</style>
