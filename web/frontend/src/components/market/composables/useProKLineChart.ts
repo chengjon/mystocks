@@ -2,6 +2,7 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { init, dispose, type Chart } from 'klinecharts'
 import { ElMessage } from 'element-plus'
 import { marketApi } from '@/api/market'
+import type { KLineChartData } from '@/utils/adapters'
 import type { KLineDataPoint } from '@/utils/indicators'
 import { applyChartContainerHeight, createProKLineChartStyleConfig } from './useProKLineChart.chart-config.ts'
 import {
@@ -56,6 +57,39 @@ export function useProKLineChart() {
   // Available indicators (for selector)
   const availableIndicators = ref<Indicator[]>(props.indicators)
 
+  const parseCategoryTimestamp = (value: string | undefined, index: number): number => {
+    if (!value) {
+      return Date.now() + index
+    }
+
+    const parsed = Date.parse(value)
+    if (!Number.isNaN(parsed)) {
+      return parsed
+    }
+
+    const numeric = Number(value)
+    if (Number.isFinite(numeric) && numeric > 0) {
+      return numeric
+    }
+
+    return Date.now() + index
+  }
+
+  const toChartData = (payload: KLineChartData): KLineDataPoint[] => {
+    return payload.categoryData.map((category, index) => {
+      const [open = 0, close = 0, low = 0, high = 0] = payload.values[index] ?? []
+
+      return {
+        timestamp: parseCategoryTimestamp(category, index),
+        open,
+        high,
+        low,
+        close,
+        volume: payload.volumes[index] ?? 0
+      }
+    })
+  }
+
   /**
    * 初始化图表
    */
@@ -94,37 +128,17 @@ export function useProKLineChart() {
     loading.value = true
 
     try {
-      // Call existing market API
-      // @ts-ignore - adjust property exists in runtime but missing in API type definition
-      const klineData = await marketApi.getKLineData({
+      const requestParams: Parameters<typeof marketApi.getKLineData>[0] & { adjust: 'qfq' | 'none' } = {
         symbol: props.symbol,
         interval: selectedPeriod.value as '1m' | '5m' | '15m' | '30m' | '1h' | '1d' | '1w' | '1M',
         limit: 1000, // Load last 1000 candles by default
-        adjust: useForwardAdjusted.value ? 'forward' : 'none'
-      } as unknown)
+        adjust: useForwardAdjusted.value ? 'qfq' : 'none'
+      }
 
-      // @ts-ignore - response has data property at runtime but missing in type definition
-      const rawData = (klineData as unknown).data
-      if (klineData && rawData && rawData.length > 0) {
-        // Convert to klinecharts format
-        interface RawKLineItem {
-          timestamp?: number
-          date?: number
-          open: number
-          high: number
-          low: number
-          close: number
-          volume: number
-        }
-        const chartData: KLineDataPoint[] = (rawData as RawKLineItem[]).map((item) => ({
-          timestamp: item.timestamp || item.date || Date.now(),
-          open: item.open,
-          high: item.high,
-          low: item.low,
-          close: item.close,
-          volume: item.volume
-        }))
+      const klineData = await marketApi.getKLineData(requestParams)
+      const chartData = toChartData(klineData)
 
+      if (chartData.length > 0) {
         // Save current K-line data for indicator calculation
         currentKLineData.value = chartData
 
