@@ -1,108 +1,104 @@
-# ArtDeco v3/v3.1 Governance Baseline - Master Index
+# ArtDeco Master Index
 
-This document is the authoritative entry point for ArtDeco v3/v3.1 governance in the MyStocks project.
+本文件是 MyStocks 项目 ArtDeco 文档体系的唯一总目录，负责回答三件事：
 
-## 0. 本文档的职责
+1. 当前哪些文档是活跃治理文档。
+2. 每份文档的职责边界是什么。
+3. 遇到具体任务时应该先读哪一份。
 
-`ARTDECO_MASTER_INDEX.md` 负责的是“完整目录和定位”，不是新手上手摘要。
+> 2026-04-01 文档治理刷新
+>
+> - 修正旧链路中的失效路径与缺失入口。
+> - 补齐 `ARTDECO_FINTECH_UNIFIED_SPEC.md`。
+> - 为历史上缺少 `web/` 子目录的两条常用路径提供兼容入口。
 
-它主要回答：
+## 1. 文档分层
 
-1. 当前有哪些 ArtDeco 核心文档
-2. 每份文档属于什么类别
-3. 你该按什么标签去找文档
+### 1.1 活跃治理文档
 
-如果你是第一次接手，不要先从这里开始通读，先看：
+| 标签 | 文档 | 职责 |
+|------|------|------|
+| `[必读]` | [ARTDECO_START_HERE](./ARTDECO_START_HERE.md) | 单页上手入口，给第一次接手的人最短阅读路径 |
+| `[必读][架构]` | [ARTDECO_FINTECH_UNIFIED_SPEC](./ARTDECO_FINTECH_UNIFIED_SPEC.md) | 当前 ArtDeco Fintech 的统一规格：设计身份、目录边界、运行时承载模式 |
+| `[必读][样式真值]` | [ARTDECO_SCSS_GOVERNANCE_BASELINE](./ARTDECO_SCSS_GOVERNANCE_BASELINE.md) | 令牌、Grid、兼容层、样式导入规范的事实源 |
+| `[必读][组件]` | [ARTDECO_COMPONENT_GUIDE](./ARTDECO_COMPONENT_GUIDE.md) | 组件目录治理、`*-tabs` 铁律、放置决策树 |
+| `[组件][目录]` | [ARTDECO_COMPONENTS_CATALOG](../../../web/frontend/ARTDECO_COMPONENTS_CATALOG.md) | 当前组件全景目录，覆盖 reusable assets 与 page-level workbench blocks |
+| `[页面][模板]` | [ARTDECO_PAGE_TEMPLATE_GUIDE](./ARTDECO_PAGE_TEMPLATE_GUIDE.md) | 模板化工作台页面的承载方式 |
+| `[页面][验证]` | [ARTDECO_FINTECH_PAGE_COMPOSITION_AUDIT](./ARTDECO_FINTECH_PAGE_COMPOSITION_AUDIT.md) | 页面骨架、一致性与工作台化收敛的审计记录 |
+| `[验证]` | [ARTDECO_FINTECH_IMPLEMENTATION_AUDIT](./ARTDECO_FINTECH_IMPLEMENTATION_AUDIT.md) | 活跃实现与统一规格的对账文档 |
 
-- `ARTDECO_START_HERE.md`
+### 1.2 运行时与历史基准文档
 
-然后再回到这里按标签和场景查完整目录。
+| 标签 | 文档 | 职责 |
+|------|------|------|
+| `[架构][运行时摘要]` | [ArtDeco_System_Architecture_Summary](../../api/ArtDeco_System_Architecture_Summary.md) | 从 Vue 路由、容器模式、组件边界角度总结当前运行时 |
+| `[历史基准]` | [ARTDECO_V3_COMPLETE_SUMMARY](../../reports/ARTDECO_V3_COMPLETE_SUMMARY.md) | V3 升级过程与后续治理刷新之间的历史基准 |
 
-## 1. 标签说明 (Reading Tags)
+### 1.3 兼容入口
 
-为减少后续接手成本，本文档给每份核心文档加上阅读标签：
+以下两个入口保留是为了兼容历史报告、审核记录和外部引用；真实内容仍在 `docs/guides/web/`：
 
-- `[必读]`: 第一次接手必须先读
-- `[样式真值]`: 样式、token、布局规则的事实源
-- `[组件]`: 组件目录、组件开发、组件选型
-- `[页面]`: 页面骨架、页面构图、页面治理
-- `[架构]`: 架构口径、布局壳层、Container-Tab 体系
-- `[验证]`: 测试、门禁、验证路径
-- `[历史基准]`: 历史上仍有参考价值，但不是当前唯一事实源
+| 兼容路径 | 指向 |
+|----------|------|
+| [docs/guides/ARTDECO_MASTER_INDEX.md](/opt/claude/mystocks_spec/docs/guides/ARTDECO_MASTER_INDEX.md) | `docs/guides/web/ARTDECO_MASTER_INDEX.md` |
+| [docs/guides/ARTDECO_COMPONENT_GUIDE.md](/opt/claude/mystocks_spec/docs/guides/ARTDECO_COMPONENT_GUIDE.md) | `docs/guides/web/ARTDECO_COMPONENT_GUIDE.md` |
 
-## 1.1 优先阅读顺序
+## 2. 推荐阅读顺序
 
-如果你是第一次接手，建议先按下面顺序读：
+如果你是第一次接手 ArtDeco：
 
-1. `[必读]` [ArtDeco Start Here](./ARTDECO_START_HERE.md)
-2. `[样式真值]` [ArtDeco SCSS Governance Baseline](./ARTDECO_SCSS_GOVERNANCE_BASELINE.md)
-3. `[架构]` [ArtDeco Fintech Unified Spec](./ARTDECO_FINTECH_UNIFIED_SPEC.md)
-4. `[页面]` [ArtDeco Fintech Page Composition Audit](./ARTDECO_FINTECH_PAGE_COMPOSITION_AUDIT.md)
-5. `[组件]` [ArtDeco Component Development Guide](./ARTDECO_COMPONENT_GUIDE.md)
-6. `[组件]` [ArtDeco Components Catalog](../../../web/frontend/ARTDECO_COMPONENTS_CATALOG.md)
+1. [ARTDECO_START_HERE](./ARTDECO_START_HERE.md)
+2. [ARTDECO_FINTECH_UNIFIED_SPEC](./ARTDECO_FINTECH_UNIFIED_SPEC.md)
+3. [ARTDECO_SCSS_GOVERNANCE_BASELINE](./ARTDECO_SCSS_GOVERNANCE_BASELINE.md)
+4. [ARTDECO_COMPONENT_GUIDE](./ARTDECO_COMPONENT_GUIDE.md)
+5. [ArtDeco_System_Architecture_Summary](../../api/ArtDeco_System_Architecture_Summary.md)
+6. [ARTDECO_COMPONENTS_CATALOG](../../../web/frontend/ARTDECO_COMPONENTS_CATALOG.md)
 
-## 1.2 按任务查找
+## 3. 按任务找文档
 
-如果你不是通读，而是要马上执行任务，直接按这里找：
+| 任务 | 优先文档 |
+|------|----------|
+| 判断当前 ArtDeco 到底是什么 | `ARTDECO_START_HERE.md` |
+| 判断“现在该按什么规则实现” | `ARTDECO_FINTECH_UNIFIED_SPEC.md` |
+| 改 token / 字体 / 间距 / glow / Grid | `ARTDECO_SCSS_GOVERNANCE_BASELINE.md` |
+| 判断组件放哪里 | `ARTDECO_COMPONENT_GUIDE.md` |
+| 查现有组件与页面块存量 | `web/frontend/ARTDECO_COMPONENTS_CATALOG.md` |
+| 理解页面模板与工作台壳层 | `ARTDECO_PAGE_TEMPLATE_GUIDE.md` |
+| 理解当前运行时架构 | `ArtDeco_System_Architecture_Summary.md` |
+| 查历史基线与升级背景 | `ARTDECO_V3_COMPLETE_SUMMARY.md` |
+| 查实现/页面是否已治理到位 | `ARTDECO_FINTECH_IMPLEMENTATION_AUDIT.md` / `ARTDECO_FINTECH_PAGE_COMPOSITION_AUDIT.md` |
 
-- 改 token / spacing / color / glow / 字体
-  看 `[样式真值]` 文档
-- 改页面骨架 / tabs shell / hero / layout
-  看 `[页面]` 和 `[架构]` 文档
-- 新增组件 / 判断组件放哪里
-  看 `[组件]` 文档
-- 跑验证 / 查门禁
-  看 `[验证]` 文档
-- 查历史背景 / 版本基准
-  看 `[历史基准]` 文档
+## 4. 当前目录口径
 
-## 2. 核心设计规范 (Core Specifications)
+当前 ArtDeco 文档体系按三层理解：
 
-*   **[必读][架构][样式真值] Start Here**: [ArtDeco Start Here](./ARTDECO_START_HERE.md)
-    *   One-page entry document for later AI / developers: source of truth, architecture, rules, workflow, verification, and doc map.
-*   **[样式真值] Design Tokens**: `web/frontend/src/styles/artdeco-tokens.scss`
-    *   Primary source of truth for colors (#D4AF37), spacing, and typography (Cinzel/Barlow/JetBrains Mono).
-*   **[必读][样式真值] SCSS Governance Baseline**: [ArtDeco SCSS Governance Baseline](./ARTDECO_SCSS_GOVERNANCE_BASELINE.md)
-    *   Active source of truth for SCSS layering, token usage, grid usage, compatibility boundaries, and new-code rules.
-*   **[必读][架构] ArtDeco Fintech Unified Spec**: [ArtDeco Fintech Unified Spec](./ARTDECO_FINTECH_UNIFIED_SPEC.md)
-    *   Defines how the project inherits the original ArtDeco style and where the current fintech-oriented evolution is intentional.
-*   **[架构][验证] Implementation Audit**: [ArtDeco Fintech Implementation Audit](./ARTDECO_FINTECH_IMPLEMENTATION_AUDIT.md)
-    *   Tracks what has already been implemented in the active ArtDeco/Fintech runtime chain and what remains in compatibility layers.
-*   **[页面][验证] Page Composition Audit**: [ArtDeco Fintech Page Composition Audit](./ARTDECO_FINTECH_PAGE_COMPOSITION_AUDIT.md)
-    *   Tracks page-level ArtDeco inheritance quality, first-wave remediation results, and the next consistency priorities.
-*   **[架构][历史基准] System Architecture**: [ArtDeco System Architecture Summary](../../api/ArtDeco_System_Architecture_Summary.md)
-    *   Overview of the active Container-Tab hybrid architecture and base asset boundaries.
-*   **[架构][历史基准] V3.1 Design Spec**: [ArtDeco Trading Center Optimized V3.1](../../api/ARTDECO_TRADING_CENTER_OPTIMIZED_V3.1.md)
-    *   The latest specification for the Trading Center and V3 upgrades.
-*   **[组件][历史基准] Component Catalog**: [ArtDeco Components Catalog](../../../web/frontend/ARTDECO_COMPONENTS_CATALOG.md)
-    *   Governance baseline for 80+ components and Base/Domain boundaries.
+1. **治理层**
+   `START_HERE`、`UNIFIED_SPEC`、`SCSS_GOVERNANCE_BASELINE`、`COMPONENT_GUIDE`
+2. **运行时与目录层**
+   `COMPONENTS_CATALOG`、`System_Architecture_Summary`、`PAGE_TEMPLATE_GUIDE`
+3. **验证与历史层**
+   `FINTECH_IMPLEMENTATION_AUDIT`、`FINTECH_PAGE_COMPOSITION_AUDIT`、`V3_COMPLETE_SUMMARY`
 
-## 3. 实施与指南 (Implementation & Guides)
+## 5. 不再作为当前唯一事实源的文档
 
-*   **[历史基准] V3.0 Complete Summary**: [ArtDeco V3.0 Complete Summary](../../reports/ARTDECO_V3_COMPLETE_SUMMARY.md)
-    *   Comprehensive summary of the V3.0 design system upgrade.
-*   **[历史基准] 历史/归档**: [ArtDeco v2.0 Final Completion Report](../../reports/ARTDECO_V2_FINAL_COMPLETION_REPORT.md)
-    *   Historical archive reference only, not active governance baseline.
-*   **[必读][组件] Component Guide**: [ArtDeco Component Development Guide](./ARTDECO_COMPONENT_GUIDE.md)
-    *   Coding standards and patterns for creating new ArtDeco components.
-*   **[样式真值] Grid System**: [ArtDeco Grid Quick Reference](./ARTDECO_GRID_QUICK_REFERENCE.md)
-    *   Usage guide for the responsive grid layout system (`artdeco-grid.scss`).
-*   **[页面][架构] API Mapping**: [ArtDeco Menu API Mapping](./ARTDECO_MENU_API_MAPPING.md)
-    *   Defines the relationship between menu items and backend API endpoints.
+以下文档仍可保留为历史参考，但不应作为新实现的直接规范：
 
-## 4. 页面开发与测试 (Page Development & Testing)
+- `ART_DECO_COMPONENT_SHOWCASE*.md`
+- `mystocks-artdeco-available-components.md`
+- 各类早期 ArtDeco 设计展示、阶段报告、迁移笔记
 
-*   **[页面] UI/UX Functionality**: [ArtDeco UI/UX Functionality Guide](./ARTDECO_UI_UX_FUNCTIONALITY_GUIDE.md)
-    *   Detailed breakdown of UI features and page-specific implementations.
-*   **[验证] Integration Test Plan**: [Web Frontend ArtDeco Integration Test Plan](../../reports/WEB_FRONTEND_ARTDECO_INTEGRATION_TEST_PLAN.md)
-    *   Verification strategy for components and visual consistency.
+判断原则：
 
-## 5. 视觉参考 (Visual References)
+- 能决定“现在怎么写”的，只能是活跃治理文档和源码。
+- 历史文档用来理解背景，不用来覆盖当前真值。
 
-*   **[历史基准] Component Showcase**: [ArtDeco Component Showcase V2.md](./ART_DECO_COMPONENT_SHOWCASE_V2.md)
-    *   Visual guide to component variants and rendering.
-*   **[历史基准] Visual Optimization**: [ArtDeco Visual Optimization Completion Report](../../reports/ARTDECO_VISUAL_OPTIMIZATION_COMPLETION_REPORT.md)
-    *   Recent updates to button heights, card ratios, and spacing.
+## 6. 维护规则
 
----
-**Maintenance**: All new ArtDeco documentation must be indexed here. Active guidance must stay aligned to the ArtDeco v3/v3.1 Governance Baseline. Obsolete documents are moved to `archive/docs/artdeco/`.
+- 新增 ArtDeco 文档时，必须先判断它属于治理层、运行时层还是历史层，再回填到本索引。
+- 如果文档职责变了，先改本索引，再改文档正文。
+- 如果文档路径变了，必须保留兼容入口或同步修正所有上游引用。
+- 当 `web/frontend/src/styles/artdeco-tokens.scss`、`web/frontend/src/views/artdeco-pages/**`、`web/frontend/src/components/artdeco/**` 的结构发生变化时，至少同步更新：
+  - 本索引
+  - `ARTDECO_FINTECH_UNIFIED_SPEC.md`
+  - `ARTDECO_COMPONENTS_CATALOG.md`
+  - `ArtDeco_System_Architecture_Summary.md`
