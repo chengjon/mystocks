@@ -20,7 +20,7 @@
     <!-- 图表容器 -->
     <div class="chart-content">
       <div class="radar-container">
-        <div ref="chartRef" class="chart-canvas" :style="{ height: chartHeight, width: '100%' }"></div>
+        <div ref="chartRef" class="chart-canvas" :style="{ height: chartHeight }"></div>
 
         <!-- 中心数值显示 -->
         <div class="center-display">
