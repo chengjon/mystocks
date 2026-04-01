@@ -1,0 +1,88 @@
+version: "v0.2"
+
+task:
+  id: "pr-31"
+  title: "preserve artdeco web review reports"
+  owner: "main"
+  created_at: "2026-04-01"
+
+mainline:
+  id: "L1-artdeco-web-report-preservation"
+  objective: "land the leftover 2026-03-31 ArtDeco Web optimization and review reports on main as clearly historical, non-canonical materials"
+  milestone_id: "L2-dirty-worktree-salvage"
+  slice_id: "L3-artdeco-web-report-preservation"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "artdeco-web-reports-are-documentation-only"
+
+scope:
+  allowed_paths:
+    - "docs/reports/ARTDECO_WEB_DESIGN_OPTIMIZATION_RECOMMENDATIONS_2026-03-31.md"
+    - "docs/reports/ARTDECO_WEB_OPTIMIZATION_EXECUTION_CHECKLIST_2026-03-31.md"
+    - "docs/reports/INDEX.md"
+    - "docs/reports/REVIEW_ARTDECO_WEB_DESIGN_OPTIMIZATION_RECOMMENDATIONS_2026-03-31.md"
+    - "governance/mainline/task-cards/pr-31.yaml"
+    - "tests/unit/scripts/test_repository_hygiene_paths.py"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No frontend runtime, styling, or route behavior changes"
+  - "No attempt to turn these reports into the active ArtDeco source-of-truth chain"
+
+acceptance:
+  checks:
+    - id: "artdeco-web-report-sync-tests"
+      command: "python -m pytest tests/unit/scripts/test_repository_hygiene_paths.py -q -k \"next_work_tasks_doc_is_converged_under_reports_tasks or handover_task_doc_is_converged_under_reports_tasks or historical_artdeco_web_reports\" --no-cov"
+      required: true
+    - id: "docs-diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-31.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If these reports are not marked non-canonical, future ArtDeco work may treat them as a replacement for the active spec chain"
+    - "If they remain stranded outside main, the design-review context in the dirty backup workspace is easy to lose"
+  rollback_plan: "git revert <merge-commit-sha> if the preserved reports prove misleading or the index/test coverage is wrong"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "preserve useful ArtDeco Web optimization and review reports without letting them override the active spec chain"
+    modified_scope: "three historical reports, the reports index, the report sync test, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime behavior changes; only documentation framing, discoverability, and test coverage are updated"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the docs slice if the historical framing or index placement proves incorrect after merge"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-01T00:00:00Z"
+    approval_note: "ArtDeco Web report preservation is documentation-only"
+    secondary_approved: false
