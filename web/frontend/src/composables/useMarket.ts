@@ -190,20 +190,15 @@ export function useMarket(options?: {
         }
       }
 
-      // Adapt parameters for API (startDate -> start_date)
-      const _apiParams = {
-        symbol: params.symbol,
-        interval: params.interval,
+      const requestParams = {
+        stock_code: params.symbol,
+        period: params.interval,
         start_date: params.startDate,
         end_date: params.endDate,
         limit: params.limit
-      };
+      }
 
-      // Use getKline instead of getKLine
-      const response = await marketService.getKline({
-        stock_code: params.symbol,
-        period: params.interval,
-      });
+      const response = await marketService.getKline(requestParams);
 
       const adapted = MarketAdapter.adaptKLineData(response as never)
       const vm: KLineChartData[] = adapted.categoryData.map((date, index) => {
