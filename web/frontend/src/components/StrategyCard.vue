@@ -189,7 +189,7 @@ const handleDelete = () => {
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   padding: 12px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+  background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-elevated) 100%);
   border-radius: 6px;
   margin-bottom: 12px;
 }
