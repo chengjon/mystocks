@@ -465,7 +465,7 @@ onMounted(() => {
 }
 
 .main-content {
-  background: white;
+  background: var(--color-bg-secondary);
   border-radius: 8px;
   box-shadow: 0 2px 12px rgb(0 0 0 / 10%);
   overflow: hidden;
@@ -473,17 +473,17 @@ onMounted(() => {
 
 :deep(.el-tabs__header) {
   margin: 0;
-  background: #fafafa;
-  border-bottom: 1px solid #e4e7ed;
+  background: var(--color-bg-primary);
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 :deep(.el-tabs__item) {
   font-weight: 600;
-  color: #606266;
+  color: var(--color-text-secondary);
 }
 
 :deep(.el-tabs__item.is-active) {
-  color: #409EFF;
+  color: var(--color-info);
 }
 
 :deep(.el-tabs__content) {
