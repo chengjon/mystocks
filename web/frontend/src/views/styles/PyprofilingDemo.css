@@ -264,10 +264,42 @@
   margin-top: var(--spacing-4);
 }
 
+.tech-table-offset {
+  margin-top: calc(var(--spacing-4) - 1px);
+}
+
+.tech-section-heading {
+  margin-top: calc(var(--spacing-6) + var(--spacing-4) - 2px);
+}
+
 .install-card h4 {
   margin-top: 0;
   margin-bottom: var(--spacing-3);
   color: var(--accent-gold);
+}
+
+.install-command-heading {
+  margin-top: calc(var(--spacing-4) - 1px) !important;
+}
+
+.install-command-input {
+  margin-top: calc(var(--spacing-2) + 2px);
+}
+
+.install-command-note {
+  margin-top: calc(var(--spacing-2) + 2px);
+  color: var(--fg-muted);
+  font-size: 13px;
+}
+
+.install-command-code,
+.font-config-code {
+  display: block;
+  margin-top: calc(var(--spacing-2) + 2px);
+}
+
+.tech-font-alert {
+  margin-top: calc(var(--spacing-4) - 1px);
 }
 
 .install-card ul {

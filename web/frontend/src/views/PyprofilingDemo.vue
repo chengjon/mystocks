@@ -364,41 +364,41 @@
 
       <div class="tech-section">
         <h3>CORE DEPENDENCIES</h3>
-        <el-table :data="dependencies" style="margin-top: 15px">
+        <el-table :data="dependencies" class="tech-table-offset">
           <el-table-column prop="package" label="PACKAGE" width="200" />
           <el-table-column prop="version" label="VERSION" width="150" />
           <el-table-column prop="purpose" label="PURPOSE" />
         </el-table>
 
-        <h3 style="margin-top: 30px">INSTALLATION GUIDE</h3>
+        <h3 class="tech-section-heading">INSTALLATION GUIDE</h3>
         <el-card :hoverable="true" class="install-card">
           <h4>ENVIRONMENT REQUIREMENTS</h4>
           <ul>
             <li>Python 3.6+</li>
             <li>pip (recommend upgrading to latest)</li>
           </ul>
-          <h4 style="margin-top: 15px">INSTALL COMMAND</h4>
+          <h4 class="install-command-heading">INSTALL COMMAND</h4>
           <el-input
             value="pip install -r requirements.txt"
             readonly
-            style="margin-top: 10px"
+            class="install-command-input"
           >
             <template #prepend>COMMAND</template>
           </el-input>
-          <p style="margin-top: 10px; color: var(--fg-muted); font-size: 13px">
+          <p class="install-command-note">
             If you encounter installation issues, try:<br>
-            <code style="display: block; margin-top: 10px">
+            <code class="install-command-code">
               python -m pip install --force-reinstall pip setuptools
             </code>
           </p>
         </el-card>
 
-        <h3 style="margin-top: 30px">CHINESE FONT CONFIGURATION</h3>
-        <el-alert type="info" :closable="false" style="margin-top: 15px">
+        <h3 class="tech-section-heading">CHINESE FONT CONFIGURATION</h3>
+        <el-alert type="info" :closable="false" class="tech-font-alert">
           <template #title>MATPLOTLIB CHINESE DISPLAY</template>
           <div>
             Project uses SimHei font for Chinese labels. If you encounter garbled text:<br>
-            <code style="display: block; margin-top: 10px">
+            <code class="font-config-code">
               plt.rcParams['font.sans-serif'] = ['SimHei']<br>
               plt.rcParams['axes.unicode_minus'] = False
             </code>
