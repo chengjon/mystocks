@@ -104,23 +104,23 @@ export function useBacktestGPU() {
     // Methods
     const getAvailabilityColor = () => {
         const { availability } = gpuStatus
-        if (availability >= 90) return '#67C23A'
-        if (availability >= 70) return '#E6A23C'
-        return '#F56C6C'
+        if (availability >= 90) return 'var(--artdeco-rise)'
+        if (availability >= 70) return 'var(--artdeco-warning)'
+        return 'var(--artdeco-down)'
     }
 
     const getUtilizationColor = () => {
         const { utilization } = gpuStatus
-        if (utilization >= 80) return '#F56C6C'
-        if (utilization >= 60) return '#E6A23C'
-        return '#67C23A'
+        if (utilization >= 80) return 'var(--artdeco-down)'
+        if (utilization >= 60) return 'var(--artdeco-warning)'
+        return 'var(--artdeco-rise)'
     }
 
     const getMemoryColor = () => {
         const { memoryUsagePercent } = gpuStatus
-        if (memoryUsagePercent >= 90) return '#F56C6C'
-        if (memoryUsagePercent >= 70) return '#E6A23C'
-        return '#67C23A'
+        if (memoryUsagePercent >= 90) return 'var(--artdeco-down)'
+        if (memoryUsagePercent >= 70) return 'var(--artdeco-warning)'
+        return 'var(--artdeco-rise)'
     }
 
     const getTemperatureStatus = () => {
