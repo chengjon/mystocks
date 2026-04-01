@@ -11,9 +11,10 @@
           v-if="filter.type === 'input'"
           :model-value="getInputValue(filter.key)"
           @update:model-value="formData[filter.key] = $event ?? ''"
+          :class="getFilterControlClass(filter.type)"
           :placeholder="filter.placeholder || `Search ${filter.label}`"
           clearable
-          :style="{ width: filter.width || '150px' }"
+          :style="filter.width ? { width: filter.width } : undefined"
           @keyup.enter="handleSearch"
         />
 
@@ -22,9 +23,10 @@
           v-else-if="filter.type === 'select'"
           :model-value="getSelectValue(filter.key)"
           @update:model-value="formData[filter.key] = $event ?? ''"
+          :class="getFilterControlClass(filter.type)"
           :placeholder="filter.placeholder || 'All'"
           clearable
-          :style="{ width: filter.width || '120px' }"
+          :style="filter.width ? { width: filter.width } : undefined"
         >
           <el-option
             v-for="(option, _idx) in filter.options"
@@ -39,9 +41,10 @@
           v-else-if="filter.type === 'date-picker'"
           :model-value="getDateValue(filter.key)"
           @update:model-value="formData[filter.key] = $event ?? null"
+          :class="getFilterControlClass(filter.type)"
           type="date"
           :placeholder="filter.placeholder || 'Select date'"
-          :style="{ width: filter.width || '150px' }"
+          :style="filter.width ? { width: filter.width } : undefined"
         />
 
         <!-- 日期范围选择器 -->
@@ -49,13 +52,14 @@
           v-else-if="filter.type === 'date-range'"
           :model-value="getDateValue(filter.key)"
           @update:model-value="formData[filter.key] = $event ?? null"
+          :class="getFilterControlClass(filter.type)"
           type="daterange"
           range-separator="TO"
           start-placeholder="START DATE"
           end-placeholder="END DATE"
           format="YYYY-MM-DD"
           value-format="YYYY-MM-DD"
-          :style="{ width: filter.width || '260px' }"
+          :style="filter.width ? { width: filter.width } : undefined"
         />
       </el-form-item>
 
@@ -181,6 +185,13 @@ const handleSearch = () => {
   emit('search', params)
 }
 
+const getFilterControlClass = (type: FilterItem['type']) => {
+  if (type === 'select') return 'filter-control filter-control--select'
+  if (type === 'date-range') return 'filter-control filter-control--date-range'
+  if (type === 'date-picker') return 'filter-control filter-control--date'
+  return 'filter-control filter-control--input'
+}
+
 const handleReset = () => {
   props.filters.forEach(filter => {
     formData[filter.key] = filter.defaultValue !== undefined ? filter.defaultValue : ''
@@ -222,6 +233,21 @@ defineExpose({
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--color-accent);
+    }
+
+    .filter-control {
+      &--input,
+      &--date {
+        width: 150px;
+      }
+
+      &--select {
+        width: 120px;
+      }
+
+      &--date-range {
+        width: 260px;
+      }
     }
   }
 
