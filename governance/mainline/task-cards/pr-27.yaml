@@ -1,0 +1,87 @@
+version: "v0.2"
+
+task:
+  id: "pr-27"
+  title: "align artdeco audit summaries with current runtime and guide chain"
+  owner: "main"
+  created_at: "2026-04-01"
+
+mainline:
+  id: "L1-artdeco-audit-alignment"
+  objective: "land the remaining ArtDeco audit and summary documents on main with wording that matches the current runtime and guide truth chain"
+  milestone_id: "L2-artdeco-docs"
+  slice_id: "L3-audit-summary-alignment"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "documentation-summary-alignment-does-not-change-product-domain-behavior"
+
+scope:
+  allowed_paths:
+    - "docs/api/ArtDeco_System_Architecture_Summary.md"
+    - "docs/guides/web/ARTDECO_FINTECH_IMPLEMENTATION_AUDIT.md"
+    - "docs/guides/web/ARTDECO_FINTECH_PAGE_COMPOSITION_AUDIT.md"
+    - "docs/reports/ARTDECO_V3_COMPLETE_SUMMARY.md"
+    - "governance/mainline/task-cards/pr-27.yaml"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No frontend runtime implementation changes"
+  - "No additional guide taxonomy expansion beyond the declared audit and summary documents"
+
+acceptance:
+  checks:
+    - id: "docs-diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "docs-reference-presence"
+      command: "test -f docs/guides/web/ARTDECO_MASTER_INDEX.md && test -f docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md && test -f web/frontend/ARTDECO_COMPONENTS_CATALOG.md"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-27.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the audits describe an outdated runtime model, later documentation and review work will continue to drift from reality"
+    - "If the historical V3 summary stays too implementation-log-heavy, readers will keep treating it as a source of truth instead of a baseline"
+  rollback_plan: "git revert <merge-commit-sha> if the audit-summary alignment introduces broken references or misleading governance wording"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "align the ArtDeco runtime summary, implementation audit, page composition audit, and V3 baseline summary with the current guide chain"
+    modified_scope: "two audit docs, one runtime architecture summary, one historical baseline summary, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime behavior changes; only documentation semantics and source-of-truth boundaries are clarified"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the docs slice if the refreshed audit/summary wording proves misleading after merge"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-01T00:00:00Z"
+    approval_note: "ArtDeco audit alignment is documentation-only cleanup"
+    secondary_approved: false
