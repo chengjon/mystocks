@@ -403,9 +403,9 @@ const getScoreClass = (score: number | undefined): string => {
 }
 
 const getProgressColor = (score: number): string => {
-  if (score >= 70) return '#67C23A'
-  if (score >= 50) return '#E6A23C'
-  return '#F56C6C'
+  if (score >= 70) return 'var(--color-success)'
+  if (score >= 50) return 'var(--color-warning)'
+  return 'var(--color-danger)'
 }
 
 const getPriorityTagType = (priority: string): string => {
