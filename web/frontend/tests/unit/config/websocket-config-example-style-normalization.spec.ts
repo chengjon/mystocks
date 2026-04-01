@@ -14,6 +14,7 @@ describe('WebSocketConfigExample style normalization', () => {
     expect(source).toContain('class="route-name"')
     expect(source).toContain('class="route-meta"')
     expect(source).toContain('class="route-description"')
+    expect(source).toContain('var(--color-text-primary)')
     expect(source).toContain('var(--color-text-secondary)')
     expect(source).toContain('var(--color-text-tertiary)')
 
@@ -21,6 +22,7 @@ describe('WebSocketConfigExample style normalization', () => {
     expect(source).not.toContain('style="float: left"')
     expect(source).not.toContain('style="float: right; color: #8492a6; font-size: 13px"')
     expect(source).not.toContain('style="margin-left: 10px"')
+    expect(source).not.toContain('color: #303133')
     expect(source).not.toContain('color: #8492a6')
     expect(source).not.toContain('color: #909399')
   })

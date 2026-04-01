@@ -304,7 +304,7 @@ onUnmounted(() => {
 
 .route-selector h4 {
   margin-bottom: 10px;
-  color: #303133;
+  color: var(--color-text-primary);
 }
 
 .route-select {
@@ -338,7 +338,7 @@ onUnmounted(() => {
 
 .subscribed-routes h4 {
   margin-bottom: 10px;
-  color: #303133;
+  color: var(--color-text-primary);
 }
 
 .message-display,
@@ -349,7 +349,7 @@ onUnmounted(() => {
 .message-display h4,
 .error-display h4 {
   margin-bottom: 10px;
-  color: #303133;
+  color: var(--color-text-primary);
 }
 
 pre {
