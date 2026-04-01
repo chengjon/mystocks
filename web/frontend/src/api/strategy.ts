@@ -174,7 +174,7 @@ class StrategyApiService {
    * Get available strategy templates
    */
   async getStrategyTemplates(): Promise<unknown[]> {
-    return request.get(`${this.baseUrl}/templates`) as unknown[]
+    return (await request.get(`${this.baseUrl}/templates`)) as unknown[]
   }
 
   /**
@@ -208,7 +208,7 @@ class StrategyApiService {
     limit?: number
     since?: string
   }): Promise<unknown[]> {
-    return request.get(`${this.baseUrl}/${id}/logs`, { params }) as unknown[]
+    return (await request.get(`${this.baseUrl}/${id}/logs`, { params })) as unknown[]
   }
 
   /**
@@ -233,7 +233,7 @@ class StrategyApiService {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
-    })
+    }) as StrategyConfigResponse
     return StrategyAdapter.toStrategyConfigVM(rawData)
   }
 }

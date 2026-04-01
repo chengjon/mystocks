@@ -7,19 +7,15 @@
 import { request } from '@/utils/request.ts'
 import { MonitoringAdapter } from '@/utils/monitoring-adapters.ts'
 import type {
+  DataQualityResponse,
+  LogEntryResponse,
+  MonitoringAlertResponse,
   SystemStatusVM,
+  SystemStatusResponse,
   MonitoringAlertVM,
   LogEntryVM,
   DataQualityVM
-} from '@/utils/monitoring-adapters.ts'
-
-// Temporary: Use any for missing generated types
-// TODO: Fix type generation to include these types
-// Type aliases currently unused - comment out to avoid ESLint error
-// type SystemStatusResponse = Record<string, unknown>
-// type MonitoringAlertResponse = Record<string, unknown>
-// type LogEntryResponse = Record<string, unknown>
-// type DataQualityResponse = Record<string, unknown>
+} from '@/utils/monitoring-adapters.types.ts'
 
 class MonitoringApiService {
   private baseUrl = '/api/monitoring'
@@ -28,7 +24,7 @@ class MonitoringApiService {
    * Get system status overview
    */
   async getSystemStatus(): Promise<SystemStatusVM> {
-    const rawData = await request.get(`${this.baseUrl}/system/status`)
+    const rawData = await request.get(`${this.baseUrl}/system/status`) as unknown as SystemStatusResponse
     return MonitoringAdapter.toSystemStatusVM(rawData)
   }
 
@@ -61,7 +57,7 @@ class MonitoringApiService {
     limit?: number
     offset?: number
   }): Promise<MonitoringAlertVM[]> {
-    const rawData = await request.get(`${this.baseUrl}/alerts`, { params })
+    const rawData = await request.get(`${this.baseUrl}/alerts`, { params }) as unknown as MonitoringAlertResponse[]
     return MonitoringAdapter.toMonitoringAlertVM(rawData)
   }
 
@@ -69,7 +65,7 @@ class MonitoringApiService {
    * Get alert details
    */
   async getAlert(alertId: string): Promise<MonitoringAlertVM> {
-    const rawData = await request.get(`${this.baseUrl}/alerts/${alertId}`)
+    const rawData = await request.get(`${this.baseUrl}/alerts/${alertId}`) as unknown as MonitoringAlertResponse
     const alerts = MonitoringAdapter.toMonitoringAlertVM([rawData])
     return alerts[0]
   }
@@ -101,7 +97,7 @@ class MonitoringApiService {
     limit?: number
     offset?: number
   }): Promise<LogEntryVM[]> {
-    const rawData = await request.get(`${this.baseUrl}/logs`, { params })
+    const rawData = await request.get(`${this.baseUrl}/logs`, { params }) as unknown as LogEntryResponse[]
     return MonitoringAdapter.toLogEntryVM(rawData)
   }
 
@@ -109,7 +105,7 @@ class MonitoringApiService {
    * Get log details
    */
   async getLog(logId: string): Promise<LogEntryVM> {
-    const rawData = await request.get(`${this.baseUrl}/logs/${logId}`)
+    const rawData = await request.get(`${this.baseUrl}/logs/${logId}`) as unknown as LogEntryResponse
     const logs = MonitoringAdapter.toLogEntryVM([rawData])
     return logs[0]
   }
@@ -130,7 +126,7 @@ class MonitoringApiService {
     }
     limit?: number
   }): Promise<LogEntryVM[]> {
-    const rawData = await request.post(`${this.baseUrl}/logs/search`, query)
+    const rawData = await request.post(`${this.baseUrl}/logs/search`, query) as unknown as LogEntryResponse[]
     return MonitoringAdapter.toLogEntryVM(rawData)
   }
 
@@ -142,7 +138,7 @@ class MonitoringApiService {
     startTime?: string
     endTime?: string
   }): Promise<DataQualityVM> {
-    const rawData = await request.get(`${this.baseUrl}/data-quality`, { params })
+    const rawData = await request.get(`${this.baseUrl}/data-quality`, { params }) as unknown as DataQualityResponse
     return MonitoringAdapter.toDataQualityVM(rawData)
   }
 
@@ -274,7 +270,7 @@ class MonitoringApiService {
       params,
       responseType: 'blob'
     })
-    return response
+    return response as unknown as Blob
   }
 
   /**
