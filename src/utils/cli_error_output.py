@@ -21,7 +21,9 @@ def print_cli_error(error: Exception, *, audit_id: str | None = None) -> None:
     print(render_cli_error_json(error, audit_id=audit_id))
 
 
-def build_external_command_runtime_error(argv: list[str], error: Exception, *, prefix: str = "external smoke command failed") -> RuntimeError:
+def build_external_command_runtime_error(
+    argv: list[str], error: Exception, *, prefix: str = "external smoke command failed"
+) -> RuntimeError:
     detail = getattr(error, "stderr", None) or str(error)
     return RuntimeError(f"{prefix} for argv={argv!r}: {detail}")
 
