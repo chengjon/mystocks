@@ -1136,6 +1136,32 @@ def test_historical_dirty_worktree_batch_plan_is_discoverable_under_reports_task
     assert "仅供回溯，不代表当前主线状态" in plan
 
 
+def test_historical_artdeco_web_reports_are_discoverable_and_non_canonical() -> None:
+    reports_index = (PROJECT_ROOT / "docs" / "reports" / "INDEX.md").read_text(encoding="utf-8")
+
+    names = [
+        "ARTDECO_WEB_DESIGN_OPTIMIZATION_RECOMMENDATIONS_2026-03-31.md",
+        "ARTDECO_WEB_OPTIMIZATION_EXECUTION_CHECKLIST_2026-03-31.md",
+        "REVIEW_ARTDECO_WEB_DESIGN_OPTIMIZATION_RECOMMENDATIONS_2026-03-31.md",
+    ]
+
+    for name in names:
+        report = (PROJECT_ROOT / "docs" / "reports" / name).read_text(encoding="utf-8")
+
+        assert f"({name})" in reports_index
+        assert "仅供回溯，不代表当前主线状态" in report
+        assert "不能替代当前 ArtDeco 规范入口" in report
+
+    review = (
+        PROJECT_ROOT
+        / "docs"
+        / "reports"
+        / "REVIEW_ARTDECO_WEB_DESIGN_OPTIMIZATION_RECOMMENDATIONS_2026-03-31.md"
+    ).read_text(encoding="utf-8")
+
+    assert "历史审核记录" in review
+
+
 def test_low_reference_tdd_and_debt_reports_are_converged_under_reports_completion_reports() -> None:
     reports_index = (PROJECT_ROOT / "docs" / "reports" / "INDEX.md").read_text(encoding="utf-8")
     completion_index = (PROJECT_ROOT / "docs" / "reports" / "completion_reports" / "INDEX.md").read_text(
