@@ -100,17 +100,17 @@ const props = defineProps({
   // 背景颜色
   backgroundColor: {
     type: String,
-    default: '#304156'
+    default: 'var(--artdeco-bg-base)'
   },
   // 文字颜色
   textColor: {
     type: String,
-    default: '#bfcbd9'
+    default: 'var(--artdeco-fg-muted)'
   },
   // 激活菜单的文字颜色
   activeTextColor: {
     type: String,
-    default: '#409EFF'
+    default: 'var(--artdeco-gold-primary)'
   },
   // 默认激活的菜单路径
   defaultActive: {
