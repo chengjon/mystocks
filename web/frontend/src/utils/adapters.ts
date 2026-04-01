@@ -47,12 +47,6 @@ interface KLinePointItem {
   volume?: number
 }
 
-// Temporary: Use any for missing generated types
-// TODO: Fix type generation to include these types
-type _IndexData = Record<string, unknown>
-type _SectorData = Record<string, unknown>
-type _KLinePoint = Record<string, unknown>
-
 // ViewModel interfaces for UI consumption
 export interface MarketOverviewVM {
   indices: IndexItemVM[]

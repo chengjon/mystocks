@@ -1,0 +1,85 @@
+version: "v0.2"
+
+task:
+  id: "pr-43"
+  title: "remove stale adapter placeholders"
+  owner: "main"
+  created_at: "2026-04-02"
+
+mainline:
+  id: "L1-data-adapter-source-hygiene"
+  objective: "remove stale placeholder commentary and unused compatibility aliases from the frontend data adapter without changing runtime behavior"
+  milestone_id: "L3-mainline-follow-up"
+  slice_id: "L4-data-adapter-source-hygiene"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "frontend"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "source-level-cleanup-with-focused-regression-and-existing-adapter-tests"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-43.yaml"
+    - "web/frontend/src/utils/adapters.ts"
+    - "web/frontend/tests/unit/data-adapter-source-hygiene.spec.ts"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No adapter behavior refactor"
+  - "No cleanup of strategy/trade adapter placeholders in this slice"
+
+acceptance:
+  checks:
+    - id: "data-adapter-hygiene-tests"
+      command: "cd web/frontend && npx vitest run tests/unit/data-adapter-source-hygiene.spec.ts src/api/adapters/marketAdapter.spec.ts --config vitest.config.mts"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-43.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the cleanup removes live compatibility helpers instead of dead aliases, market adapter behavior could regress"
+    - "If the source hygiene assertion is too broad, it could block future intentional compatibility shims"
+  rollback_plan: "git revert <merge-commit-sha> if the cleanup alters market adapter behavior or the source hygiene guard proves too strict"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "remove stale placeholder commentary and dead aliases from the frontend data adapter source"
+    modified_scope: "data adapter source, one focused hygiene regression, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime behavior change intended; this slice only removes dead source clutter"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the slice if market adapter behavior or future compatibility work is blocked"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-02T00:00:00Z"
+    approval_note: "source-level cleanup with focused regression and existing adapter tests"
+    secondary_approved: false
