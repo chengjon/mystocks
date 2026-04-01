@@ -2,7 +2,7 @@
  * Market Composable
  *
  * Vue 3 composable for market data management with automatic error handling,
- * loading states, caching, and Mock data fallback.
+ * loading states, and caching.
  */
 
 import { ref, readonly, onMounted } from 'vue';
@@ -75,18 +75,6 @@ export function useMarket(options?: {
 
       const vm = await marketApi.getMarketOverview()
 
-      // Merge Chip Race data
-      // TODO: MarketOverviewVM interface doesn't have chipRaces field
-      // if (chipRes.success) {
-      //     vm.chipRaces = MarketAdapter.adaptChipRace(chipRes);
-      // }
-
-      // Merge Long Hu Bang data
-      // TODO: MarketOverviewVM interface doesn't have longHuBang field
-      // if (lhbRes.success) {
-      //     vm.longHuBang = MarketAdapter.adaptLongHuBang(lhbRes);
-      // }
-
       // Cache the result
       if (enableCache) {
         cache.set(cacheKey, vm, { ttl: CACHE_TTL.MARKET_OVERVIEW });
@@ -97,10 +85,6 @@ export function useMarket(options?: {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
       error.value = `获取市场概览失败: ${errorMsg}`;
       console.error('[useMarket] fetchMarketOverview error:', err);
-
-      // Adapter handles Mock fallback for individual calls, but since we are assembling,
-      // if the main overview fails, the adapter returns mock overview.
-      // If separate calls fail, we just have empty lists for those sections (safe).
     } finally {
       loading.value = false;
     }

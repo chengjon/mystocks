@@ -1,0 +1,85 @@
+version: "v0.2"
+
+task:
+  id: "pr-42"
+  title: "remove stale useMarket overview TODOs"
+  owner: "main"
+  created_at: "2026-04-02"
+
+mainline:
+  id: "L1-use-market-overview-source-hygiene"
+  objective: "remove stale overview merge TODO blocks from useMarket after the real API bridge has already landed"
+  milestone_id: "L3-mainline-follow-up"
+  slice_id: "L4-use-market-overview-source-hygiene"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "frontend"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "localized-source-hygiene-cleanup-with-focused-regression"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-42.yaml"
+    - "web/frontend/src/composables/useMarket.ts"
+    - "web/frontend/tests/unit/use-market-source-hygiene.spec.ts"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No new chip-race or long-hu-bang feature bridge"
+  - "No market overview behavior change beyond removing dead comments"
+
+acceptance:
+  checks:
+    - id: "use-market-source-hygiene-tests"
+      command: "cd web/frontend && npx vitest run tests/unit/use-market-source-hygiene.spec.ts tests/unit/use-market-overview.spec.ts tests/unit/use-market-fund-flow.spec.ts tests/unit/use-market-kline.spec.ts --config vitest.config.mts"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-42.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If stale comments remain, future work can misread them as active product debt instead of dead notes"
+    - "If the cleanup removes the wrong block, it could hide a still-live requirement rather than dead commentary"
+  rollback_plan: "git revert <merge-commit-sha> if the source-hygiene cleanup proves to have removed meaningful guidance"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "remove stale overview merge TODO comments from useMarket now that the real API bridge exists"
+    modified_scope: "useMarket source comments, one source-hygiene regression test, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime behavior change is intended; this slice only removes dead commentary and keeps a source-level guard"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the slice if the removed commentary turns out to be meaningful active guidance"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-02T00:00:00Z"
+    approval_note: "source-level cleanup with dedicated regression coverage"
+    secondary_approved: false
