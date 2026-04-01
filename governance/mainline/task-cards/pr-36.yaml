@@ -1,0 +1,90 @@
+version: "v0.2"
+
+task:
+  id: "pr-36"
+  title: "tokenize openstock demo panels"
+  owner: "main"
+  created_at: "2026-04-01"
+
+mainline:
+  id: "L1-openstock-demo-tokenization"
+  objective: "move selected low-risk OpenStock demo panels onto the ArtDeco token vocabulary without touching previously rejected regression-prone files"
+  milestone_id: "L2-dirty-worktree-salvage"
+  slice_id: "L3-openstock-demo-tokenization"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "frontend"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "localized-demo-tokenization-slice-with-source-level-guardrails"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-36.yaml"
+    - "web/frontend/src/views/demo/openstock/components/FeatureStatus.vue"
+    - "web/frontend/src/views/demo/openstock/components/KlineChart.vue"
+    - "web/frontend/src/views/demo/openstock/components/StockNews.vue"
+    - "web/frontend/src/views/demo/openstock/components/StockQuote.vue"
+    - "web/frontend/tests/unit/openstock-demo-tokenization.spec.ts"
+  forbidden_paths:
+    - "web/frontend/src/views/demo/openstock/components/HeatmapChart.vue"
+    - "web/frontend/src/views/demo/openstock/components/StockSearch.vue"
+    - "web/frontend/src/views/demo/openstock/components/WatchlistManagement.vue"
+
+non_goals:
+  - "No tooltip HTML rewrite for HeatmapChart"
+  - "No watchlist/search button class changes"
+
+acceptance:
+  checks:
+    - id: "openstock-demo-tokenization-test"
+      command: "cd web/frontend && npx vitest run tests/unit/openstock-demo-tokenization.spec.ts --config vitest.config.mts"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-36.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If legacy OpenStock demo files keep the old bg/text/border token set, they will continue drifting away from the ArtDeco styling baseline"
+    - "If this slice accidentally includes the previously rejected search/watchlist files, it could reintroduce known regressions"
+  rollback_plan: "git revert <merge-commit-sha> if the tokenization slice regresses OpenStock demo rendering"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "tokenize four low-risk OpenStock demo panels while keeping known regression-prone files out of scope"
+    modified_scope: "four demo components, one focused vitest regression, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no intended runtime logic changes; the slice is limited to style/token vocabulary alignment"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the slice if demo rendering regresses or forbidden files were accidentally implicated"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-01T00:00:00Z"
+    approval_note: "localized OpenStock demo tokenization with explicit forbidden paths"
+    secondary_approved: false
