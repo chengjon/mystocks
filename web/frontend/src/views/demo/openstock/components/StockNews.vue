@@ -123,83 +123,77 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
+@use '../../../../styles/artdeco-tokens.scss' as *;
 
 .news-section {
-  padding: 10px 0;
+  padding: var(--artdeco-spacing-3) 0;
 }
 
 .controls-row {
   display: flex;
-  gap: 15px;
+  gap: calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
   align-items: flex-end;
 }
 
 .input-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  min-width: 140px;
+  gap: calc(var(--artdeco-spacing-2) - (var(--artdeco-spacing-px) * 2));
+  min-width: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
 
   .input-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-secondary);
+    color: var(--artdeco-fg-muted);
+    font-size: calc(var(--artdeco-text-sm) - var(--artdeco-spacing-px));
+    font-weight: var(--artdeco-font-medium);
   }
 }
 
-.input {
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  color: var(--text-primary);
-  background: var(--bg-primary);
-  transition: border-color 0.2s;
+.input,
+.select {
+  padding: calc(var(--artdeco-spacing-5) / 2) calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
+  background: var(--artdeco-bg-global);
+  color: var(--artdeco-fg-primary);
+  font-size: var(--artdeco-text-sm);
+  transition: border-color var(--artdeco-transition-quick) var(--artdeco-ease-out);
 
   &:focus {
     outline: none;
-    border-color: var(--primary);
+    border-color: var(--artdeco-gold-primary);
   }
+}
+
+.input::placeholder {
+  color: var(--artdeco-fg-muted);
 }
 
 .select {
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  color: var(--text-primary);
-  background: var(--bg-primary);
   cursor: pointer;
-  transition: border-color 0.2s;
-
-  &:focus {
-    outline: none;
-    border-color: var(--primary);
-  }
 }
 
 .news-list {
-  margin-top: 20px;
+  margin-top: var(--artdeco-spacing-5);
 }
 
 .timeline {
   position: relative;
-  padding-left: 30px;
+  padding-left: calc(var(--artdeco-spacing-5) + var(--artdeco-spacing-2) + (var(--artdeco-spacing-px) * 2));
 
   &::before {
     content: '';
     position: absolute;
-    left: 6px;
     top: 0;
     bottom: 0;
-    width: 2px;
-    background: var(--border-light);
+    left: calc(var(--artdeco-spacing-2) - (var(--artdeco-spacing-px) * 2));
+    width: calc(var(--artdeco-spacing-px) * 2);
+    background: color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
   }
 }
 
 .timeline-item {
   position: relative;
-  padding-bottom: 24px;
+  padding-bottom: var(--artdeco-spacing-6);
 
   &:last-child {
     padding-bottom: 0;
@@ -208,43 +202,43 @@ defineExpose({
 
 .timeline-marker {
   position: absolute;
-  left: -30px;
   top: 0;
-  width: 14px;
-  height: 14px;
-  background: var(--primary);
-  border-radius: 50%;
-  border: 3px solid var(--bg-primary);
+  left: calc((var(--artdeco-spacing-5) + var(--artdeco-spacing-2) + (var(--artdeco-spacing-px) * 2)) * -1);
+  width: calc(var(--artdeco-spacing-3) + (var(--artdeco-spacing-px) * 2));
+  height: calc(var(--artdeco-spacing-3) + (var(--artdeco-spacing-px) * 2));
+  background: var(--artdeco-gold-primary);
+  border: calc(var(--artdeco-spacing-px) * 3) solid var(--artdeco-bg-global);
+  border-radius: var(--artdeco-radius-full);
 }
 
 .timeline-content {
-  padding-left: 10px;
+  padding-left: calc(var(--artdeco-spacing-2) + (var(--artdeco-spacing-px) * 2));
 }
 
 .timeline-time {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-bottom: 8px;
+  margin-bottom: var(--artdeco-spacing-2);
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-xs);
 }
 
 .news-card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
-  padding: 16px;
+  padding: var(--artdeco-spacing-4);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 4%, var(--artdeco-bg-card));
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
 
   h4 {
-    margin: 0 0 10px 0;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text-primary);
+    margin: 0 0 calc(var(--artdeco-spacing-2) + (var(--artdeco-spacing-px) * 2)) 0;
+    color: var(--artdeco-fg-primary);
+    font-size: calc(var(--artdeco-text-sm) + var(--artdeco-spacing-px));
+    font-weight: var(--artdeco-font-semibold);
     line-height: 1.4;
   }
 
   p {
-    margin: 0 0 12px 0;
-    font-size: 13px;
-    color: var(--text-secondary);
+    margin: 0 0 var(--artdeco-spacing-3) 0;
+    color: var(--artdeco-fg-muted);
+    font-size: calc(var(--artdeco-text-sm) - var(--artdeco-spacing-px));
     line-height: 1.6;
   }
 }
@@ -256,10 +250,10 @@ defineExpose({
 }
 
 .news-link {
-  font-size: 13px;
-  color: var(--primary);
+  color: var(--artdeco-gold-primary);
+  font-size: calc(var(--artdeco-text-sm) - var(--artdeco-spacing-px));
+  font-weight: var(--artdeco-font-medium);
   text-decoration: none;
-  font-weight: 500;
 
   &:hover {
     text-decoration: underline;
@@ -268,13 +262,13 @@ defineExpose({
 
 .loading-spinner {
   display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgb(255 255 255 / 30%);
-  border-top-color: white;
+  width: var(--artdeco-spacing-4);
+  height: var(--artdeco-spacing-4);
+  margin-right: var(--artdeco-spacing-2);
+  border: calc(var(--artdeco-spacing-px) * 2) solid color-mix(in srgb, var(--artdeco-fg-primary) 30%, transparent);
+  border-top-color: var(--artdeco-fg-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
-  margin-right: 8px;
 }
 
 @keyframes spin {
