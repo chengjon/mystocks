@@ -1,0 +1,85 @@
+version: "v0.2"
+
+task:
+  id: "pr-44"
+  title: "wire wencai query watchlist action"
+  owner: "main"
+  created_at: "2026-04-02"
+
+mainline:
+  id: "L1-wencai-watchlist-action"
+  objective: "connect the Wencai query table watchlist action to the existing watchlist service with a safe default-watchlist fallback"
+  milestone_id: "L3-mainline-follow-up"
+  slice_id: "L4-wencai-watchlist-action"
+
+classification:
+  task_type: "fix"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "frontend"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "localized-watchlist-action-bugfix-with-focused-regression"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-44.yaml"
+    - "web/frontend/src/components/market/WencaiQueryTable.vue"
+    - "web/frontend/tests/unit/wencai-query-table.spec.ts"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No watchlist management page refactor"
+  - "No new watchlist selection UI in the Wencai table"
+
+acceptance:
+  checks:
+    - id: "wencai-watchlist-tests"
+      command: "cd web/frontend && npx vitest run tests/unit/wencai-query-table.spec.ts tests/unit/config/wencai-style-normalization.spec.ts --config vitest.config.mts"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-44.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the default-watchlist bootstrap path is wrong, users with no watchlists will still be unable to add Wencai results"
+    - "If the success path targets the wrong watchlist ID, the action will silently mutate the wrong list"
+  rollback_plan: "git revert <merge-commit-sha> if the Wencai watchlist action regresses after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "replace the Wencai query table's placeholder watchlist toast with a real watchlist action path"
+    modified_scope: "WencaiQueryTable, one focused watchlist regression test, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "runtime behavior changes only for the add-to-watchlist action in the Wencai query table"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the slice if the Wencai watchlist action targets the wrong list or fails to bootstrap"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-02T00:00:00Z"
+    approval_note: "localized watchlist action bugfix with dedicated regression coverage"
+    secondary_approved: false
