@@ -2,6 +2,12 @@
 
 ## 🎯 **项目目标修订**
 
+> 2026-04-01 状态说明
+>
+> - 本文档是历史转换方案，不是当前 ArtDeco 规范入口。
+> - 文中出现的 `64个ArtDeco组件` 等表述属于当时的计划口径，当前权威清单请以 `web/frontend/ARTDECO_COMPONENTS_CATALOG.md` 为准。
+> - 若本方案与当前目录边界、组件分层、页面承载模式冲突，以 `ARTDECO_MASTER_INDEX.md`、`ARTDECO_FINTECH_UNIFIED_SPEC.md` 和源码为准。
+
 基于用户反馈，**原始转换存在严重问题**：转换后的Vue页面外观与原始HTML有巨大差异，未正确应用ArtDeco设计系统。
 
 **核心问题**：

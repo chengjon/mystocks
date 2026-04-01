@@ -12,6 +12,12 @@
 > - 当前样式真值以 [ARTDECO_SCSS_GOVERNANCE_BASELINE.md](./ARTDECO_SCSS_GOVERNANCE_BASELINE.md) 为准。
 > - 若本文档中的 token 名、导入写法或视觉规则与基线冲突，以基线和源码为准。
 
+> 2026-04-01 状态说明
+>
+> - 本文档是视觉展示与历史示例集，不是当前权威组件目录。
+> - 文中组件总数和分类统计已经过时；当前准确清单请看 `web/frontend/ARTDECO_COMPONENTS_CATALOG.md`。
+> - 若展示示例与当前 token、目录边界或页面承载模式冲突，以活跃治理文档和源码为准。
+
 ---
 
 ## 🆕 What's New in v2.0
@@ -1810,7 +1816,7 @@ const demoInput = ref('')
 
 - **[实施指南](./ART_DECO_IMPLEMENTATION_REPORT.md)** - 详细的实施指南
 - **[快速参考](./ART_DECO_QUICK_REFERENCE.md)** - 快速参考手册
-- **[组件目录](./ARTDECO_COMPONENTS_CATALOG.md)** - 完整组件清单
+- **[组件目录](/opt/claude/mystocks_spec/web/frontend/ARTDECO_COMPONENTS_CATALOG.md)** - 完整组件清单
 
 ---
 

@@ -1,0 +1,86 @@
+version: "v0.2"
+
+task:
+  id: "pr-29"
+  title: "mark legacy artdeco reference docs as historical"
+  owner: "main"
+  created_at: "2026-04-01"
+
+mainline:
+  id: "L1-artdeco-legacy-doc-clarity"
+  objective: "land the remaining legacy ArtDeco reference docs on main with explicit historical status and links to the active guide chain"
+  milestone_id: "L2-artdeco-docs"
+  slice_id: "L3-legacy-reference-clarity"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "legacy-artdeco-reference-docs-are-documentation-only"
+
+scope:
+  allowed_paths:
+    - "docs/guides/web/ART_DECO_COMPONENT_SHOWCASE_V2.md"
+    - "docs/guides/web/HTML_TO_ARTDECO_VUE_CONVERSION_OPTIMIZED_PLAN.md"
+    - "docs/guides/web/WEB_CLIENT_OPERATION_PLAN.md"
+    - "governance/mainline/task-cards/pr-29.yaml"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No frontend runtime or style implementation changes"
+  - "No broad rewrite of historical reports beyond these three reference documents"
+
+acceptance:
+  checks:
+    - id: "docs-diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "docs-reference-presence"
+      command: "test -f web/frontend/ARTDECO_COMPONENTS_CATALOG.md && test -f docs/guides/web/ARTDECO_MASTER_INDEX.md && test -f docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-29.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If these historical docs continue to read like active source-of-truth documents, future contributors will follow outdated component counts and plan assumptions"
+    - "If the replacement links drift, the compatibility docs become dead ends instead of safe historical signposts"
+  rollback_plan: "git revert <merge-commit-sha> if the legacy-reference cleanup introduces broken links or misleading wording"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "mark the remaining legacy ArtDeco showcase and planning docs as historical references instead of active truth sources"
+    modified_scope: "legacy component showcase, html conversion plan, web client operation plan, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime behavior changes; only documentation positioning and reference accuracy are updated"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the docs slice if the new historical-status wording proves incorrect or confusing after merge"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-01T00:00:00Z"
+    approval_note: "legacy ArtDeco reference cleanup is documentation-only"
+    secondary_approved: false
