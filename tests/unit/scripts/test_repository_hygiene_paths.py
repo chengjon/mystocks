@@ -1101,6 +1101,41 @@ def test_test_cli_task_doc_is_converged_under_reports_tasks_legacy() -> None:
     assert "phase7-test-contracts-automation" in task_doc
 
 
+def test_historical_cleanup_reports_are_discoverable_and_marked_non_current() -> None:
+    reports_index = (PROJECT_ROOT / "docs" / "reports" / "INDEX.md").read_text(encoding="utf-8")
+
+    names = [
+        "code-cleanup-proposal-2026-03-29.md",
+        "codebase-cleanup-2026-03-29.md",
+        "deleted-content-inventory-2026-03-29.md",
+    ]
+
+    for name in names:
+        report = (PROJECT_ROOT / "docs" / "reports" / name).read_text(encoding="utf-8")
+
+        assert f"({name})" in reports_index
+        assert "仅供回溯，不代表当前主线状态" in report
+
+    deleted_inventory = (PROJECT_ROOT / "docs" / "reports" / "deleted-content-inventory-2026-03-29.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert "不能作为当前删除依据" in deleted_inventory
+
+
+def test_historical_dirty_worktree_batch_plan_is_discoverable_under_reports_tasks() -> None:
+    reports_index = (PROJECT_ROOT / "docs" / "reports" / "INDEX.md").read_text(encoding="utf-8")
+    tasks_index = (PROJECT_ROOT / "docs" / "reports" / "tasks" / "INDEX.md").read_text(encoding="utf-8")
+    plan = (
+        PROJECT_ROOT / "docs" / "reports" / "tasks" / "2026-03-27-local-dirty-worktree-batch-plan.md"
+    ).read_text(encoding="utf-8")
+
+    assert "tasks/2026-03-27-local-dirty-worktree-batch-plan.md" in reports_index
+    assert "2026-03-27-local-dirty-worktree-batch-plan.md" in tasks_index
+    assert "历史工作计划" in plan
+    assert "仅供回溯，不代表当前主线状态" in plan
+
+
 def test_low_reference_tdd_and_debt_reports_are_converged_under_reports_completion_reports() -> None:
     reports_index = (PROJECT_ROOT / "docs" / "reports" / "INDEX.md").read_text(encoding="utf-8")
     completion_index = (PROJECT_ROOT / "docs" / "reports" / "completion_reports" / "INDEX.md").read_text(

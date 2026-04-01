@@ -64,6 +64,9 @@
 - [2026-03-23-frontend-gates-ship-kit](tasks/2026-03-23-frontend-gates-ship-kit.md)
   - *Frontend Gates Ship Kit*
 
+- [2026-03-27-local-dirty-worktree-batch-plan](tasks/2026-03-27-local-dirty-worktree-batch-plan.md)
+  - *历史工作计划：本地脏工作区分批方案*
+
 - [AGENTS_CLEANUP_COMPLETION_SUMMARY](completion_reports/AGENTS_CLEANUP_COMPLETION_SUMMARY.md)
   - *Claude Code Agents Cleanup - Final Completion Summary*
 
@@ -373,6 +376,12 @@
 - [CODE_REVIEW_REPORT](CODE_REVIEW_REPORT.md)
   - *MyStocks 项目代码审查报告*
 
+- [code-cleanup-proposal-2026-03-29](code-cleanup-proposal-2026-03-29.md)
+  - *历史提案：前端代码清理候选项（未执行）*
+
+- [codebase-cleanup-2026-03-29](codebase-cleanup-2026-03-29.md)
+  - *历史报告：仓库精简尝试回溯记录*
+
 - [COMPLETE_TEST_REPORT_2026-01-27](COMPLETE_TEST_REPORT_2026-01-27.md)
   - *MyStocks 前端完整测试报告*
 
@@ -624,6 +633,9 @@
 
 - [DEPLOYMENT_GUIDE](legacy-cn/06-项目管理与报告/历史指南/DEPLOYMENT_GUIDE.md)
   - *问财功能部署快速指南*
+
+- [deleted-content-inventory-2026-03-29](deleted-content-inventory-2026-03-29.md)
+  - *历史清单：候选删除内容回溯记录（不可作为当前删除依据）*
 
 - [DEVELOPMENT_SUMMARY_2025](DEVELOPMENT_SUMMARY_2025.md)
   - *MyStocks 后端开发总结（2025年11月）*
