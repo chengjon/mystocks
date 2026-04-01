@@ -163,7 +163,7 @@
 
       <div class="features-section">
         <h3>ROLLING WINDOW FEATURE GENERATION</h3>
-        <el-descriptions :column="1" border style="margin-top: 15px" class="descriptions">
+        <el-descriptions :column="1" border class="descriptions page-features-descriptions">
           <el-descriptions-item label="WINDOW SIZE (step)">
             10 Trading Days
           </el-descriptions-item>
@@ -178,8 +178,8 @@
           </el-descriptions-item>
         </el-descriptions>
 
-        <h3 style="margin-top: 30px">FEATURE SELECTION ALGORITHMS</h3>
-        <el-table :data="featureSelectionMethods" style="margin-top: 15px">
+        <h3 class="page-section-heading-spaced">FEATURE SELECTION ALGORITHMS</h3>
+        <el-table :data="featureSelectionMethods" class="page-table-offset">
           <el-table-column prop="method" label="METHOD" width="200" />
           <el-table-column prop="module" label="MODULE PATH" width="300" />
           <el-table-column prop="description" label="DESCRIPTION" />
@@ -190,7 +190,7 @@
           </el-table-column>
         </el-table>
 
-        <el-alert type="warning" :closable="false" style="margin-top: 15px">
+        <el-alert type="warning" :closable="false" class="page-alert-offset-sm">
           <template #title>INTEGRATION NOTE</template>
           Feature selection modules are currently standalone examples and not integrated with the main prediction pipeline. To use them, import from featselection/ directory and manually integrate into model.py.
         </el-alert>
