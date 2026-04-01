@@ -1,0 +1,89 @@
+version: "v0.2"
+
+task:
+  id: "pr-28"
+  title: "align artdeco guide references with the current governance chain"
+  owner: "main"
+  created_at: "2026-04-01"
+
+mainline:
+  id: "L1-artdeco-guide-alignment"
+  objective: "land the remaining ArtDeco guide reference cleanup on main with links and terminology aligned to the current guide chain"
+  milestone_id: "L2-artdeco-docs"
+  slice_id: "L3-guide-reference-alignment"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "artdeco-guide-reference-cleanup-is-documentation-only"
+
+scope:
+  allowed_paths:
+    - "docs/guides/web/ARTDECO_GRID_QUICK_REFERENCE.md"
+    - "docs/guides/web/ARTDECO_MENU_API_MAPPING.md"
+    - "docs/guides/web/ARTDECO_MENU_DATA_FETCHING_IMPLEMENTATION_GUIDE.md"
+    - "docs/guides/web/ARTDECO_PAGE_TEMPLATE_GUIDE.md"
+    - "docs/guides/web/ARTDECO_UI_UX_FUNCTIONALITY_GUIDE.md"
+    - "docs/guides/web/mystocks-artdeco-available-components.md"
+    - "governance/mainline/task-cards/pr-28.yaml"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No frontend runtime or style implementation changes"
+  - "No expansion into unrelated docs or reports beyond the six listed guides"
+
+acceptance:
+  checks:
+    - id: "docs-diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "docs-reference-presence"
+      command: "test -f docs/guides/web/ARTDECO_SCSS_GOVERNANCE_BASELINE.md && test -f docs/guides/web/ARTDECO_COMPONENT_GUIDE.md && test -f docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md && test -f docs/api/ArtDeco_System_Architecture_Summary.md"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-28.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If these guides keep pointing at outdated structures, later ArtDeco contributors will continue using stale architecture assumptions"
+    - "If the compatibility summary continues to claim outdated component counts, audit decisions will drift from current inventory"
+  rollback_plan: "git revert <merge-commit-sha> if the guide reference cleanup introduces broken links or misleading wording"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "align the remaining ArtDeco guide references with the current source-of-truth document chain"
+    modified_scope: "grid guide, menu/api mapping guides, page template guide, ui/ux functionality guide, legacy component summary, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime behavior changes; only documentation guidance and reference accuracy are updated"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the docs cleanup if any guide references or wording prove misleading after merge"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-01T00:00:00Z"
+    approval_note: "ArtDeco guide reference cleanup is documentation-only"
+    secondary_approved: false
