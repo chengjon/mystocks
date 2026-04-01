@@ -7,6 +7,7 @@
 
 import { ref, readonly, onMounted } from 'vue';
 import { marketService } from '@/api/services/marketService';
+import { MarketAdapter } from '@/api/adapters/marketAdapter';
 import { getCache } from '@/utils/cache/part-1';
 import type { MarketOverviewVM, FundFlowChartPoint, KLineChartData } from '@/api/types/extensions';
 
@@ -199,9 +200,13 @@ export function useMarket(options?: {
         }
       }
 
-      // TODO: Implement getFundFlow in marketService
-      // For now, return mock data
-      const vm: FundFlowChartPoint[] = [];
+      const response = await marketService.getFundFlow({
+        symbol: params.symbol,
+        timeframe: params.timeframe,
+        start_date: params.start_date,
+        end_date: params.end_date,
+      })
+      const vm = MarketAdapter.adaptFundFlow(response as never)
 
       // Cache the result
       if (enableCache) {
