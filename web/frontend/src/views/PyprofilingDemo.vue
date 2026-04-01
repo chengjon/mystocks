@@ -208,14 +208,14 @@
 
       <div class="profiling-section">
         <h3>PERFORMANCE ANALYSIS TOOLS COMPARISON</h3>
-        <el-table :data="profilingTools" style="margin-top: 15px">
+        <el-table :data="profilingTools" class="profiling-table-offset">
           <el-table-column prop="tool" label="TOOL" width="180" />
           <el-table-column prop="level" label="GRANULARITY" width="120" />
           <el-table-column prop="usage" label="USAGE" />
           <el-table-column prop="output" label="OUTPUT" />
         </el-table>
 
-        <h3 style="margin-top: 30px">PERFORMANCE ANALYSIS EXAMPLE COMMANDS</h3>
+        <h3 class="profiling-section-heading">PERFORMANCE ANALYSIS EXAMPLE COMMANDS</h3>
         <div class="command-examples">
           <el-card v-for="cmd in profilingCommands" :key="cmd.tool" :hoverable="true" class="command-card">
             <h4>{{ cmd.tool }}</h4>
@@ -227,17 +227,17 @@
             >
               <template #prepend>COMMAND</template>
             </el-input>
-            <p style="margin-top: 10px; color: var(--fg-muted); font-size: 13px">
+            <p class="command-desc profiling-command-note">
               {{ cmd.description }}
             </p>
           </el-card>
         </div>
 
-        <el-alert type="info" :closable="false" style="margin-top: 20px">
+        <el-alert type="info" :closable="false" class="profiling-alert-offset">
           <template #title>
             <strong>PERFORMANCE OPTIMIZATION WORKFLOW</strong>
           </template>
-          <div style="line-height: 2">
+          <div class="profiling-workflow-content">
             <strong>推荐工作流：</strong><br>
             1. 使用 <code>cProfile</code> 快速定位性能瓶颈函数<br>
             2. 使用 <code>line_profiler</code> 对瓶颈函数进行逐行分析<br>

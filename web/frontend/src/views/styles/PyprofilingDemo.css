@@ -183,6 +183,28 @@
   margin-top: calc(var(--spacing-6) + var(--spacing-4) - 2px);
 }
 
+.profiling-table-offset {
+  margin-top: calc(var(--spacing-4) - 1px);
+}
+
+.profiling-section-heading {
+  margin-top: calc(var(--spacing-6) + var(--spacing-4) - 2px);
+}
+
+.profiling-command-note {
+  margin-top: calc(var(--spacing-2) + 2px);
+  color: var(--fg-muted);
+  font-size: 13px;
+}
+
+.profiling-alert-offset {
+  margin-top: var(--spacing-5);
+}
+
+.profiling-workflow-content {
+  line-height: 2;
+}
+
 .command-examples {
   display: grid;
   grid-template-columns: 1fr;
