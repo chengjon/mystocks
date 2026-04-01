@@ -10,7 +10,7 @@
         <h3>📁 通达信数据文件格式</h3>
         <p>通达信将股票数据存储为二进制文件,不同周期对应不同的文件扩展名:</p>
 
-        <table class="table" style="margin-top: 15px;">
+        <table class="table data-table-offset">
           <thead>
             <tr>
               <th width="120">数据类型</th>
@@ -34,7 +34,7 @@
         <h3>🔢 日线数据结构 (.day 文件)</h3>
         <p>每条日K线记录占用 32 字节,结构如下:</p>
 
-        <table class="table" style="margin-top: 15px;">
+        <table class="table data-table-offset">
           <thead>
             <tr>
               <th width="100">偏移量</th>
@@ -151,6 +151,10 @@ const codeExamples = computed<Record<string, string>>(() => ({
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   overflow: hidden;
+}
+
+.data-table-offset {
+  margin-top: 15px;
 }
 
 .tab-headers {
