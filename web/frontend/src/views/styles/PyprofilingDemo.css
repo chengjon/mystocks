@@ -222,6 +222,31 @@
   line-height: 2;
 }
 
+.api-status-alert {
+  margin-bottom: var(--spacing-5);
+}
+
+.api-section-heading-sm {
+  margin-top: var(--spacing-5);
+}
+
+.api-descriptions,
+.api-table-offset {
+  margin-top: calc(var(--spacing-4) - 1px);
+}
+
+.api-section-heading-lg {
+  margin-top: calc(var(--spacing-6) + var(--spacing-4) - 2px);
+}
+
+.api-info-alert {
+  margin-top: var(--spacing-5);
+}
+
+.api-workflow-content {
+  line-height: 2;
+}
+
 .command-examples {
   display: grid;
   grid-template-columns: 1fr;

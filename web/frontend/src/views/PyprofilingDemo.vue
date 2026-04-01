@@ -310,12 +310,12 @@
 
       <div class="api-section">
         <h3>API STATUS</h3>
-        <el-alert type="warning" :closable="false" style="margin-bottom: 20px">
+        <el-alert type="warning" :closable="false" class="api-status-alert">
           Current <code>server.py</code> only implements welcome page, no ML prediction endpoints exposed. Model prediction logic only exists in <code>model.py</code> as standalone script.
         </el-alert>
 
-        <h3 style="margin-top: 20px">EXISTING ENDPOINTS</h3>
-        <el-descriptions :column="1" border style="margin-top: 15px" class="descriptions">
+        <h3 class="api-section-heading-sm">EXISTING ENDPOINTS</h3>
+        <el-descriptions :column="1" border class="descriptions api-descriptions">
           <el-descriptions-item label="SERVICE ADDRESS">
             http://localhost:5000
           </el-descriptions-item>
@@ -327,8 +327,8 @@
           </el-descriptions-item>
         </el-descriptions>
 
-        <h3 style="margin-top: 30px">SUGGESTED API ENDPOINTS</h3>
-        <el-table :data="suggestedAPIs" style="margin-top: 15px">
+        <h3 class="api-section-heading-lg">SUGGESTED API ENDPOINTS</h3>
+        <el-table :data="suggestedAPIs" class="api-table-offset">
           <el-table-column prop="method" label="METHOD" width="100" />
           <el-table-column prop="endpoint" label="ENDPOINT" width="250" />
           <el-table-column prop="description" label="DESCRIPTION" />
@@ -342,8 +342,8 @@
         </el-table>
 
         <h3>INTEGRATION RECOMMENDATIONS</h3>
-        <el-alert type="info" :closable="false" style="margin-top: 20px">
-          <div style="line-height: 2">
+        <el-alert type="info" :closable="false" class="api-info-alert">
+          <div class="api-workflow-content">
             <strong>Recommended PyProfiling Integration:</strong><br>
             1. Create <code>/api/ml/predict</code> endpoint in backend API<br>
             2. Integrate LightGBM model training and prediction logic<br>
