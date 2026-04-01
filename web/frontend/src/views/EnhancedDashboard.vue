@@ -12,7 +12,7 @@
           :title="stat.title"
           :value="stat.value"
           :icon="getIconComponent(stat.icon)"
-          :color="getColorType(stat.color)"
+          :color="stat.tone"
           :trend="stat.trend"
           :trend-up="stat.trendClass === 'up'"
           hoverable
@@ -326,7 +326,6 @@ const {
   industryData,
   industryOptions,
   getIconComponent,
-  getColorType,
   getPriceChangeClass,
   formatPriceChange,
   getSignalTagType,

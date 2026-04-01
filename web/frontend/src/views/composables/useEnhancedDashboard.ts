@@ -29,7 +29,7 @@ interface StatItem {
   title: string
   value: string
   icon: unknown
-  color: string
+  tone: string
   trend: string
   trendClass: string
 }
@@ -80,10 +80,10 @@ const {
 } = useDashboardWatchlist()
 
 const stats = ref<StatItem[]>([
-  { title: '总股票数', value: '0', icon: Document, color: '#409EFF', trend: '+0%', trendClass: 'neutral' },
-  { title: '总市值', value: '0', icon: Money, color: '#67C23A', trend: '+0%', trendClass: 'up' },
-  { title: '市场分布', value: '0', icon: PieChart, color: '#E6A23C', trend: '+0%', trendClass: 'up' },
-  { title: '行业分布', value: '0', icon: Grid, color: '#F56C6C', trend: '+0%', trendClass: 'down' }
+  { title: '总股票数', value: '0', icon: Document, tone: 'blue', trend: '+0%', trendClass: 'neutral' },
+  { title: '总市值', value: '0', icon: Money, tone: 'green', trend: '+0%', trendClass: 'up' },
+  { title: '市场分布', value: '0', icon: PieChart, tone: 'orange', trend: '+0%', trendClass: 'up' },
+  { title: '行业分布', value: '0', icon: Grid, tone: 'red', trend: '+0%', trendClass: 'down' }
 ])
 
 const hotIndustries = ref<Array<{ industry_name: string; avg_change: number; stock_count: number }>>([])
@@ -92,14 +92,6 @@ const favoriteStocks = ref<StockData[]>([])
 const strategyStocks = ref<StrategyStock[]>([])
 
 const getIconComponent = (iconComponent: unknown): unknown => iconComponent
-
-const getColorType = (color: string): string => {
-  if (color === '#67C23A') return 'green'
-  if (color === '#F56C6C') return 'red'
-  if (color === '#E6A23C') return 'orange'
-  if (color === '#409EFF') return 'blue'
-  return 'gold'
-}
 
 const getPriceChangeClass = (change: number): string => {
   if (change > 0) return 'text-red'
@@ -318,7 +310,6 @@ onMounted(() => {
     favoriteStocks,
     strategyStocks,
     getIconComponent,
-    getColorType,
     getPriceChangeClass,
     formatPriceChange,
     getSignalTagType,
