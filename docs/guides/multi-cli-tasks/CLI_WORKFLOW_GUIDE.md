@@ -124,7 +124,7 @@ gh pr create --base dev --head [分支名] \
    - `docs/guides/multi-cli-tasks/MONGO_MULTICLI_OPERATION_CHECKLIST.md`
    - `docs/guides/ai-tools/GRAPHITI_MCP_WORKFLOW.md`
 3. 在 Mongo control plane 中记录开工：
-   - `work claim`
+   - `work mark --status in_progress`
 4. 创建或更新 `TASK-REPORT.md`
 5. 识别依赖与风险，并记录到报告
 
@@ -200,7 +200,7 @@ git push -u origin [分支名]
 - 代码已推送到远程分支
 - PR 已创建（base=dev）
 - `TASK-*-REPORT.md` 已生成（如阶段性任务）
-- Mongo control plane 已执行 `work submit`
+- Mongo control plane 已执行 `update add --status ready_for_review` 与 `work transition --to ready_for_review`
 
 ---
 
