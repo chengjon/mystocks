@@ -79,29 +79,27 @@
         <!-- 图例 -->
         <div class="hybrid-heatmap-card__legend">
             <div class="hybrid-heatmap-card__legend-item">
-                <div class="hybrid-heatmap-card__legend-color" style="background-color: var(--artdeco-down)"></div>
+                <div class="hybrid-heatmap-card__legend-color hybrid-heatmap-card__legend-color--limit-down"></div>
                 <span class="hybrid-heatmap-card__legend-text">跌停</span>
             </div>
             <div class="hybrid-heatmap-card__legend-item">
                 <div
-                    class="hybrid-heatmap-card__legend-color"
-                    style="background: linear-gradient(to right, var(--artdeco-down), var(--artdeco-flat))"
+                    class="hybrid-heatmap-card__legend-color hybrid-heatmap-card__legend-color--down-range"
                 ></div>
                 <span class="hybrid-heatmap-card__legend-text">下跌</span>
             </div>
             <div class="hybrid-heatmap-card__legend-item">
-                <div class="hybrid-heatmap-card__legend-color" style="background-color: var(--artdeco-flat)"></div>
+                <div class="hybrid-heatmap-card__legend-color hybrid-heatmap-card__legend-color--flat"></div>
                 <span class="hybrid-heatmap-card__legend-text">平盘</span>
             </div>
             <div class="hybrid-heatmap-card__legend-item">
                 <div
-                    class="hybrid-heatmap-card__legend-color"
-                    style="background: linear-gradient(to right, var(--artdeco-flat), var(--artdeco-up))"
+                    class="hybrid-heatmap-card__legend-color hybrid-heatmap-card__legend-color--up-range"
                 ></div>
                 <span class="hybrid-heatmap-card__legend-text">上涨</span>
             </div>
             <div class="hybrid-heatmap-card__legend-item">
-                <div class="hybrid-heatmap-card__legend-color" style="background-color: var(--artdeco-up)"></div>
+                <div class="hybrid-heatmap-card__legend-color hybrid-heatmap-card__legend-color--limit-up"></div>
                 <span class="hybrid-heatmap-card__legend-text">涨停</span>
             </div>
         </div>

@@ -206,6 +206,26 @@
         border: 1px solid color-mix(in srgb, var(--artdeco-fg-primary) 20%, transparent);
     }
 
+    .hybrid-heatmap-card__legend-color--limit-down {
+        background-color: var(--artdeco-down);
+    }
+
+    .hybrid-heatmap-card__legend-color--down-range {
+        background: linear-gradient(to right, var(--artdeco-down), var(--artdeco-flat));
+    }
+
+    .hybrid-heatmap-card__legend-color--flat {
+        background-color: var(--artdeco-flat);
+    }
+
+    .hybrid-heatmap-card__legend-color--up-range {
+        background: linear-gradient(to right, var(--artdeco-flat), var(--artdeco-up));
+    }
+
+    .hybrid-heatmap-card__legend-color--limit-up {
+        background-color: var(--artdeco-up);
+    }
+
     .hybrid-heatmap-card__legend-text {
         @include data-dense-typography;
 
