@@ -131,7 +131,7 @@
                 :suffix="metric.suffix"
               >
                 <template #prefix>
-                  <el-icon :style="{ color: metric.value > 0 ? '#67C23A' : '#F56C6C' }">
+                  <el-icon :class="metric.value > 0 ? 'strategy-state-positive' : 'strategy-state-negative'">
                     <component :is="metric.icon"></component>
                   </el-icon>
                 </template>
@@ -169,7 +169,7 @@
             <el-table-column prop="shares" label="数量" width="100"></el-table-column>
             <el-table-column prop="pnl" label="盈亏">
               <template #default="scope">
-                <span :style="{ color: scope.row.pnl >= 0 ? '#67C23A' : '#F56C6C' }">
+                <span :class="scope.row.pnl >= 0 ? 'strategy-state-positive' : 'strategy-state-negative'">
                   {{ scope.row.pnl >= 0 ? '+' : '' }}{{ scope.row.pnl.toFixed(2) }}%
                 </span>
               </template>
@@ -356,6 +356,14 @@ const handleRunStrategy = async () => {
 .strategy-chart-container {
   width: 100%;
   height: calc(var(--spacing-3xl) * 7 + var(--spacing-xl) + var(--spacing-md) + var(--spacing-xs));
+}
+
+.strategy-state-positive {
+  color: var(--color-success);
+}
+
+.strategy-state-negative {
+  color: var(--color-danger);
 }
 
 @keyframes fade-in {
