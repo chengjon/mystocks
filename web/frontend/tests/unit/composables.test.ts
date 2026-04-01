@@ -4,9 +4,20 @@
  * Tests for Vue 3 composables (useMarket, useStrategy, useTrading)
  */
 
-import { describe, it, expect } from 'vitest';
+import { mount } from '@vue/test-utils';
+import { defineComponent } from 'vue';
+import { describe, it, expect, vi } from 'vitest';
 import { useMarket } from '@/composables/useMarket';
 import { useStrategy } from '@/composables/useStrategy';
+
+function mountUseMarketHarness() {
+  return mount(defineComponent({
+    setup() {
+      return useMarket({ autoFetch: false });
+    },
+    template: '<div />',
+  }));
+}
 
 describe('useMarket Composable', () => {
   it('should be defined', () => {
@@ -14,38 +25,62 @@ describe('useMarket Composable', () => {
   });
 
   it('should return market overview state', () => {
-    const { marketOverview, loading, error } = useMarket({ autoFetch: false });
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const wrapper = mountUseMarketHarness()
+    const vm = wrapper.vm as unknown as {
+      marketOverview: unknown
+      loading: boolean
+      error: string | null
+    }
 
-    expect(marketOverview.value).toBeNull();
-    expect(loading.value).toBe(false);
-    expect(error.value).toBeNull();
+    expect(vm.marketOverview).toBeNull();
+    expect(vm.loading).toBe(false);
+    expect(vm.error).toBeNull();
+    expect(warnSpy).not.toHaveBeenCalled()
+    expect(errorSpy).not.toHaveBeenCalled()
+    wrapper.unmount()
+    warnSpy.mockRestore()
+    errorSpy.mockRestore()
   });
 
   it('should return fund flow data state', () => {
-    const { fundFlowData } = useMarket({ autoFetch: false });
+    const wrapper = mountUseMarketHarness()
+    const vm = wrapper.vm as unknown as {
+      fundFlowData: unknown[]
+    }
 
-    expect(fundFlowData.value).toEqual([]);
+    expect(vm.fundFlowData).toEqual([]);
+    wrapper.unmount()
   });
 
   it('should return kline data state', () => {
-    const { klineData } = useMarket({ autoFetch: false });
+    const wrapper = mountUseMarketHarness()
+    const vm = wrapper.vm as unknown as {
+      klineData: unknown
+    }
 
-    expect(klineData.value).toBeNull();
+    expect(vm.klineData).toBeNull();
+    wrapper.unmount()
   });
 
   it('should provide fetch methods', () => {
-    const { fetchMarketOverview, fetchFundFlow, fetchKLineData } = useMarket({ autoFetch: false });
+    const wrapper = mountUseMarketHarness()
+    const { fetchMarketOverview, fetchFundFlow, fetchKLineData } = wrapper.vm as unknown as ReturnType<typeof useMarket>
 
     expect(fetchMarketOverview).toBeInstanceOf(Function);
     expect(fetchFundFlow).toBeInstanceOf(Function);
     expect(fetchKLineData).toBeInstanceOf(Function);
+    wrapper.unmount()
   });
 
   it('should provide cache management methods', () => {
-    const { clearCache, getCacheStats } = useMarket({ autoFetch: false });
+    const wrapper = mountUseMarketHarness()
+    const { clearCache, getCacheStats } = wrapper.vm as unknown as ReturnType<typeof useMarket>
 
     expect(clearCache).toBeInstanceOf(Function);
     expect(getCacheStats).toBeInstanceOf(Function);
+    wrapper.unmount()
   });
 });
 
