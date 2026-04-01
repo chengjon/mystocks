@@ -134,7 +134,10 @@ onMounted(() => {
           <div class="trend-gauge">
             <div class="gauge-label">Trend Strength</div>
             <div class="gauge-bar">
-              <div class="gauge-fill" :style="{ width: `${Number(stock.trend_score) * 10}%`, background: stock.macd_signal === 'BULL' ? 'var(--artdeco-rise)' : 'var(--artdeco-down)' }"></div>
+              <div
+                :class="['gauge-fill', stock.macd_signal === 'BULL' ? 'gauge-fill--rise' : 'gauge-fill--down']"
+                :style="{ width: `${Number(stock.trend_score) * 10}%` }"
+              ></div>
             </div>
             <div class="gauge-value">{{ stock.trend_score }}/10</div>
           </div>
@@ -284,15 +287,21 @@ onMounted(() => {
     text-transform: uppercase;
     margin-bottom: var(--artdeco-spacing-1);
   }
-  .gauge-bar {
-    height: var(--artdeco-spacing-1);
-    background: var(--artdeco-bg-elevated);
-    margin-bottom: var(--artdeco-spacing-1);
-    .gauge-fill {
-      height: 100%;
-      transition: width 0.5s ease;
+    .gauge-bar {
+      height: var(--artdeco-spacing-1);
+      background: var(--artdeco-bg-elevated);
+      margin-bottom: var(--artdeco-spacing-1);
+      .gauge-fill {
+        height: 100%;
+        transition: width 0.5s ease;
+      }
+      .gauge-fill--rise {
+        background: var(--artdeco-rise);
+      }
+      .gauge-fill--down {
+        background: var(--artdeco-down);
+      }
     }
-  }
   .gauge-value {
     font-family: var(--artdeco-font-mono);
     font-size: calc(var(--artdeco-text-xs) - var(--artdeco-spacing-px) - var(--artdeco-spacing-px));
