@@ -11,7 +11,7 @@
     <div class="stats-grid">
       <div class="card stat-card">
         <div class="stat-content">
-          <div class="stat-icon" style="background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light))">
+          <div class="stat-icon demo-phase4-stat-icon-market">
             <span class="icon-emoji">📊</span>
           </div>
           <div class="stat-info">
@@ -26,7 +26,7 @@
 
       <div class="card stat-card">
         <div class="stat-content">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #27AE60, #2ECC71)">
+          <div class="stat-icon demo-phase4-stat-icon-watchlist">
             <span class="icon-emoji">⭐</span>
           </div>
           <div class="stat-info">
@@ -41,7 +41,7 @@
 
       <div class="card stat-card">
         <div class="stat-content">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #E67E22, #F39C12)">
+          <div class="stat-icon demo-phase4-stat-icon-portfolio">
             <span class="icon-emoji">💼</span>
           </div>
           <div class="stat-info">
@@ -56,7 +56,7 @@
 
       <div class="card stat-card">
         <div class="stat-content">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #E74C3C, #C0392B)">
+          <div class="stat-icon demo-phase4-stat-icon-risk">
             <span class="icon-emoji">⚠️</span>
           </div>
           <div class="stat-info">
@@ -248,4 +248,20 @@ const {
 
 <style scoped lang="scss">
 @use "./styles/Phase4Dashboard.scss" as *;
+
+.demo-phase4-stat-icon-market {
+  background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+}
+
+.demo-phase4-stat-icon-watchlist {
+  background: linear-gradient(135deg, #27AE60, #2ECC71);
+}
+
+.demo-phase4-stat-icon-portfolio {
+  background: linear-gradient(135deg, #E67E22, #F39C12);
+}
+
+.demo-phase4-stat-icon-risk {
+  background: linear-gradient(135deg, #E74C3C, #C0392B);
+}
 </style>
