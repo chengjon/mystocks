@@ -24,7 +24,7 @@
     <div v-if="Object.keys(metrics).length === 0 && isConnected" class="empty-state">
       <el-empty description="等待数据更新...">
         <template #image>
-          <el-icon :size="80" color="#409eff"><Loading /></el-icon>
+          <el-icon :size="80" class="dashboard-metrics-icon--info"><Loading /></el-icon>
         </template>
       </el-empty>
     </div>
@@ -128,10 +128,10 @@
               :title="getMetricLabel(key)"
               :value="value"
               :precision="getMetricPrecision(key)"
-              class="metric-statistic"
+              :class="['metric-statistic', getMetricStateClass(key, value)]"
             >
               <template #prefix>
-                <el-icon :color="getMetricColor(key, value)">
+                <el-icon :class="getMetricStateClass(key, value)">
                   <component :is="getMetricIcon(key)" />
                 </el-icon>
               </template>
@@ -300,17 +300,21 @@ const getMetricIcon = (key) => {
   return iconMap[key] || 'DataLine'
 }
 
-const getMetricColor = (key, value) => {
+const getMetricStateClass = (key, value) => {
   if (['total_pnl', 'unrealized_pnl', 'realized_pnl'].includes(key)) {
-    return value > 0 ? '#67c23a' : value < 0 ? '#f56c6c' : '#909399'
+    return value > 0
+      ? 'dashboard-metrics-icon--success'
+      : value < 0
+        ? 'dashboard-metrics-icon--danger'
+        : 'dashboard-metrics-icon--muted'
   }
   if (key === 'max_drawdown') {
-    return '#f56c6c'
+    return 'dashboard-metrics-icon--danger'
   }
   if (key === 'win_rate' || key === 'sharpe_ratio') {
-    return '#67c23a'
+    return 'dashboard-metrics-icon--success'
   }
-  return '#409eff'
+  return 'dashboard-metrics-icon--info'
 }
 
 const isPercentageMetric = (key) => {

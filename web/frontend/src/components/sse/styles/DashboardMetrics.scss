@@ -1,6 +1,22 @@
 @use '../../../styles/artdeco-tokens.scss' as *;
 
 .dashboard-metrics-card {
+  .dashboard-metrics-icon--muted {
+    color: var(--artdeco-fg-muted);
+  }
+
+  .dashboard-metrics-icon--info {
+    color: var(--artdeco-info);
+  }
+
+  .dashboard-metrics-icon--success {
+    color: var(--artdeco-rise);
+  }
+
+  .dashboard-metrics-icon--danger {
+    color: var(--artdeco-down);
+  }
+
   margin-bottom: var(--artdeco-spacing-5);
   border: 1px solid var(--artdeco-border-default);
   border-radius: var(--artdeco-radius-none);
