@@ -9,7 +9,7 @@
       <div class="card stat-card" v-for="stat in stats" :key="stat.title">
         <div class="card-body">
           <div class="stat-content">
-            <div class="stat-icon" :style="{ borderColor: stat.color }">
+            <div :class="['stat-icon', `stat-icon--${stat.tone}`]">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="8" y1="6" x2="21" y2="6"></line>
                 <line x1="8" y1="12" x2="21" y2="12"></line>
@@ -181,22 +181,22 @@ const stats = computed(() => [
   {
     title: '总任务数',
     value: tasks.value.length,
-    color: '#409eff'
+    tone: 'info' as const
   },
   {
     title: '运行中',
     value: tasks.value.filter(t => t.status === 'running').length,
-    color: '#67c23a'
+    tone: 'success' as const
   },
   {
     title: '今日执行',
     value: executions.value.length,
-    color: '#e6a23c'
+    tone: 'warning' as const
   },
   {
     title: '成功率',
     value: calculateSuccessRate() + '%',
-    color: '#67c23a'
+    tone: 'success' as const
   }
 ])
 

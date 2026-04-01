@@ -58,6 +58,18 @@
           justify-content: center;
           color: var(--gold-primary);
 
+          &--info {
+            color: var(--color-info);
+          }
+
+          &--success {
+            color: var(--color-success);
+          }
+
+          &--warning {
+            color: var(--color-warning);
+          }
+
           svg {
             width: var(--spacing-xl);
             height: var(--spacing-xl);
