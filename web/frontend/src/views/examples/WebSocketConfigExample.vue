@@ -317,7 +317,7 @@ onUnmounted(() => {
 
 .route-meta {
   float: right;
-  color: #8492a6;
+  color: var(--color-text-secondary);
   font-size: 13px;
 }
 
@@ -328,7 +328,7 @@ onUnmounted(() => {
 .route-description,
 .description {
   margin-left: 10px;
-  color: #909399;
+  color: var(--color-text-tertiary);
   font-size: 12px;
 }
 
