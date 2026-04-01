@@ -11,13 +11,14 @@ describe('klineApi', () => {
   describe('getKline', () => {
     it('should return K-line data structure', async () => {
       // Mock the API response
-      vi.spyOn(klineApi as any, 'getKline').mockResolvedValue({
+      const getKlineSpy = vi.spyOn(klineApi, 'getKline').mockResolvedValue({
         symbol: '000001.SH',
         candles: []
       })
 
       // The test would verify the structure when real API is available
       expect(klineApi).toBeDefined()
+      getKlineSpy.mockRestore()
     })
   })
 
