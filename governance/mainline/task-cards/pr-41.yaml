@@ -1,0 +1,84 @@
+version: "v0.2"
+
+task:
+  id: "pr-41"
+  title: "remove composable lifecycle warnings"
+  owner: "main"
+  created_at: "2026-04-02"
+
+mainline:
+  id: "L1-composables-test-lifecycle-hygiene"
+  objective: "stop useMarket unit tests from triggering Vue lifecycle warnings by executing the composable inside component setup"
+  milestone_id: "L3-mainline-follow-up"
+  slice_id: "L4-composables-test-lifecycle-hygiene"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "frontend"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "test-only-lifecycle-hygiene-fix-with-focused-regression"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-41.yaml"
+    - "web/frontend/tests/unit/composables.test.ts"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No production composable behavior changes"
+  - "No broad test-suite refactor beyond the useMarket harness"
+
+acceptance:
+  checks:
+    - id: "composables-test-hygiene"
+      command: "cd web/frontend && npx vitest run tests/unit/composables.test.ts --config vitest.config.mts"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-41.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the harness unwrap assumptions are wrong, the composables test can become less representative than before"
+    - "If the ref-unwrapping expectations drift, assertions may accidentally stop checking the intended state"
+  rollback_plan: "git revert <merge-commit-sha> if the composables unit test becomes flaky or misleading after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "remove avoidable Vue lifecycle warnings from the composables unit test"
+    modified_scope: "one frontend unit test file and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no production runtime impact; test execution now mirrors actual composable usage more closely"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the slice if the revised harness makes the composables test flaky"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-02T00:00:00Z"
+    approval_note: "test-only lifecycle warning cleanup with focused regression coverage"
+    secondary_approved: false
