@@ -259,15 +259,15 @@
 
       <div class="data-section">
         <h3>项目数据文件</h3>
-        <el-table :data="dataFiles" stripe style="margin-top: 15px">
+        <el-table :data="dataFiles" stripe class="data-table-offset">
           <el-table-column prop="file" label="文件路径" width="250" />
           <el-table-column prop="format" label="格式" width="150" />
           <el-table-column prop="description" label="说明" />
           <el-table-column prop="size" label="用途" width="200" />
         </el-table>
 
-        <h3 style="margin-top: 30px">通达信二进制格式解析</h3>
-        <el-descriptions :column="1" border style="margin-top: 15px">
+        <h3 class="data-section-heading">通达信二进制格式解析</h3>
+        <el-descriptions :column="1" border class="data-descriptions">
           <el-descriptions-item label="文件格式">
             32字节固定结构（struct）
           </el-descriptions-item>
@@ -286,9 +286,9 @@
           title="数据处理流程"
           type="info"
           :closable="false"
-          style="margin-top: 20px"
+          class="data-alert-offset"
         >
-          <div style="line-height: 2">
+          <div class="data-workflow-content">
             <strong>数据转换步骤：</strong><br>
             1. <code>utils.read_tdx_day_file()</code> 读取 .day 二进制文件<br>
             2. 解析为 OHLCV DataFrame（sh000001.csv）<br>

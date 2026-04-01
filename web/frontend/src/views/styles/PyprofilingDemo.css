@@ -205,6 +205,23 @@
   line-height: 2;
 }
 
+.data-table-offset,
+.data-descriptions {
+  margin-top: calc(var(--spacing-4) - 1px);
+}
+
+.data-section-heading {
+  margin-top: calc(var(--spacing-6) + var(--spacing-4) - 2px);
+}
+
+.data-alert-offset {
+  margin-top: var(--spacing-5);
+}
+
+.data-workflow-content {
+  line-height: 2;
+}
+
 .command-examples {
   display: grid;
   grid-template-columns: 1fr;
