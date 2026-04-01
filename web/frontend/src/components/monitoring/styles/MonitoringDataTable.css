@@ -46,6 +46,18 @@
   border-collapse: collapse;
 }
 
+.column-align--left {
+  text-align: left;
+}
+
+.column-align--center {
+  text-align: center;
+}
+
+.column-align--right {
+  text-align: right;
+}
+
 .data-table th {
   position: sticky;
   top: 0;

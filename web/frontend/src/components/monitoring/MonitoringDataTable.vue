@@ -17,8 +17,8 @@
             <th
               v-for="(column, _idx) in columns"
               :key="column.key"
-              :style="{ width: column.width, textAlign: column.align || 'left' }"
-              :class="{ sortable: column.sortable }"
+              :style="column.width ? { width: column.width } : undefined"
+              :class="[getColumnAlignClass(column.align), { sortable: column.sortable }]"
               @click="column.sortable && handleSort(column.key)"
             >
               <div class="header-content">
@@ -41,8 +41,7 @@
             <td
               v-for="(column, _idx) in columns"
               :key="column.key"
-              :style="{ textAlign: column.align || 'left' }"
-              :class="getCellClass(column, row)"
+              :class="[getColumnAlignClass(column.align), getCellClass(column, row)]"
             >
               <slot
                 :name="`column-${column.key}`"
@@ -218,6 +217,12 @@ const currentPage = ref(1)
 const currentSortBy = ref(props.sortBy)
 const currentSortOrder = ref(props.sortOrder)
 const emptyIcon = DatabaseOutlined
+
+const getColumnAlignClass = (align) => {
+  if (align === 'center') return 'column-align--center'
+  if (align === 'right') return 'column-align--right'
+  return 'column-align--left'
+}
 
 // 计算属性
 const sortedData = computed(() => {
