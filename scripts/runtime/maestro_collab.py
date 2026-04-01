@@ -8,8 +8,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
-from dotenv import load_dotenv
 from pymongo import MongoClient
+from pymongo.errors import OperationFailure
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
@@ -27,7 +27,14 @@ from src.services.maestro.collab.backends.mongo import MongoCollaborationStore
 from src.services.maestro.collab.services import CoordinationService, GraphitiPreflightService
 from src.services.maestro.collab.store.models import WorkItemRecord, WorkRequestRecord, WorkUpdateRecord
 from src.services.maestro.profiles.mystocks import COLLAB_CONTROL_PLANE_DEFAULTS
-from src.utils.mongo_runtime_config import get_mongo_connection_kwargs
+from src.utils.cli_error_output import build_cli_error_payload
+from src.utils.mongo_runtime_config import (
+    build_mongo_auth_runtime_error,
+    build_project_runtime_mongo_client,
+    get_runtime_mongo_db_default,
+    get_runtime_mongo_uri_default,
+    is_mongo_auth_error,
+)
 from scripts.runtime.export_collab_snapshots import render_task_markdown, render_task_report_markdown
 
 GRAPHITI_CLI_EXAMPLES = """Examples:
@@ -293,12 +300,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--sqlite-path", default=".symphony/tracker.db", help="Path to the local tracker sqlite DB.")
     parser.add_argument(
         "--mongo-uri",
-        default=None,
-        help="MongoDB URI for coordination state. If omitted, use env/config-driven Mongo connection settings.",
+        default=get_runtime_mongo_uri_default(COLLAB_CONTROL_PLANE_DEFAULTS["mongo_uri"]),
+        help="MongoDB URI for coordination state.",
     )
     parser.add_argument(
         "--mongo-db",
-        default=COLLAB_CONTROL_PLANE_DEFAULTS["mongo_db"],
+        default=get_runtime_mongo_db_default(COLLAB_CONTROL_PLANE_DEFAULTS["mongo_db"]),
         help="MongoDB database name for coordination state.",
     )
 
@@ -497,7 +504,13 @@ def main(argv: list[str] | None = None) -> int:
                 return 0
         finally:
             registry.close()
-    except (AuthorizationError, KeyError, ValueError) as exc:
+    except OperationFailure as exc:
+        output = getattr(args, "output", "json")
+        if is_mongo_auth_error(exc):
+            _emit_error(build_mongo_auth_runtime_error("Mongo control plane"), output=output)
+            return 1
+        raise
+    except (AuthorizationError, KeyError, ValueError, RuntimeError) as exc:
         output = getattr(args, "output", "json")
         _emit_error(exc, output=output)
         return 1
@@ -528,11 +541,7 @@ def _build_graphiti_facade(args: argparse.Namespace) -> _GraphitiFacade:
 
 
 def _build_mongo_client(mongo_uri: str | None) -> MongoClient:
-    if mongo_uri:
-        return MongoClient(mongo_uri)
-
-    load_dotenv(PROJECT_ROOT / ".env", override=False)
-    return MongoClient(**get_mongo_connection_kwargs(server_selection_timeout_ms=3000))
+    return build_project_runtime_mongo_client(PROJECT_ROOT, mongo_uri, server_selection_timeout_ms=3000)
 
 
 def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordinationFacade) -> tuple[dict | list[dict] | str, str]:
@@ -730,11 +739,7 @@ def _emit(payload: dict | list[dict] | str, *, output: str) -> None:
 
 
 def _emit_error(error: Exception, *, output: str) -> None:
-    payload = {
-        "error_code": error.__class__.__name__,
-        "message": str(error),
-        "audit_id": f"err-{uuid4().hex[:12]}",
-    }
+    payload = build_cli_error_payload(error, audit_id=f"err-{uuid4().hex[:12]}")
     _emit(payload, output=output)
 
 

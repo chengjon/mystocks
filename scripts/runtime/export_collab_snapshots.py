@@ -6,31 +6,48 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from pymongo import MongoClient
+from pymongo.errors import OperationFailure
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.services.maestro.collab.backends.mongo.store import MongoCollaborationStore
+from src.utils.cli_error_output import print_cli_error
+from src.utils.mongo_runtime_config import (
+    build_mongo_auth_runtime_error,
+    build_runtime_mongo_client,
+    get_runtime_mongo_db_default,
+    get_runtime_mongo_uri_default,
+    is_mongo_auth_error,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Export Mongo collaboration work items as markdown snapshots.")
-    parser.add_argument("--mongo-uri", default="mongodb://localhost:27017")
-    parser.add_argument("--mongo-db", default="mystocks_coord")
+    parser.add_argument("--mongo-uri", default=get_runtime_mongo_uri_default("mongodb://localhost:27017"))
+    parser.add_argument("--mongo-db", default=get_runtime_mongo_db_default("mystocks_coord"))
     parser.add_argument("--output-dir", default="reports/governance/mongo-collab-snapshots")
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    database = MongoClient(args.mongo_uri)[args.mongo_db]
-    output_dir = Path(args.output_dir)
-    written_paths = export_work_item_snapshots(database=database, output_dir=output_dir)
-    for path in written_paths:
-        print(path)
-    return 0
+    try:
+        database = build_runtime_mongo_client(args.mongo_uri)[args.mongo_db]
+        output_dir = Path(args.output_dir)
+        written_paths = export_work_item_snapshots(database=database, output_dir=output_dir)
+        for path in written_paths:
+            print(path)
+        return 0
+    except OperationFailure as exc:
+        if is_mongo_auth_error(exc):
+            print_cli_error(build_mongo_auth_runtime_error("Mongo export"))
+            return 1
+        raise
+    except RuntimeError as exc:
+        print_cli_error(exc)
+        return 1
 
 
 def export_work_item_snapshots(*, database: Any, output_dir: Path) -> list[Path]:
@@ -212,7 +229,5 @@ def _extract_graphiti_projection(events: list[dict[str, Any]]) -> dict[str, str]
         "ingest_status": str(payload.get("ingest_status", "(none)")),
         "search_summary": str(payload.get("search_summary", "(none)")),
     }
-
-
 if __name__ == "__main__":
     raise SystemExit(main())

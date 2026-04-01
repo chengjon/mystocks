@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import json
+from urllib.parse import parse_qs, urlparse
 
 import pytest
+import subprocess
 
 from scripts.runtime import smoke_graphiti_preflight
+from scripts.runtime import graphiti_smoke_common
 
 
 def test_run_smoke_creates_temp_work_item_and_runs_shared_preflight(monkeypatch) -> None:
@@ -12,6 +15,7 @@ def test_run_smoke_creates_temp_work_item_and_runs_shared_preflight(monkeypatch)
     calls: list[list[str]] = []
 
     monkeypatch.setattr(smoke_graphiti_preflight, "_build_mongo_client", lambda _mongo_uri: fake_client)
+    monkeypatch.setattr(smoke_graphiti_preflight, "get_effective_runtime_mongo_uri", lambda _mongo_uri: "mongodb://localhost:27017")
 
     def _fake_run(argv: list[str]) -> dict[str, object]:
         calls.append(argv)
@@ -66,6 +70,21 @@ def test_main_emits_json_summary(monkeypatch, capsys) -> None:
     assert payload["work_item_id"] == "GRAPHITI-PREFLIGHT-SMOKE"
 
 
+def test_main_emits_structured_json_error_when_run_smoke_fails(monkeypatch, capsys) -> None:
+    monkeypatch.setattr(
+        smoke_graphiti_preflight,
+        "run_smoke",
+        lambda **_: (_ for _ in ()).throw(RuntimeError("Graphiti preflight smoke requires writable credentials")),
+    )
+
+    exit_code = smoke_graphiti_preflight.main(["--actor-cli", "cli-preflight"])
+
+    assert exit_code == 1
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["error_code"] == "RuntimeError"
+    assert "Graphiti preflight smoke requires writable credentials" in payload["message"]
+
+
 def test_run_smoke_passes_resolved_mongo_uri_when_env_driven(monkeypatch) -> None:
     fake_client = _FakeMongoClient()
     calls: list[list[str]] = []
@@ -99,6 +118,24 @@ def test_run_smoke_passes_resolved_mongo_uri_when_env_driven(monkeypatch) -> Non
         "--mongo-db",
         "graphiti_preflight_smoke_db",
     ]
+
+
+def test_resolve_effective_mongo_uri_can_fallback_to_local_docker_container_credentials(monkeypatch) -> None:
+    monkeypatch.setattr(smoke_graphiti_preflight, "load_dotenv", lambda path, override=False: None)
+    monkeypatch.setattr(
+        smoke_graphiti_preflight,
+        "get_effective_runtime_mongo_uri",
+        lambda _mongo_uri: "mongodb://mongo:secret@127.0.0.1:27017/admin?authSource=admin",
+    )
+
+    resolved = smoke_graphiti_preflight._resolve_effective_mongo_uri(None)
+    parsed = urlparse(resolved)
+
+    assert parsed.username == "mongo"
+    assert parsed.password == "secret"
+    assert parsed.hostname == "127.0.0.1"
+    assert parsed.port == 27017
+    assert parse_qs(parsed.query)["authSource"] == ["admin"]
 
 
 def test_run_smoke_uses_unique_default_db_name(monkeypatch) -> None:
@@ -149,6 +186,34 @@ def test_run_smoke_skips_drop_database_when_mongo_setup_fails(monkeypatch) -> No
 
     assert fake_client.closed is True
     assert fake_client.drop_attempts == 0
+
+
+def test_run_coordctl_json_wraps_external_command_failure_as_runtime_error(monkeypatch) -> None:
+    monkeypatch.setenv("GRAPHITI_SMOKE_COMMAND", "/tmp/fake-cmd")
+
+    def _raise(*_args, **_kwargs):
+        raise subprocess.CalledProcessError(1, ["fake", "cmd"], output="out", stderr="boom")
+
+    monkeypatch.setattr(graphiti_smoke_common.subprocess, "run", _raise)
+
+    with pytest.raises(RuntimeError, match="external smoke command failed"):
+        smoke_graphiti_preflight._run_coordctl_json(["graphiti", "preflight"])
+
+
+def test_run_coordctl_json_wraps_invalid_external_json_as_runtime_error(monkeypatch) -> None:
+    monkeypatch.setenv("GRAPHITI_SMOKE_COMMAND", "/tmp/fake-cmd")
+    monkeypatch.setattr(
+        graphiti_smoke_common.subprocess,
+        "run",
+        lambda *_args, **_kwargs: type(
+            "CompletedProcess",
+            (),
+            {"stdout": "not-json", "stderr": "", "returncode": 0},
+        )(),
+    )
+
+    with pytest.raises(RuntimeError, match="external smoke command returned invalid JSON"):
+        smoke_graphiti_preflight._run_coordctl_json(["graphiti", "preflight"])
 
 
 class _FakeMongoClient:

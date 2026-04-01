@@ -9,7 +9,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from pymongo import MongoClient
+from pymongo.errors import OperationFailure
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
@@ -18,13 +18,21 @@ if str(PROJECT_ROOT) not in sys.path:
 from src.services.maestro.collab.runtime_registry import MongoCollaborationRegistry
 from src.services.maestro.collab.backends.mongo.store import MongoCollaborationStore
 from src.services.maestro.collab.store.models import WorkItemRecord, WorkUpdateRecord
+from src.utils.cli_error_output import print_cli_error
+from src.utils.mongo_runtime_config import (
+    build_mongo_auth_runtime_error,
+    build_runtime_mongo_client,
+    get_runtime_mongo_db_default,
+    get_runtime_mongo_uri_default,
+    is_mongo_auth_error,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Migrate SQLite collab runtime state into MongoDB.")
     parser.add_argument("--sqlite-path", default=".symphony/tracker.db")
-    parser.add_argument("--mongo-uri", default="mongodb://localhost:27017")
-    parser.add_argument("--mongo-db", default="mystocks_coord")
+    parser.add_argument("--mongo-uri", default=get_runtime_mongo_uri_default("mongodb://localhost:27017"))
+    parser.add_argument("--mongo-db", default=get_runtime_mongo_db_default("mystocks_coord"))
     parser.add_argument("--task-path", default=None)
     parser.add_argument("--report-path", default=None)
     return parser
@@ -32,17 +40,26 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    mongo_database = MongoClient(args.mongo_uri)[args.mongo_db]
-    counts = migrate_runtime_registry(sqlite_path=Path(args.sqlite_path), mongo_database=mongo_database)
-    if args.task_path or args.report_path:
-        task_counts = migrate_markdown_contract(
-            task_path=Path(args.task_path) if args.task_path else Path("TASK.md"),
-            report_path=Path(args.report_path) if args.report_path else Path("TASK-REPORT.md"),
-            mongo_database=mongo_database,
-        )
-        counts.update(task_counts)
-    print(json.dumps(counts, ensure_ascii=False, indent=2, sort_keys=True))
-    return 0
+    try:
+        mongo_database = build_runtime_mongo_client(args.mongo_uri)[args.mongo_db]
+        counts = migrate_runtime_registry(sqlite_path=Path(args.sqlite_path), mongo_database=mongo_database)
+        if args.task_path or args.report_path:
+            task_counts = migrate_markdown_contract(
+                task_path=Path(args.task_path) if args.task_path else Path("TASK.md"),
+                report_path=Path(args.report_path) if args.report_path else Path("TASK-REPORT.md"),
+                mongo_database=mongo_database,
+            )
+            counts.update(task_counts)
+        print(json.dumps(counts, ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
+    except OperationFailure as exc:
+        if is_mongo_auth_error(exc):
+            print_cli_error(build_mongo_auth_runtime_error("Mongo migration"))
+            return 1
+        raise
+    except RuntimeError as exc:
+        print_cli_error(exc)
+        return 1
 
 
 def migrate_runtime_registry(*, sqlite_path: Path, mongo_database: Any) -> dict[str, int]:
@@ -150,7 +167,5 @@ def _table_exists(connection: sqlite3.Connection, table_name: str) -> bool:
         (table_name,),
     ).fetchone()
     return row is not None
-
-
 if __name__ == "__main__":
     raise SystemExit(main())
