@@ -68,7 +68,7 @@
         <el-select
           v-model="selectedRoute"
           placeholder="请选择路由"
-          style="width: 100%"
+          class="route-select"
           clearable
         >
           <el-option
@@ -77,10 +77,10 @@
             :label="info.routeName"
             :value="info.routeName"
           >
-            <span style="float: left">{{ info.routeName }}</span>
-            <span style="float: right; color: #8492a6; font-size: 13px">
+            <span class="route-name">{{ info.routeName }}</span>
+            <span class="route-meta">
               <el-tag size="small" type="warning">{{ info.channel }}</el-tag>
-              <span style="margin-left: 10px">{{ info.description }}</span>
+              <span class="route-description">{{ info.description }}</span>
             </span>
           </el-option>
         </el-select>
@@ -307,10 +307,25 @@ onUnmounted(() => {
   color: #303133;
 }
 
+.route-select {
+  width: 100%;
+}
+
+.route-name {
+  float: left;
+}
+
+.route-meta {
+  float: right;
+  color: #8492a6;
+  font-size: 13px;
+}
+
 .channel-badge {
   margin-left: 10px;
 }
 
+.route-description,
 .description {
   margin-left: 10px;
   color: #909399;
