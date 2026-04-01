@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 
-import pytest
+from pymongo.errors import OperationFailure
 
 from scripts.runtime import maestro_collab
 
@@ -228,20 +228,14 @@ def test_build_coordination_service_uses_env_driven_mongo_client_when_uri_omitte
             captured["mongo_db"] = name
             return object()
 
-    monkeypatch.setattr(maestro_collab, "load_dotenv", lambda path, override=False: captured.update({"dotenv_path": str(path)}))
     monkeypatch.setattr(
         maestro_collab,
-        "get_mongo_connection_kwargs",
-        lambda **kwargs: {
-            "host": "mongo.local",
-            "port": 27017,
-            "username": "coord",
-            "password": "secret",
-            "authSource": "admin",
-            "serverSelectionTimeoutMS": kwargs["server_selection_timeout_ms"],
-        },
+        "build_project_runtime_mongo_client",
+        lambda project_root, mongo_uri, server_selection_timeout_ms=3000: captured.update(
+            {"project_root": str(project_root), "mongo_uri": mongo_uri, "server_selection_timeout_ms": server_selection_timeout_ms}
+        )
+        or _FakeClient(),
     )
-    monkeypatch.setattr(maestro_collab, "MongoClient", lambda **kwargs: captured.update({"client_kwargs": kwargs}) or _FakeClient())
     monkeypatch.setattr(maestro_collab, "MongoCollaborationStore", lambda database: captured.update({"database": database}) or object())
     monkeypatch.setattr(maestro_collab, "CoordinationService", lambda store: captured.update({"store": store}) or object())
 
@@ -249,15 +243,66 @@ def test_build_coordination_service_uses_env_driven_mongo_client_when_uri_omitte
 
     assert isinstance(facade, maestro_collab._MongoCoordinationFacade)
     assert captured["mongo_db"] == "mystocks_coord"
-    assert captured["client_kwargs"] == {
-        "host": "mongo.local",
-        "port": 27017,
-        "username": "coord",
-        "password": "secret",
-        "authSource": "admin",
-        "serverSelectionTimeoutMS": 3000,
-    }
-    assert str(maestro_collab.PROJECT_ROOT / ".env") == captured["dotenv_path"]
+    assert captured["mongo_uri"] is None
+    assert captured["server_selection_timeout_ms"] == 3000
+    assert str(maestro_collab.PROJECT_ROOT) == captured["project_root"]
+
+
+def test_build_coordination_service_can_fallback_to_local_docker_container_credentials(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+
+    class _FakeClient:
+        def __getitem__(self, name: str):
+            captured["mongo_db"] = name
+            return object()
+
+    monkeypatch.setattr(
+        maestro_collab,
+        "build_project_runtime_mongo_client",
+        lambda project_root, mongo_uri, server_selection_timeout_ms=3000: captured.update(
+            {"project_root": str(project_root), "mongo_uri": mongo_uri, "server_selection_timeout_ms": server_selection_timeout_ms}
+        )
+        or _FakeClient(),
+    )
+    monkeypatch.setattr(maestro_collab, "MongoCollaborationStore", lambda database: captured.update({"database": database}) or object())
+    monkeypatch.setattr(maestro_collab, "CoordinationService", lambda store: captured.update({"store": store}) or object())
+
+    facade = maestro_collab._build_coordination_service(argparse.Namespace(mongo_uri=None, mongo_db="mystocks_coord"))
+
+    assert isinstance(facade, maestro_collab._MongoCoordinationFacade)
+    assert captured["mongo_db"] == "mystocks_coord"
+    assert str(maestro_collab.PROJECT_ROOT) == captured["project_root"]
+    assert captured["mongo_uri"] is None
+    assert captured["server_selection_timeout_ms"] == 3000
+
+
+def test_build_coordination_service_can_inject_local_docker_credentials_for_default_local_uri(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+
+    class _FakeClient:
+        def __getitem__(self, name: str):
+            captured["mongo_db"] = name
+            return object()
+
+    monkeypatch.setattr(
+        maestro_collab,
+        "build_project_runtime_mongo_client",
+        lambda project_root, mongo_uri, server_selection_timeout_ms=3000: captured.update(
+            {"project_root": str(project_root), "mongo_uri": mongo_uri, "server_selection_timeout_ms": server_selection_timeout_ms}
+        )
+        or _FakeClient(),
+    )
+    monkeypatch.setattr(maestro_collab, "MongoCollaborationStore", lambda database: captured.update({"database": database}) or object())
+    monkeypatch.setattr(maestro_collab, "CoordinationService", lambda store: captured.update({"store": store}) or object())
+
+    facade = maestro_collab._build_coordination_service(
+        argparse.Namespace(mongo_uri="mongodb://localhost:27017", mongo_db="mystocks_coord")
+    )
+
+    assert isinstance(facade, maestro_collab._MongoCoordinationFacade)
+    assert captured["mongo_db"] == "mystocks_coord"
+    assert str(maestro_collab.PROJECT_ROOT) == captured["project_root"]
+    assert captured["mongo_uri"] == "mongodb://localhost:27017"
 
 
 def test_build_coordination_service_prefers_explicit_mongo_uri(monkeypatch) -> None:
@@ -268,13 +313,14 @@ def test_build_coordination_service_prefers_explicit_mongo_uri(monkeypatch) -> N
             captured["mongo_db"] = name
             return object()
 
-    monkeypatch.setattr(maestro_collab, "load_dotenv", lambda *_args, **_kwargs: pytest.fail("load_dotenv should not run"))
     monkeypatch.setattr(
         maestro_collab,
-        "get_mongo_connection_kwargs",
-        lambda **_kwargs: pytest.fail("env-driven mongo kwargs should not be used when uri is explicit"),
+        "build_project_runtime_mongo_client",
+        lambda project_root, mongo_uri, server_selection_timeout_ms=3000: captured.update(
+            {"project_root": str(project_root), "mongo_uri": mongo_uri, "server_selection_timeout_ms": server_selection_timeout_ms}
+        )
+        or _FakeClient(),
     )
-    monkeypatch.setattr(maestro_collab, "MongoClient", lambda uri: captured.update({"mongo_uri": uri}) or _FakeClient())
     monkeypatch.setattr(maestro_collab, "MongoCollaborationStore", lambda database: captured.update({"database": database}) or object())
     monkeypatch.setattr(maestro_collab, "CoordinationService", lambda store: captured.update({"store": store}) or object())
 
@@ -283,8 +329,51 @@ def test_build_coordination_service_prefers_explicit_mongo_uri(monkeypatch) -> N
     )
 
     assert isinstance(facade, maestro_collab._MongoCoordinationFacade)
+    assert str(maestro_collab.PROJECT_ROOT) == captured["project_root"]
     assert captured["mongo_uri"] == "mongodb://user:pass@mongo.example:27017/admin?authSource=admin"
     assert captured["mongo_db"] == "mystocks_coord"
+
+
+def test_main_emits_structured_error_when_mongo_auth_fails(monkeypatch, capsys) -> None:
+    monkeypatch.setattr(
+        maestro_collab,
+        "_build_coordination_service",
+        lambda _args: (_ for _ in ()).throw(
+            OperationFailure(
+                "createIndexes requires authentication",
+                13,
+                {"ok": 0.0, "errmsg": "createIndexes requires authentication", "code": 13, "codeName": "Unauthorized"},
+            )
+        ),
+    )
+
+    exit_code = maestro_collab.main(["work", "list", "--output", "json"])
+
+    assert exit_code == 1
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["error_code"] == "RuntimeError"
+    assert "Mongo control plane requires writable credentials" in payload["message"]
+
+
+def test_main_emits_structured_error_when_mongo_authentication_failed(monkeypatch, capsys) -> None:
+    monkeypatch.setattr(
+        maestro_collab,
+        "_build_coordination_service",
+        lambda _args: (_ for _ in ()).throw(
+            OperationFailure(
+                "Authentication failed.",
+                18,
+                {"ok": 0.0, "errmsg": "Authentication failed.", "code": 18, "codeName": "AuthenticationFailed"},
+            )
+        ),
+    )
+
+    exit_code = maestro_collab.main(["work", "list", "--output", "json"])
+
+    assert exit_code == 1
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["error_code"] == "RuntimeError"
+    assert "Mongo control plane requires writable credentials" in payload["message"]
 
 
 class _FakeCoordinationService:

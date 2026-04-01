@@ -1,13 +1,8 @@
 from __future__ import annotations
 
 import argparse
-import io
 import json
-import os
-import shlex
-import subprocess
 import sys
-from contextlib import redirect_stdout
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -15,6 +10,10 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from scripts.runtime import coordctl
+from scripts.runtime.graphiti_smoke_common import run_coordctl_json
+from src.utils.cli_error_output import (
+    print_cli_error,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -30,16 +29,20 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    summary = run_smoke(
-        actor_cli=args.actor_cli,
-        group_id=args.group_id,
-        name=args.name,
-        body=args.body,
-        query=args.query,
-        max_wait_seconds=args.max_wait_seconds,
-    )
-    print(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True))
-    return 0
+    try:
+        summary = run_smoke(
+            actor_cli=args.actor_cli,
+            group_id=args.group_id,
+            name=args.name,
+            body=args.body,
+            query=args.query,
+            max_wait_seconds=args.max_wait_seconds,
+        )
+        print(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
+    except RuntimeError as exc:
+        print_cli_error(exc)
+        return 1
 
 
 def run_smoke(
@@ -101,29 +104,7 @@ def run_smoke(
 
 
 def _run_coordctl_json(argv: list[str]) -> dict[str, object]:
-    command_prefix = os.getenv("GRAPHITI_SMOKE_COMMAND")
-    if command_prefix:
-        command = [*shlex.split(command_prefix), *argv]
-        completed = subprocess.run(
-            command,
-            text=True,
-            capture_output=True,
-            check=True,
-        )
-        payload = completed.stdout.strip()
-        if not payload:
-            raise RuntimeError(f"external smoke command returned no output for argv={argv!r}")
-        return json.loads(payload)
-
-    buffer = io.StringIO()
-    with redirect_stdout(buffer):
-        exit_code = coordctl.main(argv)
-    if exit_code != 0:
-        raise RuntimeError(f"coordctl failed for argv={argv!r}")
-    payload = buffer.getvalue().strip()
-    if not payload:
-        raise RuntimeError(f"coordctl returned no output for argv={argv!r}")
-    return json.loads(payload)
+    return run_coordctl_json(argv, coordctl_main=coordctl.main)
 
 
 if __name__ == "__main__":

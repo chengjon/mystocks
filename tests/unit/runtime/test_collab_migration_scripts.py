@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import json
 from datetime import UTC, datetime
 from pathlib import Path
+
+from pymongo.errors import OperationFailure
 
 from src.services.maestro.collab.backends.mongo.store import MongoCollaborationStore
 from src.services.maestro.collab.models import AssignmentState
@@ -14,6 +17,7 @@ from scripts.runtime.export_collab_snapshots import (
     render_task_markdown,
     render_task_report_markdown,
 )
+from scripts.runtime import export_collab_snapshots
 from scripts.runtime import migrate_collab_to_mongo
 from scripts.runtime.migrate_collab_to_mongo import migrate_markdown_contract, migrate_runtime_registry
 
@@ -140,7 +144,7 @@ def test_migrate_cli_can_optionally_import_markdown_contract(monkeypatch, tmp_pa
     report_path.write_text("- Latest Progress: imported", encoding="utf-8")
     fake_database = _FakeMongoDatabase()
 
-    monkeypatch.setattr("scripts.runtime.migrate_collab_to_mongo.MongoClient", lambda _uri: _FakeMongoClient(fake_database))
+    monkeypatch.setattr("scripts.runtime.migrate_collab_to_mongo.build_runtime_mongo_client", lambda *_args, **_kwargs: _FakeMongoClient(fake_database))
 
     exit_code = migrate_collab_to_mongo.main(
         [
@@ -160,6 +164,108 @@ def test_migrate_cli_can_optionally_import_markdown_contract(monkeypatch, tmp_pa
     assert exit_code == 0
     payload = capsys.readouterr().out
     assert "work_items" in payload
+
+
+def test_migrate_cli_can_inject_local_docker_credentials_for_default_local_uri(monkeypatch, tmp_path: Path, capsys) -> None:
+    fake_database = _FakeMongoDatabase()
+    captured: dict[str, object] = {}
+
+    monkeypatch.setattr(
+        "scripts.runtime.migrate_collab_to_mongo.build_runtime_mongo_client",
+        lambda mongo_uri, **_kwargs: captured.update({"mongo_uri": mongo_uri}) or _FakeMongoClient(fake_database),
+    )
+
+    exit_code = migrate_collab_to_mongo.main(
+        [
+            "--sqlite-path",
+            str(tmp_path / "tracker.db"),
+        ]
+    )
+
+    assert exit_code == 0
+    assert captured["mongo_uri"] == "mongodb://localhost:27017"
+    assert "assignments" in capsys.readouterr().out
+
+
+def test_export_collab_snapshots_cli_can_inject_local_docker_credentials_for_default_local_uri(
+    monkeypatch, tmp_path: Path, capsys
+) -> None:
+    fake_database = _FakeMongoDatabase()
+    captured: dict[str, object] = {}
+
+    monkeypatch.setattr(
+        "scripts.runtime.export_collab_snapshots.build_runtime_mongo_client",
+        lambda mongo_uri, **_kwargs: captured.update({"mongo_uri": mongo_uri}) or _FakeMongoClient(fake_database),
+    )
+
+    exit_code = export_collab_snapshots.main(
+        [
+            "--output-dir",
+            str(tmp_path),
+        ]
+    )
+
+    assert exit_code == 0
+    assert captured["mongo_uri"] == "mongodb://localhost:27017"
+    assert capsys.readouterr().out == ""
+
+
+def test_export_collab_snapshots_parser_prefers_env_mongo_uri(monkeypatch) -> None:
+    monkeypatch.setenv("MAESTRO_COLLAB_MONGO_URI", "mongodb://coord-user:coord-pass@mongo-host:27017/admin?authSource=admin")
+
+    args = export_collab_snapshots.build_parser().parse_args([])
+
+    assert args.mongo_uri == "mongodb://coord-user:coord-pass@mongo-host:27017/admin?authSource=admin"
+
+
+def test_migrate_cli_parser_prefers_env_mongo_uri(monkeypatch) -> None:
+    monkeypatch.setenv("MAESTRO_COLLAB_MONGO_URI", "mongodb://coord-user:coord-pass@mongo-host:27017/admin?authSource=admin")
+    monkeypatch.setenv("MAESTRO_COLLAB_MONGO_DB", "coord_runtime")
+
+    args = migrate_collab_to_mongo.build_parser().parse_args([])
+
+    assert args.mongo_uri == "mongodb://coord-user:coord-pass@mongo-host:27017/admin?authSource=admin"
+    assert args.mongo_db == "coord_runtime"
+
+
+def test_migrate_cli_emits_structured_json_error_when_mongo_auth_fails(monkeypatch, capsys) -> None:
+    monkeypatch.setattr(
+        "scripts.runtime.migrate_collab_to_mongo.build_runtime_mongo_client",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            OperationFailure(
+                "Authentication failed.",
+                18,
+                {"ok": 0.0, "errmsg": "Authentication failed.", "code": 18, "codeName": "AuthenticationFailed"},
+            )
+        ),
+    )
+
+    exit_code = migrate_collab_to_mongo.main([])
+
+    assert exit_code == 1
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["error_code"] == "RuntimeError"
+    assert "Mongo migration requires writable credentials" in payload["message"]
+
+
+def test_export_collab_snapshots_cli_emits_structured_json_error_when_mongo_auth_fails(monkeypatch, capsys) -> None:
+    monkeypatch.setattr(
+        "scripts.runtime.export_collab_snapshots.build_runtime_mongo_client",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            OperationFailure(
+                "createIndexes requires authentication",
+                13,
+                {"ok": 0.0, "errmsg": "createIndexes requires authentication", "code": 13, "codeName": "Unauthorized"},
+            )
+        ),
+    )
+
+    exit_code = export_collab_snapshots.main([])
+
+    assert exit_code == 1
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["error_code"] == "RuntimeError"
+    assert "Mongo export requires writable credentials" in payload["message"]
 
 
 def test_render_task_artifacts_from_mongo_records() -> None:

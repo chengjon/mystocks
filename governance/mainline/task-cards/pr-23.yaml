@@ -1,0 +1,104 @@
+version: "v0.2"
+
+task:
+  id: "pr-23"
+  title: "converge mongo runtime configuration and graphiti smoke CLI support"
+  owner: "main"
+  created_at: "2026-04-01"
+
+mainline:
+  id: "L1-runtime-convergence"
+  objective: "land the shared Mongo runtime config and Graphiti smoke helper convergence on main with focused runtime verification"
+  milestone_id: "L2-runtime-convergence"
+  slice_id: "L3-mongo-graphiti-runtime"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "tests"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "runtime-collab-convergence-is-infrastructure-not-product-domain-work"
+
+scope:
+  allowed_paths:
+    - "WORKFLOW.md"
+    - "governance/mainline/task-cards/pr-23.yaml"
+    - "scripts/runtime/export_collab_snapshots.py"
+    - "scripts/runtime/graphiti_smoke_common.py"
+    - "scripts/runtime/maestro_collab.py"
+    - "scripts/runtime/migrate_collab_to_mongo.py"
+    - "scripts/runtime/smoke_graphiti_cli.py"
+    - "scripts/runtime/smoke_graphiti_preflight.py"
+    - "scripts/runtime/smoke_mongo_multicli.py"
+    - "src/utils/cli_error_output.py"
+    - "src/utils/mongo_runtime_config.py"
+    - "tests/unit/core/test_runtime_config_governance.py"
+    - "tests/unit/maestro_collab/test_profile_defaults.py"
+    - "tests/unit/runtime/test_cli_error_output.py"
+    - "tests/unit/runtime/test_graphiti_smoke_common.py"
+    - "tests/unit/runtime/test_collab_migration_scripts.py"
+    - "tests/unit/runtime/test_maestro_coordination_cli.py"
+    - "tests/unit/runtime/test_smoke_graphiti_cli.py"
+    - "tests/unit/runtime/test_smoke_graphiti_preflight.py"
+    - "tests/unit/runtime/test_smoke_mongo_multicli.py"
+    - "tests/unit/services/symphony/test_run_symphony_cli.py"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No unrelated frontend or workflow cleanup outside the declared runtime convergence files"
+  - "No business-domain feature behavior change outside Mongo/Graphiti CLI runtime support"
+
+acceptance:
+  checks:
+    - id: "runtime-targeted-tests"
+      command: "pytest tests/unit/core/test_runtime_config_governance.py tests/unit/maestro_collab/test_profile_defaults.py tests/unit/runtime/test_cli_error_output.py tests/unit/runtime/test_graphiti_smoke_common.py tests/unit/runtime/test_collab_migration_scripts.py tests/unit/runtime/test_maestro_coordination_cli.py tests/unit/runtime/test_smoke_graphiti_cli.py tests/unit/runtime/test_smoke_graphiti_preflight.py tests/unit/runtime/test_smoke_mongo_multicli.py tests/unit/services/symphony/test_run_symphony_cli.py tests/unit/services/symphony/test_maestro_collab_cli.py tests/unit/services/maestro/test_task_report_graphiti_projection.py -q --no-cov"
+      required: true
+    - id: "runtime-ruff"
+      command: "ruff check scripts/runtime/export_collab_snapshots.py scripts/runtime/graphiti_smoke_common.py scripts/runtime/maestro_collab.py scripts/runtime/migrate_collab_to_mongo.py scripts/runtime/smoke_graphiti_cli.py scripts/runtime/smoke_graphiti_preflight.py scripts/runtime/smoke_mongo_multicli.py src/utils/cli_error_output.py src/utils/mongo_runtime_config.py tests/unit/core/test_runtime_config_governance.py tests/unit/maestro_collab/test_profile_defaults.py tests/unit/runtime/test_cli_error_output.py tests/unit/runtime/test_graphiti_smoke_common.py tests/unit/runtime/test_collab_migration_scripts.py tests/unit/runtime/test_maestro_coordination_cli.py tests/unit/runtime/test_smoke_graphiti_cli.py tests/unit/runtime/test_smoke_graphiti_preflight.py tests/unit/runtime/test_smoke_mongo_multicli.py tests/unit/services/symphony/test_run_symphony_cli.py"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-23.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Shared Mongo runtime helpers now sit under multiple runtime CLIs, so a bad fallback rule would fan out across smoke and migration entrypoints"
+    - "The root WORKFLOW.md asset is now part of the runtime CLI contract and should not silently drift from the tested expectations"
+  rollback_plan: "git revert <merge-commit-sha> if the shared Mongo/Graphiti runtime helpers regress CLI behavior or governance gates after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "remove duplicated Mongo/Graphiti runtime configuration and CLI error handling from the Maestro support scripts"
+    modified_scope: "runtime scripts, two shared utility modules, the root workflow definition, and focused runtime regression tests"
+    dependency_changes: "none"
+    legacy_logic_impact: "existing CLI behaviors are preserved while env parsing, docker fallback, and error JSON handling become shared"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the branch if runtime smoke, migration, or coordination CLI regress after merge"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-01T00:00:00Z"
+    approval_note: "runtime convergence cleanup does not introduce a new product capability"
+    secondary_approved: false

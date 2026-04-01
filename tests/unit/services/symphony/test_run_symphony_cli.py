@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import importlib
+from pathlib import Path
+
+from src.services.symphony.workflow_loader import load_workflow_definition
 
 
 def test_run_symphony_module_imports_without_circular_dependency() -> None:
@@ -25,3 +28,13 @@ def test_run_symphony_cli_accepts_explicit_path_and_port() -> None:
 
     assert args.workflow_path == "custom/WORKFLOW.md"
     assert args.port == 9030
+
+
+def test_default_root_workflow_file_exists_and_is_loadable() -> None:
+    project_root = Path(__file__).resolve().parents[4]
+    workflow_path = project_root / "WORKFLOW.md"
+
+    definition = load_workflow_definition(workflow_path)
+
+    assert definition.config["tracker"]["kind"] == "local"
+    assert definition.config["runtime"]["collab_backend"] == "sqlite"
