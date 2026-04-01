@@ -1,0 +1,86 @@
+version: "v0.2"
+
+task:
+  id: "pr-25"
+  title: "refresh artdeco start-here and docs indexes"
+  owner: "main"
+  created_at: "2026-04-01"
+
+mainline:
+  id: "L1-artdeco-doc-followup"
+  objective: "land the remaining ArtDeco start-here and docs index refresh on main with valid guide references"
+  milestone_id: "L2-artdeco-docs"
+  slice_id: "L3-start-here-followup"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "documentation-entrypoint-refresh-does-not-change-product-domain-behavior"
+
+scope:
+  allowed_paths:
+    - "docs/guides/INDEX.md"
+    - "docs/guides/web/ARTDECO_START_HERE.md"
+    - "docs/guides/web/INDEX.md"
+    - "governance/mainline/task-cards/pr-25.yaml"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No frontend runtime or style implementation changes"
+  - "No broad docs taxonomy rewrite beyond the three guide entrypoint files"
+
+acceptance:
+  checks:
+    - id: "docs-diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "docs-path-presence"
+      command: "test -f docs/guides/web/ARTDECO_MASTER_INDEX.md && test -f docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md && test -f docs/guides/web/ARTDECO_COMPONENT_GUIDE.md"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-25.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the refreshed start-here document points at stale paths, new readers will still fall onto invalid guide routes"
+    - "If the generated guide indexes drift from the actual file set, docs discovery regresses again"
+  rollback_plan: "git revert <merge-commit-sha> if the guide entrypoint refresh introduces broken references after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close the remaining ArtDeco documentation entrypoint gaps after the guide index refresh batch"
+    modified_scope: "the top-level guides index, the ArtDeco start-here entrypoint, the web guide index, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime behavior changes; only documentation navigation and wording are refreshed"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the follow-up if guide links or index metadata regress after merge"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-01T00:00:00Z"
+    approval_note: "ArtDeco docs follow-up is documentation-only cleanup"
+    secondary_approved: false
