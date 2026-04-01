@@ -120,7 +120,12 @@ onMounted(() => {
 
       <div class="monitor-grid" v-loading="loading">
         <div v-for="item in stopLossItems" :key="item.symbol" class="artdeco-card risk-card">
-          <div class="risk-level-bar" :style="{ background: Number(item.distance) < 2 ? 'var(--artdeco-rise)' : 'var(--artdeco-gold-dim)' }"></div>
+          <div
+            :class="[
+              'risk-level-bar',
+              Number(item.distance) < 2 ? 'risk-level-bar--critical' : 'risk-level-bar--watch'
+            ]"
+          ></div>
 
           <div class="card-body">
             <div class="stock-id">
@@ -254,6 +259,14 @@ onMounted(() => {
 .risk-level-bar {
   height: var(--artdeco-spacing-1);
   width: 100%;
+}
+
+.risk-level-bar--critical {
+  background: var(--artdeco-rise);
+}
+
+.risk-level-bar--watch {
+  background: var(--artdeco-gold-dim);
 }
 
 .card-body {
