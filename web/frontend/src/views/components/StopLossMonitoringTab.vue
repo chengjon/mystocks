@@ -14,19 +14,25 @@
         </el-col>
         <el-col :span="6">
           <el-statistic
+            :class="[
+              'monitoring-statistic',
+              stats.totalPnLProtected >= 0 ? 'monitoring-statistic--success' : 'monitoring-statistic--danger'
+            ]"
             title="TOTAL P&L PROTECTED"
             :value="stats.totalPnLProtected"
             prefix="¥"
             :precision="0"
-            :value-style="{ color: stats.totalPnLProtected >= 0 ? '#67C23A' : '#F56C6C' }"
           />
         </el-col>
         <el-col :span="6">
           <el-statistic
+            :class="[
+              'monitoring-statistic',
+              stats.successRate >= 90 ? 'monitoring-statistic--success' : 'monitoring-statistic--warning'
+            ]"
             title="SUCCESS RATE"
             :value="stats.successRate"
             suffix="%"
-            :value-style="{ color: stats.successRate >= 90 ? '#67C23A' : '#E6A23C' }"
           />
         </el-col>
         <el-col :span="6">
