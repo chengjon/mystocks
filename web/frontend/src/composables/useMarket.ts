@@ -8,6 +8,7 @@
 import { ref, readonly, onMounted } from 'vue';
 import { marketService } from '@/api/services/marketService';
 import { MarketAdapter } from '@/api/adapters/marketAdapter';
+import { marketApi } from '@/api/market';
 import { getCache } from '@/utils/cache/part-1';
 import type { MarketOverviewVM, FundFlowChartPoint, KLineChartData } from '@/api/types/extensions';
 
@@ -72,72 +73,7 @@ export function useMarket(options?: {
         }
       }
 
-      // TODO: Implement these methods in marketService
-      // For now, return mock data with minimal required fields
-      const vm = {
-        market_status: 'sideways' as const,
-        market_phase: 'accumulation' as const,
-        indices: {
-          shanghai: {
-            code: 'SH000001',
-            name: '上证指数',
-            current_price: 3000,
-            change_amount: 0,
-            change_percent: 0,
-            volume: 0,
-            amount: 0,
-            open: 3000,
-            high: 3000,
-            low: 3000,
-            close: 3000,
-            prev_close: 3000
-          },
-          shenzhen: {
-            code: 'SZ399001',
-            name: '深证成指',
-            current_price: 10000,
-            change_amount: 0,
-            change_percent: 0,
-            volume: 0,
-            amount: 0,
-            open: 10000,
-            high: 10000,
-            low: 10000,
-            close: 10000,
-            prev_close: 10000
-          },
-          chiNext: {
-            code: 'SZ399006',
-            name: '创业板指',
-            current_price: 2000,
-            change_amount: 0,
-            change_percent: 0,
-            volume: 0,
-            amount: 0,
-            open: 2000,
-            high: 2000,
-            low: 2000,
-            close: 2000,
-            prev_close: 2000
-          }
-        },
-        sentiment: {
-          advance_decline_ratio: 1.0,
-          up_down_volume_ratio: 1.0,
-          new_highs_new_lows_ratio: 1.0
-        },
-        turnover: { total: 0, shanghai: 0, shenzhen: 0 },
-        price_distribution: { up: 0, down: 0, flat: 0 },
-        sector_performance: [],
-        hot_concepts: [],
-        capital_flow: { main_net: 0, retail_net: 0, institution_net: 0 },
-        top_gainers: [],
-        top_losers: [],
-        technical_summary: { trend: 'neutral' as const, support: 0, resistance: 0 },
-        last_update: new Date().toISOString(),
-        market_session: 'closed' as const,
-        timestamp: new Date().toISOString()
-      } as unknown as MarketOverviewVM;
+      const vm = await marketApi.getMarketOverview()
 
       // Merge Chip Race data
       // TODO: MarketOverviewVM interface doesn't have chipRaces field
