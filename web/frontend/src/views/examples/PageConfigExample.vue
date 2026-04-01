@@ -25,10 +25,10 @@
             <span v-else class="text-muted">不需要</span>
           </el-descriptions-item>
           <el-descriptions-item label="页面类型">
-            <el-icon v-if="isStandardPage" color="#67C23A">
+            <el-icon v-if="isStandardPage" class="page-type-icon page-type-icon--standard">
               <CircleCheck />
             </el-icon>
-            <el-icon v-else color="#909399">
+            <el-icon v-else class="page-type-icon page-type-icon--component">
               <CircleClose />
             </el-icon>
           </el-descriptions-item>
@@ -219,6 +219,14 @@ onUnmounted(() => {
 
 .text-muted {
   color: #909399;
+}
+
+.page-type-icon--standard {
+  color: var(--color-success);
+}
+
+.page-type-icon--component {
+  color: var(--color-text-tertiary);
 }
 
 code {
