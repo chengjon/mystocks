@@ -6,10 +6,10 @@
       <el-row :gutter="20">
         <el-col :span="6">
           <el-statistic
+            class="monitoring-statistic monitoring-statistic--info"
             title="ACTIVE POSITIONS"
             :value="stats.activePositions"
             suffix="positions"
-            :value-style="{ color: '#409EFF' }"
           />
         </el-col>
         <el-col :span="6">
@@ -31,11 +31,11 @@
         </el-col>
         <el-col :span="6">
           <el-statistic
+            class="monitoring-statistic monitoring-statistic--info"
             title="AVG HOLDING TIME"
             :value="stats.avgHoldingTime"
             suffix="days"
             :precision="1"
-            :value-style="{ color: '#409EFF' }"
           />
         </el-col>
       </el-row>

@@ -30,6 +30,10 @@
   margin-left: var(--spacing-sm);
 }
 
+:deep(.monitoring-statistic--info .el-statistic__content-value) {
+  color: var(--color-info);
+}
+
 .price-up {
   color: var(--color-stock-down);
   font-weight: bold;

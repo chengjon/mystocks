@@ -14,13 +14,16 @@ describe('StopLossMonitoringTab style normalization', () => {
     expect(viewSource).toContain('class="monitoring-table"')
     expect(viewSource).toContain('class="position-form-control"')
     expect(viewSource).toContain('class="action-button-spaced"')
+    expect(viewSource).toContain('class="monitoring-statistic monitoring-statistic--info"')
 
     expect(viewSource).not.toContain('style="width: 100%"')
     expect(viewSource).not.toContain('style="width: 100%;"')
     expect(viewSource).not.toContain('style="margin-left: 8px;"')
+    expect(viewSource).not.toContain(":value-style=\"{ color: '#409EFF' }\"")
 
     expect(styleSource).toContain('.monitoring-table')
     expect(styleSource).toContain('.position-form-control')
     expect(styleSource).toContain('.action-button-spaced')
+    expect(styleSource).toContain('.monitoring-statistic--info .el-statistic__content-value')
   })
 })
