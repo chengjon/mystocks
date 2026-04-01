@@ -6,10 +6,10 @@
       placement="bottom-start"
     >
       <template #reference>
-        <el-button
-          size="small"
-          :icon="TrendCharts"
-        >
+        <el-button size="small">
+          <el-icon class="indicator-trigger-icon">
+            <TrendCharts />
+          </el-icon>
           技术指标
           <el-badge
             v-if="selectedCount > 0"
@@ -25,7 +25,6 @@
           <!-- 趋势指标 -->
           <el-tab-pane label="趋势" name="trend">
             <div class="indicator-list">
-              <!-- @ts-expect-error Element Plus CheckboxValueType type limitation -->
               <el-checkbox
                 v-for="(indicator, idx) in trendIndicators"
                 :key="idx"
@@ -43,7 +42,6 @@
           <!-- 动量指标 -->
           <el-tab-pane label="动量" name="momentum">
             <div class="indicator-list">
-              <!-- @ts-expect-error Element Plus CheckboxValueType type limitation -->
               <el-checkbox
                 v-for="(indicator, idx) in momentumIndicators"
                 :key="idx"
@@ -61,7 +59,6 @@
           <!-- 波动率指标 -->
           <el-tab-pane label="波动率" name="volatility">
             <div class="indicator-list">
-              <!-- @ts-expect-error Element Plus CheckboxValueType type limitation -->
               <el-checkbox
                 v-for="(indicator, idx) in volatilityIndicators"
                 :key="idx"
@@ -79,7 +76,6 @@
           <!-- 成交量指标 -->
           <el-tab-pane label="成交量" name="volume">
             <div class="indicator-list">
-              <!-- @ts-expect-error Element Plus CheckboxValueType type limitation -->
               <el-checkbox
                 v-for="(indicator, idx) in volumeIndicators"
                 :key="idx"
@@ -130,10 +126,9 @@
 </template>
 
 <script setup lang="ts">
-// @ts-nocheck
-
 import { ref, computed, watch } from 'vue'
 import { TrendCharts } from '@element-plus/icons-vue'
+import type { CheckboxValueType } from 'element-plus'
 
 /**
  * 指标元数据
@@ -227,8 +222,8 @@ const selectedCount = computed(() => selectedIndicators.value.length)
 /**
  * 检查指标是否已选中
  */
-const isIndicatorSelected = (indicator: string): CheckboxValueType => {
-  return selectedIndicators.value.includes(indicator) as CheckboxValueType
+const isIndicatorSelected = (indicator: string): boolean => {
+  return selectedIndicators.value.includes(indicator)
 }
 
 /**
