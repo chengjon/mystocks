@@ -1162,6 +1162,19 @@ def test_historical_artdeco_web_reports_are_discoverable_and_non_canonical() -> 
     assert "历史审核记录" in review
 
 
+def test_web_redesign_requirements_are_preserved_as_historical_report() -> None:
+    reports_index = (PROJECT_ROOT / "docs" / "reports" / "INDEX.md").read_text(encoding="utf-8")
+    report = (PROJECT_ROOT / "docs" / "reports" / "WEB_REDESIGN_REQUIREMENTS_2026-03-29.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert not (PROJECT_ROOT / "docs" / "guides" / "web-redesign-requirements.md").exists()
+    assert "WEB_REDESIGN_REQUIREMENTS_2026-03-29.md" in reports_index
+    assert "历史设计需求草案" in report
+    assert "仅供回溯，不代表当前主线状态" in report
+    assert "不能作为当前实施规范" in report
+
+
 def test_low_reference_tdd_and_debt_reports_are_converged_under_reports_completion_reports() -> None:
     reports_index = (PROJECT_ROOT / "docs" / "reports" / "INDEX.md").read_text(encoding="utf-8")
     completion_index = (PROJECT_ROOT / "docs" / "reports" / "completion_reports" / "INDEX.md").read_text(
