@@ -18,12 +18,12 @@
             <div class="artdeco-slider-thumb" :style="{ left: percent + '%' }"></div>
 
             <!-- Diamond Shape Markers (Art Deco Style) -->
-            <div class="artdeco-slider-marker marker-0" :style="{ left: '0%' }"></div>
-            <div class="artdeco-slider-marker marker-1" :style="{ left: '20%' }"></div>
-            <div class="artdeco-slider-marker marker-2" :style="{ left: '40%' }"></div>
-            <div class="artdeco-slider-marker marker-3" :style="{ left: '60%' }"></div>
-            <div class="artdeco-slider-marker marker-4" :style="{ left: '80%' }"></div>
-            <div class="artde-slider-marker marker-5" :style="{ left: '100%' }"></div>
+            <div class="artdeco-slider-marker marker-0"></div>
+            <div class="artdeco-slider-marker marker-1"></div>
+            <div class="artdeco-slider-marker marker-2"></div>
+            <div class="artdeco-slider-marker marker-3"></div>
+            <div class="artdeco-slider-marker marker-4"></div>
+            <div class="artdeco-slider-marker marker-5"></div>
 
             <!-- Tick Marks -->
             <div v-if="showTicks" class="artdeco-slider-ticks">
@@ -392,21 +392,27 @@
 
     // Marker colors based on position
     .marker-0 {
+        left: 0%;
         border-color: var(--artdeco-up);
     }
     .marker-1 {
+        left: 20%;
         border-color: var(--artdeco-accent-gold);
     }
     .marker-2 {
+        left: 40%;
         border-color: var(--artdeco-fg-secondary);
     }
     .marker-3 {
+        left: 60%;
         border-color: var(--artdeco-silver-light);
     }
     .marker-4 {
+        left: 80%;
         border-color: var(--artdeco-up);
     }
     .marker-5 {
+        left: 100%;
         border-color: var(--artdeco-accent-gold);
     }
 
