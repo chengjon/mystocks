@@ -158,9 +158,12 @@ const renderHeatmap = (data: HeatmapItem[]) => {
       formatter: (info: { data: { name: string; symbol?: string; value?: number; price?: number; change?: number; market_cap?: number } }) => {
         const data = info.data
         if (!data) return ''
+        const changeClass = data.value && data.value >= 0
+          ? 'openstock-heatmap-tooltip__change--up'
+          : 'openstock-heatmap-tooltip__change--down'
         return [
-          `<div style="font-weight: bold; margin-bottom: 5px;">${data.name} (${data.symbol || '-'})</div>`,
-          `涨跌幅: <span style="color: ${data.value && data.value >= 0 ? '#ef5350' : '#26a69a'};">${data.value && data.value >= 0 ? '+' : ''}${data.value?.toFixed(2) || 0}%</span>`,
+          `<div class="openstock-heatmap-tooltip__title">${data.name} (${data.symbol || '-'})</div>`,
+          `涨跌幅: <span class="${changeClass}">${data.value && data.value >= 0 ? '+' : ''}${data.value?.toFixed(2) || 0}%</span>`,
           `当前价: ${data.price?.toFixed(2) || '-'}`,
           `涨跌额: ${data.change && data.change >= 0 ? '+' : ''}${data.change?.toFixed(2) || '-'}`,
           data.market_cap ? `市值: ${(data.market_cap / 100000000).toFixed(2)}亿` : ''
@@ -344,5 +347,20 @@ onUnmounted(() => {
       margin-bottom: 4px;
     }
   }
+}
+</style>
+
+<style lang="scss">
+.openstock-heatmap-tooltip__title {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.openstock-heatmap-tooltip__change--up {
+  color: #ef5350;
+}
+
+.openstock-heatmap-tooltip__change--down {
+  color: #26a69a;
 }
 </style>
