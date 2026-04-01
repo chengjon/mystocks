@@ -1,0 +1,85 @@
+version: "v0.2"
+
+task:
+  id: "pr-34"
+  title: "clean up indicator selector typing"
+  owner: "main"
+  created_at: "2026-04-01"
+
+mainline:
+  id: "L1-indicator-selector-type-hygiene"
+  objective: "remove broad type suppression from the market IndicatorSelector component while preserving existing chart component behavior"
+  milestone_id: "L2-dirty-worktree-salvage"
+  slice_id: "L3-indicator-selector-type-hygiene"
+
+classification:
+  task_type: "fix"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "frontend"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "localized-frontend-type-hygiene-fix-with-focused-regression"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-34.yaml"
+    - "web/frontend/src/components/market/IndicatorSelector.vue"
+    - "web/frontend/tests/unit/indicator-selector-type-hygiene.spec.ts"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No broader market component refactor"
+  - "No style-token or layout behavior changes outside IndicatorSelector"
+
+acceptance:
+  checks:
+    - id: "indicator-selector-hygiene-tests"
+      command: "cd web/frontend && npx vitest run tests/unit/indicator-selector-type-hygiene.spec.ts tests/unit/config/chart-component-style-normalization.spec.ts --config vitest.config.mts"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-34.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If checkbox value narrowing is wrong, indicator selection may stop toggling correctly"
+    - "If template icon handling changes unexpectedly, the trigger button could regress visually"
+  rollback_plan: "git revert <merge-commit-sha> if indicator selection or trigger rendering regresses after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "remove type suppression in IndicatorSelector and keep its checkbox typing explicit"
+    modified_scope: "market IndicatorSelector component, one focused vitest regression, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "runtime behavior should remain equivalent; the main change is type hygiene and explicit value narrowing"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the slice if checkbox handling or trigger rendering changes unexpectedly"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-01T00:00:00Z"
+    approval_note: "localized frontend type-hygiene fix with dedicated test coverage"
+    secondary_approved: false
