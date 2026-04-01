@@ -53,8 +53,7 @@
               size="large"
               :type="indicator.enabled !== false ? 'success' : 'info'"
               effect="dark"
-              class="selected-indicator-tag"
-              :style="{ opacity: indicator.enabled !== false ? 1 : 0.6 }"
+              :class="['selected-indicator-tag', indicator.enabled !== false ? '' : 'selected-indicator-tag--disabled']"
               @close="handleRemove(index)"
             >
               <el-icon

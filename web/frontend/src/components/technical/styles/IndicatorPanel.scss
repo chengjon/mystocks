@@ -46,6 +46,10 @@
       .selected-indicator-tag {
         cursor: pointer;
 
+        &--disabled {
+          opacity: 60%;
+        }
+
         .toggle-indicator-icon {
           margin-right: calc(var(--artdeco-spacing-1) + var(--artdeco-spacing-px) * 2);
           cursor: pointer;
