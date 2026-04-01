@@ -246,13 +246,13 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 15px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .group-header h3 {
   margin: 0;
   font-size: 16px;
-  color: #333;
+  color: var(--color-text-primary);
 }
 
 .group-list {
@@ -265,21 +265,21 @@ onMounted(() => {
   align-items: center;
   padding: 12px 15px;
   margin-bottom: 8px;
-  background: #fff;
-  border: 1px solid #e0e0e0;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s;
 }
 
 .group-item:hover {
-  background: #f5f7fa;
-  border-color: #409eff;
+  background: var(--color-bg-secondary);
+  border-color: var(--color-info);
 }
 
 .group-item.active {
-  background: #ecf5ff;
-  border-color: #409eff;
+  background: color-mix(in srgb, var(--color-info) 10%, transparent);
+  border-color: var(--color-info);
 }
 
 .group-info {
@@ -291,12 +291,12 @@ onMounted(() => {
 
 .group-name {
   font-size: 14px;
-  color: #333;
+  color: var(--color-text-primary);
   font-weight: 500;
 }
 
 .group-item.active .group-name {
-  color: #409eff;
+  color: var(--color-info);
 }
 
 .group-actions {
