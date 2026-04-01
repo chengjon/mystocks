@@ -20,7 +20,7 @@
     <div v-if="!taskId && isConnected" class="empty-state">
       <el-empty description="等待训练任务...">
         <template #image>
-          <el-icon :size="emptyIconSize" :color="emptyIconColor"><Loading /></el-icon>
+          <el-icon :size="emptyIconSize" class="training-progress-icon--info"><Loading /></el-icon>
         </template>
       </el-empty>
     </div>
@@ -78,8 +78,8 @@
           <el-col :span="12" v-for="(value, key) in metrics" :key="key">
             <el-statistic :title="getMetricLabel(key)" :value="value" :precision="4">
               <template #prefix>
-                <el-icon v-if="key === 'loss'" :size="metricIconSize" :color="lossIconColor"><TrendCharts /></el-icon>
-                <el-icon v-else-if="key === 'accuracy'" :size="metricIconSize" :color="accuracyIconColor"><SuccessFilled /></el-icon>
+                <el-icon v-if="key === 'loss'" :size="metricIconSize" class="training-progress-icon--loss"><TrendCharts /></el-icon>
+                <el-icon v-else-if="key === 'accuracy'" :size="metricIconSize" class="training-progress-icon--accuracy"><SuccessFilled /></el-icon>
                 <el-icon v-else :size="metricIconSize"><DataLine /></el-icon>
               </template>
             </el-statistic>
@@ -139,9 +139,6 @@ const progressStrokeWidth = 20
 const metricGutter = 16
 const emptyIconSize = 'var(--artdeco-spacing-20)'
 const metricIconSize = 24
-const emptyIconColor = 'var(--artdeco-gold-primary)'
-const lossIconColor = 'var(--artdeco-rise)'
-const accuracyIconColor = 'var(--artdeco-down)'
 
 // Computed properties
 const getProgressStatus = computed(() => {
@@ -189,6 +186,18 @@ const getMetricLabel = (key) => {
 @use '@/styles/artdeco-tokens.scss' as *;
 
 .training-progress-card {
+  .training-progress-icon--info {
+    color: var(--artdeco-gold-primary);
+  }
+
+  .training-progress-icon--loss {
+    color: var(--artdeco-rise);
+  }
+
+  .training-progress-icon--accuracy {
+    color: var(--artdeco-down);
+  }
+
   margin-bottom: var(--artdeco-spacing-5);
   border: 1px solid var(--artdeco-border-default);
   border-radius: var(--artdeco-radius-none);
