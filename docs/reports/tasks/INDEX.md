@@ -36,6 +36,7 @@
 - 📄 [2026-03-25-directory-governance-batch-b-files](2026-03-25-directory-governance-batch-b-files.txt)
 - 📄 [2026-03-25-directory-governance-batch-staging-plan](2026-03-25-directory-governance-batch-staging-plan.md)
 - 📄 [2026-03-25-directory-governance-isolated-execution-guide](2026-03-25-directory-governance-isolated-execution-guide.md)
+- 📄 [2026-03-27-local-dirty-worktree-batch-plan](2026-03-27-local-dirty-worktree-batch-plan.md)
 - 📄 [HANDOVER_TASK](HANDOVER_TASK.md)
 - 📄 [NEXT_WORK_TASKS](NEXT_WORK_TASKS.md)
 - 📄 [TASK](TASK.md)

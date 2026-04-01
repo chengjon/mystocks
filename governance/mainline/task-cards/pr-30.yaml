@@ -1,0 +1,90 @@
+version: "v0.2"
+
+task:
+  id: "pr-30"
+  title: "preserve historical cleanup reports"
+  owner: "main"
+  created_at: "2026-04-01"
+
+mainline:
+  id: "L1-historical-cleanup-report-preservation"
+  objective: "land the leftover 2026-03-27 and 2026-03-29 cleanup reports on main as clearly historical materials with discoverable entrypoints"
+  milestone_id: "L2-dirty-worktree-salvage"
+  slice_id: "L3-cleanup-report-preservation"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "historical-cleanup-reports-are-documentation-only"
+
+scope:
+  allowed_paths:
+    - "docs/reports/INDEX.md"
+    - "docs/reports/code-cleanup-proposal-2026-03-29.md"
+    - "docs/reports/codebase-cleanup-2026-03-29.md"
+    - "docs/reports/deleted-content-inventory-2026-03-29.md"
+    - "docs/reports/tasks/2026-03-27-local-dirty-worktree-batch-plan.md"
+    - "docs/reports/tasks/INDEX.md"
+    - "governance/mainline/task-cards/pr-30.yaml"
+    - "tests/unit/scripts/test_repository_hygiene_paths.py"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No frontend runtime, styling, or route behavior changes"
+  - "No claim that the preserved reports describe current mainline state"
+
+acceptance:
+  checks:
+    - id: "docs-history-sync-tests"
+      command: "python -m pytest tests/unit/scripts/test_repository_hygiene_paths.py -q -k \"historical_cleanup_reports or historical_dirty_worktree_batch_plan\" --no-cov"
+      required: true
+    - id: "docs-diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-30.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the preserved reports are not clearly marked historical, future cleanup work may misread them as current deletion authority"
+    - "If the new report paths are not indexed, the salvage context remains stranded in the backup worktree and easy to lose"
+  rollback_plan: "git revert <merge-commit-sha> if the preserved reports prove misleading or the indexing/test coverage is incorrect"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "preserve useful cleanup reports from the dirty backup workspace without presenting them as active guidance"
+    modified_scope: "historical cleanup reports, reports indexes, report discoverability tests, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime behavior changes; only documentation status, indexing, and test coverage are updated"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the docs slice if the historical framing or indexing proves inaccurate after merge"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-01T00:00:00Z"
+    approval_note: "historical cleanup report preservation is documentation-only"
+    secondary_approved: false
