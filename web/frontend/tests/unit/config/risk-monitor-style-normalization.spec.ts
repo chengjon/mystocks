@@ -19,10 +19,13 @@ describe('RiskMonitor style normalization', () => {
     expect(source).toContain('.full-width-table {')
     expect(source).toContain('.risk-alert-item {')
     expect(source).toContain('.chart-placeholder {')
+    expect(source).toContain('.metric-subtitle {')
+    expect(source).toContain('color: var(--color-text-tertiary);')
 
     expect(source).not.toContain('style="margin-top: 30px;"')
     expect(source).not.toContain('style="width: 100%"')
     expect(source).not.toContain('style="margin-bottom: 10px;"')
     expect(source).not.toContain('style="text-align: center; padding: 40px; color: #666;"')
+    expect(source).not.toContain('color: #909399;')
   })
 })

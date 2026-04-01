@@ -408,7 +408,7 @@ onUnmounted(() => {
 
 .metric-subtitle {
   font-size: 0.75rem;
-  color: #909399;
+  color: var(--color-text-tertiary);
   margin-top: 2px;
 }
 
