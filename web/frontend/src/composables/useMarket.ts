@@ -269,29 +269,22 @@ export function useMarket(options?: {
         period: params.interval,
       });
 
-      // For now, create a simple adapter since response format may not match
-      interface KLineItem {
-        timestamp?: string | number
-        date?: string | number
-        open?: number
-        high?: number
-        low?: number
-        close?: number
-        volume?: number
-        amount?: number
-      }
-      const vm: KLineChartData[] = ((response as unknown as { data?: KLineItem[] }).data || []).map((item) => ({
-        timestamp: String(item.timestamp || item.date || ''),
-        date: String(item.date || item.timestamp || ''),
-        open: item.open || 0,
-        high: item.high || 0,
-        low: item.low || 0,
-        close: item.close || 0,
-        volume: item.volume || 0,
-        amount: item.amount || 0,
-        symbol: params.symbol,
-        interval: params.interval
-      }));
+      const adapted = MarketAdapter.adaptKLineData(response as never)
+      const vm: KLineChartData[] = adapted.categoryData.map((date, index) => {
+        const point = adapted.values[index]
+        return {
+          timestamp: date,
+          date,
+          open: point?.open ?? 0,
+          high: point?.high ?? 0,
+          low: point?.low ?? 0,
+          close: point?.close ?? 0,
+          volume: adapted.volumes[index] ?? point?.volume ?? 0,
+          amount: adapted.volumes[index] ?? point?.volume ?? 0,
+          symbol: params.symbol,
+          interval: params.interval
+        }
+      })
 
       // Cache the result
       if (enableCache) {
