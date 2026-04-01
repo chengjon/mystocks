@@ -87,17 +87,18 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
+@use '../../../../styles/artdeco-tokens.scss' as *;
 
 .status-section {
-  padding: 10px 0;
+  padding: var(--artdeco-spacing-3) 0;
 
   h3 {
-    margin: 0 0 16px 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
-    border-left: 3px solid var(--warning);
-    padding-left: 12px;
+    margin: 0 0 var(--artdeco-spacing-4) 0;
+    padding-left: var(--artdeco-spacing-3);
+    border-left: calc(var(--artdeco-spacing-px) * 3) solid var(--artdeco-warning);
+    color: var(--artdeco-fg-primary);
+    font-size: var(--artdeco-text-base);
+    font-weight: var(--artdeco-font-semibold);
   }
 }
 
@@ -105,9 +106,9 @@ defineExpose({
   display: flex;
   flex-direction: column;
   gap: 0;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 4%, var(--artdeco-bg-card));
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
   overflow: hidden;
 }
 
@@ -115,8 +116,8 @@ defineExpose({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--border-light);
+  padding: calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px)) var(--artdeco-spacing-5);
+  border-bottom: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 12%, transparent);
 
   &:last-child {
     border-bottom: none;
@@ -124,34 +125,34 @@ defineExpose({
 }
 
 .info-label {
-  font-size: 14px;
-  color: var(--text-primary);
-  font-weight: 500;
+  color: var(--artdeco-fg-primary);
+  font-size: var(--artdeco-text-sm);
+  font-weight: var(--artdeco-font-medium);
 }
 
 .suggestions-section {
-  margin-top: 24px;
+  margin-top: var(--artdeco-spacing-6);
 }
 
 .alert-content {
   .alert-title {
-    margin-bottom: 12px;
-    color: var(--text-primary);
-    font-weight: 500;
+    margin-bottom: var(--artdeco-spacing-3);
+    color: var(--artdeco-gold-primary);
+    font-weight: var(--artdeco-font-medium);
   }
 }
 
 .suggestion-list {
   margin: 0;
-  padding-left: 20px;
+  padding-left: var(--artdeco-spacing-5);
   line-height: 1.9;
-  color: var(--text-secondary);
+  color: var(--artdeco-fg-muted);
 
   li {
-    margin: 6px 0;
+    margin: var(--artdeco-spacing-2) 0;
 
     strong {
-      color: var(--text-primary);
+      color: var(--artdeco-fg-primary);
     }
   }
 }
