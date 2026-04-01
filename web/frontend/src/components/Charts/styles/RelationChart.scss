@@ -52,6 +52,10 @@
                     border-radius: var(--artdeco-radius-none);
                     border: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-fg-primary);
                     box-shadow: var(--artdeco-shadow-sm);
+
+                    &--default {
+                        background: var(--artdeco-info);
+                    }
                 }
 
                 .legend-text {

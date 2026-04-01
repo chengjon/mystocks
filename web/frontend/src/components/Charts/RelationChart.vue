@@ -20,7 +20,10 @@
 
         <div class="chart-legend" v-if="categories.length > 0">
             <div class="legend-item" v-for="category in categories" :key="category.name">
-                <div class="legend-color" :style="{ backgroundColor: category.itemStyle?.color || '#5470c6' }"></div>
+                <div
+                    :class="['legend-color', !category.itemStyle?.color ? 'legend-color--default' : '']"
+                    :style="category.itemStyle?.color ? { backgroundColor: category.itemStyle.color } : undefined"
+                ></div>
                 <span class="legend-text">{{ category.name }}</span>
             </div>
         </div>
