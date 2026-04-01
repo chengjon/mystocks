@@ -47,7 +47,7 @@
           </el-descriptions-item>
         </el-descriptions>
 
-        <div style="margin-top: 20px">
+        <div class="overview-features-block">
           <h3>CORE FEATURES</h3>
           <div class="features-grid">
             <el-card :hoverable="true">
@@ -95,9 +95,9 @@
 
       <div class="prediction-section">
         <h3>MODEL CONFIGURATION</h3>
-        <div class="config-box" style="background: var(--bg-secondary); padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+        <div class="config-box">
           <strong>LightGBM Hyperparameters:</strong>
-          <ul style="margin-top: 10px; line-height: 1.8">
+          <ul class="config-box-list">
             <li>num_leaves=25, learning_rate=0.2, n_estimators=70</li>
             <li>max_depth=15, bagging_fraction=0.8, feature_fraction=0.8</li>
             <li>reg_lambda=0.9 (L2 Regularization)</li>
@@ -105,7 +105,7 @@
         </div>
 
         <h3>MODEL TRAINING PIPELINE</h3>
-        <el-steps :active="modelStep" finish-status="success" style="margin: 20px 0" class="steps">
+        <el-steps :active="modelStep" finish-status="success" class="steps profiling-steps">
           <el-step title="DATA LOADING" description="Read Tongdaxin .day files" />
           <el-step title="FEATURE ENGINEERING" description="Generate rolling window features (10 steps × 6 columns)" />
           <el-step title="DATA SPLIT" description="80% Train / 20% Test" />
@@ -113,7 +113,7 @@
           <el-step title="PREDICTION" description="Calculate RMSE & Plot Curves" />
         </el-steps>
 
-        <div class="model-actions" style="margin-top: 20px">
+        <div class="model-actions">
           <el-button type="primary" @click="runModelDemo" :loading="modelLoading">
             RUN MODEL DEMO
           </el-button>
@@ -123,7 +123,7 @@
         </div>
 
         <!-- 模型结果展示 -->
-        <div v-if="modelResults" class="model-results" style="margin-top: 20px">
+        <div v-if="modelResults" class="model-results">
           <h3>预测结果</h3>
           <el-descriptions :column="2" border>
             <el-descriptions-item label="RMSE（均方根误差）">
@@ -144,7 +144,7 @@
             title="预测结果说明"
             type="success"
             :closable="false"
-            style="margin-top: 15px"
+            class="model-results-alert"
           >
             预测结果已保存为 predict.png 和 predict2.png 图片。
           </el-alert>

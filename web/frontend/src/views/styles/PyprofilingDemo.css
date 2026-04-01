@@ -74,6 +74,10 @@
   z-index: 1;
 }
 
+.overview-features-block {
+  margin-top: var(--spacing-5);
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -136,6 +140,18 @@
   margin-top: var(--spacing-4);
 }
 
+.config-box {
+  background: var(--bg-secondary);
+  padding: calc(var(--spacing-4) - 1px);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-5);
+}
+
+.config-box-list {
+  margin-top: var(--spacing-3);
+  line-height: 1.8;
+}
+
 .model-list ul {
   margin: 0;
   padding-left: var(--spacing-5);
@@ -146,6 +162,15 @@
 .model-actions {
   display: flex;
   gap: var(--spacing-3);
+  margin-top: var(--spacing-5);
+}
+
+.model-results {
+  margin-top: var(--spacing-5);
+}
+
+.model-results-alert {
+  margin-top: calc(var(--spacing-5) - 5px);
 }
 
 .command-examples {
