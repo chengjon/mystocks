@@ -104,7 +104,10 @@ onMounted(() => {
               <td class="leader">{{ c.leader }}</td>
               <td>
                 <div class="mini-chart">
-                  <div class="trend-bar" :style="{ height: `${Math.abs(c.change_pct) * 5}px`, background: c.change_pct >= 0 ? 'var(--artdeco-rise)' : 'var(--artdeco-down)' }"></div>
+                  <div
+                    :class="['trend-bar', c.change_pct >= 0 ? 'trend-bar--rise' : 'trend-bar--down']"
+                    :style="{ height: `${Math.abs(c.change_pct) * 5}px` }"
+                  ></div>
                 </div>
               </td>
             </tr>
@@ -250,6 +253,14 @@ onMounted(() => {
 .trend-bar {
   width: 100%;
   border-radius: 1px;
+}
+
+.trend-bar--rise {
+  background: var(--artdeco-rise);
+}
+
+.trend-bar--down {
+  background: var(--artdeco-down);
 }
 
 @media (width <= 75rem) {
