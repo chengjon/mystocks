@@ -2,6 +2,12 @@
 
 ## 目标
 
+> 治理说明
+>
+> - 本文档聚焦“菜单项与 API 的业务映射”，不是当前路由真值文档。
+> - 当前路由与页面承载真值应以 `web/frontend/src/router/index.ts`、`docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md`、`docs/api/ArtDeco_System_Architecture_Summary.md` 为准。
+> - 如果菜单路径、页面组件、承载模式与本文档不一致，以源码和活跃治理文档为准。
+
 本文档旨在提供 ArtDeco 菜单项与其后端 API 端点之间的明确映射关系。这将确保前端菜单功能与后端数据服务的紧密集成，并支持实时数据更新机制。
 
 ## 映射规则
