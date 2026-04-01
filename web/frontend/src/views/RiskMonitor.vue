@@ -386,19 +386,19 @@ onUnmounted(() => {
 .metric-value {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #303133;
+  color: var(--color-text-primary);
 }
 
 .metric-value.positive {
-  color: #67c23a;
+  color: var(--color-success);
 }
 
 .metric-value.negative {
-  color: #f56c6c;
+  color: var(--color-danger);
 }
 
 .metric-value.neutral {
-  color: #e6a23c;
+  color: var(--color-warning);
 }
 
 .metric-change {
@@ -457,10 +457,10 @@ onUnmounted(() => {
 }
 
 .positive {
-  color: #67c23a;
+  color: var(--color-success);
 }
 
 .negative {
-  color: #f56c6c;
+  color: var(--color-danger);
 }
 </style>
