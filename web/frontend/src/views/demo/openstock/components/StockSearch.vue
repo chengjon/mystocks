@@ -92,7 +92,7 @@
             </option>
           </datalist>
           <button
-            style="width: 100%; margin-top: 12px;"
+            class="watchlist-submit-btn"
             @click="addToWatchlist"
           >
             确认添加
@@ -381,6 +381,11 @@ const addToWatchlist = async () => {
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin-right: 8px;
+}
+
+.watchlist-submit-btn {
+  width: 100%;
+  margin-top: 12px;
 }
 
 @keyframes spin {
