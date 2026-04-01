@@ -14,8 +14,12 @@ describe('ExecutionHistory style normalization', () => {
     expect(source).toContain('class="execution-log-input"')
     expect(source).toContain('.execution-fallback-text {')
     expect(source).toContain('.execution-log-input {')
+    expect(source).toContain('var(--color-danger)')
+    expect(source).toContain('var(--color-bg-secondary)')
 
     expect(source).not.toContain('style="color: #909399"')
     expect(source).not.toContain("style=\"font-family: 'Courier New', monospace\"")
+    expect(source).not.toContain('color: #f56c6c;')
+    expect(source).not.toContain('background: #f5f7fa;')
   })
 })

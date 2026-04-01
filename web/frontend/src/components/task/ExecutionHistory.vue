@@ -227,7 +227,7 @@ const handleDownloadLog = () => {
   }
 
   .error-text {
-    color: #f56c6c;
+    color: var(--color-danger);
     cursor: pointer;
   }
 
@@ -235,7 +235,7 @@ const handleDownloadLog = () => {
     pre {
       margin: 0;
       padding: 12px;
-      background: #f5f7fa;
+      background: var(--color-bg-secondary);
       border-radius: 4px;
       font-size: 12px;
     }
