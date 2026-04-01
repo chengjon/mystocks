@@ -7,7 +7,7 @@
 
     <div class="features-section">
       <h3>ROLLING WINDOW FEATURES</h3>
-      <div class="info-grid" style="margin-top: 15px">
+      <div class="info-grid features-grid-offset">
         <div class="info-item">
           <div class="info-label">WINDOW SIZE (step)</div>
           <div class="info-value">10 Trading Days</div>
@@ -26,8 +26,8 @@
         </div>
       </div>
 
-      <h3 style="margin-top: 30px">FEATURE SELECTION ALGORITHMS</h3>
-      <table class="table" style="margin-top: 15px">
+      <h3 class="features-section-heading">FEATURE SELECTION ALGORITHMS</h3>
+      <table class="table features-table-offset">
         <thead>
           <tr>
             <th>METHOD</th>
@@ -105,6 +105,15 @@ const featureSelectionMethods = FEATURE_SELECTION_METHODS
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--artdeco-spacing-4);
+}
+
+.features-grid-offset,
+.features-table-offset {
+  margin-top: calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-px) * 5);
+}
+
+.features-section-heading {
+  margin-top: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-3) / 2);
 }
 
 .info-item {
