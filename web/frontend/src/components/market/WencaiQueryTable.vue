@@ -119,10 +119,17 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Refresh, Download, ArrowLeft } from '@element-plus/icons-vue'
+import { watchlistService } from '@/api/services/watchlistService.ts'
+
+interface WencaiRow {
+  code?: string
+  name?: string
+  [key: string]: unknown
+}
 
 const props = defineProps({
   queryName: String,
@@ -135,9 +142,9 @@ const loading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(20)
 const total = ref(0)
-const tableData = ref([])
+const tableData = ref<WencaiRow[]>([])
 const detailsVisible = ref(false)
-const selectedStock = ref(null)
+const selectedStock = ref<WencaiRow | null>(null)
 const detailsDialogWidth = 'calc((var(--artdeco-spacing-20) * 7) + var(--artdeco-spacing-10))'
 
 // 计算动态列（排除 code 和 name）
@@ -202,15 +209,53 @@ const exportData = () => {
 }
 
 // 查看详情
-const viewDetails = (row) => {
+const viewDetails = (row: WencaiRow) => {
   selectedStock.value = row
   detailsVisible.value = true
 }
 
+const ensureWatchlistId = async (): Promise<number> => {
+  const response = await watchlistService.listWatchlists()
+  if (response.success && response.data.length > 0) {
+    return response.data[0].id
+  }
+
+  const created = await watchlistService.createWatchlist({
+    name: '问财自选',
+    watchlist_type: 'manual',
+    risk_profile: {}
+  })
+
+  if (!created.success) {
+    throw new Error(created.message || '创建默认自选清单失败')
+  }
+
+  return created.data.id
+}
+
 // 加入自选
-const addToWatchlist = (row) => {
-  ElMessage.success(`已将 ${row.name || row.code} 加入自选`)
-  // TODO: 实现加入自选逻辑
+const addToWatchlist = async (row: WencaiRow) => {
+  if (!row.code) {
+    ElMessage.warning('缺少股票代码，无法加入自选')
+    return
+  }
+
+  try {
+    const watchlistId = await ensureWatchlistId()
+    const response = await watchlistService.addStockToWatchlist(watchlistId, {
+      stock_code: row.code,
+      entry_reason: `来自问财条件：${props.queryName}`
+    })
+
+    if (!response.success) {
+      throw new Error(response.message || '加入自选失败')
+    }
+
+    ElMessage.success(`已将 ${row.name || row.code} 加入自选`)
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '加入自选失败'
+    ElMessage.error(message)
+  }
 }
 
 // 页面加载时获取数据
