@@ -297,8 +297,8 @@ const renderChart = (): void => {
         let result = paramsArr[0].axisValue + '<br/>'
         paramsArr.forEach((param) => {
           const value = parseFloat(param.value)
-          const color = value >= 0 ? 'var(--artdeco-rise)' : 'var(--artdeco-down)'
-          result += `<span style="color: ${color}">${param.seriesName}: ${value} 万元</span><br/>`
+          const colorClass = value >= 0 ? 'fund-flow-tooltip-positive' : 'fund-flow-tooltip-negative'
+          result += `<span class="${colorClass}">${param.seriesName}: ${value} 万元</span><br/>`
         })
         return result
       }
@@ -480,5 +480,15 @@ onUnmounted(() => {
 .fund-flow-chart {
   width: 100%;
   height: calc(var(--artdeco-spacing-24) * 4 + var(--artdeco-spacing-4));
+}
+</style>
+
+<style lang="scss">
+.fund-flow-tooltip-positive {
+  color: var(--artdeco-rise);
+}
+
+.fund-flow-tooltip-negative {
+  color: var(--artdeco-down);
 }
 </style>
