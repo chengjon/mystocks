@@ -105,7 +105,7 @@
             </option>
           </select>
           <button
-            style="width: 100%; margin-top: 10px;"
+            class="move-stock-btn"
             @click="moveStock"
           >
             确认移动
@@ -390,6 +390,11 @@ const updateNotes = async (stock: WatchlistStock): Promise<void> => {
     outline: none;
     border-color: var(--primary);
   }
+}
+
+.move-stock-btn {
+  width: 100%;
+  margin-top: 10px;
 }
 
 .modal-overlay {
