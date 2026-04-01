@@ -7,7 +7,7 @@
 
     <div class="profiling-section">
       <h3>PERFORMANCE TOOLS COMPARISON</h3>
-      <table class="table" style="margin-top: 15px">
+      <table class="table profiling-table-offset">
         <thead>
           <tr>
             <th>TOOL</th>
@@ -26,7 +26,7 @@
         </tbody>
       </table>
 
-      <h3 style="margin-top: 30px">EXAMPLE COMMANDS</h3>
+      <h3 class="profiling-section-heading">EXAMPLE COMMANDS</h3>
       <div class="command-examples">
         <div class="card command-card" v-for="cmd in profilingCommands" :key="cmd.tool">
           <h4>{{ cmd.tool }}</h4>
@@ -146,6 +146,14 @@ const getLevelBadgeClass = (level: string) => {
     font-family: var(--artdeco-font-accent, var(--font-mono));
     font-size: var(--artdeco-text-xs);
   }
+}
+
+.profiling-table-offset {
+  margin-top: calc(var(--artdeco-spacing-5) - var(--artdeco-spacing-px) * 5);
+}
+
+.profiling-section-heading {
+  margin-top: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-3) / 2);
 }
 
 .command-examples {
