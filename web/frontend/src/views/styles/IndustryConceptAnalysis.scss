@@ -264,6 +264,22 @@
   .stats-section {
     margin-bottom: var(--spacing-2xl);
 
+    .stat-value--gold {
+      color: var(--color-accent);
+    }
+
+    .stat-value--blue {
+      color: var(--color-info);
+    }
+
+    .stat-value--green {
+      color: var(--color-stock-down);
+    }
+
+    .stat-value--red {
+      color: var(--color-stock-up);
+    }
+
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(calc(var(--spacing-2xl) * 4 + var(--spacing-xs) * 2), 1fr));

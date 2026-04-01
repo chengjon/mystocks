@@ -81,19 +81,19 @@
           <div class="stats-grid">
             <div class="stat-item">
               <div class="stat-label">{{ stats[0]?.title || 'N/A' }}</div>
-              <div class="stat-value" :style="{ color: stats[0]?.color || '#D4AF37' }">{{ stats[0]?.value || '-' }}</div>
+              <div :class="['stat-value', `stat-value--${stats[0]?.color || 'gold'}`]">{{ stats[0]?.value || '-' }}</div>
             </div>
             <div class="stat-item">
               <div class="stat-label">{{ stats[1]?.title || 'N/A' }}</div>
-              <div class="stat-value" :style="{ color: stats[1]?.color || '#D4AF37' }">{{ stats[1]?.value || '-' }}</div>
+              <div :class="['stat-value', `stat-value--${stats[1]?.color || 'gold'}`]">{{ stats[1]?.value || '-' }}</div>
             </div>
             <div class="stat-item">
               <div class="stat-label">{{ stats[2]?.title || 'N/A' }}</div>
-              <div class="stat-value" :style="{ color: stats[2]?.color || '#D4AF37' }">{{ stats[2]?.value || '-' }}</div>
+              <div :class="['stat-value', `stat-value--${stats[2]?.color || 'gold'}`]">{{ stats[2]?.value || '-' }}</div>
             </div>
             <div class="stat-item">
               <div class="stat-label">{{ stats[3]?.title || 'N/A' }}</div>
-              <div class="stat-value" :style="{ color: stats[3]?.color || '#D4AF37' }">{{ stats[3]?.value || '-' }}</div>
+              <div :class="['stat-value', `stat-value--${stats[3]?.color || 'gold'}`]">{{ stats[3]?.value || '-' }}</div>
             </div>
           </div>
 
