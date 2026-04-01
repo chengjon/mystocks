@@ -1,0 +1,88 @@
+version: "v0.2"
+
+task:
+  id: "pr-26"
+  title: "harden legacy market api compatibility typing"
+  owner: "main"
+  created_at: "2026-04-01"
+
+mainline:
+  id: "L1-frontend-api-compat"
+  objective: "land typed cleanup for the legacy frontend market compatibility layer without changing current mock behavior"
+  milestone_id: "L2-frontend-api-compat"
+  slice_id: "L3-legacy-market-typing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "frontend-api-compatibility-layer-is-not-currently-covered-by-function-tree-catalog"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-26.yaml"
+    - "web/frontend/src/api/marketWithFallback.ts"
+    - "web/frontend/src/api/mockApiClient.ts"
+    - "web/frontend/src/api/__tests__/market-integration.test.ts"
+    - "web/frontend/src/api/__tests__/strategy.test.ts"
+    - "web/frontend/src/api/klineApi.spec.ts"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No broad frontend API type migration outside the legacy market compatibility path"
+  - "No product behavior change beyond preserving compatibility with the current typed service contracts"
+
+acceptance:
+  checks:
+    - id: "frontend-api-vitest"
+      command: "cd web/frontend && npx vitest run src/api/__tests__/market-integration.test.ts src/api/__tests__/strategy.test.ts src/api/klineApi.spec.ts"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-26.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "The typed cleanup touches a legacy compatibility layer still consumed by older frontend code paths"
+    - "Mock API helper changes could affect downstream test fixtures if behavior changes instead of just typing"
+  rollback_plan: "git revert <merge-commit-sha> if legacy market compatibility or mock API frontend tests regress after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "remove ts-nocheck and align the legacy market compatibility layer with current typed frontend APIs"
+    modified_scope: "legacy market compatibility layer, mock API client typing, and focused frontend API regression tests"
+    dependency_changes: "none"
+    legacy_logic_impact: "existing compatibility behavior is preserved while parameter mapping and mock request typing become explicit"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the slice if frontend API compatibility tests or downstream mock consumers regress"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-01T00:00:00Z"
+    approval_note: "legacy frontend api typing cleanup does not require a separate OpenSpec proposal"
+    secondary_approved: false
