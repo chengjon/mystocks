@@ -6,6 +6,8 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 
 const {
   getMarketOverviewMock,
@@ -74,5 +76,58 @@ describe('Market API legacy compatibility layer', () => {
     expect(marketApiService.getMarketOverview).toBeDefined()
     expect(marketApiService.getFundFlow).toBeDefined()
     expect(marketApiService.getKLineData).toBeDefined()
+  })
+
+  it('does not rely on ts-nocheck in the legacy compatibility layer', () => {
+    const source = readFileSync(resolve(process.cwd(), 'src/api/marketWithFallback.ts'), 'utf8')
+    const forbiddenDirective = '@ts-' + 'nocheck'
+
+    expect(source).not.toContain(forbiddenDirective)
+  })
+
+  it('delegates fund flow requests using the modern parameter names', async () => {
+    const fundFlow = [{ date: '2026-03-31', netInflow: 12.5 }]
+    getFundFlowMock.mockResolvedValueOnce(fundFlow)
+
+    await expect(
+      marketApiService.getFundFlow({
+        startDate: '2026-03-01',
+        endDate: '2026-03-31',
+        market: 'sz'
+      })
+    ).resolves.toEqual(fundFlow)
+
+    expect(getFundFlowMock).toHaveBeenCalledWith({
+      startDate: '2026-03-01',
+      endDate: '2026-03-31',
+      market: 'sz'
+    })
+  })
+
+  it('falls back unsupported legacy kline intervals to 1d with modern field names', async () => {
+    const kline = {
+      categoryData: ['2026-03-31'],
+      values: [[1, 2, 0.5, 2.5]],
+      volumes: [1000]
+    }
+    getKLineDataMock.mockResolvedValueOnce(kline)
+
+    await expect(
+      marketApiService.getKLineData({
+        symbol: '000001.SZ',
+        interval: '4h',
+        startDate: '2026-03-01',
+        endDate: '2026-03-31',
+        limit: 50
+      })
+    ).resolves.toEqual(kline)
+
+    expect(getKLineDataMock).toHaveBeenCalledWith({
+      symbol: '000001.SZ',
+      interval: '1d',
+      startDate: '2026-03-01',
+      endDate: '2026-03-31',
+      limit: 50
+    })
   })
 })
