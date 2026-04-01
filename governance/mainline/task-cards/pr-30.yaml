@@ -26,8 +26,8 @@ function_tree:
   domain_id: "meta-governance"
   node_id: "meta-governance-mainline"
   affected_entrypoints:
-    - "docs"
     - "governance"
+    - "tests"
   update_status: "not-needed"
   secondary_domains: []
   exemption_reason: "historical-cleanup-reports-are-documentation-only"
