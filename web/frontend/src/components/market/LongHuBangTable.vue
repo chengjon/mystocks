@@ -172,7 +172,7 @@
             suffix="亿元"
           >
             <template #prefix>
-              <el-icon :color="getTrendIconColor(totalNetAmount)">
+              <el-icon :class="getTrendIconClass(totalNetAmount)">
                 <TrendCharts v-if="totalNetAmount > 0" />
                 <Bottom v-else />
               </el-icon>
@@ -366,8 +366,8 @@ const getAmountClass = (value) => {
   return 'amount-neutral'
 }
 
-const getTrendIconColor = (value) => {
-  return value > 0 ? 'var(--artdeco-rise)' : 'var(--artdeco-down)'
+const getTrendIconClass = (value) => {
+  return value > 0 ? 'amount-positive' : 'amount-negative'
 }
 
 // 组件挂载
