@@ -11,10 +11,13 @@ describe('KLineChart style source', () => {
     expect(source).toContain('var(--artdeco-fg-muted)')
     expect(source).toContain('class="indicator-toggle-icon"')
     expect(source).toContain('.indicator-toggle-icon')
+    expect(source).toContain("'overlay-indicator-tag--hidden'")
+    expect(source).toContain('&--hidden')
 
     expect(source).not.toContain('background: #fff')
     expect(source).not.toContain('#909399')
     expect(source).not.toContain('#e4e7ed')
     expect(source).not.toContain('#f5f7fa')
+    expect(source).not.toContain(":style=\"{ opacity: indicator.visible ? 1 : 0.5 }\"")
   })
 })

@@ -53,7 +53,7 @@
           closable
           size="small"
           :type="indicator.visible ? 'info' : 'warning'"
-          :style="{ opacity: indicator.visible ? 1 : 0.5 }"
+          :class="['overlay-indicator-tag', indicator.visible ? '' : 'overlay-indicator-tag--hidden']"
           @close="handleRemoveIndicator(index)"
         >
           <el-icon
@@ -410,6 +410,12 @@ watch(
     align-items: center;
     gap: var(--artdeco-spacing-3);
     flex-wrap: wrap;
+
+    .overlay-indicator-tag {
+      &--hidden {
+        opacity: 50%;
+      }
+    }
 
     .indicator-toggle-icon {
       margin-right: var(--artdeco-spacing-1);
