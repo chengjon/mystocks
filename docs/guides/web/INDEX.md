@@ -1,6 +1,6 @@
 # MyStocks 文档索引
 
-**生成时间**: 2026-03-26 11:20:03
+**生成时间**: 2026-04-01 13:57:41
 
 
 ---
@@ -13,9 +13,9 @@
 ## 📊 统计信息
 
 
-- **总文档数**: 57
+- **总文档数**: 59
 - **总目录数**: 0
-- **最后更新**: 2026-03-26
+- **最后更新**: 2026-04-01
 
 ---
 
@@ -25,6 +25,7 @@
 - 📄 [README](./INDEX.md)
 - 📄 [2026-01-23-html5-migration-experience-optimization](2026-01-23-html5-migration-experience-optimization.md)
 - 📄 [ARTDECO_COMPONENT_GUIDE](ARTDECO_COMPONENT_GUIDE.md)
+- 📄 [ARTDECO_FINTECH_UNIFIED_SPEC](ARTDECO_FINTECH_UNIFIED_SPEC.md)
 - 📄 [ARTDECO_FINTECH_IMPLEMENTATION_AUDIT](ARTDECO_FINTECH_IMPLEMENTATION_AUDIT.md)
 - 📄 [ARTDECO_FINTECH_PAGE_COMPOSITION_AUDIT](ARTDECO_FINTECH_PAGE_COMPOSITION_AUDIT.md)
 - 📄 [ARTDECO_GRID_QUICK_REFERENCE](ARTDECO_GRID_QUICK_REFERENCE.md)

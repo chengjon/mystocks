@@ -1,8 +1,8 @@
 # Guides
 
-**最后更新**: 2026-03-25 02:04:55
+**最后更新**: 2026-04-01 13:57:41
 
-**文档数量**: 215
+**文档数量**: 249
 
 
 ---
@@ -41,7 +41,7 @@
   - *AMP配置*
 
 - [ARTDECO_COMPONENT_GUIDE](web/ARTDECO_COMPONENT_GUIDE.md)
-  - *ArtDeco Component Development Guide (V3.1 Governance Baseline)*
+  - *ArtDeco Component Development Guide*
 
 - [ARTDECO_FINTECH_UNIFIED_SPEC](web/ARTDECO_FINTECH_UNIFIED_SPEC.md)
   - *ArtDeco Fintech Unified Spec*
@@ -53,7 +53,7 @@
   - *ArtDeco Grid系统快速参考指南*
 
 - [ARTDECO_MASTER_INDEX](web/ARTDECO_MASTER_INDEX.md)
-  - *ArtDeco v3/v3.1 Governance Baseline - Master Index*
+  - *ArtDeco Master Index*
 
 - [ARTDECO_MENU_API_MAPPING](web/ARTDECO_MENU_API_MAPPING.md)
   - *ArtDeco菜单系统 - API映射表*
