@@ -1,4 +1,4 @@
-# ArtDeco Fintech Unified Spec 实现审核报告
+# ArtDeco Fintech Implementation Audit
 
 > **审核日期**: 2026-03-25
 > **审核对象**: `ARTDECO_FINTECH_UNIFIED_SPEC.md`
@@ -6,6 +6,12 @@
 
 ---
 
+> 2026-04-01 状态说明
+>
+> - 本文档仍然是活跃治理链的一部分，但它的职责是“实现对账”，不是总规范入口。
+> - 阅读顺序建议：`ARTDECO_START_HERE.md` -> `ARTDECO_MASTER_INDEX.md` -> `ARTDECO_FINTECH_UNIFIED_SPEC.md` -> 本文档。
+> - 当前运行时已明确为三类承载模式并存：模板化工作台、直接 Tab 容器、功能树驱动总控容器；本文件只审查这些实现是否偏离统一规格。
+>
 ## 1. 总体评估
 
 | 维度 | 状态 | 说明 |
@@ -454,4 +460,4 @@
 
 **审核人**: Claude AI
 **审核日期**: 2026-03-25
-**文档版本**: 1.3
+**文档版本**: 1.4
