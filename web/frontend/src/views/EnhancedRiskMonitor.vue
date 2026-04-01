@@ -409,7 +409,7 @@ onMounted(() => {
 <style scoped>
 .enhanced-risk-monitor {
   padding: 20px;
-  background: #f5f7fa;
+  background: var(--color-bg-primary);
   min-height: 100vh;
 }
 
@@ -426,7 +426,7 @@ onMounted(() => {
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  color: #409EFF;
+  color: var(--color-info);
 }
 
 .control-card .card-header i {
@@ -445,21 +445,21 @@ onMounted(() => {
 .stat-number {
   font-size: 28px;
   font-weight: bold;
-  color: #303133;
+  color: var(--color-text-primary);
   margin-bottom: 5px;
 }
 
 .gpu-status-icon--available {
-  color: #67C23A;
+  color: var(--color-success);
 }
 
 .gpu-status-icon--unavailable {
-  color: #F56C6C;
+  color: var(--color-danger);
 }
 
 .stat-label {
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
