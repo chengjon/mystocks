@@ -1,0 +1,86 @@
+version: "v0.2"
+
+task:
+  id: "pr-32"
+  title: "preserve web redesign requirements draft"
+  owner: "main"
+  created_at: "2026-04-01"
+
+mainline:
+  id: "L1-web-redesign-draft-preservation"
+  objective: "land the 2026-03-29 web redesign requirements draft on main as a clearly historical, non-canonical report"
+  milestone_id: "L2-dirty-worktree-salvage"
+  slice_id: "L3-web-redesign-draft-preservation"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "web-redesign-draft-is-documentation-only"
+
+scope:
+  allowed_paths:
+    - "docs/reports/INDEX.md"
+    - "docs/reports/WEB_REDESIGN_REQUIREMENTS_2026-03-29.md"
+    - "governance/mainline/task-cards/pr-32.yaml"
+    - "tests/unit/scripts/test_repository_hygiene_paths.py"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No active guide entry under docs/guides/"
+  - "No attempt to treat this redesign brief as an approved implementation plan"
+
+acceptance:
+  checks:
+    - id: "web-redesign-draft-sync-tests"
+      command: "python -m pytest tests/unit/scripts/test_repository_hygiene_paths.py -q -k \"historical_cleanup_reports or historical_artdeco_web_reports or web_redesign_requirements_are_preserved_as_historical_report\" --no-cov"
+      required: true
+    - id: "docs-diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-32.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the redesign draft is stored as an active guide, future work may misread it as an approved implementation specification"
+    - "If it remains only in the dirty backup workspace, the historical redesign context is easy to lose"
+  rollback_plan: "git revert <merge-commit-sha> if the preserved draft proves misleading or the framing/index placement is wrong"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "preserve a useful redesign brief as historical context without letting it override active guidance"
+    modified_scope: "the historical redesign report, the reports index, the report sync test, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime behavior changes; only documentation framing, placement, and test coverage are updated"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the docs slice if the draft is later judged misleading or wrongly positioned"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-01T00:00:00Z"
+    approval_note: "web redesign draft preservation is documentation-only"
+    secondary_approved: false
