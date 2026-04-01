@@ -20,7 +20,7 @@
     <div v-if="!backtestId && isConnected" class="empty-state">
       <el-empty description="等待回测任务...">
         <template #image>
-          <el-icon :size="emptyIconSize" :color="emptyIconColor"><Timer /></el-icon>
+          <el-icon :size="emptyIconSize" class="backtest-progress-icon--info"><Timer /></el-icon>
         </template>
       </el-empty>
     </div>
@@ -87,9 +87,10 @@
                 :title="getResultLabel(key)"
                 :value="value"
                 :precision="getResultPrecision(key)"
+                :class="['result-statistic', getResultStateClass(key, value)]"
               >
                 <template #prefix>
-                  <el-icon :color="getResultColor(key, value)">
+                  <el-icon :class="getResultStateClass(key, value)">
                     <component :is="getResultIcon(key)" />
                   </el-icon>
                 </template>
@@ -199,11 +200,6 @@ const resultsGutter = 16
 const performanceGutter = 12
 const emptyIconSize = 'var(--artdeco-spacing-20)'
 const metricCardIconSize = 24
-const emptyIconColor = 'var(--artdeco-gold-primary)'
-const metricPositiveColor = 'var(--artdeco-rise)'
-const metricNegativeColor = 'var(--artdeco-down)'
-const metricWarningColor = 'var(--artdeco-warning)'
-const metricInfoColor = 'var(--artdeco-info)'
 
 // Computed properties
 const getProgressStatus = computed(() => {
@@ -281,17 +277,21 @@ const getResultIcon = (key) => {
   return iconMap[key] || 'DataLine'
 }
 
-const getResultColor = (key, value) => {
+const getResultStateClass = (key, value) => {
   if (key === 'total_return' || key === 'annual_return') {
-    return value > 0 ? metricPositiveColor : metricNegativeColor
+    return value > 0 ? 'backtest-progress-icon--success' : 'backtest-progress-icon--danger'
   }
   if (key === 'max_drawdown') {
-    return metricNegativeColor
+    return 'backtest-progress-icon--danger'
   }
   if (key === 'sharpe_ratio') {
-    return value > 1 ? metricPositiveColor : value > 0 ? metricWarningColor : metricNegativeColor
+    return value > 1
+      ? 'backtest-progress-icon--success'
+      : value > 0
+        ? 'backtest-progress-icon--warning'
+        : 'backtest-progress-icon--danger'
   }
-  return metricInfoColor
+  return 'backtest-progress-icon--info'
 }
 
 const isPercentageMetric = (key) => {
@@ -310,6 +310,22 @@ const formatPercentage = (value) => {
 @use '@/styles/artdeco-tokens.scss' as *;
 
 .backtest-progress-card {
+  .backtest-progress-icon--info {
+    color: var(--artdeco-info);
+  }
+
+  .backtest-progress-icon--success {
+    color: var(--artdeco-rise);
+  }
+
+  .backtest-progress-icon--warning {
+    color: var(--artdeco-warning);
+  }
+
+  .backtest-progress-icon--danger {
+    color: var(--artdeco-down);
+  }
+
   margin-bottom: var(--artdeco-spacing-5);
   border: 1px solid var(--artdeco-border-default);
   border-radius: var(--artdeco-radius-none);
