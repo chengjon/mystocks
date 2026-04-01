@@ -202,11 +202,11 @@ onUnmounted(() => {
 
 .data-display h4 {
   margin-bottom: 10px;
-  color: #303133;
+  color: var(--color-text-primary);
 }
 
 .data-display pre {
-  background-color: #f5f7fa;
+  background-color: var(--color-bg-secondary);
   padding: 15px;
   border-radius: 4px;
   overflow-x: auto;
@@ -218,7 +218,7 @@ onUnmounted(() => {
 }
 
 .text-muted {
-  color: #909399;
+  color: var(--color-text-tertiary);
 }
 
 .page-type-icon--standard {
@@ -230,10 +230,10 @@ onUnmounted(() => {
 }
 
 code {
-  background-color: #f5f7fa;
+  background-color: var(--color-bg-secondary);
   padding: 2px 6px;
   border-radius: 3px;
   font-family: 'Courier New', monospace;
-  color: #e83e8c;
+  color: var(--color-accent);
 }
 </style>
