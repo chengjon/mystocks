@@ -23,8 +23,8 @@ openspec:
   approval_status: "not_required"
 
 function_tree:
-  domain_id: "frontend"
-  node_id: "frontend-market-kline"
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
   affected_entrypoints:
     - "frontend"
     - "tests"
