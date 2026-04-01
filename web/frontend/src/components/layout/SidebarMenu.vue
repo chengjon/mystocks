@@ -4,8 +4,8 @@
     :collapse="isCollapse"
     :router="false"
     background-color="transparent"
-    text-color="#B8B8B8"
-    active-text-color="#D4AF37"
+    text-color="var(--artdeco-fg-muted)"
+    active-text-color="var(--artdeco-gold-primary)"
     class="artdeco-menu"
   >
     <SidebarMenuItem v-for="item in menuItems" :key="item.id" :item="item" />
