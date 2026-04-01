@@ -41,7 +41,7 @@
     <div v-if="alerts.length === 0 && isConnected" class="empty-state">
       <el-empty description="暂无风险告警">
         <template #image>
-          <el-icon :size="emptyIconSize" :color="emptyIconColor"><CircleCheck /></el-icon>
+          <el-icon :size="emptyIconSize" class="risk-alerts-icon--safe"><CircleCheck /></el-icon>
         </template>
         <template #description>
           <p class="empty-desc">系统运行正常，暂无风险告警</p>
@@ -83,7 +83,7 @@
           >
             <div class="alert-header">
               <div class="alert-title">
-                <el-icon :size="severityIconSize" :color="getSeverityColor(alert.severity)">
+                <el-icon :size="severityIconSize" :class="getSeverityStateClass(alert.severity)">
                   <component :is="getSeverityIcon(alert.severity)" />
                 </el-icon>
                 <span>{{ alert.alert_type || '风险告警' }}</span>
@@ -94,8 +94,7 @@
               <el-icon
                 v-if="!alert.read"
                 :size="unreadDotSize"
-                :color="unreadDotColor"
-                class="unread-dot"
+                class="unread-dot risk-alerts-icon--info"
               >
                 <CircleFilled />
               </el-icon>
@@ -185,14 +184,8 @@ const {
 })
 
 const emptyIconSize = 'var(--artdeco-spacing-20)'
-const emptyIconColor = 'var(--artdeco-down)'
 const severityIconSize = 18
 const unreadDotSize = 10
-const unreadDotColor = 'var(--artdeco-info)'
-const severityLowColor = 'var(--artdeco-fg-muted)'
-const severityMediumColor = 'var(--artdeco-warning)'
-const severityHighColor = 'var(--artdeco-rise)'
-const severityCriticalColor = 'var(--artdeco-rise)'
 
 // Watch for new alerts and show notifications
 if (props.showNotification) {
@@ -229,14 +222,14 @@ const getSeverityTagType = (severity) => {
   return typeMap[severity] || 'info'
 }
 
-const getSeverityColor = (severity) => {
-  const colorMap = {
-    'low': severityLowColor,
-    'medium': severityMediumColor,
-    'high': severityHighColor,
-    'critical': severityCriticalColor
+const getSeverityStateClass = (severity) => {
+  const stateMap = {
+    low: 'risk-alerts-icon--muted',
+    medium: 'risk-alerts-icon--warning',
+    high: 'risk-alerts-icon--alert',
+    critical: 'risk-alerts-icon--alert'
   }
-  return colorMap[severity] || severityLowColor
+  return stateMap[severity] || 'risk-alerts-icon--muted'
 }
 
 const getSeverityIcon = (severity) => {
@@ -311,6 +304,26 @@ const getValueClass = (value, threshold) => {
 @use '@/styles/artdeco-tokens.scss' as *;
 
 .risk-alerts-card {
+  .risk-alerts-icon--safe {
+    color: var(--artdeco-down);
+  }
+
+  .risk-alerts-icon--info {
+    color: var(--artdeco-info);
+  }
+
+  .risk-alerts-icon--muted {
+    color: var(--artdeco-fg-muted);
+  }
+
+  .risk-alerts-icon--warning {
+    color: var(--artdeco-warning);
+  }
+
+  .risk-alerts-icon--alert {
+    color: var(--artdeco-rise);
+  }
+
   margin-bottom: var(--artdeco-spacing-5);
   border: 1px solid var(--artdeco-border-default);
   border-radius: var(--artdeco-radius-none);
