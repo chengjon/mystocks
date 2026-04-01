@@ -357,25 +357,32 @@ const calculateHealth = async (stock: WatchlistStock): Promise<void> => {
 }
 
 // Helper Functions
-const getHealthColor = (score: number | undefined): string => {
-  if (!score) return '#909399'
-  if (score >= 70) return '#67C23A'
-  if (score >= 50) return '#E6A23C'
-  return '#F56C6C'
+type PortfolioStatStateClass =
+  | 'portfolio-stat--neutral'
+  | 'portfolio-stat--info'
+  | 'portfolio-stat--success'
+  | 'portfolio-stat--warning'
+  | 'portfolio-stat--danger'
+
+const getHealthStateClass = (score: number | undefined): PortfolioStatStateClass => {
+  if (!score) return 'portfolio-stat--neutral'
+  if (score >= 70) return 'portfolio-stat--success'
+  if (score >= 50) return 'portfolio-stat--warning'
+  return 'portfolio-stat--danger'
 }
 
-const getRiskColor = (score: number | undefined): string => {
-  if (!score) return '#909399'
-  if (score >= 70) return '#F56C6C'
-  if (score >= 50) return '#E6A23C'
-  return '#67C23A'
+const getRiskStateClass = (score: number | undefined): PortfolioStatStateClass => {
+  if (!score) return 'portfolio-stat--neutral'
+  if (score >= 70) return 'portfolio-stat--danger'
+  if (score >= 50) return 'portfolio-stat--warning'
+  return 'portfolio-stat--success'
 }
 
-const getAlertColor = (): string => {
+const getAlertStateClass = (): PortfolioStatStateClass => {
   const total = alertSummary.value.critical + alertSummary.value.warning + alertSummary.value.info
-  if (alertSummary.value.critical > 0) return '#F56C6C'
-  if (total > 0) return '#E6A23C'
-  return '#67C23A'
+  if (alertSummary.value.critical > 0) return 'portfolio-stat--danger'
+  if (total > 0) return 'portfolio-stat--warning'
+  return 'portfolio-stat--success'
 }
 
 const getTypeTagType = (type: string): string => {
@@ -472,9 +479,9 @@ onMounted(() => {
     handleAddStock,
     removeStock,
     calculateHealth,
-    getHealthColor,
-    getRiskColor,
-    getAlertColor,
+    getHealthStateClass,
+    getRiskStateClass,
+    getAlertStateClass,
     getTypeTagType,
     getTypeText,
     getScoreClass,

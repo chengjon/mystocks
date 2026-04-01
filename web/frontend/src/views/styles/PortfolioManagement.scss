@@ -25,6 +25,26 @@
   .stats-row {
     margin-bottom: calc(var(--spacing-md) + var(--spacing-xs));
 
+    .portfolio-stat--neutral {
+      color: var(--color-text-tertiary);
+    }
+
+    .portfolio-stat--info {
+      color: var(--color-info);
+    }
+
+    .portfolio-stat--success {
+      color: var(--color-success);
+    }
+
+    .portfolio-stat--warning {
+      color: var(--color-warning);
+    }
+
+    .portfolio-stat--danger {
+      color: var(--color-danger);
+    }
+
     .stat-card {
       :deep(.el-card__body) {
         padding: calc(var(--spacing-md) + var(--spacing-xs));

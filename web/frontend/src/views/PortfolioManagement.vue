@@ -11,11 +11,11 @@
       <el-col :xs="24" :sm="12" :md="6">
         <el-card shadow="hover" class="stat-card">
           <div class="stat-content">
-            <div class="stat-value" :style="{ color: getHealthColor(portfolioSummary.total_score) }">
+            <div :class="['stat-value', getHealthStateClass(portfolioSummary.total_score)]">
               {{ portfolioSummary.total_score?.toFixed(1) || '--' }}
             </div>
             <div class="stat-label">组合健康度</div>
-            <el-icon class="stat-icon" :style="{ color: getHealthColor(portfolioSummary.total_score) }">
+            <el-icon :class="['stat-icon', getHealthStateClass(portfolioSummary.total_score)]">
               <TrendCharts />
             </el-icon>
           </div>
@@ -25,11 +25,11 @@
       <el-col :xs="24" :sm="12" :md="6">
         <el-card shadow="hover" class="stat-card">
           <div class="stat-content">
-            <div class="stat-value" :style="{ color: getRiskColor(portfolioSummary.risk_score) }">
+            <div :class="['stat-value', getRiskStateClass(portfolioSummary.risk_score)]">
               {{ portfolioSummary.risk_score?.toFixed(1) || '--' }}
             </div>
             <div class="stat-label">风险评估</div>
-            <el-icon class="stat-icon" :style="{ color: getRiskColor(portfolioSummary.risk_score) }">
+            <el-icon :class="['stat-icon', getRiskStateClass(portfolioSummary.risk_score)]">
               <DataLine />
             </el-icon>
           </div>
@@ -41,7 +41,7 @@
           <div class="stat-content">
             <div class="stat-value">{{ portfolioSummary.position_count || 0 }}</div>
             <div class="stat-label">持仓数量</div>
-            <el-icon class="stat-icon" color="#409EFF">
+            <el-icon class="stat-icon portfolio-stat--info">
               <Tickets />
             </el-icon>
           </div>
@@ -51,11 +51,11 @@
       <el-col :xs="24" :sm="12" :md="6">
         <el-card shadow="hover" class="stat-card" :class="{ 'has-alert': alertSummary.critical > 0 }">
           <div class="stat-content">
-            <div class="stat-value" :style="{ color: getAlertColor() }">
+            <div :class="['stat-value', getAlertStateClass()]">
               {{ alertSummary.critical + alertSummary.warning + alertSummary.info }}
             </div>
             <div class="stat-label">预警数量</div>
-            <el-icon class="stat-icon" :style="{ color: getAlertColor() }">
+            <el-icon :class="['stat-icon', getAlertStateClass()]">
               <Bell />
             </el-icon>
           </div>
@@ -205,17 +205,17 @@
                 <div class="alerts-summary">
                   <el-statistic title="紧急预警" :value="alertSummary.critical">
                     <template #suffix>
-                      <el-icon color="#F56C6C"><Warning /></el-icon>
+                      <el-icon class="portfolio-stat--danger"><Warning /></el-icon>
                     </template>
                   </el-statistic>
                   <el-statistic title="风险提醒" :value="alertSummary.warning">
                     <template #suffix>
-                      <el-icon color="#E6A23C"><Warning /></el-icon>
+                      <el-icon class="portfolio-stat--warning"><Warning /></el-icon>
                     </template>
                   </el-statistic>
                   <el-statistic title="优化提示" :value="alertSummary.info">
                     <template #suffix>
-                      <el-icon color="#67C23A"><InfoFilled /></el-icon>
+                      <el-icon class="portfolio-stat--success"><InfoFilled /></el-icon>
                     </template>
                   </el-statistic>
                 </div>
@@ -469,9 +469,9 @@ const {
   handleAddStock,
   removeStock,
   calculateHealth,
-  getHealthColor,
-  getRiskColor,
-  getAlertColor,
+  getHealthStateClass,
+  getRiskStateClass,
+  getAlertStateClass,
   getTypeTagType,
   getTypeText,
   getScoreClass,
