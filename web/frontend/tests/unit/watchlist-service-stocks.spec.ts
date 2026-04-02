@@ -37,7 +37,32 @@ describe('watchlistService stock bridge', () => {
           marketCap: 1,
           addedAt: '2026-04-02 09:30:00',
           notes: '白酒龙头',
-          alerts: [],
+          alerts: [
+            {
+              id: 'alert-1',
+              type: 'price',
+              condition: 'above',
+              value: 1900,
+              isActive: true,
+              notificationMethod: 'push',
+            },
+            {
+              id: 'alert-2',
+              type: 'price',
+              condition: 'below',
+              value: 1600,
+              isActive: false,
+              notificationMethod: 'push',
+            },
+            {
+              id: 'alert-3',
+              type: 'volume',
+              condition: 'above',
+              value: 1000000,
+              isActive: true,
+              notificationMethod: 'push',
+            },
+          ],
           customFields: {
             entry_price: 1680,
             stop_loss_price: 1550,
@@ -55,7 +80,16 @@ describe('watchlistService stock bridge', () => {
           volume: 2000,
           marketCap: 1,
           addedAt: '2026-04-02 09:35:00',
-          alerts: [],
+          alerts: [
+            {
+              id: 'alert-4',
+              type: 'price',
+              condition: 'below',
+              value: 11.5,
+              isActive: true,
+              notificationMethod: 'push',
+            },
+          ],
         },
       ],
       statistics: {
@@ -98,6 +132,7 @@ describe('watchlistService stock bridge', () => {
           stop_loss_price: 1550,
           target_price: 1950,
           weight: 0.35,
+          alerts_count: 2,
         },
         {
           id: 2,
@@ -108,6 +143,7 @@ describe('watchlistService stock bridge', () => {
           stop_loss_price: undefined,
           target_price: undefined,
           weight: undefined,
+          alerts_count: 1,
         },
       ],
     })

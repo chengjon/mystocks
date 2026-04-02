@@ -17,6 +17,7 @@ export interface WatchlistStockRecord {
   stop_loss_price?: number | null
   target_price?: number | null
   weight?: number
+  alerts_count?: number
 }
 
 export interface CreateWatchlistPayload {
@@ -74,6 +75,16 @@ function normalizeWatchlistStock(raw: unknown, index: number): WatchlistStockRec
       : {}
   ) as Record<string, unknown>
 
+  const alertsCount = Array.isArray(record.alerts)
+    ? record.alerts.filter(alert => {
+        if (!alert || typeof alert !== 'object') {
+          return false
+        }
+
+        return (alert as Record<string, unknown>).isActive !== false
+      }).length
+    : toOptionalNumber(customFields.alerts_count ?? record.alerts_count)
+
   return {
     id: Number(record.id ?? index + 1),
     stock_code:
@@ -95,6 +106,7 @@ function normalizeWatchlistStock(raw: unknown, index: number): WatchlistStockRec
     ),
     target_price: toOptionalNumber(customFields.target_price ?? record.target_price ?? record.targetPrice),
     weight: toOptionalNumber(customFields.weight ?? record.weight),
+    alerts_count: alertsCount,
   }
 }
 
