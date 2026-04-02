@@ -1,4 +1,3 @@
-import { userApi } from '@/api/user.ts'
 import { request } from '@/utils/request.ts'
 
 export interface WatchlistRecord {
@@ -56,17 +55,161 @@ interface MonitoringRouteResponse<T> {
   message?: string
 }
 
+interface QuoteSnapshot {
+  price: number
+  isSynthetic: boolean
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object'
+}
+
+function isTransportWrapper(value: Record<string, unknown>): boolean {
+  return 'status' in value || 'headers' in value || 'config' in value || 'statusText' in value
+}
+
+function isMonitoringRouteEnvelope(value: Record<string, unknown>): boolean {
+  if ('success' in value || 'message' in value) {
+    return true
+  }
+
+  return 'data' in value && !isTransportWrapper(value)
+}
+
+function extractTransportData(raw: unknown): unknown {
+  if (!isRecord(raw)) {
+    return raw
+  }
+
+  if ('data' in raw) {
+    return raw.data
+  }
+
+  return raw
+}
+
 function extractMonitoringRouteResponse<T>(raw: unknown): MonitoringRouteResponse<T> | null {
-  if (!raw || typeof raw !== 'object') {
+  if (!isRecord(raw)) {
     return null
   }
 
-  const candidate = 'data' in raw ? (raw as { data?: unknown }).data : raw
-  if (!candidate || typeof candidate !== 'object') {
-    return null
+  const nestedCandidate = isRecord(raw.data) ? raw.data : null
+  if (nestedCandidate && isMonitoringRouteEnvelope(nestedCandidate)) {
+    return nestedCandidate as MonitoringRouteResponse<T>
   }
 
-  return candidate as MonitoringRouteResponse<T>
+  if (isMonitoringRouteEnvelope(raw)) {
+    return raw as MonitoringRouteResponse<T>
+  }
+
+  return null
+}
+
+function extractMonitoringRouteData<T>(raw: unknown): T | undefined {
+  const body = extractMonitoringRouteResponse<T>(raw)
+  if (body) {
+    return body.data
+  }
+
+  return extractTransportData(raw) as T | undefined
+}
+
+function toObjectRows(value: unknown): Record<string, unknown>[] {
+  if (!Array.isArray(value)) {
+    return []
+  }
+
+  return value.filter((item): item is Record<string, unknown> => isRecord(item))
+}
+
+function extractCollectionRows(raw: unknown, collectionKeys: string[]): Record<string, unknown>[] {
+  const payload = extractMonitoringRouteData<unknown>(raw)
+  if (Array.isArray(payload)) {
+    return toObjectRows(payload)
+  }
+
+  if (!isRecord(payload)) {
+    return []
+  }
+
+  for (const key of collectionKeys) {
+    const collection = payload[key]
+    if (Array.isArray(collection)) {
+      return toObjectRows(collection)
+    }
+
+    if (isRecord(collection)) {
+      if (Array.isArray(collection.data)) {
+        return toObjectRows(collection.data)
+      }
+
+      if (Array.isArray(collection.items)) {
+        return toObjectRows(collection.items)
+      }
+    }
+  }
+
+  if (Array.isArray(payload.data)) {
+    return toObjectRows(payload.data)
+  }
+
+  if (Array.isArray(payload.items)) {
+    return toObjectRows(payload.items)
+  }
+
+  return []
+}
+
+function buildAlertCountMap(rows: Record<string, unknown>[]): Map<string, number> {
+  const counts = new Map<string, number>()
+
+  for (const row of rows) {
+    const stockCode = typeof row.stock_code === 'string' ? row.stock_code : ''
+    if (!stockCode) {
+      continue
+    }
+
+    counts.set(stockCode, (counts.get(stockCode) ?? 0) + 1)
+  }
+
+  return counts
+}
+
+function buildQuoteSnapshotMap(rows: Record<string, unknown>[]): Map<string, QuoteSnapshot> {
+  const snapshots = new Map<string, QuoteSnapshot>()
+
+  for (const row of rows) {
+    const symbol =
+      typeof row.symbol === 'string'
+        ? row.symbol
+        : typeof row.stock_code === 'string'
+          ? row.stock_code
+          : ''
+    const price = toOptionalNumber((row.current_price ?? row.currentPrice ?? row.price) as unknown)
+    if (!symbol || price === undefined) {
+      continue
+    }
+
+    const name = typeof row.name === 'string' ? row.name : ''
+    snapshots.set(symbol, {
+      price,
+      isSynthetic: name === `股票${symbol}`,
+    })
+  }
+
+  return snapshots
+}
+
+function resolveCurrentPrice(stock: WatchlistStockRecord, quote: QuoteSnapshot | undefined): number | null | undefined {
+  if (quote) {
+    if (quote.isSynthetic && stock.entry_price !== undefined && stock.entry_price !== null) {
+      return stock.entry_price
+    }
+
+    return quote.price
+  }
+
+  return stock.current_price ?? stock.entry_price
 }
 
 function normalizeWatchlist(raw: unknown, index: number): WatchlistRecord {
@@ -155,28 +298,64 @@ function normalizeWatchlistStock(raw: unknown, index: number): WatchlistStockRec
 
 export const watchlistService = {
   async listWatchlists(): Promise<ServiceResponse<WatchlistRecord[]>> {
-    const data = await userApi.getWatchlists()
+    const rawResponse = await request.get('/api/v1/monitoring/watchlists')
+    const body = extractMonitoringRouteResponse<unknown>(rawResponse)
+    const data = extractCollectionRows(rawResponse, ['watchlists', 'items', 'data'])
+
     return {
-      success: true,
+      success: body?.success ?? true,
       data: data.map((item, index) => normalizeWatchlist(item, index)),
+      message: body?.message,
     }
   },
 
   async listWatchlistStocks(watchlistId: number): Promise<ServiceResponse<WatchlistStockRecord[]>> {
-    const data = await userApi.getWatchlist(String(watchlistId))
-    const stocks = Array.isArray(data.stocks) ? data.stocks : []
+    const rawStocksResponse = await request.get(`/api/v1/monitoring/watchlists/${watchlistId}/stocks`)
+    const body = extractMonitoringRouteResponse<unknown>(rawStocksResponse)
+    const stocks = extractCollectionRows(rawStocksResponse, ['stocks', 'items', 'data']).map((item, index) =>
+      normalizeWatchlistStock(item, index),
+    )
+
+    if (stocks.length === 0) {
+      return {
+        success: body?.success ?? true,
+        data: [],
+        message: body?.message,
+      }
+    }
+
+    const symbols = [...new Set(stocks.map(stock => stock.stock_code).filter(Boolean))]
+    const [rawAlertsResponse, rawQuotesResponse] = await Promise.all([
+      request.get(`/api/v1/monitoring/analysis/portfolio/${watchlistId}/alerts`),
+      request.get('/api/v1/market/quotes', {
+        params: {
+          symbols: symbols.join(','),
+        },
+      }),
+    ])
+    const alertCounts = buildAlertCountMap(extractCollectionRows(rawAlertsResponse, ['alerts', 'items', 'data']))
+    const quoteSnapshots = buildQuoteSnapshotMap(extractCollectionRows(rawQuotesResponse, ['quotes', 'items', 'data']))
 
     return {
-      success: true,
-      data: stocks.map((item, index) => normalizeWatchlistStock(item, index)),
+      success: body?.success ?? true,
+      data: stocks.map((stock) => ({
+        ...stock,
+        current_price: resolveCurrentPrice(stock, quoteSnapshots.get(stock.stock_code)),
+        alerts_count: alertCounts.get(stock.stock_code) ?? stock.alerts_count ?? 0,
+      })),
+      message: body?.message,
     }
   },
 
   async createWatchlist(payload: CreateWatchlistPayload): Promise<ServiceResponse<WatchlistRecord>> {
-    const created = await userApi.createWatchlist(payload as unknown as { name: string })
+    const rawResponse = await request.post('/api/v1/monitoring/watchlists', payload)
+    const body = extractMonitoringRouteResponse<unknown>(rawResponse)
+    const created = extractMonitoringRouteData<unknown>(rawResponse)
+
     return {
-      success: true,
+      success: body?.success ?? true,
       data: normalizeWatchlist(created, 0),
+      message: body?.message,
     }
   },
 
@@ -196,20 +375,35 @@ export const watchlistService = {
   },
 
   async deleteWatchlist(id: number): Promise<ServiceResponse<null>> {
-    await userApi.deleteWatchlist(String(id))
-    return { success: true, data: null }
+    const rawResponse = await request.delete(`/api/v1/monitoring/watchlists/${id}`)
+    const body = extractMonitoringRouteResponse<null>(rawResponse)
+
+    return {
+      success: body?.success ?? true,
+      data: null,
+      message: body?.message,
+    }
   },
 
   async addStockToWatchlist(watchlistId: number, payload: AddWatchlistStockPayload): Promise<ServiceResponse<null>> {
-    await userApi.addStockToWatchlist(String(watchlistId), {
-      symbol: payload.stock_code,
-      notes: payload.entry_reason ?? undefined,
-    })
-    return { success: true, data: null }
+    const rawResponse = await request.post(`/api/v1/monitoring/watchlists/${watchlistId}/stocks`, payload)
+    const body = extractMonitoringRouteResponse<null>(rawResponse)
+
+    return {
+      success: body?.success ?? true,
+      data: null,
+      message: body?.message,
+    }
   },
 
   async removeStockFromWatchlist(watchlistId: number, stockCode: string): Promise<ServiceResponse<null>> {
-    await userApi.removeStockFromWatchlist(String(watchlistId), stockCode)
-    return { success: true, data: null }
+    const rawResponse = await request.delete(`/api/v1/monitoring/watchlists/${watchlistId}/stocks/${stockCode}`)
+    const body = extractMonitoringRouteResponse<null>(rawResponse)
+
+    return {
+      success: body?.success ?? true,
+      data: null,
+      message: body?.message,
+    }
   }
 }
