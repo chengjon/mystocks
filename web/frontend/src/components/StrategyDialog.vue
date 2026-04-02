@@ -192,7 +192,7 @@ const handleCancel = () => {
 }
 
 .modal-container {
-  background: white;
+  background: var(--color-bg-primary);
   border-radius: 12px;
   width: 100%;
   max-width: 600px;
@@ -206,14 +206,14 @@ const handleCancel = () => {
   justify-content: space-between;
   align-items: center;
   padding: 20px 24px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .modal-header h2 {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: #262626;
+  color: var(--color-text-primary);
 }
 
 .btn-close {
@@ -221,7 +221,7 @@ const handleCancel = () => {
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #737373;
+  color: var(--color-text-tertiary);
   padding: 0;
   width: 32px;
   height: 32px;
@@ -232,7 +232,7 @@ const handleCancel = () => {
 }
 
 .btn-close:hover {
-  background-color: #f3f4f6;
+  background-color: var(--color-bg-secondary);
 }
 
 .modal-body {
