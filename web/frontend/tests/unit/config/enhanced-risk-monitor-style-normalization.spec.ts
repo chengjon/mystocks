@@ -26,6 +26,7 @@ describe('EnhancedRiskMonitor style normalization', () => {
     expect(source).toContain('var(--color-bg-secondary)')
     expect(source).toContain('var(--color-border-light)')
     expect(source).toContain('var(--color-text-secondary)')
+    expect(source).toContain('linear-gradient(135deg, var(--color-info) 0%, var(--color-accent) 100%)')
 
     expect(source).not.toContain('style="margin-top: 10px;"')
     expect(source).not.toContain('style="color: #67C23A;"')
@@ -40,5 +41,7 @@ describe('EnhancedRiskMonitor style normalization', () => {
     expect(source).not.toContain(':deep(.el-tabs__header) {\n  margin: 0;\n  background: #fafafa;\n  border-bottom: 1px solid #e4e7ed;')
     expect(source).not.toContain(':deep(.el-tabs__item) {\n  font-weight: 600;\n  color: #606266;')
     expect(source).not.toContain(':deep(.el-tabs__item.is-active) {\n  color: #409EFF;')
+    expect(source).not.toContain(':deep(.el-dialog__header) {\n  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);')
+    expect(source).not.toContain(':deep(.el-dialog__title) {\n  color: white;')
   })
 })
