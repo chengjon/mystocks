@@ -1,0 +1,86 @@
+version: "v0.2"
+
+task:
+  id: "pr-50"
+  title: "derive watchlist stock counts"
+  owner: "main"
+  created_at: "2026-04-02"
+
+mainline:
+  id: "L1-watchlist-stock-counts"
+  objective: "derive monitoring watchlist stock counts from the real watchlist response instead of defaulting them to zero"
+  milestone_id: "L3-mainline-follow-up"
+  slice_id: "L4-watchlist-stock-counts"
+
+classification:
+  task_type: "fix"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "frontend"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "localized-watchlist-count-normalization-bugfix-with-focused-regression"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-50.yaml"
+    - "web/frontend/src/api/services/watchlistService.ts"
+    - "web/frontend/tests/unit/watchlist-management-alert-summary.spec.ts"
+    - "web/frontend/tests/unit/watchlist-service-watchlists.spec.ts"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No monitoring watchlist edit flow work"
+  - "No backend watchlist API changes"
+
+acceptance:
+  checks:
+    - id: "watchlist-count-tests"
+      command: "cd web/frontend && npx vitest run tests/unit/watchlist-service-watchlists.spec.ts tests/unit/watchlist-service-stocks.spec.ts tests/unit/watchlist-management-alert-summary.spec.ts --config vitest.config.mts"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-50.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If count derivation is wrong, monitoring watchlist cards and totals can still drift from actual holdings"
+    - "If count fallback order is wrong, generic watchlist responses could report stale counts"
+  rollback_plan: "git revert <merge-commit-sha> if monitoring watchlist stock totals regress after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "replace zeroed monitoring watchlist counts with counts derived from real watchlist response fields"
+    modified_scope: "watchlist service normalization, one focused service regression test, one monitoring summary regression adjustment, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "runtime behavior changes only for monitoring watchlist stock count normalization"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the slice if monitoring watchlist counts regress"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-02T00:00:00Z"
+    approval_note: "localized monitoring watchlist count bugfix with dedicated regression coverage"
+    secondary_approved: false

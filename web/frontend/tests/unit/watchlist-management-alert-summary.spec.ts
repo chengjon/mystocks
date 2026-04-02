@@ -100,4 +100,33 @@ describe('watchlist management alert summary', () => {
       expect(model.activeAlerts.value).toBe(3)
     })
   })
+
+  it('sums portfolio stock counts from fetched watchlists into the monitoring overview', async () => {
+    listWatchlistsMock.mockResolvedValueOnce({
+      success: true,
+      data: [
+        {
+          id: 7,
+          name: '核心观察',
+          watchlist_type: 'manual',
+          risk_profile: {},
+          stocks_count: 3,
+        },
+        {
+          id: 8,
+          name: '趋势跟踪',
+          watchlist_type: 'strategy',
+          risk_profile: {},
+          stocks_count: 2,
+        },
+      ],
+    })
+
+    const model = useWatchlistManagement()
+
+    await model.refreshData()
+
+    expect(listWatchlistsMock).toHaveBeenCalled()
+    expect(model.totalStocks.value).toBe(5)
+  })
 })
