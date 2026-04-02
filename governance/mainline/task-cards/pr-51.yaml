@@ -1,0 +1,99 @@
+version: "v0.2"
+
+task:
+  id: "pr-51"
+  title: "wire monitoring watchlist edit flow"
+  owner: "main"
+  created_at: "2026-04-02"
+
+mainline:
+  id: "L1-monitoring-watchlist-edit-flow"
+  objective: "replace the monitoring watchlist edit placeholder with a real update flow that keeps backend and frontend contracts aligned"
+  milestone_id: "L3-mainline-follow-up"
+  slice_id: "L4-monitoring-watchlist-edit-flow"
+
+classification:
+  task_type: "fix"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "api"
+    - "frontend"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "localized-monitoring-watchlist-edit-bugfix-with-focused-regression"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-51.yaml"
+    - "src/monitoring/infrastructure/postgresql_async_v3.py"
+    - "web/backend/app/api/monitoring_watchlists.py"
+    - "web/backend/tests/test_monitoring_watchlists_runtime_fallback.py"
+    - "web/frontend/src/api/services/watchlistService.ts"
+    - "web/frontend/src/views/monitoring/composables/useWatchlistManagement.ts"
+    - "web/frontend/tests/unit/watchlist-management-alert-summary.spec.ts"
+    - "web/frontend/tests/unit/watchlist-service-update.spec.ts"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No monitoring watchlist list-source migration beyond the dedicated update path"
+  - "No monitoring portfolio page redesign"
+  - "No stock-level edit or alert CRUD expansion"
+
+acceptance:
+  checks:
+    - id: "monitoring-watchlist-edit-tests"
+      command: "cd web/frontend && npx vitest run tests/unit/watchlist-service-watchlists.spec.ts tests/unit/watchlist-service-stocks.spec.ts tests/unit/watchlist-management-alert-summary.spec.ts tests/unit/watchlist-service-update.spec.ts --config vitest.config.mts"
+      required: true
+    - id: "monitoring-watchlist-runtime-fallback-tests"
+      command: "python -m pytest web/backend/tests/test_monitoring_watchlists_runtime_fallback.py -q -n 0 --no-cov"
+      required: true
+    - id: "backend-ruff"
+      command: "ruff check web/backend/app/api/monitoring_watchlists.py src/monitoring/infrastructure/postgresql_async_v3.py web/backend/tests/test_monitoring_watchlists_runtime_fallback.py"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-51.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr51-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the monitoring update route and frontend normalization drift, edit submissions can succeed but render stale watchlist metadata"
+    - "If runtime fallback update behavior diverges from database behavior, local or test environments can mask production-only regressions"
+    - "If the new update path breaks shared watchlist service assumptions, monitoring page edits can regress while list and stock reads still appear healthy"
+  rollback_plan: "git revert <merge-commit-sha> if monitoring watchlist editing regresses after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "replace the monitoring watchlist edit placeholder with a real backend-to-frontend update flow"
+    modified_scope: "monitoring postgres access, monitoring watchlist API, monitoring watchlist service/composable, focused backend and frontend regression tests, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "runtime behavior changes only for monitoring watchlist editing and runtime fallback update handling"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the slice if monitoring watchlist edit submissions or fallback updates regress"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-02T00:00:00Z"
+    approval_note: "localized monitoring watchlist edit bugfix with dedicated backend and frontend regression coverage"
+    secondary_approved: false

@@ -1,4 +1,5 @@
 import { userApi } from '@/api/user.ts'
+import { request } from '@/utils/request.ts'
 
 export interface WatchlistRecord {
   id: number
@@ -6,6 +7,7 @@ export interface WatchlistRecord {
   watchlist_type: string
   risk_profile: { risk_tolerance?: number }
   stocks_count: number
+  is_active?: boolean
 }
 
 export interface WatchlistStockRecord {
@@ -26,6 +28,13 @@ export interface CreateWatchlistPayload {
   risk_profile: { risk_tolerance?: number }
 }
 
+export interface UpdateWatchlistPayload {
+  name?: string
+  watchlist_type?: string
+  risk_profile?: { risk_tolerance?: number }
+  is_active?: boolean
+}
+
 export interface AddWatchlistStockPayload {
   stock_code: string
   entry_price?: number | null
@@ -41,6 +50,25 @@ interface ServiceResponse<T> {
   message?: string
 }
 
+interface MonitoringRouteResponse<T> {
+  success?: boolean
+  data?: T
+  message?: string
+}
+
+function extractMonitoringRouteResponse<T>(raw: unknown): MonitoringRouteResponse<T> | null {
+  if (!raw || typeof raw !== 'object') {
+    return null
+  }
+
+  const candidate = 'data' in raw ? (raw as { data?: unknown }).data : raw
+  if (!candidate || typeof candidate !== 'object') {
+    return null
+  }
+
+  return candidate as MonitoringRouteResponse<T>
+}
+
 function normalizeWatchlist(raw: unknown, index: number): WatchlistRecord {
   const record = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>
   const statistics = (
@@ -52,13 +80,19 @@ function normalizeWatchlist(raw: unknown, index: number): WatchlistRecord {
   const explicitStockCount = toOptionalNumber(record.stocks_count)
   const derivedStockCount = toOptionalNumber(statistics.totalStocks)
 
-  return {
+  const normalized: WatchlistRecord = {
     id: Number(record.id ?? index + 1),
     name: typeof record.name === 'string' ? record.name : `Watchlist ${index + 1}`,
     watchlist_type: typeof record.watchlist_type === 'string' ? record.watchlist_type : 'manual',
     risk_profile: (record.risk_profile as { risk_tolerance?: number } | undefined) ?? {},
     stocks_count: explicitStockCount ?? (derivedStockCount && derivedStockCount > 0 ? derivedStockCount : inlineStockCount),
   }
+
+  if (typeof record.is_active === 'boolean') {
+    normalized.is_active = record.is_active
+  }
+
+  return normalized
 }
 
 function toOptionalNumber(value: unknown): number | undefined {
@@ -143,6 +177,21 @@ export const watchlistService = {
     return {
       success: true,
       data: normalizeWatchlist(created, 0),
+    }
+  },
+
+  async updateWatchlist(
+    id: number,
+    payload: UpdateWatchlistPayload,
+  ): Promise<ServiceResponse<WatchlistRecord>> {
+    const rawResponse = await request.put(`/api/v1/monitoring/watchlists/${id}`, payload)
+    const body = extractMonitoringRouteResponse<unknown>(rawResponse)
+    const updated = body?.data ?? rawResponse
+
+    return {
+      success: body?.success ?? true,
+      data: normalizeWatchlist(updated, 0),
+      message: body?.message,
     }
   },
 

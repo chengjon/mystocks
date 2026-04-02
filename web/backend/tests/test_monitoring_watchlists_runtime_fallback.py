@@ -32,7 +32,8 @@ def _load_watchlists_api():
     module_path = BACKEND_APP_ROOT / "api/monitoring_watchlists.py"
     spec = spec_from_file_location(module_name, module_path)
     module = module_from_spec(spec)
-    assert spec is not None and spec.loader is not None
+    assert spec is not None
+    assert spec.loader is not None
     sys.modules[module_name] = module
     spec.loader.exec_module(module)
     return module
@@ -115,6 +116,31 @@ async def test_get_watchlist_returns_runtime_fallback_when_db_unavailable(monkey
 
     assert payload["data"]["id"] == 1
     assert payload["data"]["name"] == "核心止损监控"
+    assert payload["data"]["stocks_count"] >= 1
+
+
+async def test_update_watchlist_returns_runtime_fallback_when_db_unavailable(monkeypatch):
+    _reset_runtime_state(monkeypatch)
+    monkeypatch.setenv("TESTING", "true")
+    monkeypatch.setattr(postgres_module, "get_postgres_async", lambda: _DisconnectedPostgres())
+
+    result = await watchlists_api.update_watchlist(
+        watchlist_id=1,
+        request=watchlists_api.UpdateWatchlistRequest(
+            name="趋势跟踪池",
+            watchlist_type="strategy",
+            risk_profile={"risk_tolerance": 70},
+            is_active=False,
+        ),
+        user_id=1,
+    )
+    payload = _payload(result)
+
+    assert payload["data"]["id"] == 1
+    assert payload["data"]["name"] == "趋势跟踪池"
+    assert payload["data"]["watchlist_type"] == "strategy"
+    assert payload["data"]["risk_profile"] == {"risk_tolerance": 70}
+    assert payload["data"]["is_active"] is False
     assert payload["data"]["stocks_count"] >= 1
 
 
@@ -205,3 +231,27 @@ def test_watchlist_read_endpoints_keep_unified_response_shape_in_fallback(monkey
     assert stocks_response.status_code == 200
     assert stocks_payload["success"] is True
     assert stocks_payload["data"][0]["stock_code"] == "000001"
+
+
+def test_watchlist_update_endpoint_keeps_unified_response_shape_in_fallback(monkeypatch):
+    _reset_runtime_state(monkeypatch)
+    monkeypatch.setenv("TESTING", "true")
+
+    with _build_client(monkeypatch) as client:
+        update_response = client.put(
+            "/api/v1/monitoring/watchlists/1",
+            json={
+                "name": "趋势跟踪池",
+                "watchlist_type": "strategy",
+                "risk_profile": {"risk_tolerance": 80},
+                "is_active": False,
+            },
+        )
+
+    payload = update_response.json()
+
+    assert update_response.status_code == 200
+    assert payload["success"] is True
+    assert payload["data"]["id"] == 1
+    assert payload["data"]["name"] == "趋势跟踪池"
+    assert payload["data"]["watchlist_type"] == "strategy"

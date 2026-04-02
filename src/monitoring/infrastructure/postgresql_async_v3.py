@@ -63,6 +63,13 @@ class WatchlistCreate:
 
 
 @dataclass
+class WatchlistUpdate:
+    """更新清单参数"""
+
+    changes: Dict[str, object]
+
+
+@dataclass
 class StockToAdd:
     """添加股票参数"""
 
@@ -239,6 +246,53 @@ class MonitoringPostgreSQLAccess:
 
         logger.info("✅ 获取用户 %(user_id)s 的 {len(results)} 个清单")
         return results
+
+    async def update_watchlist(self, watchlist_id: int, params: WatchlistUpdate) -> bool:
+        """更新监控清单"""
+        if not self._connected:
+            raise RuntimeError("数据库连接未初始化")
+
+        column_map = {
+            "name": "name",
+            "watchlist_type": "type",
+            "risk_profile": "risk_profile",
+            "is_active": "is_active",
+        }
+
+        assignments: List[str] = []
+        values: List[object] = [watchlist_id]
+        placeholder_index = 2
+
+        for field_name, raw_value in params.changes.items():
+            column_name = column_map.get(field_name)
+            if column_name is None:
+                continue
+
+            value = raw_value
+            if field_name == "risk_profile":
+                value = json.dumps(raw_value) if raw_value is not None else None
+
+            assignments.append(f"{column_name} = ${placeholder_index}")
+            values.append(value)
+            placeholder_index += 1
+
+        if not assignments:
+            return True
+
+        assignments.append("updated_at = CURRENT_TIMESTAMP")
+
+        async with self.pool.acquire() as conn:
+            result = await conn.execute(
+                f"""
+                UPDATE monitoring_watchlists
+                SET {", ".join(assignments)}
+                WHERE id = $1
+                """,
+                *values,
+            )
+
+        logger.info("✅ 更新监控清单: %(watchlist_id)s")
+        return result.endswith("UPDATE 1")
 
     async def add_stock_to_watchlist(self, params: StockToAdd) -> int:
         """
@@ -682,3 +736,13 @@ from src.monitoring.infrastructure._postgresql_async_v3_singleton import (
     get_postgres_async,
     initialize_postgres_async,
 )
+
+__all__ = [
+    "MonitoringPostgreSQLAccess",
+    "StockToAdd",
+    "WatchlistCreate",
+    "WatchlistUpdate",
+    "close_postgres_async",
+    "get_postgres_async",
+    "initialize_postgres_async",
+]

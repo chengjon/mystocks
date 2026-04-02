@@ -5,6 +5,7 @@ const {
   listWatchlistsMock,
   listWatchlistStocksMock,
   createWatchlistMock,
+  updateWatchlistMock,
   deleteWatchlistMock,
   addStockToWatchlistMock,
   removeStockFromWatchlistMock,
@@ -17,6 +18,7 @@ const {
   listWatchlistsMock: vi.fn(),
   listWatchlistStocksMock: vi.fn(),
   createWatchlistMock: vi.fn(),
+  updateWatchlistMock: vi.fn(),
   deleteWatchlistMock: vi.fn(),
   addStockToWatchlistMock: vi.fn(),
   removeStockFromWatchlistMock: vi.fn(),
@@ -48,6 +50,7 @@ vi.mock('@/api/services/watchlistService', () => ({
     listWatchlists: listWatchlistsMock,
     listWatchlistStocks: listWatchlistStocksMock,
     createWatchlist: createWatchlistMock,
+    updateWatchlist: updateWatchlistMock,
     deleteWatchlist: deleteWatchlistMock,
     addStockToWatchlist: addStockToWatchlistMock,
     removeStockFromWatchlist: removeStockFromWatchlistMock,
@@ -61,6 +64,16 @@ describe('watchlist management alert summary', () => {
     vi.clearAllMocks()
     randomSpy.mockReturnValue(0.9)
     listWatchlistsMock.mockResolvedValue({ success: true, data: [] })
+    updateWatchlistMock.mockResolvedValue({
+      success: true,
+      data: {
+        id: 7,
+        name: '更新后的组合',
+        watchlist_type: 'strategy',
+        risk_profile: { risk_tolerance: 70 },
+        stocks_count: 2,
+      },
+    })
     listWatchlistStocksMock.mockResolvedValue({
       success: true,
       data: [
@@ -128,5 +141,66 @@ describe('watchlist management alert summary', () => {
 
     expect(listWatchlistsMock).toHaveBeenCalled()
     expect(model.totalStocks.value).toBe(5)
+  })
+
+  it('prefills the edit modal from the selected watchlist instead of keeping the create defaults', () => {
+    const model = useWatchlistManagement()
+
+    model.editWatchlist({
+      id: 7,
+      name: '核心观察',
+      watchlist_type: 'benchmark',
+      risk_profile: { risk_tolerance: 80 },
+      stocks_count: 2,
+    })
+
+    expect(model.editingWatchlist.value?.id).toBe(7)
+    expect(model.createModalVisible.value).toBe(true)
+    expect(model.watchlistForm.name).toBe('核心观察')
+    expect(model.watchlistForm.watchlist_type).toBe('benchmark')
+    expect(model.riskTolerance.value).toBe(80)
+    expect(warningMock).not.toHaveBeenCalled()
+  })
+
+  it('submits watchlist edits through the update path and patches the local summary', async () => {
+    const model = useWatchlistManagement()
+    model.watchlists.value = [
+      {
+        id: 7,
+        name: '核心观察',
+        watchlist_type: 'manual',
+        risk_profile: { risk_tolerance: 50 },
+        stocks_count: 2,
+      },
+    ]
+
+    model.editWatchlist({
+      id: 7,
+      name: '核心观察',
+      watchlist_type: 'manual',
+      risk_profile: { risk_tolerance: 50 },
+      stocks_count: 2,
+    })
+    model.watchlistForm.name = '更新后的组合'
+    model.watchlistForm.watchlist_type = 'strategy'
+    model.riskTolerance.value = 70
+
+    await model.handleCreateOrUpdate()
+
+    expect(updateWatchlistMock).toHaveBeenCalledWith(7, {
+      name: '更新后的组合',
+      watchlist_type: 'strategy',
+      risk_profile: { risk_tolerance: 70 },
+    })
+    expect(successMock).toHaveBeenCalledWith('更新成功')
+    expect(model.createModalVisible.value).toBe(false)
+    expect(model.editingWatchlist.value).toBeNull()
+    expect(model.watchlists.value[0]).toMatchObject({
+      id: 7,
+      name: '更新后的组合',
+      watchlist_type: 'strategy',
+      risk_profile: { risk_tolerance: 70 },
+      stocks_count: 2,
+    })
   })
 })
