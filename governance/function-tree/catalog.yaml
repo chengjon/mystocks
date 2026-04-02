@@ -699,6 +699,9 @@ domains:
         coverage_paths:
           - "governance/mainline/**"
           - "governance/function-tree/**"
+          - "openspec/changes/**"
+          - "openspec/specs/**"
+          - "openspec/AGENTS.md"
           - ".github/pull_request_template.md"
           - "docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md"
           - "docs/guides/ai-tools/AI_QUICK_START.md"
@@ -706,6 +709,9 @@ domains:
           governance:
             - "governance/mainline/**"
             - "governance/function-tree/**"
+            - "openspec/changes/**"
+            - "openspec/specs/**"
+            - "openspec/AGENTS.md"
             - ".github/pull_request_template.md"
             - "docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md"
             - "docs/guides/ai-tools/AI_QUICK_START.md"

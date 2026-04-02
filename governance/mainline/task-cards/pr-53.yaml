@@ -1,0 +1,92 @@
+version: "v0.2"
+
+task:
+  id: "pr-53"
+  title: "archive completed mongo graphiti openspec changes"
+  owner: "main"
+  created_at: "2026-04-03"
+
+mainline:
+  id: "L1-mongo-graphiti-openspec-archive"
+  objective: "land the completed Mongo and Graphiti OpenSpec changes on main as archived deltas with canonical spec text kept in sync"
+  milestone_id: "L2-mongo-graphiti-closeout"
+  slice_id: "L3-openspec-archive-closeout"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "required"
+  secondary_domains: []
+  exemption_reason: "openspec-archive-closeout-only"
+
+scope:
+  allowed_paths:
+    - "governance/function-tree/catalog.yaml"
+    - "governance/mainline/task-cards/pr-53.yaml"
+    - "openspec/changes/archive/2026-04-02-add-graphiti-cross-assistant-cli/**"
+    - "openspec/changes/archive/2026-04-02-update-graphiti-memory-workflow/**"
+    - "openspec/changes/archive/2026-04-02-update-mongo-task-artifact-export/**"
+    - "openspec/specs/agent-memory-workflow/spec.md"
+    - "openspec/specs/symphony-service/spec.md"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No runtime Mongo, Graphiti, or Maestro behavior changes"
+  - "No new OpenSpec capability proposal or scope expansion beyond archiving completed changes"
+  - "No broader function-tree restructuring beyond mapping OpenSpec governance paths into the existing meta-governance node"
+
+acceptance:
+  checks:
+    - id: "governance-function-tree-regression"
+      command: "pytest --no-cov tests/unit/governance/test_function_tree_catalog.py tests/unit/governance/test_mainline_scope_gate_function_tree.py tests/unit/governance/test_task_card_function_tree_schema.py -q"
+      required: true
+    - id: "openspec-spec-validation"
+      command: "openspec validate --specs --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-53.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr53-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the allowed_paths list misses any archived OpenSpec file, the mainline governance gate will remain red"
+    - "If the archived deltas and canonical specs drift apart again, future OpenSpec readers can get conflicting Mongo or Graphiti workflow guidance"
+  rollback_plan: "git revert <merge-commit-sha> if the archival metadata or canonical spec sync proves inaccurate after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "archive completed Mongo and Graphiti OpenSpec changes while keeping the canonical agent-memory and symphony-service specs authoritative"
+    modified_scope: "three archived OpenSpec change directories, two canonical OpenSpec spec files, one function-tree catalog alignment update, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime behavior changes; OpenSpec archive state, canonical specification text, and meta-governance function-tree coverage are synchronized"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the archival cleanup if governance scope metadata, function-tree coverage, or canonical OpenSpec text is found to be inconsistent after merge"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-03T00:00:00Z"
+    approval_note: "this PR only archives previously completed OpenSpec work, syncs canonical specs, and aligns meta-governance coverage; it does not introduce a new capability proposal"
+    secondary_approved: false
