@@ -369,6 +369,8 @@ domains:
           - "src/monitoring/**"
           - "src/core/monitoring.py"
           - "web/backend/app/api/monitoring.py"
+          - "web/frontend/src/api/services/watchlistService.ts"
+          - "web/frontend/tests/unit/watchlist-service-*.spec.ts"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
@@ -378,6 +380,7 @@ domains:
           frontend:
             - "web/frontend/src/views/monitoring/**"
             - "web/frontend/src/views/monitor.vue"
+            - "web/frontend/src/api/services/watchlistService.ts"
           core:
             - "src/monitoring/**"
             - "src/core/monitoring.py"
@@ -385,6 +388,7 @@ domains:
             - "tests/monitoring/**"
             - "tests/e2e/monitoring-dashboard.spec.ts"
             - "tests/unit/monitoring/test_monitoring_service.py"
+            - "web/frontend/tests/unit/watchlist-service-*.spec.ts"
           operations:
             - "config/monitoring-stack/README.md"
             - "docs/operations/deployment/SETUP_GRAFANA.md"

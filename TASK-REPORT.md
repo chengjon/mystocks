@@ -1,5 +1,40 @@
 # TASK REPORT
 
+## [WORK] 2026-04-03 Watchlist Service Monitoring Routes（codex/watchlist-service-monitoring-routes-20260403）
+- Scope:
+  - 收敛 `web/frontend/src/api/services/watchlistService.ts`，移除剩余 generic `userApi` watchlist 契约依赖。
+  - 保持 monitoring 自选管理页与问财“加入自选”链路可用，不丢失 `alerts_count` 与 `current_price`。
+- Completed:
+  - `watchlistService.ts`
+    - `listWatchlists` 改走 `GET /api/v1/monitoring/watchlists`
+    - `createWatchlist` 改走 `POST /api/v1/monitoring/watchlists`
+    - `deleteWatchlist` 改走 `DELETE /api/v1/monitoring/watchlists/{id}`
+    - `addStockToWatchlist` 改走 `POST /api/v1/monitoring/watchlists/{id}/stocks`
+    - `removeStockFromWatchlist` 改走 `DELETE /api/v1/monitoring/watchlists/{id}/stocks/{stock_code}`
+    - `listWatchlistStocks` 改为聚合三条链路：
+      - `GET /api/v1/monitoring/watchlists/{id}/stocks`
+      - `GET /api/v1/monitoring/analysis/portfolio/{id}/alerts`
+      - `GET /api/v1/market/quotes`
+  - 新增/更新 focused unit tests：
+    - `web/frontend/tests/unit/watchlist-service-watchlists.spec.ts`
+    - `web/frontend/tests/unit/watchlist-service-stocks.spec.ts`
+    - `web/frontend/tests/unit/watchlist-service-mutations.spec.ts`
+  - 已提交代码变更：
+    - `7e3a10368 fix: align watchlist service with monitoring routes`
+- Verification Evidence:
+  - `cd web/frontend && npx vitest run tests/unit/watchlist-service-watchlists.spec.ts tests/unit/watchlist-service-stocks.spec.ts tests/unit/watchlist-service-mutations.spec.ts tests/unit/watchlist-service-update.spec.ts tests/unit/watchlist-management-alert-summary.spec.ts tests/unit/wencai-query-table.spec.ts --config vitest.config.mts`
+    - 结果：`6 files, 12 tests passed`
+  - `git diff --check`
+  - `gitnexus_detect_changes(scope="staged")`
+    - 结果：`risk_level: low`
+  - `python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-52.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr52-mainline-gate.json`
+    - 结果：`pass=True`
+- Current Status:
+  - PR 已创建：`#52`
+  - governance task card 已补齐：`governance/mainline/task-cards/pr-52.yaml`
+  - mainline gate 已通过
+  - 下一步：推送治理补丁到 PR 52
+
 ## [WORK] 2026-03-13 ArtDeco Pages Gate-0 + P0-A（dev-artdeco-pages-codex）
 - Scope:
   - 完成 `optimize-artdeco-pages` 的 `Gate-0` 首轮 SSOT 纠偏。
