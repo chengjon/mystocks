@@ -22,6 +22,7 @@ vi.mock('element-plus', () => ({
     success: successMock,
     warning: warningMock,
     error: errorMock,
+    info: vi.fn(),
   },
 }))
 
@@ -84,7 +85,7 @@ describe('WencaiQueryTable watchlist actions', () => {
       },
       global: {
         stubs: {
-          'el-button': { template: '<button @click="$emit(`click`)"><slot /></button>' },
+          'el-button': { template: '<button @click="$emit(`click`)"><slot name="icon" /><slot /></button>' },
           'el-icon': { template: '<i><slot /></i>' },
           'el-pagination': true,
           'el-dialog': { template: '<div><slot /><slot name="footer" /></div>' },
@@ -123,7 +124,7 @@ describe('WencaiQueryTable watchlist actions', () => {
       },
       global: {
         stubs: {
-          'el-button': { template: '<button @click="$emit(`click`)"><slot /></button>' },
+          'el-button': { template: '<button @click="$emit(`click`)"><slot name="icon" /><slot /></button>' },
           'el-icon': { template: '<i><slot /></i>' },
           'el-pagination': true,
           'el-dialog': { template: '<div><slot /><slot name="footer" /></div>' },

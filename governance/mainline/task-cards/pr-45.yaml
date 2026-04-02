@@ -1,0 +1,84 @@
+version: "v0.2"
+
+task:
+  id: "pr-45"
+  title: "finalize wencai watchlist regression"
+  owner: "main"
+  created_at: "2026-04-02"
+
+mainline:
+  id: "L1-wencai-watchlist-test-followup"
+  objective: "land the small follow-up regression test update that missed the original Wencai watchlist merge window"
+  milestone_id: "L3-mainline-follow-up"
+  slice_id: "L4-wencai-watchlist-test-followup"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "frontend"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "test-only-followup-for-a-merged-watchlist-action-fix"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-45.yaml"
+    - "web/frontend/tests/unit/wencai-query-table.spec.ts"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No production watchlist logic changes"
+  - "No reimplementation of the Wencai action itself"
+
+acceptance:
+  checks:
+    - id: "wencai-watchlist-followup-tests"
+      command: "cd web/frontend && npx vitest run tests/unit/wencai-query-table.spec.ts tests/unit/config/wencai-style-normalization.spec.ts --config vitest.config.mts"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-45.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this follow-up is not landed, the merged Wencai watchlist action keeps weaker regression coverage than intended"
+    - "If the follow-up scope grows, it could accidentally reopen the already merged production slice"
+  rollback_plan: "git revert <merge-commit-sha> if the follow-up test adjustment proves incorrect or overly strict"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "land the missing Wencai watchlist regression follow-up after the production fix already merged"
+    modified_scope: "one frontend unit test file and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no production runtime impact; only test coverage is adjusted"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the slice if the follow-up regression guard is wrong"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-02T00:00:00Z"
+    approval_note: "test-only follow-up for an already merged localized fix"
+    secondary_approved: false
