@@ -19,11 +19,24 @@
     - `web/frontend/tests/unit/watchlist-service-watchlists.spec.ts`
     - `web/frontend/tests/unit/watchlist-service-stocks.spec.ts`
     - `web/frontend/tests/unit/watchlist-service-mutations.spec.ts`
+  - 为通过当前 frontend type ceiling 门禁，补了 3 处最小前端类型修复：
+    - `web/frontend/src/views/TaskManagement.vue`
+      - 移除 JS 脚本块中非法的 `as const` 断言
+    - `web/frontend/src/components/market/WencaiQueryTable.vue`
+      - 对 `catch` 分支的 `error` 做 `Error` 窄化
+    - `web/frontend/src/composables/useMarket.ts`
+      - 让 `marketOverview` state 类型跟随 `marketApi.getMarketOverview()` 的真实返回，消除旧模型漂移
+  - 同步治理边界：
+    - `governance/function-tree/catalog.yaml`
+    - `governance/mainline/task-cards/pr-52.yaml`
   - 已提交代码变更：
     - `7e3a10368 fix: align watchlist service with monitoring routes`
+    - `838a65eea governance: add task card for pr-52`
 - Verification Evidence:
-  - `cd web/frontend && npx vitest run tests/unit/watchlist-service-watchlists.spec.ts tests/unit/watchlist-service-stocks.spec.ts tests/unit/watchlist-service-mutations.spec.ts tests/unit/watchlist-service-update.spec.ts tests/unit/watchlist-management-alert-summary.spec.ts tests/unit/wencai-query-table.spec.ts --config vitest.config.mts`
-    - 结果：`6 files, 12 tests passed`
+  - `cd web/frontend && npx vitest run tests/unit/watchlist-service-watchlists.spec.ts tests/unit/watchlist-service-stocks.spec.ts tests/unit/watchlist-service-mutations.spec.ts tests/unit/watchlist-service-update.spec.ts tests/unit/watchlist-management-alert-summary.spec.ts tests/unit/wencai-query-table.spec.ts tests/unit/use-market-overview.spec.ts tests/unit/composables.test.ts --config vitest.config.mts`
+    - 结果：`8 files, 26 tests passed`
+  - `cd web/frontend && npm run test:type-ceiling`
+    - 结果：`TypeScript errors 0 are within configured ceiling 0`
   - `git diff --check`
   - `gitnexus_detect_changes(scope="staged")`
     - 结果：`risk_level: low`
@@ -32,8 +45,8 @@
 - Current Status:
   - PR 已创建：`#52`
   - governance task card 已补齐：`governance/mainline/task-cards/pr-52.yaml`
-  - mainline gate 已通过
-  - 下一步：推送治理补丁到 PR 52
+  - mainline gate 曾在治理补丁后通过；本轮会基于扩大的前端类型修复 scope 再次复验
+  - 下一步：提交 frontend type-ceiling unblock patch 并回推 PR 52
 
 ## [WORK] 2026-03-13 ArtDeco Pages Gate-0 + P0-A（dev-artdeco-pages-codex）
 - Scope:

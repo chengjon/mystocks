@@ -12,6 +12,8 @@ domains:
           - "web/backend/app/api/market.py"
           - "web/backend/app/api/market/**"
           - "web/frontend/src/views/market/**"
+          - "web/frontend/src/components/market/**"
+          - "web/frontend/src/composables/useMarket.ts"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
@@ -21,6 +23,8 @@ domains:
           frontend:
             - "web/frontend/src/views/market/**"
             - "web/frontend/src/views/artdeco-pages/market-data-tabs/**"
+            - "web/frontend/src/components/market/**"
+            - "web/frontend/src/composables/useMarket.ts"
           core:
             - "src/adapters/tdx/**"
             - "src/application/market_data/**"
@@ -28,6 +32,8 @@ domains:
             - "tests/api/file_tests/test_market_api.py"
             - "tests/e2e/market-data.spec.ts"
             - "web/frontend/tests/e2e/market-data.spec.ts"
+            - "web/frontend/tests/unit/use-market-overview.spec.ts"
+            - "web/frontend/tests/unit/wencai-query-table.spec.ts"
           operations:
             - "docs/testing/E2E_TEST_GUIDE.md"
             - "docs/operations/OPS_MANUAL.md"
@@ -525,6 +531,7 @@ domains:
         coverage_paths:
           - "web/backend/app/api/system.py"
           - "config/**"
+          - "web/frontend/src/views/TaskManagement.vue"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
@@ -533,6 +540,7 @@ domains:
           frontend:
             - "web/frontend/src/views/system/**"
             - "web/frontend/src/views/artdeco-pages/system-tabs/**"
+            - "web/frontend/src/views/TaskManagement.vue"
           core:
             - "config/**"
           tests:

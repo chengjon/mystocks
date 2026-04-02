@@ -172,7 +172,8 @@ const loadResults = async () => {
 
     ElMessage.success('数据加载成功')
   } catch (error) {
-    ElMessage.error('加载数据出错: ' + error.message)
+    const message = error instanceof Error ? error.message : '未知错误'
+    ElMessage.error('加载数据出错: ' + message)
   } finally {
     loading.value = false
   }

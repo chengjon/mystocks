@@ -10,7 +10,9 @@ import { marketService } from '@/api/services/marketService';
 import { MarketAdapter } from '@/api/adapters/marketAdapter';
 import { marketApi } from '@/api/market';
 import { getCache } from '@/utils/cache/part-1';
-import type { MarketOverviewVM, FundFlowChartPoint, KLineChartData } from '@/api/types/extensions';
+import type { FundFlowChartPoint, KLineChartData } from '@/api/types/extensions';
+
+type MarketOverviewState = Awaited<ReturnType<typeof marketApi.getMarketOverview>>;
 
 /**
  * Cache keys
@@ -43,7 +45,7 @@ export function useMarket(options?: {
   const { autoFetch = true, enableCache = true } = options || {};
 
   // State
-  const marketOverview = ref<MarketOverviewVM | null>(null);
+  const marketOverview = ref<MarketOverviewState | null>(null);
   const fundFlowData = ref<FundFlowChartPoint[]>([]);
   const klineData = ref<KLineChartData[] | null>(null);
   const loading = ref(false);
@@ -66,7 +68,7 @@ export function useMarket(options?: {
     try {
       // Try cache first (if enabled and not forcing refresh)
       if (enableCache && !forceRefresh) {
-        const cached = cache.get(cacheKey) as MarketOverviewVM | undefined;
+        const cached = cache.get(cacheKey) as MarketOverviewState | undefined;
         if (cached) {
           marketOverview.value = cached;
           return;

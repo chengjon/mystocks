@@ -8,7 +8,7 @@ task:
 
 mainline:
   id: "L1-watchlist-service-monitoring-routes"
-  objective: "move the remaining frontend watchlist service flows onto monitoring routes without regressing alert and quote derived UI summaries"
+  objective: "move the remaining frontend watchlist service flows onto monitoring routes and clear the frontend type-ceiling blockers that gate this slice"
   milestone_id: "L3-mainline-follow-up"
   slice_id: "L4-watchlist-service-monitoring-routes"
 
@@ -29,7 +29,9 @@ function_tree:
     - "frontend"
     - "tests"
   update_status: "required"
-  secondary_domains: []
+  secondary_domains:
+    - "domain-01"
+    - "domain-08"
   exemption_reason: ""
 
 scope:
@@ -38,6 +40,9 @@ scope:
     - "governance/function-tree/catalog.yaml"
     - "governance/mainline/task-cards/pr-52.yaml"
     - "web/frontend/src/api/services/watchlistService.ts"
+    - "web/frontend/src/components/market/WencaiQueryTable.vue"
+    - "web/frontend/src/composables/useMarket.ts"
+    - "web/frontend/src/views/TaskManagement.vue"
     - "web/frontend/tests/unit/watchlist-service-watchlists.spec.ts"
     - "web/frontend/tests/unit/watchlist-service-stocks.spec.ts"
     - "web/frontend/tests/unit/watchlist-service-mutations.spec.ts"
@@ -48,11 +53,15 @@ non_goals:
   - "No backend monitoring route changes"
   - "No watchlist UI redesign"
   - "No alert CRUD or portfolio analytics expansion"
+  - "No broader frontend type-debt sweep beyond the blockers required to unstick this PR"
 
 acceptance:
   checks:
     - id: "watchlist-service-regression"
-      command: "cd web/frontend && npx vitest run tests/unit/watchlist-service-watchlists.spec.ts tests/unit/watchlist-service-stocks.spec.ts tests/unit/watchlist-service-mutations.spec.ts tests/unit/watchlist-service-update.spec.ts tests/unit/watchlist-management-alert-summary.spec.ts tests/unit/wencai-query-table.spec.ts --config vitest.config.mts"
+      command: "cd web/frontend && npx vitest run tests/unit/watchlist-service-watchlists.spec.ts tests/unit/watchlist-service-stocks.spec.ts tests/unit/watchlist-service-mutations.spec.ts tests/unit/watchlist-service-update.spec.ts tests/unit/watchlist-management-alert-summary.spec.ts tests/unit/wencai-query-table.spec.ts tests/unit/use-market-overview.spec.ts tests/unit/composables.test.ts --config vitest.config.mts"
+      required: true
+    - id: "frontend-type-ceiling"
+      command: "cd web/frontend && npm run test:type-ceiling"
       required: true
     - id: "diff-check"
       command: "git diff --check"
@@ -66,17 +75,18 @@ risk_and_rollback:
     - "If monitoring watchlist stocks drift from alert aggregation, the monitoring summary can silently undercount active alerts"
     - "If market quote payload parsing regresses, watchlist PnL and value calculations can fall back to stale entry prices"
     - "If any remaining generic watchlist route slips back in, monitoring and non-monitoring watchlist contracts will diverge again"
+    - "If the CI-unblock type fixes widen beyond the exact blocking files, this slice can become a hidden frontend cleanup batch"
   rollback_plan: "git revert <merge-commit-sha> if monitoring watchlist management regresses after merge"
 
 delivery:
   six_line_summary_required: true
   six_line_summary:
-    change_purpose: "finish the frontend migration from generic watchlist routes to monitoring-specific routes"
-    modified_scope: "watchlist service normalization logic, focused watchlist service tests, worker task report, and this PR task card"
+    change_purpose: "finish the frontend migration from generic watchlist routes to monitoring-specific routes and remove the frontend type-ceiling blockers that prevent the slice from merging"
+    modified_scope: "watchlist service normalization logic, focused watchlist and market/frontend type-fix files, worker task report, function-tree catalog, and this PR task card"
     dependency_changes: "none"
-    legacy_logic_impact: "monitoring watchlist reads and mutations now use monitoring APIs consistently while preserving alert and quote derived summary fields"
+    legacy_logic_impact: "monitoring watchlist reads and mutations now use monitoring APIs consistently while preserving alert and quote derived summary fields; unrelated frontend behavior is unchanged outside minimal type-safe rewrites"
     rollback_ready: "yes"
-    risk_and_rollback_point: "revert the slice if monitoring watchlist management loses alert counts, quote prices, or route compatibility"
+    risk_and_rollback_point: "revert the slice if monitoring watchlist management loses alert counts, quote prices, route compatibility, or if the type-fix follow-up introduces new frontend regressions"
 
 governance:
   phase: "phase_a_pr_hard_gate"
