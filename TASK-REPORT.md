@@ -1,5 +1,76 @@
 # TASK REPORT
 
+## [WORK] 2026-04-03 Watchlist Service Monitoring Routes（codex/watchlist-service-monitoring-routes-20260403）
+- Scope:
+  - 收敛 `web/frontend/src/api/services/watchlistService.ts`，移除剩余 generic `userApi` watchlist 契约依赖。
+  - 保持 monitoring 自选管理页与问财“加入自选”链路可用，不丢失 `alerts_count` 与 `current_price`。
+- Completed:
+  - `watchlistService.ts`
+    - `listWatchlists` 改走 `GET /api/v1/monitoring/watchlists`
+    - `createWatchlist` 改走 `POST /api/v1/monitoring/watchlists`
+    - `deleteWatchlist` 改走 `DELETE /api/v1/monitoring/watchlists/{id}`
+    - `addStockToWatchlist` 改走 `POST /api/v1/monitoring/watchlists/{id}/stocks`
+    - `removeStockFromWatchlist` 改走 `DELETE /api/v1/monitoring/watchlists/{id}/stocks/{stock_code}`
+    - `listWatchlistStocks` 改为聚合三条链路：
+      - `GET /api/v1/monitoring/watchlists/{id}/stocks`
+      - `GET /api/v1/monitoring/analysis/portfolio/{id}/alerts`
+      - `GET /api/v1/market/quotes`
+  - 新增/更新 focused unit tests：
+    - `web/frontend/tests/unit/watchlist-service-watchlists.spec.ts`
+    - `web/frontend/tests/unit/watchlist-service-stocks.spec.ts`
+    - `web/frontend/tests/unit/watchlist-service-mutations.spec.ts`
+  - 为通过当前 frontend type ceiling 门禁，补了 3 处最小前端类型修复：
+    - `web/frontend/src/views/TaskManagement.vue`
+      - 移除 JS 脚本块中非法的 `as const` 断言
+    - `web/frontend/src/components/market/WencaiQueryTable.vue`
+      - 对 `catch` 分支的 `error` 做 `Error` 窄化
+    - `web/frontend/src/composables/useMarket.ts`
+      - 让 `marketOverview` state 类型跟随 `marketApi.getMarketOverview()` 的真实返回，消除旧模型漂移
+  - 为通过当前 frontend full-unit 门禁，补了 3 处最小 CI 收尾修复：
+    - `web/frontend/tests/unit/config/task-management-style-normalization.spec.ts`
+      - 对齐 JS 脚本块现状，改为校验语义化 `tone` 字段而非过期的 `as const` 字面量
+    - `web/frontend/src/api/mockApiClient.ts`
+      - 删除残留的 mock GET request debug log，收敛到现有 console cleanup 规范
+    - `web/frontend/tests/unit/config/console-log-cleanup-batch-12.spec.ts`
+      - 修正与 `console-log-cleanup-batch-75` 冲突的过期断言，改为锁定 handler-based 文档示例
+  - 为通过当前 visual regression 门禁，补了 1 处最小可复现根因修复：
+    - `web/frontend/src/mock/backtestWorkbenchMock.ts`
+      - REAL workbench 配置不再用本地当前时钟生成 `lastUpdated` / `runLogs.ts`
+      - 改为优先使用策略 payload 中最新的 `updated_at` 派生稳定时间标签，空态回落到占位值
+    - `web/frontend/src/mock/__tests__/backtestWorkbenchMock.spec.ts`
+      - 新增测试锁定 backtest REAL mock 配置的稳定时间派生规则，防止 visual baseline 再次被秒级时间戳污染
+  - 同步治理边界：
+    - `governance/function-tree/catalog.yaml`
+    - `governance/mainline/task-cards/pr-52.yaml`
+  - 已提交代码变更：
+    - `7e3a10368 fix: align watchlist service with monitoring routes`
+    - `838a65eea governance: add task card for pr-52`
+- Verification Evidence:
+  - `cd web/frontend && npx vitest run src/mock/__tests__/backtestWorkbenchMock.spec.ts --config vitest.config.mts`
+    - 结果：`1 file, 3 tests passed`
+  - `cd web/frontend && npx vitest run tests/unit/config/task-management-style-normalization.spec.ts tests/unit/config/console-log-cleanup-batch-64.spec.ts tests/unit/config/console-log-cleanup-batch-12.spec.ts tests/unit/config/console-log-cleanup-batch-75.spec.ts --config vitest.config.mts`
+    - 结果：`4 files, 4 tests passed`
+  - `cd web/frontend && npx vitest run tests/unit/watchlist-service-watchlists.spec.ts tests/unit/watchlist-service-stocks.spec.ts tests/unit/watchlist-service-mutations.spec.ts tests/unit/watchlist-service-update.spec.ts tests/unit/watchlist-management-alert-summary.spec.ts tests/unit/wencai-query-table.spec.ts tests/unit/use-market-overview.spec.ts tests/unit/composables.test.ts --config vitest.config.mts`
+    - 结果：`8 files, 26 tests passed`
+  - `cd web/frontend && npx vitest run tests/unit/watchlist-service-watchlists.spec.ts tests/unit/watchlist-service-stocks.spec.ts tests/unit/watchlist-service-mutations.spec.ts tests/unit/watchlist-service-update.spec.ts tests/unit/watchlist-management-alert-summary.spec.ts tests/unit/wencai-query-table.spec.ts tests/unit/use-market-overview.spec.ts tests/unit/composables.test.ts tests/unit/config/task-management-style-normalization.spec.ts tests/unit/config/console-log-cleanup-batch-64.spec.ts tests/unit/config/console-log-cleanup-batch-12.spec.ts tests/unit/config/console-log-cleanup-batch-75.spec.ts --config vitest.config.mts`
+    - 结果：`12 files, 30 tests passed`
+  - `cd web/frontend && npm run test:type-ceiling`
+    - 结果：`TypeScript errors 0 are within configured ceiling 0`
+  - `cd web/frontend && FRONTEND_PORT=3020 FRONTEND_URL=http://127.0.0.1:3020 BACKEND_PORT=8020 VITE_API_BASE_URL=http://127.0.0.1:8020 USE_MOCK_DATA=true npx playwright test --config tests/visual/config/visual.config.ts tests/visual/components/charts/backtest.spec.ts --project=chromium`
+    - 结果：`2 passed`
+  - `git diff --check`
+  - `gitnexus_detect_changes(scope="staged")`
+    - 结果：`risk_level: low`
+  - `python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-52.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr52-mainline-gate-ci-unblockers.json`
+    - 结果：`pass=True`
+- Current Status:
+  - PR 已创建：`#52`
+  - governance task card 已补齐：`governance/mainline/task-cards/pr-52.yaml`
+  - full-unit CI unblockers 已在本地补齐并通过 focused + expanded 回归
+  - visual regression 根因已定位为 backtest REAL mock 配置里的秒级动态时间标签，并已补 deterministic guard
+  - mainline gate 已基于扩大的 CI unblock scope 再次通过
+  - 下一步：提交 CI unblock follow-up patch 并回推 PR 52
+
 ## [WORK] 2026-03-13 ArtDeco Pages Gate-0 + P0-A（dev-artdeco-pages-codex）
 - Scope:
   - 完成 `optimize-artdeco-pages` 的 `Gate-0` 首轮 SSOT 纠偏。

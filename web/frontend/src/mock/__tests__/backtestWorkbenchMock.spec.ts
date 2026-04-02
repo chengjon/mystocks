@@ -18,4 +18,26 @@ describe('backtestWorkbenchMock', () => {
     expect(config.backtestTasks).toHaveLength(0)
     expect(config.systemStatus).toContain('暂无策略')
   })
+
+  it('derives stable updated labels and log timestamps from strategy payload metadata', () => {
+    const config = createBacktestWorkbenchRealConfig([
+      {
+        strategy_id: 101,
+        strategy_name: 'Momentum Alpha',
+        status: 'active',
+        parameters: [],
+        updated_at: '2026-03-01T09:00:00Z'
+      },
+      {
+        strategy_id: 102,
+        strategy_name: 'Mean Reversion Beta',
+        status: 'paused',
+        parameters: [],
+        updated_at: '2026-03-01T09:05:00Z'
+      }
+    ])
+
+    expect(config.lastUpdated).toBe('2026-03-01 09:05')
+    expect(config.runLogs[0]?.ts).toBe('09:05:00')
+  })
 })

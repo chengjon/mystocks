@@ -52,7 +52,6 @@ const matchesMockRoute = (url: string, route: string): boolean => {
 export const mockApiClient = {
   async get<T = UnifiedResponse<unknown>>(url: string, config?: MockRequestConfig): Promise<T> {
     await simulateNetworkDelay();
-    console.log(`[Mock API] GET ${url}`, config);
 
     const params = getRequestParams(config);
 

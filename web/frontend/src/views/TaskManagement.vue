@@ -181,22 +181,22 @@ const stats = computed(() => [
   {
     title: '总任务数',
     value: tasks.value.length,
-    tone: 'info' as const
+    tone: 'info'
   },
   {
     title: '运行中',
     value: tasks.value.filter(t => t.status === 'running').length,
-    tone: 'success' as const
+    tone: 'success'
   },
   {
     title: '今日执行',
     value: executions.value.length,
-    tone: 'warning' as const
+    tone: 'warning'
   },
   {
     title: '成功率',
     value: calculateSuccessRate() + '%',
-    tone: 'success' as const
+    tone: 'success'
   }
 ])
 

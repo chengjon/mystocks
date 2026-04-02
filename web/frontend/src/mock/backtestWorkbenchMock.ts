@@ -43,6 +43,57 @@ export interface BacktestWorkbenchDataConfig {
   reportSummary: Array<{ label: string; value: string; variant: BacktestMetricVariantWithGold }>
 }
 
+const EMPTY_UPDATED_LABEL = '--'
+const EMPTY_LOG_TIME = '--:--:--'
+
+function toStableDateTimeLabel(rawValue: string | null | undefined): string | null {
+  if (!rawValue) {
+    return null
+  }
+
+  const parsed = new Date(rawValue)
+  if (Number.isNaN(parsed.getTime())) {
+    return null
+  }
+
+  const isoValue = parsed.toISOString()
+  return `${isoValue.slice(0, 10)} ${isoValue.slice(11, 16)}`
+}
+
+function toStableTimeLabel(rawValue: string | null | undefined): string | null {
+  if (!rawValue) {
+    return null
+  }
+
+  const parsed = new Date(rawValue)
+  if (Number.isNaN(parsed.getTime())) {
+    return null
+  }
+
+  return parsed.toISOString().slice(11, 19)
+}
+
+function getLatestStrategyUpdatedAt(strategies: StrategyConfig[]): string | null {
+  let latestUpdatedAt: string | null = null
+  let latestTimestamp = Number.NEGATIVE_INFINITY
+
+  for (const strategy of strategies) {
+    if (typeof strategy.updated_at !== 'string' || !strategy.updated_at.trim()) {
+      continue
+    }
+
+    const parsedTimestamp = new Date(strategy.updated_at).getTime()
+    if (Number.isNaN(parsedTimestamp) || parsedTimestamp <= latestTimestamp) {
+      continue
+    }
+
+    latestTimestamp = parsedTimestamp
+    latestUpdatedAt = strategy.updated_at
+  }
+
+  return latestUpdatedAt
+}
+
 function createBacktestTabs(): Array<{ key: string; label: string }> {
   return [
     { key: 'designer', label: '策略设计器' },
@@ -71,11 +122,10 @@ function createDefaultBenchmarkOptions(): BacktestOption[] {
 }
 
 function createEmptyBacktestWorkbenchConfig(): BacktestWorkbenchDataConfig {
-  const now = new Date()
   return {
     tabs: createBacktestTabs(),
     systemStatus: '运行中 · REAL 数据源待同步',
-    lastUpdated: now.toLocaleString(),
+    lastUpdated: EMPTY_UPDATED_LABEL,
     summary: {
       totalRuns: 0,
       winRate: 0,
@@ -114,7 +164,7 @@ function createEmptyBacktestWorkbenchConfig(): BacktestWorkbenchDataConfig {
         { name: '绩效计算', status: 'queued', statusClass: 'queued' }
       ]
     },
-    runLogs: [{ ts: now.toTimeString().slice(0, 8), msg: 'REAL 模式已就绪，等待策略数据。' }],
+    runLogs: [{ ts: EMPTY_LOG_TIME, msg: 'REAL 模式已就绪，等待策略数据。' }],
     optimizeRows: [],
     optimizeHints: [
       { label: '建议仓位上限', value: '--', variant: '' },
@@ -227,7 +277,9 @@ function mapStatusClass(status?: StrategyStatus): BacktestStatusClass {
 
 export function createBacktestWorkbenchRealConfig(strategies: StrategyConfig[]): BacktestWorkbenchDataConfig {
   const baseConfig = createEmptyBacktestWorkbenchConfig()
-  const currentTimestamp = new Date().toLocaleString()
+  const latestUpdatedAt = getLatestStrategyUpdatedAt(strategies)
+  const stableUpdatedLabel = toStableDateTimeLabel(latestUpdatedAt) ?? EMPTY_UPDATED_LABEL
+  const stableLogTime = toStableTimeLabel(latestUpdatedAt) ?? EMPTY_LOG_TIME
   const getStrategyDisplayName = (item: StrategyConfig, index: number) => item.strategy_name || `策略 ${index + 1}`
   const getParametersCount = (item: StrategyConfig) => item.parameters?.length ?? 0
   const getStrategyStatus = (item: StrategyConfig) => item.status || 'draft'
@@ -235,8 +287,7 @@ export function createBacktestWorkbenchRealConfig(strategies: StrategyConfig[]):
   if (!strategies.length) {
     return {
       ...baseConfig,
-      systemStatus: '运行中 · REAL 策略接口可用（暂无策略）',
-      lastUpdated: currentTimestamp
+      systemStatus: '运行中 · REAL 策略接口可用（暂无策略）'
     }
   }
 
@@ -274,7 +325,7 @@ export function createBacktestWorkbenchRealConfig(strategies: StrategyConfig[]):
   return {
     ...baseConfig,
     systemStatus: '运行中 · REAL 策略接口可用',
-    lastUpdated: currentTimestamp,
+    lastUpdated: stableUpdatedLabel,
     summary: {
       totalRuns: strategies.length,
       winRate: Number(((activeCount / strategies.length) * 100).toFixed(1)),
@@ -317,7 +368,7 @@ export function createBacktestWorkbenchRealConfig(strategies: StrategyConfig[]):
     ],
     runLogs: [
       {
-        ts: new Date().toTimeString().slice(0, 8),
+        ts: stableLogTime,
         msg: `REAL 模式已接入，策略列表同步完成（${strategies.length} 条）。`
       }
     ]

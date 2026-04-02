@@ -1,0 +1,115 @@
+version: "v0.2"
+
+task:
+  id: "pr-52"
+  title: "align watchlist service with monitoring routes"
+  owner: "main"
+  created_at: "2026-04-03"
+
+mainline:
+  id: "L1-watchlist-service-monitoring-routes"
+  objective: "move the remaining frontend watchlist service flows onto monitoring routes and clear the frontend CI blockers that gate this slice"
+  milestone_id: "L3-mainline-follow-up"
+  slice_id: "L4-watchlist-service-monitoring-routes"
+
+classification:
+  task_type: "fix"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "domain-06"
+  node_id: "domain-06-node-01"
+  affected_entrypoints:
+    - "frontend"
+    - "tests"
+  update_status: "required"
+  secondary_domains:
+    - "domain-03"
+    - "domain-01"
+    - "domain-08"
+  exemption_reason: ""
+
+scope:
+  allowed_paths:
+    - "TASK-REPORT.md"
+    - "governance/function-tree/catalog.yaml"
+    - "governance/mainline/task-cards/pr-52.yaml"
+    - "web/frontend/src/api/mockApiClient.ts"
+    - "web/frontend/src/api/services/watchlistService.ts"
+    - "web/frontend/src/components/market/WencaiQueryTable.vue"
+    - "web/frontend/src/mock/__tests__/backtestWorkbenchMock.spec.ts"
+    - "web/frontend/src/mock/backtestWorkbenchMock.ts"
+    - "web/frontend/src/composables/useMarket.ts"
+    - "web/frontend/src/views/TaskManagement.vue"
+    - "web/frontend/tests/unit/config/console-log-cleanup-batch-12.spec.ts"
+    - "web/frontend/tests/unit/config/console-log-cleanup-batch-64.spec.ts"
+    - "web/frontend/tests/unit/config/task-management-style-normalization.spec.ts"
+    - "web/frontend/tests/unit/watchlist-service-watchlists.spec.ts"
+    - "web/frontend/tests/unit/watchlist-service-stocks.spec.ts"
+    - "web/frontend/tests/unit/watchlist-service-mutations.spec.ts"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No backend monitoring route changes"
+  - "No watchlist UI redesign"
+  - "No alert CRUD or portfolio analytics expansion"
+  - "No broader frontend type-debt sweep beyond the blockers required to unstick this PR"
+
+acceptance:
+  checks:
+    - id: "frontend-ci-unblockers"
+      command: "cd web/frontend && npx vitest run tests/unit/config/task-management-style-normalization.spec.ts tests/unit/config/console-log-cleanup-batch-64.spec.ts tests/unit/config/console-log-cleanup-batch-12.spec.ts --config vitest.config.mts"
+      required: true
+    - id: "backtest-visual-determinism-guard"
+      command: "cd web/frontend && npx vitest run src/mock/__tests__/backtestWorkbenchMock.spec.ts --config vitest.config.mts"
+      required: true
+    - id: "watchlist-service-regression"
+      command: "cd web/frontend && npx vitest run tests/unit/watchlist-service-watchlists.spec.ts tests/unit/watchlist-service-stocks.spec.ts tests/unit/watchlist-service-mutations.spec.ts tests/unit/watchlist-service-update.spec.ts tests/unit/watchlist-management-alert-summary.spec.ts tests/unit/wencai-query-table.spec.ts tests/unit/use-market-overview.spec.ts tests/unit/composables.test.ts --config vitest.config.mts"
+      required: true
+    - id: "frontend-type-ceiling"
+      command: "cd web/frontend && npm run test:type-ceiling"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-52.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr52-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If monitoring watchlist stocks drift from alert aggregation, the monitoring summary can silently undercount active alerts"
+    - "If market quote payload parsing regresses, watchlist PnL and value calculations can fall back to stale entry prices"
+    - "If any remaining generic watchlist route slips back in, monitoring and non-monitoring watchlist contracts will diverge again"
+    - "If the CI-unblock type fixes widen beyond the exact blocking files, this slice can become a hidden frontend cleanup batch"
+    - "If backtest REAL mock metadata keeps using local clock timestamps, visual baselines can keep failing nondeterministically even when UI structure is unchanged"
+  rollback_plan: "git revert <merge-commit-sha> if monitoring watchlist management regresses after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "finish the frontend migration from generic watchlist routes to monitoring-specific routes and remove the frontend CI blockers that prevent the slice from merging"
+    modified_scope: "watchlist service normalization logic, focused frontend CI-unblock source and test files including backtest visual determinism guards, worker task report, function-tree catalog, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "monitoring watchlist reads and mutations now use monitoring APIs consistently while preserving alert and quote derived summary fields; unrelated frontend behavior is unchanged outside minimal type-safe rewrites"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the slice if monitoring watchlist management loses alert counts, quote prices, route compatibility, or if the type-fix follow-up introduces new frontend regressions"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-03T00:00:00Z"
+    approval_note: "localized frontend watchlist service contract fix with focused regression coverage"
+    secondary_approved: false

@@ -13,9 +13,12 @@ describe('TaskManagement style normalization', () => {
 
     expect(viewSource).toContain("'stat-icon'")
     expect(viewSource).toContain('`stat-icon--${stat.tone}`')
-    expect(viewSource).toContain("tone: 'info' as const")
-    expect(viewSource).toContain("tone: 'success' as const")
-    expect(viewSource).toContain("tone: 'warning' as const")
+    expect(viewSource).toContain("tone: 'info'")
+    expect(viewSource).toContain("tone: 'success'")
+    expect(viewSource).toContain("tone: 'warning'")
+    expect(viewSource).not.toContain("tone: 'info' as const")
+    expect(viewSource).not.toContain("tone: 'success' as const")
+    expect(viewSource).not.toContain("tone: 'warning' as const")
 
     expect(viewSource).not.toContain(":style=\"{ borderColor: stat.color }\"")
     expect(viewSource).not.toContain("color: '#409eff'")
