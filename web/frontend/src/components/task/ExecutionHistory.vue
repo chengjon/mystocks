@@ -221,7 +221,7 @@ const handleDownloadLog = () => {
   .result-cell {
     .result-preview {
       cursor: pointer;
-      color: #409eff;
+      color: var(--color-info);
       text-decoration: underline;
     }
   }
