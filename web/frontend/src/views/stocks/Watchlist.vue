@@ -264,6 +264,7 @@
         ElMessage
     } from 'element-plus'
     import { Star, RefreshRight, Search } from '@element-plus/icons-vue'
+    import { useDashboardWatchlist } from '@/composables/useDashboardWatchlist'
 
     interface Stock {
         symbol: string
@@ -279,8 +280,15 @@
         lastUpdate: string
     }
 
+    const {
+        loading: watchlistLoading,
+        watchlistStocks: dashboardWatchlistStocks,
+        loadWatchlist,
+        removeFromWatchlist: removeDashboardWatchlistStock
+    } = useDashboardWatchlist()
+
     // State
-    const loading = ref(false)
+    const loading = watchlistLoading
     const searchQuery = ref('')
     const sortBy = ref('symbol')
     const filterBy = ref('all')
@@ -295,48 +303,33 @@
         totalValue: 0
     })
 
-    // Mock watchlist data
-    const watchlistStocks = ref<Stock[]>([
-        {
-            symbol: '000001',
-            name: '平安银行',
-            price: 12.85,
-            change: 0.15,
-            changePercent: 1.18,
-            volume: 45000000,
-            marketCap: 234567890000,
-            pe: 8.5,
-            favorite: true,
-            group: 'favorites',
-            lastUpdate: '2025-01-12 15:00:00'
-        },
-        {
-            symbol: '000002',
-            name: '万科A',
-            price: 18.95,
-            change: -0.25,
-            changePercent: -1.3,
-            volume: 32000000,
-            marketCap: 189456789000,
-            pe: 12.3,
+    const watchlistStocks = ref<Stock[]>([])
+
+    const syncWatchlistRows = (): void => {
+        watchlistStocks.value = dashboardWatchlistStocks.value.map(stock => ({
+            symbol: stock.symbol,
+            name: stock.name,
+            price: stock.price,
+            change: stock.change,
+            changePercent: stock.change,
+            volume: stock.volume ?? 0,
+            marketCap: 0,
+            pe: 0,
             favorite: false,
             group: 'favorites',
-            lastUpdate: '2025-01-12 15:00:00'
-        },
-        {
-            symbol: '600036',
-            name: '招商银行',
-            price: 35.6,
-            change: 0.8,
-            changePercent: 2.3,
-            volume: 58000000,
-            marketCap: 789123456000,
-            pe: 9.2,
-            favorite: true,
-            group: 'favorites',
-            lastUpdate: '2025-01-12 15:00:00'
-        }
-    ])
+            lastUpdate: new Date().toISOString()
+        }))
+    }
+
+    const updateStats = (): void => {
+        watchlistStats.totalStocks = watchlistStocks.value.length
+        watchlistStats.gainers = watchlistStocks.value.filter(s => s.change > 0).length
+        watchlistStats.losers = watchlistStocks.value.filter(s => s.change < 0).length
+        watchlistStats.totalValue = watchlistStocks.value.reduce(
+            (sum, stock) => sum + stock.price * stock.volume,
+            0
+        )
+    }
 
     // Computed
     const filteredStocks = computed(() => {
@@ -379,25 +372,14 @@
 
     // Methods
     const refreshAllData = async () => {
-        loading.value = true
         try {
-            // TODO: Implement actual API call
-            await new Promise(resolve => setTimeout(resolve, 1000))
-
-            // Update stats
-            watchlistStats.totalStocks = watchlistStocks.value.length
-            watchlistStats.gainers = watchlistStocks.value.filter(s => s.change > 0).length
-            watchlistStats.losers = watchlistStocks.value.filter(s => s.change < 0).length
-            watchlistStats.totalValue = watchlistStocks.value.reduce(
-                (sum, stock) => sum + stock.price * stock.volume,
-                0
-            )
+            await loadWatchlist()
+            syncWatchlistRows()
+            updateStats()
 
             ElMessage.success('Data refreshed successfully')
         } catch (_error) {
             ElMessage.error('Failed to refresh data')
-        } finally {
-            loading.value = false
         }
     }
 
@@ -406,11 +388,14 @@
         ElMessage.success(`${stock.symbol} ${stock.favorite ? 'added to' : 'removed from'} favorites`)
     }
 
-    const removeFromWatchlist = (stock: Stock) => {
-        const index = watchlistStocks.value.findIndex(s => s.symbol === stock.symbol)
-        if (index > -1) {
-            watchlistStocks.value.splice(index, 1)
+    const removeFromWatchlist = async (stock: Stock) => {
+        try {
+            await removeDashboardWatchlistStock(stock.symbol)
+            syncWatchlistRows()
+            updateStats()
             ElMessage.success(`${stock.symbol} removed from watchlist`)
+        } catch (_error) {
+            ElMessage.error('Failed to remove stock from watchlist')
         }
     }
 
