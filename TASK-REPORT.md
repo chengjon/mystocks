@@ -33,6 +33,12 @@
       - 删除残留的 mock GET request debug log，收敛到现有 console cleanup 规范
     - `web/frontend/tests/unit/config/console-log-cleanup-batch-12.spec.ts`
       - 修正与 `console-log-cleanup-batch-75` 冲突的过期断言，改为锁定 handler-based 文档示例
+  - 为通过当前 visual regression 门禁，补了 1 处最小可复现根因修复：
+    - `web/frontend/src/mock/backtestWorkbenchMock.ts`
+      - REAL workbench 配置不再用本地当前时钟生成 `lastUpdated` / `runLogs.ts`
+      - 改为优先使用策略 payload 中最新的 `updated_at` 派生稳定时间标签，空态回落到占位值
+    - `web/frontend/src/mock/__tests__/backtestWorkbenchMock.spec.ts`
+      - 新增测试锁定 backtest REAL mock 配置的稳定时间派生规则，防止 visual baseline 再次被秒级时间戳污染
   - 同步治理边界：
     - `governance/function-tree/catalog.yaml`
     - `governance/mainline/task-cards/pr-52.yaml`
@@ -40,6 +46,8 @@
     - `7e3a10368 fix: align watchlist service with monitoring routes`
     - `838a65eea governance: add task card for pr-52`
 - Verification Evidence:
+  - `cd web/frontend && npx vitest run src/mock/__tests__/backtestWorkbenchMock.spec.ts --config vitest.config.mts`
+    - 结果：`1 file, 3 tests passed`
   - `cd web/frontend && npx vitest run tests/unit/config/task-management-style-normalization.spec.ts tests/unit/config/console-log-cleanup-batch-64.spec.ts tests/unit/config/console-log-cleanup-batch-12.spec.ts tests/unit/config/console-log-cleanup-batch-75.spec.ts --config vitest.config.mts`
     - 结果：`4 files, 4 tests passed`
   - `cd web/frontend && npx vitest run tests/unit/watchlist-service-watchlists.spec.ts tests/unit/watchlist-service-stocks.spec.ts tests/unit/watchlist-service-mutations.spec.ts tests/unit/watchlist-service-update.spec.ts tests/unit/watchlist-management-alert-summary.spec.ts tests/unit/wencai-query-table.spec.ts tests/unit/use-market-overview.spec.ts tests/unit/composables.test.ts --config vitest.config.mts`
@@ -48,6 +56,8 @@
     - 结果：`12 files, 30 tests passed`
   - `cd web/frontend && npm run test:type-ceiling`
     - 结果：`TypeScript errors 0 are within configured ceiling 0`
+  - `cd web/frontend && FRONTEND_PORT=3020 FRONTEND_URL=http://127.0.0.1:3020 BACKEND_PORT=8020 VITE_API_BASE_URL=http://127.0.0.1:8020 USE_MOCK_DATA=true npx playwright test --config tests/visual/config/visual.config.ts tests/visual/components/charts/backtest.spec.ts --project=chromium`
+    - 结果：`2 passed`
   - `git diff --check`
   - `gitnexus_detect_changes(scope="staged")`
     - 结果：`risk_level: low`
@@ -57,6 +67,7 @@
   - PR 已创建：`#52`
   - governance task card 已补齐：`governance/mainline/task-cards/pr-52.yaml`
   - full-unit CI unblockers 已在本地补齐并通过 focused + expanded 回归
+  - visual regression 根因已定位为 backtest REAL mock 配置里的秒级动态时间标签，并已补 deterministic guard
   - mainline gate 已基于扩大的 CI unblock scope 再次通过
   - 下一步：提交 CI unblock follow-up patch 并回推 PR 52
 

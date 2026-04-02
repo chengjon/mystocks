@@ -226,16 +226,20 @@ domains:
         label: "3.3 回测分析"
         coverage_paths:
           - "src/backtesting/**"
+          - "web/frontend/src/mock/backtestWorkbenchMock.ts"
           - "web/frontend/src/views/artdeco-pages/strategy-tabs/**"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
           frontend:
+            - "web/frontend/src/mock/backtestWorkbenchMock.ts"
             - "web/frontend/src/views/artdeco-pages/strategy-tabs/**"
           core:
             - "src/backtesting/**"
           tests:
             - "tests/e2e/strategy-management.spec.ts"
+            - "web/frontend/src/mock/__tests__/backtestWorkbenchMock.spec.ts"
+            - "web/frontend/tests/visual/components/charts/backtest.spec.ts"
           operations:
             - "docs/operations/OPS_MANUAL.md"
 

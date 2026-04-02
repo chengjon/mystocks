@@ -30,6 +30,7 @@ function_tree:
     - "tests"
   update_status: "required"
   secondary_domains:
+    - "domain-03"
     - "domain-01"
     - "domain-08"
   exemption_reason: ""
@@ -42,6 +43,8 @@ scope:
     - "web/frontend/src/api/mockApiClient.ts"
     - "web/frontend/src/api/services/watchlistService.ts"
     - "web/frontend/src/components/market/WencaiQueryTable.vue"
+    - "web/frontend/src/mock/__tests__/backtestWorkbenchMock.spec.ts"
+    - "web/frontend/src/mock/backtestWorkbenchMock.ts"
     - "web/frontend/src/composables/useMarket.ts"
     - "web/frontend/src/views/TaskManagement.vue"
     - "web/frontend/tests/unit/config/console-log-cleanup-batch-12.spec.ts"
@@ -64,6 +67,9 @@ acceptance:
     - id: "frontend-ci-unblockers"
       command: "cd web/frontend && npx vitest run tests/unit/config/task-management-style-normalization.spec.ts tests/unit/config/console-log-cleanup-batch-64.spec.ts tests/unit/config/console-log-cleanup-batch-12.spec.ts --config vitest.config.mts"
       required: true
+    - id: "backtest-visual-determinism-guard"
+      command: "cd web/frontend && npx vitest run src/mock/__tests__/backtestWorkbenchMock.spec.ts --config vitest.config.mts"
+      required: true
     - id: "watchlist-service-regression"
       command: "cd web/frontend && npx vitest run tests/unit/watchlist-service-watchlists.spec.ts tests/unit/watchlist-service-stocks.spec.ts tests/unit/watchlist-service-mutations.spec.ts tests/unit/watchlist-service-update.spec.ts tests/unit/watchlist-management-alert-summary.spec.ts tests/unit/wencai-query-table.spec.ts tests/unit/use-market-overview.spec.ts tests/unit/composables.test.ts --config vitest.config.mts"
       required: true
@@ -83,13 +89,14 @@ risk_and_rollback:
     - "If market quote payload parsing regresses, watchlist PnL and value calculations can fall back to stale entry prices"
     - "If any remaining generic watchlist route slips back in, monitoring and non-monitoring watchlist contracts will diverge again"
     - "If the CI-unblock type fixes widen beyond the exact blocking files, this slice can become a hidden frontend cleanup batch"
+    - "If backtest REAL mock metadata keeps using local clock timestamps, visual baselines can keep failing nondeterministically even when UI structure is unchanged"
   rollback_plan: "git revert <merge-commit-sha> if monitoring watchlist management regresses after merge"
 
 delivery:
   six_line_summary_required: true
   six_line_summary:
     change_purpose: "finish the frontend migration from generic watchlist routes to monitoring-specific routes and remove the frontend CI blockers that prevent the slice from merging"
-    modified_scope: "watchlist service normalization logic, focused frontend CI-unblock source and test files, worker task report, function-tree catalog, and this PR task card"
+    modified_scope: "watchlist service normalization logic, focused frontend CI-unblock source and test files including backtest visual determinism guards, worker task report, function-tree catalog, and this PR task card"
     dependency_changes: "none"
     legacy_logic_impact: "monitoring watchlist reads and mutations now use monitoring APIs consistently while preserving alert and quote derived summary fields; unrelated frontend behavior is unchanged outside minimal type-safe rewrites"
     rollback_ready: "yes"
