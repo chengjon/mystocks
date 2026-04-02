@@ -106,10 +106,10 @@ const handleDelete = () => {
 
 <style scoped>
 .strategy-card {
-  border: 1px solid #e8e8e8;
+  border: 1px solid var(--color-border-light);
   border-radius: 8px;
   padding: 16px;
-  background: white;
+  background: var(--color-bg-primary);
   transition: all 0.3s ease;
 }
 
@@ -129,7 +129,7 @@ const handleDelete = () => {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  color: #262626;
+  color: var(--color-text-primary);
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -160,7 +160,7 @@ const handleDelete = () => {
 }
 
 .description {
-  color: #737373;
+  color: var(--color-text-tertiary);
   margin-bottom: 12px;
   line-height: 1.5;
   display: -webkit-box;
@@ -174,12 +174,12 @@ const handleDelete = () => {
   gap: 8px;
   margin-bottom: 12px;
   font-size: 12px;
-  color: #737373;
+  color: var(--color-text-tertiary);
 }
 
 .type-badge {
   padding: 2px 8px;
-  background-color: #f0f0f0;
+  background-color: var(--color-bg-secondary);
   border-radius: 4px;
   font-size: 12px;
 }
@@ -203,7 +203,7 @@ const handleDelete = () => {
 
 .metric .label {
   font-size: 11px;
-  color: #737373;
+  color: var(--color-text-tertiary);
   margin-bottom: 4px;
   font-weight: 500;
 }
@@ -211,7 +211,7 @@ const handleDelete = () => {
 .metric .value {
   font-size: 16px;
   font-weight: 600;
-  color: #262626;
+  color: var(--color-text-primary);
 }
 
 .metric .value.positive {
