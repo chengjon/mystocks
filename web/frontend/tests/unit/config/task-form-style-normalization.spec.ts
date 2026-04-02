@@ -15,8 +15,10 @@ describe('TaskForm style normalization', () => {
 
     expect(source).toContain('.task-form-control {')
     expect(source).toContain('.task-form-hint {')
+    expect(source).toContain('color: var(--color-info);')
 
     expect(source).not.toContain('style="width: 100%"')
     expect(source).not.toContain('style="margin-top: 8px; color: #909399; font-size: 12px"')
+    expect(source).not.toContain('color: #409eff;')
   })
 })
