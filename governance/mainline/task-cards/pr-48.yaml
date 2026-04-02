@@ -1,0 +1,85 @@
+version: "v0.2"
+
+task:
+  id: "pr-48"
+  title: "bridge watchlist service stocks"
+  owner: "main"
+  created_at: "2026-04-02"
+
+mainline:
+  id: "L1-watchlist-service-stocks-bridge"
+  objective: "replace the watchlist service stock placeholder with a real bridge from watchlist detail data"
+  milestone_id: "L3-mainline-follow-up"
+  slice_id: "L4-watchlist-service-stocks-bridge"
+
+classification:
+  task_type: "fix"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "frontend"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "localized-watchlist-service-bugfix-with-focused-regression"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-48.yaml"
+    - "web/frontend/src/api/services/watchlistService.ts"
+    - "web/frontend/tests/unit/watchlist-service-stocks.spec.ts"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No monitoring portfolio page refactor"
+  - "No watchlist API contract expansion"
+
+acceptance:
+  checks:
+    - id: "watchlist-service-tests"
+      command: "cd web/frontend && npx vitest run tests/unit/watchlist-service-stocks.spec.ts tests/unit/wencai-query-table.spec.ts --config vitest.config.mts"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-48.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If stock mapping is wrong, monitoring watchlist drawers can render incomplete rows or misleading price fields"
+    - "If the bridge breaks existing service consumers, Wencai watchlist insertion feedback can regress"
+  rollback_plan: "git revert <merge-commit-sha> if watchlist stock loading regresses after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "replace the empty watchlist stock placeholder with a real watchlist detail bridge"
+    modified_scope: "watchlist service, one focused service regression test, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "runtime behavior changes only for watchlist stock loading through watchlistService"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the slice if watchlist stock loading or Wencai service usage regresses"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-02T00:00:00Z"
+    approval_note: "localized watchlist service bugfix with dedicated regression coverage"
+    secondary_approved: false
