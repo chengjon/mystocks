@@ -88,8 +88,7 @@ const winRate = computed(() => {
 })
 
 const activeAlerts = computed(() => {
-  // 计算活跃告警数量（模拟数据）
-  return Math.floor(Math.random() * 5)
+  return watchlistStocks.value.reduce((sum, stock) => sum + (stock.alerts_count || 0), 0)
 })
 
 // 工具函数
