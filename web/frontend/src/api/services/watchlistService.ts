@@ -43,12 +43,21 @@ interface ServiceResponse<T> {
 
 function normalizeWatchlist(raw: unknown, index: number): WatchlistRecord {
   const record = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>
+  const statistics = (
+    record.statistics && typeof record.statistics === 'object'
+      ? record.statistics
+      : {}
+  ) as Record<string, unknown>
+  const inlineStockCount = Array.isArray(record.stocks) ? record.stocks.length : 0
+  const explicitStockCount = toOptionalNumber(record.stocks_count)
+  const derivedStockCount = toOptionalNumber(statistics.totalStocks)
+
   return {
     id: Number(record.id ?? index + 1),
     name: typeof record.name === 'string' ? record.name : `Watchlist ${index + 1}`,
     watchlist_type: typeof record.watchlist_type === 'string' ? record.watchlist_type : 'manual',
     risk_profile: (record.risk_profile as { risk_tolerance?: number } | undefined) ?? {},
-    stocks_count: typeof record.stocks_count === 'number' ? record.stocks_count : 0,
+    stocks_count: explicitStockCount ?? (derivedStockCount && derivedStockCount > 0 ? derivedStockCount : inlineStockCount),
   }
 }
 
