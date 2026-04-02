@@ -9,6 +9,7 @@ export interface WatchlistRecord {
 }
 
 export interface WatchlistStockRecord {
+  id?: number
   stock_code: string
   entry_price?: number | null
   current_price?: number | null
@@ -50,6 +51,53 @@ function normalizeWatchlist(raw: unknown, index: number): WatchlistRecord {
   }
 }
 
+function toOptionalNumber(value: unknown): number | undefined {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value
+  }
+
+  if (typeof value === 'string' && value.trim() !== '') {
+    const parsed = Number(value)
+    if (Number.isFinite(parsed)) {
+      return parsed
+    }
+  }
+
+  return undefined
+}
+
+function normalizeWatchlistStock(raw: unknown, index: number): WatchlistStockRecord {
+  const record = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>
+  const customFields = (
+    record.customFields && typeof record.customFields === 'object'
+      ? record.customFields
+      : {}
+  ) as Record<string, unknown>
+
+  return {
+    id: Number(record.id ?? index + 1),
+    stock_code:
+      typeof record.symbol === 'string'
+        ? record.symbol
+        : typeof record.stock_code === 'string'
+          ? record.stock_code
+          : '',
+    entry_price: toOptionalNumber(customFields.entry_price ?? record.entry_price ?? record.entryPrice),
+    current_price: toOptionalNumber(record.currentPrice ?? record.current_price),
+    entry_reason:
+      typeof record.notes === 'string'
+        ? record.notes
+        : typeof record.entry_reason === 'string'
+          ? record.entry_reason
+          : null,
+    stop_loss_price: toOptionalNumber(
+      customFields.stop_loss_price ?? record.stop_loss_price ?? record.stopLossPrice,
+    ),
+    target_price: toOptionalNumber(customFields.target_price ?? record.target_price ?? record.targetPrice),
+    weight: toOptionalNumber(customFields.weight ?? record.weight),
+  }
+}
+
 export const watchlistService = {
   async listWatchlists(): Promise<ServiceResponse<WatchlistRecord[]>> {
     const data = await userApi.getWatchlists()
@@ -59,8 +107,14 @@ export const watchlistService = {
     }
   },
 
-  async listWatchlistStocks(_watchlistId: number): Promise<ServiceResponse<WatchlistStockRecord[]>> {
-    return { success: true, data: [] }
+  async listWatchlistStocks(watchlistId: number): Promise<ServiceResponse<WatchlistStockRecord[]>> {
+    const data = await userApi.getWatchlist(String(watchlistId))
+    const stocks = Array.isArray(data.stocks) ? data.stocks : []
+
+    return {
+      success: true,
+      data: stocks.map((item, index) => normalizeWatchlistStock(item, index)),
+    }
   },
 
   async createWatchlist(payload: CreateWatchlistPayload): Promise<ServiceResponse<WatchlistRecord>> {
