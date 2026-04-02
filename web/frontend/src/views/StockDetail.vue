@@ -264,6 +264,8 @@ interface _KlineDataItem {
   close: number
   low: number
   high: number
+  volume: number
+  amount?: number
 }
 
 interface _IntradayDataItem {
@@ -328,6 +330,112 @@ const tradeForm: Ref<TradeForm> = ref({
   quantity: ''
 })
 
+const roundMetric = (value: number): number => Number(value.toFixed(2))
+
+const resolveSummaryDateRange = (period: TimeRange, now: Date = new Date()): { startDate: string; endDate: string } => {
+  const dayMap: Record<TimeRange, number> = {
+    '1w': 7,
+    '1m': 30,
+    '3m': 90,
+    '6m': 180,
+    '1y': 365
+  }
+
+  const end = new Date(now)
+  const start = new Date(now)
+  start.setDate(start.getDate() - dayMap[period])
+
+  const toDateString = (value: Date): string => value.toISOString().slice(0, 10)
+
+  return {
+    startDate: toDateString(start),
+    endDate: toDateString(end)
+  }
+}
+
+const normalizeSummaryRows = (payload: unknown): _KlineDataItem[] => {
+  const rows = Array.isArray(payload)
+    ? payload
+    : payload && typeof payload === 'object' && Array.isArray((payload as { data?: unknown[] }).data)
+      ? (payload as { data: unknown[] }).data
+      : []
+
+  return rows.map((row, index) => {
+    const item = (row && typeof row === 'object' ? row : {}) as Record<string, unknown>
+    return {
+      date: String(item.date ?? item.datetime ?? index),
+      open: Number(item.open ?? 0),
+      close: Number(item.close ?? 0),
+      low: Number(item.low ?? 0),
+      high: Number(item.high ?? 0),
+      volume: Number(item.volume ?? 0),
+      amount: Number(item.amount ?? 0)
+    }
+  })
+}
+
+const calculateTradingSummary = (rows: _KlineDataItem[]): TradingSummary => {
+  if (rows.length === 0) {
+    return {
+      price_change: 0,
+      price_change_pct: 0,
+      highest_price: 0,
+      lowest_price: 0,
+      total_volume: 0,
+      total_turnover: 0,
+      volatility: 0,
+      win_rate: 0,
+      sharpe_ratio: 0,
+      max_drawdown: 0
+    }
+  }
+
+  const first = rows[0]
+  const last = rows[rows.length - 1]
+  const priceChange = last.close - first.close
+  const priceChangePct = first.close ? (priceChange / first.close) * 100 : 0
+  const highestPrice = Math.max(...rows.map((row) => row.high))
+  const lowestPrice = Math.min(...rows.map((row) => row.low))
+  const totalVolume = rows.reduce((sum, row) => sum + row.volume, 0)
+  const totalTurnover = rows.reduce((sum, row) => sum + (row.amount || row.close * row.volume), 0)
+
+  const returns = rows.slice(1).map((row, index) => {
+    const previousClose = rows[index].close
+    return previousClose ? (row.close - previousClose) / previousClose : 0
+  })
+
+  const meanReturn = returns.length > 0 ? returns.reduce((sum, value) => sum + value, 0) / returns.length : 0
+  const variance = returns.length > 0
+    ? returns.reduce((sum, value) => sum + Math.pow(value - meanReturn, 2), 0) / returns.length
+    : 0
+  const standardDeviation = Math.sqrt(variance)
+  const volatility = standardDeviation * 100
+  const winRate = returns.length > 0 ? (returns.filter((value) => value > 0).length / returns.length) * 100 : 0
+  const sharpeRatio = standardDeviation > 0 ? (meanReturn / standardDeviation) * Math.sqrt(returns.length) : 0
+
+  let peak = rows[0].close
+  let maxDrawdown = 0
+  for (const row of rows) {
+    peak = Math.max(peak, row.close)
+    if (peak > 0) {
+      maxDrawdown = Math.min(maxDrawdown, (row.close - peak) / peak)
+    }
+  }
+
+  return {
+    price_change: roundMetric(priceChange),
+    price_change_pct: roundMetric(priceChangePct),
+    highest_price: roundMetric(highestPrice),
+    lowest_price: roundMetric(lowestPrice),
+    total_volume: Math.round(totalVolume),
+    total_turnover: Math.round(totalTurnover),
+    volatility: roundMetric(volatility),
+    win_rate: roundMetric(winRate),
+    sharpe_ratio: roundMetric(sharpeRatio),
+    max_drawdown: roundMetric(maxDrawdown * 100)
+  }
+}
+
 const loadStockDetail = async (): Promise<void> => {
   try {
     const symbol = route.params.symbol as string || route.query.symbol as string
@@ -387,20 +495,20 @@ const loadTradingSummary = async (): Promise<void> => {
     const symbol = stockDetail.value.symbol
     if (!symbol) return
 
-    // TODO: Implement getTradingSummary API endpoint
-    // For now, use mock data as the API is not yet available
-    tradingSummary.value = {
-      price_change: parseFloat((Math.random() * 20 - 10).toFixed(2)),
-      price_change_pct: parseFloat((Math.random() * 10 - 5).toFixed(2)),
-      highest_price: parseFloat((parseFloat(stockDetail.value.price as string) + Math.random() * 10).toFixed(2)),
-      lowest_price: parseFloat((parseFloat(stockDetail.value.price as string) - Math.random() * 10).toFixed(2)),
-      total_volume: Math.floor(Math.random() * 10000000 + 1000000),
-      total_turnover: Math.floor(Math.random() * 100000000 + 10000000),
-      volatility: parseFloat((Math.random() * 20 + 5).toFixed(2)),
-      win_rate: parseFloat((Math.random() * 40 + 30).toFixed(2)),
-      sharpe_ratio: parseFloat((Math.random() * 4 - 2).toFixed(2)),
-      max_drawdown: parseFloat((Math.random() * -20 - 5).toFixed(2))
+    const { startDate, endDate } = resolveSummaryDateRange(summaryPeriod.value)
+    const response = await dataApi.getKline({
+      stock_code: symbol,
+      period: 'daily',
+      adjust: 'qfq',
+      start_date: startDate,
+      end_date: endDate
+    })
+
+    if (!response.success) {
+      throw new Error(response.message || 'FAILED TO LOAD K-LINE DATA')
     }
+
+    tradingSummary.value = calculateTradingSummary(normalizeSummaryRows(response.data))
   } catch (error) {
     console.error('Failed to load trading summary:', error)
     ElMessage.error('FAILED TO LOAD TRADING SUMMARY')
