@@ -26,6 +26,13 @@
       - 对 `catch` 分支的 `error` 做 `Error` 窄化
     - `web/frontend/src/composables/useMarket.ts`
       - 让 `marketOverview` state 类型跟随 `marketApi.getMarketOverview()` 的真实返回，消除旧模型漂移
+  - 为通过当前 frontend full-unit 门禁，补了 3 处最小 CI 收尾修复：
+    - `web/frontend/tests/unit/config/task-management-style-normalization.spec.ts`
+      - 对齐 JS 脚本块现状，改为校验语义化 `tone` 字段而非过期的 `as const` 字面量
+    - `web/frontend/src/api/mockApiClient.ts`
+      - 删除残留的 mock GET request debug log，收敛到现有 console cleanup 规范
+    - `web/frontend/tests/unit/config/console-log-cleanup-batch-12.spec.ts`
+      - 修正与 `console-log-cleanup-batch-75` 冲突的过期断言，改为锁定 handler-based 文档示例
   - 同步治理边界：
     - `governance/function-tree/catalog.yaml`
     - `governance/mainline/task-cards/pr-52.yaml`
@@ -33,20 +40,25 @@
     - `7e3a10368 fix: align watchlist service with monitoring routes`
     - `838a65eea governance: add task card for pr-52`
 - Verification Evidence:
+  - `cd web/frontend && npx vitest run tests/unit/config/task-management-style-normalization.spec.ts tests/unit/config/console-log-cleanup-batch-64.spec.ts tests/unit/config/console-log-cleanup-batch-12.spec.ts tests/unit/config/console-log-cleanup-batch-75.spec.ts --config vitest.config.mts`
+    - 结果：`4 files, 4 tests passed`
   - `cd web/frontend && npx vitest run tests/unit/watchlist-service-watchlists.spec.ts tests/unit/watchlist-service-stocks.spec.ts tests/unit/watchlist-service-mutations.spec.ts tests/unit/watchlist-service-update.spec.ts tests/unit/watchlist-management-alert-summary.spec.ts tests/unit/wencai-query-table.spec.ts tests/unit/use-market-overview.spec.ts tests/unit/composables.test.ts --config vitest.config.mts`
     - 结果：`8 files, 26 tests passed`
+  - `cd web/frontend && npx vitest run tests/unit/watchlist-service-watchlists.spec.ts tests/unit/watchlist-service-stocks.spec.ts tests/unit/watchlist-service-mutations.spec.ts tests/unit/watchlist-service-update.spec.ts tests/unit/watchlist-management-alert-summary.spec.ts tests/unit/wencai-query-table.spec.ts tests/unit/use-market-overview.spec.ts tests/unit/composables.test.ts tests/unit/config/task-management-style-normalization.spec.ts tests/unit/config/console-log-cleanup-batch-64.spec.ts tests/unit/config/console-log-cleanup-batch-12.spec.ts tests/unit/config/console-log-cleanup-batch-75.spec.ts --config vitest.config.mts`
+    - 结果：`12 files, 30 tests passed`
   - `cd web/frontend && npm run test:type-ceiling`
     - 结果：`TypeScript errors 0 are within configured ceiling 0`
   - `git diff --check`
   - `gitnexus_detect_changes(scope="staged")`
     - 结果：`risk_level: low`
-  - `python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-52.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr52-mainline-gate.json`
+  - `python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-52.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr52-mainline-gate-ci-unblockers.json`
     - 结果：`pass=True`
 - Current Status:
   - PR 已创建：`#52`
   - governance task card 已补齐：`governance/mainline/task-cards/pr-52.yaml`
-  - mainline gate 曾在治理补丁后通过；本轮会基于扩大的前端类型修复 scope 再次复验
-  - 下一步：提交 frontend type-ceiling unblock patch 并回推 PR 52
+  - full-unit CI unblockers 已在本地补齐并通过 focused + expanded 回归
+  - mainline gate 已基于扩大的 CI unblock scope 再次通过
+  - 下一步：提交 CI unblock follow-up patch 并回推 PR 52
 
 ## [WORK] 2026-03-13 ArtDeco Pages Gate-0 + P0-A（dev-artdeco-pages-codex）
 - Scope:

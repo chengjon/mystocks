@@ -8,7 +8,7 @@ task:
 
 mainline:
   id: "L1-watchlist-service-monitoring-routes"
-  objective: "move the remaining frontend watchlist service flows onto monitoring routes and clear the frontend type-ceiling blockers that gate this slice"
+  objective: "move the remaining frontend watchlist service flows onto monitoring routes and clear the frontend CI blockers that gate this slice"
   milestone_id: "L3-mainline-follow-up"
   slice_id: "L4-watchlist-service-monitoring-routes"
 
@@ -39,10 +39,14 @@ scope:
     - "TASK-REPORT.md"
     - "governance/function-tree/catalog.yaml"
     - "governance/mainline/task-cards/pr-52.yaml"
+    - "web/frontend/src/api/mockApiClient.ts"
     - "web/frontend/src/api/services/watchlistService.ts"
     - "web/frontend/src/components/market/WencaiQueryTable.vue"
     - "web/frontend/src/composables/useMarket.ts"
     - "web/frontend/src/views/TaskManagement.vue"
+    - "web/frontend/tests/unit/config/console-log-cleanup-batch-12.spec.ts"
+    - "web/frontend/tests/unit/config/console-log-cleanup-batch-64.spec.ts"
+    - "web/frontend/tests/unit/config/task-management-style-normalization.spec.ts"
     - "web/frontend/tests/unit/watchlist-service-watchlists.spec.ts"
     - "web/frontend/tests/unit/watchlist-service-stocks.spec.ts"
     - "web/frontend/tests/unit/watchlist-service-mutations.spec.ts"
@@ -57,6 +61,9 @@ non_goals:
 
 acceptance:
   checks:
+    - id: "frontend-ci-unblockers"
+      command: "cd web/frontend && npx vitest run tests/unit/config/task-management-style-normalization.spec.ts tests/unit/config/console-log-cleanup-batch-64.spec.ts tests/unit/config/console-log-cleanup-batch-12.spec.ts --config vitest.config.mts"
+      required: true
     - id: "watchlist-service-regression"
       command: "cd web/frontend && npx vitest run tests/unit/watchlist-service-watchlists.spec.ts tests/unit/watchlist-service-stocks.spec.ts tests/unit/watchlist-service-mutations.spec.ts tests/unit/watchlist-service-update.spec.ts tests/unit/watchlist-management-alert-summary.spec.ts tests/unit/wencai-query-table.spec.ts tests/unit/use-market-overview.spec.ts tests/unit/composables.test.ts --config vitest.config.mts"
       required: true
@@ -81,8 +88,8 @@ risk_and_rollback:
 delivery:
   six_line_summary_required: true
   six_line_summary:
-    change_purpose: "finish the frontend migration from generic watchlist routes to monitoring-specific routes and remove the frontend type-ceiling blockers that prevent the slice from merging"
-    modified_scope: "watchlist service normalization logic, focused watchlist and market/frontend type-fix files, worker task report, function-tree catalog, and this PR task card"
+    change_purpose: "finish the frontend migration from generic watchlist routes to monitoring-specific routes and remove the frontend CI blockers that prevent the slice from merging"
+    modified_scope: "watchlist service normalization logic, focused frontend CI-unblock source and test files, worker task report, function-tree catalog, and this PR task card"
     dependency_changes: "none"
     legacy_logic_impact: "monitoring watchlist reads and mutations now use monitoring APIs consistently while preserving alert and quote derived summary fields; unrelated frontend behavior is unchanged outside minimal type-safe rewrites"
     rollback_ready: "yes"

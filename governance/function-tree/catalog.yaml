@@ -11,6 +11,8 @@ domains:
           - "src/adapters/tdx/**"
           - "web/backend/app/api/market.py"
           - "web/backend/app/api/market/**"
+          - "web/frontend/src/api/mockApiClient.ts"
+          - "web/frontend/src/composables/useWebSocketWithConfig.ts"
           - "web/frontend/src/views/market/**"
           - "web/frontend/src/components/market/**"
           - "web/frontend/src/composables/useMarket.ts"
@@ -21,6 +23,8 @@ domains:
             - "web/backend/app/api/market.py"
             - "web/backend/app/api/market/**"
           frontend:
+            - "web/frontend/src/api/mockApiClient.ts"
+            - "web/frontend/src/composables/useWebSocketWithConfig.ts"
             - "web/frontend/src/views/market/**"
             - "web/frontend/src/views/artdeco-pages/market-data-tabs/**"
             - "web/frontend/src/components/market/**"
@@ -32,6 +36,9 @@ domains:
             - "tests/api/file_tests/test_market_api.py"
             - "tests/e2e/market-data.spec.ts"
             - "web/frontend/tests/e2e/market-data.spec.ts"
+            - "web/frontend/tests/api/mockApiClient.spec.ts"
+            - "web/frontend/tests/unit/config/console-log-cleanup-batch-12.spec.ts"
+            - "web/frontend/tests/unit/config/console-log-cleanup-batch-64.spec.ts"
             - "web/frontend/tests/unit/use-market-overview.spec.ts"
             - "web/frontend/tests/unit/wencai-query-table.spec.ts"
           operations:
@@ -545,6 +552,7 @@ domains:
             - "config/**"
           tests:
             - "tests/api/system.spec.ts"
+            - "web/frontend/tests/unit/config/task-management-style-normalization.spec.ts"
           operations:
             - "docs/operations/deployment/README.md"
             - "docker/README.md"
