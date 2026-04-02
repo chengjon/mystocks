@@ -4,6 +4,7 @@ import {
   watchlistService,
   type AddWatchlistStockPayload,
   type CreateWatchlistPayload,
+  type UpdateWatchlistPayload,
   type WatchlistRecord,
   type WatchlistStockRecord
 } from '@/api/services/watchlistService'
@@ -215,17 +216,47 @@ const showCreateModal = (): void => {
 
 const editWatchlist = (record: Watchlist): void => {
   editingWatchlist.value = record
-  message.warning('编辑组合功能待接线，当前仅开放创建、删除与成分股管理')
+  watchlistForm.name = record.name
+  watchlistForm.watchlist_type = record.watchlist_type
+  watchlistForm.risk_profile = record.risk_profile ? { ...record.risk_profile } : {}
+  riskTolerance.value = record.risk_profile?.risk_tolerance ?? 50
+  createModalVisible.value = true
 }
 
 const handleCreateOrUpdate = async (): Promise<void> => {
-  if (editingWatchlist.value) {
-    message.warning('编辑组合功能待接线，当前仅开放创建、删除与成分股管理')
-    return
-  }
-
   try {
     watchlistForm.risk_profile = { risk_tolerance: riskTolerance.value }
+
+    if (editingWatchlist.value) {
+      const response = await watchlistService.updateWatchlist(editingWatchlist.value.id, {
+        name: watchlistForm.name,
+        watchlist_type: watchlistForm.watchlist_type,
+        risk_profile: watchlistForm.risk_profile
+      } satisfies UpdateWatchlistPayload)
+
+      if (response.success) {
+        const mergedRecord = {
+          ...editingWatchlist.value,
+          ...response.data,
+        }
+
+        watchlists.value = watchlists.value.map(item =>
+          item.id === mergedRecord.id ? { ...item, ...mergedRecord } : item
+        )
+
+        if (currentWatchlist.value?.id === mergedRecord.id) {
+          currentWatchlist.value = { ...currentWatchlist.value, ...mergedRecord }
+        }
+
+        editingWatchlist.value = null
+        createModalVisible.value = false
+        message.success('更新成功')
+      } else {
+        message.error(response.message || '操作失败')
+      }
+      return
+    }
+
     const response = await watchlistService.createWatchlist({
       name: watchlistForm.name,
       watchlist_type: watchlistForm.watchlist_type,

@@ -22,7 +22,7 @@ from copy import deepcopy
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Path, Query
+from fastapi import APIRouter, Body, Path, Query
 from pydantic import BaseModel, Field, field_validator
 
 from app.core.exception_handlers import handle_exceptions
@@ -62,6 +62,17 @@ class UpdateWatchlistRequest(BaseModel):
     watchlist_type: Optional[str] = Field(None, description="清单类型")
     risk_profile: Optional[Dict[str, Any]] = Field(None, description="风控配置")
     is_active: Optional[bool] = Field(None, description="是否激活")
+
+    @field_validator("watchlist_type")
+    @classmethod
+    def validate_type(cls, v: Optional[str]) -> Optional[str]:
+        """验证清单类型"""
+        if v is None:
+            return v
+        valid_types = ["manual", "strategy", "benchmark"]
+        if v not in valid_types:
+            raise ValueError(f"无效的清单类型，支持: {', '.join(valid_types)}")
+        return v
 
 
 class AddStockRequest(BaseModel):
@@ -270,6 +281,37 @@ def _create_runtime_watchlist(request: CreateWatchlistRequest, user_id: int) -> 
     return _clone_model(created)
 
 
+def _update_runtime_watchlist(
+    watchlist_id: int,
+    request: UpdateWatchlistRequest,
+    user_id: int,
+) -> Optional[WatchlistResponse]:
+    watchlists, stocks_by_watchlist = _ensure_runtime_watchlist_state(user_id)
+
+    for index, watchlist in enumerate(watchlists):
+        if watchlist.id != watchlist_id:
+            continue
+
+        updated = _clone_model(watchlist)
+        changes = request.model_dump(exclude_unset=True)
+
+        if "name" in changes:
+            updated.name = request.name
+        if "watchlist_type" in changes:
+            updated.watchlist_type = request.watchlist_type
+        if "risk_profile" in changes:
+            updated.risk_profile = request.risk_profile
+        if "is_active" in changes:
+            updated.is_active = request.is_active
+
+        updated.updated_at = datetime.utcnow()
+        updated.stocks_count = len(stocks_by_watchlist.get(watchlist_id, []))
+        watchlists[index] = updated
+        return _clone_model(updated)
+
+    return None
+
+
 def _add_runtime_stock_to_watchlist(
     watchlist_id: int,
     request: AddStockRequest,
@@ -401,7 +443,7 @@ async def list_watchlists(
     获取用户的所有监控清单
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import StockToAdd, get_postgres_async
+        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
 
         postgres_async = get_postgres_async()
 
@@ -498,13 +540,75 @@ async def get_watchlist(
 @handle_exceptions
 async def update_watchlist(
     watchlist_id: int = Path(..., description="清单ID"),
-    request: UpdateWatchlistRequest = None,
+    request: UpdateWatchlistRequest = Body(...),
     user_id: int = Query(1, description="用户ID"),
 ) -> UnifiedResponse[WatchlistResponse]:
     """
     更新监控清单
     """
-    raise BusinessException(detail="更新功能待实现", status_code=501, error_code="FEATURE_NOT_IMPLEMENTED")
+    try:
+        from src.monitoring.infrastructure.postgresql_async_v3 import WatchlistUpdate, get_postgres_async
+
+        postgres_async = get_postgres_async()
+
+        if not postgres_async.is_connected():
+            if _runtime_fallback_enabled():
+                fallback_watchlist = _update_runtime_watchlist(
+                    watchlist_id=watchlist_id,
+                    request=request,
+                    user_id=user_id,
+                )
+                if fallback_watchlist is not None:
+                    return UnifiedResponse(data=fallback_watchlist, message="更新清单成功")
+                raise NotFoundException(resource="监控清单", identifier="查询条件")
+            raise BusinessException(detail="数据库未连接", status_code=503, error_code="DATABASE_UNAVAILABLE")
+
+        existing = await postgres_async.get_watchlist(watchlist_id)
+        if not existing or existing.get("user_id") != user_id:
+            raise NotFoundException(resource="监控清单", identifier="查询条件")
+
+        changes = request.model_dump(exclude_unset=True)
+        if changes:
+            updated = await postgres_async.update_watchlist(
+                watchlist_id,
+                WatchlistUpdate(changes=changes),
+            )
+            if not updated:
+                raise BusinessException(detail="更新清单失败", status_code=500, error_code="WATCHLIST_UPDATE_FAILED")
+
+        refreshed = await postgres_async.get_watchlist(watchlist_id)
+        stocks = await postgres_async.get_watchlist_stocks(watchlist_id)
+
+        if refreshed is None:
+            raise BusinessException(detail="更新清单失败", status_code=500, error_code="WATCHLIST_UPDATE_FAILED")
+
+        response = WatchlistResponse(
+            id=refreshed["id"],
+            user_id=refreshed["user_id"],
+            name=refreshed["name"],
+            watchlist_type=refreshed["type"],
+            risk_profile=refreshed.get("risk_profile"),
+            is_active=refreshed["is_active"],
+            created_at=refreshed["created_at"],
+            updated_at=refreshed["updated_at"],
+            stocks_count=len(stocks),
+        )
+        return UnifiedResponse(data=response, message="更新清单成功")
+
+    except (BusinessException, NotFoundException):
+        raise
+    except Exception as e:
+        if _runtime_fallback_enabled():
+            logger.warning("更新监控清单降级到 runtime fallback: %s", str(e))
+            fallback_watchlist = _update_runtime_watchlist(
+                watchlist_id=watchlist_id,
+                request=request,
+                user_id=user_id,
+            )
+            if fallback_watchlist is not None:
+                return UnifiedResponse(data=fallback_watchlist, message="更新清单成功")
+        logger.error("更新监控清单失败: %(e)s")
+        raise BusinessException(detail=f"更新失败: {str(e)}", status_code=500, error_code="WATCHLIST_UPDATE_FAILED")
 
 
 @router.delete("/{watchlist_id}", response_model=UnifiedResponse[None])
