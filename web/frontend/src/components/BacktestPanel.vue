@@ -434,17 +434,17 @@ watch(
 }
 
 .metric-card {
-  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  background: linear-gradient(135deg, var(--color-bg-primary) 0%, var(--color-bg-secondary) 100%);
   border-radius: 8px;
   padding: 16px;
   text-align: center;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-border-light);
 }
 
 .metric-card .label {
   display: block;
   font-size: 12px;
-  color: #737373;
+  color: var(--color-text-tertiary);
   margin-bottom: 8px;
   font-weight: 500;
 }
@@ -453,7 +453,7 @@ watch(
   display: block;
   font-size: 20px;
   font-weight: 700;
-  color: #262626;
+  color: var(--color-text-primary);
 }
 
 .metric-card .value.positive {
@@ -469,7 +469,7 @@ watch(
   justify-content: flex-end;
   gap: 12px;
   padding: 16px 24px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-border-light);
 }
 
 .btn-close {
