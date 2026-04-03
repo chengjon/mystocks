@@ -9,9 +9,16 @@ from typing import List
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
+from app.openapi_config import COMMON_RESPONSES
+
+STRESS_TEST_ROUTE_RESPONSES = {
+    500: COMMON_RESPONSES[500],
+}
+
 router = APIRouter(
     prefix="/stress-test",
     tags=["Stress Test"],
+    responses=STRESS_TEST_ROUTE_RESPONSES,
 )
 
 

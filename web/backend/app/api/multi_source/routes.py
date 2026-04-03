@@ -4,8 +4,14 @@
 
 from fastapi import APIRouter
 
+from app.openapi_config import COMMON_RESPONSES
+
+MULTI_SOURCE_ROUTE_RESPONSES = {
+    500: COMMON_RESPONSES[500],
+}
+
 # Prefix is governed by the central route registry.
-router = APIRouter()
+router = APIRouter(responses=MULTI_SOURCE_ROUTE_RESPONSES)
 
 
 @router.get("/health")

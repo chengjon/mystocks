@@ -9,6 +9,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
+from app.openapi_config import COMMON_RESPONSES
 from app.core.responses import (
     APIResponse,
     ErrorCodes,
@@ -23,7 +24,11 @@ from app.schemas.trade_schemas import (
     TradeHistoryResponse,
 )
 
-router = APIRouter()
+TRADE_ROUTE_RESPONSES = {
+    500: COMMON_RESPONSES[500],
+}
+
+router = APIRouter(responses=TRADE_ROUTE_RESPONSES)
 
 
 # ==================== Health Check ====================

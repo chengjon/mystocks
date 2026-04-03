@@ -22,9 +22,18 @@ from app.models.schemas import (
     IndustryPerformanceResponse,
     StockListResponse,
 )
+from app.openapi_config import COMMON_RESPONSES
 from app.services.unified_data_service import UnifiedDataService
 
-router = APIRouter(prefix="/api/analysis", tags=["industry-concept-analysis"])
+INDUSTRY_CONCEPT_ROUTE_RESPONSES = {
+    500: COMMON_RESPONSES[500],
+}
+
+router = APIRouter(
+    prefix="/api/analysis",
+    tags=["industry-concept-analysis"],
+    responses=INDUSTRY_CONCEPT_ROUTE_RESPONSES,
+)
 
 
 @router.get("/industry/list", response_model=IndustryListResponse)

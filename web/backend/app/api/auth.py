@@ -12,6 +12,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2Pas
 from app.api.auth_compat import compat_router
 from app.api.auth_schemas import PasswordResetConfirm, PasswordResetRequest, UserRegisterRequest, UserResponse
 from app.core.config import settings
+from app.openapi_config import COMMON_RESPONSES
 
 logger = logging.getLogger(__name__)
 from app.core.exceptions import ForbiddenException, UnauthorizedException
@@ -27,7 +28,13 @@ from app.core.security import (
 )
 
 
-router = APIRouter()
+AUTH_ROUTE_RESPONSES = {
+    401: COMMON_RESPONSES[401],
+    403: COMMON_RESPONSES[403],
+    500: COMMON_RESPONSES[500],
+}
+
+router = APIRouter(responses=AUTH_ROUTE_RESPONSES)
 security = HTTPBearer()
 
 # User database now backed by PostgreSQL via security.py
@@ -671,4 +678,3 @@ async def confirm_password_reset(reset_data: PasswordResetConfirm):
     finally:
         if session:
             session.close()
-

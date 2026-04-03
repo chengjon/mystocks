@@ -11,13 +11,20 @@ from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field, field_validator
 
+from app.openapi_config import COMMON_RESPONSES
 from app.core.responses import ErrorCodes, ResponseMessages, create_error_response, create_success_response
 from app.services.data_source_factory import DataSourceFactory
 from app.services.strategy_service import get_strategy_service
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter()
+STRATEGY_ROUTE_RESPONSES = {
+    400: COMMON_RESPONSES[400],
+    404: COMMON_RESPONSES[404],
+    500: COMMON_RESPONSES[500],
+}
+
+router = APIRouter(responses=STRATEGY_ROUTE_RESPONSES)
 
 
 # ==================== 请求/响应模型 ====================

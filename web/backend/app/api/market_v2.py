@@ -16,9 +16,14 @@ from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
 
+from app.openapi_config import COMMON_RESPONSES
 from app.services.market_data_service_v2 import get_market_data_service_v2
 
-router = APIRouter(tags=["市场数据V2"])
+MARKET_V2_ROUTE_RESPONSES = {
+    500: COMMON_RESPONSES[500],
+}
+
+router = APIRouter(tags=["市场数据V2"], responses=MARKET_V2_ROUTE_RESPONSES)
 
 
 # ==================== 个股资金流向 ====================

@@ -10,9 +10,16 @@ from typing import List, Optional
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
+from app.openapi_config import COMMON_RESPONSES
+
+SENTIMENT_ROUTE_RESPONSES = {
+    500: COMMON_RESPONSES[500],
+}
+
 router = APIRouter(
     prefix="/sentiment",
     tags=["Sentiment Analysis"],
+    responses=SENTIMENT_ROUTE_RESPONSES,
 )
 
 

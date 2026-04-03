@@ -19,11 +19,16 @@ from typing import Optional
 
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
+from app.openapi_config import COMMON_RESPONSES
 from app.services.websocket_manager import manager
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/ws", tags=["websocket"])
+WEBSOCKET_ROUTE_RESPONSES = {
+    500: COMMON_RESPONSES[500],
+}
+
+router = APIRouter(prefix="/ws", tags=["websocket"], responses=WEBSOCKET_ROUTE_RESPONSES)
 
 
 @router.websocket("/events")

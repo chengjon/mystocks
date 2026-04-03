@@ -9,9 +9,16 @@ from typing import Any, Dict
 from fastapi import APIRouter
 from pydantic import BaseModel
 
+from app.openapi_config import COMMON_RESPONSES
+
+OPTIMIZATION_ROUTE_RESPONSES = {
+    500: COMMON_RESPONSES[500],
+}
+
 router = APIRouter(
     prefix="/optimization",
     tags=["Database Optimization"],
+    responses=OPTIMIZATION_ROUTE_RESPONSES,
 )
 
 

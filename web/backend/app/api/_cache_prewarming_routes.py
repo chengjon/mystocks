@@ -9,10 +9,15 @@ from fastapi import APIRouter, Depends
 from app.core.cache_prewarming import get_cache_monitor, get_prewarming_strategy
 from app.core.exceptions import BusinessException
 from app.core.security import User, get_current_user
+from app.openapi_config import COMMON_RESPONSES
 
 logger = structlog.get_logger()
 
-router = APIRouter()
+CACHE_PREWARMING_ROUTE_RESPONSES = {
+    500: COMMON_RESPONSES[500],
+}
+
+router = APIRouter(responses=CACHE_PREWARMING_ROUTE_RESPONSES)
 
 
 def _timestamp() -> str:

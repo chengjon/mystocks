@@ -22,11 +22,16 @@ from typing import Optional
 from fastapi import APIRouter, Query, Request
 from sse_starlette.sse import EventSourceResponse
 
+from app.openapi_config import COMMON_RESPONSES
 from app.core.sse_manager import get_sse_manager, sse_event_generator
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/v1/sse", tags=["SSE实时推送"])
+SSE_ROUTE_RESPONSES = {
+    500: COMMON_RESPONSES[500],
+}
+
+router = APIRouter(prefix="/api/v1/sse", tags=["SSE实时推送"], responses=SSE_ROUTE_RESPONSES)
 
 
 @router.get("/training")

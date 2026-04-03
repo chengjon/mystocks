@@ -4,9 +4,16 @@ import pandas as pd
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+from app.openapi_config import COMMON_RESPONSES
 from src.indicators.indicator_factory import IndicatorFactory
 
-router = APIRouter(prefix="/api/indicator-registry", tags=["Indicator Registry"])
+INDICATOR_ROUTE_RESPONSES = {
+    400: COMMON_RESPONSES[400],
+    404: COMMON_RESPONSES[404],
+    500: COMMON_RESPONSES[500],
+}
+
+router = APIRouter(prefix="/api/indicator-registry", tags=["Indicator Registry"], responses=INDICATOR_ROUTE_RESPONSES)
 
 # Singleton Factory
 _factory = None
