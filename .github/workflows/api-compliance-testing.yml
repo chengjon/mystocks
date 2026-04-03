@@ -162,7 +162,7 @@ jobs:
     - name: Run workflow runtime validation
       if: steps.scope.outputs.workflow_validation_required == 'true'
       run: |
-        python -m pytest tests/unit/scripts/test_ci_workflow_runtime_setup.py -q -o addopts='' -k "api_compliance_workflow_uses_supported_actions_and_safe_python_matrix_expansion or api_compliance_workflow_avoids_unavailable_talib_system_packages_and_filters_backend_requirements or api_compliance_workflow_sets_backend_runtime_ports_in_env_file or api_compliance_pr_comment_is_non_blocking or api_compliance_workflow_scopes_heavy_suite_and_keeps_runtime_validation_for_workflow_only_changes"
+        python -m pytest tests/unit/scripts/test_ci_workflow_runtime_setup.py -q -o addopts='' -k "api_compliance_workflow_uses_supported_actions_and_safe_python_matrix_expansion or api_compliance_workflow_avoids_unavailable_talib_system_packages_and_filters_backend_requirements or api_compliance_workflow_sets_backend_runtime_ports_in_env_file or api_compliance_pr_comment_is_non_blocking or api_compliance_workflow_scopes_heavy_suite_and_keeps_runtime_validation_for_workflow_only_changes or api_compliance_workflow_uses_ci_safe_pytest_invocations_for_heavy_suites"
 
     - name: Run API Compliance Tests
       if: steps.scope.outputs.api_suite_required == 'true'
@@ -170,7 +170,7 @@ jobs:
         cd web/backend
         if [[ "${{ github.event.inputs.test_type }}" == "compliance" || "${{ github.event.inputs.test_type }}" == "all" || -z "${{ github.event.inputs.test_type }}" ]]; then
           echo "Running API Compliance Tests..."
-          python -m pytest tests/test_api_compliance.py \
+          python -m pytest -o addopts='' tests/test_api_compliance.py \
             --cov=app \
             --cov-report=xml \
             --cov-report=html \
@@ -186,7 +186,7 @@ jobs:
         cd web/backend
         if [[ "${{ github.event.inputs.test_type }}" == "static" || "${{ github.event.inputs.test_type }}" == "all" || -z "${{ github.event.inputs.test_type }}" ]]; then
           echo "Running Static Code Analysis Tests..."
-          python -m pytest tests/test_static_code_analysis.py \
+          python -m pytest -o addopts='' tests/test_static_code_analysis.py \
             --cov=app \
             --cov-append \
             --cov-report=xml \
@@ -202,7 +202,7 @@ jobs:
         cd web/backend
         if [[ "${{ github.event.inputs.test_type }}" == "documentation" || "${{ github.event.inputs.test_type }}" == "all" || -z "${{ github.event.inputs.test_type }}" ]]; then
           echo "Running Documentation Validation Tests..."
-          python -m pytest tests/test_api_documentation_validation.py \
+          python -m pytest -o addopts='' tests/test_api_documentation_validation.py \
             --cov=app \
             --cov-append \
             --cov-report=xml \
@@ -218,7 +218,7 @@ jobs:
         cd web/backend
         if [[ "${{ github.event.inputs.test_type }}" == "performance" || "${{ github.event.inputs.test_type }}" == "all" || -z "${{ github.event.inputs.test_type }}" ]]; then
           echo "Running Performance Tests..."
-          python -m pytest tests/test_performance_and_security.py::TestPerformanceAndSecurity::test_response_time_benchmarks \
+          python -m pytest -o addopts='' tests/test_performance_and_security.py::TestPerformanceAndSecurity::test_response_time_benchmarks \
             --cov=app \
             --cov-append \
             --cov-report=xml \
@@ -234,7 +234,7 @@ jobs:
         cd web/backend
         if [[ "${{ github.event.inputs.test_type }}" == "security" || "${{ github.event.inputs.test_type }}" == "all" || -z "${{ github.event.inputs.test_type }}" ]]; then
           echo "Running Security Tests..."
-          python -m pytest tests/test_performance_and_security.py::TestPerformanceAndSecurity::test_sql_injection_detection \
+          python -m pytest -o addopts='' tests/test_performance_and_security.py::TestPerformanceAndSecurity::test_sql_injection_detection \
             tests/test_performance_and_security.py::TestPerformanceAndSecurity::test_xss_protection_validation \
             tests/test_performance_and_security.py::TestPerformanceAndSecurity::test_authentication_security \
             --cov=app \

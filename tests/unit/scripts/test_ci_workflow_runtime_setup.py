@@ -142,6 +142,22 @@ def test_api_compliance_workflow_scopes_heavy_suite_and_keeps_runtime_validation
     assert "Scope detection skipped heavy API compliance suites" in workflow
 
 
+def test_api_compliance_workflow_uses_ci_safe_pytest_invocations_for_heavy_suites() -> None:
+    workflow = _read_workflow("api-compliance-testing.yml")
+
+    assert "python -m pytest -o addopts='' tests/test_api_compliance.py" in workflow
+    assert "python -m pytest -o addopts='' tests/test_static_code_analysis.py" in workflow
+    assert "python -m pytest -o addopts='' tests/test_api_documentation_validation.py" in workflow
+    assert (
+        "python -m pytest -o addopts='' tests/test_performance_and_security.py::"
+        "TestPerformanceAndSecurity::test_response_time_benchmarks" in workflow
+    )
+    assert (
+        "python -m pytest -o addopts='' tests/test_performance_and_security.py::"
+        "TestPerformanceAndSecurity::test_sql_injection_detection" in workflow
+    )
+
+
 def test_api_contract_and_api_file_workflows_install_backend_runtime_dependencies() -> None:
     contract_workflow = _read_workflow("api-contract-validation.yml")
     api_file_workflow = _read_workflow("api-file-tests.yml")
