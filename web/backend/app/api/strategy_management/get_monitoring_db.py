@@ -26,6 +26,7 @@ if project_root not in sys.path:
 
 from app.mock.unified_mock_data import get_mock_data_manager
 from app.api.strategy_management._strategy_management_task_tail import run_backtest_task, train_model_task
+from app.openapi_config import COMMON_RESPONSES
 from app.core.responses import create_unified_success_response
 from app.schemas.backtest_schemas import BacktestRequest
 from app.api.strategy_management.monitoring_adapter import MonitoringAdapter, MonitoringFallback
@@ -35,7 +36,18 @@ from src.monitoring.monitoring_database import MonitoringDatabase
 # 使用 MyStocksUnifiedManager 作为统一入口点
 from unified_manager import MyStocksUnifiedManager
 
-router = APIRouter(prefix="/api/v1/strategy", tags=["策略管理-Week1"])
+STRATEGY_MANAGEMENT_ROUTE_RESPONSES = {
+    400: COMMON_RESPONSES[400],
+    404: COMMON_RESPONSES[404],
+    422: COMMON_RESPONSES[422],
+    500: COMMON_RESPONSES[500],
+}
+
+router = APIRouter(
+    prefix="/api/v1/strategy",
+    tags=["策略管理-Week1"],
+    responses=STRATEGY_MANAGEMENT_ROUTE_RESPONSES,
+)
 
 STRATEGY_UPDATE_EXAMPLES = {
     "update_strategy_runtime_config": {
@@ -47,6 +59,33 @@ STRATEGY_UPDATE_EXAMPLES = {
             "symbols": ["600519", "000001", "159915"],
             "parameters": {"rebalance_days": 5, "max_position": 0.2},
             "description": "升级后的动量轮动策略配置",
+        },
+    }
+}
+
+STRATEGY_CREATE_EXAMPLES = {
+    "create_momentum_strategy": {
+        "summary": "创建新策略",
+        "description": "创建一个待运行的动量轮动策略配置，包含标的池、参数和初始状态。",
+        "value": {
+            "name": "momentum-rotation-v1",
+            "description": "用于日频轮动的动量策略",
+            "strategy_type": "technical",
+            "parameters": {"rebalance_days": 5, "max_position": 0.2},
+            "status": "draft",
+        },
+    }
+}
+
+MODEL_TRAIN_EXAMPLES = {
+    "train_lstm_model": {
+        "summary": "启动模型训练",
+        "description": "提交一个 LSTM 模型训练任务，携带模型类型、超参数与训练配置。",
+        "value": {
+            "name": "lstm-alpha-001",
+            "model_type": "lstm",
+            "hyperparameters": {"epochs": 20, "batch_size": 64, "hidden_size": 128},
+            "training_config": {"train_ratio": 0.8, "validation_ratio": 0.1, "target": "close"},
         },
     }
 }
@@ -412,8 +451,15 @@ def get_monitoring_db():
     return monitoring_db
 
 
-@router.get("/strategies")
-async def list_strategies(status: Optional[str] = None, page: int = 1, page_size: int = 20) -> Any:
+@router.get(
+    "/strategies",
+    description="分页查询策略配置列表，可按状态筛选，用于策略管理台展示和运维巡检。",
+)
+async def list_strategies(
+    status: Optional[str] = Query(None, description="可选的策略状态过滤条件，如 draft、active、archived。"),
+    page: int = Query(1, description="结果页码，从 1 开始。", ge=1),
+    page_size: int = Query(20, description="每页返回的策略数量。", ge=1, le=200),
+) -> Any:
     """
     获取策略列表
 
@@ -530,8 +576,17 @@ async def list_strategies(status: Optional[str] = None, page: int = 1, page_size
         raise HTTPException(status_code=500, detail=f"获取策略列表失败: {str(e)}")
 
 
-@router.post("/strategies")
-async def create_strategy(strategy_data: Dict[str, Any]) -> Any:
+@router.post(
+    "/strategies",
+    description="创建新的策略配置记录，支持在数据库不可用时降级写入运行时存储。",
+)
+async def create_strategy(
+    strategy_data: Dict[str, Any] = Body(
+        ...,
+        description="待创建的策略配置对象，包含名称、策略类型、参数与初始状态。",
+        openapi_examples=STRATEGY_CREATE_EXAMPLES,
+    ),
+) -> Any:
     """
     创建新策略
 
@@ -628,8 +683,11 @@ async def create_strategy(strategy_data: Dict[str, Any]) -> Any:
         raise HTTPException(status_code=500, detail=f"创建策略失败: {str(e)}")
 
 
-@router.get("/strategies/{strategy_id}")
-async def get_strategy(strategy_id: int) -> Any:
+@router.get(
+    "/strategies/{strategy_id}",
+    description="根据策略ID获取单个策略的完整配置和当前状态信息。",
+)
+async def get_strategy(strategy_id: int = Path(..., description="需要查询详情的策略ID。")) -> Any:
     """获取策略详情"""
     try:
         manager = MyStocksUnifiedManager()
@@ -743,8 +801,11 @@ async def update_strategy(
         raise HTTPException(status_code=500, detail=f"更新策略失败: {str(e)}")
 
 
-@router.delete("/strategies/{strategy_id}")
-async def delete_strategy(strategy_id: int) -> Any:
+@router.delete(
+    "/strategies/{strategy_id}",
+    description="将指定策略归档下线；当前实现通过状态更新或运行时删除完成逻辑删除。",
+)
+async def delete_strategy(strategy_id: int = Path(..., description="需要归档删除的策略ID。")) -> Any:
     """删除策略"""
     try:
         try:
@@ -783,8 +844,11 @@ async def delete_strategy(strategy_id: int) -> Any:
         raise HTTPException(status_code=500, detail=f"删除策略失败: {str(e)}")
 
 
-@router.post("/{strategy_id}/start")
-async def start_strategy(strategy_id: int) -> Any:
+@router.post(
+    "/{strategy_id}/start",
+    description="启动指定策略，将策略状态切换为 active 并记录生命周期操作。",
+)
+async def start_strategy(strategy_id: int = Path(..., description="需要启动的策略ID。")) -> Any:
     """启动策略。"""
     return await _handle_strategy_lifecycle_action(
         strategy_id,
@@ -794,8 +858,11 @@ async def start_strategy(strategy_id: int) -> Any:
     )
 
 
-@router.post("/{strategy_id}/pause")
-async def pause_strategy(strategy_id: int) -> Any:
+@router.post(
+    "/{strategy_id}/pause",
+    description="暂停指定策略，将策略状态切换为 paused，适用于人工干预或风控暂停。",
+)
+async def pause_strategy(strategy_id: int = Path(..., description="需要暂停的策略ID。")) -> Any:
     """暂停策略。"""
     return await _handle_strategy_lifecycle_action(
         strategy_id,
@@ -805,8 +872,11 @@ async def pause_strategy(strategy_id: int) -> Any:
     )
 
 
-@router.post("/{strategy_id}/resume")
-async def resume_strategy(strategy_id: int) -> Any:
+@router.post(
+    "/{strategy_id}/resume",
+    description="恢复已暂停的策略运行，将策略状态重新切换为 active。",
+)
+async def resume_strategy(strategy_id: int = Path(..., description="需要恢复运行的策略ID。")) -> Any:
     """恢复策略。"""
     return await _handle_strategy_lifecycle_action(
         strategy_id,
@@ -816,8 +886,11 @@ async def resume_strategy(strategy_id: int) -> Any:
     )
 
 
-@router.post("/{strategy_id}/stop")
-async def stop_strategy(strategy_id: int) -> Any:
+@router.post(
+    "/{strategy_id}/stop",
+    description="停止指定策略并归档，适用于策略下线、停用或终止执行场景。",
+)
+async def stop_strategy(strategy_id: int = Path(..., description="需要停止并归档的策略ID。")) -> Any:
     """停止策略。"""
     return await _handle_strategy_lifecycle_action(
         strategy_id,
@@ -827,8 +900,18 @@ async def stop_strategy(strategy_id: int) -> Any:
     )
 
 
-@router.post("/models/train")
-async def train_model(config: Dict[str, Any], background_tasks: BackgroundTasks) -> Dict[str, Any]:
+@router.post(
+    "/models/train",
+    description="提交模型训练任务并返回任务ID，后续可通过训练状态接口轮询执行进度。",
+)
+async def train_model(
+    background_tasks: BackgroundTasks,
+    config: Dict[str, Any] = Body(
+        ...,
+        description="模型训练配置，包含模型名称、模型类型、超参数和训练集配置。",
+        openapi_examples=MODEL_TRAIN_EXAMPLES,
+    ),
+) -> Dict[str, Any]:
     """
     启动模型训练任务
 
@@ -882,8 +965,11 @@ async def train_model(config: Dict[str, Any], background_tasks: BackgroundTasks)
         raise HTTPException(status_code=500, detail=f"启动模型训练失败: {str(e)}")
 
 
-@router.get("/models/training/{task_id}/status")
-async def get_training_status(task_id: str) -> Dict[str, Any]:
+@router.get(
+    "/models/training/{task_id}/status",
+    description="查询指定模型训练任务的当前状态、进度和已产出的性能指标。",
+)
+async def get_training_status(task_id: str = Path(..., description="需要查询状态的训练任务ID。")) -> Dict[str, Any]:
     """
     查询训练状态
 
@@ -929,8 +1015,14 @@ async def get_training_status(task_id: str) -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail=f"获取训练状态失败: {str(e)}")
 
 
-@router.get("/models")
-async def list_models(model_type: Optional[str] = None, status: Optional[str] = None) -> List[Dict[str, Any]]:
+@router.get(
+    "/models",
+    description="查询模型注册表，可按模型类型或训练状态筛选，便于训练资产管理和上线评估。",
+)
+async def list_models(
+    model_type: Optional[str] = Query(None, description="可选的模型类型过滤条件，如 lstm、xgboost。"),
+    status: Optional[str] = Query(None, description="可选的模型状态过滤条件，如 training、completed、failed。"),
+) -> List[Dict[str, Any]]:
     """获取模型列表"""
     try:
         manager = MyStocksUnifiedManager()
