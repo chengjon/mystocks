@@ -13,11 +13,12 @@ import logging
 import os
 from datetime import datetime
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from fastapi import APIRouter, BackgroundTasks, Body, Depends, HTTPException, Path, Query
 from sqlalchemy.orm import Session
 
 from app.core.database import SessionLocal, get_db
 from app.mock.unified_mock_data import get_mock_data_manager
+from app.openapi_config import COMMON_RESPONSES
 from app.schemas.wencai_schemas import (
     WencaiCustomQueryRequest,
     WencaiCustomQueryResponse,
@@ -34,8 +35,157 @@ from app.services.wencai_service import WencaiService
 # 配置日志
 logger = logging.getLogger(__name__)
 
+WENCAI_ROUTE_RESPONSES = {
+    400: COMMON_RESPONSES[400],
+    404: COMMON_RESPONSES[404],
+    422: COMMON_RESPONSES[422],
+    500: COMMON_RESPONSES[500],
+}
+
+WENCAI_QUERY_REQUEST_EXAMPLES = {
+    "execute_qs_9_query": {
+        "summary": "执行预定义问财查询",
+        "description": "执行预定义的强势股筛选模板，并抓取前两页结果保存到数据库。",
+        "value": {
+            "query_name": "qs_9",
+            "pages": 2,
+        },
+    }
+}
+
+WENCAI_CUSTOM_QUERY_REQUEST_EXAMPLES = {
+    "execute_custom_breakout_query": {
+        "summary": "执行自定义自然语言查询",
+        "description": "查询涨幅、换手率和成交额同时满足条件的强势股，不写入数据库。",
+        "value": {
+            "query_text": "请列出今天涨幅超过5%且换手率大于3%的股票",
+            "pages": 1,
+        },
+    }
+}
+
+WENCAI_QUERY_LIST_SUCCESS_RESPONSE = {
+    200: {
+        "description": "问财预定义查询模板列表",
+        "content": {
+            "application/json": {
+                "example": {
+                    "queries": [
+                        {
+                            "id": 1,
+                            "query_name": "qs_1",
+                            "query_text": "请列举出20天内出现过涨停的股票",
+                            "description": "涨停板复盘模板",
+                            "is_active": True,
+                            "created_at": "2025-10-17T09:00:00",
+                            "updated_at": "2025-10-17T09:00:00",
+                        }
+                    ],
+                    "total": 9,
+                }
+            }
+        },
+    }
+}
+
+WENCAI_QUERY_INFO_SUCCESS_RESPONSE = {
+    200: {
+        "description": "指定问财查询模板详情",
+        "content": {
+            "application/json": {
+                "example": {
+                    "id": 9,
+                    "query_name": "qs_9",
+                    "query_text": "请列出近期强势突破且量能放大的股票",
+                    "description": "强势突破模板",
+                    "is_active": True,
+                    "created_at": "2025-10-17T09:00:00",
+                    "updated_at": "2025-10-17T09:00:00",
+                }
+            }
+        },
+    }
+}
+
+WENCAI_RESULTS_SUCCESS_RESPONSE = {
+    200: {
+        "description": "指定问财查询的最新结果集",
+        "content": {
+            "application/json": {
+                "example": {
+                    "query_name": "qs_9",
+                    "total": 45,
+                    "results": [
+                        {
+                            "股票代码": "000001",
+                            "股票简称": "平安银行",
+                            "涨跌幅": "6.5%",
+                            "fetch_time": "2025-10-17T09:00:00",
+                        }
+                    ],
+                    "columns": ["股票代码", "股票简称", "涨跌幅", "fetch_time"],
+                    "latest_fetch_time": "2025-10-17T09:00:00",
+                }
+            }
+        },
+    }
+}
+
+WENCAI_REFRESH_SUCCESS_RESPONSE = {
+    200: {
+        "description": "后台刷新任务已成功提交",
+        "content": {
+            "application/json": {
+                "example": {
+                    "status": "refreshing",
+                    "message": "后台刷新任务已启动",
+                    "task_id": None,
+                    "query_name": "qs_9",
+                }
+            }
+        },
+    }
+}
+
+WENCAI_HISTORY_SUCCESS_RESPONSE = {
+    200: {
+        "description": "指定问财查询的历史统计数据",
+        "content": {
+            "application/json": {
+                "example": {
+                    "query_name": "qs_9",
+                    "date_range": ["2025-10-10", "2025-10-17"],
+                    "history": [
+                        {
+                            "date": "2025-10-17",
+                            "total_records": 45,
+                            "fetch_count": 3,
+                        }
+                    ],
+                    "total_days": 7,
+                }
+            }
+        },
+    }
+}
+
+WENCAI_HEALTH_SUCCESS_RESPONSE = {
+    200: {
+        "description": "问财接口服务健康状态",
+        "content": {
+            "application/json": {
+                "example": {
+                    "status": "healthy",
+                    "service": "wencai",
+                    "version": "1.0.0",
+                }
+            }
+        },
+    }
+}
+
 # 创建路由
-router = APIRouter(prefix="/api/market/wencai", tags=["wencai"])
+router = APIRouter(prefix="/api/market/wencai", tags=["wencai"], responses=WENCAI_ROUTE_RESPONSES)
 
 
 # ============================================================================
@@ -47,7 +197,8 @@ router = APIRouter(prefix="/api/market/wencai", tags=["wencai"])
     "/queries",
     response_model=WencaiQueryListResponse,
     summary="获取所有查询列表",
-    description="获取所有可用的问财查询配置",
+    description="获取所有已注册的问财查询模板，返回模板名称、查询语句、启用状态和维护说明。",
+    responses=WENCAI_QUERY_LIST_SUCCESS_RESPONSE,
 )
 async def get_all_queries(db: Session = Depends(get_db)) -> WencaiQueryListResponse:
     """
@@ -83,9 +234,13 @@ async def get_all_queries(db: Session = Depends(get_db)) -> WencaiQueryListRespo
     "/queries/{query_name}",
     response_model=WencaiQueryInfo,
     summary="获取指定查询信息",
-    description="根据查询名称获取查询配置详情",
+    description="根据预定义查询名称获取单个问财模板详情，便于前端展示模板说明和执行入口。",
+    responses=WENCAI_QUERY_INFO_SUCCESS_RESPONSE,
 )
-async def get_query_by_name(query_name: str, db: Session = Depends(get_db)) -> WencaiQueryInfo:
+async def get_query_by_name(
+    query_name: str = Path(..., description="预定义问财查询名称，如 qs_1 到 qs_9"),
+    db: Session = Depends(get_db),
+) -> WencaiQueryInfo:
     """
     获取指定查询信息
 
@@ -115,9 +270,12 @@ async def get_query_by_name(query_name: str, db: Session = Depends(get_db)) -> W
     "/query",
     response_model=WencaiQueryResponse,
     summary="执行问财查询",
-    description="执行指定的问财查询并保存结果到数据库",
+    description="执行指定的预定义问财查询模板，抓取结果并将清洗后的数据落库，返回本次执行统计。",
 )
-async def execute_query(request: WencaiQueryRequest, db: Session = Depends(get_db)) -> WencaiQueryResponse:
+async def execute_query(
+    request: WencaiQueryRequest = Body(..., openapi_examples=WENCAI_QUERY_REQUEST_EXAMPLES),
+    db: Session = Depends(get_db),
+) -> WencaiQueryResponse:
     """
     执行问财查询
 
@@ -168,10 +326,11 @@ async def execute_query(request: WencaiQueryRequest, db: Session = Depends(get_d
     "/results/{query_name}",
     response_model=WencaiResultsResponse,
     summary="获取查询结果",
-    description="获取指定查询的最新结果数据",
+    description="获取指定问财查询模板的最新结果集，支持分页读取历史落库后的筛选结果。",
+    responses=WENCAI_RESULTS_SUCCESS_RESPONSE,
 )
 async def get_query_results(
-    query_name: str,
+    query_name: str = Path(..., description="预定义问财查询名称，如 qs_1 到 qs_9"),
     limit: int = Query(100, ge=1, le=1000, description="返回条数"),
     offset: int = Query(0, ge=0, description="偏移量"),
     db: Session = Depends(get_db),
@@ -204,11 +363,12 @@ async def get_query_results(
     "/refresh/{query_name}",
     response_model=WencaiRefreshResponse,
     summary="刷新查询数据",
-    description="在后台异步刷新指定查询的数据",
+    description="在后台异步刷新指定问财查询模板的数据，并立即返回任务受理状态。",
+    responses=WENCAI_REFRESH_SUCCESS_RESPONSE,
 )
 async def refresh_query(
-    query_name: str,
     background_tasks: BackgroundTasks,
+    query_name: str = Path(..., description="需要刷新的预定义问财查询名称，如 qs_1 到 qs_9"),
     pages: int = Query(1, ge=1, le=10, description="获取页数"),
     db: Session = Depends(get_db),
 ) -> WencaiRefreshResponse:
@@ -256,10 +416,11 @@ async def refresh_query(
     "/history/{query_name}",
     response_model=WencaiHistoryResponse,
     summary="获取查询历史",
-    description="获取指定查询的历史数据统计",
+    description="获取指定问财查询模板在最近若干天内的抓取历史和记录数量变化。",
+    responses=WENCAI_HISTORY_SUCCESS_RESPONSE,
 )
 async def get_query_history(
-    query_name: str,
+    query_name: str = Path(..., description="预定义问财查询名称，如 qs_1 到 qs_9"),
     days: int = Query(7, ge=1, le=30, description="查询天数"),
     db: Session = Depends(get_db),
 ) -> WencaiHistoryResponse:
@@ -290,10 +451,11 @@ async def get_query_history(
     "/custom-query",
     response_model=WencaiCustomQueryResponse,
     summary="执行自定义查询",
-    description="执行用户自定义的问财查询（直接返回结果，不保存到数据库）",
+    description="执行用户输入的自然语言问财查询，直接返回结果预览而不写入数据库。",
 )
 async def execute_custom_query(
-    request: WencaiCustomQueryRequest, db: Session = Depends(get_db)
+    request: WencaiCustomQueryRequest = Body(..., openapi_examples=WENCAI_CUSTOM_QUERY_REQUEST_EXAMPLES),
+    db: Session = Depends(get_db),
 ) -> WencaiCustomQueryResponse:
     """
     执行自定义查询
@@ -376,7 +538,12 @@ async def execute_custom_query(
         raise HTTPException(status_code=500, detail=f"自定义查询执行失败: {str(e)}")
 
 
-@router.get("/health", summary="健康检查", description="检查问财API服务状态")
+@router.get(
+    "/health",
+    summary="健康检查",
+    description="检查问财 API 服务是否可用，并返回当前服务名称与版本信息。",
+    responses=WENCAI_HEALTH_SUCCESS_RESPONSE,
+)
 async def health_check():
     """
     健康检查

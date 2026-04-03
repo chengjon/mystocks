@@ -749,6 +749,38 @@ def test_watchlist_read_endpoints_have_docs_and_error_responses() -> None:
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
+def test_wencai_endpoints_have_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path, method, expected_params, expects_request_example, expects_success_example in [
+        ("/api/market/wencai/queries", "get", [], False, True),
+        ("/api/market/wencai/queries/{query_name}", "get", ["query_name"], False, True),
+        ("/api/market/wencai/query", "post", [], True, False),
+        ("/api/market/wencai/results/{query_name}", "get", ["query_name"], False, True),
+        ("/api/market/wencai/refresh/{query_name}", "post", ["query_name"], False, True),
+        ("/api/market/wencai/history/{query_name}", "get", ["query_name"], False, True),
+        ("/api/market/wencai/custom-query", "post", [], True, False),
+        ("/api/market/wencai/health", "get", [], False, True),
+    ]:
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expected_params:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+
+        if expects_request_example:
+            request_json = operation["requestBody"]["content"]["application/json"]
+            assert "example" in request_json or "examples" in request_json
+
+        if expects_success_example:
+            success_json = operation["responses"]["200"]["content"]["application/json"]
+            assert "example" in success_json or "examples" in success_json
+
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_monitoring_watchlist_endpoints_have_docs_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()
