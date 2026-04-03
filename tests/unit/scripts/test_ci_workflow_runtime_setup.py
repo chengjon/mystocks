@@ -158,6 +158,18 @@ def test_api_compliance_workflow_uses_ci_safe_pytest_invocations_for_heavy_suite
     )
 
 
+def test_api_compliance_threshold_only_gates_blocking_suites() -> None:
+    workflow = _read_workflow("api-compliance-testing.yml")
+    threshold_section = workflow.split("- name: Check Compliance Threshold", 1)[1]
+
+    assert "if overall_success_rate <" not in threshold_section
+    assert "blocking_success_rate" in threshold_section
+    assert "BLOCKING_SUITES" in threshold_section
+    assert '"Documentation Validation"' in threshold_section
+    assert '"Performance Tests"' in threshold_section
+    assert '"Security Tests"' in threshold_section
+
+
 def test_api_contract_and_api_file_workflows_install_backend_runtime_dependencies() -> None:
     contract_workflow = _read_workflow("api-contract-validation.yml")
     api_file_workflow = _read_workflow("api-file-tests.yml")

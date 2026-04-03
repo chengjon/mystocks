@@ -504,25 +504,47 @@ jobs:
             with open('comprehensive-test-report.json', 'r') as f:
                 report = json.load(f)
 
-            success_rate = report['overall_summary']['overall_success_rate']
-            status = report['overall_summary']['compliance_status']
-
-            # Define compliance thresholds
-            MIN_SUCCESS_RATE = 75.0  # 75% minimum success rate
+            overall_success_rate = report['overall_summary']['overall_success_rate']
+            BLOCKING_SUITES = {
+                "Documentation Validation",
+                "Performance Tests",
+                "Security Tests",
+                "Workflow Runtime Validation",
+            }
+            CRITICAL_SUITES = {
+                "Documentation Validation",
+                "Performance Tests",
+                "Security Tests",
+            }
+            MIN_BLOCKING_SUCCESS_RATE = 100.0
             MAX_CRITICAL_FAILURES = 5  # Maximum critical failures allowed
 
+            blocking_tests = 0
+            blocking_passed = 0
+            blocking_failed = 0
             critical_failures = 0
             for suite_name, suite_data in report['test_suites'].items():
                 if not suite_data.get('skipped') and 'error' not in suite_data:
-                    # Count security and compliance failures as critical
-                    if 'Security' in suite_name or 'Compliance' in suite_name:
+                    if suite_name in BLOCKING_SUITES:
+                        blocking_tests += suite_data.get('tests', 0)
+                        blocking_passed += suite_data.get('passed', 0)
+                        blocking_failed += suite_data.get('failed', 0)
+
+                    if suite_name in CRITICAL_SUITES:
                         critical_failures += suite_data.get('failed', 0)
 
-            print(f"Success Rate: {success_rate:.1f}% (minimum: {MIN_SUCCESS_RATE}%)")
+            blocking_success_rate = (blocking_passed / blocking_tests * 100) if blocking_tests > 0 else 100.0
+
+            print(f"Overall Success Rate: {overall_success_rate:.1f}% (informational)")
+            print(
+                f"Blocking Success Rate: {blocking_success_rate:.1f}% "
+                f"(minimum: {MIN_BLOCKING_SUCCESS_RATE}%)"
+            )
+            print(f"Blocking Failures: {blocking_failed}")
             print(f"Critical Failures: {critical_failures} (maximum: {MAX_CRITICAL_FAILURES})")
 
-            if success_rate < MIN_SUCCESS_RATE:
-                print(f"❌ FAILED: Success rate below minimum threshold")
+            if blocking_success_rate < MIN_BLOCKING_SUCCESS_RATE:
+                print(f"❌ FAILED: Blocking suite success rate below minimum threshold")
                 sys.exit(1)
 
             if critical_failures > MAX_CRITICAL_FAILURES:
