@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Body, Path
+from fastapi import APIRouter, Body, Path, Query
 
 from app.core.exceptions import BusinessException, NotFoundException, ValidationException
+from app.openapi_config import COMMON_RESPONSES
 from app.api.risk._shared import (
     ENHANCED_RISK_FEATURES_AVAILABLE,
     RISK_MANAGEMENT_V31_AVAILABLE,
@@ -13,7 +14,17 @@ from app.api.risk._shared import (
     logger,
 )
 
-router = APIRouter(prefix="/api/v1/risk", tags=["风险管理-止损"])
+RISK_STOP_LOSS_ROUTE_RESPONSES = {
+    400: COMMON_RESPONSES[400],
+    404: COMMON_RESPONSES[404],
+    422: COMMON_RESPONSES[422],
+    500: COMMON_RESPONSES[500],
+    503: {
+        "description": "止损增强服务不可用或尚未初始化",
+    },
+}
+
+router = APIRouter(prefix="/api/v1/risk", tags=["风险管理-止损"], responses=RISK_STOP_LOSS_ROUTE_RESPONSES)
 
 STOP_LOSS_ADD_POSITION_EXAMPLES = {
     "monitor_equity_position": {
@@ -188,8 +199,14 @@ async def remove_stop_loss_position(
         )
 
 
-@router.get("/v31/stop-loss/status/{position_id}", response_model=Dict[str, Any])
-async def get_stop_loss_status(position_id: str) -> Dict[str, Any]:
+@router.get(
+    "/v31/stop-loss/status/{position_id}",
+    response_model=Dict[str, Any],
+    description="查询指定持仓的 V3.1 止损监控状态，包括当前止损参数与命中情况。",
+)
+async def get_stop_loss_status(
+    position_id: str = Path(..., description="需要查询止损状态的持仓ID。"),
+) -> Dict[str, Any]:
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
             raise BusinessException(
@@ -216,7 +233,11 @@ async def get_stop_loss_status(position_id: str) -> Dict[str, Any]:
         )
 
 
-@router.get("/v31/stop-loss/overview", response_model=Dict[str, Any])
+@router.get(
+    "/v31/stop-loss/overview",
+    response_model=Dict[str, Any],
+    description="获取当前全部止损监控持仓的总览信息，用于盘中风控看板或批量巡检。",
+)
 async def get_stop_loss_overview() -> Dict[str, Any]:
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
@@ -276,9 +297,15 @@ async def batch_update_stop_loss_prices(
         )
 
 
-@router.get("/v31/stop-loss/history/performance", response_model=Dict[str, Any])
+@router.get(
+    "/v31/stop-loss/history/performance",
+    response_model=Dict[str, Any],
+    description="按策略类型、股票和时间窗口查询 V3.1 止损历史表现与执行效果统计。",
+)
 async def get_stop_loss_performance(
-    strategy_type: Optional[str] = None, symbol: Optional[str] = None, days: int = 30
+    strategy_type: Optional[str] = Query(None, description="可选的止损策略类型，用于筛选指定策略表现。"),
+    symbol: Optional[str] = Query(None, description="可选的股票代码，用于筛选单一标的止损表现。"),
+    days: int = Query(30, description="回溯统计的天数窗口，默认 30 天。"),
 ) -> Dict[str, Any]:
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
@@ -308,8 +335,15 @@ async def get_stop_loss_performance(
         )
 
 
-@router.get("/v31/stop-loss/history/recommendations", response_model=Dict[str, Any])
-async def get_stop_loss_recommendations(strategy_type: str, symbol: Optional[str] = None) -> Dict[str, Any]:
+@router.get(
+    "/v31/stop-loss/history/recommendations",
+    response_model=Dict[str, Any],
+    description="基于指定止损策略的历史执行结果，生成后续参数优化与使用建议。",
+)
+async def get_stop_loss_recommendations(
+    strategy_type: str = Query(..., description="用于生成推荐结论的止损策略类型。"),
+    symbol: Optional[str] = Query(None, description="可选的股票代码，用于生成单一标的建议。"),
+) -> Dict[str, Any]:
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
             raise BusinessException(

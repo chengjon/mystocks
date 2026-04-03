@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Set
 from fastapi import APIRouter, Body, Path, WebSocket, WebSocketDisconnect
 
 from app.core.exceptions import BusinessException, NotFoundException, ValidationException
+from app.openapi_config import COMMON_RESPONSES
 from app.api.risk._shared import (
     ENHANCED_RISK_FEATURES_AVAILABLE,
     RISK_MANAGEMENT_V31_AVAILABLE,
@@ -13,7 +14,17 @@ from app.api.risk._shared import (
     logger,
 )
 
-router = APIRouter(prefix="/api/v1/risk", tags=["风险管理-V3.1"])
+RISK_V31_ROUTE_RESPONSES = {
+    400: COMMON_RESPONSES[400],
+    404: COMMON_RESPONSES[404],
+    422: COMMON_RESPONSES[422],
+    500: COMMON_RESPONSES[500],
+    503: {
+        "description": "风险管理增强能力不可用或尚未初始化",
+    },
+}
+
+router = APIRouter(prefix="/api/v1/risk", tags=["风险管理-V3.1"], responses=RISK_V31_ROUTE_RESPONSES)
 
 RISK_WS_BROADCAST_EXAMPLES = {
     "broadcast_price_alert": {
@@ -29,8 +40,11 @@ RISK_WS_BROADCAST_EXAMPLES = {
 }
 
 
-@router.get("/v31/stock/{symbol}")
-async def get_stock_risk_v31(symbol: str) -> Dict[str, Any]:
+@router.get(
+    "/v31/stock/{symbol}",
+    description="获取指定股票在 V3.1 风险管理引擎下的最新风险评估结果，包含风险指标和计算时间。",
+)
+async def get_stock_risk_v31(symbol: str = Path(..., description="需要查询风险画像的股票代码。")) -> Dict[str, Any]:
     try:
         if not RISK_MANAGEMENT_V31_AVAILABLE:
             raise BusinessException(
@@ -65,8 +79,13 @@ async def get_stock_risk_v31(symbol: str) -> Dict[str, Any]:
         )
 
 
-@router.get("/v31/portfolio/{portfolio_id}")
-async def get_portfolio_risk_v31(portfolio_id: str) -> Dict[str, Any]:
+@router.get(
+    "/v31/portfolio/{portfolio_id}",
+    description="获取指定投资组合在 V3.1 风险管理引擎下的组合风险评估结果与版本信息。",
+)
+async def get_portfolio_risk_v31(
+    portfolio_id: str = Path(..., description="需要查询风险概览的投资组合ID。"),
+) -> Dict[str, Any]:
     try:
         if not RISK_MANAGEMENT_V31_AVAILABLE:
             raise BusinessException(
@@ -103,7 +122,10 @@ async def get_portfolio_risk_v31(portfolio_id: str) -> Dict[str, Any]:
         )
 
 
-@router.get("/v31/health")
+@router.get(
+    "/v31/health",
+    description="检查 V3.1 风险管理系统及其核心组件的可用性，返回当前初始化与依赖状态。",
+)
 async def get_risk_management_health() -> Dict[str, Any]:
     try:
         health_status = {
@@ -263,7 +285,10 @@ async def broadcast_risk_update(
         raise BusinessException(detail=f"广播失败: {str(e)}", status_code=500, error_code="BROADCAST_FAILED")
 
 
-@router.get("/v31/ws/connections")
+@router.get(
+    "/v31/ws/connections",
+    description="返回当前 V3.1 风险 WebSocket 通道的连接数与各主题订阅分布，用于运行态观测。",
+)
 async def get_websocket_connections():
     try:
         return {
