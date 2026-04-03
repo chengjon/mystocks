@@ -42,6 +42,47 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+PROMETHEUS_METRICS_ERROR_EXAMPLE = "# ERROR: metrics exporter unavailable\n"
+
+PROMETHEUS_HEALTH_RESPONSE_EXAMPLE = {
+    "status": "healthy",
+    "metrics_available": 42,
+    "last_update": "2026-04-03T00:00:00",
+    "exporter_version": "2.0.0",
+}
+
+PROMETHEUS_HEALTH_ERROR_EXAMPLE = {
+    "status": "unhealthy",
+    "error": "registry unavailable",
+    "last_update": "2026-04-03T00:00:00",
+}
+
+PROMETHEUS_LIST_RESPONSE_EXAMPLE = {
+    "total": 2,
+    "exporter_version": "2.0.0",
+    "metrics": [
+        {
+            "name": "mystocks_http_requests_total",
+            "type": "counter",
+            "help": "Total HTTP requests",
+            "labels": ["method", "endpoint", "status"],
+        },
+        {
+            "name": "mystocks_cache_hit_rate",
+            "type": "gauge",
+            "help": "Cache hit rate",
+            "labels": ["cache_type"],
+        },
+    ],
+}
+
+PROMETHEUS_LIST_ERROR_EXAMPLE = {
+    "total": 0,
+    "exporter_version": "2.0.0",
+    "metrics": [],
+    "error": "failed to collect metrics",
+}
+
 # ==================== 创建Prometheus注册表 ====================
 
 prometheus_registry = CollectorRegistry()
@@ -351,7 +392,16 @@ def update_health_metrics():
 # ==================== API 端点 ====================
 
 
-@router.get("/metrics", tags=["monitoring"])
+@router.get(
+    "/metrics",
+    tags=["monitoring"],
+    responses={
+        500: {
+            "description": "Prometheus 指标导出失败",
+            "content": {"text/plain": {"example": PROMETHEUS_METRICS_ERROR_EXAMPLE}},
+        }
+    },
+)
 async def metrics():
     """
     Prometheus 指标端点
@@ -378,7 +428,20 @@ async def metrics():
         return Response(content=f"# ERROR: {str(e)}\n", media_type=CONTENT_TYPE_LATEST, status_code=500)
 
 
-@router.get("/metrics/health", tags=["monitoring"])
+@router.get(
+    "/metrics/health",
+    tags=["monitoring"],
+    responses={
+        200: {
+            "description": "Prometheus 指标导出器健康状态",
+            "content": {"application/json": {"example": PROMETHEUS_HEALTH_RESPONSE_EXAMPLE}},
+        },
+        500: {
+            "description": "Prometheus 指标导出器健康检查失败",
+            "content": {"application/json": {"example": PROMETHEUS_HEALTH_ERROR_EXAMPLE}},
+        },
+    },
+)
 async def metrics_health():
     """
     Prometheus 健康检查端点
@@ -406,7 +469,20 @@ async def metrics_health():
         return {"status": "unhealthy", "error": str(e), "last_update": datetime.now().isoformat()}
 
 
-@router.get("/metrics/list", tags=["monitoring"])
+@router.get(
+    "/metrics/list",
+    tags=["monitoring"],
+    responses={
+        200: {
+            "description": "Prometheus 可用指标清单",
+            "content": {"application/json": {"example": PROMETHEUS_LIST_RESPONSE_EXAMPLE}},
+        },
+        500: {
+            "description": "Prometheus 指标清单获取失败",
+            "content": {"application/json": {"example": PROMETHEUS_LIST_ERROR_EXAMPLE}},
+        },
+    },
+)
 async def metrics_list():
     """
     列出所有可用的指标

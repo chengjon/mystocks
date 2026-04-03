@@ -8,11 +8,15 @@ from app.core.responses import UnifiedResponse, ok, server_error
 
 router = APIRouter()
 
-@router.get("/dragon-tiger/detail", response_model=UnifiedResponse)
+@router.get(
+    "/dragon-tiger/detail",
+    response_model=UnifiedResponse,
+    description="查询龙虎榜明细数据，支持按日期范围和返回条数筛选榜单结果。",
+)
 async def get_dragon_tiger_detail(
-    start_date: str = Query(...),
-    end_date: str = Query(...),
-    limit: int = 100,
+    start_date: str = Query(..., description="查询开始日期，格式为 YYYY-MM-DD。"),
+    end_date: str = Query(..., description="查询结束日期，格式为 YYYY-MM-DD。"),
+    limit: int = Query(100, description="单次请求返回的最大龙虎榜记录数。"),
     current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
     try:

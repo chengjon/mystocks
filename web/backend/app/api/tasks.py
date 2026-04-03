@@ -14,6 +14,7 @@ from typing import Any, Dict, List, Optional
 
 import structlog
 from fastapi import APIRouter, Body, Depends, Path, Query
+from pydantic import BaseModel, Field
 
 from app.api.task_security_support import (
     check_admin_privileges,
@@ -34,9 +35,81 @@ use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
 logger = structlog.get_logger()
 router = APIRouter(prefix="/api/tasks", tags=["tasks"])
 
+TASK_REGISTER_REQUEST_EXAMPLES = {
+    "manual_task": {
+        "summary": "注册手动执行任务",
+        "description": "创建一个可手动触发的数据同步任务。",
+        "value": {
+            "task_id": "daily_sync_job",
+            "task_name": "日终同步任务",
+            "task_type": "manual",
+            "task_module": "app.jobs.daily_sync",
+            "task_function": "run_daily_sync",
+            "description": "收盘后执行多源行情同步",
+            "priority": 500,
+            "schedule": None,
+            "params": {"market": "CN", "full_refresh": False},
+            "timeout": 3600,
+            "retry_count": 2,
+            "retry_delay": 60,
+            "dependencies": [],
+            "tags": ["sync", "daily"],
+            "auto_restart": False,
+            "stop_on_error": True,
+        },
+    }
+}
 
-@router.post("/register", response_model=TaskResponse)
-async def register_task(task_config: TaskConfig, current_user: User = Depends(get_current_user)):
+TASK_START_REQUEST_EXAMPLES = {
+    "start_with_runtime_params": {
+        "summary": "携带运行参数启动任务",
+        "description": "按任务ID启动任务，并覆盖本次执行所需的批量大小和优先级参数。",
+        "value": {
+            "batch_size": 100,
+            "priority": "high",
+            "dry_run": False,
+        },
+    }
+}
+
+TASK_IMPORT_REQUEST_EXAMPLES = {
+    "import_yaml_config": {
+        "summary": "导入任务配置文件",
+        "description": "从指定的 YAML 配置文件导入任务定义。",
+        "value": {"config_path": "/tmp/task-configs/daily-jobs.yaml"},
+    }
+}
+
+TASK_EXPORT_REQUEST_EXAMPLES = {
+    "export_yaml_config": {
+        "summary": "导出任务配置文件",
+        "description": "将当前任务配置导出到指定路径，便于备份或迁移。",
+        "value": {"output_path": "/tmp/task-configs/exported-jobs.yaml"},
+    }
+}
+
+
+class TaskImportRequest(BaseModel):
+    """任务配置导入请求"""
+
+    config_path: str = Field(..., description="待导入的任务配置文件路径。")
+
+
+class TaskExportRequest(BaseModel):
+    """任务配置导出请求"""
+
+    output_path: str = Field(..., description="导出后的任务配置文件输出路径。")
+
+
+@router.post(
+    "/register",
+    response_model=TaskResponse,
+    description="注册新的任务定义，并在任务管理系统中创建可调度或手动执行的任务配置。",
+)
+async def register_task(
+    task_config: TaskConfig = Body(..., openapi_examples=TASK_REGISTER_REQUEST_EXAMPLES),
+    current_user: User = Depends(get_current_user),
+):
     """
     注册新任务
 
@@ -236,9 +309,16 @@ async def get_task(
         raise BusinessException(detail=str(e), status_code=500, error_code="TASK_OPERATION_FAILED")
 
 
-@router.post("/{task_id}/start", response_model=TaskResponse)
-async def start_task(task_id: str, params: Optional[Dict[str, Any]] = Body(None)):
-    """启动任务"""
+@router.post(
+    "/{task_id}/start",
+    response_model=TaskResponse,
+    description="按任务ID启动指定任务，并支持在请求体中传入本次执行参数。",
+)
+async def start_task(
+    task_id: str = Path(..., description="需要启动的任务ID。"),
+    params: Optional[Dict[str, Any]] = Body(None, openapi_examples=TASK_START_REQUEST_EXAMPLES),
+):
+    """启动指定任务并接收运行时参数。"""
     try:
         response = await task_manager.start_task(task_id, params)
         if not response.success:
@@ -251,8 +331,12 @@ async def start_task(task_id: str, params: Optional[Dict[str, Any]] = Body(None)
         raise BusinessException(detail=str(e), status_code=500, error_code="TASK_OPERATION_FAILED")
 
 
-@router.post("/{task_id}/stop", response_model=TaskResponse)
-async def stop_task(task_id: str):
+@router.post(
+    "/{task_id}/stop",
+    response_model=TaskResponse,
+    description="按任务ID停止指定任务，并返回本次停止操作的执行结果。",
+)
+async def stop_task(task_id: str = Path(..., description="需要停止的任务ID。")):
     """停止任务"""
     try:
         response = task_manager.stop_task(task_id)
@@ -345,11 +429,17 @@ async def get_task_statistics():
         raise BusinessException(detail=str(e), status_code=500, error_code="TASK_OPERATION_FAILED")
 
 
-@router.post("/import", response_model=TaskResponse)
-async def import_config(config_path: str = Body(..., embed=True)):
+@router.post(
+    "/import",
+    response_model=TaskResponse,
+    description="从外部配置文件导入任务定义，并将其注册到任务管理系统中。",
+)
+async def import_config(
+    request: TaskImportRequest = Body(..., openapi_examples=TASK_IMPORT_REQUEST_EXAMPLES)
+):
     """导入任务配置"""
     try:
-        response = task_manager.import_config(config_path)
+        response = task_manager.import_config(request.config_path)
         if not response.success:
             raise BusinessException(detail=response.message, status_code=400, error_code="TASK_OPERATION_FAILED")
         return response
@@ -360,23 +450,31 @@ async def import_config(config_path: str = Body(..., embed=True)):
         raise BusinessException(detail=str(e), status_code=500, error_code="TASK_OPERATION_FAILED")
 
 
-@router.post("/export")
-async def export_config(output_path: str = Body(..., embed=True)):
+@router.post(
+    "/export",
+    description="将当前任务配置导出到指定文件路径，便于备份、审计或迁移。",
+)
+async def export_config(
+    request: TaskExportRequest = Body(..., openapi_examples=TASK_EXPORT_REQUEST_EXAMPLES)
+):
     """导出任务配置"""
     try:
-        task_manager.export_config(output_path)
+        task_manager.export_config(request.output_path)
         return {
             "success": True,
             "message": "Configuration exported successfully",
-            "path": output_path,
+            "path": request.output_path,
         }
     except Exception as e:
         logger.error("Failed to export config", error=str(e))
         raise BusinessException(detail=str(e), status_code=500, error_code="TASK_OPERATION_FAILED")
 
 
-@router.delete("/executions/cleanup")
-async def cleanup_executions(days: int = Query(7, ge=1, le=90)):
+@router.delete(
+    "/executions/cleanup",
+    description="清理超过指定保留天数的历史任务执行记录，并返回本次清理数量。",
+)
+async def cleanup_executions(days: int = Query(7, description="保留最近多少天的执行记录。", ge=1, le=90)):
     """清理旧的执行记录"""
     try:
         count = task_manager.cleanup_old_executions(days=days)

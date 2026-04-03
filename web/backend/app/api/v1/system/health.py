@@ -16,6 +16,20 @@ router = APIRouter(
 )
 
 
+SYSTEM_HEALTH_ERROR_RESPONSE = {
+    500: {
+        "description": "System health information is temporarily unavailable.",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "database health probe failed",
+                }
+            }
+        },
+    }
+}
+
+
 class DatabaseHealthResponse(BaseModel):
     """Database health check response"""
 
@@ -41,6 +55,7 @@ class DataClassificationStats(BaseModel):
     "/database",
     response_model=List[DatabaseHealthResponse],
     summary="Database Health Check",
+    responses=SYSTEM_HEALTH_ERROR_RESPONSE,
 )
 async def get_database_health():
     """
@@ -70,7 +85,11 @@ async def get_database_health():
     return mock_response
 
 
-@router.get("/classification/stats", summary="Data Classification Statistics")
+@router.get(
+    "/classification/stats",
+    summary="Data Classification Statistics",
+    responses=SYSTEM_HEALTH_ERROR_RESPONSE,
+)
 async def get_data_classification_stats():
     """
     获取数据分类统计信息

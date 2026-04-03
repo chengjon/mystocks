@@ -12,7 +12,7 @@ import logging
 from datetime import datetime
 from typing import Optional
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Path, Query, Header
+from fastapi import APIRouter, BackgroundTasks, Body, Depends, HTTPException, Path, Query, Header
 from sqlalchemy.orm import Session
 
 from app.api.strategy_management.backtest_status_contract import (
@@ -105,12 +105,47 @@ def _require_write_auth(authorization: Optional[str]) -> None:
     response_model=StrategyConfig,
     status_code=201,
     summary="创建新策略",
-    description="创建一个新的交易策略配置",
+    description="创建一个新的交易策略配置，并返回可直接用于策略管理页面展示的完整策略信息。",
 )
 async def create_strategy(
-    strategy: StrategyCreateRequest,
+    strategy: StrategyCreateRequest = Body(
+        ...,
+        openapi_examples={
+            "momentum_strategy": {
+                "summary": "创建动量策略",
+                "value": {
+                    "user_id": 1001,
+                    "strategy_name": "双均线突破",
+                    "strategy_type": "momentum",
+                    "description": "基于短中期均线突破信号的趋势跟踪策略",
+                    "parameters": [
+                        {
+                            "name": "short_period",
+                            "value": 5,
+                            "description": "短周期均线窗口",
+                            "data_type": "int",
+                        },
+                        {
+                            "name": "long_period",
+                            "value": 20,
+                            "description": "长周期均线窗口",
+                            "data_type": "int",
+                        },
+                    ],
+                    "max_position_size": 0.2,
+                    "stop_loss_percent": 5.0,
+                    "take_profit_percent": 12.0,
+                    "tags": ["趋势", "均线"],
+                },
+            }
+        },
+    ),
     strategy_repo: StrategyRepository = Depends(get_strategy_repository),
-    authorization: Optional[str] = Header(default=None, alias="Authorization"),
+    authorization: Optional[str] = Header(
+        default=None,
+        alias="Authorization",
+        description="Bearer 令牌。非测试环境下写操作必填，格式为 `Bearer <token>`。",
+    ),
 ):
     """
     创建新策略
@@ -299,14 +334,37 @@ async def delete_strategy(
     response_model=BacktestResult,
     status_code=202,
     summary="执行回测",
-    description="异步执行策略回测,返回回测任务信息",
+    description="异步执行策略回测任务，并返回已登记的回测任务信息与初始状态。",
 )
 async def execute_backtest(
-    backtest_req: BacktestRequest,
     background_tasks: BackgroundTasks,
+    backtest_req: BacktestRequest = Body(
+        ...,
+        openapi_examples={
+            "swing_backtest": {
+                "summary": "执行波段策略回测",
+                "value": {
+                    "strategy_id": 123,
+                    "user_id": 1001,
+                    "symbols": ["000001.SZ", "600000.SH"],
+                    "start_date": "2024-01-01",
+                    "end_date": "2024-12-31",
+                    "initial_capital": 100000.0,
+                    "commission_rate": 0.0003,
+                    "slippage_rate": 0.001,
+                    "benchmark": "000300.SH",
+                    "include_analysis": True,
+                },
+            }
+        },
+    ),
     strategy_repo: StrategyRepository = Depends(get_strategy_repository),
     backtest_repo: BacktestRepository = Depends(get_backtest_repository),
-    authorization: Optional[str] = Header(default=None, alias="Authorization"),
+    authorization: Optional[str] = Header(
+        default=None,
+        alias="Authorization",
+        description="Bearer 令牌。非测试环境下写操作必填，格式为 `Bearer <token>`。",
+    ),
 ):
     """
     执行回测

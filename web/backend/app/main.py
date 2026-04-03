@@ -41,7 +41,7 @@ from .core.socketio_manager import get_socketio_manager
 from .middleware.response_format import ResponseFormatMiddleware
 
 # 导入OpenAPI配置
-from .openapi_config import get_openapi_config
+from .openapi_config import get_openapi_config, install_openapi_schema_extra
 from .router_registry import register_api_routes
 
 # 导入缓存淘汰调度器
@@ -329,6 +329,7 @@ app = FastAPI(
     swagger_ui_oauth2_redirect_url=openapi_config.get("swagger_ui_oauth2_redirect_url"),
     lifespan=lifespan,  # 添加生命周期管理
 )
+install_openapi_schema_extra(app)
 
 # 挂载 Swagger UI 静态文件（来自 swagger-ui-py 包）
 import swagger_ui
@@ -506,8 +507,100 @@ async def log_requests(request: Request, call_next):
     return response
 
 
+HEALTH_CHECK_RESPONSE_EXAMPLE = {
+    "success": True,
+    "message": "系统健康检查完成",
+    "data": {
+        "service": "mystocks-web-api",
+        "status": "healthy",
+        "timestamp": 1712073600.0,
+        "version": "1.0.0",
+        "middleware": "response_format_enabled",
+    },
+    "request_id": "demo-request-id",
+}
+
+READINESS_SUCCESS_RESPONSE_EXAMPLE = {
+    "success": True,
+    "message": "系统就绪检查完成",
+    "data": {
+        "service": "mystocks-web-api",
+        "status": "ready",
+        "timestamp": 1712073600.0,
+        "version": "1.0.0",
+        "checks": {
+            "postgresql": {"status": "up", "message": "connected"},
+            "redis": {"status": "up", "message": "connected"},
+        },
+    },
+    "request_id": "demo-request-id",
+}
+
+READINESS_ERROR_RESPONSE_EXAMPLE = {
+    "success": False,
+    "code": 503,
+    "message": "系统未就绪",
+    "data": {
+        "service": "mystocks-web-api",
+        "status": "not_ready",
+        "timestamp": 1712073600.0,
+        "version": "1.0.0",
+        "checks": {
+            "postgresql": {"status": "down", "message": "connection refused"},
+            "redis": {"status": "up", "message": "connected"},
+        },
+    },
+    "request_id": "demo-request-id",
+}
+
+SOCKETIO_STATUS_RESPONSE_EXAMPLE = {
+    "status": "active",
+    "service": "Socket.IO",
+    "statistics": {
+        "connected_clients": 3,
+        "active_rooms": 2,
+    },
+    "timestamp": 1712073600.0,
+}
+
+SOCKETIO_STATUS_ERROR_RESPONSE_EXAMPLE = {
+    "detail": "Socket.IO status unavailable",
+}
+
+ROOT_RESPONSE_EXAMPLE = {
+    "success": True,
+    "message": "欢迎使用 MyStocks Web API",
+    "data": {
+        "message": "MyStocks Web API",
+        "docs": "/api/docs",
+        "swagger": "/api/docs",
+        "redoc": "/api/redoc",
+        "health": "/health",
+        "version": "1.0.0",
+    },
+    "request_id": "demo-request-id",
+}
+
+ROOT_ERROR_RESPONSE_EXAMPLE = {
+    "success": False,
+    "code": 500,
+    "message": "根路径信息获取失败",
+    "request_id": "demo-request-id",
+}
+
+
 # 健康检查端点 - 使用统一响应格式
-@app.get("/health")
+@app.get(
+    "/health",
+    summary="系统健康检查",
+    tags=["system"],
+    responses={
+        200: {
+            "description": "系统健康检查结果",
+            "content": {"application/json": {"example": HEALTH_CHECK_RESPONSE_EXAMPLE}},
+        }
+    },
+)
 async def health_check(request: Request):
     """系统健康检查"""
     # 获取请求ID
@@ -528,8 +621,36 @@ async def health_check(request: Request):
     )
 
 
-@app.get("/health/ready")
-@app.get("/api/health/ready")
+@app.get(
+    "/health/ready",
+    summary="系统就绪检查",
+    tags=["system"],
+    responses={
+        200: {
+            "description": "系统已就绪",
+            "content": {"application/json": {"example": READINESS_SUCCESS_RESPONSE_EXAMPLE}},
+        },
+        503: {
+            "description": "系统未就绪",
+            "content": {"application/json": {"example": READINESS_ERROR_RESPONSE_EXAMPLE}},
+        },
+    },
+)
+@app.get(
+    "/api/health/ready",
+    summary="系统就绪检查",
+    tags=["system"],
+    responses={
+        200: {
+            "description": "系统已就绪",
+            "content": {"application/json": {"example": READINESS_SUCCESS_RESPONSE_EXAMPLE}},
+        },
+        503: {
+            "description": "系统未就绪",
+            "content": {"application/json": {"example": READINESS_ERROR_RESPONSE_EXAMPLE}},
+        },
+    },
+)
 async def readiness_check(request: Request):
     """系统就绪探针，校验 PostgreSQL / Redis 连通性。"""
     request_id = getattr(request.state, "request_id", None)
@@ -569,7 +690,22 @@ async def prometheus_metrics():
 
 
 # Socket.IO健康检查端点
-@app.get("/api/socketio-status")
+@app.get(
+    "/api/socketio-status",
+    summary="Socket.IO 服务状态",
+    description="返回 Socket.IO 服务运行状态、连接统计与时间戳，用于实时通信链路巡检。",
+    tags=["system"],
+    responses={
+        200: {
+            "description": "Socket.IO 服务状态",
+            "content": {"application/json": {"example": SOCKETIO_STATUS_RESPONSE_EXAMPLE}},
+        },
+        503: {
+            "description": "Socket.IO 状态不可用",
+            "content": {"application/json": {"example": SOCKETIO_STATUS_ERROR_RESPONSE_EXAMPLE}},
+        },
+    },
+)
 async def socketio_status():
     """Socket.IO服务器状态"""
     stats = socketio_manager.get_stats()
@@ -611,7 +747,22 @@ async def get_csrf_token(request: Request):
 
 
 # 根路径重定向到文档 - 使用统一响应格式
-@app.get("/")
+@app.get(
+    "/",
+    summary="API 根入口",
+    description="返回 API 文档、健康检查与版本等入口信息，作为后端服务的轻量导航响应。",
+    tags=["system"],
+    responses={
+        200: {
+            "description": "API 根入口信息",
+            "content": {"application/json": {"example": ROOT_RESPONSE_EXAMPLE}},
+        },
+        500: {
+            "description": "API 根入口信息获取失败",
+            "content": {"application/json": {"example": ROOT_ERROR_RESPONSE_EXAMPLE}},
+        },
+    },
+)
 async def root(request: Request):
     """根路径重定向到 API 文档"""
     # 获取请求ID

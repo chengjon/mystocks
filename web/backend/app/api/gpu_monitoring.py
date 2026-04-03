@@ -33,6 +33,56 @@ logger = logging.getLogger(__name__)
 # 创建路由器
 router = APIRouter(prefix="/api/gpu", tags=["gpu-monitoring"])
 
+GPU_STATUS_RESPONSE_EXAMPLE = {
+    "success": True,
+    "message": "GPU状态查询成功",
+    "data": {
+        "gpus": [
+            {
+                "device_id": 0,
+                "name": "NVIDIA GeForce RTX 3090",
+                "gpu_utilization": 75.5,
+                "memory_used": 18000,
+                "memory_total": 24576,
+                "memory_utilization": 73.2,
+                "temperature": 68.0,
+                "power_usage": 320.5,
+                "sm_clock": 1755,
+                "memory_clock": 9751,
+            }
+        ]
+    },
+    "request_id": "demo-request-id",
+}
+
+GPU_PERFORMANCE_RESPONSE_EXAMPLE = {
+    "success": True,
+    "message": "GPU性能指标查询成功",
+    "data": {
+        "metrics": [
+            {
+                "device_id": 0,
+                "matrix_gflops": 662.52,
+                "matrix_speedup": 187.35,
+                "memory_gflops": 450.2,
+                "memory_speedup": 82.53,
+                "throughput": 1000000.0,
+                "timestamp": 1712073600.0,
+            }
+        ]
+    },
+    "request_id": "demo-request-id",
+}
+
+GPU_MONITORING_ERROR_RESPONSE_EXAMPLE = {
+    "success": False,
+    "code": 500,
+    "message": "GPU监控服务不可用",
+    "request_id": "demo-request-id",
+}
+
+GPU_METRICS_ERROR_RESPONSE_EXAMPLE = "GPU metrics exporter unavailable\n"
+
 
 # ==================== 数据模型 ====================
 
@@ -67,8 +117,23 @@ class GPUPerformanceMetrics(BaseModel):
 # ==================== API端点 ====================
 
 
-@router.get("/status")
-async def get_gpu_status(request: Request, device_id: Optional[int] = None):
+@router.get(
+    "/status",
+    responses={
+        200: {
+            "description": "GPU 实时状态",
+            "content": {"application/json": {"example": GPU_STATUS_RESPONSE_EXAMPLE}},
+        },
+        500: {
+            "description": "GPU 状态查询失败",
+            "content": {"application/json": {"example": GPU_MONITORING_ERROR_RESPONSE_EXAMPLE}},
+        },
+    },
+)
+async def get_gpu_status(
+    request: Request,
+    device_id: Optional[int] = Query(None, description="GPU设备ID（可选，不指定则返回所有GPU）"),
+):
     """
     获取GPU实时状态
 
@@ -110,8 +175,23 @@ async def get_gpu_status(request: Request, device_id: Optional[int] = None):
     )
 
 
-@router.get("/performance")
-async def get_gpu_performance(request: Request, device_id: Optional[int] = None):
+@router.get(
+    "/performance",
+    responses={
+        200: {
+            "description": "GPU 性能指标",
+            "content": {"application/json": {"example": GPU_PERFORMANCE_RESPONSE_EXAMPLE}},
+        },
+        500: {
+            "description": "GPU 性能指标查询失败",
+            "content": {"application/json": {"example": GPU_MONITORING_ERROR_RESPONSE_EXAMPLE}},
+        },
+    },
+)
+async def get_gpu_performance(
+    request: Request,
+    device_id: Optional[int] = Query(None, description="GPU设备ID（可选，不指定则返回所有GPU）"),
+):
     """
     获取GPU性能指标
 
@@ -149,7 +229,15 @@ async def get_gpu_performance(request: Request, device_id: Optional[int] = None)
     )
 
 
-@router.get("/metrics")
+@router.get(
+    "/metrics",
+    responses={
+        500: {
+            "description": "Prometheus GPU 指标导出失败",
+            "content": {"text/plain": {"example": GPU_METRICS_ERROR_RESPONSE_EXAMPLE}},
+        }
+    },
+)
 async def get_prometheus_metrics(request: Request):
     """
     Prometheus格式指标导出端点

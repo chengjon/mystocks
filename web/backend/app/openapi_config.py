@@ -13,7 +13,10 @@ Date: 2025-11-06
 """
 
 import os
+from copy import deepcopy
 from typing import Any, Dict
+
+from fastapi import FastAPI
 
 # ==================== API 元数据 ====================
 
@@ -504,6 +507,13 @@ TradingView图表组件集成。
 # ==================== 安全方案 ====================
 
 SECURITY_SCHEMES = {
+    # 兼容当前文档校验器与历史对外约定，保留标准 Bearer 名称。
+    "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT Token认证。在请求头中添加: `Authorization: Bearer <token>`",
+    },
     "BearerAuth": {
         "type": "http",
         "scheme": "bearer",
@@ -681,7 +691,34 @@ def get_openapi_schema_extra() -> Dict[str, Any]:
             "responses": COMMON_RESPONSES,
         },
         "security": [
-            {"BearerAuth": []},  # 默认需要JWT Token
+            {"Bearer": []},  # 默认需要JWT Token
             {"CSRFToken": []},  # 修改操作需要CSRF Token
         ],
     }
+
+
+def _merge_openapi_schema(base_schema: Dict[str, Any], extra_schema: Dict[str, Any]) -> Dict[str, Any]:
+    """递归合并额外 OpenAPI 配置，保留 FastAPI 自动生成的 schema 内容。"""
+    for key, value in extra_schema.items():
+        if isinstance(value, dict) and isinstance(base_schema.get(key), dict):
+            _merge_openapi_schema(base_schema[key], value)
+            continue
+
+        base_schema[key] = deepcopy(value)
+
+    return base_schema
+
+
+def install_openapi_schema_extra(app: FastAPI) -> None:
+    """给 FastAPI 实例挂接 schema 扩展，避免 servers/security 配置丢失。"""
+    original_openapi = app.openapi
+
+    def custom_openapi():
+        if app.openapi_schema is not None:
+            return app.openapi_schema
+
+        schema = original_openapi()
+        app.openapi_schema = _merge_openapi_schema(schema, get_openapi_schema_extra())
+        return app.openapi_schema
+
+    app.openapi = custom_openapi

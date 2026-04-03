@@ -29,7 +29,7 @@ import logging
 from typing import Optional
 
 from config.data_sources_loader import YAML_DATA_SOURCES_REGISTRY_PATH
-from fastapi import APIRouter, Depends, Query, Request, Header, HTTPException
+from fastapi import APIRouter, Body, Depends, Header, HTTPException, Path, Query, Request
 
 # 导入统一响应格式
 from app.api.data_source_config_schemas import (
@@ -66,6 +66,88 @@ router = APIRouter(
     },
 )
 
+ROLLBACK_REQUEST_EXAMPLES = {
+    "restore_specific_version": {
+        "summary": "回滚到指定历史版本",
+        "description": "将 akshare.stock_zh_a_hist 回滚到第 3 个历史版本。",
+        "value": {
+            "changed_by": "release-operator",
+        },
+    }
+}
+
+DATA_SOURCE_CREATE_EXAMPLES = {
+    "create_daily_kline_source": {
+        "summary": "创建日线数据源配置",
+        "description": "新增一个 AkShare A 股日线接口配置。",
+        "value": {
+            "endpoint_name": "akshare.stock_zh_a_hist",
+            "source_name": "akshare",
+            "source_type": "http",
+            "data_category": "DAILY_KLINE",
+            "parameters": {"adjust": "qfq", "period": "daily"},
+            "test_parameters": {"symbol": "600519", "start_date": "2024-01-01", "end_date": "2024-01-31"},
+            "priority": 3,
+            "description": "A股日线历史行情数据源",
+        },
+    }
+}
+
+DATA_SOURCE_UPDATE_EXAMPLES = {
+    "update_priority_and_status": {
+        "summary": "更新数据源优先级与状态",
+        "description": "将现有数据源切换为维护态并调整优先级。",
+        "value": {
+            "priority": 5,
+            "status": "maintenance",
+            "description": "维护窗口期间降级使用",
+        },
+    }
+}
+
+BATCH_OPERATION_EXAMPLES = {
+    "mixed_batch_operations": {
+        "summary": "批量创建、更新、删除",
+        "description": "一次提交多个数据源配置操作。",
+        "value": {
+            "operations": [
+                {
+                    "action": "create",
+                    "config": {
+                        "endpoint_name": "akshare.stock_intraday_em",
+                        "source_name": "akshare",
+                        "source_type": "http",
+                        "data_category": "MINUTE_KLINE",
+                        "parameters": {"period": "1"},
+                        "test_parameters": {"symbol": "600519"},
+                        "priority": 4,
+                        "description": "分时行情数据源",
+                    },
+                },
+                {
+                    "action": "update",
+                    "endpoint_name": "akshare.stock_zh_a_hist",
+                    "updates": {"priority": 2, "description": "提升为主用数据源"},
+                },
+                {
+                    "action": "delete",
+                    "endpoint_name": "legacy.deprecated_source",
+                },
+            ]
+        },
+    }
+}
+
+RELOAD_REQUEST_EXAMPLES = {
+    "reload_registry": {
+        "summary": "触发配置热重载",
+        "description": "通知系统重新读取 YAML 配置并刷新内存注册表。",
+        "value": {
+            "changed_by": "release-operator",
+        },
+    }
+}
+
 
 # ==================== Helper Functions ====================
 
@@ -87,7 +169,13 @@ def get_config_manager():
     return ConfigManager(yaml_config_path=yaml_config_path, postgresql_access=postgresql_access)
 
 
-def get_current_user(authorization: Optional[str] = Header(default=None, alias="Authorization")) -> str:
+def get_current_user(
+    authorization: Optional[str] = Header(
+        default=None,
+        alias="Authorization",
+        description="Bearer 认证令牌，格式为 `Bearer <token>`。",
+    )
+) -> str:
     """获取当前用户"""
     if settings.testing:
         return "system"
@@ -144,7 +232,11 @@ def handle_config_error(error: str, request_id: Optional[str] = None) -> Unified
 
 
 @router.post("/", response_model=UnifiedResponse, status_code=201)
-async def create_data_source(config: DataSourceCreate, request: Request, current_user: str = Depends(get_current_user)):
+async def create_data_source(
+    request: Request,
+    config: DataSourceCreate = Body(..., openapi_examples=DATA_SOURCE_CREATE_EXAMPLES),
+    current_user: str = Depends(get_current_user),
+):
     """
     创建新的数据源配置
 
@@ -209,7 +301,10 @@ async def create_data_source(config: DataSourceCreate, request: Request, current
 
 @router.put("/{endpoint_name}", response_model=UnifiedResponse)
 async def update_data_source(
-    endpoint_name: str, updates: DataSourceUpdate, request: Request, current_user: str = Depends(get_current_user)
+    request: Request,
+    endpoint_name: str = Path(..., description="需要更新的数据源端点名称。"),
+    updates: DataSourceUpdate = Body(..., openapi_examples=DATA_SOURCE_UPDATE_EXAMPLES),
+    current_user: str = Depends(get_current_user),
 ):
     """
     更新数据源配置
@@ -283,7 +378,11 @@ async def update_data_source(
 
 
 @router.delete("/{endpoint_name}", response_model=UnifiedResponse)
-async def delete_data_source(endpoint_name: str, request: Request, current_user: str = Depends(get_current_user)):
+async def delete_data_source(
+    request: Request,
+    endpoint_name: str = Path(..., description="需要删除的数据源端点名称。"),
+    current_user: str = Depends(get_current_user),
+):
     """
     删除数据源配置
 
@@ -326,7 +425,10 @@ async def delete_data_source(endpoint_name: str, request: Request, current_user:
 
 
 @router.get("/{endpoint_name}", response_model=UnifiedResponse)
-async def get_data_source(endpoint_name: str, request: Request):
+async def get_data_source(
+    request: Request,
+    endpoint_name: str = Path(..., description="需要查询详情的数据源端点名称。"),
+):
     """
     获取单个数据源配置
 
@@ -412,7 +514,9 @@ async def list_data_sources(
 
 @router.post("/batch", response_model=UnifiedResponse)
 async def batch_operations(
-    batch_request: BatchOperationRequest, request: Request, current_user: str = Depends(get_current_user)
+    request: Request,
+    batch_request: BatchOperationRequest = Body(..., openapi_examples=BATCH_OPERATION_EXAMPLES),
+    current_user: str = Depends(get_current_user),
 ):
     """
     批量操作数据源配置
@@ -521,8 +625,8 @@ async def batch_operations(
 
 @router.get("/{endpoint_name}/versions", response_model=UnifiedResponse)
 async def get_version_history(
-    endpoint_name: str,
     request: Request,
+    endpoint_name: str = Path(..., description="需要查询版本历史的数据源端点名称。"),
     limit: int = Query(10, description="返回数量限制", ge=1, le=100),
 ):
     """
@@ -584,10 +688,10 @@ async def get_version_history(
 
 @router.post("/{endpoint_name}/rollback/{version}", response_model=UnifiedResponse)
 async def rollback_to_version(
-    endpoint_name: str,
-    version: int,
     request: Request,
-    rollback_req: RollbackRequest,
+    endpoint_name: str = Path(..., description="需要回滚的数据源端点名称。"),
+    version: int = Path(..., description="目标回滚版本号。", ge=1),
+    rollback_req: RollbackRequest = Body(..., openapi_examples=ROLLBACK_REQUEST_EXAMPLES),
     current_user: str = Depends(get_current_user),
 ):
     """
@@ -639,7 +743,11 @@ async def rollback_to_version(
 
 
 @router.post("/reload", response_model=UnifiedResponse)
-async def reload_config(request: Request, reload_req: ReloadRequest, current_user: str = Depends(get_current_user)):
+async def reload_config(
+    request: Request,
+    reload_req: ReloadRequest = Body(..., openapi_examples=RELOAD_REQUEST_EXAMPLES),
+    current_user: str = Depends(get_current_user),
+):
     """
     触发配置热重载
 

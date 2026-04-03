@@ -234,14 +234,14 @@ class AlertRecordsResponse(BaseModel):
 
 @router.get("/alerts", response_model=AlertRecordsResponse)
 async def get_alert_records(
-    symbol: Optional[str] = None,
-    alert_type: Optional[str] = None,
-    alert_level: Optional[AlertLevel] = None,
-    is_read: Optional[bool] = None,
-    start_date: Optional[date] = None,
-    end_date: Optional[date] = None,
-    limit: int = Query(100, ge=1, le=1000),
-    offset: int = Query(0, ge=0),
+    symbol: Optional[str] = Query(None, description="按股票代码筛选告警记录。"),
+    alert_type: Optional[str] = Query(None, description="按告警类型筛选，例如 limit_up 或 volume_spike。"),
+    alert_level: Optional[AlertLevel] = Query(None, description="按告警等级筛选，例如 info、warning 或 critical。"),
+    is_read: Optional[bool] = Query(None, description="按已读状态筛选告警记录。"),
+    start_date: Optional[date] = Query(None, description="限制返回结果的开始日期，包含当天。"),
+    end_date: Optional[date] = Query(None, description="限制返回结果的结束日期，包含当天。"),
+    limit: int = Query(100, ge=1, le=1000, description="单次请求返回的最大告警记录数。"),
+    offset: int = Query(0, ge=0, description="分页偏移量，用于配合 limit 翻页。"),
     current_user: User = Depends(get_current_user),
 ):
     """
@@ -461,10 +461,10 @@ async def fetch_realtime_data(symbols: Optional[List[str]] = None, current_user:
 
 @router.get("/dragon-tiger", response_model=List[DragonTigerListResponse])
 async def get_dragon_tiger_list(
-    trade_date: Optional[date] = None,
-    symbol: Optional[str] = None,
-    min_net_amount: Optional[float] = None,
-    limit: int = Query(100, ge=1, le=500),
+    trade_date: Optional[date] = Query(None, description="按交易日期筛选龙虎榜数据，默认当天。"),
+    symbol: Optional[str] = Query(None, description="按股票代码筛选龙虎榜数据。"),
+    min_net_amount: Optional[float] = Query(None, description="按最小净买入额筛选龙虎榜记录。"),
+    limit: int = Query(100, ge=1, le=500, description="返回记录数量上限。"),
     current_user: User = Depends(get_current_user),
 ):
     """

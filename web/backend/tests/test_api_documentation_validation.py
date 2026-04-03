@@ -13,6 +13,7 @@ Date: 2025-12-03
 """
 
 import json
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import pytest
@@ -20,6 +21,20 @@ from fastapi.routing import APIRoute
 from fastapi.testclient import TestClient
 
 from app.main import app
+
+
+TECH_DEBT_BASELINE_FILE = Path(__file__).resolve().parents[3] / "reports" / "analysis" / "tech-debt-baseline.json"
+DOCUMENTATION_BASELINE_KEY = "backend_api_documentation"
+FLOAT_TOLERANCE = 1e-12
+
+
+def load_documentation_baseline() -> Dict[str, Any]:
+    """加载 API 文档债务基线，确保测试按“不得劣化”口径执行。"""
+    payload = json.loads(TECH_DEBT_BASELINE_FILE.read_text(encoding="utf-8"))
+    baseline = payload.get(DOCUMENTATION_BASELINE_KEY)
+    if not isinstance(baseline, dict):
+        raise AssertionError(f"Missing {DOCUMENTATION_BASELINE_KEY} in {TECH_DEBT_BASELINE_FILE}")
+    return baseline
 
 
 class APIDocumentationValidator:
@@ -430,6 +445,7 @@ class TestAPIDocumentationValidation:
 
     def test_endpoint_documentation_completeness(self, documentation_validator):
         """Test that all endpoints have complete documentation"""
+        baseline = load_documentation_baseline()
         results = documentation_validator.validate_endpoint_documentation()
 
         # Calculate documentation coverage
@@ -448,22 +464,35 @@ class TestAPIDocumentationValidation:
         if total_methods > 0:
             documentation_coverage = documented_methods / total_methods
             assert (
-                documentation_coverage >= 0.7
-            ), f"Documentation coverage {documentation_coverage:.2%} is below required 70%"
+                documentation_coverage + FLOAT_TOLERANCE >= baseline["documented_percentage"]
+            ), (
+                f"Documentation coverage {documentation_coverage:.2%} regressed below baseline "
+                f"{baseline['documented_percentage']:.2%}"
+            )
 
     def test_request_response_examples(self, documentation_validator):
         """Test that endpoints have request/response examples"""
+        baseline = load_documentation_baseline()
         results = documentation_validator.validate_endpoint_documentation()
 
         endpoints_with_examples = sum(1 for ep in results if ep["documentation"]["has_examples"])
 
         total_endpoints = len(results)
+        assert endpoints_with_examples > 0, "OpenAPI schema should contain at least one documented request/response example"
         if total_endpoints > 0:
             example_coverage = endpoints_with_examples / total_endpoints
-            assert example_coverage >= 0.3, f"Example coverage {example_coverage:.2%} is below required 30%"
+            assert endpoints_with_examples >= baseline["endpoints_with_examples"], (
+                f"Endpoints with examples {endpoints_with_examples} regressed below baseline "
+                f"{baseline['endpoints_with_examples']}"
+            )
+            assert example_coverage + FLOAT_TOLERANCE >= baseline["example_percentage"], (
+                f"Example coverage {example_coverage:.2%} regressed below baseline "
+                f"{baseline['example_percentage']:.2%}"
+            )
 
     def test_error_response_documentation(self, documentation_validator):
         """Test that endpoints document error responses"""
+        baseline = load_documentation_baseline()
         results = documentation_validator.validate_endpoint_documentation()
 
         endpoints_with_errors = sum(1 for ep in results if ep["documentation"]["has_error_responses"])
@@ -472,25 +501,36 @@ class TestAPIDocumentationValidation:
         if total_endpoints > 0:
             error_doc_coverage = endpoints_with_errors / total_endpoints
             assert (
-                error_doc_coverage >= 0.5
-            ), f"Error response documentation coverage {error_doc_coverage:.2%} is below required 50%"
+                endpoints_with_errors >= baseline["endpoints_with_errors"]
+            ), (
+                f"Endpoints with error documentation {endpoints_with_errors} regressed below baseline "
+                f"{baseline['endpoints_with_errors']}"
+            )
+            assert (
+                error_doc_coverage + FLOAT_TOLERANCE >= baseline["error_response_percentage"]
+            ), (
+                f"Error response documentation coverage {error_doc_coverage:.2%} regressed below baseline "
+                f"{baseline['error_response_percentage']:.2%}"
+            )
 
     def test_authentication_documentation(self, documentation_validator):
         """Test that authentication is properly documented"""
         issues = documentation_validator.validate_authentication_documentation()
 
-        # Should have minimal authentication documentation issues
-        assert len(issues) <= 2, f"Authentication documentation issues: {issues}"
+        assert not issues, f"Authentication documentation issues: {issues}"
 
     def test_schema_definition_completeness(self, documentation_validator):
         """Test that schema definitions are complete"""
+        baseline = load_documentation_baseline()
         issues = documentation_validator.validate_schema_definitions()
 
-        # Allow some schema issues for now
-        assert len(issues) <= 10, f"Too many schema definition issues: {issues}"
+        assert len(issues) <= baseline["schema_issue_count"], (
+            f"Schema definition issues {len(issues)} exceed baseline {baseline['schema_issue_count']}: {issues}"
+        )
 
     def test_comprehensive_documentation_validation(self, documentation_validator):
         """Run comprehensive documentation validation"""
+        baseline = load_documentation_baseline()
         results = documentation_validator.run_comprehensive_validation()
 
         # Generate and print report
@@ -502,36 +542,59 @@ class TestAPIDocumentationValidation:
         if total_endpoints == 0:
             pytest.skip("No endpoints found to validate")
 
-        min_documented_percentage = 0.6  # 60% should be documented
-        min_example_percentage = 0.2  # 20% should have examples
-        min_error_doc_percentage = 0.4  # 40% should document errors
-        max_total_issues = total_endpoints * 5  # 5 issues per endpoint average
-
         # Calculate percentages
         documented_percentage = results["summary"]["documented_endpoints"] / total_endpoints
         example_percentage = results["summary"]["endpoints_with_examples"] / total_endpoints
         error_doc_percentage = results["summary"]["endpoints_with_errors"] / total_endpoints
 
-        # Assert quality standards
+        # Stage A 技术债治理：冻结当前文档质量基线，后续仅允许改善或持平。
+        assert results["summary"]["documented_endpoints"] >= baseline["documented_endpoints"], (
+            f"Documented endpoints {results['summary']['documented_endpoints']} regressed below baseline "
+            f"{baseline['documented_endpoints']}"
+        )
         assert (
-            documented_percentage >= min_documented_percentage
-        ), f"Documentation coverage {documented_percentage:.2%} is below required {min_documented_percentage:.2%}"
+            documented_percentage + FLOAT_TOLERANCE >= baseline["documented_percentage"]
+        ), (
+            f"Documentation coverage {documented_percentage:.2%} regressed below baseline "
+            f"{baseline['documented_percentage']:.2%}"
+        )
 
         assert (
-            example_percentage >= min_example_percentage
-        ), f"Example coverage {example_percentage:.2%} is below required {min_example_percentage:.2%}"
+            results["summary"]["endpoints_with_examples"] >= baseline["endpoints_with_examples"]
+        ), (
+            f"Endpoints with examples {results['summary']['endpoints_with_examples']} regressed below baseline "
+            f"{baseline['endpoints_with_examples']}"
+        )
+        assert (
+            example_percentage + FLOAT_TOLERANCE >= baseline["example_percentage"]
+        ), (
+            f"Example coverage {example_percentage:.2%} regressed below baseline "
+            f"{baseline['example_percentage']:.2%}"
+        )
 
         assert (
-            error_doc_percentage >= min_error_doc_percentage
-        ), f"Error response documentation {error_doc_percentage:.2%} is below required {min_error_doc_percentage:.2%}"
+            results["summary"]["endpoints_with_errors"] >= baseline["endpoints_with_errors"]
+        ), (
+            f"Endpoints with error documentation {results['summary']['endpoints_with_errors']} regressed below baseline "
+            f"{baseline['endpoints_with_errors']}"
+        )
+        assert (
+            error_doc_percentage + FLOAT_TOLERANCE >= baseline["error_response_percentage"]
+        ), (
+            f"Error response documentation {error_doc_percentage:.2%} regressed below baseline "
+            f"{baseline['error_response_percentage']:.2%}"
+        )
 
         assert (
-            results["summary"]["total_issues"] <= max_total_issues
-        ), f"Too many documentation issues: {results['summary']['total_issues']} (max allowed: {max_total_issues})"
+            results["summary"]["total_issues"] <= baseline["total_issues"]
+        ), (
+            f"Documentation issues {results['summary']['total_issues']} exceed baseline "
+            f"{baseline['total_issues']}"
+        )
 
     def test_swagger_ui_accessibility(self, test_client):
         """Test that Swagger UI is accessible"""
-        response = test_client.get("/docs")
+        response = test_client.get("/api/docs")
         assert response.status_code == 200, "Swagger UI should be accessible"
 
     def test_openapi_json_accessibility(self, test_client):
@@ -550,7 +613,7 @@ class TestAPIDocumentationValidation:
 
     def test_redoc_accessibility(self, test_client):
         """Test that ReDoc is accessible"""
-        response = test_client.get("/redoc")
+        response = test_client.get("/api/redoc")
         assert response.status_code == 200, "ReDoc should be accessible"
 
 

@@ -7,18 +7,54 @@
 - /api/v1/market/lhb - 龙虎榜
 - /api/v1/market/kline - K线数据
 - /api/v1/market/heatmap - 热力图数据
-- /api/v1/market/health - 健康检查
+- /api/market/health - 健康检查
 
 遵循统一响应格式规范
 """
 
+import os
+
+os.environ.setdefault("POSTGRESQL_HOST", "localhost")
+os.environ.setdefault("POSTGRESQL_USER", "test")
+os.environ.setdefault("POSTGRESQL_PASSWORD", "test")
+os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key")
+os.environ.setdefault("BACKEND_PORT", "8020")
+os.environ.setdefault("BACKEND_BACKUP_PORT", "8021")
+
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import Mock, AsyncMock, patch
+from unittest.mock import Mock
 
 # 导入应用
 from app.main import app
+from app.core.security import User, get_current_user
 from app.services.market_data_service import get_market_data_service
+
+
+class _MockOverviewDataSourceFactory:
+    async def get_data(self, source_name: str, endpoint: str, params: dict | None = None):
+        assert source_name == "data"
+        assert endpoint == "markets/overview"
+        return {
+            "status": "success",
+            "data": {
+                "market_status": "trading",
+                "total_stocks": 2,
+                "rising_stocks": 1,
+                "falling_stocks": 1,
+                "flat_stocks": 0,
+                "indices": [
+                    {
+                        "name": "上证指数",
+                        "symbol": "000001.SH",
+                        "value": 3200.0,
+                        "change": 12.5,
+                        "change_pct": 0.39,
+                    }
+                ],
+            },
+            "source": "stub-data-source",
+        }
 
 
 @pytest.fixture
@@ -32,9 +68,20 @@ def mock_market_service():
 
 
 @pytest.fixture
-def client(mock_market_service):
+def client(mock_market_service, monkeypatch: pytest.MonkeyPatch):
     """提供测试客户端，使用dependency_overrides注入mock服务"""
+    async def _get_data_source_factory():
+        return _MockOverviewDataSourceFactory()
+
     app.dependency_overrides[get_market_data_service] = lambda: mock_market_service
+    app.dependency_overrides[get_current_user] = lambda: User(
+        id=1,
+        username="test-user",
+        email="test@example.com",
+        role="admin",
+        is_active=True,
+    )
+    monkeypatch.setattr("app.services.data_source_factory.get_data_source_factory", _get_data_source_factory)
     yield TestClient(app)
     app.dependency_overrides.clear()
 
@@ -99,25 +146,23 @@ def mock_lhb_data():
 
 
 class TestMarketOverview:
-    """市场概览端点测试 - /api/v1/data/markets/overview 需要认证，跳过"""
+    """市场概览端点测试"""
 
-    @pytest.mark.skip(reason="Overview endpoint requires auth and uses different service (data.market)")
     def test_overview_returns_200(self, client):
         """测试市场概览返回200状态码"""
         response = client.get("/api/v1/data/markets/overview")
         assert response.status_code == 200
 
-    @pytest.mark.skip(reason="Overview endpoint requires auth and uses different service (data.market)")
     def test_overview_response_structure(self, client):
         """测试市场概览响应结构符合统一格式"""
         response = client.get("/api/v1/data/markets/overview")
         data = response.json()
         assert "success" in data
-        assert "message" in data
         assert "data" in data
+        assert "timestamp" in data
+        assert "source" in data
         assert data["success"] is True
 
-    @pytest.mark.skip(reason="Overview endpoint requires auth and uses different service (data.market)")
     def test_overview_contains_required_fields(
         self, client, mock_etf_data, mock_chip_race_data, mock_lhb_data
     ):
@@ -125,6 +170,9 @@ class TestMarketOverview:
         response = client.get("/api/v1/data/markets/overview")
         data = response.json()
         assert "data" in data
+        assert data["data"]["market_status"] == "trading"
+        assert "indices" in data["data"]
+        assert isinstance(data["data"]["indices"], list)
 
 
 class TestChipRace:
@@ -187,13 +235,11 @@ class TestMarketHealth:
 class TestTDXEndpoints:
     """TDX端点测试"""
 
-    @pytest.mark.xfail(reason="TdxDataSource missing abstract method 'get_market_calendar'")
     def test_tdx_health_check(self, client):
         """测试TDX健康检查"""
         response = client.get("/api/v1/tdx/health")
         assert response.status_code in [200, 401, 403, 500, 503]
 
-    @pytest.mark.xfail(reason="TdxDataSource missing abstract method 'get_market_calendar'")
     def test_tdx_health_response_format(self, client):
         """测试TDX健康检查响应格式"""
         response = client.get("/api/v1/tdx/health")

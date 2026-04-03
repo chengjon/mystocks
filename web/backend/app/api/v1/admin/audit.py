@@ -7,7 +7,7 @@
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Path, Query
 from pydantic import BaseModel
 
 router = APIRouter(
@@ -32,11 +32,11 @@ class AuditLogResponse(BaseModel):
 
 @router.get("/logs", response_model=Dict[str, Any], summary="List Audit Logs")
 async def list_audit_logs(
-    user_id: Optional[str] = None,
-    action: Optional[str] = None,
-    resource_type: Optional[str] = None,
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
+    user_id: Optional[str] = Query(None, description="按用户ID筛选审计日志。"),
+    action: Optional[str] = Query(None, description="按操作类型筛选审计日志。"),
+    resource_type: Optional[str] = Query(None, description="按资源类型筛选审计日志。"),
+    start_date: Optional[str] = Query(None, description="查询开始日期，格式为 YYYY-MM-DD。"),
+    end_date: Optional[str] = Query(None, description="查询结束日期，格式为 YYYY-MM-DD。"),
     limit: int = Query(50, description="Maximum number of logs to return"),
 ):
     """
@@ -67,7 +67,7 @@ async def list_audit_logs(
 
 
 @router.get("/logs/{log_id}", response_model=AuditLogResponse, summary="Get Audit Log")
-async def get_audit_log(log_id: str):
+async def get_audit_log(log_id: str = Path(..., description="审计日志唯一标识。")):
     """
     获取单个审计日志详情
 
@@ -88,8 +88,8 @@ async def get_audit_log(log_id: str):
 
 @router.get("/statistics", summary="Get Audit Statistics")
 async def get_audit_statistics(
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
+    start_date: Optional[str] = Query(None, description="统计开始日期，格式为 YYYY-MM-DD。"),
+    end_date: Optional[str] = Query(None, description="统计结束日期，格式为 YYYY-MM-DD。"),
 ):
     """
     获取审计统计信息

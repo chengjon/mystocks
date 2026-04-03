@@ -17,7 +17,7 @@ from datetime import datetime, timezone
 from typing import Dict
 
 import structlog
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, BackgroundTasks, Body, Depends, HTTPException, WebSocket, WebSocketDisconnect
 
 from app.api.auth import User, get_current_active_user, get_current_user
 from app.api.notification_models import (
@@ -41,10 +41,99 @@ logger = structlog.get_logger()
 router = APIRouter()
 
 
+NOTIFICATION_INTERNAL_ERROR_RESPONSE = {
+    500: {
+        "description": "Notification service request failed while reading configuration or sending a message.",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "获取邮件服务状态失败: SMTP timeout",
+                }
+            }
+        },
+    }
+}
+
+SEND_EMAIL_EXAMPLES = {
+    "bulk_html_email": {
+        "summary": "Bulk HTML email",
+        "value": {
+            "to_addresses": ["trader@example.com", "ops@example.com"],
+            "subject": "MyStocks morning market briefing",
+            "content": "<h2>Market Open</h2><p>Futures are trending higher before the bell.</p>",
+            "content_type": "html",
+            "priority": "high",
+        },
+    }
+}
+
+WELCOME_EMAIL_EXAMPLES = {
+    "localized_welcome": {
+        "summary": "Localized welcome email",
+        "value": {
+            "user_email": "new.user@example.com",
+            "user_name": "New User",
+            "welcome_offer": "限时 7 天高级功能试用",
+            "language": "zh-CN",
+        },
+    }
+}
+
+NEWSLETTER_EXAMPLES = {
+    "daily_watchlist_newsletter": {
+        "summary": "Daily watchlist newsletter",
+        "value": {
+            "user_email": "investor@example.com",
+            "user_name": "Investor",
+            "watchlist_symbols": ["600519.SH", "000001.SZ"],
+            "news_data": [
+                {"title": "白酒板块早盘走强", "summary": "贵州茅台领涨消费板块", "source": "mock"},
+                {"title": "银行股成交活跃", "summary": "资金回流高股息方向", "source": "mock"},
+            ],
+            "newsletter_type": "daily",
+        },
+    }
+}
+
+PRICE_ALERT_EXAMPLES = {
+    "breakout_alert": {
+        "summary": "Breakout price alert",
+        "value": {
+            "user_email": "alert@example.com",
+            "user_name": "Alert User",
+            "symbol": "600519.SH",
+            "stock_name": "贵州茅台",
+            "current_price": 1688.5,
+            "alert_condition": "突破",
+            "alert_price": 1700.0,
+            "percentage_change": 2.5,
+        },
+    }
+}
+
+PREFERENCES_EXAMPLES = {
+    "active_trader_preferences": {
+        "summary": "Active trader notification preferences",
+        "value": {
+            "email_enabled": True,
+            "websocket_enabled": True,
+            "price_alerts": True,
+            "news_alerts": True,
+            "system_alerts": False,
+            "quiet_hours": {"start": "22:30", "end": "07:30"},
+            "max_daily_emails": 25,
+        },
+    }
+}
+
+
 # ==================== API 端点 ====================
 
 
-@router.get("/status")
+@router.get(
+    "/status",
+    responses=NOTIFICATION_INTERNAL_ERROR_RESPONSE,
+)
 @rate_limit(limit=10, window=60)  # 每分钟最多10次请求
 async def get_email_service_status(current_user: User = Depends(get_current_user)) -> Dict:
     """
@@ -91,8 +180,8 @@ async def get_email_service_status(current_user: User = Depends(get_current_user
 @router.post("/email/send")
 @rate_limit(limit=5, window=60)  # 每分钟最多5次邮件发送
 async def send_email(
-    request: SendEmailRequest,
     background_tasks: BackgroundTasks,
+    request: SendEmailRequest = Body(..., openapi_examples=SEND_EMAIL_EXAMPLES),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
@@ -278,8 +367,8 @@ async def websocket_notifications(websocket: WebSocket, token: str = None):
 @router.post("/email/welcome")
 @rate_limit(limit=3, window=60)  # 每分钟最多3次欢迎邮件
 async def send_welcome_email(
-    request: SendWelcomeEmailRequest,
     background_tasks: BackgroundTasks,
+    request: SendWelcomeEmailRequest = Body(..., openapi_examples=WELCOME_EMAIL_EXAMPLES),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
@@ -350,10 +439,13 @@ async def send_welcome_email(
         raise HTTPException(status_code=500, detail=f"处理欢迎邮件发送请求时发生错误: {str(e)}")
 
 
-@router.post("/email/newsletter")
+@router.post(
+    "/email/newsletter",
+    description="Send a watchlist-focused newsletter email with curated market news for the target recipient.",
+)
 async def send_daily_newsletter(
-    request: SendNewsletterRequest,
     background_tasks: BackgroundTasks,
+    request: SendNewsletterRequest = Body(..., openapi_examples=NEWSLETTER_EXAMPLES),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
@@ -387,10 +479,13 @@ async def send_daily_newsletter(
     }
 
 
-@router.post("/email/price-alert")
+@router.post(
+    "/email/price-alert",
+    description="Send a threshold or breakout alert email containing the current quote and configured trigger price.",
+)
 async def send_price_alert(
-    request: SendPriceAlertRequest,
     background_tasks: BackgroundTasks,
+    request: SendPriceAlertRequest = Body(..., openapi_examples=PRICE_ALERT_EXAMPLES),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
@@ -428,7 +523,21 @@ async def send_price_alert(
     }
 
 
-@router.post("/test-email")
+@router.post(
+    "/test-email",
+    responses={
+        500: {
+            "description": "Test email delivery failed because the mail provider rejected or timed out the request.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "测试邮件发送失败: SMTP timeout",
+                    }
+                }
+            },
+        }
+    },
+)
 async def send_test_email(current_user: User = Depends(get_current_user)) -> Dict:
     """
     发送测试邮件到当前用户邮箱
@@ -541,7 +650,11 @@ async def send_test_email(current_user: User = Depends(get_current_user)) -> Dic
         raise HTTPException(status_code=500, detail=f"测试邮件发送失败: {result['message']}")
 
 
-@router.get("/preferences")
+@router.get(
+    "/preferences",
+    description="Return the current user's notification channel switches, alert categories, and delivery limits.",
+    responses=NOTIFICATION_INTERNAL_ERROR_RESPONSE,
+)
 async def get_notification_preferences(current_user: User = Depends(get_current_active_user)) -> Dict:
     """
     获取用户通知偏好设置
@@ -575,10 +688,15 @@ async def get_notification_preferences(current_user: User = Depends(get_current_
         raise HTTPException(status_code=500, detail=f"获取通知偏好设置失败: {str(e)}")
 
 
-@router.post("/preferences")
+@router.post(
+    "/preferences",
+    description="Persist the current user's notification switches and per-category delivery preferences.",
+    responses=NOTIFICATION_INTERNAL_ERROR_RESPONSE,
+)
 @rate_limit(limit=5, window=60)  # 每分钟最多5次设置更新
 async def update_notification_preferences(
-    preferences: NotificationPreferences, current_user: User = Depends(get_current_active_user)
+    preferences: NotificationPreferences = Body(..., openapi_examples=PREFERENCES_EXAMPLES),
+    current_user: User = Depends(get_current_active_user),
 ) -> Dict:
     """
     更新用户通知偏好设置

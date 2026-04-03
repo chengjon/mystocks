@@ -44,6 +44,79 @@ process.stdout.write(JSON.stringify(backend.env));
     assert str(PROJECT_ROOT / "web" / "backend") in pythonpath_entries
 
 
+def test_root_test_pm2_config_includes_project_root_in_pythonpath() -> None:
+    env = os.environ.copy()
+    env.update(
+        {
+            "BACKEND_PORT": "8888",
+            "BACKEND_BACKUP_PORT": "8889",
+            "FRONTEND_PORT": "3020",
+            "FRONTEND_BACKUP_PORT": "3021",
+        }
+    )
+
+    completed = subprocess.run(
+        [
+            "node",
+            "-e",
+            """
+const config = require('./ecosystem.test.config.js');
+const backend = config.apps.find((app) => app.name === 'mystocks-backend');
+process.stdout.write(JSON.stringify(backend.env));
+""",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+        cwd=PROJECT_ROOT,
+        env=env,
+    )
+
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    backend_env = json.loads(completed.stdout)
+    pythonpath_entries = backend_env["PYTHONPATH"].split(":")
+
+    assert str(PROJECT_ROOT) in pythonpath_entries
+    assert str(PROJECT_ROOT / "web" / "backend") in pythonpath_entries
+
+
+def test_web_dev_pm2_config_pins_backend_redis_to_localhost() -> None:
+    env = os.environ.copy()
+    env.update(
+        {
+            "BACKEND_PORT": "8020",
+            "BACKEND_BACKUP_PORT": "8021",
+            "FRONTEND_PORT": "3020",
+            "FRONTEND_BACKUP_PORT": "3021",
+            "REDIS_HOST": "192.168.123.104",
+            "REDIS_PORT": "6380",
+        }
+    )
+
+    completed = subprocess.run(
+        [
+            "node",
+            "-e",
+            """
+const config = require('./web/ecosystem.dev.config.js');
+const backend = config.apps.find((app) => app.name === 'mystocks-backend');
+process.stdout.write(JSON.stringify(backend.env));
+""",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+        cwd=PROJECT_ROOT,
+        env=env,
+    )
+
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    backend_env = json.loads(completed.stdout)
+
+    assert backend_env["REDIS_HOST"] == "localhost"
+    assert backend_env["REDIS_PORT"] == "6379"
+
+
 def test_app_main_imports_on_origin_main_recovery_path() -> None:
     env = os.environ.copy()
     env.update(

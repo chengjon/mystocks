@@ -8,13 +8,51 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Body, Query
 from pydantic import BaseModel, Field
 
 router = APIRouter(
     prefix="/strategies",
     tags=["ML Strategies"],
 )
+
+STRATEGY_TRAINING_REQUEST_EXAMPLES = {
+    "svm_training": {
+        "summary": "训练 SVM 策略",
+        "value": {
+            "strategy_type": "svm",
+            "symbol": "AAPL",
+            "start_date": "2024-01-01",
+            "end_date": "2024-12-31",
+            "parameters": {"lookback_window": 30, "kernel": "rbf"},
+        },
+    }
+}
+
+STRATEGY_PREDICTION_REQUEST_EXAMPLES = {
+    "short_term_signal": {
+        "summary": "生成短周期预测信号",
+        "value": {
+            "strategy_id": "svm_AAPL_1735689600",
+            "symbol": "AAPL",
+            "prediction_horizon": 5,
+        },
+    }
+}
+
+STRATEGY_BACKTEST_REQUEST_EXAMPLES = {
+    "swing_backtest": {
+        "summary": "回测已训练策略",
+        "value": {
+            "strategy_id": "svm_AAPL_1735689600",
+            "symbol": "AAPL",
+            "start_date": "2024-01-01",
+            "end_date": "2024-12-31",
+            "initial_capital": 100000.0,
+            "position_size": 0.1,
+        },
+    }
+}
 
 
 class MLStrategyType(str, Enum):
@@ -104,7 +142,9 @@ class StrategyInfo(BaseModel):
 
 
 @router.post("/train", response_model=StrategyTrainingResponse, summary="Train ML Strategy")
-async def train_ml_strategy(request: StrategyTrainingRequest):
+async def train_ml_strategy(
+    request: StrategyTrainingRequest = Body(..., openapi_examples=STRATEGY_TRAINING_REQUEST_EXAMPLES)
+):
     """
     训练机器学习交易策略
 
@@ -137,7 +177,9 @@ async def train_ml_strategy(request: StrategyTrainingRequest):
     response_model=StrategyPredictionResponse,
     summary="Generate Strategy Prediction",
 )
-async def generate_strategy_prediction(request: StrategyPredictionRequest):
+async def generate_strategy_prediction(
+    request: StrategyPredictionRequest = Body(..., openapi_examples=STRATEGY_PREDICTION_REQUEST_EXAMPLES)
+):
     """
     生成策略预测信号
 
@@ -159,7 +201,9 @@ async def generate_strategy_prediction(request: StrategyPredictionRequest):
 
 
 @router.post("/backtest", response_model=BacktestResponse, summary="Backtest ML Strategy")
-async def backtest_ml_strategy(request: BacktestRequest):
+async def backtest_ml_strategy(
+    request: BacktestRequest = Body(..., openapi_examples=STRATEGY_BACKTEST_REQUEST_EXAMPLES)
+):
     """
     回测机器学习策略
 

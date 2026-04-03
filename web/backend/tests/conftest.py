@@ -17,11 +17,22 @@ import pytest
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+# 在导入 app.main 之前补齐最小测试环境，避免 collection 阶段直接 SystemExit。
+os.environ.setdefault("POSTGRESQL_HOST", "localhost")
+os.environ.setdefault("POSTGRESQL_USER", "test")
+os.environ.setdefault("POSTGRESQL_PASSWORD", "test")
+os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key")
+os.environ.setdefault("BACKEND_PORT", "8020")
+os.environ.setdefault("BACKEND_BACKUP_PORT", "8021")
+os.environ.setdefault("TESTING", "true")
+os.environ.setdefault("DEVELOPMENT_MODE", "true")
+os.environ.setdefault("MOCK_AUTH_ENABLED", "true")
+
 
 @pytest.fixture(scope="session")
 def test_env():
     """会话级环境配置"""
-    # 注意：不硬编码Mock开关，使用项目的统一配置
+    # 保持 fixture 兼容；模块级 setdefault 已负责 collection 前的最小环境。
     os.environ["TESTING"] = "true"
     return
 

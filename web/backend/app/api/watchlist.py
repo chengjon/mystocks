@@ -6,7 +6,7 @@
 import re
 from typing import Dict, List, Optional
 
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Body, Depends, Path
 from pydantic import BaseModel, Field, field_validator
 
 from app.api.auth import User, get_current_user
@@ -15,6 +15,52 @@ from app.services.data_source_factory import DataSourceFactory
 from app.services.watchlist_service import WatchlistError, get_watchlist_service
 
 router = APIRouter()
+
+WATCHLIST_ADD_REQUEST_EXAMPLES = {
+    "add_stock_to_growth_group": {
+        "summary": "添加股票到成长分组",
+        "value": {
+            "symbol": "SZ000001",
+            "display_name": "平安银行",
+            "exchange": "SZSE",
+            "market": "CN",
+            "notes": "关注一季报和资金流",
+            "group_name": "成长观察",
+        },
+    }
+}
+
+WATCHLIST_CREATE_GROUP_REQUEST_EXAMPLES = {
+    "create_custom_group": {
+        "summary": "创建自定义分组",
+        "value": {"group_name": "高股息"},
+    }
+}
+
+WATCHLIST_UPDATE_GROUP_REQUEST_EXAMPLES = {
+    "rename_group": {
+        "summary": "重命名分组",
+        "value": {"group_name": "核心持仓"},
+    }
+}
+
+WATCHLIST_MOVE_REQUEST_EXAMPLES = {
+    "move_stock_between_groups": {
+        "summary": "移动股票到新分组",
+        "value": {
+            "symbol": "SH600519",
+            "from_group_id": 1,
+            "to_group_id": 3,
+        },
+    }
+}
+
+WATCHLIST_NOTES_REQUEST_EXAMPLES = {
+    "update_trade_note": {
+        "summary": "更新自选股备注",
+        "value": {"notes": "突破年线后关注回踩确认。"},
+    }
+}
 
 
 class WatchlistItem(BaseModel):
@@ -218,8 +264,11 @@ async def get_my_watchlist_symbols(
         )
 
 
-@router.post("/add")
-async def add_to_watchlist(request: AddWatchlistRequest, current_user: User = Depends(get_current_user)) -> Dict:
+@router.post("/add", description="添加股票到当前用户自选股列表，并支持按分组名称自动归档到指定分组。")
+async def add_to_watchlist(
+    request: AddWatchlistRequest = Body(..., openapi_examples=WATCHLIST_ADD_REQUEST_EXAMPLES),
+    current_user: User = Depends(get_current_user),
+) -> Dict:
     """
     添加股票到自选股列表
     支持通过 group_id 或 group_name 指定分组
@@ -318,9 +367,9 @@ async def check_in_watchlist(
         raise BusinessException(detail=f"检查自选股失败: {str(e)}", status_code=500, error_code="STOCK_CHECK_FAILED")
 
 
-@router.put("/notes/{symbol}")
+@router.put("/notes/{symbol}", description="更新指定自选股的备注信息，便于记录交易计划或观察结论。")
 async def update_watchlist_notes(
-    request: UpdateWatchlistNotesRequest,
+    request: UpdateWatchlistNotesRequest = Body(..., openapi_examples=WATCHLIST_NOTES_REQUEST_EXAMPLES),
     symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
@@ -422,8 +471,11 @@ async def get_user_groups(current_user: User = Depends(get_current_user)) -> Lis
         )
 
 
-@router.post("/groups")
-async def create_group(request: CreateGroupRequest, current_user: User = Depends(get_current_user)) -> Dict:
+@router.post("/groups", description="创建新的自选股分组，用于管理不同主题、策略或观察清单。")
+async def create_group(
+    request: CreateGroupRequest = Body(..., openapi_examples=WATCHLIST_CREATE_GROUP_REQUEST_EXAMPLES),
+    current_user: User = Depends(get_current_user),
+) -> Dict:
     """
     创建新的自选股分组
     """
@@ -448,9 +500,9 @@ async def create_group(request: CreateGroupRequest, current_user: User = Depends
         raise BusinessException(detail=f"创建分组失败: {str(e)}", status_code=500, error_code="GROUP_CREATION_FAILED")
 
 
-@router.put("/groups/{group_id}")
+@router.put("/groups/{group_id}", description="修改指定自选股分组的名称，并保留该分组下已有的股票成员。")
 async def update_group(
-    request: UpdateGroupRequest,
+    request: UpdateGroupRequest = Body(..., openapi_examples=WATCHLIST_UPDATE_GROUP_REQUEST_EXAMPLES),
     group_id: int = Path(..., description="分组ID", ge=1),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
@@ -513,8 +565,11 @@ async def get_watchlist_by_group(
         )
 
 
-@router.put("/move")
-async def move_stock_to_group(request: MoveStockRequest, current_user: User = Depends(get_current_user)) -> Dict:
+@router.put("/move", description="将指定股票从一个自选股分组移动到另一个分组，便于动态调整观察清单。")
+async def move_stock_to_group(
+    request: MoveStockRequest = Body(..., openapi_examples=WATCHLIST_MOVE_REQUEST_EXAMPLES),
+    current_user: User = Depends(get_current_user),
+) -> Dict:
     """
     将股票从一个分组移动到另一个分组
     """

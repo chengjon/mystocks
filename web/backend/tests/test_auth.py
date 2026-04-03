@@ -9,10 +9,13 @@ Tests for JWT authentication system including:
 - User validation
 """
 
+import socket
+
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, text
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import sessionmaker
 from unittest.mock import patch
 
@@ -34,8 +37,18 @@ TEST_DATABASE_URL = (
 @pytest.fixture
 def test_db():
     """Create PostgreSQL test database session with transaction rollback isolation"""
+    try:
+        with socket.create_connection(("localhost", 5438), timeout=1):
+            pass
+    except OSError as exc:
+        pytest.skip(f"PostgreSQL test database is not reachable at localhost:5438: {exc}")
+
     engine = create_engine(TEST_DATABASE_URL)
-    connection = engine.connect()
+    try:
+        connection = engine.connect()
+    except OperationalError as exc:
+        engine.dispose()
+        pytest.skip(f"PostgreSQL test database connection failed: {exc}")
 
     # Start a top-level transaction that will be rolled back after each test
     transaction = connection.begin()

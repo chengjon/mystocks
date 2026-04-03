@@ -343,7 +343,7 @@ class TestCircuitBreakerIntegration:
         # 熔断器打开，应该返回降级响应
         if cb.is_open():
             # 应该返回缓存数据或默认值
-            assert True
+            assert cb.state == CircuitBreakerState.OPEN
 
     def test_circuit_breaker_recovery_scenario(self):
         """测试从故障恢复的完整场景"""

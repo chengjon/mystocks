@@ -15,7 +15,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import structlog
-from fastapi import APIRouter, BackgroundTasks, HTTPException, Path
+from fastapi import APIRouter, BackgroundTasks, Body, HTTPException, Path, Query
 
 logger = structlog.get_logger(__name__)
 
@@ -36,6 +36,20 @@ from src.monitoring.monitoring_database import MonitoringDatabase
 from unified_manager import MyStocksUnifiedManager
 
 router = APIRouter(prefix="/api/v1/strategy", tags=["策略管理-Week1"])
+
+STRATEGY_UPDATE_EXAMPLES = {
+    "update_strategy_runtime_config": {
+        "summary": "更新策略配置",
+        "description": "调整策略状态、标的池和执行参数。",
+        "value": {
+            "name": "momentum-rotation-v2",
+            "status": "active",
+            "symbols": ["600519", "000001", "159915"],
+            "parameters": {"rebalance_days": 5, "max_position": 0.2},
+            "description": "升级后的动量轮动策略配置",
+        },
+    }
+}
 
 # 延迟初始化监控数据库（避免导入时需要完整环境变量）
 monitoring_db = None
@@ -646,9 +660,15 @@ async def get_strategy(strategy_id: int) -> Any:
         raise HTTPException(status_code=500, detail=f"获取策略失败: {str(e)}")
 
 
-@router.put("/strategies/{strategy_id}")
-async def update_strategy(strategy_id: int, strategy_update: Dict[str, Any]) -> Any:
-    """更新策略"""
+@router.put(
+    "/strategies/{strategy_id}",
+    description="更新指定策略的配置内容、运行状态和执行参数。",
+)
+async def update_strategy(
+    strategy_id: int = Path(..., description="需要更新的策略ID。"),
+    strategy_update: Dict[str, Any] = Body(..., openapi_examples=STRATEGY_UPDATE_EXAMPLES),
+) -> Any:
+    """更新指定策略配置。"""
     try:
         try:
             manager = MyStocksUnifiedManager()
@@ -1009,9 +1029,14 @@ async def run_backtest(request: BacktestRequest, background_tasks: BackgroundTas
         raise HTTPException(status_code=500, detail=f"启动回测失败: {str(e)}")
 
 
-@router.get("/backtest/results")
+@router.get(
+    "/backtest/results",
+    description="分页查询回测结果列表，可按策略ID过滤并控制返回页码与每页条数。",
+)
 async def list_backtest_results(
-    strategy_id: Optional[int] = None, page: int = 1, page_size: int = 20
+    strategy_id: Optional[int] = Query(None, description="按策略ID筛选回测结果。"),
+    page: int = Query(1, description="结果分页页码，从 1 开始。"),
+    page_size: int = Query(20, description="每页返回的回测结果数量。"),
 ) -> Dict[str, Any]:
     """获取回测结果列表"""
     try:

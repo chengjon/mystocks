@@ -5,7 +5,7 @@
 from datetime import date, timedelta
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Body, HTTPException, Path, Query
 
 try:
     from app.models.announcement import (
@@ -21,21 +21,84 @@ except Exception:
 
 router = APIRouter(prefix="/announcement")
 
+ANNOUNCEMENT_ERROR_RESPONSE = {
+    500: {
+        "description": "公告服务处理请求失败，通常表示内部依赖、数据库会话或分析流程出现异常。",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "公告服务暂时不可用，请稍后重试",
+                }
+            }
+        },
+    }
+}
 
-@router.get("/health")
+ANNOUNCEMENT_ANALYZE_EXAMPLES = {
+    "earnings_review": {
+        "summary": "分析财报公告内容",
+        "value": {
+            "title": "2026年第一季度业绩预增公告",
+            "stock_code": "600519",
+            "content": "预计2026年第一季度归母净利润同比增长18%-22%。",
+            "analysis_mode": "summary",
+        },
+    }
+}
+
+ANNOUNCEMENT_MONITOR_RULE_CREATE_EXAMPLES = {
+    "dividend_watch_rule": {
+        "summary": "创建分红公告监控规则",
+        "value": {
+            "rule_name": "分红公告提醒",
+            "keywords": ["分红", "派息", "股权登记日"],
+            "stock_codes": ["600519", "000858"],
+            "min_importance_level": 2,
+            "notify_enabled": True,
+        },
+    }
+}
+
+ANNOUNCEMENT_MONITOR_RULE_UPDATE_EXAMPLES = {
+    "raise_importance_threshold": {
+        "summary": "提高监控规则触发阈值",
+        "value": {
+            "keywords": ["业绩预增", "利润增长", "超预期"],
+            "min_importance_level": 3,
+            "notify_enabled": True,
+        },
+    }
+}
+
+
+@router.get(
+    "/health",
+    description="检查公告服务路由是否可用，并返回最基础的服务存活状态。",
+    responses=ANNOUNCEMENT_ERROR_RESPONSE,
+)
 async def health_check():
     """健康检查"""
     return {"status": "ok", "service": "announcement"}
 
 
-@router.get("/status")
+@router.get(
+    "/status",
+    description="返回公告服务的当前状态标记，便于前端确认功能入口是否已启用。",
+    responses=ANNOUNCEMENT_ERROR_RESPONSE,
+)
 async def get_status():
     """获取服务状态"""
     return {"status": "active", "endpoint": "announcement"}
 
 
-@router.post("/analyze")
-async def analyze_data(data: dict):
+@router.post(
+    "/analyze",
+    description="提交公告文本和辅助上下文，返回用于联调的分析结果摘要。",
+    responses=ANNOUNCEMENT_ERROR_RESPONSE,
+)
+async def analyze_data(
+    data: dict = Body(..., openapi_examples=ANNOUNCEMENT_ANALYZE_EXAMPLES),
+):
     """AI分析数据"""
     # TODO: 实现AI分析逻辑
     return {"result": "分析完成", "endpoint": "announcement"}
@@ -220,7 +283,7 @@ if HAS_ANNOUNCEMENT_SERVICE:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    @router.get("/stats")
+    @router.get("/stats", responses=ANNOUNCEMENT_ERROR_RESPONSE)
     async def get_announcement_stats():
         """
         获取公告统计信息
@@ -262,7 +325,7 @@ if HAS_ANNOUNCEMENT_SERVICE:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    @router.get("/monitor-rules")
+    @router.get("/monitor-rules", responses=ANNOUNCEMENT_ERROR_RESPONSE)
     async def get_monitor_rules():
         """
         获取监控规则列表
@@ -294,8 +357,10 @@ if HAS_ANNOUNCEMENT_SERVICE:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    @router.post("/monitor-rules")
-    async def create_monitor_rule(rule_data: dict):
+    @router.post("/monitor-rules", responses=ANNOUNCEMENT_ERROR_RESPONSE)
+    async def create_monitor_rule(
+        rule_data: dict = Body(..., openapi_examples=ANNOUNCEMENT_MONITOR_RULE_CREATE_EXAMPLES)
+    ):
         """
         创建监控规则
 
@@ -353,8 +418,11 @@ if HAS_ANNOUNCEMENT_SERVICE:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    @router.put("/monitor-rules/{rule_id}")
-    async def update_monitor_rule(rule_id: int, updates: dict):
+    @router.put("/monitor-rules/{rule_id}", responses=ANNOUNCEMENT_ERROR_RESPONSE)
+    async def update_monitor_rule(
+        rule_id: int = Path(..., description="需要更新的公告监控规则ID。"),
+        updates: dict = Body(..., openapi_examples=ANNOUNCEMENT_MONITOR_RULE_UPDATE_EXAMPLES),
+    ):
         """
         更新监控规则
 
@@ -402,8 +470,8 @@ if HAS_ANNOUNCEMENT_SERVICE:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    @router.delete("/monitor-rules/{rule_id}")
-    async def delete_monitor_rule(rule_id: int):
+    @router.delete("/monitor-rules/{rule_id}", responses=ANNOUNCEMENT_ERROR_RESPONSE)
+    async def delete_monitor_rule(rule_id: int = Path(..., description="需要删除的公告监控规则ID。")):
         """
         删除监控规则
 
@@ -509,7 +577,7 @@ if HAS_ANNOUNCEMENT_SERVICE:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    @router.post("/monitor/evaluate")
+    @router.post("/monitor/evaluate", responses=ANNOUNCEMENT_ERROR_RESPONSE)
     async def evaluate_monitor_rules():
         """
         评估所有监控规则

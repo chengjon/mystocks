@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import psycopg2
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Body, HTTPException, Query
 from pydantic import BaseModel
 
 from app.api.system._logs_summary_helper import build_logs_summary_payload
@@ -20,6 +20,30 @@ logger = logging.getLogger(__name__)
 use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
 
 router = APIRouter()
+
+SYSTEM_MANAGEMENT_ERROR_RESPONSE = {
+    500: {
+        "description": "System management request failed because a backend dependency, adapter probe, or log source is unavailable.",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "获取日志统计失败: monitoring database unavailable",
+                }
+            }
+        },
+    }
+}
+
+CONNECTION_TEST_REQUEST_EXAMPLES = {
+    "postgres_connection_probe": {
+        "summary": "Probe a PostgreSQL instance",
+        "value": {
+            "db_type": "postgresql",
+            "host": "127.0.0.1",
+            "port": 5432,
+        },
+    }
+}
 
 
 def _required_env(env_name: str) -> str:
@@ -39,7 +63,7 @@ def _close_resource_quietly(resource_name: str, resource: Any) -> None:
         logger.debug("Failed to close %s cleanly: %s", resource_name, exc)
 
 
-@router.get("/health")
+@router.get("/health", responses=SYSTEM_MANAGEMENT_ERROR_RESPONSE)
 async def system_health():
     """
     系统健康检查端点 (双数据库架构: TDengine + PostgreSQL)
@@ -96,7 +120,7 @@ async def system_health():
         raise HTTPException(status_code=503, detail=f"系统健康检查失败: {str(e)}")
 
 
-@router.get("/adapters/health")
+@router.get("/adapters/health", responses=SYSTEM_MANAGEMENT_ERROR_RESPONSE)
 async def get_adapters_health():
     """
     🚀 适配器健康检查端点（新增）
@@ -150,7 +174,7 @@ async def get_adapters_health():
         raise HTTPException(status_code=500, detail=f"适配器健康检查失败: {str(e)}")
 
 
-@router.get("/datasources")
+@router.get("/datasources", responses=SYSTEM_MANAGEMENT_ERROR_RESPONSE)
 async def get_datasources():
     """
     获取已配置的数据源列表
@@ -217,7 +241,9 @@ class ConnectionTestResponse(BaseModel):
 
 
 @router.post("/test-connection", response_model=ConnectionTestResponse)
-async def test_database_connection(request: ConnectionTestRequest):
+async def test_database_connection(
+    request: ConnectionTestRequest = Body(..., openapi_examples=CONNECTION_TEST_REQUEST_EXAMPLES),
+):
     """
     测试数据库连接 (双数据库架构)
 
@@ -658,7 +684,7 @@ async def get_system_logs(
         raise HTTPException(status_code=500, detail=f"获取系统日志失败: {str(e)}")
 
 
-@router.get("/logs/summary")
+@router.get("/logs/summary", responses=SYSTEM_MANAGEMENT_ERROR_RESPONSE)
 async def get_logs_summary():
     """
     获取日志统计摘要

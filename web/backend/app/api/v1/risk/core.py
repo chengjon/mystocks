@@ -20,7 +20,7 @@ from typing import Any, Dict
 import numpy as np
 import pandas as pd
 import structlog
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 
 logger = structlog.get_logger(__name__)
 
@@ -388,8 +388,16 @@ async def get_risk_dashboard() -> RiskDashboardResponse:
         raise HTTPException(status_code=500, detail=f"获取仪表盘数据失败: {str(e)}")
 
 
-@router.get("/metrics/history")
-async def get_risk_metrics_history(entity_type: str, entity_id: int, start_date: str, end_date: str):
+@router.get(
+    "/metrics/history",
+    description="按实体类型、实体ID和日期区间查询历史风险指标时间序列。",
+)
+async def get_risk_metrics_history(
+    entity_type: str = Query(..., description="风险指标所属实体类型，例如 portfolio 或 stock。"),
+    entity_id: int = Query(..., description="风险指标所属实体ID。"),
+    start_date: str = Query(..., description="查询开始日期，格式为 YYYY-MM-DD。"),
+    end_date: str = Query(..., description="查询结束日期，格式为 YYYY-MM-DD。"),
+):
     try:
         manager = MyStocksUnifiedManager()  # noqa: F821
 

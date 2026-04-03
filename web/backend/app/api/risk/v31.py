@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 from typing import Any, Dict, List, Set
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Body, Path, WebSocket, WebSocketDisconnect
 
 from app.core.exceptions import BusinessException, NotFoundException, ValidationException
 from app.api.risk._shared import (
@@ -14,6 +14,19 @@ from app.api.risk._shared import (
 )
 
 router = APIRouter(prefix="/api/v1/risk", tags=["风险管理-V3.1"])
+
+RISK_WS_BROADCAST_EXAMPLES = {
+    "broadcast_price_alert": {
+        "summary": "广播风险更新消息",
+        "description": "向订阅指定 topic 的客户端广播新的风险事件数据。",
+        "value": {
+            "symbol": "600519",
+            "risk_level": "warning",
+            "message": "价格波动超过阈值，请关注仓位风险。",
+            "metrics": {"drawdown": 0.085, "volatility": 0.23},
+        },
+    }
+}
 
 
 @router.get("/v31/stock/{symbol}")
@@ -221,8 +234,14 @@ async def websocket_risk_updates(websocket: WebSocket, topics: str = "portfolio_
             connection_manager.disconnect(websocket)
 
 
-@router.post("/v31/ws/broadcast/{topic}")
-async def broadcast_risk_update(topic: str, message: Dict[str, Any]):
+@router.post(
+    "/v31/ws/broadcast/{topic}",
+    description="向指定 V3.1 风险主题广播更新消息，通知已订阅客户端刷新状态。",
+)
+async def broadcast_risk_update(
+    topic: str = Path(..., description="接收广播消息的风险主题名称。"),
+    message: Dict[str, Any] = Body(..., openapi_examples=RISK_WS_BROADCAST_EXAMPLES),
+):
     try:
         if topic not in connection_manager.subscriptions:
             raise ValidationException(detail=f"不支持的主题: {topic}", field="topic")

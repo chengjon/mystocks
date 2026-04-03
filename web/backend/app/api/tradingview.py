@@ -6,7 +6,7 @@ TradingView Widget API
 import os
 from typing import Dict, List
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from app.api.auth import User, get_current_user
@@ -43,7 +43,25 @@ class TickerTapeConfigRequest(BaseModel):
 
 
 @router.post("/chart/config")
-async def get_chart_config(request: ChartConfigRequest, current_user: User = Depends(get_current_user)) -> Dict:
+async def get_chart_config(
+    request: ChartConfigRequest = Body(
+        ...,
+        openapi_examples={
+            "cn_daily_chart": {
+                "summary": "A 股日线图配置",
+                "value": {
+                    "symbol": "600519",
+                    "market": "CN",
+                    "interval": "D",
+                    "theme": "dark",
+                    "locale": "zh_CN",
+                    "container_id": "tradingview_chart",
+                },
+            }
+        },
+    ),
+    current_user: User = Depends(get_current_user),
+) -> Dict:
     """
     获取 TradingView 图表配置
 
@@ -138,7 +156,24 @@ async def get_mini_chart_config(
 
 @router.post("/ticker-tape/config")
 async def get_ticker_tape_config(
-    request: TickerTapeConfigRequest, current_user: User = Depends(get_current_user)
+    request: TickerTapeConfigRequest = Body(
+        ...,
+        openapi_examples={
+            "default_watchlist": {
+                "summary": "默认自选股滚动条",
+                "value": {
+                    "symbols": [
+                        {"proName": "SSE:600519", "title": "贵州茅台"},
+                        {"proName": "SZSE:000001", "title": "平安银行"},
+                    ],
+                    "theme": "dark",
+                    "locale": "zh_CN",
+                    "container_id": "tradingview_ticker_tape",
+                },
+            }
+        },
+    ),
+    current_user: User = Depends(get_current_user),
 ) -> Dict:
     """
     获取 TradingView Ticker Tape 配置

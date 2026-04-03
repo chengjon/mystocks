@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 import structlog
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Body, Depends, Path, Query
 
 from app.core.cache_manager import get_cache_manager
 from app.core.exceptions import BusinessException
@@ -14,9 +14,28 @@ logger = structlog.get_logger()
 
 router = APIRouter()
 
+CACHE_WRITE_REQUEST_EXAMPLES = {
+    "daily_quote_cache": {
+        "summary": "写入日线行情缓存",
+        "value": {
+            "close": 18.52,
+            "open": 18.1,
+            "high": 18.74,
+            "low": 17.98,
+            "volume": 1250034,
+        },
+    }
+}
+
 
 def _timestamp() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _strip_cache_metadata(payload: Any) -> Any:
+    if not isinstance(payload, dict):
+        return payload
+    return {key: value for key, value in payload.items() if not key.startswith("_")}
 
 
 @router.get("/status")
@@ -30,11 +49,14 @@ async def get_cache_status(current_user: User = Depends(get_current_user)) -> di
         raise BusinessException(detail=str(error), status_code=500, error_code="CACHE_OPERATION_FAILED")
 
 
-@router.get("/{symbol}/{data_type}")
+@router.get(
+    "/{symbol}/{data_type}",
+    description="读取指定标的和数据类型的缓存内容，可按 timeframe 进一步区分缓存分片。",
+)
 async def get_cached_data(
-    symbol: str,
-    data_type: str,
-    timeframe: str | None = Query(None),
+    symbol: str = Path(..., description="股票或资产代码。"),
+    data_type: str = Path(..., description="缓存中的数据类型标识。"),
+    timeframe: str | None = Query(None, description="缓存时间粒度，例如 1d、1h 或 5m。"),
     current_user: User = Depends(get_current_user),
 ) -> dict[str, Any]:
     try:
@@ -50,7 +72,7 @@ async def get_cached_data(
                 "success": True,
                 "source": "cache",
                 "timestamp": _timestamp(),
-                "data": cached.get("data"),
+                "data": _strip_cache_metadata(cached.get("data")),
                 "cached_at": cached.get("timestamp"),
             }
 
@@ -64,13 +86,16 @@ async def get_cached_data(
         raise BusinessException(detail=str(error), status_code=500, error_code="CACHE_OPERATION_FAILED")
 
 
-@router.post("/{symbol}/{data_type}")
+@router.post(
+    "/{symbol}/{data_type}",
+    description="写入指定标的和数据类型的缓存数据，可设置粒度和缓存保留天数。",
+)
 async def write_cache_data(
-    symbol: str,
-    data_type: str,
-    data: dict[str, Any],
-    timeframe: str | None = Query(None),
-    ttl_days: int = Query(7),
+    symbol: str = Path(..., description="股票或资产代码。"),
+    data_type: str = Path(..., description="缓存中的数据类型标识。"),
+    data: dict[str, Any] = Body(..., openapi_examples=CACHE_WRITE_REQUEST_EXAMPLES),
+    timeframe: str | None = Query(None, description="缓存时间粒度，例如 1d、1h 或 5m。"),
+    ttl_days: int = Query(7, description="缓存保留天数，必须大于 0。"),
     current_user: User = Depends(get_current_user),
 ) -> dict[str, Any]:
     try:
@@ -136,11 +161,14 @@ async def invalidate_symbol_cache(symbol: str, current_user: User = Depends(get_
         raise BusinessException(detail=str(error), status_code=500, error_code="CACHE_OPERATION_FAILED")
 
 
-@router.get("/{symbol}/{data_type}/fresh")
+@router.get(
+    "/{symbol}/{data_type}/fresh",
+    description="检查指定缓存键是否仍在允许的新鲜度窗口内，适合调度器或读取前探测。",
+)
 async def check_cache_freshness(
-    symbol: str,
-    data_type: str,
-    max_age_days: int = Query(7),
+    symbol: str = Path(..., description="股票或资产代码。"),
+    data_type: str = Path(..., description="缓存中的数据类型标识。"),
+    max_age_days: int = Query(7, description="允许的最大缓存年龄，单位为天。"),
     current_user: User = Depends(get_current_user),
 ) -> dict[str, Any]:
     try:

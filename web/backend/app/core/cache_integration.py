@@ -40,6 +40,21 @@ logger = structlog.get_logger()
 T = TypeVar("T")
 
 
+def _strip_cache_metadata(cached_result: Dict[str, Any]) -> Dict[str, Any]:
+    """Hide cache-internal metadata from business payloads."""
+    payload = cached_result.get("data")
+    if not isinstance(payload, dict):
+        return cached_result
+
+    business_data = {key: value for key, value in payload.items() if not key.startswith("_")}
+    return {
+        "data": business_data,
+        "source": cached_result.get("source", "cache"),
+        "timestamp": cached_result.get("timestamp"),
+        "cached_at": payload.get("_cached_at"),
+    }
+
+
 class CacheIntegration:
     """缓存集成工具类"""
 
@@ -108,7 +123,7 @@ class CacheIntegration:
                     data_type=data_type,
                     source="cache",
                 )
-                return cached_result
+                return _strip_cache_metadata(cached_result)
 
         # 缓存未命中，从源获取数据
         logger.debug(

@@ -30,6 +30,31 @@ from app.core.responses import APIResponse
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
+METRICS_HEALTH_RESPONSE_EXAMPLE = {
+    "status": "healthy",
+    "timestamp": 1712073600.0,
+    "version": "1.0.0",
+}
+
+METRICS_HEALTH_ERROR_RESPONSE_EXAMPLE = {
+    "detail": "Service unavailable",
+    "status_code": 503,
+    "error_code": "SERVICE_UNAVAILABLE",
+}
+
+METRICS_ENDPOINT_ERROR_RESPONSE_EXAMPLE = {
+    "detail": "获取监控数据失败",
+    "status_code": 500,
+    "error_code": "MONITORING_DATA_RETRIEVAL_FAILED",
+}
+
+METRICS_ENDPOINT_ERROR_RESPONSE = {
+    500: {
+        "description": "监控指标获取失败，通常由内部监控服务或依赖资源不可用导致。",
+        "content": {"application/json": {"example": METRICS_ENDPOINT_ERROR_RESPONSE_EXAMPLE}},
+    }
+}
+
 # Rate limiting for metrics endpoints
 metrics_access_count: Dict[int, Dict[int, int]] | None = None
 
@@ -181,7 +206,34 @@ def update_database_metrics():
 # ==================== 公共端点（无需认证）====================
 
 
-@router.get("/health")
+@router.get(
+    "/metrics/health",
+    summary="监控指标健康检查",
+    responses={
+        200: {
+            "description": "监控指标服务健康状态",
+            "content": {"application/json": {"example": METRICS_HEALTH_RESPONSE_EXAMPLE}},
+        },
+        503: {
+            "description": "监控指标服务不可用",
+            "content": {"application/json": {"example": METRICS_HEALTH_ERROR_RESPONSE_EXAMPLE}},
+        },
+    },
+)
+@router.get(
+    "/health",
+    summary="公共健康检查",
+    responses={
+        200: {
+            "description": "公共健康检查结果",
+            "content": {"application/json": {"example": METRICS_HEALTH_RESPONSE_EXAMPLE}},
+        },
+        503: {
+            "description": "公共健康检查失败",
+            "content": {"application/json": {"example": METRICS_HEALTH_ERROR_RESPONSE_EXAMPLE}},
+        },
+    },
+)
 async def health_check() -> Dict[str, Any]:
     """
     公共健康检查端点
@@ -203,7 +255,7 @@ async def health_check() -> Dict[str, Any]:
         raise BusinessException(detail="Service unavailable", status_code=503, error_code="SERVICE_UNAVAILABLE")
 
 
-@router.get("/status")
+@router.get("/status", responses=METRICS_ENDPOINT_ERROR_RESPONSE)
 async def basic_status() -> APIResponse:
     """
     基础系统状态
@@ -231,7 +283,7 @@ async def basic_status() -> APIResponse:
 # ==================== 用户级别端点（需要认证）====================
 
 
-@router.get("/basic")
+@router.get("/basic", responses=METRICS_ENDPOINT_ERROR_RESPONSE)
 async def basic_metrics(current_user: User = Depends(get_current_user)) -> APIResponse:
     """
     基础监控指标
@@ -275,7 +327,7 @@ async def basic_metrics(current_user: User = Depends(get_current_user)) -> APIRe
         )
 
 
-@router.get("/performance")
+@router.get("/performance", responses=METRICS_ENDPOINT_ERROR_RESPONSE)
 async def performance_metrics(current_user: User = Depends(get_current_user)) -> APIResponse:
     """
     性能监控指标
@@ -362,7 +414,7 @@ async def prometheus_metrics(current_user: User = Depends(get_current_user)) -> 
         raise BusinessException(detail="获取指标数据失败", status_code=500, error_code="METRICS_DATA_RETRIEVAL_FAILED")
 
 
-@router.get("/detailed")
+@router.get("/detailed", responses=METRICS_ENDPOINT_ERROR_RESPONSE)
 async def detailed_metrics(current_user: User = Depends(get_current_user)) -> APIResponse:
     """
     详细系统指标
@@ -415,7 +467,7 @@ async def detailed_metrics(current_user: User = Depends(get_current_user)) -> AP
         )
 
 
-@router.post("/reset")
+@router.post("/reset", responses=METRICS_ENDPOINT_ERROR_RESPONSE)
 async def reset_metrics(current_user: User = Depends(get_current_user)) -> APIResponse:
     """
     重置监控指标

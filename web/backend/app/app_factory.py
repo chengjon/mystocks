@@ -46,9 +46,42 @@ from .core.validation import request_middleware
 from .middleware.response_format import ResponseFormatMiddleware
 
 # 导入OpenAPI配置
-from .openapi_config import get_openapi_config
+from .openapi_config import get_openapi_config, install_openapi_schema_extra
 
 logger = structlog.get_logger()
+
+SOCKETIO_STATUS_RESPONSE_EXAMPLE = {
+    "status": "active",
+    "service": "Socket.IO",
+    "statistics": {
+        "connected_clients": 3,
+        "active_rooms": 2,
+    },
+    "timestamp": 1712073600.0,
+}
+
+SOCKETIO_STATUS_ERROR_RESPONSE_EXAMPLE = {
+    "detail": "Socket.IO status unavailable",
+}
+
+ROOT_RESPONSE_EXAMPLE = {
+    "success": True,
+    "message": "欢迎使用 MyStocks Web API",
+    "data": {
+        "message": "MyStocks Web API",
+        "docs": "/api/docs",
+        "swagger": "/api/docs",
+        "redoc": "/api/redoc",
+        "health": "/health",
+        "version": "1.0.0",
+    },
+}
+
+ROOT_ERROR_RESPONSE_EXAMPLE = {
+    "success": False,
+    "code": 500,
+    "message": "根路径信息获取失败",
+}
 
 
 # SECURITY FIX 1.2: CSRF Token管理
@@ -166,6 +199,7 @@ def create_app() -> FastAPI:
         swagger_ui_oauth2_redirect_url=openapi_config.get("swagger_ui_oauth2_redirect_url"),
         lifespan=lifespan,  # 添加生命周期管理
     )
+    install_openapi_schema_extra(app)
 
     # 挂载 Swagger UI 静态文件（来自 swagger-ui-py 包）
     import swagger_ui
@@ -351,7 +385,22 @@ def create_app() -> FastAPI:
         )
 
     # Socket.IO健康检查端点
-    @app.get("/api/socketio-status")
+    @app.get(
+        "/api/socketio-status",
+        summary="Socket.IO 服务状态",
+        description="返回 Socket.IO 服务运行状态、连接统计与时间戳，用于实时通信链路巡检。",
+        tags=["system"],
+        responses={
+            200: {
+                "description": "Socket.IO 服务状态",
+                "content": {"application/json": {"example": SOCKETIO_STATUS_RESPONSE_EXAMPLE}},
+            },
+            503: {
+                "description": "Socket.IO 状态不可用",
+                "content": {"application/json": {"example": SOCKETIO_STATUS_ERROR_RESPONSE_EXAMPLE}},
+            },
+        },
+    )
     async def socketio_status():
         """Socket.IO服务器状态"""
         stats = socketio_manager.get_stats()
@@ -386,7 +435,22 @@ def create_app() -> FastAPI:
         )
 
     # 根路径重定向到文档 - 使用统一响应格式
-    @app.get("/")
+    @app.get(
+        "/",
+        summary="API 根入口",
+        description="返回 API 文档、健康检查与版本等入口信息，作为后端服务的轻量导航响应。",
+        tags=["system"],
+        responses={
+            200: {
+                "description": "API 根入口信息",
+                "content": {"application/json": {"example": ROOT_RESPONSE_EXAMPLE}},
+            },
+            500: {
+                "description": "API 根入口信息获取失败",
+                "content": {"application/json": {"example": ROOT_ERROR_RESPONSE_EXAMPLE}},
+            },
+        },
+    )
     async def root(request: Request):
         """根路径重定向到 API 文档"""
         # 获取请求ID

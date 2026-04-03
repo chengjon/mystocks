@@ -27,6 +27,32 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["health"])
 
+SYSTEM_SERVICES_HEALTH_RESPONSE_EXAMPLE = {
+    "success": True,
+    "message": "服务mystocks-web-api状态检查",
+    "data": {
+        "status": "healthy",
+        "service": "mystocks-web-api",
+        "timestamp": "2026-04-03T00:00:00+00:00",
+        "overall_status": "healthy",
+        "services": {
+            "postgresql": {"service": "postgresql", "status": "normal"},
+            "tdengine": {"service": "tdengine", "status": "normal"},
+            "mongodb": {"service": "mongodb", "status": "normal"},
+            "disk": {"service": "disk", "status": "normal"},
+            "system": {"service": "system", "status": "normal"},
+        },
+    },
+    "request_id": "demo-request-id",
+}
+
+SYSTEM_SERVICES_HEALTH_ERROR_RESPONSE_EXAMPLE = {
+    "success": False,
+    "code": 500,
+    "message": "健康检查失败: database unavailable",
+    "request_id": "demo-request-id",
+}
+
 
 class HealthStatus(BaseModel):
     """健康检查状态响应模型"""
@@ -61,7 +87,20 @@ def _resolve_ports(*env_keys: str) -> list[int]:
     return ports
 
 
-@router.get("/health")
+@router.get(
+    "/health/services",
+    summary="系统服务健康检查",
+    responses={
+        200: {
+            "description": "系统服务级健康检查结果",
+            "content": {"application/json": {"example": SYSTEM_SERVICES_HEALTH_RESPONSE_EXAMPLE}},
+        },
+        500: {
+            "description": "系统服务健康检查失败",
+            "content": {"application/json": {"example": SYSTEM_SERVICES_HEALTH_ERROR_RESPONSE_EXAMPLE}},
+        },
+    },
+)
 async def check_system_health(request: Request):
     """
     系统健康检查API端点

@@ -10,7 +10,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, Body, Header, HTTPException, Path
 from pydantic import BaseModel, Field
 
 from app.core.config import settings
@@ -94,8 +94,19 @@ async def get_status():
     )
 
 
-@router.post("/start", response_model=APIResponse, summary="Start trading runtime session")
-async def start_session(authorization: Optional[str] = Header(default=None, alias="Authorization")):
+@router.post(
+    "/start",
+    response_model=APIResponse,
+    summary="Start trading runtime session",
+    description="启动轻量交易运行时会话，返回当前会话标识和运行态，供前端运行时面板刷新状态。",
+)
+async def start_session(
+    authorization: Optional[str] = Header(
+        default=None,
+        alias="Authorization",
+        description="Bearer 令牌。非测试环境下写操作必填，格式为 `Bearer <token>`。",
+    )
+):
     _require_write_auth(authorization)
     if not _RUNTIME_STATE["is_running"]:
         _RUNTIME_STATE["is_running"] = True
@@ -110,8 +121,19 @@ async def start_session(authorization: Optional[str] = Header(default=None, alia
     )
 
 
-@router.post("/stop", response_model=APIResponse, summary="Stop trading runtime session")
-async def stop_session(authorization: Optional[str] = Header(default=None, alias="Authorization")):
+@router.post(
+    "/stop",
+    response_model=APIResponse,
+    summary="Stop trading runtime session",
+    description="停止轻量交易运行时会话，并返回停止后的运行状态与盈亏摘要信息。",
+)
+async def stop_session(
+    authorization: Optional[str] = Header(
+        default=None,
+        alias="Authorization",
+        description="Bearer 令牌。非测试环境下写操作必填，格式为 `Bearer <token>`。",
+    )
+):
     _require_write_auth(authorization)
     _RUNTIME_STATE["is_running"] = False
     _RUNTIME_STATE["session_id"] = None
@@ -132,10 +154,27 @@ async def get_strategies_performance():
     return create_success_response(data=strategies, message="获取策略绩效成功")
 
 
-@router.post("/strategies/add", response_model=APIResponse, summary="Add strategy to runtime list")
+@router.post(
+    "/strategies/add",
+    response_model=APIResponse,
+    summary="Add strategy to runtime list",
+    description="向轻量交易运行时注册一个前端可见的策略条目，便于在运行时面板中展示新增策略。",
+)
 async def add_strategy(
-    request: AddStrategyRequest,
-    authorization: Optional[str] = Header(default=None, alias="Authorization"),
+    request: AddStrategyRequest = Body(
+        ...,
+        openapi_examples={
+            "custom_strategy": {
+                "summary": "添加自定义运行时策略",
+                "value": {"strategy_name": "Breakout Sentinel"},
+            }
+        },
+    ),
+    authorization: Optional[str] = Header(
+        default=None,
+        alias="Authorization",
+        description="Bearer 令牌。非测试环境下写操作必填，格式为 `Bearer <token>`。",
+    ),
 ):
     _require_write_auth(authorization)
     name = request.strategy_name.strip()
@@ -154,10 +193,19 @@ async def add_strategy(
     return create_success_response(data={"name": name}, message="策略添加成功")
 
 
-@router.delete("/strategies/{strategy_name}", response_model=APIResponse, summary="Remove strategy")
+@router.delete(
+    "/strategies/{strategy_name}",
+    response_model=APIResponse,
+    summary="Remove strategy",
+    description="从轻量交易运行时中移除指定策略条目，并返回是否成功删除该策略。",
+)
 async def remove_strategy(
-    strategy_name: str,
-    authorization: Optional[str] = Header(default=None, alias="Authorization"),
+    strategy_name: str = Path(..., description="要从运行时列表中移除的策略名称。"),
+    authorization: Optional[str] = Header(
+        default=None,
+        alias="Authorization",
+        description="Bearer 令牌。非测试环境下写操作必填，格式为 `Bearer <token>`。",
+    ),
 ):
     _require_write_auth(authorization)
     before = len(_RUNTIME_STATE["strategies"])

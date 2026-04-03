@@ -22,6 +22,7 @@ from fastapi import APIRouter, Depends, Query, HTTPException
 from pydantic import ValidationError
 
 from app.api.market._market_heatmap_router import router as market_heatmap_router
+from app.api.market.health_check import router as market_health_router
 from app.api.market.market_request_models import ETFQueryParams, FundFlowRequest, MarketDataRequest, RefreshRequest
 from app.core.cache_utils import cache_response  # 导入缓存工具
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
@@ -38,6 +39,7 @@ from app.services.market_data_service import MarketDataService, get_market_data_
 
 router = APIRouter()
 router.include_router(market_heatmap_router)
+router.include_router(market_health_router)
 logger = logging.getLogger(__name__)
 
 
@@ -591,4 +593,3 @@ async def get_kline_data(
         raise BusinessException(
             detail=f"数据源暂时不可用，请稍后重试: {str(e)}", status_code=500, error_code="DATA_SOURCE_UNAVAILABLE"
         )
-

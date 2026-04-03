@@ -22,7 +22,25 @@ router = APIRouter(prefix="/pool-monitoring", tags=["Connection Pool Monitoring"
 logger = structlog.get_logger()
 
 
-@router.get("/postgresql/stats", summary="PostgreSQL连接池统计")
+POOL_MONITORING_ERROR_RESPONSE = {
+    500: {
+        "description": "Connection pool monitoring failed because the backing pool manager or database engine is unavailable.",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "获取统计信息失败: database engine unavailable",
+                }
+            }
+        },
+    }
+}
+
+
+@router.get(
+    "/postgresql/stats",
+    summary="PostgreSQL连接池统计",
+    responses=POOL_MONITORING_ERROR_RESPONSE,
+)
 async def get_postgresql_pool_stats() -> Dict[str, Any]:
     """
     获取PostgreSQL连接池统计信息
@@ -71,7 +89,11 @@ async def get_postgresql_pool_stats() -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail=f"获取统计信息失败: {str(e)}")
 
 
-@router.get("/tdengine/stats", summary="TDengine连接池统计")
+@router.get(
+    "/tdengine/stats",
+    summary="TDengine连接池统计",
+    responses=POOL_MONITORING_ERROR_RESPONSE,
+)
 async def get_tdengine_pool_stats() -> Dict[str, Any]:
     """
     获取TDengine连接池统计信息
@@ -138,7 +160,11 @@ async def get_tdengine_pool_stats() -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail=f"获取统计信息失败: {str(e)}")
 
 
-@router.get("/health", summary="连接池综合健康检查")
+@router.get(
+    "/health",
+    summary="连接池综合健康检查",
+    responses=POOL_MONITORING_ERROR_RESPONSE,
+)
 async def connection_pools_health_check() -> Dict[str, Any]:
     """
     检查所有连接池的健康状态
@@ -206,7 +232,11 @@ async def connection_pools_health_check() -> Dict[str, Any]:
     return result
 
 
-@router.get("/alerts", summary="连接池告警检测")
+@router.get(
+    "/alerts",
+    summary="连接池告警检测",
+    responses=POOL_MONITORING_ERROR_RESPONSE,
+)
 async def check_connection_pool_alerts() -> Dict[str, Any]:
     """
     检测连接池是否存在需要告警的情况

@@ -7,11 +7,14 @@ from app.core.security import User, get_current_user
 
 router = APIRouter()
 
-@router.get("/futures/index/daily")
+@router.get(
+    "/futures/index/daily",
+    description="查询股指期货日线数据，支持按合约代码和日期范围筛选历史行情。",
+)
 async def get_futures_index_daily(
-    symbol: str = Query(...),
-    start_date: str = Query(...),
-    end_date: str = Query(...),
+    symbol: str = Query(..., description="期货合约代码。"),
+    start_date: str = Query(..., description="查询开始日期，格式为 YYYY-MM-DD。"),
+    end_date: str = Query(..., description="查询结束日期，格式为 YYYY-MM-DD。"),
     current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
     try:
@@ -22,9 +25,12 @@ async def get_futures_index_daily(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/futures/index/realtime")
+@router.get(
+    "/futures/index/realtime",
+    description="查询股指期货实时行情快照，适用于盘中监控和即时行情展示。",
+)
 async def get_futures_index_realtime(
-    symbol: str = Query(...),
+    symbol: str = Query(..., description="期货合约代码。"),
     current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
     try:

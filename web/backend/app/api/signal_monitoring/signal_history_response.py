@@ -31,16 +31,31 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+SIGNAL_MONITORING_HEALTH_RESPONSE_EXAMPLE = {
+    "status": "healthy",
+    "service": "signal-monitoring-api",
+    "version": "v1.0",
+    "database": "connected",
+}
+
+SIGNAL_MONITORING_HEALTH_ERROR_RESPONSE_EXAMPLE = {
+    "status": "unhealthy",
+    "service": "signal-monitoring-api",
+    "version": "v1.0",
+    "database": "error",
+    "error": "database unavailable",
+}
+
 @router.get("/signals/history", response_model=List[SignalHistoryResponse])
 async def get_signal_history(
-    strategy_id: Optional[str] = None,
-    symbol: Optional[str] = None,
-    signal_type: Optional[str] = None,
-    status: Optional[str] = None,
-    start_date: Optional[date] = None,
-    end_date: Optional[date] = None,
-    limit: int = Query(100, ge=1, le=1000),
-    offset: int = Query(0, ge=0),
+    strategy_id: Optional[str] = Query(None, description="按策略ID筛选信号历史记录。"),
+    symbol: Optional[str] = Query(None, description="按股票或合约代码筛选信号历史记录。"),
+    signal_type: Optional[str] = Query(None, description="按信号类型筛选，例如 BUY、SELL 或 HOLD。"),
+    status: Optional[str] = Query(None, description="按信号处理状态筛选，例如 generated、executed 或 rejected。"),
+    start_date: Optional[date] = Query(None, description="限制返回结果的开始日期，包含当天。"),
+    end_date: Optional[date] = Query(None, description="限制返回结果的结束日期，包含当天。"),
+    limit: int = Query(100, ge=1, le=1000, description="单次请求返回的最大记录数。"),
+    offset: int = Query(0, ge=0, description="分页偏移量，用于配合 limit 顺序翻页。"),
     current_user: User = Depends(get_current_user),
 ):
     """
@@ -549,7 +564,20 @@ async def get_strategy_realtime_monitoring(
         raise HTTPException(status_code=500, detail=f"查询失败: {str(e)}")
 
 
-@router.get("/health")
+@router.get(
+    "/signals/health",
+    summary="信号监控健康检查",
+    responses={
+        200: {
+            "description": "信号监控服务健康状态",
+            "content": {"application/json": {"example": SIGNAL_MONITORING_HEALTH_RESPONSE_EXAMPLE}},
+        },
+        500: {
+            "description": "信号监控服务健康检查失败",
+            "content": {"application/json": {"example": SIGNAL_MONITORING_HEALTH_ERROR_RESPONSE_EXAMPLE}},
+        },
+    },
+)
 async def health_check():
     """
     信号监控API健康检查

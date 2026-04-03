@@ -12,12 +12,15 @@ from app.core.security import User, get_current_user
 
 router = APIRouter()
 
-@router.get("/stocks/daily")
+@router.get(
+    "/stocks/daily",
+    description="查询股票日线行情，支持日期范围过滤，并在未传日期时回退到最近默认窗口。",
+)
 async def get_daily_kline(
     symbol: str = Query(..., description="股票代码"),
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
-    limit: int = 100,
+    start_date: Optional[str] = Query(None, description="返回结果的开始日期，格式为 YYYY-MM-DD。"),
+    end_date: Optional[str] = Query(None, description="返回结果的结束日期，格式为 YYYY-MM-DD。"),
+    limit: int = Query(100, description="单次请求返回的最大日线记录数。"),
     current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """获取股票日线数据"""
@@ -41,23 +44,29 @@ async def get_daily_kline(
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500)
 
-@router.get("/kline")
+@router.get(
+    "/kline",
+    description="查询股票 K 线别名接口，行为与股票日线查询保持一致，便于兼容旧调用方。",
+)
 async def get_kline(
-    symbol: str = Query(...),
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
-    limit: int = 100,
+    symbol: str = Query(..., description="股票代码。"),
+    start_date: Optional[str] = Query(None, description="返回结果的开始日期，格式为 YYYY-MM-DD。"),
+    end_date: Optional[str] = Query(None, description="返回结果的结束日期，格式为 YYYY-MM-DD。"),
+    limit: int = Query(100, description="单次请求返回的最大 K 线记录数。"),
     current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """获取股票K线数据（日线别名）"""
     return await get_daily_kline(symbol, start_date, end_date, limit, current_user)
 
-@router.get("/stocks/kline")
+@router.get(
+    "/stocks/kline",
+    description="返回标准化股票 K 线结构，适用于图表组件和统一行情消费端直接使用。",
+)
 async def get_kline_data(
-    symbol: str = Query(...),
-    start_date: str = Query(...),
-    end_date: str = Query(...),
-    period: str = "day",
+    symbol: str = Query(..., description="股票代码。"),
+    start_date: str = Query(..., description="查询开始日期，格式为 YYYY-MM-DD。"),
+    end_date: str = Query(..., description="查询结束日期，格式为 YYYY-MM-DD。"),
+    period: str = Query("day", description="K 线周期，当前接口默认支持 day。"),
     current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """标准化K线数据接口"""

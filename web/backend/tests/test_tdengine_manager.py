@@ -14,9 +14,15 @@ import pytest
 from datetime import datetime, timedelta, timezone
 import sys
 import os
+import socket
 
 # Add parent directories to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+os.environ.setdefault("TDENGINE_HOST", "127.0.0.1")
+os.environ.setdefault("TDENGINE_PORT", "6030")
+os.environ.setdefault("TDENGINE_USER", "root")
+os.environ.setdefault("TDENGINE_PASSWORD", "test-password")
 
 from app.core.tdengine_manager import (
     TDengineManager,
@@ -460,11 +466,35 @@ class TestErrorHandling:
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_environment():
     """Setup test environment before running tests"""
-    # Check if TDengine is available
-    temp_manager = TDengineManager()
-    if not temp_manager.connect():
-        pytest.skip("TDengine service is not running. Start with: docker-compose -f docker-compose.tdengine.yml up -d")
-    temp_manager.close()
+    host = os.getenv("TDENGINE_HOST", "127.0.0.1")
+    port = int(os.getenv("TDENGINE_PORT", "6030"))
+    user = os.getenv("TDENGINE_USER", "root")
+    password = os.getenv("TDENGINE_PASSWORD", "test-password")
+
+    # Fast-fail when no TDengine listener is available, instead of crashing on env validation.
+    try:
+        with socket.create_connection((host, port), timeout=1):
+            pass
+    except OSError as exc:
+        pytest.skip(
+            f"TDengine service is not reachable at {host}:{port}: {exc}. "
+            "Start with: docker-compose -f docker-compose.tdengine.yml up -d"
+        )
+
+    temp_manager = TDengineManager(
+        host=host,
+        port=port,
+        user=user,
+        password=password,
+        database="mystocks_cache_test",
+        min_pool_size=1,
+        max_pool_size=1,
+    )
+    try:
+        if not temp_manager.initialize():
+            pytest.skip("TDengine service is reachable but initialization failed. Verify credentials and service readiness.")
+    finally:
+        temp_manager.close()
 
 
 if __name__ == "__main__":

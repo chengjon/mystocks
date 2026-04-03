@@ -8,9 +8,20 @@ Tests for market data APIs including:
 - Pagination and sorting
 """
 
+import os
+
 import pytest
 from fastapi.testclient import TestClient
 from datetime import datetime, timedelta
+
+os.environ.setdefault("POSTGRESQL_HOST", "localhost")
+os.environ.setdefault("POSTGRESQL_USER", "test")
+os.environ.setdefault("POSTGRESQL_PASSWORD", "test")
+os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key")
+os.environ.setdefault("BACKEND_PORT", "8020")
+os.environ.setdefault("BACKEND_BACKUP_PORT", "8021")
+os.environ.setdefault("TESTING", "true")
+os.environ.setdefault("DEVELOPMENT_MODE", "true")
 
 from app.main import app
 from app.core.security import User, get_current_user

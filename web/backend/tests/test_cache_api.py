@@ -12,6 +12,15 @@ Test Coverage:
 - GET /cache/{symbol}/{type}/fresh - 检查新鲜度
 """
 
+import os
+
+os.environ.setdefault("POSTGRESQL_HOST", "localhost")
+os.environ.setdefault("POSTGRESQL_USER", "test")
+os.environ.setdefault("POSTGRESQL_PASSWORD", "test")
+os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key")
+os.environ.setdefault("BACKEND_PORT", "8020")
+os.environ.setdefault("BACKEND_BACKUP_PORT", "8021")
+
 import pytest
 from fastapi.testclient import TestClient
 from datetime import datetime
@@ -19,6 +28,7 @@ from datetime import datetime
 from app.api.cache import router
 from app.core.cache_manager import reset_cache_manager, get_cache_manager
 from app.core.cache_integration import reset_cache_integration
+from app.core.security import User, get_current_user
 
 
 @pytest.fixture
@@ -27,6 +37,13 @@ def client():
     from fastapi import FastAPI
 
     app = FastAPI()
+    app.dependency_overrides[get_current_user] = lambda: User(
+        id=1,
+        username="test-user",
+        email="test@example.com",
+        role="admin",
+        is_active=True,
+    )
     app.include_router(router, prefix="/api")
     return TestClient(app)
 

@@ -18,7 +18,7 @@ import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Query, Request
 from pydantic import BaseModel, Field
 
 from app.core.responses import (
@@ -34,6 +34,24 @@ router = APIRouter(
     prefix="/api/v1/governance",
     tags=["Data Governance Dashboard"],
 )
+
+
+GOVERNANCE_INTERNAL_ERROR_RESPONSE = {
+    500: {
+        "description": "Governance dashboard request failed because the backing service or database is unavailable.",
+        "content": {
+            "application/json": {
+                "example": {
+                    "success": False,
+                    "code": "INTERNAL_ERROR",
+                    "message": "database connection timeout",
+                    "error_code": "GOVERNANCE_API_ERROR",
+                    "request_id": "req-governance-error",
+                }
+            }
+        },
+    }
+}
 
 
 # =============================================================================
@@ -153,7 +171,11 @@ def handle_governance_error(error: str, request_id: Optional[str] = None) -> Uni
 # =============================================================================
 
 
-@router.get("/quality/overview", response_model=UnifiedResponse)
+@router.get(
+    "/quality/overview",
+    response_model=UnifiedResponse,
+    responses=GOVERNANCE_INTERNAL_ERROR_RESPONSE,
+)
 async def get_quality_overview(http_request: Request):
     """
     数据质量总览
@@ -267,7 +289,7 @@ async def get_quality_overview(http_request: Request):
 
 @router.get("/lineage/stats", response_model=UnifiedResponse)
 async def get_lineage_stats(
-    days: int = 7,
+    days: int = Query(7, ge=1, le=90, description="Number of recent days to include in the lineage trend window."),
     http_request: Request = None,
 ):
     """
@@ -388,9 +410,9 @@ async def get_lineage_stats(
 
 @router.get("/assets/catalog", response_model=UnifiedResponse)
 async def get_assets_catalog(
-    page: int = 1,
-    page_size: int = 20,
-    asset_type: Optional[str] = None,
+    page: int = Query(1, ge=1, description="1-based page number for catalog pagination."),
+    page_size: int = Query(20, ge=1, le=100, description="Maximum number of catalog items returned per page."),
+    asset_type: Optional[str] = Query(None, description="Optional asset type filter for narrowing the catalog view."),
     http_request: Request = None,
 ):
     """
@@ -498,8 +520,8 @@ async def get_assets_catalog(
 
 @router.get("/compliance/metrics", response_model=UnifiedResponse)
 async def get_compliance_metrics(
-    days: int = 30,
-    limit: int = 20,
+    days: int = Query(30, ge=1, le=365, description="Number of recent days covered by governance compliance metrics."),
+    limit: int = Query(20, ge=1, le=100, description="Maximum number of recent governance change records to return."),
     http_request: Request = None,
 ):
     """
@@ -609,7 +631,11 @@ async def get_compliance_metrics(
         return handle_governance_error(str(e), request_id)
 
 
-@router.get("/dashboard/summary", response_model=UnifiedResponse)
+@router.get(
+    "/dashboard/summary",
+    response_model=UnifiedResponse,
+    responses=GOVERNANCE_INTERNAL_ERROR_RESPONSE,
+)
 async def get_dashboard_summary(http_request: Request):
     """
     仪表板摘要
