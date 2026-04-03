@@ -61,6 +61,12 @@
 
 ### 核心规范 (Core Standards)
 
+#### 1. **OpenAPI 契约治理标准** - OPENAPI_CONTRACT_GOVERNANCE.md
+- OpenAPI 在本项目中的契约定位
+- Single Source of Truth 执行规则
+- API 契约变更同步要求
+- PR / CI 契约门禁与基线规则
+
 #### 1. **代码质量标准** - CODE_QUALITY_STANDARDS.md
 - Pylint 配置和最佳实践
 - 代码评分目标 (8.0+/10)

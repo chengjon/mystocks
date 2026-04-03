@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 
 import numpy as np
 import pandas as pd
-from fastapi import APIRouter
+from fastapi import APIRouter, Body, Query
 
 from app.core.exceptions import BusinessException, ValidationException
 from app.api.risk._shared import (
@@ -23,9 +23,72 @@ from app.api.risk._shared import (
 
 router = APIRouter(prefix="/api/v1/risk", tags=["风险管理-指标计算"])
 
+VAR_CVAR_REQUEST_EXAMPLES = {
+    "portfolio_var_cvar": {
+        "summary": "计算组合 VaR/CVaR",
+        "description": "基于指定组合实体计算 95% 与 99% 风险价值指标。",
+        "value": {
+            "entity_type": "portfolio",
+            "entity_id": 101,
+            "confidence_level": 0.95,
+        },
+    }
+}
 
-@router.post("/var-cvar", response_model=VaRCVaRResult)
-async def calculate_var_cvar(request: VaRCVaRRequest) -> VaRCVaRResult:
+BETA_REQUEST_EXAMPLES = {
+    "stock_beta": {
+        "summary": "计算股票 Beta",
+        "description": "评估指定股票相对基准指数的 Beta 和相关性。",
+        "value": {
+            "entity_type": "stock",
+            "entity_id": 600519,
+            "market_index": "000001",
+        },
+    }
+}
+
+RISK_METRICS_CALCULATE_EXAMPLES = {
+    "calculate_metrics_from_returns": {
+        "summary": "根据收益序列计算风险指标",
+        "description": "上传收益率、权益曲线和交易记录后返回综合风险指标。",
+        "value": {
+            "returns": [0.012, -0.004, 0.009, -0.002],
+            "equity_curve": [1000000, 1012000, 1007952, 1017023],
+            "trades": [{"symbol": "600519", "pnl": 1200}, {"symbol": "000001", "pnl": -380}],
+            "total_return": 0.017,
+            "max_drawdown": 0.012,
+            "risk_free_rate": 0.03,
+        },
+    }
+}
+
+POSITION_RISK_ASSESS_EXAMPLES = {
+    "assess_equity_positions": {
+        "summary": "评估持仓集中度风险",
+        "description": "根据持仓市值、行业分布和仓位阈值评估当前组合持仓风险。",
+        "value": {
+            "positions": [
+                {"symbol": "600519.SH", "value": 180000, "sector": "白酒"},
+                {"symbol": "300750.SZ", "value": 120000, "sector": "新能源"},
+                {"symbol": "510300.SH", "value": 260000, "sector": "ETF"},
+            ],
+            "total_capital": 1000000,
+            "config": {
+                "max_position_size": 0.15,
+            },
+        },
+    }
+}
+
+
+@router.post(
+    "/var-cvar",
+    response_model=VaRCVaRResult,
+    description="计算指定实体在给定置信水平下的 VaR 与 CVaR 风险指标。",
+)
+async def calculate_var_cvar(
+    request: VaRCVaRRequest = Body(..., openapi_examples=VAR_CVAR_REQUEST_EXAMPLES)
+) -> VaRCVaRResult:
     operation_start = datetime.now()
     try:
         manager = MyStocksUnifiedManager()
@@ -111,8 +174,12 @@ async def calculate_var_cvar(request: VaRCVaRRequest) -> VaRCVaRResult:
         )
 
 
-@router.post("/beta", response_model=BetaResult)
-async def calculate_beta(request: BetaRequest) -> BetaResult:
+@router.post(
+    "/beta",
+    response_model=BetaResult,
+    description="计算指定实体相对市场基准的 Beta 系数与收益相关性。",
+)
+async def calculate_beta(request: BetaRequest = Body(..., openapi_examples=BETA_REQUEST_EXAMPLES)) -> BetaResult:
     operation_start = datetime.now()
     try:
         manager = MyStocksUnifiedManager()
@@ -256,9 +323,16 @@ async def get_risk_dashboard() -> RiskDashboardResponse:
         )
 
 
-@router.get("/metrics/history", response_model=List[Dict[str, Any]])
+@router.get(
+    "/metrics/history",
+    response_model=List[Dict[str, Any]],
+    description="按实体类型、实体ID和日期区间查询历史风险指标时间序列。",
+)
 async def get_risk_metrics_history(
-    entity_type: str, entity_id: int, start_date: str, end_date: str
+    entity_type: str = Query(..., description="风险指标所属实体类型，例如 portfolio 或 stock。"),
+    entity_id: int = Query(..., description="风险指标所属实体ID。"),
+    start_date: str = Query(..., description="查询开始日期，格式为 YYYY-MM-DD。"),
+    end_date: str = Query(..., description="查询结束日期，格式为 YYYY-MM-DD。"),
 ) -> List[Dict[str, Any]]:
     try:
         manager = MyStocksUnifiedManager()
@@ -292,8 +366,13 @@ async def get_risk_metrics_history(
         )
 
 
-@router.post("/metrics/calculate")
-async def calculate_risk_metrics(request: Dict[str, Any]) -> Dict[str, Any]:
+@router.post(
+    "/metrics/calculate",
+    description="根据收益率、权益曲线和交易记录计算综合风险指标。",
+)
+async def calculate_risk_metrics(
+    request: Dict[str, Any] = Body(..., openapi_examples=RISK_METRICS_CALCULATE_EXAMPLES)
+) -> Dict[str, Any]:
     try:
         if RISK_METRICS_AVAILABLE and RiskMetrics:
             equity_df = pd.DataFrame({"equity": request.get("equity_curve", [])})
@@ -340,8 +419,13 @@ async def calculate_risk_metrics(request: Dict[str, Any]) -> Dict[str, Any]:
         )
 
 
-@router.post("/position/assess")
-async def assess_position_risk(request: Dict[str, Any]) -> Dict[str, Any]:
+@router.post(
+    "/position/assess",
+    description="评估当前持仓的仓位集中度、行业暴露和组合风险等级，并返回超限提示。",
+)
+async def assess_position_risk(
+    request: Dict[str, Any] = Body(..., openapi_examples=POSITION_RISK_ASSESS_EXAMPLES)
+) -> Dict[str, Any]:
     try:
         positions = request.get("positions", [])
         total_capital = request.get("total_capital", 1000000)

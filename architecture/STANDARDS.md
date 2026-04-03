@@ -22,7 +22,11 @@
 
 ### 1. 契约先行 (Contract First) —— 避免“接口分裂”
 *   **原则**：严禁在未定义契约前编写业务逻辑。
-*   **流程**：先定义 OpenAPI (Swagger) 规范 -> 自动生成 Pydantic Models -> 运行 `generate_frontend_types.py` 生成 TS 类型。
+*   **契约定位**：OpenAPI 是接口契约，不是事后补写的说明文档。前端、后端、测试、第三方集成必须以同一份契约为准。
+*   **单源可信**：当前仓库以 `FastAPI 路由 + Pydantic Schema + 导出的 /openapi.json` 为 API 契约唯一事实来源；Markdown 文档、前端手写类型、临时调试脚本均不得充当并行真值。
+*   **流程**：先定义 OpenAPI (Swagger) 规范 -> 自动生成/导出契约 -> 运行 `generate_frontend_types.py` 生成 TS 类型。
+*   **同步要求**：任何接口字段、参数、认证、错误响应、示例或语义变更，必须与 OpenAPI 契约在同一提交中同步更新；禁止“代码已变，契约未变”。
+*   **可追溯性**：契约变更必须与代码一起纳入 Git，确保可比较差异、可回滚、可审计。
 *   **收益**：前端永远不会拼错字段名，后端修改字段时前端编译直接报错。
 
 ### 2. 单体骨架 (Monolithic Skeleton) —— 避免“循环依赖”

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
-from fastapi import APIRouter
+from fastapi import APIRouter, Body, Path
 
 from app.core.exceptions import BusinessException, NotFoundException, ValidationException
 from app.api.risk._shared import (
@@ -26,9 +26,143 @@ from app.api.risk._shared import (
 
 router = APIRouter(prefix="/api/v1/risk", tags=["风险管理-告警"])
 
+RISK_ALERT_UPDATE_EXAMPLES = {
+    "update_threshold_and_message": {
+        "summary": "更新风险告警规则",
+        "description": "调整现有告警规则的阈值、状态和提示文案。",
+        "value": {
+            "alert_name": "组合回撤预警",
+            "alert_type": "drawdown",
+            "severity": "warning",
+            "threshold_value": 0.12,
+            "message_template": "组合回撤达到 12%，请复核仓位风险。",
+            "is_active": True,
+        },
+    }
+}
 
-@router.post("/v31/alert/send", response_model=Dict[str, Any])
-async def send_risk_alert(request: Dict[str, Any]) -> Dict[str, Any]:
+RISK_ALERT_ACKNOWLEDGE_EXAMPLES = {
+    "acknowledge_with_feedback": {
+        "summary": "确认并记录处置结果",
+        "description": "确认指定风险告警并附带操作说明与反馈。",
+        "value": {
+            "action_taken": "reduced_position",
+            "feedback": "已减仓 20%，并提高后续监控频率。",
+        },
+    }
+}
+
+RISK_ALERT_SEND_EXAMPLES = {
+    "send_stock_drawdown_alert": {
+        "summary": "发送个股风险告警",
+        "description": "针对单只股票的回撤风险发送一条 warning 级别通知。",
+        "value": {
+            "symbol": "600519.SH",
+            "alert_type": "drawdown",
+            "severity": "warning",
+            "message": "贵州茅台日内回撤超过预警阈值，请复核仓位。",
+            "metrics": {
+                "drawdown": 0.061,
+                "daily_change": -0.038,
+            },
+            "alert_triggers": ["daily_drawdown_threshold"],
+        },
+    }
+}
+
+RISK_ALERT_RULE_EVALUATION_EXAMPLES = {
+    "evaluate_portfolio_rules": {
+        "summary": "评估组合告警规则",
+        "description": "传入组合和实时指标，批量评估当前已配置的风险告警规则。",
+        "value": {
+            "portfolio_id": "growth-portfolio",
+            "symbol": "510300.SH",
+            "metrics": {
+                "drawdown": 0.084,
+                "volatility": 0.22,
+                "var_95": 0.031,
+            },
+            "metadata": {
+                "market_session": "afternoon",
+                "strategy": "trend_following",
+            },
+        },
+    }
+}
+
+RISK_ALERT_RULE_CREATE_EXAMPLES = {
+    "add_drawdown_rule": {
+        "summary": "新增回撤告警规则",
+        "description": "创建一个针对组合回撤的 warning 级别规则，并配置触发动作。",
+        "value": {
+            "rule_id": "portfolio-drawdown-warning",
+            "rule_name": "组合回撤预警",
+            "metric_name": "drawdown",
+            "condition": ">=",
+            "threshold": 0.1,
+            "severity": "warning",
+            "actions": ["notify", "create_task"],
+            "cooldown_minutes": 30,
+        },
+    }
+}
+
+RISK_ALERT_CREATE_EXAMPLES = {
+    "create_var_alert": {
+        "summary": "创建风险预警规则",
+        "description": "为指定组合创建一条 VaR 超限预警规则，并启用邮件通知。",
+        "value": {
+            "name": "组合VaR超限预警",
+            "metric_type": "VaR",
+            "threshold_value": 0.05,
+            "condition": ">",
+            "entity_type": "portfolio",
+            "entity_id": 101,
+            "is_active": True,
+            "notification_channels": ["email"],
+        },
+    }
+}
+
+RISK_ALERT_NOTIFICATION_TEST_EXAMPLES = {
+    "test_email_notification": {
+        "summary": "测试邮件通知配置",
+        "description": "校验风险告警邮件通知配置是否可用。",
+        "value": {
+            "notification_type": "email",
+            "config_data": {
+                "email": "risk-alerts@example.com",
+                "subject": "MyStocks Risk Alert Test",
+            },
+        },
+    }
+}
+
+RISK_ALERT_GENERATION_EXAMPLES = {
+    "generate_portfolio_alerts": {
+        "summary": "生成组合风险告警",
+        "description": "根据当前回撤、日盈亏和阈值配置生成风险告警结果。",
+        "value": {
+            "current_drawdown": -0.124,
+            "daily_pnl": -58000,
+            "total_capital": 1000000,
+            "config": {
+                "max_drawdown_threshold": 0.1,
+                "daily_loss_limit": 0.04,
+            },
+        },
+    }
+}
+
+
+@router.post(
+    "/v31/alert/send",
+    response_model=Dict[str, Any],
+    description="发送一条 V3.1 风险告警通知，可用于个股、组合或通用风险事件的即时告警。",
+)
+async def send_risk_alert(
+    request: Dict[str, Any] = Body(..., openapi_examples=RISK_ALERT_SEND_EXAMPLES)
+) -> Dict[str, Any]:
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
             raise BusinessException(
@@ -105,8 +239,14 @@ async def get_alert_statistics() -> Dict[str, Any]:
         )
 
 
-@router.post("/v31/rules/evaluate", response_model=List[Dict[str, Any]])
-async def evaluate_alert_rules(request: Dict[str, Any]) -> List[Dict[str, Any]]:
+@router.post(
+    "/v31/rules/evaluate",
+    response_model=List[Dict[str, Any]],
+    description="根据输入的风险上下文评估当前 V3.1 告警规则，并返回命中的规则结果。",
+)
+async def evaluate_alert_rules(
+    request: Dict[str, Any] = Body(..., openapi_examples=RISK_ALERT_RULE_EVALUATION_EXAMPLES)
+) -> List[Dict[str, Any]]:
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
             raise BusinessException(
@@ -146,8 +286,14 @@ async def evaluate_alert_rules(request: Dict[str, Any]) -> List[Dict[str, Any]]:
         )
 
 
-@router.post("/v31/rules/add", response_model=Dict[str, Any])
-async def add_alert_rule(request: Dict[str, Any]) -> Dict[str, Any]:
+@router.post(
+    "/v31/rules/add",
+    response_model=Dict[str, Any],
+    description="向 V3.1 风险告警引擎新增一条规则，可直接提交规则定义或基于模板创建。",
+)
+async def add_alert_rule(
+    request: Dict[str, Any] = Body(..., openapi_examples=RISK_ALERT_RULE_CREATE_EXAMPLES)
+) -> Dict[str, Any]:
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
             raise BusinessException(
@@ -184,8 +330,12 @@ async def add_alert_rule(request: Dict[str, Any]) -> Dict[str, Any]:
         )
 
 
-@router.delete("/v31/rules/remove/{rule_id}", response_model=Dict[str, Any])
-async def remove_alert_rule(rule_id: str) -> Dict[str, Any]:
+@router.delete(
+    "/v31/rules/remove/{rule_id}",
+    response_model=Dict[str, Any],
+    description="从 V3.1 风险告警引擎中移除指定规则，适用于停用或清理无效规则。",
+)
+async def remove_alert_rule(rule_id: str = Path(..., description="需要移除的告警规则ID。")) -> Dict[str, Any]:
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
             raise BusinessException(
@@ -287,8 +437,14 @@ async def list_risk_alerts(is_active: Optional[bool] = None) -> List[Dict[str, A
         )
 
 
-@router.post("/alerts", response_model=RiskAlertResponse)
-async def create_risk_alert(alert_data: RiskAlertCreate) -> RiskAlertResponse:
+@router.post(
+    "/alerts",
+    response_model=RiskAlertResponse,
+    description="创建一条风险预警规则，并将规则配置持久化到风险告警存储中。",
+)
+async def create_risk_alert(
+    alert_data: RiskAlertCreate = Body(..., openapi_examples=RISK_ALERT_CREATE_EXAMPLES)
+) -> RiskAlertResponse:
     operation_start = datetime.now()
     try:
         manager = MyStocksUnifiedManager()
@@ -335,8 +491,14 @@ async def create_risk_alert(alert_data: RiskAlertCreate) -> RiskAlertResponse:
         )
 
 
-@router.put("/alerts/{alert_id}")
-async def update_risk_alert(alert_id: int, alert_update: RiskAlertUpdate) -> Dict[str, str]:
+@router.put(
+    "/alerts/{alert_id}",
+    description="更新指定风险告警规则的配置内容，并持久化最新版本。",
+)
+async def update_risk_alert(
+    alert_id: int = Path(..., description="需要更新的风险告警规则ID。"),
+    alert_update: RiskAlertUpdate = Body(..., openapi_examples=RISK_ALERT_UPDATE_EXAMPLES),
+) -> Dict[str, str]:
     try:
         manager = MyStocksUnifiedManager()
         update_data = alert_update.dict(exclude_unset=True)
@@ -362,8 +524,11 @@ async def update_risk_alert(alert_id: int, alert_update: RiskAlertUpdate) -> Dic
         )
 
 
-@router.delete("/alerts/{alert_id}")
-async def delete_risk_alert(alert_id: int) -> Dict[str, str]:
+@router.delete(
+    "/alerts/{alert_id}",
+    description="禁用指定的风险预警规则，保留记录但不再参与后续告警触发。",
+)
+async def delete_risk_alert(alert_id: int = Path(..., description="需要禁用的风险告警规则ID。")) -> Dict[str, str]:
     try:
         manager = MyStocksUnifiedManager()
         alert_df = pd.DataFrame([{"id": alert_id, "is_active": False}])
@@ -385,8 +550,14 @@ async def delete_risk_alert(alert_id: int) -> Dict[str, str]:
         )
 
 
-@router.post("/notifications/test", response_model=NotificationTestResponse)
-async def test_notification(request: NotificationTestRequest) -> NotificationTestResponse:
+@router.post(
+    "/notifications/test",
+    response_model=NotificationTestResponse,
+    description="发送一条测试通知，用于验证风险告警通知渠道配置是否可正常投递。",
+)
+async def test_notification(
+    request: NotificationTestRequest = Body(..., openapi_examples=RISK_ALERT_NOTIFICATION_TEST_EXAMPLES)
+) -> NotificationTestResponse:
     try:
         notifier = NotificationManager()
 
@@ -410,8 +581,13 @@ async def test_notification(request: NotificationTestRequest) -> NotificationTes
         raise BusinessException(detail=f"发送失败: {str(e)}", status_code=500, error_code="SENDING_FAILED")
 
 
-@router.post("/alerts/generate")
-async def generate_risk_alerts(request: Dict[str, Any]) -> Dict[str, Any]:
+@router.post(
+    "/alerts/generate",
+    description="基于当前回撤、日盈亏与风控阈值配置即时生成一组风险告警结果。",
+)
+async def generate_risk_alerts(
+    request: Dict[str, Any] = Body(..., openapi_examples=RISK_ALERT_GENERATION_EXAMPLES)
+) -> Dict[str, Any]:
     try:
         current_drawdown = request.get("current_drawdown", 0)
         daily_pnl = request.get("daily_pnl", 0)
@@ -479,8 +655,14 @@ async def get_active_alerts_v31() -> Dict[str, Any]:
         )
 
 
-@router.post("/v31/alerts/{alert_id}/acknowledge")
-async def acknowledge_alert_v31(alert_id: int, request: Dict[str, Any]) -> Dict[str, Any]:
+@router.post(
+    "/v31/alerts/{alert_id}/acknowledge",
+    description="确认指定 V3.1 风险告警，并记录处理动作与人工反馈。",
+)
+async def acknowledge_alert_v31(
+    alert_id: int = Path(..., description="需要确认的风险告警ID。"),
+    request: Dict[str, Any] = Body(..., openapi_examples=RISK_ALERT_ACKNOWLEDGE_EXAMPLES),
+) -> Dict[str, Any]:
     try:
         if not RISK_MANAGEMENT_V31_AVAILABLE:
             raise BusinessException(

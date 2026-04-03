@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Body, Path
 
 from app.core.exceptions import BusinessException, NotFoundException, ValidationException
 from app.api.risk._shared import (
@@ -15,9 +15,74 @@ from app.api.risk._shared import (
 
 router = APIRouter(prefix="/api/v1/risk", tags=["风险管理-止损"])
 
+STOP_LOSS_ADD_POSITION_EXAMPLES = {
+    "monitor_equity_position": {
+        "summary": "添加股票止损监控",
+        "value": {
+            "symbol": "600519.SH",
+            "position_id": "pos-001",
+            "entry_price": 1688.0,
+            "quantity": 100,
+            "stop_loss_type": "volatility_adaptive",
+            "custom_stop_price": 1590.0,
+        },
+    }
+}
 
-@router.post("/v31/stop-loss/add-position", response_model=Dict[str, Any])
-async def add_stop_loss_position(request: Dict[str, Any]) -> Dict[str, Any]:
+STOP_LOSS_UPDATE_PRICE_EXAMPLES = {
+    "update_market_price": {
+        "summary": "更新持仓现价",
+        "value": {
+            "position_id": "pos-001",
+            "current_price": 1662.5,
+        },
+    }
+}
+
+STOP_LOSS_BATCH_UPDATE_EXAMPLES = {
+    "batch_price_refresh": {
+        "summary": "批量刷新价格",
+        "value": {
+            "price_updates": {
+                "pos-001": 1662.5,
+                "pos-002": 24.18,
+            }
+        },
+    }
+}
+
+STOP_LOSS_CALCULATE_EXAMPLES = {
+    "volatility_stop": {
+        "summary": "计算波动率止损",
+        "value": {
+            "strategy_type": "volatility_adaptive",
+            "symbol": "600519.SH",
+            "entry_price": 1688.0,
+            "k_factor": 2.0,
+        },
+    }
+}
+
+STOP_LOSS_TRIGGER_EXAMPLES = {
+    "manual_trigger_check": {
+        "summary": "手动执行止损检查",
+        "value": {
+            "symbol": "600519.SH",
+            "current_price": 1588.0,
+            "stop_loss_price": 1590.0,
+        },
+    }
+}
+
+
+@router.post(
+    "/v31/stop-loss/add-position",
+    response_model=Dict[str, Any],
+    description="新增一个止损监控持仓，并为该持仓配置 V3.1 风险管理引擎使用的止损参数。",
+)
+async def add_stop_loss_position(
+    request: Dict[str, Any] = Body(..., openapi_examples=STOP_LOSS_ADD_POSITION_EXAMPLES)
+) -> Dict[str, Any]:
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
             raise BusinessException(
@@ -54,8 +119,14 @@ async def add_stop_loss_position(request: Dict[str, Any]) -> Dict[str, Any]:
         )
 
 
-@router.post("/v31/stop-loss/update-price", response_model=Dict[str, Any])
-async def update_stop_loss_price(request: Dict[str, Any]) -> Dict[str, Any]:
+@router.post(
+    "/v31/stop-loss/update-price",
+    response_model=Dict[str, Any],
+    description="更新指定止损监控持仓的最新价格，并立即执行一次止损条件检查。",
+)
+async def update_stop_loss_price(
+    request: Dict[str, Any] = Body(..., openapi_examples=STOP_LOSS_UPDATE_PRICE_EXAMPLES)
+) -> Dict[str, Any]:
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
             raise BusinessException(
@@ -83,8 +154,14 @@ async def update_stop_loss_price(request: Dict[str, Any]) -> Dict[str, Any]:
         )
 
 
-@router.delete("/v31/stop-loss/remove-position/{position_id}", response_model=Dict[str, Any])
-async def remove_stop_loss_position(position_id: str) -> Dict[str, Any]:
+@router.delete(
+    "/v31/stop-loss/remove-position/{position_id}",
+    response_model=Dict[str, Any],
+    description="移除指定止损监控持仓，并停止后续对该持仓执行自动止损检查。",
+)
+async def remove_stop_loss_position(
+    position_id: str = Path(..., description="需要移除的止损监控持仓ID。"),
+) -> Dict[str, Any]:
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
             raise BusinessException(
@@ -164,8 +241,14 @@ async def get_stop_loss_overview() -> Dict[str, Any]:
         )
 
 
-@router.post("/v31/stop-loss/batch-update", response_model=Dict[str, Any])
-async def batch_update_stop_loss_prices(request: Dict[str, Any]) -> Dict[str, Any]:
+@router.post(
+    "/v31/stop-loss/batch-update",
+    response_model=Dict[str, Any],
+    description="批量更新多个止损监控持仓的市场价格，适用于盘中统一刷新止损监控状态。",
+)
+async def batch_update_stop_loss_prices(
+    request: Dict[str, Any] = Body(..., openapi_examples=STOP_LOSS_BATCH_UPDATE_EXAMPLES)
+) -> Dict[str, Any]:
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
             raise BusinessException(
@@ -250,8 +333,13 @@ async def get_stop_loss_recommendations(strategy_type: str, symbol: Optional[str
         )
 
 
-@router.post("/v31/stop-loss/calculate")
-async def calculate_stop_loss_v31(request: Dict[str, Any]) -> Dict[str, Any]:
+@router.post(
+    "/v31/stop-loss/calculate",
+    description="按指定的 V3.1 止损策略参数计算建议止损位，并返回带版本标记的计算结果。",
+)
+async def calculate_stop_loss_v31(
+    request: Dict[str, Any] = Body(..., openapi_examples=STOP_LOSS_CALCULATE_EXAMPLES)
+) -> Dict[str, Any]:
     try:
         if not RISK_MANAGEMENT_V31_AVAILABLE:
             raise BusinessException(
@@ -296,8 +384,13 @@ async def calculate_stop_loss_v31(request: Dict[str, Any]) -> Dict[str, Any]:
         )
 
 
-@router.post("/v31/stop-loss/trigger")
-async def trigger_stop_loss_v31(request: Dict[str, Any]) -> Dict[str, Any]:
+@router.post(
+    "/v31/stop-loss/trigger",
+    description="基于当前价格和止损价手动触发一次 V3.1 止损检查，并返回执行结果明细。",
+)
+async def trigger_stop_loss_v31(
+    request: Dict[str, Any] = Body(..., openapi_examples=STOP_LOSS_TRIGGER_EXAMPLES)
+) -> Dict[str, Any]:
     try:
         if not RISK_MANAGEMENT_V31_AVAILABLE:
             raise BusinessException(

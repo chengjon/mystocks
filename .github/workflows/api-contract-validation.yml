@@ -5,14 +5,25 @@ on:
     paths:
       - 'web/backend/app/api/contract/**'
       - 'web/backend/app/api/**/*.py'
+      - 'web/backend/tests/test_api_documentation_validation.py'
+      - 'web/backend/tests/test_health_route_conflicts.py'
+      - 'reports/analysis/tech-debt-baseline.json'
       - 'scripts/generate_frontend_types.py'
       - '.github/workflows/api-contract-validation.yml'
   pull_request:
     paths:
       - 'web/backend/app/api/contract/**'
       - 'web/backend/app/api/**/*.py'
+      - 'web/backend/tests/test_api_documentation_validation.py'
+      - 'web/backend/tests/test_health_route_conflicts.py'
+      - 'reports/analysis/tech-debt-baseline.json'
       - 'scripts/generate_frontend_types.py'
       - 'web/frontend/src/api/**'
+      - '.github/workflows/api-contract-validation.yml'
+
+permissions:
+  contents: write
+  issues: write
 
 env:
   PYTHON_VERSION: '3.12'
@@ -48,13 +59,22 @@ jobs:
           fi
 
           changed=false
+          changed_patterns=(
+            '^web/backend/app/api/.*\.py$'
+            '^web/backend/tests/test_api_documentation_validation\.py$'
+            '^web/backend/tests/test_health_route_conflicts\.py$'
+            '^reports/analysis/tech-debt-baseline\.json$'
+            '^scripts/generate_frontend_types\.py$'
+            '^\.github/workflows/api-contract-validation\.yml$'
+          )
+
           for changed_file in "${changed_files[@]}"; do
-            case "$changed_file" in
-              web/backend/app/api/contract/*|web/backend/app/api/contract/**|scripts/generate_frontend_types.py)
+            for pattern in "${changed_patterns[@]}"; do
+              if [[ "$changed_file" =~ $pattern ]]; then
                 changed=true
-                break
-                ;;
-            esac
+                break 2
+              fi
+            done
           done
 
           echo "changed=$changed" >> "$GITHUB_OUTPUT"
@@ -84,13 +104,18 @@ jobs:
       - name: Configure backend import environment
         if: steps.scope.outputs.changed == 'true'
         run: |
-          echo "PYTHONPATH=$PWD/web/backend" >> "$GITHUB_ENV"
+          echo "PYTHONPATH=$PWD:$PWD/web/backend" >> "$GITHUB_ENV"
           echo "POSTGRESQL_HOST=localhost" >> "$GITHUB_ENV"
+          echo "POSTGRESQL_PORT=5432" >> "$GITHUB_ENV"
           echo "POSTGRESQL_USER=testuser" >> "$GITHUB_ENV"
           echo "POSTGRESQL_PASSWORD=testpassword" >> "$GITHUB_ENV"
+          echo "POSTGRESQL_DATABASE=testdb" >> "$GITHUB_ENV"
           echo "JWT_SECRET_KEY=test_secret_key_for_ci_only" >> "$GITHUB_ENV"
           echo "BACKEND_PORT=8020" >> "$GITHUB_ENV"
           echo "BACKEND_BACKUP_PORT=8021" >> "$GITHUB_ENV"
+          echo "TESTING=true" >> "$GITHUB_ENV"
+          echo "DEVELOPMENT_MODE=true" >> "$GITHUB_ENV"
+          echo "MOCK_AUTH_ENABLED=true" >> "$GITHUB_ENV"
 
       - name: Validate contract models and services
         if: steps.scope.outputs.changed == 'true'
@@ -132,6 +157,14 @@ jobs:
             json.dump(spec, f, indent=2)
           print('📄 Generated OpenAPI spec saved')
           "
+
+      - name: Run OpenAPI documentation regression gate
+        if: steps.scope.outputs.changed == 'true'
+        run: |
+          python -m pytest \
+            web/backend/tests/test_health_route_conflicts.py \
+            web/backend/tests/test_api_documentation_validation.py \
+            -q --no-cov -rs
 
       - name: Upload generated OpenAPI spec
         if: steps.scope.outputs.changed == 'true'
@@ -185,8 +218,7 @@ jobs:
       - name: Validate TypeScript compilation
         working-directory: web/frontend
         run: |
-          npm run type-check
-          if [ $? -ne 0 ]; then
+          if ! npm run type-check; then
             echo '❌ TypeScript compilation failed after type generation'
             exit 1
           fi
@@ -206,6 +238,8 @@ jobs:
       - name: Commit type changes (on main branch only)
         if: steps.check-changes.outputs.has_changes == 'true' && github.ref == 'refs/heads/main'
         run: |
+          BRANCH_NAME="${GITHUB_REF_NAME:-main}"
+          git checkout -B "$BRANCH_NAME"
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add web/frontend/src/types/
@@ -215,7 +249,7 @@ jobs:
           Ensures frontend types stay in sync with backend API contracts.
 
           Generated from commit: ${{ github.sha }}"
-          git push
+          git push --force-with-lease origin HEAD:"$BRANCH_NAME"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -318,7 +352,7 @@ jobs:
         if: always()
         run: |
           if [ -f breaking-changes-report.json ]; then
-              cat > breaking-changes-report.md << 'EOF'
+              cat > breaking-changes-report.md << EOF
           # 🚨 API Breaking Changes Report
 
           **Pull Request**: #${{ github.event.number }}
