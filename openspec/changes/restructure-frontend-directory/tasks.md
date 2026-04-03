@@ -32,6 +32,9 @@
 - [x] 3.1 Create target directories: `src/shared/components/` and `src/shared/composables/`
   - Completed: 2026-04-04 via tracked `.gitkeep` placeholders
 - Baseline note: tasks 3.2-3.4 still describe the approved target architecture, but execution must be remapped from actual current source locations recorded in `web/frontend/MIGRATION_PROGRESS.md` before any `git mv` starts.
+  - 2026-04-04 remap result: candidate classification is now recorded in `web/frontend/MIGRATION_PROGRESS.md`.
+  - Immediate scope conclusion: no files under `src/views/components/` qualify for direct Phase 2 shared extraction, and most `src/views/composables/` files are legacy root-page bundles that stay view-local.
+  - Remaining live follow-up: only the `TradingDashboard` helper pair (`useTradingDashboard.ts` and `tradingDashboardActions.ts`) remains a conditional extraction candidate, pending task `8.5` trade-domain disposition.
 - [ ] 3.2 Move all files from `src/views/shared/components/*` → `src/shared/components/` (use `git mv`)
 - [ ] 3.3 Move all files from `src/views/shared/composables/*` → `src/shared/composables/` (use `git mv`)
 - [ ] 3.4 Search for all imports of `@/views/shared/...` and update to `@/shared/...`
