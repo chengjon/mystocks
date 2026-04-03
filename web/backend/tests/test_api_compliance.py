@@ -51,13 +51,23 @@ class APIComplianceValidator:
                 )
         return endpoints
 
+    def _is_long_lived_endpoint(self, endpoint_path: str) -> bool:
+        """Skip endpoints that intentionally keep connections open."""
+        return endpoint_path.startswith("/api/v1/sse/")
+
     def get_auth_token(self) -> str:
         """Get authentication token for testing protected endpoints"""
         if not self.auth_token:
             # Login with test credentials
             response = self.client.post("/api/auth/login", data={"username": "admin", "password": "admin123"})
             if response.status_code == 200:
-                self.auth_token = response.json().get("access_token")
+                data = response.json()
+                self.auth_token = data.get("access_token") or data.get("token")
+
+                if not self.auth_token:
+                    payload = data.get("data", {})
+                    if isinstance(payload, dict):
+                        self.auth_token = payload.get("access_token") or payload.get("token")
         return self.auth_token
 
     def validate_response_structure(self, response, endpoint_path: str, method: str) -> Dict[str, Any]:
@@ -127,6 +137,10 @@ class APIComplianceValidator:
             result["auth_required"] = False
             return result
 
+        if self._is_long_lived_endpoint(endpoint_path):
+            result["auth_required"] = False
+            return result
+
         auth_token = self.get_auth_token()
         if not auth_token:
             result["compliance"] = False
@@ -163,6 +177,9 @@ class APIComplianceValidator:
             "compliance": True,
             "errors": [],
         }
+
+        if self._is_long_lived_endpoint(endpoint_path):
+            return result
 
         # Test with invalid parameters
         invalid_test_cases = [
@@ -254,12 +271,26 @@ class APIComplianceValidator:
                 "methods": endpoint["methods"],
                 "validations": {},
             }
+            is_long_lived_endpoint = self._is_long_lived_endpoint(endpoint["path"])
 
             # Run all validations for each applicable method
             for method in endpoint["methods"]:
                 if method in ["GET", "POST", "PUT", "DELETE", "PATCH"]:
                     # Skip docs and schema endpoints
                     if endpoint["path"] in ["/docs", "/openapi.json", "/redoc"]:
+                        continue
+
+                    if is_long_lived_endpoint:
+                        endpoint_result["validations"][f"{method}_response_structure"] = {
+                            "endpoint": f"{method} {endpoint['path']}",
+                            "status_code": None,
+                            "compliance": True,
+                            "errors": [],
+                            "skipped": True,
+                        }
+                        endpoint_result["validations"][f"{method}_parameter_validation"] = (
+                            self.validate_parameter_validation(endpoint["path"], method)
+                        )
                         continue
 
                     try:
@@ -459,6 +490,48 @@ class TestAPICompliance:
         # Test not found
         response = test_client.get("/api/nonexistent")
         assert response.status_code == 404
+
+    def test_streaming_endpoints_are_skipped_during_runtime_validation(self, test_client, monkeypatch):
+        """Streaming SSE endpoints should not block the compliance sweep."""
+        validator = APIComplianceValidator(test_client)
+        validator.endpoints = [
+            {"path": "/api/v1/sse/training", "methods": ["GET"]},
+            {"path": "/health", "methods": ["GET"]},
+        ]
+
+        requested_paths = []
+        original_request = validator.client.request
+
+        def tracking_request(method, url, *args, **kwargs):
+            requested_paths.append((method, url))
+            return original_request(method, url, *args, **kwargs)
+
+        monkeypatch.setattr(validator.client, "request", tracking_request)
+        monkeypatch.setattr(validator, "get_auth_token", lambda: "")
+
+        validator.run_comprehensive_validation()
+
+        assert ("GET", "/api/v1/sse/training") not in requested_paths
+        assert any(url == "/health" for _, url in requested_paths)
+
+    def test_auth_token_is_cached_from_unified_login_response(self, test_client, monkeypatch):
+        """UnifiedResponse login payloads should still populate the cached auth token."""
+        validator = APIComplianceValidator(test_client)
+        original_post = validator.client.post
+        login_calls = {"count": 0}
+
+        def tracking_post(*args, **kwargs):
+            login_calls["count"] += 1
+            return original_post(*args, **kwargs)
+
+        monkeypatch.setattr(validator.client, "post", tracking_post)
+
+        first_token = validator.get_auth_token()
+        second_token = validator.get_auth_token()
+
+        assert first_token
+        assert first_token == second_token
+        assert login_calls["count"] == 1
 
 
 # Integration with pytest collection
