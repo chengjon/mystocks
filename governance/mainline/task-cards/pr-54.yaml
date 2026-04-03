@@ -2,13 +2,13 @@ version: "v0.2"
 
 task:
   id: "pr-54"
-  title: "make frontend type generation deterministic and keep related ci gates stable"
+  title: "make frontend type generation deterministic and keep downstream contract consumers and ci gates stable"
   owner: "main"
   created_at: "2026-04-03"
 
 mainline:
   id: "L1-frontend-type-generator-determinism"
-  objective: "remove timestamp-only churn from generated frontend API type files and keep related CI workflows compatible with generated frontend API types and backend requirements that include TA-Lib/xlwings"
+  objective: "remove timestamp-only churn from generated frontend API type files, keep related CI workflows compatible with generated frontend API types and backend requirements that include TA-Lib/xlwings, and preserve downstream K-line adapter compatibility with the generated date field while tolerating legacy datetime payloads"
   milestone_id: "L2-frontend-contract-hygiene"
   slice_id: "L3-type-generator-determinism"
 
@@ -53,13 +53,15 @@ scope:
     - "web/frontend/src/api/types/strategy.ts"
     - "web/frontend/src/api/types/system.ts"
     - "web/frontend/src/api/types/trading.ts"
+    - "web/frontend/src/api/adapters/marketAdapter.ts"
+    - "web/frontend/src/api/adapters/marketAdapter.spec.ts"
   forbidden_paths:
     - "web/frontend/src/App.vue"
 
 non_goals:
   - "No backend schema or API contract semantic changes"
   - "No broader refactor of the frontend type generator beyond removing timestamp-only churn"
-  - "No frontend runtime feature changes outside the generated contract headers and related CI guard hardening"
+  - "No frontend runtime refactor outside the narrow K-line adapter compatibility change required to consume generated date fields while preserving legacy datetime payloads"
 
 acceptance:
   checks:
@@ -75,6 +77,12 @@ acceptance:
     - id: "frontend-type-generation"
       command: "python scripts/generate_frontend_types.py --all"
       required: true
+    - id: "frontend-market-adapter-compat"
+      command: "cd web/frontend && npx vitest run src/api/adapters/marketAdapter.spec.ts --config vitest.config.mts"
+      required: true
+    - id: "frontend-type-check-node20"
+      command: "cd web/frontend && NPM_CONFIG_CACHE=/tmp/npm-cache npx -y node@20 ./node_modules/vue-tsc/bin/vue-tsc.js --noEmit"
+      required: true
     - id: "diff-check"
       command: "git diff --check"
       required: true
@@ -87,18 +95,19 @@ risk_and_rollback:
     - "If any generated frontend type file still embeds runtime timestamps, repeated generation will keep reintroducing noisy diffs"
     - "If API contract validation CI still installs unavailable ta-lib system packages or the unfiltered backend requirements file, the PR gate will fail before contract checks run"
     - "If code-quality still treats generated frontend API type files as hand-maintained sources, the file size guard will fail on regenerated bundles such as web/frontend/src/api/types/common/all.ts"
+    - "If the frontend market adapter keeps reading datetime after the generated contract switches KlineDataPoint to date, contract-validation type checking will fail and K-line category labels may go blank"
     - "If the new function-tree node does not match the actual generator scope, the mainline governance gate will fail again"
   rollback_plan: "git revert <merge-commit-sha> if the deterministic generator change causes unexpected frontend contract regressions"
 
 delivery:
   six_line_summary_required: true
   six_line_summary:
-    change_purpose: "remove timestamp-only churn from generated frontend API type files, harden related CI installs and file-size guards, and formalize that slice in function-tree governance"
-    modified_scope: "frontend type generator scripts, one focused generator regression test file, two workflow runtime regression test files, two CI workflows, nine generated frontend type files, one function-tree catalog update, and this PR task card"
+    change_purpose: "remove timestamp-only churn from generated frontend API type files, harden related CI installs and file-size guards, keep the downstream market adapter compatible with the generated K-line date field, and formalize that slice in function-tree governance"
+    modified_scope: "frontend type generator scripts, one focused generator regression test file, two workflow runtime regression test files, two CI workflows, nine generated frontend type files, the market adapter and its focused regression test, one function-tree catalog update, and this PR task card"
     dependency_changes: "none"
-    legacy_logic_impact: "generated frontend type contents remain semantically unchanged; only nondeterministic header lines are removed, CI dependency installation is filtered for TA-Lib/xlwings, generated API type files are skipped by the manual file-size guard, and governance coverage is clarified"
+    legacy_logic_impact: "generated frontend type contents remain semantically unchanged; only nondeterministic header lines are removed, CI dependency installation is filtered for TA-Lib/xlwings, generated API type files are skipped by the manual file-size guard, and the market adapter now prefers generated date fields while retaining datetime fallback for legacy payloads"
     rollback_ready: "yes"
-    risk_and_rollback_point: "revert the slice if generated frontend contracts or governance matching behave unexpectedly after merge"
+    risk_and_rollback_point: "revert the slice if generated frontend contracts, downstream adapter compatibility, or governance matching behave unexpectedly after merge"
 
 governance:
   phase: "phase_a_pr_hard_gate"
@@ -109,5 +118,5 @@ governance:
     required: false
     approved_by: "main"
     approved_at: "2026-04-03T00:00:00Z"
-    approval_note: "localized generator determinism fix plus matching CI runtime hardening for contract validation and code-quality file-size guard paths"
+    approval_note: "localized generator determinism fix plus matching CI runtime hardening and a narrow downstream K-line adapter compatibility update for generated date fields"
     secondary_approved: false

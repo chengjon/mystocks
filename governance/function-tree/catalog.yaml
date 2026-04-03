@@ -88,6 +88,7 @@ domains:
           - "src/adapters/tdx/kline_data_service.py"
           - "src/adapters/akshare/misc_data/**"
           - "src/core/**"
+          - "web/frontend/src/api/adapters/marketAdapter.ts"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
@@ -95,12 +96,14 @@ domains:
             - "web/backend/app/api/market/**"
           frontend:
             - "web/frontend/src/views/market/**"
+            - "web/frontend/src/api/adapters/marketAdapter.ts"
           core:
             - "src/adapters/tdx/kline_data_service.py"
             - "src/adapters/akshare/misc_data/**"
             - "src/core/**"
           tests:
             - "web/frontend/tests/e2e/kline-chart.spec.ts"
+            - "web/frontend/src/api/adapters/marketAdapter.spec.ts"
           operations:
             - "docs/testing/E2E_TEST_GUIDE.md"
 
