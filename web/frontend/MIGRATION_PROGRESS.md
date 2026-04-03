@@ -83,6 +83,32 @@ The table below records the actual Phase 2 candidate boundary after checking fil
   - `tradingDashboardActions.ts` is the only clear canonical shared-layer candidate discovered in this pass.
 - This means the next safe `git mv` wave must not be driven by raw folder location alone; it must follow routed page ownership and the domain migration tasks that are already approved.
 
+## Trade-Domain Clarification For Task 8.5
+
+This section records the repo-backed clarification for `openspec/changes/restructure-frontend-directory/tasks.md` task `8.5`.
+
+| Evidence source | Finding |
+| --- | --- |
+| `web/frontend/src/router/index.ts` | `/trade/terminal` is an active child route and currently resolves `@/views/TradingDashboard.vue`. |
+| `web/frontend/src/config/pageConfig.ts` | `trade-terminal` still declares `component: 'TradingDashboard.vue'`. |
+| `web/frontend/src/views/` filesystem | There is no `DealingRoom.vue` or `Terminal.vue`; the only live implementation is `web/frontend/src/views/TradingDashboard.vue`. |
+| `web/frontend/src/views/trading/` filesystem | The trade directory exists but currently contains `Execution.vue`, `Orders.vue`, `Positions.vue`, and `History.vue` only. |
+| `docs/plans/frontend-page-optimization-list.md` | `DealingRoom` and `Trade-Terminal` are tracked as different pages: `DealingRoom` maps to `artdeco-pages/ArtDecoDashboard.vue`, while `Trade-Terminal` maps to `TradingDashboard.vue`. |
+| `openspec/changes/restructure-frontend-directory/specs/frontend-structure/spec.md` | The trade-domain target anchor is `src/views/trade/Center.vue`, not `DealingRoom.vue`. |
+
+### Task 8.5 Recommendation
+
+- Recommended branch for the current approved change: `Option C` (`keep in current location`).
+- Why `Option A` is not safe right now:
+  - Renaming `TradingDashboard.vue` to `DealingRoom.vue` would collide with the existing mainline `DealingRoom` concept that already points to `ArtDecoDashboard.vue`.
+  - The approved spec delta names the trade anchor `Center.vue`, so `DealingRoom.vue` is not the current spec-aligned target name either.
+- Why `Option B` is not safe right now:
+  - `TradingDashboard.vue` is still an active routed page with a verified `trade-terminal` API family.
+  - Deprecating it now would remove a live route without a replacement implementation under `views/trade/`.
+- Practical consequence for the next migration wave:
+  - Keep `web/frontend/src/views/TradingDashboard.vue`, `web/frontend/src/views/composables/useTradingDashboard.ts`, `web/frontend/src/views/composables/tradingDashboardActions.ts`, and their paired test/style assets in place for now.
+  - Do not execute a trade-domain `git mv` for this page until the naming conflict between `DealingRoom`, `Trade-Terminal`, and the spec target `trade/Center.vue` is reconciled.
+
 ## Immediate Next Boundary
 
 - Establish tracked target directories under `src/shared/`.

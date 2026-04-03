@@ -142,18 +142,24 @@
   - [ ] 8.4.2 Update imports to use `@/shared/...` absolute paths
   - [ ] 8.4.3 Run lint & type-check
 - [ ] 8.5 **CLARIFICATION: Terminal.vue and DealingRoom.vue**
-  - [ ] 8.5.0 Determine final disposition:
+  - [x] 8.5.0 Determine final disposition:
+    - Completed: 2026-04-04
+    - Decision: Option C (`keep in current location`) for the current approved change scope.
+    - Evidence: active `/trade/terminal` route and `trade-terminal` pageConfig still point to `TradingDashboard.vue`; no `DealingRoom.vue` or `Terminal.vue` implementation currently exists; `DealingRoom` is already used by the mainline `ArtDecoDashboard.vue` page inventory.
     - Option A: Move `trading/TradingDashboard.vue` → `views/trade/DealingRoom.vue` (add to trade domain)
     - Option B: Move to `deprecated/` (remove from active pages)
     - Option C: Keep in current location (no migration)
   - [ ] 8.5.1 If Option A: Move `trading/TradingDashboard.vue` → `views/trade/DealingRoom.vue`
+    - Not applicable in the current repo state because Option C was selected.
     - [ ] 8.5.1.0 **Identify all relative imports**
     - [ ] 8.5.1.1 Move dependencies: `useTrade.ts`, `trading.scss` → `src/shared/`
     - [ ] 8.5.1.2 Update imports to use `@/shared/...` absolute paths
     - [ ] 8.5.1.3 Run lint & type-check
     - [ ] 8.5.1.4 Run unit tests for DealingRoom.vue
-  - [ ] 8.5.2 If Option B or C: Document decision and rationale
+  - [x] 8.5.2 If Option B or C: Document decision and rationale
+    - Documented in `web/frontend/MIGRATION_PROGRESS.md`.
 - [ ] 8.6 Move `artdeco-pages/ArtDecoDashboard.vue` → `src/views/deprecated/ArtDecoDashboard.vue`
+  - Blocked by current repo truth: `docs/plans/frontend-page-optimization-list.md` still tracks `ArtDecoDashboard.vue` as the mainline `DealingRoom` page, so deprecating it is unsafe until that naming and routing truth is reconciled.
   - [ ] 8.6.1 No import updates needed (deprecated)
   - [ ] 8.6.2 Verify file moved
 - [ ] 8.7 Commit: "refactor: migrate trade domain pages"
