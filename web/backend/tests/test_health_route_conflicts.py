@@ -724,6 +724,31 @@ def test_watchlist_write_endpoints_have_docs_and_request_examples() -> None:
         assert "example" in request_json or "examples" in request_json
 
 
+def test_watchlist_read_endpoints_have_docs_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path, method, expected_params in [
+        ("/api/watchlist/", "get", []),
+        ("/api/watchlist/symbols", "get", []),
+        ("/api/watchlist/remove/{symbol}", "delete", ["symbol"]),
+        ("/api/watchlist/check/{symbol}", "get", ["symbol"]),
+        ("/api/watchlist/count", "get", []),
+        ("/api/watchlist/clear", "delete", []),
+        ("/api/watchlist/groups", "get", []),
+        ("/api/watchlist/groups/{group_id}", "delete", ["group_id"]),
+        ("/api/watchlist/group/{group_id}", "get", ["group_id"]),
+        ("/api/watchlist/with-groups", "get", []),
+    ]:
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expected_params:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_monitoring_watchlist_endpoints_have_docs_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()

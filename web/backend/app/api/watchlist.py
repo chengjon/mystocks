@@ -11,10 +11,19 @@ from pydantic import BaseModel, Field, field_validator
 
 from app.api.auth import User, get_current_user
 from app.core.exceptions import BusinessException, NotFoundException
+from app.openapi_config import COMMON_RESPONSES
 from app.services.data_source_factory import DataSourceFactory
 from app.services.watchlist_service import WatchlistError, get_watchlist_service
 
-router = APIRouter()
+WATCHLIST_ROUTE_RESPONSES = {
+    400: COMMON_RESPONSES[400],
+    401: COMMON_RESPONSES[401],
+    404: COMMON_RESPONSES[404],
+    422: COMMON_RESPONSES[422],
+    500: COMMON_RESPONSES[500],
+}
+
+router = APIRouter(tags=["watchlist"], responses=WATCHLIST_ROUTE_RESPONSES)
 
 WATCHLIST_ADD_REQUEST_EXAMPLES = {
     "add_stock_to_growth_group": {
@@ -198,7 +207,11 @@ class MoveStockRequest(BaseModel):
         return v
 
 
-@router.get("/", response_model=List[WatchlistItem])
+@router.get(
+    "/",
+    response_model=List[WatchlistItem],
+    description="获取当前登录用户的自选股列表，返回股票代码、展示名称、交易所、备注和加入时间。",
+)
 async def get_my_watchlist(
     current_user: User = Depends(get_current_user),
 ) -> List[Dict]:
@@ -231,7 +244,11 @@ async def get_my_watchlist(
         )
 
 
-@router.get("/symbols", response_model=List[str])
+@router.get(
+    "/symbols",
+    response_model=List[str],
+    description="获取当前登录用户自选股中的全部股票代码，适用于批量校验、联动筛选或本地缓存刷新。",
+)
 async def get_my_watchlist_symbols(
     current_user: User = Depends(get_current_user),
 ) -> List[str]:
@@ -311,7 +328,10 @@ async def add_to_watchlist(
         raise BusinessException(detail=f"添加自选股失败: {str(e)}", status_code=500, error_code="STOCK_ADDITION_FAILED")
 
 
-@router.delete("/remove/{symbol}")
+@router.delete(
+    "/remove/{symbol}",
+    description="从当前用户自选股列表中移除指定股票，适用于取消关注、误加回滚或策略切换场景。",
+)
 async def remove_from_watchlist(
     symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
     current_user: User = Depends(get_current_user),
@@ -338,7 +358,10 @@ async def remove_from_watchlist(
         raise BusinessException(detail=f"删除自选股失败: {str(e)}", status_code=500, error_code="STOCK_DELETION_FAILED")
 
 
-@router.get("/check/{symbol}")
+@router.get(
+    "/check/{symbol}",
+    description="检查指定股票是否已存在于当前用户自选股列表中，便于搜索页和详情页展示关注状态。",
+)
 async def check_in_watchlist(
     symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
     current_user: User = Depends(get_current_user),
@@ -395,7 +418,10 @@ async def update_watchlist_notes(
         raise BusinessException(detail=f"更新备注失败: {str(e)}", status_code=500, error_code="NOTE_UPDATE_FAILED")
 
 
-@router.get("/count")
+@router.get(
+    "/count",
+    description="获取当前用户自选股总数，可用于首页统计卡、容量提示和自选池规模监控。",
+)
 async def get_watchlist_count(current_user: User = Depends(get_current_user)) -> Dict:
     """
     获取自选股数量
@@ -425,7 +451,10 @@ async def get_watchlist_count(current_user: User = Depends(get_current_user)) ->
         )
 
 
-@router.delete("/clear")
+@router.delete(
+    "/clear",
+    description="清空当前登录用户的全部自选股记录，常用于重建观察池或批量重置个人配置。",
+)
 async def clear_watchlist(current_user: User = Depends(get_current_user)) -> Dict:
     """
     清空当前用户的自选股列表
@@ -456,7 +485,10 @@ async def clear_watchlist(current_user: User = Depends(get_current_user)) -> Dic
 # ==================== 分组管理 API ====================
 
 
-@router.get("/groups")
+@router.get(
+    "/groups",
+    description="获取当前用户已创建的全部自选股分组，用于分组筛选、分组迁移和分组视图初始化。",
+)
 async def get_user_groups(current_user: User = Depends(get_current_user)) -> List[Dict]:
     """
     获取当前用户的所有自选股分组
@@ -527,7 +559,10 @@ async def update_group(
         raise BusinessException(detail=f"更新分组失败: {str(e)}", status_code=500, error_code="GROUP_UPDATE_FAILED")
 
 
-@router.delete("/groups/{group_id}")
+@router.delete(
+    "/groups/{group_id}",
+    description="删除指定自选股分组，并同步移除该分组下成员；默认分组不允许删除。",
+)
 async def delete_group(
     group_id: int = Path(..., description="分组ID", ge=1), current_user: User = Depends(get_current_user)
 ) -> Dict:
@@ -548,7 +583,10 @@ async def delete_group(
         raise BusinessException(detail=f"删除分组失败: {str(e)}", status_code=500, error_code="GROUP_DELETION_FAILED")
 
 
-@router.get("/group/{group_id}")
+@router.get(
+    "/group/{group_id}",
+    description="获取指定分组下的全部自选股成员，便于按主题、策略或观察池查看清单内容。",
+)
 async def get_watchlist_by_group(
     group_id: int = Path(..., description="分组ID", ge=1), current_user: User = Depends(get_current_user)
 ) -> List[Dict]:
@@ -597,7 +635,10 @@ async def move_stock_to_group(
         raise BusinessException(detail=f"移动股票失败: {str(e)}", status_code=500, error_code="STOCK_MOVE_FAILED")
 
 
-@router.get("/with-groups")
+@router.get(
+    "/with-groups",
+    description="获取所有分组及其包含的自选股明细，返回适用于分组树或看板视图的聚合结果。",
+)
 async def get_watchlist_with_groups(
     current_user: User = Depends(get_current_user),
 ) -> Dict:
