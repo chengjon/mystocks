@@ -204,7 +204,7 @@ python scripts/runtime/smoke_graphiti_preflight.py --actor-cli cli-preflight
 若需要把 Graphiti preflight 放回完整的 repo-local 协作验收链，而不是单独跑 smoke，统一使用：
 
 ```bash
-python scripts/runtime/run_local_maestro_acceptance.sh
+bash scripts/runtime/run_local_maestro_acceptance.sh
 ```
 
 这条一键验收会顺序执行：

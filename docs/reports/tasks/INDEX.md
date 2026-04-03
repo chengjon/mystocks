@@ -1,6 +1,6 @@
 # MyStocks 文档索引
 
-**生成时间**: 2026-03-25 00:42:08
+**生成时间**: 2026-04-03 17:05:00
 
 
 ---
@@ -13,9 +13,9 @@
 ## 📊 统计信息
 
 
-- **总文档数**: 21
+- **总文档数**: 23
 - **总目录数**: 1
-- **最后更新**: 2026-03-25
+- **最后更新**: 2026-04-03
 
 ---
 
@@ -37,6 +37,8 @@
 - 📄 [2026-03-25-directory-governance-batch-staging-plan](2026-03-25-directory-governance-batch-staging-plan.md)
 - 📄 [2026-03-25-directory-governance-isolated-execution-guide](2026-03-25-directory-governance-isolated-execution-guide.md)
 - 📄 [2026-03-27-local-dirty-worktree-batch-plan](2026-03-27-local-dirty-worktree-batch-plan.md)
+- 📄 [2026-04-03-git-ref-cleanup-summary](2026-04-03-git-ref-cleanup-summary.md)
+- 📄 [2026-04-03-maestro-local-acceptance-report](2026-04-03-maestro-local-acceptance-report.md)
 - 📄 [HANDOVER_TASK](HANDOVER_TASK.md)
 - 📄 [NEXT_WORK_TASKS](NEXT_WORK_TASKS.md)
 - 📄 [TASK](TASK.md)

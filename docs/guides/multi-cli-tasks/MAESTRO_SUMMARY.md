@@ -220,6 +220,25 @@ Maestro 不直接替人写任务契约；它只消费这些契约并执行自动
 - 不立即独立成通用产品
 - 不在当前阶段与 `maestro.collab` 平行建第二套长期体系
 
+### Repo-Local Acceptance
+
+当前推荐的本机收口命令：
+
+```bash
+bash scripts/runtime/run_local_maestro_acceptance.sh
+```
+
+该命令会串行执行：
+
+- `coordctl work list`
+- Mongo smoke
+- Graphiti preflight smoke
+- collab snapshot export
+
+最新一次实跑收口记录见：
+
+- `docs/reports/tasks/2026-04-03-maestro-local-acceptance-report.md`
+
 ## 操作面
 
 ### 任务定义面
