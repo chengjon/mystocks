@@ -781,6 +781,53 @@ def test_wencai_endpoints_have_docs_examples_and_error_responses() -> None:
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
+def test_monitoring_analysis_endpoints_have_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path, method, expected_params, expects_request_example in [
+        ("/api/v1/monitoring/analysis/calculate", "post", ["use_gpu"], True),
+        ("/api/v1/monitoring/analysis/calculate/batch", "post", ["use_gpu"], True),
+        ("/api/v1/monitoring/analysis/results/{stock_code}", "get", ["stock_code", "days"], False),
+        (
+            "/api/v1/monitoring/analysis/portfolio/{watchlist_id}",
+            "get",
+            ["watchlist_id", "user_id", "include_risk_metrics"],
+            False,
+        ),
+        ("/api/v1/monitoring/analysis/market-regime", "get", ["index_code"], False),
+        ("/api/v1/monitoring/analysis/engine/status", "get", [], False),
+        ("/api/v1/monitoring/analysis/portfolio/{watchlist_id}/summary", "get", ["watchlist_id", "user_id"], False),
+        (
+            "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/alerts",
+            "get",
+            ["watchlist_id", "user_id", "level"],
+            False,
+        ),
+        (
+            "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/rebalance",
+            "get",
+            ["watchlist_id", "user_id"],
+            False,
+        ),
+    ]:
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expected_params:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+
+        if expects_request_example:
+            request_json = operation["requestBody"]["content"]["application/json"]
+            assert "example" in request_json or "examples" in request_json
+
+        success_json = operation["responses"]["200"]["content"]["application/json"]
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_monitoring_watchlist_endpoints_have_docs_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()

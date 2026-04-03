@@ -8,10 +8,94 @@ from pydantic import BaseModel, Field
 
 from app.core.exception_handlers import handle_exceptions
 from app.core.responses import UnifiedResponse
+from app.openapi_config import COMMON_RESPONSES
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter()
+
+def _success_response_spec(description: str, message: str, data: Any) -> Dict[int, Dict[str, Any]]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": {
+                        "success": True,
+                        "code": 200,
+                        "message": message,
+                        "data": data,
+                        "timestamp": "2026-04-04T01:30:00Z",
+                        "request_id": "req_monitoring_portfolio_example",
+                    }
+                }
+            },
+        }
+    }
+
+
+MONITORING_PORTFOLIO_ROUTE_RESPONSES = {
+    400: COMMON_RESPONSES[400],
+    404: COMMON_RESPONSES[404],
+    422: COMMON_RESPONSES[422],
+    500: COMMON_RESPONSES[500],
+}
+
+PORTFOLIO_SUMMARY_SUCCESS_RESPONSE = _success_response_spec(
+    "投资组合分析摘要",
+    "获取组合摘要成功",
+    {
+        "watchlist_id": 8,
+        "watchlist_name": "核心持仓",
+        "analysis_date": "2026-04-04",
+        "total_score": {"average": 79.2, "min": 68.4, "max": 87.3},
+        "radar_averages": {
+            "trend": 80.2,
+            "technical": 78.4,
+            "momentum": 81.7,
+            "volatility": 73.1,
+            "risk": 82.8,
+        },
+        "risk_score": 76.4,
+        "position_count": 3,
+        "sector_allocation": {"白酒": 42.0, "银行": 31.0, "科技": 27.0},
+        "alert_summary": {"critical": 1, "warning": 2, "info": 3},
+        "rebalance_count": 2,
+    },
+)
+
+PORTFOLIO_ALERTS_SUCCESS_RESPONSE = _success_response_spec(
+    "投资组合预警列表",
+    "获取预警列表成功 (共2条)",
+    [
+        {
+            "level": "warning",
+            "type": "drawdown",
+            "stock_code": "600519",
+            "message": "近 5 日回撤接近阈值，建议关注仓位风险。",
+            "details": {"current_drawdown": 0.078, "threshold": 0.08},
+        }
+    ],
+)
+
+PORTFOLIO_REBALANCE_SUCCESS_RESPONSE = _success_response_spec(
+    "投资组合再平衡建议列表",
+    "获取再平衡建议成功 (共1条)",
+    [
+        {
+            "reason": "行业集中度偏高",
+            "priority": "high",
+            "stock_code": "600519",
+            "action": "reduce",
+            "current_weight": 0.42,
+            "target_weight": 0.3,
+            "message": "建议降低白酒板块集中度，释放 12% 仓位到低相关资产。",
+            "estimated_cost": 1560.0,
+        }
+    ],
+)
+
+
+router = APIRouter(responses=MONITORING_PORTFOLIO_ROUTE_RESPONSES)
 
 
 class PortfolioSummaryResponse(BaseModel):
@@ -52,7 +136,13 @@ class RebalanceSuggestionResponse(BaseModel):
     estimated_cost: float = Field(..., description="预估成本")
 
 
-@router.get("/portfolio/{watchlist_id}/summary", response_model=UnifiedResponse[PortfolioSummaryResponse])
+@router.get(
+    "/portfolio/{watchlist_id}/summary",
+    response_model=UnifiedResponse[PortfolioSummaryResponse],
+    summary="获取组合分析摘要",
+    description="返回指定自选清单的组合总分、雷达均值、行业分布和预警汇总，供组合总览页展示。",
+    responses=PORTFOLIO_SUMMARY_SUCCESS_RESPONSE,
+)
 @handle_exceptions
 async def get_portfolio_summary(
     watchlist_id: int = Path(..., description="清单ID"),
@@ -114,7 +204,13 @@ async def get_portfolio_summary(
         raise HTTPException(status_code=500, detail=f"获取失败: {str(error)}")
 
 
-@router.get("/portfolio/{watchlist_id}/alerts", response_model=UnifiedResponse[List[AlertResponse]])
+@router.get(
+    "/portfolio/{watchlist_id}/alerts",
+    response_model=UnifiedResponse[List[AlertResponse]],
+    summary="获取组合预警列表",
+    description="列出指定自选清单当前触发的组合预警，并支持按预警级别过滤结果。",
+    responses=PORTFOLIO_ALERTS_SUCCESS_RESPONSE,
+)
 @handle_exceptions
 async def get_portfolio_alerts(
     watchlist_id: int = Path(..., description="清单ID"),
@@ -180,7 +276,13 @@ async def get_portfolio_alerts(
         raise HTTPException(status_code=500, detail=f"获取失败: {str(error)}")
 
 
-@router.get("/portfolio/{watchlist_id}/rebalance", response_model=UnifiedResponse[List[RebalanceSuggestionResponse]])
+@router.get(
+    "/portfolio/{watchlist_id}/rebalance",
+    response_model=UnifiedResponse[List[RebalanceSuggestionResponse]],
+    summary="获取再平衡建议",
+    description="根据组合健康度和仓位结构生成再平衡建议，返回优先级、目标权重和预估成本。",
+    responses=PORTFOLIO_REBALANCE_SUCCESS_RESPONSE,
+)
 @handle_exceptions
 async def get_rebalance_suggestions(
     watchlist_id: int = Path(..., description="清单ID"),
