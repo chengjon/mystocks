@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import sys
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -25,7 +24,6 @@ def build_argument_parser() -> argparse.ArgumentParser:
 def generate_index_file(domains: list[str], output_dir: Path) -> str:
     lines = [
         "// Auto-generated index file for TypeScript types",
-        f"// Generated at: {datetime.now().isoformat()}",
         "",
     ]
 

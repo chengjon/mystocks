@@ -720,3 +720,18 @@ domains:
             - "tests/fixtures/governance/**"
           operations:
             - "docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md"
+      - id: "meta-governance-frontend-type-generation"
+        label: "Frontend Type Generation Determinism"
+        coverage_paths:
+          - "scripts/generate_frontend_types.py"
+          - "scripts/_generate_frontend_types_cli.py"
+          - "web/frontend/src/api/types/**"
+          - "tests/unit/test_generate_frontend_types_converter.py"
+        entrypoints:
+          frontend:
+            - "web/frontend/src/api/types/**"
+          tests:
+            - "tests/unit/test_generate_frontend_types_converter.py"
+          operations:
+            - "scripts/generate_frontend_types.py"
+            - "scripts/_generate_frontend_types_cli.py"
