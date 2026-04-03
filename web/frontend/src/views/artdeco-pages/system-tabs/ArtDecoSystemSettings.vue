@@ -9,7 +9,7 @@
           <span>TIME: {{ displayProcessTime }}</span>
         </div>
       </div>
-      <ArtDecoButton variant="solid" size="sm" @click="saveAll">保存配置</ArtDecoButton>
+      <ArtDecoButton variant="solid" size="sm" @click="saveAll">保存本地设置</ArtDecoButton>
     </div>
 
     <div class="tabs">
@@ -25,7 +25,8 @@
     </div>
 
     <div class="analysis-blocker" role="status" aria-live="polite">
-      系统配置接口真值待确认，当前页面仅保留本地设置持久化与健康监控视图。
+      统一系统配置后端契约仍未建立，当前页面仅保留本地设置持久化与健康监控视图；
+      数据源真实配置写回请前往“系统数据”页。
     </div>
 
     <template v-if="activeTab === 'sources'">

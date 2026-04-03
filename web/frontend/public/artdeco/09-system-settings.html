@@ -291,7 +291,7 @@
     const API_BASE_URL = '/api/v1';
 
     function saveAllSettings() {
-      alert('保存设置功能开发中：将调用 /api/v1/system/config 接口');
+      alert('当前页面仅保存本地设置；健康数据读取 /health/detailed 与 /health，数据源真实配置写回请前往 System-Data。');
     }
 
     function resetSettings() {
@@ -302,7 +302,7 @@
 
     // Load settings from API on page load
     window.addEventListener('DOMContentLoaded', () => {
-      // TODO: Fetch settings from /api/v1/system/config
+      // TODO: Read health summary from /health/detailed or /health; keep page save local-only.
     });
   </script>
 </body>

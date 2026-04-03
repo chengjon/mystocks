@@ -63,7 +63,7 @@ const CONFIG = {
     'risk-sentiment': { apiEndpoint: '/api/risk/sentiment', wsChannel: 'risk:sentiment', description: '舆情监控' },
     'risk-announcement': { apiEndpoint: '/api/risk/announcement', wsChannel: 'risk:announcement', description: '公告监控' },
     'system-monitoring': { apiEndpoint: '/api/system/monitoring', wsChannel: 'system:monitoring', description: '运维监控' },
-    'system-settings': { apiEndpoint: '/api/system/settings', wsChannel: 'system:settings', description: '系统设置' },
+    'system-settings': { apiEndpoint: '/health/detailed', description: '系统设置（本地持久化 + 健康监控）' },
     'system-data-update': { apiEndpoint: '/api/system/data-update', wsChannel: 'system:data-update', description: '数据更新' },
     'system-data-quality': { apiEndpoint: '/api/system/data-quality', wsChannel: 'system:data-quality', description: '数据质量' },
     'system-api-health': { apiEndpoint: '/api/system/api-health', wsChannel: 'system:api-health', description: 'API健康' },

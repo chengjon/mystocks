@@ -455,7 +455,7 @@ export const API_ENDPOINTS = {
   // 系统监控 (35+ endpoints)
   SYSTEM: {
     MONITORING: '/api/monitoring/dashboard',
-    SETTINGS: '/api/system/settings',
+    // No unified backend system-settings contract exists in active codepaths.
     DATA_UPDATE: '/api/system/data-update',
     DATA_QUALITY: '/api/monitoring/data-quality',
     API_HEALTH: '/api/monitoring/api-health',

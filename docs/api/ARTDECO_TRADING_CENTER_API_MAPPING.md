@@ -273,19 +273,19 @@
 
 ---
 
-### 系统设置 (3个API端点)
+### 系统设置 (当前无统一后端设置API)
 
-| 功能节点 | 主要API端点 | 数据流向 | Vue组件映射 |
-|---------|-------------|---------|-------------|
-| 通用设置 | `GET/PUT /api/system/settings/general` | 配置管理 | `ArtDecoGeneralSettings.vue` |
-| 界面设置 | `GET/PUT /api/system/settings/ui` | 主题/布局配置 | `ArtDecoUISettings.vue` |
-| 安全设置 | `GET/PUT /api/system/settings/security` | 权限/认证配置 | `ArtDecoSecuritySettings.vue` |
+| 功能节点 | 当前真实接口/行为 | 数据流向 | Vue组件映射 |
+|---------|------------------|---------|-------------|
+| System-Config 页面 | `GET /health/detailed`、`GET /health` + 本地 `localStorage` | 健康监控读取 + 本地设置持久化 | `ArtDecoSystemSettings.vue` |
+| 数据源配置写回 | `GET/POST /api/v1/data-sources/config/*` | 数据源配置管理 | `ArtDecoDataManagement.vue` |
 
 **设置范围**:
 - 界面主题: ArtDeco金黑/浅色模式
 - 布局偏好: 侧边栏展开/折叠
 - 数据刷新: 实时/定时/手动
 - 通知方式: 邮件/Webhook/短信
+- 说明: 当前活跃代码路径中不存在统一 `/api/system/settings/*` 后端契约；若未来补齐，应以 FastAPI/OpenAPI 为唯一真值源重新校准本映射文档
 
 ---
 

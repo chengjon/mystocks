@@ -370,43 +370,46 @@ GET /api/v1/monitoring/health
 
 ### 9. System Settings (09-system-settings.html)
 
-**Purpose**: 数据源配置、用户权限、API管理
+**Purpose**: 健康监控、本地设置持久化占位、以及指向真实数据源配置入口的系统页
 
 **Key Features to Implement**:
-- Data source configuration (API keys/refresh intervals)
-- User management (roles/permissions)
-- System preferences (theme/notifications)
-- API documentation viewer
-- System logs viewer
-- Database status monitoring
+- Health monitor summary sourced from backend readiness / health endpoints
+- Local-only page settings persistence for non-destructive UI preferences
+- Explicit handoff to `System-Data` for real datasource configuration writes
+- Read-only system status / diagnostics view
+- Clear degraded-state messaging when no unified backend system-settings contract exists
 
 **API Endpoints**:
 ```
-GET /api/v1/system/config
-PUT /api/v1/system/config
-GET /api/v1/system/users
-POST /api/v1/system/users
-GET /api/v1/system/logs
-GET /api/v1/system/health
+GET /health/detailed
+GET /health
+localStorage (page-level local persistence only)
+System-Data write family: /api/v1/data-sources/config/
+System-Data batch write: /api/v1/data-sources/config/batch
 ```
+
+**Current Truth Note**:
+- Active codepaths do not provide a unified `/api/system/settings` or `/api/v1/system/config` backend contract.
+- The `System-Config` page is read-only with respect to backend state: it reads health endpoints and persists only local page settings.
+- Real datasource writeback belongs to the `System-Data` page, not to `System-Config`.
 
 **Layout Template**:
 ```
 ┌─────────────────────────────────────────────┐
-│ [Data Sources] [Users] [Preferences]      │
+│ [Local Settings] [Health Monitor] [Go to System-Data] │
 ├─────────────────────────────────────────────┤
 │                                             │
-│  Data Source Status Table                    │
+│  Health / Status Table                       │
 │  Source | Status | Latency | Last Update   │
 │                                             │
-│  Configuration Form                          │
-│  [API Key Input] [Test Connection]          │
+│  Local Preferences Form                      │
+│  [Theme Toggle] [Notification Toggle]       │
 │                                             │
-│  User Management Table                       │
-│  Username | Role | Email | Actions         │
+│  Local Save CTA                              │
+│  [保存本地设置] [恢复默认]                  │
 │                                             │
-│  System Logs Viewer                          │
-│  Time | Level | Module | Message           │
+│  Datasource Writeback Handoff                │
+│  “数据源真实配置写回请前往系统数据页”        │
 └─────────────────────────────────────────────┘
 ```
 

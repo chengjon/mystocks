@@ -123,9 +123,10 @@
 - ✅ 配置保存与重置
 
 **API集成**:
-- `GET /api/v1/system/config` - 获取配置
-- `POST /api/v1/system/config` - 保存配置
-- `PUT /api/v1/system/datasource` - 更新数据源
+- `GET /health/detailed` - 读取系统健康详情
+- `GET /health` - 读取系统健康摘要
+- `localStorage` - 当前页面仅做本地设置持久化
+- `POST /api/v1/data-sources/config/batch` - 数据源真实配置写回由 `System-Data` 页面承接
 
 ---
 
@@ -296,10 +297,11 @@ POST /api/v1/risk/config        // 风控配置
 
 **系统管理**:
 ```javascript
-GET /api/v1/system/config       // 系统配置
-POST /api/v1/system/config      // 保存配置
-GET /api/v1/system/datasource   // 数据源状态
-PUT /api/v1/system/datasource   // 更新数据源
+GET /health/detailed                    // System-Config 详细健康视图
+GET /health                             // System-Config 健康摘要回退
+localStorage                            // System-Config 本地设置持久化
+GET /api/v1/data-sources/config/        // System-Data 数据源状态
+POST /api/v1/data-sources/config/batch  // System-Data 数据源批量写回
 ```
 
 ---

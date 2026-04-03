@@ -77,7 +77,7 @@ This is tracked separately from `verified/pending`.
 | `Risk-News` | `/api/announcement/list` | runtime `200` + page request verified |
 | `Risk-StopLoss` | `/api/v1/monitoring/watchlists` + `/api/v1/monitoring/watchlists/{id}/stocks` + `/api/v1/market/quotes` | worktree backend `127.0.0.1:8125` read family `200` + helper merges stop-loss rows with quotes payload |
 | `System-API` | `/health` + `/api/health/detailed` | worktree backend `127.0.0.1:8124` primary `200` + export `200` with consumable `UnifiedResponse` |
-| `System-Config` | `/api/health/detailed` + `/api/health` | PM2 backend `http://localhost:8888` returns `200`; page helper now maps both detailed warning payloads and slim health payloads into monitor rows |
+| `System-Config` | `read-family: /api/health/detailed + /api/health ; save: localStorage-only` | PM2 backend `http://localhost:8888` returns `200`; page helper maps both detailed warning payloads and slim health payloads into monitor rows, while page save remains local-only and datasource writeback belongs to `System-Data` |
 | `System-Health` | `/health` | runtime `200` + response keys verified |
 | `System-Data` | `/api/v1/data-sources/config/` + `/api/v1/data-sources/config/batch` | backend write family previously proven `200` + frontend read/write mapping verified |
 | `Market-Realtime` | `/api/v1/market/quotes` | runtime `200` + local helper mapping verified on current worktree backend |
@@ -180,7 +180,7 @@ This is tracked separately from `verified/pending`.
 | `Market-LHB` | prefer `/api/v2/market/lhb` | runtime `200` | verified |
 | `Strategy-Repo` | keep `/api/v1/strategy/strategies` for CRUD; keep lifecycle actions disabled in UI until backend routes exist | list/create/update/delete `200` on worktree backend `8122`; lifecycle `404` | verified for primary CRUD flow; lifecycle routes remain intentionally contained, not exposed |
 | `System-API` | keep `/health` for primary card load; use `/api/health/detailed` for export path | worktree backend `8124`: `/health` -> `200`, `/api/health/detailed` -> `200` | verified; detailed route now degrades to `warning` payload instead of `500` when script logging hits read-only FS |
-| `System-Config` | use `/api/health/detailed` as primary monitor source and `/api/health` as fallback summary source; page-level helper now normalizes both payload shapes into monitor table rows | PM2 backend `8888`: `/api/health` `200`; helper maps live slim payload into non-empty rows; detailed warning payload shape covered by focused node tests | verified |
+| `System-Config` | use `/api/health/detailed` as primary monitor source and `/api/health` as fallback summary source; page-level helper normalizes both payload shapes into monitor table rows, while page save remains `localStorage`-only and real datasource writeback stays under `System-Data` | PM2 backend `8888`: `/api/health` `200`; helper maps live slim payload into non-empty rows; detailed warning payload shape covered by focused node tests; page save is intentionally not counted as backend real-write closure | verified |
 | `System-Data` | keep `/api/v1/data-sources/config/` read path and `/api/v1/data-sources/config/batch` write family | read `200`, batch `200`; frontend now emits batch `update` operations with `status=active|maintenance` | verified |
 | `Strategy-Backtest` | use `/api/v1/strategy/backtest/run` + `/api/v1/strategy/backtest/status/{id}` + `/api/v1/strategy/backtest/results/{id}`; in TESTING/DEVELOPMENT_MODE, run/status/result chain degrades to runtime fallback when manager/env is unavailable | worktree backend `8128`: run `200`, status `200`, result `200`, result payload contains `performance.total_return/max_drawdown` and `start_date/end_date` | verified on current worktree backend under runtime fallback mode |
 | `Strategy-GPU` | use `/api/gpu/status` + `/api/gpu/performance`; route registration restored and page helper maps unified payloads into GPU dashboard cards | worktree backend `8131`: status `200`, performance `200`; front-end gpu helper tests pass | verified |
@@ -273,6 +273,7 @@ This is tracked separately from `verified/pending`.
 - frontend `System-Config` monitor-table proof:
   - helper maps live `/api/health` slim payload -> row `{ endpoint: "/api/health", qps: "-", p95: "-", errorRate: "0.00%" }`
   - helper maps detailed warning payload and explicit metrics arrays in focused node tests
+  - page save semantics remain local-only (`localStorage`); datasource backend writeback is tracked separately under `System-Data`
 - `GET /api/v1/monitoring/alert-rules` on worktree backend `127.0.0.1:8127` -> `200`
 - `GET /api/v1/monitoring/alerts?page=1&page_size=50` on worktree backend `127.0.0.1:8127` -> `200`
 - frontend `Risk-Alerts` mapping proof on worktree backend `127.0.0.1:8127`:
@@ -350,7 +351,7 @@ So backend behavior changes in this worktree now have:
 - direct route verification on `127.0.0.1:8120` and `127.0.0.1:8121` for the routes exercised in this task
 - direct route verification on `127.0.0.1:8122` for `Strategy-Repo` CRUD + `UnifiedResponse` contract in testing/development fallback mode
 - direct route verification on `127.0.0.1:8128` for `Strategy-Backtest` run/status/result chain in testing/development fallback mode
-- direct route verification on `http://localhost:8888` for `System-Config` health-summary fallback source
+- direct route verification on `http://localhost:8888` for `System-Config` health read family; page save remains local-only and is not treated as a backend write-chain proof
 - direct route verification on `127.0.0.1:8127` for `Risk-Alerts` rules/records read family in testing/development fallback mode
  - direct route verification on `127.0.0.1:8125` for `Risk-StopLoss` read family + quote merge in testing/development fallback mode
  - direct route verification on `127.0.0.1:8126` for `DealingRoom` industry heat route recovery + authenticated fund-flow family
