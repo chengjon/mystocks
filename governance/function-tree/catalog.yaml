@@ -723,15 +723,19 @@ domains:
       - id: "meta-governance-frontend-type-generation"
         label: "Frontend Type Generation Determinism"
         coverage_paths:
+          - ".github/workflows/api-contract-validation.yml"
           - "scripts/generate_frontend_types.py"
           - "scripts/_generate_frontend_types_cli.py"
+          - "tests/unit/scripts/test_ci_workflow_runtime_setup.py"
           - "web/frontend/src/api/types/**"
           - "tests/unit/test_generate_frontend_types_converter.py"
         entrypoints:
           frontend:
             - "web/frontend/src/api/types/**"
           tests:
+            - "tests/unit/scripts/test_ci_workflow_runtime_setup.py"
             - "tests/unit/test_generate_frontend_types_converter.py"
           operations:
+            - ".github/workflows/api-contract-validation.yml"
             - "scripts/generate_frontend_types.py"
             - "scripts/_generate_frontend_types_cli.py"

@@ -2,13 +2,13 @@ version: "v0.2"
 
 task:
   id: "pr-54"
-  title: "make frontend type generation deterministic"
+  title: "make frontend type generation deterministic and keep contract validation ci stable"
   owner: "main"
   created_at: "2026-04-03"
 
 mainline:
   id: "L1-frontend-type-generator-determinism"
-  objective: "remove timestamp-only churn from generated frontend API type files so repeated generation does not create noisy diffs"
+  objective: "remove timestamp-only churn from generated frontend API type files and keep the API contract validation workflow compatible with backend requirements that include TA-Lib/xlwings"
   milestone_id: "L2-frontend-contract-hygiene"
   slice_id: "L3-type-generator-determinism"
 
@@ -35,10 +35,12 @@ function_tree:
 
 scope:
   allowed_paths:
+    - ".github/workflows/api-contract-validation.yml"
     - "governance/function-tree/catalog.yaml"
     - "governance/mainline/task-cards/pr-54.yaml"
     - "scripts/generate_frontend_types.py"
     - "scripts/_generate_frontend_types_cli.py"
+    - "tests/unit/scripts/test_ci_workflow_runtime_setup.py"
     - "tests/unit/test_generate_frontend_types_converter.py"
     - "web/frontend/src/api/types/admin.ts"
     - "web/frontend/src/api/types/analysis.ts"
@@ -55,12 +57,15 @@ scope:
 non_goals:
   - "No backend schema or API contract semantic changes"
   - "No broader refactor of the frontend type generator beyond removing timestamp-only churn"
-  - "No frontend runtime feature changes outside the generated contract headers"
+  - "No frontend runtime feature changes outside the generated contract headers and contract-validation CI install path hardening"
 
 acceptance:
   checks:
     - id: "generator-determinism-regression"
       command: "pytest --no-cov tests/unit/test_generate_frontend_types_converter.py tests/unit/governance/test_function_tree_catalog.py tests/unit/governance/test_mainline_scope_gate_function_tree.py tests/unit/governance/test_task_card_function_tree_schema.py -q"
+      required: true
+    - id: "contract-validation-workflow-runtime"
+      command: "pytest --no-cov tests/unit/scripts/test_ci_workflow_runtime_setup.py -q -k \"api_contract_validation or api_contract_and_api_file_workflows_install_backend_runtime_dependencies\""
       required: true
     - id: "frontend-type-generation"
       command: "python scripts/generate_frontend_types.py --all"
@@ -75,16 +80,17 @@ acceptance:
 risk_and_rollback:
   risks:
     - "If any generated frontend type file still embeds runtime timestamps, repeated generation will keep reintroducing noisy diffs"
+    - "If API contract validation CI still installs unavailable ta-lib system packages or the unfiltered backend requirements file, the PR gate will fail before contract checks run"
     - "If the new function-tree node does not match the actual generator scope, the mainline governance gate will fail again"
   rollback_plan: "git revert <merge-commit-sha> if the deterministic generator change causes unexpected frontend contract regressions"
 
 delivery:
   six_line_summary_required: true
   six_line_summary:
-    change_purpose: "remove timestamp-only churn from generated frontend API type files and formalize that generator slice in function-tree governance"
-    modified_scope: "frontend type generator scripts, one focused regression test file, nine generated frontend type files, one function-tree catalog update, and this PR task card"
+    change_purpose: "remove timestamp-only churn from generated frontend API type files, harden API contract validation CI installs, and formalize that slice in function-tree governance"
+    modified_scope: "frontend type generator scripts, one focused generator regression test file, one workflow runtime regression test file, one API contract validation workflow, nine generated frontend type files, one function-tree catalog update, and this PR task card"
     dependency_changes: "none"
-    legacy_logic_impact: "generated frontend type contents remain semantically unchanged; only nondeterministic header lines are removed and governance coverage is clarified"
+    legacy_logic_impact: "generated frontend type contents remain semantically unchanged; only nondeterministic header lines are removed, CI dependency installation is filtered for TA-Lib/xlwings, and governance coverage is clarified"
     rollback_ready: "yes"
     risk_and_rollback_point: "revert the slice if generated frontend contracts or governance matching behave unexpectedly after merge"
 
@@ -97,5 +103,5 @@ governance:
     required: false
     approved_by: "main"
     approved_at: "2026-04-03T00:00:00Z"
-    approval_note: "localized generator determinism fix plus matching function-tree governance metadata"
+    approval_note: "localized generator determinism fix plus matching CI runtime hardening and function-tree governance metadata"
     secondary_approved: false
