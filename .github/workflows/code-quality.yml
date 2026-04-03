@@ -266,6 +266,11 @@ jobs:
         gated_changed=0
 
         for changed_file in "${changed_files[@]}"; do
+          if [[ "$changed_file" =~ ^web/frontend/src/api/types/ ]]; then
+            echo "Skipping generated frontend API type file: $changed_file"
+            continue
+          fi
+
           if [[ "$changed_file" =~ ^((web/frontend/.*\.(vue|ts|js))|(tests/.*\.(ts|js)))$ ]]; then
             cmd+=(--path "$changed_file")
             gated_changed=1
