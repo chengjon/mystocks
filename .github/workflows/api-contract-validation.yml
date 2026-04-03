@@ -69,17 +69,13 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 
-      - name: Install system dependencies
-        if: steps.scope.outputs.changed == 'true'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ta-lib
-
       - name: Install Python dependencies
         if: steps.scope.outputs.changed == 'true'
         run: |
-          pip install -r web/backend/requirements.txt
-          pip install pydantic openapi-spec-validator
+          python -m pip install --upgrade pip
+          grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>=' web/backend/requirements.txt > /tmp/backend-requirements-ci.txt
+          python -m pip install -r /tmp/backend-requirements-ci.txt
+          python -m pip install pydantic openapi-spec-validator
 
       - name: Configure backend import environment
         if: steps.scope.outputs.changed == 'true'
@@ -173,7 +169,9 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          pip install -r web/backend/requirements.txt
+          python -m pip install --upgrade pip
+          grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>=' web/backend/requirements.txt > /tmp/backend-requirements-ci.txt
+          python -m pip install -r /tmp/backend-requirements-ci.txt
 
       - name: Install Node.js dependencies
         working-directory: web/frontend
@@ -245,14 +243,11 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ta-lib
-
       - name: Install Python dependencies
         run: |
-          pip install -r web/backend/requirements.txt
+          python -m pip install --upgrade pip
+          grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>=' web/backend/requirements.txt > /tmp/backend-requirements-ci.txt
+          python -m pip install -r /tmp/backend-requirements-ci.txt
 
       - name: Configure backend import environment
         run: |
