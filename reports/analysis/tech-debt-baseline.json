@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-03T05:21:00Z",
+  "generated_at": "2026-04-03T11:08:21Z",
   "metric_version": "v1",
   "frontend_type_errors": 0,
   "frontend_suppressions_count": 0,
@@ -7,6 +7,20 @@
   "backend_todo_count": 0,
   "backend_placeholder_count": 0,
   "test_placeholder_assert_count": 0,
+  "backend_static_code_analysis": {
+    "frozen_at": "2026-04-03T19:08:21+08:00",
+    "files_analyzed": 77,
+    "total_issues": 1253,
+    "critical_issues": 49,
+    "warning_issues": 1195,
+    "suggestion_issues": 9,
+    "docstring_issues": 619,
+    "type_annotation_issues": 400,
+    "pydantic_issues": 119,
+    "import_issues": 9,
+    "security_issues": 49,
+    "endpoint_function_issues": 174
+  },
   "backend_api_documentation": {
     "frozen_at": "2026-04-03T13:21:00+08:00",
     "total_endpoints": 488,

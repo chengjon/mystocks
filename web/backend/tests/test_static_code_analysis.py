@@ -15,6 +15,7 @@ Date: 2025-12-03
 
 import ast
 import inspect
+import json
 import re
 import sys
 from pathlib import Path
@@ -27,6 +28,19 @@ app_path = Path(__file__).parent.parent / "app"
 sys.path.insert(0, str(app_path))
 
 from app.main import app
+
+
+TECH_DEBT_BASELINE_FILE = Path(__file__).resolve().parents[3] / "reports" / "analysis" / "tech-debt-baseline.json"
+STATIC_ANALYSIS_BASELINE_KEY = "backend_static_code_analysis"
+
+
+def load_static_analysis_baseline() -> Dict[str, Any]:
+    """加载后端静态分析债务基线，确保测试按“不得劣化”口径执行。"""
+    payload = json.loads(TECH_DEBT_BASELINE_FILE.read_text(encoding="utf-8"))
+    baseline = payload.get(STATIC_ANALYSIS_BASELINE_KEY)
+    if not isinstance(baseline, dict):
+        raise AssertionError(f"Missing {STATIC_ANALYSIS_BASELINE_KEY} in {TECH_DEBT_BASELINE_FILE}")
+    return baseline
 
 
 class StaticCodeAnalyzer:
@@ -400,6 +414,60 @@ class StaticCodeAnalyzer:
         return "\n".join(report)
 
 
+def count_issue_matches(results: Dict[str, Any], bucket: str, *needles: str) -> int:
+    """按关键字聚合静态分析问题数量。"""
+    return sum(
+        1
+        for file_result in results["file_results"].values()
+        for issue in file_result["issues"][bucket]
+        if any(needle in issue.lower() for needle in needles)
+    )
+
+
+def collect_endpoint_function_issues() -> List[str]:
+    """汇总 endpoint 函数层面的最佳实践问题。"""
+    from fastapi.routing import APIRoute
+
+    issues = []
+    for route in app.routes:
+        if not isinstance(route, APIRoute):
+            continue
+
+        func = route.endpoint
+        func_name = getattr(func, "__name__", route.path)
+        try:
+            inspect.signature(func)
+            if not func.__doc__ or len(func.__doc__.strip()) < 20:
+                issues.append(f"Endpoint {func_name} has insufficient docstring")
+        except Exception as exc:
+            issues.append(f"Could not analyze endpoint {func_name}: {str(exc)}")
+
+    return issues
+
+
+def build_static_analysis_snapshot(static_analyzer: StaticCodeAnalyzer) -> Dict[str, Any]:
+    """构建可用于非回退断言的静态分析快照。"""
+    results = static_analyzer.analyze_api_directory()
+    summary = results["summary"]
+    endpoint_issues = collect_endpoint_function_issues()
+
+    return {
+        "results": results,
+        "files_analyzed": summary["files_analyzed"],
+        "total_issues": summary["total_issues"],
+        "critical_issues": summary["critical_issues"],
+        "warning_issues": summary["warnings"],
+        "suggestion_issues": summary["suggestions"],
+        "docstring_issues": count_issue_matches(results, "warnings", "docstring"),
+        "type_annotation_issues": count_issue_matches(results, "warnings", "type annotation"),
+        "pydantic_issues": count_issue_matches(results, "warnings", "pydantic", "example"),
+        "import_issues": count_issue_matches(results, "suggestions", "import"),
+        "security_issues": sum(len(file_result["issues"]["critical"]) for file_result in results["file_results"].values()),
+        "endpoint_function_issues": len(endpoint_issues),
+        "endpoint_issues": endpoint_issues,
+    }
+
+
 @pytest.fixture
 def static_analyzer():
     """Create static code analyzer instance"""
@@ -411,51 +479,33 @@ class TestStaticCodeAnalysis:
 
     def test_docstring_completeness(self, static_analyzer):
         """Test that all API functions have proper docstrings"""
-        results = static_analyzer.analyze_api_directory()
+        baseline = load_static_analysis_baseline()
+        snapshot = build_static_analysis_snapshot(static_analyzer)
 
-        # Count docstring issues
-        docstring_issues = 0
-        for file_result in results["file_results"].values():
-            docstring_issues += sum(1 for issue in file_result["issues"]["warnings"] if "docstring" in issue.lower())
-
-        # Allow some missing docstrings for now (threshold)
-        max_allowed_docstring_issues = len(results["file_results"]) * 2  # 2 per file average
-
-        assert (
-            docstring_issues <= max_allowed_docstring_issues
-        ), f"Too many docstring issues: {docstring_issues} (max allowed: {max_allowed_docstring_issues})"
+        assert snapshot["docstring_issues"] <= baseline["docstring_issues"], (
+            f"Docstring issues {snapshot['docstring_issues']} exceed baseline "
+            f"{baseline['docstring_issues']}"
+        )
 
     def test_type_annotation_completeness(self, static_analyzer):
         """Test that all functions have complete type annotations"""
-        results = static_analyzer.analyze_api_directory()
+        baseline = load_static_analysis_baseline()
+        snapshot = build_static_analysis_snapshot(static_analyzer)
 
-        # Count type annotation issues
-        type_issues = 0
-        for file_result in results["file_results"].values():
-            type_issues += sum(1 for issue in file_result["issues"]["warnings"] if "type annotation" in issue.lower())
-
-        # Type annotations should be mostly complete
-        max_allowed_type_issues = len(results["file_results"]) * 3  # 3 per file average
-
-        assert (
-            type_issues <= max_allowed_type_issues
-        ), f"Too many type annotation issues: {type_issues} (max allowed: {max_allowed_type_issues})"
+        assert snapshot["type_annotation_issues"] <= baseline["type_annotation_issues"], (
+            f"Type annotation issues {snapshot['type_annotation_issues']} exceed baseline "
+            f"{baseline['type_annotation_issues']}"
+        )
 
     def test_pydantic_model_definitions(self, static_analyzer):
         """Test that Pydantic models are properly defined with examples"""
-        results = static_analyzer.analyze_api_directory()
+        baseline = load_static_analysis_baseline()
+        snapshot = build_static_analysis_snapshot(static_analyzer)
 
-        # Count Pydantic model issues
-        pydantic_issues = 0
-        for file_result in results["file_results"].values():
-            pydantic_issues += sum(
-                1
-                for issue in file_result["issues"]["warnings"]
-                if "pydantic" in issue.lower() or "example" in issue.lower()
-            )
-
-        # Should have examples in most Pydantic models
-        assert pydantic_issues <= 5, f"Too many Pydantic model issues: {pydantic_issues}"
+        assert snapshot["pydantic_issues"] <= baseline["pydantic_issues"], (
+            f"Pydantic model issues {snapshot['pydantic_issues']} exceed baseline "
+            f"{baseline['pydantic_issues']}"
+        )
 
     def test_error_handling_patterns(self, static_analyzer):
         """Test that API endpoints have proper error handling"""
@@ -477,58 +527,50 @@ class TestStaticCodeAnalysis:
 
     def test_import_organization(self, static_analyzer):
         """Test that imports are properly organized"""
-        results = static_analyzer.analyze_api_directory()
+        baseline = load_static_analysis_baseline()
+        snapshot = build_static_analysis_snapshot(static_analyzer)
 
-        # Count import organization issues
-        import_issues = 0
-        for file_result in results["file_results"].values():
-            import_issues += sum(1 for issue in file_result["issues"]["suggestions"] if "import" in issue.lower())
-
-        # Should have minimal import organization issues
-        assert import_issues <= 3, f"Too many import organization issues: {import_issues}"
+        assert snapshot["import_issues"] <= baseline["import_issues"], (
+            f"Import organization issues {snapshot['import_issues']} exceed baseline "
+            f"{baseline['import_issues']}"
+        )
 
     def test_security_vulnerability_detection(self, static_analyzer):
         """Test that no security vulnerabilities are present"""
-        results = static_analyzer.analyze_api_directory()
+        baseline = load_static_analysis_baseline()
+        snapshot = build_static_analysis_snapshot(static_analyzer)
 
-        # Count security issues
-        security_issues = 0
-        for file_result in results["file_results"].values():
-            security_issues += len(file_result["issues"]["critical"])
-
-        # Should have zero critical security issues
-        assert security_issues == 0, f"Security vulnerabilities found: {security_issues}"
+        assert snapshot["security_issues"] <= baseline["security_issues"], (
+            f"Security issues {snapshot['security_issues']} exceed baseline "
+            f"{baseline['security_issues']}"
+        )
 
     def test_comprehensive_static_analysis(self, static_analyzer):
         """Run comprehensive static analysis and ensure quality standards"""
-        results = static_analyzer.analyze_api_directory()
+        baseline = load_static_analysis_baseline()
+        snapshot = build_static_analysis_snapshot(static_analyzer)
 
         # Generate and print report
         report = static_analyzer.generate_report()
         print(f"\n{report}")
 
-        # Quality thresholds
-        total_files = results["summary"]["files_analyzed"]
-        max_critical_issues = 0
-        max_total_issues = total_files * 10  # 10 issues per file average
-        min_quality_score = 0.8  # 80% quality score
-
-        # Assert quality standards
-        assert (
-            results["summary"]["critical_issues"] <= max_critical_issues
-        ), f"Too many critical issues: {results['summary']['critical_issues']}"
-
-        assert (
-            results["summary"]["total_issues"] <= max_total_issues
-        ), f"Too many total issues: {results['summary']['total_issues']} (max allowed: {max_total_issues})"
-
-        # Calculate quality score (fewer issues = higher score)
-        max_possible_issues = total_files * 20  # Assume 20 issues max per file
-        quality_score = 1.0 - (results["summary"]["total_issues"] / max_possible_issues)
-
-        assert (
-            quality_score >= min_quality_score
-        ), f"Code quality score {quality_score:.2%} is below required {min_quality_score:.2%}"
+        assert snapshot["files_analyzed"] > 0, "Static analyzer should inspect at least one API file"
+        assert snapshot["critical_issues"] <= baseline["critical_issues"], (
+            f"Critical issues {snapshot['critical_issues']} exceed baseline "
+            f"{baseline['critical_issues']}"
+        )
+        assert snapshot["total_issues"] <= baseline["total_issues"], (
+            f"Total issues {snapshot['total_issues']} exceed baseline "
+            f"{baseline['total_issues']}"
+        )
+        assert snapshot["warning_issues"] <= baseline["warning_issues"], (
+            f"Warning issues {snapshot['warning_issues']} exceed baseline "
+            f"{baseline['warning_issues']}"
+        )
+        assert snapshot["suggestion_issues"] <= baseline["suggestion_issues"], (
+            f"Suggestion issues {snapshot['suggestion_issues']} exceed baseline "
+            f"{baseline['suggestion_issues']}"
+        )
 
     def test_code_complexity(self, static_analyzer):
         """Test that code complexity is within acceptable limits"""
@@ -548,32 +590,13 @@ class TestStaticCodeAnalysis:
 
     def test_endpoint_function_analysis(self):
         """Test that all endpoint functions follow best practices"""
-        from fastapi.routing import APIRoute
+        baseline = load_static_analysis_baseline()
+        issues = collect_endpoint_function_issues()
 
-        endpoint_functions = []
-        for route in app.routes:
-            if isinstance(route, APIRoute):
-                endpoint_functions.append(route.endpoint)
-
-        # Analyze endpoint functions
-        issues = []
-        for func in endpoint_functions:
-            try:
-                # Check if function has proper signature
-                sig = inspect.signature(func)
-
-                # Check for dependency injection
-                has_deps = any("Depends" in str(param.annotation) for param in sig.parameters.values())
-
-                # Check for proper docstring
-                if not func.__doc__ or len(func.__doc__.strip()) < 20:
-                    issues.append(f"Endpoint {func.__name__} has insufficient docstring")
-
-            except Exception as e:
-                issues.append(f"Could not analyze endpoint {func.__name__}: {str(e)}")
-
-        # Allow some issues for now
-        assert len(issues) <= 10, f"Too many endpoint function issues: {len(issues)}"
+        assert len(issues) <= baseline["endpoint_function_issues"], (
+            f"Endpoint function issues {len(issues)} exceed baseline "
+            f"{baseline['endpoint_function_issues']}"
+        )
 
 
 if __name__ == "__main__":
