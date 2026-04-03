@@ -17,14 +17,21 @@
   - Status: ✅ VERIFIED (2026-03-02)
 
 ## 3. Shared Asset Extraction (Phase 2)
-- [ ] 3.0 **Identify existing files at target locations**
-  - [ ] 3.0.1 List all files that already exist in `src/shared/components/` and `src/shared/composables/`
-  - [ ] 3.0.2 For each existing file, determine merge strategy:
+- [x] 3.0 **Identify existing files at target locations**
+  - Completed: 2026-04-04
+  - Baseline recorded in `web/frontend/MIGRATION_PROGRESS.md`
+  - [x] 3.0.1 List all files that already exist in `src/shared/components/` and `src/shared/composables/`
+    - Result: no target files or directories existed in the repository baseline before this batch.
+  - [x] 3.0.2 For each existing file, determine merge strategy:
     - Compare source and target file contents
     - Choose which version to keep (or merge both)
     - Run unit tests to verify functionality
     - Delete source file after merge
-- [ ] 3.1 Create target directories: `src/shared/components/` and `src/shared/composables/`
+    - Result: no target-location conflicts existed, so no per-file merge was required in this batch.
+    - Baseline drift found: the repo has no `src/views/shared/*` source tree; actual candidate extraction sources are `src/views/components/` and `src/views/composables/`.
+- [x] 3.1 Create target directories: `src/shared/components/` and `src/shared/composables/`
+  - Completed: 2026-04-04 via tracked `.gitkeep` placeholders
+- Baseline note: tasks 3.2-3.4 still describe the approved target architecture, but execution must be remapped from actual current source locations recorded in `web/frontend/MIGRATION_PROGRESS.md` before any `git mv` starts.
 - [ ] 3.2 Move all files from `src/views/shared/components/*` → `src/shared/components/` (use `git mv`)
 - [ ] 3.3 Move all files from `src/views/shared/composables/*` → `src/shared/composables/` (use `git mv`)
 - [ ] 3.4 Search for all imports of `@/views/shared/...` and update to `@/shared/...`
