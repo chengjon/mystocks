@@ -55,6 +55,17 @@ class APIComplianceValidator:
         """Skip endpoints that intentionally keep connections open."""
         return endpoint_path.startswith("/api/v1/sse/")
 
+    def _is_runtime_unsafe_endpoint(self, endpoint_path: str) -> bool:
+        """Skip routes that trigger long-lived streams, live upstream fetches, or active refresh jobs."""
+        if self._is_long_lived_endpoint(endpoint_path):
+            return True
+
+        if endpoint_path == "/api/v1/market/heatmap":
+            return True
+
+        refresh_markers = ("/refresh", "/refresh-all")
+        return any(marker in endpoint_path for marker in refresh_markers)
+
     def get_auth_token(self) -> str:
         """Get authentication token for testing protected endpoints"""
         if not self.auth_token:
@@ -137,8 +148,10 @@ class APIComplianceValidator:
             result["auth_required"] = False
             return result
 
-        if self._is_long_lived_endpoint(endpoint_path):
+        if self._is_runtime_unsafe_endpoint(endpoint_path):
             result["auth_required"] = False
+            result["skipped"] = True
+            result["skip_reason"] = "runtime_unsafe_endpoint"
             return result
 
         auth_token = self.get_auth_token()
@@ -178,7 +191,9 @@ class APIComplianceValidator:
             "errors": [],
         }
 
-        if self._is_long_lived_endpoint(endpoint_path):
+        if self._is_runtime_unsafe_endpoint(endpoint_path):
+            result["skipped"] = True
+            result["skip_reason"] = "runtime_unsafe_endpoint"
             return result
 
         # Test with invalid parameters
@@ -271,7 +286,7 @@ class APIComplianceValidator:
                 "methods": endpoint["methods"],
                 "validations": {},
             }
-            is_long_lived_endpoint = self._is_long_lived_endpoint(endpoint["path"])
+            is_runtime_unsafe_endpoint = self._is_runtime_unsafe_endpoint(endpoint["path"])
 
             # Run all validations for each applicable method
             for method in endpoint["methods"]:
@@ -280,13 +295,14 @@ class APIComplianceValidator:
                     if endpoint["path"] in ["/docs", "/openapi.json", "/redoc"]:
                         continue
 
-                    if is_long_lived_endpoint:
+                    if is_runtime_unsafe_endpoint:
                         endpoint_result["validations"][f"{method}_response_structure"] = {
                             "endpoint": f"{method} {endpoint['path']}",
                             "status_code": None,
                             "compliance": True,
                             "errors": [],
                             "skipped": True,
+                            "skip_reason": "runtime_unsafe_endpoint",
                         }
                         endpoint_result["validations"][f"{method}_parameter_validation"] = (
                             self.validate_parameter_validation(endpoint["path"], method)
@@ -512,6 +528,33 @@ class TestAPICompliance:
         validator.run_comprehensive_validation()
 
         assert ("GET", "/api/v1/sse/training") not in requested_paths
+        assert any(url == "/health" for _, url in requested_paths)
+
+    def test_external_refresh_endpoints_are_skipped_during_runtime_validation(self, test_client, monkeypatch):
+        """External refresh and heatmap endpoints should not trigger live upstream calls in the sweep."""
+        validator = APIComplianceValidator(test_client)
+        validator.endpoints = [
+            {"path": "/api/v1/market/heatmap", "methods": ["GET"]},
+            {"path": "/api/v1/market/etf/refresh", "methods": ["POST"]},
+            {"path": "/api/v2/market/refresh-all", "methods": ["POST"]},
+            {"path": "/health", "methods": ["GET"]},
+        ]
+
+        requested_paths = []
+        original_request = validator.client.request
+
+        def tracking_request(method, url, *args, **kwargs):
+            requested_paths.append((method, url))
+            return original_request(method, url, *args, **kwargs)
+
+        monkeypatch.setattr(validator.client, "request", tracking_request)
+        monkeypatch.setattr(validator, "get_auth_token", lambda: "")
+
+        validator.run_comprehensive_validation()
+
+        assert ("GET", "/api/v1/market/heatmap") not in requested_paths
+        assert ("POST", "/api/v1/market/etf/refresh") not in requested_paths
+        assert ("POST", "/api/v2/market/refresh-all") not in requested_paths
         assert any(url == "/health" for _, url in requested_paths)
 
     def test_auth_token_is_cached_from_unified_login_response(self, test_client, monkeypatch):
