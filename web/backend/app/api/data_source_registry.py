@@ -20,16 +20,29 @@ import os
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query, Header
-from pydantic import BaseModel
+from fastapi import APIRouter, Body, HTTPException, Header, Path, Query
+from pydantic import BaseModel, Field
 
 from app.core.config import settings
+from app.openapi_config import COMMON_RESPONSES
 from app.core.responses import ErrorCodes, create_error_response
 from app.core.security import verify_token
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/v1/data-sources", tags=["数据源管理"])
+DATA_SOURCE_REGISTRY_RESPONSES = {
+    400: COMMON_RESPONSES[400],
+    401: COMMON_RESPONSES[401],
+    404: COMMON_RESPONSES[404],
+    422: COMMON_RESPONSES[422],
+    500: COMMON_RESPONSES[500],
+}
+
+router = APIRouter(
+    prefix="/api/v1/data-sources",
+    tags=["数据源管理"],
+    responses=DATA_SOURCE_REGISTRY_RESPONSES,
+)
 
 
 # ==================== Pydantic Models ====================
@@ -38,48 +51,76 @@ router = APIRouter(prefix="/api/v1/data-sources", tags=["数据源管理"])
 class DataSourceSearchResponse(BaseModel):
     """数据源搜索响应"""
 
-    total: int
-    data_sources: List[Dict[str, Any]]
+    total: int = Field(..., description="满足筛选条件的数据源总数。")
+    data_sources: List[Dict[str, Any]] = Field(..., description="符合条件的数据源配置与状态列表。")
 
 
 class CategoryStatsResponse(BaseModel):
     """分类统计响应"""
 
-    category: str
-    display_name: str
-    total: int
-    healthy: int
-    unhealthy: int
-    avg_quality_score: float
-    avg_response_time: float
+    category: str = Field(..., description="数据分类编码。")
+    display_name: str = Field(..., description="数据分类的中文展示名称。")
+    total: int = Field(..., description="该分类下注册的数据源总数。")
+    healthy: int = Field(..., description="该分类下当前健康的数据源数量。")
+    unhealthy: int = Field(..., description="该分类下当前异常或不健康的数据源数量。")
+    avg_quality_score: float = Field(..., description="该分类数据源的平均质量评分。")
+    avg_response_time: float = Field(..., description="该分类数据源的平均响应时间，单位秒。")
 
 
 class DataSourceUpdate(BaseModel):
     """数据源更新请求"""
 
-    priority: Optional[int] = None
-    data_quality_score: Optional[float] = None
-    status: Optional[str] = None
-    description: Optional[str] = None
+    priority: Optional[int] = Field(None, description="新的优先级，数值越小优先级越高。")
+    data_quality_score: Optional[float] = Field(None, description="新的数据质量评分。")
+    status: Optional[str] = Field(None, description="新的状态，如 active、maintenance、deprecated。")
+    description: Optional[str] = Field(None, description="新的补充说明或治理备注。")
 
 
 class TestRequest(BaseModel):
     """测试请求"""
 
-    test_params: Dict[str, Any]
+    test_params: Dict[str, Any] = Field(..., description="发送给目标数据源处理器的测试参数。")
 
 
 class TestResponse(BaseModel):
     """测试响应"""
 
-    success: bool
-    endpoint_name: str
-    test_params: Dict[str, Any]
-    duration: Optional[float] = None
-    row_count: Optional[int] = None
-    data_preview: Optional[List[Dict]] = None
-    quality_checks: Optional[Dict[str, Any]] = None
-    error: Optional[str] = None
+    success: bool = Field(..., description="本次测试是否执行成功。")
+    endpoint_name: str = Field(..., description="被测试的数据源接口名称。")
+    test_params: Dict[str, Any] = Field(..., description="用于本次测试的数据源参数。")
+    duration: Optional[float] = Field(None, description="测试执行耗时，单位秒。")
+    row_count: Optional[int] = Field(None, description="测试返回的数据行数。")
+    data_preview: Optional[List[Dict]] = Field(None, description="返回数据的预览内容，通常为前几行。")
+    quality_checks: Optional[Dict[str, Any]] = Field(None, description="测试后生成的数据质量检查结果。")
+    error: Optional[str] = Field(None, description="测试失败时的错误信息。")
+
+
+DATA_SOURCE_UPDATE_EXAMPLES = {
+    "adjust_priority_and_status": {
+        "summary": "更新数据源配置",
+        "description": "调整数据源优先级、质量评分和状态，常用于治理登记或切换维护状态。",
+        "value": {
+            "priority": 1,
+            "data_quality_score": 9.5,
+            "status": "active",
+            "description": "主数据源，优先使用。",
+        },
+    }
+}
+
+DATA_SOURCE_TEST_EXAMPLES = {
+    "test_daily_kline_endpoint": {
+        "summary": "测试日线数据接口",
+        "description": "对指定 AKShare 日线接口发起一次样例测试，验证连通性和数据质量。",
+        "value": {
+            "test_params": {
+                "symbol": "000001",
+                "start_date": "20240101",
+                "end_date": "20240131",
+            }
+        },
+    }
+}
 
 
 # ==================== Helper Functions ====================
@@ -204,7 +245,11 @@ async def search_data_sources(
         raise HTTPException(status_code=500, detail=f"搜索失败: {str(e)}")
 
 
-@router.get("/categories", response_model=List[CategoryStatsResponse])
+@router.get(
+    "/categories",
+    response_model=List[CategoryStatsResponse],
+    description="汇总所有五层数据分类的接口规模、健康状态、平均质量评分和平均响应时间。",
+)
 async def get_category_stats():
     """
     获取所有5层数据分类的统计信息
@@ -287,8 +332,11 @@ async def get_category_stats():
         raise HTTPException(status_code=500, detail=f"获取分类统计失败: {str(e)}")
 
 
-@router.get("/{endpoint_name}")
-async def get_data_source(endpoint_name: str):
+@router.get(
+    "/{endpoint_name}",
+    description="获取单个数据源接口的完整配置、调用计数和最近一次调用信息。",
+)
+async def get_data_source(endpoint_name: str = Path(..., description="需要查询详情的数据源接口名称。")):
     """
     获取单个数据源的详细信息
 
@@ -323,11 +371,18 @@ async def get_data_source(endpoint_name: str):
         raise HTTPException(status_code=500, detail=f"获取数据源失败: {str(e)}")
 
 
-@router.put("/{endpoint_name}")
+@router.put(
+    "/{endpoint_name}",
+    description="更新指定数据源的优先级、质量评分、状态或补充描述信息。",
+)
 async def update_data_source(
-    endpoint_name: str,
-    update: DataSourceUpdate,
-    authorization: Optional[str] = Header(default=None, alias="Authorization"),
+    endpoint_name: str = Path(..., description="需要更新配置的数据源接口名称。"),
+    update: DataSourceUpdate = Body(..., openapi_examples=DATA_SOURCE_UPDATE_EXAMPLES),
+    authorization: Optional[str] = Header(
+        default=None,
+        alias="Authorization",
+        description="Bearer Token。非测试环境下写操作必须提供有效认证凭据。",
+    ),
 ):
     """
     更新数据源配置
@@ -407,11 +462,19 @@ async def update_data_source(
         raise HTTPException(status_code=500, detail=f"更新失败: {str(e)}")
 
 
-@router.post("/{endpoint_name}/test", response_model=TestResponse)
+@router.post(
+    "/{endpoint_name}/test",
+    response_model=TestResponse,
+    description="对指定数据源执行一次手动测试，返回耗时、数据预览和质量检查结果。",
+)
 async def test_data_source(
-    endpoint_name: str,
-    request: TestRequest,
-    authorization: Optional[str] = Header(default=None, alias="Authorization"),
+    endpoint_name: str = Path(..., description="需要执行测试的数据源接口名称。"),
+    request: TestRequest = Body(..., openapi_examples=DATA_SOURCE_TEST_EXAMPLES),
+    authorization: Optional[str] = Header(
+        default=None,
+        alias="Authorization",
+        description="Bearer Token。非测试环境下手动测试操作必须提供有效认证凭据。",
+    ),
 ):
     """
     手动测试数据源
@@ -505,10 +568,17 @@ async def test_data_source(
         raise HTTPException(status_code=500, detail=f"测试失败: {str(e)}")
 
 
-@router.post("/{endpoint_name}/health-check")
+@router.post(
+    "/{endpoint_name}/health-check",
+    description="使用预设测试参数对单个数据源执行健康检查，快速判断接口可用性。",
+)
 async def health_check_data_source(
-    endpoint_name: str,
-    authorization: Optional[str] = Header(default=None, alias="Authorization"),
+    endpoint_name: str = Path(..., description="需要执行健康检查的数据源接口名称。"),
+    authorization: Optional[str] = Header(
+        default=None,
+        alias="Authorization",
+        description="Bearer Token。非测试环境下健康检查操作必须提供有效认证凭据。",
+    ),
 ):
     """
     健康检查单个数据源
@@ -553,9 +623,16 @@ async def health_check_data_source(
         raise HTTPException(status_code=500, detail=f"健康检查失败: {str(e)}")
 
 
-@router.post("/health-check/all")
+@router.post(
+    "/health-check/all",
+    description="批量执行所有数据源的健康检查，并返回带时间戳的汇总结果。",
+)
 async def health_check_all_data_sources(
-    authorization: Optional[str] = Header(default=None, alias="Authorization"),
+    authorization: Optional[str] = Header(
+        default=None,
+        alias="Authorization",
+        description="Bearer Token。非测试环境下批量健康检查必须提供有效认证凭据。",
+    ),
 ):
     """
     健康检查所有数据源

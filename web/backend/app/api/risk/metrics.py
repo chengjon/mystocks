@@ -6,6 +6,7 @@ import pandas as pd
 from fastapi import APIRouter, Body, Query
 
 from app.core.exceptions import BusinessException, ValidationException
+from app.openapi_config import COMMON_RESPONSES
 from app.api.risk._shared import (
     DataClassification,
     MyStocksUnifiedManager,
@@ -21,7 +22,18 @@ from app.api.risk._shared import (
     VaRCVaRResult,
 )
 
-router = APIRouter(prefix="/api/v1/risk", tags=["风险管理-指标计算"])
+RISK_METRICS_ROUTE_RESPONSES = {
+    400: COMMON_RESPONSES[400],
+    404: COMMON_RESPONSES[404],
+    422: COMMON_RESPONSES[422],
+    500: COMMON_RESPONSES[500],
+}
+
+router = APIRouter(
+    prefix="/api/v1/risk",
+    tags=["风险管理-指标计算"],
+    responses=RISK_METRICS_ROUTE_RESPONSES,
+)
 
 VAR_CVAR_REQUEST_EXAMPLES = {
     "portfolio_var_cvar": {
@@ -263,7 +275,11 @@ async def calculate_beta(request: BetaRequest = Body(..., openapi_examples=BETA_
         raise BusinessException(detail=f"计算Beta失败: {str(e)}", status_code=500, error_code="BETA_CALCULATION_FAILED")
 
 
-@router.get("/dashboard", response_model=RiskDashboardResponse)
+@router.get(
+    "/dashboard",
+    response_model=RiskDashboardResponse,
+    description="聚合最新风险指标、活跃告警和近 30 天风险历史，用于风险总览仪表盘展示。",
+)
 async def get_risk_dashboard() -> RiskDashboardResponse:
     try:
         manager = MyStocksUnifiedManager()
