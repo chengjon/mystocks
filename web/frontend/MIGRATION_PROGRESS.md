@@ -109,6 +109,29 @@ This section records the repo-backed clarification for `openspec/changes/restruc
   - Keep `web/frontend/src/views/TradingDashboard.vue`, `web/frontend/src/views/composables/useTradingDashboard.ts`, `web/frontend/src/views/composables/tradingDashboardActions.ts`, and their paired test/style assets in place for now.
   - Do not execute a trade-domain `git mv` for this page until the naming conflict between `DealingRoom`, `Trade-Terminal`, and the spec target `trade/Center.vue` is reconciled.
 
+## Dashboard / DealingRoom Blocker For Task 8.6
+
+This section records why `openspec/changes/restructure-frontend-directory/tasks.md` task `8.6` cannot safely proceed today.
+
+| Evidence source | Finding |
+| --- | --- |
+| `web/frontend/src/router/index.ts` | The live root route is `/dashboard`, and it renders `@/views/artdeco-pages/ArtDecoDashboard.vue`. |
+| `web/frontend/src/config/pageConfig.ts` | The generated `dashboard` page config still binds `component: 'ArtDecoDashboard.vue'`, with title `交易室`. |
+| `docs/plans/frontend-page-optimization-list.md` | The same component is tracked as the mainline `DealingRoom` page at `/dealing-room`, with verified P0 status. |
+| `openspec/changes/restructure-frontend-directory/tasks.md` | Task `8.6` currently proposes deprecating `ArtDecoDashboard.vue`. |
+
+### Task 8.6 Blocker Conclusion
+
+- `ArtDecoDashboard.vue` is still a live mainline page under current router truth and current page-inventory truth.
+- The repo currently has a naming drift, not a dead page:
+  - router / pageConfig truth says `dashboard`
+  - page-optimization truth says `DealingRoom`
+  - both truths still point to `ArtDecoDashboard.vue`
+- Because the same file is still the live mainline shell, task `8.6` must stay blocked.
+- Safe next action is not a `git mv` to `deprecated/`; it is a truth-reconciliation step that decides whether:
+  - `dashboard` and `DealingRoom` are aliases for one surviving page, or
+  - one of those names should be formally retired in a separately reconciled change.
+
 ## Immediate Next Boundary
 
 - Establish tracked target directories under `src/shared/`.
