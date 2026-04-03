@@ -1,0 +1,101 @@
+version: "v0.2"
+
+task:
+  id: "pr-54"
+  title: "make frontend type generation deterministic"
+  owner: "main"
+  created_at: "2026-04-03"
+
+mainline:
+  id: "L1-frontend-type-generator-determinism"
+  objective: "remove timestamp-only churn from generated frontend API type files so repeated generation does not create noisy diffs"
+  milestone_id: "L2-frontend-contract-hygiene"
+  slice_id: "L3-type-generator-determinism"
+
+classification:
+  task_type: "fix"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-frontend-type-generation"
+  affected_entrypoints:
+    - "frontend"
+    - "tests"
+    - "operations"
+  update_status: "required"
+  secondary_domains: []
+  exemption_reason: "generated-frontend-contract-determinism"
+
+scope:
+  allowed_paths:
+    - "governance/function-tree/catalog.yaml"
+    - "governance/mainline/task-cards/pr-54.yaml"
+    - "scripts/generate_frontend_types.py"
+    - "scripts/_generate_frontend_types_cli.py"
+    - "tests/unit/test_generate_frontend_types_converter.py"
+    - "web/frontend/src/api/types/admin.ts"
+    - "web/frontend/src/api/types/analysis.ts"
+    - "web/frontend/src/api/types/common.ts"
+    - "web/frontend/src/api/types/common/all.ts"
+    - "web/frontend/src/api/types/generated-types.ts"
+    - "web/frontend/src/api/types/index.ts"
+    - "web/frontend/src/api/types/strategy.ts"
+    - "web/frontend/src/api/types/system.ts"
+    - "web/frontend/src/api/types/trading.ts"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No backend schema or API contract semantic changes"
+  - "No broader refactor of the frontend type generator beyond removing timestamp-only churn"
+  - "No frontend runtime feature changes outside the generated contract headers"
+
+acceptance:
+  checks:
+    - id: "generator-determinism-regression"
+      command: "pytest --no-cov tests/unit/test_generate_frontend_types_converter.py tests/unit/governance/test_function_tree_catalog.py tests/unit/governance/test_mainline_scope_gate_function_tree.py tests/unit/governance/test_task_card_function_tree_schema.py -q"
+      required: true
+    - id: "frontend-type-generation"
+      command: "python scripts/generate_frontend_types.py --all"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-54.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr54-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If any generated frontend type file still embeds runtime timestamps, repeated generation will keep reintroducing noisy diffs"
+    - "If the new function-tree node does not match the actual generator scope, the mainline governance gate will fail again"
+  rollback_plan: "git revert <merge-commit-sha> if the deterministic generator change causes unexpected frontend contract regressions"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "remove timestamp-only churn from generated frontend API type files and formalize that generator slice in function-tree governance"
+    modified_scope: "frontend type generator scripts, one focused regression test file, nine generated frontend type files, one function-tree catalog update, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "generated frontend type contents remain semantically unchanged; only nondeterministic header lines are removed and governance coverage is clarified"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the slice if generated frontend contracts or governance matching behave unexpectedly after merge"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-03T00:00:00Z"
+    approval_note: "localized generator determinism fix plus matching function-tree governance metadata"
+    secondary_approved: false
