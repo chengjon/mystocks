@@ -131,6 +131,8 @@ This section records why `openspec/changes/restructure-frontend-directory/tasks.
 - Safe next action is not a `git mv` to `deprecated/`; it is a truth-reconciliation step that decides whether:
   - `dashboard` and `DealingRoom` are aliases for one surviving page, or
   - one of those names should be formally retired in a separately reconciled change.
+- Follow-up result: no existing approved OpenSpec change currently reconciles that truth, so a new proposal has been scaffolded as `reconcile-dashboard-dealingroom-truth` and now awaits approval before further implementation.
+- Follow-up result: no existing approved OpenSpec change currently reconciles that truth, so a new proposal has been scaffolded as `reconcile-dashboard-dealingroom-truth` and now awaits approval before further implementation.
 
 ## Immediate Next Boundary
 

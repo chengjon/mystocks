@@ -161,6 +161,7 @@
 - [ ] 8.6 Move `artdeco-pages/ArtDecoDashboard.vue` → `src/views/deprecated/ArtDecoDashboard.vue`
   - Blocked by current repo truth: `docs/plans/frontend-page-optimization-list.md` still tracks `ArtDecoDashboard.vue` as the mainline `DealingRoom` page, so deprecating it is unsafe until that naming and routing truth is reconciled.
   - Evidence: current router truth still renders `ArtDecoDashboard.vue` at `/dashboard`, and generated `pageConfig.ts` still binds the `dashboard` page to the same component.
+  - Follow-up: proposal `reconcile-dashboard-dealingroom-truth` has been scaffolded and is now the required approval gate before any future attempt to resume this task.
   - [ ] 8.6.1 No import updates needed (deprecated)
   - [ ] 8.6.2 Verify file moved
 - [ ] 8.7 Commit: "refactor: migrate trade domain pages"
