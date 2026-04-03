@@ -724,6 +724,40 @@ def test_watchlist_write_endpoints_have_docs_and_request_examples() -> None:
         assert "example" in request_json or "examples" in request_json
 
 
+def test_monitoring_watchlist_endpoints_have_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path, method, expected_params, requires_request_example in [
+        ("/api/v1/monitoring/watchlists", "post", ["user_id"], True),
+        ("/api/v1/monitoring/watchlists", "get", ["user_id"], False),
+        ("/api/v1/monitoring/watchlists/{watchlist_id}", "get", ["watchlist_id", "user_id"], False),
+        ("/api/v1/monitoring/watchlists/{watchlist_id}", "put", ["watchlist_id", "user_id"], True),
+        ("/api/v1/monitoring/watchlists/{watchlist_id}", "delete", ["watchlist_id", "user_id"], False),
+        ("/api/v1/monitoring/watchlists/{watchlist_id}/stocks", "post", ["watchlist_id", "user_id"], True),
+        ("/api/v1/monitoring/watchlists/{watchlist_id}/stocks", "get", ["watchlist_id", "user_id"], False),
+        (
+            "/api/v1/monitoring/watchlists/{watchlist_id}/stocks/{stock_code}",
+            "delete",
+            ["watchlist_id", "stock_code", "user_id"],
+            False,
+        ),
+    ]:
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expected_params:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+
+        if requires_request_example:
+            request_json = operation["requestBody"]["content"]["application/json"]
+            assert "example" in request_json or "examples" in request_json
+
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_ml_strategy_endpoints_have_request_examples() -> None:
     app.openapi_schema = None
     schema = app.openapi()

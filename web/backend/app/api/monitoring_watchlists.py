@@ -22,17 +22,100 @@ from copy import deepcopy
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Path, Query
+from fastapi import APIRouter, Body, Path, Query
 from pydantic import BaseModel, Field, field_validator
 
 from app.core.exception_handlers import handle_exceptions
 from app.core.exceptions import BusinessException, NotFoundException
 from app.core.responses import UnifiedResponse
+from app.openapi_config import COMMON_RESPONSES
 
 logger = logging.getLogger(__name__)
 
+MONITORING_WATCHLIST_ROUTE_RESPONSES = {
+    400: COMMON_RESPONSES[400],
+    404: COMMON_RESPONSES[404],
+    422: COMMON_RESPONSES[422],
+    500: COMMON_RESPONSES[500],
+    503: {
+        "description": "依赖的监控数据库当前不可用",
+        "content": {
+            "application/json": {
+                "example": {
+                    "success": False,
+                    "message": "数据库未连接",
+                    "error_code": "DATABASE_UNAVAILABLE",
+                    "timestamp": "2026-04-03T10:30:00Z",
+                }
+            }
+        },
+    },
+}
+
+FEATURE_NOT_IMPLEMENTED_RESPONSE = {
+    "description": "接口契约已预留，但后端实现尚未完成",
+    "content": {
+        "application/json": {
+            "example": {
+                "success": False,
+                "message": "更新功能待实现",
+                "error_code": "FEATURE_NOT_IMPLEMENTED",
+                "timestamp": "2026-04-03T10:30:00Z",
+            }
+        }
+    },
+}
+
 # Prefix is governed by the central route registry.
-router = APIRouter(tags=["monitoring-watchlists"])
+router = APIRouter(tags=["monitoring-watchlists"], responses=MONITORING_WATCHLIST_ROUTE_RESPONSES)
+
+CREATE_WATCHLIST_REQUEST_EXAMPLES = {
+    "manual_watchlist_with_risk_profile": {
+        "summary": "创建手工监控清单",
+        "description": "创建一个用于止损观察的手工清单，并附带基础风控参数。",
+        "value": {
+            "name": "核心止损监控",
+            "watchlist_type": "manual",
+            "risk_profile": {
+                "max_position_size": 0.15,
+                "default_stop_loss_pct": 0.08,
+                "rebalance_window": "weekly",
+            },
+        },
+    }
+}
+
+UPDATE_WATCHLIST_REQUEST_EXAMPLES = {
+    "rebalance_watchlist_profile": {
+        "summary": "更新清单名称与风控配置",
+        "description": "调整清单展示名称、风控约束和启用状态，适用于策略切换或阶段性停用。",
+        "value": {
+            "name": "核心趋势监控",
+            "watchlist_type": "strategy",
+            "risk_profile": {
+                "max_position_size": 0.12,
+                "take_profit_pct": 0.18,
+                "alert_threshold": "medium",
+            },
+            "is_active": True,
+        },
+    }
+}
+
+ADD_STOCK_REQUEST_EXAMPLES = {
+    "add_stock_with_targets": {
+        "summary": "添加带止损止盈的清单成员",
+        "description": "向监控清单中加入一只股票，并同时记录建仓理由、止损价和目标价。",
+        "value": {
+            "stock_code": "600519",
+            "entry_price": 1820.0,
+            "entry_reason": "突破年线后纳入趋势跟踪",
+            "stop_loss_price": 1750.0,
+            "target_price": 1935.0,
+            "weight": 0.2,
+        },
+    }
+}
 
 
 # ==================== 请求模型 ====================
@@ -333,10 +416,15 @@ def _delete_runtime_watchlist(watchlist_id: int, user_id: int) -> bool:
 # ==================== API 端点 ====================
 
 
-@router.post("", response_model=UnifiedResponse[WatchlistResponse])
+@router.post(
+    "",
+    response_model=UnifiedResponse[WatchlistResponse],
+    summary="创建监控清单",
+    description="创建一个新的监控清单，记录名称、清单类型和可选风控配置，供后续持仓跟踪与告警使用。",
+)
 @handle_exceptions
 async def create_watchlist(
-    request: CreateWatchlistRequest,
+    request: CreateWatchlistRequest = Body(..., openapi_examples=CREATE_WATCHLIST_REQUEST_EXAMPLES),
     user_id: int = Query(1, description="用户ID"),
 ) -> UnifiedResponse[WatchlistResponse]:
     """
@@ -392,7 +480,12 @@ async def create_watchlist(
         raise BusinessException(detail=f"创建失败: {str(e)}", status_code=500, error_code="WATCHLIST_CREATION_FAILED")
 
 
-@router.get("", response_model=UnifiedResponse[List[WatchlistResponse]])
+@router.get(
+    "",
+    response_model=UnifiedResponse[List[WatchlistResponse]],
+    summary="获取监控清单列表",
+    description="按用户查询当前全部监控清单，并返回每个清单的类型、启用状态、风控配置和成员数量汇总。",
+)
 @handle_exceptions
 async def list_watchlists(
     user_id: int = Query(1, description="用户ID"),
@@ -444,7 +537,12 @@ async def list_watchlists(
         raise BusinessException(detail=f"获取失败: {str(e)}", status_code=500, error_code="WATCHLIST_RETRIEVAL_FAILED")
 
 
-@router.get("/{watchlist_id}", response_model=UnifiedResponse[WatchlistResponse])
+@router.get(
+    "/{watchlist_id}",
+    response_model=UnifiedResponse[WatchlistResponse],
+    summary="获取监控清单详情",
+    description="根据清单 ID 查询单个监控清单的完整信息，包括名称、风控配置、启用状态以及当前成员数量。",
+)
 @handle_exceptions
 async def get_watchlist(
     watchlist_id: int = Path(..., description="清单ID"),
@@ -494,11 +592,17 @@ async def get_watchlist(
         raise BusinessException(detail=f"获取失败: {str(e)}", status_code=500, error_code="WATCHLIST_RETRIEVAL_FAILED")
 
 
-@router.put("/{watchlist_id}", response_model=UnifiedResponse[WatchlistResponse])
+@router.put(
+    "/{watchlist_id}",
+    response_model=UnifiedResponse[WatchlistResponse],
+    summary="更新监控清单",
+    description="更新监控清单的名称、类型、风控配置或启用状态。当前版本仅保留契约，后端实现尚未开放。",
+    responses={501: FEATURE_NOT_IMPLEMENTED_RESPONSE},
+)
 @handle_exceptions
 async def update_watchlist(
     watchlist_id: int = Path(..., description="清单ID"),
-    request: UpdateWatchlistRequest = None,
+    request: UpdateWatchlistRequest = Body(..., openapi_examples=UPDATE_WATCHLIST_REQUEST_EXAMPLES),
     user_id: int = Query(1, description="用户ID"),
 ) -> UnifiedResponse[WatchlistResponse]:
     """
@@ -507,7 +611,12 @@ async def update_watchlist(
     raise BusinessException(detail="更新功能待实现", status_code=501, error_code="FEATURE_NOT_IMPLEMENTED")
 
 
-@router.delete("/{watchlist_id}", response_model=UnifiedResponse[None])
+@router.delete(
+    "/{watchlist_id}",
+    response_model=UnifiedResponse[None],
+    summary="删除监控清单",
+    description="删除指定监控清单，并级联移除该清单下的全部成员记录，适用于清单下线或策略废弃场景。",
+)
 @handle_exceptions
 async def delete_watchlist(
     watchlist_id: int = Path(..., description="清单ID"),
@@ -548,11 +657,16 @@ async def delete_watchlist(
         raise BusinessException(detail=f"删除失败: {str(e)}", status_code=500, error_code="WATCHLIST_DELETION_FAILED")
 
 
-@router.post("/{watchlist_id}/stocks", response_model=UnifiedResponse[WatchlistStockResponse])
+@router.post(
+    "/{watchlist_id}/stocks",
+    response_model=UnifiedResponse[WatchlistStockResponse],
+    summary="添加监控清单成员",
+    description="向指定监控清单添加一只股票，并记录入库价格、建仓理由、止损价、目标价和权重等跟踪信息。",
+)
 @handle_exceptions
 async def add_stock_to_watchlist(
     watchlist_id: int = Path(..., description="清单ID"),
-    request: AddStockRequest = None,
+    request: AddStockRequest = Body(..., openapi_examples=ADD_STOCK_REQUEST_EXAMPLES),
     user_id: int = Query(1, description="用户ID"),
 ) -> UnifiedResponse[WatchlistStockResponse]:
     """
@@ -624,7 +738,12 @@ async def add_stock_to_watchlist(
         raise BusinessException(detail=f"添加失败: {str(e)}", status_code=500, error_code="STOCK_ADDITION_FAILED")
 
 
-@router.get("/{watchlist_id}/stocks", response_model=UnifiedResponse[List[WatchlistStockResponse]])
+@router.get(
+    "/{watchlist_id}/stocks",
+    response_model=UnifiedResponse[List[WatchlistStockResponse]],
+    summary="获取监控清单成员",
+    description="查询指定监控清单下的全部股票成员及其入库价格、风控阈值、权重和启用状态。",
+)
 @handle_exceptions
 async def list_watchlist_stocks(
     watchlist_id: int = Path(..., description="清单ID"),
@@ -689,7 +808,12 @@ async def list_watchlist_stocks(
         raise BusinessException(detail=f"获取失败: {str(e)}", status_code=500, error_code="WATCHLIST_RETRIEVAL_FAILED")
 
 
-@router.delete("/{watchlist_id}/stocks/{stock_code}", response_model=UnifiedResponse[None])
+@router.delete(
+    "/{watchlist_id}/stocks/{stock_code}",
+    response_model=UnifiedResponse[None],
+    summary="移除监控清单成员",
+    description="从指定监控清单中移除某只股票，常用于止损出清、观察结束或误加成员后的回滚处理。",
+)
 @handle_exceptions
 async def remove_stock_from_watchlist(
     watchlist_id: int = Path(..., description="清单ID"),
