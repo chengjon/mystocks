@@ -160,9 +160,10 @@ jobs:
         if: steps.scope.outputs.changed == 'true'
         run: |
           python -m pytest \
+            -o addopts='' \
             web/backend/tests/test_health_route_conflicts.py \
             web/backend/tests/test_api_documentation_validation.py \
-            -q --no-cov -rs
+            -q -rs
 
       - name: Upload generated OpenAPI spec
         if: steps.scope.outputs.changed == 'true'
