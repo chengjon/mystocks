@@ -5,53 +5,107 @@
 """
 
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Body, Path, Query
 from pydantic import BaseModel, Field
+
+from app.openapi_config import COMMON_RESPONSES
+
+TRADING_SESSION_ROUTE_RESPONSES = {
+    400: COMMON_RESPONSES[400],
+    404: COMMON_RESPONSES[404],
+    422: COMMON_RESPONSES[422],
+    500: COMMON_RESPONSES[500],
+}
 
 router = APIRouter(
     prefix="/trading/sessions",
     tags=["Trading Sessions"],
+    responses=TRADING_SESSION_ROUTE_RESPONSES,
 )
 
 
 class TradingSessionCreate(BaseModel):
     """创建交易会话请求"""
 
-    symbol: str = Field(..., description="Trading symbol")
-    strategy_id: Optional[str] = Field(None, description="Associated strategy ID")
-    initial_capital: float = Field(100000.0, description="Initial capital")
-    position_size: float = Field(0.1, description="Position size (0-1)")
-    risk_threshold: float = Field(0.05, description="Risk threshold")
+    symbol: str = Field(..., description="交易标的代码。")
+    strategy_id: Optional[str] = Field(None, description="关联的策略ID。")
+    initial_capital: float = Field(100000.0, description="会话初始资金。")
+    position_size: float = Field(0.1, description="单次仓位比例，范围为 0 到 1。")
+    risk_threshold: float = Field(0.05, description="风险阈值，超过后可触发风控动作。")
 
 
 class TradingSessionResponse(BaseModel):
     """交易会话响应"""
 
-    session_id: str
-    symbol: str
-    strategy_id: Optional[str]
-    status: str
-    current_capital: float
-    current_positions: int
-    daily_pnl: float
-    total_pnl: float
-    created_at: datetime
-    updated_at: datetime
+    session_id: str = Field(..., description="交易会话ID。")
+    symbol: str = Field(..., description="交易标的代码。")
+    strategy_id: Optional[str] = Field(None, description="关联的策略ID。")
+    status: str = Field(..., description="当前会话状态，如 active、paused、stopped。")
+    current_capital: float = Field(..., description="当前剩余或可用资金。")
+    current_positions: int = Field(..., description="当前持仓数量。")
+    daily_pnl: float = Field(..., description="当日盈亏。")
+    total_pnl: float = Field(..., description="累计盈亏。")
+    created_at: datetime = Field(..., description="交易会话创建时间。")
+    updated_at: datetime = Field(..., description="交易会话最近更新时间。")
+
+
+class TradingSessionListResponse(BaseModel):
+    """交易会话列表响应"""
+
+    sessions: list[TradingSessionResponse] = Field(..., description="符合筛选条件的交易会话列表。")
+    total: int = Field(..., description="当前返回结果对应的会话总数。")
+
+
+class TradingSessionDeleteResponse(BaseModel):
+    """删除交易会话响应"""
+
+    message: str = Field(..., description="删除结果说明。")
 
 
 class TradingSessionUpdate(BaseModel):
     """更新交易会话请求"""
 
-    action: str = Field(..., description="Action: start, pause, stop")
-    reason: Optional[str] = Field(None, description="Reason for action")
+    action: str = Field(..., description="会话动作，支持 start、pause、stop。")
+    reason: Optional[str] = Field(None, description="本次状态变更的原因说明。")
 
 
-@router.get("", response_model=Dict[str, Any], summary="List Trading Sessions")
+TRADING_SESSION_CREATE_EXAMPLES = {
+    "create_intraday_session": {
+        "summary": "创建交易会话",
+        "description": "创建一个绑定策略的盘中交易会话，指定初始资金、仓位和风险阈值。",
+        "value": {
+            "symbol": "600519",
+            "strategy_id": "svm_momentum_v1",
+            "initial_capital": 100000.0,
+            "position_size": 0.1,
+            "risk_threshold": 0.05,
+        },
+    }
+}
+
+TRADING_SESSION_UPDATE_EXAMPLES = {
+    "pause_session_with_reason": {
+        "summary": "暂停交易会话",
+        "description": "将指定交易会话切换为暂停状态，并记录暂停原因。",
+        "value": {
+            "action": "pause",
+            "reason": "日内波动超出阈值，临时暂停执行。",
+        },
+    }
+}
+
+
+@router.get(
+    "",
+    response_model=TradingSessionListResponse,
+    summary="List Trading Sessions",
+    description="按标的或状态筛选交易会话列表，返回当前会话概览与总数。",
+)
 async def list_trading_sessions(
-    symbol: Optional[str] = None,
-    status: Optional[str] = None,
+    symbol: Optional[str] = Query(None, description="可选的交易标的代码过滤条件。"),
+    status: Optional[str] = Query(None, description="可选的会话状态过滤条件，如 active 或 paused。"),
 ):
     """
     获取交易会话列表
@@ -85,8 +139,9 @@ async def list_trading_sessions(
     "/{session_id}",
     response_model=TradingSessionResponse,
     summary="Get Trading Session",
+    description="根据交易会话ID获取单个会话的资金、仓位和盈亏详情。",
 )
-async def get_trading_session(session_id: str):
+async def get_trading_session(session_id: str = Path(..., description="需要查询详情的交易会话ID。")):
     """
     获取单个交易会话详情
 
@@ -106,8 +161,15 @@ async def get_trading_session(session_id: str):
     )
 
 
-@router.post("", response_model=TradingSessionResponse, summary="Create Trading Session")
-async def create_trading_session(request: TradingSessionCreate):
+@router.post(
+    "",
+    response_model=TradingSessionResponse,
+    summary="Create Trading Session",
+    description="创建新的交易会话，并基于请求参数初始化资金、仓位和风险阈值。",
+)
+async def create_trading_session(
+    request: TradingSessionCreate = Body(..., openapi_examples=TRADING_SESSION_CREATE_EXAMPLES)
+):
     """
     创建新的交易会话
 
@@ -132,8 +194,12 @@ async def create_trading_session(request: TradingSessionCreate):
     "/{session_id}",
     response_model=TradingSessionResponse,
     summary="Update Trading Session",
+    description="更新指定交易会话的运行状态，例如启动、暂停或停止。",
 )
-async def update_trading_session(session_id: str, request: TradingSessionUpdate):
+async def update_trading_session(
+    session_id: str = Path(..., description="需要更新状态的交易会话ID。"),
+    request: TradingSessionUpdate = Body(..., openapi_examples=TRADING_SESSION_UPDATE_EXAMPLES),
+):
     """
     更新交易会话状态
 
@@ -153,8 +219,13 @@ async def update_trading_session(session_id: str, request: TradingSessionUpdate)
     )
 
 
-@router.delete("/{session_id}", summary="Delete Trading Session")
-async def delete_trading_session(session_id: str):
+@router.delete(
+    "/{session_id}",
+    response_model=TradingSessionDeleteResponse,
+    summary="Delete Trading Session",
+    description="删除已完成或已取消的交易会话记录，并返回本次删除操作的结果说明。",
+)
+async def delete_trading_session(session_id: str = Path(..., description="需要删除的交易会话ID。")):
     """
     删除交易会话
 
