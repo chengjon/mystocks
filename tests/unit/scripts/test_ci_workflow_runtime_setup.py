@@ -88,6 +88,60 @@ def test_api_contract_validation_pr_comment_is_non_blocking() -> None:
     assert "continue-on-error: true" in comment_section
 
 
+def test_api_compliance_workflow_uses_supported_actions_and_safe_python_matrix_expansion() -> None:
+    workflow = _read_workflow("api-compliance-testing.yml")
+
+    assert "python-version: ['3.10', '3.11']" in workflow
+    assert "python-version: ['3.9', '3.10', '3.11']" not in workflow
+    assert "python-version: [3.9, 3.10, 3.11]" not in workflow
+    assert "uses: actions/setup-python@v5" in workflow
+    assert "uses: actions/cache@v4" in workflow
+    assert "uses: actions/github-script@v7" in workflow
+    assert "MATRIX_PYTHON_VERSION: ${{ matrix.python-version }}" in workflow
+    assert "print(f\"Python Version: {os.getenv('MATRIX_PYTHON_VERSION', 'unknown')}\")" in workflow
+    assert "${{{{ matrix.python-version }}}}" not in workflow
+
+
+def test_api_compliance_workflow_avoids_unavailable_talib_system_packages_and_filters_backend_requirements() -> None:
+    workflow = _read_workflow("api-compliance-testing.yml")
+    install_section = workflow.split("- name: Install system dependencies", 1)[1].split("- name: Set up environment variables", 1)[0]
+
+    assert "libta libta-dev" not in install_section
+    assert "libta-lib0" not in install_section
+    assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in install_section
+    assert "python -m pip install -r /tmp/backend-requirements-ci.txt" in install_section
+
+
+def test_api_compliance_workflow_sets_backend_runtime_ports_in_env_file() -> None:
+    workflow = _read_workflow("api-compliance-testing.yml")
+    env_section = workflow.split("- name: Set up environment variables", 1)[1].split("- name: Wait for PostgreSQL", 1)[0]
+
+    assert "BACKEND_PORT=8000" in env_section
+    assert "BACKEND_BACKUP_PORT=8001" in env_section
+
+
+def test_api_compliance_pr_comment_is_non_blocking() -> None:
+    workflow = _read_workflow("api-compliance-testing.yml")
+    comment_section = workflow.split("- name: Comment PR with Results", 1)[1].split("- name: Update Badge", 1)[0]
+
+    assert "continue-on-error: true" in comment_section
+
+
+def test_api_compliance_workflow_scopes_heavy_suite_and_keeps_runtime_validation_for_workflow_only_changes() -> None:
+    workflow = _read_workflow("api-compliance-testing.yml")
+
+    assert "- name: Detect API compliance execution scope" in workflow
+    assert "api_suite_required" in workflow
+    assert "workflow_validation_required" in workflow
+    assert ".github/workflows/api-compliance-testing.yml" in workflow
+    assert "tests/unit/scripts/test_ci_workflow_runtime_setup.py" in workflow
+    assert "web/backend/app/" in workflow
+    assert "if: steps.scope.outputs.workflow_validation_required == 'true'" in workflow
+    assert "if: steps.scope.outputs.api_suite_required == 'true'" in workflow
+    assert "Run workflow runtime validation" in workflow
+    assert "Scope detection skipped heavy API compliance suites" in workflow
+
+
 def test_api_contract_and_api_file_workflows_install_backend_runtime_dependencies() -> None:
     contract_workflow = _read_workflow("api-contract-validation.yml")
     api_file_workflow = _read_workflow("api-file-tests.yml")
