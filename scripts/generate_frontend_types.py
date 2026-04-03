@@ -16,7 +16,6 @@ import re
 import ast
 from pathlib import Path
 from typing import Dict, List, Set, Optional, Any
-from datetime import datetime
 from collections import defaultdict
 import yaml
 
@@ -572,7 +571,6 @@ class TypeScriptGenerator:
         """Generate single file TypeScript code (backward compatible)"""
         output = [
             "// Auto-generated TypeScript types from backend Pydantic models",
-            f"// Generated at: {datetime.now().isoformat()}",
             "",
             "// Standard Unified Response Wrapper",
             "export interface UnifiedResponse<TData = unknown> {",
@@ -610,7 +608,6 @@ class TypeScriptGenerator:
 
         output = [
             f"// Auto-generated types for {domain} domain",
-            f"// Generated at: {datetime.now().isoformat()}",
             "",
         ]
 
@@ -664,7 +661,6 @@ class TypeScriptGenerator:
         # 只保留极少量的核心基础接口定义，其他全部外迁
         common_entry_lines = [
             "// MyStocks ArtDeco v3.1 Common Types Entry",
-            f"// Generated at: {datetime.now().isoformat()}",
             "",
             "/**",
             " * ⚠️ 警告: 本文件已通过工程红线瘦身。",
@@ -694,7 +690,6 @@ class TypeScriptGenerator:
     def write_generated_types_compat_barrel(self, output_dir: Path) -> None:
         generated_types_lines = [
             "// Auto-generated compatibility barrel for legacy imports",
-            f"// Generated at: {datetime.now().isoformat()}",
             "",
             "export * from './index';",
             "",

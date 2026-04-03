@@ -187,7 +187,18 @@ export class MarketAdapter {
       const klineData = apiResponse.data;
       const points = klineData.data || [];
 
-      const categoryData = points.map((p) => p.datetime || '');
+      const categoryData = points.map((p) => {
+        if ("date" in p && typeof p.date === "string") {
+          return p.date;
+        }
+
+        // Keep compatibility with legacy responses that still emit `datetime`.
+        if ("datetime" in p && typeof p.datetime === "string") {
+          return p.datetime;
+        }
+
+        return '';
+      });
       const values = points.map((p) => ({
         open: p.open || 0,
         close: p.close || 0,

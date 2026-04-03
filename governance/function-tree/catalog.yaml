@@ -88,6 +88,7 @@ domains:
           - "src/adapters/tdx/kline_data_service.py"
           - "src/adapters/akshare/misc_data/**"
           - "src/core/**"
+          - "web/frontend/src/api/adapters/marketAdapter.ts"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
@@ -95,12 +96,14 @@ domains:
             - "web/backend/app/api/market/**"
           frontend:
             - "web/frontend/src/views/market/**"
+            - "web/frontend/src/api/adapters/marketAdapter.ts"
           core:
             - "src/adapters/tdx/kline_data_service.py"
             - "src/adapters/akshare/misc_data/**"
             - "src/core/**"
           tests:
             - "web/frontend/tests/e2e/kline-chart.spec.ts"
+            - "web/frontend/src/api/adapters/marketAdapter.spec.ts"
           operations:
             - "docs/testing/E2E_TEST_GUIDE.md"
 
@@ -720,3 +723,26 @@ domains:
             - "tests/fixtures/governance/**"
           operations:
             - "docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md"
+      - id: "meta-governance-frontend-type-generation"
+        label: "Frontend Type Generation Determinism"
+        coverage_paths:
+          - ".github/workflows/api-contract-validation.yml"
+          - ".github/workflows/code-quality.yml"
+          - "scripts/generate_frontend_types.py"
+          - "scripts/_generate_frontend_types_cli.py"
+          - "tests/unit/scripts/test_file_size_guardrail_integration.py"
+          - "tests/unit/scripts/test_ci_workflow_runtime_setup.py"
+          - "web/frontend/src/api/types/**"
+          - "tests/unit/test_generate_frontend_types_converter.py"
+        entrypoints:
+          frontend:
+            - "web/frontend/src/api/types/**"
+          tests:
+            - "tests/unit/scripts/test_file_size_guardrail_integration.py"
+            - "tests/unit/scripts/test_ci_workflow_runtime_setup.py"
+            - "tests/unit/test_generate_frontend_types_converter.py"
+          operations:
+            - ".github/workflows/api-contract-validation.yml"
+            - ".github/workflows/code-quality.yml"
+            - "scripts/generate_frontend_types.py"
+            - "scripts/_generate_frontend_types_cli.py"

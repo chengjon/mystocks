@@ -129,7 +129,7 @@ describe('MarketAdapter', () => {
   })
 
   describe('adaptKLineData', () => {
-    it('should transform K-line API response', () => {
+    it('should transform K-line API response using generated date field', () => {
       const mockResponse = {
         success: true,
         message: 'success',
@@ -138,7 +138,7 @@ describe('MarketAdapter', () => {
           period: '1d',
           data: [
             {
-              datetime: '2025-01-02',
+              date: '2025-01-02',
               open: 3000.00,
               close: 3010.00,
               low: 2990.00,
@@ -164,6 +164,32 @@ describe('MarketAdapter', () => {
         volume: 50000000
       })
       expect(result.volumes).toEqual([50000000])
+    })
+
+    it('should fall back to legacy datetime field when present', () => {
+      const mockResponse = {
+        success: true,
+        message: 'success',
+        data: {
+          symbol: '000001.SH',
+          period: '1d',
+          data: [
+            {
+              datetime: '2025-01-03',
+              open: 3020.00,
+              close: 3030.00,
+              low: 3010.00,
+              high: 3040.00,
+              volume: 51000000
+            }
+          ],
+          count: 1
+        }
+      }
+
+      const result = MarketAdapter.adaptKLineData(mockResponse)
+
+      expect(result.categoryData).toEqual(['2025-01-03'])
     })
 
     it('should handle empty candles', () => {

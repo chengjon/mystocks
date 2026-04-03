@@ -88,6 +88,31 @@ def test_api_contract_validation_pr_comment_is_non_blocking() -> None:
     assert "continue-on-error: true" in comment_section
 
 
+def test_api_contract_validation_workflow_avoids_unavailable_talib_system_packages_and_filters_backend_requirements() -> None:
+    workflow = _read_workflow("api-contract-validation.yml")
+
+    assert "sudo apt-get install -y ta-lib" not in workflow
+    assert workflow.count("grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>=' web/backend/requirements.txt > /tmp/backend-requirements-ci.txt") == 3
+    assert workflow.count("python -m pip install -r /tmp/backend-requirements-ci.txt") == 3
+
+
+def test_api_contract_validation_generate_types_job_uses_supported_generator_cli_and_current_output_paths() -> None:
+    workflow = _read_workflow("api-contract-validation.yml")
+    generate_section = workflow.split("- name: Generate TypeScript types from OpenAPI spec", 1)[1].split(
+        "- name: Validate TypeScript compilation", 1
+    )[0]
+    change_section = workflow.split("- name: Check for type changes", 1)[1].split(
+        "- name: Commit type changes (on main branch only)", 1
+    )[0]
+    commit_section = workflow.split("- name: Commit type changes (on main branch only)", 1)[1]
+
+    assert "--openapi-spec" not in generate_section
+    assert "python scripts/generate_frontend_types.py --all" in generate_section
+    assert "web/frontend/src/types/" not in change_section
+    assert 'grep -q "web/frontend/src/api/types/"' in change_section
+    assert "git add web/frontend/src/api/types/" in commit_section
+
+
 def test_api_compliance_workflow_uses_supported_actions_and_safe_python_matrix_expansion() -> None:
     workflow = _read_workflow("api-compliance-testing.yml")
 
@@ -146,7 +171,7 @@ def test_api_contract_and_api_file_workflows_install_backend_runtime_dependencie
     contract_workflow = _read_workflow("api-contract-validation.yml")
     api_file_workflow = _read_workflow("api-file-tests.yml")
 
-    assert "pip install -r web/backend/requirements.txt" in contract_workflow
+    assert "python -m pip install -r /tmp/backend-requirements-ci.txt" in contract_workflow
 
     for package_name in (
         "structlog",
