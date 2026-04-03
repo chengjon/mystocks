@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import sys
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -12,6 +11,10 @@ from typing import Any
 def build_argument_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Generate TypeScript types from Pydantic models")
     parser.add_argument("--domain", "-d", help="Generate types for specific domain only")
+    parser.add_argument(
+        "--openapi-spec",
+        help="Path to generated OpenAPI spec artifact for contract-first CI validation",
+    )
     parser.add_argument("--all", action="store_true", help="Generate multi-file output (default)")
     parser.add_argument(
         "--single",
@@ -25,7 +28,6 @@ def build_argument_parser() -> argparse.ArgumentParser:
 def generate_index_file(domains: list[str], output_dir: Path) -> str:
     lines = [
         "// Auto-generated index file for TypeScript types",
-        f"// Generated at: {datetime.now().isoformat()}",
         "",
     ]
 
@@ -147,6 +149,12 @@ def run_generation(
     generator_factory: Any,
 ) -> None:
     print("🔄 Generating TypeScript types from Pydantic models...")
+    if args.openapi_spec:
+        openapi_spec_path = Path(args.openapi_spec)
+        if not openapi_spec_path.exists():
+            raise FileNotFoundError(f"OpenAPI spec artifact not found: {openapi_spec_path}")
+        print(f"📄 Using OpenAPI contract artifact: {openapi_spec_path}")
+
     config = config_factory()
     extractor = extractor_factory(config)
     _extract_models(project_root, extractor)

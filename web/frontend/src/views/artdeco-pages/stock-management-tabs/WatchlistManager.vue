@@ -29,7 +29,7 @@
 
     <ArtDecoCard title="组合持仓明细" hoverable>
       <ArtDecoTable :columns="columns" :data="displayCurrentStocks">
-        <template #action="{ row }">
+        <template #actions="{ row }">
           <ArtDecoButton variant="outline" size="sm" @click="handleRemoveStock(row)">删除</ArtDecoButton>
         </template>
       </ArtDecoTable>
@@ -164,13 +164,18 @@ async function handleAddList() {
   await loadWatchlists()
 }
 
-async function handleRemoveStock(row: StockRow) {
-  emit('remove-stock', row)
+async function handleRemoveStock(row: unknown) {
+  if (!row || typeof row !== 'object') {
+    return
+  }
+
+  const stockRow = row as StockRow
+  emit('remove-stock', stockRow)
   if (props.currentStocks.length > 0) {
     return
   }
 
-  const symbol = typeof row.symbol === 'string' ? row.symbol : ''
+  const symbol = typeof stockRow.symbol === 'string' ? stockRow.symbol : ''
   const watchlistId = displayActiveWatchlistId.value
   if (!symbol || !watchlistId) {
     return
@@ -228,8 +233,7 @@ const columns = [
   { key: 'price', label: '现价', align: 'right' },
   { key: 'change', label: '涨跌幅', variant: 'color', align: 'right' },
   { key: 'volume', label: '成交量', align: 'right' },
-  { key: 'weight', label: '权重', align: 'right' },
-  { key: 'action', label: '操作', width: '90px' }
+  { key: 'weight', label: '权重', align: 'right' }
 ]
 </script>
 

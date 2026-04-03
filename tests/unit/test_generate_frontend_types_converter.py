@@ -1,7 +1,8 @@
 import importlib
 from pathlib import Path
 
-from scripts.generate_frontend_types import TypeConverter
+from scripts._generate_frontend_types_cli import generate_index_file as cli_generate_index_file
+from scripts.generate_frontend_types import TypeConverter, TypeScriptGenerator
 
 
 def _line_count(path: str) -> int:
@@ -34,3 +35,37 @@ def test_generate_frontend_types_cli_helper_remains_importable() -> None:
     assert callable(helper.build_argument_parser)
     assert callable(helper.run_generation)
     assert callable(module.main)
+
+
+def test_generate_frontend_types_cli_accepts_openapi_spec_argument() -> None:
+    helper = importlib.import_module("scripts._generate_frontend_types_cli")
+    parser = helper.build_argument_parser()
+
+    args = parser.parse_args(["--openapi-spec", "generated_openapi.json"])
+
+    assert args.openapi_spec == "generated_openapi.json"
+
+
+def test_generated_types_output_is_deterministic(tmp_path: Path) -> None:
+    generator = TypeScriptGenerator()
+    models = {
+        "AuditLogResponse": {
+            "type": "interface",
+            "fields": {
+                "log_id": {"type": "str"},
+            },
+        }
+    }
+
+    domain_output = generator.generate_domain("admin", models)
+    assert "Generated at:" not in domain_output
+
+    generator.write_common_split_files(models, tmp_path)
+    assert "Generated at:" not in (tmp_path / "common.ts").read_text(encoding="utf-8")
+    assert "Generated at:" not in (tmp_path / "common" / "all.ts").read_text(encoding="utf-8")
+
+    generator.write_generated_types_compat_barrel(tmp_path)
+    assert "Generated at:" not in (tmp_path / "generated-types.ts").read_text(encoding="utf-8")
+
+    index_output = cli_generate_index_file(["admin"], tmp_path)
+    assert "Generated at:" not in index_output

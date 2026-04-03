@@ -2,7 +2,7 @@
 
 > 版本：v1.0  
 > 生效日期：2026-04-03  
-> 适用范围：`web/backend/app/api/**`、`web/backend/tests/**`、`scripts/generate_frontend_types.py`、`web/frontend/src/api/**`、`.github/workflows/api-contract-validation.yml`
+> 适用范围：`web/backend/app/api/**`、`web/backend/tests/**`、`scripts/generate_frontend_types.py`、`scripts/_generate_frontend_types_cli.py`、`web/frontend/src/api/**`、`.github/workflows/api-contract-validation.yml`
 
 ## 1. 定位
 
