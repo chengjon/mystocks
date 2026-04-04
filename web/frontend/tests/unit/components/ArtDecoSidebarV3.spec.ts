@@ -49,4 +49,15 @@ describe('ArtDecoSidebar v3.2', () => {
     // 注意：Store 状态变化需要组件重新渲染
     // 在真实集成中由 Pinia 响应式驱动
   })
+
+  it('exposes an accessible name on the collapse toggle', () => {
+    const wrapper = mount(ArtDecoSidebar, {
+      global: {
+        plugins: [router],
+        stubs: { 'ArtDecoIcon': true, 'ArtDecoBadge': true, 'router-link': true }
+      }
+    })
+
+    expect(wrapper.find('.collapse-toggle').attributes('aria-label')).toBeTruthy()
+  })
 })

@@ -72,7 +72,7 @@
 
     <!-- Bottom Section: Actions & Signature -->
     <div class="sidebar-footer">
-      <button class="collapse-toggle" @click="preferenceStore.toggleSidebar">
+      <button class="collapse-toggle" @click="preferenceStore.toggleSidebar" aria-label="Toggle sidebar">
         <ArtDecoIcon :name="preferenceStore.sidebarCollapsed ? 'ChevronRight' : 'ChevronLeft'" size="xs" />
       </button>
       <div v-if="!preferenceStore.sidebarCollapsed" class="footer-signature">

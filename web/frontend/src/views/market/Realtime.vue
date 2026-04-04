@@ -117,7 +117,7 @@ onMounted(fetchOverview)
       <div class="content-shell-header">
         <div class="content-shell-copy">
           <span class="content-shell-kicker">index and breadth route</span>
-          <h3 class="content-shell-title">指数快照与分布面板</h3>
+          <h2 class="content-shell-title">指数快照与分布面板</h2>
           <p class="content-shell-subtitle">切换时间窗口和市场范围，观察指数快照与涨跌分布对市场情绪的即时影响。</p>
         </div>
         <div class="content-shell-meta">
@@ -129,8 +129,8 @@ onMounted(fetchOverview)
 
       <div class="toolbar artdeco-card">
         <div class="toolbar-left">
-          <ArtDecoSelect v-model="activeWindow" :options="windowOptions" placeholder="时间窗口" />
-          <ArtDecoSelect v-model="activeBoard" :options="boardOptions" placeholder="市场范围" />
+          <ArtDecoSelect v-model="activeWindow" :options="windowOptions" label="统计窗口" placeholder="时间窗口" />
+          <ArtDecoSelect v-model="activeBoard" :options="boardOptions" label="市场范围" placeholder="市场范围" />
         </div>
         <ArtDecoButton variant="outline" size="sm" @click="fetchOverview">刷新行情</ArtDecoButton>
       </div>

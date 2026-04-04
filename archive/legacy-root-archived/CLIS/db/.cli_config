@@ -1,7 +1,0 @@
-[cli]
-name = db
-type = worker
-
-[mailbox]
-watcher_enabled = true
-scan_interval = 60

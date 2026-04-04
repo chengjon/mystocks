@@ -1,6 +1,12 @@
 <template>
     <div class="artdeco-select" :class="sizeClass">
-        <select :value="modelValue" @input="handleInput" :disabled="disabled" :placeholder="placeholder">
+        <select
+            :value="modelValue"
+            @input="handleInput"
+            :disabled="disabled"
+            :placeholder="placeholder"
+            :aria-label="accessibleName"
+        >
             <option v-if="placeholder && !modelValue" value="" disabled selected>
                 {{ placeholder }}
             </option>
@@ -28,6 +34,8 @@
     interface Props {
         modelValue: string | number
         options: Option[]
+        label?: string
+        ariaLabel?: string
         placeholder?: string
         disabled?: boolean
         size?: 'sm' | 'md' | 'lg'
@@ -45,6 +53,10 @@
 
     const sizeClass = computed(() => {
         return `artdeco-select-${props.size}`
+    })
+
+    const accessibleName = computed(() => {
+        return props.ariaLabel || props.label || props.placeholder || undefined
     })
 
     function handleInput(event: Event) {
