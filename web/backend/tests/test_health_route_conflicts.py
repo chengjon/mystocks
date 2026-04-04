@@ -627,14 +627,51 @@ def test_strategy_mgmt_write_endpoints_have_docs_and_request_examples() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
-    for path in ["/api/strategy-mgmt/strategies", "/api/strategy-mgmt/backtest/execute"]:
-        operation = schema["paths"][path]["post"]
+    for path, method in [
+        ("/api/strategy-mgmt/strategies", "post"),
+        ("/api/strategy-mgmt/strategies/{strategy_id}", "put"),
+        ("/api/strategy-mgmt/backtest/execute", "post"),
+    ]:
+        operation = schema["paths"][path][method]
         parameters = operation.get("parameters", [])
         request_json = operation["requestBody"]["content"]["application/json"]
 
         assert len(operation.get("description", "")) >= 20
         assert any(param["name"] == "Authorization" and param.get("description") for param in parameters)
         assert "example" in request_json or "examples" in request_json
+
+
+def test_strategy_mgmt_legacy_endpoints_have_success_examples_and_error_docs() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path, method, expected_params, expects_success_example in [
+        ("/api/strategy-mgmt/strategies", "post", ["Authorization"], True),
+        ("/api/strategy-mgmt/strategies", "get", ["user_id", "status", "page", "page_size"], True),
+        ("/api/strategy-mgmt/strategies/{strategy_id}", "get", ["strategy_id"], True),
+        ("/api/strategy-mgmt/strategies/{strategy_id}", "put", ["strategy_id", "Authorization"], True),
+        ("/api/strategy-mgmt/strategies/{strategy_id}", "delete", ["strategy_id", "Authorization"], False),
+        ("/api/strategy-mgmt/backtest/execute", "post", ["Authorization"], True),
+        ("/api/strategy-mgmt/backtest/results/{backtest_id}", "get", ["backtest_id"], True),
+        ("/api/strategy-mgmt/backtest/results", "get", ["user_id", "strategy_id", "page", "page_size"], True),
+        ("/api/strategy-mgmt/health", "get", [], True),
+        ("/api/strategy-mgmt/backtest/status/{backtest_id}", "get", ["backtest_id"], True),
+    ]:
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expected_params:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+
+        if expects_success_example:
+            success_json = operation["responses"][next(code for code in operation["responses"] if code.startswith("2"))][
+                "content"
+            ]["application/json"]
+            assert "example" in success_json or "examples" in success_json
+
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_trading_runtime_session_and_delete_endpoints_have_docs() -> None:

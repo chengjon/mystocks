@@ -23,6 +23,7 @@ from app.core.config import settings
 from app.core.database import get_db
 from app.core.responses import ErrorCodes, create_error_response
 from app.core.security import verify_token
+from app.openapi_config import COMMON_RESPONSES
 from app.models.strategy_schemas import (
     BacktestExecuteRequest,
     BacktestListResponse,
@@ -42,8 +43,211 @@ from src.data_sources import get_business_source
 # 配置日志
 logger = logging.getLogger(__name__)
 
+
+def _response_spec(status_code: int, description: str, example: dict) -> dict:
+    return {
+        status_code: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+STRATEGY_MGMT_ROUTE_RESPONSES = {
+    400: COMMON_RESPONSES[400],
+    401: COMMON_RESPONSES[401],
+    404: COMMON_RESPONSES[404],
+    422: COMMON_RESPONSES[422],
+    500: COMMON_RESPONSES[500],
+}
+
+STRATEGY_CONFIG_EXAMPLE = {
+    "strategy_id": 123,
+    "user_id": 1001,
+    "strategy_name": "双均线突破",
+    "strategy_type": "momentum",
+    "description": "基于短中期均线突破信号的趋势跟踪策略",
+    "parameters": [
+        {
+            "name": "short_period",
+            "value": 5,
+            "description": "短周期均线窗口",
+            "data_type": "int",
+        },
+        {
+            "name": "long_period",
+            "value": 20,
+            "description": "长周期均线窗口",
+            "data_type": "int",
+        },
+    ],
+    "max_position_size": 0.2,
+    "stop_loss_percent": 5.0,
+    "take_profit_percent": 12.0,
+    "status": "active",
+    "created_at": "2026-04-01T09:30:00",
+    "updated_at": "2026-04-04T09:45:00",
+    "tags": ["趋势", "均线"],
+}
+
+STRATEGY_UPDATE_REQUEST_EXAMPLES = {
+    "pause_strategy_and_adjust_risk": {
+        "summary": "更新策略参数与状态",
+        "description": "将策略切换为暂停状态，并同步调整止损与标签。",
+        "value": {
+            "description": "回撤放大后进入观察期，暂停新开仓。",
+            "stop_loss_percent": 4.0,
+            "status": "paused",
+            "tags": ["趋势", "观察期"],
+        },
+    }
+}
+
+BACKTEST_RESULT_PENDING_EXAMPLE = {
+    "backtest_id": 456,
+    "strategy_id": 123,
+    "user_id": 1001,
+    "symbols": ["000001.SZ", "600000.SH"],
+    "start_date": "2024-01-01",
+    "end_date": "2024-12-31",
+    "initial_capital": 100000.0,
+    "final_capital": 100000.0,
+    "performance": {
+        "total_return": 0.0,
+        "annual_return": 0.0,
+        "benchmark_return": 0.0,
+        "alpha": 0.0,
+        "beta": 0.0,
+        "sharpe_ratio": 0.0,
+        "max_drawdown": 0.0,
+        "volatility": 0.0,
+        "total_trades": 0,
+        "win_rate": 0.0,
+        "profit_factor": 0.0,
+        "calmar_ratio": 0.0,
+        "sortino_ratio": 0.0,
+    },
+    "equity_curve": [],
+    "trades": [],
+    "status": "pending",
+    "created_at": "2026-04-04T09:46:00",
+    "completed_at": None,
+    "error_message": None,
+}
+
+BACKTEST_RESULT_COMPLETED_EXAMPLE = {
+    "backtest_id": 456,
+    "strategy_id": 123,
+    "user_id": 1001,
+    "symbols": ["000001.SZ", "600000.SH"],
+    "start_date": "2024-01-01",
+    "end_date": "2024-12-31",
+    "initial_capital": 100000.0,
+    "final_capital": 115000.0,
+    "performance": {
+        "total_return": 15.0,
+        "annual_return": 15.0,
+        "benchmark_return": 8.0,
+        "alpha": 7.0,
+        "beta": 1.05,
+        "sharpe_ratio": 1.8,
+        "max_drawdown": -8.5,
+        "volatility": 12.3,
+        "total_trades": 45,
+        "win_rate": 62.2,
+        "profit_factor": 1.85,
+        "calmar_ratio": 1.76,
+        "sortino_ratio": 2.1,
+    },
+    "equity_curve": [],
+    "trades": [],
+    "status": "completed",
+    "created_at": "2026-04-01T09:46:00",
+    "completed_at": "2026-04-01T09:52:00",
+    "error_message": None,
+}
+
+CREATE_STRATEGY_SUCCESS_RESPONSE = _response_spec(201, "新建策略配置", STRATEGY_CONFIG_EXAMPLE)
+LIST_STRATEGIES_SUCCESS_RESPONSE = _response_spec(
+    200,
+    "策略列表查询结果",
+    {
+        "total_count": 2,
+        "strategies": [STRATEGY_CONFIG_EXAMPLE],
+        "page": 1,
+        "page_size": 20,
+    },
+)
+GET_STRATEGY_SUCCESS_RESPONSE = _response_spec(200, "单个策略详情", STRATEGY_CONFIG_EXAMPLE)
+UPDATE_STRATEGY_SUCCESS_RESPONSE = _response_spec(
+    200,
+    "更新后的策略详情",
+    {
+        **STRATEGY_CONFIG_EXAMPLE,
+        "description": "回撤放大后进入观察期，暂停新开仓。",
+        "stop_loss_percent": 4.0,
+        "status": "paused",
+        "tags": ["趋势", "观察期"],
+    },
+)
+EXECUTE_BACKTEST_SUCCESS_RESPONSE = _response_spec(202, "已登记的回测任务", BACKTEST_RESULT_PENDING_EXAMPLE)
+GET_BACKTEST_RESULT_SUCCESS_RESPONSE = _response_spec(200, "完整回测结果", BACKTEST_RESULT_COMPLETED_EXAMPLE)
+LIST_BACKTESTS_SUCCESS_RESPONSE = _response_spec(
+    200,
+    "用户回测历史列表",
+    {
+        "total_count": 1,
+        "backtests": [
+            {
+                "backtest_id": 456,
+                "strategy_id": 123,
+                "strategy_name": "双均线突破",
+                "symbols": ["000001.SZ", "600000.SH"],
+                "date_range": "2024-01-01 ~ 2024-12-31",
+                "total_return": 15.0,
+                "sharpe_ratio": 1.8,
+                "max_drawdown": -8.5,
+                "status": "completed",
+                "created_at": "2026-04-01T09:46:00",
+            }
+        ],
+        "page": 1,
+        "page_size": 20,
+    },
+)
+STRATEGY_MGMT_HEALTH_SUCCESS_RESPONSE = _response_spec(
+    200,
+    "策略管理服务健康状态",
+    {
+        "status": "healthy",
+        "service": "strategy-mgmt",
+        "database": "connected",
+        "data_source": {"status": "ok"},
+        "strategies_count": 12,
+        "backtests_count": 34,
+        "timestamp": "2026-04-04T09:47:00",
+    },
+)
+BACKTEST_STATUS_SUCCESS_RESPONSE = _response_spec(
+    200,
+    "兼容保留的回测状态结果",
+    {
+        "backtest_id": 456,
+        "status": "completed",
+        "created_at": "2026-04-01T09:46:00",
+        "started_at": "2026-04-01T09:47:00",
+        "completed_at": "2026-04-01T09:52:00",
+        "error_message": None,
+        "has_results": True,
+    },
+)
+
 # 创建路由器
-router = APIRouter(prefix="/api/strategy-mgmt", tags=["strategy-mgmt"], responses={404: {"description": "Not found"}})
+router = APIRouter(prefix="/api/strategy-mgmt", tags=["strategy-mgmt"], responses=STRATEGY_MGMT_ROUTE_RESPONSES)
 
 
 # ============================================================================
@@ -106,6 +310,7 @@ def _require_write_auth(authorization: Optional[str]) -> None:
     status_code=201,
     summary="创建新策略",
     description="创建一个新的交易策略配置，并返回可直接用于策略管理页面展示的完整策略信息。",
+    responses=CREATE_STRATEGY_SUCCESS_RESPONSE,
 )
 async def create_strategy(
     strategy: StrategyCreateRequest = Body(
@@ -184,7 +389,8 @@ async def create_strategy(
     "/strategies",
     response_model=StrategyListResponse,
     summary="获取策略列表",
-    description="获取用户的策略列表，支持分页和状态筛选",
+    description="获取用户的策略列表，支持分页、状态筛选和策略管理页的数据初始化。",
+    responses=LIST_STRATEGIES_SUCCESS_RESPONSE,
 )
 async def list_strategies(
     user_id: int = Query(..., description="用户ID", ge=1),
@@ -224,7 +430,8 @@ async def list_strategies(
     "/strategies/{strategy_id}",
     response_model=StrategyConfig,
     summary="获取策略详情",
-    description="根据ID获取策略的完整配置信息",
+    description="根据策略 ID 获取完整配置、参数和风险控制信息，供详情页或编辑页回填。",
+    responses=GET_STRATEGY_SUCCESS_RESPONSE,
 )
 async def get_strategy(
     strategy_id: int = Path(..., description="策略ID", ge=1),
@@ -256,13 +463,21 @@ async def get_strategy(
 
 
 @router.put(
-    "/strategies/{strategy_id}", response_model=StrategyConfig, summary="更新策略", description="更新策略的配置信息"
+    "/strategies/{strategy_id}",
+    response_model=StrategyConfig,
+    summary="更新策略",
+    description="更新指定策略的配置项、状态或风险参数，并返回最新的完整策略信息。",
+    responses=UPDATE_STRATEGY_SUCCESS_RESPONSE,
 )
 async def update_strategy(
     strategy_id: int = Path(..., description="策略ID", ge=1),
-    update_data: StrategyUpdateRequest = ...,
+    update_data: StrategyUpdateRequest = Body(..., openapi_examples=STRATEGY_UPDATE_REQUEST_EXAMPLES),
     strategy_repo: StrategyRepository = Depends(get_strategy_repository),
-    authorization: Optional[str] = Header(default=None, alias="Authorization"),
+    authorization: Optional[str] = Header(
+        default=None,
+        alias="Authorization",
+        description="Bearer 令牌。非测试环境下写操作必填，格式为 `Bearer <token>`。",
+    ),
 ):
     """
     更新策略
@@ -293,11 +508,20 @@ async def update_strategy(
         raise HTTPException(status_code=500, detail=f"更新策略失败: {str(e)}")
 
 
-@router.delete("/strategies/{strategy_id}", status_code=204, summary="删除策略", description="删除指定的策略配置")
+@router.delete(
+    "/strategies/{strategy_id}",
+    status_code=204,
+    summary="删除策略",
+    description="删除指定的策略配置，并在成功后返回 204 无内容响应。",
+)
 async def delete_strategy(
     strategy_id: int = Path(..., description="策略ID", ge=1),
     strategy_repo: StrategyRepository = Depends(get_strategy_repository),
-    authorization: Optional[str] = Header(default=None, alias="Authorization"),
+    authorization: Optional[str] = Header(
+        default=None,
+        alias="Authorization",
+        description="Bearer 令牌。非测试环境下写操作必填，格式为 `Bearer <token>`。",
+    ),
 ):
     """
     删除策略
@@ -335,6 +559,7 @@ async def delete_strategy(
     status_code=202,
     summary="执行回测",
     description="异步执行策略回测任务，并返回已登记的回测任务信息与初始状态。",
+    responses=EXECUTE_BACKTEST_SUCCESS_RESPONSE,
 )
 async def execute_backtest(
     background_tasks: BackgroundTasks,
@@ -456,7 +681,8 @@ async def execute_backtest(
     "/backtest/results/{backtest_id}",
     response_model=BacktestResult,
     summary="获取回测结果",
-    description="根据回测ID获取完整的回测结果",
+    description="根据回测 ID 获取完整的回测结果、绩效指标、权益曲线和交易记录。",
+    responses=GET_BACKTEST_RESULT_SUCCESS_RESPONSE,
 )
 async def get_backtest_result(
     backtest_id: int = Path(..., description="回测ID", ge=1),
@@ -491,7 +717,8 @@ async def get_backtest_result(
     "/backtest/results",
     response_model=BacktestListResponse,
     summary="获取回测列表",
-    description="获取用户的回测历史列表，支持分页",
+    description="获取用户的回测历史列表，支持分页和按策略过滤，用于回测记录页展示。",
+    responses=LIST_BACKTESTS_SUCCESS_RESPONSE,
 )
 async def list_backtests(
     user_id: int = Query(..., description="用户ID", ge=1),
@@ -548,7 +775,12 @@ async def list_backtests(
         raise HTTPException(status_code=500, detail=f"获取回测列表失败: {str(e)}")
 
 
-@router.get("/health", summary="健康检查", description="检查策略管理服务和数据库连接的健康状态")
+@router.get(
+    "/health",
+    summary="健康检查",
+    description="检查策略管理服务、数据库连接和底层业务数据源是否处于可用状态。",
+    responses=STRATEGY_MGMT_HEALTH_SUCCESS_RESPONSE,
+)
 async def health_check(db: Session = Depends(get_db), data_source=Depends(get_data_source)):
     """健康检查端点"""
     try:
@@ -595,6 +827,7 @@ async def health_check(db: Session = Depends(get_db), data_source=Depends(get_da
     summary="获取回测任务状态",
     description="兼容旧版回测状态查询接口，推荐改用 /api/v1/strategy/backtest/status/{backtest_id}",
     deprecated=True,
+    responses=BACKTEST_STATUS_SUCCESS_RESPONSE,
 )
 async def get_backtest_status(
     backtest_id: int = Path(..., description="回测ID", ge=1),
