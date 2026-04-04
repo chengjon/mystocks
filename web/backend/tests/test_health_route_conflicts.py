@@ -865,6 +865,36 @@ def test_monitoring_analysis_endpoints_have_docs_examples_and_error_responses() 
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
+def test_analysis_backtest_and_stress_test_endpoints_have_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path, method, expected_params, expects_request_example in [
+        ("/api/v1/backtest/monte-carlo", "post", [], True),
+        ("/api/v1/backtest/stress-test", "post", [], True),
+        ("/api/v1/backtest/equity-curve/{strategy_id}", "get", ["strategy_id", "start_date", "end_date"], False),
+        ("/api/v1/stress-test/run", "post", ["portfolio_id", "initial_capital"], True),
+        ("/api/v1/stress-test/scenarios", "get", [], False),
+        ("/api/v1/stress-test/history", "get", ["portfolio_id", "limit"], False),
+    ]:
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expected_params:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+
+        if expects_request_example:
+            request_json = operation["requestBody"]["content"]["application/json"]
+            assert "example" in request_json or "examples" in request_json
+
+        success_code = next(code for code in operation["responses"] if code.startswith("2"))
+        success_json = operation["responses"][success_code]["content"]["application/json"]
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_monitoring_watchlist_endpoints_have_docs_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()
