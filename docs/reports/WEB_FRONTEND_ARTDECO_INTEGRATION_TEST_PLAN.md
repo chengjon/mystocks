@@ -230,6 +230,12 @@ test('API calls and data flow', async ({ page }) => {
 
 ---
 
+> 2026-04-01 状态说明
+>
+> - 本文件属于历史分析/方案/完成报告，不是当前 ArtDeco 规范入口。
+> - 文中出现的组件数量、间距级数、目录结构、字体方案或页面承载模式，应视为当时会话上下文；若与当前代码不一致，以当前活跃治理文档和源码为准。
+> - 当前建议先看：`docs/guides/web/ARTDECO_START_HERE.md`、`docs/guides/web/ARTDECO_MASTER_INDEX.md`、`docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md`、`web/frontend/ARTDECO_COMPONENTS_CATALOG.md`。
+
 **文档版本**: v1.0
 **最后更新**: 2026-01-17
 **状态**: 准备就绪

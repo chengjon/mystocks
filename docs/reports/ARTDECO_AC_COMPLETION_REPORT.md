@@ -7,6 +7,12 @@
 
 ---
 
+> 2026-04-01 状态说明
+>
+> - 本文件属于历史分析/方案/完成报告，不是当前 ArtDeco 规范入口。
+> - 文中出现的组件数量、间距级数、目录结构、字体方案或页面承载模式，应视为当时会话上下文；若与当前代码不一致，以当前活跃治理文档和源码为准。
+> - 当前建议先看：`docs/guides/web/ARTDECO_START_HERE.md`、`docs/guides/web/ARTDECO_MASTER_INDEX.md`、`docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md`、`web/frontend/ARTDECO_COMPONENTS_CATALOG.md`。
+
 ## 执行摘要
 
 本次优化严格遵循 ArtDeco 设计规范（`/opt/mydoc/design/ArtDeco.md`），通过添加几何装饰元素和背景纹理效果，显著增强了视觉深度和戏剧性效果。所有修改均通过 TypeScript 编译检查，确保代码质量。
@@ -301,7 +307,7 @@ transition: all var(--artdeco-transition-slow) var(--artdeco-ease-in-out);
 
 ### Before（优化前）
 
-- ✅ 优秀的 11 级间距系统
+- ✅ 优秀的 11 级间距系统（历史优化口径）
 - ✅ 完善的颜色系统（100% 符合 ArtDeco 规范）
 - ✅ 良好的容器策略
 - ❌ 缺少背景纹理

@@ -7,6 +7,11 @@
 
 ## 🚀 快速导航
 
+- 当前入口：`ARTDECO_START_HERE.md`
+- 当前总目录：`ARTDECO_MASTER_INDEX.md`
+- 当前统一规格：`ARTDECO_FINTECH_UNIFIED_SPEC.md`
+- 当前组件目录：`/opt/claude/mystocks_spec/web/frontend/ARTDECO_COMPONENTS_CATALOG.md`
+- 历史兼容入口：`ART_DECO_COMPONENTS_CATALOG.md` / `ART_DECO_COMPONENT_SHOWCASE.md` / `ART_DECO_QUICK_REFERENCE.md`
 
 ---
 

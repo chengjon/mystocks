@@ -17,7 +17,7 @@
 
 **优化目标**：
 1. **ArtDeco风格优先**：以项目ArtDeco设计系统为核心，全面提升页面视觉体验
-2. **组件库深度集成**：使用64个ArtDeco组件替换原始HTML元素
+2. **组件库深度集成**：使用 ArtDeco 组件库替换原始 HTML 元素（原文中的 64 个统计为历史计划口径）
 3. **视觉一致性保证**：确保转换后页面具有统一的Art Deco豪华设计风格
 4. **功能与美学平衡**：在保持Vue功能强大的同时，注入Art Deco的奢华视觉体验
 
@@ -453,7 +453,7 @@ watch(wsStatus, (newStatus) => {
 ## 🎯 **实施计划与时间表**
 
 ### **Week 1: ArtDeco基础设施完善**
-- [ ] 完善ArtDeco组件库 (64个组件验证)
+- [ ] 完善 ArtDeco 组件库（历史统计验证项）
 - [ ] 建立Art Deco样式强制应用规范
 - [ ] 创建转换模板和最佳实践指南
 
@@ -479,7 +479,7 @@ watch(wsStatus, (newStatus) => {
 
 ### **开发环境要求**
 - ✅ Vue 3 + TypeScript (现有)
-- ✅ ArtDeco组件库 (64个组件)
+- ✅ ArtDeco组件库（历史统计口径）
 - ✅ SCSS预处理器 (现有)
 - ✅ Art Deco设计令牌系统
 
@@ -547,7 +547,7 @@ npm run artdeco:replace -- --file=vue-file.vue
 
 **实施原则**:
 1. **视觉第一**: 以Art Deco豪华设计为核心驱动力
-2. **组件优先**: 强制使用64个ArtDeco组件库
+2. **组件优先**: 优先使用 ArtDeco 组件库
 3. **系统统一**: 严格遵循Art Deco设计令牌和规范
 4. **功能保证**: 在视觉革新的同时，100%保留Vue功能
 
@@ -557,6 +557,6 @@ npm run artdeco:replace -- --file=vue-file.vue
 
 **文档版本**: v2.0 (深度优化版)
 **优化重点**: 解决视觉差异问题，强制应用Art Deco设计系统
-**技术保障**: 64个ArtDeco组件 + 完整设计令牌系统
+**技术保障**: ArtDeco 组件库 + 完整设计令牌系统
 **质量保证**: 视觉一致性100% + 功能完整性100%</content>
 <parameter name="filePath">docs/guides/web/HTML_TO_ARTDECO_VUE_CONVERSION_OPTIMIZED_PLAN.md
