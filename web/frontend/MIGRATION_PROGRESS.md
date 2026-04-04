@@ -95,13 +95,13 @@ This section records the current repository truth for the approved Market / Data
 | `4.4 Data-Industry` | `/data/industry` already resolves `web/frontend/src/views/data/Industry.vue`. | `web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue` is a thin compatibility wrapper around `Industry.vue`. | Structural move already landed. |
 | `4.5 Data-Concept` | `/data/concept` already resolves `web/frontend/src/views/data/Concepts.vue`. | `web/frontend/src/views/artdeco-pages/market-tabs/MarketConceptTab.vue` is a thin compatibility wrapper around `Concepts.vue`. | Structural move already landed. |
 | `4.6 Data-FundFlow` | `/data/fund-flow` already resolves `web/frontend/src/views/data/FundFlow.vue`. | `web/frontend/src/views/artdeco-pages/market-data-tabs/FundFlowAnalysis.vue` is a thin compatibility wrapper around `FundFlow.vue`. | Structural move already landed. |
-| `5.1 Data-Indicator` | `/data/indicator` already resolves `web/frontend/src/views/data/Advanced.vue` in router and pageConfig truth. | `web/frontend/src/views/data/Advanced.vue` is currently the thin wrapper, while `web/frontend/src/views/artdeco-pages/ArtDecoDataAnalysis.vue` still contains the primary implementation. | Target path exists, but implementation inversion is still outstanding. |
+| `5.1 Data-Indicator` | `/data/indicator` already resolves `web/frontend/src/views/data/Advanced.vue` in router and pageConfig truth. | `web/frontend/src/views/artdeco-pages/ArtDecoDataAnalysis.vue` is now the thin compatibility wrapper, while `web/frontend/src/views/data/Advanced.vue` owns the primary implementation. | Completed in the 2026-04-04 cutover batch. |
 
 ### Phase 3a / 3b Immediate Consequence
 
 - Do not spend a future batch repeating the original literal `git mv` steps for `4.1` through `4.6`; the routed target files already exist and are already the active entrypoints.
 - Treat the remaining ArtDeco market/data source files in those six tasks as compatibility wrappers, not as the primary routed implementation.
-- The next real Market / Data implementation batch should start with `5.1 Data-Indicator`, because it is the first task in this area where the target file still wraps the old implementation instead of owning it.
+- The routed Market / Data target pages are now structurally aligned through `web/frontend/src/views/data/Advanced.vue`; future work in this area is compatibility-wrapper retirement or shared-layer normalization, not target-file ownership inversion.
 
 ## Trade-Domain Clarification For Task 8.5
 

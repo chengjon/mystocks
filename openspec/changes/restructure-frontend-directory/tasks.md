@@ -80,12 +80,12 @@
 - [ ] 4.7 Commit: "refactor: migrate market domain pages"
 
 ## 5. Page-by-Page Migration – Data Domain (Phase 3b)
-- 2026-04-04 repo-truth note: `5.1 Data-Indicator` is the first unresolved Market / Data migration item after the already-landed `4.1` through `4.6` structure moves.
-  - The target route and pageConfig already point to `src/views/data/Advanced.vue`.
-  - Current repo truth is inverted relative to the intended end state: `Advanced.vue` is a thin wrapper around `artdeco-pages/ArtDecoDataAnalysis.vue`, so the target location exists but does not yet own the implementation.
-- [ ] 5.1 Move `artdeco-pages/ArtDecoDataAnalysis.vue` → `views/data/Advanced.vue`
-  - [ ] 5.1.1 Move dependency: `useAdvancedData.ts`
-  - [ ] 5.1.2 Update imports
+- 2026-04-04 repo-truth note: `5.1 Data-Indicator` has now completed its implementation inversion.
+  - The target route and pageConfig continue to point to `src/views/data/Advanced.vue`.
+  - Current repo truth is now aligned with the intended end state: `Advanced.vue` owns the primary implementation and `artdeco-pages/ArtDecoDataAnalysis.vue` has been reduced to a compatibility wrapper.
+- [x] 5.1 Move `artdeco-pages/ArtDecoDataAnalysis.vue` → `views/data/Advanced.vue`
+  - [x] 5.1.1 Remap dependency truth: the current repo uses `@/composables/market/useDataAnalysis`; no `useAdvancedData.ts` file exists to move in this batch.
+  - [x] 5.1.2 Update imports
   - [ ] 5.1.3 Run lint & type-check
   - [ ] 5.1.4 Run unit tests for Advanced.vue
 - [ ] 5.2 Commit: "refactor: migrate data domain pages"
