@@ -44,6 +44,10 @@ import {
     type TradingHistory,
     type TradingSignals
 } from './TradingApiManager.types.ts'
+import {
+    assertSupportedSystemSettingsWrite,
+    buildSystemSettingsSnapshot
+} from './systemSettingsContract.ts'
 
 // 主API管理器
 export class TradingApiManager {
@@ -245,31 +249,21 @@ export class TradingApiManager {
 
     // 系统设置
     async getSystemSettings(): Promise<SystemSettings> {
-        const [general, datasource, notification, security] = await Promise.all([
-            userApi.getGeneralSettings(),
-            dataApi.getDatasourceSettings(),
-            userApi.getNotificationSettings(),
-            userApi.getSecuritySettings()
-        ])
-
-        return {
-            general: general.data,
-            datasource: datasource.data,
-            notification: notification.data,
-            security: security.data
-        }
+        const datasource = await monitoringApi.getDataSourceConfig()
+        return buildSystemSettingsSnapshot({
+            datasource: datasource.data ?? null
+        })
     }
 
     async saveSystemSettings(settings: Partial<SystemSettings>): Promise<boolean> {
-        const promises = []
+        assertSupportedSystemSettingsWrite(settings)
 
-        if (settings.general) promises.push(userApi.saveGeneralSettings(settings.general))
-        if (settings.datasource) promises.push(dataApi.saveDatasourceSettings(settings.datasource))
-        if (settings.notification) promises.push(userApi.saveNotificationSettings(settings.notification))
-        if (settings.security) promises.push(userApi.saveSecuritySettings(settings.security))
+        if (!settings.datasource) {
+            return true
+        }
 
-        const results = await Promise.all(promises)
-        return results.every(result => result.success)
+        const result = await monitoringApi.updateDataSourceConfig(settings.datasource)
+        return result.success === true
     }
 
     // ========== 工具方法 ==========
