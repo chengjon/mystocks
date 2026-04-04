@@ -9,6 +9,7 @@ from fastapi import APIRouter, Body, Depends, Path, Query
 from app.core.cache_manager import get_cache_manager
 from app.core.exceptions import BusinessException
 from app.core.security import User, get_current_user
+from app.openapi_config import COMMON_RESPONSES
 
 logger = structlog.get_logger()
 
@@ -38,7 +39,62 @@ def _strip_cache_metadata(payload: Any) -> Any:
     return {key: value for key, value in payload.items() if not key.startswith("_")}
 
 
-@router.get("/status")
+def _success_response_spec(description: str, example: dict[str, Any]) -> dict[int, dict[str, Any]]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+CACHE_ROUTE_ERROR_RESPONSES = {
+    400: COMMON_RESPONSES[400],
+    500: COMMON_RESPONSES[500],
+}
+
+CACHE_STATUS_RESPONSES = {
+    500: COMMON_RESPONSES[500],
+    **_success_response_spec(
+        "缓存状态统计",
+        {
+            "success": True,
+            "timestamp": "2026-04-04T12:40:00Z",
+            "data": {
+                "hit_rate": 0.92,
+                "entries": 1450,
+                "memory_usage_mb": 256.4,
+                "expired_entries": 18,
+            },
+        },
+    ),
+}
+
+CACHE_INVALIDATE_RESPONSES = {
+    **CACHE_ROUTE_ERROR_RESPONSES,
+    **_success_response_spec(
+        "指定标的缓存清除结果",
+        {
+            "success": True,
+            "message": "缓存已清除",
+            "symbol": "600519.SH",
+            "deleted_count": 6,
+            "timestamp": "2026-04-04T12:40:00Z",
+        },
+    ),
+}
+
+
+@router.get(
+    "/status",
+    summary="获取缓存状态",
+    description="返回缓存命中率、缓存条目数量和内存占用等基础统计，用于缓存监控面板展示。",
+    responses=CACHE_STATUS_RESPONSES,
+)
 async def get_cache_status(current_user: User = Depends(get_current_user)) -> dict[str, Any]:
     try:
         stats = get_cache_manager().get_cache_stats()
@@ -138,8 +194,16 @@ async def write_cache_data(
         raise BusinessException(detail=str(error), status_code=500, error_code="CACHE_OPERATION_FAILED")
 
 
-@router.delete("/{symbol}")
-async def invalidate_symbol_cache(symbol: str, current_user: User = Depends(get_current_user)) -> dict[str, Any]:
+@router.delete(
+    "/{symbol}",
+    summary="清除指定标的缓存",
+    description="按标的代码清除该标的关联的所有缓存内容，便于单标的缓存失效和局部重建。",
+    responses=CACHE_INVALIDATE_RESPONSES,
+)
+async def invalidate_symbol_cache(
+    symbol: str = Path(..., description="需要清除缓存的股票或资产代码。"),
+    current_user: User = Depends(get_current_user),
+) -> dict[str, Any]:
     try:
         if not symbol:
             raise ValueError("股票代码不能为空")

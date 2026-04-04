@@ -419,6 +419,31 @@ def test_cache_data_endpoints_have_descriptions_examples_and_parameter_docs() ->
         assert any(param["name"] == parameter_name and param.get("description") for param in fresh_parameters)
 
 
+def test_cache_management_endpoints_have_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path, method, expected_params in [
+        ("/api/cache", "delete", ["confirm"]),
+        ("/api/cache/status", "get", []),
+        ("/api/cache/{symbol}", "delete", ["symbol"]),
+        ("/api/cache/evict/manual", "post", []),
+        ("/api/cache/eviction/stats", "get", []),
+    ]:
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+        success_json = operation["responses"][next(code for code in operation["responses"] if code.startswith("2"))][
+            "content"
+        ]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expected_params:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_audit_endpoints_have_parameter_descriptions() -> None:
     app.openapi_schema = None
     schema = app.openapi()

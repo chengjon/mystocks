@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends
 from app.core.cache_eviction import get_eviction_scheduler, get_eviction_strategy
 from app.core.exceptions import BusinessException
 from app.core.security import User, get_current_user
+from app.openapi_config import COMMON_RESPONSES
 
 logger = structlog.get_logger()
 
@@ -19,7 +20,60 @@ def _timestamp() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-@router.post("/evict/manual")
+def _success_response_spec(description: str, example: dict[str, Any]) -> dict[int, dict[str, Any]]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+CACHE_EVICTION_ERROR_RESPONSES = {
+    500: COMMON_RESPONSES[500],
+}
+
+CACHE_MANUAL_EVICTION_RESPONSES = {
+    **CACHE_EVICTION_ERROR_RESPONSES,
+    **_success_response_spec(
+        "手动缓存淘汰结果",
+        {
+            "success": True,
+            "message": "清理完成",
+            "deleted_count": 42,
+            "timestamp": "2026-04-04T12:40:00Z",
+        },
+    ),
+}
+
+CACHE_EVICTION_STATS_RESPONSES = {
+    **CACHE_EVICTION_ERROR_RESPONSES,
+    **_success_response_spec(
+        "缓存淘汰统计",
+        {
+            "success": True,
+            "data": {
+                "ttl_days": 7,
+                "frequency_tracking": {"enabled": True, "tracked_keys": 128},
+                "hot_data": [{"symbol": "600519.SH", "data_type": "daily", "hits": 98}],
+                "cache_stats": {"total_entries": 1450, "evicted_last_run": 42},
+            },
+            "timestamp": "2026-04-04T12:40:00Z",
+        },
+    ),
+}
+
+
+@router.post(
+    "/evict/manual",
+    summary="执行手动缓存淘汰",
+    description="立即触发一次缓存淘汰任务，返回本次清理是否成功和实际删除的缓存条目数量。",
+    responses=CACHE_MANUAL_EVICTION_RESPONSES,
+)
 async def manual_cache_eviction(current_user: User = Depends(get_current_user)) -> dict[str, Any]:
     try:
         result = get_eviction_scheduler().manual_cleanup()
@@ -39,7 +93,12 @@ async def manual_cache_eviction(current_user: User = Depends(get_current_user)) 
         raise BusinessException(detail=str(error), status_code=500, error_code="CACHE_OPERATION_FAILED")
 
 
-@router.get("/eviction/stats")
+@router.get(
+    "/eviction/stats",
+    summary="获取缓存淘汰统计",
+    description="返回缓存淘汰策略配置、热点数据和最近淘汰统计，用于缓存策略运维分析。",
+    responses=CACHE_EVICTION_STATS_RESPONSES,
+)
 async def get_eviction_statistics(current_user: User = Depends(get_current_user)) -> dict[str, Any]:
     try:
         strategy = get_eviction_strategy()

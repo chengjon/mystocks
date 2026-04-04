@@ -11,18 +11,55 @@ from app.api._cache_prewarming_routes import router as prewarming_router
 from app.core.cache_manager import get_cache_manager
 from app.core.exceptions import BusinessException
 from app.core.security import User, get_current_user
+from app.openapi_config import COMMON_RESPONSES
 
 logger = structlog.get_logger()
 
 router = APIRouter(prefix="/cache", tags=["cache"])
 
 
+def _success_response_spec(description: str, example: dict[str, object]) -> dict[int, dict[str, object]]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+CACHE_CLEAR_ALL_RESPONSES = {
+    400: COMMON_RESPONSES[400],
+    500: COMMON_RESPONSES[500],
+    **_success_response_spec(
+        "清除全量缓存结果",
+        {
+            "success": True,
+            "message": "所有缓存已清除",
+            "deleted_count": 128,
+            "timestamp": "2026-04-04T12:40:00Z",
+        },
+    ),
+}
+
+
 def _timestamp() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-@router.delete("")
-async def clear_all_cache(confirm: bool = Query(False), current_user: User = Depends(get_current_user)) -> dict[str, object]:
+@router.delete(
+    "",
+    summary="清除全部缓存",
+    description="在显式确认后清除系统中的所有缓存条目，适用于缓存重建或紧急故障恢复场景。",
+    responses=CACHE_CLEAR_ALL_RESPONSES,
+)
+async def clear_all_cache(
+    confirm: bool = Query(False, description="是否确认执行全量缓存清除；必须传入 `true` 才会真正删除缓存。"),
+    current_user: User = Depends(get_current_user),
+) -> dict[str, object]:
     try:
         if not confirm:
             raise ValueError("需要确认才能清除所有缓存，请设置 confirm=true")
