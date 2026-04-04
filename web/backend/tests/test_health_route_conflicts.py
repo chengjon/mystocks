@@ -377,16 +377,26 @@ def test_financial_data_endpoint_has_docs_examples_and_error_responses() -> None
     assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
-def test_dragon_tiger_detail_endpoint_has_description_and_parameter_docs() -> None:
+def test_dragon_tiger_data_endpoints_have_docs_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
-    operation = schema["paths"]["/api/v1/data/dragon-tiger/detail"]["get"]
-    parameters = operation.get("parameters", [])
+    for path, expected_params in [
+        ("/api/v1/data/dragon-tiger/detail", ["start_date", "end_date", "limit"]),
+        ("/api/v1/data/dragon-tiger/institution-stats", ["period", "limit"]),
+    ]:
+        operation = schema["paths"][path]["get"]
+        parameters = operation.get("parameters", [])
+        success_json = operation["responses"][next(code for code in operation["responses"] if code.startswith("2"))][
+            "content"
+        ]["application/json"]
 
-    assert len(operation.get("description", "")) >= 20
-    for parameter_name in ["start_date", "end_date", "limit"]:
-        assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expected_params:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_futures_data_endpoints_have_descriptions_and_parameter_docs() -> None:
