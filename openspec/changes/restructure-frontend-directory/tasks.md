@@ -42,6 +42,10 @@
 - [ ] 3.6 Commit: "refactor: extract shared assets to src/shared/"
 
 ## 4. Page-by-Page Migration – Market Domain (Phase 3a)
+- 2026-04-04 repo-truth note: tasks `4.1` through `4.6` are already structurally landed in the current repository.
+  - Current router truth and generated `pageConfig.ts` already resolve the target domain pages under `src/views/market/` and `src/views/data/`.
+  - The listed ArtDeco market/data source files now act as thin compatibility wrappers that forward into those routed target pages.
+  - Remaining work in this area is compatibility-wrapper retirement and shared-layer normalization, not repeating the original literal `git mv`.
 - [ ] 4.1 Move `artdeco-pages/market-tabs/MarketRealtimeTab.vue` → `views/market/Realtime.vue`
   - [ ] 4.1.0 **Identify all relative imports** (composables, styles, components) in the source file
   - [ ] 4.1.1 Move dependency: `useMarketData.ts` → `src/shared/composables/`
@@ -76,6 +80,9 @@
 - [ ] 4.7 Commit: "refactor: migrate market domain pages"
 
 ## 5. Page-by-Page Migration – Data Domain (Phase 3b)
+- 2026-04-04 repo-truth note: `5.1 Data-Indicator` is the first unresolved Market / Data migration item after the already-landed `4.1` through `4.6` structure moves.
+  - The target route and pageConfig already point to `src/views/data/Advanced.vue`.
+  - Current repo truth is inverted relative to the intended end state: `Advanced.vue` is a thin wrapper around `artdeco-pages/ArtDecoDataAnalysis.vue`, so the target location exists but does not yet own the implementation.
 - [ ] 5.1 Move `artdeco-pages/ArtDecoDataAnalysis.vue` → `views/data/Advanced.vue`
   - [ ] 5.1.1 Move dependency: `useAdvancedData.ts`
   - [ ] 5.1.2 Update imports

@@ -83,6 +83,26 @@ The table below records the actual Phase 2 candidate boundary after checking fil
   - `tradingDashboardActions.ts` is the only clear canonical shared-layer candidate discovered in this pass.
 - This means the next safe `git mv` wave must not be driven by raw folder location alone; it must follow routed page ownership and the domain migration tasks that are already approved.
 
+## Phase 3a / 3b Repo Truth Baseline
+
+This section records the current repository truth for the approved Market / Data migration tasks before any new page-level move is attempted.
+
+| Approved task | Current route / pageConfig target | Legacy ArtDeco source role | Current verdict |
+| --- | --- | --- | --- |
+| `4.1 Market-Realtime` | `/market/realtime` already resolves `web/frontend/src/views/market/Realtime.vue` in both router and pageConfig truth. | `web/frontend/src/views/artdeco-pages/market-tabs/MarketRealtimeTab.vue` is now a thin compatibility wrapper that forwards attrs into `Realtime.vue`. | Structural move already landed; do not repeat the original literal `git mv`. |
+| `4.2 Market-Technical` | `/market/technical` already resolves `web/frontend/src/views/market/Technical.vue`. | `web/frontend/src/views/artdeco-pages/market-tabs/MarketKLineTab.vue` is a thin compatibility wrapper around `Technical.vue`. | Structural move already landed. |
+| `4.3 Market-LHB` | `/market/lhb` already resolves `web/frontend/src/views/market/LHB.vue`. | `web/frontend/src/views/artdeco-pages/market-data-tabs/DragonTigerAnalysis.vue` is a thin compatibility wrapper around `LHB.vue`. | Structural move already landed. |
+| `4.4 Data-Industry` | `/data/industry` already resolves `web/frontend/src/views/data/Industry.vue`. | `web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue` is a thin compatibility wrapper around `Industry.vue`. | Structural move already landed. |
+| `4.5 Data-Concept` | `/data/concept` already resolves `web/frontend/src/views/data/Concepts.vue`. | `web/frontend/src/views/artdeco-pages/market-tabs/MarketConceptTab.vue` is a thin compatibility wrapper around `Concepts.vue`. | Structural move already landed. |
+| `4.6 Data-FundFlow` | `/data/fund-flow` already resolves `web/frontend/src/views/data/FundFlow.vue`. | `web/frontend/src/views/artdeco-pages/market-data-tabs/FundFlowAnalysis.vue` is a thin compatibility wrapper around `FundFlow.vue`. | Structural move already landed. |
+| `5.1 Data-Indicator` | `/data/indicator` already resolves `web/frontend/src/views/data/Advanced.vue` in router and pageConfig truth. | `web/frontend/src/views/data/Advanced.vue` is currently the thin wrapper, while `web/frontend/src/views/artdeco-pages/ArtDecoDataAnalysis.vue` still contains the primary implementation. | Target path exists, but implementation inversion is still outstanding. |
+
+### Phase 3a / 3b Immediate Consequence
+
+- Do not spend a future batch repeating the original literal `git mv` steps for `4.1` through `4.6`; the routed target files already exist and are already the active entrypoints.
+- Treat the remaining ArtDeco market/data source files in those six tasks as compatibility wrappers, not as the primary routed implementation.
+- The next real Market / Data implementation batch should start with `5.1 Data-Indicator`, because it is the first task in this area where the target file still wraps the old implementation instead of owning it.
+
 ## Trade-Domain Clarification For Task 8.5
 
 This section records the repo-backed clarification for `openspec/changes/restructure-frontend-directory/tasks.md` task `8.5`.
