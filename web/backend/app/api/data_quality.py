@@ -8,10 +8,11 @@ import os
 from datetime import datetime, timedelta
 from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Body, Path, Query
 
 from app.core.exceptions import NotFoundException
 from app.core.responses import create_error_response, create_success_response
+from app.openapi_config import COMMON_RESPONSES
 from app.services.data_quality_monitor import get_data_quality_monitor, monitor_data_quality
 from app.services.data_source_factory import get_data_source_factory
 from app.services.data_source_factory import get_data_source_mode as get_factory_mode
@@ -22,7 +23,186 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/data-quality", tags=["data-quality"])
 
 
-@router.get("/health")
+def _success_response_spec(description: str, example: Any) -> dict[int, dict[str, Any]]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+DATA_QUALITY_ERROR_RESPONSES = {
+    500: COMMON_RESPONSES[500],
+}
+
+DATA_QUALITY_ALERT_ACTION_RESPONSES = {
+    404: COMMON_RESPONSES[404],
+    500: COMMON_RESPONSES[500],
+}
+
+DATA_QUALITY_TEST_REQUEST_EXAMPLES = {
+    "test_realtime_feed_payload": {
+        "summary": "测试实时行情数据质量",
+        "description": "提交一段模拟数据，验证指定数据源的质量监控与评分逻辑。",
+        "value": {
+            "status": "success",
+            "timestamp": "2026-04-04T09:35:00Z",
+            "test": True,
+            "data": {
+                "symbol": "600519.SH",
+                "price": 1710.88,
+                "volume": 126500,
+            },
+        },
+    }
+}
+
+DATA_QUALITY_HEALTH_RESPONSES = {
+    **DATA_QUALITY_ERROR_RESPONSES,
+    **_success_response_spec(
+        "数据源健康状态汇总",
+        {
+            "success": True,
+            "message": "Data sources health status retrieved successfully",
+            "data": {
+                "timestamp": "2026-04-04T09:35:00Z",
+                "total_sources": 3,
+                "healthy_sources": 2,
+                "degraded_sources": 1,
+                "failed_sources": 0,
+                "sources": {
+                    "akshare": {
+                        "status": "healthy",
+                        "response_time": 120.5,
+                        "message": "source reachable",
+                        "last_check": "2026-04-04T09:34:58Z",
+                        "metrics": {
+                            "total_requests": 480,
+                            "success_rate": 0.98,
+                            "error_count": 8,
+                            "availability": 0.995,
+                        },
+                    }
+                },
+            },
+            "timestamp": "2026-04-04T09:35:00Z",
+        },
+    ),
+}
+
+DATA_QUALITY_ALERT_ACK_RESPONSES = {
+    **DATA_QUALITY_ALERT_ACTION_RESPONSES,
+    **_success_response_spec(
+        "告警确认结果",
+        {
+            "success": True,
+            "message": "Alert 'alert_001' acknowledged successfully",
+            "data": None,
+            "timestamp": "2026-04-04T09:35:00Z",
+        },
+    ),
+}
+
+DATA_QUALITY_ALERT_RESOLVE_RESPONSES = {
+    **DATA_QUALITY_ALERT_ACTION_RESPONSES,
+    **_success_response_spec(
+        "告警处理结果",
+        {
+            "success": True,
+            "message": "Alert 'alert_001' resolved successfully",
+            "data": None,
+            "timestamp": "2026-04-04T09:35:00Z",
+        },
+    ),
+}
+
+DATA_QUALITY_MODE_RESPONSES = {
+    **DATA_QUALITY_ERROR_RESPONSES,
+    **_success_response_spec(
+        "数据源模式配置",
+        {
+            "success": True,
+            "message": "Data source mode configuration retrieved successfully",
+            "data": {
+                "current_mode": "hybrid",
+                "fallback_enabled": True,
+                "available_modes": ["mock", "real", "hybrid"],
+                "environment_variables": {
+                    "USE_MOCK_DATA": "true",
+                    "REAL_DATA_AVAILABLE": "false",
+                    "FALLBACK_ENABLED": "true",
+                },
+                "mode_description": {
+                    "mock": "完全使用模拟数据",
+                    "real": "完全使用真实数据",
+                    "hybrid": "混合模式：优先Real，失败时fallback到Mock",
+                },
+            },
+            "timestamp": "2026-04-04T09:35:00Z",
+        },
+    ),
+}
+
+DATA_QUALITY_OVERVIEW_RESPONSES = {
+    **DATA_QUALITY_ERROR_RESPONSES,
+    **_success_response_spec(
+        "系统数据质量概览",
+        {
+            "success": True,
+            "message": "System status overview retrieved successfully",
+            "data": {
+                "timestamp": "2026-04-04T09:35:00Z",
+                "system_health": {"overall_score": 92.4, "status": "healthy", "health_percentage": 96.0},
+                "data_sources": {
+                    "total": 3,
+                    "healthy": 2,
+                    "degraded": 1,
+                    "failed": 0,
+                    "available_sources": ["akshare", "baostock", "tushare"],
+                },
+                "data_quality": {"average_score": 91.3, "total_alerts": 2, "critical_alerts": 0},
+                "configuration": {
+                    "mode": "hybrid",
+                    "fallback_enabled": True,
+                    "monitoring_enabled": True,
+                },
+                "performance": {"last_24h_health": {"avg_response_time": 145.2, "total_requests": 1280}},
+            },
+            "timestamp": "2026-04-04T09:35:00Z",
+        },
+    ),
+}
+
+DATA_QUALITY_TEST_RESPONSES = {
+    **DATA_QUALITY_ERROR_RESPONSES,
+    **_success_response_spec(
+        "数据质量测试结果",
+        {
+            "success": True,
+            "message": "Data quality test completed for 'akshare'",
+            "data": {
+                "source": "akshare",
+                "quality_score": 96.5,
+                "alerts_generated": 0,
+                "metrics": {"latency_ms": 150.0, "completeness": 1.0, "freshness": 0.99},
+            },
+            "timestamp": "2026-04-04T09:35:00Z",
+        },
+    ),
+}
+
+
+@router.get(
+    "/health",
+    summary="获取数据源健康状态",
+    description="汇总所有数据源的健康状态、响应时间和可用性指标，供运维与数据质量监控面板使用。",
+    responses=DATA_QUALITY_HEALTH_RESPONSES,
+)
 async def get_sources_health():
     """获取所有数据源健康状态"""
     try:
@@ -207,8 +387,13 @@ async def get_active_alerts(
         )
 
 
-@router.post("/alerts/{alert_id}/acknowledge")
-async def acknowledge_alert(alert_id: str):
+@router.post(
+    "/alerts/{alert_id}/acknowledge",
+    summary="确认数据质量告警",
+    description="按告警ID确认一条数据质量告警，便于运维人员标记已知问题并避免重复处理。",
+    responses=DATA_QUALITY_ALERT_ACK_RESPONSES,
+)
+async def acknowledge_alert(alert_id: str = Path(..., description="需要确认的数据质量告警ID。")):
     """确认告警"""
     try:
         monitor = get_data_quality_monitor()
@@ -234,8 +419,13 @@ async def acknowledge_alert(alert_id: str):
         )
 
 
-@router.post("/alerts/{alert_id}/resolve")
-async def resolve_alert(alert_id: str):
+@router.post(
+    "/alerts/{alert_id}/resolve",
+    summary="解决数据质量告警",
+    description="按告警ID将一条数据质量告警标记为已解决，并保留后续审计与回溯所需状态。",
+    responses=DATA_QUALITY_ALERT_RESOLVE_RESPONSES,
+)
+async def resolve_alert(alert_id: str = Path(..., description="需要标记为已解决的数据质量告警ID。")):
     """解决告警"""
     try:
         monitor = get_data_quality_monitor()
@@ -261,7 +451,12 @@ async def resolve_alert(alert_id: str):
         )
 
 
-@router.get("/config/mode")
+@router.get(
+    "/config/mode",
+    summary="获取数据源模式配置",
+    description="返回当前数据源运行模式、回退开关和环境变量快照，帮助确认实时环境配置状态。",
+    responses=DATA_QUALITY_MODE_RESPONSES,
+)
 async def get_data_source_mode():
     """获取当前数据源模式配置"""
     try:
@@ -295,7 +490,12 @@ async def get_data_source_mode():
         )
 
 
-@router.get("/status/overview")
+@router.get(
+    "/status/overview",
+    summary="获取系统状态概览",
+    description="汇总数据源健康分、告警数量、运行模式和近期性能指标，用于数据质量总览面板展示。",
+    responses=DATA_QUALITY_OVERVIEW_RESPONSES,
+)
 async def get_system_status_overview():
     """获取系统状态概览"""
     try:
@@ -372,9 +572,15 @@ async def get_system_status_overview():
         )
 
 
-@router.post("/test/quality")
+@router.post(
+    "/test/quality",
+    summary="测试数据质量监控",
+    description="向指定数据源提交一段测试数据并返回质量监控结果，验证质量评分和告警逻辑是否正常。",
+    responses=DATA_QUALITY_TEST_RESPONSES,
+)
 async def test_data_quality(
-    source: str = Query(..., description="Data source name"), test_data: Optional[Dict[str, Any]] = None
+    source: str = Query(..., description="需要执行数据质量测试的数据源名称。"),
+    test_data: Optional[Dict[str, Any]] = Body(None, openapi_examples=DATA_QUALITY_TEST_REQUEST_EXAMPLES),
 ):
     """测试数据质量监控"""
     try:
