@@ -113,9 +113,17 @@ describe('pageConfig current contract', () => {
       const dataConfig = getPageConfig('system-data')
 
       expect(configConfig?.component).toBe('Settings.vue')
+      expect(configConfig?.apiEndpoint).toBe('/health/detailed')
+      expect(configConfig?.wsChannel).toBeUndefined()
       expect(healthConfig?.component).toBe('Health.vue')
+      expect(healthConfig?.apiEndpoint).toBe('/health')
+      expect(healthConfig?.wsChannel).toBeUndefined()
       expect(apiConfig?.component).toBe('API.vue')
+      expect(apiConfig?.apiEndpoint).toBe('/health')
+      expect(apiConfig?.wsChannel).toBeUndefined()
       expect(dataConfig?.component).toBe('DataSource.vue')
+      expect(dataConfig?.apiEndpoint).toBe('/v1/data-sources/config/')
+      expect(dataConfig?.wsChannel).toBeUndefined()
     })
 
     it('does not expose retired legacy keys in PAGE_CONFIG', () => {

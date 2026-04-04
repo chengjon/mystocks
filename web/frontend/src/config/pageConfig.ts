@@ -5,7 +5,7 @@
  * To make permanent changes, update the generation script and run:
  *   npm run generate-page-config
  * 
- * Generated at: 2026-03-22T02:31:38.549Z
+ * Generated at: 2026-04-04T05:41:04.359Z
  * Routes processed: 35
  */
 
@@ -292,9 +292,8 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     type: 'page',
     routePath: 'config',
     title: '系统配置',
-    description: '系统配置',
-    apiEndpoint: '/api/system/config',
-    wsChannel: 'system:config',
+    description: '系统设置（本地持久化 + 健康监控）',
+    apiEndpoint: '/health/detailed',
     component: 'Settings.vue',
     requiresAuth: true,
   },
@@ -303,8 +302,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     routePath: 'health',
     title: '健康矩阵',
     description: '健康矩阵',
-    apiEndpoint: '/api/system/health',
-    wsChannel: 'system:health',
+    apiEndpoint: '/health',
     component: 'Health.vue',
     requiresAuth: true,
   },
@@ -313,8 +311,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     routePath: 'api',
     title: 'API 终端',
     description: 'API 终端',
-    apiEndpoint: '/api/system/api',
-    wsChannel: 'system:api',
+    apiEndpoint: '/health',
     component: 'API.vue',
     requiresAuth: true,
   },
@@ -323,8 +320,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     routePath: 'data',
     title: '数据源管理',
     description: '数据源管理',
-    apiEndpoint: '/api/system/data',
-    wsChannel: 'system:data',
+    apiEndpoint: '/v1/data-sources/config/',
     component: 'DataSource.vue',
     requiresAuth: true,
   },
