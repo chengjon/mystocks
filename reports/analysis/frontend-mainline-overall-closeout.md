@@ -1,6 +1,6 @@
 # MyStocks Frontend Mainline Overall Closeout
 
-> Generated at: `2026-04-03T23:28:55+08:00`
+> Generated at: `2026-04-04T20:33:23+08:00`
 > Overall plan: `docs/plans/2026-04-02-frontend-mainline-testing-overall-plan.md`
 > Scope: `34` pages across `Phase 1-4`
 > Branch: `wip/root-dirty-20260403`
@@ -18,6 +18,7 @@
 - The single preserved residual debt is `System-Config`:
   - the page is routable and usable
   - the monitor panel reads real backend health endpoints
+  - `2026-04-04` follow-up confirmed that no unified backend config write contract exists in current repo truth
   - the current `保存本地设置` action is still local-only degrade and must not be reported as verified backend real-write closure
 
 ## 2. Phase Summary
@@ -72,6 +73,7 @@ Resolved during the full mainline run:
 - Closeout rule:
   - `System-Config` counts as `Mock PASS` + `Real PASS` for route-shell and real-read
   - it does **not** count as verified real-write closure
+  - the contract-truth follow-up is complete; the residual debt is now explicitly accepted rather than left as an open frontend discovery item
 
 ## 5. Quality Gate
 
@@ -114,6 +116,12 @@ Resolved during the full mainline run:
     - `12 passed, 0 failed, 0 skipped`
   - Phase 4:
     - `10 passed, 0 failed, 0 skipped`
+  - Follow-up targeted smoke:
+    - `phase4-mainline-matrix.spec.ts`
+    - grep: `System-Config renders blocker note and persists local settings`
+    - project: `chromium`
+    - mode: `PLAYWRIGHT_EXTERNAL_FRONTEND=1` against live PM2 frontend on `http://127.0.0.1:3020`
+    - result: `1 passed, 0 failed, 0 skipped`
 
 ## 7. Final Conclusion
 
@@ -124,7 +132,8 @@ Resolved during the full mainline run:
   - no unresolved `frontend render gap`
   - one intentionally preserved `backend contract/runtime gap`
 - The next work should not reopen the whole mainline.
-- The next work should be a targeted follow-up only:
-  - confirm the backend truth for `System-Config`
-  - if a real config write contract exists, align the page and add non-destructive real-write smoke
-  - if no such contract exists, keep the local degrade explicit and register it as accepted residual debt
+- The targeted `System-Config` follow-up is now complete:
+  - confirmed no unified backend config write contract exists in current repo truth
+  - aligned generated frontend `pageConfig` to that truth
+  - passed a focused post-cutover route smoke against the live PM2 frontend shell
+- No further frontend-mainline batch is required unless a new backend `System-Config` write contract is introduced and approved later.

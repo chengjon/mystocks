@@ -1,0 +1,260 @@
+{
+  "scope": "frontend-mainline-overall-closeout",
+  "generated_at": "2026-04-04T20:33:23+08:00",
+  "branch": "wip/root-dirty-20260403",
+  "overall_plan": "docs/plans/2026-04-02-frontend-mainline-testing-overall-plan.md",
+  "phases": [
+    {
+      "phase": 1,
+      "source_plan": "docs/plans/2026-04-02-frontend-mainline-phase-1-execution-matrix.md",
+      "pages_total": 6,
+      "pages": [
+        "Login",
+        "Dashboard",
+        "Market-Realtime",
+        "Market-Technical",
+        "Market-LHB",
+        "Data-Industry"
+      ],
+      "mock_pages_passed": 6,
+      "real_pages_passed": 6,
+      "classification": {
+        "route_config_drift": 0,
+        "frontend_render_gap": 0,
+        "backend_contract_runtime_gap": 0
+      },
+      "blockers": []
+    },
+    {
+      "phase": 2,
+      "source_plan": "docs/plans/2026-04-03-frontend-mainline-phase-2-execution-matrix.md",
+      "pages_total": 6,
+      "pages": [
+        "Data-Concept",
+        "Data-FundFlow",
+        "Data-Indicator",
+        "Watchlist-Manage",
+        "Watchlist-Signals",
+        "Watchlist-Screener"
+      ],
+      "mock_pages_passed": 6,
+      "real_pages_passed": 6,
+      "classification": {
+        "route_config_drift": 0,
+        "frontend_render_gap": 0,
+        "backend_contract_runtime_gap": 0
+      },
+      "blockers": []
+    },
+    {
+      "phase": 3,
+      "source_plan": "docs/plans/2026-04-03-frontend-mainline-phase-3-execution-matrix.md",
+      "pages_total": 12,
+      "pages": [
+        "Strategy-Repo",
+        "Strategy-Parameters",
+        "Strategy-Signals",
+        "Strategy-Backtest",
+        "Strategy-GPU",
+        "Strategy-Opt",
+        "Strategy-Pos",
+        "Trade-Positions",
+        "Trade-Terminal",
+        "Trade-Signals",
+        "Trade-Portfolio",
+        "Trade-History"
+      ],
+      "mock_pages_passed": 12,
+      "real_pages_passed": 12,
+      "classification": {
+        "route_config_drift": 0,
+        "frontend_render_gap": 0,
+        "backend_contract_runtime_gap": 0
+      },
+      "blockers": []
+    },
+    {
+      "phase": 4,
+      "source_plan": "docs/plans/2026-04-03-frontend-mainline-phase-4-execution-matrix.md",
+      "pages_total": 10,
+      "pages": [
+        "Risk-Management",
+        "Risk-Overview",
+        "Risk-PnL",
+        "Risk-StopLoss",
+        "Risk-Alerts",
+        "Risk-News",
+        "System-Config",
+        "System-Health",
+        "System-API",
+        "System-Data"
+      ],
+      "mock_pages_passed": 10,
+      "real_pages_passed": 10,
+      "classification": {
+        "route_config_drift": 0,
+        "frontend_render_gap": 0,
+        "backend_contract_runtime_gap": 1
+      },
+      "blockers": [
+        "System-Config has no unified backend config write contract in current repo truth; current save path remains localStorage-only degrade and cannot be counted as real-write closure"
+      ]
+    }
+  ],
+  "pages_total": 34,
+  "page_verdicts": {
+    "mock_passed": 34,
+    "mock_failed": 0,
+    "real_passed": 34,
+    "real_failed": 0
+  },
+  "classification": {
+    "route_config_drift": 0,
+    "frontend_render_gap": 0,
+    "backend_contract_runtime_gap": 1
+  },
+  "quality_gates": {
+    "structural_syntax_errors": 0,
+    "frontend_type_errors_baseline": 0,
+    "frontend_type_check_executed": false,
+    "frontend_type_regression_detected": false,
+    "pm2": {
+      "mystocks-backend": "online",
+      "mystocks-frontend": "online",
+      "mystocks-frontend-static": "online"
+    },
+    "services": {
+      "backend": "http://localhost:8020",
+      "frontend": "http://localhost:3020",
+      "backend_health": 200,
+      "backend_ready": 200,
+      "frontend_proxy_ready": 200
+    }
+  },
+  "verification": {
+    "mock": {
+      "browser_project": "chromium",
+      "phase_breakdown": [
+        {
+          "phase": 1,
+          "command_scope": "auth-login.spec.ts + kline-chart.spec.ts + market-data.spec.ts + phase1-mainline-matrix.spec.ts",
+          "passed": 34,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "phase": 2,
+          "command_scope": "phase2-mainline-matrix.spec.ts",
+          "passed": 6,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "phase": 3,
+          "command_scope": "phase3-mainline-matrix.spec.ts",
+          "passed": 12,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "phase": 4,
+          "command_scope": "phase4-mainline-matrix.spec.ts",
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        }
+      ]
+    },
+    "real": {
+      "browser_project": "chromium",
+      "phase_breakdown": [
+        {
+          "phase": 1,
+          "command_scope": "comprehensive-all-pages.spec.ts subset: Dashboard|Market-Realtime|Market-Technical|Market-LHB|Data-Industry",
+          "passed": 5,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "phase": 1,
+          "command_scope": "real login chain browser script",
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "phase": 2,
+          "command_scope": "comprehensive-all-pages.spec.ts subset: Data-Concept|Data-FundFlow|Data-Indicator|Watchlist-Manage|Watchlist-Signals|Watchlist-Screener",
+          "passed": 6,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "phase": 3,
+          "command_scope": "comprehensive-all-pages.spec.ts subset: Strategy-Repo|Strategy-Parameters|Strategy-Signals|Strategy-Backtest|Strategy-GPU|Strategy-Opt|Strategy-Pos|Trade-Positions|Trade-Terminal|Trade-Signals|Trade-Portfolio|Trade-History",
+          "passed": 12,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "phase": 4,
+          "command_scope": "comprehensive-all-pages.spec.ts subset: Risk-Management|Risk-Overview|Risk-PnL|Risk-StopLoss|Risk-Alerts|Risk-News|System-Config|System-Health|System-API|System-Data",
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "phase": 4,
+          "command_scope": "phase4-mainline-matrix.spec.ts targeted follow-up: System-Config renders blocker note and persists local settings (external_frontend/live PM2)",
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0
+        }
+      ]
+    }
+  },
+  "residual_debt": [
+    {
+      "page": "System-Config",
+      "route": "/system/config",
+      "component": "web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue",
+      "category": "backend contract/runtime gap",
+      "summary": "System-Config remains a local-only degrade for save behavior; current repo truth confirms no unified backend config write contract exists.",
+      "frontend_evidence": [
+        "The page banner explicitly states that no unified backend system-config contract has been established and that the page remains local-only for saves.",
+        "saveAll() persists only to localStorage via STORAGE_KEY=artdeco-system-settings.",
+        "Monitor rows are read-only and sourced from monitoringApi.getDetailedSystemHealth() and monitoringApi.getSystemHealth().",
+        "Focused post-cutover browser smoke passed against the live PM2 frontend shell on 2026-04-04."
+      ],
+      "backend_evidence": [
+        "No backend route matching /api/system/settings was found under web/backend/app.",
+        "Confirmed read-only health endpoints exist at /health and /health/detailed in web/backend/app/api/health.py.",
+        "Nearest non-equivalent write contract is data source configuration batch write at POST /v1/data-sources/config/batch."
+      ]
+    }
+  ],
+  "resolved_issues": [
+    "Phase 1 cleared backend PYTHONPATH drift, frontend proxy drift, and readiness recovery drift so the startup shell and market chain became reproducibly green.",
+    "Phase 2 fixed the Watchlist-Manage delete-action render gap by aligning the table actions slot contract.",
+    "Phase 3 normalized the strategy/trade mock matrix under VITE_USE_MOCK_DATA=false without requiring production source fixes.",
+    "Phase 4 normalized the risk/system mock matrix under VITE_USE_MOCK_DATA=false and kept the System-Config contract gap explicit.",
+    "The targeted System-Config follow-up confirmed no unified backend write contract exists, aligned generated pageConfig to that truth, and passed a focused post-cutover browser smoke against the live PM2 frontend shell."
+  ],
+  "source_fix_footprint": [
+    "ecosystem.test.config.js",
+    "web/backend/ecosystem.config.js",
+    "web/backend/tests/test_post_rewrite_backend_import_stability.py",
+    "web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue"
+  ],
+  "work_items": [
+    "2026-04-03-frontend-mainline-phase-1-main",
+    "2026-04-03-frontend-mainline-phase-2-main",
+    "2026-04-03-frontend-mainline-phase-3-main",
+    "2026-04-03-frontend-mainline-phase-4-main"
+  ],
+  "next_action": {
+    "title": "Frontend mainline follow-up complete",
+    "kind": "accepted-residual-debt",
+    "summary": "Do not reopen the whole frontend mainline. The System-Config follow-up is complete: no unified backend write contract exists, generated pageConfig is aligned, and focused route smoke passed. Keep the local-only degrade explicit unless a new backend contract is introduced later."
+  }
+}
