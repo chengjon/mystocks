@@ -1,24 +1,10 @@
-<template>
-    <div class="risk-alerts-view">
-        <h1>Risk Alerts</h1>
-        <p>Configure and monitor risk alerts</p>
-        <div class="placeholder-content">
-            <el-alert
-                title="Coming Soon"
-                description="Risk alerts management will be implemented in Phase 7"
-                type="info"
-                show-icon
-            />
-        </div>
-    </div>
-</template>
-
 <script setup lang="ts">
-    // Risk alerts view
+import { useAttrs } from 'vue'
+import RiskAlertsPage from '@/views/artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue'
+
+const attrs = useAttrs()
 </script>
 
-<style scoped>
-    .risk-alerts-view {
-        padding: 20px;
-    }
-</style>
+<template>
+  <RiskAlertsPage v-bind="attrs" />
+</template>

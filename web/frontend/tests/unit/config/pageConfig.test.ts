@@ -94,6 +94,18 @@ describe('pageConfig current contract', () => {
       expect(historyConfig?.component).toBe('History.vue')
     })
 
+    it('returns current standard page config for approved risk routes using canonical domain filenames', () => {
+      const overviewConfig = getPageConfig('risk-overview')
+      const stopLossConfig = getPageConfig('risk-stop-loss')
+      const alertsConfig = getPageConfig('risk-alerts')
+      const newsConfig = getPageConfig('risk-news')
+
+      expect(overviewConfig?.component).toBe('Overview.vue')
+      expect(stopLossConfig?.component).toBe('StopLoss.vue')
+      expect(alertsConfig?.component).toBe('Alerts.vue')
+      expect(newsConfig?.component).toBe('News.vue')
+    })
+
     it('does not expose retired legacy keys in PAGE_CONFIG', () => {
       expect(PAGE_CONFIG['artdeco-market-data']).toBeUndefined()
       expect(PAGE_CONFIG['artdeco-stock-management']).toBeUndefined()

@@ -220,13 +220,13 @@ const routes: RouteRecordRaw[] = [
             path: 'management',
             alias: ['/risk-management'],
             name: 'risk-management',
-            component: () => import('@/views/artdeco-pages/ArtDecoRiskManagement.vue'),
+            component: () => import('@/views/risk/Center.vue'),
             meta: { title: '风险管理中心', requiresAuth: true }
           },
           {
             path: 'overview',
             name: 'risk-overview',
-            component: () => import('@/views/artdeco-pages/risk-tabs/RiskOverviewTab.vue'),
+            component: () => import('@/views/risk/Overview.vue'),
             meta: { title: '风险概览', requiresAuth: true }
           },
           {
@@ -238,19 +238,19 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'stop-loss',
             name: 'risk-stop-loss',
-            component: () => import('@/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue'),
+            component: () => import('@/views/risk/StopLoss.vue'),
             meta: { title: '止损雷达', requiresAuth: true }
           },
           {
             path: 'alerts',
             name: 'risk-alerts',
-            component: () => import('@/views/artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue'),
+            component: () => import('@/views/risk/Alerts.vue'),
             meta: { title: '告警中心', requiresAuth: true }
           },
           {
             path: 'news',
             name: 'risk-news',
-            component: () => import('@/views/artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue'),
+            component: () => import('@/views/risk/News.vue'),
             meta: { title: '舆情预警', requiresAuth: true }
           }
         ]

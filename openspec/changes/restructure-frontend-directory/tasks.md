@@ -191,6 +191,11 @@
 - [ ] 8.7 Commit: "refactor: migrate trade domain pages"
 
 ## 9. Page-by-Page Migration – Risk Domain (Phase 3f)
+- 2026-04-04 repo-truth note: tasks `9.2` through `9.6` required a mixed landing batch because the repo already contained placeholder target files under `src/views/risk/`.
+  - `src/views/risk/Center.vue`, `src/views/risk/StopLoss.vue`, and `src/views/risk/News.vue` are now landed as target entry wrappers.
+  - `src/views/risk/Overview.vue` and `src/views/risk/Alerts.vue` have been inverted from placeholder pages into compatibility wrappers around the current ArtDeco implementations.
+  - The `ArtDecoPageTemplate.vue` dependency chain remains preserved through `ArtDecoRiskManagement.vue`.
+  - `risk-pnl` remains outside this micro-batch and still points to `PortfolioOverviewTab.vue` in current repo truth.
 - [ ] 9.1 Verify `ArtDecoPageTemplate.vue` is retained (not deleted)
   - [ ] 9.1.1 Check that `src/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue` exists
   - [ ] 9.1.2 Verify `ArtDecoRiskManagement.vue` imports it correctly

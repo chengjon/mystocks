@@ -245,7 +245,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: '风险概览',
     apiEndpoint: '/api/risk/overview',
     wsChannel: 'risk:overview',
-    component: 'RiskOverviewTab.vue',
+    component: 'Overview.vue',
     requiresAuth: true,
   },
   'risk-pnl': {
@@ -265,7 +265,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: '止损雷达',
     apiEndpoint: '/api/risk/stop/loss',
     wsChannel: 'risk:stop/loss',
-    component: 'StopLossMonitorTab.vue',
+    component: 'StopLoss.vue',
     requiresAuth: true,
   },
   'risk-alerts': {
@@ -275,7 +275,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: '告警中心',
     apiEndpoint: '/api/risk/alerts',
     wsChannel: 'risk:alerts',
-    component: 'ArtDecoRiskAlerts.vue',
+    component: 'Alerts.vue',
     requiresAuth: true,
   },
   'risk-news': {
@@ -285,7 +285,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: '舆情预警',
     apiEndpoint: '/api/risk/news',
     wsChannel: 'risk:news',
-    component: 'ArtDecoAnnouncementMonitor.vue',
+    component: 'News.vue',
     requiresAuth: true,
   },
   'system-config': {

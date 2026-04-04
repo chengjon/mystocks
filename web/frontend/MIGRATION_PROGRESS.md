@@ -150,6 +150,24 @@ This section records the current repository truth for the approved Trade migrati
 - The trade domain no longer depends on legacy ArtDeco file paths as its primary routed entrypoints for positions, signals, portfolio, and history.
 - `trade-terminal` intentionally remains on `web/frontend/src/views/TradingDashboard.vue` per task `8.5` Option C, and task `8.6` stays blocked by the dashboard / dealing-room truth split.
 
+## Phase 3f Repo Truth Baseline
+
+This section records the current repository truth for the approved Risk migration tasks after landing the missing target entrypoints and inverting the existing placeholders for tasks `9.2` through `9.6`.
+
+| Approved task | Current route / pageConfig target | Current implementation behind target | Current verdict |
+| --- | --- | --- | --- |
+| `9.2 Risk-Center` | `/risk/management` and alias `/risk-management` now resolve `web/frontend/src/views/risk/Center.vue` in router truth. No `risk-management` pageConfig entry exists in the current repo truth. | `Center.vue` is a thin compatibility wrapper around `web/frontend/src/views/artdeco-pages/ArtDecoRiskManagement.vue`, which still imports `ArtDecoPageTemplate.vue`. | Target entrypoint landed; template retention preserved; pageConfig gap remains pre-existing truth. |
+| `9.3 Risk-Overview` | `/risk/overview` now resolves `web/frontend/src/views/risk/Overview.vue`; pageConfig now points to `Overview.vue`. | `Overview.vue` is now a thin compatibility wrapper around `web/frontend/src/views/artdeco-pages/risk-tabs/RiskOverviewTab.vue`. | Target entrypoint landed; compatibility retirement still pending. |
+| `9.4 Risk-StopLoss` | `/risk/stop-loss` now resolves `web/frontend/src/views/risk/StopLoss.vue`; pageConfig now points to `StopLoss.vue`. | `StopLoss.vue` is a thin compatibility wrapper around `web/frontend/src/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue`. | Target entrypoint landed; compatibility retirement still pending. |
+| `9.5 Risk-Alerts` | `/risk/alerts` now resolves `web/frontend/src/views/risk/Alerts.vue`; pageConfig now points to `Alerts.vue`. | `Alerts.vue` is now a thin compatibility wrapper around `web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue`. | Target entrypoint landed; compatibility retirement still pending. |
+| `9.6 Risk-News` | `/risk/news` now resolves `web/frontend/src/views/risk/News.vue`; pageConfig now points to `News.vue`. | `News.vue` is a thin compatibility wrapper around `web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue`. | Target entrypoint landed; compatibility retirement still pending. |
+
+### Phase 3f Immediate Consequence
+
+- The approved risk routes for center, overview, stop-loss, alerts, and news no longer depend on legacy ArtDeco file paths as their primary routed entrypoints.
+- The `ArtDecoPageTemplate.vue` dependency chain remains intact through `ArtDecoRiskManagement.vue`.
+- `risk-pnl` remains an active extra route outside this micro-batch and still resolves `PortfolioOverviewTab.vue` in current repo truth.
+
 ## Trade-Domain Clarification For Task 8.5
 
 This section records the repo-backed clarification for `openspec/changes/restructure-frontend-directory/tasks.md` task `8.5`.
