@@ -333,7 +333,7 @@ def test_monitoring_alerts_endpoint_has_query_parameter_descriptions() -> None:
         assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
 
 
-def test_kline_data_endpoints_have_descriptions_and_parameter_docs() -> None:
+def test_kline_data_endpoints_have_docs_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
@@ -341,15 +341,22 @@ def test_kline_data_endpoints_have_descriptions_and_parameter_docs() -> None:
         "/api/v1/data/stocks/daily": {"symbol", "start_date", "end_date", "limit"},
         "/api/v1/data/kline": {"symbol", "start_date", "end_date", "limit"},
         "/api/v1/data/stocks/kline": {"symbol", "start_date", "end_date", "period"},
+        "/api/v1/data/stocks/intraday": {"symbol", "date"},
     }
 
     for path, parameter_names in endpoint_expectations.items():
         operation = schema["paths"][path]["get"]
         parameters = operation.get("parameters", [])
+        success_json = operation["responses"][next(code for code in operation["responses"] if code.startswith("2"))][
+            "content"
+        ]["application/json"]
 
+        assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
         for parameter_name in parameter_names:
             assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_financial_data_endpoint_has_description_and_parameter_docs() -> None:
