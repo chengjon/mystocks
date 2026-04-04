@@ -13,7 +13,6 @@ import {
     dataApi,
     tradeApi,
     indicatorApi,
-    userApi,
     announcementApi,
     _watchlistApi
 } from '@/api/index.ts'

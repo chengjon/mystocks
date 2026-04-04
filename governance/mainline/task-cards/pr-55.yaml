@@ -1,0 +1,116 @@
+version: "v0.2"
+
+task:
+  id: "pr-55"
+  title: "consolidate artdeco governance docs and keep focused frontend verification gates green"
+  owner: "main"
+  created_at: "2026-04-05"
+
+mainline:
+  id: "L1-artdeco-doc-and-gate-alignment"
+  objective: "land the current ArtDeco governance documentation set on main together with the narrow frontend contract and route-verification updates required to keep the publish branch mergeable"
+  milestone_id: "L2-artdeco-docs"
+  slice_id: "L3-artdeco-doc-and-gate-alignment"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "frontend"
+    - "tests"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "artdeco-doc-consolidation-includes narrow multi-domain frontend verification files but does not introduce a new product-domain capability"
+
+scope:
+  allowed_paths:
+    - "docs/INDEX.md"
+    - "docs/guides/INDEX.md"
+    - "docs/guides/web/INDEX.md"
+    - "docs/guides/web/HTML_TO_ARTDECO_VUE_CONVERSION_OPTIMIZED_PLAN.md"
+    - "docs/reports/**"
+    - "governance/mainline/task-cards/pr-55.yaml"
+    - "web/frontend/ARTDECO_COMPONENTS_CATALOG.md"
+    - "web/frontend/src/services/TradingApiManager.ts"
+    - "web/frontend/src/services/TradingApiManager.types.ts"
+    - "web/frontend/src/styles/artdeco-tokens.scss"
+    - "web/frontend/src/views/artdeco-pages/ArtDecoTradingCenter.vue"
+    - "web/frontend/src/views/artdeco-pages/market-data-tabs/**"
+    - "web/frontend/src/views/artdeco-pages/stock-management-tabs/**"
+    - "web/frontend/src/views/artdeco-pages/system-tabs/**"
+    - "web/frontend/tests/e2e/artdeco-config-integration.spec.ts"
+    - "web/frontend/tests/unit/config/artdeco-trading-center-types-cleanup.spec.ts"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No new ArtDeco product capability or route expansion beyond the already-verified publish branch scope"
+  - "No unrelated cleanup outside the documented ArtDeco docs, focused frontend contract files, and their matching tests"
+
+acceptance:
+  checks:
+    - id: "frontend-lint"
+      command: "cd web/frontend && npm run lint"
+      required: true
+    - id: "frontend-type-check"
+      command: "cd web/frontend && npx vue-tsc --noEmit --incremental false"
+      required: true
+    - id: "artdeco-vitest"
+      command: "cd web/frontend && npx vitest run src/views/artdeco-pages/market-data-tabs/__tests__/industryAnalysisData.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoDataManagement.spec.ts tests/unit/config/artdeco-trading-center-types-cleanup.spec.ts"
+      required: true
+    - id: "stock-management-route-data-node-test"
+      command: "cd web/frontend && node --test src/views/artdeco-pages/stock-management-tabs/__node_tests__/stockManagementRouteData.test.ts"
+      required: true
+    - id: "artdeco-config-integration-e2e"
+      command: "cd web/frontend && PLAYWRIGHT_EXTERNAL_FRONTEND=1 FRONTEND_BASE_URL=http://127.0.0.1:3020 BACKEND_BASE_URL=http://127.0.0.1:8020 FRONTEND_PORT=3020 FRONTEND_BACKUP_PORT=3021 BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 npx playwright test --config playwright.config.js --reporter=github --output=/tmp/pw-artdeco-publish-config --project=chromium tests/e2e/artdeco-config-integration.spec.ts"
+      required: true
+    - id: "menu-navigation-e2e"
+      command: "cd web/frontend && PLAYWRIGHT_EXTERNAL_FRONTEND=1 FRONTEND_BASE_URL=http://127.0.0.1:3020 BACKEND_BASE_URL=http://127.0.0.1:8020 FRONTEND_PORT=3020 FRONTEND_BACKUP_PORT=3021 BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 npx playwright test --config playwright.config.js --reporter=github --output=/tmp/pw-artdeco-publish-menu --project=chromium tests/e2e/critical/menu-navigation-fixed.spec.ts"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-55.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr55-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the PR task card misses any touched path, Mainline Governance Gate will keep failing even though the code and docs are valid"
+    - "If the frontend cleanup changes behavior instead of removing dead import noise, stores that import TradingApiManager could regress unexpectedly"
+    - "If ArtDeco route-shell assertions drift from the current router layout, the focused E2E coverage can become misleading"
+  rollback_plan: "git revert <merge-commit-sha> if the ArtDeco documentation alignment or focused frontend verification changes cause governance or runtime regressions after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "publish the refreshed ArtDeco governance documentation chain while keeping the narrow frontend contract and route-verification surface mergeable under current CI gates"
+    modified_scope: "ArtDeco docs indexes and reports, the component catalog, focused trading center service and view files, focused ArtDeco tab tests, two focused E2E specs, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no new product behavior is introduced; the only runtime code delta in this repair slice removes one unused TradingApiManager import so lint gates pass while existing route and contract behavior stay unchanged"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the merge if governance gating, ArtDeco route verification, or the focused frontend contract alignment behaves unexpectedly after mainline integration"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-05T00:00:00Z"
+    approval_note: "documentation-led ArtDeco alignment plus a narrow frontend lint cleanup and matching verification coverage"
+    secondary_approved: false
