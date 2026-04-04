@@ -70,6 +70,18 @@ describe('pageConfig current contract', () => {
       expect(indicatorConfig?.component).toBe('Advanced.vue')
     })
 
+    it('returns current standard page config for strategy routes using canonical domain filenames', () => {
+      const repoConfig = getPageConfig('strategy-repo')
+      const parametersConfig = getPageConfig('strategy-parameters')
+      const backtestConfig = getPageConfig('strategy-backtest')
+      const optimizationConfig = getPageConfig('strategy-opt')
+
+      expect(repoConfig?.component).toBe('List.vue')
+      expect(parametersConfig?.component).toBe('Parameters.vue')
+      expect(backtestConfig?.component).toBe('Backtest.vue')
+      expect(optimizationConfig?.component).toBe('Optimization.vue')
+    })
+
     it('does not expose retired legacy keys in PAGE_CONFIG', () => {
       expect(PAGE_CONFIG['artdeco-market-data']).toBeUndefined()
       expect(PAGE_CONFIG['artdeco-stock-management']).toBeUndefined()

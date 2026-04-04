@@ -118,6 +118,22 @@ This section records the current repository truth for the approved Watchlist mig
 - The watchlist domain no longer depends on legacy source file paths as its primary routed entrypoints.
 - Remaining watchlist work is implementation ownership and dependency normalization, not target-path creation.
 
+## Phase 3d Repo Truth Baseline
+
+This section records the current repository truth for the approved Strategy migration tasks after landing the missing target entrypoints.
+
+| Approved task | Current route / pageConfig target | Current implementation behind target | Current verdict |
+| --- | --- | --- | --- |
+| `7.1 Strategy-Repo` | `/strategy/repo` now resolves `web/frontend/src/views/strategy/List.vue` in router truth; pageConfig now points to `List.vue`. | `List.vue` is a thin compatibility wrapper around `web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue`. | Target entrypoint landed; compatibility retirement still pending. |
+| `7.2 Strategy-Parameters` | `/strategy/parameters` now resolves `web/frontend/src/views/strategy/Parameters.vue`; pageConfig points to `Parameters.vue`. | `Parameters.vue` is a thin compatibility wrapper around `web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue`. | Target entrypoint landed; compatibility retirement still pending. |
+| `7.3 Strategy-Backtest` | `/strategy/backtest` now resolves `web/frontend/src/views/strategy/Backtest.vue`; pageConfig points to `Backtest.vue`. | `Backtest.vue` is a thin compatibility wrapper around `web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue`. | Target entrypoint landed; compatibility retirement still pending. |
+| `7.4 Strategy-Optimization` | `/strategy/opt` now resolves `web/frontend/src/views/strategy/Optimization.vue`; pageConfig points to `Optimization.vue`. | `Optimization.vue` is a thin compatibility wrapper around `web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue`. | Target entrypoint landed; compatibility retirement still pending. |
+
+### Phase 3d Immediate Consequence
+
+- The strategy domain no longer depends on legacy ArtDeco file paths as its primary routed entrypoints for repo, parameters, backtest, and optimization.
+- Remaining strategy work is implementation ownership and dependency normalization, not target-path creation for tasks `7.1` through `7.4`.
+
 ## Trade-Domain Clarification For Task 8.5
 
 This section records the repo-backed clarification for `openspec/changes/restructure-frontend-directory/tasks.md` task `8.5`.

@@ -111,6 +111,12 @@
 - [ ] 6.4 Commit: "refactor: migrate watchlist domain pages"
 
 ## 7. Page-by-Page Migration – Strategy Domain (Phase 3d)
+- 2026-04-04 repo-truth note: the strategy target pages for tasks `7.1` through `7.4` did not exist in the repository baseline, so this batch lands the missing target entrypoints and retargets router/pageConfig to them.
+  - `src/views/strategy/List.vue` now fronts the existing `ArtDecoStrategyManagement.vue` implementation.
+  - `src/views/strategy/Parameters.vue` now fronts the existing `StrategyParametersTab.vue` implementation.
+  - `src/views/strategy/Backtest.vue` now fronts the existing `ArtDecoBacktestAnalysis.vue` implementation.
+  - `src/views/strategy/Optimization.vue` now fronts the existing `ArtDecoStrategyOptimization.vue` implementation.
+  - Remaining work in this area is compatibility-wrapper retirement and dependency normalization, not leaving the strategy domain on non-domain entry files.
 - [ ] 7.1 Move `artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue` → `views/strategy/List.vue`
   - [ ] 7.1.1 Move dependency: `useStrategyList.ts`
   - [ ] 7.1.2 Update imports

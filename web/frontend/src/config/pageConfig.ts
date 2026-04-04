@@ -127,7 +127,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     title: '策略仓库',
     description: '策略仓库',
     apiEndpoint: '/api/v1/strategy/strategies',
-    component: 'ArtDecoStrategyManagement.vue',
+    component: 'List.vue',
     requiresAuth: true,
   },
   'strategy-parameters': {
@@ -137,7 +137,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: '策略参数',
     apiEndpoint: '/api/strategy/parameters',
     wsChannel: 'strategy:parameters',
-    component: 'StrategyParametersTab.vue',
+    component: 'Parameters.vue',
     requiresAuth: true,
   },
   'strategy-signals': {
@@ -156,7 +156,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     title: '回测引擎',
     description: '策略回测',
     apiEndpoint: '/api/v1/strategy/backtest',
-    component: 'ArtDecoBacktestAnalysis.vue',
+    component: 'Backtest.vue',
     requiresAuth: true,
   },
   'strategy-gpu': {
@@ -176,7 +176,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: '参数优化',
     apiEndpoint: '/api/strategy/opt',
     wsChannel: 'strategy:opt',
-    component: 'ArtDecoStrategyOptimization.vue',
+    component: 'Optimization.vue',
     requiresAuth: true,
   },
   'strategy-pos': {

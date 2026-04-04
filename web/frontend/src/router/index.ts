@@ -129,13 +129,13 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'repo',
             name: 'strategy-repo',
-            component: () => import('@/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue'),
+            component: () => import('@/views/strategy/List.vue'),
             meta: { title: '策略仓库', requiresAuth: true, api: '/api/v1/strategy/list' }
           },
           {
             path: 'parameters',
             name: 'strategy-parameters',
-            component: () => import('@/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue'),
+            component: () => import('@/views/strategy/Parameters.vue'),
             meta: { title: '策略参数', requiresAuth: true, api: '/api/v1/strategy/strategies' }
           },
           {
@@ -147,7 +147,7 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'backtest',
             name: 'strategy-backtest',
-            component: () => import('@/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue'),
+            component: () => import('@/views/strategy/Backtest.vue'),
             meta: { title: '回测引擎', requiresAuth: true, api: '/api/v1/strategy/backtest' }
           },
           {
@@ -159,7 +159,7 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'opt',
             name: 'strategy-opt',
-            component: () => import('@/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue'),
+            component: () => import('@/views/strategy/Optimization.vue'),
             meta: { title: '参数优化', requiresAuth: true }
           },
           {
