@@ -16,12 +16,108 @@ from pydantic import BaseModel, Field
 from app.core.config import settings
 from app.core.responses import APIResponse, ErrorCodes, create_error_response, create_success_response
 from app.core.security import verify_token
+from app.openapi_config import COMMON_RESPONSES
 
 router = APIRouter(tags=["trading-runtime"])
 
 
 class AddStrategyRequest(BaseModel):
     strategy_name: str = Field(..., min_length=1, max_length=100)
+
+
+def _success_response_spec(description: str, message: str, data: Any) -> dict[int, dict[str, Any]]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": {
+                        "success": True,
+                        "message": message,
+                        "data": data,
+                        "timestamp": "2026-04-04T09:30:00Z",
+                    }
+                }
+            },
+        }
+    }
+
+
+TRADING_RUNTIME_ERROR_RESPONSES = {
+    500: COMMON_RESPONSES[500],
+}
+
+TRADING_RUNTIME_STATUS_RESPONSE = {
+    **TRADING_RUNTIME_ERROR_RESPONSES,
+    **_success_response_spec(
+        "交易运行时状态快照",
+        "获取交易状态成功",
+        {
+            "session_id": "runtime-1712203200",
+            "active_positions": 3,
+            "total_pnl": 12500.5,
+            "daily_pnl": 850.2,
+            "current_drawdown": 0.032,
+            "is_running": True,
+            "last_updated": "2026-04-04T09:30:00Z",
+        },
+    ),
+}
+
+TRADING_RUNTIME_STRATEGY_PERFORMANCE_RESPONSE = {
+    **TRADING_RUNTIME_ERROR_RESPONSES,
+    **_success_response_spec(
+        "运行时策略绩效列表",
+        "获取策略绩效成功",
+        [
+            {
+                "id": "demo-momentum",
+                "name": "Demo Momentum",
+                "type": "momentum",
+                "pnl": 12500.5,
+                "win_rate": 0.63,
+            },
+            {
+                "id": "demo-mean-reversion",
+                "name": "Demo Mean Reversion",
+                "type": "mean_reversion",
+                "pnl": 4200.0,
+                "win_rate": 0.57,
+            },
+        ],
+    ),
+}
+
+TRADING_RUNTIME_MARKET_SNAPSHOT_RESPONSE = {
+    **TRADING_RUNTIME_ERROR_RESPONSES,
+    **_success_response_spec(
+        "交易运行时市场快照",
+        "获取市场快照成功",
+        {
+            "timestamp": "2026-04-04T09:30:00Z",
+            "market_status": "open",
+            "data": {
+                "000001.SH": {"price": 12.5, "change": 0.08, "change_percent": 0.64},
+                "600519.SH": {"price": 1710.88, "change": -5.12, "change_percent": -0.3},
+            },
+        },
+    ),
+}
+
+TRADING_RUNTIME_RISK_METRICS_RESPONSE = {
+    **TRADING_RUNTIME_ERROR_RESPONSES,
+    **_success_response_spec(
+        "交易运行时风险指标",
+        "获取风险指标成功",
+        {
+            "risk_status": "warning",
+            "current_drawdown": 0.061,
+            "daily_pnl": -3200.0,
+            "active_positions": 5,
+            "last_updated": "2026-04-04T09:30:00Z",
+        },
+    ),
+}
 
 
 _RUNTIME_STATE: Dict[str, Any] = {
@@ -78,7 +174,13 @@ def _require_write_auth(authorization: Optional[str]) -> None:
         )
 
 
-@router.get("/status", response_model=APIResponse, summary="Get trading runtime status")
+@router.get(
+    "/status",
+    response_model=APIResponse,
+    summary="Get trading runtime status",
+    description="返回轻量交易运行时当前会话、持仓数量、盈亏和回撤摘要，用于前端运行时面板轮询展示。",
+    responses=TRADING_RUNTIME_STATUS_RESPONSE,
+)
 async def get_status():
     return create_success_response(
         data={
@@ -148,7 +250,13 @@ async def stop_session(
     )
 
 
-@router.get("/strategies/performance", response_model=APIResponse, summary="Get strategy performance list")
+@router.get(
+    "/strategies/performance",
+    response_model=APIResponse,
+    summary="Get strategy performance list",
+    description="返回运行时当前已注册策略的收益、胜率等绩效摘要，供运行时策略列表和绩效面板展示。",
+    responses=TRADING_RUNTIME_STRATEGY_PERFORMANCE_RESPONSE,
+)
 async def get_strategies_performance():
     strategies: List[Dict[str, Any]] = _RUNTIME_STATE["strategies"]
     return create_success_response(data=strategies, message="获取策略绩效成功")
@@ -217,7 +325,13 @@ async def remove_strategy(
     )
 
 
-@router.get("/market/snapshot", response_model=APIResponse, summary="Get market snapshot")
+@router.get(
+    "/market/snapshot",
+    response_model=APIResponse,
+    summary="Get market snapshot",
+    description="返回交易运行时缓存的市场状态与关键标的快照，供运行时首页刷新行情卡片。",
+    responses=TRADING_RUNTIME_MARKET_SNAPSHOT_RESPONSE,
+)
 async def get_market_snapshot():
     payload = {
         "timestamp": _now_iso(),
@@ -227,7 +341,13 @@ async def get_market_snapshot():
     return create_success_response(data=payload, message="获取市场快照成功")
 
 
-@router.get("/risk/metrics", response_model=APIResponse, summary="Get risk metrics")
+@router.get(
+    "/risk/metrics",
+    response_model=APIResponse,
+    summary="Get risk metrics",
+    description="返回交易运行时当前回撤、日内盈亏和持仓数量等核心风险指标，用于风控面板快速预警。",
+    responses=TRADING_RUNTIME_RISK_METRICS_RESPONSE,
+)
 async def get_risk_metrics():
     payload = {
         "risk_status": "warning" if _RUNTIME_STATE["current_drawdown"] > 0.05 else "normal",

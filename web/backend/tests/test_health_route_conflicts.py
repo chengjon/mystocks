@@ -693,6 +693,27 @@ def test_trading_runtime_session_and_delete_endpoints_have_docs() -> None:
     assert any(param["name"] == "Authorization" and param.get("description") for param in delete_parameters)
 
 
+def test_trading_runtime_read_endpoints_have_success_examples_and_error_docs() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path in [
+        "/api/trading/status",
+        "/api/trading/strategies/performance",
+        "/api/trading/market/snapshot",
+        "/api/trading/risk/metrics",
+    ]:
+        operation = schema["paths"][path]["get"]
+        success_json = operation["responses"][next(code for code in operation["responses"] if code.startswith("2"))][
+            "content"
+        ]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_tradingview_body_config_endpoints_have_request_examples() -> None:
     app.openapi_schema = None
     schema = app.openapi()
