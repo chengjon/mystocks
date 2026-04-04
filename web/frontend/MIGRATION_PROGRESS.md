@@ -103,6 +103,21 @@ This section records the current repository truth for the approved Market / Data
 - Treat the remaining ArtDeco market/data source files in those six tasks as compatibility wrappers, not as the primary routed implementation.
 - The routed Market / Data target pages are now structurally aligned through `web/frontend/src/views/data/Advanced.vue`; future work in this area is compatibility-wrapper retirement or shared-layer normalization, not target-file ownership inversion.
 
+## Phase 3c Repo Truth Baseline
+
+This section records the current repository truth for the approved Watchlist migration tasks after landing the missing target entrypoints.
+
+| Approved task | Current route / pageConfig target | Current implementation behind target | Current verdict |
+| --- | --- | --- | --- |
+| `6.1 Watchlist-Manage` | `/watchlist/manage` now resolves `web/frontend/src/views/watchlist/Manage.vue` in router truth; pageConfig now points to `Manage.vue`. | `Manage.vue` is a thin compatibility wrapper around `web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue`. | Target entrypoint landed; compatibility retirement still pending. |
+| `6.2 Watchlist-Screener` | `/watchlist/screener` now resolves `web/frontend/src/views/watchlist/Screener.vue`; pageConfig points to `Screener.vue`. | `Screener.vue` is a thin compatibility wrapper around `web/frontend/src/views/stocks/Screener.vue`. | Target entrypoint landed; compatibility retirement still pending. |
+| `6.3 Watchlist-Signals` | `/watchlist/signals` now resolves `web/frontend/src/views/watchlist/Signals.vue`; pageConfig now points to `Signals.vue`. | `Signals.vue` is a thin compatibility wrapper around `web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue`. | Target entrypoint landed while preserving strategy-domain reuse. |
+
+### Phase 3c Immediate Consequence
+
+- The watchlist domain no longer depends on legacy source file paths as its primary routed entrypoints.
+- Remaining watchlist work is implementation ownership and dependency normalization, not target-path creation.
+
 ## Trade-Domain Clarification For Task 8.5
 
 This section records the repo-backed clarification for `openspec/changes/restructure-frontend-directory/tasks.md` task `8.5`.

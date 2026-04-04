@@ -91,6 +91,11 @@
 - [ ] 5.2 Commit: "refactor: migrate data domain pages"
 
 ## 6. Page-by-Page Migration – Watchlist Domain (Phase 3c)
+- 2026-04-04 repo-truth note: the watchlist target pages did not exist in the repository baseline, so this batch lands the missing target entrypoints and retargets router/pageConfig to them.
+  - `src/views/watchlist/Manage.vue` now fronts the existing `WatchlistManager.vue` implementation.
+  - `src/views/watchlist/Signals.vue` now fronts the existing `StrategySignalsTab.vue` implementation for the watchlist route while preserving the strategy-domain reuse.
+  - `src/views/watchlist/Screener.vue` now fronts the existing `stocks/Screener.vue` implementation.
+  - Remaining work in this area is compatibility-wrapper retirement and dependency normalization, not leaving the watchlist domain on non-domain entry files.
 - [ ] 6.1 Move `artdeco-pages/stock-management-tabs/WatchlistManager.vue` → `views/watchlist/Manage.vue`
   - [ ] 6.1.1 Move dependency: `useWatchlist.ts`
   - [ ] 6.1.2 Update imports

@@ -102,19 +102,19 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'manage',
             name: 'watchlist-manage',
-            component: () => import('@/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue'),
+            component: () => import('@/views/watchlist/Manage.vue'),
             meta: { title: '组合管理', requiresAuth: true, api: '/api/v1/monitoring/watchlists' }
           },
           {
             path: 'signals',
             name: 'watchlist-signals',
-            component: () => import('@/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue'),
+            component: () => import('@/views/watchlist/Signals.vue'),
             meta: { title: '信号雷达', requiresAuth: true, api: '/api/v1/trade/signals' }
           },
           {
             path: 'screener',
             name: 'watchlist-screener',
-            component: () => import('@/views/stocks/Screener.vue'),
+            component: () => import('@/views/watchlist/Screener.vue'),
             meta: { title: '策略选股', requiresAuth: true, api: '/api/v1/data/stocks/basic' }
           }
         ]

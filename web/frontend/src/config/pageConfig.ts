@@ -98,7 +98,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     title: '组合管理',
     description: '组合管理',
     apiEndpoint: '/api/v1/monitoring/watchlists',
-    component: 'WatchlistManager.vue',
+    component: 'Manage.vue',
     requiresAuth: true,
   },
   'watchlist-signals': {
@@ -108,7 +108,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: '信号雷达',
     apiEndpoint: '/api/watchlist/signals',
     wsChannel: 'watchlist:signals',
-    component: 'StrategySignalsTab.vue',
+    component: 'Signals.vue',
     requiresAuth: true,
   },
   'watchlist-screener': {
