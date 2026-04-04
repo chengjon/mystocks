@@ -97,8 +97,6 @@
 
     const routeName = 'artdeco-trading-center'
     const _pageConfig = ref(getPageConfig(routeName))
-
-    console.log('Trading Center - 配置系统已就绪')
     import ArtDecoMarketOverview from './market-data-tabs/ArtDecoMarketOverview.vue'
     import ArtDecoRealtimeMonitor from './market-data-tabs/ArtDecoRealtimeMonitor.vue'
     import ArtDecoMarketAnalysis from './market-data-tabs/ArtDecoMarketAnalysis.vue'
