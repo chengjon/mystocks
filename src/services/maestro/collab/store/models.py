@@ -22,6 +22,7 @@ class WorkItemRecord(_FrozenModel):
     forbidden_paths: list[str]
     acceptance_checks: list[str]
     openspec: dict[str, Any] | None
+    metadata: dict[str, Any] | None = None
     created_at: datetime
     updated_at: datetime
 

@@ -90,6 +90,37 @@ def test_mongo_collaboration_store_ignores_mongo_internal_id_on_read() -> None:
     assert work_item.work_item_id == "MT-100A"
 
 
+def test_mongo_collaboration_store_accepts_work_item_metadata_from_existing_documents() -> None:
+    database = _FakeDatabase()
+    database["work_items"].docs.append(
+        {
+            "work_item_id": "MT-100B",
+            "task_key": "api-availability",
+            "title": "API availability hardening",
+            "objective": "Track availability implementation in Mongo control plane",
+            "branch": "dev-api-availability-gemini",
+            "owner_cli": "gemini",
+            "status": "in_progress",
+            "allowed_paths": ["web/backend/app/api"],
+            "forbidden_paths": ["web/frontend/src"],
+            "acceptance_checks": ["pytest tests/api -q"],
+            "openspec": {"change_id": "mongodb-multicli"},
+            "metadata": {"source": "legacy-runtime", "worktree": "root-dirty"},
+            "created_at": _ts("2026-03-14T08:00:00Z"),
+            "updated_at": _ts("2026-03-14T08:00:00Z"),
+        }
+    )
+    store = MongoCollaborationStore(database)
+
+    work_items = store.list_work_items()
+
+    assert [item.work_item_id for item in work_items] == ["MT-100B"]
+    assert work_items[0].model_dump(mode="python")["metadata"] == {
+        "source": "legacy-runtime",
+        "worktree": "root-dirty",
+    }
+
+
 def test_mongo_collaboration_store_ignores_duplicate_update_ids() -> None:
     store = MongoCollaborationStore(_FakeDatabase())
     first_update = WorkUpdateRecord(
