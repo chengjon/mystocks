@@ -761,6 +761,30 @@ def test_task_register_and_cleanup_endpoints_have_docs() -> None:
     assert any(param["name"] == "days" and param.get("description") for param in cleanup_parameters)
 
 
+def test_task_read_endpoints_have_parameter_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path, expected_params in [
+        ("/api/tasks/executions/", ["task_id", "limit"]),
+        ("/api/tasks/executions/{execution_id}", ["execution_id"]),
+        ("/api/tasks/statistics/", []),
+        ("/api/tasks/health", []),
+    ]:
+        operation = schema["paths"][path]["get"]
+        parameters = operation.get("parameters", [])
+        success_json = operation["responses"][next(code for code in operation["responses"] if code.startswith("2"))][
+            "content"
+        ]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expected_params:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_watchlist_write_endpoints_have_docs_and_request_examples() -> None:
     app.openapi_schema = None
     schema = app.openapi()
