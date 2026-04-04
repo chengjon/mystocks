@@ -16,6 +16,11 @@ vi.mock('@/api/index', () => ({
 
 import ArtDecoDataManagement from '../ArtDecoDataManagement.vue'
 
+interface ArtDecoDataManagementVm {
+  toggleConfig(index: number): void
+  saveConfig(): Promise<void>
+}
+
 describe('ArtDecoDataManagement', () => {
   beforeEach(() => {
     getDataSourceConfigMock.mockReset().mockResolvedValue({
@@ -82,9 +87,11 @@ describe('ArtDecoDataManagement', () => {
 
     await flushPromises()
 
-    ;(wrapper.vm as any).toggleConfig(0)
+    const vm = wrapper.vm as unknown as ArtDecoDataManagementVm
+
+    vm.toggleConfig(0)
     await nextTick()
-    await (wrapper.vm as any).saveConfig()
+    await vm.saveConfig()
     await flushPromises()
 
     expect(updateDataSourceConfigMock).toHaveBeenCalledWith({

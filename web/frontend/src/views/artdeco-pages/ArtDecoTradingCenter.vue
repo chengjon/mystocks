@@ -84,15 +84,11 @@
     import { useAuthStore } from '@/stores/auth'
     import ArtDecoHeader from '@/components/artdeco/core/ArtDecoHeader.vue'
     import ArtDecoFunctionTree from '@/components/artdeco/core/ArtDecoFunctionTree.vue'
-    // @ts-ignore - Component not implemented yet
     import ArtDecoBreadcrumb from '@/components/artdeco/core/ArtDecoBreadcrumb.vue'
-    // @ts-ignore - Component not implemented yet
     import ArtDecoFooter from '@/components/artdeco/core/ArtDecoFooter.vue'
     import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
     import ArtDecoIcon from '@/components/artdeco/core/ArtDecoIcon.vue'
-    // @ts-ignore - Component not implemented yet
     import ArtDecoStatusIndicator from '@/components/artdeco/core/ArtDecoStatusIndicator.vue'
-    // @ts-ignore - Component not implemented yet
     import ArtDecoLoadingOverlay from '@/components/artdeco/core/ArtDecoLoadingOverlay.vue'
 
     // ========== 配置系统集成 ==========
@@ -102,38 +98,22 @@
     const routeName = 'artdeco-trading-center'
     const _pageConfig = ref(getPageConfig(routeName))
 
-    // 导入所有功能组件（均为@ts-ignore状态）
-    // @ts-ignore - Component not implemented yet
+    console.log('Trading Center - 配置系统已就绪')
     import ArtDecoMarketOverview from './market-data-tabs/ArtDecoMarketOverview.vue'
-    // @ts-ignore - Component not implemented yet
     import ArtDecoRealtimeMonitor from './market-data-tabs/ArtDecoRealtimeMonitor.vue'
-    // @ts-ignore - Component not implemented yet
     import ArtDecoMarketAnalysis from './market-data-tabs/ArtDecoMarketAnalysis.vue'
-    // @ts-ignore - Component not implemented yet
     import ArtDecoIndustryAnalysis from './market-data-tabs/ArtDecoIndustryAnalysis.vue'
-    // @ts-ignore - Component not implemented yet
     import ArtDecoSignalsView from './trading-tabs/ArtDecoSignalsView.vue'
-    // @ts-ignore - Component not implemented yet
     import ArtDecoHistoryView from './trading-tabs/ArtDecoHistoryView.vue'
-    // @ts-ignore - Component not implemented yet
     import ArtDecoPositionMonitor from './trading-tabs/ArtDecoPositionMonitor.vue'
-    // @ts-ignore - Component not implemented yet
     import ArtDecoPerformanceAnalysis from './trading-tabs/ArtDecoPerformanceAnalysis.vue'
-    // @ts-ignore - Component not implemented yet
     import ArtDecoStrategyManagement from './strategy-tabs/ArtDecoStrategyManagement.vue'
-    // @ts-ignore - Component not implemented yet
     import ArtDecoBacktestAnalysis from './strategy-tabs/ArtDecoBacktestAnalysis.vue'
-    // @ts-ignore - Component not implemented yet
     import ArtDecoStrategyOptimization from './strategy-tabs/ArtDecoStrategyOptimization.vue'
-    // @ts-ignore - Component not implemented yet
     import ArtDecoRiskMonitor from './risk-tabs/ArtDecoRiskMonitor.vue'
-    // @ts-ignore - Component not implemented yet
     import ArtDecoAnnouncementMonitor from './risk-tabs/ArtDecoAnnouncementMonitor.vue'
-    // @ts-ignore - Component not implemented yet
     import ArtDecoRiskAlerts from './risk-tabs/ArtDecoRiskAlerts.vue'
-    // @ts-ignore - Component not implemented yet
     import ArtDecoMonitoringDashboard from './system-tabs/ArtDecoMonitoringDashboard.vue'
-    // @ts-ignore - Component not implemented yet
     import ArtDecoDataManagement from './system-tabs/ArtDecoDataManagement.vue'
     import ArtDecoSystemSettings from './system-tabs/ArtDecoSystemSettings.vue'
 
