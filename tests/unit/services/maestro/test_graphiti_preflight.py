@@ -8,7 +8,6 @@ from src.services.maestro.collab.authz import ActorIdentity
 from src.services.maestro.collab.backends.mongo.store import MongoCollaborationStore
 from src.services.maestro.collab.integrations.models import (
     GraphitiIngestStatus,
-    GraphitiPreflightResult,
     GraphitiQueryBundle,
     GraphitiSearchResult,
     GraphitiServerStatus,
@@ -210,6 +209,10 @@ class _FakeDatabase:
             "work_requests": _FakeCollection(),
             "work_events": _FakeCollection(),
             "worker_status_views": _FakeCollection(),
+            "transcript_sessions": _FakeCollection(),
+            "transcript_events": _FakeCollection(),
+            "transcript_hot_bodies": _FakeCollection(),
+            "transcript_legacy_indexes": _FakeCollection(),
         }
 
     def __getitem__(self, name: str) -> "_FakeCollection":

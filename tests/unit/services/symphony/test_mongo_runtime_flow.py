@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
 
 from fastapi.testclient import TestClient
 
@@ -102,6 +101,10 @@ class _FakeDatabase:
             "work_requests": _FakeCollection(),
             "work_events": _FakeCollection(),
             "worker_status_views": _FakeCollection(),
+            "transcript_sessions": _FakeCollection(),
+            "transcript_events": _FakeCollection(),
+            "transcript_hot_bodies": _FakeCollection(),
+            "transcript_legacy_indexes": _FakeCollection(),
             "issue_assignments": _FakeCollection(),
             "worktree_registry": _FakeCollection(),
             "worker_heartbeats": _FakeCollection(),

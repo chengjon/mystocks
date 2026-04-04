@@ -6,6 +6,7 @@ import sys
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 from uuid import uuid4
 
 from pymongo import MongoClient
@@ -24,8 +25,16 @@ from src.services.maestro.collab import (
 )
 from src.services.maestro.collab.authz import ActorIdentity, AuthorizationError
 from src.services.maestro.collab.backends.mongo import MongoCollaborationStore
-from src.services.maestro.collab.services import CoordinationService, GraphitiPreflightService
-from src.services.maestro.collab.store.models import WorkItemRecord, WorkRequestRecord, WorkUpdateRecord
+from src.services.maestro.collab.integrations import GraphitiAdapter, GraphitiMcpTransport
+from src.services.maestro.collab.transcript_archive import FilesystemTranscriptArchiveBackend
+from src.services.maestro.collab.services import CoordinationService, GraphitiPreflightService, TranscriptLedgerService
+from src.services.maestro.collab.store.models import (
+    TranscriptLegacyIndexRecord,
+    TranscriptSessionRecord,
+    WorkItemRecord,
+    WorkRequestRecord,
+    WorkUpdateRecord,
+)
 from src.services.maestro.profiles.mystocks import COLLAB_CONTROL_PLANE_DEFAULTS
 from src.utils.cli_error_output import build_cli_error_payload
 from src.utils.mongo_runtime_config import (
@@ -35,7 +44,11 @@ from src.utils.mongo_runtime_config import (
     get_runtime_mongo_uri_default,
     is_mongo_auth_error,
 )
-from scripts.runtime.export_collab_snapshots import render_task_markdown, render_task_report_markdown
+from scripts.runtime.export_collab_snapshots import (
+    _extract_graphiti_projection,
+    render_task_markdown,
+    render_task_report_markdown,
+)
 
 GRAPHITI_CLI_EXAMPLES = """Examples:
   python scripts/runtime/coordctl.py graphiti preflight --work-item-id MT-100 --actor-cli cli-1 --task-path TASK.md --output json
@@ -51,8 +64,9 @@ class _IssueRef:
 
 
 class _MongoCoordinationFacade:
-    def __init__(self, service: CoordinationService) -> None:
+    def __init__(self, service: CoordinationService, *, transcript_service: TranscriptLedgerService) -> None:
         self._service = service
+        self._transcript_service = transcript_service
         self._graphiti_preflight = GraphitiPreflightService(service=service)
 
     def create_work_item(self, payload: dict) -> dict:
@@ -69,6 +83,7 @@ class _MongoCoordinationFacade:
             forbidden_paths=payload.get("forbidden_paths", []),
             acceptance_checks=payload.get("acceptance_checks", []),
             openspec=payload.get("openspec"),
+            metadata=payload.get("metadata"),
             created_at=now,
             updated_at=now,
         )
@@ -115,14 +130,22 @@ class _MongoCoordinationFacade:
         stored = self._service.upsert_work_item(ActorIdentity(cli_name=actor_cli, role=role), updated)
         return stored.model_dump(mode="json")
 
-    def create_work_update(self, work_item_id: str, actor_cli: str, summary: str, status: str) -> dict:
+    def create_work_update(
+        self,
+        work_item_id: str,
+        actor_cli: str,
+        summary: str,
+        status: str,
+        *,
+        details: dict | None = None,
+    ) -> dict:
         update = WorkUpdateRecord(
             work_item_id=work_item_id,
             update_id=f"upd-{uuid4().hex}",
             actor_cli=actor_cli,
             status=status,
             summary=summary,
-            details={},
+            details=details or {},
             created_at=_utcnow(),
         )
         stored = self._service.append_work_update(ActorIdentity(cli_name=actor_cli, role="worker_cli"), update)
@@ -196,6 +219,195 @@ class _MongoCoordinationFacade:
         payload["task_path"] = task_path
         payload["max_wait_seconds"] = max_wait_seconds
         return payload
+
+    def start_transcript_session(
+        self,
+        session_id: str,
+        work_item_id: str,
+        actor_cli: str,
+        transcript_kind: str,
+        *,
+        archive_policy_version: str = "v1",
+    ) -> dict:
+        work_item = self._service.get_work_item(ActorIdentity(cli_name="main", role="main_cli"), work_item_id)
+        if work_item is None:
+            raise KeyError(f"Unknown work item: {work_item_id}")
+
+        stored = self._transcript_service.start_session(
+            self._actor(actor_cli),
+            TranscriptSessionRecord(
+                session_id=session_id,
+                work_item_id=work_item_id,
+                actor_cli=actor_cli,
+                branch=work_item.branch,
+                transcript_kind=transcript_kind,
+                started_at=_utcnow(),
+                closed_at=None,
+                archive_policy_version=archive_policy_version,
+            ),
+        )
+        return stored.model_dump(mode="json")
+
+    def append_transcript_block(
+        self,
+        session_id: str,
+        actor_cli: str,
+        content: str,
+        *,
+        payload: dict | None = None,
+    ) -> dict:
+        stored = self._transcript_service.append_block(
+            self._actor(actor_cli),
+            session_id=session_id,
+            event_id=f"tevt-{uuid4().hex}",
+            occurred_at=_utcnow(),
+            content=content,
+            payload=payload,
+        )
+        return stored.model_dump(mode="json")
+
+    def close_transcript_session(
+        self,
+        session_id: str,
+        actor_cli: str,
+        *,
+        payload: dict | None = None,
+    ) -> dict:
+        stored = self._transcript_service.close_session(
+            self._actor(actor_cli),
+            session_id=session_id,
+            event_id=f"tevt-{uuid4().hex}",
+            occurred_at=_utcnow(),
+            payload=payload,
+        )
+        return stored.model_dump(mode="json")
+
+    def show_transcript_session(self, session_id: str, actor_cli: str) -> dict:
+        actor = self._actor(actor_cli)
+        session = self._transcript_service.get_session(actor, session_id)
+        if session is None:
+            raise KeyError(f"Unknown transcript session: {session_id}")
+        events = self._transcript_service.list_session_events(actor, session_id)
+        hot_body = self._transcript_service.get_hot_body(actor, session_id)
+        hot_body_available = self._is_hot_body_available(hot_body=hot_body, events=events)
+        return {
+            "session": session.model_dump(mode="json"),
+            "event_count": len(events),
+            "hot_body_available": hot_body_available,
+            "archive_ref": self._archive_ref_from_events(events),
+        }
+
+    def export_transcript_session(self, session_id: str, actor_cli: str) -> dict:
+        actor = self._actor(actor_cli)
+        session = self._transcript_service.get_session(actor, session_id)
+        if session is None:
+            raise KeyError(f"Unknown transcript session: {session_id}")
+        events = self._transcript_service.list_session_events(actor, session_id)
+        hot_body = self._transcript_service.get_hot_body(actor, session_id)
+        hot_body_available = self._is_hot_body_available(hot_body=hot_body, events=events)
+        archive_ref = self._archive_ref_from_events(events)
+        return {
+            "session": session.model_dump(mode="json"),
+            "events": [event.model_dump(mode="json") for event in events],
+            "hot_body": hot_body.model_dump(mode="json") if hot_body_available and hot_body is not None else None,
+            "archive_ref": None if hot_body_available else archive_ref,
+        }
+
+    def list_work_item_transcripts(self, work_item_id: str) -> list[dict]:
+        actor = ActorIdentity(cli_name="main", role="main_cli")
+        summaries: list[dict] = []
+        for session in self._transcript_service.list_work_item_sessions(actor, work_item_id):
+            events = self._transcript_service.list_session_events(actor, session.session_id)
+            hot_body = self._transcript_service.get_hot_body(actor, session.session_id)
+            summaries.append(
+                {
+                    "session_id": session.session_id,
+                    "actor_cli": session.actor_cli,
+                    "transcript_kind": session.transcript_kind,
+                    "started_at": session.started_at.isoformat(),
+                    "hot_body_available": self._is_hot_body_available(hot_body=hot_body, events=events),
+                    "archive_locator": self._archive_ref_from_events(events),
+                    "source": "ledger",
+                }
+            )
+
+        for legacy_index in self._transcript_service.list_legacy_indexes(actor, work_item_id):
+            summaries.append(
+                {
+                    "legacy_session_label": legacy_index.legacy_session_label,
+                    "legacy_block_kind": legacy_index.legacy_block_kind,
+                    "captured_at": legacy_index.captured_at.isoformat(),
+                    "archive_locator": legacy_index.archive_locator,
+                    "source": "legacy",
+                }
+            )
+
+        return summaries
+
+    def index_legacy_transcript(
+        self,
+        *,
+        work_item_id: str,
+        actor_cli: str,
+        legacy_block_kind: str,
+        legacy_session_label: str,
+        source_artifact: str,
+        captured_at: datetime,
+        source_anchor: str,
+        archive_locator: str,
+        checksum: str,
+        migration_batch_id: str,
+    ) -> dict:
+        stored = self._transcript_service.index_legacy_record(
+            self._actor(actor_cli),
+            TranscriptLegacyIndexRecord(
+                legacy_index_id=f"legacy-{uuid4().hex}",
+                work_item_id=work_item_id,
+                source_artifact=source_artifact,
+                legacy_block_kind=legacy_block_kind,
+                legacy_session_label=legacy_session_label,
+                captured_at=captured_at,
+                source_anchor=source_anchor,
+                archive_locator=archive_locator,
+                checksum=checksum,
+                migration_batch_id=migration_batch_id,
+                migration_recorded_at=_utcnow(),
+            ),
+        )
+        return stored.model_dump(mode="json")
+
+    @staticmethod
+    def _actor(actor_cli: str) -> ActorIdentity:
+        role = "main_cli" if actor_cli == "main" else "worker_cli"
+        return ActorIdentity(cli_name=actor_cli, role=role)
+
+    @staticmethod
+    def _archive_ref_from_events(events: list[Any]) -> str | None:
+        archive_ref: str | None = None
+        for event in events:
+            payload = event.payload if hasattr(event, "payload") else event.get("payload", {})
+            event_type = event.event_type if hasattr(event, "event_type") else event.get("event_type")
+            if event_type == "transcript.body_archived":
+                archive_ref = payload.get("archive_locator")
+            elif event_type == "transcript.hot_body_expired":
+                archive_ref = payload.get("archive_locator") or archive_ref
+        return archive_ref
+
+    @staticmethod
+    def _is_hot_body_available(*, hot_body: Any, events: list[Any]) -> bool:
+        if hot_body is None:
+            return False
+        if any(
+            (event.event_type if hasattr(event, "event_type") else event.get("event_type")) == "transcript.hot_body_expired"
+            for event in events
+        ):
+            return False
+        purge_after = hot_body.purge_after if hasattr(hot_body, "purge_after") else hot_body.get("purge_after")
+        if isinstance(purge_after, str):
+            purge_after = _parse_datetime(purge_after)
+        if purge_after is not None and purge_after <= _utcnow():
+            return False
+        return True
 
 
 class _GraphitiFacade:
@@ -345,6 +557,7 @@ def build_parser() -> argparse.ArgumentParser:
     work_create.add_argument("--forbidden-path", action="append", default=[])
     work_create.add_argument("--acceptance-check", action="append", default=[])
     work_create.add_argument("--openspec-json", default=None)
+    work_create.add_argument("--metadata-json", default=None)
     work_create.add_argument("--output", choices=("json", "text"), default="json")
 
     work_list = work_subparsers.add_parser("list", help="List work items")
@@ -390,6 +603,7 @@ def build_parser() -> argparse.ArgumentParser:
     work_mark.add_argument("--status", required=True)
     work_mark.add_argument("--actor-cli", required=True)
     work_mark.add_argument("--summary", default=None)
+    work_mark.add_argument("--details-json", default=None)
     work_mark.add_argument("--output", choices=("json", "text"), default="json")
 
     update_parser = subparsers.add_parser("update", help="Manage work updates")
@@ -399,6 +613,7 @@ def build_parser() -> argparse.ArgumentParser:
     update_add.add_argument("--actor-cli", required=True)
     update_add.add_argument("--summary", required=True)
     update_add.add_argument("--status", required=True)
+    update_add.add_argument("--details-json", default=None)
     update_add.add_argument("--output", choices=("json", "text"), default="json")
 
     request_parser = subparsers.add_parser("request", help="Manage work requests")
@@ -417,6 +632,55 @@ def build_parser() -> argparse.ArgumentParser:
     request_review.add_argument("--reviewed-by", default="main")
     request_review.add_argument("--status", required=True)
     request_review.add_argument("--output", choices=("json", "text"), default="json")
+
+    transcript_parser = subparsers.add_parser("transcript", help="Manage transcript ledger sessions")
+    transcript_subparsers = transcript_parser.add_subparsers(dest="transcript_command", required=True)
+
+    transcript_start = transcript_subparsers.add_parser("start", help="Start a transcript session")
+    transcript_start.add_argument("session_id")
+    transcript_start.add_argument("--work-item-id", required=True)
+    transcript_start.add_argument("--actor-cli", required=True)
+    transcript_start.add_argument("--transcript-kind", choices=("AUTO", "MANUAL"), required=True)
+    transcript_start.add_argument("--archive-policy-version", default="v1")
+    transcript_start.add_argument("--output", choices=("json", "text"), default="json")
+
+    transcript_append = transcript_subparsers.add_parser("append", help="Append a transcript block")
+    transcript_append.add_argument("session_id")
+    transcript_append.add_argument("--actor-cli", required=True)
+    transcript_append_content = transcript_append.add_mutually_exclusive_group(required=True)
+    transcript_append_content.add_argument("--content", default=None)
+    transcript_append_content.add_argument("--content-file", default=None)
+    transcript_append.add_argument("--payload-json", default=None)
+    transcript_append.add_argument("--output", choices=("json", "text"), default="json")
+
+    transcript_close = transcript_subparsers.add_parser("close", help="Close a transcript session")
+    transcript_close.add_argument("session_id")
+    transcript_close.add_argument("--actor-cli", required=True)
+    transcript_close.add_argument("--payload-json", default=None)
+    transcript_close.add_argument("--output", choices=("json", "text"), default="json")
+
+    transcript_show = transcript_subparsers.add_parser("show-session", help="Show transcript session summary")
+    transcript_show.add_argument("session_id")
+    transcript_show.add_argument("--actor-cli", required=True)
+    transcript_show.add_argument("--output", choices=("json", "text"), default="json")
+
+    transcript_export = transcript_subparsers.add_parser("export-session", help="Export transcript session details")
+    transcript_export.add_argument("session_id")
+    transcript_export.add_argument("--actor-cli", required=True)
+    transcript_export.add_argument("--output", choices=("json", "text"), default="json")
+
+    transcript_legacy = transcript_subparsers.add_parser("index-legacy", help="Record a legacy transcript index")
+    transcript_legacy.add_argument("--work-item-id", required=True)
+    transcript_legacy.add_argument("--actor-cli", required=True)
+    transcript_legacy.add_argument("--legacy-block-kind", choices=("AUTO", "MANUAL"), required=True)
+    transcript_legacy.add_argument("--legacy-session-label", required=True)
+    transcript_legacy.add_argument("--source-artifact", required=True)
+    transcript_legacy.add_argument("--captured-at", required=True)
+    transcript_legacy.add_argument("--source-anchor", required=True)
+    transcript_legacy.add_argument("--archive-locator", required=True)
+    transcript_legacy.add_argument("--checksum", required=True)
+    transcript_legacy.add_argument("--migration-batch-id", required=True)
+    transcript_legacy.add_argument("--output", choices=("json", "text"), default="json")
 
     graphiti_parser = subparsers.add_parser("graphiti", help="Run Graphiti memory operations")
     graphiti_subparsers = graphiti_parser.add_subparsers(dest="graphiti_command", required=True)
@@ -466,7 +730,7 @@ def main(argv: list[str] | None = None) -> int:
             _emit(suggestion, output="json")
             return 0
 
-        if args.command in {"work", "update", "request"}:
+        if args.command in {"work", "update", "request", "transcript"}:
             service = _build_coordination_service(args)
             payload, output = _handle_coordination_command(args, service)
             _emit(payload, output=output)
@@ -523,7 +787,18 @@ def _build_coordination_service(args: argparse.Namespace) -> _MongoCoordinationF
     database = client[args.mongo_db]
     store = MongoCollaborationStore(database)
     service = CoordinationService(store)
-    return _MongoCoordinationFacade(service)
+    transcript_defaults = COLLAB_CONTROL_PLANE_DEFAULTS.get("transcript_archive", {})
+    archive_backend = None
+    if transcript_defaults.get("backend") == "filesystem":
+        archive_backend = FilesystemTranscriptArchiveBackend(
+            PROJECT_ROOT / transcript_defaults.get("archive_root", ".maestro/transcript-archive")
+        )
+    transcript_service = TranscriptLedgerService(
+        store,
+        archive_backend=archive_backend,
+        hot_retention_days=int(transcript_defaults.get("hot_retention_days", 90)),
+    )
+    return _MongoCoordinationFacade(service, transcript_service=transcript_service)
 
 
 def _build_graphiti_facade(args: argparse.Namespace) -> _GraphitiFacade:
@@ -540,6 +815,44 @@ def _build_graphiti_facade(args: argparse.Namespace) -> _GraphitiFacade:
     return _GraphitiFacade(service)
 
 
+def _build_live_graphiti_projection(events: list[dict]) -> dict[str, str] | None:
+    base_projection = _extract_graphiti_projection(events)
+    latest_reference = _latest_graphiti_event(
+        events,
+        event_types=("automation.graphiti_memory_recorded", "automation.graphiti_preflight_checked"),
+    )
+    if latest_reference is None:
+        return None
+
+    payload = latest_reference.get("payload", {})
+    episode_uuid = payload.get("episode_uuid")
+    group_id = payload.get("group_id")
+    if not episode_uuid or not group_id:
+        return base_projection
+
+    try:
+        adapter = GraphitiAdapter(transport=GraphitiMcpTransport(timeout_seconds=3))
+        live_status = adapter.get_ingest_status(episode_uuid=str(episode_uuid), group_id=str(group_id))
+    except Exception:
+        return base_projection
+
+    projection = dict(base_projection)
+    projection["ingest_status"] = str(live_status.ingest_status or projection.get("ingest_status", "(none)"))
+    return projection
+
+
+def _latest_graphiti_event(events: list[dict], *, event_types: tuple[str, ...]) -> dict | None:
+    latest_event: dict | None = None
+    latest_created_at = ""
+    for event in events:
+        if event.get("event_type") not in event_types:
+            continue
+        created_at = str(event.get("created_at", ""))
+        if created_at >= latest_created_at:
+            latest_event = event
+            latest_created_at = created_at
+    return latest_event
+
 def _build_mongo_client(mongo_uri: str | None) -> MongoClient:
     return build_project_runtime_mongo_client(PROJECT_ROOT, mongo_uri, server_selection_timeout_ms=3000)
 
@@ -548,6 +861,7 @@ def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordi
     if args.command == "work":
         if args.work_command == "create":
             openspec = json.loads(args.openspec_json) if args.openspec_json else None
+            metadata = json.loads(args.metadata_json) if args.metadata_json else None
             payload = service.create_work_item(
                 {
                     "work_item_id": args.work_item_id,
@@ -561,6 +875,7 @@ def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordi
                     "forbidden_paths": args.forbidden_path,
                     "acceptance_checks": args.acceptance_check,
                     "openspec": openspec,
+                    "metadata": metadata,
                 }
             )
             return payload, args.output
@@ -621,6 +936,8 @@ def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordi
                 requests=requests,
                 status_view=status_view,
                 events=events,
+                transcripts=service.list_work_item_transcripts(args.work_item_id),
+                graphiti_projection=_build_live_graphiti_projection(events),
             )
             if args.output_path:
                 output_path = Path(args.output_path)
@@ -635,10 +952,18 @@ def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordi
             return service.transition_work_item(args.work_item_id, args.to, args.actor_cli), args.output
         if args.work_command == "mark":
             summary = args.summary or f"status marked to {args.status}"
-            return service.create_work_update(args.work_item_id, args.actor_cli, summary, args.status), args.output
+            details = json.loads(args.details_json) if args.details_json else {}
+            return (
+                service.create_work_update(args.work_item_id, args.actor_cli, summary, args.status, details=details),
+                args.output,
+            )
 
     if args.command == "update" and args.update_command == "add":
-        return service.create_work_update(args.work_item_id, args.actor_cli, args.summary, args.status), args.output
+        details = json.loads(args.details_json) if args.details_json else {}
+        return (
+            service.create_work_update(args.work_item_id, args.actor_cli, args.summary, args.status, details=details),
+            args.output,
+        )
 
     if args.command == "request":
         if args.request_command == "create":
@@ -655,6 +980,63 @@ def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordi
         if args.request_command == "review":
             return (
                 service.review_work_request(args.work_item_id, args.request_id, args.reviewed_by, args.status),
+                args.output,
+            )
+
+    if args.command == "transcript":
+        if args.transcript_command == "start":
+            return (
+                service.start_transcript_session(
+                    args.session_id,
+                    args.work_item_id,
+                    args.actor_cli,
+                    args.transcript_kind,
+                    archive_policy_version=args.archive_policy_version,
+                ),
+                args.output,
+            )
+        if args.transcript_command == "append":
+            payload = json.loads(args.payload_json) if args.payload_json else {}
+            content = args.content
+            if args.content_file:
+                content = Path(args.content_file).read_text(encoding="utf-8")
+            return (
+                service.append_transcript_block(
+                    args.session_id,
+                    args.actor_cli,
+                    content or "",
+                    payload=payload,
+                ),
+                args.output,
+            )
+        if args.transcript_command == "close":
+            payload = json.loads(args.payload_json) if args.payload_json else {}
+            return (
+                service.close_transcript_session(
+                    args.session_id,
+                    args.actor_cli,
+                    payload=payload,
+                ),
+                args.output,
+            )
+        if args.transcript_command == "show-session":
+            return service.show_transcript_session(args.session_id, args.actor_cli), args.output
+        if args.transcript_command == "export-session":
+            return service.export_transcript_session(args.session_id, args.actor_cli), args.output
+        if args.transcript_command == "index-legacy":
+            return (
+                service.index_legacy_transcript(
+                    work_item_id=args.work_item_id,
+                    actor_cli=args.actor_cli,
+                    legacy_block_kind=args.legacy_block_kind,
+                    legacy_session_label=args.legacy_session_label,
+                    source_artifact=args.source_artifact,
+                    captured_at=_parse_datetime(args.captured_at),
+                    source_anchor=args.source_anchor,
+                    archive_locator=args.archive_locator,
+                    checksum=args.checksum,
+                    migration_batch_id=args.migration_batch_id,
+                ),
                 args.output,
             )
 
@@ -753,6 +1135,10 @@ def _format_text(payload: dict) -> str:
             rendered = str(value)
         parts.append(f"{key}={rendered}")
     return " ".join(parts)
+
+
+def _parse_datetime(value: str) -> datetime:
+    return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(UTC)
 
 
 def _utcnow() -> datetime:

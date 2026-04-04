@@ -68,3 +68,48 @@ class WorkerStatusViewRecord(_FrozenModel):
     blocker: str | None
     has_pending_request: bool
     updated_at: datetime
+
+
+class TranscriptSessionRecord(_FrozenModel):
+    session_id: str
+    work_item_id: str
+    actor_cli: str
+    branch: str
+    transcript_kind: str
+    started_at: datetime
+    closed_at: datetime | None
+    archive_policy_version: str
+
+
+class TranscriptEventRecord(_FrozenModel):
+    work_item_id: str
+    session_id: str
+    event_id: str
+    event_type: str
+    sequence_no: int
+    occurred_at: datetime
+    payload: dict[str, Any]
+
+
+class TranscriptHotBodyRecord(_FrozenModel):
+    body_id: str
+    session_id: str
+    event_id: str
+    content: str
+    checksum: str
+    available_until: datetime
+    purge_after: datetime | None = None
+
+
+class TranscriptLegacyIndexRecord(_FrozenModel):
+    legacy_index_id: str
+    work_item_id: str
+    source_artifact: str
+    legacy_block_kind: str
+    legacy_session_label: str
+    captured_at: datetime
+    source_anchor: str
+    archive_locator: str
+    checksum: str
+    migration_batch_id: str
+    migration_recorded_at: datetime

@@ -149,6 +149,34 @@ class GraphitiAdapter:
             message=payload.get("message"),
         )
 
+    def get_ingest_status(
+        self,
+        *,
+        episode_uuid: str,
+        group_id: str,
+    ) -> GraphitiIngestStatus:
+        try:
+            payload = self._transport.call_tool(
+                "get_ingest_status",
+                {
+                    "episode_uuid": episode_uuid,
+                    "group_id": group_id,
+                },
+            )
+        except GraphitiTransportError as exc:
+            ingest_status = "best_effort" if "Unknown tool" in str(exc) or "not found" in str(exc) else "failed"
+            return GraphitiIngestStatus(
+                ingest_status=ingest_status,
+                episode_uuid=episode_uuid,
+                group_id=group_id,
+                queue_depth=None,
+                queue_position=None,
+                processed_at=None,
+                last_error=str(exc),
+            )
+
+        return _build_ingest_status(payload, episode_uuid=episode_uuid, group_id=group_id)
+
     def wait_for_ingest(
         self,
         *,
@@ -158,69 +186,22 @@ class GraphitiAdapter:
         poll_interval_seconds: int = DEFAULT_POLL_INTERVAL_SECONDS,
     ) -> GraphitiIngestStatus:
         deadline = self._time_fn() + max_wait_seconds
-        last_payload: dict[str, Any] | None = None
+        last_status: GraphitiIngestStatus | None = None
 
         while True:
-            try:
-                last_payload = self._transport.call_tool(
-                    "get_ingest_status",
-                    {
-                        "episode_uuid": episode_uuid,
-                        "group_id": group_id,
-                    },
-                )
-            except GraphitiTransportError as exc:
-                if "Unknown tool" in str(exc) or "not found" in str(exc):
-                    return GraphitiIngestStatus(
-                        ingest_status="best_effort",
-                        episode_uuid=episode_uuid,
-                        group_id=group_id,
-                        queue_depth=None,
-                        queue_position=None,
-                        processed_at=None,
-                        last_error=str(exc),
-                    )
-                return GraphitiIngestStatus(
-                    ingest_status="failed",
-                    episode_uuid=episode_uuid,
-                    group_id=group_id,
-                    queue_depth=None,
-                    queue_position=None,
-                    processed_at=None,
-                    last_error=str(exc),
-                )
-
-            state = last_payload.get("state")
-            if state == "completed":
-                return GraphitiIngestStatus(
-                    ingest_status="completed",
-                    episode_uuid=last_payload.get("episode_uuid", episode_uuid),
-                    group_id=last_payload.get("group_id", group_id),
-                    queue_depth=last_payload.get("queue_depth"),
-                    queue_position=last_payload.get("queue_position"),
-                    processed_at=last_payload.get("processed_at"),
-                    last_error=last_payload.get("last_error"),
-                )
-            if state == "failed":
-                return GraphitiIngestStatus(
-                    ingest_status="failed",
-                    episode_uuid=last_payload.get("episode_uuid", episode_uuid),
-                    group_id=last_payload.get("group_id", group_id),
-                    queue_depth=last_payload.get("queue_depth"),
-                    queue_position=last_payload.get("queue_position"),
-                    processed_at=last_payload.get("processed_at"),
-                    last_error=last_payload.get("last_error"),
-                )
+            last_status = self.get_ingest_status(episode_uuid=episode_uuid, group_id=group_id)
+            if last_status.ingest_status in {"completed", "failed", "best_effort"}:
+                return last_status
 
             if self._time_fn() >= deadline:
                 return GraphitiIngestStatus(
                     ingest_status="warming",
-                    episode_uuid=last_payload.get("episode_uuid", episode_uuid),
-                    group_id=last_payload.get("group_id", group_id),
-                    queue_depth=last_payload.get("queue_depth"),
-                    queue_position=last_payload.get("queue_position"),
-                    processed_at=last_payload.get("processed_at"),
-                    last_error=last_payload.get("last_error"),
+                    episode_uuid=last_status.episode_uuid if last_status else episode_uuid,
+                    group_id=last_status.group_id if last_status else group_id,
+                    queue_depth=last_status.queue_depth if last_status else None,
+                    queue_position=last_status.queue_position if last_status else None,
+                    processed_at=last_status.processed_at if last_status else None,
+                    last_error=last_status.last_error if last_status else None,
                 )
 
             self._sleep_fn(min(poll_interval_seconds, max(0.0, deadline - self._time_fn())))
@@ -325,6 +306,20 @@ def _best_effort_error_text(response_text: str) -> str:
     if match:
         return match.group(1)
     return response_text[:200]
+
+
+def _build_ingest_status(payload: dict[str, Any], *, episode_uuid: str, group_id: str) -> GraphitiIngestStatus:
+    state = payload.get("state")
+    ingest_status = state if state in {"queued", "processing", "completed", "failed"} else "warming"
+    return GraphitiIngestStatus(
+        ingest_status=ingest_status,
+        episode_uuid=payload.get("episode_uuid", episode_uuid),
+        group_id=payload.get("group_id", group_id),
+        queue_depth=payload.get("queue_depth"),
+        queue_position=payload.get("queue_position"),
+        processed_at=payload.get("processed_at"),
+        last_error=payload.get("last_error"),
+    )
 
 
 def _resolve_graphiti_mcp_url() -> str:
