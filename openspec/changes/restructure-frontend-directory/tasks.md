@@ -223,6 +223,12 @@
 - [ ] 9.7 Commit: "refactor: migrate risk domain pages"
 
 ## 10. Page-by-Page Migration – System Domain (Phase 3g)
+- 2026-04-04 repo-truth note: the system target pages for tasks `10.1` through `10.4` did not exist in the repository baseline, so this batch lands the missing target entrypoints and retargets the system router/pageConfig entries to them.
+  - `src/views/system/Settings.vue` now fronts the existing `ArtDecoSystemSettings.vue` implementation.
+  - `src/views/system/Health.vue` now fronts the existing `SystemHealthTab.vue` implementation.
+  - `src/views/system/API.vue` now fronts the existing `ArtDecoMonitoringDashboard.vue` implementation.
+  - `src/views/system/DataSource.vue` now fronts the existing `ArtDecoDataManagement.vue` implementation.
+  - Remaining work in this area is compatibility-wrapper retirement and dependency normalization, not leaving the system domain on non-domain entry files.
 - [ ] 10.1 Move `artdeco-pages/system-tabs/ArtDecoSystemSettings.vue` → `views/system/Settings.vue`
   - [ ] 10.1.1 Move dependency: `useSystemSettings.ts`
   - [ ] 10.1.2 Update imports

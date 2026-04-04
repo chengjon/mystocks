@@ -106,6 +106,18 @@ describe('pageConfig current contract', () => {
       expect(newsConfig?.component).toBe('News.vue')
     })
 
+    it('returns current standard page config for system routes using canonical domain filenames', () => {
+      const configConfig = getPageConfig('system-config')
+      const healthConfig = getPageConfig('system-health')
+      const apiConfig = getPageConfig('system-api')
+      const dataConfig = getPageConfig('system-data')
+
+      expect(configConfig?.component).toBe('Settings.vue')
+      expect(healthConfig?.component).toBe('Health.vue')
+      expect(apiConfig?.component).toBe('API.vue')
+      expect(dataConfig?.component).toBe('DataSource.vue')
+    })
+
     it('does not expose retired legacy keys in PAGE_CONFIG', () => {
       expect(PAGE_CONFIG['artdeco-market-data']).toBeUndefined()
       expect(PAGE_CONFIG['artdeco-stock-management']).toBeUndefined()

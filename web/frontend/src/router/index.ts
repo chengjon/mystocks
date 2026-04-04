@@ -265,25 +265,25 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'config',
             name: 'system-config',
-            component: () => import('@/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue'),
+            component: () => import('@/views/system/Settings.vue'),
             meta: { title: '系统配置', requiresAuth: true }
           },
           {
             path: 'health',
             name: 'system-health',
-            component: () => import('@/views/artdeco-pages/system-tabs/SystemHealthTab.vue'),
+            component: () => import('@/views/system/Health.vue'),
             meta: { title: '健康矩阵', requiresAuth: true }
           },
           {
             path: 'api',
             name: 'system-api',
-            component: () => import('@/views/artdeco-pages/system-tabs/ArtDecoMonitoringDashboard.vue'),
+            component: () => import('@/views/system/API.vue'),
             meta: { title: 'API 终端', requiresAuth: true }
           },
           {
             path: 'data',
             name: 'system-data',
-            component: () => import('@/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue'),
+            component: () => import('@/views/system/DataSource.vue'),
             meta: { title: '数据源管理', requiresAuth: true }
           }
         ]

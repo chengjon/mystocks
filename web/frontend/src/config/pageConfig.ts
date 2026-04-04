@@ -295,7 +295,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: '系统配置',
     apiEndpoint: '/api/system/config',
     wsChannel: 'system:config',
-    component: 'ArtDecoSystemSettings.vue',
+    component: 'Settings.vue',
     requiresAuth: true,
   },
   'system-health': {
@@ -305,7 +305,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: '健康矩阵',
     apiEndpoint: '/api/system/health',
     wsChannel: 'system:health',
-    component: 'SystemHealthTab.vue',
+    component: 'Health.vue',
     requiresAuth: true,
   },
   'system-api': {
@@ -315,7 +315,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: 'API 终端',
     apiEndpoint: '/api/system/api',
     wsChannel: 'system:api',
-    component: 'ArtDecoMonitoringDashboard.vue',
+    component: 'API.vue',
     requiresAuth: true,
   },
   'system-data': {
@@ -325,7 +325,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: '数据源管理',
     apiEndpoint: '/api/system/data',
     wsChannel: 'system:data',
-    component: 'ArtDecoDataManagement.vue',
+    component: 'DataSource.vue',
     requiresAuth: true,
   },
   'stock-graphics': {

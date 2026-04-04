@@ -168,6 +168,22 @@ This section records the current repository truth for the approved Risk migratio
 - The `ArtDecoPageTemplate.vue` dependency chain remains intact through `ArtDecoRiskManagement.vue`.
 - `risk-pnl` remains an active extra route outside this micro-batch and still resolves `PortfolioOverviewTab.vue` in current repo truth.
 
+## Phase 3g Repo Truth Baseline
+
+This section records the current repository truth for the approved System migration tasks after landing the missing target entrypoints for tasks `10.1` through `10.4`.
+
+| Approved task | Current route / pageConfig target | Current implementation behind target | Current verdict |
+| --- | --- | --- | --- |
+| `10.1 System-Config` | `/system/config` now resolves `web/frontend/src/views/system/Settings.vue`; pageConfig now points to `Settings.vue`. | `Settings.vue` is a thin compatibility wrapper around `web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue`. | Target entrypoint landed; compatibility retirement still pending. |
+| `10.2 System-Health` | `/system/health` now resolves `web/frontend/src/views/system/Health.vue`; pageConfig now points to `Health.vue`. | `Health.vue` is a thin compatibility wrapper around `web/frontend/src/views/artdeco-pages/system-tabs/SystemHealthTab.vue`. | Target entrypoint landed; compatibility retirement still pending. |
+| `10.3 System-API` | `/system/api` now resolves `web/frontend/src/views/system/API.vue`; pageConfig now points to `API.vue`. | `API.vue` is a thin compatibility wrapper around `web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoMonitoringDashboard.vue`. | Target entrypoint landed; compatibility retirement still pending. |
+| `10.4 System-Data` | `/system/data` now resolves `web/frontend/src/views/system/DataSource.vue`; pageConfig now points to `DataSource.vue`. | `DataSource.vue` is a thin compatibility wrapper around `web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue`. | Target entrypoint landed; compatibility retirement still pending. |
+
+### Phase 3g Immediate Consequence
+
+- The approved system routes for config, health, API, and data no longer depend on legacy ArtDeco file paths as their primary routed entrypoints.
+- The current batch only lands canonical target entry wrappers; deeper dependency extraction and legacy compatibility retirement remain future work.
+
 ## Trade-Domain Clarification For Task 8.5
 
 This section records the repo-backed clarification for `openspec/changes/restructure-frontend-directory/tasks.md` task `8.5`.
