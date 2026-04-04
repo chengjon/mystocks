@@ -4,14 +4,141 @@
 import os
 from datetime import datetime
 from typing import Any, Dict, Optional
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Path, Query
 
 from app.core.database import db_service
 from app.core.exceptions import BusinessException
-from app.core.responses import ErrorCodes, create_error_response
 from app.core.security import User, get_current_user
+from app.openapi_config import COMMON_RESPONSES
 
 router = APIRouter()
+
+
+def _success_response_spec(description: str, example: dict[str, Any]) -> dict[int, dict[str, Any]]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+STOCK_QUERY_ERROR_RESPONSES = {
+    422: COMMON_RESPONSES[422],
+    500: COMMON_RESPONSES[500],
+}
+
+STOCK_METADATA_ERROR_RESPONSES = {
+    500: COMMON_RESPONSES[500],
+}
+
+STOCK_BASIC_RESPONSES = {
+    **STOCK_QUERY_ERROR_RESPONSES,
+    **_success_response_spec(
+        "股票基础信息分页结果",
+        {
+            "success": True,
+            "data": [
+                {
+                    "symbol": "600519",
+                    "name": "贵州茅台",
+                    "industry": "酿酒行业",
+                    "area": "贵州",
+                    "market": "SH",
+                    "list_date": "2001-08-27",
+                    "price": 1710.88,
+                    "change": 12.31,
+                    "change_pct": 0.72,
+                    "volume": 325800,
+                    "turnover": 556000000.0,
+                    "pe": 28.4,
+                    "market_cap": 2148000000000.0,
+                    "circulating_market_cap": 2142000000000.0,
+                }
+            ],
+            "total": 1,
+            "limit": 100,
+            "offset": 0,
+            "timestamp": "2026-04-04T13:10:00",
+            "source": "data",
+            "message": "查询成功",
+        },
+    ),
+}
+
+STOCK_INDUSTRIES_RESPONSES = {
+    **STOCK_METADATA_ERROR_RESPONSES,
+    **_success_response_spec(
+        "股票行业分类列表",
+        {
+            "success": True,
+            "data": [
+                {"industry_name": "酿酒行业", "industry_code": "IND_001"},
+                {"industry_name": "银行", "industry_code": "IND_002"},
+            ],
+            "total": 2,
+            "timestamp": "2026-04-04T13:10:00",
+        },
+    ),
+}
+
+STOCK_CONCEPTS_RESPONSES = {
+    **STOCK_METADATA_ERROR_RESPONSES,
+    **_success_response_spec(
+        "股票概念分类列表",
+        {
+            "success": True,
+            "data": [
+                {"concept_name": "白酒概念", "concept_code": "GN0001"},
+                {"concept_name": "中字头股票", "concept_code": "GN0002"},
+            ],
+            "total": 2,
+            "timestamp": "2026-04-04T13:10:00",
+        },
+    ),
+}
+
+STOCK_SEARCH_RESPONSES = {
+    **STOCK_QUERY_ERROR_RESPONSES,
+    **_success_response_spec(
+        "股票搜索结果",
+        {
+            "success": True,
+            "data": [
+                {"symbol": "600519", "name": "贵州茅台", "market": "SH", "industry": "酿酒行业"},
+                {"symbol": "000858", "name": "五粮液", "market": "SZ", "industry": "酿酒行业"},
+            ],
+            "keyword": "茅台",
+            "total": 2,
+            "limit": 20,
+            "timestamp": "2026-04-04T13:10:00",
+            "source": "data",
+        },
+    ),
+}
+
+STOCK_DETAIL_RESPONSES = {
+    **STOCK_QUERY_ERROR_RESPONSES,
+    **_success_response_spec(
+        "股票详情结果",
+        {
+            "success": True,
+            "data": {
+                "symbol": "600519",
+                "name": "股票519",
+                "market": "SH",
+                "industry": "银行",
+                "price": 88.52,
+                "change_pct": 1.34,
+            },
+            "timestamp": "2026-04-04T13:10:00",
+        },
+    ),
+}
 
 
 def _runtime_fallback_enabled() -> bool:
@@ -106,7 +233,12 @@ def _build_runtime_stocks_basic_result(params: Dict[str, Any]) -> Dict[str, Any]
         "source": "runtime_fallback",
     }
 
-@router.get("/stocks/basic")
+@router.get(
+    "/stocks/basic",
+    summary="查询股票基础信息",
+    description="分页返回股票基础资料与实时行情摘要，支持关键词、行业、概念、市场和排序条件筛选。",
+    responses=STOCK_BASIC_RESPONSES,
+)
 async def get_stocks_basic(
     limit: int = Query(100, ge=1, le=1000, description="返回记录数限制"),
     offset: int = Query(0, ge=0, description="偏移量"),
@@ -175,7 +307,12 @@ async def get_stocks_basic(
             }
         raise BusinessException(detail=f"查询失败: {str(e)}", status_code=500)
 
-@router.get("/stocks/industries")
+@router.get(
+    "/stocks/industries",
+    summary="查询股票行业分类",
+    description="返回股票基础资料中可用的行业分类清单，适用于筛选器初始化和下拉选项加载。",
+    responses=STOCK_INDUSTRIES_RESPONSES,
+)
 async def get_stocks_industries(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
     """获取所有行业分类列表"""
     try:
@@ -192,9 +329,14 @@ async def get_stocks_industries(current_user: User = Depends(get_current_user)) 
         db_service.set_cache_data(cache_key, result, ttl=3600)
         return result
     except Exception as e:
-        return create_error_response(ErrorCodes.DATABASE_ERROR, str(e)).model_dump()
+        raise BusinessException(detail=f"获取行业分类失败: {str(e)}", status_code=500, error_code="DATABASE_ERROR")
 
-@router.get("/stocks/concepts")
+@router.get(
+    "/stocks/concepts",
+    summary="查询股票概念分类",
+    description="返回概念板块字典列表，供股票检索、标签筛选和看板配置直接复用。",
+    responses=STOCK_CONCEPTS_RESPONSES,
+)
 async def get_stocks_concepts(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
     """获取所有概念分类列表"""
     try:
@@ -210,12 +352,17 @@ async def get_stocks_concepts(current_user: User = Depends(get_current_user)) ->
         db_service.set_cache_data(cache_key, result, ttl=3600)
         return result
     except Exception as e:
-        return create_error_response(ErrorCodes.DATABASE_ERROR, str(e)).model_dump()
+        raise BusinessException(detail=f"获取概念分类失败: {str(e)}", status_code=500, error_code="DATABASE_ERROR")
 
-@router.get("/stocks/search")
+@router.get(
+    "/stocks/search",
+    summary="搜索股票代码和名称",
+    description="根据关键字检索股票代码、名称及附带元信息，适用于搜索框联想和快速选股。",
+    responses=STOCK_SEARCH_RESPONSES,
+)
 async def search_stocks(
     keyword: str = Query(..., description="搜索关键词"),
-    limit: int = Query(20, ge=1, le=100),
+    limit: int = Query(20, ge=1, le=100, description="单次返回的最大匹配结果数。"),
     current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """股票搜索接口"""
@@ -237,8 +384,16 @@ async def search_stocks(
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500)
 
-@router.get("/stocks/{symbol}/detail")
-async def get_stock_detail(symbol: str, current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
+@router.get(
+    "/stocks/{symbol}/detail",
+    summary="查询股票详情",
+    description="返回单只股票的基础档案与行情摘要，适用于详情页首屏或缓存回填场景。",
+    responses=STOCK_DETAIL_RESPONSES,
+)
+async def get_stock_detail(
+    symbol: str = Path(..., description="股票代码，支持纯代码或带交易所后缀的证券标识。"),
+    current_user: User = Depends(get_current_user),
+) -> Dict[str, Any]:
     """获取股票详细信息"""
     try:
         cache_key = f"stock:detail:{symbol}"
@@ -258,4 +413,4 @@ async def get_stock_detail(symbol: str, current_user: User = Depends(get_current
         db_service.set_cache_data(cache_key, result, ttl=1800)
         return result
     except Exception as e:
-        return {"success": False, "msg": str(e)}
+        raise BusinessException(detail=f"获取股票详情失败: {str(e)}", status_code=500, error_code="DATABASE_ERROR")
