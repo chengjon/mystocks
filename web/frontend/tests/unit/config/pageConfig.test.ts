@@ -82,6 +82,18 @@ describe('pageConfig current contract', () => {
       expect(optimizationConfig?.component).toBe('Optimization.vue')
     })
 
+    it('returns current standard page config for trade routes using canonical domain filenames', () => {
+      const positionsConfig = getPageConfig('trade-positions')
+      const signalsConfig = getPageConfig('trade-signals')
+      const portfolioConfig = getPageConfig('trade-portfolio')
+      const historyConfig = getPageConfig('trade-history')
+
+      expect(positionsConfig?.component).toBe('Center.vue')
+      expect(signalsConfig?.component).toBe('Signals.vue')
+      expect(portfolioConfig?.component).toBe('Portfolio.vue')
+      expect(historyConfig?.component).toBe('History.vue')
+    })
+
     it('does not expose retired legacy keys in PAGE_CONFIG', () => {
       expect(PAGE_CONFIG['artdeco-market-data']).toBeUndefined()
       expect(PAGE_CONFIG['artdeco-stock-management']).toBeUndefined()

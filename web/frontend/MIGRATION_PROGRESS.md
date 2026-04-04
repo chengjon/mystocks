@@ -134,6 +134,22 @@ This section records the current repository truth for the approved Strategy migr
 - The strategy domain no longer depends on legacy ArtDeco file paths as its primary routed entrypoints for repo, parameters, backtest, and optimization.
 - Remaining strategy work is implementation ownership and dependency normalization, not target-path creation for tasks `7.1` through `7.4`.
 
+## Phase 3e Repo Truth Baseline
+
+This section records the current repository truth for the approved Trade migration tasks after landing the missing target entrypoints for tasks `8.1` through `8.4`.
+
+| Approved task | Current route / pageConfig target | Current implementation behind target | Current verdict |
+| --- | --- | --- | --- |
+| `8.1 Trade-Center` | `/trade/positions` now resolves `web/frontend/src/views/trade/Center.vue` in router truth; pageConfig now points to `Center.vue`. | `Center.vue` is a thin compatibility wrapper around `web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue`. | Target entrypoint landed; compatibility retirement still pending. |
+| `8.2 Trade-Signals` | `/trade/signals` now resolves `web/frontend/src/views/trade/Signals.vue`; pageConfig points to `Signals.vue`. | `Signals.vue` is a thin compatibility wrapper around `web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue`. | Target entrypoint landed; compatibility retirement still pending. |
+| `8.3 Trade-Portfolio` | `/trade/portfolio` now resolves `web/frontend/src/views/trade/Portfolio.vue`; pageConfig points to `Portfolio.vue`. | `Portfolio.vue` is a thin compatibility wrapper around `web/frontend/src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue`. | Target entrypoint landed; compatibility retirement still pending. |
+| `8.4 Trade-History` | `/trade/history` now resolves `web/frontend/src/views/trade/History.vue`; pageConfig points to `History.vue`. | `History.vue` is a thin compatibility wrapper around `web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue`. | Target entrypoint landed; compatibility retirement still pending. |
+
+### Phase 3e Immediate Consequence
+
+- The trade domain no longer depends on legacy ArtDeco file paths as its primary routed entrypoints for positions, signals, portfolio, and history.
+- `trade-terminal` intentionally remains on `web/frontend/src/views/TradingDashboard.vue` per task `8.5` Option C, and task `8.6` stays blocked by the dashboard / dealing-room truth split.
+
 ## Trade-Domain Clarification For Task 8.5
 
 This section records the repo-backed clarification for `openspec/changes/restructure-frontend-directory/tasks.md` task `8.5`.

@@ -180,7 +180,7 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'positions',
             name: 'trade-positions',
-            component: () => import('@/views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue'),
+            component: () => import('@/views/trade/Center.vue'),
             meta: { title: '头寸管理', requiresAuth: true }
           },
           {
@@ -192,19 +192,19 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'signals',
             name: 'trade-signals',
-            component: () => import('@/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue'),
+            component: () => import('@/views/trade/Signals.vue'),
             meta: { title: '信号监控', requiresAuth: true }
           },
           {
             path: 'portfolio',
             name: 'trade-portfolio',
-            component: () => import('@/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue'),
+            component: () => import('@/views/trade/Portfolio.vue'),
             meta: { title: '持仓透视', requiresAuth: true }
           },
           {
             path: 'history',
             name: 'trade-history',
-            component: () => import('@/views/artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue'),
+            component: () => import('@/views/trade/History.vue'),
             meta: { title: '历史对账', requiresAuth: true }
           }
         ]

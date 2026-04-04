@@ -138,6 +138,12 @@
 - [ ] 7.5 Commit: "refactor: migrate strategy domain pages"
 
 ## 8. Page-by-Page Migration – Trade Domain (Phase 3e)
+- 2026-04-04 repo-truth note: the trade target pages for tasks `8.1` through `8.4` did not exist in the repository baseline, so this batch lands the missing target entrypoints and retargets the trade router/pageConfig entries to them.
+  - `src/views/trade/Center.vue` now fronts the existing `ArtDecoTradingPositions.vue` implementation.
+  - `src/views/trade/Signals.vue` now fronts the existing `ArtDecoSignalsView.vue` implementation.
+  - `src/views/trade/Portfolio.vue` now fronts the existing `PortfolioOverviewTab.vue` implementation.
+  - `src/views/trade/History.vue` now fronts the existing `ArtDecoTradingHistory.vue` implementation.
+  - `trade-terminal` remains on `TradingDashboard.vue` per task `8.5` Option C, and task `8.6` remains blocked pending `reconcile-dashboard-dealingroom-truth`.
 - [ ] 8.1 Move `artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue` → `views/trade/Center.vue`
   - [ ] 8.1.0 **Identify all relative imports**
   - [ ] 8.1.1 Move dependency: `usePositions.ts` to `src/shared/composables/`

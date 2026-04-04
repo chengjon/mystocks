@@ -195,7 +195,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: '头寸管理',
     apiEndpoint: '/api/trade/positions',
     wsChannel: 'trade:positions',
-    component: 'ArtDecoTradingPositions.vue',
+    component: 'Center.vue',
     requiresAuth: true,
   },
   'trade-terminal': {
@@ -215,7 +215,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: '信号监控',
     apiEndpoint: '/api/trade/signals',
     wsChannel: 'trade:signals',
-    component: 'ArtDecoSignalsView.vue',
+    component: 'Signals.vue',
     requiresAuth: true,
   },
   'trade-portfolio': {
@@ -225,7 +225,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: '持仓透视',
     apiEndpoint: '/api/trade/portfolio',
     wsChannel: 'trade:portfolio',
-    component: 'PortfolioOverviewTab.vue',
+    component: 'Portfolio.vue',
     requiresAuth: true,
   },
   'trade-history': {
@@ -235,7 +235,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: '历史对账',
     apiEndpoint: '/api/trade/history',
     wsChannel: 'trade:history',
-    component: 'ArtDecoTradingHistory.vue',
+    component: 'History.vue',
     requiresAuth: true,
   },
   'risk-overview': {
