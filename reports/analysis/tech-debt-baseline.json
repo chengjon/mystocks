@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-04T12:30:26Z",
+  "generated_at": "2026-04-04T14:54:56Z",
   "metric_version": "v1",
   "frontend_type_errors": 0,
   "frontend_suppressions_count": 0,
@@ -22,12 +22,12 @@
     "endpoint_function_issues": 174
   },
   "backend_api_documentation": {
-    "frozen_at": "2026-04-04T20:30:26+08:00",
+    "frozen_at": "2026-04-04T22:54:56+08:00",
     "total_endpoints": 488,
     "documented_endpoints": 352,
     "documented_percentage": 0.7213114754098361,
-    "endpoints_with_examples": 141,
-    "example_percentage": 0.2889344262295082,
+    "endpoints_with_examples": 142,
+    "example_percentage": 0.29098360655737704,
     "endpoints_with_errors": 462,
     "error_response_percentage": 0.9467213114754098,
     "total_issues": 784,
