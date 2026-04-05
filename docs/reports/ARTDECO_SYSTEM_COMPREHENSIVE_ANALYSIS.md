@@ -6,6 +6,12 @@
 
 ---
 
+> 2026-04-01 状态说明
+>
+> - 本文件属于历史分析/方案/完成报告，不是当前 ArtDeco 规范入口。
+> - 文中出现的组件数量、间距级数、目录结构、字体方案或页面承载模式，应视为当时会话上下文；若与当前代码不一致，以当前活跃治理文档和源码为准。
+> - 当前建议先看：`docs/guides/web/ARTDECO_START_HERE.md`、`docs/guides/web/ARTDECO_MASTER_INDEX.md`、`docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md`、`web/frontend/ARTDECO_COMPONENTS_CATALOG.md`。
+
 ## 📊 执行摘要
 
 本报告基于官方ArtDeco设计规范(`/opt/mydoc/design/ArtDeco/ArtDeco.md`)和项目Vue组件开发指南,对MyStocks量化交易平台的ArtDeco设计系统进行全面分析和优化建议。
@@ -14,7 +20,7 @@
 
 | 维度 | 当前状态 | 官方标准 | 差距分析 |
 |------|---------|---------|---------|
-| **组件数量** | 66个 | N/A | ✅ 超出预期(文档说64个) |
+| **组件数量** | 历史盘点值 66 | N/A | ⚠️ 当前库存请改查 `web/frontend/ARTDECO_COMPONENTS_CATALOG.md` |
 | **令牌完整性** | 70% | 100% | ⚠️ 缺少量化专用令牌 |
 | **设计一致性** | 85% | 100% | ⚠️ 部分偏离ArtDeco规范 |
 | **金融风格** | 60% | 80% | ⚠️ 缺少量化专业视觉 |
@@ -26,7 +32,7 @@
 
 ### 1.1 组件库统计
 
-**实际组件数量**: 66个Vue组件
+**实际组件数量**: 历史盘点值 66 个 Vue 组件（当前库存以 `web/frontend/ARTDECO_COMPONENTS_CATALOG.md` 为准）
 
 | 分类 | 数量 | 位置 | 状态 |
 |------|------|------|------|
@@ -261,7 +267,7 @@ core (11):
 
 | 文档声称 | 实际情况 |
 |---------|---------|
-| 52个组件 | 66个组件 |
+| 历史文档声称 52 个组件 | 历史盘点值 66 个组件（当前库存请查最新目录） |
 | `--artdeco-accent-gold` | 实际使用`--artdeco-gold-primary` |
 | 所有组件使用直角 | 部分组件使用8px圆角 |
 | 过渡时间300-500ms | 最快150ms |
@@ -913,7 +919,7 @@ a {
 
 ### 5.1 当前vs建议结构
 
-**当前** (66个组件,4个分类):
+**当前** (历史盘点值 66 个组件, 4 个分类):
 ```
 components/artdeco/
 ├── base/         (12) - 基础
@@ -922,7 +928,7 @@ components/artdeco/
 └── core/         (11) - 核心
 ```
 
-**建议** (66个组件,6个分类):
+**建议** (历史盘点值 66 个组件, 6 个分类):
 ```
 components/artdeco/
 ├── base/          (12) - 原子组件
@@ -1115,7 +1121,7 @@ components/artdeco/specialized/ → components/artdeco/{business,charts,trading}
 
 ### 核心发现
 
-1. **组件库丰富**: 66个组件超出预期
+1. **组件库丰富**: 历史盘点显示组件存量充足（当前库存请查最新目录）
 2. **令牌系统基本完善**: 但需添加金融专用令牌
 3. **设计一致性良好**: 85%符合ArtDeco规范
 4. **文档需更新**: 与实现存在偏差

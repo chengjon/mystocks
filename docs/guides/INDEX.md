@@ -77,13 +77,13 @@
   - *ArtDeco UI/UX 功能清单与页面开发指南*
 
 - [ART_DECO_COMPONENTS_CATALOG](web/ART_DECO_COMPONENTS_CATALOG.md)
-  - *ArtDeco Components Catalog*
+  - *ArtDeco Components Catalog (Historical Compatibility Entry)*
 
 - [ART_DECO_COMPONENT_SHOWCASE](web/ART_DECO_COMPONENT_SHOWCASE.md)
-  - *Art Deco Component Showcase*
+  - *Art Deco Component Showcase (Historical Compatibility Entry)*
 
 - [ART_DECO_COMPONENT_SHOWCASE_V2](web/ART_DECO_COMPONENT_SHOWCASE_V2.md)
-  - *ArtDeco 组件展示*
+  - *ArtDeco 组件展示（Historical Visual Reference）*
 
 - [ART_DECO_FINAL_REPORT](web/ART_DECO_FINAL_REPORT.md)
   - *MyStocks Art Deco 前端重构 - 最终实施报告*
@@ -92,7 +92,7 @@
   - *Art Deco Design System Implementation Report*
 
 - [ART_DECO_QUICK_REFERENCE](web/ART_DECO_QUICK_REFERENCE.md)
-  - *Art Deco Quick Reference Guide*
+  - *Art Deco Quick Reference Guide (Historical Compatibility Entry)*
 
 - [A_STOCK_DASHBOARD_USER_GUIDE](web/A_STOCK_DASHBOARD_USER_GUIDE.md)
   - *A股Dashboard原型系统 - 用户使用指南*
@@ -218,7 +218,7 @@
   - *HTML5 Migration Experience Optimization - Web Workers Implementation Summary*
 
 - [HTML_TO_ARTDECO_VUE_CONVERSION_OPTIMIZED_PLAN](web/HTML_TO_ARTDECO_VUE_CONVERSION_OPTIMIZED_PLAN.md)
-  - *MyStocks HTML到ArtDeco Vue页面转换与合并方案 (优化版)*
+  - *MyStocks HTML到ArtDeco Vue页面转换与合并方案 (Historical Conversion Plan)*
 
 - [INITIALIZATION_PROMPT](templates/INITIALIZATION_PROMPT.md)
   - *Frontend CLI 任务初始化*
@@ -578,7 +578,7 @@
   - *Claude Code Hooks 问题与解决方案手册*
 
 - [mystocks-artdeco-available-components](web/mystocks-artdeco-available-components.md)
-  - *MyStocks ArtDeco Design System - Available Components Summary*
+  - *MyStocks ArtDeco Design System - Available Components Summary (Historical Compatibility Summary)*
 
 - [mystocks-artdeco-integration-fix](frontend/mystocks-artdeco-integration-fix.md)
   - *MyStocks Vue前端ArtDeco集成修复实施计划*

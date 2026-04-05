@@ -7,6 +7,12 @@
 
 ---
 
+> 2026-04-01 状态说明
+>
+> - 本文件属于历史分析/方案/完成报告，不是当前 ArtDeco 规范入口。
+> - 文中出现的组件数量、间距级数、目录结构、字体方案或页面承载模式，应视为当时会话上下文；若与当前代码不一致，以当前活跃治理文档和源码为准。
+> - 当前建议先看：`docs/guides/web/ARTDECO_START_HERE.md`、`docs/guides/web/ARTDECO_MASTER_INDEX.md`、`docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md`、`web/frontend/ARTDECO_COMPONENTS_CATALOG.md`。
+
 ## 📊 原审核报告分析
 
 ### 审核总结
@@ -41,7 +47,7 @@
 
 ### **优化原则**
 
-1. **复用优先** - 充分利用已有64个ArtDeco组件
+1. **复用优先** - 充分利用已有 ArtDeco 组件存量（原文 64 个为历史盘点值）
 2. **API驱动** - 基于实际571个API端点设计功能
 3. **设计一致** - 使用已有ArtDeco设计令牌和样式
 4. **渐进增强** - 在现有基础上优化，而非推倒重来
@@ -566,7 +572,7 @@ onMounted(() => {
 **目标**：使用已有ArtDeco组件，避免重复开发
 
 **任务清单**：
-- [ ] 审核64个ArtDeco组件，确认可复用组件
+- [ ] 审核当前 ArtDeco 组件目录，确认可复用组件（原文 64 个为历史盘点值）
 - [ ] 更新菜单配置，使用`ArtDecoSidebar`和`ArtDecoDynamicSidebar`
 - [ ] 使用`ArtDecoBadge`替代新建徽章组件
 - [ ] 使用`ArtDecoStatusIndicator`替代新建状态指示器
@@ -664,7 +670,7 @@ onMounted(() => {
 
 ### **立即行动（高优先级）**
 
-1. ✅ **复用现有ArtDeco组件**（64个组件）
+1. ✅ **复用现有 ArtDeco 组件**（原文 64 个为历史盘点值）
    - 使用`ArtDecoSidebar`和`ArtDecoDynamicSidebar`
    - 使用`ArtDecoBadge`和`ArtDecoStatusIndicator`
    - 使用`ArtDecoBreadcrumb`集成面包屑导航

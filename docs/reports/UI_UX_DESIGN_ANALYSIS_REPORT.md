@@ -7,6 +7,12 @@
 
 ---
 
+> 2026-04-01 状态说明
+>
+> - 本文件是历史设计分析报告，不是当前 ArtDeco 规范入口。
+> - 文中出现的组件数量、设计系统成熟度和实现边界，反映的是当时分析时点；若与当前代码不一致，以当前活跃治理文档和源码为准。
+> - 当前建议先看：`docs/guides/web/ARTDECO_START_HERE.md`、`docs/guides/web/ARTDECO_MASTER_INDEX.md`、`docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md`、`web/frontend/ARTDECO_COMPONENTS_CATALOG.md`。
+
 ## 📊 执行摘要
 
 基于 UI/UX Pro Max 的专业设计审查，MyStocks 前端已建立了优秀的 ArtDeco 设计系统，但存在**量化专业性不足**的问题。本报告提供了**保持ArtDeco美学**的同时**增强量化管理风格**的具体改进方案。
@@ -14,7 +20,7 @@
 ### 关键发现
 
 **✅ 设计优势**:
-- 完整的 ArtDeco 组件库（64个组件）
+- 完整的 ArtDeco 组件库（原文 64 个组件为历史盘点值，当前库存请查最新目录）
 - 独特的视觉识别（金色强调、几何装饰）
 - 良好的设计令牌系统
 

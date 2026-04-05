@@ -22,6 +22,18 @@ test("extractMonitoringWatchlists maps monitoring watchlist summary rows for rou
   ])
 })
 
+test("extractMonitoringWatchlists accepts already-unwrapped watchlist arrays", () => {
+  const rows = extractMonitoringWatchlists([
+    { id: 18, name: "成长股精选", stocks_count: 0 },
+    { id: 16, name: "核心科技股", stocks_count: 2 },
+  ])
+
+  assert.deepEqual(rows, [
+    { id: "18", name: "成长股精选", stocks: [] },
+    { id: "16", name: "核心科技股", stocks: [{}, {}] },
+  ])
+})
+
 test("extractMonitoringWatchlistStocks maps watchlist stock rows for display table", () => {
   const rows = extractMonitoringWatchlistStocks({
     data: [
@@ -29,6 +41,32 @@ test("extractMonitoringWatchlistStocks maps watchlist stock rows for display tab
       { stock_code: "000858.SZ", entry_price: 145, weight: 0.2 },
     ],
   })
+
+  assert.deepEqual(rows, [
+    {
+      symbol: "600519.SH",
+      name: "600519.SH",
+      price: 1650,
+      change: "--",
+      volume: "--",
+      weight: "40.00%",
+    },
+    {
+      symbol: "000858.SZ",
+      name: "000858.SZ",
+      price: 145,
+      change: "--",
+      volume: "--",
+      weight: "20.00%",
+    },
+  ])
+})
+
+test("extractMonitoringWatchlistStocks accepts already-unwrapped stock arrays", () => {
+  const rows = extractMonitoringWatchlistStocks([
+    { stock_code: "600519.SH", entry_price: 1650, weight: 0.4 },
+    { stock_code: "000858.SZ", entry_price: 145, weight: 0.2 },
+  ])
 
   assert.deepEqual(rows, [
     {

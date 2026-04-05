@@ -6,6 +6,12 @@
 
 ---
 
+> 2026-04-01 状态说明
+>
+> - 本文件属于历史分析/方案/完成报告，不是当前 ArtDeco 规范入口。
+> - 文中出现的组件数量、间距级数、目录结构、字体方案或页面承载模式，应视为当时会话上下文；若与当前代码不一致，以当前活跃治理文档和源码为准。
+> - 当前建议先看：`docs/guides/web/ARTDECO_START_HERE.md`、`docs/guides/web/ARTDECO_MASTER_INDEX.md`、`docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md`、`web/frontend/ARTDECO_COMPONENTS_CATALOG.md`。
+
 ## 📊 执行摘要
 
 成功创建ArtDeco量化交易扩展令牌系统，在保持ArtDeco美学的基础上，添加量化交易专业特性。
@@ -627,7 +633,7 @@ watch(lastPrice, (newVal, oldVal) => {
 ## 📚 相关文档
 
 ### ArtDeco设计系统文档
-- `web/frontend/ARTDECO_COMPONENTS_CATALOG.md` - 64个ArtDeco组件目录
+- `web/frontend/ARTDECO_COMPONENTS_CATALOG.md` - 当前 ArtDeco 组件全景目录（旧的 64 个统计为历史口径）
 - `web/frontend/src/styles/artdeco-tokens.scss` - 基础ArtDeco令牌系统
 - `web/frontend/src/styles/artdeco-global.scss` - 全局样式 (含导入)
 

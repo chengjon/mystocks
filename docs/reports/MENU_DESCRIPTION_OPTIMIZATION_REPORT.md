@@ -6,6 +6,12 @@
 
 ---
 
+> 2026-04-01 状态说明
+>
+> - 本文件是历史菜单描述优化记录，不是当前 ArtDeco 规范入口。
+> - 文中若引用旧菜单结构、旧组件清单或旧文档路径，应视为当时上下文；当前菜单与页面承载真值以源码和活跃治理文档为准。
+> - 当前建议先看：`docs/guides/web/ARTDECO_START_HERE.md`、`docs/guides/web/ARTDECO_MASTER_INDEX.md`、`docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md`。
+
 ## 📊 修改摘要
 
 ### 问题描述
