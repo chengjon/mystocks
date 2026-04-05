@@ -82,7 +82,6 @@
 </script>
 
 <script setup lang="ts">
-// @ts-nocheck
 import { ref, computed, watch } from 'vue';
 import type { IndicatorConfig, IndicatorType } from '@/utils/indicator';
 import type { OscillatorConfig, OscillatorType } from '@/utils/indicator';
