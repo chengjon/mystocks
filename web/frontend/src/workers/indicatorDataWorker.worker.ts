@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import type { KLineData } from '@/types/kline';
 // import type { IndicatorResult } from '@/types/kline';  // Currently unused
 // import type { IndicatorParams } from '@/types/indicator';  // Currently unused

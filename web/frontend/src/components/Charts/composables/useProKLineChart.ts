@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Note: This file has complex third-party library (KLineCharts) type issues
 // that are best handled with type assertions. Type safety is maintained through
 // runtime checks and the library's own type guards.
