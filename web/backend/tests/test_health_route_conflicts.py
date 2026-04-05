@@ -522,6 +522,29 @@ def test_risk_metrics_history_endpoint_has_description_and_parameter_docs() -> N
         assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
 
 
+def test_ml_model_management_endpoints_have_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    list_operation = schema["paths"]["/api/ml/models"]["get"]
+    list_success_json = list_operation["responses"]["200"]["content"]["application/json"]
+
+    assert list_operation.get("summary")
+    assert len(list_operation.get("description", "")) >= 20
+    assert "example" in list_success_json or "examples" in list_success_json
+    assert any(code.startswith(("4", "5")) for code in list_operation["responses"])
+
+    detail_operation = schema["paths"]["/api/ml/models/{model_name}"]["get"]
+    detail_parameters = detail_operation.get("parameters", [])
+    detail_success_json = detail_operation["responses"]["200"]["content"]["application/json"]
+
+    assert detail_operation.get("summary")
+    assert len(detail_operation.get("description", "")) >= 20
+    assert any(param["name"] == "model_name" and param.get("description") for param in detail_parameters)
+    assert "example" in detail_success_json or "examples" in detail_success_json
+    assert any(code.startswith(("4", "5")) for code in detail_operation["responses"])
+
+
 def test_data_source_rollback_endpoint_has_description_parameter_docs_and_examples() -> None:
     app.openapi_schema = None
     schema = app.openapi()

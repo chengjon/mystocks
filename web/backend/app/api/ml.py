@@ -6,7 +6,7 @@
 import os
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Path
 
 from app.core.security import User, get_current_user
 from app.schemas.ml_schemas import (
@@ -45,6 +45,114 @@ feature_service = FeatureEngineeringService()
 
 # 模型存储目录
 MODEL_DIR = os.getenv("ML_MODEL_DIR", "./models")
+
+
+def _success_response_spec(status_code: int, description: str, example: object) -> dict[int, dict]:
+    return {
+        status_code: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+def _error_response_spec(status_code: int, description: str, example: dict) -> dict[int, dict]:
+    return {
+        status_code: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+ML_MODEL_LIST_RESPONSES = {
+    **_success_response_spec(
+        200,
+        "已保存模型列表",
+        {
+            "total": 2,
+            "models": [
+                {
+                    "name": "a_share_lgbm_v1",
+                    "path": "./models/a_share_lgbm_v1.pkl",
+                    "trained_at": "2026-04-05T09:30:00",
+                    "test_rmse": 1.82,
+                    "test_r2": 0.78,
+                    "train_samples": 2400,
+                    "test_samples": 600,
+                    "feature_dim": 32,
+                },
+                {
+                    "name": "hs300_xgboost_v2",
+                    "path": "./models/hs300_xgboost_v2.pkl",
+                    "trained_at": "2026-04-04T15:00:00",
+                    "test_rmse": 2.11,
+                    "test_r2": 0.73,
+                    "train_samples": 1800,
+                    "test_samples": 450,
+                    "feature_dim": 28,
+                },
+            ],
+        },
+    ),
+    **_error_response_spec(
+        500,
+        "模型列表查询失败",
+        {"detail": "读取模型目录失败: [Errno 2] No such file or directory: './models'"},
+    ),
+}
+
+ML_MODEL_DETAIL_RESPONSES = {
+    **_success_response_spec(
+        200,
+        "模型详情",
+        {
+            "name": "a_share_lgbm_v1",
+            "metadata": {
+                "model_type": "lightgbm",
+                "trained_at": "2026-04-05T09:30:00",
+                "stock_scope": "A-share",
+                "market": "sh",
+                "metrics": {
+                    "rmse": 1.82,
+                    "r2": 0.78,
+                    "step": 10,
+                },
+            },
+            "training_history": [
+                {"epoch": 1, "train_loss": 0.043, "val_loss": 0.051},
+                {"epoch": 2, "train_loss": 0.039, "val_loss": 0.047},
+            ],
+            "feature_importance": [
+                {"feature": "close", "importance": 0.31},
+                {"feature": "volume", "importance": 0.18},
+            ],
+        },
+    ),
+    **_error_response_spec(
+        404,
+        "指定模型不存在",
+        {"detail": "模型不存在: a_share_lgbm_v9"},
+    ),
+    **_error_response_spec(
+        503,
+        "模型服务当前不可用",
+        {"detail": "ML prediction service unavailable: missing optional dependency"},
+    ),
+    **_error_response_spec(
+        500,
+        "模型详情查询失败",
+        {"detail": "加载模型详情失败: metadata.json is corrupted"},
+    ),
+}
 
 
 def _build_ml_service() -> "MLPredictionService":
@@ -263,9 +371,15 @@ async def predict_with_model(request: ModelPredictRequest, current_user: User = 
 # ==================== 模型管理相关 ====================
 
 
-@router.get("/models", response_model=ModelListResponse)
+@router.get(
+    "/models",
+    response_model=ModelListResponse,
+    summary="获取已保存模型列表",
+    description="返回当前模型目录中可用的机器学习模型清单，供模型运维、评估和预测调用前选择。",
+    responses=ML_MODEL_LIST_RESPONSES,
+)
 async def list_models(current_user: User = Depends(get_current_user)):
-    """列出所有已保存的模型"""
+    """返回当前模型目录中可用的机器学习模型清单。"""
     try:
         ml_service = _build_ml_service()
         models = ml_service.list_saved_models()
@@ -276,9 +390,18 @@ async def list_models(current_user: User = Depends(get_current_user)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/models/{model_name}", response_model=ModelDetailResponse)
-async def get_model_detail(model_name: str, current_user: User = Depends(get_current_user)):
-    """获取模型详情"""
+@router.get(
+    "/models/{model_name}",
+    response_model=ModelDetailResponse,
+    summary="获取单个模型详情",
+    description="按模型名称读取训练元数据、训练历史和特征重要性，供排障、复盘和上线前核验使用。",
+    responses=ML_MODEL_DETAIL_RESPONSES,
+)
+async def get_model_detail(
+    model_name: str = Path(..., description="已保存模型的名称，用于定位需要查看详情的模型。"),
+    current_user: User = Depends(get_current_user),
+):
+    """按模型名称读取训练元数据、训练历史和特征重要性。"""
     try:
         ml_service = _build_ml_service()
         loaded = ml_service.load_model(model_name)
