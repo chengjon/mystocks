@@ -1,5 +1,3 @@
-
-// @ts-nocheck
 /**
  * User & Watchlist Module Data Adapters
  *
@@ -11,6 +9,33 @@ import type {
   WatchlistResponse,
   NotificationResponse
 } from '@/api/types/generated-types.ts'
+import type {
+  NotificationPreferencesVM,
+  NotificationVM,
+  PrivacyPreferencesVM,
+  StockAlertVM,
+  SubscriptionVM,
+  UserPermissionsVM,
+  UserPreferencesVM,
+  UserProfileVM,
+  UserStatisticsVM,
+  WatchlistStatisticsVM,
+  WatchlistVM,
+} from './types-1.ts'
+
+type AnyRecord = Record<string, unknown>
+
+const asRecord = (value: unknown): AnyRecord =>
+  typeof value === 'object' && value !== null ? (value as AnyRecord) : {}
+
+const asArray = <T = unknown>(value: unknown): T[] =>
+  Array.isArray(value) ? (value as T[]) : []
+
+const asString = (value: unknown, fallback = ''): string =>
+  typeof value === 'string' ? value : value == null ? fallback : String(value)
+
+const asNumber = (value: unknown, fallback = 0): number =>
+  typeof value === 'number' && Number.isFinite(value) ? value : fallback
 
 export class UserAdapter {
   /**
@@ -22,9 +47,9 @@ export class UserAdapter {
       username: data.username || '',
       email: data.email || '',
       displayName: data.displayName || data.username || '',
-      avatar: data.avatar,
-      role: this.getUserRole(data.role),
-      status: this.getUserStatus(data.status),
+      avatar: data.avatar || undefined,
+      role: this.getUserRole(data.role || ''),
+      status: this.getUserStatus(data.status || ''),
       preferences: this.toUserPreferencesVM(data.preferences),
       permissions: this.toUserPermissionsVM(data.permissions),
       subscription: this.toSubscriptionVM(data.subscription),
@@ -42,13 +67,13 @@ export class UserAdapter {
     return data.map(watchlist => ({
       id: watchlist.id || '',
       name: watchlist.name || '',
-      description: watchlist.description,
+      description: watchlist.description || undefined,
       isDefault: watchlist.isDefault || false,
       isPublic: watchlist.isPublic || false,
       owner: {
-        userId: watchlist.owner?.userId || '',
-        username: watchlist.owner?.username || '',
-        displayName: watchlist.owner?.displayName || ''
+        userId: asString(watchlist.owner?.userId),
+        username: asString(watchlist.owner?.username),
+        displayName: asString(watchlist.owner?.displayName)
       },
       stocks: (watchlist.stocks || []).map(stock => ({
         symbol: stock.symbol || '',
@@ -56,24 +81,15 @@ export class UserAdapter {
         market: stock.market || 'A',
         currentPrice: stock.currentPrice || 0,
         changeAmount: stock.changeAmount || 0,
-        changePercent: this.formatPercent(stock.changePercent),
+        changePercent: this.formatPercent(stock.changePercent ?? 0),
         volume: stock.volume || 0,
         marketCap: stock.marketCap || 0,
-        pe: stock.pe,
-        pb: stock.pb,
+        pe: stock.pe ?? undefined,
+        pb: stock.pb ?? undefined,
         addedAt: this.formatDateTime(stock.addedAt),
-        notes: stock.notes,
-        alerts: (stock.alerts || []).map(alert => ({
-          id: alert.id || '',
-          type: alert.type || 'price',
-          condition: alert.condition || 'above',
-          value: alert.value || 0,
-          isActive: alert.isActive !== false,
-          triggeredAt: this.formatDateTime(alert.triggeredAt),
-          expiresAt: this.formatDateTime(alert.expiresAt),
-          notificationMethod: alert.notificationMethod || 'push'
-        })),
-        customFields: stock.customFields
+        notes: stock.notes || undefined,
+        alerts: asArray(stock.alerts).map(alert => this.toStockAlertVM(alert)),
+        customFields: stock.customFields || undefined
       })),
       statistics: this.toWatchlistStatisticsVM(watchlist.statistics),
       tags: watchlist.tags || [],
@@ -90,41 +106,59 @@ export class UserAdapter {
   static toNotificationVM(data: NotificationResponse[]): NotificationVM[] {
     return data.map(notification => ({
       id: notification.id || '',
-      type: (notification.type || 'system') as unknown,
+      type: this.getNotificationType(notification.type),
       title: notification.title || '',
       message: notification.message || '',
-      data: notification.data,
-      priority: this.getNotificationPriority(notification.priority),
+      data: notification.data || undefined,
+      priority: this.getNotificationPriority(notification.priority || ''),
       isRead: notification.isRead || false,
       createdAt: this.formatDateTime(notification.createdAt),
       expiresAt: this.formatDateTime(notification.expiresAt),
-      actionUrl: notification.actionUrl,
-      actionText: notification.actionText,
-      icon: notification.icon,
+      actionUrl: notification.actionUrl || undefined,
+      actionText: notification.actionText || undefined,
+      icon: notification.icon || undefined,
       category: notification.category || 'general'
     }))
+  }
+
+  private static toStockAlertVM(alert: unknown): StockAlertVM {
+    const record = asRecord(alert)
+
+    return {
+      id: asString(record.id),
+      type: (asString(record.type, 'price') as StockAlertVM['type']),
+      condition: (asString(record.condition, 'above') as StockAlertVM['condition']),
+      value: asNumber(record.value),
+      isActive: record.isActive !== false,
+      triggeredAt: this.formatDateTime(record.triggeredAt),
+      expiresAt: this.formatDateTime(record.expiresAt),
+      notificationMethod: (asString(record.notificationMethod, 'push') as StockAlertVM['notificationMethod']),
+    }
   }
 
   /**
    * Convert user preferences to ViewModel
    */
   private static toUserPreferencesVM(preferences: unknown): UserPreferencesVM {
+    const record = asRecord(preferences)
+    const chartSettings = asRecord(record.chartSettings)
+
     return {
-      theme: preferences.theme || 'auto',
-      language: preferences.language || 'zh-CN',
-      timezone: preferences.timezone || 'Asia/Shanghai',
-      dateFormat: preferences.dateFormat || 'YYYY-MM-DD',
-      timeFormat: preferences.timeFormat || '24h',
-      defaultDashboard: preferences.defaultDashboard || 'overview',
-      watchlistLayout: preferences.watchlistLayout || 'grid',
+      theme: asString(record.theme, 'auto') as UserPreferencesVM['theme'],
+      language: asString(record.language, 'zh-CN') as UserPreferencesVM['language'],
+      timezone: asString(record.timezone, 'Asia/Shanghai'),
+      dateFormat: asString(record.dateFormat, 'YYYY-MM-DD') as UserPreferencesVM['dateFormat'],
+      timeFormat: asString(record.timeFormat, '24h') as UserPreferencesVM['timeFormat'],
+      defaultDashboard: asString(record.defaultDashboard, 'overview'),
+      watchlistLayout: asString(record.watchlistLayout, 'grid') as UserPreferencesVM['watchlistLayout'],
       chartSettings: {
-        defaultPeriod: preferences.chartSettings?.defaultPeriod || '1D',
-        showVolume: preferences.chartSettings?.showVolume !== false,
-        showMA: preferences.chartSettings?.showMA !== false,
-        indicators: preferences.chartSettings?.indicators || []
+        defaultPeriod: asString(chartSettings.defaultPeriod, '1D'),
+        showVolume: chartSettings.showVolume !== false,
+        showMA: chartSettings.showMA !== false,
+        indicators: asArray<string>(chartSettings.indicators)
       },
-      notifications: this.toNotificationPreferencesVM(preferences.notifications),
-      privacy: this.toPrivacyPreferencesVM(preferences.privacy)
+      notifications: this.toNotificationPreferencesVM(record.notifications),
+      privacy: this.toPrivacyPreferencesVM(record.privacy)
     }
   }
 
@@ -132,15 +166,17 @@ export class UserAdapter {
    * Convert notification preferences to ViewModel
    */
   private static toNotificationPreferencesVM(notifications: unknown): NotificationPreferencesVM {
+    const record = asRecord(notifications)
+
     return {
-      email: notifications?.email !== false,
-      push: notifications?.push !== false,
-      sms: notifications?.sms || false,
-      priceAlerts: notifications?.priceAlerts !== false,
-      orderStatus: notifications?.orderStatus !== false,
-      systemUpdates: notifications?.systemUpdates !== false,
-      marketNews: notifications?.marketNews !== false,
-      strategySignals: notifications?.strategySignals !== false
+      email: record.email !== false,
+      push: record.push !== false,
+      sms: record.sms === true,
+      priceAlerts: record.priceAlerts !== false,
+      orderStatus: record.orderStatus !== false,
+      systemUpdates: record.systemUpdates !== false,
+      marketNews: record.marketNews !== false,
+      strategySignals: record.strategySignals !== false
     }
   }
 
@@ -148,13 +184,15 @@ export class UserAdapter {
    * Convert privacy preferences to ViewModel
    */
   private static toPrivacyPreferencesVM(privacy: unknown): PrivacyPreferencesVM {
+    const record = asRecord(privacy)
+
     return {
-      profileVisibility: privacy?.profileVisibility || 'private',
-      showRealName: privacy?.showRealName || false,
-      showEmail: privacy?.showEmail || false,
-      showTradingStats: privacy?.showTradingStats !== false,
-      allowDirectMessages: privacy?.allowDirectMessages !== false,
-      dataSharing: privacy?.dataSharing || false
+      profileVisibility: asString(record.profileVisibility, 'private') as PrivacyPreferencesVM['profileVisibility'],
+      showRealName: record.showRealName === true,
+      showEmail: record.showEmail === true,
+      showTradingStats: record.showTradingStats !== false,
+      allowDirectMessages: record.allowDirectMessages !== false,
+      dataSharing: record.dataSharing === true
     }
   }
 
@@ -162,18 +200,20 @@ export class UserAdapter {
    * Convert user permissions to ViewModel
    */
   private static toUserPermissionsVM(permissions: unknown): UserPermissionsVM {
+    const record = asRecord(permissions)
+
     return {
-      canTrade: permissions?.canTrade !== false,
-      canWithdraw: permissions?.canWithdraw !== false,
-      canUseStrategies: permissions?.canUseStrategies !== false,
-      canAccessAdvancedFeatures: permissions?.canAccessAdvancedFeatures || false,
-      canViewMarketData: permissions?.canViewMarketData !== false,
-      canExportData: permissions?.canExportData !== false,
-      canManageUsers: permissions?.canManageUsers || false,
-      canViewAnalytics: permissions?.canViewAnalytics !== false,
-      maxStrategies: permissions?.maxStrategies || 5,
-      maxWatchlists: permissions?.maxWatchlists || 10,
-      maxApiCalls: permissions?.maxApiCalls || 1000
+      canTrade: record.canTrade !== false,
+      canWithdraw: record.canWithdraw !== false,
+      canUseStrategies: record.canUseStrategies !== false,
+      canAccessAdvancedFeatures: record.canAccessAdvancedFeatures === true,
+      canViewMarketData: record.canViewMarketData !== false,
+      canExportData: record.canExportData !== false,
+      canManageUsers: record.canManageUsers === true,
+      canViewAnalytics: record.canViewAnalytics !== false,
+      maxStrategies: asNumber(record.maxStrategies, 5),
+      maxWatchlists: asNumber(record.maxWatchlists, 10),
+      maxApiCalls: asNumber(record.maxApiCalls, 1000)
     }
   }
 
@@ -181,22 +221,25 @@ export class UserAdapter {
    * Convert subscription to ViewModel
    */
   private static toSubscriptionVM(subscription: unknown): SubscriptionVM {
+    const record = asRecord(subscription)
+    const limits = asRecord(record.limits)
+
     return {
-      plan: subscription?.plan || 'free',
-      status: subscription?.status || 'active',
-      startDate: this.formatDate(subscription?.startDate),
-      endDate: this.formatDate(subscription?.endDate),
-      trialEndDate: this.formatDate(subscription?.trialEndDate),
-      autoRenew: subscription?.autoRenew !== false,
-      features: subscription?.features || [],
+      plan: asString(record.plan, 'free') as SubscriptionVM['plan'],
+      status: asString(record.status, 'active') as SubscriptionVM['status'],
+      startDate: this.formatDate(record.startDate),
+      endDate: this.formatDate(record.endDate),
+      trialEndDate: this.formatDate(record.trialEndDate) || undefined,
+      autoRenew: record.autoRenew !== false,
+      features: asArray<string>(record.features),
       limits: {
-        maxStrategies: subscription?.limits?.maxStrategies || 5,
-        maxWatchlists: subscription?.limits?.maxWatchlists || 10,
-        maxApiCallsPerDay: subscription?.limits?.maxApiCallsPerDay || 1000,
-        maxDataRetention: subscription?.limits?.maxDataRetention || 30
+        maxStrategies: asNumber(limits.maxStrategies, 5),
+        maxWatchlists: asNumber(limits.maxWatchlists, 10),
+        maxApiCallsPerDay: asNumber(limits.maxApiCallsPerDay, 1000),
+        maxDataRetention: asNumber(limits.maxDataRetention, 30)
       },
-      nextBillingAmount: subscription?.nextBillingAmount,
-      nextBillingDate: this.formatDate(subscription?.nextBillingDate)
+      nextBillingAmount: typeof record.nextBillingAmount === 'number' ? record.nextBillingAmount : undefined,
+      nextBillingDate: this.formatDate(record.nextBillingDate) || undefined
     }
   }
 
@@ -204,25 +247,30 @@ export class UserAdapter {
    * Convert user statistics to ViewModel
    */
   private static toUserStatisticsVM(statistics: unknown): UserStatisticsVM {
-    const winRate = statistics?.totalTrades ? (statistics.winningTrades / statistics.totalTrades) * 100 : 0
-    const totalPnLPercent = statistics?.totalInvested ? (statistics.totalPnL / statistics.totalInvested) * 100 : 0
+    const record = asRecord(statistics)
+    const totalTrades = asNumber(record.totalTrades)
+    const winningTrades = asNumber(record.winningTrades)
+    const totalInvested = asNumber(record.totalInvested)
+    const totalPnL = asNumber(record.totalPnL)
+    const winRate = totalTrades ? (winningTrades / totalTrades) * 100 : 0
+    const totalPnLPercent = totalInvested ? (totalPnL / totalInvested) * 100 : 0
 
     return {
-      totalTrades: statistics?.totalTrades || 0,
-      winningTrades: statistics?.winningTrades || 0,
-      losingTrades: statistics?.losingTrades || 0,
+      totalTrades,
+      winningTrades,
+      losingTrades: asNumber(record.losingTrades),
       winRate,
-      totalPnL: statistics?.totalPnL || 0,
+      totalPnL,
       totalPnLPercent: this.formatPercent(totalPnLPercent),
-      averageReturn: statistics?.averageReturn || 0,
-      sharpeRatio: statistics?.sharpeRatio || 0,
-      maxDrawdown: statistics?.maxDrawdown || 0,
-      totalCommission: statistics?.totalCommission || 0,
-      joinDate: this.formatDate(statistics?.joinDate),
-      activeStrategies: statistics?.activeStrategies || 0,
-      activeWatchlists: statistics?.activeWatchlists || 0,
-      followers: statistics?.followers || 0,
-      following: statistics?.following || 0
+      averageReturn: asNumber(record.averageReturn),
+      sharpeRatio: asNumber(record.sharpeRatio),
+      maxDrawdown: asNumber(record.maxDrawdown),
+      totalCommission: asNumber(record.totalCommission),
+      joinDate: this.formatDate(record.joinDate),
+      activeStrategies: asNumber(record.activeStrategies),
+      activeWatchlists: asNumber(record.activeWatchlists),
+      followers: asNumber(record.followers),
+      following: asNumber(record.following)
     }
   }
 
@@ -230,26 +278,33 @@ export class UserAdapter {
    * Convert watchlist statistics to ViewModel
    */
   private static toWatchlistStatisticsVM(statistics: unknown): WatchlistStatisticsVM {
+    const record = asRecord(statistics)
+    const bestPerformer = asRecord(record.bestPerformer)
+    const worstPerformer = asRecord(record.worstPerformer)
+
     return {
-      totalStocks: statistics?.totalStocks || 0,
-      totalValue: statistics?.totalValue || 0,
-      todayChange: statistics?.todayChange || 0,
-      todayChangePercent: this.formatPercent(statistics?.todayChangePercent),
+      totalStocks: asNumber(record.totalStocks),
+      totalValue: asNumber(record.totalValue),
+      todayChange: asNumber(record.todayChange),
+      todayChangePercent: this.formatPercent(asNumber(record.todayChangePercent)),
       bestPerformer: {
-        symbol: statistics?.bestPerformer?.symbol || '',
-        name: statistics?.bestPerformer?.name || '',
-        changePercent: this.formatPercent(statistics?.bestPerformer?.changePercent)
+        symbol: asString(bestPerformer.symbol),
+        name: asString(bestPerformer.name),
+        changePercent: this.formatPercent(asNumber(bestPerformer.changePercent))
       },
       worstPerformer: {
-        symbol: statistics?.worstPerformer?.symbol || '',
-        name: statistics?.worstPerformer?.name || '',
-        changePercent: this.formatPercent(statistics?.worstPerformer?.changePercent)
+        symbol: asString(worstPerformer.symbol),
+        name: asString(worstPerformer.name),
+        changePercent: this.formatPercent(asNumber(worstPerformer.changePercent))
       },
-      sectors: (statistics?.sectors || []).map((sector: unknown) => ({
-        name: sector.name || '',
-        count: sector.count || 0,
-        weight: sector.weight || 0
-      }))
+      sectors: asArray(record.sectors).map((sector) => {
+        const sectorRecord = asRecord(sector)
+        return {
+          name: asString(sectorRecord.name),
+          count: asNumber(sectorRecord.count),
+          weight: asNumber(sectorRecord.weight)
+        }
+      })
     }
   }
 
@@ -299,6 +354,19 @@ export class UserAdapter {
     }
   }
 
+  private static getNotificationType(type: string | undefined): NotificationVM['type'] {
+    switch (type) {
+      case 'price_alert':
+      case 'order':
+      case 'strategy':
+      case 'social':
+      case 'market':
+        return type
+      default:
+        return 'system'
+    }
+  }
+
   /**
    * Format percentage
    */
@@ -311,9 +379,13 @@ export class UserAdapter {
   /**
    * Format date and time
    */
-  private static formatDateTime(timestamp: string | number | Date | undefined): string {
+  private static formatDateTime(timestamp: unknown): string {
     if (!timestamp) return ''
-    const date = new Date(timestamp)
+    const normalizedTimestamp =
+      timestamp instanceof Date || typeof timestamp === 'string' || typeof timestamp === 'number'
+        ? timestamp
+        : asString(timestamp)
+    const date = new Date(normalizedTimestamp)
     return date.toLocaleString('zh-CN', {
       year: 'numeric',
       month: '2-digit',
@@ -326,9 +398,13 @@ export class UserAdapter {
   /**
    * Format date only
    */
-  private static formatDate(timestamp: string | number | Date | undefined): string {
+  private static formatDate(timestamp: unknown): string {
     if (!timestamp) return ''
-    const date = new Date(timestamp)
+    const normalizedTimestamp =
+      timestamp instanceof Date || typeof timestamp === 'string' || typeof timestamp === 'number'
+        ? timestamp
+        : asString(timestamp)
+    const date = new Date(normalizedTimestamp)
     return date.toLocaleDateString('zh-CN', {
       year: 'numeric',
       month: '2-digit',
@@ -416,4 +492,3 @@ export class UserAdapter {
 }
 
 export default UserAdapter
-
