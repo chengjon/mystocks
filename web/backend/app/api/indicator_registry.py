@@ -1,8 +1,8 @@
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from fastapi import APIRouter, Body, HTTPException, Path
+from pydantic import BaseModel, Field
 
 from app.openapi_config import COMMON_RESPONSES
 from src.indicators.indicator_factory import IndicatorFactory
@@ -17,6 +17,22 @@ router = APIRouter(prefix="/api/indicator-registry", tags=["Indicator Registry"]
 
 # Singleton Factory
 _factory = None
+
+CALCULATION_REQUEST_EXAMPLES = {
+    "sma_batch_calculation": {
+        "summary": "计算简单移动平均线",
+        "description": "提交三条 OHLCV 数据并用 window=3 计算 SMA。",
+        "value": {
+            "indicator_id": "sma",
+            "data": [
+                {"open": 10.1, "high": 10.5, "low": 9.9, "close": 10.3, "volume": 120000},
+                {"open": 10.3, "high": 10.8, "low": 10.2, "close": 10.6, "volume": 135000},
+                {"open": 10.6, "high": 10.9, "low": 10.4, "close": 10.7, "volume": 142000},
+            ],
+            "parameters": {"window": 3},
+        },
+    }
+}
 
 
 def get_factory():
@@ -37,9 +53,23 @@ class IndicatorInfo(BaseModel):
 
 
 class CalculationRequest(BaseModel):
-    indicator_id: str
-    data: List[Dict[str, Any]]  # List of rows (OHLCV)
-    parameters: Optional[Dict[str, Any]] = {}
+    indicator_id: str = Field(..., description="指标唯一标识，例如 sma 或 ema。")
+    data: List[Dict[str, Any]] = Field(..., description="用于批量计算的 OHLCV 行数据列表。")
+    parameters: Optional[Dict[str, Any]] = Field(default_factory=dict, description="覆盖默认配置的可选参数。")
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "indicator_id": "sma",
+                "data": [
+                    {"open": 10.1, "high": 10.5, "low": 9.9, "close": 10.3, "volume": 120000},
+                    {"open": 10.3, "high": 10.8, "low": 10.2, "close": 10.6, "volume": 135000},
+                    {"open": 10.6, "high": 10.9, "low": 10.4, "close": 10.7, "volume": 142000},
+                ],
+                "parameters": {"window": 3},
+            }
+        }
+    }
 
 
 class CalculationResponse(BaseModel):
@@ -68,7 +98,9 @@ async def list_indicators():
 
 
 @router.get("/indicators/{indicator_id}")
-async def get_indicator_details(indicator_id: str):
+async def get_indicator_details(
+    indicator_id: str = Path(..., description="指标唯一标识，用于查询单个指标的详细注册配置。")
+):
     """Get detailed configuration for a specific indicator."""
     factory = get_factory()
     if indicator_id not in factory.registry:
@@ -77,7 +109,7 @@ async def get_indicator_details(indicator_id: str):
 
 
 @router.post("/calculate", response_model=CalculationResponse)
-async def calculate_indicator(req: CalculationRequest):
+async def calculate_indicator(req: CalculationRequest = Body(..., openapi_examples=CALCULATION_REQUEST_EXAMPLES)):
     """Run a batch calculation."""
     factory = get_factory()
 

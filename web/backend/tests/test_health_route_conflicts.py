@@ -566,6 +566,25 @@ def test_realtime_quote_endpoints_have_descriptions_examples_and_parameter_docs(
     assert any(code.startswith(("4", "5")) for code in quotes_operation["responses"])
 
 
+def test_indicator_registry_endpoints_have_request_examples_and_parameter_docs() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    calculate_operation = schema["paths"]["/api/indicator-registry/calculate"]["post"]
+    calculate_json = calculate_operation["requestBody"]["content"]["application/json"]
+
+    assert calculate_operation.get("summary")
+    assert len(calculate_operation.get("description", "")) >= 20
+    assert "example" in calculate_json or "examples" in calculate_json
+
+    detail_operation = schema["paths"]["/api/indicator-registry/indicators/{indicator_id}"]["get"]
+    detail_parameters = detail_operation.get("parameters", [])
+
+    assert detail_operation.get("summary")
+    assert len(detail_operation.get("description", "")) >= 20
+    assert any(param["name"] == "indicator_id" and param.get("description") for param in detail_parameters)
+
+
 def test_sentiment_and_technical_pattern_endpoints_have_docs_examples_and_parameter_descriptions() -> None:
     app.openapi_schema = None
     schema = app.openapi()
