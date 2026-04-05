@@ -1,5 +1,3 @@
-
-// @ts-nocheck
 /**
  * Strategy Module Data Adapters
  *
@@ -9,13 +7,38 @@
 import type {
   StrategyListResponse
 } from '@/api/types/generated-types.ts'
-import type { Strategy } from '@/api/types/strategy.ts'
+import type { Strategy } from '@/api/types/extensions/strategy'
 
 // Temporary: Use any for missing generated types
 // TODO: Fix type generation to include these types
 type StrategyConfigResponse = Record<string, unknown>
 type BacktestResultResponse = Record<string, unknown>
 type TechnicalIndicatorResponse = Record<string, unknown>
+type AnyRecord = Record<string, unknown>
+
+const asRecord = (value: unknown): AnyRecord =>
+  typeof value === 'object' && value !== null ? (value as AnyRecord) : {}
+
+const asArray = <T = unknown>(value: unknown): T[] =>
+  Array.isArray(value) ? (value as T[]) : []
+
+const asString = (value: unknown, fallback = ''): string =>
+  typeof value === 'string' ? value : value == null ? fallback : String(value)
+
+const asNumber = (value: unknown, fallback = 0): number =>
+  typeof value === 'number' && Number.isFinite(value) ? value : fallback
+
+type AdaptedStrategy = Strategy & {
+  strategy_id: string
+  createdAt: Date
+  updatedAt: Date
+  performance?: Strategy['performance'] & {
+    totalReturn: number
+    sharpeRatio: number
+    maxDrawdown: number
+    winRate: number
+  }
+}
 
 // ViewModel interfaces
 export interface StrategyListItemVM {
@@ -122,23 +145,39 @@ export interface IndicatorParameterVM {
 }
 
 export class StrategyAdapter {
+  private static normalizeStrategyRows(input: StrategyListResponse | unknown[] | unknown): AnyRecord[] {
+    if (Array.isArray(input)) {
+      return input.map((item) => asRecord(item))
+    }
+
+    const record = asRecord(input)
+    if (Array.isArray(record.strategies)) {
+      return record.strategies.map((item) => asRecord(item))
+    }
+    if (Array.isArray(record.items)) {
+      return record.items.map((item) => asRecord(item))
+    }
+
+    return []
+  }
+
   /**
    * Convert strategy list response to ViewModel
    */
-  static toStrategyListVM(data: StrategyListResponse[]): StrategyListItemVM[] {
-    return data.map((item: unknown) => ({
-      id: item.id || '',
-      code: item.strategyCode || item.code || '',
-      name: item.name || item.displayName || '',
-      type: item.type || 'custom',
+  static toStrategyListVM(data: StrategyListResponse | unknown[] | unknown): StrategyListItemVM[] {
+    return this.normalizeStrategyRows(data).map((item) => ({
+      id: asString(item.id),
+      code: asString(item.strategyCode || item.code),
+      name: asString(item.name || item.displayName),
+      type: asString(item.type, 'custom'),
       status: this.getStrategyStatus(item.status),
       lastRunTime: item.lastRunTime ? this.formatDateTime(item.lastRunTime) : '从未运行',
       nextRunTime: item.nextRunTime ? this.formatDateTime(item.nextRunTime) : '未设置',
-      totalReturn: this.formatPercent(item.totalReturn || 0),
-      sharpeRatio: (item.sharpeRatio || 0).toFixed(2),
-      maxDrawdown: this.formatPercent(item.maxDrawdown || 0),
-      winRate: this.formatPercent(item.winRate || 0),
-      description: item.description || ''
+      totalReturn: this.formatPercent(asNumber(item.totalReturn)),
+      sharpeRatio: asNumber(item.sharpeRatio).toFixed(2),
+      maxDrawdown: this.formatPercent(asNumber(item.maxDrawdown)),
+      winRate: this.formatPercent(asNumber(item.winRate)),
+      description: asString(item.description)
     }))
   }
 
@@ -146,13 +185,14 @@ export class StrategyAdapter {
    * Convert strategy config response to ViewModel
    */
   static toStrategyConfigVM(data: StrategyConfigResponse): StrategyConfigVM {
+    const record = asRecord(data)
     return {
-      id: data.id || '',
-      name: data.name || '',
-      description: data.description || '',
-      parameters: (data.parameters || []).map(this.toParameterVM),
-      canEdit: data.canEdit !== false,
-      lastModified: this.formatDateTime(data.lastModified)
+      id: asString(record.id),
+      name: asString(record.name),
+      description: asString(record.description),
+      parameters: asArray(record.parameters).map(this.toParameterVM),
+      canEdit: record.canEdit !== false,
+      lastModified: this.formatDateTime(record.lastModified)
     }
   }
 
@@ -160,38 +200,44 @@ export class StrategyAdapter {
    * Convert backtest result to ViewModel
    */
   static toBacktestResultVM(data: BacktestResultResponse): BacktestResultVM {
-    const returns = this.calculateReturns(data.initialCapital, data.finalCapital)
+    const record = asRecord(data)
+    const initialCapital = asNumber(record.initialCapital)
+    const finalCapital = asNumber(record.finalCapital)
+    const returns = this.calculateReturns(initialCapital, finalCapital)
 
     return {
-      strategyId: data.strategyId || '',
-      strategyName: data.strategyName || '',
-      startDate: data.startDate || '',
-      endDate: data.endDate || '',
-      initialCapital: data.initialCapital || 0,
-      finalCapital: data.finalCapital || 0,
+      strategyId: asString(record.strategyId),
+      strategyName: asString(record.strategyName),
+      startDate: asString(record.startDate),
+      endDate: asString(record.endDate),
+      initialCapital,
+      finalCapital,
       totalReturn: this.formatPercent(returns),
-      annualizedReturn: this.formatPercent(data.annualizedReturn || 0),
-      sharpeRatio: (data.sharpeRatio || 0).toFixed(2),
-      maxDrawdown: this.formatPercent(data.maxDrawdown || 0),
-      winRate: this.formatPercent(data.winRate || 0),
-      profitFactor: (data.profitFactor || 0).toFixed(2),
-      totalTrades: data.totalTrades || 0,
-      equityCurve: (data.equityCurve || []).map(point => ({
-        date: point.date,
-        equity: point.equity,
-        drawdown: point.drawdown || 0
-      })),
+      annualizedReturn: this.formatPercent(asNumber(record.annualizedReturn)),
+      sharpeRatio: asNumber(record.sharpeRatio).toFixed(2),
+      maxDrawdown: this.formatPercent(asNumber(record.maxDrawdown)),
+      winRate: this.formatPercent(asNumber(record.winRate)),
+      profitFactor: asNumber(record.profitFactor).toFixed(2),
+      totalTrades: asNumber(record.totalTrades),
+      equityCurve: asArray(record.equityCurve).map((point) => {
+        const pointRecord = asRecord(point)
+        return {
+          date: asString(pointRecord.date),
+          equity: asNumber(pointRecord.equity),
+          drawdown: asNumber(pointRecord.drawdown)
+        }
+      }),
       metrics: {
-        profitAndLoss: data.profitAndLoss || 0,
-        grossProfit: data.grossProfit || 0,
-        grossLoss: data.grossLoss || 0,
-        averageTrade: data.averageTrade || 0,
-        averageWin: data.averageWin || 0,
-        averageLoss: data.averageLoss || 0,
-        largestWin: data.largestWin || 0,
-        largestLoss: data.largestLoss || 0,
-        consecutiveWins: data.consecutiveWins || 0,
-        consecutiveLosses: data.consecutiveLosses || 0
+        profitAndLoss: asNumber(record.profitAndLoss),
+        grossProfit: asNumber(record.grossProfit),
+        grossLoss: asNumber(record.grossLoss),
+        averageTrade: asNumber(record.averageTrade),
+        averageWin: asNumber(record.averageWin),
+        averageLoss: asNumber(record.averageLoss),
+        largestWin: asNumber(record.largestWin),
+        largestLoss: asNumber(record.largestLoss),
+        consecutiveWins: asNumber(record.consecutiveWins),
+        consecutiveLosses: asNumber(record.consecutiveLosses)
       }
     }
   }
@@ -200,19 +246,23 @@ export class StrategyAdapter {
    * Convert technical indicator to ViewModel
    */
   static toTechnicalIndicatorVM(data: TechnicalIndicatorResponse): TechnicalIndicatorVM {
+    const record = asRecord(data)
     return {
-      name: data.name || '',
-      displayName: data.displayName || data.name || '',
-      category: data.category || 'technical',
-      parameters: (data.parameters || []).map(param => ({
-        name: param.name || '',
-        type: param.type || 'number',
-        defaultValue: param.defaultValue,
-        description: param.description || ''
-      })),
-      outputs: data.outputs || [],
-      description: data.description || '',
-      formula: data.formula
+      name: asString(record.name),
+      displayName: asString(record.displayName || record.name),
+      category: asString(record.category, 'technical'),
+      parameters: asArray(record.parameters).map((param) => {
+        const paramRecord = asRecord(param)
+        return {
+          name: asString(paramRecord.name),
+          type: asString(paramRecord.type, 'number'),
+          defaultValue: paramRecord.defaultValue,
+          description: asString(paramRecord.description)
+        }
+      }),
+      outputs: asArray<string>(record.outputs),
+      description: asString(record.description),
+      formula: typeof record.formula === 'string' ? record.formula : undefined
     }
   }
 
@@ -220,32 +270,37 @@ export class StrategyAdapter {
    * Convert parameter to ViewModel
    */
   private static toParameterVM(param: unknown): StrategyParameterVM {
+    const record = asRecord(param)
+
     return {
-      name: param.name || '',
-      displayName: param.displayName || param.name || '',
-      type: param.type || 'string',
-      value: param.value,
-      defaultValue: param.defaultValue,
-      options: param.options?.map((opt: unknown) => ({
-        label: opt.label || String(opt.value),
-        value: opt.value
-      })),
-      min: param.min,
-      max: param.max,
-      step: param.step,
-      unit: param.unit,
-      description: param.description || ''
+      name: asString(record.name),
+      displayName: asString(record.displayName || record.name),
+      type: asString(record.type, 'string') as StrategyParameterVM['type'],
+      value: record.value,
+      defaultValue: record.defaultValue,
+      options: asArray(record.options).map((opt) => {
+        const optionRecord = asRecord(opt)
+        return {
+          label: asString(optionRecord.label || optionRecord.value),
+          value: optionRecord.value
+        }
+      }),
+      min: typeof record.min === 'number' ? record.min : undefined,
+      max: typeof record.max === 'number' ? record.max : undefined,
+      step: typeof record.step === 'number' ? record.step : undefined,
+      unit: typeof record.unit === 'string' ? record.unit : undefined,
+      description: asString(record.description)
     }
   }
 
   /**
    * Get strategy status
    */
-  private static getStrategyStatus(status: string | boolean): 'running' | 'stopped' | 'paused' | 'error' {
+  private static getStrategyStatus(status: unknown): 'running' | 'stopped' | 'paused' | 'error' {
     if (typeof status === 'boolean') {
       return status ? 'running' : 'stopped'
     }
-    switch (status?.toLowerCase()) {
+    switch (asString(status).toLowerCase()) {
       case 'active':
       case 'running':
       case 'enabled':
@@ -274,8 +329,12 @@ export class StrategyAdapter {
   /**
    * Format date and time
    */
-  private static formatDateTime(timestamp: string | number | Date): string {
-    const date = new Date(timestamp)
+  private static formatDateTime(timestamp: unknown): string {
+    if (!timestamp) return ''
+    const normalized = timestamp instanceof Date || typeof timestamp === 'string' || typeof timestamp === 'number'
+      ? timestamp
+      : asString(timestamp)
+    const date = new Date(normalized)
     return date.toLocaleString('zh-CN', {
       year: 'numeric',
       month: '2-digit',
@@ -330,28 +389,52 @@ export class StrategyAdapter {
    * Alias for toStrategyConfigVM
    */
   static adaptStrategyDetail(data: unknown): StrategyConfigVM {
-    return this.toStrategyConfigVM(data)
+    return this.toStrategyConfigVM(asRecord(data))
   }
 
   /**
    * Alias for toStrategyConfigVM
    */
-  static adaptStrategy(data: unknown): Strategy {
+  static adaptStrategy(data: unknown): AdaptedStrategy {
+    const record = asRecord(data)
+    const performance = asRecord(record.performance)
+    const createdAt = record.created_at ? new Date(asString(record.created_at)) : new Date()
+    const updatedAt = record.updated_at ? new Date(asString(record.updated_at)) : new Date()
+
     return {
-      id: data.id || data.strategy_id || '',
-      strategy_id: data.strategy_id || data.id || '',
-      name: data.name || data.strategy_name || '',
-      description: data.description || '',
-      type: data.type || 'custom',
-      status: data.status ? this.getStrategyStatus(data.status) : 'inactive',
-      performance: data.performance ? {
-        totalReturn: data.performance.total_return || data.performance.totalReturn || 0,
-        sharpeRatio: data.performance.sharpe_ratio || data.performance.sharpeRatio || 0,
-        maxDrawdown: data.performance.max_drawdown || data.performance.maxDrawdown || 0,
-        winRate: data.performance.win_rate || data.performance.winRate || 0,
-      } : null,
-      createdAt: data.created_at ? new Date(data.created_at) : new Date(),
-      updatedAt: data.updated_at ? new Date(data.updated_at) : new Date(),
+      id: asString(record.id || record.strategy_id),
+      strategy_id: asString(record.strategy_id || record.id),
+      name: asString(record.name || record.strategy_name),
+      description: asString(record.description) || undefined,
+      type: (asString(record.type, 'custom') as AdaptedStrategy['type']),
+      status: record.status ? (this.getStrategyStatus(record.status) as AdaptedStrategy['status']) : 'inactive',
+      parameters: asRecord(record.parameters),
+      constraints: undefined,
+      risk_limits: undefined,
+      performance: Object.keys(performance).length > 0 ? {
+        total_return: asNumber(performance.total_return || performance.totalReturn),
+        annualized_return: 0,
+        sharpe_ratio: asNumber(performance.sharpe_ratio || performance.sharpeRatio),
+        sortino_ratio: 0,
+        max_drawdown: asNumber(performance.max_drawdown || performance.maxDrawdown),
+        volatility: 0,
+        value_at_risk: 0,
+        total_trades: 0,
+        win_rate: asNumber(performance.win_rate || performance.winRate),
+        profit_factor: 0,
+        average_win: 0,
+        average_loss: 0,
+        calmar_ratio: 0,
+        information_ratio: 0,
+        totalReturn: asNumber(performance.total_return || performance.totalReturn),
+        sharpeRatio: asNumber(performance.sharpe_ratio || performance.sharpeRatio),
+        maxDrawdown: asNumber(performance.max_drawdown || performance.maxDrawdown),
+        winRate: asNumber(performance.win_rate || performance.winRate),
+      } : undefined,
+      created_at: createdAt.toISOString(),
+      updated_at: updatedAt.toISOString(),
+      createdAt,
+      updatedAt,
     }
   }
 
@@ -360,7 +443,7 @@ export class StrategyAdapter {
    */
   static adaptBacktestTask(data: unknown): BacktestResultVM | null {
     if (!data) return null
-    return this.toBacktestResultVM(data)
+    return this.toBacktestResultVM(asRecord(data))
   }
 }
 
