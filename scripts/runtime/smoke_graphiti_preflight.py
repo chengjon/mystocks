@@ -1,30 +1,36 @@
 from __future__ import annotations
 
 import argparse
-import io
 import json
-import os
-import shlex
-import subprocess
 import sys
-from contextlib import redirect_stdout
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from pymongo.errors import OperationFailure
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from scripts.runtime import coordctl
+from scripts.runtime.graphiti_smoke_common import run_coordctl_json
 from src.services.maestro.collab.authz import ActorIdentity
 from src.services.maestro.collab.backends.mongo.store import MongoCollaborationStore
 from src.services.maestro.collab.services import CoordinationService
 from src.services.maestro.collab.store.models import WorkItemRecord
-from src.utils.mongo_runtime_config import build_mongo_connection_uri, get_mongo_connection_kwargs
+from src.utils.cli_error_output import (
+    print_cli_error,
+)
+from src.utils.mongo_runtime_config import (
+    build_mongo_auth_runtime_error,
+    build_project_runtime_mongo_client,
+    build_runtime_mongo_client,
+    get_effective_runtime_mongo_uri,
+    is_mongo_auth_error,
+)
 
 SMOKE_WORK_ITEM_ID = "GRAPHITI-PREFLIGHT-SMOKE"
 
@@ -40,14 +46,23 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    summary = run_smoke(
-        mongo_uri=args.mongo_uri,
-        mongo_db=args.mongo_db,
-        actor_cli=args.actor_cli,
-        max_wait_seconds=args.max_wait_seconds,
-    )
-    print(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True))
-    return 0
+    try:
+        summary = run_smoke(
+            mongo_uri=args.mongo_uri,
+            mongo_db=args.mongo_db,
+            actor_cli=args.actor_cli,
+            max_wait_seconds=args.max_wait_seconds,
+        )
+        print(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
+    except OperationFailure as exc:
+        if is_mongo_auth_error(exc):
+            print_cli_error(build_mongo_auth_runtime_error("Graphiti preflight smoke"))
+            return 1
+        raise
+    except RuntimeError as exc:
+        print_cli_error(exc)
+        return 1
 
 
 def run_smoke(
@@ -122,44 +137,15 @@ def run_smoke(
 
 
 def _build_mongo_client(mongo_uri: str | None) -> MongoClient:
-    if mongo_uri:
-        return MongoClient(mongo_uri)
-    load_dotenv(PROJECT_ROOT / ".env", override=False)
-    return MongoClient(**get_mongo_connection_kwargs(server_selection_timeout_ms=3000))
+    return build_project_runtime_mongo_client(PROJECT_ROOT, mongo_uri, server_selection_timeout_ms=3000)
 
 
 def _resolve_effective_mongo_uri(mongo_uri: str | None) -> str:
-    if mongo_uri:
-        return mongo_uri
     load_dotenv(PROJECT_ROOT / ".env", override=False)
-    return build_mongo_connection_uri()
+    return get_effective_runtime_mongo_uri(mongo_uri)
 
 
 def _run_coordctl_json(argv: list[str]) -> dict[str, object]:
-    command_prefix = os.getenv("GRAPHITI_SMOKE_COMMAND")
-    if command_prefix:
-        command = [*shlex.split(command_prefix), *argv]
-        completed = subprocess.run(
-            command,
-            text=True,
-            capture_output=True,
-            check=True,
-        )
-        payload = completed.stdout.strip()
-        if not payload:
-            raise RuntimeError(f"external smoke command returned no output for argv={argv!r}")
-        return json.loads(payload)
-
-    buffer = io.StringIO()
-    with redirect_stdout(buffer):
-        exit_code = coordctl.main(argv)
-    if exit_code != 0:
-        raise RuntimeError(f"coordctl failed for argv={argv!r}")
-    payload = buffer.getvalue().strip()
-    if not payload:
-        raise RuntimeError(f"coordctl returned no output for argv={argv!r}")
-    return json.loads(payload)
-
-
+    return run_coordctl_json(argv, coordctl_main=coordctl.main)
 if __name__ == "__main__":
     raise SystemExit(main())

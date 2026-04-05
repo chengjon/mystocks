@@ -10,6 +10,7 @@ from uuid import uuid4
 from fastapi.testclient import TestClient
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from pymongo.errors import OperationFailure
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
@@ -24,7 +25,13 @@ from src.services.symphony.mongo_tracker import MongoWorkItemTrackerClient
 from src.services.symphony.models import WorkflowDefinition
 from src.services.symphony.orchestrator import SymphonyOrchestrator
 from src.services.symphony.status_api import create_status_app
-from src.utils.mongo_runtime_config import get_mongo_connection_kwargs
+from src.utils.cli_error_output import print_cli_error
+from src.utils.mongo_runtime_config import (
+    build_mongo_auth_runtime_error,
+    build_project_runtime_mongo_client,
+    build_runtime_mongo_client,
+    is_mongo_auth_error,
+)
 
 
 class _SmokeRunnerFactory:
@@ -41,9 +48,13 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    summary = run_smoke(mongo_uri=args.mongo_uri, mongo_db=args.mongo_db)
-    print(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True))
-    return 0
+    try:
+        summary = run_smoke(mongo_uri=args.mongo_uri, mongo_db=args.mongo_db)
+        print(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
+    except RuntimeError as exc:
+        _emit_error(exc)
+        return 1
 
 
 def run_smoke(*, mongo_uri: str | None, mongo_db: str | None = None) -> dict[str, object]:
@@ -53,8 +64,7 @@ def run_smoke(*, mongo_uri: str | None, mongo_db: str | None = None) -> dict[str
 
     try:
         database = client[db_name]
-        should_drop_database = True
-        service = CoordinationService(database_store := __import__(
+        service = CoordinationService(__import__(
             "src.services.maestro.collab.backends.mongo.store",
             fromlist=["MongoCollaborationStore"],
         ).MongoCollaborationStore(database))
@@ -79,6 +89,7 @@ def run_smoke(*, mongo_uri: str | None, mongo_db: str | None = None) -> dict[str
             ),
             work_item,
         )
+        should_drop_database = True
 
         workflow_definition = WorkflowDefinition(
             config={
@@ -129,6 +140,10 @@ def run_smoke(*, mongo_uri: str | None, mongo_db: str | None = None) -> dict[str
             "control_plane_status": control_plane[0]["status"] if control_plane else None,
             "status_api_control_plane_count": state_payload["control_plane"]["count"],
         }
+    except OperationFailure as exc:
+        if is_mongo_auth_error(exc):
+            raise RuntimeError(_build_auth_error_message(mongo_uri=mongo_uri, db_name=db_name, error=exc)) from exc
+        raise
     finally:
         try:
             if should_drop_database:
@@ -138,10 +153,27 @@ def run_smoke(*, mongo_uri: str | None, mongo_db: str | None = None) -> dict[str
 
 
 def _build_mongo_client(mongo_uri: str | None) -> MongoClient:
+    return build_project_runtime_mongo_client(PROJECT_ROOT, mongo_uri, server_selection_timeout_ms=3000)
+
+
+def _build_auth_error_message(*, mongo_uri: str | None, db_name: str, error: OperationFailure) -> str:
     if mongo_uri:
-        return MongoClient(mongo_uri)
-    load_dotenv(PROJECT_ROOT / ".env", override=False)
-    return MongoClient(**get_mongo_connection_kwargs(server_selection_timeout_ms=3000))
+        credential_hint = f"the provided --mongo-uri for database '{db_name}'"
+    else:
+        credential_hint = (
+            "a writable Mongo URI via --mongo-uri or one of "
+            "MAESTRO_COLLAB_MONGO_URI/COLLAB_MONGO_URI/MONGODB_URI/MONGO_URI"
+        )
+
+    return (
+        f"{build_mongo_auth_runtime_error('Mongo smoke')}. "
+        f"Provide {credential_hint}. "
+        f"Original error: {error}"
+    )
+
+
+def _emit_error(error: Exception) -> None:
+    print_cli_error(error)
 
 
 if __name__ == "__main__":
