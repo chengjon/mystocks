@@ -45,6 +45,47 @@ logger = structlog.get_logger()
 router = APIRouter()
 
 
+def _response_spec(status_code: int, description: str, example: dict) -> dict[int, dict]:
+    return {
+        status_code: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+INDICATOR_CACHE_STATS_RESPONSES = {
+    **_response_spec(
+        200,
+        "指标缓存统计结果",
+        {
+            "success": True,
+            "data": {
+                "size": 128,
+                "max_size": 1000,
+                "ttl": 300,
+                "hit_rate": 0.82,
+            },
+            "message": "缓存统计信息获取成功",
+            "timestamp": "2026-04-05T08:00:00Z",
+            "request_id": "req-cache-stats-001",
+        },
+    ),
+    **_response_spec(
+        500,
+        "指标缓存统计查询失败",
+        {
+            "detail": "获取缓存统计失败: Redis connection refused",
+            "error_code": "CACHE_STATS_RETRIEVAL_FAILED",
+        },
+    ),
+}
+
+
 class IndicatorCalculateBatchRequest(BaseModel):
     """批量技术指标计算请求"""
 
@@ -626,11 +667,16 @@ async def _calculate_single_indicator(request, current_user):
     }
 
 
-@router.get("/cache/stats")
+@router.get(
+    "/cache/stats",
+    summary="获取指标缓存统计",
+    description="返回技术指标计算缓存的容量、TTL 与命中率概览，供容量治理、性能排障和缓存策略调优使用。",
+    responses=INDICATOR_CACHE_STATS_RESPONSES,
+)
 @rate_limit(limit=10, window=60)
 async def get_cache_statistics(current_user: User = Depends(get_current_active_user)) -> Dict:
     """
-    获取指标计算缓存统计信息
+    返回技术指标计算缓存的容量、TTL 与命中率概览。
     """
     try:
         stats = indicator_cache.get_stats()

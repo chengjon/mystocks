@@ -473,6 +473,19 @@ def test_cache_management_endpoints_have_docs_examples_and_error_responses() -> 
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
+def test_indicator_cache_statistics_endpoint_has_description_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    operation = schema["paths"]["/api/v1/indicators/cache/stats"]["get"]
+    success_json = operation["responses"]["200"]["content"]["application/json"]
+
+    assert operation.get("summary")
+    assert len(operation.get("description", "")) >= 20
+    assert "example" in success_json or "examples" in success_json
+    assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_audit_endpoints_have_parameter_descriptions() -> None:
     app.openapi_schema = None
     schema = app.openapi()
