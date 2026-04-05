@@ -55,7 +55,7 @@ class StrategyParameter(BaseModel):
     """策略参数"""
 
     name: str = Field(..., description="参数名称")
-    value: Any = Field(..., description="参数值")
+    value: str | int | float | bool | Dict[str, Any] | List[Any] | None = Field(..., description="参数值")
     description: Optional[str] = Field(None, description="参数说明")
     data_type: str = Field("string", description="数据类型: string/int/float/bool")
 

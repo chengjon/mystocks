@@ -66,6 +66,11 @@ class APIDocumentationValidator:
                 raise Exception(f"Could not fetch OpenAPI schema: {response.status_code}")
         return self.openapi_schema
 
+    @staticmethod
+    def _has_openapi_type(schema_fragment: Dict[str, Any]) -> bool:
+        """OpenAPI 3.1 may express types via type/ref/composition keywords."""
+        return any(key in schema_fragment for key in ("type", "$ref", "anyOf", "oneOf", "allOf"))
+
     def validate_openapi_completeness(self) -> Dict[str, Any]:
         """Validate OpenAPI schema completeness"""
         issues = []
@@ -332,7 +337,7 @@ class APIDocumentationValidator:
 
             for schema_name, schema_def in schemas.items():
                 # Check for required fields
-                if "type" not in schema_def:
+                if not self._has_openapi_type(schema_def):
                     issues.append(f"Schema {schema_name} missing type")
 
                 # Check for description
@@ -346,7 +351,7 @@ class APIDocumentationValidator:
                     else:
                         properties = schema_def["properties"]
                         for prop_name, prop_def in properties.items():
-                            if "type" not in prop_def:
+                            if not self._has_openapi_type(prop_def):
                                 issues.append(f"Property {prop_name} in {schema_name} missing type")
                             if "description" not in prop_def or not prop_def["description"]:
                                 issues.append(f"Property {prop_name} in {schema_name} missing description")
@@ -632,6 +637,64 @@ class TestAPIDocumentationValidation:
 
         assert "/api/docs" not in validated_paths
         assert "/api/redoc" not in validated_paths
+
+    def test_monitoring_related_schemas_have_types_and_descriptions(self, documentation_validator):
+        """监控/告警高频 schema 不应再出现字段类型或描述缺失。"""
+        issues = documentation_validator.validate_schema_definitions()
+        target_schemas = {
+            "AlertRuleCreate",
+            "AlertRuleUpdate",
+            "AlertRuleResponse",
+            "AlertRecordResponse",
+            "RealtimeMonitoringResponse",
+            "DragonTigerListResponse",
+            "MonitoringSummaryResponse",
+            "SignalHistoryResponse",
+            "SignalQualityReportResponse",
+            "StrategyRealtimeMonitoringResponse",
+        }
+
+        target_issues = [
+            issue
+            for issue in issues
+            if any(
+                issue.startswith(f"Schema {schema} ")
+                or f" in {schema} " in issue
+                for schema in target_schemas
+            )
+        ]
+
+        assert not target_issues, f"Monitoring-related schema issues remain: {target_issues}"
+
+    def test_misc_contract_schemas_have_descriptions_and_explicit_types(self, documentation_validator):
+        """剩余高频契约 schema 应补齐字段描述，并清理 Any 造成的类型缺失。"""
+        issues = documentation_validator.validate_schema_definitions()
+        target_schemas = {
+            "AllIndicatorsResponse",
+            "AuditLogResponse",
+            "CalculationResponse",
+            "IndicatorInfo",
+            "LogQueryResponse",
+            "OptimizationResponse",
+            "SentimentResponse",
+            "StrategyParameter",
+            "SystemLog",
+            "TaskResponse",
+            "TaskStatistics",
+            "TechnicalIndicatorResponse",
+        }
+
+        target_issues = [
+            issue
+            for issue in issues
+            if any(
+                issue.startswith(f"Schema {schema} ")
+                or f" in {schema} " in issue
+                for schema in target_schemas
+            )
+        ]
+
+        assert not target_issues, f"Misc contract schema issues remain: {target_issues}"
 
 
 if __name__ == "__main__":

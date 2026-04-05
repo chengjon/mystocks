@@ -61,14 +61,14 @@ class SentimentRequest(BaseModel):
 class SentimentResponse(BaseModel):
     """情感分析响应"""
 
-    symbol: str
-    sentiment: str
-    confidence: float
-    positive_score: float
-    negative_score: float
-    neutral_score: float
-    key_phrases: List[str]
-    analyzed_at: datetime
+    symbol: str = Field(..., description="被分析的股票代码。")
+    sentiment: str = Field(..., description="整体情感倾向。")
+    confidence: float = Field(..., description="情感判断置信度。")
+    positive_score: float = Field(..., description="正向情感评分。")
+    negative_score: float = Field(..., description="负向情感评分。")
+    neutral_score: float = Field(..., description="中性情感评分。")
+    key_phrases: List[str] = Field(..., description="提取出的关键情感短语。")
+    analyzed_at: datetime = Field(..., description="情感分析完成时间。")
 
 
 @router.post(

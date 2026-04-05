@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional
 
 import psycopg2
 from fastapi import APIRouter, Body, HTTPException, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.api.system._logs_summary_helper import build_logs_summary_payload
 
@@ -378,25 +378,25 @@ async def test_database_connection(
 class SystemLog(BaseModel):
     """系统日志模型"""
 
-    id: int
-    timestamp: str
-    level: str  # INFO, WARNING, ERROR, CRITICAL
-    category: str  # database, api, adapter, system
-    operation: str  # 操作名称
-    message: str
-    details: Optional[Dict[str, Any]] = None
-    duration_ms: Optional[int] = None
-    has_error: bool = False
+    id: int = Field(..., description="系统日志记录ID。")
+    timestamp: str = Field(..., description="日志记录时间。")
+    level: str = Field(..., description="日志级别，例如 INFO、WARNING、ERROR。")
+    category: str = Field(..., description="日志分类，例如 database、api、adapter 或 system。")
+    operation: str = Field(..., description="对应的操作名称。")
+    message: str = Field(..., description="日志消息正文。")
+    details: Optional[Dict[str, Any]] = Field(None, description="结构化日志上下文。")
+    duration_ms: Optional[int] = Field(None, description="操作耗时，单位毫秒。")
+    has_error: bool = Field(False, description="该日志是否代表错误或异常。")
 
 
 class LogQueryResponse(BaseModel):
     """日志查询响应"""
 
-    success: bool
-    data: List[SystemLog]
-    total: int
-    filtered: int
-    timestamp: str
+    success: bool = Field(..., description="日志查询是否成功。")
+    data: List[SystemLog] = Field(..., description="返回的系统日志列表。")
+    total: int = Field(..., description="日志总记录数。")
+    filtered: int = Field(..., description="按当前筛选条件命中的记录数。")
+    timestamp: str = Field(..., description="本次查询响应时间。")
 
 
 def get_system_logs_from_db(

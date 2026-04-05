@@ -7,7 +7,7 @@
 from typing import Any, Dict, List
 
 from fastapi import APIRouter, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 router = APIRouter(
     prefix="/technical-indicators",
@@ -18,9 +18,9 @@ router = APIRouter(
 class TechnicalIndicatorResponse(BaseModel):
     """Technical indicator response"""
 
-    symbol: str
-    indicators: Dict[str, Any]
-    calculated_at: str
+    symbol: str = Field(..., description="请求指标计算的股票代码。")
+    indicators: Dict[str, Any] = Field(..., description="按指标名称组织的计算结果映射。")
+    calculated_at: str = Field(..., description="本次指标计算完成时间。")
 
 
 @router.get("", response_model=TechnicalIndicatorResponse, summary="Get Technical Indicators")

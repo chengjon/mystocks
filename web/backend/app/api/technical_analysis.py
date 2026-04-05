@@ -5,7 +5,7 @@ Enhanced Technical Analysis
 
 import logging
 from datetime import date, datetime
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Path, Query
 from pydantic import BaseModel, Field, ValidationError, field_validator
@@ -200,15 +200,15 @@ class VolumeIndicatorsResponse(BaseModel):
 class AllIndicatorsResponse(BaseModel):
     """所有指标综合响应"""
 
-    symbol: str
-    latest_price: float
-    latest_date: str
-    data_points: int
-    total_indicators: int
-    trend: Dict
-    momentum: Dict
-    volatility: Dict
-    volume: Dict
+    symbol: str = Field(..., description="请求的股票代码。")
+    latest_price: float = Field(..., description="最新收盘价或最新成交价。")
+    latest_date: str = Field(..., description="最新指标对应的交易日期。")
+    data_points: int = Field(..., description="参与指标计算的数据点数量。")
+    total_indicators: int = Field(..., description="返回的指标总数。")
+    trend: Dict[str, Any] = Field(..., description="趋势类指标结果集合。")
+    momentum: Dict[str, Any] = Field(..., description="动量类指标结果集合。")
+    volatility: Dict[str, Any] = Field(..., description="波动率类指标结果集合。")
+    volume: Dict[str, Any] = Field(..., description="成交量类指标结果集合。")
 
 
 class TradingSignalItem(BaseModel):

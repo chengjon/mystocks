@@ -44,12 +44,14 @@ def get_factory():
 
 # Models
 class IndicatorInfo(BaseModel):
-    indicator_id: str
-    indicator_name: str
-    indicator_category: str
-    use_case: str
-    description: Optional[str]
-    status: str
+    """指标注册表中的单个指标信息。"""
+
+    indicator_id: str = Field(..., description="指标唯一标识。")
+    indicator_name: str = Field(..., description="指标名称。")
+    indicator_category: str = Field(..., description="指标分类。")
+    use_case: str = Field(..., description="典型使用场景。")
+    description: Optional[str] = Field(None, description="指标功能说明。")
+    status: str = Field(..., description="指标当前状态。")
 
 
 class CalculationRequest(BaseModel):
@@ -73,9 +75,11 @@ class CalculationRequest(BaseModel):
 
 
 class CalculationResponse(BaseModel):
-    indicator_id: str
-    result: List[Optional[float]]
-    length: int
+    """指标批量计算响应。"""
+
+    indicator_id: str = Field(..., description="已执行计算的指标ID。")
+    result: List[Optional[float]] = Field(..., description="按输入顺序返回的计算结果列表。")
+    length: int = Field(..., description="结果列表长度。")
 
 
 @router.get("/indicators", response_model=List[IndicatorInfo])

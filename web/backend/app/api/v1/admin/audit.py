@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Path, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 router = APIRouter(
     prefix="/audit",
@@ -19,15 +19,15 @@ router = APIRouter(
 class AuditLogResponse(BaseModel):
     """审计日志响应"""
 
-    log_id: str
-    user_id: str
-    action: str
-    resource_type: str
-    resource_id: str
-    details: Dict[str, Any]
-    ip_address: str
-    user_agent: str
-    timestamp: datetime
+    log_id: str = Field(..., description="审计日志唯一标识。")
+    user_id: str = Field(..., description="触发该操作的用户ID。")
+    action: str = Field(..., description="审计动作类型，例如 LOGIN 或 UPDATE。")
+    resource_type: str = Field(..., description="被审计资源类型。")
+    resource_id: str = Field(..., description="被审计资源ID。")
+    details: Dict[str, Any] = Field(..., description="审计明细数据。")
+    ip_address: str = Field(..., description="请求来源IP地址。")
+    user_agent: str = Field(..., description="客户端 User-Agent。")
+    timestamp: datetime = Field(..., description="审计事件发生时间。")
 
 
 @router.get("/logs", response_model=Dict[str, Any], summary="List Audit Logs")

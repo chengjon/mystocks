@@ -100,22 +100,22 @@ class TaskExecution(BaseModel):
 class TaskStatistics(BaseModel):
     """任务统计信息"""
 
-    task_id: str
-    task_name: str
-    total_executions: int = 0
-    success_count: int = 0
-    failed_count: int = 0
-    avg_duration: float = 0.0
-    last_execution_time: Optional[datetime] = None
-    last_status: Optional[TaskStatus] = None
-    success_rate: float = 0.0
+    task_id: str = Field(..., description="任务ID。")
+    task_name: str = Field(..., description="任务名称。")
+    total_executions: int = Field(0, description="累计执行次数。")
+    success_count: int = Field(0, description="成功执行次数。")
+    failed_count: int = Field(0, description="失败执行次数。")
+    avg_duration: float = Field(0.0, description="平均执行时长，单位秒。")
+    last_execution_time: Optional[datetime] = Field(None, description="最近一次执行时间。")
+    last_status: Optional[TaskStatus] = Field(None, description="最近一次执行状态。")
+    success_rate: float = Field(0.0, description="执行成功率。")
 
 
 class TaskResponse(BaseModel):
     """任务响应模型"""
 
-    success: bool
-    message: str
-    data: Optional[Dict[str, Any]] = None
-    task_id: Optional[str] = None
-    execution_id: Optional[str] = None
+    success: bool = Field(..., description="任务操作是否成功。")
+    message: str = Field(..., description="任务操作结果说明。")
+    data: Optional[Dict[str, Any]] = Field(None, description="附加业务数据。")
+    task_id: Optional[str] = Field(None, description="关联任务ID。")
+    execution_id: Optional[str] = Field(None, description="关联执行记录ID。")

@@ -143,13 +143,18 @@
   - `src/views/trade/Signals.vue` now fronts the existing `ArtDecoSignalsView.vue` implementation.
   - `src/views/trade/Portfolio.vue` now fronts the existing `PortfolioOverviewTab.vue` implementation.
   - `src/views/trade/History.vue` now fronts the existing `ArtDecoTradingHistory.vue` implementation.
-  - `trade-terminal` remains on `TradingDashboard.vue` per task `8.5` Option C, and task `8.6` remains blocked pending `reconcile-dashboard-dealingroom-truth`.
-- [ ] 8.1 Move `artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue` → `views/trade/Center.vue`
-  - [ ] 8.1.0 **Identify all relative imports**
-  - [ ] 8.1.1 Move dependency: `usePositions.ts` to `src/shared/composables/`
-  - [ ] 8.1.2 Update imports to use `@/shared/...` absolute paths
-  - [ ] 8.1.3 Run lint & type-check
-  - [ ] 8.1.4 Run unit tests for Center.vue
+  - `trade-terminal` remains on `TradingDashboard.vue` per task `8.5` Option C; task `8.6` is now closed via `reconcile-dashboard-dealingroom-truth`.
+- [x] 8.1 Move `artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue` → `views/trade/Center.vue`
+  - Completed: 2026-04-05 via repo-truth-aligned micro-batch `2026-04-05-restructure-trade-center-main`.
+  - Result: `src/views/trade/Center.vue` now hosts the canonical positions implementation; `ArtDecoTradingPositions.vue` is retained as a legacy compatibility wrapper into the canonical route entrypoint.
+  - [x] 8.1.0 **Identify all relative imports**
+    - Evidence: the only local relative dependency in the original file was `./tradingDataTransform`.
+  - [x] 8.1.1 Move dependency: `usePositions.ts` to `src/shared/composables/`
+    - Repo-truth note: not applicable as written. The current positions page uses `apiClient` + `useArtDecoApi`, and the shared `usePositions()` helper already exists centrally in `src/composables/useTrading.ts`.
+  - [x] 8.1.2 Update imports to use `@/shared/...` absolute paths
+    - Evidence: the canonical page no longer depends on relative imports; `tradingDataTransform` now resolves through an absolute `@/views/...` import until the shared helper migration is executed in a later batch.
+  - [x] 8.1.3 Run lint & type-check
+  - [x] 8.1.4 Run unit tests for Center.vue
 - [ ] 8.2 Move `artdeco-pages/trading-tabs/ArtDecoSignalsView.vue` → `views/trade/Signals.vue`
   - [ ] 8.2.0 **Identify all relative imports**
   - [ ] 8.2.1 Move dependency: `useSignals.ts` to `src/shared/composables/`

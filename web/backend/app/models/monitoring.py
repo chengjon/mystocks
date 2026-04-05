@@ -4,7 +4,7 @@ Real-time Monitoring System
 """
 
 from datetime import date, datetime
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from sqlalchemy import (
@@ -250,16 +250,16 @@ class AlertLevel(str, Enum):
 class AlertRuleCreate(BaseModel):
     """创建告警规则请求"""
 
-    rule_name: str = Field(..., min_length=1, max_length=100)
-    rule_type: AlertRuleType
-    description: Optional[str] = None
-    symbol: Optional[str] = None
-    stock_name: Optional[str] = None
-    parameters: Dict = Field(default_factory=dict)
-    trigger_conditions: Dict = Field(default_factory=dict)
-    notification_config: Dict = Field(default_factory=dict)
-    priority: int = Field(default=1, ge=1, le=5)
-    is_active: bool = True
+    rule_name: str = Field(..., min_length=1, max_length=100, description="告警规则名称。")
+    rule_type: AlertRuleType = Field(..., description="告警规则类型枚举。")
+    description: Optional[str] = Field(None, description="规则业务说明。")
+    symbol: Optional[str] = Field(None, description="绑定的股票或合约代码；为空表示全市场。")
+    stock_name: Optional[str] = Field(None, description="股票或合约名称。")
+    parameters: Dict[str, Any] = Field(default_factory=dict, description="规则参数配置。")
+    trigger_conditions: Dict[str, Any] = Field(default_factory=dict, description="触发条件配置。")
+    notification_config: Dict[str, Any] = Field(default_factory=dict, description="通知策略配置。")
+    priority: int = Field(default=1, ge=1, le=5, description="规则优先级，1 为最低，5 为最高。")
+    is_active: bool = Field(True, description="规则是否启用。")
 
     @field_validator("rule_name")
     @classmethod
@@ -272,31 +272,31 @@ class AlertRuleCreate(BaseModel):
 class AlertRuleUpdate(BaseModel):
     """更新告警规则请求"""
 
-    rule_name: Optional[str] = None
-    description: Optional[str] = None
-    parameters: Optional[Dict] = None
-    trigger_conditions: Optional[Dict] = None
-    notification_config: Optional[Dict] = None
-    priority: Optional[int] = Field(None, ge=1, le=5)
-    is_active: Optional[bool] = None
+    rule_name: Optional[str] = Field(None, description="更新后的规则名称。")
+    description: Optional[str] = Field(None, description="更新后的规则说明。")
+    parameters: Optional[Dict[str, Any]] = Field(None, description="更新后的规则参数。")
+    trigger_conditions: Optional[Dict[str, Any]] = Field(None, description="更新后的触发条件。")
+    notification_config: Optional[Dict[str, Any]] = Field(None, description="更新后的通知配置。")
+    priority: Optional[int] = Field(None, ge=1, le=5, description="更新后的规则优先级。")
+    is_active: Optional[bool] = Field(None, description="更新后的启用状态。")
 
 
 class AlertRuleResponse(BaseModel):
     """告警规则响应"""
 
-    id: int
-    rule_name: str
-    rule_type: str
-    description: Optional[str]
-    symbol: Optional[str]
-    stock_name: Optional[str]
-    parameters: Dict
-    trigger_conditions: Dict
-    notification_config: Dict
-    is_active: bool
-    priority: int
-    created_at: datetime
-    updated_at: datetime
+    id: int = Field(..., description="规则主键ID。")
+    rule_name: str = Field(..., description="规则名称。")
+    rule_type: str = Field(..., description="规则类型。")
+    description: Optional[str] = Field(None, description="规则说明。")
+    symbol: Optional[str] = Field(None, description="绑定的股票或合约代码。")
+    stock_name: Optional[str] = Field(None, description="股票或合约名称。")
+    parameters: Dict[str, Any] = Field(..., description="规则参数。")
+    trigger_conditions: Dict[str, Any] = Field(..., description="触发条件。")
+    notification_config: Dict[str, Any] = Field(..., description="通知配置。")
+    is_active: bool = Field(..., description="规则是否启用。")
+    priority: int = Field(..., description="规则优先级。")
+    created_at: datetime = Field(..., description="规则创建时间。")
+    updated_at: datetime = Field(..., description="规则最近更新时间。")
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -304,21 +304,21 @@ class AlertRuleResponse(BaseModel):
 class AlertRecordResponse(BaseModel):
     """告警记录响应"""
 
-    id: int
-    rule_id: Optional[int]
-    rule_name: Optional[str]
-    symbol: str
-    stock_name: Optional[str]
-    alert_time: datetime
-    alert_type: str
-    alert_level: str
-    alert_title: Optional[str]
-    alert_message: Optional[str]
-    alert_details: Optional[Dict]
-    snapshot_data: Optional[Dict]
-    is_read: bool
-    is_handled: bool
-    created_at: datetime
+    id: int = Field(..., description="告警记录主键ID。")
+    rule_id: Optional[int] = Field(None, description="关联的规则ID。")
+    rule_name: Optional[str] = Field(None, description="关联规则名称。")
+    symbol: str = Field(..., description="触发告警的股票或合约代码。")
+    stock_name: Optional[str] = Field(None, description="股票或合约名称。")
+    alert_time: datetime = Field(..., description="告警触发时间。")
+    alert_type: str = Field(..., description="告警类型。")
+    alert_level: str = Field(..., description="告警级别。")
+    alert_title: Optional[str] = Field(None, description="告警标题。")
+    alert_message: Optional[str] = Field(None, description="告警消息正文。")
+    alert_details: Optional[Dict[str, Any]] = Field(None, description="结构化告警详情。")
+    snapshot_data: Optional[Dict[str, Any]] = Field(None, description="触发时快照数据。")
+    is_read: bool = Field(..., description="是否已读。")
+    is_handled: bool = Field(..., description="是否已处理。")
+    created_at: datetime = Field(..., description="记录创建时间。")
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -326,19 +326,19 @@ class AlertRecordResponse(BaseModel):
 class RealtimeMonitoringResponse(BaseModel):
     """实时监控数据响应"""
 
-    id: int
-    symbol: str
-    stock_name: Optional[str]
-    timestamp: datetime
-    trade_date: date
-    price: Optional[float]
-    change_percent: Optional[float]
-    volume: Optional[int]
-    amount: Optional[float]
-    indicators: Optional[Dict]
-    market_strength: Optional[str]
-    is_limit_up: bool
-    is_limit_down: bool
+    id: int = Field(..., description="实时监控记录ID。")
+    symbol: str = Field(..., description="股票或合约代码。")
+    stock_name: Optional[str] = Field(None, description="股票或合约名称。")
+    timestamp: datetime = Field(..., description="监控快照时间。")
+    trade_date: date = Field(..., description="交易日期。")
+    price: Optional[float] = Field(None, description="最新价格。")
+    change_percent: Optional[float] = Field(None, description="涨跌幅百分比。")
+    volume: Optional[int] = Field(None, description="成交量。")
+    amount: Optional[float] = Field(None, description="成交额。")
+    indicators: Optional[Dict[str, Any]] = Field(None, description="技术指标快照。")
+    market_strength: Optional[str] = Field(None, description="市场强弱标签。")
+    is_limit_up: bool = Field(..., description="是否涨停。")
+    is_limit_down: bool = Field(..., description="是否跌停。")
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -346,19 +346,19 @@ class RealtimeMonitoringResponse(BaseModel):
 class DragonTigerListResponse(BaseModel):
     """龙虎榜响应"""
 
-    id: int
-    symbol: str
-    stock_name: Optional[str]
-    trade_date: date
-    reason: Optional[str]
-    total_buy_amount: Optional[float]
-    total_sell_amount: Optional[float]
-    net_amount: Optional[float]
-    institution_buy_count: int
-    institution_sell_count: int
-    institution_net_amount: Optional[float]
-    detail_data: Optional[Dict]
-    impact_score: Optional[int]
+    id: int = Field(..., description="龙虎榜记录ID。")
+    symbol: str = Field(..., description="股票代码。")
+    stock_name: Optional[str] = Field(None, description="股票名称。")
+    trade_date: date = Field(..., description="上榜交易日期。")
+    reason: Optional[str] = Field(None, description="上榜原因。")
+    total_buy_amount: Optional[float] = Field(None, description="总买入金额。")
+    total_sell_amount: Optional[float] = Field(None, description="总卖出金额。")
+    net_amount: Optional[float] = Field(None, description="净买入金额。")
+    institution_buy_count: int = Field(..., description="机构买入席位数量。")
+    institution_sell_count: int = Field(..., description="机构卖出席位数量。")
+    institution_net_amount: Optional[float] = Field(None, description="机构净买入金额。")
+    detail_data: Optional[Dict[str, Any]] = Field(None, description="龙虎榜明细数据。")
+    impact_score: Optional[int] = Field(None, description="影响评分。")
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -366,12 +366,12 @@ class DragonTigerListResponse(BaseModel):
 class MonitoringSummaryResponse(BaseModel):
     """监控摘要响应"""
 
-    total_stocks: int = 0
-    limit_up_count: int = 0
-    limit_down_count: int = 0
-    strong_up_count: int = 0
-    strong_down_count: int = 0
-    avg_change_percent: Optional[float] = None
-    total_amount: Optional[float] = None
-    active_alerts: int = 0
-    unread_alerts: int = 0
+    total_stocks: int = Field(0, description="纳入监控的股票总数。")
+    limit_up_count: int = Field(0, description="涨停数量。")
+    limit_down_count: int = Field(0, description="跌停数量。")
+    strong_up_count: int = Field(0, description="强势上涨股票数量。")
+    strong_down_count: int = Field(0, description="强势下跌股票数量。")
+    avg_change_percent: Optional[float] = Field(None, description="平均涨跌幅。")
+    total_amount: Optional[float] = Field(None, description="总成交额。")
+    active_alerts: int = Field(0, description="当前活跃告警数量。")
+    unread_alerts: int = Field(0, description="未读告警数量。")

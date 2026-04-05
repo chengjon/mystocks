@@ -7,7 +7,7 @@
 from typing import Any, Dict
 
 from fastapi import APIRouter, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.openapi_config import COMMON_RESPONSES
 
@@ -25,10 +25,10 @@ router = APIRouter(
 class OptimizationResponse(BaseModel):
     """优化响应"""
 
-    operation: str
-    status: str
-    duration_ms: int
-    result: Dict[str, Any]
+    operation: str = Field(..., description="执行的数据库优化操作名称。")
+    status: str = Field(..., description="优化操作执行状态。")
+    duration_ms: int = Field(..., description="本次操作耗时，单位毫秒。")
+    result: Dict[str, Any] = Field(..., description="优化执行结果详情。")
 
 
 @router.post("/vacuum", response_model=OptimizationResponse, summary="Vacuum Database")
