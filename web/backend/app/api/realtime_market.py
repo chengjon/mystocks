@@ -16,7 +16,7 @@ from datetime import datetime
 from typing import Any, Dict, List
 
 import structlog
-from fastapi import APIRouter, HTTPException, Query, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, HTTPException, Path, Query, WebSocket, WebSocketDisconnect
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -29,6 +29,123 @@ from web.backend.app.api.realtime_mtm_adapter import MTMUpdate, get_mtm_engine
 logger = structlog.get_logger()
 
 router = APIRouter()
+
+
+def _success_response_spec(status_code: int, description: str, example: object) -> dict[int, dict]:
+    return {
+        status_code: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+def _error_response_spec(status_code: int, description: str, example: dict) -> dict[int, dict]:
+    return {
+        status_code: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+PORTFOLIO_MTM_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "获取投资组合市值快照失败",
+        {"detail": "MTM 引擎不可用", "error_code": "MTM_OPERATION_FAILED"},
+    ),
+    **_success_response_spec(
+        200,
+        "投资组合市值快照",
+        {
+            "success": True,
+            "data": {
+                "portfolio_id": "portfolio-001",
+                "total_market_value": 1258000.0,
+                "total_cost": 1195000.0,
+                "total_unrealized_profit": 43200.0,
+                "total_realized_profit": 19800.0,
+                "total_profit": 63000.0,
+                "profit_ratio": 5.27,
+                "cash_balance": 186000.0,
+                "available_cash": 152000.0,
+                "position_count": 3,
+                "last_update": "2026-04-05T14:30:00",
+                "positions": {
+                    "pos-001": {
+                        "position_id": "pos-001",
+                        "symbol": "600519",
+                        "quantity": 200,
+                        "avg_price": 1680.0,
+                        "market_price": 1718.5,
+                        "market_value": 343700.0,
+                        "unrealized_profit": 7700.0,
+                        "profit_ratio": 2.29,
+                    }
+                },
+            },
+        },
+    ),
+}
+
+POSITION_MTM_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "获取持仓市值快照失败",
+        {"detail": "MTM 引擎不可用", "error_code": "MTM_OPERATION_FAILED"},
+    ),
+    **_success_response_spec(
+        200,
+        "单个持仓市值快照",
+        {
+            "success": True,
+            "data": {
+                "position_id": "pos-001",
+                "symbol": "600519",
+                "quantity": 200,
+                "avg_price": 1680.0,
+                "market_price": 1718.5,
+                "market_value": 343700.0,
+                "unrealized_profit": 7700.0,
+                "profit_ratio": 2.29,
+                "total_profit": 9800.0,
+                "last_update": "2026-04-05T14:30:00",
+            },
+        },
+    ),
+}
+
+MTM_STATS_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "获取 MTM 引擎统计失败",
+        {"detail": "MTM 引擎不可用", "error_code": "MTM_OPERATION_FAILED"},
+    ),
+    **_success_response_spec(
+        200,
+        "MTM 引擎统计信息",
+        {
+            "success": True,
+            "data": {
+                "engine_metrics": {"snapshots_served": 128, "last_update": "2026-04-05T14:30:00"},
+                "connection_stats": {
+                    "total_connections": 3,
+                    "total_subscriptions": 8,
+                    "subscribed_symbols": ["600519", "000001"],
+                },
+            },
+        },
+    ),
+}
 
 
 @dataclass
@@ -369,8 +486,13 @@ async def get_realtime_quotes(symbols: str = Query(..., description="股票代�
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/api/mtm/portfolio/{portfolio_id}")
-async def get_portfolio_mtm(portfolio_id: str):
+@router.get(
+    "/api/mtm/portfolio/{portfolio_id}",
+    summary="获取投资组合市值快照",
+    description="按投资组合 ID 查询最新 MTM 市值快照，返回组合收益、现金余额和持仓汇总信息。",
+    responses=PORTFOLIO_MTM_RESPONSES,
+)
+async def get_portfolio_mtm(portfolio_id: str = Path(..., description="待查询的投资组合 ID。")):
     """
     获取投资组合市值快照
     """
@@ -388,8 +510,13 @@ async def get_portfolio_mtm(portfolio_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/api/mtm/position/{position_id}")
-async def get_position_mtm(position_id: str):
+@router.get(
+    "/api/mtm/position/{position_id}",
+    summary="获取单个持仓市值快照",
+    description="按持仓 ID 查询最新 MTM 快照，返回盈亏、持仓数量和最近更新时间。",
+    responses=POSITION_MTM_RESPONSES,
+)
+async def get_position_mtm(position_id: str = Path(..., description="待查询的持仓 ID。")):
     """
     获取单个持仓市值快照
     """
@@ -421,7 +548,12 @@ async def get_position_mtm(position_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/api/mtm/stats")
+@router.get(
+    "/api/mtm/stats",
+    summary="获取 MTM 引擎统计信息",
+    description="查询 MTM 引擎当前服务指标和 WebSocket 连接统计，用于监控运行状态。",
+    responses=MTM_STATS_RESPONSES,
+)
 async def get_mtm_stats():
     """
     获取 MTM 引擎统计信息

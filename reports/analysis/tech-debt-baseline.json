@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-05T05:19:35Z",
+  "generated_at": "2026-04-05T05:29:41Z",
   "metric_version": "v1",
   "frontend_type_errors": 0,
   "frontend_suppressions_count": 0,
@@ -22,15 +22,15 @@
     "endpoint_function_issues": 174
   },
   "backend_api_documentation": {
-    "frozen_at": "2026-04-05T13:19:35+08:00",
+    "frozen_at": "2026-04-05T13:29:41+08:00",
     "total_endpoints": 489,
-    "documented_endpoints": 417,
-    "documented_percentage": 0.852760736196319,
-    "endpoints_with_examples": 213,
-    "example_percentage": 0.43558282208588955,
-    "endpoints_with_errors": 478,
-    "error_response_percentage": 0.9775051124744376,
-    "total_issues": 705,
+    "documented_endpoints": 420,
+    "documented_percentage": 0.8588957055214724,
+    "endpoints_with_examples": 216,
+    "example_percentage": 0.44171779141104295,
+    "endpoints_with_errors": 479,
+    "error_response_percentage": 0.9795501022494888,
+    "total_issues": 699,
     "schema_issue_count": 616,
     "authentication_issue_count": 0
   }
