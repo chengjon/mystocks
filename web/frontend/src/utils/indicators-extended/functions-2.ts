@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 /**
  * Extended Technical Indicators Utility
  *
@@ -9,14 +7,12 @@
 
 import {
   EMA,
-  _MACD,
   RSI,
   BollingerBands,
   ATR,
   MFI,
   // MOM 已移除 - technicalindicators v3.1.0 不存在，使用 ROC 替代
   OBV,
-  _KST,
   ForceIndex
   // VWMA 已移除 - technicalindicators v3.1.0 不存在，使用自定义实现
 } from 'technicalindicators'
@@ -29,6 +25,8 @@ import {
   calculateCCI,
   calculateCMO,
   calculateDEMA,
+  calculateDonchianLower,
+  calculateDonchianUpper,
   calculateEMA,
   calculateHMA,
   calculateKAMA,
@@ -48,6 +46,17 @@ import {
   calculateADL,
   type ExtendedKLineDataPoint
 } from './part-1.ts'
+
+interface IndicatorCalcParams {
+  period?: number
+  step?: number
+  max?: number
+  fastPeriod?: number
+  slowPeriod?: number
+  signalPeriod?: number
+  stdDev?: number
+  multiplier?: number
+}
 
 function calculateAverage(values: number[], divisors: number[], period: number): number[] {
   const result: number[] = []
@@ -374,46 +383,48 @@ export function calculateIndicator(
   data: ExtendedKLineDataPoint[],
   params?: unknown
 ): unknown {
+  const config = (typeof params === 'object' && params !== null ? params : {}) as IndicatorCalcParams
+
   try {
     switch (indicator) {
-      case 'SMA': return calculateSMA(data, params?.period || 20)
-      case 'EMA': return calculateEMA(data, params?.period || 20)
-      case 'WMA': return calculateWMA(data, params?.period || 20)
-      case 'DEMA': return calculateDEMA(data, params?.period || 20)
-      case 'TEMA': return calculateTEMA(data, params?.period || 20)
-      case 'TRIMA': return calculateTRIMA(data, params?.period || 18)
-      case 'VWMA': return calculateVWMA(data, params?.period || 20)
+      case 'SMA': return calculateSMA(data, config.period || 20)
+      case 'EMA': return calculateEMA(data, config.period || 20)
+      case 'WMA': return calculateWMA(data, config.period || 20)
+      case 'DEMA': return calculateDEMA(data, config.period || 20)
+      case 'TEMA': return calculateTEMA(data, config.period || 20)
+      case 'TRIMA': return calculateTRIMA(data, config.period || 18)
+      case 'VWMA': return calculateVWMA(data, config.period || 20)
       case 'VWAP': return calculateVWAP(data)
-      case 'KAMA': return calculateKAMA(data, params?.period || 20)
-      case 'HMA': return calculateHMA(data, params?.period || 20)
-      case 'PSAR': return calculatePSAR(data, params?.step || 0.02, params?.max || 0.2)
-      case 'ADX': return calculateADX(data, params?.period || 14)
-      case 'MACD': return calculateMACD(data.map(d => d.close), params?.fastPeriod, params?.slowPeriod, params?.signalPeriod)
-      case 'DonchianUpper': return calculateDonchianUpper(data, params?.period || 20)
-      case 'DonchianLower': return calculateDonchianLower(data, params?.period || 20)
+      case 'KAMA': return calculateKAMA(data, config.period || 20)
+      case 'HMA': return calculateHMA(data, config.period || 20)
+      case 'PSAR': return calculatePSAR(data, config.step || 0.02, config.max || 0.2)
+      case 'ADX': return calculateADX(data, config.period || 14)
+      case 'MACD': return calculateMACD(data.map(d => d.close), config.fastPeriod, config.slowPeriod, config.signalPeriod)
+      case 'DonchianUpper': return calculateDonchianUpper(data, config.period || 20)
+      case 'DonchianLower': return calculateDonchianLower(data, config.period || 20)
 
-      case 'RSI': return RSI.calculate({ period: params?.period || 14, values: data.map(d => d.close) })
-      case 'CCI': return calculateCCI(data, params?.period || 20)
+      case 'RSI': return RSI.calculate({ period: config.period || 14, values: data.map(d => d.close) })
+      case 'CCI': return calculateCCI(data, config.period || 20)
       case 'AO': return calculateAO(data)
-      case 'CMO': return calculateCMO(data, params?.period || 14)
-      case 'MOM': return calculateMOM(data, params?.period || 10)
-      case 'ROC': return calculateROC(data, params?.period || 12)
-      case 'WilliamsR': return calculateWilliamsR(data, params?.period || 14)
-      case 'Stochastic': return calculateStochastic(data, params?.period || 14, params?.signalPeriod || 3)
+      case 'CMO': return calculateCMO(data, config.period || 14)
+      case 'MOM': return calculateMOM(data, config.period || 10)
+      case 'ROC': return calculateROC(data, config.period || 12)
+      case 'WilliamsR': return calculateWilliamsR(data, config.period || 14)
+      case 'Stochastic': return calculateStochastic(data, config.period || 14, config.signalPeriod || 3)
       case 'StochRSI': return calculateStochRSI(data)
-      case 'BullBearPower': return calculateBullBearPower(data, params?.period || 13)
+      case 'BullBearPower': return calculateBullBearPower(data, config.period || 13)
       case 'UltimateOscillator': return calculateUltimateOscillator(data)
-      case 'MFI': return calculateMFI(data, params?.period || 14)
-      case 'TRIX': return calculateTRIX(data, params?.period || 18)
-      case 'ForceIndex': return calculateForceIndex(data, params?.period || 13)
+      case 'MFI': return calculateMFI(data, config.period || 14)
+      case 'TRIX': return calculateTRIX(data, config.period || 18)
+      case 'ForceIndex': return calculateForceIndex(data, config.period || 13)
 
-      case 'BB': return calculateBB(data, params?.period || 20, params?.stdDev || 2)
-      case 'ATR': return calculateATR(data, params?.period || 14)
-      case 'KeltnerChannel': return calculateKeltnerChannel(data, params?.period || 20, params?.multiplier || 2)
+      case 'BB': return calculateBB(data, config.period || 20, config.stdDev || 2)
+      case 'ATR': return calculateATR(data, config.period || 14)
+      case 'KeltnerChannel': return calculateKeltnerChannel(data, config.period || 20, config.multiplier || 2)
 
       case 'OBV': return calculateOBV(data)
       case 'ADL': return calculateADL(data)
-      case 'ChaikinMF': return calculateChaikinMF(data, params?.period || 20)
+      case 'ChaikinMF': return calculateChaikinMF(data, config.period || 20)
 
       default:
         return null

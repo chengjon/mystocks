@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 /**
  * Extended Technical Indicators Utility
  *
@@ -10,7 +8,6 @@
 import {
   SMA,
   EMA,
-  _MACD,
   Stochastic,
   WMA,
   ADL,
@@ -23,8 +20,7 @@ import {
   StochasticRSI,
   TRIX,
   VWAP,
-  WilliamsR,
-  _KST
+  WilliamsR
   // VWMA 已移除 - technicalindicators v3.1.0 不存在，使用自定义实现
 } from 'technicalindicators'
 
