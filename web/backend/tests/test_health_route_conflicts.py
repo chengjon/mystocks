@@ -923,6 +923,34 @@ def test_stock_search_endpoints_have_docs_examples_and_error_responses() -> None
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
+def test_stock_search_support_endpoints_have_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    endpoint_expectations = {
+        ("/api/stock-search/news/{symbol}", "get"): {"symbol", "market", "days"},
+        ("/api/stock-search/news/market/{category}", "get"): {"category", "market"},
+        ("/api/stock-search/recommendation/{symbol}", "get"): {"symbol"},
+        ("/api/stock-search/cache/clear", "post"): set(),
+        ("/api/stock-search/analytics/searches", "get"): {"limit", "operation", "username"},
+        ("/api/stock-search/analytics/cleanup", "post"): {"days"},
+    }
+
+    for (path, method), parameter_names in endpoint_expectations.items():
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+        success_json = operation["responses"][next(code for code in operation["responses"] if code.startswith("2"))][
+            "content"
+        ]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in parameter_names:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_watchlist_write_endpoints_have_docs_and_request_examples() -> None:
     app.openapi_schema = None
     schema = app.openapi()

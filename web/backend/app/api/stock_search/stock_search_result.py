@@ -19,6 +19,17 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from pydantic import ValidationError
 
 from app.api.auth import User, get_current_user
+from app.api.stock_search.openapi_metadata import (
+    CACHE_CLEAR_RESPONSES,
+    MARKET_NEWS_RESPONSES,
+    RECOMMENDATION_RESPONSES,
+    SEARCH_ANALYTICS_CLEANUP_RESPONSES,
+    SEARCH_ANALYTICS_RESPONSES,
+    STOCK_NEWS_RESPONSES,
+    STOCK_PROFILE_RESPONSES,
+    STOCK_QUOTE_RESPONSES,
+    STOCK_SEARCH_RESPONSES,
+)
 from app.api.stock_search.stock_search_schemas import NewsItem, SearchRequest, StockQuote, StockSearchResult
 from app.api.stock_search.stock_search_support import (
     check_admin_privileges,
@@ -29,7 +40,6 @@ from app.api.stock_search.stock_search_support import (
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
 from app.core.exceptions import BusinessException, ForbiddenException, NotFoundException, ValidationException
 from app.core.responses import APIResponse
-from app.openapi_config import COMMON_RESPONSES
 from app.schema import StockListQueryModel  # 导入P0改进的验证模型
 from app.services.stock_search_service import get_stock_search_service
 from src.core.exceptions import (
@@ -43,158 +53,6 @@ from src.core.exceptions import (
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
-
-
-def _success_response_spec(description: str, example: Any) -> dict[int, dict[str, Any]]:
-    return {
-        200: {
-            "description": description,
-            "content": {
-                "application/json": {
-                    "example": example,
-                }
-            },
-        }
-    }
-
-
-def _error_response_spec(status_code: int, description: str, example: dict[str, Any]) -> dict[int, dict[str, Any]]:
-    return {
-        status_code: {
-            "description": description,
-            "content": {
-                "application/json": {
-                    "example": example,
-                }
-            },
-        }
-    }
-
-
-STOCK_SEARCH_RESPONSES = {
-    400: COMMON_RESPONSES[400],
-    401: COMMON_RESPONSES[401],
-    422: COMMON_RESPONSES[422],
-    500: COMMON_RESPONSES[500],
-    **_error_response_spec(
-        429,
-        "搜索频率超限",
-        {
-            "code": "RATE_LIMIT_EXCEEDED",
-            "message": "搜索频率过高，请稍后再试",
-            "data": None,
-            "path": "/api/stock-search/search",
-            "timestamp": None,
-        },
-    ),
-    **_error_response_spec(
-        503,
-        "股票搜索服务暂不可用",
-        {
-            "code": "SERVICE_UNAVAILABLE",
-            "message": "股票搜索服务暂时不可用，请稍后重试",
-            "data": None,
-            "path": "/api/stock-search/search",
-            "timestamp": None,
-        },
-    ),
-    **_success_response_spec(
-        "A股与港股股票搜索结果",
-        [
-            {
-                "symbol": "600519",
-                "description": "贵州茅台",
-                "displaySymbol": "600519.SH",
-                "type": "Common Stock",
-                "exchange": "SSE",
-                "market": "cn",
-            },
-            {
-                "symbol": "00700",
-                "description": "腾讯控股",
-                "displaySymbol": "00700.HK",
-                "type": "Common Stock",
-                "exchange": "HKEX",
-                "market": "hk",
-            },
-        ],
-    ),
-}
-
-STOCK_QUOTE_RESPONSES = {
-    400: COMMON_RESPONSES[400],
-    401: COMMON_RESPONSES[401],
-    404: COMMON_RESPONSES[404],
-    422: COMMON_RESPONSES[422],
-    500: COMMON_RESPONSES[500],
-    **_error_response_spec(
-        503,
-        "实时行情服务暂不可用",
-        {
-            "code": "SERVICE_UNAVAILABLE",
-            "message": "数据源暂时不可用，请稍后重试",
-            "data": None,
-            "path": "/api/stock-search/quote/600519",
-            "timestamp": None,
-        },
-    ),
-    **_success_response_spec(
-        "A股或港股实时行情",
-        {
-            "symbol": "600519",
-            "name": "贵州茅台",
-            "current": 1710.88,
-            "change": 12.31,
-            "percent_change": 0.72,
-            "high": 1718.6,
-            "low": 1688.0,
-            "open": 1695.0,
-            "previous_close": 1698.57,
-            "volume": 325800.0,
-            "amount": 556000000.0,
-            "timestamp": 1775351400.0,
-        },
-    ),
-}
-
-STOCK_PROFILE_RESPONSES = {
-    401: COMMON_RESPONSES[401],
-    422: COMMON_RESPONSES[422],
-    500: COMMON_RESPONSES[500],
-    **_error_response_spec(
-        501,
-        "当前环境未启用公司资料服务",
-        {
-            "code": "FEATURE_NOT_SUPPORTED",
-            "message": "公司基本信息功能暂不支持，本系统仅支持 A 股和 H 股（港股），不支持美股",
-            "data": None,
-            "path": "/api/stock-search/profile/600519",
-            "timestamp": None,
-        },
-    ),
-    **_error_response_spec(
-        503,
-        "公司资料服务暂不可用",
-        {
-            "code": "COMPANY_INFO_SERVICE_UNAVAILABLE",
-            "message": "公司信息服务暂时不可用，请稍后重试",
-            "data": None,
-            "path": "/api/stock-search/profile/600519",
-            "timestamp": None,
-        },
-    ),
-    **_success_response_spec(
-        "A股或港股公司资料",
-        {
-            "symbol": "600519",
-            "name": "贵州茅台",
-            "industry": "酿酒行业",
-            "market_cap": 2148000000000.0,
-            "listing_date": "2001-08-27",
-            "description": "贵州茅台酒股份有限公司，主营高端白酒生产与销售。",
-        },
-    ),
-}
 
 
 def validate_stock_symbol(symbol: str, market: str) -> str:
@@ -537,10 +395,16 @@ async def get_company_profile(
         )
 
 
-@router.get("/news/{symbol}", response_model=List[NewsItem])
+@router.get(
+    "/news/{symbol}",
+    response_model=List[NewsItem],
+    summary="获取A股或港股个股新闻",
+    description="返回指定 A 股或港股股票最近数日的新闻列表，适用于个股资讯面板与事件回溯场景。",
+    responses=STOCK_NEWS_RESPONSES,
+)
 async def get_stock_news(
-    symbol: str,
-    market: str = Query("cn", description="市场类型: cn, hk"),
+    symbol: str = Path(..., description="股票代码，例如 A股 `600519`、港股 `00700`"),
+    market: str = Query("cn", description="市场类型: cn, hk", pattern=r"^(cn|hk)$"),
     days: int = Query(7, description="获取最近几天的新闻", ge=1, le=30),
     current_user: User = Depends(get_current_user),
 ) -> List[Dict]:
@@ -575,6 +439,8 @@ async def get_stock_news(
                 raise ValidationException(detail="不支持的市场类型，仅支持: cn, hk", field="market")
 
             return news
+    except HTTPException:
+        raise
     except (DataFetchError, ServiceError, NetworkError) as e:
         logger.error("Get stock news failed for symbol {symbol}: {e.message}", extra=e.to_dict())
         raise BusinessException(
@@ -585,10 +451,16 @@ async def get_stock_news(
         raise BusinessException(detail="获取新闻失败，请稍后重试", status_code=500, error_code="NEWS_RETRIEVAL_FAILED")
 
 
-@router.get("/news/market/{category}", response_model=List[NewsItem])
+@router.get(
+    "/news/market/{category}",
+    response_model=List[NewsItem],
+    summary="获取A股或港股市场新闻",
+    description="按新闻分类返回 A 股或港股市场级资讯，用于市场概览、主题跟踪和盘中快讯聚合。",
+    responses=MARKET_NEWS_RESPONSES,
+)
 async def get_market_news(
-    category: str = "general",
-    market: str = Query("cn", description="市场类型: cn, hk"),
+    category: str = Path(..., description="市场新闻分类，例如 `general`、`macro`、`industry`"),
+    market: str = Query("cn", description="市场类型: cn, hk", pattern=r"^(cn|hk)$"),
     current_user: User = Depends(get_current_user),
 ) -> List[Dict]:
     """
@@ -609,6 +481,8 @@ async def get_market_news(
             raise ValidationException(detail="不支持的市场类型，仅支持: cn, hk", field="market")
 
         return news
+    except HTTPException:
+        raise
     except (DataFetchError, ServiceError, NetworkError) as e:
         logger.error("Get market news failed for category {category}: {e.message}", extra=e.to_dict())
         raise BusinessException(
@@ -621,8 +495,16 @@ async def get_market_news(
         )
 
 
-@router.get("/recommendation/{symbol}")
-async def get_recommendation_trends(symbol: str, current_user: User = Depends(get_current_user)) -> Dict:
+@router.get(
+    "/recommendation/{symbol}",
+    summary="获取个股分析师推荐趋势",
+    description="返回指定股票的分析师评级趋势或 mock 示例，在真实推荐数据源未启用时按契约返回 501。",
+    responses=RECOMMENDATION_RESPONSES,
+)
+async def get_recommendation_trends(
+    symbol: str = Path(..., description="股票代码，例如 A股 `600519`、港股 `00700`"),
+    current_user: User = Depends(get_current_user),
+) -> Dict:
     """
     获取分析师推荐趋势
 
@@ -663,7 +545,13 @@ async def get_recommendation_trends(symbol: str, current_user: User = Depends(ge
         )
 
 
-@router.post("/cache/clear", response_model=APIResponse)
+@router.post(
+    "/cache/clear",
+    response_model=APIResponse,
+    summary="清除股票搜索缓存",
+    description="管理员清空股票搜索相关缓存，用于数据源切换、异常恢复和排查缓存脏数据。",
+    responses=CACHE_CLEAR_RESPONSES,
+)
 async def clear_search_cache(current_user: User = Depends(get_current_user)) -> APIResponse:
     """
     清除搜索缓存
@@ -699,7 +587,13 @@ async def clear_search_cache(current_user: User = Depends(get_current_user)) -> 
         raise BusinessException(detail="清除缓存失败", status_code=500, error_code="CACHE_CLEAR_FAILED")
 
 
-@router.get("/analytics/searches", response_model=Dict[str, Any])
+@router.get(
+    "/analytics/searches",
+    response_model=Dict[str, Any],
+    summary="查询股票搜索分析数据",
+    description="管理员查询股票搜索行为分析结果，支持按操作类型和用户名过滤，并返回聚合统计。",
+    responses=SEARCH_ANALYTICS_RESPONSES,
+)
 async def get_search_analytics(
     limit: int = Query(100, description="返回记录数", ge=1, le=500),
     operation: Optional[str] = Query(None, description="操作类型过滤"),
@@ -780,7 +674,13 @@ async def get_search_analytics(
         )
 
 
-@router.post("/analytics/cleanup", response_model=APIResponse)
+@router.post(
+    "/analytics/cleanup",
+    response_model=APIResponse,
+    summary="清理股票搜索分析数据",
+    description="管理员按保留天数清理旧的股票搜索分析记录，控制运营审计数据体积。",
+    responses=SEARCH_ANALYTICS_CLEANUP_RESPONSES,
+)
 async def cleanup_search_analytics(
     days: int = Query(7, description="保留最近几天的数据", ge=1, le=30), current_user: User = Depends(get_current_user)
 ):
