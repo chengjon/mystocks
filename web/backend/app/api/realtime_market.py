@@ -147,6 +147,63 @@ MTM_STATS_RESPONSES = {
     ),
 }
 
+REALTIME_QUOTE_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "获取单只股票实时行情失败",
+        {"detail": "realtime quote service unavailable"},
+    ),
+    **_success_response_spec(
+        200,
+        "单只股票实时行情",
+        {
+            "success": True,
+            "data": {
+                "symbol": "600519",
+                "name": "贵州茅台",
+                "price": 1710.88,
+                "open": 1702.0,
+                "high": 1718.5,
+                "low": 1698.2,
+                "pre_close": 1700.1,
+                "volume": 126500,
+                "amount": 214563000.0,
+                "change": 10.78,
+                "change_percent": 0.63,
+            },
+        },
+    ),
+}
+
+REALTIME_QUOTES_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "批量获取实时行情失败",
+        {"detail": "batch realtime quote service unavailable"},
+    ),
+    **_success_response_spec(
+        200,
+        "批量股票实时行情",
+        {
+            "success": True,
+            "data": {
+                "600519": {
+                    "symbol": "600519",
+                    "name": "贵州茅台",
+                    "price": 1710.88,
+                    "change_percent": 0.63,
+                },
+                "000001": {
+                    "symbol": "000001",
+                    "name": "平安银行",
+                    "price": 12.58,
+                    "change_percent": -0.24,
+                },
+            },
+        },
+    ),
+}
+
 
 @dataclass
 class SubscriptionInfo:
@@ -412,8 +469,13 @@ async def websocket_portfolio(
         manager.disconnect(client_id)
 
 
-@router.get("/api/realtime/quote/{symbol}")
-async def get_realtime_quote(symbol: str):
+@router.get(
+    "/api/realtime/quote/{symbol}",
+    summary="获取单只股票实时行情",
+    description="按股票代码返回最新价、开高低收和成交额等实时行情字段，供盘口面板和持仓估值组件直接消费。",
+    responses=REALTIME_QUOTE_RESPONSES,
+)
+async def get_realtime_quote(symbol: str = Path(..., description="待查询的股票代码，例如 600519 或 000001。")):
     """
     获取股票实时行情
 
@@ -452,7 +514,12 @@ async def get_realtime_quote(symbol: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/api/realtime/quotes")
+@router.get(
+    "/api/realtime/quotes",
+    summary="批量获取股票实时行情",
+    description="按逗号分隔的股票代码列表批量返回最新行情摘要，适用于自选股列表和监控看板的并发查询场景。",
+    responses=REALTIME_QUOTES_RESPONSES,
+)
 async def get_realtime_quotes(symbols: str = Query(..., description="股票代码列表，逗号分隔")):
     """
     批量获取股票实时行情

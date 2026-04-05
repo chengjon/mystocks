@@ -543,6 +543,29 @@ def test_data_quality_overview_endpoints_have_descriptions_examples_and_error_re
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
+def test_realtime_quote_endpoints_have_descriptions_examples_and_parameter_docs() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    quote_operation = schema["paths"]["/api/api/realtime/quote/{symbol}"]["get"]
+    quote_parameters = quote_operation.get("parameters", [])
+    quote_success_json = quote_operation["responses"]["200"]["content"]["application/json"]
+
+    assert quote_operation.get("summary")
+    assert len(quote_operation.get("description", "")) >= 20
+    assert any(param["name"] == "symbol" and param.get("description") for param in quote_parameters)
+    assert "example" in quote_success_json or "examples" in quote_success_json
+    assert any(code.startswith(("4", "5")) for code in quote_operation["responses"])
+
+    quotes_operation = schema["paths"]["/api/api/realtime/quotes"]["get"]
+    quotes_success_json = quotes_operation["responses"]["200"]["content"]["application/json"]
+
+    assert quotes_operation.get("summary")
+    assert len(quotes_operation.get("description", "")) >= 20
+    assert "example" in quotes_success_json or "examples" in quotes_success_json
+    assert any(code.startswith(("4", "5")) for code in quotes_operation["responses"])
+
+
 def test_sentiment_and_technical_pattern_endpoints_have_docs_examples_and_parameter_descriptions() -> None:
     app.openapi_schema = None
     schema = app.openapi()
