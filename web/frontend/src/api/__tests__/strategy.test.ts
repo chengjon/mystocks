@@ -8,6 +8,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { StrategyAdapter } from '@/api/adapters/strategyAdapter';
 import { mockStrategyList, mockStrategyDetail, mockBacktestTask } from '@/mock/strategyMock';
 import type { UnifiedResponse } from '@/api/apiClient';
+import type { Strategy } from '@/api/types/extensions/strategy';
 
 // Mock console methods
 global.console = {
@@ -231,16 +232,19 @@ describe('StrategyAdapter', () => {
     });
 
     it('should reject strategy with invalid type', () => {
-      const invalidStrategy = {
+      const invalidStrategy: Strategy = {
         id: '1',
         name: 'Test',
         description: 'Test',
-        type: 'invalid_type' as any,
+        type: 'custom',
         status: 'active' as const,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
         parameters: {},
       };
+      Object.defineProperty(invalidStrategy, 'type', {
+        value: 'invalid_type',
+      });
 
       const result = StrategyAdapter.validateStrategy(invalidStrategy);
       expect(result).toBe(false);
