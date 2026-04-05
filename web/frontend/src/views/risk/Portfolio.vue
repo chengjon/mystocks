@@ -19,6 +19,6 @@
 
 <style scoped>
     .risk-portfolio-view {
-        padding: 20px;
+        padding: var(--artdeco-spacing-5);
     }
 </style>

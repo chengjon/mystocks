@@ -19,6 +19,6 @@
 
 <style scoped>
     .risk-positions-view {
-        padding: 20px;
+        padding: var(--artdeco-spacing-5);
     }
 </style>

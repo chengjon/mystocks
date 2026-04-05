@@ -19,6 +19,6 @@
 
 <style scoped>
     .history-view {
-        padding: 20px;
+        padding: var(--artdeco-spacing-5);
     }
 </style>
