@@ -67,9 +67,7 @@ class MongoCollaborationStore(CollaborationStore):
         return [_load_required(document, WorkItemRecord) for document in cursor]
 
     def append_work_update(self, update: WorkUpdateRecord) -> WorkUpdateRecord:
-        existing = self._work_updates.find_one(
-            {"work_item_id": update.work_item_id, "update_id": update.update_id}
-        )
+        existing = self._work_updates.find_one({"work_item_id": update.work_item_id, "update_id": update.update_id})
         if existing is None:
             self._work_updates.insert_one(_document_for(update))
         return update

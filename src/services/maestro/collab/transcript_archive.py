@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from hashlib import sha256
 from pathlib import Path
-from typing import Any, Callable, Protocol
+from typing import Any, Callable, Protocol, cast
 
 
 @dataclass(frozen=True)
@@ -32,7 +32,9 @@ class TranscriptArchiveRetryableError(RuntimeError):
 
 
 class TranscriptArchiveBackend(Protocol):
-    def seal_session(self, session_id: str, chunks: list[str], metadata: dict[str, Any]) -> TranscriptArchiveSealResult: ...
+    def seal_session(
+        self, session_id: str, chunks: list[str], metadata: dict[str, Any]
+    ) -> TranscriptArchiveSealResult: ...
 
     def stat(self, locator: str) -> TranscriptArchiveStat: ...
 
@@ -90,7 +92,10 @@ class FilesystemTranscriptArchiveBackend:
         return TranscriptArchiveStat(locator=locator, exists=True, size_bytes=path.stat().st_size)
 
     def retrieve_metadata(self, locator: str) -> dict[str, Any]:
-        return json.loads((self._root / locator).read_text(encoding="utf-8"))
+        payload = json.loads((self._root / locator).read_text(encoding="utf-8"))
+        if not isinstance(payload, dict):
+            raise ValueError(f"archive manifest must be an object: {locator}")
+        return cast(dict[str, Any], payload)
 
     def _write_text(self, path: Path, content: str) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
