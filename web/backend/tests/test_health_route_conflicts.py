@@ -59,6 +59,26 @@ def test_root_and_socketio_status_have_documented_examples_and_errors() -> None:
         assert any(status.startswith("5") for status in responses)
 
 
+def test_health_and_csrf_endpoints_have_tags_examples_and_error_docs() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    csrf_operation = schema["paths"]["/api/csrf-token"]["get"]
+    csrf_responses = csrf_operation["responses"]
+    csrf_success_json = csrf_responses["200"]["content"]["application/json"]
+
+    assert csrf_operation.get("tags")
+    assert len(csrf_operation.get("description", "")) >= 20
+    assert "example" in csrf_success_json or "examples" in csrf_success_json
+    assert any(status.startswith("5") for status in csrf_responses)
+
+    health_operation = schema["paths"]["/health"]["get"]
+    health_responses = health_operation["responses"]
+
+    assert len(health_operation.get("description", "")) >= 20
+    assert any(status.startswith("5") for status in health_responses)
+
+
 def test_prometheus_exporter_endpoints_have_error_docs_and_examples() -> None:
     app.openapi_schema = None
     schema = app.openapi()

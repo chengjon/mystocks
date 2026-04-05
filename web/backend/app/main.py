@@ -520,6 +520,14 @@ HEALTH_CHECK_RESPONSE_EXAMPLE = {
     "request_id": "demo-request-id",
 }
 
+HEALTH_CHECK_ERROR_RESPONSE_EXAMPLE = {
+    "success": False,
+    "code": 500,
+    "message": "系统健康检查失败",
+    "data": None,
+    "request_id": "demo-request-id",
+}
+
 READINESS_SUCCESS_RESPONSE_EXAMPLE = {
     "success": True,
     "message": "系统就绪检查完成",
@@ -588,17 +596,38 @@ ROOT_ERROR_RESPONSE_EXAMPLE = {
     "request_id": "demo-request-id",
 }
 
+CSRF_TOKEN_RESPONSE_EXAMPLE = {
+    "success": True,
+    "code": 200,
+    "message": "CSRF token生成成功",
+    "data": {
+        "csrf_token": "csrf_demo_token_1234567890",
+        "token_type": "Bearer",
+        "expires_in": 3600,
+    },
+    "request_id": "demo-request-id",
+}
+
+CSRF_TOKEN_ERROR_RESPONSE_EXAMPLE = {
+    "detail": "Failed to generate CSRF token",
+}
+
 
 # 健康检查端点 - 使用统一响应格式
 @app.get(
     "/health",
     summary="系统健康检查",
+    description="返回服务存活状态、版本和响应格式中间件状态，供负载均衡、容器探针和人工巡检快速确认服务是否可用。",
     tags=["system"],
     responses={
         200: {
             "description": "系统健康检查结果",
             "content": {"application/json": {"example": HEALTH_CHECK_RESPONSE_EXAMPLE}},
-        }
+        },
+        500: {
+            "description": "系统健康检查失败",
+            "content": {"application/json": {"example": HEALTH_CHECK_ERROR_RESPONSE_EXAMPLE}},
+        },
     },
 )
 async def health_check(request: Request):
@@ -718,7 +747,22 @@ async def socketio_status():
 
 
 # SECURITY FIX 1.2: CSRF Token 端点
-@app.get("/api/csrf-token")
+@app.get(
+    "/api/csrf-token",
+    summary="获取 CSRF Token",
+    description="为前端返回新的 CSRF token，用于后续受保护写操作的请求头注入和安全校验。",
+    tags=["system", "security"],
+    responses={
+        200: {
+            "description": "成功生成 CSRF token",
+            "content": {"application/json": {"example": CSRF_TOKEN_RESPONSE_EXAMPLE}},
+        },
+        500: {
+            "description": "CSRF token 生成失败",
+            "content": {"application/json": {"example": CSRF_TOKEN_ERROR_RESPONSE_EXAMPLE}},
+        },
+    },
+)
 async def get_csrf_token(request: Request):
     """
     获取CSRF Token端点
