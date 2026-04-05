@@ -21,11 +21,20 @@ const wrapperCases = [
   },
   {
     label: 'risk stop-loss',
-    wrapperPath: 'src/views/risk/StopLoss.vue',
-    implementationPath: 'src/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue',
-    importLine: "import RiskStopLossPage from '@/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue'",
-    renderLine: '<RiskStopLossPage v-bind="attrs" />',
+    canonicalPath: 'src/views/risk/StopLoss.vue',
+    legacyPath: 'src/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue',
+    legacyImportLine: "import RiskStopLossCanonicalPage from '@/views/risk/StopLoss.vue'",
+    legacyRenderLine: '<RiskStopLossCanonicalPage v-bind="attrs" />',
+    canonicalEvidence: [
+      "import { apiClient } from '@/api/apiClient'",
+      "import { buildStopLossRows, pickPrimaryStopLossWatchlist, type StopLossRow } from '@/views/artdeco-pages/risk-tabs/stopLossMonitorData.ts'",
+      'title="止损雷达工作台"',
+      'buildStopLossRows(stocks, quotes)',
+    ],
   },
+]
+
+const compatibilityWrapperCases = [
   {
     label: 'risk alerts',
     wrapperPath: 'src/views/risk/Alerts.vue',
@@ -43,20 +52,22 @@ const wrapperCases = [
 ] as const
 
 describe('risk wrapper retention', () => {
-  it('moves the canonical risk overview implementation into src/views/risk/Overview.vue and keeps the ArtDeco path as a legacy wrapper', () => {
-    const canonicalSource = readSource(wrapperCases[0].canonicalPath)
-    const legacySource = readSource(wrapperCases[0].legacyPath)
-    const legacyFullPath = resolve(process.cwd(), wrapperCases[0].legacyPath)
+  for (const wrapperCase of wrapperCases) {
+    it(`moves the canonical ${wrapperCase.label} implementation into src/views/risk and keeps the ArtDeco path as a legacy wrapper`, () => {
+      const canonicalSource = readSource(wrapperCase.canonicalPath)
+      const legacySource = readSource(wrapperCase.legacyPath)
+      const legacyFullPath = resolve(process.cwd(), wrapperCase.legacyPath)
 
-    expect(existsSync(legacyFullPath)).toBe(true)
-    for (const evidenceLine of wrapperCases[0].canonicalEvidence) {
-      expect(canonicalSource).toContain(evidenceLine)
-    }
-    expect(legacySource).toContain(wrapperCases[0].legacyImportLine)
-    expect(legacySource).toContain(wrapperCases[0].legacyRenderLine)
-  })
+      expect(existsSync(legacyFullPath)).toBe(true)
+      for (const evidenceLine of wrapperCase.canonicalEvidence) {
+        expect(canonicalSource).toContain(evidenceLine)
+      }
+      expect(legacySource).toContain(wrapperCase.legacyImportLine)
+      expect(legacySource).toContain(wrapperCase.legacyRenderLine)
+    })
+  }
 
-  for (const wrapperCase of wrapperCases.slice(1)) {
+  for (const wrapperCase of compatibilityWrapperCases) {
     it(`keeps the canonical ${wrapperCase.label} wrapper pointed at its ArtDeco implementation`, () => {
       const wrapperSource = readSource(wrapperCase.wrapperPath)
       const implementationFullPath = resolve(process.cwd(), wrapperCase.implementationPath)
