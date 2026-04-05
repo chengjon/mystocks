@@ -1110,6 +1110,55 @@ def test_auth_login_endpoint_has_form_example_and_error_docs() -> None:
     assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
+def test_monitoring_alert_management_endpoints_have_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    endpoint_expectations = {
+        ("/api/v1/monitoring/alert-rules", "get"): {
+            "parameters": {"rule_type", "is_active"},
+            "requires_request_example": False,
+        },
+        ("/api/v1/monitoring/alert-rules", "post"): {
+            "parameters": set(),
+            "requires_request_example": True,
+        },
+        ("/api/v1/monitoring/alert-rules/{rule_id}", "put"): {
+            "parameters": {"rule_id"},
+            "requires_request_example": True,
+        },
+        ("/api/v1/monitoring/alert-rules/{rule_id}", "delete"): {
+            "parameters": {"rule_id"},
+            "requires_request_example": False,
+        },
+        ("/api/v1/monitoring/alerts/{alert_id}/mark-read", "post"): {
+            "parameters": {"alert_id"},
+            "requires_request_example": False,
+        },
+        ("/api/v1/monitoring/alerts/mark-all-read", "post"): {
+            "parameters": set(),
+            "requires_request_example": False,
+        },
+    }
+
+    for (path, method), expectation in endpoint_expectations.items():
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+        success_json = operation["responses"][next(code for code in operation["responses"] if code.startswith("2"))][
+            "content"
+        ]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expectation["parameters"]:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        if expectation["requires_request_example"]:
+            request_json = operation["requestBody"]["content"]["application/json"]
+            assert "example" in request_json or "examples" in request_json
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_stock_search_endpoints_have_docs_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()

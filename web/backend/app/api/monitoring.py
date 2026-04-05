@@ -7,7 +7,7 @@ import os
 from datetime import date, datetime
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Body, Depends, Path, Query
 from pydantic import BaseModel
 
 from app.core.exceptions import BusinessException, NotFoundException
@@ -30,6 +30,178 @@ from app.services.monitoring_service import monitoring_service
 router = APIRouter()
 
 _RUNTIME_ALERT_TIMESTAMP = datetime(2026, 3, 13, 10, 0, 0)
+
+
+def _success_response_spec(status_code: int, description: str, example: object) -> dict[int, dict]:
+    return {
+        status_code: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+def _error_response_spec(status_code: int, description: str, example: dict) -> dict[int, dict]:
+    return {
+        status_code: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+ALERT_RULES_LIST_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "获取告警规则列表失败",
+        {"detail": "监控服务不可用", "error_code": "MONITORING_OPERATION_FAILED"},
+    ),
+    **_success_response_spec(
+        200,
+        "告警规则列表",
+        {
+            "success": True,
+            "code": 200,
+            "message": "获取告警规则成功",
+            "data": [
+                {
+                    "id": 9001,
+                    "rule_name": "核心仓位跌破止损线",
+                    "rule_type": "technical_break",
+                    "description": "关键持仓跌破止损价时触发",
+                    "symbol": "600519",
+                    "stock_name": "贵州茅台",
+                    "parameters": {"stop_loss_price": 1750},
+                    "trigger_conditions": {"operator": "<=", "field": "current_price"},
+                    "notification_config": {"channels": ["ui"], "level": "critical"},
+                    "is_active": True,
+                    "priority": 5,
+                    "created_at": "2026-03-13T10:00:00",
+                    "updated_at": "2026-03-13T10:00:00",
+                }
+            ],
+            "timestamp": "2026-04-05T12:00:00Z",
+            "request_id": "req-monitoring-rules-001",
+            "errors": None,
+        },
+    ),
+}
+
+ALERT_RULE_CREATE_RESPONSES = {
+    **_error_response_spec(
+        400,
+        "创建告警规则请求无效",
+        {"detail": "规则名称不能为空", "error_code": "INVALID_MONITORING_REQUEST"},
+    ),
+    **_success_response_spec(
+        200,
+        "告警规则创建成功",
+        {
+            "id": 9201,
+            "rule_name": "茅台涨停监控",
+            "rule_type": "limit_up",
+            "description": "茅台涨停时触发提醒",
+            "symbol": "600519",
+            "stock_name": "贵州茅台",
+            "parameters": {"include_st": False},
+            "trigger_conditions": {"field": "change_percent", "operator": ">=", "value": 9.8},
+            "notification_config": {"channels": ["ui", "sound"], "level": "warning"},
+            "is_active": True,
+            "priority": 5,
+            "created_at": "2026-04-05T12:00:00",
+            "updated_at": "2026-04-05T12:00:00",
+        },
+    ),
+}
+
+ALERT_RULE_UPDATE_RESPONSES = {
+    **_error_response_spec(
+        404,
+        "未找到指定告警规则",
+        {"detail": "未找到监控数据: 9201", "error_code": "RESOURCE_NOT_FOUND"},
+    ),
+    **_error_response_spec(
+        400,
+        "更新告警规则请求无效",
+        {"detail": "优先级超出范围", "error_code": "INVALID_MONITORING_REQUEST"},
+    ),
+    **_success_response_spec(
+        200,
+        "告警规则更新成功",
+        {
+            "id": 9201,
+            "rule_name": "茅台涨停监控",
+            "rule_type": "limit_up",
+            "description": "更新后的涨停提醒规则",
+            "symbol": "600519",
+            "stock_name": "贵州茅台",
+            "parameters": {"include_st": False},
+            "trigger_conditions": {"field": "change_percent", "operator": ">=", "value": 9.8},
+            "notification_config": {"channels": ["ui"], "level": "critical"},
+            "is_active": True,
+            "priority": 4,
+            "created_at": "2026-04-05T10:00:00",
+            "updated_at": "2026-04-05T12:00:00",
+        },
+    ),
+}
+
+ALERT_RULE_DELETE_RESPONSES = {
+    **_error_response_spec(
+        404,
+        "未找到指定告警规则",
+        {"detail": "未找到监控数据: 9201", "error_code": "RESOURCE_NOT_FOUND"},
+    ),
+    **_error_response_spec(
+        400,
+        "删除告警规则请求无效",
+        {"detail": "删除失败", "error_code": "INVALID_MONITORING_REQUEST"},
+    ),
+    **_success_response_spec(
+        200,
+        "告警规则删除成功",
+        {"success": True, "message": "告警规则已删除"},
+    ),
+}
+
+ALERT_MARK_READ_RESPONSES = {
+    **_error_response_spec(
+        404,
+        "未找到指定告警记录",
+        {"detail": "未找到告警记录: 查询条件", "error_code": "RESOURCE_NOT_FOUND"},
+    ),
+    **_error_response_spec(
+        500,
+        "标记告警已读失败",
+        {"detail": "监控服务不可用", "error_code": "MONITORING_OPERATION_FAILED"},
+    ),
+    **_success_response_spec(
+        200,
+        "告警已标记为已读",
+        {"success": True, "message": "已标记为已读"},
+    ),
+}
+
+ALERT_MARK_ALL_READ_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "批量标记告警已读失败",
+        {"detail": "监控服务不可用", "error_code": "MONITORING_OPERATION_FAILED"},
+    ),
+    **_success_response_spec(
+        200,
+        "批量标记所有未读告警为已读",
+        {"success": True, "message": "功能开发中"},
+    ),
+}
 
 
 def _runtime_fallback_enabled() -> bool:
@@ -124,10 +296,16 @@ def _resolve_query_int(value: object, default: int) -> int:
 # ============================================================================
 
 
-@router.get("/alert-rules", response_model=UnifiedResponse[List[AlertRuleResponse]])
+@router.get(
+    "/alert-rules",
+    response_model=UnifiedResponse[List[AlertRuleResponse]],
+    summary="获取告警规则列表",
+    description="查询监控告警规则列表，支持按规则类型和启用状态过滤。",
+    responses=ALERT_RULES_LIST_RESPONSES,
+)
 async def get_alert_rules(
-    rule_type: Optional[AlertRuleType] = None,
-    is_active: Optional[bool] = None,
+    rule_type: Optional[AlertRuleType] = Query(None, description="规则类型过滤条件，例如 limit_up 或 technical_break。"),
+    is_active: Optional[bool] = Query(None, description="按启用状态过滤，true 表示仅返回启用规则。"),
     current_user: User = Depends(get_current_user),
 ):
     """
@@ -154,8 +332,31 @@ async def get_alert_rules(
         raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
-@router.post("/alert-rules", response_model=AlertRuleResponse)
-async def create_alert_rule(rule: AlertRuleCreate, current_user: User = Depends(get_current_user)):
+@router.post(
+    "/alert-rules",
+    response_model=AlertRuleResponse,
+    summary="创建告警规则",
+    description="创建新的监控告警规则，定义触发条件、通知方式和优先级。",
+    responses=ALERT_RULE_CREATE_RESPONSES,
+)
+async def create_alert_rule(
+    rule: AlertRuleCreate = Body(
+        ...,
+        example={
+            "rule_name": "茅台涨停监控",
+            "rule_type": "limit_up",
+            "description": "茅台涨停时触发提醒",
+            "symbol": "600519",
+            "stock_name": "贵州茅台",
+            "parameters": {"include_st": False},
+            "trigger_conditions": {"field": "change_percent", "operator": ">=", "value": 9.8},
+            "notification_config": {"channels": ["ui", "sound"], "level": "warning"},
+            "priority": 5,
+            "is_active": True,
+        },
+    ),
+    current_user: User = Depends(get_current_user),
+):
     """
     创建告警规则
 
@@ -181,8 +382,26 @@ async def create_alert_rule(rule: AlertRuleCreate, current_user: User = Depends(
         raise BusinessException(detail=str(e), status_code=400, error_code="INVALID_MONITORING_REQUEST")
 
 
-@router.put("/alert-rules/{rule_id}", response_model=AlertRuleResponse)
-async def update_alert_rule(rule_id: int, updates: AlertRuleUpdate, current_user: User = Depends(get_current_user)):
+@router.put(
+    "/alert-rules/{rule_id}",
+    response_model=AlertRuleResponse,
+    summary="更新告警规则",
+    description="按规则 ID 更新告警规则的部分字段，例如通知配置、优先级或启用状态。",
+    responses=ALERT_RULE_UPDATE_RESPONSES,
+)
+async def update_alert_rule(
+    rule_id: int = Path(..., description="告警规则 ID。"),
+    updates: AlertRuleUpdate = Body(
+        ...,
+        example={
+            "description": "更新后的涨停提醒规则",
+            "notification_config": {"channels": ["ui"], "level": "critical"},
+            "priority": 4,
+            "is_active": True,
+        },
+    ),
+    current_user: User = Depends(get_current_user),
+):
     """
     更新告警规则
 
@@ -200,8 +419,16 @@ async def update_alert_rule(rule_id: int, updates: AlertRuleUpdate, current_user
         raise BusinessException(detail=str(e), status_code=400, error_code="INVALID_MONITORING_REQUEST")
 
 
-@router.delete("/alert-rules/{rule_id}")
-async def delete_alert_rule(rule_id: int, current_user: User = Depends(get_current_user)):
+@router.delete(
+    "/alert-rules/{rule_id}",
+    summary="删除告警规则",
+    description="按规则 ID 删除指定告警规则，用于停用不再需要的监控配置。",
+    responses=ALERT_RULE_DELETE_RESPONSES,
+)
+async def delete_alert_rule(
+    rule_id: int = Path(..., description="告警规则 ID。"),
+    current_user: User = Depends(get_current_user),
+):
     """
     删除告警规则
 
@@ -295,8 +522,16 @@ async def get_alert_records(
         raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
-@router.post("/alerts/{alert_id}/mark-read")
-async def mark_alert_read(alert_id: int, current_user: User = Depends(get_current_user)):
+@router.post(
+    "/alerts/{alert_id}/mark-read",
+    summary="标记告警为已读",
+    description="按告警记录 ID 将单条告警标记为已读，便于前端清理未读提醒。",
+    responses=ALERT_MARK_READ_RESPONSES,
+)
+async def mark_alert_read(
+    alert_id: int = Path(..., description="告警记录 ID。"),
+    current_user: User = Depends(get_current_user),
+):
     """
     标记告警为已读
 
@@ -314,9 +549,14 @@ async def mark_alert_read(alert_id: int, current_user: User = Depends(get_curren
         raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
-@router.post("/alerts/mark-all-read")
+@router.post(
+    "/alerts/mark-all-read",
+    summary="批量标记全部告警已读",
+    description="批量将当前用户可见的未读告警标记为已读，用于监控中心一键清空提醒。",
+    responses=ALERT_MARK_ALL_READ_RESPONSES,
+)
 async def mark_all_alerts_read(current_user: User = Depends(get_current_user)):
-    """批量标记所有未读告警为已读"""
+    """批量标记所有未读告警为已读。"""
     try:
         # TODO: 实现批量标记功能
         return {"success": True, "message": "功能开发中"}
