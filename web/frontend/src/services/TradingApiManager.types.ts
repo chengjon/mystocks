@@ -57,11 +57,23 @@ export interface MonitoringDashboardData {
   dataQuality: unknown
 }
 
+export type SystemSettingsSection = 'general' | 'datasource' | 'notification' | 'security'
+
+export interface SystemSettingsMeta {
+  contractStatus: 'degraded'
+  unifiedBackendApiAvailable: false
+  backendReadSections: SystemSettingsSection[]
+  backendWriteSections: SystemSettingsSection[]
+  unsupportedSections: SystemSettingsSection[]
+  pageSaveMode: 'local-storage-degrade'
+}
+
 export interface SystemSettings {
-  general: unknown
-  datasource: unknown
-  notification: unknown
-  security: unknown
+  general: unknown | null
+  datasource: unknown | null
+  notification: unknown | null
+  security: unknown | null
+  meta: SystemSettingsMeta
 }
 
 export interface SystemHealth {
