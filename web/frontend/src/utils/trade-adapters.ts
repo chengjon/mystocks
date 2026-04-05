@@ -1,5 +1,3 @@
-
-// @ts-nocheck
 /**
  * Trade Management Module Data Adapters
  *
@@ -15,6 +13,19 @@ import type {
 // TODO: Fix type generation to include these types
 type AccountOverviewResponse = Record<string, unknown>
 type PositionResponse = Record<string, unknown>
+type AnyRecord = Record<string, unknown>
+
+const asRecord = (value: unknown): AnyRecord =>
+  typeof value === 'object' && value !== null ? (value as AnyRecord) : {}
+
+const asArray = <T = unknown>(value: unknown): T[] =>
+  Array.isArray(value) ? (value as T[]) : []
+
+const asString = (value: unknown, fallback = ''): string =>
+  typeof value === 'string' ? value : value == null ? fallback : String(value)
+
+const asNumber = (value: unknown, fallback = 0): number =>
+  typeof value === 'number' && Number.isFinite(value) ? value : fallback
 
 // ViewModel interfaces
 export interface AccountOverviewVM {
@@ -105,26 +116,32 @@ export class TradeAdapter {
    * Convert account overview to ViewModel
    */
   static toAccountOverviewVM(data: AccountOverviewResponse): AccountOverviewVM {
-    const todayPnLPercent = data.totalAssets ? (data.todayPnL / (data.totalAssets - data.todayPnL)) * 100 : 0
-    const totalPnLPercent = data.totalAssets ? (data.totalPnL / (data.totalAssets - data.totalPnL)) * 100 : 0
+    const totalAssets = asNumber(data.totalAssets)
+    const todayPnL = asNumber(data.todayPnL)
+    const totalPnL = asNumber(data.totalPnL)
+    const todayPnLPercent = totalAssets ? (todayPnL / (totalAssets - todayPnL)) * 100 : 0
+    const totalPnLPercent = totalAssets ? (totalPnL / (totalAssets - totalPnL)) * 100 : 0
 
     return {
-      totalAssets: data.totalAssets || 0,
-      availableCash: data.availableCash || 0,
-      totalMarketValue: data.totalMarketValue || 0,
-      totalPositionValue: data.totalPositionValue || 0,
-      todayPnL: data.todayPnL || 0,
+      totalAssets,
+      availableCash: asNumber(data.availableCash),
+      totalMarketValue: asNumber(data.totalMarketValue),
+      totalPositionValue: asNumber(data.totalPositionValue),
+      todayPnL,
       todayPnLPercent: this.formatPercent(todayPnLPercent),
-      totalPnL: data.totalPnL || 0,
+      totalPnL,
       totalPnLPercent: this.formatPercent(totalPnLPercent),
-      currency: data.currency || 'CNY',
+      currency: asString(data.currency, 'CNY'),
       lastUpdate: Date.now(),
-      assetAllocation: (data.assetAllocation || []).map(item => ({
-        category: item.category || '',
-        value: item.value || 0,
-        percentage: this.formatPercent(item.percentage || 0),
-        color: item.color || this.getColorForCategory(item.category)
-      }))
+      assetAllocation: asArray(data.assetAllocation).map((item) => {
+        const record = asRecord(item)
+        return {
+          category: asString(record.category),
+          value: asNumber(record.value),
+          percentage: this.formatPercent(asNumber(record.percentage)),
+          color: asString(record.color, this.getColorForCategory(asString(record.category)))
+        }
+      })
     }
   }
 
@@ -132,23 +149,26 @@ export class TradeAdapter {
    * Convert order response to ViewModel
    */
   static toOrderVM(data: OrderResponse[]): OrderVM[] {
-    return data.map((order: unknown) => ({
-      orderId: order.order_id || order.orderId || '',
-      symbol: order.symbol || '',
-      name: order.name || order.order_name || '',
-      side: this.getOrderSide(order.side || order.order_side),
-      type: order.type || order.order_type || 'market',
-      quantity: order.quantity || order.order_quantity || 0,
-      price: order.price || order.order_price || 0,
-      amount: order.amount || order.order_amount || 0,
-      status: this.getOrderStatus(order.status || order.order_status),
-      filledQuantity: order.filledQuantity || order.filled_quantity || 0,
-      filledAmount: order.filledAmount || order.filled_amount || 0,
-      averagePrice: order.averagePrice || order.average_price || 0,
-      orderTime: this.formatDateTime(order.orderTime || order.order_time),
-      updateTime: this.formatDateTime(order.updateTime || order.update_time),
-      remarks: order.remarks || order.order_remarks || ''
-    }))
+    return data.map((order) => {
+      const record = asRecord(order)
+      return {
+        orderId: asString(record.order_id || record.orderId),
+        symbol: asString(record.symbol),
+        name: asString(record.name || record.order_name),
+        side: this.getOrderSide(record.side || record.order_side || record.direction),
+        type: asString(record.type || record.order_type, 'market'),
+        quantity: asNumber(record.quantity || record.order_quantity),
+        price: asNumber(record.price || record.order_price),
+        amount: asNumber(record.amount || record.order_amount),
+        status: this.getOrderStatus(record.status || record.order_status),
+        filledQuantity: asNumber(record.filledQuantity || record.filled_quantity),
+        filledAmount: asNumber(record.filledAmount || record.filled_amount),
+        averagePrice: asNumber(record.averagePrice || record.average_price),
+        orderTime: this.formatDateTime(record.orderTime || record.order_time || record.created_at),
+        updateTime: this.formatDateTime(record.updateTime || record.update_time || record.updated_at),
+        remarks: asString(record.remarks || record.order_remarks) || undefined
+      }
+    })
   }
 
   /**
@@ -156,30 +176,37 @@ export class TradeAdapter {
    */
   static toPositionVM(data: PositionResponse[]): PositionVM[] {
     return data.map(position => {
-      const unrealizedPnL = position.quantity && position.avgPrice && position.currentPrice
-        ? (position.currentPrice - position.avgPrice) * position.quantity * (position.side === 'long' ? 1 : -1)
+      const record = asRecord(position)
+      const quantity = asNumber(record.quantity)
+      const avgPrice = asNumber(record.avgPrice)
+      const currentPrice = asNumber(record.currentPrice)
+      const side = (asString(record.side, 'long') as 'long' | 'short')
+      const unrealizedPnL = quantity && avgPrice && currentPrice
+        ? (currentPrice - avgPrice) * quantity * (side === 'long' ? 1 : -1)
         : 0
-      const unrealizedPnLPercent = position.costBasis ? (unrealizedPnL / position.costBasis) * 100 : 0
-      const positionPnL = unrealizedPnL + (position.realizedPnL || 0)
-      const positionPnLPercent = (position.costBasis ? (positionPnL / position.costBasis) * 100 : 0)
+      const costBasis = asNumber(record.costBasis)
+      const realizedPnL = asNumber(record.realizedPnL)
+      const unrealizedPnLPercent = costBasis ? (unrealizedPnL / costBasis) * 100 : 0
+      const positionPnL = unrealizedPnL + realizedPnL
+      const positionPnLPercent = costBasis ? (positionPnL / costBasis) * 100 : 0
 
       return {
-        symbol: position.symbol || '',
-        name: position.name || '',
-        side: (position.side || 'long') as 'long' | 'short',
-        quantity: position.quantity || 0,
-        avgPrice: position.avgPrice || 0,
-        currentPrice: position.currentPrice || 0,
-        marketValue: position.marketValue || 0,
+        symbol: asString(record.symbol),
+        name: asString(record.name),
+        side,
+        quantity,
+        avgPrice,
+        currentPrice,
+        marketValue: asNumber(record.marketValue),
         unrealizedPnL,
         unrealizedPnLPercent: this.formatPercent(unrealizedPnLPercent),
-        realizedPnL: position.realizedPnL || 0,
+        realizedPnL,
         positionPnL,
         positionPnLPercent: this.formatPercent(positionPnLPercent),
-        costBasis: position.costBasis || 0,
-        marginUsed: position.marginUsed || 0,
-        marginAvailable: position.marginAvailable || 0,
-        lastUpdate: this.formatDateTime(position.lastUpdate)
+        costBasis,
+        marginUsed: asNumber(record.marginUsed),
+        marginAvailable: asNumber(record.marginAvailable),
+        lastUpdate: this.formatDateTime(record.lastUpdate)
       }
     })
   }
@@ -189,12 +216,13 @@ export class TradeAdapter {
    */
   static toTradeHistoryVM(data: TradeHistoryResponse[]): TradeHistoryVM[] {
     // Group trades by date
-    const groupedTrades = data.reduce((groups, trade: unknown) => {
-      const date = this.formatDate(trade.tradeTime || trade.trade_time)
+    const groupedTrades = data.reduce((groups, trade) => {
+      const record = asRecord(trade)
+      const date = this.formatDate(record.tradeTime || record.trade_time || record.trade_date)
       if (!groups[date]) {
         groups[date] = []
       }
-      groups[date].push(trade)
+      groups[date].push(record)
       return groups
     }, {} as Record<string, unknown[]>)
 
@@ -202,7 +230,7 @@ export class TradeAdapter {
     return Object.entries(groupedTrades).map(([date, trades]) => {
       const tradesVM = trades.map(trade => this.toTradeVM(trade))
       const totalCommission = tradesVM.reduce((sum, trade) => sum + trade.commission, 0)
-      const realizedPnL = tradesVM.reduce((sum, trade) => sum + trade.realizedPnL, 0)
+      const realizedPnL = tradesVM.reduce((sum, trade) => sum + (trade.realizedPnL ?? 0), 0)
 
       return {
         date,
@@ -219,34 +247,36 @@ export class TradeAdapter {
    * Convert single trade to ViewModel
    */
   private static toTradeVM(trade: unknown): TradeVM {
+    const record = asRecord(trade)
     return {
-      tradeId: trade.tradeId || '',
-      orderId: trade.orderId || '',
-      symbol: trade.symbol || '',
-      name: trade.name || '',
-      side: this.getOrderSide(trade.side),
-      quantity: trade.quantity || 0,
-      price: trade.price || 0,
-      amount: trade.amount || 0,
-      commission: trade.commission || 0,
-      tradeTime: this.formatDateTime(trade.tradeTime),
-      tradeType: trade.tradeType || 'T0',
-      notes: trade.notes
+      tradeId: asString(record.tradeId || record.trade_id),
+      orderId: asString(record.orderId || record.order_id),
+      symbol: asString(record.symbol),
+      name: asString(record.name),
+      side: this.getOrderSide(record.side || record.action),
+      quantity: asNumber(record.quantity),
+      price: asNumber(record.price),
+      amount: asNumber(record.amount),
+      commission: asNumber(record.commission),
+      tradeTime: this.formatDateTime(record.tradeTime || record.trade_time || record.trade_date),
+      tradeType: asString(record.tradeType || record.trade_type || 'T0'),
+      notes: asString(record.notes) || undefined,
+      realizedPnL: typeof record.realizedPnL === 'number' ? record.realizedPnL : typeof record.profit_loss === 'number' ? record.profit_loss : undefined
     }
   }
 
   /**
    * Get order side
    */
-  private static getOrderSide(side: string): 'buy' | 'sell' {
-    return side?.toLowerCase() === 'sell' ? 'sell' : 'buy'
+  private static getOrderSide(side: unknown): 'buy' | 'sell' {
+    return asString(side).toLowerCase() === 'sell' ? 'sell' : 'buy'
   }
 
   /**
    * Get order status
    */
-  private static getOrderStatus(status: string): 'pending' | 'partial' | 'filled' | 'cancelled' | 'rejected' {
-    switch (status?.toLowerCase()) {
+  private static getOrderStatus(status: unknown): 'pending' | 'partial' | 'filled' | 'cancelled' | 'rejected' {
+    switch (asString(status).toLowerCase()) {
       case 'new':
       case 'pending':
         return 'pending'
@@ -275,8 +305,12 @@ export class TradeAdapter {
   /**
    * Format date and time
    */
-  private static formatDateTime(timestamp: string | number | Date): string {
-    const date = new Date(timestamp)
+  private static formatDateTime(timestamp: unknown): string {
+    if (!timestamp) return ''
+    const normalized = timestamp instanceof Date || typeof timestamp === 'string' || typeof timestamp === 'number'
+      ? timestamp
+      : asString(timestamp)
+    const date = new Date(normalized)
     return date.toLocaleString('zh-CN', {
       year: 'numeric',
       month: '2-digit',
@@ -289,8 +323,12 @@ export class TradeAdapter {
   /**
    * Format date only
    */
-  private static formatDate(timestamp: string | number | Date): string {
-    const date = new Date(timestamp)
+  private static formatDate(timestamp: unknown): string {
+    if (!timestamp) return ''
+    const normalized = timestamp instanceof Date || typeof timestamp === 'string' || typeof timestamp === 'number'
+      ? timestamp
+      : asString(timestamp)
+    const date = new Date(normalized)
     return date.toLocaleDateString('zh-CN', {
       year: 'numeric',
       month: '2-digit',
