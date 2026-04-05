@@ -235,54 +235,57 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
+@use '../../../../styles/artdeco-tokens.scss' as *;
 
 .heatmap-section {
-  padding: 10px 0;
+  padding: var(--artdeco-spacing-3) 0;
 }
 
 .controls-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: var(--artdeco-spacing-5);
 }
 
 .radio-group {
   display: flex;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 4%, var(--artdeco-bg-card));
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
   overflow: hidden;
 
   .radio-btn {
-    padding: 8px 20px;
-    font-size: 14px;
-    color: var(--text-secondary);
+    padding: var(--artdeco-spacing-2) var(--artdeco-spacing-5);
+    font-size: var(--artdeco-text-sm);
+    color: var(--artdeco-fg-muted);
     cursor: pointer;
-    transition: all 0.2s;
-    border-right: 1px solid var(--border);
+    transition:
+      background var(--artdeco-transition-quick) var(--artdeco-ease-out),
+      color var(--artdeco-transition-quick) var(--artdeco-ease-out);
+    border-right: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
 
     &:last-child {
       border-right: none;
     }
 
     &:hover {
-      background: var(--bg-dark);
+      background: color-mix(in srgb, var(--artdeco-gold-primary) 5%, transparent);
     }
 
     &.active {
-      background: var(--primary);
-      color: white;
+      background: var(--artdeco-gold-primary);
+      color: var(--artdeco-bg-global);
     }
   }
 }
 
 .echarts-heatmap-container {
   width: 100%;
-  height: 600px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  height: 37.5rem;
+  background: var(--artdeco-bg-global);
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
   position: relative;
   overflow: hidden;
 
@@ -292,29 +295,29 @@ onUnmounted(() => {
 
   .loading-overlay {
     position: absolute;
-    inset: 0 0 0 0;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgb(255 255 255 / 80%);
+    background: color-mix(in srgb, var(--artdeco-bg-global) 80%, transparent);
     z-index: 10;
 
     .loading-text {
-      font-size: 16px;
-      color: var(--text-secondary);
+      font-size: var(--artdeco-text-base);
+      color: var(--artdeco-fg-muted);
     }
   }
 }
 
 .loading-spinner {
   display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgb(255 255 255 / 30%);
-  border-top-color: white;
+  width: var(--artdeco-spacing-4);
+  height: var(--artdeco-spacing-4);
+  margin-right: var(--artdeco-spacing-2);
+  border: calc(var(--artdeco-spacing-px) * 2) solid color-mix(in srgb, var(--artdeco-fg-primary) 30%, transparent);
+  border-top-color: var(--artdeco-fg-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
-  margin-right: 8px;
 }
 
 @keyframes spin {
@@ -324,24 +327,24 @@ onUnmounted(() => {
 .alert-content {
   strong {
     display: block;
-    margin-bottom: 8px;
-    color: var(--text-primary);
+    margin-bottom: var(--artdeco-spacing-2);
+    color: var(--artdeco-fg-primary);
   }
 
   p {
-    margin: 0 0 10px 0;
-    color: var(--text-secondary);
+    margin: 0 0 var(--artdeco-spacing-3) 0;
+    color: var(--artdeco-fg-muted);
   }
 
   .info-list {
-    margin: 10px 0 0 0;
-    padding-left: 20px;
-    font-size: 12px;
-    color: var(--text-muted);
+    margin: var(--artdeco-spacing-3) 0 0 0;
+    padding-left: var(--artdeco-spacing-5);
+    font-size: var(--artdeco-text-xs);
+    color: var(--artdeco-fg-muted);
     line-height: 1.8;
 
     li {
-      margin-bottom: 4px;
+      margin-bottom: var(--artdeco-spacing-1);
     }
   }
 }

@@ -120,74 +120,64 @@ const loadKlineChart = async () => {
 </script>
 
 <style scoped lang="scss">
+@use '../../../../styles/artdeco-tokens.scss' as *;
 
 .klinechart-section {
-  padding: 10px 0;
+  padding: var(--artdeco-spacing-3) 0;
 }
 
 .controls-row {
   display: flex;
-  gap: 15px;
+  gap: var(--artdeco-spacing-4);
   align-items: flex-end;
-  margin-bottom: 20px;
+  margin-bottom: var(--artdeco-spacing-5);
 }
 
 .input-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  min-width: 150px;
+  gap: var(--artdeco-spacing-2);
+  min-width: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-10));
 
   .input-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-secondary);
+    color: var(--artdeco-fg-muted);
+    font-size: calc(var(--artdeco-text-sm) - var(--artdeco-spacing-px));
+    font-weight: var(--artdeco-font-medium);
   }
 }
 
-.input {
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  color: var(--text-primary);
-  background: var(--bg-primary);
-  transition: border-color 0.2s;
+.input,
+.select {
+  padding: calc(var(--artdeco-spacing-5) / 2) calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
+  font-size: var(--artdeco-text-sm);
+  color: var(--artdeco-fg-primary);
+  background: var(--artdeco-bg-global);
+  transition: border-color var(--artdeco-transition-quick) var(--artdeco-ease-out);
 
   &:focus {
     outline: none;
-    border-color: var(--primary);
+    border-color: var(--artdeco-gold-primary);
   }
+}
 
-  &::placeholder {
-    color: var(--text-muted);
-  }
+.input::placeholder {
+  color: var(--artdeco-fg-muted);
 }
 
 .select {
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  color: var(--text-primary);
-  background: var(--bg-primary);
   cursor: pointer;
-  transition: border-color 0.2s;
-
-  &:focus {
-    outline: none;
-    border-color: var(--primary);
-  }
 }
 
 .klinechart-container {
-  width: 100%;
-  height: 600px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
   position: relative;
+  width: 100%;
+  height: 37.5rem;
   overflow: hidden;
+  background: var(--artdeco-bg-global);
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
 
   &.loading {
     opacity: 70%;
@@ -195,29 +185,29 @@ const loadKlineChart = async () => {
 
   .loading-overlay {
     position: absolute;
-    inset: 0 0 0 0;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgb(255 255 255 / 80%);
+    background: color-mix(in srgb, var(--artdeco-bg-global) 80%, transparent);
     z-index: 10;
 
     .loading-text {
-      font-size: 16px;
-      color: var(--text-secondary);
+      font-size: var(--artdeco-text-base);
+      color: var(--artdeco-fg-muted);
     }
   }
 }
 
 .loading-spinner {
   display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgb(255 255 255 / 30%);
-  border-top-color: white;
+  width: var(--artdeco-spacing-4);
+  height: var(--artdeco-spacing-4);
+  margin-right: var(--artdeco-spacing-2);
+  border: calc(var(--artdeco-spacing-px) * 2) solid color-mix(in srgb, var(--artdeco-fg-primary) 30%, transparent);
+  border-top-color: var(--artdeco-fg-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
-  margin-right: 8px;
 }
 
 @keyframes spin {
@@ -227,19 +217,19 @@ const loadKlineChart = async () => {
 .alert-content {
   strong {
     display: block;
-    margin-bottom: 8px;
-    color: var(--text-primary);
+    margin-bottom: var(--artdeco-spacing-2);
+    color: var(--artdeco-fg-primary);
   }
 
   p {
     margin: 0;
-    color: var(--text-secondary);
+    color: var(--artdeco-fg-muted);
   }
 
   .tip {
-    margin-top: 8px;
-    font-size: 12px;
-    color: var(--text-muted);
+    margin-top: var(--artdeco-spacing-2);
+    font-size: var(--artdeco-text-xs);
+    color: var(--artdeco-fg-muted);
   }
 }
 </style>

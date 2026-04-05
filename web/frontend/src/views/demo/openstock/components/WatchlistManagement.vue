@@ -104,10 +104,7 @@
               {{ group.group_name }}
             </option>
           </select>
-          <button
-            style="width: 100%; margin-top: 10px;"
-            @click="moveStock"
-          >
+          <button class="btn btn-primary move-confirm-btn" @click="moveStock">
             确认移动
           </button>
         </div>
@@ -302,141 +299,145 @@ const updateNotes = async (stock: WatchlistStock): Promise<void> => {
 </script>
 
 <style scoped lang="scss">
+@use '../../../../styles/artdeco-tokens.scss' as *;
 
 .watchlist-section {
-  padding: 10px 0;
+  padding: var(--artdeco-spacing-3) 0;
 }
 
 .watchlist-grid {
   display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 20px;
+  grid-template-columns: calc(var(--artdeco-spacing-20) * 3) minmax(0, 1fr);
+  gap: var(--artdeco-spacing-5);
 }
 
-.sidebar {
-  min-height: 500px;
-}
-
-.main-content {
-  min-height: 500px;
+.sidebar,
+.main-content,
+.group-stocks {
+  min-height: calc(var(--artdeco-spacing-20) * 6 + var(--artdeco-spacing-5));
 }
 
 .group-stocks {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
-  padding: 20px;
-  min-height: 500px;
+  padding: var(--artdeco-spacing-5);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 4%, var(--artdeco-bg-card));
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
 }
 
 .group-stocks-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid var(--primary);
+  margin-bottom: var(--artdeco-spacing-5);
+  padding-bottom: calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
+  border-bottom: calc(var(--artdeco-spacing-px) * 2) solid color-mix(in srgb, var(--artdeco-gold-primary) 60%, transparent);
 
   h4 {
     margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--primary);
+    color: var(--artdeco-gold-primary);
+    font-size: calc(var(--artdeco-text-base) + var(--artdeco-spacing-px) * 2);
+    font-weight: var(--artdeco-font-semibold);
+    letter-spacing: var(--artdeco-tracking-wide);
   }
 }
 
 .actions {
   display: flex;
-  gap: 10px;
+  gap: var(--artdeco-spacing-2);
 }
 
 .table-wrapper {
-  min-height: 400px;
+  min-height: calc(var(--artdeco-spacing-20) * 5);
 }
 
 .action-buttons {
   display: flex;
-  gap: 6px;
+  gap: calc(var(--artdeco-spacing-2) - (var(--artdeco-spacing-px) * 2));
   flex-wrap: wrap;
 }
 
-.input {
+.input,
+.select {
   width: 100%;
-  padding: 6px 10px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  transition: border-color 0.2s;
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
+  background: var(--artdeco-bg-global);
+  color: var(--artdeco-fg-primary);
+  transition: border-color var(--artdeco-transition-quick) var(--artdeco-ease-out);
 
   &:focus {
     outline: none;
-    border-color: var(--primary);
+    border-color: var(--artdeco-gold-primary);
+  }
+}
+
+.input {
+  padding: calc(var(--artdeco-spacing-2) - (var(--artdeco-spacing-px) * 2))
+    calc(var(--artdeco-spacing-3) + (var(--artdeco-spacing-px) * 2));
+  font-size: calc(var(--artdeco-text-sm) - var(--artdeco-spacing-px));
+
+  &::placeholder {
+    color: var(--artdeco-fg-muted);
   }
 }
 
 .select {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  background: var(--bg-primary);
-  color: var(--text-primary);
+  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
+  font-size: var(--artdeco-text-sm);
   cursor: pointer;
-
-  &:focus {
-    outline: none;
-    border-color: var(--primary);
-  }
 }
 
-.modal-overlay {
+.popover-overlay {
   position: fixed;
-  inset: 0 0 0 0;
-  background: rgb(0 0 0 / 30%);
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: color-mix(in srgb, var(--artdeco-bg-global) 35%, transparent);
   z-index: 1000;
 }
 
-.popover-content {
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  width: 220px;
+.popover {
+  width: calc((var(--artdeco-spacing-20) * 2) + var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
   overflow: hidden;
+  background: var(--artdeco-bg-card);
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
+  box-shadow: var(--artdeco-shadow-lg);
+}
 
-  .popover-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-light);
-    font-weight: 600;
-    color: var(--text-primary);
+.popover-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 4%, var(--artdeco-bg-card));
+  border-bottom: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 12%, transparent);
+  color: var(--artdeco-fg-primary);
+  font-weight: var(--artdeco-font-semibold);
+}
+
+.popover-close {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--artdeco-fg-muted);
+  cursor: pointer;
+  font-size: var(--artdeco-text-lg);
+  line-height: var(--artdeco-leading-none);
+  transition: color var(--artdeco-transition-quick) var(--artdeco-ease-out);
+
+  &:hover {
+    color: var(--artdeco-fg-primary);
   }
+}
 
-  .popover-close {
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
+.popover-content {
+  padding: var(--artdeco-spacing-4);
+}
 
-    &:hover {
-      color: var(--text-primary);
-    }
-  }
-
-  .popover-content {
-    padding: 16px;
-  }
+.move-confirm-btn {
+  width: 100%;
+  margin-top: var(--artdeco-spacing-3);
 }
 </style>

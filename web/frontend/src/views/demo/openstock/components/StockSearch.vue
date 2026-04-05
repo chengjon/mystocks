@@ -91,10 +91,7 @@
               {{ group.value }} ({{ group.count }}只)
             </option>
           </datalist>
-          <button
-            style="width: 100%; margin-top: 12px;"
-            @click="addToWatchlist"
-          >
+          <button class="btn btn-primary add-confirm-btn" @click="addToWatchlist">
             确认添加
           </button>
         </div>
@@ -252,14 +249,15 @@ const addToWatchlist = async () => {
 </script>
 
 <style scoped lang="scss">
+@use '../../../../styles/artdeco-tokens.scss' as *;
 
 .search-section {
-  padding: 10px 0;
+  padding: var(--artdeco-spacing-3) 0;
 }
 
 .search-form {
   display: flex;
-  gap: 15px;
+  gap: calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
   align-items: stretch;
 }
 
@@ -267,169 +265,183 @@ const addToWatchlist = async () => {
   flex: 1;
   display: flex;
   align-items: stretch;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
   overflow: hidden;
-  background: var(--bg-primary);
-  transition: border-color 0.2s;
+  background: var(--artdeco-bg-global);
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
+  transition: border-color var(--artdeco-transition-quick) var(--artdeco-ease-out);
 
   &:focus-within {
-    border-color: var(--primary);
+    border-color: var(--artdeco-gold-primary);
   }
 }
 
 .input-prepend {
   display: flex;
   align-items: center;
-  background: var(--bg-secondary);
-  border-right: 1px solid var(--border);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 4%, var(--artdeco-bg-card));
+  border-right: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
 }
 
 .market-select {
-  padding: 10px 14px;
+  min-width: var(--artdeco-spacing-10);
+  padding: calc(var(--artdeco-spacing-5) / 2) calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
   border: none;
-  background: transparent;
-  font-size: 14px;
-  color: var(--text-primary);
-  cursor: pointer;
   outline: none;
-  min-width: 80px;
+  background: transparent;
+  color: var(--artdeco-fg-primary);
+  font-size: var(--artdeco-text-sm);
+  cursor: pointer;
 
   &:focus {
-    background: var(--bg-dark);
+    background: var(--artdeco-bg-elevated);
   }
 }
 
 .search-input {
   flex: 1;
-  padding: 10px 14px;
+  padding: calc(var(--artdeco-spacing-5) / 2) calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
   border: none;
-  font-size: 14px;
-  color: var(--text-primary);
-  background: transparent;
   outline: none;
+  background: transparent;
+  color: var(--artdeco-fg-primary);
+  font-size: var(--artdeco-text-sm);
 
   &::placeholder {
-    color: var(--text-muted);
+    color: var(--artdeco-fg-muted);
   }
 }
 
 .clear-btn {
-  padding: 0 12px;
-  background: none;
+  padding: 0 var(--artdeco-spacing-3);
   border: none;
-  font-size: 18px;
-  color: var(--text-muted);
+  background: none;
+  color: var(--artdeco-fg-muted);
+  font-size: calc(var(--artdeco-text-base) + var(--artdeco-spacing-px) * 2);
   cursor: pointer;
+  transition: color var(--artdeco-transition-quick) var(--artdeco-ease-out);
 
   &:hover {
-    color: var(--text-primary);
+    color: var(--artdeco-fg-primary);
   }
 }
 
 .search-actions {
   display: flex;
-  gap: 10px;
+  gap: var(--artdeco-spacing-2);
 }
 
 .search-results {
-  margin-top: 20px;
+  margin-top: var(--artdeco-spacing-5);
 
   h3 {
-    margin-bottom: 15px;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
+    margin-bottom: calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
+    color: var(--artdeco-gold-primary);
+    font-size: var(--artdeco-text-base);
+    font-weight: var(--artdeco-font-semibold);
+    letter-spacing: var(--artdeco-tracking-wide);
   }
 }
 
 .action-buttons {
   display: flex;
-  gap: 6px;
+  gap: calc(var(--artdeco-spacing-2) - (var(--artdeco-spacing-px) * 2));
   flex-wrap: wrap;
 }
 
 .input {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  transition: border-color 0.2s;
+  padding: calc(var(--artdeco-spacing-5) / 2) var(--artdeco-spacing-3);
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
+  background: var(--artdeco-bg-global);
+  color: var(--artdeco-fg-primary);
+  font-size: var(--artdeco-text-sm);
+  transition: border-color var(--artdeco-transition-quick) var(--artdeco-ease-out);
 
   &:focus {
     outline: none;
-    border-color: var(--primary);
+    border-color: var(--artdeco-gold-primary);
+  }
+
+  &::placeholder {
+    color: var(--artdeco-fg-muted);
   }
 }
 
 .input-label {
   display: block;
-  margin-bottom: 8px;
-  font-size: 13px;
-  color: var(--text-secondary);
+  margin-bottom: var(--artdeco-spacing-2);
+  color: var(--artdeco-fg-muted);
+  font-size: calc(var(--artdeco-text-sm) - var(--artdeco-spacing-px));
 }
 
 .loading-spinner {
   display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgb(255 255 255 / 30%);
-  border-top-color: white;
+  width: var(--artdeco-spacing-4);
+  height: var(--artdeco-spacing-4);
+  margin-right: var(--artdeco-spacing-2);
+  border: calc(var(--artdeco-spacing-px) * 2) solid color-mix(in srgb, var(--artdeco-fg-primary) 30%, transparent);
+  border-top-color: var(--artdeco-fg-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
-  margin-right: 8px;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-.modal-overlay {
+.popover-overlay {
   position: fixed;
-  inset: 0 0 0 0;
-  background: rgb(0 0 0 / 30%);
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: color-mix(in srgb, var(--artdeco-bg-global) 35%, transparent);
   z-index: 1000;
 }
 
-.popover-content {
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  width: 300px;
+.popover {
+  width: calc((var(--artdeco-spacing-20) * 3) + var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
   overflow: hidden;
+  background: var(--artdeco-bg-card);
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
+  box-shadow: var(--artdeco-shadow-lg);
+}
 
-  .popover-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-light);
-    font-weight: 600;
-    color: var(--text-primary);
+.popover-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 4%, var(--artdeco-bg-card));
+  border-bottom: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 12%, transparent);
+  color: var(--artdeco-fg-primary);
+  font-weight: var(--artdeco-font-semibold);
+}
+
+.popover-close {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--artdeco-fg-muted);
+  cursor: pointer;
+  font-size: var(--artdeco-text-lg);
+  line-height: var(--artdeco-leading-none);
+  transition: color var(--artdeco-transition-quick) var(--artdeco-ease-out);
+
+  &:hover {
+    color: var(--artdeco-fg-primary);
   }
+}
 
-  .popover-close {
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: var(--text-muted);
-    cursor: pointer;
+.popover-content {
+  padding: var(--artdeco-spacing-4);
+}
 
-    &:hover {
-      color: var(--text-primary);
-    }
-  }
-
-  .popover-content {
-    padding: 16px;
-  }
+.add-confirm-btn {
+  width: 100%;
+  margin-top: var(--artdeco-spacing-3);
 }
 </style>
