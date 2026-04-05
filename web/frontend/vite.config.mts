@@ -1,12 +1,42 @@
 import { defineConfig, loadEnv } from "vite"
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
+import { resolve } from 'node:path'
 import { visualizer } from 'rollup-plugin-visualizer'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import commonjs from 'vite-plugin-commonjs'
+import { normalizeGeneratedDtsFile } from './scripts/dev/normalize-generated-dts.mjs'
 // import { VitePWA } from 'vite-plugin-pwa' // PWA 禁用
+
+const GENERATED_COMPONENT_DTS_PATH = 'src/components.d.ts'
+
+function normalizeGeneratedDtsPlugin(relativePath: string) {
+  const absolutePath = resolve(process.cwd(), relativePath)
+  const normalize = () => normalizeGeneratedDtsFile(relativePath)
+  const normalizeIfTarget = (filePath: string) => {
+    if (resolve(filePath) === absolutePath) {
+      void normalize()
+    }
+  }
+
+  return {
+    name: 'mystocks-normalize-generated-dts',
+    buildStart() {
+      return normalize()
+    },
+    configureServer(server: { watcher: { add: (path: string) => void; on: (event: 'add' | 'change', callback: (filePath: string) => void) => void } }) {
+      server.watcher.add(absolutePath)
+      server.watcher.on('add', normalizeIfTarget)
+      server.watcher.on('change', normalizeIfTarget)
+      void normalize()
+    },
+    writeBundle() {
+      return normalize()
+    },
+  }
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -46,8 +76,9 @@ export default defineConfig(({ mode }) => {
         // 重新启用Element Plus Resolver（按需导入模式）
         resolvers: [ElementPlusResolver()],
         dirs: ['src/components/artdeco'],
-        dts: 'src/components.d.ts',
+        dts: GENERATED_COMPONENT_DTS_PATH,
       }),
+      normalizeGeneratedDtsPlugin(GENERATED_COMPONENT_DTS_PATH),
       // Bundle分析插件 - 生成可视化报告
       visualizer({
         filename: 'dist/stats.html',
