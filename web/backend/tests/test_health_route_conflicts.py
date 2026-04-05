@@ -663,6 +663,30 @@ def test_margin_endpoints_have_docs_examples_and_error_responses() -> None:
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
+def test_tdx_read_endpoints_have_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    endpoint_expectations = {
+        "/api/v1/tdx/health": set(),
+        "/api/v1/tdx/index/quote/{symbol}": {"symbol"},
+    }
+
+    for path, parameter_names in endpoint_expectations.items():
+        operation = schema["paths"][path]["get"]
+        parameters = operation.get("parameters", [])
+        success_json = operation["responses"][next(code for code in operation["responses"] if code.startswith("2"))][
+            "content"
+        ]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in parameter_names:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_data_source_versions_endpoint_has_parameter_docs() -> None:
     app.openapi_schema = None
     schema = app.openapi()

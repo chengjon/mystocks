@@ -14,7 +14,7 @@ TDX数据API路由
 from datetime import datetime, timedelta
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 
 from app.core.security import User, get_current_active_user
 from app.schemas.tdx_schemas import (
@@ -26,6 +26,87 @@ from app.schemas.tdx_schemas import (
 from app.services.tdx_service import TdxService, get_tdx_service
 
 router = APIRouter()
+
+
+def _success_response_spec(status_code: int, description: str, example: object) -> dict[int, dict]:
+    return {
+        status_code: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+def _error_response_spec(status_code: int, description: str, example: dict) -> dict[int, dict]:
+    return {
+        status_code: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+TDX_INDEX_QUOTE_RESPONSES = {
+    **_error_response_spec(
+        400,
+        "指数代码无效",
+        {"detail": "无效的指数代码,必须为6位数字"},
+    ),
+    **_error_response_spec(
+        500,
+        "获取指数行情失败",
+        {"detail": "获取指数行情失败: TDX 服务暂不可用"},
+    ),
+    **_success_response_spec(
+        200,
+        "指数实时行情",
+        {
+            "code": "000001",
+            "name": "上证指数",
+            "price": 3250.5,
+            "pre_close": 3245.0,
+            "open": 3246.0,
+            "high": 3252.0,
+            "low": 3244.0,
+            "volume": 1234567890,
+            "amount": 450000000000.0,
+            "change": 5.5,
+            "change_pct": 0.17,
+            "timestamp": "2026-04-05 14:30:00",
+        },
+    ),
+}
+
+TDX_HEALTH_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "TDX 服务检查失败",
+        {
+            "status": "error",
+            "tdx_connected": False,
+            "timestamp": "2026-04-05 14:30:00",
+            "server_info": {"error": "TDX 服务连接异常"},
+        },
+    ),
+    **_success_response_spec(
+        200,
+        "TDX 服务健康状态",
+        {
+            "status": "healthy",
+            "tdx_connected": True,
+            "timestamp": "2026-04-05 14:30:00",
+            "server_info": {"host": "127.0.0.1", "port": 7709},
+        },
+    ),
+}
 
 
 # ==================== 实时行情 ====================
@@ -175,10 +256,11 @@ async def get_stock_kline(
     "/index/quote/{symbol}",
     response_model=IndexQuoteResponse,
     summary="获取指数实时行情",
-    description="查询指定指数的实时点位和涨跌幅",
+    description="查询指定指数的实时点位、涨跌幅和成交额等行情字段，适用于指数监控看板。",
+    responses=TDX_INDEX_QUOTE_RESPONSES,
 )
 async def get_index_quote(
-    symbol: str,
+    symbol: str = Path(..., description="6 位数字指数代码，例如 000001 或 399001。"),
     current_user: User = Depends(get_current_active_user),
     service: TdxService = Depends(get_tdx_service),
 ):
@@ -304,7 +386,8 @@ async def get_index_kline(
     "/health",
     response_model=TdxHealthResponse,
     summary="TDX服务健康检查",
-    description="检查TDX服务器连接状态",
+    description="检查 TDX 服务的连接状态和服务端信息，用于后端运行状态探活与排障。",
+    responses=TDX_HEALTH_RESPONSES,
 )
 async def health_check(service: TdxService = Depends(get_tdx_service)):
     """
