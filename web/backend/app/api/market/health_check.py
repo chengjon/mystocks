@@ -36,7 +36,43 @@ from app.services.market_data_service import MarketDataService, get_market_data_
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-@router.get("/health", summary="市场数据 API 健康检查", description="检查市场数据 API 服务的健康状态", tags=["health"])
+
+MARKET_HEALTH_RESPONSES = {
+    500: {
+        "description": "市场数据服务内部错误",
+        "content": {
+            "application/json": {
+                "example": {
+                    "success": False,
+                    "message": "市场数据服务健康检查失败",
+                    "error_code": "MARKET_HEALTH_CHECK_FAILED",
+                    "timestamp": "2026-04-05T08:45:00",
+                }
+            }
+        },
+    },
+    200: {
+        "description": "市场数据服务健康状态",
+        "content": {
+            "application/json": {
+                "example": {
+                    "status": "healthy",
+                    "timestamp": "2026-04-05T08:45:00",
+                    "service": "market-data-api",
+                }
+            }
+        },
+    },
+}
+
+
+@router.get(
+    "/health",
+    summary="市场数据 API 健康检查",
+    description="检查市场数据 API 服务的健康状态，用于市场数据链路监控、自动化巡检和负载均衡探针。",
+    tags=["health"],
+    responses=MARKET_HEALTH_RESPONSES,
+)
 async def health_check():
     """
     检查市场数据 API 服务的整体健康状态
@@ -86,5 +122,4 @@ async def health_check():
         "timestamp": datetime.now().isoformat(),
         "service": "market-data-api",
     }
-
 

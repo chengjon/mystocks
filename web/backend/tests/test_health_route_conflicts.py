@@ -924,6 +924,34 @@ def test_market_overview_endpoints_have_docs_examples_and_error_responses() -> N
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
+def test_market_health_and_refresh_endpoints_have_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    endpoint_expectations = {
+        ("/api/v1/market/health", "get"): set(),
+        ("/api/v2/market/etf/refresh", "post"): set(),
+        ("/api/v2/market/lhb/refresh", "post"): {"trade_date"},
+        ("/api/v2/market/sector/fund-flow/refresh", "post"): {"sector_type", "timeframe"},
+        ("/api/v2/market/dividend/refresh", "post"): {"symbol"},
+        ("/api/v2/market/blocktrade/refresh", "post"): {"trade_date"},
+    }
+
+    for (path, method), parameter_names in endpoint_expectations.items():
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+        success_json = operation["responses"][next(code for code in operation["responses"] if code.startswith("2"))][
+            "content"
+        ]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in parameter_names:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_stock_search_endpoints_have_docs_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()

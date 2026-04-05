@@ -23,6 +23,68 @@ MARKET_V2_ROUTE_RESPONSES = {
     500: COMMON_RESPONSES[500],
 }
 
+
+def _success_response_spec(description: str, example: dict) -> dict[int, dict]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+MARKET_V2_REFRESH_BASE_RESPONSES = {
+    500: COMMON_RESPONSES[500],
+}
+
+ETF_REFRESH_RESPONSES = {
+    **MARKET_V2_REFRESH_BASE_RESPONSES,
+    **_success_response_spec(
+        "ETF 数据刷新结果",
+        {"success": True, "message": "ETF 数据刷新完成", "updated_count": 268, "source": "eastmoney"},
+    ),
+}
+
+LHB_REFRESH_RESPONSES = {
+    422: COMMON_RESPONSES[422],
+    **MARKET_V2_REFRESH_BASE_RESPONSES,
+    **_success_response_spec(
+        "龙虎榜数据刷新结果",
+        {"success": True, "message": "龙虎榜数据刷新完成", "trade_date": "2026-04-03", "updated_count": 57},
+    ),
+}
+
+SECTOR_FLOW_REFRESH_RESPONSES = {
+    422: COMMON_RESPONSES[422],
+    **MARKET_V2_REFRESH_BASE_RESPONSES,
+    **_success_response_spec(
+        "行业/概念资金流向刷新结果",
+        {"success": True, "message": "板块资金流向刷新完成", "sector_type": "行业", "timeframe": "今日", "updated_count": 128},
+    ),
+}
+
+DIVIDEND_REFRESH_RESPONSES = {
+    422: COMMON_RESPONSES[422],
+    **MARKET_V2_REFRESH_BASE_RESPONSES,
+    **_success_response_spec(
+        "股票分红配送数据刷新结果",
+        {"success": True, "message": "股票分红配送数据刷新完成", "symbol": "600519", "updated_count": 8},
+    ),
+}
+
+BLOCKTRADE_REFRESH_RESPONSES = {
+    422: COMMON_RESPONSES[422],
+    **MARKET_V2_REFRESH_BASE_RESPONSES,
+    **_success_response_spec(
+        "股票大宗交易数据刷新结果",
+        {"success": True, "message": "股票大宗交易数据刷新完成", "trade_date": "2026-04-03", "updated_count": 41},
+    ),
+}
+
 router = APIRouter(tags=["市场数据V2"], responses=MARKET_V2_ROUTE_RESPONSES)
 
 
@@ -92,7 +154,12 @@ async def get_etf_list(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/etf/refresh", summary="刷新ETF数据")
+@router.post(
+    "/etf/refresh",
+    summary="刷新 ETF 数据",
+    description="从东方财富拉取并落库全市场 ETF 行情数据，适用于定时同步任务或手工补数场景。",
+    responses=ETF_REFRESH_RESPONSES,
+)
 async def refresh_etf_spot():
     """
     从东方财富刷新全市场ETF数据
@@ -129,7 +196,12 @@ async def get_lhb_detail(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/lhb/refresh", summary="刷新龙虎榜数据")
+@router.post(
+    "/lhb/refresh",
+    summary="刷新龙虎榜数据",
+    description="按指定交易日从东方财富同步龙虎榜明细数据，适用于 A 股盘后榜单补齐和复盘分析。",
+    responses=LHB_REFRESH_RESPONSES,
+)
 async def refresh_lhb_detail(trade_date: str = Query(..., description="交易日期 (YYYY-MM-DD)")):
     """
     从东方财富刷新指定日期的龙虎榜数据
@@ -166,7 +238,12 @@ async def get_sector_fund_flow(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/sector/fund-flow/refresh", summary="刷新行业/概念资金流向")
+@router.post(
+    "/sector/fund-flow/refresh",
+    summary="刷新行业/概念资金流向",
+    description="按板块类型和时间维度同步行业或概念资金流向数据，用于 A 股热点主题资金监控。",
+    responses=SECTOR_FLOW_REFRESH_RESPONSES,
+)
 async def refresh_sector_fund_flow(
     sector_type: str = Query(default="行业", description="板块类型: 行业/概念/地域"),
     timeframe: str = Query(default="今日", description="时间维度: 今日/3日/5日/10日"),
@@ -204,7 +281,12 @@ async def get_stock_dividend(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/dividend/refresh", summary="刷新股票分红配送数据")
+@router.post(
+    "/dividend/refresh",
+    summary="刷新股票分红配送数据",
+    description="按股票代码从东方财富同步分红配送历史记录，适用于个股权益事件校准和补录。",
+    responses=DIVIDEND_REFRESH_RESPONSES,
+)
 async def refresh_stock_dividend(symbol: str = Query(..., description="股票代码")):
     """
     从东方财富刷新股票分红配送数据
@@ -242,7 +324,12 @@ async def get_stock_blocktrade(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/blocktrade/refresh", summary="刷新股票大宗交易数据")
+@router.post(
+    "/blocktrade/refresh",
+    summary="刷新股票大宗交易数据",
+    description="按交易日同步股票大宗交易记录，不传日期时获取最新可用交易日数据。",
+    responses=BLOCKTRADE_REFRESH_RESPONSES,
+)
 async def refresh_stock_blocktrade(
     trade_date: Optional[str] = Query(None, description="交易日期 (YYYY-MM-DD)，不传则获取最新")
 ):
