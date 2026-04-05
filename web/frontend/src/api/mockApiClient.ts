@@ -1,9 +1,23 @@
-// @ts-nocheck
 // web/frontend/src/api/mockApiClient.ts
 
 import type { UnifiedResponse } from './types/common.ts';
 import mockDashboard from '../mock/mockDashboard.js';
 import { loadMockKlineData } from './mockKlineData.ts';
+import type { IntervalType } from '../types/kline.ts';
+
+type RequestParams = Record<string, unknown>;
+
+interface MockRequestConfig {
+  params?: RequestParams;
+}
+
+function getRequestParams(config?: MockRequestConfig): RequestParams {
+  return config?.params ?? {};
+}
+
+function isIntervalType(value: unknown): value is IntervalType {
+  return value === '1m' || value === '5m' || value === '15m' || value === '1h' || value === '1d' || value === '1w' || value === '1M';
+}
 
 // A simple delay function to simulate network latency
 const simulateNetworkDelay = (min = 100, max = 500) =>
@@ -20,6 +34,8 @@ const createMockResponse = <T>(data: T): UnifiedResponse<T> => ({
   errors: null,
 });
 
+const toMockResult = <T>(value: unknown): T => value as T;
+
 const normalizeMockPath = (url = '') => url.replace(/^\/api(?=\/)/, '');
 
 const matchesMockRoute = (url: string, route: string): boolean => {
@@ -34,11 +50,11 @@ const matchesMockRoute = (url: string, route: string): boolean => {
 };
 
 export const mockApiClient = {
-  async get<T = UnifiedResponse>(url: string, config?: unknown): Promise<T> {
+  async get<T = UnifiedResponse<unknown>>(url: string, config?: MockRequestConfig): Promise<T> {
     await simulateNetworkDelay();
     console.log(`[Mock API] GET ${url}`, config);
 
-    const params = config?.params || {};
+    const params = getRequestParams(config);
 
     // --- Dashboard & Market Routes ---
 
@@ -69,7 +85,7 @@ export const mockApiClient = {
       return {
         ...response,
         process_time: '0.00'
-      } as unknown;
+      } as T;
     }
 
     // 2. Market Overview (ETF List / Indices)
@@ -81,7 +97,7 @@ export const mockApiClient = {
         { symbol: '399006.SZ', name: '创业板指', latest_price: 2156.89, change_percent: -0.45, volume: 500000 },
         { symbol: '510300.SH', name: '沪深300', latest_price: 3800.00, change_percent: 0.50, volume: 800000 },
       ];
-      return createMockResponse(indices) as unknown;
+      return toMockResult<T>(createMockResponse(indices));
     }
 
     // 3. Fund Flow
@@ -92,7 +108,7 @@ export const mockApiClient = {
         northTotal: { amount: 58.8, monthly: 1256 },
         mainForce: { amount: 126.5, percentage: 68 }
       };
-      return createMockResponse(flowData) as unknown;
+      return toMockResult<T>(createMockResponse(flowData));
     }
 
     if (url.includes('/api/market/fund-flow')) {
@@ -103,7 +119,7 @@ export const mockApiClient = {
         northTotal: { amount: 58.8, monthly: 1256 },
         mainForce: { amount: 126.5, percentage: 68 }
       };
-      return createMockResponse(flowData) as unknown;
+      return toMockResult<T>(createMockResponse(flowData));
     }
 
     // 4. Industry Flow
@@ -112,13 +128,13 @@ export const mockApiClient = {
         ...sector,
         amount: Number((150 - index * 12.5).toFixed(1))
       }));
-      return createMockResponse(sectors) as unknown;
+      return toMockResult<T>(createMockResponse(sectors));
     }
 
     if (url.includes('/api/market/industry/flow')) {
       // Use mockDashboard logic
       const sectors = mockDashboard.getLeadingSectors();
-      return createMockResponse(sectors) as unknown;
+      return toMockResult<T>(createMockResponse(sectors));
     }
 
     // 5. Stock Flow Ranking
@@ -130,7 +146,7 @@ export const mockApiClient = {
         { code: '600036', name: '招商银行', amount: 6.7, change: 1.2 },
         { code: '000002', name: '万科A', amount: -3.1, change: -0.9 }
       ];
-      return createMockResponse(stocks) as unknown;
+      return toMockResult<T>(createMockResponse(stocks));
     }
 
     if (url.includes('/api/monitoring/stock/flow/ranking')) {
@@ -141,7 +157,7 @@ export const mockApiClient = {
         { code: '600036', name: '招商银行', amount: 6.7, change: 1.2 },
         { code: '000002', name: '万科A', amount: -3.1, change: -0.9 }
       ];
-      return createMockResponse(stocks) as unknown;
+      return toMockResult<T>(createMockResponse(stocks));
     }
 
     // 6. Long Hu Bang (Dragon Tiger List)
@@ -150,7 +166,7 @@ export const mockApiClient = {
         { code: '000001', name: '平安银行', reason: '日涨幅偏离值达7%', amount: 12000, change_percent: 10.01 },
         { code: '600000', name: '浦发银行', reason: '连续三个交易日内，涨幅偏离值累计达20%', amount: 8500, change_percent: 9.98 }
       ];
-      return createMockResponse(lhb) as unknown;
+      return toMockResult<T>(createMockResponse(lhb));
     }
 
     // 7. Block Trading
@@ -159,15 +175,15 @@ export const mockApiClient = {
         { code: '600519', name: '贵州茅台', price: 1800.00, amount: 5000, buyer: '机构专用', seller: '中信证券北京总部' },
         { code: '300750', name: '宁德时代', price: 240.00, amount: 3000, buyer: '深股通专用', seller: '机构专用' }
       ];
-      return createMockResponse(block) as unknown;
+      return toMockResult<T>(createMockResponse(block));
     }
 
     // 8. K-Line Data
     if (url.includes('/api/market/kline')) {
-        const symbol = params.symbol || '000001.SH';
-        const period = params.period || '1d';
+        const symbol = typeof params.symbol === 'string' ? params.symbol : '000001.SH';
+        const period = isIntervalType(params.period) ? params.period : '1d';
         const kline = await loadMockKlineData(symbol, period);
-        return createMockResponse(kline.candles) as unknown;
+        return toMockResult<T>(createMockResponse(kline.candles));
     }
 
     // 9. Real-time Quote
@@ -181,7 +197,7 @@ export const mockApiClient = {
             volume: Math.floor(Math.random() * 1000000),
             turnover: Math.floor(Math.random() * 100000000)
         };
-        return createMockResponse(quote) as unknown;
+        return toMockResult<T>(createMockResponse(quote));
     }
 
     // 10. Intraday Trend
@@ -200,26 +216,26 @@ export const mockApiClient = {
         // push order: oldest first. So it is chronological. 
         // However, let's just return what generateMockCandles returns.
         
-        return createMockResponse({
+        return toMockResult<T>(createMockResponse({
             symbol,
             lastClose: kline.candles[0].open * 0.98, // approximate
             data: kline.candles.map(c => c.close) // Simpler trend array
-        }) as unknown;
+        }));
     }
 
     // 11. Technical Indicators
     if (url.includes('/api/strategy/v2/indicators')) {
-      return createMockResponse([
+      return toMockResult<T>(createMockResponse([
         { name: 'RSI', value: '65.2', signal: '超买', signalType: 'fall' },
         { name: 'MACD', value: '+0.45', signal: '金叉', signalType: 'rise' },
         { name: 'KDJ', value: '78.5', signal: '中性', signalType: 'neutral' },
         { name: 'BOLL', value: '上轨', signal: '强势', signalType: 'rise' }
-      ]) as unknown;
+      ]));
     }
 
     // 12. Portfolio Summary & Positions
     if (url.includes('/api/portfolio/v2/summary')) {
-      return createMockResponse({
+      return toMockResult<T>(createMockResponse({
         total_assets: 1256789,
         daily_pnl: 8450,
         daily_pnl_percent: 0.68,
@@ -229,12 +245,12 @@ export const mockApiClient = {
           { symbol: '600519', name: '贵州茅台', quantity: 100, cost: 1800, price: 1850, pnl: 5000, pnl_percent: 2.78 },
           { symbol: '300750', name: '宁德时代', quantity: 200, cost: 230, price: 245, pnl: 3000, pnl_percent: 6.52 }
         ]
-      }) as unknown;
+      }));
     }
 
     // 13. Watchlist Data
     if (url.includes('/api/portfolio/v2/watchlist')) {
-      return createMockResponse([
+      return toMockResult<T>(createMockResponse([
         { 
           id: 'default', 
           name: '默认自选', 
@@ -251,47 +267,47 @@ export const mockApiClient = {
             { symbol: '002230', name: '科大讯飞', price: '45.6', change: -1.2 }
           ] 
         }
-      ]) as unknown;
+      ]));
     }
 
     // 14. Data Quality Monitoring
     if (url.includes('/api/monitoring/v2/data-quality')) {
-      return createMockResponse({
+      return toMockResult<T>(createMockResponse({
         metrics: { integrity: 99.8, accuracy: 99.5, timeliness: 98.2, consistency: 99.1 },
         sources: [
           { name: '交易所实时行情', type: '实时', status: 'healthy', statusText: '正常', quality: 100 },
           { name: '财务报表数据库', type: '离线', status: 'healthy', statusText: '正常', quality: 99.5 },
           { name: '问财三方数据', type: 'API', status: 'warning', statusText: '稍慢', quality: 85.2 }
         ]
-      }) as unknown;
+      }));
     }
 
     // Default fallback
     console.warn(`[Mock API] No handler for GET ${url}, returning generic mock.`);
-    return { ...createMockResponse({}), data: { url, method: 'GET', ...config?.params } } as T;
+      return { ...createMockResponse({}), data: { url, method: 'GET', ...params } } as T;
   },
 
-  async post<T = UnifiedResponse>(url: string, data?: unknown, config?: unknown): Promise<T> {
+  async post<T = UnifiedResponse<unknown>>(url: string, data?: unknown, config?: MockRequestConfig): Promise<T> {
     await simulateNetworkDelay();
     console.warn(`[Mock API] POST request to ${url} with data:`, data, 'and config:', config);
-    return { ...createMockResponse({}), data: { url, method: 'POST', requestData: data, ...config?.params } } as T;
+    return { ...createMockResponse({}), data: { url, method: 'POST', requestData: data, ...getRequestParams(config) } } as T;
   },
 
-  async put<T = UnifiedResponse>(url: string, data?: unknown, config?: unknown): Promise<T> {
+  async put<T = UnifiedResponse<unknown>>(url: string, data?: unknown, config?: MockRequestConfig): Promise<T> {
     await simulateNetworkDelay();
     console.warn(`[Mock API] PUT request to ${url} with data:`, data, 'and config:', config);
-    return { ...createMockResponse({}), data: { url, method: 'PUT', requestData: data, ...config?.params } } as T;
+    return { ...createMockResponse({}), data: { url, method: 'PUT', requestData: data, ...getRequestParams(config) } } as T;
   },
 
-  async patch<T = UnifiedResponse>(url: string, data?: unknown, config?: unknown): Promise<T> {
+  async patch<T = UnifiedResponse<unknown>>(url: string, data?: unknown, config?: MockRequestConfig): Promise<T> {
     await simulateNetworkDelay();
     console.warn(`[Mock API] PATCH request to ${url} with data:`, data, 'and config:', config);
-    return { ...createMockResponse({}), data: { url, method: 'PATCH', requestData: data, ...config?.params } } as T;
+    return { ...createMockResponse({}), data: { url, method: 'PATCH', requestData: data, ...getRequestParams(config) } } as T;
   },
 
-  async delete<T = UnifiedResponse>(url: string, config?: unknown): Promise<T> {
+  async delete<T = UnifiedResponse<unknown>>(url: string, config?: MockRequestConfig): Promise<T> {
     await simulateNetworkDelay();
     console.warn(`[Mock API] DELETE request to ${url} with config:`, config);
-    return { ...createMockResponse({}), data: { url, method: 'DELETE', ...config?.params } } as T;
+    return { ...createMockResponse({}), data: { url, method: 'DELETE', ...getRequestParams(config) } } as T;
   },
 };
