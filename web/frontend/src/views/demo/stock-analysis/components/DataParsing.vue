@@ -10,7 +10,7 @@
         <h3>📁 通达信数据文件格式</h3>
         <p>通达信将股票数据存储为二进制文件,不同周期对应不同的文件扩展名:</p>
 
-        <table class="table" style="margin-top: 15px;">
+        <table class="table table-spacing">
           <thead>
             <tr>
               <th width="120">数据类型</th>
@@ -34,7 +34,7 @@
         <h3>🔢 日线数据结构 (.day 文件)</h3>
         <p>每条日K线记录占用 32 字节,结构如下:</p>
 
-        <table class="table" style="margin-top: 15px;">
+        <table class="table table-spacing">
           <thead>
             <tr>
               <th width="100">偏移量</th>
@@ -118,112 +118,128 @@ const codeExamples = computed<Record<string, string>>(() => ({
 </script>
 
 <style scoped lang="scss">
+@use '../../../../styles/artdeco-tokens.scss' as *;
 
 .content-section {
-  padding: 10px 0;
+  padding: var(--artdeco-spacing-3) 0;
   line-height: 1.8;
 }
 
 .section {
-  margin-bottom: 30px;
+  margin-bottom: calc(var(--artdeco-spacing-5) + var(--artdeco-spacing-2) + (var(--artdeco-spacing-px) * 2));
 
   &:last-child {
     margin-bottom: 0;
   }
 
   h3 {
-    margin: 0 0 15px 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--primary);
-    border-left: 3px solid var(--primary);
-    padding-left: 12px;
+    margin: 0 0 calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px)) 0;
+    padding-left: var(--artdeco-spacing-3);
+    border-left: calc(var(--artdeco-spacing-px) * 3) solid var(--artdeco-gold-primary);
+    color: var(--artdeco-gold-primary);
+    font-size: calc(var(--artdeco-text-base) + (var(--artdeco-spacing-px) * 2));
+    font-weight: var(--artdeco-font-semibold);
+    letter-spacing: var(--artdeco-tracking-wide);
   }
 
   p {
     margin: 0;
-    color: var(--text-secondary);
+    color: var(--artdeco-fg-muted);
   }
 }
 
+.table-spacing {
+  margin-top: calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
+}
+
 .tabs {
-  margin-top: 20px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  margin-top: var(--artdeco-spacing-5);
   overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
 }
 
 .tab-headers {
   display: flex;
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 4%, var(--artdeco-bg-card));
+  border-bottom: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 12%, transparent);
 }
 
 .tab-btn {
-  padding: 12px 24px;
-  background: none;
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-6);
   border: none;
-  font-size: 14px;
-  color: var(--text-secondary);
+  border-right: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 12%, transparent);
+  background: none;
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
   cursor: pointer;
-  transition: all 0.2s;
-  border-right: 1px solid var(--border);
+  transition:
+    background var(--artdeco-transition-quick) var(--artdeco-ease-out),
+    color var(--artdeco-transition-quick) var(--artdeco-ease-out);
 
   &:last-child {
     border-right: none;
   }
 
   &:hover {
-    background: var(--bg-dark);
+    background: var(--artdeco-bg-elevated);
   }
 
   &.active {
-    background: var(--bg-primary);
-    color: var(--primary);
-    font-weight: 500;
+    background: var(--artdeco-bg-global);
+    color: var(--artdeco-gold-primary);
+    font-weight: var(--artdeco-font-medium);
   }
 }
 
 .tab-content {
-  background: var(--bg-primary);
+  background: var(--artdeco-bg-global);
 }
 
 .code-block {
   display: block;
-  background: var(--bg-dark);
-  border: none;
-  border-radius: 0;
-  padding: 15px;
-  font-family: 'SF Mono', Monaco, Consolas, monospace;
-  font-size: 13px;
-  line-height: 1.6;
-  overflow-x: auto;
-  white-space: pre;
-  color: var(--text-primary);
   width: 100%;
-  min-height: 400px;
+  min-height: calc((var(--artdeco-spacing-20) * 4) + var(--artdeco-spacing-10));
+  padding: calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
+  overflow-x: auto;
   resize: vertical;
+  white-space: pre;
+  border: none;
+  border-radius: var(--artdeco-radius-none);
+  background: var(--artdeco-bg-elevated);
+  color: var(--artdeco-fg-primary);
+  font-family: var(--font-mono);
+  font-size: calc(var(--artdeco-text-sm) - var(--artdeco-spacing-px));
+  line-height: 1.6;
+}
+
+.alert-card {
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 4%, var(--artdeco-bg-card));
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
 }
 
 .alert-content {
+  padding: var(--artdeco-spacing-4);
+
   strong {
     display: block;
-    margin-bottom: 10px;
-    color: var(--text-primary);
+    margin-bottom: calc(var(--artdeco-spacing-3) - (var(--artdeco-spacing-px) * 2));
+    color: var(--artdeco-fg-primary);
   }
 }
 
 .warning-list {
   margin: 0;
-  padding-left: 20px;
-  color: var(--text-secondary);
+  padding-left: var(--artdeco-spacing-5);
+  color: var(--artdeco-fg-muted);
 
   li {
-    margin: 6px 0;
+    margin: calc(var(--artdeco-spacing-2) - (var(--artdeco-spacing-px) * 2)) 0;
 
     strong {
-      color: var(--text-primary);
-      font-weight: 600;
+      color: var(--artdeco-fg-primary);
+      font-weight: var(--artdeco-font-semibold);
     }
   }
 }
