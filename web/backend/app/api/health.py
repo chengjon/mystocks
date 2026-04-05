@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from typing import Dict, Optional
 
 import psycopg2
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Path, Request
 from pydantic import BaseModel
 
 from app.core.readiness import check_mongodb_readiness
@@ -479,8 +479,15 @@ async def detailed_health_check(current_user: User = Depends(get_current_user)):
         raise BusinessException(detail=f"详细健康检查失败: {str(e)}", status_code=500, error_code="HEALTH_CHECK_FAILED")
 
 
-@router.get("/reports/health/{timestamp}")
-async def get_health_report(timestamp: str, current_user: User = Depends(get_current_user)):
+@router.get(
+    "/reports/health/{timestamp}",
+    summary="获取健康检查报告",
+    description="按报告时间戳读取历史健康检查结果，便于排查某次巡检、发布窗口或告警时段的系统状态。",
+)
+async def get_health_report(
+    timestamp: str = Path(..., description="健康检查报告时间戳，例如 20260405T183000。"),
+    current_user: User = Depends(get_current_user),
+):
     """
     获取健康检查报告
 

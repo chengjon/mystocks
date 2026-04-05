@@ -1971,3 +1971,114 @@ def test_risk_remaining_write_endpoints_have_docs_and_request_examples() -> None
 
         request_json = operation["requestBody"]["content"]["application/json"]
         assert "example" in request_json or "examples" in request_json
+
+
+def test_v1_lineage_write_endpoints_have_request_examples() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path in [
+        "/api/v1/lineage/record",
+        "/api/v1/lineage/graph",
+        "/api/v1/lineage/impact",
+    ]:
+        operation = schema["paths"][path]["post"]
+        request_json = operation["requestBody"]["content"]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        assert "example" in request_json or "examples" in request_json
+
+
+def test_v1_strategy_backtest_endpoints_have_request_examples_and_descriptions() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    run_operation = schema["paths"]["/api/v1/strategy/backtest/run"]["post"]
+    run_request_json = run_operation["requestBody"]["content"]["application/json"]
+    assert run_operation.get("summary")
+    assert len(run_operation.get("description", "")) >= 20
+    assert "example" in run_request_json or "examples" in run_request_json
+
+    for path in [
+        "/api/v1/strategy/backtest/results/{backtest_id}",
+        "/api/v1/strategy/backtest/status/{backtest_id}",
+    ]:
+        operation = schema["paths"][path]["get"]
+        parameters = operation.get("parameters", [])
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        assert any(param["name"] == "backtest_id" and param.get("description") for param in parameters)
+
+
+def test_v1_data_route_sentiment_strategy_and_optimization_endpoints_have_docs() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path in ["/api/v1/data/route", "/api/v1/sentiment/analyze"]:
+        operation = schema["paths"][path]["post"]
+        request_json = operation["requestBody"]["content"]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        assert "example" in request_json or "examples" in request_json
+
+    strategies_operation = schema["paths"]["/api/v1/strategies"]["get"]
+    strategies_parameters = strategies_operation.get("parameters", [])
+    assert strategies_operation.get("summary")
+    assert len(strategies_operation.get("description", "")) >= 20
+    assert any(
+        param["name"] == "strategy_type" and param.get("description")
+        for param in strategies_parameters
+    )
+
+    slow_queries_operation = schema["paths"]["/api/v1/optimization/slow-queries"]["get"]
+    slow_queries_parameters = slow_queries_operation.get("parameters", [])
+    assert slow_queries_operation.get("summary")
+    assert len(slow_queries_operation.get("description", "")) >= 20
+    assert any(
+        param["name"] == "limit" and param.get("description")
+        for param in slow_queries_parameters
+    )
+
+
+def test_remaining_signal_health_and_task_endpoints_have_parameter_docs_and_descriptions() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    health_report_operation = schema["paths"]["/api/reports/health/{timestamp}"]["get"]
+    health_report_parameters = health_report_operation.get("parameters", [])
+    assert health_report_operation.get("summary")
+    assert len(health_report_operation.get("description", "")) >= 20
+    assert any(
+        param["name"] == "timestamp" and param["in"] == "path" and param.get("description")
+        for param in health_report_parameters
+    )
+
+    signal_quality_operation = schema["paths"]["/api/signals/quality-report"]["get"]
+    signal_quality_parameters = signal_quality_operation.get("parameters", [])
+    assert signal_quality_operation.get("summary")
+    assert len(signal_quality_operation.get("description", "")) >= 20
+    assert any(
+        param["name"] == "strategy_id" and param.get("description")
+        for param in signal_quality_parameters
+    )
+
+    realtime_operation = schema["paths"]["/api/strategies/{strategy_id}/realtime"]["get"]
+    realtime_parameters = realtime_operation.get("parameters", [])
+    assert realtime_operation.get("summary")
+    assert len(realtime_operation.get("description", "")) >= 20
+    assert any(
+        param["name"] == "strategy_id" and param["in"] == "path" and param.get("description")
+        for param in realtime_parameters
+    )
+
+    task_operation = schema["paths"]["/api/tasks/{task_id}"]["get"]
+    task_parameters = task_operation.get("parameters", [])
+    assert task_operation.get("summary")
+    assert len(task_operation.get("description", "")) >= 20
+    assert any(
+        param["name"] == "task_id" and param["in"] == "path" and param.get("description")
+        for param in task_parameters
+    )

@@ -90,6 +90,26 @@ MODEL_TRAIN_EXAMPLES = {
     }
 }
 
+BACKTEST_RUN_EXAMPLES = {
+    "run_index_future_backtest": {
+        "summary": "启动股指期货回测",
+        "description": "提交沪深 300 股指期货策略回测，包含时间区间、初始资金和手续费参数。",
+        "value": {
+            "strategy_name": "if_trend_following",
+            "symbols": ["IF9999.CCFX"],
+            "start_date": "2025-01-01",
+            "end_date": "2025-03-31",
+            "initial_capital": 500000.0,
+            "parameters": {
+                "strategy_id": 12,
+                "commission_rate": 0.00023,
+                "slippage_rate": 0.0005,
+                "margin_ratio": 0.12,
+            },
+        },
+    }
+}
+
 # 延迟初始化监控数据库（避免导入时需要完整环境变量）
 monitoring_db = None
 _runtime_strategy_store: List[Dict[str, Any]] = []
@@ -1045,8 +1065,15 @@ async def list_models(
         raise HTTPException(status_code=500, detail=f"获取模型列表失败: {str(e)}")
 
 
-@router.post("/backtest/run")
-async def run_backtest(request: BacktestRequest, background_tasks: BackgroundTasks) -> Dict[str, int]:
+@router.post(
+    "/backtest/run",
+    summary="执行回测",
+    description="提交回测任务并异步执行，适用于策略联调、股指期货策略验证和结果追踪场景。",
+)
+async def run_backtest(
+    background_tasks: BackgroundTasks,
+    request: BacktestRequest = Body(..., openapi_examples=BACKTEST_RUN_EXAMPLES),
+) -> Dict[str, int]:
     """
     执行回测
 
@@ -1160,7 +1187,11 @@ async def list_backtest_results(
         raise HTTPException(status_code=500, detail=f"获取回测结果失败: {str(e)}")
 
 
-@router.get("/backtest/results/{backtest_id}")
+@router.get(
+    "/backtest/results/{backtest_id}",
+    summary="获取回测详细结果",
+    description="按回测 ID 返回单次回测的详细结果记录，便于查看绩效数据、参数快照和运行状态。",
+)
 async def get_backtest_result(backtest_id: int = Path(..., description="回测ID", ge=1)) -> Dict[str, Any]:
     """获取回测详细结果"""
     try:
@@ -1189,7 +1220,11 @@ async def get_backtest_result(backtest_id: int = Path(..., description="回测ID
         raise HTTPException(status_code=500, detail=f"获取回测结果失败: {str(e)}")
 
 
-@router.get("/backtest/status/{backtest_id}")
+@router.get(
+    "/backtest/status/{backtest_id}",
+    summary="获取回测任务状态",
+    description="按回测 ID 查询后台回测任务的当前状态，用于轮询进度、判断是否完成以及是否可读取结果。",
+)
 async def get_backtest_status(backtest_id: int = Path(..., description="回测ID", ge=1)) -> Dict[str, Any]:
     """获取回测任务状态"""
     fallback_record = _find_runtime_backtest(backtest_id) if _runtime_fallback_enabled() else None

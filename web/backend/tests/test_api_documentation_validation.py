@@ -26,6 +26,7 @@ from app.main import app
 TECH_DEBT_BASELINE_FILE = Path(__file__).resolve().parents[3] / "reports" / "analysis" / "tech-debt-baseline.json"
 DOCUMENTATION_BASELINE_KEY = "backend_api_documentation"
 FLOAT_TOLERANCE = 1e-12
+NON_CONTRACT_ROUTE_PATHS = {"/api/docs", "/api/redoc"}
 
 
 def load_documentation_baseline() -> Dict[str, Any]:
@@ -110,6 +111,8 @@ class APIDocumentationValidator:
 
         for route in app.routes:
             if isinstance(route, APIRoute):
+                if route.path in NON_CONTRACT_ROUTE_PATHS:
+                    continue
                 endpoint_result = self._validate_single_endpoint(route, schema)
                 endpoint_results.append(endpoint_result)
 
@@ -621,6 +624,14 @@ class TestAPIDocumentationValidation:
         """Test that ReDoc is accessible"""
         response = test_client.get("/api/redoc")
         assert response.status_code == 200, "ReDoc should be accessible"
+
+    def test_docs_ui_routes_are_excluded_from_contract_validation(self, documentation_validator):
+        """Swagger/ReDoc UI 路由不属于 OpenAPI 契约端点，不应计入文档债。"""
+        results = documentation_validator.validate_endpoint_documentation()
+        validated_paths = {item["path"] for item in results}
+
+        assert "/api/docs" not in validated_paths
+        assert "/api/redoc" not in validated_paths
 
 
 if __name__ == "__main__":

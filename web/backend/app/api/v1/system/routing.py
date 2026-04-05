@@ -6,13 +6,19 @@
 
 from typing import Dict, Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 from pydantic import BaseModel, Field
 
 router = APIRouter(
     prefix="/data",
     tags=["Data Routing"],
 )
+
+DATA_ROUTING_REQUEST_EXAMPLE = {
+    "data_category": "market_data",
+    "symbol": "IF9999.CCFX",
+    "date_range": {"start": "2025-03-01", "end": "2025-03-31"},
+}
 
 
 class DataRoutingRequest(BaseModel):
@@ -35,8 +41,13 @@ class DataRoutingResponse(BaseModel):
     recommended_strategy: str = Field(..., description="Recommended query strategy")
 
 
-@router.post("/route", response_model=DataRoutingResponse, summary="Data Routing Decision")
-async def get_data_route(request: DataRoutingRequest):
+@router.post(
+    "/route",
+    response_model=DataRoutingResponse,
+    summary="Data Routing Decision",
+    description="根据数据类别、标的和时间范围推断最合适的查询路由，帮助在 PostgreSQL 与 TDengine 之间做契约化选择。",
+)
+async def get_data_route(request: DataRoutingRequest = Body(..., example=DATA_ROUTING_REQUEST_EXAMPLE)):
     """
     根据数据特性和查询条件智能选择数据库路由
 

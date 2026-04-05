@@ -13,7 +13,7 @@ import logging
 from datetime import date, datetime, timedelta
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Path, Query
 
 from app.api.signal_monitoring.signal_history_response_schemas import (
     ActiveSignalItem,
@@ -207,7 +207,7 @@ async def get_signal_history(
 
 @router.get("/signals/quality-report", response_model=SignalQualityReportResponse)
 async def get_signal_quality_report(
-    strategy_id: str,
+    strategy_id: str = Query(..., description="需要生成质量报告的策略ID。"),
     period_days: int = Query(7, ge=1, le=90, description="统计周期（天）"),
     current_user: User = Depends(get_current_user),
 ):
@@ -393,7 +393,7 @@ async def get_signal_quality_report(
 
 @router.get("/strategies/{strategy_id}/realtime", response_model=StrategyRealtimeMonitoringResponse)
 async def get_strategy_realtime_monitoring(
-    strategy_id: str,
+    strategy_id: str = Path(..., description="需要查看实时监控状态的策略ID。"),
     current_user: User = Depends(get_current_user),
 ):
     """

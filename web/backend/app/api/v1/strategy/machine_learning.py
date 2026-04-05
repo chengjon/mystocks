@@ -224,7 +224,10 @@ async def backtest_ml_strategy(
 
 @router.get("", response_model=Dict[str, Any], summary="List Available Strategies")
 async def list_strategies(
-    strategy_type: Optional[MLStrategyType] = None,
+    strategy_type: Optional[MLStrategyType] = Query(
+        None,
+        description="按策略类型筛选，可选 svm、decision_tree、naive_bayes、lstm 或 transformer。",
+    ),
     trained_only: bool = Query(False, description="Only return trained strategies"),
 ):
     """

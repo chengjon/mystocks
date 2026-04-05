@@ -6,7 +6,7 @@
 
 from typing import Any, Dict
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from pydantic import BaseModel
 
 from app.openapi_config import COMMON_RESPONSES
@@ -114,8 +114,12 @@ async def get_database_status():
     }
 
 
-@router.get("/slow-queries", summary="Get Slow Queries")
-async def get_slow_queries(limit: int = 10):
+@router.get(
+    "/slow-queries",
+    summary="Get Slow Queries",
+    description="返回数据库中最慢的一批 SQL 查询，便于定位索引缺失、扫描放大和执行时间异常的热点语句。",
+)
+async def get_slow_queries(limit: int = Query(10, ge=1, le=100, description="返回的慢查询条数上限。")):
     """
     获取慢查询列表
 

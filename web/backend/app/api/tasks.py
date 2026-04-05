@@ -374,7 +374,12 @@ async def list_tasks(
         raise BusinessException(detail="获取任务列表失败", status_code=500, error_code="TASK_LIST_RETRIEVAL_FAILED")
 
 
-@router.get("/{task_id}", response_model=TaskConfig)
+@router.get(
+    "/{task_id}",
+    response_model=TaskConfig,
+    summary="获取任务详情",
+    description="按任务 ID 返回任务的完整配置和当前状态，适用于任务排障、配置核对和执行前检查。",
+)
 async def get_task(
     task_id: str = Path(..., description="任务ID", min_length=1, max_length=50, pattern=r"^[a-zA-Z0-9_-]+$"),
 ):

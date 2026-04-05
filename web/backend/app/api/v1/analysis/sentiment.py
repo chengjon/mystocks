@@ -7,7 +7,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from fastapi import APIRouter, Path, Query
+from fastapi import APIRouter, Body, Path, Query
 from pydantic import BaseModel, Field
 
 from app.openapi_config import COMMON_RESPONSES
@@ -43,6 +43,12 @@ router = APIRouter(
     responses=SENTIMENT_ROUTE_RESPONSES,
 )
 
+SENTIMENT_ANALYZE_REQUEST_EXAMPLE = {
+    "symbol": "0700.HK",
+    "text": "腾讯云收入保持增长，广告业务恢复明显，市场关注 AI 投入带来的中长期回报。",
+    "source": "broker-report",
+}
+
 
 class SentimentRequest(BaseModel):
     """情感分析请求"""
@@ -65,8 +71,13 @@ class SentimentResponse(BaseModel):
     analyzed_at: datetime
 
 
-@router.post("/analyze", response_model=SentimentResponse, summary="Analyze Sentiment")
-async def analyze_sentiment(request: SentimentRequest):
+@router.post(
+    "/analyze",
+    response_model=SentimentResponse,
+    summary="Analyze Sentiment",
+    description="分析单段文本对指定股票的情感倾向，适用于新闻摘要、研报摘录和舆情片段的快速判断。",
+)
+async def analyze_sentiment(request: SentimentRequest = Body(..., example=SENTIMENT_ANALYZE_REQUEST_EXAMPLE)):
     """
     分析文本情感
 

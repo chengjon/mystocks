@@ -18,7 +18,7 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Path, Query, Request
+from fastapi import APIRouter, Body, HTTPException, Path, Query, Request
 from pydantic import BaseModel, Field
 
 from app.api._data_lineage_impact_helper import build_impacted_nodes
@@ -36,6 +36,32 @@ router = APIRouter(
     prefix="/api/v1/lineage",
     tags=["Data Lineage"],
 )
+
+LINEAGE_RECORD_REQUEST_EXAMPLE = {
+    "from_node": "raw:stock:600519",
+    "to_node": "feature:daily-factor:600519",
+    "operation": "transform",
+    "from_node_type": "dataset",
+    "to_node_type": "transform",
+    "metadata": {
+        "market": "A-share",
+        "pipeline": "daily-factor-build",
+        "owner": "quant-research",
+    },
+}
+
+LINEAGE_GRAPH_REQUEST_EXAMPLE = {
+    "node_id": "feature:daily-factor:600519",
+    "direction": "both",
+    "max_depth": 3,
+    "include_metadata": True,
+}
+
+LINEAGE_IMPACT_REQUEST_EXAMPLE = {
+    "node_id": "feature:daily-factor:600519",
+    "max_levels": 3,
+    "include_indirect": True,
+}
 
 
 # =============================================================================
@@ -217,8 +243,8 @@ async def get_lineage_tracker():
 
 @router.post("/record", response_model=UnifiedResponse, status_code=201)
 async def record_lineage(
-    request: LineageRecordRequest,
     http_request: Request,
+    request: LineageRecordRequest = Body(..., example=LINEAGE_RECORD_REQUEST_EXAMPLE),
 ):
     """
     记录血缘关系
@@ -489,8 +515,8 @@ async def get_downstream_lineage(
 
 @router.post("/graph", response_model=UnifiedResponse)
 async def get_lineage_graph(
-    request: LineageGraphRequest,
     http_request: Request,
+    request: LineageGraphRequest = Body(..., example=LINEAGE_GRAPH_REQUEST_EXAMPLE),
 ):
     """
     查询完整血缘图
@@ -605,8 +631,8 @@ async def get_lineage_graph(
 
 @router.post("/impact", response_model=UnifiedResponse)
 async def analyze_impact(
-    request: ImpactAnalysisRequest,
     http_request_obj: Request,
+    request: ImpactAnalysisRequest = Body(..., example=LINEAGE_IMPACT_REQUEST_EXAMPLE),
 ):
     """
     影响分析
