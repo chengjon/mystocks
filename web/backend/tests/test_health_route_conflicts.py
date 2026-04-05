@@ -486,6 +486,33 @@ def test_indicator_cache_statistics_endpoint_has_description_examples_and_error_
     assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
+def test_sentiment_and_technical_pattern_endpoints_have_docs_examples_and_parameter_descriptions() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    sentiment_operation = schema["paths"]["/api/v1/sentiment/stock/{symbol}"]["get"]
+    sentiment_parameters = sentiment_operation.get("parameters", [])
+    sentiment_success_json = sentiment_operation["responses"]["200"]["content"]["application/json"]
+
+    assert sentiment_operation.get("summary")
+    assert len(sentiment_operation.get("description", "")) >= 20
+    for parameter_name in ["symbol", "days"]:
+        assert any(param["name"] == parameter_name and param.get("description") for param in sentiment_parameters)
+    assert "example" in sentiment_success_json or "examples" in sentiment_success_json
+    assert any(code.startswith(("4", "5")) for code in sentiment_operation["responses"])
+
+    patterns_operation = schema["paths"]["/api/v1/technical/patterns/{symbol}"]["get"]
+    patterns_parameters = patterns_operation.get("parameters", [])
+    patterns_success_json = patterns_operation["responses"]["200"]["content"]["application/json"]
+
+    assert patterns_operation.get("summary")
+    assert len(patterns_operation.get("description", "")) >= 20
+    for parameter_name in ["symbol", "period"]:
+        assert any(param["name"] == parameter_name and param.get("description") for param in patterns_parameters)
+    assert "example" in patterns_success_json or "examples" in patterns_success_json
+    assert any(code.startswith(("4", "5")) for code in patterns_operation["responses"])
+
+
 def test_audit_endpoints_have_parameter_descriptions() -> None:
     app.openapi_schema = None
     schema = app.openapi()

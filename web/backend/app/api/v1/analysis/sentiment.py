@@ -7,13 +7,34 @@
 from datetime import datetime
 from typing import List, Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Path, Query
 from pydantic import BaseModel, Field
 
 from app.openapi_config import COMMON_RESPONSES
 
 SENTIMENT_ROUTE_RESPONSES = {
     500: COMMON_RESPONSES[500],
+}
+
+STOCK_SENTIMENT_RESPONSES = {
+    200: {
+        "description": "股票情感趋势数据",
+        "content": {
+            "application/json": {
+                "example": {
+                    "symbol": "600519",
+                    "period_days": 7,
+                    "sentiment_scores": [
+                        {"date": "2026-04-05", "score": 0.65, "mention_count": 125},
+                        {"date": "2026-04-04", "score": 0.58, "mention_count": 98},
+                        {"date": "2026-04-03", "score": 0.72, "mention_count": 156},
+                    ],
+                    "average_sentiment": 0.65,
+                    "total_mentions": 379,
+                }
+            }
+        },
+    }
 }
 
 router = APIRouter(
@@ -63,8 +84,16 @@ async def analyze_sentiment(request: SentimentRequest):
     )
 
 
-@router.get("/stock/{symbol}", summary="Get Stock Sentiment")
-async def get_stock_sentiment(symbol: str, days: int = 7):
+@router.get(
+    "/stock/{symbol}",
+    summary="获取股票情感趋势",
+    description="按股票代码返回最近若干天的舆情情感分数、提及次数和平均情感，供研判短期情绪变化使用。",
+    responses=STOCK_SENTIMENT_RESPONSES,
+)
+async def get_stock_sentiment(
+    symbol: str = Path(..., description="股票代码，例如 600519 或 0700.HK。"),
+    days: int = Query(7, ge=1, le=30, description="回溯统计的自然日天数，默认最近 7 天。"),
+):
     """
     获取股票情感趋势
 
