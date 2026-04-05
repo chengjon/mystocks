@@ -6,7 +6,7 @@
 
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Body, HTTPException, Query
 from pydantic import BaseModel
 
 from app.openapi_config import COMMON_RESPONSES
@@ -30,6 +30,20 @@ TRADE_ROUTE_RESPONSES = {
 
 router = APIRouter(responses=TRADE_ROUTE_RESPONSES)
 
+TRADE_HEALTH_RESPONSE_EXAMPLE = {
+    "success": True,
+    "data": {"status": "ok", "service": "trade"},
+    "message": "服务正常",
+    "request_id": "req-trade-health-001",
+}
+
+EXECUTE_TRADE_REQUEST_EXAMPLE = {
+    "direction": "buy",
+    "symbol": "600519.SH",
+    "quantity": 100,
+    "price": 1750.0,
+}
+
 
 # ==================== Health Check ====================
 
@@ -41,9 +55,21 @@ class HealthCheckResponse(BaseModel):
     service: str
 
 
-@router.get("/health", response_model=APIResponse)
+@router.get(
+    "/health",
+    response_model=APIResponse,
+    summary="交易服务健康检查",
+    description="检查交易服务接口是否可用，并返回交易模块基础运行状态，用于前端探针和运维巡检。",
+    responses={
+        200: {
+            "description": "交易服务运行正常",
+            "content": {"application/json": {"example": TRADE_HEALTH_RESPONSE_EXAMPLE}},
+        },
+        500: COMMON_RESPONSES[500],
+    },
+)
 async def health_check():
-    """健康检查"""
+    """检查交易服务接口健康状态并返回基础服务信息。"""
     return create_success_response(data={"status": "ok", "service": "trade"}, message="服务正常")
 
 
@@ -169,7 +195,7 @@ async def get_positions():
 
 
 @router.get("/signals", response_model=APIResponse)
-async def get_signals(limit: int = Query(20, ge=1, le=200)):
+async def get_signals(limit: int = Query(20, ge=1, le=200, description="返回的交易信号数量上限，范围 1-200")):
     """
     获取交易信号列表
 
@@ -393,7 +419,7 @@ async def get_statistics():
 
 
 @router.post("/execute", response_model=APIResponse)
-async def execute_trade(order: dict):
+async def execute_trade(order: dict = Body(..., example=EXECUTE_TRADE_REQUEST_EXAMPLE)):
     """
     执行买卖交易
 

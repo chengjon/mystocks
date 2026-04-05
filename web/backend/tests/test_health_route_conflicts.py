@@ -1439,6 +1439,28 @@ def test_operational_health_endpoints_have_descriptions_and_error_docs() -> None
     assert any(code.startswith(("4", "5")) for code in dashboard_operation["responses"])
 
 
+def test_trade_endpoints_have_examples_parameter_docs_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    health_operation = schema["paths"]["/api/v1/trade/health"]["get"]
+    signals_operation = schema["paths"]["/api/v1/trade/signals"]["get"]
+    execute_operation = schema["paths"]["/api/v1/trade/execute"]["post"]
+
+    assert len(health_operation.get("description", "")) >= 20
+    assert any(code.startswith("5") for code in health_operation["responses"])
+
+    assert any(
+        param["name"] == "limit" and param.get("description")
+        for param in signals_operation.get("parameters", [])
+    )
+    assert any(code.startswith("5") for code in signals_operation["responses"])
+
+    execute_json = execute_operation["requestBody"]["content"]["application/json"]
+    assert "example" in execute_json or "examples" in execute_json
+    assert any(code.startswith(("4", "5")) for code in execute_operation["responses"])
+
+
 def test_monitoring_alert_management_endpoints_have_docs_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()
