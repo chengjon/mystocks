@@ -45,10 +45,15 @@ const wrapperCases = [
   },
   {
     label: 'trade history',
-    wrapperPath: 'src/views/trade/History.vue',
-    implementationPath: 'src/views/artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue',
-    importLine: "import TradeHistoryPage from '@/views/artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue'",
-    renderLine: '<TradeHistoryPage v-bind="attrs" />'
+    canonicalPath: 'src/views/trade/History.vue',
+    legacyPath: 'src/views/artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue',
+    legacyImportLine: "import TradeHistoryCanonicalPage from '@/views/trade/History.vue'",
+    legacyRenderLine: '<TradeHistoryCanonicalPage v-bind="attrs" />',
+    canonicalEvidence: [
+      "import { apiClient } from '@/api/apiClient'",
+      "title=\"交易历史工作台\"",
+      "apiClient.get('/v1/trade/trades')",
+    ]
   }
 ] as const
 
@@ -92,14 +97,16 @@ describe('trade wrapper retention', () => {
     expect(legacySource).toContain(wrapperCases[2].legacyRenderLine)
   })
 
-  for (const wrapperCase of wrapperCases.slice(3)) {
-    it(`keeps the canonical ${wrapperCase.label} wrapper pointed at its ArtDeco implementation`, () => {
-      const wrapperSource = readSource(wrapperCase.wrapperPath)
-      const implementationFullPath = resolve(process.cwd(), wrapperCase.implementationPath)
+  it('moves the canonical trade history implementation into src/views/trade/History.vue and keeps the ArtDeco path as a legacy wrapper', () => {
+    const canonicalSource = readSource(wrapperCases[3].canonicalPath)
+    const legacySource = readSource(wrapperCases[3].legacyPath)
+    const legacyFullPath = resolve(process.cwd(), wrapperCases[3].legacyPath)
 
-      expect(existsSync(implementationFullPath)).toBe(true)
-      expect(wrapperSource).toContain(wrapperCase.importLine)
-      expect(wrapperSource).toContain(wrapperCase.renderLine)
-    })
-  }
+    expect(existsSync(legacyFullPath)).toBe(true)
+    for (const evidenceLine of wrapperCases[3].canonicalEvidence) {
+      expect(canonicalSource).toContain(evidenceLine)
+    }
+    expect(legacySource).toContain(wrapperCases[3].legacyImportLine)
+    expect(legacySource).toContain(wrapperCases[3].legacyRenderLine)
+  })
 })

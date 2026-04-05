@@ -175,11 +175,16 @@
   - [x] 8.3.2 Update imports to use `@/shared/...` absolute paths
     - Evidence: the canonical page now resolves `portfolioOverviewData.ts` through a stable absolute `@/views/...` import until the shared helper migration is executed in a later batch.
   - [x] 8.3.3 Run lint & type-check
-- [ ] 8.4 Move `artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue` → `views/trade/History.vue`
-  - [ ] 8.4.0 **Identify all relative imports**
-  - [ ] 8.4.1 Move dependency: `useHistory.ts` to `src/shared/composables/`
-  - [ ] 8.4.2 Update imports to use `@/shared/...` absolute paths
-  - [ ] 8.4.3 Run lint & type-check
+- [x] 8.4 Move `artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue` → `views/trade/History.vue`
+  - Completed: 2026-04-05 via repo-truth-aligned micro-batch `2026-04-05-restructure-trade-history-main`.
+  - Result: `src/views/trade/History.vue` now hosts the canonical trade history implementation; `ArtDecoTradingHistory.vue` is retained as a legacy compatibility wrapper into the canonical route entrypoint.
+  - [x] 8.4.0 **Identify all relative imports**
+    - Evidence: the only local relative dependency in the original file was `./tradingDataTransform`.
+  - [x] 8.4.1 Move dependency: `useHistory.ts` to `src/shared/composables/`
+    - Repo-truth note: not applicable as written. The current history page does not own a local `useHistory.ts`; it uses `apiClient` + `useArtDecoApi` and the local `tradingDataTransform.ts` helper.
+  - [x] 8.4.2 Update imports to use `@/shared/...` absolute paths
+    - Evidence: the canonical page now resolves `tradingDataTransform.ts` through a stable absolute `@/views/...` import until the shared helper migration is executed in a later batch.
+  - [x] 8.4.3 Run lint & type-check
 - [ ] 8.5 **CLARIFICATION: Terminal.vue and DealingRoom.vue**
   - [x] 8.5.0 Determine final disposition:
     - Completed: 2026-04-04
