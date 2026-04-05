@@ -220,11 +220,15 @@
   - Result: `src/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue` remains present, and `ArtDecoRiskManagement.vue` still imports it through `./_templates/ArtDecoPageTemplate.vue` in current repo truth.
   - [x] 9.1.1 Check that `src/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue` exists
   - [x] 9.1.2 Verify `ArtDecoRiskManagement.vue` imports it correctly
-- [ ] 9.2 Move `artdeco-pages/ArtDecoRiskManagement.vue` → `views/risk/Center.vue`
-  - [ ] 9.2.1 Move dependency: `useRisk.ts`
-  - [ ] 9.2.2 Update imports (including template import)
-  - [ ] 9.2.3 Run lint & type-check
-  - [ ] 9.2.4 Run unit tests for Center.vue
+- [x] 9.2 Move `artdeco-pages/ArtDecoRiskManagement.vue` → `views/risk/Center.vue`
+  - Completed: 2026-04-06 via repo-truth-aligned micro-batch `2026-04-06-restructure-risk-center-main`.
+  - Result: `src/views/risk/Center.vue` now hosts the canonical risk center implementation; `ArtDecoRiskManagement.vue` is retained as a legacy compatibility wrapper into the canonical route entrypoint.
+  - [x] 9.2.1 Move dependency: `useRisk.ts`
+    - Repo-truth note: not applicable as written. The current risk center page does not own a local `useRisk.ts`; it composes `ArtDecoPageTemplate`, local `riskManagementHelpers.ts`, and `riskManagementData.ts`.
+  - [x] 9.2.2 Update imports (including template import)
+    - Evidence: the canonical page now resolves `ArtDecoPageTemplate.vue` and risk-tab helpers through stable absolute `@/views/...` imports.
+  - [x] 9.2.3 Run lint & type-check
+  - [x] 9.2.4 Run unit tests for Center.vue
 - [ ] 9.3 Move `artdeco-pages/risk-tabs/RiskOverviewTab.vue` → `views/risk/Overview.vue`
   - [ ] 9.3.1 Move dependency: `useRiskOverview.ts`
   - [ ] 9.3.2 Update imports
