@@ -27,7 +27,8 @@ def test_mongo_coordination_guide_uses_current_checklist_path_and_cli_surface() 
     assert "python scripts/runtime/smoke_mongo_multicli.py" in guide
     assert "python scripts/runtime/smoke_graphiti_preflight.py --actor-cli cli-preflight" in guide
     assert "/tmp/mongo-collab-snapshots-codex" in guide
-    assert "python scripts/runtime/run_local_maestro_acceptance.sh" in guide
+    assert "bash scripts/runtime/run_local_maestro_acceptance.sh" in guide
+    assert "python scripts/runtime/run_local_maestro_acceptance.sh" not in guide
 
 
 def test_mongo_operation_checklist_matches_current_control_plane_commands() -> None:
@@ -44,7 +45,8 @@ def test_mongo_operation_checklist_matches_current_control_plane_commands() -> N
     assert "`work transition`" in checklist
     assert "`error_code`" in checklist
     assert "`message`" in checklist
-    assert "python scripts/runtime/run_local_maestro_acceptance.sh" in checklist
+    assert "bash scripts/runtime/run_local_maestro_acceptance.sh" in checklist
+    assert "python scripts/runtime/run_local_maestro_acceptance.sh" not in checklist
 
 
 def test_graphiti_workflow_guide_mentions_structured_json_error_output() -> None:
@@ -54,4 +56,27 @@ def test_graphiti_workflow_guide_mentions_structured_json_error_output() -> None
     assert "`message`" in guide
     assert "python scripts/runtime/smoke_graphiti_cli.py" in guide
     assert "python scripts/runtime/smoke_graphiti_preflight.py --actor-cli cli-preflight" in guide
-    assert "python scripts/runtime/run_local_maestro_acceptance.sh" in guide
+    assert "bash scripts/runtime/run_local_maestro_acceptance.sh" in guide
+    assert "python scripts/runtime/run_local_maestro_acceptance.sh" not in guide
+
+
+def test_maestro_quick_start_surfaces_repo_local_acceptance_entrypoint() -> None:
+    guide = (PROJECT_ROOT / "docs" / "guides" / "multi-cli-tasks" / "MAESTRO_QUICK_START.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert "bash scripts/runtime/run_local_maestro_acceptance.sh" in guide
+    assert "python scripts/runtime/run_local_maestro_acceptance.sh" not in guide
+    assert "docs/reports/tasks/2026-04-03-maestro-local-acceptance-report.md" in guide
+
+
+def test_maestro_summary_and_task_index_keep_local_acceptance_entry_discoverable() -> None:
+    summary = (PROJECT_ROOT / "docs" / "guides" / "multi-cli-tasks" / "MAESTRO_SUMMARY.md").read_text(
+        encoding="utf-8"
+    )
+    task_index = (PROJECT_ROOT / "docs" / "reports" / "tasks" / "INDEX.md").read_text(encoding="utf-8")
+
+    assert "### Repo-Local Acceptance" in summary
+    assert "bash scripts/runtime/run_local_maestro_acceptance.sh" in summary
+    assert "docs/reports/tasks/2026-04-03-maestro-local-acceptance-report.md" in summary
+    assert "2026-04-03-maestro-local-acceptance-report" in task_index

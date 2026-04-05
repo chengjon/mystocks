@@ -151,7 +151,7 @@ Graphiti 预检 -> coordctl graphiti preflight
 ### One-Command Local Acceptance
 
 ```bash
-python scripts/runtime/run_local_maestro_acceptance.sh
+bash scripts/runtime/run_local_maestro_acceptance.sh
 ```
 
 用途：

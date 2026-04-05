@@ -312,6 +312,18 @@ python scripts/runtime/run_symphony.py WORKFLOW.md --port 8035
 - `Symphony` 是现有兼容实现名
 - `Maestro` 是未来长期家族名
 
+## Repo-Local Acceptance
+
+如果需要在当前仓库里快速确认 Mongo control plane、Graphiti preflight 和快照导出整条链仍然可运行，统一执行：
+
+```bash
+bash scripts/runtime/run_local_maestro_acceptance.sh
+```
+
+最新一次实跑验收记录见：
+
+- `docs/reports/tasks/2026-04-03-maestro-local-acceptance-report.md`
+
 ## 推荐继续阅读
 
 - `docs/guides/multi-cli-tasks/MAESTRO_SUMMARY.md`

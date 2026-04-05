@@ -2,12 +2,20 @@ RUNTIME_FAMILY_NAME = "Maestro"
 LEGACY_RUNTIME_NAME = "Symphony"
 PROFILE_NAME = "mystocks"
 
+TRANSCRIPT_ARCHIVE_DEFAULTS = {
+    "backend": "filesystem",
+    "archive_root": ".maestro/transcript-archive",
+    "hot_retention_days": 90,
+    "archive_policy_version": "v1",
+}
+
 COLLAB_CONTROL_PLANE_DEFAULTS = {
     "backend": "sqlite",
     "mongo_uri": "mongodb://localhost:27017",
     "mongo_db": "mystocks_coord",
     "cutover_mode": "project-first",
     "promote_new_tasks_to_mongo": True,
+    "transcript_archive": TRANSCRIPT_ARCHIVE_DEFAULTS,
 }
 
 ROLE_MODEL = {

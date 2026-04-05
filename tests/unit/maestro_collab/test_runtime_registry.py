@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-from src.services.maestro.collab.models import AssignmentState, WorkerHeartbeat, WorkspaceBinding
+from src.services.maestro.collab.models import AssignmentState
 from src.services.maestro.collab.runtime_registry import DualWriteCollaborationRegistry, MongoCollaborationRegistry
 
 
@@ -184,7 +184,14 @@ class _FakeDatabase:
             "worktree_registry": _FakeCollection(),
             "worker_heartbeats": _FakeCollection(),
             "work_items": _FakeCollection(),
+            "work_updates": _FakeCollection(),
+            "work_requests": _FakeCollection(),
+            "work_events": _FakeCollection(),
             "worker_status_views": _FakeCollection(),
+            "transcript_sessions": _FakeCollection(),
+            "transcript_events": _FakeCollection(),
+            "transcript_hot_bodies": _FakeCollection(),
+            "transcript_legacy_indexes": _FakeCollection(),
         }
 
     def __getitem__(self, name: str) -> _FakeCollection:

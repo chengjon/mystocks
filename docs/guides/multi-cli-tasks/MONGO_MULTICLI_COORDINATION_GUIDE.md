@@ -247,7 +247,7 @@ python scripts/runtime/export_collab_snapshots.py --output-dir /tmp/mongo-collab
 如果需要把 Mongo control plane、Graphiti preflight、以及快照导出串成一条本机验收链路，统一使用：
 
 ```bash
-python scripts/runtime/run_local_maestro_acceptance.sh
+bash scripts/runtime/run_local_maestro_acceptance.sh
 ```
 
 该脚本会顺序执行并落盘：

@@ -5,7 +5,7 @@ import json
 import re
 import sqlite3
 import sys
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -132,7 +132,16 @@ def migrate_markdown_contract(*, task_path: Path, report_path: Path, mongo_datab
     )
 
     work_updates = 0
-    if latest_progress:
+    legacy_updates = _extract_legacy_work_updates(
+        report_text,
+        work_item_id=work_item_id,
+        default_actor_cli=owner_cli,
+    )
+    if legacy_updates:
+        for update in legacy_updates:
+            store.append_work_update(update)
+        work_updates = len(legacy_updates)
+    elif latest_progress:
         store.append_work_update(
             WorkUpdateRecord(
                 work_item_id=work_item_id,
@@ -147,6 +156,189 @@ def migrate_markdown_contract(*, task_path: Path, report_path: Path, mongo_datab
         work_updates = 1
 
     return {"work_items": 1, "work_updates": work_updates}
+
+
+def _extract_legacy_work_updates(markdown: str, *, work_item_id: str, default_actor_cli: str) -> list[WorkUpdateRecord]:
+    matches = list(re.finditer(r"^## \[WORK\] (?P<heading>.+)$", markdown, flags=re.MULTILINE))
+    updates: list[WorkUpdateRecord] = []
+
+    for index, match in enumerate(matches):
+        heading = match.group("heading").strip()
+        start = match.end()
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(markdown)
+        body = markdown[start:end]
+        parsed_heading = _parse_legacy_work_heading(heading, default_actor_cli=default_actor_cli)
+        if parsed_heading is None:
+            continue
+
+        summary, actor_cli, created_at = parsed_heading
+        details = _parse_legacy_work_details(body)
+        updates.append(
+            WorkUpdateRecord(
+                work_item_id=work_item_id,
+                update_id=_build_legacy_update_id(work_item_id=work_item_id, summary=summary, created_at=created_at, index=index),
+                actor_cli=actor_cli,
+                status="imported",
+                summary=summary,
+                details=details,
+                created_at=created_at + timedelta(seconds=index),
+            )
+        )
+
+    return updates
+
+
+def _parse_legacy_work_heading(heading: str, *, default_actor_cli: str) -> tuple[str, str, datetime] | None:
+    actor_cli = default_actor_cli
+    heading_without_actor = heading.strip()
+    actor_match = re.match(r"(?P<value>.+?)（(?P<actor>[^）]+)）$", heading_without_actor)
+    if actor_match:
+        heading_without_actor = actor_match.group("value").strip()
+        actor_cli = actor_match.group("actor").strip() or default_actor_cli
+
+    date_match = re.match(r"(?P<date>\d{4}-\d{2}-\d{2})(?:\s+(?P<title>.+))?$", heading_without_actor)
+    if date_match is None:
+        return None
+
+    created_at = datetime.fromisoformat(f"{date_match.group('date')}T00:00:00+00:00").astimezone(UTC)
+    summary = (date_match.group("title") or heading_without_actor).strip()
+    return summary, actor_cli, created_at
+
+
+def _parse_legacy_work_details(body: str) -> dict[str, Any]:
+    details: dict[str, Any] = {}
+    current_label: str | None = None
+    current_key: str | None = None
+    current_inline: str | None = None
+    current_lines: list[str] = []
+
+    def flush_current() -> None:
+        nonlocal current_label, current_key, current_inline, current_lines
+        if current_label is None:
+            return
+        items = _parse_legacy_section_items(current_lines, inline_value=current_inline)
+        if items:
+            key = current_key or "notes"
+            if key == "notes" and current_key is None:
+                items = [f"{current_label}:"] + items
+            details.setdefault(key, []).extend(items)
+        current_label = None
+        current_key = None
+        current_inline = None
+        current_lines = []
+
+    for raw_line in body.splitlines():
+        if match := re.match(r"^- (?P<label>[^:：]+)[:：]\s*(?P<inline>.*)$", raw_line):
+            candidate_label = match.group("label").strip()
+            candidate_key = _map_legacy_detail_key(candidate_label)
+            candidate_inline = match.group("inline").strip()
+            if candidate_key is not None or candidate_inline == "":
+                flush_current()
+                current_label = candidate_label
+                current_key = candidate_key
+                current_inline = candidate_inline or None
+                continue
+
+        if match := re.match(r"^### (?P<label>.+?)\s*$", raw_line):
+            flush_current()
+            current_label = match.group("label").strip()
+            current_key = _map_legacy_detail_key(current_label)
+            current_inline = None
+            continue
+
+        current_lines.append(raw_line)
+
+    flush_current()
+    _rebalance_nested_status_sections(details)
+    return details
+
+
+def _parse_legacy_section_items(lines: list[str], *, inline_value: str | None = None) -> list[str]:
+    items: list[str] = []
+    if inline_value:
+        items.append(inline_value)
+
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if stripped.startswith("- "):
+            items.append(stripped[2:].strip())
+            continue
+        if stripped.startswith("* "):
+            items.append(stripped[2:].strip())
+            continue
+        items.append(stripped)
+
+    return items
+
+
+def _map_legacy_detail_key(label: str) -> str | None:
+    normalized = re.sub(r"\s+", " ", label.strip().lower())
+    return {
+        "scope": "scope",
+        "root cause": "root_cause",
+        "completed": "completed",
+        "implemented fixes": "completed",
+        "verification evidence": "verification_evidence",
+        "verification update": "verification_evidence",
+        "quality gate": "quality_gate",
+        "current status": "current_status",
+        "next": "next",
+        "artifacts": "artifacts",
+        "notes": "notes",
+        "additional observation": "notes",
+        "additional observations": "notes",
+        "说明": "notes",
+    }.get(normalized)
+
+
+def _build_legacy_update_id(*, work_item_id: str, summary: str, created_at: datetime, index: int) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", summary.lower()).strip("-")
+    if not slug:
+        slug = f"work-{index + 1}"
+    return f"import-{work_item_id.lower()}-{created_at.date().isoformat()}-{index + 1:03d}-{slug}"
+
+
+def _rebalance_nested_status_sections(details: dict[str, Any]) -> None:
+    current_status = details.get("current_status")
+    if not isinstance(current_status, list) or not current_status:
+        return
+
+    marker_targets = {
+        "next:": "next",
+        "next：": "next",
+        "additional observation:": "notes",
+        "additional observation：": "notes",
+        "additional observations:": "notes",
+        "additional observations：": "notes",
+        "说明:": "notes",
+        "说明：": "notes",
+        "quality gate:": "quality_gate",
+        "quality gate：": "quality_gate",
+        "质量门禁状态:": "quality_gate",
+        "质量门禁状态：": "quality_gate",
+    }
+
+    rebalanced: dict[str, list[str]] = {"current_status": []}
+    active_target = "current_status"
+    for item in current_status:
+        target = marker_targets.get(item.strip().lower())
+        if target is not None:
+            active_target = target
+            rebalanced.setdefault(active_target, [])
+            continue
+        rebalanced.setdefault(active_target, []).append(item)
+
+    if rebalanced["current_status"]:
+        details["current_status"] = rebalanced["current_status"]
+    else:
+        details.pop("current_status", None)
+
+    for key, values in rebalanced.items():
+        if key == "current_status" or not values:
+            continue
+        details[key] = [*details.get(key, []), *values]
 
 
 def _extract_backticked_value(markdown: str, label: str) -> str | None:

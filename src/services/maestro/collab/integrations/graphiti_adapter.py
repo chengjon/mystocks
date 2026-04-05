@@ -7,7 +7,8 @@ import time
 import urllib.error
 import urllib.request
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Callable, Protocol
+from urllib.parse import urlparse
 
 from .models import (
     GraphitiIngestStatus,
@@ -33,7 +34,7 @@ class GraphitiTransport(Protocol):
 
 class GraphitiMcpTransport:
     def __init__(self, url: str | None = None, timeout_seconds: int = 90) -> None:
-        self._url = url or _resolve_graphiti_mcp_url()
+        self._url = _validate_graphiti_mcp_url(url or _resolve_graphiti_mcp_url())
         self._timeout_seconds = timeout_seconds
         self._session_id: str | None = None
         self._request_id = 1
@@ -76,7 +77,7 @@ class GraphitiMcpTransport:
             headers["mcp-session-id"] = self._session_id
         request = urllib.request.Request(self._url, data=data, headers=headers, method="POST")
         try:
-            with urllib.request.urlopen(request, timeout=self._timeout_seconds) as response:
+            with urllib.request.urlopen(request, timeout=self._timeout_seconds) as response:  # nosec B310
                 self._session_id = response.headers.get("mcp-session-id") or self._session_id
                 response_text = response.read().decode("utf-8")
         except urllib.error.HTTPError as exc:
@@ -87,9 +88,12 @@ class GraphitiMcpTransport:
             raise GraphitiTransportError(str(exc.reason)) from exc
 
         try:
-            return json.loads(_parse_sse_data(response_text))
+            payload_obj = json.loads(_parse_sse_data(response_text))
         except (json.JSONDecodeError, ValueError) as exc:
             raise GraphitiTransportError(f"Invalid MCP response: {response_text[:200]}") from exc
+        if not isinstance(payload_obj, dict):
+            raise GraphitiTransportError(f"Invalid MCP response payload: {payload_obj!r}")
+        return payload_obj
 
     def _next_request_id(self) -> int:
         self._request_id += 1
@@ -101,8 +105,8 @@ class GraphitiAdapter:
         self,
         *,
         transport: GraphitiTransport | None = None,
-        time_fn=time.monotonic,
-        sleep_fn=time.sleep,
+        time_fn: Callable[[], float] = time.monotonic,
+        sleep_fn: Callable[[float], None] = time.sleep,
     ) -> None:
         self._transport = transport or GraphitiMcpTransport()
         self._time_fn = time_fn
@@ -149,6 +153,34 @@ class GraphitiAdapter:
             message=payload.get("message"),
         )
 
+    def get_ingest_status(
+        self,
+        *,
+        episode_uuid: str,
+        group_id: str,
+    ) -> GraphitiIngestStatus:
+        try:
+            payload = self._transport.call_tool(
+                "get_ingest_status",
+                {
+                    "episode_uuid": episode_uuid,
+                    "group_id": group_id,
+                },
+            )
+        except GraphitiTransportError as exc:
+            ingest_status = "best_effort" if "Unknown tool" in str(exc) or "not found" in str(exc) else "failed"
+            return GraphitiIngestStatus(
+                ingest_status=ingest_status,
+                episode_uuid=episode_uuid,
+                group_id=group_id,
+                queue_depth=None,
+                queue_position=None,
+                processed_at=None,
+                last_error=str(exc),
+            )
+
+        return _build_ingest_status(payload, episode_uuid=episode_uuid, group_id=group_id)
+
     def wait_for_ingest(
         self,
         *,
@@ -158,69 +190,22 @@ class GraphitiAdapter:
         poll_interval_seconds: int = DEFAULT_POLL_INTERVAL_SECONDS,
     ) -> GraphitiIngestStatus:
         deadline = self._time_fn() + max_wait_seconds
-        last_payload: dict[str, Any] | None = None
+        last_status: GraphitiIngestStatus | None = None
 
         while True:
-            try:
-                last_payload = self._transport.call_tool(
-                    "get_ingest_status",
-                    {
-                        "episode_uuid": episode_uuid,
-                        "group_id": group_id,
-                    },
-                )
-            except GraphitiTransportError as exc:
-                if "Unknown tool" in str(exc) or "not found" in str(exc):
-                    return GraphitiIngestStatus(
-                        ingest_status="best_effort",
-                        episode_uuid=episode_uuid,
-                        group_id=group_id,
-                        queue_depth=None,
-                        queue_position=None,
-                        processed_at=None,
-                        last_error=str(exc),
-                    )
-                return GraphitiIngestStatus(
-                    ingest_status="failed",
-                    episode_uuid=episode_uuid,
-                    group_id=group_id,
-                    queue_depth=None,
-                    queue_position=None,
-                    processed_at=None,
-                    last_error=str(exc),
-                )
-
-            state = last_payload.get("state")
-            if state == "completed":
-                return GraphitiIngestStatus(
-                    ingest_status="completed",
-                    episode_uuid=last_payload.get("episode_uuid", episode_uuid),
-                    group_id=last_payload.get("group_id", group_id),
-                    queue_depth=last_payload.get("queue_depth"),
-                    queue_position=last_payload.get("queue_position"),
-                    processed_at=last_payload.get("processed_at"),
-                    last_error=last_payload.get("last_error"),
-                )
-            if state == "failed":
-                return GraphitiIngestStatus(
-                    ingest_status="failed",
-                    episode_uuid=last_payload.get("episode_uuid", episode_uuid),
-                    group_id=last_payload.get("group_id", group_id),
-                    queue_depth=last_payload.get("queue_depth"),
-                    queue_position=last_payload.get("queue_position"),
-                    processed_at=last_payload.get("processed_at"),
-                    last_error=last_payload.get("last_error"),
-                )
+            last_status = self.get_ingest_status(episode_uuid=episode_uuid, group_id=group_id)
+            if last_status.ingest_status in {"completed", "failed", "best_effort"}:
+                return last_status
 
             if self._time_fn() >= deadline:
                 return GraphitiIngestStatus(
                     ingest_status="warming",
-                    episode_uuid=last_payload.get("episode_uuid", episode_uuid),
-                    group_id=last_payload.get("group_id", group_id),
-                    queue_depth=last_payload.get("queue_depth"),
-                    queue_position=last_payload.get("queue_position"),
-                    processed_at=last_payload.get("processed_at"),
-                    last_error=last_payload.get("last_error"),
+                    episode_uuid=last_status.episode_uuid if last_status else episode_uuid,
+                    group_id=last_status.group_id if last_status else group_id,
+                    queue_depth=last_status.queue_depth if last_status else None,
+                    queue_position=last_status.queue_position if last_status else None,
+                    processed_at=last_status.processed_at if last_status else None,
+                    last_error=last_status.last_error if last_status else None,
                 )
 
             self._sleep_fn(min(poll_interval_seconds, max(0.0, deadline - self._time_fn())))
@@ -315,9 +300,12 @@ def _extract_content_object(payload: dict[str, Any]) -> dict[str, Any]:
 
 def _extract_content_text(payload: dict[str, Any]) -> str:
     try:
-        return payload["result"]["content"][0]["text"]
+        text = payload["result"]["content"][0]["text"]
     except Exception as exc:
         raise GraphitiTransportError(f"Unexpected MCP payload: {payload}") from exc
+    if not isinstance(text, str):
+        raise GraphitiTransportError(f"Unexpected MCP payload: {payload}")
+    return text
 
 
 def _best_effort_error_text(response_text: str) -> str:
@@ -325,6 +313,20 @@ def _best_effort_error_text(response_text: str) -> str:
     if match:
         return match.group(1)
     return response_text[:200]
+
+
+def _build_ingest_status(payload: dict[str, Any], *, episode_uuid: str, group_id: str) -> GraphitiIngestStatus:
+    state = payload.get("state")
+    ingest_status = state if state in {"queued", "processing", "completed", "failed"} else "warming"
+    return GraphitiIngestStatus(
+        ingest_status=ingest_status,
+        episode_uuid=payload.get("episode_uuid", episode_uuid),
+        group_id=payload.get("group_id", group_id),
+        queue_depth=payload.get("queue_depth"),
+        queue_position=payload.get("queue_position"),
+        processed_at=payload.get("processed_at"),
+        last_error=payload.get("last_error"),
+    )
 
 
 def _resolve_graphiti_mcp_url() -> str:
@@ -344,3 +346,10 @@ def _resolve_graphiti_mcp_url() -> str:
             return url
 
     return DEFAULT_GRAPHITI_MCP_URL
+
+
+def _validate_graphiti_mcp_url(url: str) -> str:
+    parsed = urlparse(url)
+    if parsed.scheme not in {"http", "https"}:
+        raise GraphitiTransportError("Graphiti MCP URL must use http or https")
+    return url

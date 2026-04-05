@@ -7,6 +7,10 @@ from pymongo import ASCENDING
 from src.services.maestro.collab.backends.mongo.indexes import build_collaboration_index_models
 from src.services.maestro.collab.store.base import CollaborationStore
 from src.services.maestro.collab.store.models import (
+    TranscriptEventRecord,
+    TranscriptHotBodyRecord,
+    TranscriptLegacyIndexRecord,
+    TranscriptSessionRecord,
     WorkerStatusViewRecord,
     WorkEventRecord,
     WorkItemRecord,
@@ -18,6 +22,10 @@ RecordT = TypeVar(
     "RecordT",
     WorkItemRecord,
     WorkUpdateRecord,
+    TranscriptSessionRecord,
+    TranscriptEventRecord,
+    TranscriptHotBodyRecord,
+    TranscriptLegacyIndexRecord,
     WorkRequestRecord,
     WorkEventRecord,
     WorkerStatusViewRecord,
@@ -32,6 +40,10 @@ class MongoCollaborationStore(CollaborationStore):
         self._work_requests = database["work_requests"]
         self._work_events = database["work_events"]
         self._worker_status_views = database["worker_status_views"]
+        self._transcript_sessions = database["transcript_sessions"]
+        self._transcript_events = database["transcript_events"]
+        self._transcript_hot_bodies = database["transcript_hot_bodies"]
+        self._transcript_legacy_indexes = database["transcript_legacy_indexes"]
         self.ensure_indexes()
 
     def ensure_indexes(self) -> None:
@@ -55,9 +67,7 @@ class MongoCollaborationStore(CollaborationStore):
         return [_load_required(document, WorkItemRecord) for document in cursor]
 
     def append_work_update(self, update: WorkUpdateRecord) -> WorkUpdateRecord:
-        existing = self._work_updates.find_one(
-            {"work_item_id": update.work_item_id, "update_id": update.update_id}
-        )
+        existing = self._work_updates.find_one({"work_item_id": update.work_item_id, "update_id": update.update_id})
         if existing is None:
             self._work_updates.insert_one(_document_for(update))
         return update
@@ -101,6 +111,57 @@ class MongoCollaborationStore(CollaborationStore):
     def get_worker_status_view(self, work_item_id: str) -> WorkerStatusViewRecord | None:
         document = self._worker_status_views.find_one({"work_item_id": work_item_id})
         return _load_optional(document, WorkerStatusViewRecord)
+
+    def upsert_transcript_session(self, session: TranscriptSessionRecord) -> TranscriptSessionRecord:
+        self._transcript_sessions.replace_one(
+            {"session_id": session.session_id},
+            _document_for(session),
+            upsert=True,
+        )
+        return session
+
+    def get_transcript_session(self, session_id: str) -> TranscriptSessionRecord | None:
+        document = self._transcript_sessions.find_one({"session_id": session_id})
+        return _load_optional(document, TranscriptSessionRecord)
+
+    def list_transcript_sessions(self, work_item_id: str) -> list[TranscriptSessionRecord]:
+        cursor = self._transcript_sessions.find({"work_item_id": work_item_id})
+        sessions = [_load_required(document, TranscriptSessionRecord) for document in cursor]
+        return sorted(sessions, key=lambda item: (item.started_at, item.session_id))
+
+    def append_transcript_event(self, event: TranscriptEventRecord) -> TranscriptEventRecord:
+        existing = self._transcript_events.find_one({"session_id": event.session_id, "event_id": event.event_id})
+        if existing is None:
+            self._transcript_events.insert_one(_document_for(event))
+        return event
+
+    def list_transcript_events(self, session_id: str) -> list[TranscriptEventRecord]:
+        cursor = self._transcript_events.find({"session_id": session_id})
+        events = [_load_required(document, TranscriptEventRecord) for document in cursor]
+        return sorted(events, key=lambda item: (item.sequence_no, item.occurred_at, item.event_id))
+
+    def upsert_transcript_hot_body(self, hot_body: TranscriptHotBodyRecord) -> TranscriptHotBodyRecord:
+        self._transcript_hot_bodies.replace_one(
+            {"session_id": hot_body.session_id},
+            _document_for(hot_body),
+            upsert=True,
+        )
+        return hot_body
+
+    def get_transcript_hot_body(self, session_id: str) -> TranscriptHotBodyRecord | None:
+        document = self._transcript_hot_bodies.find_one({"session_id": session_id})
+        return _load_optional(document, TranscriptHotBodyRecord)
+
+    def append_transcript_legacy_index(self, legacy_index: TranscriptLegacyIndexRecord) -> TranscriptLegacyIndexRecord:
+        existing = self._transcript_legacy_indexes.find_one({"legacy_index_id": legacy_index.legacy_index_id})
+        if existing is None:
+            self._transcript_legacy_indexes.insert_one(_document_for(legacy_index))
+        return legacy_index
+
+    def list_transcript_legacy_indexes(self, work_item_id: str) -> list[TranscriptLegacyIndexRecord]:
+        cursor = self._transcript_legacy_indexes.find({"work_item_id": work_item_id})
+        records = [_load_required(document, TranscriptLegacyIndexRecord) for document in cursor]
+        return sorted(records, key=lambda item: (item.captured_at, item.legacy_index_id))
 
 
 def _document_for(record: RecordT) -> dict[str, Any]:

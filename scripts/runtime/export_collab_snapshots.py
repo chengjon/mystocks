@@ -105,6 +105,7 @@ def render_task_markdown(*, work_item: dict[str, Any], status_view: dict[str, An
     forbidden_paths = work_item.get("forbidden_paths", [])
     acceptance_checks = work_item.get("acceptance_checks", [])
     openspec = work_item.get("openspec")
+    metadata = work_item.get("metadata") or {}
     tracker_state = status_view["status"] if status_view else work_item["status"]
 
     lines = [
@@ -145,6 +146,16 @@ def render_task_markdown(*, work_item: dict[str, Any], status_view: dict[str, An
     else:
         lines.append("- (none)")
 
+    _append_optional_section(lines, "Related Plans", metadata.get("related_plans"))
+    _append_owner_decision_section(lines, metadata)
+    _append_optional_section(lines, "Scope Paths", metadata.get("scope_paths"))
+    _append_optional_section(lines, "Validation Commands", metadata.get("validation_commands"))
+    _append_optional_section(lines, "Next Steps", metadata.get("next_steps"))
+    _append_optional_section(lines, "Blocked Items", metadata.get("blocked_items"))
+    _append_optional_section(lines, "Compatibility Notes", metadata.get("compatibility_notes"))
+    _append_optional_section(lines, "Rollback Rule", metadata.get("rollback_rule"))
+    _append_optional_section(lines, "Artifact Links", metadata.get("artifact_links"))
+
     lines.append("")
     return "\n".join(lines)
 
@@ -156,11 +167,13 @@ def render_task_report_markdown(
     requests: list[dict[str, Any]],
     status_view: dict[str, Any] | None = None,
     events: list[dict[str, Any]] | None = None,
+    transcripts: list[dict[str, Any]] | None = None,
+    graphiti_projection: dict[str, str] | None = None,
 ) -> str:
     current_status = status_view["status"] if status_view else work_item["status"]
     latest_progress = status_view.get("latest_update") if status_view else None
     pending_request = status_view["has_pending_request"] if status_view else "(unknown)"
-    graphiti_projection = _extract_graphiti_projection(events or [])
+    graphiti_projection = graphiti_projection or _extract_graphiti_projection(events or [])
 
     lines = [
         "# TASK-REPORT",
@@ -205,8 +218,149 @@ def render_task_report_markdown(
         ]
     )
 
+    if transcripts:
+        lines.extend(["", "## Transcripts"])
+        for transcript in transcripts:
+            session_label = transcript.get("session_id") or transcript.get("legacy_session_label") or "(unknown)"
+            actor_cli = transcript.get("actor_cli") or "(legacy)"
+            transcript_kind = transcript.get("transcript_kind") or transcript.get("legacy_block_kind") or "(unknown)"
+            started_at = transcript.get("started_at") or transcript.get("captured_at") or "(unknown)"
+            hot_body_available = "yes" if transcript.get("hot_body_available") else "no"
+            archive_locator = transcript.get("archive_locator") or transcript.get("archive_ref") or "(none)"
+            source = transcript.get("source", "ledger")
+            lines.append(
+                f"- `{session_label}` | source=`{source}` | actor=`{actor_cli}` | kind=`{transcript_kind}` | started=`{started_at}` | hot_body=`{hot_body_available}` | archive_ref=`{archive_locator}`"
+            )
+
+    detailed_updates = [update for update in updates if _has_structured_report_details(update.get("details"))]
+    if detailed_updates:
+        lines.extend(["", "## Detailed Updates"])
+        for update in detailed_updates:
+            lines.extend(
+                [
+                    "",
+                    f"### `{update['created_at']}` [{update['status']}] {update['actor_cli']}",
+                    f"- Summary: {update['summary']}",
+                ]
+            )
+            details = update.get("details") or {}
+            _append_optional_section(lines, "Scope", details.get("scope"), level=4)
+            _append_optional_section(lines, "Root Cause", details.get("root_cause"), level=4)
+            _append_optional_section(lines, "Completed", details.get("completed"), level=4)
+            _append_optional_section(lines, "Verification Evidence", details.get("verification_evidence"), level=4)
+            _append_optional_section(lines, "Quality Gate", details.get("quality_gate"), level=4)
+            _append_optional_section(lines, "Current Status", details.get("current_status"), level=4)
+            _append_optional_section(lines, "Next", details.get("next"), level=4)
+            _append_optional_section(lines, "Artifacts", details.get("artifacts"), level=4)
+            _append_optional_section(lines, "Notes", details.get("notes"), level=4)
+
     lines.append("")
     return "\n".join(lines)
+
+
+def _append_owner_decision_section(lines: list[str], metadata: dict[str, Any]) -> None:
+    decision_lines: list[str] = []
+    if _has_content(metadata.get("suggested_owner")):
+        decision_lines.append(f"- Suggested Owner: `{metadata['suggested_owner']}`")
+    if _has_content(metadata.get("final_owner")):
+        decision_lines.append(f"- Final Owner: `{metadata['final_owner']}`")
+    if _has_content(metadata.get("worker_cli")):
+        decision_lines.append(f"- Worker CLI: `{metadata['worker_cli']}`")
+    if _has_content(metadata.get("decision_basis")):
+        decision_lines.append("- Decision Basis:")
+        decision_lines.extend(_render_value_lines(metadata["decision_basis"], indent=1))
+    if _has_content(metadata.get("suggest_reasons")):
+        decision_lines.append("- Suggest Reasons:")
+        decision_lines.extend(_render_value_lines(metadata["suggest_reasons"], indent=1))
+
+    if decision_lines:
+        lines.extend(["", "## Owner Decision", *decision_lines])
+
+
+def _append_optional_section(lines: list[str], title: str, value: Any, *, level: int = 2) -> None:
+    if not _has_content(value):
+        return
+    lines.extend(["", f"{'#' * level} {title}"])
+    lines.extend(_render_value_lines(value))
+
+
+def _render_value_lines(value: Any, *, indent: int = 0) -> list[str]:
+    prefix = "  " * indent + "- "
+
+    if isinstance(value, dict):
+        lines: list[str] = []
+        for key, item in value.items():
+            if not _has_content(item):
+                continue
+            if _is_scalar(item):
+                lines.append(f"{prefix}`{key}`: {_format_scalar(item)}")
+            else:
+                lines.append(f"{prefix}`{key}`:")
+                lines.extend(_render_value_lines(item, indent=indent + 1))
+        return lines or [prefix + "(none)"]
+
+    if isinstance(value, list):
+        lines = []
+        for item in value:
+            if not _has_content(item):
+                continue
+            if _is_scalar(item):
+                lines.append(prefix + str(item))
+            elif isinstance(item, dict):
+                summary = item.get("summary")
+                if isinstance(summary, str) and summary.strip():
+                    lines.append(prefix + summary)
+                    remaining = {key: item_value for key, item_value in item.items() if key != "summary"}
+                    if remaining:
+                        lines.extend(_render_value_lines(remaining, indent=indent + 1))
+                else:
+                    lines.append(prefix + json.dumps(item, ensure_ascii=False, sort_keys=True))
+            else:
+                lines.append(prefix + str(item))
+        return lines or [prefix + "(none)"]
+
+    return [prefix + _format_scalar(value)]
+
+
+def _format_scalar(value: Any) -> str:
+    if isinstance(value, bool):
+        return f"`{value}`"
+    if isinstance(value, (int, float)):
+        return f"`{value}`"
+    return str(value)
+
+
+def _has_content(value: Any) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, str):
+        return value.strip() != ""
+    if isinstance(value, (list, dict, tuple, set)):
+        return len(value) > 0
+    return True
+
+
+def _is_scalar(value: Any) -> bool:
+    return isinstance(value, (str, int, float, bool))
+
+
+def _has_structured_report_details(details: Any) -> bool:
+    if not isinstance(details, dict):
+        return False
+    return any(
+        _has_content(details.get(key))
+        for key in (
+            "scope",
+            "root_cause",
+            "completed",
+            "verification_evidence",
+            "quality_gate",
+            "current_status",
+            "next",
+            "artifacts",
+            "notes",
+        )
+    )
 
 
 def _extract_graphiti_projection(events: list[dict[str, Any]]) -> dict[str, str]:

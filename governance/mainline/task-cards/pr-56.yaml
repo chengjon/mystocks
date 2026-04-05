@@ -1,0 +1,131 @@
+version: "v0.2"
+
+task:
+  id: "pr-56"
+  title: "land the verified runtime truth and maestro docs sync line on main with governance coverage"
+  owner: "main"
+  created_at: "2026-04-05"
+
+mainline:
+  id: "L1-runtime-truth-and-maestro-docs"
+  objective: "land the Mongo-backed maestro runtime truth, transcript archive flow, and local acceptance documentation updates on top of origin/main without bringing unrelated frontend work into the PR"
+  milestone_id: "L2-runtime-maestro"
+  slice_id: "L3-runtime-truth-and-docs-alignment"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "core"
+    - "tests"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "this PR aligns an already-implemented runtime and documentation convergence slice onto mainline and adds only the narrow CI/governance repair files needed to merge it cleanly"
+
+scope:
+  allowed_paths:
+    - "config/mypy.ini"
+    - "docs/guides/ai-tools/GRAPHITI_MCP_WORKFLOW.md"
+    - "docs/guides/multi-cli-tasks/MAESTRO_QUICK_START.md"
+    - "docs/guides/multi-cli-tasks/MAESTRO_SUMMARY.md"
+    - "docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md"
+    - "docs/guides/multi-cli-tasks/MONGO_MULTICLI_OPERATION_CHECKLIST.md"
+    - "docs/guides/multi-cli-tasks/MULTI_CLI_WORKTREE_MANAGEMENT.md"
+    - "docs/reports/tasks/2026-04-03-git-ref-cleanup-summary.md"
+    - "docs/reports/tasks/2026-04-03-maestro-local-acceptance-report.md"
+    - "docs/reports/tasks/INDEX.md"
+    - "governance/mainline/task-cards/pr-56.yaml"
+    - "scripts/runtime/export_collab_snapshots.py"
+    - "scripts/runtime/maestro_collab.py"
+    - "scripts/runtime/migrate_collab_to_mongo.py"
+    - "scripts/runtime/migrate_transcript_legacy_indexes.py"
+    - "src/services/maestro/collab/**"
+    - "src/services/maestro/profiles/mystocks.py"
+    - "tests/unit/docs/test_maestro_doc_sync.py"
+    - "tests/unit/maestro_collab/**"
+    - "tests/unit/runtime/test_collab_migration_scripts.py"
+    - "tests/unit/runtime/test_maestro_coordination_cli.py"
+    - "tests/unit/runtime/test_smoke_graphiti_preflight.py"
+    - "tests/unit/runtime/test_smoke_mongo_multicli.py"
+    - "tests/unit/runtime/test_transcript_legacy_migration.py"
+    - "tests/unit/services/maestro/test_graphiti_adapter.py"
+    - "tests/unit/services/maestro/test_graphiti_preflight.py"
+    - "tests/unit/services/maestro/test_task_report_graphiti_projection.py"
+    - "tests/unit/services/maestro/test_transcript_archive.py"
+    - "tests/unit/services/maestro/test_transcript_ledger_service.py"
+    - "tests/unit/services/symphony/test_mongo_runtime_flow.py"
+  forbidden_paths:
+    - "web/frontend/**"
+
+non_goals:
+  - "No new frontend route or watchlist work"
+  - "No unrelated cleanup in the root dirty worktree"
+  - "No broader CI redesign outside the minimum governance and typed-runtime fixes needed for this PR"
+
+acceptance:
+  checks:
+    - id: "graphiti-adapter-regression"
+      command: "python -m pytest --no-cov tests/unit/services/maestro/test_graphiti_adapter.py -q"
+      required: true
+    - id: "maestro-runtime-focused-pytest"
+      command: "python -m pytest --no-cov tests/unit/maestro_collab/test_coordination_service.py tests/unit/maestro_collab/test_mongo_store.py tests/unit/maestro_collab/test_runtime_registry.py tests/unit/runtime/test_collab_migration_scripts.py tests/unit/runtime/test_maestro_coordination_cli.py tests/unit/runtime/test_smoke_graphiti_preflight.py tests/unit/runtime/test_smoke_mongo_multicli.py tests/unit/runtime/test_transcript_legacy_migration.py tests/unit/services/maestro/test_graphiti_preflight.py tests/unit/services/maestro/test_task_report_graphiti_projection.py tests/unit/services/maestro/test_transcript_archive.py tests/unit/services/maestro/test_transcript_ledger_service.py tests/unit/services/symphony/test_mongo_runtime_flow.py"
+      required: true
+    - id: "maestro-doc-sync"
+      command: "python -m pytest --no-cov tests/unit/docs/test_maestro_doc_sync.py tests/unit/runtime/test_local_maestro_acceptance_script.py -q"
+      required: true
+    - id: "python-black-check"
+      command: "python -m black --check src/services/maestro/collab/backends/mongo/store.py src/services/maestro/collab/integrations/graphiti_adapter.py src/services/maestro/collab/transcript_archive.py tests/unit/services/maestro/test_graphiti_adapter.py"
+      required: true
+    - id: "python-bandit-check"
+      command: "python -m bandit -ll src/services/maestro/collab/authz/policy.py src/services/maestro/collab/backends/mongo/indexes.py src/services/maestro/collab/backends/mongo/store.py src/services/maestro/collab/integrations/graphiti_adapter.py src/services/maestro/collab/services/__init__.py src/services/maestro/collab/services/transcript_ledger.py src/services/maestro/collab/store/base.py src/services/maestro/collab/store/models.py src/services/maestro/collab/transcript_archive.py src/services/maestro/profiles/mystocks.py"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-56.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr56-mainline-gate.json"
+      required: true
+    - id: "local-maestro-acceptance"
+      command: "bash scripts/runtime/run_local_maestro_acceptance.sh"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the task card misses any touched path, Mainline Governance Gate will stay red even when the runtime code is valid"
+    - "If Graphiti MCP transport accepts non-http schemes, Bandit stays red and the transport surface remains broader than intended"
+    - "If the mypy suppression for pymongo is too broad or wrong, the branch can hide future import problems instead of isolating this optional dependency gap"
+  rollback_plan: "git revert <merge-commit-sha> if the runtime truth alignment, Graphiti transport hardening, or maestro docs discoverability changes regress after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "land the verified runtime truth line plus maestro docs discoverability updates on top of origin/main and close the branch-specific governance/type/security blockers that keep the PR unstable"
+    modified_scope: "runtime maestro source files, focused runtime/docs regression tests, config/mypy.ini, the pr-56 governance card, and no frontend product code"
+    dependency_changes: "none"
+    legacy_logic_impact: "runtime behavior stays functionally aligned with the previously verified convergence line; the only new behavior hardens Graphiti MCP URL/text validation and narrows CI import handling for optional pymongo typing"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the merge if governance gating, Graphiti transport behavior, or maestro runtime acceptance regresses after landing"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-05T00:00:00Z"
+    approval_note: "mainline runtime truth and maestro docs alignment with only the minimum CI-unblock files needed for merge"
+    secondary_approved: false
