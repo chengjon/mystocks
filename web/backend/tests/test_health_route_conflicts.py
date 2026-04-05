@@ -931,6 +931,7 @@ def test_stock_search_support_endpoints_have_docs_examples_and_error_responses()
         ("/api/stock-search/news/{symbol}", "get"): {"symbol", "market", "days"},
         ("/api/stock-search/news/market/{category}", "get"): {"category", "market"},
         ("/api/stock-search/recommendation/{symbol}", "get"): {"symbol"},
+        ("/api/stock-search/rate-limits/status", "get"): {"user_id"},
         ("/api/stock-search/cache/clear", "post"): set(),
         ("/api/stock-search/analytics/searches", "get"): {"limit", "operation", "username"},
         ("/api/stock-search/analytics/cleanup", "post"): {"days"},

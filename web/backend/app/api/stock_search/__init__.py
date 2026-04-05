@@ -1,4 +1,6 @@
 """stock_search 拆分包"""
+from .get_rate_limits_status import get_rate_limits_status  # noqa: F401
+from .get_rate_limits_status import router as rate_limits_router  # noqa: F401
 from .stock_search_result import StockSearchResult  # noqa: F401
 from .stock_search_result import StockQuote  # noqa: F401
 from .stock_search_result import NewsItem  # noqa: F401
@@ -18,6 +20,7 @@ from .stock_search_result import clear_search_cache  # noqa: F401
 from .stock_search_result import get_search_analytics  # noqa: F401
 from .stock_search_result import cleanup_search_analytics  # noqa: F401
 from .stock_search_result import router  # noqa: F401
-from .get_rate_limits_status import get_rate_limits_status  # noqa: F401
+
+router.include_router(rate_limits_router)
 
 __all__ = ['StockSearchResult', 'StockQuote', 'NewsItem', 'SearchRequest', 'check_search_rate_limit', 'check_admin_privileges', 'log_search_operation', 'validate_stock_symbol', 'sanitize_query_params', 'search_stocks', 'get_stock_quote', 'get_company_profile', 'get_stock_news', 'get_market_news', 'get_recommendation_trends', 'clear_search_cache', 'get_search_analytics', 'cleanup_search_analytics', 'get_rate_limits_status', 'router']

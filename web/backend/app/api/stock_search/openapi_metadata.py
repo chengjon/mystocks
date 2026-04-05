@@ -224,3 +224,27 @@ SEARCH_ANALYTICS_CLEANUP_RESPONSES = {
         {"success": True, "data": {"cleaned_count": 12, "remaining_count": 35, "cutoff_days": 7}, "message": "已清理 12 条旧搜索分析数据"},
     ),
 }
+
+RATE_LIMIT_STATUS_RESPONSES = {
+    401: COMMON_RESPONSES[401],
+    403: COMMON_RESPONSES[403],
+    422: COMMON_RESPONSES[422],
+    500: COMMON_RESPONSES[500],
+    **_success_response_spec(
+        "访问频率限制状态查询结果",
+        {
+            "success": True,
+            "data": {
+                "total_users": 2,
+                "user_limits": {
+                    "101": {
+                        "rate_limits": {"29589240": 12, "29589241": 4},
+                        "total_minutes": 2,
+                        "current_minute_requests": 4,
+                    }
+                },
+            },
+            "message": "所有用户的频率限制状态",
+        },
+    ),
+}
