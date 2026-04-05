@@ -21,10 +21,15 @@ const wrapperCases = [
   },
   {
     label: 'trade signals',
-    wrapperPath: 'src/views/trade/Signals.vue',
-    implementationPath: 'src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue',
-    importLine: "import TradeSignalsPage from '@/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue'",
-    renderLine: '<TradeSignalsPage v-bind="attrs" />'
+    canonicalPath: 'src/views/trade/Signals.vue',
+    legacyPath: 'src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue',
+    legacyImportLine: "import TradeSignalsCanonicalPage from '@/views/trade/Signals.vue'",
+    legacyRenderLine: '<TradeSignalsCanonicalPage v-bind="attrs" />',
+    canonicalEvidence: [
+      "import { strategyApi } from '@/api'",
+      "title=\"交易信号工作台\"",
+      "strategyApi.getSignals({ limit: 20 })"
+    ]
   },
   {
     label: 'trade portfolio',
@@ -56,7 +61,20 @@ describe('trade wrapper retention', () => {
     expect(legacySource).toContain(wrapperCases[0].legacyRenderLine)
   })
 
-  for (const wrapperCase of wrapperCases.slice(1)) {
+  it('moves the canonical trade signals implementation into src/views/trade/Signals.vue and keeps the ArtDeco path as a legacy wrapper', () => {
+    const canonicalSource = readSource(wrapperCases[1].canonicalPath)
+    const legacySource = readSource(wrapperCases[1].legacyPath)
+    const legacyFullPath = resolve(process.cwd(), wrapperCases[1].legacyPath)
+
+    expect(existsSync(legacyFullPath)).toBe(true)
+    for (const evidenceLine of wrapperCases[1].canonicalEvidence) {
+      expect(canonicalSource).toContain(evidenceLine)
+    }
+    expect(legacySource).toContain(wrapperCases[1].legacyImportLine)
+    expect(legacySource).toContain(wrapperCases[1].legacyRenderLine)
+  })
+
+  for (const wrapperCase of wrapperCases.slice(2)) {
     it(`keeps the canonical ${wrapperCase.label} wrapper pointed at its ArtDeco implementation`, () => {
       const wrapperSource = readSource(wrapperCase.wrapperPath)
       const implementationFullPath = resolve(process.cwd(), wrapperCase.implementationPath)

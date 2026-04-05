@@ -156,10 +156,15 @@
   - [x] 8.1.3 Run lint & type-check
   - [x] 8.1.4 Run unit tests for Center.vue
 - [ ] 8.2 Move `artdeco-pages/trading-tabs/ArtDecoSignalsView.vue` → `views/trade/Signals.vue`
-  - [ ] 8.2.0 **Identify all relative imports**
-  - [ ] 8.2.1 Move dependency: `useSignals.ts` to `src/shared/composables/`
-  - [ ] 8.2.2 Update imports to use `@/shared/...` absolute paths
-  - [ ] 8.2.3 Run lint & type-check
+  - Completed: 2026-04-05 via repo-truth-aligned micro-batch `2026-04-05-restructure-trade-signals-main`.
+  - Result: `src/views/trade/Signals.vue` now hosts the canonical signals implementation; `ArtDecoSignalsView.vue` is retained as a legacy compatibility wrapper into the canonical route entrypoint.
+  - [x] 8.2.0 **Identify all relative imports**
+    - Evidence: the original file depended on `../strategy-tabs/strategySignalsData`, `./ArtDecoTradingSignals.vue`, and three `../components/*` imports.
+  - [x] 8.2.1 Move dependency: `useSignals.ts` to `src/shared/composables/`
+    - Repo-truth note: not applicable as written. The current signals page fetches through `strategyApi.getSignals()` and does not own a local `useSignals.ts` composable to relocate.
+  - [x] 8.2.2 Update imports to use `@/shared/...` absolute paths
+    - Evidence: the canonical page now resolves its reused ArtDeco helpers through stable absolute `@/views/...` paths; shared-layer extraction remains a later batch.
+  - [x] 8.2.3 Run lint & type-check
 - [ ] 8.3 Move `artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue` → `views/trade/Portfolio.vue`
   - [ ] 8.3.0 **Identify all relative imports**
   - [ ] 8.3.1 Move dependency: `usePortfolio.ts` to `src/shared/composables/`
