@@ -1,8 +1,8 @@
 # MyStocks 前端页面优化规划（修订版）
 
-**版本**: V2.1（依据 2026-03-02 审核意见修订）
+**版本**: V2.2（依据 2026-04-05 dashboard truth reconciliation 修订）
 **创建日期**: 2026-03-02
-**最后更新**: 2026-03-03
+**最后更新**: 2026-04-05
 
 ## 0. 统计口径（先定义再统计）
 
@@ -99,7 +99,7 @@ bash scripts/tests/test/run-comprehensive-tests.sh
 - 高复用页面: 能力提取（按 V3）
 
 ### Phase 1（6 页，P0/P1）
-- Login、DealingRoom、Market-Realtime、Market-Technical、Market-LHB、Data-Industry
+- Login、Dashboard、Market-Realtime、Market-Technical、Market-LHB、Data-Industry
 
 ### Phase 2（6 页）
 - Data-Concept、Data-FundFlow、Data-Indicator、Watchlist-Manage、Watchlist-Signals、Watchlist-Screener
@@ -122,7 +122,7 @@ bash scripts/tests/test/run-comprehensive-tests.sh
 | # | 页面 | 路径 | 组件路径（router 真值） | 优先级 | 数据状态 | API（当前） | API状态 | 备注 |
 |---|---|---|---|---|---|---|---|---|
 | 1 | Login | `/login` | `Login.vue` | P0 | real | `/api/v1/auth/login` | verified | 2026-03-13 已在当前 worktree backend `127.0.0.1:8124` 验证 form login 成功，返回 `data.token/token_type/user` 与 `authStore` 消费契约一致 |
-| 2 | DealingRoom | `/dealing-room` | `artdeco-pages/ArtDecoDashboard.vue` | P0 | mixed | `primary-family: /api/v1/market/quotes + /api/akshare/market/fund-flow/hsgt-summary + /api/akshare/market/fund-flow/big-deal + /api/v1/market/kline + /api/v2/market/sector/fund-flow ; stats-family: /health + /api/v1/strategy/strategies + /api/v1/trade/positions` | verified | 2026-03-13 当前 worktree backend `127.0.0.1:8126` 已验证主链与 stats 链均可达；`sector/fund-flow` 从 `500` 收口到 `200`，前端现有 industry mapper 可提取 12 条热区行；AKShare 资金流家族在登录态 Bearer token 下返回 `200` |
+| 2 | Dashboard | `/dashboard` | `artdeco-pages/ArtDecoDashboard.vue` | P0 | mixed | `primary-family: /api/v1/market/quotes + /api/akshare/market/fund-flow/hsgt-summary + /api/akshare/market/fund-flow/big-deal + /api/v1/market/kline + /api/v2/market/sector/fund-flow ; stats-family: /health + /api/v1/strategy/strategies + /api/v1/trade/positions` | verified | 2026-03-13 当前 worktree backend `127.0.0.1:8126` 已验证主链与 stats 链均可达；`sector/fund-flow` 从 `500` 收口到 `200`，前端现有 industry mapper 可提取 12 条热区行；AKShare 资金流家族在登录态 Bearer token 下返回 `200`。`DealingRoom` 仅保留为历史兼容别名，当前 canonical route truth 为 `/dashboard`。 |
 | 3 | Market-Realtime | `/market/realtime` | `artdeco-pages/market-tabs/MarketRealtimeTab.vue` | P0 | mixed | `/api/v1/market/quotes` | verified | 2026-03-13 已在当前 worktree backend `127.0.0.1:8120` 验证真实返回与字段映射 |
 | 4 | Market-Technical | `/market/technical` | `artdeco-pages/market-tabs/MarketKLineTab.vue` | P0 | mixed | `/api/v1/market/kline` | verified | 2026-03-13 页级请求、实时返回与字段映射已核 |
 | 5 | Market-LHB | `/market/lhb` | `artdeco-pages/market-data-tabs/DragonTigerAnalysis.vue` | P1 | mixed | `/api/v2/market/lhb` | verified | 2026-03-13 组件自取数链、实时返回与字段映射已核 |
@@ -268,7 +268,7 @@ bash scripts/tests/test/run-comprehensive-tests.sh
 ## 8. 当前进度
 
 - 总清单条目: 34
-- 优化中: 2（Login、DealingRoom）
+- 优化中: 2（Login、Dashboard）
 - 待优化: 32
 - 完成: 0
 - 完成率: 0%

@@ -182,12 +182,11 @@
     - [ ] 8.5.1.4 Run unit tests for DealingRoom.vue
   - [x] 8.5.2 If Option B or C: Document decision and rationale
     - Documented in `web/frontend/MIGRATION_PROGRESS.md`.
-- [ ] 8.6 Move `artdeco-pages/ArtDecoDashboard.vue` → `src/views/deprecated/ArtDecoDashboard.vue`
-  - Blocked by current repo truth: `docs/plans/frontend-page-optimization-list.md` still tracks `ArtDecoDashboard.vue` as the mainline `DealingRoom` page, so deprecating it is unsafe until that naming and routing truth is reconciled.
-  - Evidence: current router truth still renders `ArtDecoDashboard.vue` at `/dashboard`, and generated `pageConfig.ts` still binds the `dashboard` page to the same component.
-  - Follow-up: proposal `reconcile-dashboard-dealingroom-truth` has been scaffolded and is now the required approval gate before any future attempt to resume this task.
-  - [ ] 8.6.1 No import updates needed (deprecated)
-  - [ ] 8.6.2 Verify file moved
+- [x] 8.6 Reconcile dashboard truth and retain `ArtDecoDashboard.vue` as the canonical dashboard shell
+  - Completed: 2026-04-05 via change `reconcile-dashboard-dealingroom-truth`.
+  - Repo truth: `/dashboard` is canonical and remains backed by `ArtDecoDashboard.vue`; `/dealing-room` is legacy compatibility only.
+  - `ArtDecoDashboard.vue` MUST NOT move to `deprecated/` under the current approved restructure scope.
+  - `TradingDashboard.vue` remains exclusive to `/trade/terminal`.
 - [ ] 8.7 Commit: "refactor: migrate trade domain pages"
 
 ## 9. Page-by-Page Migration – Risk Domain (Phase 3f)

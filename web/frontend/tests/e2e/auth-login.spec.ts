@@ -116,6 +116,13 @@ test.describe("Authentication Login Smoke", () => {
     await stubReadinessProbe(page);
   });
 
+  test("redirects root requests through the canonical dashboard login redirect", async ({ page }) => {
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+
+    await page.waitForURL(/\/login\?redirect=\/dashboard/, { timeout: 15000 });
+    await expect(page.getByTestId("username-input")).toBeVisible({ timeout: 15000 });
+  });
+
   test("redirects unauthenticated users to login with return URL", async ({ page }) => {
     await page.goto("/dashboard", { waitUntil: "domcontentloaded" });
 
@@ -124,6 +131,13 @@ test.describe("Authentication Login Smoke", () => {
     await expect(page.getByTestId("password-input")).toBeVisible();
     await expect(page.getByRole("button", { name: "SIGN IN" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "LOGIN" })).toBeVisible();
+  });
+
+  test("redirects legacy dealing-room requests through the canonical dashboard login redirect", async ({ page }) => {
+    await page.goto("/dealing-room", { waitUntil: "domcontentloaded" });
+
+    await page.waitForURL(/\/login\?redirect=\/dashboard/, { timeout: 15000 });
+    await expect(page.getByTestId("username-input")).toBeVisible({ timeout: 15000 });
   });
 
   test("logs in through the UI and lands on the requested protected route", async ({ page }) => {
