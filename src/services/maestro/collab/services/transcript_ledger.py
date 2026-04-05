@@ -6,10 +6,6 @@ from typing import Any, Callable
 from uuid import uuid4
 
 from src.services.maestro.collab.authz import ActorIdentity, CoordinationAuthorizer
-from src.services.maestro.collab.transcript_archive import (
-    TranscriptArchiveBackend,
-    TranscriptArchiveRetryableError,
-)
 from src.services.maestro.collab.store.base import CollaborationStore
 from src.services.maestro.collab.store.models import (
     TranscriptEventRecord,
@@ -17,6 +13,10 @@ from src.services.maestro.collab.store.models import (
     TranscriptLegacyIndexRecord,
     TranscriptSessionRecord,
     WorkItemRecord,
+)
+from src.services.maestro.collab.transcript_archive import (
+    TranscriptArchiveBackend,
+    TranscriptArchiveRetryableError,
 )
 
 HOT_TRANSCRIPT_RETENTION_DAYS = 90
