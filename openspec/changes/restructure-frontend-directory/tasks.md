@@ -155,7 +155,7 @@
     - Evidence: the canonical page no longer depends on relative imports; `tradingDataTransform` now resolves through an absolute `@/views/...` import until the shared helper migration is executed in a later batch.
   - [x] 8.1.3 Run lint & type-check
   - [x] 8.1.4 Run unit tests for Center.vue
-- [ ] 8.2 Move `artdeco-pages/trading-tabs/ArtDecoSignalsView.vue` → `views/trade/Signals.vue`
+- [x] 8.2 Move `artdeco-pages/trading-tabs/ArtDecoSignalsView.vue` → `views/trade/Signals.vue`
   - Completed: 2026-04-05 via repo-truth-aligned micro-batch `2026-04-05-restructure-trade-signals-main`.
   - Result: `src/views/trade/Signals.vue` now hosts the canonical signals implementation; `ArtDecoSignalsView.vue` is retained as a legacy compatibility wrapper into the canonical route entrypoint.
   - [x] 8.2.0 **Identify all relative imports**
@@ -165,11 +165,16 @@
   - [x] 8.2.2 Update imports to use `@/shared/...` absolute paths
     - Evidence: the canonical page now resolves its reused ArtDeco helpers through stable absolute `@/views/...` paths; shared-layer extraction remains a later batch.
   - [x] 8.2.3 Run lint & type-check
-- [ ] 8.3 Move `artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue` → `views/trade/Portfolio.vue`
-  - [ ] 8.3.0 **Identify all relative imports**
-  - [ ] 8.3.1 Move dependency: `usePortfolio.ts` to `src/shared/composables/`
-  - [ ] 8.3.2 Update imports to use `@/shared/...` absolute paths
-  - [ ] 8.3.3 Run lint & type-check
+- [x] 8.3 Move `artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue` → `views/trade/Portfolio.vue`
+  - Completed: 2026-04-05 via repo-truth-aligned micro-batch `2026-04-05-restructure-trade-portfolio-main`.
+  - Result: `src/views/trade/Portfolio.vue` now hosts the canonical portfolio implementation; `PortfolioOverviewTab.vue` is retained as a legacy compatibility wrapper into the canonical route entrypoint.
+  - [x] 8.3.0 **Identify all relative imports**
+    - Evidence: the only local relative dependency in the original file was `./portfolioOverviewData`.
+  - [x] 8.3.1 Move dependency: `usePortfolio.ts` to `src/shared/composables/`
+    - Repo-truth note: not applicable as written. The current portfolio page does not own a local `usePortfolio.ts`; it uses `apiClient` + `useArtDecoApi` and the local helper pair in `portfolioOverviewData.ts`.
+  - [x] 8.3.2 Update imports to use `@/shared/...` absolute paths
+    - Evidence: the canonical page now resolves `portfolioOverviewData.ts` through a stable absolute `@/views/...` import until the shared helper migration is executed in a later batch.
+  - [x] 8.3.3 Run lint & type-check
 - [ ] 8.4 Move `artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue` → `views/trade/History.vue`
   - [ ] 8.4.0 **Identify all relative imports**
   - [ ] 8.4.1 Move dependency: `useHistory.ts` to `src/shared/composables/`

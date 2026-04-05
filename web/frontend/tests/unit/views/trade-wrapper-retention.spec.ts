@@ -33,10 +33,15 @@ const wrapperCases = [
   },
   {
     label: 'trade portfolio',
-    wrapperPath: 'src/views/trade/Portfolio.vue',
-    implementationPath: 'src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue',
-    importLine: "import TradePortfolioPage from '@/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue'",
-    renderLine: '<TradePortfolioPage v-bind="attrs" />'
+    canonicalPath: 'src/views/trade/Portfolio.vue',
+    legacyPath: 'src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue',
+    legacyImportLine: "import TradePortfolioCanonicalPage from '@/views/trade/Portfolio.vue'",
+    legacyRenderLine: '<TradePortfolioCanonicalPage v-bind="attrs" />',
+    canonicalEvidence: [
+      "import { apiClient } from '@/api/apiClient'",
+      "title=\"组合资产工作台\"",
+      "apiClient.get('/v1/trade/positions')",
+    ]
   },
   {
     label: 'trade history',
@@ -74,7 +79,20 @@ describe('trade wrapper retention', () => {
     expect(legacySource).toContain(wrapperCases[1].legacyRenderLine)
   })
 
-  for (const wrapperCase of wrapperCases.slice(2)) {
+  it('moves the canonical trade portfolio implementation into src/views/trade/Portfolio.vue and keeps the ArtDeco path as a legacy wrapper', () => {
+    const canonicalSource = readSource(wrapperCases[2].canonicalPath)
+    const legacySource = readSource(wrapperCases[2].legacyPath)
+    const legacyFullPath = resolve(process.cwd(), wrapperCases[2].legacyPath)
+
+    expect(existsSync(legacyFullPath)).toBe(true)
+    for (const evidenceLine of wrapperCases[2].canonicalEvidence) {
+      expect(canonicalSource).toContain(evidenceLine)
+    }
+    expect(legacySource).toContain(wrapperCases[2].legacyImportLine)
+    expect(legacySource).toContain(wrapperCases[2].legacyRenderLine)
+  })
+
+  for (const wrapperCase of wrapperCases.slice(3)) {
     it(`keeps the canonical ${wrapperCase.label} wrapper pointed at its ArtDeco implementation`, () => {
       const wrapperSource = readSource(wrapperCase.wrapperPath)
       const implementationFullPath = resolve(process.cwd(), wrapperCase.implementationPath)
