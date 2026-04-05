@@ -687,6 +687,19 @@ def test_tdx_read_endpoints_have_docs_examples_and_error_responses() -> None:
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
+def test_lineage_upstream_and_downstream_endpoints_have_parameter_docs() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path in ["/api/v1/lineage/{node_id}/upstream", "/api/v1/lineage/{node_id}/downstream"]:
+        operation = schema["paths"][path]["get"]
+        parameters = operation.get("parameters", [])
+
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in ["node_id", "max_depth"]:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+
+
 def test_data_source_versions_endpoint_has_parameter_docs() -> None:
     app.openapi_schema = None
     schema = app.openapi()

@@ -18,7 +18,7 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Path, Query, Request
 from pydantic import BaseModel, Field
 
 from app.api._data_lineage_impact_helper import build_impacted_nodes
@@ -292,8 +292,8 @@ async def record_lineage(
 
 @router.get("/{node_id}/upstream", response_model=UnifiedResponse)
 async def get_upstream_lineage(
-    node_id: str,
-    max_depth: int = 3,
+    node_id: str = Path(..., description="要查询血缘关系的节点 ID。"),
+    max_depth: int = Query(3, description="向上游追溯的最大层级深度。", ge=1, le=10),
     http_request: Request = None,
 ):
     """
@@ -402,8 +402,8 @@ async def get_upstream_lineage(
 
 @router.get("/{node_id}/downstream", response_model=UnifiedResponse)
 async def get_downstream_lineage(
-    node_id: str,
-    max_depth: int = 3,
+    node_id: str = Path(..., description="要分析影响范围的节点 ID。"),
+    max_depth: int = Query(3, description="向下游扩散查询的最大层级深度。", ge=1, le=10),
     http_request: Request = None,
 ):
     """
