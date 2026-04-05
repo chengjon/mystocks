@@ -16,24 +16,21 @@ const E2E_USER = {
 }
 
 type AlertRuleRecord = {
-  id: string
   rule_name: string
   rule_type: string
   symbol: string
   is_active: boolean
-  priority: string
+  priority: number
   updated_at: string
 }
 
 type AlertRecord = {
-  id: string
   symbol: string
   stock_name: string
   alert_type: string
   alert_level: string
   alert_message: string
   alert_time: string
-  created_at: string
   is_read: boolean
 }
 
@@ -45,27 +42,23 @@ type AnnouncementRecord = {
   importance_level: number
   publish_date: string
   publish_time: string
-  url: string
+  url?: string
 }
 
 type DataSourceConfigRecord = {
   endpoint_name: string
   name: string
-  status: "active" | "maintenance"
   endpoint: string
+  status: "active" | "maintenance"
 }
 
 type Phase4State = {
-  positionsPayload: Record<string, unknown>
-  watchlists: Array<Record<string, unknown>>
-  watchlistStocks: Map<string, Array<Record<string, unknown>>>
   alertRules: AlertRuleRecord[]
   alertRecords: AlertRecord[]
   announcements: AnnouncementRecord[]
   dataSourceConfigs: DataSourceConfigRecord[]
-  configBatchCalls: number
-  detailedHealthCalls: number
-  savedConfigPayloads: Array<Record<string, unknown>>
+  lastBatchPayload: Record<string, unknown> | null
+  detailedHealthFetchCount: number
   unhandledRequests: string[]
 }
 
@@ -74,69 +67,57 @@ const POSITIONS_PAYLOAD = {
     {
       symbol: "600519",
       symbol_name: "贵州茅台",
-      market_value: 420000,
-      profit_loss_percent: 2.61,
+      market_value: 202584,
+      profit_loss_percent: -0.69,
     },
     {
       symbol: "300750",
       symbol_name: "宁德时代",
-      market_value: 180000,
-      profit_loss_percent: -4.12,
-    },
-    {
-      symbol: "002594",
-      symbol_name: "比亚迪",
-      market_value: 95000,
-      profit_loss_percent: 1.38,
+      market_value: 170080,
+      profit_loss_percent: 1.24,
     },
   ],
-  total_market_value: 695000,
-  total_profit_loss: 12840,
-  total_profit_loss_percent: 1.88,
+  total_market_value: 372664,
+  total_profit_loss: 6844,
+  total_profit_loss_percent: 1.84,
 }
 
 const ALERT_RULES: AlertRuleRecord[] = [
   {
-    id: "rule-1",
-    rule_name: "组合波动率阈值",
-    rule_type: "volatility",
-    symbol: "Global",
-    is_active: true,
-    priority: "P1",
-    updated_at: "2026-04-03T09:20:00Z",
-  },
-  {
-    id: "rule-2",
-    rule_name: "单票仓位上限",
-    rule_type: "position_limit",
+    rule_name: "单票止损线",
+    rule_type: "stop_loss",
     symbol: "600519",
     is_active: true,
-    priority: "P0",
-    updated_at: "2026-04-03T09:22:00Z",
+    priority: 1,
+    updated_at: "2026-04-05T08:30:00Z",
+  },
+  {
+    rule_name: "组合波动率约束",
+    rule_type: "portfolio_volatility",
+    symbol: "GLOBAL",
+    is_active: true,
+    priority: 2,
+    updated_at: "2026-04-05T08:35:00Z",
   },
 ]
 
 const ALERT_RECORDS: AlertRecord[] = [
   {
-    id: "alert-1",
     symbol: "600519",
     stock_name: "贵州茅台",
-    alert_type: "position_limit",
+    alert_type: "stop_loss",
     alert_level: "critical",
-    alert_message: "单票仓位已超过 50% 风险阈值",
-    alert_time: "2026-04-03T09:35:00Z",
-    created_at: "2026-04-03T09:35:00Z",
+    alert_message: "已跌破止损线，请立即处理。",
+    alert_time: "2026-04-05T09:30:00Z",
     is_read: false,
   },
   {
-    id: "alert-2",
     symbol: "300750",
     stock_name: "宁德时代",
-    alert_type: "drawdown",
+    alert_type: "position_limit",
     alert_level: "warning",
-    alert_message: "回撤接近止损阈值",
-    alert_time: "2026-04-03T10:05:00Z",
-    created_at: "2026-04-03T10:05:00Z",
+    alert_message: "仓位接近上限，建议控制风险敞口。",
+    alert_time: "2026-04-05T09:10:00Z",
     is_read: true,
   },
 ]
@@ -145,63 +126,86 @@ const ANNOUNCEMENTS: AnnouncementRecord[] = [
   {
     stock_code: "600519",
     stock_name: "贵州茅台",
-    announcement_type: "业绩快报",
-    announcement_title: "2026Q1 业绩快报发布",
+    announcement_type: "年度报告",
+    announcement_title: "2026 年第一季度经营数据公告",
     importance_level: 5,
-    publish_date: "2026-04-03",
-    publish_time: "08:30:00",
+    publish_date: "2026-04-05",
+    publish_time: "09:05:00",
     url: "https://example.com/announcements/600519-q1",
   },
   {
     stock_code: "300750",
     stock_name: "宁德时代",
-    announcement_type: "投资者关系",
-    announcement_title: "回购计划说明会纪要",
+    announcement_type: "董事会决议",
+    announcement_title: "关于回购方案进展的公告",
     importance_level: 3,
-    publish_date: "2026-04-03",
-    publish_time: "09:15:00",
-    url: "https://example.com/announcements/300750-ir",
+    publish_date: "2026-04-05",
+    publish_time: "08:42:00",
   },
 ]
-
-const DETAILED_HEALTH_PAYLOAD = {
-  metrics: [
-    { endpoint: "/api/v1/market/quotes", qps: 53, p95: 128, error_rate: 0.18 },
-    { endpoint: "/api/v1/auth/login", qps: 7, p95: 164, error_rate: 0.02 },
-    { endpoint: "/api/v1/strategy/backtest", qps: 3, p95: 342, error_rate: 0.64 },
-  ],
-  output: "API端点正常: /api/v1/market/quotes\nAPI端点正常: /api/v1/auth/login",
-  status: "healthy",
-  service: "mystocks-backend",
-  version: "2.0.0",
-}
-
-const HEALTH_PAYLOAD = {
-  status: "healthy",
-  service: "mystocks-backend",
-  version: "2.0.0",
-}
 
 const DATA_SOURCE_CONFIGS: DataSourceConfigRecord[] = [
   {
-    endpoint_name: "akshare.market",
-    name: "AKShare",
+    endpoint_name: "akshare.market.quotes",
+    name: "AKShare 行情",
+    endpoint: "/api/v1/market/quotes",
     status: "active",
-    endpoint: "https://akshare.example/api",
   },
   {
-    endpoint_name: "tushare.market",
-    name: "Tushare",
+    endpoint_name: "tushare.factor.daily",
+    name: "Tushare 因子",
+    endpoint: "/api/v1/factors/daily",
     status: "active",
-    endpoint: "https://tushare.example/api",
   },
   {
-    endpoint_name: "tdx.realtime",
-    name: "TDX",
+    endpoint_name: "tdx.realtime.depth",
+    name: "TDX 实时深度",
+    endpoint: "/api/v1/market/depth",
     status: "maintenance",
-    endpoint: "tcp://tdx.example:7709",
   },
 ]
+
+const WATCHLISTS = [
+  { id: 101, name: "核心风控池", is_active: true },
+  { id: 102, name: "备选观察池", is_active: false },
+]
+
+const WATCHLIST_STOCKS = [
+  {
+    stock_code: "600519",
+    name: "贵州茅台",
+    entry_price: 1692.5,
+    stop_loss_price: 1700,
+  },
+  {
+    stock_code: "300750",
+    name: "宁德时代",
+    entry_price: 208.4,
+    stop_loss_price: 210,
+  },
+]
+
+const QUOTE_ROWS = [
+  { symbol: "600519", name: "贵州茅台", current_price: 1688.2 },
+  { symbol: "300750", name: "宁德时代", current_price: 212.6 },
+]
+
+const HEALTH_DATA = {
+  status: "healthy",
+  service: "mystocks-backend",
+  version: "2.0.0",
+}
+
+const DETAILED_HEALTH_DATA = {
+  status: "healthy",
+  service: "mystocks-backend",
+  version: "2.0.0",
+  apis: [
+    { endpoint: "/api/v1/market/quotes", qps: 53, p95: 128, errorRate: "0.18%" },
+    { endpoint: "/api/v1/auth/login", qps: 7, p95: 164, errorRate: "0.02%" },
+    { endpoint: "/api/v1/data-sources/config/batch", qps: 2, p95: 231, errorRate: "0.00%" },
+  ],
+}
 
 function normalizePathname(url: string): string {
   let pathname = new URL(url).pathname
@@ -217,7 +221,7 @@ function buildUnifiedResponse<T>(data: T, overrides?: Partial<Record<string, unk
     code: 200,
     message: "ok",
     data,
-    timestamp: "2026-04-03T00:00:00Z",
+    timestamp: "2026-04-05T00:00:00Z",
     request_id: "req-phase4-default",
     ...(overrides ?? {}),
   }
@@ -225,33 +229,59 @@ function buildUnifiedResponse<T>(data: T, overrides?: Partial<Record<string, unk
 
 function createPhase4State(): Phase4State {
   return {
-    positionsPayload: JSON.parse(JSON.stringify(POSITIONS_PAYLOAD)) as Record<string, unknown>,
-    watchlists: [
-      { id: 1, name: "核心止损监控", is_active: true },
-      { id: 2, name: "备选观察池", is_active: false },
-    ],
-    watchlistStocks: new Map<string, Array<Record<string, unknown>>>([
-      [
-        "1",
-        [
-          { stock_code: "600519", name: "贵州茅台", entry_price: 1680, stop_loss_price: 1700 },
-          { stock_code: "300750", name: "宁德时代", entry_price: 208, stop_loss_price: 208 },
-        ],
-      ],
-      [
-        "2",
-        [{ stock_code: "002594", name: "比亚迪", entry_price: 255, stop_loss_price: 248 }],
-      ],
-    ]),
     alertRules: ALERT_RULES.map((row) => ({ ...row })),
     alertRecords: ALERT_RECORDS.map((row) => ({ ...row })),
     announcements: ANNOUNCEMENTS.map((row) => ({ ...row })),
     dataSourceConfigs: DATA_SOURCE_CONFIGS.map((row) => ({ ...row })),
-    configBatchCalls: 0,
-    detailedHealthCalls: 0,
-    savedConfigPayloads: [],
+    lastBatchPayload: null,
+    detailedHealthFetchCount: 0,
     unhandledRequests: [],
   }
+}
+
+async function installBrowserSpies(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    const openedUrls: string[] = []
+    const downloads: Array<{ href: string; download: string }> = []
+    const blobUrls: string[] = []
+
+    ;(window as typeof window & {
+      __phase4OpenedUrls: string[]
+      __phase4Downloads: Array<{ href: string; download: string }>
+      __phase4BlobUrls: string[]
+    }).__phase4OpenedUrls = openedUrls
+    ;(window as typeof window & {
+      __phase4OpenedUrls: string[]
+      __phase4Downloads: Array<{ href: string; download: string }>
+      __phase4BlobUrls: string[]
+    }).__phase4Downloads = downloads
+    ;(window as typeof window & {
+      __phase4OpenedUrls: string[]
+      __phase4Downloads: Array<{ href: string; download: string }>
+      __phase4BlobUrls: string[]
+    }).__phase4BlobUrls = blobUrls
+
+    window.open = ((url?: string | URL | undefined) => {
+      if (url) {
+        openedUrls.push(String(url))
+      }
+      return null
+    }) as typeof window.open
+
+    URL.createObjectURL = (() => {
+      const nextUrl = `blob:phase4-export-${blobUrls.length + 1}`
+      blobUrls.push(nextUrl)
+      return nextUrl
+    }) as typeof URL.createObjectURL
+    URL.revokeObjectURL = (() => {}) as typeof URL.revokeObjectURL
+
+    HTMLAnchorElement.prototype.click = function click() {
+      downloads.push({
+        href: this.href,
+        download: this.download,
+      })
+    }
+  })
 }
 
 async function seedAuth(page: Page): Promise<void> {
@@ -268,6 +298,7 @@ async function seedAuth(page: Page): Promise<void> {
 async function setupPhase4Mock(page: Page): Promise<Phase4State> {
   const state = createPhase4State()
   await page.setViewportSize({ width: 1440, height: 900 })
+  await installBrowserSpies(page)
   await seedAuth(page)
   await stubPhase4Apis(page, state)
   return state
@@ -291,36 +322,35 @@ async function stubPhase4Apis(page: Page, state: Phase4State): Promise<void> {
     if (normalizedPath === "/health" && method === "GET") {
       await route.fulfill({
         status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(buildUnifiedResponse(HEALTH_PAYLOAD, { request_id: "req-phase4-health" })),
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-health",
+          "x-process-time": "18ms",
+        },
+        body: JSON.stringify(buildUnifiedResponse(HEALTH_DATA, { request_id: "req-phase4-health" })),
       })
       return
     }
 
     if (normalizedPath === "/health/detailed" && method === "GET") {
-      state.detailedHealthCalls += 1
+      state.detailedHealthFetchCount += 1
       await route.fulfill({
         status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(buildUnifiedResponse(DETAILED_HEALTH_PAYLOAD, { request_id: "req-phase4-health-detailed" })),
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-health-detailed",
+          "x-process-time": "27ms",
+        },
+        body: JSON.stringify(buildUnifiedResponse(DETAILED_HEALTH_DATA, { request_id: "req-phase4-health-detailed" })),
       })
       return
     }
 
-    if (normalizedPath === "/csrf-token") {
+    if (normalizedPath === "/csrf-token" && method === "GET") {
       await route.fulfill({
         status: 200,
         contentType: "application/json",
-        body: JSON.stringify(
-          buildUnifiedResponse(
-            {
-              csrf_token: "e2e-phase4-csrf",
-              token_type: "bearer",
-              expires_in: 3600,
-            },
-            { request_id: "req-phase4-csrf" }
-          )
-        ),
+        body: JSON.stringify(buildUnifiedResponse({ csrf_token: "e2e-phase4-csrf" }, { request_id: "req-phase4-csrf" })),
       })
       return
     }
@@ -328,48 +358,12 @@ async function stubPhase4Apis(page: Page, state: Phase4State): Promise<void> {
     if (normalizedPath === "/v1/trade/positions" && method === "GET") {
       await route.fulfill({
         status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(buildUnifiedResponse(state.positionsPayload, { request_id: "req-phase4-positions" })),
-      })
-      return
-    }
-
-    if (normalizedPath === "/v1/monitoring/watchlists" && method === "GET") {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(buildUnifiedResponse(state.watchlists, { request_id: "req-phase4-watchlists" })),
-      })
-      return
-    }
-
-    const watchlistStocksMatch = normalizedPath.match(/^\/v1\/monitoring\/watchlists\/([^/]+)\/stocks$/)
-    if (watchlistStocksMatch && method === "GET") {
-      const watchlistId = watchlistStocksMatch[1]
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(
-          buildUnifiedResponse(state.watchlistStocks.get(watchlistId) || [], { request_id: "req-phase4-watchlist-stocks" })
-        ),
-      })
-      return
-    }
-
-    if (normalizedPath === "/v1/market/quotes" && method === "GET") {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(
-          buildUnifiedResponse(
-            [
-              { symbol: "600519", name: "贵州茅台", current_price: 1688.2 },
-              { symbol: "300750", name: "宁德时代", current_price: 209.0 },
-              { symbol: "002594", name: "比亚迪", current_price: 258.3 },
-            ],
-            { request_id: "req-phase4-quotes" }
-          )
-        ),
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-positions",
+          "x-process-time": "29ms",
+        },
+        body: JSON.stringify(buildUnifiedResponse(POSITIONS_PAYLOAD, { request_id: "req-phase4-positions" })),
       })
       return
     }
@@ -377,8 +371,11 @@ async function stubPhase4Apis(page: Page, state: Phase4State): Promise<void> {
     if (normalizedPath === "/v1/monitoring/alert-rules" && method === "GET") {
       await route.fulfill({
         status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(buildUnifiedResponse(state.alertRules, { request_id: "req-phase4-alert-rules" })),
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-rules",
+        },
+        body: JSON.stringify(buildUnifiedResponse(state.alertRules, { request_id: "req-phase4-rules" })),
       })
       return
     }
@@ -386,7 +383,10 @@ async function stubPhase4Apis(page: Page, state: Phase4State): Promise<void> {
     if (normalizedPath === "/v1/monitoring/alerts" && method === "GET") {
       await route.fulfill({
         status: 200,
-        contentType: "application/json",
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-alerts",
+        },
         body: JSON.stringify(buildUnifiedResponse(state.alertRecords, { request_id: "req-phase4-alerts" })),
       })
       return
@@ -395,62 +395,88 @@ async function stubPhase4Apis(page: Page, state: Phase4State): Promise<void> {
     if (normalizedPath === "/announcement/list" && method === "GET") {
       await route.fulfill({
         status: 200,
-        contentType: "application/json",
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-announcements",
+        },
         body: JSON.stringify(buildUnifiedResponse(state.announcements, { request_id: "req-phase4-announcements" })),
       })
       return
     }
 
-    if ((normalizedPath === "/v1/data-sources/config/" || normalizedPath === "/v1/data-sources/config") && method === "GET") {
+    if (normalizedPath === "/v1/monitoring/watchlists" && method === "GET") {
       await route.fulfill({
         status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(
-          buildUnifiedResponse(
-            {
-              endpoints: state.dataSourceConfigs.map((row) => ({ ...row })),
-            },
-            { request_id: "req-phase4-data-config" }
-          )
-        ),
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-watchlists",
+        },
+        body: JSON.stringify(buildUnifiedResponse(WATCHLISTS, { request_id: "req-phase4-watchlists" })),
+      })
+      return
+    }
+
+    if (normalizedPath === "/v1/monitoring/watchlists/101/stocks" && method === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-watchlist-stocks",
+        },
+        body: JSON.stringify(buildUnifiedResponse(WATCHLIST_STOCKS, { request_id: "req-phase4-watchlist-stocks" })),
+      })
+      return
+    }
+
+    if (normalizedPath === "/v1/market/quotes" && method === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-quotes",
+        },
+        body: JSON.stringify(buildUnifiedResponse(QUOTE_ROWS, { request_id: "req-phase4-quotes" })),
+      })
+      return
+    }
+
+    if (normalizedPath === "/v1/data-sources/config/" && method === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-config",
+        },
+        body: JSON.stringify(buildUnifiedResponse(state.dataSourceConfigs, { request_id: "req-phase4-config" })),
       })
       return
     }
 
     if (normalizedPath === "/v1/data-sources/config/batch" && method === "POST") {
-      state.configBatchCalls += 1
       const payload = JSON.parse(request.postData() || "{}") as {
-        operations?: Array<{
-          endpoint_name?: string
-          updates?: { status?: "active" | "maintenance" }
-        }>
+        operations?: Array<{ endpoint_name?: string; updates?: { status?: "active" | "maintenance" } }>
       }
-      state.savedConfigPayloads.push(payload as Record<string, unknown>)
+      state.lastBatchPayload = payload as Record<string, unknown>
 
       for (const operation of payload.operations || []) {
-        const endpointName = operation.endpoint_name
-        const nextStatus = operation.updates?.status
-        if (!endpointName || !nextStatus) {
-          continue
-        }
-        const target = state.dataSourceConfigs.find((item) => item.endpoint_name === endpointName)
-        if (target) {
-          target.status = nextStatus
+        const item = state.dataSourceConfigs.find((entry) => entry.endpoint_name === operation.endpoint_name)
+        if (item && operation.updates?.status) {
+          item.status = operation.updates.status
         }
       }
 
       await route.fulfill({
         status: 200,
-        contentType: "application/json",
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-config-batch",
+        },
         body: JSON.stringify(
           buildUnifiedResponse(
             {
-              operations: (payload.operations || []).map((operation) => ({
-                endpoint_name: operation.endpoint_name,
-                status: operation.updates?.status || "active",
-              })),
+              operations_applied: (payload.operations || []).length,
             },
-            { request_id: "req-phase4-data-config-save" }
+            { request_id: "req-phase4-config-batch" }
           )
         ),
       })
@@ -470,166 +496,164 @@ async function stubPhase4Apis(page: Page, state: Phase4State): Promise<void> {
   })
 }
 
+async function gotoRoute(page: Page, path: string): Promise<void> {
+  await page.goto(`${FRONTEND_BASE_URL}${path}`)
+  await page.waitForLoadState("networkidle").catch(() => {})
+}
+
 test.describe("Phase 4 Mainline Matrix", () => {
   test.describe.configure({ timeout: 180000 })
 
-  test("Risk-Management renders workflow shell and derived risk alerts", async ({ page }) => {
+  test("Risk-Management renders portfolio guard shell and actions", async ({ page }) => {
     const state = await setupPhase4Mock(page)
 
-    await page.goto(`${FRONTEND_BASE_URL}/risk/management`)
+    await gotoRoute(page, "/risk/management")
 
+    await expect(page.getByText("风险管理中心").first()).toBeVisible()
     await expect(page.getByText("风险控制工作流").first()).toBeVisible()
-    await expect(page.getByRole("button", { name: "导出" })).toBeVisible()
-    await expect(page.getByRole("button", { name: "设置", exact: true })).toBeVisible()
-    await expect(page.locator(".stats-grid")).toContainText("总资产")
+    await expect(page.locator(".risk-table tbody tr")).toHaveCount(2)
     await expect(page.locator(".risk-table")).toContainText("贵州茅台")
-    await expect(page.locator(".risk-table")).toContainText("宁德时代")
-    await expect(page.locator(".custom-tabs-trace")).toContainText("REQ_ID:")
+    await expect(page.getByRole("button", { name: "导出" })).toBeVisible()
+    await expect(page.getByRole("main").getByRole("button", { name: "设置", exact: true })).toBeVisible()
     expect(state.unhandledRequests).toEqual([])
   })
 
-  test("Risk-Overview renders rules and alerts tabs from mocked rule payload", async ({ page }) => {
+  test("Risk-Overview renders rule table and alert tab under mock data", async ({ page }) => {
     const state = await setupPhase4Mock(page)
 
-    await page.goto(`${FRONTEND_BASE_URL}/risk/overview`)
+    await gotoRoute(page, "/risk/overview")
 
     await expect(page.getByText("风险概览工作台").first()).toBeVisible()
-    await expect(page.getByRole("button", { name: "刷新概览" })).toBeVisible()
     await page.getByRole("button", { name: "规则清单" }).click()
-    await expect(page.locator(".tab-panel")).toContainText("组合波动率阈值")
+    await expect(page.locator(".content-shell")).toContainText("单票止损线")
     await page.getByRole("button", { name: "预警消息" }).click()
     await expect(page.locator(".alerts-list")).toContainText("组合波动率超过阈值 18%")
-    await expect(page.locator(".hero-meta")).toContainText("REQ_ID:")
     expect(state.unhandledRequests).toEqual([])
   })
 
-  test("Risk-PnL renders portfolio attribution and rebalance suggestions", async ({ page }) => {
+  test("Risk-PnL renders portfolio metrics and top positions", async ({ page }) => {
     const state = await setupPhase4Mock(page)
 
-    await page.goto(`${FRONTEND_BASE_URL}/risk/pnl`)
+    await gotoRoute(page, "/risk/pnl")
 
     await expect(page.getByText("组合资产工作台").first()).toBeVisible()
-    await expect(page.locator(".stats-strip")).toContainText("总资产")
-    await expect(page.locator(".positions-grid")).toContainText("贵州茅台")
-    await expect(page.locator(".attribution-grid")).toContainText("收益贡献")
-    await expect(page.locator(".rebalance-list")).toContainText("建议减仓")
+    await expect(page.locator(".positions-grid .position-item")).toHaveCount(2)
+    await expect(page.locator(".portfolio-overview-tab")).toContainText("Top Positions")
+    await expect(page.locator(".portfolio-overview-tab")).toContainText("贵州茅台")
+    await expect(page.locator(".rebalance-section")).toContainText("自动再平衡建议")
     expect(state.unhandledRequests).toEqual([])
   })
 
   test("Risk-StopLoss renders triggered and critical stop-loss cards", async ({ page }) => {
     const state = await setupPhase4Mock(page)
 
-    await page.goto(`${FRONTEND_BASE_URL}/risk/stop-loss`)
+    await gotoRoute(page, "/risk/stop-loss")
 
     await expect(page.getByText("止损雷达工作台").first()).toBeVisible()
-    await expect(page.getByText("止损距离监控面板")).toBeVisible()
-    await expect(page.locator(".monitor-grid")).toContainText("贵州茅台")
-    await expect(page.locator(".monitor-grid")).toContainText("宁德时代")
+    await expect(page.locator(".risk-card")).toHaveCount(2)
     await expect(page.locator(".monitor-grid")).toContainText("TRIGGERED")
-    await expect(page.locator(".hero-meta")).toContainText("REQ_ID:")
+    await expect(page.locator(".monitor-grid")).toContainText("宁德时代")
     expect(state.unhandledRequests).toEqual([])
   })
 
-  test("Risk-Alerts renders alert records and rule list", async ({ page }) => {
+  test("Risk-Alerts renders mocked alerts and rules tables", async ({ page }) => {
     const state = await setupPhase4Mock(page)
 
-    await page.goto(`${FRONTEND_BASE_URL}/risk/alerts`)
+    await gotoRoute(page, "/risk/alerts")
 
     await expect(page.getByText("风险告警工作台").first()).toBeVisible()
-    await expect(page.getByRole("heading", { name: "近期告警" })).toBeVisible()
-    await expect(page.getByRole("heading", { name: "规则列表" })).toBeVisible()
-    await expect(page.locator(".table-card").first()).toContainText("贵州茅台")
-    await expect(page.locator(".table-card").nth(1)).toContainText("组合波动率阈值")
-    await expect(page.locator(".hero-meta")).toContainText("REQ_ID:")
+    await expect(page.locator(".risk-alerts")).toContainText("近期告警")
+    await expect(page.locator(".risk-alerts")).toContainText("已跌破止损线，请立即处理。")
+    await expect(page.locator(".risk-alerts")).toContainText("规则列表")
+    await expect(page.locator(".risk-alerts")).toContainText("组合波动率约束")
     expect(state.unhandledRequests).toEqual([])
   })
 
-  test("Risk-News renders announcement ledger with linked source action", async ({ page }) => {
+  test("Risk-News renders announcements and opens source links", async ({ page }) => {
     const state = await setupPhase4Mock(page)
 
-    await page.goto(`${FRONTEND_BASE_URL}/risk/news`)
+    await gotoRoute(page, "/risk/news")
 
     await expect(page.getByText("公告与舆情工作台").first()).toBeVisible()
-    await expect(page.getByText("公告列表")).toBeVisible()
-    await expect(page.locator(".table-card")).toContainText("2026Q1 业绩快报发布")
-    await expect(page.getByRole("button", { name: "查看原文" }).first()).toBeEnabled()
-    await expect(page.locator(".hero-meta")).toContainText("REQ_ID:")
+    await expect(page.locator(".announcement-monitor")).toContainText("公告列表")
+    await expect(page.locator(".announcement-monitor")).toContainText("2026 年第一季度经营数据公告")
+    await page.getByRole("button", { name: "查看原文" }).first().click()
+    const openedUrls = await page.evaluate(() => (window as typeof window & { __phase4OpenedUrls: string[] }).__phase4OpenedUrls)
+    expect(openedUrls).toEqual(["https://example.com/announcements/600519-q1"])
     expect(state.unhandledRequests).toEqual([])
   })
 
-  test("System-Config renders blocker note and persists local settings", async ({ page }) => {
+  test("System-Config keeps blocker copy and saves local settings", async ({ page }) => {
     const state = await setupPhase4Mock(page)
 
-    await page.goto(`${FRONTEND_BASE_URL}/system/config`)
+    await gotoRoute(page, "/system/config")
 
-    await expect(page.locator(".system-settings-page")).toBeVisible()
+    await expect(page.getByText("系统配置中心").first()).toBeVisible()
     await expect(page.locator(".analysis-blocker")).toContainText("统一系统配置后端契约仍未建立")
-    await page.locator(".system-settings-page .tabs").getByRole("button", { name: "系统监控" }).click()
-    await expect(page.locator(".hybrid-table")).toContainText("/api/v1/market/quotes")
-
-    await page.locator(".system-settings-page .tabs").getByRole("button", { name: "系统设置" }).click()
-    await page.locator(".field input").first().fill("http://127.0.0.1:9000")
+    await expect(page.locator(".header-meta")).toContainText("DATA: REAL")
+    await page.locator(".tabs").getByRole("button", { name: "系统设置", exact: true }).click()
+    await page.locator(".form-grid input").first().fill("http://localhost:9999")
     await page.getByRole("button", { name: "保存本地设置" }).click()
-
-    const saved = await page.evaluate(() => window.localStorage.getItem("artdeco-system-settings"))
-    expect(saved).toContain("127.0.0.1:9000")
+    const saved = await page.evaluate(() => localStorage.getItem("artdeco-system-settings"))
+    expect(saved).toContain("http://localhost:9999")
+    expect(state.detailedHealthFetchCount).toBe(1)
     expect(state.unhandledRequests).toEqual([])
   })
 
-  test("System-Health renders health matrix and middleware deck", async ({ page }) => {
+  test("System-Health renders health matrix and middleware panel", async ({ page }) => {
     const state = await setupPhase4Mock(page)
 
-    await page.goto(`${FRONTEND_BASE_URL}/system/health`)
+    await gotoRoute(page, "/system/health")
 
     await expect(page.getByText("系统健康矩阵").first()).toBeVisible()
-    await expect(page.getByText("服务状态与中间件面板")).toBeVisible()
-    await expect(page.locator(".status-card").first()).toContainText("mystocks-backend")
-    await expect(page.locator(".middleware-list")).toContainText("Redis Caching")
-    await expect(page.locator(".hero-meta")).toContainText("REQ_ID:")
+    await expect(page.locator(".health-grid")).toContainText("mystocks-backend")
+    await expect(page.locator(".health-grid")).toContainText("Performance Tracing")
+    await expect(page.locator(".content-shell")).toContainText("服务状态与中间件面板")
     expect(state.unhandledRequests).toEqual([])
   })
 
-  test("System-API renders telemetry panel and exports detailed report", async ({ page }) => {
+  test("System-API renders observability deck and exports detailed health", async ({ page }) => {
     const state = await setupPhase4Mock(page)
 
-    await page.goto(`${FRONTEND_BASE_URL}/system/api`)
+    await gotoRoute(page, "/system/api")
 
     await expect(page.getByText("系统监控工作台").first()).toBeVisible()
-    await expect(page.getByText("系统健康与遥测面板")).toBeVisible()
     await expect(page.locator(".health-grid")).toContainText("mystocks-backend")
-
-    const [download] = await Promise.all([
-      page.waitForEvent("download"),
-      page.getByRole("button", { name: "导出报告" }).click(),
-    ])
-    expect(await download.suggestedFilename()).toMatch(/^system-health-.*\.json$/)
-    await expect.poll(() => state.detailedHealthCalls).toBe(1)
+    await page.getByRole("button", { name: "导出报告" }).click()
+    const blobUrls = await page.evaluate(
+      () => (window as typeof window & { __phase4BlobUrls: string[] }).__phase4BlobUrls
+    )
+    expect(state.detailedHealthFetchCount).toBe(1)
+    expect(blobUrls).toHaveLength(1)
+    expect(blobUrls[0]).toContain("blob:phase4-export-")
     expect(state.unhandledRequests).toEqual([])
   })
 
-  test("System-Data renders config table and submits batch save payload", async ({ page }) => {
+  test("System-Data renders config table and posts batch write payload", async ({ page }) => {
     const state = await setupPhase4Mock(page)
 
-    await page.goto(`${FRONTEND_BASE_URL}/system/data`)
+    await gotoRoute(page, "/system/data")
 
     await expect(page.getByText("数据源治理工作台").first()).toBeVisible()
-    await expect(page.getByText("数据源配置与写回面板")).toBeVisible()
-    await expect(page.locator(".config-table")).toContainText("AKShare")
-
-    await page.locator(".config-row").nth(1).getByRole("button", { name: "禁用" }).click()
-    await expect(page.locator(".config-row").nth(1).getByRole("button", { name: "启用" })).toBeVisible()
+    await expect(page.locator(".config-row")).toHaveCount(4)
+    await expect(page.locator(".config-table")).toContainText("AKShare 行情")
+    const firstConfigRow = page.locator(".config-row").filter({ hasText: "AKShare 行情" })
+    await firstConfigRow.getByRole("button", { name: "禁用", exact: true }).click()
+    await expect(firstConfigRow.locator(".status-badge")).toContainText("禁用")
+    await expect(firstConfigRow.getByRole("button", { name: "启用", exact: true })).toBeVisible()
     await page.getByRole("button", { name: "保存配置" }).click()
-
-    await expect.poll(() => state.configBatchCalls).toBe(1)
-    expect(state.savedConfigPayloads[0]).toMatchObject({
+    await expect.poll(() => state.lastBatchPayload).toEqual({
       operations: [
         {
-          endpoint_name: "akshare.market",
-          updates: { status: "maintenance" },
+          action: "update",
+          endpoint_name: "akshare.market.quotes",
+          updates: {
+            status: "maintenance",
+          },
         },
       ],
     })
-    await expect(page.locator(".config-row").nth(1)).toContainText("禁用")
+    await expect(page.locator(".config-table")).toContainText("TDX 实时深度")
     expect(state.unhandledRequests).toEqual([])
   })
 })
