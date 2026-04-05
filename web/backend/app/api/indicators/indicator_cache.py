@@ -18,7 +18,7 @@ from typing import Dict, List, Optional, Union
 
 import numpy as np
 import structlog
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Body, Depends, Path, Query
 from pydantic import BaseModel, Field, constr, field_validator
 
 from app.api.auth import get_current_active_user
@@ -83,6 +83,38 @@ INDICATOR_CACHE_STATS_RESPONSES = {
             "error_code": "CACHE_STATS_RETRIEVAL_FAILED",
         },
     ),
+}
+
+INDICATOR_CATEGORY_PATH_DESCRIPTION = "指标分类，可选值为 trend、momentum、volatility、volume 或 candlestick。"
+
+INDICATOR_CALCULATE_REQUEST_EXAMPLE = {
+    "symbol": "600519.SH",
+    "start_date": "2024-01-01",
+    "end_date": "2024-12-31",
+    "indicators": [
+        {"abbreviation": "SMA", "parameters": {"timeperiod": 20}},
+        {"abbreviation": "RSI", "parameters": {"timeperiod": 14}},
+    ],
+    "use_cache": True,
+}
+
+INDICATOR_CALCULATE_BATCH_REQUEST_EXAMPLE = {
+    "calculations": [
+        {
+            "symbol": "600519.SH",
+            "start_date": "2024-01-01",
+            "end_date": "2024-06-30",
+            "indicators": [{"abbreviation": "MACD", "parameters": {"fastperiod": 12, "slowperiod": 26}}],
+            "use_cache": True,
+        },
+        {
+            "symbol": "000300.SH",
+            "start_date": "2024-01-01",
+            "end_date": "2024-06-30",
+            "indicators": [{"abbreviation": "ATR", "parameters": {"timeperiod": 14}}],
+            "use_cache": True,
+        },
+    ]
 }
 
 
@@ -245,7 +277,7 @@ async def get_indicator_registry_endpoint(
 
 
 @router.get("/registry/{category}", response_model=List[IndicatorMetadata])
-async def get_indicators_by_category(category: str):
+async def get_indicators_by_category(category: str = Path(..., description=INDICATOR_CATEGORY_PATH_DESCRIPTION)):
     """
     获取指定分类的指标
 
@@ -301,7 +333,8 @@ async def get_indicators_by_category(category: str):
 @router.post("/calculate")
 @rate_limit(limit=20, window=60)  # 每分钟最多20次计算请求
 async def calculate_indicators(
-    request: IndicatorCalculateRequest, current_user: User = Depends(get_current_active_user)
+    request: IndicatorCalculateRequest = Body(..., example=INDICATOR_CALCULATE_REQUEST_EXAMPLE),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     计算技术指标 - Phase 4C Enhanced
@@ -549,7 +582,8 @@ async def calculate_indicators(
 @router.post("/calculate/batch")
 @rate_limit(limit=5, window=60)  # 每分钟最多5次批量计算
 async def calculate_indicators_batch(
-    request: IndicatorCalculateBatchRequest, current_user: User = Depends(get_current_active_user)
+    request: IndicatorCalculateBatchRequest = Body(..., example=INDICATOR_CALCULATE_BATCH_REQUEST_EXAMPLE),
+    current_user: User = Depends(get_current_active_user),
 ) -> Dict:
     """
     批量计算技术指标 - Phase 4C Enhanced
@@ -692,7 +726,11 @@ async def get_cache_statistics(current_user: User = Depends(get_current_active_u
         )
 
 
-@router.post("/cache/clear")
+@router.post(
+    "/cache/clear",
+    summary="清理指标缓存",
+    description="按模式清理技术指标计算缓存，仅管理员可执行，支持清空全部缓存、清理过期条目或按 symbol 前缀筛选。",
+)
 @rate_limit(limit=3, window=60)  # 每分钟最多3次清理
 async def clear_cache(
     pattern: Optional[str] = Query(None, description="清理模式: all, expired, or symbol prefix"),

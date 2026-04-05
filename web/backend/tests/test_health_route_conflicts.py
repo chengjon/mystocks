@@ -525,6 +525,115 @@ def test_indicator_cache_statistics_endpoint_has_description_examples_and_error_
     assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
+def test_v1_indicator_endpoints_have_examples_parameter_docs_and_descriptions() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    registry_operation = schema["paths"]["/api/v1/indicators/registry/{category}"]["get"]
+    registry_parameters = registry_operation.get("parameters", [])
+
+    assert registry_operation.get("summary")
+    assert len(registry_operation.get("description", "")) >= 20
+    assert any(
+        param["name"] == "category" and param["in"] == "path" and param.get("description")
+        for param in registry_parameters
+    )
+    assert any(code.startswith(("4", "5")) for code in registry_operation["responses"])
+
+    for path in ["/api/v1/indicators/calculate", "/api/v1/indicators/calculate/batch"]:
+        operation = schema["paths"][path]["post"]
+        request_json = operation["requestBody"]["content"]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        assert "example" in request_json or "examples" in request_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+    clear_cache_operation = schema["paths"]["/api/v1/indicators/cache/clear"]["post"]
+    clear_cache_parameters = clear_cache_operation.get("parameters", [])
+
+    assert clear_cache_operation.get("summary")
+    assert len(clear_cache_operation.get("description", "")) >= 20
+    assert any(param["name"] == "pattern" and param.get("description") for param in clear_cache_parameters)
+    assert any(code.startswith(("4", "5")) for code in clear_cache_operation["responses"])
+
+
+def test_tdx_and_metrics_endpoints_have_parameter_docs_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    quote_operation = schema["paths"]["/api/v1/tdx/quote/{symbol}"]["get"]
+    quote_parameters = quote_operation.get("parameters", [])
+
+    assert quote_operation.get("summary")
+    assert len(quote_operation.get("description", "")) >= 20
+    assert any(
+        param["name"] == "symbol" and param["in"] == "path" and param.get("description")
+        for param in quote_parameters
+    )
+    assert any(code.startswith(("4", "5")) for code in quote_operation["responses"])
+
+    index_kline_operation = schema["paths"]["/api/v1/tdx/index/kline"]["get"]
+    assert index_kline_operation.get("summary")
+    assert len(index_kline_operation.get("description", "")) >= 20
+    assert any(code.startswith(("4", "5")) for code in index_kline_operation["responses"])
+
+    metrics_operation = schema["paths"]["/api/metrics"]["get"]
+    assert any(code.startswith(("4", "5")) for code in metrics_operation["responses"])
+
+
+def test_ml_endpoints_have_request_examples_and_parameter_docs() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    market_operation = schema["paths"]["/api/ml/tdx/stocks/{market}"]["get"]
+    market_parameters = market_operation.get("parameters", [])
+
+    assert market_operation.get("summary")
+    assert len(market_operation.get("description", "")) >= 20
+    assert any(
+        param["name"] == "market" and param["in"] == "path" and param.get("description")
+        for param in market_parameters
+    )
+    assert any(code.startswith(("4", "5")) for code in market_operation["responses"])
+
+    for path in [
+        "/api/ml/tdx/data",
+        "/api/ml/features/generate",
+        "/api/ml/models/train",
+        "/api/ml/models/predict",
+        "/api/ml/models/hyperparameter-search",
+        "/api/ml/models/evaluate",
+    ]:
+        operation = schema["paths"][path]["post"]
+        request_json = operation["requestBody"]["content"]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        assert "example" in request_json or "examples" in request_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
+def test_multi_source_endpoints_have_descriptions_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path in ["/api/multi-source/health", "/api/multi-source/status"]:
+        operation = schema["paths"][path]["get"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+    analyze_operation = schema["paths"]["/api/multi-source/analyze"]["post"]
+    analyze_json = analyze_operation["requestBody"]["content"]["application/json"]
+
+    assert analyze_operation.get("summary")
+    assert len(analyze_operation.get("description", "")) >= 20
+    assert "example" in analyze_json or "examples" in analyze_json
+    assert any(code.startswith(("4", "5")) for code in analyze_operation["responses"])
+
+
 def test_data_quality_overview_endpoints_have_descriptions_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()

@@ -2,7 +2,7 @@
 多数据源API路由
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 
 from app.openapi_config import COMMON_RESPONSES
 
@@ -13,21 +13,34 @@ MULTI_SOURCE_ROUTE_RESPONSES = {
 # Prefix is governed by the central route registry.
 router = APIRouter(responses=MULTI_SOURCE_ROUTE_RESPONSES)
 
+MULTI_SOURCE_ANALYZE_REQUEST_EXAMPLE = {
+    "symbol": "600519",
+    "data_sources": ["technical", "fundamental", "sentiment", "flow"],
+    "analysis_depth": "advanced",
+    "weights": {
+        "technical": 0.3,
+        "fundamental": 0.4,
+        "sentiment": 0.2,
+        "flow": 0.1,
+    },
+    "time_range": "3m",
+}
 
-@router.get("/health")
+
+@router.get("/health", description="返回多数据源服务的基础健康状态，用于网关探活、运维巡检和启动后自检。")
 async def health_check():
-    """健康检查"""
+    """返回多数据源服务的基础健康状态。"""
     return {"status": "ok", "service": "multi_source"}
 
 
-@router.get("/status")
+@router.get("/status", description="返回多数据源服务的当前运行状态和端点标识，用于联调和运行态确认。")
 async def get_status():
-    """获取服务状态"""
+    """返回多数据源服务的当前运行状态。"""
     return {"status": "active", "endpoint": "multi_source"}
 
 
 @router.post("/analyze")
-async def analyze_data(data: dict):
+async def analyze_data(data: dict = Body(..., example=MULTI_SOURCE_ANALYZE_REQUEST_EXAMPLE)):
     """
     多数据源AI综合分析
 

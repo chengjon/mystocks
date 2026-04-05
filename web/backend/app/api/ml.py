@@ -6,7 +6,7 @@
 import os
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Path
+from fastapi import APIRouter, Body, Depends, HTTPException, Path
 
 from app.core.security import User, get_current_user
 from app.schemas.ml_schemas import (
@@ -45,6 +45,51 @@ feature_service = FeatureEngineeringService()
 
 # 模型存储目录
 MODEL_DIR = os.getenv("ML_MODEL_DIR", "./models")
+
+ML_MARKET_PATH_DESCRIPTION = "市场代码，支持 sh（上交所）或 sz（深交所）。"
+
+ML_TDX_DATA_REQUEST_EXAMPLE = {"stock_code": "000001", "market": "sh"}
+
+ML_FEATURE_GENERATION_REQUEST_EXAMPLE = {
+    "stock_code": "000001",
+    "market": "sh",
+    "step": 10,
+    "include_indicators": True,
+}
+
+ML_MODEL_TRAIN_REQUEST_EXAMPLE = {
+    "stock_code": "000001",
+    "market": "sh",
+    "step": 10,
+    "test_size": 0.2,
+    "model_name": "a_share_lgbm_v1",
+    "model_params": {"n_estimators": 100, "learning_rate": 0.1},
+}
+
+ML_MODEL_PREDICT_REQUEST_EXAMPLE = {
+    "model_name": "a_share_lgbm_v1",
+    "stock_code": "000001",
+    "market": "sh",
+    "days": 1,
+}
+
+ML_HYPERPARAMETER_SEARCH_REQUEST_EXAMPLE = {
+    "stock_code": "000001",
+    "market": "sh",
+    "step": 10,
+    "cv": 5,
+    "param_grid": {
+        "num_leaves": [15, 31],
+        "n_estimators": [50, 100],
+        "learning_rate": [0.05, 0.1],
+    },
+}
+
+ML_MODEL_EVALUATION_REQUEST_EXAMPLE = {
+    "model_name": "a_share_lgbm_v1",
+    "stock_code": "000001",
+    "market": "sh",
+}
 
 
 def _success_response_spec(status_code: int, description: str, example: object) -> dict[int, dict]:
@@ -168,7 +213,10 @@ def _build_ml_service() -> "MLPredictionService":
 
 
 @router.post("/tdx/data", response_model=TdxDataResponse)
-async def get_tdx_data(request: TdxDataRequest, current_user: User = Depends(get_current_user)):
+async def get_tdx_data(
+    request: TdxDataRequest = Body(..., example=ML_TDX_DATA_REQUEST_EXAMPLE),
+    current_user: User = Depends(get_current_user),
+):
     """
     获取通达信股票数据
 
@@ -199,7 +247,10 @@ async def get_tdx_data(request: TdxDataRequest, current_user: User = Depends(get
 
 
 @router.get("/tdx/stocks/{market}", response_model=List[str])
-async def list_tdx_stocks(market: str, current_user: User = Depends(get_current_user)):
+async def list_tdx_stocks(
+    market: str = Path(..., description=ML_MARKET_PATH_DESCRIPTION),
+    current_user: User = Depends(get_current_user),
+):
     """
     列出可用的股票代码
 
@@ -216,7 +267,10 @@ async def list_tdx_stocks(market: str, current_user: User = Depends(get_current_
 
 
 @router.post("/features/generate", response_model=FeatureGenerationResponse)
-async def generate_features(request: FeatureGenerationRequest, current_user: User = Depends(get_current_user)):
+async def generate_features(
+    request: FeatureGenerationRequest = Body(..., example=ML_FEATURE_GENERATION_REQUEST_EXAMPLE),
+    current_user: User = Depends(get_current_user),
+):
     """
     生成特征数据
 
@@ -258,7 +312,10 @@ async def generate_features(request: FeatureGenerationRequest, current_user: Use
 
 
 @router.post("/models/train", response_model=ModelTrainResponse)
-async def train_model(request: ModelTrainRequest, current_user: User = Depends(get_current_user)):
+async def train_model(
+    request: ModelTrainRequest = Body(..., example=ML_MODEL_TRAIN_REQUEST_EXAMPLE),
+    current_user: User = Depends(get_current_user),
+):
     """
     训练预测模型
 
@@ -306,7 +363,10 @@ async def train_model(request: ModelTrainRequest, current_user: User = Depends(g
 
 
 @router.post("/models/predict", response_model=ModelPredictResponse)
-async def predict_with_model(request: ModelPredictRequest, current_user: User = Depends(get_current_user)):
+async def predict_with_model(
+    request: ModelPredictRequest = Body(..., example=ML_MODEL_PREDICT_REQUEST_EXAMPLE),
+    current_user: User = Depends(get_current_user),
+):
     """
     使用模型进行预测
 
@@ -432,7 +492,10 @@ async def get_model_detail(
 
 
 @router.post("/models/hyperparameter-search", response_model=HyperparameterSearchResponse)
-async def hyperparameter_search(request: HyperparameterSearchRequest, current_user: User = Depends(get_current_user)):
+async def hyperparameter_search(
+    request: HyperparameterSearchRequest = Body(..., example=ML_HYPERPARAMETER_SEARCH_REQUEST_EXAMPLE),
+    current_user: User = Depends(get_current_user),
+):
     """
     超参数搜索
 
@@ -478,7 +541,10 @@ async def hyperparameter_search(request: HyperparameterSearchRequest, current_us
 
 
 @router.post("/models/evaluate", response_model=ModelEvaluationResponse)
-async def evaluate_model(request: ModelEvaluationRequest, current_user: User = Depends(get_current_user)):
+async def evaluate_model(
+    request: ModelEvaluationRequest = Body(..., example=ML_MODEL_EVALUATION_REQUEST_EXAMPLE),
+    current_user: User = Depends(get_current_user),
+):
     """
     评估模型性能
 

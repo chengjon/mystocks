@@ -119,7 +119,7 @@ TDX_HEALTH_RESPONSES = {
     description="查询指定股票的实时行情数据,包括最新价、涨跌幅、成交量、五档行情等",
 )
 async def get_stock_quote(
-    symbol: str,
+    symbol: str = Path(..., description="6 位数字股票代码，例如 600519。"),
     current_user: User = Depends(get_current_active_user),
     service: TdxService = Depends(get_tdx_service),
 ):
@@ -312,7 +312,7 @@ async def get_index_quote(
     "/index/kline",
     response_model=KlineResponse,
     summary="获取指数K线数据",
-    description="查询指数历史K线数据,支持多种周期",
+    description="查询指数历史K线数据，支持分钟级到日线周期，并允许按日期区间筛选用于指数回溯分析。",
 )
 async def get_index_kline(
     symbol: str = Query(..., description="指数代码(6位数字)"),

@@ -373,7 +373,7 @@ async def performance_metrics(current_user: User = Depends(get_current_user)) ->
 # ==================== 管理员级别端点（需要管理员权限）====================
 
 
-@router.get("/metrics")
+@router.get("/metrics", responses=METRICS_ENDPOINT_ERROR_RESPONSE)
 async def prometheus_metrics(current_user: User = Depends(get_current_user)) -> Response:
     """
     Prometheus metrics端点
