@@ -930,6 +930,9 @@ def test_market_health_and_refresh_endpoints_have_docs_examples_and_error_respon
 
     endpoint_expectations = {
         ("/api/v1/market/health", "get"): set(),
+        ("/api/v1/market/etf/refresh", "post"): set(),
+        ("/api/v1/market/chip-race", "get"): {"race_type", "trade_date", "min_race_amount", "limit"},
+        ("/api/v1/market/lhb", "get"): {"symbol", "start_date", "end_date", "min_net_amount", "limit"},
         ("/api/v2/market/etf/refresh", "post"): set(),
         ("/api/v2/market/lhb/refresh", "post"): {"trade_date"},
         ("/api/v2/market/sector/fund-flow/refresh", "post"): {"sector_type", "timeframe"},

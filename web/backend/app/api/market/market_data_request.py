@@ -43,6 +43,107 @@ router.include_router(market_health_router)
 logger = logging.getLogger(__name__)
 
 
+def _success_response_spec(description: str, example: object) -> dict[int, dict]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+def _error_response_spec(status_code: int, description: str, example: dict) -> dict[int, dict]:
+    return {
+        status_code: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+ETF_REFRESH_RESPONSES = {
+    **_error_response_spec(
+        400,
+        "ETF 数据刷新失败",
+        {"detail": "ETF数据源不可用", "error_code": "MARKET_OPERATION_FAILED"},
+    ),
+    **_error_response_spec(
+        500,
+        "ETF 数据刷新过程中发生内部错误",
+        {"detail": "刷新ETF数据时发生错误", "error_code": "INTERNAL_SERVER_ERROR"},
+    ),
+    **_success_response_spec(
+        "ETF 数据刷新成功",
+        {"success": True, "message": "ETF实时数据刷新成功", "data": {"source": "akshare", "refreshed": True}},
+    ),
+}
+
+CHIP_RACE_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "竞价抢筹查询失败",
+        {"detail": "竞价抢筹服务不可用", "error_code": "MARKET_SERVICE_ERROR"},
+    ),
+    **_success_response_spec(
+        "竞价抢筹数据列表",
+        [
+            {
+                "id": 1,
+                "symbol": "600519",
+                "name": "贵州茅台",
+                "trade_date": "2026-04-03",
+                "race_type": "open",
+                "latest_price": 1688.0,
+                "change_percent": 1.86,
+                "prev_close": 1657.2,
+                "open_price": 1668.0,
+                "race_amount": 58000000.0,
+                "race_amplitude": 3.2,
+                "race_commission": 72000000.0,
+                "race_transaction": 58000000.0,
+                "race_ratio": 12.4,
+                "created_at": "2026-04-03T09:30:00",
+            }
+        ],
+    ),
+}
+
+LHB_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "龙虎榜查询失败",
+        {"detail": "龙虎榜服务不可用", "error_code": "MARKET_SERVICE_ERROR"},
+    ),
+    **_success_response_spec(
+        "龙虎榜数据列表",
+        [
+            {
+                "id": 1,
+                "symbol": "002594",
+                "name": "比亚迪",
+                "trade_date": "2026-04-03",
+                "reason": "日涨幅偏离值达7%",
+                "buy_amount": 325000000.0,
+                "sell_amount": 186000000.0,
+                "net_amount": 139000000.0,
+                "turnover_rate": 8.6,
+                "institution_buy": 98000000.0,
+                "institution_sell": 42000000.0,
+                "created_at": "2026-04-03T16:05:00",
+            }
+        ],
+    ),
+}
+
+
 @router.get("/fund-flow", summary="查询资金流向")
 @cache_response("fund_flow", ttl=300)  # 🚀 添加5分钟缓存
 async def get_fund_flow(
@@ -235,7 +336,13 @@ async def get_etf_list(
         )
 
 
-@router.post("/etf/refresh", response_model=MessageResponse, summary="刷新ETF数据")
+@router.post(
+    "/etf/refresh",
+    response_model=MessageResponse,
+    summary="刷新ETF数据",
+    description="刷新全市场 ETF 实时行情数据，用于 A 股 ETF 行情同步和后续查询缓存预热。",
+    responses=ETF_REFRESH_RESPONSES,
+)
 async def refresh_etf_data(
     service: MarketDataService = Depends(get_market_data_service),
 ):
@@ -253,13 +360,19 @@ async def refresh_etf_data(
     return MessageResponse(**result)
 
 
-@router.get("/chip-race", response_model=List[ChipRaceResponse], summary="查询竞价抢筹")
+@router.get(
+    "/chip-race",
+    response_model=List[ChipRaceResponse],
+    summary="查询竞价抢筹",
+    description="查询竞价抢筹数据，支持按类型、日期、金额门槛和返回数量过滤，用于盘前盘后抢筹监控。",
+    responses=CHIP_RACE_RESPONSES,
+)
 @cache_response("chip_race", ttl=300)  # 🚀 添加5分钟缓存
 async def get_chip_race(
     race_type: str = Query(default="open", description="抢筹类型: open/end"),
     trade_date: Optional[date] = Query(None, description="交易日期"),
     min_race_amount: Optional[float] = Query(None, ge=0, description="最小抢筹金额"),
-    limit: int = Query(default=100, ge=1, le=500),
+    limit: int = Query(default=100, ge=1, le=500, description="返回记录数限制"),
     service: MarketDataService = Depends(get_market_data_service),
 ):
     """
@@ -301,14 +414,20 @@ async def refresh_chip_race(
     return MessageResponse(**result)
 
 
-@router.get("/lhb", response_model=List[LongHuBangResponse], summary="查询龙虎榜")
+@router.get(
+    "/lhb",
+    response_model=List[LongHuBangResponse],
+    summary="查询龙虎榜",
+    description="查询龙虎榜明细数据，支持股票、日期区间、净买入额和返回数量过滤，用于异动席位分析。",
+    responses=LHB_RESPONSES,
+)
 @cache_response("lhb", ttl=86400)  # 🚀 添加24小时缓存（龙虎榜每日发布）
 async def get_lhb_detail(
     symbol: Optional[str] = Query(None, description="股票代码"),
     start_date: Optional[date] = Query(None, description="开始日期"),
     end_date: Optional[date] = Query(None, description="结束日期"),
     min_net_amount: Optional[float] = Query(None, description="最小净买入额"),
-    limit: int = Query(default=100, ge=1, le=500),
+    limit: int = Query(default=100, ge=1, le=500, description="返回记录数限制"),
     service: MarketDataService = Depends(get_market_data_service),
 ):
     """
