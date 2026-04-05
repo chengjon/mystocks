@@ -215,9 +215,11 @@
   - `src/views/risk/Overview.vue` and `src/views/risk/Alerts.vue` have been inverted from placeholder pages into compatibility wrappers around the current ArtDeco implementations.
   - The `ArtDecoPageTemplate.vue` dependency chain remains preserved through `ArtDecoRiskManagement.vue`.
   - `risk-pnl` remains outside this micro-batch and still points to `PortfolioOverviewTab.vue` in current repo truth.
-- [ ] 9.1 Verify `ArtDecoPageTemplate.vue` is retained (not deleted)
-  - [ ] 9.1.1 Check that `src/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue` exists
-  - [ ] 9.1.2 Verify `ArtDecoRiskManagement.vue` imports it correctly
+- [x] 9.1 Verify `ArtDecoPageTemplate.vue` is retained (not deleted)
+  - Completed: 2026-04-05 via verification batch `2026-04-05-verify-risk-template-retention-main`.
+  - Result: `src/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue` remains present, and `ArtDecoRiskManagement.vue` still imports it through `./_templates/ArtDecoPageTemplate.vue` in current repo truth.
+  - [x] 9.1.1 Check that `src/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue` exists
+  - [x] 9.1.2 Verify `ArtDecoRiskManagement.vue` imports it correctly
 - [ ] 9.2 Move `artdeco-pages/ArtDecoRiskManagement.vue` → `views/risk/Center.vue`
   - [ ] 9.2.1 Move dependency: `useRisk.ts`
   - [ ] 9.2.2 Update imports (including template import)
