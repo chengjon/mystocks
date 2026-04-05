@@ -13,7 +13,7 @@ mainline:
   slice_id: "L4-api-file-tests-contract-batch1"
 
 classification:
-  task_type: "test"
+  task_type: "cleanup"
   secondary_type: "none"
   secondary_change_budget_percent: 0
   secondary_allowed_paths: []
@@ -23,11 +23,11 @@ openspec:
   approval_status: "not_required"
 
 function_tree:
-  domain_id: "backend-api-contracts"
-  node_id: "backend-api-file-tests"
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
   affected_entrypoints:
     - "tests"
-    - "backend"
+    - "api"
   update_status: "not-needed"
   secondary_domains: []
   exemption_reason: "localized-test-hardening-slice-without-application-code-changes"
