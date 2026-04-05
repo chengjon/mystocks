@@ -1,9 +1,38 @@
-// @ts-nocheck
-
-import { dataApi, realtimeService } from '@/api/index.ts'
+import { dataApi } from '@/api/index.ts'
 
 import type { CachedData, DataRoute } from './TradingApiManager.types.ts'
 import { DataClassification } from './TradingApiManager.types.ts'
+
+type SaveBatchDataOptions = {
+  database: 'tdengine' | 'postgresql'
+  useExecuteValues?: boolean
+  compression?: boolean
+  useUpsert?: boolean
+  conflictColumns?: string[]
+  updateColumns?: string[]
+}
+
+type SaveBatchDataResult = { success: boolean }
+type DataApiCompat = typeof dataApi & {
+  saveBatchData?: (table: string, data: unknown, options: SaveBatchDataOptions) => Promise<SaveBatchDataResult>
+  queryTimeSeries?: (table: string, filters: unknown) => Promise<unknown>
+  queryRelational?: (table: string, filters: unknown) => Promise<unknown>
+}
+
+const dataApiCompat = dataApi as DataApiCompat
+
+const realtimeService = {
+  connect(channel: string, _callback: Function): void {
+    console.warn(`[TradingApiManager.data-flow] realtimeService unavailable for channel: ${channel}`)
+  },
+  disconnect(_channel: string): void {
+    // No-op fallback while realtime service is absent from the current API surface.
+  },
+}
+
+function isRecordArray(data: unknown): data is Array<Record<string, unknown>> {
+  return Array.isArray(data) && data.every((item) => typeof item === 'object' && item !== null)
+}
 
 export class DataFlowManager {
   private cache = new Map<string, CachedData>()
@@ -79,7 +108,12 @@ export class DataFlowManager {
   }
 
   private async saveToTDengine(data: unknown, table: string): Promise<boolean> {
-    const result = await dataApi.saveBatchData(table, data, {
+    if (!dataApiCompat.saveBatchData) {
+      console.warn(`[TradingApiManager.data-flow] saveBatchData unavailable for TDengine table: ${table}`)
+      return false
+    }
+
+    const result = await dataApiCompat.saveBatchData(table, data, {
       database: 'tdengine',
       useExecuteValues: true,
       compression: true
@@ -89,22 +123,41 @@ export class DataFlowManager {
   }
 
   private async saveToPostgreSQL(data: unknown, table: string): Promise<boolean> {
-    const result = await dataApi.saveBatchData(table, data, {
+    if (!dataApiCompat.saveBatchData) {
+      console.warn(`[TradingApiManager.data-flow] saveBatchData unavailable for PostgreSQL table: ${table}`)
+      return false
+    }
+
+    const updateColumns = isRecordArray(data)
+      ? Object.keys(data[0] ?? {}).filter((key) => key !== 'id')
+      : []
+
+    const result = await dataApiCompat.saveBatchData(table, data, {
       database: 'postgresql',
       useUpsert: true,
       conflictColumns: ['id'],
-      updateColumns: Object.keys(data[0] || {}).filter(key => key !== 'id')
+      updateColumns
     })
 
     return result.success
   }
 
   private async loadFromTDengine(table: string, filters: unknown): Promise<unknown> {
-    return await dataApi.queryTimeSeries(table, filters)
+    if (!dataApiCompat.queryTimeSeries) {
+      console.warn(`[TradingApiManager.data-flow] queryTimeSeries unavailable for table: ${table}`)
+      return []
+    }
+
+    return await dataApiCompat.queryTimeSeries(table, filters)
   }
 
   private async loadFromPostgreSQL(table: string, filters: unknown): Promise<unknown> {
-    return await dataApi.queryRelational(table, filters)
+    if (!dataApiCompat.queryRelational) {
+      console.warn(`[TradingApiManager.data-flow] queryRelational unavailable for table: ${table}`)
+      return []
+    }
+
+    return await dataApiCompat.queryRelational(table, filters)
   }
 
   private isExpired(cached: CachedData): boolean {
