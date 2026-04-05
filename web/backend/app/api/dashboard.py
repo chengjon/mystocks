@@ -42,6 +42,20 @@ logger = logging.getLogger(__name__)
 _cache_manager: Optional[CacheManager] = None
 _cache_manager_initialized: Optional[bool] = None
 
+DASHBOARD_HEALTH_RESPONSE_EXAMPLE = {
+    "success": True,
+    "message": "服务dashboard状态检查",
+    "data": {
+        "status": "healthy",
+        "service": "dashboard",
+        "timestamp": "2026-04-05T12:00:00Z",
+        "data_source": {"status": "healthy", "latency_ms": 18},
+        "real_api": "enabled",
+        "database_connections": {"postgresql": "connected", "tdengine": "connected"},
+    },
+    "request_id": "req-dashboard-health-001",
+}
+
 
 async def get_cache_manager() -> CacheManager:
     """获取或初始化缓存管理器（单例模式，支持Redis注入）"""
@@ -228,7 +242,18 @@ async def get_market_overview(
         raise HTTPException(status_code=500, detail=f"获取市场概览失败: {str(e)}")
 
 
-@router.get("/health", summary="仪表盘健康检查", description="检查仪表盘服务和数据源的健康状态", tags=["health"])
+@router.get(
+    "/health",
+    summary="仪表盘健康检查",
+    description="检查仪表盘服务、真实数据源与数据库连接状态，供前端健康面板和运维探针统一消费。",
+    tags=["health"],
+    responses={
+        200: {
+            "description": "仪表盘服务与依赖组件健康状态",
+            "content": {"application/json": {"example": DASHBOARD_HEALTH_RESPONSE_EXAMPLE}},
+        }
+    },
+)
 async def health_check(request: Request, data_source=Depends(get_data_source)):
     """
     检查仪表盘服务及其依赖组件的健康状态

@@ -53,6 +53,26 @@ SYSTEM_SERVICES_HEALTH_ERROR_RESPONSE_EXAMPLE = {
     "request_id": "demo-request-id",
 }
 
+DETAILED_HEALTH_RESPONSE_EXAMPLE = {
+    "success": True,
+    "code": 200,
+    "message": "详细健康检查完成",
+    "data": {
+        "status": "success",
+        "output": "[OK] backend: running\n[OK] frontend: running\n",
+        "error": "",
+    },
+    "request_id": "req-health-detailed-001",
+}
+
+DETAILED_HEALTH_ERROR_RESPONSE_EXAMPLE = {
+    "success": False,
+    "code": 500,
+    "message": "详细健康检查失败: 健康检查脚本不存在: /opt/claude/mystocks_spec/scripts/dev/automation/health_check_simple.sh",
+    "error_code": "HEALTH_CHECK_FAILED",
+    "request_id": "req-health-detailed-001",
+}
+
 
 class HealthStatus(BaseModel):
     """健康检查状态响应模型"""
@@ -407,7 +427,21 @@ async def generate_health_report(services: Dict[str, HealthStatus]) -> Optional[
         return None
 
 
-@router.get("/health/detailed")
+@router.get(
+    "/health/detailed",
+    summary="详细健康检查",
+    description="执行详细健康检查脚本并返回组件级输出，用于运维排障、发布验收和环境巡检。",
+    responses={
+        200: {
+            "description": "详细健康检查执行完成",
+            "content": {"application/json": {"example": DETAILED_HEALTH_RESPONSE_EXAMPLE}},
+        },
+        500: {
+            "description": "详细健康检查执行失败",
+            "content": {"application/json": {"example": DETAILED_HEALTH_ERROR_RESPONSE_EXAMPLE}},
+        },
+    },
+)
 async def detailed_health_check(current_user: User = Depends(get_current_user)):
     """
     详细健康检查

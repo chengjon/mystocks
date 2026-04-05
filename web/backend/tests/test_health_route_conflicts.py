@@ -1409,19 +1409,34 @@ def test_auth_support_endpoints_have_docs_examples_and_error_responses() -> None
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
-def test_auth_login_endpoint_has_form_example_and_error_docs() -> None:
+def test_auth_login_endpoints_have_form_example_and_error_docs() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
-    operation = schema["paths"]["/api/v1/auth/login"]["post"]
-    form_content = operation["requestBody"]["content"]["application/x-www-form-urlencoded"]
-    success_json = operation["responses"]["200"]["content"]["application/json"]
+    for path in ["/api/v1/auth/login", "/api/auth/login"]:
+        operation = schema["paths"][path]["post"]
+        form_content = operation["requestBody"]["content"]["application/x-www-form-urlencoded"]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
 
-    assert operation.get("summary")
-    assert len(operation.get("description", "")) >= 20
-    assert "example" in form_content or "examples" in form_content
-    assert "example" in success_json or "examples" in success_json
-    assert any(code.startswith(("4", "5")) for code in operation["responses"])
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        assert "example" in form_content or "examples" in form_content
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
+def test_operational_health_endpoints_have_descriptions_and_error_docs() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    detailed_operation = schema["paths"]["/api/health/detailed"]["get"]
+    dashboard_operation = schema["paths"]["/api/dashboard/health"]["get"]
+
+    assert len(detailed_operation.get("description", "")) >= 20
+    assert any(code.startswith("5") for code in detailed_operation["responses"])
+
+    assert len(dashboard_operation.get("description", "")) >= 20
+    assert any(code.startswith(("4", "5")) for code in dashboard_operation["responses"])
 
 
 def test_monitoring_alert_management_endpoints_have_docs_examples_and_error_responses() -> None:
