@@ -59,140 +59,146 @@ const currentComponent = computed(() => {
 </script>
 
 <style scoped lang="scss">
+@use '../../styles/artdeco-tokens.scss' as *;
 
 .pyprofiling-demo {
-  padding: 20px;
   min-height: 100vh;
-  background: var(--bg-primary);
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgb(212 175 55 / 2%) 10px, rgb(212 175 55 / 2%) 11px);
+  padding: var(--artdeco-spacing-6);
+  position: relative;
+  background: var(--artdeco-bg-global);
+  background-image:
+    linear-gradient(180deg, color-mix(in srgb, var(--artdeco-gold-primary) 6%, transparent), transparent 40%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent var(--artdeco-spacing-5),
+      var(--artdeco-gold-opacity-05) var(--artdeco-spacing-5),
+      var(--artdeco-gold-opacity-05) calc(var(--artdeco-spacing-5) + var(--artdeco-spacing-px))
+    );
 }
 
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 4%;
-  background-image:
-    repeating-linear-gradient(45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px),
-    repeating-linear-gradient(-45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px);
+.page-header,
+.main-card {
+  position: relative;
+  z-index: 1;
+}
 
 .page-header {
   text-align: center;
-  margin-bottom: 30px;
-  padding: 30px 0;
-  position: relative;
+  margin-bottom: var(--artdeco-spacing-8);
 
   .page-title {
-    font-family: var(--font-display);
-    font-size: 32px;
-    color: var(--gold-primary);
+    margin: 0 0 var(--artdeco-spacing-2) 0;
+    color: var(--artdeco-gold-primary);
+    font-family: var(--artdeco-font-heading, var(--font-display));
+    font-size: var(--artdeco-text-3xl);
+    font-weight: var(--artdeco-font-semibold);
+    letter-spacing: var(--artdeco-tracking-widest);
     text-transform: uppercase;
-    letter-spacing: 4px;
-    margin: 0 0 8px 0;
   }
 
   .page-subtitle {
-    font-family: var(--font-body);
-    font-size: 12px;
-    color: var(--gold-muted);
-    letter-spacing: 3px;
-    text-transform: uppercase;
     margin: 0;
+    color: var(--artdeco-fg-muted);
+    font-family: var(--artdeco-font-body, var(--font-body));
+    font-size: var(--artdeco-text-xs);
+    letter-spacing: var(--artdeco-tracking-wider);
+    text-transform: uppercase;
   }
 
   .decorative-line {
-    width: 200px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
-    margin: 20px auto 0;
+    width: calc(var(--artdeco-spacing-20) * 2);
+    height: calc(var(--artdeco-spacing-px) * 2);
+    margin: var(--artdeco-spacing-5) auto 0;
+    position: relative;
+    background: linear-gradient(90deg, transparent, var(--artdeco-gold-primary), transparent);
 
     &::before {
       content: '';
       position: absolute;
-      bottom: -6px;
+      bottom: calc(var(--artdeco-spacing-2) * -1);
       left: 50%;
       transform: translateX(-50%);
-      width: 60px;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold-muted), transparent);
+      width: calc(var(--artdeco-spacing-20) - var(--artdeco-spacing-5));
+      height: var(--artdeco-spacing-px);
+      background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--artdeco-gold-primary) 50%, transparent), transparent);
     }
   }
 }
 
 .main-card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--gold-dim);
-  position: relative;
-  border-radius: 0;
-  padding: 20px;
-  z-index: 1;
+  padding: var(--artdeco-spacing-5);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 4%, var(--artdeco-bg-card));
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none);
+  box-shadow: var(--artdeco-shadow-md);
 
   &::before,
   &::after {
     content: '';
     position: absolute;
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--gold-primary);
+    width: var(--artdeco-spacing-4);
+    height: var(--artdeco-spacing-4);
+    border: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-gold-primary);
   }
 
   &::before {
-    top: 12px;
-    left: 12px;
+    top: var(--artdeco-spacing-3);
+    left: var(--artdeco-spacing-3);
     border-right: none;
     border-bottom: none;
   }
 
   &::after {
-    bottom: 12px;
-    right: 12px;
-    border-left: none;
+    right: var(--artdeco-spacing-3);
+    bottom: var(--artdeco-spacing-3);
     border-top: none;
+    border-left: none;
   }
 }
 
 .tabs-container {
   display: flex;
-  gap: 4px;
-  margin-bottom: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--gold-dim);
+  gap: var(--artdeco-spacing-1);
+  margin-bottom: var(--artdeco-spacing-5);
+  padding-bottom: var(--artdeco-spacing-5);
+  border-bottom: 1px solid var(--artdeco-gold-dim);
   flex-wrap: wrap;
 }
 
 .tab-button {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
+  gap: var(--artdeco-spacing-2);
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-5);
   background: transparent;
-  border: 1px solid var(--gold-dim);
-  color: var(--text-muted);
-  font-family: var(--font-display);
-  font-size: 12px;
+  border: 1px solid var(--artdeco-gold-dim);
+  color: var(--artdeco-fg-muted);
+  font-family: var(--artdeco-font-heading, var(--font-display));
+  font-size: var(--artdeco-text-xs);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: var(--artdeco-spacing-px);
   cursor: pointer;
-  border-radius: 0;
-  transition: all 0.3s ease;
+  border-radius: var(--artdeco-radius-none);
+  transition:
+    color var(--artdeco-transition-quick) var(--artdeco-ease-out),
+    border-color var(--artdeco-transition-quick) var(--artdeco-ease-out),
+    background var(--artdeco-transition-quick) var(--artdeco-ease-out);
 
   .tab-icon {
-    font-size: 14px;
+    font-size: var(--artdeco-text-sm);
   }
 
   &:hover {
-    color: var(--gold-primary);
-    border-color: var(--gold-primary);
-    background: rgb(212 175 55 / 5%);
+    color: var(--artdeco-gold-primary);
+    border-color: var(--artdeco-gold-primary);
+    background: color-mix(in srgb, var(--artdeco-gold-primary) 5%, transparent);
   }
 
   &.active {
-    color: var(--bg-primary);
-    background: var(--gold-primary);
-    border-color: var(--gold-primary);
+    color: var(--artdeco-bg-global);
+    background: var(--artdeco-gold-primary);
+    border-color: var(--artdeco-gold-primary);
   }
 }
 
@@ -201,27 +207,25 @@ const currentComponent = computed(() => {
   z-index: 1;
 }
 
-@media (width <= 768px) {
+@media (width <= 48rem) {
   .pyprofiling-demo {
-    padding: 10px;
+    padding: var(--artdeco-spacing-4);
   }
 
   .page-header {
-    padding: 20px 0;
-
     .page-title {
-      font-size: 24px;
-      letter-spacing: 2px;
+      font-size: var(--artdeco-text-2xl);
+      letter-spacing: calc(var(--artdeco-spacing-px) * 2);
     }
 
     .page-subtitle {
-      font-size: 10px;
-      letter-spacing: 2px;
+      font-size: calc(var(--artdeco-text-xs) - var(--artdeco-spacing-px));
+      letter-spacing: calc(var(--artdeco-spacing-px) * 2);
     }
   }
 
   .main-card {
-    padding: 15px;
+    padding: calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
   }
 
   .tabs-container {
