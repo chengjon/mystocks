@@ -203,6 +203,214 @@ ALERT_MARK_ALL_READ_RESPONSES = {
     ),
 }
 
+REALTIME_MONITORING_DETAIL_RESPONSES = {
+    **_error_response_spec(
+        404,
+        "未找到指定股票的实时监控数据",
+        {"detail": "未找到股票监控数据: 查询条件", "error_code": "RESOURCE_NOT_FOUND"},
+    ),
+    **_error_response_spec(
+        500,
+        "获取实时监控数据失败",
+        {"detail": "监控服务不可用", "error_code": "MONITORING_OPERATION_FAILED"},
+    ),
+    **_success_response_spec(
+        200,
+        "单只股票的最新实时监控数据",
+        {
+            "id": 3101,
+            "symbol": "600519",
+            "stock_name": "贵州茅台",
+            "timestamp": "2026-04-05T14:30:00",
+            "trade_date": "2026-04-05",
+            "price": 1718.5,
+            "change_percent": 2.31,
+            "volume": 328700,
+            "amount": 564321000.0,
+            "indicators": {"macd": 1.25, "rsi": 63.4},
+            "market_strength": "strong",
+            "is_limit_up": False,
+            "is_limit_down": False,
+        },
+    ),
+}
+
+REALTIME_MONITORING_LIST_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "获取实时监控列表失败",
+        {"detail": "监控服务不可用", "error_code": "MONITORING_OPERATION_FAILED"},
+    ),
+    **_success_response_spec(
+        200,
+        "实时监控数据列表",
+        [
+            {
+                "id": 3101,
+                "symbol": "600519",
+                "stock_name": "贵州茅台",
+                "timestamp": "2026-04-05T14:30:00",
+                "trade_date": "2026-04-05",
+                "price": 1718.5,
+                "change_percent": 2.31,
+                "volume": 328700,
+                "amount": 564321000.0,
+                "indicators": {"macd": 1.25, "rsi": 63.4},
+                "market_strength": "strong",
+                "is_limit_up": False,
+                "is_limit_down": False,
+            },
+            {
+                "id": 3102,
+                "symbol": "000001",
+                "stock_name": "平安银行",
+                "timestamp": "2026-04-05T14:30:00",
+                "trade_date": "2026-04-05",
+                "price": 12.86,
+                "change_percent": -0.72,
+                "volume": 512600,
+                "amount": 65910400.0,
+                "indicators": {"macd": -0.12, "rsi": 46.1},
+                "market_strength": "neutral",
+                "is_limit_up": False,
+                "is_limit_down": False,
+            },
+        ],
+    ),
+}
+
+FETCH_REALTIME_DATA_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "触发实时数据抓取失败",
+        {"detail": "监控服务不可用", "error_code": "MONITORING_OPERATION_FAILED"},
+    ),
+    **_success_response_spec(
+        200,
+        "实时数据抓取任务执行结果",
+        {
+            "success": True,
+            "message": "实时数据获取成功",
+            "data": {"stocks_count": 3, "saved_count": 3, "alerts_triggered": 1},
+        },
+    ),
+}
+
+FETCH_DRAGON_TIGER_DATA_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "触发龙虎榜数据抓取失败",
+        {"detail": "监控服务不可用", "error_code": "MONITORING_OPERATION_FAILED"},
+    ),
+    **_success_response_spec(
+        200,
+        "龙虎榜数据抓取结果",
+        {
+            "success": True,
+            "message": "龙虎榜数据获取成功",
+            "data": {"trade_date": "2026-04-05", "count": 12},
+        },
+    ),
+}
+
+MONITORING_SUMMARY_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "获取监控摘要失败",
+        {"detail": "监控服务不可用", "error_code": "MONITORING_OPERATION_FAILED"},
+    ),
+    **_success_response_spec(
+        200,
+        "监控摘要信息",
+        {
+            "total_stocks": 1568,
+            "limit_up_count": 23,
+            "limit_down_count": 5,
+            "strong_up_count": 127,
+            "strong_down_count": 89,
+            "avg_change_percent": 0.85,
+            "total_amount": 2456789000.0,
+            "active_alerts": 12,
+            "unread_alerts": 5,
+        },
+    ),
+}
+
+TODAY_STATS_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "获取今日监控统计失败",
+        {"detail": "监控服务不可用", "error_code": "MONITORING_OPERATION_FAILED"},
+    ),
+    **_success_response_spec(
+        200,
+        "今日监控统计结果",
+        {
+            "success": True,
+            "data": {
+                "alerts_summary": [{"alert_level": "warning", "alert_count": 8}],
+                "active_rules": [{"id": 9001, "rule_name": "核心仓位跌破止损线", "priority": 5}],
+                "realtime_summary": {
+                    "total_stocks": 1568,
+                    "limit_up_count": 23,
+                    "limit_down_count": 5,
+                    "active_alerts": 12,
+                },
+            },
+        },
+    ),
+}
+
+START_MONITORING_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "启动监控失败",
+        {"detail": "监控服务不可用", "error_code": "MONITORING_OPERATION_FAILED"},
+    ),
+    **_success_response_spec(
+        200,
+        "监控启动请求已受理",
+        {
+            "success": True,
+            "message": "监控启动功能开发中",
+            "data": {"symbols": ["600519", "000001"], "interval": 30},
+        },
+    ),
+}
+
+STOP_MONITORING_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "停止监控失败",
+        {"detail": "监控服务不可用", "error_code": "MONITORING_OPERATION_FAILED"},
+    ),
+    **_success_response_spec(
+        200,
+        "监控已停止",
+        {"success": True, "message": "监控已停止"},
+    ),
+}
+
+MONITORING_STATUS_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "获取监控运行状态失败",
+        {"detail": "监控服务不可用", "error_code": "MONITORING_OPERATION_FAILED"},
+    ),
+    **_success_response_spec(
+        200,
+        "监控运行状态",
+        {
+            "success": True,
+            "data": {
+                "is_monitoring": True,
+                "monitored_symbols": ["600519", "000001", "601318"],
+                "monitored_count": 3,
+            },
+        },
+    ),
+}
+
 
 def _runtime_fallback_enabled() -> bool:
     return (
@@ -569,8 +777,17 @@ async def mark_all_alerts_read(current_user: User = Depends(get_current_user)):
 # ============================================================================
 
 
-@router.get("/realtime/{symbol}", response_model=RealtimeMonitoringResponse)
-async def get_realtime_monitoring(symbol: str, current_user: User = Depends(get_current_user)):
+@router.get(
+    "/realtime/{symbol}",
+    response_model=RealtimeMonitoringResponse,
+    summary="获取单只股票实时监控数据",
+    description="查询指定股票的最新实时监控快照，返回行情、指标和涨跌停状态等监控字段。",
+    responses=REALTIME_MONITORING_DETAIL_RESPONSES,
+)
+async def get_realtime_monitoring(
+    symbol: str = Path(..., description="待查询的股票代码，例如 600519。"),
+    current_user: User = Depends(get_current_user),
+):
     """
     获取单只股票的最新实时监控数据
 
@@ -604,12 +821,18 @@ async def get_realtime_monitoring(symbol: str, current_user: User = Depends(get_
         raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
-@router.get("/realtime", response_model=List[RealtimeMonitoringResponse])
+@router.get(
+    "/realtime",
+    response_model=List[RealtimeMonitoringResponse],
+    summary="获取实时监控数据列表",
+    description="批量查询当日实时监控记录，支持按股票列表、涨停状态和跌停状态筛选。",
+    responses=REALTIME_MONITORING_LIST_RESPONSES,
+)
 async def get_realtime_monitoring_list(
-    symbols: Optional[str] = Query(None, description="逗号分隔的股票代码列表"),
-    limit: int = Query(100, ge=1, le=1000),
-    is_limit_up: Optional[bool] = None,
-    is_limit_down: Optional[bool] = None,
+    symbols: Optional[str] = Query(None, description="逗号分隔的股票代码列表，例如 600519,000001。"),
+    limit: int = Query(100, ge=1, le=1000, description="返回的最新实时监控记录上限。"),
+    is_limit_up: Optional[bool] = Query(None, description="是否仅返回涨停股票，true 表示只保留涨停记录。"),
+    is_limit_down: Optional[bool] = Query(None, description="是否仅返回跌停股票，true 表示只保留跌停记录。"),
     current_user: User = Depends(get_current_user),
 ):
     """
@@ -655,19 +878,29 @@ async def get_realtime_monitoring_list(
         raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
-@router.post("/realtime/fetch")
-async def fetch_realtime_data(symbols: Optional[List[str]] = None, current_user: User = Depends(get_current_user)):
+@router.post(
+    "/realtime/fetch",
+    summary="手动触发实时行情抓取",
+    description="手动刷新实时监控行情数据，可按股票代码列表定向抓取并同步评估告警规则。",
+    responses=FETCH_REALTIME_DATA_RESPONSES,
+)
+async def fetch_realtime_data(
+    symbols: Optional[List[str]] = Body(
+        default=None,
+        description="需要立即刷新的股票代码数组；为空时抓取当前监控范围内的全量实时数据。",
+        example=["600519", "000001", "601318"],
+    ),
+    current_user: User = Depends(get_current_user),
+):
     """
     手动触发获取实时数据
 
     参数:
     - symbols: 股票代码列表 (可选，不提供则获取全市场)
 
-    示例:
+    请求体示例:
     ```json
-    {
-      "symbols": ["600519", "000001", "600000"]
-    }
+    ["600519", "000001", "601318"]
     ```
     """
     try:
@@ -745,8 +978,16 @@ async def get_dragon_tiger_list(
         raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
-@router.post("/dragon-tiger/fetch")
-async def fetch_dragon_tiger_data(trade_date: Optional[date] = None, current_user: User = Depends(get_current_user)):
+@router.post(
+    "/dragon-tiger/fetch",
+    summary="手动触发龙虎榜数据抓取",
+    description="手动抓取指定交易日的龙虎榜数据，并写入监控侧使用的龙虎榜数据表。",
+    responses=FETCH_DRAGON_TIGER_DATA_RESPONSES,
+)
+async def fetch_dragon_tiger_data(
+    trade_date: Optional[date] = Query(None, description="需要抓取的交易日期，默认使用当天交易日。"),
+    current_user: User = Depends(get_current_user),
+):
     """
     手动触发获取龙虎榜数据
 
@@ -777,7 +1018,13 @@ async def fetch_dragon_tiger_data(trade_date: Optional[date] = None, current_use
 # ============================================================================
 
 
-@router.get("/analyze", response_model=MonitoringSummaryResponse)
+@router.get(
+    "/analyze",
+    response_model=MonitoringSummaryResponse,
+    summary="获取监控分析摘要",
+    description="兼容旧版调用方的监控分析入口，返回与摘要接口一致的监控汇总结果。",
+    responses=MONITORING_SUMMARY_RESPONSES,
+)
 async def analyze_monitoring(current_user: User = Depends(get_current_user)):
     """
     监控分析 (Alias for summary)
@@ -787,7 +1034,13 @@ async def analyze_monitoring(current_user: User = Depends(get_current_user)):
     return await get_monitoring_summary(current_user)
 
 
-@router.get("/summary", response_model=MonitoringSummaryResponse)
+@router.get(
+    "/summary",
+    response_model=MonitoringSummaryResponse,
+    summary="获取监控系统摘要",
+    description="返回监控系统的核心汇总指标，包括涨跌停数量、活跃告警数与市场强弱概览。",
+    responses=MONITORING_SUMMARY_RESPONSES,
+)
 async def get_monitoring_summary(current_user: User = Depends(get_current_user)):
     """
     获取监控系统摘要
@@ -831,9 +1084,14 @@ async def get_monitoring_summary(current_user: User = Depends(get_current_user))
         raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
-@router.get("/stats/today")
+@router.get(
+    "/stats/today",
+    summary="获取今日监控统计",
+    description="查询当日告警摘要、活跃规则与实时监控总览，供监控中心首页与值班看板展示。",
+    responses=TODAY_STATS_RESPONSES,
+)
 async def get_today_statistics(current_user: User = Depends(get_current_user)):
-    """获取今日统计数据"""
+    """获取今日监控统计聚合结果。"""
     try:
         session = monitoring_service.get_session()
         try:
@@ -875,8 +1133,19 @@ class MonitoringControlRequest(BaseModel):
     interval: int = 60  # 更新间隔(秒)
 
 
-@router.post("/control/start")
-async def start_monitoring(request: MonitoringControlRequest, current_user: User = Depends(get_current_user)):
+@router.post(
+    "/control/start",
+    summary="启动实时监控任务",
+    description="提交监控启动请求，指定监控股票范围和刷新间隔，用于监控面板手动拉起任务。",
+    responses=START_MONITORING_RESPONSES,
+)
+async def start_monitoring(
+    request: MonitoringControlRequest = Body(
+        ...,
+        example={"symbols": ["600519", "000001", "601318"], "interval": 30},
+    ),
+    current_user: User = Depends(get_current_user),
+):
     """
     启动监控
 
@@ -896,9 +1165,14 @@ async def start_monitoring(request: MonitoringControlRequest, current_user: User
         raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
-@router.post("/control/stop")
+@router.post(
+    "/control/stop",
+    summary="停止实时监控任务",
+    description="停止当前运行中的监控任务，并返回停止结果给监控控制面板。",
+    responses=STOP_MONITORING_RESPONSES,
+)
 async def stop_monitoring(current_user: User = Depends(get_current_user)):
-    """停止监控"""
+    """停止当前监控任务并返回结果。"""
     try:
         monitoring_service.stop_monitoring()
         return {"success": True, "message": "监控已停止"}
@@ -906,7 +1180,12 @@ async def stop_monitoring(current_user: User = Depends(get_current_user)):
         raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
-@router.get("/control/status")
+@router.get(
+    "/control/status",
+    summary="获取监控运行状态",
+    description="查询实时监控系统的运行状态、监控范围和当前监控股票数量，用于面板状态展示。",
+    responses=MONITORING_STATUS_RESPONSES,
+)
 async def get_monitoring_status():
     """
     获取实时监控系统运行状态

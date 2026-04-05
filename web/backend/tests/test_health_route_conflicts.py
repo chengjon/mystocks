@@ -548,6 +548,71 @@ def test_monitoring_dragon_tiger_endpoint_has_parameter_docs() -> None:
         assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
 
 
+def test_monitoring_realtime_control_and_summary_endpoints_have_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    endpoint_expectations = {
+        ("/api/v1/monitoring/realtime/{symbol}", "get"): {
+            "parameters": {"symbol"},
+            "requires_request_example": False,
+        },
+        ("/api/v1/monitoring/realtime", "get"): {
+            "parameters": {"symbols", "limit", "is_limit_up", "is_limit_down"},
+            "requires_request_example": False,
+        },
+        ("/api/v1/monitoring/realtime/fetch", "post"): {
+            "parameters": set(),
+            "requires_request_example": True,
+        },
+        ("/api/v1/monitoring/dragon-tiger/fetch", "post"): {
+            "parameters": {"trade_date"},
+            "requires_request_example": False,
+        },
+        ("/api/v1/monitoring/analyze", "get"): {
+            "parameters": set(),
+            "requires_request_example": False,
+        },
+        ("/api/v1/monitoring/summary", "get"): {
+            "parameters": set(),
+            "requires_request_example": False,
+        },
+        ("/api/v1/monitoring/stats/today", "get"): {
+            "parameters": set(),
+            "requires_request_example": False,
+        },
+        ("/api/v1/monitoring/control/start", "post"): {
+            "parameters": set(),
+            "requires_request_example": True,
+        },
+        ("/api/v1/monitoring/control/stop", "post"): {
+            "parameters": set(),
+            "requires_request_example": False,
+        },
+        ("/api/v1/monitoring/control/status", "get"): {
+            "parameters": set(),
+            "requires_request_example": False,
+        },
+    }
+
+    for (path, method), expectation in endpoint_expectations.items():
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+        success_json = operation["responses"][next(code for code in operation["responses"] if code.startswith("2"))][
+            "content"
+        ]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expectation["parameters"]:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        if expectation["requires_request_example"]:
+            request_json = operation["requestBody"]["content"]["application/json"]
+            assert "example" in request_json or "examples" in request_json
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_data_source_versions_endpoint_has_parameter_docs() -> None:
     app.openapi_schema = None
     schema = app.openapi()
