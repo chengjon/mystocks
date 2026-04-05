@@ -467,7 +467,7 @@ describe('menuDataFetcher', () => {
     it('应该抛出不支持的方法错误', async () => {
       const invalidMenuItem: MenuItem = {
         ...mockMenuItem,
-        apiMethod: 'PATCH' as any
+        apiMethod: 'PATCH' as unknown as MenuItem['apiMethod']
       }
 
       const result = await fetchMenuItemData(invalidMenuItem)
