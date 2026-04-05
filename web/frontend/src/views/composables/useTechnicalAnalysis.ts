@@ -24,7 +24,6 @@ interface HttpLikeError {
 }
 
 export function useTechnicalAnalysis() {
-// @ts-nocheck
 
 // ============================================
 // 状态管理
