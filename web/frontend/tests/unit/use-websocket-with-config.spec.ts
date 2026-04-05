@@ -89,4 +89,11 @@ describe('useWebSocketWithConfig', () => {
     expect(cleanup).toHaveBeenCalledTimes(1)
     expect(tradeCleanup).toHaveBeenCalledTimes(1)
   })
+
+  it('keeps the legacy utils import path compatible with the composables module', async () => {
+    const composablesModule = await import('@/composables/useWebSocketWithConfig')
+    const legacyModule = await import('@/utils/useWebSocketWithConfig')
+
+    expect(legacyModule.useWebSocketWithConfig).toBe(composablesModule.useWebSocketWithConfig)
+  })
 })
