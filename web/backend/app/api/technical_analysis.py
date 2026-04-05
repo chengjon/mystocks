@@ -22,6 +22,8 @@ logger = logging.getLogger(__name__)
 router = APIRouter(tags=["technical-analysis"])
 router.include_router(technical_patterns_router)
 
+SYMBOL_PATH_DESCRIPTION = "股票代码，支持证券代码或带交易所后缀的标准格式，例如 600519.SH。"
+
 
 # ============================================================================
 # Enhanced Pydantic Models with Validation
@@ -408,7 +410,10 @@ async def get_trend_indicators(
 
 
 @router.get("/{symbol}/momentum", response_model=Dict)
-async def get_momentum_indicators(symbol: str, period: str = Query("daily", description="数据周期")):
+async def get_momentum_indicators(
+    symbol: str = Path(..., description=SYMBOL_PATH_DESCRIPTION),
+    period: str = Query("daily", description="数据周期"),
+):
     """
     获取动量指标
 
@@ -459,7 +464,10 @@ async def get_momentum_indicators(symbol: str, period: str = Query("daily", desc
 
 
 @router.get("/{symbol}/volatility", response_model=Dict)
-async def get_volatility_indicators(symbol: str, period: str = Query("daily", description="数据周期")):
+async def get_volatility_indicators(
+    symbol: str = Path(..., description=SYMBOL_PATH_DESCRIPTION),
+    period: str = Query("daily", description="数据周期"),
+):
     """
     获取波动性指标
 
@@ -509,7 +517,10 @@ async def get_volatility_indicators(symbol: str, period: str = Query("daily", de
 
 
 @router.get("/{symbol}/volume", response_model=Dict)
-async def get_volume_indicators(symbol: str, period: str = Query("daily", description="数据周期")):
+async def get_volume_indicators(
+    symbol: str = Path(..., description=SYMBOL_PATH_DESCRIPTION),
+    period: str = Query("daily", description="数据周期"),
+):
     """
     获取成交量指标
 
@@ -559,7 +570,10 @@ async def get_volume_indicators(symbol: str, period: str = Query("daily", descri
 
 
 @router.get("/{symbol}/signals", response_model=Dict)
-async def get_trading_signals(symbol: str, period: str = Query("daily", description="数据周期")):
+async def get_trading_signals(
+    symbol: str = Path(..., description=SYMBOL_PATH_DESCRIPTION),
+    period: str = Query("daily", description="数据周期"),
+):
     """
     获取交易信号
 
@@ -614,7 +628,7 @@ async def get_trading_signals(symbol: str, period: str = Query("daily", descript
 
 @router.get("/{symbol}/history")
 async def get_stock_history(
-    symbol: str,
+    symbol: str = Path(..., description=SYMBOL_PATH_DESCRIPTION),
     period: str = Query("daily", description="数据周期"),
     start_date: Optional[str] = Query(None, description="开始日期"),
     end_date: Optional[str] = Query(None, description="结束日期"),

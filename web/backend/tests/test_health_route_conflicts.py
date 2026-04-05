@@ -1461,6 +1461,24 @@ def test_trade_endpoints_have_examples_parameter_docs_and_error_responses() -> N
     assert any(code.startswith(("4", "5")) for code in execute_operation["responses"])
 
 
+def test_technical_symbol_routes_have_path_parameter_descriptions() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path in [
+        "/api/v1/technical/{symbol}/momentum",
+        "/api/v1/technical/{symbol}/volatility",
+        "/api/v1/technical/{symbol}/volume",
+        "/api/v1/technical/{symbol}/signals",
+        "/api/v1/technical/{symbol}/history",
+    ]:
+        operation = schema["paths"][path]["get"]
+        assert any(
+            param["name"] == "symbol" and param["in"] == "path" and param.get("description")
+            for param in operation.get("parameters", [])
+        )
+
+
 def test_monitoring_alert_management_endpoints_have_docs_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()
