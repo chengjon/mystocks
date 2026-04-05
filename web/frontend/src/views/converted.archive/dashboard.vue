@@ -244,7 +244,7 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .dashboard-page {
   @include artdeco-layout;
@@ -262,11 +262,11 @@ onMounted(() => {
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
+    height: calc(var(--artdeco-spacing-px) * 3);
     background: linear-gradient(90deg,
       transparent 0%,
       var(--artdeco-gold-primary) 20%,
-      var(--artdeco-gold-hover) 50%,
+      var(--artdeco-gold-light) 50%,
       var(--artdeco-gold-primary) 80%,
       transparent 100%
     );
@@ -325,13 +325,13 @@ onMounted(() => {
       &.chart-card {
         .chart-container {
           position: relative;
-          height: 300px;
+          height: calc((var(--artdeco-spacing-20) * 3) + var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
 
           .chart-placeholder {
             height: 100%;
             background: linear-gradient(135deg,
               var(--artdeco-bg-card) 0%,
-              rgb(212 175 55 / 5%) 50%,
+              color-mix(in srgb, var(--artdeco-gold-primary) 5%, transparent) 50%,
               var(--artdeco-bg-card) 100%
             );
             border-radius: var(--artdeco-radius-md);
@@ -348,11 +348,11 @@ onMounted(() => {
               top: 50%;
               left: 50%;
               transform: translate(-50%, -50%);
-              width: 200px;
-              height: 200px;
+              width: calc((var(--artdeco-spacing-20) * 2) + var(--artdeco-spacing-10));
+              height: calc((var(--artdeco-spacing-20) * 2) + var(--artdeco-spacing-10));
               background: radial-gradient(circle,
                 transparent 30%,
-                rgb(212 175 55 / 10%) 50%,
+                color-mix(in srgb, var(--artdeco-gold-primary) 10%, transparent) 50%,
                 transparent 70%
               );
               border-radius: 50%;
@@ -373,7 +373,7 @@ onMounted(() => {
           justify-content: space-between;
           align-items: center;
           padding: var(--artdeco-spacing-3);
-          background: rgb(212 175 55 / 5%);
+          background: color-mix(in srgb, var(--artdeco-gold-primary) 5%, transparent);
           border-radius: var(--artdeco-radius-sm);
 
           .symbol {
@@ -390,7 +390,7 @@ onMounted(() => {
             font-size: var(--artdeco-text-lg);
 
             &.positive {
-              color: var(--artdeco-up);
+              color: var(--artdeco-rise);
             }
 
             &.negative {
@@ -399,11 +399,11 @@ onMounted(() => {
           }
 
           .change {
-            font-family: var(--artdeco-font-accent);
+            font-family: var(--font-mono);
             font-size: var(--artdeco-text-sm);
 
             &.positive {
-              color: var(--artdeco-up);
+              color: var(--artdeco-rise);
             }
 
             &.negative {
@@ -424,18 +424,18 @@ onMounted(() => {
           align-items: center;
           gap: var(--artdeco-spacing-4);
           padding: var(--artdeco-spacing-3);
-          background: rgb(212 175 55 / 5%);
+          background: color-mix(in srgb, var(--artdeco-gold-primary) 5%, transparent);
           border-radius: var(--artdeco-radius-sm);
-          transition: all var(--artdeco-transition-fast);
+          transition: all var(--artdeco-transition-quick);
 
           &:hover {
-            background: rgb(212 175 55 / 10%);
-            transform: translateX(4px);
+            background: color-mix(in srgb, var(--artdeco-gold-primary) 10%, transparent);
+            transform: translateX(var(--artdeco-spacing-1));
           }
 
           .activity-icon {
-            width: 40px;
-            height: 40px;
+            width: var(--artdeco-spacing-10);
+            height: var(--artdeco-spacing-10);
             background: var(--artdeco-gold-primary);
             border-radius: 50%;
             display: flex;
@@ -459,7 +459,7 @@ onMounted(() => {
             }
 
             .activity-time {
-              font-family: var(--artdeco-font-accent);
+              font-family: var(--font-mono);
               font-size: var(--artdeco-text-sm);
               color: var(--artdeco-fg-muted);
             }
@@ -478,7 +478,7 @@ onMounted(() => {
           justify-content: space-between;
           align-items: center;
           padding: var(--artdeco-spacing-4);
-          background: rgb(212 175 55 / 5%);
+          background: color-mix(in srgb, var(--artdeco-gold-primary) 5%, transparent);
           border-radius: var(--artdeco-radius-sm);
 
           .metric-label {
@@ -520,7 +520,7 @@ onMounted(() => {
           justify-content: space-between;
           align-items: center;
           padding: var(--artdeco-spacing-3);
-          background: rgb(212 175 55 / 5%);
+          background: color-mix(in srgb, var(--artdeco-gold-primary) 5%, transparent);
           border-radius: var(--artdeco-radius-sm);
 
           .service-name {
@@ -535,28 +535,28 @@ onMounted(() => {
             gap: var(--artdeco-spacing-2);
 
             .status-dot {
-              width: 8px;
-              height: 8px;
+              width: var(--artdeco-spacing-2);
+              height: var(--artdeco-spacing-2);
               border-radius: 50%;
 
               &.online {
                 background: var(--artdeco-success);
-                box-shadow: 0 0 8px rgb(76 175 80 / 60%);
+                box-shadow: 0 0 var(--artdeco-spacing-2) color-mix(in srgb, var(--artdeco-success) 60%, transparent);
               }
 
               &.warning {
                 background: var(--artdeco-warning);
-                box-shadow: 0 0 8px rgb(255 193 7 / 60%);
+                box-shadow: 0 0 var(--artdeco-spacing-2) color-mix(in srgb, var(--artdeco-warning) 60%, transparent);
               }
 
               &.offline {
-                background: var(--artdeco-danger);
-                box-shadow: 0 0 8px rgb(244 67 54 / 60%);
+                background: var(--artdeco-down);
+                box-shadow: 0 0 var(--artdeco-spacing-2) color-mix(in srgb, var(--artdeco-down) 60%, transparent);
               }
             }
 
             .status-text {
-              font-family: var(--artdeco-font-accent);
+              font-family: var(--font-mono);
               font-size: var(--artdeco-text-sm);
               color: var(--artdeco-fg-muted);
             }
@@ -580,7 +580,7 @@ onMounted(() => {
 }
 
 // Responsive design for Art Deco dashboard
-@media (width <= 1200px) {
+@media (width <= calc(var(--artdeco-spacing-20) * 15)) {
   .dashboard-page {
     .dashboard-grid {
       grid-template-columns: 1fr 1fr;
@@ -588,7 +588,7 @@ onMounted(() => {
   }
 }
 
-@media (width <= 768px) {
+@media (width <= calc(var(--artdeco-spacing-16) * 12)) {
   .dashboard-page {
     .stats-grid {
       grid-template-columns: 1fr;

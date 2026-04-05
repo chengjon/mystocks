@@ -41,7 +41,7 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .data-analysis-page {
   @include artdeco-layout;
@@ -51,13 +51,13 @@ onMounted(() => {
   }
   
   .chart-placeholder {
-    height: 300px;
-    background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
-    border-radius: 8px;
+    height: calc((var(--artdeco-spacing-20) * 3) + var(--artdeco-spacing-10));
+    background: linear-gradient(135deg, var(--artdeco-bg-global), var(--artdeco-bg-card));
+    border-radius: var(--artdeco-radius-none);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--fg-muted);
+    color: var(--artdeco-fg-muted);
   }
   
   // ArtDeco decorative elements
@@ -67,8 +67,8 @@ onMounted(() => {
     top: 0;
     left: 0;
     right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    height: calc(var(--artdeco-spacing-px) * 2);
+    background: linear-gradient(90deg, transparent, var(--artdeco-gold-primary), transparent);
   }
 }
 </style>

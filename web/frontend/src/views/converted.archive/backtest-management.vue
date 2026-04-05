@@ -615,7 +615,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .backtest-management-page {
   @include artdeco-layout;
@@ -629,7 +629,7 @@ onUnmounted(() => {
 
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(calc((var(--artdeco-spacing-20) * 3) + var(--artdeco-spacing-10)), 1fr));
       gap: var(--artdeco-spacing-lg);
     }
   }
@@ -680,7 +680,7 @@ onUnmounted(() => {
 
         .parameters-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(calc((var(--artdeco-spacing-20) * 2) + var(--artdeco-spacing-10)), 1fr));
           gap: var(--artdeco-spacing-md);
         }
 
@@ -726,7 +726,7 @@ onUnmounted(() => {
         grid-template-columns: 1fr 1fr;
         gap: var(--artdeco-spacing-lg);
 
-        @media (max-width: 1200px) {
+        @media (width <= calc(var(--artdeco-spacing-20) * 15)) {
           grid-template-columns: 1fr;
         }
       }
@@ -737,7 +737,7 @@ onUnmounted(() => {
 
       .metrics-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(calc((var(--artdeco-spacing-20) * 3) + var(--artdeco-spacing-10) + var(--artdeco-spacing-5)), 1fr));
         gap: var(--artdeco-spacing-lg);
       }
 
@@ -764,8 +764,8 @@ onUnmounted(() => {
           align-items: center;
           padding: var(--artdeco-spacing-sm) var(--artdeco-spacing-md);
           background: var(--artdeco-bg-elevated);
-          border: 1px solid rgb(212 175 55 / 10%);
-          border-radius: 4px;
+          border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 10%, transparent);
+          border-radius: var(--artdeco-radius-none);
 
           .metric-label {
             font-family: var(--artdeco-font-body);
@@ -781,7 +781,7 @@ onUnmounted(() => {
             font-weight: 600;
 
             &.success { color: var(--artdeco-success); }
-            &.danger { color: var(--artdeco-danger); }
+            &.danger { color: var(--artdeco-down); }
             &.warning { color: var(--artdeco-warning); }
             &.info { color: var(--artdeco-info); }
           }
@@ -808,7 +808,7 @@ onUnmounted(() => {
 
         .comparison-header {
           background: var(--artdeco-bg-elevated);
-          border-bottom: 1px solid rgb(212 175 55 / 20%);
+          border-bottom: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
           font-family: var(--artdeco-font-display);
           font-size: var(--artdeco-font-size-sm);
           font-weight: 600;
@@ -818,7 +818,7 @@ onUnmounted(() => {
         }
 
         .comparison-row {
-          border-bottom: 1px solid rgb(212 175 55 / 10%);
+          border-bottom: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 10%, transparent);
 
           &:last-child {
             border-bottom: none;
@@ -826,7 +826,7 @@ onUnmounted(() => {
 
           .strategy-column {
             font-weight: 600;
-            color: var(--artdeco-fg-secondary);
+            color: var(--artdeco-fg-primary);
           }
 
           .metric-column {
@@ -835,7 +835,7 @@ onUnmounted(() => {
             font-weight: 600;
 
             &.success { color: var(--artdeco-success); }
-            &.danger { color: var(--artdeco-danger); }
+            &.danger { color: var(--artdeco-down); }
             &.info { color: var(--artdeco-info); }
           }
         }
@@ -845,20 +845,5 @@ onUnmounted(() => {
 
   .text-success { color: var(--artdeco-rise); }
   .text-danger { color: var(--artdeco-fall); }
-}
-    justify-content: center;
-    color: var(--fg-muted);
-  }
-  
-  // ArtDeco decorative elements
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  }
 }
 </style>
