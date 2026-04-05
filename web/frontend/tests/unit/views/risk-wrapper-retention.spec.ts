@@ -37,11 +37,19 @@ const wrapperCases = [
 const compatibilityWrapperCases = [
   {
     label: 'risk alerts',
-    wrapperPath: 'src/views/risk/Alerts.vue',
-    implementationPath: 'src/views/artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue',
-    importLine: "import RiskAlertsPage from '@/views/artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue'",
-    renderLine: '<RiskAlertsPage v-bind="attrs" />',
+    canonicalPath: 'src/views/risk/Alerts.vue',
+    legacyPath: 'src/views/artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue',
+    legacyImportLine: "import RiskAlertsCanonicalPage from '@/views/risk/Alerts.vue'",
+    legacyRenderLine: '<RiskAlertsCanonicalPage v-bind=\"attrs\" v-bind=\"props\" />',
+    canonicalEvidence: [
+      "import { monitoringApi } from '@/api/index'",
+      'title="风险告警工作台"',
+      "monitoringApi.getAlerts({ page: 1, page_size: 50 })",
+    ],
   },
+]
+
+const remainingCompatibilityWrapperCases = [
   {
     label: 'risk news',
     wrapperPath: 'src/views/risk/News.vue',
@@ -68,6 +76,21 @@ describe('risk wrapper retention', () => {
   }
 
   for (const wrapperCase of compatibilityWrapperCases) {
+    it(`moves the canonical ${wrapperCase.label} implementation into src/views/risk and keeps the ArtDeco path as a legacy wrapper`, () => {
+      const canonicalSource = readSource(wrapperCase.canonicalPath)
+      const legacySource = readSource(wrapperCase.legacyPath)
+      const legacyFullPath = resolve(process.cwd(), wrapperCase.legacyPath)
+
+      expect(existsSync(legacyFullPath)).toBe(true)
+      for (const evidenceLine of wrapperCase.canonicalEvidence) {
+        expect(canonicalSource).toContain(evidenceLine)
+      }
+      expect(legacySource).toContain(wrapperCase.legacyImportLine)
+      expect(legacySource).toContain(wrapperCase.legacyRenderLine)
+    })
+  }
+
+  for (const wrapperCase of remainingCompatibilityWrapperCases) {
     it(`keeps the canonical ${wrapperCase.label} wrapper pointed at its ArtDeco implementation`, () => {
       const wrapperSource = readSource(wrapperCase.wrapperPath)
       const implementationFullPath = resolve(process.cwd(), wrapperCase.implementationPath)

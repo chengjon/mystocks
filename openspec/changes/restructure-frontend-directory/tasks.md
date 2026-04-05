@@ -247,10 +247,15 @@
     - Evidence: the canonical page now resolves `apiClient` and `stopLossMonitorData.ts` through stable absolute `@/...` imports, while the legacy ArtDeco path imports `@/views/risk/StopLoss.vue`.
   - [x] 9.4.3 Run lint & type-check
   - [x] 9.4.4 Run unit tests for StopLoss.vue
-- [ ] 9.5 Move `artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue` → `views/risk/Alerts.vue`
-  - [ ] 9.5.1 Move dependency: `useRiskAlerts.ts`
-  - [ ] 9.5.2 Update imports
-  - [ ] 9.5.3 Run lint & type-check
+- [x] 9.5 Move `artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue` → `views/risk/Alerts.vue`
+  - Completed: 2026-04-06 via repo-truth-aligned micro-batch `2026-04-06-restructure-risk-alerts-main`.
+  - Result: `src/views/risk/Alerts.vue` now hosts the canonical risk alerts implementation; `ArtDecoRiskAlerts.vue` is retained as a legacy compatibility wrapper into the canonical route entrypoint.
+  - [x] 9.5.1 Move dependency: `useRiskAlerts.ts`
+    - Repo-truth note: not applicable as written. The current risk alerts page does not own a local `useRiskAlerts.ts`; it composes `useArtDecoApi`, `monitoringApi`, and inline normalization / formatting helpers.
+  - [x] 9.5.2 Update imports
+    - Evidence: the canonical page keeps the repo-truth imports from `@/api/index`, `@/api/types/common`, `@/composables/artdeco/useArtDecoApi`, and `@/components/artdeco`, while the legacy ArtDeco path now imports `@/views/risk/Alerts.vue`.
+  - [x] 9.5.3 Run lint & type-check
+  - [x] 9.5.4 Run unit tests for Alerts.vue
 - [ ] 9.6 Move `artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue` → `views/risk/News.vue`
   - [ ] 9.6.1 Move dependency: `useRiskNews.ts`
   - [ ] 9.6.2 Update imports
