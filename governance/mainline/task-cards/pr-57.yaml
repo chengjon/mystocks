@@ -1,0 +1,92 @@
+version: "v0.2"
+
+task:
+  id: "pr-57"
+  title: "type strategy dialog request payloads"
+  owner: "main"
+  created_at: "2026-04-05"
+
+mainline:
+  id: "L1-strategy-dialog-request-typing"
+  objective: "remove the StrategyDialog ts-nocheck escape hatch and align create/update payloads with the generated strategy request types without pulling unrelated frontend work into the PR"
+  milestone_id: "L3-mainline-follow-up"
+  slice_id: "L4-strategy-dialog-request-typing"
+
+classification:
+  task_type: "fix"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "frontend"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "localized-strategy-dialog-type-hardening-with-focused-regression"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-57.yaml"
+    - "web/frontend/src/components/StrategyDialog.vue"
+    - "web/frontend/tests/unit/config/strategy-dialog-types-cleanup.spec.ts"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+    - "web/frontend/src/views/**"
+
+non_goals:
+  - "No strategy page redesign or route migration"
+  - "No broader strategy service/composable refactor beyond the dialog payload contract"
+
+acceptance:
+  checks:
+    - id: "strategy-dialog-vitest"
+      command: "cd web/frontend && npx vitest run tests/unit/config/strategy-dialog-types-cleanup.spec.ts"
+      required: true
+    - id: "strategy-dialog-eslint"
+      command: "cd web/frontend && npx eslint src/components/StrategyDialog.vue"
+      required: true
+    - id: "strategy-dialog-vue-tsc"
+      command: "cd web/frontend && npx vue-tsc --noEmit --pretty false"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-57.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the default constraints or risk limits do not match backend expectations, create-strategy submissions can fail at runtime"
+    - "If the update payload id requirement diverges from the dialog caller contract, save events can break for edit flows"
+  rollback_plan: "git revert <merge-commit-sha> if strategy dialog create or update flows regress after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "remove the StrategyDialog type escape hatch and align emitted request payloads with the generated frontend API contract"
+    modified_scope: "StrategyDialog component, one focused frontend regression test, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "runtime behavior changes only in the dialog payload construction path by supplying required defaults and update ids"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the slice if strategy dialog create or edit submission behavior regresses"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-05T00:00:00Z"
+    approval_note: "localized frontend request-typing fix with dedicated regression coverage"
+    secondary_approved: false
