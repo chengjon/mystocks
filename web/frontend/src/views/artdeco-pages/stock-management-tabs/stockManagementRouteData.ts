@@ -50,6 +50,10 @@ function parseId(value: unknown, fallback = ''): string {
 }
 
 function extractList(raw: unknown): Record<string, unknown>[] {
+  if (Array.isArray(raw)) {
+    return raw.filter(isRecord)
+  }
+
   if (!isRecord(raw)) {
     return []
   }
