@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { extractIndustryFlowRows, toBoardRows, toRotationRows } from '../industryAnalysisData'
+import {
+  extractIndustryFlowRows,
+  toBoardRows,
+  toRotationRows,
+  type IndustryFlowRow
+} from '../industryAnalysisData'
 
 describe('industryAnalysisData', () => {
   it('extracts rows from direct array and nested containers', () => {
@@ -24,15 +29,16 @@ describe('industryAnalysisData', () => {
   })
 
   it('maps v2 sector fund-flow fields to board rows', () => {
-    const rows = toBoardRows([
+    const rawRows: IndustryFlowRow[] = [
       {
         rank: 1,
         sector_name: '证券',
         change_percent: 2.92,
         main_net_inflow: 3441226240,
         main_net_inflow_rate: 7.58
-      } as any
-    ])
+      }
+    ]
+    const rows = toBoardRows(rawRows)
 
     expect(rows).toHaveLength(1)
     expect(rows[0]?.name).toBe('证券')
