@@ -1,13 +1,13 @@
 # MyStocks Frontend Mainline Phase 4 Matrix
 
-> Generated at: `2026-04-03T15:25:49+08:00`
+> Generated at: `2026-04-05T17:42:40+08:00`
 > Source plan: `docs/plans/2026-04-03-frontend-mainline-phase-4-execution-matrix.md`
 > Overall plan: `docs/plans/2026-04-02-frontend-mainline-testing-overall-plan.md`
 > Scope: `10` pages
 
 ## 1. Runtime Baseline
 
-- Verification date: `2026-04-03`
+- Verification date: `2026-04-05`
 - `mystocks-backend`: `http://localhost:8020`
 - `mystocks-frontend`: `http://localhost:3020`
 - Backend health:
@@ -16,9 +16,9 @@
 - Frontend proxy health:
   - `/api/health/ready` -> `200 OK`
 - Verification frontend runtime:
-  - `/tmp/mystocks-frontend-run`
-  - `VITE_USE_MOCK_DATA=false`
-  - `VITE_APP_MODE=real`
+  - live PM2 preview shell: `mystocks-frontend`
+  - `http://localhost:3020`
+  - `VITE_API_BASE_URL=http://localhost:8020`
 
 ## 2. Page Matrix
 
@@ -41,17 +41,17 @@
 
 - Browser project: `chromium`
 - Important note:
-  - This suite uses Playwright route stubs and must run with `VITE_USE_MOCK_DATA=false`.
+  - This suite uses Playwright route stubs against the live PM2 frontend shell.
 - Command:
-  - `cd /tmp/mystocks-frontend-run && VITE_USE_MOCK_DATA=false VITE_APP_MODE=real FRONTEND_PORT=3070 FRONTEND_BACKUP_PORT=3071 BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 VITE_API_BASE_URL=http://127.0.0.1:8020 npx playwright test --config playwright.config.js --project=chromium tests/e2e/phase4-mainline-matrix.spec.ts`
-    - Result: `10 passed, 0 failed, 0 skipped`
+  - `cd web/frontend && PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --config playwright.config.js --project chromium`
+    - Result: `10 passed, 0 failed, 0 skipped` (`15.0s`)
 
 ### Real Track
 
 - Browser project: `chromium`
 - Command:
-  - `cd /tmp/mystocks-frontend-run && VITE_USE_MOCK_DATA=false VITE_APP_MODE=real FRONTEND_PORT=3070 FRONTEND_BACKUP_PORT=3071 BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 E2E_BACKEND_URL=http://127.0.0.1:8020 VITE_API_BASE_URL=http://127.0.0.1:8020 npx playwright test tests/e2e/comprehensive-all-pages.spec.ts --config playwright.config.js --project=chromium --grep "Risk-Management|Risk-Overview|Risk-PnL|Risk-StopLoss|Risk-Alerts|Risk-News|System-Config|System-Health|System-API|System-Data"`
-    - Result: `10 passed, 0 failed, 0 skipped`
+  - `cd web/frontend && PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test tests/e2e/comprehensive-all-pages.spec.ts --config playwright.config.js --project chromium --grep 'Risk-Management|Risk-Overview|Risk-PnL|Risk-StopLoss|Risk-Alerts|Risk-News|System-Config|System-Health|System-API|System-Data'`
+    - Result: `10 passed, 0 failed, 0 skipped` (`4.4m`)
 - Real subset HTTP evidence:
   - `Risk-Management`: `HTTP 200`
   - `Risk-Overview`: `HTTP 200`
@@ -75,6 +75,7 @@ Resolved during Phase 4:
 - 新增 `phase4-mainline-matrix.spec.ts`，为 Risk / System 十页建立统一 mock 矩阵
 - Mock 轨继续统一为 `VITE_USE_MOCK_DATA=false`，由 Playwright route stubs 接管请求路径
 - `System-Data` 的批量写回请求构造已在 mock 轨被显式验证
+- live PM2 frontend 在本次 refresh 中已从陈旧 `BACKEND_PORT=8888` 代理漂移纠正回 `BACKEND_PORT=8020`，`/api/health/ready` 已恢复 `200`
 
 Known Phase 4 gap:
 
@@ -84,25 +85,25 @@ Known Phase 4 gap:
 
 - Structural syntax errors: `0`
 - Frontend type baseline: `reports/analysis/tech-debt-baseline.json` -> `frontend_type_errors = 0`
-- Type-check execution in this closeout: not executed
+- Type-check execution in this closeout:
+  - `cd web/frontend && npx vue-tsc --noEmit --pretty false`
+  - Result: `exit 0`, no output
 - Type regression verdict:
-  - No evidence of regression above baseline in this micro-batch
-  - This closeout changed one plan doc, one E2E spec, and Phase 4 status artifacts
+  - No evidence of regression above baseline in this refresh batch
+  - This refresh batch changed Phase 4 / overall analysis artifacts only
 - PM2 services:
   - `mystocks-backend`: `online`
   - `mystocks-frontend`: `online`
-- Additional PM2 observation:
-  - `mystocks-frontend-static`: `online`
 - Service addresses:
   - `http://localhost:8020`
   - `http://localhost:3020`
 
 ## 6. Final Conclusion
 
-Phase 4 has reached a usable closeout state on `2026-04-03`:
+Phase 4 remains in a usable closeout state after the `2026-04-05` refresh:
 
 - All ten target pages pass the dedicated mock matrix.
 - All ten target pages pass the real-read subset in `comprehensive-all-pages.spec.ts`.
 - One known gap remains explicitly documented:
   - `System-Config` has no unified backend config write contract; current save behavior is local-only degrade, not real-write closure.
-- Outside that documented gap, this closeout did not require production source fixes; existing pages satisfied the current Phase 4 matrix as-is.
+- Outside that documented gap, this refresh did not require production source edits; the only runtime action was reloading the live PM2 frontend shell with the correct backend port environment.

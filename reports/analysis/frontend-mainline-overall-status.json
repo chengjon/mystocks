@@ -1,6 +1,6 @@
 {
   "scope": "frontend-mainline-overall-closeout",
-  "generated_at": "2026-04-04T20:33:23+08:00",
+  "generated_at": "2026-04-05T17:42:40+08:00",
   "branch": "wip/root-dirty-20260403",
   "overall_plan": "docs/plans/2026-04-02-frontend-mainline-testing-overall-plan.md",
   "phases": [
@@ -116,12 +116,11 @@
   "quality_gates": {
     "structural_syntax_errors": 0,
     "frontend_type_errors_baseline": 0,
-    "frontend_type_check_executed": false,
+    "frontend_type_check_executed": true,
     "frontend_type_regression_detected": false,
     "pm2": {
       "mystocks-backend": "online",
-      "mystocks-frontend": "online",
-      "mystocks-frontend-static": "online"
+      "mystocks-frontend": "online"
     },
     "services": {
       "backend": "http://localhost:8020",
@@ -159,6 +158,13 @@
         {
           "phase": 4,
           "command_scope": "phase4-mainline-matrix.spec.ts",
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "phase": 4,
+          "command_scope": "phase4-mainline-matrix.spec.ts rerun against live PM2 frontend after proxy env refresh",
           "passed": 10,
           "failed": 0,
           "skipped": 0
@@ -209,6 +215,13 @@
           "passed": 1,
           "failed": 0,
           "skipped": 0
+        },
+        {
+          "phase": 4,
+          "command_scope": "comprehensive-all-pages.spec.ts subset: Risk-Management|Risk-Overview|Risk-PnL|Risk-StopLoss|Risk-Alerts|Risk-News|System-Config|System-Health|System-API|System-Data rerun against live PM2 frontend after proxy env refresh",
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
         }
       ]
     }
@@ -238,7 +251,8 @@
     "Phase 2 fixed the Watchlist-Manage delete-action render gap by aligning the table actions slot contract.",
     "Phase 3 normalized the strategy/trade mock matrix under VITE_USE_MOCK_DATA=false without requiring production source fixes.",
     "Phase 4 normalized the risk/system mock matrix under VITE_USE_MOCK_DATA=false and kept the System-Config contract gap explicit.",
-    "The targeted System-Config follow-up confirmed no unified backend write contract exists, aligned generated pageConfig to that truth, and passed a focused post-cutover browser smoke against the live PM2 frontend shell."
+    "The targeted System-Config follow-up confirmed no unified backend write contract exists, aligned generated pageConfig to that truth, and passed a focused post-cutover browser smoke against the live PM2 frontend shell.",
+    "The 2026-04-05 refresh reloaded the live PM2 frontend shell with BACKEND_PORT=8020, restoring /api/health/ready to 200 and revalidating the full Phase 4 mock and real subsets."
   ],
   "source_fix_footprint": [
     "ecosystem.test.config.js",
@@ -250,7 +264,8 @@
     "2026-04-03-frontend-mainline-phase-1-main",
     "2026-04-03-frontend-mainline-phase-2-main",
     "2026-04-03-frontend-mainline-phase-3-main",
-    "2026-04-03-frontend-mainline-phase-4-main"
+    "2026-04-03-frontend-mainline-phase-4-main",
+    "2026-04-05-frontend-mainline-phase4-artifact-refresh-main"
   ],
   "next_action": {
     "title": "Frontend mainline follow-up complete",

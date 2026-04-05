@@ -1,13 +1,13 @@
 # MyStocks Frontend Mainline Overall Closeout
 
-> Generated at: `2026-04-04T20:33:23+08:00`
+> Generated at: `2026-04-05T17:42:40+08:00`
 > Overall plan: `docs/plans/2026-04-02-frontend-mainline-testing-overall-plan.md`
 > Scope: `34` pages across `Phase 1-4`
 > Branch: `wip/root-dirty-20260403`
 
 ## 1. Overall Verdict
 
-- Frontend mainline `Phase 1-4` has reached overall usable closeout on `2026-04-03`.
+- Frontend mainline `Phase 1-4` remains in overall usable closeout after the `2026-04-05` refresh.
 - Page-level verdict:
   - Mock: `34 / 34 PASS`
   - Real: `34 / 34 PASS`
@@ -49,6 +49,7 @@ Resolved during the full mainline run:
   - no production source fix required
 - Phase 4 closeout:
   - no production source fix required
+  - `2026-04-05` refresh additionally reloaded the live PM2 frontend shell so its proxy env returned from stale `BACKEND_PORT=8888` to repo truth `BACKEND_PORT=8020`
 
 ## 4. Residual Debt Kept Explicit
 
@@ -79,14 +80,15 @@ Resolved during the full mainline run:
 
 - Structural syntax errors: `0`
 - Frontend type baseline: `reports/analysis/tech-debt-baseline.json` -> `frontend_type_errors = 0`
-- Type-check execution in overall closeout: not executed
+- Type-check execution in overall closeout refresh:
+  - `cd web/frontend && npx vue-tsc --noEmit --pretty false`
+  - Result: `exit 0`, no output
 - Type regression verdict:
-  - no evidence of regression above baseline in the closeout batches
-  - phases `1-4` all reported `frontend_type_check_executed = false`
+  - no evidence of regression above baseline in the closeout refresh batch
+  - the overall closeout artifacts now reflect a fresh zero-output type check against the current repo head
 - PM2 current state rechecked at closeout time:
   - `mystocks-backend`: `online`
   - `mystocks-frontend`: `online`
-  - `mystocks-frontend-static`: `online`
 - Service addresses:
   - `http://localhost:8020`
   - `http://localhost:3020`
@@ -94,6 +96,7 @@ Resolved during the full mainline run:
   - `/health` -> `200`
   - `/health/ready` -> `200`
   - `/api/health/ready` -> `200`
+  - live PM2 frontend proxy env re-aligned to `BACKEND_PORT=8020`
 
 ## 6. Execution Evidence
 
@@ -122,6 +125,11 @@ Resolved during the full mainline run:
     - project: `chromium`
     - mode: `PLAYWRIGHT_EXTERNAL_FRONTEND=1` against live PM2 frontend on `http://127.0.0.1:3020`
     - result: `1 passed, 0 failed, 0 skipped`
+  - Refresh rerun:
+    - `phase4-mainline-matrix.spec.ts` against live PM2 frontend
+    - result: `10 passed, 0 failed, 0 skipped` (`15.0s`)
+    - `comprehensive-all-pages.spec.ts` Phase 4 subset against live PM2 frontend
+    - result: `10 passed, 0 failed, 0 skipped` (`4.4m`)
 
 ## 7. Final Conclusion
 
@@ -136,4 +144,5 @@ Resolved during the full mainline run:
   - confirmed no unified backend config write contract exists in current repo truth
   - aligned generated frontend `pageConfig` to that truth
   - passed a focused post-cutover route smoke against the live PM2 frontend shell
+- The `2026-04-05` refresh also cleared a stale PM2 frontend proxy env drift so live `/api/health/ready` is back to `200`.
 - No further frontend-mainline batch is required unless a new backend `System-Config` write contract is introduced and approved later.
