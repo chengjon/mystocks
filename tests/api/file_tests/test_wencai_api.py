@@ -1,131 +1,112 @@
 """
-File-level tests for wencai.py API endpoints
+File-level route and model contract tests for wencai.py.
 
-Tests all WenCai natural language query endpoints including:
-- Natural language stock queries
-- Intelligent question answering
-- Query result parsing and formatting
-- Search result ranking and filtering
-
-Priority: P2 (Utility)
-Coverage: 70% functional + smoke testing
+这里对齐当前真实的问财查询路由与响应模型，
+替换掉生成式占位断言。
 """
 
-import asyncio
+from __future__ import annotations
+
+import importlib
+import sys
+from pathlib import Path
 
 import pytest
 
-from tests.api.file_tests.conftest import api_test_fixtures, assert_file_test_result, mock_responses
+
+ROOT = Path(__file__).resolve().parents[3]
+BACKEND_ROOT = ROOT / "web" / "backend"
+if str(BACKEND_ROOT) not in sys.path:
+    sys.path.insert(0, str(BACKEND_ROOT))
+
+
+@pytest.fixture
+def wencai_module(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("POSTGRESQL_HOST", "localhost")
+    monkeypatch.setenv("POSTGRESQL_USER", "postgres")
+    monkeypatch.setenv("POSTGRESQL_PASSWORD", "password")
+    monkeypatch.setenv("JWT_SECRET_KEY", "test-secret-key")
+    monkeypatch.setenv("BACKEND_PORT", "8020")
+    monkeypatch.setenv("BACKEND_BACKUP_PORT", "8021")
+    return importlib.import_module("app.api.wencai")
 
 
 class TestWencaiAPIFile:
-    """Test suite for wencai.py API file"""
+    @pytest.mark.file_test
+    def test_router_registers_expected_wencai_routes(self, wencai_module):
+        route_methods = {(route.path, tuple(sorted(route.methods or []))) for route in wencai_module.router.routes}
+
+        assert wencai_module.router.prefix == "/api/market/wencai"
+        assert wencai_module.router.tags == ["wencai"]
+        assert ("/api/market/wencai/queries", ("GET",)) in route_methods
+        assert ("/api/market/wencai/queries/{query_name}", ("GET",)) in route_methods
+        assert ("/api/market/wencai/query", ("POST",)) in route_methods
+        assert ("/api/market/wencai/results/{query_name}", ("GET",)) in route_methods
+        assert ("/api/market/wencai/refresh/{query_name}", ("POST",)) in route_methods
+        assert ("/api/market/wencai/history/{query_name}", ("GET",)) in route_methods
+        assert ("/api/market/wencai/custom-query", ("POST",)) in route_methods
+        assert ("/api/market/wencai/health", ("GET",)) in route_methods
 
     @pytest.mark.file_test
-    def test_wencai_query_endpoint(self, api_test_fixtures):
-        """Test POST /api/wencai/query - Natural language query"""
-        # Test natural language stock query processing
-        assert api_test_fixtures["base_url"].startswith("http")
+    def test_router_contains_expected_number_of_routes(self, wencai_module):
+        route_pairs = [(route.path, tuple(sorted(route.methods or []))) for route in wencai_module.router.routes]
+
+        assert len(route_pairs) == 8
+        assert len(route_pairs) == len(set(route_pairs))
 
     @pytest.mark.file_test
-    def test_wencai_search_endpoint(self, api_test_fixtures):
-        """Test GET /api/wencai/search - Search stocks by criteria"""
-        # Test structured search queries
-        assert api_test_fixtures["retry_attempts"] >= 1
+    def test_response_models_remain_stable(self, wencai_module):
+        response_models = {(route.path, tuple(sorted(route.methods or []))): route.response_model for route in wencai_module.router.routes}
+
+        assert response_models[("/api/market/wencai/queries", ("GET",))] is wencai_module.WencaiQueryListResponse
+        assert response_models[("/api/market/wencai/queries/{query_name}", ("GET",))] is wencai_module.WencaiQueryInfo
+        assert response_models[("/api/market/wencai/query", ("POST",))] is wencai_module.WencaiQueryResponse
+        assert response_models[("/api/market/wencai/results/{query_name}", ("GET",))] is wencai_module.WencaiResultsResponse
+        assert response_models[("/api/market/wencai/refresh/{query_name}", ("POST",))] is wencai_module.WencaiRefreshResponse
+        assert response_models[("/api/market/wencai/history/{query_name}", ("GET",))] is wencai_module.WencaiHistoryResponse
+        assert response_models[("/api/market/wencai/custom-query", ("POST",))] is wencai_module.WencaiCustomQueryResponse
+        assert response_models[("/api/market/wencai/health", ("GET",))] is None
 
     @pytest.mark.file_test
-    def test_wencai_analyze_endpoint(self, api_test_fixtures):
-        """Test POST /api/wencai/analyze - Analyze query results"""
-        # Test query result analysis and insights
-        assert api_test_fixtures["mock_enabled"] is True
+    def test_route_names_remain_stable(self, wencai_module):
+        route_names = {(route.path, tuple(sorted(route.methods or []))): route.name for route in wencai_module.router.routes}
+
+        assert route_names[("/api/market/wencai/queries", ("GET",))] == "get_all_queries"
+        assert route_names[("/api/market/wencai/query", ("POST",))] == "execute_query"
+        assert route_names[("/api/market/wencai/custom-query", ("POST",))] == "execute_custom_query"
+        assert route_names[("/api/market/wencai/health", ("GET",))] == "health_check"
 
     @pytest.mark.file_test
-    def test_wencai_suggestions_endpoint(self, api_test_fixtures):
-        """Test GET /api/wencai/suggestions - Query suggestions"""
-        # Test intelligent query suggestions
-        assert api_test_fixtures["contract_validation"] is True
-
-    @pytest.mark.file_test
-    def test_wencai_history_endpoint(self, api_test_fixtures):
-        """Test GET /api/wencai/history - Query history"""
-        # Test user query history tracking
-        assert api_test_fixtures["test_timeout"] > 0
-
-    @pytest.mark.file_test
-    def test_error_handling(self, mock_responses):
-        """Test error handling across WenCai endpoints"""
-        error_response = mock_responses["error_response"]
-        assert error_response["success"] is False
-        assert "code" in error_response
-        assert "message" in error_response
-
-    @pytest.mark.file_test
-    def test_response_format_validation(self):
-        """Test response format validation for WenCai endpoints"""
-        # Validate WenCai response formats
-        assert True  # Placeholder
-
-    @pytest.mark.file_test
-    def test_performance_requirements(self, api_test_fixtures):
-        """Test performance requirements for WenCai endpoints"""
-        # Validate WenCai query performance
-        timeout = api_test_fixtures["test_timeout"]
-        assert timeout <= 30  # Max 30 seconds for WenCai operations
-
     @pytest.mark.asyncio
-    @pytest.mark.file_test
-    async def test_wencai_nlp_processing(self):
-        """Test natural language processing capabilities"""
-        # Test NLP query understanding and processing
-        await asyncio.sleep(0.01)  # Simulate async operation
-        assert True
+    async def test_health_check_returns_expected_static_payload(self, wencai_module):
+        payload = await wencai_module.health_check()
+
+        assert payload == {"status": "healthy", "service": "wencai", "version": "1.0.0"}
 
     @pytest.mark.file_test
-    def test_wencai_data_consistency(self):
-        """Test data consistency in WenCai operations"""
-        # Ensure WenCai data remains consistent
-        assert True
+    def test_router_exposes_four_get_and_three_post_business_routes_plus_health(self, wencai_module):
+        methods = [tuple(sorted(route.methods or [])) for route in wencai_module.router.routes]
+
+        assert methods.count(("GET",)) == 5
+        assert methods.count(("POST",)) == 3
 
     @pytest.mark.file_test
-    def test_wencai_workflow(self):
-        """Test complete WenCai query workflow"""
-        # Test query -> analysis -> results workflow
-        assert True
+    def test_module_docstring_mentions_restful_stock_screening_api(self, wencai_module):
+        doc = wencai_module.__doc__ or ""
 
-
-class TestWencaiIntegration:
-    """Integration tests for wencai.py with related modules"""
+        assert "问财API路由" in doc
+        assert "RESTful API端点" in doc
 
     @pytest.mark.file_test
-    def test_wencai_data_integration(self):
-        """Test WenCai integration with data modules"""
-        # Test WenCai queries with internal data sources
-        assert True
+    def test_docstrings_cover_queries_results_and_custom_query(self, wencai_module):
+        assert "获取所有查询列表" in (wencai_module.get_all_queries.__doc__ or "")
+        assert "获取查询结果" in (wencai_module.get_query_results.__doc__ or "")
+        assert "执行自定义查询" in (wencai_module.execute_custom_query.__doc__ or "")
 
     @pytest.mark.file_test
-    def test_wencai_strategy_integration(self):
-        """Test WenCai with strategy analysis"""
-        # Test natural language strategy queries
-        assert True
-
-
-class TestWencaiValidation:
-    """Validation tests for WenCai API"""
+    def test_background_refresh_task_helper_is_exported_and_callable(self, wencai_module):
+        assert callable(wencai_module._refresh_query_task)
 
     @pytest.mark.file_test
-    def test_wencai_api_compliance(self):
-        """Test compliance with WenCai API specifications"""
-        # Validate WenCai API compliance
-        assert True
-
-    @pytest.mark.file_test
-    def test_wencai_query_accuracy(self):
-        """Test accuracy of WenCai query processing"""
-        # Validate query understanding and result accuracy
-        assert True
-
-    @pytest.mark.file_test
-    def test_wencai_endpoint_coverage(self):
-        """Test that all expected WenCai endpoints are implemented"""
-        # Validate WenCai endpoint coverage
-        assert True
+    def test_all_routes_share_same_wencai_namespace(self, wencai_module):
+        assert all(route.path.startswith("/api/market/wencai") for route in wencai_module.router.routes)
