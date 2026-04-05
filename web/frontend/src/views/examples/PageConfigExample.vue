@@ -25,10 +25,10 @@
             <span v-else class="text-muted">不需要</span>
           </el-descriptions-item>
           <el-descriptions-item label="页面类型">
-            <el-icon v-if="isStandardPage" color="#67C23A">
+            <el-icon v-if="isStandardPage" class="page-type-icon page-type-icon--page">
               <CircleCheck />
             </el-icon>
-            <el-icon v-else color="#909399">
+            <el-icon v-else class="page-type-icon page-type-icon--component">
               <CircleClose />
             </el-icon>
           </el-descriptions-item>
@@ -175,57 +175,74 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@use '../../styles/artdeco-tokens.scss' as *;
+
 .page-config-example {
-  padding: 20px;
+  padding: var(--artdeco-spacing-5);
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: var(--artdeco-fg-primary);
 }
 
 .config-info {
-  margin: 20px 0;
+  margin: var(--artdeco-spacing-5) 0;
 }
 
 .actions {
-  margin: 20px 0;
+  margin: var(--artdeco-spacing-5) 0;
   display: flex;
-  gap: 10px;
+  gap: var(--artdeco-spacing-2);
 }
 
 .data-display {
-  margin-top: 20px;
+  margin-top: var(--artdeco-spacing-5);
 }
 
 .data-display h4 {
-  margin-bottom: 10px;
-  color: #303133;
+  margin-bottom: var(--artdeco-spacing-2);
+  color: var(--artdeco-fg-primary);
 }
 
 .data-display pre {
-  background-color: #f5f7fa;
-  padding: 15px;
-  border-radius: 4px;
+  padding: calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
+  background-color: var(--artdeco-bg-elevated);
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
+  color: var(--artdeco-fg-primary);
   overflow-x: auto;
-  max-height: 400px;
+  max-height: calc(var(--artdeco-spacing-20) * 5);
 }
 
 .error-display {
-  margin-top: 20px;
+  margin-top: var(--artdeco-spacing-5);
 }
 
 .text-muted {
-  color: #909399;
+  color: var(--artdeco-fg-muted);
+}
+
+.page-type-icon {
+  font-size: calc(var(--artdeco-text-base) + var(--artdeco-spacing-px) * 2);
+
+  &--page {
+    color: var(--artdeco-rise);
+  }
+
+  &--component {
+    color: var(--artdeco-fg-muted);
+  }
 }
 
 code {
-  background-color: #f5f7fa;
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-family: 'Courier New', monospace;
-  color: #e83e8c;
+  padding: calc(var(--artdeco-spacing-px) * 2) calc(var(--artdeco-spacing-2) + (var(--artdeco-spacing-px) * 2));
+  background-color: var(--artdeco-bg-elevated);
+  border-radius: var(--artdeco-radius-none);
+  color: var(--artdeco-gold-primary);
+  font-family: var(--font-mono);
 }
 </style>

@@ -137,45 +137,50 @@ const {
 } = useTradingDashboardMigrated()
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@use '../../styles/artdeco-tokens.scss' as *;
+
 .trading-dashboard-migrated {
-  padding: 20px;
+  padding: var(--artdeco-spacing-5);
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: var(--artdeco-fg-primary);
 }
 
 .control-panel {
-  margin-bottom: 20px;
+  margin-bottom: var(--artdeco-spacing-5);
 }
 
 .status-display {
-  margin: 20px 0;
+  margin: var(--artdeco-spacing-5) 0;
 }
 
 .data-tabs {
-  margin-top: 20px;
+  margin-top: var(--artdeco-spacing-5);
 }
 
 pre {
-  background-color: #f5f7fa;
-  padding: 15px;
-  border-radius: 4px;
+  padding: calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
+  background-color: var(--artdeco-bg-elevated);
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 20%, transparent);
+  border-radius: var(--artdeco-radius-none);
+  color: var(--artdeco-fg-primary);
   overflow-x: auto;
-  max-height: 400px;
+  max-height: calc(var(--artdeco-spacing-20) * 5);
 }
 
 .config-detail {
-  margin-top: 10px;
+  margin-top: var(--artdeco-spacing-2);
 }
 
 .config-detail p {
-  margin: 5px 0;
-  font-size: 13px;
-  color: #606266;
+  margin: calc(var(--artdeco-spacing-1) + var(--artdeco-spacing-px)) 0;
+  font-size: calc(var(--artdeco-text-sm) - var(--artdeco-spacing-px));
+  color: var(--artdeco-fg-muted);
 }
 </style>
 

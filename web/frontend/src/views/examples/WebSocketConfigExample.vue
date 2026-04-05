@@ -68,7 +68,7 @@
         <el-select
           v-model="selectedRoute"
           placeholder="请选择路由"
-          style="width: 100%"
+          class="route-select"
           clearable
         >
           <el-option
@@ -77,10 +77,10 @@
             :label="info.routeName"
             :value="info.routeName"
           >
-            <span style="float: left">{{ info.routeName }}</span>
-            <span style="float: right; color: #8492a6; font-size: 13px">
-              <el-tag size="small" type="warning">{{ info.channel }}</el-tag>
-              <span style="margin-left: 10px">{{ info.description }}</span>
+            <span class="route-option-label">{{ info.routeName }}</span>
+            <span class="route-option-meta">
+              <el-tag size="small" type="warning" class="channel-badge">{{ info.channel }}</el-tag>
+              <span class="description">{{ info.description }}</span>
             </span>
           </el-option>
         </el-select>
@@ -283,62 +283,80 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@use '../../styles/artdeco-tokens.scss' as *;
+
 .websocket-config-example {
-  padding: 20px;
+  padding: var(--artdeco-spacing-5);
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: var(--artdeco-fg-primary);
 }
 
 .controls {
-  margin: 20px 0;
+  margin: var(--artdeco-spacing-5) 0;
 }
 
 .route-selector {
-  margin: 20px 0;
+  margin: var(--artdeco-spacing-5) 0;
 }
 
 .route-selector h4 {
-  margin-bottom: 10px;
-  color: #303133;
+  margin-bottom: var(--artdeco-spacing-2);
+  color: var(--artdeco-gold-primary);
+}
+
+.route-select {
+  width: 100%;
+}
+
+.route-option-label {
+  float: left;
+}
+
+.route-option-meta {
+  float: right;
+  color: var(--artdeco-fg-muted);
+  font-size: calc(var(--artdeco-text-sm) - var(--artdeco-spacing-px));
 }
 
 .channel-badge {
-  margin-left: 10px;
+  margin-left: var(--artdeco-spacing-2);
 }
 
 .description {
-  margin-left: 10px;
-  color: #909399;
-  font-size: 12px;
+  margin-left: var(--artdeco-spacing-2);
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-xs);
 }
 
 .subscribed-routes {
-  margin: 20px 0;
+  margin: var(--artdeco-spacing-5) 0;
 }
 
 .subscribed-routes h4 {
-  margin-bottom: 10px;
-  color: #303133;
+  margin-bottom: var(--artdeco-spacing-2);
+  color: var(--artdeco-fg-primary);
 }
 
 .message-display,
 .error-display {
-  margin: 20px 0;
+  margin: var(--artdeco-spacing-5) 0;
 }
 
 .message-display h4,
 .error-display h4 {
-  margin-bottom: 10px;
-  color: #303133;
+  margin-bottom: var(--artdeco-spacing-2);
+  color: var(--artdeco-fg-primary);
 }
 
 pre {
   margin: 0;
+  color: var(--artdeco-fg-primary);
   white-space: pre-wrap;
   word-break: break-all;
 }
