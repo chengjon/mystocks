@@ -24,7 +24,95 @@ def _timestamp() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-@router.post("/prewarming/trigger")
+def _success_response_spec(description: str, example: dict[str, Any]) -> dict[int, dict[str, Any]]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+PREWARM_TRIGGER_RESPONSES = {
+    **_success_response_spec(
+        "缓存预热触发结果",
+        {
+            "success": True,
+            "message": "缓存预热成功",
+            "prewarmed_count": 42,
+            "failed_count": 0,
+            "elapsed_seconds": 1.37,
+            "timestamp": "2026-04-05T08:00:00+00:00",
+        },
+    ),
+    500: COMMON_RESPONSES[500],
+}
+
+PREWARM_STATUS_RESPONSES = {
+    **_success_response_spec(
+        "缓存预热状态",
+        {
+            "success": True,
+            "data": {
+                "enabled": True,
+                "last_prewarm_at": "2026-04-05T07:55:00+00:00",
+                "next_prewarm_at": "2026-04-05T08:25:00+00:00",
+                "status": "idle",
+            },
+            "timestamp": "2026-04-05T08:00:00+00:00",
+        },
+    ),
+    500: COMMON_RESPONSES[500],
+}
+
+CACHE_MONITORING_METRICS_RESPONSES = {
+    **_success_response_spec(
+        "缓存监控指标",
+        {
+            "success": True,
+            "data": {
+                "hit_count": 1280,
+                "miss_count": 320,
+                "hit_rate": 0.8,
+                "hit_rate_percent": "80.0%",
+                "average_latency_ms": 12.4,
+                "total_reads": 1600,
+                "health_status": "healthy",
+            },
+            "timestamp": "2026-04-05T08:00:00+00:00",
+        },
+    ),
+    500: COMMON_RESPONSES[500],
+}
+
+CACHE_MONITORING_HEALTH_RESPONSES = {
+    **_success_response_spec(
+        "缓存健康状态",
+        {
+            "success": True,
+            "status": "healthy",
+            "hit_rate": 80.0,
+            "hit_rate_percent": "80.0%",
+            "message": "缓存系统运行正常，命中率 80.0%",
+            "total_reads": 1600,
+            "average_latency_ms": 12.4,
+            "timestamp": "2026-04-05T08:00:00+00:00",
+        },
+    ),
+    500: COMMON_RESPONSES[500],
+}
+
+
+@router.post(
+    "/prewarming/trigger",
+    summary="触发缓存预热",
+    description="立即执行一次缓存预热任务并返回预热数量、失败数量和耗时，供值班排障或发布后手动补热使用。",
+    responses=PREWARM_TRIGGER_RESPONSES,
+)
 async def trigger_cache_prewarming(current_user: User = Depends(get_current_user)) -> dict[str, Any]:
     try:
         result = get_prewarming_strategy().prewarm_cache()
@@ -46,7 +134,12 @@ async def trigger_cache_prewarming(current_user: User = Depends(get_current_user
         raise BusinessException(detail=str(error), status_code=500, error_code="CACHE_OPERATION_FAILED")
 
 
-@router.get("/prewarming/status")
+@router.get(
+    "/prewarming/status",
+    summary="获取缓存预热状态",
+    description="返回缓存预热策略的当前状态、最近执行时间和下一次计划执行时间，供缓存运营监控使用。",
+    responses=PREWARM_STATUS_RESPONSES,
+)
 async def get_prewarming_status(current_user: User = Depends(get_current_user)) -> dict[str, Any]:
     try:
         status = get_prewarming_strategy().get_prewarming_status()
@@ -57,7 +150,12 @@ async def get_prewarming_status(current_user: User = Depends(get_current_user)) 
         raise BusinessException(detail=str(error), status_code=500, error_code="CACHE_OPERATION_FAILED")
 
 
-@router.get("/monitoring/metrics")
+@router.get(
+    "/monitoring/metrics",
+    summary="获取缓存监控指标",
+    description="返回缓存命中率、延迟和总读取次数等关键指标，供观察缓存效果和性能走势使用。",
+    responses=CACHE_MONITORING_METRICS_RESPONSES,
+)
 async def get_cache_monitoring_metrics(current_user: User = Depends(get_current_user)) -> dict[str, Any]:
     try:
         metrics = get_cache_monitor().get_metrics()
@@ -80,7 +178,12 @@ async def get_cache_monitoring_metrics(current_user: User = Depends(get_current_
         raise BusinessException(detail=str(error), status_code=500, error_code="CACHE_OPERATION_FAILED")
 
 
-@router.get("/monitoring/health")
+@router.get(
+    "/monitoring/health",
+    summary="获取缓存健康状态",
+    description="根据缓存命中率和延迟计算当前健康状态，供健康面板和告警系统快速判定缓存是否需要人工干预。",
+    responses=CACHE_MONITORING_HEALTH_RESPONSES,
+)
 async def get_cache_health_status(current_user: User = Depends(get_current_user)) -> dict[str, Any]:
     try:
         health = get_prewarming_strategy().get_health_status()
