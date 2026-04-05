@@ -73,6 +73,25 @@ AUTH_LOGOUT_RESPONSES = {
     **_success_response_spec(200, "用户登出成功", {"message": "登出成功", "success": True}),
 }
 
+AUTH_LOGIN_RESPONSES = {
+    **_success_response_spec(
+        200,
+        "用户登录成功并返回访问令牌",
+        {
+            "success": True,
+            "data": {
+                "token": "eyJhbGciOiJIUzI1NiIs...",
+                "token_type": "bearer",
+                "expires_in": 7200,
+                "user": {"username": "trader_admin", "email": "admin@example.com", "role": "admin"},
+            },
+            "message": "登录成功",
+            "timestamp": "2026-04-05T12:00:00Z",
+            "request_id": "req-auth-login-001",
+        },
+    ),
+}
+
 AUTH_ME_RESPONSES = {
     **_success_response_spec(
         200,
@@ -195,7 +214,25 @@ async def get_current_active_user(
     return current_user
 
 
-@router.post("/login")
+@router.post(
+    "/login",
+    summary="用户登录",
+    responses=AUTH_LOGIN_RESPONSES,
+    openapi_extra={
+        "requestBody": {
+            "required": True,
+            "content": {
+                "application/x-www-form-urlencoded": {
+                    "schema": {"$ref": "#/components/schemas/Body_login_for_access_token_api_v1_auth_login_post"},
+                    "example": {
+                        "username": "trader_admin",
+                        "password": "SecurePass123",
+                    },
+                }
+            },
+        }
+    },
+)
 async def login_for_access_token(
     request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),

@@ -1095,6 +1095,21 @@ def test_auth_support_endpoints_have_docs_examples_and_error_responses() -> None
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
+def test_auth_login_endpoint_has_form_example_and_error_docs() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    operation = schema["paths"]["/api/v1/auth/login"]["post"]
+    form_content = operation["requestBody"]["content"]["application/x-www-form-urlencoded"]
+    success_json = operation["responses"]["200"]["content"]["application/json"]
+
+    assert operation.get("summary")
+    assert len(operation.get("description", "")) >= 20
+    assert "example" in form_content or "examples" in form_content
+    assert "example" in success_json or "examples" in success_json
+    assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_stock_search_endpoints_have_docs_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()

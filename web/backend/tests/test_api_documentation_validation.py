@@ -215,16 +215,22 @@ class APIDocumentationValidator:
             return
 
         content = request_body["content"]
-        if "application/json" not in content:
-            endpoint_result["issues"].append(f"Request body missing JSON content for {method.upper()}")
+        supported_content_types = [
+            "application/json",
+            "application/x-www-form-urlencoded",
+            "multipart/form-data",
+        ]
+        matching_content_type = next((content_type for content_type in supported_content_types if content_type in content), None)
+        if matching_content_type is None:
+            endpoint_result["issues"].append(f"Request body missing supported content type for {method.upper()}")
             return
 
-        json_content = content["application/json"]
-        if "schema" not in json_content:
+        request_content = content[matching_content_type]
+        if "schema" not in request_content:
             endpoint_result["issues"].append(f"Request body missing schema for {method.upper()}")
 
         # Check for examples
-        if "example" in json_content or "examples" in json_content:
+        if "example" in request_content or "examples" in request_content:
             endpoint_result["documentation"]["has_examples"] = True
         else:
             endpoint_result["issues"].append(f"Request body missing example for {method.upper()}")
