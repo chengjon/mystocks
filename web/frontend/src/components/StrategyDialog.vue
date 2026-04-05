@@ -91,10 +91,14 @@
 </template>
 
 <script setup lang="ts">
-// @ts-nocheck
-
 import { ref, computed, watch } from 'vue';
-import type { StrategyVM as Strategy, CreateStrategyRequestVM as CreateStrategyRequest, UpdateStrategyRequestVM as UpdateStrategyRequest } from '@/api/types/extensions';
+import type {
+  StrategyVM as Strategy,
+  CreateStrategyRequestVM as CreateStrategyRequest,
+  UpdateStrategyRequestVM as UpdateStrategyRequest,
+  StrategyConstraintsVM,
+  RiskLimitsVM,
+} from '@/api/types/extensions';
 
 const props = defineProps<{
   strategy?: Strategy | null;
@@ -110,6 +114,26 @@ const show = computed(() => !!props.strategy);
 const isEditing = computed(() => !!props.strategy);
 
 const isSubmitting = ref(false);
+
+const defaultConstraints: StrategyConstraintsVM = {
+  allowed_symbols: [],
+  allowed_sectors: [],
+  forbidden_symbols: [],
+  trading_hours: {
+    start: '09:30',
+    end: '15:00',
+  },
+  market_conditions: [],
+};
+
+const defaultRiskLimits: RiskLimitsVM = {
+  daily_pnl_limit: 0,
+  single_stock_loss_limit: 0,
+  total_drawdown_limit: 0,
+  max_holding_period_days: 0,
+  max_consecutive_losses: 0,
+  max_loss_per_trade: 0,
+};
 
 const formData = ref<{
   name: string;
@@ -130,7 +154,7 @@ watch(
     if (strategy) {
       formData.value = {
         name: strategy.name,
-        description: strategy.description,
+        description: strategy.description ?? '',
         type: strategy.type,
         parameters: { ...strategy.parameters },
       };
@@ -158,6 +182,7 @@ const addParameter = () => {
 const handleSubmit = () => {
   if (isEditing.value && props.strategy) {
     const data: UpdateStrategyRequest = {
+      id: props.strategy.id,
       name: formData.value.name,
       description: formData.value.description,
       parameters: formData.value.parameters,
@@ -169,6 +194,8 @@ const handleSubmit = () => {
       description: formData.value.description,
       type: formData.value.type,
       parameters: formData.value.parameters,
+      constraints: defaultConstraints,
+      risk_limits: defaultRiskLimits,
     };
     emit('save', data);
   }
