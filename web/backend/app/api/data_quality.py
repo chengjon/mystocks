@@ -121,6 +121,100 @@ DATA_QUALITY_ALERT_RESOLVE_RESPONSES = {
     ),
 }
 
+DATA_QUALITY_METRICS_RESPONSES = {
+    **DATA_QUALITY_ERROR_RESPONSES,
+    **_success_response_spec(
+        "数据质量指标",
+        {
+            "success": True,
+            "message": "All data quality metrics retrieved successfully",
+            "data": {
+                "timestamp": "2026-04-05T08:00:00Z",
+                "summary": {
+                    "average_quality_score": 93.2,
+                    "health_percentage": 96.7,
+                    "healthy_sources": 3,
+                    "total_active_alerts": 1,
+                    "critical_alerts": 0,
+                },
+                "sources": {
+                    "akshare": {
+                        "overall_quality_score": 95.6,
+                        "overall_health": "healthy",
+                        "active_alerts_count": 0,
+                        "metrics_summary": {
+                            "freshness": {
+                                "value": 99.2,
+                                "unit": "%",
+                                "quality_level": "excellent",
+                                "severity": "info",
+                            }
+                        },
+                    }
+                },
+            },
+            "timestamp": "2026-04-05T08:00:00Z",
+        },
+    ),
+}
+
+DATA_QUALITY_ALERTS_RESPONSES = {
+    **DATA_QUALITY_ERROR_RESPONSES,
+    **_success_response_spec(
+        "活跃数据质量告警",
+        {
+            "success": True,
+            "message": "Active alerts retrieved successfully",
+            "data": {
+                "timestamp": "2026-04-05T08:00:00Z",
+                "total_alerts": 1,
+                "returned_alerts": 1,
+                "alerts": [
+                    {
+                        "id": "alert_001",
+                        "metric_name": "freshness",
+                        "severity": "warning",
+                        "source": "akshare",
+                        "message": "Data freshness exceeded threshold",
+                        "timestamp": "2026-04-05T07:58:00Z",
+                        "acknowledged": False,
+                        "resolved": False,
+                        "resolved_at": None,
+                        "metadata": {"threshold_minutes": 15},
+                    }
+                ],
+            },
+            "timestamp": "2026-04-05T08:00:00Z",
+        },
+    ),
+}
+
+DATA_QUALITY_TRENDS_RESPONSES = {
+    404: COMMON_RESPONSES[404],
+    **DATA_QUALITY_ERROR_RESPONSES,
+    **_success_response_spec(
+        "数据质量趋势",
+        {
+            "success": True,
+            "message": "Quality trends for 'akshare' retrieved successfully",
+            "data": {
+                "source": "akshare",
+                "period_hours": 24,
+                "total_evaluations": 12,
+                "hourly_trends": {
+                    "2026-04-05 08:00": {
+                        "avg_quality_score": 94.5,
+                        "avg_response_time": 132.4,
+                        "success_rate": 100.0,
+                        "total_evaluations": 3,
+                    }
+                },
+            },
+            "timestamp": "2026-04-05T08:00:00Z",
+        },
+    ),
+}
+
 DATA_QUALITY_MODE_RESPONSES = {
     **DATA_QUALITY_ERROR_RESPONSES,
     **_success_response_spec(
@@ -249,7 +343,12 @@ async def get_sources_health():
         )
 
 
-@router.get("/metrics")
+@router.get(
+    "/metrics",
+    summary="获取数据质量指标",
+    description="返回指定数据源或全量数据源的数据质量评分、健康等级和关键指标摘要，供质量大盘和巡检脚本使用。",
+    responses=DATA_QUALITY_METRICS_RESPONSES,
+)
 async def get_data_quality_metrics(source: Optional[str] = Query(None, description="Filter by specific data source")):
     """获取数据质量指标"""
     try:
@@ -334,7 +433,12 @@ async def get_data_quality_metrics(source: Optional[str] = Query(None, descripti
         )
 
 
-@router.get("/alerts")
+@router.get(
+    "/alerts",
+    summary="获取活跃数据质量告警",
+    description="按严重级别、数据源和数量上限返回当前活跃告警列表，供值班人员快速识别待处理的数据质量问题。",
+    responses=DATA_QUALITY_ALERTS_RESPONSES,
+)
 async def get_active_alerts(
     severity: Optional[str] = Query(None, description="Filter by severity level"),
     source: Optional[str] = Query(None, description="Filter by data source"),
@@ -610,7 +714,12 @@ async def test_data_quality(
         )
 
 
-@router.get("/metrics/trends")
+@router.get(
+    "/metrics/trends",
+    summary="获取数据质量趋势",
+    description="按数据源和时间窗口返回质量评分、响应时间与成功率趋势，供识别质量退化和波动周期使用。",
+    responses=DATA_QUALITY_TRENDS_RESPONSES,
+)
 async def get_quality_trends(
     source: str = Query(..., description="Data source name"),
     hours: int = Query(24, ge=1, le=168, description="Number of hours to analyze"),
