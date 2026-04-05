@@ -898,6 +898,31 @@ def test_stock_reference_endpoints_have_docs_examples_and_error_responses() -> N
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
+def test_stock_search_endpoints_have_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    endpoint_expectations = {
+        "/api/stock-search/search": {"q", "market", "page", "page_size", "sort_by", "sort_order"},
+        "/api/stock-search/quote/{symbol}": {"symbol", "market"},
+        "/api/stock-search/profile/{symbol}": {"symbol", "market"},
+    }
+
+    for path, parameter_names in endpoint_expectations.items():
+        operation = schema["paths"][path]["get"]
+        parameters = operation.get("parameters", [])
+        success_json = operation["responses"][next(code for code in operation["responses"] if code.startswith("2"))][
+            "content"
+        ]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in parameter_names:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_watchlist_write_endpoints_have_docs_and_request_examples() -> None:
     app.openapi_schema = None
     schema = app.openapi()
