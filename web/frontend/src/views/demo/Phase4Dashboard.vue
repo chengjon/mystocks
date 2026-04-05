@@ -11,7 +11,7 @@
     <div class="stats-grid">
       <div class="card stat-card">
         <div class="stat-content">
-          <div class="stat-icon" style="background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light))">
+          <div class="stat-icon market-indices-icon">
             <span class="icon-emoji">📊</span>
           </div>
           <div class="stat-info">
@@ -26,7 +26,7 @@
 
       <div class="card stat-card">
         <div class="stat-content">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #27AE60, #2ECC71)">
+          <div class="stat-icon watchlist-icon">
             <span class="icon-emoji">⭐</span>
           </div>
           <div class="stat-info">
@@ -41,7 +41,7 @@
 
       <div class="card stat-card">
         <div class="stat-content">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #E67E22, #F39C12)">
+          <div class="stat-icon portfolio-icon">
             <span class="icon-emoji">💼</span>
           </div>
           <div class="stat-info">
@@ -56,7 +56,7 @@
 
       <div class="card stat-card">
         <div class="stat-content">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #E74C3C, #C0392B)">
+          <div class="stat-icon risk-alerts-icon">
             <span class="icon-emoji">⚠️</span>
           </div>
           <div class="stat-info">
