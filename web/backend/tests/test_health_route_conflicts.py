@@ -1064,6 +1064,37 @@ def test_akshare_board_endpoints_have_docs_examples_and_error_responses() -> Non
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
+def test_auth_support_endpoints_have_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    endpoint_expectations = {
+        ("/api/v1/auth/logout", "post"): {"parameters": set(), "requires_request_example": False},
+        ("/api/v1/auth/me", "get"): {"parameters": set(), "requires_request_example": False},
+        ("/api/v1/auth/refresh", "post"): {"parameters": set(), "requires_request_example": False},
+        ("/api/v1/auth/register", "post"): {"parameters": set(), "requires_request_example": True},
+        ("/api/v1/auth/reset-password/request", "post"): {"parameters": set(), "requires_request_example": True},
+        ("/api/v1/auth/reset-password/confirm", "post"): {"parameters": set(), "requires_request_example": True},
+    }
+
+    for (path, method), expectation in endpoint_expectations.items():
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+        success_json = operation["responses"][next(code for code in operation["responses"] if code.startswith("2"))][
+            "content"
+        ]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expectation["parameters"]:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        if expectation["requires_request_example"]:
+            request_json = operation["requestBody"]["content"]["application/json"]
+            assert "example" in request_json or "examples" in request_json
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_stock_search_endpoints_have_docs_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()

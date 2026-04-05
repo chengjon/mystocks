@@ -6,7 +6,7 @@ import logging
 from datetime import timedelta
 from typing import Any, Dict
 
-from fastapi import APIRouter, Depends, Request, status
+from fastapi import APIRouter, Body, Depends, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2PasswordRequestForm
 
 from app.api.auth_compat import compat_router
@@ -41,6 +41,107 @@ security = HTTPBearer()
 # The authenticate_user() and get_user_from_database() functions
 # handle database queries with automatic fallback to mock data
 # if the database is unavailable.
+
+
+def _success_response_spec(status_code: int, description: str, example: object) -> dict[int, dict]:
+    return {
+        status_code: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+def _error_response_spec(status_code: int, description: str, example: dict) -> dict[int, dict]:
+    return {
+        status_code: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+AUTH_LOGOUT_RESPONSES = {
+    **_success_response_spec(200, "用户登出成功", {"message": "登出成功", "success": True}),
+}
+
+AUTH_ME_RESPONSES = {
+    **_success_response_spec(
+        200,
+        "当前登录用户信息",
+        {"id": 1, "username": "trader_admin", "email": "admin@example.com", "role": "admin", "is_active": True},
+    ),
+}
+
+AUTH_REFRESH_RESPONSES = {
+    **_success_response_spec(
+        200,
+        "访问令牌刷新成功",
+        {"access_token": "eyJhbGciOiJIUzI1NiIs...", "token_type": "bearer", "expires_in": 7200},
+    ),
+}
+
+AUTH_REGISTER_RESPONSES = {
+    **_error_response_spec(409, "用户名或邮箱已存在", {"detail": "用户名已存在", "error_code": "USER_ALREADY_EXISTS"}),
+    **_success_response_spec(
+        201,
+        "用户注册成功",
+        {
+            "success": True,
+            "data": {
+                "id": 3,
+                "username": "john_doe",
+                "email": "john@example.com",
+                "role": "user",
+                "is_active": True,
+            },
+            "message": "User registered successfully",
+            "timestamp": "2026-04-05T12:00:00Z",
+            "request_id": "req-auth-register-001",
+        },
+    ),
+}
+
+AUTH_RESET_REQUEST_RESPONSES = {
+    **_success_response_spec(
+        200,
+        "密码重置请求已受理",
+        {
+            "success": True,
+            "data": None,
+            "message": "If the email exists, a password reset link has been sent",
+            "timestamp": "2026-04-05T12:00:00Z",
+            "request_id": "req-auth-reset-001",
+        },
+    ),
+}
+
+AUTH_RESET_CONFIRM_RESPONSES = {
+    **_error_response_spec(
+        400,
+        "密码重置令牌无效或已过期",
+        {"detail": "Invalid or expired reset token", "error_code": "INVALID_RESET_TOKEN"},
+    ),
+    **_success_response_spec(
+        200,
+        "密码重置成功",
+        {
+            "success": True,
+            "data": None,
+            "message": "Password reset successfully",
+            "timestamp": "2026-04-05T12:00:00Z",
+            "request_id": "req-auth-reset-confirm-001",
+        },
+    ),
+}
 
 
 async def get_current_user(
@@ -143,7 +244,12 @@ async def login_for_access_token(
     )
 
 
-@router.post("/logout")
+@router.post(
+    "/logout",
+    summary="用户登出",
+    description="撤销当前 Bearer Token 并结束当前会话，用于前端主动退出登录。",
+    responses=AUTH_LOGOUT_RESPONSES,
+)
 async def logout(
     credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()), current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
@@ -155,7 +261,13 @@ async def logout(
     return {"message": "登出成功", "success": True}
 
 
-@router.get("/me", response_model=User)
+@router.get(
+    "/me",
+    response_model=User,
+    summary="获取当前用户信息",
+    description="返回当前登录用户的基础资料和角色信息，用于前端初始化登录态。",
+    responses=AUTH_ME_RESPONSES,
+)
 async def read_users_me(current_user: User = Depends(get_current_user)) -> User:
     """
     获取当前用户信息
@@ -163,7 +275,12 @@ async def read_users_me(current_user: User = Depends(get_current_user)) -> User:
     return current_user
 
 
-@router.post("/refresh")
+@router.post(
+    "/refresh",
+    summary="刷新访问令牌",
+    description="基于当前已认证用户重新签发访问令牌，用于延长会话有效期。",
+    responses=AUTH_REFRESH_RESPONSES,
+)
 async def refresh_token(
     current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
@@ -318,8 +435,24 @@ async def get_csrf_token():
         )
 
 
-@router.post("/register", status_code=status.HTTP_201_CREATED)
-async def register_user(user_data: UserRegisterRequest):
+@router.post(
+    "/register",
+    status_code=status.HTTP_201_CREATED,
+    summary="用户注册",
+    description="创建新用户账户，要求提供用户名、邮箱和符合强度要求的密码。",
+    responses=AUTH_REGISTER_RESPONSES,
+)
+async def register_user(
+    user_data: UserRegisterRequest = Body(
+        ...,
+        example={
+            "username": "john_doe",
+            "email": "john@example.com",
+            "password": "SecurePass123",
+            "role": "user",
+        },
+    )
+):
     """
     用户注册
 
@@ -455,8 +588,15 @@ async def register_user(user_data: UserRegisterRequest):
             session.close()
 
 
-@router.post("/reset-password/request")
-async def request_password_reset(request: PasswordResetRequest):
+@router.post(
+    "/reset-password/request",
+    summary="请求密码重置",
+    description="提交邮箱地址并触发密码重置流程，接口始终返回统一成功消息以避免邮箱枚举。",
+    responses=AUTH_RESET_REQUEST_RESPONSES,
+)
+async def request_password_reset(
+    request: PasswordResetRequest = Body(..., example={"email": "user@example.com"})
+):
     """
     请求密码重置
 
@@ -547,8 +687,18 @@ async def request_password_reset(request: PasswordResetRequest):
             session.close()
 
 
-@router.post("/reset-password/confirm")
-async def confirm_password_reset(reset_data: PasswordResetConfirm):
+@router.post(
+    "/reset-password/confirm",
+    summary="确认密码重置",
+    description="提交重置令牌和新密码，完成用户密码更新。",
+    responses=AUTH_RESET_CONFIRM_RESPONSES,
+)
+async def confirm_password_reset(
+    reset_data: PasswordResetConfirm = Body(
+        ...,
+        example={"token": "eyJhbGciOiJIUzI1NiIs...", "new_password": "NewSecurePass123"},
+    )
+):
     """
     确认密码重置
 
