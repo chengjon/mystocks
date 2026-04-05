@@ -229,10 +229,15 @@
     - Evidence: the canonical page now resolves `ArtDecoPageTemplate.vue` and risk-tab helpers through stable absolute `@/views/...` imports.
   - [x] 9.2.3 Run lint & type-check
   - [x] 9.2.4 Run unit tests for Center.vue
-- [ ] 9.3 Move `artdeco-pages/risk-tabs/RiskOverviewTab.vue` → `views/risk/Overview.vue`
-  - [ ] 9.3.1 Move dependency: `useRiskOverview.ts`
-  - [ ] 9.3.2 Update imports
-  - [ ] 9.3.3 Run lint & type-check
+- [x] 9.3 Move `artdeco-pages/risk-tabs/RiskOverviewTab.vue` → `views/risk/Overview.vue`
+  - Completed: 2026-04-06 via repo-truth-aligned micro-batch `2026-04-06-restructure-risk-overview-main`.
+  - Result: `src/views/risk/Overview.vue` now hosts the canonical risk overview implementation; `RiskOverviewTab.vue` is retained as a legacy compatibility wrapper into the canonical route entrypoint.
+  - [x] 9.3.1 Move dependency: `useRiskOverview.ts`
+    - Repo-truth note: not applicable as written. The current risk overview page does not own a local `useRiskOverview.ts`; it already uses stable absolute imports and pulls risk rule data through `monitoringApi.getAlertRules()`.
+  - [x] 9.3.2 Update imports
+    - Evidence: the legacy ArtDeco path now imports `@/views/risk/Overview.vue`, while the canonical page retains the repo-truth implementation imports from `@/api/index`, `@/api/types/common`, `@/composables/artdeco/useArtDecoApi`, and `@/components/artdeco`.
+  - [x] 9.3.3 Run lint & type-check
+  - [x] 9.3.4 Run unit tests for Overview.vue
 - [ ] 9.4 Move `artdeco-pages/risk-tabs/StopLossMonitorTab.vue` → `views/risk/StopLoss.vue`
   - [ ] 9.4.1 Move dependency: `useStopLoss.ts`
   - [ ] 9.4.2 Update imports

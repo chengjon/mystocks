@@ -22,8 +22,8 @@ class StockSearchResult(BaseModel):
 class StockQuote(BaseModel):
     """股票报价"""
 
-    symbol: Optional[str] = None
-    name: Optional[str] = None
+    symbol: Optional[str] = Field(None, description="股票代码")
+    name: Optional[str] = Field(None, description="股票名称")
     current: float = Field(..., description="当前价格")
     change: float = Field(..., description="涨跌额")
     percent_change: float = Field(..., description="涨跌幅")
