@@ -610,15 +610,15 @@ artdeco-system/
 ├── assets/
 │   └── css/
 │       └── artdeco-theme.css          # Core theme file
-├── 01-dashboard.html                  # ✅ Complete
-├── 02-market-center.html              # ✅ Complete
-├── 03-stock-screener.html             # ✅ Complete
-├── 04-data-analysis.html              # 🚧 Template
-├── 05-strategy-lab.html               # 🚧 Template
-├── 06-backtest-arena.html             # 🚧 Template
-├── 07-trade-station.html              # 🚧 Template
-├── 08-risk-center.html                # 🚧 Template
-├── 09-system-settings.html            # 🚧 Template
+├── 01-dashboard.html                  # historical example
+├── 02-market-center.html              # historical example
+├── 03-stock-screener.html             # historical example
+├── 04-data-analysis.html              # historical template
+├── 05-strategy-lab.html               # historical template
+├── 06-backtest-arena.html             # historical template
+├── 07-trade-station.html              # historical template
+├── 08-risk-center.html                # historical template
+├── 09-system-settings.html            # historical template
 └── README.md                           # This file
 ```
 
