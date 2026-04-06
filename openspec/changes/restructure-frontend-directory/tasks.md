@@ -313,7 +313,14 @@
     - Evidence: the canonical page now resolves `useArtDecoApi`, `monitoringApi`, and the data-management helpers through stable absolute imports, while the legacy ArtDeco path imports `@/views/system/DataSource.vue`.
   - [x] 10.4.3 Run lint & type-check
   - [x] 10.4.4 Run unit tests for DataSource.vue
-- [ ] 10.5 Commit: "refactor: migrate system domain pages"
+- [x] 10.5 Record system domain migration closeout
+  - Completed: 2026-04-06 via repo-truth-aligned ledger batch `2026-04-06-restructure-system-domain-ledger-main`.
+  - Repo-truth note: system-domain migration landed as four verified micro-batches instead of one monolithic commit.
+  - Verified micro-batch chain:
+    - `74d4cac6b` `refactor[frontend]: migrate system settings canonical entrypoint`
+    - `3980779da` `refactor[frontend]: migrate system health canonical entrypoint`
+    - `0cc915904` `refactor[frontend]: migrate system api canonical entrypoint`
+    - `e080f4ae0` `refactor[frontend]: migrate system data source canonical entrypoint`
 
 ## 11. Routing & Layout Adjustments (Phase 4)
 - [ ] 11.1 Edit `src/router/index.ts` to update all route paths to new locations
