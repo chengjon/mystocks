@@ -19,7 +19,16 @@ from typing import List, Optional, Tuple
 from dotenv import load_dotenv
 import yaml
 
-load_dotenv()  # Load environment variables from .env
+
+def _safe_load_dotenv() -> None:
+    """导入期仅做非阻塞环境加载，避免因本地 .env 权限导致模块不可导入。"""
+    try:
+        load_dotenv()
+    except OSError as error:
+        logging.getLogger(__name__).warning("skip load_dotenv during import: %s", error)
+
+
+_safe_load_dotenv()
 
 
 class TdxServerConfig:

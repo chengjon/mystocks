@@ -32,6 +32,19 @@ from app.openapi_config import COMMON_RESPONSES
 
 logger = logging.getLogger(__name__)
 
+
+def _success_response_spec(description: str, example: Any) -> Dict[int, Dict[str, Any]]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
 MONITORING_WATCHLIST_ROUTE_RESPONSES = {
     400: COMMON_RESPONSES[400],
     404: COMMON_RESPONSES[404],
@@ -116,6 +129,106 @@ ADD_STOCK_REQUEST_EXAMPLES = {
         },
     }
 }
+
+WATCHLIST_LIST_RESPONSES = _success_response_spec(
+    "监控清单列表",
+    {
+        "success": True,
+        "code": 200,
+        "message": "获取清单列表成功",
+        "data": [
+            {
+                "id": 1,
+                "user_id": 1,
+                "name": "核心止损监控",
+                "watchlist_type": "manual",
+                "risk_profile": {"max_position_size": 0.15, "default_stop_loss_pct": 0.08},
+                "is_active": True,
+                "created_at": "2026-03-13T09:30:00",
+                "updated_at": "2026-03-13T09:30:00",
+                "stocks_count": 2,
+            }
+        ],
+        "timestamp": "2026-04-05T12:00:00Z",
+        "request_id": "req-monitoring-watchlists-001",
+        "errors": None,
+    },
+)
+
+WATCHLIST_DETAIL_RESPONSES = _success_response_spec(
+    "监控清单详情",
+    {
+        "success": True,
+        "code": 200,
+        "message": "获取清单成功",
+        "data": {
+            "id": 1,
+            "user_id": 1,
+            "name": "核心止损监控",
+            "watchlist_type": "manual",
+            "risk_profile": {"max_position_size": 0.15, "default_stop_loss_pct": 0.08},
+            "is_active": True,
+            "created_at": "2026-03-13T09:30:00",
+            "updated_at": "2026-03-13T09:30:00",
+            "stocks_count": 2,
+        },
+        "timestamp": "2026-04-05T12:00:00Z",
+        "request_id": "req-monitoring-watchlists-002",
+        "errors": None,
+    },
+)
+
+WATCHLIST_DELETE_RESPONSES = _success_response_spec(
+    "监控清单删除成功",
+    {
+        "success": True,
+        "code": 200,
+        "message": "删除清单成功",
+        "data": None,
+        "timestamp": "2026-04-05T12:00:00Z",
+        "request_id": "req-monitoring-watchlists-003",
+        "errors": None,
+    },
+)
+
+WATCHLIST_STOCK_LIST_RESPONSES = _success_response_spec(
+    "监控清单成员列表",
+    {
+        "success": True,
+        "code": 200,
+        "message": "获取股票列表成功",
+        "data": [
+            {
+                "id": 1001,
+                "watchlist_id": 1,
+                "stock_code": "000001",
+                "entry_price": 12.45,
+                "entry_at": "2026-03-13T09:30:00",
+                "entry_reason": "突破年线纳入观察",
+                "stop_loss_price": 11.5,
+                "target_price": 13.6,
+                "weight": 0.4,
+                "is_active": True,
+            }
+        ],
+        "timestamp": "2026-04-05T12:00:00Z",
+        "request_id": "req-monitoring-watchlists-004",
+        "errors": None,
+    },
+)
+
+WATCHLIST_STOCK_DELETE_RESPONSES = _success_response_spec(
+    "监控清单成员移除成功",
+    {
+        "success": True,
+        "code": 200,
+        "message": "移除股票成功",
+        "data": None,
+        "timestamp": "2026-04-05T12:00:00Z",
+        "request_id": "req-monitoring-watchlists-005",
+        "errors": None,
+    },
+)
 
 
 # ==================== 请求模型 ====================
@@ -485,6 +598,7 @@ async def create_watchlist(
     response_model=UnifiedResponse[List[WatchlistResponse]],
     summary="获取监控清单列表",
     description="按用户查询当前全部监控清单，并返回每个清单的类型、启用状态、风控配置和成员数量汇总。",
+    responses=WATCHLIST_LIST_RESPONSES,
 )
 @handle_exceptions
 async def list_watchlists(
@@ -542,6 +656,7 @@ async def list_watchlists(
     response_model=UnifiedResponse[WatchlistResponse],
     summary="获取监控清单详情",
     description="根据清单 ID 查询单个监控清单的完整信息，包括名称、风控配置、启用状态以及当前成员数量。",
+    responses=WATCHLIST_DETAIL_RESPONSES,
 )
 @handle_exceptions
 async def get_watchlist(
@@ -616,6 +731,7 @@ async def update_watchlist(
     response_model=UnifiedResponse[None],
     summary="删除监控清单",
     description="删除指定监控清单，并级联移除该清单下的全部成员记录，适用于清单下线或策略废弃场景。",
+    responses=WATCHLIST_DELETE_RESPONSES,
 )
 @handle_exceptions
 async def delete_watchlist(
@@ -743,6 +859,7 @@ async def add_stock_to_watchlist(
     response_model=UnifiedResponse[List[WatchlistStockResponse]],
     summary="获取监控清单成员",
     description="查询指定监控清单下的全部股票成员及其入库价格、风控阈值、权重和启用状态。",
+    responses=WATCHLIST_STOCK_LIST_RESPONSES,
 )
 @handle_exceptions
 async def list_watchlist_stocks(
@@ -813,6 +930,7 @@ async def list_watchlist_stocks(
     response_model=UnifiedResponse[None],
     summary="移除监控清单成员",
     description="从指定监控清单中移除某只股票，常用于止损出清、观察结束或误加成员后的回滚处理。",
+    responses=WATCHLIST_STOCK_DELETE_RESPONSES,
 )
 @handle_exceptions
 async def remove_stock_from_watchlist(

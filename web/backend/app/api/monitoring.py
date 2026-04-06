@@ -203,6 +203,43 @@ ALERT_MARK_ALL_READ_RESPONSES = {
     ),
 }
 
+ALERT_RECORDS_LIST_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "获取告警记录列表失败",
+        {"detail": "监控服务不可用", "error_code": "MONITORING_OPERATION_FAILED"},
+    ),
+    **_success_response_spec(
+        200,
+        "告警记录列表",
+        {
+            "success": True,
+            "data": [
+                {
+                    "id": 9101,
+                    "rule_id": 9001,
+                    "rule_name": "核心仓位跌破止损线",
+                    "symbol": "600519",
+                    "stock_name": "贵州茅台",
+                    "alert_time": "2026-04-05T14:31:00",
+                    "alert_type": "technical_break",
+                    "alert_level": "critical",
+                    "alert_title": "止损预警",
+                    "alert_message": "当前价格接近止损线，请优先复核仓位",
+                    "alert_details": {"stop_loss_price": 1750.0},
+                    "snapshot_data": {"current_price": 1762.0, "distance_to_stop": 0.69},
+                    "is_read": False,
+                    "is_handled": False,
+                    "created_at": "2026-04-05T14:31:00",
+                }
+            ],
+            "total": 1,
+            "limit": 100,
+            "offset": 0,
+        },
+    ),
+}
+
 REALTIME_MONITORING_DETAIL_RESPONSES = {
     **_error_response_spec(
         404,
@@ -310,6 +347,35 @@ FETCH_DRAGON_TIGER_DATA_RESPONSES = {
             "message": "龙虎榜数据获取成功",
             "data": {"trade_date": "2026-04-05", "count": 12},
         },
+    ),
+}
+
+DRAGON_TIGER_LIST_RESPONSES = {
+    **_error_response_spec(
+        500,
+        "获取龙虎榜列表失败",
+        {"detail": "监控服务不可用", "error_code": "MONITORING_OPERATION_FAILED"},
+    ),
+    **_success_response_spec(
+        200,
+        "龙虎榜记录列表",
+        [
+            {
+                "id": 7101,
+                "symbol": "600519",
+                "stock_name": "贵州茅台",
+                "trade_date": "2026-04-05",
+                "reason": "日涨幅偏离值达到 7%",
+                "total_buy_amount": 356000000.0,
+                "total_sell_amount": 210000000.0,
+                "net_amount": 146000000.0,
+                "institution_buy_count": 3,
+                "institution_sell_count": 1,
+                "institution_net_amount": 92000000.0,
+                "detail_data": {"top_buy_seat": "机构专用", "top_sell_seat": "沪股通专用"},
+                "impact_score": 8,
+            }
+        ],
     ),
 }
 
@@ -667,7 +733,13 @@ class AlertRecordsResponse(BaseModel):
     offset: int = Field(..., description="当前分页偏移量。")
 
 
-@router.get("/alerts", response_model=AlertRecordsResponse)
+@router.get(
+    "/alerts",
+    response_model=AlertRecordsResponse,
+    summary="获取告警记录列表",
+    description="查询监控告警记录，支持按股票、告警类型、等级、已读状态和日期区间进行筛选分页。",
+    responses=ALERT_RECORDS_LIST_RESPONSES,
+)
 async def get_alert_records(
     symbol: Optional[str] = Query(None, description="按股票代码筛选告警记录。"),
     alert_type: Optional[str] = Query(None, description="按告警类型筛选，例如 limit_up 或 volume_spike。"),
@@ -932,7 +1004,13 @@ async def fetch_realtime_data(
 # ============================================================================
 
 
-@router.get("/dragon-tiger", response_model=List[DragonTigerListResponse])
+@router.get(
+    "/dragon-tiger",
+    response_model=List[DragonTigerListResponse],
+    summary="获取龙虎榜列表",
+    description="查询监控模块内的龙虎榜记录，支持按交易日、股票代码和净买入额阈值进行过滤。",
+    responses=DRAGON_TIGER_LIST_RESPONSES,
+)
 async def get_dragon_tiger_list(
     trade_date: Optional[date] = Query(None, description="按交易日期筛选龙虎榜数据，默认当天。"),
     symbol: Optional[str] = Query(None, description="按股票代码筛选龙虎榜数据。"),

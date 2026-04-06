@@ -22,6 +22,12 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Dict, List, Optional
 
+from src.monitoring.infrastructure._postgresql_async_v3_singleton import (
+    close_postgres_async,
+    get_postgres_async,
+    initialize_postgres_async,
+)
+
 try:
     import asyncpg
 
@@ -675,5 +681,3 @@ class MonitoringPostgreSQLAccess:
         if row:
             return dict(row)
         return None
-
-
