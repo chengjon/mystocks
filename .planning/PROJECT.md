@@ -35,7 +35,7 @@ Every file in the codebase has exactly one canonical location, every import reso
 
 - [ ] Eliminate duplicate adapter layer (src/interfaces/adapters/ → resolve vs src/adapters/)
 - [ ] Fix frontend case-conflict directories (Charts/ vs charts/ etc.)
-- [ ] Auto-fix all ruff errors (target: <50 from ~1,456)
+- [ ] Reduce remaining ruff errors toward <50 (stretch goal — Phase 1 achieved <900, 805 F821 remain)
 - [ ] Merge overlapping data access layers into single canonical layer
 - [ ] Consolidate routes (remove src/routes/ + src/api/ dead code)
 - [ ] Clean frontend entry points (remove 7 extra main-*.js/ts variants)
