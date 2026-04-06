@@ -7,9 +7,9 @@
 > 文内优先级、缺口清单、执行步骤、目标值和时间线如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
 
 
-**版本**: V2.6（依据 2026-04-06 API status rule reconciliation 修订）
-**创建日期**: 2026-03-02
-**最后更新**: 2026-04-06
+**Historical Plan Version Snapshot**: V2.6（依据 2026-04-06 API status rule reconciliation 修订）
+**Historical Plan Creation Date**: 2026-03-02
+**Historical Plan Last Revision Snapshot**: 2026-04-06
 
 ## 0. 统计口径（先定义再统计）
 
