@@ -33,16 +33,22 @@ const wrapperCases = [
       "const pageStatusType = computed(() => (health.value?.status === 'healthy' ? 'success' : 'warning'))",
     ]
   },
+  {
+    label: 'system API',
+    canonicalPath: 'src/views/system/API.vue',
+    legacyPath: 'src/views/artdeco-pages/system-tabs/ArtDecoMonitoringDashboard.vue',
+    legacyImportLine: "import SystemApiCanonicalPage from '@/views/system/API.vue'",
+    legacyRenderLine: '<SystemApiCanonicalPage v-bind="attrs" />',
+    canonicalEvidence: [
+      "import { monitoringApi } from '@/api/index'",
+      "const isEmbedded = computed(() => Boolean(props.functionKey))",
+      'title="系统监控工作台"',
+      'const exportReport = async () => {',
+    ]
+  },
 ]
 
 const compatibilityWrapperCases = [
-  {
-    label: 'system API',
-    wrapperPath: 'src/views/system/API.vue',
-    implementationPath: 'src/views/artdeco-pages/system-tabs/ArtDecoMonitoringDashboard.vue',
-    importLine: "import SystemApiPage from '@/views/artdeco-pages/system-tabs/ArtDecoMonitoringDashboard.vue'",
-    renderLine: '<SystemApiPage v-bind="attrs" />'
-  },
   {
     label: 'system data source',
     wrapperPath: 'src/views/system/DataSource.vue',

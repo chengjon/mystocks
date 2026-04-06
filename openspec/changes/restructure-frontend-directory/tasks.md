@@ -295,11 +295,15 @@
     - Evidence: the canonical page now resolves `useArtDecoApi` and `apiClient` through stable absolute imports, while the legacy ArtDeco path imports `@/views/system/Health.vue`.
   - [x] 10.2.3 Run lint & type-check
   - [x] 10.2.4 Run unit tests for Health.vue
-- [ ] 10.3 Move `artdeco-pages/system-tabs/ArtDecoMonitoringDashboard.vue` → `views/system/API.vue`
-  - [ ] 10.3.1 Move dependency: `useApiMonitoring.ts`
-  - [ ] 10.3.2 Update imports
-  - [ ] 10.3.3 Run lint & type-check
-  - [ ] 10.3.4 Run unit tests for API.vue
+- [x] 10.3 Move `artdeco-pages/system-tabs/ArtDecoMonitoringDashboard.vue` → `views/system/API.vue`
+  - Completed: 2026-04-06 via repo-truth-aligned micro-batch `2026-04-06-restructure-system-api-main`.
+  - Result: `src/views/system/API.vue` now hosts the canonical system API monitoring implementation; `ArtDecoMonitoringDashboard.vue` is retained as a legacy compatibility wrapper into the canonical route entrypoint, preserving embedded usage from `ArtDecoTradingCenter.vue`.
+  - [x] 10.3.1 Move dependency: `useApiMonitoring.ts`
+    - Repo-truth note: not applicable as written. The current system API monitoring page does not own a local `useApiMonitoring.ts`; it composes `useArtDecoApi` and `monitoringApi` directly inside the page implementation.
+  - [x] 10.3.2 Update imports
+    - Evidence: the canonical page now resolves `useArtDecoApi` and `monitoringApi` through stable absolute imports, while the legacy ArtDeco path imports `@/views/system/API.vue`.
+  - [x] 10.3.3 Run lint & type-check
+  - [x] 10.3.4 Run unit tests for API.vue
 - [ ] 10.4 Move `artdeco-pages/system-tabs/ArtDecoDataManagement.vue` → `views/system/DataSource.vue`
   - [ ] 10.4.1 Move dependency: `useDataSource.ts`
   - [ ] 10.4.2 Update imports
