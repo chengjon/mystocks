@@ -85,6 +85,125 @@ INDICATOR_CACHE_STATS_RESPONSES = {
     ),
 }
 
+INDICATOR_METADATA_EXAMPLE = {
+    "abbreviation": "SMA",
+    "full_name": "Simple Moving Average",
+    "chinese_name": "简单移动平均线",
+    "category": "trend",
+    "description": "计算指定周期内收盘价的算术平均值，用于识别价格趋势方向。",
+    "panel_type": "overlay",
+    "parameters": [
+        {
+            "name": "timeperiod",
+            "type": "int",
+            "default": 20,
+            "min": 2,
+            "max": 250,
+            "description": "均线周期，常用于 A 股、港股与股指期货的趋势观察。",
+        }
+    ],
+    "outputs": [
+        {
+            "name": "sma",
+            "description": "简单移动平均值",
+        }
+    ],
+    "reference_lines": None,
+    "min_data_points_formula": "timeperiod",
+}
+
+INDICATOR_REGISTRY_RESPONSES = _response_spec(
+    200,
+    "指标注册表查询成功",
+    {
+        "total_count": 2,
+        "categories": {
+            "trend": 1,
+            "momentum": 1,
+            "volatility": 0,
+            "volume": 0,
+            "candlestick": 0,
+        },
+        "indicators": [
+            INDICATOR_METADATA_EXAMPLE,
+            {
+                "abbreviation": "RSI",
+                "full_name": "Relative Strength Index",
+                "chinese_name": "相对强弱指标",
+                "category": "momentum",
+                "description": "衡量价格涨跌强弱，适合观察超买超卖区间。",
+                "panel_type": "oscillator",
+                "parameters": [
+                    {
+                        "name": "timeperiod",
+                        "type": "int",
+                        "default": 14,
+                        "min": 2,
+                        "max": 100,
+                        "description": "RSI 计算周期。",
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "rsi",
+                        "description": "RSI 指标值",
+                    }
+                ],
+                "reference_lines": [30.0, 70.0],
+                "min_data_points_formula": "timeperiod + 1",
+            },
+        ],
+    },
+)
+
+INDICATOR_CATEGORY_RESPONSES = _response_spec(
+    200,
+    "分类指标查询成功",
+    [
+        INDICATOR_METADATA_EXAMPLE,
+        {
+            "abbreviation": "EMA",
+            "full_name": "Exponential Moving Average",
+            "chinese_name": "指数移动平均线",
+            "category": "trend",
+            "description": "对最新价格赋予更高权重，适合趋势跟踪与信号平滑。",
+            "panel_type": "overlay",
+            "parameters": [
+                {
+                    "name": "timeperiod",
+                    "type": "int",
+                    "default": 12,
+                    "min": 2,
+                    "max": 250,
+                    "description": "EMA 计算周期。",
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "ema",
+                    "description": "指数移动平均值",
+                }
+            ],
+            "reference_lines": None,
+            "min_data_points_formula": "timeperiod",
+        },
+    ],
+)
+
+INDICATOR_CACHE_CLEAR_RESPONSES = _response_spec(
+    200,
+    "指标缓存清理成功",
+    {
+        "success": True,
+        "data": {
+            "cleared_count": "全部",
+        },
+        "message": "缓存清理完成，已清理全部",
+        "timestamp": "2026-04-07T09:30:00Z",
+        "request_id": "req-indicator-cache-clear-001",
+    },
+)
+
 INDICATOR_CATEGORY_PATH_DESCRIPTION = "指标分类，可选值为 trend、momentum、volatility、volume 或 candlestick。"
 
 INDICATOR_CALCULATE_REQUEST_EXAMPLE = {
@@ -157,7 +276,13 @@ class IndicatorOptimizationRequest(BaseModel):
     max_iterations: int = Field(50, ge=1, le=200, description="最大迭代次数")
 
 
-@router.get("/registry", response_model=IndicatorRegistryResponse)
+@router.get(
+    "/registry",
+    response_model=IndicatorRegistryResponse,
+    summary="获取指标注册表",
+    description="返回技术指标注册中心中的全部可用指标元数据，支持按分类、关键词和高级指标开关筛选，供行情分析、策略编排与指标面板配置统一复用。",
+    responses=INDICATOR_REGISTRY_RESPONSES,
+)
 @rate_limit(limit=30, window=60)  # 每分钟最多30次请求
 async def get_indicator_registry_endpoint(
     category: Optional[str] = Query(None, description="筛选指定分类的指标"),
@@ -276,7 +401,13 @@ async def get_indicator_registry_endpoint(
         )
 
 
-@router.get("/registry/{category}", response_model=List[IndicatorMetadata])
+@router.get(
+    "/registry/{category}",
+    response_model=List[IndicatorMetadata],
+    summary="按分类获取指标列表",
+    description="返回指定指标分类下的元数据清单，便于前端按趋势、动量、波动率、成交量或 K 线形态组织指标选择面板。",
+    responses=INDICATOR_CATEGORY_RESPONSES,
+)
 async def get_indicators_by_category(category: str = Path(..., description=INDICATOR_CATEGORY_PATH_DESCRIPTION)):
     """
     获取指定分类的指标
@@ -730,6 +861,7 @@ async def get_cache_statistics(current_user: User = Depends(get_current_active_u
     "/cache/clear",
     summary="清理指标缓存",
     description="按模式清理技术指标计算缓存，仅管理员可执行，支持清空全部缓存、清理过期条目或按 symbol 前缀筛选。",
+    responses=INDICATOR_CACHE_CLEAR_RESPONSES,
 )
 @rate_limit(limit=3, window=60)  # 每分钟最多3次清理
 async def clear_cache(
