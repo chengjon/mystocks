@@ -1,0 +1,89 @@
+version: "v0.2"
+
+task:
+  id: "pr-59"
+  title: "replace placeholder api file tests batch 2"
+  owner: "main"
+  created_at: "2026-04-06"
+
+mainline:
+  id: "L1-api-file-tests-contract-batch2"
+  objective: "replace placeholder file-level tests for announcement, data_source_config, indicator_registry, and multi_source with real route and model contract assertions without pulling unrelated backend or frontend work into the PR"
+  milestone_id: "L3-mainline-follow-up"
+  slice_id: "L4-api-file-tests-contract-batch2"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "domain-10"
+  node_id: "domain-10-node-01"
+  affected_entrypoints:
+    - "tests"
+  update_status: "required"
+  secondary_domains: []
+  exemption_reason: "localized-test-hardening-slice-without-application-code-changes"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-59.yaml"
+    - "tests/api/file_tests/test_announcement_api.py"
+    - "tests/api/file_tests/test_data_source_config_api.py"
+    - "tests/api/file_tests/test_indicator_registry_api.py"
+    - "tests/api/file_tests/test_multi_source_api.py"
+  forbidden_paths:
+    - "web/frontend/**"
+    - "web/backend/app/**"
+    - "src/**"
+
+non_goals:
+  - "No backend application logic changes"
+  - "No frontend route or page migration work"
+  - "No expansion to the other placeholder api file-tests in this micro-batch"
+
+acceptance:
+  checks:
+    - id: "api-file-tests-batch2"
+      command: "python -m pytest --no-cov tests/api/file_tests/test_announcement_api.py tests/api/file_tests/test_data_source_config_api.py tests/api/file_tests/test_indicator_registry_api.py tests/api/file_tests/test_multi_source_api.py"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-59.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If any asserted route surface or docstring no longer matches the live backend module, the focused file-tests will fail until the contract is updated"
+    - "If the batch accidentally pulls in unrelated fixtures or application imports, mainline scope drift could invalidate the PR"
+  rollback_plan: "git revert <merge-commit-sha> if the route-contract assertions prove too brittle on mainline"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "replace four placeholder backend api file-tests with route and model contract assertions against the currently exported modules"
+    modified_scope: "four api file-test files plus this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none in runtime behavior; only the test harness becomes stricter and more truthful"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the slice if these file-tests introduce noisy failures on mainline"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-06T00:00:00Z"
+    approval_note: "focused test-hardening micro-batch with isolated scope and dedicated verification"
+    secondary_approved: false
