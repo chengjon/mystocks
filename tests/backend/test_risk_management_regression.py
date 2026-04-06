@@ -3,16 +3,21 @@ from fastapi.testclient import TestClient
 from unittest.mock import MagicMock, patch, AsyncMock
 import pandas as pd
 import numpy as np
-from datetime import datetime, date
 import sys
 import os
 
-# Add web/backend to sys.path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../web/backend")))
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+BACKEND_ROOT = os.path.join(PROJECT_ROOT, "web/backend")
+
+# Keep repo root ahead of web/backend so `src` resolves to the primary tree
+# instead of the legacy duplicate under `web/backend/src`.
+sys.path = [entry for entry in sys.path if entry not in {PROJECT_ROOT, BACKEND_ROOT}]
+sys.path.insert(0, PROJECT_ROOT)
+sys.path.insert(1, BACKEND_ROOT)
 
 # Import the router
 try:
-    from app.api.risk_management import router
+    from app.api.risk import router
     from fastapi import FastAPI
 except ImportError as e:
     print(f"Import Error: {e}")
@@ -25,7 +30,7 @@ client = TestClient(app)
 
 @pytest.fixture
 def mock_unified_manager():
-    with patch("app.api.risk_management.MyStocksUnifiedManager") as mock:
+    with patch("app.api.risk.metrics.MyStocksUnifiedManager") as mock:
         manager_instance = MagicMock()
         mock.return_value = manager_instance
         yield manager_instance
@@ -109,7 +114,7 @@ def test_get_dashboard(mock_unified_manager):
 
 def test_v31_stop_loss_calculate():
     """Test V3.1 stop loss calculation."""
-    with patch("app.api.risk_v31.stop_loss.get_risk_management_core") as mock_get_core:
+    with patch("app.api.risk.stop_loss.get_risk_management_core") as mock_get_core:
         core = MagicMock()
         mock_get_core.return_value = core
         
@@ -119,7 +124,7 @@ def test_v31_stop_loss_calculate():
         
         payload = {"strategy_type": "volatility_adaptive", "symbol": "sh600000", "entry_price": 100.0, "k_factor": 2.0}
         
-        with patch("app.api.risk_v31.stop_loss.RISK_MANAGEMENT_V31_AVAILABLE", True):
+        with patch("app.api.risk.stop_loss.RISK_MANAGEMENT_V31_AVAILABLE", True):
             response = client.post("/api/v1/risk/v31/stop-loss/calculate", json=payload)
             
             assert response.status_code == 200
