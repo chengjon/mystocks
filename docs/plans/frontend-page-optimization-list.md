@@ -219,8 +219,8 @@ bash scripts/tests/test/run-comprehensive-tests.sh
 - `/health`
   - 支撑页面：`System-Health`
 
-活跃清单中当前已无“路径已证实存在但页面仍保持 `pending`”的接口。
-旧 `/api/v1/risk/alerts` 仅作为已证伪旧口径保留在下方历史纠偏章节，不能再视为当前 pending 项。
+按本文件 2026-04-06 revision snapshot 的核对结果，活跃清单中当时已无“路径已证实存在但页面仍保持 `pending`”的接口。
+旧 `/api/v1/risk/alerts` 仅作为已证伪旧口径保留在下方历史纠偏章节；在这份历史计划快照里它不再作为 pending 项陈述，当前主线真相仍需以后续更新日期更晚的工件复核。
 
 已证伪或需修正的旧口径:
 - `Market-Realtime`
