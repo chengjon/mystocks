@@ -509,9 +509,13 @@ def test_cache_data_endpoints_have_descriptions_examples_and_parameter_docs() ->
 
     get_operation = schema["paths"]["/api/cache/{symbol}/{data_type}"]["get"]
     get_parameters = get_operation.get("parameters", [])
+    get_success_json = get_operation["responses"]["200"]["content"]["application/json"]
+    assert get_operation.get("summary")
     assert len(get_operation.get("description", "")) >= 20
     for parameter_name in ["symbol", "data_type", "timeframe"]:
         assert any(param["name"] == parameter_name and param.get("description") for param in get_parameters)
+    assert "example" in get_success_json or "examples" in get_success_json
+    assert any(code.startswith(("4", "5")) for code in get_operation["responses"])
 
     post_operation = schema["paths"]["/api/cache/{symbol}/{data_type}"]["post"]
     post_parameters = post_operation.get("parameters", [])
@@ -523,9 +527,13 @@ def test_cache_data_endpoints_have_descriptions_examples_and_parameter_docs() ->
 
     fresh_operation = schema["paths"]["/api/cache/{symbol}/{data_type}/fresh"]["get"]
     fresh_parameters = fresh_operation.get("parameters", [])
+    fresh_success_json = fresh_operation["responses"]["200"]["content"]["application/json"]
+    assert fresh_operation.get("summary")
     assert len(fresh_operation.get("description", "")) >= 20
     for parameter_name in ["symbol", "data_type", "max_age_days"]:
         assert any(param["name"] == parameter_name and param.get("description") for param in fresh_parameters)
+    assert "example" in fresh_success_json or "examples" in fresh_success_json
+    assert any(code.startswith(("4", "5")) for code in fresh_operation["responses"])
 
 
 def test_cache_management_endpoints_have_docs_examples_and_error_responses() -> None:

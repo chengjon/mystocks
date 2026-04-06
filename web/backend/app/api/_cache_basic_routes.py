@@ -88,6 +88,41 @@ CACHE_INVALIDATE_RESPONSES = {
     ),
 }
 
+CACHE_READ_RESPONSES = {
+    **CACHE_ROUTE_ERROR_RESPONSES,
+    **_success_response_spec(
+        "缓存读取结果",
+        {
+            "success": True,
+            "source": "cache",
+            "timestamp": "2026-04-07T03:55:00Z",
+            "data": {
+                "close": 18.52,
+                "open": 18.1,
+                "high": 18.74,
+                "low": 17.98,
+                "volume": 1250034,
+            },
+            "cached_at": "2026-04-07T03:30:00Z",
+        },
+    ),
+}
+
+CACHE_FRESHNESS_RESPONSES = {
+    **CACHE_ROUTE_ERROR_RESPONSES,
+    **_success_response_spec(
+        "缓存新鲜度检查结果",
+        {
+            "success": True,
+            "symbol": "600519.SH",
+            "data_type": "daily_quote",
+            "is_fresh": True,
+            "max_age_days": 7,
+            "timestamp": "2026-04-07T03:55:00Z",
+        },
+    ),
+}
+
 
 @router.get(
     "/status",
@@ -107,7 +142,9 @@ async def get_cache_status(current_user: User = Depends(get_current_user)) -> di
 
 @router.get(
     "/{symbol}/{data_type}",
+    summary="读取缓存数据",
     description="读取指定标的和数据类型的缓存内容，可按 timeframe 进一步区分缓存分片。",
+    responses=CACHE_READ_RESPONSES,
 )
 async def get_cached_data(
     symbol: str = Path(..., description="股票或资产代码。"),
@@ -227,7 +264,9 @@ async def invalidate_symbol_cache(
 
 @router.get(
     "/{symbol}/{data_type}/fresh",
+    summary="检查缓存新鲜度",
     description="检查指定缓存键是否仍在允许的新鲜度窗口内，适合调度器或读取前探测。",
+    responses=CACHE_FRESHNESS_RESPONSES,
 )
 async def check_cache_freshness(
     symbol: str = Path(..., description="股票或资产代码。"),
