@@ -2,13 +2,13 @@
 
 > **使用说明**:
 > 本文件是 API 集成专题指南，不是当前 API 契约、当前前后端集成主线或仓库共享规则的唯一事实来源。
-> 当前执行口径请优先阅读 `architecture/STANDARDS.md`、根目录 `AGENTS.md`、实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json`，以及主线测试文档。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 `architecture/STANDARDS.md`；若涉及 API / 测试执行流程或协作约束，再结合根目录 `AGENTS.md` 与主线测试文档；若涉及契约事实源，再以实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json` 为准。
 >
 > 文内版本号、Phase 状态、集成原则和 UnifiedResponse 示例应结合当前代码与契约复核；若未同步更新，不得直接视为当前标准。
 
-**版本**: 1.0.0
-**最后更新**: 2025-12-25
-**状态**: Phase 1 完成，Phase 2-4 规划中
+**Historical Guide Version Snapshot**: 1.0.0
+**Historical Guide Update Snapshot**: 2025-12-25
+**Historical Guide Status Snapshot**: Phase 1 完成，Phase 2-4 规划中
 
 ---
 
