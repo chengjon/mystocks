@@ -9,7 +9,7 @@
 
 **Historical Design Version Snapshot**: 3.0.0
 **Historical Design Snapshot Date**: 2026-01-22
-**总计**: 5大模块 × 16个子模块 × 48个功能节点 = **48个API端点**
+**Historical API Count Snapshot**: 5大模块 × 16个子模块 × 48个功能节点 = **48个API端点**
 
 ---
 
