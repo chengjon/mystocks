@@ -278,7 +278,9 @@ bash scripts/tests/test/run-comprehensive-tests.sh
 
 ---
 
-## 8. 当前进度
+## 8. 历史进度快照（2026-03-03 计划基线）
+
+> 以下计数是 2026-03-03 这份执行清单的历史计划快照，不是 2026-04-06 当前 frontend mainline 的实时完成率；当前收口真相以 `reports/analysis/frontend-mainline-overall-closeout.md` 与 `reports/analysis/frontend-mainline-overall-status.json` 为准。
 
 - 总清单条目: 34
 - 优化中: 2（Login、Dashboard）
