@@ -1,5 +1,12 @@
 # `frontend-page-optimization-list.md` 审核意见（结合当前 `web/` 现状）
 
+> **历史计划说明**:
+> 本文件是阶段性计划、路线图、提案、任务方案或执行矩阵，不是当前基线、当前实施状态或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线文档一并核对。
+>
+> 文内优先级、缺口清单、执行步骤、目标值和时间线如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
+
+
 ## 1. 审核范围与依据
 - 审核对象：`docs/plans/frontend-page-optimization-list.md`
 - 代码事实来源：
@@ -154,7 +161,7 @@
 5. 验收命令切换到 `scripts/run_e2e_pm2.sh`，扩展测试保持并行。
 6. 参考文档纳入 `FRONTEND_OPTIMIZATION_STRATEGY_V3.md`，并声明 V3 优先级。
 
-## 5. 审批建议
+## 5. 历史审批建议
 - 建议审批结论：**“按以上 P0/P1 修订后通过”**。
 - 若你同意，我下一步可以直接基于以上清单改写 `docs/plans/frontend-page-optimization-list.md`（保留原结构，仅做最小必要修订）。
 
@@ -164,11 +171,11 @@
   - 结果：`exit 0`，`8 passed (4.5s)`（chromium，`navigation-consistency.spec.ts`）
 - 报告路径统一：
   - 固定为 `reports/analysis/frontend-page-optimization-audit-report.md`
-- 端口事实（审批备注）：
+- 端口事实（历史审批备注）：
   - 运行真值：Frontend `3020`、Backend `8020`
   - 当前兼容地址校验：`http://localhost:8020/health` 不通（`000`）
 
-## 7. 继续收口（2026-03-03）
+## 7. 历史继续收口（2026-03-03）
 - CI 自动门禁补齐：
   - `.github/workflows/frontend-testing.yml` 新增 `frontend-optimization-audit` 作业
   - 执行命令：
