@@ -34,12 +34,20 @@ from sqlalchemy.orm import declarative_base, relationship
 # Create declarative base for SQLAlchemy models
 Base = declarative_base()
 
-# 加载环境变量
-load_dotenv()
-
 # 配置日志
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("DatabaseTableManager")
+
+
+def _safe_load_dotenv() -> None:
+    """导入期仅做非阻塞环境加载，避免因本地 .env 权限导致模块不可导入。"""
+    try:
+        load_dotenv()
+    except OSError as error:
+        logger.warning("skip load_dotenv during import: %s", error)
+
+
+_safe_load_dotenv()
 
 def _build_monitor_db_url() -> str:
     monitor_url = os.getenv("MONITOR_DB_URL")
@@ -132,5 +140,4 @@ class TableValidationLog(Base):
     validation_status = Column(String(10), nullable=False)
     validation_details = Column(JSON, nullable=False)
     issues_found = Column(Text)
-
 

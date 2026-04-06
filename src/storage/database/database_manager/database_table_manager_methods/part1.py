@@ -63,12 +63,20 @@ def _detect_taos_runtime():
 # TDengine availability check
 taos, TAOS_AVAILABLE, TAOS_MODULE_TYPE = _detect_taos_runtime()
 
-# 加载环境变量
-load_dotenv()
-
 # 配置日志
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("DatabaseTableManager")
+
+
+def _safe_load_dotenv() -> None:
+    """导入期仅做非阻塞环境加载，避免因本地 .env 权限导致模块不可导入。"""
+    try:
+        load_dotenv()
+    except OSError as error:
+        logger.warning("skip load_dotenv during import: %s", error)
+
+
+_safe_load_dotenv()
 
 
 class DatabaseTableManagerCoreMixin:
