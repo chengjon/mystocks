@@ -225,44 +225,44 @@ bash scripts/tests/test/run-comprehensive-tests.sh
 已证伪或需修正的旧口径:
 - `Market-Realtime`
   - 旧错误页面口径：`/api/v1/data/markets/overview`
-  - 当前页面口径：`/api/v1/market/quotes`
-  - 当前状态：已在当前 worktree backend `127.0.0.1:8120` 验证通过
+  - 本次修订核对页面口径：`/api/v1/market/quotes`
+  - 本次修订核对状态：已在当次 worktree backend `127.0.0.1:8120` 验证通过
 - `Risk-News`
   - 旧口径：`/api/v1/announcement`
-  - 页面真实请求：`/api/announcement/list`
+  - 修订时页面真实请求：`/api/announcement/list`
 - `Market-LHB`
   - 旧口径：`/api/data/lhb`
-  - 当前已核实：`/api/v2/market/lhb`
+  - 本次修订已核实：`/api/v2/market/lhb`
 - `Data-Industry` / `Data-Concept` / `Data-FundFlow`
   - 旧口径混用：`/api/akshare/market/*`、`/api/akshare_market/*`
-  - 当前真实页面口径已分化：
+  - 本次修订核对页面口径已分化：
     - `Data-Industry` -> `/api/v2/market/sector/fund-flow`
-    - `Data-Concept` -> 当前错误路径 `/api/v1/market/concept`，候选替代 `/api/v2/market/sector/fund-flow?sector_type=概念`
+    - `Data-Concept` -> 修订时页面错误路径 `/api/v1/market/concept`，候选替代 `/api/v2/market/sector/fund-flow?sector_type=概念`
     - `Data-FundFlow` -> `/api/akshare/market/fund-flow/hsgt-summary` + `/api/akshare/market/fund-flow/big-deal`
 - `System-Data`
   - 读路径已证实：`/api/v1/data-sources/config/`
   - 写路径家族已证实：`/api/v1/data-sources/config/batch`
-  - 当前页面语义：
+  - 本次修订核对页面语义：
     - `启用` -> batch `updates.status = active`
     - `禁用` -> batch `updates.status = maintenance`
 - `Risk-StopLoss`
   - 旧错误口径：只读取 `/api/v1/monitoring/watchlists`
-  - 当前页面真实链路：
+  - 本次修订核对页面真实链路：
     - `/api/v1/monitoring/watchlists`
     - `/api/v1/monitoring/watchlists/{id}/stocks`
     - `/api/v1/market/quotes`
 - `Risk-Alerts`
   - 旧错误口径：`/api/v1/risk/alerts`
-  - 当前页面真实链路：
+  - 本次修订核对页面真实链路：
     - `/api/v1/monitoring/alert-rules`
     - `/api/v1/monitoring/alerts`
 - `Risk-Overview`
   - 旧错误口径：`/api/v1/risk/*`
-  - 当前页面真实链路：
+  - 本次修订核对页面真实链路：
     - `/api/v1/monitoring/alert-rules`
 - `System-Config`
   - 旧错误口径：`/api/system/*`
-  - 当前页面真实链路：
+  - 本次修订核对页面真实链路：
     - `/api/health/detailed`
     - `/api/health`
 
