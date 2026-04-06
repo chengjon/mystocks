@@ -108,6 +108,125 @@ TDX_HEALTH_RESPONSES = {
     ),
 }
 
+TDX_STOCK_QUOTE_RESPONSES = {
+    **_error_response_spec(
+        400,
+        "股票代码无效",
+        {"detail": "无效的股票代码,必须为6位数字"},
+    ),
+    **_error_response_spec(
+        500,
+        "获取股票实时行情失败",
+        {"detail": "获取实时行情失败: TDX 服务暂不可用"},
+    ),
+    **_success_response_spec(
+        200,
+        "股票实时行情",
+        {
+            "code": "600519",
+            "name": "贵州茅台",
+            "price": 1850.5,
+            "pre_close": 1845.0,
+            "open": 1846.0,
+            "high": 1852.0,
+            "low": 1844.0,
+            "volume": 123456,
+            "amount": 228000000.0,
+            "bid1": 1850.0,
+            "bid1_volume": 100,
+            "ask1": 1851.0,
+            "ask1_volume": 150,
+            "timestamp": "2026-04-07 14:30:00",
+            "change": 5.5,
+            "change_pct": 0.3,
+        },
+    ),
+}
+
+TDX_STOCK_KLINE_RESPONSES = {
+    **_error_response_spec(
+        400,
+        "K线查询参数无效",
+        {"detail": "无效的K线周期,支持的周期: 1m, 5m, 15m, 30m, 1h, 1d"},
+    ),
+    **_error_response_spec(
+        500,
+        "获取股票K线失败",
+        {"detail": "获取K线数据失败: TDX 服务暂不可用"},
+    ),
+    **_success_response_spec(
+        200,
+        "股票历史K线数据",
+        {
+            "code": "600519",
+            "period": "1d",
+            "data": [
+                {
+                    "date": "2026-04-01 00:00:00",
+                    "open": 1838.0,
+                    "high": 1855.0,
+                    "low": 1832.5,
+                    "close": 1850.5,
+                    "volume": 96543,
+                    "amount": 178560000.0,
+                },
+                {
+                    "date": "2026-04-02 00:00:00",
+                    "open": 1851.0,
+                    "high": 1862.0,
+                    "low": 1846.0,
+                    "close": 1858.6,
+                    "volume": 88421,
+                    "amount": 164230000.0,
+                },
+            ],
+            "count": 2,
+        },
+    ),
+}
+
+TDX_INDEX_KLINE_RESPONSES = {
+    **_error_response_spec(
+        400,
+        "指数K线查询参数无效",
+        {"detail": "无效的指数代码,必须为6位数字"},
+    ),
+    **_error_response_spec(
+        500,
+        "获取指数K线失败",
+        {"detail": "获取指数K线失败: TDX 服务暂不可用"},
+    ),
+    **_success_response_spec(
+        200,
+        "指数历史K线数据",
+        {
+            "code": "000300",
+            "period": "1d",
+            "data": [
+                {
+                    "date": "2026-04-01 00:00:00",
+                    "open": 3650.2,
+                    "high": 3678.4,
+                    "low": 3642.8,
+                    "close": 3670.1,
+                    "volume": 245678901,
+                    "amount": 356800000000.0,
+                },
+                {
+                    "date": "2026-04-02 00:00:00",
+                    "open": 3672.0,
+                    "high": 3686.5,
+                    "low": 3659.7,
+                    "close": 3664.3,
+                    "volume": 231234567,
+                    "amount": 340500000000.0,
+                },
+            ],
+            "count": 2,
+        },
+    ),
+}
+
 
 # ==================== 实时行情 ====================
 
@@ -117,6 +236,7 @@ TDX_HEALTH_RESPONSES = {
     response_model=RealTimeQuoteResponse,
     summary="获取股票实时行情",
     description="查询指定股票的实时行情数据,包括最新价、涨跌幅、成交量、五档行情等",
+    responses=TDX_STOCK_QUOTE_RESPONSES,
 )
 async def get_stock_quote(
     symbol: str = Path(..., description="6 位数字股票代码，例如 600519。"),
@@ -169,6 +289,7 @@ async def get_stock_quote(
     response_model=KlineResponse,
     summary="获取股票K线数据",
     description="查询股票历史K线数据,支持多种周期(1m/5m/15m/30m/1h/1d)",
+    responses=TDX_STOCK_KLINE_RESPONSES,
 )
 async def get_stock_kline(
     symbol: str = Query(..., description="股票代码(6位数字)"),
@@ -313,6 +434,7 @@ async def get_index_quote(
     response_model=KlineResponse,
     summary="获取指数K线数据",
     description="查询指数历史K线数据，支持分钟级到日线周期，并允许按日期区间筛选用于指数回溯分析。",
+    responses=TDX_INDEX_KLINE_RESPONSES,
 )
 async def get_index_kline(
     symbol: str = Query(..., description="指数代码(6位数字)"),

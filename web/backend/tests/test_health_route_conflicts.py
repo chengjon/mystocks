@@ -994,6 +994,9 @@ def test_tdx_read_endpoints_have_docs_examples_and_error_responses() -> None:
 
     endpoint_expectations = {
         "/api/v1/tdx/health": set(),
+        "/api/v1/tdx/quote/{symbol}": {"symbol"},
+        "/api/v1/tdx/kline": {"symbol", "period"},
+        "/api/v1/tdx/index/kline": {"symbol", "period"},
         "/api/v1/tdx/index/quote/{symbol}": {"symbol"},
     }
 
