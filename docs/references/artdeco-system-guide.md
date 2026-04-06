@@ -767,5 +767,5 @@ This ArtDeco-styled interface achieves:
 **Project**: MyStocks A股量化交易管理系统
 
 **Version**: 1.0.0
-**Last Updated**: 2025-01-03
+**Historical Snapshot Date**: 2025-01-03
 **Status**: Historical snapshot status; these phase labels describe an early design planning state, not current frontend mainline progress
