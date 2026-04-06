@@ -52,6 +52,115 @@ NOTIFICATION_INTERNAL_ERROR_RESPONSE = {
     }
 }
 
+NOTIFICATION_STATUS_RESPONSES = {
+    **NOTIFICATION_INTERNAL_ERROR_RESPONSE,
+    200: {
+        "description": "邮件服务状态查询成功。",
+        "content": {
+            "application/json": {
+                "example": {
+                    "success": True,
+                    "data": {
+                        "configured": True,
+                        "smtp_host": "smtp.example.com",
+                        "smtp_port": 587,
+                        "smtp_tls_enabled": True,
+                        "service_type": "smtp",
+                        "supported_content_types": ["plain", "html"],
+                        "max_recipients_per_email": 100,
+                        "rate_limits": {
+                            "user_per_minute": 5,
+                            "user_per_hour": 50,
+                            "global_per_minute": 100,
+                        },
+                        "status": "healthy",
+                        "message": "邮件服务已配置并可用",
+                    },
+                    "message": "邮件服务状态查询成功",
+                    "timestamp": "2026-04-07T02:20:00Z",
+                    "request_id": "req-notification-status-001",
+                }
+            }
+        },
+    },
+}
+
+NOTIFICATION_TEST_EMAIL_RESPONSES = {
+    400: {
+        "description": "当前用户未配置邮箱地址。",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "用户未设置邮箱",
+                }
+            }
+        },
+    },
+    500: {
+        "description": "Test email delivery failed because the mail provider rejected or timed out the request.",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "测试邮件发送失败: SMTP timeout",
+                }
+            }
+        },
+    },
+    503: {
+        "description": "邮件服务未配置，无法发送测试邮件。",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "邮件服务未配置",
+                }
+            }
+        },
+    },
+    200: {
+        "description": "测试邮件发送成功。",
+        "content": {
+            "application/json": {
+                "example": {
+                    "success": True,
+                    "message": "测试邮件已发送至 trader@example.com",
+                    "recipient": "trader@example.com",
+                }
+            }
+        },
+    },
+}
+
+NOTIFICATION_PREFERENCES_RESPONSES = {
+    **NOTIFICATION_INTERNAL_ERROR_RESPONSE,
+    200: {
+        "description": "通知偏好设置查询成功。",
+        "content": {
+            "application/json": {
+                "example": {
+                    "success": True,
+                    "data": {
+                        "email_enabled": True,
+                        "websocket_enabled": True,
+                        "price_alerts": True,
+                        "news_alerts": True,
+                        "system_alerts": True,
+                        "quiet_hours": {"start": "22:30", "end": "07:30"},
+                        "max_daily_emails": 25,
+                        "notification_types": {
+                            "price_alert": {"enabled": True, "priority": "normal"},
+                            "news_alert": {"enabled": True, "priority": "low"},
+                            "system_alert": {"enabled": False, "priority": "high"},
+                        },
+                    },
+                    "message": "通知偏好设置获取成功",
+                    "timestamp": "2026-04-07T02:20:00Z",
+                    "request_id": "req-notification-preferences-001",
+                }
+            }
+        },
+    },
+}
+
 SEND_EMAIL_EXAMPLES = {
     "bulk_html_email": {
         "summary": "Bulk HTML email",
@@ -130,7 +239,7 @@ PREFERENCES_EXAMPLES = {
 
 @router.get(
     "/status",
-    responses=NOTIFICATION_INTERNAL_ERROR_RESPONSE,
+    responses=NOTIFICATION_STATUS_RESPONSES,
 )
 @rate_limit(limit=10, window=60)  # 每分钟最多10次请求
 async def get_email_service_status(current_user: User = Depends(get_current_user)) -> Dict:
@@ -523,18 +632,7 @@ async def send_price_alert(
 
 @router.post(
     "/test-email",
-    responses={
-        500: {
-            "description": "Test email delivery failed because the mail provider rejected or timed out the request.",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "detail": "测试邮件发送失败: SMTP timeout",
-                    }
-                }
-            },
-        }
-    },
+    responses=NOTIFICATION_TEST_EMAIL_RESPONSES,
 )
 async def send_test_email(current_user: User = Depends(get_current_user)) -> Dict:
     """
@@ -651,7 +749,7 @@ async def send_test_email(current_user: User = Depends(get_current_user)) -> Dic
 @router.get(
     "/preferences",
     description="Return the current user's notification channel switches, alert categories, and delivery limits.",
-    responses=NOTIFICATION_INTERNAL_ERROR_RESPONSE,
+    responses=NOTIFICATION_PREFERENCES_RESPONSES,
 )
 async def get_notification_preferences(current_user: User = Depends(get_current_active_user)) -> Dict:
     """

@@ -173,12 +173,18 @@ def test_notification_endpoints_have_error_docs_and_descriptions() -> None:
 
     for path in ["/api/notification/status", "/api/notification/test-email"]:
         operation = schema["paths"][path]["post" if path.endswith("test-email") else "get"]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        assert "example" in success_json or "examples" in success_json
         assert any(status.startswith("5") for status in operation["responses"])
 
     get_preferences = schema["paths"]["/api/notification/preferences"]["get"]
     post_preferences = schema["paths"]["/api/notification/preferences"]["post"]
+    get_preferences_success_json = get_preferences["responses"]["200"]["content"]["application/json"]
 
     assert len(get_preferences.get("description", "")) >= 20
+    assert "example" in get_preferences_success_json or "examples" in get_preferences_success_json
     assert any(status.startswith("5") for status in get_preferences["responses"])
     assert len(post_preferences.get("description", "")) >= 20
     assert any(status.startswith("5") for status in post_preferences["responses"])
