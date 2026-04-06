@@ -1,8 +1,15 @@
 # API 规范标准化综合方案
 
-**版本**: v1.0
-**日期**: 2026-01-01
-**状态**: 📋 待执行
+> **历史计划说明**:
+> 本文件是 API 相关的阶段性计划、路线图或方案材料，不是当前 API 契约、当前实施状态或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`；若涉及 API 契约事实源，再以实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json` 为准。
+>
+> 文内优先级、时间线、实施状态和建议动作如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
+
+
+**Historical Plan Version Snapshot**: v1.0
+**Historical Plan Snapshot Date**: 2026-01-01
+**Historical Plan Status Snapshot**: 📋 待执行
 
 ---
 
