@@ -14,7 +14,7 @@
 - [x] 2.3 Reuse the existing user notification preferences endpoints as the only notification truth
 - [x] 2.4 Add canonical system-scoped read/write contracts for `security`
 - [x] 2.5 Update frontend composition services to expose section ownership and evidence metadata
-- [ ] 2.6 Remove page-level local-storage persistence only after section exit criteria are met
+- [x] 2.6 Remove page-level local-storage persistence only after section exit criteria are met
 
 ## 3. Governance Gates
 - [x] 3.1 Verify no duplicate storage layer, shim persistence path, or `*_new` compatibility branch is introduced

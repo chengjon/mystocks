@@ -9,7 +9,7 @@
           <span>TIME: {{ displayProcessTime }}</span>
         </div>
       </div>
-      <ArtDecoButton variant="solid" size="sm" @click="saveAll">保存本地设置</ArtDecoButton>
+      <ArtDecoButton variant="solid" size="sm" @click="saveAll">保存系统设置</ArtDecoButton>
     </div>
 
     <div class="tabs">
@@ -27,11 +27,11 @@
     <div class="analysis-blocker" role="status" aria-live="polite">
       <p>
         System-Config 仍按分段真相运行，不存在单体统一后端存储；
-        当前页面继续保留本地设置草稿与健康监控视图。
+        当前页面保留健康监控视图，并按 section owner 分别读取和写入。
       </p>
       <p>general 与 security 已接入系统级 /api/v1/system/settings/* 契约。</p>
       <p>数据源配置使用系统级后端契约，通知偏好使用用户级 /api/notification/preferences 契约。</p>
-      <p>下方“系统设置”表单仅保存本地设置草稿，不构成系统后端真相。</p>
+      <p>下方“系统设置”表单直接写入 general section 的系统级后端真相，不再使用本地草稿持久化。</p>
     </div>
 
     <template v-if="activeTab === 'sources'">
@@ -84,8 +84,6 @@ import { monitoringApi } from '@/api'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { API_BASE_URL } from '@/config/runtime-endpoints'
 import { normalizeSystemSettingsMonitorRows, type MonitorRow } from '@/views/artdeco-pages/system-tabs/systemSettingsMonitorData.ts'
-
-const STORAGE_KEY = 'artdeco-system-settings'
 
 const tabs = [
   { key: 'sources', label: '数据源' },
@@ -149,6 +147,51 @@ const displayProcessTime = computed(() => {
   return `${value.toFixed(2)}ms`
 })
 
+function applyGeneralSettings(data: Partial<{
+  backend_url: string
+  max_backtest_jobs: number
+  default_slippage_percent: number
+  fee_rate_bps: number
+}>) {
+  if (typeof data.backend_url === 'string' && data.backend_url.trim()) {
+    form.backendUrl = data.backend_url
+  }
+  if (typeof data.max_backtest_jobs === 'number') {
+    form.maxBacktestJobs = String(data.max_backtest_jobs)
+  }
+  if (typeof data.default_slippage_percent === 'number') {
+    form.slippage = String(data.default_slippage_percent)
+  }
+  if (typeof data.fee_rate_bps === 'number') {
+    form.feeRate = String(data.fee_rate_bps)
+  }
+}
+
+function buildGeneralSettingsPayload() {
+  return {
+    backend_url: form.backendUrl.trim(),
+    max_backtest_jobs: Number.parseInt(form.maxBacktestJobs.trim(), 10),
+    default_slippage_percent: Number.parseFloat(form.slippage.trim()),
+    fee_rate_bps: Number.parseFloat(form.feeRate.trim()),
+  }
+}
+
+async function loadGeneralSettings() {
+  const settings = await exec(() => monitoringApi.getSystemGeneralSettings(), {
+    silent: true,
+    errorMsg: '系统通用设置加载失败',
+  })
+
+  if (settings) {
+    applyGeneralSettings(settings as Record<string, unknown> as {
+      backend_url: string
+      max_backtest_jobs: number
+      default_slippage_percent: number
+      fee_rate_bps: number
+    })
+  }
+}
+
 async function loadMonitorRows() {
   const detailed = await exec(() => monitoringApi.getDetailedSystemHealth(), {
     silent: true,
@@ -184,33 +227,37 @@ async function loadMonitorRows() {
   apiRows.value = [...defaultApiRows]
 }
 
-function restoreSettings() {
-  const raw = localStorage.getItem(STORAGE_KEY)
-  if (!raw) {
-    return
-  }
-
-  try {
-    const saved = JSON.parse(raw) as Partial<typeof form>
-    if (typeof saved.backendUrl === 'string') form.backendUrl = saved.backendUrl
-    if (typeof saved.maxBacktestJobs === 'string') form.maxBacktestJobs = saved.maxBacktestJobs
-    if (typeof saved.slippage === 'string') form.slippage = saved.slippage
-    if (typeof saved.feeRate === 'string') form.feeRate = saved.feeRate
-  } catch {
-    localStorage.removeItem(STORAGE_KEY)
-  }
-}
-
-function saveAll() {
+async function saveAll() {
   if (!form.backendUrl.trim() || !form.maxBacktestJobs.trim() || !form.slippage.trim() || !form.feeRate.trim()) {
     return
   }
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...form }))
+  const payload = buildGeneralSettingsPayload()
+  if (
+    Number.isNaN(payload.max_backtest_jobs) ||
+    Number.isNaN(payload.default_slippage_percent) ||
+    Number.isNaN(payload.fee_rate_bps)
+  ) {
+    return
+  }
+
+  const saved = await exec(() => monitoringApi.updateSystemGeneralSettings(payload), {
+    successMsg: '系统通用设置已保存',
+    errorMsg: '系统通用设置保存失败',
+  })
+
+  if (saved) {
+    applyGeneralSettings(saved as Record<string, unknown> as {
+      backend_url: string
+      max_backtest_jobs: number
+      default_slippage_percent: number
+      fee_rate_bps: number
+    })
+  }
 }
 
 onMounted(() => {
-  restoreSettings()
+  void loadGeneralSettings()
   void loadMonitorRows()
 })
 </script>
