@@ -85,13 +85,14 @@ class AlertManager:
             Alert: 告警对象
         """
         try:
+            now = datetime.now()
             alert = Alert(
-                alert_id=f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{source}",
+                alert_id=f"{now.strftime('%Y%m%d%H%M%S%f')}_{source}",
                 level=level,
                 title=title,
                 message=message,
                 source=source,
-                timestamp=datetime.now(),
+                timestamp=now,
             )
 
             self.active_alerts.append(alert)
@@ -267,4 +268,3 @@ class WebhookAlertChannel(AlertChannel):
 
         except Exception as e:
             logger.error("发送Webhook告警失败: %s", e)
-

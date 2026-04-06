@@ -343,7 +343,7 @@ class TestDataQualityMonitor:
         monitor = DataQualityMonitor(config_manager)
 
         # 模拟过期数据
-        with patch("monitoring.monitoring_service.datetime") as mock_datetime:
+        with patch("src.monitoring.monitoring_service._data_quality_monitor.datetime") as mock_datetime:
             mock_now = datetime.now()
             mock_datetime.now.return_value = mock_now
             mock_datetime.now.return_value = mock_now

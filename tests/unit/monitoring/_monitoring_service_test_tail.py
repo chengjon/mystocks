@@ -104,6 +104,8 @@ class TestAlertManager:
         alert2 = manager.create_alert(AlertLevel.WARNING, "Warning 1", "Warning message", "test")
         alert3 = manager.create_alert(AlertLevel.ERROR, "Error 1", "Error message", "test")
 
+        assert len({alert1.alert_id, alert2.alert_id, alert3.alert_id}) == 3
+
         manager.resolve_alert(alert2.alert_id)
 
         active_alerts = manager.get_active_alerts()
@@ -132,7 +134,7 @@ class TestAlertManager:
         old_time = datetime.now() - timedelta(days=10)
         recent_time = datetime.now() - timedelta(days=1)
 
-        with patch("monitoring.monitoring_service.datetime") as mock_datetime:
+        with patch("src.monitoring.monitoring_service.alert_manager.datetime") as mock_datetime:
             mock_datetime.now.return_value = old_time
             old_alert = manager.create_alert(AlertLevel.INFO, "Old Alert", "This is old", "test")
             manager.resolve_alert(old_alert.alert_id)
@@ -185,7 +187,7 @@ class TestAlertChannels:
             timestamp=datetime.now(),
         )
 
-        with patch("monitoring.monitoring_service.logger.critical") as mock_critical:
+        with patch("src.monitoring.monitoring_service.alert_manager.logger.critical") as mock_critical:
             channel.send_alert(alert)
             mock_critical.assert_called_once()
 
@@ -201,7 +203,7 @@ class TestAlertChannels:
             timestamp=datetime.now(),
         )
 
-        with patch("monitoring.monitoring_service.logger.error") as mock_error:
+        with patch("src.monitoring.monitoring_service.alert_manager.logger.error") as mock_error:
             channel.send_alert(alert)
             mock_error.assert_called_once()
 
@@ -217,7 +219,7 @@ class TestAlertChannels:
             timestamp=datetime.now(),
         )
 
-        with patch("monitoring.monitoring_service.logger.warning") as mock_warning:
+        with patch("src.monitoring.monitoring_service.alert_manager.logger.warning") as mock_warning:
             channel.send_alert(alert)
             mock_warning.assert_called_once()
 
@@ -233,7 +235,7 @@ class TestAlertChannels:
             timestamp=datetime.now(),
         )
 
-        with patch("monitoring.monitoring_service.logger.info") as mock_info:
+        with patch("src.monitoring.monitoring_service.alert_manager.logger.info") as mock_info:
             channel.send_alert(alert)
             mock_info.assert_called_once()
 
@@ -276,7 +278,7 @@ class TestAlertChannels:
             timestamp=datetime.now(),
         )
 
-        with patch("monitoring.monitoring_service.logger") as mock_logger:
+        with patch("src.monitoring.monitoring_service.alert_manager.logger") as mock_logger:
             channel.send_alert(alert)
             mock_logger.warning.assert_called_with("邮件告警: 未配置收件人")
 
@@ -292,9 +294,9 @@ class TestAlertChannels:
             timestamp=datetime.now(),
         )
 
-        with patch("monitoring.monitoring_service.logger") as mock_logger:
+        with patch("src.monitoring.monitoring_service.alert_manager.logger") as mock_logger:
             channel.send_alert(alert)
-            mock_logger.info.assert_called_with("邮件告警发送至: ['admin@example.com']")
+            mock_logger.info.assert_called_with("邮件告警发送至: %s", ["admin@example.com"])
 
     def test_webhook_alert_channel_initialization(self):
         """测试Webhook告警渠道初始化"""
@@ -330,7 +332,7 @@ class TestAlertChannels:
             timestamp=datetime.now(),
         )
 
-        with patch("monitoring.monitoring_service.logger") as mock_logger:
+        with patch("src.monitoring.monitoring_service.alert_manager.logger") as mock_logger:
             channel.send_alert(alert)
             mock_logger.warning.assert_called_with("Webhook告警: 未配置URL")
 
@@ -346,6 +348,10 @@ class TestAlertChannels:
             timestamp=datetime.now(),
         )
 
-        with patch("monitoring.monitoring_service.logger") as mock_logger:
+        with patch("src.monitoring.monitoring_service.alert_manager.logger") as mock_logger:
             channel.send_alert(alert)
-            mock_logger.info.assert_called_with("Webhook告警发送至: https://hooks.example.com/test")
+            mock_logger.info.assert_called_once()
+            message, url, payload = mock_logger.info.call_args[0]
+            assert message == "Webhook告警发送至: %s, payload: %s"
+            assert url == "https://hooks.example.com/test"
+            assert payload["alert_id"] == "alert_001"
