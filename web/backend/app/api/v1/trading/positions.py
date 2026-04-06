@@ -97,12 +97,86 @@ POSITION_UPDATE_EXAMPLES = {
     }
 }
 
+POSITION_RESPONSE_EXAMPLE = {
+    "position_id": "pos_001",
+    "symbol": "600519",
+    "name": "贵州茅台",
+    "quantity": 100,
+    "average_cost": 1800.0,
+    "current_price": 1850.0,
+    "market_value": 185000.0,
+    "unrealized_pnl": 5000.0,
+    "realized_pnl": 0.0,
+    "weight": 0.35,
+    "created_at": "2025-01-15T10:30:00Z",
+    "updated_at": "2025-01-20T15:00:00Z",
+}
+
+POSITION_LIST_RESPONSES = {
+    **POSITION_ROUTE_RESPONSES,
+    200: {
+        "description": "持仓列表查询成功。",
+        "content": {
+            "application/json": {
+                "example": {
+                    "positions": [
+                        POSITION_RESPONSE_EXAMPLE,
+                        {
+                            "position_id": "pos_002",
+                            "symbol": "00700.HK",
+                            "name": "腾讯控股",
+                            "quantity": 200,
+                            "average_cost": 320.5,
+                            "current_price": 328.0,
+                            "market_value": 65600.0,
+                            "unrealized_pnl": 1500.0,
+                            "realized_pnl": 0.0,
+                            "weight": 0.15,
+                            "created_at": "2025-01-18T09:30:00Z",
+                            "updated_at": "2025-01-20T15:00:00Z",
+                        },
+                    ],
+                    "total_value": 250600.0,
+                    "total": 2,
+                }
+            }
+        },
+    },
+}
+
+POSITION_DETAIL_RESPONSES = {
+    **POSITION_ROUTE_RESPONSES,
+    200: {
+        "description": "持仓详情查询成功。",
+        "content": {
+            "application/json": {
+                "example": POSITION_RESPONSE_EXAMPLE,
+            }
+        },
+    },
+}
+
+POSITION_DELETE_RESPONSES = {
+    **POSITION_ROUTE_RESPONSES,
+    200: {
+        "description": "持仓删除成功。",
+        "content": {
+            "application/json": {
+                "example": {
+                    "message": "Position pos_001 deleted successfully",
+                }
+            }
+        },
+    },
+}
+
 
 @router.get(
     "",
     response_model=PositionListResponse,
     summary="List Positions",
     description="按标的或交易会话筛选当前持仓列表，并返回总市值汇总。",
+    responses=POSITION_LIST_RESPONSES,
 )
 async def list_positions(
     symbol: Optional[str] = Query(None, description="可选的标的代码过滤条件。"),
@@ -165,6 +239,7 @@ async def list_positions(
     response_model=PositionResponse,
     summary="Get Position",
     description="根据持仓ID获取单个持仓的成本、价格、市值和盈亏详情。",
+    responses=POSITION_DETAIL_RESPONSES,
 )
 async def get_position(position_id: str = Path(..., description="需要查询详情的持仓ID。")):
     """
@@ -254,6 +329,7 @@ async def update_position(
     response_model=PositionDeleteResponse,
     summary="Delete Position",
     description="删除或关闭指定持仓，并返回本次持仓处理结果。",
+    responses=POSITION_DELETE_RESPONSES,
 )
 async def delete_position(position_id: str = Path(..., description="需要删除或关闭的持仓ID。")):
     """

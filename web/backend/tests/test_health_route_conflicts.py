@@ -800,6 +800,31 @@ def test_audit_endpoints_have_parameter_descriptions() -> None:
         )
 
 
+def test_positions_endpoints_have_examples_parameter_docs_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    endpoint_expectations = {
+        ("/api/v1/positions", "get"): {"symbol", "session_id"},
+        ("/api/v1/positions/{position_id}", "get"): {"position_id"},
+        ("/api/v1/positions/{position_id}", "delete"): {"position_id"},
+    }
+
+    for (path, method), parameter_names in endpoint_expectations.items():
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+        success_json = operation["responses"][next(code for code in operation["responses"] if code.startswith("2"))][
+            "content"
+        ]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in parameter_names:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_backtest_results_endpoint_has_description_and_parameter_docs() -> None:
     app.openapi_schema = None
     schema = app.openapi()
