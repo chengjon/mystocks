@@ -39,7 +39,7 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 ## Global Architecture Standards
 
 - 执行任何代码修改前，必须先阅读 `architecture/STANDARDS.md`。
-- `方案先行准则 (Proposal-First Rule)`、`六步走战略`、`Docker 一等公民原则` 统一以 `architecture/STANDARDS.md` 为准。
+- `方案先行准则 (Proposal-First Rule)`、`六步走战略`、`Docker 一等公民原则`、`迁移收口与技术债治理规则` 统一以 `architecture/STANDARDS.md` 为准。
 - 本文件只保留 Agent 执行层面的流程、命令和协作规范，避免重复维护共享规则正文。
 
 ---
@@ -181,14 +181,9 @@ npm run pm2:logs                  # View logs
 - Use context managers for resource management
 
 ### Cleanup and Deletion Decision Standard
-- **“未引用 / 未使用” 不等于“可删除”**；禁止仅凭静态搜索、IDE 提示、lint 告警或“当前文件内未使用”就直接删除文件、模块、组件、函数、测试、配置或导入。
-- 发起任何“清理 / 删除 / 裁剪”前，必须同时完成两层判定：
-  1. **代码路径判定**：确认是否仍被路由、菜单、注册表、动态导入、构建脚本、样式注入、副作用导入、兼容分支、特性开关、文档约定或运行时字符串映射使用。
-  2. **功能树判定**：确认该对象在当前项目功能树中的归属与状态，至少标记为以下之一：`有效`、`失效但兼容保留`、`实验/灰度`、`重复冗余`、`待判定`。
-- 只有在 **代码路径可安全移除** 且 **功能树状态明确为“重复冗余”或“正式下线”** 时，才允许删除。
-- 若功能仍有效、可能恢复、承担兼容职责，或状态无法明确判定，则默认 **不删除**；优先选择补注释、补文档、登记技术债、标记 `deprecated`、或在汇报中说明保留原因。
-- 对于 `unused import`、未使用局部变量、未使用解构项等“看起来可机械清理”的项，也必须先确认其不承担 **副作用初始化、类型约束、样式加载、注册触发、polyfill、扩展槽位** 等隐含职责；无法证明时不得删除。
-- 当提交包含清理/删除动作时，提交说明或任务汇报中应简要写明：**清理对象、所属功能节点、状态判定、删除依据、未删除原因（如有）**。
+- 清理 / 删除判定、迁移收口、重复层治理、兼容层退役、机械拆分限制、审计指标口径，统一以 `architecture/STANDARDS.md` “三、迁移收口与技术债治理规则”为唯一事实来源。
+- Agent 在处理 `*_new.py`、shim、平行目录、`part1/part2/part3`、`.bak/.backup`、archive/legacy/demo/converted 等临时或兼容产物时，必须先回到 `STANDARDS.md` 执行，不得在本文件自行简化为“搜不到引用即可删”。
+- 技术债门禁、基线、豁免、周报模板继续参考 `docs/standards/technical-debt-governance-charter-v1.md`。
 
 ### Project Structure
 ```
@@ -220,6 +215,12 @@ npm run pm2:logs                  # View logs
 ├── openspec/               # OpenSpec 变更管理
 └── .claude/                # Claude Code 系统
 ```
+
+### Frontend Structure Truth
+- 当前前端目录与路由真相源摘要统一参考 `docs/guides/frontend-structure.md`，不要把 March 迁移提案快照当作当前目录事实。
+- 活跃业务路由页面默认以 `web/frontend/src/views/<domain>/*.vue` 为 canonical 入口，当前主业务域包括 `market`、`data`、`watchlist`、`strategy`、`trade`、`risk`、`system`。
+- `web/frontend/src/views/artdeco-pages/` 仍可能承载嵌入页或兼容包装层，但默认不构成主动路由真相源；判断活跃导航必须回到 `web/frontend/src/router/index.ts` 与相关 route spec。
+- 当前 repo-truth 例外必须保留认知：`/dashboard` 仍由 `web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue` 提供，`/trade/terminal` 仍由 `web/frontend/src/views/TradingDashboard.vue` 提供。
 
 ---
 
