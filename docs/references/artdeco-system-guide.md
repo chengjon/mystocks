@@ -1,4 +1,4 @@
-# MyStocks ArtDeco Web Interface - Complete Design System
+# MyStocks ArtDeco Web Interface - Historical Design System Reference
 
 > **参考指南说明**:
 > 本文件是补充指南、命令参考、操作说明或使用手册，不是当前仓库共享规则、当前实现边界或当前主线流程的唯一事实来源。
@@ -626,21 +626,21 @@ artdeco-system/
 
 ## 🎯 Historical Design Priority
 
-### Historical Phase 1 Scope ✅
+### Historical Phase 1 Scope (Early Snapshot)
 1. Dashboard - Market overview and monitoring
 2. Market Center - Real-time quotes and K-line charts
 3. Stock Screener - Advanced filtering and sorting
 
-### Historical Phase 2 Backlog 🚧
+### Historical Phase 2 Backlog (Early Snapshot)
 4. Data Analysis - Financial analysis and IC analysis
 5. Strategy Lab - Strategy development and parameter tuning
 6. Backtest Arena - Historical backtesting and performance reports
 
-### Phase 3 (Medium Priority) 📋
+### Historical Phase 3 Backlog (Medium Priority Snapshot)
 7. Trade Station - Order management and position tracking
 8. Risk Center - Portfolio risk and compliance monitoring
 
-### Phase 4 (Lower Priority) 📝
+### Historical Phase 4 Backlog (Lower Priority Snapshot)
 9. System Settings - Configuration and user management
 
 ---
