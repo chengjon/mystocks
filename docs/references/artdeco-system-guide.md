@@ -4,14 +4,14 @@
 > 本文件是补充指南、命令参考、操作说明或使用手册，不是当前仓库共享规则、当前实现边界或当前主线流程的唯一事实来源。
 > 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线治理文档一并核对。
 >
-> 文内步骤、示例、命令和说明应视为补充参考；若与当前代码或主线文档冲突，应以后者为准。
+> 文内步骤、示例、命令和说明应视为补充参考；若与当前代码、`architecture/STANDARDS.md` 或主线治理文档不一致，应以 `architecture/STANDARDS.md`、当前代码实现及主线治理文档为准。
 
 
 ## 📚 Project Overview
 
-**Project Name**: A股量化交易管理系统 - ArtDeco Edition
-**Design Style**: ArtDeco Modern (几何美学 + 奢华金融)
-**Pages**: 9 Core Pages
+**Historical Project Name Snapshot**: A股量化交易管理系统 - ArtDeco Edition
+**Historical Design Style Snapshot**: ArtDeco Modern (几何美学 + 奢华金融)
+**Historical Page Count Snapshot**: 9 Core Pages
 **Status**: Historical design reference snapshot; the old `Phase 1 Complete (3/9 pages fully implemented)` line describes an early design milestone, not current frontend mainline status
 
 ---
