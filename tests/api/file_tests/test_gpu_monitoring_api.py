@@ -1,131 +1,147 @@
 """
-File-level tests for gpu_monitoring.py API endpoints
+File-level route and model contract tests for gpu_monitoring.py.
 
-Tests all GPU monitoring endpoints including:
-- GPU resource usage tracking
-- GPU performance metrics
-- GPU health monitoring
-- GPU utilization analytics
-
-Priority: P2 (Utility)
-Coverage: 70% functional + smoke testing
+这里覆盖当前真实的 GPU 监控路由、Pydantic 模型和 mock 响应行为。
 """
 
-import asyncio
+from __future__ import annotations
+
+import importlib
+import sys
+from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
-from tests.api.file_tests.conftest import api_test_fixtures, assert_file_test_result, mock_responses
+
+ROOT = Path(__file__).resolve().parents[3]
+BACKEND_ROOT = ROOT / "web" / "backend"
+if str(BACKEND_ROOT) not in sys.path:
+    sys.path.insert(0, str(BACKEND_ROOT))
+
+
+@pytest.fixture
+def gpu_monitoring_module(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("POSTGRESQL_HOST", "localhost")
+    monkeypatch.setenv("POSTGRESQL_USER", "postgres")
+    monkeypatch.setenv("POSTGRESQL_PASSWORD", "password")
+    monkeypatch.setenv("JWT_SECRET_KEY", "test-secret-key")
+    monkeypatch.setenv("BACKEND_PORT", "8020")
+    monkeypatch.setenv("BACKEND_BACKUP_PORT", "8021")
+    return importlib.import_module("app.api.gpu_monitoring")
 
 
 class TestGpuMonitoringAPIFile:
-    """Test suite for gpu_monitoring.py API file"""
+    @pytest.mark.file_test
+    def test_router_registers_expected_gpu_routes(self, gpu_monitoring_module):
+        route_methods = {(route.path, tuple(sorted(route.methods or []))) for route in gpu_monitoring_module.router.routes}
+
+        assert gpu_monitoring_module.router.prefix == "/api/gpu"
+        assert gpu_monitoring_module.router.tags == ["gpu-monitoring"]
+        assert ("/api/gpu/status", ("GET",)) in route_methods
+        assert ("/api/gpu/performance", ("GET",)) in route_methods
+        assert ("/api/gpu/metrics", ("GET",)) in route_methods
+        assert ("/api/gpu/history", ("GET",)) in route_methods
 
     @pytest.mark.file_test
-    def test_gpu_status_endpoint(self, api_test_fixtures):
-        """Test GET /api/gpu/status - GPU status overview"""
-        # Test GPU status and availability
-        assert api_test_fixtures["base_url"].startswith("http")
+    def test_router_contains_expected_number_of_routes(self, gpu_monitoring_module):
+        route_pairs = [(route.path, tuple(sorted(route.methods or []))) for route in gpu_monitoring_module.router.routes]
+
+        assert len(route_pairs) == 4
+        assert len(route_pairs) == len(set(route_pairs))
 
     @pytest.mark.file_test
-    def test_gpu_utilization_endpoint(self, api_test_fixtures):
-        """Test GET /api/gpu/utilization - GPU utilization metrics"""
-        # Test GPU utilization tracking
-        assert api_test_fixtures["retry_attempts"] >= 1
+    def test_gpu_status_model_fields_and_ranges_are_stable(self, gpu_monitoring_module):
+        fields = gpu_monitoring_module.GPUStatus.model_fields
+
+        assert set(fields) == {
+            "device_id",
+            "name",
+            "gpu_utilization",
+            "memory_used",
+            "memory_total",
+            "memory_utilization",
+            "temperature",
+            "power_usage",
+            "sm_clock",
+            "memory_clock",
+        }
+        assert any(getattr(meta, "ge", None) == 0 for meta in fields["gpu_utilization"].metadata)
+        assert any(getattr(meta, "le", None) == 100 for meta in fields["gpu_utilization"].metadata)
+        assert any(getattr(meta, "ge", None) == 0 for meta in fields["memory_utilization"].metadata)
+        assert any(getattr(meta, "le", None) == 100 for meta in fields["memory_utilization"].metadata)
 
     @pytest.mark.file_test
-    def test_gpu_memory_endpoint(self, api_test_fixtures):
-        """Test GET /api/gpu/memory - GPU memory usage"""
-        # Test GPU memory monitoring
-        assert api_test_fixtures["mock_enabled"] is True
+    def test_gpu_performance_model_fields_are_stable(self, gpu_monitoring_module):
+        fields = set(gpu_monitoring_module.GPUPerformanceMetrics.model_fields)
+
+        assert fields == {
+            "device_id",
+            "matrix_gflops",
+            "matrix_speedup",
+            "memory_gflops",
+            "memory_speedup",
+            "throughput",
+            "timestamp",
+        }
 
     @pytest.mark.file_test
-    def test_gpu_temperature_endpoint(self, api_test_fixtures):
-        """Test GET /api/gpu/temperature - GPU temperature monitoring"""
-        # Test GPU temperature tracking
-        assert api_test_fixtures["contract_validation"] is True
-
-    @pytest.mark.file_test
-    def test_gpu_performance_endpoint(self, api_test_fixtures):
-        """Test GET /api/gpu/performance - GPU performance metrics"""
-        # Test GPU performance analytics
-        assert api_test_fixtures["test_timeout"] > 0
-
-    @pytest.mark.file_test
-    def test_error_handling(self, mock_responses):
-        """Test error handling across GPU monitoring endpoints"""
-        error_response = mock_responses["error_response"]
-        assert error_response["success"] is False
-        assert "code" in error_response
-        assert "message" in error_response
-
-    @pytest.mark.file_test
-    def test_response_format_validation(self):
-        """Test response format validation for GPU monitoring endpoints"""
-        # Validate GPU monitoring response formats
-        assert True  # Placeholder
-
-    @pytest.mark.file_test
-    def test_performance_requirements(self, api_test_fixtures):
-        """Test performance requirements for GPU monitoring endpoints"""
-        # Validate GPU monitoring query performance
-        timeout = api_test_fixtures["test_timeout"]
-        assert timeout <= 30  # Max 30 seconds for GPU monitoring
-
     @pytest.mark.asyncio
-    @pytest.mark.file_test
-    async def test_gpu_monitoring_data_collection(self):
-        """Test GPU monitoring data collection and processing"""
-        # Test GPU metrics collection
-        await asyncio.sleep(0.01)  # Simulate async operation
-        assert True
+    async def test_get_gpu_status_returns_unified_response_payload(self, gpu_monitoring_module):
+        request = SimpleNamespace(state=SimpleNamespace(request_id="req-1"))
+
+        payload = await gpu_monitoring_module.get_gpu_status(request, device_id=None)
+
+        assert payload.success is True
+        assert payload.message == "GPU状态查询成功"
+        assert payload.request_id == "req-1"
+        assert payload.data["gpus"][0]["device_id"] == 0
 
     @pytest.mark.file_test
-    def test_gpu_monitoring_data_consistency(self):
-        """Test data consistency in GPU monitoring operations"""
-        # Ensure GPU monitoring data remains consistent
-        assert True
+    @pytest.mark.asyncio
+    async def test_get_gpu_performance_returns_unified_response_payload(self, gpu_monitoring_module):
+        request = SimpleNamespace(state=SimpleNamespace(request_id="req-2"))
+
+        payload = await gpu_monitoring_module.get_gpu_performance(request, device_id=0)
+
+        assert payload.success is True
+        assert payload.message == "GPU性能指标查询成功"
+        assert payload.data["metrics"][0]["device_id"] == 0
 
     @pytest.mark.file_test
-    def test_gpu_monitoring_workflow(self):
-        """Test complete GPU monitoring workflow"""
-        # Test status -> utilization -> performance workflow
-        assert True
+    @pytest.mark.asyncio
+    async def test_get_prometheus_metrics_returns_plain_text_response(self, gpu_monitoring_module):
+        request = SimpleNamespace(state=SimpleNamespace(request_id="req-3"))
 
+        response = await gpu_monitoring_module.get_prometheus_metrics(request)
 
-class TestGpuMonitoringIntegration:
-    """Integration tests for gpu_monitoring.py with related modules"""
-
-    @pytest.mark.file_test
-    def test_gpu_monitoring_system_integration(self):
-        """Test GPU monitoring with system monitoring"""
-        # Test GPU monitoring integration with system metrics
-        assert True
+        assert response.media_type == "text/plain"
+        assert "gpu_utilization" in response.body.decode()
+        assert "gpu_matrix_gflops" in response.body.decode()
 
     @pytest.mark.file_test
-    def test_gpu_monitoring_performance_integration(self):
-        """Test GPU monitoring with performance analysis"""
-        # Test GPU metrics with performance analysis
-        assert True
+    @pytest.mark.asyncio
+    async def test_get_gpu_history_returns_empty_history_structure(self, gpu_monitoring_module):
+        request = SimpleNamespace(state=SimpleNamespace(request_id="req-4"))
 
+        payload = await gpu_monitoring_module.get_gpu_history(request, device_id=0, start_time=None, end_time=None, limit=10)
 
-class TestGpuMonitoringValidation:
-    """Validation tests for GPU monitoring API"""
-
-    @pytest.mark.file_test
-    def test_gpu_monitoring_api_compliance(self):
-        """Test compliance with GPU monitoring API specifications"""
-        # Validate GPU monitoring API compliance
-        assert True
+        assert payload.success is True
+        assert payload.message == "GPU历史数据查询成功"
+        assert payload.data == {"device_id": 0, "records": [], "total": 0}
 
     @pytest.mark.file_test
-    def test_gpu_monitoring_accuracy(self):
-        """Test accuracy of GPU monitoring data"""
-        # Validate GPU monitoring data accuracy
-        assert True
+    def test_route_names_remain_stable(self, gpu_monitoring_module):
+        route_names = {(route.path, tuple(sorted(route.methods or []))): route.name for route in gpu_monitoring_module.router.routes}
+
+        assert route_names[("/api/gpu/status", ("GET",))] == "get_gpu_status"
+        assert route_names[("/api/gpu/performance", ("GET",))] == "get_gpu_performance"
+        assert route_names[("/api/gpu/metrics", ("GET",))] == "get_prometheus_metrics"
+        assert route_names[("/api/gpu/history", ("GET",))] == "get_gpu_history"
 
     @pytest.mark.file_test
-    def test_gpu_monitoring_endpoint_coverage(self):
-        """Test that all expected GPU monitoring endpoints are implemented"""
-        # Validate GPU monitoring endpoint coverage
-        assert True
+    def test_module_docstring_mentions_prometheus_and_hardware_monitoring(self, gpu_monitoring_module):
+        doc = gpu_monitoring_module.__doc__ or ""
+
+        assert "Prometheus" in doc
+        assert "GPU实时状态查询" in doc
