@@ -7,6 +7,10 @@ import pytest
 from src.services.maestro.collab.authz.policy import ActorIdentity, AuthorizationError
 from src.services.maestro.collab.services.coordination import CoordinationService
 from src.services.maestro.collab.store.models import (
+    TranscriptEventRecord,
+    TranscriptHotBodyRecord,
+    TranscriptLegacyIndexRecord,
+    TranscriptSessionRecord,
     WorkerStatusViewRecord,
     WorkEventRecord,
     WorkItemRecord,
@@ -240,6 +244,10 @@ class _InMemoryCollaborationStore:
         self.work_requests: dict[str, list[WorkRequestRecord]] = {}
         self.work_events: dict[str, list[WorkEventRecord]] = {}
         self.worker_status_views: dict[str, WorkerStatusViewRecord] = {}
+        self.transcript_sessions: dict[str, TranscriptSessionRecord] = {}
+        self.transcript_events: dict[str, list[TranscriptEventRecord]] = {}
+        self.transcript_hot_bodies: dict[str, TranscriptHotBodyRecord] = {}
+        self.transcript_legacy_indexes: dict[str, list[TranscriptLegacyIndexRecord]] = {}
 
     def ensure_indexes(self) -> None:
         return None
@@ -289,3 +297,43 @@ class _InMemoryCollaborationStore:
 
     def get_worker_status_view(self, work_item_id: str) -> WorkerStatusViewRecord | None:
         return self.worker_status_views.get(work_item_id)
+
+    def upsert_transcript_session(self, session: TranscriptSessionRecord) -> TranscriptSessionRecord:
+        self.transcript_sessions[session.session_id] = session
+        return session
+
+    def get_transcript_session(self, session_id: str) -> TranscriptSessionRecord | None:
+        return self.transcript_sessions.get(session_id)
+
+    def list_transcript_sessions(self, work_item_id: str) -> list[TranscriptSessionRecord]:
+        return sorted(
+            [session for session in self.transcript_sessions.values() if session.work_item_id == work_item_id],
+            key=lambda item: (item.started_at, item.session_id),
+        )
+
+    def append_transcript_event(self, event: TranscriptEventRecord) -> TranscriptEventRecord:
+        events = self.transcript_events.setdefault(event.session_id, [])
+        if all(existing.event_id != event.event_id for existing in events):
+            events.append(event)
+            events.sort(key=lambda item: (item.sequence_no, item.occurred_at, item.event_id))
+        return event
+
+    def list_transcript_events(self, session_id: str) -> list[TranscriptEventRecord]:
+        return list(self.transcript_events.get(session_id, []))
+
+    def upsert_transcript_hot_body(self, hot_body: TranscriptHotBodyRecord) -> TranscriptHotBodyRecord:
+        self.transcript_hot_bodies[hot_body.session_id] = hot_body
+        return hot_body
+
+    def get_transcript_hot_body(self, session_id: str) -> TranscriptHotBodyRecord | None:
+        return self.transcript_hot_bodies.get(session_id)
+
+    def append_transcript_legacy_index(self, legacy_index: TranscriptLegacyIndexRecord) -> TranscriptLegacyIndexRecord:
+        legacy_indexes = self.transcript_legacy_indexes.setdefault(legacy_index.work_item_id, [])
+        if all(existing.legacy_index_id != legacy_index.legacy_index_id for existing in legacy_indexes):
+            legacy_indexes.append(legacy_index)
+            legacy_indexes.sort(key=lambda item: (item.captured_at, item.legacy_index_id))
+        return legacy_index
+
+    def list_transcript_legacy_indexes(self, work_item_id: str) -> list[TranscriptLegacyIndexRecord]:
+        return list(self.transcript_legacy_indexes.get(work_item_id, []))
