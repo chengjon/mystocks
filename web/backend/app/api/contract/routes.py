@@ -3,7 +3,7 @@ API契约管理 API路由
 提供契约版本管理、差异检测、验证和同步功能
 """
 
-from typing import List
+from typing import Any, Dict, List
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query
 from sqlalchemy.orm import Session
@@ -25,6 +25,19 @@ from app.api.contract.services.version_manager import VersionManager
 from app.core.database import get_db
 
 router = APIRouter(prefix="/api/contracts", tags=["contract-management"])
+
+
+def _success_response_spec(description: str, example: Any) -> Dict[int, Dict[str, Any]]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
 
 
 CONTRACT_VERSION_CREATE_EXAMPLES = {
@@ -120,6 +133,101 @@ CONTRACT_LIST_ERROR_RESPONSE = {
     }
 }
 
+CONTRACT_VERSION_DETAIL_RESPONSES = _success_response_spec(
+    "契约版本详情",
+    {
+        "id": 13,
+        "name": "market-api",
+        "version": "1.2.0",
+        "spec": {
+            "openapi": "3.1.0",
+            "info": {"title": "Market API", "version": "1.2.0"},
+            "paths": {"/api/v1/market/quotes": {"get": {"summary": "List quotes", "responses": {"200": {}}}}},
+        },
+        "commit_hash": "abc123def456",
+        "author": "codex",
+        "description": "Add quote aggregation endpoint",
+        "tags": ["market", "v1"],
+        "created_at": "2026-04-06T15:30:00",
+        "is_active": True,
+    },
+)
+
+CONTRACT_VERSION_LIST_RESPONSES = _success_response_spec(
+    "契约版本列表",
+    [
+        {
+            "id": 13,
+            "name": "market-api",
+            "version": "1.2.0",
+            "spec": {
+                "openapi": "3.1.0",
+                "info": {"title": "Market API", "version": "1.2.0"},
+                "paths": {"/api/v1/market/quotes": {"get": {"summary": "List quotes", "responses": {"200": {}}}}},
+            },
+            "commit_hash": "abc123def456",
+            "author": "codex",
+            "description": "Add quote aggregation endpoint",
+            "tags": ["market", "v1"],
+            "created_at": "2026-04-06T15:30:00",
+            "is_active": True,
+        }
+    ],
+)
+
+CONTRACT_VERSION_ACTIVATE_RESPONSES = _success_response_spec(
+    "契约版本激活结果",
+    {
+        "success": True,
+        "message": "版本已激活",
+    },
+)
+
+CONTRACT_VERSION_DELETE_RESPONSES = _success_response_spec(
+    "契约版本删除结果",
+    {
+        "success": True,
+        "message": "版本已删除",
+    },
+)
+
+CONTRACT_LIST_RESPONSES = {
+    **CONTRACT_LIST_ERROR_RESPONSE,
+    **_success_response_spec(
+        "契约列表",
+        {
+            "contracts": [
+                {
+                    "name": "market-api",
+                    "latest_version": "1.2.0",
+                    "total_versions": 3,
+                    "last_updated": "2026-04-06T15:30:00",
+                    "description": "市场数据对外契约",
+                    "tags": ["market", "public"],
+                }
+            ],
+            "total": 1,
+        },
+    ),
+}
+
+CONTRACT_SYNC_REPORT_RESPONSES = {
+    **CONTRACT_SYNC_ERROR_RESPONSE,
+    **_success_response_spec(
+        "契约同步报告",
+        {
+            "contracts": [
+                {
+                    "name": "trading-runtime",
+                    "detected_endpoints": 12,
+                    "last_synced_version": "2.1.0",
+                }
+            ],
+            "generated_at": "2026-04-06T15:30:00",
+        },
+    ),
+}
+
 
 # ==================== 契约版本管理 ====================
 
@@ -143,7 +251,7 @@ async def create_version(
     return VersionManager.create_version(db, version_data)
 
 
-@router.get("/versions/{version_id}", response_model=ContractVersionResponse)
+@router.get("/versions/{version_id}", response_model=ContractVersionResponse, responses=CONTRACT_VERSION_DETAIL_RESPONSES)
 async def get_version(
     version_id: int = Path(..., description="Unique identifier of the contract version to retrieve."),
     db: Session = Depends(get_db),
@@ -155,7 +263,11 @@ async def get_version(
     return version
 
 
-@router.get("/versions/{name}/active", response_model=ContractVersionResponse)
+@router.get(
+    "/versions/{name}/active",
+    response_model=ContractVersionResponse,
+    responses=CONTRACT_VERSION_DETAIL_RESPONSES,
+)
 async def get_active_version(
     name: str = Path(..., description="Contract name whose active version should be returned."),
     db: Session = Depends(get_db),
@@ -167,7 +279,7 @@ async def get_active_version(
     return version
 
 
-@router.get("/versions", response_model=List[ContractVersionResponse])
+@router.get("/versions", response_model=List[ContractVersionResponse], responses=CONTRACT_VERSION_LIST_RESPONSES)
 async def list_versions(
     name: str = Query(None, description="Optional contract name filter used to scope the version list."),
     limit: int = Query(50, ge=1, le=200, description="Maximum number of contract versions returned in one page."),
@@ -191,7 +303,7 @@ async def update_version(
     return version
 
 
-@router.post("/versions/{version_id}/activate")
+@router.post("/versions/{version_id}/activate", responses=CONTRACT_VERSION_ACTIVATE_RESPONSES)
 async def activate_version(
     version_id: int = Path(..., description="Unique identifier of the contract version that should become active."),
     db: Session = Depends(get_db),
@@ -203,7 +315,7 @@ async def activate_version(
     return {"success": True, "message": "版本已激活"}
 
 
-@router.delete("/versions/{version_id}")
+@router.delete("/versions/{version_id}", responses=CONTRACT_VERSION_DELETE_RESPONSES)
 async def delete_version(
     version_id: int = Path(..., description="Unique identifier of the contract version to delete."),
     db: Session = Depends(get_db),
@@ -218,7 +330,7 @@ async def delete_version(
 # ==================== 契约列表 ====================
 
 
-@router.get("/contracts", response_model=ContractListResponse, responses=CONTRACT_LIST_ERROR_RESPONSE)
+@router.get("/contracts", response_model=ContractListResponse, responses=CONTRACT_LIST_RESPONSES)
 async def list_contracts(db: Session = Depends(get_db)):
     """列出所有已登记契约及其最新版本和元数据信息。"""
     contracts = VersionManager.list_contracts(db)
@@ -346,7 +458,7 @@ async def sync_contract(
     return result
 
 
-@router.get("/sync/report", responses=CONTRACT_SYNC_ERROR_RESPONSE)
+@router.get("/sync/report", responses=CONTRACT_SYNC_REPORT_RESPONSES)
 async def get_sync_report(db: Session = Depends(get_db)):
     """
     获取同步报告

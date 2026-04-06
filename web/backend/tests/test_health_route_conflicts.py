@@ -244,6 +244,33 @@ def test_contract_management_endpoints_have_examples_and_error_docs() -> None:
     assert any(status.startswith("5") for status in contracts_get["responses"])
 
 
+def test_contract_read_and_control_endpoints_have_success_examples() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    endpoint_expectations = {
+        ("/api/contracts/versions", "get"): {"name", "limit", "offset"},
+        ("/api/contracts/versions/{version_id}", "get"): {"version_id"},
+        ("/api/contracts/versions/{name}/active", "get"): {"name"},
+        ("/api/contracts/versions/{version_id}/activate", "post"): {"version_id"},
+        ("/api/contracts/versions/{version_id}", "delete"): {"version_id"},
+        ("/api/contracts/contracts", "get"): set(),
+        ("/api/contracts/sync/report", "get"): set(),
+    }
+
+    for (path, method), expected_params in endpoint_expectations.items():
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+        success_code = next(code for code in operation["responses"] if code.startswith("2"))
+        success_json = operation["responses"][success_code]["content"]["application/json"]
+
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expected_params:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_pool_monitoring_endpoints_have_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()
