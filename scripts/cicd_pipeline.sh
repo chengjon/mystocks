@@ -181,7 +181,7 @@ except Exception as e:
 
 # 测试路由导入
 try:
-    from src.routes import *
+    from web.backend.app.main import app  # canonical FastAPI app
     print('路由模块导入成功')
 except Exception as e:
     print(f'路由模块导入失败: {e}')
