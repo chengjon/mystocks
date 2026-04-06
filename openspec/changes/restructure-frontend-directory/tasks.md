@@ -404,8 +404,10 @@
 - [ ] 17.4 Commit archive changes
 
 ## 18. Documentation Updates (Phase 8)
-- [ ] 18.1 Add migration summary to `docs/guides/frontend-structure.md`
-- [ ] 18.2 Update routing diagram in `docs/architecture/routing.md` (if exists)
+- [x] 18.1 Add migration summary to `docs/guides/frontend-structure.md`
+  - Repo-truth result: `docs/guides/frontend-structure.md` now exists and documents the active router truth, canonical domain entrypoints, compatibility-wrapper rule, and current verification truth.
+- [x] 18.2 Update routing diagram in `docs/architecture/routing.md` (if exists)
+  - Repo-truth result: not applicable in the current repository because `docs/architecture/routing.md` does not exist.
 - [ ] 18.3 Record final effort (≈ 26 person-days) in project status report
 - [ ] 18.4 Update `AGENTS.md` with new directory structure reference
 - [ ] 18.5 Commit: "docs: update frontend structure documentation"
