@@ -1,5 +1,11 @@
 # MyStocks Web系统访问指南
 
+> **使用说明**:
+> 本文件是历史 Web 访问与联调说明，不是当前默认服务地址、当前运行基线或仓库共享规则的唯一事实来源。
+> 若涉及当前环境一致性、默认访问地址、PM2/Docker 主线或审批门禁，请优先阅读 `architecture/STANDARDS.md`、根目录 `AGENTS.md`、`docs/operations/README.md`。
+>
+> 文内 `localhost:3000`、端口、页面路径和数据库监控说明如未重新核实，应视为历史访问快照；当前前端默认访问地址应以根级治理文档为准。
+
 **更新日期**: 2025-10-25
 **系统架构**: TDengine + PostgreSQL 双数据库
 

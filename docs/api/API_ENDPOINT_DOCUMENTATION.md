@@ -1,5 +1,11 @@
 # MyStocks API端点文档
 
+> **使用说明**:
+> 本文件是 API 端点总览型静态文档，不是当前 API 契约、当前端点统计或仓库共享规则的唯一事实来源。
+> 当前 API 单一事实来源请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，以及实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json`。
+>
+> 文内端点数量、端点路径、函数名和分类统计如未重新扫描生成，应视为历史快照或盘点结果，不得直接当作当前硬基线。
+
 ## 概览
 
 本文档包含了MyStocks量化交易数据管理系统的所有API端点定义，提供完整的RESTful API接口信息。

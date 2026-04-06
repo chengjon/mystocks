@@ -1,51 +1,152 @@
-# ArtDeco System Architecture Summary (V3.1 Governance Baseline)
+# ArtDeco System Architecture Summary
 
-本系统是基于 MyStocks 项目的高端金融级 UI 体系，旨在为量化交易提供极高信息密度的专业交互体验。本文档作为 V3.1 Governance Baseline 的架构确权说明。
+本文档从运行时角度总结当前 ArtDeco 前端体系，重点是“现在实际上怎么跑”，而不是历史理想模型。
 
-## 1. 核心架构原则 (Architecture Principles)
+## 1. 当前运行时全景
 
-### 1.1 "Container-Tab" 混合架构
-系统弃用了过时的“超大单体组件”，演进为**容器化管理**模式：
-*   **父容器 (Parent Containers)**: 位于 `views/artdeco-pages/`，负责路由接入、全局 Tab 状态管理和通用 API 配置。
-*   **领域组件 (Domain Components)**: 位于 `views/artdeco-pages/components/`，按业务领域（market, risk, strategy 等）分拆，实现 1:1 的功能复刻。
-*   **基础资产 (Base Assets)**: 位于 `src/components/artdeco/`，提供原子级的 UI 支持。
+ArtDeco 运行时由四层组成：
 
-### 1.2 统一配置驱动
-系统通过 `pageConfig.ts` 动态驱动。父容器根据当前激活的 Tab 名，自动从配置中提取 `apiEndpoint` 和 `wsChannel`，并下发给领域组件，实现了业务逻辑与界面表现的完全解耦。
+1. **路由与布局壳层**
+   `web/frontend/src/router/index.ts` + `web/frontend/src/layouts/ArtDecoLayoutEnhanced.vue`
+2. **可复用资产层**
+   `web/frontend/src/components/artdeco/**`
+3. **页面工作台层**
+   `web/frontend/src/views/artdeco-pages/**`
+4. **设计令牌层**
+   `web/frontend/src/styles/artdeco-*.scss`
 
-## 2. 视觉规范层 (Visual Layer - V3.0)
+## 2. 不是单一容器架构，而是三种模式并存
 
-### 2.1 设计令牌 (Design Tokens)
-**文件**: `web/frontend/src/styles/artdeco-tokens.scss`
-*   **主色调**: 黑曜石黑 (`#0A0A0A`) + 金属金 (`#D4AF37`)。
-*   **间距体系**: 11 级精确系统，从 `4px` (`--artdeco-spacing-1`) 到 `128px` (`--artdeco-spacing-32`)。
-*   **字体栈**: 
-    *   Display: `Cinzel` (几何衬线，用于标题)
-    *   Body: `Barlow` (现代无衬线，极佳的可读性)
-    *   Mono: `JetBrains Mono` (用于金融数值对齐)
+### 2.1 模板化工作台
 
-### 2.2 A 股特定规范
-系统强制执行 A 股“红涨绿跌”视觉语义：
-*   `--artdeco-rise`: `#FF5252` (上涨/盈利)
-*   `--artdeco-down`: `#00E676` (下跌/亏损)
+代表文件：
 
-## 3. 领域划分与组件分布 (Domain Mapping)
+- `web/frontend/src/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue`
+- `web/frontend/src/views/artdeco-pages/ArtDecoRiskManagement.vue`
 
-| 领域 (Domain) | 父容器 | 核心分拆组件 (位于 components/) |
-|:---|:---|:---|
-| **市场中心** | `ArtDecoMarketData.vue` | `MarketOverview`, `FundFlow`, `LHB`, `ETFAnalysis` |
-| **交易管理** | `ArtDecoTradingCenter.vue` | `SignalsView`, `HistoryView`, `PositionMonitor` |
-| **风险控制** | `ArtDecoRiskManagement.vue` | `RiskMonitor`, `AnnouncementMonitor`, `RiskAlerts` |
-| **策略研发** | `ArtDecoStrategyLab.vue` | `StrategyManagement`, `BacktestAnalysis`, `Optimization` |
+特点：
 
-## 4. 可验证性说明 (Verifiability)
+- 统一提供 `header / stats / tabs / content` 承载面
+- 通过 `pageConfig`、`tabs`、`defaultTab` 驱动工作台壳层
+- 适合风险、系统、策略类的标准工作台
 
-开发者可通过以下路径验证系统一致性：
-1.  **物理核实**: 检查 `src/components/artdeco/` 下的 66+ 个组件是否与 [组件目录](../web/ART_DECO_COMPONENTS_CATALOG.md) 一致。
-2.  **样式验证**: 检查 `.vue` 文件是否通过 `@import '@/styles/artdeco-tokens.scss'` 导入令牌，而非硬编码颜色。
-3.  **布局验证**: 检查是否使用了 `@include artdeco-grid` 实现响应式降级（4列 -> 2列 -> 1列）。
+### 2.2 直接 Tab 容器
 
----
-**维护者**: UI/UX Pro Max Agent
-**治理口径**: V3.1 Governance Baseline
-**最后更新**: 2026-02-08 (基于 V3.1 代码库核实)
+代表文件：
+
+- `web/frontend/src/views/artdeco-pages/ArtDecoMarketData.vue`
+
+特点：
+
+- 页面内直接定义 tab rail 与 content panel
+- 容器自己维护 tab 元数据与局部数据流
+- 适合历史积累较深、尚未完全模板化的页面
+
+### 2.3 功能树驱动总控容器
+
+代表文件：
+
+- `web/frontend/src/views/artdeco-pages/ArtDecoTradingCenter.vue`
+
+特点：
+
+- 左侧功能树，右侧动态组件
+- 适合总控台、总入口、跨域编排场景
+- 页面自身承担更强的 orchestration 职责
+
+## 3. 路由与配置边界
+
+### 3.1 Router 是主入口
+
+`web/frontend/src/router/index.ts` 当前负责：
+
+- 挂载 `ArtDecoLayoutEnhanced.vue`
+- 定义主业务域路由：`market`、`data`、`watchlist`、`strategy`、`trade`、`risk`、`system`
+- 将大量 ArtDeco page/workbench 直接作为独立路由挂入
+
+### 3.2 `pageConfig.ts` 不是唯一真值
+
+`web/frontend/src/config/pageConfig.ts` 当前是自动生成的页面配置文件，提供：
+
+- routePath
+- title / description
+- apiEndpoint
+- wsChannel
+- component
+
+但当前现实是：
+
+- 它对页面元信息有价值
+- 它不是所有 ArtDeco tabs 的唯一事实源
+- 很多页面的 tab 结构仍然由页面自身维护
+
+因此，架构文档不能再把 `pageConfig.ts` 写成“所有页签块都由它动态驱动”。
+
+## 4. 组件边界
+
+### 4.1 Reusable Assets
+
+`web/frontend/src/components/artdeco/**`
+
+当前共 7 层：
+
+- `base`
+- `core`
+- `business`
+- `charts`
+- `trading`
+- `advanced`
+- `specialized`
+
+### 4.2 Page-Level Shared Fragments
+
+`web/frontend/src/views/artdeco-pages/components/`
+
+这不是全局组件库，而是 ArtDeco 页面系统内部共享片段层。
+
+### 4.3 Domain Tab Blocks
+
+`web/frontend/src/views/artdeco-pages/*-tabs/`
+
+这些文件是域内工作台块：
+
+- 允许页面上下文绑定
+- 允许独立路由态 / 内嵌态双承载
+- 默认不应跨域复用
+
+## 5. 设计令牌事实点
+
+当前 `web/frontend/src/styles/artdeco-tokens.scss` 明确包含：
+
+- 字体：`Cinzel` / `Barlow` / `JetBrains Mono`
+- A 股颜色：`--artdeco-rise` = 红，`--artdeco-down` = 绿
+- 间距：13 个编号级别
+  - `1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32`
+- 语义别名：`sm / md / lg / xl`
+- 紧凑变量：`compact-*`
+
+## 6. 当前代表性页面映射
+
+| 页面 | 模式 | 说明 |
+|------|------|------|
+| `ArtDecoRiskManagement.vue` | 模板化工作台 | 标准 `pageConfig + slots` 承载 |
+| `ArtDecoMarketData.vue` | 直接 Tab 容器 | 容器内直写 tabs 与数据流 |
+| `ArtDecoTradingCenter.vue` | 功能树驱动总控台 | 左树右内容，动态组件切换 |
+| `strategy-tabs/ArtDecoStrategyManagement.vue` | 独立工作台路由 | 既可作为独立路由，也可纳入域内编排 |
+| `risk-tabs/RiskOverviewTab.vue` | 域内工作台块 | 域内风险工作台入口 |
+
+## 7. 架构结论
+
+当前 ArtDeco 前端的准确描述不是单一“容器 - 页签块”模型，而是：
+
+- **布局壳层统一**
+- **组件层分层明确**
+- **页面承载模式并存**
+- **路由驱动与模板化工作台共存**
+
+后续架构治理的重点不是再创造一个抽象名词，而是继续把页面收敛到更清晰的边界：
+
+- 哪些是 reusable assets
+- 哪些是 page-level shared fragments
+- 哪些是 domain tab blocks
+- 哪些应该继续模板化

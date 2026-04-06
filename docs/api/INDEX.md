@@ -1,5 +1,9 @@
 # Api
 
+> **导航说明**:
+> 本文件是 `docs/api/` 目录索引，用于定位 API 相关文档，不是当前 API 契约或当前仓库共享规则的唯一事实来源。
+> 若涉及 API 契约、执行规则或门禁，请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，以及实际的 FastAPI 路由 + Pydantic Schema + OpenAPI 契约。
+
 **最后更新**: 2026-03-25 02:04:55
 
 **文档数量**: 203

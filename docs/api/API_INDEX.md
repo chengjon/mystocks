@@ -1,5 +1,11 @@
 # MyStocks API 文档索引
 
+> **导航说明**:
+> 本文件是 API 文档索引与静态参考，不是当前 API 契约、当前端点基线或仓库共享规则的唯一事实来源。
+> 当前 API 单一事实来源请优先遵循 `architecture/STANDARDS.md` 中的契约治理规则，以及实际的 FastAPI 路由 + Pydantic Schema + 导出的 `/openapi.json`。
+>
+> 文内 URL、端点列表、请求示例和模块划分如未重新生成或复核，应视为静态快照，而不是自动同步的当前事实。
+
 ## 在线文档
 
 | 文档类型 | URL | 说明 |
