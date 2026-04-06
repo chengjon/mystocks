@@ -7,10 +7,10 @@
 > 文内优先级、缺口清单、执行步骤、目标值和时间线如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
 
 
-> 日期：2026-04-02
-> 范围：前端 Web 主链页面验证与修复总纲
-> 适用仓库：`/opt/claude/mystocks_spec`
-> Graphiti 记忆组：`mystocks_spec`
+> Historical Plan Snapshot Date: 2026-04-02
+> Historical Scope Snapshot: 前端 Web 主链页面验证与修复总纲
+> Historical Repo Snapshot: `/opt/claude/mystocks_spec`
+> Historical Graphiti Memory Group Snapshot: `mystocks_spec`
 
 ## 1. 背景
 
