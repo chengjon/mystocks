@@ -5,7 +5,7 @@ Provides pytest fixtures and helpers for API contract testing.
 """
 
 import logging
-from typing import Any, Generator
+from typing import Any, Dict, Generator
 
 import pytest
 import yaml
@@ -16,21 +16,34 @@ from .contract_validator import ContractValidator, ValidationResult
 logger = logging.getLogger(__name__)
 
 
+def _load_openapi_spec(spec_path: str | None = None) -> Dict[str, Any]:
+    """Load the effective OpenAPI contract.
+
+    Runtime-generated schema is the default contract source of truth. An explicit
+    file path remains available only as a compatibility override for isolated
+    tooling and historical snapshots.
+    """
+    if spec_path:
+        with open(spec_path, "r", encoding="utf-8") as f:
+            return yaml.safe_load(f)
+
+    from app.main import app
+
+    return app.openapi()
+
+
 @pytest.fixture
 def contract_validator() -> Generator[ContractValidator, None, None]:
     """
     Pytest fixture for ContractValidator.
 
-    Loads OpenAPI spec from docs/api/openapi.yaml
+    Loads the runtime-generated OpenAPI contract by default.
     """
-    spec_path = "docs/api/openapi.yaml"
     try:
-        with open(spec_path, "r", encoding="utf-8") as f:
-            spec = yaml.safe_load(f)
-        validator = ContractValidator(spec)
+        validator = ContractValidator(_load_openapi_spec())
         yield validator
-    except FileNotFoundError:
-        pytest.skip(f"OpenAPI spec not found at {spec_path}")
+    except ImportError:
+        pytest.skip("FastAPI app not available")
 
 
 @pytest.fixture
@@ -110,22 +123,19 @@ class ContractTestMixin:
         return result
 
 
-def generate_contract_tests(spec_path: str = "docs/api/openapi.yaml") -> list:
+def generate_contract_tests(spec_path: str | None = None) -> list:
     """
     Generate pytest test cases from OpenAPI specification.
 
     This function can be used to dynamically generate tests for all endpoints.
 
     Args:
-        spec_path: Path to OpenAPI specification
+        spec_path: Optional compatibility override for a specific OpenAPI file.
 
     Returns:
         List of test case dictionaries
     """
-    with open(spec_path, "r", encoding="utf-8") as f:
-        spec = yaml.safe_load(f)
-
-    validator = ContractValidator(spec)
+    validator = ContractValidator(_load_openapi_spec(spec_path))
     test_cases = []
 
     for endpoint in validator.get_endpoint_schema_paths():
