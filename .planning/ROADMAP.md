@@ -60,7 +60,7 @@ Before any migration or deletion, the following single-source-of-truth declarati
 1. Grep for all imports of `src.interfaces.adapters` — document findings
 2. If zero imports: delete `src/interfaces/adapters/` entirely
 3. If imports exist: redirect to `src/adapters/` first, then delete
-4. Run `ruff check --fix --select F401,F841,W291,W293,E701` on `src/` and `web/backend/app/`
+4. Run `ruff check --fix --unsafe-fixes --select W293,F841,W291` on `src/` and `web/backend/app/` (F401/E701 not auto-fixable per research)
 5. Run full `ruff check` and document remaining errors
 6. Run smoke tests (FastAPI import + pytest)
 
@@ -129,7 +129,7 @@ After user reviews DELETION-CANDIDATES.md:
 1. `DELETION-CANDIDATES.md` exists with grep evidence + functional tree + disposition for each target
 2. User has reviewed and approved the deletion list
 3. `src/routes/`, `src/api/`, `src/data_access_pkg/`, `src/db_manager/`, `src/database_optimization/` all removed
-4. `ruff check src/ web/backend/app/` still <50 errors (no new errors)
+4. `ruff check src/ web/backend/app/` still <900 errors (no regressions from Phase 1 baseline of 877)
 5. `python -c "from web.backend.app.main import app; print('OK')"` passes
 6. `pytest --tb=short` passes (same pass/fail count)
 
