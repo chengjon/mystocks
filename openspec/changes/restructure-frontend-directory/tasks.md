@@ -417,7 +417,8 @@
 
 ## 19. Cleanup & Verification (Phase 9)
 - [ ] 19.1 Verify no stale imports remain (run `npm run lint` one final time)
-- [ ] 19.2 Verify no broken routes (run `npm run dev` and spot-check)
+- [x] 19.2 Verify no broken routes (run `npm run dev` and spot-check)
+  - Repo-truth result: on `2026-04-06`, the live PM2 shell confirmed `mystocks-frontend` and `mystocks-backend` were `online`, `http://127.0.0.1:3020` and `http://127.0.0.1:8020/health` both responded successfully, and a focused Chromium spot-check passed 4 representative mainline routes via the external frontend shell: dashboard (`phase1`), data concept (`phase2`), trade terminal (`phase3`), and system health (`phase4`).
 - [x] 19.3 Update `MIGRATION_PROGRESS.md` with final status
   - Repo-truth result: `openspec/changes/restructure-frontend-directory/MIGRATION_PROGRESS.md` was refreshed on `2026-04-06` to the current execution frontier, explicitly separating locally closed phases `0-5` from still-pending external workflow gates in phases `6-9`.
 - [ ] 19.4 Close any related GitHub issues
