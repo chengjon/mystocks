@@ -1,5 +1,12 @@
 # Requirements: MyStocks Codebase Consolidation
 
+> **使用说明**:
+> 本文件是项目入口、工作流快照、规划工件或使用说明，不是当前共享规则、当前代码实现或当前运行状态的唯一事实来源。
+> 当前执行口径请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，并结合当前代码、主线任务系统与验证结果使用。
+>
+> 文内步骤、范围、状态或说明如未重新复核，应按其所属上下文理解，不得直接当作跨场景通用事实。
+
+
 **Defined:** 2026-04-06
 **Core Value:** Every file has exactly one canonical location, every import resolves cleanly, zero lint errors.
 
@@ -7,9 +14,9 @@
 
 ### Lint Baseline
 
-- [ ] **LINT-01**: Duplicate adapter layer (`src/interfaces/adapters/`) is eliminated — deleted or converted to Protocol stubs
-- [ ] **LINT-02**: Ruff check passes with <50 errors on `src/` and `web/backend/app/` (from current ~1,456)
-- [ ] **LINT-03**: Auto-fixable ruff rules (F401, F841, W291, W293, E701) produce zero violations
+- [ ] **LINT-01**: Duplicate adapter layer (`src/interfaces/adapters/`) deleted entirely — full deletion per CONTEXT.md D-01
+- [ ] **LINT-02**: Ruff check passes with <900 errors on `src/` and `web/backend/app/` (from ~1,456; target recalibrated per 01-RESEARCH.md measured baseline)
+- [ ] **LINT-03**: Auto-fixable ruff rules (W293, F841, W291) produce zero violations (F401 and E701 not auto-fixable by ruff 0.9.10)
 - [ ] **LINT-04**: Frontend case-conflict directories merged into lowercase canonical names
 
 ### Dead Code Removal
@@ -18,14 +25,14 @@
 - [ ] **DEAD-02**: `src/api/` (5 files) removed — verified zero imports before deletion
 - [ ] **DEAD-03**: `src/data_access_pkg/` merged into canonical `src/data_access/`
 - [ ] **DEAD-04**: `src/db_manager/` (empty shell) removed
-- [ ] **DEAD-05**: `src/database_optimization/` merged into `src/database/`
+- [ ] **DEAD-05**: `src/database_optimization/` merged into `src/data_access/` (canonical, per ROADMAP.md Global truth sources table)
 - [ ] **DEAD-06**: All proposed deletions listed in a review document for user approval before execution
 
 ### Structural Consolidation
 
 - [ ] **STRU-01**: Single canonical data access layer in `src/data_access/` — all others removed
 - [ ] **STRU-02**: All import paths updated to point to canonical locations
-- [ ] **STRU-03**: Frontend has exactly one entry point (`main.js`) — all variants removed or archived
+- [ ] **STRU-03**: Frontend has exactly one entry point — verified truth source ( entry point ( `index.html` + Vite config)
 - [ ] **STRU-04**: `views/composables/` relocated to `src/composables/`
 - [ ] **STRU-05**: `views/converted.archive/` and `views/demo/` removed from source tree
 
@@ -56,7 +63,7 @@
 | LINT-01 | Phase 1 | Pending |
 | LINT-02 | Phase 1 | Pending |
 | LINT-03 | Phase 1 | Pending |
-| LINT-04 | Phase 1 | Pending |
+| LINT-04 | Phase 3 | Pending |
 | DEAD-01 | Phase 2 | Pending |
 | DEAD-02 | Phase 2 | Pending |
 | DEAD-03 | Phase 2 | Pending |
