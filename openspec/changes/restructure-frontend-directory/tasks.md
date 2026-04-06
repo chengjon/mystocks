@@ -265,7 +265,10 @@
     - Evidence: the canonical page keeps the repo-truth imports from `@/api/index`, `@/api/types/common`, `@/composables/artdeco/useArtDecoApi`, and `@/components/artdeco`, while the legacy ArtDeco path now imports `@/views/risk/News.vue`.
   - [x] 9.6.3 Run lint & type-check
   - [x] 9.6.4 Run unit tests for News.vue
-- [ ] 9.7 Commit: "refactor: migrate risk domain pages"
+- [x] 9.7 Commit: "refactor: migrate risk domain pages"
+  - Repo-truth note: the approved mainline execution replaced the original single-commit expectation with repo-truth-aligned micro-batches.
+  - Completed: 2026-04-06 via commit chain `4bdd5611a`, `377134dee`, `ff85fd3cb`, `1861a6825`, and `0690d94e7`.
+  - Result: risk domain canonical entrypoints now live under `src/views/risk/`, while legacy ArtDeco paths remain thin compatibility wrappers.
 
 ## 10. Page-by-Page Migration – System Domain (Phase 3g)
 - 2026-04-04 repo-truth note: the system target pages for tasks `10.1` through `10.4` did not exist in the repository baseline, so this batch lands the missing target entrypoints and retargets the system router/pageConfig entries to them.
