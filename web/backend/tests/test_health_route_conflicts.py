@@ -639,6 +639,9 @@ def test_tdx_and_metrics_endpoints_have_parameter_docs_and_error_responses() -> 
     assert any(code.startswith(("4", "5")) for code in index_kline_operation["responses"])
 
     metrics_operation = schema["paths"]["/api/metrics"]["get"]
+    metrics_success_content = metrics_operation["responses"]["200"]["content"]
+    assert "text/plain" in metrics_success_content
+    assert "example" in metrics_success_content["text/plain"] or "examples" in metrics_success_content["text/plain"]
     assert any(code.startswith(("4", "5")) for code in metrics_operation["responses"])
 
 

@@ -55,6 +55,25 @@ METRICS_ENDPOINT_ERROR_RESPONSE = {
     }
 }
 
+PROMETHEUS_METRICS_SUCCESS_RESPONSE = {
+    200: {
+        "description": "Prometheus 文本格式监控指标。",
+        "content": {
+            "text/plain": {
+                "example": (
+                    "# HELP mystocks_http_requests_total Total HTTP requests\n"
+                    "# TYPE mystocks_http_requests_total counter\n"
+                    'mystocks_http_requests_total{method="GET",endpoint="/api/metrics",status="200"} 128.0\n'
+                    "# HELP mystocks_db_connections_active Active database connections\n"
+                    "# TYPE mystocks_db_connections_active gauge\n"
+                    'mystocks_db_connections_active{database="postgresql"} 5.0\n'
+                )
+            }
+        },
+    },
+    **METRICS_ENDPOINT_ERROR_RESPONSE,
+}
+
 # Rate limiting for metrics endpoints
 metrics_access_count: Dict[int, Dict[int, int]] | None = None
 
@@ -373,7 +392,7 @@ async def performance_metrics(current_user: User = Depends(get_current_user)) ->
 # ==================== 管理员级别端点（需要管理员权限）====================
 
 
-@router.get("/metrics", responses=METRICS_ENDPOINT_ERROR_RESPONSE)
+@router.get("/metrics", responses=PROMETHEUS_METRICS_SUCCESS_RESPONSE)
 async def prometheus_metrics(current_user: User = Depends(get_current_user)) -> Response:
     """
     Prometheus metrics端点
