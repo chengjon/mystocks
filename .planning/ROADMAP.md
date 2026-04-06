@@ -53,7 +53,7 @@ Before any migration or deletion, the following single-source-of-truth declarati
 1. `ruff check src/ web/backend/app/ --statistics` reports <900 errors (from ~1,456; recalibrated per `.planning/phases/01-python-lint-baseline/01-RESEARCH.md` — 805 F821 require manual investigation, not auto-fixable)
 2. `src/interfaces/adapters/` deleted — verified zero imports: `grep -r "from src.interfaces.adapters\|import src.interfaces.adapters" --include="*.py" src/ web/ tests/ scripts/` returns empty
 3. Auto-fixable rules produce zero violations: `ruff check src/ web/backend/app/ --select F401,F841,W291,W293,E701` exits 0
-4. FastAPI app starts: `python -c "from web.backend.app.main import app; print('OK')"`
+4. FastAPI app starts: `cd web/backend && PYTHONPATH=$(git rev-parse --show-toplevel):. python -c "from app.main import app; print('OK')"``
 5. No regressions: `pytest --tb=short` passes (same pass/fail count as before)
 
 **Tasks:**

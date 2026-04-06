@@ -23,7 +23,7 @@ progress:
 **Project:** MyStocks Codebase Consolidation
 **Initialized:** 2026-04-06
 **Current Phase:** 2
-**Blocker:** Synchronize REQUIREMENTS/STATE/REVIEW with revised ROADMAP before Phase 1 execution
+**Blocker:** None
 
 ---
 
@@ -32,7 +32,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-06)
 
 **Core value:** Every file has exactly one canonical location, every import resolves cleanly, zero lint errors.
-**Current focus:** Phase 01 — python-lint-baseline
+**Current focus:** Phase 02 — dead-code-inventory-and-removal (pending planning)
 
 ---
 
@@ -49,7 +49,7 @@ See: .planning/PROJECT.md (updated 2026-04-06)
 
 | Phase | Name | Status | Plans | Progress |
 |-------|------|--------|-------|----------|
-| 1 | Lint Baseline | Context gathered / approval pending | 1 | — |
+| 1 | Lint Baseline | ✓ Complete | 1 | 100% |
 | 2 | Dead Code Removal | Pending | 0 | 0% |
 | 3 | Structural Consolidation | Pending | 0 | 0% |
 | 4 | Naming & Polish | Pending | 0 | 0% |

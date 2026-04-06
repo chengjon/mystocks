@@ -7,6 +7,10 @@ date: 2026-04-06
 
 # Phase 1 Verification Report: Python Lint Baseline
 
+> **历史总结说明**:
+> 本文件是某次阶段性验证工作的历史总结快照，用于追溯当时的验证口径、结果与结论。
+> 其中的通过状态、指标和证据均受生成时间与当时仓库状态影响；引用前应结合当前实现与最新验证结果重新确认。
+
 ## Summary
 
 Phase 1 achieved its goal: reduce total ruff errors from ~1,456 to below 900 and zero-out safe-to-fix violations.
@@ -85,7 +89,7 @@ Root cause: `cannot import name 'Base' from 'src.storage.database.database_manag
 
 ## Known Pre-Existing Issues (NOT Phase 1 scope)
 
-1. **FastAPI import error**: `cannot import name 'get_socketio_manager'` in `web/backend/app/main.py:37` — naming mismatch, not caused by Phase 1
+1. **FastAPI smoke test**: PASSES with correct invocation (`cd web/backend && PYTHONPATH=$(git rev-parse --show-toplevel):. python -c "from app.main import app; print('OK')"`). Original `get_socketio_manager` error was a false positive caused by wrong PYTHONPATH, not a code bug.
 2. **F821 errors (805)**: Undefined names in adapter/analysis/monitoring modules — each requires understanding the intended import
 3. **F401 unused imports (21)**: Not auto-fixable by ruff 0.9.10 — need manual review for re-export vs dead import
 

@@ -38,6 +38,10 @@ completed: 2026-04-06
 
 # Phase 1: Python Lint Baseline Summary
 
+> **历史总结说明**:
+> 本文件是某次阶段性治理工作的历史总结快照，用于追溯当时的交付结果、关键决策与影响范围。
+> 其中的完成度、指标和结论不应直接视为当前事实；引用前应结合 `architecture/STANDARDS.md`、当前实现与最新验证结果重新确认。
+
 **Reduced ruff errors from 1,456 to 877 via adapter deletion + 206 auto-fixes, documented 805 F821 errors for future phases**
 
 ## Performance
