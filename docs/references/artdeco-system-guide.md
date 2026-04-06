@@ -12,7 +12,7 @@
 **Project Name**: A股量化交易管理系统 - ArtDeco Edition
 **Design Style**: ArtDeco Modern (几何美学 + 奢华金融)
 **Pages**: 9 Core Pages
-**Status**: ✅ Phase 1 Complete (3/9 pages fully implemented)
+**Status**: Historical design reference snapshot; the old `Phase 1 Complete (3/9 pages fully implemented)` line describes an early design milestone, not current frontend mainline status
 
 ---
 
