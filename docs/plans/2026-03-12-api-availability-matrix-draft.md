@@ -12,6 +12,8 @@
 **Branch:** `dev-api-availability-gemini`
 **Status:** Historical Draft Snapshot
 
+All worktree backend ports (`127.0.0.1:81xx`) and PM2 `localhost:8888` references in this draft are dated historical verification evidence, not current runtime port truth. Current runtime truth must be taken from newer frontend mainline closeout artifacts and active runtime checks.
+
 ## Purpose
 
 This draft defined the working truth for page-level API availability in the 2026-03 web optimization scope.
