@@ -342,10 +342,20 @@
   - Repo-truth closeout: phase 11 is recorded as a verification-and-ledger micro-batch rather than a second router rewrite commit.
 
 ## 12. Testing – Smoke Suite (Phase 5)
-- [ ] 12.1 Run `npm run test:smoke` locally
-- [ ] 12.2 Fix any failing smoke tests
-- [ ] 12.3 Verify all tests pass
-- [ ] 12.4 Generate test report and attach to PR
+- 2026-04-06 repo-truth note: the current repo does not expose a single `npm run test:smoke` command, so phase `12.1` through `12.4` close against the verified safe smoke gate chain already tracked in Mongo.
+  - Verified work item `2026-04-04-restructure-frontend-phase5-safe-smoke-main` records the repo-truth smoke commands:
+    - `npm run test:e2e:stable`
+    - `npm run test:e2e:axe`
+    - `npm run test:e2e:lighthouse`
+  - Verified work item `2026-04-04-restructure-frontend-phase5-lighthouse-a11y-remediation-main` records the only discovered blocker in that chain and its resolution.
+- [x] 12.1 Run `npm run test:smoke` locally
+  - Repo-truth result: replaced by the three safe smoke gates above because the one-command wording is obsolete in the current repo.
+- [x] 12.2 Fix any failing smoke tests
+  - Resolved blocker: the `/market/realtime` Lighthouse accessibility regression was fixed and re-verified in `2026-04-04-restructure-frontend-phase5-lighthouse-a11y-remediation-main`.
+- [x] 12.3 Verify all tests pass
+  - Repo-truth result: the stable route shell, accessibility smoke, and Lighthouse smoke chain returned to green after the remediation batch.
+- [x] 12.4 Generate test report and attach to PR
+  - Repo-truth result: Mongo work items and their acceptance-command history are the authoritative smoke report record for this control-plane workflow.
 
 ## 13. Testing – End-to-End (Phase 5)
 - [ ] 13.1 Run `npm run test:e2e` (Cypress full suite)
