@@ -1696,6 +1696,8 @@ def test_auth_support_endpoints_have_docs_examples_and_error_responses() -> None
         ("/api/v1/auth/logout", "post"): {"parameters": set(), "requires_request_example": False},
         ("/api/v1/auth/me", "get"): {"parameters": set(), "requires_request_example": False},
         ("/api/v1/auth/refresh", "post"): {"parameters": set(), "requires_request_example": False},
+        ("/api/v1/auth/users", "get"): {"parameters": set(), "requires_request_example": False},
+        ("/api/v1/auth/csrf/token", "get"): {"parameters": set(), "requires_request_example": False},
         ("/api/v1/auth/register", "post"): {"parameters": set(), "requires_request_example": True},
         ("/api/v1/auth/reset-password/request", "post"): {"parameters": set(), "requires_request_example": True},
         ("/api/v1/auth/reset-password/confirm", "post"): {"parameters": set(), "requires_request_example": True},

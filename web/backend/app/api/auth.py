@@ -161,6 +161,50 @@ AUTH_RESET_CONFIRM_RESPONSES = {
     ),
 }
 
+AUTH_USERS_RESPONSES = {
+    **_success_response_spec(
+        200,
+        "用户列表查询成功",
+        {
+            "users": [
+                {
+                    "id": 1,
+                    "username": "trader_admin",
+                    "email": "admin@example.com",
+                    "role": "admin",
+                    "is_active": True,
+                },
+                {
+                    "id": 2,
+                    "username": "market_viewer",
+                    "email": "viewer@example.com",
+                    "role": "user",
+                    "is_active": True,
+                },
+            ],
+            "total": 2,
+        },
+    ),
+}
+
+AUTH_CSRF_RESPONSES = {
+    **_success_response_spec(
+        200,
+        "CSRF 令牌生成成功",
+        {
+            "success": True,
+            "data": {
+                "token": "csrf-token-example",
+                "token_type": "csrf",
+                "expires_in": 3600,
+            },
+            "message": "CSRF token generated successfully",
+            "timestamp": "2026-04-07T03:45:00Z",
+            "request_id": "req-auth-csrf-001",
+        },
+    ),
+}
+
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
@@ -340,7 +384,12 @@ async def refresh_token(
     }
 
 
-@router.get("/users")
+@router.get(
+    "/users",
+    summary="获取用户列表",
+    description="返回系统中的活跃用户列表及总数，仅管理员可访问，用于后台账号管理和权限审查。",
+    responses=AUTH_USERS_RESPONSES,
+)
 async def get_users(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
     """
     获取用户列表（仅管理员）
@@ -398,7 +447,12 @@ def check_permission(user_role: str, required_role: str) -> bool:
 
 
 # SECURITY FIX 1.2: CSRF Token获取端点
-@router.get("/csrf/token")
+@router.get(
+    "/csrf/token",
+    summary="获取 CSRF 令牌",
+    description="生成前端提交写操作前所需的 CSRF 保护令牌，返回 token、类型和过期时间。",
+    responses=AUTH_CSRF_RESPONSES,
+)
 async def get_csrf_token():
     """
     获取CSRF保护令牌 - v1版本 (标准化端点)
