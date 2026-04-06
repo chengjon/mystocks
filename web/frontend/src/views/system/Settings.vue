@@ -25,8 +25,12 @@
     </div>
 
     <div class="analysis-blocker" role="status" aria-live="polite">
-      统一系统配置后端契约仍未建立，当前页面仅保留本地设置持久化与健康监控视图；
-      数据源真实配置写回请前往“系统数据”页。
+      <p>
+        统一系统配置后端契约仍未建立，当前页面仅保留本地设置持久化与健康监控视图；
+        数据源真实配置写回请前往“系统数据”页。
+      </p>
+      <p>数据源配置使用系统级后端契约，通知偏好使用用户级 /api/notification/preferences 契约。</p>
+      <p>general 与 security 仍待系统级写入契约，下方“系统设置”表单仅保存本地设置草稿，不构成系统后端真相。</p>
     </div>
 
     <template v-if="activeTab === 'sources'">
