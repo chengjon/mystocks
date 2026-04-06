@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 from datetime import datetime
 import logging
 from unittest.mock import MagicMock, patch
@@ -114,3 +115,9 @@ def test_legacy_operation_start_and_result_write_into_canonical_operation_logs()
 
 def test_monitoring_service_public_export_points_to_canonical_monitoring_database() -> None:
     assert MonitoringServiceDatabase is MonitoringDatabase
+
+
+def test_private_monitoring_service_module_points_to_canonical_monitoring_database() -> None:
+    legacy_module = importlib.import_module("src.monitoring.monitoring_service._monitoring_database")
+
+    assert legacy_module.MonitoringDatabase is MonitoringDatabase
