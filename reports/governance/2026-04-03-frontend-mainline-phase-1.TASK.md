@@ -1,0 +1,67 @@
+# TASK
+
+> Exported from Mongo control plane. Do not treat this file as the primary editable task source.
+
+- Issue Identifier: `2026-04-03-frontend-mainline-phase-1-main`
+- Issue Title: `Frontend Mainline Phase 1`
+- Objective: `Close Mock/Real validation for the six Phase 1 pages and remove readiness blockers so the startup shell and market mainline are fully green.`
+- Branch: `wip/root-dirty-20260403`
+- Assigned Worker CLI: `main`
+- Tracker State: `verified`
+
+## Allowed Paths
+- `docs/plans/2026-04-02-frontend-mainline-phase-1-execution-matrix.md`
+- `reports/analysis/frontend-mainline-phase-1-matrix.md`
+- `reports/analysis/frontend-mainline-phase-1-status.json`
+- `reports/governance/2026-04-03-root-TASK-REPORT.pre-mongo-cutover.md`
+- `reports/governance/2026-04-03-frontend-mainline-phase-1.TASK.md`
+- `reports/governance/2026-04-03-frontend-mainline-phase-1.TASK-REPORT.md`
+
+## Forbidden Paths
+- (none)
+
+## Acceptance Checks
+- (none)
+
+## OpenSpec
+- (none)
+
+## Related Plans
+- docs/plans/2026-04-02-frontend-mainline-testing-overall-plan.md
+- docs/plans/2026-04-02-frontend-mainline-phase-1-execution-matrix.md
+
+## Owner Decision
+- Suggested Owner: `main`
+- Final Owner: `main`
+- Worker CLI: `main`
+- Decision Basis:
+  - Root legacy TASK-REPORT history is being decomposed into focused Mongo work items instead of being restored as a single giant markdown truth source.
+  - Frontend Mainline Phase 1 evidence is preserved as control-plane data, with markdown exported only as a snapshot view.
+
+## Scope Paths
+- docs/plans/2026-04-02-frontend-mainline-phase-1-execution-matrix.md
+- reports/analysis/frontend-mainline-phase-1-matrix.md
+- reports/analysis/frontend-mainline-phase-1-status.json
+
+## Next Steps
+- 按总体方案进入 Phase 1 收口产出消费阶段：
+- 使用 `reports/analysis/frontend-mainline-phase-1-matrix.md`
+- 使用 `reports/analysis/frontend-mainline-phase-1-status.json`
+- 后续可直接进入 `Phase 2` 页面批次：
+- `Data-Concept`
+- `Data-FundFlow`
+- `Data-Indicator`
+- `Watchlist-Manage`
+- `Watchlist-Signals`
+- `Watchlist-Screener`
+
+## Compatibility Notes
+- Imported from archived root TASK-REPORT legacy blocks on 2026-04-03.
+- Mongo is the source of truth; exported markdown is a projection for review and comparison.
+
+## Artifact Links
+- reports/analysis/frontend-mainline-phase-1-matrix.md
+- reports/analysis/frontend-mainline-phase-1-status.json
+- reports/governance/2026-04-03-root-TASK-REPORT.pre-mongo-cutover.md
+- reports/governance/2026-04-03-frontend-mainline-phase-1.TASK.md
+- reports/governance/2026-04-03-frontend-mainline-phase-1.TASK-REPORT.md

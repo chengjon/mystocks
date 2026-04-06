@@ -1,0 +1,257 @@
+# TASK-REPORT
+
+> Exported from Mongo control plane. Human notes may be appended, but active state lives in Mongo.
+
+- Issue Identifier: `2026-03-14-api-route-governance-mystocks-spec1`
+- Issue Title: `API route registration and prefix governance`
+- Assigned Worker CLI: `mystocks_spec1`
+- Current Status: `merged`
+- Latest Progress: API Route Registration And Prefix Governance
+- Pending Request: `False`
+
+## Updates
+- `2026-03-14T00:00:46` [merged] mystocks_spec1: API Route Registration And Prefix Governance
+
+## Requests
+- (none)
+
+## Graphiti
+
+- server_status: `(none)`
+- ingest_status: `(none)`
+- search_summary: `(none)`
+
+## Detailed Updates
+
+### `2026-03-14T00:00:46` [merged] mystocks_spec1
+- Summary: API Route Registration And Prefix Governance
+
+#### Scope
+- 统一 `register_all_routers` 与 `register_api_routes` 的注册职责，收敛为单一主注册入口。
+- 治理本任务范围内 scoped router 的前缀来源，避免模块内硬编码非 `/api` / 非版本化前缀。
+- 增加 focused backend regression checks，验证映射、前缀约束与兼容包装器行为。
+
+#### Completed
+- `web/backend/app/api/register_routers.py`
+- 改为兼容包装器，统一委托 `app.router_registry.register_api_routes(...)`
+- 不再维护第二套路由清单
+- `web/backend/app/router_registry.py`
+- 通过 `VERSION_MAPPING` 挂载：
+- `monitoring_watchlists`
+- `monitoring_analysis`
+- `multi_source`
+- 补回 `prometheus_exporter`，避免 `app_factory.py` 切到 central registry 后丢路由
+- `web/backend/app/api/VERSION_MAPPING.py`
+- 新增治理映射：
+- `monitoring_analysis -> /api/v1/monitoring/analysis`
+- `monitoring_watchlists -> /api/v1/monitoring/watchlists`
+- `multi_source -> /api/multi-source`
+- `web/backend/app/api/technical/routes.py`
+- 移除模块内 `/technical` 前缀，改由 central registry 负责挂载
+- `web/backend/app/api/monitoring_analysis.py`
+- 移除模块内 `/monitoring/analysis` 前缀
+- 文档注释更新为 `/api/v1/monitoring/analysis/**`
+- `web/backend/app/api/monitoring_watchlists.py`
+- 移除模块内 `/monitoring/watchlists` 前缀
+- 文档注释更新为 `/api/v1/monitoring/watchlists/**`
+- 根据 main review follow-up 修复 runtime fallback：
+- `get_watchlist` 改为返回 runtime watchlist 详情
+- `delete_watchlist` 改为删除 runtime watchlist，而不是误走“添加股票”分支
+- `web/backend/app/api/multi_source/routes.py`
+- 移除模块内 `/multi_source` 前缀
+- 文档示例更新为 `/api/multi-source/**`
+- `web/backend/tests/test_route_governance_static.py`
+- 新增 focused static regression checks：
+- 版本映射包含治理条目
+- scoped router 模块本身不再烘焙 runtime prefix
+- `register_all_routers` 委托到 central registry
+- `web/backend/tests/test_monitoring_watchlists_runtime_fallback.py`
+- 直接按 canonical prefix 挂载 `watchlists` router
+- 测试装载方式改为按文件路径加载目标模块，绕开 `app.api.__init__` 现存导入炸点
+- 补充 `get_watchlist` / `delete_watchlist` 的 runtime fallback regression tests
+
+#### Notes
+- TDD red phase:
+- `pytest web/backend/tests/test_route_governance_static.py -q`
+- 结果：`3 failed`
+- 失败点：
+- `VERSION_MAPPING` 缺少治理条目
+- scoped router 仍保留硬编码前缀
+- `register_all_routers` 仍维持第二套注册逻辑
+- Focused pytest green phase:
+- `PYTHONPATH=.:web/backend pytest -o addopts='' web/backend/tests/test_route_governance_static.py -q`
+- 结果：`3 passed`
+- `PYTHONPATH=.:web/backend pytest -o addopts='' web/backend/tests/test_monitoring_watchlists_runtime_fallback.py -q`
+- 初次结果：`6 passed`
+- review follow-up 后结果：`8 passed`
+- Review follow-up red/green:
+- `PYTHONPATH=.:web/backend pytest -o addopts='' web/backend/tests/test_monitoring_watchlists_runtime_fallback.py -q -k 'get_watchlist_returns_runtime_fallback_when_db_unavailable or delete_watchlist_uses_runtime_fallback_when_db_unavailable'`
+- red 结果：`2 failed`
+- 失败点：
+- `get_watchlist` runtime fallback 误引用未定义 `request`
+- `delete_watchlist` runtime fallback 误引用未定义 `request`
+- green 结果：`2 passed, 6 deselected`
+- Syntax:
+- `PYTHONPATH=.:web/backend python -m py_compile web/backend/app/api/VERSION_MAPPING.py web/backend/app/router_registry.py web/backend/app/api/register_routers.py web/backend/app/api/technical/routes.py web/backend/app/api/monitoring_analysis.py web/backend/app/api/monitoring_watchlists.py web/backend/app/api/multi_source/routes.py web/backend/tests/test_route_governance_static.py web/backend/tests/test_monitoring_watchlists_runtime_fallback.py`
+- 结果：通过
+- Diff hygiene:
+- `git -c safe.directory=/opt/claude/mystocks_spec1 diff --check -- web/backend/app/api/VERSION_MAPPING.py web/backend/app/router_registry.py web/backend/app/api/register_routers.py web/backend/app/api/technical/routes.py web/backend/app/api/monitoring_analysis.py web/backend/app/api/monitoring_watchlists.py web/backend/app/api/multi_source/routes.py web/backend/tests/test_route_governance_static.py web/backend/tests/test_monitoring_watchlists_runtime_fallback.py`
+- 结果：通过
+- GitNexus:
+- `impact(register_api_routes, upstream)` -> `LOW`
+- `impact(register_all_routers, upstream)` -> `LOW`
+- `detect_changes(scope=unstaged)` -> `CRITICAL`
+- 说明：该结果受当前 worktree 既有 `405` 个已改文件影响，非本批次单独引入；本批次实际修改文件仅限上文列出的 9 个目标文件
+- Environment / Process Blockers:
+- `git fetch origin`
+- 初次失败：此前 worktree git metadata 位于只读路径，无法写 `FETCH_HEAD`
+- 当前状态：已在全局 `safe.directory` 放行后执行成功
+- `git rebase main`
+- 未执行
+- 原因：
+- 当前 worktree 存在本地未提交改动（含派单文件 `TASK.md` 的既有改动）
+- `HEAD...origin/main = 22 0`，当前分支不落后于 `origin/main`
+- 在脏工作树上强行 rebase 风险高于收益
+- `python scripts/runtime/coordctl.py work show ...`
+- 失败：Mongo `createIndexes` 鉴权失败（`Unauthorized`）
+- `TASK.md` 指向的以下文件在当前路径不存在:
+- `docs/reports/ARCHITECTURE_ASSESSMENT_REPORT.md`
+- `docs/reports/API_VERSION_CONFLICT_INVESTIGATION.md`
+- `docs/guides/multi-cli-tasks/MONGO_MULTICLI_OPERATION_CHECKLIST.md`
+- 本轮改以现有可定位文档与代码真值推进
+- Risks:
+- `router_registry.py` 仍依赖 `app.api.__init__` 的现有导入行为；本轮没有越界重构该包初始化逻辑。
+- `detect_changes(scope=unstaged)` 在当前脏 worktree 中噪音很大，提交前仍需 main CLI 结合文件清单人工确认范围。
+- `technical/routes.py` 目前仍非主注册链路的活跃技术分析实现；本轮只做前缀治理，不扩展其职责。
+- `config/monitoring-stack/config/prometheus.yml` 仍引用 `/api/multi_source/health`；这与本轮 canonical `/api/multi-source/**` 口径不一致，但该文件超出 worker scope，需由 main CLI 或对应 owner 单独收敛。
+- Rollback:
+- 1. 还原以下文件到本轮前状态：
+- `web/backend/app/api/VERSION_MAPPING.py`
+- `web/backend/app/router_registry.py`
+- `web/backend/app/api/register_routers.py`
+- `web/backend/app/api/technical/routes.py`
+- `web/backend/app/api/monitoring_analysis.py`
+- `web/backend/app/api/monitoring_watchlists.py`
+- `web/backend/app/api/multi_source/routes.py`
+- `web/backend/tests/test_route_governance_static.py`
+- `web/backend/tests/test_monitoring_watchlists_runtime_fallback.py`
+- 2. 重新执行：
+- `PYTHONPATH=.:web/backend pytest -o addopts='' web/backend/tests/test_route_governance_static.py -q`
+- `PYTHONPATH=.:web/backend pytest -o addopts='' web/backend/tests/test_monitoring_watchlists_runtime_fallback.py -q`
+- 代码状态:
+- 已满足本任务 acceptance 的实现与 focused regression 要求
+- 可复核状态:
+- 可进入 main CLI review
+- 未完成的流程项:
+- Mongo control plane `ready_for_review` 打点
+- 原因：当前环境对目标 Mongo 库无鉴权，`coordctl` 在 `createIndexes` 阶段即失败
+- 分支同步结论:
+- `git fetch origin` 已成功
+- `HEAD...origin/main = 22 0`
+- 当前分支未落后于 `origin/main`
+- 因 worktree 非干净且含既有 `TASK.md` 改动，未执行 `git rebase main`
+- 请 main CLI 优先核对:
+- `TASK.md` 为派单文件既有改动，不属于本轮实现
+- 本轮目标文件仅为：
+- `web/backend/app/api/VERSION_MAPPING.py`
+- `web/backend/app/router_registry.py`
+- `web/backend/app/api/register_routers.py`
+- `web/backend/app/api/technical/routes.py`
+- `web/backend/app/api/monitoring_analysis.py`
+- `web/backend/app/api/monitoring_watchlists.py`
+- `web/backend/app/api/multi_source/routes.py`
+- `web/backend/tests/test_monitoring_watchlists_runtime_fallback.py`
+- `web/backend/tests/test_route_governance_static.py`
+- `TASK-REPORT.md`
+- 如需补控制面状态:
+- 需先解决 Mongo 认证，再执行：
+- `python scripts/runtime/coordctl.py work mark 2026-03-14-api-route-governance-mystocks-spec1 --status ready_for_review --actor-cli mystocks_spec1 --summary "Code, focused validation, and TASK-REPORT are ready for main review" --output json`
+- ## [MAIN MERGE] 2026-03-15 Frontend Structure Convergence Worker3
+- Source:
+- Mongo `work_item_id`: `2026-03-14-frontend-structure-convergence-mystocks-spec3`
+- Worker worktree: `/opt/claude/mystocks_spec3`
+- Merged Into Local `main`:
+- `web/frontend/src/components/realtime/RealtimePositionPanel.vue`
+- `web/frontend/src/composables/useWebSocketWithConfig.ts`
+- `web/frontend/src/views/artdeco-pages/ArtDecoMarketData.vue`
+- `web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts`
+- `web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts`
+- `web/frontend/tests/unit/realtime-position-panel.spec.ts`
+- `web/frontend/tests/unit/use-websocket-with-config.spec.ts`
+- Merge Notes:
+- 已并入 worker3 已复核的 realtime/dashboard/WebSocket 收口结果：
+- `RealtimePositionPanel` 改为 shared `useRealtimeMarket()`，并修复真实双 `connected` 握手下的重复握手动作
+- `useWebSocketWithConfig` 立即激活底层订阅注册并返回真实 cleanup
+- `useArtDecoDashboard` 维持已验证的 `market.trend.000001` 订阅路径，并补趋势点追加断言
+- `ArtDecoMarketData` 的龙虎榜加载改为 `dashboardService.getLongHuBang(...)`
+- worker3 中较早版本的 `ArtDecoStrategyManagement.vue` / `strategyManagementViewModel.ts` 纯逻辑拆分未按原样并入。
+- 原因：当前 `main` 工作树已存在更完整的 `strategyManagementHelpers.ts` + `useStrategyManagementViewModel()` 路线与对应测试，强行覆盖会踩掉主仓并行重构；该部分按 `superseded by current main-side refactor` 处理。
+- Main-Side Verification:
+- `npm --prefix web/frontend run test -- strategy-management-view-model.spec.ts use-websocket-with-config.spec.ts ArtDecoDashboardLogic.spec.ts realtime-position-panel.spec.ts`
+- 结果：`3 files passed`, `9 tests passed`
+- 说明：`strategy-management-view-model.spec.ts` 未在当前 `main` 中并入，按现有主仓 helper 路线改为单独验证
+- `npm --prefix web/frontend run test -- strategy-management-helpers.spec.ts`
+- 结果：`1 file passed`, `5 tests passed`
+- `git diff --check -- web/frontend/src/components/realtime/RealtimePositionPanel.vue web/frontend/src/composables/useWebSocketWithConfig.ts web/frontend/src/views/artdeco-pages/ArtDecoMarketData.vue web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts web/frontend/tests/unit/realtime-position-panel.spec.ts web/frontend/tests/unit/use-websocket-with-config.spec.ts`
+- 结果：通过
+- `gitnexus_detect_changes(scope="staged")`
+- 结果：`risk_level=low`
+- Local Main Commits:
+- `065953da` `fix(frontend): converge realtime dashboard subscriptions`
+- ## [MAIN MERGE] 2026-03-15 Function Tree Governance Worker5
+- Source:
+- Mongo `work_item_id`: `2026-03-14-govern-function-tree-as-code-mystocks-spec5`
+- Worker worktree: `/opt/claude/mystocks_spec5`
+- Worker commits reviewed:
+- `74d9a273` `feat(governance): codify function tree governance`
+- `07c1cae5` `fix(governance): harden function tree catalog`
+- Merged Into Local `main`:
+- `.github/pull_request_template.md`
+- `docs/FUNCTION_TREE.md`
+- `docs/guides/ai-tools/AI_QUICK_START.md`
+- `docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md`
+- `governance/function-tree/catalog.yaml`
+- `governance/function-tree/schema.json`
+- `governance/mainline/schemas/ai-task-card.schema.json`
+- `governance/mainline/scripts/mainline_scope_gate.py`
+- `governance/mainline/spec/ai-development-mainline-governance-spec.md`
+- `governance/mainline/templates/ai-task-card.yaml`
+- `openspec/changes/govern-function-tree-as-code/**`
+- `tests/fixtures/governance/function-tree-governance-sample-card.yaml`
+- `tests/unit/governance/**`
+- Merge Notes:
+- 已选择性并入 worker5 的治理实现，不带 worker worktree 根的 `TASK.md` / `TASK-REPORT.md`。
+- `function_tree` 现在具备 machine-readable catalog/schema、task-card schema 合同、mainline scope gate 校验、PR reviewer 镜像字段，以及 `FUNCTION_TREE` 稳定 ID 文档同步口径。
+- follow-up 修复也已包含在主线并入结果中：
+- duplicate `domain_id` / `node_id` 由 `load_function_tree_catalog()` 的 integrity check 直接拒绝
+- literal entrypoint path existence 补了回归测试
+- `meta-governance` dead link 已改为仓内真实存在的 `docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md`
+- OpenSpec `design.md` 的 trailing whitespace 已清掉
+- 当前唯一仍保留的限制是：
+- 原始 `pytest ... -q` 在仓库默认 coverage fail-under 80 下仍返回退出码 `1`
+- 但 focused governance 测试本身已全部通过，不属于本次变更引入的功能失败
+- Main-Side Verification:
+- `pytest --no-cov tests/unit/governance/test_function_tree_catalog.py tests/unit/governance/test_task_card_function_tree_schema.py tests/unit/governance/test_mainline_scope_gate_function_tree.py tests/unit/governance/test_function_tree_doc_sync.py -q`
+- 结果：`19 passed`
+- `pytest tests/unit/governance/test_function_tree_catalog.py tests/unit/governance/test_task_card_function_tree_schema.py tests/unit/governance/test_mainline_scope_gate_function_tree.py tests/unit/governance/test_function_tree_doc_sync.py -q`
+- 结果：`19 passed`，但命令整体因仓库默认 coverage fail-under 80 / no-data-collected 返回退出码 `1`
+- `openspec validate govern-function-tree-as-code --strict`
+- 结果：通过
+- `git diff --check -- .github/pull_request_template.md docs/FUNCTION_TREE.md docs/guides/ai-tools/AI_QUICK_START.md docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md governance/function-tree/catalog.yaml governance/function-tree/schema.json governance/mainline/schemas/ai-task-card.schema.json governance/mainline/scripts/mainline_scope_gate.py governance/mainline/spec/ai-development-mainline-governance-spec.md governance/mainline/templates/ai-task-card.yaml openspec/changes/govern-function-tree-as-code/design.md openspec/changes/govern-function-tree-as-code/proposal.md openspec/changes/govern-function-tree-as-code/specs/function-tree-governance/spec.md openspec/changes/govern-function-tree-as-code/tasks.md tests/fixtures/governance/function-tree-governance-sample-card.yaml tests/unit/governance/__init__.py tests/unit/governance/test_function_tree_catalog.py tests/unit/governance/test_function_tree_doc_sync.py tests/unit/governance/test_mainline_scope_gate_function_tree.py tests/unit/governance/test_task_card_function_tree_schema.py`
+- 结果：通过
+- `gitnexus_detect_changes(scope="staged")`
+- 结果：`risk_level=low`
+- Local Main Commits:
+- `f8bbcc6a` `feat(governance): codify function tree governance`
+- ## [AUTO] 2026-03-16 22:19:21 Session 4e52ecb7-69f2-48ea-80a4-8aa9cc3dc3d8
+- Completion: true
+- Summary: The OpenCode configuration is now valid. The `mcp list` command succeeded, showing 6 MCP servers configured.
+- Model: `glm-5`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/4e52ecb7-69f2-48ea-80a4-8aa9cc3dc3d8.jsonl`
+- ## [AUTO] 2026-03-24 11:33:18 Session ed940f9a-2752-452a-bee6-590f2045c723
+- Completion: true
+- Summary: ✅ **已修复**
+- Model: `glm-5`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/ed940f9a-2752-452a-bee6-590f2045c723.jsonl`
