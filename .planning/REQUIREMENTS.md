@@ -60,9 +60,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LINT-01 | Phase 1 | Pending |
-| LINT-02 | Phase 1 | Pending |
-| LINT-03 | Phase 1 | Pending |
+| LINT-01 | Phase 1 | ✓ Done |
+| LINT-02 | Phase 1 | ✓ Done |
+| LINT-03 | Phase 1 | ✓ Done |
 | LINT-04 | Phase 3 | Pending |
 | DEAD-01 | Phase 2 | Pending |
 | DEAD-02 | Phase 2 | Pending |
