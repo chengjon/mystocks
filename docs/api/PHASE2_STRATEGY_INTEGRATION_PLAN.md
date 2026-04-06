@@ -1,9 +1,16 @@
 # Phase 2: 策略管理模块 API 集成实施方案
 
-**版本**: 1.0.0
-**创建日期**: 2025-12-25
-**预计工期**: 2-3 天
-**状态**: 📋 规划中
+> **历史计划说明**:
+> 本文件是 API 相关的阶段性计划、路线图或方案材料，不是当前 API 契约、当前实施状态或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`；若涉及 API 契约事实源，再以实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json` 为准。
+>
+> 文内优先级、时间线、实施状态和建议动作如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
+
+
+**Historical Plan Version Snapshot**: 1.0.0
+**Historical Plan Snapshot Date**: 2025-12-25
+**Historical Estimated Duration Snapshot**: 2-3 天
+**Historical Plan Status Snapshot**: 📋 规划中
 
 ---
 
