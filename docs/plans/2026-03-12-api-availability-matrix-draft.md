@@ -100,7 +100,7 @@ This is tracked separately from `verified/pending`.
 
 ## Historical High-Priority Pending Pages
 
-当前已无 `pending` 页面。
+按 2026-03-12 这份 historical draft snapshot 的口径，当时已无 `pending` 页面；当前主线真相仍需以后续更新日期更晚的 closeout / status artifact 为准。
 
 ## Key Path Corrections
 
