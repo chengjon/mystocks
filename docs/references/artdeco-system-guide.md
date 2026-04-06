@@ -62,7 +62,7 @@
 
 ---
 
-## 📄 Implemented Pages (Phase 1)
+## 📄 Historical Design Examples (Early Phase Snapshot)
 
 ### ✅ 1. Dashboard (01-dashboard.html)
 
@@ -153,7 +153,7 @@ DELETE /api/v1/user/watchlist/{stock_code}
 
 ---
 
-## 🚧 Remaining Pages (Phase 2 - Templates)
+## 🚧 Historical Template Backlog (Early Plan Snapshot)
 
 ### 4. Data Analysis (04-data-analysis.html)
 
@@ -624,14 +624,14 @@ artdeco-system/
 
 ---
 
-## 🎯 Implementation Priority
+## 🎯 Historical Design Priority
 
-### Phase 1 (Complete) ✅
+### Historical Phase 1 Scope ✅
 1. Dashboard - Market overview and monitoring
 2. Market Center - Real-time quotes and K-line charts
 3. Stock Screener - Advanced filtering and sorting
 
-### Phase 2 (High Priority) 🚧
+### Historical Phase 2 Backlog 🚧
 4. Data Analysis - Financial analysis and IC analysis
 5. Strategy Lab - Strategy development and parameter tuning
 6. Backtest Arena - Historical backtesting and performance reports
@@ -768,4 +768,4 @@ This ArtDeco-styled interface achieves:
 
 **Version**: 1.0.0
 **Last Updated**: 2025-01-03
-**Status**: ✅ Phase 1 Complete | 🚧 Phase 2 In Progress
+**Status**: Historical snapshot status; these phase labels describe an early design planning state, not current frontend mainline progress
