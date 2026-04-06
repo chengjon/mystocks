@@ -290,7 +290,9 @@ bash scripts/tests/test/run-comprehensive-tests.sh
 
 ---
 
-## 9. 下一步执行顺序
+## 9. 历史下一步执行顺序（2026-03-03 计划快照）
+
+> 以下顺序是 2026-03-03 这份计划文档的历史执行建议，不是当前 frontend mainline 的实时排期；当前主线锚点以 `docs/plans/2026-04-02-frontend-mainline-phase-1-execution-matrix.md` 为准，任务状态以 Mongo `coordctl.py work` 记录为准。
 
 1. `placeholder` 与 `mock-debt` 页面收口已完成，继续按 V3 策略推进 `mixed` 页面能力提取与聚合。
 2. 优先处理 P0/P1 的 `mixed` 页面，补齐 API 对齐与字段一致性验证。
@@ -299,16 +301,16 @@ bash scripts/tests/test/run-comprehensive-tests.sh
 
 ---
 
-## 10. 审批备注（2026-03-03）
+## 10. 历史审批备注快照（2026-03-03）
 
-- 门禁命令实跑结果: `bash scripts/run_e2e_pm2.sh` -> `8 passed`（chromium，navigation-consistency）
+- 历史门禁命令实跑结果（2026-03-03）: `bash scripts/run_e2e_pm2.sh` -> `8 passed`（chromium，navigation-consistency）
 - 审计报告路径统一为:
   `reports/analysis/frontend-page-optimization-audit-report.md`
 - CI 门禁已接入:
   `.github/workflows/frontend-testing.yml` 新增 `frontend-optimization-audit` 作业（strict）
-- 当前运行端口真值:
+- 当时运行端口真值（2026-03-03 审批记录）:
   Frontend `3020`，Backend `8020`
-- 端口兼容性探测:
+- 当时端口兼容性探测（2026-03-03）:
   `http://localhost:3020` -> `200`，`http://localhost:8020/health` -> `200`，`http://localhost:8000/health` -> `000`
 - 本轮进展（2026-03-03）:
   `#29/#30` 风险告警与公告监控页面完成去占位并接入数据加载；`#33/#34` 状态修正为 `mixed`
