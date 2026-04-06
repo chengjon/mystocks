@@ -246,7 +246,7 @@ const dataApiCompat = {
     },
 }
 
-const userApiCompat = {
+const _userApiCompat = {
     async getGeneralSettings(): Promise<DataEnvelope<unknown>> {
         return wrapData({})
     },

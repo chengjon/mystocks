@@ -29,6 +29,7 @@ export default [
   {
     ignores: [
       'dist/**',
+      'dist-lighthouse/**',
       'dist-ssr/**',
       'build/**',
       'node_modules/**',

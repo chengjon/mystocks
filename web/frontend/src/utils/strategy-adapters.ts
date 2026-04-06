@@ -7,7 +7,7 @@
 import type {
   StrategyListResponse
 } from '@/api/types/generated-types.ts'
-import type { Strategy } from '@/api/types/extensions/strategy'
+import type { Strategy } from '@/api/types/extensions/strategy.ts'
 
 // Temporary: Use any for missing generated types
 // TODO: Fix type generation to include these types

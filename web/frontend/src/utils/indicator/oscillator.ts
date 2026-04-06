@@ -1,4 +1,4 @@
-import type { KLineData } from '@/types/kline'
+import type { KLineData } from '@/types/kline.ts'
 import {
   calculateATR as calculateATRBase,
   calculateKDJ as calculateKDJBase,
@@ -6,7 +6,7 @@ import {
   calculateRSI as calculateRSIBase,
   formatIndicatorData,
   type KLineDataPoint,
-} from '@/utils/indicators'
+} from '@/utils/indicators.ts'
 
 export type OscillatorType = 'MACD' | 'RSI' | 'KDJ' | 'WR' | 'CCI' | 'OBV' | 'ATR'
 
