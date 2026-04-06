@@ -286,10 +286,15 @@
     - Evidence: the canonical page now resolves `monitoringApi` and `systemSettingsMonitorData.ts` through stable absolute imports, while the legacy ArtDeco path imports `@/views/system/Settings.vue`.
   - [x] 10.1.3 Run lint & type-check
   - [x] 10.1.4 Run unit tests for Settings.vue
-- [ ] 10.2 Move `artdeco-pages/system-tabs/SystemHealthTab.vue` → `views/system/Health.vue`
-  - [ ] 10.2.1 Move dependency: `useSystemHealth.ts`
-  - [ ] 10.2.2 Update imports
-  - [ ] 10.2.3 Run lint & type-check
+- [x] 10.2 Move `artdeco-pages/system-tabs/SystemHealthTab.vue` → `views/system/Health.vue`
+  - Completed: 2026-04-06 via repo-truth-aligned micro-batch `2026-04-06-restructure-system-health-main`.
+  - Result: `src/views/system/Health.vue` now hosts the canonical system health implementation; `SystemHealthTab.vue` is retained as a legacy compatibility wrapper into the canonical route entrypoint.
+  - [x] 10.2.1 Move dependency: `useSystemHealth.ts`
+    - Repo-truth note: not applicable as written. The current system health page does not own a local `useSystemHealth.ts`; it composes `useArtDecoApi` and `apiClient` directly inside the page implementation.
+  - [x] 10.2.2 Update imports
+    - Evidence: the canonical page now resolves `useArtDecoApi` and `apiClient` through stable absolute imports, while the legacy ArtDeco path imports `@/views/system/Health.vue`.
+  - [x] 10.2.3 Run lint & type-check
+  - [x] 10.2.4 Run unit tests for Health.vue
 - [ ] 10.3 Move `artdeco-pages/system-tabs/ArtDecoMonitoringDashboard.vue` → `views/system/API.vue`
   - [ ] 10.3.1 Move dependency: `useApiMonitoring.ts`
   - [ ] 10.3.2 Update imports

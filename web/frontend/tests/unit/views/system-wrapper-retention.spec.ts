@@ -20,16 +20,22 @@ const wrapperCases = [
       'normalizeSystemSettingsMonitorRows(detailed)',
     ]
   },
+  {
+    label: 'system health',
+    canonicalPath: 'src/views/system/Health.vue',
+    legacyPath: 'src/views/artdeco-pages/system-tabs/SystemHealthTab.vue',
+    legacyImportLine: "import SystemHealthCanonicalPage from '@/views/system/Health.vue'",
+    legacyRenderLine: '<SystemHealthCanonicalPage v-bind="attrs" />',
+    canonicalEvidence: [
+      "import { apiClient } from '@/api/apiClient'",
+      'const fetchHealth = async () => {',
+      'title="系统健康矩阵"',
+      "const pageStatusType = computed(() => (health.value?.status === 'healthy' ? 'success' : 'warning'))",
+    ]
+  },
 ]
 
 const compatibilityWrapperCases = [
-  {
-    label: 'system health',
-    wrapperPath: 'src/views/system/Health.vue',
-    implementationPath: 'src/views/artdeco-pages/system-tabs/SystemHealthTab.vue',
-    importLine: "import SystemHealthPage from '@/views/artdeco-pages/system-tabs/SystemHealthTab.vue'",
-    renderLine: '<SystemHealthPage v-bind="attrs" />'
-  },
   {
     label: 'system API',
     wrapperPath: 'src/views/system/API.vue',
