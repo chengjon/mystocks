@@ -25,6 +25,20 @@ WATCHLIST_ROUTE_RESPONSES = {
 
 router = APIRouter(tags=["watchlist"], responses=WATCHLIST_ROUTE_RESPONSES)
 
+
+def _success_response_spec(description: str, example: object) -> dict[int, dict]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
 WATCHLIST_ADD_REQUEST_EXAMPLES = {
     "add_stock_to_growth_group": {
         "summary": "添加股票到成长分组",
@@ -69,6 +83,100 @@ WATCHLIST_NOTES_REQUEST_EXAMPLES = {
         "summary": "更新自选股备注",
         "value": {"notes": "突破年线后关注回踩确认。"},
     }
+}
+
+WATCHLIST_ITEM_EXAMPLE = {
+    "id": 101,
+    "symbol": "SZ000001",
+    "display_name": "平安银行",
+    "exchange": "SZSE",
+    "added_at": "2026-04-07 09:30:00",
+    "notes": "关注一季报和资金流",
+}
+
+WATCHLIST_GROUP_EXAMPLE = {
+    "id": 3,
+    "group_name": "成长观察",
+    "created_at": "2026-04-07T09:00:00",
+    "stock_count": 12,
+}
+
+WATCHLIST_GROUP_STOCK_EXAMPLE = {
+    "id": 101,
+    "stock_code": "SZ000001",
+    "stock_name": "平安银行",
+    "added_at": "2026-04-07T09:30:00",
+    "notes": "关注一季报和资金流",
+}
+
+WATCHLIST_LIST_RESPONSES = {
+    **WATCHLIST_ROUTE_RESPONSES,
+    **_success_response_spec("当前用户自选股列表", [WATCHLIST_ITEM_EXAMPLE]),
+}
+
+WATCHLIST_SYMBOLS_RESPONSES = {
+    **WATCHLIST_ROUTE_RESPONSES,
+    **_success_response_spec("当前用户自选股代码列表", ["SZ000001", "SH600519"]),
+}
+
+WATCHLIST_REMOVE_RESPONSES = {
+    **WATCHLIST_ROUTE_RESPONSES,
+    **_success_response_spec(
+        "移除自选股结果",
+        {"success": True, "message": "已从自选股移除", "symbol": "SZ000001"},
+    ),
+}
+
+WATCHLIST_CHECK_RESPONSES = {
+    **WATCHLIST_ROUTE_RESPONSES,
+    **_success_response_spec(
+        "自选股存在性检查结果",
+        {"symbol": "SZ000001", "is_in_watchlist": True},
+    ),
+}
+
+WATCHLIST_COUNT_RESPONSES = {
+    **WATCHLIST_ROUTE_RESPONSES,
+    **_success_response_spec("自选股数量统计结果", {"count": 12}),
+}
+
+WATCHLIST_CLEAR_RESPONSES = {
+    **WATCHLIST_ROUTE_RESPONSES,
+    **_success_response_spec("清空自选股结果", {"success": True, "message": "自选股列表已清空"}),
+}
+
+WATCHLIST_GROUP_LIST_RESPONSES = {
+    **WATCHLIST_ROUTE_RESPONSES,
+    **_success_response_spec("自选股分组列表", [WATCHLIST_GROUP_EXAMPLE]),
+}
+
+WATCHLIST_GROUP_DELETE_RESPONSES = {
+    **WATCHLIST_ROUTE_RESPONSES,
+    **_success_response_spec("删除分组结果", {"success": True, "message": "分组已删除", "group_id": 3}),
+}
+
+WATCHLIST_GROUP_DETAIL_RESPONSES = {
+    **WATCHLIST_ROUTE_RESPONSES,
+    **_success_response_spec("指定分组下的自选股列表", [WATCHLIST_GROUP_STOCK_EXAMPLE]),
+}
+
+WATCHLIST_WITH_GROUPS_RESPONSES = {
+    **WATCHLIST_ROUTE_RESPONSES,
+    **_success_response_spec(
+        "分组视图下的自选股聚合结果",
+        {
+            "groups": [
+                {
+                    "id": 3,
+                    "name": "成长观察",
+                    "stock_count": 1,
+                    "created_at": "2026-04-07T09:00:00",
+                    "sort_order": 1,
+                    "stocks": [WATCHLIST_GROUP_STOCK_EXAMPLE],
+                }
+            ]
+        },
+    ),
 }
 
 
@@ -211,6 +319,7 @@ class MoveStockRequest(BaseModel):
     "/",
     response_model=List[WatchlistItem],
     description="获取当前登录用户的自选股列表，返回股票代码、展示名称、交易所、备注和加入时间。",
+    responses=WATCHLIST_LIST_RESPONSES,
 )
 async def get_my_watchlist(
     current_user: User = Depends(get_current_user),
@@ -248,6 +357,7 @@ async def get_my_watchlist(
     "/symbols",
     response_model=List[str],
     description="获取当前登录用户自选股中的全部股票代码，适用于批量校验、联动筛选或本地缓存刷新。",
+    responses=WATCHLIST_SYMBOLS_RESPONSES,
 )
 async def get_my_watchlist_symbols(
     current_user: User = Depends(get_current_user),
@@ -331,6 +441,7 @@ async def add_to_watchlist(
 @router.delete(
     "/remove/{symbol}",
     description="从当前用户自选股列表中移除指定股票，适用于取消关注、误加回滚或策略切换场景。",
+    responses=WATCHLIST_REMOVE_RESPONSES,
 )
 async def remove_from_watchlist(
     symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
@@ -361,6 +472,7 @@ async def remove_from_watchlist(
 @router.get(
     "/check/{symbol}",
     description="检查指定股票是否已存在于当前用户自选股列表中，便于搜索页和详情页展示关注状态。",
+    responses=WATCHLIST_CHECK_RESPONSES,
 )
 async def check_in_watchlist(
     symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
@@ -421,6 +533,7 @@ async def update_watchlist_notes(
 @router.get(
     "/count",
     description="获取当前用户自选股总数，可用于首页统计卡、容量提示和自选池规模监控。",
+    responses=WATCHLIST_COUNT_RESPONSES,
 )
 async def get_watchlist_count(current_user: User = Depends(get_current_user)) -> Dict:
     """
@@ -454,6 +567,7 @@ async def get_watchlist_count(current_user: User = Depends(get_current_user)) ->
 @router.delete(
     "/clear",
     description="清空当前登录用户的全部自选股记录，常用于重建观察池或批量重置个人配置。",
+    responses=WATCHLIST_CLEAR_RESPONSES,
 )
 async def clear_watchlist(current_user: User = Depends(get_current_user)) -> Dict:
     """
@@ -488,6 +602,7 @@ async def clear_watchlist(current_user: User = Depends(get_current_user)) -> Dic
 @router.get(
     "/groups",
     description="获取当前用户已创建的全部自选股分组，用于分组筛选、分组迁移和分组视图初始化。",
+    responses=WATCHLIST_GROUP_LIST_RESPONSES,
 )
 async def get_user_groups(current_user: User = Depends(get_current_user)) -> List[Dict]:
     """
@@ -562,6 +677,7 @@ async def update_group(
 @router.delete(
     "/groups/{group_id}",
     description="删除指定自选股分组，并同步移除该分组下成员；默认分组不允许删除。",
+    responses=WATCHLIST_GROUP_DELETE_RESPONSES,
 )
 async def delete_group(
     group_id: int = Path(..., description="分组ID", ge=1), current_user: User = Depends(get_current_user)
@@ -586,6 +702,7 @@ async def delete_group(
 @router.get(
     "/group/{group_id}",
     description="获取指定分组下的全部自选股成员，便于按主题、策略或观察池查看清单内容。",
+    responses=WATCHLIST_GROUP_DETAIL_RESPONSES,
 )
 async def get_watchlist_by_group(
     group_id: int = Path(..., description="分组ID", ge=1), current_user: User = Depends(get_current_user)
@@ -638,6 +755,7 @@ async def move_stock_to_group(
 @router.get(
     "/with-groups",
     description="获取所有分组及其包含的自选股明细，返回适用于分组树或看板视图的聚合结果。",
+    responses=WATCHLIST_WITH_GROUPS_RESPONSES,
 )
 async def get_watchlist_with_groups(
     current_user: User = Depends(get_current_user),
