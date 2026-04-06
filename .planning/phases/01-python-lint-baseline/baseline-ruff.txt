@@ -1,0 +1,14 @@
+1173	F821	[ ] undefined-name
+  95	W293	[*] blank-line-with-whitespace
+  78	F841	[*] unused-variable
+  28	W291	[*] trailing-whitespace
+  21	F401	[ ] unused-import
+  17	F811	[ ] redefined-while-unused
+  15	E701	[ ] multiple-statements-on-one-line-colon
+  13	E722	[ ] bare-except
+   6	F601	[ ] multi-value-repeated-key-literal
+   4	F823	[ ] undefined-local
+   3	F403	[ ] undefined-local-with-import-star
+   2	E741	[ ] ambiguous-variable-name
+   1	F402	[ ] import-shadowed-by-loop-var
+[*] fixable with `ruff check --fix`
