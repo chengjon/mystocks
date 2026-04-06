@@ -1,8 +1,15 @@
 # MyStocks 前端主线测试 Phase 1 详细推进表
 
-> 日期：2026-04-02
+> **历史计划说明**:
+> 本文件是阶段性计划、路线图、提案、任务方案或执行矩阵，不是当前基线、当前实施状态或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线文档一并核对。
+>
+> 文内优先级、缺口清单、执行步骤、目标值和时间线如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
+
+
+> Historical Plan Snapshot Date: 2026-04-02
 > 上游总纲：`docs/plans/2026-04-02-frontend-mainline-testing-overall-plan.md`
-> 范围：Phase 1 六个页面的 Mock / Real 双轨验证与修复推进
+> Historical Scope Snapshot: Phase 1 六个页面的 Mock / Real 双轨验证与修复推进
 
 ## 1. 目标
 
@@ -31,9 +38,9 @@ Phase 1 的目标不是把所有业务功能一次做完，而是优先回答三
 - 功能树真值：`docs/FUNCTION_TREE.md`
 - 主链清单真值：`docs/plans/frontend-page-optimization-list.md`
 
-### 2.2 当前已知漂移
+### 2.2 方案编写时已知漂移
 
-- `Dashboard` 在主链清单中仍有历史命名 `DealingRoom` 痕迹，但当前页面真路径以 `/dashboard` 为准。
+- `Dashboard` 在主链清单中仍有历史命名 `DealingRoom` 痕迹，但当次页面真路径以 `/dashboard` 为准。
 - `pageConfig.ts` 含旧 API 口径，不能作为页面测试入口。
 - `menu.config.js` 含旧路径，不能作为页面访问依据。
 
