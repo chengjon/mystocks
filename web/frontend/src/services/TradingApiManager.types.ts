@@ -59,13 +59,27 @@ export interface MonitoringDashboardData {
 
 export type SystemSettingsSection = 'general' | 'datasource' | 'notification' | 'security'
 
+export type SystemSettingsSectionScope = 'system' | 'user'
+export type SystemSettingsSectionStatus = 'available' | 'unavailable'
+export type SystemSettingsEvidenceType = 'measured' | 'inferred' | 'historical-baseline'
+export type SystemSettingsSectionOwner = 'system-settings' | 'data-source-config' | 'notification-preferences'
+
+export interface SystemSettingsSectionMeta {
+  scope: SystemSettingsSectionScope
+  owner: SystemSettingsSectionOwner
+  readStatus: SystemSettingsSectionStatus
+  writeStatus: SystemSettingsSectionStatus
+  evidenceType: SystemSettingsEvidenceType
+}
+
 export interface SystemSettingsMeta {
-  contractStatus: 'degraded'
+  contractStatus: 'sectioned'
   unifiedBackendApiAvailable: false
   backendReadSections: SystemSettingsSection[]
   backendWriteSections: SystemSettingsSection[]
   unsupportedSections: SystemSettingsSection[]
-  pageSaveMode: 'local-storage-degrade'
+  pageSaveMode: 'section-routed'
+  sections: Record<SystemSettingsSection, SystemSettingsSectionMeta>
 }
 
 export interface SystemSettings {

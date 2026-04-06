@@ -7,22 +7,53 @@ import {
 } from '../systemSettingsContract'
 
 describe('systemSettingsContract', () => {
-  it('builds a degraded snapshot that keeps datasource as the only backend-backed section', () => {
+  it('builds a sectioned snapshot with datasource and notification as backend-backed sections', () => {
     const datasource = { providers: ['akshare'], writable: true }
+    const notification = { email_enabled: true, websocket_enabled: true }
 
-    const snapshot = buildSystemSettingsSnapshot({ datasource })
+    const snapshot = buildSystemSettingsSnapshot({ datasource, notification })
 
     expect(snapshot.general).toBeNull()
     expect(snapshot.datasource).toEqual(datasource)
-    expect(snapshot.notification).toBeNull()
+    expect(snapshot.notification).toEqual(notification)
     expect(snapshot.security).toBeNull()
     expect(snapshot.meta).toEqual({
-      contractStatus: 'degraded',
+      contractStatus: 'sectioned',
       unifiedBackendApiAvailable: false,
-      backendReadSections: ['datasource'],
-      backendWriteSections: ['datasource'],
-      unsupportedSections: ['general', 'notification', 'security'],
-      pageSaveMode: 'local-storage-degrade',
+      backendReadSections: ['datasource', 'notification'],
+      backendWriteSections: ['datasource', 'notification'],
+      unsupportedSections: ['general', 'security'],
+      pageSaveMode: 'section-routed',
+      sections: {
+        general: {
+          scope: 'system',
+          owner: 'system-settings',
+          readStatus: 'unavailable',
+          writeStatus: 'unavailable',
+          evidenceType: 'inferred',
+        },
+        datasource: {
+          scope: 'system',
+          owner: 'data-source-config',
+          readStatus: 'available',
+          writeStatus: 'available',
+          evidenceType: 'measured',
+        },
+        notification: {
+          scope: 'user',
+          owner: 'notification-preferences',
+          readStatus: 'available',
+          writeStatus: 'available',
+          evidenceType: 'measured',
+        },
+        security: {
+          scope: 'system',
+          owner: 'system-settings',
+          readStatus: 'unavailable',
+          writeStatus: 'unavailable',
+          evidenceType: 'inferred',
+        },
+      },
     })
   })
 
@@ -34,7 +65,7 @@ describe('systemSettingsContract', () => {
       security: { twoFactor: false },
     })
 
-    expect(unsupported).toEqual(['general', 'notification', 'security'])
+    expect(unsupported).toEqual(['general', 'security'])
   })
 
   it('rejects writes outside the datasource section', () => {
@@ -46,10 +77,11 @@ describe('systemSettingsContract', () => {
     ).toThrow(/unsupported unified system settings sections/i)
   })
 
-  it('allows datasource-only writes to pass through', () => {
+  it('allows datasource and notification writes to pass through', () => {
     expect(() =>
       assertSupportedSystemSettingsWrite({
         datasource: { providers: ['akshare'], writable: true },
+        notification: { email_enabled: true },
       }),
     ).not.toThrow()
   })

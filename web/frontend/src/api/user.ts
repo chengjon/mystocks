@@ -287,14 +287,14 @@ class UserApiService {
    * Get notification settings
    */
   async getNotificationSettings(): Promise<NotificationSettings> {
-    return request.get(`${this.notificationUrl}/settings`)
+    return request.get(`${this.notificationUrl}/preferences`)
   }
 
   /**
    * Update notification settings
    */
   async updateNotificationSettings(settings: UpdateNotificationSettingsPayload): Promise<void> {
-    await request.put(`${this.notificationUrl}/settings`, settings)
+    await request.post(`${this.notificationUrl}/preferences`, settings)
   }
 
   /**

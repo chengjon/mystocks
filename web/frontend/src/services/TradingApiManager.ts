@@ -468,22 +468,33 @@ export class TradingApiManager {
 
     // 系统设置
     async getSystemSettings(): Promise<SystemSettings> {
-        const datasource = await dataApiCompat.getDatasourceSettings()
+        const [datasource, notification] = await Promise.all([
+            dataApiCompat.getDatasourceSettings(),
+            _userApiCompat.getNotificationSettings(),
+        ])
 
         return buildSystemSettingsSnapshot({
             datasource: datasource.data,
+            notification: notification.data,
         })
     }
 
     async saveSystemSettings(settings: Partial<SystemSettings>): Promise<boolean> {
         assertSupportedSystemSettingsWrite(settings)
 
-        if (!settings.datasource) {
-            return true
+        let success = true
+
+        if (settings.datasource) {
+            const result = await dataApiCompat.saveDatasourceSettings(settings.datasource)
+            success = success && result.success
         }
 
-        const result = await dataApiCompat.saveDatasourceSettings(settings.datasource)
-        return result.success
+        if (settings.notification) {
+            const result = await _userApiCompat.saveNotificationSettings(settings.notification)
+            success = success && result.success
+        }
+
+        return success
     }
 
     // ========== 工具方法 ==========

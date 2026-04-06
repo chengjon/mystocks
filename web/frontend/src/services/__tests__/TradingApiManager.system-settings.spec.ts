@@ -61,7 +61,7 @@ describe('TradingApiManager system settings contract', () => {
     vi.clearAllMocks()
   })
 
-  it('returns a degraded snapshot and reads only datasource settings from backend truth', async () => {
+  it('returns a sectioned snapshot and reads datasource plus notification from canonical truths', async () => {
     getDataSourceConfigMock.mockResolvedValue({
       success: true,
       data: {
@@ -71,7 +71,8 @@ describe('TradingApiManager system settings contract', () => {
     })
 
     getNotificationSettingsMock.mockResolvedValue({
-      channels: ['email'],
+      email_enabled: true,
+      websocket_enabled: true,
     })
 
     const manager = new TradingApiManager()
@@ -81,9 +82,13 @@ describe('TradingApiManager system settings contract', () => {
       providers: ['akshare'],
       writable: true,
     })
-    expect(snapshot.meta.contractStatus).toBe('degraded')
-    expect(snapshot.meta.backendReadSections).toEqual(['datasource'])
-    expect(getNotificationSettingsMock).not.toHaveBeenCalled()
+    expect(snapshot.notification).toEqual({
+      email_enabled: true,
+      websocket_enabled: true,
+    })
+    expect(snapshot.meta.contractStatus).toBe('sectioned')
+    expect(snapshot.meta.backendReadSections).toEqual(['datasource', 'notification'])
+    expect(getNotificationSettingsMock).toHaveBeenCalledTimes(1)
   })
 
   it('rejects writes to unsupported unified system settings sections', async () => {
@@ -123,5 +128,24 @@ describe('TradingApiManager system settings contract', () => {
 
     expect(updateDataSourceConfigMock).toHaveBeenCalledWith(datasourcePayload)
     expect(updateNotificationSettingsMock).not.toHaveBeenCalled()
+  })
+
+  it('persists notification writes through the canonical notification preferences route', async () => {
+    updateNotificationSettingsMock.mockResolvedValue(undefined)
+
+    const manager = new TradingApiManager()
+    const notificationPayload = {
+      email_enabled: false,
+      websocket_enabled: true,
+    }
+
+    await expect(
+      manager.saveSystemSettings({
+        notification: notificationPayload,
+      }),
+    ).resolves.toBe(true)
+
+    expect(updateNotificationSettingsMock).toHaveBeenCalledWith(notificationPayload)
+    expect(updateDataSourceConfigMock).not.toHaveBeenCalled()
   })
 })
