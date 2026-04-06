@@ -7,7 +7,7 @@
 > 文内优先级、缺口清单、执行步骤、目标值和时间线如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
 
 
-**版本**: V2.3（依据 2026-04-06 mainline artifact reconciliation 修订）
+**版本**: V2.4（依据 2026-04-06 verification baseline labeling 修订）
 **创建日期**: 2026-03-02
 **最后更新**: 2026-04-06
 
@@ -167,7 +167,12 @@ bash scripts/tests/test/run-comprehensive-tests.sh
 
 ## 7. 首轮核验证据清单（多源证据）
 
-`last_verified_at: 2026-03-13`（来源: `docs/plans/2026-03-12-api-availability-matrix-draft.md` + 本地 runtime probe）
+`historical first-round baseline verified_at: 2026-03-13`
+
+说明:
+- 本节是首轮核验历史基线，不是当前主线的统一“最新验证时间”。
+- 2026-04-05 的 PM2/proxy refresh 与 2026-04-06 的 System-Config sectioned contract closeout，已在 `reports/analysis/frontend-mainline-overall-closeout.md` 与 `reports/analysis/frontend-mainline-overall-status.json` 单独更新为当前真相。
+- 读取本清单时，应把本节视为“首轮 verified 来源说明”，而不是覆盖后续 refresh 的最新口径。
 
 页面级 `verified` 已支撑的主接口:
 - `/api/v1/market/quotes`
