@@ -57,6 +57,42 @@ class MonitoringDatabaseCoreMixin:
             if conn and pool:
                 pool.putconn(conn)
 
+    def _insert_operation_log_row(self, conn, insert_sql: str, insert_params: tuple[Any, ...]) -> None:
+        """执行 operation_logs 插入，确保游标总是释放。"""
+        cursor = conn.cursor()
+        try:
+            cursor.execute(insert_sql, insert_params)
+        finally:
+            cursor.close()
+
+    def _is_missing_operation_logs_partition_error(self, error: Exception) -> bool:
+        """识别 operation_logs 当前月份分区缺失错误。"""
+        error_text = str(error).lower()
+        return "no partition of relation" in error_text and "operation_logs" in error_text
+
+    def _ensure_current_operation_logs_partition(self, conn) -> None:
+        """为 operation_logs 补齐当前月份分区。"""
+        current_time = datetime.now().astimezone()
+        range_start = current_time.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        if range_start.month == 12:
+            range_end = range_start.replace(year=range_start.year + 1, month=1)
+        else:
+            range_end = range_start.replace(month=range_start.month + 1)
+
+        partition_name = range_start.strftime("operation_logs_%Y_%m")
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                f"""
+                CREATE TABLE IF NOT EXISTS {partition_name}
+                PARTITION OF operation_logs
+                FOR VALUES FROM (%s) TO (%s)
+                """,
+                (range_start, range_end),
+            )
+        finally:
+            cursor.close()
+
     def log_operation(
         self,
         operation_type: str,
@@ -97,38 +133,42 @@ class MonitoringDatabaseCoreMixin:
 
         try:
             operation_id = str(uuid.uuid4())
+            insert_sql = """
+                INSERT INTO operation_logs (
+                    operation_id, operation_type, classification,
+                    target_database, table_name, record_count,
+                    operation_status, error_message, execution_time_ms,
+                    user_agent, client_ip, additional_info
+                ) VALUES (
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                )
+            """
+            insert_params = (
+                operation_id,
+                operation_type,
+                classification,
+                target_database,
+                table_name,
+                record_count,
+                operation_status,
+                error_message,
+                execution_time_ms,
+                user_agent,
+                client_ip,
+                json.dumps(additional_info) if additional_info else None,
+            )
 
             with self._get_connection() as conn:
-                cursor = conn.cursor()
+                try:
+                    self._insert_operation_log_row(conn, insert_sql, insert_params)
+                except Exception as error:
+                    if not self._is_missing_operation_logs_partition_error(error):
+                        raise
 
-                cursor.execute(
-                    """
-                    INSERT INTO operation_logs (
-                        operation_id, operation_type, classification,
-                        target_database, table_name, record_count,
-                        operation_status, error_message, execution_time_ms,
-                        user_agent, client_ip, additional_info
-                    ) VALUES (
-                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
-                    )
-                """,
-                    (
-                        operation_id,
-                        operation_type,
-                        classification,
-                        target_database,
-                        table_name,
-                        record_count,
-                        operation_status,
-                        error_message,
-                        execution_time_ms,
-                        user_agent,
-                        client_ip,
-                        json.dumps(additional_info) if additional_info else None,
-                    ),
-                )
-
-                cursor.close()
+                    logger.info("检测到 operation_logs 当前月份分区缺失，尝试自动补建后重试")
+                    conn.rollback()
+                    self._ensure_current_operation_logs_partition(conn)
+                    self._insert_operation_log_row(conn, insert_sql, insert_params)
 
             return True
 
