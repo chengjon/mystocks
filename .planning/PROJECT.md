@@ -1,5 +1,12 @@
 # MyStocks Codebase Consolidation
 
+> **使用说明**:
+> 本文件是项目入口、工作流快照、规划工件或使用说明，不是当前共享规则、当前代码实现或当前运行状态的唯一事实来源。
+> 当前执行口径请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，并结合当前代码、主线任务系统与验证结果使用。
+>
+> 文内步骤、范围、状态或说明如未重新复核，应按其所属上下文理解，不得直接当作跨场景通用事实。
+
+
 ## What This Is
 
 A structured cleanup initiative for the MyStocks quantitative trading platform codebase. The goal is to eliminate code/file redundancy, resolve feature divergence, and establish a clear mainline with zero dead code, consistent naming, and a single source of truth for each concern. This is not a feature project — it is a technical debt remediation effort targeting 12 documented issues across Python backend and Vue 3 frontend.
@@ -20,6 +27,9 @@ Every file in the codebase has exactly one canonical location, every import reso
 - ✓ Vue 3 + Pinia frontend with ArtDeco design system — existing
 - ✓ Unified Manager entry point — existing
 - ✓ Real data mode (USE_MOCK_DATA=False) — existing
+- ✓ LINT-01: src/interfaces/adapters/ deleted (commit 9ac60b838) — Validated in Phase 1
+- ✓ LINT-02: Total ruff errors reduced to 877 (<900 target) — Validated in Phase 1
+- ✓ LINT-03: W293/F841/W291 zeroed via --unsafe-fixes (206 fixes) — Validated in Phase 1
 
 ### Active
 
@@ -69,7 +79,7 @@ Layered architecture: Frontend (Vue 3) → Backend API (FastAPI) → Core Busine
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Lint first, structure after | Fixing adapters eliminates 500+ F821 errors, giving clean baseline for structural work | — Pending |
+| Lint first, structure after | Fixing adapters eliminates 500+ F821 errors, giving clean baseline for structural work | ✓ Phase 1: 1,456→877 errors, 40% reduction |
 | Zero-breakage per phase | User requires system fully working at every phase boundary | — Pending |
 | Dead code: review-before-delete | User wants deletion list as MD document for approval before any removal | — Pending |
 | Mock files: keep as-is | 66 mock files not blocking anything, useful for dev/testing | — Pending |
@@ -93,4 +103,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-06 after initialization*
+*Last updated: 2026-04-06 after Phase 1 completion*
