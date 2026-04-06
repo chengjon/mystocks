@@ -1,5 +1,11 @@
 # MyStocks Web API 完整文档
 
+> **历史文档说明**:
+> 本文件是 `2025-11-30` 的 API 文档快照，不是当前 API 契约、当前端点总览或仓库共享规则的唯一事实来源。
+> 当前 API 单一事实来源请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，以及实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json`。
+>
+> 文内基础 URL、端点数量、认证流程和响应示例如未重新导出与复核，应视为历史快照，不得直接当作当前事实。
+
 **生成日期**: 2025-11-30
 **API 版本**: 1.0.0
 **基础 URL**: http://localhost:8020

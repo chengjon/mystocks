@@ -1,5 +1,11 @@
 # WebSocket Architecture Documentation Index
 
+> **导航说明**:
+> 本文件是 WebSocket 架构文档导航页，不是当前 WebSocket 实现基线、当前实时通信主线或仓库共享规则的唯一事实来源。
+> 当前执行口径请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，以及实际代码实现与主线契约/测试文档。
+>
+> 文内“Primary Document”“Quick Reference”等说明只表示文档导航关系，不代表这些 Markdown 自动等同于当前系统事实。
+
 ## Overview
 
 This documentation set provides a comprehensive analysis of the MyStocks WebSocket real-time subscription system, including architecture, implementation details, and integration guidance.

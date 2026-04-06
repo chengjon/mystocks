@@ -1,5 +1,11 @@
 # Implementation Index - MyStocks Database Optimization
 
+> **历史索引说明**:
+> 本文件是数据库优化任务的实施索引，不是当前数据库优化基线、当前性能指标或仓库共享规则的唯一事实来源。
+> 当前执行口径请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`、当前代码与验证结果。
+>
+> 文内 `COMPLETE`、测试通过率、覆盖率和性能收益应按当次任务上下文理解；若未重新验证，不得直接视为当前事实。
+
 ## Quick Navigation
 
 ### 📋 Task 11: Database Index Optimization

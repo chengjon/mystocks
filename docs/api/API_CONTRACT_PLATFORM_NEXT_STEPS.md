@@ -1,5 +1,11 @@
 # API Contract Platform - Status & Enhanced Action Plan
 
+> **历史计划说明**:
+> 本文件是 API Contract Platform 的阶段性状态与行动计划，不是当前平台实现基线、当前任务状态或仓库共享规则的唯一事实来源。
+> 当前 API 契约治理口径请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`、实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json`。
+>
+> 文内 `Ready for Implementation`、已完成项、CLI 修复结论和类型生成步骤应按当次计划上下文理解；若未在当前代码与主线文档中复核，不得直接视为当前事实。
+
 **Document Version**: 2.0
 **Last Updated**: 2025-12-30
 **Status**: Ready for Implementation
