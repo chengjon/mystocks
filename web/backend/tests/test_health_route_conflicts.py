@@ -1454,9 +1454,18 @@ def test_market_health_and_refresh_endpoints_have_docs_examples_and_error_respon
 
     endpoint_expectations = {
         ("/api/v1/market/health", "get"): set(),
+        ("/api/v1/market/heatmap", "get"): {"market", "limit"},
+        ("/api/v1/market/fund-flow", "get"): {"symbol", "timeframe", "start_date", "end_date"},
+        ("/api/v1/market/fund-flow/refresh", "post"): {"symbol", "timeframe"},
+        ("/api/v1/market/etf/list", "get"): {"symbol", "keyword", "market", "category", "limit", "offset"},
         ("/api/v1/market/etf/refresh", "post"): set(),
         ("/api/v1/market/chip-race", "get"): {"race_type", "trade_date", "min_race_amount", "limit"},
+        ("/api/v1/market/chip-race/refresh", "post"): {"race_type", "trade_date"},
         ("/api/v1/market/lhb", "get"): {"symbol", "start_date", "end_date", "min_net_amount", "limit"},
+        ("/api/v1/market/lhb/refresh", "post"): {"trade_date"},
+        ("/api/v1/market/quotes", "get"): {"symbols"},
+        ("/api/v1/market/stocks", "get"): {"limit", "search", "exchange", "security_type"},
+        ("/api/v1/market/kline", "get"): {"stock_code", "period", "adjust", "start_date", "end_date"},
         ("/api/v2/market/fund-flow", "get"): {"symbol", "timeframe", "start_date", "end_date"},
         ("/api/v2/market/fund-flow/refresh", "post"): {"symbol", "timeframe"},
         ("/api/v2/market/etf/list", "get"): {"symbol", "keyword", "limit"},

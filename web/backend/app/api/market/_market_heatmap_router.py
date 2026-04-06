@@ -11,7 +11,45 @@ from app.core.exceptions import BusinessException
 router = APIRouter()
 
 
-@router.get("/heatmap", summary="获取市场热力图数据")
+def _success_response_spec(description: str, example: dict) -> dict[int, dict]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+MARKET_HEATMAP_RESPONSES = {
+    **_success_response_spec(
+        "市场热力图数据",
+        {
+            "success": True,
+            "data": [
+                {
+                    "symbol": "600519",
+                    "name": "贵州茅台",
+                    "price": 1688.0,
+                    "change": 25.8,
+                    "change_pct": 1.55,
+                    "volume": 4589123,
+                    "amount": 7742000000.0,
+                    "market_cap": 2120000000000.0,
+                }
+            ],
+            "total": 1,
+            "timestamp": "2026-04-07T09:30:00",
+            "source": "real",
+        },
+    ),
+}
+
+
+@router.get("/heatmap", summary="获取市场热力图数据", responses=MARKET_HEATMAP_RESPONSES)
 @cache_response("market_heatmap", ttl=60)
 async def get_market_heatmap(
     market: str = Query(default="cn", description="市场类型: cn(A股)/hk(港股)"),
