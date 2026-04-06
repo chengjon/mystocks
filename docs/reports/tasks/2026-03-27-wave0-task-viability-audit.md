@@ -1,5 +1,9 @@
 # 2026-03-27 Wave 0 任务价值审计
 
+> 2026-04-06 补充说明：
+> 本文档反映 `2026-03-27` 当日审计结论。
+> 其中 `implement-api-file-level-testing` 后续已按“重建后的收口线”执行完主线 salvage，正式收口记录见 `reports/governance/2026-04-06-api-file-tests-salvage-closeout.md`。
+
 > 目标：对历史“未完成任务”做现状价值判断，避免机械续做。
 >
 > 审计原则：
@@ -30,7 +34,7 @@
 |---|---:|---|---|
 | `add-artdeco-strategy-management-chain` | `23/24` | `视为已完成（仅剩归档动作）` | 否 |
 | `optimize-web-menu-accessibility` | `6/9` | `调整后执行` | 否 |
-| `implement-api-file-level-testing` | `33/51` | `调整后执行` | 否 |
+| `implement-api-file-level-testing` | `33/51` | `历史结论：调整后执行；现状：已收口` | 否 |
 | `restructure-frontend-directory` | `7/92` | `调整后执行` | 否 |
 | `extend-frontend-config-model` | `62/85` | `取消原任务并另立后续增强项` | 否 |
 
@@ -49,7 +53,7 @@
 | `add-artdeco-strategy-management-chain` | 已归档旧任务包 |
 | `optimize-web-menu-accessibility` | 已归档旧任务包 |
 | `extend-frontend-config-model` | 已归档旧任务包 |
-| `implement-api-file-level-testing` | 不沿用旧任务包，后续按当前框架重建新任务 |
+| `implement-api-file-level-testing` | 不沿用旧任务包；该重建线后续已完成主线 salvage 收口 |
 | `restructure-frontend-directory` | 不沿用旧任务包，后续按当前目录现状重建新任务 |
 
 ### 已归档路径
@@ -171,7 +175,11 @@
 
 ### 最终处理
 
-不继续执行旧任务包，后续重建为新任务。
+不继续执行旧任务包。
+
+补充：
+- 后续重建线已完成主线 salvage 收口。
+- 当前唯一残留项是 root dirty worktree 内 `tests/api/file_tests/test_tradingview_api.py` 的格式等价差异，归类为 root-dirty hygiene。
 
 ---
 
