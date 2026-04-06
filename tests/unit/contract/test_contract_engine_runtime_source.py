@@ -7,8 +7,14 @@ from pathlib import Path
 
 import yaml
 
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+BACKEND_ROOT = PROJECT_ROOT / "web/backend"
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../web/backend"))
+# Keep the repository root ahead of web/backend so `src` resolves to the
+# primary source tree instead of the legacy duplicate under `web/backend/src`.
+sys.path = [entry for entry in sys.path if entry not in {str(PROJECT_ROOT), str(BACKEND_ROOT)}]
+sys.path.insert(0, str(PROJECT_ROOT))
+sys.path.insert(1, str(BACKEND_ROOT))
 
 from tests.contract.contract_engine import ContractTestEngine
 from tests.contract.models import ContractTestConfig
@@ -100,7 +106,25 @@ def test_contract_test_engine_allows_explicit_openapi_file_override(monkeypatch,
     assert [case.name for case in discovered] == ["POST /api/override"]
 
 
-def test_contract_test_engine_marks_unavailable_when_runtime_openapi_cannot_load(tmp_path: Path) -> None:
+def test_contract_test_engine_loads_runtime_openapi_from_app_main(tmp_path: Path) -> None:
+    engine = ContractTestEngine(
+        ContractTestConfig(
+            test_data_path=str(tmp_path / "test-data"),
+            report_output_path=str(tmp_path / "reports"),
+        )
+    )
+
+    assert engine.openapi_spec_source == "runtime"
+    assert engine.openapi_spec_error is None
+    assert engine.openapi_spec["openapi"].startswith("3.")
+    assert "paths" in engine.openapi_spec
+
+
+def test_contract_test_engine_marks_unavailable_when_runtime_openapi_import_is_broken(
+    monkeypatch, tmp_path: Path
+) -> None:
+    monkeypatch.setitem(sys.modules, "app.main", types.ModuleType("app.main"))
+
     engine = ContractTestEngine(
         ContractTestConfig(
             test_data_path=str(tmp_path / "test-data"),

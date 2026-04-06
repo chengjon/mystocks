@@ -25,6 +25,7 @@ try:
 except ImportError:
     raise ImportError("python-socketio is not installed. Install it with: pip install python-socketio")
 
+from ._socketio_manager_singleton import get_socketio_manager, reset_socketio_manager
 from app.core.reconnection_manager import get_reconnection_manager
 from app.models.websocket_message import (
     WebSocketErrorCode,

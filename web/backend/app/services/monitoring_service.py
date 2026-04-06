@@ -14,6 +14,7 @@ import pandas as pd
 from sqlalchemy import and_, create_engine, desc
 from sqlalchemy.orm import Session, sessionmaker
 
+from app.core.config import settings
 from app.models.monitoring import (
     AlertRecord,
     AlertRule,
@@ -80,18 +81,16 @@ class MonitoringService:
         logger.info("MonitoringService initialized")
 
     def _get_database_url(self) -> str:
-        """获取数据库连接URL"""
-        import os
+        """获取数据库连接URL.
 
-        from dotenv import load_dotenv
-
-        load_dotenv()
-
-        host = os.getenv("POSTGRESQL_HOST", "localhost")
-        port = os.getenv("POSTGRESQL_PORT", "5438")
-        user = os.getenv("POSTGRESQL_USER", "postgres")
-        password = os.getenv("POSTGRESQL_PASSWORD")
-        database = os.getenv("POSTGRESQL_DATABASE", "mystocks")
+        Runtime services must consume the centralized settings object instead of
+        discovering nested .env files at import time.
+        """
+        host = settings.postgresql_host or "localhost"
+        port = str(settings.postgresql_port or 5438)
+        user = settings.postgresql_user or "postgres"
+        password = settings.postgresql_password
+        database = settings.postgresql_database or "mystocks"
 
         if not password:
             raise ValueError("POSTGRESQL_PASSWORD environment variable must be set")

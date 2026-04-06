@@ -9,6 +9,7 @@
 """
 
 import os
+from pathlib import Path
 from typing import Any, Dict, Optional
 
 from dotenv import load_dotenv
@@ -30,7 +31,9 @@ except ImportError:
     pool = None
 
 # 加载环境变量
-load_dotenv()
+# OpenAPI/runtime import paths must share the repository-root .env as the
+# single source of truth instead of implicitly discovering nested copies.
+load_dotenv(Path(__file__).resolve().parents[3] / ".env")
 
 
 class DatabaseConnectionManager:
