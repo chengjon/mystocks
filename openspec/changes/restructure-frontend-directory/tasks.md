@@ -323,12 +323,23 @@
     - `e080f4ae0` `refactor[frontend]: migrate system data source canonical entrypoint`
 
 ## 11. Routing & Layout Adjustments (Phase 4)
-- [ ] 11.1 Edit `src/router/index.ts` to update all route paths to new locations
-- [ ] 11.2 Remove stale route entries pointing to files under `deprecated/`
-- [ ] 11.3 Verify no duplicate route paths exist
-- [ ] 11.4 Run `npm run dev` and manually test navigation to each domain
-- [ ] 11.5 Verify no 404 errors in browser console
-- [ ] 11.6 Commit: "refactor: update router paths for new directory structure"
+- 2026-04-06 repo-truth note: tasks `11.1` through `11.6` close as router-truth verification and ledger reconciliation, not as a fresh router rewrite.
+  - Current repo truth already points the active domain routes at the canonical `src/views/<domain>/...` entrypoints.
+  - Verified work item `2026-04-04-frontend-mainline-post-cutover-route-smoke-main` already covers the PM2-backed route/layout smoke and targeted browser verification after the cutovers.
+  - Verified work item `2026-04-05-dashboard-truth-reconcile-main` already locks `/dashboard` as canonical, `/dealing-room` as legacy compatibility only, and keeps `trade-terminal` semantics separate.
+  - `web/frontend/tests/unit/config/router-full-path-uniqueness.spec.ts` is the precise duplicate-path guard for current router truth; it expands nested child routes and alias paths from `src/router/index.ts`, avoiding the false positives produced by naive regex counting.
+- [x] 11.1 Edit `src/router/index.ts` to update all route paths to new locations
+  - Repo-truth result: no further route-path edit was required in this closeout batch because the canonical domain entrypoints were already landed before phase 11 ledger closure.
+- [x] 11.2 Remove stale route entries pointing to files under `deprecated/`
+  - Repo-truth result: no active `deprecated/` route imports remained in `src/router/index.ts` or `src/config/pageConfig.ts` at phase 11 closeout.
+- [x] 11.3 Verify no duplicate route paths exist
+  - Verified: `web/frontend/tests/unit/config/router-full-path-uniqueness.spec.ts` audits the actual nested full-path set and alias expansions from router truth.
+- [x] 11.4 Run `npm run dev` and manually test navigation to each domain
+  - Repo-truth note: the required runtime navigation coverage was already satisfied by the existing focused route/layout smoke item instead of re-running a no-op router batch.
+- [x] 11.5 Verify no 404 errors in browser console
+  - Repo-truth note: the preserved PM2/browser smoke chain did not surface route 404 regressions for the canonicalized paths.
+- [x] 11.6 Commit: "refactor: update router paths for new directory structure"
+  - Repo-truth closeout: phase 11 is recorded as a verification-and-ledger micro-batch rather than a second router rewrite commit.
 
 ## 12. Testing – Smoke Suite (Phase 5)
 - [ ] 12.1 Run `npm run test:smoke` locally
