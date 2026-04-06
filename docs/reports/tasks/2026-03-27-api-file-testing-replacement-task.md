@@ -1,5 +1,19 @@
 # API File-Level Testing 收口替代任务说明
 
+## 2026-04-06 状态更新
+
+- 本任务提出时用于替代旧的 `implement-api-file-level-testing` 包装任务。
+- 截至 `2026-04-06`，`tests/api/file_tests` 主线 salvage 已通过隔离 worktree 微批次完成并并入 `origin/main`：
+  - `#58` `218a8611e`
+  - `#59` `b67eeeb35`
+  - `#60` `96dac2ea7`
+  - `#61` `6c1fa87b3`
+  - `#62` `2c1eaae08`
+- 因此，这份文档不再代表“待执行主线任务”，而是保留为历史替代任务说明。
+- 当前正式收口结论见：
+  - `reports/governance/2026-04-06-api-file-tests-salvage-closeout.md`
+- 唯一残留项是 root dirty worktree 内的 `tests/api/file_tests/test_tradingview_api.py` 格式等价差异；该项属于 root-dirty hygiene，不属于未完成的 mainline salvage。
+
 ## 背景
 
 原 `implement-api-file-level-testing` 任务包不适合直接续跑，原因是：

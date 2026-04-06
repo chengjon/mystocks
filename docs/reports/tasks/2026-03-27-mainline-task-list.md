@@ -1,5 +1,9 @@
 # 2026-03-27 主线未完成任务清单
 
+> 2026-04-06 补充说明：
+> 本文档是 `2026-03-27` 的历史快照。
+> 其中 `implement-api-file-level-testing` 后续已完成主线 salvage 收口，正式结论见 `docs/reports/tasks/2026-03-27-api-file-testing-replacement-task.md` 与 `reports/governance/2026-04-06-api-file-tests-salvage-closeout.md`。
+
 > 目的：汇总当前仓库主线可见的未完成事项，形成后续执行审批依据。
 >
 > 盘点来源：
@@ -131,7 +135,7 @@
 
 | 任务 | 当前进度 | 风险/说明 | 建议动作 |
 |---|---:|---|---|
-| `implement-api-file-level-testing` | `33/51` | 方向仍有价值，但现有任务包已与当前框架状态不匹配 | 重建为“API file-level testing 收口任务” |
+| `implement-api-file-level-testing` | `33/51` | 历史判断为“需重建”；后续已完成 mainline salvage 收口 | 保留此行仅作历史记录，现行结论见 2026-04-06 closeout |
 | `restructure-frontend-directory` | `7/92` | 与当前目录治理主线最相关，但旧 checklist 不适合直接续跑 | 重建为“目录现状盘点与新批次任务” |
 
 ## P2：暂不处理的其他活跃变更
@@ -175,7 +179,7 @@
 
 ### Wave 1：只创建新任务，不直接实施旧任务包
 
-1. 创建 `API file-level testing 收口新任务`
+1. `API file-level testing` 线已完成收口，后续仅剩 root-dirty hygiene（如需）
 2. 创建 `frontend directory restructure 现状盘点与新批次任务`
 
 当前已完成：
