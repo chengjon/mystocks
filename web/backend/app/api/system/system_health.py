@@ -46,6 +46,154 @@ CONNECTION_TEST_REQUEST_EXAMPLES = {
 }
 
 
+def _success_response_spec(description: str, example: Any) -> Dict[int, Dict[str, Any]]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+SYSTEM_HEALTH_RESPONSES = {
+    **SYSTEM_MANAGEMENT_ERROR_RESPONSE,
+    **_success_response_spec(
+        "系统健康检查结果",
+        {
+            "status": "healthy",
+            "timestamp": "2026-04-07T08:00:00",
+            "databases": {
+                "postgresql": "healthy",
+                "tdengine": "healthy",
+            },
+            "service": "mystocks-web-api",
+            "version": "2.2.0",
+            "architecture": "dual-database",
+        },
+    ),
+}
+
+SYSTEM_ADAPTER_HEALTH_RESPONSES = {
+    **SYSTEM_MANAGEMENT_ERROR_RESPONSE,
+    **_success_response_spec(
+        "数据适配器健康检查结果",
+        {
+            "overall_status": "healthy",
+            "healthy_count": 3,
+            "total_count": 3,
+            "adapters": {
+                "akshare": {
+                    "healthy": True,
+                    "status": "healthy",
+                    "error": None,
+                    "last_check": "2026-04-07T08:00:00",
+                },
+                "tdx": {
+                    "healthy": True,
+                    "status": "healthy",
+                    "error": None,
+                    "last_check": "2026-04-07T08:00:00",
+                },
+            },
+            "timestamp": "2026-04-07T08:00:00",
+            "message": "3/3 适配器正常运行",
+        },
+    ),
+}
+
+SYSTEM_DATASOURCES_RESPONSES = {
+    **SYSTEM_MANAGEMENT_ERROR_RESPONSE,
+    **_success_response_spec(
+        "系统已配置数据源列表",
+        {
+            "success": True,
+            "data": [
+                {
+                    "id": "tdx",
+                    "name": "通达信(TDX)",
+                    "type": "realtime",
+                    "status": "active",
+                    "description": "实时行情和多周期K线数据",
+                    "features": ["实时行情", "分钟K线", "日K线"],
+                }
+            ],
+            "total": 1,
+            "timestamp": "2026-04-07T08:00:00",
+        },
+    ),
+}
+
+SYSTEM_CONNECTION_TEST_RESPONSES = {
+    **SYSTEM_MANAGEMENT_ERROR_RESPONSE,
+    **_success_response_spec(
+        "数据库连接测试结果",
+        {
+            "success": True,
+            "message": "PostgreSQL 连接成功 (PostgreSQL 15.5)，发现数据库: mystocks",
+            "error": None,
+        },
+    ),
+}
+
+SYSTEM_LOGS_RESPONSES = {
+    **SYSTEM_MANAGEMENT_ERROR_RESPONSE,
+    **_success_response_spec(
+        "系统运行日志列表",
+        {
+            "success": True,
+            "data": [
+                {
+                    "id": 8,
+                    "timestamp": "2026-04-07T07:59:30",
+                    "level": "WARNING",
+                    "category": "api",
+                    "operation": "API请求",
+                    "message": "API请求频率过高",
+                    "details": {"endpoint": "/api/market/quotes", "rate": "120 req/min"},
+                    "duration_ms": 0,
+                    "has_error": True,
+                }
+            ],
+            "total": 1,
+            "filtered": 1,
+            "timestamp": "2026-04-07T08:00:00",
+        },
+    ),
+}
+
+SYSTEM_LOG_SUMMARY_RESPONSES = {
+    **SYSTEM_MANAGEMENT_ERROR_RESPONSE,
+    **_success_response_spec(
+        "系统日志摘要",
+        {
+            "success": True,
+            "data": {
+                "total_logs": 128,
+                "level_counts": {
+                    "INFO": 96,
+                    "WARNING": 20,
+                    "ERROR": 10,
+                    "CRITICAL": 2,
+                },
+                "category_counts": {
+                    "database": 48,
+                    "api": 32,
+                    "adapter": 28,
+                    "system": 20,
+                },
+                "recent_errors_1h": 4,
+                "last_update": "2026-04-07T08:00:00",
+            },
+            "timestamp": "2026-04-07T08:00:00",
+        },
+    ),
+}
+
+
 def _required_env(env_name: str) -> str:
     value = os.getenv(env_name, "").strip()
     if not value:
@@ -63,7 +211,7 @@ def _close_resource_quietly(resource_name: str, resource: Any) -> None:
         logger.debug("Failed to close %s cleanly: %s", resource_name, exc)
 
 
-@router.get("/health", responses=SYSTEM_MANAGEMENT_ERROR_RESPONSE)
+@router.get("/health", responses=SYSTEM_HEALTH_RESPONSES)
 async def system_health():
     """
     系统健康检查端点 (双数据库架构: TDengine + PostgreSQL)
@@ -120,7 +268,7 @@ async def system_health():
         raise HTTPException(status_code=503, detail=f"系统健康检查失败: {str(e)}")
 
 
-@router.get("/adapters/health", responses=SYSTEM_MANAGEMENT_ERROR_RESPONSE)
+@router.get("/adapters/health", responses=SYSTEM_ADAPTER_HEALTH_RESPONSES)
 async def get_adapters_health():
     """
     🚀 适配器健康检查端点（新增）
@@ -174,7 +322,7 @@ async def get_adapters_health():
         raise HTTPException(status_code=500, detail=f"适配器健康检查失败: {str(e)}")
 
 
-@router.get("/datasources", responses=SYSTEM_MANAGEMENT_ERROR_RESPONSE)
+@router.get("/datasources", responses=SYSTEM_DATASOURCES_RESPONSES)
 async def get_datasources():
     """
     获取已配置的数据源列表
@@ -240,7 +388,11 @@ class ConnectionTestResponse(BaseModel):
     error: Optional[str] = Field(None, description="连接失败时的错误详情。")
 
 
-@router.post("/test-connection", response_model=ConnectionTestResponse)
+@router.post(
+    "/test-connection",
+    response_model=ConnectionTestResponse,
+    responses=SYSTEM_CONNECTION_TEST_RESPONSES,
+)
 async def test_database_connection(
     request: ConnectionTestRequest = Body(..., openapi_examples=CONNECTION_TEST_REQUEST_EXAMPLES),
 ):
@@ -630,7 +782,7 @@ def get_mock_system_logs(filter_errors: bool = False, limit: int = 100) -> List[
     return mock_logs
 
 
-@router.get("/logs", response_model=LogQueryResponse)
+@router.get("/logs", response_model=LogQueryResponse, responses=SYSTEM_LOGS_RESPONSES)
 async def get_system_logs(
     filter_errors: bool = Query(False, description="是否只显示有问题的日志"),
     limit: int = Query(100, ge=1, le=1000, description="返回条数限制"),
@@ -684,7 +836,7 @@ async def get_system_logs(
         raise HTTPException(status_code=500, detail=f"获取系统日志失败: {str(e)}")
 
 
-@router.get("/logs/summary", responses=SYSTEM_MANAGEMENT_ERROR_RESPONSE)
+@router.get("/logs/summary", responses=SYSTEM_LOG_SUMMARY_RESPONSES)
 async def get_logs_summary():
     """
     获取日志统计摘要

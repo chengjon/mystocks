@@ -77,6 +77,89 @@ SYSTEM_SETTINGS_ERROR_RESPONSES = {
     }
 }
 
+
+def _success_response_spec(description: str, example: Any) -> dict[int, dict[str, Any]]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+GENERAL_SETTINGS_READ_RESPONSES = {
+    **SYSTEM_SETTINGS_ERROR_RESPONSES,
+    **_success_response_spec(
+        "系统通用设置读取结果",
+        {
+            "success": True,
+            "code": 200,
+            "message": "获取系统通用设置成功",
+            "data": GeneralSettingsPayload().model_dump(mode="json"),
+            "timestamp": "2026-04-07T08:00:00Z",
+            "request_id": "req-system-settings-general-read-001",
+            "errors": None,
+        },
+    ),
+}
+
+GENERAL_SETTINGS_UPDATE_RESPONSES = {
+    **SYSTEM_SETTINGS_ERROR_RESPONSES,
+    **_success_response_spec(
+        "系统通用设置更新结果",
+        {
+            "success": True,
+            "code": 200,
+            "message": "更新系统通用设置成功",
+            "data": GeneralSettingsPayload().model_dump(mode="json"),
+            "timestamp": "2026-04-07T08:00:00Z",
+            "request_id": "req-system-settings-general-write-001",
+            "errors": None,
+        },
+    ),
+}
+
+SECURITY_SETTINGS_READ_RESPONSES = {
+    **SYSTEM_SETTINGS_ERROR_RESPONSES,
+    **_success_response_spec(
+        "系统安全设置读取结果",
+        {
+            "success": True,
+            "code": 200,
+            "message": "获取系统安全设置成功",
+            "data": SecuritySettingsPayload().model_dump(mode="json"),
+            "timestamp": "2026-04-07T08:00:00Z",
+            "request_id": "req-system-settings-security-read-001",
+            "errors": None,
+        },
+    ),
+}
+
+SECURITY_SETTINGS_UPDATE_RESPONSES = {
+    **SYSTEM_SETTINGS_ERROR_RESPONSES,
+    **_success_response_spec(
+        "系统安全设置更新结果",
+        {
+            "success": True,
+            "code": 200,
+            "message": "更新系统安全设置成功",
+            "data": SecuritySettingsPayload(
+                session_timeout_minutes=90,
+                mfa_required=True,
+                ip_allowlist_enabled=True,
+                password_policy_level="strict",
+            ).model_dump(mode="json"),
+            "timestamp": "2026-04-07T08:00:00Z",
+            "request_id": "req-system-settings-security-write-001",
+            "errors": None,
+        },
+    ),
+}
+
 SECTION_MODELS = {
     "general": GeneralSettingsPayload,
     "security": SecuritySettingsPayload,
@@ -322,7 +405,7 @@ def _raise_unavailable(exc: RuntimeError) -> None:
     response_model=UnifiedResponse[GeneralSettingsPayload],
     summary="Get General System Settings",
     description="Read the canonical system-scoped general settings from the PostgreSQL system_config truth.",
-    responses=SYSTEM_SETTINGS_ERROR_RESPONSES,
+    responses=GENERAL_SETTINGS_READ_RESPONSES,
 )
 async def get_general_settings(
     repository: SystemSettingsRepository = Depends(get_system_settings_repository),
@@ -341,7 +424,7 @@ async def get_general_settings(
     response_model=UnifiedResponse[GeneralSettingsPayload],
     summary="Update General System Settings",
     description="Persist the canonical system-scoped general settings into the PostgreSQL system_config truth.",
-    responses=SYSTEM_SETTINGS_ERROR_RESPONSES,
+    responses=GENERAL_SETTINGS_UPDATE_RESPONSES,
 )
 async def update_general_settings(
     payload: GeneralSettingsPayload = Body(..., openapi_examples=GENERAL_SETTINGS_EXAMPLES),
@@ -363,7 +446,7 @@ async def update_general_settings(
     response_model=UnifiedResponse[SecuritySettingsPayload],
     summary="Get Security System Settings",
     description="Read the canonical system-scoped security settings from the PostgreSQL system_config truth.",
-    responses=SYSTEM_SETTINGS_ERROR_RESPONSES,
+    responses=SECURITY_SETTINGS_READ_RESPONSES,
 )
 async def get_security_settings(
     repository: SystemSettingsRepository = Depends(get_system_settings_repository),
@@ -382,7 +465,7 @@ async def get_security_settings(
     response_model=UnifiedResponse[SecuritySettingsPayload],
     summary="Update Security System Settings",
     description="Persist the canonical system-scoped security settings into the PostgreSQL system_config truth.",
-    responses=SYSTEM_SETTINGS_ERROR_RESPONSES,
+    responses=SECURITY_SETTINGS_UPDATE_RESPONSES,
 )
 async def update_security_settings(
     payload: SecuritySettingsPayload = Body(..., openapi_examples=SECURITY_SETTINGS_EXAMPLES),

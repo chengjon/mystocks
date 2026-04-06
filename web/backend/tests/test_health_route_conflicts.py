@@ -156,8 +156,12 @@ def test_v1_system_settings_endpoints_have_examples_and_error_responses() -> Non
 
         assert len(get_operation.get("description", "")) >= 20
         assert any(status.startswith("5") for status in get_operation["responses"])
+        get_success_content = get_operation["responses"]["200"]["content"]["application/json"]
+        assert "example" in get_success_content or "examples" in get_success_content
         assert len(post_operation.get("description", "")) >= 20
         assert any(status.startswith("5") for status in post_operation["responses"])
+        post_success_content = post_operation["responses"]["200"]["content"]["application/json"]
+        assert "example" in post_success_content or "examples" in post_success_content
 
         post_json = post_operation["requestBody"]["content"]["application/json"]
         assert "example" in post_json or "examples" in post_json
@@ -308,14 +312,20 @@ def test_system_management_endpoints_have_error_docs_and_examples() -> None:
         "/api/v1/system/health",
         "/api/v1/system/adapters/health",
         "/api/v1/system/datasources",
+        "/api/v1/system/logs",
         "/api/v1/system/logs/summary",
     ]:
         operation = schema["paths"][path]["get"]
         assert any(status.startswith("5") for status in operation["responses"])
+        success_content = operation["responses"]["200"]["content"]["application/json"]
+        assert "example" in success_content or "examples" in success_content
 
     test_connection = schema["paths"]["/api/v1/system/test-connection"]["post"]
+    assert any(status.startswith("5") for status in test_connection["responses"])
     json_content = test_connection["requestBody"]["content"]["application/json"]
+    success_content = test_connection["responses"]["200"]["content"]["application/json"]
     assert "example" in json_content or "examples" in json_content
+    assert "example" in success_content or "examples" in success_content
 
 
 def test_announcement_endpoints_have_examples_parameter_docs_and_error_responses() -> None:
