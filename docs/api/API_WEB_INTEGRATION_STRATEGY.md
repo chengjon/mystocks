@@ -1,8 +1,14 @@
 # API与Web集成开发策略指南
 
-**版本**: 1.0.0
-**创建日期**: 2025-12-29
-**状态**: 战略规划
+> **设计方案说明**:
+> 本文件是 API 与 Web 集成开发的策略设计稿，不是当前前后端集成主线、当前 API 契约或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`；若涉及 API 契约事实源，再以实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json` 为准。
+>
+> 文内战略分期、平台状态、OpenAPI 生成链路与工具命令应按设计方案理解；若未在当前代码与主线文档中复核，不得直接当作当前标准。
+
+**Historical Strategy Version Snapshot**: 1.0.0
+**Historical Strategy Snapshot Date**: 2025-12-29
+**Historical Strategy Status Snapshot**: 战略规划
 
 ---
 
