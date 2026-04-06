@@ -6,6 +6,10 @@ started: 2026-04-07
 completed: 2026-04-07
 ---
 
+> **历史实施说明**:
+> 本文件属于 `.planning` 阶段执行摘要，不是当前仓库共享规则、当前审批状态或当前实施结果的唯一事实来源。
+> 执行共享规则与审批门禁请优先遵循 `architecture/STANDARDS.md`；若涉及当前任务执行状态，再结合根目录 `AGENTS.md`、phase 主文档与最新验证结果核对。
+
 # Summary: Plan 01 — Dead Code Inventory & Functional Tree
 
 ## Objective
@@ -21,13 +25,24 @@ DELETION-CANDIDATES.md at project root — a review document covering 34 files a
 |--------|-------|---------------|------|
 | src/routes/ | 19 | DELETE after redirect | LOW — 1 broken prod caller, 1 CI script |
 | src/api/ | 5 | DELETE | LOW — zero prod callers, test imports already broken |
-| src/data_access_pkg/ | 5 | DELETE (canonical wins) | LOW — zero external callers |
-| src/db_manager/ | 1 | DELETE | LOW — empty shim |
-| src/database_optimization/ | 5 | MERGE 3 unique files → src/data_access/optimizers/ | MEDIUM — 2 test callers need redirect |
+| src/data_access_pkg/ | 5 | DELETE (canonical wins) | LOW — 1 root shim caller (`src/data_access.py:2`) |
+| src/db_manager/ | 1 | DELETE | LOW — empty shim, scripts only |
+| src/database_optimization/ | 5 | MERGE 4 unique utility files → src/data_access/optimizers/ | MEDIUM — 2 test callers need redirect |
 
 ## Sweep Coverage
 
-All 8 sweep types completed (A-H): static imports, string references, dynamic imports, namespace patterns, shell-embedded Python, compat shim chains, route registration, build/packaging.
+All 8 sweep types completed (A–H). Full evidence with grep output is in `DELETION-CANDIDATES.md` "Code Path Evidence" sections per table. Summary:
+
+| Sweep | Type | src/routes | src/api | src/data_access_pkg | src/db_manager | src/database_optimization |
+|-------|------|-----------|--------|--------------------|---------------|-------------------------|
+| A | Static imports | 1 prod + 1 CI | 1 test (broken) | 1 internal | 0 | 2 tests |
+| B | String/dynamic refs | 0 | 0 | 1 regression test | 1 test (4 mock patches) | 2 report refs |
+| C | Dynamic imports | 0 | 0 | 0 | 0 | 0 |
+| D | `__all__`/namespace | 3 `__all__` | 2 `__all__` | 1 `__all__` | 1 `__all__` | 1 `__all__` |
+| E | Shell-embedded | 1 CI script | 0 | 0 | 0 | 0 |
+| F | Compat shim chains | 1 external | 0 | 0 | 0 | 0 |
+| G | Route registration | 11 APIRouter | 3 APIRouter | N/A | N/A | N/A |
+| H | Build/packaging | 0 | 0 | 0 | 0 | 0 |
 
 ## Special Cases Documented
 
