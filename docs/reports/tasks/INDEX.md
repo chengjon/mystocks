@@ -1,5 +1,9 @@
 # MyStocks 文档索引
 
+> 2026-04-06 状态说明：
+> 本文档是 `2026-04-03` 生成的目录快照，下面的统计与文件清单不保证覆盖当前全部内容。
+> 当前目录真值应以文件系统实际内容为准；若需任务现状，请优先查看仓库根目录 `TASK.md` / `TASK-REPORT.md`，以及 `reports/governance/` 下的 focused 收口记录。
+
 **生成时间**: 2026-04-03 17:05:00
 
 
@@ -7,6 +11,18 @@
 
 ## 🚀 快速导航
 
+- 当前任务真值：`/TASK.md`、`/TASK-REPORT.md`
+- focused 收口记录：`/reports/governance/`
+- 当前目录实际文件清单可用：
+  - `find docs/reports/tasks -maxdepth 1 -type f | sort`
+
+
+## 🆕 Snapshot 后新增的重要文档
+
+- 📄 [2026-03-26-directory-governance-pr-draft](2026-03-26-directory-governance-pr-draft.md)
+- 📄 [2026-03-27-api-file-testing-replacement-task](2026-03-27-api-file-testing-replacement-task.md)
+- 📄 [2026-03-27-mainline-task-list](2026-03-27-mainline-task-list.md)
+- 📄 [2026-03-27-wave0-task-viability-audit](2026-03-27-wave0-task-viability-audit.md)
 
 ---
 
