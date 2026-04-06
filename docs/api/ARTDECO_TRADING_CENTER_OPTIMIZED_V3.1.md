@@ -1,10 +1,17 @@
 # ArtDeco 量化交易管理中心 - 优化设计方案 V3.1
 
-**版本**: 3.1.0
-**优化日期**: 2026-01-22
+> **使用说明**:
+> 本文件是 API 相关的参考文档或专题说明，不是当前 API 契约、当前实施基线或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`；若涉及 API 契约事实源，再以实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json` 为准。
+>
+> 文内端点、命令、统计值和示例如未重新复核，应视为参考或历史材料，不得直接当作当前事实。
+
+
+**Historical Design Version Snapshot**: 3.1.0
+**Historical Optimization Snapshot Date**: 2026-01-22
 **更新内容**: 整合Grid布局系统,完整HTML对齐
 **设计理念**: 金融量化专业级 · ArtDeco美学 · 极致信息密度
-**对齐度**: 100% (Grid系统已实现) ✅
+**Historical Alignment Snapshot**: 100% (Grid系统已实现) ✅
 
 ---
 
@@ -2480,7 +2487,7 @@ $table-rows-compact: (
 
 ---
 
-**文档版本**: 3.1.0
-**最后更新**: 2026-01-22 (Grid系统集成)
+**Historical Document Version Snapshot**: 3.1.0
+**Historical Snapshot Date**: 2026-01-22 (Grid系统集成)
 **维护者**: UI/UX Pro Max + ArtDeco设计系统
-**状态**: ✅ Grid系统已集成,对齐度100%
+**Historical Status**: ✅ Grid系统已集成,对齐度100%
