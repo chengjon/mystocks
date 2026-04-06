@@ -296,10 +296,12 @@ class APIDocumentationValidator:
                 # Check for content examples
                 if "content" in response_spec:
                     content = response_spec["content"]
-                    if "application/json" in content:
-                        json_content = content["application/json"]
-                        if "example" in json_content or "examples" in json_content:
+                    for content_spec in content.values():
+                        if isinstance(content_spec, dict) and (
+                            "example" in content_spec or "examples" in content_spec
+                        ):
                             has_response_examples = True
+                            break
 
             # Check error responses
             elif status_code.startswith("4") or status_code.startswith("5"):
