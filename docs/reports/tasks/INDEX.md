@@ -51,6 +51,7 @@
 
 #### Legacy
 
+    - 📄 [README](legacy/README.md)
     - 📄 [FRONTEND_HISTORY_MIGRATION](legacy/FRONTEND_HISTORY_MIGRATION.md)
     - 📄 [PHASE_2_SAGA_ROLLOUT](legacy/PHASE_2_SAGA_ROLLOUT.md)
     - 📄 [TEST_CLI_TASK](legacy/TEST_CLI_TASK.md)
