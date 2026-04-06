@@ -1,9 +1,16 @@
 # API契约验证执行计划 - Phase 2前期准备
 
-**创建日期**: 2026-01-02
-**状态**: 🎯 Ready to Execute
-**负责人**: Main CLI (Claude Code)
-**数据守卫者**: 用户 (负责数据层问题解决)
+> **历史计划说明**:
+> 本文件是 API 相关的阶段性计划、路线图或方案材料，不是当前 API 契约、当前实施状态或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`；若涉及 API 契约事实源，再以实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json` 为准。
+>
+> 文内优先级、时间线、实施状态和建议动作如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
+
+
+**Historical Execution Plan Snapshot Date**: 2026-01-02
+**Historical Execution Plan Status Snapshot**: 🎯 Ready to Execute
+**Historical Owner Snapshot**: Main CLI (Claude Code)
+**Historical Data Steward Snapshot**: 用户 (负责数据层问题解决)
 
 ---
 
