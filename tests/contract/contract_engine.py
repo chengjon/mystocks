@@ -53,22 +53,34 @@ class ContractTestEngine:
         report_dir.mkdir(parents=True, exist_ok=True)
 
         # 加载 OpenAPI 规范
-        if self.config.openapi_spec_path:
-            self._load_openapi_spec()
+        self._load_openapi_spec()
 
     def _load_openapi_spec(self):
-        """加载 OpenAPI 规范"""
+        """加载 OpenAPI 规范.
+
+        Runtime-generated OpenAPI is the default source of truth. An explicit
+        config path remains available as a compatibility override for isolated
+        snapshots and replay scenarios.
+        """
         try:
-            spec_path = Path(self.config.openapi_spec_path)
-            if spec_path.exists():
-                with open(spec_path, "r", encoding="utf-8") as f:
-                    if spec_path.suffix.lower() == ".json":
-                        self.openapi_spec = json.load(f)
-                    else:
-                        self.openapi_spec = yaml.safe_load(f)
-                logger.info("成功加载 OpenAPI 规范: %(spec_path)s")
-            else:
+            if self.config.openapi_spec_path:
+                spec_path = Path(self.config.openapi_spec_path)
+                if spec_path.exists():
+                    with open(spec_path, "r", encoding="utf-8") as f:
+                        if spec_path.suffix.lower() == ".json":
+                            self.openapi_spec = json.load(f)
+                        else:
+                            self.openapi_spec = yaml.safe_load(f)
+                    logger.info("成功加载 OpenAPI 规范: %(spec_path)s")
+                    return
+
                 logger.warning("OpenAPI 规范文件不存在: %(spec_path)s")
+                return
+
+            from app.main import app
+
+            self.openapi_spec = app.openapi()
+            logger.info("成功加载运行时 OpenAPI 规范")
         except Exception as e:
             logger.error("加载 OpenAPI 规范失败: %(e)s")
 
