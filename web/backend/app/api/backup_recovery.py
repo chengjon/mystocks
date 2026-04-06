@@ -64,7 +64,7 @@ def log_security_event(
     event_type: str, user: User, action: str, details: Optional[Dict[str, Any]] = None, success: bool = True
 ):
     """记录安全审计日志"""
-    log_data = {
+    {
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "event_type": event_type,
         "user_id": user.id,

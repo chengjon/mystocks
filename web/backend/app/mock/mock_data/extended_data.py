@@ -2,9 +2,8 @@
 
 import logging
 import random
-import time
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +13,6 @@ class MockExtendedDataMixin:
 
     def _generate_watchlist_data(self, user_id: int = 1) -> List[Dict[str, Any]]:
         """生成自选股Mock数据"""
-        import random
         from datetime import datetime
 
         # 模拟自选股数据

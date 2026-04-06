@@ -161,7 +161,7 @@ def _calculate_probability_features(self, series: pd.Series, bins: int = 10) -> 
     try:
         # 创建分位数bins
         quantiles = np.linspace(0, 1, bins + 1)
-        bin_edges = series.quantile(quantiles)
+        series.quantile(quantiles)
 
         # 计算每个值在分布中的概率位置
         ranks = series.rank(pct=True)

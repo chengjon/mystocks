@@ -1,166 +1,224 @@
 """
-测试TDXDataSource适配器
+测试 TDXDataSource 当前兼容入口（tdx_split）。
 """
 
-import sys
-from unittest.mock import MagicMock, patch
+from __future__ import annotations
 
 import pandas as pd
 import pytest
 
-sys.path.insert(0, "/opt/claude/mystocks_spec")
-
 from src.adapters.tdx.tdx_adapter import TdxDataSource
 
 
+class _FakeContextManager:
+    def __init__(self, api):
+        self.api = api
+
+    def __enter__(self):
+        return self.api
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+
+class _FakeQuoteAPI:
+    def __init__(self, connect_result=True, quotes=None):
+        self.connect_result = connect_result
+        self.quotes = quotes or []
+
+    def connect(self, host, port):
+        return self.connect_result
+
+    def get_security_quotes(self, pairs):
+        return self.quotes
+
+
+class _FakeKlineAPI:
+    def __init__(self, connect_result=True, bars=None):
+        self.connect_result = connect_result
+        self.bars = bars or []
+
+    def connect(self, host, port):
+        return self.connect_result
+
+    def get_security_bars(self, category, market, symbol, start_position, batch_size):
+        return self.bars
+
+
 class TestTDXAdapter:
-    """TdxDataSource适配器测试类"""
+    """TDX split 适配器测试。"""
 
     def setup_method(self):
-        """测试前准备"""
-        with patch("adapters.tdx_adapter.TdxHq_API"):
-            self.adapter = TdxDataSource()
+        self.adapter = TdxDataSource(use_server_config=False)
 
     def test_adapter_initialization(self):
         """测试适配器初始化"""
         assert self.adapter is not None
+        assert self.adapter.tdx_host == "101.227.73.20"
+        assert self.adapter.tdx_port == 7709
+        assert self.adapter.max_retries == 3
         assert hasattr(self.adapter, "get_real_time_data")
-        assert hasattr(self.adapter, "get_kline_data")
+        assert hasattr(self.adapter, "get_stock_kline")
 
-    @patch("adapters.tdx_adapter.TdxHq_API")
-    def test_get_real_time_data_success(self, mock_api, sample_realtime_data):
+    def test_get_real_time_data_success(self, monkeypatch):
         """测试获取实时数据成功场景"""
-        # Mock TDX API
-        mock_api_instance = MagicMock()
-        mock_api_instance.get_security_quotes.return_value = [sample_realtime_data]
-        mock_api.return_value = mock_api_instance
+        fake_api = _FakeQuoteAPI(
+            quotes=[
+                {
+                    "name": "平安银行",
+                    "price": 12.34,
+                    "last_close": 12.0,
+                    "open": 12.1,
+                    "high": 12.5,
+                    "low": 12.0,
+                    "vol": 12345,
+                    "amount": 67890.0,
+                    "bid1": 12.33,
+                    "bid_vol1": 100,
+                    "ask1": 12.35,
+                    "ask_vol1": 120,
+                }
+            ]
+        )
+        monkeypatch.setattr(self.adapter, "_retry_api_call", lambda func: func)
+        monkeypatch.setattr(self.adapter, "_get_tdx_connection", lambda: _FakeContextManager(fake_api))
+        monkeypatch.setattr("src.adapters.tdx.tdx_split.realtime_misc.ColumnMapper.to_english", lambda df: df)
 
-        with patch.object(self.adapter, "api", mock_api_instance):
-            # 调用方法
-            result = self.adapter.get_real_time_data("000001")
+        result = self.adapter.get_real_time_data("000001")
 
-            # 验证
-            assert result is not None
-            assert isinstance(result, dict)
+        assert result["code"] == "000001"
+        assert result["name"] == "平安银行"
+        assert result["price"] == 12.34
+        assert result["volume"] == 12345
 
-    @patch("adapters.tdx_adapter.TdxHq_API")
-    def test_get_real_time_data_connection_fail(self, mock_api):
+    def test_get_real_time_data_connection_fail(self, monkeypatch):
         """测试连接失败场景"""
-        # Mock连接失败
-        mock_api_instance = MagicMock()
-        mock_api_instance.get_security_quotes.side_effect = Exception("Connection failed")
-        mock_api.return_value = mock_api_instance
+        fake_api = _FakeQuoteAPI(connect_result=False)
+        monkeypatch.setattr(self.adapter, "_retry_api_call", lambda func: func)
+        monkeypatch.setattr(self.adapter, "_get_tdx_connection", lambda: _FakeContextManager(fake_api))
 
-        with patch.object(self.adapter, "api", mock_api_instance):
-            # 调用方法
-            result = self.adapter.get_real_time_data("000001")
+        result = self.adapter.get_real_time_data("000001")
 
-            # 验证返回None或空结果
-            assert result is None or result == {}
+        assert isinstance(result, str)
+        assert "网络连接失败" in result
 
-    @patch("adapters.tdx_adapter.TdxHq_API")
-    def test_get_kline_data_daily(self, mock_api, sample_stock_data):
+    def test_get_stock_kline_daily(self, monkeypatch):
         """测试获取日K线数据"""
-        # Mock返回数据
-        mock_api_instance = MagicMock()
-        mock_api_instance.get_security_bars.return_value = sample_stock_data.to_dict("records")
-        mock_api.return_value = mock_api_instance
+        fake_api = _FakeKlineAPI(
+            bars=[
+                {
+                    "datetime": "2024-01-01 15:00:00",
+                    "open": 10.0,
+                    "high": 10.5,
+                    "low": 9.8,
+                    "close": 10.2,
+                    "vol": 1000,
+                }
+            ]
+        )
+        monkeypatch.setattr(self.adapter, "_retry_api_call", lambda func: func)
+        monkeypatch.setattr(self.adapter, "_get_tdx_connection", lambda: _FakeContextManager(fake_api))
+        monkeypatch.setattr("src.adapters.tdx.tdx_split.kline_classify.ColumnMapper.to_english", lambda df: df)
+        monkeypatch.setattr("src.adapters.tdx.tdx_split.kline_classify.normalize_date", lambda value: value)
 
-        with patch.object(self.adapter, "api", mock_api_instance):
-            # 调用方法
-            result = self.adapter.get_kline_data("000001", period="daily", count=10)
+        result = self.adapter.get_stock_kline("000001", "2024-01-01", "2024-01-31", period="1d")
 
-            # 验证
-            if result is not None:
-                assert isinstance(result, (pd.DataFrame, list))
+        assert isinstance(result, pd.DataFrame)
+        assert not result.empty
+        assert list(result["close"]) == [10.2]
 
-    @patch("adapters.tdx_adapter.TdxHq_API")
-    def test_get_kline_data_minute(self, mock_api, sample_stock_data):
+    def test_get_stock_kline_minute(self, monkeypatch):
         """测试获取分钟K线数据"""
-        # Mock返回数据
-        mock_api_instance = MagicMock()
-        mock_api_instance.get_security_bars.return_value = sample_stock_data.to_dict("records")
-        mock_api.return_value = mock_api_instance
+        fake_api = _FakeKlineAPI(
+            bars=[
+                {
+                    "datetime": "2024-01-01 09:35:00",
+                    "open": 10.0,
+                    "high": 10.1,
+                    "low": 9.9,
+                    "close": 10.05,
+                    "vol": 500,
+                }
+            ]
+        )
+        monkeypatch.setattr(self.adapter, "_retry_api_call", lambda func: func)
+        monkeypatch.setattr(self.adapter, "_get_tdx_connection", lambda: _FakeContextManager(fake_api))
+        monkeypatch.setattr("src.adapters.tdx.tdx_split.kline_classify.ColumnMapper.to_english", lambda df: df)
+        monkeypatch.setattr("src.adapters.tdx.tdx_split.kline_classify.normalize_date", lambda value: value)
 
-        with patch.object(self.adapter, "api", mock_api_instance):
-            # 调用方法
-            result = self.adapter.get_kline_data("000001", period="5m", count=50)
+        result = self.adapter.get_stock_kline("000001", "2024-01-01", "2024-01-31", period="5m")
 
-            # 验证
-            if result is not None:
-                assert isinstance(result, (pd.DataFrame, list))
+        assert isinstance(result, pd.DataFrame)
+        assert not result.empty
+        assert list(result["close"]) == [10.05]
 
     def test_period_mapping(self):
-        """测试周期映射"""
-        # 测试各种周期参数
-        test_periods = ["1m", "5m", "15m", "30m", "1h", "daily", "1d"]
+        """测试支持的周期映射"""
+        supported_periods = ["1m", "5m", "15m", "30m", "1h", "1d", "1w", "1M", "1q", "1y"]
+        fake_api = _FakeKlineAPI(bars=[])
 
-        for period in test_periods:
-            # 不应该抛出异常
-            try:
-                result = self.adapter.get_kline_data("000001", period=period, count=1)
-                # 允许返回None（如果没有实际连接）
-                assert result is None or isinstance(result, (pd.DataFrame, list))
-            except KeyError:
-                pytest.fail(f"Period {period} not supported")
+        from src.adapters.tdx.tdx_split import kline_classify as kline_module
+
+        original_retry = self.adapter._retry_api_call
+        original_connection = self.adapter._get_tdx_connection
+        original_mapper = kline_module.ColumnMapper.to_english
+        original_normalize = kline_module.normalize_date
+
+        self.adapter._retry_api_call = lambda func: func
+        self.adapter._get_tdx_connection = lambda: _FakeContextManager(fake_api)
+        kline_module.ColumnMapper.to_english = lambda df: df
+        kline_module.normalize_date = lambda value: value
+
+        try:
+            for period in supported_periods:
+                result = self.adapter.get_stock_kline("000001", "2024-01-01", "2024-01-31", period=period)
+                assert isinstance(result, pd.DataFrame)
+        finally:
+            self.adapter._retry_api_call = original_retry
+            self.adapter._get_tdx_connection = original_connection
+            kline_module.ColumnMapper.to_english = original_mapper
+            kline_module.normalize_date = original_normalize
 
     def test_market_detection(self):
         """测试市场检测"""
-        # 测试不同市场的股票代码
-        test_cases = [
-            ("000001", 0),  # 深圳
-            ("600519", 1),  # 上海
-            ("300001", 0),  # 创业板
-            ("688001", 1),  # 科创板
-        ]
-
-        for symbol, expected_market in test_cases:
-            # 适配器应该能正确识别市场
-            # 这里只测试不抛出异常
-            try:
-                result = self.adapter.get_real_time_data(symbol)
-                assert True  # 通过
-            except:
-                pass  # 允许API调用失败
-
-    @patch("adapters.tdx_adapter.TdxHq_API")
-    def test_server_failover(self, mock_api):
-        """测试服务器切换机制"""
-        # Mock第一个服务器失败，第二个成功
-        mock_api_instance = MagicMock()
-        mock_api_instance.connect.side_effect = [False, True]
-        mock_api.return_value = mock_api_instance
-
-        with patch.object(self.adapter, "api", mock_api_instance):
-            # 适配器应该能自动切换服务器
-            # 这里只验证不抛出异常
-            try:
-                self.adapter.get_real_time_data("000001")
-                assert True
-            except:
-                pass
+        assert self.adapter._get_market_code("000001") == 0
+        assert self.adapter._get_market_code("600519") == 1
+        assert self.adapter._get_market_code("300001") == 0
+        assert self.adapter._get_market_code("688001") == 1
 
     def test_invalid_symbol(self):
         """测试无效股票代码"""
         invalid_symbols = [None, "", "INVALID", "abc123"]
 
         for symbol in invalid_symbols:
-            # 应该返回None或抛出特定异常
             result = self.adapter.get_real_time_data(symbol)
-            assert result is None or result == {}
+            assert isinstance(result, str)
+            assert "无效的股票代码格式" in result
 
-    def test_count_parameter_validation(self):
-        """测试count参数验证"""
-        # 测试边界值
-        test_counts = [1, 100, 500, 1000]
+    def test_server_failover(self, monkeypatch):
+        """测试重试装饰器在失败时会重试"""
+        calls = {"count": 0}
 
-        for count in test_counts:
-            try:
-                result = self.adapter.get_kline_data("000001", period="daily", count=count)
-                # 不抛出异常就通过
-                assert True
-            except:
-                pass
+        def flaky():
+            calls["count"] += 1
+            if calls["count"] < 3:
+                raise RuntimeError("temporary failure")
+            return "ok"
+
+        monkeypatch.setattr(self.adapter, "retry_delay", 0)
+
+        wrapped = self.adapter._retry_api_call(flaky)
+        result = wrapped()
+
+        assert result == "ok"
+        assert calls["count"] == 3
+
+    def test_unsupported_period_returns_empty_dataframe(self):
+        """测试不支持的周期返回空DataFrame"""
+        result = self.adapter.get_stock_kline("000001", "2024-01-01", "2024-01-31", period="yearly")
+
+        assert isinstance(result, pd.DataFrame)
+        assert result.empty
 
 
 class TestTDXAdapterIntegration:
@@ -174,10 +232,8 @@ class TestTDXAdapterIntegration:
             adapter = TdxDataSource()
             result = adapter.get_real_time_data("000001")
 
-            if result is not None:
-                assert isinstance(result, dict)
-                # 验证必需字段
-                assert "symbol" in result or "price" in result
+            if result and isinstance(result, dict):
+                assert "code" in result or "price" in result
         except Exception as e:
             pytest.skip(f"TDX connection failed: {str(e)}")
 
@@ -187,11 +243,9 @@ class TestTDXAdapterIntegration:
         """测试真实K线数据获取（可选）"""
         try:
             adapter = TdxDataSource()
-            result = adapter.get_kline_data("000001", period="daily", count=5)
+            result = adapter.get_stock_kline("000001", "2024-01-01", "2024-01-31", period="1d")
 
             if result is not None:
-                assert isinstance(result, (pd.DataFrame, list))
-                if isinstance(result, pd.DataFrame):
-                    assert len(result) > 0
+                assert isinstance(result, pd.DataFrame)
         except Exception as e:
             pytest.skip(f"TDX K-line data failed: {str(e)}")

@@ -140,6 +140,182 @@ def test_build_mongo_connection_uri_constructs_uri_from_standard_env_names(monke
     assert build_mongo_connection_uri() == 'mongodb://root-user:root-pass@mongo-host:27019/admin?authSource=admin'
 
 
+def test_inject_local_docker_auth_into_uri_adds_credentials_for_localhost_uri(monkeypatch: pytest.MonkeyPatch) -> None:
+    from src.utils import mongo_runtime_config
+
+    monkeypatch.setattr(
+        mongo_runtime_config,
+        'read_local_docker_mongo_env',
+        lambda container_name='mystocks-mongodb': {
+            'MONGO_INITDB_ROOT_USERNAME': 'mongo',
+            'MONGO_INITDB_ROOT_PASSWORD': 'secret',
+        },
+    )
+
+    resolved = mongo_runtime_config.inject_local_docker_auth_into_uri('mongodb://localhost:27017/admin?authSource=admin')
+
+    assert resolved == 'mongodb://mongo:secret@localhost:27017/admin?authSource=admin'
+
+
+def test_merge_local_docker_auth_into_connection_kwargs_adds_credentials_for_localhost_kwargs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from src.utils import mongo_runtime_config
+
+    monkeypatch.setattr(
+        mongo_runtime_config,
+        'read_local_docker_mongo_env',
+        lambda container_name='mystocks-mongodb': {
+            'MONGO_INITDB_ROOT_USERNAME': 'mongo',
+            'MONGO_INITDB_ROOT_PASSWORD': 'secret',
+        },
+    )
+
+    resolved = mongo_runtime_config.merge_local_docker_auth_into_connection_kwargs(
+        {
+            'host': '127.0.0.1',
+            'port': 27017,
+            'username': None,
+            'password': None,
+            'authSource': 'admin',
+            'serverSelectionTimeoutMS': 3000,
+        }
+    )
+
+    assert resolved == {
+        'host': '127.0.0.1',
+        'port': 27017,
+        'username': 'mongo',
+        'password': 'secret',
+        'authSource': 'admin',
+        'serverSelectionTimeoutMS': 3000,
+    }
+
+
+def test_build_runtime_mongo_client_prefers_explicit_uri_with_local_injection(monkeypatch: pytest.MonkeyPatch) -> None:
+    from src.utils import mongo_runtime_config
+
+    captured: dict[str, object] = {}
+    monkeypatch.setattr(
+        mongo_runtime_config,
+        'inject_local_docker_auth_into_uri',
+        lambda uri, **_: 'mongodb://mongo:secret@localhost:27017/admin?authSource=admin',
+    )
+    monkeypatch.setattr(
+        mongo_runtime_config,
+        'MongoClient',
+        lambda uri: captured.update({'mongo_uri': uri}) or object(),
+    )
+
+    mongo_runtime_config.build_runtime_mongo_client('mongodb://localhost:27017/admin?authSource=admin')
+
+    assert captured['mongo_uri'] == 'mongodb://mongo:secret@localhost:27017/admin?authSource=admin'
+
+
+def test_build_runtime_mongo_client_uses_env_kwargs_when_uri_missing(monkeypatch: pytest.MonkeyPatch) -> None:
+    from src.utils import mongo_runtime_config
+
+    captured: dict[str, object] = {}
+    monkeypatch.setattr(
+        mongo_runtime_config,
+        'get_mongo_connection_kwargs',
+        lambda **kwargs: {
+            'host': '127.0.0.1',
+            'port': 27017,
+            'username': None,
+            'password': None,
+            'authSource': 'admin',
+            'serverSelectionTimeoutMS': kwargs['server_selection_timeout_ms'],
+        },
+    )
+    monkeypatch.setattr(
+        mongo_runtime_config,
+        'merge_local_docker_auth_into_connection_kwargs',
+        lambda kwargs, **_: {**kwargs, 'username': 'mongo', 'password': 'secret'},
+    )
+    monkeypatch.setattr(
+        mongo_runtime_config,
+        'MongoClient',
+        lambda **kwargs: captured.update({'client_kwargs': kwargs}) or object(),
+    )
+
+    mongo_runtime_config.build_runtime_mongo_client(None)
+
+    assert captured['client_kwargs'] == {
+        'host': '127.0.0.1',
+        'port': 27017,
+        'username': 'mongo',
+        'password': 'secret',
+        'authSource': 'admin',
+        'serverSelectionTimeoutMS': 3000,
+    }
+
+
+def test_get_runtime_mongo_uri_default_prefers_env_uri(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv('MAESTRO_COLLAB_MONGO_URI', 'mongodb://coord-user:coord-pass@mongo-host:27017/admin?authSource=admin')
+
+    from src.utils.mongo_runtime_config import get_runtime_mongo_uri_default
+
+    assert get_runtime_mongo_uri_default('mongodb://localhost:27017') == (
+        'mongodb://coord-user:coord-pass@mongo-host:27017/admin?authSource=admin'
+    )
+
+
+def test_get_runtime_mongo_db_default_prefers_env_db(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv('MAESTRO_COLLAB_MONGO_DB', 'coord_runtime')
+
+    from src.utils.mongo_runtime_config import get_runtime_mongo_db_default
+
+    assert get_runtime_mongo_db_default('mystocks_coord') == 'coord_runtime'
+
+
+def test_get_effective_runtime_mongo_uri_injects_local_docker_auth_when_uri_missing(monkeypatch: pytest.MonkeyPatch) -> None:
+    from src.utils import mongo_runtime_config
+
+    monkeypatch.setattr(
+        mongo_runtime_config,
+        'build_mongo_connection_uri',
+        lambda default_database='admin': 'mongodb://127.0.0.1:27017/admin?authSource=admin',
+    )
+    monkeypatch.setattr(
+        mongo_runtime_config,
+        'inject_local_docker_auth_into_uri',
+        lambda uri, **_: 'mongodb://mongo:secret@127.0.0.1:27017/admin?authSource=admin',
+    )
+
+    assert mongo_runtime_config.get_effective_runtime_mongo_uri(None) == (
+        'mongodb://mongo:secret@127.0.0.1:27017/admin?authSource=admin'
+    )
+
+
+def test_build_project_runtime_mongo_client_loads_dotenv_before_building(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    from src.utils import mongo_runtime_config
+
+    captured: dict[str, object] = {}
+    monkeypatch.setattr(
+        mongo_runtime_config,
+        'load_dotenv',
+        lambda path, override=False: captured.update({'dotenv_path': str(path), 'override': override}),
+    )
+    monkeypatch.setattr(
+        mongo_runtime_config,
+        'build_runtime_mongo_client',
+        lambda mongo_uri, server_selection_timeout_ms=3000: captured.update(
+            {'mongo_uri': mongo_uri, 'timeout': server_selection_timeout_ms}
+        )
+        or object(),
+    )
+
+    mongo_runtime_config.build_project_runtime_mongo_client(tmp_path, None, server_selection_timeout_ms=1234)
+
+    assert captured == {
+        'dotenv_path': str(tmp_path / '.env'),
+        'override': False,
+        'mongo_uri': None,
+        'timeout': 1234,
+    }
+
+
 def test_database_connection_manager_uses_role_aware_redis_kwargs() -> None:
     with patch('dotenv.load_dotenv', return_value=True):
         module = importlib.import_module('src.storage.database.connection_manager')
@@ -194,7 +370,8 @@ def test_redis_manager_uses_role_aware_redis_kwargs() -> None:
 
     spec = importlib.util.spec_from_file_location(module_name, module_path)
     module = importlib.util.module_from_spec(spec)
-    assert spec is not None and spec.loader is not None
+    assert spec is not None
+    assert spec.loader is not None
 
     fake_settings = type(
         'FakeSettings',
@@ -262,7 +439,8 @@ def test_app_container_uses_role_aware_redis_kwargs() -> None:
 
     spec = importlib.util.spec_from_file_location(module_name, module_path)
     module = importlib.util.module_from_spec(spec)
-    assert spec is not None and spec.loader is not None
+    assert spec is not None
+    assert spec.loader is not None
 
     fake_redis_client = MagicMock()
     fake_redis_module = MagicMock()
@@ -336,7 +514,8 @@ def test_initialize_realtime_mtm_uses_role_aware_redis_kwargs() -> None:
 
     spec = importlib.util.spec_from_file_location(module_name, module_path)
     module = importlib.util.module_from_spec(spec)
-    assert spec is not None and spec.loader is not None
+    assert spec is not None
+    assert spec.loader is not None
 
     fake_event_bus = MagicMock()
     fake_redis_event_bus_cls = MagicMock(return_value=fake_event_bus)
@@ -381,7 +560,8 @@ def test_redis_event_bus_defaults_to_monitoring_role_kwargs() -> None:
 
     spec = importlib.util.spec_from_file_location(module_name, module_path)
     module = importlib.util.module_from_spec(spec)
-    assert spec is not None and spec.loader is not None
+    assert spec is not None
+    assert spec.loader is not None
 
     fake_redis_client = MagicMock()
     fake_redis_module = MagicMock(Redis=MagicMock(return_value=fake_redis_client))
@@ -418,7 +598,8 @@ def test_redis_event_bus_preserves_explicit_db_argument() -> None:
 
     spec = importlib.util.spec_from_file_location(module_name, module_path)
     module = importlib.util.module_from_spec(spec)
-    assert spec is not None and spec.loader is not None
+    assert spec is not None
+    assert spec.loader is not None
 
     fake_redis_client = MagicMock()
     fake_redis_module = MagicMock(Redis=MagicMock(return_value=fake_redis_client))

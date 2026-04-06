@@ -229,12 +229,12 @@ class SVMTradingStrategy(MLTradingStrategy):
         防止在极端市场条件下产生错误信号
         """
         try:
-            original_signal_counts = signals_df["signal"].value_counts().to_dict()
+            signals_df["signal"].value_counts().to_dict()
             logger.info("风险控制前信号分布: %(original_signal_counts)s")
 
             # 过滤低置信度信号
             high_confidence_mask = signals_df["confidence"] > self.config.confidence_threshold
-            low_conf_signals = (~high_confidence_mask).sum()
+            (~high_confidence_mask).sum()
             signals_df.loc[~high_confidence_mask, "signal"] = 0
             logger.info("低置信度过滤: %(low_conf_signals)s 个信号被过滤")
 
@@ -262,17 +262,17 @@ class SVMTradingStrategy(MLTradingStrategy):
 
                 # 在超买区不产生买入信号
                 overbought_mask = data["rsi_14"] > 75
-                overbought_buy_signals = (overbought_mask & (signals_df["signal"] == 1)).sum()
+                (overbought_mask & (signals_df["signal"] == 1)).sum()
                 signals_df.loc[overbought_mask & (signals_df["signal"] == 1), "signal"] = 0
                 logger.info("超买区过滤: %(overbought_buy_signals)s 个买入信号被过滤")
 
                 # 在超卖区不产生卖出信号
                 oversold_mask = data["rsi_14"] < 25
-                oversold_sell_signals = (oversold_mask & (signals_df["signal"] == -1)).sum()
+                (oversold_mask & (signals_df["signal"] == -1)).sum()
                 signals_df.loc[oversold_mask & (signals_df["signal"] == -1), "signal"] = 0
                 logger.info("超卖区过滤: %(oversold_sell_signals)s 个卖出信号被过滤")
 
-            final_signal_counts = signals_df["signal"].value_counts().to_dict()
+            signals_df["signal"].value_counts().to_dict()
             logger.info("风险控制后信号分布: %(final_signal_counts)s")
 
             return signals_df

@@ -94,12 +94,12 @@ class PerformanceMiddleware:
 
         # Generate Request ID
         request_id = str(uuid.uuid4())
-        
+
         # Store in scope for other middlewares
         if "state" not in scope:
             scope["state"] = {}
         scope["state"]["request_id"] = request_id
-        
+
         method = scope["method"]
         path = scope["path"]
         endpoint = get_endpoint_name(path)

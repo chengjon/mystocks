@@ -61,7 +61,7 @@ class WatchlistRepositoryImpl(IWatchlistRepository):
         from sqlalchemy import text
 
         config_json = json.dumps(watchlist.config.to_dict())
-        alert_conditions = json.dumps([c.to_dict() for c in watchlist.alert_conditions])
+        json.dumps([c.to_dict() for c in watchlist.alert_conditions])
 
         sql = """
         INSERT OR REPLACE INTO ddd_watchlists
@@ -151,7 +151,7 @@ class WatchlistRepositoryImpl(IWatchlistRepository):
 
         # 安全访问row字段（按索引）
         # 表结构: id, name, watchlist_type, description, config_json, color_tag, created_at, updated_at
-        row_dict = dict(row._mapping) if hasattr(row, "_mapping") else {}
+        dict(row._mapping) if hasattr(row, "_mapping") else {}
 
         return Watchlist(
             id=row[0],

@@ -14,24 +14,10 @@
 """
 
 import logging
-import os
-from datetime import date, datetime
-from typing import List, Optional
+from datetime import datetime
 
-from fastapi import APIRouter, Depends, Query, HTTPException
-from pydantic import BaseModel, Field, ValidationError, field_validator
+from fastapi import APIRouter
 
-from app.core.cache_utils import cache_response  # 导入缓存工具
-from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
-from app.core.exceptions import BusinessException, NotFoundException, ValidationException
-from app.core.responses import create_error_response, create_success_response
-from app.schemas.market_schemas import (
-    ChipRaceResponse,
-    ETFDataResponse,
-    LongHuBangResponse,
-    MessageResponse,
-)
-from app.services.market_data_service import MarketDataService, get_market_data_service
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

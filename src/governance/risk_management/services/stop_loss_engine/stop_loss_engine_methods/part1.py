@@ -70,7 +70,7 @@ class StopLossEngineCoreMixin:
 
             # 计算基础止损距离
             stop_distance = k * atr_value
-            stop_loss_price = entry_price - stop_distance
+            entry_price - stop_distance
 
             # 应用市场波动率调整
             market_adjustment = await self._calculate_market_volatility_adjustment(symbol)

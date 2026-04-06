@@ -4,6 +4,9 @@
 
 from __future__ import annotations
 
+from typing import List
+
+from ..helpers import AnalysisResult, TestCase, TestCategory, TestPriority
 
 class AITestGeneratorCoreTailMixin:
     """AITestGenerator Core 尾部方法集。"""

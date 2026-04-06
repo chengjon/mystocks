@@ -38,7 +38,7 @@ class MarketDataService:
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 code, name, industry, area,
                 list_date, total_share,
                 total_assets, is_st, is_hs
@@ -143,7 +143,7 @@ class MarketDataService:
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 price, change, change_percent,
                 volume, amount, turnover
             FROM stock_quotes

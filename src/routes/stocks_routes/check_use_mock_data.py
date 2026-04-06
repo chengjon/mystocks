@@ -8,7 +8,7 @@ FastAPI路由文件: Stocks
 
 import logging
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Query
 from src.routes.stocks_routes._watchlist_router import router as watchlist_router

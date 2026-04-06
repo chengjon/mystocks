@@ -31,7 +31,7 @@ class TDXAdapter(BaseAdapter):
             self._log_request_start("get_stock_basic", {"stock_code": stock_code})
 
             sql = f"""
-            SELECT 
+            SELECT
                 code as symbol,
                 name as name,
                 industry as industry,
@@ -73,7 +73,7 @@ class TDXAdapter(BaseAdapter):
             )
 
             sql = f"""
-            SELECT 
+            SELECT
                 date as trade_date,
                 open as open,
                 high as high,
@@ -124,7 +124,7 @@ class TDXAdapter(BaseAdapter):
             quotes = []
             for stock_code in stock_codes[:100]:
                 sql = f"""
-                SELECT 
+                SELECT
                     code as symbol,
                     name as name,
                     price as price,
@@ -167,7 +167,7 @@ class TDXAdapter(BaseAdapter):
             self._log_request_start("get_board_data", {"board_type": board_type})
 
             sql = f"""
-            SELECT 
+            SELECT
                 code as symbol,
                 name as name,
                 board_date as board_date,

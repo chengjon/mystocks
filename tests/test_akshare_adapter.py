@@ -191,26 +191,18 @@ class TestAkshareAdapter:
 
         for input_symbol, expected in test_cases:
             # 适配器应该能处理各种格式
-            # 这里只测试不抛出异常
-            try:
-                # 调用某个方法看是否能处理格式
-                result = self.adapter.get_stock_daily(input_symbol, "2024-01-01", "2024-01-10")
-                # 不抛出异常就算通过
-                assert True
-            except:
-                # 允许API调用失败，但不应该是格式问题
-                pass
+            result = self.adapter.get_stock_daily(input_symbol, "2024-01-01", "2024-01-10")
+            assert isinstance(result, pd.DataFrame)
 
     def test_date_format_validation(self):
         """测试日期格式验证"""
         valid_dates = ["2024-01-01", "2023-12-31"]
-        invalid_dates = ["20240101", "2024/01/01", "invalid"]
 
         for date_str in valid_dates:
             # 应该不抛出格式错误
             try:
                 result = self.adapter.get_stock_daily("000001", date_str, date_str)
-                assert True  # 通过
+                assert isinstance(result, pd.DataFrame)
             except ValueError:
                 pytest.fail(f"Valid date {date_str} raised ValueError")
 

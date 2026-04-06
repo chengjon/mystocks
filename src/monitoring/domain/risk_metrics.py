@@ -129,7 +129,7 @@ class AdvancedRiskCalculator:
 
     def _calculate_single(self, input_data: RiskMetricsInput) -> RiskMetricsOutput:
         """计算单个股票的风险指标"""
-        df = input_data.to_dataframe()
+        input_data.to_dataframe()
         closes = np.array(input_data.close_prices)
 
         if len(closes) < self.config.min_data_points:

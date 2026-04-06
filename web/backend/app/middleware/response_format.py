@@ -16,25 +16,15 @@
 - 自动转换旧的响应格式
 """
 
-import json
 import logging
 import time
 import uuid
-from typing import Any, Callable, Dict
+from typing import Callable
 
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from app.core.responses import (
-    BusinessCode,
-    ErrorCodes,
-    ErrorDetail,
-    ResponseMessages,
-    UnifiedResponse,
-    create_unified_error_response,
-    create_validation_error_response,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +54,7 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         # 获取由 PerformanceMiddleware 生成的请求ID
         request_id = getattr(request.state, "request_id", str(uuid.uuid4()))
-        
+
         # 记录开始时间（微秒级精确度）
         start_time = time.perf_counter()
 
@@ -74,7 +64,7 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
 
         try:
             response = await call_next(request)
-            
+
             # 计算处理时间（毫秒）
             process_time = (time.perf_counter() - start_time) * 1000
 

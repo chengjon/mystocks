@@ -13,7 +13,6 @@ import warnings
 
 from src.advanced_analysis import BaseAnalyzer
 from src.advanced_analysis._fundamental_analyzer_mixin import FundamentalAnalyzerMixin
-from src.advanced_analysis.fundamental_models import FinancialRatios, FundamentalScore, ValuationMetrics
 
 try:
     pass

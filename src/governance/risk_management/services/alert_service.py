@@ -254,11 +254,11 @@ class RiskAlertService(IRiskAlertService):
             for alert in alerts:
                 try:
                     # 转换为通知格式
-                    notification_level = self._map_alert_severity_to_notification_level(alert.severity)
+                    self._map_alert_severity_to_notification_level(alert.severity)
 
                     # 构建通知消息
-                    title = self._generate_notification_title(alert)
-                    message = self._generate_notification_message(alert)
+                    self._generate_notification_title(alert)
+                    self._generate_notification_message(alert)
 
                     # 发送通知
                     success = await self.notification_manager.send_signal_notification(

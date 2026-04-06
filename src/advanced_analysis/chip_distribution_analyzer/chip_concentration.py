@@ -17,12 +17,6 @@ from src.advanced_analysis.chip_distribution_analyzer._generate_chip_recommendat
     _create_error_result,
     _generate_chip_recommendations,
 )
-from src.advanced_analysis.chip_distribution_analyzer.chip_models import (
-    ChipConcentration,
-    ChipFlowDynamics,
-    CostAreaAnalysis,
-    WinningProbability,
-)
 
 
 class ChipDistributionAnalyzer(ChipDistributionAnalyzerMixin, BaseAnalyzer):

@@ -223,7 +223,7 @@ class TransformerTradingStrategy(MLTradingStrategy):
 
                     total_loss += loss.item()
 
-                avg_loss = total_loss / len(dataloader)
+                total_loss / len(dataloader)
                 if epoch % 5 == 0:
                     logger.info("Epoch {epoch + 1}/{self.epochs}, Loss: %(avg_loss)s")
 

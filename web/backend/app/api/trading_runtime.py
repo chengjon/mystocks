@@ -22,7 +22,9 @@ router = APIRouter(tags=["trading-runtime"])
 
 
 class AddStrategyRequest(BaseModel):
-    strategy_name: str = Field(..., min_length=1, max_length=100)
+    """向运行时会话添加策略实例的请求。"""
+
+    strategy_name: str = Field(..., min_length=1, max_length=100, description="待加入运行时会话的策略名称。")
 
 
 def _success_response_spec(description: str, message: str, data: Any) -> dict[int, dict[str, Any]]:

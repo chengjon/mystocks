@@ -10,7 +10,6 @@ import time
 import asyncio
 from contextlib import asynccontextmanager
 
-import structlog
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
@@ -376,7 +375,6 @@ app.add_middleware(PerformanceMiddleware)
 
 # 配置统一响应格式中间件 (API标准化)
 # 负责自动包装 UnifiedResponse
-from .middleware.response_format import ResponseFormatMiddleware
 app.add_middleware(ResponseFormatMiddleware)
 
 # Phase Security: 配置速率限制中间件 (防止暴力破解)

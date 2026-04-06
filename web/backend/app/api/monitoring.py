@@ -8,7 +8,7 @@ from datetime import date, datetime
 from typing import List, Optional
 
 from fastapi import APIRouter, Body, Depends, Path, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.core.exceptions import BusinessException, NotFoundException
 from app.core.responses import UnifiedResponse, create_unified_success_response
@@ -660,11 +660,11 @@ async def delete_alert_rule(
 class AlertRecordsResponse(BaseModel):
     """告警记录列表响应"""
 
-    success: bool = True
-    data: List[AlertRecordResponse]
-    total: int
-    limit: int
-    offset: int
+    success: bool = Field(True, description="查询是否成功。")
+    data: List[AlertRecordResponse] = Field(..., description="告警记录列表。")
+    total: int = Field(..., description="符合筛选条件的告警总数。")
+    limit: int = Field(..., description="当前请求返回上限。")
+    offset: int = Field(..., description="当前分页偏移量。")
 
 
 @router.get("/alerts", response_model=AlertRecordsResponse)
@@ -1129,8 +1129,8 @@ async def get_today_statistics(current_user: User = Depends(get_current_user)):
 class MonitoringControlRequest(BaseModel):
     """监控控制请求"""
 
-    symbols: Optional[List[str]] = None
-    interval: int = 60  # 更新间隔(秒)
+    symbols: Optional[List[str]] = Field(None, description="需要纳入监控的股票代码列表；为空表示使用默认监控池。")
+    interval: int = Field(60, description="监控轮询间隔，单位秒。")
 
 
 @router.post(

@@ -10,11 +10,8 @@ import pandas as pd
 from src.advanced_analysis import AnalysisResult, AnalysisType
 from src.advanced_analysis.sentiment_analyzer._sentiment_score_tail import SentimentAnalyzerTailMixin
 from src.advanced_analysis.sentiment_analyzer.sentiment_models import (
-    MarketSentimentImpact,
-    SentimentAlert,
     SentimentKeywords,
     SentimentScore,
-    SentimentSource,
 )
 
 logger = logging.getLogger(__name__)
@@ -221,13 +218,10 @@ class SentimentAnalyzerMixin(SentimentAnalyzerTailMixin):
 
         if sentiment > 0.2:
             words = positive_words * 3 + neutral_words
-            tone = "positive"
         elif sentiment < -0.2:
             words = negative_words * 3 + neutral_words
-            tone = "negative"
         else:
             words = neutral_words * 2 + positive_words + negative_words
-            tone = "neutral"
 
         # 随机选择词汇组成句子
         selected_words = np.random.choice(words, size=np.random.randint(5, 15), replace=True)

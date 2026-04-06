@@ -360,7 +360,7 @@ class SinaFinanceWebSocketAdapter(BaseWebSocketAdapter):
                 return False
 
             # 构造订阅消息
-            message = {
+            {
                 "type": action,
                 "symbols": symbols,
                 "timestamp": datetime.now().isoformat(),

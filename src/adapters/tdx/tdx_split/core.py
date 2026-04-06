@@ -7,7 +7,6 @@ from functools import wraps
 from typing import Optional
 
 import pandas as pd
-from src.utils.column_mapper import ColumnMapper
 from src.utils.tdx_server_config import TdxServerConfig
 
 try:

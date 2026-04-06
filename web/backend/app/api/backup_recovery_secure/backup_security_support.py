@@ -36,7 +36,7 @@ def log_security_event(
     success: bool = True,
 ) -> None:
     """记录安全审计日志。"""
-    log_data = {
+    {
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "event_type": event_type,
         "user_id": user.id,

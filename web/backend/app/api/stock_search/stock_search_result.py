@@ -30,7 +30,7 @@ from app.api.stock_search.openapi_metadata import (
     STOCK_QUOTE_RESPONSES,
     STOCK_SEARCH_RESPONSES,
 )
-from app.api.stock_search.stock_search_schemas import NewsItem, SearchRequest, StockQuote, StockSearchResult
+from app.api.stock_search.stock_search_schemas import NewsItem, StockQuote, StockSearchResult
 from app.api.stock_search.stock_search_support import (
     check_admin_privileges,
     check_search_rate_limit,

@@ -136,21 +136,21 @@ class ChipRaceRequest(BaseModel):
 class ChipRaceResponse(BaseModel):
     """竞价抢筹响应"""
 
-    id: int
-    symbol: str
-    name: str
-    trade_date: date
+    id: int = Field(description="竞价抢筹记录ID")
+    symbol: str = Field(description="股票代码")
+    name: str = Field(description="股票名称")
+    trade_date: date = Field(description="交易日期")
     race_type: str = Field(description="抢筹类型: open/end")
-    latest_price: float
+    latest_price: float = Field(description="最新成交价")
     change_percent: float = Field(description="涨跌幅(%)")
-    prev_close: float
-    open_price: float
+    prev_close: float = Field(description="前收盘价")
+    open_price: float = Field(description="开盘价")
     race_amount: float = Field(description="抢筹金额(元)")
     race_amplitude: float = Field(description="抢筹幅度(%)")
     race_commission: float = Field(description="抢筹委托金额")
     race_transaction: float = Field(description="抢筹成交金额")
     race_ratio: float = Field(description="抢筹占比(%)")
-    created_at: Optional[datetime] = None
+    created_at: Optional[datetime] = Field(None, description="记录创建时间")
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -171,10 +171,10 @@ class LongHuBangRequest(BaseModel):
 class LongHuBangResponse(BaseModel):
     """龙虎榜响应"""
 
-    id: int
-    symbol: str
-    name: str
-    trade_date: date
+    id: int = Field(description="龙虎榜记录ID")
+    symbol: str = Field(description="股票代码")
+    name: str = Field(description="股票名称")
+    trade_date: date = Field(description="上榜交易日期")
     reason: Optional[str] = Field(description="上榜原因")
     buy_amount: float = Field(description="买入总额(元)")
     sell_amount: float = Field(description="卖出总额(元)")
@@ -182,7 +182,7 @@ class LongHuBangResponse(BaseModel):
     turnover_rate: float = Field(description="换手率(%)")
     institution_buy: Optional[float] = Field(description="机构买入额")
     institution_sell: Optional[float] = Field(description="机构卖出额")
-    created_at: Optional[datetime] = None
+    created_at: Optional[datetime] = Field(None, description="记录创建时间")
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -202,9 +202,9 @@ class PaginatedResponse(BaseModel):
 class MessageResponse(BaseModel):
     """通用消息响应"""
 
-    success: bool
-    message: str
-    data: Optional[dict] = None
+    success: bool = Field(description="操作是否成功")
+    message: str = Field(description="操作结果说明")
+    data: Optional[dict] = Field(None, description="附加返回数据")
 
 
 # ==================== 市场概览 (Market Overview) ====================

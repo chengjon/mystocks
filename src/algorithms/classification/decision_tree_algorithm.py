@@ -227,7 +227,6 @@ class DecisionTreeAlgorithm(GPUAcceleratedAlgorithm):
             self.is_trained = True
             self.update_metadata(last_trained=pd.Timestamp.now())
 
-            algorithm_name = "Random Forest" if use_random_forest else "Decision Tree"
             logger.info("%(algorithm_name)s training completed - Accuracy: %(accuracy)s")
             return training_result
 

@@ -494,7 +494,7 @@ async def list_watchlists(
     获取用户的所有监控清单
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import StockToAdd, get_postgres_async
+        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
 
         postgres_async = get_postgres_async()
 

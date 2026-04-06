@@ -46,7 +46,7 @@ class TransactionCleaner:
         logger.info("Purge invalid data: %(purge_invalid_data)s")
 
         # 1. 检查并处理僵尸事务
-        zombie_count = self.check_zombie_transactions()
+        self.check_zombie_transactions()
         logger.info("Processed %(zombie_count)s zombie transactions")
 
         # 2. 清理无效数据（可选）
@@ -66,7 +66,7 @@ class TransactionCleaner:
             int: 处理的事务数量
         """
         # 定义超时阈值 (10分钟前)
-        timeout_threshold = datetime.now() - timedelta(minutes=10)
+        datetime.now() - timedelta(minutes=10)
 
         try:
             # 使用PostgreSQLDataAccess查询超时事务
@@ -202,7 +202,6 @@ class TransactionCleaner:
                 "market_data.tick_data",
             ]
 
-            total_deleted = 0
 
             for table in tables_to_check:
                 try:

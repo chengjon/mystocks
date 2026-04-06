@@ -128,12 +128,12 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
     async def calculate_technical_indicator(self, symbol: str, indicator_type: IndicatorType, period: int = 20) -> IndicatorData:
         """
         计算技术指标
-        
+
         Args:
             symbol: 股票代码
             indicator_type: 指标类型
             period: 周期
-        
+
         Returns:
             IndicatorData: 指标数据
         """
@@ -342,7 +342,7 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 high_price, low_price, close_price
             FROM stock_daily
             WHERE code = '{symbol}'
@@ -471,10 +471,10 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
     async def get_fundamental_data(self, symbol: str) -> FundamentalData:
         """
         获取基本面数据
-        
+
         Args:
             symbol: 股票代码
-        
+
         Returns:
             FundamentalData: 基本面数据
         """
@@ -484,7 +484,7 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 symbol, name, industry,
                 market_cap, pe_ratio, pb_ratio, ps_ratio, roe,
                 revenue_growth, profit_growth
@@ -522,10 +522,10 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
     async def run_comprehensive_analysis(self, symbol: str) -> AnalysisResult:
         """
         运行综合分析
-        
+
         Args:
             symbol: 股票代码
-        
+
         Returns:
             AnalysisResult: 综合分析结果
         """

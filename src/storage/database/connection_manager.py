@@ -239,7 +239,6 @@ class DatabaseConnectionManager:
         try:
             pool = self.get_postgresql_connection()
             conn = pool.getconn()
-            conn.close()
             pool.putconn(conn)
             results["postgresql"] = True
         except Exception as e:

@@ -129,7 +129,7 @@ class SignalMonitoringContext:
         if not update_strategy_health:
             return
 
-        total_signals = sum(self.signals_generated.values())
+        sum(self.signals_generated.values())
 
         health_status = 1 if len(self.errors) == 0 else 0
         update_strategy_health(self.strategy_id, health_status)
@@ -281,7 +281,6 @@ def record_signal_result(
         execution_time_ms: 执行时间（毫秒，可选）
     """
     if update_signal_success_rate:
-        status = "success" if executed else "failed"
 
         if executed:
             update_signal_success_rate(strategy_id, "BUY", 100.0 if profit_loss and profit_loss > 0 else 80.0)

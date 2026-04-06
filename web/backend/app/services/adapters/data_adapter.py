@@ -4,7 +4,7 @@
 
 import time
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from app.core.database import db_service
 from app.services.data_quality_monitor import get_data_quality_monitor

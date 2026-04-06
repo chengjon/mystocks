@@ -13,7 +13,7 @@
 """
 
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -89,7 +89,7 @@ async def health_check(
         try:
             from src.gpu.core.hardware_abstraction import GPUResourceManager
 
-            gpu_manager = GPUResourceManager()
+            GPUResourceManager()
             gpu_available = True
         except ImportError:
             gpu_available = False

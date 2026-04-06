@@ -20,15 +20,12 @@ class TestDatabaseManagerPureMock:
 
     def test_import_only(self):
         """测试仅能导入类和枚举"""
-        try:
-            from src.storage.database.database_manager import DatabaseTableManager
+        from src.storage.database.database_manager import DatabaseTableManager
 
-            assert DatabaseTableManager is not None
-            assert DatabaseType is not None
-            assert hasattr(DatabaseType, "POSTGRESQL")
-            assert hasattr(DatabaseType, "TDENGINE")
-        except ImportError:
-            pytest.skip("DatabaseTableManager not available")
+        assert DatabaseTableManager is not None
+        assert DatabaseType is not None
+        assert hasattr(DatabaseType, "POSTGRESQL")
+        assert hasattr(DatabaseType, "TDENGINE")
 
     def test_database_type_enum_values(self):
         """测试DatabaseType枚举值"""
@@ -36,134 +33,143 @@ class TestDatabaseManagerPureMock:
         assert DatabaseType.TDENGINE is not None
         assert DatabaseType.REDIS is not None
 
-    @patch("src.storage.database.database_manager.create_engine")
-    @patch("src.storage.database.database_manager.Base.metadata")
-    @patch("src.storage.database.database_manager.sessionmaker")
-    @patch("src.storage.database.database_manager.os.getenv")
-    @patch("src.storage.database.database_manager.load_dotenv")
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.get_redis_db_for_role")
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.os.getenv")
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.sessionmaker")
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.Base.metadata.create_all")
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.create_engine")
     def test_manager_attributes_mock(
         self,
-        mock_load_dotenv,
-        mock_getenv,
-        mock_sessionmaker,
-        mock_metadata,
         mock_create_engine,
+        mock_create_all,
+        mock_sessionmaker,
+        mock_getenv,
+        mock_get_redis_db_for_role,
     ):
         """测试管理器属性设置（完全模拟）"""
-        # Mock所有外部依赖
         mock_engine = Mock()
         mock_create_engine.return_value = mock_engine
         mock_session = Mock()
-        mock_sessionmaker.return_value = mock_session
+        mock_session_factory = Mock(return_value=mock_session)
+        mock_sessionmaker.return_value = mock_session_factory
+        mock_get_redis_db_for_role.return_value = 9
 
-        # 设置环境变量返回值
         def getenv_side_effect(key, default=None):
             env_vars = {
                 "TDENGINE_HOST": "localhost",
+                "TDENGINE_USER": "root",
+                "TDENGINE_PASSWORD": "taosdata",
                 "POSTGRESQL_HOST": "localhost",
+                "POSTGRESQL_USER": "postgres",
+                "POSTGRESQL_PASSWORD": "postgres",
                 "REDIS_HOST": "localhost",
             }
             return env_vars.get(key, default)
 
         mock_getenv.side_effect = getenv_side_effect
 
-        try:
-            from src.storage.database.database_manager import DatabaseTableManager
+        from src.storage.database.database_manager import DatabaseTableManager
 
-            manager = DatabaseTableManager()
+        manager = DatabaseTableManager()
 
-            # 验证属性存在
-            assert hasattr(manager, "monitor_engine")
-            assert hasattr(manager, "monitor_session")
-            assert hasattr(manager, "db_configs")
-            assert hasattr(manager, "db_connections")
-            assert hasattr(manager, "connection_pool")
+        assert manager.monitor_engine is mock_engine
+        assert manager.monitor_session is mock_session
+        assert hasattr(manager, "db_configs")
+        assert hasattr(manager, "db_connections")
+        assert DatabaseType.TDENGINE in manager.db_configs
+        assert DatabaseType.POSTGRESQL in manager.db_configs
+        assert DatabaseType.REDIS in manager.db_configs
+        assert isinstance(manager.db_connections, dict)
 
-            # 验证配置结构
-            assert DatabaseType.TDENGINE in manager.db_configs
-            assert DatabaseType.POSTGRESQL in manager.db_configs
-            assert isinstance(manager.db_connections, dict)
-
-        except Exception as e:
-            # 如果由于环境问题导致失败，我们跳过测试
-            pytest.skip(f"DatabaseTableManager initialization failed: {e}")
-
-    @patch("src.storage.database.database_manager.create_engine")
-    @patch("src.storage.database.database_manager.Base.metadata")
-    @patch("src.storage.database.database_manager.sessionmaker")
-    @patch("src.storage.database.database_manager.os.getenv")
-    @patch("src.storage.database.database_manager.load_dotenv")
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.get_redis_db_for_role")
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.os.getenv")
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.sessionmaker")
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.Base.metadata.create_all")
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.create_engine")
     def test_db_configs_structure_mock(
         self,
-        mock_load_dotenv,
-        mock_getenv,
-        mock_sessionmaker,
-        mock_metadata,
         mock_create_engine,
+        mock_create_all,
+        mock_sessionmaker,
+        mock_getenv,
+        mock_get_redis_db_for_role,
     ):
         """测试数据库配置结构"""
         mock_engine = Mock()
         mock_create_engine.return_value = mock_engine
         mock_session = Mock()
-        mock_sessionmaker.return_value = mock_session
+        mock_sessionmaker.return_value = Mock(return_value=mock_session)
+        mock_get_redis_db_for_role.return_value = 3
 
         def getenv_side_effect(key, default=None):
-            return f"mock_{key.lower()}"
+            env_vars = {
+                "TDENGINE_HOST": "mock_tdengine_host",
+                "TDENGINE_USER": "mock_tdengine_user",
+                "TDENGINE_PASSWORD": "mock_tdengine_password",
+                "POSTGRESQL_HOST": "mock_postgresql_host",
+                "POSTGRESQL_USER": "mock_postgresql_user",
+                "POSTGRESQL_PASSWORD": "mock_postgresql_password",
+                "REDIS_HOST": "mock_redis_host",
+            }
+            return env_vars.get(key, default)
 
         mock_getenv.side_effect = getenv_side_effect
 
-        try:
-            from src.storage.database.database_manager import DatabaseTableManager
+        from src.storage.database.database_manager import DatabaseTableManager
 
-            manager = DatabaseTableManager()
+        manager = DatabaseTableManager()
 
-            # 验证配置结构
-            postgresql_config = manager.db_configs[DatabaseType.POSTGRESQL]
-            assert "host" in postgresql_config
-            assert "user" in postgresql_config
-            assert "password" in postgresql_config
-            assert "port" in postgresql_config
+        postgresql_config = manager.db_configs[DatabaseType.POSTGRESQL]
+        assert postgresql_config["host"] == "mock_postgresql_host"
+        assert postgresql_config["user"] == "mock_postgresql_user"
+        assert postgresql_config["password"] == "mock_postgresql_password"
+        assert postgresql_config["port"] == 5432
 
-            tdengine_config = manager.db_configs[DatabaseType.TDENGINE]
-            assert "host" in tdengine_config
-            assert "user" in tdengine_config
-            assert "password" in tdengine_config
-            assert "port" in tdengine_config
+        tdengine_config = manager.db_configs[DatabaseType.TDENGINE]
+        assert tdengine_config["host"] == "mock_tdengine_host"
+        assert tdengine_config["user"] == "mock_tdengine_user"
+        assert tdengine_config["password"] == "mock_tdengine_password"
+        assert tdengine_config["port"] == 6041
 
-        except Exception as e:
-            pytest.skip(f"DatabaseTableManager initialization failed: {e}")
-
-    @patch("src.storage.database.database_manager.create_engine")
-    @patch("src.storage.database.database_manager.Base.metadata")
-    @patch("src.storage.database.database_manager.sessionmaker")
-    @patch("src.storage.database.database_manager.os.getenv")
-    @patch("src.storage.database_manager.load_dotenv")
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.get_redis_db_for_role")
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.os.getenv")
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.sessionmaker")
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.Base.metadata.create_all")
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.create_engine")
     def test_connections_dict_initialization(
         self,
-        mock_load_dotenv,
-        mock_getenv,
-        mock_sessionmaker,
-        mock_metadata,
         mock_create_engine,
+        mock_create_all,
+        mock_sessionmaker,
+        mock_getenv,
+        mock_get_redis_db_for_role,
     ):
         """测试连接字典初始化"""
         mock_engine = Mock()
         mock_create_engine.return_value = mock_engine
         mock_session = Mock()
-        mock_sessionmaker.return_value = mock_session
-        mock_getenv.return_value = "mock_value"
+        mock_sessionmaker.return_value = Mock(return_value=mock_session)
+        mock_get_redis_db_for_role.return_value = 1
+        mock_getenv.side_effect = lambda key, default=None: {
+            "TDENGINE_HOST": "mock_tdengine_host",
+            "TDENGINE_USER": "mock_tdengine_user",
+            "TDENGINE_PASSWORD": "mock_tdengine_password",
+            "TDENGINE_PORT": "6041",
+            "POSTGRESQL_HOST": "mock_postgresql_host",
+            "POSTGRESQL_USER": "mock_postgresql_user",
+            "POSTGRESQL_PASSWORD": "mock_postgresql_password",
+            "POSTGRESQL_PORT": "5432",
+            "REDIS_HOST": "mock_redis_host",
+            "REDIS_PORT": "6379",
+            "REDIS_PASSWORD": "mock_redis_password",
+        }.get(key, default)
 
-        try:
-            from src.storage.database.database_manager import DatabaseTableManager
+        from src.storage.database.database_manager import DatabaseTableManager
 
-            manager = DatabaseTableManager()
+        manager = DatabaseTableManager()
 
-            # 连接字典应该初始化为空字典
-            assert isinstance(manager.db_connections, dict)
-            assert len(manager.db_connections) == 0
-
-        except Exception as e:
-            pytest.skip(f"DatabaseTableManager initialization failed: {e}")
+        assert isinstance(manager.db_connections, dict)
+        assert len(manager.db_connections) == 0
 
     def test_database_type_constant_values(self):
         """测试数据库类型常量值"""
@@ -182,21 +188,40 @@ class TestDatabaseManagerPureMock:
         assert DatabaseType.POSTGRESQL != DatabaseType.TDENGINE
         assert DatabaseType.REDIS != DatabaseType.POSTGRESQL
 
-    @patch("src.storage.database.database_manager.create_engine")
-    def test_mock_dependencies_called(self, mock_create_engine):
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.get_redis_db_for_role")
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.os.getenv")
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.sessionmaker")
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.Base.metadata.create_all")
+    @patch("src.storage.database.database_manager.database_table_manager_methods.part1.create_engine")
+    def test_mock_dependencies_called(
+        self,
+        mock_create_engine,
+        mock_create_all,
+        mock_sessionmaker,
+        mock_getenv,
+        mock_get_redis_db_for_role,
+    ):
         """测试模拟依赖是否被调用"""
         mock_create_engine.return_value = Mock()
-        mock_create_engine.return_value.cursor.return_value = Mock()
+        mock_sessionmaker.return_value = Mock(return_value=Mock())
+        mock_get_redis_db_for_role.return_value = 2
+        mock_getenv.side_effect = lambda key, default=None: {
+            "TDENGINE_HOST": "mock_tdengine_host",
+            "TDENGINE_USER": "mock_tdengine_user",
+            "TDENGINE_PASSWORD": "mock_tdengine_password",
+            "TDENGINE_PORT": "6041",
+            "POSTGRESQL_HOST": "mock_postgresql_host",
+            "POSTGRESQL_USER": "mock_postgresql_user",
+            "POSTGRESQL_PASSWORD": "mock_postgresql_password",
+            "POSTGRESQL_PORT": "5432",
+            "REDIS_HOST": "mock_redis_host",
+            "REDIS_PORT": "6379",
+            "REDIS_PASSWORD": "mock_redis_password",
+        }.get(key, default)
+        from src.storage.database.database_manager import DatabaseTableManager
 
-        try:
-            from src.storage.database.database_manager import DatabaseTableManager
-
-            DatabaseTableManager()
-            # mock_create_engine应该被调用用于创建监控引擎
-            mock_create_engine.assert_called()
-
-        except Exception as e:
-            pytest.skip(f"DatabaseTableManager initialization failed: {e}")
+        DatabaseTableManager()
+        mock_create_engine.assert_called()
 
 
 class TestDatabaseManagerMethodsMock:

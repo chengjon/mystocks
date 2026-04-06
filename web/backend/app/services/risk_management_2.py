@@ -190,7 +190,7 @@ class RiskManagementExtended(RiskBase):
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 var_95, var_99, sharpe_ratio,
                 max_drawdown, beta, volatility
             FROM portfolio_risk_metrics
@@ -547,7 +547,7 @@ class RiskManagementExtended(RiskBase):
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 portfolio_id,
                 COUNT(*) as event_count,
                 COUNT(*) as active_alerts,

@@ -213,7 +213,7 @@ class TestDatabaseHelper:
         assert len(params) == 3
         assert "John" in params
         assert 25 in params
-        assert True in params
+        assert any(value is True for value in params)
 
     def test_build_where_clause_string_values(self):
         """测试字符串值处理"""
@@ -249,7 +249,7 @@ class TestDatabaseHelper:
 
         assert "active" in where_clause
         assert "deleted" in where_clause
-        assert True in params
+        assert any(value is True for value in params)
         assert False in params
 
     def test_build_where_clause_none_values(self):

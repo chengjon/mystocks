@@ -42,7 +42,7 @@ async def websocket_risk_updates(websocket: WebSocket, topics: str = "portfolio_
     await connection_manager.connect(websocket, topic_list)
     try:
         while True:
-            data = await websocket.receive_text()
+            await websocket.receive_text()
             # Handle messages...
     except WebSocketDisconnect:
         connection_manager.disconnect(websocket)

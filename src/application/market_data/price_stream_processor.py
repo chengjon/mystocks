@@ -154,7 +154,7 @@ class PriceStreamProcessor:
             portfolio_id: 投资组合ID
         """
         if portfolio_id in self._portfolio_symbols:
-            symbols = self._portfolio_symbols.pop(portfolio_id)
+            self._portfolio_symbols.pop(portfolio_id)
             logger.info("✅ Unregistered portfolio %(portfolio_id)s with {len(symbols)} symbols")
 
     def _on_price_update(self, update: PriceUpdate) -> None:

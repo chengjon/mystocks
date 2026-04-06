@@ -93,7 +93,7 @@ class SmartRouter:
         # 计算每个数据源的综合评分
         scored_endpoints = []
         for endpoint in endpoints:
-            endpoint_name = endpoint.get("endpoint_name") or endpoint.get("name", "unknown")
+            endpoint.get("endpoint_name") or endpoint.get("name", "unknown")
 
             score = self._calculate_score(
                 endpoint,
@@ -201,7 +201,7 @@ class SmartRouter:
         Returns:
             成本评分 (0-100)
         """
-        source_type = endpoint.get("source_type", "")
+        endpoint.get("source_type", "")
         cost_info = endpoint.get("cost", {})
 
         base_score = 50.0

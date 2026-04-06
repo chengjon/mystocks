@@ -2,9 +2,8 @@
 
 import logging
 import random
-import time
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +24,6 @@ class MockTechnicalDataMixin:
         Returns:
             资金流向数据
         """
-        import random
-        from datetime import datetime
 
         # 解析时间维度
         timeframe_days = {"1": 1, "3": 3, "5": 5, "10": 10}.get(timeframe, 1)

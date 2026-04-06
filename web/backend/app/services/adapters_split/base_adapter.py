@@ -33,10 +33,10 @@ class BaseAdapter(ABC):
     def get_stock_basic(self, stock_code: str) -> Optional[Dict]:
         """
         获取股票基本信息
-        
+
         Args:
             stock_code: 股票代码
-        
+
         Returns:
             Dict: 股票基本信息，失败返回None
         """
@@ -46,12 +46,12 @@ class BaseAdapter(ABC):
     def get_stock_daily(self, stock_code: str, start_date: str, end_date: str) -> Optional[List[Dict]]:
         """
         获取股票日线数据
-        
+
         Args:
             stock_code: 股票代码
             start_date: 开始日期 (YYYY-MM-DD)
             end_date: 结束日期 (YYYY-MM-DD)
-        
+
         Returns:
             List[Dict]: 日线数据列表，失败返回空列表
         """
@@ -61,10 +61,10 @@ class BaseAdapter(ABC):
     def get_realtime_quotes(self, stock_codes: List[str]) -> Optional[List[Dict]]:
         """
         获取实时行情
-        
+
         Args:
             stock_codes: 股票代码列表
-        
+
         Returns:
             List[Dict]: 实时行情数据列表，失败返回空列表
         """
@@ -74,7 +74,7 @@ class BaseAdapter(ABC):
     def check_health(self) -> HealthStatus:
         """
         检查数据源健康状态
-        
+
         Returns:
             HealthStatus: 健康状态
         """
@@ -127,7 +127,7 @@ class BaseAdapter(ABC):
                 self._log_request_error('get_stock_basic', Exception('未返回数据'))
 
             end_time = datetime.now()
-            duration = (end_time - start_time).total_seconds()
+            (end_time - start_time).total_seconds()
 
             return result
         except Exception as e:
@@ -155,7 +155,7 @@ class BaseAdapter(ABC):
                 self._log_request_error('get_stock_daily', Exception('未返回数据'))
 
             end_time = datetime.now()
-            duration = (end_time - start_time).total_seconds()
+            (end_time - start_time).total_seconds()
 
             return result
         except Exception as e:
@@ -179,7 +179,7 @@ class BaseAdapter(ABC):
                 self._log_request_error('get_realtime_quotes', Exception('未返回数据'))
 
             end_time = datetime.now()
-            duration = (end_time - start_time).total_seconds()
+            (end_time - start_time).total_seconds()
 
             return result
         except Exception as e:
@@ -199,7 +199,7 @@ class BaseAdapter(ABC):
             self._log_request_success('check_health', result)
 
             end_time = datetime.now()
-            duration = (end_time - start_time).total_seconds()
+            (end_time - start_time).total_seconds()
 
             return result
         except Exception as e:

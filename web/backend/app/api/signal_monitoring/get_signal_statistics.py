@@ -10,19 +10,18 @@ Signal Monitoring API Endpoints
 """
 
 import logging
-from datetime import date, datetime, timedelta
+from datetime import datetime
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel
 
 from app.core.security import User, get_current_user
-from .signal_history_response import (
+from .signal_history_response_schemas import (
     ActiveSignalsResponse,
+    ActiveSignalItem,
     SignalStatisticsResponse,
     StrategyDetailedHealthResponse,
 )
-from .signal_history_response_schemas import ActiveSignalItem
 
 logger = logging.getLogger(__name__)
 

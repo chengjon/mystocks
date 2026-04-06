@@ -6,6 +6,8 @@ MyStocks AI辅助测试工具
 集成AST分析和项目上下文感知
 """
 
+from __future__ import annotations
+
 import ast
 import asyncio
 import hashlib
@@ -17,6 +19,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
 import pytest
+
+from ..helpers import AnalysisResult, TestCase, TestCategory, TestPriority
 
 
 class AITestGeneratorCreatePatternSpecificMixin:
@@ -123,227 +127,111 @@ class AITestGeneratorCreatePatternSpecificMixin:
 
     def _generate_basic_test_case(self, analysis: AnalysisResult) -> str:
         """生成基础测试用例"""
-        return f"""
-def test_{analysis.method_name}_basic():
-    # 基本功能测试
-    # TODO: 实现具体的测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "basic", "基本功能测试")
 
     def _generate_parameter_validation_test(self, analysis: AnalysisResult) -> str:
         """生成参数验证测试"""
-        return f"""
-def test_{analysis.method_name}_parameter_validation():
-    # 参数验证测试
-    # TODO: 实现参数验证逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "parameter_validation", "参数验证测试")
 
     def _generate_return_validation_test(self, analysis: AnalysisResult) -> str:
         """生成返回值验证测试"""
-        return f"""
-def test_{analysis.method_name}_return_validation():
-    # 返回值验证测试
-    # TODO: 实现返回值验证逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "return_validation", "返回值验证测试")
 
     def _generate_boundary_test_case(self, analysis: AnalysisResult) -> str:
         """生成边界测试用例"""
-        return f"""
-def test_{analysis.method_name}_boundary():
-    # 边界条件测试
-    # TODO: 实现边界条件测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "boundary", "边界条件测试")
 
     def _generate_extreme_values_test(self, analysis: AnalysisResult) -> str:
         """生成极值测试"""
-        return f"""
-def test_{analysis.method_name}_extreme_values():
-    # 极值测试
-    # TODO: 实现极值测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "extreme_values", "极值测试")
 
     def _generate_null_values_test(self, analysis: AnalysisResult) -> str:
         """生成空值测试"""
-        return f"""
-def test_{analysis.method_name}_null_values():
-    # 空值测试
-    # TODO: 实现空值测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "null_values", "空值测试")
 
     def _generate_exception_test_case(self, analysis: AnalysisResult) -> str:
         """生成异常测试用例"""
-        return f"""
-def test_{analysis.method_name}_exceptions():
-    # 异常处理测试
-    # TODO: 实现异常处理测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "exceptions", "异常处理测试")
 
     def _generate_error_propagation_test(self, analysis: AnalysisResult) -> str:
         """生成错误传播测试"""
-        return f"""
-def test_{analysis.method_name}_error_propagation():
-    # 错误传播测试
-    # TODO: 实现错误传播测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "error_propagation", "错误传播测试")
 
     def _generate_resource_cleanup_test(self, analysis: AnalysisResult) -> str:
         """生成资源清理测试"""
-        return f"""
-def test_{analysis.method_name}_resource_cleanup():
-    # 资源清理测试
-    # TODO: 实现资源清理测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "resource_cleanup", "资源清理测试")
 
     def _generate_input_validation_test(self, analysis: AnalysisResult) -> str:
         """生成输入验证测试"""
-        return f"""
-def test_{analysis.method_name}_input_validation():
-    # 输入验证测试
-    # TODO: 实现输入验证测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "input_validation", "输入验证测试")
 
     def _generate_type_validation_test(self, analysis: AnalysisResult) -> str:
         """生成类型验证测试"""
-        return f"""
-def test_{analysis.method_name}_type_validation():
-    # 类型验证测试
-    # TODO: 实现类型验证测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "type_validation", "类型验证测试")
 
     def _generate_format_validation_test(self, analysis: AnalysisResult) -> str:
         """生成格式验证测试"""
-        return f"""
-def test_{analysis.method_name}_format_validation():
-    # 格式验证测试
-    # TODO: 实现格式验证测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "format_validation", "格式验证测试")
 
     def _generate_sql_injection_test(self, analysis: AnalysisResult) -> str:
         """生成SQL注入测试"""
-        return f"""
-def test_{analysis.method_name}_sql_injection():
-    # SQL注入防护测试
-    # TODO: 实现SQL注入防护测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "sql_injection", "SQL注入防护测试")
 
     def _generate_xss_test(self, analysis: AnalysisResult) -> str:
         """生成XSS测试"""
-        return f"""
-def test_{analysis.method_name}_xss_protection():
-    # XSS防护测试
-    # TODO: 实现XSS防护测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "xss_protection", "XSS防护测试")
 
     def _generate_csrf_test(self, analysis: AnalysisResult) -> str:
         """生成CSRF测试"""
-        return f"""
-def test_{analysis.method_name}_csrf_protection():
-    # CSRF防护测试
-    # TODO: 实现CSRF防护测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "csrf_protection", "CSRF防护测试")
 
     def _generate_authorization_test(self, analysis: AnalysisResult) -> str:
         """生成权限验证测试"""
-        return f"""
-def test_{analysis.method_name}_authorization():
-    # 权限验证测试
-    # TODO: 实现权限验证测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "authorization", "权限验证测试")
 
     def _generate_performance_test(self, analysis: AnalysisResult) -> str:
         """生成性能测试"""
-        return f"""
-def test_{analysis.method_name}_performance():
-    # 性能基准测试
-    # TODO: 实现性能基准测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "performance", "性能基准测试")
 
     def _generate_memory_usage_test(self, analysis: AnalysisResult) -> str:
         """生成内存使用测试"""
-        return f"""
-def test_{analysis.method_name}_memory_usage():
-    # 内存使用测试
-    # TODO: 实现内存使用测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "memory_usage", "内存使用测试")
 
     def _generate_concurrency_test(self, analysis: AnalysisResult) -> str:
         """生成并发测试"""
-        return f"""
-def test_{analysis.method_name}_concurrency():
-    # 并发测试
-    # TODO: 实现并发测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "concurrency", "并发测试")
 
     def _generate_timeout_test(self, analysis: AnalysisResult) -> str:
         """生成超时测试"""
-        return f"""
-def test_{analysis.method_name}_timeout():
-    # 超时测试
-    # TODO: 实现超时测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(analysis.method_name, "timeout", "超时测试")
 
     def _generate_recursive_test(self, method_name: str) -> str:
         """生成递归测试"""
-        return f"""
-def test_{method_name}_recursive():
-    # 递归函数测试
-    # TODO: 实现递归测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(method_name, "recursive", "递归函数测试")
 
     def _generate_callback_test(self, method_name: str) -> str:
         """生成回调测试"""
-        return f"""
-def test_{method_name}_callback():
-    # 回调函数测试
-    # TODO: 实现回调测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(method_name, "callback", "回调函数测试")
 
     def _generate_async_test(self, method_name: str) -> str:
         """生成异步测试"""
-        return f"""
-def test_{method_name}_async():
-    # 异步函数测试
-    # TODO: 实现异步测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(method_name, "async", "异步函数测试")
 
     def _generate_state_management_test(self, method_name: str) -> str:
         """生成状态管理测试"""
-        return f"""
-def test_{method_name}_state_management():
-    # 状态管理测试
-    # TODO: 实现状态管理测试逻辑
-    assert True  # 占位符，需要实现具体测试
-"""
+        return self._generate_callable_smoke_test(method_name, "state_management", "状态管理测试")
 
     def _generate_transaction_test(self, method_name: str) -> str:
         """生成事务测试"""
+        return self._generate_callable_smoke_test(method_name, "transaction", "事务测试")
+
+    def _generate_callable_smoke_test(self, method_name: str, suffix: str, description: str) -> str:
+        """生成可运行的 smoke 测试模板。"""
         return f"""
-def test_{method_name}_transaction():
-    # 事务测试
-    # TODO: 实现事务测试逻辑
-    assert True  # 占位符，需要实现具体测试
+def test_{method_name}_{suffix}():
+    # {description}
+    target = globals().get("{method_name}")
+    assert callable(target), "Expected {method_name} to be importable and callable in the generated test namespace"
 """
 
     def _is_recursive_function(self, method_name: str) -> bool:
@@ -735,4 +623,3 @@ def test_{method_name}_parameter_validation():
                 base_score += 10
 
         return min(base_score, 100) / 100.0
-

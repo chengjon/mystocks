@@ -648,7 +648,7 @@ class AlertNotificationManager:
             logger.error("Failed to retrieve notification history: %s", e)
             return []
 
-from src.monitoring._alert_notifier_singleton import get_notification_manager, send_test_notification
+from src.monitoring._alert_notifier_singleton import get_notification_manager
 
 
 if __name__ == "__main__":

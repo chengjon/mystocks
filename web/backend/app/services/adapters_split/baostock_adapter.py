@@ -29,7 +29,7 @@ class BaostockAdapter(BaseAdapter):
             self._log_request_start("get_stock_basic", {"stock_code": stock_code})
 
             sql = f"""
-                SELECT 
+                SELECT
                     code as symbol,
                     name as name,
                     industry as industry,
@@ -82,7 +82,7 @@ class BaostockAdapter(BaseAdapter):
             )
 
             sql = f"""
-                SELECT 
+                SELECT
                     trade_date,
                     open, high, low, close, volume, amount, adj_factor
                 FROM baostock_daily
@@ -129,7 +129,7 @@ class BaostockAdapter(BaseAdapter):
             quotes = []
             for stock_code in stock_codes[:50]:
                 sql = f"""
-                    SELECT 
+                    SELECT
                         code as symbol,
                         name as name,
                         price as price,
@@ -174,7 +174,7 @@ class BaostockAdapter(BaseAdapter):
             self._log_request_start("get_dividend_data", {"stock_code": stock_code, "year": year})
 
             sql = f"""
-                SELECT 
+                SELECT
                     div_date as div_date,
                     div_ratio as div_ratio,
                     div_yield as div_yield,

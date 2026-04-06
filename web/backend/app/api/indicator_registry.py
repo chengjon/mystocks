@@ -55,6 +55,8 @@ class IndicatorInfo(BaseModel):
 
 
 class CalculationRequest(BaseModel):
+    """指标批量计算请求。"""
+
     indicator_id: str = Field(..., description="指标唯一标识，例如 sma 或 ema。")
     data: List[Dict[str, Any]] = Field(..., description="用于批量计算的 OHLCV 行数据列表。")
     parameters: Optional[Dict[str, Any]] = Field(default_factory=dict, description="覆盖默认配置的可选参数。")

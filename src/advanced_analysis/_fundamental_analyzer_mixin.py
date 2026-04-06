@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Tuple
+from typing import Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -44,8 +44,8 @@ class FundamentalAnalyzerMixin(FundamentalAnalyzerTailMixin):
             AnalysisResult: 分析结果
         """
         periods = kwargs.get("periods", 4)
-        include_valuation = kwargs.get("include_valuation", True)
-        include_comparison = kwargs.get("include_comparison", True)
+        kwargs.get("include_valuation", True)
+        kwargs.get("include_comparison", True)
 
         try:
             # 获取财务数据
@@ -125,7 +125,7 @@ class FundamentalAnalyzerMixin(FundamentalAnalyzerTailMixin):
         try:
             from src.data_sources.factory import get_timeseries_source
 
-            timeseries_source = get_timeseries_source(source_type="mock")
+            get_timeseries_source(source_type="mock")
             # TODO: 实现从timeseries_source获取财务数据的逻辑
             return pd.DataFrame()
 

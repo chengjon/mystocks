@@ -1,16 +1,11 @@
-import asyncio
-import json
 import os
 import sys
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Set
+from typing import Dict
 
 import numpy as np
 import pandas as pd
 import structlog
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
-from app.core.exceptions import BusinessException, NotFoundException, ValidationException
 
 logger = structlog.get_logger(__name__)
 
@@ -18,9 +13,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from src.core import DataClassification
 from src.monitoring.monitoring_database import MonitoringDatabase
-from unified_manager import MyStocksUnifiedManager
 
 try:
     from src.ml_strategy.automation.notification_manager import (
@@ -172,16 +165,3 @@ def get_monitoring_db():
             monitoring_db = MonitoringFallback()
     return monitoring_db
 
-
-from app.schemas.risk_schemas import (
-    BetaRequest,
-    BetaResult,
-    NotificationTestRequest,
-    NotificationTestResponse,
-    RiskAlertCreate,
-    RiskAlertResponse,
-    RiskAlertUpdate,
-    RiskDashboardResponse,
-    VaRCVaRRequest,
-    VaRCVaRResult,
-)

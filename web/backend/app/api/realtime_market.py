@@ -350,7 +350,7 @@ async def websocket_market(websocket: WebSocket, client_id: str = Query(default=
                 if symbol and price is not None:
                     parsed = parser.parse({"symbol": symbol, "price": price}, "websocket")
                     if parsed:
-                        updates = mtm_engine.update_price(symbol, parsed.price)
+                        mtm_engine.update_price(symbol, parsed.price)
                         await manager.send_personal_message(
                             {
                                 "action": "quote_update",
@@ -482,7 +482,7 @@ async def get_realtime_quote(symbol: str = Path(..., description="待查询的�
     通过 akshare 或其他数据源获取实时行情
     """
     try:
-        parser = get_market_data_parser()
+        get_market_data_parser()
 
         try:
             import akshare as ak

@@ -13,6 +13,7 @@ AI优化建议数量: 2
 """
 
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -54,18 +55,20 @@ class TestNewFeatureModule:
 
     def test_basic_functionality(self):
         """测试基础功能"""
-        # TODO: 实现基础功能测试
-        assert True  # 占位符
+        adapter = NewMarketDataAdapter()
+        assert isinstance(adapter, NewMarketDataAdapter)
 
     def test_error_handling(self):
         """测试错误处理"""
-        # TODO: 实现错误处理测试
-        assert True  # 占位符
+        with pytest.raises(ValueError, match="Simulated risky operation failure"):
+            NewMarketDataAdapter().risky_operation()
 
     def test_performance(self):
         """测试性能"""
-        # TODO: 实现性能测试
-        assert True  # 占位符
+        start_time = time.time()
+        for _ in range(1000):
+            NewMarketDataAdapter()
+        assert time.time() - start_time < 1.0
 
     # AI生成的优化测试
 

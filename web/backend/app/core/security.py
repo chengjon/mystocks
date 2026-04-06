@@ -10,7 +10,7 @@ import bcrypt
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.core.config import settings
 
@@ -40,11 +40,11 @@ class TokenData(BaseModel):
 class User(BaseModel):
     """用户模型"""
 
-    id: Optional[int] = None
-    username: str
-    email: Optional[str] = None
-    role: str = "user"  # user, admin
-    is_active: bool = True
+    id: Optional[int] = Field(None, description="用户ID。")
+    username: str = Field(..., description="用户名。")
+    email: Optional[str] = Field(None, description="用户邮箱。")
+    role: str = Field("user", description="用户角色，例如 user 或 admin。")
+    is_active: bool = Field(True, description="用户是否处于激活状态。")
 
 
 class UserInDB(User):

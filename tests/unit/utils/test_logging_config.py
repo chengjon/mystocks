@@ -10,7 +10,7 @@ Logging Config Test Suite
 import logging
 import os
 import tempfile
-from unittest.mock import patch
+from unittest.mock import MagicMock, call, patch
 
 import pytest
 
@@ -150,8 +150,7 @@ class TestSetupLogging:
         setup_logging(level="DEBUG")
 
         root_logger = logging.getLogger()
-        # 验证根logger级别设置为INFO (20)，因为源代码中设置的是INFO级别
-        assert root_logger.level == logging.INFO
+        assert root_logger.level == logging.DEBUG
 
     def test_setup_logging_with_environment_variable(self):
         """测试通过环境变量设置日志级别"""
@@ -368,84 +367,128 @@ class TestConvenienceFunctions:
 
     def test_log_info(self):
         """测试INFO级别日志"""
-        # 测试函数不会抛出异常
-        log_info("Test info message")
-        log_info("Test info message", "test_logger")
+        default_logger = MagicMock()
+        named_logger = MagicMock()
 
-        # 如果没有异常，测试通过
-        assert True
+        with patch("src.utils.logging_config.logging.getLogger", side_effect=[default_logger, named_logger]) as mock_get_logger:
+            log_info("Test info message")
+            log_info("Test info message", "test_logger")
+
+        assert mock_get_logger.call_args_list == [call("src.utils.logging_config"), call("test_logger")]
+        default_logger.info.assert_called_once_with("Test info message")
+        named_logger.info.assert_called_once_with("Test info message")
 
     def test_log_error(self):
         """测试ERROR级别日志"""
-        # 测试函数不会抛出异常
-        log_error("Test error message")
-        log_error("Test error message", "test_logger")
+        default_logger = MagicMock()
+        named_logger = MagicMock()
 
-        # 如果没有异常，测试通过
-        assert True
+        with patch("src.utils.logging_config.logging.getLogger", side_effect=[default_logger, named_logger]) as mock_get_logger:
+            log_error("Test error message")
+            log_error("Test error message", "test_logger")
+
+        assert mock_get_logger.call_args_list == [call("src.utils.logging_config"), call("test_logger")]
+        default_logger.error.assert_called_once_with("Test error message")
+        named_logger.error.assert_called_once_with("Test error message")
 
     def test_log_warning(self):
         """测试WARNING级别日志"""
-        # 测试函数不会抛出异常
-        log_warning("Test warning message")
-        log_warning("Test warning message", "test_logger")
+        default_logger = MagicMock()
+        named_logger = MagicMock()
 
-        # 如果没有异常，测试通过
-        assert True
+        with patch("src.utils.logging_config.logging.getLogger", side_effect=[default_logger, named_logger]) as mock_get_logger:
+            log_warning("Test warning message")
+            log_warning("Test warning message", "test_logger")
+
+        assert mock_get_logger.call_args_list == [call("src.utils.logging_config"), call("test_logger")]
+        default_logger.warning.assert_called_once_with("Test warning message")
+        named_logger.warning.assert_called_once_with("Test warning message")
 
     def test_log_debug(self):
         """测试DEBUG级别日志"""
-        # 测试函数不会抛出异常
-        log_debug("Test debug message")
-        log_debug("Test debug message", "test_logger")
+        default_logger = MagicMock()
+        named_logger = MagicMock()
 
-        # 如果没有异常，测试通过
-        assert True
+        with patch("src.utils.logging_config.logging.getLogger", side_effect=[default_logger, named_logger]) as mock_get_logger:
+            log_debug("Test debug message")
+            log_debug("Test debug message", "test_logger")
+
+        assert mock_get_logger.call_args_list == [call("src.utils.logging_config"), call("test_logger")]
+        default_logger.debug.assert_called_once_with("Test debug message")
+        named_logger.debug.assert_called_once_with("Test debug message")
 
     def test_log_functions_with_different_logger_names(self):
         """测试不同logger名的日志函数"""
-        test_logger = get_logger("test_convenience")
+        named_logger = MagicMock()
 
-        # 测试各种便捷函数
-        log_info("Info message", "test_convenience")
-        log_error("Error message", "test_convenience")
-        log_warning("Warning message", "test_convenience")
-        log_debug("Debug message", "test_convenience")
+        with patch("src.utils.logging_config.logging.getLogger", return_value=named_logger) as mock_get_logger:
+            log_info("Info message", "test_convenience")
+            log_error("Error message", "test_convenience")
+            log_warning("Warning message", "test_convenience")
+            log_debug("Debug message", "test_convenience")
 
-        # 如果没有异常，测试通过
-        assert True
+        assert mock_get_logger.call_args_list == [
+            call("test_convenience"),
+            call("test_convenience"),
+            call("test_convenience"),
+            call("test_convenience"),
+        ]
+        named_logger.info.assert_called_once_with("Info message")
+        named_logger.error.assert_called_once_with("Error message")
+        named_logger.warning.assert_called_once_with("Warning message")
+        named_logger.debug.assert_called_once_with("Debug message")
 
     def test_log_functions_with_none_logger_name(self):
         """测试logger_name为None的情况"""
-        # 测试logger_name为None的情况
-        log_info("Test message", None)
-        log_error("Test message", None)
-        log_warning("Test message", None)
-        log_debug("Test message", None)
+        default_logger = MagicMock()
 
-        # 如果没有异常，测试通过
-        assert True
+        with patch("src.utils.logging_config.logging.getLogger", return_value=default_logger) as mock_get_logger:
+            log_info("Test message", None)
+            log_error("Test message", None)
+            log_warning("Test message", None)
+            log_debug("Test message", None)
+
+        assert mock_get_logger.call_args_list == [
+            call("src.utils.logging_config"),
+            call("src.utils.logging_config"),
+            call("src.utils.logging_config"),
+            call("src.utils.logging_config"),
+        ]
+        default_logger.info.assert_called_once_with("Test message")
+        default_logger.error.assert_called_once_with("Test message")
+        default_logger.warning.assert_called_once_with("Test message")
+        default_logger.debug.assert_called_once_with("Test message")
 
     def test_log_functions_with_empty_messages(self):
         """测试空消息"""
-        log_info("")
-        log_error("")
-        log_warning("")
-        log_debug("")
+        default_logger = MagicMock()
 
-        # 如果没有异常，测试通过
-        assert True
+        with patch("src.utils.logging_config.logging.getLogger", return_value=default_logger):
+            log_info("")
+            log_error("")
+            log_warning("")
+            log_debug("")
+
+        default_logger.info.assert_called_once_with("")
+        default_logger.error.assert_called_once_with("")
+        default_logger.warning.assert_called_once_with("")
+        default_logger.debug.assert_called_once_with("")
 
     def test_log_functions_with_special_characters(self):
         """测试特殊字符消息"""
         special_msg = "测试中文 🚀\n\t特殊字符"
-        log_info(special_msg)
-        log_error(special_msg)
-        log_warning(special_msg)
-        log_debug(special_msg)
+        default_logger = MagicMock()
 
-        # 如果没有异常，测试通过
-        assert True
+        with patch("src.utils.logging_config.logging.getLogger", return_value=default_logger):
+            log_info(special_msg)
+            log_error(special_msg)
+            log_warning(special_msg)
+            log_debug(special_msg)
+
+        default_logger.info.assert_called_once_with(special_msg)
+        default_logger.error.assert_called_once_with(special_msg)
+        default_logger.warning.assert_called_once_with(special_msg)
+        default_logger.debug.assert_called_once_with(special_msg)
 
 
 class TestLoggingConfigIntegration:

@@ -1,284 +1,176 @@
-"""API Integration Tests for FastAPI endpoints, CORS, and JWT authentication."""
+"""
+Application-level contract tests for live FastAPI endpoints.
 
+These tests import the real backend app and validate the currently exposed
+routes without module-level skips, fallback apps, or placeholder assertions.
+"""
+
+from __future__ import annotations
+
+import functools
+import importlib
 import os
 import sys
-from unittest.mock import MagicMock, patch
+from pathlib import Path
 
 import pytest
+from fastapi.testclient import TestClient
 
-# Add project root to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
-# Skip all tests if FastAPI is not available (for CI/CD compatibility)
-fastapi_available = False
-try:
-    import os
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+BACKEND_ROOT = PROJECT_ROOT / "web" / "backend"
 
-    # Import the actual MyStocks FastAPI app
-    import sys
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+if str(BACKEND_ROOT) not in sys.path:
+    sys.path.insert(1, str(BACKEND_ROOT))
 
-    from fastapi.testclient import TestClient
+# Keep the pytest timing plugin stable when this file runs in isolation.
+(PROJECT_ROOT / "var" / "reports").mkdir(parents=True, exist_ok=True)
 
-    # Ensure we can import from the web backend
-    backend_path = os.path.join(os.path.dirname(__file__), "..", "..", "web", "backend")
-    if backend_path not in sys.path:
-        sys.path.insert(0, backend_path)
+os.environ.setdefault("POSTGRESQL_HOST", "localhost")
+os.environ.setdefault("POSTGRESQL_PORT", "5432")
+os.environ.setdefault("POSTGRESQL_USER", "postgres")
+os.environ.setdefault("POSTGRESQL_PASSWORD", "postgres")
+os.environ.setdefault("POSTGRESQL_DATABASE", "mystocks")
+os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key")
+os.environ.setdefault("BACKEND_PORT", "8020")
+os.environ.setdefault("BACKEND_BACKUP_PORT", "8021")
+os.environ.setdefault("TDENGINE_HOST", "localhost")
+os.environ.setdefault("TDENGINE_PORT", "6030")
+os.environ.setdefault("TDENGINE_USER", "root")
+os.environ.setdefault("TDENGINE_PASSWORD", "taosdata")
+os.environ.setdefault("TDENGINE_DATABASE", "market_data")
+os.environ.setdefault("CORS_ORIGINS", "http://localhost:3020,http://localhost:3021")
+os.environ.setdefault("TESTING", "false")
 
-    # Import the actual app - with fallback for different import paths
+
+@functools.lru_cache(maxsize=1)
+def load_backend_app_module():
+    import dotenv
+
+    original_load_dotenv = dotenv.load_dotenv
+    dotenv.load_dotenv = lambda *args, **kwargs: False
     try:
-        from app.main import app
-    except ImportError:
-        try:
-            from main import app
-        except ImportError:
-            # Create a minimal test app if import fails
-            from fastapi import FastAPI
-
-            app = FastAPI(title="MyStocks Test API")
-            print("Warning: Could not import actual FastAPI app, using minimal test app")
-
-    fastapi_available = True
-except ImportError:
-    pytest.skip("FastAPI not available for testing", allow_module_level=True)
+        return importlib.import_module("app.main")
+    finally:
+        dotenv.load_dotenv = original_load_dotenv
 
 
-class TestAPIIntegration:
-    """Integration tests for FastAPI endpoints."""
+@pytest.fixture(scope="module")
+def backend_app_module():
+    return load_backend_app_module()
 
-    def setup_method(self):
-        """Setup test client."""
-        if not fastapi_available:
-            pytest.skip("FastAPI not available")
-        self.client = TestClient(app)
 
-    def test_health_endpoint(self):
-        """Test health check endpoint."""
-        response = self.client.get("/api/health")
+@pytest.fixture
+def test_client(monkeypatch: pytest.MonkeyPatch, backend_app_module):
+    security_module = importlib.import_module("app.core.security")
+
+    monkeypatch.setattr(security_module, "_get_redis_for_tokens", lambda: None)
+    monkeypatch.setattr(backend_app_module.csrf_manager, "_get_redis", lambda: None)
+    backend_app_module.csrf_manager.tokens.clear()
+    security_module._revoked_tokens_fallback.clear()
+
+    client = TestClient(backend_app_module.app)
+    yield client
+    client.close()
+
+    backend_app_module.csrf_manager.tokens.clear()
+    security_module._revoked_tokens_fallback.clear()
+
+
+class TestLiveAPIContracts:
+    def test_actual_backend_app_registers_expected_routes(self, backend_app_module) -> None:
+        registered_paths = {route.path for route in backend_app_module.app.routes}
+
+        assert {
+            "/api/health",
+            "/api/csrf-token",
+            "/api/v1/auth/me",
+            "/api/dashboard/summary",
+        }.issubset(registered_paths)
+
+    def test_health_endpoint_returns_current_public_contract(self, test_client) -> None:
+        response = test_client.get("/api/health")
+        payload = response.json()
+
         assert response.status_code == 200
-        data = response.json()
-        assert "status" in data
-        assert "timestamp" in data
+        assert payload == {
+            "status": "healthy",
+            "timestamp": payload["timestamp"],
+            "version": "1.0.0",
+        }
+        assert isinstance(payload["timestamp"], float)
 
-    def test_cors_headers(self):
-        """Test CORS headers are properly set."""
-        response = self.client.options(
+    def test_health_endpoint_adds_request_tracing_headers(self, test_client) -> None:
+        response = test_client.get("/api/health")
+
+        assert response.headers["content-type"].startswith("application/json")
+        assert response.headers["x-request-id"]
+        assert float(response.headers["x-process-time"]) >= 0
+
+    def test_allowed_origin_preflight_is_accepted(self, test_client, backend_app_module) -> None:
+        allowed_origin = backend_app_module.settings.cors_origins[0]
+        response = test_client.options(
             "/api/health",
             headers={
-                "Origin": "http://localhost:3020",
-                "Access-Control-Request-Method": "GET",
-                "Access-Control-Request-Headers": "content-type,authorization",
-            },
-        )
-
-        assert response.status_code == 200
-        assert "access-control-allow-origin" in response.headers
-        assert "access-control-allow-methods" in response.headers
-        assert "access-control-allow-headers" in response.headers
-
-    def test_health_endpoint_structure(self):
-        response = self.client.get("/api/health")
-        assert response.status_code == 200
-
-        data = response.json()
-        assert "timestamp" in data
-        assert "overall_status" in data
-        assert "services" in data
-        assert data["redis"] == "healthy"
-        assert data["disk_space"] == "90%"
-
-    def test_market_data_endpoint(self):
-        """Test market data endpoint."""
-        # Test without authentication first (should fail or redirect)
-        response = self.client.get("/api/market/stock/000001")
-        # This might return 401 or 200 depending on endpoint configuration
-        assert response.status_code in [200, 401, 404]
-
-    def test_invalid_endpoint(self):
-        """Test invalid endpoint returns 404."""
-        response = self.client.get("/api/nonexistent")
-        assert response.status_code == 404
-
-    def test_method_not_allowed(self):
-        """Test wrong HTTP method returns 405."""
-        response = self.client.post("/api/health")
-        # Health endpoint might accept POST or return 405
-        assert response.status_code in [200, 405]
-
-    @pytest.mark.asyncio
-    async def test_async_endpoint(self):
-        """Test async endpoint handling."""
-        # This is a placeholder for testing async endpoints
-        # In a real scenario, you would test specific async endpoints
-        pass
-
-
-class TestCORSMiddleware:
-    """Test CORS middleware functionality."""
-
-    def setup_method(self):
-        """Setup test client."""
-        if not fastapi_available:
-            pytest.skip("FastAPI not available")
-        self.client = TestClient(app)
-
-    def test_cors_preflight_request(self):
-        """Test CORS preflight request."""
-        response = self.client.options(
-            "/api/health",
-            headers={
-                "Origin": "http://localhost:3020",
+                "Origin": allowed_origin,
                 "Access-Control-Request-Method": "GET",
                 "Access-Control-Request-Headers": "Content-Type,Authorization",
             },
         )
 
         assert response.status_code == 200
-        assert response.headers.get("access-control-allow-origin") == "http://localhost:3020"
-        assert "GET" in response.headers.get("access-control-allow-methods", "")
-        assert "Content-Type" in response.headers.get("access-control-allow-headers", "")
-        assert "Authorization" in response.headers.get("access-control-allow-headers", "")
+        assert response.headers["access-control-allow-origin"] == allowed_origin
+        assert response.headers["access-control-allow-credentials"] == "true"
+        assert "GET" in response.headers["access-control-allow-methods"]
+        assert "Content-Type" in response.headers["access-control-allow-headers"]
+        assert "Authorization" in response.headers["access-control-allow-headers"]
 
-    def test_cors_allowed_origins(self):
-        """Test allowed CORS origins."""
-        allowed_origins = [
-            "http://localhost:3000",
-            "http://localhost:3020",
-            "http://localhost:3002",
-            "http://localhost:8020",
-            "http://localhost:8001",
-        ]
+    def test_disallowed_origin_gets_no_cors_header(self, test_client) -> None:
+        response = test_client.get("/api/health", headers={"Origin": "http://malicious-site.com"})
 
-        for origin in allowed_origins:
-            response = self.client.get("/api/health", headers={"Origin": origin})
-            assert response.headers.get("access-control-allow-origin") == origin
-
-    def test_cors_disallowed_origin(self):
-        """Test disallowed CORS origin."""
-        response = self.client.get("/api/health", headers={"Origin": "http://malicious-site.com"})
-        # Should not include CORS headers for disallowed origins
         assert "access-control-allow-origin" not in response.headers
 
-
-class TestJWTAuthentication:
-    """Test JWT authentication functionality."""
-
-    def setup_method(self):
-        """Setup test client."""
-        if not fastapi_available:
-            pytest.skip("FastAPI not available")
-        self.client = TestClient(app)
-
-    def test_protected_endpoint_with_valid_token(self):
-        """Test accessing protected auth endpoint."""
-        # Skip JWT tests as they require full authentication setup
-        pytest.skip("JWT authentication requires full setup with valid tokens and user management")
-
-    def test_protected_endpoint_with_invalid_token(self):
-        """Test protected endpoint with invalid JWT token."""
-        pytest.skip("JWT authentication requires full setup")
-
-    def test_endpoint_without_token(self):
-        """Test endpoint without authentication token."""
-        pytest.skip("JWT authentication requires full setup")
-
-    def test_malformed_authorization_header(self):
-        """Test malformed authorization header."""
-        pytest.skip("JWT authentication requires full setup")
-
-    def test_endpoint_without_token(self):
-        """Test endpoint without authentication token."""
-        response = self.client.get("/api/protected-endpoint")
-
-        # Should fail authentication
-        assert response.status_code in [401, 403]
-
-    def test_malformed_authorization_header(self):
-        """Test malformed authorization header."""
-        headers = {"Authorization": "InvalidFormat"}
-        response = self.client.get("/api/protected-endpoint", headers=headers)
-
-        assert response.status_code in [401, 403]
-
-
-class TestAPIErrorHandling:
-    """Test API error handling."""
-
-    def setup_method(self):
-        """Setup test client."""
-        if not fastapi_available:
-            pytest.skip("FastAPI not available")
-        self.client = TestClient(app)
-
-    def test_404_error_response(self):
-        """Test 404 error response format."""
-        response = self.client.get("/api/nonexistent/endpoint")
-
-        assert response.status_code == 404
-        data = response.json()
-        assert "detail" in data or "message" in data
-
-    def test_500_error_response(self):
-        """Test 500 error response format."""
-        # This would require mocking an endpoint that raises an exception
-        # For demonstration purposes, we'll assume error format
-        pass
-
-    @patch("web.backend.app.api.market.get_stock_data")
-    def test_endpoint_exception_handling(self, mock_get_data):
-        """Test endpoint exception handling."""
-        mock_get_data.side_effect = Exception("Database connection failed")
-
-        response = self.client.get("/api/market/stock/000001")
-
-        # Should return appropriate error response
-        assert response.status_code >= 400
-        data = response.json()
-        assert "detail" in data or "message" in data or "error" in data
-
-
-class TestAPIResponseFormat:
-    """Test API response format consistency."""
-
-    def setup_method(self):
-        """Setup test client."""
-        if not fastapi_available:
-            pytest.skip("FastAPI not available")
-        self.client = TestClient(app)
-
-    def test_json_response_format(self):
-        """Test JSON response format."""
-        response = self.client.get("/api/health")
+    def test_csrf_token_endpoint_returns_unified_response(self, test_client) -> None:
+        response = test_client.get("/api/csrf-token")
+        payload = response.json()
 
         assert response.status_code == 200
-        assert response.headers["content-type"] == "application/json"
+        assert payload["success"] is True
+        assert payload["code"] == 200
+        assert payload["data"]["token_type"] == "Bearer"
+        assert payload["data"]["expires_in"] == 3600
+        assert len(payload["data"]["csrf_token"]) > 30
 
-        data = response.json()
-        assert isinstance(data, dict)
+    def test_csrf_token_endpoint_rejects_unsupported_post_method(self, test_client) -> None:
+        response = test_client.post("/api/csrf-token")
 
-    def test_response_headers(self):
-        """Test common response headers."""
-        response = self.client.get("/api/health")
+        assert response.status_code == 405
+        assert response.json() == {"detail": "Method Not Allowed"}
 
-        # Check for common headers
-        assert "content-type" in response.headers
-        assert "content-length" in response.headers
+    def test_auth_me_without_credentials_returns_403(self, test_client) -> None:
+        response = test_client.get("/api/v1/auth/me")
 
-    @pytest.mark.parametrize(
-        "endpoint",
-        [
-            "/api/health",
-            "/api/market/stock/000001",
-            "/api/dashboard/summary",
-        ],
-    )
-    def test_endpoint_response_time(self, endpoint):
-        """Test endpoint response time is reasonable."""
-        import time
+        assert response.status_code == 403
+        assert response.json() == {"code": 6001, "message": "Not authenticated"}
 
-        start_time = time.time()
-        response = self.client.get(endpoint)
-        end_time = time.time()
+    def test_auth_me_with_invalid_bearer_token_returns_401(self, test_client) -> None:
+        response = test_client.get("/api/v1/auth/me", headers={"Authorization": "Bearer invalid-token"})
+        payload = response.json()
 
-        response_time = end_time - start_time
-        # Response should be under 5 seconds (reasonable for API)
-        assert response_time < 5.0
+        assert response.status_code == 401
+        assert payload["code"] == 6000
+        assert "Invalid credentials" in payload["message"]
+
+    def test_dashboard_summary_requires_user_id(self, test_client) -> None:
+        response = test_client.get("/api/dashboard/summary")
+
+        assert response.status_code == 422
+        assert response.json() == {"code": 1001, "message": "输入参数验证失败"}
+
+    def test_unknown_api_route_returns_not_found(self, test_client) -> None:
+        response = test_client.get("/api/nonexistent")
+
+        assert response.status_code == 404
+        assert response.json() == {"detail": "Not Found"}

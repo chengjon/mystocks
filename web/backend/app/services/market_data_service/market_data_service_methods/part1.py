@@ -24,7 +24,7 @@ from sqlalchemy.orm import sessionmaker
 from app.adapters.akshare_extension import get_akshare_extension
 from app.adapters.tqlex_adapter import get_tqlex_adapter
 from app.core.cache_integration import get_cache_integration
-from app.models.market_data import ChipRaceEndData, ChipRaceOpenData, ETFData, FundFlow, LongHuBangData
+from app.models.market_data import ChipRaceEndData, ChipRaceOpenData, ETFData, FundFlow
 
 logger = logging.getLogger(__name__)
 

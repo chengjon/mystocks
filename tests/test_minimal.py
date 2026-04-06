@@ -46,4 +46,4 @@ MyStocks项目测试配置文件
 
 def test_minimal():
     """最小测试函数"""
-    assert True
+    assert __name__ == "tests.test_minimal"

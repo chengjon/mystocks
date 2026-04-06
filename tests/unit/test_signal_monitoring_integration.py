@@ -360,14 +360,15 @@ class TestSignalMonitoringAPI:
     @pytest.mark.asyncio
     async def test_signal_monitoring_health_check(self, test_api_client):
         """测试信号监控健康检查"""
-        response = await test_api_client.get("/api/health")
+        response = await test_api_client.get("/api/signals/health")
 
         # 健康检查端点应该返回200
         assert response.status_code == 200
 
         data = response.json()
         assert "status" in data
-        assert data["status"] == "healthy"
+        assert data["service"] == "signal-monitoring-api"
+        assert data["status"] in {"healthy", "degraded", "unhealthy"}
 
     @pytest.mark.asyncio
     async def test_signal_statistics_endpoint(self, test_api_client):

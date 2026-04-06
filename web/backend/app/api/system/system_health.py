@@ -227,17 +227,17 @@ async def get_datasources():
 class ConnectionTestRequest(BaseModel):
     """数据库连接测试请求"""
 
-    db_type: str
-    host: str
-    port: int
+    db_type: str = Field(..., description="待测试的数据库类型，例如 postgresql 或 tdengine。")
+    host: str = Field(..., description="数据库服务主机地址。")
+    port: int = Field(..., description="数据库服务端口。")
 
 
 class ConnectionTestResponse(BaseModel):
     """数据库连接测试响应"""
 
-    success: bool
-    message: Optional[str] = None
-    error: Optional[str] = None
+    success: bool = Field(..., description="连接测试是否成功。")
+    message: Optional[str] = Field(None, description="连接测试结果说明。")
+    error: Optional[str] = Field(None, description="连接失败时的错误详情。")
 
 
 @router.post("/test-connection", response_model=ConnectionTestResponse)

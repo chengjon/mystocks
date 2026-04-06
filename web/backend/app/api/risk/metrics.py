@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from fastapi import APIRouter, Body, Query
 
-from app.core.exceptions import BusinessException, ValidationException
+from app.core.exceptions import BusinessException
 from app.openapi_config import COMMON_RESPONSES
 from app.api.risk._shared import (
     DataClassification,

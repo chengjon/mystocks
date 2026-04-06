@@ -43,7 +43,7 @@ class RiskManagementService:
             Dict: 风险指标
         """
         try:
-            calc_config = config or CalculationConfig()
+            config or CalculationConfig()
             result = self.calculator.calculate_all_metrics(returns, config)
 
             return result.to_dict()
@@ -241,7 +241,7 @@ class RiskManagementService:
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 date, close_price, volume
             FROM portfolio_history
             WHERE portfolio_id = '{portfolio_id}'

@@ -185,7 +185,7 @@ class VectorizedHealthCalculator:
                     )
                 )
 
-        elapsed_ms = (time.time() - start_time) * 1000
+        (time.time() - start_time) * 1000
         logger.info("批量计算 {len(inputs)} 只股票健康度: {elapsed_ms:.2f}ms")
 
         return results

@@ -120,7 +120,7 @@ class PortfolioTracker:
     async def create_portfolio(self, user_id: str, name: str, initial_capital: float = 100000.0, risk_profile_id: Optional[str] = None, description: str = "", tags: List[str] = None) -> str:
         """
         创建投资组合
-        
+
         Args:
             user_id: 用户ID
             name: 投资组合名称
@@ -128,7 +128,7 @@ class PortfolioTracker:
             risk_profile_id: 风险配置文件ID
             description: 描述
             tags: 标签列表
-        
+
         Returns:
             str: 投资组合ID，失败返回空字符串
         """
@@ -165,14 +165,14 @@ class PortfolioTracker:
     async def update_portfolio(self, portfolio_id: str, name: Optional[str] = None, status: Optional[PortfolioStatus] = None, description: Optional[str] = None, tags: Optional[List[str]] = None) -> bool:
         """
         更新投资组合
-        
+
         Args:
             portfolio_id: 投资组合ID
             name: 名称
             status: 状态
             description: 描述
             tags: 标签列表
-        
+
         Returns:
             bool: 是否更新成功
         """
@@ -206,10 +206,10 @@ class PortfolioTracker:
     async def delete_portfolio(self, portfolio_id: str) -> bool:
         """
         删除投资组合
-        
+
         Args:
             portfolio_id: 投资组合ID
-        
+
         Returns:
             bool: 是否删除成功
         """
@@ -234,10 +234,10 @@ class PortfolioTracker:
     async def get_portfolio(self, portfolio_id: str) -> Optional[Dict]:
         """
         获取投资组合信息
-        
+
         Args:
             portfolio_id: 投资组合ID
-        
+
         Returns:
             Dict: 投资组合信息，失败返回None
         """
@@ -255,7 +255,7 @@ class PortfolioTracker:
             if metrics:
                 total_return = sum(m.value for m in metrics if m.metric_type == PerformanceMetric.TOTAL_RETURN) / len(metrics)
                 drawdown_metrics = [m for m in metrics if m.metric_type == PerformanceMetric.MAX_DRAWDOWN]
-                max_drawdown = max(abs(m.value) for m in drawdown_metrics) if drawdown_metrics else 0
+                max(abs(m.value) for m in drawdown_metrics) if drawdown_metrics else 0
                 portfolio_info.total_assets = portfolio_info.initial_capital * (1 + total_return)
                 portfolio_info.current_capital = portfolio_info.total_assets
 
@@ -268,13 +268,13 @@ class PortfolioTracker:
     async def list_portfolios(self, user_id: str, status: Optional[PortfolioStatus] = None, limit: int = 100, offset: int = 0) -> List[Dict]:
         """
         获取投资组合列表
-        
+
         Args:
             user_id: 用户ID
             status: 状态过滤
             limit: 限制数量
             offset: 偏移量
-        
+
         Returns:
             List[Dict]: 投资组合列表
         """
@@ -304,20 +304,20 @@ class PortfolioTracker:
     async def calculate_performance_metrics(self, portfolio_id: str, metric_type: PerformanceMetric, period: str = "daily", start_date: Optional[datetime] = None, end_date: Optional[datetime] = None) -> Dict:
         """
         计算性能指标
-        
+
         Args:
             portfolio_id: 投资组合ID
             metric_type: 指标类型
             period: 时间周期
             start_date: 开始日期
             end_date: 结束日期
-        
+
         Returns:
             Dict: 性能指标结果
         """
         try:
             import uuid
-            metric_id = f"metric_{uuid.uuid4()}"
+            f"metric_{uuid.uuid4()}"
 
             if not end_date:
                 end_date = datetime.now()
@@ -331,7 +331,7 @@ class PortfolioTracker:
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 trade_date,
                 close_price
             FROM stock_daily
@@ -450,10 +450,10 @@ class PortfolioTracker:
     async def get_performance_summary(self, portfolio_id: str) -> Dict:
         """
         获取性能摘要
-        
+
         Args:
             portfolio_id: 投资组合ID
-        
+
         Returns:
             Dict: 性能摘要
         """
@@ -520,10 +520,10 @@ class PortfolioTracker:
     async def get_all_portfolios_summary(self, user_id: str) -> Dict:
         """
         获取所有投资组合摘要
-        
+
         Args:
             user_id: 用户ID
-        
+
         Returns:
             Dict: 投资组合摘要
         """
@@ -554,11 +554,11 @@ class PortfolioTracker:
     async def export_portfolio_data(self, portfolio_id: str, format: str = 'json') -> str:
         """
         导出投资组合数据
-        
+
         Args:
             portfolio_id: 投资组合ID
             format: 格式（json/csv）
-        
+
         Returns:
             str: 导出内容
         """
@@ -604,10 +604,10 @@ class PortfolioTracker:
     async def update_benchmark_metrics(self, new_benchmarks: Dict[str, float]) -> bool:
         """
         更新基准指标
-        
+
         Args:
             new_benchmarks: 新的基准指标
-        
+
         Returns:
             bool: 是否更新成功
         """

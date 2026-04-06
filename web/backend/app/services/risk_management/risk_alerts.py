@@ -99,7 +99,7 @@ class AlertManager:
             smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
             smtp_port = int(os.getenv("SMTP_PORT", "587"))
             smtp_username = os.getenv("SMTP_USERNAME", "")
-            smtp_password = os.getenv("SMTP_PASSWORD", "")
+            os.getenv("SMTP_PASSWORD", "")
 
             return {
                 "type": AlertChannel.EMAIL,
@@ -322,7 +322,7 @@ class AlertManager:
             - 触发时间: {alert.triggered_at.isoformat()}
             - 风险等级: {alert.risk_level.value}
             - 消息: {alert.message}
-            
+
             请及时处理此风险事件。
             """
 

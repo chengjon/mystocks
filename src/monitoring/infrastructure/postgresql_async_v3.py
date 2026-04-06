@@ -677,8 +677,3 @@ class MonitoringPostgreSQLAccess:
         return None
 
 
-from src.monitoring.infrastructure._postgresql_async_v3_singleton import (
-    close_postgres_async,
-    get_postgres_async,
-    initialize_postgres_async,
-)

@@ -10,7 +10,6 @@ import json
 import logging
 import os
 import time
-from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
@@ -21,13 +20,6 @@ import aiofiles
 import aiohttp
 import yaml
 
-from app.services.data_adapter import (
-    DashboardDataSourceAdapter,
-    DataDataSourceAdapter,
-    StrategyDataSourceAdapter,
-    TechnicalAnalysisDataSourceAdapter,
-    WatchlistDataSourceAdapter,
-)
 
 # 导入数据源接口和适配器
 from app.services.data_source_interface import (
@@ -35,7 +27,6 @@ from app.services.data_source_interface import (
     HealthStatusEnum,
     IDataSource,
 )
-from app.services.market_data_adapter import MarketDataSourceAdapter
 
 logger = logging.getLogger(__name__)
 

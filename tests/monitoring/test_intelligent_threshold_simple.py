@@ -14,18 +14,11 @@ import pytest
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
-# 直接导入模块测试功能
-try:
-    from src.monitoring.clustering_analyzer import ClusteringAnalyzer
-    from src.monitoring.data_analyzer import DataAnalyzer
-    from src.monitoring.statistical_optimizer import StatisticalOptimizer
-    from src.monitoring.threshold_rule_manager import ThresholdRuleManager
-    from src.monitoring.trend_analyzer import TrendAnalyzer
-
-    MODULES_AVAILABLE = True
-except ImportError as e:
-    print(f"Import error: {e}")
-    MODULES_AVAILABLE = False
+from src.monitoring.clustering_analyzer import ClusteringAnalyzer
+from src.monitoring.data_analyzer import DataAnalyzer
+from src.monitoring.statistical_optimizer import StatisticalOptimizer
+from src.monitoring.threshold_rule_manager import ThresholdRuleManager
+from src.monitoring.trend_analyzer import TrendAnalyzer
 
 
 class TestCoreFunctionality:
@@ -33,9 +26,6 @@ class TestCoreFunctionality:
 
     def test_basic_data_analysis(self):
         """测试基础数据分析功能"""
-        if not MODULES_AVAILABLE:
-            pytest.skip("Modules not available")
-
         analyzer = DataAnalyzer(window_size=50)
         timestamp = datetime.now()
 
@@ -48,16 +38,13 @@ class TestCoreFunctionality:
         assert isinstance(stats, dict)
         assert "mean" in stats
         assert "std_dev" in stats
-        assert "count" == 20
+        assert stats["count"] == 20
         assert stats["mean"] > 10.0
         assert stats["min_value"] == 10.0
         assert stats["max_value"] == 11.9
 
     def test_statistical_optimization(self):
         """测试统计优化功能"""
-        if not MODULES_AVAILABLE:
-            pytest.skip("Modules not available")
-
         optimizer = StatisticalOptimizer()
         # 生成足够的数据点
         data = [10.0 + np.random.normal(0, 1) for _ in range(50)]
@@ -71,9 +58,6 @@ class TestCoreFunctionality:
 
     def test_trend_analysis(self):
         """测试趋势分析功能"""
-        if not MODULES_AVAILABLE:
-            pytest.skip("Modules not available")
-
         analyzer = TrendAnalyzer()
         # 生成上升趋势数据
         data = [10.0 + i * 0.5 for i in range(20)]
@@ -86,9 +70,6 @@ class TestCoreFunctionality:
 
     def test_clustering_analysis(self):
         """测试聚类分析功能"""
-        if not MODULES_AVAILABLE:
-            pytest.skip("Modules not available")
-
         analyzer = ClusteringAnalyzer(min_cluster_size=3)
         # 创建两个明显聚类
         normal_data = [10.0, 10.1, 10.2, 10.3] * 10
@@ -103,9 +84,6 @@ class TestCoreFunctionality:
 
     def test_threshold_rule_management(self):
         """测试阈值规则管理功能"""
-        if not MODULES_AVAILABLE:
-            pytest.skip("Modules not available")
-
         manager = ThresholdRuleManager()
 
         # 创建规则
@@ -139,9 +117,6 @@ class TestCoreFunctionality:
 
     def test_performance_benchmark(self):
         """性能基准测试"""
-        if not MODULES_AVAILABLE:
-            pytest.skip("Modules not available")
-
         manager = ThresholdRuleManager()
 
         import time
@@ -165,9 +140,4 @@ class TestCoreFunctionality:
 
 
 if __name__ == "__main__":
-    # 如果直接运行此文件，显示模块可用性状态
-    print(f"Modules available: {MODULES_AVAILABLE}")
-    if MODULES_AVAILABLE:
-        pytest.main([__file__, "-v", "--tb=short"])
-    else:
-        print("⚠️  Some modules are not available. This is expected during refactoring.")
+    pytest.main([__file__, "-v", "--tb=short"])

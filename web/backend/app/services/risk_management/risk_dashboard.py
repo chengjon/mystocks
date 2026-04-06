@@ -233,7 +233,6 @@ class RiskDashboard(RiskBase):
     async def _calculate_chart(self, chart_type: DashboardChartType, portfolio_ids: List[str]) -> List[ChartDataPoint]:
         """计算图表数据"""
         try:
-            time_range = DashboardTimeRange.MONTHLY
             days = 30
 
             if chart_type == DashboardChartType.VAR_TREND:
@@ -259,7 +258,7 @@ class RiskDashboard(RiskBase):
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 var_95, var_99, sharpe_ratio, max_drawdown, beta, volatility,
                 total_value, calculated_at
             FROM risk_metrics
@@ -432,7 +431,7 @@ class RiskDashboard(RiskBase):
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 var_95, var_99, sharpe_ratio, max_drawdown, beta, volatility,
                 calculated_at
             FROM risk_metrics
@@ -465,7 +464,7 @@ class RiskDashboard(RiskBase):
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 date, max_drawdown, calculated_at
             FROM risk_metrics
             WHERE portfolio_id = '{portfolio_id}'
@@ -491,7 +490,7 @@ class RiskDashboard(RiskBase):
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 date, sharpe_ratio, calculated_at
             FROM risk_metrics
             WHERE portfolio_id = '{portfolio_id}'
@@ -517,7 +516,7 @@ class RiskDashboard(RiskBase):
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 date, beta, calculated_at
             FROM risk_metrics
             WHERE portfolio_id = '{portfolio_id}'
@@ -540,7 +539,7 @@ class RiskDashboard(RiskBase):
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 date, volatility, calculated_at
             FROM risk_metrics
             WHERE portfolio_id = '{portfolio_id}'

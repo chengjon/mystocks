@@ -5,20 +5,12 @@
 """
 
 import asyncio
-import json
 import logging
 import os
-import time
 from contextlib import asynccontextmanager
-from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
-import aiofiles
-import aiohttp
-import yaml
 from config.data_sources_loader import JSON_DATA_SOURCES_CONFIG_PATH
 
 from app.services.data_adapter import (
@@ -37,7 +29,6 @@ from app.services.data_source_interface import (
 )
 from app.services.market_data_adapter import MarketDataSourceAdapter
 from .data_source_mode import (
-    BaseDataSource,
     DataSourceConfig,
     DataSourceMetrics,
     DataSourceMode,

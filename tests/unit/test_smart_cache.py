@@ -180,7 +180,8 @@ class TestSmartCache:
             refresh_count.acquire(timeout=5)
 
         # 由于 max_workers=5，最多应该有5个并发刷新
-        # (这里我们只验证没有抛出异常)
+        stats = cache.get_stats()
+        assert stats["size"] == 10
 
         # 释放所有阻塞的刷新
         for _ in range(10):
@@ -264,8 +265,7 @@ class TestSmartCache:
         # 关闭缓存
         cache.shutdown()
 
-        # 验证线程池已关闭 (不会抛出异常)
-        assert True
+        assert cache.refresh_executor._shutdown is True
 
     def test_contains(self):
         """测试 __contains__ 方法"""

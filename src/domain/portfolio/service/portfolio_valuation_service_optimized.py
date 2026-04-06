@@ -168,7 +168,7 @@ class OptimizedPortfolioValuationService(PortfolioValuationService):
         calculator = self.incremental_calculators[portfolio_id]
 
         # 记录旧市值
-        old_holdings_value = sum(pos.market_value for pos in portfolio.positions.values())
+        sum(pos.market_value for pos in portfolio.positions.values())
 
         # 更新持仓价格
         for symbol, price in prices.items():

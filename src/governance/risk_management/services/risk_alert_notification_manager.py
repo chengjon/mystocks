@@ -411,10 +411,10 @@ class RiskAlertNotificationManager(MonitoredNotificationManager):
         """发送风险通知"""
         try:
             # 映射严重程度到通知级别
-            notification_level = self._map_severity_to_notification_level(severity)
+            self._map_severity_to_notification_level(severity)
 
             # 构建通知标题
-            title = self._build_alert_title(alert_type, severity, symbol, portfolio_id)
+            self._build_alert_title(alert_type, severity, symbol, portfolio_id)
 
             # 构建扩展上下文
             extended_context = {

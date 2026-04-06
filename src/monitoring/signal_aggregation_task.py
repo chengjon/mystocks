@@ -225,7 +225,7 @@ class SignalMetricsAggregator:
 
             manager = SignalManager()
 
-            stats = manager.get_manager_stats()
+            manager.get_manager_stats()
             return [{"id": "default", "name": "Default Strategy"}]
         except Exception:
             logger.warning("获取活跃策略失败: %(e)s")

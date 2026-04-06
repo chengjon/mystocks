@@ -22,7 +22,7 @@
 from datetime import datetime, timezone
 from typing import Optional
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Body, Depends, Query
 
 from app.api.backup_recovery_secure._integrity_verification import verify_backup_integrity_impl
 from app.api.backup_recovery_secure.backup_security_support import (
@@ -31,15 +31,12 @@ from app.api.backup_recovery_secure.backup_security_support import (
     log_security_event,
     verify_admin_permission,
     verify_backup_permission,
-    verify_recovery_permission,
 )
 from app.core.responses import ErrorCode, error_response, success_response
 from app.core.security import User, get_current_user
 from app.models.backup_schemas import (
     BackupListQueryParams,
     BackupMetadata,
-    CleanupBackupsRequest,
-    CleanupResult,
     PostgreSQLFullBackupRequest,
     PostgreSQLFullRecoveryRequest,
     RecoveryMetadata,

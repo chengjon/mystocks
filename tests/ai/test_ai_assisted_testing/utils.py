@@ -6,6 +6,8 @@ MyStocks AI辅助测试工具
 集成AST分析和项目上下文感知
 """
 
+from __future__ import annotations
+
 import ast
 import asyncio
 import hashlib
@@ -17,6 +19,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
 import pytest
+
+from .ai_test_generator import AITestGenerator
+from .helpers import TestCase
 
 class IntelligentTestOptimizer:
     """智能测试优化器"""
@@ -335,5 +340,4 @@ async def test_comprehensive_test_generation():
     assert result["generated_tests"] > 0
     assert "coverage_analysis" in result
     assert "ai_recommendations" in result
-
 

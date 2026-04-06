@@ -9,7 +9,6 @@ from typing import Any, Dict
 from fastapi import APIRouter, Body, Depends, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2PasswordRequestForm
 
-from app.api.auth_compat import compat_router
 from app.api.auth_schemas import PasswordResetConfirm, PasswordResetRequest, UserRegisterRequest, UserResponse
 from app.core.config import settings
 from app.openapi_config import COMMON_RESPONSES
@@ -682,7 +681,7 @@ async def request_password_reset(
             # Generate password reset token (valid for 1 hour)
             from app.core.security import create_access_token
 
-            reset_token = create_access_token(
+            create_access_token(
                 data={"sub": user.username, "user_id": user.id, "purpose": "password_reset"},
                 expires_delta=timedelta(hours=1),
             )

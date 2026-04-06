@@ -22,7 +22,6 @@ from app.api.task_security_support import (
     log_task_operation,
     task_audit_log,
 )
-from app.api.tasks_schemas import TaskExecutionRequest, TaskQueryParams, TaskRegistrationRequest
 from app.api.auth import User, get_current_user
 from app.core.exceptions import BusinessException, ForbiddenException, NotFoundException
 from app.core.responses import APIResponse

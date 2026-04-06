@@ -84,7 +84,7 @@ class GPUResourceManager:
             try:
                 # 检查GPU内存
                 gpu_memory = cp.cuda.runtime.memGetInfo()
-                total_memory = gpu_memory[1]
+                gpu_memory[1]
                 free_memory = gpu_memory[0]
                 self.available_memory = free_memory * self.gpu_memory_limit
 

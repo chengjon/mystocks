@@ -3,11 +3,9 @@
 支持 Windows 下的 Wind, Choice, MiniQMT 多源触发。
 """
 
-import time
 import httpx
-import asyncio
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 from app.services.data_source_interface import IDataSource, HealthStatus, HealthStatusEnum
 
 logger = __import__("logging").getLogger(__name__)
@@ -25,7 +23,7 @@ class MultiSourceBridgeAdapter(IDataSource):
     async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """
         按需触发数据采集逻辑
-        
+
         Args:
             endpoint: 格式为 "provider/method", 如 "wind/wsd" 或 "qmt/position"
         """
@@ -41,7 +39,7 @@ class MultiSourceBridgeAdapter(IDataSource):
         # 发起按需采集指令
         async with httpx.AsyncClient(timeout=self.timeout) as client:
             logger.info(f"🚀 Triggering remote task: {provider_name} via {method}")
-            
+
             response = await client.post(
                 f"{base_url}/api/v1/task/execute",
                 json={
@@ -73,7 +71,7 @@ class MultiSourceBridgeAdapter(IDataSource):
                         results.append(f"{name}:OK")
                 except:
                     results.append(f"{name}:OFFLINE")
-        
+
         return HealthStatus(
             status=HealthStatusEnum.HEALTHY if "OK" in "".join(results) else HealthStatusEnum.FAILED,
             response_time=0,

@@ -13,18 +13,12 @@
 """
 
 import logging
-import os
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional
 
-import pandas as pd
-from sqlalchemy import and_, create_engine, or_
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import and_
 
-from app.adapters.akshare_extension import get_akshare_extension
-from app.adapters.tqlex_adapter import get_tqlex_adapter
-from app.core.cache_integration import get_cache_integration
-from app.models.market_data import ChipRaceEndData, ChipRaceOpenData, ETFData, FundFlow, LongHuBangData
+from app.models.market_data import LongHuBangData
 
 logger = logging.getLogger(__name__)
 

@@ -26,7 +26,7 @@ from jinja2 import Template
 from pydantic import BaseModel, Field
 from prometheus_client import Counter, Gauge, Histogram, start_http_server
 
-from ..ai.test_data_manager import DataManager as AIDataManager
+from ...ai.test_data_manager import DataManager as AIDataManager
 
 class TestAlertManager:
     """测试告警管理器"""
@@ -745,5 +745,4 @@ class DynamicPerformanceOptimizer:
         next_steps.append("定期进行性能分析")
 
         return next_steps
-
 

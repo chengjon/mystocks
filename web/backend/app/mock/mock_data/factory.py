@@ -1,14 +1,10 @@
 """Mock 数据子模块"""
 
 import logging
-import random
-import time
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 
-from typing import Callable, TYPE_CHECKING
 
 
 class _FallbackMockDataManager:

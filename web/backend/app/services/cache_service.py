@@ -362,7 +362,7 @@ class CacheService:
                 await self.redis_pool.set(key, serialized_value)
 
             # 计算缓存大小
-            entry_size = len(serialized_value)
+            len(serialized_value)
 
             # 检查缓存大小
             if len(await self.redis_pool.dbsize()) > self.max_cache_size:

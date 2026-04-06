@@ -290,7 +290,7 @@ class LSTMTradingStrategy(MLTradingStrategy):
 
                     total_loss += loss.item()
 
-                avg_loss = total_loss / len(dataloader)
+                total_loss / len(dataloader)
                 if epoch % 10 == 0:
                     logger.info("Epoch {epoch + 1}/{self.epochs}, Loss: %(avg_loss)s")
 
@@ -433,7 +433,7 @@ class LSTMTradingStrategy(MLTradingStrategy):
             if len(data) > 0:
                 # 检查是否与技术指标一致
                 latest_rsi = data["rsi_14"].iloc[-1] if "rsi_14" in data.columns else 50
-                latest_macd = data["macd"].iloc[-1] if "macd" in data.columns else 0
+                data["macd"].iloc[-1] if "macd" in data.columns else 0
 
                 # RSI过滤：超买时避免买入，超卖时避免卖出
                 if len(signals_df) > 0:

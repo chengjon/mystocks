@@ -348,7 +348,7 @@ async def get_upstream_lineage(
         edges_to_include = []
 
         # 初始查询
-        graph = await tracker.get_lineage(node_id)
+        await tracker.get_lineage(node_id)
 
         # 使用队列进行BFS遍历
         from collections import deque

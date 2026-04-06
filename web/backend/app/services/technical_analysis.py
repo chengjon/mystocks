@@ -121,12 +121,12 @@ class TechnicalAnalysis:
     async def calculate_indicator(self, symbol: str, indicator_type: IndicatorType, period: int = 20) -> TechnicalIndicator:
         """
         计算技术指标
-        
+
         Args:
             symbol: 股票代码
             indicator_type: 指标类型
             period: 周期
-        
+
         Returns:
             TechnicalIndicator: 技术指标数据
         """
@@ -355,7 +355,7 @@ class TechnicalAnalysis:
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 high_price, low_price, close_price, date
             FROM stock_daily
             WHERE code = '{symbol}'
@@ -386,11 +386,11 @@ class TechnicalAnalysis:
 
                 if high != low:
                     if low > k_value:
-                        d_value = 2 * (high - low)
+                        2 * (high - low)
                     else:
-                        d_value = 2 * (close - low)
+                        2 * (close - low)
                 else:
-                    d_value = 0
+                    pass
 
                 k_values.append(k_value)
 
@@ -472,7 +472,7 @@ class TechnicalAnalysis:
 
             volumes = [r['volume'] for r in results]
 
-            vol_ma = await self._calculate_volume_ma(volumes)
+            await self._calculate_volume_ma(volumes)
 
             return volumes
 
@@ -493,7 +493,7 @@ class TechnicalAnalysis:
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 close_price, volume, amount, date
             FROM stock_daily
             WHERE code = '{symbol}'
@@ -524,11 +524,11 @@ class TechnicalAnalysis:
     async def generate_trading_signal(self, symbol: str, strategy: str = "default") -> TradingSignal:
         """
         生成交易信号
-        
+
         Args:
             symbol: 股票代码
             strategy: 策略名称
-        
+
         Returns:
             TradingSignal: 交易信号
         """
@@ -580,11 +580,11 @@ class TechnicalAnalysis:
     async def analyze_trend(self, symbol: str, period: int = 30) -> TrendAnalysis:
         """
         分析趋势
-        
+
         Args:
             symbol: 股票代码
             period: 分析周期（天）
-        
+
         Returns:
             TrendAnalysis: 趋势分析结果
         """

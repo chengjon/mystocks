@@ -13,7 +13,6 @@ from src.advanced_analysis.financial_valuation_analyzer._dcf_valuation_models im
     DuPontAnalysis,
     ModernValuation,
     RelativeValuation,
-    ValuationConsensus,
 )
 from src.advanced_analysis.financial_valuation_analyzer._dcf_valuation_tail import FinancialValuationAnalyzerTailMixin
 
@@ -103,9 +102,8 @@ class FinancialValuationAnalyzerMixin(FinancialValuationAnalyzerTailMixin):
                     dupont_analysis = self._perform_dupont_analysis(financial_data)
 
                 # 现代估值方法
-                modern_valuation = None
                 if include_modern:
-                    modern_valuation = self._calculate_modern_valuation(financial_data, current_price)
+                    self._calculate_modern_valuation(financial_data, current_price)
 
                 # 估值共识
                 valuation_consensus = self._calculate_valuation_consensus(dcf_valuation, relative_valuation, current_price)
@@ -579,7 +577,7 @@ class FinancialValuationAnalyzerMixin(FinancialValuationAnalyzerTailMixin):
                     np.log(current_price / current_price)
                     + (risk_free_rate - dividend_yield + volatility**2 / 2) * time_to_maturity
                 ) / (volatility * np.sqrt(time_to_maturity))
-                d2 = d1 - volatility * np.sqrt(time_to_maturity)
+                d1 - volatility * np.sqrt(time_to_maturity)
 
                 # 假设这是看涨期权价值
                 bs_value = current_price * np.exp(-dividend_yield * time_to_maturity) * 0.5  # 简化

@@ -30,9 +30,7 @@ from app.api.notification_models import (
 )
 from app.api.notification_support import (
     connection_manager,
-    is_in_quiet_hours,
     rate_limit,
-    validate_notification_preferences,
 )
 from app.core.responses import create_success_response
 from app.services.email_service import get_email_service

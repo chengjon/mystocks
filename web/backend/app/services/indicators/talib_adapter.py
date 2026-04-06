@@ -234,7 +234,7 @@ def register_all_talib_indicators():
     """
     注册所有支持的TA-Lib指标到Factory
     """
-    registry = get_indicator_registry()
+    get_indicator_registry()
     supported_indicators = [
         "SMA",
         "EMA",

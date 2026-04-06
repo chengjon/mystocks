@@ -26,7 +26,7 @@ from jinja2 import Template
 from pydantic import BaseModel, Field
 from prometheus_client import Counter, Gauge, Histogram, start_http_server
 
-from ..ai.test_data_manager import DataManager as AIDataManager
+from ...ai.test_data_manager import DataManager as AIDataManager
 
 class AlertSeverity(Enum):
     """告警严重级别"""
@@ -593,5 +593,4 @@ class TestMonitor:
                     "count": len(values),
                 }
         return summary
-
 

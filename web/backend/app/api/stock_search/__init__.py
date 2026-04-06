@@ -4,10 +4,10 @@ from .get_rate_limits_status import router as rate_limits_router  # noqa: F401
 from .stock_search_result import StockSearchResult  # noqa: F401
 from .stock_search_result import StockQuote  # noqa: F401
 from .stock_search_result import NewsItem  # noqa: F401
-from .stock_search_result import SearchRequest  # noqa: F401
-from .stock_search_result import check_search_rate_limit  # noqa: F401
-from .stock_search_result import check_admin_privileges  # noqa: F401
-from .stock_search_result import log_search_operation  # noqa: F401
+from .stock_search_schemas import SearchRequest  # noqa: F401
+from .stock_search_support import check_search_rate_limit  # noqa: F401
+from .stock_search_support import check_admin_privileges  # noqa: F401
+from .stock_search_support import log_search_operation  # noqa: F401
 from .stock_search_result import validate_stock_symbol  # noqa: F401
 from .stock_search_result import sanitize_query_params  # noqa: F401
 from .stock_search_result import search_stocks  # noqa: F401

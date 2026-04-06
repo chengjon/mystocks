@@ -222,12 +222,12 @@ class RiskMonitoring:
             subject = f"[{event.risk_level.value}] 风险告警 - {event.event_id}"
             body = f"""
             风险事件: {event.message}
-            
+
             时间: {event.timestamp}
             风险等级: {event.risk_level.value}
             组合ID: {event.portfolio_id if event.portfolio_id else "N/A"}
             股票代码: {event.stock_code if event.stock_code else "N/A"}
-            
+
             当前指标:
             {event.metrics_snapshot}
             """
@@ -390,7 +390,7 @@ class RiskMonitoring:
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 portfolio_id,
                 total_value,
                 cash_balance,
@@ -403,8 +403,8 @@ class RiskMonitoring:
             result = await db_service.fetch_one(sql)
 
             if result:
-                portfolio_value = result["total_value"]
-                cash_balance = result["cash_balance"]
+                result["total_value"]
+                result["cash_balance"]
                 position_count = result["position_count"]
 
                 if position_count > self.thresholds.position_size_limit:

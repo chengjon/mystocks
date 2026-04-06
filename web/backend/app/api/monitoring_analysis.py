@@ -700,7 +700,7 @@ async def identify_market_regime(
         factory = get_calculator_factory()
 
         np.random.seed(42)
-        dates = pd.date_range(start="2024-01-01", periods=100, freq="D")
+        pd.date_range(start="2024-01-01", periods=100, freq="D")
         closes = 100 + np.cumsum(np.random.randn(100) * 0.5)
         index_data = pd.DataFrame({"close": closes})
 

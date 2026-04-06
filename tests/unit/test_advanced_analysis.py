@@ -302,8 +302,10 @@ class TestAdvancedAnalysisIntegration:
             TradingSignalAnalyzer,
         )
 
-        # If we reach this point, all imports were successful
-        assert True
+        assert FundamentalAnalyzer is not None
+        assert TechnicalAnalyzer is not None
+        assert TradingSignalAnalyzer is not None
+        assert MultidimensionalRadarAnalyzer is not None
 
     def test_analysis_types_enum_complete(self):
         """测试分析类型枚举完整性"""

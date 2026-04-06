@@ -23,7 +23,6 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 
-from app.services.indicators._smart_scheduler_factory import create_scheduler
 from .dependency_graph import (
     IncrementalCalculator,
     IndicatorDependencyGraph,
@@ -441,7 +440,7 @@ class SmartScheduler:
         node_id = ind.get("node_id", abbr)
 
         # 生成唯一的计算键 (用于缓存和锁)
-        cache_key = self._generate_cache_key(node_id, params)
+        self._generate_cache_key(node_id, params)
         lock_resource = self._generate_lock_resource(node_id, params)
 
         # 第一次检查: 查本地缓存

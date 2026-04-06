@@ -206,7 +206,7 @@ class TradingDataService:
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 order_id, symbol, side, order_type, quantity, price,
                 status, created_at, updated_at, filled_at
             FROM orders
@@ -241,7 +241,7 @@ class TradingDataService:
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 position_id, symbol, quantity, avg_cost,
                 current_price, market_value, unrealized_pnl, realized_pnl,
                 created_at, updated_at
@@ -285,7 +285,7 @@ class TradingDataService:
             from app.core.database import db_service
 
             sql = f"""
-            SELECT 
+            SELECT
                 trade_id, order_id, symbol, side, quantity,
                 price, amount, commission, pnl, pnl_percent,
                 created_at

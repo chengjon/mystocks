@@ -114,11 +114,11 @@ class MLStrategyBacktester:
 
             # 调试: 检查原始信号分布
             if not signals_df.empty and self.config.signal_column in signals_df.columns:
-                raw_signal_counts = signals_df[self.config.signal_column].value_counts()
+                signals_df[self.config.signal_column].value_counts()
                 logger.info("原始信号分布: {raw_signal_counts.to_dict()")
-                raw_buy_signals = (signals_df[self.config.signal_column] == 1).sum()
-                raw_sell_signals = (signals_df[self.config.signal_column] == -1).sum()
-                raw_hold_signals = (signals_df[self.config.signal_column] == 0).sum()
+                (signals_df[self.config.signal_column] == 1).sum()
+                (signals_df[self.config.signal_column] == -1).sum()
+                (signals_df[self.config.signal_column] == 0).sum()
                 logger.info("原始信号 - 买入: %(raw_buy_signals)s, 持有: %(raw_hold_signals)s, 卖出: %(raw_sell_signals)s")
 
                 if self.config.confidence_column in signals_df.columns:
@@ -132,10 +132,10 @@ class MLStrategyBacktester:
 
             # 调试: 检查信号分布
             if not backtest_signals.empty:
-                signal_counts = backtest_signals["signal"].value_counts()
+                backtest_signals["signal"].value_counts()
                 logger.info("转换后信号分布: {signal_counts.to_dict()")
-                buy_signals = (backtest_signals["signal"] == "buy").sum()
-                sell_signals = (backtest_signals["signal"] == "sell").sum()
+                (backtest_signals["signal"] == "buy").sum()
+                (backtest_signals["signal"] == "sell").sum()
                 logger.info("买入信号: %(buy_signals)s, 卖出信号: %(sell_signals)s")
 
             # 执行回测
@@ -425,7 +425,7 @@ class MLStrategyBacktester:
             if "equity_curve" not in backtest_result:
                 return {}
 
-            equity_curve = backtest_result["equity_curve"]
+            backtest_result["equity_curve"]
 
             # 计算买入持有策略
             initial_price = price_data["close"].iloc[0]

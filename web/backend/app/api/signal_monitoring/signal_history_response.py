@@ -16,14 +16,9 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
 
 from app.api.signal_monitoring.signal_history_response_schemas import (
-    ActiveSignalItem,
-    ActiveSignalsResponse,
     SignalHistoryResponse,
     SignalQualityReportResponse,
-    SignalStatisticsResponse,
-    StrategyDetailedHealthResponse,
     StrategyRealtimeMonitoringResponse,
-    UnifiedResponse,
 )
 from app.core.security import User, get_current_user
 

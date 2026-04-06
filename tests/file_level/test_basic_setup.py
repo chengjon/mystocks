@@ -9,7 +9,8 @@ def test_framework_import():
         from tests.file_level.core import FileLevelTestRunner
         from tests.file_level.fixtures import TestDataFactory
 
-        assert True
+        assert FileLevelTestRunner is not None
+        assert TestDataFactory is not None
     except ImportError as e:
         assert False, f"Import failed: {e}"
 

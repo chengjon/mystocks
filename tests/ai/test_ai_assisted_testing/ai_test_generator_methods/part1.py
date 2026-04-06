@@ -20,6 +20,7 @@ from typing import Any, Dict, List, Optional, Set
 
 import pytest
 
+from ..helpers import AnalysisResult, ProjectContextAnalyzer, TestCase, TestCategory, TestPriority
 from .part1_tail import AITestGeneratorCoreTailMixin
 
 
@@ -738,4 +739,3 @@ class AITestGeneratorCoreMixin(AITestGeneratorCoreTailMixin):
         test_cases.append(format_validation_case)
 
         return test_cases
-

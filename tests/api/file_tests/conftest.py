@@ -50,16 +50,28 @@ def mock_responses():
 
 @pytest.fixture
 def contract_specs():
-    """OpenAPI contract specifications for testing"""
+    """Historical contract snapshots for isolated file tests.
+
+    These fixtures are not the API contract source of truth. Runtime-generated
+    OpenAPI remains the authoritative contract; these snapshots only keep file
+    tests isolated while runtime app imports are still fragile in some test
+    environments.
+    """
     _ok = {"get": {"responses": {"200": {"description": "Success"}}}}
     _post = {"post": {"responses": {"200": {"description": "Success"}}}}
     _put = {"put": {"responses": {"200": {"description": "Success"}}}}
     _del = {"delete": {"responses": {"200": {"description": "Success"}}}}
+    snapshot_meta = {
+        "source_type": "historical_snapshot",
+        "is_contract_truth": False,
+        "usage_note": "Use runtime OpenAPI for current contract truth; this fixture is only an isolated file-test snapshot.",
+    }
 
     return {
         "market-data": {
             "openapi": "3.0.3",
             "info": {"title": "Market Data API", "version": "1.0.0"},
+            "_meta": {**snapshot_meta, "domain": "market-data"},
             "paths": {
                 "/api/market/overview": _ok,
                 "/api/market/fund-flow": _ok,
@@ -72,6 +84,7 @@ def contract_specs():
         "strategy-management": {
             "openapi": "3.0.3",
             "info": {"title": "Strategy Management API", "version": "1.0.0"},
+            "_meta": {**snapshot_meta, "domain": "strategy-management"},
             "paths": {
                 "/api/strategies": _ok,
                 "/api/strategies/{id}": _ok,
@@ -89,6 +102,7 @@ def contract_specs():
         "risk-management": {
             "openapi": "3.0.3",
             "info": {"title": "Risk Management API", "version": "1.0.0"},
+            "_meta": {**snapshot_meta, "domain": "risk-management"},
             "paths": {
                 "/var-cvar": _ok,
                 "/beta": _ok,
@@ -132,6 +146,7 @@ def contract_specs():
         "trading": {
             "openapi": "3.0.3",
             "info": {"title": "Trading API", "version": "1.0.0"},
+            "_meta": {**snapshot_meta, "domain": "trading"},
             "paths": {
                 "/api/trade/orders": _ok,
                 "/api/trade/orders/create": _post,

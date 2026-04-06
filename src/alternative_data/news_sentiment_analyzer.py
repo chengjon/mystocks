@@ -8,7 +8,6 @@ Collect financial news from multiple sources, perform sentiment analysis, and ge
 """
 
 import hashlib
-import json
 import logging
 import re
 from dataclasses import dataclass, field
@@ -27,12 +26,6 @@ except ImportError:
     TRANSFORMERS_AVAILABLE = False
     logging.warning("Transformers not available, using fallback sentiment analysis")
 
-from src.alternative_data._news_sentiment_service_helper import (
-    _save_articles_to_db,
-    collect_and_analyze_news,
-    get_market_sentiment_overview,
-    get_sentiment_indicators,
-)
 from src.core.database import DatabaseConnectionManager
 
 logger = logging.getLogger(__name__)

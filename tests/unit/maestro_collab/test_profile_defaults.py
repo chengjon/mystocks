@@ -18,3 +18,13 @@ def test_maestro_collab_parser_uses_profile_defaults_for_mongo_settings() -> Non
 
     assert args.mongo_uri == mystocks.COLLAB_CONTROL_PLANE_DEFAULTS["mongo_uri"]
     assert args.mongo_db == mystocks.COLLAB_CONTROL_PLANE_DEFAULTS["mongo_db"]
+
+
+def test_maestro_collab_parser_prefers_env_mongo_defaults(monkeypatch) -> None:
+    monkeypatch.setenv("MAESTRO_COLLAB_MONGO_URI", "mongodb://coord-user:coord-pass@mongo-host:27017/admin?authSource=admin")
+    monkeypatch.setenv("MAESTRO_COLLAB_MONGO_DB", "coord_runtime")
+
+    args = build_parser().parse_args(["work", "list"])
+
+    assert args.mongo_uri == "mongodb://coord-user:coord-pass@mongo-host:27017/admin?authSource=admin"
+    assert args.mongo_db == "coord_runtime"

@@ -203,7 +203,7 @@ class DatabaseService:
         redis = self._get_redis()
         if not redis:
             return None
-        
+
         try:
             data = redis.get(cache_key)
             if data:
@@ -217,7 +217,7 @@ class DatabaseService:
         redis = self._get_redis()
         if not redis:
             return
-        
+
         try:
             redis.setex(cache_key, ttl, json.dumps(data))
         except Exception as e:
@@ -227,7 +227,7 @@ class DatabaseService:
     def query_stocks_basic(self, limit: int = 100, search: Optional[str] = None) -> pd.DataFrame:
         """查询股票基本信息 (带缓存优化)"""
         cache_key = f"stocks_basic:{limit}:{search or 'all'}"
-        
+
         # 尝试缓存
         cached = self.get_cache_data(cache_key)
         if cached:
@@ -264,7 +264,7 @@ class DatabaseService:
             if not df.empty:
                 self.set_cache_data(cache_key, df.to_dict("records"), ttl=1800) # 30分钟缓存
             return df
-            
+
         except Exception as e:
             logger.error("Failed to query stocks basic", error=str(e))
             raise
@@ -273,7 +273,7 @@ class DatabaseService:
     def query_daily_kline(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """查询日线数据 (带缓存优化)"""
         cache_key = f"kline:{symbol}:{start_date}:{end_date}"
-        
+
         cached = self.get_cache_data(cache_key)
         if cached:
             return pd.DataFrame(cached)
@@ -294,7 +294,7 @@ class DatabaseService:
                     """)
                     result = session.execute(query, {"symbol": symbol, "start_date": start_date, "end_date": end_date})
                     df = pd.DataFrame(result.fetchall(), columns=result.keys())
-            
+
             if not df.empty:
                 self.set_cache_data(cache_key, df.to_dict("records"), ttl=300) # 5分钟缓存
             return df

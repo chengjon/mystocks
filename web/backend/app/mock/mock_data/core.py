@@ -3,10 +3,9 @@
 import logging
 import os
 import random
-import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 from ._watchlist_data import get_watchlist_mock_data
 

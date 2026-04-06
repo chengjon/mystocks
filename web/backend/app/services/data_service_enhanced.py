@@ -415,7 +415,7 @@ class EnhancedDataService:
             if self.unified_manager:
                 logger.info("Saving {len(df_save)} records to database for %(symbol)s")
 
-                result = self.unified_manager.save_data_by_classification(
+                self.unified_manager.save_data_by_classification(
                     classification=DataClassification.DAILY_KLINE,
                     table_name="daily_kline",
                     data=df_save,

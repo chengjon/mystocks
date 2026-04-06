@@ -3,15 +3,13 @@
 import logging
 import time
 import asyncio
-from collections import OrderedDict, defaultdict
+from collections import defaultdict
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, TYPE_CHECKING
+from typing import Any, Dict, Optional, TYPE_CHECKING
 from asyncio import Lock
 
-import pandas as pd
 
 if TYPE_CHECKING:
-    from app.core.tdengine_manager import TDengineManager
     from app.core.cache.multi_level import MultiLevelCache
 
 # Mock/Fallback constants if not imported

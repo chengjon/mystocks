@@ -658,7 +658,7 @@ async def execute_backtest(
         }
 
         # 启动 Celery 异步任务
-        task = run_backtest_task.delay(
+        run_backtest_task.delay(
             backtest_id=backtest_result.backtest_id,
             strategy_config=strategy_config_dict,
             backtest_config=backtest_config_dict,

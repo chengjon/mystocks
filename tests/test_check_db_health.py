@@ -1,148 +1,192 @@
 """
-测试check_db_health数据库健康检查工具
+Contract tests for the `check_db_health` utility script.
 
-修改: 2025-11-19 - 更新为双数据库架构 (PostgreSQL + TDengine)
+These tests validate the current script contract directly instead of using
+dynamic imports, skip-heavy fallbacks, or the legacy `{"status": ...}` shape.
 """
 
+from __future__ import annotations
+
+import importlib
 import sys
-from unittest.mock import MagicMock, patch
+from pathlib import Path
+from types import ModuleType, SimpleNamespace
+from unittest.mock import MagicMock
 
 import pytest
 
-sys.path.insert(0, "/opt/claude/mystocks_spec")
 
-# 动态导入模块
-import importlib.util
-
-spec = importlib.util.spec_from_file_location(
-    "check_db_health", "/opt/claude/mystocks_spec/src/utils/check_db_health.py"
-)
-check_db_health = importlib.util.module_from_spec(spec)
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 
-@pytest.fixture(autouse=True)
-def load_module():
-    """加载模块，如果失败则跳过测试"""
-    try:
-        spec.loader.exec_module(check_db_health)
-    except FileNotFoundError:
-        pytest.skip("check_db_health.py 文件不存在")
-    except Exception as e:
-        pytest.skip(f"加载模块失败: {str(e)}")
+@pytest.fixture
+def check_db_health_module():
+    return importlib.import_module("src.utils.check_db_health")
+
+
+@pytest.fixture
+def fake_config(monkeypatch: pytest.MonkeyPatch):
+    config_module = ModuleType("web.backend.app.core.config")
+    config_module.settings = SimpleNamespace(
+        postgresql_host="localhost",
+        postgresql_port=5432,
+        postgresql_user="postgres",
+        postgresql_password="postgres",
+        postgresql_database="mystocks",
+        tdengine_host="localhost",
+        tdengine_port=6030,
+        tdengine_user="root",
+        tdengine_password="taosdata",
+        tdengine_database="market_data",
+    )
+    monkeypatch.setitem(sys.modules, "web.backend.app.core.config", config_module)
+    return config_module.settings
 
 
 class TestDatabaseHealthCheck:
-    """数据库健康检查测试类 (双数据库架构: PostgreSQL + TDengine)"""
+    def test_check_postgresql_connection_returns_success_tuple(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        check_db_health_module,
+        fake_config,
+    ) -> None:
+        main_cursor = MagicMock()
+        main_cursor.fetchone.return_value = ("PostgreSQL 17.6",)
+        main_cursor.fetchall.return_value = [("prices",), ("signals",)]
 
-    @patch("psycopg2.connect")
-    def test_check_postgresql_success(self, mock_connect):
-        """测试PostgreSQL检查成功"""
-        # Mock连接和cursor
-        mock_cursor = MagicMock()
-        mock_cursor.fetchone.return_value = ("PostgreSQL 17.6",)
-        mock_cursor.fetchall.return_value = [("test_table",)]
+        monitor_cursor = MagicMock()
+        monitor_cursor.fetchall.return_value = [("alerts",)]
 
-        mock_conn = MagicMock()
-        mock_conn.cursor.return_value = mock_cursor
-        mock_connect.return_value = mock_conn
+        main_connection = MagicMock()
+        main_connection.cursor.return_value = main_cursor
+        monitor_connection = MagicMock()
+        monitor_connection.cursor.return_value = monitor_cursor
 
-        # 调用方法
-        if hasattr(check_db_health, "check_postgresql_connection"):
-            result = check_db_health.check_postgresql_connection()
+        psycopg2_module = ModuleType("psycopg2")
+        psycopg2_module.connect = MagicMock(side_effect=[main_connection, monitor_connection])
+        monkeypatch.setitem(sys.modules, "psycopg2", psycopg2_module)
 
-            # 验证
-            assert result is not None
-            assert "status" in result
-            assert result["status"] in ["success", "failed"]
-        else:
-            pytest.skip("check_postgresql_connection 函数不存在")
+        result = check_db_health_module.check_postgresql_connection()
 
-    @patch("psycopg2.connect")
-    def test_check_postgresql_connection_failure(self, mock_connect):
-        """测试PostgreSQL连接失败"""
-        # Mock连接失败
-        mock_connect.side_effect = Exception("Connection refused")
+        assert result == (True, None)
+        assert psycopg2_module.connect.call_count == 2
+        assert psycopg2_module.connect.call_args_list[0].kwargs["database"] == fake_config.postgresql_database
+        assert psycopg2_module.connect.call_args_list[1].kwargs["database"] == "mystocks_monitoring"
+        main_cursor.execute.assert_any_call("SELECT version()")
+        main_connection.close.assert_called_once()
+        monitor_connection.close.assert_called_once()
 
-        # 调用方法
-        if hasattr(check_db_health, "check_postgresql_connection"):
-            result = check_db_health.check_postgresql_connection()
+    def test_check_postgresql_connection_returns_failure_tuple(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        check_db_health_module,
+        fake_config,
+    ) -> None:
+        psycopg2_module = ModuleType("psycopg2")
+        psycopg2_module.connect = MagicMock(side_effect=Exception("Connection refused"))
+        monkeypatch.setitem(sys.modules, "psycopg2", psycopg2_module)
 
-            # 验证
-            assert result is not None
-            assert result["status"] == "failed"
-        else:
-            pytest.skip("check_postgresql_connection 函数不存在")
+        result = check_db_health_module.check_postgresql_connection()
 
-    @patch("taos.connect")
-    def test_check_tdengine_success(self, mock_connect):
-        """测试TDengine检查成功"""
-        # Mock连接和cursor
-        mock_cursor = MagicMock()
-        mock_cursor.fetchone.return_value = ("3.0.0",)
-        mock_cursor.fetchall.return_value = [("test_db",)]
+        assert result == (False, "Connection refused")
 
-        mock_conn = MagicMock()
-        mock_conn.cursor.return_value = mock_cursor
-        mock_connect.return_value = mock_conn
+    def test_check_tdengine_connection_returns_success_tuple(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        check_db_health_module,
+        fake_config,
+    ) -> None:
+        cursor = MagicMock()
+        cursor.fetchone.return_value = ("3.0.0",)
+        cursor.fetchall.return_value = [("ts_tick_data",), ("ts_kline",)]
 
-        # 调用方法
-        if hasattr(check_db_health, "check_tdengine_connection"):
-            result = check_db_health.check_tdengine_connection()
+        connection = MagicMock()
+        connection.cursor.return_value = cursor
 
-            # 验证
-            assert result is not None
-            assert "status" in result
-            assert result["status"] in ["success", "failed"]
-        else:
-            pytest.skip("check_tdengine_connection 函数不存在")
+        taos_module = ModuleType("taos")
+        taos_module.connect = MagicMock(return_value=connection)
+        monkeypatch.setitem(sys.modules, "taos", taos_module)
 
-    @patch("taos.connect")
-    def test_check_tdengine_connection_failure(self, mock_connect):
-        """测试TDengine连接失败"""
-        # Mock连接失败
-        mock_connect.side_effect = Exception("Connection refused")
+        result = check_db_health_module.check_tdengine_connection()
 
-        # 调用方法
-        if hasattr(check_db_health, "check_tdengine_connection"):
-            result = check_db_health.check_tdengine_connection()
+        assert result == (True, None)
+        taos_module.connect.assert_called_once_with(
+            host=fake_config.tdengine_host,
+            port=fake_config.tdengine_port,
+            user=fake_config.tdengine_user,
+            password=fake_config.tdengine_password,
+            timeout=5000,
+        )
+        cursor.execute.assert_any_call("SELECT CLIENT_VERSION()")
+        cursor.execute.assert_any_call(f"USE {fake_config.tdengine_database}")
+        cursor.execute.assert_any_call("SHOW STABLES")
+        cursor.close.assert_called_once()
+        connection.close.assert_called_once()
 
-            # 验证
-            assert result is not None
-            assert result["status"] == "failed"
-        else:
-            pytest.skip("check_tdengine_connection 函数不存在")
+    def test_check_tdengine_connection_returns_failure_tuple(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        check_db_health_module,
+        fake_config,
+    ) -> None:
+        taos_module = ModuleType("taos")
+        taos_module.connect = MagicMock(side_effect=Exception("Connection refused"))
+        monkeypatch.setitem(sys.modules, "taos", taos_module)
+
+        result = check_db_health_module.check_tdengine_connection()
+
+        assert result == (False, "Connection refused")
+
+    def test_check_redis_connection_returns_success_tuple(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        check_db_health_module,
+        fake_config,
+    ) -> None:
+        redis_client = MagicMock()
+        redis_client.info.return_value = {"redis_version": "7.0.0", "used_memory_human": "1.00M"}
+        redis_client.dbsize.return_value = 12
+
+        redis_module = ModuleType("redis")
+        redis_module.Redis = MagicMock(return_value=redis_client)
+        monkeypatch.setitem(sys.modules, "redis", redis_module)
+        monkeypatch.setattr(
+            check_db_health_module,
+            "get_redis_connection_kwargs",
+            lambda *_args, **_kwargs: {
+                "host": "localhost",
+                "port": 6379,
+                "password": None,
+                "db": 1,
+            },
+        )
+
+        result = check_db_health_module.check_redis_connection()
+
+        assert result == (True, None)
+        redis_module.Redis.assert_called_once()
+        redis_client.ping.assert_called_once()
+        redis_client.close.assert_called_once()
 
 
-class TestHealthCheckIntegration:
-    """集成测试"""
+class TestHealthCheckMain:
+    def test_main_summarizes_partial_failure_and_returns_non_zero(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str],
+        check_db_health_module,
+    ) -> None:
+        monkeypatch.setattr(check_db_health_module, "check_postgresql_connection", lambda: (True, None))
+        monkeypatch.setattr(check_db_health_module, "check_tdengine_connection", lambda: (False, "tdengine down"))
+        monkeypatch.setattr(check_db_health_module, "check_redis_connection", lambda: (True, None))
 
-    @pytest.mark.integration
-    @pytest.mark.slow
-    def test_run_all_checks(self):
-        """测试运行所有检查（可选）"""
-        try:
-            results = []
+        exit_code = check_db_health_module.main()
+        output = capsys.readouterr().out
 
-            # 运行 PostgreSQL 检查
-            if hasattr(check_db_health, "check_postgresql_connection"):
-                postgresql_result = check_db_health.check_postgresql_connection()
-                results.append(postgresql_result)
-
-            # 运行 TDengine 检查
-            if hasattr(check_db_health, "check_tdengine_connection"):
-                tdengine_result = check_db_health.check_tdengine_connection()
-                results.append(tdengine_result)
-
-            # 验证结果
-            if results:
-                assert all(r is not None for r in results)
-                assert all("status" in r for r in results)
-            else:
-                pytest.skip("没有可用的健康检查函数")
-
-        except Exception as e:
-            pytest.skip(f"健康检查失败: {str(e)}")
-
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v", "--tb=short"])
+        assert exit_code == 1
+        assert "MyStocks 数据库健康检查" in output
+        assert "总计: 2/3 个数据库连接成功" in output
+        assert "【TDengine修复】" in output
+        assert "【Redis修复】" not in output

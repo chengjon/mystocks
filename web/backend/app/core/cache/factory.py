@@ -1,12 +1,8 @@
 """缓存管理器子模块"""
 
 import logging
-import time
-from collections import OrderedDict
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
-import pandas as pd
 
 logger = logging.getLogger(__name__)
 

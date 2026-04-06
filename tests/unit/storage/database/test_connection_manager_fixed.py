@@ -1,431 +1,176 @@
 """
-DatabaseConnectionManager 修复版Mock测试
-正确处理模块内导入的Mock策略
+DatabaseConnectionManager 模块契约测试
+
+这份测试关注模块级导入、副作用初始化和较细的边界语义。
+前两份 connection_manager 测试覆盖核心行为，这里补足剩余分支。
 """
 
-import os
-import sys
-from unittest.mock import Mock, patch
+from __future__ import annotations
 
+import importlib
+from types import SimpleNamespace
+from unittest.mock import Mock
+
+import dotenv
 import pytest
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../../.."))
-
-
-class TestDatabaseConnectionManagerFixed:
-    """正确模拟模块内导入的测试"""
-
-    @patch("src.storage.database.connection_manager.load_dotenv")
-    @patch("src.storage.database.connection_manager.os.getenv")
-    def test_initialization_success(self, mock_getenv, mock_load_dotenv):
-        """测试管理器初始化成功"""
-
-        # 设置环境变量
-        def getenv_side_effect(key, default=None):
-            env_vars = {
-                "TDENGINE_HOST": "localhost",
-                "TDENGINE_PORT": "6041",
-                "TDENGINE_USER": "root",
-                "TDENGINE_PASSWORD": "your-tdengine-password",
-                "TDENGINE_DATABASE": "test_db",
-                "POSTGRESQL_HOST": "localhost",
-                "POSTGRESQL_PORT": "5432",
-                "POSTGRESQL_USER": "postgres",
-                "POSTGRESQL_PASSWORD": "password",
-                "POSTGRESQL_DATABASE": "test_db",
-            }
-            return env_vars.get(key, default)
-
-        mock_getenv.side_effect = getenv_side_effect
-
-        try:
-            from src.storage.database.connection_manager import (
-                DatabaseConnectionManager,
-            )
-
-            manager = DatabaseConnectionManager()
-
-            # 验证初始化结果
-            assert hasattr(manager, "_connections")
-            assert isinstance(manager._connections, dict)
-            assert len(manager._connections) == 0
-        except EnvironmentError:
-            pytest.skip("Environment variables validation failed")
-
-    @patch("src.storage.database.connection_manager.load_dotenv")
-    @patch("src.storage.database.connection_manager.os.getenv")
-    def test_initialization_missing_env_vars(self, mock_getenv, mock_load_dotenv):
-        """测试缺少环境变量时的初始化失败"""
-        mock_getenv.return_value = None
-
-        try:
-            from src.storage.database.connection_manager import (
-                DatabaseConnectionManager,
-            )
-
-            with pytest.raises(EnvironmentError, match="缺少必需的环境变量"):
-                DatabaseConnectionManager()
-        except ImportError:
-            pytest.skip("DatabaseConnectionManager not available")
-
-    @patch("src.storage.database.connection_manager.load_dotenv")
-    @patch("src.storage.database.connection_manager.os.getenv")
-    def test_validate_env_variables_method(self, mock_getenv, mock_load_dotenv):
-        """测试环境变量验证方法"""
-
-        # 测试完整环境变量
-        def getenv_complete(key, default=None):
-            env_vars = {
-                "TDENGINE_HOST": "localhost",
-                "TDENGINE_PORT": "6041",
-                "TDENGINE_USER": "root",
-                "TDENGINE_PASSWORD": "your-tdengine-password",
-                "TDENGINE_DATABASE": "test_db",
-                "POSTGRESQL_HOST": "localhost",
-                "POSTGRESQL_PORT": "5432",
-                "POSTGRESQL_USER": "postgres",
-                "POSTGRESQL_PASSWORD": "password",
-                "POSTGRESQL_DATABASE": "test_db",
-            }
-            return env_vars.get(key, default)
-
-        # 测试缺失环境变量
-        def getenv_missing(key, default=None):
-            env_vars = {
-                "TDENGINE_HOST": "localhost",
-                # 缺少其他变量
-            }
-            return env_vars.get(key, default)
-
-        mock_getenv.side_effect = getenv_complete
-
-        try:
-            from src.storage.database.connection_manager import (
-                DatabaseConnectionManager,
-            )
-
-            # 完整环境变量应该成功
-            manager = DatabaseConnectionManager()
-            assert manager is not None
-
-            # 切换到缺失环境变量
-            mock_getenv.side_effect = getenv_missing
-
-            # 缺失环境变量应该失败
-            with pytest.raises(EnvironmentError):
-                DatabaseConnectionManager()
-
-        except ImportError:
-            pytest.skip("DatabaseConnectionManager not available")
-
-    @patch("src.storage.database.connection_manager.load_dotenv")
-    @patch("src.storage.database.connection_manager.os.getenv")
-    def test_connections_dict_management(self, mock_getenv, mock_load_dotenv):
-        """测试连接字典管理"""
-        mock_getenv.return_value = "mock_value"
-
-        try:
-            from src.storage.database.connection_manager import (
-                DatabaseConnectionManager,
-            )
-
-            # Mock验证方法以跳过环境变量检查
-            with patch.object(DatabaseConnectionManager, "_validate_env_variables"):
-                manager = DatabaseConnectionManager()
-
-                # 初始状态
-                assert len(manager._connections) == 0
-                assert isinstance(manager._connections, dict)
-
-                # 模拟添加连接
-                mock_conn = Mock()
-                manager._connections["test"] = mock_conn
-
-                # 验证连接已添加
-                assert len(manager._connections) == 1
-                assert manager._connections["test"] == mock_conn
-
-        except ImportError:
-            pytest.skip("DatabaseConnectionManager not available")
-
-    @patch("src.storage.database.connection_manager.load_dotenv")
-    @patch("src.storage.database.connection_manager.os.getenv")
-    def test_close_all_connections_logic(self, mock_getenv, mock_load_dotenv):
-        """测试关闭所有连接的逻辑"""
-        mock_getenv.return_value = "mock_value"
-
-        try:
-            from src.storage.database.connection_manager import (
-                DatabaseConnectionManager,
-            )
-
-            with patch.object(DatabaseConnectionManager, "_validate_env_variables"):
-                manager = DatabaseConnectionManager()
-
-                # 模拟各种类型的连接
-                mock_tdengine = Mock()
-                mock_postgresql = Mock()
-                mock_redis = Mock()
-
-                # 设置连接
-                manager._connections = {
-                    "tdengine": mock_tdengine,
-                    "postgresql": mock_postgresql,
-                    "redis": mock_redis,
-                }
-
-                # 调用关闭所有连接
-                manager.close_all_connections()
-
-                # 验证各种关闭方法被调用
-                mock_tdengine.close.assert_called_once()
-                mock_postgresql.closeall.assert_called_once()
-                mock_redis.close.assert_called_once()
-
-                # 验证连接字典被清空
-                assert len(manager._connections) == 0
-
-        except ImportError:
-            pytest.skip("DatabaseConnectionManager not available")
-
-    @patch("src.storage.database.connection_manager.load_dotenv")
-    @patch("src.storage.database.connection_manager.os.getenv")
-    def test_close_all_connections_with_exceptions(self, mock_getenv, mock_load_dotenv):
-        """测试关闭连接时处理异常"""
-        mock_getenv.return_value = "mock_value"
-
-        try:
-            from src.storage.database.connection_manager import (
-                DatabaseConnectionManager,
-            )
-
-            with patch.object(DatabaseConnectionManager, "_validate_env_variables"):
-                manager = DatabaseConnectionManager()
-
-                # 模拟关闭时会抛出异常的连接
-                mock_failing_conn = Mock()
-                mock_failing_conn.close.side_effect = Exception("Close failed")
-
-                mock_working_conn = Mock()
-
-                manager._connections = {
-                    "tdengine": mock_failing_conn,  # 使用实际存在的类型
-                    "postgresql": mock_working_conn,
-                }
-
-                # 调用关闭所有连接不应该因为异常而中断
-                try:
-                    manager.close_all_connections()
-                except Exception:
-                    pytest.fail("close_all_connections should not raise exceptions")
-
-                # 验证连接都尝试关闭（允许被异常处理捕获）
-                assert mock_failing_conn.close.call_count >= 1
-                mock_working_conn.closeall.assert_called_once()
-
-                # 验证连接字典被清空
-                assert len(manager._connections) == 0
-
-        except ImportError:
-            pytest.skip("DatabaseConnectionManager not available")
-
-    @patch("src.storage.database.connection_manager.load_dotenv")
-    @patch("src.storage.database.connection_manager.os.getenv")
-    def test_return_postgresql_connection(self, mock_getenv, mock_load_dotenv):
-        """测试归还PostgreSQL连接"""
-        mock_getenv.return_value = "mock_value"
-
-        try:
-            from src.storage.database.connection_manager import (
-                DatabaseConnectionManager,
-            )
-
-            with patch.object(DatabaseConnectionManager, "_validate_env_variables"):
-                manager = DatabaseConnectionManager()
-
-                # 模拟PostgreSQL连接池
-                mock_pool = Mock()
-                mock_connection = Mock()
-
-                manager._connections = {"postgresql": mock_pool}
-
-                # 调用归还连接
-                manager._return_postgresql_connection(mock_connection)
-
-                # 验证连接被归还到池中
-                mock_pool.putconn.assert_called_once_with(mock_connection)
-
-                # 测试没有PostgreSQL连接池的情况
-                manager._connections = {}
-
-                # 调用归还连接不应该出错
-                try:
-                    manager._return_postgresql_connection(mock_connection)
-                except Exception:
-                    pytest.fail("_return_postgresql_connection should not raise exceptions when no pool exists")
-
-        except ImportError:
-            pytest.skip("DatabaseConnectionManager not available")
-
-    @patch("src.storage.database.connection_manager.load_dotenv")
-    @patch("src.storage.database.connection_manager.os.getenv")
-    def test_get_connection_manager_singleton(self, mock_getenv, mock_load_dotenv):
-        """测试全局连接管理器单例模式"""
-        mock_getenv.return_value = "mock_value"
-
-        try:
-            from src.storage.database.connection_manager import get_connection_manager
-
-            # Mock DatabaseConnectionManager以避免实际初始化
-            with patch("src.storage.database.connection_manager.DatabaseConnectionManager") as mock_manager_class:
-                mock_instance = Mock()
-                mock_manager_class.return_value = mock_instance
-
-                # 第一次调用应该创建新实例
-                manager1 = get_connection_manager()
-                assert mock_manager_class.call_count == 1
-
-                # 第二次调用应该返回相同实例
-                manager2 = get_connection_manager()
-                assert mock_manager_class.call_count == 1  # 没有再次创建
-
-                # 验证返回相同实例
-                assert manager1 == manager2
-
-        except ImportError:
-            pytest.skip("get_connection_manager not available")
-
-    def test_module_structure(self):
-        """测试模块结构"""
-        try:
-            from src.storage.database.connection_manager import (
-                DatabaseConnectionManager,
-                get_connection_manager,
-            )
-
-            # 验证类存在
-            assert DatabaseConnectionManager is not None
-            assert callable(DatabaseConnectionManager)
-
-            # 验证函数存在
-            assert get_connection_manager is not None
-            assert callable(get_connection_manager)
-
-            # 验证类方法存在
-            expected_methods = [
-                "__init__",
-                "_validate_env_variables",
-                "get_tdengine_connection",
-                "get_postgresql_connection",
-                "_return_postgresql_connection",
-                "get_redis_connection",
-                "close_all_connections",
-                "test_all_connections",
-            ]
-
-            for method_name in expected_methods:
-                assert hasattr(DatabaseConnectionManager, method_name), f"Missing method: {method_name}"
-
-        except ImportError:
-            pytest.skip("Module structure test failed")
-
-    @patch("src.storage.database.connection_manager.load_dotenv")
-    @patch("src.storage.database.connection_manager.os.getenv")
-    def test_environment_variable_parsing(self, mock_getenv, mock_load_dotenv):
-        """测试环境变量解析逻辑"""
-
-        # 测试完整的环境变量集合
-        def getenv_side_effect(key, default=None):
-            env_vars = {
-                "TDENGINE_HOST": "localhost",
-                "TDENGINE_PORT": "6041",
-                "TDENGINE_USER": "root",
-                "TDENGINE_PASSWORD": "your-tdengine-password",
-                "TDENGINE_DATABASE": "test_db",
-                "POSTGRESQL_HOST": "localhost",
-                "POSTGRESQL_PORT": "5432",
-                "POSTGRESQL_USER": "postgres",
-                "POSTGRESQL_PASSWORD": "password",
-                "POSTGRESQL_DATABASE": "test_db",
-            }
-            return env_vars.get(key, default)
-
-        mock_getenv.side_effect = getenv_side_effect
-
-        try:
-            from src.storage.database.connection_manager import (
-                DatabaseConnectionManager,
-            )
-
-            # Mock验证方法以跳过完整环境变量检查
-            with patch.object(DatabaseConnectionManager, "_validate_env_variables"):
-                manager = DatabaseConnectionManager()
-
-                # 验证环境变量被正确读取
-                assert mock_getenv.call_count >= 0
-
-                # 重置mock调用计数
-                mock_getenv.reset_mock()
-
-                # 验证特定环境变量被正确读取
-                test_vars = [
-                    "TDENGINE_HOST",
-                    "TDENGINE_PORT",
-                    "POSTGRESQL_HOST",
-                    "POSTGRESQL_PORT",
-                ]
-                for var in test_vars:
-                    mock_getenv(var)
-                    mock_getenv.assert_called_with(var)
-
-        except ImportError:
-            pytest.skip("Environment variable parsing test failed")
-
-
-class TestConnectionManagerIntegration:
-    """测试连接管理器的集成行为"""
-
-    def test_global_instance_isolation(self):
-        """测试全局实例隔离"""
-        try:
-            # 重置全局变量
-            import src.storage.database.connection_manager as conn_module
-            from src.storage.database.connection_manager import get_connection_manager
-
-            conn_module._connection_manager = None
-
-            # Mock DatabaseConnectionManager
-            with patch("src.storage.database.connection_manager.DatabaseConnectionManager") as mock_class:
-                mock_instance = Mock()
-                mock_class.return_value = mock_instance
-
-                # 获取实例
-                instance1 = get_connection_manager()
-                instance2 = get_connection_manager()
-
-                # 验证是同一个实例
-                assert instance1 is instance2
-                assert mock_class.call_count == 1
-
-        except ImportError:
-            pytest.skip("Global instance isolation test failed")
-
-    @patch("src.storage.database.connection_manager.load_dotenv")
-    def test_load_dotenv_called(self, mock_load_dotenv):
-        """测试load_dotenv被调用"""
-        try:
-            from src.storage.database.connection_manager import (
-                DatabaseConnectionManager,
-            )
-
-            # 验证模块导入时load_dotenv被调用
-            # 由于我们在模块级别patch，这应该已经触发了调用
-            # 如果没有触发，至少验证patch存在
-            assert mock_load_dotenv is not None
-
-        except ImportError:
-            pytest.skip("Load dotenv test failed")
-
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])
+from src.storage.database import connection_manager as cm
+
+
+DEFAULT_ENV = {
+    "TDENGINE_HOST": "localhost",
+    "TDENGINE_PORT": "6030",
+    "TDENGINE_REST_PORT": None,
+    "TDENGINE_USER": "root",
+    "TDENGINE_PASSWORD": "td-secret",
+    "TDENGINE_DATABASE": "market_data",
+    "POSTGRESQL_HOST": "localhost",
+    "POSTGRESQL_PORT": "5432",
+    "POSTGRESQL_USER": "postgres",
+    "POSTGRESQL_PASSWORD": "pg-secret",
+    "POSTGRESQL_DATABASE": "mystocks",
+}
+
+
+def patch_env(monkeypatch: pytest.MonkeyPatch, **overrides: str | None) -> dict[str, str | None]:
+    values = {**DEFAULT_ENV, **overrides}
+    monkeypatch.setattr(cm.os, "getenv", lambda key, default=None: values.get(key, default))
+    return values
+
+
+@pytest.fixture(autouse=True)
+def reset_singleton(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(cm, "_connection_manager", None)
+
+
+def test_module_structure_exposes_expected_methods() -> None:
+    expected_methods = {
+        "__init__",
+        "_validate_env_variables",
+        "get_tdengine_connection",
+        "get_postgresql_connection",
+        "_return_postgresql_connection",
+        "get_redis_connection",
+        "close_all_connections",
+        "test_all_connections",
+    }
+
+    assert callable(cm.DatabaseConnectionManager)
+    assert callable(cm.get_connection_manager)
+    assert expected_methods.issubset(set(dir(cm.DatabaseConnectionManager)))
+
+
+def test_validate_env_variables_reports_partial_missing_set(monkeypatch: pytest.MonkeyPatch) -> None:
+    patch_env(
+        monkeypatch,
+        TDENGINE_USER=None,
+        TDENGINE_PASSWORD=None,
+        POSTGRESQL_DATABASE=None,
+    )
+
+    with pytest.raises(EnvironmentError) as excinfo:
+        cm.DatabaseConnectionManager()
+
+    message = str(excinfo.value)
+    assert "TDENGINE_USER" in message
+    assert "TDENGINE_PASSWORD" in message
+    assert "POSTGRESQL_DATABASE" in message
+
+
+def test_connections_dict_accepts_runtime_entries_after_init(monkeypatch: pytest.MonkeyPatch) -> None:
+    patch_env(monkeypatch)
+    manager = cm.DatabaseConnectionManager()
+    marker = Mock()
+
+    manager._connections["custom"] = marker
+
+    assert manager._connections == {"custom": marker}
+
+
+def test_close_all_connections_supports_plain_redis_client(monkeypatch: pytest.MonkeyPatch) -> None:
+    patch_env(monkeypatch)
+    manager = cm.DatabaseConnectionManager()
+    redis_client = Mock()
+    manager._connections = {"redis": redis_client}
+
+    manager.close_all_connections()
+
+    redis_client.close.assert_called_once_with()
+    assert manager._connections == {}
+
+
+def test_close_all_connections_continues_after_tdengine_close_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    patch_env(monkeypatch)
+    manager = cm.DatabaseConnectionManager()
+    broken_tdengine = Mock()
+    broken_tdengine.close.side_effect = RuntimeError("close failed")
+    postgresql_pool = Mock()
+    manager._connections = {"tdengine": broken_tdengine, "postgresql": postgresql_pool}
+
+    manager.close_all_connections()
+
+    postgresql_pool.closeall.assert_called_once_with()
+    assert manager._connections == {}
+
+
+def test_return_postgresql_connection_does_not_raise_without_pool(monkeypatch: pytest.MonkeyPatch) -> None:
+    patch_env(monkeypatch)
+    manager = cm.DatabaseConnectionManager()
+
+    manager._return_postgresql_connection(Mock())
+
+    assert manager._connections == {}
+
+
+def test_get_connection_manager_creates_new_singleton_after_manual_reset(monkeypatch: pytest.MonkeyPatch) -> None:
+    patch_env(monkeypatch)
+    first_manager = Mock()
+    second_manager = Mock()
+    manager_class = Mock(side_effect=[first_manager, second_manager])
+    monkeypatch.setattr(cm, "DatabaseConnectionManager", manager_class)
+
+    one = cm.get_connection_manager()
+    cm._connection_manager = None
+    two = cm.get_connection_manager()
+
+    assert one is first_manager
+    assert two is second_manager
+    assert manager_class.call_count == 2
+
+
+def test_module_reload_invokes_load_dotenv(monkeypatch: pytest.MonkeyPatch) -> None:
+    load_dotenv = Mock()
+    monkeypatch.setattr(dotenv, "load_dotenv", load_dotenv)
+
+    reloaded = importlib.reload(cm)
+
+    try:
+        load_dotenv.assert_called_once_with()
+        assert reloaded is cm
+    finally:
+        importlib.reload(cm)
+
+
+def test_get_tdengine_connection_falls_back_to_tdengine_port(monkeypatch: pytest.MonkeyPatch) -> None:
+    patch_env(monkeypatch, TDENGINE_REST_PORT=None, TDENGINE_PORT="6035")
+    connect = Mock(return_value=Mock())
+    monkeypatch.setattr(cm, "taosws", SimpleNamespace(connect=connect))
+    manager = cm.DatabaseConnectionManager()
+
+    manager.get_tdengine_connection()
+
+    assert connect.call_args.kwargs["port"] == 6035
+
+
+def test_get_postgresql_connection_wraps_pool_factory_errors(monkeypatch: pytest.MonkeyPatch) -> None:
+    patch_env(monkeypatch, POSTGRESQL_HOST="db.internal", POSTGRESQL_PORT="5439")
+    pool_factory = Mock(side_effect=RuntimeError("factory failed"))
+    monkeypatch.setattr(cm, "pool", SimpleNamespace(SimpleConnectionPool=pool_factory))
+    manager = cm.DatabaseConnectionManager()
+
+    with pytest.raises(ConnectionError) as excinfo:
+        manager.get_postgresql_connection()
+
+    message = str(excinfo.value)
+    assert "PostgreSQL连接失败" in message
+    assert "db.internal:5439" in message

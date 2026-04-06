@@ -7,12 +7,8 @@
 迁移自 OpenStock 项目
 """
 
-import json
-from datetime import datetime, timedelta
-from functools import lru_cache
-from typing import Dict, List, Optional
+from datetime import datetime
 
-import requests
 
 def parse_datetime_to_timestamp(value) -> float:
     """

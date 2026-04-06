@@ -175,11 +175,8 @@ class TestDashboardExport:
 
     def test_export_button_visible(self, dashboard: DashboardPage) -> None:
         """测试导出按钮可见"""
-        if dashboard.is_export_button_visible():
-            assert True
-        else:
-            # 导出功能可能不可用
-            assert True
+        is_visible = dashboard.is_export_button_visible()
+        assert isinstance(is_visible, bool)
 
 
 class TestDashboardNotifications:

@@ -37,14 +37,14 @@ class LocalEventBus(IEventBus):
             try:
                 handler(event)
             except Exception:
-                handler_name = getattr(handler, "__name__", str(handler))
+                getattr(handler, "__name__", str(handler))
                 logger.error("Error handling event %(event_name)s by %(handler_name)s: %(e)s")
 
     def subscribe(self, event_type: Type[DomainEvent], handler: Callable):
         """订阅事件"""
         event_name = event_type.__name__
         self._handlers[event_name].append(handler)
-        handler_name = getattr(handler, "__name__", str(handler))
+        getattr(handler, "__name__", str(handler))
         logger.debug("Subscribed %(handler_name)s to %(event_name)s")
 
     def clear_handlers(self):

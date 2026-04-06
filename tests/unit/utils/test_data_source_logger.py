@@ -108,8 +108,7 @@ class TestDataSourceLogger:
         """测试成功调用记录"""
         logger = DataSourceLogger("test_log_call")
 
-        # 使用临时日志文件避免创建实际文件
-        with patch("logging.FileHandler"):
+        with patch.object(logger.logger, "info") as mock_info:
             logger.log_call(
                 adapter_type="TestAdapter",
                 method="test_method",
@@ -118,14 +117,17 @@ class TestDataSourceLogger:
                 duration=0.123,
             )
 
-        # 验证调用成功（不会抛出异常）
-        assert True
+        mock_info.assert_called_once()
+        assert "Adapter Call: %s.%s" in mock_info.call_args[0][0]
+        assert "Params: {'symbol': 'AAPL'}" in mock_info.call_args[0][0]
+        assert "Success: True" in mock_info.call_args[0][0]
+        assert "Duration: 0.123s" in mock_info.call_args[0][0]
 
     def test_log_call_with_none_result(self):
         """测试None结果的处理"""
         logger = DataSourceLogger("test_log_none")
 
-        with patch("logging.FileHandler"):
+        with patch.object(logger.logger, "info") as mock_info:
             logger.log_call(
                 adapter_type="TestAdapter",
                 method="test_method",
@@ -134,13 +136,15 @@ class TestDataSourceLogger:
                 duration=0.456,
             )
 
-        assert True
+        mock_info.assert_called_once()
+        assert "Success: False" in mock_info.call_args[0][0]
+        assert "Duration: 0.456s" in mock_info.call_args[0][0]
 
     def test_log_call_with_error_string(self):
         """测试错误字符串结果的处理"""
         logger = DataSourceLogger("test_log_error")
 
-        with patch("logging.FileHandler"):
+        with patch.object(logger.logger, "info") as mock_info:
             logger.log_call(
                 adapter_type="TestAdapter",
                 method="test_method",
@@ -149,13 +153,15 @@ class TestDataSourceLogger:
                 duration=0.789,
             )
 
-        assert True
+        mock_info.assert_called_once()
+        assert "Success: False" in mock_info.call_args[0][0]
+        assert "Duration: 0.789s" in mock_info.call_args[0][0]
 
     def test_log_call_with_normal_string(self):
         """测试普通字符串结果的处理"""
         logger = DataSourceLogger("test_log_string")
 
-        with patch("logging.FileHandler"):
+        with patch.object(logger.logger, "info") as mock_info:
             logger.log_call(
                 adapter_type="TestAdapter",
                 method="test_method",
@@ -164,13 +170,15 @@ class TestDataSourceLogger:
                 duration=0.234,
             )
 
-        assert True
+        mock_info.assert_called_once()
+        assert "Success: True" in mock_info.call_args[0][0]
+        assert "Duration: 0.234s" in mock_info.call_args[0][0]
 
     def test_log_error(self):
         """测试错误记录"""
         logger = DataSourceLogger("test_log_error")
 
-        with patch("logging.FileHandler"):
+        with patch.object(logger.logger, "error") as mock_error:
             logger.log_error(
                 adapter_type="TestAdapter",
                 method="test_method",
@@ -178,7 +186,13 @@ class TestDataSourceLogger:
                 error="Connection timeout",
             )
 
-        assert True
+        mock_error.assert_called_once_with(
+            "Adapter Error: %s.%s Params: %s Error: %s",
+            "TestAdapter",
+            "test_method",
+            {"symbol": "GOOGL"},
+            "Connection timeout",
+        )
 
     def test_log_call_with_complex_params(self):
         """测试复杂参数的处理"""
@@ -192,7 +206,7 @@ class TestDataSourceLogger:
             "options": {"adjust": "auto", "extended": True},
         }
 
-        with patch("logging.FileHandler"):
+        with patch.object(logger.logger, "info") as mock_info:
             logger.log_call(
                 adapter_type="ComplexAdapter",
                 method="get_historical_data",
@@ -201,7 +215,11 @@ class TestDataSourceLogger:
                 duration=2.345,
             )
 
-        assert True
+        mock_info.assert_called_once()
+        assert "Adapter Call: %s.%s" in mock_info.call_args[0][0]
+        assert "symbols" in mock_info.call_args[0][0]
+        assert "Success: True" in mock_info.call_args[0][0]
+        assert "Duration: 2.345s" in mock_info.call_args[0][0]
 
     def test_log_call_with_various_durations(self):
         """测试不同持续时间的记录"""
@@ -209,7 +227,7 @@ class TestDataSourceLogger:
 
         durations = [0.001, 0.123, 1.456, 10.789, 0.0]
 
-        with patch("logging.FileHandler"):
+        with patch.object(logger.logger, "info") as mock_info:
             for duration in durations:
                 logger.log_call(
                     adapter_type="DurationTest",
@@ -219,7 +237,13 @@ class TestDataSourceLogger:
                     duration=duration,
                 )
 
-        assert True
+        assert mock_info.call_count == len(durations)
+        rendered_messages = [call.args[0] for call in mock_info.call_args_list]
+        assert "Duration: 0.001s" in rendered_messages[0]
+        assert "Duration: 0.123s" in rendered_messages[1]
+        assert "Duration: 1.456s" in rendered_messages[2]
+        assert "Duration: 10.789s" in rendered_messages[3]
+        assert "Duration: 0.000s" in rendered_messages[4]
 
 
 class TestGlobalDataSourceLogger:
@@ -233,8 +257,7 @@ class TestGlobalDataSourceLogger:
 
     def test_global_logger_functionality(self):
         """测试全局日志记录器功能"""
-        with patch("logging.FileHandler"):
-            # 测试日志记录功能正常工作
+        with patch.object(data_source_logger.logger, "info") as mock_info:
             data_source_logger.log_call(
                 adapter_type="GlobalTest",
                 method="test_method",
@@ -243,7 +266,9 @@ class TestGlobalDataSourceLogger:
                 duration=0.1,
             )
 
-        assert True
+        mock_info.assert_called_once()
+        assert "Adapter Call: %s.%s" in mock_info.call_args[0][0]
+        assert "Success: True" in mock_info.call_args[0][0]
 
 
 class TestLogDataSourceCallDecorator:
@@ -456,11 +481,12 @@ class TestLogDataSourceMethodDecorator:
             mock_logger.logger.info.assert_called_once()
 
             # 验证参数格式
-            call_args = mock_logger.logger.info.call_args[0][0]
-            assert "DataAdapter.fetch_data" in call_args
-            assert "Success: True" in call_args
-            assert "Duration:" in call_args
-            assert "Params:" in call_args
+            call_args = mock_logger.logger.info.call_args[0]
+            assert "DS Call: %s.%s" in call_args[0]
+            assert "Success: True" in call_args[0]
+            assert "Duration:" in call_args[0]
+            assert "Params:" in call_args[0]
+            assert call_args[1:] == ("DataAdapter", "fetch_data")
 
     @patch("src.utils.data_source_logger.data_source_logger")
     def test_method_decorator_failure_detection(self, mock_logger):

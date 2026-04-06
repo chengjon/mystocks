@@ -48,14 +48,18 @@ class DataException(MyStocksException):
     """数据相关异常"""
 
     def __init__(self, message: str, **kwargs):
-        super().__init__(message, error_code="DATA_ERROR", status_code=400, **kwargs)
+        kwargs.setdefault("error_code", "DATA_ERROR")
+        kwargs.setdefault("status_code", 400)
+        super().__init__(message, **kwargs)
 
 
 class DatabaseException(MyStocksException):
     """数据库相关异常"""
 
     def __init__(self, message: str, **kwargs):
-        super().__init__(message, error_code="DATABASE_ERROR", status_code=500, **kwargs)
+        kwargs.setdefault("error_code", "DATABASE_ERROR")
+        kwargs.setdefault("status_code", 500)
+        super().__init__(message, **kwargs)
 
 
 # Additional database exceptions
@@ -63,7 +67,9 @@ class DatabaseConnectionError(DatabaseException):
     """Raised when database connection fails."""
 
     def __init__(self, message: str, **kwargs):
-        super().__init__(message, error_code="DATABASE_CONNECTION_ERROR", status_code=503, **kwargs)
+        kwargs.setdefault("error_code", "DATABASE_CONNECTION_ERROR")
+        kwargs.setdefault("status_code", 503)
+        super().__init__(message, **kwargs)
 
 
 # 数据库特定异常
@@ -72,7 +78,9 @@ class DatabaseNotFoundError(DatabaseException):
 
     def __init__(self, database_name: str, **kwargs):
         message = f"Database '{database_name}' not found"
-        super().__init__(message, error_code="DATABASE_NOT_FOUND", status_code=404, **kwargs)
+        kwargs.setdefault("error_code", "DATABASE_NOT_FOUND")
+        kwargs.setdefault("status_code", 404)
+        super().__init__(message, **kwargs)
 
 
 class DatabaseOperationError(DatabaseException):
@@ -82,7 +90,9 @@ class DatabaseOperationError(DatabaseException):
         message = f"Database operation '{operation}' failed"
         if details:
             message += f": {details}"
-        super().__init__(message, error_code="DATABASE_OPERATION_ERROR", status_code=500, **kwargs)
+        kwargs.setdefault("error_code", "DATABASE_OPERATION_ERROR")
+        kwargs.setdefault("status_code", 500)
+        super().__init__(message, **kwargs)
 
 
 # 数据操作异常
@@ -93,7 +103,9 @@ class DataFetchError(DataException):
         message = f"Failed to fetch data from '{source}'"
         if details:
             message += f": {details}"
-        super().__init__(message, error_code="DATA_FETCH_ERROR", status_code=503, **kwargs)
+        kwargs.setdefault("error_code", "DATA_FETCH_ERROR")
+        kwargs.setdefault("status_code", 503)
+        super().__init__(message, **kwargs)
 
 
 class DataValidationError(DataException):
@@ -101,7 +113,9 @@ class DataValidationError(DataException):
 
     def __init__(self, field: str, value: Any, expected: str, **kwargs):
         message = f"Data validation failed for field '{field}': got {value}, expected {expected}"
-        super().__init__(message, error_code="DATA_VALIDATION_ERROR", status_code=400, **kwargs)
+        kwargs.setdefault("error_code", "DATA_VALIDATION_ERROR")
+        kwargs.setdefault("status_code", 400)
+        super().__init__(message, **kwargs)
 
 
 class DataNotFoundError(DataException):
@@ -109,21 +123,27 @@ class DataNotFoundError(DataException):
 
     def __init__(self, resource: str, identifier: Any, **kwargs):
         message = f"{resource} with identifier '{identifier}' not found"
-        super().__init__(message, error_code="DATA_NOT_FOUND", status_code=404, **kwargs)
+        kwargs.setdefault("error_code", "DATA_NOT_FOUND")
+        kwargs.setdefault("status_code", 404)
+        super().__init__(message, **kwargs)
 
 
 class NetworkException(MyStocksException):
     """网络相关异常"""
 
     def __init__(self, message: str, **kwargs):
-        super().__init__(message, error_code="NETWORK_ERROR", status_code=503, **kwargs)
+        kwargs.setdefault("error_code", "NETWORK_ERROR")
+        kwargs.setdefault("status_code", 503)
+        super().__init__(message, **kwargs)
 
 
 class NetworkError(NetworkException):
     """网络错误异常 (别名，兼容旧代码)"""
 
     def __init__(self, message: str, **kwargs):
-        super().__init__(message, error_code="NETWORK_ERROR", status_code=503, **kwargs)
+        kwargs.setdefault("error_code", "NETWORK_ERROR")
+        kwargs.setdefault("status_code", 503)
+        super().__init__(message, **kwargs)
 
 
 class ServiceError(MyStocksException):
@@ -131,28 +151,36 @@ class ServiceError(MyStocksException):
 
     def __init__(self, service: str, message: str, **kwargs):
         full_message = f"Service '{service}': {message}"
-        super().__init__(full_message, error_code="SERVICE_ERROR", status_code=503, **kwargs)
+        kwargs.setdefault("error_code", "SERVICE_ERROR")
+        kwargs.setdefault("status_code", 503)
+        super().__init__(full_message, **kwargs)
 
 
 class ProcessingException(MyStocksException):
     """数据处理相关异常"""
 
     def __init__(self, message: str, **kwargs):
-        super().__init__(message, error_code="PROCESSING_ERROR", status_code=500, **kwargs)
+        kwargs.setdefault("error_code", "PROCESSING_ERROR")
+        kwargs.setdefault("status_code", 500)
+        super().__init__(message, **kwargs)
 
 
 class BusinessLogicException(MyStocksException):
     """业务逻辑异常"""
 
     def __init__(self, message: str, **kwargs):
-        super().__init__(message, error_code="BUSINESS_LOGIC_ERROR", status_code=400, **kwargs)
+        kwargs.setdefault("error_code", "BUSINESS_LOGIC_ERROR")
+        kwargs.setdefault("status_code", 400)
+        super().__init__(message, **kwargs)
 
 
 class DataSourceException(MyStocksException):
     """数据源相关异常"""
 
     def __init__(self, message: str, **kwargs):
-        super().__init__(message, error_code="DATA_SOURCE_ERROR", status_code=503, **kwargs)
+        kwargs.setdefault("error_code", "DATA_SOURCE_ERROR")
+        kwargs.setdefault("status_code", 503)
+        super().__init__(message, **kwargs)
 
 
 # 网络异常
@@ -163,7 +191,9 @@ class ConnectionError(NetworkException):
         message = f"Connection failed to {host}"
         if port:
             message += f":{port}"
-        super().__init__(message, error_code="CONNECTION_ERROR", status_code=503, **kwargs)
+        kwargs.setdefault("error_code", "CONNECTION_ERROR")
+        kwargs.setdefault("status_code", 503)
+        super().__init__(message, **kwargs)
 
 
 class TimeoutError(NetworkException):
@@ -171,7 +201,9 @@ class TimeoutError(NetworkException):
 
     def __init__(self, operation: str, timeout: float, **kwargs):
         message = f"Operation '{operation}' timed out after {timeout}s"
-        super().__init__(message, error_code="TIMEOUT_ERROR", status_code=504, **kwargs)
+        kwargs.setdefault("error_code", "TIMEOUT_ERROR")
+        kwargs.setdefault("status_code", 504)
+        super().__init__(message, **kwargs)
 
 
 class AuthenticationError(NetworkException):
@@ -179,7 +211,9 @@ class AuthenticationError(NetworkException):
 
     def __init__(self, service: str, **kwargs):
         message = f"Authentication failed for service '{service}'"
-        super().__init__(message, error_code="AUTHENTICATION_ERROR", status_code=401, **kwargs)
+        kwargs.setdefault("error_code", "AUTHENTICATION_ERROR")
+        kwargs.setdefault("status_code", 401)
+        super().__init__(message, **kwargs)
 
 
 # 数据源特定异常
@@ -188,12 +222,9 @@ class DataSourceConnectionError(DataSourceException):
 
     def __init__(self, source_name: str, **kwargs):
         message = f"Failed to connect to data source '{source_name}'"
-        super().__init__(
-            message,
-            error_code="DATA_SOURCE_CONNECTION_ERROR",
-            status_code=503,
-            **kwargs,
-        )
+        kwargs.setdefault("error_code", "DATA_SOURCE_CONNECTION_ERROR")
+        kwargs.setdefault("status_code", 503)
+        super().__init__(message, **kwargs)
 
 
 class DataSourceConfigError(DataSourceException):
@@ -201,7 +232,9 @@ class DataSourceConfigError(DataSourceException):
 
     def __init__(self, source_name: str, config_issue: str, **kwargs):
         message = f"Data source '{source_name}' configuration error: {config_issue}"
-        super().__init__(message, error_code="DATA_SOURCE_CONFIG_ERROR", status_code=500, **kwargs)
+        kwargs.setdefault("error_code", "DATA_SOURCE_CONFIG_ERROR")
+        kwargs.setdefault("status_code", 500)
+        super().__init__(message, **kwargs)
 
 
 class DataSourceDataNotFound(DataSourceException):
@@ -209,7 +242,9 @@ class DataSourceDataNotFound(DataSourceException):
 
     def __init__(self, source_name: str, data_identifier: str, **kwargs):
         message = f"Data not found in source '{source_name}': {data_identifier}"
-        super().__init__(message, error_code="DATA_SOURCE_DATA_NOT_FOUND", status_code=404, **kwargs)
+        kwargs.setdefault("error_code", "DATA_SOURCE_DATA_NOT_FOUND")
+        kwargs.setdefault("status_code", 404)
+        super().__init__(message, **kwargs)
 
 
 class DataSourceQueryError(DataSourceException):
@@ -219,7 +254,9 @@ class DataSourceQueryError(DataSourceException):
         message = f"Query failed in source '{source_name}': {query}"
         if details:
             message += f" - {details}"
-        super().__init__(message, error_code="DATA_SOURCE_QUERY_ERROR", status_code=500, **kwargs)
+        kwargs.setdefault("error_code", "DATA_SOURCE_QUERY_ERROR")
+        kwargs.setdefault("status_code", 500)
+        super().__init__(message, **kwargs)
 
 
 # 业务逻辑异常
@@ -228,7 +265,9 @@ class InvalidParameterError(BusinessLogicException):
 
     def __init__(self, parameter: str, value: Any, reason: str, **kwargs):
         message = f"Invalid parameter '{parameter}' with value '{value}': {reason}"
-        super().__init__(message, error_code="INVALID_PARAMETER", status_code=400, **kwargs)
+        kwargs.setdefault("error_code", "INVALID_PARAMETER")
+        kwargs.setdefault("status_code", 400)
+        super().__init__(message, **kwargs)
 
 
 class InsufficientPermissionsError(BusinessLogicException):
@@ -236,7 +275,9 @@ class InsufficientPermissionsError(BusinessLogicException):
 
     def __init__(self, operation: str, required_role: str, **kwargs):
         message = f"Insufficient permissions for operation '{operation}'. Required role: {required_role}"
-        super().__init__(message, error_code="INSUFFICIENT_PERMISSIONS", status_code=403, **kwargs)
+        kwargs.setdefault("error_code", "INSUFFICIENT_PERMISSIONS")
+        kwargs.setdefault("status_code", 403)
+        super().__init__(message, **kwargs)
 
 
 class ResourceLimitExceededError(BusinessLogicException):
@@ -244,7 +285,9 @@ class ResourceLimitExceededError(BusinessLogicException):
 
     def __init__(self, resource: str, limit: Any, current: Any, **kwargs):
         message = f"Resource limit exceeded for '{resource}': limit={limit}, current={current}"
-        super().__init__(message, error_code="RESOURCE_LIMIT_EXCEEDED", status_code=429, **kwargs)
+        kwargs.setdefault("error_code", "RESOURCE_LIMIT_EXCEEDED")
+        kwargs.setdefault("status_code", 429)
+        super().__init__(message, **kwargs)
 
 
 # 导出所有异常类
