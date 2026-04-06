@@ -1,11 +1,10 @@
 """
 PostgreSQL 索引优化器
 
-优化PostgreSQL的单列索引、复合索引、部分索引和BRIN索引
+优化 PostgreSQL 的单列索引、复合索引、部分索引和 BRIN 索引
 """
 
 import logging
-import os
 from datetime import datetime
 from typing import Dict
 
@@ -13,17 +12,15 @@ logger = logging.getLogger(__name__)
 
 
 class PostgreSQLIndexOptimizer:
-    """PostgreSQL索引优化管理器"""
+    """PostgreSQL 索引优化管理器"""
 
     def __init__(self):
-        """初始化PostgreSQL索引优化器"""
-        self.host = os.getenv("POSTGRESQL_HOST", "localhost")
-        self.port = int(os.getenv("POSTGRESQL_PORT", "5432"))
-        self.user = os.getenv("POSTGRESQL_USER", "postgres")
-        self.password = os.getenv("POSTGRESQL_PASSWORD")
-        if not self.password:
-            raise ValueError("POSTGRESQL_PASSWORD environment variable is required")
-        self.database = os.getenv("POSTGRESQL_DATABASE", "mystocks")
+        """初始化 PostgreSQL 索引优化器"""
+        self.host = "localhost"
+        self.port = 5432
+        self.user = "postgres"
+        self.password = None
+        self.database = "mystocks"
 
         self.optimization_stats = {
             "indexes_created": 0,
@@ -33,17 +30,7 @@ class PostgreSQLIndexOptimizer:
         }
 
     def design_single_column_indexes(self) -> Dict:
-        """
-        设计单列索引
-
-        Returns:
-            {
-                "indexes": [
-                    {"column": "...", "table": "...", "reason": "...", "type": "BTREE/HASH"}
-                ],
-                "implementation": "..."
-            }
-        """
+        """设计单列索引。"""
         logger.info("Designing single-column indexes for PostgreSQL...")
 
         indexes = [
@@ -121,16 +108,7 @@ class PostgreSQLIndexOptimizer:
         }
 
     def design_composite_indexes(self) -> Dict:
-        """
-        设计复合索引
-
-        Returns:
-            {
-                "composite_indexes": [
-                    {"columns": [...], "reason": "...", "selectivity": "..."}
-                ]
-            }
-        """
+        """设计复合索引。"""
         logger.info("Designing composite indexes for PostgreSQL...")
 
         composite_indexes = [
@@ -193,14 +171,7 @@ class PostgreSQLIndexOptimizer:
         }
 
     def design_partial_indexes(self) -> Dict:
-        """
-        设计部分索引（有条件的索引）
-
-        Returns:
-            {
-                "partial_indexes": [...]
-            }
-        """
+        """设计部分索引。"""
         logger.info("Designing partial indexes for PostgreSQL...")
 
         partial_indexes = [
@@ -256,14 +227,7 @@ class PostgreSQLIndexOptimizer:
         }
 
     def design_brin_indexes(self) -> Dict:
-        """
-        设计BRIN索引（块范围索引，适合大型有序表）
-
-        Returns:
-            {
-                "brin_indexes": [...]
-            }
-        """
+        """设计 BRIN 索引。"""
         logger.info("Designing BRIN indexes for PostgreSQL...")
 
         brin_indexes = [
@@ -322,7 +286,7 @@ class PostgreSQLIndexOptimizer:
         }
 
     def get_optimization_summary(self) -> Dict:
-        """获取索引优化总结"""
+        """获取索引优化总结。"""
         logger.info("Generating PostgreSQL optimization summary...")
 
         single_col = self.design_single_column_indexes()
@@ -352,7 +316,7 @@ class PostgreSQLIndexOptimizer:
                 "time_range_queries": "80-90% smaller index + fast scans",
             },
             "implementation_phases": [
-                "Phase 1: Create single-column indexes (8 indexes)",
+                "Phase 1: Create single-column indexes (7 indexes)",
                 "Phase 2: Create composite indexes (4 indexes)",
                 "Phase 3: Create BRIN indexes (4 indexes)",
                 "Phase 4: Create partial indexes (3 indexes)",

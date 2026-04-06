@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 02
-status: awaiting-approval
+status: executing
 last_updated: "2026-04-07"
 current_plan: "02-01"
 blocker: "DELETION-CANDIDATES.md pending user approval before Plans 02-04"
@@ -25,7 +25,8 @@ progress:
 **Project:** MyStocks Codebase Consolidation
 **Initialized:** 2026-04-06
 **Current Phase:** 02
-**Blocker:** DELETION-CANDIDATES.md awaiting user approval (Plan 02-01 complete, Plans 02-04 blocked on approval)
+**Progress:** Plans 02-01 ✓, 02-02 ✓, 02-03 ✓ (all merge work pre-done), 02-04 pending (deletion)
+**Blocker:** None — Plans 02-01 through 02-03 complete, Plan 02-04 (deletion) requires user approval checkpoint
 
 ---
 
@@ -53,7 +54,7 @@ See: .planning/PROJECT.md (updated 2026-04-06)
 | Phase | Name | Status | Plans | Progress |
 |-------|------|--------|-------|----------|
 | 1 | Lint Baseline | ✓ Complete | 1 | 100% |
-| 2 | Dead Code Removal | Awaiting Approval | 1/4 | 25% |
+| 2 | Dead Code Removal | Executing | 3/4 | 75% |
 | 3 | Structural Consolidation | Pending | 0 | 0% |
 | 4 | Naming & Polish | Pending | 0 | 0% |
 

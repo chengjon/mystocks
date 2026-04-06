@@ -6,7 +6,10 @@
 # 说明：重构后的数据库服务统一入口
 """
 
+import os
+import sys
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, List, Optional
 
 from loguru import logger
@@ -151,20 +154,64 @@ class DatabaseService(BaseDatabaseService):
             if not query_params:
                 return {"success": False, "error": "缺少查询参数", "data": None}
 
-            # 导入问财相关功能
-            from src.routes.wencai_routes import execute_custom_query, get_query_results
+            from src.mock.mock_Wencai import execute_custom_query as execute_mock_custom_query
+            from src.mock.mock_Wencai import get_query_results as get_mock_query_results
 
             query_name = query_params.get("query_name")
             query_text = query_params.get("query_text")
             pages = query_params.get("pages", 1)
+            limit = query_params.get("limit", pages * 20)
+            offset = query_params.get("offset", 0)
+            use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
 
             if query_text:
-                # 执行自定义查询
                 request_data = {"query_text": query_text, "pages": pages}
-                result = execute_custom_query(request_data)
+
+                if use_mock:
+                    result = execute_mock_custom_query(request_data)
+                else:
+                    # Bridge to the canonical backend service layer without depending on legacy src.routes.
+                    backend_root = Path(__file__).resolve().parents[3] / "web" / "backend"
+                    backend_root_str = str(backend_root)
+                    if backend_root_str not in sys.path:
+                        sys.path.insert(0, backend_root_str)
+
+                    from app.services.wencai_service import WencaiService
+
+                    service = WencaiService()
+                    df = service.adapter.fetch_data(query=query_text, pages=pages)
+
+                    if df.empty:
+                        result = {
+                            "success": True,
+                            "message": "查询成功，但没有找到匹配的数据",
+                            "query_text": query_text,
+                            "total_records": 0,
+                            "results": [],
+                            "columns": [],
+                        }
+                    else:
+                        result = {
+                            "success": True,
+                            "message": f"查询成功，共获取 {len(df)} 条数据",
+                            "query_text": query_text,
+                            "total_records": len(df),
+                            "results": df.to_dict("records"),
+                            "columns": list(df.columns),
+                        }
             elif query_name:
-                # 执行预定义查询
-                result = get_query_results(query_name, query_params)
+                if use_mock:
+                    result = get_mock_query_results(query_name, limit=limit, offset=offset)
+                else:
+                    backend_root = Path(__file__).resolve().parents[3] / "web" / "backend"
+                    backend_root_str = str(backend_root)
+                    if backend_root_str not in sys.path:
+                        sys.path.insert(0, backend_root_str)
+
+                    from app.services.wencai_service import WencaiService
+
+                    service = WencaiService()
+                    result = service.get_query_results(query_name=query_name, limit=limit, offset=offset)
             else:
                 return {"success": False, "error": "缺少查询名称或查询文本", "data": None}
 

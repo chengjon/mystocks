@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 class SlowQueryAnalyzer:
     """慢查询分析管理器"""
 
-    # 慢查询阈值（毫秒）
     SLOW_QUERY_THRESHOLD_MS = 500
     VERY_SLOW_QUERY_THRESHOLD_MS = 2000
 
@@ -24,15 +23,7 @@ class SlowQueryAnalyzer:
         self.optimization_recommendations = []
 
     def analyze_postgresql_slow_queries(self) -> Dict:
-        """
-        分析PostgreSQL慢查询
-
-        Returns:
-            {
-                "slow_queries": [...],
-                "recommendations": [...]
-            }
-        """
+        """分析 PostgreSQL 慢查询。"""
         logger.info("Analyzing PostgreSQL slow queries...")
 
         slow_queries = [
@@ -87,9 +78,7 @@ class SlowQueryAnalyzer:
                 "severity": "MEDIUM",
                 "root_cause": "No index on (user_id, symbol); requires full table scan for aggregation",
                 "explain_plan_issue": "Hash Aggregate with Seq Scan",
-                "optimization": (
-                    "CREATE INDEX idx_transaction_records_user_symbol " "ON transaction_records(user_id, symbol)"
-                ),
+                "optimization": "CREATE INDEX idx_transaction_records_user_symbol ON transaction_records(user_id, symbol)",
                 "expected_speedup": "8-15x faster",
                 "affected_queries_per_day": 50,
             },
@@ -107,9 +96,7 @@ class SlowQueryAnalyzer:
                 "priority": "HIGH",
                 "recommendation": "Create index on (user_id, created_at) for order_records",
                 "impact": "Reduce aggregation query time from 1200ms to 50-80ms",
-                "implementation": (
-                    "CREATE INDEX idx_order_records_user_date " "ON order_records(user_id, created_at DESC);"
-                ),
+                "implementation": "CREATE INDEX idx_order_records_user_date ON order_records(user_id, created_at DESC);",
                 "estimated_queries_improved": 100,
             },
             {
@@ -123,24 +110,16 @@ class SlowQueryAnalyzer:
 
         return {
             "total_slow_queries_identified": len(slow_queries),
-            "critical_queries": sum(1 for q in slow_queries if q["severity"] == "CRITICAL"),
-            "high_priority_queries": sum(1 for q in slow_queries if q["severity"] == "HIGH"),
+            "critical_queries": sum(1 for query in slow_queries if query["severity"] == "CRITICAL"),
+            "high_priority_queries": sum(1 for query in slow_queries if query["severity"] == "HIGH"),
             "slow_queries": slow_queries,
             "recommendations": recommendations,
-            "total_daily_slow_queries": sum(q["affected_queries_per_day"] for q in slow_queries),
+            "total_daily_slow_queries": sum(query["affected_queries_per_day"] for query in slow_queries),
             "estimated_total_speedup": "10-30x average improvement",
         }
 
     def analyze_tdengine_slow_queries(self) -> Dict:
-        """
-        分析TDengine慢查询
-
-        Returns:
-            {
-                "slow_queries": [...],
-                "recommendations": [...]
-            }
-        """
+        """分析 TDengine 慢查询。"""
         logger.info("Analyzing TDengine slow queries...")
 
         slow_queries = [
@@ -216,36 +195,23 @@ class SlowQueryAnalyzer:
 
         return {
             "total_slow_queries_identified": len(slow_queries),
-            "critical_queries": sum(1 for q in slow_queries if q["severity"] == "CRITICAL"),
-            "high_priority_queries": sum(1 for q in slow_queries if q["severity"] == "HIGH"),
+            "critical_queries": sum(1 for query in slow_queries if query["severity"] == "CRITICAL"),
+            "high_priority_queries": sum(1 for query in slow_queries if query["severity"] == "HIGH"),
             "slow_queries": slow_queries,
             "recommendations": recommendations,
-            "total_daily_slow_queries": sum(q["affected_queries_per_day"] for q in slow_queries),
+            "total_daily_slow_queries": sum(query["affected_queries_per_day"] for query in slow_queries),
             "estimated_total_speedup": "15-40x average improvement",
         }
 
     def generate_explain_analysis(self, query: str, database: str = "postgresql") -> Dict:
-        """
-        生成EXPLAIN分析
-
-        Args:
-            query: SQL查询语句
-            database: 数据库类型 (postgresql | tdengine)
-
-        Returns:
-            {
-                "query": "...",
-                "execution_plan": "...",
-                "bottlenecks": [...],
-                "optimization_suggestions": [...]
-            }
-        """
+        """生成 EXPLAIN 分析。"""
         logger.info("Generating EXPLAIN analysis for %s...", database)
 
         bottlenecks = []
         optimization_suggestions = []
+        normalized_query = query.lower()
 
-        if "sequential" in query.lower() or "seq scan" in query.lower():
+        if "sequential" in normalized_query or "seq scan" in normalized_query:
             bottlenecks.append(
                 {
                     "type": "FULL TABLE SCAN",
@@ -256,7 +222,7 @@ class SlowQueryAnalyzer:
             )
             optimization_suggestions.append("Create index on filtered columns")
 
-        if "join" in query.lower():
+        if "join" in normalized_query:
             bottlenecks.append(
                 {
                     "type": "JOIN WITHOUT INDEX",
@@ -267,7 +233,7 @@ class SlowQueryAnalyzer:
             )
             optimization_suggestions.append("Create indexes on join columns (both sides)")
 
-        if "group by" in query.lower() and "index" not in query.lower():
+        if "group by" in normalized_query and "index" not in normalized_query:
             bottlenecks.append(
                 {
                     "type": "UNINDEXED AGGREGATION",
@@ -287,7 +253,7 @@ class SlowQueryAnalyzer:
         }
 
     def get_analysis_summary(self) -> Dict:
-        """获取分析总结"""
+        """获取分析总结。"""
         pg_analysis = self.analyze_postgresql_slow_queries()
         td_analysis = self.analyze_tdengine_slow_queries()
 
@@ -298,7 +264,7 @@ class SlowQueryAnalyzer:
             "total_slow_queries": (
                 pg_analysis["total_slow_queries_identified"] + td_analysis["total_slow_queries_identified"]
             ),
-            "total_daily_impact": (pg_analysis["total_daily_slow_queries"] + td_analysis["total_daily_slow_queries"]),
+            "total_daily_impact": pg_analysis["total_daily_slow_queries"] + td_analysis["total_daily_slow_queries"],
             "estimated_cumulative_slowdown_hours_per_day": round(
                 (pg_analysis["total_daily_slow_queries"] * 1.2 + td_analysis["total_daily_slow_queries"] * 1.5) / 3600,
                 2,

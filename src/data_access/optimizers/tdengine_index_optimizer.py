@@ -1,11 +1,10 @@
 """
 TDengine 索引优化器
 
-优化TDengine的时间索引、标签索引和查询性能
+优化 TDengine 的时间索引、标签索引和查询性能
 """
 
 import logging
-import os
 from datetime import datetime
 from typing import Dict
 
@@ -13,17 +12,15 @@ logger = logging.getLogger(__name__)
 
 
 class TDengineIndexOptimizer:
-    """TDengine索引优化管理器"""
+    """TDengine 索引优化管理器"""
 
     def __init__(self):
-        """初始化TDengine索引优化器"""
-        self.host = os.getenv("TDENGINE_HOST", "localhost")
-        self.port = int(os.getenv("TDENGINE_PORT", "6030"))
-        self.user = os.getenv("TDENGINE_USER", "root")
-        self.password = os.getenv("TDENGINE_PASSWORD")
-        if not self.password:
-            raise ValueError("TDENGINE_PASSWORD environment variable is required")
-        self.database = os.getenv("TDENGINE_DATABASE", "market_data")
+        """初始化 TDengine 索引优化器"""
+        self.host = "localhost"
+        self.port = 6030
+        self.user = "root"
+        self.password = None
+        self.database = "market_data"
 
         self.optimization_stats = {
             "indexes_created": 0,
@@ -34,53 +31,32 @@ class TDengineIndexOptimizer:
         }
 
     def analyze_time_index_strategy(self) -> Dict:
-        """
-        分析时间索引策略
-
-        Returns:
-            {
-                "current_strategy": "...",
-                "recommendations": [...],
-                "estimated_improvement": "..."
-            }
-        """
+        """分析时间索引策略。"""
         logger.info("Analyzing TDengine time index strategy...")
 
-        recommendations = []
-
-        # 时间戳应该是主键和排序键
-        recommendations.append(
+        recommendations = [
             {
                 "priority": "CRITICAL",
                 "recommendation": "Ensure timestamp is primary key in SUPERTABLE definition",
                 "impact": "Enables automatic time-range query optimization",
                 "implementation": "ALTER SUPERTABLE tick_data MODIFY COLUMN ts TIMESTAMP PRIMARY KEY",
-            }
-        )
-
-        # 时间分区策略
-        recommendations.append(
+            },
             {
                 "priority": "HIGH",
                 "recommendation": "Enable time-based partitioning",
                 "impact": "Reduces query scans by limiting data range",
                 "implementation": "Configure PARTITION BY DAY for high-frequency tables",
-            }
-        )
-
-        # INTERVAL聚合优化
-        recommendations.append(
+            },
             {
                 "priority": "HIGH",
                 "recommendation": "Use INTERVAL() for K-line aggregation",
                 "impact": "Sub-second aggregation for minute/hourly K-lines",
                 "implementation": (
                     "SELECT INTERVAL(ts, 1m) as time_bucket, first(close) as open, "
-                    "max(high), min(low), last(close), sum(volume) FROM tick_data "
-                    "GROUP BY time_bucket"
+                    "max(high), min(low), last(close), sum(volume) FROM tick_data GROUP BY time_bucket"
                 ),
-            }
-        )
+            },
+        ]
 
         return {
             "current_strategy": "Time-range indexed SuperTable with INTERVAL aggregation",
@@ -89,16 +65,7 @@ class TDengineIndexOptimizer:
         }
 
     def analyze_tag_index_strategy(self) -> Dict:
-        """
-        分析标签索引策略
-
-        Returns:
-            {
-                "tag_optimization_plan": [...],
-                "index_structure": "...",
-                "query_performance_impact": "..."
-            }
-        """
+        """分析标签索引策略。"""
         logger.info("Analyzing TDengine tag index strategy...")
 
         tag_optimization_plan = [
@@ -135,16 +102,7 @@ class TDengineIndexOptimizer:
         }
 
     def optimize_time_range_queries(self) -> Dict:
-        """
-        优化时间范围查询
-
-        Returns:
-            {
-                "query_patterns": [...],
-                "optimization_techniques": [...],
-                "expected_speedup": "..."
-            }
-        """
+        """优化时间范围查询。"""
         logger.info("Optimizing time-range queries...")
 
         query_patterns = [
@@ -195,7 +153,7 @@ class TDengineIndexOptimizer:
         }
 
     def get_optimization_summary(self) -> Dict:
-        """获取索引优化总结"""
+        """获取索引优化总结。"""
         logger.info("Generating TDengine optimization summary...")
 
         return {

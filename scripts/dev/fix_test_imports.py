@@ -5,7 +5,7 @@
 修复旧的导入路径为新的 src/ 结构:
 - from unified_manager import → from src.core.unified_manager import
 - from core import → from src.core import
-- from db_manager import → from src.db_manager import
+- from db_manager import → from src.storage.database import
 - from adapters import → from src.adapters import
 - from interfaces import → from src.interfaces import
 
@@ -25,8 +25,8 @@ IMPORT_REPLACEMENTS = [
     (r'\bfrom core\.(\w+) import', r'from src.core.\1 import'),
 
     # 数据库管理
-    (r'\bfrom db_manager import', 'from src.db_manager import'),
-    (r'\bfrom db_manager\.(\w+) import', r'from src.db_manager.\1 import'),
+    (r'\bfrom db_manager import', 'from src.storage.database import'),
+    (r'\bfrom db_manager\.(\w+) import', r'from src.storage.database.\1 import'),
 
     # 适配器
     (r'\bfrom adapters import', 'from src.adapters import'),
@@ -84,7 +84,6 @@ def fix_imports_in_file(file_path: Path, dry_run: bool = False) -> Tuple[int, in
     try:
         # 读取文件内容
         content = file_path.read_text(encoding='utf-8')
-        original_content = content
 
         replacements_count = 0
 

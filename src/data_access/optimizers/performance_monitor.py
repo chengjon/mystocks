@@ -7,31 +7,23 @@
 import logging
 from collections import defaultdict
 from datetime import datetime
-from typing import Dict
+from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
 
 class IndexPerformanceMonitor:
-    """索引性能监控管理器"""
+    """索引性能监控器"""
 
     def __init__(self):
-        """初始化性能监控"""
         self.query_metrics = defaultdict(list)
-        self.index_usage_stats = {}
-        self.performance_baselines = {}
+        self.index_usage_stats: Dict[str, Dict] = {}
+        self.performance_baselines: Dict[str, Dict] = {}
         self.slow_query_threshold_ms = 500
         self.very_slow_query_threshold_ms = 2000
 
     def record_query_execution(self, query_name: str, execution_time_ms: float, table_name: str = None) -> None:
-        """
-        记录查询执行时间
-
-        Args:
-            query_name: 查询标识
-            execution_time_ms: 执行时间（毫秒）
-            table_name: 表名
-        """
+        """记录查询执行指标"""
         self.query_metrics[query_name].append(
             {
                 "timestamp": datetime.now().isoformat(),
@@ -42,87 +34,43 @@ class IndexPerformanceMonitor:
             }
         )
 
-    def analyze_query_performance(self, query_name: str = None) -> Dict:
-        """
-        分析查询性能
-
-        Args:
-            query_name: 查询标识，None表示分析所有查询
-
-        Returns:
-            {
-                "query_name": "...",
-                "avg_execution_time_ms": ...,
-                "min_execution_time_ms": ...,
-                "max_execution_time_ms": ...,
-                "slow_query_percentage": ...,
-                "execution_count": ...
-            }
-        """
+    def analyze_query_performance(self, query_name: Optional[str] = None) -> Dict:
+        """分析单个或全部查询的性能统计"""
         logger.info("Analyzing query performance for %s...", query_name or "all queries")
 
         results = {}
-
         queries_to_analyze = [query_name] if query_name else list(self.query_metrics.keys())
 
         for qname in queries_to_analyze:
             metrics = self.query_metrics.get(qname, [])
-
             if not metrics:
                 continue
+            results[qname] = self._build_query_summary(qname, metrics)
 
-            execution_times = [m["execution_time_ms"] for m in metrics]
-            slow_queries = sum(1 for m in metrics if m["is_slow"])
-
-            results[qname] = {
-                "query_name": qname,
-                "execution_count": len(metrics),
-                "avg_execution_time_ms": round(sum(execution_times) / len(execution_times), 2),
-                "min_execution_time_ms": min(execution_times),
-                "max_execution_time_ms": max(execution_times),
-                "median_execution_time_ms": sorted(execution_times)[len(execution_times) // 2],
-                "slow_query_percentage": round((slow_queries / len(metrics)) * 100, 2),
-                "p95_execution_time_ms": sorted(execution_times)[int(len(execution_times) * 0.95)],
-                "p99_execution_time_ms": sorted(execution_times)[int(len(execution_times) * 0.99)],
-            }
-
+        if query_name:
+            return results.get(query_name, {})
         return results
 
     def track_index_usage(self, index_name: str, used: bool = True) -> None:
-        """
-        跟踪索引使用情况
-
-        Args:
-            index_name: 索引名称
-            used: 是否被使用
-        """
+        """跟踪索引使用情况"""
         if index_name not in self.index_usage_stats:
             self.index_usage_stats[index_name] = {
+                "usage_count": 0,
                 "total_uses": 0,
                 "unused_days": 0,
                 "last_used": None,
             }
 
         if used:
+            self.index_usage_stats[index_name]["usage_count"] += 1
             self.index_usage_stats[index_name]["total_uses"] += 1
             self.index_usage_stats[index_name]["last_used"] = datetime.now().isoformat()
 
     def get_index_usage_report(self) -> Dict:
-        """
-        获取索引使用报告
-
-        Returns:
-            {
-                "total_indexes": ...,
-                "actively_used": ...,
-                "unused_indexes": [...],
-                "recommendations": [...]
-            }
-        """
+        """获取索引使用报告"""
         logger.info("Generating index usage report...")
 
         unused_indexes = [name for name, stats in self.index_usage_stats.items() if stats["total_uses"] == 0]
-
         underused_indexes = [
             {
                 "index_name": name,
@@ -149,29 +97,14 @@ class IndexPerformanceMonitor:
         }
 
     def establish_performance_baseline(self, baseline_name: str, metrics: Dict) -> None:
-        """
-        建立性能基准
-
-        Args:
-            baseline_name: 基准名称
-            metrics: 性能指标
-        """
+        """建立性能基准"""
         self.performance_baselines[baseline_name] = {
             "timestamp": datetime.now().isoformat(),
             "metrics": metrics,
         }
 
     def benchmark_query_performance(self) -> Dict:
-        """
-        进行查询性能基准测试
-
-        Returns:
-            {
-                "baseline_name": "...",
-                "test_results": [...],
-                "overall_performance": "..."
-            }
-        """
+        """进行查询性能基准测试"""
         logger.info("Running query performance benchmarks...")
 
         test_results = [
@@ -179,7 +112,7 @@ class IndexPerformanceMonitor:
                 "test_name": "Symbol Lookup (Single Column)",
                 "description": "SELECT * FROM daily_kline WHERE symbol = 'AAPL'",
                 "target_time_ms": 100,
-                "baseline_time_ms": 500,  # 假设未优化前
+                "baseline_time_ms": 500,
                 "optimization": "CREATE INDEX idx_daily_kline_symbol",
                 "expected_speedup": "5x",
             },
@@ -201,7 +134,7 @@ class IndexPerformanceMonitor:
             },
             {
                 "test_name": "Time-Series Aggregation (TDengine)",
-                "description": "SELECT INTERVAL(ts, 1m), FIRST(close), MAX(high), MIN(low), LAST(close) FROM tick_data",
+                "description": "SELECT INTERVAL(ts, 1m), FIRST(close), MAX(high), MIN(low), LAST(close), SUM(volume) FROM tick_data",
                 "target_time_ms": 200,
                 "baseline_time_ms": 800,
                 "optimization": "Enable time-based partitioning + timestamp index",
@@ -209,9 +142,7 @@ class IndexPerformanceMonitor:
             },
             {
                 "test_name": "User Order History",
-                "description": (
-                    "SELECT * FROM order_records WHERE user_id = 123 " "AND symbol = 'AAPL' ORDER BY created_at DESC"
-                ),
+                "description": "SELECT * FROM order_records WHERE user_id = 123 AND symbol = 'AAPL' ORDER BY created_at DESC",
                 "target_time_ms": 50,
                 "baseline_time_ms": 800,
                 "optimization": "CREATE INDEX idx_order_records_user_symbol_date",
@@ -235,18 +166,7 @@ class IndexPerformanceMonitor:
         }
 
     def generate_performance_report(self) -> Dict:
-        """
-        生成性能报告
-
-        Returns:
-            {
-                "timestamp": "...",
-                "query_performance": {...},
-                "index_usage": {...},
-                "benchmarks": {...},
-                "recommendations": [...]
-            }
-        """
+        """生成性能报告"""
         logger.info("Generating comprehensive performance report...")
 
         query_perf = self.analyze_query_performance()
@@ -298,3 +218,35 @@ class IndexPerformanceMonitor:
                 "Phase 4: Monitor performance (PENDING)",
             ],
         }
+
+    def _build_query_summary(self, query_name: str, metrics: List[Dict]) -> Dict:
+        execution_times = [metric["execution_time_ms"] for metric in metrics]
+        slow_count = sum(1 for metric in metrics if metric["is_slow"])
+
+        return {
+            "query_name": query_name,
+            "execution_count": len(metrics),
+            "avg_execution_time_ms": round(sum(execution_times) / len(execution_times), 2),
+            "min_execution_time_ms": min(execution_times),
+            "max_execution_time_ms": max(execution_times),
+            "median_execution_time_ms": sorted(execution_times)[len(execution_times) // 2],
+            "slow_query_percentage": round((slow_count / len(metrics)) * 100, 2),
+            "p95_execution_time_ms": self._percentile(sorted(execution_times), 95),
+            "p99_execution_time_ms": self._percentile(sorted(execution_times), 99),
+        }
+
+    @staticmethod
+    def _percentile(values: List[float], percentile: int) -> float:
+        if not values:
+            return 0
+        if len(values) == 1:
+            return values[0]
+        position = (percentile / 100) * len(values)
+        if position <= 1:
+            return values[0]
+        if position >= len(values):
+            return values[-1]
+        lower_index = max(int(position) - 1, 0)
+        upper_index = min(lower_index + 1, len(values) - 1)
+        weight = position - int(position)
+        return values[lower_index] + (values[upper_index] - values[lower_index]) * weight

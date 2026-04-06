@@ -15,7 +15,7 @@ project_root = os.path.dirname(
 )
 sys.path.insert(0, project_root)
 
-from src.database_optimization import (
+from src.data_access.optimizers import (
     TDengineIndexOptimizer,
     PostgreSQLIndexOptimizer,
     SlowQueryAnalyzer,
@@ -468,10 +468,7 @@ class TestIndexPerformanceMonitor:
         for time_ms in execution_times:
             self.monitor.record_query_execution("multi_query", time_ms)
 
-        result = self.monitor.analyze_query_performance("multi_query")
-
-        assert "multi_query" in result
-        analysis = result["multi_query"]
+        analysis = self.monitor.analyze_query_performance("multi_query")
         assert analysis["execution_count"] == 5
         assert analysis["avg_execution_time_ms"] == 200.0
         assert analysis["min_execution_time_ms"] == 100
@@ -494,8 +491,7 @@ class TestIndexPerformanceMonitor:
         for i in range(100):
             self.monitor.record_query_execution("percentile_query", 100 + i)
 
-        result = self.monitor.analyze_query_performance("percentile_query")
-        analysis = result["percentile_query"]
+        analysis = self.monitor.analyze_query_performance("percentile_query")
 
         assert "p95_execution_time_ms" in analysis
         assert "p99_execution_time_ms" in analysis
@@ -592,7 +588,6 @@ class TestDatabaseOptimizationIntegration:
         tdengine_opt = TDengineIndexOptimizer()
         postgresql_opt = PostgreSQLIndexOptimizer()
         slow_analyzer = SlowQueryAnalyzer()
-        perf_monitor = IndexPerformanceMonitor()
 
         # Get analysis from each component
         td_summary = tdengine_opt.get_optimization_summary()

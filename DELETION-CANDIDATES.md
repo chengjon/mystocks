@@ -5,7 +5,7 @@
 > 当前共享规则与删除门禁仍以 [architecture/STANDARDS.md](/opt/claude/mystocks_spec/architecture/STANDARDS.md) 为准；若涉及当前执行状态，再结合根目录 `AGENTS.md`、phase 主文档与最新验证结果核对。
 
 **Generated:** 2026-04-07  
-**Status:** PENDING USER APPROVAL  
+**Status:** BATCH 1 EXECUTED, DELETION STILL PENDING USER APPROVAL
 **Phase:** 2 (`Dead Code Inventory & Removal`)
 
 ---
@@ -26,6 +26,37 @@
 - `src/api/types/*` does **not** exist in the current tree, but `tests/api_contract_tests.py` still imports it. This is a real inconsistency that must be resolved before deleting `src/api/`.
 - `src/data_access_pkg/tdengine_access.py` is much larger than canonical `src/data_access/tdengine_access.py`, but canonical code is split across helper modules. This points to a refactor split, not automatically to missing functionality.
 - `src/database_optimization/` is not pure dead code. Its optimizer classes appear unique and should be migrated before deletion.
+
+## Batch 1 Execution Status
+
+以下动作已在本次会话内实际完成：
+
+- `src/database/services/database_service.py` 已移除 `src.routes.wencai_routes` 依赖
+- `execute_wencai_query()` 已改为：
+  - `USE_MOCK_DATA=true` 时走 `src.mock.mock_Wencai`
+  - 默认走 `web/backend/app/services/wencai_service.py` 的 service 层能力
+- `src/data_access.py` 已改为 canonical shim：`from src.data_access import *`
+- `src/database_optimization/` 的 4 个优化器类已复制到 `src/data_access/optimizers/`
+- `src/data_access/optimizers/__init__.py` 已导出 4 个新类
+- `tests/unit/database_optimization/test_performance_monitor.py` 与 `scripts/tests/test_database_optimization.py` 已改为引用 `src.data_access.optimizers`
+- `tests/api_contract_tests.py` 中对不存在的 `src.api.types.*` 导入已清理
+- `scripts/dev/fix_test_imports.py`、`scripts/dev/quality_gate/fix_test_imports.py`、`scripts/dev/project/update_imports.py` 的 dead-target 映射已改向 canonical 位置
+
+本批次明确没有执行的动作：
+
+- 未删除 `src/routes/`
+- 未删除 `src/api/`
+- 未删除 `src/data_access_pkg/`
+- 未删除 `src/database_optimization/`
+- 未删除 `src/db_manager/`
+
+本批次验证结果：
+
+- `ruff check` 通过
+- `pytest tests/unit/database_optimization/test_performance_monitor.py -q --no-cov -o addopts=''`: `22 passed`
+- `pytest scripts/tests/test_database_optimization.py -q --no-cov -o addopts=''`: `45 passed`
+- `pytest tests/api_contract_tests.py -q --no-cov -o addopts=''`: `no tests ran`
+- GitNexus `detect_changes(scope="staged")`: `changed_files: 14`, `risk_level: low`
 
 ---
 

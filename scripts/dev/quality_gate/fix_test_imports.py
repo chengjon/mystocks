@@ -5,7 +5,7 @@
 将旧的导入路径转换为新的标准导入路径：
 - from core.xxx → from src.core.xxx
 - from adapters.xxx → from src.adapters.xxx
-- from db_manager.xxx → from src.db_manager.xxx
+- from db_manager.xxx → from src.storage.database.xxx
 - from monitoring.xxx → from src.monitoring.xxx
 - from interfaces.xxx → from src.interfaces.xxx
 - from storage.xxx → from src.storage.xxx
@@ -29,7 +29,7 @@ sys.path.insert(0, str(project_root))
 IMPORT_MAPPINGS = {
     'from core.': 'from src.core.',
     'from adapters.': 'from src.adapters.',
-    'from db_manager.': 'from src.db_manager.',
+    'from db_manager.': 'from src.storage.database.',
     'from monitoring.': 'from src.monitoring.',
     'from interfaces.': 'from src.interfaces.',
     'from storage.': 'from src.storage.',
@@ -38,12 +38,10 @@ IMPORT_MAPPINGS = {
     'from gpu.': 'from src.gpu.',
     'from ml_strategy.': 'from src.ml_strategy.',
     'from contract_testing.': 'from src.contract_testing.',
-    'from routes.': 'from src.routes.',
-    'from api.': 'from src.api.',
     'from backup_recovery.': 'from src.backup_recovery.',
     'from cron.': 'from src.cron.',
     'from database.': 'from src.database.',
-    'from database_optimization.': 'from src.database_optimization.',
+    'from database_optimization.': 'from src.data_access.optimizers.',
     'from factories.': 'from src.factories.',
     'from mock.': 'from src.mock.',
     'from reporting.': 'from src.reporting.',
@@ -128,7 +126,6 @@ def fix_imports(file_path: Path, dry_run: bool = False) -> dict:
     }
 
     content = file_path.read_text(encoding='utf-8')
-    original_content = content
     lines = content.split('\n')
 
     for i, line in enumerate(lines):
