@@ -479,7 +479,7 @@ Response: {
 
 ---
 
-**文档版本**: 3.0.0
+**Historical Document Version Snapshot**: 3.0.0
 **Historical Snapshot Date**: 2026-01-22
 **维护者**: Backend Team + Frontend Team
-**审核状态**: ✅ 已审核
+**Historical Review Status**: ✅ 已审核（历史设计稿状态）
