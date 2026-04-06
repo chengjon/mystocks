@@ -13,6 +13,19 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
+from app.schemas.risk_schemas import (
+    BetaRequest,
+    BetaResult,
+    NotificationTestRequest,
+    NotificationTestResponse,
+    RiskAlertCreate,
+    RiskAlertResponse,
+    RiskAlertUpdate,
+    RiskDashboardResponse,
+    VaRCVaRRequest,
+    VaRCVaRResult,
+)
+from src.core import DataClassification, MyStocksUnifiedManager
 from src.monitoring.monitoring_database import MonitoringDatabase
 
 try:
@@ -165,3 +178,32 @@ def get_monitoring_db():
             monitoring_db = MonitoringFallback()
     return monitoring_db
 
+
+__all__ = [
+    "AlertContext",
+    "BetaRequest",
+    "BetaResult",
+    "DataClassification",
+    "ENHANCED_RISK_FEATURES_AVAILABLE",
+    "MyStocksUnifiedManager",
+    "NotificationManager",
+    "NotificationTestRequest",
+    "NotificationTestResponse",
+    "RISK_MANAGEMENT_V31_AVAILABLE",
+    "RISK_METRICS_AVAILABLE",
+    "RiskAlertCreate",
+    "RiskAlertResponse",
+    "RiskAlertUpdate",
+    "RiskCalculator",
+    "RiskDashboardResponse",
+    "RiskMetrics",
+    "VaRCVaRRequest",
+    "VaRCVaRResult",
+    "get_alert_rule_engine",
+    "get_monitoring_db",
+    "get_risk_alert_notification_manager",
+    "get_risk_management_core",
+    "get_stop_loss_execution_service",
+    "get_stop_loss_history_service",
+    "logger",
+]
