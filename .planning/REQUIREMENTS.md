@@ -14,9 +14,9 @@
 
 ### Lint Baseline
 
-- [ ] **LINT-01**: Duplicate adapter layer (`src/interfaces/adapters/`) deleted entirely — full deletion per CONTEXT.md D-01
-- [ ] **LINT-02**: Ruff check passes with <900 errors on `src/` and `web/backend/app/` (from ~1,456; target recalibrated per 01-RESEARCH.md measured baseline)
-- [ ] **LINT-03**: Auto-fixable ruff rules (W293, F841, W291) produce zero violations (F401 and E701 not auto-fixable by ruff 0.9.10)
+- [x] **LINT-01**: Duplicate adapter layer (`src/interfaces/adapters/`) deleted entirely — full deletion per CONTEXT.md D-01 ✓ Phase 1 (commit 9ac60b838)
+- [x] **LINT-02**: Ruff check passes with <900 errors on `src/` and `web/backend/app/` (from ~1,456; target recalibrated per 01-RESEARCH.md measured baseline) ✓ Phase 1 (877 final)
+- [x] **LINT-03**: Auto-fixable ruff rules (W293, F841, W291) produce zero violations (F401 and E701 not auto-fixable by ruff 0.9.10) ✓ Phase 1 (206 fixes)
 - [ ] **LINT-04**: Frontend case-conflict directories merged into lowercase canonical names
 
 ### Dead Code Removal

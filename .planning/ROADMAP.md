@@ -9,7 +9,7 @@
 
 **Created:** 2026-04-06
 **Revised:** 2026-04-06 (addressing review findings)
-**Status:** Review draft — pending approval
+**Status:** Phase 1 complete — execution approved and verified
 **Granularity:** Coarse (4 phases)
 **Execution:** Sequential (zero-breakage constraint)
 
@@ -52,7 +52,7 @@ Before any migration or deletion, the following single-source-of-truth declarati
 **Success Criteria:**
 1. `ruff check src/ web/backend/app/ --statistics` reports <900 errors (from ~1,456; recalibrated per `.planning/phases/01-python-lint-baseline/01-RESEARCH.md` — 805 F821 require manual investigation, not auto-fixable)
 2. `src/interfaces/adapters/` deleted — verified zero imports: `grep -r "from src.interfaces.adapters\|import src.interfaces.adapters" --include="*.py" src/ web/ tests/ scripts/` returns empty
-3. Auto-fixable rules produce zero violations: `ruff check src/ web/backend/app/ --select F401,F841,W291,W293,E701` exits 0
+3. Auto-fixable rules produce zero violations: `ruff check src/ web/backend/app/ --select W293,F841,W291` exits 0 (F401 and E701 not auto-fixable by ruff 0.9.10 per 01-RESEARCH.md)
 4. FastAPI app starts: `cd web/backend && PYTHONPATH=$(git rev-parse --show-toplevel):. python -c "from app.main import app; print('OK')"``
 5. No regressions: `pytest --tb=short` passes (same pass/fail count as before)
 
