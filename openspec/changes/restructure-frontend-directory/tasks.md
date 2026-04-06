@@ -410,7 +410,8 @@
   - Repo-truth result: not applicable in the current repository because `docs/architecture/routing.md` does not exist.
 - [x] 18.3 Record final effort (≈ 26 person-days) in project status report
   - Repo-truth result: `docs/reports/FRONTEND_STRUCTURE_REPO_TRUTH_STATUS_2026-04-06.md` records `26 person-days` as a historical planning estimate and explicitly states that the current local repo truth does not provide a reconstructable measured actual.
-- [ ] 18.4 Update `AGENTS.md` with new directory structure reference
+- [x] 18.4 Update `AGENTS.md` with new directory structure reference
+  - Repo-truth result: `AGENTS.md` now points agents to `docs/guides/frontend-structure.md` for current frontend directory truth, states the canonical routed-page rule under `web/frontend/src/views/<domain>/`, and records the repo-truth exceptions for `/dashboard` and `/trade/terminal` via commit `5424e0ad5` (`docs: align AGENTS frontend structure truth`).
 - [x] 18.5 Commit: "docs: update frontend structure documentation"
   - Repo-truth result: the documentation-update scope landed as the committed micro-batch chain `abe00f585` (`docs: add frontend structure repo truth guide`) and `21ee881a7` (`docs: add frontend structure repo truth status report`).
 
