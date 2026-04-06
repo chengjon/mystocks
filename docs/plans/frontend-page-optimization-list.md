@@ -7,7 +7,7 @@
 > 文内优先级、缺口清单、执行步骤、目标值和时间线如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
 
 
-**版本**: V2.5（依据 2026-04-06 port evidence labeling 修订）
+**版本**: V2.6（依据 2026-04-06 API status rule reconciliation 修订）
 **创建日期**: 2026-03-02
 **最后更新**: 2026-04-06
 
@@ -68,7 +68,7 @@
 ### 3.3 API 使用规则（强制）
 - 端点必须来源于后端注册路由或 OpenAPI 导出，禁止手工臆写。
 - 文档中每个 API 字段应标注校验状态（`verified` / `pending`）。
-- 关键端点清单须包含 `last_verified_at`。
+- 关键端点清单必须显式区分“历史基线验证日期”和“后续 refresh 真相引用”；禁止再用单一 `last_verified_at` 同时承载首轮基线与后续刷新。
 - CI/本地统一校验命令:
   `python scripts/dev/frontend_optimization_audit.py --repo-root . --strict --report-file reports/analysis/frontend-page-optimization-audit-report.md`
 - 审计报告固定路径:
@@ -124,7 +124,7 @@ bash scripts/tests/test/run-comprehensive-tests.sh
 字段说明:
 - `组件路径`: 相对 `src/views/`
 - `数据状态`: `real` / `mixed` / `mock` / `placeholder`
-- `API状态`: `verified` / `pending`（以 `docs/plans/2026-03-12-api-availability-matrix-draft.md` 为准）
+- `API状态`: `verified` / `pending`；`docs/plans/2026-03-12-api-availability-matrix-draft.md` 只作为首轮历史基线来源，若后续 refresh artifact 更新当前真相，以更新日期更晚的 artifact 为准
 - `备注`: 行内出现的 `127.0.0.1:81xx`、`localhost:8888` 等端口，均是带日期的历史验证证据，不是当前运行时端口真值；当前仓库默认端口真值仍以第 3.4 节为准，即 frontend `3020` / backend `8020`
 
 | # | 页面 | 路径 | 组件路径（router 真值） | 优先级 | 数据状态 | API（当前） | API状态 | 备注 |
