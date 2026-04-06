@@ -1,13 +1,20 @@
 # API Availability Matrix Draft
 
-**Date:** 2026-03-12
-**Updated:** 2026-03-14
+> **设计方案说明**:
+> 本文件是架构设计、界面设计、系统模型、规格定义或映射方案，不是当前仓库共享规则、当前实现边界或当前主线契约的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线治理文档一并核对。
+>
+> 文内结构分层、字段约定、模块职责、视觉规范和实施建议应结合当前代码与主线文档复核；若冲突，应以后者为准。
+
+
+**Historical Baseline Date:** 2026-03-12
+**Historical Refresh Date:** 2026-03-14
 **Branch:** `dev-api-availability-gemini`
-**Status:** Draft
+**Status:** Historical Draft Snapshot
 
 ## Purpose
 
-This draft defines the working truth for page-level API availability in the current web optimization scope.
+This draft defined the working truth for page-level API availability in the 2026-03 web optimization scope.
 
 It does not treat documentation, route metadata, or OpenAPI inventory as sufficient proof on their own.
 Page-level verdicts are based on a multi-source evidence chain:
@@ -89,7 +96,7 @@ This is tracked separately from `verified/pending`.
 | `Market-LHB` | `/api/v2/market/lhb` | runtime `200` + row mapper verified |
 | `Watchlist-Screener` | `/api/v1/data/stocks/basic` | worktree backend `127.0.0.1:8132` returns `200`; page helper maps live screener rows with `price/change_pct/volume/turnover/pe/market_cap` |
 
-## High-Priority Pending Pages
+## Historical High-Priority Pending Pages
 
 当前已无 `pending` 页面。
 
