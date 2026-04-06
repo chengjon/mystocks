@@ -29,6 +29,7 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 - `方案先行准则 (Proposal-First Rule)`：见“零、统一治理与审批门禁”
 - `推荐开发流程：六步走战略`：见“一、推荐开发流程：六步走战略”
 - `Docker 一等公民原则`：见“二、技术工程红线 -> 3. 环境一致性”
+- `迁移收口与技术债治理规则`：见“三、迁移收口与技术债治理规则”
 
 本文件仅保留 Claude 使用方式、协作流程和排障细节，不再重复上述规则正文。
 
@@ -243,6 +244,7 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
 > - “零、统一治理与审批门禁”（含 `Proposal-First Rule`）
 > - “一、推荐开发流程：六步走战略”
 > - “二、技术工程红线 -> 3. 环境一致性”（Docker/PM2 一等公民）
+> - “三、迁移收口与技术债治理规则”
 
 #### Skill 手动加载
 
@@ -290,16 +292,11 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
 - 优先使用显式类型、接口、泛型、联合类型或 `unknown`，禁止在业务代码中新增无说明的裸 `any`
 - 自动生成文件、类型声明文件、兼容层代码、测试代码可按实际情况豁免，但应尽量缩小 `any` 的影响范围并说明原因
 
-#### 清理 / 删除判定标准（强制）
+#### 迁移收口 / 清理 / 审计口径（唯一来源）
 
-- **“未引用 / 未使用” 不等于“可删除”**。禁止仅凭静态搜索结果、编辑器提示、lint 报警或“当前文件内未使用”就直接删除文件、模块、组件、函数、测试、配置或导入。
-- 在执行任何清理、删除、裁剪前，必须同时完成两类判定：
-  1. **代码路径判定**：核查其是否仍被路由、菜单、注册表、动态导入、构建脚本、样式副作用、兼容分支、特性开关、运行时字符串映射或文档约定使用。
-  2. **功能树判定**：核查其在当前项目功能树中的归属与状态，并明确标记为：`有效`、`失效但兼容保留`、`实验/灰度`、`重复冗余`、`待判定` 之一。
-- 只有当 **代码路径已证明可安全移除**，且 **功能树状态明确为“重复冗余”或“正式下线”** 时，才允许删除。
-- 若该对象仍承载有效功能、兼容职责、实验用途，或功能状态无法确认，则默认 **不删除**；优先采用补文档、补注释、登记技术债、标记弃用、或在任务汇报中说明保留原因。
-- 对 `unused import`、未使用局部变量、未使用解构项等低层级清理，也必须确认其不承担 **副作用初始化、样式加载、类型约束、自动注册、polyfill、扩展占位** 等隐含职责；无法证明时不得删除。
-- 涉及清理 / 删除的提交、`TASK-REPORT` 或最终汇报，应至少说明：**清理对象、所属功能节点、状态判定、删除依据、保留原因（如适用）**。
+- 迁移收口、重复层禁止、兼容层退役、机械拆分限制、清理 / 删除判定、审计指标口径，统一以 [architecture/STANDARDS.md](architecture/STANDARDS.md) “三、迁移收口与技术债治理规则”为唯一事实来源。
+- 处理 `*_new.py`、shim、平行目录、`part1/part2/part3`、`.bak/.backup`、归档目录、临时入口等事项时，不得在本文件另起一套规则，必须回到 `STANDARDS.md` 执行。
+- 技术债门禁、基线、豁免与周报模板，继续以 `docs/standards/technical-debt-governance-charter-v1.md` 为执行细则。
 
 #### 文档与维护工作流
 
@@ -394,7 +391,7 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
 
 ---
 
-**Last updated**: 2026-02-15
+**Last updated**: 2026-04-06
 
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
@@ -588,3 +585,188 @@ gitnexus config embeddings clear
 | Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
 
 <!-- gitnexus:end -->
+
+<!-- GSD:project-start source:PROJECT.md -->
+## Project
+
+**MyStocks Codebase Consolidation**
+
+A structured cleanup initiative for the MyStocks quantitative trading platform codebase. The goal is to eliminate code/file redundancy, resolve feature divergence, and establish a clear mainline with zero dead code, consistent naming, and a single source of truth for each concern. This is not a feature project — it is a technical debt remediation effort targeting 12 documented issues across Python backend and Vue 3 frontend.
+
+**Core Value:** Every file in the codebase has exactly one canonical location, every import resolves cleanly, and `ruff check` / `stylelint` / `pytest` pass with zero errors.
+
+### Constraints
+
+- **Zero-breakage**: Every phase must leave the system fully working. No temporary breakage allowed.
+- **Deletion approval**: All dead code deletion must be saved as an MD document for user review before any files are removed.
+- **Desktop-only**: No mobile/responsive changes.
+- **STANDARDS.md compliance**: All changes must comply with `architecture/STANDARDS.md`.
+- **Port discipline**: Backend 8020, Frontend 3020 (from .env).
+<!-- GSD:project-end -->
+
+<!-- GSD:stack-start source:codebase/STACK.md -->
+## Technology Stack
+
+## Languages & Runtimes
+| Layer | Language | Runtime | Version |
+|-------|----------|---------|---------|
+| Backend API | Python | CPython 3.12+ | FastAPI 0.114+ |
+| Frontend | TypeScript / Vue 3 | Vite + Node.js | Vue 3.4+ |
+| Database TS | SQL (TDengine) | TDengine 3.3+ | High-frequency time-series |
+| Database OLTP | SQL (PostgreSQL) | PostgreSQL 17+ TimescaleDB | Relational + time-series |
+| GPU (optional) | Python CUDA | gpu_api_system/ | src/gpu/ |
+## Backend Dependencies
+### Core Framework
+- **FastAPI** 0.114+ — async REST API framework
+- **Uvicorn** — ASGI server (configured in `web/backend/app/main.py`)
+- **SQLAlchemy** — ORM for PostgreSQL
+- **Pydantic** — data validation / settings (`web/backend/app/core/config.py`)
+### Data & Computation
+- **TDengine** client — time-series database connector
+- **psycopg2 / asyncpg** — PostgreSQL drivers
+- **aiohttp** — async HTTP client (for data source adapters)
+- **numpy / pandas** — data manipulation in algorithms
+### External Data Sources
+- **akshare** — A-share market data (`src/adapters/akshare/`)
+- **efinance** — financial data (`src/adapters/efinance_adapter/`)
+- **TDX (通达信)** — real-time market protocol (`src/adapters/tdx_adapter/`)
+## Frontend Dependencies
+### Core Framework
+- **Vue 3** + Composition API
+- **Pinia** — state management (`web/frontend/src/stores/`)
+- **Vue Router** — routing (`web/frontend/src/router/`)
+- **Vite** — build tool
+### UI & Visualization
+- **ECharts** — chart rendering (via `src/components/Charts/`, `src/components/charts/`)
+- **ArtDeco** design system — custom theme (`src/views/artdeco-pages/`, `src/components/artdeco/`)
+### Additional
+- **axios** — HTTP client (`src/api/`)
+- **SSE** — server-sent events (`src/components/sse/`)
+## Configuration
+| Config | Location | Format |
+|--------|----------|--------|
+| Environment vars | `.env` / `.env.example` | dotenv |
+| Backend settings | `web/backend/app/core/config.py` | Pydantic Settings |
+| CORS | `web/backend/app/core/config.py` | Python |
+| Data sources registry | `config/data_sources_registry.yaml` | YAML |
+| Playwright | `config/playwright/` (6 configs) | TypeScript |
+| Frontend | `web/frontend/vite.config.js` | JS |
+| Linting | Ruff (Python), Stylelint (CSS/SCSS) | TOML / JSON |
+## Build & Dev Commands
+# Backend
+# Frontend
+# Python lint
+# CSS lint
+# Type check
+<!-- GSD:stack-end -->
+
+<!-- GSD:conventions-start source:CONVENTIONS.md -->
+## Conventions
+
+## Python Conventions
+### Import Style
+- **Required**: Absolute imports using `from src.*`
+- **Import order**: stdlib → third-party → local
+- **Violations found**: Root shim files use bare `from core import *` (no `src.` prefix)
+### Type Hints
+- Function parameters and return values should use type hints
+- Pydantic models for data validation
+- `# type: ignore` found in 12 files (~40 occurrences), mostly in `web/backend/app/services/stock_search_service.py` (15)
+### Naming
+- **Modules**: snake_case
+- **Classes**: PascalCase
+- **Constants**: UPPER_SNAKE_CASE
+- **Violations**: `src/calcu/` (truncated name)
+### File Organization
+- Max 800 lines for Python files (enforced by `architecture/standards/large_file_splitting_principles.md`)
+- Max 500 lines for Vue/TS files
+- Max 1000 lines for test files
+- **Current violations**: All under 800 lines (previously >1000 line files were mechanically split)
+### Error Handling
+- Bare `except` forbidden (E722 — 13 occurrences remain)
+- External calls should consider retry logic
+- Contextual exception logging required
+### Configuration
+- Ports injected via `.env` only, no hardcoding
+- Frontend: 3020-3029, Backend: 8020-8029
+- Config centralized in `config/` directory
+## Frontend (TypeScript / Vue) Conventions
+### Import Convention
+- ES modules with explicit extensions for local imports
+- Import order: third-party → local → styles
+### Function Patterns
+- Top-level pure functions: `function` declarations
+- Callbacks/closures: arrow functions
+- `defineStore`, composables: `const xxx = () =>` allowed
+### Type Annotations
+- Exported functions in `api/`, `services/`, `utils/` must have explicit return types
+- No bare `any` in business code
+- `@ts-ignore` / `@ts-expect-error` forbidden without approval
+### CSS/SCSS
+- No inline styles in Vue components
+- Styles in sibling `styles/` directory
+- `npx stylelint` must pass with zero errors
+## Code Quality Gates
+| Tool | Command | Standard |
+|------|---------|----------|
+| Ruff | `ruff check src/ web/backend/app/` | Currently ~1456 issues |
+| Mypy | `mypy src/ --no-error-summary` | Type safety |
+| Pytest | `pytest` | Test execution |
+| Stylelint | `npx stylelint "src/**/*.{vue,scss,css}"` | Zero errors |
+| vue-tsc | `npx vue-tsc --noEmit` | TS type check |
+| Black | `black --check .` | Formatting |
+## Anti-Patterns Found in Codebase
+<!-- GSD:conventions-end -->
+
+<!-- GSD:architecture-start source:ARCHITECTURE.md -->
+## Architecture
+
+## High-Level Pattern
+```
+```
+## Entry Points
+### Backend
+- `web/backend/app/main.py` (885 lines) — FastAPI application factory
+### Frontend
+- `web/frontend/src/main.js` (6883 bytes) — Vue app bootstrap
+### Core
+- `src/unified_manager.py` — re-exports `MyStocksUnifiedManager` from `src/core/unified_manager.py`
+- Root shims: `core.py`, `data_access.py`, `monitoring.py` — backward compatibility re-exports
+## Key Abstractions
+### Adapter Pattern
+- `src/adapters/` — concrete implementations (akshare, efinance, tdx, financial)
+- `src/interfaces/adapters/` — **duplicate** of src/adapters/ with missing imports (causes 500+ F821 errors)
+- `src/data_sources/` — data source factory + mock/real strategy
+### Factory Pattern
+- `src/factories/` — various factories
+- `src/data_sources/factory.py` — creates mock or real data sources based on env
+- `web/backend/app/services/data_source_factory/` — backend-side data source factory
+### Domain-Driven Design (partial)
+- `src/domain/` — domain models and services
+- `src/application/` — application services (portfolio, watchlist, market data processing)
+- `src/infrastructure/` — infrastructure adapters (market data repos, streaming)
+## Data Flow
+```
+```
+## Known Architectural Issues
+<!-- GSD:architecture-end -->
+
+<!-- GSD:workflow-start source:GSD defaults -->
+## GSD Workflow Enforcement
+
+Before using Edit, Write, or other file-changing tools, start work through a GSD command so planning artifacts and execution context stay in sync.
+
+Use these entry points:
+- `/gsd:quick` for small fixes, doc updates, and ad-hoc tasks
+- `/gsd:debug` for investigation and bug fixing
+- `/gsd:execute-phase` for planned phase work
+
+Do not make direct repo edits outside a GSD workflow unless the user explicitly asks to bypass it.
+<!-- GSD:workflow-end -->
+
+<!-- GSD:profile-start -->
+## Developer Profile
+
+> Profile not yet configured. Run `/gsd:profile-user` to generate your developer profile.
+> This section is managed by `generate-claude-profile` -- do not edit manually.
+<!-- GSD:profile-end -->
