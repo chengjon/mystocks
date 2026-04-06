@@ -1,5 +1,10 @@
 # Handover Report: Technical Debt Phase 3 Verification
 
+> 2026-04-06 状态说明：
+> 本文档是历史 handoff 快照，对应早期 `conductor` 工作流，不再代表当前主线任务接力入口。
+> 当前任务现状请优先查看仓库根目录 `TASK.md` / `TASK-REPORT.md` 的 Mongo 导出快照，以及 `reports/governance/` 下的 focused 收口记录。
+> 若需继续追溯本文件中的历史上下文，请将其视为归档参考，而非现行执行指令。
+
 **Date:** Thursday, January 15, 2026
 **Current Task:** User Manual Verification for 'General Test Coverage Improvement & Refactoring' (Phase 3)
 **Track:** Address Technical Debt (`conductor/tracks/tech_debt_20251221/`)
