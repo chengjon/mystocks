@@ -1,137 +1,124 @@
 """
-File-level tests for ml.py API endpoints
+File-level route contract tests for ml.py.
 
-Tests all machine learning service endpoints including:
-- Model prediction and inference
-- Model training status monitoring
-- Model management and deployment
-- ML performance metrics
-
-Priority: P2 (Utility)
-Coverage: 70% functional + smoke testing
+这里对齐当前真实的机器学习路由面与响应模型，
+替换掉生成式占位断言。
 """
 
-import asyncio
+from __future__ import annotations
+
+import importlib
+import sys
+from pathlib import Path
 
 import pytest
 
-from tests.api.file_tests.conftest import api_test_fixtures, assert_file_test_result, mock_responses
+
+ROOT = Path(__file__).resolve().parents[3]
+BACKEND_ROOT = ROOT / "web" / "backend"
+if str(BACKEND_ROOT) not in sys.path:
+    sys.path.insert(0, str(BACKEND_ROOT))
+
+
+@pytest.fixture
+def ml_module(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("POSTGRESQL_HOST", "localhost")
+    monkeypatch.setenv("POSTGRESQL_USER", "postgres")
+    monkeypatch.setenv("POSTGRESQL_PASSWORD", "password")
+    monkeypatch.setenv("JWT_SECRET_KEY", "test-secret-key")
+    monkeypatch.setenv("BACKEND_PORT", "8020")
+    monkeypatch.setenv("BACKEND_BACKUP_PORT", "8021")
+    return importlib.import_module("app.api.ml")
 
 
 class TestMLAPIFile:
-    """Test suite for ml.py API file"""
+    @pytest.mark.file_test
+    def test_router_registers_expected_ml_routes(self, ml_module):
+        route_methods = {(route.path, tuple(sorted(route.methods or []))) for route in ml_module.router.routes}
+
+        assert ml_module.router.prefix == "/ml"
+        assert ml_module.router.tags == ["Machine Learning"]
+        assert ("/ml/tdx/data", ("POST",)) in route_methods
+        assert ("/ml/tdx/stocks/{market}", ("GET",)) in route_methods
+        assert ("/ml/features/generate", ("POST",)) in route_methods
+        assert ("/ml/models/train", ("POST",)) in route_methods
+        assert ("/ml/models/predict", ("POST",)) in route_methods
+        assert ("/ml/models", ("GET",)) in route_methods
+        assert ("/ml/models/{model_name}", ("GET",)) in route_methods
+        assert ("/ml/models/hyperparameter-search", ("POST",)) in route_methods
+        assert ("/ml/models/evaluate", ("POST",)) in route_methods
 
     @pytest.mark.file_test
-    def test_model_predict_endpoint(self, api_test_fixtures):
-        """Test POST /api/ml/predict - Model prediction"""
-        # Test ML model inference
-        assert api_test_fixtures["base_url"].startswith("http")
+    def test_router_contains_expected_number_of_route_method_pairs(self, ml_module):
+        route_pairs = [(route.path, tuple(sorted(route.methods or []))) for route in ml_module.router.routes]
+
+        assert len(route_pairs) == 9
+        assert len(route_pairs) == len(set(route_pairs))
 
     @pytest.mark.file_test
-    def test_model_train_endpoint(self, api_test_fixtures):
-        """Test POST /api/ml/train - Model training"""
-        # Test ML model training initiation
-        assert api_test_fixtures["retry_attempts"] >= 1
+    def test_response_models_remain_stable(self, ml_module):
+        response_models = {(route.path, tuple(sorted(route.methods or []))): route.response_model for route in ml_module.router.routes}
+
+        assert response_models[("/ml/tdx/data", ("POST",))] is ml_module.TdxDataResponse
+        assert response_models[("/ml/tdx/stocks/{market}", ("GET",))] == ml_module.List[str]
+        assert response_models[("/ml/features/generate", ("POST",))] is ml_module.FeatureGenerationResponse
+        assert response_models[("/ml/models/train", ("POST",))] is ml_module.ModelTrainResponse
+        assert response_models[("/ml/models/predict", ("POST",))] is ml_module.ModelPredictResponse
+        assert response_models[("/ml/models", ("GET",))] is ml_module.ModelListResponse
+        assert response_models[("/ml/models/{model_name}", ("GET",))] is ml_module.ModelDetailResponse
+        assert response_models[("/ml/models/hyperparameter-search", ("POST",))] is ml_module.HyperparameterSearchResponse
+        assert response_models[("/ml/models/evaluate", ("POST",))] is ml_module.ModelEvaluationResponse
 
     @pytest.mark.file_test
-    def test_model_list_endpoint(self, api_test_fixtures):
-        """Test GET /api/ml/models - Model list"""
-        # Test trained model listing
-        assert api_test_fixtures["mock_enabled"] is True
+    def test_route_names_remain_stable_for_core_operations(self, ml_module):
+        route_names = {(route.path, tuple(sorted(route.methods or []))): route.name for route in ml_module.router.routes}
+
+        assert route_names[("/ml/models/train", ("POST",))] == "train_model"
+        assert route_names[("/ml/models/predict", ("POST",))] == "predict_with_model"
+        assert route_names[("/ml/models", ("GET",))] == "list_models"
+        assert route_names[("/ml/models/evaluate", ("POST",))] == "evaluate_model"
 
     @pytest.mark.file_test
-    def test_model_status_endpoint(self, api_test_fixtures):
-        """Test GET /api/ml/models/{id}/status - Model status"""
-        # Test model training status monitoring
-        assert api_test_fixtures["contract_validation"] is True
+    def test_router_contains_five_model_lifecycle_routes(self, ml_module):
+        model_paths = {route.path for route in ml_module.router.routes if "/ml/models" in route.path}
+
+        assert "/ml/models/train" in model_paths
+        assert "/ml/models/predict" in model_paths
+        assert "/ml/models" in model_paths
+        assert "/ml/models/{model_name}" in model_paths
+        assert "/ml/models/hyperparameter-search" in model_paths
+        assert "/ml/models/evaluate" in model_paths
 
     @pytest.mark.file_test
-    def test_model_delete_endpoint(self, api_test_fixtures):
-        """Test DELETE /api/ml/models/{id} - Delete model"""
-        # Test model cleanup and removal
-        assert api_test_fixtures["test_timeout"] > 0
+    def test_mlprediction_service_builder_exposes_service_unavailable_path(self, ml_module, monkeypatch):
+        monkeypatch.setattr(ml_module, "MLPredictionService", None)
+        monkeypatch.setattr(ml_module, "_ML_PREDICTION_IMPORT_ERROR", ModuleNotFoundError("missing"))
+
+        with pytest.raises(ml_module.HTTPException) as excinfo:
+            ml_module._build_ml_service()
+
+        assert excinfo.value.status_code == 503
+        assert "ML prediction service unavailable" in excinfo.value.detail
 
     @pytest.mark.file_test
-    def test_ml_metrics_endpoint(self, api_test_fixtures):
-        """Test GET /api/ml/metrics - ML performance metrics"""
-        # Test ML model performance metrics
-        assert True
+    def test_module_docstring_mentions_training_prediction_and_evaluation(self, ml_module):
+        doc = ml_module.__doc__ or ""
+
+        assert "模型训练" in doc
+        assert "预测" in doc
+        assert "评估" in doc
 
     @pytest.mark.file_test
-    def test_error_handling(self, mock_responses):
-        """Test error handling across ML endpoints"""
-        error_response = mock_responses["error_response"]
-        assert error_response["success"] is False
-        assert "code" in error_response
-        assert "message" in error_response
+    def test_feature_and_tdx_route_docstrings_are_descriptive(self, ml_module):
+        assert "生成特征数据" in (ml_module.generate_features.__doc__ or "")
+        assert "获取通达信股票数据" in (ml_module.get_tdx_data.__doc__ or "")
 
     @pytest.mark.file_test
-    def test_response_format_validation(self):
-        """Test response format validation for ML endpoints"""
-        # Validate ML response formats
-        assert True  # Placeholder
+    def test_model_dir_defaults_to_models_directory(self, ml_module):
+        assert ml_module.MODEL_DIR == "./models"
 
     @pytest.mark.file_test
-    def test_performance_requirements(self, api_test_fixtures):
-        """Test performance requirements for ML endpoints"""
-        # Validate ML operation performance
-        timeout = api_test_fixtures["test_timeout"]
-        assert timeout <= 30  # Max 30 seconds for ML operations
+    def test_router_only_exposes_get_and_post_methods(self, ml_module):
+        methods = {method for route in ml_module.router.routes for method in route.methods or []}
 
-    @pytest.mark.asyncio
-    @pytest.mark.file_test
-    async def test_ml_inference(self):
-        """Test ML model inference operations"""
-        # Test model prediction and inference
-        await asyncio.sleep(0.01)  # Simulate async operation
-        assert True
-
-    @pytest.mark.file_test
-    def test_ml_data_consistency(self):
-        """Test data consistency in ML operations"""
-        # Ensure ML data remains consistent
-        assert True
-
-    @pytest.mark.file_test
-    def test_ml_workflow(self):
-        """Test complete ML workflow"""
-        # Test model training -> deployment -> prediction workflow
-        assert True
-
-
-class TestMLIntegration:
-    """Integration tests for ml.py with related modules"""
-
-    @pytest.mark.file_test
-    def test_ml_strategy_integration(self):
-        """Test ML integration with strategy modules"""
-        # Test ML predictions for strategy decisions
-        assert True
-
-    @pytest.mark.file_test
-    def test_ml_monitoring_integration(self):
-        """Test ML model monitoring and metrics"""
-        # Test ML model performance monitoring
-        assert True
-
-
-class TestMLValidation:
-    """Validation tests for ML API"""
-
-    @pytest.mark.file_test
-    def test_ml_api_compliance(self):
-        """Test compliance with ML API specifications"""
-        # Validate ML API compliance
-        assert True
-
-    @pytest.mark.file_test
-    def test_model_accuracy(self):
-        """Test ML model accuracy and reliability"""
-        # Validate model prediction accuracy
-        assert True
-
-    @pytest.mark.file_test
-    def test_ml_endpoint_coverage(self):
-        """Test that all expected ML endpoints are implemented"""
-        # Validate ML endpoint coverage
-        assert True
+        assert methods == {"GET", "POST"}

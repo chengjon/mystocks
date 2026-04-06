@@ -1,143 +1,143 @@
 """
-File-level tests for monitoring.py API endpoints
+File-level route and helper contract tests for monitoring.py.
 
-Tests all monitoring-related endpoints including:
-- System health monitoring
-- Performance metrics collection
-- Log management and analysis
-- Resource usage tracking
-
-Priority: P1 (Core Business)
-Coverage: 90% functional + integration testing
+这里校验当前 18 个监控路由、fallback helper 和核心响应模型，
+不触发真实数据库查询。
 """
 
-import asyncio
+from __future__ import annotations
 
+import importlib
+import sys
+from pathlib import Path
+from types import SimpleNamespace
+
+import dotenv
 import pytest
 
-from tests.api.file_tests.conftest import api_test_fixtures, assert_file_test_result, mock_responses
+
+ROOT = Path(__file__).resolve().parents[3]
+BACKEND_ROOT = ROOT / "web" / "backend"
+if str(BACKEND_ROOT) not in sys.path:
+    sys.path.insert(0, str(BACKEND_ROOT))
+
+
+@pytest.fixture
+def monitoring_module(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("POSTGRESQL_HOST", "localhost")
+    monkeypatch.setenv("POSTGRESQL_USER", "postgres")
+    monkeypatch.setenv("POSTGRESQL_PASSWORD", "password")
+    monkeypatch.setenv("JWT_SECRET_KEY", "test-secret-key")
+    monkeypatch.setenv("BACKEND_PORT", "8020")
+    monkeypatch.setenv("BACKEND_BACKUP_PORT", "8021")
+    monkeypatch.setattr(dotenv, "load_dotenv", lambda *args, **kwargs: False)
+    return importlib.import_module("app.api.monitoring")
 
 
 class TestMonitoringAPIFile:
-    """Test suite for monitoring.py API file"""
+    @pytest.mark.file_test
+    def test_router_registers_expected_monitoring_routes(self, monitoring_module):
+        route_methods = {(route.path, tuple(sorted(route.methods or []))) for route in monitoring_module.router.routes}
+
+        assert ("/alert-rules", ("GET",)) in route_methods
+        assert ("/alert-rules", ("POST",)) in route_methods
+        assert ("/alert-rules/{rule_id}", ("PUT",)) in route_methods
+        assert ("/alert-rules/{rule_id}", ("DELETE",)) in route_methods
+        assert ("/alerts", ("GET",)) in route_methods
+        assert ("/alerts/{alert_id}/mark-read", ("POST",)) in route_methods
+        assert ("/alerts/mark-all-read", ("POST",)) in route_methods
+        assert ("/realtime/{symbol}", ("GET",)) in route_methods
+        assert ("/realtime", ("GET",)) in route_methods
+        assert ("/realtime/fetch", ("POST",)) in route_methods
+        assert ("/dragon-tiger", ("GET",)) in route_methods
+        assert ("/dragon-tiger/fetch", ("POST",)) in route_methods
+        assert ("/analyze", ("GET",)) in route_methods
+        assert ("/summary", ("GET",)) in route_methods
+        assert ("/stats/today", ("GET",)) in route_methods
+        assert ("/control/start", ("POST",)) in route_methods
+        assert ("/control/stop", ("POST",)) in route_methods
+        assert ("/control/status", ("GET",)) in route_methods
 
     @pytest.mark.file_test
-    def test_health_endpoint(self, api_test_fixtures):
-        """Test GET /api/monitoring/health - System health check"""
-        # Test system health status
-        assert api_test_fixtures["base_url"].startswith("http")
+    def test_router_contains_expected_number_of_route_method_pairs(self, monitoring_module):
+        route_pairs = [(route.path, tuple(sorted(route.methods or []))) for route in monitoring_module.router.routes]
+
+        assert len(route_pairs) == 18
+        assert len(route_pairs) == len(set(route_pairs))
 
     @pytest.mark.file_test
-    def test_performance_endpoint(self, api_test_fixtures):
-        """Test GET /api/monitoring/performance - Performance metrics"""
-        # Test performance data collection
-        assert api_test_fixtures["retry_attempts"] >= 1
+    def test_response_models_remain_stable_for_key_routes(self, monitoring_module):
+        response_models = {(route.path, tuple(sorted(route.methods or []))): route.response_model for route in monitoring_module.router.routes}
+
+        assert response_models[("/alert-rules", ("GET",))] == monitoring_module.UnifiedResponse[
+            monitoring_module.List[monitoring_module.AlertRuleResponse]
+        ]
+        assert response_models[("/alerts", ("GET",))] is monitoring_module.AlertRecordsResponse
+        assert response_models[("/realtime/{symbol}", ("GET",))] is monitoring_module.RealtimeMonitoringResponse
+        assert response_models[("/realtime", ("GET",))] == monitoring_module.List[
+            monitoring_module.RealtimeMonitoringResponse
+        ]
+        assert response_models[("/dragon-tiger", ("GET",))] == monitoring_module.List[
+            monitoring_module.DragonTigerListResponse
+        ]
+        assert response_models[("/summary", ("GET",))] is monitoring_module.MonitoringSummaryResponse
 
     @pytest.mark.file_test
-    def test_logs_endpoint(self, api_test_fixtures):
-        """Test GET /api/monitoring/logs - System logs"""
-        # Test log retrieval and filtering
-        assert api_test_fixtures["mock_enabled"] is True
+    def test_route_names_remain_stable_for_core_operations(self, monitoring_module):
+        route_names = {(route.path, tuple(sorted(route.methods or []))): route.name for route in monitoring_module.router.routes}
+
+        assert route_names[("/alert-rules", ("GET",))] == "get_alert_rules"
+        assert route_names[("/alerts", ("GET",))] == "get_alert_records"
+        assert route_names[("/summary", ("GET",))] == "get_monitoring_summary"
+        assert route_names[("/control/status", ("GET",))] == "get_monitoring_status"
 
     @pytest.mark.file_test
-    def test_metrics_endpoint(self, api_test_fixtures):
-        """Test GET /api/monitoring/metrics - System metrics"""
-        # Test metrics collection and reporting
-        assert api_test_fixtures["contract_validation"] is True
+    def test_runtime_fallback_flag_reads_testing_or_development_env(self, monitoring_module, monkeypatch):
+        monkeypatch.setenv("TESTING", "false")
+        monkeypatch.setenv("DEVELOPMENT_MODE", "false")
+        assert monitoring_module._runtime_fallback_enabled() is False
+
+        monkeypatch.setenv("TESTING", "true")
+        assert monitoring_module._runtime_fallback_enabled() is True
+
+        monkeypatch.setenv("TESTING", "false")
+        monkeypatch.setenv("DEVELOPMENT_MODE", "true")
+        assert monitoring_module._runtime_fallback_enabled() is True
 
     @pytest.mark.file_test
-    def test_resources_endpoint(self, api_test_fixtures):
-        """Test GET /api/monitoring/resources - Resource usage"""
-        # Test resource monitoring
-        assert api_test_fixtures["test_timeout"] > 0
+    def test_runtime_fallback_builders_return_consistent_fixture_objects(self, monitoring_module):
+        rules = monitoring_module._build_runtime_alert_rules()
+        records = monitoring_module._build_runtime_alert_records()
+
+        assert len(rules) == 2
+        assert len(records) == 2
+        assert rules[0].id == 9001
+        assert records[0].rule_id == 9001
+        assert rules[1].symbol == "000001"
+        assert records[1].alert_level == "warning"
 
     @pytest.mark.file_test
-    def test_alerts_endpoint(self, api_test_fixtures):
-        """Test GET /api/monitoring/alerts - System alerts"""
-        # Test alert management and notifications
-        assert True
+    def test_resolve_query_int_uses_default_when_query_like_object_is_passed(self, monitoring_module):
+        query_like = SimpleNamespace(default=25)
+
+        assert monitoring_module._resolve_query_int(12, 99) == 12
+        assert monitoring_module._resolve_query_int(query_like, 99) == 25
 
     @pytest.mark.file_test
-    def test_dashboard_endpoint(self, api_test_fixtures):
-        """Test GET /api/monitoring/dashboard - Monitoring dashboard"""
-        # Test dashboard data aggregation
-        assert True
+    def test_alert_records_response_model_fields_remain_stable(self, monitoring_module):
+        fields = set(monitoring_module.AlertRecordsResponse.model_fields)
+
+        assert fields == {"success", "data", "total", "limit", "offset"}
 
     @pytest.mark.file_test
-    def test_error_handling(self, mock_responses):
-        """Test error handling across monitoring endpoints"""
-        error_response = mock_responses["error_response"]
-        assert error_response["success"] is False
-        assert "code" in error_response
-        assert "message" in error_response
+    def test_summary_and_analyze_routes_share_same_response_model(self, monitoring_module):
+        response_models = {(route.path, tuple(sorted(route.methods or []))): route.response_model for route in monitoring_module.router.routes}
+
+        assert response_models[("/analyze", ("GET",))] is monitoring_module.MonitoringSummaryResponse
+        assert response_models[("/summary", ("GET",))] is monitoring_module.MonitoringSummaryResponse
 
     @pytest.mark.file_test
-    def test_response_format_validation(self):
-        """Test response format validation for monitoring endpoints"""
-        # Validate monitoring data formats
-        assert True  # Placeholder
-
-    @pytest.mark.file_test
-    def test_performance_requirements(self, api_test_fixtures):
-        """Test performance requirements for monitoring endpoints"""
-        # Validate monitoring query performance
-        timeout = api_test_fixtures["test_timeout"]
-        assert timeout <= 30  # Max 30 seconds for monitoring queries
-
-    @pytest.mark.asyncio
-    @pytest.mark.file_test
-    async def test_monitoring_data_collection(self):
-        """Test monitoring data collection and aggregation"""
-        # Test real-time data collection
-        await asyncio.sleep(0.01)  # Simulate async operation
-        assert True
-
-    @pytest.mark.file_test
-    def test_monitoring_data_consistency(self):
-        """Test data consistency across monitoring operations"""
-        # Ensure monitoring data remains consistent
-        assert True
-
-    @pytest.mark.file_test
-    def test_alert_workflow(self):
-        """Test complete alert generation and handling workflow"""
-        # Test alert threshold -> generation -> notification workflow
-        assert True
-
-
-class TestMonitoringIntegration:
-    """Integration tests for monitoring.py with related modules"""
-
-    @pytest.mark.file_test
-    def test_monitoring_system_integration(self):
-        """Test monitoring system with core application"""
-        # Test monitoring integration with main application
-        assert True
-
-    @pytest.mark.file_test
-    def test_monitoring_notification_integration(self):
-        """Test monitoring alerts with notification system"""
-        # Test alert to notification integration
-        assert True
-
-
-class TestMonitoringValidation:
-    """Validation tests for monitoring API"""
-
-    @pytest.mark.file_test
-    def test_monitoring_api_compliance(self):
-        """Test compliance with monitoring API specifications"""
-        # Validate monitoring API compliance
-        assert True
-
-    @pytest.mark.file_test
-    def test_monitoring_data_accuracy(self):
-        """Test accuracy of monitoring data collection"""
-        # Validate monitoring data accuracy
-        assert True
-
-    @pytest.mark.file_test
-    def test_monitoring_coverage(self):
-        """Test that all expected monitoring endpoints are implemented"""
-        # Validate monitoring endpoint coverage
-        assert True
+    def test_docstrings_cover_alerts_realtime_and_summary_operations(self, monitoring_module):
+        assert "获取告警规则列表" in (monitoring_module.get_alert_rules.__doc__ or "")
+        assert "获取实时监控数据列表" in (monitoring_module.get_realtime_monitoring_list.__doc__ or "")
+        assert "获取监控系统摘要" in (monitoring_module.get_monitoring_summary.__doc__ or "")
