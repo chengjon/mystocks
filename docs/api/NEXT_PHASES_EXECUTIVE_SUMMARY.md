@@ -1,8 +1,14 @@
 # Next Development Phases - Executive Summary
 
-**Status**: Ready to Start Phase 4
-**Date**: 2025-12-30
-**Document**: [Full Roadmap](./NEXT_DEVELOPMENT_PHASES.md)
+> **历史总结说明**:
+> This file is an executive summary for a staged roadmap, not the sole source of truth for the current implementation status, current error counts, or repository-wide governance rules.
+> For repository-wide governance baselines and approval gates, follow `architecture/STANDARDS.md` first. Use the root `AGENTS.md` only for execution workflow and collaboration constraints, then verify against the current code plus the primary contract/testing docs.
+>
+> The listed counts, challenges, timelines, and success criteria should be treated as historical roadmap context unless re-verified in the current repository.
+
+**Historical Summary Status Snapshot**: Ready to Start Phase 4
+**Historical Summary Snapshot Date**: 2025-12-30
+**Historical Summary Document Snapshot**: [Full Roadmap](./NEXT_DEVELOPMENT_PHASES.md)
 
 ---
 
