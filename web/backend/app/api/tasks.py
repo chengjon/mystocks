@@ -185,6 +185,143 @@ TASK_HEALTH_SUCCESS_RESPONSE = {
     ),
 }
 
+TASK_CONFIG_EXAMPLE = {
+    "task_id": "daily_sync_job",
+    "task_name": "日终同步任务",
+    "task_type": "data_sync",
+    "task_module": "app.jobs.daily_sync",
+    "task_function": "run_daily_sync",
+    "description": "收盘后执行 A 股、港股与股指期货相关数据同步",
+    "priority": 500,
+    "schedule": None,
+    "params": {"market": "CN", "full_refresh": False},
+    "timeout": 3600,
+    "retry_count": 2,
+    "retry_delay": 60,
+    "dependencies": [],
+    "tags": ["sync", "daily"],
+    "auto_restart": False,
+    "stop_on_error": True,
+}
+
+TASK_RESPONSE_EXAMPLE = {
+    "success": True,
+    "message": "任务操作成功",
+    "data": {"status": "ok"},
+    "task_id": "daily_sync_job",
+    "execution_id": None,
+}
+
+TASK_LIST_SUCCESS_RESPONSE = {
+    **TASK_READ_ERROR_RESPONSES,
+    **_success_response_spec(
+        "任务列表查询成功",
+        [
+            TASK_CONFIG_EXAMPLE,
+            {
+                "task_id": "hk_close_sync",
+                "task_name": "港股收盘同步任务",
+                "task_type": "market_sync",
+                "task_module": "app.jobs.hk_sync",
+                "task_function": "run_hk_sync",
+                "description": "港股收盘后同步行情和成交统计",
+                "priority": 500,
+                "schedule": None,
+                "params": {"market": "HK", "full_refresh": True},
+                "timeout": 2400,
+                "retry_count": 1,
+                "retry_delay": 30,
+                "dependencies": [],
+                "tags": ["sync", "hk"],
+                "auto_restart": False,
+                "stop_on_error": True,
+            },
+        ],
+    ),
+}
+
+TASK_CONFIG_DETAIL_SUCCESS_RESPONSE = {
+    **TASK_DETAIL_ERROR_RESPONSES,
+    **_success_response_spec("任务详情查询成功", TASK_CONFIG_EXAMPLE),
+}
+
+TASK_UNREGISTER_SUCCESS_RESPONSE = {
+    **TASK_DETAIL_ERROR_RESPONSES,
+    **_success_response_spec(
+        "任务注销成功",
+        {
+            "success": True,
+            "message": "任务注销成功",
+            "data": {"removed": True},
+            "task_id": "daily_sync_job",
+            "execution_id": None,
+        },
+    ),
+}
+
+TASK_STOP_SUCCESS_RESPONSE = {
+    **TASK_DETAIL_ERROR_RESPONSES,
+    **_success_response_spec(
+        "任务停止成功",
+        {
+            "success": True,
+            "message": "任务停止成功",
+            "data": {"status": "stopped"},
+            "task_id": "daily_sync_job",
+            "execution_id": "exec_1001",
+        },
+    ),
+}
+
+TASK_EXECUTION_CLEANUP_SUCCESS_RESPONSE = {
+    **TASK_READ_ERROR_RESPONSES,
+    **_success_response_spec(
+        "任务执行记录清理成功",
+        {
+            "success": True,
+            "message": "Cleaned up 12 old execution records",
+            "count": 12,
+        },
+    ),
+}
+
+TASK_AUDIT_LOGS_SUCCESS_RESPONSE = {
+    **TASK_READ_ERROR_RESPONSES,
+    **_success_response_spec(
+        "任务审计日志查询成功",
+        {
+            "logs": [
+                {
+                    "timestamp": "2026-04-04T08:00:00Z",
+                    "username": "admin",
+                    "operation": "register_task",
+                    "task_id": "daily_sync_job",
+                    "details": {"task_type": "data_sync", "enabled": True},
+                }
+            ],
+            "total_count": 1,
+            "filter_applied": {"operation": "register_task", "username": "admin"},
+            "returned_count": 1,
+        },
+    ),
+}
+
+TASK_AUDIT_CLEANUP_SUCCESS_RESPONSE = {
+    **TASK_READ_ERROR_RESPONSES,
+    **_success_response_spec(
+        "任务审计日志清理成功",
+        {
+            "success": True,
+            "message": "已清理 8 条旧审计日志",
+            "data": {
+                "cleaned_count": 8,
+                "remaining_count": 42,
+                "cutoff_date": "2026-03-05T00:00:00+00:00",
+            },
+        },
+    ),
+}
+
 
 class TaskImportRequest(BaseModel):
     """任务配置导入请求"""
@@ -259,7 +396,13 @@ async def register_task(
         raise BusinessException(detail="任务注册失败", status_code=500, error_code="TASK_REGISTRATION_FAILED")
 
 
-@router.delete("/{task_id}", response_model=TaskResponse)
+@router.delete(
+    "/{task_id}",
+    response_model=TaskResponse,
+    summary="注销任务",
+    description="按任务ID注销任务定义，并返回任务下线或移除后的处理结果。",
+    responses=TASK_UNREGISTER_SUCCESS_RESPONSE,
+)
 async def unregister_task(
     task_id: str = Path(..., description="任务ID", min_length=1, max_length=50, pattern=r"^[a-zA-Z0-9_-]+$"),
     current_user: User = Depends(get_current_user),
@@ -297,7 +440,13 @@ async def unregister_task(
         raise BusinessException(detail="任务注销失败", status_code=500, error_code="TASK_UNREGISTRATION_FAILED")
 
 
-@router.get("/", response_model=List[TaskConfig])
+@router.get(
+    "/",
+    response_model=List[TaskConfig],
+    summary="列出任务定义",
+    description="按任务类型、标签、状态和分页参数筛选任务定义列表，供任务中心和运维面板查询。",
+    responses=TASK_LIST_SUCCESS_RESPONSE,
+)
 async def list_tasks(
     task_type: Optional[str] = Query(
         None,
@@ -378,6 +527,7 @@ async def list_tasks(
     response_model=TaskConfig,
     summary="获取任务详情",
     description="按任务 ID 返回任务的完整配置和当前状态，适用于任务排障、配置核对和执行前检查。",
+    responses=TASK_CONFIG_DETAIL_SUCCESS_RESPONSE,
 )
 async def get_task(
     task_id: str = Path(..., description="任务ID", min_length=1, max_length=50, pattern=r"^[a-zA-Z0-9_-]+$"),
@@ -437,6 +587,7 @@ async def start_task(
     "/{task_id}/stop",
     response_model=TaskResponse,
     description="按任务ID停止指定任务，并返回本次停止操作的执行结果。",
+    responses=TASK_STOP_SUCCESS_RESPONSE,
 )
 async def stop_task(task_id: str = Path(..., description="需要停止的任务ID。")):
     """停止任务"""
@@ -592,7 +743,9 @@ async def export_config(
 
 @router.delete(
     "/executions/cleanup",
+    summary="清理任务执行记录",
     description="清理超过指定保留天数的历史任务执行记录，并返回本次清理数量。",
+    responses=TASK_EXECUTION_CLEANUP_SUCCESS_RESPONSE,
 )
 async def cleanup_executions(days: int = Query(7, description="保留最近多少天的执行记录。", ge=1, le=90)):
     """清理旧的执行记录"""
@@ -687,7 +840,13 @@ async def tasks_health():
 # ==================== 管理员专用端点 ====================
 
 
-@router.get("/audit/logs", response_model=Dict[str, Any])
+@router.get(
+    "/audit/logs",
+    response_model=Dict[str, Any],
+    summary="获取任务审计日志",
+    description="按操作类型和用户名过滤任务审计日志，返回倒序排列的审计记录及筛选结果统计。",
+    responses=TASK_AUDIT_LOGS_SUCCESS_RESPONSE,
+)
 async def get_audit_logs(
     limit: int = Query(50, description="返回记录数", ge=1, le=500),
     operation: Optional[str] = Query(None, description="操作类型过滤"),
@@ -746,7 +905,13 @@ async def get_audit_logs(
         raise BusinessException(detail="获取审计日志失败", status_code=500, error_code="AUDIT_LOG_RETRIEVAL_FAILED")
 
 
-@router.post("/cleanup/audit", response_model=APIResponse)
+@router.post(
+    "/cleanup/audit",
+    response_model=APIResponse,
+    summary="清理任务审计日志",
+    description="按保留天数清理历史任务审计日志，并返回本次清理数量、剩余数量和截止时间。",
+    responses=TASK_AUDIT_CLEANUP_SUCCESS_RESPONSE,
+)
 async def cleanup_audit_logs(
     days: int = Query(30, description="保留最近几天的日志", ge=1, le=365),
     current_user: User = Depends(get_current_user),

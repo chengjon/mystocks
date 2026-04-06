@@ -1362,9 +1362,11 @@ def test_task_stop_import_and_export_endpoints_have_docs_and_examples() -> None:
 
     stop_operation = schema["paths"]["/api/tasks/{task_id}/stop"]["post"]
     stop_parameters = stop_operation.get("parameters", [])
+    stop_success_json = stop_operation["responses"]["200"]["content"]["application/json"]
 
     assert len(stop_operation.get("description", "")) >= 20
     assert any(param["name"] == "task_id" and param.get("description") for param in stop_parameters)
+    assert "example" in stop_success_json or "examples" in stop_success_json
 
     for path in ["/api/tasks/import", "/api/tasks/export"]:
         operation = schema["paths"][path]["post"]
@@ -1386,9 +1388,13 @@ def test_task_register_and_cleanup_endpoints_have_docs() -> None:
 
     cleanup_operation = schema["paths"]["/api/tasks/executions/cleanup"]["delete"]
     cleanup_parameters = cleanup_operation.get("parameters", [])
+    cleanup_success_json = cleanup_operation["responses"]["200"]["content"]["application/json"]
 
+    assert cleanup_operation.get("summary")
     assert len(cleanup_operation.get("description", "")) >= 20
     assert any(param["name"] == "days" and param.get("description") for param in cleanup_parameters)
+    assert "example" in cleanup_success_json or "examples" in cleanup_success_json
+    assert any(code.startswith(("4", "5")) for code in cleanup_operation["responses"])
 
 
 def test_task_read_endpoints_have_parameter_docs_examples_and_error_responses() -> None:
@@ -1396,6 +1402,8 @@ def test_task_read_endpoints_have_parameter_docs_examples_and_error_responses() 
     schema = app.openapi()
 
     for path, expected_params in [
+        ("/api/tasks/", ["task_type", "tags", "status", "enabled", "limit", "offset"]),
+        ("/api/tasks/{task_id}", ["task_id"]),
         ("/api/tasks/executions/", ["task_id", "limit"]),
         ("/api/tasks/executions/{execution_id}", ["execution_id"]),
         ("/api/tasks/statistics/", []),
@@ -1406,6 +1414,29 @@ def test_task_read_endpoints_have_parameter_docs_examples_and_error_responses() 
         success_json = operation["responses"][next(code for code in operation["responses"] if code.startswith("2"))][
             "content"
         ]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expected_params:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
+def test_task_admin_endpoints_have_response_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    endpoint_expectations = {
+        ("/api/tasks/{task_id}", "delete"): ["task_id"],
+        ("/api/tasks/audit/logs", "get"): ["limit", "operation", "username"],
+        ("/api/tasks/cleanup/audit", "post"): ["days"],
+    }
+
+    for (path, method), expected_params in endpoint_expectations.items():
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+        success_json = operation["responses"]["200"]["content"]["application/json"]
 
         assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
