@@ -1,155 +1,129 @@
 """
-File-level tests for multi_source.py API endpoints
+File-level contract tests for the active multi_source API package.
 
-Tests all multi-source data management endpoints including:
-- Data source configuration and management
-- Multi-source data aggregation
-- Source prioritization and failover
-- Data consistency across sources
-
-Priority: P2 (Utility)
-Coverage: 70% functional + smoke testing
+仓库里同时存在包路由和遗留单文件定义，运行时实际导出的是
+`app.api.multi_source.routes`。这里对齐当前生效的接口面。
 """
 
-import asyncio
+from __future__ import annotations
+
+import sys
+from pathlib import Path
 
 import pytest
+import importlib
 
-from tests.api.file_tests.conftest import api_test_fixtures, assert_file_test_result, mock_responses
+
+ROOT = Path(__file__).resolve().parents[3]
+BACKEND_ROOT = ROOT / "web" / "backend"
+if str(BACKEND_ROOT) not in sys.path:
+    sys.path.insert(0, str(BACKEND_ROOT))
+
+
+@pytest.fixture
+def multi_source_module(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("POSTGRESQL_HOST", "localhost")
+    monkeypatch.setenv("POSTGRESQL_USER", "postgres")
+    monkeypatch.setenv("POSTGRESQL_PASSWORD", "password")
+    monkeypatch.setenv("JWT_SECRET_KEY", "test-secret-key")
+    monkeypatch.setenv("BACKEND_PORT", "8020")
+    monkeypatch.setenv("BACKEND_BACKUP_PORT", "8021")
+    package = importlib.import_module("app.api.multi_source")
+    routes = importlib.import_module("app.api.multi_source.routes")
+    return package, routes
 
 
 class TestMultiSourceAPIFile:
-    """Test suite for multi_source.py API file"""
+    @pytest.mark.file_test
+    def test_router_registers_expected_paths(self, multi_source_module):
+        package, routes = multi_source_module
+        paths = {(route.path, tuple(sorted(route.methods or []))) for route in routes.router.routes}
+
+        assert package.router is routes.router
+        assert routes.router.prefix == ""
+        assert ("/health", ("GET",)) in paths
+        assert ("/status", ("GET",)) in paths
+        assert ("/analyze", ("POST",)) in paths
 
     @pytest.mark.file_test
-    def test_source_list_endpoint(self, api_test_fixtures):
-        """Test GET /api/multi-source/sources - List data sources"""
-        # Test data source listing and status
-        assert api_test_fixtures["base_url"].startswith("http")
-
-    @pytest.mark.file_test
-    def test_source_config_endpoint(self, api_test_fixtures):
-        """Test GET /api/multi-source/config - Source configuration"""
-        # Test source configuration retrieval
-        assert api_test_fixtures["retry_attempts"] >= 1
-
-    @pytest.mark.file_test
-    def test_source_add_endpoint(self, api_test_fixtures):
-        """Test POST /api/multi-source/add - Add data source"""
-        # Test new data source registration
-        assert api_test_fixtures["mock_enabled"] is True
-
-    @pytest.mark.file_test
-    def test_source_update_endpoint(self, api_test_fixtures):
-        """Test PUT /api/multi-source/{id} - Update source config"""
-        # Test data source configuration updates
-        assert api_test_fixtures["contract_validation"] is True
-
-    @pytest.mark.file_test
-    def test_source_remove_endpoint(self, api_test_fixtures):
-        """Test DELETE /api/multi-source/{id} - Remove data source"""
-        # Test data source removal
-        assert api_test_fixtures["test_timeout"] > 0
-
-    @pytest.mark.file_test
-    def test_source_health_endpoint(self, api_test_fixtures):
-        """Test GET /api/multi-source/health - Source health status"""
-        # Test multi-source health monitoring
-        assert True
-
-    @pytest.mark.file_test
-    def test_data_aggregation_endpoint(self, api_test_fixtures):
-        """Test GET /api/multi-source/aggregate - Data aggregation"""
-        # Test data aggregation from multiple sources
-        assert True
-
-    @pytest.mark.file_test
-    def test_source_failover_endpoint(self, api_test_fixtures):
-        """Test POST /api/multi-source/failover - Trigger failover"""
-        # Test source failover mechanisms
-        assert True
-
-    @pytest.mark.file_test
-    def test_source_priorities_endpoint(self, api_test_fixtures):
-        """Test GET /api/multi-source/priorities - Source priorities"""
-        # Test source prioritization logic
-        assert True
-
-    @pytest.mark.file_test
-    def test_error_handling(self, mock_responses):
-        """Test error handling across multi-source endpoints"""
-        error_response = mock_responses["error_response"]
-        assert error_response["success"] is False
-        assert "code" in error_response
-        assert "message" in error_response
-
-    @pytest.mark.file_test
-    def test_response_format_validation(self):
-        """Test response format validation for multi-source endpoints"""
-        # Validate multi-source response formats
-        assert True  # Placeholder
-
-    @pytest.mark.file_test
-    def test_performance_requirements(self, api_test_fixtures):
-        """Test performance requirements for multi-source endpoints"""
-        # Validate multi-source operation performance
-        timeout = api_test_fixtures["test_timeout"]
-        assert timeout <= 30  # Max 30 seconds for multi-source operations
-
     @pytest.mark.asyncio
-    @pytest.mark.file_test
-    async def test_multi_source_aggregation(self):
-        """Test multi-source data aggregation and processing"""
-        # Test data aggregation from multiple sources
-        await asyncio.sleep(0.01)  # Simulate async operation
-        assert True
+    async def test_health_check_returns_service_status(self, multi_source_module):
+        _, routes = multi_source_module
+
+        payload = await routes.health_check()
+
+        assert payload == {"status": "ok", "service": "multi_source"}
 
     @pytest.mark.file_test
-    def test_multi_source_data_consistency(self):
-        """Test data consistency across multi-source operations"""
-        # Ensure multi-source data remains consistent
-        assert True
+    @pytest.mark.asyncio
+    async def test_status_endpoint_returns_active_service_marker(self, multi_source_module):
+        _, routes = multi_source_module
+
+        payload = await routes.get_status()
+
+        assert payload == {"status": "active", "endpoint": "multi_source"}
 
     @pytest.mark.file_test
-    def test_multi_source_workflow(self):
-        """Test complete multi-source management workflow"""
-        # Test source setup -> aggregation -> failover workflow
-        assert True
+    @pytest.mark.asyncio
+    async def test_analyze_endpoint_returns_placeholder_result_for_minimal_payload(self, multi_source_module):
+        _, routes = multi_source_module
 
+        payload = await routes.analyze_data({"symbol": "600519"})
 
-class TestMultiSourceIntegration:
-    """Integration tests for multi_source.py with related modules"""
-
-    @pytest.mark.file_test
-    def test_multi_source_data_integration(self):
-        """Test multi-source integration with data modules"""
-        # Test multi-source data with core data modules
-        assert True
+        assert payload == {"result": "分析完成", "endpoint": "multi_source"}
 
     @pytest.mark.file_test
-    def test_multi_source_monitoring_integration(self):
-        """Test multi-source with monitoring systems"""
-        # Test source health monitoring integration
-        assert True
+    @pytest.mark.asyncio
+    async def test_analyze_endpoint_accepts_extended_request_shape(self, multi_source_module):
+        _, routes = multi_source_module
 
+        payload = await routes.analyze_data(
+            {
+                "symbol": "600519",
+                "data_sources": ["technical", "fundamental", "sentiment"],
+                "analysis_depth": "advanced",
+                "weights": {"technical": 0.3, "fundamental": 0.5, "sentiment": 0.2},
+                "time_range": "3m",
+            }
+        )
 
-class TestMultiSourceValidation:
-    """Validation tests for multi-source API"""
-
-    @pytest.mark.file_test
-    def test_multi_source_api_compliance(self):
-        """Test compliance with multi-source API specifications"""
-        # Validate multi-source API compliance
-        assert True
-
-    @pytest.mark.file_test
-    def test_multi_source_data_accuracy(self):
-        """Test accuracy of multi-source data aggregation"""
-        # Validate data aggregation accuracy
-        assert True
+        assert payload["endpoint"] == "multi_source"
+        assert payload["result"] == "分析完成"
 
     @pytest.mark.file_test
-    def test_multi_source_endpoint_coverage(self):
-        """Test that all expected multi-source endpoints are implemented"""
-        # Validate multi-source endpoint coverage
-        assert True
+    def test_router_contains_unique_paths_only(self, multi_source_module):
+        _, routes = multi_source_module
+        route_paths = [route.path for route in routes.router.routes]
+
+        assert route_paths == ["/health", "/status", "/analyze"]
+        assert len(route_paths) == len(set(route_paths))
+
+    @pytest.mark.file_test
+    def test_router_methods_match_expected_contract(self, multi_source_module):
+        _, routes = multi_source_module
+        route_methods = {route.path: tuple(sorted(route.methods or [])) for route in routes.router.routes}
+
+        assert route_methods["/health"] == ("GET",)
+        assert route_methods["/status"] == ("GET",)
+        assert route_methods["/analyze"] == ("POST",)
+
+    @pytest.mark.file_test
+    def test_package_exports_router_in___all__(self, multi_source_module):
+        package, routes = multi_source_module
+
+        assert package.__all__ == ["router"]
+        assert package.router is routes.router
+
+    @pytest.mark.file_test
+    def test_analyze_endpoint_docstring_mentions_ai_analysis(self, multi_source_module):
+        _, routes = multi_source_module
+
+        assert "AI综合分析" in (routes.analyze_data.__doc__ or "")
+        assert "多数据源" in (routes.analyze_data.__doc__ or "")
+
+    @pytest.mark.file_test
+    def test_health_and_status_handlers_have_stable_names(self, multi_source_module):
+        _, routes = multi_source_module
+
+        assert routes.health_check.__name__ == "health_check"
+        assert routes.get_status.__name__ == "get_status"

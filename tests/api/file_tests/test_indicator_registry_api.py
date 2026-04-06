@@ -1,131 +1,120 @@
 """
-File-level tests for indicator_registry.py API endpoints
+File-level route and model contract tests for indicator_registry.py.
 
-Tests all indicator registry endpoints including:
-- Technical indicator registration and management
-- Indicator metadata and configuration
-- Indicator validation and compatibility
-- Custom indicator support
-
-Priority: P2 (Utility)
-Coverage: 70% functional + smoke testing
+这里对齐当前真实的 3 个端点、工厂单例和请求/响应模型，
+替换掉生成式占位断言。
 """
 
-import asyncio
+from __future__ import annotations
+
+import importlib
+import sys
+from pathlib import Path
+from unittest.mock import Mock
 
 import pytest
 
-from tests.api.file_tests.conftest import api_test_fixtures, assert_file_test_result, mock_responses
+
+ROOT = Path(__file__).resolve().parents[3]
+BACKEND_ROOT = ROOT / "web" / "backend"
+if str(BACKEND_ROOT) not in sys.path:
+    sys.path.insert(0, str(BACKEND_ROOT))
+
+
+@pytest.fixture
+def indicator_registry_module(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("POSTGRESQL_HOST", "localhost")
+    monkeypatch.setenv("POSTGRESQL_USER", "postgres")
+    monkeypatch.setenv("POSTGRESQL_PASSWORD", "password")
+    monkeypatch.setenv("JWT_SECRET_KEY", "test-secret-key")
+    monkeypatch.setenv("BACKEND_PORT", "8020")
+    monkeypatch.setenv("BACKEND_BACKUP_PORT", "8021")
+    return importlib.import_module("app.api.indicator_registry")
 
 
 class TestIndicatorRegistryAPIFile:
-    """Test suite for indicator_registry.py API file"""
+    @pytest.mark.file_test
+    def test_router_registers_expected_indicator_registry_routes(self, indicator_registry_module):
+        route_methods = {(route.path, tuple(sorted(route.methods or []))) for route in indicator_registry_module.router.routes}
+
+        assert indicator_registry_module.router.prefix == "/api/indicator-registry"
+        assert indicator_registry_module.router.tags == ["Indicator Registry"]
+        assert ("/api/indicator-registry/indicators", ("GET",)) in route_methods
+        assert ("/api/indicator-registry/indicators/{indicator_id}", ("GET",)) in route_methods
+        assert ("/api/indicator-registry/calculate", ("POST",)) in route_methods
 
     @pytest.mark.file_test
-    def test_indicator_list_endpoint(self, api_test_fixtures):
-        """Test GET /api/indicators - List registered indicators"""
-        # Test indicator registry listing
-        assert api_test_fixtures["base_url"].startswith("http")
+    def test_router_contains_expected_number_of_routes(self, indicator_registry_module):
+        route_pairs = [(route.path, tuple(sorted(route.methods or []))) for route in indicator_registry_module.router.routes]
+
+        assert len(route_pairs) == 3
+        assert len(route_pairs) == len(set(route_pairs))
 
     @pytest.mark.file_test
-    def test_indicator_detail_endpoint(self, api_test_fixtures):
-        """Test GET /api/indicators/{id} - Get indicator details"""
-        # Test individual indicator metadata
-        assert api_test_fixtures["retry_attempts"] >= 1
+    def test_response_models_remain_stable(self, indicator_registry_module):
+        response_models = {(route.path, tuple(sorted(route.methods or []))): route.response_model for route in indicator_registry_module.router.routes}
+
+        assert response_models[("/api/indicator-registry/indicators", ("GET",))] == indicator_registry_module.List[
+            indicator_registry_module.IndicatorInfo
+        ]
+        assert response_models[("/api/indicator-registry/indicators/{indicator_id}", ("GET",))] is None
+        assert response_models[("/api/indicator-registry/calculate", ("POST",))] is indicator_registry_module.CalculationResponse
 
     @pytest.mark.file_test
-    def test_indicator_register_endpoint(self, api_test_fixtures):
-        """Test POST /api/indicators/register - Register new indicator"""
-        # Test indicator registration process
-        assert api_test_fixtures["mock_enabled"] is True
+    def test_route_names_remain_stable(self, indicator_registry_module):
+        route_names = {(route.path, tuple(sorted(route.methods or []))): route.name for route in indicator_registry_module.router.routes}
+
+        assert route_names[("/api/indicator-registry/indicators", ("GET",))] == "list_indicators"
+        assert route_names[("/api/indicator-registry/indicators/{indicator_id}", ("GET",))] == "get_indicator_details"
+        assert route_names[("/api/indicator-registry/calculate", ("POST",))] == "calculate_indicator"
 
     @pytest.mark.file_test
-    def test_indicator_validate_endpoint(self, api_test_fixtures):
-        """Test POST /api/indicators/validate - Validate indicator"""
-        # Test indicator validation logic
-        assert api_test_fixtures["contract_validation"] is True
+    def test_get_factory_behaves_as_singleton(self, indicator_registry_module, monkeypatch):
+        fake_factory = Mock()
+        factory_class = Mock(return_value=fake_factory)
+        monkeypatch.setattr(indicator_registry_module, "IndicatorFactory", factory_class)
+        monkeypatch.setattr(indicator_registry_module, "_factory", None)
+
+        first = indicator_registry_module.get_factory()
+        second = indicator_registry_module.get_factory()
+
+        assert first is fake_factory
+        assert second is fake_factory
+        factory_class.assert_called_once_with()
 
     @pytest.mark.file_test
-    def test_indicator_update_endpoint(self, api_test_fixtures):
-        """Test PUT /api/indicators/{id} - Update indicator"""
-        # Test indicator configuration updates
-        assert api_test_fixtures["test_timeout"] > 0
+    def test_indicator_info_model_fields_remain_stable(self, indicator_registry_module):
+        fields = set(indicator_registry_module.IndicatorInfo.model_fields)
+
+        assert fields == {
+            "indicator_id",
+            "indicator_name",
+            "indicator_category",
+            "use_case",
+            "description",
+            "status",
+        }
 
     @pytest.mark.file_test
-    def test_error_handling(self, mock_responses):
-        """Test error handling across indicator registry endpoints"""
-        error_response = mock_responses["error_response"]
-        assert error_response["success"] is False
-        assert "code" in error_response
-        assert "message" in error_response
+    def test_calculation_models_expose_expected_fields(self, indicator_registry_module):
+        request_fields = set(indicator_registry_module.CalculationRequest.model_fields)
+        response_fields = set(indicator_registry_module.CalculationResponse.model_fields)
+
+        assert request_fields == {"indicator_id", "data", "parameters"}
+        assert response_fields == {"indicator_id", "result", "length"}
 
     @pytest.mark.file_test
-    def test_response_format_validation(self):
-        """Test response format validation for indicator registry endpoints"""
-        # Validate indicator registry response formats
-        assert True  # Placeholder
+    def test_calculation_request_default_parameters_is_empty_mapping(self, indicator_registry_module):
+        req = indicator_registry_module.CalculationRequest(indicator_id="sma", data=[{"close": 1.0}])
+
+        assert req.parameters == {}
 
     @pytest.mark.file_test
-    def test_performance_requirements(self, api_test_fixtures):
-        """Test performance requirements for indicator registry endpoints"""
-        # Validate indicator registry performance
-        timeout = api_test_fixtures["test_timeout"]
-        assert timeout <= 30  # Max 30 seconds for registry operations
-
-    @pytest.mark.asyncio
-    @pytest.mark.file_test
-    async def test_indicator_registration(self):
-        """Test indicator registration and management"""
-        # Test complete indicator lifecycle
-        await asyncio.sleep(0.01)  # Simulate async operation
-        assert True
+    def test_docstrings_cover_listing_details_and_calculation(self, indicator_registry_module):
+        assert "List all registered indicators." in (indicator_registry_module.list_indicators.__doc__ or "")
+        assert "Get detailed configuration" in (indicator_registry_module.get_indicator_details.__doc__ or "")
+        assert "Run a batch calculation." in (indicator_registry_module.calculate_indicator.__doc__ or "")
 
     @pytest.mark.file_test
-    def test_indicator_data_consistency(self):
-        """Test data consistency in indicator registry operations"""
-        # Ensure indicator registry data remains consistent
-        assert True
-
-    @pytest.mark.file_test
-    def test_indicator_workflow(self):
-        """Test complete indicator registry workflow"""
-        # Test register -> validate -> use workflow
-        assert True
-
-
-class TestIndicatorRegistryIntegration:
-    """Integration tests for indicator_registry.py with related modules"""
-
-    @pytest.mark.file_test
-    def test_indicator_technical_analysis_integration(self):
-        """Test indicator registry with technical analysis modules"""
-        # Test indicator registry integration with TA modules
-        assert True
-
-    @pytest.mark.file_test
-    def test_indicator_strategy_integration(self):
-        """Test indicator registry with strategy modules"""
-        # Test custom indicators in strategies
-        assert True
-
-
-class TestIndicatorRegistryValidation:
-    """Validation tests for indicator registry API"""
-
-    @pytest.mark.file_test
-    def test_indicator_registry_api_compliance(self):
-        """Test compliance with indicator registry API specifications"""
-        # Validate indicator registry API compliance
-        assert True
-
-    @pytest.mark.file_test
-    def test_indicator_validation_accuracy(self):
-        """Test accuracy of indicator validation"""
-        # Validate indicator validation logic accuracy
-        assert True
-
-    @pytest.mark.file_test
-    def test_indicator_registry_endpoint_coverage(self):
-        """Test that all expected indicator registry endpoints are implemented"""
-        # Validate indicator registry endpoint coverage
-        assert True
+    def test_module_prefix_implies_all_routes_share_same_namespace(self, indicator_registry_module):
+        assert all(route.path.startswith("/api/indicator-registry") for route in indicator_registry_module.router.routes)
