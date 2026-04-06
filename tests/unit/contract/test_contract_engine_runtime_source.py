@@ -48,6 +48,8 @@ def test_contract_test_engine_defaults_to_runtime_openapi(monkeypatch, tmp_path:
     )
 
     assert engine.openapi_spec == runtime_spec
+    assert engine.openapi_spec_source == "runtime"
+    assert engine.openapi_spec_error is None
     discovered = engine.discover_tests_from_openapi()
     assert [case.name for case in discovered] == ["GET /api/runtime"]
 
@@ -92,5 +94,20 @@ def test_contract_test_engine_allows_explicit_openapi_file_override(monkeypatch,
     )
 
     assert engine.openapi_spec == explicit_spec
+    assert engine.openapi_spec_source == "explicit_file"
+    assert engine.openapi_spec_error is None
     discovered = engine.discover_tests_from_openapi()
     assert [case.name for case in discovered] == ["POST /api/override"]
+
+
+def test_contract_test_engine_marks_unavailable_when_runtime_openapi_cannot_load(tmp_path: Path) -> None:
+    engine = ContractTestEngine(
+        ContractTestConfig(
+            test_data_path=str(tmp_path / "test-data"),
+            report_output_path=str(tmp_path / "reports"),
+        )
+    )
+
+    assert engine.openapi_spec_source == "unavailable"
+    assert engine.openapi_spec_error
+    assert engine.discover_tests_from_openapi() == []

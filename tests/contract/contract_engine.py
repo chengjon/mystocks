@@ -36,6 +36,8 @@ class ContractTestEngine:
         self.validator = ContractValidator(self.config)
         self.executor = ContractTestExecutor(self.config)
         self.test_suites: Dict[str, ContractTestSuite] = {}
+        self.openapi_spec_source: str = "unavailable"
+        self.openapi_spec_error: Optional[str] = None
 
         # 初始化
         self._initialize()
@@ -71,18 +73,26 @@ class ContractTestEngine:
                             self.openapi_spec = json.load(f)
                         else:
                             self.openapi_spec = yaml.safe_load(f)
-                    logger.info("成功加载 OpenAPI 规范: %(spec_path)s")
+                    self.openapi_spec_source = "explicit_file"
+                    self.openapi_spec_error = None
+                    logger.info("成功加载 OpenAPI 规范: %s", spec_path)
                     return
 
-                logger.warning("OpenAPI 规范文件不存在: %(spec_path)s")
+                self.openapi_spec_source = "unavailable"
+                self.openapi_spec_error = f"OpenAPI 规范文件不存在: {spec_path}"
+                logger.warning(self.openapi_spec_error)
                 return
 
             from app.main import app
 
             self.openapi_spec = app.openapi()
+            self.openapi_spec_source = "runtime"
+            self.openapi_spec_error = None
             logger.info("成功加载运行时 OpenAPI 规范")
         except Exception as e:
-            logger.error("加载 OpenAPI 规范失败: %(e)s")
+            self.openapi_spec_source = "unavailable"
+            self.openapi_spec_error = str(e)
+            logger.error("加载 OpenAPI 规范失败: %s", e)
 
     def discover_tests_from_openapi(self) -> List[ContractTestCase]:
         """从 OpenAPI 规范发现测试用例"""
