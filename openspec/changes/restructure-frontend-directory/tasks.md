@@ -256,10 +256,15 @@
     - Evidence: the canonical page keeps the repo-truth imports from `@/api/index`, `@/api/types/common`, `@/composables/artdeco/useArtDecoApi`, and `@/components/artdeco`, while the legacy ArtDeco path now imports `@/views/risk/Alerts.vue`.
   - [x] 9.5.3 Run lint & type-check
   - [x] 9.5.4 Run unit tests for Alerts.vue
-- [ ] 9.6 Move `artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue` → `views/risk/News.vue`
-  - [ ] 9.6.1 Move dependency: `useRiskNews.ts`
-  - [ ] 9.6.2 Update imports
-  - [ ] 9.6.3 Run lint & type-check
+- [x] 9.6 Move `artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue` → `views/risk/News.vue`
+  - Completed: 2026-04-06 via repo-truth-aligned micro-batch `2026-04-06-restructure-risk-news-main`.
+  - Result: `src/views/risk/News.vue` now hosts the canonical risk news implementation; `ArtDecoAnnouncementMonitor.vue` is retained as a legacy compatibility wrapper into the canonical route entrypoint.
+  - [x] 9.6.1 Move dependency: `useRiskNews.ts`
+    - Repo-truth note: not applicable as written. The current risk news page does not own a local `useRiskNews.ts`; it composes `useArtDecoApi`, `monitoringApi`, and inline announcement formatting / source-link helpers.
+  - [x] 9.6.2 Update imports
+    - Evidence: the canonical page keeps the repo-truth imports from `@/api/index`, `@/api/types/common`, `@/composables/artdeco/useArtDecoApi`, and `@/components/artdeco`, while the legacy ArtDeco path now imports `@/views/risk/News.vue`.
+  - [x] 9.6.3 Run lint & type-check
+  - [x] 9.6.4 Run unit tests for News.vue
 - [ ] 9.7 Commit: "refactor: migrate risk domain pages"
 
 ## 10. Page-by-Page Migration – System Domain (Phase 3g)
