@@ -780,24 +780,39 @@ def test_audit_endpoints_have_parameter_descriptions() -> None:
     schema = app.openapi()
 
     logs_operation = schema["paths"]["/api/v1/audit/logs"]["get"]
+    logs_success_json = logs_operation["responses"]["200"]["content"]["application/json"]
+    assert logs_operation.get("summary")
+    assert len(logs_operation.get("description", "")) >= 20
     for parameter_name in ["user_id", "action", "resource_type", "start_date", "end_date", "limit"]:
         assert any(
             param["name"] == parameter_name and param.get("description")
             for param in logs_operation.get("parameters", [])
         )
+    assert "example" in logs_success_json or "examples" in logs_success_json
+    assert any(code.startswith(("4", "5")) for code in logs_operation["responses"])
 
     log_detail_operation = schema["paths"]["/api/v1/audit/logs/{log_id}"]["get"]
+    log_detail_success_json = log_detail_operation["responses"]["200"]["content"]["application/json"]
+    assert log_detail_operation.get("summary")
+    assert len(log_detail_operation.get("description", "")) >= 20
     assert any(
         param["name"] == "log_id" and param.get("description")
         for param in log_detail_operation.get("parameters", [])
     )
+    assert "example" in log_detail_success_json or "examples" in log_detail_success_json
+    assert any(code.startswith(("4", "5")) for code in log_detail_operation["responses"])
 
     statistics_operation = schema["paths"]["/api/v1/audit/statistics"]["get"]
+    statistics_success_json = statistics_operation["responses"]["200"]["content"]["application/json"]
+    assert statistics_operation.get("summary")
+    assert len(statistics_operation.get("description", "")) >= 20
     for parameter_name in ["start_date", "end_date"]:
         assert any(
             param["name"] == parameter_name and param.get("description")
             for param in statistics_operation.get("parameters", [])
         )
+    assert "example" in statistics_success_json or "examples" in statistics_success_json
+    assert any(code.startswith(("4", "5")) for code in statistics_operation["responses"])
 
 
 def test_positions_endpoints_have_examples_parameter_docs_and_error_responses() -> None:
