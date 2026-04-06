@@ -423,12 +423,14 @@
 
 **Total tasks**: 19 major phases with 100+ sub-tasks
 **Estimated effort**: 26 person-days (≈ 3.5 weeks)
+Historical planning estimate from the original approval package, not a current measured actual.
 **Critical path**: Phases 0 → 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9
 **Parallel opportunities**: Phases 3a–3g (market, data, watchlist, strategy, trade, risk, system) can be parallelized if multiple developers are available.
+**Current repo-truth frontier**: phases 0–5 have been materially closed through verified micro-batches and ledger reconciliation; phases 6–9 remain external workflow or follow-up gates and are intentionally still open.
 
 **Key verification gates**:
 - ✅ `npm run lint && npm run type-check` after each file move
-- ✅ `npm run test:smoke` before merge
-- ✅ `npm run test:e2e` before merge
+- ✅ Safe smoke gate chain before merge: `npm run test:e2e:stable`, `npm run test:e2e:axe`, `npm run test:e2e:lighthouse`
+- ✅ Playwright matrix plus focused real-read UI smoke coverage before merge
 - ✅ Architecture Board approval before implementation
-- ✅ Post-deployment smoke test on staging
+- ⏳ Formal review/sign-off, merge/deploy, staging validation, and OpenSpec archive remain pending external workflow gates
