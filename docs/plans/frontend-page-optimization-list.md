@@ -7,9 +7,9 @@
 > 文内优先级、缺口清单、执行步骤、目标值和时间线如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
 
 
-**版本**: V2.2（依据 2026-04-05 dashboard truth reconciliation 修订）
+**版本**: V2.3（依据 2026-04-06 mainline artifact reconciliation 修订）
 **创建日期**: 2026-03-02
-**最后更新**: 2026-04-05
+**最后更新**: 2026-04-06
 
 ## 0. 统计口径（先定义再统计）
 
@@ -213,8 +213,8 @@ bash scripts/tests/test/run-comprehensive-tests.sh
 - `/health`
   - 支撑页面：`System-Health`
 
-路径已证实存在，但页面仍保持 `pending`:
-- `/api/v1/risk/alerts`
+活跃清单中当前已无“路径已证实存在但页面仍保持 `pending`”的接口。
+旧 `/api/v1/risk/alerts` 仅作为已证伪旧口径保留在下方历史纠偏章节，不能再视为当前 pending 项。
 
 已证伪或需修正的旧口径:
 - `Market-Realtime`
