@@ -1,0 +1,80 @@
+version: "v0.2"
+
+task:
+  id: "pr-60"
+  title: "replace placeholder api file tests with route contract assertions batch 3"
+  owner: "main"
+  created_at: "2026-04-06"
+
+mainline:
+  id: "L1-api-file-tests-contract-salvage"
+  objective: "replace placeholder API file tests with route-aware contract coverage through isolated salvage micro-batches"
+  milestone_id: "L2-api-file-tests-batch-series"
+  slice_id: "L3-batch-3-cache-contract-data-tdx"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - "tests/api/file_tests/test_cache_api.py"
+    - "tests/api/file_tests/test_contract_routes_api.py"
+    - "tests/api/file_tests/test_data_api.py"
+    - "tests/api/file_tests/test_tdx_api.py"
+    - "governance/mainline/task-cards/pr-60.yaml"
+  forbidden_paths:
+    - "web/frontend/src/views/data/Advanced.vue"
+    - "web/frontend/src/views/artdeco-pages/ArtDecoDataAnalysis.vue"
+    - "web/frontend/src/views/watchlist"
+
+non_goals:
+  - "No backend implementation changes; this batch only replaces placeholder file tests with route-aware contract assertions"
+  - "No work on Data-Indicator or Watchlist lines"
+  - "No scope expansion outside the declared 4 test files and governance task card"
+
+acceptance:
+  checks:
+    - id: "api-file-tests-batch-3"
+      command: "python -m pytest --no-cov tests/api/file_tests/test_cache_api.py tests/api/file_tests/test_contract_routes_api.py tests/api/file_tests/test_data_api.py tests/api/file_tests/test_tdx_api.py"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-60.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr60-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If any asserted router metadata drifts from the actual backend route exports, this batch will fail as intended on future runs"
+    - "If the task card function tree mapping is wrong, the governance gate will fail even though the code diff is correct"
+  rollback_plan: "git revert <merge-commit-sha> if these route-aware tests or the PR-60 governance card introduce unexpected mainline gate failures"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "salvage four placeholder API file tests by aligning them to the active cache, contract, data, and tdx router surfaces"
+    modified_scope: "four tests/api/file_tests modules plus this PR-60 governance task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no product logic changes; only test expectations now track real route exports and metadata"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the PR if the new route-aware assertions or governance scope metadata cause unexpected failures after merge"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-06T00:00:00Z"
+    approval_note: "tests-only cleanup batch does not require a separate OpenSpec proposal"
+    secondary_approved: false
