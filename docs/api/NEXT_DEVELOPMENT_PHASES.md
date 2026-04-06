@@ -1,9 +1,15 @@
 # Next Development Phases - API Contract Platform
 
-**Status**: CLI_3 Complete ✅
-**Date**: 2025-12-30
-**Current TypeScript Errors**: 262
-**Project State**: Frontend Market Data Integration Complete, Trade Module Repaired
+> **历史计划说明**:
+> This file is a staged roadmap for the API Contract Platform, not the sole source of truth for the current implementation status, current type-error baseline, or repository-wide governance rules.
+> For repository-wide governance baselines and approval gates, follow `architecture/STANDARDS.md` first. Use the root `AGENTS.md` only for execution workflow and collaboration constraints, then verify against the current code plus the primary contract/testing docs.
+>
+> The listed TypeScript error counts, completed phases, and next-phase scope should be treated as historical planning context unless re-verified against the current repository state.
+
+**Historical Roadmap Status Snapshot**: CLI_3 Complete ✅
+**Historical Roadmap Snapshot Date**: 2025-12-30
+**Historical TypeScript Error Snapshot**: 262
+**Historical Project State Snapshot**: Frontend Market Data Integration Complete, Trade Module Repaired
 
 ---
 
