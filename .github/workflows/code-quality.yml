@@ -78,6 +78,52 @@ jobs:
                 print(f"- {item['path']}: {item['message']}")
         PY
 
+    - name: Governance Report Fields Guard
+      run: |
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+        else
+          BASE_SHA="${{ github.event.before }}"
+        fi
+
+        if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+          mapfile -t changed_files < <(git ls-files 'reports/governance/*.TASK.md' 'reports/governance/*.TASK-REPORT.md')
+        else
+          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}" | grep -E '^reports/governance/.*\.TASK(-REPORT)?\.md$' || true)
+        fi
+
+        if [ "${#changed_files[@]}" -eq 0 ]; then
+          printf '{"checked_files":0,"structural_files":0,"errors":[],"summary":{"checked_files":0,"structural_files":0,"errors":0}}' > governance-report-fields-guard.json
+          echo "No changed governance task markdown files detected."
+          exit 0
+        fi
+
+        cmd=(python scripts/dev/quality_gate/governance_report_fields_guard.py --format json)
+        for changed_file in "${changed_files[@]}"; do
+          cmd+=(--path "$changed_file")
+        done
+
+        set +e
+        "${cmd[@]}" > governance-report-fields-guard.json
+        status=$?
+        set -e
+
+        python - <<'PY'
+        import json
+        from pathlib import Path
+
+        report = json.loads(Path("governance-report-fields-guard.json").read_text(encoding="utf-8"))
+        summary = report["summary"]
+        print(f"Governance report fields summary: {summary}")
+
+        if report["errors"]:
+            print("Blocking findings:")
+            for item in report["errors"][:10]:
+                print(f"- {item['path']}: {item['message']}")
+        PY
+
+        exit "$status"
+
     - name: Production Python Guardrails
       run: |
         if [ "${{ github.event_name }}" = "pull_request" ]; then
