@@ -1,5 +1,10 @@
 # 下一步工作任务安排 (P1阶段)
 
+> 2026-04-06 状态说明：
+> 本文档保留为早期前端测试规划快照，不再代表当前主线执行队列。
+> 当前任务真值源以仓库根目录的 `TASK.md` / `TASK-REPORT.md` Mongo 导出快照，以及 `reports/governance/` 下的按工作项收口记录为准。
+> 若需查看最近的 `api file tests` 收口结论，见 `reports/governance/2026-04-06-api-file-tests-salvage-closeout.md`。
+
 根据您提交的P0任务完成报告，Web客户端已成功运行，所有核心通信渠道（CORS、WebSocket、API端点）工作正常。恭喜您！
 
 现在我们将继续推进，进入**P1阶段的高优先级任务**，旨在提升测试套件的健壮性和可靠性，确保所有E2E测试文件与ArtDeco优先架构完全对齐，并增加UI一致性验证。

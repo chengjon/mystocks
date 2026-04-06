@@ -1,5 +1,9 @@
 # Tech Debt Governance Rollup (2026Q1)
 
+> 2026-04-06 状态说明：
+> 本文档是 `2026Q1` 治理周报模板/历史样例快照，未继续滚动更新。
+> 当前状态汇总请优先查看仓库根目录 `TASK-REPORT.md` 的 Mongo 导出内容，以及 `reports/governance/` 下的 focused 收口记录。
+
 ## Week Window
 - Start: ____-__-__
 - End: ____-__-__
@@ -40,4 +44,3 @@
 - Model: `glm-5`
 - Files: (none)
 - Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/b2fc73ff-0728-4a6f-a603-27464f86c5a7.jsonl`
-
