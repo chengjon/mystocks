@@ -10,7 +10,7 @@
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Dict, List
 
 
@@ -19,6 +19,102 @@ logger = logging.getLogger(__name__)
 
 class MonitoringDatabaseHistoryMixin:
     """MonitoringDatabase 方法集 Part 3"""
+
+    def get_operation_statistics(self, hours: int = 24) -> Dict[str, Any]:
+        """兼容旧监控接口，读取 canonical operation_logs 统计摘要。"""
+        if not self.enable_monitoring:
+            return {}
+
+        try:
+            cutoff_time = datetime.now() - timedelta(hours=hours)
+
+            with self._get_connection() as conn:
+                cursor = conn.cursor()
+
+                cursor.execute(
+                    """
+                    SELECT
+                        COUNT(*) AS total_operations,
+                        COUNT(CASE WHEN operation_status = 'SUCCESS' THEN 1 END) AS successful_operations,
+                        COUNT(CASE WHEN operation_status = 'FAILED' THEN 1 END) AS failed_operations,
+                        AVG(execution_time_ms) AS average_duration
+                    FROM operation_logs
+                    WHERE created_at >= %s
+                    """,
+                    (cutoff_time,),
+                )
+                totals = cursor.fetchone() or (0, 0, 0, None)
+
+                cursor.execute(
+                    """
+                    SELECT target_database, COUNT(*)
+                    FROM operation_logs
+                    WHERE created_at >= %s
+                    GROUP BY target_database
+                    """,
+                    (cutoff_time,),
+                )
+                database_rows = cursor.fetchall()
+
+                cursor.execute(
+                    """
+                    SELECT operation_type, COUNT(*)
+                    FROM operation_logs
+                    WHERE created_at >= %s
+                    GROUP BY operation_type
+                    """,
+                    (cutoff_time,),
+                )
+                operation_rows = cursor.fetchall()
+                cursor.close()
+
+            return {
+                "total_operations": totals[0] or 0,
+                "successful_operations": totals[1] or 0,
+                "failed_operations": totals[2] or 0,
+                "database_breakdown": {row[0]: row[1] for row in database_rows},
+                "operation_type_breakdown": {row[0]: row[1] for row in operation_rows},
+                "average_duration": float(totals[3]) if totals[3] is not None else 0.0,
+                "last_update": datetime.now().isoformat(),
+            }
+        except Exception as e:
+            logger.error("获取操作统计失败: %s", e)
+            return {}
+
+    def get_table_creation_history(self, limit: int = 50) -> List[Dict[str, Any]]:
+        """兼容旧监控接口，读取表创建历史。"""
+        if not self.enable_monitoring:
+            return []
+
+        try:
+            with self._get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    """
+                    SELECT table_name, database_type, database_name, creation_time, status, error_message
+                    FROM table_creation_log
+                    ORDER BY creation_time DESC
+                    LIMIT %s
+                    """,
+                    (limit,),
+                )
+                rows = cursor.fetchall()
+                cursor.close()
+
+            return [
+                {
+                    "table_name": row[0],
+                    "database_type": row[1],
+                    "database_name": row[2],
+                    "creation_time": row[3],
+                    "status": row[4],
+                    "error_message": row[5],
+                }
+                for row in rows
+            ]
+        except Exception as e:
+            logger.error("获取表创建历史失败: %s", e)
+            return []
 
     async def get_metrics_history(
         self, metric_name: str, start_time: datetime, end_time: datetime

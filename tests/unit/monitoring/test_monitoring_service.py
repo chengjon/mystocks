@@ -7,6 +7,7 @@ Monitoring Service Test Suite
 测试模块: src.monitoring.monitoring_service (1104行)
 """
 
+import json
 import os
 import sys
 from datetime import datetime, timedelta
@@ -129,136 +130,158 @@ class TestMonitoringDatabase:
         """测试使用URL初始化监控数据库"""
         test_url = "postgresql://user:pass@host:5432/db_monitor"  # pragma: allowlist secret
 
-        with patch("monitoring.monitoring_service.DatabaseTableManager") as mock_db_manager:
-            with patch("monitoring.monitoring_service.load_dotenv"):
-                db = MonitoringDatabase(monitor_db_url=test_url)
+        with patch("src.monitoring.monitoring_database_methods.part1.DatabaseConnectionManager") as mock_conn_manager:
+            db = MonitoringDatabase(monitor_db_url=test_url)
 
-                assert db.monitor_db_url == test_url
-                mock_db_manager.assert_called_once()
+        assert db.monitor_db_url == test_url
+        assert db.enable_monitoring is True
+        mock_conn_manager.assert_called_once()
 
     def test_monitoring_database_initialization_without_url(self):
         """测试不使用URL初始化监控数据库"""
-        with patch("monitoring.monitoring_service.DatabaseTableManager") as mock_db_manager:
-            with patch("monitoring.monitoring_service.load_dotenv"):
-                with patch.dict(
-                    os.environ,
-                    {"MONITOR_DB_URL": "postgresql://test:test@localhost:5432/monitor"},  # pragma: allowlist secret
-                ):
-                    db = MonitoringDatabase()
+        with patch("src.monitoring.monitoring_database_methods.part1.DatabaseConnectionManager") as mock_conn_manager:
+            db = MonitoringDatabase()
 
-                    assert (
-                        db.monitor_db_url == "postgresql://test:test@localhost:5432/monitor"
-                    )  # pragma: allowlist secret
-                    mock_db_manager.assert_called_once()
+        assert db.monitor_db_url is None
+        assert db.enable_monitoring is True
+        mock_conn_manager.assert_called_once()
 
-    @patch("psycopg2.connect")
-    def test_get_monitor_connection_success(self, mock_connect):
-        """测试获取监控数据库连接成功"""
-        mock_connect.return_value = Mock()
+    def test_get_connection_success(self):
+        """测试获取监控数据库连接上下文成功"""
+        with patch("src.monitoring.monitoring_database_methods.part1.DatabaseConnectionManager") as mock_conn_manager_cls:
+            mock_conn_manager = mock_conn_manager_cls.return_value
+            mock_pool = Mock()
+            mock_connection = Mock()
+            mock_conn_manager.get_postgresql_connection.return_value = mock_pool
+            mock_pool.getconn.return_value = mock_connection
 
-        with patch("monitoring.monitoring_service.DatabaseTableManager"):
-            with patch("monitoring.monitoring_service.load_dotenv"):
-                db = MonitoringDatabase(monitor_db_url="postgresql://user:pass@host:5432/db_monitor")
-                connection = db._get_monitor_connection()
+            db = MonitoringDatabase(monitor_db_url="postgresql://user:pass@host:5432/db_monitor")
 
-                assert connection is not None
-                mock_connect.assert_called_once()
+            with db._get_connection() as connection:
+                assert connection is mock_connection
 
-    @patch("psycopg2.connect")
-    def test_get_monitor_connection_failure(self, mock_connect):
-        """测试获取监控数据库连接失败"""
-        mock_connect.side_effect = Exception("Connection failed")
+        mock_connection.commit.assert_called_once()
+        mock_pool.putconn.assert_called_once_with(mock_connection)
 
-        with patch("monitoring.monitoring_service.DatabaseTableManager"):
-            with patch("monitoring.monitoring_service.load_dotenv"):
-                db = MonitoringDatabase(monitor_db_url="postgresql://user:pass@host:5432/db_monitor")
-                connection = db._get_monitor_connection()
+    def test_get_connection_failure(self):
+        """测试获取监控数据库连接上下文失败"""
+        with patch("src.monitoring.monitoring_database_methods.part1.DatabaseConnectionManager") as mock_conn_manager_cls:
+            mock_conn_manager = mock_conn_manager_cls.return_value
+            mock_pool = Mock()
+            mock_conn_manager.get_postgresql_connection.return_value = mock_pool
+            mock_pool.getconn.side_effect = Exception("Connection failed")
 
-                assert connection is None
+            db = MonitoringDatabase(monitor_db_url="postgresql://user:pass@host:5432/db_monitor")
+
+            with pytest.raises(Exception, match="Connection failed"):
+                with db._get_connection():
+                    pass
 
     def test_log_operation_start_basic(self):
         """测试记录操作开始"""
-        with patch("monitoring.monitoring_service.DatabaseTableManager"):
-            with patch("monitoring.monitoring_service.load_dotenv"):
-                db = MonitoringDatabase(monitor_db_url="postgresql://user:pass@host:5432/db_monitor")
-                db._insert_operation_log = Mock()
+        with patch("src.monitoring.monitoring_database_methods.part1.DatabaseConnectionManager"):
+            db = MonitoringDatabase(monitor_db_url="postgresql://user:pass@host:5432/db_monitor")
 
-                operation_id = db.log_operation_start(
-                    table_name="test_table",
-                    database_type="postgresql",
-                    database_name="test_db",
-                    operation_type="INSERT",
-                )
+        operation_id = db.log_operation_start(
+            table_name="test_table",
+            database_type="postgresql",
+            database_name="test_db",
+            operation_type="INSERT",
+        )
 
-                assert "test_table" in operation_id
-                assert "INSERT" in operation_id
-                db._insert_operation_log.assert_called_once()
+        assert "test_table" in operation_id
+        assert "INSERT" in operation_id
+        assert operation_id in db._pending_operations
+        assert db._pending_operations[operation_id]["table_name"] == "test_table"
 
     def test_log_operation_start_with_details(self):
         """测试记录操作开始并包含详细信息"""
-        with patch("monitoring.monitoring_service.DatabaseTableManager"):
-            with patch("monitoring.monitoring_service.load_dotenv"):
-                db = MonitoringDatabase(monitor_db_url="postgresql://user:pass@host:5432/db_monitor")
-                db._insert_operation_log = Mock()
+        with patch("src.monitoring.monitoring_database_methods.part1.DatabaseConnectionManager"):
+            db = MonitoringDatabase(monitor_db_url="postgresql://user:pass@host:5432/db_monitor")
 
-                details = {"batch_size": 100, "source": "api"}
-                operation_id = db.log_operation_start(
-                    table_name="test_table",
-                    database_type="postgresql",
-                    database_name="test_db",
-                    operation_type="INSERT",
-                    operation_details=details,
-                )
+        details = {"batch_size": 100, "source": "api"}
+        operation_id = db.log_operation_start(
+            table_name="test_table",
+            database_type="postgresql",
+            database_name="test_db",
+            operation_type="INSERT",
+            operation_details=details,
+        )
 
-                assert operation_id is not None
-                db._insert_operation_log.assert_called_once()
+        assert operation_id is not None
+        assert db._pending_operations[operation_id]["operation_details"] == details
 
     def test_log_operation_result_success(self):
         """测试记录操作结果成功"""
-        with patch("monitoring.monitoring_service.DatabaseTableManager"):
-            with patch("monitoring.monitoring_service.load_dotenv"):
-                db = MonitoringDatabase(monitor_db_url="postgresql://user:pass@host:5432/db_monitor")
-                db._update_operation_log = Mock()
+        with patch("src.monitoring.monitoring_database_methods.part1.DatabaseConnectionManager"):
+            db = MonitoringDatabase(monitor_db_url="postgresql://user:pass@host:5432/db_monitor")
 
-                db.log_operation_result(operation_id="test_op_001", success=True, data_count=100)
+        operation_id = db.log_operation_start(
+            table_name="test_table",
+            database_type="postgresql",
+            database_name="test_db",
+            operation_type="INSERT",
+        )
+        db._write_operation_log_entry = Mock(return_value=True)
 
-                db._update_operation_log.assert_called_once()
+        result = db.log_operation_result(operation_id=operation_id, success=True, data_count=100)
+
+        assert result is True
+        db._write_operation_log_entry.assert_called_once()
+        insert_params = db._write_operation_log_entry.call_args.args[0]
+        assert insert_params[0] == operation_id
+        assert insert_params[5] == 100
+        assert insert_params[6] == "SUCCESS"
 
     def test_log_operation_result_failure(self):
         """测试记录操作结果失败"""
-        with patch("monitoring.monitoring_service.DatabaseTableManager"):
-            with patch("monitoring.monitoring_service.load_dotenv"):
-                db = MonitoringDatabase(monitor_db_url="postgresql://user:pass@host:5432/db_monitor")
-                db._update_operation_log = Mock()
+        with patch("src.monitoring.monitoring_database_methods.part1.DatabaseConnectionManager"):
+            db = MonitoringDatabase(monitor_db_url="postgresql://user:pass@host:5432/db_monitor")
 
-                db.log_operation_result(
-                    operation_id="test_op_001",
-                    success=False,
-                    error_message="Connection timeout",
-                )
+        operation_id = db.log_operation_start(
+            table_name="test_table",
+            database_type="postgresql",
+            database_name="test_db",
+            operation_type="INSERT",
+            operation_details={"batch_size": 100},
+        )
+        db._write_operation_log_entry = Mock(return_value=True)
 
-                db._update_operation_log.assert_called_once()
+        result = db.log_operation_result(
+            operation_id=operation_id,
+            success=False,
+            error_message="Connection timeout",
+        )
+
+        assert result is True
+        db._write_operation_log_entry.assert_called_once()
+        insert_params = db._write_operation_log_entry.call_args.args[0]
+        assert insert_params[0] == operation_id
+        assert insert_params[6] == "FAILED"
+        assert insert_params[7] == "Connection timeout"
+        assert json.loads(insert_params[11])["legacy_operation_details"] == {"batch_size": 100}
 
     def test_get_operation_statistics_empty(self):
         """测试获取操作统计信息（无数据）"""
-        with patch("monitoring.monitoring_service.DatabaseTableManager"):
-            with patch("monitoring.monitoring_service.load_dotenv"):
-                db = MonitoringDatabase()
-                db._get_monitor_connection = Mock(return_value=None)
+        with patch("src.monitoring.monitoring_database_methods.part1.DatabaseConnectionManager"):
+            db = MonitoringDatabase()
 
-                stats = db.get_operation_statistics(hours=24)
+        db._get_connection = Mock(side_effect=Exception("Connection failed"))
 
-                assert stats == {}
+        stats = db.get_operation_statistics(hours=24)
+
+        assert stats == {}
 
     def test_get_table_creation_history(self):
         """测试获取表创建历史"""
-        with patch("monitoring.monitoring_service.DatabaseTableManager"):
-            with patch("monitoring.monitoring_service.load_dotenv"):
-                db = MonitoringDatabase()
+        with patch("src.monitoring.monitoring_database_methods.part1.DatabaseConnectionManager"):
+            db = MonitoringDatabase()
 
-                history = db.get_table_creation_history(limit=50)
+        db._get_connection = Mock(side_effect=Exception("Connection failed"))
 
-                assert isinstance(history, list)
+        history = db.get_table_creation_history(limit=50)
+
+        assert history == []
 
 
 class TestDataQualityMonitor:
