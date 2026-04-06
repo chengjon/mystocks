@@ -85,13 +85,176 @@ BLOCKTRADE_REFRESH_RESPONSES = {
     ),
 }
 
+FUND_FLOW_QUERY_RESPONSES = {
+    **MARKET_V2_ROUTE_RESPONSES,
+    **_success_response_spec(
+        "个股资金流向历史数据",
+        {
+            "success": True,
+            "data": [
+                {
+                    "trade_date": "2026-04-03",
+                    "main_net_inflow": 128000000.0,
+                    "super_large_net_inflow": 51200000.0,
+                    "large_net_inflow": 76800000.0,
+                    "medium_net_inflow": -8600000.0,
+                    "small_net_inflow": -20100000.0,
+                }
+            ],
+            "count": 1,
+        },
+    ),
+}
+
+FUND_FLOW_REFRESH_RESPONSES = {
+    **MARKET_V2_REFRESH_BASE_RESPONSES,
+    **_success_response_spec(
+        "资金流向刷新结果",
+        {
+            "success": True,
+            "message": "资金流向数据刷新完成",
+            "symbol": "600519",
+            "timeframe": "今日",
+            "updated_count": 10,
+        },
+    ),
+}
+
+ETF_LIST_RESPONSES = {
+    **MARKET_V2_ROUTE_RESPONSES,
+    **_success_response_spec(
+        "ETF 实时行情列表",
+        {
+            "success": True,
+            "data": [
+                {
+                    "symbol": "510300",
+                    "name": "沪深300ETF",
+                    "latest_price": 3.986,
+                    "change_percent": 0.72,
+                    "volume": 85234123,
+                    "turnover": 338000000.0,
+                }
+            ],
+            "count": 1,
+        },
+    ),
+}
+
+LHB_QUERY_RESPONSES = {
+    **MARKET_V2_ROUTE_RESPONSES,
+    **_success_response_spec(
+        "龙虎榜查询结果",
+        {
+            "success": True,
+            "data": [
+                {
+                    "symbol": "002594",
+                    "name": "比亚迪",
+                    "trade_date": "2026-04-03",
+                    "reason": "日涨幅偏离值达7%",
+                    "buy_amount": 325000000.0,
+                    "sell_amount": 186000000.0,
+                    "net_amount": 139000000.0,
+                    "turnover_rate": 8.6,
+                }
+            ],
+            "count": 1,
+        },
+    ),
+}
+
+SECTOR_FLOW_QUERY_RESPONSES = {
+    **MARKET_V2_ROUTE_RESPONSES,
+    **_success_response_spec(
+        "行业或概念资金流向查询结果",
+        {
+            "success": True,
+            "data": [
+                {
+                    "sector_name": "半导体",
+                    "sector_type": "行业",
+                    "timeframe": "今日",
+                    "main_net_inflow": 2150000000.0,
+                    "change_percent": 2.35,
+                    "ranking": 1,
+                }
+            ],
+            "count": 1,
+        },
+    ),
+}
+
+DIVIDEND_QUERY_RESPONSES = {
+    **MARKET_V2_ROUTE_RESPONSES,
+    **_success_response_spec(
+        "股票分红配送历史记录",
+        {
+            "success": True,
+            "data": [
+                {
+                    "symbol": "600519",
+                    "announcement_date": "2026-03-20",
+                    "ex_dividend_date": "2026-04-15",
+                    "cash_dividend": 27.624,
+                    "share_transfer": 0.0,
+                    "bonus_share": 0.0,
+                }
+            ],
+            "count": 1,
+        },
+    ),
+}
+
+BLOCKTRADE_QUERY_RESPONSES = {
+    **MARKET_V2_ROUTE_RESPONSES,
+    **_success_response_spec(
+        "股票大宗交易记录",
+        {
+            "success": True,
+            "data": [
+                {
+                    "symbol": "600519",
+                    "trade_date": "2026-04-03",
+                    "price": 1682.5,
+                    "volume": 150000,
+                    "amount": 252375000.0,
+                    "premium_rate": -0.45,
+                    "buyer": "机构专用",
+                    "seller": "机构专用",
+                }
+            ],
+            "count": 1,
+        },
+    ),
+}
+
+REFRESH_ALL_RESPONSES = {
+    **MARKET_V2_REFRESH_BASE_RESPONSES,
+    **_success_response_spec(
+        "批量刷新所有市场数据的结果",
+        {
+            "success": True,
+            "message": "批量刷新完成",
+            "details": {
+                "fund_flow": {"success": True, "updated_count": 3890},
+                "etf": {"success": True, "updated_count": 268},
+                "sector_industry": {"success": True, "updated_count": 128},
+                "sector_concept": {"success": True, "updated_count": 96},
+                "lhb": {"success": True, "trade_date": "2026-04-03", "updated_count": 57},
+                "blocktrade": {"success": True, "trade_date": "2026-04-03", "updated_count": 41},
+            },
+        },
+    ),
+}
+
 router = APIRouter(tags=["市场数据V2"], responses=MARKET_V2_ROUTE_RESPONSES)
 
 
 # ==================== 个股资金流向 ====================
 
 
-@router.get("/fund-flow", summary="查询个股资金流向")
+@router.get("/fund-flow", summary="查询个股资金流向", responses=FUND_FLOW_QUERY_RESPONSES)
 async def get_fund_flow(
     symbol: str = Query(..., description="股票代码"),
     timeframe: str = Query(default="1", description="时间维度: 1/3/5/10天"),
@@ -114,7 +277,7 @@ async def get_fund_flow(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/fund-flow/refresh", summary="刷新资金流向数据")
+@router.post("/fund-flow/refresh", summary="刷新资金流向数据", responses=FUND_FLOW_REFRESH_RESPONSES)
 async def refresh_fund_flow(
     symbol: Optional[str] = Query(None, description="股票代码，不传则刷新全市场"),
     timeframe: str = Query(default="今日", description="时间维度: 今日/3日/5日/10日"),
@@ -135,7 +298,7 @@ async def refresh_fund_flow(
 # ==================== ETF数据 ====================
 
 
-@router.get("/etf/list", summary="查询ETF列表")
+@router.get("/etf/list", summary="查询ETF列表", responses=ETF_LIST_RESPONSES)
 async def get_etf_list(
     symbol: Optional[str] = Query(None, description="ETF代码"),
     keyword: Optional[str] = Query(None, description="关键词搜索"),
@@ -175,7 +338,7 @@ async def refresh_etf_spot():
 # ==================== 龙虎榜 ====================
 
 
-@router.get("/lhb", summary="查询龙虎榜")
+@router.get("/lhb", summary="查询龙虎榜", responses=LHB_QUERY_RESPONSES)
 async def get_lhb_detail(
     symbol: Optional[str] = Query(None, description="股票代码"),
     start_date: Optional[date] = Query(None, description="开始日期"),
@@ -217,7 +380,7 @@ async def refresh_lhb_detail(trade_date: str = Query(..., description="交易日
 # ==================== 行业/概念资金流向 ====================
 
 
-@router.get("/sector/fund-flow", summary="查询行业/概念资金流向")
+@router.get("/sector/fund-flow", summary="查询行业/概念资金流向", responses=SECTOR_FLOW_QUERY_RESPONSES)
 async def get_sector_fund_flow(
     sector_type: str = Query(default="行业", description="板块类型: 行业/概念/地域"),
     timeframe: str = Query(default="今日", description="时间维度: 今日/3日/5日/10日"),
@@ -262,7 +425,7 @@ async def refresh_sector_fund_flow(
 # ==================== 股票分红配送 ====================
 
 
-@router.get("/dividend", summary="查询股票分红配送")
+@router.get("/dividend", summary="查询股票分红配送", responses=DIVIDEND_QUERY_RESPONSES)
 async def get_stock_dividend(
     symbol: str = Query(..., description="股票代码"),
     limit: int = Query(default=50, ge=1, le=200, description="返回数量"),
@@ -302,7 +465,7 @@ async def refresh_stock_dividend(symbol: str = Query(..., description="股票代
 # ==================== 股票大宗交易 ====================
 
 
-@router.get("/blocktrade", summary="查询股票大宗交易")
+@router.get("/blocktrade", summary="查询股票大宗交易", responses=BLOCKTRADE_QUERY_RESPONSES)
 async def get_stock_blocktrade(
     symbol: Optional[str] = Query(None, description="股票代码"),
     start_date: Optional[date] = Query(None, description="开始日期"),
@@ -347,7 +510,7 @@ async def refresh_stock_blocktrade(
 # ==================== 批量刷新 ====================
 
 
-@router.post("/refresh-all", summary="批量刷新所有市场数据")
+@router.post("/refresh-all", summary="批量刷新所有市场数据", responses=REFRESH_ALL_RESPONSES)
 async def refresh_all_market_data():
     """
     一键刷新所有市场数据（用于定时任务）
