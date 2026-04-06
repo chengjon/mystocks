@@ -1,181 +1,142 @@
 """
-File-level tests for risk_management.py API endpoints
+File-level compatibility contract tests for risk_management.py.
 
-Tests all risk management endpoints including:
-- VaR/CVaR risk calculations
-- Stop-loss strategy management
-- Risk alerts and monitoring
-- Portfolio risk assessment
-
-Priority: P0 (Contract-managed)
-Coverage: 100% functional + contract validation
+当前文件已经退化为兼容 shim，这里验证它是否仍然正确重导出
+`app.api.risk` 的路由面，并保留弃用提示。
 """
 
-import asyncio
+from __future__ import annotations
+
+import importlib
+import sys
+import warnings
+from pathlib import Path
 
 import pytest
 
-from tests.api.file_tests.conftest import api_test_fixtures, assert_file_test_result, mock_responses
+
+ROOT = Path(__file__).resolve().parents[3]
+BACKEND_ROOT = ROOT / "web" / "backend"
+if str(BACKEND_ROOT) not in sys.path:
+    sys.path.insert(0, str(BACKEND_ROOT))
+
+
+@pytest.fixture
+def risk_management_module(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("POSTGRESQL_HOST", "localhost")
+    monkeypatch.setenv("POSTGRESQL_USER", "postgres")
+    monkeypatch.setenv("POSTGRESQL_PASSWORD", "password")
+    monkeypatch.setenv("JWT_SECRET_KEY", "test-secret-key")
+    monkeypatch.setenv("BACKEND_PORT", "8020")
+    monkeypatch.setenv("BACKEND_BACKUP_PORT", "8021")
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        return importlib.import_module("app.api.risk_management")
 
 
 class TestRiskManagementAPIFile:
-    """Test suite for risk_management.py API file"""
+    @pytest.mark.file_test
+    @pytest.mark.contract_test
+    def test_compat_shim_emits_deprecation_warning_on_reload(self, risk_management_module):
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            importlib.reload(risk_management_module)
+
+        try:
+            assert any("deprecated" in str(item.message) for item in caught)
+        finally:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                importlib.reload(risk_management_module)
+
+    @pytest.mark.file_test
+    def test_router_exports_expected_number_of_http_and_websocket_routes(self, risk_management_module):
+        http_routes = [route for route in risk_management_module.router.routes if getattr(route, "methods", None)]
+        websocket_routes = [route for route in risk_management_module.router.routes if not getattr(route, "methods", None)]
+
+        assert len(http_routes) == 36
+        assert len(websocket_routes) == 1
+
+    @pytest.mark.file_test
+    def test_router_contains_core_risk_metric_routes(self, risk_management_module):
+        route_methods = {(route.path, tuple(sorted(route.methods or []))) for route in risk_management_module.router.routes if getattr(route, "methods", None)}
+
+        assert ("/api/v1/risk/var-cvar", ("POST",)) in route_methods
+        assert ("/api/v1/risk/beta", ("POST",)) in route_methods
+        assert ("/api/v1/risk/dashboard", ("GET",)) in route_methods
+        assert ("/api/v1/risk/metrics/history", ("GET",)) in route_methods
+        assert ("/api/v1/risk/metrics/calculate", ("POST",)) in route_methods
+        assert ("/api/v1/risk/position/assess", ("POST",)) in route_methods
+
+    @pytest.mark.file_test
+    def test_router_contains_stop_loss_and_alert_routes(self, risk_management_module):
+        route_methods = {(route.path, tuple(sorted(route.methods or []))) for route in risk_management_module.router.routes if getattr(route, "methods", None)}
+
+        assert ("/api/v1/risk/v31/stop-loss/add-position", ("POST",)) in route_methods
+        assert ("/api/v1/risk/v31/stop-loss/update-price", ("POST",)) in route_methods
+        assert ("/api/v1/risk/v31/stop-loss/remove-position/{position_id}", ("DELETE",)) in route_methods
+        assert ("/api/v1/risk/v31/stop-loss/status/{position_id}", ("GET",)) in route_methods
+        assert ("/api/v1/risk/v31/alert/send", ("POST",)) in route_methods
+        assert ("/api/v1/risk/v31/alert/statistics", ("GET",)) in route_methods
+        assert ("/api/v1/risk/alerts", ("GET",)) in route_methods
+        assert ("/api/v1/risk/alerts", ("POST",)) in route_methods
+
+    @pytest.mark.file_test
+    def test_router_contains_v31_health_and_realtime_routes(self, risk_management_module):
+        route_methods = {(route.path, tuple(sorted(route.methods or []))) for route in risk_management_module.router.routes if getattr(route, "methods", None)}
+
+        assert ("/api/v1/risk/v31/risk/realtime/{symbol}", ("GET",)) in route_methods
+        assert ("/api/v1/risk/v31/stock/{symbol}", ("GET",)) in route_methods
+        assert ("/api/v1/risk/v31/portfolio/{portfolio_id}", ("GET",)) in route_methods
+        assert ("/api/v1/risk/v31/health", ("GET",)) in route_methods
+
+    @pytest.mark.file_test
+    def test_route_names_remain_stable_for_key_operations(self, risk_management_module):
+        route_names = {
+            (route.path, tuple(sorted(route.methods or []))): route.name
+            for route in risk_management_module.router.routes
+            if getattr(route, "methods", None)
+        }
+
+        assert route_names[("/api/v1/risk/var-cvar", ("POST",))] == "calculate_var_cvar"
+        assert route_names[("/api/v1/risk/beta", ("POST",))] == "calculate_beta"
+        assert route_names[("/api/v1/risk/dashboard", ("GET",))] == "get_risk_dashboard"
+        assert route_names[("/api/v1/risk/v31/alerts/{alert_id}/acknowledge", ("POST",))] == "acknowledge_alert_v31"
+
+    @pytest.mark.file_test
+    def test_router_contains_expected_response_models_for_core_metrics(self, risk_management_module):
+        response_models = {
+            (route.path, tuple(sorted(route.methods or []))): route.response_model
+            for route in risk_management_module.router.routes
+            if getattr(route, "methods", None)
+        }
+
+        assert response_models[("/api/v1/risk/var-cvar", ("POST",))].__name__ == "VaRCVaRResult"
+        assert response_models[("/api/v1/risk/beta", ("POST",))].__name__ == "BetaResult"
+        assert response_models[("/api/v1/risk/dashboard", ("GET",))].__name__ == "RiskDashboardResponse"
+        assert response_models[("/api/v1/risk/alerts", ("POST",))].__name__ == "RiskAlertResponse"
+
+    @pytest.mark.file_test
+    def test_module_docstring_describes_compatibility_shim_and_split_targets(self, risk_management_module):
+        doc = risk_management_module.__doc__ or ""
+
+        assert "Compatibility shim" in doc
+        assert "risk/metrics.py" in doc
+        assert "risk/stop_loss.py" in doc
+        assert "risk/alerts.py" in doc
+        assert "risk/v31.py" in doc
+
+    @pytest.mark.file_test
+    def test_module_exports_only_router(self, risk_management_module):
+        assert risk_management_module.__all__ == ["router"]
 
     @pytest.mark.file_test
     @pytest.mark.contract_test
-    def test_var_cvar_calculation(self, api_test_fixtures, mock_responses):
-        """Test POST /var-cvar - Calculate VaR and CVaR"""
-        # Test risk metric calculations
-        assert api_test_fixtures["base_url"].startswith("http")
+    def test_contract_fixture_still_covers_risk_management_domain(self, contract_specs):
+        spec = contract_specs["risk-management"]
 
-    @pytest.mark.file_test
-    def test_beta_calculation(self, api_test_fixtures):
-        """Test POST /beta - Calculate beta coefficient"""
-        # Test beta calculation for assets
-        assert api_test_fixtures["retry_attempts"] >= 1
-
-    @pytest.mark.file_test
-    def test_risk_dashboard(self, api_test_fixtures):
-        """Test GET /dashboard - Get risk dashboard data"""
-        # Test comprehensive risk overview
-        assert api_test_fixtures["mock_enabled"] is True
-
-    @pytest.mark.file_test
-    def test_stop_loss_position_add(self, api_test_fixtures):
-        """Test POST /v31/stop-loss/add-position - Add stop-loss position"""
-        # Test adding new stop-loss position
-        assert api_test_fixtures["contract_validation"] is True
-
-    @pytest.mark.file_test
-    def test_stop_loss_position_update(self, api_test_fixtures):
-        """Test POST /v31/stop-loss/update-price - Update stop-loss price"""
-        # Test updating stop-loss parameters
-        assert api_test_fixtures["test_timeout"] > 0
-
-    @pytest.mark.file_test
-    def test_stop_loss_position_remove(self, api_test_fixtures):
-        """Test DELETE /v31/stop-loss/remove-position/{position_id} - Remove position"""
-        # Test removing stop-loss position
-        assert True
-
-    @pytest.mark.file_test
-    def test_stop_loss_status(self, api_test_fixtures):
-        """Test GET /v31/stop-loss/status/{position_id} - Get position status"""
-        # Test retrieving stop-loss status
-        assert True
-
-    @pytest.mark.file_test
-    def test_stop_loss_overview(self, api_test_fixtures):
-        """Test GET /v31/stop-loss/overview - Get stop-loss overview"""
-        # Test comprehensive stop-loss positions overview
-        assert True
-
-    @pytest.mark.file_test
-    def test_risk_alert_create(self, api_test_fixtures):
-        """Test POST /v31/alert/create - Create risk alert"""
-        # Test creating new risk alerts
-        assert True
-
-    @pytest.mark.file_test
-    def test_risk_alert_list(self, api_test_fixtures):
-        """Test GET /v31/alert/list - List risk alerts"""
-        # Test retrieving active alerts
-        assert True
-
-    @pytest.mark.file_test
-    def test_risk_alert_acknowledge(self, api_test_fixtures):
-        """Test PUT /v31/alert/{id}/acknowledge - Acknowledge alert"""
-        # Test acknowledging risk alerts
-        assert True
-
-    @pytest.mark.file_test
-    @pytest.mark.contract_test
-    def test_contract_compliance(self, contract_specs):
-        """Test OpenAPI contract compliance for risk_management.py"""
-        spec = contract_specs.get("risk-management")
-        assert spec is not None
         assert spec["info"]["version"] == "1.0.0"
+        assert spec["openapi"] == "3.0.3"
         assert "/var-cvar" in spec["paths"]
         assert "/beta" in spec["paths"]
         assert "/dashboard" in spec["paths"]
-
-    @pytest.mark.file_test
-    def test_error_handling(self, mock_responses):
-        """Test error handling across risk management endpoints"""
-        error_response = mock_responses["error_response"]
-        assert error_response["success"] is False
-        assert "code" in error_response
-        assert "message" in error_response
-
-    @pytest.mark.file_test
-    def test_response_format_validation(self):
-        """Test response format validation for risk endpoints"""
-        # Validate response schemas match contract specifications
-        assert True  # Placeholder
-
-    @pytest.mark.file_test
-    def test_performance_requirements(self, api_test_fixtures):
-        """Test performance requirements for risk management endpoints"""
-        # Validate response times are within acceptable limits
-        timeout = api_test_fixtures["test_timeout"]
-        assert timeout <= 30  # Max 30 seconds for risk calculations
-
-    @pytest.mark.asyncio
-    @pytest.mark.file_test
-    async def test_concurrent_risk_calculations(self):
-        """Test concurrent risk metric calculations"""
-        # Test multiple simultaneous risk calculations
-        await asyncio.sleep(0.01)  # Simulate async operation
-        assert True
-
-    @pytest.mark.file_test
-    def test_risk_data_consistency(self):
-        """Test data consistency across risk management operations"""
-        # Ensure risk data remains consistent across operations
-        assert True
-
-    @pytest.mark.file_test
-    def test_risk_workflow_integration(self):
-        """Test complete risk management workflow"""
-        # Test calculate -> monitor -> alert -> respond workflow
-        assert True
-
-
-class TestRiskManagementIntegration:
-    """Integration tests for risk_management.py with related modules"""
-
-    @pytest.mark.file_test
-    def test_risk_strategy_integration(self):
-        """Test risk calculations with strategy performance"""
-        # Test risk assessment for trading strategies
-        assert True
-
-    @pytest.mark.file_test
-    def test_risk_portfolio_integration(self):
-        """Test portfolio-level risk assessment"""
-        # Test comprehensive portfolio risk analysis
-        assert True
-
-
-class TestRiskContractValidation:
-    """Contract validation tests for risk-management API"""
-
-    @pytest.mark.contract_test
-    def test_openapi_spec_compliance(self, contract_specs):
-        """Test compliance with OpenAPI 3.0.3 specification"""
-        spec = contract_specs["risk-management"]
-        assert spec["info"]["version"] == "1.0.0"
-        assert spec["openapi"] == "3.0.3"
-
-    @pytest.mark.contract_test
-    def test_response_schema_validation(self):
-        """Test response schemas match contract definitions"""
-        # Validate actual responses against contract schemas
-        assert True
-
-    @pytest.mark.contract_test
-    def test_endpoint_coverage(self, contract_specs):
-        """Test that all contract-defined endpoints are implemented"""
-        spec = contract_specs["risk-management"]
-        paths = spec["paths"]
-        assert len(paths) >= 36  # Risk management has extensive endpoint coverage
