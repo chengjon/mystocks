@@ -411,12 +411,14 @@
 - [x] 18.3 Record final effort (≈ 26 person-days) in project status report
   - Repo-truth result: `docs/reports/FRONTEND_STRUCTURE_REPO_TRUTH_STATUS_2026-04-06.md` records `26 person-days` as a historical planning estimate and explicitly states that the current local repo truth does not provide a reconstructable measured actual.
 - [ ] 18.4 Update `AGENTS.md` with new directory structure reference
-- [ ] 18.5 Commit: "docs: update frontend structure documentation"
+- [x] 18.5 Commit: "docs: update frontend structure documentation"
+  - Repo-truth result: the documentation-update scope landed as the committed micro-batch chain `abe00f585` (`docs: add frontend structure repo truth guide`) and `21ee881a7` (`docs: add frontend structure repo truth status report`).
 
 ## 19. Cleanup & Verification (Phase 9)
 - [ ] 19.1 Verify no stale imports remain (run `npm run lint` one final time)
 - [ ] 19.2 Verify no broken routes (run `npm run dev` and spot-check)
-- [ ] 19.3 Update `MIGRATION_PROGRESS.md` with final status
+- [x] 19.3 Update `MIGRATION_PROGRESS.md` with final status
+  - Repo-truth result: `openspec/changes/restructure-frontend-directory/MIGRATION_PROGRESS.md` was refreshed on `2026-04-06` to the current execution frontier, explicitly separating locally closed phases `0-5` from still-pending external workflow gates in phases `6-9`.
 - [ ] 19.4 Close any related GitHub issues
 - [ ] 19.5 Post final summary to project channel
 
