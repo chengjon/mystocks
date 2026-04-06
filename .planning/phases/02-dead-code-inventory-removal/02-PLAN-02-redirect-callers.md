@@ -9,6 +9,7 @@ files_modified:
   - scripts/dev/quality_gate/fix_test_imports.py
   - scripts/dev/project/update_imports.py
   - scripts/dev/fix_test_imports.py
+  - src/data_sources/real_data_source.py
 autonomous: true
 requirements_addressed:
   - DEAD-01
@@ -16,102 +17,138 @@ requirements_addressed:
   - DEAD-04
 ---
 
-# Plan 02: Caller Redirection
+# Plan 02: Caller Redirection & Dead Import Cleanup
 
-**Objective:** Redirect all known callers of `src/routes/`, `src/api/`, and `src/db_manager/` to their canonical equivalents. No deletions yet — only import path updates.
+**Objective:** Redirect or remove all callers of `src/routes/`, `src/api/`, and `src/db_manager/`. No deletions of target directories yet — only import cleanup in caller files.
 
 ## Tasks
 
 <task id="1">
 <objective>
-Redirect production caller: database_service.py → canonical route import
+Fix broken circular import in database_service.py — NOT a route redirect
 </objective>
 
 <read_first>
-- src/database/services/database_service.py (specifically line 155)
-- web/backend/app/api/ — find the canonical equivalent of wencai_routes functions
+- src/database/services/database_service.py (lines 130-175 — execute_wencai_query method)
+- src/routes/wencai_routes.py (lines 150-180 — to see how it calls back into database_service)
+- src/data_sources/real_data_source.py (lines 130-150 — the active callers of execute_wencai_query)
+- DELETION-CANDIDATES.md (circular dependency section from Plan 01)
 </read_first>
 
 <action>
-In `src/database/services/database_service.py` at line 155:
+**BACKGROUND:** The current import at database_service.py:155 is already broken:
 
-Current:
 ```python
 from src.routes.wencai_routes import execute_custom_query, get_query_results
 ```
 
-1. First verify what `execute_custom_query` and `get_query_results` do in `src/routes/wencai_routes.py`
-2. Find their canonical equivalent in `web/backend/app/api/` — search:
-   ```bash
-   grep -rn "def execute_custom_query\|def get_query_results" --include="*.py" web/backend/
-   ```
-3. If canonical equivalent exists, replace the import:
-   ```python
-   from web.backend.app.api.[module] import execute_custom_query, get_query_results
-   ```
-4. If NO canonical equivalent exists, the import is dead — check if `execute_custom_query` and `get_query_results` are actually used in this file:
-   ```bash
-   grep -n "execute_custom_query\|get_query_results" src/database/services/database_service.py
-   ```
-   If not used, delete the import line entirely (per D-04: mark with comment if needed).
-5. Run `ruff check src/database/services/database_service.py` to verify no new errors.
+The actual function names in wencai_routes.py are `execute_custom_wencai_query` and `get_wencai_query_results`. This import raises ImportError at runtime. Furthermore, redirecting to `web/backend/app/api/wencai.py` would be architecturally wrong — those are FastAPI route handlers with Depends/request models, not callable service functions.
+
+**THIS IS A SERVICE LAYER FIX, NOT A ROUTE REDIRECT.**
+
+Step 1 — Determine if `execute_wencai_query` is reachable at runtime:
+
+```bash
+# Check who calls execute_wencai_query on database_service
+grep -rn "execute_wencai_query" --include="*.py" src/ tests/ scripts/ | grep -v "def execute_wencai_query"
+```
+
+Known callers:
+- `src/data_sources/real_data_source.py:135,139,144` — calls via `db_service.execute_wencai_query`
+- `src/routes/wencai_routes.py:180,254,335,484` — circular (routes call service which tries to import routes)
+
+Step 2 — Analyze the call chain:
+
+The method `database_service.execute_wencai_query()` has a broken import that crashes with ImportError. Any runtime path reaching it would fail. Check if `real_data_source.py` is actually used in production or only in the dead `src/routes/` path:
+
+```bash
+grep -rn "real_data_source\|RealDataSource" --include="*.py" src/ web/ | grep -v "__pycache__" | grep -v "src/data_sources/real_data_source.py"
+```
+
+Step 3 — Choose the correct fix based on reachability:
+
+**IF `execute_wencai_query` is called from active (non-dead) code:**
+- The method body should call the actual wencai service implementation directly, NOT through routes
+- Find the real implementation: `grep -rn "def execute_custom_wencai_query\|class.*WencaiService" --include="*.py" src/ web/`
+- Rewrite the method to call the service-layer function directly, removing the broken circular import
+
+**IF `execute_wencai_query` is only reachable through dead `src/routes/` callers:**
+- The method is effectively dead (unreachable without the routes that are being deleted)
+- Remove the method entirely from database_service.py
+- Also remove the 3 callers in `real_data_source.py` if those are also dead paths
+- Add a comment: `# Removed execute_wencai_query — was circular with dead src/routes/wencai_routes.py (Phase 2)`
+
+**DO NOT redirect to `web/backend/app/api/wencai.py` — that's a FastAPI route layer, not a service layer.**
 </action>
 
 <acceptance_criteria>
 - `src/database/services/database_service.py` no longer imports from `src.routes.wencai_routes`
-- `ruff check src/database/services/database_service.py` shows no new F821 errors
-- If functions are unused, import line is removed (not commented out)
+- `src/database/services/database_service.py` no longer imports from `web/backend/app/api/wencai` (wrong layer)
+- The broken `execute_wencai_query` method is either removed (if dead) or fixed to call service-layer directly
+- `real_data_source.py` callers handled consistently (removed if dead, redirected if active)
+- No new ruff errors introduced
+- No circular dependency remains
 </acceptance_criteria>
 </task>
 
 <task id="2">
 <objective>
-Redirect test caller: api_contract_tests.py → canonical type imports
+Remove broken dead imports in tests/api_contract_tests.py — NOT a type migration
 </objective>
 
 <read_first>
-- tests/api_contract_tests.py (specifically lines 21-23)
-- src/api/types/ — verify what types are exported
-- web/backend/app/ — search for canonical type definitions
+- tests/api_contract_tests.py (full file — especially lines 21-23 and usage at lines 67, 78)
+- DELETION-CANDIDATES.md (src/api/types/ non-existence confirmed)
 </read_first>
 
 <action>
-In `tests/api_contract_tests.py` at lines 21-23:
+**BACKGROUND:** The import at tests/api_contract_tests.py:21-23:
 
-Current:
 ```python
 from src.api.types.common import APIResponse
 from src.api.types.market import MarketOverview, MarketOverviewData
 from src.api.types.strategy import BacktestRequest, BacktestResponse, StrategyInfo
 ```
 
-1. Verify `src/api/types/` directory exists and contains these modules:
-   ```bash
-   ls -la src/api/types/ 2>/dev/null
-   ```
-2. Search for canonical equivalents:
-   ```bash
-   grep -rn "class APIResponse\|class MarketOverview\|class BacktestRequest\|class BacktestResponse\|class StrategyInfo" --include="*.py" web/backend/ src/
-   ```
-3. If types are ONLY defined in `src/api/types/`, they need to be moved to a canonical location first (probably `src/domain/` or `web/backend/app/schemas/`).
-4. If types exist elsewhere, update imports to canonical location.
-5. If types are ONLY used in this test and nowhere in production, add `@pytest.mark.skip` with reason `"Types from dead src/api/ layer — needs migration"` per D-04.
-6. Run `ruff check tests/api_contract_tests.py` to verify.
+`src/api/types/` DOES NOT EXIST as a Python package. It only exists as TypeScript at `web/frontend/src/api/types/`. These imports are ALREADY BROKEN (ImportError). This is NOT a type migration issue — there are no types to migrate.
+
+Step 1 — Verify the imports are broken:
+
+```bash
+python -c "from src.api.types.common import APIResponse" 2>&1
+# Expected: ModuleNotFoundError or ImportError
+```
+
+Step 2 — Check how the imported names are actually used:
+
+```bash
+grep -n "APIResponse\|MarketOverview\|MarketOverviewData\|BacktestRequest\|BacktestResponse\|StrategyInfo" tests/api_contract_tests.py
+```
+
+Step 3 — Based on usage analysis:
+
+- If the names are used only in string references (e.g., `"frontend_types": {"request": "BacktestRequest"}`) — they're just labels, not runtime type usage. Remove the broken import lines and replace any inline type references with plain strings.
+- If the names are used in actual `isinstance()` checks or as base classes — find the canonical Python equivalent and update the import.
+- Most likely: these are dead imports in a test file that was never properly maintained. The test likely fails before reaching these lines. Add `@pytest.mark.skip("src/api/types/ does not exist — dead imports from Phase 2 cleanup")` or delete the file if it's entirely non-functional.
+
+Step 4 — Run `ruff check tests/api_contract_tests.py` after changes.
 </action>
 
 <acceptance_criteria>
-- `tests/api_contract_tests.py` no longer imports from `src.api.types.*` (or test is skipped with reason)
-- No new ruff errors introduced
+- `tests/api_contract_tests.py` no longer imports from `src.api.types.*`
+- No attempt to "migrate types from src/api/types/" (it doesn't exist as Python)
+- If test is dead, marked with `@pytest.mark.skip` with reason noting Phase 2 cleanup
+- `ruff check tests/api_contract_tests.py` passes
 </acceptance_criteria>
 </task>
 
 <task id="3">
 <objective>
-Redirect CI/CD reference: cicd_pipeline.sh
+Redirect CI/CD reference in cicd_pipeline.sh
 </objective>
 
 <read_first>
-- scripts/cicd_pipeline.sh (specifically line 184)
+- scripts/cicd_pipeline.sh (lines 175-195 for context around line 184)
 </read_first>
 
 <action>
@@ -128,7 +165,7 @@ Current: `from src.routes import *`
    ```python
    from web.backend.app.main import app  # canonical FastAPI app
    ```
-4. Verify the script runs: `bash -n scripts/cicd_pipeline.sh` (syntax check)
+4. Verify: `bash -n scripts/cicd_pipeline.sh`
 </action>
 
 <acceptance_criteria>
@@ -149,21 +186,21 @@ Clean up dev script import mapping rules for dead targets
 </read_first>
 
 <action>
-These scripts contain import-mapping dictionaries. They map old import patterns to `src.routes.*`, `src.api.*`, `src.db_manager.*` patterns.
+These scripts contain import-mapping dictionaries that map old patterns to `src.routes.*`, `src.api.*`, `src.db_manager.*` patterns. These are NOT actual imports — they're mapping rules that redirect other code.
 
-For `scripts/dev/quality_gate/fix_test_imports.py`:
-- Line 41: `'from routes.': 'from src.routes.'` — REMOVE this mapping rule (or comment out with `# DEPRECATED: src/routes/ deleted in Phase 2`)
-- Line 42: `'from api.': 'from src.api.'` — REMOVE this mapping rule
+For each script, remove or update the dead-target mapping rules:
+
+**scripts/dev/quality_gate/fix_test_imports.py:**
+- Line 41: `'from routes.': 'from src.routes.'` — REMOVE (dead target)
+- Line 42: `'from api.': 'from src.api.'` — REMOVE (dead target)
 - Line 46: `'from database_optimization.': 'from src.database_optimization.'` — UPDATE to `'from database_optimization.': 'from src.data_access.optimizers.'`
 
-For `scripts/dev/project/update_imports.py`:
-- Lines 16, 27: `"from db_manager"` / `"import db_manager"` mappings — REMOVE or update to point to `src.storage.database`
+**scripts/dev/project/update_imports.py:**
+- Lines 16, 27: `"from db_manager"` / `"import db_manager"` → UPDATE to `"from db_manager": "from src.storage.database"`
 
-For `scripts/dev/fix_test_imports.py`:
-- Lines 8, 28-29: db_manager patterns — REMOVE or update to `src.storage.database`
-- Line 32: `'from db_manager.': 'from src.db_manager.'` — REMOVE or update
-
-Also check and update `scripts/dev/quality_gate/fix_test_imports.py` line 8 for the same pattern.
+**scripts/dev/fix_test_imports.py:**
+- Lines 8, 28-29: db_manager patterns → UPDATE to `src.storage.database`
+- Line 32: `'from db_manager.': 'from src.db_manager.'` → UPDATE to `'from db_manager.': 'from src.storage.database.'`
 
 Run `ruff check scripts/dev/` after all changes.
 </action>
@@ -171,6 +208,7 @@ Run `ruff check scripts/dev/` after all changes.
 <acceptance_criteria>
 - No dev script maps to `src.routes`, `src.api`, or `src.db_manager` as import targets
 - database_optimization mappings redirect to `src.data_access.optimizers`
+- db_manager mappings redirect to `src.storage.database`
 - `ruff check scripts/dev/` shows no new errors
 </acceptance_criteria>
 </task>
@@ -185,29 +223,66 @@ Run verification after all redirections
 </read_first>
 
 <action>
-Run verification suite:
 ```bash
 # Lint check
 ruff check src/ web/backend/app/ | wc -l
 
-# Verify no remaining imports to dead targets (production code only)
-grep -rn "from src\.routes\b\|import src\.routes\b" --include="*.py" src/ web/ | grep -v "src/routes/" | grep -v "__pycache__"
-grep -rn "from src\.api\b\|import src\.api\b" --include="*.py" src/ web/ | grep -v "src/api/" | grep -v "__pycache__"
-grep -rn "from src\.db_manager\b\|import src\.db_manager\b" --include="*.py" src/ web/ | grep -v "src/db_manager/" | grep -v "__pycache__"
+# Verify zero remaining production callers to dead targets
+grep -rn "from src\.routes\b\|import src\.routes\b" --include="*.py" src/ web/ | grep -v "src/routes/" | grep -v "__pycache__" || echo "routes: CLEAN"
+grep -rn "from src\.api\b\|import src\.api\b" --include="*.py" src/ web/ | grep -v "src/api/" | grep -v "__pycache__" || echo "api: CLEAN"
+grep -rn "from src\.db_manager\b\|import src\.db_manager\b" --include="*.py" src/ web/ | grep -v "src/db_manager/" | grep -v "__pycache__" || echo "db_manager: CLEAN"
 
 # FastAPI smoke test
 cd web/backend && PYTHONPATH=$(git rev-parse --show-toplevel):. python -c "from app.main import app; print('OK')"
 
-# Run tests
+# Tests
 pytest --tb=short -q 2>&1 | tail -5
 ```
 </action>
 
 <acceptance_criteria>
 - `ruff check` count still <900
-- Zero production imports of `src.routes.*`, `src.api.*`, `src.db_manager.*` outside the target directories themselves
+- Zero production imports of `src.routes.*`, `src.api.*`, `src.db_manager.*` outside target directories
 - FastAPI smoke test prints "OK"
-- `pytest` pass/fail count unchanged from Phase 1 baseline
+- pytest pass/fail count unchanged from baseline
+</acceptance_criteria>
+</task>
+
+<task id="6">
+<objective>
+Commit all redirections as single commit (CONTEXT.md D-12: commit 2 covers sub-stages 2b+2c)
+</objective>
+
+<read_first>
+- All modified files from tasks 1-5
+</read_first>
+
+<action>
+```bash
+git add src/database/services/database_service.py \
+        src/data_sources/real_data_source.py \
+        tests/api_contract_tests.py \
+        scripts/cicd_pipeline.sh \
+        scripts/dev/quality_gate/fix_test_imports.py \
+        scripts/dev/project/update_imports.py \
+        scripts/dev/fix_test_imports.py
+git commit -m "refactor(02): redirect callers away from dead code targets (2b+2c)
+
+- database_service.py: remove broken circular import from src.routes.wencai_routes
+  (was already ImportError at runtime — wrong function names + circular dependency)
+- tests/api_contract_tests.py: remove broken imports from non-existent src.api.types
+- cicd_pipeline.sh: update smoke test to use canonical web.backend.app.main
+- dev scripts: update import mappings to point to canonical locations
+  (database_optimization → src.data_access.optimizers, db_manager → src.storage.database)
+
+Per CONTEXT.md D-12: this is commit 2 of 3 (sub-stages 2b+2c combined)."
+```
+</action>
+
+<acceptance_criteria>
+- Single commit for all redirection work (per CONTEXT.md D-12: 2b+2c combined)
+- Commit message lists all changes and references CONTEXT.md D-12
+- `git log --oneline -1` shows the commit
 </acceptance_criteria>
 </task>
 
@@ -216,10 +291,13 @@ pytest --tb=short -q 2>&1 | tail -5
 ## Verification
 
 ```bash
-# Zero external callers remaining for routes/api/db_manager
+# Zero external callers remaining
 ! grep -rn "from src\.routes\b\|import src\.routes\b" --include="*.py" src/ web/ | grep -v "src/routes/" | grep -vq . && echo "routes: CLEAN" || echo "routes: CALLERS REMAIN"
 ! grep -rn "from src\.api\b\|import src\.api\b" --include="*.py" src/ web/ | grep -v "src/api/" | grep -vq . && echo "api: CLEAN" || echo "api: CALLERS REMAIN"
 ! grep -rn "from src\.db_manager\b\|import src\.db_manager\b" --include="*.py" src/ web/ | grep -v "src/db_manager/" | grep -vq . && echo "db_manager: CLEAN" || echo "db_manager: CALLERS REMAIN"
+
+# No redirect to wrong layer
+! grep -rn "from web\.backend\.app\.api.*import.*execute_custom\|from web\.backend\.app\.api.*import.*get_query" --include="*.py" src/ | grep -vq . && echo "no-wrong-layer-redirect: OK" || echo "WRONG LAYER REDIRECT DETECTED"
 ```
 
 ## Must-Haves
@@ -227,6 +305,8 @@ pytest --tb=short -q 2>&1 | tail -5
 - [ ] Zero production callers of `src.routes.*` outside src/routes/ itself
 - [ ] Zero production callers of `src.api.*` outside src/api/ itself
 - [ ] Zero production callers of `src.db_manager.*` outside src/db_manager/ itself
+- [ ] NO redirects from service layer to FastAPI route handlers (wrong layer)
+- [ ] Circular dependency (database_service ↔ wencai_routes) resolved
 - [ ] `ruff check` count <900
 - [ ] FastAPI smoke test passes
-- [ ] Dev script mapping rules updated (not pointing to dead layers)
+- [ ] Single commit for 2b+2c per CONTEXT.md D-12

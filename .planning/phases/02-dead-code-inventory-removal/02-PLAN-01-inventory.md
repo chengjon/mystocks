@@ -3,7 +3,6 @@ wave: 1
 depends_on: []
 files_modified:
   - DELETION-CANDIDATES.md (new)
-  - .planning/phases/02-dead-code-inventory-removal/02-PLAN-01-inventory.md
 autonomous: true
 requirements_addressed:
   - DEAD-06
@@ -11,138 +10,187 @@ requirements_addressed:
 
 # Plan 01: Dead Code Inventory & Functional Tree
 
-**Objective:** Produce a comprehensive DELETION-CANDIDATES.md with grep evidence AND functional tree analysis for all 5 deletion targets. NO code changes in this plan — documentation only.
+**Objective:** Produce a comprehensive DELETION-CANDIDATES.md with both code-path AND functional-tree evidence per STANDARDS.md §4 (lines 103-111). NO code changes — documentation only.
 
 ## Tasks
 
 <task id="1">
 <objective>
-Run comprehensive import analysis for all 5 deletion targets
+Run repo-wide evidence sweep for all 5 deletion targets per STANDARDS.md §4 deletion governance
 </objective>
 
 <read_first>
+- architecture/STANDARDS.md (lines 103-111 — deletion governance: code-path + functional-tree dual judgment)
 - .planning/phases/02-dead-code-inventory-removal/02-CONTEXT.md (decisions D-08 through D-11)
-- .planning/phases/02-dead-code-inventory-removal/02-RESEARCH.md (caller analysis already partially done)
-- architecture/STANDARDS.md (lines 103-111 — deletion governance rules)
+- .planning/phases/02-dead-code-inventory-removal/02-RESEARCH.md (partial caller analysis)
 </read_first>
 
 <action>
-For each of the 5 target directories, run the following grep commands and capture full output with file:line references:
+For each of the 5 target directories, run ALL of the following sweeps. STANDARDS.md §4 requires BOTH code-path judgment AND functional-tree judgment before any deletion.
 
-1. `src/routes/` (19 files):
-   ```bash
-   grep -rn "from src\.routes\b\|import src\.routes\b" --include="*.py" src/ web/ tests/ scripts/
-   grep -rn "src\.routes\b" --include="*.py" --include="*.sh" --include="*.yml" --include="*.yaml" .github/ scripts/
-   grep -rn "importlib\|__import__\|import_module" --include="*.py" src/routes/
-   ```
+### Sweep A: Static imports (Python)
 
-2. `src/api/` (5 files):
-   ```bash
-   grep -rn "from src\.api\b\|import src\.api\b" --include="*.py" src/ web/ tests/ scripts/
-   grep -rn "src\.api\b" --include="*.py" --include="*.sh" --include="*.yml" --include="*.yaml" .github/ scripts/
-   grep -rn "importlib\|__import__\|import_module" --include="*.py" src/api/
-   ```
-
-3. `src/data_access_pkg/` (5 files):
-   ```bash
-   grep -rn "from src\.data_access_pkg\b\|import src\.data_access_pkg\b" --include="*.py" src/ web/ tests/ scripts/
-   ```
-
-4. `src/db_manager/` (1 file):
-   ```bash
-   grep -rn "from src\.db_manager\b\|import src\.db_manager\b" --include="*.py" src/ web/ tests/ scripts/
-   grep -rn "from db_manager\b\|import db_manager\b" --include="*.py" src/ web/ tests/ scripts/
-   ```
-
-5. `src/database_optimization/` (5 files):
-   ```bash
-   grep -rn "from src\.database_optimization\b\|import src\.database_optimization\b" --include="*.py" src/ web/ tests/ scripts/
-   ```
-
-Also run a CI/CD sweep:
 ```bash
-grep -rn "src\.routes\|src\.api\|src\.data_access_pkg\|src\.db_manager\|src\.database_optimization" --include="*.sh" --include="*.yml" --include="*.yaml" --include="*.toml" scripts/ .github/ config/
+for target in "src\.routes" "src\.api" "src\.data_access_pkg" "src\.db_manager" "src\.database_optimization"; do
+  echo "=== $target static imports ==="
+  grep -rn "from ${target}\b\|import ${target}\b" --include="*.py" src/ web/ tests/ scripts/
+done
+```
+
+### Sweep B: String/dynamic references (Python + shell + config)
+
+```bash
+for target in "src\.routes" "src\.api" "src\.data_access_pkg" "src\.db_manager" "src\.database_optimization"; do
+  echo "=== $target string refs ==="
+  grep -rn "$target" --include="*.py" --include="*.sh" --include="*.yml" --include="*.yaml" --include="*.toml" --include="*.cfg" --include="*.ini" --include="*.json" . \
+    | grep -v "__pycache__" | grep -v ".pyc:" | grep -v "from ${target}\|import ${target}"
+done
+```
+
+### Sweep C: Dynamic imports within target dirs
+
+```bash
+for dir in src/routes src/api src/data_access_pkg src/db_manager src/database_optimization; do
+  echo "=== $dir dynamic imports ==="
+  grep -rn "importlib\|__import__\|import_module\|getattr.*import\|globals()\[.*import" --include="*.py" "$dir/" 2>/dev/null
+done
+```
+
+### Sweep D: Namespace package / implicit imports
+
+```bash
+# Check for __init__.py that re-exports or uses __path__ manipulation
+for dir in src/routes src/api src/data_access_pkg src/db_manager src/database_optimization; do
+  echo "=== $dir namespace patterns ==="
+  grep -rn "__path__\|__all__\|namespace\|find_module\|iter_modules" --include="*.py" "$dir/" 2>/dev/null
+done
+```
+
+### Sweep E: Shell-embedded Python (scripts, CI/CD, Docker)
+
+```bash
+grep -rn "src\.routes\|src\.api\|src\.data_access_pkg\|src\.db_manager\|src\.database_optimization" \
+  --include="*.sh" --include="*.yml" --include="*.yaml" --include="*.toml" \
+  scripts/ .github/ config/ docker-compose* Dockerfile* Makefile* 2>/dev/null
+
+# Also check shell heredocs and embedded Python
+grep -rn "python.*-c\|python3.*-c\|python <<\|python3 <<" --include="*.sh" scripts/ .github/ 2>/dev/null | while read line; do
+  echo "$line" | grep -q "src\.routes\|src\.api\|src\.data_access_pkg\|src\.db_manager\|src\.database_optimization" && echo "EMBEDDED REF: $line"
+done
+```
+
+### Sweep F: Compat shim / re-export chains
+
+```bash
+# Check if any OTHER module re-exports from targets (shim chains)
+grep -rn "from src\.routes\|from src\.api\b\|from src\.data_access_pkg\|from src\.db_manager\|from src\.database_optimization" --include="*.py" src/ \
+  | grep -v "src/routes/" | grep -v "src/api/" | grep -v "src/data_access_pkg/" | grep -v "src/db_manager/" | grep -v "src/database_optimization/"
+```
+
+### Sweep G: Route registration / dispatch tables
+
+```bash
+# Check for FastAPI router inclusion, Flask blueprint registration, or dispatch dicts
+grep -rn "include_router\|add_api_route\|register_blueprint\|APIRouter\|app\.include\|router_registry\|VERSION_MAPPING" --include="*.py" src/routes/ src/api/ 2>/dev/null
+grep -rn "src\.routes\|src\.api" --include="*.py" web/backend/app/ 2>/dev/null
+```
+
+### Sweep H: Build / packaging references
+
+```bash
+grep -rn "src\.routes\|src\.api\|src\.data_access_pkg\|src\.db_manager\|src\.database_optimization" \
+  --include="*.toml" --include="*.cfg" --include="*.ini" --include="*.txt" pyproject.toml setup.cfg setup.py requirements*.txt MANIFEST.in 2>/dev/null
 ```
 </action>
 
 <acceptance_criteria>
-- All grep commands have been run for all 5 targets
+- All 8 sweeps (A through H) completed for all 5 target directories
 - Output captured with file:line references
-- CI/CD scripts checked
-- Dynamic import scan complete for src/routes/ and src/api/
+- Dynamic import scan complete
+- Shell-embedded Python checked
+- Route registration tables checked
+- Namespace package patterns checked
+- Build/packaging references checked
+- Compat shim chains traced to endpoints
 </acceptance_criteria>
 </task>
 
 <task id="2">
 <objective>
-Build functional tree for each target directory
+Build functional tree and two-layer judgment per STANDARDS.md §4
 </objective>
 
 <read_first>
-- All files in src/routes/ (19 files — read __init__.py and main route files to understand purpose)
+- All files in src/routes/ (19 files)
 - All files in src/api/ (5 files)
-- src/data_access_pkg/__init__.py, src/data_access_pkg/interface.py
+- src/data_access_pkg/ (5 files — especially __init__.py and interface.py)
 - src/db_manager/__init__.py
-- src/database_optimization/__init__.py
+- src/database_optimization/ (5 files — __init__.py and each module)
+- architecture/STANDARDS.md §4 lines 103-111
 </read_first>
 
 <action>
-For each target directory, document:
+For each target directory, produce TWO layers of judgment per STANDARDS.md §4:
 
-1. **src/routes/** — For each of the 19 files, document:
-   - Module path (e.g., `src/routes/monitoring_routes/check_monitoring_health.py`)
-   - Functional purpose: what endpoint/capability does it define?
-   - HTTP method + path pattern (if it defines FastAPI routes)
-   - Canonical equivalent in `web/backend/app/api/` (the actual active route layer)
-   - All known callers (from task 1 grep output)
-   - Keep/delete recommendation
+**Layer 1 — Code-path judgment:** (from task 1 sweep results)
+Is the target referenced by: routes, menus, registries, dynamic imports, build scripts, style injection, side-effect imports, compat branches, feature flags, doc conventions, or runtime string mappings?
 
-2. **src/api/** — For each of the 5 files:
-   - Module path
-   - Functional purpose
-   - All known callers
-   - Check if `src/api/types/` directory exists and what it contains
-   - Keep/delete recommendation
+**Layer 2 — Functional-tree judgment:** (this task)
+Assign one of: `有效 (Active)`, `失效但兼容保留 (Inactive but compat-retained)`, `实验/灰度 (Experimental)`, `重复冗余 (Duplicate)`, `待判定 (Pending)`
 
-3. **src/data_access_pkg/** — For each of the 5 files:
-   - Module path
-   - Classes/functions exported
-   - Compare with canonical `src/data_access/` equivalents
-   - CRITICAL: Compare `tdengine_access.py` content (23,514 bytes vs 2,770 bytes canonical)
-   - Keep/delete/merge recommendation
+For each of the 34 files across 5 directories:
 
-4. **src/db_manager/** — Single file analysis:
-   - Verify `__init__.py` is ONLY a re-export shim pointing to `src.storage.database`
-   - Confirm no other files exist in directory
-   - Keep/delete recommendation
+1. **src/routes/** (19 files):
+   - Module path, functional purpose, HTTP method + path
+   - Canonical equivalent in `web/backend/app/api/` (the active route layer)
+   - CRITICAL: Document the circular dependency — `database_service.py:155` imports from `wencai_routes.py` but `wencai_routes.py:180,254,335,484` calls `db_service.execute_wencai_query()` — creating a circular call chain
+   - Functional-tree status for each file
 
-5. **src/database_optimization/** — For each of the 5 files:
-   - Module path, classes/functions exported
-   - Compare with `src/data_access/optimizers/query_optimizer.py`
-   - Determine if each file has unique functionality not in canonical layer
-   - Keep/delete/merge recommendation with specific merge target path
+2. **src/api/** (5 files):
+   - Module path, purpose, all callers
+   - CRITICAL: Verify `src/api/types/` directory existence — live verification shows it DOES NOT EXIST in `src/api/` (only TypeScript version exists at `web/frontend/src/api/types/`)
+   - `tests/api_contract_tests.py:21` imports from `src.api.types.*` — these imports are ALREADY BROKEN (ImportError)
+   - Functional-tree status
+
+3. **src/data_access_pkg/** (5 files):
+   - Module path, classes/functions, canonical `src/data_access/` equivalents
+   - CRITICAL: tdengine_access.py size discrepancy (23,514 bytes vs 2,770 bytes canonical) — investigate root cause
+   - Functional-tree status
+
+4. **src/db_manager/** (1 file):
+   - Verify `__init__.py` is ONLY a re-export shim to `src.storage.database`
+   - Functional-tree status
+
+5. **src/database_optimization/** (5 files):
+   - Module path, classes/functions, compare with `src/data_access/optimizers/query_optimizer.py`
+   - Determine unique vs duplicate functionality per file
+   - Functional-tree status with merge recommendation
 </action>
 
 <acceptance_criteria>
 - Functional tree documented for all 5 directories (34 files total)
-- Each file has: module path, purpose, status, callers, recommendation
-- tdengine_access.py content comparison completed (23KB vs 3KB discrepancy resolved)
-- database_optimization file-by-file overlap analysis complete
+- Each file has TWO judgments: code-path (from sweeps) AND functional-tree status
+- tdengine_access.py discrepancy root-caused
+- Circular dependency (database_service ↔ wencai_routes) documented
+- src/api/types/ non-existence confirmed
+- Each file assigned one of: Active, Inactive-but-compat, Experimental, Duplicate, Pending
 </acceptance_criteria>
 </task>
 
 <task id="3">
 <objective>
-Write DELETION-CANDIDATES.md per CONTEXT.md format requirements (D-08 through D-11)
+Write DELETION-CANDIDATES.md per CONTEXT.md format (D-08 through D-11) and STANDARDS.md §4
 </objective>
 
 <read_first>
 - .planning/phases/02-dead-code-inventory-removal/02-CONTEXT.md (decisions D-08 through D-11)
-- Task 1 and Task 2 outputs
+- Task 1 sweep outputs (all 8 sweeps)
+- Task 2 functional tree outputs
+- architecture/STANDARDS.md §4 lines 103-111
 </read_first>
 
 <action>
-Create `DELETION-CANDIDATES.md` at project root with this structure:
+Create `DELETION-CANDIDATES.md` at project root. Structure:
 
 ```markdown
 # Deletion Candidates — Phase 2 Review
@@ -150,69 +198,81 @@ Create `DELETION-CANDIDATES.md` at project root with this structure:
 **Generated:** [date]
 **Status:** PENDING USER APPROVAL
 **Phase:** 2 (Dead Code Inventory & Removal)
+**Governance:** Per architecture/STANDARDS.md §4 (lines 103-111)
 
 ---
 
 ## Summary
 
-| Target | Files | Prod Callers | Test Callers | Script Refs | Recommendation |
-|--------|-------|-------------|-------------|-------------|---------------|
-| src/routes/ | 19 | 1 | 0 | 2 | DELETE |
-| src/api/ | 5 | 0 | 1 | 1 | DELETE |
-| src/data_access_pkg/ | 5 | 0 | 0 | 0 | MERGE → src/data_access/ |
-| src/db_manager/ | 1 | 0 | 0 | 3 | DELETE |
-| src/database_optimization/ | 5 | 0 | 2 | 1 | MERGE → src/data_access/optimizers/ |
+| Target | Files | Code-Path Judgment | Functional-Tree Status | Recommendation |
+|--------|-------|--------------------|-----------------------|---------------|
+| src/routes/ | 19 | 1 prod caller (broken circular dep) | 重复冗余 | DELETE |
+| src/api/ | 5 | 1 test caller (already broken ImportError) | 重复冗余 | DELETE |
+| src/data_access_pkg/ | 5 | 0 external callers | 重复冗余 | MERGE → src/data_access/ |
+| src/db_manager/ | 1 | 0 callers (shim only) | 重复冗余 | DELETE |
+| src/database_optimization/ | 5 | 2 test callers | 重复冗余 (unique utils) | MERGE → src/data_access/optimizers/ |
 
 ---
 
-## Table 1: src/routes/ (19 files)
+## Evidence Tables
 
-| File | Purpose | Status | Callers (file:line) | Action | Redirect To |
-|------|---------|--------|--------------------|----:|------------|
-| ... | ... | ... | ... | DELETE | web/backend/app/api/... |
-...
+### Table 1: src/routes/ (19 files)
 
-## Table 2: src/api/ (5 files)
-...
+| File | Purpose | Code-Path Status | Functional-Tree Status | Callers (file:line) | Action |
+|------|---------|-----------------|----------------------|--------------------|--------|
+... (all 19 files)
 
-## Table 3: src/data_access_pkg/ (5 files)
-...
+### Table 2-5: ... (same structure for other targets)
 
-## Table 4: src/db_manager/ (1 file)
-...
+---
 
-## Table 5: src/database_optimization/ (5 files)
-...
+## Special Cases
+
+### Circular Dependency: database_service.py ↔ wencai_routes.py
+
+database_service.py:155 imports from src.routes.wencai_routes (broken — wrong function names)
+wencai_routes.py:180,254,335,484 calls db_service.execute_wencai_query()
+→ Circular: routes → service → routes
+→ Both the import AND the function names are wrong — method crashes at runtime
+→ Callers in real_data_source.py:135,139,144 are also dead paths
+
+### Broken Import: tests/api_contract_tests.py
+
+tests/api_contract_tests.py:21 imports from src.api.types.*
+src/api/types/ does NOT exist as a Python package
+→ Imports already raise ImportError
+→ Test file is dead — needs broken import cleanup, NOT type migration
+
+### Size Discrepancy: tdengine_access.py
+
+[Investigation results from task 2]
 
 ---
 
 ## Caller Redirection Map
 
-| Current Import | Redirect To | Files Affected |
-|---------------|------------|---------------|
-| from src.routes.wencai_routes import ... | from web.backend.app.api.... import ... | src/database/services/database_service.py:155 |
+| Current Import | Status | Correct Action | Files Affected |
+|---------------|--------|---------------|---------------|
+| from src.routes.wencai_routes import execute_custom_query, get_query_results | BROKEN (wrong names) | Remove dead import + dead method | src/database/services/database_service.py:155 |
+| from src.api.types.common import APIResponse | BROKEN (no such module) | Delete broken import | tests/api_contract_tests.py:21-23 |
 ...
 
 ## Verification Commands
 
 ```bash
-# After all sub-stages complete:
-ruff check src/ web/backend/app/ | wc -l  # Must be <900
+ruff check src/ web/backend/app/ | wc -l
 cd web/backend && PYTHONPATH=$(git rev-parse --show-toplevel):. python -c "from app.main import app; print('OK')"
 pytest --tb=short
 ```
 ```
-
-Each table must include actual grep output as evidence, not summaries. Per D-10: "Include grep evidence as inline command output (not just 'grep returned X results')."
 </action>
 
 <acceptance_criteria>
 - `DELETION-CANDIDATES.md` exists at project root
-- Contains 5 tables (one per target directory) with per-file analysis
-- Each row has: file path, purpose, status, callers with file:line, keep/delete, redirect target
-- Summary table with aggregate stats
-- Caller Redirection Map with exact import transformations
-- Grep evidence included inline (not summarized)
+- 5 evidence tables with per-file analysis
+- Each file has both code-path AND functional-tree judgments per STANDARDS.md §4
+- Special cases section covers: circular dependency, broken imports, size discrepancy
+- Grep evidence inline (not summarized) per D-10
 - Status marked as "PENDING USER APPROVAL"
 </acceptance_criteria>
 </task>
@@ -239,7 +299,7 @@ Present the summary table to the user for review and approval. Do NOT proceed to
 <acceptance_criteria>
 - DELETION-CANDIDATES.md committed
 - Commit message references sub-stage 2a
-- User has reviewed and approved the deletion list before any code changes
+- User has reviewed and approved before any code changes
 </acceptance_criteria>
 </task>
 
@@ -250,17 +310,18 @@ Present the summary table to the user for review and approval. Do NOT proceed to
 ```bash
 test -f DELETION-CANDIDATES.md && echo "EXISTS" || echo "MISSING"
 grep -c "PENDING USER APPROVAL" DELETION-CANDIDATES.md
-grep -c "src/routes/" DELETION-CANDIDATES.md
-grep -c "src/api/" DELETION-CANDIDATES.md
-grep -c "src/data_access_pkg/" DELETION-CANDIDATES.md
-grep -c "src/db_manager/" DELETION-CANDIDATES.md
-grep -c "src/database_optimization/" DELETION-CANDIDATES.md
+grep -c "Code-Path" DELETION-CANDIDATES.md
+grep -c "Functional-Tree" DELETION-CANDIDATES.md
+grep -c "STANDARDS.md" DELETION-CANDIDATES.md
 ```
 
 ## Must-Haves
 
 - [ ] DELETION-CANDIDATES.md exists with all 5 target directories analyzed
-- [ ] Every target file has grep evidence (not just counts)
-- [ ] Caller Redirection Map with exact import → redirect mappings
-- [ ] tdengine_access.py size discrepancy investigated and documented
+- [ ] BOTH code-path AND functional-tree judgments per STANDARDS.md §4
+- [ ] 8 sweep types (A-H) completed: static, string, dynamic, namespace, shell, shim, route-reg, build
+- [ ] Circular dependency (database_service ↔ wencai_routes) documented
+- [ ] src/api/types/ non-existence confirmed
+- [ ] tdengine_access.py size discrepancy root-caused
+- [ ] Grep evidence inline per D-10
 - [ ] User has approved before any code changes

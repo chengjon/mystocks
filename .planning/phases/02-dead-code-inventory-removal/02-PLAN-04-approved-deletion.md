@@ -8,6 +8,7 @@ files_modified:
   - src/api/ (DELETE — 5 files)
   - src/data_access_pkg/ (DELETE — 5 files)
   - src/database_optimization/ (DELETE — 5 files)
+  - src/db_manager/ (DELETE — 1 file)
   - DELETION-CANDIDATES.md (update status)
 autonomous: false
 requirements_addressed:
@@ -20,9 +21,11 @@ requirements_addressed:
 
 # Plan 04: Approved Deletion of Dead Directories
 
-**Objective:** Delete all 5 dead/duplicate directories after Plans 02 and 03 are complete and user has approved. This is the final irreversible step.
+**Objective:** Delete all 5 dead/duplicate directories after Plans 02 and 03 are complete AND user has approved DELETION-CANDIDATES.md. This is the ONLY plan that performs directory deletions.
 
-**NOTE:** This plan requires `autonomous: false` — user must confirm before execution begins.
+**IMPORTANT:** This plan requires `autonomous: false` — user must confirm before execution. Per CONTEXT.md D-08, NO deletion occurs until user approves DELETION-CANDIDATES.md.
+
+**Per CONTEXT.md D-12:** This is commit 3 of 3 (sub-stage 2d — approved deletion).
 
 ## Tasks
 
@@ -33,14 +36,15 @@ Pre-deletion verification — confirm all callers redirected and merges complete
 
 <read_first>
 - DELETION-CANDIDATES.md (user-approved version)
-- Plans 02 and 03 outputs
+- Plan 02 and Plan 03 outputs
+- architecture/STANDARDS.md §4 (lines 103-111 — deletion governance)
 </read_first>
 
 <action>
-Run comprehensive pre-deletion checks:
+Run comprehensive pre-deletion checks per STANDARDS.md §4:
 
 ```bash
-# 1. Verify ZERO production callers for each target (outside the target itself)
+# 1. Verify ZERO external callers for each target
 echo "=== src/routes callers ==="
 grep -rn "from src\.routes\b\|import src\.routes\b" --include="*.py" src/ web/ | grep -v "src/routes/" | grep -v "__pycache__" || echo "NONE"
 
@@ -54,37 +58,40 @@ echo "=== src/database_optimization callers ==="
 grep -rn "from src\.database_optimization\b\|import src\.database_optimization\b" --include="*.py" src/ web/ tests/ scripts/ | grep -v "src/database_optimization/" | grep -v "__pycache__" || echo "NONE"
 
 echo "=== src/db_manager callers ==="
-grep -rn "from src\.db_manager\b\|import src\.db_manager\b" --include="*.py" src/ web/ tests/ | grep -v "src/db_manager/" | grep -v "__pycache__" || echo "NONE"
+grep -rn "from src\.db_manager\b\|import src\.db_manager\b" --include="*.py" src/ web/ tests/ scripts/ | grep -v "src/db_manager/" | grep -v "__pycache__" || echo "NONE"
 
-# 2. Verify db_manager already deleted (Plan 03 task 5)
-test ! -d src/db_manager && echo "db_manager: already deleted" || echo "db_manager: still exists"
+# 2. Verify database_optimization files merged into canonical
+python -c "from src.data_access.optimizers import IndexPerformanceMonitor, PostgreSQLIndexOptimizer, SlowQueryAnalyzer, TDengineIndexOptimizer; print('merge: OK')"
 
-# 3. Verify database_optimization files merged into canonical
-python -c "from src.data_access.optimizers import IndexPerformanceMonitor; print('merge: OK')"
-
-# 4. Baseline metrics
+# 3. Baseline metrics
 echo "=== ruff count ==="
 ruff check src/ web/backend/app/ 2>&1 | wc -l
 
 echo "=== FastAPI smoke ==="
 cd web/backend && PYTHONPATH=$(git rev-parse --show-toplevel):. python -c "from app.main import app; print('OK')"
+
+# 4. String references (not just imports — per STANDARDS.md §4 code-path judgment)
+echo "=== String references ==="
+grep -rn "src\.routes\|src\.api\|src\.data_access_pkg\|src\.db_manager\|src\.database_optimization" \
+  --include="*.sh" --include="*.yml" --include="*.yaml" --include="*.toml" --include="*.json" \
+  scripts/ .github/ config/ 2>/dev/null || echo "NONE"
 ```
 
-IF any target has remaining production callers, STOP and report. Do NOT proceed to task 2.
-IF db_manager still exists, include it in the deletion batch (it was supposed to be deleted in Plan 03).
+IF any target has remaining production callers or string references, STOP and report. Do NOT proceed to task 2.
 </action>
 
 <acceptance_criteria>
-- All 5 targets have ZERO external production callers
+- All 5 targets have ZERO external production callers (per STANDARDS.md §4 code-path judgment)
 - database_optimization files importable from canonical `src.data_access.optimizers`
 - Pre-deletion ruff count recorded for comparison
 - FastAPI smoke test passes before deletion
+- String references in CI/CD/scripts also verified clean
 </acceptance_criteria>
 </task>
 
 <task id="2">
 <objective>
-Create backup tag and delete all dead directories
+Create backup tag and delete all 5 dead directories
 </objective>
 
 <read_first>
@@ -98,7 +105,7 @@ Create a backup tag BEFORE deletion:
 git tag pre-phase2-deletion
 ```
 
-Delete each directory (skip db_manager if already deleted in Plan 03):
+Delete each directory:
 
 ```bash
 # Target 1: src/routes/ (19 files)
@@ -107,14 +114,14 @@ git rm -r src/routes/
 # Target 2: src/api/ (5 files)
 git rm -r src/api/
 
-# Target 3: src/data_access_pkg/ (5 files — now empty after merge in Plan 03)
+# Target 3: src/data_access_pkg/ (5 files — content merged or covered by canonical)
 git rm -r src/data_access_pkg/
 
-# Target 4: src/database_optimization/ (5 files — now empty after merge in Plan 03)
+# Target 4: src/database_optimization/ (5 files — unique content copied to src/data_access/optimizers/ in Plan 03)
 git rm -r src/database_optimization/
 
-# Target 5: src/db_manager/ (if not already deleted in Plan 03)
-test -d src/db_manager && git rm -r src/db_manager/ || echo "db_manager: already deleted"
+# Target 5: src/db_manager/ (1 file — empty re-export shell)
+git rm -r src/db_manager/
 ```
 
 After each deletion, verify no broken references appeared:
@@ -122,24 +129,24 @@ After each deletion, verify no broken references appeared:
 ruff check src/ web/backend/app/ 2>&1 | wc -l
 ```
 
-If ruff count increases by more than 5 (expected: decrease since dead files are gone), STOP and investigate.
+If ruff count increases by more than 5, STOP and investigate before continuing.
 </action>
 
 <acceptance_criteria>
 - Backup tag `pre-phase2-deletion` created
 - All 5 directories removed: `src/routes/`, `src/api/`, `src/data_access_pkg/`, `src/database_optimization/`, `src/db_manager/`
-- `ruff check` count stays <900 (expected: decrease by ~20-40 since dead files removed)
+- `ruff check` count stays <900 (expected: decrease since dead files removed)
 - No F821 errors from missing modules
 </acceptance_criteria>
 </task>
 
 <task id="3">
 <objective>
-Run full verification suite after deletion
+Run full verification suite after deletion — all Phase 2 success criteria
 </objective>
 
 <read_first>
-- All modified/deleted files
+- All deleted files
 </read_first>
 
 <action>
@@ -148,9 +155,6 @@ Run all success criteria from ROADMAP Phase 2:
 ```bash
 # SC-1: DELETION-CANDIDATES.md exists
 test -f DELETION-CANDIDATES.md && echo "SC1: PASS" || echo "SC1: FAIL"
-
-# SC-2: User approved (manual check — should be done already)
-echo "SC2: Manual — user approved DELETION-CANDIDATES.md"
 
 # SC-3: All 5 target directories removed
 for dir in src/routes src/api src/data_access_pkg src/db_manager src/database_optimization; do
@@ -181,45 +185,48 @@ pytest --tb=short -q 2>&1 | tail -5
 
 <task id="4">
 <objective>
-Commit deletion and update DELETION-CANDIDATES.md status
+Commit deletion — CONTEXT.md D-12: this is commit 3 of 3 (sub-stage 2d)
 </objective>
 
 <read_first>
 - DELETION-CANDIDATES.md
+- CONTEXT.md D-12 (commit granularity: 3 commits total)
 </read_first>
 
 <action>
-1. Update DELETION-CANDIDATES.md status from "PENDING USER APPROVAL" to "APPROVED & DELETED":
-   - Replace `**Status:** PENDING USER APPROVAL` with `**Status:** APPROVED & DELETED (Phase 2 complete)`
+**Per CONTEXT.md D-12:** This is the 3rd and final commit of Phase 2.
+
+1. Update DELETION-CANDIDATES.md status:
+   - Replace `PENDING USER APPROVAL` with `APPROVED & DELETED (Phase 2 complete)`
    - Add deletion date and commit hash
 
-2. Commit:
+2. Single commit for ALL deletions + status update:
    ```bash
-   git add -A  # captures deletions
-   git commit -m "refactor(02): delete 5 dead code directories (34 files total)
+   git add -A  # captures all deletions + DELETION-CANDIDATES.md update
+   git commit -m "refactor(02): delete 5 dead code directories (34 files) — sub-stage 2d
 
-   Deleted:
-   - src/routes/ (19 files) — mock-era routes, 1 prod caller redirected
-   - src/api/ (5 files) — dead alternative route layer, test imports updated
+   Deleted (per approved DELETION-CANDIDATES.md):
+   - src/routes/ (19 files) — mock-era routes, callers redirected in commit 2
+   - src/api/ (5 files) — dead alternative route layer, broken test imports cleaned
    - src/data_access_pkg/ (5 files) — fully covered by canonical src/data_access/
    - src/database_optimization/ (5 files) — merged into src/data_access/optimizers/
-   - src/db_manager/ (1 file) — empty re-export shell
+   - src/db_manager/ (1 file) — empty re-export shell pointing to src.storage.database
 
-   Per DELETION-CANDIDATES.md (user approved).
+   CONTEXT.md D-12 commit granularity:
+   - Commit 1 (2a): DELETION-CANDIDATES.md inventory
+   - Commit 2 (2b+2c): Caller redirections + merge of overlapping layers
+   - Commit 3 (2d): This commit — approved deletions
+
    Backup tag: pre-phase2-deletion"
-   ```
-
-3. Commit the status update:
-   ```bash
-   git add DELETION-CANDIDATES.md
-   git commit -m "docs(02): update DELETION-CANDIDATES.md status to approved"
    ```
 </action>
 
 <acceptance_criteria>
-- Deletion committed with detailed message listing all 5 targets
+- Single commit for all deletions (per CONTEXT.md D-12: commit 3 of 3)
+- Commit message lists all 5 targets with file counts
+- Commit message references D-12 commit granularity and all 3 commits
 - DELETION-CANDIDATES.md status updated to "APPROVED & DELETED"
-- `git log --oneline -3` shows deletion commit + status update
+- `git log --oneline -3` shows the 3-commit structure
 </acceptance_criteria>
 </task>
 
@@ -236,19 +243,25 @@ done
 # Canonical layer intact
 python -c "from src.data_access import DataAccessFactory, TDengineDataAccess, PostgreSQLDataAccess; print('canonical: OK')"
 python -c "from src.data_access.optimizers import IndexPerformanceMonitor, QueryOptimizer; print('optimizers: OK')"
+python -c "from src.storage.database import DatabaseConnectionManager; print('storage: OK')"
 
 # Full suite
 ruff check src/ web/backend/app/ | wc -l
 cd web/backend && PYTHONPATH=$(git rev-parse --show-toplevel):. python -c "from app.main import app; print('OK')"
 pytest --tb=short -q 2>&1 | tail -5
+
+# Verify 3-commit structure per CONTEXT.md D-12
+git log --oneline -3
 ```
 
 ## Must-Haves
 
 - [ ] All 5 directories removed (34+ files)
+- [ ] `src/db_manager/` deleted HERE (not in Plan 03)
 - [ ] Zero broken imports in production code
 - [ ] `ruff check` count <900
 - [ ] FastAPI smoke test passes
 - [ ] pytest pass/fail count unchanged
 - [ ] Backup tag `pre-phase2-deletion` exists
 - [ ] DELETION-CANDIDATES.md status updated to approved
+- [ ] EXACTLY 3 commits total per CONTEXT.md D-12 (2a, 2b+2c, 2d)
