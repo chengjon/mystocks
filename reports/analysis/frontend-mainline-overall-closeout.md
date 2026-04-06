@@ -1,6 +1,6 @@
 # MyStocks Frontend Mainline Overall Closeout
 
-> **当前收口工件说明**:
+> **使用说明（当前收口工件）**:
 > 本文件记录截至生成时间的前端主线收口实测结果，可作为当前这轮 mainline closeout 的测量工件之一，但不是仓库共享规则、长期系统总览或跨阶段治理口径的唯一事实来源。
 > 当前共享规则与治理口径请优先遵循 `architecture/STANDARDS.md`；执行流程、命令与协作约束再结合根目录 `AGENTS.md`，并与当前代码实现、验证结果、主线文档及同批次 machine-readable artifact 一并核对。
 >
