@@ -712,6 +712,51 @@ def test_build_coordination_service_prefers_explicit_mongo_uri(monkeypatch) -> N
     assert captured["mongo_db"] == "mystocks_coord"
 
 
+def test_build_coordination_service_uses_transcript_archive_defaults(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+
+    class _FakeClient:
+        def __getitem__(self, name: str):
+            captured["mongo_db"] = name
+            return object()
+
+    monkeypatch.setattr(
+        maestro_collab,
+        "build_project_runtime_mongo_client",
+        lambda project_root, mongo_uri, server_selection_timeout_ms=3000: captured.update(
+            {"project_root": str(project_root), "mongo_uri": mongo_uri, "server_selection_timeout_ms": server_selection_timeout_ms}
+        )
+        or _FakeClient(),
+    )
+    monkeypatch.setattr(maestro_collab, "MongoCollaborationStore", lambda database: captured.update({"database": database}) or object())
+    monkeypatch.setattr(maestro_collab, "CoordinationService", lambda store: captured.update({"store": store}) or object())
+    monkeypatch.setattr(
+        maestro_collab,
+        "FilesystemTranscriptArchiveBackend",
+        lambda root: captured.update({"archive_root": str(root)}) or ("archive-backend", str(root)),
+    )
+    monkeypatch.setattr(
+        maestro_collab,
+        "TranscriptLedgerService",
+        lambda store, archive_backend=None, hot_retention_days=90: captured.update(
+            {
+                "transcript_store": store,
+                "archive_backend": archive_backend,
+                "hot_retention_days": hot_retention_days,
+            }
+        )
+        or object(),
+    )
+
+    facade = maestro_collab._build_coordination_service(argparse.Namespace(mongo_uri=None, mongo_db="mystocks_coord"))
+
+    assert isinstance(facade, maestro_collab._MongoCoordinationFacade)
+    assert captured["mongo_db"] == "mystocks_coord"
+    assert captured["archive_root"] == str(maestro_collab.PROJECT_ROOT / ".maestro/transcript-archive")
+    assert captured["hot_retention_days"] == 90
+    assert captured["archive_backend"] == ("archive-backend", str(maestro_collab.PROJECT_ROOT / ".maestro/transcript-archive"))
+
+
 def test_main_emits_structured_error_when_mongo_auth_fails(monkeypatch, capsys) -> None:
     monkeypatch.setattr(
         maestro_collab,
