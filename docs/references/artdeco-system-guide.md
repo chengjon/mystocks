@@ -762,10 +762,10 @@ This ArtDeco-styled interface achieves:
 
 ## 🎓 Acknowledgments
 
-**Design System**: ArtDeco Modern (1920s geometric aesthetics meets modern fintech)
-**Implementation**: Claude Code Frontend Design Specialist
-**Project**: MyStocks A股量化交易管理系统
+**Historical Design System Snapshot**: ArtDeco Modern (1920s geometric aesthetics meets modern fintech)
+**Historical Implementation Snapshot**: Claude Code Frontend Design Specialist
+**Historical Project Snapshot**: MyStocks A股量化交易管理系统
 
-**Version**: 1.0.0
+**Historical Version Snapshot**: 1.0.0
 **Historical Snapshot Date**: 2025-01-03
 **Status**: Historical snapshot status; these phase labels describe an early design planning state, not current frontend mainline progress
