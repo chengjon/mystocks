@@ -2,19 +2,19 @@
 
 > **历史计划说明**:
 > 本文件是阶段性计划、路线图、提案、任务方案或执行矩阵，不是当前基线、当前实施状态或仓库共享规则的唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或当前执行口径，请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，并结合当前代码实现与主线文档使用。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线文档一并核对。
 >
 > 文内优先级、缺口清单、执行步骤、目标值和时间线如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
 
 
-> 日期：2026-04-03
+> Historical Plan Snapshot Date: 2026-04-03
 > 上游总纲：`docs/plans/2026-04-02-frontend-mainline-testing-overall-plan.md`
-> 范围：Phase 4 十个页面的 Mock / Real 双轨验证与修复推进
+> Historical Scope Snapshot: Phase 4 十个页面的 Mock / Real 双轨验证与修复推进
 >
-> `2026-04-06` 收口更新：
-> `System-Config` 当前活跃路由已切到 `web/frontend/src/views/system/Settings.vue`；
+> `2026-04-06` 收口更新快照：
+> `System-Config` 当次活跃路由已切到 `web/frontend/src/views/system/Settings.vue`；
 > approved `add-sectioned-system-config-contract` 已为 `general/security` 落地 `/api/v1/system/settings/*`，
-> 旧的 “本地持久化-only” 口径已失效，以下 System-Config 条目按当前收口真相刷新。
+> 旧的 “本地持久化-only” 口径已失效，以下 System-Config 条目按该次收口快照刷新。
 
 ## 1. 目标
 
@@ -46,12 +46,12 @@ Phase 4 聚焦两条系统级主链：
 - 功能树真值：`docs/FUNCTION_TREE.md`
 - 主链清单真值：`docs/plans/frontend-page-optimization-list.md`
 
-### 2.2 当前已知事实
+### 2.2 方案编写时已知事实
 
 - 上述 10 页均已在主链清单中标记为 Phase 4 页面。
 - `web/frontend/tests/e2e/comprehensive-all-pages.spec.ts` 已覆盖这 10 个路由的 real 子集入口。
-- 当前仓库没有这 10 页的专用稳定 Phase 4 E2E，需要新增一份矩阵测试资产补缺。
-- `Phase 3` 已完成，当前运行态口径为：
+- 方案编写时仓库没有这 10 页的专用稳定 Phase 4 E2E，需要新增一份矩阵测试资产补缺。
+- 按方案编写时记录，`Phase 3` 已完成，当时运行态口径为：
   - `mystocks-backend`: `http://localhost:8020`
   - `mystocks-frontend`: `http://localhost:3020`
   - `http://localhost:8020/health/ready` = `200`
