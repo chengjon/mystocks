@@ -412,15 +412,15 @@ Response: {
 
 ## 🚀 API版本管理
 
-### 当前版本
+### Historical Version Snapshot
 
 | 版本号 | 发布日期 | 状态 | 说明 |
 |-------|---------|------|------|
 | v3.0.0 | 2026-01-22 | ✅ 稳定 | ArtDeco优化版本 |
 
-### 版本策略
+### Historical Version Strategy
 
-- **URL版本**: `/api/v3//*` (当前版本)
+- **URL版本**: `/api/v3//*`（historical design version proposal）
 - **向后兼容**: 保留v1、v2端点（标记为deprecated）
 - **弃用通知**: 响应头`X-API-Deprecated: true`
 - **迁移指南**: `/docs/api/migration-v2-to-v3.md`
