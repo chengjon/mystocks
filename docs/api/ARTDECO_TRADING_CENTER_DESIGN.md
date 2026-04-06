@@ -1,7 +1,14 @@
 # ArtDeco 量化交易管理中心 - 菜单功能树设计
 
-**版本**: 2.0.0
-**设计日期**: 2025-01-14
+> **设计方案说明**:
+> 本文件是 API 相关的设计稿、映射文档或方案说明，不是当前 API 契约、当前实现基线或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`；若涉及 API 契约事实源，再以实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json` 为准。
+>
+> 文内结构设计、端点规划、映射关系和实施建议应结合当前代码与主线文档复核；若未落地，不得直接当作当前标准。
+
+
+**Historical Design Version Snapshot**: 2.0.0
+**Historical Design Snapshot Date**: 2025-01-14
 **ArtDeco主题**: 金色主色调 (#D4AF37)，几何装饰设计
 
 ---
