@@ -17,6 +17,7 @@ from .api import monitoring_analysis
 from .api import monitoring_watchlists
 from .api import prometheus_exporter
 from .api import realtime_market
+from .api import risk
 from .api import signal_monitoring
 from .api import strategy_list_mock
 from .api import websocket
@@ -38,7 +39,6 @@ from .api import (
     monitoring,
     multi_source,
     notification,
-    risk_management,
     sse_endpoints,
     stock_search,
     strategy,
@@ -124,7 +124,7 @@ def register_api_routes(app: FastAPI, *, use_mock_apis: bool, logger: logging.Lo
     )
 
     app.include_router(strategy_management.router)
-    app.include_router(risk_management.router)
+    app.include_router(risk.router)
     app.include_router(sse_endpoints.router)
     app.include_router(industry_concept_analysis.router)
 

@@ -19,6 +19,8 @@ sys.path.insert(1, str(BACKEND_ROOT))
 
 def test_risk_management_compat_router_uses_runtime_risk_routes(caplog) -> None:
     for module_name in [
+        "app",
+        "app.api",
         "app.api.risk_management",
         "app.api.risk",
         "app.api.risk.metrics",
@@ -39,3 +41,27 @@ def test_risk_management_compat_router_uses_runtime_risk_routes(caplog) -> None:
         "falling back to empty compatibility router" in record.message
         for record in caplog.records
     )
+
+
+def test_app_main_registers_canonical_risk_router_without_loading_compat_shim() -> None:
+    for module_name in [
+        "app",
+        "app.api",
+        "app.main",
+        "app.router_registry",
+        "app.api.risk_management",
+        "app.api.risk",
+        "app.api.risk.metrics",
+        "app.api.risk.stop_loss",
+        "app.api.risk.alerts",
+        "app.api.risk.v31",
+        "app.api.risk._shared",
+    ]:
+        sys.modules.pop(module_name, None)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        importlib.import_module("app.main")
+
+    assert "app.api.risk" in sys.modules
+    assert "app.api.risk_management" not in sys.modules
