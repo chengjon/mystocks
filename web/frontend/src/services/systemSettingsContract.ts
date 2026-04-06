@@ -1,22 +1,31 @@
 import type { SystemSettings, SystemSettingsSection } from './TradingApiManager.types.ts'
 
-const BACKEND_SUPPORTED_SECTIONS = ['datasource', 'notification'] as const satisfies ReadonlyArray<SystemSettingsSection>
-const UNSUPPORTED_SECTIONS = ['general', 'security'] as const satisfies ReadonlyArray<SystemSettingsSection>
+const BACKEND_SUPPORTED_SECTIONS = [
+  'general',
+  'datasource',
+  'notification',
+  'security',
+] as const satisfies ReadonlyArray<SystemSettingsSection>
+const UNSUPPORTED_SECTIONS: SystemSettingsSection[] = []
 
 type SystemSettingsSnapshotInput = {
+  general: unknown | null
   datasource: unknown | null
   notification: unknown | null
+  security: unknown | null
 }
 
 export function buildSystemSettingsSnapshot({
+  general,
   datasource,
   notification,
+  security,
 }: SystemSettingsSnapshotInput): SystemSettings {
   return {
-    general: null,
+    general,
     datasource,
     notification,
-    security: null,
+    security,
     meta: {
       contractStatus: 'sectioned',
       unifiedBackendApiAvailable: false,
@@ -28,9 +37,9 @@ export function buildSystemSettingsSnapshot({
         general: {
           scope: 'system',
           owner: 'system-settings',
-          readStatus: 'unavailable',
-          writeStatus: 'unavailable',
-          evidenceType: 'inferred',
+          readStatus: 'available',
+          writeStatus: 'available',
+          evidenceType: 'measured',
         },
         datasource: {
           scope: 'system',
@@ -49,9 +58,9 @@ export function buildSystemSettingsSnapshot({
         security: {
           scope: 'system',
           owner: 'system-settings',
-          readStatus: 'unavailable',
-          writeStatus: 'unavailable',
-          evidenceType: 'inferred',
+          readStatus: 'available',
+          writeStatus: 'available',
+          evidenceType: 'measured',
         },
       },
     },
@@ -73,6 +82,6 @@ export function assertSupportedSystemSettingsWrite(settings: Partial<SystemSetti
 
   throw new Error(
     `Unsupported unified system settings sections: ${unsupported.join(', ')}. ` +
-      'System-Config currently supports datasource and notification backend writes; other sections remain unavailable.',
+      'System-Config currently supports only the canonical routed section writes that are declared in the section contract.',
   )
 }

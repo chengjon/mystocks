@@ -57,13 +57,19 @@ export const monitoringApi = {
   // Existing methods
   getSystemHealth: (): Promise<UnifiedResponse<unknown>> => apiClient.get('/health'),
   getDetailedSystemHealth: (): Promise<UnifiedResponse<unknown>> => apiClient.get('/health/detailed'),
+  getSystemGeneralSettings: (): Promise<UnifiedResponse<unknown>> => apiClient.get('/v1/system/settings/general'),
+  updateSystemGeneralSettings: (data: Record<string, unknown>): Promise<UnifiedResponse<unknown>> =>
+    apiClient.post('/v1/system/settings/general', data),
   getAlertRules: (): Promise<UnifiedResponse<AlertRuleResponse[]>> => apiClient.get('/v1/monitoring/alert-rules'),
   getAlerts: (params: Record<string, unknown>): Promise<UnifiedResponse<AlertRecordResponse[]>> => apiClient.get('/v1/monitoring/alerts', { params }),
   // New method for announcements
   getAnnouncements: (params: Record<string, unknown> = {}): Promise<UnifiedResponse<any>> => apiClient.get('/announcement/list', { params }),
   // Data source configuration
   getDataSourceConfig: (): Promise<UnifiedResponse<any>> => apiClient.get('/v1/data-sources/config/'),
+  getSystemSecuritySettings: (): Promise<UnifiedResponse<unknown>> => apiClient.get('/v1/system/settings/security'),
   updateDataSourceConfig: (data: Record<string, unknown>): Promise<UnifiedResponse<any>> => apiClient.post('/v1/data-sources/config/batch', data),
+  updateSystemSecuritySettings: (data: Record<string, unknown>): Promise<UnifiedResponse<unknown>> =>
+    apiClient.post('/v1/system/settings/security', data),
   // CRUD for alert rules
   createAlertRule: (data: Record<string, unknown>): Promise<UnifiedResponse<AlertRuleResponse>> => apiClient.post('/v1/monitoring/alert-rules', data),
   updateAlertRule: (id: string, data: Record<string, unknown>): Promise<UnifiedResponse<AlertRuleResponse>> => apiClient.put(`/v1/monitoring/alert-rules/${id}`, data),

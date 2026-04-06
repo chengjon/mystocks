@@ -9,15 +9,15 @@
 - [x] 1.3 Run `openspec validate add-sectioned-system-config-contract --strict`
 
 ## 2. Future Implementation Plan
-- [ ] 2.1 Add canonical system-scoped read/write contracts for `general`
-- [ ] 2.2 Reuse the existing datasource config endpoints as the only datasource truth
-- [ ] 2.3 Reuse the existing user notification preferences endpoints as the only notification truth
-- [ ] 2.4 Add canonical system-scoped read/write contracts for `security`
-- [ ] 2.5 Update frontend composition services to expose section ownership and evidence metadata
+- [x] 2.1 Add canonical system-scoped read/write contracts for `general`
+- [x] 2.2 Reuse the existing datasource config endpoints as the only datasource truth
+- [x] 2.3 Reuse the existing user notification preferences endpoints as the only notification truth
+- [x] 2.4 Add canonical system-scoped read/write contracts for `security`
+- [x] 2.5 Update frontend composition services to expose section ownership and evidence metadata
 - [ ] 2.6 Remove page-level local-storage persistence only after section exit criteria are met
 
 ## 3. Governance Gates
-- [ ] 3.1 Verify no duplicate storage layer, shim persistence path, or `*_new` compatibility branch is introduced
-- [ ] 3.2 Verify deletion/retirement decisions include both code-path and function-tree judgments
-- [ ] 3.3 Verify metrics and UI labels separate `measured`, `inferred`, and `historical-baseline`
-- [ ] 3.4 Verify migration completion is evaluated per section, not by a vague page-level claim
+- [x] 3.1 Verify no duplicate storage layer, shim persistence path, or `*_new` compatibility branch is introduced
+- [x] 3.2 Verify deletion/retirement decisions include both code-path and function-tree judgments
+- [x] 3.3 Verify metrics and UI labels separate `measured`, `inferred`, and `historical-baseline`
+- [x] 3.4 Verify migration completion is evaluated per section, not by a vague page-level claim

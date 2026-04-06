@@ -146,6 +146,23 @@ def test_v1_health_endpoints_have_error_responses() -> None:
         assert any(status.startswith("5") for status in operation["responses"])
 
 
+def test_v1_system_settings_endpoints_have_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path in ["/api/v1/system/settings/general", "/api/v1/system/settings/security"]:
+        get_operation = schema["paths"][path]["get"]
+        post_operation = schema["paths"][path]["post"]
+
+        assert len(get_operation.get("description", "")) >= 20
+        assert any(status.startswith("5") for status in get_operation["responses"])
+        assert len(post_operation.get("description", "")) >= 20
+        assert any(status.startswith("5") for status in post_operation["responses"])
+
+        post_json = post_operation["requestBody"]["content"]["application/json"]
+        assert "example" in post_json or "examples" in post_json
+
+
 def test_notification_endpoints_have_error_docs_and_descriptions() -> None:
     app.openapi_schema = None
     schema = app.openapi()

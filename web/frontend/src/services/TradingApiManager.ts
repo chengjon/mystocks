@@ -225,6 +225,25 @@ const monitoringApiCompat = {
     },
 }
 
+const systemApiCompat = {
+    async getGeneralSettings(): Promise<DataEnvelope<unknown>> {
+        const response = await legacyMonitoringApi.getSystemGeneralSettings()
+        return wrapData(response.data)
+    },
+    async saveGeneralSettings(settings: unknown): Promise<{ success: boolean }> {
+        const response = await legacyMonitoringApi.updateSystemGeneralSettings(settings as Record<string, unknown>)
+        return { success: response.success }
+    },
+    async getSecuritySettings(): Promise<DataEnvelope<unknown>> {
+        const response = await legacyMonitoringApi.getSystemSecuritySettings()
+        return wrapData(response.data)
+    },
+    async saveSecuritySettings(settings: unknown): Promise<{ success: boolean }> {
+        const response = await legacyMonitoringApi.updateSystemSecuritySettings(settings as Record<string, unknown>)
+        return { success: response.success }
+    },
+}
+
 const dataApiCompat = {
     ...dataApi,
     async importData(config: DataConfig): Promise<DataOperationResult> {
@@ -247,23 +266,11 @@ const dataApiCompat = {
 }
 
 const _userApiCompat = {
-    async getGeneralSettings(): Promise<DataEnvelope<unknown>> {
-        return wrapData({})
-    },
-    async saveGeneralSettings(_settings: unknown): Promise<{ success: true }> {
-        return wrapSuccess()
-    },
     async getNotificationSettings(): Promise<DataEnvelope<unknown>> {
         return wrapData(await userApi.getNotificationSettings())
     },
     async saveNotificationSettings(settings: unknown): Promise<{ success: true }> {
         await userApi.updateNotificationSettings(settings as Parameters<typeof userApi.updateNotificationSettings>[0])
-        return wrapSuccess()
-    },
-    async getSecuritySettings(): Promise<DataEnvelope<unknown>> {
-        return wrapData({})
-    },
-    async saveSecuritySettings(_settings: unknown): Promise<{ success: true }> {
         return wrapSuccess()
     },
 }
@@ -468,14 +475,18 @@ export class TradingApiManager {
 
     // 系统设置
     async getSystemSettings(): Promise<SystemSettings> {
-        const [datasource, notification] = await Promise.all([
+        const [general, datasource, notification, security] = await Promise.all([
+            systemApiCompat.getGeneralSettings(),
             dataApiCompat.getDatasourceSettings(),
             _userApiCompat.getNotificationSettings(),
+            systemApiCompat.getSecuritySettings(),
         ])
 
         return buildSystemSettingsSnapshot({
+            general: general.data,
             datasource: datasource.data,
             notification: notification.data,
+            security: security.data,
         })
     }
 
@@ -484,6 +495,11 @@ export class TradingApiManager {
 
         let success = true
 
+        if (settings.general) {
+            const result = await systemApiCompat.saveGeneralSettings(settings.general)
+            success = success && result.success
+        }
+
         if (settings.datasource) {
             const result = await dataApiCompat.saveDatasourceSettings(settings.datasource)
             success = success && result.success
@@ -491,6 +507,11 @@ export class TradingApiManager {
 
         if (settings.notification) {
             const result = await _userApiCompat.saveNotificationSettings(settings.notification)
+            success = success && result.success
+        }
+
+        if (settings.security) {
+            const result = await systemApiCompat.saveSecuritySettings(settings.security)
             success = success && result.success
         }
 

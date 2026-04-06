@@ -54,7 +54,7 @@ describe('SystemSettings canonical page truth messaging', () => {
     })
   })
 
-  it('explains section-aware truth and keeps local draft fields explicitly non-canonical', async () => {
+  it('explains the landed sectioned backend truth and keeps local draft fields explicitly non-canonical', async () => {
     const wrapper = mount(SystemSettingsPage as never, {
       global: {
         stubs: {
@@ -82,9 +82,9 @@ describe('SystemSettings canonical page truth messaging', () => {
 
     await flushPromises()
 
+    expect(wrapper.text()).toContain('general 与 security 已接入系统级 /api/v1/system/settings/* 契约')
     expect(wrapper.text()).toContain('数据源配置使用系统级后端契约')
     expect(wrapper.text()).toContain('通知偏好使用用户级 /api/notification/preferences 契约')
-    expect(wrapper.text()).toContain('general 与 security 仍待系统级写入契约')
     expect(wrapper.text()).toContain('下方“系统设置”表单仅保存本地设置草稿')
   })
 })
