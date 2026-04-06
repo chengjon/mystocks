@@ -481,7 +481,7 @@ class TestPerformanceMonitor:
         )
         metrics.mark_completed(data_count=100)
 
-        with patch("monitoring.monitoring_service.logger") as mock_logger:
+        with patch("src.monitoring.monitoring_service._performance_monitor.logger") as mock_logger:
             monitor.record_operation_metrics(metrics)
 
             mock_logger.warning.assert_called()
@@ -578,6 +578,8 @@ class TestPerformanceMonitor:
 
         # 历史记录应该被清理到5000条
         assert len(monitor.metrics_history) == 5000
+        assert monitor.metrics_history[0].operation_id == "op_7000"
+        assert monitor.metrics_history[-1].operation_id == "op_11999"
 
 
 if __name__ == "__main__":

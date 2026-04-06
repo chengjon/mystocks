@@ -15,6 +15,7 @@ class PerformanceMonitor:
     def __init__(self):
         """初始化性能监控器"""
         self.metrics_history: List[OperationMetrics] = []
+        self.max_history_size = 5000
         self.slow_query_threshold = 5.0
 
     def record_operation_metrics(self, metrics: OperationMetrics):
@@ -27,8 +28,8 @@ class PerformanceMonitor:
         try:
             self.metrics_history.append(metrics)
 
-            if len(self.metrics_history) > 10000:
-                self.metrics_history = self.metrics_history[-5000:]
+            if len(self.metrics_history) > self.max_history_size:
+                del self.metrics_history[: -self.max_history_size]
 
             if metrics.duration and metrics.duration > self.slow_query_threshold:
                 self._alert_slow_operation(metrics)
