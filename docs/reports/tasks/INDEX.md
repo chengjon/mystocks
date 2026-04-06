@@ -24,6 +24,14 @@
 - 📄 [2026-03-27-mainline-task-list](2026-03-27-mainline-task-list.md)
 - 📄 [2026-03-27-wave0-task-viability-audit](2026-03-27-wave0-task-viability-audit.md)
 
+## 🗂 历史归档分组说明
+
+- `TASK-T01-REPORT.md` 到 `TASK-T10-REPORT.md`
+  - 属于 `2026Q1` 治理执行板分报告历史归档，不是当前任务拆分真值源。
+  - 其中的进度、DDL、指标和 blocker 口径应视为当时快照，不得直接当成当前实测值、当前基线或当前执行计划。
+- `HANDOVER_TASK.md`
+  - 属于早期 `conductor` handoff 归档记录，保留用于追溯上下文，不作为当前接力入口。
+
 ---
 
 ## 📊 统计信息
