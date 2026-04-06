@@ -9,11 +9,20 @@ function readSource(pathFromFrontendRoot: string): string {
 const wrapperCases = [
   {
     label: 'system settings',
-    wrapperPath: 'src/views/system/Settings.vue',
-    implementationPath: 'src/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue',
-    importLine: "import SystemSettingsPage from '@/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue'",
-    renderLine: '<SystemSettingsPage v-bind="attrs" />'
+    canonicalPath: 'src/views/system/Settings.vue',
+    legacyPath: 'src/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue',
+    legacyImportLine: "import SystemSettingsCanonicalPage from '@/views/system/Settings.vue'",
+    legacyRenderLine: '<SystemSettingsCanonicalPage v-bind="attrs" />',
+    canonicalEvidence: [
+      "import { monitoringApi } from '@/api'",
+      "import { normalizeSystemSettingsMonitorRows, type MonitorRow } from '@/views/artdeco-pages/system-tabs/systemSettingsMonitorData.ts'",
+      '系统配置中心',
+      'normalizeSystemSettingsMonitorRows(detailed)',
+    ]
   },
+]
+
+const compatibilityWrapperCases = [
   {
     label: 'system health',
     wrapperPath: 'src/views/system/Health.vue',
@@ -34,11 +43,26 @@ const wrapperCases = [
     implementationPath: 'src/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue',
     importLine: "import SystemDataSourcePage from '@/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue'",
     renderLine: '<SystemDataSourcePage v-bind="attrs" />'
-  }
+  },
 ] as const
 
 describe('system wrapper retention', () => {
   for (const wrapperCase of wrapperCases) {
+    it(`moves the canonical ${wrapperCase.label} implementation into src/views/system and keeps the ArtDeco path as a legacy wrapper`, () => {
+      const canonicalSource = readSource(wrapperCase.canonicalPath)
+      const legacySource = readSource(wrapperCase.legacyPath)
+      const legacyFullPath = resolve(process.cwd(), wrapperCase.legacyPath)
+
+      expect(existsSync(legacyFullPath)).toBe(true)
+      for (const evidenceLine of wrapperCase.canonicalEvidence) {
+        expect(canonicalSource).toContain(evidenceLine)
+      }
+      expect(legacySource).toContain(wrapperCase.legacyImportLine)
+      expect(legacySource).toContain(wrapperCase.legacyRenderLine)
+    })
+  }
+
+  for (const wrapperCase of compatibilityWrapperCases) {
     it(`keeps the canonical ${wrapperCase.label} wrapper pointed at its ArtDeco implementation`, () => {
       const wrapperSource = readSource(wrapperCase.wrapperPath)
       const implementationFullPath = resolve(process.cwd(), wrapperCase.implementationPath)

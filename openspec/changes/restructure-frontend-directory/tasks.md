@@ -277,10 +277,15 @@
   - `src/views/system/API.vue` now fronts the existing `ArtDecoMonitoringDashboard.vue` implementation.
   - `src/views/system/DataSource.vue` now fronts the existing `ArtDecoDataManagement.vue` implementation.
   - Remaining work in this area is compatibility-wrapper retirement and dependency normalization, not leaving the system domain on non-domain entry files.
-- [ ] 10.1 Move `artdeco-pages/system-tabs/ArtDecoSystemSettings.vue` → `views/system/Settings.vue`
-  - [ ] 10.1.1 Move dependency: `useSystemSettings.ts`
-  - [ ] 10.1.2 Update imports
-  - [ ] 10.1.3 Run lint & type-check
+- [x] 10.1 Move `artdeco-pages/system-tabs/ArtDecoSystemSettings.vue` → `views/system/Settings.vue`
+  - Completed: 2026-04-06 via repo-truth-aligned micro-batch `2026-04-06-restructure-system-settings-main`.
+  - Result: `src/views/system/Settings.vue` now hosts the canonical system settings implementation; `ArtDecoSystemSettings.vue` is retained as a legacy compatibility wrapper into the canonical route entrypoint.
+  - [x] 10.1.1 Move dependency: `useSystemSettings.ts`
+    - Repo-truth note: not applicable as written. The current system settings page does not own a local `useSystemSettings.ts`; it composes `useArtDecoApi`, `monitoringApi`, local storage helpers, and `systemSettingsMonitorData.ts`.
+  - [x] 10.1.2 Update imports
+    - Evidence: the canonical page now resolves `monitoringApi` and `systemSettingsMonitorData.ts` through stable absolute imports, while the legacy ArtDeco path imports `@/views/system/Settings.vue`.
+  - [x] 10.1.3 Run lint & type-check
+  - [x] 10.1.4 Run unit tests for Settings.vue
 - [ ] 10.2 Move `artdeco-pages/system-tabs/SystemHealthTab.vue` → `views/system/Health.vue`
   - [ ] 10.2.1 Move dependency: `useSystemHealth.ts`
   - [ ] 10.2.2 Update imports
