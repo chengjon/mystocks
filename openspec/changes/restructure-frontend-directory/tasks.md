@@ -408,7 +408,8 @@
   - Repo-truth result: `docs/guides/frontend-structure.md` now exists and documents the active router truth, canonical domain entrypoints, compatibility-wrapper rule, and current verification truth.
 - [x] 18.2 Update routing diagram in `docs/architecture/routing.md` (if exists)
   - Repo-truth result: not applicable in the current repository because `docs/architecture/routing.md` does not exist.
-- [ ] 18.3 Record final effort (≈ 26 person-days) in project status report
+- [x] 18.3 Record final effort (≈ 26 person-days) in project status report
+  - Repo-truth result: `docs/reports/FRONTEND_STRUCTURE_REPO_TRUTH_STATUS_2026-04-06.md` records `26 person-days` as a historical planning estimate and explicitly states that the current local repo truth does not provide a reconstructable measured actual.
 - [ ] 18.4 Update `AGENTS.md` with new directory structure reference
 - [ ] 18.5 Commit: "docs: update frontend structure documentation"
 
