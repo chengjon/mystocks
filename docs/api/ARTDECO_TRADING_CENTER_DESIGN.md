@@ -9,7 +9,7 @@
 
 **Historical Design Version Snapshot**: 2.0.0
 **Historical Design Snapshot Date**: 2025-01-14
-**ArtDeco主题**: 金色主色调 (#D4AF37)，几何装饰设计
+**Historical Theme Snapshot**: 金色主色调 (#D4AF37)，几何装饰设计
 
 ---
 
