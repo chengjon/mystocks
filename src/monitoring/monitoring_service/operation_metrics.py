@@ -6,7 +6,7 @@ MyStocks 量化交易数据管理系统 - 监控与自动化模块
 """
 
 from src.monitoring.monitoring_service._data_quality_monitor import DataQualityMonitor
-from src.monitoring.monitoring_service._monitoring_database import MonitoringDatabase
+from src.monitoring.monitoring_database import MonitoringDatabase
 from src.monitoring.monitoring_service._operation_metric_models import Alert, AlertLevel, OperationMetrics
 from src.monitoring.monitoring_service._performance_monitor import PerformanceMonitor
 

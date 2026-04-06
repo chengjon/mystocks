@@ -24,17 +24,20 @@ logger = logging.getLogger(__name__)
 class MonitoringDatabaseCoreMixin:
     """MonitoringDatabase 方法集 Part 1"""
 
-    def __init__(self, enable_monitoring: bool = True):
+    def __init__(self, enable_monitoring: bool = True, monitor_db_url: Optional[str] = None):
         """
         初始化监控数据库
 
         Args:
             enable_monitoring: 是否启用监控 (默认True)
+            monitor_db_url: 兼容旧监控服务构造参数
         """
         self.enable_monitoring = enable_monitoring
+        self.monitor_db_url = monitor_db_url
         self.conn_manager = DatabaseConnectionManager()
         self._write_failures = 0
         self._total_writes = 0
+        self._pending_operations: Dict[str, Dict[str, Any]] = {}
 
         logger.info("✅ MonitoringDatabase initialized (enabled=%s)", enable_monitoring)
 
@@ -93,6 +96,35 @@ class MonitoringDatabaseCoreMixin:
         finally:
             cursor.close()
 
+    def _write_operation_log_entry(self, insert_params: tuple[Any, ...]) -> bool:
+        """写入 canonical operation_logs，必要时自动补当前月份分区。"""
+        insert_sql = """
+            INSERT INTO operation_logs (
+                operation_id, operation_type, classification,
+                target_database, table_name, record_count,
+                operation_status, error_message, execution_time_ms,
+                user_agent, client_ip, additional_info
+            ) VALUES (
+                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+            )
+        """
+
+        try:
+            with self._get_connection() as conn:
+                try:
+                    self._insert_operation_log_row(conn, insert_sql, insert_params)
+                except Exception as error:
+                    if not self._is_missing_operation_logs_partition_error(error):
+                        raise
+
+                    logger.info("检测到 operation_logs 当前月份分区缺失，尝试自动补建后重试")
+                    conn.rollback()
+                    self._ensure_current_operation_logs_partition(conn)
+                    self._insert_operation_log_row(conn, insert_sql, insert_params)
+            return True
+        except Exception:
+            raise
+
     def log_operation(
         self,
         operation_type: str,
@@ -133,16 +165,6 @@ class MonitoringDatabaseCoreMixin:
 
         try:
             operation_id = str(uuid.uuid4())
-            insert_sql = """
-                INSERT INTO operation_logs (
-                    operation_id, operation_type, classification,
-                    target_database, table_name, record_count,
-                    operation_status, error_message, execution_time_ms,
-                    user_agent, client_ip, additional_info
-                ) VALUES (
-                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
-                )
-            """
             insert_params = (
                 operation_id,
                 operation_type,
@@ -157,20 +179,7 @@ class MonitoringDatabaseCoreMixin:
                 client_ip,
                 json.dumps(additional_info) if additional_info else None,
             )
-
-            with self._get_connection() as conn:
-                try:
-                    self._insert_operation_log_row(conn, insert_sql, insert_params)
-                except Exception as error:
-                    if not self._is_missing_operation_logs_partition_error(error):
-                        raise
-
-                    logger.info("检测到 operation_logs 当前月份分区缺失，尝试自动补建后重试")
-                    conn.rollback()
-                    self._ensure_current_operation_logs_partition(conn)
-                    self._insert_operation_log_row(conn, insert_sql, insert_params)
-
-            return True
+            return self._write_operation_log_entry(insert_params)
 
         except Exception as e:
             self._write_failures += 1
@@ -185,6 +194,74 @@ class MonitoringDatabaseCoreMixin:
                 operation_status,
                 execution_time_ms,
             )
+            return False
+
+    def log_operation_start(
+        self,
+        table_name: str,
+        database_type: str,
+        database_name: str,
+        operation_type: str,
+        operation_details: Optional[Dict] = None,
+    ) -> str:
+        """兼容旧监控接口，先缓存操作上下文，结果阶段再写 canonical operation_logs。"""
+        operation_id = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{table_name}_{operation_type}"
+
+        if not self.enable_monitoring:
+            return operation_id
+
+        self._pending_operations[operation_id] = {
+            "table_name": table_name,
+            "database_type": database_type,
+            "database_name": database_name,
+            "operation_type": operation_type,
+            "operation_details": operation_details or {},
+            "started_at": datetime.now(),
+        }
+        return operation_id
+
+    def log_operation_result(
+        self,
+        operation_id: str,
+        success: bool,
+        data_count: int = 0,
+        error_message: Optional[str] = None,
+    ) -> bool:
+        """兼容旧监控接口，收口到 canonical operation_logs。"""
+        if not self.enable_monitoring:
+            return True
+
+        operation = self._pending_operations.pop(operation_id, None)
+        if operation is None:
+            logger.warning("未找到待完成的监控操作: %s", operation_id)
+            return False
+
+        duration_ms = int((datetime.now() - operation["started_at"]).total_seconds() * 1000)
+        insert_params = (
+            operation_id,
+            operation["operation_type"],
+            operation["database_name"],
+            operation["database_type"],
+            operation["table_name"],
+            data_count,
+            "SUCCESS" if success else "FAILED",
+            error_message,
+            duration_ms,
+            None,
+            None,
+            json.dumps(
+                {
+                    "legacy_database_name": operation["database_name"],
+                    "legacy_operation_details": operation["operation_details"],
+                }
+            ),
+        )
+
+        try:
+            return self._write_operation_log_entry(insert_params)
+        except Exception as error:
+            self._write_failures += 1
+            logger.warning("记录兼容操作日志失败 (降级到本地日志): %s", error)
             return False
 
     def record_performance_metric(
