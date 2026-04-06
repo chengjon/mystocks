@@ -12,6 +12,7 @@
 import json
 import logging
 import uuid
+from contextlib import contextmanager
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
@@ -37,6 +38,7 @@ class MonitoringDatabaseCoreMixin:
 
         logger.info("✅ MonitoringDatabase initialized (enabled=%s)", enable_monitoring)
 
+    @contextmanager
     def _get_connection(self):
         """获取监控数据库连接的上下文管理器"""
         pool = None

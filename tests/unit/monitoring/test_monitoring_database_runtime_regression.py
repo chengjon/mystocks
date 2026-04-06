@@ -1,0 +1,36 @@
+from __future__ import annotations
+
+import logging
+from unittest.mock import MagicMock, patch
+
+from src.monitoring.monitoring_database import MonitoringDatabase
+
+
+def test_log_operation_uses_connection_context_manager_without_fallback(caplog) -> None:
+    mock_conn_manager = MagicMock()
+    mock_pool = MagicMock()
+    mock_conn = MagicMock()
+    mock_cursor = MagicMock()
+
+    mock_conn_manager.get_postgresql_connection.return_value = mock_pool
+    mock_pool.getconn.return_value = mock_conn
+    mock_conn.cursor.return_value = mock_cursor
+
+    with patch("src.monitoring.monitoring_database_methods.part1.DatabaseConnectionManager", return_value=mock_conn_manager):
+        monitoring_db = MonitoringDatabase()
+
+    with caplog.at_level(logging.WARNING):
+        result = monitoring_db.log_operation(
+            operation_type="RISK_CALCULATION",
+            classification="DERIVED_DATA",
+            target_database="PostgreSQL",
+            table_name="risk_metrics",
+            record_count=1,
+            operation_status="SUCCESS",
+            execution_time_ms=5,
+        )
+
+    assert result is True
+    mock_conn.commit.assert_called_once()
+    mock_pool.putconn.assert_called_once_with(mock_conn)
+    assert not any("记录操作日志失败" in record.message for record in caplog.records)
