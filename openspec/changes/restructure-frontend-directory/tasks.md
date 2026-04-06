@@ -304,11 +304,15 @@
     - Evidence: the canonical page now resolves `useArtDecoApi` and `monitoringApi` through stable absolute imports, while the legacy ArtDeco path imports `@/views/system/API.vue`.
   - [x] 10.3.3 Run lint & type-check
   - [x] 10.3.4 Run unit tests for API.vue
-- [ ] 10.4 Move `artdeco-pages/system-tabs/ArtDecoDataManagement.vue` → `views/system/DataSource.vue`
-  - [ ] 10.4.1 Move dependency: `useDataSource.ts`
-  - [ ] 10.4.2 Update imports
-  - [ ] 10.4.3 Run lint & type-check
-  - [ ] 10.4.4 Run unit tests for DataSource.vue
+- [x] 10.4 Move `artdeco-pages/system-tabs/ArtDecoDataManagement.vue` → `views/system/DataSource.vue`
+  - Completed: 2026-04-06 via repo-truth-aligned micro-batch `2026-04-06-restructure-system-data-source-main`.
+  - Result: `src/views/system/DataSource.vue` now hosts the canonical system data-source governance implementation; `ArtDecoDataManagement.vue` is retained as a legacy compatibility wrapper into the canonical route entrypoint, preserving embedded usage from `ArtDecoTradingCenter.vue`.
+  - [x] 10.4.1 Move dependency: `useDataSource.ts`
+    - Repo-truth note: not applicable as written. The current system data-source page does not own a local `useDataSource.ts`; it composes `useArtDecoApi`, `monitoringApi`, `dataManagementData`, and `dataManagementCapabilities` directly inside the page implementation.
+  - [x] 10.4.2 Update imports
+    - Evidence: the canonical page now resolves `useArtDecoApi`, `monitoringApi`, and the data-management helpers through stable absolute imports, while the legacy ArtDeco path imports `@/views/system/DataSource.vue`.
+  - [x] 10.4.3 Run lint & type-check
+  - [x] 10.4.4 Run unit tests for DataSource.vue
 - [ ] 10.5 Commit: "refactor: migrate system domain pages"
 
 ## 11. Routing & Layout Adjustments (Phase 4)

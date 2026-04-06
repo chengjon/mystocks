@@ -46,17 +46,23 @@ const wrapperCases = [
       'const exportReport = async () => {',
     ]
   },
-]
-
-const compatibilityWrapperCases = [
   {
     label: 'system data source',
-    wrapperPath: 'src/views/system/DataSource.vue',
-    implementationPath: 'src/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue',
-    importLine: "import SystemDataSourcePage from '@/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue'",
-    renderLine: '<SystemDataSourcePage v-bind="attrs" />'
+    canonicalPath: 'src/views/system/DataSource.vue',
+    legacyPath: 'src/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue',
+    legacyImportLine: "import SystemDataSourceCanonicalPage from '@/views/system/DataSource.vue'",
+    legacyRenderLine: '<SystemDataSourceCanonicalPage v-bind="attrs" />',
+    canonicalEvidence: [
+      "import { monitoringApi } from '@/api/index'",
+      "import {\n  extractDataSourceConfigItems,",
+      'title="数据源治理工作台"',
+      'const writeEnabled = supportsDataSourceConfigWrite()',
+      'const saveConfig = async () => {',
+    ]
   },
-] as const
+]
+
+const compatibilityWrapperCases = [] as const
 
 describe('system wrapper retention', () => {
   for (const wrapperCase of wrapperCases) {
