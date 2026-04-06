@@ -30,6 +30,20 @@ from app.core.security import verify_token
 
 logger = logging.getLogger(__name__)
 
+
+def _success_response_spec(description: str, example: Any) -> Dict[int, Dict[str, Any]]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
 DATA_SOURCE_REGISTRY_RESPONSES = {
     400: COMMON_RESPONSES[400],
     401: COMMON_RESPONSES[401],
@@ -37,6 +51,82 @@ DATA_SOURCE_REGISTRY_RESPONSES = {
     422: COMMON_RESPONSES[422],
     500: COMMON_RESPONSES[500],
 }
+
+DATA_SOURCE_SEARCH_RESPONSES = _success_response_spec(
+    "数据源搜索结果",
+    {
+        "total": 1,
+        "data_sources": [
+            {
+                "endpoint_name": "akshare.stock_zh_a_hist",
+                "source_name": "akshare",
+                "source_type": "http",
+                "data_category": "DAILY_KLINE",
+                "status": "active",
+                "priority": 3,
+                "description": "A股日线历史行情数据源",
+            }
+        ],
+    },
+)
+
+DATA_SOURCE_CATEGORY_STATS_RESPONSES = _success_response_spec(
+    "数据源分类统计结果",
+    [
+        {
+            "category": "DAILY_KLINE",
+            "display_name": "日线K线数据",
+            "total": 12,
+            "healthy": 10,
+            "unhealthy": 2,
+            "avg_quality_score": 8.73,
+            "avg_response_time": 0.512,
+        }
+    ],
+)
+
+DATA_SOURCE_DETAIL_RESPONSES = _success_response_spec(
+    "数据源详情",
+    {
+        "endpoint_name": "akshare.stock_zh_a_hist",
+        "source_name": "akshare",
+        "source_type": "http",
+        "data_category": "DAILY_KLINE",
+        "status": "active",
+        "priority": 3,
+        "description": "A股日线历史行情数据源",
+        "last_call": "2026-04-06T15:30:00",
+        "call_count": 128,
+    },
+)
+
+DATA_SOURCE_HEALTH_CHECK_RESPONSES = _success_response_spec(
+    "单个数据源健康检查结果",
+    {
+        "endpoint_name": "akshare.stock_zh_a_hist",
+        "status": "healthy",
+        "message": "健康检查通过",
+        "duration": 0.432,
+        "timestamp": "2026-04-06T15:30:00",
+    },
+)
+
+DATA_SOURCE_HEALTH_CHECK_ALL_RESPONSES = _success_response_spec(
+    "全部数据源健康检查汇总",
+    {
+        "summary": {
+            "total": 3,
+            "healthy": 2,
+            "unhealthy": 1,
+        },
+        "results": {
+            "akshare.stock_zh_a_hist": {"status": "healthy", "duration": 0.432},
+            "tushare.daily_basic": {"status": "healthy", "duration": 0.518},
+            "legacy.market_feed": {"status": "unhealthy", "error": "timeout"},
+        },
+        "timestamp": "2026-04-06T15:30:00",
+    },
+)
 
 router = APIRouter(
     prefix="/api/v1/data-sources",
@@ -177,7 +267,7 @@ def _require_write_auth(authorization: Optional[str]) -> None:
 # ==================== API Endpoints ====================
 
 
-@router.get("/", response_model=DataSourceSearchResponse)
+@router.get("/", response_model=DataSourceSearchResponse, responses=DATA_SOURCE_SEARCH_RESPONSES)
 async def search_data_sources(
     data_category: Optional[str] = Query(None, description="5层数据分类（如: DAILY_KLINE）"),
     classification_level: Optional[int] = Query(None, description="分类层级（1-5）"),
@@ -249,6 +339,7 @@ async def search_data_sources(
     "/categories",
     response_model=List[CategoryStatsResponse],
     description="汇总所有五层数据分类的接口规模、健康状态、平均质量评分和平均响应时间。",
+    responses=DATA_SOURCE_CATEGORY_STATS_RESPONSES,
 )
 async def get_category_stats():
     """
@@ -335,6 +426,7 @@ async def get_category_stats():
 @router.get(
     "/{endpoint_name}",
     description="获取单个数据源接口的完整配置、调用计数和最近一次调用信息。",
+    responses=DATA_SOURCE_DETAIL_RESPONSES,
 )
 async def get_data_source(endpoint_name: str = Path(..., description="需要查询详情的数据源接口名称。")):
     """
@@ -571,6 +663,7 @@ async def test_data_source(
 @router.post(
     "/{endpoint_name}/health-check",
     description="使用预设测试参数对单个数据源执行健康检查，快速判断接口可用性。",
+    responses=DATA_SOURCE_HEALTH_CHECK_RESPONSES,
 )
 async def health_check_data_source(
     endpoint_name: str = Path(..., description="需要执行健康检查的数据源接口名称。"),
@@ -626,6 +719,7 @@ async def health_check_data_source(
 @router.post(
     "/health-check/all",
     description="批量执行所有数据源的健康检查，并返回带时间戳的汇总结果。",
+    responses=DATA_SOURCE_HEALTH_CHECK_ALL_RESPONSES,
 )
 async def health_check_all_data_sources(
     authorization: Optional[str] = Header(

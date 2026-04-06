@@ -1000,6 +1000,31 @@ def test_data_source_versions_endpoint_has_parameter_docs() -> None:
         assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
 
 
+def test_data_source_registry_read_endpoints_have_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    endpoint_expectations = {
+        "/api/v1/data-sources/": {"data_category", "classification_level", "source_type", "only_healthy", "keyword", "status"},
+        "/api/v1/data-sources/categories": set(),
+        "/api/v1/data-sources/{endpoint_name}": {"endpoint_name"},
+        "/api/v1/data-sources/{endpoint_name}/health-check": {"endpoint_name", "Authorization"},
+        "/api/v1/data-sources/health-check/all": {"Authorization"},
+    }
+
+    for path, expected_params in endpoint_expectations.items():
+        operation = schema["paths"][path]["get" if path.endswith("/") or "health-check" not in path else "post"]
+        parameters = operation.get("parameters", [])
+        success_code = next(code for code in operation["responses"] if code.startswith("2"))
+        success_json = operation["responses"][success_code]["content"]["application/json"]
+
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expected_params:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_data_source_item_crud_endpoints_have_path_and_auth_docs() -> None:
     app.openapi_schema = None
     schema = app.openapi()
@@ -1015,6 +1040,28 @@ def test_data_source_item_crud_endpoints_have_path_and_auth_docs() -> None:
         assert len(operation.get("description", "")) >= 20
         assert any(param["name"] == "endpoint_name" and param.get("description") for param in parameters)
         assert any(param["name"] == "Authorization" and param.get("description") for param in parameters)
+
+
+def test_data_source_config_read_endpoints_have_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path, method, expected_params in [
+        ("/api/v1/data-sources/config/", "get", {"data_category", "source_type", "status"}),
+        ("/api/v1/data-sources/config/{endpoint_name}", "get", {"endpoint_name"}),
+        ("/api/v1/data-sources/config/{endpoint_name}", "delete", {"endpoint_name", "Authorization"}),
+        ("/api/v1/data-sources/config/{endpoint_name}/versions", "get", {"endpoint_name", "limit"}),
+    ]:
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+        success_code = next(code for code in operation["responses"] if code.startswith("2"))
+        success_json = operation["responses"][success_code]["content"]["application/json"]
+
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expected_params:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_data_source_write_endpoints_have_request_examples() -> None:

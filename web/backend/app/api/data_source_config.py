@@ -26,7 +26,7 @@ Contract Version: 1.0
 """
 
 import logging
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from config.data_sources_loader import YAML_DATA_SOURCES_REGISTRY_PATH
 from fastapi import APIRouter, Body, Depends, Header, HTTPException, Path, Query, Request
@@ -53,6 +53,19 @@ from app.core.security import verify_token
 
 logger = logging.getLogger(__name__)
 
+
+def _success_response_spec(status_code: int, description: str, example: Any) -> Dict[int, Dict[str, Any]]:
+    return {
+        status_code: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
 router = APIRouter(
     prefix="/api/v1/data-sources/config",
     tags=["数据源配置管理"],
@@ -63,6 +76,110 @@ router = APIRouter(
         404: {"description": "资源未找到"},
         409: {"description": "资源冲突"},
         500: {"description": "服务器错误"},
+    },
+)
+
+DATA_SOURCE_CONFIG_DETAIL_RESPONSES = _success_response_spec(
+    200,
+    "数据源配置详情",
+    {
+        "success": True,
+        "code": 200,
+        "message": "获取数据源配置成功",
+        "data": {
+            "endpoint_name": "akshare.stock_zh_a_hist",
+            "source_name": "akshare",
+            "source_type": "http",
+            "data_category": "DAILY_KLINE",
+            "parameters": {"adjust": "qfq", "period": "daily"},
+            "test_parameters": {"symbol": "600519", "start_date": "2024-01-01", "end_date": "2024-01-31"},
+            "priority": 3,
+            "status": "active",
+            "description": "A股日线历史行情数据源",
+        },
+        "timestamp": "2026-04-06T15:30:00Z",
+        "request_id": "req-data-source-config-001",
+        "errors": None,
+    },
+)
+
+DATA_SOURCE_CONFIG_LIST_RESPONSES = _success_response_spec(
+    200,
+    "数据源配置列表",
+    {
+        "success": True,
+        "code": 200,
+        "message": "获取数据源列表成功，共 1 个",
+        "data": {
+            "endpoints": [
+                {
+                    "endpoint_name": "akshare.stock_zh_a_hist",
+                    "source_name": "akshare",
+                    "source_type": "http",
+                    "data_category": "DAILY_KLINE",
+                    "priority": 3,
+                    "status": "active",
+                }
+            ],
+            "total": 1,
+        },
+        "timestamp": "2026-04-06T15:30:00Z",
+        "request_id": "req-data-source-config-002",
+        "errors": None,
+    },
+)
+
+DATA_SOURCE_CONFIG_DELETE_RESPONSES = _success_response_spec(
+    200,
+    "数据源配置删除结果",
+    {
+        "success": True,
+        "code": 200,
+        "message": "数据源配置删除成功: akshare.stock_zh_a_hist",
+        "data": {
+            "endpoint_name": "akshare.stock_zh_a_hist",
+            "version": 4,
+        },
+        "timestamp": "2026-04-06T15:30:00Z",
+        "request_id": "req-data-source-config-003",
+        "errors": None,
+    },
+)
+
+DATA_SOURCE_CONFIG_VERSIONS_RESPONSES = _success_response_spec(
+    200,
+    "数据源配置版本历史",
+    {
+        "success": True,
+        "code": 200,
+        "message": "获取版本历史成功，共 2 个版本",
+        "data": {
+            "endpoint_name": "akshare.stock_zh_a_hist",
+            "versions": [
+                {
+                    "endpoint_name": "akshare.stock_zh_a_hist",
+                    "version": 4,
+                    "change_type": "update",
+                    "changed_by": "release-operator",
+                    "changed_at": "2026-04-06T15:20:00",
+                    "change_summary": "调整优先级与状态",
+                    "metadata": {"priority": 3, "status": "active"},
+                },
+                {
+                    "endpoint_name": "akshare.stock_zh_a_hist",
+                    "version": 3,
+                    "change_type": "create",
+                    "changed_by": "system",
+                    "changed_at": "2026-04-05T09:00:00",
+                    "change_summary": "初始创建",
+                    "metadata": {"priority": 5},
+                },
+            ],
+            "total": 2,
+        },
+        "timestamp": "2026-04-06T15:30:00Z",
+        "request_id": "req-data-source-config-004",
+        "errors": None,
     },
 )
 
@@ -377,7 +494,7 @@ async def update_data_source(
         )
 
 
-@router.delete("/{endpoint_name}", response_model=UnifiedResponse)
+@router.delete("/{endpoint_name}", response_model=UnifiedResponse, responses=DATA_SOURCE_CONFIG_DELETE_RESPONSES)
 async def delete_data_source(
     request: Request,
     endpoint_name: str = Path(..., description="需要删除的数据源端点名称。"),
@@ -424,7 +541,7 @@ async def delete_data_source(
         )
 
 
-@router.get("/{endpoint_name}", response_model=UnifiedResponse)
+@router.get("/{endpoint_name}", response_model=UnifiedResponse, responses=DATA_SOURCE_CONFIG_DETAIL_RESPONSES)
 async def get_data_source(
     request: Request,
     endpoint_name: str = Path(..., description="需要查询详情的数据源端点名称。"),
@@ -467,7 +584,7 @@ async def get_data_source(
         )
 
 
-@router.get("/", response_model=UnifiedResponse)
+@router.get("/", response_model=UnifiedResponse, responses=DATA_SOURCE_CONFIG_LIST_RESPONSES)
 async def list_data_sources(
     request: Request,
     data_category: Optional[str] = Query(None, description="数据分类"),
@@ -623,7 +740,7 @@ async def batch_operations(
         )
 
 
-@router.get("/{endpoint_name}/versions", response_model=UnifiedResponse)
+@router.get("/{endpoint_name}/versions", response_model=UnifiedResponse, responses=DATA_SOURCE_CONFIG_VERSIONS_RESPONSES)
 async def get_version_history(
     request: Request,
     endpoint_name: str = Path(..., description="需要查询版本历史的数据源端点名称。"),
