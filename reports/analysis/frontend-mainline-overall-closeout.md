@@ -1,25 +1,32 @@
 # MyStocks Frontend Mainline Overall Closeout
 
-> Generated at: `2026-04-05T17:42:40+08:00`
+> **历史文档说明**:
+> 本文件是某阶段的历史文档、过程记录或专题材料，不是当前基线、当前系统总览或仓库共享规则的唯一事实来源。
+> 当前执行口径请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，并结合当前代码实现、验证结果与主线文档使用。
+>
+> 文内描述、背景、结论和上下文如未重新复核，应视为历史快照，不得直接当作当前事实。
+
+
+> Generated at: `2026-04-06T13:32:02+08:00`
 > Overall plan: `docs/plans/2026-04-02-frontend-mainline-testing-overall-plan.md`
 > Scope: `34` pages across `Phase 1-4`
 > Branch: `wip/root-dirty-20260403`
 
 ## 1. Overall Verdict
 
-- Frontend mainline `Phase 1-4` remains in overall usable closeout after the `2026-04-05` refresh.
+- Frontend mainline `Phase 1-4` remains in overall usable closeout after the `2026-04-06` refresh.
 - Page-level verdict:
   - Mock: `34 / 34 PASS`
   - Real: `34 / 34 PASS`
 - Aggregate issue classification:
   - `route/config drift`: `0`
   - `frontend render gap`: `0`
-  - `backend contract/runtime gap`: `1`
-- The single preserved residual debt is `System-Config`:
+  - `backend contract/runtime gap`: `0`
+- `System-Config` no longer remains as a residual gap:
   - the page is routable and usable
   - the monitor panel reads real backend health endpoints
-  - `2026-04-04` follow-up confirmed that no unified backend config write contract exists in current repo truth
-  - the current `保存本地设置` action is still local-only degrade and must not be reported as verified backend real-write closure
+  - the settings form now reads and writes the `general` section through `/api/v1/system/settings/general`
+  - the broader settings truth remains intentionally sectioned rather than monolithic
 
 ## 2. Phase Summary
 
@@ -28,7 +35,7 @@
 | Phase 1 | `6` | `6 / 6 PASS` | `6 / 6 PASS` | `0 / 0 / 0` | 收口启动链与市场首批页面；主要问题是 PM2 / proxy / readiness 运行态漂移，不是页面缺失 |
 | Phase 2 | `6` | `6 / 6 PASS` | `6 / 6 PASS` | `0 / 0 / 0` | 收口数据分析与自选管理；唯一源码修复是 `Watchlist-Manage` 删除动作渲染缺口 |
 | Phase 3 | `12` | `12 / 12 PASS` | `12 / 12 PASS` | `0 / 0 / 0` | 收口策略与交易主链；未发现新的生产源码回归 |
-| Phase 4 | `10` | `10 / 10 PASS` | `10 / 10 PASS` | `0 / 0 / 1` | 收口风险与系统页；仅保留 `System-Config` 真实配置写链未确认 |
+| Phase 4 | `10` | `10 / 10 PASS` | `10 / 10 PASS` | `0 / 0 / 0` | 收口风险与系统页；`System-Config` 已切换到分段后端契约并完成主线收口 |
 
 > Classification column order: `route/config drift / frontend render gap / backend contract/runtime gap`
 
@@ -48,33 +55,47 @@ Resolved during the full mainline run:
 - Phase 3 closeout:
   - no production source fix required
 - Phase 4 closeout:
-  - no production source fix required
   - `2026-04-05` refresh additionally reloaded the live PM2 frontend shell so its proxy env returned from stale `BACKEND_PORT=8888` to repo truth `BACKEND_PORT=8020`
+  - `2026-04-06` approved sectioned contract landing additionally updated:
+    - `web/backend/app/api/v1/system/settings.py`
+    - `web/backend/tests/test_system_settings_contract.py`
+    - `web/frontend/src/services/systemSettingsContract.ts`
+    - `web/frontend/src/views/system/Settings.vue`
+    - `web/frontend/src/views/system/__tests__/Settings.spec.ts`
 
-## 4. Residual Debt Kept Explicit
+## 4. Sectioned Contract Closure
 
 ### `System-Config`
 
-- Frontend page:
-  - `web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue`
+- Frontend route truth:
+  - route entry: [index.ts](/opt/claude/mystocks_spec/web/frontend/src/router/index.ts)
+  - active page: [Settings.vue](/opt/claude/mystocks_spec/web/frontend/src/views/system/Settings.vue)
+  - compatibility surface: [ArtDecoSystemSettings.vue](/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue) only wraps the canonical page
 - Current behavior:
-  - page banner already states: `统一系统配置后端契约仍未建立，当前页面仅保留本地设置持久化与健康监控视图；数据源真实配置写回请前往“系统数据”页。`
-  - page CTA is `保存本地设置`
-  - `saveAll()` only executes `localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...form }))`
-  - monitor rows are read-only and come from `monitoringApi.getDetailedSystemHealth()` / `monitoringApi.getSystemHealth()`
+  - page banner now states that `System-Config` runs on a sectioned truth and does not use a monolithic backend store
+  - page CTA is `保存系统设置`
+  - `saveAll()` now calls `monitoringApi.updateSystemGeneralSettings(...)`
+  - monitor rows remain read-only and come from `monitoringApi.getDetailedSystemHealth()` / `monitoringApi.getSystemHealth()`
 - Backend truth check:
-  - no backend route matching `/api/system/settings` was found under `web/backend/app`
-  - confirmed read-only health endpoints exist:
-    - `web/backend/app/api/health.py` -> `/health`
-    - `web/backend/app/api/health.py` -> `/health/detailed`
-  - nearest write-capable but non-equivalent backend contract is data source configuration:
-    - `web/frontend/src/api/index.ts` -> `POST /v1/data-sources/config/batch`
-    - `web/backend/app/api/data_source_config.py`
-  - stale frontend constant hint for `/api/system/settings` has been removed from `web/frontend/src/types/unified-api.ts`
+  - canonical system-scoped routes now exist:
+    - [settings.py](/opt/claude/mystocks_spec/web/backend/app/api/v1/system/settings.py) -> `/api/v1/system/settings/general`
+    - [settings.py](/opt/claude/mystocks_spec/web/backend/app/api/v1/system/settings.py) -> `/api/v1/system/settings/security`
+  - canonical persistence is PostgreSQL `system_config`
+  - datasource and notification continue to use their own canonical owners rather than a duplicated merged store
+- Evidence split:
+  - measured runtime checks:
+    - `GET http://localhost:8020/api/v1/system/settings/general` -> `200`
+    - `GET http://localhost:8020/api/v1/system/settings/security` -> `200`
+  - measured targeted tests:
+    - backend contract tests passed
+    - frontend `Settings.vue` + section-composition tests passed
+    - `vue-tsc --noEmit` passed
+  - not measured in this refresh:
+    - no destructive shared-runtime live write mutation was executed against PM2
 - Closeout rule:
-  - `System-Config` counts as `Mock PASS` + `Real PASS` for route-shell and real-read
-  - it does **not** count as verified real-write closure
-  - the contract-truth follow-up is complete; the residual debt is now explicitly accepted rather than left as an open frontend discovery item
+  - `System-Config` now counts as closed for the frontend-mainline `backend contract/runtime gap`
+  - this does **not** imply a single monolithic unified settings API exists
+  - future work should keep section ownership explicit for `general` / `security` / `datasource` / `notification`
 
 ## 5. Quality Gate
 
@@ -83,6 +104,15 @@ Resolved during the full mainline run:
 - Type-check execution in overall closeout refresh:
   - `cd web/frontend && npx vue-tsc --noEmit --pretty false`
   - Result: `exit 0`, no output
+- Supplemental contract verification in this refresh:
+  - `cd web/backend && PYTHONPATH=. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest tests/test_system_settings_contract.py tests/test_health_route_conflicts.py -q -o addopts="" -k system_settings`
+  - Result: `passed`
+  - `cd web/frontend && npx vitest run src/views/system/__tests__/Settings.spec.ts src/services/__tests__/systemSettingsContract.spec.ts src/services/__tests__/TradingApiManager.system-settings.spec.ts`
+  - Result: `passed`
+  - `curl -sS -o /tmp/system-settings-general.json -w '%{http_code}' http://localhost:8020/api/v1/system/settings/general`
+  - Result: `200`
+  - `curl -sS -o /tmp/system-settings-security.json -w '%{http_code}' http://localhost:8020/api/v1/system/settings/security`
+  - Result: `200`
 - Type regression verdict:
   - no evidence of regression above baseline in the closeout refresh batch
   - the overall closeout artifacts now reflect a fresh zero-output type check against the current repo head
@@ -119,12 +149,17 @@ Resolved during the full mainline run:
     - `12 passed, 0 failed, 0 skipped`
   - Phase 4:
     - `10 passed, 0 failed, 0 skipped`
-  - Follow-up targeted smoke:
+  - Historical follow-up smoke (`2026-04-04`):
     - `phase4-mainline-matrix.spec.ts`
     - grep: `System-Config renders blocker note and persists local settings`
     - project: `chromium`
     - mode: `PLAYWRIGHT_EXTERNAL_FRONTEND=1` against live PM2 frontend on `http://127.0.0.1:3020`
     - result: `1 passed, 0 failed, 0 skipped`
+  - Current sectioned-contract refresh (`2026-04-06`):
+    - `GET /api/v1/system/settings/general` -> `200`
+    - `GET /api/v1/system/settings/security` -> `200`
+    - backend contract tests: `passed`
+    - frontend sectioned-settings tests: `passed`
   - Refresh rerun:
     - `phase4-mainline-matrix.spec.ts` against live PM2 frontend
     - result: `10 passed, 0 failed, 0 skipped` (`15.0s`)
@@ -138,11 +173,11 @@ Resolved during the full mainline run:
   - `34` target pages are present, routable, and green under the established Mock/Real matrix
   - no unresolved `route/config drift`
   - no unresolved `frontend render gap`
-  - one intentionally preserved `backend contract/runtime gap`
+  - no unresolved `backend contract/runtime gap`
 - The next work should not reopen the whole mainline.
 - The targeted `System-Config` follow-up is now complete:
-  - confirmed no unified backend config write contract exists in current repo truth
-  - aligned generated frontend `pageConfig` to that truth
-  - passed a focused post-cutover route smoke against the live PM2 frontend shell
+  - landed the approved sectioned backend contract for `general` / `security`
+  - retired the canonical page-level local draft fallback
+  - refreshed active mainline artifacts so they no longer describe `System-Config` as `localStorage`-only
 - The `2026-04-05` refresh also cleared a stale PM2 frontend proxy env drift so live `/api/health/ready` is back to `200`.
-- No further frontend-mainline batch is required unless a new backend `System-Config` write contract is introduced and approved later.
+- No further frontend-mainline batch is required unless the page later expands to new section owners and needs additional live-browser non-destructive smoke.

@@ -37,7 +37,7 @@ from .core.responses import (
 )
 
 # 导入Socket.IO服务器管理器
-from .core.socketio_manager import get_socketio_manager
+from .core._socketio_manager_singleton import get_socketio_manager
 
 # 导入输入验证中间件
 from .core.validation import request_middleware

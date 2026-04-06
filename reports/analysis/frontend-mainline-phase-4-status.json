@@ -1,6 +1,6 @@
 {
   "phase": 4,
-  "generated_at": "2026-04-05T17:42:40+08:00",
+  "generated_at": "2026-04-06T13:32:02+08:00",
   "source_plan": "docs/plans/2026-04-03-frontend-mainline-phase-4-execution-matrix.md",
   "overall_plan": "docs/plans/2026-04-02-frontend-mainline-testing-overall-plan.md",
   "pages_total": 10,
@@ -56,7 +56,7 @@
   "classification": {
     "route_config_drift": 0,
     "frontend_render_gap": 0,
-    "backend_contract_runtime_gap": 1
+    "backend_contract_runtime_gap": 0
   },
   "quality_gates": {
     "structural_syntax_errors": 0,
@@ -75,13 +75,41 @@
       "frontend_proxy_ready": 200
     }
   },
-  "blockers": [
-    "System-Config backend config write contract is still unconfirmed; current save path is localStorage-only degrade and cannot be counted as real-write closure"
-  ],
+  "blockers": [],
+  "contract_refresh": {
+    "date": "2026-04-06",
+    "runtime_reads": [
+      {
+        "endpoint": "http://localhost:8020/api/v1/system/settings/general",
+        "status": 200
+      },
+      {
+        "endpoint": "http://localhost:8020/api/v1/system/settings/security",
+        "status": 200
+      }
+    ],
+    "targeted_checks": [
+      {
+        "command": "cd web/backend && PYTHONPATH=. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest tests/test_system_settings_contract.py tests/test_health_route_conflicts.py -q -o addopts=\"\" -k system_settings",
+        "result": "passed"
+      },
+      {
+        "command": "cd web/frontend && npx vitest run src/views/system/__tests__/Settings.spec.ts src/services/__tests__/systemSettingsContract.spec.ts src/services/__tests__/TradingApiManager.system-settings.spec.ts",
+        "result": "passed"
+      },
+      {
+        "command": "cd web/frontend && npx vue-tsc --noEmit --pretty false",
+        "result": "passed"
+      }
+    ],
+    "note": "Live PM2 runtime GET checks were measured directly. General-section write closure is backed by targeted backend/frontend tests; no destructive shared-runtime write smoke was executed in this refresh."
+  },
   "resolved_issues": [
     "Phase 4 mock matrix normalized to VITE_USE_MOCK_DATA=false with Playwright route stubs",
     "Risk and System phase pages now have dedicated mock-matrix evidence",
     "System-Data mock batch write payload construction is explicitly covered",
-    "Live PM2 frontend proxy env was refreshed back to BACKEND_PORT=8020 so /api/health/ready returned to 200 during the artifact refresh"
+    "Live PM2 frontend proxy env was refreshed back to BACKEND_PORT=8020 so /api/health/ready returned to 200 during the artifact refresh",
+    "System-Config now routes to the canonical views/system/Settings.vue page, reads/writes the general section through /api/v1/system/settings/general, and keeps the broader settings truth sectioned instead of local-only.",
+    "The approved sectioned system-settings contract landed with canonical backend routes for general/security backed by PostgreSQL system_config, removing the previous backend contract/runtime gap from the Phase 4 closeout."
   ]
 }

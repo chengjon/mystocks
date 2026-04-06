@@ -1,8 +1,20 @@
 # MyStocks 前端主线测试 Phase 4 详细推进表
 
+> **历史计划说明**:
+> 本文件是阶段性计划、路线图、提案、任务方案或执行矩阵，不是当前基线、当前实施状态或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或当前执行口径，请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，并结合当前代码实现与主线文档使用。
+>
+> 文内优先级、缺口清单、执行步骤、目标值和时间线如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
+
+
 > 日期：2026-04-03
 > 上游总纲：`docs/plans/2026-04-02-frontend-mainline-testing-overall-plan.md`
 > 范围：Phase 4 十个页面的 Mock / Real 双轨验证与修复推进
+>
+> `2026-04-06` 收口更新：
+> `System-Config` 当前活跃路由已切到 `web/frontend/src/views/system/Settings.vue`；
+> approved `add-sectioned-system-config-contract` 已为 `general/security` 落地 `/api/v1/system/settings/*`，
+> 旧的 “本地持久化-only” 口径已失效，以下 System-Config 条目按当前收口真相刷新。
 
 ## 1. 目标
 
@@ -77,7 +89,7 @@ Phase 4 固定按以下顺序推进：
 原因：
 
 - 先收口风险域的组合、规则、告警、公告与止损链，快速暴露监控与读链问题。
-- 再进入系统域，收口健康探针、导出链、本地配置持久化与数据源批量写回链。
+- 再进入系统域，收口健康探针、导出链、分段配置读写与数据源批量写回链。
 
 ## 4. 统一执行模型
 
@@ -98,7 +110,7 @@ Phase 4 固定按以下顺序推进：
 
 - `System-API` 重点验证导出链。
 - `System-Data` 重点验证批量写回链。
-- `System-Config` 当前仅存在本地持久化保存，不存在已确认的真实后端配置写链，必须明确按降级态记录。
+- `System-Config` 重点验证 `general` section 的系统级读写链、健康监控读链，以及“分段真相而非单体统一后端”的治理约束。
 
 ## 5. Phase 4 页面矩阵
 
@@ -190,20 +202,25 @@ Phase 4 固定按以下顺序推进：
 ### 5.7 System-Config
 
 - 路由：`/system/config`
-- 组件：`web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue`
+- 组件：`web/frontend/src/views/system/Settings.vue`
 - Canonical 接口族：
+  - `/api/v1/system/settings/general`
+  - `/api/v1/system/settings/security`
   - `/health/detailed`
   - `/health`
-- 降级说明：
-  - `保存本地设置` 仅写本地 `localStorage`
-  - 当前页面明确显示 `统一系统配置后端契约仍未建立`
+- 分段真相说明：
+  - 页面显示当前按 section owner 分段读写，不引入单体统一后端存储
+  - `保存系统设置` 直接写入 `general` section 的系统级后端契约
+  - `ArtDecoSystemSettings.vue` 仅保留为包装 `Settings.vue` 的薄兼容层
+  - datasource / notification 仍分别归属 `System-Data` 与 `/api/notification/preferences`
 - Mock 轨要求：
   - `数据源`、`系统设置`、`系统监控` 三页签可见
   - 健康监控表格能消费 detailed/slim health payload
-  - 本地设置保存后能写入本地持久化
+  - 系统设置表单保存后能走 `general` section owner 写链
 - Real 轨要求：
+  - 真实 `general` endpoint 能驱动表单回填与保存
   - 真实健康接口至少能驱动监控表格非空或健康摘要
-  - 必须将“无真实配置写链”按降级态写入报告，不可伪装为已闭环写链
+  - 报告中必须明确“分段后端真相已建立，但单体统一 settings API 仍不存在”，不可把二者混写
 
 ### 5.8 System-Health
 

@@ -148,6 +148,7 @@ class PostgresSystemSettingsRepository:
 
     def __init__(self, postgres_access: Any | None = None) -> None:
         self._postgres_access = postgres_access or get_postgres_async()
+        self._is_readonly_storage_value: bool | int | None = None
 
     def _require_pool(self) -> Any:
         is_connected = getattr(self._postgres_access, "is_connected", lambda: False)
@@ -155,6 +156,33 @@ class PostgresSystemSettingsRepository:
         if not is_connected() or pool is None:
             raise RuntimeError("system_config repository unavailable")
         return pool
+
+    async def _resolve_is_readonly_storage_value(self, pool: Any) -> bool | int:
+        if self._is_readonly_storage_value is not None:
+            return self._is_readonly_storage_value
+
+        async with pool.acquire() as conn:
+            row = await conn.fetchrow(
+                """
+                SELECT data_type, udt_name
+                FROM information_schema.columns
+                WHERE table_schema = current_schema()
+                  AND table_name = 'system_config'
+                  AND column_name = 'is_readonly'
+                """
+            )
+
+        data_type = str(row["data_type"]).lower() if row and row["data_type"] is not None else ""
+        udt_name = str(row["udt_name"]).lower() if row and row["udt_name"] is not None else ""
+
+        if data_type == "boolean" or udt_name == "bool":
+            self._is_readonly_storage_value = False
+        elif data_type in {"smallint", "integer", "bigint"} or udt_name in {"int2", "int4", "int8"}:
+            self._is_readonly_storage_value = 0
+        else:
+            self._is_readonly_storage_value = False
+
+        return self._is_readonly_storage_value
 
     async def read_section(self, section: SectionName) -> dict[str, Any]:
         pool = self._require_pool()
@@ -182,52 +210,79 @@ class PostgresSystemSettingsRepository:
         pool = self._require_pool()
         model_cls = SECTION_MODELS[section]
         normalized = cast(dict[str, Any], model_cls(**payload).model_dump(mode="json"))
+        readonly_storage_value = await self._resolve_is_readonly_storage_value(pool)
 
         async with pool.acquire() as conn:
             async with conn.transaction():
                 for key, spec in SECTION_FIELD_SPECS[section].items():
                     value = normalized[key]
-                    await conn.execute(
+                    serialized_value = self._serialize_value(value, spec["type"])
+                    update_status = await conn.execute(
                         """
-                        INSERT INTO system_config
-                        (config_group, config_key, config_value, config_type, description, is_sensitive, is_readonly, created_at, updated_at)
-                        VALUES ($1, $2, $3, $4, $5, $6, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-                        ON CONFLICT (config_group, config_key)
-                        DO UPDATE SET
-                            config_value = EXCLUDED.config_value,
-                            config_type = EXCLUDED.config_type,
-                            description = EXCLUDED.description,
-                            is_sensitive = EXCLUDED.is_sensitive,
+                        UPDATE system_config
+                        SET config_value = $1,
+                            config_type = $2,
+                            description = $3,
+                            is_sensitive = $4,
                             updated_at = CURRENT_TIMESTAMP
+                        WHERE config_group = $5 AND config_key = $6
                         """,
-                        section,
-                        key,
-                        self._serialize_value(value, spec["type"]),
+                        serialized_value,
                         spec["type"],
                         spec["description"],
                         spec["is_sensitive"],
+                        section,
+                        key,
                     )
+                    if update_status.endswith("0"):
+                        await conn.execute(
+                            """
+                            INSERT INTO system_config
+                            (config_group, config_key, config_value, config_type, description, is_sensitive, is_readonly, created_at, updated_at)
+                            VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                            """,
+                            section,
+                            key,
+                            serialized_value,
+                            spec["type"],
+                            spec["description"],
+                            spec["is_sensitive"],
+                            readonly_storage_value,
+                        )
 
         return normalized
 
     async def _ensure_defaults(self, section: SectionName, pool: Any) -> None:
+        readonly_storage_value = await self._resolve_is_readonly_storage_value(pool)
+
         async with pool.acquire() as conn:
             async with conn.transaction():
                 for key, spec in SECTION_FIELD_SPECS[section].items():
-                    await conn.execute(
+                    existing_row = await conn.fetchval(
                         """
-                        INSERT INTO system_config
-                        (config_group, config_key, config_value, config_type, description, is_sensitive, is_readonly, created_at, updated_at)
-                        VALUES ($1, $2, $3, $4, $5, $6, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-                        ON CONFLICT (config_group, config_key) DO NOTHING
+                        SELECT 1
+                        FROM system_config
+                        WHERE config_group = $1 AND config_key = $2
+                        LIMIT 1
                         """,
                         section,
                         key,
-                        self._serialize_value(spec["default"], spec["type"]),
-                        spec["type"],
-                        spec["description"],
-                        spec["is_sensitive"],
                     )
+                    if existing_row is None:
+                        await conn.execute(
+                            """
+                            INSERT INTO system_config
+                            (config_group, config_key, config_value, config_type, description, is_sensitive, is_readonly, created_at, updated_at)
+                            VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                            """,
+                            section,
+                            key,
+                            self._serialize_value(spec["default"], spec["type"]),
+                            spec["type"],
+                            spec["description"],
+                            spec["is_sensitive"],
+                            readonly_storage_value,
+                        )
 
     @staticmethod
     def _serialize_value(value: Any, config_type: str) -> str:

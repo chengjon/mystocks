@@ -1,6 +1,6 @@
 {
   "scope": "frontend-mainline-overall-closeout",
-  "generated_at": "2026-04-05T17:42:40+08:00",
+  "generated_at": "2026-04-06T13:32:02+08:00",
   "branch": "wip/root-dirty-20260403",
   "overall_plan": "docs/plans/2026-04-02-frontend-mainline-testing-overall-plan.md",
   "phases": [
@@ -94,11 +94,9 @@
       "classification": {
         "route_config_drift": 0,
         "frontend_render_gap": 0,
-        "backend_contract_runtime_gap": 1
+        "backend_contract_runtime_gap": 0
       },
-      "blockers": [
-        "System-Config has no unified backend config write contract in current repo truth; current save path remains localStorage-only degrade and cannot be counted as real-write closure"
-      ]
+      "blockers": []
     }
   ],
   "pages_total": 34,
@@ -111,7 +109,7 @@
   "classification": {
     "route_config_drift": 0,
     "frontend_render_gap": 0,
-    "backend_contract_runtime_gap": 1
+    "backend_contract_runtime_gap": 0
   },
   "quality_gates": {
     "structural_syntax_errors": 0,
@@ -211,13 +209,6 @@
         },
         {
           "phase": 4,
-          "command_scope": "phase4-mainline-matrix.spec.ts targeted follow-up: System-Config renders blocker note and persists local settings (external_frontend/live PM2)",
-          "passed": 1,
-          "failed": 0,
-          "skipped": 0
-        },
-        {
-          "phase": 4,
           "command_scope": "comprehensive-all-pages.spec.ts subset: Risk-Management|Risk-Overview|Risk-PnL|Risk-StopLoss|Risk-Alerts|Risk-News|System-Config|System-Health|System-API|System-Data rerun against live PM2 frontend after proxy env refresh",
           "passed": 10,
           "failed": 0,
@@ -226,50 +217,64 @@
       ]
     }
   },
-  "residual_debt": [
-    {
-      "page": "System-Config",
-      "route": "/system/config",
-      "component": "web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue",
-      "category": "backend contract/runtime gap",
-      "summary": "System-Config remains a local-only degrade for save behavior; current repo truth confirms no unified backend config write contract exists.",
-      "frontend_evidence": [
-        "The page banner explicitly states that no unified backend system-config contract has been established and that the page remains local-only for saves.",
-        "saveAll() persists only to localStorage via STORAGE_KEY=artdeco-system-settings.",
-        "Monitor rows are read-only and sourced from monitoringApi.getDetailedSystemHealth() and monitoringApi.getSystemHealth().",
-        "Focused post-cutover browser smoke passed against the live PM2 frontend shell on 2026-04-04."
-      ],
-      "backend_evidence": [
-        "No backend route matching /api/system/settings was found under web/backend/app.",
-        "Confirmed read-only health endpoints exist at /health and /health/detailed in web/backend/app/api/health.py.",
-        "Nearest non-equivalent write contract is data source configuration batch write at POST /v1/data-sources/config/batch."
-      ]
-    }
-  ],
+  "contract_refresh": {
+    "date": "2026-04-06",
+    "runtime_reads": [
+      {
+        "endpoint": "http://localhost:8020/api/v1/system/settings/general",
+        "status": 200
+      },
+      {
+        "endpoint": "http://localhost:8020/api/v1/system/settings/security",
+        "status": 200
+      }
+    ],
+    "targeted_checks": [
+      {
+        "command": "cd web/backend && PYTHONPATH=. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest tests/test_system_settings_contract.py tests/test_health_route_conflicts.py -q -o addopts=\"\" -k system_settings",
+        "result": "passed"
+      },
+      {
+        "command": "cd web/frontend && npx vitest run src/views/system/__tests__/Settings.spec.ts src/services/__tests__/systemSettingsContract.spec.ts src/services/__tests__/TradingApiManager.system-settings.spec.ts",
+        "result": "passed"
+      },
+      {
+        "command": "cd web/frontend && npx vue-tsc --noEmit --pretty false",
+        "result": "passed"
+      }
+    ],
+    "note": "Live PM2 runtime GET checks were measured directly. General-section write closure is backed by targeted backend/frontend tests; no destructive shared-runtime write mutation was executed in this refresh."
+  },
+  "residual_debt": [],
   "resolved_issues": [
     "Phase 1 cleared backend PYTHONPATH drift, frontend proxy drift, and readiness recovery drift so the startup shell and market chain became reproducibly green.",
     "Phase 2 fixed the Watchlist-Manage delete-action render gap by aligning the table actions slot contract.",
     "Phase 3 normalized the strategy/trade mock matrix under VITE_USE_MOCK_DATA=false without requiring production source fixes.",
-    "Phase 4 normalized the risk/system mock matrix under VITE_USE_MOCK_DATA=false and kept the System-Config contract gap explicit.",
-    "The targeted System-Config follow-up confirmed no unified backend write contract exists, aligned generated pageConfig to that truth, and passed a focused post-cutover browser smoke against the live PM2 frontend shell.",
+    "Phase 4 normalized the risk/system mock matrix under VITE_USE_MOCK_DATA=false and later refreshed System-Config to the approved sectioned backend contract.",
+    "The targeted System-Config follow-up landed canonical general/security backend routes backed by PostgreSQL system_config, aligned the canonical page to section-routed saves, and refreshed active artifacts away from the old local-only wording.",
     "The 2026-04-05 refresh reloaded the live PM2 frontend shell with BACKEND_PORT=8020, restoring /api/health/ready to 200 and revalidating the full Phase 4 mock and real subsets."
   ],
   "source_fix_footprint": [
     "ecosystem.test.config.js",
     "web/backend/ecosystem.config.js",
     "web/backend/tests/test_post_rewrite_backend_import_stability.py",
-    "web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue"
+    "web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue",
+    "web/backend/app/api/v1/system/settings.py",
+    "web/backend/tests/test_system_settings_contract.py",
+    "web/frontend/src/services/systemSettingsContract.ts",
+    "web/frontend/src/views/system/Settings.vue"
   ],
   "work_items": [
     "2026-04-03-frontend-mainline-phase-1-main",
     "2026-04-03-frontend-mainline-phase-2-main",
     "2026-04-03-frontend-mainline-phase-3-main",
     "2026-04-03-frontend-mainline-phase-4-main",
-    "2026-04-05-frontend-mainline-phase4-artifact-refresh-main"
+    "2026-04-05-frontend-mainline-phase4-artifact-refresh-main",
+    "2026-04-06-frontend-mainline-system-config-sectioned-closeout-refresh-main"
   ],
   "next_action": {
-    "title": "Frontend mainline follow-up complete",
-    "kind": "accepted-residual-debt",
-    "summary": "Do not reopen the whole frontend mainline. The System-Config follow-up is complete: no unified backend write contract exists, generated pageConfig is aligned, and focused route smoke passed. Keep the local-only degrade explicit unless a new backend contract is introduced later."
+    "title": "Frontend mainline closeout complete",
+    "kind": "complete",
+    "summary": "Do not reopen the whole frontend mainline. The System-Config follow-up is now closed under the approved sectioned contract: general/security use /api/v1/system/settings/*, the canonical page no longer uses local draft persistence, and the owner-split model remains explicit instead of reintroducing a fake monolithic settings API."
   }
 }

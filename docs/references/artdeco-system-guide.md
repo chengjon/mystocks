@@ -1,5 +1,12 @@
 # MyStocks ArtDeco Web Interface - Complete Design System
 
+> **参考指南说明**:
+> 本文件是补充指南、命令参考、操作说明或使用手册，不是当前仓库共享规则、当前实现边界或当前主线流程的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或当前执行口径，请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，并结合当前代码实现与主线治理文档使用。
+>
+> 文内步骤、示例、命令和说明应视为补充参考；若与当前代码或主线文档冲突，应以后者为准。
+
+
 ## 📚 Project Overview
 
 **Project Name**: A股量化交易管理系统 - ArtDeco Edition
@@ -381,35 +388,40 @@ GET /api/v1/monitoring/health
 
 **API Endpoints**:
 ```
-GET /health/detailed
-GET /health
-localStorage (page-level local persistence only)
+GET /api/v1/system/settings/general
+PUT /api/v1/system/settings/general
+GET /api/v1/system/settings/security
+PUT /api/v1/system/settings/security
+GET /api/health/detailed
+GET /api/health
 System-Data write family: /api/v1/data-sources/config/
 System-Data batch write: /api/v1/data-sources/config/batch
+Notification preferences: /api/notification/preferences
 ```
 
 **Current Truth Note**:
-- Active codepaths do not provide a unified `/api/system/settings` or `/api/v1/system/config` backend contract.
-- The `System-Config` page is read-only with respect to backend state: it reads health endpoints and persists only local page settings.
-- Real datasource writeback belongs to the `System-Data` page, not to `System-Config`.
+- Active route `/system/config` resolves to `web/frontend/src/views/system/Settings.vue`; `ArtDecoSystemSettings.vue` is only a thin compatibility wrapper.
+- The page is no longer local-draft only: the visible CTA `保存系统设置` writes the general section through `/api/v1/system/settings/general`.
+- The settings truth is sectioned rather than monolithic. Do not invent a single unified `/api/system/settings` or `/api/v1/system/config` API as a parallel truth source.
+- Datasource and notification writes remain with their canonical owner contracts instead of being folded into a duplicate merged store.
 
 **Layout Template**:
 ```
 ┌─────────────────────────────────────────────┐
-│ [Local Settings] [Health Monitor] [Go to System-Data] │
+│ [Sectioned Settings] [Health Monitor] [Go to System-Data] │
 ├─────────────────────────────────────────────┤
 │                                             │
 │  Health / Status Table                       │
 │  Source | Status | Latency | Last Update   │
 │                                             │
-│  Local Preferences Form                      │
+│  General Section Form                        │
 │  [Theme Toggle] [Notification Toggle]       │
 │                                             │
-│  Local Save CTA                              │
-│  [保存本地设置] [恢复默认]                  │
+│  Backend Save CTA                            │
+│  [保存系统设置]                              │
 │                                             │
-│  Datasource Writeback Handoff                │
-│  “数据源真实配置写回请前往系统数据页”        │
+│  Routed Section Owners                       │
+│  security / datasource / notification        │
 └─────────────────────────────────────────────┘
 ```
 

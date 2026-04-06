@@ -1,5 +1,12 @@
 # ArtDeco 量化交易管理中心 - API端点映射表
 
+> **设计方案说明**:
+> 本文件是 API 相关的设计稿、映射文档或方案说明，不是当前 API 契约、当前实现基线或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁、当前执行口径或 API 契约事实源，请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，以及实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json`。
+>
+> 文内结构设计、端点规划、映射关系和实施建议应结合当前代码与主线文档复核；若未落地，不得直接当作当前标准。
+
+
 **版本**: 3.0.0
 **文档日期**: 2026-01-22
 **总计**: 6大模块 × 18个子模块 × 57个功能节点 = **95个API端点**
@@ -273,19 +280,20 @@
 
 ---
 
-### 系统设置 (当前无统一后端设置API)
+### 系统设置 (分段契约，非单体统一API)
 
 | 功能节点 | 当前真实接口/行为 | 数据流向 | Vue组件映射 |
 |---------|------------------|---------|-------------|
-| System-Config 页面 | `GET /health/detailed`、`GET /health` + 本地 `localStorage` | 健康监控读取 + 本地设置持久化 | `ArtDecoSystemSettings.vue` |
+| System-Config 页面 | `GET/PUT /api/v1/system/settings/general` + `GET /api/health/detailed` + `GET /api/health` | 系统通用配置读写 + 健康监控读取 | `views/system/Settings.vue` |
+| System-Config section owner | `GET/PUT /api/v1/system/settings/security` + `GET/POST /api/v1/data-sources/config/*` + `GET/PUT /api/notification/preferences` | security/system、datasource/system、notification/user 各自归属 | `TradingApiManager.ts` 分段组合 |
 | 数据源配置写回 | `GET/POST /api/v1/data-sources/config/*` | 数据源配置管理 | `ArtDecoDataManagement.vue` |
 
 **设置范围**:
-- 界面主题: ArtDeco金黑/浅色模式
-- 布局偏好: 侧边栏展开/折叠
-- 数据刷新: 实时/定时/手动
-- 通知方式: 邮件/Webhook/短信
-- 说明: 当前活跃代码路径中不存在统一 `/api/system/settings/*` 后端契约；若未来补齐，应以 FastAPI/OpenAPI 为唯一真值源重新校准本映射文档
+- 通用系统参数: `backend_url`、`max_backtest_jobs`、`default_slippage_percent`、`fee_rate_bps`
+- 安全参数: `session_timeout_minutes`、`mfa_required`、`ip_allowlist_enabled`、`password_policy_level`
+- 数据源配置: 保持由 `System-Data` 与 `/api/v1/data-sources/config/*` 管理
+- 通知偏好: 保持由 `/api/notification/preferences` 管理
+- 说明: 当前活跃代码路径采用受治理的 sectioned contract，而不是补出一个单体统一 `/api/system/settings/*` 真相层；`general/security` 由 PostgreSQL `system_config` 驱动，datasource 与 notification 保持各自 owner 契约
 
 ---
 

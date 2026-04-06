@@ -1,5 +1,12 @@
 # MyStocks 前端页面优化规划（修订版）
 
+> **历史计划说明**:
+> 本文件是阶段性计划、路线图、提案、任务方案或执行矩阵，不是当前基线、当前实施状态或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或当前执行口径，请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，并结合当前代码实现与主线文档使用。
+>
+> 文内优先级、缺口清单、执行步骤、目标值和时间线如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
+
+
 **版本**: V2.2（依据 2026-04-05 dashboard truth reconciliation 修订）
 **创建日期**: 2026-03-02
 **最后更新**: 2026-04-05
@@ -151,7 +158,7 @@ bash scripts/tests/test/run-comprehensive-tests.sh
 | 28 | Risk-StopLoss | `/risk/stop-loss` | `artdeco-pages/risk-tabs/StopLossMonitorTab.vue` | P1 | mixed | `read-family: /api/v1/monitoring/watchlists + /api/v1/monitoring/watchlists/{id}/stocks + /api/v1/market/quotes` | verified | 2026-03-13 当前 worktree backend `127.0.0.1:8125` 已验证三段读链均可达；页面已改为 watchlist -> stocks -> quotes 组合映射，监控库不可用时在 `TESTING/DEVELOPMENT_MODE` 下走 runtime fallback |
 | 29 | Risk-Alerts | `/risk/alerts` | `artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue` | P1 | mixed | `read-family: /api/v1/monitoring/alert-rules + /api/v1/monitoring/alerts` | verified | 2026-03-13 当前 worktree backend `127.0.0.1:8127` 已验证两条读链均返回 `200`；`alert-rules` 已对齐 `UnifiedResponse`，监控库不可用时在 `TESTING/DEVELOPMENT_MODE` 下走 runtime fallback |
 | 30 | Risk-News | `/risk/news` | `artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue` | P2 | mixed | `/api/announcement/list` | verified | 2026-03-12 页面真实请求已核，旧 `/api/v1/announcement` 口径作废 |
-| 31 | System-Config | `/system/config` | `artdeco-pages/system-tabs/ArtDecoSystemSettings.vue` | P2 | mixed | `read-family: primary /api/health/detailed ; fallback /api/health ; save: localStorage-only` | verified | 2026-03-14 页面 monitor helper 已对齐详细健康 warning payload 与 slim `/api/health` payload；当前页面 `保存本地设置` 仅写入 localStorage，数据源真实配置写回归属 `System-Data`，不再误报为统一后端 real-write 闭环 |
+| 31 | System-Config | `/system/config` | `views/system/Settings.vue` | P2 | mixed | `read/write-family: general /api/v1/system/settings/general ; monitor-family: /api/health/detailed + /api/health ; routed section owners: security /api/v1/system/settings/security ; datasource /api/v1/data-sources/config/* ; notification /api/notification/preferences` | verified | 2026-04-06 活跃路由已切到 canonical `Settings.vue`；页面“保存系统设置”直接写入 general section 后端真相，`ArtDecoSystemSettings.vue` 仅保留为薄包装层；整体设置真相保持按 section owner 拆分，不引入单体统一 settings 存储 |
 | 32 | System-Health | `/system/health` | `artdeco-pages/system-tabs/SystemHealthTab.vue` | P2 | mixed | `/health` | verified | |
 | 33 | System-API | `/system/api` | `artdeco-pages/system-tabs/ArtDecoMonitoringDashboard.vue` | P2 | mixed | `primary: /health ; export: /api/health/detailed` | verified | 2026-03-13 已在当前 worktree backend `127.0.0.1:8124` 验证主加载与导出链均可消费；导出链以 `warning` 状态返回非阻塞脚本告警 |
 | 34 | System-Data | `/system/data` | `artdeco-pages/system-tabs/ArtDecoDataManagement.vue` | P2 | mixed | `read: /api/v1/data-sources/config/ ; write-family: /api/v1/data-sources/config/batch` | verified | 2026-03-13 前端已对齐 `endpoints[]` 读模型与 `batch.operations[].updates.status` 写模型；启用/禁用分别映射到 `active` / `maintenance` |
@@ -256,7 +263,7 @@ bash scripts/tests/test/run-comprehensive-tests.sh
 > 说明: 自 2026-03-12 起，本清单不再仅依赖 `scripts/dev/frontend_optimization_audit.py` 的路径匹配结果；`verified` 必须同时满足“页面真实请求可定位 + 路径存在/可达 + 字段可消费”。
 > `Strategy-Repo` 的本轮验证口径补充：在 `TESTING=true` + `DEVELOPMENT_MODE=true` 的当前 worktree backend 上，`/api/v1/strategy/strategies` 已通过 runtime fallback 证明 CRUD 与 `UnifiedResponse` 契约闭环；缺失的 lifecycle 路径仍保持 UI 侧禁用，不再阻塞主 CRUD 流。
 > `Strategy-Backtest` 的本轮验证口径补充：在 `TESTING=true` + `DEVELOPMENT_MODE=true` 的当前 worktree backend 上，`/api/v1/strategy/backtest/run`、`/status/{id}`、`/results/{id}` 已通过 runtime fallback 闭环；前端本地缺失的 `backtestAnalysisViewModel.ts`、`backtestAnalysisHelpers.ts`、`backtestContract.ts` 也已补回，因此当前页面不再卡在缺模块或后端环境门禁。
-> `System-Config` 的本轮验证口径补充：页面并不调用 `/api/system/*`；它实际读取 `/api/health/detailed` 和 `/api/health`。本轮已把 monitor helper 改为兼容详细健康 warning payload、显式 metrics 数组和 slim health summary，因此 monitor tab 可以消费真实后端响应，不再固定退回默认 mock rows。当前页面 CTA 为 `保存本地设置`，仅写入 localStorage；数据源真实配置写回属于 `System-Data` 页的 `/api/v1/data-sources/config/batch`，不是统一 `/api/system/settings` 契约。
+> `System-Config` 的本轮验证口径补充：活跃路由当前落在 `web/frontend/src/views/system/Settings.vue`，并通过 `/api/v1/system/settings/general` 读取与写入 general section；健康监控仍读取 `/api/health/detailed` 和 `/api/health`。更宽口径的系统设置真相仍按 section owner 拆分：security -> `/api/v1/system/settings/security`，datasource -> `/api/v1/data-sources/config/*`，notification -> `/api/notification/preferences`。本轮收口的结论不是“补出一个单体统一 `/api/system/settings`”，而是把页面从本地草稿退化态切换到受治理的分段后端契约。
 > `Risk-Overview` 的本轮验证口径补充：页面真实请求只有 `/api/v1/monitoring/alert-rules`；规则表页签的字段消费已在当前 worktree backend 上核证，其余 overview/alerts 页签保持静态展示，不构成主读链 blocker。
 > `Risk-Alerts` 的本轮验证口径补充：在 `TESTING=true` + `DEVELOPMENT_MODE=true` 的当前 worktree backend 上，`/api/v1/monitoring/alert-rules` 与 `/api/v1/monitoring/alerts` 会在监控 DB 不可用时降级到 runtime fallback；其中 `alert-rules` 已补齐 `UnifiedResponse` 契约，与 `useArtDecoApi()` 的读链一致。
 > `Risk-StopLoss` 的本轮验证口径补充：在 `TESTING=true` + `DEVELOPMENT_MODE=true` 的当前 worktree backend 上，watchlist 读接口会在监控 DB 不可用时降级到 runtime fallback；页面再使用 `/api/v1/market/quotes` 补全 `current_price`，从而闭环 `symbol/current_price/stop_price/distance`。

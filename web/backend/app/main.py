@@ -34,7 +34,7 @@ from .core.exception_handler import register_exception_handlers
 from .core.middleware.performance import PerformanceMiddleware, metrics_endpoint
 
 # 导入Socket.IO服务器管理器
-from .core.socketio_manager import get_socketio_manager
+from .core._socketio_manager_singleton import get_socketio_manager
 
 # 导入统一响应格式中间件
 from .middleware.response_format import ResponseFormatMiddleware
@@ -190,7 +190,7 @@ async def lifespan(app: FastAPI):
 
     # 初始化监控数据库连接池 (Phase 1.4)
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import initialize_postgres_async
+        from src.monitoring.infrastructure._postgresql_async_v3_singleton import initialize_postgres_async
 
         success = await initialize_postgres_async()
         if success:
