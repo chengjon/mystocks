@@ -5,9 +5,9 @@
 > 其中的完成度、通过状态和结论不应直接视为当前事实；引用前应结合 `architecture/STANDARDS.md`、当前实现与最新验证结果重新确认。
 
 
-**日期**: 2025-12-31
-**执行者**: Main CLI (Manager)
-**任务**: E2E测试创建与执行验证
+**Historical Execution Snapshot Date**: 2025-12-31
+**Historical Executor Snapshot**: Main CLI (Manager)
+**Historical Task Snapshot**: E2E测试创建与执行验证
 
 ---
 

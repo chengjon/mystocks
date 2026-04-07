@@ -7,9 +7,9 @@
 > 文内统计值、完成状态、修复结论和验收结果如未重新复核，应视为历史快照，不得直接当作当前事实。
 
 
-**日期**: 2025-12-31
-**执行者**: Test CLI (Worker CLI)
-**任务**: 启动后端并完成E2E测试
+**Historical Execution Snapshot Date**: 2025-12-31
+**Historical Executor Snapshot**: Test CLI (Worker CLI)
+**Historical Task Snapshot**: 启动后端并完成E2E测试
 
 ---
 
