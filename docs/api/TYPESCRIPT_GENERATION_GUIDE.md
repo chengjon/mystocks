@@ -581,6 +581,6 @@ async def generate_types_parallel(contract_files):
 
 ---
 
-**文档版本**: v1.0.0
-**最后更新**: 2025-12-29
-**维护者**: MyStocks Frontend Team
+**历史文档版本快照**: v1.0.0
+**历史最后更新快照**: 2025-12-29
+**历史维护者快照**: MyStocks Frontend Team
