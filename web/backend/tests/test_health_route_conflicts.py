@@ -300,7 +300,7 @@ def test_pool_monitoring_endpoints_have_error_responses() -> None:
         assert any(status.startswith("5") for status in operation["responses"])
 
 
-def test_metrics_endpoints_have_error_responses() -> None:
+def test_metrics_endpoints_have_success_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
@@ -312,6 +312,10 @@ def test_metrics_endpoints_have_error_responses() -> None:
         ("/api/reset", "post"),
     ]:
         operation = schema["paths"][path][method]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        assert "example" in success_json or "examples" in success_json
         assert any(status.startswith("5") for status in operation["responses"])
 
 

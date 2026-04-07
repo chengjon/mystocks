@@ -55,6 +55,111 @@ METRICS_ENDPOINT_ERROR_RESPONSE = {
     }
 }
 
+
+def _success_response_spec(description: str, example: Dict[str, Any]) -> Dict[int, Dict[str, Any]]:
+    return {
+        200: {
+            "description": description,
+            "content": {"application/json": {"example": example}},
+        }
+    }
+
+
+METRICS_STATUS_RESPONSES = {
+    **_success_response_spec(
+        "基础系统状态",
+        {
+            "success": True,
+            "data": {
+                "api_status": "running",
+                "database_status": "healthy",
+                "cache_status": "available",
+            },
+            "message": "系统运行正常",
+            "timestamp": "2026-04-07T10:00:00Z",
+            "request_id": None,
+        },
+    ),
+    **METRICS_ENDPOINT_ERROR_RESPONSE,
+}
+
+METRICS_BASIC_RESPONSES = {
+    **_success_response_spec(
+        "基础监控指标",
+        {
+            "success": True,
+            "data": {
+                "http_requests_total": 1000,
+                "active_connections": 10,
+                "cache_hit_rate": 0.85,
+                "uptime": 1712484000.0,
+            },
+            "message": "基础监控数据获取成功",
+            "timestamp": "2026-04-07T10:00:00Z",
+            "request_id": None,
+        },
+    ),
+    **METRICS_ENDPOINT_ERROR_RESPONSE,
+}
+
+METRICS_PERFORMANCE_RESPONSES = {
+    **_success_response_spec(
+        "性能监控指标",
+        {
+            "success": True,
+            "data": {
+                "response_time_avg": 0.15,
+                "response_time_p95": 0.3,
+                "request_rate": 50,
+                "error_rate": 0.01,
+                "cpu_usage": 0.25,
+                "memory_usage": 0.6,
+            },
+            "message": "性能监控数据获取成功",
+            "timestamp": "2026-04-07T10:00:00Z",
+            "request_id": None,
+        },
+    ),
+    **METRICS_ENDPOINT_ERROR_RESPONSE,
+}
+
+METRICS_DETAILED_RESPONSES = {
+    **_success_response_spec(
+        "详细系统指标",
+        {
+            "success": True,
+            "data": {
+                "database_connections": {
+                    "postgresql": {"active": 8, "idle": 12},
+                    "tdengine": {"active": 2, "idle": 3},
+                    "redis": {"active": 1, "idle": 5},
+                },
+                "api_health": {"backend": 1, "database": 1},
+                "datasource_availability": {"tdx": 1, "akshare": 1, "financial": 1, "baostock": 1},
+                "system_info": {"uptime": 1712484000.0, "version": "1.0.0", "environment": "production"},
+            },
+            "message": "详细监控数据获取成功",
+            "timestamp": "2026-04-07T10:00:00Z",
+            "request_id": None,
+        },
+    ),
+    **METRICS_ENDPOINT_ERROR_RESPONSE,
+}
+
+METRICS_RESET_RESPONSES = {
+    **_success_response_spec(
+        "重置监控指标结果",
+        {
+            "success": True,
+            "data": {"reset_count": 4},
+            "message": "监控指标已重置",
+            "timestamp": "2026-04-07T10:00:00Z",
+            "request_id": None,
+        },
+    ),
+    **METRICS_ENDPOINT_ERROR_RESPONSE,
+}
+
 PROMETHEUS_METRICS_SUCCESS_RESPONSE = {
     200: {
         "description": "Prometheus 文本格式监控指标。",
@@ -274,7 +379,7 @@ async def health_check() -> Dict[str, Any]:
         raise BusinessException(detail="Service unavailable", status_code=503, error_code="SERVICE_UNAVAILABLE")
 
 
-@router.get("/status", responses=METRICS_ENDPOINT_ERROR_RESPONSE)
+@router.get("/status", summary="获取基础系统状态", responses=METRICS_STATUS_RESPONSES)
 async def basic_status() -> APIResponse:
     """
     基础系统状态
@@ -302,7 +407,7 @@ async def basic_status() -> APIResponse:
 # ==================== 用户级别端点（需要认证）====================
 
 
-@router.get("/basic", responses=METRICS_ENDPOINT_ERROR_RESPONSE)
+@router.get("/basic", summary="获取基础监控指标", responses=METRICS_BASIC_RESPONSES)
 async def basic_metrics(current_user: User = Depends(get_current_user)) -> APIResponse:
     """
     基础监控指标
@@ -346,7 +451,7 @@ async def basic_metrics(current_user: User = Depends(get_current_user)) -> APIRe
         )
 
 
-@router.get("/performance", responses=METRICS_ENDPOINT_ERROR_RESPONSE)
+@router.get("/performance", summary="获取性能监控指标", responses=METRICS_PERFORMANCE_RESPONSES)
 async def performance_metrics(current_user: User = Depends(get_current_user)) -> APIResponse:
     """
     性能监控指标
@@ -433,7 +538,7 @@ async def prometheus_metrics(current_user: User = Depends(get_current_user)) -> 
         raise BusinessException(detail="获取指标数据失败", status_code=500, error_code="METRICS_DATA_RETRIEVAL_FAILED")
 
 
-@router.get("/detailed", responses=METRICS_ENDPOINT_ERROR_RESPONSE)
+@router.get("/detailed", summary="获取详细系统指标", responses=METRICS_DETAILED_RESPONSES)
 async def detailed_metrics(current_user: User = Depends(get_current_user)) -> APIResponse:
     """
     详细系统指标
@@ -486,7 +591,7 @@ async def detailed_metrics(current_user: User = Depends(get_current_user)) -> AP
         )
 
 
-@router.post("/reset", responses=METRICS_ENDPOINT_ERROR_RESPONSE)
+@router.post("/reset", summary="重置监控指标", responses=METRICS_RESET_RESPONSES)
 async def reset_metrics(current_user: User = Depends(get_current_user)) -> APIResponse:
     """
     重置监控指标
