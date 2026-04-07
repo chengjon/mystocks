@@ -2192,6 +2192,29 @@ def test_analysis_backtest_and_stress_test_endpoints_have_docs_examples_and_erro
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
+def test_industry_concept_analysis_endpoints_have_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path, expected_params in [
+        ("/api/analysis/industry/list", []),
+        ("/api/analysis/concept/list", []),
+        ("/api/analysis/industry/stocks", ["industry_code", "limit"]),
+        ("/api/analysis/concept/stocks", ["concept_code", "limit"]),
+        ("/api/analysis/industry/performance", ["industry_code"]),
+    ]:
+        operation = schema["paths"][path]["get"]
+        parameters = operation.get("parameters", [])
+        success_json = operation["responses"]["200"]["content"]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expected_params:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_monitoring_watchlist_endpoints_have_docs_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()

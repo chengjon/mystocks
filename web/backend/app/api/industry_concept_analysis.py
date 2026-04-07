@@ -36,7 +36,182 @@ router = APIRouter(
 )
 
 
-@router.get("/industry/list", response_model=IndustryListResponse)
+def _success_response_spec(description: str, example: dict) -> dict[int, dict]:
+    return {
+        200: {
+            "description": description,
+            "content": {"application/json": {"example": example}},
+        }
+    }
+
+
+INDUSTRY_LIST_RESPONSES = {
+    **INDUSTRY_CONCEPT_ROUTE_RESPONSES,
+    **_success_response_spec(
+        "行业分类列表查询成功。",
+        {
+            "success": True,
+            "data": {
+                "industries": [
+                    {
+                        "industry_code": "BK0475",
+                        "industry_name": "证券",
+                        "stock_count": 48,
+                        "up_count": 31,
+                        "down_count": 14,
+                        "latest_price": 1245.32,
+                        "change_percent": 1.82,
+                        "change_amount": 22.31,
+                        "volume": 125000000,
+                        "amount": 3680000000,
+                        "total_market_value": 5820000000000,
+                        "turnover_rate": 2.14,
+                        "updated_at": "2026-04-08T10:00:00",
+                    }
+                ],
+                "total_count": 1,
+            },
+            "timestamp": "2026-04-08T10:00:00",
+        },
+    ),
+}
+
+CONCEPT_LIST_RESPONSES = {
+    **INDUSTRY_CONCEPT_ROUTE_RESPONSES,
+    **_success_response_spec(
+        "概念分类列表查询成功。",
+        {
+            "success": True,
+            "data": {
+                "concepts": [
+                    {
+                        "concept_code": "GN1234",
+                        "concept_name": "人工智能",
+                        "stock_count": 86,
+                        "up_count": 52,
+                        "down_count": 24,
+                        "latest_price": 2188.6,
+                        "change_percent": 3.25,
+                        "change_amount": 68.92,
+                        "volume": 182000000,
+                        "amount": 5210000000,
+                        "total_market_value": 9200000000000,
+                        "turnover_rate": 3.41,
+                        "updated_at": "2026-04-08T10:00:00",
+                    }
+                ],
+                "total_count": 1,
+            },
+            "timestamp": "2026-04-08T10:00:00",
+        },
+    ),
+}
+
+INDUSTRY_STOCKS_RESPONSES = {
+    **INDUSTRY_CONCEPT_ROUTE_RESPONSES,
+    **_success_response_spec(
+        "行业成分股列表查询成功。",
+        {
+            "success": True,
+            "data": {
+                "stocks": [
+                    {
+                        "symbol": "600030.SH",
+                        "category_name": "证券",
+                        "latest_price": 24.36,
+                        "change_percent": 2.51,
+                        "volume": 18500000,
+                        "amount": 451000000,
+                    }
+                ],
+                "total_count": 1,
+                "industry_code": "BK0475",
+            },
+            "timestamp": "2026-04-08T10:00:00",
+        },
+    ),
+}
+
+CONCEPT_STOCKS_RESPONSES = {
+    **INDUSTRY_CONCEPT_ROUTE_RESPONSES,
+    **_success_response_spec(
+        "概念成分股列表查询成功。",
+        {
+            "success": True,
+            "data": {
+                "stocks": [
+                    {
+                        "symbol": "300308.SZ",
+                        "category_name": "人工智能",
+                        "latest_price": 56.72,
+                        "change_percent": 5.18,
+                        "volume": 26500000,
+                        "amount": 1502000000,
+                    }
+                ],
+                "total_count": 1,
+                "concept_code": "GN1234",
+            },
+            "timestamp": "2026-04-08T10:00:00",
+        },
+    ),
+}
+
+INDUSTRY_PERFORMANCE_RESPONSES = {
+    404: {
+        "description": "指定行业不存在或当前无可用表现数据。",
+        "content": {"application/json": {"example": {"detail": "未找到行业: BK9999"}}},
+    },
+    **INDUSTRY_CONCEPT_ROUTE_RESPONSES,
+    **_success_response_spec(
+        "行业整体表现查询成功。",
+        {
+            "success": True,
+            "data": {
+                "industry": {
+                    "industry_code": "BK0475",
+                    "industry_name": "证券",
+                    "stock_count": 48,
+                    "up_count": 31,
+                    "down_count": 14,
+                    "leader_stock": "600030.SH",
+                    "latest_price": 1245.32,
+                    "change_percent": 1.82,
+                    "change_amount": 22.31,
+                    "volume": 125000000,
+                    "amount": 3680000000,
+                    "total_market_value": 5820000000000,
+                    "turnover_rate": 2.14,
+                    "updated_at": "2026-04-08T10:00:00",
+                },
+                "up_count": 31,
+                "down_count": 14,
+                "leader_stock": {
+                    "symbol": "600030.SH",
+                    "price": 24.36,
+                    "change_percent": 2.51,
+                },
+                "stocks_performance": [
+                    {
+                        "symbol": "600030.SH",
+                        "latest_price": 24.36,
+                        "change_percent": 2.51,
+                    }
+                ],
+            },
+            "timestamp": "2026-04-08T10:00:00",
+        },
+    ),
+}
+
+
+@router.get(
+    "/industry/list",
+    response_model=IndustryListResponse,
+    summary="获取行业分类列表",
+    description="返回当前数据库中的全部行业分类快照，包括涨跌家数、成交额和换手率等汇总指标。",
+    responses=INDUSTRY_LIST_RESPONSES,
+)
 async def get_industry_list():
     """
     获取所有行业分类列表
@@ -83,7 +258,13 @@ async def get_industry_list():
         raise HTTPException(status_code=500, detail=f"获取行业列表失败: {str(e)}")
 
 
-@router.get("/concept/list", response_model=ConceptListResponse)
+@router.get(
+    "/concept/list",
+    response_model=ConceptListResponse,
+    summary="获取概念分类列表",
+    description="返回当前数据库中的全部概念分类快照，包括涨跌家数、成交额和换手率等汇总指标。",
+    responses=CONCEPT_LIST_RESPONSES,
+)
 async def get_concept_list():
     """
     获取所有概念分类列表
@@ -130,7 +311,13 @@ async def get_concept_list():
         raise HTTPException(status_code=500, detail=f"获取概念列表失败: {str(e)}")
 
 
-@router.get("/industry/stocks", response_model=StockListResponse)
+@router.get(
+    "/industry/stocks",
+    response_model=StockListResponse,
+    summary="获取行业成分股列表",
+    description="按行业代码查询该行业下的成分股列表，并返回最新价格、涨跌幅和成交额等字段。",
+    responses=INDUSTRY_STOCKS_RESPONSES,
+)
 async def get_industry_stocks(
     industry_code: str = Query(..., description="行业代码"),
     limit: Optional[int] = Query(None, ge=1, le=1000, description="限制返回数量"),
@@ -183,7 +370,13 @@ async def get_industry_stocks(
         raise HTTPException(status_code=500, detail=f"获取行业成分股失败: {str(e)}")
 
 
-@router.get("/concept/stocks", response_model=StockListResponse)
+@router.get(
+    "/concept/stocks",
+    response_model=StockListResponse,
+    summary="获取概念成分股列表",
+    description="按概念代码查询该概念下的成分股列表，并返回最新价格、涨跌幅和成交额等字段。",
+    responses=CONCEPT_STOCKS_RESPONSES,
+)
 async def get_concept_stocks(
     concept_code: str = Query(..., description="概念代码"),
     limit: Optional[int] = Query(None, ge=1, le=1000, description="限制返回数量"),
@@ -236,7 +429,13 @@ async def get_concept_stocks(
         raise HTTPException(status_code=500, detail=f"获取概念成分股失败: {str(e)}")
 
 
-@router.get("/industry/performance", response_model=IndustryPerformanceResponse)
+@router.get(
+    "/industry/performance",
+    response_model=IndustryPerformanceResponse,
+    summary="获取行业整体表现",
+    description="返回指定行业的整体表现、上涨下跌家数、领涨股以及行业内股票涨跌幅分布。",
+    responses=INDUSTRY_PERFORMANCE_RESPONSES,
+)
 async def get_industry_performance(industry_code: str = Query(..., description="行业代码")):
     """
     获取行业整体表现数据
