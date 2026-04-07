@@ -4,7 +4,7 @@ Database Performance Monitor Test Suite
 
 创建日期: 2025-12-20
 版本: 1.0.0
-测试模块: src.database_optimization.performance_monitor (334行)
+测试模块: src.data_access.optimizers.performance_monitor
 """
 
 import os

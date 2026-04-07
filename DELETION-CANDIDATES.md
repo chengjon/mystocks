@@ -5,7 +5,7 @@
 > 当前共享规则与删除门禁仍以 [architecture/STANDARDS.md](/opt/claude/mystocks_spec/architecture/STANDARDS.md) 为准；若涉及当前执行状态，再结合根目录 `AGENTS.md`、phase 主文档与最新验证结果核对。
 
 **Generated:** 2026-04-07  
-**Status:** BATCH 1 EXECUTED, DELETION STILL PENDING USER APPROVAL
+**Status:** HISTORICAL INVENTORY DRAFT; TARGET DIRECTORIES ALREADY ABSENT IN CURRENT WORKSPACE
 **Phase:** 2 (`Dead Code Inventory & Removal`)
 
 ---
@@ -27,6 +27,22 @@
 - `src/data_access_pkg/tdengine_access.py` is much larger than canonical `src/data_access/tdengine_access.py`, but canonical code is split across helper modules. This points to a refactor split, not automatically to missing functionality.
 - `src/database_optimization/` is not pure dead code. Its optimizer classes appear unique and should be migrated before deletion.
 
+## Workspace Truth Update
+
+按当前工作区实际检查：
+
+- `src/routes/` 不存在
+- `src/api/` 不存在
+- `src/data_access_pkg/` 不存在
+- `src/database_optimization/` 不存在
+- `src/db_manager/` 不存在
+
+因此，本文件当前应视为：
+
+- Phase 2 历史盘点和迁移审计稿
+- 用于解释这些目录为什么曾被视为删除/合并对象
+- 不是当前工作区的“待执行删除清单”
+
 ## Batch 1 Execution Status
 
 以下动作已在本次会话内实际完成：
@@ -42,13 +58,7 @@
 - `tests/api_contract_tests.py` 中对不存在的 `src.api.types.*` 导入已清理
 - `scripts/dev/fix_test_imports.py`、`scripts/dev/quality_gate/fix_test_imports.py`、`scripts/dev/project/update_imports.py` 的 dead-target 映射已改向 canonical 位置
 
-本批次明确没有执行的动作：
-
-- 未删除 `src/routes/`
-- 未删除 `src/api/`
-- 未删除 `src/data_access_pkg/`
-- 未删除 `src/database_optimization/`
-- 未删除 `src/db_manager/`
+本批次未执行新的目录删除操作；但需要注意，上述历史目录在当前工作区里已经不存在。
 
 本批次验证结果：
 

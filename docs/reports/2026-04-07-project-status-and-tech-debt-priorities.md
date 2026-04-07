@@ -55,19 +55,34 @@ Phase 2 目录中已经存在 4 份计划文件，但自动进度工具仍把该
 - GitNexus `impact` 检查中，本批涉及的优化器类与导入修复函数均为 `LOW` 风险
 - GitNexus `detect_changes(scope="staged")`: `changed_files: 14`, `risk_level: low`
 
+### Workspace Truth Update
+
+补充检查发现，当前工作区中以下历史目录已经不存在：
+
+- `src/routes/`
+- `src/api/`
+- `src/data_access_pkg/`
+- `src/db_manager/`
+- `src/database_optimization/`
+
+这意味着 `.planning` 和历史盘点文档中的 Phase 2 “待删除对象”在当前仓库真相下应重新解释为：
+
+- 已发生过的历史收敛动作
+- 或旧计划口径滞后于当前工作区
+
 ---
 
 ## 2. Recommended Priority Order
 
-### Priority 1: Finish Phase 2 Inventory First
+### Priority 1: Reconcile Historical Phase 2 Docs With Workspace Truth
 
-先完成 Phase 2 的“只盘点、不删除”子阶段，产出 `DELETION-CANDIDATES.md`。
+先把 Phase 2 历史计划、盘点稿与当前工作区真相对齐。
 
 这是当前最重要的动作，因为：
 
-- `architecture/STANDARDS.md` 明确要求删除前同时完成“代码路径判定”和“功能树判定”
-- 当前 5 个目标层仍有残余调用和兼容职责，不能仅凭 grep 结果直接删除
-- 这一产物是后续重定向、合并和删除的审批前提
+- 当前工作区里相关目录已经不存在，若继续沿用“待删除”口径，会误导后续执行
+- 仍然有少量旧字符串引用和历史文档描述没有收口
+- 需要把“删除审批稿”转为“历史收敛审计稿”
 
 目标范围：
 
@@ -79,12 +94,10 @@ Phase 2 目录中已经存在 4 份计划文件，但自动进度工具仍把该
 
 核心输出：
 
-- 每个目标目录的文件级清单
-- 功能归属
-- 调用方证据
-- 保留/删除建议
-- 重定向目标
-- 验证命令
+- 当前工作区真相说明
+- 历史目录与 canonical 目标的对应关系
+- 残余引用与旧文档待修项
+- 后续验证命令
 
 主要参考：
 
@@ -92,15 +105,15 @@ Phase 2 目录中已经存在 4 份计划文件，但自动进度工具仍把该
 - `.planning/phases/02-dead-code-inventory-removal/02-RESEARCH.md`
 - `.planning/phases/02-dead-code-inventory-removal/02-PLAN-01-inventory.md`
 
-### Priority 2: Redirect Callers And Merge Overlapping Layers
+### Priority 2: Finish Residual Caller And Comment Cleanup
 
-在盘点完成后，执行 Phase 2 的重定向和合并动作。
+继续处理残余调用方、脚本字符串映射和旧注释。
 
 重点包括：
 
-- 把 `src/routes` / `src/api` / `src/db_manager` 的残余调用迁移到 canonical 位置
-- 把 `src/database_optimization` 中仍有价值的实现并入 `src/data_access/optimizers/`
-- 查清 `src/data_access_pkg/tdengine_access.py` 与 `src/data_access/tdengine_access.py` 的体积差异和责任边界
+- 清理对历史目录的残余字符串引用
+- 修正仍然提到 `src.database_optimization` 的测试注释和文档
+- 持续验证 `src.data_access` / `src.data_access.optimizers` 是当前唯一真相源
 
 主要参考：
 
@@ -111,25 +124,16 @@ Phase 2 目录中已经存在 4 份计划文件，但自动进度工具仍把该
 
 - 该优先级已开始执行
 - 第一批已经完成：Wencai 调用方重定向、`database_optimization` 向 `src/data_access/optimizers/` 的合并、脚本/测试导入修复
-- 尚未完成：`scripts/cicd_pipeline.sh` 的 `src.routes` 烟雾检查替换、`src/data_access_pkg/*` 其余覆盖率核实、真正的目录删除
+- `scripts/cicd_pipeline.sh` 当前已直接检查 `web/backend/app.main`
+- 下一步重点转为残余文档/注释/字符串引用收口
 
-### Priority 3: Delete Dead Layers Only After Approval
+### Priority 3: Verify Canonical Layer Coverage
 
-在你审批 `DELETION-CANDIDATES.md` 后，再执行真正的删除动作。
+继续验证 canonical 层是否完全承接历史职责，特别是：
 
-删除目标为：
-
-- `src/routes/`
-- `src/api/`
-- `src/data_access_pkg/`
-- `src/database_optimization/`
-- `src/db_manager/`
-
-这一步必须视为单独的批准点，不应与前两步合并执行。
-
-主要参考：
-
-- `.planning/phases/02-dead-code-inventory-removal/02-PLAN-04-approved-deletion.md`
+- `src.data_access`
+- `src.data_access.optimizers`
+- `web/backend/app/*`
 
 ### Priority 4: Phase 3 Frontend Structural Consolidation
 
@@ -243,12 +247,11 @@ Phase 2 收口后，下一梯队是前端结构收敛。
 
 建议按下面顺序推进：
 
-1. 保持 `DELETION-CANDIDATES.md` 作为删除审批稿，并补充本批次已完成状态
-2. 完成 Phase 2 剩余“非删除”动作：`scripts/cicd_pipeline.sh`、`src/data_access_pkg` 覆盖核实、残余 caller 清理
-3. 复核 Phase 2 删除前验证命令
-4. 经单独审批后删除历史层
-5. 进入 Phase 3 前端结构收敛
-6. 最后做 Phase 4 命名与 shim 收尾
+1. 把 Phase 2 文档解释为历史收敛审计稿，而不是当前待删除清单
+2. 完成残余 caller / 注释 / 文档字符串收口
+3. 继续验证 canonical 层覆盖完整性
+4. 进入 Phase 3 前端结构收敛
+5. 最后做 Phase 4 命名与 shim 收尾
 
 ---
 
