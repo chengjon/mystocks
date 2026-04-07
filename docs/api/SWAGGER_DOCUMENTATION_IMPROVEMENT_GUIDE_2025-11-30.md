@@ -1,9 +1,16 @@
 # Swagger API 文档完善指南
 
-**创建日期**: 2025-11-30
-**优先级**: 🟡 P1 - 高优先级
-**状态**: 📋 计划阶段
-**工作量**: 8-12 小时
+> **使用说明**:
+> 本文件是 API 相关的参考文档或专题说明，不是当前 API 契约、当前实施基线或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`；若涉及 API 契约事实源，再以实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json` 为准。
+>
+> 文内端点、命令、统计值和示例如未重新复核，应视为参考或历史材料，不得直接当作当前事实。
+
+
+**Historical Guide Snapshot Date**: 2025-11-30
+**Historical Priority Snapshot**: 🟡 P1 - 高优先级
+**Historical Guide Status Snapshot**: 📋 计划阶段
+**Historical Effort Snapshot**: 8-12 小时
 
 ---
 
