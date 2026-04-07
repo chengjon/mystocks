@@ -7,9 +7,9 @@
 > 文内统计值、完成状态、修复结论和验收结果如未重新复核，应视为历史快照，不得直接当作当前事实。
 
 
-**日期**: 2025-12-31
-**任务**: 验证回测引擎使用真实市场数据
-**状态**: ✅ 完成
+**Historical Execution Snapshot Date**: 2025-12-31
+**Historical Task Snapshot**: 验证回测引擎使用真实市场数据
+**Historical Status Snapshot**: ✅ 完成
 
 ---
 
