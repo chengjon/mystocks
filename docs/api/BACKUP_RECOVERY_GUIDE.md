@@ -546,5 +546,5 @@ for b in backups:
 
 ---
 
-**最后更新**: 2025-11-11
-**版本**: 1.0.0
+**Historical Last Updated Snapshot**: 2025-11-11
+**Historical Document Version Snapshot**: 1.0.0
