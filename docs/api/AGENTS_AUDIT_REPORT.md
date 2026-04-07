@@ -7,9 +7,9 @@
 > 文内统计值、完成状态、修复结论和验收结果如未重新复核，应视为历史快照，不得直接当作当前事实。
 
 
-**生成时间**: 2025-12-10
-**审查范围**: 项目级和用户级子代理
-**参考文档**: `/opt/mydoc/Anthropic/Claude-code/sub-agents.md`
+**Historical Audit Snapshot Time**: 2025-12-10
+**Historical Audit Scope Snapshot**: 项目级和用户级子代理
+**Historical Reference Snapshot**: `/opt/mydoc/Anthropic/Claude-code/sub-agents.md`
 
 ---
 
