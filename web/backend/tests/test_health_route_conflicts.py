@@ -1428,16 +1428,39 @@ def test_trading_runtime_read_endpoints_have_success_examples_and_error_docs() -
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
-def test_tradingview_body_config_endpoints_have_request_examples() -> None:
+def test_tradingview_body_config_endpoints_have_request_and_response_examples() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
     for path in ["/api/tradingview/chart/config", "/api/tradingview/ticker-tape/config"]:
         operation = schema["paths"][path]["post"]
         request_json = operation["requestBody"]["content"]["application/json"]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
 
+        assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
         assert "example" in request_json or "examples" in request_json
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
+def test_tradingview_query_config_endpoints_have_success_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path, method in [
+        ("/api/tradingview/mini-chart/config", "post"),
+        ("/api/tradingview/market-overview/config", "get"),
+        ("/api/tradingview/screener/config", "get"),
+        ("/api/tradingview/symbol/convert", "get"),
+    ]:
+        operation = schema["paths"][path][method]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_task_stop_import_and_export_endpoints_have_docs_and_examples() -> None:
