@@ -1,3 +1,13 @@
+/**
+ * Domain: Trading Analytics (Signals, History, Performance)
+ *
+ * Manages analytical trading data: signals, trade history, position monitoring, performance analysis.
+ * Responsible for: trading signals, trading history, position monitoring, performance metrics.
+ * Consumers: analytics views, strategy performance dashboards, trading signals display.
+ *
+ * For trade order operations and system health, see trading.ts.
+ */
+
 // Trading Data Store - 专注于交易数据管理
 // 负责交易信号、历史、持仓监控、绩效分析等交易相关数据
 

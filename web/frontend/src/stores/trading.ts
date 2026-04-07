@@ -1,3 +1,14 @@
+/**
+ * Domain: Trading Operations (Orders & System Status)
+ *
+ * Manages trade order execution, system health monitoring, and basic trading state.
+ * Responsible for: trade order CRUD, system health data, system info.
+ * Consumers: order placement UI, system status dashboard.
+ *
+ * For trading analytics (signals, history, positions, performance),
+ * see tradingData.ts.
+ */
+
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { apiGet } from '@/api/apiClient';

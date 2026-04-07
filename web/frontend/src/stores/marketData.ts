@@ -1,4 +1,15 @@
 /**
+ * Domain: Market Data with IndexedDB Caching (Enhanced)
+ *
+ * Provides rich market data management with intelligent caching (IndexedDB → Network → Fallback),
+ * offline support, sync status tracking, and web worker integration for technical indicators.
+ * Responsible for: cached market data, technical indicator computation, offline-first access.
+ * Consumers: chart views, analysis pages, data-intensive components.
+ *
+ * For simple real-time market overview without caching, see market.ts.
+ */
+
+/**
  * Enhanced Market Data Store with IndexedDB Integration
  * Implements intelligent caching strategy: IndexedDB → Network → Fallback
  */

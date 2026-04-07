@@ -1,3 +1,14 @@
+/**
+ * Domain: Market Overview & Analysis (Simple API Wrapper)
+ *
+ * Provides lightweight market data access via the baseStore template pattern.
+ * Responsible for: market overview, market analysis (technical/capital_flow/longhu_bang).
+ * Consumers: overview widgets, simple dashboard cards.
+ *
+ * For enhanced market data with IndexedDB caching, offline support,
+ * and web worker integration, see marketData.ts.
+ */
+
 // Market Data Store - 基于标准模板的市场数据管理
 // 使用统一的Store模式和API调用规范
 
