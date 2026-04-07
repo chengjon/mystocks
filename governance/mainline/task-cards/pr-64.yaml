@@ -1,0 +1,87 @@
+version: "v0.2"
+
+task:
+  id: "pr-64"
+  title: "archive deletion evidence governance openspec change"
+  owner: "main"
+  created_at: "2026-04-08"
+
+mainline:
+  id: "L1-deletion-governance-openspec-closeout"
+  objective: "archive the completed deletion evidence governance OpenSpec change and keep directory-governance spec truth synchronized on main"
+  milestone_id: "L2-governance-closeout"
+  slice_id: "L3-deletion-evidence-openspec-archive"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "required"
+  secondary_domains: []
+  exemption_reason: "openspec-archive-closeout-only"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-64.yaml"
+    - "openspec/changes/archive/2026-04-07-add-deletion-evidence-governance/**"
+    - "openspec/specs/directory-governance/spec.md"
+  forbidden_paths:
+    - "web/frontend/**"
+    - "src/**"
+    - "scripts/compliance/deletion_evidence_gate.py"
+
+non_goals:
+  - "No runtime deletion gate behavior change"
+  - "No new OpenSpec proposal or expansion beyond archiving the completed deletion-governance change"
+  - "No unrelated governance, frontend, Mongo, or watchlist work"
+
+acceptance:
+  checks:
+    - id: "openspec-spec-validation"
+      command: "openspec validate --specs --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-64.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr64-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the task card misses any archived file path, Mainline Governance Gate will fail even though the archive itself is correct"
+    - "If the canonical directory-governance spec is not updated together with the archive move, OpenSpec truth will drift from the landed implementation"
+  rollback_plan: "git revert <merge-commit-sha> if the archive metadata or canonical spec sync for deletion evidence governance is found to be inaccurate after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "move the completed deletion evidence governance change into OpenSpec archive and promote its delta into the canonical directory-governance spec"
+    modified_scope: "one archived OpenSpec change directory, the canonical openspec/specs/directory-governance/spec.md file, and this PR-64 task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime or hook behavior changes; only OpenSpec archive state and canonical spec truth are synchronized"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the merge if the archived change metadata or canonical spec text is found to diverge from the landed deletion gate behavior"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-08T00:00:00Z"
+    approval_note: "this PR only archives already-landed deletion governance work and keeps the canonical OpenSpec spec aligned"
+    secondary_approved: false
