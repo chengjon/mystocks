@@ -10,6 +10,7 @@ from src.indicators.indicator_factory import IndicatorFactory
 INDICATOR_ROUTE_RESPONSES = {
     400: COMMON_RESPONSES[400],
     404: COMMON_RESPONSES[404],
+    422: COMMON_RESPONSES[422],
     500: COMMON_RESPONSES[500],
 }
 
@@ -18,20 +19,77 @@ router = APIRouter(prefix="/api/indicator-registry", tags=["Indicator Registry"]
 # Singleton Factory
 _factory = None
 
+
+def _success_response_spec(description: str, example: object) -> dict[int, dict]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+INDICATOR_INFO_EXAMPLE = {
+    "indicator_id": "sma.5",
+    "indicator_name": "SMA",
+    "indicator_category": "Unknown",
+    "use_case": "Unknown",
+    "description": None,
+    "status": "active",
+}
+
+INDICATOR_DETAIL_EXAMPLE = {
+    "indicator_id": "sma.5",
+    "indicator_name": "SMA",
+    "class_name": "SMAIndicator",
+    "module_path": "src.indicators.implementations.trend.sma",
+    "supports_streaming": True,
+    "parameters": {"period": {"default": 5}},
+    "required_columns": ["close"],
+    "output_columns": ["sma"],
+}
+
+CALCULATION_RESPONSE_EXAMPLE = {
+    "indicator_id": "sma.5",
+    "result": [None, None, None, None, 10.48],
+    "length": 5,
+}
+
 CALCULATION_REQUEST_EXAMPLES = {
     "sma_batch_calculation": {
         "summary": "计算简单移动平均线",
-        "description": "提交三条 OHLCV 数据并用 window=3 计算 SMA。",
+        "description": "提交五条 OHLCV 数据并用 period=5 计算 SMA。",
         "value": {
-            "indicator_id": "sma",
+            "indicator_id": "sma.5",
             "data": [
                 {"open": 10.1, "high": 10.5, "low": 9.9, "close": 10.3, "volume": 120000},
                 {"open": 10.3, "high": 10.8, "low": 10.2, "close": 10.6, "volume": 135000},
                 {"open": 10.6, "high": 10.9, "low": 10.4, "close": 10.7, "volume": 142000},
+                {"open": 10.7, "high": 10.95, "low": 10.5, "close": 10.4, "volume": 150000},
+                {"open": 10.4, "high": 10.7, "low": 10.2, "close": 10.4, "volume": 128000},
             ],
-            "parameters": {"window": 3},
+            "parameters": {"period": 5},
         },
     }
+}
+
+INDICATOR_LIST_RESPONSES = {
+    **INDICATOR_ROUTE_RESPONSES,
+    **_success_response_spec("指标注册表摘要列表。", [INDICATOR_INFO_EXAMPLE]),
+}
+
+INDICATOR_DETAIL_RESPONSES = {
+    **INDICATOR_ROUTE_RESPONSES,
+    **_success_response_spec("单个指标的注册配置详情。", INDICATOR_DETAIL_EXAMPLE),
+}
+
+INDICATOR_CALCULATE_RESPONSES = {
+    **INDICATOR_ROUTE_RESPONSES,
+    **_success_response_spec("指标批量计算结果。", CALCULATION_RESPONSE_EXAMPLE),
 }
 
 
@@ -64,13 +122,15 @@ class CalculationRequest(BaseModel):
     model_config = {
         "json_schema_extra": {
             "example": {
-                "indicator_id": "sma",
+                "indicator_id": "sma.5",
                 "data": [
                     {"open": 10.1, "high": 10.5, "low": 9.9, "close": 10.3, "volume": 120000},
                     {"open": 10.3, "high": 10.8, "low": 10.2, "close": 10.6, "volume": 135000},
                     {"open": 10.6, "high": 10.9, "low": 10.4, "close": 10.7, "volume": 142000},
+                    {"open": 10.7, "high": 10.95, "low": 10.5, "close": 10.4, "volume": 150000},
+                    {"open": 10.4, "high": 10.7, "low": 10.2, "close": 10.4, "volume": 128000},
                 ],
-                "parameters": {"window": 3},
+                "parameters": {"period": 5},
             }
         }
     }
@@ -84,7 +144,13 @@ class CalculationResponse(BaseModel):
     length: int = Field(..., description="结果列表长度。")
 
 
-@router.get("/indicators", response_model=List[IndicatorInfo])
+@router.get(
+    "/indicators",
+    response_model=List[IndicatorInfo],
+    summary="列出已注册技术指标",
+    description="返回指标注册表中的全部指标摘要，供前端配置面板、功能发现和下拉选择器读取。",
+    responses=INDICATOR_LIST_RESPONSES,
+)
 async def list_indicators():
     """List all registered indicators."""
     factory = get_factory()
@@ -103,7 +169,12 @@ async def list_indicators():
     return results
 
 
-@router.get("/indicators/{indicator_id}")
+@router.get(
+    "/indicators/{indicator_id}",
+    summary="查询单个指标注册配置",
+    description="根据指标 ID 返回注册表中的详细配置，包括实现类、参数定义和输入输出列说明。",
+    responses=INDICATOR_DETAIL_RESPONSES,
+)
 async def get_indicator_details(
     indicator_id: str = Path(..., description="指标唯一标识，用于查询单个指标的详细注册配置。")
 ):
@@ -114,7 +185,13 @@ async def get_indicator_details(
     return factory.registry[indicator_id]
 
 
-@router.post("/calculate", response_model=CalculationResponse)
+@router.post(
+    "/calculate",
+    response_model=CalculationResponse,
+    summary="执行指标批量计算",
+    description="接收一组 OHLCV 数据和可选参数，执行指定技术指标的批量计算并返回对齐后的结果序列。",
+    responses=INDICATOR_CALCULATE_RESPONSES,
+)
 async def calculate_indicator(req: CalculationRequest = Body(..., openapi_examples=CALCULATION_REQUEST_EXAMPLES)):
     """Run a batch calculation."""
     factory = get_factory()

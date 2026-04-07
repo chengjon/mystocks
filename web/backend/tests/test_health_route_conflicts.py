@@ -840,19 +840,33 @@ def test_indicator_registry_endpoints_have_request_examples_and_parameter_docs()
     app.openapi_schema = None
     schema = app.openapi()
 
+    list_operation = schema["paths"]["/api/indicator-registry/indicators"]["get"]
+    list_success_json = list_operation["responses"]["200"]["content"]["application/json"]
+
+    assert list_operation.get("summary")
+    assert len(list_operation.get("description", "")) >= 20
+    assert "example" in list_success_json or "examples" in list_success_json
+    assert any(code.startswith(("4", "5")) for code in list_operation["responses"])
+
     calculate_operation = schema["paths"]["/api/indicator-registry/calculate"]["post"]
     calculate_json = calculate_operation["requestBody"]["content"]["application/json"]
+    calculate_success_json = calculate_operation["responses"]["200"]["content"]["application/json"]
 
     assert calculate_operation.get("summary")
     assert len(calculate_operation.get("description", "")) >= 20
     assert "example" in calculate_json or "examples" in calculate_json
+    assert "example" in calculate_success_json or "examples" in calculate_success_json
+    assert any(code.startswith(("4", "5")) for code in calculate_operation["responses"])
 
     detail_operation = schema["paths"]["/api/indicator-registry/indicators/{indicator_id}"]["get"]
     detail_parameters = detail_operation.get("parameters", [])
+    detail_success_json = detail_operation["responses"]["200"]["content"]["application/json"]
 
     assert detail_operation.get("summary")
     assert len(detail_operation.get("description", "")) >= 20
     assert any(param["name"] == "indicator_id" and param.get("description") for param in detail_parameters)
+    assert "example" in detail_success_json or "examples" in detail_success_json
+    assert any(code.startswith(("4", "5")) for code in detail_operation["responses"])
 
 
 def test_sentiment_and_technical_pattern_endpoints_have_docs_examples_and_parameter_descriptions() -> None:
