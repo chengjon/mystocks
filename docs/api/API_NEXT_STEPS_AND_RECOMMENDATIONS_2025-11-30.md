@@ -6,9 +6,9 @@
 >
 > 文内端点数量、缺失比例、问题优先级和修复建议如未重新扫描与复核，应视为历史分析结论，不得直接当作当前事实。
 
-**报告生成时间**: 2025-11-30
-**基础分析文档**: `API_ARCHITECTURE_COMPREHENSIVE_SUMMARY_2025-11-30.md`
-**分析范围**: 完整后端API源代码扫描结果的后续处理建议
+**Historical Report Snapshot Date**: 2025-11-30
+**Historical Base Analysis Snapshot**: `API_ARCHITECTURE_COMPREHENSIVE_SUMMARY_2025-11-30.md`
+**Historical Analysis Scope Snapshot**: 完整后端API源代码扫描结果的后续处理建议
 
 ---
 
