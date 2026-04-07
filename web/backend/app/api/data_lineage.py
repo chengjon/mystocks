@@ -29,6 +29,7 @@ from app.core.responses import (
     create_unified_error_response,
     create_unified_success_response,
 )
+from app.openapi_config import COMMON_RESPONSES
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +37,35 @@ router = APIRouter(
     prefix="/api/v1/lineage",
     tags=["Data Lineage"],
 )
+
+LINEAGE_COMMON_ERROR_RESPONSES = {
+    422: COMMON_RESPONSES[422],
+    500: COMMON_RESPONSES[500],
+}
+
+LINEAGE_QUERY_ERROR_RESPONSES = {
+    404: COMMON_RESPONSES[404],
+    **LINEAGE_COMMON_ERROR_RESPONSES,
+}
+
+
+def _success_response_spec(
+    status_code: int,
+    description: str,
+    example: Dict[str, Any],
+    extra_responses: Optional[Dict[int, Dict[str, Any]]] = None,
+) -> Dict[int, Dict[str, Any]]:
+    return {
+        status_code: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        },
+        **(extra_responses or {}),
+    }
 
 LINEAGE_RECORD_REQUEST_EXAMPLE = {
     "from_node": "raw:stock:600519",
@@ -62,6 +92,232 @@ LINEAGE_IMPACT_REQUEST_EXAMPLE = {
     "max_levels": 3,
     "include_indirect": True,
 }
+
+LINEAGE_RECORD_SUCCESS_EXAMPLE = {
+    "success": True,
+    "code": 201,
+    "message": "成功记录血缘关系: raw:stock:600519 -> feature:daily-factor:600519",
+    "data": {
+        "from_node": "raw:stock:600519",
+        "to_node": "feature:daily-factor:600519",
+        "operation": "transform",
+    },
+    "timestamp": "2026-04-08T03:10:00Z",
+    "request_id": "req-lineage-record-001",
+    "errors": None,
+}
+
+LINEAGE_UPSTREAM_SUCCESS_EXAMPLE = {
+    "success": True,
+    "code": 200,
+    "message": "成功查询上游血缘: 2个节点",
+    "data": {
+        "nodes": [
+            {
+                "node_id": "raw:stock:600519",
+                "node_type": "dataset",
+                "name": "raw:stock:600519",
+                "metadata": {"market": "A-share", "source": "tdx"},
+                "created_at": "2026-04-01T09:30:00Z",
+                "updated_at": "2026-04-08T02:50:00Z",
+            },
+            {
+                "node_id": "feature:daily-factor:600519",
+                "node_type": "transform",
+                "name": "feature:daily-factor:600519",
+                "metadata": {"pipeline": "daily-factor-build"},
+                "created_at": "2026-04-07T15:00:00Z",
+                "updated_at": "2026-04-08T02:50:00Z",
+            },
+        ],
+        "edges": [
+            {
+                "from_node": "raw:stock:600519",
+                "to_node": "feature:daily-factor:600519",
+                "operation": "transform",
+                "timestamp": "2026-04-08T02:45:00Z",
+                "metadata": {"pipeline": "daily-factor-build"},
+            }
+        ],
+        "queried_node": "feature:daily-factor:600519",
+        "depth": 3,
+        "total_nodes": 2,
+        "total_edges": 1,
+    },
+    "timestamp": "2026-04-08T03:10:00Z",
+    "request_id": "req-lineage-upstream-001",
+    "errors": None,
+}
+
+LINEAGE_DOWNSTREAM_SUCCESS_EXAMPLE = {
+    "success": True,
+    "code": 200,
+    "message": "成功查询下游血缘: 2个节点",
+    "data": {
+        "nodes": [
+            {
+                "node_id": "feature:daily-factor:600519",
+                "node_type": "transform",
+                "name": "feature:daily-factor:600519",
+                "metadata": {"pipeline": "daily-factor-build"},
+                "created_at": "2026-04-07T15:00:00Z",
+                "updated_at": "2026-04-08T02:50:00Z",
+            },
+            {
+                "node_id": "risk:model-input:if-main",
+                "node_type": "dataset",
+                "name": "risk:model-input:if-main",
+                "metadata": {"market": "CFFEX", "instrument": "IF主连"},
+                "created_at": "2026-04-08T02:40:00Z",
+                "updated_at": "2026-04-08T02:55:00Z",
+            },
+        ],
+        "edges": [
+            {
+                "from_node": "feature:daily-factor:600519",
+                "to_node": "risk:model-input:if-main",
+                "operation": "serve",
+                "timestamp": "2026-04-08T02:55:00Z",
+                "metadata": {"consumer": "index-futures-risk-engine"},
+            }
+        ],
+        "queried_node": "feature:daily-factor:600519",
+        "depth": 3,
+        "total_nodes": 2,
+        "total_edges": 1,
+    },
+    "timestamp": "2026-04-08T03:10:00Z",
+    "request_id": "req-lineage-downstream-001",
+    "errors": None,
+}
+
+LINEAGE_GRAPH_SUCCESS_EXAMPLE = {
+    "success": True,
+    "code": 200,
+    "message": "成功查询血缘图: 3个节点, 2条边",
+    "data": {
+        "nodes": [
+            {
+                "node_id": "raw:stock:600519",
+                "node_type": "dataset",
+                "name": "raw:stock:600519",
+                "metadata": {"market": "A-share", "source": "tdx"},
+                "created_at": "2026-04-01T09:30:00Z",
+                "updated_at": "2026-04-08T02:50:00Z",
+            },
+            {
+                "node_id": "feature:daily-factor:600519",
+                "node_type": "transform",
+                "name": "feature:daily-factor:600519",
+                "metadata": {"pipeline": "daily-factor-build"},
+                "created_at": "2026-04-07T15:00:00Z",
+                "updated_at": "2026-04-08T02:50:00Z",
+            },
+            {
+                "node_id": "risk:model-input:if-main",
+                "node_type": "dataset",
+                "name": "risk:model-input:if-main",
+                "metadata": {"market": "CFFEX", "instrument": "IF主连"},
+                "created_at": "2026-04-08T02:40:00Z",
+                "updated_at": "2026-04-08T02:55:00Z",
+            },
+        ],
+        "edges": [
+            {
+                "from_node": "raw:stock:600519",
+                "to_node": "feature:daily-factor:600519",
+                "operation": "transform",
+                "timestamp": "2026-04-08T02:45:00Z",
+                "metadata": {"pipeline": "daily-factor-build"},
+            },
+            {
+                "from_node": "feature:daily-factor:600519",
+                "to_node": "risk:model-input:if-main",
+                "operation": "serve",
+                "timestamp": "2026-04-08T02:55:00Z",
+                "metadata": {"consumer": "index-futures-risk-engine"},
+            },
+        ],
+        "queried_node": "feature:daily-factor:600519",
+        "direction": "both",
+        "depth": 3,
+        "total_nodes": 3,
+        "total_edges": 2,
+    },
+    "timestamp": "2026-04-08T03:10:00Z",
+    "request_id": "req-lineage-graph-001",
+    "errors": None,
+}
+
+LINEAGE_IMPACT_SUCCESS_EXAMPLE = {
+    "success": True,
+    "code": 200,
+    "message": "影响分析完成: 2个节点受影响",
+    "data": {
+        "node_id": "feature:daily-factor:600519",
+        "impacted_nodes": [
+            {
+                "node_id": "risk:model-input:if-main",
+                "node_type": "dataset",
+                "level": 1,
+                "path": ["feature:daily-factor:600519", "risk:model-input:if-main"],
+                "impact_type": "direct",
+            },
+            {
+                "node_id": "strategy:alpha-if-spread",
+                "node_type": "transform",
+                "level": 2,
+                "path": [
+                    "feature:daily-factor:600519",
+                    "risk:model-input:if-main",
+                    "strategy:alpha-if-spread",
+                ],
+                "impact_type": "indirect",
+            },
+        ],
+        "total_impacted": 2,
+        "max_level": 3,
+        "analysis_timestamp": "2026-04-08T03:10:00Z",
+    },
+    "timestamp": "2026-04-08T03:10:00Z",
+    "request_id": "req-lineage-impact-001",
+    "errors": None,
+}
+
+LINEAGE_RECORD_RESPONSES = _success_response_spec(
+    201,
+    "血缘关系记录结果。",
+    LINEAGE_RECORD_SUCCESS_EXAMPLE,
+    LINEAGE_COMMON_ERROR_RESPONSES,
+)
+
+LINEAGE_UPSTREAM_RESPONSES = _success_response_spec(
+    200,
+    "上游血缘查询结果。",
+    LINEAGE_UPSTREAM_SUCCESS_EXAMPLE,
+    LINEAGE_QUERY_ERROR_RESPONSES,
+)
+
+LINEAGE_DOWNSTREAM_RESPONSES = _success_response_spec(
+    200,
+    "下游血缘查询结果。",
+    LINEAGE_DOWNSTREAM_SUCCESS_EXAMPLE,
+    LINEAGE_QUERY_ERROR_RESPONSES,
+)
+
+LINEAGE_GRAPH_RESPONSES = _success_response_spec(
+    200,
+    "完整血缘图查询结果。",
+    LINEAGE_GRAPH_SUCCESS_EXAMPLE,
+    LINEAGE_QUERY_ERROR_RESPONSES,
+)
+
+LINEAGE_IMPACT_RESPONSES = _success_response_spec(
+    200,
+    "血缘影响分析结果。",
+    LINEAGE_IMPACT_SUCCESS_EXAMPLE,
+    LINEAGE_QUERY_ERROR_RESPONSES,
+)
 
 
 # =============================================================================
@@ -241,7 +497,7 @@ async def get_lineage_tracker():
 # =============================================================================
 
 
-@router.post("/record", response_model=UnifiedResponse, status_code=201)
+@router.post("/record", response_model=UnifiedResponse, status_code=201, responses=LINEAGE_RECORD_RESPONSES)
 async def record_lineage(
     http_request: Request,
     request: LineageRecordRequest = Body(..., example=LINEAGE_RECORD_REQUEST_EXAMPLE),
@@ -316,7 +572,7 @@ async def record_lineage(
         return handle_lineage_error(str(e), request_id)
 
 
-@router.get("/{node_id}/upstream", response_model=UnifiedResponse)
+@router.get("/{node_id}/upstream", response_model=UnifiedResponse, responses=LINEAGE_UPSTREAM_RESPONSES)
 async def get_upstream_lineage(
     node_id: str = Path(..., description="要查询血缘关系的节点 ID。"),
     max_depth: int = Query(3, description="向上游追溯的最大层级深度。", ge=1, le=10),
@@ -426,7 +682,7 @@ async def get_upstream_lineage(
         return handle_lineage_error(str(e), request_id)
 
 
-@router.get("/{node_id}/downstream", response_model=UnifiedResponse)
+@router.get("/{node_id}/downstream", response_model=UnifiedResponse, responses=LINEAGE_DOWNSTREAM_RESPONSES)
 async def get_downstream_lineage(
     node_id: str = Path(..., description="要分析影响范围的节点 ID。"),
     max_depth: int = Query(3, description="向下游扩散查询的最大层级深度。", ge=1, le=10),
@@ -513,7 +769,7 @@ async def get_downstream_lineage(
         return handle_lineage_error(str(e), request_id)
 
 
-@router.post("/graph", response_model=UnifiedResponse)
+@router.post("/graph", response_model=UnifiedResponse, responses=LINEAGE_GRAPH_RESPONSES)
 async def get_lineage_graph(
     http_request: Request,
     request: LineageGraphRequest = Body(..., example=LINEAGE_GRAPH_REQUEST_EXAMPLE),
@@ -629,7 +885,7 @@ async def get_lineage_graph(
         return handle_lineage_error(str(e), request_id)
 
 
-@router.post("/impact", response_model=UnifiedResponse)
+@router.post("/impact", response_model=UnifiedResponse, responses=LINEAGE_IMPACT_RESPONSES)
 async def analyze_impact(
     http_request_obj: Request,
     request: ImpactAnalysisRequest = Body(..., example=LINEAGE_IMPACT_REQUEST_EXAMPLE),

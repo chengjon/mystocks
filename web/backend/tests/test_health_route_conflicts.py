@@ -1268,17 +1268,22 @@ def test_tdx_read_endpoints_have_docs_examples_and_error_responses() -> None:
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
-def test_lineage_upstream_and_downstream_endpoints_have_parameter_docs() -> None:
+def test_lineage_upstream_and_downstream_endpoints_have_docs_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
     for path in ["/api/v1/lineage/{node_id}/upstream", "/api/v1/lineage/{node_id}/downstream"]:
         operation = schema["paths"][path]["get"]
         parameters = operation.get("parameters", [])
+        success_code = next(code for code in operation["responses"] if code.startswith("2"))
+        success_json = operation["responses"][success_code]["content"]["application/json"]
 
+        assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
         for parameter_name in ["node_id", "max_depth"]:
             assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_data_source_versions_endpoint_has_parameter_docs() -> None:
@@ -2514,7 +2519,7 @@ def test_risk_remaining_write_endpoints_have_docs_and_request_examples() -> None
         assert "example" in request_json or "examples" in request_json
 
 
-def test_v1_lineage_write_endpoints_have_request_examples() -> None:
+def test_v1_lineage_write_endpoints_have_request_and_response_examples() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
@@ -2525,10 +2530,14 @@ def test_v1_lineage_write_endpoints_have_request_examples() -> None:
     ]:
         operation = schema["paths"][path]["post"]
         request_json = operation["requestBody"]["content"]["application/json"]
+        success_code = next(code for code in operation["responses"] if code.startswith("2"))
+        success_json = operation["responses"][success_code]["content"]["application/json"]
 
         assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
         assert "example" in request_json or "examples" in request_json
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_v1_strategy_backtest_endpoints_have_request_examples_and_descriptions() -> None:
