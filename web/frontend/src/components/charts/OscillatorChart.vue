@@ -111,7 +111,7 @@ const updateChart = () => {
   });
 
   try {
-    chartInstance.applyNewData(chartData as unknown);
+    chartInstance.applyNewData(chartData);
   } catch (e) {
     console.warn('Failed to update oscillator chart:', e);
   }
@@ -128,6 +128,7 @@ const initChart = () => {
   if (!chartRef.value) return;
 
   const range = displayRange.value;
+  const crosshairAction = 'onCrosshairChange' as Parameters<Chart['subscribeAction']>[0];
 
   const chartStyles = {
     grid: {
@@ -176,7 +177,7 @@ const initChart = () => {
   // ✅ 修复：在使用chartInstance之前检查null
   if (chartInstance) {
     try {
-      chartInstance.subscribeAction('onCrosshairChange' as unknown, (data: unknown) => {
+      chartInstance.subscribeAction(crosshairAction, (data: unknown) => {
         const crosshair = data as { data?: Record<string, unknown> };
         if (crosshair.data) {
           const indicatorNames = getIndicatorNames(props.type);

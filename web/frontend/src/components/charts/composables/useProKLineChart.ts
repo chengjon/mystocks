@@ -2,7 +2,7 @@
 // that are best handled with type assertions. Type safety is maintained through
 // runtime checks and the library's own type guards.
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
-import { init, registerIndicator, type Chart as KLineChartsChart } from 'klinecharts';
+import { dispose, init, registerIndicator } from 'klinecharts';
 import { useKlineChart } from '@/composables/useKlineChart';
 import type { KLineData, IntervalType, AdjustType } from '@/types/kline';
 import type { Chart } from '@/types/klinecharts';
@@ -20,8 +20,34 @@ import {
   type ProKLineChartProps
 } from './useProKLineChart.options.ts';
 
-// Type alias for compatibility
-type KLineChart = KLineChartsChart;
+type IndicatorRegistration = Parameters<typeof registerIndicator>[0];
+
+interface RuntimeIndicatorRef {
+  name?: string;
+  paneId?: string;
+}
+
+const registerCustomIndicator = (indicator: unknown): void => {
+  registerIndicator(indicator as IndicatorRegistration);
+};
+
+const getRuntimeIndicators = (instance: Chart): RuntimeIndicatorRef[] => {
+  return (instance as unknown as { getIndicators: () => RuntimeIndicatorRef[] }).getIndicators();
+};
+
+const removeRuntimeIndicator = (instance: Chart, indicator: RuntimeIndicatorRef): void => {
+  if (typeof indicator.paneId !== 'string') return;
+
+  (instance as unknown as { removeIndicator: (paneId: string, name?: string) => void }).removeIndicator(
+    indicator.paneId,
+    indicator.name
+  );
+};
+
+const disposeChart = (instance: Chart | null): void => {
+  if (!instance) return;
+  dispose(instance as Parameters<typeof dispose>[0]);
+};
 
 export function useProKLineChart() {
 
@@ -35,8 +61,8 @@ const emit = defineEmits<{
 const chartContainer = ref<HTMLElement | null>(null);
 const klineRef = ref<HTMLElement | null>(null);
 const oscillatorRef = ref<HTMLElement | null>(null);
-let chartInstance: KLineChart | null = null;
-let oscillatorInstance: KLineChart | null = null;
+let chartInstance: Chart | null = null;
+let oscillatorInstance: Chart | null = null;
 
 const {
   klineData,
@@ -69,7 +95,7 @@ const formatVolume = formatKLineVolume;
 const initChart = () => {
   if (!klineRef.value) return;
 
-  chartInstance = init(klineRef.value, createMainChartConfig()) as Chart;
+  chartInstance = init(klineRef.value, createMainChartConfig() as unknown as Parameters<typeof init>[1]) as Chart;
 };
 
 const updateChartData = () => {
@@ -92,17 +118,17 @@ const registerIndicators = () => {
   if (!chartInstance) return;
 
   try {
-    registerIndicator({
+    registerCustomIndicator({
       name: 'MA',
       shortName: 'MA',
       calcParams: [5, 10, 20],
       figures: [
-        { key: 'MA5', title: 'MA5: ', type: 'line', styles: [{ color: '#2DC08E' }] as unknown },
-        { key: 'MA10', title: 'MA10: ', type: 'line', styles: [{ color: '#D4AF37' }] as unknown },
-        { key: 'MA20', title: 'MA20: ', type: 'line', styles: [{ color: '#F92855' }] as unknown }
+        { key: 'MA5', title: 'MA5: ', type: 'line', styles: [{ color: '#2DC08E' }] },
+        { key: 'MA10', title: 'MA10: ', type: 'line', styles: [{ color: '#D4AF37' }] },
+        { key: 'MA20', title: 'MA20: ', type: 'line', styles: [{ color: '#F92855' }] }
       ],
-      calc: ((kLineDataList) => {
-        const closes = kLineDataList.map(d => d.close);
+      calc: (kLineDataList: KLineData[]) => {
+        const closes = kLineDataList.map((d: KLineData) => d.close);
         const result: Record<string, number[]> = { MA5: [], MA10: [], MA20: [] };
 
         const calcMA = (period: number): number[] => {
@@ -111,7 +137,7 @@ const registerIndicators = () => {
             if (i < period - 1) {
               ma.push(NaN);
             } else {
-              const sum = closes.slice(i - period + 1, i + 1).reduce((a, b) => a + b, 0);
+              const sum = closes.slice(i - period + 1, i + 1).reduce((a: number, b: number) => a + b, 0);
               ma.push(Number((sum / period).toFixed(2)));
             }
           }
@@ -122,23 +148,23 @@ const registerIndicators = () => {
         result.MA10 = calcMA(10);
         result.MA20 = calcMA(20);
         return result;
-      }) as unknown
+      }
     });
 
-    registerIndicator({
+    registerCustomIndicator({
       name: 'BOLL',
       shortName: 'BOLL',
       calcParams: [20, 2],
       figures: [
-        { key: 'upper', title: '上轨: ', type: 'line', styles: [{ color: '#D4AF37' }] as unknown },
-        { key: 'middle', title: '中轨: ', type: 'line', styles: [{ color: '#D4AF37' }] as unknown },
-        { key: 'lower', title: '下轨: ', type: 'line', styles: [{ color: '#D4AF37' }] as unknown }
+        { key: 'upper', title: '上轨: ', type: 'line', styles: [{ color: '#D4AF37' }] },
+        { key: 'middle', title: '中轨: ', type: 'line', styles: [{ color: '#D4AF37' }] },
+        { key: 'lower', title: '下轨: ', type: 'line', styles: [{ color: '#D4AF37' }] }
       ],
-      calc: ((kLineDataList) => {
-        const closes = kLineDataList.map(d => d.close);
+      calc: (kLineDataList: KLineData[]) => {
+        const closes = kLineDataList.map((d: KLineData) => d.close);
         const period = 20;
         const stdDev = 2;
-        const result = { upper: [], middle: [], lower: [] };
+        const result: { upper: number[]; middle: number[]; lower: number[] } = { upper: [], middle: [], lower: [] };
 
         for (let i = 0; i < kLineDataList.length; i++) {
           if (i < period - 1) {
@@ -147,8 +173,8 @@ const registerIndicators = () => {
             result.lower.push(NaN);
           } else {
             const slice = closes.slice(i - period + 1, i + 1);
-            const sma = slice.reduce((a, b) => a + b, 0) / period;
-            const variance = slice.reduce((a, b) => a + Math.pow(b - sma, 2), 0) / period;
+            const sma = slice.reduce((a: number, b: number) => a + b, 0) / period;
+            const variance = slice.reduce((a: number, b: number) => a + Math.pow(b - sma, 2), 0) / period;
             const std = Math.sqrt(variance);
 
             result.middle.push(Number(sma.toFixed(2)));
@@ -157,7 +183,7 @@ const registerIndicators = () => {
           }
         }
         return result;
-      }) as unknown
+      }
     });
   } catch (e) {
     console.warn('Failed to register indicators:', e);
@@ -170,10 +196,10 @@ const toggleMainIndicator = (indicatorKey: string) => {
   if (activeMainIndicators.value.has(indicatorKey)) {
     activeMainIndicators.value.delete(indicatorKey);
     try {
-      const indicators = chartInstance.getIndicators();
-      const target = indicators.find((ind: unknown) => ind.name === indicatorKey);
+      const indicators = getRuntimeIndicators(chartInstance);
+      const target = indicators.find((ind) => ind.name === indicatorKey);
       if (target) {
-        chartInstance.removeIndicator(target.paneId, indicatorKey);
+        removeRuntimeIndicator(chartInstance, target);
       }
     } catch (e) {
       console.warn('Failed to remove indicator:', e);
@@ -192,18 +218,18 @@ const initOscillatorChart = () => {
   if (!oscillatorRef.value) return;
 
   try {
-    registerIndicator({
+    registerCustomIndicator({
       name: 'MACD',
       shortName: 'MACD',
       calcParams: [12, 26, 9],
       figures: [
-        { key: 'DIF', title: 'DIF: ', type: 'line', styles: [{ color: '#2DC08E' }] as unknown },
-        { key: 'DEA', title: 'DEA: ', type: 'line', styles: [{ color: '#F92855' }] as unknown },
-        { key: 'MACD', title: 'MACD: ', type: 'bar', styles: [{ color: 'rgb(212 175 55 / 60%)' }] as unknown }
+        { key: 'DIF', title: 'DIF: ', type: 'line', styles: [{ color: '#2DC08E' }] },
+        { key: 'DEA', title: 'DEA: ', type: 'line', styles: [{ color: '#F92855' }] },
+        { key: 'MACD', title: 'MACD: ', type: 'bar', styles: [{ color: 'rgb(212 175 55 / 60%)' }] }
       ],
-      calc: ((kLineDataList) => {
-        const closes = kLineDataList.map(d => d.close);
-        const result = { DIF: [], DEA: [], MACD: [] };
+      calc: (kLineDataList: KLineData[]) => {
+        const closes = kLineDataList.map((d: KLineData) => d.close);
+        const result: { DIF: number[]; DEA: number[]; MACD: number[] } = { DIF: [], DEA: [], MACD: [] };
 
         const calcEMA = (data: number[], period: number): number[] => {
           const ema: number[] = [];
@@ -233,18 +259,18 @@ const initOscillatorChart = () => {
         }
 
         return result;
-      }) as unknown
+      }
     });
 
-    registerIndicator({
+    registerCustomIndicator({
       name: 'RSI',
       shortName: 'RSI',
       calcParams: [14],
       figures: [
-        { key: 'RSI', title: 'RSI: ', type: 'line', styles: [{ color: '#D4AF37' }] as unknown }
+        { key: 'RSI', title: 'RSI: ', type: 'line', styles: [{ color: '#D4AF37' }] }
       ],
-      calc: ((kLineDataList) => {
-        const closes = kLineDataList.map(d => d.close);
+      calc: (kLineDataList: KLineData[]) => {
+        const closes = kLineDataList.map((d: KLineData) => d.close);
         const result: number[] = [];
         let gains = 0;
         let losses = 0;
@@ -273,23 +299,23 @@ const initOscillatorChart = () => {
 
         result.unshift(NaN);
         return { RSI: result };
-      }) as unknown
+      }
     });
 
-    registerIndicator({
+    registerCustomIndicator({
       name: 'KDJ',
       shortName: 'KDJ',
       calcParams: [9, 3, 3],
       figures: [
-        { key: 'K', title: 'K: ', type: 'line', styles: [{ color: '#D4AF37' }] as unknown },
-        { key: 'D', title: 'D: ', type: 'line', styles: [{ color: '#2DC08E' }] as unknown },
-        { key: 'J', title: 'J: ', type: 'line', styles: [{ color: '#F92855' }] as unknown }
+        { key: 'K', title: 'K: ', type: 'line', styles: [{ color: '#D4AF37' }] },
+        { key: 'D', title: 'D: ', type: 'line', styles: [{ color: '#2DC08E' }] },
+        { key: 'J', title: 'J: ', type: 'line', styles: [{ color: '#F92855' }] }
       ],
-      calc: ((kLineDataList) => {
-        const highs = kLineDataList.map(d => d.high);
-        const lows = kLineDataList.map(d => d.low);
-        const closes = kLineDataList.map(d => d.close);
-        const result = { K: [], D: [], J: [] };
+      calc: (kLineDataList: KLineData[]) => {
+        const highs = kLineDataList.map((d: KLineData) => d.high);
+        const lows = kLineDataList.map((d: KLineData) => d.low);
+        const closes = kLineDataList.map((d: KLineData) => d.close);
+        const result: { K: number[]; D: number[]; J: number[] } = { K: [], D: [], J: [] };
         const n = 9;
         const m1 = 3;
         const m2 = 3;
@@ -321,10 +347,13 @@ const initOscillatorChart = () => {
         }
 
         return result;
-      }) as unknown
+      }
     });
 
-    oscillatorInstance = init(oscillatorRef.value, createOscillatorChartConfig()) as Chart;
+    oscillatorInstance = init(
+      oscillatorRef.value,
+      createOscillatorChartConfig() as unknown as Parameters<typeof init>[1]
+    ) as Chart;
 
     updateOscillatorIndicator();
   } catch (e) {
@@ -336,9 +365,9 @@ const updateOscillatorIndicator = () => {
   if (!oscillatorInstance) return;
 
   try {
-    const indicators = oscillatorInstance.getIndicators();
-    indicators.forEach((ind: unknown) => {
-      oscillatorInstance.removeIndicator(ind.paneId, ind.name);
+    const indicators = getRuntimeIndicators(oscillatorInstance);
+    indicators.forEach((ind) => {
+      removeRuntimeIndicator(oscillatorInstance, ind);
     });
 
     oscillatorInstance.createIndicator(activeOscillatorIndicator.value, false);
@@ -404,20 +433,18 @@ watch(error, (err) => {
 });
 
 onMounted(() => {
-  registerIndicators();
   initChart();
+  registerIndicators();
   loadKlineData(selectedSymbol.value, selectedInterval.value, selectedAdjust.value);
   window.addEventListener('resize', handleResize);
 });
 
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize);
-  if (chartInstance) {
-    try { chartInstance.dispose(); } catch (_error) { void _error; }
-  }
-  if (oscillatorInstance) {
-    try { oscillatorInstance.dispose(); } catch (_error) { void _error; }
-  }
+  disposeChart(chartInstance);
+  disposeChart(oscillatorInstance);
+  chartInstance = null;
+  oscillatorInstance = null;
 });
 
   return {

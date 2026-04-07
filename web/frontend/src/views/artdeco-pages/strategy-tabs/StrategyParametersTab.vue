@@ -13,6 +13,7 @@ import {
 } from './strategyParametersData'
 
 type ParametersDataSource = 'real'
+type StrategyParameterValue = NonNullable<NonNullable<StrategyConfig['parameters']>[number]>['value']
 
 const { loading, error, lastRequestId, lastProcessTime, exec } = useArtDecoApi()
 const strategies = ref<StrategyConfig[]>([])
@@ -113,9 +114,26 @@ function toStrategyParameters(
 
   return entries.map(([name, value]) => ({
     name,
-    value,
+    value: normalizeParameterValue(value),
     data_type: typeof value
   }))
+}
+
+function normalizeParameterValue(value: unknown): StrategyParameterValue {
+  if (value === undefined) return undefined
+  if (value === null) return null
+  if (Array.isArray(value)) return value
+
+  switch (typeof value) {
+    case 'string':
+    case 'number':
+    case 'boolean':
+      return value
+    case 'object':
+      return value as Record<string, unknown>
+    default:
+      return String(value)
+  }
 }
 
 function getOptimizationScore(strategy: StrategyConfig): number | null {

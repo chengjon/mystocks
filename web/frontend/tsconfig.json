@@ -96,6 +96,7 @@
     "src/api/monitoring.ts",             // 监控API（低优先级）
     "src/api/market.ts",                 // 市场API（低优先级）
     "src/components/market/ProKLineChart.vue",  // 暂时排除（Phase 2修复）
+    "src/_entry-archive/**/*",              // 历史入口归档，不参与当前运行时 typecheck
     "src/views/converted.archive/**/*",  // 归档文件，不进行类型检查
     "src/views/artdeco-pages/settings/**/*",  // 设置页面（低优先级）
     "src/views/Phase4Dashboard.vue",     // 仪表板（低优先级）
