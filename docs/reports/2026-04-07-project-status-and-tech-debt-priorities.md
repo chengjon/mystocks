@@ -103,7 +103,7 @@ Phase 2 目录中已经存在 4 份计划文件，但自动进度工具仍把该
 
 - `.planning/phases/02-dead-code-inventory-removal/02-CONTEXT.md`
 - `.planning/phases/02-dead-code-inventory-removal/02-RESEARCH.md`
-- `.planning/phases/02-dead-code-inventory-removal/02-PLAN-01-inventory.md`
+- `.planning/phases/02-dead-code-inventory-removal/02-01-PLAN.md`
 
 ### Priority 2: Finish Residual Caller And Comment Cleanup
 
@@ -117,8 +117,8 @@ Phase 2 目录中已经存在 4 份计划文件，但自动进度工具仍把该
 
 主要参考：
 
-- `.planning/phases/02-dead-code-inventory-removal/02-PLAN-02-redirect-callers.md`
-- `.planning/phases/02-dead-code-inventory-removal/02-PLAN-03-merge-overlapping.md`
+- `.planning/phases/02-dead-code-inventory-removal/02-02-PLAN.md`
+- `.planning/phases/02-dead-code-inventory-removal/02-03-PLAN.md`
 
 当前执行状态：
 
@@ -141,13 +141,29 @@ Phase 2 收口后，下一梯队是前端结构收敛。
 
 重点包括：
 
-- 先确认真实 frontend entry truth source
+- 先按已确认事实固化 frontend entry truth source：`index.html -> /src/main-standard.ts -> /src/router/index.ts`
 - 合并大小写冲突目录
 - 清理多余 `main-*` 入口
 - 收敛 `views/composables/`
 - 清理 `views/demo/` 与 `views/converted.archive/`
 
 这是部署与模块解析风险，优先级高于命名美化类问题。
+
+补充审计结论：
+
+- `views/announcement/AnnouncementMonitor.vue` 当前仍是 `router/index.ts` 的现役路由页面
+- `views/stocks/` 当前仍被 `watchlist/Screener.vue` 与 `src/composables/market/useDataAnalysis.ts` 直接复用
+- `views/monitoring/` 在本次审计范围内未发现现役 `router/index.ts` / `views/*` / `src/composables/*` import，但仍有历史 `router/index.js*` 与测试 spec 痕迹，现阶段应标为“待判定”而不是“可删”
+- `views/composables/` 当前主要服务 root-level legacy views（如 `Analysis.vue`、`TradingDashboard.vue`、`TechnicalAnalysis.vue` 等）的相对路径引用，不应直接迁移
+- `main-standard.ts` 是当前 HTML 真入口，但 `main.js` 仍被 `web/frontend/verify-mount.js` 直接读取，入口变体治理仍需先做 caller 分类
+- `views/composables/usePhase4Dashboard.ts` 与 `views/demo/composables/usePhase4Dashboard.ts` 是分叉实现，不是薄包装
+- `views/composables/useTechnicalAnalysis.ts` 与 `views/technical/composables/useTechnicalAnalysis.ts` 也是分叉实现，应作为 Phase 3/4 的重复实现候选单独治理
+- `views/demo/`、`views/converted.archive/`、`views/examples/` 当前更接近“测试守护资产/历史示例资产”，不是当前主路由真相，也不能直接按死代码目录处理
+- `Phase4Dashboard` 这组重复实现目前更像“历史路由资产 + demo资产”的并存，而不是同一真相源的简单重命名
+- `TechnicalAnalysis` 这组重复实现目前更像“离开主路由后的双分叉存量”，治理重点应放在功能树判定，而不是先机械合并
+- `phase4.routes.js` 在当前审计范围内未发现被现役路由聚合链引用，因此 `Phase4Dashboard` root 版本更像脱离主链的旧路由资产
+- `phase4.routes.js` 还引用了缺失文件 `StrategyMgmtPhase4.vue`，说明该路由文件本身也已具备“过期残留”特征
+- `market/Technical.vue` 已被 `market-route-canonical-paths.spec.ts` 与 `domain-body-migration-ownership.spec.ts` 明确约束为 canonical technical page
 
 ### Priority 5: Phase 4 Naming And Shim Polish
 
@@ -230,10 +246,10 @@ Phase 2 收口后，下一梯队是前端结构收敛。
 
 ### 4.4 Process Debt
 
-当前还能明确看到两项流程债：
+按 2026-04-07 生成本报告时的工作树快照，仍能明确看到两项流程债：
 
 - Phase 2 计划工件已存在，但自动进度统计未正确识别
-- 当前工作树极度脏：`git status --short | wc -l` 为 `2887`
+- 当次工作树极度脏：`git status --short | wc -l` 观测值为 `2887`
 
 这会直接影响：
 
@@ -263,9 +279,9 @@ Phase 2 收口后，下一梯队是前端结构收敛。
 - `/opt/claude/mystocks_spec/.planning/phases/01-python-lint-baseline/01-SUMMARY.md`
 - `/opt/claude/mystocks_spec/.planning/phases/02-dead-code-inventory-removal/02-CONTEXT.md`
 - `/opt/claude/mystocks_spec/.planning/phases/02-dead-code-inventory-removal/02-RESEARCH.md`
-- `/opt/claude/mystocks_spec/.planning/phases/02-dead-code-inventory-removal/02-PLAN-01-inventory.md`
-- `/opt/claude/mystocks_spec/.planning/phases/02-dead-code-inventory-removal/02-PLAN-02-redirect-callers.md`
-- `/opt/claude/mystocks_spec/.planning/phases/02-dead-code-inventory-removal/02-PLAN-03-merge-overlapping.md`
-- `/opt/claude/mystocks_spec/.planning/phases/02-dead-code-inventory-removal/02-PLAN-04-approved-deletion.md`
+- `/opt/claude/mystocks_spec/.planning/phases/02-dead-code-inventory-removal/02-01-PLAN.md`
+- `/opt/claude/mystocks_spec/.planning/phases/02-dead-code-inventory-removal/02-02-PLAN.md`
+- `/opt/claude/mystocks_spec/.planning/phases/02-dead-code-inventory-removal/02-03-PLAN.md`
+- `/opt/claude/mystocks_spec/.planning/phases/02-dead-code-inventory-removal/02-04-PLAN.md`
 - `/opt/claude/mystocks_spec/reports/analysis/tech-debt-baseline.json`
 - `/opt/claude/mystocks_spec/reports/analysis/tech-debt-current-real-week2-day5.json`
