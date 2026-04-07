@@ -14,17 +14,17 @@ Fix naming conventions (truncated names, mechanical splits, `_new.py` files), fi
 ## Implementation Decisions
 
 ### Root Shim Disposition
-- **D-01:** Deprecate-in-place — add `warnings.warn(DeprecationWarning, "...")` to each root shim (core.py, data_access.py, monitoring.py)
-- **D-02:** Do NOT redirect callers or remove shims in this phase. Mark for removal in a future cleanup cycle.
-- **D-03:** Add a comment in each shim file pointing to the canonical `src.*` import path
+- **D-01:** Complete caller inventory for each root shim FIRST (per ROADMAP.md sub-stage 4a step 1). Check: scripts/, Dockerfiles, docker-compose files, CI configs, and Python imports.
+- **D-02:** After inventory, decide disposition per shim (Remove / Deprecate / Keep). User preference is Deprecate-in-place (`warnings.warn("...", DeprecationWarning)`) but the final call depends on what the inventory reveals — if a shim has zero runtime callers, Remove may be cleaner.
+- **D-03:** For shims marked Deprecate: add deprecation warning + comment pointing to canonical `src.*` import path. Do NOT redirect callers or remove shims in this phase.
 
 ### Naming Conventions
 - **D-04:** Rename `src/calcu/` → `src/calculators/` (git mv, update all imports)
 - **D-05:** Rename `part{1,2,3}.py` files to semantic names based on actual contents — researcher/planner must read each file to determine the right name before renaming
 - **D-06:** For `*_new.py` files: verify `_new` version is functionally complete, then rename to replace the canonical file and delete the old one (git mv for history)
-  - `src/database/database_service_new.py` → replace `database_service.py`
-  - `src/advanced_analysis/decision_models/decision_models_analyzer_new.py` → replace `decision_models_analyzer.py`
-- **D-07:** Delete `baseStore.ts.bak` from `web/frontend/src/stores/`
+  - `src/database/database_service_new.py` → replace `src/database/database_service.py`
+  - `src/advanced_analysis/decision_models/decision_models_analyzer_new.py` → replace `src/advanced_analysis/decision_models_analyzer.py` (note: canonical is in the parent `advanced_analysis/` package, not inside the `decision_models/` subpackage)
+- **D-07:** Audit `baseStore.ts.bak` in `web/frontend/src/stores/` for consumers per DELETION-CANDIDATES pattern (architecture/STANDARDS.md:103), then delete if redundant
 
 ### Store Domain Clarification
 - **D-08:** Document boundaries for overlapping store pairs (market.ts vs marketData.ts, trading.ts vs tradingData.ts) — do NOT merge
@@ -50,7 +50,13 @@ Fix naming conventions (truncated names, mechanical splits, `_new.py` files), fi
 
 ### Root shims
 - `.planning/ROADMAP.md` — Global Execution Prerequisites > Root Shim Disposition Table
-- `src/core.py`, `data_access.py`, `monitoring.py` — current shim implementations
+- **Root-level shims** (re-export wrappers, NOT canonical implementations):
+  - `core.py` (root) — re-exports from `src/core/`
+  - `data_access.py` (root) — re-exports from `src/data_access/`
+  - `monitoring.py` (root) — re-exports from `src/monitoring/`
+- **src/ internal re-exports** (also shims, but inside src/):
+  - `src/core.py` — re-exports from `src/core/`
+  - `src/data_access.py` — re-exports from `src/data_access/`
 - `scripts/dev/project/update_imports.py` — references shim import patterns
 - `scripts/dev/fix_test_imports.py` — references shim import patterns
 
@@ -79,13 +85,22 @@ Fix naming conventions (truncated names, mechanical splits, `_new.py` files), fi
 
 ### Current State
 - `src/calcu/`: 1 block/ subdir + readme.md (truncated name)
-- 6 `part{1,2,3}.py` files in 2 modules:
-  - `src/monitoring/monitoring_database_methods/part{1,2,3}.py`
+- **32 `part{1,2,3}.py` files across 11 modules** (not 6 in 2 — full inventory required for NAME-02):
+  - `src/adapters/efinance_adapter/efinance_data_source_methods/part{1,2,3}.py`
   - `src/core/deduplication_strategy_methods/part{1,2,3}.py`
+  - `src/data_sources/real/postgresql_relational/postgre_sql_relational_data_source_methods/part{1,2,3}.py`
+  - `src/data_sources/real/tdengine_timeseries/t_dengine_time_series_data_source_methods/part{1,2}.py`
+  - `src/governance/risk_management/calculators/gpu_calculator/gpu_risk_calculator_methods/part{1,2,3}.py`
+  - `src/governance/risk_management/services/stop_loss_engine/stop_loss_engine_methods/part{1,2,3}.py`
+  - `src/gpu/acceleration/feature_calculation_gpu/feature_calculation_gpu_methods/part{1,2}.py`
+  - `src/gpu/acceleration/optimization_gpu_methods/part{1,2,3}.py`
+  - `src/gpu/api_system/services/resource_scheduler/resource_scheduler_methods/part{1,2}.py`
+  - `src/monitoring/monitoring_database_methods/part{1,2,3}.py`
+  - `src/storage/database/database_manager/database_table_manager_methods/part{1,2,3}.py`
 - 2 `*_new.py` files:
   - `src/database/database_service_new.py`
-  - `src/advanced_analysis/decision_models/decision_models_analyzer_new.py`
-- 3 root shims: core.py (548 bytes), data_access.py (285 bytes), monitoring.py (520 bytes)
+  - `src/advanced_analysis/decision_models/decision_models_analyzer_new.py` (canonical: `src/advanced_analysis/decision_models_analyzer.py` in parent package)
+- Root-level shims: `core.py`, `data_access.py`, `monitoring.py` + src/ internal re-exports: `src/core.py`, `src/data_access.py`
 - 20+ Pinia stores in `web/frontend/src/stores/`
 - 1 stale backup: `baseStore.ts.bak`
 
