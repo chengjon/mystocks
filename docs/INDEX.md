@@ -9,6 +9,7 @@
 
 - [📖 项目概述](#overview)
 - [📘 开发指南](#guides)
+- [🛡️ 删除治理](guides/governance/DELETION_EVIDENCE_GATE.md)
 - [🔌 API文档](#api)
 - [🏗️  架构设计](#architecture)
 - [⚙️  运维文档](#operations)
