@@ -1,8 +1,8 @@
 # Guides
 
-**最后更新**: 2026-04-01 13:57:41
+**最后更新**: 2026-04-08 01:18:00
 
-**文档数量**: 249
+**文档数量**: 250
 
 
 ---
@@ -174,6 +174,9 @@
 
 - [DATA_SOURCE_TOOLS_QUICK_REFERENCE](data-source/DATA_SOURCE_TOOLS_QUICK_REFERENCE.md)
   - *数据源管理工具 - 快速参考卡片*
+
+- [DELETION_EVIDENCE_GATE](governance/DELETION_EVIDENCE_GATE.md)
+  - *目录删除与 >=3 文档删除的证据门禁操作指南*
 
 - [DEVELOPER_GUIDE](onboarding/DEVELOPER_GUIDE.md)
   - *MyStocks 开发指南*

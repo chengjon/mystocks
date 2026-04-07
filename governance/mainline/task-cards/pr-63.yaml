@@ -1,0 +1,99 @@
+version: "v0.2"
+
+task:
+  id: "pr-63"
+  title: "surface deletion evidence gate docs and canonical navigation"
+  owner: "main"
+  created_at: "2026-04-08"
+
+mainline:
+  id: "L1-deletion-governance-operability"
+  objective: "make the landed deletion evidence gate discoverable and operable from canonical docs entrypoints without changing gate semantics or touching unrelated product lines"
+  milestone_id: "L2-governance-docs-hardening"
+  slice_id: "L3-deletion-evidence-guide-and-indexes"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "docs-and-test discoverability slice for an already-landed governance gate with no runtime behavior or business-domain changes"
+
+scope:
+  allowed_paths:
+    - "docs/INDEX.md"
+    - "docs/guides/INDEX.md"
+    - "docs/guides/governance/DELETION_EVIDENCE_GATE.md"
+    - "docs/guides/governance/INDEX.md"
+    - "governance/mainline/README.md"
+    - "governance/mainline/task-cards/pr-63.yaml"
+    - "tests/unit/docs/test_deletion_evidence_doc_sync.py"
+  forbidden_paths:
+    - "web/frontend/src/views/data/Advanced.vue"
+    - "web/frontend/src/views/artdeco-pages/ArtDecoDataAnalysis.vue"
+    - "web/frontend/src/views/watchlist/**"
+    - "scripts/compliance/deletion_evidence_gate.py"
+    - "governance/deletion-evidence.yaml"
+    - "governance/waivers/deletion-evidence-waivers.yaml"
+
+non_goals:
+  - "No deletion gate semantics change, schema change, or runtime enforcement change"
+  - "No work on Data-Indicator, Watchlist, Mongo, or other user-owned active lines"
+  - "No duplicate policy layer outside the canonical guide and existing governance entrypoints"
+
+acceptance:
+  checks:
+    - id: "deletion-evidence-doc-sync"
+      command: "python -m pytest --no-cov tests/unit/docs/test_deletion_evidence_doc_sync.py -q"
+      required: true
+    - id: "guides-hooks-convergence"
+      command: "python -m pytest --no-cov tests/unit/docs/test_deletion_evidence_doc_sync.py tests/unit/scripts/test_repository_hygiene_paths.py -q -k \"hook_guides_are_converged_under_guides_hooks_family or deletion_evidence_guide_is_discoverable\""
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-63.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr63-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the task card omits any touched path, Mainline Governance Gate will remain red even though the docs themselves are correct"
+    - "If the guide starts restating policy loosely instead of pointing back to canonical artifacts, governance truth can drift again"
+    - "If top-level docs navigation drops this entry in a future cleanup, deletion governance becomes harder to use despite the gate being enforced"
+  rollback_plan: "git revert <merge-commit-sha> if the PR-63 task card or deletion-governance discoverability links create unexpected governance failures or reviewer confusion"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "surface the landed deletion evidence gate through canonical docs entrypoints and explain how to use its exact-path evidence and waiver artifacts"
+    modified_scope: "docs indexes, one governance operating guide, governance/mainline README, one docs sync regression test, and the PR-63 task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none in runtime or enforcement behavior; only operator discoverability and documentation guardrails improve"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the PR if the added task card or discoverability links introduce governance noise or misleading guidance"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-08T00:00:00Z"
+    approval_note: "docs-only governance discoverability batch for an already-landed deletion evidence gate"
+    secondary_approved: false
