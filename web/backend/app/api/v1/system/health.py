@@ -30,6 +30,71 @@ SYSTEM_HEALTH_ERROR_RESPONSE = {
 }
 
 
+def _success_response_spec(description: str, example: dict) -> dict[int, dict]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+DATABASE_HEALTH_RESPONSES = {
+    **SYSTEM_HEALTH_ERROR_RESPONSE,
+    **_success_response_spec(
+        "Database health snapshot for PostgreSQL and TDengine.",
+        [
+            {
+                "database_type": "postgresql",
+                "connection_status": "healthy",
+                "response_time_ms": 15.2,
+                "active_connections": 5,
+                "total_tables": 45,
+                "last_health_check": "2026-04-08T02:10:00+00:00",
+            },
+            {
+                "database_type": "tdengine",
+                "connection_status": "healthy",
+                "response_time_ms": 8.7,
+                "active_connections": 12,
+                "total_tables": 28,
+                "last_health_check": "2026-04-08T02:10:00+00:00",
+            },
+        ],
+    ),
+}
+
+CLASSIFICATION_STATS_RESPONSES = {
+    **SYSTEM_HEALTH_ERROR_RESPONSE,
+    **_success_response_spec(
+        "Data classification storage and distribution snapshot.",
+        {
+            "data": {
+                "market_data": {
+                    "description": "高频时序数据",
+                    "record_count": 12500000,
+                    "storage_size_gb": 45.2,
+                    "database": "tdengine",
+                    "compression_ratio": 20.0,
+                },
+                "reference_data": {
+                    "description": "参考数据",
+                    "record_count": 500000,
+                    "storage_size_gb": 2.1,
+                    "database": "postgresql",
+                    "compression_ratio": 1.0,
+                },
+            },
+            "total_classes": 5,
+        },
+    ),
+}
+
+
 class DatabaseHealthResponse(BaseModel):
     """Database health check response"""
 
@@ -55,7 +120,7 @@ class DataClassificationStats(BaseModel):
     "/database",
     response_model=List[DatabaseHealthResponse],
     summary="Database Health Check",
-    responses=SYSTEM_HEALTH_ERROR_RESPONSE,
+    responses=DATABASE_HEALTH_RESPONSES,
 )
 async def get_database_health():
     """
@@ -88,7 +153,7 @@ async def get_database_health():
 @router.get(
     "/classification/stats",
     summary="Data Classification Statistics",
-    responses=SYSTEM_HEALTH_ERROR_RESPONSE,
+    responses=CLASSIFICATION_STATS_RESPONSES,
 )
 async def get_data_classification_stats():
     """

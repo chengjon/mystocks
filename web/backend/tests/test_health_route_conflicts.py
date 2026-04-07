@@ -165,12 +165,16 @@ def test_governance_dashboard_endpoints_have_docs_examples_and_error_responses()
         assert any(status.startswith(("4", "5")) for status in operation["responses"])
 
 
-def test_v1_health_endpoints_have_error_responses() -> None:
+def test_v1_health_endpoints_have_docs_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
     for path in ["/api/v1/health/database", "/api/v1/health/classification/stats"]:
         operation = schema["paths"][path]["get"]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        assert "example" in success_json or "examples" in success_json
         assert any(status.startswith("5") for status in operation["responses"])
 
 
