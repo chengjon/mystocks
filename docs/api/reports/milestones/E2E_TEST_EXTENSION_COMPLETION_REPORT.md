@@ -5,9 +5,9 @@
 > 其中的完成度、通过状态和结论不应直接视为当前事实；引用前应结合 `architecture/STANDARDS.md`、当前实现与最新验证结果重新确认。
 
 
-**日期**: 2025-12-31
-**执行者**: Test CLI (Worker CLI)
-**任务**: 扩展E2E测试覆盖所有可用页面
+**Historical Execution Snapshot Date**: 2025-12-31
+**Historical Executor Snapshot**: Test CLI (Worker CLI)
+**Historical Task Snapshot**: 扩展E2E测试覆盖所有可用页面
 
 ---
 
