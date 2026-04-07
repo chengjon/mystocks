@@ -2552,14 +2552,25 @@ def test_v1_data_route_sentiment_strategy_and_optimization_endpoints_have_docs()
     )
     assert any(code.startswith(("4", "5")) for code in strategies_operation["responses"])
 
-    slow_queries_operation = schema["paths"]["/api/v1/optimization/slow-queries"]["get"]
-    slow_queries_parameters = slow_queries_operation.get("parameters", [])
-    assert slow_queries_operation.get("summary")
-    assert len(slow_queries_operation.get("description", "")) >= 20
-    assert any(
-        param["name"] == "limit" and param.get("description")
-        for param in slow_queries_parameters
-    )
+    optimization_expectations = {
+        "/api/v1/optimization/vacuum": ("post", set()),
+        "/api/v1/optimization/analyze": ("post", set()),
+        "/api/v1/optimization/reindex": ("post", set()),
+        "/api/v1/optimization/status": ("get", set()),
+        "/api/v1/optimization/slow-queries": ("get", {"limit"}),
+    }
+
+    for path, (method, parameter_names) in optimization_expectations.items():
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+        success_json = operation["responses"]["200"]["content"]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in parameter_names:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_remaining_signal_health_and_task_endpoints_have_parameter_docs_and_descriptions() -> None:

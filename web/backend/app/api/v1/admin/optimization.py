@@ -15,6 +15,84 @@ OPTIMIZATION_ROUTE_RESPONSES = {
     500: COMMON_RESPONSES[500],
 }
 
+
+def _success_response_spec(description: str, example: Dict[str, Any]) -> Dict[int, Dict[str, Any]]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+VACUUM_RESPONSE_EXAMPLE = {
+    "operation": "vacuum",
+    "status": "completed",
+    "duration_ms": 5200,
+    "result": {
+        "space_reclaimed_mb": 150,
+        "tables_processed": 12,
+    },
+}
+
+ANALYZE_RESPONSE_EXAMPLE = {
+    "operation": "analyze",
+    "status": "completed",
+    "duration_ms": 3200,
+    "result": {
+        "tables_analyzed": 45,
+        "indexes_updated": 28,
+    },
+}
+
+REINDEX_RESPONSE_EXAMPLE = {
+    "operation": "reindex",
+    "status": "completed",
+    "duration_ms": 8500,
+    "result": {
+        "indexes_rebuilt": 35,
+        "index_size_reduction_percent": 12,
+    },
+}
+
+DATABASE_STATUS_RESPONSE_EXAMPLE = {
+    "last_vacuum": "2025-01-19T02:00:00Z",
+    "last_analyze": "2025-01-19T02:30:00Z",
+    "last_reindex": "2025-01-15T03:00:00Z",
+    "recommendations": [
+        {
+            "type": "vacuum",
+            "priority": "low",
+            "reason": "Database was vacuumed recently",
+        }
+    ],
+    "index_statistics": [
+        {
+            "index_name": "idx_trades_symbol",
+            "size_mb": 45.2,
+            "scan_count": 12500,
+            "hit_ratio": 0.98,
+        }
+    ],
+}
+
+SLOW_QUERIES_RESPONSE_EXAMPLE = {
+    "queries": [
+        {
+            "query": "SELECT * FROM trades WHERE symbol = ?",
+            "call_count": 1250,
+            "total_time_ms": 5200,
+            "mean_time_ms": 4.16,
+            "rows_examined": 125000,
+        }
+    ],
+    "total": 1,
+}
+
 router = APIRouter(
     prefix="/optimization",
     tags=["Database Optimization"],
@@ -31,7 +109,12 @@ class OptimizationResponse(BaseModel):
     result: Dict[str, Any] = Field(..., description="优化执行结果详情。")
 
 
-@router.post("/vacuum", response_model=OptimizationResponse, summary="Vacuum Database")
+@router.post(
+    "/vacuum",
+    response_model=OptimizationResponse,
+    summary="Vacuum Database",
+    responses=_success_response_spec("Vacuum optimization execution result.", VACUUM_RESPONSE_EXAMPLE),
+)
 async def vacuum_database():
     """
     执行数据库Vacuum操作
@@ -49,7 +132,12 @@ async def vacuum_database():
     )
 
 
-@router.post("/analyze", response_model=OptimizationResponse, summary="Analyze Database")
+@router.post(
+    "/analyze",
+    response_model=OptimizationResponse,
+    summary="Analyze Database",
+    responses=_success_response_spec("Analyze optimization execution result.", ANALYZE_RESPONSE_EXAMPLE),
+)
 async def analyze_database():
     """
     执行数据库Analyze操作
@@ -67,7 +155,12 @@ async def analyze_database():
     )
 
 
-@router.post("/reindex", response_model=OptimizationResponse, summary="Reindex Database")
+@router.post(
+    "/reindex",
+    response_model=OptimizationResponse,
+    summary="Reindex Database",
+    responses=_success_response_spec("Reindex optimization execution result.", REINDEX_RESPONSE_EXAMPLE),
+)
 async def reindex_database():
     """
     执行数据库Reindex操作
@@ -85,7 +178,11 @@ async def reindex_database():
     )
 
 
-@router.get("/status", summary="Get Database Status")
+@router.get(
+    "/status",
+    summary="Get Database Status",
+    responses=_success_response_spec("Current database optimization status snapshot.", DATABASE_STATUS_RESPONSE_EXAMPLE),
+)
 async def get_database_status():
     """
     获取数据库优化状态
@@ -118,6 +215,7 @@ async def get_database_status():
     "/slow-queries",
     summary="Get Slow Queries",
     description="返回数据库中最慢的一批 SQL 查询，便于定位索引缺失、扫描放大和执行时间异常的热点语句。",
+    responses=_success_response_spec("Slow query hotspot snapshot for database tuning.", SLOW_QUERIES_RESPONSE_EXAMPLE),
 )
 async def get_slow_queries(limit: int = Query(10, ge=1, le=100, description="返回的慢查询条数上限。")):
     """
