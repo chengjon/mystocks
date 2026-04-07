@@ -35,11 +35,133 @@ POOL_MONITORING_ERROR_RESPONSE = {
     }
 }
 
+POOL_MONITORING_TDENGINE_UNAVAILABLE_RESPONSE = {
+    503: {
+        "description": "TDengine connection pool is not initialized or currently unavailable.",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "TDengine连接池未初始化或不可用",
+                }
+            }
+        },
+    }
+}
+
+
+def _success_response_spec(description: str, example: Dict[str, Any]) -> Dict[int, Dict[str, Any]]:
+    return {
+        200: {
+            "description": description,
+            "content": {"application/json": {"example": example}},
+        }
+    }
+
+
+POSTGRESQL_POOL_STATS_RESPONSES = {
+    **_success_response_spec(
+        "当前 PostgreSQL 连接池容量、活跃连接和使用率统计快照。",
+        {
+            "pool_size": 10,
+            "checked_in": 8,
+            "checked_out": 2,
+            "overflow": 0,
+            "max_overflow": 20,
+            "pool_capacity": 30,
+            "usage_percentage": 6.67,
+            "pool_status": "健康：连接池使用率正常",
+            "timestamp": "2026-04-07T10:00:00+00:00",
+        },
+    ),
+    **POOL_MONITORING_ERROR_RESPONSE,
+}
+
+TDENGINE_POOL_STATS_RESPONSES = {
+    **_success_response_spec(
+        "当前 TDengine 连接池容量、请求量、错误率和超时率统计快照。",
+        {
+            "total_created": 128,
+            "total_closed": 124,
+            "active_connections": 2,
+            "idle_connections": 3,
+            "connection_requests": 256,
+            "connection_timeouts": 1,
+            "connection_errors": 0,
+            "pool_size": 5,
+            "usage_percentage": 40.0,
+            "pool_status": "健康：连接池使用率正常",
+            "error_rate": 0.0,
+            "timeout_rate": 0.39,
+            "timestamp": "2026-04-07T10:00:00+00:00",
+        },
+    ),
+    **POOL_MONITORING_TDENGINE_UNAVAILABLE_RESPONSE,
+    **POOL_MONITORING_ERROR_RESPONSE,
+}
+
+POOL_MONITORING_HEALTH_RESPONSES = {
+    **_success_response_spec(
+        "PostgreSQL 与 TDengine 连接池的综合健康检查结果。",
+        {
+            "postgresql": {
+                "status": "healthy",
+                "details": {
+                    "active_connections": 2,
+                    "idle_connections": 8,
+                    "usage_percentage": 6.67,
+                },
+            },
+            "tdengine": {
+                "status": "healthy",
+                "details": {
+                    "active_connections": 2,
+                    "idle_connections": 3,
+                    "usage_percentage": 40.0,
+                    "error_rate": 0.0,
+                },
+            },
+            "overall_status": "healthy",
+            "timestamp": "2026-04-07T10:00:00+00:00",
+        },
+    ),
+    **POOL_MONITORING_ERROR_RESPONSE,
+}
+
+POOL_MONITORING_ALERT_RESPONSES = {
+    **_success_response_spec(
+        "当前连接池告警列表，包括使用率、错误率和超时率阈值命中情况。",
+        {
+            "has_alerts": True,
+            "alert_count": 2,
+            "alerts": [
+                {
+                    "level": "warning",
+                    "component": "postgresql",
+                    "metric": "pool_usage",
+                    "value": 83.5,
+                    "threshold": 80,
+                    "message": "PostgreSQL连接池使用率高达83.5%",
+                },
+                {
+                    "level": "warning",
+                    "component": "tdengine",
+                    "metric": "timeout_rate",
+                    "value": 3.1,
+                    "threshold": 2,
+                    "message": "TDengine连接超时率高达3.1%",
+                },
+            ],
+            "timestamp": "2026-04-07T10:00:00+00:00",
+        },
+    ),
+    **POOL_MONITORING_ERROR_RESPONSE,
+}
+
 
 @router.get(
     "/postgresql/stats",
     summary="PostgreSQL连接池统计",
-    responses=POOL_MONITORING_ERROR_RESPONSE,
+    responses=POSTGRESQL_POOL_STATS_RESPONSES,
 )
 async def get_postgresql_pool_stats() -> Dict[str, Any]:
     """
@@ -92,7 +214,7 @@ async def get_postgresql_pool_stats() -> Dict[str, Any]:
 @router.get(
     "/tdengine/stats",
     summary="TDengine连接池统计",
-    responses=POOL_MONITORING_ERROR_RESPONSE,
+    responses=TDENGINE_POOL_STATS_RESPONSES,
 )
 async def get_tdengine_pool_stats() -> Dict[str, Any]:
     """
@@ -163,7 +285,7 @@ async def get_tdengine_pool_stats() -> Dict[str, Any]:
 @router.get(
     "/health",
     summary="连接池综合健康检查",
-    responses=POOL_MONITORING_ERROR_RESPONSE,
+    responses=POOL_MONITORING_HEALTH_RESPONSES,
 )
 async def connection_pools_health_check() -> Dict[str, Any]:
     """
@@ -235,7 +357,7 @@ async def connection_pools_health_check() -> Dict[str, Any]:
 @router.get(
     "/alerts",
     summary="连接池告警检测",
-    responses=POOL_MONITORING_ERROR_RESPONSE,
+    responses=POOL_MONITORING_ALERT_RESPONSES,
 )
 async def check_connection_pool_alerts() -> Dict[str, Any]:
     """

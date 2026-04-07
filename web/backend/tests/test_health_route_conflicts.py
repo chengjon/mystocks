@@ -286,7 +286,7 @@ def test_contract_read_and_control_endpoints_have_success_examples() -> None:
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
-def test_pool_monitoring_endpoints_have_error_responses() -> None:
+def test_pool_monitoring_endpoints_have_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
@@ -297,7 +297,13 @@ def test_pool_monitoring_endpoints_have_error_responses() -> None:
         "/api/pool-monitoring/alerts",
     ]:
         operation = schema["paths"][path]["get"]
-        assert any(status.startswith("5") for status in operation["responses"])
+        success_code = next(code for code in operation["responses"] if code.startswith("2"))
+        success_json = operation["responses"][success_code]["content"]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        assert "example" in success_json or "examples" in success_json
+        assert any(status.startswith(("4", "5")) for status in operation["responses"])
 
 
 def test_metrics_endpoints_have_success_examples_and_error_responses() -> None:

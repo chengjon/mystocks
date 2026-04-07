@@ -7,12 +7,12 @@
 > 文内统计值、完成状态、修复结论和验收结果如未重新复核，应视为历史快照，不得直接当作当前事实。
 
 
-**Project**: MyStocks Quantitative Trading System
-**Task ID**: 11
-**Task Title**: 数据库索引优化 (Database Index Optimization)
-**Status**: ✅ **COMPLETE**
-**Completion Date**: 2025-11-11
-**Category**: P1-性能 (Performance - High Priority)
+**Historical Project Snapshot**: MyStocks Quantitative Trading System
+**Historical Task-ID Snapshot**: 11
+**Historical Task Title Snapshot**: 数据库索引优化 (Database Index Optimization)
+**Historical Completion Status Snapshot**: ✅ **COMPLETE**
+**Historical Completion Snapshot Date**: 2025-11-11
+**Historical Category Snapshot**: P1-性能 (Performance - High Priority)
 
 ---
 
