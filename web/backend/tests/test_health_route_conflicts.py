@@ -723,7 +723,7 @@ def test_tdx_and_metrics_endpoints_have_parameter_docs_and_error_responses() -> 
     assert any(code.startswith(("4", "5")) for code in metrics_operation["responses"])
 
 
-def test_ml_endpoints_have_request_examples_and_parameter_docs() -> None:
+def test_ml_endpoints_have_request_response_examples_and_parameter_docs() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
@@ -750,10 +750,12 @@ def test_ml_endpoints_have_request_examples_and_parameter_docs() -> None:
     ]:
         operation = schema["paths"][path]["post"]
         request_json = operation["requestBody"]["content"]["application/json"]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
 
         assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
         assert "example" in request_json or "examples" in request_json
+        assert "example" in success_json or "examples" in success_json
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 

@@ -212,6 +212,209 @@ ML_TDX_STOCKS_RESPONSES = {
     ),
 }
 
+ML_TDX_DATA_RESPONSES = {
+    **_success_response_spec(
+        200,
+        "通达信原始行情数据。",
+        {
+            "code": "000001",
+            "market": "sh",
+            "data": [
+                {
+                    "trade_date": "2026-04-07",
+                    "open": 12.31,
+                    "high": 12.58,
+                    "low": 12.18,
+                    "close": 12.45,
+                    "volume": 18502340,
+                    "amount": 229341122.0,
+                }
+            ],
+            "total_records": 1,
+        },
+    ),
+    **_error_response_spec(
+        404,
+        "指定股票没有可用行情数据。",
+        {"detail": "未找到股票数据: sh000001"},
+    ),
+    **_error_response_spec(
+        500,
+        "通达信数据读取失败。",
+        {"detail": "读取通达信数据失败: file corrupted"},
+    ),
+}
+
+ML_FEATURE_GENERATION_RESPONSES = {
+    **_success_response_spec(
+        200,
+        "特征生成结果。",
+        {
+            "success": True,
+            "message": "特征生成成功",
+            "total_samples": 2380,
+            "feature_dim": 32,
+            "step": 10,
+            "feature_columns": ["open", "high", "low", "close", "volume", "ma5", "rsi14"],
+            "metadata": {
+                "total_samples": 2380,
+                "feature_dim": 32,
+                "step": 10,
+                "feature_columns": ["open", "high", "low", "close", "volume", "ma5", "rsi14"],
+            },
+        },
+    ),
+    **_error_response_spec(
+        404,
+        "指定股票没有可用于生成特征的历史数据。",
+        {"detail": "未找到股票数据: sh000001"},
+    ),
+    **_error_response_spec(
+        500,
+        "特征工程处理失败。",
+        {"detail": "特征生成失败: insufficient rows for rolling window"},
+    ),
+}
+
+ML_MODEL_TRAIN_RESPONSES = {
+    **_success_response_spec(
+        200,
+        "模型训练结果。",
+        {
+            "success": True,
+            "message": "模型 a_share_lgbm_v1 训练成功",
+            "model_name": "a_share_lgbm_v1",
+            "metrics": {
+                "train_rmse": 1.24,
+                "test_rmse": 1.82,
+                "train_r2": 0.86,
+                "test_r2": 0.78,
+                "step": 10,
+            },
+        },
+    ),
+    **_error_response_spec(
+        404,
+        "指定股票没有可用于训练的数据。",
+        {"detail": "未找到股票数据: sh000001"},
+    ),
+    **_error_response_spec(
+        503,
+        "机器学习预测服务当前不可用。",
+        {"detail": "ML prediction service unavailable: missing optional dependency"},
+    ),
+    **_error_response_spec(
+        500,
+        "模型训练或保存失败。",
+        {"detail": "LightGBM training failed: invalid feature matrix"},
+    ),
+}
+
+ML_MODEL_PREDICT_RESPONSES = {
+    **_success_response_spec(
+        200,
+        "模型预测结果。",
+        {
+            "success": True,
+            "message": "预测成功",
+            "model_name": "a_share_lgbm_v1",
+            "stock_code": "000001",
+            "predictions": [
+                {"date": "T+1", "predicted_price": 12.88, "confidence": None},
+            ],
+        },
+    ),
+    **_error_response_spec(
+        400,
+        "当前样本量不足，无法构造预测窗口。",
+        {"detail": "数据不足，无法进行预测"},
+    ),
+    **_error_response_spec(
+        404,
+        "模型或股票数据不存在。",
+        {"detail": "模型不存在: a_share_lgbm_v1"},
+    ),
+    **_error_response_spec(
+        503,
+        "机器学习预测服务当前不可用。",
+        {"detail": "ML prediction service unavailable: missing optional dependency"},
+    ),
+    **_error_response_spec(
+        500,
+        "预测执行失败。",
+        {"detail": "prediction failed: model metadata missing"},
+    ),
+}
+
+ML_HYPERPARAMETER_SEARCH_RESPONSES = {
+    **_success_response_spec(
+        200,
+        "超参数搜索结果。",
+        {
+            "success": True,
+            "message": "超参数搜索完成",
+            "best_params": {"num_leaves": 31, "n_estimators": 100, "learning_rate": 0.1},
+            "best_rmse": 1.71,
+            "best_mse": 2.92,
+            "cv_results": {
+                "mean_test_score": [-1.94, -1.71],
+                "params": [
+                    {"num_leaves": 15, "n_estimators": 50, "learning_rate": 0.05},
+                    {"num_leaves": 31, "n_estimators": 100, "learning_rate": 0.1},
+                ],
+            },
+        },
+    ),
+    **_error_response_spec(
+        404,
+        "指定股票没有可用于搜索的数据。",
+        {"detail": "未找到股票数据: sh000001"},
+    ),
+    **_error_response_spec(
+        503,
+        "机器学习预测服务当前不可用。",
+        {"detail": "ML prediction service unavailable: missing optional dependency"},
+    ),
+    **_error_response_spec(
+        500,
+        "超参数搜索执行失败。",
+        {"detail": "grid search failed: cv split error"},
+    ),
+}
+
+ML_MODEL_EVALUATION_RESPONSES = {
+    **_success_response_spec(
+        200,
+        "模型评估结果。",
+        {
+            "success": True,
+            "message": "评估完成",
+            "model_name": "a_share_lgbm_v1",
+            "metrics": {
+                "rmse": 1.82,
+                "mse": 3.31,
+                "mae": 1.24,
+                "r2": 0.78,
+            },
+        },
+    ),
+    **_error_response_spec(
+        404,
+        "模型或股票数据不存在。",
+        {"detail": "模型不存在: a_share_lgbm_v1"},
+    ),
+    **_error_response_spec(
+        503,
+        "机器学习预测服务当前不可用。",
+        {"detail": "ML prediction service unavailable: missing optional dependency"},
+    ),
+    **_error_response_spec(
+        500,
+        "模型评估执行失败。",
+        {"detail": "model evaluation failed: feature mismatch"},
+    ),
+}
+
 
 def _build_ml_service() -> "MLPredictionService":
     if MLPredictionService is None:
@@ -225,7 +428,13 @@ def _build_ml_service() -> "MLPredictionService":
 # ==================== 通达信数据相关 ====================
 
 
-@router.post("/tdx/data", response_model=TdxDataResponse)
+@router.post(
+    "/tdx/data",
+    response_model=TdxDataResponse,
+    summary="获取通达信行情数据",
+    description="按股票代码和市场代码读取通达信原始行情数据，返回 OHLCV 记录列表和总记录数。",
+    responses=ML_TDX_DATA_RESPONSES,
+)
 async def get_tdx_data(
     request: TdxDataRequest = Body(..., example=ML_TDX_DATA_REQUEST_EXAMPLE),
     current_user: User = Depends(get_current_user),
@@ -284,7 +493,13 @@ async def list_tdx_stocks(
 # ==================== 特征工程相关 ====================
 
 
-@router.post("/features/generate", response_model=FeatureGenerationResponse)
+@router.post(
+    "/features/generate",
+    response_model=FeatureGenerationResponse,
+    summary="生成机器学习特征",
+    description="基于指定股票历史行情生成训练特征，返回样本量、特征维度和特征列清单。",
+    responses=ML_FEATURE_GENERATION_RESPONSES,
+)
 async def generate_features(
     request: FeatureGenerationRequest = Body(..., example=ML_FEATURE_GENERATION_REQUEST_EXAMPLE),
     current_user: User = Depends(get_current_user),
@@ -329,7 +544,13 @@ async def generate_features(
 # ==================== 模型训练相关 ====================
 
 
-@router.post("/models/train", response_model=ModelTrainResponse)
+@router.post(
+    "/models/train",
+    response_model=ModelTrainResponse,
+    summary="训练机器学习模型",
+    description="使用指定股票历史行情训练模型，并返回训练完成后的模型名称和评估指标。",
+    responses=ML_MODEL_TRAIN_RESPONSES,
+)
 async def train_model(
     request: ModelTrainRequest = Body(..., example=ML_MODEL_TRAIN_REQUEST_EXAMPLE),
     current_user: User = Depends(get_current_user),
@@ -380,7 +601,13 @@ async def train_model(
 # ==================== 模型预测相关 ====================
 
 
-@router.post("/models/predict", response_model=ModelPredictResponse)
+@router.post(
+    "/models/predict",
+    response_model=ModelPredictResponse,
+    summary="使用模型执行预测",
+    description="加载指定模型并对目标股票执行下一交易日价格预测，返回预测价格列表。",
+    responses=ML_MODEL_PREDICT_RESPONSES,
+)
 async def predict_with_model(
     request: ModelPredictRequest = Body(..., example=ML_MODEL_PREDICT_REQUEST_EXAMPLE),
     current_user: User = Depends(get_current_user),
@@ -509,7 +736,13 @@ async def get_model_detail(
 # ==================== 超参数搜索 ====================
 
 
-@router.post("/models/hyperparameter-search", response_model=HyperparameterSearchResponse)
+@router.post(
+    "/models/hyperparameter-search",
+    response_model=HyperparameterSearchResponse,
+    summary="执行超参数搜索",
+    description="对指定股票数据执行模型超参数搜索，并返回最佳参数组合与交叉验证结果。",
+    responses=ML_HYPERPARAMETER_SEARCH_RESPONSES,
+)
 async def hyperparameter_search(
     request: HyperparameterSearchRequest = Body(..., example=ML_HYPERPARAMETER_SEARCH_REQUEST_EXAMPLE),
     current_user: User = Depends(get_current_user),
@@ -558,7 +791,13 @@ async def hyperparameter_search(
 # ==================== 模型评估 ====================
 
 
-@router.post("/models/evaluate", response_model=ModelEvaluationResponse)
+@router.post(
+    "/models/evaluate",
+    response_model=ModelEvaluationResponse,
+    summary="评估模型表现",
+    description="使用指定股票数据评估已保存模型的效果，返回 RMSE、MAE、R2 等评估指标。",
+    responses=ML_MODEL_EVALUATION_RESPONSES,
+)
 async def evaluate_model(
     request: ModelEvaluationRequest = Body(..., example=ML_MODEL_EVALUATION_REQUEST_EXAMPLE),
     current_user: User = Depends(get_current_user),
