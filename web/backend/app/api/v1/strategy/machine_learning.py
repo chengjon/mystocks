@@ -54,6 +54,60 @@ STRATEGY_BACKTEST_REQUEST_EXAMPLES = {
     }
 }
 
+STRATEGY_LIST_RESPONSES = {
+    200: {
+        "description": "可用机器学习策略列表",
+        "content": {
+            "application/json": {
+                "example": {
+                    "strategies": [
+                        {
+                            "strategy_id": "svm_momentum_v1",
+                            "strategy_type": "svm",
+                            "name": "SVM Momentum Strategy",
+                            "description": "基于动量指标的SVM分类策略",
+                            "trained": True,
+                            "performance": {
+                                "accuracy": 0.78,
+                                "sharpe_ratio": 1.35,
+                                "max_drawdown": 0.08,
+                            },
+                            "created_at": "2025-01-15T10:30:00Z",
+                        }
+                    ],
+                    "total": 1,
+                }
+            }
+        },
+    },
+    422: {
+        "description": "策略筛选参数不合法",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": [
+                        {
+                            "loc": ["query", "strategy_type"],
+                            "msg": "Input should be 'svm', 'decision_tree', 'naive_bayes', 'lstm' or 'transformer'",
+                            "type": "enum",
+                        }
+                    ]
+                }
+            }
+        },
+    },
+    500: {
+        "description": "策略列表查询失败",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "获取策略列表失败: strategy registry unavailable",
+                }
+            }
+        },
+    },
+}
+
 
 class MLStrategyType(str, Enum):
     """ML strategy types"""
@@ -222,7 +276,12 @@ async def backtest_ml_strategy(
     return mock_response
 
 
-@router.get("", response_model=Dict[str, Any], summary="List Available Strategies")
+@router.get(
+    "",
+    response_model=Dict[str, Any],
+    summary="List Available Strategies",
+    responses=STRATEGY_LIST_RESPONSES,
+)
 async def list_strategies(
     strategy_type: Optional[MLStrategyType] = Query(
         None,

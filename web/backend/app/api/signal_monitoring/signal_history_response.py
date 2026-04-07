@@ -123,6 +123,33 @@ SIGNAL_QUALITY_REPORT_RESPONSES = {
     ),
 }
 
+STRATEGY_REALTIME_RESPONSES = {
+    **SIGNAL_MONITORING_ERROR_RESPONSES,
+    **_success_response_spec(
+        "策略实时监控快照",
+        {
+            "strategy_id": "macd_strategy",
+            "timestamp": "2026-01-08T15:30:45",
+            "health_status": 1,
+            "active_signals_count": 5,
+            "signal_generation_rate": 2.5,
+            "avg_latency_ms": 45.2,
+            "p95_latency_ms": 68.5,
+            "p99_latency_ms": 92.3,
+            "gpu_enabled": True,
+            "gpu_utilization": 75.5,
+            "recent_signals": [
+                {
+                    "id": 12345,
+                    "symbol": "600519.SH",
+                    "signal_type": "BUY",
+                    "generated_at": "2026-01-08T15:30:00",
+                }
+            ],
+        },
+    ),
+}
+
 
 @router.get(
     "/signals/history",
@@ -478,7 +505,12 @@ async def get_signal_quality_report(
         raise HTTPException(status_code=500, detail=f"查询失败: {str(e)}")
 
 
-@router.get("/strategies/{strategy_id}/realtime", response_model=StrategyRealtimeMonitoringResponse)
+@router.get(
+    "/strategies/{strategy_id}/realtime",
+    response_model=StrategyRealtimeMonitoringResponse,
+    summary="获取策略实时监控数据",
+    responses=STRATEGY_REALTIME_RESPONSES,
+)
 async def get_strategy_realtime_monitoring(
     strategy_id: str = Path(..., description="需要查看实时监控状态的策略ID。"),
     current_user: User = Depends(get_current_user),
