@@ -6,8 +6,8 @@
 >
 > 文内覆盖率、端点总数和改善结果如未重新扫描与复核，应视为历史总结数字，不得直接当作当前硬指标。
 
-**报告日期**: 2025-11-30
-**报告类型**: P1 API 文档改善 - 工作总结报告
+**Historical Report Snapshot Date**: 2025-11-30
+**Historical Report Type Snapshot**: P1 API 文档改善 - 工作总结报告
 
 ---
 
