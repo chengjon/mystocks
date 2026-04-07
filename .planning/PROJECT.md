@@ -9,7 +9,7 @@
 
 ## What This Is
 
-A structured cleanup initiative for the MyStocks quantitative trading platform codebase. The goal is to eliminate code/file redundancy, resolve feature divergence, and establish a clear mainline with zero dead code, consistent naming, and a single source of truth for each concern. This is not a feature project — it is a technical debt remediation effort targeting 12 documented issues across Python backend and Vue 3 frontend.
+A structured cleanup initiative for the MyStocks quantitative trading platform codebase. Phase 1 (v1.0) eliminated code/file redundancy, resolved feature divergence, and established a clear mainline with consistent naming and a single source of truth for each concern.
 
 ## Core Value
 
@@ -19,29 +19,37 @@ Every file in the codebase has exactly one canonical location, every import reso
 
 ### Validated
 
-<!-- Existing capabilities confirmed working by codebase map. -->
-
 - ✓ Market data fetching via akshare/efinance/TDX adapters — existing
 - ✓ TDengine + PostgreSQL dual-database data layer — existing
 - ✓ FastAPI backend with 205 route files — existing
 - ✓ Vue 3 + Pinia frontend with ArtDeco design system — existing
 - ✓ Unified Manager entry point — existing
 - ✓ Real data mode (USE_MOCK_DATA=False) — existing
-- ✓ LINT-01: src/interfaces/adapters/ deleted (commit 9ac60b838) — Validated in Phase 1
-- ✓ LINT-02: Total ruff errors reduced to 877 (<900 target) — Validated in Phase 1
-- ✓ LINT-03: W293/F841/W291 zeroed via --unsafe-fixes (206 fixes) — Validated in Phase 1
+- ✓ LINT-01: src/interfaces/adapters/ deleted (commit 9ac60b838) — v1.0
+- ✓ LINT-02: Total ruff errors reduced to 877 (<900 target), then 863 after Phase 2 — v1.0
+- ✓ LINT-03: W293/F841/W291 zeroed via --unsafe-fixes (206 fixes) — v1.0
+- ✓ LINT-04: Frontend case-conflict directories merged (Charts→charts) — v1.0
+- ✓ DEAD-01: src/routes/ (19 files) removed — v1.0
+- ✓ DEAD-02: src/api/ (5 files) removed — v1.0
+- ✓ DEAD-03: src/data_access_pkg/ merged into src/data_access/ — v1.0
+- ✓ DEAD-04: src/db_manager/ removed — v1.0
+- ✓ DEAD-05: src/database_optimization/ merged into src/data_access/ — v1.0
+- ✓ DEAD-06: DELETION-CANDIDATES.md review-before-delete process — v1.0
+- ✓ STRU-01: Single canonical data access layer verified — v1.0
+- ✓ STRU-02: All import paths updated to canonical locations — v1.0
+- ✓ NAME-01: src/calcu/ removed — v1.0
+- ✓ NAME-02: 32 part-files renamed to semantic names — v1.0
+- ✓ NAME-03: *_new.py files resolved — v1.0
+- ✓ NAME-04: Root-level shims deleted (core.py, data_access.py, monitoring.py) — v1.0
+- ✓ NAME-05: Pinia store domain boundaries documented — v1.0
 
 ### Active
 
-- [ ] Fix frontend case-conflict directories (Charts/ vs charts/ etc.)
-- [ ] Reduce remaining ruff errors (stretch goal beyond Phase 1's <900 baseline; 805 F821 remain)
-- [ ] Merge overlapping data access layers into single canonical layer
-- [ ] Consolidate routes (remove src/routes/ + src/api/ dead code)
-- [ ] Clean frontend entry points (remove 7 extra main-*.js/ts variants)
-- [ ] Fix frontend structural mess (artdeco-pages monolith, misplaced composables, dead views)
-- [ ] Resolve root-level shim chains (core.py, data_access.py, monitoring.py)
-- [ ] Fix naming conventions (calcu/, part1/part2/part3, *_new.py, *_backup files)
-- [ ] Consolidate overlapping stores (market.ts vs marketData.ts, trading.ts vs tradingData.ts)
+- [ ] STRU-03: Single frontend entry point (2 files remain — verify-mount.js blocks main.js removal)
+- [ ] STRU-04: views/composables/ → src/composables/ (COMPOSABLES-AUDIT.md shows 15+ imports would break)
+- [ ] STRU-05: views/converted.archive/ removal (5 test files must be deleted first)
+- [ ] Reduce remaining ruff errors below 863 (805 F821 require manual investigation)
+- [ ] Consolidate overlapping stores (market.ts vs marketData.ts runtime merge)
 
 ### Out of Scope
 
@@ -53,36 +61,41 @@ Every file in the codebase has exactly one canonical location, every import reso
 
 ## Context
 
-### Brownfield Project
+### Current State (post-v1.0)
 
-This is an existing codebase with:
-- **Python**: 38 sub-directories in src/, 530 Python files in web/backend/app/
-- **Vue 3**: 908 .vue+.ts files in web/frontend/src/
-- **Tests**: 908 test files (quality issues documented)
-- **Known Issues**: 12 issues documented in `.planning/codebase/CONCERNS.md` (P0: 2, P1: 3, P2: 5, Low: 2)
-- **Current ruff errors**: 877 (Phase 1 baseline; 805 F821 require manual investigation)
+Shipped v1.0 Codebase Consolidation (2026-04-08):
+- **4 phases, 10 plans, ~54 commits** over 3 days
+- **Python**: ~195K LOC in src/ (863 ruff errors remaining, down from 1,456)
+- **Frontend**: ~192K LOC in web/frontend/src/
+- **Deleted**: 34 dead files across 5 directories, 3 root shims, 1 empty directory
+- **Renamed**: 32 part-files to semantic names
+- **Merged**: 3 case-conflict directories, overlapping data access layers
+- **Known gaps**: STRU-03/04/05 deferred with audit evidence
 
 ### Architecture
 
-Layered architecture: Frontend (Vue 3) → Backend API (FastAPI) → Core Business (src/) → Data Layer (TDengine + PostgreSQL). See `.planning/codebase/ARCHITECTURE.md` for full details.
-
-## Constraints
-
-- **Zero-breakage**: Every phase must leave the system fully working. No temporary breakage allowed.
-- **Deletion approval**: All dead code deletion must be saved as an MD document for user review before any files are removed.
-- **Desktop-only**: No mobile/responsive changes.
-- **STANDARDS.md compliance**: All changes must comply with `architecture/STANDARDS.md`.
-- **Port discipline**: Backend 8020, Frontend 3020 (from .env).
+Layered architecture: Frontend (Vue 3) → Backend API (FastAPI) → Core Business (src/) → Data Layer (TDengine + PostgreSQL).
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Lint first, structure after | Fixing adapters eliminates 500+ F821 errors, giving clean baseline for structural work | ✓ Phase 1: 1,456→877 errors, 40% reduction |
-| Zero-breakage per phase | User requires system fully working at every phase boundary | — Pending |
-| Dead code: review-before-delete | User wants deletion list as MD document for approval before any removal | — Pending |
-| Mock files: keep as-is | 66 mock files not blocking anything, useful for dev/testing | — Pending |
-| Skip domain research | Brownfield cleanup — no new domain to research, all issues already documented | — Pending |
+| Lint first, structure after | Fixing adapters eliminates 500+ F821 errors, giving clean baseline | ✓ Phase 1: 40% reduction |
+| Zero-breakage per phase | User requires system fully working at every phase boundary | ✓ All phases verified |
+| Dead code: review-before-delete | User wants deletion list as MD document for approval | ✓ DELETION-CANDIDATES.md approved |
+| Mock files: keep as-is | 66 mock files not blocking anything, useful for dev/testing | ✓ Kept |
+| Two-step git mv for WSL2 | Case-sensitivity requires temp path rename | ✓ Charts/ merge worked |
+| Composables: no bulk move | 15+ active imports would break, per-file migration needed | ✓ Deferred with audit |
+| Store domains: document, don't merge | Overlap is intentional (simple vs enhanced), document boundaries | ✓ NAME-05 complete |
+| Skip domain research | Brownfield cleanup — no new domain to research | ✓ No research phase needed |
+
+## Constraints
+
+- **Zero-breakage**: Every phase must leave the system fully working.
+- **Deletion approval**: All dead code deletion must be saved as MD document for user review.
+- **Desktop-only**: No mobile/responsive changes.
+- **STANDARDS.md compliance**: All changes must comply with `architecture/STANDARDS.md`.
+- **Port discipline**: Backend 8020, Frontend 3020 (from .env).
 
 ## Evolution
 
@@ -102,4 +115,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-06 after Phase 1 completion*
+*Last updated: 2026-04-08 after v1.0 milestone completion*
