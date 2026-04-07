@@ -84,7 +84,12 @@ def test_prometheus_exporter_endpoints_have_error_docs_and_examples() -> None:
     schema = app.openapi()
 
     metrics_operation = schema["paths"]["/metrics"]["get"]
+    metrics_success_content = metrics_operation["responses"]["200"]["content"]
     assert metrics_operation.get("tags")
+    assert metrics_operation.get("summary")
+    assert len(metrics_operation.get("description", "")) >= 20
+    assert "text/plain" in metrics_success_content
+    assert "example" in metrics_success_content["text/plain"] or "examples" in metrics_success_content["text/plain"]
     assert any(status.startswith("5") for status in metrics_operation["responses"])
 
     for path in ["/metrics/health", "/metrics/list"]:

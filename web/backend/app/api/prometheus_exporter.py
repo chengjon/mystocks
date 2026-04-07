@@ -43,6 +43,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 PROMETHEUS_METRICS_ERROR_EXAMPLE = "# ERROR: metrics exporter unavailable\n"
+PROMETHEUS_METRICS_SUCCESS_EXAMPLE = (
+    '# HELP mystocks_http_requests_total Total HTTP requests\\n'
+    '# TYPE mystocks_http_requests_total counter\\n'
+    'mystocks_http_requests_total{method="GET",endpoint="/metrics",status="200"} 128.0\\n'
+)
 
 PROMETHEUS_HEALTH_RESPONSE_EXAMPLE = {
     "status": "healthy",
@@ -394,8 +399,14 @@ def update_health_metrics():
 
 @router.get(
     "/metrics",
+    summary="导出 Prometheus 指标",
+    description="提供系统监控指标的 Prometheus 文本流输出，供 Prometheus 抓取与监控平台集成使用。",
     tags=["monitoring"],
     responses={
+        200: {
+            "description": "Prometheus 指标导出结果",
+            "content": {"text/plain": {"example": PROMETHEUS_METRICS_SUCCESS_EXAMPLE}},
+        },
         500: {
             "description": "Prometheus 指标导出失败",
             "content": {"text/plain": {"example": PROMETHEUS_METRICS_ERROR_EXAMPLE}},
