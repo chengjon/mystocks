@@ -7,10 +7,10 @@
 > 文内统计值、完成状态、修复结论和验收结果如未重新复核，应视为历史快照，不得直接当作当前事实。
 
 
-**任务**: 开发MyStocks项目E2E测试框架（阶段3）
-**执行时间**: 2025-12-30
-**工程师**: Test CLI (Worker CLI)
-**状态**: ✅ 框架完成（85%），⚠️ 需要前端配合修复（15%）
+**Historical Task Snapshot**: 开发MyStocks项目E2E测试框架（阶段3）
+**Historical Execution Snapshot Date**: 2025-12-30
+**Historical Engineer Snapshot**: Test CLI (Worker CLI)
+**Historical Status Snapshot**: ✅ 框架完成（85%），⚠️ 需要前端配合修复（15%）
 
 ---
 
