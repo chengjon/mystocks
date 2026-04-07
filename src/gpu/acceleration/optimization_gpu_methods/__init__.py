@@ -1,7 +1,7 @@
 """OptimizationGPU 方法级拆分包"""
-from .part1 import OptimizationGPUCoreMixin
-from .part2 import OptimizationGPURiskParityOptimizationMixin
-from .part3 import OptimizationGPUPortfolioMixin
+from .core import OptimizationGPUCoreMixin
+from .risk_parity_optimization import OptimizationGPURiskParityOptimizationMixin
+from .portfolio import OptimizationGPUPortfolioMixin
 
 
 class OptimizationGPU(

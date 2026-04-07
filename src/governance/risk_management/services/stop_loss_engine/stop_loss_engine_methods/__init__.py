@@ -1,7 +1,7 @@
 """StopLossEngine 方法级拆分包"""
-from .part1 import StopLossEngineCoreMixin
-from .part2 import StopLossEngineCalculateTriggerConfidenceMixin
-from .part3 import StopLossEngineRiskAssessmentMixin
+from .core import StopLossEngineCoreMixin
+from .calculate_trigger_confidence import StopLossEngineCalculateTriggerConfidenceMixin
+from .risk_assessment import StopLossEngineRiskAssessmentMixin
 
 
 class StopLossEngine(

@@ -1,7 +1,7 @@
 """MonitoringDatabase 方法级拆分包"""
-from .part1 import MonitoringDatabaseCoreMixin
-from .part2 import MonitoringDatabaseCleanupOldRecordsMixin
-from .part3 import MonitoringDatabaseHistoryMixin
+from .core import MonitoringDatabaseCoreMixin
+from .cleanup_old_records import MonitoringDatabaseCleanupOldRecordsMixin
+from .history import MonitoringDatabaseHistoryMixin
 
 
 class MonitoringDatabase(

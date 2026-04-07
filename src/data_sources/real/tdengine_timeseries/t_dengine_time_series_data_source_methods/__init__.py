@@ -1,6 +1,6 @@
 """TDengineTimeSeriesDataSource 方法级拆分包"""
-from .part1 import TDengineTimeSeriesDataSourceCoreMixin
-from .part2 import TDengineTimeSeriesDataSourceCheckDataQualityMixin
+from .core import TDengineTimeSeriesDataSourceCoreMixin
+from .check_data_quality import TDengineTimeSeriesDataSourceCheckDataQualityMixin
 
 
 class TDengineTimeSeriesDataSource(

@@ -1,7 +1,7 @@
 """ResourceScheduler 方法级拆分包"""
-from .part1 import ResourceSchedulerCoreMixin
-from .part2 import ResourceSchedulerCalculateQueueEfficiencyMixin
-from .part3 import ResourceSchedulerPerformanceMixin
+from .core import ResourceSchedulerCoreMixin
+from .calculate_queue_efficiency import ResourceSchedulerCalculateQueueEfficiencyMixin
+from .performance import ResourceSchedulerPerformanceMixin
 
 
 class ResourceScheduler(

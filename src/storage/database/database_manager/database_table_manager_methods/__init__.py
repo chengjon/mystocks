@@ -1,7 +1,7 @@
 """DatabaseTableManager 方法级拆分包"""
-from .part1 import DatabaseTableManagerCoreMixin
-from .part2 import DatabaseTableManagerCloseAllConnectionsMixin
-from .part3 import DatabaseTableManagerDDLInfoMixin
+from .core import DatabaseTableManagerCoreMixin
+from .close_all_connections import DatabaseTableManagerCloseAllConnectionsMixin
+from .ddl_info import DatabaseTableManagerDDLInfoMixin
 
 
 class DatabaseTableManager(

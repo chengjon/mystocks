@@ -1,7 +1,7 @@
 """PostgreSQLRelationalDataSource 方法级拆分包"""
-from .part1 import PostgreSQLRelationalDataSourceCoreMixin
-from .part2 import PostgreSQLRelationalDataSourceGetStockBasicMixin
-from .part3 import PostgreSQLRelationalDataSourcePreferencesMixin
+from .core import PostgreSQLRelationalDataSourceCoreMixin
+from .get_stock_basic import PostgreSQLRelationalDataSourceGetStockBasicMixin
+from .preferences import PostgreSQLRelationalDataSourcePreferencesMixin
 
 
 class PostgreSQLRelationalDataSource(

@@ -1,7 +1,7 @@
 """FeatureCalculationGPU 方法级拆分包"""
-from .part1 import FeatureCalculationGPUCoreMixin
-from .part2 import FeatureCalculationGPUCalculatePriceVolumeMixin
-from .part3 import FeatureCalculationGPUPostVolumeMixin
+from .core import FeatureCalculationGPUCoreMixin
+from .calculate_price_volume import FeatureCalculationGPUCalculatePriceVolumeMixin
+from .post_volume import FeatureCalculationGPUPostVolumeMixin
 
 
 class FeatureCalculationGPU(

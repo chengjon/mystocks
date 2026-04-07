@@ -1,7 +1,7 @@
 """EfinanceDataSource 方法级拆分包"""
-from .part1 import EfinanceDataSourceCoreMixin
-from .part2 import EfinanceDataSourceGetBondBasicMixin
-from .part3 import EfinanceDataSourceBondQuoteMixin
+from .core import EfinanceDataSourceCoreMixin
+from .get_bond_basic import EfinanceDataSourceGetBondBasicMixin
+from .bond_quote import EfinanceDataSourceBondQuoteMixin
 
 
 class EfinanceDataSource(

@@ -9,7 +9,7 @@ from typing import Any, Dict
 
 from src.storage.database.database_manager import DatabaseType
 
-from .part1 import logger
+from .core import logger
 
 
 class DeduplicationStrategyValidationMixin:

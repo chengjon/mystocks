@@ -6,7 +6,7 @@ from typing import Any, Dict
 
 from psycopg2 import sql
 
-from .part1 import logger
+from .core import logger
 
 
 class PostgreSQLRelationalDataSourcePreferencesMixin:

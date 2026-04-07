@@ -1,7 +1,7 @@
 """DeduplicationStrategy 方法级拆分包"""
-from .part1 import DeduplicationStrategyCoreMixin
-from .part2 import DeduplicationStrategyValidateSingleTableMixin
-from .part3 import DeduplicationStrategyValidationMixin
+from .core import DeduplicationStrategyCoreMixin
+from .validate_single_table import DeduplicationStrategyValidateSingleTableMixin
+from .validation import DeduplicationStrategyValidationMixin
 
 
 class DeduplicationStrategy(
