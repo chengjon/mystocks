@@ -11,16 +11,17 @@
 
 | Subdirectory | Contents |
 |-------------|----------|
-| demo/ | Root demo views |
+| demo/ | Root demo views (OpenStockDemo.vue, Wencai.vue, etc.) |
 | demo/openstock/ | OpenStock demo components + config |
 | demo/pyprofiling/ | PyProfiling demo components + styles |
 | demo/stock-analysis/ | Stock analysis demo components |
-| demo/freqtrade/ | Freqtrade demo components |
-| demo/tdxpy/ | TDX Python demo components |
-| demo/wencai/ | Wencai query demo |
-| demo/smart-data/ | Smart data test view |
+| demo/composables/ | Demo-specific composables |
+| demo/docs/ | Demo documentation |
+| demo/styles/ | Demo shared styles |
 
-## Active Routes (5 defined in router/index.js)
+Note: FreqtradeDemo.vue, TdxpyDemo.vue, and smart-data-test live in sibling view directories (`views/freqtrade-demo/`, `views/tdxpy-demo/`), not inside `views/demo/`.
+
+## Active Routes (6 defined in router/index.js)
 
 | Route Path | Route Name | Source |
 |-----------|------------|--------|
@@ -29,14 +30,22 @@
 | `/demo/freqtrade` | freqtrade-demo | router/index.js:140-141 |
 | `/demo/stock-analysis` | stock-analysis-demo | router/index.js:146-147 |
 | `/demo/tdxpy` | tdxpy-demo | router/index.js:152-153 |
+| `/demo/smart-data-test` | smart-data-test | router/index.js:157-158 |
 
-## Runtime Consumers (views importing from demo/)
+## Runtime Consumers
+
+### Direct consumers of views/demo/ contents
 
 | Consumer View | Imports From |
 |--------------|-------------|
 | OpenStockDemo.vue | `./demo/openstock/config`, `./demo/openstock/components` |
-| TdxpyDemo.vue | `./tdxpy-demo/TdxOverviewTab.vue`, + 4 more tabs |
-| FreqtradeDemo.vue | `./freqtrade-demo/FreqOverviewTab.vue`, + 5 more tabs |
+
+### Sibling view consumers (NOT importing from views/demo/)
+
+| View | Imports From | Note |
+|------|-------------|------|
+| FreqtradeDemo.vue | `./freqtrade-demo/FreqOverviewTab.vue`, + 5 more tabs | Sibling `views/freqtrade-demo/` directory |
+| TdxpyDemo.vue | `./tdxpy-demo/TdxOverviewTab.vue`, + 4 more tabs | Sibling `views/tdxpy-demo/` directory |
 
 ## Test Consumers
 
@@ -52,7 +61,7 @@
 
 | Action | Would Break |
 |--------|------------|
-| Delete demo/ | 5 routes, 3+ view consumers, 8+ test files |
+| Delete demo/ | 6 routes, 1 direct consumer, 2 sibling consumers, 8+ test files |
 | Delete without router update | Broken navigation, 404s |
 | Delete without test update | 8+ test failures |
 

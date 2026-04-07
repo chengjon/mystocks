@@ -2,8 +2,9 @@
 
 **Created:** 2026-04-07
 **Phase:** 03-structural-consolidation (Plan 03-02, Task 5)
+**Revised:** 2026-04-07 (review findings: enumerate individual SCSS files)
 
-## Inventory (10 vue files + styles/)
+## Inventory (10 vue files + 2 SCSS files)
 
 | # | File | Runtime Consumers | Test Consumers |
 |---|------|-------------------|----------------|
@@ -16,7 +17,8 @@
 | 7 | setting.vue | 0 | 0 |
 | 8 | stock-management.vue | 0 | 1 spec (converted-archive-shared-style-template) |
 | 9 | trading-management.vue | 0 | 1 spec (converted-archive-trading-management-style-source) |
-| 10 | styles/ | 0 | 2 specs (market-data scss, shared scss template) |
+| 10 | styles/market-data.scss | 0 | 1 spec (converted-archive-market-data-style-source) |
+| 11 | styles/market-quotes.scss | 0 | 0 |
 
 ## Test Consumer Detail
 
@@ -32,7 +34,7 @@
 
 | File | Recommendation | Reason |
 |------|---------------|--------|
-| All 10 vue + styles/ | **Remove tests + delete archive** | Zero runtime consumers. All tests validate style patterns in files that have no runtime purpose. Tests guard dead code. |
+| All 10 vue + 2 SCSS | **Remove tests + delete archive** | Zero runtime consumers. All tests validate style patterns in files that have no runtime purpose. Tests guard dead code. |
 
 **Safe path:** Delete the 5 test files first, then delete `views/converted.archive/` entirely.
 

@@ -17,7 +17,7 @@
 - [x] **LINT-01**: Duplicate adapter layer (`src/interfaces/adapters/`) deleted entirely — full deletion per CONTEXT.md D-01 ✓ Phase 1 (commit 9ac60b838)
 - [x] **LINT-02**: Ruff check passes with <900 errors on `src/` and `web/backend/app/` (from ~1,456; target recalibrated per 01-RESEARCH.md measured baseline) ✓ Phase 1 (877 final)
 - [x] **LINT-03**: Auto-fixable ruff rules (W293, F841, W291) produce zero violations (F401 and E701 not auto-fixable by ruff 0.9.10) ✓ Phase 1 (206 fixes)
-- [ ] **LINT-04**: Frontend case-conflict directories merged into lowercase canonical names
+- [x] **LINT-04**: Frontend case-conflict directories merged into lowercase canonical names ✓ Phase 3 (Charts→charts, Common/ and Market/ removed)
 
 ### Dead Code Removal
 
@@ -30,11 +30,11 @@
 
 ### Structural Consolidation
 
-- [ ] **STRU-01**: Single canonical data access layer in `src/data_access/` — all others removed
-- [ ] **STRU-02**: All import paths updated to point to canonical locations
-- [ ] **STRU-03**: Frontend has exactly one entry point — verified truth source ( entry point ( `index.html` + Vite config)
-- [ ] **STRU-04**: `views/composables/` relocated to `src/composables/`
-- [ ] **STRU-05**: `views/converted.archive/` and `views/demo/` removed from source tree
+- [x] **STRU-01**: Single canonical data access layer in `src/data_access/` — all others removed ✓ Phase 3 (verified: zero stale imports, all 15 modules import)
+- [x] **STRU-02**: All import paths updated to point to canonical locations ✓ Phase 3 (no case-conflict imports existed)
+- [ ] **STRU-03**: Frontend has exactly one entry point — verified truth source ( entry point ( `index.html` + Vite config) ⏸ Partial: 2 entry files remain (main-standard.ts + main.js blocked by verify-mount.js)
+- [ ] **STRU-04**: `views/composables/` relocated to `src/composables/` ⏸ Deferred: COMPOSABLES-AUDIT.md shows bulk move would break 15+ active imports. Needs requirement re-scope.
+- [ ] **STRU-05**: `views/converted.archive/` and `views/demo/` removed from source tree ⏸ Deferred: ARCHIVE-AUDIT.md shows safe path (remove 5 tests first). DEMO-AUDIT.md proves demo/ is active code with routes — "not applicable" for demo portion.
 
 ### Naming & Polish
 
@@ -63,18 +63,18 @@
 | LINT-01 | Phase 1 | ✓ Done |
 | LINT-02 | Phase 1 | ✓ Done |
 | LINT-03 | Phase 1 | ✓ Done |
-| LINT-04 | Phase 3 | Pending |
+| LINT-04 | Phase 3 | ✓ Done |
 | DEAD-01 | Phase 2 | Pending |
 | DEAD-02 | Phase 2 | Pending |
 | DEAD-03 | Phase 2 | Pending |
 | DEAD-04 | Phase 2 | Pending |
 | DEAD-05 | Phase 2 | Pending |
 | DEAD-06 | Phase 2 | Pending |
-| STRU-01 | Phase 3 | Pending |
-| STRU-02 | Phase 3 | Pending |
-| STRU-03 | Phase 3 | Pending |
-| STRU-04 | Phase 3 | Pending |
-| STRU-05 | Phase 3 | Pending |
+| STRU-01 | Phase 3 | ✓ Done (verified) |
+| STRU-02 | Phase 3 | ✓ Done |
+| STRU-03 | Phase 3 | ⏸ Partial |
+| STRU-04 | Phase 3 | ⏸ Deferred |
+| STRU-05 | Phase 3 | ⏸ Deferred |
 | NAME-01 | Phase 4 | Pending |
 | NAME-02 | Phase 4 | Pending |
 | NAME-03 | Phase 4 | Pending |
@@ -88,4 +88,4 @@
 
 ---
 *Requirements defined: 2026-04-06*
-*Last updated: 2026-04-06 after initial definition*
+*Last updated: 2026-04-07 after Phase 3 execution*

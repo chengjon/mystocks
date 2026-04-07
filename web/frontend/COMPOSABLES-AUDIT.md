@@ -7,7 +7,7 @@
 
 | # | File | Consumers | Consumer Paths | Classification |
 |---|------|-----------|----------------|----------------|
-| 1 | tradingDashboardActions.ts | 1 | TradingDashboard.vue | Extraction candidate |
+| 1 | tradingDashboardActions.ts | 1 | useTradingDashboard.ts (which is consumed by TradingDashboard.vue) | Extraction candidate |
 | 2 | useAdvancedAnalysis.ts | 1 | AdvancedAnalysis.vue | Keep view-local |
 | 3 | useAnalysis.ts | 1 | Analysis.vue | Keep view-local |
 | 4 | useBacktestWizard.ts | 1 | BacktestWizard.vue | Keep view-local |
@@ -22,15 +22,15 @@
 | 13 | useTechnicalAnalysis.types.ts | 1 | TechnicalAnalysis.vue | Keep view-local |
 | 14 | useTradingDashboard.ts | 1 | TradingDashboard.vue | Extraction candidate |
 | 15 | usemonitor.ts | 1 | monitor.vue | Keep view-local |
-| 16 | __tests__/ | 0 | (test dir) | Keep view-local |
-| 17 | __node_tests__/ | 0 | (test dir) | Keep view-local |
+| 16 | __tests__/useTradingDashboard.spec.ts | 0 | (test file) | Keep view-local |
+| 17 | __node_tests__/tradingDashboardActions.test.ts | 0 | (test file) | Keep view-local |
 
 Additionally, feature-specific `composables/` subdirectories exist under 11 view groups (monitoring, market, strategy, announcement, etc.) with their own local composables.
 
 ## Summary
 
 - **Keep view-local:** 15 files — each consumed by exactly 1 view via relative `./composables/` imports
-- **Extraction candidates:** 2 files (`useTradingDashboard.ts`, `tradingDashboardActions.ts`)
+- **Extraction candidates:** 2 files (`useTradingDashboard.ts`, `tradingDashboardActions.ts`) — note: `tradingDashboardActions.ts` is consumed by `useTradingDashboard.ts`, not directly by TradingDashboard.vue
 - **MIGRATION_PROGRESS.md agreement:** Fully consistent — 15/17 classified "Keep view-local"
 
 ## Recommendation
