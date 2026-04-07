@@ -56,6 +56,21 @@ MULTI_SOURCE_STATUS_RESPONSES = {
     500: COMMON_RESPONSES[500],
 }
 
+MULTI_SOURCE_ANALYZE_RESPONSES = {
+    200: {
+        "description": "多数据源综合分析结果",
+        "content": {
+            "application/json": {
+                "example": {
+                    "result": "分析完成",
+                    "endpoint": "multi_source",
+                }
+            }
+        },
+    },
+    500: COMMON_RESPONSES[500],
+}
+
 
 @router.get(
     "/health",
@@ -79,7 +94,12 @@ async def get_status():
     return {"status": "active", "endpoint": "multi_source"}
 
 
-@router.post("/analyze")
+@router.post(
+    "/analyze",
+    summary="执行多数据源综合分析",
+    description="接收多个分析维度与权重配置，返回当前版本的多数据源综合分析结果。",
+    responses=MULTI_SOURCE_ANALYZE_RESPONSES,
+)
 async def analyze_data(data: dict = Body(..., example=MULTI_SOURCE_ANALYZE_REQUEST_EXAMPLE)):
     """
     多数据源AI综合分析

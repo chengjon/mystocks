@@ -83,6 +83,74 @@ GPU_MONITORING_ERROR_RESPONSE_EXAMPLE = {
 
 GPU_METRICS_ERROR_RESPONSE_EXAMPLE = "GPU metrics exporter unavailable\n"
 
+GPU_METRICS_SUCCESS_RESPONSE_EXAMPLE = """# HELP gpu_utilization GPU利用率百分比
+# TYPE gpu_utilization gauge
+gpu_utilization{device_id="0"} 75.5
+
+# HELP gpu_memory_utilization 显存利用率百分比
+# TYPE gpu_memory_utilization gauge
+gpu_memory_utilization{device_id="0"} 73.2
+
+# HELP gpu_temperature GPU温度（摄氏度）
+# TYPE gpu_temperature gauge
+gpu_temperature{device_id="0"} 68.0
+
+# HELP gpu_power_usage GPU功耗（瓦特）
+# TYPE gpu_power_usage gauge
+gpu_power_usage{device_id="0"} 320.5"""
+
+GPU_HISTORY_RESPONSE_EXAMPLE = {
+    "success": True,
+    "message": "GPU历史数据查询成功",
+    "data": {
+        "device_id": 0,
+        "records": [
+            {
+                "timestamp": 1712073600.0,
+                "gpu_utilization": 75.5,
+                "memory_utilization": 73.2,
+                "temperature": 68.0,
+                "power_usage": 320.5,
+            }
+        ],
+        "total": 1,
+    },
+    "request_id": "demo-request-id",
+}
+
+
+def _json_response_spec(description: str, example: object) -> dict[int, dict]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+GPU_HISTORY_RESPONSES = {
+    **_json_response_spec("GPU 历史监控数据", GPU_HISTORY_RESPONSE_EXAMPLE),
+    500: {
+        "description": "GPU 历史数据查询失败",
+        "content": {"application/json": {"example": GPU_MONITORING_ERROR_RESPONSE_EXAMPLE}},
+    },
+}
+
+GPU_PROMETHEUS_METRICS_RESPONSES = {
+    200: {
+        "description": "Prometheus GPU 指标文本",
+        "content": {"text/plain": {"example": GPU_METRICS_SUCCESS_RESPONSE_EXAMPLE}},
+    },
+    500: {
+        "description": "Prometheus GPU 指标导出失败",
+        "content": {"text/plain": {"example": GPU_METRICS_ERROR_RESPONSE_EXAMPLE}},
+    },
+}
+
 
 # ==================== 数据模型 ====================
 
@@ -231,12 +299,9 @@ async def get_gpu_performance(
 
 @router.get(
     "/metrics",
-    responses={
-        500: {
-            "description": "Prometheus GPU 指标导出失败",
-            "content": {"text/plain": {"example": GPU_METRICS_ERROR_RESPONSE_EXAMPLE}},
-        }
-    },
+    summary="导出 GPU Prometheus 指标",
+    description="以 Prometheus 文本格式导出当前 GPU 监控指标，供监控系统按固定周期抓取。",
+    responses=GPU_PROMETHEUS_METRICS_RESPONSES,
 )
 async def get_prometheus_metrics(request: Request):
     """
@@ -289,7 +354,12 @@ gpu_matrix_speedup{device_id="0"} 187.35
     )
 
 
-@router.get("/history")
+@router.get(
+    "/history",
+    summary="查询 GPU 历史监控数据",
+    description="按设备和时间范围返回 GPU 历史监控记录，供趋势图展示和性能回溯分析使用。",
+    responses=GPU_HISTORY_RESPONSES,
+)
 async def get_gpu_history(
     request: Request,
     device_id: int = Query(..., description="GPU设备ID"),

@@ -64,6 +64,61 @@ WENCAI_CUSTOM_QUERY_REQUEST_EXAMPLES = {
     }
 }
 
+WENCAI_QUERY_EXECUTION_SUCCESS_RESPONSE = {
+    200: {
+        "description": "预定义问财查询执行结果",
+        "content": {
+            "application/json": {
+                "example": {
+                    "success": True,
+                    "message": "查询执行成功，共获取 45 条记录",
+                    "query_name": "qs_9",
+                    "total_records": 45,
+                    "new_records": 12,
+                    "duplicate_records": 33,
+                    "table_name": "wencai_qs_9",
+                    "fetch_time": "2025-10-17T09:05:00",
+                }
+            }
+        },
+    }
+}
+
+WENCAI_CUSTOM_QUERY_SUCCESS_RESPONSE = {
+    200: {
+        "description": "自定义问财查询结果预览",
+        "content": {
+            "application/json": {
+                "example": {
+                    "success": True,
+                    "message": "查询成功，共获取 10 条数据",
+                    "query_text": "请列出今天涨幅超过5%且换手率大于3%的股票",
+                    "total_records": 10,
+                    "results": [
+                        {
+                            "stock_code": "000001",
+                            "stock_name": "平安银行",
+                            "current_price": 10.56,
+                            "change_percent": 5.8,
+                            "volume": 320000,
+                            "market_cap": 185000000000,
+                        }
+                    ],
+                    "columns": [
+                        "stock_code",
+                        "stock_name",
+                        "current_price",
+                        "change_percent",
+                        "volume",
+                        "market_cap",
+                    ],
+                    "fetch_time": "2025-10-17T09:05:00",
+                }
+            }
+        },
+    }
+}
+
 WENCAI_QUERY_LIST_SUCCESS_RESPONSE = {
     200: {
         "description": "问财预定义查询模板列表",
@@ -271,6 +326,7 @@ async def get_query_by_name(
     response_model=WencaiQueryResponse,
     summary="执行问财查询",
     description="执行指定的预定义问财查询模板，抓取结果并将清洗后的数据落库，返回本次执行统计。",
+    responses=WENCAI_QUERY_EXECUTION_SUCCESS_RESPONSE,
 )
 async def execute_query(
     request: WencaiQueryRequest = Body(..., openapi_examples=WENCAI_QUERY_REQUEST_EXAMPLES),
@@ -452,6 +508,7 @@ async def get_query_history(
     response_model=WencaiCustomQueryResponse,
     summary="执行自定义查询",
     description="执行用户输入的自然语言问财查询，直接返回结果预览而不写入数据库。",
+    responses=WENCAI_CUSTOM_QUERY_SUCCESS_RESPONSE,
 )
 async def execute_custom_query(
     request: WencaiCustomQueryRequest = Body(..., openapi_examples=WENCAI_CUSTOM_QUERY_REQUEST_EXAMPLES),

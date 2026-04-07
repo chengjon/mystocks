@@ -123,6 +123,22 @@ CACHE_FRESHNESS_RESPONSES = {
     ),
 }
 
+CACHE_WRITE_RESPONSES = {
+    **CACHE_ROUTE_ERROR_RESPONSES,
+    **_success_response_spec(
+        "缓存写入结果",
+        {
+            "success": True,
+            "message": "缓存写入成功",
+            "symbol": "600519.SH",
+            "data_type": "daily_quote",
+            "timeframe": "1d",
+            "ttl_days": 7,
+            "timestamp": "2026-04-07T03:55:00Z",
+        },
+    ),
+}
+
 
 @router.get(
     "/status",
@@ -181,7 +197,9 @@ async def get_cached_data(
 
 @router.post(
     "/{symbol}/{data_type}",
+    summary="写入缓存数据",
     description="写入指定标的和数据类型的缓存数据，可设置粒度和缓存保留天数。",
+    responses=CACHE_WRITE_RESPONSES,
 )
 async def write_cache_data(
     symbol: str = Path(..., description="股票或资产代码。"),

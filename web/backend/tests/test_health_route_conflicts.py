@@ -117,7 +117,21 @@ def test_gpu_monitoring_endpoints_have_parameter_docs_and_error_responses() -> N
         assert any(status.startswith("5") for status in responses)
 
     metrics_operation = schema["paths"]["/api/gpu/metrics"]["get"]
+    metrics_success_text = metrics_operation["responses"]["200"]["content"]["text/plain"]
+    assert metrics_operation.get("summary")
+    assert len(metrics_operation.get("description", "")) >= 20
+    assert "example" in metrics_success_text or "examples" in metrics_success_text
     assert any(status.startswith("5") for status in metrics_operation["responses"])
+
+    history_operation = schema["paths"]["/api/gpu/history"]["get"]
+    history_parameters = history_operation.get("parameters", [])
+    history_success_json = history_operation["responses"]["200"]["content"]["application/json"]
+    assert history_operation.get("summary")
+    assert len(history_operation.get("description", "")) >= 20
+    for parameter_name in ["device_id", "start_time", "end_time", "limit"]:
+        assert any(param["name"] == parameter_name and param.get("description") for param in history_parameters)
+    assert "example" in history_success_json or "examples" in history_success_json
+    assert any(status.startswith(("4", "5")) for status in history_operation["responses"])
 
 
 def test_governance_dashboard_endpoints_have_parameter_docs_and_error_responses() -> None:
@@ -590,10 +604,14 @@ def test_cache_data_endpoints_have_descriptions_examples_and_parameter_docs() ->
     post_operation = schema["paths"]["/api/cache/{symbol}/{data_type}"]["post"]
     post_parameters = post_operation.get("parameters", [])
     post_json = post_operation["requestBody"]["content"]["application/json"]
+    post_success_json = post_operation["responses"]["200"]["content"]["application/json"]
+    assert post_operation.get("summary")
     assert len(post_operation.get("description", "")) >= 20
     for parameter_name in ["symbol", "data_type", "timeframe", "ttl_days"]:
         assert any(param["name"] == parameter_name and param.get("description") for param in post_parameters)
     assert "example" in post_json or "examples" in post_json
+    assert "example" in post_success_json or "examples" in post_success_json
+    assert any(code.startswith(("4", "5")) for code in post_operation["responses"])
 
     fresh_operation = schema["paths"]["/api/cache/{symbol}/{data_type}/fresh"]["get"]
     fresh_parameters = fresh_operation.get("parameters", [])
@@ -774,10 +792,12 @@ def test_multi_source_endpoints_have_descriptions_examples_and_error_responses()
 
     analyze_operation = schema["paths"]["/api/multi-source/analyze"]["post"]
     analyze_json = analyze_operation["requestBody"]["content"]["application/json"]
+    analyze_success_json = analyze_operation["responses"]["200"]["content"]["application/json"]
 
     assert analyze_operation.get("summary")
     assert len(analyze_operation.get("description", "")) >= 20
     assert "example" in analyze_json or "examples" in analyze_json
+    assert "example" in analyze_success_json or "examples" in analyze_success_json
     assert any(code.startswith(("4", "5")) for code in analyze_operation["responses"])
 
 
@@ -2116,16 +2136,17 @@ def test_wencai_endpoints_have_docs_examples_and_error_responses() -> None:
     for path, method, expected_params, expects_request_example, expects_success_example in [
         ("/api/market/wencai/queries", "get", [], False, True),
         ("/api/market/wencai/queries/{query_name}", "get", ["query_name"], False, True),
-        ("/api/market/wencai/query", "post", [], True, False),
+        ("/api/market/wencai/query", "post", [], True, True),
         ("/api/market/wencai/results/{query_name}", "get", ["query_name"], False, True),
         ("/api/market/wencai/refresh/{query_name}", "post", ["query_name"], False, True),
         ("/api/market/wencai/history/{query_name}", "get", ["query_name"], False, True),
-        ("/api/market/wencai/custom-query", "post", [], True, False),
+        ("/api/market/wencai/custom-query", "post", [], True, True),
         ("/api/market/wencai/health", "get", [], False, True),
     ]:
         operation = schema["paths"][path][method]
         parameters = operation.get("parameters", [])
 
+        assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
         for parameter_name in expected_params:
             assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
@@ -2447,12 +2468,15 @@ def test_remaining_signal_health_and_task_endpoints_have_parameter_docs_and_desc
 
     health_report_operation = schema["paths"]["/api/reports/health/{timestamp}"]["get"]
     health_report_parameters = health_report_operation.get("parameters", [])
+    health_report_success_json = health_report_operation["responses"]["200"]["content"]["application/json"]
     assert health_report_operation.get("summary")
     assert len(health_report_operation.get("description", "")) >= 20
     assert any(
         param["name"] == "timestamp" and param["in"] == "path" and param.get("description")
         for param in health_report_parameters
     )
+    assert "example" in health_report_success_json or "examples" in health_report_success_json
+    assert any(code.startswith(("4", "5")) for code in health_report_operation["responses"])
 
     signal_quality_operation = schema["paths"]["/api/signals/quality-report"]["get"]
     signal_quality_parameters = signal_quality_operation.get("parameters", [])

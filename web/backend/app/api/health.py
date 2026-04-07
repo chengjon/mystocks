@@ -73,6 +73,40 @@ DETAILED_HEALTH_ERROR_RESPONSE_EXAMPLE = {
     "request_id": "req-health-detailed-001",
 }
 
+HEALTH_REPORT_RESPONSE_EXAMPLE = {
+    "timestamp": "2026-04-03T00:00:00+00:00",
+    "services": {
+        "postgresql": {
+            "service": "postgresql",
+            "status": "normal",
+            "details": "连接正常",
+            "response_time": 0.02,
+        },
+        "tdengine": {
+            "service": "tdengine",
+            "status": "normal",
+            "details": "连接正常",
+            "response_time": 0.03,
+        },
+    },
+}
+
+HEALTH_REPORT_NOT_FOUND_RESPONSE_EXAMPLE = {
+    "success": False,
+    "code": 404,
+    "message": "健康检查报告不存在: 20260403_000000",
+    "error_code": "RESOURCE_NOT_FOUND",
+    "request_id": "req-health-report-001",
+}
+
+HEALTH_REPORT_ERROR_RESPONSE_EXAMPLE = {
+    "success": False,
+    "code": 500,
+    "message": "获取报告失败: [Errno 13] Permission denied",
+    "error_code": "REPORT_RETRIEVAL_FAILED",
+    "request_id": "req-health-report-001",
+}
+
 
 class HealthStatus(BaseModel):
     """健康检查状态响应模型"""
@@ -483,9 +517,23 @@ async def detailed_health_check(current_user: User = Depends(get_current_user)):
     "/reports/health/{timestamp}",
     summary="获取健康检查报告",
     description="按报告时间戳读取历史健康检查结果，便于排查某次巡检、发布窗口或告警时段的系统状态。",
+    responses={
+        200: {
+            "description": "指定时间点的健康检查报告",
+            "content": {"application/json": {"example": HEALTH_REPORT_RESPONSE_EXAMPLE}},
+        },
+        404: {
+            "description": "指定健康检查报告不存在",
+            "content": {"application/json": {"example": HEALTH_REPORT_NOT_FOUND_RESPONSE_EXAMPLE}},
+        },
+        500: {
+            "description": "健康检查报告读取失败",
+            "content": {"application/json": {"example": HEALTH_REPORT_ERROR_RESPONSE_EXAMPLE}},
+        },
+    },
 )
 async def get_health_report(
-    timestamp: str = Path(..., description="健康检查报告时间戳，例如 20260405T183000。"),
+    timestamp: str = Path(..., description="健康检查报告时间戳，例如 20260405_183000。"),
     current_user: User = Depends(get_current_user),
 ):
     """
