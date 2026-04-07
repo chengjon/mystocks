@@ -6,8 +6,8 @@
 >
 > 文内“85%”“基本就绪”、修复项和配置建议如未重新验证，应视为历史状态评估，不得直接当作当前事实。
 
-**生成时间**: 2025-12-05
-**状态**: ✅ **基本就绪，有少量警告**
+**Historical Assessment Snapshot Time**: 2025-12-05
+**Historical Assessment Status Snapshot**: ✅ **基本就绪，有少量警告**
 
 ---
 
