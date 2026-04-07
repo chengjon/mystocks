@@ -702,6 +702,7 @@ def test_ml_endpoints_have_request_examples_and_parameter_docs() -> None:
 
     market_operation = schema["paths"]["/api/ml/tdx/stocks/{market}"]["get"]
     market_parameters = market_operation.get("parameters", [])
+    market_success_json = market_operation["responses"]["200"]["content"]["application/json"]
 
     assert market_operation.get("summary")
     assert len(market_operation.get("description", "")) >= 20
@@ -709,6 +710,7 @@ def test_ml_endpoints_have_request_examples_and_parameter_docs() -> None:
         param["name"] == "market" and param["in"] == "path" and param.get("description")
         for param in market_parameters
     )
+    assert "example" in market_success_json or "examples" in market_success_json
     assert any(code.startswith(("4", "5")) for code in market_operation["responses"])
 
     for path in [

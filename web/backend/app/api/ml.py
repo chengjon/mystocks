@@ -199,6 +199,19 @@ ML_MODEL_DETAIL_RESPONSES = {
     ),
 }
 
+ML_TDX_STOCKS_RESPONSES = {
+    **_success_response_spec(
+        200,
+        "指定市场可用股票代码列表",
+        ["000001", "000002", "600519", "601318"],
+    ),
+    **_error_response_spec(
+        500,
+        "股票代码列表查询失败",
+        {"detail": "读取通达信股票目录失败: market index unavailable"},
+    ),
+}
+
 
 def _build_ml_service() -> "MLPredictionService":
     if MLPredictionService is None:
@@ -246,7 +259,12 @@ async def get_tdx_data(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/tdx/stocks/{market}", response_model=List[str])
+@router.get(
+    "/tdx/stocks/{market}",
+    response_model=List[str],
+    summary="列出可用股票代码",
+    responses=ML_TDX_STOCKS_RESPONSES,
+)
 async def list_tdx_stocks(
     market: str = Path(..., description=ML_MARKET_PATH_DESCRIPTION),
     current_user: User = Depends(get_current_user),
