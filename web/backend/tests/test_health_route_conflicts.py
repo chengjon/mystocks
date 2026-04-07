@@ -134,12 +134,16 @@ def test_gpu_monitoring_endpoints_have_parameter_docs_and_error_responses() -> N
     assert any(status.startswith(("4", "5")) for status in history_operation["responses"])
 
 
-def test_governance_dashboard_endpoints_have_parameter_docs_and_error_responses() -> None:
+def test_governance_dashboard_endpoints_have_docs_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
     for path in ["/api/v1/governance/quality/overview", "/api/v1/governance/dashboard/summary"]:
         operation = schema["paths"][path]["get"]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        assert "example" in success_json or "examples" in success_json
         assert any(status.startswith("5") for status in operation["responses"])
 
     expected_parameters = {
@@ -151,9 +155,14 @@ def test_governance_dashboard_endpoints_have_parameter_docs_and_error_responses(
     for path, parameter_names in expected_parameters.items():
         operation = schema["paths"][path]["get"]
         parameters = operation.get("parameters", [])
+        success_json = operation["responses"]["200"]["content"]["application/json"]
 
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
         for parameter_name in parameter_names:
             assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(status.startswith(("4", "5")) for status in operation["responses"])
 
 
 def test_v1_health_endpoints_have_error_responses() -> None:
