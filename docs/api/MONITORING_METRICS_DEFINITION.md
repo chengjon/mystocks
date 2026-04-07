@@ -7,9 +7,9 @@
 > 文内端点、命令、统计值和示例如未重新复核，应视为参考或历史材料，不得直接当作当前事实。
 
 
-**Status**: ✅ COMPLETE
-**Date**: 2025-11-12
-**Task**: 定义自定义监控指标
+**Historical Document Status**: ✅ COMPLETE
+**Historical Task Snapshot Date**: 2025-11-12
+**Historical Task Scope**: 定义自定义监控指标
 
 ## 📊 Monitoring Metrics Framework
 
