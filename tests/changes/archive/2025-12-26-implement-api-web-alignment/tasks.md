@@ -1,5 +1,10 @@
 # Implementation Tasks - API-Web Component Alignment
 
+> **历史任务说明**:
+> 本文件用于保留某次测试任务拆解、检查清单或阶段性待办，不代表当前仍需按原样执行。
+> 其中的勾选状态、优先级和执行顺序仅对应当时上下文；继续沿用前应先对照当前需求、现行实现与最新验证结果重新校准。
+
+
 ## 📋 Task Overview
 
 This document outlines the concrete tasks needed to implement the API-Web component alignment based on the final alignment document. Tasks are organized by phases and include dependencies.

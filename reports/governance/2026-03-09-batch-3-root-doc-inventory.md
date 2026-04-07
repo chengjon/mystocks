@@ -1,5 +1,12 @@
 # Batch 3 Root Document Migration Inventory
 
+> **设计方案说明**:
+> 本文件是架构设计、系统模型、功能结构、映射关系或规格方案，不是当前仓库共享规则、当前实现边界或当前主线契约的唯一事实来源。
+> 当前共享规则与治理口径请优先遵循 `architecture/STANDARDS.md`；执行流程、命令与协作约束再结合根目录 `AGENTS.md`，并与当前代码实现及主线治理文档一并核对。
+>
+> 文内结构分层、字段约定、模块职责、功能清单和实施建议应结合当前代码与主线文档复核；若冲突，应以 `architecture/STANDARDS.md`、当前代码实现及主线治理文档为准。
+
+
 - Date: `2026-03-09`
 - Worktree: `dev-repo-hygiene-b1`
 - Change: `integrate-repository-hygiene`

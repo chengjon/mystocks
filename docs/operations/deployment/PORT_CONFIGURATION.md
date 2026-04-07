@@ -1,5 +1,11 @@
 # Port Configuration Guide
 
+> **Usage Note**:
+> This file is a port-configuration reference for specific local scripts and deployment scenarios, not the sole source of truth for the current repository-wide service baseline.
+> For current environment consistency, default service addresses, and approval gates, follow `architecture/STANDARDS.md` first. If you need operations workflow or collaboration constraints, then consult the root `AGENTS.md` and `docs/operations/README.md`.
+>
+> The `3000-3009` and `8000-8009` ranges in this file should be treated as local/legacy configuration examples. They must not override the current default access baseline (`frontend 3020`, `backend 8020`) unless a task explicitly requires a specialized setup.
+
 ## Overview
 
 This project supports flexible port configuration for both frontend and backend services, allowing easy switching between different port ranges without code changes.

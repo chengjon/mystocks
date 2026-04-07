@@ -1,5 +1,10 @@
 # Design: add-policy-driven-directory-governance
 
+> **历史文档说明**:
+> 本文件属于已归档变更留下的历史规格、设计附件或过程材料，用于补充还原当时方案与结构。
+> 它不再是当前治理口径或当前实现状态的默认真相源；如与现行 specs、共享规则或代码实现不一致，应以 `architecture/STANDARDS.md`、当前 `openspec/specs/` 正式规格与实际代码实现为准。
+
+
 ## Overview
 
 本设计引入“策略清单驱动”的目录治理检查器，将目录检查从硬编码 Bash 逻辑升级为：

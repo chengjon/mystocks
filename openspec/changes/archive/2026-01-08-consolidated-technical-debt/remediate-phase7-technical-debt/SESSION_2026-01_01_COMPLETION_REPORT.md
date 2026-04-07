@@ -1,5 +1,10 @@
 # Phase 7 Technical Debt Remediation - Session Completion Report
 
+> **历史总结说明**:
+> 本文件是某次阶段性交付、完成确认、结果汇总或收尾说明的历史快照，用于追溯当时的实施结论。
+> 其中的完成度、结论和统计口径不应直接视为当前状态；引用前应结合 `architecture/STANDARDS.md`、当前代码、现行 specs 与最新验证结果重新确认。
+
+
 **Date**: 2026-01-01
 **Session Focus**: Week 1 & Week 2 (Task 2.1-2.2)
 **Status**: ✅ Major Progress - 85% of Week 1-2 Complete

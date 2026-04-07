@@ -1,5 +1,12 @@
 # Large File Exception Registry (ArtDeco 3.1)
 
+> **历史文档说明**:
+> 本文件是某阶段的历史文档、过程记录或专题材料，不是当前基线、当前系统总览或仓库共享规则的唯一事实来源。
+> 当前共享规则与治理口径请优先遵循 `architecture/STANDARDS.md`；执行流程、命令与协作约束再结合根目录 `AGENTS.md`，并与当前代码实现、验证结果及主线文档一并核对。
+>
+> 文内描述、背景、结论和上下文如未重新复核，应视为历史快照，不得直接当作当前事实。
+
+
 This document tracks files temporarily allowed to exceed limits and the current progress of governance.
 
 | Category | File Path | Current Lines | Status | Strategy |

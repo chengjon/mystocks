@@ -15,6 +15,10 @@ autonomous: true
 
 # Plan 01 (v2): Auto-Fix Ruff + Verify Post-Deletion Baseline
 
+> **历史计划说明**:
+> 本文件记录某次阶段性治理工作的历史执行计划、目标拆解与验证设想，反映的是当时准备推进的方向与范围，而非当前已生效事实。
+> 若其内容与现行 `architecture/STANDARDS.md`、当前实现或后续结论不一致，应以 `architecture/STANDARDS.md`、当前实现与最新结论为准。
+
 **Objective:** Auto-fix safe ruff rules on the post-deletion codebase, document remaining errors, write verification report.
 
 **Status note:** `src/interfaces/adapters/` was already deleted in commit `9ac60b838` (75 files, 17,492 lines). This plan covers the remaining Phase 1 work.

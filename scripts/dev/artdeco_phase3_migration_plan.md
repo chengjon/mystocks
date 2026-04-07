@@ -1,5 +1,10 @@
 # ArtDeco Phase 3 Migration Plan
 
+> **历史计划说明**:
+> 本文件记录某次脚本迁移、重构或实施计划，反映的是当时准备推进的方向与范围，而非当前已生效事实。
+> 若其内容与现行 `architecture/STANDARDS.md`、当前脚本实现或后续结论不一致，应以 `architecture/STANDARDS.md`、当前脚本实现与最新结论为准。
+
+
 **Date**: 2026-01-20
 **Status**: Ready to Execute
 **Estimated Time**: 1.5-2 hours

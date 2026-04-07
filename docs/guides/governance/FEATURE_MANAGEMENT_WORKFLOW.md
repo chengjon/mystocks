@@ -1,5 +1,12 @@
 # 功能管理流程指南
 
+> **补充规范说明**:
+> 本文件是项目补充标准、执行细则或专题规范，不是仓库共享规则的唯一事实来源。
+> 仓库级共享规则总入口仍以 `architecture/STANDARDS.md` 为准；执行流程、命令与协作约束再参考根目录 `AGENTS.md`。本文件用于补充某一专题的执行细则、约束或参考模板。
+>
+> 若本文件与 `architecture/STANDARDS.md`、根目录 `AGENTS.md` 或当前已批准执行口径不一致，应优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md` 与当前实现；若无冲突，则按本文件的专题范围执行。
+
+
 > **版本**: 1.0.0 | **创建日期**: 2026-03-12
 > **适用范围**: 所有功能开发、维护、废弃流程
 
@@ -121,6 +128,22 @@
 
 5. 提交前复核
    └─→ 确认 task card.function_tree 与 PR 镜像字段、验证证据、FUNCTION_TREE 稳定 ID 一致
+
+### 3.5 Transcript 证据治理
+
+```
+1. 新 transcript 采集
+   └─→ `AUTO` / `MANUAL` transcript 必须落到 Mongo transcript ledger
+   └─→ 每条 transcript 必须归属到具体 `work_item_id`
+
+2. 导出边界
+   └─→ `TASK-REPORT.md` 只保留 transcript 摘要，不作为正文真相源
+   └─→ 完整正文只允许显式 session export，且仅限 90 天热存窗口
+
+3. 历史迁移
+   └─→ 历史 markdown transcript block 只建立 legacy audit index + archive reference
+   └─→ 不回填正文，不伪造新的 append-only transcript body events
+```
 ```
 
 ---

@@ -1,5 +1,12 @@
 # Maestro Quick Start
 
+> **参考指南说明**:
+> 本文件是补充指南、命令参考、操作说明或使用手册，不是当前仓库共享规则、当前实现边界或当前主线流程的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线治理文档一并核对。
+>
+> 文内步骤、示例、命令和说明应视为补充参考；若与当前代码、`architecture/STANDARDS.md` 或主线治理文档不一致，应以 `architecture/STANDARDS.md`、当前代码实现及主线治理文档为准。
+
+
 本指南面向 MyStocks 当前仓库，目标是：在**本地 SQLite + 本地工作区 + 多 CLI 协作**模式下，把 Maestro 跑起来。
 
 ## 适用场景
@@ -311,6 +318,18 @@ python scripts/runtime/run_symphony.py WORKFLOW.md --port 8035
 
 - `Symphony` 是现有兼容实现名
 - `Maestro` 是未来长期家族名
+
+## Repo-Local Acceptance
+
+如果需要在当前仓库里快速确认 Mongo control plane、Graphiti preflight 和快照导出整条链仍然可运行，统一执行：
+
+```bash
+bash scripts/runtime/run_local_maestro_acceptance.sh
+```
+
+最新一次实跑验收记录见：
+
+- `docs/reports/tasks/2026-04-03-maestro-local-acceptance-report.md`
 
 ## 推荐继续阅读
 

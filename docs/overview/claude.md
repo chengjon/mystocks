@@ -19,9 +19,17 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+> **权威来源声明**:
+> 本文件属于 `docs/overview/` 下的历史概览文档，不是当前仓库规则的唯一事实来源。
+> 如与仓库级共享规则或执行入口文档冲突，应始终以 `architecture/STANDARDS.md` 作为共享规则与审批门禁来源，并按职责分别以根目录 `AGENTS.md`、根目录 `CLAUDE.md` 作为执行入口参考。
+>
+> 涉及迁移收口、兼容层保留/退役、重复层治理、清理/删除判定、审计指标口径时，请统一回到 `architecture/STANDARDS.md`。
 
-**Note**: This file works in conjunction with the project constitution (`.specify/memory/constitution.md`) and the highest guidance document (`项目开发规范与指导文档.md`) to ensure consistent development practices.
+This file provides historical/contextual guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+> **历史快照说明**:
+> 下文“重大更新”“Historical Development Status Snapshot”“Historical Week 4 Update”等带日期章节，仅作为历史背景保留。
+> 未经重新核实时，不得据此单独判断当前兼容层状态、迁移完成度、技术债现状或当前推荐导入路径。
 
 ## 🗂️ 重大更新 (2025-11-09): 项目目录重组完成
 
@@ -32,7 +40,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ 所有文档整合到 `docs/` 目录
 - ✅ 所有脚本整合到 `scripts/` 目录
 - ✅ 统一导入路径为 `from src.*` 格式
-- ✅ 创建 `src/db_manager/` 兼容层确保平滑过渡
+- ✅ 曾创建 `src/db_manager/` 兼容层用于迁移过渡
 - ✅ Git历史完整保留 (使用 `git mv` 移动所有文件)
 - ✅ 目录混乱度降低 **69%**
 
@@ -42,17 +50,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 from src.core import ConfigDrivenTableManager, DataClassification
 from src.adapters.akshare_adapter import AkshareDataSource
 from src.data_access import TDengineDataAccess, PostgreSQLDataAccess
-from src.db_manager import DatabaseTableManager  # 兼容层
+from src.storage.database import DatabaseTableManager
 from src.monitoring import MonitoringDatabase, AlertManager
 from src.interfaces import IDataSource
 
-# ⚠️ 仍然有效: 旧的导入路径 (通过兼容层)
-from core import ConfigDrivenTableManager
-from db_manager.database_manager import DatabaseTableManager
-
-# ❌ 已废弃: 直接从根目录导入模块目录
-from adapters.akshare_adapter import AkshareDataSource
+# ❌ 已废弃: 历史代码中曾直接从根目录模块目录导入，禁止在新改动中继续复制
 ```
+
+历史兼容导入路径可能仍出现在旧代码或旧报告中，但新变更应遵循根目录 `AGENTS.md` 中的 canonical import paths。
 
 **脚本路径更新**:
 ```bash
@@ -72,7 +77,10 @@ python test_config_driven_table_manager.py
 
 ---
 
-## 📊 Current Development Status (2025-11-22)
+## 📊 Historical Development Status Snapshot (2025-11-22)
+
+> **历史指标说明**:
+> 本节中的阶段进度、Pylint 数字、覆盖率目标和修复计划均为历史快照，不得直接充当当前技术债基线或当前门禁结论。
 
 ### Development Progress Summary
 
@@ -149,11 +157,11 @@ python test_config_driven_table_manager.py
 
 ---
 
-## ⚡ Week 4 Update (2026-01-10): Three-Database Architecture (Redis Reintroduction)
+## ⚡ Historical Week 4 Update (2026-01-10): Three-Database Architecture (Redis Reintroduction)
 
-**Major Change**: System upgraded from 2 databases to 3 (PostgreSQL + TDengine + **Redis**)
+**Historical Change Summary**: System upgraded from 2 databases to 3 (PostgreSQL + TDengine + **Redis**)
 
-**Migration Completed**:
+**Historical Snapshot**:
 - ✅ **Redis added back**: L2 distributed cache + Pub/Sub + Distributed Lock
 - ✅ **Three-database architecture finalized**:
   - **PostgreSQL**: Primary database for all structured data (daily bars, reference, derived, transaction, metadata)
@@ -161,7 +169,7 @@ python test_config_driven_table_manager.py
   - **Redis**: Distributed cache, message bus, and distributed locks
 - ✅ **Production-ready**: Optimized for high concurrency and performance
 
-**New Configuration**: See `.env` for 3-database setup (PostgreSQL + TDengine + Redis).
+**Historical Configuration Note**: See `.env` for the then-active 3-database setup (PostgreSQL + TDengine + Redis).
 
 **Philosophy**: Right Tool for Right Job - Each database optimized for its workload
 
@@ -191,9 +199,13 @@ python test_config_driven_table_manager.py
 
 ## Project Overview
 
-MyStocks is a professional quantitative trading data management system that uses a **dual-database architecture** optimized for different data characteristics. The system is built on adapter and factory patterns to provide unified data access layers with configuration-driven automation.
+MyStocks is a professional quantitative trading data management system built on adapter and factory patterns to provide unified data access layers with configuration-driven automation.
 
-**Current Architecture** (Post-Week 3):
+> **历史架构快照说明**:
+> 下方 `Post-Week 3` / `Week 4+` 架构描述用于保留演进背景，不应单独作为当前数据库架构结论。
+> 当前架构与运行口径以根目录 `AGENTS.md` 和 `architecture/STANDARDS.md` 为准。
+
+**Historical Architecture Snapshot** (Post-Week 3):
 - **TDengine**: High-frequency time-series market data (tick/minute data) with extreme compression
 - **PostgreSQL + TimescaleDB**: All other data types (daily bars, reference data, derived data, metadata)
 - **Optimized Operations**: Right database for right workload, reduced unnecessary complexity
@@ -202,11 +214,11 @@ MyStocks is a professional quantitative trading data management system that uses
 
 ### Environment Setup
 ```bash
-# Install dependencies (three-database setup)
+# Install dependencies (historical three-database setup example)
 pip install pandas numpy pyyaml psycopg2-binary taospy akshare redis
 
 # Create .env file with database configuration
-# Required environment variables for 3-database architecture:
+# Historical environment variable example for 3-database architecture:
 # TDengine (high-frequency time-series data):
 # - TDENGINE_HOST, TDENGINE_PORT, TDENGINE_USER, TDENGINE_PASSWORD, TDENGINE_DATABASE
 # PostgreSQL (all other data):
@@ -219,13 +231,13 @@ pip install pandas numpy pyyaml psycopg2-binary taospy akshare redis
 ### System Initialization and Management
 ```bash
 # Initialize the complete system
-python -c "from unified_manager import MyStocksUnifiedManager; manager = MyStocksUnifiedManager(); manager.initialize_system()"
+python -c "from src.core.unified_manager import MyStocksUnifiedManager; manager = MyStocksUnifiedManager(); manager.initialize_system()"
 
 # Run system demonstration
 python scripts/runtime/system_demo.py
 
 # Validate database connections and table structures
-python -c "from core import ConfigDrivenTableManager; mgr = ConfigDrivenTableManager(); mgr.validate_all_table_structures()"
+python -c "from src.core import ConfigDrivenTableManager; mgr = ConfigDrivenTableManager(); mgr.validate_all_table_structures()"
 
 # Run realtime market data saver
 python scripts/runtime/run_realtime_market_saver.py
@@ -265,7 +277,7 @@ print(f'Tables configured: {len(config.get(\"tables\", []))}')
 "
 
 # Create tables from configuration
-python -c "from db_manager.database_manager import DatabaseTableManager; mgr = DatabaseTableManager(); mgr.batch_create_tables('table_config.yaml')"
+python -c "from src.storage.database import DatabaseTableManager; mgr = DatabaseTableManager(); mgr.batch_create_tables('table_config.yaml')"
 ```
 
 ## High-Level Architecture
@@ -298,9 +310,12 @@ historical_data = [
 
 ---
 
-### Core Design Principles
+### Historical Core Design Principles
 
-1. **Three-Database Data Storage** (Week 4+): Right database for right workload
+> **说明**:
+> 下列原则描述的是当时三数据库阶段的设计口径，当前数据库与运行治理仍以根目录 `AGENTS.md` 和 `architecture/STANDARDS.md` 为准。
+
+1. **Historical Three-Database Data Storage** (Week 4+): Right database for right workload
    - **High-Frequency Market Data** (高频时序数据): Tick/minute data → **TDengine** (20:1 compression, ultra-high write performance)
    - **Daily Market Data** (日线数据): Daily bars, historical data → **PostgreSQL TimescaleDB** hypertables
    - **Reference Data** (参考数据): Relatively static descriptive data → **PostgreSQL** standard tables
@@ -311,7 +326,7 @@ historical_data = [
    - **Message Bus** (消息总线): Events, notifications → **Redis** Pub/Sub
    - **Distributed Locks** (分布式锁): Resource coordination → **Redis**
 
-2. **Optimized Architecture** (Week 4+): 3-database strategy maximizes performance
+2. **Historical Optimized Architecture** (Week 4+): 3-database strategy maximizes performance
    - **TDengine database**: `market_data` (超表: tick_data, minute_data)
    - **PostgreSQL database**: `mystocks` (所有其他表 + TimescaleDB混合表)
    - **Redis database**: `db=1` (L2缓存, Pub/Sub消息, 分布式锁)
@@ -327,7 +342,7 @@ historical_data = [
    - `PerformanceMonitor` tracks query performance and alerts on slow operations
    - `DataQualityMonitor` ensures data completeness, freshness, and accuracy
 
-5. **Redis Integration Features** (New in Week 4):
+5. **Historical Redis Integration Features** (New in Week 4):
    - **L2 Distributed Cache** (`redis_cache`): Indicator results, API responses, market data
    - **Real-time Message Bus** (`redis_pubsub`): Event notifications, price updates, task status
    - **Distributed Locks** (`redis_lock`): Prevent duplicate calculations, resource coordination
@@ -349,16 +364,14 @@ from src.core.data_storage_strategy import DataStorageStrategy
 ```
 
 #### Unified Access Layer (`src/core/` - unified_manager)
-**位置**: `src/core/unified_manager.py` + 根目录 `unified_manager.py` (入口点)
+**位置**: `src/core/unified_manager.py`
 - `MyStocksUnifiedManager`: 所有数据操作的统一入口点
 - `AutomatedMaintenanceManager`: 定时维护和健康检查
 - 自动路由方法: `save_data_by_classification()` 和 `load_data_by_classification()`
 
 **导入**:
 ```python
-from unified_manager import MyStocksUnifiedManager  # 通过根目录入口点
-# 或
-from src.core.unified_manager import MyStocksUnifiedManager  # 直接导入
+from src.core.unified_manager import MyStocksUnifiedManager
 ```
 
 #### Redis Services (`web/backend/app/services/redis/`)
@@ -415,21 +428,19 @@ from src.interfaces import IDataSource
 
 #### Database Infrastructure (`src/storage/database/` + 兼容层 `src/db_manager/`)
 **实际位置**: `src/storage/database/` 目录
-**兼容层**: `src/db_manager/` (重导出 `src.storage.database` 的所有类)
+**兼容层**: `src/db_manager/` 如仍存在，仅应视为历史兼容层，不得重新升级为新真相源
 
 - `DatabaseTableManager`: 双数据库连接和表管理
 - `DatabaseConnectionManager`: 数据库连接池管理
 - 支持 **TDengine** (WebSocket/Native) 和 **PostgreSQL** (TimescaleDB扩展)
 - 环境变量驱动配置,确保安全性
 
-**导入** (两种方式均可):
+**导入**:
 ```python
-# 方式1: 通过兼容层 (旧代码可继续使用)
-from src.db_manager import DatabaseTableManager, DatabaseConnectionManager
-
-# 方式2: 直接导入 (推荐)
 from src.storage.database import DatabaseTableManager, DatabaseConnectionManager
 ```
+
+若历史代码仍出现兼容导入路径，应按 `architecture/STANDARDS.md` 第三节评估其保留原因与退场条件。
 
 #### Monitoring and Quality (`src/monitoring/`)
 **位置**: `src/monitoring/` 目录
@@ -548,7 +559,7 @@ This architecture enables efficient handling of quantitative trading data by usi
 
 1. **代码文件长度限制**: 单个Python文件应控制在2000行以内，大于此限制的文件需要进行模块化拆分
 2. **模块化拆分原则**: 将大文件按照功能拆分为多个小文件，每个文件专注于特定功能
-3. **向后兼容性**: 拆分后的代码应保持原有的导入路径不变，确保现有代码可以正常工作
+3. **兼容层约束**: 若拆分后需要保留兼容导入路径，必须作为薄封装短期存在，并明确 owner、保留原因与退场条件
 4. **排除目录**: temp目录及其子目录下的所有文件不纳入长度优化范围
 
 遵循此规范有助于提高代码质量，降低维护难度，并提升开发效率。详细内容请参阅[《代码文件长度优化规范》](../standards/CODE_SIZE_OPTIMIZATION_SAVED_20251125.md)。
@@ -699,9 +710,9 @@ project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(_
 sys.path.insert(0, project_root)
 
 # Now you can import from project root
-from core import ConfigDrivenTableManager
-from adapters.akshare_adapter import AkshareDataSource
-from db_manager.database_manager import DatabaseTableManager
+from src.core import ConfigDrivenTableManager
+from src.adapters.akshare_adapter import AkshareDataSource
+from src.storage.database import DatabaseTableManager
 ```
 
 **Explanation**:

@@ -1,5 +1,12 @@
 # Architecture Research: Safe Refactoring Order
 
+> **参考指南说明**:
+> 本文件是补充指南、命令参考、操作说明或专题文档，不是当前仓库共享规则、当前实现边界或当前主线流程的唯一事实来源。
+> 当前共享规则与治理口径请优先遵循 `architecture/STANDARDS.md`；执行流程、命令与协作约束再结合根目录 `AGENTS.md`，并与当前代码实现及主线治理文档一并核对。
+>
+> 文内步骤、示例、命令和说明应视为补充参考；若与当前代码、`architecture/STANDARDS.md` 或主线治理文档不一致，应以 `architecture/STANDARDS.md`、当前代码实现及主线治理文档为准。
+
+
 **Researched:** 2026-04-06
 **Architecture Type:** Layered (Frontend → FastAPI → Core → Data)
 

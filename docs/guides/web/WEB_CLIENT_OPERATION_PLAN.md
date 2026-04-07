@@ -1,5 +1,12 @@
 # MyStocks Web端正常运行 - 后续建议
 
+> **历史计划说明**:
+> 本文件是阶段性计划、路线图、提案、任务方案或执行矩阵，不是当前基线、当前实施状态或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线文档一并核对。
+>
+> 文内优先级、缺口清单、执行步骤、目标值和时间线如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
+
+
 **文档版本**: v1.1
 **创建日期**: 2026-01-20
 **最后更新**: 2026-01-20
@@ -13,6 +20,12 @@
 - ⚙️ [PM2配置](../../web/frontend/ecosystem.config.js)
 
 ---
+
+> 2026-04-01 状态说明
+>
+> - 本文档是 2026-01 的运行建议记录，不属于当前 ArtDeco 规范链。
+> - 文中涉及的组件数量、环境判断、服务命名与测试现状应视为历史上下文，不应替代当前活跃治理文档与实际运行状态。
+> - 若要理解当前 ArtDeco 体系，请先看 `ARTDECO_START_HERE.md`、`ARTDECO_MASTER_INDEX.md` 与 `ARTDECO_FINTECH_UNIFIED_SPEC.md`。
 
 ## 背景
 
@@ -1380,7 +1393,7 @@ crontab -e
 
 **技术文档**:
 - 🏗️ [系统架构总结](../api/ArtDeco_System_Architecture_Summary.md) - ArtDeco系统架构文档
-- 🎨 [ArtDeco组件目录](../../web/frontend/ARTDECO_COMPONENTS_CATALOG.md) - 64个ArtDeco组件说明
+- 🎨 [ArtDeco组件目录](../../web/frontend/ARTDECO_COMPONENTS_CATALOG.md) - 当前 ArtDeco 组件目录
 - 📐 [ArtDeco设计展示V2](../api/ART_DECO_COMPONENT_SHOWCASE_V2.md) - ArtDeco设计系统展示
 
 ### 配置文件

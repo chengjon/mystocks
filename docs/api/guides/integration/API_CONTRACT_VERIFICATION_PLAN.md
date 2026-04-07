@@ -1,8 +1,15 @@
 # API契约验证计划 - Phase 2前期准备
 
-**创建日期**: 2026-01-02
-**目的**: 在Phase 2执行前，系统化验证所有前端使用的API端点
-**策略**: API契约驱动 + 数据守卫者协调 + 问题立即报告机制
+> **历史计划说明**:
+> 本文件是 API 相关的阶段性计划、路线图或方案材料，不是当前 API 契约、当前实施状态或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`；若涉及 API 契约事实源，再以实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json` 为准。
+>
+> 文内优先级、时间线、实施状态和建议动作如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
+
+
+**Historical Verification Plan Snapshot Date**: 2026-01-02
+**Historical Verification Purpose Snapshot**: 在Phase 2执行前，系统化验证所有前端使用的API端点
+**Historical Verification Strategy Snapshot**: API契约驱动 + 数据守卫者协调 + 问题立即报告机制
 
 ---
 

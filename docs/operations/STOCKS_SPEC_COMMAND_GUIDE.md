@@ -1,5 +1,11 @@
 # stocks_spec 命令使用指南
 
+> **使用说明**:
+> 本文件描述的是 `scripts/stocks_spec.sh` 这一专项本地管理脚本，不是当前仓库运行拓扑、统一服务地址或共享规则的唯一事实来源。
+> 若涉及环境一致性、PM2/Docker 主线、审批门禁或当前默认访问地址，请优先阅读 `architecture/STANDARDS.md`；若涉及运维执行流程或协作约束，再结合根目录 `AGENTS.md` 与 `docs/operations/README.md`。
+>
+> 文内 `8000/3000` 端口样例来自该脚本的局部默认值，只能代表此脚本行为，不应覆盖仓库统一运行口径。
+
 ## 概述
 
 `stocks_spec` 是 MyStocks_spec 项目的服务管理工具，用于方便地启动、停止和管理前端和后端服务。
@@ -47,6 +53,8 @@ stocks_spec -start
   Swagger文档: http://localhost:8020/docs
   ReDoc文档: http://localhost:8020/api/redoc
 ```
+
+> 上述输出块仅为脚本样例，若与当前任务运行结果或根目录治理文档冲突，应以 `architecture/STANDARDS.md`、当前任务运行结果及现行运维文档为准。
 
 ### 停止所有服务
 ```bash

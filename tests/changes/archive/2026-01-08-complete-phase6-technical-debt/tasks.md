@@ -1,5 +1,10 @@
 # Complete Phase 6 Technical Debt Remediation - Tasks
 
+> **历史任务说明**:
+> 本文件用于保留某次测试任务拆解、检查清单或阶段性待办，不代表当前仍需按原样执行。
+> 其中的勾选状态、优先级和执行顺序仅对应当时上下文；继续沿用前应先对照当前需求、现行实现与最新验证结果重新校准。
+
+
 ## Overview
 This document tracks the implementation tasks for completing Phase 6 Technical Debt Remediation.
 The current state shows:

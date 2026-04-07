@@ -1,5 +1,12 @@
 # TASK-REPORT
 
+> **使用说明**:
+> 本文件是项目入口、工作流快照、规划工件或使用说明，不是当前共享规则、当前代码实现或当前运行状态的唯一事实来源。
+> 当前共享规则与治理口径请优先遵循 `architecture/STANDARDS.md`；执行流程、命令与协作约束再结合根目录 `AGENTS.md`，并与当前代码、主线任务系统及验证结果一并核对。
+>
+> 文内步骤、范围、状态或说明如未重新复核，应按其所属上下文理解，不得直接当作跨场景通用事实。
+
+
 > Exported from Mongo control plane. Human notes may be appended, but active state lives in Mongo.
 
 - Issue Identifier: `2026-04-03-root-task-artifact-mongo-cutover-main`
@@ -274,3 +281,35 @@
 
 #### Next
 - Only re-export root artifacts again if downstream consumers need the newest projections after later Mongo updates.
+
+## [AUTO] 2026-04-06 11:56:25 Session 554d2418-26d2-4ce2-94b6-12f17d5e015b
+- Completion: true
+- Summary: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Model: `glm-5.1`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/554d2418-26d2-4ce2-94b6-12f17d5e015b.jsonl`
+
+
+## [AUTO] 2026-04-06 12:59:36 Session 4a31bb9e-fdc7-4f5c-9c83-fecfab713295
+- Completion: true
+- Summary: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Model: `glm-5.1`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/4a31bb9e-fdc7-4f5c-9c83-fecfab713295.jsonl`
+
+
+## [AUTO] 2026-04-06 23:44:34 Session 2de0c434-4572-48dd-98e7-696a743236b0
+- Completion: true
+- Summary: ✓ Requirements coverage: 6/6 REQ-IDs covered by plans
+- Model: `glm-5.1`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/2de0c434-4572-48dd-98e7-696a743236b0.jsonl`
+
+
+## [AUTO] 2026-04-07 02:25:57 Session 191881af-c6fb-4f19-bd58-67746aecbef6
+- Completion: true
+- Summary: **Phase 2: Dead Code Inventory & Removal — COMPLETE**
+- Model: `glm-5.1`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/191881af-c6fb-4f19-bd58-67746aecbef6.jsonl`
+

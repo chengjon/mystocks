@@ -1,5 +1,10 @@
 # Lighthouse Performance Audit Report
 
+> **历史分析说明**:
+> 本文件是某次针对 Web 前后端结构、质量、性能、可访问性或实现状态的历史分析记录，用于保留当时的判断依据与观察结果。
+> 文中的结论、统计和风险判断均受生成时间、样本范围与当时仓库状态影响；若要判断当前情况，必须重新核对 `architecture/STANDARDS.md`、现行代码与最新验证结果。
+
+
 **Project**: MyStocks Quantitative Trading Platform - Frontend
 **Audit Date**: 2025-12-26
 **Phase**: Phase 1 - UI/UX Foundation (T1.13)

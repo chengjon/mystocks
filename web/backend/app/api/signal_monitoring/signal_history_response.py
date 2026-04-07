@@ -11,7 +11,7 @@ Signal Monitoring API Endpoints
 
 import logging
 from datetime import date, datetime, timedelta
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
 
@@ -21,6 +21,7 @@ from app.api.signal_monitoring.signal_history_response_schemas import (
     StrategyRealtimeMonitoringResponse,
 )
 from app.core.security import User, get_current_user
+from app.openapi_config import COMMON_RESPONSES
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +42,94 @@ SIGNAL_MONITORING_HEALTH_ERROR_RESPONSE_EXAMPLE = {
     "error": "database unavailable",
 }
 
-@router.get("/signals/history", response_model=List[SignalHistoryResponse])
+
+def _success_response_spec(description: str, example: Any) -> dict[int, dict[str, Any]]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+SIGNAL_MONITORING_ERROR_RESPONSES = {
+    401: COMMON_RESPONSES[401],
+    422: COMMON_RESPONSES[422],
+    500: COMMON_RESPONSES[500],
+    503: {
+        "description": "监控数据库不可用",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "监控数据库未连接",
+                }
+            }
+        },
+    },
+}
+
+SIGNAL_HISTORY_RESPONSES = {
+    **SIGNAL_MONITORING_ERROR_RESPONSES,
+    **_success_response_spec(
+        "信号历史记录列表",
+        [
+            {
+                "id": 12345,
+                "strategy_id": "macd_strategy",
+                "symbol": "600519.SH",
+                "signal_type": "BUY",
+                "generated_at": "2026-01-08T10:30:00",
+                "status": "executed",
+                "execution_time_ms": 45.5,
+                "gpu_used": True,
+                "gpu_latency_ms": 12.3,
+                "executed": True,
+                "executed_at": "2026-01-08T10:30:05",
+                "profit_loss": 125.5,
+                "profit_loss_percent": 2.5,
+            }
+        ],
+    ),
+}
+
+SIGNAL_QUALITY_REPORT_RESPONSES = {
+    **SIGNAL_MONITORING_ERROR_RESPONSES,
+    **_success_response_spec(
+        "信号质量分析报告",
+        {
+            "strategy_id": "macd_strategy",
+            "period_start": "2026-01-01",
+            "period_end": "2026-01-08",
+            "total_signals": 150,
+            "buy_signals": 75,
+            "sell_signals": 60,
+            "hold_signals": 15,
+            "executed_signals": 120,
+            "execution_rate": 80.0,
+            "signal_accuracy": 78.5,
+            "signal_success_rate": 85.0,
+            "avg_profit_loss": 25.5,
+            "total_profit_loss": 3060.0,
+            "avg_execution_time_ms": 45.2,
+            "gpu_usage_rate": 65.0,
+            "profitable_signals": 95,
+            "losing_signals": 25,
+            "win_rate": 79.17,
+        },
+    ),
+}
+
+
+@router.get(
+    "/signals/history",
+    response_model=List[SignalHistoryResponse],
+    summary="查询信号历史",
+    responses=SIGNAL_HISTORY_RESPONSES,
+)
 async def get_signal_history(
     strategy_id: Optional[str] = Query(None, description="按策略ID筛选信号历史记录。"),
     symbol: Optional[str] = Query(None, description="按股票或合约代码筛选信号历史记录。"),
@@ -199,8 +287,12 @@ async def get_signal_history(
         logger.error("查询信号历史失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"查询失败: {str(e)}")
 
-
-@router.get("/signals/quality-report", response_model=SignalQualityReportResponse)
+@router.get(
+    "/signals/quality-report",
+    response_model=SignalQualityReportResponse,
+    summary="生成信号质量报告",
+    responses=SIGNAL_QUALITY_REPORT_RESPONSES,
+)
 async def get_signal_quality_report(
     strategy_id: str = Query(..., description="需要生成质量报告的策略ID。"),
     period_days: int = Query(7, ge=1, le=90, description="统计周期（天）"),

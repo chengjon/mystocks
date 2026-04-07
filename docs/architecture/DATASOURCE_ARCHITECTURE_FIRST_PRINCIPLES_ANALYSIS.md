@@ -1,5 +1,12 @@
 # MyStocks 数据源与数据库架构第一性原理评审
 
+> **历史分析说明**:
+> 本文件是架构相关的评估、分析、总结或审查材料，不是当前架构基线、当前实现状态或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线治理文档一并核对。
+>
+> 文内结论、统计值、完成状态和对比结果如未重新复核，应视为历史分析快照，不得直接当作当前事实。
+
+
 **评审日期**: 2025-10-24
 **评审文档**: DATASOURCE_AND_DATABASE_ARCHITECTURE.md v2.1.0
 **评审方法**: First-Principles Deconstruction & Constraint-Driven Analysis

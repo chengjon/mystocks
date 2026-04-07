@@ -1,5 +1,11 @@
 # Python 代码质量保证工作流程
 
+> **参考指南说明**:
+> 本文件是 Python 质量保证专题流程文档，不是当前仓库统一质量门禁或共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 `architecture/STANDARDS.md`；若涉及运维执行流程或协作约束，再结合根目录 `AGENTS.md` 与 `docs/operations/README.md`。
+>
+> 文内工具组合、触发时机和流程分层应视为质量治理参考框架；若与当前 hook、CI 或主线治理文档冲突，应以 `architecture/STANDARDS.md`、当前 hook/CI 配置与主线治理文档为准。
+
 **优化策略**: Ruff 优先 + Black 兜底 + Pylint 深度审查
 
 **统一行长度**: 120 (Black/Ruff/Pylint 保持一致)

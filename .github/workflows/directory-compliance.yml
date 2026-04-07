@@ -6,6 +6,8 @@ on:
       - 'src/**'
       - 'scripts/**'
       - 'docs/**'
+      - '*.md'
+      - '**/*.md'
   schedule:
     - cron: '0 2 * * 0'
 
@@ -53,7 +55,11 @@ jobs:
       - name: Check __init__.py
         run: |
           python scripts/hooks/check_init_py.py || exit 1
-      
+
+      - name: Check markdown governance boundaries
+        run: |
+          python scripts/compliance/markdown_governance_gate.py --root-dir . --format json > reports/compliance/markdown-governance-report.json
+
       - name: Upload compliance report
         uses: actions/upload-artifact@v4
         with:
@@ -79,7 +85,11 @@ jobs:
       - name: Full directory scan
         run: |
           python scripts/hooks/full_directory_scan.py
-      
+
+      - name: Check markdown governance boundaries
+        run: |
+          python scripts/compliance/markdown_governance_gate.py --root-dir . --format json > reports/compliance/markdown-governance-report.json
+
       - name: Upload full scan report
         uses: actions/upload-artifact@v4
         with:

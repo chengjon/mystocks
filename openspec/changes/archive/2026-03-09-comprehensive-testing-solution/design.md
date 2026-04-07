@@ -1,5 +1,10 @@
 # Comprehensive Testing Solution - Technical Design Document
 
+> **历史文档说明**:
+> 本文件属于已归档变更留下的历史规格、设计附件或过程材料，用于补充还原当时方案与结构。
+> 它不再是当前治理口径或当前实现状态的默认真相源；如与现行 specs、共享规则或代码实现不一致，应以 `architecture/STANDARDS.md`、当前 `openspec/specs/` 正式规格与实际代码实现为准。
+
+
 ## 📋 设计概述
 
 本文档详细描述了 MyStocks 全面测试解决方案的技术架构、设计原则和实现细节。该设计基于微服务架构、容器化部署和现代化测试理念，确保系统的高可用性、可扩展性和可维护性。

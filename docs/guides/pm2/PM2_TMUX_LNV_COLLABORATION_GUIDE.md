@@ -1,5 +1,11 @@
 # PM2、Tmux 和 Lnav 协作开发运维指南（可执行版）
 
+> **使用说明**:
+> 本文件是 PM2/Tmux/Lnav 协作专题指南，不是当前仓库共享规则或所有运行场景的唯一事实来源。
+> 若涉及环境一致性、统一运行基线、审批门禁或默认服务地址，请优先阅读 `architecture/STANDARDS.md`；若涉及运维执行流程或协作约束，再结合根目录 `AGENTS.md` 与 `docs/operations/README.md`。
+>
+> 本文档可作为当前协作实践参考，但若与 `architecture/STANDARDS.md`、根目录 `AGENTS.md` 或实际运行结果冲突，应以 `architecture/STANDARDS.md`、根目录 `AGENTS.md` 与实际运行结果为准。
+
 ## 文档目标
 
 本指南用于在 MyStocks 项目中建立一套“可落地、可复现”的协作流程：

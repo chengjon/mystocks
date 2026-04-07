@@ -19,19 +19,20 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 # 项目 Claude AI 集成指南 (Project Claude AI Integration Guide)
 
+> **使用说明**:
+> 本文件是 Claude/OpenCode 在本仓库的执行入口与协作说明，不是仓库共享规则的唯一事实来源。
+> 仓库级共享规则与当前执行口径以 `architecture/STANDARDS.md` 为准；涉及 OpenSpec 提案、变更与能力规范时，请同步遵循 `openspec/AGENTS.md`。
+>
+> 本文件仅保留 Claude 使用方式、协作流程和排障细节；仓库级共享规则、审批门禁与治理口径仍以 `architecture/STANDARDS.md` 为准。若同一事项在两处重复描述且口径不一致，应以 `architecture/STANDARDS.md` 作为共享规则来源，并将本文件视为执行层入口说明。
+
 > **⚠️ 核心约束 (Critical Requirement)**:
 > 在执行任何代码修改或架构设计前，**必须**首先阅读并遵守 [architecture/STANDARDS.md](architecture/STANDARDS.md) 定义的工程红线。任何违反准则（如硬编码 App.vue、单例未初始化等）的操作将被视为无效交付。
 
 ## 1. 统一规则引用 (Canonical Rules)
 
-为避免多文档分叉，以下共享规则统一以 [architecture/STANDARDS.md](architecture/STANDARDS.md) 为准：
+为避免多文档分叉，仓库级共享规则与当前执行口径统一以 [architecture/STANDARDS.md](architecture/STANDARDS.md) 为准。
 
-- `方案先行准则 (Proposal-First Rule)`：见“零、统一治理与审批门禁”
-- `推荐开发流程：六步走战略`：见“一、推荐开发流程：六步走战略”
-- `Docker 一等公民原则`：见“二、技术工程红线 -> 3. 环境一致性”
-- `迁移收口与技术债治理规则`：见“三、迁移收口与技术债治理规则”
-
-本文件仅保留 Claude 使用方式、协作流程和排障细节，不再重复上述规则正文。
+本文件仅保留 Claude 使用方式、协作流程和排障细节，不再重复共享规则正文或维护并行目录。
 
 ---
 
@@ -238,13 +239,10 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
 
 遇到"计划/提案/架构调整"类需求时，先打开 `openspec/AGENTS.md`。
 
-#### 3.1.1 推荐开发流程：六步走战略
+#### 3.1.1 推荐开发流程（统一引用）
 
-> 共享正文已统一至 [architecture/STANDARDS.md](architecture/STANDARDS.md)：
-> - “零、统一治理与审批门禁”（含 `Proposal-First Rule`）
-> - “一、推荐开发流程：六步走战略”
-> - “二、技术工程红线 -> 3. 环境一致性”（Docker/PM2 一等公民）
-> - “三、迁移收口与技术债治理规则”
+> 共享正文已统一收敛到 [architecture/STANDARDS.md](architecture/STANDARDS.md)。
+> 本节不再重复列举共享规则，只保留 Claude 使用方式、协作流程与仓库内的执行补充说明。
 
 #### Skill 手动加载
 

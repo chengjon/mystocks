@@ -1,3 +1,7 @@
+> **历史计划说明**:
+> 本文件属于 `.planning` 阶段研究产物，不是当前仓库共享规则、当前审批状态或当前实施结果的唯一事实来源。
+> 执行共享规则与审批门禁请优先遵循 `architecture/STANDARDS.md`；若涉及当前任务执行入口，再结合根目录 `AGENTS.md`、phase 主文档与最新验证结果核对。
+
 # Phase 2: Dead Code Inventory & Removal — Research
 
 **Researched:** 2026-04-06

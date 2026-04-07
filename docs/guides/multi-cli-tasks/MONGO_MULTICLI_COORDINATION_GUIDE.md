@@ -1,5 +1,12 @@
 # Mongo Multi-CLI Coordination Guide
 
+> **参考指南说明**:
+> 本文件是补充指南、命令参考、操作说明或使用手册，不是当前仓库共享规则、当前实现边界或当前主线流程的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线治理文档一并核对。
+>
+> 文内步骤、示例、命令和说明应视为补充参考；若与当前代码、`architecture/STANDARDS.md` 或主线治理文档不一致，应以 `architecture/STANDARDS.md`、当前代码实现及主线治理文档为准。
+
+
 ## Purpose
 
 本指南说明如何在 MyStocks 当前仓库内使用 `Maestro` 的 MongoDB 多 CLI 协作控制面。
@@ -247,7 +254,7 @@ python scripts/runtime/export_collab_snapshots.py --output-dir /tmp/mongo-collab
 如果需要把 Mongo control plane、Graphiti preflight、以及快照导出串成一条本机验收链路，统一使用：
 
 ```bash
-python scripts/runtime/run_local_maestro_acceptance.sh
+bash scripts/runtime/run_local_maestro_acceptance.sh
 ```
 
 该脚本会顺序执行并落盘：

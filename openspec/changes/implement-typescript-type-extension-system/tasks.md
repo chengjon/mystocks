@@ -1,5 +1,10 @@
 # Implementation Tasks
 
+> **使用说明**:
+> 本文件用于记录当前 OpenSpec 变更的执行清单、操作步骤或协作约束，帮助跟踪实施过程。
+> 其中勾选状态、执行顺序和局部说明仅代表任务推进视角，不应脱离 proposal、design、正式 specs、`architecture/STANDARDS.md` 与实际验证结果单独解读为最终事实。
+
+
 ## Phase 1: Infrastructure Setup (1.5 hours)
 
 ### 1.1 Create Directory Structure

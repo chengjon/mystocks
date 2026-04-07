@@ -1,4 +1,9 @@
 ## 1. 市场总貌数据扩充 ✅ 完成
+
+> **使用说明**:
+> 本文件用于记录当前 OpenSpec 变更的执行清单、操作步骤或协作约束，帮助跟踪实施过程。
+> 其中勾选状态、执行顺序和局部说明仅代表任务推进视角，不应脱离 proposal、design、正式 specs、`architecture/STANDARDS.md` 与实际验证结果单独解读为最终事实。
+
 - [x] 1.1 实现上海证券交易所市场总貌数据 (akshare.stock_sse_summary)
 - [x] 1.2 实现深圳证券交易所市场总貌数据 (akshare.stock_szse_summary)
 - [x] 1.3 实现深圳证券交易所地区交易排序数据 (akshare.stock_szse_area_summary)

@@ -1,5 +1,10 @@
 # MyStocks 项目目录整理方案
 
+> **历史计划说明**:
+> 本文件记录某次历史方案、改造计划、实施设想或后续行动安排，反映的是当时准备推动的方向与范围，而非当前已生效事实。
+> 若其内容与现行 `architecture/STANDARDS.md`、当前实现或后续结论不一致，应以 `architecture/STANDARDS.md`、当前实现与最新结论为准。
+
+
 **版本**: v3.0  
 **创建日期**: 2026-03-23  
 **基于规范**: [目录与文件整理通用规则](../standards/DIRECTORY_AND_FILE_ORGANIZATION_RULES.md)  

@@ -1,5 +1,9 @@
 # Phase 2: Dead Code Inventory & Removal - Discussion Log
 
+> **历史决策说明**:
+> 本文件用于记录阶段讨论过程、备选方案与取舍理由，不是仓库级共享规则、当前实施状态或当前执行结论的唯一事实来源。
+> 仓库级共享规则与审批门禁请优先遵循 `architecture/STANDARDS.md`；若涉及执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前阶段上下文和代码实现一并核对。
+
 > **Audit trail only.** Do not use as input to planning, research, or execution agents.
 > Decisions are captured in CONTEXT.md — this log preserves the alternatives considered.
 

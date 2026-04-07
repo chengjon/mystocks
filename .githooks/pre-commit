@@ -1,10 +1,40 @@
 #!/bin/bash
-# Pre-commit hook: directory governance + production Python guardrails + backend singleton None guard + UnifiedResponse contract guard + frontend/test file size guard + PM2 first-class gate
+# Pre-commit hook: markdown governance + directory governance + production Python guardrails + backend singleton None guard + UnifiedResponse contract guard + frontend/test file size guard + PM2 first-class gate
 # Install: git config core.hooksPath .githooks
 
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+run_markdown_governance_gate() {
+  if [[ "${DISABLE_MARKDOWN_GOVERNANCE_GATE:-0}" == "1" ]]; then
+    echo "⚠️  Markdown governance gate skipped via DISABLE_MARKDOWN_GOVERNANCE_GATE=1"
+    return 0
+  fi
+
+  if [[ "${SKIP:-}" == *"markdown-governance-gate"* ]]; then
+    echo "⚠️  Markdown governance gate skipped via SKIP=markdown-governance-gate"
+    return 0
+  fi
+
+  mapfile -t staged_markdown_files < <(
+    git -C "$PROJECT_ROOT" diff --cached --name-only --diff-filter=ACMR \
+      | grep -E '.*\.md$' || true
+  )
+
+  if [[ "${#staged_markdown_files[@]}" -eq 0 ]]; then
+    echo "ℹ️  No staged markdown files for markdown governance gate"
+    return 0
+  fi
+
+  echo "🔍 Running markdown governance gate on staged changes..."
+  cmd=(python "$PROJECT_ROOT/scripts/compliance/markdown_governance_gate.py" --root-dir "$PROJECT_ROOT" --format text)
+  for path in "${staged_markdown_files[@]}"; do
+    cmd+=(--path "$path")
+  done
+  "${cmd[@]}"
+  echo "✅ Markdown governance gate passed"
+}
 
 run_directory_governance() {
   if [[ "${DISABLE_DIR_STRUCTURE_CHECK:-0}" == "1" ]]; then
@@ -172,6 +202,7 @@ run_pm2_first_class_gate() {
   echo "✅ PM2 first-class gate passed"
 }
 
+run_markdown_governance_gate
 run_directory_governance
 run_production_python_guardrails
 run_backend_singleton_none_guard

@@ -1,5 +1,10 @@
 # Monitoring Stack 部署关键要点总结
 
+> **参考指南说明**:
+> 本文件用于说明配置目录中的局部部署方法、目录用途、参数背景或外部系统接入参考，帮助理解配置层实践。
+> 其中的路径、端口、步骤、截图式说明和操作建议应与 `architecture/STANDARDS.md`、当前配置文件及最新验证结果一并核对，不应单独充当共享规则或当前状态的唯一事实来源。
+
+
 ## 概述
 
 本文档总结 MyStocks 监控栈 5 个容器的关键配置要点，涵盖 Prometheus、Grafana、Loki、Tempo 和 Node Exporter。

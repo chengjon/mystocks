@@ -1,5 +1,10 @@
 # Key Rotation Guide
 
+> **参考指南说明**:
+> 本文件用于提供 Web 子系统的使用方法、操作指引、接口接入说明、排障提示或结构参考，帮助理解局部实现与协作方式。
+> 其中的步骤、示例、端口、目录和操作建议应先与 `architecture/STANDARDS.md`、当前代码实现及最新验证结果核对；若涉及仓库执行流程、命令或协作约束，再补充参考根目录 `AGENTS.md`。本文件不得单独视为仓库共享规则或当前状态的唯一事实来源。
+
+
 **Phase 3 Task 20: Configuration Sensitive Info Encryption Storage**
 
 Comprehensive guide for managing encryption key rotation in the MyStocks system.

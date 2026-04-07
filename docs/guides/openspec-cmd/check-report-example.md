@@ -1,5 +1,12 @@
 # OpenSpec Check Report: frontend-unified-optimization
 
+> **历史总结说明**:
+> 本文件是阶段性总结、报告、状态、修复记录或工作日志，不是当前基线、当前实施状态或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现、验证结果及主线文档一并核对。
+>
+> 文内统计值、完成状态、结论和处理结果如未重新复核，应视为历史快照，不得直接当作当前事实。
+
+
 **Check Date**: 2026-01-13 (Updated: Latest Manual Check)
 **Checked By**: Claude Code (OpenSpec Check Command)
 **Change ID**: frontend-unified-optimization

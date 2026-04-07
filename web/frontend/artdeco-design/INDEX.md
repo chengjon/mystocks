@@ -1,5 +1,10 @@
 # MyStocks ArtDeco Design System - File Index
 
+> **历史索引说明**:
+> 本文件是 Web 目录下历史材料、报告、指南或专题文档的导航索引，主要用于回溯与定位。
+> 目录项、数量统计、完成标记和链接关系仅反映整理时状态；判断当前事实时，应优先查看 `architecture/STANDARDS.md` 与现行代码、最新主线文档；若涉及执行流程或协作约束，再补充参考根目录 `AGENTS.md`。
+
+
 **Created**: 2025-01-03
 **Status**: ✅ Complete (Phase 1: 3/9 pages fully implemented)
 **Design Style**: ArtDeco Modern (几何美学 + 奢华金融)

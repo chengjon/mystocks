@@ -1,5 +1,10 @@
 # Quantitative Trading Algorithms Implementation
 
+> **专题方案说明**:
+> 本文件用于描述某项测试能力、测试契约、测试规格或变更提案的边界与要求，服务于测试方案管理和差异追踪。
+> 它不自动等同于当前已落地测试实现或当前运行结果；执行时需同时核对 `architecture/STANDARDS.md`、当前代码实现、测试脚本与最新验证结果。
+
+
 ## Summary
 This change adds 6 quantitative trading algorithms to the MyStocks system, leveraging existing GPU acceleration, dual database architecture, and technical indicators infrastructure. The algorithms will provide advanced market analysis capabilities for buy/sell signals, trend prediction, and risk assessment.
 

@@ -1,5 +1,10 @@
 # Change: Technical Debt Remediation Initiative
 
+> **历史计划说明**:
+> 本文件记录某次测试重构、能力建设或问题修复的历史计划与设想，反映的是当时准备推动的方向与范围，而非当前已生效事实。
+> 若其内容与现行 `architecture/STANDARDS.md`、当前测试实现或后续结论不一致，应以 `architecture/STANDARDS.md`、当前测试实现与最新验证结果为准。
+
+
 ## Why
 The MyStocks project has accumulated significant technical debt across performance, security, testing, and architectural domains. The technical debt analysis identified 152 total issues (12 critical, 28 high-priority, 45 medium-priority, 67 low-priority) that are impacting system reliability, security, and maintainability. Immediate action is required to address critical vulnerabilities and performance bottlenecks before they cause production failures.
 

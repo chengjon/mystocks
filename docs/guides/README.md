@@ -1,14 +1,24 @@
 # MyStocks 量化交易数据管理系统
 
+> **权威来源声明**:
+> 本文件属于历史性总览/导览文档，不是当前仓库共享规则、迁移状态或技术债口径的唯一事实来源。
+> 如与 `architecture/STANDARDS.md` 冲突，应始终以 `architecture/STANDARDS.md` 作为仓库级共享规则与审批门禁来源；若涉及具体执行入口，再按职责分别核对根目录 `AGENTS.md` 与根目录 `CLAUDE.md`。
+>
+> 涉及迁移收口、兼容层治理、清理/删除判定、审计指标口径时，请统一回到 `architecture/STANDARDS.md`。
+
+> **历史快照说明**:
+> 文内 `Week 3`、`ValueCell Migration`、旧目录重组说明等章节保留为历史背景。
+> 未经重新核实时，不得单独据此判断当前推荐导入路径、兼容层状态、数据库架构结论或当前开发门禁。
+
 **创建人**: JohnC & Claude
 **版本**: 3.0.0
 **批准日期**: 2025-10-15
 **最后修订**: 2025-10-24
-**本次修订内容**: Week 3数据库简化完成 + Adapter整理 + ValueCell Phase 3完成
+**本次修订内容**: 历史修订摘要：Week 3数据库简化完成 + Adapter整理 + ValueCell Phase 3完成
 
 ---
 
-## ⚡ Week 3 重大更新 (2025-10-19)
+## ⚡ Historical Week 3 Snapshot (2025-10-19)
 
 **数据库架构简化**: 4数据库 → 2数据库 (TDengine + PostgreSQL)
 
@@ -33,7 +43,7 @@
 
 MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，采用科学的数据分类体系和智能路由策略，实现多数据库协同工作。系统基于适配器模式和工厂模式构建统一的数据访问层，提供配置驱动的自动化管理，确保数据的高效存储、快速查询和实时监控。
 
-**最新特性 (ValueCell Migration)**:
+**历史特性快照 (ValueCell Migration)**:
 - ✅ **Phase 1**: 实时监控和告警系统（龙虎榜、资金流向、自定义规则）
 - ✅ **Phase 2**: 增强技术分析系统（26个技术指标、交易信号生成）
 - ✅ **Phase 3**: 多数据源集成系统（优先级路由、自动故障转移、公告监控）
@@ -55,7 +65,7 @@ MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，
 - **增强技术分析** (Phase 2): 26个专业技术指标，4大类别（趋势、动量、波动、成交量）
 - **多数据源集成** (Phase 3): 优先级路由、自动故障转移、官方公告监控（类似SEC Agent）
 
-### 📊 双数据库存储策略 (Week 3后)
+### 📊 历史双数据库存储策略 (Week 3后快照)
 基于数据特性和访问频率的专业化存储方案：
 - **高频时序数据** (Tick/分钟线) → TDengine（极致压缩比20:1，超强写入性能）
 - **历史K线数据** (日线/周线/月线) → PostgreSQL + TimescaleDB扩展（复杂时序查询）
@@ -118,14 +128,14 @@ MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，
 - **策略参数** → **PostgreSQL** (策略配置，版本控制)
 - **系统配置** → **PostgreSQL** (系统设置，集中管理)
 
-### 数据库分工与存储方案 (Week 3简化后)
+### 历史数据库分工与存储方案 (Week 3简化后)
 
 | 数据库 | 专业定位 | 适用数据 | 核心优势 |
 |--------|----------|----------|----------|
 | **TDengine** | 高频时序数据专用库 | Tick数据、分钟K线、实时深度 | 极高压缩比(20:1)、超强写入性能、列式存储 |
 | **PostgreSQL + TimescaleDB** | 通用数据仓库+分析引擎 | 日线K线、技术指标、量化因子、参考数据、交易数据、元数据 | 自动分区、复杂查询、ACID事务、JSON支持 |
 
-**说明**:
+**历史说明**:
 - ✅ **TDengine**: 专注高频市场数据（毫秒级Tick、分钟K线），极致压缩和写入性能
 - ✅ **PostgreSQL**: 处理所有其他数据类型，TimescaleDB扩展提供时序优化
 - ❌ **MySQL已移除**: 所有参考数据和元数据已迁移至PostgreSQL（299行数据）
@@ -137,8 +147,8 @@ MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，
 所有数据操作都通过统一的接口进行，隐藏底层数据库差异：
 
 ```python
-from unified_manager import MyStocksUnifiedManager
-from core import DataClassification
+from src.core import DataClassification
+from src.core.unified_manager import MyStocksUnifiedManager
 
 # 创建统一管理器
 manager = MyStocksUnifiedManager()
@@ -165,7 +175,7 @@ data = manager.load_data_by_classification(
 - **实时更新**: 毫秒级的实时数据推送
 - **定时更新**: 自动化的定期数据同步
 
-### 数据流工作流程 (Week 3简化后)
+### 历史数据流工作流程 (Week 3简化后)
 
 ```mermaid
 graph TD
@@ -186,7 +196,7 @@ graph TD
     style K fill:#ccffcc
 ```
 
-### 数据缓存方法 (Week 3简化后)
+### 历史数据缓存方法 (Week 3简化后)
 
 #### 两层缓存架构
 1. **L1缓存**: 应用层缓存 (微秒级访问，Python字典/LRU缓存)
@@ -293,10 +303,10 @@ mystocks_spec/
 ├── CHANGELOG.md              # 版本变更日志
 ├── LICENSE                   # MIT许可证
 ├── requirements.txt          # Python依赖清单
-├── core.py                   # 核心模块入口点
-├── data_access.py           # 数据访问入口点
-├── monitoring.py            # 监控模块入口点
-├── unified_manager.py       # 统一管理器入口点
+├── core.py                   # 历史兼容入口（如仍存在）
+├── data_access.py           # 历史兼容入口（如仍存在）
+├── monitoring.py            # 历史兼容入口（如仍存在）
+├── unified_manager.py       # 历史兼容入口（如仍存在）
 └── __init__.py              # Python包标识
 ```
 
@@ -370,22 +380,20 @@ mystocks_spec/
 from src.core import ConfigDrivenTableManager
 from src.adapters.akshare_adapter import AkshareDataSource
 from src.data_access.tdengine_access import TDengineDataAccess
-from src.db_manager import DatabaseTableManager  # 兼容层
+from src.storage.database import DatabaseTableManager
 
-# ❌ 旧的导入路径 (已废弃)
-from core import ConfigDrivenTableManager
-from adapters.akshare_adapter import AkshareDataSource
+# ❌ 已废弃: 历史代码中曾使用根目录或旧模块路径，禁止在新改动中继续复制
 ```
 
 **2. 兼容层设计**:
-- `src/db_manager/` 是兼容层,实际代码在 `src/storage/database/`
-- 保证平滑过渡,旧导入路径仍然有效
+- `src/db_manager/` 如仍存在，应视为历史兼容层；当前主实现与推荐导入路径应以 `src/storage/database/` 及当前代码实现为准
+- 不得把兼容层描述理解为“新代码默认可继续依赖兼容层”
 
 **3. 入口点文件**:
-根目录的 `.py` 文件 (`core.py`, `data_access.py`, `monitoring.py`, `unified_manager.py`) 是入口点文件:
-- 提供向后兼容性
-- 可作为快速访问点
-- 内部导入自 `src.*`
+根目录的 `.py` 文件 (`core.py`, `data_access.py`, `monitoring.py`, `unified_manager.py`) 如仍存在，只应视为历史兼容入口:
+- 不应作为新代码默认入口
+- 若继续保留，必须符合 `architecture/STANDARDS.md` 的兼容层约束
+- 新改动应直接使用 `src.*` 主路径
 
 **4. Git历史完整保留**:
 - 所有文件移动使用 `git mv` 命令
@@ -444,7 +452,7 @@ src/
 
 ### 1. 环境准备
 
-#### 数据库服务（Week 3简化后 - 双数据库架构）
+#### 历史数据库服务示例（Week 3简化后 - 双数据库架构）
 确保以下数据库服务正常运行：
 
 **必需数据库**:
@@ -464,7 +472,7 @@ src/
 # 基础依赖
 pip install pandas numpy pyyaml
 
-# 数据库驱动（Week 3简化后 - 双数据库）
+# 历史数据库驱动示例（Week 3简化后 - 双数据库）
 pip install psycopg2-binary taospy
 
 # 数据源适配器
@@ -474,7 +482,7 @@ pip install akshare efinance schedule loguru
 pip install ujson numba cachetools
 ```
 
-#### 环境配置（Week 3简化版 - 双数据库）
+#### 历史环境配置示例（Week 3简化版 - 双数据库）
 创建 `.env` 文件：
 ```bash
 # TDengine高频时序数据库（必需）
@@ -502,7 +510,7 @@ LRU_CACHE_MAXSIZE=1000
 ### 2. 系统初始化
 
 ```python
-from unified_manager import MyStocksUnifiedManager
+from src.core.unified_manager import MyStocksUnifiedManager
 
 # 创建统一管理器
 manager = MyStocksUnifiedManager()
@@ -522,7 +530,7 @@ else:
 ```python
 import pandas as pd
 from datetime import datetime
-from core import DataClassification
+from src.core import DataClassification
 
 # 1. 保存股票基本信息 (自动路由到PostgreSQL)
 symbols_data = pd.DataFrame({
@@ -580,9 +588,9 @@ print(f"查询到 {len(history)} 条历史数据")
 
 ```python
 # 使用改进的customer_adapter和自动路由保存
-from adapters.customer_adapter import CustomerDataSource
-from unified_manager import MyStocksUnifiedManager
-from core import DataClassification
+from src.adapters.customer_adapter import CustomerDataSource
+from src.core import DataClassification
+from src.core.unified_manager import MyStocksUnifiedManager
 
 # 1. 创建数据适配器（启用列名标准化）
 adapter = CustomerDataSource(use_column_mapping=True)
@@ -633,12 +641,12 @@ print(f"数据质量评分: {quality_report['overall_score']:.2f}")
 
 ### 🎯 根目录入口点文件
 
-**说明**: 根目录的Python文件是系统入口点,提供向后兼容性和快速访问:
+**说明**: 根目录的Python文件如仍存在，仅应视为历史兼容入口，不应再作为新代码默认访问点:
 
-- `core.py` - 核心模块入口 → 导入自 `src.core`
-- `unified_manager.py` - 统一管理器入口 → 导入自 `src.core`
-- `data_access.py` - 数据访问入口 → 导入自 `src.data_access`
-- `monitoring.py` - 监控模块入口 → 导入自 `src.monitoring`
+- `core.py` - 历史兼容入口 → 主实现位于 `src.core`
+- `unified_manager.py` - 历史兼容入口 → 主实现位于 `src.core.unified_manager`
+- `data_access.py` - 历史兼容入口 → 主实现位于 `src.data_access`
+- `monitoring.py` - 历史兼容入口 → 主实现位于 `src.monitoring`
 
 **使用建议**:
 - ✅ 推荐: 直接从 `src.*` 导入 (标准路径)
@@ -702,20 +710,18 @@ from src.storage.database import DatabaseConnectionManager, DatabaseTableManager
 
 #### src/db_manager/ - 兼容层 (重要!)
 
-**说明**: `src/db_manager/` 是兼容层,实际代码在 `src/storage/database/`
+**说明**: `src/db_manager/` 如仍存在，仅应视为历史兼容层；实际主实现应以 `src/storage/database/` 及当前代码实现为准
 
 - `src/db_manager/__init__.py` - 重导出 src.storage.database 的所有类
 - `src/db_manager/connection_manager.py` - 兼容包装器
 - `src/db_manager/database_manager.py` - 兼容包装器
 
-**导入示例** (两种方式等价):
+**导入示例**:
 ```python
-# 方式1: 通过兼容层 (旧代码可继续使用)
-from src.db_manager import DatabaseTableManager
-
-# 方式2: 直接导入 (推荐)
 from src.storage.database import DatabaseTableManager
 ```
+
+若历史代码仍出现兼容导入路径，应按迁移治理规则评估其保留原因与退场条件，而不是直接把兼容层继续当作新真相源。
 
 #### src/monitoring/ - 监控和告警
 
@@ -1334,8 +1340,8 @@ curl -X POST http://localhost:8020/backtest \
 - TDengine快速参考
 - 前后端数据流
 
-**开发规范** (`docs/standards/`):
-- 项目开发规范与指导文档
+**开发规范与治理**:
+- `architecture/STANDARDS.md`（共享规则唯一事实来源）
 - 代码修改规则
 - 数据工作流程
 - Web页面结构指南

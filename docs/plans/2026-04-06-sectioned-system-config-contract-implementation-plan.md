@@ -1,5 +1,9 @@
 # Sectioned System-Config Contract Implementation Plan
 
+> **历史计划说明**:
+> 本文件记录某次阶段性治理、任务推进或方案落地时的历史执行计划、目标拆解与验证设想，反映的是当时准备推进的方向与范围，而非当前已生效事实。
+> 若其内容与现行 `architecture/STANDARDS.md`、当前实现或后续结论不一致，应以 `architecture/STANDARDS.md`、当前实现与最新结论为准。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Implement the approved `add-sectioned-system-config-contract` change in governed micro-batches, first by composing existing canonical datasource and notification truths, then by adding canonical system-scoped `general` and `security` contracts, and only then retiring local-storage degradation.

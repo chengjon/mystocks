@@ -2,7 +2,7 @@
 
 > **使用说明**:
 > 本文件是项目入口、工作流快照、规划工件或使用说明，不是当前共享规则、当前代码实现或当前运行状态的唯一事实来源。
-> 当前执行口径请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，并结合当前代码、主线任务系统与验证结果使用。
+> 当前共享规则与治理口径请优先遵循 `architecture/STANDARDS.md`；执行流程、命令与协作约束再结合根目录 `AGENTS.md`，并与当前代码、主线任务系统及验证结果一并核对。
 >
 > 文内步骤、范围、状态或说明如未重新复核，应按其所属上下文理解，不得直接当作跨场景通用事实。
 
@@ -53,7 +53,7 @@ Before any migration or deletion, the following single-source-of-truth declarati
 1. `ruff check src/ web/backend/app/ --statistics` reports <900 errors (from ~1,456; recalibrated per `.planning/phases/01-python-lint-baseline/01-RESEARCH.md` — 805 F821 require manual investigation, not auto-fixable)
 2. `src/interfaces/adapters/` deleted — verified zero imports: `grep -r "from src.interfaces.adapters\|import src.interfaces.adapters" --include="*.py" src/ web/ tests/ scripts/` returns empty
 3. Auto-fixable rules produce zero violations: `ruff check src/ web/backend/app/ --select W293,F841,W291` exits 0 (F401 and E701 not auto-fixable by ruff 0.9.10 per 01-RESEARCH.md)
-4. FastAPI app starts: `cd web/backend && PYTHONPATH=$(git rev-parse --show-toplevel):. python -c "from app.main import app; print('OK')"``
+4. FastAPI app starts: `cd web/backend && PYTHONPATH=$(git rev-parse --show-toplevel):. python -c "from app.main import app; print('OK')"`
 5. No regressions: `pytest --tb=short` passes (same pass/fail count as before)
 
 **Tasks:**
@@ -130,7 +130,7 @@ After user reviews DELETION-CANDIDATES.md:
 2. User has reviewed and approved the deletion list
 3. `src/routes/`, `src/api/`, `src/data_access_pkg/`, `src/db_manager/`, `src/database_optimization/` all removed
 4. `ruff check src/ web/backend/app/` still <900 errors (no regressions from Phase 1 baseline of 877)
-5. `python -c "from web.backend.app.main import app; print('OK')"` passes
+5. `cd web/backend && PYTHONPATH=$(git rev-parse --show-toplevel):. python -c "from app.main import app; print('OK')"` passes
 6. `pytest --tb=short` passes (same pass/fail count)
 
 **Canonical refs:**
@@ -168,7 +168,7 @@ After user reviews DELETION-CANDIDATES.md:
 
 1. Verify `src/data_access/` is sole data access layer (Phase 2 should have merged others)
 2. Verify all imports point to `src/data_access/`
-3. Run: `python -c "from web.backend.app.main import app; print('OK')"`
+3. Run: `cd web/backend && PYTHONPATH=$(git rev-parse --show-toplevel):. python -c "from app.main import app; print('OK')"`
 
 ### Sub-stage 3d: Frontend Cleanup
 
@@ -184,7 +184,7 @@ After user reviews DELETION-CANDIDATES.md:
 3. `cd web/frontend && npm run build` succeeds
 4. `cd web/frontend && npx stylelint "src/**/*.{vue,scss,css}"` passes
 5. `src/data_access/` is sole data access layer — verified by: `ls src/data_access_pkg/ src/db_manager/ src/database_optimization/ 2>&1 | grep "No such file"`
-6. FastAPI starts: `python -c "from web.backend.app.main import app; print('OK')"`
+6. FastAPI starts: `cd web/backend && PYTHONPATH=$(git rev-parse --show-toplevel):. python -c "from app.main import app; print('OK')"`
 
 **Risk notes:**
 - Case-conflict merge affects import paths — must update all references
@@ -212,7 +212,7 @@ After user reviews DELETION-CANDIDATES.md:
 2. For each shim marked "Remove": redirect callers to `src.*` imports, then delete
 3. For each shim marked "Deprecate": add `warnings.warn("... is deprecated, use src....")`, keep file
 4. For "Keep": document as intentional in `ARCHITECTURE.md`
-5. Verify: `python -c "from web.backend.app.main import app; print('OK')"`
+5. Verify: `cd web/backend && PYTHONPATH=$(git rev-parse --show-toplevel):. python -c "from app.main import app; print('OK')"`
 
 ### Sub-stage 4b: Naming Cleanup
 

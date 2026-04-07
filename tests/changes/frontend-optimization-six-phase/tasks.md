@@ -1,5 +1,10 @@
 # Tasks: Frontend Framework Six-Phase Optimization
 
+> **使用说明**:
+> 本文件用于记录测试体系中的当前执行步骤、任务清单、入口约束或协作方式，服务于测试推进过程中的上下文同步。
+> 其中的步骤、勾选项和局部要求仅代表执行视角，不能脱离 `architecture/STANDARDS.md`、当前测试实现与实际验证结果单独解读为最终事实。
+
+
 **Change ID**: `frontend-optimization-six-phase`
 **Total Tasks**: 122
 **Estimated Duration**: 12-16 weeks (60-80 working days)

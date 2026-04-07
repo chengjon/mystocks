@@ -1,5 +1,10 @@
 # Function Tree Doc Routing Implementation Plan
 
+> **历史计划说明**:
+> 本文件记录某次历史方案、改造计划、实施设想或后续行动安排，反映的是当时准备推动的方向与范围，而非当前已生效事实。
+> 若其内容与现行 `architecture/STANDARDS.md`、当前实现或后续结论不一致，应以 `architecture/STANDARDS.md`、当前实现与最新结论为准。
+
+
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
 **Goal:** 将 `docs/FUNCTION_TREE.md` 升级为业务能力总线，并补齐 AI 快速路由入口、功能管理维护规则和 PR 模板对齐字段。

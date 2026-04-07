@@ -2,7 +2,7 @@
 
 > **使用说明**:
 > 本文件是项目入口、工作流快照、规划工件或使用说明，不是当前共享规则、当前代码实现或当前运行状态的唯一事实来源。
-> 当前执行口径请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，并结合当前代码、主线任务系统与验证结果使用。
+> 当前共享规则与治理口径请优先遵循 `architecture/STANDARDS.md`；执行流程、命令与协作约束再结合根目录 `AGENTS.md`，并与当前代码、主线任务系统及验证结果一并核对。
 >
 > 文内步骤、范围、状态或说明如未重新复核，应按其所属上下文理解，不得直接当作跨场景通用事实。
 
@@ -33,9 +33,8 @@ Every file in the codebase has exactly one canonical location, every import reso
 
 ### Active
 
-- [ ] Eliminate duplicate adapter layer (src/interfaces/adapters/ → resolve vs src/adapters/)
 - [ ] Fix frontend case-conflict directories (Charts/ vs charts/ etc.)
-- [ ] Reduce remaining ruff errors toward <50 (stretch goal — Phase 1 achieved <900, 805 F821 remain)
+- [ ] Reduce remaining ruff errors (stretch goal beyond Phase 1's <900 baseline; 805 F821 remain)
 - [ ] Merge overlapping data access layers into single canonical layer
 - [ ] Consolidate routes (remove src/routes/ + src/api/ dead code)
 - [ ] Clean frontend entry points (remove 7 extra main-*.js/ts variants)
@@ -61,7 +60,7 @@ This is an existing codebase with:
 - **Vue 3**: 908 .vue+.ts files in web/frontend/src/
 - **Tests**: 908 test files (quality issues documented)
 - **Known Issues**: 12 issues documented in `.planning/codebase/CONCERNS.md` (P0: 2, P1: 3, P2: 5, Low: 2)
-- **Current ruff errors**: ~1,456 (46% auto-fixable, 80%+ caused by duplicate adapters)
+- **Current ruff errors**: 877 (Phase 1 baseline; 805 F821 require manual investigation)
 
 ### Architecture
 

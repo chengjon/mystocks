@@ -19,6 +19,12 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 # AGENTS.md - Coding Agent Configuration
 
+> **使用说明**:
+> 本文件是 AI Agent 的执行入口与协作说明，不是仓库共享规则的唯一事实来源。
+> 仓库级共享规则与当前执行口径以 `architecture/STANDARDS.md` 为准；涉及 OpenSpec 提案、变更与能力规范时，请同步遵循 `openspec/AGENTS.md`。
+>
+> 本文件仅保留执行层流程、命令、协作和环境约束；仓库级共享规则、审批门禁与治理口径仍以 `architecture/STANDARDS.md` 为准。若同一事项在两处重复描述且口径不一致，应以 `architecture/STANDARDS.md` 作为共享规则来源，并将本文件视为执行层入口说明。
+
 ## Project Overview
 
 **MyStocks** 是一套面向量化交易的全栈数据管理系统，核心目标：
@@ -39,7 +45,7 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 ## Global Architecture Standards
 
 - 执行任何代码修改前，必须先阅读 `architecture/STANDARDS.md`。
-- `方案先行准则 (Proposal-First Rule)`、`六步走战略`、`Docker 一等公民原则`、`迁移收口与技术债治理规则` 统一以 `architecture/STANDARDS.md` 为准。
+- 仓库级共享规则与当前执行口径统一以 `architecture/STANDARDS.md` 为准。
 - 本文件只保留 Agent 执行层面的流程、命令和协作规范，避免重复维护共享规则正文。
 
 ---
@@ -390,12 +396,10 @@ tests/
 
 ## 推荐开发流程与环境一致性（统一引用）
 
-以下共享规范已统一收敛到 `architecture/STANDARDS.md`，此处不再重复正文：
+以下共享规范已统一收敛到 `architecture/STANDARDS.md`，本节不再重复列举共享规则正文。
 
-- “零、统一治理与审批门禁”（含 `Proposal-First Rule`）
-- “一、推荐开发流程：六步走战略”
-- “二、技术工程红线 -> 3. 环境一致性”（Docker/PM2 一等公民）
-- 前端变更卫生 / 微提交规范：`docs/guides/frontend/frontend-change-hygiene-and-micro-commit-guide.md`
+前端变更卫生 / 微提交规范继续参考：
+- `docs/guides/frontend/frontend-change-hygiene-and-micro-commit-guide.md`
 
 ---
 

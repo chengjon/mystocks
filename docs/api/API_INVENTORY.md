@@ -2,7 +2,7 @@
 
 > **历史盘点说明**:
 > 本文件是某次 API 端点盘点结果，不是当前 API 契约、当前端点总量或仓库共享规则的唯一事实来源。
-> 当前 API 单一事实来源请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，以及实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json`。
+> 若涉及仓库级共享规则或审批门禁，请优先遵循 `architecture/STANDARDS.md`；若涉及执行流程与协作约束，再参考根目录 `AGENTS.md`；若涉及 API 契约事实源，再以实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json` 为准。
 >
 > 文内“340个端点”、扫描范围、优先级划分和契约状态如未重新扫描与复核，应视为历史盘点快照，不得直接当作当前事实。
 

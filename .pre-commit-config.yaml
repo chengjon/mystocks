@@ -166,6 +166,16 @@ repos:
         pass_filenames: false
         always_run: true
 
+      - id: markdown-governance-gate
+        name: Markdown Governance Gate
+        entry: >-
+          bash -lc 'args=(--format text); for file in "$@"; do args+=(--path "$file"); done;
+          python scripts/compliance/markdown_governance_gate.py "${args[@]}"' --
+        language: system
+        files: \.md$
+        pass_filenames: true
+        stages: [pre-commit]
+
       - id: mainline-governance-reminder
         name: Mainline Governance Reminder (non-blocking)
         entry: scripts/hooks/mainline-governance-reminder.sh

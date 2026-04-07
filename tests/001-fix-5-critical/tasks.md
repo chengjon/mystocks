@@ -1,5 +1,10 @@
 # Implementation Tasks: Fix 5 Critical Issues in OpenStock Demo
 
+> **历史任务说明**:
+> 本文件用于保留某次测试任务拆解、检查清单或阶段性待办，不代表当前仍需按原样执行。
+> 其中的勾选状态、优先级和执行顺序仅对应当时上下文；继续沿用前应先对照当前需求、现行实现与最新验证结果重新校准。
+
+
 **Feature Branch**: `001-fix-5-critical`
 **Date**: 2025-10-20
 **Total Tasks**: 24

@@ -1,5 +1,10 @@
 # OpenSpec Proposal: Implement Optimized Testing Strategy
 
+> **专题方案说明**:
+> 本文件用于描述某一专题能力的规格边界、变更提案或专题约束，服务于 OpenSpec 的方案管理与差异追踪。
+> 它不自动等同于“当前已上线实现”或仓库共享治理规则的唯一真相源；执行时需同时核对 `architecture/STANDARDS.md`、审批状态、当前代码实现以及相关 `openspec/specs/` 正式规格。
+
+
 ## Why
 
 MyStocks项目的测试基础设施存在严重问题：ESM模块导入错误导致Vue应用无法渲染，服务器稳定性差，测试执行效率低下。基于实际测试经验和Web测试方法论，需要实施优化后的协同测试策略，建立稳定、可扩展的测试体系。

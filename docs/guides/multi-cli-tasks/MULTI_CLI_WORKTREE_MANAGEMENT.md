@@ -1,8 +1,13 @@
 # 多CLI协作 Worktree 管理手册（标准化版）
 
-**文档版本**: v3.0
-**更新日期**: 2026-03-04
-**变更说明**: 整合《AI-CLI协作开发规范》，新增分支策略、PR管理规则、提交信息规范、违规处理章节，并完成项目无关化标准化。
+> **参考指南说明**:
+> 本文件用于提供某一局部主题的使用方法、操作步骤、背景说明或参考材料，帮助理解仓库中的具体实践。
+> 其中的命令、路径、流程和示例应与 `architecture/STANDARDS.md`、当前代码实现及最新验证结果一并核对，不应单独视为共享规则或当前状态的唯一事实来源。
+
+
+**文档版本**: v3.1
+**更新日期**: 2026-04-03
+**变更说明**: 在 v3.0 基础上补充 Git ref 归档/清理规则，并增加清理收口报告入口。
 **适用范围**: 单开发者 + 多 AI CLI（Claude Code/Codex/Gemini/OpenCode 等）协作的 Git Worktree 项目
 
 ---
@@ -41,8 +46,9 @@
 11. [交互规则](#交互规则)
 12. [违规处理](#违规处理)
 13. [任务管理工具](#任务管理工具)
-14. [快速参考](#快速参考)
-15. [相关文档](#相关文档)
+14. [Ref Hygiene](#ref-hygiene)
+15. [快速参考](#快速参考)
+16. [相关文档](#相关文档)
 
 ---
 
@@ -182,6 +188,13 @@ gh pr create --base dev --head [分支名] \
 4. 更新 TASK-REPORT.md（进度、阻塞、证据）
 5. 发起到 `dev` 的 PR，并等待主 CLI 审核
 
+### Transcript 治理补充
+
+- 新产生的 `AUTO` / `MANUAL` transcript 必须通过 `python scripts/runtime/coordctl.py transcript ...` 写入 transcript ledger，且每条 transcript 必须绑定一个 `work_item_id`。
+- `TASK-REPORT.md` 继续作为可读投影面，只保留 transcript 摘要元数据，不再默认内嵌完整正文。
+- 完整 transcript 正文只允许通过显式 `transcript export-session` 导出，并且仅在 90 天热存窗口内返回；超过 90 天只展示审计链和 archive ref。
+- 历史 markdown 中的 transcript block 只做 legacy index，不回填正文到新的 transcript event 链。
+
 ---
 
 ## 任务分配方法
@@ -232,6 +245,31 @@ gh pr create --base dev --head [分支名] \
 
 ---
 
+## Ref Hygiene
+
+多 CLI 协作结束后的 Git ref 清理必须遵循以下顺序，避免误删活跃线或丢失历史：
+
+1. 先确认 worktree 绑定关系：`git worktree list`
+2. 再确认本地/远端分支关系：`git branch -vv`、`git branch -r`
+3. 删除远端前先核对 PR 状态：`gh pr list --state open --head <branch>`
+4. 只要分支头提交仍有独立历史，就先打本地归档 tag，再删除分支名
+5. 镜像远端如 `public-github/main`、`quantix/main` 默认保留，不参与日常清理
+
+推荐规则：
+
+- 本地分支若与同名远端头完全一致，可直接删除本地分支名，只保留远端副本。
+- 本地分支若仅作为历史快照保留，应先转换为 `archive/*` tag，再删除本地分支名。
+- 远端分支若无 open PR、仅被自身引用，且确认不再作为活跃交付线使用，应先把远端头归档为本地 `archive/*` tag，再删除远端分支名。
+- 清理完成后，应把最终分支面、worktree 状态、archive tag 结果写入 `docs/reports/tasks/` 作为收口证据。
+
+推荐归档命名：
+
+- 本地历史快照：`archive/<branch>-head-YYYYMMDD`
+- 本地分叉头：`archive/<branch>-local-head-YYYYMMDD`
+- 远端清理快照：`archive/<branch>-remote-head-YYYYMMDD`
+
+---
+
 ## 快速参考
 
 ```bash
@@ -251,6 +289,15 @@ git push -u origin feat/api-cli-x
 gh pr create --base dev --head feat/api-cli-x \
   --title "feat(api): add xxx endpoint" \
   --body "AI CLI: CLI-X | 生成模块: api"
+
+# 清理前核对 worktree / 远端 / PR
+git worktree list
+git branch -vv
+gh pr list --state open --head feat/api-cli-x
+
+# 归档后删除远端分支
+git tag archive/feat-api-cli-x-remote-head-YYYYMMDD origin/feat/api-cli-x
+git push origin --delete feat/api-cli-x
 ```
 
 ---
@@ -262,6 +309,7 @@ gh pr create --base dev --head feat/api-cli-x \
 - `./GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md`
 - `./TASK_TEMPLATE.md`
 - `./GIT_WORKTREE_MAIN_CLI_MANUAL.md`
+- `../../reports/tasks/2026-04-03-git-ref-cleanup-summary.md`
 
 ---
 

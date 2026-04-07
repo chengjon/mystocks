@@ -1,6 +1,13 @@
 # MyStocks 文档索引
 
-**生成时间**: 2026-03-25 00:42:08
+> **历史索引说明**:
+> 本文件是历史任务、报告、计划或专题材料的索引，不是当前基线、当前实施状态或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现、验证结果及主线文档一并核对。
+>
+> 文内目录项、完成标记、数量统计和链接关系如未重新生成或复核，应视为历史导航快照，不得直接当作当前事实。
+
+
+**生成时间**: 2026-04-03 17:05:00
 
 
 ---
@@ -13,9 +20,9 @@
 ## 📊 统计信息
 
 
-- **总文档数**: 21
+- **总文档数**: 23
 - **总目录数**: 1
-- **最后更新**: 2026-03-25
+- **最后更新**: 2026-04-03
 
 ---
 
@@ -36,6 +43,8 @@
 - 📄 [2026-03-25-directory-governance-batch-b-files](2026-03-25-directory-governance-batch-b-files.txt)
 - 📄 [2026-03-25-directory-governance-batch-staging-plan](2026-03-25-directory-governance-batch-staging-plan.md)
 - 📄 [2026-03-25-directory-governance-isolated-execution-guide](2026-03-25-directory-governance-isolated-execution-guide.md)
+- 📄 [2026-04-03-git-ref-cleanup-summary](2026-04-03-git-ref-cleanup-summary.md)
+- 📄 [2026-04-03-maestro-local-acceptance-report](2026-04-03-maestro-local-acceptance-report.md)
 - 📄 [HANDOVER_TASK](HANDOVER_TASK.md)
 - 📄 [NEXT_WORK_TASKS](NEXT_WORK_TASKS.md)
 - 📄 [TASK](TASK.md)

@@ -19,6 +19,10 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 # MyStocks 量化交易数据管理系统 - iFlow 交互指南
 
+> **使用说明**:
+> 本文件用于说明 iFlow 在本项目中的交互入口、协作约束与执行方式，服务于当前协作过程中的上下文同步。
+> 其中的流程、角色说明和局部规则不能脱离 `architecture/STANDARDS.md`、`openspec/AGENTS.md`、当前实现与实际验证结果单独解读为最终事实。
+
 ## 项目概述
 
 MyStocks 是一个专业的企业级量化交易数据管理系统和 Web 管理平台，采用科学的数据分类体系和智能路由策略，实现多数据库协同工作。系统基于适配器模式和工厂模式构建统一的数据访问层，提供配置驱动的自动化管理，确保数据的高效存储、快速查询和实时监控。

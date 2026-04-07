@@ -1,4 +1,9 @@
 ## 1. Spec Reconciliation
+
+> **使用说明**:
+> 本文件用于记录当前 OpenSpec 变更的执行清单、操作步骤或协作约束，帮助跟踪实施过程。
+> 其中勾选状态、执行顺序和局部说明仅代表任务推进视角，不应脱离 proposal、design、正式 specs、`architecture/STANDARDS.md` 与实际验证结果单独解读为最终事实。
+
 - [x] 1.1 Update `frontend-routing` spec with canonical dashboard route truth and DealingRoom compatibility semantics
   - Evidence: `specs/frontend-routing/spec.md` defines `/dashboard` as canonical, keeps `/dealing-room` as legacy compatibility, and preserves `/trade/terminal` separation.
 - [x] 1.2 Update `file-organization` spec to block deprecating active route-bound pages

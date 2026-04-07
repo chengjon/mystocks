@@ -1,5 +1,10 @@
 # Implementation Plan: Architecture Optimization for Quantitative Trading System
 
+> **历史计划说明**:
+> 本文件记录某次测试重构、能力建设或问题修复的历史计划与设想，反映的是当时准备推动的方向与范围，而非当前已生效事实。
+> 若其内容与现行 `architecture/STANDARDS.md`、当前测试实现或后续结论不一致，应以 `architecture/STANDARDS.md`、当前测试实现与最新验证结果为准。
+
+
 **Branch**: `002-arch-optimization` | **Date**: 2025-10-25 | **Spec**: [spec.md](./spec.md)
 **Input**: Feature specification from `/specs/002-arch-optimization/spec.md`
 

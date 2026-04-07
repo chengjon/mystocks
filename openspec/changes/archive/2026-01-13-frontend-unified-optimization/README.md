@@ -1,5 +1,10 @@
 # Frontend Unified Optimization - Complete Integration
 
+> **历史索引说明**:
+> 本文件是已归档 OpenSpec 变更或专题材料的导航索引，主要用于回溯和定位历史文档。
+> 目录项、链接关系和归档说明仅反映整理时状态；判断当前事实时，应优先查看现行 `openspec/specs/`、`architecture/STANDARDS.md` 与最新实现。
+
+
 **Status**: ✅ Ready for Approval
 **Created**: 2026-01-13
 **Total Tasks**: 301

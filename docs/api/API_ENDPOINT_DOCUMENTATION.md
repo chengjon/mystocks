@@ -2,7 +2,7 @@
 
 > **使用说明**:
 > 本文件是 API 端点总览型静态文档，不是当前 API 契约、当前端点统计或仓库共享规则的唯一事实来源。
-> 当前 API 单一事实来源请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，以及实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json`。
+> 若涉及仓库级共享规则或审批门禁，请优先遵循 `architecture/STANDARDS.md`；若涉及执行流程与协作约束，再参考根目录 `AGENTS.md`；若涉及 API 契约事实源，再以实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json` 为准。
 >
 > 文内端点数量、端点路径、函数名和分类统计如未重新扫描生成，应视为历史快照或盘点结果，不得直接当作当前硬基线。
 

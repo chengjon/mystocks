@@ -1,5 +1,9 @@
 # MyStocks 开发指南
 
+> **使用说明**:
+> 本文件是开发者 onboarding 指南，不是当前仓库共享规则、分支治理或架构口径的唯一事实来源。
+> 开始任何写操作、规划、迁移或验证前，请优先阅读 `architecture/STANDARDS.md`；若涉及具体执行入口，再按职责分别参考根目录 `AGENTS.md` 与根目录 `CLAUDE.md`。
+
 ## 📋 概述
 
 欢迎加入MyStocks量化交易平台开发团队！本指南将帮助你快速上手项目开发，掌握分支管理、CI/CD流程和最佳实践。
@@ -17,6 +21,11 @@
 ## 🎯 快速开始
 
 ### 环境准备
+
+开始之前，先完成：
+1. 阅读 `architecture/STANDARDS.md`
+2. 阅读根目录 `AGENTS.md`
+3. 如涉及 proposal / plan / spec，再阅读 `openspec/AGENTS.md`
 
 1. **克隆项目**
    ```bash

@@ -2,9 +2,9 @@
 
 > **参考模板说明**:
 > 本文件是 API 文档写作样式与示例模板，不是当前 API 契约、当前响应结构或仓库共享规则的唯一事实来源。
-> 当前 API 单一事实来源请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，以及实际导出的 `/openapi.json`。
+> 若涉及仓库级共享规则或审批门禁，请优先遵循 `architecture/STANDARDS.md`；若涉及执行流程与协作约束，再参考根目录 `AGENTS.md`；若涉及 API 契约事实源，再以实际导出的 `/openapi.json` 为准。
 >
-> 文内端点、字段和响应示例只应用作写作参考；若与真实路由和 OpenAPI 契约冲突，应以后者为准。
+> 文内端点、字段和响应示例只应用作写作参考；若与真实路由和 OpenAPI 契约冲突，应以实际 FastAPI 路由、Pydantic Schema 与导出的 `/openapi.json` 为准。
 
 ## 文档结构示例
 

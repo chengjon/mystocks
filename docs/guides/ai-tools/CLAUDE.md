@@ -19,7 +19,13 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 # CLAUDE.md - MyStocks 项目开发指南
 
-本文档为 Claude Code 提供项目开发指导。配合项目宪章 (`.specify/memory/constitution.md`) 和《项目开发规范与指导文档.md》使用。
+本文档为 Claude Code 提供项目开发指导；共享规则与当前执行口径统一以 `architecture/STANDARDS.md` 及仓库根入口文档为准，本文件仅作扩展说明。
+
+> **权威来源声明**:
+> 本文件属于历史/扩展指导文档，不是当前仓库规则的唯一事实来源。
+> 仓库级共享规则与审批门禁请优先遵循 `architecture/STANDARDS.md`；若涉及具体执行入口、命令或协作约束，再按职责参考根目录 `AGENTS.md` 与根目录 `CLAUDE.md`。
+>
+> 涉及迁移收口、重复层治理、兼容层退役、清理/删除判定、审计指标口径时，请统一回到 `architecture/STANDARDS.md`。
 
 ---
 
@@ -196,7 +202,7 @@ from src.core.data_storage_strategy import DataStorageStrategy
 
 **导入示例**:
 ```python
-from unified_manager import MyStocksUnifiedManager  # 根目录入口点
+from src.core.unified_manager import MyStocksUnifiedManager
 ```
 
 #### Database Access Layer (`src/data_access/`)
@@ -245,14 +251,12 @@ from src.gpu.core.kernels.matrix_kernels import MatrixKernelEngine
 # ✅ 推荐: 新的标准导入路径
 from src.core import ConfigDrivenTableManager, DataClassification
 from src.adapters.akshare_adapter import AkshareDataSource
+from src.storage.database import DatabaseTableManager
 
-# ⚠️ 仍然有效: 旧的导入路径 (通过兼容层)
-from core import ConfigDrivenTableManager
-from db_manager.database_manager import DatabaseTableManager  # 兼容层
-
-# ❌ 已废弃: 直接从根目录导入模块目录
-from adapters.akshare_adapter import AkshareDataSource
+# ❌ 已废弃: 历史代码中曾直接从根目录模块目录导入，禁止在新改动中继续复制
 ```
+
+历史兼容导入路径可能仍出现在旧代码或旧报告中，但新变更应遵循根目录 `AGENTS.md` 中的 canonical import paths。
 
 **脚本路径更新**:
 ```bash
@@ -448,7 +452,7 @@ echo "JWT_SECRET_KEY=<生成的密钥>" >> .env
 
 ```bash
 # 初始化完整系统
-python -c "from unified_manager import MyStocksUnifiedManager; manager = MyStocksUnifiedManager(); manager.initialize_system()"
+python -c "from src.core.unified_manager import MyStocksUnifiedManager; manager = MyStocksUnifiedManager(); manager.initialize_system()"
 
 # 运行系统演示
 python scripts/runtime/system_demo.py

@@ -1,5 +1,12 @@
 # Phase 4: Remaining API Files Compliance Analysis
 
+> **历史分析说明**:
+> 本文件是阶段性分析材料，不是当前基线、当前实施优先级或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现、验证结果及主线文档一并核对。
+>
+> 文内问题分级、差距判断、风险结论和建议动作如未重新复核，应视为历史分析结果，不得直接当作当前事实。
+
+
 ## Executive Summary
 
 This analysis examines the 7 remaining API files not included in Phase 1-3 improvements to determine their current compliance status and plan Phase 4 enhancements.

@@ -1,5 +1,11 @@
 # E2E测试调试方法与实战指南
 
+> **使用说明**:
+> 本文件是 E2E 调试专题指南，适合补充查阅，不是当前 Web E2E 主线、当前 Playwright 配置或测试门禁的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及测试执行流程、E2E 规范或协作约束，再结合 `docs/testing/TESTING_GUIDE.md`、`docs/testing/e2e/README.md` 与根目录 `AGENTS.md`。
+>
+> 2026-04 当前主线默认执行 `web/frontend/playwright.config.js`（`tests/e2e`）；本文件中的单文件、`grep`、headed 等命令仅代表调试场景，不应替代标准验收口径。
+
 ## 目录
 
 1. [测试运行方法](#测试运行方法)

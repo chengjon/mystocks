@@ -1,5 +1,9 @@
 # Task Master AI - Agent Integration Guide
 
+> **补充规范说明**:
+> 本文件是 Task Master 集成场景下的补充说明与操作指南，不是仓库共享规则或项目治理口径的唯一事实来源。
+> 共享规则总入口仍以 `architecture/STANDARDS.md` 为准；若涉及执行流程或协作约束，再参考根目录 `AGENTS.md`。若本文件与根级治理文档或当前实现不一致，应优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md` 与当前实现。
+
 ## Essential Commands
 
 ### Core Workflow Commands

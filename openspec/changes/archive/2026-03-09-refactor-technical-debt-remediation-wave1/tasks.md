@@ -1,5 +1,10 @@
 ## 1. Stage A - Stop Bleeding（质量信号对齐）
 
+> **历史任务说明**:
+> 本文件用于保留某次历史任务拆解、执行清单或阶段性待办，不代表当前仍需按原样执行。
+> 其中的勾选状态、优先级和实施顺序仅对应当时上下文；继续沿用前应先对照 `architecture/STANDARDS.md`、当前需求、现行 specs 与实际仓库状态重新校准。
+
+
 - [x] 1.1 统一前端构建与类型检查门禁：禁止主链路以 `|| true` 放行 `vue-tsc` 失败
 - [x] 1.2 建立技术债基线文件（type errors / suppressions / skip-xfail）并接入 CI 对比
 - [x] 1.2.1 基线 SoT 迁移：将前端类型错误基线来源从 AGENTS 固定值迁移到 `reports/analysis/tech-debt-baseline.json` 并同步 CI 读取

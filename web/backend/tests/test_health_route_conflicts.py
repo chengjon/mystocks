@@ -393,6 +393,25 @@ def test_signal_history_endpoint_has_query_parameter_descriptions() -> None:
         assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
 
 
+def test_signal_monitoring_endpoints_have_success_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    history_operation = schema["paths"]["/api/signals/history"]["get"]
+    history_success_json = history_operation["responses"]["200"]["content"]["application/json"]
+    assert history_operation.get("summary")
+    assert len(history_operation.get("description", "")) >= 20
+    assert "example" in history_success_json or "examples" in history_success_json
+    assert any(status.startswith(("4", "5")) for status in history_operation["responses"])
+
+    quality_operation = schema["paths"]["/api/signals/quality-report"]["get"]
+    quality_success_json = quality_operation["responses"]["200"]["content"]["application/json"]
+    assert quality_operation.get("summary")
+    assert len(quality_operation.get("description", "")) >= 20
+    assert "example" in quality_success_json or "examples" in quality_success_json
+    assert any(status.startswith(("4", "5")) for status in quality_operation["responses"])
+
+
 def test_monitoring_alerts_endpoint_has_query_parameter_descriptions() -> None:
     app.openapi_schema = None
     schema = app.openapi()

@@ -1,5 +1,10 @@
 # Worker CLI 工作流程指南（标准化版）
 
+> **参考指南说明**:
+> 本文件用于提供某一局部主题的使用方法、操作步骤、背景说明或参考材料，帮助理解仓库中的具体实践。
+> 其中的命令、路径、流程和示例应与 `architecture/STANDARDS.md`、当前代码实现及最新验证结果一并核对，不应单独视为共享规则或当前状态的唯一事实来源。
+
+
 **文档版本**: v3.0
 **更新日期**: 2026-03-04
 **变更说明**: 整合《AI-CLI协作开发规范》，新增分支策略、PR管理规则、提交信息规范、违规处理；完成项目无关化。
@@ -124,7 +129,7 @@ gh pr create --base dev --head [分支名] \
    - `docs/guides/multi-cli-tasks/MONGO_MULTICLI_OPERATION_CHECKLIST.md`
    - `docs/guides/ai-tools/GRAPHITI_MCP_WORKFLOW.md`
 3. 在 Mongo control plane 中记录开工：
-   - `work claim`
+   - `work mark --status in_progress`
 4. 创建或更新 `TASK-REPORT.md`
 5. 识别依赖与风险，并记录到报告
 
@@ -200,7 +205,7 @@ git push -u origin [分支名]
 - 代码已推送到远程分支
 - PR 已创建（base=dev）
 - `TASK-*-REPORT.md` 已生成（如阶段性任务）
-- Mongo control plane 已执行 `work submit`
+- Mongo control plane 已执行 `update add --status ready_for_review` 与 `work transition --to ready_for_review`
 
 ---
 

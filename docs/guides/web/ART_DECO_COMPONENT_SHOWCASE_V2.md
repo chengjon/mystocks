@@ -1,9 +1,16 @@
 # ArtDeco 组件展示
 ## ArtDeco Component Showcase
 
+> **参考指南说明**:
+> 本文件是补充指南、命令参考、操作说明或使用手册，不是当前仓库共享规则、当前实现边界或当前主线流程的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线治理文档一并核对。
+>
+> 文内步骤、示例、命令和说明应视为补充参考；若与当前代码、`architecture/STANDARDS.md` 或主线治理文档不一致，应以 `architecture/STANDARDS.md`、当前代码实现及主线治理文档为准。
+
+
 **版本**: v2.0 (Phase 2-4 Enhancements)
 **更新日期**: 2026-01-20
-**组件总数**: 66 (从 v1.1 的 64 个增加)
+**组件总数**: 历史统计值 66（仅供回看，不代表当前仓库库存）
 **适用范围**: MyStocks 量化交易平台前端
 
 > 治理说明
@@ -11,6 +18,12 @@
 > - 本文档是组件展示与视觉参考，不是当前 SCSS 真值。
 > - 当前样式真值以 [ARTDECO_SCSS_GOVERNANCE_BASELINE.md](./ARTDECO_SCSS_GOVERNANCE_BASELINE.md) 为准。
 > - 若本文档中的 token 名、导入写法或视觉规则与基线冲突，以基线和源码为准。
+
+> 2026-04-01 状态说明
+>
+> - 本文档是视觉展示与历史示例集，不是当前权威组件目录。
+> - 文中组件总数和分类统计已经过时；当前准确清单请看 `web/frontend/ARTDECO_COMPONENTS_CATALOG.md`。
+> - 若展示示例与当前 token、目录边界或页面承载模式冲突，以活跃治理文档和源码为准。
 
 ---
 
@@ -1810,7 +1823,7 @@ const demoInput = ref('')
 
 - **[实施指南](./ART_DECO_IMPLEMENTATION_REPORT.md)** - 详细的实施指南
 - **[快速参考](./ART_DECO_QUICK_REFERENCE.md)** - 快速参考手册
-- **[组件目录](./ARTDECO_COMPONENTS_CATALOG.md)** - 完整组件清单
+- **[组件目录](/opt/claude/mystocks_spec/web/frontend/ARTDECO_COMPONENTS_CATALOG.md)** - 完整组件清单
 
 ---
 

@@ -1,5 +1,9 @@
 # MyStocks Web端 PM2部署和Playwright自动化测试方案
 
+> **使用说明**:
+> 本文件是 PM2 + Playwright 专题指南，不是当前前端测试主线、当前 PM2 运行基线或仓库共享规则的唯一事实来源。
+> 若涉及当前 E2E 入口、运行门禁、端口口径或环境一致性，请优先遵循 `architecture/STANDARDS.md`；若涉及测试执行流程或协作约束，再结合 `docs/testing/e2e/README.md`、`docs/testing/TESTING_GUIDE.md` 与根目录 `AGENTS.md`。
+
 ## 📋 概述
 
 本文档提供了完整的web端测试方案，包括PM2生产环境部署和Playwright端到端自动化测试，确保所有功能正常运行。

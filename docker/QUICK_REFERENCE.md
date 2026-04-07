@@ -1,5 +1,10 @@
 # MyStocks Docker 配置快速参考
 
+> **参考指南说明**:
+> 本文件用于提供本地运行、部署配置、安全设置或操作步骤方面的参考信息，帮助理解项目配套环境与使用方式。
+> 其中的命令、端口、路径和操作建议应与 `architecture/STANDARDS.md`、当前配置实现及最新验证结果一并核对，不应单独充当共享规则或当前状态的唯一事实来源。
+
+
 > 当前 canonical 路径为根级 `docker/`。`config/docker/` 与 `config/docker-infra/` 为兼容层。
 
 ## 🚀 一键启动

@@ -1,5 +1,12 @@
 # Task Artifacts Workflow Exception Report
 
+> **历史计划说明**:
+> 本文件是阶段性计划、路线图、提案、执行清单或整改建议，不是当前基线、当前实施状态或仓库共享规则的唯一事实来源。
+> 当前共享规则与治理口径请优先遵循 `architecture/STANDARDS.md`；执行流程、命令与协作约束再结合根目录 `AGENTS.md`，并与当前代码实现及主线文档一并核对。
+>
+> 文内优先级、缺口清单、执行步骤、目标值、时间线和建议动作如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
+
+
 - Date: `2026-03-09`
 - Worktree: `dev-repo-hygiene-b1`
 - Change: `integrate-repository-hygiene`

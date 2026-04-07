@@ -1,5 +1,10 @@
 # OpenSpec Proposal: Comprehensive Testing Solution for MyStocks
 
+> **历史计划说明**:
+> 本文件记录某次历史提案、计划或分工设想，反映的是当时准备推动的方向与范围，而非当前已生效事实。
+> 若其内容与现行 `architecture/STANDARDS.md`、当前 `openspec/specs/`、已归档结论或实际实现不一致，应以 `architecture/STANDARDS.md`、当前 `openspec/specs/` 正式规格与实际实现为准，并将已归档结论仅视为历史背景。
+
+
 ## 📋 概述
 
 本提案旨在为 MyStocks 量化交易平台实施一个全面的测试解决方案。该方案整合了先进的测试技术，包括 AI 辅助测试、契约测试、性能测试和数据优化，以满足现代金融科技应用的复杂测试需求。

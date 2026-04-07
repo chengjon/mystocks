@@ -1,5 +1,11 @@
 # Grafana 自动化配置说明
 
+> **使用说明**:
+> 本文件是 Grafana 专项配置指南，不是当前前端基线、当前监控主入口或仓库共享规则的唯一事实来源。
+> 若涉及当前环境一致性、统一运行口径或审批门禁，请优先阅读 `architecture/STANDARDS.md`；若涉及运维执行流程或协作约束，再结合根目录 `AGENTS.md` 与 `docs/operations/README.md`、`docs/operations/monitoring/INDEX.md`。
+>
+> 文内 `http://localhost:3000` 指向 Grafana，而不是仓库前端默认访问地址；当前前端默认地址仍应以根目录治理文档声明为准。
+
 ## 📋 快速开始
 
 ### 方法 1: 使用自动化脚本（推荐）

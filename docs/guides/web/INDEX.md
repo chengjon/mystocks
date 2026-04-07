@@ -1,21 +1,33 @@
 # MyStocks 文档索引
 
-**生成时间**: 2026-03-26 11:20:03
+> **导航说明**:
+> 本文件是文档导航或索引，不是当前规则、当前基线或当前实现状态的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线文档一并核对。
+>
+> 文内目录、链接、数量和分类如未重新生成或复核，应视为导航快照，不得直接当作当前事实。
+
+
+**生成时间**: 2026-04-01 13:57:41
 
 
 ---
 
 ## 🚀 快速导航
 
+- 当前入口：`ARTDECO_START_HERE.md`
+- 当前总目录：`ARTDECO_MASTER_INDEX.md`
+- 当前统一规格：`ARTDECO_FINTECH_UNIFIED_SPEC.md`
+- 当前组件目录：`/opt/claude/mystocks_spec/web/frontend/ARTDECO_COMPONENTS_CATALOG.md`
+- 历史兼容入口：`ART_DECO_COMPONENTS_CATALOG.md` / `ART_DECO_COMPONENT_SHOWCASE.md` / `ART_DECO_QUICK_REFERENCE.md`
 
 ---
 
 ## 📊 统计信息
 
 
-- **总文档数**: 57
+- **总文档数**: 59
 - **总目录数**: 0
-- **最后更新**: 2026-03-26
+- **最后更新**: 2026-04-01
 
 ---
 
@@ -25,6 +37,7 @@
 - 📄 [README](./INDEX.md)
 - 📄 [2026-01-23-html5-migration-experience-optimization](2026-01-23-html5-migration-experience-optimization.md)
 - 📄 [ARTDECO_COMPONENT_GUIDE](ARTDECO_COMPONENT_GUIDE.md)
+- 📄 [ARTDECO_FINTECH_UNIFIED_SPEC](ARTDECO_FINTECH_UNIFIED_SPEC.md)
 - 📄 [ARTDECO_FINTECH_IMPLEMENTATION_AUDIT](ARTDECO_FINTECH_IMPLEMENTATION_AUDIT.md)
 - 📄 [ARTDECO_FINTECH_PAGE_COMPOSITION_AUDIT](ARTDECO_FINTECH_PAGE_COMPOSITION_AUDIT.md)
 - 📄 [ARTDECO_GRID_QUICK_REFERENCE](ARTDECO_GRID_QUICK_REFERENCE.md)

@@ -3,6 +3,10 @@ name: ui-ux-pro-max
 description: "UI/UX design intelligence. 50 styles, 21 palettes, 50 font pairings, 20 charts, 9 stacks (React, Next.js, Vue, Svelte, SwiftUI, React Native, Flutter, Tailwind, shadcn/ui). Actions: plan, build, create, design, implement, review, fix, improve, optimize, enhance, refactor, check UI/UX code. Projects: website, landing page, dashboard, admin panel, e-commerce, SaaS, portfolio, blog, mobile app, .html, .tsx, .vue, .svelte. Elements: button, modal, navbar, sidebar, card, table, form, chart. Styles: glassmorphism, claymorphism, minimalism, brutalism, neumorphism, bento grid, dark mode, responsive, skeuomorphism, flat design. Topics: color palette, accessibility, animation, layout, typography, font pairing, spacing, hover, shadow, gradient."
 ---
 
+> **补充规范说明**:
+> 本文件是特定工具、代理、命令、技能、工作流或规则的局部执行提示，不是仓库共享规则的唯一事实来源。
+> 涉及项目治理、审批门禁、共享红线或主线口径时，应优先遵循 `architecture/STANDARDS.md`；执行流程与协作约束再参考根目录 `AGENTS.md`。
+
 # UI/UX Pro Max - Design Intelligence
 
 Searchable database of UI styles, color palettes, font pairings, chart types, product recommendations, UX guidelines, and stack-specific best practices.

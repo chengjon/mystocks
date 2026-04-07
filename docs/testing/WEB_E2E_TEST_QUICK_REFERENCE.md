@@ -1,5 +1,9 @@
 # MyStocks Web端 - Playwright自动化测试快速参考
 
+> **使用说明**:
+> 本文件是 Web E2E quick reference，适合补充查阅，不是当前前端测试主线或仓库测试门禁的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及测试执行流程、E2E 规范或协作约束，再结合 `docs/testing/TESTING_GUIDE.md`、`docs/testing/e2e/README.md` 与根目录 `AGENTS.md`。
+
 > 2026-03 基线更新：标准 E2E 命令已统一到 `playwright.config.js`（`tests/e2e`）。
 > 推荐使用 `npm run test:e2e` / `npm run test:e2e:chromium`，避免直接执行未指定配置的 `playwright test`。
 

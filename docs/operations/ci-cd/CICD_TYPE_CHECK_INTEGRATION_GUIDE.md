@@ -1,5 +1,9 @@
 # CI/CD 类型检查集成指南
 
+> **使用说明**:
+> 本文件是类型检查集成专题指南，不是当前 CI/CD 基线、当前类型门禁或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁、环境一致性或前端 E2E 主线，请优先阅读 `architecture/STANDARDS.md`；若涉及测试或运维执行流程、协作约束，再结合根目录 `AGENTS.md`、`docs/testing/TESTING_GUIDE.md` 与 `docs/operations/README.md`。
+
 本文档说明如何在 MyStocks 项目的 CI/CD 流程中使用 Python (mypy) 和 TypeScript (vue-tsc) 类型检查。
 
 > 2026-03 说明：前端 E2E 任务默认使用 `web/frontend/playwright.config.js`（`tests/e2e`）。  

@@ -1,5 +1,11 @@
 # MyStocks 测试环境依赖需求文档
 
+> **使用说明**:
+> 本文件是 Phase 6.2 时期的测试环境快照，不是当前测试基线、当前仓库环境口径或共享规则的唯一事实来源。
+> 若涉及当前测试入口、服务地址、技术债门禁或环境一致性，请优先遵循 `architecture/STANDARDS.md`；若涉及测试执行流程或协作约束，再结合 `docs/testing/TESTING_GUIDE.md`、`docs/testing/e2e/README.md` 与根目录 `AGENTS.md`。
+>
+> 文内数据库端口、目录路径、Phase 编号与环境变量如未重新核实，应视为历史记录。
+
 **文档版本**: 2.0
 **生成日期**: 2025-12-28
 **基于配置**: /opt/claude/mystocks_spec/.env
@@ -13,7 +19,7 @@
 
 ```bash
 # 1. 进入项目目录
-cd /opt/claude/mystocks_phase6_monitoring
+cd /opt/claude/mystocks_spec
 
 # 2. 检查环境
 bash scripts/check_test_environment.sh

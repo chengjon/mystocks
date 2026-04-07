@@ -1,5 +1,10 @@
 # reorganize-project-directory-structure
 
+> **历史索引说明**:
+> 本文件是已归档 OpenSpec 变更或专题材料的导航索引，主要用于回溯和定位历史文档。
+> 目录项、链接关系和归档说明仅反映整理时状态；判断当前事实时，应优先查看现行 `openspec/specs/`、`architecture/STANDARDS.md` 与最新实现。
+
+
 ## 概述
 
 对 MyStocks 项目进行全面的文件目录重组，将当前 83 个根目录 + 50 个根文件精简至 13 个标准目录 + ~10 个必要根文件。

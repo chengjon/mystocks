@@ -1,5 +1,9 @@
 # PM2、Tmux和Lnav快速启动指南
 
+> **使用说明**:
+> 本文件是 PM2/Tmux/Lnav 的专题 quick start，不是当前仓库共享规则、当前运维基线或当前运行拓扑的唯一事实来源。
+> 若涉及环境一致性、服务编排、当前端口或运行门禁，请优先阅读 `architecture/STANDARDS.md`；若涉及运维执行流程或协作约束，再结合根目录 `AGENTS.md` 与 `docs/operations/README.md`。
+
 ## 🚀 一键启动开发环境
 
 ### 快速命令

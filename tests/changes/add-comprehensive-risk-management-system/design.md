@@ -1,5 +1,10 @@
 # Risk Management System Architecture Design
 
+> **设计方案说明**:
+> 本文件用于记录测试方案中的结构设计、数据模型、技术取舍或实现路径，属于方案设计层材料。
+> 它不是共享规则正文，也不直接代表当前已落地状态；落地判断应结合 `architecture/STANDARDS.md`、当前测试实现与实际验证结果。
+
+
 ## Context
 MyStocks项目已有成熟的监控基础设施，需要在此基础上构建完整的风险管理框架。现有系统包括：
 - **信号监控系统**: SignalRecorder、SignalResultTracker、MonitoredNotificationManager

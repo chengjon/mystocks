@@ -1,5 +1,10 @@
 # 4 Worktree 执行计划（v3.1）
 
+> **历史计划说明**:
+> 本文件记录某次多 CLI worktree 协作的历史执行计划、拓扑安排或实施设想，反映的是当时准备推动的方向与范围，而非当前已生效事实。
+> 若其内容与现行 `architecture/STANDARDS.md`、当前协作口径或后续结论不一致，应以 `architecture/STANDARDS.md`、当前协作口径与最新结论为准。
+
+
 **日期**: 2026-03-05  
 **主仓库（Main CLI）**: `/opt/claude/mystocks_spec` (`main`)  
 **开发入口分支**: `dev`  

@@ -1,5 +1,10 @@
 # Phase 1: 核心稳定性（1-2周）
 
+> **使用说明**:
+> 本文件用于记录当前 OpenSpec 变更的执行清单、操作步骤或协作约束，帮助跟踪实施过程。
+> 其中勾选状态、执行顺序和局部说明仅代表任务推进视角，不应脱离 proposal、design、正式 specs、`architecture/STANDARDS.md` 与实际验证结果单独解读为最终事实。
+
+
 ## 1. SmartCache 实现（3-4天）
 
 - [ ] 1.1 创建 `src/core/data_source/smart_cache.py` 文件

@@ -1,4 +1,9 @@
 # OpenSpec Conventions & Format Guide
+
+> **参考指南说明**:
+> 本文件用于说明 OpenSpec 的使用约定、项目上下文或操作参考，帮助理解变更提案与规格治理流程。
+> 其中的流程、示例与项目背景应先与 `architecture/STANDARDS.md`、当前 `openspec/specs/` 和已批准变更核对；若涉及执行流程或协作约束，再补充参考根目录 `AGENTS.md`。本文件不得单独充当仓库共享规则或当前实现状态的唯一事实来源。
+
 ## Complete Reference for mystocks_spec Project
 
 ---

@@ -1,5 +1,12 @@
 # Graphiti MCP Workflow Guide
 
+> **参考指南说明**:
+> 本文件是补充指南、命令参考、操作说明或使用手册，不是当前仓库共享规则、当前实现边界或当前主线流程的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线治理文档一并核对。
+>
+> 文内步骤、示例、命令和说明应视为补充参考；若与当前代码、`architecture/STANDARDS.md` 或主线治理文档不一致，应以 `architecture/STANDARDS.md`、当前代码实现及主线治理文档为准。
+
+
 ## Purpose
 
 本指南定义 MyStocks 当前项目内对 `graphiti-mcp` 与 `graphiti-api` 的使用边界。
@@ -204,7 +211,7 @@ python scripts/runtime/smoke_graphiti_preflight.py --actor-cli cli-preflight
 若需要把 Graphiti preflight 放回完整的 repo-local 协作验收链，而不是单独跑 smoke，统一使用：
 
 ```bash
-python scripts/runtime/run_local_maestro_acceptance.sh
+bash scripts/runtime/run_local_maestro_acceptance.sh
 ```
 
 这条一键验收会顺序执行：

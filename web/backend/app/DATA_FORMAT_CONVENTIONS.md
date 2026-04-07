@@ -1,4 +1,9 @@
 # MyStocks API 数据格式约定
+
+> **补充规范说明**:
+> 本文件用于补充说明 Web 子系统某一局部领域的格式约定、数据约束或实现边界，是共享规则在局部场景下的补充材料。
+> 它不得与 `architecture/STANDARDS.md` 形成并行真相源；如与共享规则、正式契约或实际代码实现不一致，应以 `architecture/STANDARDS.md`、正式契约与实际代码实现为准。
+
 # Data Format Conventions for MyStocks API
 
 **Version**: 2.0.0

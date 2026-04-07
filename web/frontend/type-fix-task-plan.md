@@ -1,5 +1,10 @@
 # Task Plan: Complete TypeScript Type Error Fixes
 
+> **历史计划说明**:
+> 本文件记录某次 Web 相关需求、改进设想、预案或任务计划，反映的是当时准备推动的方向与范围，而非当前已生效事实。
+> 若其内容与现行 `architecture/STANDARDS.md`、已批准方案、当前代码实现或后续结论不一致，应以 `architecture/STANDARDS.md`、已批准方案、当前代码实现与最新结论为准。
+
+
 ## Goal
 Fix TypeScript type errors, reducing from ~99 to ~24 remaining (Vue/Demo component issues require separate fixes).
 

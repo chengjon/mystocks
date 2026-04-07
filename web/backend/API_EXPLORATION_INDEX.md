@@ -1,5 +1,10 @@
 # MyStocks Web API - Codebase Exploration Index
 
+> **参考指南说明**:
+> 本文件用于提供 Web 子系统的使用方法、操作指引、接口接入说明、排障提示或结构参考，帮助理解局部实现与协作方式。
+> 其中的步骤、示例、端口、目录和操作建议应先与 `architecture/STANDARDS.md`、当前代码实现及最新验证结果核对；若涉及仓库执行流程、命令或协作约束，再补充参考根目录 `AGENTS.md`。本文件不得单独视为仓库共享规则或当前状态的唯一事实来源。
+
+
 **Exploration Date:** November 7, 2025
 **Focus:** API Architecture Analysis for Task 11 (API Gateway & Request Routing)
 **Backend Path:** `/opt/claude/mystocks_spec/web/backend`

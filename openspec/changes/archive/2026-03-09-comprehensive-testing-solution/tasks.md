@@ -1,5 +1,10 @@
 # Comprehensive Testing Solution - Task Implementation Plan
 
+> **历史任务说明**:
+> 本文件用于保留某次历史任务拆解、执行清单或阶段性待办，不代表当前仍需按原样执行。
+> 其中的勾选状态、优先级和实施顺序仅对应当时上下文；继续沿用前应先对照 `architecture/STANDARDS.md`、当前需求、现行 specs 与实际仓库状态重新校准。
+
+
 ## 📋 任务概览
 
 本任务清单详细列出了 MyStocks 全面测试解决方案的实现状态。所有核心模块已完成，剩余工作主要是优化和完善。

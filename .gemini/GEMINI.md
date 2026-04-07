@@ -1,5 +1,11 @@
 # MyStocks Workspace Context
 
+> **使用说明**:
+> This file is Gemini CLI's workspace entry context, not the sole source of shared repository rules.
+> Repository-wide shared rules and approval gates still defer to `architecture/STANDARDS.md`; proposal/spec workflows still defer to `openspec/AGENTS.md`.
+>
+> Keep this file focused on stable Gemini-facing execution context. If it conflicts with canonical project governance, follow the canonical docs.
+
 This file follows the Gemini CLI context guideline: keep only stable, project-level instructions here.
 
 ## Project

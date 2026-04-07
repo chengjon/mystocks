@@ -1,5 +1,12 @@
 # Maestro 总结文档
 
+> **历史总结说明**:
+> 本文件是阶段性总结、报告、状态、修复记录或工作日志，不是当前基线、当前实施状态或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现、验证结果及主线文档一并核对。
+>
+> 文内统计值、完成状态、结论和处理结果如未重新复核，应视为历史快照，不得直接当作当前事实。
+
+
 ## 一句话定义
 
 `Maestro` 是 MyStocks 当前这套“本地优先、多 CLI 协作、可演进协作控制面”的自动化运行时家族名。
@@ -219,6 +226,25 @@ Maestro 不直接替人写任务契约；它只消费这些契约并执行自动
 - 不重写 `maestro.kernel`
 - 不立即独立成通用产品
 - 不在当前阶段与 `maestro.collab` 平行建第二套长期体系
+
+### Repo-Local Acceptance
+
+当前推荐的本机收口命令：
+
+```bash
+bash scripts/runtime/run_local_maestro_acceptance.sh
+```
+
+该命令会串行执行：
+
+- `coordctl work list`
+- Mongo smoke
+- Graphiti preflight smoke
+- collab snapshot export
+
+最新一次实跑收口记录见：
+
+- `docs/reports/tasks/2026-04-03-maestro-local-acceptance-report.md`
 
 ## 操作面
 

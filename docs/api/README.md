@@ -2,7 +2,7 @@
 
 > **导航说明**:
 > 本文件是 API 文档中心首页，不是当前仓库共享规则或 API 契约唯一事实来源。
-> API 契约与执行规则请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，以及实际的 FastAPI 路由 + Pydantic Schema + 导出的 OpenAPI 契约。
+> API 契约与仓库级审批门禁请优先遵循 `architecture/STANDARDS.md`；若涉及执行规则或协作约束，再参考根目录 `AGENTS.md`；若涉及契约事实源，再以实际的 FastAPI 路由 + Pydantic Schema + 导出的 OpenAPI 契约为准。
 >
 > 文内端点数量、架构概览、启动方式、统计信息等内容，如未重新核实，应视为历史快照或导览说明。
 

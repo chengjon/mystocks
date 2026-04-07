@@ -1,5 +1,9 @@
 # FUNCTION_MAP
 
+> **使用说明**:
+> 本文件用于快速定位特定专题工作流中的能力入口，不是当前仓库共享规则、全局架构地图或长期维护承诺的唯一事实来源。
+> 如与 `architecture/STANDARDS.md` 冲突，应始终以 `architecture/STANDARDS.md` 作为仓库级共享规则与审批门禁来源；若涉及具体执行入口，再按职责分别核对根目录 `AGENTS.md` 与根目录 `CLAUDE.md`。
+
 ## Purpose
 
 本文件用于快速定位本轮 `MongoDB Multi-CLI Coordination` 的主要能力入口。

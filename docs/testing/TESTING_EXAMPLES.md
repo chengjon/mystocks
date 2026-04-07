@@ -1,5 +1,9 @@
 # Testing Examples (Compatibility Entry)
 
+> **使用说明**:
+> 本文件是历史兼容示例入口，不是当前测试基线、当前命令全集或仓库共享规则的唯一事实来源。
+> 执行前请优先核对 `docs/testing/TESTING_GUIDE.md`、`docs/testing/e2e/README.md` 与 `architecture/STANDARDS.md` 中的当前口径。
+
 该文档用于承接历史引用路径 `docs/guides/TESTING_EXAMPLES.md`。
 
 ## 示例 1：StrategyManagement 链路 E2E（推荐）

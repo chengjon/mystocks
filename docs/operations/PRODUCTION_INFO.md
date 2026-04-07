@@ -1,5 +1,11 @@
 # MyStocks 生产环境信息手册
 
+> **使用说明**:
+> 本文件是某次生产部署或联调的环境快照，不是当前生产基线、当前服务地址或仓库共享规则的唯一事实来源。
+> 若涉及当前运行口径、环境一致性、PM2/Docker 主线或审批门禁，请优先阅读 `architecture/STANDARDS.md`；若涉及运维执行流程或协作约束，再结合根目录 `AGENTS.md` 与 `docs/operations/README.md`。
+>
+> 文内端口占用、部署时间、版本号、启动/停止命令可能来自不同时间点记录；若条目互相冲突，应一律按历史快照处理，不得直接视为当前事实。
+
 ## 部署信息
 
 ### 服务器配置
@@ -47,6 +53,8 @@
 
 ### 启动命令
 ```bash
+# 以下为历史直启示例；当前任务若要求环境一致性或验收门禁，请优先采用 PM2/Docker 主线流程。
+
 # 启动后端服务
 cd /opt/claude/mystocks_spec/web/backend
 export PYTHONPATH=/opt/claude/mystocks_spec/web/backend:$PYTHONPATH
@@ -59,6 +67,8 @@ npm run preview -- --port 3020 --host 0.0.0.0 &
 
 ### 停止命令
 ```bash
+# 以下 `pkill` 为历史应急示例，执行前必须结合实际进程确认，不能当作默认停机标准流程。
+
 # 停止后端服务
 pkill -f "uvicorn.*8888"
 

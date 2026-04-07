@@ -1,5 +1,11 @@
 # MyStocks Operations Manual
 
+> **Usage Note**:
+> This file is an operations playbook / topology reference, not the sole source of truth for the current runtime topology, current service addresses, or repository-wide governance rules.
+> For environment consistency, current service baselines, and approval gates, follow `architecture/STANDARDS.md` first. If you need operations workflow or collaboration constraints, then consult the root `AGENTS.md` and `docs/operations/README.md`.
+>
+> Kubernetes topology, service ports, and response targets in this file should be treated as reference or historical/target-state material unless re-verified in the current environment.
+
 ## Overview
 
 ### System Architecture

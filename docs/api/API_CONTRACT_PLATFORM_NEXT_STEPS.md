@@ -2,7 +2,7 @@
 
 > **历史计划说明**:
 > 本文件是 API Contract Platform 的阶段性状态与行动计划，不是当前平台实现基线、当前任务状态或仓库共享规则的唯一事实来源。
-> 当前 API 契约治理口径请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`、实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json`。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及执行流程或协作约束，再参考根目录 `AGENTS.md`；若涉及 API 契约事实源，再以实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json` 为准。
 >
 > 文内 `Ready for Implementation`、已完成项、CLI 修复结论和类型生成步骤应按当次计划上下文理解；若未在当前代码与主线文档中复核，不得直接视为当前事实。
 

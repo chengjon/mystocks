@@ -1,5 +1,9 @@
 # 🔄 CI/CD 类型检查快速参考
 
+> **使用说明**:
+> 本文件是类型检查 quick reference，适合补充查阅，不是当前 CI/CD 门禁、当前类型基线或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 `architecture/STANDARDS.md`；若涉及运维执行流程、协作约束或专项操作说明，再结合根目录 `AGENTS.md` 与 `docs/operations/README.md` 及主线测试/类型检查文档。
+
 > 本文档提供 Python (mypy) 和 TypeScript (vue-tsc) 类型检查的快速参考。
 
 ---

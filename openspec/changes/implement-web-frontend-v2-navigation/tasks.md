@@ -1,5 +1,10 @@
 # Implementation Tasks for Web Frontend V2 Navigation（更新版）
 
+> **使用说明**:
+> 本文件用于记录当前 OpenSpec 变更的执行清单、操作步骤或协作约束，帮助跟踪实施过程。
+> 其中勾选状态、执行顺序和局部说明仅代表任务推进视角，不应脱离 proposal、design、正式 specs、`architecture/STANDARDS.md` 与实际验证结果单独解读为最终事实。
+
+
 **更新日期**: 2026-01-20
 **任务性质**: 路由集成（非组件创建）
 **核心策略**: 复用现有19个ArtDeco子组件

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import shutil
 from pathlib import Path
 
 from tests.pytest_runtime_artifacts import (
@@ -61,7 +62,7 @@ def test_active_test_runners_use_canonical_coverage_artifact_paths() -> None:
     assert 'Path("coverage.xml")' not in run_all_tests
 
     assert CANONICAL_COVERAGE_HTML_DIR in e2e_runner
-    assert 'file://$(pwd)/htmlcov/index.html' not in e2e_runner
+    assert "file://$(pwd)/htmlcov/index.html" not in e2e_runner
 
 
 class _FakePlugin:
@@ -120,8 +121,7 @@ def test_conftest_reconfigures_default_timing_output_to_canonical_path(tmp_path:
 def test_cleanup_root_runtime_artifacts_moves_timing_csv_and_removes_root_pycache(tmp_path: Path) -> None:
     root_timing_file = tmp_path / "test_timing.csv"
     root_timing_file.write_text(
-        "test_name,start_time,end_time,duration_seconds,result\n"
-        "unit/test_example.py::test_ok,2026,2026,0.001,P\n",
+        "test_name,start_time,end_time,duration_seconds,result\n" "unit/test_example.py::test_ok,2026,2026,0.001,P\n",
         encoding="utf-8",
     )
     root_cache_dir = tmp_path / "__pycache__"
@@ -162,3 +162,23 @@ def test_cleanup_root_runtime_artifacts_removes_root_coverage_data_and_html_repo
 
     assert not root_coverage_data_file.exists()
     assert not root_htmlcov_dir.exists()
+
+
+def test_cleanup_root_runtime_artifacts_ignores_permission_error_when_removing_root_pycache(
+    tmp_path: Path, monkeypatch
+) -> None:
+    root_cache_dir = tmp_path / "__pycache__"
+    root_cache_dir.mkdir()
+
+    original_rmtree = shutil.rmtree
+
+    def fake_rmtree(path: Path) -> None:
+        if Path(path) == root_cache_dir:
+            raise PermissionError("simulated permission failure")
+        original_rmtree(path)
+
+    monkeypatch.setattr("tests.pytest_runtime_artifacts.shutil.rmtree", fake_rmtree)
+
+    cleanup_root_runtime_artifacts(tmp_path)
+
+    assert root_cache_dir.exists()

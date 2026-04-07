@@ -1,6 +1,12 @@
 # API Response Format Unification - Implementation Report
 ## Phase 1: High-Impact Files Complete
 
+> **历史实施说明**:
+> This file is an implementation report for a response-format unification phase, not the sole source of truth for the current response standardization status or repository-wide governance rules.
+> For repository-wide governance baselines and approval gates, follow `architecture/STANDARDS.md` first. Use the root `AGENTS.md` only for execution workflow and collaboration constraints, then verify against the current code plus the primary contract/testing docs.
+>
+> The listed compliance gains, completed files, and transformation patterns should be treated as historical implementation results unless re-verified in the current repository.
+
 **Implementation Date**: 2025-12-03
 **Objective**: Unify response formats across 24 API files to improve compliance by +15%
 **Scope**: Focus on highest-impact files with largest compliance gains

@@ -1,5 +1,12 @@
 # MongoDB Multi-CLI Coordination Implementation Plan
 
+> **历史计划说明**:
+> 本文件是阶段性计划、路线图、提案、任务方案或执行矩阵，不是当前基线、当前实施状态或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线文档一并核对。
+>
+> 文内优先级、缺口清单、执行步骤、目标值和时间线如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
+
+
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
 **Goal:** 在本项目内部落地 `Maestro` 下一代 MongoDB 协作控制面，先补齐“主 CLI 分发 -> worker 上报 -> request 审批 -> 状态汇总”链路，并与现有 `Maestro` 结构对齐。  

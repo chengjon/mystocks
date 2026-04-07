@@ -1,5 +1,10 @@
 # Change: Smart Quantitative Monitoring and Portfolio Management System
 
+> **专题方案说明**:
+> 本文件用于描述某项测试能力、测试契约、测试规格或变更提案的边界与要求，服务于测试方案管理和差异追踪。
+> 它不自动等同于当前已落地测试实现或当前运行结果；执行时需同时核对 `architecture/STANDARDS.md`、当前代码实现、测试脚本与最新验证结果。
+
+
 ## Why
 
 当前系统缺乏智能股票监控和投资组合管理能力，无法满足量化投资需求，而v3.0实施计划通过充分复用现有架构（MonitoringEventPublisher、src/gpu模块）可实现高性价比的快速落地，开发周期9-10周。

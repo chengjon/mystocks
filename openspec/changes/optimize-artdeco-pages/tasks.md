@@ -1,4 +1,9 @@
 ## 1. Implementation
+
+> **使用说明**:
+> 本文件用于记录当前 OpenSpec 变更的执行清单、操作步骤或协作约束，帮助跟踪实施过程。
+> 其中勾选状态、执行顺序和局部说明仅代表任务推进视角，不应脱离 proposal、design、正式 specs、`architecture/STANDARDS.md` 与实际验证结果单独解读为最终事实。
+
 - [x] 1.1 完成 `Gate-0` ArtDeco 治理校对：统一 `Container-Tab` 架构、`components/[domain]` 与 `[domain]-tabs` 边界、`router/menu/API/tokens` SSOT
 - [x] 1.2 为全部 `P0/P1` 页面建立批次矩阵，并标记 `container-only`、`tab-only`、`needs-domain-component-extraction`、`needs-token-cleanup`、`api-pending-blocked`
 - [x] 1.3 执行 `P0-A` 市场核心批次：`Market-Realtime`、`Market-Technical`

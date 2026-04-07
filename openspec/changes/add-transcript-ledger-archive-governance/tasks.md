@@ -1,5 +1,10 @@
 ## 1. Implementation
 
+> **使用说明**:
+> 本文件用于记录当前 OpenSpec 变更的执行清单、操作步骤或协作约束，帮助跟踪实施过程。
+> 其中勾选状态、执行顺序和局部说明仅代表任务推进视角，不应脱离 proposal、design、正式 specs、`architecture/STANDARDS.md` 与实际验证结果单独解读为最终事实。
+
+
 - [x] 1.1 Extend the collaboration specification and runtime docs to define the dedicated transcript ledger boundary, including `work_item_id`-required ingest.
 - [x] 1.2 Add transcript session, event, hot-body, and legacy-index records to the collaboration store model and Mongo backend.
 - [x] 1.3 Add CLI / service entrypoints for transcript session start, block append, session close, and transcript query/export flows.

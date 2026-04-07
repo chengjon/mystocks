@@ -1,4 +1,9 @@
 # Phase 6 Add Document Metadata Coverage Achievement Report
+
+> **历史总结说明**:
+> 本文件是某次阶段性交付、修复验收、部署确认或专题推进的历史总结快照，用于追溯当时的实施结论。
+> 其中的完成度、通过状态和结论不应直接视为当前事实；引用前应结合 `architecture/STANDARDS.md`、当前实现与最新验证结果重新确认。
+
 # Phase 6 添加文档元数据覆盖率成就报告
 
 **创建日期**: 2025-12-20

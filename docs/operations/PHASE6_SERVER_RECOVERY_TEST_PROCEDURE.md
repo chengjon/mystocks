@@ -1,6 +1,12 @@
 # MyStocks Phase 6.2 服务器恢复后测试流程
 # 执行时间: 服务器恢复后立即执行
 
+> **使用说明**:
+> 本文件是 Phase 6.2 时期的恢复验证流程，不是当前服务编排、当前测试门禁或仓库共享规则的唯一事实来源。
+> 若涉及当前环境一致性、服务启动主线、E2E 入口或审批门禁，请优先阅读 `architecture/STANDARDS.md`；若涉及运维执行流程或协作约束，再结合根目录 `AGENTS.md` 与 `docs/operations/README.md`、`docs/testing/TESTING_GUIDE.md`。
+>
+> 文内 `python run_server.py`、`npm run dev`、`pm2 start ecosystem.config.js` 等命令属于阶段性恢复样例；如与当前 PM2/Docker 主线冲突，应以 `architecture/STANDARDS.md`、当前 PM2/Docker 配置与现行运维文档为准。
+
 ## 紧急恢复流程 (5分钟)
 
 ### 1. 数据库连接验证

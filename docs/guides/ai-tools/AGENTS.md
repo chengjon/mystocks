@@ -19,6 +19,12 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 # AGENTS.md - Coding Agent Configuration
 
+> **权威来源声明**:
+> 本文件属于历史/扩展指导文档，不是当前仓库规则的唯一事实来源。
+> 仓库级共享规则与审批门禁请优先遵循 `architecture/STANDARDS.md`；若涉及具体执行入口、命令或协作约束，再按职责参考根目录 `AGENTS.md` 与根目录 `CLAUDE.md`。
+>
+> 涉及迁移收口、重复层治理、兼容层退役、清理/删除判定、审计指标口径时，请统一回到 `architecture/STANDARDS.md`。
+
 ## Build/Lint/Test Commands
 
 ```bash
@@ -78,8 +84,7 @@ python ai_test_optimizer_toolkit/bin/ai_test_optimizer.py --run-all
 - Use explicit imports for clarity
 
 ### Formatting
-- Use Black formatter with default settings
-- Line length: 88 characters (Black default)
+- Use Black formatter; current formatter settings follow root `AGENTS.md` and `pyproject.toml`
 - Use double quotes for strings
 - Use 4 spaces for indentation
 
@@ -111,8 +116,9 @@ python ai_test_optimizer_toolkit/bin/ai_test_optimizer.py --run-all
 - Monitoring stack: `monitoring-stack/` directory for observability
 - OpenSpec: `openspec/` directory for change management
 
-### Database Architecture (Week 3+)
-- Dual database: TDengine for high-frequency time-series, PostgreSQL for everything else
+### Database Architecture
+- Current database architecture and migration status must follow root `AGENTS.md` and `architecture/STANDARDS.md`
+- Historical notes in this extension doc must not be treated as authorization to keep or introduce parallel layers
 - Use `MyStocksUnifiedManager` for automatic routing
 - Classification-based methods: `save_data_by_classification()`, `load_data_by_classification()`
 - **TDengine**: High-frequency market data (Tick, minute K-lines) with 20:1 compression
@@ -133,9 +139,7 @@ from src.adapters.akshare_adapter import AkshareDataSource
 from src.interfaces import IDataSource
 
 # Database management
-from src.db_manager import DatabaseTableManager  # Compatibility layer
-# OR
-from src.storage.database import DatabaseTableManager  # Direct import
+from src.storage.database import DatabaseTableManager
 
 # GPU API system
 from gpu_api_system.services import GPUBacktestService, GPURealtimeService
@@ -146,6 +150,8 @@ from src.monitoring import MonitoringDatabase, AlertManager
 # Web API
 from web.backend.app.api import trading_signals_api, monitoring_api
 ```
+
+Historical compatibility import paths may still exist in old code or reports, but new changes should follow the canonical paths defined in root `AGENTS.md`.
 
 ### OpenSpec Workflow
 - Always open `@/openspec/AGENTS.md` when the request mentions planning or proposals

@@ -1,5 +1,10 @@
 ## Phase 1: Frontend Architecture Optimization (Based on HTML5 Migration Experience)
 
+> **使用说明**:
+> 本文件用于记录当前 OpenSpec 变更的执行清单、操作步骤或协作约束，帮助跟踪实施过程。
+> 其中勾选状态、执行顺序和局部说明仅代表任务推进视角，不应脱离 proposal、design、正式 specs、`architecture/STANDARDS.md` 与实际验证结果单独解读为最终事实。
+
+
 ### 1.1 菜单系统完整实现
 - [ ] 1.1.1 更新路由配置使用ArtDecoLayoutEnhanced (基于迁移路由经验)
 - [ ] 1.1.2 完善MenuConfig.enhanced.ts的6个功能域 (市场观察/选股分析/策略中心/交易管理/风险监控/系统设置)

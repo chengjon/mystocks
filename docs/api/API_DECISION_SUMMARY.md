@@ -1,6 +1,12 @@
 # MyStocks API架构决策摘要
 # API Architecture Decision Summary
 
+> **历史决策说明**:
+> 本文件是 `2025-10-24` 的 API 架构决策摘要，不是当前 API 技术路线、当前实施优先级或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及执行流程与协作约束，再结合根目录 `AGENTS.md`；若涉及主线契约文档，则应与当前代码实现一并复核。
+>
+> 文内 ROI、成本、实施时间和推荐度如未重新评估，应视为历史决策依据，不得直接当作当前事实。
+
 **决策日期**: 2025-10-24
 **决策者**: First-Principles Fullstack Architect
 

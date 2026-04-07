@@ -1,5 +1,11 @@
 # Task Plan: Phase 4 - API 路由修复、E2E 优化、性能测试
 
+> **历史计划说明**:
+> 本文件是一次阶段性任务计划与执行记录，不是当前测试主线、当前 E2E 基线或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及测试执行流程、E2E 规范或协作约束，再结合 `docs/testing/TESTING_GUIDE.md`、`docs/testing/e2e/README.md` 与根目录 `AGENTS.md`。
+>
+> 文内通过率、问题清单、阶段结论和文件变更点应按当次 Phase 4 上下文理解；若未重新验证，不得直接视为当前仓库状态。
+
 ## Goal
 修复 API 路由不匹配的测试，优化 E2E 测试的 Playwright 配置，验证性能测试基础设施。达成 E2E 通过率 ≥ 95%。
 

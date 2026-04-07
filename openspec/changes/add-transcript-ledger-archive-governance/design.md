@@ -1,5 +1,10 @@
 ## Context
 
+> **设计方案说明**:
+> 本文件用于记录某项变更的设计思路、结构拆分、实现取舍或技术路径，属于方案设计层材料。
+> 它不是共享规则正文，也不直接代表当前仓库已落地状态；落地判断应结合 `architecture/STANDARDS.md`、对应 proposal/tasks、审批结果与实际代码验证。
+
+
 MyStocks now treats Mongo as the source of truth for active work items, updates, requests, and
 status views. However, `AUTO` / `MANUAL` session transcripts remain outside that model:
 

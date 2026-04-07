@@ -1,5 +1,9 @@
 # Agent Context - 股票数据扩展功能集成
 
+> **设计方案说明**:
+> 本文件记录某项功能集成的设计上下文、技术选型与结构设想，服务于特定专题的上下文补充。
+> 它不是当前仓库共享规则、当前实现边界或当前主线结论的唯一事实来源；执行时应先核对 `architecture/STANDARDS.md`、当前代码实现与最新验证结果；若涉及执行流程或协作约束，再补充参考根目录 `AGENTS.md`。
+
 **Last Updated**: 2025-10-14
 **Feature**: 003-inside-mystocks
 **Phase**: Phase 1 - Design Complete

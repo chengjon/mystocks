@@ -19,6 +19,12 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 # MyStocks 量化交易数据管理系统 - iFlow 交互指南
 
+> **权威来源声明**:
+> 本文件属于 `docs/overview/` 下的历史交互/总览文档，不是当前仓库规则、迁移状态或技术债口径的唯一事实来源。
+> 如与 `architecture/STANDARDS.md` 冲突，应始终以 `architecture/STANDARDS.md` 作为仓库级共享规则与审批门禁来源；若涉及具体执行入口，再按职责分别核对根目录 `AGENTS.md` 与根目录 `CLAUDE.md`。
+>
+> 文内项目规模、目录结构、示例导入、初始化命令等内容，如未重新核实，应视为历史快照或历史参考，不得直接充当当前执行规则。
+
 ## 项目概述
 
 MyStocks 是一个专业的企业级量化交易数据管理系统和 Web 管理平台，采用科学的数据分类体系和智能路由策略，实现多数据库协同工作。系统基于适配器模式和工厂模式构建统一的数据访问层，提供配置驱动的自动化管理，确保数据的高效存储、快速查询和实时监控。
@@ -71,10 +77,10 @@ MyStocks 是一个专业的企业级量化交易数据管理系统和 Web 管理
 │   ├── CHANGELOG.md                 # 版本变更日志
 │   ├── LICENSE                      # MIT 许可证
 │   ├── requirements.txt             # Python 依赖清单
-│   ├── core.py                      # 核心模块入口点
-│   ├── unified_manager.py           # 统一管理器入口点
-│   ├── data_access.py               # 数据访问入口点
-│   ├── monitoring.py                # 监控模块入口点
+│   ├── core.py                      # 历史兼容入口（如仍存在）
+│   ├── unified_manager.py           # 历史兼容入口（如仍存在）
+│   ├── data_access.py               # 历史兼容入口（如仍存在）
+│   ├── monitoring.py                # 历史兼容入口（如仍存在）
 │   ├── __init__.py                  # Python 包标识
 │   ├── .env                         # 环境变量 (2.20 KB)
 │   ├── .env.example                 # 环境变量模板 (2.21 KB)
@@ -910,8 +916,8 @@ python src/gpu/api_system/wsl2_gpu_init.py
 
 #### 5. 系统初始化
 ```python
-from unified_manager import MyStocksUnifiedManager
-from core import DataClassification
+from src.core import DataClassification
+from src.core.unified_manager import MyStocksUnifiedManager
 
 # 创建统一管理器
 manager = MyStocksUnifiedManager()
@@ -1054,8 +1060,8 @@ daily_data = adapter.get_stock_daily('600000', '2024-01-01', '2024-12-31')
 print(f"获取到 {len(daily_data)} 条日线数据")
 
 # 通过统一管理器保存数据
-from unified_manager import MyStocksUnifiedManager
-from core import DataClassification
+from src.core import DataClassification
+from src.core.unified_manager import MyStocksUnifiedManager
 
 manager = MyStocksUnifiedManager()
 manager.save_data_by_classification(daily_data, DataClassification.DAILY_KLINE)

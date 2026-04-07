@@ -1,5 +1,10 @@
 # Quickstart Guide: Fix 5 Critical Issues
 
+> **参考指南说明**:
+> 本文件用于说明测试目录中的使用方法、执行入口、部署步骤、操作手册或局部参考，帮助理解测试层面的实践方式。
+> 其中的命令、路径、步骤与示例应与 `architecture/STANDARDS.md`、当前测试实现和最新验证结果一并核对，不应单独充当共享规则或当前状态的唯一事实来源。
+
+
 **Feature**: Fix 5 Critical Issues in OpenStock Demo
 **Branch**: `001-fix-5-critical`
 **Date**: 2025-10-20

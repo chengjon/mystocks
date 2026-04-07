@@ -1,5 +1,12 @@
 # Guides
 
+> **历史文档说明**:
+> 本文件是某阶段的历史文档、过程记录或专题材料，不是当前基线、当前系统总览或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现、验证结果及主线文档一并核对。
+>
+> 文内描述、背景、结论和上下文如未重新复核，应视为历史快照，不得直接当作当前事实。
+
+
 **最后更新**: 2026-03-11 19:12:00
 
 **文档数量**: 246
@@ -49,8 +56,14 @@
 - [API对齐核心流程](api/guides/integration/API对齐核心流程.md)
   - *API对齐核心流程*
 
+- [ARTDECO_COMPONENTS_CATALOG_CURRENT](../web/frontend/ARTDECO_COMPONENTS_CATALOG.md)
+  - *Current ArtDeco Components Catalog*
+
 - [ARTDECO_COMPONENT_GUIDE](web/ARTDECO_COMPONENT_GUIDE.md)
-  - *ArtDeco 组件开发指南*
+  - *ArtDeco Component Development Guide*
+
+- [ARTDECO_FINTECH_UNIFIED_SPEC](web/ARTDECO_FINTECH_UNIFIED_SPEC.md)
+  - *ArtDeco Fintech Unified Spec*
 
 - [ARTDECO_GRID_QUICK_REFERENCE](web/ARTDECO_GRID_QUICK_REFERENCE.md)
   - *ArtDeco Grid系统快速参考*
@@ -59,7 +72,7 @@
   - *ArtDeco Grid系统快速参考指南*
 
 - [ARTDECO_MASTER_INDEX](web/ARTDECO_MASTER_INDEX.md)
-  - *ArtDeco v3/v3.1 Governance Baseline - Master Index*
+  - *ArtDeco Master Index*
 
 - [ARTDECO_MENU_API_MAPPING](web/ARTDECO_MENU_API_MAPPING.md)
   - *ArtDeco菜单系统 - API映射表*
@@ -78,6 +91,9 @@
 
 - [ARTDECO_SCSS_GOVERNANCE_BASELINE](web/ARTDECO_SCSS_GOVERNANCE_BASELINE.md)
   - *ArtDeco SCSS Governance Baseline*
+
+- [ARTDECO_START_HERE](web/ARTDECO_START_HERE.md)
+  - *ArtDeco Start Here*
 
 - [ARTDECO_UI_UX_FUNCTIONALITY_GUIDE](web/ARTDECO_UI_UX_FUNCTIONALITY_GUIDE.md)
   - *ArtDeco UI/UX 功能清单与页面开发指南*
@@ -281,7 +297,7 @@
   - *硬编码治理分级指南（通用版）*
 
 - [HTML_TO_ARTDECO_VUE_CONVERSION_OPTIMIZED_PLAN](guides/web/HTML_TO_ARTDECO_VUE_CONVERSION_OPTIMIZED_PLAN.md)
-  - *MyStocks HTML到ArtDeco Vue页面转换与合并方案 (优化版)*
+  - *MyStocks HTML到ArtDeco Vue页面转换与合并方案 (Historical Conversion Plan)*
 
 - [HTML_TO_ARTDECO_VUE_CONVERSION_PLAN](guides/HTML_TO_ARTDECO_VUE_CONVERSION_PLAN.md)
   - *MyStocks HTML到ArtDeco Vue页面转换与合并方案 (再生版)*
@@ -737,7 +753,7 @@
   - *MyStocks API 修复实施指南*
 
 - [mystocks-artdeco-available-components](guides/web/mystocks-artdeco-available-components.md)
-  - *MyStocks ArtDeco Design System - Available Components Summary*
+  - *MyStocks ArtDeco Design System - Available Components Summary (Historical Compatibility Summary)*
 
 - [mystocks-artdeco-integration-fix](guides/frontend/mystocks-artdeco-integration-fix.md)
   - *MyStocks Vue前端ArtDeco集成修复实施计划*

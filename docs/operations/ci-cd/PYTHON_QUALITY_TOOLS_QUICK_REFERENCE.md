@@ -1,5 +1,9 @@
 # Python 质量检查工具 - 快速参考
 
+> **使用说明**:
+> 本文件是 Python 质量工具 quick reference，适合补充查阅，不是当前质量门禁、当前工具链基线或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 `architecture/STANDARDS.md`；若涉及运维执行流程、质量协作约束或专项操作说明，再结合根目录 `AGENTS.md`、`docs/operations/README.md` 与主线质量治理文档。
+
 ## 一行命令快速修复
 
 ```bash

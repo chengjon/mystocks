@@ -1,5 +1,12 @@
 # Wave 3: Large File Splitting Implementation Plan
 
+> **历史文档说明**:
+> 本文件是某阶段的历史文档、过程记录或专题材料，不是当前基线、当前系统总览或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现、验证结果及主线文档一并核对。
+>
+> 文内描述、背景、结论和上下文如未重新复核，应视为历史快照，不得直接当作当前事实。
+
+
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
 **Goal:** Split two large TypeScript files into modular directories to improve maintainability and keep file sizes under 500 lines, while maintaining backward compatibility.

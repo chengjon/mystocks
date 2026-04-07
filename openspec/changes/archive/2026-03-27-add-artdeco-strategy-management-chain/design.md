@@ -1,5 +1,10 @@
 ## Context
 
+> **历史文档说明**:
+> 本文件属于已归档变更留下的历史规格、设计附件或过程材料，用于补充还原当时方案与结构。
+> 它不再是当前治理口径或当前实现状态的默认真相源；如与现行 specs、共享规则或代码实现不一致，应以 `architecture/STANDARDS.md`、当前 `openspec/specs/` 正式规格与实际代码实现为准。
+
+
 `ArtDecoStrategyManagement` 当前仅占位显示，尚未形成可执行链路。项目中已存在可复用能力（`useStrategy`、`StrategyApiService`、`StrategyAdapter`）以及多路后端策略 API，但存在接口域并行、响应结构不一致问题。设计目标是以最小改造成本打通策略管理核心路径，并满足 ArtDeco 工程红线中的可观测性与 Mock 驱动要求。
 
 ## Goals

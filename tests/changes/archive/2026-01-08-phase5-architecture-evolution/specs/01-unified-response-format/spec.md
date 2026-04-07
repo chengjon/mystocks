@@ -1,4 +1,9 @@
 ## MODIFIED Requirements
+
+> **历史文档说明**:
+> 本文件属于已归档测试变更留下的历史规格、设计附件或过程材料，用于补充还原当时方案与结构。
+> 它不再是当前测试治理口径或当前实现状态的默认真相源；如与现行规则、当前实现或最新验证结果不一致，应以 `architecture/STANDARDS.md`、当前测试实现与最新验证结果为准。
+
 ### Requirement: All API endpoints MUST return responses in a standardized format with optional performance metadata.
 All API endpoints MUST return responses in a standardized format. When performance monitoring is enabled, responses MAY include performance metadata.
 

@@ -1,5 +1,11 @@
 # MyStocks Monitoring Guide
 
+> **Usage Note**:
+> This file is a monitoring architecture reference, not the sole source of truth for the current monitoring baseline, current production readiness status, or repository-wide governance rules.
+> For current runtime baselines, environment consistency, and approval gates, follow `architecture/STANDARDS.md` first. If you need operations workflow or collaboration constraints, then consult the root `AGENTS.md` and `docs/operations/README.md`.
+>
+> References to Phase 5 readiness, Grafana access, or specific monitoring stack components should be treated as stage-specific monitoring guidance unless re-verified in the current environment.
+
 ## Overview
 
 This document describes the monitoring infrastructure and configuration for MyStocks Phase 5 production readiness.

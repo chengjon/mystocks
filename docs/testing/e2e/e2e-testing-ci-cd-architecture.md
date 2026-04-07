@@ -1,5 +1,11 @@
 # MyStocks CI/CD 管道架构总结
 
+> **历史架构说明**:
+> 本文件是某阶段 E2E / CI-CD 架构总结，不是当前 Web E2E 主线、当前 Playwright 配置或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及测试执行流程、E2E 规范或协作约束，再结合 `docs/testing/TESTING_GUIDE.md`、`docs/testing/e2e/README.md` 与根目录 `AGENTS.md`。
+>
+> 文内 `playwright.config.ts`、`pytest tests/e2e/`、tmux/lnav 辅助流程和三层测试划分应按当期架构背景理解；若未在当前代码与主线文档中复核，不得直接当作当前标准。
+
 ## 概述
 我们已经成功实现了完整的CI/CD管道架构，包含三层测试架构和使用tmux、lnav等工具进行辅助开发。
 

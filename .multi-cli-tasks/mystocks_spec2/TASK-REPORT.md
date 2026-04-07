@@ -1,5 +1,10 @@
 # mystocks_spec2 任务进度报告
 
+> **使用说明**:
+> 本文件用于说明多 CLI 协作流程中的当前入口、任务工件或执行方式，服务于协作推进过程中的上下文同步。
+> 其中的步骤、状态和局部约束不能脱离 `architecture/STANDARDS.md`、当前协作口径与实际执行结果单独解读为最终事实。
+
+
 **Worker CLI**: mystocks_spec2
 **任务文档**: `TASK.md`
 **工作分支**: `dev-mystocks-spec2`

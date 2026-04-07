@@ -2,7 +2,7 @@
 
 > **导航说明**:
 > 本文件是 WebSocket 架构文档导航页，不是当前 WebSocket 实现基线、当前实时通信主线或仓库共享规则的唯一事实来源。
-> 当前执行口径请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，以及实际代码实现与主线契约/测试文档。
+> 若涉及仓库级共享规则、审批门禁、治理口径或主线契约/测试文档，请优先遵循 `architecture/STANDARDS.md` 并结合实际代码实现复核；若涉及执行流程或协作约束，再补充参考根目录 `AGENTS.md`。
 >
 > 文内“Primary Document”“Quick Reference”等说明只表示文档导航关系，不代表这些 Markdown 自动等同于当前系统事实。
 

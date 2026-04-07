@@ -1,5 +1,12 @@
 # MyStocks 部署指南 - 双数据库架构
 
+> **使用说明**:
+> 本文件是历史部署指南入口，不是当前运行架构、当前环境基线或仓库共享规则的唯一事实来源。
+> 若涉及环境一致性、PM2/Docker 优先级、审批门禁或当前运行口径，请优先阅读 `architecture/STANDARDS.md`；若涉及具体执行入口，再按职责分别参考根目录 `AGENTS.md` 与根目录 `CLAUDE.md`。
+>
+> 文内“双数据库架构”、版本号、安装步骤等内容，如未重新核实，应视为历史部署快照。
+> 当前本地服务地址如无专项说明，应以 `http://localhost:8020`（backend）和 `http://localhost:3020`（frontend）为准。
+
 **版本**: 3.0.0
 **更新日期**: 2025-10-25
 **架构**: TDengine + PostgreSQL 双数据库
@@ -279,18 +286,18 @@ quit
 ### 2. 初始化PostgreSQL表结构
 
 ```bash
-# 使用系统初始化脚本
-python -c "from unified_manager import MyStocksUnifiedManager; mgr = MyStocksUnifiedManager(); mgr.initialize_system()"
+# 当前主线入口示例（使用 src.* 导入）
+python -c "from src.core.unified_manager import MyStocksUnifiedManager; mgr = MyStocksUnifiedManager(); mgr.initialize_system()"
 
-# 或使用配置驱动管理器
-python -c "from core import ConfigDrivenTableManager; mgr = ConfigDrivenTableManager(); mgr.batch_create_tables('table_config.yaml')"
+# 或使用配置驱动管理器（当前主线入口示例）
+python -c "from src.core import ConfigDrivenTableManager; mgr = ConfigDrivenTableManager(); mgr.batch_create_tables('table_config.yaml')"
 ```
 
 ### 3. 验证表结构
 
 ```bash
 # 验证PostgreSQL表
-python -c "from core import ConfigDrivenTableManager; mgr = ConfigDrivenTableManager(); mgr.validate_all_table_structures()"
+python -c "from src.core import ConfigDrivenTableManager; mgr = ConfigDrivenTableManager(); mgr.validate_all_table_structures()"
 
 # 检查TDengine超表
 taos -h localhost -P 6030 -u root -p your-tdengine-password -s "USE market_data; SHOW STABLES;"
@@ -300,15 +307,17 @@ taos -h localhost -P 6030 -u root -p your-tdengine-password -s "USE market_data;
 
 ## 端口配置
 
-### 端口范围说明
+### 历史端口范围说明
 - **后端服务**: 8000-8010 (自动选择可用端口)
 - **前端服务**: 3000-3010 (自动选择可用端口)
 
-系统会在指定范围内自动查找并使用可用端口，避免端口冲突问题。
+以上范围属于历史部署快照，不应覆盖当前仓库在根目录 `AGENTS.md` 中声明的默认访问地址与运行门禁。
 
 ## 服务启动
 
 ### 1. 启动后端服务（FastAPI）
+
+> 以下命令为历史本地直启示例。当前任务若涉及环境一致性或验收门禁，请优先采用 PM2/Docker 主线流程。
 
 ```bash
 # 激活虚拟环境
@@ -338,7 +347,7 @@ npm run dev
 npm run build
 ```
 
-访问前端页面：http://localhost:3000 (端口可能为3000-3010范围内的可用端口)
+访问前端页面：http://localhost:3000 (历史范围说明；当前默认访问地址应以 `http://localhost:3020` 为准)
 
 ### 3. 使用Docker Compose（推荐）
 
@@ -418,8 +427,8 @@ python test_unified_manager.py
 
 ```bash
 python3 << 'EOF'
-from unified_manager import MyStocksUnifiedManager
-from core import DataClassification, DataStorageStrategy
+from src.core import DataClassification, MyStocksUnifiedManager
+from src.core.data_storage_strategy import DataStorageStrategy
 import pandas as pd
 
 # 验证路由规则

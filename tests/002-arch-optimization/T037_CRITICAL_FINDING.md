@@ -1,5 +1,10 @@
 # T037 Critical Finding: TDengine Not Running
 
+> **历史分析说明**:
+> 本文件是某次针对测试覆盖、缺陷、基线、诊断结果或方案可行性形成的历史分析记录，用于保留当时的判断依据与观察结果。
+> 文中的结论、统计和问题判断均受生成时间、样本范围与当时仓库状态影响；如需判断当前状态，必须重新核对现行测试实现与最新验证结果。
+
+
 **Date**: 2025-10-25
 **Status**: 🚨 Critical Architecture Mismatch Detected
 **Impact**: Blocks T037 (System Initialization Test)

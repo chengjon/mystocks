@@ -1,5 +1,9 @@
 # Claude Code Agents 文档索引
 
+> **导航说明**:
+> 本文件用于索引 Claude Code Agents 相关历史文档与管理材料，不是当前仓库共享规则或当前开发执行口径的唯一事实来源。
+> 若涉及仓库级治理规则、迁移收口或执行门禁，请优先阅读 `architecture/STANDARDS.md`；若涉及具体执行入口，再按职责分别参考根目录 `AGENTS.md` 与根目录 `CLAUDE.md`。
+
 **项目**: MyStocks_spec
 **最后更新**: 2025-12-10
 **状态**: ✅ 已完成

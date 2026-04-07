@@ -1,5 +1,10 @@
 # Technical Design for Quantitative Trading Algorithms API
 
+> **设计方案说明**:
+> 本文件用于记录测试方案中的结构设计、数据模型、技术取舍或实现路径，属于方案设计层材料。
+> 它不是共享规则正文，也不直接代表当前已落地状态；落地判断应结合 `architecture/STANDARDS.md`、当前测试实现与实际验证结果。
+
+
 ## Context
 
 MyStocks has implemented 11 quantitative trading algorithms with GPU acceleration, but these algorithms are only accessible programmatically within the codebase. This change exposes these algorithms through REST APIs to enable external integration, frontend access, and broader ecosystem adoption.

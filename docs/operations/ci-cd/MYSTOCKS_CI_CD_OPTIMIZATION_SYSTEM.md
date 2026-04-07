@@ -1,5 +1,11 @@
 # MyStocks 企业级 CI/CD 优化体系
 
+> **历史架构说明**:
+> 本文件是某阶段 CI/CD 优化体系设计与总结，不是当前流水线基线、当前 E2E 主线或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁、环境一致性或测试主线，请优先阅读 `architecture/STANDARDS.md`；若涉及测试或运维执行流程、协作约束，再结合根目录 `AGENTS.md`、`docs/testing/TESTING_GUIDE.md` 与 `docs/operations/README.md`。
+>
+> 文内 `playwright.config.ts`、`localhost:3000`、tmux/lnav/PM2 协同链路和“已实现/待优化”项应按当期架构背景理解；若未在当前代码与主线文档中复核，不得直接当作当前标准。
+
 **版本**: v2.0 (企业级优化版)
 **创建时间**: 2026-01-13
 **适用场景**: 量化交易系统生产级CI/CD

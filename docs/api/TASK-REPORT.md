@@ -1,5 +1,12 @@
 # Frontend CLI 任务报告
 
+> **历史总结说明**:
+> 本文件是 API 相关的阶段性总结、报告、状态或验收材料，不是当前 API 契约、当前实施基线或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`；若涉及 API 契约事实源，再以实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json` 为准。
+>
+> 文内统计值、完成状态、修复结论和验收结果如未重新复核，应视为历史快照，不得直接当作当前事实。
+
+
 **Worker CLI**: Frontend CLI (前端开发工程师)
 **Branch**: phase7-frontend-web-integration
 **Worktree**: /opt/claude/mystocks_phase7_frontend

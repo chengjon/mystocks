@@ -1,5 +1,9 @@
 # Phase 2: Dead Code Inventory & Removal - Context
 
+> **使用说明**:
+> 本文件是阶段上下文与约束汇总，不是仓库级共享规则、当前代码事实或当前执行结论的唯一事实来源。
+> 仓库级共享规则与审批门禁请优先遵循 `architecture/STANDARDS.md`；若涉及执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及相关阶段文档一并核对。
+
 **Gathered:** 2026-04-06
 **Status:** Ready for planning
 

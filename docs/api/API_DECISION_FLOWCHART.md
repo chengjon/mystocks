@@ -1,6 +1,12 @@
 # MyStocks API架构决策流程图
 # API Architecture Decision Flowchart
 
+> **历史决策说明**:
+> 本文件是某阶段 API 架构选型的决策流程图，不是当前 API 技术路线、当前实时通信主线或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及执行流程与协作约束，再结合根目录 `AGENTS.md`；若涉及主线契约文档，则应与当前代码实现一并复核。
+>
+> 文内 REST/SSE/WebSocket/GraphQL/gRPC 取舍应按当次决策上下文理解；若未在当前架构与治理文档中复核，不得直接视为当前标准。
+
 基于第一性原理的决策树，帮助快速做出正确的技术选择。
 
 ---

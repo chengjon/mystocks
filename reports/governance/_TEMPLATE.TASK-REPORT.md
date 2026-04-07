@@ -1,5 +1,12 @@
 # TASK-REPORT
 
+> **参考模板说明**:
+> 本文件是模板、骨架或示例输入，不是当前共享规则、当前任务状态或当前实现结果的唯一事实来源。
+> 当前共享规则与治理口径请优先遵循 `architecture/STANDARDS.md`；执行流程、命令与协作约束再结合根目录 `AGENTS.md` 与对应主线模板/流程文档。
+>
+> 使用本模板时应结合当前任务上下文填写；模板中的占位内容、示例字段和默认值不得直接当作当前事实。
+
+
 > Governance template. Copy this file to a dated task report under `reports/governance/` and then fill the placeholders.
 
 - Issue Identifier: `<yyyy-mm-dd-scope-topic-owner>`

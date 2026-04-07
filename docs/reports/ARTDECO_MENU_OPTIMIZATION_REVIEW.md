@@ -1,11 +1,24 @@
 # MyStocks ArtDeco菜单系统 - 审核报告优化建议
 
+> **历史分析说明**:
+> 本文件是阶段性分析、审计、评估或复盘材料，不是当前基线、当前实施优先级或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现、验证结果及主线文档一并核对。
+>
+> 文内问题分级、差距判断、风险结论、审阅意见和建议动作如未重新复核，应视为历史分析结果，不得直接当作当前事实。
+
+
 **创建时间**: 2026-01-20
 **审核对象**: `docs/reports/ARTDECO_MENU_FRONTEND_DESIGN_REVIEW.md`
 **优化类型**: 基于项目实际情况的改进方案
 **优化目标**: 充分利用已有组件和API，避免重复开发
 
 ---
+
+> 2026-04-01 状态说明
+>
+> - 本文件属于历史分析/方案/完成报告，不是当前 ArtDeco 规范入口。
+> - 文中出现的组件数量、间距级数、目录结构、字体方案或页面承载模式，应视为当时会话上下文；若与当前代码不一致，以当前活跃治理文档和源码为准。
+> - 当前建议先看：`docs/guides/web/ARTDECO_START_HERE.md`、`docs/guides/web/ARTDECO_MASTER_INDEX.md`、`docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md`、`web/frontend/ARTDECO_COMPONENTS_CATALOG.md`。
 
 ## 📊 原审核报告分析
 
@@ -41,7 +54,7 @@
 
 ### **优化原则**
 
-1. **复用优先** - 充分利用已有64个ArtDeco组件
+1. **复用优先** - 充分利用已有 ArtDeco 组件存量（原文 64 个为历史盘点值）
 2. **API驱动** - 基于实际571个API端点设计功能
 3. **设计一致** - 使用已有ArtDeco设计令牌和样式
 4. **渐进增强** - 在现有基础上优化，而非推倒重来
@@ -566,7 +579,7 @@ onMounted(() => {
 **目标**：使用已有ArtDeco组件，避免重复开发
 
 **任务清单**：
-- [ ] 审核64个ArtDeco组件，确认可复用组件
+- [ ] 审核当前 ArtDeco 组件目录，确认可复用组件（原文 64 个为历史盘点值）
 - [ ] 更新菜单配置，使用`ArtDecoSidebar`和`ArtDecoDynamicSidebar`
 - [ ] 使用`ArtDecoBadge`替代新建徽章组件
 - [ ] 使用`ArtDecoStatusIndicator`替代新建状态指示器
@@ -664,7 +677,7 @@ onMounted(() => {
 
 ### **立即行动（高优先级）**
 
-1. ✅ **复用现有ArtDeco组件**（64个组件）
+1. ✅ **复用现有 ArtDeco 组件**（原文 64 个为历史盘点值）
    - 使用`ArtDecoSidebar`和`ArtDecoDynamicSidebar`
    - 使用`ArtDecoBadge`和`ArtDecoStatusIndicator`
    - 使用`ArtDecoBreadcrumb`集成面包屑导航

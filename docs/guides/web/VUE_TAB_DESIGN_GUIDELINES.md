@@ -1,5 +1,12 @@
 ### Vue Component Design Proposal: "One Tab, One Component" vs. "One Component, Multiple Tabs"
 
+> **参考指南说明**:
+> 本文件是补充指南、命令参考、操作说明或使用手册，不是当前仓库共享规则、当前实现边界或当前主线流程的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线治理文档一并核对。
+>
+> 文内步骤、示例、命令和说明应视为补充参考；若与当前代码、`architecture/STANDARDS.md` 或主线治理文档不一致，应以 `architecture/STANDARDS.md`、当前代码实现及主线治理文档为准。
+
+
 **Guiding Principle: "Tab Panel Business Relevance"**
 
 The choice between implementing tabbed interfaces using "One Tab, One Component" (1T1C) or "One Component, Multiple Tabs" (1C-MT) should primarily be driven by the **business relevance and logical cohesion of the content within each tab panel**. Rather than a rigid, one-size-fits-all rule, a nuanced approach that prioritizes high cohesion and low coupling at the appropriate level is essential for maintainable, scalable, and performant frontend architecture, especially in complex financial applications.

@@ -1,5 +1,11 @@
 # MyStocks 快速启动指南
 
+> **使用说明**:
+> 本文件是 quick-start 入口文档，不是当前运行架构、当前服务拓扑或仓库共享规则的唯一事实来源。
+> 若涉及环境一致性、PM2/Docker 优先级、当前服务端口或运行门禁，请优先阅读 `architecture/STANDARDS.md`；若涉及运维执行流程或协作约束，再结合根目录 `AGENTS.md` 与 `docs/operations/README.md`。
+>
+> 文内启动命令、访问地址、数据同步服务和页面验证步骤，如未重新核实，应视为快捷示例或历史快照。
+
 ## 系统要求
 - Python 3.12+
 - Node.js 16+

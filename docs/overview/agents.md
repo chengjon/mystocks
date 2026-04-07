@@ -19,6 +19,15 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 # AGENTS.md - Coding Agent Configuration
 
+> **权威来源声明**:
+> 本文件属于 `docs/overview/` 下的概览文档，不是当前仓库规则的唯一事实来源。
+> 如与仓库级共享规则或执行入口文档冲突，应始终以 `architecture/STANDARDS.md` 作为共享规则与审批门禁来源，并按职责分别以根目录 `AGENTS.md`、根目录 `CLAUDE.md` 作为执行入口参考。
+>
+> 涉及迁移收口、兼容层退役、清理/删除判定、审计指标口径时，请统一回到 `architecture/STANDARDS.md`。
+
+> **使用说明**:
+> 下文命令、格式、架构示例属于 overview 快照。当前可执行规则、命令与配置数值以根目录 `AGENTS.md` 和 `architecture/STANDARDS.md` 为准。
+
 ## Build/Lint/Test Commands
 
 ```bash
@@ -51,8 +60,7 @@ black --check .
 - Use explicit imports for clarity
 
 ### Formatting
-- Use Black formatter with default settings
-- Line length: 88 characters (Black default)
+- Use Black formatter; current formatter settings follow root `AGENTS.md` and `pyproject.toml`
 - Use double quotes for strings
 - Use 4 spaces for indentation
 
@@ -80,8 +88,9 @@ black --check .
 - Config: `config/` directory for YAML/JSON configs
 - Docs: `docs/` directory for documentation
 
-### Database Architecture (Week 3+)
-- Dual database: TDengine for high-frequency time-series, PostgreSQL for everything else
+### Database Architecture
+- Current database architecture and migration status must follow root `AGENTS.md` and `architecture/STANDARDS.md`
+- Historical notes in this overview must not be treated as authorization to keep or introduce parallel layers
 - Use `MyStocksUnifiedManager` for automatic routing
 - Classification-based methods: `save_data_by_classification()`, `load_data_by_classification()`
 
@@ -99,7 +108,7 @@ from src.adapters.akshare_adapter import AkshareDataSource
 from src.interfaces import IDataSource
 
 # Database management
-from src.db_manager import DatabaseTableManager  # Compatibility layer
-# OR
-from src.storage.database import DatabaseTableManager  # Direct import
+from src.storage.database import DatabaseTableManager
 ```
+
+Historical compatibility import paths may appear in old code or reports, but new changes should follow the canonical paths defined in root `AGENTS.md`.

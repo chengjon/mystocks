@@ -1,5 +1,9 @@
 # Testing Guide (Compatibility Entry)
 
+> **使用说明**:
+> 本文件是历史兼容入口，用于承接旧引用路径，不是当前测试门禁、当前 E2E 基线或仓库共享规则的唯一事实来源。
+> 当前测试治理口径请优先阅读 `architecture/STANDARDS.md`；若涉及测试执行流程或协作约束，再结合根目录 `AGENTS.md`、`docs/testing/README.md` 与 `docs/testing/e2e/README.md`。
+
 该文档用于承接历史引用路径 `docs/guides/TESTING_GUIDE.md`。
 
 ## 当前标准入口（2026-03）

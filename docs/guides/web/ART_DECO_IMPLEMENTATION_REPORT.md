@@ -1,6 +1,13 @@
 # Art Deco Design System Implementation Report
 ## MyStocks 量化交易平台 - 装饰艺术设计系统实现报告
 
+> **历史总结说明**:
+> 本文件是阶段性总结、报告、状态、修复记录或工作日志，不是当前基线、当前实施状态或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现、验证结果及主线文档一并核对。
+>
+> 文内统计值、完成状态、结论和处理结果如未重新复核，应视为历史快照，不得直接当作当前事实。
+
+
 **Date**: 2026-01-20
 **Version**: 2.0 (Phase 2-4 Enhancements)
 **Author**: Claude Code (Frontend Specialist)

@@ -1,5 +1,9 @@
 # OpenSpec 命令扩展指南
 
+> **使用说明**:
+> 本文件聚焦 OpenSpec 命令扩展方法，不是仓库级共享规则的唯一事实来源。
+> 若任务涉及 proposal、plan、spec、能力新增或架构变更，请优先阅读 `openspec/AGENTS.md`；若涉及仓库级共享规则、审批门禁或迁移治理，请另行遵循 `architecture/STANDARDS.md`。
+
 本文档说明如何为 OpenSpec 系统创建和集成新的命令。
 
 ## 📁 目录结构

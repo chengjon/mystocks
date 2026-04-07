@@ -1,4 +1,11 @@
-# ArtDeco Fintech Unified Spec 实现审核报告
+# ArtDeco Fintech Implementation Audit
+
+> **历史分析说明**:
+> 本文件是阶段性分析、审计或评估材料，不是当前基线、当前实施优先级或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现、验证结果及主线文档一并核对。
+>
+> 文内问题分级、差距判断、风险结论和建议动作如未重新复核，应视为历史分析结果，不得直接当作当前事实。
+
 
 > **审核日期**: 2026-03-25
 > **审核对象**: `ARTDECO_FINTECH_UNIFIED_SPEC.md`
@@ -6,6 +13,12 @@
 
 ---
 
+> 2026-04-01 状态说明
+>
+> - 本文档仍然是活跃治理链的一部分，但它的职责是“实现对账”，不是总规范入口。
+> - 阅读顺序建议：`ARTDECO_START_HERE.md` -> `ARTDECO_MASTER_INDEX.md` -> `ARTDECO_FINTECH_UNIFIED_SPEC.md` -> 本文档。
+> - 当前运行时已明确为三类承载模式并存：模板化工作台、直接 Tab 容器、功能树驱动总控容器；本文件只审查这些实现是否偏离统一规格。
+>
 ## 1. 总体评估
 
 | 维度 | 状态 | 说明 |
@@ -332,6 +345,82 @@
    - `ArtDecoRiskManagement.vue`
    - `BacktestHeader.vue` / `BacktestKpiGrid.vue` / `BacktestWorkbenchTabs.vue` 子组件链已切换到 `@use` 并补足 tabs rail header
    - `ArtDecoRiskMonitor.vue` 已将历史失效样式替换为标准化占位壳层
+   - `src/views/market` 活跃链已完成一轮真实值债清理：
+     `Auction.vue`、`MarketDataView.vue`、`CapitalFlow.scss`、`Concepts.scss`、`Etf.scss`、`Realtime.scss`、`Tdx.scss`、`Technical.scss`
+     已通过目录级 `check-artdeco-tokens.js --target-dir src/views/market`
+   - `src/views/market` 已重新纳入 `lint:artdeco:changed`
+   - `MarketDataView` 直连组件链首批已纳入门禁：
+     `FundFlowPanel.vue`、`ETFDataTable.vue`、`ChipRaceTable.vue`、`LongHuBangTable.vue`
+     已完成单文件 token 收口并加入 `lint:artdeco:changed`
+   - `MarketData.vue` 兼容 panel 链首批已完成同类收口：
+     `ChipRacePanel.vue`、`ETFDataPanel.vue`、`LongHuBangPanel.vue`
+     已完成单文件 token 收口并加入 `lint:artdeco:changed`
+   - `components/market` 补充小型交互组件首批已纳入门禁：
+     `IndicatorSelector.vue`、`ProKLineChart.vue`、`WencaiPanelSimple.vue`
+     已完成单文件 token 收口并加入 `lint:artdeco:changed`
+   - `Wencai` 活跃面板链已完成第二轮收口：
+     `WencaiPanel.vue`、`styles/WencaiPanel.scss`、`WencaiPanelV2.vue`、`styles/WencaiPanelV2.scss`
+     已完成 token 收口并加入 `lint:artdeco:changed`
+   - 相邻技术/图表入口已完成旧样式入口语法收口：
+     `components/technical/IndicatorPanel.vue`、`components/Charts/AdvancedHeatmap.vue`、`components/Charts/RelationChart.vue`
+     已切换到 `@use`，并加入 `lint:artdeco:changed`
+   - `components/Charts/ProKLineChart.vue` 与 `components/chart/HealthRadarChart.vue`
+     已将旧 CSS 入口从 `@import` 收口为 `scss + @use`，并加入 `lint:artdeco:changed`
+   - `components/market/SmartRecommendation.vue`、`components/Market/SmartRecommendation.vue`、
+     `views/system/DatabaseMonitor.vue`、`views/monitoring/MonitoringDashboard.vue`
+     已完成旧样式入口收口并加入 `lint:artdeco:changed`
+   - `views/system/Architecture.vue`、`views/monitoring/AlertRulesManagement.vue`、
+     `views/monitoring/RiskDashboard.vue`、`views/announcement/AnnouncementMonitor.vue`
+     已完成旧样式入口收口并加入 `lint:artdeco:changed`
+   - `views/system/PerformanceMonitor.vue` 与 `views/monitoring/WatchlistManagement.vue`
+     已完成旧样式入口收口并加入 `lint:artdeco:changed`
+   - 根页面入口链新增收口：
+     `SmartDataSourceTest.vue`、`DataVisualizationShowcase.vue`、`TechnicalAnalysis.vue`、
+     `BacktestAnalysis.vue`、`TradingDashboard.vue`、`StrategyManagement.vue`、`IndicatorLibrary.vue`
+     已完成旧样式入口收口并加入 `lint:artdeco:changed`
+   - 根页面补充收口：
+     `Analysis.vue`、`BacktestWizard.vue`、`Dashboard.vue`、`Market.vue`、`Settings.vue`、`IndustryConceptAnalysis.vue`
+     已完成旧样式入口收口并加入 `lint:artdeco:changed`
+   - strategy/demo/components 补充入口收口：
+     `BatchScan.vue`、`SingleRun.vue`、`StatsAnalysis.vue`、`ResultsQuery.vue`、`StrategyList.vue`、`BacktestGPU.vue`、
+     `demo/Phase4Dashboard.vue`、`demo/Wencai.vue`、`demo/pyprofiling/components/Prediction.vue`、
+     `views/components/StopLossMonitoringTab.vue`、`views/components/RiskOverviewTab.vue`、
+     `trade-management/components/TradeHistoryTab.vue`、`components/monitoring/MonitoringAlertPanel.vue`、
+     `components/monitoring/MonitoringDataTable.vue`、`components/sse/DashboardMetrics.vue`
+     已完成旧样式入口收口并加入 `lint:artdeco:changed`
+   - 根页面入口继续收口：
+     `TaskManagement.vue`、`monitor.vue`、`Phase4Dashboard.vue`、`Wencai.vue`、`RealTimeMonitor.vue`、
+     `StockDetail.vue`、`TdxMarket.vue`、`PortfolioManagement.vue`、`StockAnalysisDemo.vue`、
+     `EnhancedDashboard.vue`、`PyprofilingDemo.vue`、`errors/ServiceUnavailable.vue`
+     已完成旧样式入口收口并加入 `lint:artdeco:changed`
+   - 边缘活跃组件入口收口：
+     `components/data/DataCard.vue`、`components/realtime/RealtimePositionPanel.vue`、
+     `components/menu_root/TreeMenu.vue`、`components/charts/AdvancedHeatmap.vue`、
+     `components/charts/RelationChart.vue`
+     已完成旧样式入口收口并加入 `lint:artdeco:changed`
+   - command-palette / stocks / `TradeManagement.vue` 仍保留真实 token 债，
+     当前不再是单纯入口语法问题；后续需按“真实值债治理”单独推进
+   - `Activity.vue`、`Screener.vue`、`TradeManagement.vue`
+     已完成首轮真实 token 债收口并加入 `lint:artdeco:changed`
+   - `Industry.vue`
+     已完成首轮真实 token 债收口并加入 `lint:artdeco:changed`
+   - `shared/command-palette/styles/CommandPalette.scss`
+     已完成首轮真实 token 债收口并加入 `lint:artdeco:changed`
+   - `views/technical/TechnicalAnalysis.scss`
+     已补齐最小 web3 兼容 token/mixin 层，并加入 `lint:artdeco:changed`
+   - `src/views/stocks`
+     已从若干 target-file 升级为目录级 `lint:artdeco:changed` 门禁
+   - `components/shared/charts/ChartContainer.vue`、`views/SkeletonUsage.vue`
+     已完成收口并通过门禁
+   - `src/views/components`、`src/views/technical`、
+     `src/components/shared/charts`、`src/components/shared/command-palette`
+     已升级为目录级门禁
+   - `components/shared/ui/DetailDialog.vue`、
+     `views/styles/*.scss`（`Analysis.scss`、`BacktestWizard.scss`、`Dashboard.scss`、`IndustryConceptAnalysis.scss`、`Market.scss`、`Settings.scss`、`TradingDecisionCenter.scss`）、
+     `views/stock-analysis/*.vue`
+     已完成旧样式入口语法收口，当前相关范围 `@import = 0`
+   - `src/views/stocks`
+     已完成目录级 token 收口，旧 `@import` 为 `0`，并已升级为 `lint:artdeco:changed` 的目录级门禁
 
    待继续：
 
@@ -357,7 +446,8 @@
 2. **P1 已完成主要目标**：活跃 ArtDeco/Fintech 链路中的旧字体引用已收敛，真值层/兼容层/历史层边界已显式定义。
 3. **P2 已完成第一轮**：关键页面、布局壳层与活跃占位页已完成 ArtDeco Fintech 工作站化收敛。
 4. **P3 已开始推进**：`ArtDecoStockManagement.vue`、`ArtDecoMarketQuotes.vue`、`ArtDecoTradingManagement.vue`、`ArtDecoStrategyManagement.vue`、`ArtDecoStrategyOptimization.vue`、`ArtDecoBacktestAnalysis.vue`、`StrategyParametersTab.vue`、`StrategySignalsTab.vue`、`ArtDecoSignalsView.vue`、`ArtDecoTradingHistory.vue`、`ArtDecoTradingPositions.vue`、`ArtDecoMonitoringDashboard.vue`、`ArtDecoDataManagement.vue`、`SystemHealthTab.vue`、`ArtDecoRiskAlerts.vue`、`ArtDecoAnnouncementMonitor.vue`、`RiskOverviewTab.vue`、`StopLossMonitorTab.vue`、`MarketRealtimeTab.vue`、`MarketKLineTab.vue`、`MarketConceptTab.vue`、`MarketETFTab.vue`、`TechnicalScannerTab.vue`、`PortfolioOverviewTab.vue`、`DragonTigerAnalysis.vue`、`FundFlowAnalysis.vue`、`ArtDecoIndustryAnalysis.vue` 与 `ArtDecoRiskManagement.vue` 已完成第二轮页面级补强。
-5. **剩余工作**：历史兼容层的长期归档策略、剩余页面一致性审查、页面骨架模板化。
+5. **P3 新进展**：`src/views/market` 已从“导入链已清、真实值债未过门禁”推进到“目录级 token 自检通过，并被重新纳入 changed-scope 门禁”。
+6. **剩余工作**：历史兼容层的长期归档策略、剩余页面一致性审查、页面骨架模板化。
 
 ---
 
@@ -377,4 +467,4 @@
 
 **审核人**: Claude AI
 **审核日期**: 2026-03-25
-**文档版本**: 1.3
+**文档版本**: 1.4

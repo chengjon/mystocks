@@ -1,5 +1,10 @@
 # Data Model: Architecture Optimization
 
+> **设计方案说明**:
+> 本文件用于记录测试方案中的结构设计、数据模型、技术取舍或实现路径，属于方案设计层材料。
+> 它不是共享规则正文，也不直接代表当前已落地状态；落地判断应结合 `architecture/STANDARDS.md`、当前测试实现与实际验证结果。
+
+
 **Feature**: Architecture Optimization for Quantitative Trading System
 **Branch**: `002-arch-optimization`
 **Date**: 2025-10-25

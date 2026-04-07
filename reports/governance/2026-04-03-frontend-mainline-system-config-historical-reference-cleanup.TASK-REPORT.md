@@ -1,5 +1,12 @@
 # TASK-REPORT
 
+> **历史任务说明**:
+> 本文件是历史任务单、历史任务汇报或归档任务工件，不是当前任务系统、当前实施状态或仓库共享规则的唯一事实来源。
+> 当前共享规则与治理口径请优先遵循 `architecture/STANDARDS.md`；执行流程、命令与协作约束再结合根目录 `AGENTS.md`，并与当前主线任务系统及验证结果一并核对。
+>
+> 文内范围、完成状态、负责人、验证命令和下一步如未重新复核，应视为当时任务快照，不得直接当作当前事实。
+
+
 > Exported from Mongo control plane. Human notes may be appended, but active state lives in Mongo.
 
 - Issue Identifier: `2026-04-03-frontend-mainline-system-config-historical-reference-cleanup-main`

@@ -1,4 +1,9 @@
 # 数据源注册表拆分方案设计
+
+> **历史计划说明**:
+> 本文件记录某次配置拆分、部署调整或结构重组的历史计划与设想，反映的是当时准备推动的方向与范围，而非当前已生效事实。
+> 若其内容与现行 `architecture/STANDARDS.md`、当前配置实现或后续结论不一致，应以 `architecture/STANDARDS.md`、当前配置实现与最新结论为准。
+
 # Data Source Registry Splitting Plan
 
 ## 🎯 拆分目标

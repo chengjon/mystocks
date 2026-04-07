@@ -1,5 +1,12 @@
 # 技术债治理章程 v1（Technical Debt Governance Charter v1）
 
+> **补充规范说明**:
+> 本文件是项目补充标准、执行细则或专题规范，不是仓库共享规则的唯一事实来源。
+> 仓库级共享规则总入口仍以 `architecture/STANDARDS.md` 为准；执行流程、命令与协作约束再参考根目录 `AGENTS.md`。本文件用于补充某一专题的执行细则、约束或参考模板。
+>
+> 若本文件与 `architecture/STANDARDS.md`、根目录 `AGENTS.md` 或当前已批准执行口径不一致，应优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md` 与当前实现；若无冲突，则按本文件的专题范围执行。
+
+
 > 版本：v1.1
 > 生效日期：2026-03-01
 > 适用范围：MyStocks 全仓（`src/`、`web/backend/`、`web/frontend/`、`tests/`、`.github/workflows/`）
@@ -142,6 +149,19 @@
 4. **指标类**
    - 必须分列 `measured`、`baseline`、`inferred`、`target`、`source_or_command`。
    - 若某列为空，必须写明 `N/A` 或原因，不能省略整列。
+
+## 3.6 Markdown 治理门禁
+
+为防止共享规则、执行入口与历史文档再次出现口径漂移，Markdown 文档治理纳入自动门禁，但共享规则来源仍以 `architecture/STANDARDS.md` 为准。
+
+1. 所有受管 Markdown 文档默认必须在开头提供边界说明块。
+2. 边界说明标题必须使用受控标题，例如：`导航说明`、`权威来源声明`、`使用说明`，或与历史/专题属性对应的受控标题。
+3. 文档中禁止使用基于“前者 / 后者 / 相对位置判断”的模糊措辞；必须显式写出权威文件路径。
+4. 当前自动检查入口：
+   - 本地脚本：`python scripts/compliance/markdown_governance_gate.py --root-dir . --format text`
+   - 提交前门禁：`markdown-governance-gate`
+   - CI 工作流：`.github/workflows/directory-compliance.yml`
+5. 该门禁的作用是约束“文档如何正确引用真相源”，不是创建新的真相源；若规则解释与共享规则正文冲突，仍以 `architecture/STANDARDS.md` 为准。
 
 ---
 

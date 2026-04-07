@@ -2,7 +2,7 @@
 
 > **使用说明**:
 > 本文件是 API 相关的参考文档或专题说明，不是当前 API 契约、当前实施基线或仓库共享规则的唯一事实来源。
-> 当前执行口径请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，以及实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json`。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`；若涉及 API 契约事实源，再以实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json` 为准。
 >
 > 文内端点、命令、统计值和示例如未重新复核，应视为参考或历史材料，不得直接当作当前事实。
 
@@ -16,7 +16,7 @@
 - 当前治理口径:
   - 运行时生成的 OpenAPI 才是默认契约来源。
   - 显式 spec_path / openapi_spec_path 只作为兼容覆盖，用于历史快照、回放或隔离测试，不得升级为并行真相源。
-  - 若本文件中的旧示例与上述当前实现不一致，应以后者为准。
+  - 若本文件中的旧示例与上述当前实现不一致，应以当前 FastAPI 路由、Pydantic Schema 与导出的 `/openapi.json` 为准。
 
 
 ## Module: src.contract_testing

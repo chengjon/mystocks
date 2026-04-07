@@ -1,6 +1,12 @@
 # Gemini CLI: Python Quality Assurance Guidelines
 
-This document outlines the Python code quality assurance workflow and tools that Gemini CLI must adhere to when working on Python projects. These guidelines are derived from the project's official quality assurance documentation (`docs/operations/ci-cd/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md`, `docs/operations/ci-cd/PYTHON_QUALITY_TOOLS_QUICK_REFERENCE.md`, and `CLAUDE.md`).
+> **权威来源声明**:
+> 本文件属于历史/扩展指导文档，不是当前仓库规则的唯一事实来源。
+> 仓库级共享规则与审批门禁请优先遵循 `architecture/STANDARDS.md`；若涉及具体执行入口、命令或协作约束，再按职责参考根目录 `AGENTS.md` 与根目录 `CLAUDE.md`。
+>
+> 涉及迁移收口、重复层治理、兼容层退役、清理/删除判定、审计指标口径时，请统一回到 `architecture/STANDARDS.md`。
+
+This document outlines the Python code quality assurance workflow and tools that Gemini CLI must adhere to when working on Python projects. These guidelines are adapted from the project's quality-assurance references (`docs/operations/ci-cd/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md`, `docs/operations/ci-cd/PYTHON_QUALITY_TOOLS_QUICK_REFERENCE.md`) plus the current root entry docs.
 
 ## Core Principles
 

@@ -1,5 +1,10 @@
 ## Phase 6.1: Code Quality - Pylint Error Remediation
 
+> **历史任务说明**:
+> 本文件用于保留某次测试任务拆解、检查清单或阶段性待办，不代表当前仍需按原样执行。
+> 其中的勾选状态、优先级和执行顺序仅对应当时上下文；继续沿用前应先对照当前需求、现行实现与最新验证结果重新校准。
+
+
 ### 1. Pylint Error Analysis
 - [ ] 1.1 Run comprehensive Pylint scan on entire codebase
 - [ ] 1.2 Document current error count (215) by category

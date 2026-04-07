@@ -2,9 +2,9 @@
 
 > **使用说明**:
 > 本文件是 Apifox 工具快速上手指南，不是当前 API 契约、当前测试门禁或仓库共享规则的唯一事实来源。
-> 当前 API 单一事实来源请优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md`，以及实际导出的 `/openapi.json`。
+> 若涉及仓库级共享规则或审批门禁，请优先遵循 `architecture/STANDARDS.md`；若涉及执行流程与协作约束，再参考根目录 `AGENTS.md`；若涉及 API 契约事实源，再以实际导出的 `/openapi.json` 为准。
 >
-> 文内 Apifox 项目地址、已导入数量、环境变量和认证脚本应视为工具接入快照；若与当前 Apifox 项目或真实接口不一致，应以后者为准。
+> 文内 Apifox 项目地址、已导入数量、环境变量和认证脚本应视为工具接入快照；若与当前 Apifox 项目或真实接口不一致，应以实际 Apifox 项目配置、当前接口实现与导出的 `/openapi.json` 为准。
 
 ## 🚀 5分钟快速上手
 

@@ -1,5 +1,10 @@
 ## 1. Specification
 
+> **使用说明**:
+> 本文件用于记录当前 OpenSpec 变更的执行清单、操作步骤或协作约束，帮助跟踪实施过程。
+> 其中勾选状态、执行顺序和局部说明仅代表任务推进视角，不应脱离 proposal、design、正式 specs、`architecture/STANDARDS.md` 与实际验证结果单独解读为最终事实。
+
+
 - [x] 1.1 Modify `agent-memory-workflow` to define a canonical shared Graphiti CLI entrypoint.
 - [x] 1.2 Modify `agent-memory-workflow` to distinguish Mongo-backed scoped preflight from generic Graphiti memory operations.
 - [x] 1.3 Modify `agent-memory-workflow` to require auditable Graphiti write metadata for explicit memory recording.

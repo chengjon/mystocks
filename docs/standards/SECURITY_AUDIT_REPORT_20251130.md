@@ -1,4 +1,11 @@
 # Security Audit Report - MyStocks Project
+
+> **历史分析说明**:
+> 本文件是标准治理相关的分析、审计、总结或报告材料，不是当前门禁基线或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码及现行标准文档一并复核。
+>
+> 文内结论、统计值、风险等级和完成状态如未重新复核，应视为历史分析快照，不得直接当作当前事实。
+
 **Date**: 2025-11-30
 **Status**: COMPLETED WITH CRITICAL FIXES
 **Severity**: HIGH (Credentials exposed in multiple locations)

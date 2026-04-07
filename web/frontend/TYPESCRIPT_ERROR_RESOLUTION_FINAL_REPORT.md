@@ -1,5 +1,10 @@
 # TypeScript Error Resolution - Final Report
 
+> **历史总结说明**:
+> 本文件是某次 Web 功能开发、修复、集成、测试、验收或阶段性交付的历史总结快照，用于追溯当时的实施结论。
+> 其中的完成度、通过数、状态和结论不应直接视为当前事实；引用前应结合 `architecture/STANDARDS.md`、当前实现、基线文件与最新验证结果重新确认。
+
+
 ## Executive Summary
 
 **Project**: MyStocks Frontend
