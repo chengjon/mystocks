@@ -26,14 +26,54 @@ MULTI_SOURCE_ANALYZE_REQUEST_EXAMPLE = {
     "time_range": "3m",
 }
 
+MULTI_SOURCE_HEALTH_RESPONSES = {
+    200: {
+        "description": "多数据源服务健康状态",
+        "content": {
+            "application/json": {
+                "example": {
+                    "status": "ok",
+                    "service": "multi_source",
+                }
+            }
+        },
+    },
+    500: COMMON_RESPONSES[500],
+}
 
-@router.get("/health", description="返回多数据源服务的基础健康状态，用于网关探活、运维巡检和启动后自检。")
+MULTI_SOURCE_STATUS_RESPONSES = {
+    200: {
+        "description": "多数据源服务当前状态",
+        "content": {
+            "application/json": {
+                "example": {
+                    "status": "active",
+                    "endpoint": "multi_source",
+                }
+            }
+        },
+    },
+    500: COMMON_RESPONSES[500],
+}
+
+
+@router.get(
+    "/health",
+    summary="获取多数据源健康状态",
+    description="返回多数据源服务的基础健康状态，用于网关探活、运维巡检和启动后自检。",
+    responses=MULTI_SOURCE_HEALTH_RESPONSES,
+)
 async def health_check():
     """返回多数据源服务的基础健康状态。"""
     return {"status": "ok", "service": "multi_source"}
 
 
-@router.get("/status", description="返回多数据源服务的当前运行状态和端点标识，用于联调和运行态确认。")
+@router.get(
+    "/status",
+    summary="获取多数据源运行状态",
+    description="返回多数据源服务的当前运行状态和端点标识，用于联调和运行态确认。",
+    responses=MULTI_SOURCE_STATUS_RESPONSES,
+)
 async def get_status():
     """返回多数据源服务的当前运行状态。"""
     return {"status": "active", "endpoint": "multi_source"}

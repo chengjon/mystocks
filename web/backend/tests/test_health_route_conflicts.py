@@ -734,9 +734,11 @@ def test_multi_source_endpoints_have_descriptions_examples_and_error_responses()
 
     for path in ["/api/multi-source/health", "/api/multi-source/status"]:
         operation = schema["paths"][path]["get"]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
 
         assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
+        assert "example" in success_json or "examples" in success_json
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
     analyze_operation = schema["paths"]["/api/multi-source/analyze"]["post"]
