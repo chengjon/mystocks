@@ -1104,11 +1104,14 @@ def test_data_source_rollback_endpoint_has_description_parameter_docs_and_exampl
     operation = schema["paths"]["/api/v1/data-sources/config/{endpoint_name}/rollback/{version}"]["post"]
     parameters = operation.get("parameters", [])
     request_json = operation["requestBody"]["content"]["application/json"]
+    success_json = operation["responses"]["200"]["content"]["application/json"]
 
     assert len(operation.get("description", "")) >= 20
     for parameter_name in ["endpoint_name", "version"]:
         assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
     assert "example" in request_json or "examples" in request_json
+    assert "example" in success_json or "examples" in success_json
+    assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_monitoring_dragon_tiger_endpoint_has_parameter_docs() -> None:
@@ -1331,6 +1334,18 @@ def test_data_source_item_crud_endpoints_have_path_and_auth_docs() -> None:
         assert any(param["name"] == "endpoint_name" and param.get("description") for param in parameters)
         assert any(param["name"] == "Authorization" and param.get("description") for param in parameters)
 
+    registry_update_operation = schema["paths"]["/api/v1/data-sources/{endpoint_name}"]["put"]
+    registry_update_parameters = registry_update_operation.get("parameters", [])
+    assert len(registry_update_operation.get("description", "")) >= 20
+    for parameter_name in ["endpoint_name", "Authorization"]:
+        assert any(param["name"] == parameter_name and param.get("description") for param in registry_update_parameters)
+
+    registry_test_operation = schema["paths"]["/api/v1/data-sources/{endpoint_name}/test"]["post"]
+    registry_test_parameters = registry_test_operation.get("parameters", [])
+    assert len(registry_test_operation.get("description", "")) >= 20
+    for parameter_name in ["endpoint_name", "Authorization"]:
+        assert any(param["name"] == parameter_name and param.get("description") for param in registry_test_parameters)
+
 
 def test_data_source_config_read_endpoints_have_examples_and_error_responses() -> None:
     app.openapi_schema = None
@@ -1363,10 +1378,16 @@ def test_data_source_write_endpoints_have_request_examples() -> None:
         ("/api/v1/data-sources/config/{endpoint_name}", "put"),
         ("/api/v1/data-sources/config/batch", "post"),
         ("/api/v1/data-sources/config/reload", "post"),
+        ("/api/v1/data-sources/{endpoint_name}", "put"),
+        ("/api/v1/data-sources/{endpoint_name}/test", "post"),
     ]:
         operation = schema["paths"][path][method]
         request_json = operation["requestBody"]["content"]["application/json"]
+        success_code = next(code for code in operation["responses"] if code.startswith("2"))
+        success_json = operation["responses"][success_code]["content"]["application/json"]
         assert "example" in request_json or "examples" in request_json
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_risk_metric_write_endpoints_have_descriptions_and_examples() -> None:

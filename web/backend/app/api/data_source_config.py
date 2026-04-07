@@ -70,8 +70,6 @@ router = APIRouter(
     prefix="/api/v1/data-sources/config",
     tags=["数据源配置管理"],
     responses={
-        200: {"description": "成功"},
-        201: {"description": "创建成功"},
         400: {"description": "请求参数错误"},
         404: {"description": "资源未找到"},
         409: {"description": "资源冲突"},
@@ -179,6 +177,116 @@ DATA_SOURCE_CONFIG_VERSIONS_RESPONSES = _success_response_spec(
         },
         "timestamp": "2026-04-06T15:30:00Z",
         "request_id": "req-data-source-config-004",
+        "errors": None,
+    },
+)
+
+DATA_SOURCE_CONFIG_CREATE_RESPONSES = _success_response_spec(
+    201,
+    "数据源配置创建结果",
+    {
+        "success": True,
+        "code": 201,
+        "message": "数据源配置创建成功: akshare.stock_zh_a_hist",
+        "data": {
+            "endpoint_name": "akshare.stock_zh_a_hist",
+            "version": 1,
+        },
+        "timestamp": "2026-04-08T02:20:00Z",
+        "request_id": "req-data-source-config-create-001",
+        "errors": None,
+    },
+)
+
+DATA_SOURCE_CONFIG_UPDATE_RESPONSES = _success_response_spec(
+    200,
+    "数据源配置更新结果",
+    {
+        "success": True,
+        "code": 200,
+        "message": "数据源配置更新成功: akshare.stock_zh_a_hist",
+        "data": {
+            "endpoint_name": "akshare.stock_zh_a_hist",
+            "version": 5,
+        },
+        "timestamp": "2026-04-08T02:20:00Z",
+        "request_id": "req-data-source-config-update-001",
+        "errors": None,
+    },
+)
+
+DATA_SOURCE_CONFIG_BATCH_RESPONSES = _success_response_spec(
+    200,
+    "数据源配置批量操作结果",
+    {
+        "success": True,
+        "code": 200,
+        "message": "批量操作完成: 成功 2/3",
+        "data": {
+            "total": 3,
+            "succeeded": 2,
+            "failed": 1,
+            "results": [
+                {
+                    "action": "create",
+                    "success": True,
+                    "endpoint_name": "akshare.stock_intraday_em",
+                    "version": 1,
+                    "error": None,
+                },
+                {
+                    "action": "update",
+                    "success": True,
+                    "endpoint_name": "akshare.stock_zh_a_hist",
+                    "version": 5,
+                    "error": None,
+                },
+                {
+                    "action": "delete",
+                    "success": False,
+                    "error": "endpoint not found: legacy.deprecated_source",
+                },
+            ],
+        },
+        "timestamp": "2026-04-08T02:20:00Z",
+        "request_id": "req-data-source-config-batch-001",
+        "errors": None,
+    },
+)
+
+DATA_SOURCE_CONFIG_ROLLBACK_RESPONSES = _success_response_spec(
+    200,
+    "数据源配置回滚结果",
+    {
+        "success": True,
+        "code": 200,
+        "message": "回滚成功: akshare.stock_zh_a_hist → 版本 3",
+        "data": {
+            "endpoint_name": "akshare.stock_zh_a_hist",
+            "version": 6,
+            "restored_from_version": 3,
+        },
+        "timestamp": "2026-04-08T02:20:00Z",
+        "request_id": "req-data-source-config-rollback-001",
+        "errors": None,
+    },
+)
+
+DATA_SOURCE_CONFIG_RELOAD_RESPONSES = _success_response_spec(
+    200,
+    "数据源配置热重载结果",
+    {
+        "success": True,
+        "code": 200,
+        "message": "配置热重载成功: 12 → 13 个端点",
+        "data": {
+            "old_count": 12,
+            "new_count": 13,
+            "duration": 0.428,
+            "reloaded_at": "2026-04-08T02:20:00Z",
+        },
+        "timestamp": "2026-04-08T02:20:00Z",
+        "request_id": "req-data-source-config-reload-001",
         "errors": None,
     },
 )
@@ -348,7 +456,7 @@ def handle_config_error(error: str, request_id: Optional[str] = None) -> Unified
 # ==================== API Endpoints ====================
 
 
-@router.post("/", response_model=UnifiedResponse, status_code=201)
+@router.post("/", response_model=UnifiedResponse, status_code=201, responses=DATA_SOURCE_CONFIG_CREATE_RESPONSES)
 async def create_data_source(
     request: Request,
     config: DataSourceCreate = Body(..., openapi_examples=DATA_SOURCE_CREATE_EXAMPLES),
@@ -416,7 +524,7 @@ async def create_data_source(
         )
 
 
-@router.put("/{endpoint_name}", response_model=UnifiedResponse)
+@router.put("/{endpoint_name}", response_model=UnifiedResponse, responses=DATA_SOURCE_CONFIG_UPDATE_RESPONSES)
 async def update_data_source(
     request: Request,
     endpoint_name: str = Path(..., description="需要更新的数据源端点名称。"),
@@ -629,7 +737,7 @@ async def list_data_sources(
         )
 
 
-@router.post("/batch", response_model=UnifiedResponse)
+@router.post("/batch", response_model=UnifiedResponse, responses=DATA_SOURCE_CONFIG_BATCH_RESPONSES)
 async def batch_operations(
     request: Request,
     batch_request: BatchOperationRequest = Body(..., openapi_examples=BATCH_OPERATION_EXAMPLES),
@@ -803,7 +911,11 @@ async def get_version_history(
         )
 
 
-@router.post("/{endpoint_name}/rollback/{version}", response_model=UnifiedResponse)
+@router.post(
+    "/{endpoint_name}/rollback/{version}",
+    response_model=UnifiedResponse,
+    responses=DATA_SOURCE_CONFIG_ROLLBACK_RESPONSES,
+)
 async def rollback_to_version(
     request: Request,
     endpoint_name: str = Path(..., description="需要回滚的数据源端点名称。"),
@@ -859,7 +971,7 @@ async def rollback_to_version(
         )
 
 
-@router.post("/reload", response_model=UnifiedResponse)
+@router.post("/reload", response_model=UnifiedResponse, responses=DATA_SOURCE_CONFIG_RELOAD_RESPONSES)
 async def reload_config(
     request: Request,
     reload_req: ReloadRequest = Body(..., openapi_examples=RELOAD_REQUEST_EXAMPLES),
