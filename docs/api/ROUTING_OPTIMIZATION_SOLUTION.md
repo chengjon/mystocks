@@ -7,11 +7,11 @@
 > 文内端点、命令、统计值和示例如未重新复核，应视为参考或历史材料，不得直接当作当前事实。
 
 
-**文档版本**: v2.1 (简化实用版)
-**创建日期**: 2026-01-23
-**最后更新**: 2026-01-23
-**优化目标**: 为个人投资者和小团队提供实用、安全、高效的路由解决方案
-**预估实施时间**: 3-4天 (适合小型团队的轻量实现)
+**Historical Document Version Snapshot**: v2.1 (简化实用版)
+**Historical Creation Date Snapshot**: 2026-01-23
+**Historical Last Updated Snapshot**: 2026-01-23
+**Historical Optimization Target Snapshot**: 为个人投资者和小团队提供实用、安全、高效的路由解决方案
+**Historical Estimated Implementation Snapshot**: 3-4天 (适合小型团队的轻量实现)
 
 ---
 

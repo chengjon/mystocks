@@ -7,9 +7,9 @@
 > 文内目录、链接、数量和分类如未重新生成或复核，应视为导航快照，不得直接当作当前事实。
 
 
-**最后更新**: 2026-03-24 02:24:42
+**Historical Last Updated Snapshot**: 2026-03-24 02:24:42
 
-**文档数量**: 4
+**Historical Document Count Snapshot**: 4
 
 
 ---
