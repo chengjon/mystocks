@@ -414,6 +414,62 @@ def test_announcement_endpoints_have_examples_parameter_docs_and_error_responses
     assert any(status.startswith("5") for status in evaluate_operation["responses"])
 
 
+def test_public_announcement_endpoints_have_success_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path in [
+        "/api/announcement/health",
+        "/api/announcement/status",
+        "/api/announcement/fetch",
+        "/api/announcement/list",
+        "/api/announcement/today",
+        "/api/announcement/important",
+        "/api/announcement/stats",
+        "/api/announcement/monitor-rules",
+        "/api/announcement/triggered-records",
+    ]:
+        method = "post" if path == "/api/announcement/fetch" else "get"
+        operation = schema["paths"][path][method]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
+        assert len(operation.get("description", "")) >= 20
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+    analyze_operation = schema["paths"]["/api/announcement/analyze"]["post"]
+    analyze_json = analyze_operation["requestBody"]["content"]["application/json"]
+    analyze_success_json = analyze_operation["responses"]["200"]["content"]["application/json"]
+    assert len(analyze_operation.get("description", "")) >= 20
+    assert "example" in analyze_json or "examples" in analyze_json
+    assert "example" in analyze_success_json or "examples" in analyze_success_json
+    assert any(code.startswith(("4", "5")) for code in analyze_operation["responses"])
+
+    monitor_rules_post = schema["paths"]["/api/announcement/monitor-rules"]["post"]
+    monitor_rules_post_json = monitor_rules_post["requestBody"]["content"]["application/json"]
+    monitor_rules_post_success_json = monitor_rules_post["responses"]["200"]["content"]["application/json"]
+    assert "example" in monitor_rules_post_json or "examples" in monitor_rules_post_json
+    assert "example" in monitor_rules_post_success_json or "examples" in monitor_rules_post_success_json
+    assert any(code.startswith(("4", "5")) for code in monitor_rules_post["responses"])
+
+    update_operation = schema["paths"]["/api/announcement/monitor-rules/{rule_id}"]["put"]
+    update_json = update_operation["requestBody"]["content"]["application/json"]
+    update_success_json = update_operation["responses"]["200"]["content"]["application/json"]
+    assert any(param["name"] == "rule_id" and param.get("description") for param in update_operation["parameters"])
+    assert "example" in update_json or "examples" in update_json
+    assert "example" in update_success_json or "examples" in update_success_json
+    assert any(code.startswith(("4", "5")) for code in update_operation["responses"])
+
+    delete_operation = schema["paths"]["/api/announcement/monitor-rules/{rule_id}"]["delete"]
+    delete_success_json = delete_operation["responses"]["200"]["content"]["application/json"]
+    assert any(param["name"] == "rule_id" and param.get("description") for param in delete_operation["parameters"])
+    assert "example" in delete_success_json or "examples" in delete_success_json
+    assert any(code.startswith(("4", "5")) for code in delete_operation["responses"])
+
+    evaluate_operation = schema["paths"]["/api/announcement/monitor/evaluate"]["post"]
+    evaluate_success_json = evaluate_operation["responses"]["200"]["content"]["application/json"]
+    assert "example" in evaluate_success_json or "examples" in evaluate_success_json
+    assert any(code.startswith(("4", "5")) for code in evaluate_operation["responses"])
+
 def test_signal_history_endpoint_has_query_parameter_descriptions() -> None:
     app.openapi_schema = None
     schema = app.openapi()

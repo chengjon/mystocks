@@ -70,11 +70,214 @@ ANNOUNCEMENT_MONITOR_RULE_UPDATE_EXAMPLES = {
     }
 }
 
+ANNOUNCEMENT_ITEM_EXAMPLE = {
+    "id": 101,
+    "stock_code": "600519",
+    "stock_name": "贵州茅台",
+    "title": "2026年第一季度业绩预增公告",
+    "type": "业绩预告",
+    "publish_date": "2026-04-07",
+    "publish_time": "2026-04-07T18:30:00",
+    "url": "https://example.com/announcement/101",
+    "importance_level": 4,
+    "sentiment": "positive",
+}
+
+ANNOUNCEMENT_MONITOR_RULE_EXAMPLE = {
+    "id": 7,
+    "rule_name": "分红公告提醒",
+    "stock_codes": ["600519", "000858"],
+    "keywords": ["分红", "派息", "股权登记日"],
+    "min_importance_level": 2,
+    "notify_enabled": True,
+    "is_active": True,
+}
+
+ANNOUNCEMENT_TRIGGERED_RECORD_EXAMPLE = {
+    "id": 21,
+    "rule_id": 7,
+    "announcement_id": 101,
+    "matched_keywords": ["分红"],
+    "triggered_at": "2026-04-07T18:35:00",
+    "notified": True,
+    "notified_at": "2026-04-07T18:36:00",
+    "notification_result": "sent",
+    "rule_name": "分红公告提醒",
+    "announcement_title": "2026年第一季度利润分配预案公告",
+    "stock_code": "600519",
+}
+
+
+def _success_response_spec(description: str, example: object) -> dict[int, dict]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+ANNOUNCEMENT_HEALTH_RESPONSES = {
+    **ANNOUNCEMENT_ERROR_RESPONSE,
+    **_success_response_spec("公告服务健康状态", {"status": "ok", "service": "announcement"}),
+}
+
+ANNOUNCEMENT_STATUS_RESPONSES = {
+    **ANNOUNCEMENT_ERROR_RESPONSE,
+    **_success_response_spec("公告服务运行状态", {"status": "active", "endpoint": "announcement"}),
+}
+
+ANNOUNCEMENT_ANALYZE_RESPONSES = {
+    **ANNOUNCEMENT_ERROR_RESPONSE,
+    **_success_response_spec("公告分析结果摘要", {"result": "分析完成", "endpoint": "announcement"}),
+}
+
+ANNOUNCEMENT_FETCH_RESPONSES = {
+    **ANNOUNCEMENT_ERROR_RESPONSE,
+    **_success_response_spec(
+        "公告抓取和入库结果",
+        {
+            "success": True,
+            "saved_count": 12,
+            "updated_count": 4,
+            "total_fetched": 16,
+            "source": "cninfo",
+        },
+    ),
+}
+
+ANNOUNCEMENT_LIST_RESPONSES = {
+    **ANNOUNCEMENT_ERROR_RESPONSE,
+    **_success_response_spec(
+        "公告列表查询结果",
+        {
+            "success": True,
+            "data": [ANNOUNCEMENT_ITEM_EXAMPLE],
+            "total": 1,
+            "page": 1,
+            "page_size": 20,
+            "total_pages": 1,
+        },
+    ),
+}
+
+ANNOUNCEMENT_TODAY_RESPONSES = {
+    **ANNOUNCEMENT_ERROR_RESPONSE,
+    **_success_response_spec(
+        "今日公告列表",
+        {
+            "success": True,
+            "date": "2026-04-07",
+            "announcements": [ANNOUNCEMENT_ITEM_EXAMPLE],
+            "count": 1,
+        },
+    ),
+}
+
+ANNOUNCEMENT_IMPORTANT_RESPONSES = {
+    **ANNOUNCEMENT_ERROR_RESPONSE,
+    **_success_response_spec(
+        "重要公告列表",
+        {
+            "success": True,
+            "start_date": "2026-04-01",
+            "end_date": "2026-04-07",
+            "min_importance": 3,
+            "announcements": [ANNOUNCEMENT_ITEM_EXAMPLE],
+            "count": 1,
+        },
+    ),
+}
+
+ANNOUNCEMENT_STATS_RESPONSES = {
+    **ANNOUNCEMENT_ERROR_RESPONSE,
+    **_success_response_spec(
+        "公告统计概览",
+        {
+            "success": True,
+            "total_count": 240,
+            "today_count": 12,
+            "important_count": 5,
+            "triggered_count": 2,
+            "by_source": {"cninfo": 240},
+            "by_type": {"业绩预告": 48},
+            "by_sentiment": {"positive": 88, "neutral": 120, "negative": 32},
+        },
+    ),
+}
+
+ANNOUNCEMENT_MONITOR_RULE_LIST_RESPONSES = {
+    **ANNOUNCEMENT_ERROR_RESPONSE,
+    **_success_response_spec("公告监控规则列表", [ANNOUNCEMENT_MONITOR_RULE_EXAMPLE]),
+}
+
+ANNOUNCEMENT_MONITOR_RULE_CREATE_RESPONSES = {
+    **ANNOUNCEMENT_ERROR_RESPONSE,
+    **_success_response_spec(
+        "新建公告监控规则结果",
+        {
+            "success": True,
+            "data": ANNOUNCEMENT_MONITOR_RULE_EXAMPLE,
+        },
+    ),
+}
+
+ANNOUNCEMENT_MONITOR_RULE_UPDATE_RESPONSES = {
+    **ANNOUNCEMENT_ERROR_RESPONSE,
+    **_success_response_spec(
+        "更新后的公告监控规则",
+        {
+            "success": True,
+            "data": {
+                **ANNOUNCEMENT_MONITOR_RULE_EXAMPLE,
+                "keywords": ["业绩预增", "利润增长", "超预期"],
+                "min_importance_level": 3,
+            },
+        },
+    ),
+}
+
+ANNOUNCEMENT_MONITOR_RULE_DELETE_RESPONSES = {
+    **ANNOUNCEMENT_ERROR_RESPONSE,
+    **_success_response_spec("公告监控规则删除结果", {"success": True, "message": "规则已删除"}),
+}
+
+ANNOUNCEMENT_TRIGGERED_RECORDS_RESPONSES = {
+    **ANNOUNCEMENT_ERROR_RESPONSE,
+    **_success_response_spec(
+        "公告规则触发记录列表",
+        {
+            "success": True,
+            "data": [ANNOUNCEMENT_TRIGGERED_RECORD_EXAMPLE],
+            "total": 1,
+            "page": 1,
+            "page_size": 20,
+            "total_pages": 1,
+        },
+    ),
+}
+
+ANNOUNCEMENT_MONITOR_EVALUATE_RESPONSES = {
+    **ANNOUNCEMENT_ERROR_RESPONSE,
+    **_success_response_spec(
+        "公告监控规则评估结果",
+        {
+            "success": True,
+            "rules_evaluated": 5,
+            "triggered_count": 2,
+        },
+    ),
+}
+
 
 @router.get(
     "/health",
     description="检查公告服务路由是否可用，并返回最基础的服务存活状态。",
-    responses=ANNOUNCEMENT_ERROR_RESPONSE,
+    responses=ANNOUNCEMENT_HEALTH_RESPONSES,
 )
 async def health_check():
     """健康检查"""
@@ -84,7 +287,7 @@ async def health_check():
 @router.get(
     "/status",
     description="返回公告服务的当前状态标记，便于前端确认功能入口是否已启用。",
-    responses=ANNOUNCEMENT_ERROR_RESPONSE,
+    responses=ANNOUNCEMENT_STATUS_RESPONSES,
 )
 async def get_status():
     """获取服务状态"""
@@ -94,7 +297,7 @@ async def get_status():
 @router.post(
     "/analyze",
     description="提交公告文本和辅助上下文，返回用于联调的分析结果摘要。",
-    responses=ANNOUNCEMENT_ERROR_RESPONSE,
+    responses=ANNOUNCEMENT_ANALYZE_RESPONSES,
 )
 async def analyze_data(
     data: dict = Body(..., openapi_examples=ANNOUNCEMENT_ANALYZE_EXAMPLES),
@@ -106,7 +309,7 @@ async def analyze_data(
 
 if HAS_ANNOUNCEMENT_SERVICE:
 
-    @router.post("/fetch")
+    @router.post("/fetch", responses=ANNOUNCEMENT_FETCH_RESPONSES)
     async def fetch_announcements(
         symbol: Optional[str] = Query(None, description="股票代码"),
         start_date: Optional[date] = Query(None, description="开始日期"),
@@ -148,7 +351,7 @@ if HAS_ANNOUNCEMENT_SERVICE:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    @router.get("/list")
+    @router.get("/list", responses=ANNOUNCEMENT_LIST_RESPONSES)
     async def get_announcements(
         stock_code: Optional[str] = Query(None, description="股票代码"),
         start_date: Optional[date] = Query(None, description="开始日期"),
@@ -196,7 +399,7 @@ if HAS_ANNOUNCEMENT_SERVICE:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    @router.get("/today")
+    @router.get("/today", responses=ANNOUNCEMENT_TODAY_RESPONSES)
     async def get_today_announcements(
         min_importance: Optional[int] = Query(0, ge=0, le=5, description="最小重要性级别")
     ):
@@ -237,7 +440,7 @@ if HAS_ANNOUNCEMENT_SERVICE:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    @router.get("/important")
+    @router.get("/important", responses=ANNOUNCEMENT_IMPORTANT_RESPONSES)
     async def get_important_announcements(
         days: int = Query(7, ge=1, le=30, description="查询天数"),
         min_importance: int = Query(3, ge=0, le=5, description="最小重要性级别"),
@@ -283,7 +486,7 @@ if HAS_ANNOUNCEMENT_SERVICE:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    @router.get("/stats", responses=ANNOUNCEMENT_ERROR_RESPONSE)
+    @router.get("/stats", responses=ANNOUNCEMENT_STATS_RESPONSES)
     async def get_announcement_stats():
         """
         获取公告统计信息
@@ -325,7 +528,7 @@ if HAS_ANNOUNCEMENT_SERVICE:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    @router.get("/monitor-rules", responses=ANNOUNCEMENT_ERROR_RESPONSE)
+    @router.get("/monitor-rules", responses=ANNOUNCEMENT_MONITOR_RULE_LIST_RESPONSES)
     async def get_monitor_rules():
         """
         获取监控规则列表
@@ -357,7 +560,7 @@ if HAS_ANNOUNCEMENT_SERVICE:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    @router.post("/monitor-rules", responses=ANNOUNCEMENT_ERROR_RESPONSE)
+    @router.post("/monitor-rules", responses=ANNOUNCEMENT_MONITOR_RULE_CREATE_RESPONSES)
     async def create_monitor_rule(
         rule_data: dict = Body(..., openapi_examples=ANNOUNCEMENT_MONITOR_RULE_CREATE_EXAMPLES)
     ):
@@ -418,7 +621,7 @@ if HAS_ANNOUNCEMENT_SERVICE:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    @router.put("/monitor-rules/{rule_id}", responses=ANNOUNCEMENT_ERROR_RESPONSE)
+    @router.put("/monitor-rules/{rule_id}", responses=ANNOUNCEMENT_MONITOR_RULE_UPDATE_RESPONSES)
     async def update_monitor_rule(
         rule_id: int = Path(..., description="需要更新的公告监控规则ID。"),
         updates: dict = Body(..., openapi_examples=ANNOUNCEMENT_MONITOR_RULE_UPDATE_EXAMPLES),
@@ -470,7 +673,7 @@ if HAS_ANNOUNCEMENT_SERVICE:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    @router.delete("/monitor-rules/{rule_id}", responses=ANNOUNCEMENT_ERROR_RESPONSE)
+    @router.delete("/monitor-rules/{rule_id}", responses=ANNOUNCEMENT_MONITOR_RULE_DELETE_RESPONSES)
     async def delete_monitor_rule(rule_id: int = Path(..., description="需要删除的公告监控规则ID。")):
         """
         删除监控规则
@@ -502,7 +705,7 @@ if HAS_ANNOUNCEMENT_SERVICE:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    @router.get("/triggered-records")
+    @router.get("/triggered-records", responses=ANNOUNCEMENT_TRIGGERED_RECORDS_RESPONSES)
     async def get_triggered_records(
         rule_id: Optional[int] = Query(None, description="规则ID"),
         stock_code: Optional[str] = Query(None, description="股票代码"),
@@ -577,7 +780,7 @@ if HAS_ANNOUNCEMENT_SERVICE:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    @router.post("/monitor/evaluate", responses=ANNOUNCEMENT_ERROR_RESPONSE)
+    @router.post("/monitor/evaluate", responses=ANNOUNCEMENT_MONITOR_EVALUATE_RESPONSES)
     async def evaluate_monitor_rules():
         """
         评估所有监控规则
