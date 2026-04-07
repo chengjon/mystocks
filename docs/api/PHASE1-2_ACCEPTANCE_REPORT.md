@@ -7,10 +7,10 @@
 > 文内统计值、完成状态、修复结论和验收结果如未重新复核，应视为历史快照，不得直接当作当前事实。
 
 
-**验收日期**: 2025-12-25
-**验收人**: Claude Code (Sonnet 4.5)
-**项目**: MyStocks API-Web 对齐优化
-**验收范围**: Phase 1 (市场数据模块) + Phase 2 (策略管理模块)
+**Historical Acceptance Snapshot Date**: 2025-12-25
+**Historical Reviewer Snapshot**: Claude Code (Sonnet 4.5)
+**Historical Project Snapshot**: MyStocks API-Web 对齐优化
+**Historical Acceptance Scope Snapshot**: Phase 1 (市场数据模块) + Phase 2 (策略管理模块)
 
 ---
 

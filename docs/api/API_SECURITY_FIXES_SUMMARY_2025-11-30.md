@@ -6,9 +6,9 @@
 >
 > 文内修复状态、影响范围和代码片段应按当次安全治理上下文理解；若未在当前代码中复核，不得直接当作当前事实。
 
-**修复日期**: 2025-11-30
-**优先级**: 🔴 P0 - 严重安全问题修复
-**修复状态**: ✅ 已完成（前两项）
+**Historical Fix Snapshot Date**: 2025-11-30
+**Historical Priority Snapshot**: 🔴 P0 - 严重安全问题修复
+**Historical Fix Status Snapshot**: ✅ 已完成（前两项）
 
 ---
 
