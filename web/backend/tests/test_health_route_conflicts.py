@@ -224,7 +224,12 @@ def test_contract_management_endpoints_have_examples_and_error_docs() -> None:
     ]:
         operation = schema["paths"][path]["post"]
         json_content = operation["requestBody"]["content"]["application/json"]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
         assert "example" in json_content or "examples" in json_content
+        assert "example" in success_json or "examples" in success_json
+        assert any(status.startswith(("4", "5")) for status in operation["responses"])
 
     sync_report = schema["paths"]["/api/contracts/sync/report"]["get"]
     assert any(status.startswith("5") for status in sync_report["responses"])
@@ -244,11 +249,16 @@ def test_contract_management_endpoints_have_examples_and_error_docs() -> None:
 
     version_put = schema["paths"]["/api/contracts/versions/{version_id}"]["put"]
     put_json = version_put["requestBody"]["content"]["application/json"]
+    put_success_json = version_put["responses"]["200"]["content"]["application/json"]
+    assert version_put.get("summary")
     assert len(version_put.get("description", "")) >= 20
     assert any(param["name"] == "version_id" and param.get("description") for param in version_put["parameters"])
     assert "example" in put_json or "examples" in put_json
+    assert "example" in put_success_json or "examples" in put_success_json
+    assert any(status.startswith(("4", "5")) for status in version_put["responses"])
 
     activate_post = schema["paths"]["/api/contracts/versions/{version_id}/activate"]["post"]
+    assert activate_post.get("summary")
     assert len(activate_post.get("description", "")) >= 20
     assert any(param["name"] == "version_id" and param.get("description") for param in activate_post["parameters"])
 

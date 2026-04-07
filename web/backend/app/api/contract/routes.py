@@ -40,6 +40,18 @@ def _success_response_spec(description: str, example: Any) -> Dict[int, Dict[str
     }
 
 
+CONTRACT_OPERATION_ERROR_RESPONSES = {
+    404: {
+        "description": "指定的契约版本、契约名称或对比目标不存在。",
+        "content": {"application/json": {"example": {"detail": "契约版本不存在"}}},
+    },
+    500: {
+        "description": "契约管理操作失败，通常由契约仓库、数据库或 OpenAPI 处理链路异常导致。",
+        "content": {"application/json": {"example": {"detail": "contract registry unavailable"}}},
+    },
+}
+
+
 CONTRACT_VERSION_CREATE_EXAMPLES = {
     "market_api_version": {
         "summary": "Create a new market API contract version",
@@ -228,11 +240,128 @@ CONTRACT_SYNC_REPORT_RESPONSES = {
     ),
 }
 
+CONTRACT_VERSION_CREATE_RESPONSES = {
+    **CONTRACT_OPERATION_ERROR_RESPONSES,
+    **_success_response_spec(
+        "创建契约版本成功。",
+        {
+            "id": 14,
+            "name": "trading-runtime",
+            "version": "2.2.0",
+            "spec": {
+                "openapi": "3.1.0",
+                "info": {"title": "Trading Runtime API", "version": "2.2.0"},
+                "paths": {"/api/trading/status": {"get": {"summary": "Get trading runtime status", "responses": {"200": {}}}}},
+            },
+            "commit_hash": "fedcba65",
+            "author": "codex",
+            "description": "Add runtime control examples",
+            "tags": ["runtime", "v2"],
+            "created_at": "2026-04-08T11:30:00",
+            "is_active": False,
+        },
+    ),
+}
+
+CONTRACT_VERSION_UPDATE_RESPONSES = {
+    **CONTRACT_OPERATION_ERROR_RESPONSES,
+    **_success_response_spec(
+        "更新契约版本元数据成功。",
+        {
+            "id": 14,
+            "name": "trading-runtime",
+            "version": "2.2.0",
+            "spec": {
+                "openapi": "3.1.0",
+                "info": {"title": "Trading Runtime API", "version": "2.2.0"},
+                "paths": {"/api/trading/status": {"get": {"summary": "Get trading runtime status", "responses": {"200": {}}}}},
+            },
+            "commit_hash": "fedcba65",
+            "author": "codex",
+            "description": "Mark runtime contract as reviewed baseline.",
+            "tags": ["baseline", "runtime"],
+            "created_at": "2026-04-08T11:30:00",
+            "is_active": False,
+        },
+    ),
+}
+
+CONTRACT_DIFF_RESPONSES = {
+    **CONTRACT_OPERATION_ERROR_RESPONSES,
+    **_success_response_spec(
+        "契约版本差异比较结果。",
+        {
+            "from_version": "2.1.0",
+            "to_version": "2.2.0",
+            "total_changes": 2,
+            "breaking_changes": 0,
+            "non_breaking_changes": 2,
+            "diffs": [
+                {
+                    "change_type": "added",
+                    "path": "paths./api/trading/start.post.responses.200",
+                    "old_value": None,
+                    "new_value": {"description": "交易运行时会话启动结果"},
+                    "is_breaking": False,
+                    "description": "Added success example for trading runtime start endpoint",
+                }
+            ],
+            "summary": "2 non-breaking changes detected between 2.1.0 and 2.2.0",
+        },
+    ),
+}
+
+CONTRACT_VALIDATE_RESPONSES = {
+    **CONTRACT_OPERATION_ERROR_RESPONSES,
+    **_success_response_spec(
+        "OpenAPI 契约验证结果。",
+        {
+            "valid": True,
+            "error_count": 0,
+            "warning_count": 1,
+            "results": [
+                {
+                    "valid": True,
+                    "category": "warning",
+                    "path": "paths./api/v1/trades.get.responses.200",
+                    "message": "Response example is recommended for stable consumer integration",
+                    "suggestion": "Add a concrete 200 response example before release",
+                }
+            ],
+        },
+    ),
+}
+
+CONTRACT_SYNC_RESPONSES = {
+    **CONTRACT_OPERATION_ERROR_RESPONSES,
+    **_success_response_spec(
+        "契约同步执行结果。",
+        {
+            "success": True,
+            "version_id": 14,
+            "version": "2026.04.08.1130",
+            "direction": "code_to_db",
+            "changes": {
+                "endpoints_added": 12,
+                "sync_direction": "code_to_db",
+                "generated_from": "FastAPI routes",
+            },
+            "message": "Successfully synced 12 endpoints from code to database",
+        },
+    ),
+}
+
 
 # ==================== 契约版本管理 ====================
 
 
-@router.post("/versions", response_model=ContractVersionResponse)
+@router.post(
+    "/versions",
+    response_model=ContractVersionResponse,
+    summary="创建契约版本",
+    description="创建新的契约版本记录，并把 OpenAPI 规范、作者、提交号和标签一起写入版本仓库。",
+    responses=CONTRACT_VERSION_CREATE_RESPONSES,
+)
 async def create_version(
     version_data: ContractVersionCreate = Body(..., openapi_examples=CONTRACT_VERSION_CREATE_EXAMPLES),
     db: Session = Depends(get_db),
@@ -290,7 +419,13 @@ async def list_versions(
     return VersionManager.list_versions(db, name, limit, offset)
 
 
-@router.put("/versions/{version_id}", response_model=ContractVersionResponse)
+@router.put(
+    "/versions/{version_id}",
+    response_model=ContractVersionResponse,
+    summary="更新契约版本元数据",
+    description="更新指定契约版本的描述、标签等元数据，不修改该版本对应的 OpenAPI 规范正文。",
+    responses=CONTRACT_VERSION_UPDATE_RESPONSES,
+)
 async def update_version(
     version_id: int = Path(..., description="Unique identifier of the contract version to update."),
     update_data: ContractVersionUpdate = Body(..., openapi_examples=CONTRACT_VERSION_UPDATE_EXAMPLES),
@@ -343,7 +478,13 @@ async def list_contracts(db: Session = Depends(get_db)):
 # ==================== 契约差异检测 ====================
 
 
-@router.post("/diff", response_model=ContractDiffResponse)
+@router.post(
+    "/diff",
+    response_model=ContractDiffResponse,
+    summary="比较契约版本差异",
+    description="比较两个契约版本的差异，输出总变更数、破坏性变更数以及逐项 diff 明细。",
+    responses=CONTRACT_DIFF_RESPONSES,
+)
 async def compare_versions(
     request: ContractDiffRequest = Body(..., openapi_examples=CONTRACT_DIFF_EXAMPLES),
     db: Session = Depends(get_db),
@@ -383,7 +524,13 @@ async def compare_versions(
 # ==================== 契约验证 ====================
 
 
-@router.post("/validate", response_model=ContractValidateResponse)
+@router.post(
+    "/validate",
+    response_model=ContractValidateResponse,
+    summary="验证契约规范",
+    description="验证待检查的 OpenAPI 规范，并在需要时与指定历史版本比较破坏性变更。",
+    responses=CONTRACT_VALIDATE_RESPONSES,
+)
 async def validate_contract(request: ContractValidateRequest = Body(..., openapi_examples=CONTRACT_VALIDATE_EXAMPLES)):
     """
     验证OpenAPI规范
@@ -426,7 +573,12 @@ async def validate_contract(request: ContractValidateRequest = Body(..., openapi
 # ==================== 契约同步 ====================
 
 
-@router.post("/sync")
+@router.post(
+    "/sync",
+    summary="同步契约",
+    description="在代码与契约仓库之间同步指定契约，可选择 code_to_db 或 db_to_code 方向。",
+    responses=CONTRACT_SYNC_RESPONSES,
+)
 async def sync_contract(
     request: ContractSyncRequest = Body(..., openapi_examples=CONTRACT_SYNC_EXAMPLES),
     db: Session = Depends(get_db),
