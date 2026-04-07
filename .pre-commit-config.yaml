@@ -185,6 +185,14 @@ repos:
         pass_filenames: false
         always_run: true
 
+      - id: deletion-evidence-gate
+        name: Deletion Evidence Gate
+        entry: python scripts/compliance/deletion_evidence_gate.py --root-dir . --format text --scope staged
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
       - id: production-python-guardrails
         name: Production Python Guardrails
         entry: >-

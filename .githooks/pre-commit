@@ -22,6 +22,31 @@ run_directory_governance() {
   echo "✅ Directory governance check passed"
 }
 
+run_deletion_evidence_gate() {
+  if [[ "${DISABLE_DELETION_EVIDENCE_GATE:-0}" == "1" ]]; then
+    echo "⚠️  Deletion evidence gate skipped via DISABLE_DELETION_EVIDENCE_GATE=1"
+    return 0
+  fi
+
+  if [[ "${SKIP:-}" == *"deletion-evidence-gate"* ]]; then
+    echo "⚠️  Deletion evidence gate skipped via SKIP=deletion-evidence-gate"
+    return 0
+  fi
+
+  mapfile -t staged_deleted_paths < <(
+    git -C "$PROJECT_ROOT" diff --cached --name-only --diff-filter=D || true
+  )
+
+  if [[ "${#staged_deleted_paths[@]}" -eq 0 ]]; then
+    echo "ℹ️  No staged deletions for deletion evidence gate"
+    return 0
+  fi
+
+  echo "🔍 Running deletion evidence gate on staged deletions..."
+  python "$PROJECT_ROOT/scripts/compliance/deletion_evidence_gate.py" --root-dir "$PROJECT_ROOT" --format text --scope staged
+  echo "✅ Deletion evidence gate passed"
+}
+
 run_production_python_guardrails() {
   if [[ "${DISABLE_PRODUCTION_PYTHON_GUARDRAILS:-0}" == "1" ]]; then
     echo "⚠️  Production Python guardrails skipped via DISABLE_PRODUCTION_PYTHON_GUARDRAILS=1"
@@ -173,6 +198,7 @@ run_pm2_first_class_gate() {
 }
 
 run_directory_governance
+run_deletion_evidence_gate
 run_production_python_guardrails
 run_backend_singleton_none_guard
 run_unified_response_contract_guard
