@@ -10,7 +10,7 @@
 
 import logging
 from datetime import date, datetime
-from typing import Optional
+from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
@@ -56,6 +56,139 @@ DASHBOARD_HEALTH_RESPONSE_EXAMPLE = {
     "request_id": "req-dashboard-health-001",
 }
 
+DASHBOARD_SUMMARY_RESPONSE_EXAMPLE = {
+    "user_id": 1001,
+    "trade_date": "2026-04-07",
+    "generated_at": "2026-04-07T09:30:00Z",
+    "market_overview": {
+        "indices": [
+            {
+                "symbol": "000001.SH",
+                "name": "上证指数",
+                "current_price": 3128.42,
+                "change_percent": 0.86,
+                "volume": 386502300,
+                "turnover": 452300000000,
+                "update_time": "2026-04-07T09:30:00Z",
+            },
+            {
+                "symbol": "HSI",
+                "name": "恒生指数",
+                "current_price": 17886.35,
+                "change_percent": 1.14,
+                "volume": 125000000,
+                "turnover": 168500000000,
+                "update_time": "2026-04-07T09:30:00Z",
+            },
+        ],
+        "up_count": 3124,
+        "down_count": 1587,
+        "flat_count": 126,
+        "total_volume": 983452100.0,
+        "total_turnover": 820300000000.0,
+        "top_gainers": [{"symbol": "600519.SH", "name": "贵州茅台", "change_percent": 3.21}],
+        "top_losers": [{"symbol": "0700.HK", "name": "腾讯控股", "change_percent": -1.42}],
+        "most_active": [{"symbol": "IF2504", "name": "沪深300股指期货", "turnover": 5230000000.0}],
+    },
+    "watchlist": {
+        "total_count": 4,
+        "items": [{"symbol": "600519.SH", "name": "贵州茅台", "current_price": 1688.0, "change_percent": 3.21}],
+        "avg_change_percent": 1.18,
+    },
+    "portfolio": {
+        "total_market_value": 1285000.0,
+        "total_cost": 1218000.0,
+        "total_profit_loss": 67000.0,
+        "total_profit_loss_percent": 5.5,
+        "position_count": 3,
+        "positions": [{"symbol": "510300.SH", "name": "沪深300ETF", "quantity": 5000, "avg_cost": 4.08}],
+    },
+    "risk_alerts": {
+        "total_count": 2,
+        "unread_count": 1,
+        "critical_count": 0,
+        "alerts": [
+            {
+                "alert_id": 101,
+                "alert_type": "position_limit",
+                "alert_level": "warning",
+                "symbol": "IF2504",
+                "message": "股指期货保证金占用接近阈值",
+                "triggered_at": "2026-04-07T09:25:00Z",
+                "is_read": False,
+            }
+        ],
+    },
+    "data_source": "real_api_composite",
+    "cache_hit": True,
+}
+
+MARKET_OVERVIEW_RESPONSE_EXAMPLE = {
+    "success": True,
+    "code": 200,
+    "message": "获取市场概览成功",
+    "data": {
+        "indices": [
+            {
+                "symbol": "000001.SH",
+                "name": "上证指数",
+                "current_price": 3128.42,
+                "change_percent": 0.86,
+                "volume": 386502300,
+                "turnover": 452300000000,
+                "update_time": "2026-04-07T09:30:00Z",
+            },
+            {
+                "symbol": "HSI",
+                "name": "恒生指数",
+                "current_price": 17886.35,
+                "change_percent": 1.14,
+                "volume": 125000000,
+                "turnover": 168500000000,
+                "update_time": "2026-04-07T09:30:00Z",
+            },
+        ],
+        "up_count": 3124,
+        "down_count": 1587,
+        "flat_count": 126,
+        "total_volume": 983452100.0,
+        "total_turnover": 820300000000.0,
+        "top_gainers": [{"symbol": "600519.SH", "name": "贵州茅台", "change_percent": 3.21}],
+        "top_losers": [{"symbol": "0700.HK", "name": "腾讯控股", "change_percent": -1.42}],
+        "most_active": [{"symbol": "IF2504", "name": "沪深300股指期货", "turnover": 5230000000.0}],
+    },
+    "timestamp": "2026-04-07T09:30:00Z",
+    "request_id": "req-dashboard-overview-001",
+    "errors": None,
+}
+
+
+def _response_spec(status_code: int, description: str, example: Any) -> dict[int, dict[str, Any]]:
+    return {
+        status_code: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+DASHBOARD_SUMMARY_RESPONSES = {
+    **_response_spec(200, "仪表盘聚合摘要", DASHBOARD_SUMMARY_RESPONSE_EXAMPLE),
+    **_response_spec(400, "查询参数错误", {"detail": "参数验证失败: user_id 必须大于 0"}),
+    **_response_spec(500, "仪表盘数据获取失败", {"detail": "获取仪表盘数据失败: 数据源不可用"}),
+}
+
+MARKET_OVERVIEW_RESPONSES = {
+    **_response_spec(200, "市场概览统一响应", MARKET_OVERVIEW_RESPONSE_EXAMPLE),
+    **_response_spec(404, "市场概览数据不可用", {"detail": "市场概览数据不可用"}),
+    **_response_spec(500, "市场概览处理失败", {"detail": "获取市场概览失败: 市场概览数据解析失败"}),
+    **_response_spec(503, "市场概览数据源未就绪", {"detail": "市场概览数据源未实现专用接口"}),
+}
+
 
 async def get_cache_manager() -> CacheManager:
     """获取或初始化缓存管理器（单例模式，支持Redis注入）"""
@@ -92,6 +225,7 @@ router = APIRouter(prefix="/api/dashboard", tags=["dashboard"], responses={404: 
     response_model=DashboardResponse,
     summary="获取仪表盘汇总数据",
     description="获取用户的完整仪表盘数据，包括市场概览、自选股、持仓、风险预警等信息",
+    responses=DASHBOARD_SUMMARY_RESPONSES,
 )
 async def get_dashboard_summary(
     user_id: int = Query(..., description="用户ID", ge=1),
@@ -202,6 +336,7 @@ async def get_dashboard_summary(
     response_model=UnifiedResponse[MarketOverview],
     summary="获取市场概览",
     description="获取市场指数、涨跌家数、榜单等市场概览信息（使用真实API数据）",
+    responses=MARKET_OVERVIEW_RESPONSES,
 )
 async def get_market_overview(
     request: Request,

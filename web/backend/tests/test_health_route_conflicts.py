@@ -412,6 +412,30 @@ def test_signal_monitoring_endpoints_have_success_examples_and_error_responses()
     assert any(status.startswith(("4", "5")) for status in quality_operation["responses"])
 
 
+def test_dashboard_endpoints_have_success_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    summary_operation = schema["paths"]["/api/dashboard/summary"]["get"]
+    summary_success_json = summary_operation["responses"]["200"]["content"]["application/json"]
+    summary_parameters = summary_operation.get("parameters", [])
+    assert summary_operation.get("summary")
+    assert len(summary_operation.get("description", "")) >= 20
+    assert "example" in summary_success_json or "examples" in summary_success_json
+    assert any(status.startswith(("4", "5")) for status in summary_operation["responses"])
+    for parameter_name in ["user_id", "trade_date", "include_market", "include_watchlist", "include_portfolio"]:
+        assert any(param["name"] == parameter_name and param.get("description") for param in summary_parameters)
+
+    overview_operation = schema["paths"]["/api/dashboard/market-overview"]["get"]
+    overview_success_json = overview_operation["responses"]["200"]["content"]["application/json"]
+    overview_parameters = overview_operation.get("parameters", [])
+    assert overview_operation.get("summary")
+    assert len(overview_operation.get("description", "")) >= 20
+    assert "example" in overview_success_json or "examples" in overview_success_json
+    assert any(status.startswith(("4", "5")) for status in overview_operation["responses"])
+    assert any(param["name"] == "limit" and param.get("description") for param in overview_parameters)
+
+
 def test_monitoring_alerts_endpoint_has_query_parameter_descriptions() -> None:
     app.openapi_schema = None
     schema = app.openapi()
