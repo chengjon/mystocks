@@ -191,8 +191,9 @@ def test_notification_endpoints_have_error_docs_and_descriptions() -> None:
     assert len(get_preferences.get("description", "")) >= 20
     assert "example" in get_preferences_success_json or "examples" in get_preferences_success_json
     assert any(status.startswith("5") for status in get_preferences["responses"])
+    assert post_preferences.get("summary")
     assert len(post_preferences.get("description", "")) >= 20
-    assert any(status.startswith("5") for status in post_preferences["responses"])
+    assert any(status.startswith(("4", "5")) for status in post_preferences["responses"])
 
     for path in [
         "/api/notification/email/send",
@@ -203,11 +204,12 @@ def test_notification_endpoints_have_error_docs_and_descriptions() -> None:
     ]:
         operation = schema["paths"][path]["post"]
         json_content = operation["requestBody"]["content"]["application/json"]
-        assert "example" in json_content or "examples" in json_content
-
-    for path in ["/api/notification/email/newsletter", "/api/notification/email/price-alert"]:
-        operation = schema["paths"][path]["post"]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
+        assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
+        assert "example" in json_content or "examples" in json_content
+        assert "example" in success_json or "examples" in success_json
+        assert any(status.startswith(("4", "5")) for status in operation["responses"])
 
 
 def test_contract_management_endpoints_have_examples_and_error_docs() -> None:

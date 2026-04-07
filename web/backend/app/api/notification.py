@@ -52,6 +52,21 @@ NOTIFICATION_INTERNAL_ERROR_RESPONSE = {
     }
 }
 
+
+def _success_response_spec(
+    description: str,
+    example: Dict,
+    extra_responses: Dict[int, Dict] | None = None,
+) -> Dict[int, Dict]:
+    return {
+        200: {
+            "description": description,
+            "content": {"application/json": {"example": example}},
+        },
+        **(extra_responses or {}),
+        **NOTIFICATION_INTERNAL_ERROR_RESPONSE,
+    }
+
 NOTIFICATION_STATUS_RESPONSES = {
     **NOTIFICATION_INTERNAL_ERROR_RESPONSE,
     200: {
@@ -160,6 +175,109 @@ NOTIFICATION_PREFERENCES_RESPONSES = {
         },
     },
 }
+
+NOTIFICATION_SEND_EMAIL_RESPONSES = _success_response_spec(
+    "邮件发送请求已受理，后台任务将按优先级和预约时间调度发送。",
+    {
+        "success": True,
+        "data": {
+            "success": True,
+            "message": "邮件已安排在 2026-04-08 09:30:00+00:00 发送",
+            "recipients_count": 2,
+            "priority": "high",
+            "scheduled_at": "2026-04-08T09:30:00+00:00",
+            "content_type": "html",
+        },
+        "message": "邮件发送请求已受理",
+        "timestamp": "2026-04-07T02:20:00Z",
+        "request_id": "req-notification-send-001",
+    },
+    extra_responses={
+        400: {
+            "description": "预约发送时间早于当前时间。",
+            "content": {"application/json": {"example": {"detail": "定时发送时间必须晚于当前时间"}}},
+        },
+        403: {
+            "description": "非管理员无权发起群发邮件任务。",
+            "content": {"application/json": {"example": {"detail": "仅管理员可以发送邮件"}}},
+        },
+        503: {
+            "description": "邮件服务未配置，无法创建发送任务。",
+            "content": {"application/json": {"example": {"detail": "邮件服务未配置，无法发送邮件"}}},
+        },
+    },
+)
+
+NOTIFICATION_WELCOME_EMAIL_RESPONSES = _success_response_spec(
+    "欢迎邮件发送任务已受理，后台会继续完成模板渲染和发送。",
+    {
+        "success": True,
+        "data": {
+            "success": True,
+            "message": "欢迎邮件正在发送中",
+            "recipient": "new.user@example.com",
+            "language": "zh-CN",
+            "estimated_delivery": "2-5分钟",
+        },
+        "message": "欢迎邮件发送请求已受理",
+        "timestamp": "2026-04-07T02:20:00Z",
+        "request_id": "req-notification-welcome-001",
+    },
+    extra_responses={
+        403: {
+            "description": "非管理员只能给自己的邮箱发送欢迎邮件。",
+            "content": {"application/json": {"example": {"detail": "只能为自己的邮箱发送欢迎邮件"}}},
+        },
+        503: {
+            "description": "邮件服务未配置，无法发送欢迎邮件。",
+            "content": {"application/json": {"example": {"detail": "邮件服务未配置，无法发送欢迎邮件"}}},
+        },
+    },
+)
+
+NOTIFICATION_NEWSLETTER_RESPONSES = _success_response_spec(
+    "新闻简报发送任务已创建，后台将按传入股票列表组装邮件内容。",
+    {
+        "success": True,
+        "message": "新闻简报正在发送中",
+        "recipient": "investor@example.com",
+        "symbols_count": 2,
+    },
+    extra_responses={
+        503: {
+            "description": "邮件服务未配置，无法发送新闻简报。",
+            "content": {"application/json": {"example": {"detail": "邮件服务未配置"}}},
+        }
+    },
+)
+
+NOTIFICATION_PRICE_ALERT_RESPONSES = _success_response_spec(
+    "价格提醒邮件发送任务已创建，后台将使用当前行情和触发阈值生成通知。",
+    {
+        "success": True,
+        "message": "价格提醒正在发送中",
+        "recipient": "alert@example.com",
+        "symbol": "600519.SH",
+        "current_price": 1688.5,
+    },
+    extra_responses={
+        503: {
+            "description": "邮件服务未配置，无法发送价格提醒。",
+            "content": {"application/json": {"example": {"detail": "邮件服务未配置"}}},
+        }
+    },
+)
+
+NOTIFICATION_UPDATE_PREFERENCES_RESPONSES = _success_response_spec(
+    "通知偏好设置已保存，后续消息分发会使用新的渠道和限额配置。",
+    {
+        "success": True,
+        "data": {"updated": True},
+        "message": "通知偏好设置更新成功",
+        "timestamp": "2026-04-07T02:20:00Z",
+        "request_id": "req-notification-preferences-update-001",
+    },
+)
 
 SEND_EMAIL_EXAMPLES = {
     "bulk_html_email": {
@@ -284,7 +402,11 @@ async def get_email_service_status(current_user: User = Depends(get_current_user
         raise HTTPException(status_code=500, detail=f"获取邮件服务状态失败: {str(e)}")
 
 
-@router.post("/email/send")
+@router.post(
+    "/email/send",
+    summary="发送通知邮件",
+    responses=NOTIFICATION_SEND_EMAIL_RESPONSES,
+)
 @rate_limit(limit=5, window=60)  # 每分钟最多5次邮件发送
 async def send_email(
     background_tasks: BackgroundTasks,
@@ -471,7 +593,11 @@ async def websocket_notifications(websocket: WebSocket, token: str = None):
         await websocket.close(code=4000, reason="连接建立失败")
 
 
-@router.post("/email/welcome")
+@router.post(
+    "/email/welcome",
+    summary="发送欢迎邮件",
+    responses=NOTIFICATION_WELCOME_EMAIL_RESPONSES,
+)
 @rate_limit(limit=3, window=60)  # 每分钟最多3次欢迎邮件
 async def send_welcome_email(
     background_tasks: BackgroundTasks,
@@ -548,7 +674,9 @@ async def send_welcome_email(
 
 @router.post(
     "/email/newsletter",
+    summary="发送新闻简报邮件",
     description="Send a watchlist-focused newsletter email with curated market news for the target recipient.",
+    responses=NOTIFICATION_NEWSLETTER_RESPONSES,
 )
 async def send_daily_newsletter(
     background_tasks: BackgroundTasks,
@@ -588,7 +716,9 @@ async def send_daily_newsletter(
 
 @router.post(
     "/email/price-alert",
+    summary="发送价格提醒邮件",
     description="Send a threshold or breakout alert email containing the current quote and configured trigger price.",
+    responses=NOTIFICATION_PRICE_ALERT_RESPONSES,
 )
 async def send_price_alert(
     background_tasks: BackgroundTasks,
@@ -786,8 +916,9 @@ async def get_notification_preferences(current_user: User = Depends(get_current_
 
 @router.post(
     "/preferences",
+    summary="更新通知偏好设置",
     description="Persist the current user's notification switches and per-category delivery preferences.",
-    responses=NOTIFICATION_INTERNAL_ERROR_RESPONSE,
+    responses=NOTIFICATION_UPDATE_PREFERENCES_RESPONSES,
 )
 @rate_limit(limit=5, window=60)  # 每分钟最多5次设置更新
 async def update_notification_preferences(
