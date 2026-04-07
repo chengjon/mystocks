@@ -144,7 +144,117 @@ FUND_FLOW_BIG_DEAL_RESPONSES = {
     ),
 }
 
-@router.get("/fund-flow/hsgt-summary", summary="获取沪深港通资金流向汇总")
+HSGT_SUMMARY_RESPONSES = {
+    **_error_response_spec(
+        404,
+        "未找到沪深港通资金流向汇总数据",
+        {"success": False, "error_code": "DATA_NOT_FOUND", "message": "No HSGT fund flow summary data found for date range 2024-01-01 to 2024-01-05"},
+    ),
+    **_error_response_spec(
+        500,
+        "沪深港通资金流向汇总查询失败",
+        {"success": False, "error_code": "INTERNAL_ERROR", "message": "Failed to get HSGT fund flow summary"},
+    ),
+    **_success_response_spec(
+        "沪深港通资金流向汇总数据",
+        {
+            "success": True,
+            "data": {
+                "data": [{"日期": "2024-01-15", "北向净流入": 18.2, "南向净流入": 6.4}],
+                "count": 1,
+                "columns": ["日期", "北向净流入", "南向净流入"],
+                "date_range": {"start": "2024-01-01", "end": "2024-01-05"},
+                "source": "akshare",
+                "provider": "em",
+            },
+        },
+    ),
+}
+
+HSGT_DETAIL_RESPONSES = {
+    **_error_response_spec(
+        404,
+        "未找到沪深港通资金流向明细数据",
+        {"success": False, "error_code": "DATA_NOT_FOUND", "message": "No HSGT fund flow detail data found for date range 2024-01-01 to 2024-01-05"},
+    ),
+    **_error_response_spec(
+        500,
+        "沪深港通资金流向明细查询失败",
+        {"success": False, "error_code": "INTERNAL_ERROR", "message": "Failed to get HSGT fund flow detail"},
+    ),
+    **_success_response_spec(
+        "沪深港通资金流向明细数据",
+        {
+            "success": True,
+            "data": {
+                "data": [{"日期": "2024-01-15", "市场": "沪股通", "净流入": 12.6}],
+                "count": 1,
+                "columns": ["日期", "市场", "净流入"],
+                "date_range": {"start": "2024-01-01", "end": "2024-01-05"},
+                "source": "akshare",
+                "provider": "em",
+            },
+        },
+    ),
+}
+
+NORTH_DAILY_RESPONSES = {
+    **_error_response_spec(
+        404,
+        "未找到北向资金每日统计数据",
+        {"success": False, "error_code": "DATA_NOT_FOUND", "message": "No north fund daily data found for date range 2024-01-01 to 2024-01-05"},
+    ),
+    **_error_response_spec(
+        500,
+        "北向资金每日统计查询失败",
+        {"success": False, "error_code": "INTERNAL_ERROR", "message": "Failed to get north fund daily data"},
+    ),
+    **_success_response_spec(
+        "北向资金每日统计数据",
+        {
+            "success": True,
+            "data": {
+                "data": [{"日期": "2024-01-15", "净流入额": 18.2}],
+                "count": 1,
+                "columns": ["日期", "净流入额"],
+                "date_range": {"start": "2024-01-01", "end": "2024-01-05"},
+                "fund_direction": "north",
+                "source": "akshare",
+                "provider": "em",
+            },
+        },
+    ),
+}
+
+SOUTH_DAILY_RESPONSES = {
+    **_error_response_spec(
+        404,
+        "未找到南向资金每日统计数据",
+        {"success": False, "error_code": "DATA_NOT_FOUND", "message": "No south fund daily data found for date range 2024-01-01 to 2024-01-05"},
+    ),
+    **_error_response_spec(
+        500,
+        "南向资金每日统计查询失败",
+        {"success": False, "error_code": "INTERNAL_ERROR", "message": "Failed to get south fund daily data"},
+    ),
+    **_success_response_spec(
+        "南向资金每日统计数据",
+        {
+            "success": True,
+            "data": {
+                "data": [{"日期": "2024-01-15", "净流入额": 6.4}],
+                "count": 1,
+                "columns": ["日期", "净流入额"],
+                "date_range": {"start": "2024-01-01", "end": "2024-01-05"},
+                "fund_direction": "south",
+                "source": "akshare",
+                "provider": "em",
+            },
+        },
+    ),
+}
+
+@router.get("/fund-flow/hsgt-summary", summary="获取沪深港通资金流向汇总", responses=HSGT_SUMMARY_RESPONSES)
 async def get_hsgt_fund_flow_summary(
     start_date: str = Query(..., description="开始日期", example="2024-01-01"),
     end_date: str = Query(..., description="结束日期", example="2024-01-05"),
@@ -182,7 +292,7 @@ async def get_hsgt_fund_flow_summary(
         )
 
 
-@router.get("/fund-flow/hsgt-detail", summary="获取沪深港通资金流向明细")
+@router.get("/fund-flow/hsgt-detail", summary="获取沪深港通资金流向明细", responses=HSGT_DETAIL_RESPONSES)
 async def get_hsgt_fund_flow_detail(
     start_date: str = Query(..., description="开始日期", example="2024-01-01"),
     end_date: str = Query(..., description="结束日期", example="2024-01-05"),
@@ -220,7 +330,7 @@ async def get_hsgt_fund_flow_detail(
         )
 
 
-@router.get("/fund-flow/north-daily", summary="获取北向资金每日统计")
+@router.get("/fund-flow/north-daily", summary="获取北向资金每日统计", responses=NORTH_DAILY_RESPONSES)
 async def get_north_fund_daily(
     start_date: str = Query(..., description="开始日期", example="2024-01-01"),
     end_date: str = Query(..., description="结束日期", example="2024-01-05"),
@@ -259,7 +369,7 @@ async def get_north_fund_daily(
         )
 
 
-@router.get("/fund-flow/south-daily", summary="获取南向资金每日统计")
+@router.get("/fund-flow/south-daily", summary="获取南向资金每日统计", responses=SOUTH_DAILY_RESPONSES)
 async def get_south_fund_daily(
     start_date: str = Query(..., description="开始日期", example="2024-01-01"),
     end_date: str = Query(..., description="结束日期", example="2024-01-05"),
@@ -464,4 +574,3 @@ async def get_fund_flow_big_deal(
             ErrorCodes.INTERNAL_ERROR,
             f"Failed to get fund flow big deal data: {str(e)}"
         )
-

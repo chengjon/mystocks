@@ -1848,6 +1848,10 @@ def test_akshare_fund_flow_endpoints_have_docs_examples_and_error_responses() ->
     schema = app.openapi()
 
     endpoint_expectations = {
+        "/api/akshare/market/fund-flow/hsgt-summary": {"start_date", "end_date"},
+        "/api/akshare/market/fund-flow/hsgt-detail": {"start_date", "end_date"},
+        "/api/akshare/market/fund-flow/north-daily": {"start_date", "end_date"},
+        "/api/akshare/market/fund-flow/south-daily": {"start_date", "end_date"},
         "/api/akshare/market/fund-flow/north-stock/{symbol}": {"symbol"},
         "/api/akshare/market/fund-flow/south-stock/{symbol}": {"symbol"},
         "/api/akshare/market/fund-flow/hsgt-holdings/{symbol}": {"symbol"},
@@ -1878,6 +1882,37 @@ def test_akshare_analysis_endpoints_have_docs_examples_and_error_responses() -> 
         "/api/akshare/market/forecast/profit/em/{symbol}": {"symbol"},
         "/api/akshare/market/forecast/profit/ths/{symbol}": {"symbol"},
         "/api/akshare/market/technical/indicators/em/{symbol}": {"symbol"},
+        "/api/akshare/market/market/account-statistics": {"date"},
+    }
+
+    for path, parameter_names in endpoint_expectations.items():
+        operation = schema["paths"][path]["get"]
+        parameters = operation.get("parameters", [])
+        success_json = operation["responses"][next(code for code in operation["responses"] if code.startswith("2"))][
+            "content"
+        ]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in parameter_names:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
+def test_akshare_stock_info_endpoints_have_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    endpoint_expectations = {
+        "/api/akshare/market/stock/individual-info/em": {"symbol"},
+        "/api/akshare/market/stock/individual-info/xq": {"symbol"},
+        "/api/akshare/market/stock/business-intro/ths": {"symbol"},
+        "/api/akshare/market/stock/business-composition/em": {"symbol"},
+        "/api/akshare/market/stock/comment/em": {"symbol"},
+        "/api/akshare/market/stock/comment-detail/em": {"symbol"},
+        "/api/akshare/market/stock/news/em": {"symbol"},
+        "/api/akshare/market/stock/bid-ask/em": {"symbol"},
     }
 
     for path, parameter_names in endpoint_expectations.items():

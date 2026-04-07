@@ -146,6 +146,34 @@ TECHNICAL_INDICATORS_EM_RESPONSES = {
     ),
 }
 
+ACCOUNT_STATISTICS_RESPONSES = {
+    **_error_response_spec(
+        404,
+        "未找到股票账户统计月度数据",
+        {"success": False, "error_code": "DATA_NOT_FOUND", "message": "No account statistics data found for month 2024-01"},
+    ),
+    **_error_response_spec(
+        500,
+        "股票账户统计月度查询失败",
+        {"success": False, "error_code": "INTERNAL_ERROR", "message": "Failed to get account statistics for 2024-01"},
+    ),
+    **_success_response_spec(
+        "股票账户统计月度数据",
+        {
+            "success": True,
+            "data": {
+                "data": [{"统计月": "2024-01", "新增投资者": 1800000, "期末投资者": 220000000}],
+                "count": 1,
+                "columns": ["统计月", "新增投资者", "期末投资者"],
+                "query_month": "2024-01",
+                "source": "akshare",
+                "provider": "em",
+                "statistics_type": "account",
+            },
+        },
+    ),
+}
+
 
 @router.get(
     "/chip-distribution/{symbol}",
@@ -322,7 +350,7 @@ async def get_technical_indicators_em(
         )
 
 
-@router.get("/market/account-statistics", summary="获取股票账户统计月度")
+@router.get("/market/account-statistics", summary="获取股票账户统计月度", responses=ACCOUNT_STATISTICS_RESPONSES)
 async def get_account_statistics_em(
     date: str = Query(..., description="查询月份", example="2024-01"),
     current_user: User = Depends(get_current_user),
