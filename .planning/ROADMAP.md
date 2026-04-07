@@ -27,7 +27,7 @@ Before any migration or deletion, the following single-source-of-truth declarati
 |---------|-------------------|----------------------|
 | Data access layer | `src/data_access/` | `data_access_pkg/`, `database/`, `db_manager/`, `database_optimization/` all migrate into `src/data_access/` |
 | API routes | `web/backend/app/api/` | `src/routes/` and `src/api/` redirect here, then delete |
-| Frontend entry | **TBD** — must be verified via `index.html` + Vite config + PM2 startup before Phase 3 | All other `main-*.js/ts` variants archived after verification |
+| Frontend entry | `web/frontend/index.html` -> `/src/main-standard.ts` -> `/src/router/index.ts` | All other `main-*.js/ts` variants converge to this verified chain; archive only after caller / test / script audit |
 | Adapters (concrete) | `src/adapters/` | `src/interfaces/adapters/` deleted (no Protocol conversion — full deletion) |
 
 ### Root Shim Disposition Table
@@ -149,10 +149,16 @@ After user reviews DELETION-CANDIDATES.md:
 ### Sub-stage 3a: Frontend Entry Verification (before any changes)
 
 1. Check actual loaded entry: `cat web/frontend/index.html | grep -E "src/|script"`
-2. Check Vite config: `cat web/frontend/vite.config.js | grep -E "entry|input|main"`
+2. Check Vite config: `cat web/frontend/vite.config.mts | grep -E "entry|input|main"`
 3. Check PM2 config: `grep -r "main\|entry\|frontend" ecosystem.config.js 2>/dev/null || echo "no PM2 config"`
 4. Document current actual entry point(s)
 5. Declare canonical entry based on evidence (not assumption)
+
+Current verified result from 2026-04-07 audit:
+
+```text
+web/frontend/index.html -> /src/main-standard.ts -> /src/router/index.ts
+```
 
 ### Sub-stage 3b: Case-Conflict Directory Merge
 
@@ -172,10 +178,13 @@ After user reviews DELETION-CANDIDATES.md:
 
 ### Sub-stage 3d: Frontend Cleanup
 
-1. After 3a identifies canonical entry: archive all other `main-*.js/ts` variants
-2. Move `views/composables/` contents to `src/composables/` (update imports)
-3. Remove `views/converted.archive/`
-4. Remove `views/demo/`
+1. After 3a verifies canonical entry: audit all other `main-*.js/ts` variants for HTML / script / test / tooling references, then archive only the confirmed-unused set
+   Current known caveat: `web/frontend/verify-mount.js` still reads `web/frontend/src/main.js`
+2. Inventory `views/composables/` runtime and relative-path consumers before any move to `src/composables/`
+   Current known caveat: multiple root-level legacy views still import `./composables/*`
+3. Classify `views/monitoring/` as one of: active truth, historical router target, test-guarded artifact, or removable residual
+4. Classify `views/converted.archive/` and `views/demo/` before any removal; do not treat directory presence alone as deletion proof
+   Current known caveat: both areas are still heavily referenced by Vitest config specs as style/example guard assets
 5. Verify: `cd web/frontend && npm run build`
 
 **Success Criteria:**
@@ -189,6 +198,7 @@ After user reviews DELETION-CANDIDATES.md:
 **Risk notes:**
 - Case-conflict merge affects import paths — must update all references
 - Frontend entry verification must happen BEFORE any entry point changes
+- `views/monitoring/` still appears in historical `router/index.js*` files and dedicated Vitest guard specs; deletion or archive without classification would violate migration governance
 - If route/layout changes involved: must run `scripts/run_e2e_pm2.sh` per STANDARDS.md:58-60
 
 **Canonical refs:**
@@ -196,6 +206,7 @@ After user reviews DELETION-CANDIDATES.md:
 - `.planning/codebase/STRUCTURE.md` — Current directory structure
 - `.planning/research/ARCHITECTURE.md` — Safe refactoring order
 - `.planning/research/PITFALLS.md` — P-03
+- `docs/reports/2026-04-07-frontend-structure-repo-truth-audit.md` — current repo-truth audit and residual directory classification
 - `architecture/STANDARDS.md` — Code organization rules
 
 ---
