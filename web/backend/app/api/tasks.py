@@ -259,6 +259,40 @@ TASK_UNREGISTER_SUCCESS_RESPONSE = {
     ),
 }
 
+TASK_REGISTER_SUCCESS_RESPONSE = {
+    **TASK_READ_ERROR_RESPONSES,
+    400: COMMON_RESPONSES[400],
+    **_success_response_spec(
+        "任务注册成功",
+        {
+            "success": True,
+            "message": "任务注册成功",
+            "data": {
+                "task_id": "daily_sync_job",
+                "status": "registered",
+                "created_by": "admin",
+            },
+            "task_id": "daily_sync_job",
+            "execution_id": None,
+        },
+    ),
+}
+
+TASK_START_SUCCESS_RESPONSE = {
+    **TASK_DETAIL_ERROR_RESPONSES,
+    400: COMMON_RESPONSES[400],
+    **_success_response_spec(
+        "任务启动成功",
+        {
+            "success": True,
+            "message": "任务启动成功",
+            "data": {"status": "running"},
+            "task_id": "daily_sync_job",
+            "execution_id": "exec_1001",
+        },
+    ),
+}
+
 TASK_STOP_SUCCESS_RESPONSE = {
     **TASK_DETAIL_ERROR_RESPONSES,
     **_success_response_spec(
@@ -269,6 +303,33 @@ TASK_STOP_SUCCESS_RESPONSE = {
             "data": {"status": "stopped"},
             "task_id": "daily_sync_job",
             "execution_id": "exec_1001",
+        },
+    ),
+}
+
+TASK_IMPORT_SUCCESS_RESPONSE = {
+    **TASK_READ_ERROR_RESPONSES,
+    400: COMMON_RESPONSES[400],
+    **_success_response_spec(
+        "任务配置导入成功",
+        {
+            "success": True,
+            "message": "任务配置导入成功",
+            "data": {"imported": 3, "failed": 0},
+            "task_id": None,
+            "execution_id": None,
+        },
+    ),
+}
+
+TASK_EXPORT_SUCCESS_RESPONSE = {
+    **TASK_READ_ERROR_RESPONSES,
+    **_success_response_spec(
+        "任务配置导出成功",
+        {
+            "success": True,
+            "message": "Configuration exported successfully",
+            "path": "/tmp/task-configs/exported-jobs.yaml",
         },
     ),
 }
@@ -338,7 +399,9 @@ class TaskExportRequest(BaseModel):
 @router.post(
     "/register",
     response_model=TaskResponse,
+    summary="注册任务",
     description="注册新的任务定义，并在任务管理系统中创建可调度或手动执行的任务配置。",
+    responses=TASK_REGISTER_SUCCESS_RESPONSE,
 )
 async def register_task(
     task_config: TaskConfig = Body(..., openapi_examples=TASK_REGISTER_REQUEST_EXAMPLES),
@@ -564,7 +627,9 @@ async def get_task(
 @router.post(
     "/{task_id}/start",
     response_model=TaskResponse,
+    summary="启动任务",
     description="按任务ID启动指定任务，并支持在请求体中传入本次执行参数。",
+    responses=TASK_START_SUCCESS_RESPONSE,
 )
 async def start_task(
     task_id: str = Path(..., description="需要启动的任务ID。"),
@@ -703,7 +768,9 @@ async def get_task_statistics():
 @router.post(
     "/import",
     response_model=TaskResponse,
+    summary="导入任务配置",
     description="从外部配置文件导入任务定义，并将其注册到任务管理系统中。",
+    responses=TASK_IMPORT_SUCCESS_RESPONSE,
 )
 async def import_config(
     request: TaskImportRequest = Body(..., openapi_examples=TASK_IMPORT_REQUEST_EXAMPLES)
@@ -723,7 +790,9 @@ async def import_config(
 
 @router.post(
     "/export",
+    summary="导出任务配置",
     description="将当前任务配置导出到指定文件路径，便于备份、审计或迁移。",
+    responses=TASK_EXPORT_SUCCESS_RESPONSE,
 )
 async def export_config(
     request: TaskExportRequest = Body(..., openapi_examples=TASK_EXPORT_REQUEST_EXAMPLES)

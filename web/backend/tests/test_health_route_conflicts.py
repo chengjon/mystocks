@@ -1287,17 +1287,21 @@ def test_risk_alert_update_and_acknowledge_endpoints_have_docs_and_examples() ->
         assert "example" in request_json or "examples" in request_json
 
 
-def test_task_start_endpoint_has_docs_and_request_example() -> None:
+def test_task_start_endpoint_has_docs_request_and_response_examples() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
     operation = schema["paths"]["/api/tasks/{task_id}/start"]["post"]
     parameters = operation.get("parameters", [])
     request_json = operation["requestBody"]["content"]["application/json"]
+    success_json = operation["responses"]["200"]["content"]["application/json"]
 
+    assert operation.get("summary")
     assert len(operation.get("description", "")) >= 20
     assert any(param["name"] == "task_id" and param.get("description") for param in parameters)
     assert "example" in request_json or "examples" in request_json
+    assert "example" in success_json or "examples" in success_json
+    assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_strategy_update_endpoint_has_docs_and_request_example() -> None:
@@ -1485,16 +1489,22 @@ def test_task_stop_import_and_export_endpoints_have_docs_and_examples() -> None:
     stop_parameters = stop_operation.get("parameters", [])
     stop_success_json = stop_operation["responses"]["200"]["content"]["application/json"]
 
+    assert stop_operation.get("summary")
     assert len(stop_operation.get("description", "")) >= 20
     assert any(param["name"] == "task_id" and param.get("description") for param in stop_parameters)
     assert "example" in stop_success_json or "examples" in stop_success_json
+    assert any(code.startswith(("4", "5")) for code in stop_operation["responses"])
 
     for path in ["/api/tasks/import", "/api/tasks/export"]:
         operation = schema["paths"][path]["post"]
         request_json = operation["requestBody"]["content"]["application/json"]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
 
+        assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
         assert "example" in request_json or "examples" in request_json
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_task_register_and_cleanup_endpoints_have_docs() -> None:
@@ -1503,9 +1513,13 @@ def test_task_register_and_cleanup_endpoints_have_docs() -> None:
 
     register_operation = schema["paths"]["/api/tasks/register"]["post"]
     register_request_json = register_operation["requestBody"]["content"]["application/json"]
+    register_success_json = register_operation["responses"]["200"]["content"]["application/json"]
 
+    assert register_operation.get("summary")
     assert len(register_operation.get("description", "")) >= 20
     assert "example" in register_request_json or "examples" in register_request_json
+    assert "example" in register_success_json or "examples" in register_success_json
+    assert any(code.startswith(("4", "5")) for code in register_operation["responses"])
 
     cleanup_operation = schema["paths"]["/api/tasks/executions/cleanup"]["delete"]
     cleanup_parameters = cleanup_operation.get("parameters", [])
