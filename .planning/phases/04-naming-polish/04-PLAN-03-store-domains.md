@@ -56,8 +56,8 @@ must_haves:
 </action>
 
 <acceptance_criteria>
-- `web/frontend/src/stores/market.ts` line 1 contains `Domain: Market Overview`
-- `web/frontend/src/stores/marketData.ts` line 1 contains `Domain: Market Data with IndexedDB`
+- `head -5 web/frontend/src/stores/market.ts | grep -c "Domain: Market Overview"` returns 1 or more
+- `head -5 web/frontend/src/stores/marketData.ts | grep -c "Domain: Market Data"` returns 1 or more
 - Both files contain `see market` referencing the other store
 - Neither file's export signatures or logic changed
 </acceptance_criteria>
@@ -99,8 +99,8 @@ must_haves:
 </action>
 
 <acceptance_criteria>
-- `web/frontend/src/stores/trading.ts` line 1 contains `Domain: Trading Operations`
-- `web/frontend/src/stores/tradingData.ts` line 1 contains `Domain: Trading Analytics`
+- `head -5 web/frontend/src/stores/trading.ts | grep -c "Domain: Trading Operations"` returns 1 or more
+- `head -5 web/frontend/src/stores/tradingData.ts | grep -c "Domain: Trading Analytics"` returns 1 or more
 - Both files contain `see trading` referencing the other store
 - Neither file's export signatures or logic changed
 </acceptance_criteria>

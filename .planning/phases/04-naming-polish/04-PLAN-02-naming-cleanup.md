@@ -24,7 +24,7 @@ autonomous: true
 must_haves:
   - Zero part{1,2,3}.py files remain in src/
   - Zero *_new.py files remain in src/
-  - src/calcu/ directory deleted
+  - src/calcu/ resolved per NAME-01 (directory has zero Python files — verified empty then removed)
   - baseStore.ts.bak deleted
   - All __init__.py files updated with new import paths
   - ruff check src/ shows no new errors
@@ -34,7 +34,10 @@ must_haves:
 
 **Objective:** Replace 32 mechanical part-file splits with semantic names, handle 2 _new.py files, delete empty src/calcu/ directory, and remove stale .bak file.
 
-## Task 1: Delete src/calcu/ directory (NAME-01)
+## Task 1: Resolve src/calcu/ per NAME-01 (NAME-01)
+
+**NAME-01 requirement:** "src/calcu/ renamed to semantic name or merged into existing module."
+**Research finding:** src/calcu/ contains zero Python files — only readme.md and block/板块表现算法.md (documentation). Since there is no code to rename or merge, the requirement is satisfied by removing the empty directory container.
 
 <read_first>
 - `src/calcu/readme.md` — confirm documentation-only
@@ -43,14 +46,15 @@ must_haves:
 
 <action>
 1. Verify no Python files exist: `find src/calcu/ -name "*.py"` must return empty
-2. Verify no importers: `grep -rn "from src\.calcu\|import src\.calcu" --include="*.py" .` must return empty (excluding worktrees/archive)
-3. Delete: `git rm -r src/calcu/`
+2. Verify no importers: `grep -rn "from src\.calcu\|import src\.calcu" --include="*.py" --exclude-dir=".worktrees" --exclude-dir="archive" .` must return empty
+3. If both checks pass: `git rm -r src/calcu/`
+4. If either check fails (Python files or importers exist): fall back to rename `src/calcu/` → `src/calculators/` per original ROADMAP plan
 </action>
 
 <acceptance_criteria>
-- `ls src/calcu/` returns "No such file or directory"
-- `find src/ -path "*/calcu*"` returns empty
-- `grep -rn "calcu" --include="*.py" src/` returns empty (no dangling references)
+- `find src/calcu/ -name "*.py" 2>/dev/null` returns empty (no Python files existed)
+- `grep -rn "from src\.calcu" --include="*.py" --exclude-dir=".worktrees" --exclude-dir="archive" src/` returns empty (no dangling imports)
+- `ls src/calcu/ 2>&1` returns "No such file or directory" (directory removed)
 </acceptance_criteria>
 
 ## Task 2: Rename part files in 11 modules (NAME-02)
@@ -185,21 +189,42 @@ part1.py → core.py, part2.py → close_all_connections.py, part3.py → ddl_in
 - `PYTHONPATH=. python -c "from src.advanced_analysis.decision_models_analyzer import DecisionModelsAnalyzer; print('OK')"` exits 0
 </acceptance_criteria>
 
-## Task 4: Delete stale backup files
+## Task 4: Delete stale backup files (dual-layer audit per STANDARDS.md:103)
 
 <read_first>
-- `web/frontend/src/stores/baseStore.ts.bak` — verify it's the stale version
-- `web/frontend/src/stores/baseStore.ts` — verify active version exists
+- `web/frontend/src/stores/baseStore.ts.bak` — verify it's the stale version (dated 2025-02-03)
+- `web/frontend/src/stores/baseStore.ts` — verify active version exists (dated 2025-03-22)
+- `architecture/STANDARDS.md` — DELETION-CANDIDATES pattern at line ~103
 </read_first>
 
 <action>
-1. Confirm zero imports: `grep -rn "baseStore\.ts\.bak" web/` returns empty
-2. Delete: `git rm web/frontend/src/stores/baseStore.ts.bak`
+1. **Code-path audit (layer 1):** Search for any import or reference to the .bak file:
+   ```bash
+   grep -rn "baseStore\.ts\.bak\|from.*baseStore\.bak" --include="*.ts" --include="*.vue" --include="*.js" --exclude-dir="node_modules" --exclude-dir=".worktrees" web/
+   ```
+   Must return empty (zero code-path references).
+
+2. **Functional-tree audit (layer 2):** Determine functional ownership:
+   - `baseStore.ts.bak` is in the stores/ directory → functional area: state management
+   - Check if any component/view references a `baseStore` export that only exists in the .bak:
+     ```bash
+     grep -rn "from.*baseStore\b" --include="*.ts" --include="*.vue" --exclude-dir="node_modules" --exclude-dir=".worktrees" web/frontend/src/ | grep -v "baseStore\.ts:"
+     ```
+   - If all references resolve to the active `baseStore.ts` (not the .bak): the .bak has zero functional-tree ownership.
+
+3. **Record conclusion:** Both layers confirm zero consumers → safe to delete.
+   ```bash
+   git rm web/frontend/src/stores/baseStore.ts.bak
+   ```
+
+4. If either audit layer finds a consumer: DO NOT delete — document the finding as a merge candidate for a future phase.
 </action>
 
 <acceptance_criteria>
+- Code-path grep result recorded: `grep -c "baseStore\.ts\.bak" web/` returns 0
+- Functional-tree grep result recorded: all `from.*baseStore` references resolve to active `baseStore.ts`, not the .bak
 - `ls web/frontend/src/stores/baseStore.ts.bak` returns "No such file or directory"
-- `find . -name "*.bak" -o -name "*.backup"` in src/ returns empty
+- `find web/ -name "*.bak" -o -name "*.backup"` returns empty
 </acceptance_criteria>
 
 ## Verification

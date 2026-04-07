@@ -20,32 +20,46 @@ must_haves:
 
 **Objective:** Remove all three root-level shim files (zero callers) and add deprecation warnings to src/ internal re-exports (20+ callers each).
 
-## Task 1: Remove root-level shim files
+## Task 1: Complete caller inventory then remove root-level shim files
 
 <read_first>
 - `core.py` (root) — current shim content
 - `data_access.py` (root) — current shim content
 - `monitoring.py` (root) — current shim content
 - `src/core.py` — imports `from core import *` (chains through root shim)
+- `scripts/dev/project/update_imports.py` — references shim import patterns (migration utility)
+- `scripts/dev/fix_test_imports.py` — references shim import patterns
+- `Dockerfile*` — check for `FROM` or `COPY` referencing root shims
+- `docker-compose*.yml` — check for volume mounts or env vars referencing root shims
+- `.github/workflows/*.yml` — check for CI steps referencing root shims
 </read_first>
 
 <action>
-1. Fix circular import chain in `src/core.py`:
+1. **Complete caller inventory (ROADMAP 4a step 1):** Before any deletion, grep ALL caller surfaces:
+   ```bash
+   # Python imports
+   grep -rn "from core import\|import core\b" --include="*.py" --exclude-dir=".worktrees" --exclude-dir="archive" --exclude-dir="__pycache__" .
+   grep -rn "from data_access import\|import data_access\b" --include="*.py" --exclude-dir=".worktrees" --exclude-dir="archive" --exclude-dir="__pycache__" .
+   grep -rn "from monitoring import\|import monitoring\b" --include="*.py" --exclude-dir=".worktrees" --exclude-dir="archive" --exclude-dir="__pycache__" .
+
+   # Non-Python callers (scripts, Docker, CI)
+   grep -rn "core\.\|data_access\.\|monitoring\." --include="*.sh" --include="*.yml" --include="*.yaml" --include="Dockerfile*" --include="docker-compose*" .
+   ```
+   Research found zero active callers for all three root shims. Verify this is still true before proceeding.
+
+2. Fix circular import chain in `src/core.py`:
    - Current line: `from core import *  # noqa: F401, F403`
-   - Replace with: `from src.core import *  # noqa: F401, F403` (or direct re-export from src.core package)
+   - Read `src/core/__init__.py` to see what it exports, then update `src/core.py` to import directly from `src.core.{module}` packages instead of the root shim
+   - The exact import list depends on what `src/core/__init__.py` exports — read it first
 
-   Actually, since src/core.py re-exports from src/core/, the import should be:
-   - `from src.core import *` — but this creates a self-referential import
-   - Better: Read src/core.py to see what it re-exports, then make it import directly from `src.core.{module}` packages
-   - Check what `src/core/__init__.py` exports, then replicate those imports in `src/core.py` using the full path
-
-2. After fixing src/core.py, delete root shims:
+3. After fixing src/core.py AND confirming zero callers from step 1, delete root shims:
    - `git rm core.py`
    - `git rm data_access.py`
    - `git rm monitoring.py`
 </action>
 
 <acceptance_criteria>
+- Caller inventory completed: grep results recorded showing zero active callers for all three root shims
 - `ls core.py data_access.py monitoring.py` returns "No such file or directory" for all three
 - `grep -n "from core import" src/core.py` returns nothing (no root shim reference)
 - `cd /opt/claude/mystocks_spec && PYTHONPATH=. python -c "from src.core import DataClassification; print('OK')"` exits 0 and prints "OK"
@@ -98,6 +112,9 @@ ls core.py data_access.py monitoring.py 2>&1 | grep -c "No such file" | grep -q 
 # Imports still work
 cd /opt/claude/mystocks_spec && PYTHONPATH=. python -c "from src.core import DataClassification; print('OK')"
 cd /opt/claude/mystocks_spec && PYTHONPATH=. python -c "from src.data_access import PostgreSQLDataAccess; print('OK')"
+
+# ROADMAP startup-level check (per Phase 4 sub-stage 4a step 5)
+cd web/backend && PYTHONPATH=$(git rev-parse --show-toplevel):. python -c "from app.main import app; print('OK')"
 
 # No new lint errors
 ruff check src/core.py src/data_access.py
