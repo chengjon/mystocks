@@ -28,6 +28,62 @@ WEBSOCKET_ROUTE_RESPONSES = {
     500: COMMON_RESPONSES[500],
 }
 
+WEBSOCKET_STATS_RESPONSES = {
+    200: {
+        "description": "WebSocket 连接统计",
+        "content": {
+            "application/json": {
+                "example": {
+                    "total_connections": 12,
+                    "unique_users": 8,
+                    "total_channels": 6,
+                    "channel_subscribers": {
+                        "events:tasks": 5,
+                        "events:indicators": 4,
+                        "events:market": 3,
+                    },
+                }
+            }
+        },
+    },
+    500: COMMON_RESPONSES[500],
+}
+
+WEBSOCKET_CHANNELS_RESPONSES = {
+    200: {
+        "description": "WebSocket 频道目录",
+        "content": {
+            "application/json": {
+                "example": {
+                    "channels": {
+                        "events:tasks": {
+                            "description": "All task events (created, started, progress, completed, failed)",
+                            "example_use": "Monitor background calculation jobs",
+                            "event_types": [
+                                "task.created",
+                                "task.started",
+                                "task.progress",
+                                "task.completed",
+                                "task.failed",
+                            ],
+                        },
+                        "events:market:{stock_code}": {
+                            "description": "Specific stock market events",
+                            "example_use": "Monitor specific stock price",
+                            "event_types": ["market.price.update"],
+                        },
+                    },
+                    "usage_examples": [
+                        "ws://localhost:${BACKEND_PORT}/ws/events",
+                        "ws://localhost:${BACKEND_PORT}/ws/events?channels=events:tasks,events:indicators",
+                    ],
+                }
+            }
+        },
+    },
+    500: COMMON_RESPONSES[500],
+}
+
 router = APIRouter(prefix="/ws", tags=["websocket"], responses=WEBSOCKET_ROUTE_RESPONSES)
 
 
@@ -112,7 +168,12 @@ async def websocket_events(
         manager.disconnect(connection_id)
 
 
-@router.get("/stats")
+@router.get(
+    "/stats",
+    summary="获取 WebSocket 连接统计",
+    description="返回当前 WebSocket 活跃连接、唯一用户、频道数量和各频道订阅分布，用于实时推送监控面板。",
+    responses=WEBSOCKET_STATS_RESPONSES,
+)
 async def get_websocket_stats():
     """
     Get WebSocket connection statistics
@@ -126,7 +187,12 @@ async def get_websocket_stats():
     return manager.get_stats()
 
 
-@router.get("/channels")
+@router.get(
+    "/channels",
+    summary="获取 WebSocket 频道目录",
+    description="列出可订阅的 WebSocket 频道、事件类型和推荐用法，供前端联调与运行态诊断使用。",
+    responses=WEBSOCKET_CHANNELS_RESPONSES,
+)
 async def list_channels():
     """
     List available event channels

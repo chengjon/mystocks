@@ -752,6 +752,20 @@ def test_multi_source_endpoints_have_descriptions_examples_and_error_responses()
     assert any(code.startswith(("4", "5")) for code in analyze_operation["responses"])
 
 
+def test_websocket_http_endpoints_have_success_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path in ["/ws/stats", "/ws/channels"]:
+        operation = schema["paths"][path]["get"]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_data_quality_overview_endpoints_have_descriptions_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()
