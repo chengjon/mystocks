@@ -179,6 +179,68 @@ WATCHLIST_WITH_GROUPS_RESPONSES = {
     ),
 }
 
+WATCHLIST_ADD_RESPONSES = {
+    **WATCHLIST_ROUTE_RESPONSES,
+    **_success_response_spec(
+        "添加自选股结果",
+        {
+            "success": True,
+            "message": "已添加到自选股",
+            "symbol": "SZ000001",
+            "group_name": "成长观察",
+        },
+    ),
+}
+
+WATCHLIST_NOTES_RESPONSES = {
+    **WATCHLIST_ROUTE_RESPONSES,
+    **_success_response_spec(
+        "更新自选股备注结果",
+        {
+            "success": True,
+            "message": "备注已更新",
+            "symbol": "SZ000001",
+        },
+    ),
+}
+
+WATCHLIST_GROUP_CREATE_RESPONSES = {
+    **WATCHLIST_ROUTE_RESPONSES,
+    **_success_response_spec(
+        "创建自选股分组结果",
+        {
+            "success": True,
+            "message": "分组 '高股息' 创建成功",
+            "group": WATCHLIST_GROUP_EXAMPLE,
+        },
+    ),
+}
+
+WATCHLIST_GROUP_UPDATE_RESPONSES = {
+    **WATCHLIST_ROUTE_RESPONSES,
+    **_success_response_spec(
+        "更新自选股分组结果",
+        {
+            "success": True,
+            "message": "分组已更新为 '核心持仓'",
+            "group_id": 3,
+        },
+    ),
+}
+
+WATCHLIST_MOVE_RESPONSES = {
+    **WATCHLIST_ROUTE_RESPONSES,
+    **_success_response_spec(
+        "移动自选股分组结果",
+        {
+            "success": True,
+            "message": "股票 SH600519 已移动到新分组",
+            "symbol": "SH600519",
+            "to_group_id": 3,
+        },
+    ),
+}
+
 
 class WatchlistItem(BaseModel):
     """自选股条目"""
@@ -391,7 +453,12 @@ async def get_my_watchlist_symbols(
         )
 
 
-@router.post("/add", description="添加股票到当前用户自选股列表，并支持按分组名称自动归档到指定分组。")
+@router.post(
+    "/add",
+    summary="添加自选股",
+    description="添加股票到当前用户自选股列表，并支持按分组名称自动归档到指定分组。",
+    responses=WATCHLIST_ADD_RESPONSES,
+)
 async def add_to_watchlist(
     request: AddWatchlistRequest = Body(..., openapi_examples=WATCHLIST_ADD_REQUEST_EXAMPLES),
     current_user: User = Depends(get_current_user),
@@ -502,7 +569,12 @@ async def check_in_watchlist(
         raise BusinessException(detail=f"检查自选股失败: {str(e)}", status_code=500, error_code="STOCK_CHECK_FAILED")
 
 
-@router.put("/notes/{symbol}", description="更新指定自选股的备注信息，便于记录交易计划或观察结论。")
+@router.put(
+    "/notes/{symbol}",
+    summary="更新自选股备注",
+    description="更新指定自选股的备注信息，便于记录交易计划或观察结论。",
+    responses=WATCHLIST_NOTES_RESPONSES,
+)
 async def update_watchlist_notes(
     request: UpdateWatchlistNotesRequest = Body(..., openapi_examples=WATCHLIST_NOTES_REQUEST_EXAMPLES),
     symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
@@ -618,7 +690,12 @@ async def get_user_groups(current_user: User = Depends(get_current_user)) -> Lis
         )
 
 
-@router.post("/groups", description="创建新的自选股分组，用于管理不同主题、策略或观察清单。")
+@router.post(
+    "/groups",
+    summary="创建自选股分组",
+    description="创建新的自选股分组，用于管理不同主题、策略或观察清单。",
+    responses=WATCHLIST_GROUP_CREATE_RESPONSES,
+)
 async def create_group(
     request: CreateGroupRequest = Body(..., openapi_examples=WATCHLIST_CREATE_GROUP_REQUEST_EXAMPLES),
     current_user: User = Depends(get_current_user),
@@ -647,7 +724,12 @@ async def create_group(
         raise BusinessException(detail=f"创建分组失败: {str(e)}", status_code=500, error_code="GROUP_CREATION_FAILED")
 
 
-@router.put("/groups/{group_id}", description="修改指定自选股分组的名称，并保留该分组下已有的股票成员。")
+@router.put(
+    "/groups/{group_id}",
+    summary="更新自选股分组",
+    description="修改指定自选股分组的名称，并保留该分组下已有的股票成员。",
+    responses=WATCHLIST_GROUP_UPDATE_RESPONSES,
+)
 async def update_group(
     request: UpdateGroupRequest = Body(..., openapi_examples=WATCHLIST_UPDATE_GROUP_REQUEST_EXAMPLES),
     group_id: int = Path(..., description="分组ID", ge=1),
@@ -720,7 +802,12 @@ async def get_watchlist_by_group(
         )
 
 
-@router.put("/move", description="将指定股票从一个自选股分组移动到另一个分组，便于动态调整观察清单。")
+@router.put(
+    "/move",
+    summary="移动自选股分组",
+    description="将指定股票从一个自选股分组移动到另一个分组，便于动态调整观察清单。",
+    responses=WATCHLIST_MOVE_RESPONSES,
+)
 async def move_stock_to_group(
     request: MoveStockRequest = Body(..., openapi_examples=WATCHLIST_MOVE_REQUEST_EXAMPLES),
     current_user: User = Depends(get_current_user),

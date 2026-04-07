@@ -2029,7 +2029,7 @@ def test_stock_search_support_endpoints_have_docs_examples_and_error_responses()
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
-def test_watchlist_write_endpoints_have_docs_and_request_examples() -> None:
+def test_watchlist_write_endpoints_have_docs_request_and_response_examples() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
@@ -2043,11 +2043,15 @@ def test_watchlist_write_endpoints_have_docs_and_request_examples() -> None:
         operation = schema["paths"][path][method]
         parameters = operation.get("parameters", [])
         request_json = operation["requestBody"]["content"]["application/json"]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
 
+        assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
         for parameter_name in expected_params:
             assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
         assert "example" in request_json or "examples" in request_json
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_watchlist_read_endpoints_have_docs_examples_and_error_responses() -> None:
