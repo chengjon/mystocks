@@ -7,8 +7,8 @@
 > 文内端点、命令、统计值和示例如未重新复核，应视为参考或历史材料，不得直接当作当前事实。
 
 
-**更新时间**: 2026-01-02
-**文档版本**: v1.0
+**Historical Last Updated Snapshot**: 2026-01-02
+**Historical Document Version Snapshot**: v1.0
 
 本文档介绍如何使用多种方法获取 A 股市场所有股票代码。
 
@@ -382,5 +382,5 @@ bs.logout()
 
 ---
 
-**维护者**: Claude Code
-**最后更新**: 2026-01-02
+**Historical Maintainer Snapshot**: Claude Code
+**Historical Last Updated Snapshot**: 2026-01-02

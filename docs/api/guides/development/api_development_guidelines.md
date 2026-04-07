@@ -11,9 +11,9 @@
 
 本文档定义了MyStocks项目中新增API端点时必须遵循的标准和规范，确保所有API保持一致性、可维护性和RESTful设计原则。
 
-**版本**: 2.0.0
-**最后更新**: 2025-12-02
-**适用范围**: 所有新增API端点开发
+**Historical Document Version Snapshot**: 2.0.0
+**Historical Last Updated Snapshot**: 2025-12-02
+**Historical Scope Snapshot**: 所有新增API端点开发
 
 ---
 

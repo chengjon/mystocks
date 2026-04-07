@@ -358,6 +358,6 @@ def validate_end_date(cls, v: Optional[str], info) -> Optional[str]:
 
 ---
 
-**文档版本**: 1.0
-**更新时间**: 2025-12-29
-**维护者**: CLI-2 Backend API Architect
+**Historical Document Version Snapshot**: 1.0
+**Historical Last Updated Snapshot**: 2025-12-29
+**Historical Maintainer Snapshot**: CLI-2 Backend API Architect
