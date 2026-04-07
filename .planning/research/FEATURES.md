@@ -1,95 +1,74 @@
-# Features Research: Clean Codebase Patterns
+# Features Research: v1.1 Final Polish
 
-> **参考指南说明**:
-> 本文件是补充指南、命令参考、操作说明或专题文档，不是当前仓库共享规则、当前实现边界或当前主线流程的唯一事实来源。
-> 当前共享规则与治理口径请优先遵循 `architecture/STANDARDS.md`；执行流程、命令与协作约束再结合根目录 `AGENTS.md`，并与当前代码实现及主线治理文档一并核对。
->
-> 文内步骤、示例、命令和说明应视为补充参考；若与当前代码、`architecture/STANDARDS.md` 或主线治理文档不一致，应以 `architecture/STANDARDS.md`、当前代码实现及主线治理文档为准。
+**Researched:** 2026-04-08
+**Focus:** What "done" looks like for each cleanup category
 
+## Category: Lint Cleanup (F821)
 
-**Researched:** 2026-04-06
-**Project Type:** Brownfield cleanup (Python + Vue 3 monorepo)
+### Table Stakes
+- F821 undefined-name errors reduced significantly (791 → target <50 or all documented)
+- Top-20 files fixed first (70%+ of errors concentrated in adapters/)
+
+### Differentiators
+- Categorize remaining F821s: fixable vs dead code vs intentional
+- CI gate on new F821s to prevent regression
+
+### Anti-features
+- Do NOT auto-fix all F821s blindly — some are in dead code paths
+- Do NOT add noqa comments — fix properly or delete dead code
+
+### What "Done" Looks Like
+- `ruff check --select F821` returns <50 errors (or documented)
+- Top 20 files have zero F821 errors
+- No runtime regressions
+
+---
+
+## Category: Frontend Entry Consolidation (STRU-03)
+
+### Table Stakes
+- Single entry point: main.js only
+
+### What "Done" Looks Like
+- Only 1 entry file in web/frontend/src/
+- `npm run dev` and `npm run build` both work
 
 ---
 
-## Table Stakes (Must Have)
+## Category: Composables Migration (STRU-04)
 
-These are non-negotiable for a "clean" codebase:
+### Table Stakes
+- All composables in canonical location: `src/composables/`
+- views/composables/ directory removed
+- All ~30 consumer imports updated from `'./composables/X'` to `'@/composables/X'`
 
-### Single Source of Truth
-- **One canonical adapter layer**: `src/adapters/` is the implementation. If `src/interfaces/adapters/` exists, it must be Protocol/ABC only (signatures, no implementations).
-- **One data access layer**: Merge `data_access/`, `data_access_pkg/`, `database/`, `db_manager/` into a single `src/data_access/`.
-- **One route location**: All FastAPI routes in `web/backend/app/api/`. No routes in `src/`.
-- **One frontend entry**: `main.js` only. No variants.
-
-### Naming Consistency
-- **Python**: `snake_case` for modules/dirs, no truncated names (`calcu/` → proper name or merge), no `*_new.py` / `*_backup` files in source tree.
-- **Vue**: `kebab-case` for component directories, no case-conflict pairs (`Charts/` + `charts/`).
-- **No part1/part2/part3 splits**: Semantic naming or extract to proper modules.
-
-### Zero Lint Errors
-- **Python**: `ruff check` passes with 0 errors.
-- **Frontend**: `stylelint` passes with 0 errors.
-- **TypeScript**: `vue-tsc --noEmit` passes.
-
-### No Dead Code in Source Tree
-- No `.backup` files, no `*_new.py` variants, no `converted.archive/` directories.
-- Demo files not referenced by routes or tests should be removed.
-- Empty directories (`db_manager/` with only `__init__.py`) should be deleted.
-
-## Differentiators (Nice-to-Have)
-
-### Structure Quality
-- **Flat API directory reorganization**: Group 205 backend API files into subdirectories by domain (market/, portfolio/, trading/, monitoring/, etc.)
-- **Store domain clarity**: Each Pinia store covers exactly one domain concern (no `market.ts` + `marketData.ts` overlap)
-- **Composable relocation**: `views/composables/` → `src/composables/`
-
-### Import Hygiene
-- **Absolute imports only**: No root-level shims with bare imports
-- **No circular dependencies**: Verified via import graph analysis
-- **Re-export shims minimized**: Keep backward compat only if external consumers exist
-
-## Anti-Features (Deliberately NOT Doing)
-
-| Anti-Feature | Why Not |
-|-------------|---------|
-| Adding new abstractions | Cleanup should reduce complexity, not add layers |
-| Refactoring working business logic | If it works, don't touch it — only fix structure |
-| Changing API contracts | Routes consolidation is location only, not signature changes |
-| Adding new test frameworks | Fix existing tests, don't add frameworks |
-| Implementing design patterns | No new patterns — remove broken ones |
-| Mobile/responsive support | Desktop-only per project constraints |
-| Performance optimization | Not a goal unless caused by duplicate code paths |
-
-## Dependencies Between Cleanup Tasks
-
-```
-1. Fix duplicate adapters (P0)
-   └─→ Unblocks: ruff error count drops from 1,456 to ~300
-
-2. Auto-fix ruff errors (P0)
-   └─→ Depends on: #1 (adapters fixed first)
-   └─→ Unblocks: clean baseline for structural work
-
-3. Merge data access layers (P1)
-   └─→ Depends on: #2 (clean imports first)
-   └─→ Unblocks: root shim cleanup
-
-4. Consolidate routes (P1)
-   └─→ Independent of #3 (different architectural layer)
-
-5. Fix frontend case conflicts (P0)
-   └─→ Independent of all Python work
-
-6. Clean frontend structure (P2)
-   └─→ Depends on: #5 (case conflicts fixed first)
-
-7. Fix root shims (P2)
-   └─→ Depends on: #3 (data access consolidated first)
-
-8. Fix naming (P2)
-   └─→ Independent (can run anytime after #1)
-```
+### What "Done" Looks Like
+- `views/composables/` does not exist
+- `vue-tsc --noEmit` passes
+- `npm run build` succeeds
 
 ---
-*Research completed: 2026-04-06*
+
+## Category: Archive Removal (STRU-05)
+
+### Table Stakes
+- views/converted.archive/ deleted (11 dead files)
+
+### What "Done" Looks Like
+- Directory does not exist
+- No imports reference it (verified: zero found)
+- Test suite passes
+
+---
+
+## Complexity Assessment
+
+| Category | Complexity | Risk | Scope |
+|----------|-----------|------|-------|
+| F821 Resolution | Medium | Low | 62 files |
+| Entry Consolidation | Low | Low | 2 files |
+| Composables Migration | High | Medium | ~47 files |
+| Archive Removal | Low | Low | 11 files |
+
+---
+*Features research complete: 2026-04-08*

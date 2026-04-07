@@ -1,117 +1,62 @@
-# Architecture Research: Safe Refactoring Order
+# Architecture Research: v1.1 Final Polish
 
-> **参考指南说明**:
-> 本文件是补充指南、命令参考、操作说明或专题文档，不是当前仓库共享规则、当前实现边界或当前主线流程的唯一事实来源。
-> 当前共享规则与治理口径请优先遵循 `architecture/STANDARDS.md`；执行流程、命令与协作约束再结合根目录 `AGENTS.md`，并与当前代码实现及主线治理文档一并核对。
->
-> 文内步骤、示例、命令和说明应视为补充参考；若与当前代码、`architecture/STANDARDS.md` 或主线治理文档不一致，应以 `architecture/STANDARDS.md`、当前代码实现及主线治理文档为准。
+**Researched:** 2026-04-08
+**Focus:** Integration points, file relationships, suggested build order
 
+## F821 Error Clusters
 
-**Researched:** 2026-04-06
-**Architecture Type:** Layered (Frontend → FastAPI → Core → Data)
+### Distribution
+- 62 files, 791 total F821 errors
+- Top: `src/adapters/` (akshare + financial ≈ 350 errors)
+- Secondary: `src/monitoring/` (~56), `src/gpu/` (~34), `web/backend/app/repositories/` (~28)
+- Long tail: ~323 errors across 42 files
 
----
+### Top 20 Files
+| Errors | File |
+|--------|------|
+| 81 | src/adapters/akshare/misc_data/get_ths_industry_names.py |
+| 54 | src/adapters/akshare/misc_data/get_futures_index_daily.py |
+| 50 | src/adapters/financial/stock_daily.py |
+| 45 | src/adapters/financial/realtime_data.py |
+| 34 | src/advanced_analysis/models/decision_synthesis.py |
+| 34 | src/gpu/api_system/services/resource_scheduler/.../core.py |
+| 33 | src/adapters/financial/index_daily.py |
+| 32 | src/adapters/akshare/index_daily.py |
+| 30 | src/adapters/financial/financial_data.py |
+| 28 | src/monitoring/multi_channel_alert_manager/... |
+| 28 | web/backend/app/repositories/algorithm_model_repository/.../part1.py |
+| 25 | src/adapters/financial/stock_basic.py |
+| 25 | src/monitoring/threshold/manager.py |
 
-## Recommended Refactoring Order
+## Frontend Entry Consolidation
 
-The order matters because later steps depend on earlier ones completing cleanly.
+### Current State
+- verify-mount.js is already in `_entry-archive/` — may be partially done
+- Need to verify if any active references remain
 
-### Phase 1: Lint Baseline (Unblocks everything)
+## Composables Migration
 
-**Goal:** Get ruff from 1,456 errors to <50 without changing any behavior.
+### Layout
+- 17 composable files in views/composables/
+- All consumers use relative imports: `'./composables/useX'`
+- Target: src/composables/ (already exists with ~30+ composables)
+- Each composable has 1-3 consumers (manageable)
+- 2 test files in views/composables/__tests__/ and __node_tests__/
 
-**Step 1a: Resolve duplicate adapter layer**
-- **Current**: `src/interfaces/adapters/` is a full copy of `src/adapters/` missing imports
-- **Fix**: Delete `src/interfaces/adapters/` entirely OR convert to Protocol stubs
-- **Decision needed**: Does anything import from `src.interfaces.adapters`?
-- **Verification**: `grep -r "from src.interfaces.adapters" src/ web/` — if zero hits, safe to delete
+## Archive Removal
 
-**Step 1b: Auto-fix ruff safe rules**
-- `ruff check --fix --select F401,F841,W291,W293,E701`
-- This fixes ~46% of remaining errors automatically
-- **Verification**: `ruff check src/ web/backend/app/ --statistics`
+- 11 files in views/converted.archive/
+- Zero imports found — completely dead
 
-### Phase 2: Dead Code Removal (Reduces complexity)
+## Suggested Build Order
 
-**Goal:** Remove code that nothing uses.
-
-**Step 2a: Remove dead route layers**
-- Delete `src/routes/` (19 files) — verify no imports first
-- Delete `src/api/` (5 files) — verify no imports first
-- **Verification**: `grep -r "from src.routes\|from src.api\|import src.routes\|import src.api" src/ web/ tests/`
-- **Safety**: If any imports found, redirect them to `web/backend/app/api/` equivalent
-
-**Step 2b: Remove empty/dead directories**
-- Delete `src/db_manager/` (empty shell)
-- Delete `src/data_access_pkg/` (duplicate of `data_access/`)
-- Delete `src/database_optimization/` (overlaps `database/`)
-- **Verification**: grep for any imports before deletion
-
-**Step 2c: Generate deletion list for user review**
-- Write all proposed deletions to `DELETION-CANDIDATES.md`
-- Wait for user approval before executing
-
-### Phase 3: Structural Consolidation (Merges overlapping layers)
-
-**Goal:** Single canonical location for each concern.
-
-**Step 3a: Merge data access layers**
-- Keep `src/data_access/` as canonical
-- Move any unique files from `data_access_pkg/` and `database/` into it
-- Update all imports
-- **Verification**: `pytest` + `ruff check`
-
-**Step 3b: Fix frontend case conflicts**
-- Merge `Charts/` → `charts/`, `Common/` → `common/`, `Market/` → `market/`
-- Update all import references
-- **Verification**: `npx stylelint` + `npm run build`
-
-**Step 3c: Clean frontend entry points**
-- Keep only `main.js`
-- Move variants to archive or delete (per user approval)
-
-### Phase 4: Naming & Polish (Final cleanup)
-
-**Goal:** Consistent naming, zero shims.
-
-**Step 4a: Fix naming conventions**
-- `src/calcu/` → merge into `src/utils/` or rename to `src/calculators/`
-- `part1/part2/part3` files → semantic names or proper module extraction
-- `*_new.py` → merge into canonical version
-- `*.bak` / `*.backup` files → delete
-
-**Step 4b: Resolve root-level shims**
-- `core.py` → verify nothing imports from it, then delete
-- `data_access.py` → verify, delete
-- `monitoring.py` → verify, delete
-- `unified_manager.py` → keep if it's the documented entry point
-
-**Step 4c: Clean frontend structure**
-- Move `views/composables/` → `src/composables/`
-- Remove `views/converted.archive/`
-- Remove `views/demo/` (or archive)
-- Consolidate overlapping stores
-
-## Import Safety Strategy
-
-After each phase:
-
-1. **Run `ruff check`** — ensures no undefined names
-2. **Run `pytest`** — catches runtime import errors (limited by 0.16% coverage)
-3. **Run `grep` verification** — explicitly check that removed modules aren't imported
-4. **Manual review of deletion list** — user approves before deletion
-
-## Phase Dependencies
-
-```
-Phase 1 (Lint Baseline)
-  ├─→ Phase 2 (Dead Code) — needs clean import graph
-  │     └─→ Phase 3 (Consolidation) — needs dead code removed
-  │           └─→ Phase 4 (Polish) — needs structure settled
-  └─→ Phase 3b (Frontend cases) — independent of Python phases
-```
-
-Frontend case conflicts (Phase 3b) can run in parallel with Phase 2 since it's a different layer.
+| Order | Task | Rationale |
+|-------|------|-----------|
+| 1 | Archive Removal (STRU-05) | Easiest win, zero imports |
+| 2 | Entry Consolidation (STRU-03) | Small scope, verify status |
+| 3 | F821 Top-20 (LINT-05a) | 70%+ of errors in 20 files |
+| 4 | Composables Migration (STRU-04) | Highest complexity, full attention |
+| 5 | F821 Long Tail (LINT-05b) | Remaining 42 files, routine |
 
 ---
-*Research completed: 2026-04-06*
+*Architecture research complete: 2026-04-08*
