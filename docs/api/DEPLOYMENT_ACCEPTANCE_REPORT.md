@@ -5,11 +5,11 @@
 > 其中的完成度、通过状态和结论不应直接视为当前事实；引用前应结合 `architecture/STANDARDS.md`、当前实现与最新验证结果重新确认。
 
 
-**项目**: MyStocks API契约管理平台
-**分支**: phase6-api-contract-standardization
-**CLI**: CLI-2 (API Contract Standardization)
-**报告日期**: 2025-12-29
-**报告版本**: v1.0
+**Historical Project Snapshot**: MyStocks API契约管理平台
+**Historical Branch Snapshot**: phase6-api-contract-standardization
+**Historical CLI Snapshot**: CLI-2 (API Contract Standardization)
+**Historical Report Snapshot Date**: 2025-12-29
+**Historical Report-Version Snapshot**: v1.0
 
 ---
 

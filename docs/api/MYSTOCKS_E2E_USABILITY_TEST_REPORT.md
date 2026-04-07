@@ -9,9 +9,9 @@
 
 ## 📋 测试概述
 
-**测试时间**: 2025年11月26日
-**测试目标**: MyStocks量化交易数据管理系统
-**测试范围**: 前端Web应用 + 后端API服务的完整端到端功能验证
+**Historical Test Snapshot Date**: 2025年11月26日
+**Historical Test Target Snapshot**: MyStocks量化交易数据管理系统
+**Historical Test Scope Snapshot**: 前端Web应用 + 后端API服务的完整端到端功能验证
 
 ### 测试环境信息
 - **前端**: http://localhost:3020 (Vue3 + Vite + Element Plus)

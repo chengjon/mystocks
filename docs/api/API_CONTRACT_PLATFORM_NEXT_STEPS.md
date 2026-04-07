@@ -6,9 +6,9 @@
 >
 > 文内 `Ready for Implementation`、已完成项、CLI 修复结论和类型生成步骤应按当次计划上下文理解；若未在当前代码与主线文档中复核，不得直接视为当前事实。
 
-**Document Version**: 2.0
-**Last Updated**: 2025-12-30
-**Status**: Ready for Implementation
+**Historical Document-Version Snapshot**: 2.0
+**Historical Plan Snapshot Date**: 2025-12-30
+**Historical Plan Status Snapshot**: Ready for Implementation
 
 ---
 
