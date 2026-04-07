@@ -83,6 +83,7 @@ PR 创建/更新后，工作流自动执行：
 
 - `governance/mainline/spec/ai-development-mainline-governance-spec.md`
 - `governance/mainline/reports/mainline-governance-v0.2-task-summary.md`
+- `docs/guides/governance/DELETION_EVIDENCE_GATE.md`
 
 ## 常见失败原因
 
