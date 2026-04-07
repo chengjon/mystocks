@@ -46,6 +46,11 @@ cli_reports/            → reports/cli/
 completion_reports/     → reports/completion/
 ```
 
+> 2026-04-07 治理附注:
+> 上述 `cli_reports/ → reports/cli/` 目前仍属于未完成收口的迁移意图，不得据此直接删除旧路径或视为 cutover 已完成。
+> 当前 repo-truth 以 [reports-retirement-readiness-matrix.md](/opt/claude/mystocks_spec/reports/governance/2026-04-07-reports-retirement-readiness-matrix.md) 和 [reports-cli-retirement-readiness-audit.md](/opt/claude/mystocks_spec/reports/governance/2026-04-07-reports-cli-retirement-readiness-audit.md) 为准。
+> 在 `code_path_verdict = unsafe_to_delete` 且 `function_tree_verdict` 未收敛到 `重复冗余` 或正式下线前，不得删除相关目录。
+
 ### 5. 备份和临时目录
 ```
 backups/                → 保留 (重要备份)

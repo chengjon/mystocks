@@ -425,6 +425,12 @@ docs/
 | `docs/technical_debt/` | 合并到`reports/` | 技术债务 |
 | `docs/plans/` | 合并到`reports/` | 计划文档 |
 
+> 2026-04-07 治理附注:
+> 本表是历史迁移意图，不是当前删除授权。
+> 对 `docs/cli_reports/`、`reports/quant/`、`reports/data_cleaning/`、`reports/phase7_monitoring/` 等当前仍受退役前判定约束的路径，
+> 必须先遵循 [reports-retirement-readiness-matrix.md](/opt/claude/mystocks_spec/reports/governance/2026-04-07-reports-retirement-readiness-matrix.md) 及其源审计；
+> 在未满足退出条件前，不得据此直接删除或宣告迁移完成。
+
 ---
 
 ## 5. 迁移前后详细对照表
@@ -522,6 +528,10 @@ docs/
 | 33 | `docs/technical_debt/` | `docs/reports/technical_debt/` | 移动 | 低 | `git checkout HEAD -- docs/technical_debt/` |
 | 34 | `docs/plans/` | `docs/reports/plans/` | 移动 | 低 | `git checkout HEAD -- docs/plans/` |
 
+> 2026-04-07 治理附注:
+> 行 24 所表达的 `docs/cli_reports/` 路由仍受 [reports-cli-retirement-readiness-audit.md](/opt/claude/mystocks_spec/reports/governance/2026-04-07-reports-cli-retirement-readiness-audit.md) 约束，
+> 当前不得把该行视为删除许可。
+
 ---
 
 ## 6. 根目录文件迁移计划
@@ -609,6 +619,10 @@ docs/
 | `package.json` | `web/frontend/package.json` | 移动 |
 | `package-lock.json` | `web/frontend/package-lock.json` | 移动 |
 | `package-grafana.json` | `config/package-grafana.json` | 移动 |
+
+> 2026-04-07 治理附注:
+> `quant_strategy_validation_results.json` 的历史迁移意图仍受 [reports-quant-retirement-readiness-audit.md](/opt/claude/mystocks_spec/reports/governance/2026-04-07-reports-quant-retirement-readiness-audit.md) 约束，
+> 当前不得把该行视为删除或强制搬迁许可。
 
 ---
 

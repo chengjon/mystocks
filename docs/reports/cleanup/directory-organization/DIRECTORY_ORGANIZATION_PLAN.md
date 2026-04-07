@@ -389,6 +389,12 @@
 | `docs/plans/` | 特殊保留 | 规划与实施计划目录，被 README、OpenSpec 与脚本直接引用，当前不迁移 |
 | `docs/docs/` | 验证后删除或并入目标家族 | 先确认是否为空聚合目录 |
 
+**2026-04-07 治理附注**:
+
+- 本节中的目录路由表只表达迁移方向，不构成当前删除许可。
+- 对已完成退役前判定的 `reports/cli/`、`reports/data_cleaning/`、`reports/phase7_monitoring/`、`reports/quant/`，当前统一以 [reports-retirement-readiness-matrix.md](/opt/claude/mystocks_spec/reports/governance/2026-04-07-reports-retirement-readiness-matrix.md) 为总览真相源。
+- 在对应审计仍为 `code_path_verdict = unsafe_to_delete` 时，不得按本计划直接删除、强制并目录，或把旧路径视为已正式退出。
+
 **特别说明**:
 
 - `docs/api/`、`docs/guides/`、`docs/operations/`、`docs/overview/`、`docs/testing/`、`docs/reports/`、`docs/standards/` 可直接作为保留家族
