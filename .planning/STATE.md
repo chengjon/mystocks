@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: Codebase Consolidation
+milestone: v1.1
+milestone_name: Final Polish
 current_phase: null
-status: milestone_complete
-last_updated: "2026-04-08T02:30:00Z"
+status: defining_requirements
+last_updated: "2026-04-08T03:00:00Z"
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 10
-  completed_plans: 10
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
 ---
 
 # Project State
@@ -20,7 +20,16 @@ progress:
 
 **Project:** MyStocks Codebase Consolidation
 **Initialized:** 2026-04-06
-**Milestone:** v1.0 SHIPPED 2026-04-08
+**Milestone:** v1.1 Final Polish — IN PROGRESS
+
+---
+
+## Current Position
+
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-08 — Milestone v1.1 started
 
 ---
 
@@ -29,7 +38,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-08)
 
 **Core value:** Every file has exactly one canonical location, every import resolves cleanly, zero lint errors.
-**Current focus:** Planning next milestone — `/gsd:new-milestone` to start
+**Current focus:** v1.1 Final Polish — deferred structural items + F821 errors
 
 ---
 
@@ -38,18 +47,18 @@ See: .planning/PROJECT.md (updated 2026-04-08)
 | Milestone | Shipped | Phases | Plans | Status |
 |-----------|---------|--------|-------|--------|
 | v1.0 Codebase Consolidation | 2026-04-08 | 4 | 10 | Complete (3 deferred requirements) |
+| v1.1 Final Polish | — | TBD | TBD | Defining requirements |
 
 ---
 
-## Phase Status
+## Accumulated Context
 
-| Phase | Name | Status | Plans | Progress |
-|-------|------|--------|-------|----------|
-| 1 | Lint Baseline | ✓ Complete | 1/1 | 100% |
-| 2 | Dead Code Removal | ✓ Complete | 4/4 | 100% |
-| 3 | Structural Consolidation | ✓ Complete (conditional) | 2/2 | 100% |
-| 4 | Naming & Polish | ✓ Complete | 3/3 | 100% |
+- Ruff F821 count verified at 791 on 2026-04-08 (not 805 from v1.0 archive)
+- Store overlap (market.ts vs marketData.ts) is CLOSED per NAME-05 — do not reopen
+- Frontend case-conflict: only Charts→charts was a merge; Common/, Market/ were deleted (untracked)
+- Composables migration must be per-file (15+ active imports); bulk move will break
+- verify-mount.js is the blocker for STRU-03 — must understand its runtime role first
 
 ---
 *State initialized: 2026-04-06*
-*Last updated: 2026-04-08 after v1.0 milestone completion*
+*Last updated: 2026-04-08 after v1.1 milestone started*

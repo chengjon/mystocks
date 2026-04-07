@@ -7,6 +7,16 @@
 > 文内步骤、范围、状态或说明如未重新复核，应按其所属上下文理解，不得直接当作跨场景通用事实。
 
 
+## Current Milestone: v1.1 Final Polish
+
+**Goal:** Resolve the remaining deferred structural items and substantially reduce F821 undefined-name errors.
+
+**Target features:**
+- STRU-03: Single frontend entry point
+- STRU-04: Composables relocation
+- STRU-05: Archive removal
+- LINT-05: Reduce F821 ruff errors from 791 toward zero
+
 ## What This Is
 
 A structured cleanup initiative for the MyStocks quantitative trading platform codebase. Phase 1 (v1.0) eliminated code/file redundancy, resolved feature divergence, and established a clear mainline with consistent naming and a single source of truth for each concern.
@@ -48,8 +58,7 @@ Every file in the codebase has exactly one canonical location, every import reso
 - [ ] STRU-03: Single frontend entry point (2 files remain — verify-mount.js blocks main.js removal)
 - [ ] STRU-04: views/composables/ → src/composables/ (COMPOSABLES-AUDIT.md shows 15+ imports would break)
 - [ ] STRU-05: views/converted.archive/ removal (5 test files must be deleted first)
-- [ ] Reduce remaining ruff errors below 863 (805 F821 require manual investigation)
-- [ ] Consolidate overlapping stores (market.ts vs marketData.ts runtime merge)
+- [ ] LINT-05: Reduce F821 ruff errors from 791 (current, verified 2026-04-08)
 
 ### Out of Scope
 
@@ -115,4 +124,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-08 after v1.0 milestone completion*
+*Last updated: 2026-04-08 after v1.1 milestone started*
