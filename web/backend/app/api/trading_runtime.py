@@ -49,6 +49,27 @@ TRADING_RUNTIME_ERROR_RESPONSES = {
     500: COMMON_RESPONSES[500],
 }
 
+TRADING_RUNTIME_WRITE_ERROR_RESPONSES = {
+    401: {
+        "description": "缺少 Bearer 令牌，或令牌无效/已过期，写操作被拒绝。",
+        "content": {
+            "application/json": {
+                "example": {
+                    "success": False,
+                    "error": {
+                        "code": "UNAUTHORIZED",
+                        "message": "缺少或无效的认证凭据",
+                    },
+                    "message": "缺少或无效的认证凭据",
+                    "timestamp": "2026-04-04T09:30:00Z",
+                    "request_id": None,
+                }
+            }
+        },
+    },
+    **TRADING_RUNTIME_ERROR_RESPONSES,
+}
+
 TRADING_RUNTIME_STATUS_RESPONSE = {
     **TRADING_RUNTIME_ERROR_RESPONSES,
     **_success_response_spec(
@@ -117,6 +138,54 @@ TRADING_RUNTIME_RISK_METRICS_RESPONSE = {
             "daily_pnl": -3200.0,
             "active_positions": 5,
             "last_updated": "2026-04-04T09:30:00Z",
+        },
+    ),
+}
+
+TRADING_RUNTIME_START_RESPONSE = {
+    **TRADING_RUNTIME_WRITE_ERROR_RESPONSES,
+    **_success_response_spec(
+        "交易运行时会话启动结果",
+        "交易会话已启动",
+        {
+            "session_id": "runtime-1712203200",
+            "is_running": True,
+        },
+    ),
+}
+
+TRADING_RUNTIME_STOP_RESPONSE = {
+    **TRADING_RUNTIME_WRITE_ERROR_RESPONSES,
+    **_success_response_spec(
+        "交易运行时会话停止结果",
+        "交易会话已停止",
+        {
+            "is_running": False,
+            "total_pnl": 12500.5,
+            "daily_pnl": 850.2,
+        },
+    ),
+}
+
+TRADING_RUNTIME_ADD_STRATEGY_RESPONSE = {
+    **TRADING_RUNTIME_WRITE_ERROR_RESPONSES,
+    **_success_response_spec(
+        "运行时策略注册结果",
+        "策略添加成功",
+        {
+            "name": "Breakout Sentinel",
+        },
+    ),
+}
+
+TRADING_RUNTIME_REMOVE_STRATEGY_RESPONSE = {
+    **TRADING_RUNTIME_WRITE_ERROR_RESPONSES,
+    **_success_response_spec(
+        "运行时策略移除结果",
+        "策略移除成功",
+        {
+            "strategy_name": "Breakout Sentinel",
+            "removed": True,
         },
     ),
 }
@@ -203,6 +272,7 @@ async def get_status():
     response_model=APIResponse,
     summary="Start trading runtime session",
     description="启动轻量交易运行时会话，返回当前会话标识和运行态，供前端运行时面板刷新状态。",
+    responses=TRADING_RUNTIME_START_RESPONSE,
 )
 async def start_session(
     authorization: Optional[str] = Header(
@@ -230,6 +300,7 @@ async def start_session(
     response_model=APIResponse,
     summary="Stop trading runtime session",
     description="停止轻量交易运行时会话，并返回停止后的运行状态与盈亏摘要信息。",
+    responses=TRADING_RUNTIME_STOP_RESPONSE,
 )
 async def stop_session(
     authorization: Optional[str] = Header(
@@ -269,6 +340,7 @@ async def get_strategies_performance():
     response_model=APIResponse,
     summary="Add strategy to runtime list",
     description="向轻量交易运行时注册一个前端可见的策略条目，便于在运行时面板中展示新增策略。",
+    responses=TRADING_RUNTIME_ADD_STRATEGY_RESPONSE,
 )
 async def add_strategy(
     request: AddStrategyRequest = Body(
@@ -308,6 +380,7 @@ async def add_strategy(
     response_model=APIResponse,
     summary="Remove strategy",
     description="从轻量交易运行时中移除指定策略条目，并返回是否成功删除该策略。",
+    responses=TRADING_RUNTIME_REMOVE_STRATEGY_RESPONSE,
 )
 async def remove_strategy(
     strategy_name: str = Path(..., description="要从运行时列表中移除的策略名称。"),

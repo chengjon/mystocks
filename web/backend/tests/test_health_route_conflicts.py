@@ -1326,17 +1326,21 @@ def test_risk_v31_broadcast_endpoint_has_docs_and_request_example() -> None:
     assert "example" in request_json or "examples" in request_json
 
 
-def test_trading_runtime_add_strategy_endpoint_has_docs_and_request_example() -> None:
+def test_trading_runtime_add_strategy_endpoint_has_docs_request_and_response_examples() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
     operation = schema["paths"]["/api/trading/strategies/add"]["post"]
     parameters = operation.get("parameters", [])
     request_json = operation["requestBody"]["content"]["application/json"]
+    success_json = operation["responses"]["200"]["content"]["application/json"]
 
+    assert operation.get("summary")
     assert len(operation.get("description", "")) >= 20
     assert any(param["name"] == "Authorization" and param.get("description") for param in parameters)
     assert "example" in request_json or "examples" in request_json
+    assert "example" in success_json or "examples" in success_json
+    assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_strategy_mgmt_write_endpoints_have_docs_and_request_examples() -> None:
@@ -1390,23 +1394,31 @@ def test_strategy_mgmt_legacy_endpoints_have_success_examples_and_error_docs() -
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
-def test_trading_runtime_session_and_delete_endpoints_have_docs() -> None:
+def test_trading_runtime_session_and_delete_endpoints_have_docs_and_success_examples() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
     for path in ["/api/trading/start", "/api/trading/stop"]:
         operation = schema["paths"][path]["post"]
         parameters = operation.get("parameters", [])
+        success_json = operation["responses"]["200"]["content"]["application/json"]
 
+        assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
         assert any(param["name"] == "Authorization" and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
     delete_operation = schema["paths"]["/api/trading/strategies/{strategy_name}"]["delete"]
     delete_parameters = delete_operation.get("parameters", [])
+    delete_success_json = delete_operation["responses"]["200"]["content"]["application/json"]
 
+    assert delete_operation.get("summary")
     assert len(delete_operation.get("description", "")) >= 20
     assert any(param["name"] == "strategy_name" and param.get("description") for param in delete_parameters)
     assert any(param["name"] == "Authorization" and param.get("description") for param in delete_parameters)
+    assert "example" in delete_success_json or "examples" in delete_success_json
+    assert any(code.startswith(("4", "5")) for code in delete_operation["responses"])
 
 
 def test_trading_runtime_read_endpoints_have_success_examples_and_error_docs() -> None:
