@@ -1,74 +1,87 @@
-# Features Research: v1.1 Final Polish
+# Features Research: v1.1 Final Polish (Corrected)
 
 **Researched:** 2026-04-08
-**Focus:** What "done" looks like for each cleanup category
+**Corrected:** 2026-04-08 — aligned with v1.0 Phase 3 VERIFICATION.md
 
 ## Category: Lint Cleanup (F821)
 
 ### Table Stakes
-- F821 undefined-name errors reduced significantly (791 → target <50 or all documented)
-- Top-20 files fixed first (70%+ of errors concentrated in adapters/)
-
-### Differentiators
-- Categorize remaining F821s: fixable vs dead code vs intentional
-- CI gate on new F821s to prevent regression
+- F821 errors reduced from 791 (62 files)
+- Top-20 files fixed first (concentrated in adapters/)
 
 ### Anti-features
-- Do NOT auto-fix all F821s blindly — some are in dead code paths
-- Do NOT add noqa comments — fix properly or delete dead code
+- Do NOT auto-fix blindly — some are in dead code paths (delete instead)
+- Do NOT add noqa comments
 
 ### What "Done" Looks Like
-- `ruff check --select F821` returns <50 errors (or documented)
-- Top 20 files have zero F821 errors
-- No runtime regressions
+- Significant F821 reduction, top-20 files clean, no runtime regressions
 
 ---
 
-## Category: Frontend Entry Consolidation (STRU-03)
+## Category: Entry Consolidation (STRU-03)
+
+### Authoritative Context (from v1.0 Phase 3)
+- **Canonical entry**: `main-standard.ts` — NOT `main.js`
+- `main.js` exists only because `verify-mount.js` reads it
+- `verify-mount.js` lives at `web/frontend/verify-mount.js` (NOT archived)
+- 6 other entry variants were archived in v1.0; these 2 remain
 
 ### Table Stakes
-- Single entry point: main.js only
+- Resolve verify-mount.js disposition: update it to reference main-standard.ts, OR remove it
+- Then archive main.js
+- Result: single entry point (main-standard.ts)
 
 ### What "Done" Looks Like
-- Only 1 entry file in web/frontend/src/
+- Only main-standard.ts as active entry
+- main.js and verify-mount.js archived or removed
 - `npm run dev` and `npm run build` both work
 
 ---
 
-## Category: Composables Migration (STRU-04)
+## Category: Composables (STRU-04)
+
+### Authoritative Context (from v1.0 Phase 3)
+- COMPOSABLES-AUDIT.md classifies 15/17 as "Keep view-local" (1 consumer each)
+- Only 2 are extraction candidates
+- Bulk relocation would break 15+ active imports
+- v1.0 decision: deferred with audit evidence, needs re-scoping
 
 ### Table Stakes
-- All composables in canonical location: `src/composables/`
-- views/composables/ directory removed
-- All ~30 consumer imports updated from `'./composables/X'` to `'@/composables/X'`
+- **Re-scope the requirement** based on audit evidence
+- Options: (a) accept view-local pattern as canonical, (b) extract only 2 candidates, (c) per-file migration with full test coverage
 
 ### What "Done" Looks Like
-- `views/composables/` does not exist
-- `vue-tsc --noEmit` passes
-- `npm run build` succeeds
+- STRU-04 has a clear, evidence-based disposition (may be "accepted as-is" or "2 files migrated")
 
 ---
 
 ## Category: Archive Removal (STRU-05)
 
+### Authoritative Context (from v1.0 Phase 3)
+- `views/converted.archive/`: 0 runtime consumers, 5 test consumers block deletion
+- `views/demo/`: ACTIVE code — 5 routes, 3+ views, 8+ tests — NOT removable
+- DEMO-AUDIT.md proves demo/ is active; STRU-05 demo portion = not applicable
+
 ### Table Stakes
-- views/converted.archive/ deleted (11 dead files)
+- Handle 5 test consumers for converted.archive/
+- Mark demo/ removal as "not applicable"
+- Delete converted.archive/ after test dependencies resolved
 
 ### What "Done" Looks Like
-- Directory does not exist
-- No imports reference it (verified: zero found)
-- Test suite passes
+- views/converted.archive/ deleted
+- views/demo/ confirmed as active code (no removal)
+- All tests pass
 
 ---
 
 ## Complexity Assessment
 
-| Category | Complexity | Risk | Scope |
+| Category | Complexity | Risk | Notes |
 |----------|-----------|------|-------|
-| F821 Resolution | Medium | Low | 62 files |
-| Entry Consolidation | Low | Low | 2 files |
-| Composables Migration | High | Medium | ~47 files |
-| Archive Removal | Low | Low | 11 files |
+| F821 Resolution | Medium | Low | Per-file, 62 files |
+| Entry Consolidation | Low | Medium | Must not delete wrong entry |
+| Composables Re-scoping | Low | Low | Decision task, not bulk migration |
+| Archive Removal | Medium | Low | Must resolve 5 test deps first |
 
 ---
-*Features research complete: 2026-04-08*
+*Features research corrected: 2026-04-08*

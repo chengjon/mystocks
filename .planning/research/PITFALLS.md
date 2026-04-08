@@ -1,74 +1,55 @@
-# Pitfalls Research: v1.1 Final Polish
+# Pitfalls Research: v1.1 Final Polish (Corrected)
 
 **Researched:** 2026-04-08
-**Focus:** What breaks and how to prevent it
+**Corrected:** 2026-04-08 — aligned with v1.0 Phase 3 VERIFICATION.md
 
-## F821 Resolution Pitfalls
+## Critical Pitfall: Getting v1.0 Facts Wrong
+
+The biggest pitfall is re-building conclusions that v1.0 already resolved with evidence:
+- **Entry**: canonical is main-standard.ts, NOT main.js
+- **Composables**: 15/17 are view-local, bulk migration is harmful
+- **Archive**: demo/ is active code, only converted.archive/ is removable (with test deps)
+
+## F821 Pitfalls
 
 ### P1: Fixing Dead Code Instead of Deleting
-**Sign:** F821 in a function that references deleted modules.
-**Prevention:** Check if containing function is used before fixing. Delete dead code instead.
-**Phase:** F821 resolution — "dead or alive" check before each fix.
+**Prevention:** Check if function is used before adding imports.
 
 ### P2: Wrong Import Path
-**Sign:** Multiple modules with similar names (e.g., financial/stock_daily vs akshare/stock_daily).
-**Prevention:** Verify correct module by checking what the undefined name is and which module exports it.
+**Sign:** financial/stock_daily vs akshare/stock_daily confusion.
+**Prevention:** Verify correct module for each undefined name.
 
-### P3: Circular Imports
-**Sign:** Adding import creates circular dependency.
-**Prevention:** After batch fixes, run `python -c "import src.module"` to verify.
+### P3: GPU Conditional Imports
+**Prevention:** Don't blindly add imports for GPU code — check conditional patterns.
 
-### P4: GPU/Optional Code
-**Sign:** 34 F821s in src/gpu/ may have conditional imports.
-**Prevention:** Don't blindly add imports for GPU code — check if module is meant to work without GPU.
+## Entry Consolidation Pitfalls
 
-## Frontend Entry Pitfalls
+### P4: Deleting the Wrong Entry
+**CRITICAL:** main.js is NOT the target entry. main-standard.ts is canonical.
+Deleting main.js without resolving verify-mount.js will break the dev workflow.
 
-### P5: verify-mount.js Already Archived
-**Sign:** File is in _entry-archive/ already.
-**Prevention:** Verify actual status before starting — may just need confirmation.
+### P5: verify-mount.js Still Active
+**Fact:** verify-mount.js is at web/frontend/verify-mount.js (NOT archived).
+**Prevention:** Read verify-mount.js, understand its role, then decide update vs remove.
 
-### P6: Breaking Hot-Reload
-**Sign:** Vite HMR fails after entry changes.
-**Prevention:** Run `npm run dev` and verify hot-reload after changes.
+## Composables Pitfalls
 
-## Composables Migration Pitfalls
+### P6: Bulk Migration
+**CRITICAL:** Do NOT bulk-move 17 files. 15/17 are correctly view-local.
+**Prevention:** Accept view-local pattern or extract only the 2 candidates.
 
-### P7: Name Collisions in Target
-**Sign:** src/composables/ already has ~30 files — possible name collisions.
-**Prevention:** Pre-migration audit: check each name against existing entries.
-
-### P8: Relative Import Chains
-**Sign:** Composables import from relative paths (`../api/`, `../stores/`).
-**Prevention:** Read each composable's imports before moving.
-
-### P9: Test Files Left Behind
-**Sign:** 2 test files reference old location.
-**Prevention:** Move/update tests alongside their composables.
-
-### P10: TypeScript Path Aliases
-**Sign:** `@/composables/` resolves differently after move.
-**Prevention:** Run `vue-tsc --noEmit` after each batch.
+### P7: Name Collisions
+**Prevention:** Pre-check against existing src/composables/ names for the 2 extraction candidates.
 
 ## Archive Removal Pitfalls
 
-### P11: Test Files Referencing Archive
-**Sign:** Tests import from converted.archive.
-**Prevention:** Grep test files for archive references before deletion.
+### P8: Deleting Without Test Resolution
+**Fact:** 5 test consumers exist for converted.archive/.
+**Prevention:** Update or remove those tests BEFORE deleting archive directory.
 
-### P12: Router References
-**Sign:** Vue Router lazy-loads archived views.
-**Prevention:** Check router config for converted.archive references.
-
-## Prevention Strategy
-
-| Phase | Verification | Tool |
-|-------|-------------|------|
-| F821 batch | Error count drops, no circular imports | ruff + python import |
-| Entry | Dev server + HMR works | npm run dev |
-| Composables | TS compiles + build succeeds | vue-tsc --noEmit + npm run build |
-| Archive | No dangling refs + tests pass | grep + pytest |
-| Every phase | Full build + tests | CI commands |
+### P9: Accidentally Removing demo/
+**CRITICAL:** demo/ is active code with routes, views, and tests.
+**Prevention:** STRU-05 demo portion = "not applicable". Only touch converted.archive/.
 
 ---
-*Pitfalls research complete: 2026-04-08*
+*Pitfalls research corrected: 2026-04-08*

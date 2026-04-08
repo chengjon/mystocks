@@ -1,37 +1,37 @@
-# Stack Research: v1.1 Final Polish
+# Stack Research: v1.1 Final Polish (Corrected)
 
 **Researched:** 2026-04-08
-**Focus:** Tooling for F821 resolution, entry consolidation, composables migration, archive cleanup
+**Corrected:** 2026-04-08 — aligned with v1.0 Phase 3 VERIFICATION.md
 
 ## Summary
 
-No new dependencies needed. All cleanup tasks use existing tooling.
+No new dependencies. All cleanup uses existing tooling.
 
 ## Tooling
 
 ### F821 Resolution
-- **ruff** (current version): `ruff check --select F821 --fix` for auto-fixable cases
-- **Manual review**: Most F821 are missing imports — need human judgment for correct module
+- **ruff**: `ruff check --select F821 --fix` for auto-fixable; manual for most
+- No new tools needed
 
-### Frontend Entry Consolidation
-- **Vite** (existing): Entry point configured in `vite.config.js`
+### Entry Consolidation (STRU-03)
+- **Vite** (existing): entry configured in `vite.config.js`
+- **Key fact from v1.0**: canonical entry is `main-standard.ts`, NOT `main.js`
+- `main.js` retained because `verify-mount.js` (at `web/frontend/verify-mount.js`) reads it
+- Resolution: update verify-mount.js → main-standard.ts, OR remove verify-mount.js, then archive main.js
 
-### Composables Migration
-- **git mv**: Move files preserving history
-- **grep/ast-grep**: Find all import references to update
+### Composables (STRU-04)
+- **Key fact from v1.0**: 15/17 composables are view-local (1 consumer each, relative import from sibling view)
+- Only 2 are extraction candidates for `src/composables/`
+- Bulk relocation is NOT the correct approach — would break 15+ active imports
+- Need to re-scope: accept view-local as canonical pattern, or extract only the 2 candidates
 
-### Archive Removal
-- **git rm**: Delete dead files
+### Archive Removal (STRU-05)
+- **Key fact from v1.0**: `views/converted.archive/` has 5 test consumers blocking deletion
+- `views/demo/` is ACTIVE code (5 routes, 3+ views, 8+ tests) — NOT removable
+- STRU-05 demo portion should be marked "not applicable"
 
 ## What NOT to Add
-- No new linters, formatters, or analysis tools
-- No codemods — composables migration needs manual per-consumer updates
-- No automated F821 fixers — most require understanding context
-
-## Integration Points
-- F821 fixes touch 62 files across `src/adapters/`, `src/monitoring/`, `src/gpu/`, `web/backend/`
-- Composables migration touches 17 files + ~30 consumer views
-- Archive removal is isolated (zero imports found)
+- No new tools, codemods, or automated fixers
 
 ---
-*Stack research complete: 2026-04-08*
+*Stack research corrected: 2026-04-08*
