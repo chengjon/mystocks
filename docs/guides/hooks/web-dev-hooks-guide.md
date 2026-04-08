@@ -70,7 +70,7 @@ The Web Development Hooks system provides specialized file tracking, validation,
 **Whitelist**: `.claude/web-dev-whitelist.json`
 
 **Protected Files**:
-- All files in `docs/web-dev/`
+- All files in `docs/guides/hooks/`
 - All files in `web/` directory
 - Root configuration files (package.json, tsconfig.json, etc.)
 
@@ -126,7 +126,7 @@ The Web Development Hooks system provides specialized file tracking, validation,
 - `web/backend/`
 - `web/frontend/`
 - `config/`
-- `docs/web-dev/`
+- `docs/guides/hooks/`
 
 ---
 
@@ -177,7 +177,7 @@ The Web Development Hooks system provides specialized file tracking, validation,
   },
   "documentation": {
     "category": "Documentation",
-    "directory": "docs/web-dev/",
+    "directory": "docs/guides/hooks/",
     "priority": "high",
     "extensions": [".md"]
   }
@@ -231,13 +231,13 @@ web_backend:
 ### Documentation Structure
 ```yaml
 web_dev_docs:
-  root: "docs/web-dev/"
-  guides: "docs/web-dev/guides/"
-  api: "docs/web-dev/api/"
-  tutorials: "docs/web-dev/tutorials/"
-  deployment: "docs/web-dev/deployment/"
+  root: "docs/guides/hooks/"
+  guides: "docs/guides/hooks/"
+  api: "docs/api/"
+  tutorials: "docs/guides/hooks/"
+  deployment: "docs/operations/"
   tracing: "var/log/web-dev/tracing/"
-  archived: "docs/web-dev/archived/"
+  archived: "archive/docs/"
 ```
 
 ---
@@ -246,7 +246,7 @@ web_dev_docs:
 
 ### 1. Create Directory Structure
 ```bash
-mkdir -p docs/web-dev/{guides,api,tutorials,deployment,archived}
+mkdir -p docs/guides/hooks
 mkdir -p var/log/web-dev/tracing
 mkdir -p .claude/hooks
 ```
@@ -390,7 +390,7 @@ jq -r '.file_type' var/log/web-dev/tracing/web-edit-tracker.jsonl | sort | uniq 
 | `post-tool-use-file-edit-tracker.sh` | Python backend tracking | `src/`, `tests/` Python files |
 | `post-tool-use-web-dev-file-tracker.sh` | Web frontend tracking | `web/`, TypeScript, Vue, React |
 | `post-tool-use-document-organizer.sh` | General doc organization | Root `.md` files |
-| `post-tool-use-web-dev-document-organizer.sh` | Web doc validation | `docs/web-dev/` |
+| `post-tool-use-web-dev-document-organizer.sh` | Web doc validation | `docs/guides/hooks/` |
 
 ### Hook Execution Order
 
