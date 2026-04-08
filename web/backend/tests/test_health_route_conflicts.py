@@ -1050,6 +1050,30 @@ def test_positions_endpoints_have_examples_parameter_docs_and_error_responses() 
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
+def test_position_write_endpoints_have_request_and_response_examples() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    for path, method, expected_params in [
+        ("/api/v1/positions", "post", []),
+        ("/api/v1/positions/{position_id}", "patch", ["position_id"]),
+    ]:
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+        request_json = operation["requestBody"]["content"]["application/json"]
+        success_json = operation["responses"][next(code for code in operation["responses"] if code.startswith("2"))][
+            "content"
+        ]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expected_params:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in request_json or "examples" in request_json
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_backtest_results_endpoint_has_description_and_parameter_docs() -> None:
     app.openapi_schema = None
     schema = app.openapi()

@@ -112,6 +112,36 @@ POSITION_RESPONSE_EXAMPLE = {
     "updated_at": "2025-01-20T15:00:00Z",
 }
 
+POSITION_CREATE_RESPONSE_EXAMPLE = {
+    "position_id": "pos_003",
+    "symbol": "600519",
+    "name": "贵州茅台",
+    "quantity": 100,
+    "average_cost": 1800.0,
+    "current_price": 1800.0,
+    "market_value": 180000.0,
+    "unrealized_pnl": 0.0,
+    "realized_pnl": 0.0,
+    "weight": 0.0,
+    "created_at": "2026-04-08T04:00:00Z",
+    "updated_at": "2026-04-08T04:00:00Z",
+}
+
+POSITION_UPDATE_RESPONSE_EXAMPLE = {
+    "position_id": "pos_001",
+    "symbol": "600519",
+    "name": "贵州茅台",
+    "quantity": 120,
+    "average_cost": 1800.0,
+    "current_price": 1850.0,
+    "market_value": 222000.0,
+    "unrealized_pnl": 6000.0,
+    "realized_pnl": 0.0,
+    "weight": 0.4,
+    "created_at": "2025-01-15T10:30:00Z",
+    "updated_at": "2026-04-08T04:05:00Z",
+}
+
 POSITION_LIST_RESPONSES = {
     **POSITION_ROUTE_RESPONSES,
     200: {
@@ -165,6 +195,30 @@ POSITION_DELETE_RESPONSES = {
                 "example": {
                     "message": "Position pos_001 deleted successfully",
                 }
+            }
+        },
+    },
+}
+
+POSITION_CREATE_RESPONSES = {
+    **POSITION_ROUTE_RESPONSES,
+    200: {
+        "description": "持仓创建成功。",
+        "content": {
+            "application/json": {
+                "example": POSITION_CREATE_RESPONSE_EXAMPLE,
+            }
+        },
+    },
+}
+
+POSITION_UPDATE_RESPONSES = {
+    **POSITION_ROUTE_RESPONSES,
+    200: {
+        "description": "持仓更新成功。",
+        "content": {
+            "application/json": {
+                "example": POSITION_UPDATE_RESPONSE_EXAMPLE,
             }
         },
     },
@@ -268,6 +322,7 @@ async def get_position(position_id: str = Path(..., description="需要查询详
     response_model=PositionResponse,
     summary="Create Position",
     description="创建新的持仓记录，并根据建仓价格和数量初始化市值。",
+    responses=POSITION_CREATE_RESPONSES,
 )
 async def create_position(request: PositionCreate = Body(..., openapi_examples=POSITION_CREATE_EXAMPLES)):
     """
@@ -298,6 +353,7 @@ async def create_position(request: PositionCreate = Body(..., openapi_examples=P
     response_model=PositionResponse,
     summary="Update Position",
     description="更新指定持仓的数量或风控参数，例如止损价和止盈价。",
+    responses=POSITION_UPDATE_RESPONSES,
 )
 async def update_position(
     position_id: str = Path(..., description="需要更新的持仓ID。"),
