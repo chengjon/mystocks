@@ -1605,10 +1605,12 @@ def test_governance_guides_are_converged_under_guides_governance_family() -> Non
     for name in governance_docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "governance" / name).is_file()
-        assert f"- [{name.removesuffix('.md')}]({name})" not in guides_index
-        assert f"governance/{name}" in guides_index
         assert f"guides/governance/{name}" in cleanup_index_root
         assert name.removesuffix(".md") in governance_index
+
+    assert "[`governance/`]" in guides_index
+    assert "/opt/claude/mystocks_spec/architecture/STANDARDS.md" in governance_index
+    assert "/opt/claude/mystocks_spec/docs/overview/documentation-system.md" in governance_index
 
 
 def test_onboarding_guides_are_converged_under_guides_onboarding_family() -> None:

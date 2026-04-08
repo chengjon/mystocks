@@ -1,33 +1,26 @@
-# MyStocks 文档索引
+# Governance Guide Family
 
 > **导航说明**:
-> 本文件是文档导航或索引，不是当前规则、当前基线或当前实现状态的唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线文档一并核对。
->
-> 文内目录、链接、数量和分类如未重新生成或复核，应视为导航快照，不得直接当作当前事实。
+> 本文件是 `docs/guides/governance/` 的 transition index，不是仓库共享规则、审批门禁或当前治理口径的唯一事实来源。
+> 若需确认当前仓库级治理规则，请优先阅读 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若需确认文档系统 trunk 与 lifecycle，请优先阅读 [`docs/overview/documentation-system.md`](/opt/claude/mystocks_spec/docs/overview/documentation-system.md)。
 
+## Current Trunk First
 
-**生成时间**: 2026-03-25 00:08:57
+这一 family 只保留 focused workflow helpers，不再承担并行 governance trunk 的角色。当前阅读顺序是：
 
+1. [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)
+2. [`docs/overview/documentation-system.md`](/opt/claude/mystocks_spec/docs/overview/documentation-system.md)
+3. 再按需进入本 family 的专题执行指南
 
----
+## Active Supporting Guides
 
-## 🚀 快速导航
+- [`FEATURE_MANAGEMENT_WORKFLOW.md`](./FEATURE_MANAGEMENT_WORKFLOW.md)
+  - 功能状态、功能树、task card / PR 镜像与变更同步流程
+- [`TECHNICAL_DEBT_MANAGEMENT.md`](./TECHNICAL_DEBT_MANAGEMENT.md)
+  - 技术债识别、分级、偿还与预防的专题执行细则
 
+## Retention Rule
 
----
-
-## 📊 统计信息
-
-
-- **总文档数**: 2
-- **总目录数**: 0
-- **最后更新**: 2026-03-25
-
----
-
-
-## 📁 项目根目录
-
-- 📄 [FEATURE_MANAGEMENT_WORKFLOW](FEATURE_MANAGEMENT_WORKFLOW.md)
-- 📄 [TECHNICAL_DEBT_MANAGEMENT](TECHNICAL_DEBT_MANAGEMENT.md)
+- 该 family 当前角色是 `supporting`
+- 专题治理流程允许保留，但不得覆盖 `architecture/STANDARDS.md` 的共享规则地位
+- 历史索引或局部导航可以继续引用本 family 内文档，但不应把它们当成仓库级治理真相源
