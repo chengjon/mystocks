@@ -65,6 +65,24 @@ def test_scope_gate_allows_meta_governance_self_bootstrap() -> None:
     assert metrics["matched_domain_ids"] == ["meta-governance"]
 
 
+def test_scope_gate_allows_meta_governance_technical_debt_artifacts() -> None:
+    module = load_scope_gate_module()
+    card = make_card(
+        domain_id="meta-governance",
+        node_id="meta-governance-mainline",
+        affected_entrypoints=["governance"],
+        update_status="required",
+    )
+
+    violations, metrics = module.validate_function_tree_mapping(
+        card,
+        ["governance/technical-debt/TASK.md"],
+    )
+
+    assert violations == []
+    assert metrics["matched_domain_ids"] == ["meta-governance"]
+
+
 def test_scope_gate_rejects_unknown_node() -> None:
     module = load_scope_gate_module()
     card = make_card(
