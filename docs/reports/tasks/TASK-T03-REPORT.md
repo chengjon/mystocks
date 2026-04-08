@@ -1,5 +1,9 @@
 # TASK-T03 Execution Report - Debt Register Cadence
 
+> Historical note:
+> The execution-log evidence path below points at retired sidecar `technical_debt/governance/*`.
+> Current canonical source is `governance/technical-debt/DEBT_REGISTER.md`.
+
 ## Basics
 - Task ID: T03
 - Owner: TBD

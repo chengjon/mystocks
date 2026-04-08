@@ -1,5 +1,9 @@
 # TASK-T01 Execution Report - Architecture Source of Truth
 
+> Historical note:
+> The execution-log evidence path below points at retired sidecar `technical_debt/governance/*`.
+> Current canonical source is `governance/technical-debt/ARCHITECTURE_SOURCE_OF_TRUTH.md`.
+
 ## Basics
 - Task ID: T01
 - Owner: TBD

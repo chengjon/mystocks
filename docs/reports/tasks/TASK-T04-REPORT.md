@@ -1,5 +1,9 @@
 # TASK-T04 Execution Report - Consolidate Runtime Config Entry Points
 
+> Historical note:
+> The execution-log evidence paths below point at retired sidecar `technical_debt/governance/*`.
+> Current governance-canonical directory is `governance/technical-debt/`; the specific runtime-config closeout should be verified from current source and reports before reuse.
+
 ## Basics
 - Task ID: T04
 - Owner: TBD
