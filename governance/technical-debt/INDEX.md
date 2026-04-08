@@ -14,6 +14,7 @@ This directory is the canonical home for the `tech-debt-governance-2026q1` basel
 - `ARCHITECTURE_SOURCE_OF_TRUTH.md`
 - `SPEC_CONFLICT_MATRIX.md`
 - `DEBT_REGISTER.md`
+- `TEMPORARY_ARTIFACT_INVENTORY.md`
 - `WEEKLY_GOVERNANCE_CADENCE.md`
 - `TASK.md`
 - `TASK-REPORT.md`

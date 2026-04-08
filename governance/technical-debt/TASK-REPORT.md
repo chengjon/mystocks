@@ -36,6 +36,9 @@
   - `reports/governance/2026-04-07-reports-retirement-readiness-matrix.md` separates `measured`, `historical_baseline`, `inferred`, and `target`
   - `reports/governance/2026-04-07-reports-cli-retirement-readiness-audit.md` and `reports/governance/2026-04-07-reports-data-cleaning-retirement-readiness-audit.md` record both `code_path_verdict` and `function_tree_verdict`
   - `docs/reports/tasks/INDEX.md`, `docs/reports/tasks/TASK.md`, and `docs/reports/tasks/TASK-T01-REPORT.md` through `TASK-T04-REPORT.md` now carry explicit retirement notes that redirect historical `technical_debt/governance/*` citations to `governance/technical-debt/*`
+  - `governance/technical-debt/TEMPORARY_ARTIFACT_INVENTORY.md` now defines the canonical class-level inventory for temporary entrypoints, mechanical splits, and backup files
+  - `governance/technical-debt/WEEKLY_GOVERNANCE_CADENCE.md` and `reports/governance/README.md` now require explicit evidence sources for progress and closeout claims
+  - `docs/reports/tasks/TASK.md` and `docs/reports/tasks/TASK-T05-REPORT.md` through `TASK-T10-REPORT.md` now mark blank-evidence drafts as unverified historical context only
 - `inferred`
   - Historical task snapshots and root mainline snapshots had overlapping discoverability and needed an explicit bridge
   - Archived sidecar governance artifacts were partially implemented but not canonical
@@ -44,5 +47,5 @@
 
 ## Decisions Needed
 
-1. Confirm whether temporary-entrypoint inventory should become a dedicated follow-up change or stay tracked as open debt (`TD-014`).
-2. Decide whether narrative-only historical governance reports need explicit retrofit beyond the current canonical board and report templates (`TD-015`).
+1. Confirm whether deletion-governance runbooks need another bridge layer beyond the current OpenSpec-first wording (`SC-008`).
+2. Confirm whether cleanup-readiness references need another explicit registry-path bridge in templates or reports (`SC-018`).
