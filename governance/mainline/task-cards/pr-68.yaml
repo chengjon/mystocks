@@ -1,0 +1,97 @@
+version: "v0.2"
+
+task:
+  id: "pr-68"
+  title: "archive ArtDeco pages openspec change"
+  owner: "main"
+  created_at: "2026-04-08"
+
+mainline:
+  id: "L1-artdeco-pages-openspec-closeout"
+  objective: "archive the completed ArtDeco pages OpenSpec change and keep canonical frontend governance specs synchronized on main"
+  milestone_id: "L2-governance-closeout"
+  slice_id: "L3-artdeco-pages-openspec-archive"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "required"
+  secondary_domains: []
+  exemption_reason: "openspec-archive-closeout-only"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-68.yaml"
+    - "openspec/changes/archive/2026-04-08-optimize-artdeco-pages/design.md"
+    - "openspec/changes/archive/2026-04-08-optimize-artdeco-pages/proposal.md"
+    - "openspec/changes/archive/2026-04-08-optimize-artdeco-pages/specs/04-smart-dumb-components/spec.md"
+    - "openspec/changes/archive/2026-04-08-optimize-artdeco-pages/specs/api-integration/spec.md"
+    - "openspec/changes/archive/2026-04-08-optimize-artdeco-pages/specs/code-quality/spec.md"
+    - "openspec/changes/archive/2026-04-08-optimize-artdeco-pages/specs/frontend-routing/spec.md"
+    - "openspec/changes/archive/2026-04-08-optimize-artdeco-pages/tasks.md"
+    - "openspec/specs/04-smart-dumb-components/spec.md"
+    - "openspec/specs/api-integration/spec.md"
+    - "openspec/specs/code-quality/spec.md"
+    - "openspec/specs/frontend-routing/spec.md"
+  forbidden_paths:
+    - "web/frontend/**"
+    - "tests/e2e/**"
+    - "docs/plans/frontend-page-optimization-list.md"
+    - "src/**"
+
+non_goals:
+  - "No runtime ArtDeco page behavior change"
+  - "No new OpenSpec proposal or expansion beyond archiving the completed optimize-artdeco-pages change"
+  - "No unrelated governance, Mongo, watchlist, or active frontend directory migration work"
+
+acceptance:
+  checks:
+    - id: "openspec-spec-validation"
+      command: "openspec validate --specs --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-68.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr68-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the task card misses any archived file path, Mainline Governance Gate will fail even though the archive itself is correct"
+    - "If the canonical frontend governance specs are not updated together with the archive move, OpenSpec truth will drift from the landed ArtDeco optimization governance"
+  rollback_plan: "git revert <merge-commit-sha> if the archive metadata or canonical spec sync for ArtDeco pages is found to be inaccurate after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "move the completed ArtDeco pages optimization change into OpenSpec archive and promote its deltas into the canonical frontend governance specs"
+    modified_scope: "one archived OpenSpec change directory, four canonical OpenSpec spec files, and this PR-68 task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime frontend behavior changes; only OpenSpec archive state and canonical spec truth are synchronized"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the merge if the archived change metadata or canonical spec text is found to diverge from the landed ArtDeco optimization governance behavior"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-08T00:00:00Z"
+    approval_note: "this PR only archives already-landed ArtDeco optimization work and keeps the canonical OpenSpec specs aligned"
+    secondary_approved: false
