@@ -646,6 +646,6 @@ cat versions.txt
 
 ---
 
-**文档版本**: v1.0.0
-**最后更新**: 2025-12-29
-**维护者**: MyStocks Team
+**Historical Document Version Snapshot**: v1.0.0
+**Historical Last Updated Snapshot**: 2025-12-29
+**Historical Maintainer Snapshot**: MyStocks Team
