@@ -7,10 +7,10 @@
 > 文内端点、命令、统计值和示例如未重新复核，应视为参考或历史材料，不得直接当作当前事实。
 
 
-**创建时间**: 2026-01-11
-**版本**: 2.0
-**作者**: Claude Code & MyStocks Team
-**适用平台**: MyStocks 量化交易数据管理系统
+**Historical Creation Time Snapshot**: 2026-01-11
+**Historical Document Version Snapshot**: 2.0
+**Historical Author Snapshot**: Claude Code & MyStocks Team
+**Historical Platform Snapshot**: MyStocks 量化交易数据管理系统
 
 ---
 

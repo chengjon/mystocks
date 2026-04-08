@@ -7,9 +7,9 @@
 > 文内端点、命令、统计值和示例如未重新复核，应视为参考或历史材料，不得直接当作当前事实。
 
 
-**创建日期**: 2025-12-25
-**目标**: 将前端Mock数据逐步替换为真实API调用，保持原有Mock数据不变
-**原则**: Mock数据保留作为备用，真实数据优先使用
+**Historical Creation Date Snapshot**: 2025-12-25
+**Historical Goal Snapshot**: 将前端Mock数据逐步替换为真实API调用，保持原有Mock数据不变
+**Historical Principle Snapshot**: Mock数据保留作为备用，真实数据优先使用
 
 ---
 
@@ -419,6 +419,6 @@ npm run dev
 
 ---
 
-**文档所有者**: MyStocks Development Team
-**审核状态**: ✅ 已审核
-**实施状态**: 🚀 进行中
+**Historical Document Owner Snapshot**: MyStocks Development Team
+**Historical Review Status Snapshot**: ✅ 已审核
+**Historical Implementation Status Snapshot**: 🚀 进行中

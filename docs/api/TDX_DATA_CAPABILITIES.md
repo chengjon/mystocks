@@ -7,10 +7,10 @@
 > 文内端点、命令、统计值和示例如未重新复核，应视为参考或历史材料，不得直接当作当前事实。
 
 
-**文档版本**: v1.0
-**创建日期**: 2026-01-02
-**模块路径**: `src/adapters/tdx/`
-**数据源**: 通达信 (TongDaXin) + PyTDX
+**Historical Document Version Snapshot**: v1.0
+**Historical Creation Date Snapshot**: 2026-01-02
+**Historical Module Path Snapshot**: `src/adapters/tdx/`
+**Historical Data Source Snapshot**: 通达信 (TongDaXin) + PyTDX
 
 ---
 
@@ -732,6 +732,6 @@ print(f"新能源板块共 {len(stocks)} 只股票")
 
 ---
 
-**文档维护**: MyStocks Project
-**最后更新**: 2026-01-02
-**版本**: v1.0
+**Historical Document Maintenance Snapshot**: MyStocks Project
+**Historical Last Updated Snapshot**: 2026-01-02
+**Historical Document Version Snapshot**: v1.0
