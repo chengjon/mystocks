@@ -3,6 +3,7 @@
 > 2026-04-06 状态说明：
 > 本文档是 `2026Q1` 治理执行板历史快照，未继续维护，不应作为当前任务分派真值源。
 > 当前活跃任务请以仓库根目录 `TASK.md` / `TASK-REPORT.md` 的 Mongo 导出快照为准；按工作项的收口证据请看 `reports/governance/`。
+> 若关联历史分报告仍保留空白 `Evidence`、未勾选 checklist、或 `TBD` 字段，应将其视为未验证草稿上下文，不得据此推断“已完成”或“正在执行”。
 
 ## Usage
 - Cadence: weekly plan (Mon) and rollup (Fri)

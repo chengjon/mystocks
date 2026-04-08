@@ -35,6 +35,8 @@
   - `openspec archive tech-debt-governance-2026q1 --yes` promoted `openspec/specs/architecture-governance/spec.md` on 2026-04-08
   - `reports/governance/2026-04-07-reports-retirement-readiness-matrix.md` separates `measured`, `historical_baseline`, `inferred`, and `target`
   - `reports/governance/2026-04-07-reports-cli-retirement-readiness-audit.md` and `reports/governance/2026-04-07-reports-data-cleaning-retirement-readiness-audit.md` record both `code_path_verdict` and `function_tree_verdict`
+  - `governance/technical-debt/WEEKLY_GOVERNANCE_CADENCE.md` and `reports/governance/README.md` now require explicit evidence sources for progress and closeout claims
+  - `docs/reports/tasks/TASK.md` and `docs/reports/tasks/TASK-T05-REPORT.md` through `TASK-T10-REPORT.md` now mark blank-evidence drafts as unverified historical context only
 - `inferred`
   - Historical task snapshots and root mainline snapshots had overlapping discoverability and needed an explicit bridge
   - Archived sidecar governance artifacts were partially implemented but not canonical

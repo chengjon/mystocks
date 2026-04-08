@@ -76,6 +76,16 @@ Any numbers recorded here must keep these categories separate:
 Historical snapshots must stay labeled as historical.
 Do not present an archived number as the current repo value unless it is freshly re-measured and cited from the current canonical source.
 
+## Evidence Discipline
+
+Progress or closeout claims recorded here must keep the evidence source explicit.
+
+- If a statement says something is done, converged, retired, or blocked, it must cite:
+  - a concrete evidence path, or
+  - the command / generated source that established that result
+- If evidence is absent, record the statement as unverified context or planned work, not as completion proof
+- Historical drafts with blank evidence fields may remain for traceability, but they do not establish current status
+
 ## Temporary Files / Mechanical Splits / Backups
 
 This directory must not accumulate:
