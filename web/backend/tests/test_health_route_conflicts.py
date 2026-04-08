@@ -2636,9 +2636,14 @@ def test_risk_v31_stop_loss_write_endpoints_have_docs_and_request_examples() -> 
     ]:
         operation = schema["paths"][path]["post"]
         request_json = operation["requestBody"]["content"]["application/json"]
+        success_code = next(code for code in operation["responses"] if code.startswith("2"))
+        success_json = operation["responses"][success_code]["content"]["application/json"]
 
+        assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
         assert "example" in request_json or "examples" in request_json
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_risk_v31_alert_write_endpoints_have_docs_and_request_examples() -> None:
@@ -2658,6 +2663,31 @@ def test_risk_v31_alert_write_endpoints_have_docs_and_request_examples() -> None
         assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
         assert "example" in request_json or "examples" in request_json
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
+def test_risk_v31_stop_loss_read_endpoints_have_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    endpoint_expectations = {
+        ("/api/v1/risk/v31/stop-loss/status/{position_id}", "get"): {"parameters": {"position_id"}},
+        ("/api/v1/risk/v31/stop-loss/overview", "get"): {"parameters": set()},
+        ("/api/v1/risk/v31/stop-loss/history/performance", "get"): {"parameters": {"strategy_type", "symbol", "days"}},
+        ("/api/v1/risk/v31/stop-loss/history/recommendations", "get"): {"parameters": {"strategy_type", "symbol"}},
+    }
+
+    for (path, method), expectation in endpoint_expectations.items():
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+        success_code = next(code for code in operation["responses"] if code.startswith("2"))
+        success_json = operation["responses"][success_code]["content"]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expectation["parameters"]:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
         assert "example" in success_json or "examples" in success_json
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
@@ -2711,11 +2741,23 @@ def test_risk_remaining_write_endpoints_have_docs_and_request_examples() -> None
         request_json = operation["requestBody"]["content"]["application/json"]
         assert "example" in request_json or "examples" in request_json
 
-        if path == "/api/v1/risk/position/assess":
+        if path in {
+            "/api/v1/risk/position/assess",
+            "/api/v1/risk/v31/stop-loss/remove-position/{position_id}",
+        }:
             success_code = next(code for code in operation["responses"] if code.startswith("2"))
             success_json = operation["responses"][success_code]["content"]["application/json"]
             assert "example" in success_json or "examples" in success_json
             assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+    remove_operation = schema["paths"]["/api/v1/risk/v31/stop-loss/remove-position/{position_id}"]["delete"]
+    remove_parameters = remove_operation.get("parameters", [])
+    remove_success_code = next(code for code in remove_operation["responses"] if code.startswith("2"))
+    remove_success_json = remove_operation["responses"][remove_success_code]["content"]["application/json"]
+
+    assert any(param["name"] == "position_id" and param.get("description") for param in remove_parameters)
+    assert "example" in remove_success_json or "examples" in remove_success_json
+    assert any(code.startswith(("4", "5")) for code in remove_operation["responses"])
 
 
 def test_v1_lineage_write_endpoints_have_request_and_response_examples() -> None:

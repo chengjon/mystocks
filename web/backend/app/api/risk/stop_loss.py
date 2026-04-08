@@ -26,6 +26,19 @@ RISK_STOP_LOSS_ROUTE_RESPONSES = {
 
 router = APIRouter(prefix="/api/v1/risk", tags=["风险管理-止损"], responses=RISK_STOP_LOSS_ROUTE_RESPONSES)
 
+
+def _success_response_spec(description: str, example: Any) -> dict[int, dict[str, Any]]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
 STOP_LOSS_ADD_POSITION_EXAMPLES = {
     "monitor_equity_position": {
         "summary": "添加股票止损监控",
@@ -85,11 +98,211 @@ STOP_LOSS_TRIGGER_EXAMPLES = {
     }
 }
 
+STOP_LOSS_ADD_POSITION_RESPONSE_EXAMPLE = {
+    "success": True,
+    "position_id": "pos-001",
+    "stop_loss_price": 1590.0,
+    "stop_loss_type": "volatility_adaptive",
+    "monitoring_active": True,
+}
+
+STOP_LOSS_UPDATE_PRICE_RESPONSE_EXAMPLE = {
+    "checked": True,
+    "stop_loss_triggered": False,
+    "current_price": 1662.5,
+    "stop_loss_price": 1590.0,
+    "distance_to_stop": 4.56,
+    "position_id": "pos-001",
+}
+
+STOP_LOSS_REMOVE_POSITION_RESPONSE_EXAMPLE = {
+    "success": True,
+    "position_id": "pos-001",
+    "message": "止损监控已移除",
+}
+
+STOP_LOSS_STATUS_RESPONSE_EXAMPLE = {
+    "found": True,
+    "position_id": "pos-001",
+    "symbol": "600519.SH",
+    "entry_price": 1688.0,
+    "stop_loss_price": 1590.0,
+    "stop_loss_type": "volatility_adaptive",
+    "highest_price": None,
+    "is_active": True,
+    "last_check_time": "2026-04-08T11:25:00",
+    "time_since_last_check": 18.4,
+}
+
+STOP_LOSS_OVERVIEW_RESPONSE_EXAMPLE = {
+    "total_positions": 2,
+    "active_positions": 2,
+    "inactive_positions": 0,
+    "execution_stats": {
+        "total_positions_monitored": 2,
+        "stop_loss_triggered": 1,
+        "successful_executions": 1,
+        "failed_executions": 0,
+        "total_pnl_protected": 12500.0,
+    },
+    "positions": [
+        {
+            "position_id": "pos-001",
+            "symbol": "600519.SH",
+            "stop_loss_type": "volatility_adaptive",
+            "is_active": True,
+        },
+        {
+            "position_id": "pos-002",
+            "symbol": "0700.HK",
+            "stop_loss_type": "trailing_stop",
+            "is_active": True,
+        },
+    ],
+}
+
+STOP_LOSS_BATCH_UPDATE_RESPONSE_EXAMPLE = {
+    "total_checked": 2,
+    "triggered_count": 1,
+    "triggered_positions": ["pos-002"],
+    "results": [
+        {
+            "checked": True,
+            "stop_loss_triggered": False,
+            "current_price": 1662.5,
+            "stop_loss_price": 1590.0,
+            "distance_to_stop": 4.56,
+            "position_id": "pos-001",
+        },
+        {
+            "checked": True,
+            "stop_loss_triggered": True,
+            "execution_result": {"success": True, "order_id": "sl-order-001"},
+            "position_id": "pos-002",
+        },
+    ],
+}
+
+STOP_LOSS_PERFORMANCE_RESPONSE_EXAMPLE = {
+    "total_trades": 18,
+    "win_rate": 0.61,
+    "total_pnl": 42800.0,
+    "avg_pnl": 2377.78,
+    "avg_win": 6120.0,
+    "avg_loss": -3150.0,
+    "max_profit": 11800.0,
+    "max_loss": -6200.0,
+    "profit_factor": 2.14,
+    "win_loss_ratio": 1.94,
+    "avg_holding_period_days": 6.2,
+    "monthly_performance": {
+        "2026-02": {"trades": 8, "pnl": 15400.0},
+        "2026-03": {"trades": 10, "pnl": 27400.0},
+    },
+    "filters": {
+        "strategy_type": "volatility_adaptive",
+        "symbol": "600519.SH",
+        "date_from": "2026-03-09T11:25:00",
+        "date_to": None,
+    },
+    "generated_at": "2026-04-08T11:25:00",
+}
+
+STOP_LOSS_RECOMMENDATIONS_RESPONSE_EXAMPLE = {
+    "recommendations": [
+        "策略胜率中等，可以继续使用",
+        "盈亏比较好，建议保持当前止损设置",
+        "利润因子优秀，策略表现非常好",
+    ],
+    "performance_summary": {
+        "win_rate": 0.61,
+        "profit_factor": 2.14,
+        "avg_holding_period": 6.2,
+        "total_trades": 18,
+    },
+    "confidence": "high",
+    "generated_at": "2026-04-08T11:25:00",
+}
+
+STOP_LOSS_CALCULATE_RESPONSE_EXAMPLE = {
+    "status": "success",
+    "data": {
+        "strategy_type": "volatility_adaptive_advanced",
+        "entry_price": 1688.0,
+        "stop_loss_price": 1590.0,
+        "stop_percentage": 5.81,
+        "base_atr_value": 14.4,
+        "k_factor": 2.0,
+        "market_adjustment": 1.02,
+        "risk_tolerance": "medium",
+        "use_dynamic_k": False,
+        "risk_assessment": {"level": "medium", "score": 63},
+        "execution_recommendation": "当前止损设置合理",
+        "historical_analysis": {"max_drawdown_p95": 0.058},
+        "calculated_at": "2026-04-08T11:25:00",
+    },
+    "strategy_type": "volatility_adaptive",
+    "calculated_at": "2026-04-08T11:25:00",
+    "version": "3.1",
+}
+
+STOP_LOSS_TRIGGER_RESPONSE_EXAMPLE = {
+    "status": "success",
+    "data": {
+        "triggered": True,
+        "execution_result": {
+            "symbol": "600519.SH",
+            "triggered_at": "2026-04-08T11:25:00",
+            "current_price": 1588.0,
+            "stop_loss_price": 1590.0,
+            "loss_amount": 2.0,
+        },
+        "symbol": "600519.SH",
+        "current_price": 1588.0,
+        "stop_loss_price": 1590.0,
+    },
+    "executed_at": "2026-04-08T11:25:00",
+    "version": "3.1",
+}
+
+STOP_LOSS_ADD_POSITION_RESPONSES = _success_response_spec(
+    "V3.1 止损监控持仓新增成功。", STOP_LOSS_ADD_POSITION_RESPONSE_EXAMPLE
+)
+STOP_LOSS_UPDATE_PRICE_RESPONSES = _success_response_spec(
+    "V3.1 止损价格更新成功。", STOP_LOSS_UPDATE_PRICE_RESPONSE_EXAMPLE
+)
+STOP_LOSS_REMOVE_POSITION_RESPONSES = _success_response_spec(
+    "V3.1 止损监控移除成功。", STOP_LOSS_REMOVE_POSITION_RESPONSE_EXAMPLE
+)
+STOP_LOSS_STATUS_RESPONSES = _success_response_spec(
+    "V3.1 止损监控状态查询成功。", STOP_LOSS_STATUS_RESPONSE_EXAMPLE
+)
+STOP_LOSS_OVERVIEW_RESPONSES = _success_response_spec(
+    "V3.1 止损监控总览查询成功。", STOP_LOSS_OVERVIEW_RESPONSE_EXAMPLE
+)
+STOP_LOSS_BATCH_UPDATE_RESPONSES = _success_response_spec(
+    "V3.1 止损价格批量更新成功。", STOP_LOSS_BATCH_UPDATE_RESPONSE_EXAMPLE
+)
+STOP_LOSS_PERFORMANCE_RESPONSES = _success_response_spec(
+    "V3.1 止损历史表现查询成功。", STOP_LOSS_PERFORMANCE_RESPONSE_EXAMPLE
+)
+STOP_LOSS_RECOMMENDATIONS_RESPONSES = _success_response_spec(
+    "V3.1 止损策略建议生成成功。", STOP_LOSS_RECOMMENDATIONS_RESPONSE_EXAMPLE
+)
+STOP_LOSS_CALCULATE_RESPONSES = _success_response_spec(
+    "V3.1 止损位计算成功。", STOP_LOSS_CALCULATE_RESPONSE_EXAMPLE
+)
+STOP_LOSS_TRIGGER_RESPONSES = _success_response_spec(
+    "V3.1 止损触发检查成功。", STOP_LOSS_TRIGGER_RESPONSE_EXAMPLE
+)
+
 
 @router.post(
     "/v31/stop-loss/add-position",
     response_model=Dict[str, Any],
+    summary="新增 V3.1 止损监控",
     description="新增一个止损监控持仓，并为该持仓配置 V3.1 风险管理引擎使用的止损参数。",
+    responses=STOP_LOSS_ADD_POSITION_RESPONSES,
 )
 async def add_stop_loss_position(
     request: Dict[str, Any] = Body(..., openapi_examples=STOP_LOSS_ADD_POSITION_EXAMPLES)
@@ -133,7 +346,9 @@ async def add_stop_loss_position(
 @router.post(
     "/v31/stop-loss/update-price",
     response_model=Dict[str, Any],
+    summary="更新 V3.1 止损价格",
     description="更新指定止损监控持仓的最新价格，并立即执行一次止损条件检查。",
+    responses=STOP_LOSS_UPDATE_PRICE_RESPONSES,
 )
 async def update_stop_loss_price(
     request: Dict[str, Any] = Body(..., openapi_examples=STOP_LOSS_UPDATE_PRICE_EXAMPLES)
@@ -168,7 +383,9 @@ async def update_stop_loss_price(
 @router.delete(
     "/v31/stop-loss/remove-position/{position_id}",
     response_model=Dict[str, Any],
+    summary="移除 V3.1 止损监控",
     description="移除指定止损监控持仓，并停止后续对该持仓执行自动止损检查。",
+    responses=STOP_LOSS_REMOVE_POSITION_RESPONSES,
 )
 async def remove_stop_loss_position(
     position_id: str = Path(..., description="需要移除的止损监控持仓ID。"),
@@ -202,7 +419,9 @@ async def remove_stop_loss_position(
 @router.get(
     "/v31/stop-loss/status/{position_id}",
     response_model=Dict[str, Any],
+    summary="查询 V3.1 止损状态",
     description="查询指定持仓的 V3.1 止损监控状态，包括当前止损参数与命中情况。",
+    responses=STOP_LOSS_STATUS_RESPONSES,
 )
 async def get_stop_loss_status(
     position_id: str = Path(..., description="需要查询止损状态的持仓ID。"),
@@ -236,7 +455,9 @@ async def get_stop_loss_status(
 @router.get(
     "/v31/stop-loss/overview",
     response_model=Dict[str, Any],
+    summary="查询 V3.1 止损总览",
     description="获取当前全部止损监控持仓的总览信息，用于盘中风控看板或批量巡检。",
+    responses=STOP_LOSS_OVERVIEW_RESPONSES,
 )
 async def get_stop_loss_overview() -> Dict[str, Any]:
     try:
@@ -265,7 +486,9 @@ async def get_stop_loss_overview() -> Dict[str, Any]:
 @router.post(
     "/v31/stop-loss/batch-update",
     response_model=Dict[str, Any],
+    summary="批量更新 V3.1 止损价格",
     description="批量更新多个止损监控持仓的市场价格，适用于盘中统一刷新止损监控状态。",
+    responses=STOP_LOSS_BATCH_UPDATE_RESPONSES,
 )
 async def batch_update_stop_loss_prices(
     request: Dict[str, Any] = Body(..., openapi_examples=STOP_LOSS_BATCH_UPDATE_EXAMPLES)
@@ -300,7 +523,9 @@ async def batch_update_stop_loss_prices(
 @router.get(
     "/v31/stop-loss/history/performance",
     response_model=Dict[str, Any],
+    summary="查询 V3.1 止损历史表现",
     description="按策略类型、股票和时间窗口查询 V3.1 止损历史表现与执行效果统计。",
+    responses=STOP_LOSS_PERFORMANCE_RESPONSES,
 )
 async def get_stop_loss_performance(
     strategy_type: Optional[str] = Query(None, description="可选的止损策略类型，用于筛选指定策略表现。"),
@@ -338,7 +563,9 @@ async def get_stop_loss_performance(
 @router.get(
     "/v31/stop-loss/history/recommendations",
     response_model=Dict[str, Any],
+    summary="获取 V3.1 止损建议",
     description="基于指定止损策略的历史执行结果，生成后续参数优化与使用建议。",
+    responses=STOP_LOSS_RECOMMENDATIONS_RESPONSES,
 )
 async def get_stop_loss_recommendations(
     strategy_type: str = Query(..., description="用于生成推荐结论的止损策略类型。"),
@@ -369,7 +596,9 @@ async def get_stop_loss_recommendations(
 
 @router.post(
     "/v31/stop-loss/calculate",
+    summary="计算 V3.1 止损位",
     description="按指定的 V3.1 止损策略参数计算建议止损位，并返回带版本标记的计算结果。",
+    responses=STOP_LOSS_CALCULATE_RESPONSES,
 )
 async def calculate_stop_loss_v31(
     request: Dict[str, Any] = Body(..., openapi_examples=STOP_LOSS_CALCULATE_EXAMPLES)
@@ -420,7 +649,9 @@ async def calculate_stop_loss_v31(
 
 @router.post(
     "/v31/stop-loss/trigger",
+    summary="触发 V3.1 止损检查",
     description="基于当前价格和止损价手动触发一次 V3.1 止损检查，并返回执行结果明细。",
+    responses=STOP_LOSS_TRIGGER_RESPONSES,
 )
 async def trigger_stop_loss_v31(
     request: Dict[str, Any] = Body(..., openapi_examples=STOP_LOSS_TRIGGER_EXAMPLES)
