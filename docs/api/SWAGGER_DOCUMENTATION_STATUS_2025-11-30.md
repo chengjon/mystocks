@@ -7,11 +7,11 @@
 > 文内统计值、完成状态、修复结论和验收结果如未重新复核，应视为历史快照，不得直接当作当前事实。
 
 
-**分析日期**: 2025-11-30T21:06:45.076088
-**分析文件数**: 42
-**发现端点数**: 269
-**已有文档**: 259
-**缺失文档**: 10
+**Historical Analysis Snapshot Time**: 2025-11-30T21:06:45.076088
+**Historical Analyzed File Count Snapshot**: 42
+**Historical Endpoint Count Snapshot**: 269
+**Historical Existing Documentation Snapshot**: 259
+**Historical Missing Documentation Snapshot**: 10
 
 ## 按 HTTP 方法分类
 
