@@ -1613,6 +1613,31 @@ def test_risk_v31_read_endpoints_have_docs_examples_and_error_responses() -> Non
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
+def test_sse_endpoints_have_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    endpoint_expectations = {
+        ("/api/v1/sse/training", "get"): {"parameters": {"client_id"}},
+        ("/api/v1/sse/backtest", "get"): {"parameters": {"client_id"}},
+        ("/api/v1/sse/alerts", "get"): {"parameters": {"client_id"}},
+        ("/api/v1/sse/dashboard", "get"): {"parameters": {"client_id"}},
+        ("/api/v1/sse/status", "get"): {"parameters": set()},
+    }
+
+    for (path, method), expectation in endpoint_expectations.items():
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+        success_json = operation["responses"]["200"]["content"]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expectation["parameters"]:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith("5") for code in operation["responses"])
+
+
 def test_trading_runtime_add_strategy_endpoint_has_docs_request_and_response_examples() -> None:
     app.openapi_schema = None
     schema = app.openapi()

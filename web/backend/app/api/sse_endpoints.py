@@ -34,7 +34,114 @@ SSE_ROUTE_RESPONSES = {
 router = APIRouter(prefix="/api/v1/sse", tags=["SSE实时推送"], responses=SSE_ROUTE_RESPONSES)
 
 
-@router.get("/training")
+def _success_response_spec(description: str, example: dict) -> dict[int, dict]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+SSE_TRAINING_RESPONSE_EXAMPLE = {
+    "event": "training_progress",
+    "data": {
+        "task_id": "training-uuid",
+        "progress": 45.5,
+        "status": "running",
+        "message": "Training epoch 10/100",
+        "metrics": {
+            "loss": 0.023,
+            "accuracy": 0.95,
+        },
+    },
+    "timestamp": "2026-04-08T12:15:00Z",
+}
+
+SSE_BACKTEST_RESPONSE_EXAMPLE = {
+    "event": "backtest_progress",
+    "data": {
+        "backtest_id": "backtest-uuid",
+        "progress": 67.8,
+        "status": "running",
+        "message": "Simulating 2026-03-15",
+        "current_date": "2026-03-15",
+        "results": {
+            "total_return": 0.15,
+            "sharpe_ratio": 1.8,
+            "max_drawdown": -0.08,
+        },
+    },
+    "timestamp": "2026-04-08T12:15:00Z",
+}
+
+SSE_ALERTS_RESPONSE_EXAMPLE = {
+    "event": "risk_alert",
+    "data": {
+        "alert_type": "var_exceeded",
+        "severity": "high",
+        "message": "VaR exceeded threshold",
+        "metric_name": "var_95",
+        "metric_value": 0.06,
+        "threshold": 0.05,
+        "entity_type": "portfolio",
+        "entity_id": "portfolio-123",
+    },
+    "timestamp": "2026-04-08T12:15:00Z",
+}
+
+SSE_DASHBOARD_RESPONSE_EXAMPLE = {
+    "event": "dashboard_update",
+    "data": {
+        "update_type": "metrics",
+        "data": {
+            "total_value": 1500000.0,
+            "daily_return": 0.025,
+            "positions_count": 15,
+        },
+    },
+    "timestamp": "2026-04-08T12:15:00Z",
+}
+
+SSE_STATUS_RESPONSE_EXAMPLE = {
+    "status": "active",
+    "total_connections": 6,
+    "channels": {
+        "training": {
+            "connection_count": 2,
+            "clients": ["train-client-1", "train-client-2"],
+        },
+        "backtest": {
+            "connection_count": 1,
+            "clients": ["backtest-client-1"],
+        },
+        "alerts": {
+            "connection_count": 2,
+            "clients": ["alerts-client-1", "alerts-client-2"],
+        },
+        "dashboard": {
+            "connection_count": 1,
+            "clients": ["dashboard-client-1"],
+        },
+    },
+}
+
+SSE_TRAINING_RESPONSES = _success_response_spec("训练进度 SSE 事件流连接成功。", SSE_TRAINING_RESPONSE_EXAMPLE)
+SSE_BACKTEST_RESPONSES = _success_response_spec("回测进度 SSE 事件流连接成功。", SSE_BACKTEST_RESPONSE_EXAMPLE)
+SSE_ALERTS_RESPONSES = _success_response_spec("风险告警 SSE 事件流连接成功。", SSE_ALERTS_RESPONSE_EXAMPLE)
+SSE_DASHBOARD_RESPONSES = _success_response_spec("仪表盘 SSE 事件流连接成功。", SSE_DASHBOARD_RESPONSE_EXAMPLE)
+SSE_STATUS_RESPONSES = _success_response_spec("SSE 服务状态查询成功。", SSE_STATUS_RESPONSE_EXAMPLE)
+
+
+@router.get(
+    "/training",
+    summary="订阅训练进度 SSE",
+    responses=SSE_TRAINING_RESPONSES,
+)
 async def sse_training_stream(
     request: Request,
     client_id: Optional[str] = Query(None, description="客户端ID（可选，自动生成）"),
@@ -90,7 +197,11 @@ async def sse_training_stream(
     )
 
 
-@router.get("/backtest")
+@router.get(
+    "/backtest",
+    summary="订阅回测进度 SSE",
+    responses=SSE_BACKTEST_RESPONSES,
+)
 async def sse_backtest_stream(
     request: Request,
     client_id: Optional[str] = Query(None, description="客户端ID（可选，自动生成）"),
@@ -143,7 +254,11 @@ async def sse_backtest_stream(
     )
 
 
-@router.get("/alerts")
+@router.get(
+    "/alerts",
+    summary="订阅风险告警 SSE",
+    responses=SSE_ALERTS_RESPONSES,
+)
 async def sse_alerts_stream(
     request: Request,
     client_id: Optional[str] = Query(None, description="客户端ID（可选，自动生成）"),
@@ -200,7 +315,11 @@ async def sse_alerts_stream(
     )
 
 
-@router.get("/dashboard")
+@router.get(
+    "/dashboard",
+    summary="订阅仪表盘 SSE",
+    responses=SSE_DASHBOARD_RESPONSES,
+)
 async def sse_dashboard_stream(
     request: Request,
     client_id: Optional[str] = Query(None, description="客户端ID（可选，自动生成）"),
@@ -262,7 +381,11 @@ async def sse_dashboard_stream(
     )
 
 
-@router.get("/status")
+@router.get(
+    "/status",
+    summary="查询 SSE 服务状态",
+    responses=SSE_STATUS_RESPONSES,
+)
 async def sse_status():
     """
     Get SSE server status
