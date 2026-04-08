@@ -570,7 +570,7 @@ const generateTestReport = () => {
 
 ## 📚 相关文档
 
-- **Chrome DevTools基础教程**: `docs/testing/legacy-cn/04-测试/ChromeDevTools使用说明.md`
+- **Chrome DevTools历史中文教程（已归档）**: `archive/docs/testing/legacy-cn-2026-04-08/04-测试/ChromeDevTools使用说明.md`
 - **WSL2环境配置指南**: `docs/guides/chrome-devtools/chrome-devtools-wsl2-guide.md`
 - **项目架构文档**: `docs/architecture/`
 - **API文档**: `web/backend/docs/`

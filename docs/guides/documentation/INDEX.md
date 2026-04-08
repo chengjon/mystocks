@@ -30,6 +30,7 @@
 ## 📁 项目根目录
 
 - 📄 [README](./INDEX.md)
+- 📄 [CANONICAL_TRUNK_ADMISSION_GUIDE](./CANONICAL_TRUNK_ADMISSION_GUIDE.md)
 - 📄 [DOCUMENTATION_WORKFLOW_GUIDE](DOCUMENTATION_WORKFLOW_GUIDE.md)
 - 📄 [文件目录整理方法论指南](文件目录整理方法论指南.md)
 - 📄 [文件目录管理方案](文件目录管理方案.md)
