@@ -1103,16 +1103,20 @@ def test_position_write_endpoints_have_request_and_response_examples() -> None:
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
-def test_backtest_results_endpoint_has_description_and_parameter_docs() -> None:
+def test_backtest_results_endpoint_has_description_parameter_docs_and_success_example() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
     operation = schema["paths"]["/api/v1/strategy/backtest/results"]["get"]
     parameters = operation.get("parameters", [])
+    success_json = operation["responses"]["200"]["content"]["application/json"]
 
+    assert operation.get("summary")
     assert len(operation.get("description", "")) >= 20
     for parameter_name in ["strategy_id", "page", "page_size"]:
         assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+    assert "example" in success_json or "examples" in success_json
+    assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_risk_metrics_history_endpoint_has_description_and_parameter_docs() -> None:
@@ -1498,17 +1502,21 @@ def test_task_start_endpoint_has_docs_request_and_response_examples() -> None:
     assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
-def test_strategy_update_endpoint_has_docs_and_request_example() -> None:
+def test_strategy_update_endpoint_has_docs_request_and_response_example() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
     operation = schema["paths"]["/api/v1/strategy/strategies/{strategy_id}"]["put"]
     parameters = operation.get("parameters", [])
     request_json = operation["requestBody"]["content"]["application/json"]
+    success_json = operation["responses"]["200"]["content"]["application/json"]
 
+    assert operation.get("summary")
     assert len(operation.get("description", "")) >= 20
     assert any(param["name"] == "strategy_id" and param.get("description") for param in parameters)
     assert "example" in request_json or "examples" in request_json
+    assert "example" in success_json or "examples" in success_json
+    assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_risk_v31_broadcast_endpoint_has_docs_and_request_example() -> None:
@@ -2660,15 +2668,53 @@ def test_v1_lineage_write_endpoints_have_request_and_response_examples() -> None
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
-def test_v1_strategy_backtest_endpoints_have_request_examples_and_descriptions() -> None:
+def test_v1_strategy_management_endpoints_have_success_examples_and_parameter_docs() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    endpoint_expectations = {
+        ("/api/v1/strategy/strategies", "get"): {"status", "page", "page_size"},
+        ("/api/v1/strategy/strategies", "post"): set(),
+        ("/api/v1/strategy/strategies/{strategy_id}", "get"): {"strategy_id"},
+        ("/api/v1/strategy/strategies/{strategy_id}", "delete"): {"strategy_id"},
+        ("/api/v1/strategy/{strategy_id}/start", "post"): {"strategy_id"},
+        ("/api/v1/strategy/{strategy_id}/pause", "post"): {"strategy_id"},
+        ("/api/v1/strategy/{strategy_id}/resume", "post"): {"strategy_id"},
+        ("/api/v1/strategy/{strategy_id}/stop", "post"): {"strategy_id"},
+        ("/api/v1/strategy/models/train", "post"): set(),
+        ("/api/v1/strategy/models/training/{task_id}/status", "get"): {"task_id"},
+        ("/api/v1/strategy/models", "get"): {"model_type", "status"},
+    }
+
+    for (path, method), expected_params in endpoint_expectations.items():
+        operation = schema["paths"][path][method]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expected_params:
+            assert any(
+                param["name"] == parameter_name and param.get("description") for param in operation.get("parameters", [])
+            )
+        if "requestBody" in operation:
+            request_json = operation["requestBody"]["content"]["application/json"]
+            assert "example" in request_json or "examples" in request_json
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
+def test_v1_strategy_backtest_endpoints_have_request_and_response_examples() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
     run_operation = schema["paths"]["/api/v1/strategy/backtest/run"]["post"]
     run_request_json = run_operation["requestBody"]["content"]["application/json"]
+    run_success_json = run_operation["responses"]["200"]["content"]["application/json"]
     assert run_operation.get("summary")
     assert len(run_operation.get("description", "")) >= 20
     assert "example" in run_request_json or "examples" in run_request_json
+    assert "example" in run_success_json or "examples" in run_success_json
+    assert any(code.startswith(("4", "5")) for code in run_operation["responses"])
 
     for path in [
         "/api/v1/strategy/backtest/results/{backtest_id}",
@@ -2676,10 +2722,13 @@ def test_v1_strategy_backtest_endpoints_have_request_examples_and_descriptions()
     ]:
         operation = schema["paths"][path]["get"]
         parameters = operation.get("parameters", [])
+        success_json = operation["responses"]["200"]["content"]["application/json"]
 
         assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
         assert any(param["name"] == "backtest_id" and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_v1_data_route_sentiment_strategy_and_optimization_endpoints_have_docs() -> None:
