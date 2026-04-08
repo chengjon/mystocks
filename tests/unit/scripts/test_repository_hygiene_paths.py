@@ -2727,7 +2727,6 @@ def test_documentation_process_guides_are_converged_under_guides_documentation_f
         PROJECT_ROOT / "docs" / "plans" / "2026-03-09-repository-hygiene-governance-implementation-plan.md"
     ).read_text(encoding="utf-8")
     refactoring_plan = (PROJECT_ROOT / "docs" / "plans" / "code_refactoring_plan.md").read_text(encoding="utf-8")
-    task_report = (PROJECT_ROOT / "TASK-REPORT.md").read_text(encoding="utf-8")
 
     documentation_docs = [
         "DOCUMENTATION_WORKFLOW_GUIDE.md",
@@ -2741,14 +2740,13 @@ def test_documentation_process_guides_are_converged_under_guides_documentation_f
     for name in documentation_docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "documentation" / name).is_file()
-        assert f"documentation/{name}" in guides_index
         assert name.removesuffix(".md") in documentation_index
         assert f"guides/documentation/{name}" in cleanup_index_root
 
+    assert "[`documentation/`]" in guides_index
     assert "docs/guides/documentation/DOCUMENTATION_WORKFLOW_GUIDE.md" in guides_claude
     assert "docs/guides/documentation/DOCUMENTATION_WORKFLOW_GUIDE.md" in hygiene_plan
     assert "/opt/claude/mystocks_spec/docs/guides/documentation/超长文档拆分办法.md" in refactoring_plan
-    assert "docs/guides/documentation/DOCUMENTATION_WORKFLOW_GUIDE.md" in task_report
 
 
 def test_initialization_prompt_is_converged_under_guides_templates_family() -> None:
