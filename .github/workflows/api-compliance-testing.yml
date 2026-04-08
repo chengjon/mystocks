@@ -92,7 +92,7 @@ jobs:
 
           for changed_file in "${changed_files[@]}"; do
             case "$changed_file" in
-              web/backend/app/*|web/backend/tests/test_api_compliance.py|web/backend/tests/test_static_code_analysis.py|web/backend/tests/test_api_documentation_validation.py|web/backend/tests/test_performance_and_security.py|web/backend/requirements.txt|web/backend/requirements-test.txt)
+              web/backend/app/*|web/backend/tests/test_api_compliance.py|web/backend/tests/test_static_code_analysis.py|web/backend/tests/test_api_documentation_validation.py|web/backend/tests/test_performance_and_security.py|web/backend/requirements.txt|web/backend/requirements-test.txt|scripts/dev/openapi_success_example_audit.py|scripts/setup_compliance_testing.sh)
                 api_suite_required=true
                 ;;
               .github/workflows/api-compliance-testing.yml|tests/unit/scripts/test_ci_workflow_runtime_setup.py)
