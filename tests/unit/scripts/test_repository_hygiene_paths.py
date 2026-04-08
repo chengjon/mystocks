@@ -351,6 +351,21 @@ def test_guides_readme_navigation_links_use_current_canonical_paths() -> None:
     assert "./REORGANIZATION_COMPLETION_REPORT.md" not in guides_readme
 
 
+def test_guides_root_remains_supporting_surface_not_docs_trunk() -> None:
+    docs_readme = (PROJECT_ROOT / "docs" / "README.md").read_text(encoding="utf-8")
+    guides_readme = (PROJECT_ROOT / "docs" / "guides" / "README.md").read_text(encoding="utf-8")
+    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
+
+    assert "/opt/claude/mystocks_spec/docs/guides/README.md" not in docs_readme
+    assert "/opt/claude/mystocks_spec/docs/guides/INDEX.md" not in docs_readme
+    assert "`docs/guides/` 不再被视为单一 canonical docs trunk" in guides_readme
+    assert "/opt/claude/mystocks_spec/docs/guides/ai-tools/" in guides_readme
+    assert "/opt/claude/mystocks_spec/docs/guides/frontend/" in guides_readme
+    assert "/opt/claude/mystocks_spec/docs/guides/web/" in guides_readme
+    assert "/opt/claude/mystocks_spec/docs/guides/governance/" in guides_index
+    assert "/opt/claude/mystocks_spec/docs/guides/documentation/" in guides_index
+
+
 def test_active_architecture_and_standards_docs_point_to_current_canonical_guides() -> None:
     page_config_model = (PROJECT_ROOT / "docs" / "architecture" / "PAGE_CONFIG_MODEL.md").read_text(
         encoding="utf-8"
