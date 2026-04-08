@@ -38,7 +38,7 @@ Last activity: 2026-04-08 — Milestone v1.1 started
 See: .planning/PROJECT.md (updated 2026-04-08)
 
 **Core value:** Every file has exactly one canonical location, every import resolves cleanly, zero lint errors.
-**Current focus:** v1.1 Final Polish — deferred structural items + F821 errors
+**Current focus:** v1.1 Final Polish — 3 deferred structural items with evidence-based dispositions
 
 ---
 

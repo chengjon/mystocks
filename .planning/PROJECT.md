@@ -9,13 +9,12 @@
 
 ## Current Milestone: v1.1 Final Polish
 
-**Goal:** Resolve the remaining deferred structural items and substantially reduce F821 undefined-name errors.
+**Goal:** Resolve the 3 deferred structural items from v1.0 with evidence-based dispositions.
 
 **Target features:**
-- STRU-03: Single frontend entry point
-- STRU-04: Composables relocation
-- STRU-05: Archive removal
-- LINT-05: Reduce F821 ruff errors from 791 toward zero
+- STRU-03: Single frontend entry point (resolve verify-mount.js, archive main.js)
+- STRU-04: Composables disposition (accept view-local as canonical, extract 2 candidates only)
+- STRU-05: Archive removal (handle 5 test deps, delete converted.archive/, demo/ is N/A)
 
 ## What This Is
 
@@ -55,10 +54,9 @@ Every file in the codebase has exactly one canonical location, every import reso
 
 ### Active
 
-- [ ] STRU-03: Single frontend entry point (2 files remain — verify-mount.js blocks main.js removal)
-- [ ] STRU-04: views/composables/ → src/composables/ (COMPOSABLES-AUDIT.md shows 15+ imports would break)
-- [ ] STRU-05: views/converted.archive/ removal (5 test files must be deleted first)
-- [ ] LINT-05: Reduce F821 ruff errors from 791 (current, verified 2026-04-08)
+- [ ] STRU-03: Single frontend entry point (resolve verify-mount.js, archive main.js, keep main-standard.ts)
+- [ ] STRU-04: Composables disposition (v1.0 audit: 15/17 view-local, accept as canonical, extract 2 candidates only)
+- [ ] STRU-05: views/converted.archive/ removal (resolve 5 test deps first; demo/ is active code, N/A)
 
 ### Out of Scope
 
@@ -78,7 +76,7 @@ Shipped v1.0 Codebase Consolidation (2026-04-08):
 - **Frontend**: ~192K LOC in web/frontend/src/
 - **Deleted**: 34 dead files across 5 directories, 3 root shims, 1 empty directory
 - **Renamed**: 32 part-files to semantic names
-- **Merged**: 3 case-conflict directories, overlapping data access layers
+- **Merged**: 1 case-conflict directory (Charts→charts); 2 untracked conflict directories deleted (Common/, Market/)
 - **Known gaps**: STRU-03/04/05 deferred with audit evidence
 
 ### Architecture
