@@ -298,6 +298,33 @@ def test_contract_management_endpoints_have_examples_and_error_docs() -> None:
     assert any(status.startswith("5") for status in contracts_get["responses"])
 
 
+def test_v1_strategy_runtime_endpoints_have_success_examples_and_parameter_docs() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    endpoint_expectations = {
+        ("/api/v1/strategy/definitions", "get"): set(),
+        ("/api/v1/strategy/run/single", "post"): {"strategy_code", "symbol", "stock_name", "check_date"},
+        ("/api/v1/strategy/run/batch", "post"): {"strategy_code", "symbols", "market", "limit", "check_date"},
+        ("/api/v1/strategy/results", "get"): {"strategy_code", "symbol", "check_date", "match_result", "limit", "offset"},
+        ("/api/v1/strategy/matched-stocks", "get"): {"strategy_code", "check_date", "limit"},
+        ("/api/v1/strategy/stats/summary", "get"): {"check_date"},
+    }
+
+    for (path, method), expected_params in endpoint_expectations.items():
+        operation = schema["paths"][path][method]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expected_params:
+            assert any(
+                param["name"] == parameter_name and param.get("description") for param in operation.get("parameters", [])
+            )
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_contract_read_and_control_endpoints_have_success_examples() -> None:
     app.openapi_schema = None
     schema = app.openapi()
