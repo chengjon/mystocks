@@ -1,0 +1,88 @@
+version: "v0.2"
+
+task:
+  id: "pr-69"
+  title: "archive api availability mapping openspec residue"
+  owner: "main"
+  created_at: "2026-04-08"
+
+mainline:
+  id: "L1-api-availability-openspec-residue-closeout"
+  objective: "archive the completed task-only api availability mapping OpenSpec residue and remove it from the active change list without duplicating canonical spec text"
+  milestone_id: "L2-governance-closeout"
+  slice_id: "L3-api-availability-task-only-archive"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "task-only-openspec-residue-closeout-with-skip-specs"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-69.yaml"
+    - "openspec/changes/archive/2026-04-08-verify-api-availability-mapping/tasks.md"
+  forbidden_paths:
+    - "openspec/specs/**"
+    - "web/frontend/**"
+    - "web/backend/**"
+    - "src/**"
+    - "tests/**"
+
+non_goals:
+  - "No runtime API availability behavior change"
+  - "No new OpenSpec proposal or retroactive duplicate spec creation for verify-api-availability-mapping"
+  - "No unrelated governance, frontend, Mongo, or watchlist work"
+
+acceptance:
+  checks:
+    - id: "openspec-spec-validation"
+      command: "openspec validate --specs --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-69.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr69-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the task card misses the archived tasks file path, Mainline Governance Gate will fail even though the archive itself is correct"
+    - "If this residue were archived with new spec text, it could duplicate or conflict with the later canonical ArtDeco optimization requirements"
+  rollback_plan: "git revert <merge-commit-sha> if the archive metadata for verify-api-availability-mapping is found to be inaccurate after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "move the completed task-only api availability mapping residue into OpenSpec archive and remove it from the active completed-change list"
+    modified_scope: "one archived OpenSpec tasks file and this PR-69 task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime or canonical spec behavior changes; this batch archives residue only and intentionally uses skip-specs"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the merge if the archived residue is found to need canonical spec handling instead of task-only closeout"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-08T00:00:00Z"
+    approval_note: "this PR only archives a task-only OpenSpec residue with skip-specs because the relevant canonical behavior has already been absorbed elsewhere"
+    secondary_approved: false
