@@ -130,6 +130,16 @@ def test_docs_report_sprawl_directories_are_converged_under_reports() -> None:
     assert (PROJECT_ROOT / "reports" / "tests").is_dir()
 
 
+def test_reports_readme_remains_canonical_historical_evidence_trunk() -> None:
+    docs_readme = (PROJECT_ROOT / "docs" / "README.md").read_text(encoding="utf-8")
+    reports_readme = (PROJECT_ROOT / "docs" / "reports" / "README.md").read_text(encoding="utf-8")
+
+    assert "/opt/claude/mystocks_spec/docs/reports/README.md" in docs_readme
+    assert "Historical Evidence Trunk" in reports_readme
+    assert "/opt/claude/mystocks_spec/architecture/STANDARDS.md" in reports_readme
+    assert "/opt/claude/mystocks_spec/docs/reports/documentation-governance/" in reports_readme
+
+
 def test_docs_archive_and_legacy_are_converged_under_archive_root() -> None:
     assert not (PROJECT_ROOT / "docs" / "archive").exists()
     assert not (PROJECT_ROOT / "docs" / "legacy").exists()
