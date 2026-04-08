@@ -13,6 +13,7 @@
 
 - 当前任务真值：`/TASK.md`、`/TASK-REPORT.md`
 - focused 收口记录：`/reports/governance/`
+- 技术债治理 canonical：`/governance/technical-debt/INDEX.md`
 - 当前目录实际文件清单可用：
   - `find docs/reports/tasks -maxdepth 1 -type f | sort`
 
@@ -29,6 +30,7 @@
 - `TASK-T01-REPORT.md` 到 `TASK-T10-REPORT.md`
   - 属于 `2026Q1` 治理执行板分报告历史归档，不是当前任务拆分真值源。
   - 其中的进度、DDL、指标和 blocker 口径应视为当时快照，不得直接当成当前实测值、当前基线或当前执行计划。
+  - 当前 canonical 路径已经切换到 `/governance/technical-debt/`。
 - `HANDOVER_TASK.md`
   - 属于早期 `conductor` handoff 归档记录，保留用于追溯上下文，不作为当前接力入口。
 

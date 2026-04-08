@@ -12,5 +12,5 @@ Technical debt tracking exists but lacks a single source of truth, clear ownersh
 
 ## Impact
 - Affected specs: `architecture-governance` (new)
-- Affected docs: `technical_debt/governance/*`, `TASK*.md`
+- Affected docs: `governance/technical-debt/*`, `TASK*.md`
 - No runtime behavior changes in this proposal.

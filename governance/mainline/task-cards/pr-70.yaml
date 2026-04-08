@@ -1,0 +1,97 @@
+version: "v0.2"
+
+task:
+  id: "pr-70"
+  title: "converge 2026q1 tech debt governance baseline into canonical artifacts"
+  owner: "main"
+  created_at: "2026-04-08"
+
+mainline:
+  id: "L1-tech-debt-governance-baseline-convergence"
+  objective: "publish one canonical 2026Q1 tech debt governance baseline and bridge historical task snapshots without replacing the operational mainline coordination board"
+  milestone_id: "L2-governance-convergence"
+  slice_id: "L3-tech-debt-governance-baseline"
+
+classification:
+  task_type: "feature"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "tech-debt-governance-2026q1"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "documentation-and-governance-baseline-convergence-only-no-runtime-symbol-changes"
+
+scope:
+  allowed_paths:
+    - "TASK.md"
+    - "TASK-REPORT.md"
+    - "docs/INDEX.md"
+    - "docs/reports/tasks/INDEX.md"
+    - "docs/reports/technical_debt/INDEX.md"
+    - "openspec/changes/tech-debt-governance-2026q1/proposal.md"
+    - "openspec/changes/tech-debt-governance-2026q1/design.md"
+    - "openspec/changes/tech-debt-governance-2026q1/tasks.md"
+    - "technical_debt/governance/**"
+    - "governance/technical-debt/**"
+    - "governance/mainline/task-cards/pr-70.yaml"
+  forbidden_paths:
+    - "src/**"
+    - "web/frontend/**"
+    - "web/backend/**"
+    - "tests/**"
+    - "scripts/**"
+
+non_goals:
+  - "No runtime behavior or API change"
+  - "No replacement of the operational root TASK board with the governance board"
+  - "No watchlist, Mongo, or frontend migration work"
+
+acceptance:
+  checks:
+    - id: "openspec-change-validation"
+      command: "openspec validate tech-debt-governance-2026q1 --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-70.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr70-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the bridge text is ambiguous, readers may still treat historical snapshots as canonical governance truth"
+    - "If the allowed path set is incomplete, the mainline governance gate will fail even when the artifact convergence is correct"
+  rollback_plan: "git revert <merge-commit-sha> if the canonical governance directory or bridge notes are found to misstate the operational truth model"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "converge the partially implemented 2026Q1 tech debt governance baseline into one live canonical directory and bridge historical entrypoints to it"
+    modified_scope: "governance/technical-debt canonical artifacts, bridge notes in current task/index entrypoints, the active change proposal-design-task docs, and this PR-70 task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime logic changes; historical governance sidecars remain for audit only while operational mainline TASK snapshots stay in place"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the merge if the new canonical directory or bridge notes create governance truth ambiguity"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "user"
+    approved_at: "2026-04-08T00:00:00Z"
+    approval_note: "user explicitly approved the design-doc plus OpenSpec path and authorized continuing this governance baseline implementation"
+    secondary_approved: false

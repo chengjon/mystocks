@@ -12,7 +12,7 @@ The project has multiple technical debt reports but lacks a consistent governanc
 
 ## Decisions
 - Use OpenSpec deltas for governance requirements.
-- Maintain debt artifacts under `technical_debt/governance/`.
+- Maintain debt artifacts under `governance/technical-debt/`.
 - Track execution via root-level `TASK*.md` files.
 
 ## Risks / Trade-offs
