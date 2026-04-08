@@ -26,6 +26,19 @@ router = APIRouter(
 )
 
 
+def _success_response_spec(description: str, example: dict) -> dict[int, dict]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
 class TradingSessionCreate(BaseModel):
     """创建交易会话请求"""
 
@@ -96,12 +109,81 @@ TRADING_SESSION_UPDATE_EXAMPLES = {
     }
 }
 
+TRADING_SESSION_RESPONSE_EXAMPLE = {
+    "session_id": "session_001",
+    "symbol": "600519",
+    "strategy_id": "svm_momentum_v1",
+    "status": "active",
+    "current_capital": 102500.0,
+    "current_positions": 100,
+    "daily_pnl": 2500.0,
+    "total_pnl": 2500.0,
+    "created_at": "2026-04-08T09:30:00",
+    "updated_at": "2026-04-08T15:00:00",
+}
+
+TRADING_SESSION_LIST_RESPONSE_EXAMPLE = {
+    "sessions": [
+        TRADING_SESSION_RESPONSE_EXAMPLE,
+        {
+            "session_id": "session_002",
+            "symbol": "0700.HK",
+            "strategy_id": "hk_breakout_v2",
+            "status": "paused",
+            "current_capital": 208000.0,
+            "current_positions": 0,
+            "daily_pnl": -1200.0,
+            "total_pnl": 8000.0,
+            "created_at": "2026-04-07T09:30:00",
+            "updated_at": "2026-04-08T11:00:00",
+        },
+    ],
+    "total": 2,
+}
+
+TRADING_SESSION_CREATE_RESPONSE_EXAMPLE = {
+    "session_id": "session_1744085700",
+    "symbol": "600519",
+    "strategy_id": "svm_momentum_v1",
+    "status": "active",
+    "current_capital": 100000.0,
+    "current_positions": 0,
+    "daily_pnl": 0.0,
+    "total_pnl": 0.0,
+    "created_at": "2026-04-08T12:25:00",
+    "updated_at": "2026-04-08T12:25:00",
+}
+
+TRADING_SESSION_UPDATE_RESPONSE_EXAMPLE = {
+    "session_id": "session_001",
+    "symbol": "600519",
+    "strategy_id": "svm_momentum_v1",
+    "status": "pause",
+    "current_capital": 102500.0,
+    "current_positions": 100,
+    "daily_pnl": 2500.0,
+    "total_pnl": 2500.0,
+    "created_at": "2026-04-08T09:30:00",
+    "updated_at": "2026-04-08T12:25:00",
+}
+
+TRADING_SESSION_DELETE_RESPONSE_EXAMPLE = {
+    "message": "Session session_001 deleted successfully",
+}
+
+TRADING_SESSION_LIST_RESPONSES = _success_response_spec("交易会话列表查询成功。", TRADING_SESSION_LIST_RESPONSE_EXAMPLE)
+TRADING_SESSION_DETAIL_RESPONSES = _success_response_spec("交易会话详情查询成功。", TRADING_SESSION_RESPONSE_EXAMPLE)
+TRADING_SESSION_CREATE_RESPONSES = _success_response_spec("交易会话创建成功。", TRADING_SESSION_CREATE_RESPONSE_EXAMPLE)
+TRADING_SESSION_UPDATE_RESPONSES = _success_response_spec("交易会话状态更新成功。", TRADING_SESSION_UPDATE_RESPONSE_EXAMPLE)
+TRADING_SESSION_DELETE_RESPONSES = _success_response_spec("交易会话删除成功。", TRADING_SESSION_DELETE_RESPONSE_EXAMPLE)
+
 
 @router.get(
     "",
     response_model=TradingSessionListResponse,
     summary="List Trading Sessions",
     description="按标的或状态筛选交易会话列表，返回当前会话概览与总数。",
+    responses=TRADING_SESSION_LIST_RESPONSES,
 )
 async def list_trading_sessions(
     symbol: Optional[str] = Query(None, description="可选的交易标的代码过滤条件。"),
@@ -140,6 +222,7 @@ async def list_trading_sessions(
     response_model=TradingSessionResponse,
     summary="Get Trading Session",
     description="根据交易会话ID获取单个会话的资金、仓位和盈亏详情。",
+    responses=TRADING_SESSION_DETAIL_RESPONSES,
 )
 async def get_trading_session(session_id: str = Path(..., description="需要查询详情的交易会话ID。")):
     """
@@ -166,6 +249,7 @@ async def get_trading_session(session_id: str = Path(..., description="需要查
     response_model=TradingSessionResponse,
     summary="Create Trading Session",
     description="创建新的交易会话，并基于请求参数初始化资金、仓位和风险阈值。",
+    responses=TRADING_SESSION_CREATE_RESPONSES,
 )
 async def create_trading_session(
     request: TradingSessionCreate = Body(..., openapi_examples=TRADING_SESSION_CREATE_EXAMPLES)
@@ -195,6 +279,7 @@ async def create_trading_session(
     response_model=TradingSessionResponse,
     summary="Update Trading Session",
     description="更新指定交易会话的运行状态，例如启动、暂停或停止。",
+    responses=TRADING_SESSION_UPDATE_RESPONSES,
 )
 async def update_trading_session(
     session_id: str = Path(..., description="需要更新状态的交易会话ID。"),
@@ -224,6 +309,7 @@ async def update_trading_session(
     response_model=TradingSessionDeleteResponse,
     summary="Delete Trading Session",
     description="删除已完成或已取消的交易会话记录，并返回本次删除操作的结果说明。",
+    responses=TRADING_SESSION_DELETE_RESPONSES,
 )
 async def delete_trading_session(session_id: str = Path(..., description="需要删除的交易会话ID。")):
     """

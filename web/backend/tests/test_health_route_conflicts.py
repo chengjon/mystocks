@@ -1638,6 +1638,34 @@ def test_sse_endpoints_have_docs_examples_and_error_responses() -> None:
         assert any(code.startswith("5") for code in operation["responses"])
 
 
+def test_trading_session_endpoints_have_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    endpoint_expectations = {
+        ("/api/v1/trading/sessions", "get"): {"parameters": {"symbol", "status"}, "has_request": False},
+        ("/api/v1/trading/sessions", "post"): {"parameters": set(), "has_request": True},
+        ("/api/v1/trading/sessions/{session_id}", "get"): {"parameters": {"session_id"}, "has_request": False},
+        ("/api/v1/trading/sessions/{session_id}", "patch"): {"parameters": {"session_id"}, "has_request": True},
+        ("/api/v1/trading/sessions/{session_id}", "delete"): {"parameters": {"session_id"}, "has_request": False},
+    }
+
+    for (path, method), expectation in endpoint_expectations.items():
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+        success_json = operation["responses"]["200"]["content"]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expectation["parameters"]:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        if expectation["has_request"]:
+            request_json = operation["requestBody"]["content"]["application/json"]
+            assert "example" in request_json or "examples" in request_json
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
 def test_trading_runtime_add_strategy_endpoint_has_docs_request_and_response_examples() -> None:
     app.openapi_schema = None
     schema = app.openapi()
