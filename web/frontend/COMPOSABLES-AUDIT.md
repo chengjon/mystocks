@@ -44,3 +44,22 @@ Rationale:
 4. The 2 extraction candidates should only move after TradingDashboard disposition is resolved (per MIGRATION_PROGRESS.md task 8.5)
 
 **STRU-04 status:** Cannot complete without breaking active code. Recommend updating REQUIREMENTS.md to mark STRU-04 as deferred.
+
+## Final Disposition (Phase 5, 2026-04-08)
+
+Per CONTEXT.md decisions D-01 through D-04 (role-first extraction criteria):
+
+### Extraction Candidates
+
+| File | Disposition | Rationale |
+|------|-------------|-----------|
+| useTradingDashboard.ts | **Keep view-local** | 1 consumer (TradingDashboard.vue), view-specific state management. No extraction case. |
+| tradingDashboardActions.ts | **Keep view-local (AUDITED EXCEPTION)** | Not a composable — transport helper (CSRF + HTTP). 1 consumer (useTradingDashboard.ts). Kept for pragmatic reasons (move cost > semantic gain). **Naming debt:** this file is misnamed; presence in composables/ directory is NOT an endorsement of transport helpers in composable directories. If a second consumer appears, relocate to `src/api/` per STANDARDS.md rule. |
+
+### View-Local Confirmation
+
+The remaining 15/17 files remain classified "Keep view-local" as originally audited. Per STANDARDS.md section 二.1 (Composable 协作定位), view-local co-location is the canonical pattern for single-consumer composables.
+
+### Convention Reference
+
+Extraction criteria documented in `architecture/STANDARDS.md` section 二.1 — "Composable 协作定位（View-Local Canonical）".
