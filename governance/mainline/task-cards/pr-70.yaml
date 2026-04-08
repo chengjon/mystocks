@@ -24,7 +24,7 @@ openspec:
 
 function_tree:
   domain_id: "meta-governance"
-  node_id: "meta-governance-tech-debt-baseline"
+  node_id: "meta-governance-mainline"
   affected_entrypoints:
     - "governance"
   update_status: "not-needed"
