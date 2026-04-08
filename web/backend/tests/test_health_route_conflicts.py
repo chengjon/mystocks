@@ -2688,7 +2688,7 @@ def test_monitoring_watchlist_endpoints_have_docs_examples_and_error_responses()
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
-def test_ml_strategy_endpoints_have_request_examples() -> None:
+def test_ml_strategy_endpoints_have_request_and_response_examples() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
@@ -2699,9 +2699,12 @@ def test_ml_strategy_endpoints_have_request_examples() -> None:
     ]:
         operation = schema["paths"][path]["post"]
         request_json = operation["requestBody"]["content"]["application/json"]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
 
+        assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
         assert "example" in request_json or "examples" in request_json
+        assert "example" in success_json or "examples" in success_json
 
 
 def test_risk_v31_stop_loss_write_endpoints_have_docs_and_request_examples() -> None:

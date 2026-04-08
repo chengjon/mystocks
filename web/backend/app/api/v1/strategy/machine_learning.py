@@ -16,6 +16,19 @@ router = APIRouter(
     tags=["ML Strategies"],
 )
 
+
+def _success_response_spec(description: str, example: dict) -> dict[int, dict]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
 STRATEGY_TRAINING_REQUEST_EXAMPLES = {
     "svm_training": {
         "summary": "训练 SVM 策略",
@@ -53,6 +66,53 @@ STRATEGY_BACKTEST_REQUEST_EXAMPLES = {
         },
     }
 }
+
+STRATEGY_TRAINING_RESPONSE_EXAMPLE = {
+    "strategy_id": "svm_AAPL_1735689600",
+    "strategy_type": "svm",
+    "training_accuracy": 0.78,
+    "validation_score": 0.72,
+    "feature_importance": {
+        "close_price": 0.25,
+        "volume": 0.2,
+        "rsi_14": 0.15,
+        "macd": 0.12,
+        "bollinger_position": 0.1,
+        "momentum": 0.08,
+        "volatility": 0.06,
+        "trend_strength": 0.04,
+    },
+    "training_duration_ms": 4520,
+    "model_size_bytes": 125000,
+}
+
+STRATEGY_PREDICTION_RESPONSE_EXAMPLE = {
+    "strategy_id": "svm_AAPL_1735689600",
+    "symbol": "AAPL",
+    "prediction": {
+        "signal": "BUY",
+        "strength": 0.75,
+        "predicted_return": 0.025,
+        "time_horizon": 5,
+    },
+    "confidence": 0.82,
+    "timestamp": "2026-04-08T12:30:00",
+}
+
+STRATEGY_BACKTEST_RESPONSE_EXAMPLE = {
+    "strategy_id": "svm_AAPL_1735689600",
+    "total_return": 0.285,
+    "annualized_return": 0.195,
+    "sharpe_ratio": 1.45,
+    "max_drawdown": 0.085,
+    "win_rate": 0.62,
+    "total_trades": 89,
+    "backtest_duration_ms": 1250,
+}
+
+STRATEGY_TRAINING_RESPONSES = _success_response_spec("机器学习策略训练成功。", STRATEGY_TRAINING_RESPONSE_EXAMPLE)
+STRATEGY_PREDICTION_RESPONSES = _success_response_spec("机器学习策略预测成功。", STRATEGY_PREDICTION_RESPONSE_EXAMPLE)
+STRATEGY_BACKTEST_RESPONSES = _success_response_spec("机器学习策略回测成功。", STRATEGY_BACKTEST_RESPONSE_EXAMPLE)
 
 STRATEGY_LIST_RESPONSES = {
     200: {
@@ -195,7 +255,12 @@ class StrategyInfo(BaseModel):
     created_at: str
 
 
-@router.post("/train", response_model=StrategyTrainingResponse, summary="Train ML Strategy")
+@router.post(
+    "/train",
+    response_model=StrategyTrainingResponse,
+    summary="Train ML Strategy",
+    responses=STRATEGY_TRAINING_RESPONSES,
+)
 async def train_ml_strategy(
     request: StrategyTrainingRequest = Body(..., openapi_examples=STRATEGY_TRAINING_REQUEST_EXAMPLES)
 ):
@@ -230,6 +295,7 @@ async def train_ml_strategy(
     "/predict",
     response_model=StrategyPredictionResponse,
     summary="Generate Strategy Prediction",
+    responses=STRATEGY_PREDICTION_RESPONSES,
 )
 async def generate_strategy_prediction(
     request: StrategyPredictionRequest = Body(..., openapi_examples=STRATEGY_PREDICTION_REQUEST_EXAMPLES)
@@ -254,7 +320,12 @@ async def generate_strategy_prediction(
     return mock_response
 
 
-@router.post("/backtest", response_model=BacktestResponse, summary="Backtest ML Strategy")
+@router.post(
+    "/backtest",
+    response_model=BacktestResponse,
+    summary="Backtest ML Strategy",
+    responses=STRATEGY_BACKTEST_RESPONSES,
+)
 async def backtest_ml_strategy(
     request: BacktestRequest = Body(..., openapi_examples=STRATEGY_BACKTEST_REQUEST_EXAMPLES)
 ):

@@ -8,6 +8,7 @@ files_modified:
   - web/frontend/COMPOSABLES-AUDIT.md
   - .planning/REQUIREMENTS.md
   - .planning/PROJECT.md
+  - .planning/STATE.md
 requirements:
   - COMP-01
   - COMP-02
@@ -24,7 +25,7 @@ Document the view-local composable convention in STANDARDS.md, record final disp
 <must_haves>
 - architecture/STANDARDS.md contains a composable co-location rule in section 二.1 (前端开发红线)
 - web/frontend/COMPOSABLES-AUDIT.md has a "Final Disposition" section with per-file decisions and tradingDashboardActions.ts flagged as audited exception
-- .planning/REQUIREMENTS.md has COMP-01/02/03 checked off with traceability status "Complete"
+- .planning/REQUIREMENTS.md has COMP-01/02 checked off as Complete, COMP-03 as N/A (no extraction justified)
 - .planning/PROJECT.md has STRU-04 moved from Active to Validated with phase reference
 - npm run build succeeds (no files were moved, so build should be unchanged)
 </must_haves>
@@ -131,7 +132,7 @@ Change the 3 COMP checkboxes from unchecked to checked:
 Update the traceability table status for each:
 - `| COMP-01 | Phase 5 | Pending |` → `| COMP-01 | Phase 5 | Complete — both candidates kept view-local per evidence |`
 - `| COMP-02 | Phase 5 | Pending |` → `| COMP-02 | Phase 5 | Complete — convention added to STANDARDS.md |`
-- `| COMP-03 | Phase 5 | Pending |` → `| COMP-03 | Phase 5 | Complete — no extractions needed, `vue-tsc --noEmit` unchanged |`
+- `| COMP-03 | Phase 5 | Pending |` → `| COMP-03 | Phase 5 | N/A — no extraction justified; both candidates kept view-local per evidence. Build verified unchanged. |`
 
 ### Step 2: Update PROJECT.md
 
@@ -155,7 +156,7 @@ This confirms no files were inadvertently modified. Build must exit 0.
 - `.planning/REQUIREMENTS.md` contains `- [x] **COMP-01**`
 - `.planning/REQUIREMENTS.md` contains `- [x] **COMP-02**`
 - `.planning/REQUIREMENTS.md` contains `- [x] **COMP-03**`
-- `.planning/REQUIREMENTS.md` traceability table shows "Complete" for COMP-01, COMP-02, COMP-03
+- `.planning/REQUIREMENTS.md` traceability table shows "Complete" for COMP-01, COMP-02 and "N/A" for COMP-03
 - `.planning/PROJECT.md` contains `STRU-04` in the Validated section
 - `.planning/PROJECT.md` does NOT contain `STRU-04` in the Active section
 - `.planning/STATE.md` contains `STRU-04 CLOSED`

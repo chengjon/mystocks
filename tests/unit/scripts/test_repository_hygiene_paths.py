@@ -282,10 +282,12 @@ def test_active_documentation_entry_guides_no_longer_point_to_removed_quickstart
         PROJECT_ROOT / "docs" / "reports" / "DOCUMENTATION_ORGANIZATION_SUMMARY.md"
     ).read_text(encoding="utf-8")
 
-    assert "../operations/quick-start.md" in guides_readme
-    assert "../overview/IFLOW.md" in guides_readme
-    assert "../../.taskmaster/CLAUDE.md" in guides_readme
+    assert "/opt/claude/mystocks_spec/docs/README.md" in guides_readme
+    assert "/opt/claude/mystocks_spec/docs/guides/documentation/" in guides_readme
+    assert "/opt/claude/mystocks_spec/docs/guides/governance/" in guides_readme
     assert "docs/guides/QUICKSTART.md" not in guides_readme
+    assert "quick-start.md" not in guides_readme
+    assert "START_HERE.md" not in guides_readme
 
     assert "../../../README.md" in doc_management
     assert "../../INDEX.md" in doc_management
@@ -306,17 +308,26 @@ def test_active_documentation_entry_guides_no_longer_point_to_removed_quickstart
 def test_guides_readme_navigation_links_use_current_canonical_paths() -> None:
     guides_readme = (PROJECT_ROOT / "docs" / "guides" / "README.md").read_text(encoding="utf-8")
 
-    assert "../standards/PROJECT_MODULES.md" in guides_readme
-    assert "../architecture/README.md" in guides_readme
-    assert "../api/README.md" in guides_readme
-    assert "../reports/INDEX.md" in guides_readme
-    assert "./data-source/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md" in guides_readme
-    assert "./data-source/DATA_SOURCE_TOOLS_QUICK_REFERENCE.md" in guides_readme
-    assert "../architecture/DATA_SOURCE_MANAGEMENT_V2.md" in guides_readme
-    assert "../reports/DATA_SOURCE_V2_FINAL_VERIFICATION_REPORT.md" in guides_readme
-    assert "../reports/DATA_SOURCE_V2_ENHANCEMENT_PROPOSAL.md" in guides_readme
-    assert "../reports/REORGANIZATION_COMPLETION_REPORT.md" in guides_readme
+    assert "/opt/claude/mystocks_spec/docs/README.md" in guides_readme
+    assert "/opt/claude/mystocks_spec/docs/guides/ai-tools/" in guides_readme
+    assert "/opt/claude/mystocks_spec/docs/guides/frontend/" in guides_readme
+    assert "/opt/claude/mystocks_spec/docs/guides/web/" in guides_readme
+    assert "/opt/claude/mystocks_spec/docs/guides/typescript/" in guides_readme
+    assert "/opt/claude/mystocks_spec/docs/guides/pm2/" in guides_readme
+    assert "/opt/claude/mystocks_spec/docs/guides/openspec-cmd/" in guides_readme
+    assert "/opt/claude/mystocks_spec/docs/guides/multi-cli-tasks/" in guides_readme
+    assert "/opt/claude/mystocks_spec/docs/guides/onboarding/" in guides_readme
 
+    assert "../standards/PROJECT_MODULES.md" not in guides_readme
+    assert "../architecture/README.md" not in guides_readme
+    assert "../api/README.md" not in guides_readme
+    assert "../reports/INDEX.md" not in guides_readme
+    assert "./data-source/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md" not in guides_readme
+    assert "./data-source/DATA_SOURCE_TOOLS_QUICK_REFERENCE.md" not in guides_readme
+    assert "../architecture/DATA_SOURCE_MANAGEMENT_V2.md" not in guides_readme
+    assert "../reports/DATA_SOURCE_V2_FINAL_VERIFICATION_REPORT.md" not in guides_readme
+    assert "../reports/DATA_SOURCE_V2_ENHANCEMENT_PROPOSAL.md" not in guides_readme
+    assert "../reports/REORGANIZATION_COMPLETION_REPORT.md" not in guides_readme
     assert "./PROJECT_MODULES.md" not in guides_readme
     assert "./docs/architecture/README.md" not in guides_readme
     assert "./docs/guides/" not in guides_readme
