@@ -14,19 +14,19 @@ Resolve STRU-04 by making evidence-based decisions on the 2 extraction candidate
 ## Implementation Decisions
 
 ### Extraction Criteria
-- **D-01:** Extraction rule is **consumer count + role check**:
-  - 2+ consumers → extract to `src/composables/`
-  - 1 consumer + view-specific logic → keep view-local
-  - 1 consumer + clearly a shared domain utility (e.g., CSRF transport, shared types) → may extract to appropriate non-composable location (`api/`, `utils/`, NOT `src/composables/`)
-- **D-02:** No pre-emptive extraction based on "growth potential" or "might be reused later" — extract only when a second consumer actually exists or the file serves a clear cross-cutting domain role
+- **D-01:** Extraction rule is **role-first, then consumer count** (role check takes priority over consumer count):
+  1. **Role gate (first):** Is the file actually a composable (reactive state + Vue lifecycle)? If NO, it does NOT belong in `src/composables/` regardless of consumer count. Route by role: transport helpers → `src/api/` or feature-local `helpers/`; shared types → `types/`; utilities → `utils/`.
+  2. **Consumer count (second, for true composables only):** 2+ consumers → extract to `src/composables/`. 1 consumer + view-specific logic → keep view-local.
+  3. **Single-consumer domain utility:** A file with 1 consumer that clearly serves a cross-cutting domain role (CSRF, auth, shared types) may be pre-emptively extracted to its role-appropriate location — but NOT to `src/composables/`.
+- **D-02:** No pre-emptive extraction based on "growth potential" or "might be reused later" — extract only when a second consumer actually exists or the file provably serves a cross-cutting domain role
 
 ### Individual Composable Dispositions
 - **D-03:** `useTradingDashboard.ts` → **keep view-local**. Single consumer (TradingDashboard.vue), view-specific state management, no shared-domain role. No extraction case.
-- **D-04:** `tradingDashboardActions.ts` → **keep in `views/composables/`**. It is a transport/helper layer (CSRF token resolution, HTTP post/delete wrappers), not a composable. However, it has exactly 1 consumer (`useTradingDashboard.ts`) and is consumed by exactly 1 view. The extraction question only arises if/when a second consumer appears. At that point, consider moving to `src/api/` or a feature-local service/helper location — NOT `src/composables/`.
+- **D-04:** `tradingDashboardActions.ts` → **keep in `views/composables/` as an audited exception with documented naming debt**. Per D-01 role gate, this file is NOT a composable — it is a transport/helper layer (CSRF token resolution, HTTP post/delete wrappers). It stays in `views/composables/` solely because: (a) it has exactly 1 consumer, (b) moving it provides no functional benefit, (c) the move cost exceeds the semantic purity gain. **Naming debt:** This file should be flagged as "misnamed — not a composable" in COMPOSABLES-AUDIT.md so future contributors do not infer that transport helpers in composables/ directories is an accepted pattern. If a second consumer ever appears, relocate to `src/api/` or a feature-local `helpers/` — per D-01 role gate, NOT `src/composables/`.
 
 ### View-Local Pattern Documentation
 - **D-05:** Document the view-local convention in `architecture/STANDARDS.md` (frontend conventions section) as the canonical project rule. This is the project's authoritative rules file and the right place for lasting conventions.
-- **D-06:** The convention rule: "Composables with a single consumer are co-located with their view via `./composables/` relative imports. This is idiomatic Vue and the canonical pattern. Extraction to `src/composables/` requires 2+ consumers or a provable cross-cutting domain role."
+- **D-06:** The convention rule: "Role-first, then consumer count. (1) Files that are not composables (no reactive state / Vue lifecycle) do NOT go in `src/composables/` — route by role. (2) True composables with a single consumer are co-located with their view via `./composables/` relative imports — this is idiomatic Vue and the canonical pattern. (3) Extraction to `src/composables/` requires 2+ consumers."
 - **D-07:** COMPOSABLES-AUDIT.md remains as the audit evidence document (why these decisions were made). STANDARDS.md is the forward-looking rule (how to decide in the future).
 
 ### Claude's Discretion
@@ -80,8 +80,7 @@ Resolve STRU-04 by making evidence-based decisions on the 2 extraction candidate
 ## Specific Ideas
 
 - Audit documents explain "why these decisions"; STANDARDS.md defines "the rule going forward" — both are needed but serve different purposes
-- tradingDashboardActions.ts is a misnomer — it's not a composable, it's a transport helper. Keeping it in views/composables/ is pragmatic (1 consumer, no harm), but the naming could confuse future contributors
-- If a second consumer ever appears for tradingDashboardActions, the right destination is `src/api/` or a feature-local helper — not `src/composables/`
+- tradingDashboardActions.ts is an audited exception: not a composable, but kept in views/composables/ for pragmatic reasons (1 consumer, no functional gain from moving). It MUST be flagged as naming debt so the convention rule is not undermined by its presence. If a second consumer appears, relocate to `src/api/` per D-01 role gate — never `src/composables/`
 
 </specifics>
 
