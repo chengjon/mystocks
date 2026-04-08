@@ -1,5 +1,9 @@
 # TASK-T02 Execution Report - Spec Conflict Matrix (Round 1)
 
+> Historical note:
+> The execution-log evidence path below points at retired sidecar `technical_debt/governance/*`.
+> Current canonical source is `governance/technical-debt/SPEC_CONFLICT_MATRIX.md`.
+
 ## Basics
 - Task ID: T02
 - Owner: TBD
