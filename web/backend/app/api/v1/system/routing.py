@@ -14,6 +14,23 @@ router = APIRouter(
     tags=["Data Routing"],
 )
 
+
+DATA_ROUTING_RESPONSES = {
+    200: {
+        "description": "数据路由决策结果",
+        "content": {
+            "application/json": {
+                "example": {
+                    "route_selected": "tdengine",
+                    "estimated_records": 1000,
+                    "query_complexity": "high_frequency",
+                    "recommended_strategy": "direct_query",
+                }
+            }
+        },
+    }
+}
+
 DATA_ROUTING_REQUEST_EXAMPLE = {
     "data_category": "market_data",
     "symbol": "IF9999.CCFX",
@@ -46,6 +63,7 @@ class DataRoutingResponse(BaseModel):
     response_model=DataRoutingResponse,
     summary="Data Routing Decision",
     description="根据数据类别、标的和时间范围推断最合适的查询路由，帮助在 PostgreSQL 与 TDengine 之间做契约化选择。",
+    responses=DATA_ROUTING_RESPONSES,
 )
 async def get_data_route(request: DataRoutingRequest = Body(..., example=DATA_ROUTING_REQUEST_EXAMPLE)):
     """

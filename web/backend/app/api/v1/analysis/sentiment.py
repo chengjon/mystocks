@@ -43,6 +43,19 @@ router = APIRouter(
     responses=SENTIMENT_ROUTE_RESPONSES,
 )
 
+
+def _success_response_spec(description: str, example: dict) -> dict[int, dict]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
 SENTIMENT_ANALYZE_REQUEST_EXAMPLE = {
     "symbol": "0700.HK",
     "text": "腾讯云收入保持增长，广告业务恢复明显，市场关注 AI 投入带来的中长期回报。",
@@ -71,11 +84,43 @@ class SentimentResponse(BaseModel):
     analyzed_at: datetime = Field(..., description="情感分析完成时间。")
 
 
+SENTIMENT_ANALYZE_RESPONSE_EXAMPLE = {
+    "symbol": "0700.HK",
+    "sentiment": "POSITIVE",
+    "confidence": 0.85,
+    "positive_score": 0.75,
+    "negative_score": 0.1,
+    "neutral_score": 0.15,
+    "key_phrases": ["云收入增长", "广告恢复", "AI 投入回报"],
+    "analyzed_at": "2026-04-08T12:45:00",
+}
+
+MARKET_SENTIMENT_RESPONSE_EXAMPLE = {
+    "timestamp": "2026-04-08T12:45:00",
+    "overall_sentiment": "NEUTRAL",
+    "market_score": 0.52,
+    "sector_sentiments": [
+        {"sector": "technology", "score": 0.68, "trend": "up"},
+        {"sector": "finance", "score": 0.55, "trend": "stable"},
+        {"sector": "healthcare", "score": 0.48, "trend": "down"},
+    ],
+    "hot_topics": [
+        {"topic": "AI", "sentiment": 0.72, "mention_count": 1250},
+        {"topic": "新能源", "sentiment": 0.65, "mention_count": 980},
+        {"topic": "消费升级", "sentiment": 0.58, "mention_count": 750},
+    ],
+}
+
+SENTIMENT_ANALYZE_RESPONSES = _success_response_spec("单段文本情感分析成功。", SENTIMENT_ANALYZE_RESPONSE_EXAMPLE)
+MARKET_SENTIMENT_RESPONSES = _success_response_spec("市场整体情感查询成功。", MARKET_SENTIMENT_RESPONSE_EXAMPLE)
+
+
 @router.post(
     "/analyze",
     response_model=SentimentResponse,
     summary="Analyze Sentiment",
     description="分析单段文本对指定股票的情感倾向，适用于新闻摘要、研报摘录和舆情片段的快速判断。",
+    responses=SENTIMENT_ANALYZE_RESPONSES,
 )
 async def analyze_sentiment(request: SentimentRequest = Body(..., example=SENTIMENT_ANALYZE_REQUEST_EXAMPLE)):
     """
@@ -123,7 +168,12 @@ async def get_stock_sentiment(
     }
 
 
-@router.get("/market", summary="Get Market Sentiment")
+@router.get(
+    "/market",
+    summary="Get Market Sentiment",
+    description="获取当前市场整体情感分值、行业情绪分布和热点主题热度，用于观察市场舆情温度。",
+    responses=MARKET_SENTIMENT_RESPONSES,
+)
 async def get_market_sentiment():
     """
     获取市场整体情感

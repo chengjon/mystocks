@@ -15,6 +15,26 @@ router = APIRouter(
 )
 
 
+TECHNICAL_INDICATORS_RESPONSES = {
+    200: {
+        "description": "技术指标计算结果",
+        "content": {
+            "application/json": {
+                "example": {
+                    "symbol": "IF9999.CCFX",
+                    "indicators": {
+                        "rsi": {"value": 58.4, "signal": "NEUTRAL"},
+                        "macd": {"value": 1.26, "signal": "BULLISH"},
+                        "bollinger": {"value": 0.63, "signal": "UPPER_BAND"},
+                    },
+                    "calculated_at": "2026-04-08T12:45:00Z",
+                }
+            }
+        },
+    }
+}
+
+
 class TechnicalIndicatorResponse(BaseModel):
     """Technical indicator response"""
 
@@ -23,7 +43,13 @@ class TechnicalIndicatorResponse(BaseModel):
     calculated_at: str = Field(..., description="本次指标计算完成时间。")
 
 
-@router.get("", response_model=TechnicalIndicatorResponse, summary="Get Technical Indicators")
+@router.get(
+    "",
+    response_model=TechnicalIndicatorResponse,
+    summary="Get Technical Indicators",
+    description="按标的、指标集合和周期参数计算技术指标，返回信号方向和计算时间。",
+    responses=TECHNICAL_INDICATORS_RESPONSES,
+)
 async def get_technical_indicators(
     symbol: str = Query(..., description="Stock symbol"),
     indicators: List[str] = Query(..., description="Indicator names (rsi,macd,bollinger,etc.)"),

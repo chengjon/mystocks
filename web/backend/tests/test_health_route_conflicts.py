@@ -2935,10 +2935,30 @@ def test_v1_data_route_sentiment_strategy_and_optimization_endpoints_have_docs()
     for path in ["/api/v1/data/route", "/api/v1/sentiment/analyze"]:
         operation = schema["paths"][path]["post"]
         request_json = operation["requestBody"]["content"]["application/json"]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
 
         assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
         assert "example" in request_json or "examples" in request_json
+        assert "example" in success_json or "examples" in success_json
+
+    market_sentiment_operation = schema["paths"]["/api/v1/sentiment/market"]["get"]
+    market_sentiment_success_json = market_sentiment_operation["responses"]["200"]["content"]["application/json"]
+    assert market_sentiment_operation.get("summary")
+    assert len(market_sentiment_operation.get("description", "")) >= 20
+    assert "example" in market_sentiment_success_json or "examples" in market_sentiment_success_json
+
+    technical_indicators_operation = schema["paths"]["/api/v1/technical-indicators"]["get"]
+    technical_indicators_parameters = technical_indicators_operation.get("parameters", [])
+    technical_indicators_success_json = technical_indicators_operation["responses"]["200"]["content"]["application/json"]
+    assert technical_indicators_operation.get("summary")
+    assert len(technical_indicators_operation.get("description", "")) >= 20
+    for parameter_name in ["symbol", "indicators", "period"]:
+        assert any(
+            param["name"] == parameter_name and param.get("description")
+            for param in technical_indicators_parameters
+        )
+    assert "example" in technical_indicators_success_json or "examples" in technical_indicators_success_json
 
     strategies_operation = schema["paths"]["/api/v1/strategies"]["get"]
     strategies_parameters = strategies_operation.get("parameters", [])
