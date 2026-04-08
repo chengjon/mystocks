@@ -39,6 +39,7 @@
   - `governance/technical-debt/TEMPORARY_ARTIFACT_INVENTORY.md` now defines the canonical class-level inventory for temporary entrypoints, mechanical splits, and backup files
   - `governance/technical-debt/WEEKLY_GOVERNANCE_CADENCE.md` and `reports/governance/README.md` now require explicit evidence sources for progress and closeout claims
   - `docs/reports/tasks/TASK.md` and `docs/reports/tasks/TASK-T05-REPORT.md` through `TASK-T10-REPORT.md` now mark blank-evidence drafts as unverified historical context only
+  - `docs/guides/governance/DELETION_EVIDENCE_GATE.md` and `reports/governance/README.md` now explicitly subordinate deletion guidance to `openspec/specs/directory-governance/spec.md` plus the machine-truth registries
 - `inferred`
   - Historical task snapshots and root mainline snapshots had overlapping discoverability and needed an explicit bridge
   - Archived sidecar governance artifacts were partially implemented but not canonical
@@ -47,5 +48,4 @@
 
 ## Decisions Needed
 
-1. Confirm whether deletion-governance runbooks need another bridge layer beyond the current OpenSpec-first wording (`SC-008`).
-2. Confirm whether cleanup-readiness references need another explicit registry-path bridge in templates or reports (`SC-018`).
+1. Confirm whether cleanup-readiness references need another explicit registry-path bridge in templates or reports (`SC-018`).

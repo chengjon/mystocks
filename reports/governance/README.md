@@ -55,6 +55,12 @@ If exit condition is unknown, the migration is not fully closed; record that gap
 
 Do not delete governance records only because they look old or unreferenced.
 
+When a record here discusses deletion or retirement readiness:
+
+- policy truth stays in `openspec/specs/directory-governance/spec.md`
+- machine truth stays in `governance/deletion-evidence.yaml` and `governance/waivers/deletion-evidence-waivers.yaml`
+- records in this directory are evidence and analysis only, not deletion authorization
+
 Before deleting or relocating a file in this directory, complete both checks:
 
 - code-path verdict:

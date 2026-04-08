@@ -1,6 +1,16 @@
 # Deletion Evidence Gate
 
-本页只说明如何操作删除治理门禁；规范口径仍以 [architecture/STANDARDS.md](../../../architecture/STANDARDS.md) 与机器工件为准。
+本页只说明如何操作删除治理门禁，不定义规范真相。
+删除治理的权威来源顺序是：
+
+1. policy truth: [openspec/specs/directory-governance/spec.md](../../../openspec/specs/directory-governance/spec.md)
+2. repo-wide rule source: [architecture/STANDARDS.md](../../../architecture/STANDARDS.md)
+3. machine truth: `governance/deletion-evidence.yaml`、`governance/waivers/deletion-evidence-waivers.yaml`
+4. this page: runbook only
+
+如果本页与上述 policy 或 machine truth 不一致，以上述来源为准。
+
+报告、审计、closeout 文档可以引用删除治理结论，但它们本身不是删除授权来源。
 
 ## 拦截范围
 
@@ -19,6 +29,8 @@
 
 - 正常删除证据：`governance/deletion-evidence.yaml`
 - 紧急豁免：`governance/waivers/deletion-evidence-waivers.yaml`
+
+这两个 registry 才是机器判定输入；runbook 示例和审计报告不能替代它们。
 
 要求：
 
