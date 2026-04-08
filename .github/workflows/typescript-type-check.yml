@@ -13,6 +13,9 @@ on:
       - 'web/frontend/tsconfig.json'
       - 'web/frontend/vite.config.ts'
       - 'web/frontend/package.json'
+      - 'reports/analysis/tech-debt-baseline.json'
+      - 'reports/compliance/exceptions/tech_debt_baseline_rebaseline.json'
+      - '.github/workflows/typescript-type-check.yml'
   pull_request:
     branches: [ main, develop ]
     paths:
@@ -22,6 +25,9 @@ on:
       - 'web/frontend/tsconfig.json'
       - 'web/frontend/vite.config.ts'
       - 'web/frontend/package.json'
+      - 'reports/analysis/tech-debt-baseline.json'
+      - 'reports/compliance/exceptions/tech_debt_baseline_rebaseline.json'
+      - '.github/workflows/typescript-type-check.yml'
   workflow_dispatch:
 
 permissions:
