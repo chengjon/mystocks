@@ -7,12 +7,18 @@
 > 文内目录、链接、数量和分类如未重新生成或复核，应视为导航快照，不得直接当作当前事实。
 
 
-**最后更新**: 2026-03-25 02:04:55
+**最后更新**: 2026-04-08
 
-**文档数量**: 1
+**状态**: compatibility entry only
 
 
 ---
 
+- [WEB_DEV_HOOKS_GUIDE](../guides/hooks/WEB_DEV_HOOKS_GUIDE.md)
+  - *当前推荐的 Web Hook / 工作流主入口*
+
+- [web-dev-hooks-guide](../guides/hooks/web-dev-hooks-guide.md)
+  - *当前推荐的英文/补充说明入口*
+
 - [GUIDE](GUIDE.md)
-  - *MyStocks Web 开发工作目录说明*
+  - *兼容入口说明；仅用于旧链接过渡*

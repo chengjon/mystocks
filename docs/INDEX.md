@@ -70,18 +70,6 @@
             - 📄 [api_integration_optimization_plan](api/guides/integration/api_integration_optimization_plan.md)
             - 📄 [implementation-guide](api/guides/integration/implementation-guide.md)
             - 📄 [前后端整合与部署完整方案](api/guides/integration/前后端整合与部署完整方案.md)
-    - 📂 [Legacy Cn](api/legacy-cn)
-
-###### Legacy Cn
-
-        - 📄 [README](api/legacy-cn/INDEX.md)
-        - 📂 [Api与功能文档](api/legacy-cn/03-API与功能文档)
-
-######## Api与功能文档
-
-            - 📄 [README](api/legacy-cn/03-API与功能文档/README.md)
-            - 📄 [API契约同步组件实现方案](api/legacy-cn/03-API与功能文档/API契约同步组件实现方案.md)
-            - 📄 [env](api/legacy-cn/03-API与功能文档/env.md)
     - 📂 [Openapi](api/openapi)
 
 ###### Openapi
@@ -322,25 +310,7 @@
 #### Architecture
 
     - 📄 [README](architecture/README.md)
-    - 📂 [Legacy Cn](architecture/legacy-cn)
-
-###### Legacy Cn
-
-        - 📂 [架构与设计文档](architecture/legacy-cn/02-架构与设计文档)
-
-######## 架构与设计文档
-
-            - 📄 [README](architecture/legacy-cn/02-架构与设计文档/README.md)
-            - 📄 [A股量化分析平台功能扩展方案](architecture/legacy-cn/02-架构与设计文档/A股量化分析平台功能扩展方案.md)
-            - 📄 [A股量化分析平台扩展方案-豆包](architecture/legacy-cn/02-架构与设计文档/A股量化分析平台扩展方案-豆包.md)
-            - 📄 [RISK_MANAGEMENT_ARCHITECTURE_V2](architecture/legacy-cn/02-架构与设计文档/RISK_MANAGEMENT_ARCHITECTURE_V2.md)
-            - 📄 [vue组件开发注意事项](architecture/legacy-cn/02-架构与设计文档/vue组件开发注意事项.md)
-            - 📄 [web页面结构详细描述](architecture/legacy-cn/02-架构与设计文档/web页面结构详细描述.md)
-            - 📄 [股票指标计算体系](architecture/legacy-cn/02-架构与设计文档/股票指标计算体系.md)
-            - 📄 [股票监控功能设计方案1](architecture/legacy-cn/02-架构与设计文档/股票监控功能设计方案1.md)
-            - 📄 [设计令牌的核心作用](architecture/legacy-cn/02-架构与设计文档/设计令牌的核心作用.md)
-            - 📄 [页面结构优化方案v2](architecture/legacy-cn/02-架构与设计文档/页面结构优化方案v2.md)
-            - 📄 [风险管理方案](architecture/legacy-cn/02-架构与设计文档/风险管理方案.md)
+    - 📦 [Archived legacy-cn snapshot](../archive/docs/architecture/legacy-cn-2026-04-08)
     - 📄 [ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION](architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md)
     - 📄 [ADAPTER_EXTENSION_GUIDE](architecture/ADAPTER_EXTENSION_GUIDE.md)
     - 📄 [ADAPTER_FUNCTION_SURVEY](architecture/ADAPTER_FUNCTION_SURVEY.md)
@@ -1123,127 +1093,7 @@
         - 📄 [README](reports/design/INDEX.md)
         - 📄 [ARTDECO_PHASE2_COMPLETION_REPORT](reports/design/ARTDECO_PHASE2_COMPLETION_REPORT.md)
         - 📄 [artdeco-implementation-summary](reports/design/artdeco-implementation-summary.md)
-    - 📂 [Legacy Cn](reports/legacy-cn)
-
-###### Legacy Cn
-
-        - 📄 [README](reports/legacy-cn/INDEX.md)
-        - 📂 [项目管理与报告](reports/legacy-cn/06-项目管理与报告)
-
-######## 项目管理与报告
-
-            - 📄 [README](reports/legacy-cn/06-项目管理与报告/README.md)
-            - 📂 [历史指南](reports/legacy-cn/06-项目管理与报告/历史指南)
-
-########## 历史指南
-
-                - 📄 [README](reports/legacy-cn/06-项目管理与报告/历史指南/INDEX.md)
-                - 📄 [AI_PERFORMANCE_OPTIMIZATION_COMPLETION_REPORT](reports/legacy-cn/06-项目管理与报告/历史指南/AI_PERFORMANCE_OPTIMIZATION_COMPLETION_REPORT.md)
-                - 📄 [APIFOX_INTEGRATION_COMPLETE](reports/legacy-cn/06-项目管理与报告/历史指南/APIFOX_INTEGRATION_COMPLETE.md)
-                - 📄 [APIFOX_MCP_SETUP](reports/legacy-cn/06-项目管理与报告/历史指南/APIFOX_MCP_SETUP.md)
-                - 📄 [ARCHITECTURE_REVIEW_SUMMARY_2025-12-04](reports/legacy-cn/06-项目管理与报告/历史指南/ARCHITECTURE_REVIEW_SUMMARY_2025-12-04.md)
-                - 📄 [CLAUDE_CODE_TOOLS_GUIDE](reports/legacy-cn/06-项目管理与报告/历史指南/CLAUDE_CODE_TOOLS_GUIDE.md)
-                - 📄 [CONTRACT_TESTING_GUIDE](reports/legacy-cn/06-项目管理与报告/历史指南/CONTRACT_TESTING_GUIDE.md)
-                - 📄 [DAY_1_COMPLETION_REPORT](reports/legacy-cn/06-项目管理与报告/历史指南/DAY_1_COMPLETION_REPORT.md)
-                - 📄 [DB_LEAK_FIX_REPORT](reports/legacy-cn/06-项目管理与报告/历史指南/DB_LEAK_FIX_REPORT.md)
-                - 📄 [DEPLOYMENT_GUIDE](reports/legacy-cn/06-项目管理与报告/历史指南/DEPLOYMENT_GUIDE.md)
-                - 📄 [DEV_ENVIRONMENT_COMPLETION_REPORT](reports/legacy-cn/06-项目管理与报告/历史指南/DEV_ENVIRONMENT_COMPLETION_REPORT.md)
-                - 📄 [DEV_ENVIRONMENT_SETUP_COMPLETION](reports/legacy-cn/06-项目管理与报告/历史指南/DEV_ENVIRONMENT_SETUP_COMPLETION.md)
-                - 📄 [DEV_TOOLCHAIN_GUIDE](reports/legacy-cn/06-项目管理与报告/历史指南/DEV_TOOLCHAIN_GUIDE.md)
-                - 📄 [DOCUMENTATION_GUIDE](reports/legacy-cn/06-项目管理与报告/历史指南/DOCUMENTATION_GUIDE.md)
-                - 📄 [DOCUMENT_REORGANIZATION_PLAN](reports/legacy-cn/06-项目管理与报告/历史指南/DOCUMENT_REORGANIZATION_PLAN.md)
-                - 📄 [FRONTEND_BACKEND_DATA_FLOW_REPORT](reports/legacy-cn/06-项目管理与报告/历史指南/FRONTEND_BACKEND_DATA_FLOW_REPORT.md)
-                - 📄 [HOOKS_CONFIGURATION_DETAILED](reports/legacy-cn/06-项目管理与报告/历史指南/HOOKS_CONFIGURATION_DETAILED.md)
-                - 📄 [HOOKS_MIGRATION_GUIDE](reports/legacy-cn/06-项目管理与报告/历史指南/HOOKS_MIGRATION_GUIDE.md)
-                - 📄 [HOOKS_QUICK_REFERENCE](reports/legacy-cn/06-项目管理与报告/历史指南/HOOKS_QUICK_REFERENCE.md)
-                - 📄 [IFLOW](reports/legacy-cn/06-项目管理与报告/历史指南/IFLOW.md)
-                - 📄 [IMPLEMENTATION_GUIDE](reports/legacy-cn/06-项目管理与报告/历史指南/IMPLEMENTATION_GUIDE.md)
-                - 📄 [INSTOCK_MIGRATION_REPORT](reports/legacy-cn/06-项目管理与报告/历史指南/INSTOCK_MIGRATION_REPORT.md)
-                - 📄 [INTEGRATION_TESTS_GUIDE](reports/legacy-cn/06-项目管理与报告/历史指南/INTEGRATION_TESTS_GUIDE.md)
-                - 📄 [LEGACY_CODE_ANALYSIS](reports/legacy-cn/06-项目管理与报告/历史指南/LEGACY_CODE_ANALYSIS.md)
-                - 📄 [MODULAR_CODE_SPLIT_REPORT](reports/legacy-cn/06-项目管理与报告/历史指南/MODULAR_CODE_SPLIT_REPORT.md)
-                - 📄 [MODULAR_CODE_USAGE_GUIDE](reports/legacy-cn/06-项目管理与报告/历史指南/MODULAR_CODE_USAGE_GUIDE.md)
-                - 📄 [MONITORING_DOCUMENTATION_INDEX](reports/legacy-cn/06-项目管理与报告/历史指南/MONITORING_DOCUMENTATION_INDEX.md)
-                - 📄 [OPENSTOCK_DEMO_PAGE_GUIDE](reports/legacy-cn/06-项目管理与报告/历史指南/OPENSTOCK_DEMO_PAGE_GUIDE.md)
-                - 📄 [OPENSTOCK_MIGRATION_GUIDE](reports/legacy-cn/06-项目管理与报告/历史指南/OPENSTOCK_MIGRATION_GUIDE.md)
-                - 📄 [OPENSTOCK_MIGRATION_SUMMARY](reports/legacy-cn/06-项目管理与报告/历史指南/OPENSTOCK_MIGRATION_SUMMARY.md)
-                - 📄 [OPENSTOCK_QUICKSTART](reports/legacy-cn/06-项目管理与报告/历史指南/OPENSTOCK_QUICKSTART.md)
-                - 📄 [OPENSTOCK_UPGRADE_STATUS](reports/legacy-cn/06-项目管理与报告/历史指南/OPENSTOCK_UPGRADE_STATUS.md)
-                - 📄 [P0_IMPLEMENTATION_PLAN_2025-12-04](reports/legacy-cn/06-项目管理与报告/历史指南/P0_IMPLEMENTATION_PLAN_2025-12-04.md)
-                - 📄 [P0_IMPLEMENTATION_STATUS_2025-12-04](reports/legacy-cn/06-项目管理与报告/历史指南/P0_IMPLEMENTATION_STATUS_2025-12-04.md)
-                - 📄 [P0_QUICK_REFERENCE](reports/legacy-cn/06-项目管理与报告/历史指南/P0_QUICK_REFERENCE.md)
-                - 📄 [P0_TASK2_COMPLETION_REPORT_2025-12-04](reports/legacy-cn/06-项目管理与报告/历史指南/P0_TASK2_COMPLETION_REPORT_2025-12-04.md)
-                - 📄 [P0_TASK2_VALIDATION_IMPLEMENTATION](reports/legacy-cn/06-项目管理与报告/历史指南/P0_TASK2_VALIDATION_IMPLEMENTATION.md)
-                - 📄 [P0_TASK3_COMPLETION_REPORT_2025-12-04](reports/legacy-cn/06-项目管理与报告/历史指南/P0_TASK3_COMPLETION_REPORT_2025-12-04.md)
-                - 📄 [P0_TASK4_TEST_COVERAGE_COMPLETION_REPORT](reports/legacy-cn/06-项目管理与报告/历史指南/P0_TASK4_TEST_COVERAGE_COMPLETION_REPORT.md)
-                - 📄 [P1_API_INTEGRATION_TEST_COMPLETION_REPORT](reports/legacy-cn/06-项目管理与报告/历史指南/P1_API_INTEGRATION_TEST_COMPLETION_REPORT.md)
-                - 📄 [P2_API_INTEGRATION_TEMPLATE](reports/legacy-cn/06-项目管理与报告/历史指南/P2_API_INTEGRATION_TEMPLATE.md)
-                - 📄 [P2_MODULE_MIGRATION_COMPLETION_REPORT](reports/legacy-cn/06-项目管理与报告/历史指南/P2_MODULE_MIGRATION_COMPLETION_REPORT.md)
-                - 📄 [PHASE0_CREDENTIAL_ROTATION_GUIDE](reports/legacy-cn/06-项目管理与报告/历史指南/PHASE0_CREDENTIAL_ROTATION_GUIDE.md)
-                - 📄 [PHASE10_FINAL_REPORT](reports/legacy-cn/06-项目管理与报告/历史指南/PHASE10_FINAL_REPORT.md)
-                - 📄 [PHASE1_3_IMPLEMENTATION_PLAN](reports/legacy-cn/06-项目管理与报告/历史指南/PHASE1_3_IMPLEMENTATION_PLAN.md)
-                - 📄 [PHASE1_COMPLETION_REPORT_20251130](reports/legacy-cn/06-项目管理与报告/历史指南/PHASE1_COMPLETION_REPORT_20251130.md)
-                - 📄 [PHASE1_EXCEPTION_HIERARCHY](reports/legacy-cn/06-项目管理与报告/历史指南/PHASE1_EXCEPTION_HIERARCHY.md)
-                - 📄 [PHASE1_SECURITY_BRIEFING_20251130](reports/legacy-cn/06-项目管理与报告/历史指南/PHASE1_SECURITY_BRIEFING_20251130.md)
-                - 📄 [PHASE2_E2E_TESTING_PLAN](reports/legacy-cn/06-项目管理与报告/历史指南/PHASE2_E2E_TESTING_PLAN.md)
-                - 📄 [PHASE2_FRAMEWORK_SETUP_REPORT](reports/legacy-cn/06-项目管理与报告/历史指南/PHASE2_FRAMEWORK_SETUP_REPORT.md)
-                - 📄 [PHASE3_ADVANCED_TESTING_IMPLEMENTATION](reports/legacy-cn/06-项目管理与报告/历史指南/PHASE3_ADVANCED_TESTING_IMPLEMENTATION.md)
-                - 📄 [PHASE3_COMPLETION_SUMMARY](reports/legacy-cn/06-项目管理与报告/历史指南/PHASE3_COMPLETION_SUMMARY.md)
-                - 📄 [PHASE3_FINAL_COMPLETION_REPORT](reports/legacy-cn/06-项目管理与报告/历史指南/PHASE3_FINAL_COMPLETION_REPORT.md)
-                - 📄 [PHASE3_MILESTONE2_API_INTEGRATION_GUIDE](reports/legacy-cn/06-项目管理与报告/历史指南/PHASE3_MILESTONE2_API_INTEGRATION_GUIDE.md)
-                - 📄 [PHASE3_MILESTONE5_COVERAGE_REPORTING](reports/legacy-cn/06-项目管理与报告/历史指南/PHASE3_MILESTONE5_COVERAGE_REPORTING.md)
-                - 📄 [PHASE4_ADVANCED_TESTING_PLAN](reports/legacy-cn/06-项目管理与报告/历史指南/PHASE4_ADVANCED_TESTING_PLAN.md)
-                - 📄 [PHASE4_MILESTONE1_WEBSOCKET_TESTING](reports/legacy-cn/06-项目管理与报告/历史指南/PHASE4_MILESTONE1_WEBSOCKET_TESTING.md)
-                - 📄 [PHASE_10_ROADMAP](reports/legacy-cn/06-项目管理与报告/历史指南/PHASE_10_ROADMAP.md)
-                - 📄 [PHASE_9_COMPLETION](reports/legacy-cn/06-项目管理与报告/历史指南/PHASE_9_COMPLETION.md)
-                - 📄 [PHASE_COMPLETION_REPORT](reports/legacy-cn/06-项目管理与报告/历史指南/PHASE_COMPLETION_REPORT.md)
-                - 📄 [PIXSO_MCP_9tootls](reports/legacy-cn/06-项目管理与报告/历史指南/PIXSO_MCP_9tootls.md)
-                - 📄 [PIXSO_MCP_NEXT_STEPS](reports/legacy-cn/06-项目管理与报告/历史指南/PIXSO_MCP_NEXT_STEPS.md)
-                - 📄 [PIXSO_MCP_TROUBLESHOOTING](reports/legacy-cn/06-项目管理与报告/历史指南/PIXSO_MCP_TROUBLESHOOTING.md)
-                - 📄 [PLAYWRIGHT_EXPANSION_REPORT](reports/legacy-cn/06-项目管理与报告/历史指南/PLAYWRIGHT_EXPANSION_REPORT.md)
-                - 📄 [PLAYWRIGHT_QUICKSTART](reports/legacy-cn/06-项目管理与报告/历史指南/PLAYWRIGHT_QUICKSTART.md)
-                - 📄 [PORT_ALLOCATION_GUIDE](reports/legacy-cn/06-项目管理与报告/历史指南/PORT_ALLOCATION_GUIDE.md)
-                - 📄 [PROJECT_DIRECTORY_STANDARD](reports/legacy-cn/06-项目管理与报告/历史指南/PROJECT_DIRECTORY_STANDARD.md)
-                - 📄 [QUICKSTART](reports/legacy-cn/06-项目管理与报告/历史指南/QUICKSTART.md)
-                - 📄 [QUICK_START](reports/legacy-cn/06-项目管理与报告/历史指南/QUICK_START.md)
-                - 📄 [QUICK_START_目录管理](reports/legacy-cn/06-项目管理与报告/历史指南/QUICK_START_目录管理.md)
-                - 📄 [README_UPDATED](reports/legacy-cn/06-项目管理与报告/历史指南/README_UPDATED.md)
-                - 📄 [SECURITY_DOCUMENTATION_INDEX](reports/legacy-cn/06-项目管理与报告/历史指南/SECURITY_DOCUMENTATION_INDEX.md)
-                - 📄 [SWAGGER_UI_CDN_SOLUTION](reports/legacy-cn/06-项目管理与报告/历史指南/SWAGGER_UI_CDN_SOLUTION.md)
-                - 📄 [SWAGGER_UI_FINAL_SOLUTION](reports/legacy-cn/06-项目管理与报告/历史指南/SWAGGER_UI_FINAL_SOLUTION.md)
-                - 📄 [SWAGGER_UI_LOCAL_SOLUTION_SUCCESS](reports/legacy-cn/06-项目管理与报告/历史指南/SWAGGER_UI_LOCAL_SOLUTION_SUCCESS.md)
-                - 📄 [SWAGGER_UI_QUICK_REFERENCE](reports/legacy-cn/06-项目管理与报告/历史指南/SWAGGER_UI_QUICK_REFERENCE.md)
-                - 📄 [TDENGINE_QUICK_REFERENCE](reports/legacy-cn/06-项目管理与报告/历史指南/TDENGINE_QUICK_REFERENCE.md)
-                - 📄 [TEAM_CONFIGURATION_SUMMARY](reports/legacy-cn/06-项目管理与报告/历史指南/TEAM_CONFIGURATION_SUMMARY.md)
-                - 📄 [TECHNICAL_DEBT_ASSESSMENT_2025-12-05](reports/legacy-cn/06-项目管理与报告/历史指南/TECHNICAL_DEBT_ASSESSMENT_2025-12-05.md)
-                - 📄 [TECHNICAL_DEBT_FIX_PROGRESS](reports/legacy-cn/06-项目管理与报告/历史指南/TECHNICAL_DEBT_FIX_PROGRESS.md)
-                - 📄 [TECHNICAL_DEBT_STATUS](reports/legacy-cn/06-项目管理与报告/历史指南/TECHNICAL_DEBT_STATUS.md)
-                - 📄 [TECH_DEBT_ACTION_PLAN](reports/legacy-cn/06-项目管理与报告/历史指南/TECH_DEBT_ACTION_PLAN.md)
-                - 📄 [TECH_DEBT_ANALYSIS_2025](reports/legacy-cn/06-项目管理与报告/历史指南/TECH_DEBT_ANALYSIS_2025.md)
-                - 📄 [TECH_DEBT_COVERAGE_FINAL_REPORT](reports/legacy-cn/06-项目管理与报告/历史指南/TECH_DEBT_COVERAGE_FINAL_REPORT.md)
-                - 📄 [TECH_DEBT_METRICS](reports/legacy-cn/06-项目管理与报告/历史指南/TECH_DEBT_METRICS.md)
-                - 📄 [TECH_DEBT_REMEDIATION_PLAN_2025](reports/legacy-cn/06-项目管理与报告/历史指南/TECH_DEBT_REMEDIATION_PLAN_2025.md)
-                - 📄 [TECH_DEBT_TEST_COVERAGE_UPDATE](reports/legacy-cn/06-项目管理与报告/历史指南/TECH_DEBT_TEST_COVERAGE_UPDATE.md)
-                - 📄 [TEST_COVERAGE_IMPROVEMENT_REPORT](reports/legacy-cn/06-项目管理与报告/历史指南/TEST_COVERAGE_IMPROVEMENT_REPORT.md)
-                - 📄 [TOOLCHAIN_IMPLEMENTATION_SUMMARY](reports/legacy-cn/06-项目管理与报告/历史指南/TOOLCHAIN_IMPLEMENTATION_SUMMARY.md)
-                - 📄 [TOOLCHAIN_TROUBLESHOOT](reports/legacy-cn/06-项目管理与报告/历史指南/TOOLCHAIN_TROUBLESHOOT.md)
-                - 📄 [UI_UX_OPTIMIZATION_COMPLETION_REPORT](reports/legacy-cn/06-项目管理与报告/历史指南/UI_UX_OPTIMIZATION_COMPLETION_REPORT.md)
-                - 📄 [VUE_IMPLEMENTATION_GUIDE](reports/legacy-cn/06-项目管理与报告/历史指南/VUE_IMPLEMENTATION_GUIDE.md)
-                - 📄 [Vue_FastAPI_AI_Strategy_Implementation_Guide](reports/legacy-cn/06-项目管理与报告/历史指南/Vue_FastAPI_AI_Strategy_Implementation_Guide.md)
-                - 📄 [Vue_FastAPI_Code_Reference_Guide](reports/legacy-cn/06-项目管理与报告/历史指南/Vue_FastAPI_Code_Reference_Guide.md)
-                - 📄 [Vue_FastAPI_Deployment_Implementation_Guide](reports/legacy-cn/06-项目管理与报告/历史指南/Vue_FastAPI_Deployment_Implementation_Guide.md)
-                - 📄 [Vue_FastAPI_GPU_System_Implementation_Guide](reports/legacy-cn/06-项目管理与报告/历史指南/Vue_FastAPI_GPU_System_Implementation_Guide.md)
-                - 📄 [Vue_FastAPI_Implementation_Master_Guide](reports/legacy-cn/06-项目管理与报告/历史指南/Vue_FastAPI_Implementation_Master_Guide.md)
-                - 📄 [Vue_FastAPI_Monitoring_Implementation_Guide](reports/legacy-cn/06-项目管理与报告/历史指南/Vue_FastAPI_Monitoring_Implementation_Guide.md)
-                - 📄 [WEBSOCKET_QUICK_REFERENCE](reports/legacy-cn/06-项目管理与报告/历史指南/WEBSOCKET_QUICK_REFERENCE.md)
-                - 📄 [WEB_USABILITY_TESTING_GUIDE](reports/legacy-cn/06-项目管理与报告/历史指南/WEB_USABILITY_TESTING_GUIDE.md)
-                - 📄 [WEEK1_IMPLEMENTATION_STATUS](reports/legacy-cn/06-项目管理与报告/历史指南/WEEK1_IMPLEMENTATION_STATUS.md)
-                - 📄 [WEEK1_OPTIMIZATION_GUIDE](reports/legacy-cn/06-项目管理与报告/历史指南/WEEK1_OPTIMIZATION_GUIDE.md)
-                - 📄 [关键经验和成功做法](reports/legacy-cn/06-项目管理与报告/历史指南/关键经验和成功做法.md)
-                - 📄 [根目录混乱问题分析与解决方案](reports/legacy-cn/06-项目管理与报告/历史指南/根目录混乱问题分析与解决方案.md)
-                - 📄 [目录管理解决方案总结](reports/legacy-cn/06-项目管理与报告/历史指南/目录管理解决方案总结.md)
-                - 📄 [端口配置更新报告](reports/legacy-cn/06-项目管理与报告/历史指南/端口配置更新报告.md)
-                - 📄 [系统状态报告](reports/legacy-cn/06-项目管理与报告/历史指南/系统状态报告.md)
+    - 📂 [Archived Legacy Cn](../archive/docs/reports/legacy-cn-2026-04-08)
     - 📂 [Load Test Reports](reports/load_test_reports)
 
 ###### Load Test Reports
@@ -2146,21 +1996,7 @@
 
         - 📄 [README](testing/e2e/README.md)
         - 📄 [e2e-testing-ci-cd-architecture](testing/e2e/e2e-testing-ci-cd-architecture.md)
-    - 📂 [Legacy Cn](testing/legacy-cn)
-
-###### Legacy Cn
-
-        - 📄 [README](testing/legacy-cn/INDEX.md)
-        - 📂 [测试](testing/legacy-cn/04-测试)
-
-######## 测试
-
-            - 📄 [ChromeDevTools使用说明](testing/legacy-cn/04-测试/ChromeDevTools使用说明.md)
-            - 📄 [ESLint问题](testing/legacy-cn/04-测试/ESLint问题.md)
-            - 📄 [PM2测试web方案](testing/legacy-cn/04-测试/PM2测试web方案.md)
-            - 📄 [typescript源头去重](testing/legacy-cn/04-测试/typescript源头去重.md)
-            - 📄 [一般typescript问题解决](testing/legacy-cn/04-测试/一般typescript问题解决.md)
-            - 📄 [测试流程](testing/legacy-cn/04-测试/测试流程.md)
+    - 📂 [Archived Legacy Cn](../archive/docs/testing/legacy-cn-2026-04-08)
     - 📄 [BUGFIX-signals-500-error-retrospective](testing/BUGFIX-signals-500-error-retrospective.md)
     - 📄 [E2E_TEST_DEBUG_METHODS](testing/E2E_TEST_DEBUG_METHODS.md)
     - 📄 [E2E_TEST_GUIDE](testing/E2E_TEST_GUIDE.md)
@@ -2184,16 +2020,20 @@
 
 #### Web Dev
 
-    - 📄 [README](web-dev/INDEX.md)
-    - 📄 [GUIDE](web-dev/GUIDE.md)
-- 📂 [Worklogs](worklogs)
+    - 📄 [WEB_DEV_HOOKS_GUIDE](guides/hooks/WEB_DEV_HOOKS_GUIDE.md)
+    - 📄 [web-dev-hooks-guide](guides/hooks/web-dev-hooks-guide.md)
+    - 📄 [Compatibility Guide](web-dev/GUIDE.md)
+- 📂 [Worklogs](reports/worklogs)
 
 #### Worklogs
 
-    - 📄 [README](worklogs/INDEX.md)
-    - 📂 [Claude Auto](worklogs/claude-auto)
+    - 📄 [README](reports/worklogs/INDEX.md)
+    - 📂 [Claude Auto](reports/worklogs/claude-auto)
 
 ###### Claude Auto
 
-        - 📄 [2026-03-24](worklogs/claude-auto/2026-03-24.md)
+        - 📄 [2026-03-24](reports/worklogs/claude-auto/2026-03-24.md)
+        - 📄 [2026-04-06](reports/worklogs/claude-auto/2026-04-06.md)
+        - 📄 [2026-04-07](reports/worklogs/claude-auto/2026-04-07.md)
+        - 📄 [2026-04-08](reports/worklogs/claude-auto/2026-04-08.md)
 - 📄 [FUNCTION_TREE](FUNCTION_TREE.md)
