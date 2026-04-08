@@ -95,7 +95,7 @@ ENTRY-01, ENTRY-02, ENTRY-03
 
 | # | Phase | Goal | Requirements | Success Criteria |
 |---|-------|------|--------------|------------------|
-| 5 | Composables Disposition | Resolve STRU-04 with evidence-based decisions | COMP-01, COMP-02, COMP-03 | 5 |
+| 5 | Composables Disposition | Resolve STRU-04 with evidence-based decisions | Complete    | 2026-04-08 |
 | 6 | Archive Cleanup | Remove converted.archive/, confirm demo/ active | ARCH-01, ARCH-02, ARCH-03, ARCH-04 | 5 |
 | 7 | Entry Consolidation | Single entry point (main-standard.ts) | ENTRY-01, ENTRY-02, ENTRY-03 | 5 |
 
