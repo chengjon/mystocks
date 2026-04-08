@@ -28,10 +28,29 @@ DEBT_MARKER_PATTERN = re.compile(
 )
 
 REQUIRED_MARKER_FIELDS = ("owner", "issue", "ttl")
-NO_NEW_DEBT_METRICS = (
-    "frontend_type_errors",
-    "frontend_suppressions_count",
-    "skip_xfail_count",
+
+
+@dataclass(frozen=True)
+class MetricRule:
+    path: str
+    direction: str
+    required: bool = True
+
+
+GATE_METRIC_RULES = (
+    MetricRule("frontend_type_errors", "max"),
+    MetricRule("frontend_suppressions_count", "max"),
+    MetricRule("skip_xfail_count", "max"),
+    MetricRule("backend_api_documentation.documented_endpoints", "min", required=False),
+    MetricRule("backend_api_documentation.documented_percentage", "min", required=False),
+    MetricRule("backend_api_documentation.endpoints_with_examples", "min", required=False),
+    MetricRule("backend_api_documentation.example_percentage", "min", required=False),
+    MetricRule("backend_api_documentation.endpoints_with_errors", "min", required=False),
+    MetricRule("backend_api_documentation.error_response_percentage", "min", required=False),
+    MetricRule("backend_api_documentation.total_issues", "max", required=False),
+    MetricRule("backend_api_documentation.schema_issue_count", "max", required=False),
+    MetricRule("backend_api_documentation.authentication_issue_count", "max", required=False),
+    MetricRule("backend_api_documentation.json_success_missing_examples", "max", required=False),
 )
 
 
@@ -59,29 +78,44 @@ def load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def get_metric_value(payload: dict, path: str) -> int | float | None:
+    current: object = payload
+    for segment in path.split("."):
+        if not isinstance(current, dict) or segment not in current:
+            return None
+        current = current[segment]
+    return current if isinstance(current, (int, float)) else None
+
+
 def evaluate_no_new_debt(current: dict, baseline: dict) -> list[str]:
     violations: list[str] = []
-    for metric in NO_NEW_DEBT_METRICS:
-        base_value = baseline.get(metric)
-        current_value = current.get(metric)
-        if not isinstance(base_value, int) or not isinstance(current_value, int):
-            violations.append(f"missing integer metric: {metric}")
+    for rule in GATE_METRIC_RULES:
+        base_value = get_metric_value(baseline, rule.path)
+        current_value = get_metric_value(current, rule.path)
+        if base_value is None or current_value is None:
+            if rule.required:
+                violations.append(f"missing numeric metric: {rule.path}")
             continue
-        if current_value > base_value:
-            violations.append(f"metric {metric} regressed: current={current_value} > baseline={base_value}")
+        if rule.direction == "max" and current_value > base_value:
+            violations.append(f"metric {rule.path} regressed: current={current_value} > baseline={base_value}")
+        if rule.direction == "min" and current_value < base_value:
+            violations.append(f"metric {rule.path} regressed: current={current_value} < baseline={base_value}")
     return violations
 
 
 def evaluate_baseline_review(previous_baseline: dict, proposed_baseline: dict) -> list[str]:
     violations: list[str] = []
-    for metric in NO_NEW_DEBT_METRICS:
-        old_value = previous_baseline.get(metric)
-        new_value = proposed_baseline.get(metric)
-        if not isinstance(old_value, int) or not isinstance(new_value, int):
-            violations.append(f"missing integer metric in baseline review: {metric}")
+    for rule in GATE_METRIC_RULES:
+        old_value = get_metric_value(previous_baseline, rule.path)
+        new_value = get_metric_value(proposed_baseline, rule.path)
+        if old_value is None or new_value is None:
+            if rule.required:
+                violations.append(f"missing numeric metric in baseline review: {rule.path}")
             continue
-        if new_value > old_value:
-            violations.append(f"baseline metric {metric} increased: proposed={new_value} > previous={old_value}")
+        if rule.direction == "max" and new_value > old_value:
+            violations.append(f"baseline metric {rule.path} increased: proposed={new_value} > previous={old_value}")
+        if rule.direction == "min" and new_value < old_value:
+            violations.append(f"baseline metric {rule.path} decreased: proposed={new_value} < previous={old_value}")
     return violations
 
 
@@ -207,6 +241,8 @@ def compute_hotspot_scores(large_files: list[dict], touch_counts: dict[str, int]
 
 def render_weekly_report(metrics: dict, kpi: dict, hotspots: list[dict], ttl_violations: list[MarkerViolation]) -> str:
     now = datetime.now(timezone.utc).isoformat()
+    baseline_doc = metrics.get("baseline", {}).get("backend_api_documentation", {})
+    current_doc = metrics.get("current", {}).get("backend_api_documentation", {})
     lines = [
         "# Technical Debt Weekly Governance Report",
         "",
@@ -224,7 +260,13 @@ def render_weekly_report(metrics: dict, kpi: dict, hotspots: list[dict], ttl_vio
         f"- exception-compliance-rate: `{kpi.get('exception_compliance_rate', 0.0):.2f}`",
         f"- ttl-cleanup-rate: `{kpi.get('ttl_cleanup_rate', 0.0):.2f}`",
         "",
-        "## 3. Risk Hotspots (Top N)",
+        "## 3. OpenAPI Documentation Debt",
+        f"- baseline_json_success_missing_examples: `{baseline_doc.get('json_success_missing_examples', 'N/A')}`",
+        f"- current_json_success_missing_examples: `{current_doc.get('json_success_missing_examples', 'N/A')}`",
+        f"- baseline_non_json_success_responses: `{baseline_doc.get('non_json_success_responses', 'N/A')}`",
+        f"- current_non_json_success_responses: `{current_doc.get('non_json_success_responses', 'N/A')}`",
+        "",
+        "## 4. Risk Hotspots (Top N)",
     ]
 
     if hotspots:
@@ -233,7 +275,7 @@ def render_weekly_report(metrics: dict, kpi: dict, hotspots: list[dict], ttl_vio
     else:
         lines.append("- no hotspot files detected")
 
-    lines.extend(["", "## 4. Expired Items", ""])
+    lines.extend(["", "## 5. Expired Items", ""])
     if ttl_violations:
         for violation in ttl_violations[:30]:
             lines.append(f"- {violation.path}:{violation.line} -> {violation.message}")
@@ -243,7 +285,7 @@ def render_weekly_report(metrics: dict, kpi: dict, hotspots: list[dict], ttl_vio
     lines.extend(
         [
             "",
-            "## 5. Actions",
+            "## 6. Actions",
             "- owners should remediate expired markers before merge",
             "- baseline updates are allowed only if metrics are non-increasing",
             "",

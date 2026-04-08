@@ -111,6 +111,14 @@ OpenAPI 在本项目中是 API 契约层，不是事后文档层。
 - `error_response_percentage` 不得下降
 - `total_issues` 不得上升
 - `schema_issue_count` 不得上升
+- `authentication_issue_count` 不得上升
+- `json_success_missing_examples` 不得上升
+
+说明：
+
+- `json_success_missing_examples` 只统计成功 `application/json` 响应缺 `example/examples` 的缺口
+- `204` 成功响应不计入该缺口
+- `non_json_success_responses` 是观察项，不参与“不得劣化”失败判定；典型场景是 Prometheus / OpenMetrics `text/plain` 端点
 
 ### 5.3 基线更新规则
 
@@ -126,6 +134,12 @@ OpenAPI 在本项目中是 API 契约层，不是事后文档层。
 pytest web/backend/tests/test_health_route_conflicts.py \
   web/backend/tests/test_api_documentation_validation.py \
   -q --no-cov -rs
+```
+
+查看当前 success example 分层审计：
+
+```bash
+python scripts/dev/openapi_success_example_audit.py --show-non-json
 ```
 
 查看当前 OpenAPI 汇总：

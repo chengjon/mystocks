@@ -110,6 +110,8 @@
 3. suppression 总量不得高于当前基线。
 4. OpenAPI 文档问题总量不得高于当前基线。
 5. OpenAPI 已文档化端点数、示例覆盖端点数、错误响应文档端点数不得低于当前基线。
+6. OpenAPI `application/json` 成功响应缺 example 数（`backend_api_documentation.json_success_missing_examples`）不得高于当前基线。
+7. Prometheus / OpenMetrics 等非 JSON 成功响应数量属于观察项，不作为“文档债上升”判定依据，必须与 JSON 契约债分列报告。
 
 > 注：基线值由每次阶段性治理窗口冻结并公告；未公告前沿用上次基线。
 
@@ -254,6 +256,8 @@
 3. 新增 skip/xfail 数（目标：`<= 0`）
 4. 例外合规率（目标：`100%`）
 5. 到期清理率（目标：`>= 90%`）
+6. OpenAPI JSON success example gap（目标：`<= baseline`）
+7. Non-JSON success responses（观察项，单列汇报，不作为债务失败阈值）
 
 ## 6.3 热点与行动
 - Top 10 热点文件（含路径）

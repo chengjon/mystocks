@@ -6,6 +6,7 @@ from scripts.dev.quality_gate.tech_debt_governance_gate import (
     compute_hotspot_scores,
     evaluate_baseline_review,
     evaluate_no_new_debt,
+    get_metric_value,
     parse_ttl,
 )
 
@@ -23,17 +24,44 @@ def test_evaluate_no_new_debt_detects_regression() -> None:
         "frontend_type_errors": 100,
         "frontend_suppressions_count": 20,
         "skip_xfail_count": 10,
+        "backend_api_documentation": {
+            "documented_endpoints": 10,
+            "documented_percentage": 1.0,
+            "endpoints_with_examples": 8,
+            "example_percentage": 0.8,
+            "endpoints_with_errors": 10,
+            "error_response_percentage": 1.0,
+            "total_issues": 0,
+            "schema_issue_count": 0,
+            "authentication_issue_count": 0,
+            "json_success_missing_examples": 0,
+        },
     }
     current = {
         "frontend_type_errors": 101,
         "frontend_suppressions_count": 20,
         "skip_xfail_count": 12,
+        "backend_api_documentation": {
+            "documented_endpoints": 10,
+            "documented_percentage": 1.0,
+            "endpoints_with_examples": 7,
+            "example_percentage": 0.7,
+            "endpoints_with_errors": 10,
+            "error_response_percentage": 1.0,
+            "total_issues": 1,
+            "schema_issue_count": 0,
+            "authentication_issue_count": 0,
+            "json_success_missing_examples": 1,
+        },
     }
 
     violations = evaluate_no_new_debt(current=current, baseline=baseline)
 
     assert any("frontend_type_errors" in item for item in violations)
     assert any("skip_xfail_count" in item for item in violations)
+    assert any("backend_api_documentation.endpoints_with_examples" in item for item in violations)
+    assert any("backend_api_documentation.total_issues" in item for item in violations)
+    assert any("backend_api_documentation.json_success_missing_examples" in item for item in violations)
 
 
 def test_evaluate_baseline_review_only_allows_non_increase() -> None:
@@ -41,16 +69,49 @@ def test_evaluate_baseline_review_only_allows_non_increase() -> None:
         "frontend_type_errors": 200,
         "frontend_suppressions_count": 50,
         "skip_xfail_count": 30,
+        "backend_api_documentation": {
+            "documented_endpoints": 20,
+            "documented_percentage": 1.0,
+            "endpoints_with_examples": 15,
+            "example_percentage": 0.75,
+            "endpoints_with_errors": 20,
+            "error_response_percentage": 1.0,
+            "total_issues": 0,
+            "schema_issue_count": 0,
+            "authentication_issue_count": 0,
+            "json_success_missing_examples": 0,
+        },
     }
     proposed = {
         "frontend_type_errors": 190,
         "frontend_suppressions_count": 50,
         "skip_xfail_count": 31,
+        "backend_api_documentation": {
+            "documented_endpoints": 19,
+            "documented_percentage": 0.95,
+            "endpoints_with_examples": 15,
+            "example_percentage": 0.75,
+            "endpoints_with_errors": 20,
+            "error_response_percentage": 1.0,
+            "total_issues": 0,
+            "schema_issue_count": 0,
+            "authentication_issue_count": 0,
+            "json_success_missing_examples": 0,
+        },
     }
 
     violations = evaluate_baseline_review(previous_baseline=previous, proposed_baseline=proposed)
 
-    assert violations == ["baseline metric skip_xfail_count increased: proposed=31 > previous=30"]
+    assert "baseline metric skip_xfail_count increased: proposed=31 > previous=30" in violations
+    assert "baseline metric backend_api_documentation.documented_endpoints decreased: proposed=19 < previous=20" in violations
+    assert "baseline metric backend_api_documentation.documented_percentage decreased: proposed=0.95 < previous=1.0" in violations
+
+
+def test_get_metric_value_supports_nested_paths() -> None:
+    payload = {"backend_api_documentation": {"json_success_missing_examples": 0}}
+
+    assert get_metric_value(payload, "backend_api_documentation.json_success_missing_examples") == 0
+    assert get_metric_value(payload, "backend_api_documentation.nonexistent") is None
 
 
 def test_compute_hotspot_scores_sorts_by_score_desc() -> None:

@@ -20,12 +20,17 @@ import argparse
 import json
 import re
 import subprocess
+import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
+
+for candidate in (str(PROJECT_ROOT), str(PROJECT_ROOT / "web" / "backend")):
+    if candidate not in sys.path:
+        sys.path.insert(0, candidate)
 
 FRONTEND_SRC = PROJECT_ROOT / "web" / "frontend" / "src"
 BACKEND_APP = PROJECT_ROOT / "web" / "backend" / "app"
@@ -172,6 +177,48 @@ def collect_test_placeholder_asserts() -> dict:
     }
 
 
+def collect_backend_api_documentation() -> dict:
+    """Collect current OpenAPI documentation baseline from the generated contract."""
+    try:
+        from fastapi.testclient import TestClient
+
+        from app.main import app
+        from scripts.dev.openapi_success_example_audit import collect_openapi_success_example_audit
+        from web.backend.tests.test_api_documentation_validation import APIDocumentationValidator
+    except Exception as exc:
+        return {"backend_api_documentation": {"collection_error": str(exc)}}
+
+    validator = APIDocumentationValidator(TestClient(app))
+    results = validator.run_comprehensive_validation()
+    missing_json_examples, non_json_success_responses = collect_openapi_success_example_audit()
+
+    summary = results["summary"]
+    total_endpoints = summary["total_endpoints"]
+    schema_issue_count = len(validator.validate_schema_definitions())
+    authentication_issue_count = len(validator.validate_authentication_documentation())
+
+    def _safe_ratio(numerator: int, denominator: int) -> float:
+        return numerator / denominator if denominator else 0.0
+
+    return {
+        "backend_api_documentation": {
+            "frozen_at": datetime.now(timezone.utc).isoformat(),
+            "total_endpoints": total_endpoints,
+            "documented_endpoints": summary["documented_endpoints"],
+            "documented_percentage": _safe_ratio(summary["documented_endpoints"], total_endpoints),
+            "endpoints_with_examples": summary["endpoints_with_examples"],
+            "example_percentage": _safe_ratio(summary["endpoints_with_examples"], total_endpoints),
+            "endpoints_with_errors": summary["endpoints_with_errors"],
+            "error_response_percentage": _safe_ratio(summary["endpoints_with_errors"], total_endpoints),
+            "total_issues": summary["total_issues"],
+            "schema_issue_count": schema_issue_count,
+            "authentication_issue_count": authentication_issue_count,
+            "json_success_missing_examples": len(missing_json_examples),
+            "non_json_success_responses": len(non_json_success_responses),
+        }
+    }
+
+
 def collect_baseline(timeout: int) -> dict:
     payload: dict = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -184,6 +231,7 @@ def collect_baseline(timeout: int) -> dict:
     payload.update(collect_skip_xfail())
     payload.update(collect_backend_todo_and_placeholders())
     payload.update(collect_test_placeholder_asserts())
+    payload.update(collect_backend_api_documentation())
 
     return payload
 
