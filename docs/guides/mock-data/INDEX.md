@@ -1,36 +1,42 @@
-# Mock Data
+# Mock Data Guide Family
 
 > **导航说明**:
-> 本文件是文档导航或索引，不是当前规则、当前基线或当前实现状态的唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线文档一并核对。
->
-> 文内目录、链接、数量和分类如未重新生成或复核，应视为导航快照，不得直接当作当前事实。
+> 本文件是 `docs/guides/mock-data/` 的 transition index，不是仓库共享规则、当前 trunk map 或当前实现状态的唯一事实来源。
+> 若需确认文档系统主干与 reader routing，请优先阅读 [`docs/overview/documentation-system.md`](/opt/claude/mystocks_spec/docs/overview/documentation-system.md)；若涉及审批门禁、删除判定或共享治理规则，请回到 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)。
 
+## Current Entry Order
 
-**最后更新**: 2026-03-24 10:32:04
+这一 family 当前角色是 `supporting`，用于 Mock/Real 数据切换专题说明，不承担仓库级治理 trunk。推荐阅读顺序：
 
-**文档数量**: 7
+1. [`MOCK_REAL_DATA_SWITCHING_GUIDE.md`](./MOCK_REAL_DATA_SWITCHING_GUIDE.md)
+2. [`MOCK_DATA_USAGE_RULES.md`](./MOCK_DATA_USAGE_RULES.md)
+3. [`MOCK_REAL_DATA_INDEX.md`](./MOCK_REAL_DATA_INDEX.md)
+4. 再按需进入历史路线图、历史计划和旧快照说明
 
+## Active Supporting Guides
 
----
+- [`MOCK_REAL_DATA_SWITCHING_GUIDE.md`](./MOCK_REAL_DATA_SWITCHING_GUIDE.md)
+  - 当前 Mock/Real 数据切换主指南
+- [`MOCK_DATA_USAGE_RULES.md`](./MOCK_DATA_USAGE_RULES.md)
+  - Mock 数据使用规则和专题执行细则
+- [`MOCK_REAL_DATA_INDEX.md`](./MOCK_REAL_DATA_INDEX.md)
+  - family 内的专题导航与按角色阅读入口
 
-- [MOCK_DATA_USAGE_RULES](MOCK_DATA_USAGE_RULES.md)
-  - *Mock数据使用规则文档*
+## Retained Historical References
 
-- [MOCK_REAL_DATA_INDEX](MOCK_REAL_DATA_INDEX.md)
-  - *Mock/Real数据文档索引*
+以下文件继续保留在 `mock-data/` family 中，但作为历史参考或兼容快照使用，不应被误读为当前主入口：
 
-- [MOCK_REAL_DATA_SWITCHING_GUIDE](MOCK_REAL_DATA_SWITCHING_GUIDE.md)
-  - *Mock/Real 数据切换指南*
+- [`REAL_DATA_INTEGRATION_PRINCIPLES.md`](./REAL_DATA_INTEGRATION_PRINCIPLES.md)
+  - 历史架构原则参考
+- [`REAL_DATA_INTEGRATION_ROADMAP.md`](./REAL_DATA_INTEGRATION_ROADMAP.md)
+  - 历史路线图
+- [`PHASE_2_REAL_DATA_INTEGRATION_PLAN.md`](./PHASE_2_REAL_DATA_INTEGRATION_PLAN.md)
+  - 历史实施计划
+- [`README_MOCK_DATA.md`](./README_MOCK_DATA.md)
+  - 旧版 Mock 系统说明快照，保留作历史背景参考
 
-- [PHASE_2_REAL_DATA_INTEGRATION_PLAN](PHASE_2_REAL_DATA_INTEGRATION_PLAN.md)
-  - *Phase 2: Real Data Integration Implementation Plan*
+## Retention Rule
 
-- [README_MOCK_DATA](README_MOCK_DATA.md)
-  - *Mock数据系统文档*
-
-- [REAL_DATA_INTEGRATION_PRINCIPLES](REAL_DATA_INTEGRATION_PRINCIPLES.md)
-  - *Real数据对接 - 核心原则与最佳实践*
-
-- [REAL_DATA_INTEGRATION_ROADMAP](REAL_DATA_INTEGRATION_ROADMAP.md)
-  - *Real数据对接完整路线图 - 8周实现计划*
+- 该 family 当前保留为 `supporting`，不升级为新的 canonical docs trunk
+- 根导航只应暴露当前核心入口，其余历史/计划/旧快照说明统一通过本 index 进入
+- 若后续历史文档的 inbound links 继续下降，再按 bounded batch 单独评估 archive/delete

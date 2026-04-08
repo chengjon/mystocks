@@ -774,6 +774,7 @@ def test_hook_guides_are_converged_under_guides_hooks_family() -> None:
     final_execution_summary = (PROJECT_ROOT / "docs" / "reports" / "final_execution_summary.md").read_text(
         encoding="utf-8"
     )
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
     hooks_index = (PROJECT_ROOT / "docs" / "guides" / "hooks" / "INDEX.md").read_text(encoding="utf-8")
     cleanup_index_root = (
@@ -799,6 +800,13 @@ def test_hook_guides_are_converged_under_guides_hooks_family() -> None:
 
     assert not (PROJECT_ROOT / "docs" / "web-dev").exists()
     assert "[`hooks/`]" in guides_index
+    assert "guides/hooks/INDEX.md" in docs_index
+    assert "guides/hooks/WEB_DEV_HOOKS_GUIDE.md" in docs_index
+    assert "guides/hooks/web-dev-hooks-guide.md" in docs_index
+    assert "guides/hooks/pre_commit_hook_setup_guide.md" in docs_index
+    assert "guides/hooks/hook-analysis-report.md" not in docs_index
+    assert "guides/hooks/hook-optimization-summary.md" not in docs_index
+    assert "#### Web Dev Hooks" in docs_index
     assert "docs/guides/hooks/pre_commit_hook_setup_guide.md" in final_execution_summary
     assert "WEB_DEV_HOOKS_GUIDE" in hooks_index
     assert "web-dev-hooks-guide" in hooks_index
@@ -2184,6 +2192,7 @@ def test_chrome_devtools_guides_are_converged_under_guides_chrome_devtools_famil
 
 def test_mock_real_data_docs_are_converged_under_guides_mock_data_family() -> None:
     guides_claude = (PROJECT_ROOT / "docs" / "guides" / "ai-tools" / "CLAUDE.md").read_text(encoding="utf-8")
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     overview_claude = (PROJECT_ROOT / "docs" / "overview" / "claude.md").read_text(encoding="utf-8")
     iflow_root = (PROJECT_ROOT / "IFLOW.md").read_text(encoding="utf-8")
     iflow_docs = (PROJECT_ROOT / "docs" / "overview" / "IFLOW.md").read_text(encoding="utf-8")
@@ -2232,8 +2241,16 @@ def test_mock_real_data_docs_are_converged_under_guides_mock_data_family() -> No
     for name in mock_docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "mock-data" / name).is_file()
-        assert f"mock-data/{name}" in guides_index
         assert f"mock-data/{name}" in cleanup_index_root
+
+    assert "[`mock-data/`]" in guides_index
+    assert "/docs/guides/mock-data/" in guides_index
+    assert "guides/mock-data/INDEX.md" in docs_index
+    assert "guides/mock-data/MOCK_REAL_DATA_SWITCHING_GUIDE.md" in docs_index
+    assert "guides/mock-data/MOCK_DATA_USAGE_RULES.md" in docs_index
+    assert "guides/mock-data/MOCK_REAL_DATA_INDEX.md" in docs_index
+    assert "guides/mock-data/REAL_DATA_INTEGRATION_ROADMAP.md" not in docs_index
+    assert "guides/mock-data/PHASE_2_REAL_DATA_INTEGRATION_PLAN.md" not in docs_index
 
     assert "docs/guides/mock-data/MOCK_DATA_USAGE_RULES.md" in guides_claude
     assert "docs/guides/mock-data/MOCK_REAL_DATA_SWITCHING_GUIDE.md" in guides_claude
@@ -2261,6 +2278,7 @@ def test_mock_real_data_docs_are_converged_under_guides_mock_data_family() -> No
     assert "REAL_DATA_INTEGRATION_PRINCIPLES" in mock_index
     assert "REAL_DATA_INTEGRATION_ROADMAP" in mock_index
     assert "README_MOCK_DATA" in mock_index
+    assert "transition index" in mock_index
 
 
 def test_pm2_guides_are_converged_under_guides_pm2_family() -> None:
@@ -2779,6 +2797,7 @@ def test_refactoring_and_index_analysis_docs_are_converged_under_reports_analysi
 
 
 def test_documentation_process_guides_are_converged_under_guides_documentation_family() -> None:
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
     documentation_index = (
         PROJECT_ROOT / "docs" / "guides" / "documentation" / "INDEX.md"
@@ -2808,6 +2827,11 @@ def test_documentation_process_guides_are_converged_under_guides_documentation_f
         assert f"guides/documentation/{name}" in cleanup_index_root
 
     assert "[`documentation/`]" in guides_index
+    assert "guides/documentation/INDEX.md" in docs_index
+    assert "guides/documentation/CANONICAL_TRUNK_ADMISSION_GUIDE.md" in docs_index
+    assert "guides/documentation/DOCUMENTATION_WORKFLOW_GUIDE.md" in docs_index
+    assert "guides/documentation/文件目录整理方法论指南.md" not in docs_index
+    assert "guides/documentation/超长文档拆分办法.md" not in docs_index
     assert "docs/guides/documentation/DOCUMENTATION_WORKFLOW_GUIDE.md" in guides_claude
     assert "docs/guides/documentation/DOCUMENTATION_WORKFLOW_GUIDE.md" in hygiene_plan
     assert "/opt/claude/mystocks_spec/docs/guides/documentation/超长文档拆分办法.md" in refactoring_plan

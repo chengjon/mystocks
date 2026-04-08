@@ -523,12 +523,9 @@
 ###### Documentation
 
         - 📄 [README](guides/documentation/INDEX.md)
+        - 📄 [CANONICAL_TRUNK_ADMISSION_GUIDE](guides/documentation/CANONICAL_TRUNK_ADMISSION_GUIDE.md)
         - 📄 [DOCUMENTATION_WORKFLOW_GUIDE](guides/documentation/DOCUMENTATION_WORKFLOW_GUIDE.md)
-        - 📄 [文件目录整理方法论指南](guides/documentation/文件目录整理方法论指南.md)
-        - 📄 [文件目录管理方案](guides/documentation/文件目录管理方案.md)
-        - 📄 [文档管理指南](guides/documentation/文档管理指南.md)
-        - 📄 [文档结构说明](guides/documentation/文档结构说明.md)
-        - 📄 [超长文档拆分办法](guides/documentation/超长文档拆分办法.md)
+        - 📄 [Specialized References](guides/documentation/INDEX.md)
     - 📂 [Features](guides/features)
 
 ###### Features
@@ -572,33 +569,25 @@
 
         - 📄 [README](guides/governance/INDEX.md)
         - 📄 [FEATURE_MANAGEMENT_WORKFLOW](guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md)
-        - 📄 [TECHNICAL_DEBT_MANAGEMENT](guides/governance/TECHNICAL_DEBT_MANAGEMENT.md)
+        - 📄 [Supporting Guides](guides/governance/INDEX.md)
     - 📂 [Hooks](guides/hooks)
 
 ###### Hooks
 
         - 📄 [README](guides/hooks/INDEX.md)
         - 📄 [WEB_DEV_HOOKS_GUIDE](guides/hooks/WEB_DEV_HOOKS_GUIDE.md)
-        - 📄 [hook-analysis-report](guides/hooks/hook-analysis-report.md)
-        - 📄 [hook-optimization-summary](guides/hooks/hook-optimization-summary.md)
-        - 📄 [hooks使用指南](guides/hooks/hooks使用指南.md)
-        - 📄 [hooks详细说明](guides/hooks/hooks详细说明.md)
-        - 📄 [hooks错误处理方法](guides/hooks/hooks错误处理方法.md)
-        - 📄 [post_tool_use_hook_error_diagnosis](guides/hooks/post_tool_use_hook_error_diagnosis.md)
-        - 📄 [pre_commit_hook_setup_guide](guides/hooks/pre_commit_hook_setup_guide.md)
         - 📄 [web-dev-hooks-guide](guides/hooks/web-dev-hooks-guide.md)
+        - 📄 [pre_commit_hook_setup_guide](guides/hooks/pre_commit_hook_setup_guide.md)
+        - 📄 [Supporting Guides](guides/hooks/INDEX.md)
     - 📂 [Mock Data](guides/mock-data)
 
 ###### Mock Data
 
         - 📄 [README](guides/mock-data/INDEX.md)
+        - 📄 [MOCK_REAL_DATA_SWITCHING_GUIDE](guides/mock-data/MOCK_REAL_DATA_SWITCHING_GUIDE.md)
         - 📄 [MOCK_DATA_USAGE_RULES](guides/mock-data/MOCK_DATA_USAGE_RULES.md)
         - 📄 [MOCK_REAL_DATA_INDEX](guides/mock-data/MOCK_REAL_DATA_INDEX.md)
-        - 📄 [MOCK_REAL_DATA_SWITCHING_GUIDE](guides/mock-data/MOCK_REAL_DATA_SWITCHING_GUIDE.md)
-        - 📄 [PHASE_2_REAL_DATA_INTEGRATION_PLAN](guides/mock-data/PHASE_2_REAL_DATA_INTEGRATION_PLAN.md)
-        - 📄 [README_MOCK_DATA](guides/mock-data/README_MOCK_DATA.md)
-        - 📄 [REAL_DATA_INTEGRATION_PRINCIPLES](guides/mock-data/REAL_DATA_INTEGRATION_PRINCIPLES.md)
-        - 📄 [REAL_DATA_INTEGRATION_ROADMAP](guides/mock-data/REAL_DATA_INTEGRATION_ROADMAP.md)
+        - 📄 [Supporting Guides](guides/mock-data/INDEX.md)
     - 📂 [Multi Cli Tasks](guides/multi-cli-tasks)
 
 ###### Multi Cli Tasks
@@ -2016,12 +2005,14 @@
     - 📄 [技术债务分析报告](testing/技术债务分析报告.md)
     - 📄 [测试价值分析报告](testing/测试价值分析报告.md)
     - 📄 [测试策略与规范](testing/测试策略与规范.md)
-- 📂 [Web Dev](web-dev)
+- 📂 [Web Dev Hooks](guides/hooks)
 
-#### Web Dev
+#### Web Dev Hooks
 
+    - 📄 [README](guides/hooks/INDEX.md)
     - 📄 [WEB_DEV_HOOKS_GUIDE](guides/hooks/WEB_DEV_HOOKS_GUIDE.md)
     - 📄 [web-dev-hooks-guide](guides/hooks/web-dev-hooks-guide.md)
+    - 📄 [pre_commit_hook_setup_guide](guides/hooks/pre_commit_hook_setup_guide.md)
 - 📂 [Worklogs](reports/worklogs)
 
 #### Worklogs
