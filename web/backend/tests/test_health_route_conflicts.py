@@ -768,10 +768,12 @@ def test_v1_indicator_endpoints_have_examples_parameter_docs_and_descriptions() 
     for path in ["/api/v1/indicators/calculate", "/api/v1/indicators/calculate/batch"]:
         operation = schema["paths"][path]["post"]
         request_json = operation["requestBody"]["content"]["application/json"]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
 
         assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
         assert "example" in request_json or "examples" in request_json
+        assert "example" in success_json or "examples" in success_json
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
     clear_cache_operation = schema["paths"]["/api/v1/indicators/cache/clear"]["post"]

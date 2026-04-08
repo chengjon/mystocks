@@ -236,6 +236,164 @@ INDICATOR_CALCULATE_BATCH_REQUEST_EXAMPLE = {
     ]
 }
 
+INDICATOR_CALCULATE_RESPONSE_EXAMPLE = {
+    "success": True,
+    "data": {
+        "symbol": "600519.SH",
+        "symbol_name": "贵州茅台",
+        "start_date": "2024-01-01",
+        "end_date": "2024-01-10",
+        "ohlcv": {
+            "dates": ["2024-01-02", "2024-01-03", "2024-01-04"],
+            "open": [1680.5, 1695.2, 1710.0],
+            "high": [1705.6, 1712.8, 1726.4],
+            "low": [1672.1, 1688.0, 1701.7],
+            "close": [1698.4, 1708.6, 1721.3],
+            "volume": [4521300, 4876500, 4332100],
+            "turnover": [7684521000.0, 8243105600.0, 7452013300.0],
+        },
+        "indicators": [
+            {
+                "abbreviation": "SMA",
+                "parameters": {"timeperiod": 20},
+                "outputs": [
+                    {
+                        "output_name": "sma",
+                        "values": [None, None, 1709.43],
+                        "display_name": "SMA(20)",
+                    }
+                ],
+                "panel_type": "overlay",
+                "reference_lines": None,
+                "error": None,
+                "success": True,
+            },
+            {
+                "abbreviation": "RSI",
+                "parameters": {"timeperiod": 14},
+                "outputs": [
+                    {
+                        "output_name": "rsi",
+                        "values": [None, None, 61.82],
+                        "display_name": "RSI(14)",
+                    }
+                ],
+                "panel_type": "oscillator",
+                "reference_lines": [30.0, 70.0],
+                "error": None,
+                "success": True,
+            },
+        ],
+        "calculation_time_ms": 42.18,
+        "cached": False,
+        "statistics": {
+            "total_indicators": 2,
+            "successful_calculations": 2,
+            "failed_calculations": 0,
+            "data_points": 3,
+            "date_range_days": 9,
+        },
+    },
+    "message": "技术指标计算成功，共2/2个指标计算完成",
+    "timestamp": "2026-04-08T04:20:00Z",
+    "request_id": "req-indicator-calc-001",
+}
+
+INDICATOR_CALCULATE_BATCH_RESPONSE_EXAMPLE = {
+    "success": True,
+    "data": {
+        "batch_statistics": {
+            "total_calculations": 2,
+            "successful_calculations": 2,
+            "failed_calculations": 0,
+            "total_indicators": 2,
+            "calculation_time_ms": 96.44,
+            "average_time_per_calculation": 48.22,
+        },
+        "results": [
+            {
+                "symbol": "600519.SH",
+                "start_date": "2024-01-01",
+                "end_date": "2024-06-30",
+                "success": True,
+                "data": {
+                    "symbol": "600519.SH",
+                    "symbol_name": "贵州茅台",
+                    "indicators_count": 1,
+                    "data_points": 120,
+                    "results": {
+                        "MACD": {
+                            "parameters": {"fastperiod": 12, "slowperiod": 26},
+                            "panel_type": "oscillator",
+                            "reference_lines": [0.0],
+                            "values": {
+                                "macd": [0.14, 0.18, 0.22],
+                                "macdsignal": [0.09, 0.12, 0.16],
+                                "macdhist": [0.05, 0.06, 0.06],
+                            },
+                        }
+                    },
+                },
+            },
+            {
+                "symbol": "000300.SH",
+                "start_date": "2024-01-01",
+                "end_date": "2024-06-30",
+                "success": True,
+                "data": {
+                    "symbol": "000300.SH",
+                    "symbol_name": "沪深300",
+                    "indicators_count": 1,
+                    "data_points": 120,
+                    "results": {
+                        "ATR": {
+                            "parameters": {"timeperiod": 14},
+                            "panel_type": "oscillator",
+                            "reference_lines": None,
+                            "values": {"atr": [41.2, 42.8, 40.9]},
+                        }
+                    },
+                },
+            },
+        ],
+    },
+    "message": "批量计算完成，2/2个请求成功",
+    "timestamp": "2026-04-08T04:20:00Z",
+    "request_id": "req-indicator-batch-calc-001",
+}
+
+INDICATOR_CALCULATE_RESPONSES = {
+    **_response_spec(200, "技术指标计算成功", INDICATOR_CALCULATE_RESPONSE_EXAMPLE),
+    **_response_spec(
+        404,
+        "查询范围内未找到可用 OHLCV 数据",
+        {
+            "detail": "股票数据不存在: 查询条件",
+            "error_code": "RESOURCE_NOT_FOUND",
+        },
+    ),
+    **_response_spec(
+        500,
+        "技术指标计算失败",
+        {
+            "detail": "计算指标时发生错误: 指标计算引擎异常",
+            "error_code": "INDICATOR_CALCULATION_ERROR",
+        },
+    ),
+}
+
+INDICATOR_CALCULATE_BATCH_RESPONSES = {
+    **_response_spec(200, "批量技术指标计算成功", INDICATOR_CALCULATE_BATCH_RESPONSE_EXAMPLE),
+    **_response_spec(
+        500,
+        "批量技术指标计算失败",
+        {
+            "detail": "批量计算失败: BATCH_CALCULATION_FAILED",
+            "error_code": "BATCH_CALCULATION_FAILED",
+        },
+    ),
+}
+
 
 class IndicatorCalculateBatchRequest(BaseModel):
     """批量技术指标计算请求"""
@@ -461,7 +619,11 @@ async def get_indicators_by_category(category: str = Path(..., description=INDIC
         )
 
 
-@router.post("/calculate")
+@router.post(
+    "/calculate",
+    summary="计算技术指标",
+    responses=INDICATOR_CALCULATE_RESPONSES,
+)
 @rate_limit(limit=20, window=60)  # 每分钟最多20次计算请求
 async def calculate_indicators(
     request: IndicatorCalculateRequest = Body(..., example=INDICATOR_CALCULATE_REQUEST_EXAMPLE),
@@ -710,7 +872,11 @@ async def calculate_indicators(
         )
 
 
-@router.post("/calculate/batch")
+@router.post(
+    "/calculate/batch",
+    summary="批量计算技术指标",
+    responses=INDICATOR_CALCULATE_BATCH_RESPONSES,
+)
 @rate_limit(limit=5, window=60)  # 每分钟最多5次批量计算
 async def calculate_indicators_batch(
     request: IndicatorCalculateBatchRequest = Body(..., example=INDICATOR_CALCULATE_BATCH_REQUEST_EXAMPLE),
