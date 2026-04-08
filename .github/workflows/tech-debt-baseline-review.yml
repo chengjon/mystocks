@@ -1,0 +1,101 @@
+name: Tech Debt Baseline Review
+
+on:
+  push:
+    paths:
+      - 'reports/analysis/tech-debt-baseline.json'
+      - 'reports/compliance/exceptions/tech_debt_baseline_rebaseline.json'
+      - 'scripts/dev/quality_gate/tech_debt_governance_gate.py'
+      - 'tests/unit/test_tech_debt_governance_gate.py'
+      - '.github/workflows/tech-debt-baseline-review.yml'
+  pull_request:
+    paths:
+      - 'reports/analysis/tech-debt-baseline.json'
+      - 'reports/compliance/exceptions/tech_debt_baseline_rebaseline.json'
+      - 'scripts/dev/quality_gate/tech_debt_governance_gate.py'
+      - 'tests/unit/test_tech_debt_governance_gate.py'
+      - '.github/workflows/tech-debt-baseline-review.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: '3.12'
+  BASELINE_FILE: 'reports/analysis/tech-debt-baseline.json'
+  EXCEPTIONS_FILE: 'reports/compliance/exceptions/tech_debt_baseline_rebaseline.json'
+
+jobs:
+  baseline-review:
+    name: Validate Tech Debt Baseline Updates
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install minimal test dependency
+        run: python -m pip install pytest
+
+      - name: Run governance gate unit tests
+        run: |
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=. \
+          python -m pytest -o addopts='' tests/unit/test_tech_debt_governance_gate.py -q
+
+      - name: Detect baseline diff scope
+        id: scope
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE_SHA="${{ github.event.before }}"
+          fi
+
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            if git rev-parse HEAD^ >/dev/null 2>&1; then
+              BASE_SHA="$(git rev-parse HEAD^)"
+            else
+              BASE_SHA=""
+            fi
+          fi
+
+          baseline_changed=false
+          if [ -n "$BASE_SHA" ]; then
+            if git diff --quiet "$BASE_SHA" "${{ github.sha }}" -- "${{ env.BASELINE_FILE }}"; then
+              baseline_changed=false
+            else
+              baseline_changed=true
+            fi
+          fi
+
+          echo "base_sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
+          echo "baseline_changed=$baseline_changed" >> "$GITHUB_OUTPUT"
+
+      - name: Skip baseline review when baseline file is unchanged
+        if: steps.scope.outputs.baseline_changed != 'true'
+        run: echo "Baseline file unchanged; unit tests already validated governance logic."
+
+      - name: Export previous baseline snapshot
+        if: steps.scope.outputs.baseline_changed == 'true'
+        run: |
+          git show "${{ steps.scope.outputs.base_sha }}:${{ env.BASELINE_FILE }}" > /tmp/tech-debt-baseline.previous.json
+
+      - name: Run baseline review gate
+        if: steps.scope.outputs.baseline_changed == 'true'
+        run: |
+          EXCEPTION_ARGS=()
+          if [ -f "${{ env.EXCEPTIONS_FILE }}" ]; then
+            EXCEPTION_ARGS+=(--exceptions "${{ env.EXCEPTIONS_FILE }}")
+          fi
+
+          python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-review \
+            --previous /tmp/tech-debt-baseline.previous.json \
+            --proposed "${{ env.BASELINE_FILE }}" \
+            "${EXCEPTION_ARGS[@]}"
