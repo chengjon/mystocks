@@ -1,5 +1,12 @@
 # 问财股票筛选功能集成 - 完整实施报告
 
+> **历史总结说明**:
+> 本文件是 API 相关的阶段性总结、报告、状态或验收材料，不是当前 API 契约、当前实施基线或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`；若涉及 API 契约事实源，再以实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json` 为准。
+>
+> 文内统计值、完成状态、修复结论和验收结果如未重新复核，应视为历史快照，不得直接当作当前事实。
+
+
 ## 📋 项目信息
 
 - **项目名称**: MyStocks Web后端 - 问财筛选功能集成
@@ -470,7 +477,7 @@ web/backend/scripts/
 
 ---
 
-**项目状态**: ✅ **完成并就绪部署**
-**完成日期**: 2025-10-17
-**版本**: 1.0.0
-**作者**: MyStocks Backend Team + Claude Code
+**Historical Project Status Snapshot**: ✅ **完成并就绪部署**
+**Historical Completion Snapshot Date**: 2025-10-17
+**Historical Document Version Snapshot**: 1.0.0
+**Historical Author Snapshot**: MyStocks Backend Team + Claude Code

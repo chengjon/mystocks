@@ -1,5 +1,12 @@
 # MyStocks API 完整列表文档
 
+> **使用说明**:
+> 本文件是 API 相关的参考文档或专题说明，不是当前 API 契约、当前实施基线或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`；若涉及 API 契约事实源，再以实际的 FastAPI 路由 + Pydantic Schema + `/openapi.json` 为准。
+>
+> 文内端点、命令、统计值和示例如未重新复核，应视为参考或历史材料，不得直接当作当前事实。
+
+
 ## 概述
 
 本文档包含 MyStocks 量化交易数据管理系统中所有的 RESTful API 端点详细说明。API 基于 FastAPI 框架构建，采用 JWT 认证（除公开端点外）。
@@ -1612,6 +1619,6 @@ curl -X GET "http://localhost:8020/api/market/quotes" \
 5. SSE端点支持客户端自动重连
 6. 监控端点提供Prometheus兼容的指标格式
 
-**最后更新**: 2025-11-08
-**API版本**: v2.1.0
-**文档版本**: 1.0.0
+**Historical Last Updated Snapshot**: 2025-11-08
+**Historical API Version Snapshot**: v2.1.0
+**Historical Document Version Snapshot**: 1.0.0
