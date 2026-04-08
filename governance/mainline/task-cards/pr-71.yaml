@@ -1,0 +1,101 @@
+version: "v0.2"
+
+task:
+  id: "pr-71"
+  title: "archive tech debt governance openspec change"
+  owner: "main"
+  created_at: "2026-04-08"
+
+mainline:
+  id: "L1-tech-debt-governance-openspec-closeout"
+  objective: "archive the completed tech-debt-governance-2026q1 OpenSpec change and keep governance truth synchronized on main"
+  milestone_id: "L2-governance-closeout"
+  slice_id: "L3-tech-debt-governance-openspec-archive"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "required"
+  secondary_domains: []
+  exemption_reason: "openspec-archive-closeout-only"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-71.yaml"
+    - "governance/technical-debt/ARCHITECTURE_SOURCE_OF_TRUTH.md"
+    - "governance/technical-debt/DEBT_REGISTER.md"
+    - "governance/technical-debt/INDEX.md"
+    - "governance/technical-debt/SPEC_CONFLICT_MATRIX.md"
+    - "governance/technical-debt/TASK-REPORT.md"
+    - "governance/technical-debt/TASK-T10-REPORT.md"
+    - "governance/technical-debt/TASK.md"
+    - "openspec/changes/archive/2026-04-08-tech-debt-governance-2026q1/design.md"
+    - "openspec/changes/archive/2026-04-08-tech-debt-governance-2026q1/impact.md"
+    - "openspec/changes/archive/2026-04-08-tech-debt-governance-2026q1/proposal.md"
+    - "openspec/changes/archive/2026-04-08-tech-debt-governance-2026q1/specs/architecture-governance/spec.md"
+    - "openspec/changes/archive/2026-04-08-tech-debt-governance-2026q1/tasks.md"
+    - "openspec/specs/architecture-governance/spec.md"
+  forbidden_paths:
+    - ".github/workflows/**"
+    - "scripts/**"
+    - "tests/**"
+    - "web/frontend/**"
+    - "web/backend/**"
+    - "src/**"
+
+non_goals:
+  - "No runtime behavior change"
+  - "No new governance capability beyond archiving the completed tech-debt baseline change"
+  - "No unrelated frontend, Mongo, watchlist, or deletion-gate work"
+
+acceptance:
+  checks:
+    - id: "openspec-spec-validation"
+      command: "openspec validate --specs --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-71.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr71-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the task card misses any archived file path, Mainline Governance Gate will fail even though the OpenSpec archive is correct"
+    - "If governance board and register entries are not updated together with the archive move, governance truth will drift from the live OpenSpec state"
+  rollback_plan: "git revert <merge-commit-sha> if the archive metadata, canonical spec, or governance closeout records are found to diverge after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "move the completed tech-debt-governance-2026q1 change into OpenSpec archive and promote architecture-governance into canonical spec truth"
+    modified_scope: "one archived OpenSpec change directory, the canonical openspec/specs/architecture-governance/spec.md file, governance closeout records, and this PR-71 task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime or workflow behavior changes; only OpenSpec archive state and governance records are synchronized"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the merge if the archived change metadata, canonical architecture-governance spec, or governance closeout records are inaccurate"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-08T00:00:00Z"
+    approval_note: "this PR only archives already-landed tech debt governance work and keeps canonical governance truth aligned"
+    secondary_approved: false
