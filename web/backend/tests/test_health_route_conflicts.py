@@ -2145,22 +2145,49 @@ def test_trade_endpoints_have_examples_parameter_docs_and_error_responses() -> N
     assert any(code.startswith(("4", "5")) for code in execute_operation["responses"])
 
 
-def test_technical_symbol_routes_have_path_parameter_descriptions() -> None:
+def test_technical_analysis_endpoints_have_examples_parameter_docs_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
-    for path in [
-        "/api/v1/technical/{symbol}/momentum",
-        "/api/v1/technical/{symbol}/volatility",
-        "/api/v1/technical/{symbol}/volume",
-        "/api/v1/technical/{symbol}/signals",
-        "/api/v1/technical/{symbol}/history",
-    ]:
-        operation = schema["paths"][path]["get"]
-        assert any(
-            param["name"] == "symbol" and param["in"] == "path" and param.get("description")
-            for param in operation.get("parameters", [])
-        )
+    endpoint_expectations = {
+        ("/api/v1/technical/{symbol}/indicators", "get"): {
+            "parameters": {"symbol", "period", "start_date", "end_date", "limit"},
+        },
+        ("/api/v1/technical/{symbol}/trend", "get"): {
+            "parameters": {"symbol", "period", "ma_periods"},
+        },
+        ("/api/v1/technical/{symbol}/momentum", "get"): {
+            "parameters": {"symbol", "period"},
+        },
+        ("/api/v1/technical/{symbol}/volatility", "get"): {
+            "parameters": {"symbol", "period"},
+        },
+        ("/api/v1/technical/{symbol}/volume", "get"): {
+            "parameters": {"symbol", "period"},
+        },
+        ("/api/v1/technical/{symbol}/signals", "get"): {
+            "parameters": {"symbol", "period"},
+        },
+        ("/api/v1/technical/{symbol}/history", "get"): {
+            "parameters": {"symbol", "period", "start_date", "end_date", "limit"},
+        },
+        ("/api/v1/technical/batch/indicators", "post"): {
+            "parameters": {"symbols", "period"},
+        },
+    }
+
+    for (path, method), expectations in endpoint_expectations.items():
+        operation = schema["paths"][path][method]
+        success_json = operation["responses"]["200"]["content"]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expectations["parameters"]:
+            assert any(
+                param["name"] == parameter_name and param.get("description") for param in operation.get("parameters", [])
+            )
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_monitoring_alert_management_endpoints_have_docs_examples_and_error_responses() -> None:
