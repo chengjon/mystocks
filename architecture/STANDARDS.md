@@ -71,6 +71,7 @@
 *   **路径语义化**：当 `MenuConfig` 的路径与路由实现不一致时，必须在 [router/index.ts](../web/frontend/src/router/index.ts) 中使用 `alias`。
 *   **禁止硬编码样式**：视觉属性必须引用 [artdeco-tokens.scss](../web/frontend/src/styles/artdeco-tokens.scss) 变量。
 *   **TRACE_ID 显化**：所有业务 Tab 必须在 UI 预留 Request ID 展示位。
+*   **Composable 协作定位（View-Local Canonical）**：Composable 按角色分类，再按消费者数量决定去向。（1）不是 composable 的文件（无 reactive state / Vue lifecycle）不得放入 `src/composables/`，按职能路由（transport → `src/api/`，types → `types/`，utils → `utils/`）。（2）真正的 composable 若只有 1 个消费者，使用 `./composables/` 相对导入与消费者视图同目录共存（idiomatic Vue co-location），这是 canonical pattern。（3）提取到 `src/composables/` 需满足 2+ 消费者。禁止基于"可能复用"的预防性提取。
 
 ### 2. 后端开发红线
 *   **单例防御**：所有 `global` 变量必须在模块顶层显式初始化为 `None`，杜绝 `NameError`。
