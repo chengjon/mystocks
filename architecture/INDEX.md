@@ -11,6 +11,9 @@
 
 **文档数量**: 99
 
+> `docs/architecture/legacy-cn/` 历史中文架构资料已归档，不再作为活跃入口。
+> 历史快照位置：`archive/docs/architecture/legacy-cn-2026-04-08/`。
+
 
 ---
 
@@ -53,11 +56,8 @@
 - [ARCHITECTURE_REVIEW_REPORT_2025-12-04](architecture/ARCHITECTURE_REVIEW_REPORT_2025-12-04.md)
   - *MyStocks API 全面架构评审报告*
 
-- [A股量化分析平台功能扩展方案](architecture/legacy-cn/02-架构与设计文档/A股量化分析平台功能扩展方案.md)
-  - *A股量化分析平台功能扩展方案*
-
-- [A股量化分析平台扩展方案-豆包](architecture/legacy-cn/02-架构与设计文档/A股量化分析平台扩展方案-豆包.md)
-  - *A股量化分析平台扩展方案-豆包*
+- [legacy-cn archived snapshot](../archive/docs/architecture/legacy-cn-2026-04-08/)
+  - *历史中文架构资料已归档，不再作为活跃入口*
 
 - [DATABASE_ARCHITECTURE](architecture/DATABASE_ARCHITECTURE.md)
   - *MyStocks Database Architecture Overview*
@@ -227,9 +227,6 @@
 - [README_审批指南](architecture/README_审批指南.md)
   - *数据源架构优化方案 - 审批指南*
 
-- [RISK_MANAGEMENT_ARCHITECTURE_V2](architecture/legacy-cn/02-架构与设计文档/RISK_MANAGEMENT_ARCHITECTURE_V2.md)
-  - *轻量级高性能风险管理系统架构方案 (LHP-RMS)*
-
 - [ROUTER_SIMPLIFICATION_EXPLANATION](architecture/ROUTER_SIMPLIFICATION_EXPLANATION.md)
   - *路由配置简化说明*
 
@@ -272,12 +269,6 @@
 - [typescript_quality_system_plan](architecture/typescript_quality_system_plan.md)
   - *Task Plan: TypeScript质量保障系统设计与实现*
 
-- [vue组件开发注意事项](architecture/legacy-cn/02-架构与设计文档/vue组件开发注意事项.md)
-  - *vue组件开发注意事项*
-
-- [web页面结构详细描述](architecture/legacy-cn/02-架构与设计文档/web页面结构详细描述.md)
-  - *MyStocks 量化交易平台 - Web页面结构详细描述*
-
 - [备份策略架构优化](architecture/备份策略架构优化.md)
   - *架构优化数据库备份策略*
 
@@ -295,18 +286,3 @@
 
 - [数据源管理](architecture/数据源管理.md)
   - *数据源管理*
-
-- [股票指标计算体系](architecture/legacy-cn/02-架构与设计文档/股票指标计算体系.md)
-  - *股票指标计算体系*
-
-- [股票监控功能设计方案1](architecture/legacy-cn/02-架构与设计文档/股票监控功能设计方案1.md)
-  - *股票监控功能设计方案1*
-
-- [设计令牌的核心作用](architecture/legacy-cn/02-架构与设计文档/设计令牌的核心作用.md)
-  - *设计令牌的核心作用*
-
-- [页面结构优化方案v2](architecture/legacy-cn/02-架构与设计文档/页面结构优化方案v2.md)
-  - *页面结构优化方案v2*
-
-- [风险管理方案](architecture/legacy-cn/02-架构与设计文档/风险管理方案.md)
-  - *风险管理基础设施：*

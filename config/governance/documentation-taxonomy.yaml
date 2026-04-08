@@ -1,0 +1,661 @@
+metadata:
+  id: documentation-governance-taxonomy
+  version: 1
+  owner: documentation-governance
+  default_action_bias: delete/archive > rewrite
+
+scan_roots:
+  - architecture
+  - docs
+  - openspec
+
+canonical_entrypoints:
+  docs_index: docs/README.md
+  trunk_map: docs/overview/documentation-system.md
+
+decision_statuses:
+  - keep-canonical
+  - keep-supporting
+  - merge-into-trunk
+  - archive
+  - delete
+  - needs-replacement
+
+lifecycle_classes:
+  canonical:
+    description: Authoritative active trunk document or spec.
+    current_truth_allowed: true
+  supporting:
+    description: Active helper document beneath a canonical trunk.
+    current_truth_allowed: false
+  report:
+    description: Historical evidence, verification output, or audit material.
+    current_truth_allowed: false
+  plan:
+    description: Future-facing planning or approved in-flight change material.
+    current_truth_allowed: false
+  generated_reference:
+    description: Generated export, listing, or machine-produced reference artifact.
+    current_truth_allowed: false
+  archive_candidate:
+    description: Historical material that should leave active trees.
+    current_truth_allowed: false
+  delete_candidate:
+    description: Redundant material removable only after delete-gate requirements pass.
+    current_truth_allowed: false
+
+archive_targets:
+  historical_evidence: docs/reports/
+  retired_docs: archive/docs/
+  retired_api_docs: archive/docs/api/
+
+delete_gate_requirements:
+  - canonical_replacement_exists
+  - inbound_links_updated_or_retired
+  - no_retention_duty_remains
+  - decision_register_marks_delete
+
+trunks:
+  - id: repository-standards
+    concern: repository-governance
+    path: architecture/STANDARDS.md
+    path_kind: file
+    lifecycle: canonical
+    current_truth: true
+    protected: true
+  - id: docs-entrypoint
+    concern: documentation-navigation
+    path: docs/README.md
+    path_kind: file
+    lifecycle: canonical
+    current_truth: true
+    protected: true
+  - id: documentation-governance-trunk
+    concern: documentation-governance
+    path: docs/overview/documentation-system.md
+    path_kind: file
+    lifecycle: canonical
+    current_truth: true
+    protected: true
+  - id: current-capability-truth
+    concern: current-capability-truth
+    path: openspec/specs/
+    path_kind: directory
+    lifecycle: canonical
+    current_truth: true
+    protected: true
+  - id: approved-change-truth
+    concern: approved-pending-changes
+    path: openspec/changes/
+    path_kind: directory
+    lifecycle: canonical
+    current_truth: false
+    protected: true
+  - id: api-navigation
+    concern: api-documentation-navigation
+    path: docs/api/README.md
+    path_kind: file
+    lifecycle: canonical
+    current_truth: false
+    protected: true
+  - id: operations-runbooks
+    concern: operations-runbooks
+    path: docs/operations/README.md
+    path_kind: file
+    lifecycle: canonical
+    current_truth: false
+    protected: true
+  - id: testing-guidance
+    concern: testing-guidance
+    path: docs/testing/README.md
+    path_kind: file
+    lifecycle: canonical
+    current_truth: false
+    protected: true
+  - id: historical-evidence
+    concern: historical-evidence
+    path: docs/reports/README.md
+    path_kind: file
+    lifecycle: canonical
+    current_truth: false
+    protected: true
+
+protected_doc_families:
+  - id: governance-entrypoints
+    concern: repository-governance
+    match_paths:
+      - architecture/STANDARDS.md
+      - docs/README.md
+      - docs/overview/documentation-system.md
+    lifecycle: canonical
+    canonical_trunk_id: documentation-governance-trunk
+    delete_protected: true
+  - id: openspec-core-entrypoints
+    concern: openspec-governance
+    match_paths:
+      - openspec/AGENTS.md
+      - openspec/project.md
+    lifecycle: supporting
+    canonical_trunk_id: documentation-governance-trunk
+    delete_protected: true
+  - id: trunk-readmes
+    concern: documentation-navigation
+    match_paths:
+      - docs/api/README.md
+      - docs/operations/README.md
+      - docs/testing/README.md
+      - docs/reports/README.md
+    lifecycle: canonical
+    canonical_trunk_id: docs-entrypoint
+    delete_protected: true
+
+families:
+  - id: architecture-supporting-docs
+    concern: repository-governance
+    match_paths:
+      - architecture/**/*.md
+    exclude_paths:
+      - architecture/STANDARDS.md
+    lifecycle: supporting
+    canonical_trunk_id: repository-standards
+    decision_status: keep-supporting
+  - id: architecture-root-secondary-index
+    concern: repository-governance
+    match_paths:
+      - architecture/INDEX.md
+    lifecycle: generated_reference
+    canonical_trunk_id: repository-standards
+    decision_status: merge-into-trunk
+  - id: architecture-root-supporting-docs
+    concern: repository-governance
+    match_paths:
+      - architecture/*.md
+    exclude_paths:
+      - architecture/STANDARDS.md
+      - architecture/INDEX.md
+    lifecycle: supporting
+    canonical_trunk_id: repository-standards
+    decision_status: keep-supporting
+  - id: docs-function-tree
+    concern: documentation-navigation
+    match_paths:
+      - docs/FUNCTION_TREE.md
+    lifecycle: supporting
+    canonical_trunk_id: docs-entrypoint
+    decision_status: keep-supporting
+  - id: docs-architecture-legacy-cn
+    concern: architecture-reference
+    match_paths:
+      - docs/architecture/legacy-cn/*.md
+      - docs/architecture/legacy-cn/**/*.md
+    lifecycle: archive_candidate
+    canonical_trunk_id: docs-entrypoint
+    canonical_replacement: docs/architecture/README.md
+    archive_target: archive/docs/architecture/
+    decision_status: archive
+  - id: docs-architecture-secondary-indexes
+    concern: architecture-reference
+    match_paths:
+      - docs/architecture/INDEX.md
+    lifecycle: generated_reference
+    canonical_trunk_id: docs-entrypoint
+    decision_status: merge-into-trunk
+  - id: docs-architecture-entrypoints
+    concern: architecture-reference
+    match_paths:
+      - docs/architecture/README.md
+    lifecycle: supporting
+    canonical_trunk_id: docs-entrypoint
+    decision_status: keep-supporting
+  - id: docs-architecture-supporting-docs
+    concern: architecture-reference
+    match_paths:
+      - docs/architecture/*.md
+      - docs/architecture/**/*.md
+    exclude_paths:
+      - docs/architecture/README.md
+      - docs/architecture/INDEX.md
+      - docs/architecture/legacy-cn/*.md
+      - docs/architecture/legacy-cn/**/*.md
+    lifecycle: supporting
+    canonical_trunk_id: docs-entrypoint
+    decision_status: keep-supporting
+  - id: overview-supporting-docs
+    concern: documentation-navigation
+    match_paths:
+      - docs/overview/*.md
+      - docs/overview/**/*.md
+    exclude_paths:
+      - docs/overview/documentation-system.md
+      - docs/overview/README.md
+      - docs/overview/INDEX.md
+    lifecycle: supporting
+    canonical_trunk_id: docs-entrypoint
+    decision_status: keep-supporting
+  - id: overview-transition-indexes
+    concern: documentation-navigation
+    match_paths:
+      - docs/overview/README.md
+      - docs/overview/INDEX.md
+    lifecycle: supporting
+    canonical_trunk_id: docs-entrypoint
+    decision_status: merge-into-trunk
+  - id: docs-root-secondary-index
+    concern: documentation-navigation
+    match_paths:
+      - docs/INDEX.md
+    lifecycle: generated_reference
+    canonical_trunk_id: docs-entrypoint
+    decision_status: merge-into-trunk
+  - id: openspec-current-specs
+    concern: current-capability-truth
+    match_paths:
+      - openspec/specs/**/*.md
+    lifecycle: canonical
+    canonical_trunk_id: current-capability-truth
+    decision_status: keep-canonical
+  - id: openspec-approved-changes
+    concern: approved-pending-changes
+    match_paths:
+      - openspec/changes/**/*.md
+    lifecycle: plan
+    canonical_trunk_id: approved-change-truth
+    decision_status: keep-supporting
+  - id: api-secondary-indexes
+    concern: api-documentation-navigation
+    match_paths:
+      - docs/api/INDEX.md
+      - docs/api/API_INDEX.md
+      - docs/api/WEBSOCKET_DOCUMENTATION_INDEX.md
+    lifecycle: supporting
+    canonical_trunk_id: api-navigation
+    decision_status: merge-into-trunk
+  - id: api-guides-supporting
+    concern: api-documentation-navigation
+    match_paths:
+      - docs/api/guides/*.md
+      - docs/api/guides/**/*.md
+    lifecycle: supporting
+    canonical_trunk_id: api-navigation
+    decision_status: keep-supporting
+  - id: api-specifications-supporting
+    concern: api-documentation-navigation
+    match_paths:
+      - docs/api/specifications/*.md
+      - docs/api/specifications/**/*.md
+    lifecycle: supporting
+    canonical_trunk_id: api-navigation
+    decision_status: keep-supporting
+  - id: api-testing-supporting
+    concern: api-documentation-navigation
+    match_paths:
+      - docs/api/testing/*.md
+      - docs/api/testing/**/*.md
+    lifecycle: supporting
+    canonical_trunk_id: api-navigation
+    decision_status: keep-supporting
+  - id: api-openapi-reference
+    concern: api-documentation-navigation
+    match_paths:
+      - docs/api/openapi/*.md
+      - docs/api/openapi/**/*.md
+    lifecycle: generated_reference
+    canonical_trunk_id: api-navigation
+    decision_status: keep-supporting
+  - id: api-reports-history
+    concern: api-documentation-navigation
+    match_paths:
+      - docs/api/reports/*.md
+      - docs/api/reports/**/*.md
+    lifecycle: report
+    canonical_trunk_id: api-navigation
+    archive_target: docs/api/reports/
+    decision_status: keep-supporting
+  - id: api-root-plans
+    concern: api-documentation-navigation
+    match_paths:
+      - docs/api/*PLAN*.md
+      - docs/api/api_documentation_cleanup_plan.md
+      - docs/api/task_plan*.md
+      - docs/api/quantitative-analysis-implementation-plan.md
+    lifecycle: plan
+    canonical_trunk_id: api-navigation
+    decision_status: keep-supporting
+  - id: api-root-history
+    concern: api-documentation-navigation
+    match_paths:
+      - docs/api/*REPORT*.md
+      - docs/api/*SUMMARY*.md
+      - docs/api/TASK*.md
+      - docs/api/PHASE*.md
+      - docs/api/IMPLEMENTATION*.md
+      - docs/api/FINAL*.md
+      - docs/api/security-remediation-report.md
+      - docs/api/technical_debt*.md
+    lifecycle: report
+    canonical_trunk_id: api-navigation
+    archive_target: docs/api/reports/
+    decision_status: keep-supporting
+  - id: api-root-reference-supporting
+    concern: api-documentation-navigation
+    match_paths:
+      - docs/api/*.md
+    exclude_paths:
+      - docs/api/README.md
+      - docs/api/INDEX.md
+      - docs/api/API_INDEX.md
+      - docs/api/WEBSOCKET_DOCUMENTATION_INDEX.md
+      - docs/api/*PLAN*.md
+      - docs/api/api_documentation_cleanup_plan.md
+      - docs/api/task_plan*.md
+      - docs/api/quantitative-analysis-implementation-plan.md
+      - docs/api/*REPORT*.md
+      - docs/api/*SUMMARY*.md
+      - docs/api/TASK*.md
+      - docs/api/PHASE*.md
+      - docs/api/IMPLEMENTATION*.md
+      - docs/api/FINAL*.md
+      - docs/api/security-remediation-report.md
+      - docs/api/technical_debt*.md
+    lifecycle: supporting
+    canonical_trunk_id: api-navigation
+    decision_status: keep-supporting
+  - id: api-legacy-cn
+    concern: api-documentation-navigation
+    match_paths:
+      - docs/api/legacy-cn/*.md
+      - docs/api/legacy-cn/**/*.md
+    lifecycle: delete_candidate
+    canonical_trunk_id: api-navigation
+    canonical_replacement: docs/api/README.md
+    archive_target: archive/docs/api/
+    delete_gate:
+      inbound_links: clean
+      retention_duty: none
+      decision_status: delete
+  - id: operations-root-reports
+    concern: historical-evidence
+    match_paths:
+      - docs/operations/运维效果分析报告.md
+    lifecycle: report
+    canonical_trunk_id: historical-evidence
+    archive_target: docs/reports/
+    decision_status: keep-supporting
+  - id: operations-supporting-docs
+    concern: operations-runbooks
+    match_paths:
+      - docs/operations/*.md
+      - docs/operations/**/*.md
+    exclude_paths:
+      - docs/operations/README.md
+      - docs/operations/INDEX.md
+      - docs/operations/运维效果分析报告.md
+    lifecycle: supporting
+    canonical_trunk_id: operations-runbooks
+    decision_status: keep-supporting
+  - id: operations-secondary-indexes
+    concern: operations-runbooks
+    match_paths:
+      - docs/operations/INDEX.md
+    lifecycle: supporting
+    canonical_trunk_id: operations-runbooks
+    decision_status: merge-into-trunk
+  - id: testing-root-plans
+    concern: testing-guidance
+    match_paths:
+      - docs/testing/phase4-plan.md
+      - docs/testing/test-system-plan.md
+      - docs/testing/VISUAL_REGRESSION_TEST_PLAN.md
+    lifecycle: plan
+    canonical_trunk_id: testing-guidance
+    decision_status: keep-supporting
+  - id: testing-root-reports
+    concern: historical-evidence
+    match_paths:
+      - docs/testing/BUGFIX-signals-500-error-retrospective.md
+      - docs/testing/test-system-analysis.md
+      - docs/testing/技术债务分析报告.md
+      - docs/testing/测试价值分析报告.md
+    lifecycle: report
+    canonical_trunk_id: historical-evidence
+    archive_target: docs/reports/
+    decision_status: keep-supporting
+  - id: testing-supporting-docs
+    concern: testing-guidance
+    match_paths:
+      - docs/testing/*.md
+      - docs/testing/**/*.md
+    exclude_paths:
+      - docs/testing/README.md
+      - docs/testing/INDEX.md
+      - docs/testing/legacy-cn/*.md
+      - docs/testing/legacy-cn/**/*.md
+      - docs/testing/phase4-plan.md
+      - docs/testing/test-system-plan.md
+      - docs/testing/VISUAL_REGRESSION_TEST_PLAN.md
+      - docs/testing/BUGFIX-signals-500-error-retrospective.md
+      - docs/testing/test-system-analysis.md
+      - docs/testing/技术债务分析报告.md
+      - docs/testing/测试价值分析报告.md
+    lifecycle: supporting
+    canonical_trunk_id: testing-guidance
+    decision_status: keep-supporting
+  - id: testing-secondary-indexes
+    concern: testing-guidance
+    match_paths:
+      - docs/testing/INDEX.md
+    lifecycle: supporting
+    canonical_trunk_id: testing-guidance
+    decision_status: merge-into-trunk
+  - id: testing-legacy-cn
+    concern: testing-guidance
+    match_paths:
+      - docs/testing/legacy-cn/*.md
+      - docs/testing/legacy-cn/**/*.md
+    lifecycle: archive_candidate
+    canonical_trunk_id: testing-guidance
+    canonical_replacement: docs/testing/README.md
+    archive_target: archive/docs/testing/
+    decision_status: archive
+  - id: reports-history
+    concern: historical-evidence
+    match_paths:
+      - docs/reports/*.md
+      - docs/reports/**/*.md
+    exclude_paths:
+      - docs/reports/README.md
+      - docs/reports/INDEX.md
+    lifecycle: report
+    canonical_trunk_id: historical-evidence
+    archive_target: docs/reports/
+    decision_status: keep-supporting
+  - id: reports-secondary-indexes
+    concern: historical-evidence
+    match_paths:
+      - docs/reports/INDEX.md
+    lifecycle: generated_reference
+    canonical_trunk_id: historical-evidence
+    decision_status: merge-into-trunk
+  - id: plans-secondary-indexes
+    concern: planning-material
+    match_paths:
+      - docs/plans/INDEX.md
+    lifecycle: generated_reference
+    canonical_trunk_id: approved-change-truth
+    decision_status: merge-into-trunk
+  - id: plans-and-designs
+    concern: planning-material
+    match_paths:
+      - docs/plans/*.md
+      - docs/plans/**/*.md
+    exclude_paths:
+      - docs/plans/INDEX.md
+    lifecycle: plan
+    canonical_trunk_id: approved-change-truth
+    archive_target: docs/plans/
+    decision_status: keep-supporting
+  - id: design-secondary-indexes
+    concern: design-reference
+    match_paths:
+      - docs/design/INDEX.md
+    lifecycle: generated_reference
+    canonical_trunk_id: docs-entrypoint
+    decision_status: merge-into-trunk
+  - id: design-entrypoints
+    concern: design-reference
+    match_paths:
+      - docs/design/README.md
+    lifecycle: supporting
+    canonical_trunk_id: docs-entrypoint
+    decision_status: keep-supporting
+  - id: design-update-plans
+    concern: design-reference
+    match_paths:
+      - docs/design/update/*.md
+      - docs/design/update/**/*.md
+    lifecycle: plan
+    canonical_trunk_id: approved-change-truth
+    archive_target: docs/design/update/
+    decision_status: keep-supporting
+  - id: design-supporting-docs
+    concern: design-reference
+    match_paths:
+      - docs/design/*.md
+      - docs/design/**/*.md
+    exclude_paths:
+      - docs/design/README.md
+      - docs/design/INDEX.md
+      - docs/design/update/*.md
+      - docs/design/update/**/*.md
+    lifecycle: supporting
+    canonical_trunk_id: docs-entrypoint
+    decision_status: keep-supporting
+  - id: references-secondary-indexes
+    concern: reference-material
+    match_paths:
+      - docs/references/INDEX.md
+      - docs/references/**/INDEX.md
+    lifecycle: generated_reference
+    canonical_trunk_id: docs-entrypoint
+    decision_status: merge-into-trunk
+  - id: references-supporting-docs
+    concern: reference-material
+    match_paths:
+      - docs/references/*.md
+      - docs/references/**/*.md
+    exclude_paths:
+      - docs/references/INDEX.md
+      - docs/references/**/INDEX.md
+    lifecycle: supporting
+    canonical_trunk_id: docs-entrypoint
+    decision_status: keep-supporting
+  - id: standards-supporting-docs
+    concern: repository-governance
+    match_paths:
+      - docs/standards/*.md
+      - docs/standards/**/*.md
+    lifecycle: supporting
+    canonical_trunk_id: repository-standards
+    decision_status: keep-supporting
+  - id: worklogs-secondary-indexes
+    concern: historical-evidence
+    match_paths:
+      - docs/worklogs/INDEX.md
+    lifecycle: generated_reference
+    canonical_trunk_id: historical-evidence
+    decision_status: merge-into-trunk
+  - id: worklogs-history
+    concern: historical-evidence
+    match_paths:
+      - docs/worklogs/*.md
+      - docs/worklogs/**/*.md
+    exclude_paths:
+      - docs/worklogs/INDEX.md
+    lifecycle: report
+    canonical_trunk_id: historical-evidence
+    archive_target: docs/reports/
+    decision_status: keep-supporting
+  - id: guides-governance-support
+    concern: documentation-governance
+    match_paths:
+      - docs/guides/governance/**/*.md
+      - docs/guides/documentation/**/*.md
+    lifecycle: supporting
+    canonical_trunk_id: documentation-governance-trunk
+    decision_status: merge-into-trunk
+  - id: guides-transition-indexes
+    concern: guide-routing
+    match_paths:
+      - docs/guides/README.md
+      - docs/guides/INDEX.md
+    lifecycle: supporting
+    canonical_trunk_id: docs-entrypoint
+    decision_status: merge-into-trunk
+  - id: guides-active-families
+    concern: guide-routing
+    match_paths:
+      - docs/guides/ai-tools/**/*.md
+      - docs/guides/buger/**/*.md
+      - docs/guides/chrome-devtools/**/*.md
+      - docs/guides/data-interface/**/*.md
+      - docs/guides/data-source/**/*.md
+      - docs/guides/features/**/*.md
+      - docs/guides/frontend/**/*.md
+      - docs/guides/hooks/**/*.md
+      - docs/guides/mock-data/**/*.md
+      - docs/guides/multi-cli-tasks/**/*.md
+      - docs/guides/onboarding/**/*.md
+      - docs/guides/openspec-cmd/**/*.md
+      - docs/guides/pm2/**/*.md
+      - docs/guides/quant-trading/**/*.md
+      - docs/guides/superpowers/**/*.md
+      - docs/guides/tdx-integration/**/*.md
+      - docs/guides/templates/**/*.md
+      - docs/guides/typescript/**/*.md
+      - docs/guides/ui-ux-pro-max/**/*.md
+      - docs/guides/web/**/*.md
+      - docs/guides/wencai/**/*.md
+    lifecycle: supporting
+    canonical_trunk_id: docs-entrypoint
+    decision_status: keep-supporting
+  - id: guides-root-compatibility
+    concern: guide-routing
+    match_paths:
+      - docs/guides/*.md
+    exclude_paths:
+      - docs/guides/README.md
+      - docs/guides/INDEX.md
+    lifecycle: supporting
+    canonical_trunk_id: docs-entrypoint
+    decision_status: keep-supporting
+  - id: web-dev-compatibility-entrypoints
+    concern: guide-routing
+    match_paths:
+      - docs/web-dev/INDEX.md
+      - docs/web-dev/GUIDE.md
+    lifecycle: supporting
+    canonical_trunk_id: docs-entrypoint
+    decision_status: merge-into-trunk
+  - id: openspec-conventions-guide
+    concern: openspec-governance
+    match_paths:
+      - openspec/OPENSPEC_CONVENTIONS.md
+    lifecycle: supporting
+    canonical_trunk_id: documentation-governance-trunk
+    decision_status: keep-supporting
+  - id: openspec-root-history-reports
+    concern: openspec-governance
+    match_paths:
+      - openspec/changes/*.md
+    lifecycle: report
+    canonical_trunk_id: documentation-governance-trunk
+    archive_target: docs/reports/
+    decision_status: keep-supporting
+  - id: openspec-legacy-change-snapshots
+    concern: approved-pending-changes
+    match_paths:
+      - openspec/changes-*/**/*.md
+    lifecycle: plan
+    canonical_trunk_id: approved-change-truth
+    archive_target: openspec/changes/
+    decision_status: keep-supporting

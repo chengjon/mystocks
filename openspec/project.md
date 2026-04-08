@@ -3,6 +3,8 @@
 > **参考指南说明**:
 > 本文件用于说明 OpenSpec 的使用约定、项目上下文或操作参考，帮助理解变更提案与规格治理流程。
 > 其中的流程、示例与项目背景应先与 `architecture/STANDARDS.md`、当前 `openspec/specs/` 和已批准变更核对；若涉及执行流程或协作约束，再补充参考根目录 `AGENTS.md`。本文件不得单独充当仓库共享规则或当前实现状态的唯一事实来源。
+>
+> 若需要仓库文档系统的主干入口与 canonical trunk map，请先阅读 [`docs/README.md`](/opt/claude/mystocks_spec/docs/README.md) 与 [`docs/overview/documentation-system.md`](/opt/claude/mystocks_spec/docs/overview/documentation-system.md)。
 
 
 ## Purpose

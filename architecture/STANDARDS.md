@@ -2,6 +2,9 @@
 
 本文档定义了开发过程中必须严格遵守的架构约束和开发流程。所有代码提交必须符合这些规则。
 
+> **文档系统入口说明**:
+> 若需要仓库文档系统的 canonical trunk map 与 reader routing，请先阅读 [`docs/README.md`](../docs/README.md) 与 [`docs/overview/documentation-system.md`](../docs/overview/documentation-system.md)。
+
 ---
 
 ## 零、统一治理与审批门禁 (Single Source of Truth)
