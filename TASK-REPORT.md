@@ -1,5 +1,10 @@
 # TASK REPORT
 
+## Governance Canonical References
+
+- `technical_debt/governance/INDEX.md` is the canonical home for the `tech-debt-governance-2026q1` governance baseline.
+- This repository-root `TASK-REPORT.md` remains the operational mainline coordination snapshot and must not be treated as the canonical 2026Q1 governance rollup.
+
 ## [WORK] 2026-04-03 Watchlist Service Monitoring Routes（codex/watchlist-service-monitoring-routes-20260403）
 - Scope:
   - 收敛 `web/frontend/src/api/services/watchlistService.ts`，移除剩余 generic `userApi` watchlist 契约依赖。

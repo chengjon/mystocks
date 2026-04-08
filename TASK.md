@@ -1,5 +1,10 @@
 # TASK
 
+## Governance Canonical References
+
+- `technical_debt/governance/INDEX.md` is the canonical home for the `tech-debt-governance-2026q1` governance baseline.
+- This repository-root `TASK.md` remains the operational mainline coordination snapshot and must not be treated as the canonical 2026Q1 governance board.
+
 <!-- AUTO_LAYER1_START -->
 ## Auto Layer 1 (Now/Next/Blocked)
 - Last Sync: 2026-03-25 23:43:57
