@@ -32,6 +32,7 @@
   - 其中的进度、DDL、指标和 blocker 口径应视为当时快照，不得直接当成当前实测值、当前基线或当前执行计划。
   - 当前 canonical 路径已经切换到 `/governance/technical-debt/`。
   - 如果历史报告仍提到 `technical_debt/governance/*`，应将其视为已退役 sidecar 路径，并跳转到对应的 `/governance/technical-debt/*` 文档。
+  - 若历史报告保留空白 `Evidence`、未勾选 checklist、或 `TBD` owner/DDL，应视为未验证草稿上下文，而不是完成证据。
 - `HANDOVER_TASK.md`
   - 属于早期 `conductor` handoff 归档记录，保留用于追溯上下文，不作为当前接力入口。
 

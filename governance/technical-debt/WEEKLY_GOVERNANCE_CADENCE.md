@@ -54,6 +54,14 @@ Every metric in a governance report must be labeled as one of the following:
 
 Do not merge these classes into one number or one verdict line.
 
+## Evidence Discipline
+
+1. Any progress, completion, or blocker claim in a canonical governance record must cite either:
+   - a concrete evidence path, or
+   - the command / machine-produced source that supports the claim.
+2. If evidence is missing, the claim must be recorded as open or unverified context, not as measured completion.
+3. Historical drafts with blank evidence fields may be retained for traceability, but they must not be used as current completion proof.
+
 ## Cleanup and Retirement Review Rules
 
 1. Before declaring a deletion-ready path, cite:

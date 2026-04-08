@@ -1,5 +1,10 @@
 # TASK-T09 Execution Report - Debt Gate (PR) Trial
 
+> Historical note:
+> This retained draft has no recorded execution evidence in the log below.
+> Treat its status, risks, and next steps as historical planning context only, not as current completion proof.
+> Current governance truth lives in `governance/technical-debt/` and repository-root `TASK.md` / `TASK-REPORT.md`.
+
 ## Basics
 - Task ID: T09
 - Owner: TBD
