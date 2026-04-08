@@ -35,6 +35,19 @@ router = APIRouter(
     responses=RISK_METRICS_ROUTE_RESPONSES,
 )
 
+
+def _success_response_spec(description: str, example: Any) -> dict[int, dict[str, Any]]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
 VAR_CVAR_REQUEST_EXAMPLES = {
     "portfolio_var_cvar": {
         "summary": "计算组合 VaR/CVaR",
@@ -92,11 +105,150 @@ POSITION_RISK_ASSESS_EXAMPLES = {
     }
 }
 
+VAR_CVAR_SUCCESS_RESPONSE_EXAMPLE = {
+    "var_95_hist": -0.0289,
+    "var_95_param": -0.0309,
+    "var_99_hist": -0.0385,
+    "cvar_95": -0.036,
+    "cvar_99": -0.0432,
+    "entity_type": "portfolio",
+    "entity_id": 101,
+    "confidence_level": 0.95,
+}
+
+BETA_SUCCESS_RESPONSE_EXAMPLE = {
+    "beta": 1.18,
+    "correlation": 0.82,
+    "entity_type": "stock",
+    "entity_id": 600519,
+    "market_index": "000300",
+}
+
+RISK_DASHBOARD_SUCCESS_RESPONSE_EXAMPLE = {
+    "metrics": {
+        "var_95_hist": -0.025,
+        "cvar_95": -0.031,
+        "beta": 1.08,
+    },
+    "active_alerts": [
+        {
+            "id": 12,
+            "name": "组合 VaR 超限",
+            "metric_type": "VaR",
+            "threshold_value": 0.03,
+        }
+    ],
+    "risk_history": [
+        {
+            "date": "2026-04-01",
+            "var_95_hist": -0.021,
+            "cvar_95": -0.028,
+            "beta": 1.02,
+        },
+        {
+            "date": "2026-04-02",
+            "var_95_hist": -0.025,
+            "cvar_95": -0.031,
+            "beta": 1.08,
+        },
+    ],
+}
+
+RISK_METRICS_HISTORY_SUCCESS_RESPONSE_EXAMPLE = [
+    {
+        "date": "2026-04-01",
+        "var_95_hist": -0.021,
+        "var_95_param": -0.023,
+        "cvar_95": -0.028,
+        "beta": 1.02,
+    },
+    {
+        "date": "2026-04-02",
+        "var_95_hist": -0.025,
+        "var_95_param": -0.027,
+        "cvar_95": -0.031,
+        "beta": 1.08,
+    },
+]
+
+RISK_METRICS_CALCULATE_SUCCESS_RESPONSE_EXAMPLE = {
+    "status": "success",
+    "metrics": {
+        "volatility": 0.214,
+        "sharpe_ratio": 1.36,
+        "max_drawdown": 0.012,
+        "skewness": -0.18,
+        "kurtosis": 0.74,
+    },
+    "calculated_at": "2026-04-08T10:35:00",
+    "module": "RiskMetrics (main project)",
+}
+
+POSITION_RISK_ASSESS_SUCCESS_RESPONSE_EXAMPLE = {
+    "status": "success",
+    "risk_assessment": {
+        "total_position_value": 560000,
+        "position_ratio": 0.56,
+        "cash_ratio": 0.44,
+        "position_concentration": [
+            {
+                "symbol": "600519.SH",
+                "concentration": 0.18,
+                "exceeds_limit": True,
+            },
+            {
+                "symbol": "300750.SZ",
+                "concentration": 0.12,
+                "exceeds_limit": False,
+            },
+            {
+                "symbol": "510300.SH",
+                "concentration": 0.26,
+                "exceeds_limit": True,
+            },
+        ],
+        "exceeded_positions": [
+            {
+                "symbol": "600519.SH",
+                "concentration": 0.18,
+            },
+            {
+                "symbol": "510300.SH",
+                "concentration": 0.26,
+            },
+        ],
+        "high_concentration_risk": True,
+        "sector_concentration": {
+            "白酒": 0.18,
+            "新能源": 0.12,
+            "ETF": 0.26,
+        },
+        "herfindahl_index": 0.1144,
+        "risk_level": "HIGH",
+    },
+    "assessed_at": "2026-04-08T10:35:00",
+}
+
+VAR_CVAR_RESPONSES = _success_response_spec("VaR/CVaR 风险指标计算成功。", VAR_CVAR_SUCCESS_RESPONSE_EXAMPLE)
+BETA_RESPONSES = _success_response_spec("Beta 风险指标计算成功。", BETA_SUCCESS_RESPONSE_EXAMPLE)
+RISK_DASHBOARD_RESPONSES = _success_response_spec("风险仪表盘数据查询成功。", RISK_DASHBOARD_SUCCESS_RESPONSE_EXAMPLE)
+RISK_METRICS_HISTORY_RESPONSES = _success_response_spec(
+    "风险指标历史时间序列查询成功。", RISK_METRICS_HISTORY_SUCCESS_RESPONSE_EXAMPLE
+)
+RISK_METRICS_CALCULATE_RESPONSES = _success_response_spec(
+    "综合风险指标计算成功。", RISK_METRICS_CALCULATE_SUCCESS_RESPONSE_EXAMPLE
+)
+POSITION_RISK_ASSESS_RESPONSES = _success_response_spec(
+    "持仓集中度与风险等级评估成功。", POSITION_RISK_ASSESS_SUCCESS_RESPONSE_EXAMPLE
+)
+
 
 @router.post(
     "/var-cvar",
     response_model=VaRCVaRResult,
+    summary="计算 VaR/CVaR 风险指标",
     description="计算指定实体在给定置信水平下的 VaR 与 CVaR 风险指标。",
+    responses=VAR_CVAR_RESPONSES,
 )
 async def calculate_var_cvar(
     request: VaRCVaRRequest = Body(..., openapi_examples=VAR_CVAR_REQUEST_EXAMPLES)
@@ -189,7 +341,9 @@ async def calculate_var_cvar(
 @router.post(
     "/beta",
     response_model=BetaResult,
+    summary="计算市场 Beta 指标",
     description="计算指定实体相对市场基准的 Beta 系数与收益相关性。",
+    responses=BETA_RESPONSES,
 )
 async def calculate_beta(request: BetaRequest = Body(..., openapi_examples=BETA_REQUEST_EXAMPLES)) -> BetaResult:
     operation_start = datetime.now()
@@ -278,7 +432,9 @@ async def calculate_beta(request: BetaRequest = Body(..., openapi_examples=BETA_
 @router.get(
     "/dashboard",
     response_model=RiskDashboardResponse,
+    summary="获取风险仪表盘数据",
     description="聚合最新风险指标、活跃告警和近 30 天风险历史，用于风险总览仪表盘展示。",
+    responses=RISK_DASHBOARD_RESPONSES,
 )
 async def get_risk_dashboard() -> RiskDashboardResponse:
     try:
@@ -342,7 +498,9 @@ async def get_risk_dashboard() -> RiskDashboardResponse:
 @router.get(
     "/metrics/history",
     response_model=List[Dict[str, Any]],
+    summary="查询风险指标历史",
     description="按实体类型、实体ID和日期区间查询历史风险指标时间序列。",
+    responses=RISK_METRICS_HISTORY_RESPONSES,
 )
 async def get_risk_metrics_history(
     entity_type: str = Query(..., description="风险指标所属实体类型，例如 portfolio 或 stock。"),
@@ -384,7 +542,9 @@ async def get_risk_metrics_history(
 
 @router.post(
     "/metrics/calculate",
+    summary="计算综合风险指标",
     description="根据收益率、权益曲线和交易记录计算综合风险指标。",
+    responses=RISK_METRICS_CALCULATE_RESPONSES,
 )
 async def calculate_risk_metrics(
     request: Dict[str, Any] = Body(..., openapi_examples=RISK_METRICS_CALCULATE_EXAMPLES)
@@ -437,7 +597,9 @@ async def calculate_risk_metrics(
 
 @router.post(
     "/position/assess",
+    summary="评估持仓风险",
     description="评估当前持仓的仓位集中度、行业暴露和组合风险等级，并返回超限提示。",
+    responses=POSITION_RISK_ASSESS_RESPONSES,
 )
 async def assess_position_risk(
     request: Dict[str, Any] = Body(..., openapi_examples=POSITION_RISK_ASSESS_EXAMPLES)

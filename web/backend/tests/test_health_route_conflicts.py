@@ -1125,10 +1125,27 @@ def test_risk_metrics_history_endpoint_has_description_and_parameter_docs() -> N
 
     operation = schema["paths"]["/api/v1/risk/metrics/history"]["get"]
     parameters = operation.get("parameters", [])
+    success_json = operation["responses"]["200"]["content"]["application/json"]
 
+    assert operation.get("summary")
     assert len(operation.get("description", "")) >= 20
     for parameter_name in ["entity_type", "entity_id", "start_date", "end_date"]:
         assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+    assert "example" in success_json or "examples" in success_json
+    assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
+def test_risk_dashboard_endpoint_has_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    operation = schema["paths"]["/api/v1/risk/dashboard"]["get"]
+    success_json = operation["responses"]["200"]["content"]["application/json"]
+
+    assert operation.get("summary")
+    assert len(operation.get("description", "")) >= 20
+    assert "example" in success_json or "examples" in success_json
+    assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_ml_model_management_endpoints_have_docs_examples_and_error_responses() -> None:
@@ -1463,9 +1480,14 @@ def test_risk_metric_write_endpoints_have_descriptions_and_examples() -> None:
     ]:
         operation = schema["paths"][path]["post"]
         request_json = operation["requestBody"]["content"]["application/json"]
+        success_code = next(code for code in operation["responses"] if code.startswith("2"))
+        success_json = operation["responses"][success_code]["content"]["application/json"]
 
+        assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
         assert "example" in request_json or "examples" in request_json
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_risk_alert_update_and_acknowledge_endpoints_have_docs_and_examples() -> None:
@@ -2639,12 +2661,19 @@ def test_risk_remaining_write_endpoints_have_docs_and_request_examples() -> None
     for path, method in paths:
         operation = schema["paths"][path][method]
         assert len(operation.get("description", "")) >= 20
+        assert operation.get("summary")
 
         if "requestBody" not in operation:
             continue
 
         request_json = operation["requestBody"]["content"]["application/json"]
         assert "example" in request_json or "examples" in request_json
+
+        if path == "/api/v1/risk/position/assess":
+            success_code = next(code for code in operation["responses"] if code.startswith("2"))
+            success_json = operation["responses"][success_code]["content"]["application/json"]
+            assert "example" in success_json or "examples" in success_json
+            assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_v1_lineage_write_endpoints_have_request_and_response_examples() -> None:
