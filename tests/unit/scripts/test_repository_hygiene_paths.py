@@ -713,7 +713,6 @@ def test_web_dev_tracking_runtime_artifacts_are_converged_under_var_log() -> Non
     tracker_hook = (PROJECT_ROOT / ".claude" / "hooks" / "post-tool-use-web-dev-file-tracker.sh").read_text(
         encoding="utf-8"
     )
-    web_dev_guide = (PROJECT_ROOT / "docs" / "web-dev" / "GUIDE.md").read_text(encoding="utf-8")
     web_dev_hooks_guide = (PROJECT_ROOT / "docs" / "guides" / "hooks" / "web-dev-hooks-guide.md").read_text(
         encoding="utf-8"
     )
@@ -728,16 +727,14 @@ def test_web_dev_tracking_runtime_artifacts_are_converged_under_var_log() -> Non
     )
 
     assert 'WEB_DEV_LOG="${PROJECT_ROOT}/var/log/web-dev/tracing/web-edit-tracker.jsonl"' in tracker_hook
-    assert "var/log/web-dev/tracing/web-edit-tracker.jsonl" in web_dev_guide
     assert "var/log/web-dev/tracing/web-edit-tracker.jsonl" in web_dev_hooks_guide
     assert "var/log/web-dev/tracing/web-edit-tracker.jsonl" in web_dev_hooks_guide_cn
     assert "var/log/web-dev/tracing/" in directory_plan
     assert "var/log/web-dev/tracing/web-edit-tracker.jsonl" in directory_review
-    assert not (PROJECT_ROOT / "docs" / "web-dev" / "tracing").exists()
+    assert not (PROJECT_ROOT / "docs" / "web-dev").exists()
 
 
 def test_hook_guides_are_converged_under_guides_hooks_family() -> None:
-    web_dev_guide = (PROJECT_ROOT / "docs" / "web-dev" / "GUIDE.md").read_text(encoding="utf-8")
     final_execution_summary = (PROJECT_ROOT / "docs" / "reports" / "final_execution_summary.md").read_text(
         encoding="utf-8"
     )
@@ -762,11 +759,10 @@ def test_hook_guides_are_converged_under_guides_hooks_family() -> None:
     for name in hook_docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "hooks" / name).is_file()
-        assert f"hooks/{name}" in guides_index
         assert f"hooks/{name}" in cleanup_index_root
 
-    assert "docs/guides/hooks/WEB_DEV_HOOKS_GUIDE.md" in web_dev_guide
-    assert "docs/guides/hooks/web-dev-hooks-guide.md" in web_dev_guide
+    assert not (PROJECT_ROOT / "docs" / "web-dev").exists()
+    assert "[`hooks/`]" in guides_index
     assert "docs/guides/hooks/pre_commit_hook_setup_guide.md" in final_execution_summary
     assert "WEB_DEV_HOOKS_GUIDE" in hooks_index
     assert "web-dev-hooks-guide" in hooks_index

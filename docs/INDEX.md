@@ -2022,7 +2022,6 @@
 
     - 📄 [WEB_DEV_HOOKS_GUIDE](guides/hooks/WEB_DEV_HOOKS_GUIDE.md)
     - 📄 [web-dev-hooks-guide](guides/hooks/web-dev-hooks-guide.md)
-    - 📄 [Compatibility Guide](web-dev/GUIDE.md)
 - 📂 [Worklogs](reports/worklogs)
 
 #### Worklogs

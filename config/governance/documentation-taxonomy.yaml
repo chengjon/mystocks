@@ -628,14 +628,6 @@ families:
     lifecycle: supporting
     canonical_trunk_id: docs-entrypoint
     decision_status: keep-supporting
-  - id: web-dev-compatibility-entrypoints
-    concern: guide-routing
-    match_paths:
-      - docs/web-dev/INDEX.md
-      - docs/web-dev/GUIDE.md
-    lifecycle: supporting
-    canonical_trunk_id: docs-entrypoint
-    decision_status: merge-into-trunk
   - id: openspec-conventions-guide
     concern: openspec-governance
     match_paths:

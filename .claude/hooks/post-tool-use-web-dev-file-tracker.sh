@@ -38,7 +38,7 @@ LOWER_PATH="$(printf '%s' "${FILE_PATH}" | tr '[:upper:]' '[:lower:]')"
 
 case "${LOWER_PATH}" in
     *.ts|*.tsx|*.js|*.jsx|*.vue|*.scss|*.css|*.html|*.json|*.yml|*.yaml|\
-    web/frontend/*|docs/web-dev/*|docs/guides/hooks/*)
+    web/frontend/*|docs/guides/hooks/*)
         ;;
     *)
         exit 0

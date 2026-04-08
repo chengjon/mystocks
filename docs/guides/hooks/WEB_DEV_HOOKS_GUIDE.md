@@ -38,12 +38,11 @@
     └── web-file-tracker.sh                    # Web文件追踪脚本（新）
 ```
 
-**Web文档目录**:
+**Web文档主干**:
 ```
 docs/
-├── web-dev/                                   # Web开发文档入口
-│   ├── GUIDE.md
-│   └── INDEX.md
+├── guides/
+│   └── hooks/                                # Web Hook / 工作流文档主入口
 var/
 └── log/
     └── web-dev/
@@ -88,7 +87,7 @@ var/
     ↓
 分类存储
   ├── var/log/web-dev/tracing/        # 所有Web编辑记录
-  ├── docs/web-dev/                   # Hook说明与工作入口
+  ├── docs/guides/hooks/              # Hook说明与工作入口
   └── .claude/edit_log.jsonl        # 全局编辑日志
 ```
 
@@ -156,7 +155,7 @@ var/
 检测到Write操作
     ↓
 检查文件扩展名
-  ├── .md/.rst → docs/web-dev/guides/
+  ├── .md/.rst → docs/guides/hooks/
   ├── .yaml/.yml → config/
   ├── .json → config/
   └── .txt → docs/
@@ -187,7 +186,7 @@ var/
     },
     "guides": {
       "patterns": ["docs/(tutorials|guides)/.*\\.md$"],
-      "target": "docs/web-dev/guides/",
+      "target": "docs/guides/hooks/",
       "description": "开发指南文档"
     },
     "architecture": {
@@ -385,7 +384,7 @@ var/
     },
     "guides": {
       "patterns": ["docs/(tutorials|guides)/.*\\.md$"],
-      "target": "docs/web-dev/guides/"
+      "target": "docs/guides/hooks/"
     },
     "architecture": {
       "patterns": ["docs/architecture/.*\\.md$"],
@@ -576,7 +575,7 @@ set -euo pipefail
 
 # 配置
 CLAUDE_PROJECT_DIR="${CLAUDE_PROJECT_DIR:-.}"
-WEB_DEV_DIR="docs/web-dev"
+WEB_GUIDE_DIR="docs/guides/hooks"
 WEB_DEV_LOG="$WEB_DEV_LOG/organizer.log"
 
 # 白名单 - 这些文件不会被移动
@@ -592,11 +591,11 @@ ALLOWED_ROOT_FILES=(
 
 # 文档分类映射
 DOC_MAP=(
-    "docs/api/GUIDE.md -> $WEB_DEV_DIR/api/"
-    "docs/architecture/ARCHITECTURE.md -> $WEB_DEV_DIR/architecture/"
-    "docs/operations/deployment/DEPLOYMENT.md -> $WEB_DEV_DIR/deployment/"
-    "docs/(tutorials|guides)/GUIDE.md -> $WEB_DEV_DIR/guides/"
-    "docs/(标准|规范|convention).+md -> $WEB_DEV_DIR/standards/"
+    "docs/api/GUIDE.md -> docs/api/"
+    "docs/architecture/ARCHITECTURE.md -> docs/architecture/"
+    "docs/operations/deployment/DEPLOYMENT.md -> docs/operations/"
+    "docs/(tutorials|guides|specs)/GUIDE.md -> $WEB_GUIDE_DIR/"
+    "docs/(标准|规范|convention|standards).+md -> docs/standards/"
 )
 
 # 文档类型映射
@@ -660,17 +659,15 @@ fi
 
 # 检查文件路径
 if [[ "$FILE_PATH" =~ ^docs/api/ ]]; then
-    RECOMMENDATION="$WEB_DEV_DIR/api/"
-elif [[ "$FILE_PATH" =~ ^docs/.*guide/.* ]]; then
-    RECOMMENDATION="$WEB_DEV_DIR/guides/"
+    RECOMMENDATION="docs/api/"
+elif [[ "$FILE_PATH" =~ ^docs/(tutorials|guides|specs)/ ]]; then
+    RECOMMENDATION="$WEB_GUIDE_DIR/"
 elif [[ "$FILE_PATH" =~ ^docs/architecture/.* ]]; then
-    RECOMMENDATION="$WEB_DEV_DIR/architecture/"
+    RECOMMENDATION="docs/architecture/"
 elif [[ "$FILE_PATH" =~ ^docs/operations/deployment/ ]]; then
-    RECOMMENDATION="$WEB_DEV_DIR/deployment/"
-elif [[ "$FILE_PATH" =~ ^docs/(标准|规范|convention) ]]; then
-    RECOMMENDATION="$WEB_DEV_DIR/standards/"
-elif [[ "$FILE_PATH" =~ ^docs/.*guide.*/ ]]; then
-    RECOMMENDATION="$WEB_DEV_DIR/guides/"
+    RECOMMENDATION="docs/operations/"
+elif [[ "$FILE_PATH" =~ ^docs/(标准|规范|convention|standards)/ ]]; then
+    RECOMMENDATION="docs/standards/"
 else
     RECOMMENDATION=""
 fi
@@ -683,7 +680,7 @@ if [ -n "$RECOMMENDATION" ]; then
     fi
 
     # 创建Web开发文档建议文档
-    WEB_DEV_GUIDE="docs/web-dev/GUIDE.md"
+    WEB_DEV_GUIDE="docs/guides/hooks/WEB_DEV_HOOKS_GUIDE.md"
 
     # 如果文档不存在，创建它
     if [ ! -f "$WEB_DEV_GUIDE" ]; then
@@ -707,7 +704,7 @@ docs/api/AGENTS_AUDIT_REPORT.md
 ### 开发指南
 ```bash
 # 开发指南应存放在这里
-docs/web-dev/guides/
+docs/guides/hooks/
 ├── 以下文档路径符合开发指南规则：
 docs/guides/WEB_AUTOMATION_TEST_PLAN.md
 docs/guides/WEB_AUTOMATION_TEST_QUICK_REFERENCE.md

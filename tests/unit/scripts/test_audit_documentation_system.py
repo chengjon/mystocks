@@ -125,16 +125,17 @@ def test_build_report_blocks_delete_candidate_without_replacement(tmp_path: Path
     assert "delete_gate.decision_status=needs-replacement" in blocked["issues"]
 
 
-def test_build_report_classifies_web_dev_compatibility_entrypoints() -> None:
+def test_build_report_skips_deleted_web_dev_compatibility_entrypoints() -> None:
+    assert not (PROJECT_ROOT / "docs" / "web-dev").exists()
+
     report = build_report(
         PROJECT_ROOT,
         taxonomy_path=DEFAULT_TAXONOMY_PATH,
         paths=["docs/web-dev/INDEX.md", "docs/web-dev/GUIDE.md"],
     )
 
+    assert report["scanned_files"] == 0
+    assert report["classified_files"] == 0
     assert report["summary"]["unclassified"] == 0
     assert report["summary"]["blocked_delete_candidates"] == 0
-
-    classifications = {item["path"]: item for item in report["classifications"]}
-    assert classifications["docs/web-dev/INDEX.md"]["id"] == "web-dev-compatibility-entrypoints"
-    assert classifications["docs/web-dev/GUIDE.md"]["id"] == "web-dev-compatibility-entrypoints"
+    assert report["classifications"] == []
