@@ -55,6 +55,20 @@
 - Pydantic schema definitions
 - exported OpenAPI artifacts
 
+### If You Need Current OpenAPI Example Audit Status
+
+优先回到：
+
+- [`scripts/dev/openapi_success_example_audit.py`](/opt/claude/mystocks_spec/scripts/dev/openapi_success_example_audit.py)
+- [`web/backend/tests/test_api_documentation_validation.py`](/opt/claude/mystocks_spec/web/backend/tests/test_api_documentation_validation.py)
+- [`web/backend/tests/test_health_route_conflicts.py`](/opt/claude/mystocks_spec/web/backend/tests/test_health_route_conflicts.py)
+
+当前口径说明：
+
+- `application/json` 的成功响应必须提供 `example` 或 `examples`
+- `204` 成功响应不计入 example 缺口
+- Prometheus / OpenMetrics `text/plain` 成功响应不计入 JSON 契约债，作为非 JSON 观察项单独报告
+
 ### If You Need API Development Guidance
 
 优先阅读：
@@ -84,3 +98,4 @@
 - [documentation-system.md](/opt/claude/mystocks_spec/docs/overview/documentation-system.md)
 - [2026-04-08-first-pass-inventory.md](/opt/claude/mystocks_spec/docs/reports/documentation-governance/2026-04-08-first-pass-inventory.md)
 - [2026-04-08-decision-register.md](/opt/claude/mystocks_spec/docs/reports/documentation-governance/2026-04-08-decision-register.md)
+- [2026-04-08-openapi-contract-audit-followup.md](/opt/claude/mystocks_spec/docs/reports/documentation-governance/2026-04-08-openapi-contract-audit-followup.md)
