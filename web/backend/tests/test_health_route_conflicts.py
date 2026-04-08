@@ -2093,18 +2093,55 @@ def test_trade_endpoints_have_examples_parameter_docs_and_error_responses() -> N
     health_operation = schema["paths"]["/api/v1/trade/health"]["get"]
     signals_operation = schema["paths"]["/api/v1/trade/signals"]["get"]
     execute_operation = schema["paths"]["/api/v1/trade/execute"]["post"]
+    portfolio_operation = schema["paths"]["/api/v1/trade/portfolio"]["get"]
+    positions_operation = schema["paths"]["/api/v1/trade/positions"]["get"]
+    trades_operation = schema["paths"]["/api/v1/trade/trades"]["get"]
+    statistics_operation = schema["paths"]["/api/v1/trade/statistics"]["get"]
 
     assert len(health_operation.get("description", "")) >= 20
     assert any(code.startswith("5") for code in health_operation["responses"])
+
+    portfolio_success_json = portfolio_operation["responses"]["200"]["content"]["application/json"]
+    assert portfolio_operation.get("summary")
+    assert len(portfolio_operation.get("description", "")) >= 20
+    assert "example" in portfolio_success_json or "examples" in portfolio_success_json
+    assert any(code.startswith("5") for code in portfolio_operation["responses"])
+
+    positions_success_json = positions_operation["responses"]["200"]["content"]["application/json"]
+    assert positions_operation.get("summary")
+    assert len(positions_operation.get("description", "")) >= 20
+    assert "example" in positions_success_json or "examples" in positions_success_json
+    assert any(code.startswith("5") for code in positions_operation["responses"])
 
     assert any(
         param["name"] == "limit" and param.get("description")
         for param in signals_operation.get("parameters", [])
     )
+    signals_success_json = signals_operation["responses"]["200"]["content"]["application/json"]
+    assert "example" in signals_success_json or "examples" in signals_success_json
     assert any(code.startswith("5") for code in signals_operation["responses"])
 
+    trades_success_json = trades_operation["responses"]["200"]["content"]["application/json"]
+    assert trades_operation.get("summary")
+    assert len(trades_operation.get("description", "")) >= 20
+    for parameter_name in ["symbol", "start_date", "end_date", "page", "page_size"]:
+        assert any(
+            param["name"] == parameter_name and param.get("description")
+            for param in trades_operation.get("parameters", [])
+        )
+    assert "example" in trades_success_json or "examples" in trades_success_json
+    assert any(code.startswith(("4", "5")) for code in trades_operation["responses"])
+
+    statistics_success_json = statistics_operation["responses"]["200"]["content"]["application/json"]
+    assert statistics_operation.get("summary")
+    assert len(statistics_operation.get("description", "")) >= 20
+    assert "example" in statistics_success_json or "examples" in statistics_success_json
+    assert any(code.startswith("5") for code in statistics_operation["responses"])
+
     execute_json = execute_operation["requestBody"]["content"]["application/json"]
+    execute_success_json = execute_operation["responses"]["200"]["content"]["application/json"]
     assert "example" in execute_json or "examples" in execute_json
+    assert "example" in execute_success_json or "examples" in execute_success_json
     assert any(code.startswith(("4", "5")) for code in execute_operation["responses"])
 
 

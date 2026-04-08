@@ -4,7 +4,7 @@
 使用统一的Pydantic模型和APIResponse格式
 """
 
-from typing import Optional
+from typing import Any, Optional
 
 from fastapi import APIRouter, Body, HTTPException, Query
 from pydantic import BaseModel
@@ -37,11 +37,218 @@ TRADE_HEALTH_RESPONSE_EXAMPLE = {
     "request_id": "req-trade-health-001",
 }
 
+TRADE_PORTFOLIO_RESPONSE_EXAMPLE = {
+    "success": True,
+    "message": "获取账户信息成功",
+    "request_id": "req-trade-portfolio-001",
+    "timestamp": "2026-04-08T04:20:00Z",
+    "data": {
+        "account_id": "ACC_DEMO_001",
+        "account_type": "stock",
+        "total_assets": "1175000.00",
+        "cash": "150000.00",
+        "market_value": "1025000.00",
+        "frozen_cash": None,
+        "total_profit_loss": "55000.00",
+        "profit_loss_percent": 4.91,
+        "risk_level": "low",
+        "last_update": "2026-04-08T04:20:00Z",
+    },
+}
+
+TRADE_POSITIONS_RESPONSE_EXAMPLE = {
+    "success": True,
+    "message": "获取持仓列表成功，共2只股票",
+    "request_id": "req-trade-positions-001",
+    "timestamp": "2026-04-08T04:20:00Z",
+    "data": {
+        "positions": [
+            {
+                "symbol": "600519.SH",
+                "symbol_name": "贵州茅台",
+                "quantity": 500,
+                "available_quantity": 500,
+                "cost_price": "1650.00",
+                "current_price": "1750.00",
+                "market_value": "875000.00",
+                "profit_loss": "50000.00",
+                "profit_loss_percent": 6.06,
+                "last_update": "2026-04-08T04:20:00Z",
+            },
+            {
+                "symbol": "000858.SZ",
+                "symbol_name": "五粮液",
+                "quantity": 1000,
+                "available_quantity": 1000,
+                "cost_price": "145.00",
+                "current_price": "150.00",
+                "market_value": "150000.00",
+                "profit_loss": "5000.00",
+                "profit_loss_percent": 3.45,
+                "last_update": "2026-04-08T04:20:00Z",
+            },
+        ],
+        "total_count": 2,
+        "total_market_value": "1025000.00",
+        "total_profit_loss": "55000.00",
+        "total_profit_loss_percent": 5.67,
+    },
+}
+
+TRADE_SIGNALS_RESPONSE_EXAMPLE = {
+    "success": True,
+    "message": "获取交易信号成功",
+    "request_id": "req-trade-signals-001",
+    "timestamp": "2026-04-08T04:20:00Z",
+    "data": {
+        "items": [
+            {
+                "symbol": "600519.SH",
+                "name": "贵州茅台",
+                "type": "BUY",
+                "price": 1750.0,
+                "time": "10:15:00",
+                "strategy": "MomentumAlpha",
+            },
+            {
+                "symbol": "000858.SZ",
+                "name": "五粮液",
+                "type": "SELL",
+                "price": 150.0,
+                "time": "10:18:00",
+                "strategy": "MeanReversion",
+            },
+        ],
+        "total": 2,
+    },
+}
+
+TRADE_HISTORY_RESPONSE_EXAMPLE = {
+    "success": True,
+    "message": "获取交易记录成功，共2条记录",
+    "request_id": "req-trade-history-001",
+    "timestamp": "2026-04-08T04:20:00Z",
+    "data": {
+        "trades": [
+            {
+                "trade_id": "TRD001",
+                "order_id": "ORDER001",
+                "symbol": "600519.SH",
+                "direction": "buy",
+                "price": "1650.00",
+                "quantity": 500,
+                "amount": "825000.00",
+                "commission": "82.50",
+                "trade_time": "2026-04-08T09:35:00Z",
+                "trade_type": "normal",
+            },
+            {
+                "trade_id": "TRD002",
+                "order_id": "ORDER002",
+                "symbol": "000858.SZ",
+                "direction": "buy",
+                "price": "145.00",
+                "quantity": 1000,
+                "amount": "145000.00",
+                "commission": "145.00",
+                "trade_time": "2026-04-08T10:05:00Z",
+                "trade_type": "normal",
+            },
+        ],
+        "total_count": 2,
+        "total_amount": "970000.00",
+        "total_commission": "227.50",
+        "page": 1,
+        "page_size": 20,
+    },
+}
+
+TRADE_STATISTICS_RESPONSE_EXAMPLE = {
+    "success": True,
+    "message": "获取交易统计成功",
+    "request_id": "req-trade-statistics-001",
+    "timestamp": "2026-04-08T04:20:00Z",
+    "data": {
+        "total_trades": 3,
+        "buy_count": 2,
+        "sell_count": 1,
+        "position_count": 2,
+        "total_buy_amount": 970000.0,
+        "total_sell_amount": 100000.0,
+        "total_commission": 277.5,
+        "realized_profit": -870000.0,
+    },
+}
+
 EXECUTE_TRADE_REQUEST_EXAMPLE = {
     "direction": "buy",
     "symbol": "600519.SH",
     "quantity": 100,
     "price": 1750.0,
+}
+
+EXECUTE_TRADE_RESPONSE_EXAMPLE = {
+    "success": True,
+    "message": "买入委托成功",
+    "request_id": "req-trade-execute-001",
+    "timestamp": "2026-04-08T04:20:00Z",
+    "data": {
+        "order_id": "ORDER_ABC123DEF456",
+        "direction": "buy",
+        "symbol": "600519.SH",
+        "quantity": 100,
+        "price": 1750.0,
+        "trade_amount": 175000.0,
+        "commission": 87.5,
+        "total_amount": 175087.5,
+        "status": "completed",
+        "trade_time": "2026-04-08T04:20:00Z",
+        "message": "买入成功",
+    },
+}
+
+
+def _success_response_spec(description: str, example: dict[str, Any]) -> dict[int, dict[str, Any]]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
+
+
+TRADE_PORTFOLIO_RESPONSES = {
+    **TRADE_ROUTE_RESPONSES,
+    **_success_response_spec("账户资产概览查询成功。", TRADE_PORTFOLIO_RESPONSE_EXAMPLE),
+}
+
+TRADE_POSITIONS_RESPONSES = {
+    **TRADE_ROUTE_RESPONSES,
+    **_success_response_spec("当前持仓列表查询成功。", TRADE_POSITIONS_RESPONSE_EXAMPLE),
+}
+
+TRADE_SIGNALS_RESPONSES = {
+    **TRADE_ROUTE_RESPONSES,
+    **_success_response_spec("交易信号列表查询成功。", TRADE_SIGNALS_RESPONSE_EXAMPLE),
+}
+
+TRADE_HISTORY_RESPONSES = {
+    **TRADE_ROUTE_RESPONSES,
+    **_success_response_spec("交易历史分页查询成功。", TRADE_HISTORY_RESPONSE_EXAMPLE),
+}
+
+TRADE_STATISTICS_RESPONSES = {
+    **TRADE_ROUTE_RESPONSES,
+    **_success_response_spec("交易统计指标查询成功。", TRADE_STATISTICS_RESPONSE_EXAMPLE),
+}
+
+TRADE_EXECUTE_RESPONSES = {
+    **TRADE_ROUTE_RESPONSES,
+    **_success_response_spec("交易委托执行成功。", EXECUTE_TRADE_RESPONSE_EXAMPLE),
 }
 
 
@@ -76,7 +283,7 @@ async def health_check():
 # ==================== Portfolio (Account Info) ====================
 
 
-@router.get("/portfolio", response_model=APIResponse)
+@router.get("/portfolio", response_model=APIResponse, responses=TRADE_PORTFOLIO_RESPONSES)
 async def get_portfolio():
     """
     获取投资组合概览
@@ -124,7 +331,7 @@ async def get_portfolio():
 # ==================== Positions ====================
 
 
-@router.get("/positions", response_model=APIResponse)
+@router.get("/positions", response_model=APIResponse, responses=TRADE_POSITIONS_RESPONSES)
 async def get_positions():
     """
     获取持仓列表
@@ -194,7 +401,7 @@ async def get_positions():
         )
 
 
-@router.get("/signals", response_model=APIResponse)
+@router.get("/signals", response_model=APIResponse, responses=TRADE_SIGNALS_RESPONSES)
 async def get_signals(limit: int = Query(20, ge=1, le=200, description="返回的交易信号数量上限，范围 1-200")):
     """
     获取交易信号列表
@@ -238,7 +445,7 @@ async def get_signals(limit: int = Query(20, ge=1, le=200, description="返回�
 # ==================== Trade History ====================
 
 
-@router.get("/trades", response_model=APIResponse)
+@router.get("/trades", response_model=APIResponse, responses=TRADE_HISTORY_RESPONSES)
 async def get_trades(
     symbol: Optional[str] = Query(None, description="股票代码 (可选)"),
     start_date: Optional[str] = Query(None, description="开始日期 YYYY-MM-DD"),
@@ -368,7 +575,7 @@ class TradeStatistics(BaseModel):
     realized_profit: float
 
 
-@router.get("/statistics", response_model=APIResponse)
+@router.get("/statistics", response_model=APIResponse, responses=TRADE_STATISTICS_RESPONSES)
 async def get_statistics():
     """
     获取交易统计数据
@@ -418,7 +625,7 @@ async def get_statistics():
 # ==================== Execute Trade ====================
 
 
-@router.post("/execute", response_model=APIResponse)
+@router.post("/execute", response_model=APIResponse, responses=TRADE_EXECUTE_RESPONSES)
 async def execute_trade(order: dict = Body(..., example=EXECUTE_TRADE_REQUEST_EXAMPLE)):
     """
     执行买卖交易
