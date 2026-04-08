@@ -23,6 +23,8 @@ def test_deletion_evidence_guide_is_discoverable_and_points_to_canonical_artifac
     assert "governance/waivers/deletion-evidence-waivers.yaml" in guide
     assert "`HEAD`" in guide
     assert "wildcard" in guide.lower()
+    assert "--audit-waivers" in guide
+    assert "--warning-window-days 7" in guide
 
     assert "guides/governance/DELETION_EVIDENCE_GATE.md" in docs_index
     assert "governance/DELETION_EVIDENCE_GATE.md" in guides_index

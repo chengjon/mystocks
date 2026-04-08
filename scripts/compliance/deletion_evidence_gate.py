@@ -266,7 +266,7 @@ def is_truthy_approval(value: Any) -> bool:
     return False
 
 
-def validate_waiver_entry(entry: dict[str, Any], today: date) -> str | None:
+def validate_waiver_entry_structure(entry: dict[str, Any]) -> str | None:
     path_value = normalize_relative_path(str(entry.get("path", "")))
     kind = str(entry.get("kind", "")).strip()
     owner = str(entry.get("owner", "")).strip()
@@ -293,9 +293,121 @@ def validate_waiver_entry(entry: dict[str, Any], today: date) -> str | None:
         return "approved_on must be an ISO date"
     if expires_on is None:
         return "expires_on must be an ISO date"
+    return None
+
+
+def validate_waiver_entry(entry: dict[str, Any], today: date) -> str | None:
+    structure_error = validate_waiver_entry_structure(entry)
+    if structure_error is not None:
+        return structure_error
+
+    expires_on = parse_iso_date(entry.get("expires_on"))
+    assert expires_on is not None
     if expires_on < today:
         return f"waiver expired on {expires_on.isoformat()}"
     return None
+
+
+def classify_waiver_audit_status(expires_on: date, today: date, warning_window_days: int) -> tuple[str, int]:
+    days_until_expiry = (expires_on - today).days
+    if days_until_expiry < 0:
+        return "expired", days_until_expiry
+    if days_until_expiry <= warning_window_days:
+        return "expiring_soon", days_until_expiry
+    return "healthy", days_until_expiry
+
+
+def build_waiver_audit_report(
+    root_dir: str | Path = ".",
+    *,
+    ref: str = "HEAD",
+    today: date | None = None,
+    warning_window_days: int = 7,
+) -> dict[str, Any]:
+    root_path = Path(root_dir).resolve()
+    today_value = today or date.today()
+    waiver_entries, waiver_errors = load_waiver_entries(root_path, ref)
+
+    findings: list[dict[str, Any]] = []
+    errors: list[dict[str, Any]] = [
+        {
+            "path": "",
+            "kind": "waiver",
+            "owner": "",
+            "expires_on": None,
+            "days_until_expiry": None,
+            "status": "invalid",
+            "message": message,
+        }
+        for message in waiver_errors
+    ]
+
+    for entry in waiver_entries:
+        path_value = normalize_relative_path(str(entry.get("path", "")))
+        kind = str(entry.get("kind", "")).strip()
+        owner = str(entry.get("owner", "")).strip()
+        expires_on = parse_iso_date(entry.get("expires_on"))
+        structure_error = validate_waiver_entry_structure(entry)
+
+        if structure_error is not None:
+            errors.append(
+                {
+                    "path": path_value,
+                    "kind": kind,
+                    "owner": owner,
+                    "expires_on": entry.get("expires_on"),
+                    "days_until_expiry": None,
+                    "status": "invalid",
+                    "message": structure_error,
+                }
+            )
+            continue
+
+        assert expires_on is not None
+        status, days_until_expiry = classify_waiver_audit_status(expires_on, today_value, warning_window_days)
+        if status == "expired":
+            message = f"Waiver expired on {expires_on.isoformat()}"
+        elif status == "expiring_soon":
+            message = f"Waiver expires in {days_until_expiry} day(s)"
+        else:
+            message = f"Waiver remains valid for {days_until_expiry} day(s)"
+
+        findings.append(
+            {
+                "path": path_value,
+                "kind": kind,
+                "owner": owner,
+                "expires_on": expires_on.isoformat(),
+                "days_until_expiry": days_until_expiry,
+                "status": status,
+                "message": message,
+            }
+        )
+
+    sorted_findings = sorted(findings, key=lambda item: (item["expires_on"], item["path"]))
+
+    return {
+        "project_root": str(root_path),
+        "mode": "waiver-audit",
+        "evidence_ref": ref,
+        "today": today_value.isoformat(),
+        "warning_window_days": warning_window_days,
+        "waiver_registry_path": WAIVER_REGISTRY_PATH,
+        "findings": sorted_findings,
+        "errors": errors,
+        "summary": {
+            "total": len(sorted_findings) + len(errors),
+            "healthy": sum(1 for item in sorted_findings if item["status"] == "healthy"),
+            "expiring_soon": sum(1 for item in sorted_findings if item["status"] == "expiring_soon"),
+            "expired": sum(1 for item in sorted_findings if item["status"] == "expired"),
+            "invalid": len(errors),
+        },
+        "policy": {
+            "head_only_authorization": True,
+            "warning_window_days": warning_window_days,
+            "waiver_registry_path": WAIVER_REGISTRY_PATH,
+        },
+    }
 
 
 def evaluate_target(
@@ -468,6 +580,33 @@ def print_report(report: dict[str, Any], output_format: str) -> None:
         print(json.dumps(report, indent=2, ensure_ascii=False))
         return
 
+    if report.get("mode") == "waiver-audit":
+        print("Deletion Waiver Audit")
+        print("=====================")
+        print(f"waiver_registry_path: {report['waiver_registry_path']}")
+        print(f"today: {report['today']}")
+        print(f"warning_window_days: {report['warning_window_days']}")
+        print(f"total: {report['summary']['total']}")
+        print(f"healthy: {report['summary']['healthy']}")
+        print(f"expiring_soon: {report['summary']['expiring_soon']}")
+        print(f"expired: {report['summary']['expired']}")
+        print(f"invalid: {report['summary']['invalid']}")
+
+        if not report["findings"] and not report["errors"]:
+            print("\nNo waiver findings detected.")
+            return
+
+        for item in report["findings"]:
+            print(
+                f"- {item['kind']} {item['path']}: {item['status']} "
+                f"(expires_on={item['expires_on']}, days_until_expiry={item['days_until_expiry']})"
+            )
+        for item in report["errors"]:
+            path_value = item.get("path", "")
+            label = f"{item.get('kind', 'waiver')} {path_value}".strip()
+            print(f"- {label}: invalid - {item['message']}")
+        return
+
     print("Deletion Evidence Gate")
     print("======================")
     print(f"scope: {report['scope']}")
@@ -495,11 +634,25 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--path", action="append")
     parser.add_argument("--format", choices=("text", "json"), default="text")
     parser.add_argument("--today", help="ISO date override for deterministic waiver validation")
+    parser.add_argument("--audit-waivers", action="store_true")
+    parser.add_argument("--warning-window-days", type=int, default=7)
     args = parser.parse_args(argv)
 
     today = parse_iso_date(args.today) if args.today else None
     if args.today and today is None:
         raise SystemExit("--today must be an ISO date")
+    if args.warning_window_days < 0:
+        raise SystemExit("--warning-window-days must be >= 0")
+
+    if args.audit_waivers:
+        report = build_waiver_audit_report(
+            args.root_dir,
+            ref=args.ref,
+            today=today,
+            warning_window_days=args.warning_window_days,
+        )
+        print_report(report, args.format)
+        return 1 if report["errors"] else 0
 
     report = build_report(
         args.root_dir,

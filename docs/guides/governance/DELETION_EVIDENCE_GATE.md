@@ -98,6 +98,28 @@ python scripts/compliance/deletion_evidence_gate.py --root-dir . --format text -
 python scripts/compliance/deletion_evidence_gate.py --root-dir . --format json --scope staged
 ```
 
+## Waiver 巡检与告警
+
+仓库会通过 GitHub Actions 每日巡检 `HEAD:governance/waivers/deletion-evidence-waivers.yaml`，并支持手动触发。
+
+巡检只做债务可见性告警，不阻塞普通开发流；但如果 waiver registry 本身结构损坏，workflow 会失败。
+
+本地也可手动查看：
+
+```bash
+python scripts/compliance/deletion_evidence_gate.py \
+  --root-dir . \
+  --format text \
+  --audit-waivers \
+  --warning-window-days 7
+```
+
+输出会区分：
+
+- `expired`
+- `expiring_soon`
+- `healthy`
+
 ## 操作顺序
 
 1. 先在治理工件里落盘精确删除对象。

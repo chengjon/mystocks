@@ -272,3 +272,141 @@ def test_rejects_expired_or_wildcard_waiver(tmp_path: Path) -> None:
     payload = json.loads(completed.stdout)
     assert payload["errors"][0]["mode"] == "invalid-waiver"
     assert "expired" in payload["errors"][0]["message"]
+
+
+def test_waiver_audit_reports_empty_registry_as_healthy_zero_state(tmp_path: Path) -> None:
+    repo = bootstrap_repo(tmp_path)
+    commit_all(repo, "bootstrap")
+
+    completed = run_gate(repo, "--audit-waivers", "--today", "2026-04-08")
+
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    payload = json.loads(completed.stdout)
+    assert payload["mode"] == "waiver-audit"
+    assert payload["summary"] == {
+        "total": 0,
+        "healthy": 0,
+        "expiring_soon": 0,
+        "expired": 0,
+        "invalid": 0,
+    }
+    assert payload["findings"] == []
+    assert payload["errors"] == []
+
+
+def test_waiver_audit_flags_expired_and_expiring_entries_without_failing(tmp_path: Path) -> None:
+    repo = bootstrap_repo(
+        tmp_path,
+        waiver_entries=[
+            {
+                "path": "docs/legacy/old-a.md",
+                "kind": "document",
+                "reason": "Approved cleanup",
+                "owner": "repo-governance",
+                "approved_by_user": True,
+                "approved_on": "2026-04-01",
+                "expires_on": "2026-04-07",
+                "ticket_or_context": "waiver-a",
+            },
+            {
+                "path": "docs/legacy/old-b.md",
+                "kind": "document",
+                "reason": "Approved cleanup",
+                "owner": "repo-governance",
+                "approved_by_user": True,
+                "approved_on": "2026-04-01",
+                "expires_on": "2026-04-12",
+                "ticket_or_context": "waiver-b",
+            },
+            {
+                "path": "docs/legacy/old-c.md",
+                "kind": "document",
+                "reason": "Approved cleanup",
+                "owner": "repo-governance",
+                "approved_by_user": True,
+                "approved_on": "2026-04-01",
+                "expires_on": "2026-04-20",
+                "ticket_or_context": "waiver-c",
+            },
+        ],
+    )
+    commit_all(repo, "bootstrap")
+
+    completed = run_gate(repo, "--audit-waivers", "--today", "2026-04-08")
+
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    payload = json.loads(completed.stdout)
+    assert payload["summary"] == {
+        "total": 3,
+        "healthy": 1,
+        "expiring_soon": 1,
+        "expired": 1,
+        "invalid": 0,
+    }
+    statuses = {item["path"]: item["status"] for item in payload["findings"]}
+    assert statuses == {
+        "docs/legacy/old-a.md": "expired",
+        "docs/legacy/old-b.md": "expiring_soon",
+        "docs/legacy/old-c.md": "healthy",
+    }
+
+
+def test_waiver_audit_supports_warning_window_override(tmp_path: Path) -> None:
+    repo = bootstrap_repo(
+        tmp_path,
+        waiver_entries=[
+            {
+                "path": "docs/legacy/old-a.md",
+                "kind": "document",
+                "reason": "Approved cleanup",
+                "owner": "repo-governance",
+                "approved_by_user": True,
+                "approved_on": "2026-04-01",
+                "expires_on": "2026-04-12",
+                "ticket_or_context": "waiver-a",
+            }
+        ],
+    )
+    commit_all(repo, "bootstrap")
+
+    completed = run_gate(
+        repo,
+        "--audit-waivers",
+        "--today",
+        "2026-04-08",
+        "--warning-window-days",
+        "2",
+    )
+
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    payload = json.loads(completed.stdout)
+    assert payload["summary"]["healthy"] == 1
+    assert payload["summary"]["expiring_soon"] == 0
+    assert payload["findings"][0]["status"] == "healthy"
+
+
+def test_waiver_audit_fails_on_invalid_registry_entries(tmp_path: Path) -> None:
+    repo = bootstrap_repo(
+        tmp_path,
+        waiver_entries=[
+            {
+                "path": "docs/*",
+                "kind": "document",
+                "reason": "Bad wildcard",
+                "owner": "repo-governance",
+                "approved_by_user": True,
+                "approved_on": "2026-04-01",
+                "expires_on": "2026-04-12",
+                "ticket_or_context": "waiver-a",
+            }
+        ],
+    )
+    commit_all(repo, "bootstrap")
+
+    completed = run_gate(repo, "--audit-waivers", "--today", "2026-04-08")
+
+    assert completed.returncode == 1, completed.stdout + completed.stderr
+    payload = json.loads(completed.stdout)
+    assert payload["summary"]["invalid"] == 1
+    assert payload["errors"][0]["status"] == "invalid"
+    assert "wildcards are forbidden" in payload["errors"][0]["message"]

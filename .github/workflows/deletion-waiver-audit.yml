@@ -1,0 +1,51 @@
+name: Deletion Waiver Audit
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deletion-waiver-audit:
+    name: Deletion Waiver Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install audit dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      - name: Run deletion waiver audit
+        run: |
+          mkdir -p /tmp/deletion-waiver-audit
+          python scripts/compliance/deletion_evidence_gate.py \
+            --root-dir . \
+            --format json \
+            --audit-waivers \
+            --warning-window-days 7 \
+            > /tmp/deletion-waiver-audit/report.json
+
+      - name: Upload waiver audit artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deletion-waiver-audit-report
+          path: /tmp/deletion-waiver-audit/report.json
+          if-no-files-found: error
+
+      - name: Add workflow summary
+        if: always()
+        run: |
+          python -c 'import json, os; from pathlib import Path; report = json.loads(Path("/tmp/deletion-waiver-audit/report.json").read_text(encoding="utf-8")); summary_path = Path(os.environ["GITHUB_STEP_SUMMARY"]); findings = report.get("findings", []); earliest = findings[0]["expires_on"] if findings else "N/A"; affected = ", ".join(item["path"] for item in findings[:10]) or "none"; lines = ["# Deletion Waiver Audit", "", "- total: {}".format(report["summary"]["total"]), "- healthy: {}".format(report["summary"]["healthy"]), "- expiring_soon: {}".format(report["summary"]["expiring_soon"]), "- expired: {}".format(report["summary"]["expired"]), "- invalid: {}".format(report["summary"]["invalid"]), "- earliest_expires_on: {}".format(earliest), "- affected_paths: {}".format(affected)]; summary_path.write_text("\n".join(lines), encoding="utf-8")'
