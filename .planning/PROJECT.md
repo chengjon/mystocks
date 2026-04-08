@@ -13,7 +13,6 @@
 
 **Target features:**
 - STRU-03: Single frontend entry point (resolve verify-mount.js, archive main.js)
-- STRU-04: Composables disposition (accept view-local as canonical, extract 2 candidates only)
 - STRU-05: Archive removal (handle 5 test deps, delete converted.archive/, demo/ is N/A)
 
 ## What This Is
@@ -56,7 +55,6 @@ Every file in the codebase has exactly one canonical location, every import reso
 ### Active
 
 - [ ] STRU-03: Single frontend entry point (resolve verify-mount.js, archive main.js, keep main-standard.ts)
-- ✓ STRU-04: Composables disposition — view-local accepted as canonical, 2 candidates kept (Phase 5, 2026-04-08)
 - [ ] STRU-05: views/converted.archive/ removal (resolve 5 test deps first; demo/ is active code, N/A)
 
 ### Out of Scope
