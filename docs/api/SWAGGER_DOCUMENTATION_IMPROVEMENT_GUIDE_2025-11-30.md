@@ -511,6 +511,6 @@ class SwaggerDocGenerator:
 
 ---
 
-**最后更新**: 2025-11-30
-**维护者**: AI Assistant
-**版本**: 1.0
+**Historical Last Updated Snapshot**: 2025-11-30
+**Historical Maintainer Snapshot**: AI Assistant
+**Historical Document Version Snapshot**: 1.0

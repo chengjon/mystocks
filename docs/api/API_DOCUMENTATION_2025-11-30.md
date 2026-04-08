@@ -593,5 +593,5 @@ curl -X GET "http://localhost:8020/api/auth/user" \
 
 ---
 
-**最后更新**: 2025-11-30
-**文档维护者**: MyStocks 开发团队
+**Historical Last Updated Snapshot**: 2025-11-30
+**Historical Document Maintainer Snapshot**: MyStocks 开发团队

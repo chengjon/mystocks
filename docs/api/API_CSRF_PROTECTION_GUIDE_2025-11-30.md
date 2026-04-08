@@ -432,6 +432,6 @@ A: 建议使用 `sessionStorage`，因为关闭浏览器时会清除，更安全
 
 ---
 
-**指南版本**: 1.0
-**最后更新**: 2025-11-30
-**维护者**: AI Assistant
+**Historical Guide Version Snapshot**: 1.0
+**Historical Last Updated Snapshot**: 2025-11-30
+**Historical Maintainer Snapshot**: AI Assistant
