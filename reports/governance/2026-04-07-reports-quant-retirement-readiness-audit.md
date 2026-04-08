@@ -170,6 +170,9 @@ Before a future deletion proposal can be considered, all of the following must b
 2. If it does, record that canonical home explicitly.
 3. Update or archive tracked governance and cleanup documents that still reference the current path.
 4. Re-run the two-layer deletion judgment after the path references are reduced to a deletion-safe set.
+5. If deletion is later proposed, cite the exact authorization registry path in that proposal or closeout:
+   - `governance/deletion-evidence.yaml`
+   - or emergency-only `governance/waivers/deletion-evidence-waivers.yaml`
 
 ## Explicit Non-Recommendation
 

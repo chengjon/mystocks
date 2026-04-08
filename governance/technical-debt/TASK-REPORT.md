@@ -48,4 +48,4 @@
 
 ## Decisions Needed
 
-1. Confirm whether cleanup-readiness references need another explicit registry-path bridge in templates or reports (`SC-018`).
+1. Confirm whether any future cleanup-readiness template still needs the same explicit registry-path bridge outside the current audited report set.

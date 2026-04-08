@@ -81,6 +81,11 @@ Measured on `2026-04-07` from the four source audits above:
 
 ## Exit Condition Snapshot
 
+Any future deletion proposal mentioned below must later cite the exact authorization registry path:
+
+- normal path: `governance/deletion-evidence.yaml`
+- emergency-only path: `governance/waivers/deletion-evidence-waivers.yaml`
+
 | Directory | Minimum exit condition before any future deletion proposal |
 |---|---|
 | `reports/cli/` | choose the canonical home for retained CLI report payloads, cut references down to one path, and record migration closure |

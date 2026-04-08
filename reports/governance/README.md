@@ -60,6 +60,7 @@ When a record here discusses deletion or retirement readiness:
 - policy truth stays in `openspec/specs/directory-governance/spec.md`
 - machine truth stays in `governance/deletion-evidence.yaml` and `governance/waivers/deletion-evidence-waivers.yaml`
 - records in this directory are evidence and analysis only, not deletion authorization
+- if a future deletion proposal is mentioned, the record must name which exact registry path would carry that authorization
 
 Before deleting or relocating a file in this directory, complete both checks:
 

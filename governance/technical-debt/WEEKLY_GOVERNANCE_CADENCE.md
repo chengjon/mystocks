@@ -67,6 +67,8 @@ Do not merge these classes into one number or one verdict line.
 1. Before declaring a deletion-ready path, cite:
    - the code-path verdict source from `governance/deletion-evidence.yaml` or the active review evidence
    - the function-tree verdict source from `governance/function-tree/catalog.yaml`
+   - the exact future authorization registry path:
+     `governance/deletion-evidence.yaml`, or emergency-only `governance/waivers/deletion-evidence-waivers.yaml`
 2. Before declaring a compatibility layer, shim, or `*_new.py` removable, cite the migration completion and exit criteria from `architecture/STANDARDS.md`.
 3. Temporary entrypoints, mechanical splits, and backup files must be tracked as governance debt until retired or formally accepted, using `governance/technical-debt/TEMPORARY_ARTIFACT_INVENTORY.md` as the canonical class-level inventory.
 

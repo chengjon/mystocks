@@ -188,6 +188,9 @@ Before a future deletion proposal can be considered, all of the following must b
    - verification command set
    - old-path exit condition
 4. Re-run the two-layer deletion judgment after the cutover.
+5. If deletion is later proposed, cite the exact authorization registry path in that proposal or closeout:
+   - `governance/deletion-evidence.yaml`
+   - or emergency-only `governance/waivers/deletion-evidence-waivers.yaml`
 
 ## Explicit Non-Recommendation
 

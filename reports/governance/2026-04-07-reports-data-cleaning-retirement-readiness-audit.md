@@ -169,6 +169,9 @@ Before a future deletion proposal can be considered, all of the following must b
 2. Update all current docs that teach this directory as the daily or weekly report path.
 3. Decide the canonical home for any retained historical cleaning reports.
 4. Re-run the two-layer deletion judgment after the output path is no longer active.
+5. If deletion is later proposed, cite the exact authorization registry path in that proposal or closeout:
+   - `governance/deletion-evidence.yaml`
+   - or emergency-only `governance/waivers/deletion-evidence-waivers.yaml`
 
 ## Explicit Non-Recommendation
 
