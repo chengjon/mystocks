@@ -1,0 +1,13 @@
+{
+  "generated_at": "2026-04-08T13:20:00+00:00",
+  "exceptions": [
+    {
+      "path": "skip_xfail_count",
+      "approved_value": 102,
+      "owner": "governance",
+      "issue": "baseline-realignment-2026-04-08",
+      "ttl": "2026-04-30",
+      "reason": "replace historical placeholder skip_xfail baseline with measured repository value"
+    }
+  ]
+}

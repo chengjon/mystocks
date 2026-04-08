@@ -78,6 +78,33 @@ def load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def load_baseline_review_exceptions(path: Path | None) -> dict[str, dict]:
+    if path is None:
+        return {}
+
+    payload = load_json(path)
+    items = payload.get("exceptions", [])
+    if not isinstance(items, list):
+        raise ValueError("baseline review exceptions must contain an 'exceptions' list")
+
+    exceptions: dict[str, dict] = {}
+    for item in items:
+        if not isinstance(item, dict):
+            raise ValueError("baseline review exception entries must be objects")
+
+        metric_path = item.get("path")
+        approved_value = item.get("approved_value")
+        if not isinstance(metric_path, str) or not isinstance(approved_value, (int, float)):
+            raise ValueError("baseline review exception entries require string 'path' and numeric 'approved_value'")
+
+        for field in ("owner", "issue", "ttl", "reason"):
+            if not isinstance(item.get(field), str) or not item[field].strip():
+                raise ValueError(f"baseline review exception '{metric_path}' missing field: {field}")
+
+        exceptions[metric_path] = item
+    return exceptions
+
+
 def get_metric_value(payload: dict, path: str) -> int | float | None:
     current: object = payload
     for segment in path.split("."):
@@ -85,6 +112,27 @@ def get_metric_value(payload: dict, path: str) -> int | float | None:
             return None
         current = current[segment]
     return current if isinstance(current, (int, float)) else None
+
+
+def is_approved_baseline_review_exception(
+    path: str,
+    proposed_value: int | float,
+    review_exceptions: dict[str, dict] | None,
+    as_of: date,
+) -> bool:
+    if not review_exceptions:
+        return False
+
+    item = review_exceptions.get(path)
+    if not isinstance(item, dict):
+        return False
+
+    ttl = parse_ttl(f"ttl={item.get('ttl', '')}")
+    approved_value = item.get("approved_value")
+    if ttl is None or ttl < as_of or not isinstance(approved_value, (int, float)):
+        return False
+
+    return approved_value == proposed_value
 
 
 def evaluate_no_new_debt(current: dict, baseline: dict) -> list[str]:
@@ -103,8 +151,14 @@ def evaluate_no_new_debt(current: dict, baseline: dict) -> list[str]:
     return violations
 
 
-def evaluate_baseline_review(previous_baseline: dict, proposed_baseline: dict) -> list[str]:
+def evaluate_baseline_review(
+    previous_baseline: dict,
+    proposed_baseline: dict,
+    review_exceptions: dict[str, dict] | None = None,
+    as_of: date | None = None,
+) -> list[str]:
     violations: list[str] = []
+    review_date = as_of or date.today()
     for rule in GATE_METRIC_RULES:
         old_value = get_metric_value(previous_baseline, rule.path)
         new_value = get_metric_value(proposed_baseline, rule.path)
@@ -113,9 +167,11 @@ def evaluate_baseline_review(previous_baseline: dict, proposed_baseline: dict) -
                 violations.append(f"missing numeric metric in baseline review: {rule.path}")
             continue
         if rule.direction == "max" and new_value > old_value:
-            violations.append(f"baseline metric {rule.path} increased: proposed={new_value} > previous={old_value}")
+            if not is_approved_baseline_review_exception(rule.path, new_value, review_exceptions, review_date):
+                violations.append(f"baseline metric {rule.path} increased: proposed={new_value} > previous={old_value}")
         if rule.direction == "min" and new_value < old_value:
-            violations.append(f"baseline metric {rule.path} decreased: proposed={new_value} < previous={old_value}")
+            if not is_approved_baseline_review_exception(rule.path, new_value, review_exceptions, review_date):
+                violations.append(f"baseline metric {rule.path} decreased: proposed={new_value} < previous={old_value}")
     return violations
 
 
@@ -417,8 +473,15 @@ def run_weekly_report(args: argparse.Namespace) -> int:
 def run_baseline_review(args: argparse.Namespace) -> int:
     previous = load_json((PROJECT_ROOT / args.previous).resolve())
     proposed = load_json((PROJECT_ROOT / args.proposed).resolve())
+    review_exceptions = load_baseline_review_exceptions(
+        (PROJECT_ROOT / args.exceptions).resolve() if args.exceptions else None
+    )
 
-    violations = evaluate_baseline_review(previous_baseline=previous, proposed_baseline=proposed)
+    violations = evaluate_baseline_review(
+        previous_baseline=previous,
+        proposed_baseline=proposed,
+        review_exceptions=review_exceptions,
+    )
     if violations:
         print("[baseline-review] failed")
         for item in violations:
@@ -465,6 +528,7 @@ def build_parser() -> argparse.ArgumentParser:
     review = sub.add_parser("baseline-review", help="Ensure baseline update is non-increasing")
     review.add_argument("--previous", required=True)
     review.add_argument("--proposed", required=True)
+    review.add_argument("--exceptions", help="Optional JSON manifest for approved rebaseline exceptions")
     review.set_defaults(func=run_baseline_review)
 
     return parser

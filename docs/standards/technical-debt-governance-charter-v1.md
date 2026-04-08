@@ -216,6 +216,10 @@
    - CI Artifact/周报
    - 相关治理文档（`docs/`）
    - 技术债基线文件（`reports/analysis/tech-debt-baseline.json`）
+4. 若因历史占位值、统计口径修正或治理脚本补采导致基线必须上调，必须同时提交机器可读例外清单：
+   - 路径：`reports/compliance/exceptions/tech_debt_baseline_rebaseline.json`
+   - 最少字段：`path`、`approved_value`、`owner`、`issue`、`ttl`、`reason`
+   - 校验命令：`python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-review --previous <old> --proposed <new> --exceptions reports/compliance/exceptions/tech_debt_baseline_rebaseline.json`
 
 ## 5.3 临时层 / 兼容层资产台账
 

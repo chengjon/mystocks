@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import date
 
 from scripts.dev.quality_gate.tech_debt_governance_gate import (
@@ -7,6 +8,7 @@ from scripts.dev.quality_gate.tech_debt_governance_gate import (
     evaluate_baseline_review,
     evaluate_no_new_debt,
     get_metric_value,
+    load_baseline_review_exceptions,
     parse_ttl,
 )
 
@@ -105,6 +107,93 @@ def test_evaluate_baseline_review_only_allows_non_increase() -> None:
     assert "baseline metric skip_xfail_count increased: proposed=31 > previous=30" in violations
     assert "baseline metric backend_api_documentation.documented_endpoints decreased: proposed=19 < previous=20" in violations
     assert "baseline metric backend_api_documentation.documented_percentage decreased: proposed=0.95 < previous=1.0" in violations
+
+
+def test_evaluate_baseline_review_allows_approved_rebaseline_exception() -> None:
+    previous = {
+        "frontend_type_errors": 0,
+        "frontend_suppressions_count": 0,
+        "skip_xfail_count": 0,
+    }
+    proposed = {
+        "frontend_type_errors": 0,
+        "frontend_suppressions_count": 0,
+        "skip_xfail_count": 102,
+    }
+    exceptions = {
+        "skip_xfail_count": {
+            "approved_value": 102,
+            "owner": "governance",
+            "issue": "baseline-2026-04-08",
+            "ttl": "2026-04-30",
+            "reason": "replace historical placeholder baseline with measured value",
+        }
+    }
+
+    violations = evaluate_baseline_review(
+        previous_baseline=previous,
+        proposed_baseline=proposed,
+        review_exceptions=exceptions,
+        as_of=date(2026, 4, 8),
+    )
+
+    assert violations == []
+
+
+def test_evaluate_baseline_review_rejects_expired_rebaseline_exception() -> None:
+    previous = {
+        "frontend_type_errors": 0,
+        "frontend_suppressions_count": 0,
+        "skip_xfail_count": 0,
+    }
+    proposed = {
+        "frontend_type_errors": 0,
+        "frontend_suppressions_count": 0,
+        "skip_xfail_count": 102,
+    }
+    exceptions = {
+        "skip_xfail_count": {
+            "approved_value": 102,
+            "owner": "governance",
+            "issue": "baseline-2026-04-08",
+            "ttl": "2026-04-01",
+            "reason": "replace historical placeholder baseline with measured value",
+        }
+    }
+
+    violations = evaluate_baseline_review(
+        previous_baseline=previous,
+        proposed_baseline=proposed,
+        review_exceptions=exceptions,
+        as_of=date(2026, 4, 8),
+    )
+
+    assert "baseline metric skip_xfail_count increased: proposed=102 > previous=0" in violations
+
+
+def test_load_baseline_review_exceptions_reads_json_file(tmp_path) -> None:
+    manifest = tmp_path / "baseline-exceptions.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "exceptions": [
+                    {
+                        "path": "skip_xfail_count",
+                        "approved_value": 102,
+                        "owner": "governance",
+                        "issue": "baseline-2026-04-08",
+                        "ttl": "2026-04-30",
+                        "reason": "replace historical placeholder baseline with measured value",
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    exceptions = load_baseline_review_exceptions(manifest)
+
+    assert exceptions["skip_xfail_count"]["approved_value"] == 102
 
 
 def test_get_metric_value_supports_nested_paths() -> None:
