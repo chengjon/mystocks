@@ -701,6 +701,7 @@ domains:
         label: "Mainline Governance And Function-Tree Gate"
         coverage_paths:
           - "governance/mainline/**"
+          - "governance/technical-debt/**"
           - "governance/function-tree/**"
           - "openspec/changes/**"
           - "openspec/specs/**"
@@ -711,6 +712,7 @@ domains:
         entrypoints:
           governance:
             - "governance/mainline/**"
+            - "governance/technical-debt/**"
             - "governance/function-tree/**"
             - "openspec/changes/**"
             - "openspec/specs/**"

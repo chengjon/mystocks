@@ -8,8 +8,8 @@
 
 ## Summary
 
-- Completed: 7 / 10
-- In Progress: 3
+- Completed: 10 / 10
+- In Progress: 0
 - Blocked: 0
 - Overdue: 0
 
@@ -22,9 +22,9 @@
 | T03 | done | Seeded `TD-001`..`TD-015` with owner, DDL, status, and next action | None | Refresh status on the next Friday rollup |
 | T04 | done | Published canonical board, rollup, and per-task report pack | None | Keep future governance execution evidence in this directory |
 | T05 | done | Added bridge references from root task docs and historical indexes | None | Extend bridges only if another stale entrypoint appears |
-| T06 | doing | Codified metric taxonomy in the cadence document | First measured weekly dataset not yet attached | Apply taxonomy in the next recurring rollup |
-| T07 | doing | Linked migration and compatibility retirement rules into governance artifacts | Rule adoption still depends on future task usage | Verify future cleanup work cites the references |
-| T08 | doing | Linked cleanup readiness to code-path and function-tree evidence rules | First deletion-review usage still pending | Verify the next governed cleanup work cites both sources |
+| T06 | done | Codified the rollup metric template and confirmed live governance audits already separate measured, inferred, and historical-baseline facts | None | Keep future rollups using the same evidence-labeled metric blocks |
+| T07 | done | Linked migration and compatibility retirement rules into governance artifacts and pointed at reports that carry canonical-source, compatibility-surface, and exit-condition fields | None | Keep future convergence audits citing `architecture/STANDARDS.md` and the migration checklist |
+| T08 | done | Confirmed governed cleanup audits already record both code-path and function-tree verdicts before any deletion recommendation | None | Keep future cleanup reviews citing both verdict layers before approval |
 | T09 | done | Published initial weekly rollup to start the cadence | Cadence is seeded but not yet repeated | Publish the next weekly update on schedule |
 | T10 | done | Archived `tech-debt-governance-2026q1` and promoted `architecture-governance` into live spec truth | None | Keep future governance spec changes landing in `openspec/specs/architecture-governance/spec.md` |
 
@@ -33,6 +33,8 @@
 - `measured`
   - `openspec validate tech-debt-governance-2026q1 --strict` passed on 2026-04-08
   - `openspec archive tech-debt-governance-2026q1 --yes` promoted `openspec/specs/architecture-governance/spec.md` on 2026-04-08
+  - `reports/governance/2026-04-07-reports-retirement-readiness-matrix.md` separates `measured`, `historical_baseline`, `inferred`, and `target`
+  - `reports/governance/2026-04-07-reports-cli-retirement-readiness-audit.md` and `reports/governance/2026-04-07-reports-data-cleaning-retirement-readiness-audit.md` record both `code_path_verdict` and `function_tree_verdict`
 - `inferred`
   - Historical task snapshots and root mainline snapshots had overlapping discoverability and needed an explicit bridge
   - Archived sidecar governance artifacts were partially implemented but not canonical
@@ -41,5 +43,5 @@
 
 ## Decisions Needed
 
-1. Confirm whether temporary-entrypoint inventory should become a follow-up change or stay in T06-T08 governance follow-through.
-2. Confirm whether archived sidecar governance notes need additional bridge text beyond the canonical index references.
+1. Confirm whether temporary-entrypoint inventory should become a dedicated follow-up change or stay tracked as open debt (`TD-014`).
+2. Confirm whether archived sidecar governance notes need additional bridge text beyond the canonical index references (`TD-011`).
