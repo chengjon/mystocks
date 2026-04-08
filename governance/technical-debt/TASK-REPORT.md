@@ -35,6 +35,7 @@
   - `openspec archive tech-debt-governance-2026q1 --yes` promoted `openspec/specs/architecture-governance/spec.md` on 2026-04-08
   - `reports/governance/2026-04-07-reports-retirement-readiness-matrix.md` separates `measured`, `historical_baseline`, `inferred`, and `target`
   - `reports/governance/2026-04-07-reports-cli-retirement-readiness-audit.md` and `reports/governance/2026-04-07-reports-data-cleaning-retirement-readiness-audit.md` record both `code_path_verdict` and `function_tree_verdict`
+  - `governance/technical-debt/TEMPORARY_ARTIFACT_INVENTORY.md` now defines the canonical class-level inventory for temporary entrypoints, mechanical splits, and backup files
 - `inferred`
   - Historical task snapshots and root mainline snapshots had overlapping discoverability and needed an explicit bridge
   - Archived sidecar governance artifacts were partially implemented but not canonical
@@ -43,5 +44,5 @@
 
 ## Decisions Needed
 
-1. Confirm whether temporary-entrypoint inventory should become a dedicated follow-up change or stay tracked as open debt (`TD-014`).
-2. Confirm whether archived sidecar governance notes need additional bridge text beyond the canonical index references (`TD-011`).
+1. Decide whether narrative-only historical governance reports need explicit retrofit beyond the current canonical board and report templates (`TD-015`).
+2. Confirm whether deletion-governance runbooks need another bridge layer beyond the current OpenSpec-first wording (`SC-008`).

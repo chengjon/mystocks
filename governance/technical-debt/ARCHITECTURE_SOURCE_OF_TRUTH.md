@@ -16,6 +16,7 @@ cleanup decisions, migration exit calls, and debt reports do not drift across pa
 | Technical debt charter | `docs/standards/technical-debt-governance-charter-v1.md` | policy | main | Governs debt gates, exceptions, baselines, and weekly KPI language |
 | Technical debt baseline metrics | `reports/analysis/tech-debt-baseline.json` | historical_baseline | main | Frozen baseline; do not mix with current measured results |
 | Governance execution artifacts | `governance/technical-debt/` | operational | main | Canonical directory for this governance baseline |
+| Temporary artifact inventory | `governance/technical-debt/TEMPORARY_ARTIFACT_INVENTORY.md` | operational | main | Canonical class-level review path for temporary entrypoints, mechanical splits, and backup files |
 | Mainline coordination snapshots | `TASK.md`, `TASK-REPORT.md`, `governance/mainline/task-cards/` | operational | main | Operational mainline coordination, not the canonical governance board |
 | Deletion governance rules | `openspec/specs/directory-governance/spec.md` | policy | main | Capability truth for directory deletion and waiver audit behavior |
 | Deletion evidence registries | `governance/deletion-evidence.yaml`, `governance/waivers/deletion-evidence-waivers.yaml` | machine_truth | main | Exact-path deletion authorization and waiver registry |
