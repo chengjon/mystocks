@@ -7,8 +7,8 @@
 > 文内问题分级、差距判断、风险结论和建议动作如未重新复核，应视为历史分析结果，不得直接当作当前事实。
 
 
-**分析日期**: 2025-11-27
-**报告版本**: 1.0
+**Historical Analysis Snapshot Date**: 2025-11-27
+**Historical Report-Version Snapshot**: 1.0
 
 ---
 
