@@ -106,6 +106,9 @@ python scripts/dev/gpu_test_examples.py
 
 # Validate documentation consistency
 python scripts/dev/validate_documentation_consistency.py
+
+# Audit OpenAPI success-response examples
+python scripts/dev/openapi_success_example_audit.py --show-non-json
 ```
 
 ---

@@ -167,6 +167,11 @@ jobs:
             web/backend/tests/test_api_documentation_validation.py \
             -q -rs
 
+      - name: Run OpenAPI success example audit
+        if: steps.scope.outputs.changed == 'true'
+        run: |
+          python scripts/dev/openapi_success_example_audit.py --show-non-json
+
       - name: Upload generated OpenAPI spec
         if: steps.scope.outputs.changed == 'true'
         uses: actions/upload-artifact@v4

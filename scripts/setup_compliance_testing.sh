@@ -137,6 +137,7 @@ cd web/backend
 print_status "Testing module imports..."
 python -c "
 import sys
+import pathlib
 try:
     from app.main import app
     print('✅ FastAPI app import successful')
@@ -163,6 +164,13 @@ try:
     print('✅ Documentation Validator import successful')
 except ImportError as e:
     print(f'❌ Documentation Validator import failed: {e}')
+    sys.exit(1)
+
+audit_script = pathlib.Path('../../scripts/dev/openapi_success_example_audit.py').resolve()
+if audit_script.exists():
+    print(f'✅ OpenAPI success example audit script found: {audit_script}')
+else:
+    print(f'❌ OpenAPI success example audit script missing: {audit_script}')
     sys.exit(1)
 
 try:
@@ -312,6 +320,7 @@ case $TEST_TYPE in
     "documentation"|"docs")
         print_status "Running Documentation Validation Tests..."
         python -m pytest tests/test_api_documentation_validation.py -v -m "not slow"
+        python ../../scripts/dev/openapi_success_example_audit.py --show-non-json
         ;;
     "performance"|"perf")
         print_status "Running Performance Tests..."
@@ -324,10 +333,12 @@ case $TEST_TYPE in
     "all")
         print_status "Running All Compliance Tests..."
         python -m pytest tests/test_api_compliance.py tests/test_static_code_analysis.py tests/test_api_documentation_validation.py tests/test_performance_and_security.py -v -m "not slow"
+        python ../../scripts/dev/openapi_success_example_audit.py --show-non-json
         ;;
     "comprehensive")
         print_status "Running Comprehensive Tests (including slow tests)..."
         python -m pytest tests/test_api_compliance.py tests/test_static_code_analysis.py tests/test_api_documentation_validation.py tests/test_performance_and_security.py -v
+        python ../../scripts/dev/openapi_success_example_audit.py --show-non-json
         ;;
     *)
         print_error "Unknown test type: $TEST_TYPE"

@@ -210,6 +210,8 @@ jobs:
             --json-report-file=documentation-validation-results.json \
             -v \
             --tb=short || true
+          cd ../..
+          python scripts/dev/openapi_success_example_audit.py --show-non-json || true
         fi
 
     - name: Run Performance Tests
