@@ -39,6 +39,7 @@ This directory is the canonical home for the `tech-debt-governance-2026q1` basel
 
 - Repo-wide rules: `architecture/STANDARDS.md`
 - OpenSpec workflow: `openspec/AGENTS.md`
+- Architecture governance capability: `openspec/specs/architecture-governance/spec.md`
 - Technical debt charter: `docs/standards/technical-debt-governance-charter-v1.md`
 - Baseline metrics: `reports/analysis/tech-debt-baseline.json`
 - Deletion governance capability: `openspec/specs/directory-governance/spec.md`

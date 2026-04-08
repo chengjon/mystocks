@@ -12,6 +12,7 @@ cleanup decisions, migration exit calls, and debt reports do not drift across pa
 | Repo-wide engineering rules | `architecture/STANDARDS.md` | policy | main | Top-level source for approval gates, migration closure, deletion rules, and single-source-of-truth policy |
 | OpenSpec workflow | `openspec/AGENTS.md` | policy | main | Authoritative workflow for proposal, implementation, and archive stages |
 | OpenSpec project conventions | `openspec/project.md` | policy | main | Project-specific conventions that active changes must follow |
+| Architecture governance capability | `openspec/specs/architecture-governance/spec.md` | policy | main | Live capability truth for governance SoT, conflict matrix, debt register, execution board, and cadence |
 | Technical debt charter | `docs/standards/technical-debt-governance-charter-v1.md` | policy | main | Governs debt gates, exceptions, baselines, and weekly KPI language |
 | Technical debt baseline metrics | `reports/analysis/tech-debt-baseline.json` | historical_baseline | main | Frozen baseline; do not mix with current measured results |
 | Governance execution artifacts | `governance/technical-debt/` | operational | main | Canonical directory for this governance baseline |

@@ -15,7 +15,7 @@
 | TD-006 | Cleanup Evidence | Cleanup readiness decisions were not consistently tied to both code-path and function-tree verdicts | high | main | 2026-04-17 | in_progress | Require both sources in deletion-related task work |
 | TD-007 | Ownership | Previous governance task drafts used `TBD` owner and DDL fields | medium | main | 2026-04-08 | done | Keep owner and DDL fields mandatory on the canonical board |
 | TD-008 | Indexing | Technical debt indexes did not expose a canonical governance baseline path | medium | main | 2026-04-08 | done | Maintain links from `docs/INDEX.md` and debt indexes |
-| TD-009 | Capability Promotion | `architecture-governance` is still an active change, not a live archived capability | medium | main | 2026-04-22 | open | Archive the change after adoption review |
+| TD-009 | Capability Promotion | `architecture-governance` promotion was pending until the governance baseline change was archived and promoted into live spec truth | medium | main | 2026-04-22 | done | Keep future governance changes updating `openspec/specs/architecture-governance/spec.md` directly |
 | TD-010 | Weekly Cadence | Weekly governance cadence had templates but no canonical kickoff location | medium | main | 2026-04-11 | in_progress | Publish the first rollup in `governance/technical-debt/TASK-REPORT.md` |
 | TD-011 | Historical Sidecars | Archived sidecar governance docs remain available and can cause reader drift | low | main | 2026-04-20 | open | Add retirement notes when those paths are indexed or cited |
 | TD-012 | Mainline Semantics | Root `TASK.md` and governance task boards share names but not semantics | medium | main | 2026-04-08 | done | Keep bridge text in root task docs |
