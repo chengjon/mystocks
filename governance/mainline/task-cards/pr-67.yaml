@@ -1,0 +1,95 @@
+version: "v0.2"
+
+task:
+  id: "pr-67"
+  title: "archive repository hygiene openspec change"
+  owner: "main"
+  created_at: "2026-04-08"
+
+mainline:
+  id: "L1-repository-hygiene-openspec-closeout"
+  objective: "archive the completed repository hygiene OpenSpec change and keep canonical governance specs synchronized on main"
+  milestone_id: "L2-governance-closeout"
+  slice_id: "L3-repository-hygiene-openspec-archive"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "required"
+  secondary_domains: []
+  exemption_reason: "openspec-archive-closeout-only"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-67.yaml"
+    - "openspec/changes/archive/2026-04-08-integrate-repository-hygiene/design.md"
+    - "openspec/changes/archive/2026-04-08-integrate-repository-hygiene/proposal.md"
+    - "openspec/changes/archive/2026-04-08-integrate-repository-hygiene/specs/directory-governance/spec.md"
+    - "openspec/changes/archive/2026-04-08-integrate-repository-hygiene/specs/file-organization/spec.md"
+    - "openspec/changes/archive/2026-04-08-integrate-repository-hygiene/tasks.md"
+    - "openspec/specs/directory-governance/spec.md"
+    - "openspec/specs/file-organization/spec.md"
+  forbidden_paths:
+    - "scripts/cleanup/auto_cleanup.sh"
+    - "scripts/maintenance/monitor_file_size.sh"
+    - "scripts/maintenance/rotate_logs.sh"
+    - "tests/**"
+    - "web/frontend/**"
+    - "src/**"
+
+non_goals:
+  - "No runtime repository hygiene behavior change"
+  - "No new OpenSpec proposal or expansion beyond archiving the completed integrate-repository-hygiene change"
+  - "No unrelated governance, frontend, Mongo, or watchlist work"
+
+acceptance:
+  checks:
+    - id: "openspec-spec-validation"
+      command: "openspec validate --specs --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-67.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr67-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the task card misses any archived file path, Mainline Governance Gate will fail even though the archive itself is correct"
+    - "If the canonical directory-governance and file-organization specs are not updated together with the archive move, OpenSpec truth will drift from the landed repository hygiene implementation"
+  rollback_plan: "git revert <merge-commit-sha> if the archive metadata or canonical spec sync for repository hygiene is found to be inaccurate after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "move the completed repository hygiene change into OpenSpec archive and promote its deltas into the canonical directory-governance and file-organization specs"
+    modified_scope: "one archived OpenSpec change directory, two canonical OpenSpec spec files, and this PR-67 task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime hygiene behavior changes; only OpenSpec archive state and canonical spec truth are synchronized"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the merge if the archived change metadata or canonical spec text is found to diverge from the landed repository hygiene behavior"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-08T00:00:00Z"
+    approval_note: "this PR only archives already-landed repository hygiene work and keeps the canonical OpenSpec specs aligned"
+    secondary_approved: false
