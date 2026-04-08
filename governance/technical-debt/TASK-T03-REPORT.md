@@ -17,7 +17,7 @@
 
 | Date | Action | Result | Evidence |
 | --- | --- | --- | --- |
-| 2026-04-08 | Seeded canonical debt register | Completed | `technical_debt/governance/DEBT_REGISTER.md` |
+| 2026-04-08 | Seeded canonical debt register | Completed | `governance/technical-debt/DEBT_REGISTER.md` |
 
 ## Risks / Blockers
 

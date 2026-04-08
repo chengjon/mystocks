@@ -17,7 +17,7 @@
 
 | Date | Action | Result | Evidence |
 | --- | --- | --- | --- |
-| 2026-04-08 | Published the initial canonical weekly rollup | Completed | `technical_debt/governance/TASK-REPORT.md` |
+| 2026-04-08 | Published the initial canonical weekly rollup | Completed | `governance/technical-debt/TASK-REPORT.md` |
 
 ## Risks / Blockers
 

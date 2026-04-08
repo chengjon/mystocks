@@ -4,14 +4,14 @@
 
 **文档数量**: 5
 
-> Canonical governance baseline: `technical_debt/governance/INDEX.md`
+> Canonical governance baseline: `governance/technical-debt/INDEX.md`
 >
 > 本目录保留技术债分析与评估报告；治理基线、执行板、周报与冲突矩阵的当前真值已收敛到上面的 canonical 目录。
 
 
 ---
 
-- [governance baseline](../../../technical_debt/governance/INDEX.md)
+- [governance baseline](../../../governance/technical-debt/INDEX.md)
   - *2026Q1 canonical governance source of truth and execution artifacts*
 
 - [detailed_technical_debt_assessment](detailed_technical_debt_assessment.md)

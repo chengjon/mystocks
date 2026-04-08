@@ -14,7 +14,7 @@ cleanup decisions, migration exit calls, and debt reports do not drift across pa
 | OpenSpec project conventions | `openspec/project.md` | policy | main | Project-specific conventions that active changes must follow |
 | Technical debt charter | `docs/standards/technical-debt-governance-charter-v1.md` | policy | main | Governs debt gates, exceptions, baselines, and weekly KPI language |
 | Technical debt baseline metrics | `reports/analysis/tech-debt-baseline.json` | historical_baseline | main | Frozen baseline; do not mix with current measured results |
-| Governance execution artifacts | `technical_debt/governance/` | operational | main | Canonical directory for this governance baseline |
+| Governance execution artifacts | `governance/technical-debt/` | operational | main | Canonical directory for this governance baseline |
 | Mainline coordination snapshots | `TASK.md`, `TASK-REPORT.md`, `governance/mainline/task-cards/` | operational | main | Operational mainline coordination, not the canonical governance board |
 | Deletion governance rules | `openspec/specs/directory-governance/spec.md` | policy | main | Capability truth for directory deletion and waiver audit behavior |
 | Deletion evidence registries | `governance/deletion-evidence.yaml`, `governance/waivers/deletion-evidence-waivers.yaml` | machine_truth | main | Exact-path deletion authorization and waiver registry |
@@ -37,6 +37,6 @@ cleanup decisions, migration exit calls, and debt reports do not drift across pa
 
 ## Change Control
 
-1. Every governance update must reference a task ID from `technical_debt/governance/TASK.md`.
+1. Every governance update must reference a task ID from `governance/technical-debt/TASK.md`.
 2. If a historical report conflicts with this map, treat the historical report as context only.
 3. New governance entrypoints must be added here instead of introduced as sidecar truth.

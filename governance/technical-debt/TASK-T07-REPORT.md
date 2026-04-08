@@ -17,7 +17,7 @@
 
 | Date | Action | Result | Evidence |
 | --- | --- | --- | --- |
-| 2026-04-08 | Linked retirement and migration rules into canonical governance docs | In progress | `technical_debt/governance/ARCHITECTURE_SOURCE_OF_TRUTH.md`, `technical_debt/governance/WEEKLY_GOVERNANCE_CADENCE.md` |
+| 2026-04-08 | Linked retirement and migration rules into canonical governance docs | In progress | `governance/technical-debt/ARCHITECTURE_SOURCE_OF_TRUTH.md`, `governance/technical-debt/WEEKLY_GOVERNANCE_CADENCE.md` |
 
 ## Risks / Blockers
 

@@ -17,7 +17,7 @@
 
 | Date | Action | Result | Evidence |
 | --- | --- | --- | --- |
-| 2026-04-08 | Seeded canonical conflict matrix | Completed | `technical_debt/governance/SPEC_CONFLICT_MATRIX.md` |
+| 2026-04-08 | Seeded canonical conflict matrix | Completed | `governance/technical-debt/SPEC_CONFLICT_MATRIX.md` |
 
 ## Risks / Blockers
 

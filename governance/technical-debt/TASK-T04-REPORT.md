@@ -10,14 +10,14 @@
 
 ## Acceptance Criteria
 
-1. Canonical execution board exists in `technical_debt/governance/TASK.md`.
+1. Canonical execution board exists in `governance/technical-debt/TASK.md`.
 2. Canonical weekly rollup and T01..T10 report files exist in the same directory.
 
 ## Execution Log
 
 | Date | Action | Result | Evidence |
 | --- | --- | --- | --- |
-| 2026-04-08 | Published board and report pack | Completed | `technical_debt/governance/TASK.md`, `technical_debt/governance/TASK-REPORT.md`, `technical_debt/governance/TASK-T01-REPORT.md` |
+| 2026-04-08 | Published board and report pack | Completed | `governance/technical-debt/TASK.md`, `governance/technical-debt/TASK-REPORT.md`, `governance/technical-debt/TASK-T01-REPORT.md` |
 
 ## Risks / Blockers
 

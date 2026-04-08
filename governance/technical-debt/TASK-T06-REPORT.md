@@ -17,7 +17,7 @@
 
 | Date | Action | Result | Evidence |
 | --- | --- | --- | --- |
-| 2026-04-08 | Defined the taxonomy and required usage | In progress | `technical_debt/governance/WEEKLY_GOVERNANCE_CADENCE.md` |
+| 2026-04-08 | Defined the taxonomy and required usage | In progress | `governance/technical-debt/WEEKLY_GOVERNANCE_CADENCE.md` |
 
 ## Risks / Blockers
 

@@ -17,7 +17,7 @@
 
 | Date | Action | Result | Evidence |
 | --- | --- | --- | --- |
-| 2026-04-08 | Published canonical source map | Completed | `technical_debt/governance/ARCHITECTURE_SOURCE_OF_TRUTH.md` |
+| 2026-04-08 | Published canonical source map | Completed | `governance/technical-debt/ARCHITECTURE_SOURCE_OF_TRUTH.md` |
 
 ## Risks / Blockers
 

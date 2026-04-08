@@ -38,8 +38,11 @@ scope:
     - "docs/INDEX.md"
     - "docs/reports/tasks/INDEX.md"
     - "docs/reports/technical_debt/INDEX.md"
+    - "openspec/changes/tech-debt-governance-2026q1/proposal.md"
+    - "openspec/changes/tech-debt-governance-2026q1/design.md"
     - "openspec/changes/tech-debt-governance-2026q1/tasks.md"
     - "technical_debt/governance/**"
+    - "governance/technical-debt/**"
     - "governance/mainline/task-cards/pr-70.yaml"
   forbidden_paths:
     - "src/**"
@@ -75,7 +78,7 @@ delivery:
   six_line_summary_required: true
   six_line_summary:
     change_purpose: "converge the partially implemented 2026Q1 tech debt governance baseline into one live canonical directory and bridge historical entrypoints to it"
-    modified_scope: "technical_debt/governance canonical artifacts, root task-board bridge notes, debt index bridges, OpenSpec task checklist, and this PR-70 task card"
+    modified_scope: "governance/technical-debt canonical artifacts, bridge notes in current task/index entrypoints, the active change proposal-design-task docs, and this PR-70 task card"
     dependency_changes: "none"
     legacy_logic_impact: "no runtime logic changes; historical governance sidecars remain for audit only while operational mainline TASK snapshots stay in place"
     rollback_ready: "yes"

@@ -17,7 +17,7 @@
 
 | Date | Action | Result | Evidence |
 | --- | --- | --- | --- |
-| 2026-04-08 | Added cleanup-verdict requirements to canonical governance docs | In progress | `technical_debt/governance/WEEKLY_GOVERNANCE_CADENCE.md`, `technical_debt/governance/DEBT_REGISTER.md` |
+| 2026-04-08 | Added cleanup-verdict requirements to canonical governance docs | In progress | `governance/technical-debt/WEEKLY_GOVERNANCE_CADENCE.md`, `governance/technical-debt/DEBT_REGISTER.md` |
 
 ## Risks / Blockers
 

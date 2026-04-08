@@ -8,21 +8,21 @@ This document defines the recurring operating cadence for the 2026Q1 technical d
 
 - Monday: board review and owner/DDL refresh
 - Wednesday: conflict triage and blocker review
-- Friday: weekly rollup publication in `technical_debt/governance/TASK-REPORT.md`
+- Friday: weekly rollup publication in `governance/technical-debt/TASK-REPORT.md`
 
 ## Required Inputs
 
-- `technical_debt/governance/ARCHITECTURE_SOURCE_OF_TRUTH.md`
-- `technical_debt/governance/SPEC_CONFLICT_MATRIX.md`
-- `technical_debt/governance/DEBT_REGISTER.md`
-- `technical_debt/governance/TASK.md`
+- `governance/technical-debt/ARCHITECTURE_SOURCE_OF_TRUTH.md`
+- `governance/technical-debt/SPEC_CONFLICT_MATRIX.md`
+- `governance/technical-debt/DEBT_REGISTER.md`
+- `governance/technical-debt/TASK.md`
 - `reports/analysis/tech-debt-baseline.json`
 - `reports/governance/` evidence records when a governance task closes
 
 ## Required Outputs
 
-- Updated `technical_debt/governance/TASK-REPORT.md`
-- Task-specific updates in `technical_debt/governance/TASK-T01-REPORT.md` through `TASK-T10-REPORT.md`
+- Updated `governance/technical-debt/TASK-REPORT.md`
+- Task-specific updates in `governance/technical-debt/TASK-T01-REPORT.md` through `TASK-T10-REPORT.md`
 - Bridge updates only when operational docs or indexes would otherwise point at stale governance truth
 
 ## Metric Taxonomy
@@ -48,6 +48,6 @@ Do not merge these classes into one number or one verdict line.
 
 ## Ownership Rules
 
-1. Each open task in `technical_debt/governance/TASK.md` must have one owner and one DDL.
+1. Each open task in `governance/technical-debt/TASK.md` must have one owner and one DDL.
 2. Any overdue task must appear in the Friday rollup with a blocker or recovery action.
 3. If a historical artifact conflicts with a canonical artifact, the rollup must state which path is canonical.

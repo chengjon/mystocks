@@ -14,4 +14,4 @@
 - Execution board: `TASK.md`
 - Weekly rollup: `TASK-REPORT.md`
 - Per-task reports: `TASK-T01-REPORT.md` .. `TASK-T10-REPORT.md`
-- Governance docs: `technical_debt/governance/`
+- Governance docs: `governance/technical-debt/`
