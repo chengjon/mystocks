@@ -7,9 +7,9 @@
 > 文内目录项、完成标记、数量统计和链接关系如未重新生成或复核，应视为历史导航快照，不得直接当作当前事实。
 
 
-**最后更新**: 2026-03-24 10:03:09
+**最后更新**: 2026-04-08
 
-**文档数量**: 17
+**文档数量**: 21
 
 
 ---
@@ -61,6 +61,18 @@
 
 - [2026-03-11-strategy-management-handoff](claude-auto/2026-03-11-strategy-management-handoff.md)
   - *前端策略管理链路工作交接记录 - 2026-03-11*
+
+- [2026-03-24](claude-auto/2026-03-24.md)
+  - *Claude Auto Worklog - 2026-03-24*
+
+- [2026-04-06](claude-auto/2026-04-06.md)
+  - *Claude Auto Worklog - 2026-04-06*
+
+- [2026-04-07](claude-auto/2026-04-07.md)
+  - *Claude Auto Worklog - 2026-04-07*
+
+- [2026-04-08](claude-auto/2026-04-08.md)
+  - *Claude Auto Worklog - 2026-04-08*
 
 - [MULTI_CLI_MAIN_CLI_LESSONS_LEARNED](MULTI_CLI_MAIN_CLI_LESSONS_LEARNED.md)
   - *主CLI经验总结 - Phase 6多CLI协作*

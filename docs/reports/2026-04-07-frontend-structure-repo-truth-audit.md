@@ -181,6 +181,17 @@ Canonical frontend entry = web/frontend/index.html -> /src/main-standard.ts -> /
 
 仍把这些页面/样式文件当作受保护对象
 
+补充进展：
+
+- 历史路由资产状态已单独整理到 `docs/reports/2026-04-07-legacy-router-asset-status.md`
+- `views/monitoring` 功能树状态已单独整理到 `docs/reports/2026-04-07-monitoring-functional-status.md`
+- 当前可直接锁定：
+  - `src/router/index.js` = `historical legacy router asset`
+  - `src/router/index.js.clean` = `historical broken backup / stale working copy`
+  - `src/router/index.js.backup-phase2.3` = `historical backup`
+  - `src/router/phase4.routes.js` = `stale route asset`
+- 本次未发现测试直接把这些路由文件本身当作守护对象，但它们对应的页面目标仍被多组 spec 守护
+
 ### Priority D
 
 对 `converted.archive/`、`demo/`、`examples/`、`freqtrade-demo/`、`tdxpy-demo/` 等目录，建议先补一轮“功能树状态表”，再决定归档或保留策略；不要仅凭目录名判断。
@@ -192,6 +203,17 @@ Canonical frontend entry = web/frontend/index.html -> /src/main-standard.ts -> /
 - 仍由 root-level legacy views 使用的 composable
 - 与新 domain 页面功能重复、可以迁移或合并的 composable
 - 只剩测试或 demo 依赖的 composable
+
+补充进展：
+
+- `views/composables/` 文件级状态已单独整理到 `docs/reports/2026-04-07-views-composables-status.md`
+- 当前目录级判断已可写成：
+  - `root-level legacy view support`
+  - `partial test guards`
+  - `duplicate-candidates`
+- 当前最需要单独治理的仍是：
+  - `usePhase4Dashboard.ts`
+  - `useTechnicalAnalysis.ts`
 
 ### Priority F
 
@@ -297,6 +319,16 @@ Canonical frontend entry = web/frontend/index.html -> /src/main-standard.ts -> /
 
 - `离开主路由后的双分叉存量`
 - 需要单独做功能树判定，而不是直接合并文件
+
+补充进展：
+
+- 双分叉页面的功能树状态已单独整理到 `docs/reports/2026-04-07-duplicate-page-functional-status.md`
+- 当前可直接锁定：
+  - `src/views/market/Technical.vue` = `有效 canonical 入口`
+  - `src/views/TechnicalAnalysis.vue` = `失效但兼容/历史保留`
+  - `src/views/technical/TechnicalAnalysis.vue` = `独立分叉实现，待判定`
+  - `src/views/Phase4Dashboard.vue` = `失效但兼容/历史保留`
+  - `src/views/demo/Phase4Dashboard.vue` = `实验/示例资产`
 
 ### Functional Tree Status Suggestion
 
@@ -420,6 +452,11 @@ find web/frontend/src/views/examples -maxdepth 2 -type f \( -name '*.vue' -o -na
 
 - `architecture/STANDARDS.md`
 - `.planning/ROADMAP.md`
+- `docs/reports/2026-04-07-legacy-router-asset-status.md`
+- `docs/reports/2026-04-07-monitoring-functional-status.md`
+- `docs/reports/2026-04-07-views-composables-status.md`
+- `docs/reports/2026-04-07-duplicate-page-functional-status.md`
+- `docs/reports/2026-04-07-phase3-4-execution-matrix.md`
 - `docs/guides/frontend-structure.md`
 - `web/frontend/index.html`
 - `web/frontend/vite.config.mts`

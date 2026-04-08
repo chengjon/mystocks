@@ -112,6 +112,9 @@ src/views/market/Technical.vue
 - `main.js` 仍被 `web/frontend/verify-mount.js` 直接读取
 - `phase4.routes.js` 当前未发现被现役路由聚合链引用
 - `phase4.routes.js` 还引用缺失文件 `StrategyMgmtPhase4.vue`
+- `index.js` 已可标记为 `historical legacy router asset`
+- `index.js.clean` 已可标记为 `historical broken backup / stale working copy`
+- `index.js.backup-phase2.3` 已可标记为 `historical backup`
 
 #### Exit Condition
 
@@ -119,6 +122,7 @@ src/views/market/Technical.vue
   - `历史失效路由文件`
   - 或 `仍需保留的历史资产`
 - 在 `verify-mount.js` 收口前，不应把 `main.js` 直接归为可删入口
+- 当前路由资产分类报告已形成；下一步重点转为这些文件对应页面目标的功能树判定
 
 ---
 
@@ -136,6 +140,7 @@ src/views/market/Technical.vue
 - `useAnalysis.ts`、`useBacktestWizard.ts`、`useEnhancedDashboard.ts`、`useSettings.ts`、`useTradingDashboard.ts` 等仍服务 root-level 页面
 - `usePhase4Dashboard.ts` 与 demo 版并存
 - `useTechnicalAnalysis.ts` 与 `views/technical/` 版并存
+- 文件级状态表已形成：`docs/reports/2026-04-07-views-composables-status.md`
 
 #### Exit Condition
 
@@ -169,6 +174,7 @@ src/views/market/Technical.vue
 
 - root 版：`失效但兼容/历史保留`
 - demo 版：`实验/示例资产`
+- 当前判定报告已形成：`docs/reports/2026-04-07-duplicate-page-functional-status.md`
 
 #### Exit Condition
 
@@ -196,6 +202,7 @@ src/views/market/Technical.vue
 - root 版：`失效但兼容/历史保留`
 - `views/technical/` 版：`独立分叉实现，待判定`
 - `market/Technical.vue`：`有效 canonical 入口`
+- 当前判定报告已形成：`docs/reports/2026-04-07-duplicate-page-functional-status.md`
 
 #### Exit Condition
 
@@ -218,6 +225,7 @@ src/views/market/Technical.vue
 - `views/demo/` 当前主要被大量 config spec 直接读取
 - `views/converted.archive/` 当前更接近历史迁移快照 + 测试守护对象
 - `views/examples/` 当前更接近示例资产 + 测试守护对象
+- `views/monitoring` 功能树状态已形成：`docs/reports/2026-04-07-monitoring-functional-status.md`
 
 #### Exit Condition
 
@@ -230,17 +238,24 @@ src/views/market/Technical.vue
 
 下一轮最适合直接产出的文档/结果：
 
-1. `phase4.routes.js` 状态说明
-   - 说明它为何已不在主链
-   - 说明 `StrategyMgmtPhase4.vue` 缺失的影响
+1. `views/monitoring` 页面目标退场条件细化
+   - 功能树判定已完成
+   - 下一步需把 Playwright / Vitest 守护范围与归档策略对齐
 
-2. `TechnicalAnalysis` 功能树判定说明
-   - root 版
-   - `views/technical/` 版
-   - `market/Technical.vue`
+2. `Phase4Dashboard` 与 `TechnicalAnalysis` 的退场条件细化
+   - 当前功能树判定已完成
+   - 下一步应把“保留理由”进一步对齐到具体 spec 与归档策略
 
-3. `views/composables` 状态表补全
-   - 补完每个文件的标签与后续建议
+3. 历史路由文件与页面目标的退场条件对齐
+   - 已有 `docs/reports/2026-04-07-legacy-router-asset-status.md`
+   - 已有 `docs/reports/2026-04-07-monitoring-functional-status.md`
+   - 已有 `docs/reports/2026-04-07-views-composables-status.md`
+   - 已有 `docs/reports/2026-04-07-duplicate-page-functional-status.md`
+   - 下一步应把 route asset judgement 对齐到具体测试与归档步骤
+
+4. 执行批次矩阵
+   - 已有 `docs/reports/2026-04-07-phase3-4-execution-matrix.md`
+   - 后续实施可直接按 E1-E6 批次推进
 
 ---
 
@@ -248,6 +263,11 @@ src/views/market/Technical.vue
 
 - `architecture/STANDARDS.md`
 - `.planning/ROADMAP.md`
+- `docs/reports/2026-04-07-legacy-router-asset-status.md`
+- `docs/reports/2026-04-07-monitoring-functional-status.md`
+- `docs/reports/2026-04-07-views-composables-status.md`
+- `docs/reports/2026-04-07-duplicate-page-functional-status.md`
+- `docs/reports/2026-04-07-phase3-4-execution-matrix.md`
 - `docs/reports/2026-04-07-project-status-and-tech-debt-priorities.md`
 - `docs/reports/2026-04-07-frontend-structure-repo-truth-audit.md`
 - `web/frontend/index.html`
