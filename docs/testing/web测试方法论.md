@@ -1,5 +1,11 @@
 # Web前端测试方法论 - 基于Vue+Vite项目实践经验
 
+> **参考方法说明**:
+> 本文件是 Web 前端测试方法论与经验总结，不是当前前端测试基线、当前实现规范或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及测试执行流程、E2E 规范或协作约束，再结合 `docs/testing/TESTING_GUIDE.md`、`docs/testing/e2e/README.md` 与根目录 `AGENTS.md`。
+>
+> 文内 Vue/Vite 场景、端口、脚本和调试步骤属于方法论示例；若与当前仓库实现或治理文档冲突，应以 `architecture/STANDARDS.md`、当前前端实现与现行测试文档为准。
+
 ## 核心原则：环境稳定 + 分层排查 + 问题隔离
 
 基于MyStocks项目Vue+Vite应用的实际测试经验，总结出系统性的Web前端测试方法论。重点解决现代前端框架的依赖管理、ESM模块兼容性、自动化导入等核心问题。

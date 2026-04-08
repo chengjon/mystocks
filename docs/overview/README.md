@@ -1,64 +1,36 @@
-# 📋 项目总览与核心规范
+# Overview Transition Index
 
 > **导航说明**:
-> 本文件是 `docs/overview/` 的导览页，不是当前仓库共享规则、迁移状态或技术债口径的唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 `architecture/STANDARDS.md`；若涉及具体执行入口，再按职责分别参考根目录 `AGENTS.md` 与根目录 `CLAUDE.md`。
+> 本文件是 `docs/overview/` 的 transition index，用于把读者导向当前有效的 trunk 与少量仍保留的 supporting overview 文档。
+> 它不再承担整个 `docs/` 树的总入口角色；仓库文档主干入口已上移到 [`docs/README.md`](/opt/claude/mystocks_spec/docs/README.md)。
 
-## 📁 目录说明
+## Start Here
 
-本模块包含MyStocks项目的核心概述文档和开发规范，是团队成员快速了解项目和遵循开发标准的核心资料。
+- 仓库级共享规则与审批门禁：
+  [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)
+- 文档系统 trunk map：
+  [`documentation-system.md`](/opt/claude/mystocks_spec/docs/overview/documentation-system.md)
+- 当前能力真相：
+  [`openspec/specs/`](/opt/claude/mystocks_spec/openspec/specs/)
+- 已批准但未完成的变更：
+  [`openspec/changes/`](/opt/claude/mystocks_spec/openspec/changes/)
 
-## 📄 核心文档列表
+## Retained Overview Documents
 
-### 🎯 项目概览文档
-- **[项目总览.md](./项目总览.md)** - 项目简介、核心功能、当前状态
-- **[CHANGELOG.md](../../CHANGELOG.md)** - 版本变更日志（月度更新）
-- **[INDEX.md](./INDEX.md)** - 总览目录索引
-- **[archived.md](./archived.md)** - 历史概览与迁移说明
+- [`项目总览.md`](/opt/claude/mystocks_spec/docs/overview/项目总览.md)
+- [`开发与安全规范.md`](/opt/claude/mystocks_spec/docs/overview/开发与安全规范.md)
+- [`开发工具链指南.md`](/opt/claude/mystocks_spec/docs/overview/开发工具链指南.md)
+- [`CURRENT_STATUS.md`](/opt/claude/mystocks_spec/docs/overview/CURRENT_STATUS.md)
+- [`archived.md`](/opt/claude/mystocks_spec/docs/overview/archived.md)
 
-### 📖 开发规范文档
-- **[开发与安全规范.md](./开发与安全规范.md)** - 代码规范、安全要求、文件组织规则
-- **[开发工具链指南.md](./开发工具链指南.md)** - Claude Code、APIFox、Playwright等工具使用指南
-- **[agents.md](./agents.md)** - Agent 相关总览
-- **[claude.md](./claude.md)** - Claude 入口文档摘要
-- **[initialization-prompt.md](./initialization-prompt.md)** - 初始化提示词说明
+## Compatibility Notes
 
-## 🚀 快速导航
+- [`INDEX.md`](/opt/claude/mystocks_spec/docs/overview/INDEX.md) 仅作为旧链接兼容索引保留
+- [`agents.md`](/opt/claude/mystocks_spec/docs/overview/agents.md)、[`claude.md`](/opt/claude/mystocks_spec/docs/overview/claude.md) 与 [`initialization-prompt.md`](/opt/claude/mystocks_spec/docs/overview/initialization-prompt.md) 仍可作为 onboarding supporting docs 使用
+- 若某个 overview 文档与 trunk 冲突，以 trunk 为准，而不是回头扩写 overview 根索引
 
-### 新团队成员
-1. 先阅读 `architecture/STANDARDS.md` 与根目录 `AGENTS.md`
-2. 再阅读 **[项目总览.md](./项目总览.md)** 了解项目整体背景
-3. 按需参考 **[开发与安全规范.md](./开发与安全规范.md)** 与 **[开发工具链指南.md](./开发工具链指南.md)**
+## Governance Status
 
-### 开发人员
-- 查看最新 **[CHANGELOG.md](../../CHANGELOG.md)** 了解版本变更
-- 优先遵循 `architecture/STANDARDS.md`，再参考 **[开发与安全规范.md](./开发与安全规范.md)** 的补充说明
-- 使用 **[开发工具链指南.md](./开发工具链指南.md)** 提升开发效率
-
-### 项目管理人员
-- 查看 **[INDEX.md](./INDEX.md)** 与 **[archived.md](./archived.md)** 了解当前入口与历史资料
-- 关注 **[CHANGELOG.md](../../CHANGELOG.md)** 了解功能交付
-
-## 📝 文档维护规范
-
-### 更新频率
-- **项目总览.md**: 项目重大变更时更新
-- **CHANGELOG.md**: 每月更新，记录当月所有变更
-- **开发与安全规范.md**: 规范变更时更新
-- **开发工具链指南.md**: 工具升级时更新
-
-### 责任人
-- **项目负责人**: 项目总览、概览索引、历史概览
-- **技术负责人**: 开发规范、工具链指南
-- **全体成员**: CHANGELOG（按实际贡献更新）
-
-### 质量要求
-1. **内容准确**: 确保信息与实际项目状态一致
-2. **结构清晰**: 使用统一的文档结构和格式
-3. **易于理解**: 避免过于技术化的表述，提供必要的解释
-4. **及时更新**: 变更发生后24小时内更新相关文档
-
----
-
-*最后更新: 2025-12-06*
-*维护人: 项目管理团队*
+- `docs/overview/README.md` 不再模拟 `docs/` 根入口
+- `docs/overview/` 现在只承担项目总览与 onboarding supporting surface
+- 后续 cleanup 应继续收缩重复入口，而不是重新堆积全量索引
