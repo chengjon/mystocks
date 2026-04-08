@@ -7,10 +7,10 @@
 > 若本文件与 `architecture/STANDARDS.md`、根目录 `AGENTS.md` 或当前已批准执行口径不一致，应优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md` 与当前实现；若无冲突，则按本文件的专题范围执行。
 
 
-**版本**: 2.0
-**创建日期**: 2025-12-25
-**适用范围**: 所有 API-Web 对齐 Phase（Phase 1-4）
-**目标**: 确保每个 Phase 不仅是"代码完成"，而是"真正可用、稳定、且用户体验良好"
+**Historical Document Version Snapshot**: 2.0
+**Historical Creation Date Snapshot**: 2025-12-25
+**Historical Scope Snapshot**: 所有 API-Web 对齐 Phase（Phase 1-4）
+**Historical Goal Snapshot**: 确保每个 Phase 不仅是"代码完成"，而是"真正可用、稳定、且用户体验良好"
 
 ---
 
@@ -999,7 +999,7 @@ npx playwright test --grep @performance
 
 ---
 
-**文档所有者**: MyStocks Development Team
-**最后更新**: 2025-12-25 17:30 UTC
-**版本**: 2.0
-**状态**: ✅ 已审核
+**Historical Document Owner Snapshot**: MyStocks Development Team
+**Historical Last Updated Snapshot**: 2025-12-25 17:30 UTC
+**Historical Document Version Snapshot**: 2.0
+**Historical Status Snapshot**: ✅ 已审核

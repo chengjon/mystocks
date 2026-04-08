@@ -7,9 +7,9 @@
 > 文内结构分层、字段约定、模块职责和实施建议应结合当前代码与主线文档复核；若冲突，应以 `architecture/STANDARDS.md`、当前代码实现及主线治理文档为准。
 
 
-**版本**: 2.0.0
-**更新时间**: 2025-11-11
-**规范状态**: 完整定义和验证 ✅
+**Historical Document Version Snapshot**: 2.0.0
+**Historical Last Updated Snapshot**: 2025-11-11
+**Historical Specification Status Snapshot**: 完整定义和验证 ✅
 
 ---
 

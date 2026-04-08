@@ -559,5 +559,5 @@ ROI：13.3
 
 ---
 
-**文档版本**: v1.0
-**最后更新**: 2025-10-24
+**Historical Document Version Snapshot**: v1.0
+**Historical Last Updated Snapshot**: 2025-10-24

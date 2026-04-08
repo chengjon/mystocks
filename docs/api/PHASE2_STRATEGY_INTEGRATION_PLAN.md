@@ -1233,6 +1233,6 @@ const pollBacktestStatus = async (taskId: string) => {
 
 ---
 
-**文档版本**: 1.0.0
-**最后更新**: 2025-12-25
-**维护者**: MyStocks 开发团队
+**Historical Document Version Snapshot**: 1.0.0
+**Historical Last Updated Snapshot**: 2025-12-25
+**Historical Maintainer Snapshot**: MyStocks 开发团队
