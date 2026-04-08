@@ -481,5 +481,5 @@ Response: {
 
 **Historical Document Version Snapshot**: 3.0.0
 **Historical Snapshot Date**: 2026-01-22
-**维护者**: Backend Team + Frontend Team
+**Historical Maintainer Snapshot**: Backend Team + Frontend Team
 **Historical Review Status**: ✅ 已审核（历史设计稿状态）
