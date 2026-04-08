@@ -9,6 +9,8 @@ on:
       - 'web/backend/tests/test_health_route_conflicts.py'
       - 'web/frontend/src/api/**'
       - 'reports/analysis/tech-debt-baseline.json'
+      - 'reports/compliance/exceptions/tech_debt_baseline_rebaseline.json'
+      - 'scripts/dev/quality_gate/collect_tech_debt_baseline.py'
       - 'scripts/dev/openapi_success_example_audit.py'
       - 'scripts/generate_frontend_types.py'
       - 'scripts/_generate_frontend_types_cli.py'
@@ -20,6 +22,8 @@ on:
       - 'web/backend/tests/test_api_documentation_validation.py'
       - 'web/backend/tests/test_health_route_conflicts.py'
       - 'reports/analysis/tech-debt-baseline.json'
+      - 'reports/compliance/exceptions/tech_debt_baseline_rebaseline.json'
+      - 'scripts/dev/quality_gate/collect_tech_debt_baseline.py'
       - 'scripts/dev/openapi_success_example_audit.py'
       - 'scripts/generate_frontend_types.py'
       - 'scripts/_generate_frontend_types_cli.py'
@@ -70,6 +74,8 @@ jobs:
             '^web/backend/tests/test_health_route_conflicts\.py$'
             '^web/frontend/src/api/.*$'
             '^reports/analysis/tech-debt-baseline\.json$'
+            '^reports/compliance/exceptions/tech_debt_baseline_rebaseline\.json$'
+            '^scripts/dev/quality_gate/collect_tech_debt_baseline\.py$'
             '^scripts/dev/openapi_success_example_audit\.py$'
             '^scripts/generate_frontend_types\.py$'
             '^scripts/_generate_frontend_types_cli\.py$'
@@ -174,6 +180,19 @@ jobs:
         if: steps.scope.outputs.changed == 'true'
         run: |
           python scripts/dev/openapi_success_example_audit.py --show-non-json
+
+      - name: Validate backend_api_documentation collector
+        if: steps.scope.outputs.changed == 'true'
+        run: |
+          python - <<'PY'
+          from scripts.dev.quality_gate.collect_tech_debt_baseline import collect_backend_api_documentation
+
+          payload = collect_backend_api_documentation()["backend_api_documentation"]
+          assert "collection_error" not in payload, payload.get("collection_error")
+          assert payload["documented_endpoints"] == payload["total_endpoints"], payload
+          assert payload["json_success_missing_examples"] == 0, payload
+          print("✅ backend_api_documentation collector validation passed")
+          PY
 
       - name: Upload generated OpenAPI spec
         if: steps.scope.outputs.changed == 'true'
