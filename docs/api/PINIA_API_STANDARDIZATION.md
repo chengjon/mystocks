@@ -7,10 +7,10 @@
 > 文内端点、命令、统计值和示例如未重新复核，应视为参考或历史材料，不得直接当作当前事实。
 
 
-**文档版本**: v1.0
-**创建日期**: 2026-01-23
-**设计目标**: 为MyStocks前端建立统一的API数据获取模式
-**核心理念**: 一切API调用通过Pinia Store管理，标准化状态、缓存、错误处理
+**Historical Document Version Snapshot**: v1.0
+**Historical Creation Date Snapshot**: 2026-01-23
+**Historical Design Goal Snapshot**: 为MyStocks前端建立统一的API数据获取模式
+**Historical Core Principle Snapshot**: 一切API调用通过Pinia Store管理，标准化状态、缓存、错误处理
 
 ---
 

@@ -157,6 +157,6 @@ docker-compose up -d              # Docker 部署
 
 ---
 
-**创建时间**: 2026-01-15  
-**文档版本**: v1.0  
-**维护者**: Claude Code Agent
+**Historical Creation Time Snapshot**: 2026-01-15  
+**Historical Document Version Snapshot**: v1.0  
+**Historical Maintainer Snapshot**: Claude Code Agent
