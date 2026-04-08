@@ -341,5 +341,5 @@ python scripts/fetch_akshare_data.py
 
 ---
 
-**维护者**: Claude Code
-**最后更新**: 2026-01-02
+**Historical Maintainer Snapshot**: Claude Code
+**Historical Last Updated Snapshot**: 2026-01-02

@@ -449,6 +449,6 @@
 
 ---
 
-**最后更新**: 2025-12-06
-**版本**: v1.0
-**维护者**: MyStocks开发团队
+**Historical Last Updated Snapshot**: 2025-12-06
+**Historical Document Version Snapshot**: v1.0
+**Historical Maintainer Snapshot**: MyStocks开发团队
