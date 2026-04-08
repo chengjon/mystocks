@@ -1299,8 +1299,16 @@ def test_api_validation_and_error_guides_are_converged_under_docs_api_family() -
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "api" / name).is_file()
         assert name.removesuffix(".md") not in guides_index
-        assert name.removesuffix(".md") in api_index
         assert f"api/{name}" in cleanup_index_root
+
+    assert "/opt/claude/mystocks_spec/docs/api/README.md" in api_index
+    assert "/opt/claude/mystocks_spec/docs/api/guides/development/" in api_index
+    assert "/opt/claude/mystocks_spec/docs/api/guides/integration/INDEX.md" in api_index
+    assert "/opt/claude/mystocks_spec/docs/api/specifications/INDEX.md" in api_index
+    assert "/opt/claude/mystocks_spec/docs/api/testing/INDEX.md" in api_index
+    assert "VALIDATION_GUIDE.md" not in api_index
+    assert "ERROR_CODE_GUIDE.md" not in api_index
+    assert "EXCEPTION_HANDLER_GUIDE.md" not in api_index
 
     assert "docs/api/ERROR_CODE_GUIDE.md" in api_contract_report
     assert "docs/api/EXCEPTION_HANDLER_GUIDE.md" in api_contract_report
@@ -1308,9 +1316,9 @@ def test_api_validation_and_error_guides_are_converged_under_docs_api_family() -
     assert "docs/api/VALIDATION_GUIDE.md" in error_code_guide
     assert "docs/api/ERROR_CODE_GUIDE.md" in exception_handler_guide
     assert "docs/api/VALIDATION_GUIDE.md" in exception_handler_guide
-    assert "ERROR_CODE_GUIDE.md" in api_readme
-    assert "EXCEPTION_HANDLER_GUIDE.md" in api_readme
-    assert "VALIDATION_GUIDE.md" in api_readme
+    assert "/opt/claude/mystocks_spec/docs/api/ERROR_CODE_GUIDE.md" in api_readme
+    assert "/opt/claude/mystocks_spec/docs/api/EXCEPTION_HANDLER_GUIDE.md" in api_readme
+    assert "/opt/claude/mystocks_spec/docs/api/VALIDATION_GUIDE.md" in api_readme
 
 
 def test_api_alignment_and_contract_plan_guides_are_converged_under_docs_api_guides_integration() -> None:
@@ -1362,10 +1370,10 @@ def test_api_alignment_and_contract_plan_guides_are_converged_under_docs_api_gui
         assert name.removesuffix(".md") in api_guides_index
         assert f"guides/integration/{name}" in cleanup_index_root
 
-    assert "./guides/integration/API对齐方案.md" in api_readme
-    assert "./guides/integration/API对齐核心流程.md" in api_readme
-    assert "./guides/integration/README_INTEGRATION.md" in api_readme
-    assert "./guides/integration/前后端整合与部署完整方案.md" in api_readme
+    assert "/opt/claude/mystocks_spec/docs/api/guides/development/api_development_guidelines.md" in api_readme
+    assert "/opt/claude/mystocks_spec/docs/api/guides/integration/INDEX.md" in api_readme
+    assert "/opt/claude/mystocks_spec/docs/api/testing/compliance/api_acceptance_standards.md" in api_readme
+    assert "/opt/claude/mystocks_spec/docs/api/specifications/core/api_specification.md" in api_readme
     assert "docs/api/guides/integration/API对齐核心流程.md" in integration_status
     assert "docs/api/guides/integration/API对齐方案.md" in integration_status
     assert "docs/api/guides/integration/前后端整合与部署完整方案.md" in readme_integration
