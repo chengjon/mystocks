@@ -51,11 +51,12 @@ Every file in the codebase has exactly one canonical location, every import reso
 - ✓ NAME-03: *_new.py files resolved — v1.0
 - ✓ NAME-04: Root-level shims deleted (core.py, data_access.py, monitoring.py) — v1.0
 - ✓ NAME-05: Pinia store domain boundaries documented — v1.0
+- ✓ STRU-04: Composables disposition — view-local accepted as canonical, 2 candidates kept (Phase 5, 2026-04-08)
 
 ### Active
 
 - [ ] STRU-03: Single frontend entry point (resolve verify-mount.js, archive main.js, keep main-standard.ts)
-- [ ] STRU-04: Composables disposition (v1.0 audit: 15/17 view-local, accept as canonical, extract 2 candidates only)
+- ✓ STRU-04: Composables disposition — view-local accepted as canonical, 2 candidates kept (Phase 5, 2026-04-08)
 - [ ] STRU-05: views/converted.archive/ removal (resolve 5 test deps first; demo/ is active code, N/A)
 
 ### Out of Scope

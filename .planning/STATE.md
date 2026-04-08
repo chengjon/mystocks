@@ -58,6 +58,7 @@ See: .planning/PROJECT.md (updated 2026-04-08)
 - Frontend case-conflict: only Charts→charts was a merge; Common/, Market/ were deleted (untracked)
 - Composables migration must be per-file (15+ active imports); bulk move will break
 - verify-mount.js is the blocker for STRU-03 — must understand its runtime role first
+- STRU-04 CLOSED (2026-04-08): view-local is canonical pattern per STANDARDS.md, 2 extraction candidates both kept view-local
 
 ---
 *State initialized: 2026-04-06*

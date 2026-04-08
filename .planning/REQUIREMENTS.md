@@ -13,9 +13,9 @@
 
 ### Composables Re-scoping
 
-- [ ] **COMP-01**: COMPOSABLES-AUDIT.md reviewed and disposition decided for each of the 2 extraction candidates
-- [ ] **COMP-02**: View-local pattern (15/17 composables) accepted as canonical and documented; only the 2 extraction candidates may be migrated
-- [ ] **COMP-03**: Any extracted composables placed in src/composables/ with all consumer imports updated, `vue-tsc --noEmit` passes
+- [x] **COMP-01**: COMPOSABLES-AUDIT.md reviewed and disposition decided for each of the 2 extraction candidates
+- [x] **COMP-02**: View-local pattern (15/17 composables) accepted as canonical and documented; only the 2 extraction candidates may be migrated
+- [x] **COMP-03**: Any extracted composables placed in src/composables/ with all consumer imports updated, `vue-tsc --noEmit` passes
 
 ### Archive Removal
 
@@ -38,9 +38,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| COMP-01 | Phase 5 | Pending |
-| COMP-02 | Phase 5 | Pending |
-| COMP-03 | Phase 5 | Pending |
+| COMP-01 | Phase 5 | Complete — both candidates kept view-local per evidence |
+| COMP-02 | Phase 5 | Complete — convention added to STANDARDS.md |
+| COMP-03 | Phase 5 | N/A — no extraction justified; both candidates kept view-local per evidence. Build verified unchanged. |
 | ARCH-01 | Phase 6 | Pending |
 | ARCH-02 | Phase 6 | Pending |
 | ARCH-03 | Phase 6 | Pending |
