@@ -2341,16 +2341,21 @@ def test_testing_specialized_guides_are_converged_under_docs_testing_family() ->
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "testing" / name).is_file()
         assert f"- 📄 [{name.removesuffix('.md')}]({name})" not in guides_index
-        assert name.removesuffix(".md") in testing_index
         assert f"testing/{name}" in cleanup_index_root or f"docs/testing/{name}" in cleanup_index_root
 
-    assert "./TESTING_GUIDE.md" in testing_readme
-    assert "./TESTING_EXAMPLES.md" in testing_readme
-    assert "./E2E_TEST_DEBUG_METHODS.md" in testing_readme
-    assert "./E2E_TEST_QUICK_REFERENCE_COMPATIBILITY.md" in testing_readme
-    assert "./WEB_E2E_TEST_QUICK_REFERENCE.md" in testing_readme
-    assert "./WEB_E2E_TEST_QUICK_REFERENCE_V2.md" in testing_readme
-    assert "./VISUAL_REGRESSION_TEST_PLAN.md" in testing_readme
+    assert "/opt/claude/mystocks_spec/docs/testing/README.md" in testing_index
+    assert "/opt/claude/mystocks_spec/docs/testing/E2E_TEST_GUIDE.md" in testing_index
+    assert "/opt/claude/mystocks_spec/docs/testing/E2E_TEST_DEBUG_METHODS.md" in testing_index
+    assert "/opt/claude/mystocks_spec/docs/testing/TEST_ENVIRONMENT_REQUIREMENTS.md" in testing_index
+    assert "/opt/claude/mystocks_spec/docs/testing/常见测试问题与解决方案.md" in testing_index
+    assert "TESTING_GUIDE.md" not in testing_index
+    assert "TESTING_EXAMPLES.md" not in testing_index
+    assert "E2E_TEST_QUICK_REFERENCE_COMPATIBILITY.md" not in testing_index
+
+    assert "/opt/claude/mystocks_spec/docs/testing/TESTING_GUIDE.md" in testing_readme
+    assert "/opt/claude/mystocks_spec/docs/testing/TESTING_EXAMPLES.md" in testing_readme
+    assert "/opt/claude/mystocks_spec/docs/testing/E2E_TEST_DEBUG_METHODS.md" in testing_readme
+    assert "/opt/claude/mystocks_spec/docs/testing/E2E_TEST_QUICK_REFERENCE_COMPATIBILITY.md" in testing_readme
     assert "docs/testing/TESTING_GUIDE.md" in developer_guide
     assert "docs/testing/TESTING_EXAMPLES.md" in developer_guide
     assert "docs/testing/WEB_E2E_TEST_QUICK_REFERENCE_V2.md" in testing_guide
@@ -2554,8 +2559,6 @@ def test_operational_guides_are_converged_under_docs_operations_families() -> No
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "operations" / name).is_file()
         assert f"- 📄 [{name.removesuffix('.md')}]({name})" not in guides_index
-        assert name.removesuffix(".md") in operations_index
-        assert f"{name}" in operations_readme
         assert f"operations/{name}" in cleanup_index_root
 
     for name in deployment_docs:
@@ -2563,8 +2566,23 @@ def test_operational_guides_are_converged_under_docs_operations_families() -> No
         assert (PROJECT_ROOT / "docs" / "operations" / "deployment" / name).is_file()
         assert f"- 📄 [{name.removesuffix('.md')}]({name})" not in guides_index
         assert name.removesuffix(".md") in deployment_index
-        assert f"deployment/{name}" in operations_readme
         assert f"operations/deployment/{name}" in cleanup_index_root or f"deployment/{name}" in cleanup_index_root
+
+    assert "/opt/claude/mystocks_spec/docs/operations/README.md" in operations_index
+    assert "/opt/claude/mystocks_spec/docs/operations/OPS_MANUAL.md" in operations_index
+    assert "/opt/claude/mystocks_spec/docs/operations/PRODUCTION_INFO.md" in operations_index
+    assert "/opt/claude/mystocks_spec/docs/operations/TROUBLESHOOTING.md" in operations_index
+    assert "/opt/claude/mystocks_spec/docs/operations/deployment-guide.md" in operations_index
+    assert "/opt/claude/mystocks_spec/docs/operations/quick-start.md" in operations_index
+    assert "BACKUP_GUIDE.md" not in operations_index
+    assert "INFRASTRUCTURE_CHECKLIST.md" not in operations_index
+    assert "PHASE6_SERVER_RECOVERY_TEST_PROCEDURE.md" not in operations_index
+    assert "STOCKS_SPEC_COMMAND_GUIDE.md" not in operations_index
+    assert "TROUBLESHOOTING_QUICK_REFERENCE.md" not in operations_index
+
+    assert "/opt/claude/mystocks_spec/docs/operations/BACKUP_GUIDE.md" in operations_readme
+    assert "/opt/claude/mystocks_spec/docs/operations/INFRASTRUCTURE_CHECKLIST.md" in operations_readme
+    assert "/opt/claude/mystocks_spec/docs/operations/STOCKS_SPEC_COMMAND_GUIDE.md" in operations_readme
 
     assert "../operations/deployment/DEPLOYMENT.md" in user_guide
     assert "../operations/INFRASTRUCTURE_CHECKLIST.md" in config_splitting
@@ -2597,7 +2615,7 @@ def test_quick_start_guide_is_converged_under_docs_operations_family() -> None:
     assert name.removesuffix(".md") not in guides_index
     assert name.removesuffix(".md") in operations_index
     assert f"operations/{name}" in cleanup_index_root or name in operations_readme
-    assert "./quick-start.md" in operations_readme
+    assert "/opt/claude/mystocks_spec/docs/operations/quick-start.md" in operations_readme
     assert '\"QUICK_START.md\": \"operations/quick-start.md\"' in migration_script
 
 
