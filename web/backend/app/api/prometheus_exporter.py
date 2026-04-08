@@ -20,6 +20,7 @@ from datetime import datetime
 
 import psutil
 from fastapi import APIRouter, Response
+from fastapi.responses import PlainTextResponse
 from prometheus_client import (
     CONTENT_TYPE_LATEST,
     CollectorRegistry,
@@ -402,6 +403,7 @@ def update_health_metrics():
     summary="导出 Prometheus 指标",
     description="提供系统监控指标的 Prometheus 文本流输出，供 Prometheus 抓取与监控平台集成使用。",
     tags=["monitoring"],
+    response_class=PlainTextResponse,
     responses={
         200: {
             "description": "Prometheus 指标导出结果",

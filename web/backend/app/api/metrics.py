@@ -13,6 +13,7 @@ import time
 from typing import Any, Dict
 
 from fastapi import APIRouter, Depends, Response
+from fastapi.responses import PlainTextResponse
 from prometheus_client import (
     CONTENT_TYPE_LATEST,
     REGISTRY,
@@ -497,7 +498,7 @@ async def performance_metrics(current_user: User = Depends(get_current_user)) ->
 # ==================== 管理员级别端点（需要管理员权限）====================
 
 
-@router.get("/metrics", responses=PROMETHEUS_METRICS_SUCCESS_RESPONSE)
+@router.get("/metrics", response_class=PlainTextResponse, responses=PROMETHEUS_METRICS_SUCCESS_RESPONSE)
 async def prometheus_metrics(current_user: User = Depends(get_current_user)) -> Response:
     """
     Prometheus metrics端点

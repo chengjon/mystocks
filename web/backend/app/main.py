@@ -16,7 +16,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 
 # 导入 Swagger UI HTML 生成器
 from fastapi.openapi.docs import get_swagger_ui_html
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
@@ -710,7 +710,7 @@ async def readiness_check(request: Request):
 
 
 # Phase 5: Prometheus指标端点
-@app.get("/metrics", include_in_schema=False)
+@app.get("/metrics", include_in_schema=False, response_class=PlainTextResponse)
 async def prometheus_metrics():
     """Prometheus指标端点"""
     return metrics_endpoint()

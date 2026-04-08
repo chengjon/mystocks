@@ -27,6 +27,7 @@ TECH_DEBT_BASELINE_FILE = Path(__file__).resolve().parents[3] / "reports" / "ana
 DOCUMENTATION_BASELINE_KEY = "backend_api_documentation"
 FLOAT_TOLERANCE = 1e-12
 NON_CONTRACT_ROUTE_PATHS = {"/api/docs", "/api/redoc"}
+JSON_SUCCESS_EXAMPLE_MEDIA_TYPE = "application/json"
 
 
 def load_documentation_baseline() -> Dict[str, Any]:
@@ -157,6 +158,39 @@ class APIDocumentationValidator:
                 endpoint_results.append(endpoint_result)
 
         return endpoint_results
+
+    def find_success_json_response_example_gaps(self) -> List[Dict[str, str]]:
+        """Return JSON success responses that still miss an explicit OpenAPI example.
+
+        Prometheus/OpenMetrics `text/plain` endpoints are intentionally excluded here.
+        Their contract is validated separately by route-specific tests.
+        """
+
+        schema = self.get_openapi_schema()
+        missing_examples: List[Dict[str, str]] = []
+
+        for path, path_item in schema.get("paths", {}).items():
+            for method, method_spec in path_item.items():
+                responses = method_spec.get("responses", {})
+                for status_code, response_spec in responses.items():
+                    if not status_code.startswith("2") or status_code == "204":
+                        continue
+
+                    content = response_spec.get("content", {})
+                    json_content = content.get(JSON_SUCCESS_EXAMPLE_MEDIA_TYPE)
+                    if not isinstance(json_content, dict):
+                        continue
+
+                    if "example" not in json_content and "examples" not in json_content:
+                        missing_examples.append(
+                            {
+                                "method": method.upper(),
+                                "path": path,
+                                "status_code": status_code,
+                            }
+                        )
+
+        return missing_examples
 
     def _validate_single_endpoint(self, route: APIRoute, schema: Dict[str, Any]) -> Dict[str, Any]:
         """Validate documentation for a single endpoint"""
@@ -540,6 +574,15 @@ class TestAPIDocumentationValidation:
                 f"Example coverage {example_coverage:.2%} regressed below baseline "
                 f"{baseline['example_percentage']:.2%}"
             )
+
+    def test_success_json_responses_have_examples(self, documentation_validator):
+        """JSON 成功响应必须提供 example；Prometheus 文本端点不计入该口径。"""
+        missing_examples = documentation_validator.find_success_json_response_example_gaps()
+
+        assert not missing_examples, (
+            "JSON success responses missing examples: "
+            f"{missing_examples}"
+        )
 
     def test_error_response_documentation(self, documentation_validator):
         """Test that endpoints document error responses"""

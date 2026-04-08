@@ -22,6 +22,7 @@ import logging
 from typing import Optional
 
 from fastapi import APIRouter, Query, Request
+from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field
 
 # 导入统一响应格式
@@ -301,6 +302,7 @@ async def get_gpu_performance(
     "/metrics",
     summary="导出 GPU Prometheus 指标",
     description="以 Prometheus 文本格式导出当前 GPU 监控指标，供监控系统按固定周期抓取。",
+    response_class=PlainTextResponse,
     responses=GPU_PROMETHEUS_METRICS_RESPONSES,
 )
 async def get_prometheus_metrics(request: Request):
@@ -345,8 +347,6 @@ gpu_matrix_speedup{device_id="0"} 187.35
 """.strip()
 
     logger.info("Prometheus GPU指标导出")
-
-    from fastapi.responses import PlainTextResponse
 
     return PlainTextResponse(
         content=metrics_text,
