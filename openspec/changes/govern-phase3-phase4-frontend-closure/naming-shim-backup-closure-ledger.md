@@ -1,6 +1,6 @@
 # Naming / Shim / Backup Closure Ledger
 
-> **执行产物说明**:
+> **历史文档说明**:
 > 本文档用于完成 `govern-phase3-phase4-frontend-closure` 的任务 `3.3`。
 > 本批次按照 `architecture/STANDARDS.md` 与当前 OpenSpec 的 governance-first 口径执行：
 > 对命名 / shim / backup 对象逐类给出 `keep / deprecate / archive-candidate / blocked-remove` 决策、

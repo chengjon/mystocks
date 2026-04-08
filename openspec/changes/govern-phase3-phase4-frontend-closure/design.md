@@ -1,5 +1,10 @@
 ## Context
 
+> **专题方案说明**:
+> 本文件用于描述 `govern-phase3-phase4-frontend-closure` 的设计约束、分批策略与验证门禁。
+> 它服务于当前 OpenSpec 变更的方案管理，不自动等同于当前仓库实现、共享治理规则或已完成结构收口的唯一事实来源。
+> 执行时仍需同时核对 `architecture/STANDARDS.md`、`openspec/AGENTS.md`、当前代码与实际验证结果。
+
 The current repository contains several active frontend restructure proposals, but the 2026-04-07 repo-truth audits showed that multiple assumptions are unsafe:
 
 - the runtime route truth is `web/frontend/index.html -> /src/main-standard.ts -> /src/router/index.ts`

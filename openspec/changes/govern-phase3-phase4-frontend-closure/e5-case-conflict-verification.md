@@ -1,6 +1,6 @@
 # E5 Case-Conflict Verification
 
-> **执行产物说明**:
+> **历史文档说明**:
 > 本文档记录 `govern-phase3-phase4-frontend-closure` 在 `3.2` 阶段的验证结果。
 > 目标是确认真正的 case-conflict 是否仍存在，并给出 build / stylelint / route-smoke 的实际结果。
 > 当前文档已作为 `3.2` 完成证据的一部分。

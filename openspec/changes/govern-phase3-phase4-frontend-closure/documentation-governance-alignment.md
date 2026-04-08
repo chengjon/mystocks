@@ -1,6 +1,6 @@
 # Documentation Governance Alignment
 
-> **对齐记录说明**:
+> **历史文档说明**:
 > 本文档用于记录 `govern-phase3-phase4-frontend-closure` 与已批准文档治理变更之间的执行对齐关系。
 > 它不是把两个 OpenSpec 变更合并为一个变更，而是声明当前前端结构收口任务在文档治理口径上的上游依赖。
 
