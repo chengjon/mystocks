@@ -33,7 +33,11 @@ from app.openapi_config import COMMON_RESPONSES
 logger = logging.getLogger(__name__)
 
 
-def _success_response_spec(description: str, example: Any) -> Dict[int, Dict[str, Any]]:
+def _success_response_spec(
+    description: str,
+    example: Any,
+    extra_responses: Optional[Dict[int, Dict[str, Any]]] = None,
+) -> Dict[int, Dict[str, Any]]:
     return {
         200: {
             "description": description,
@@ -42,7 +46,8 @@ def _success_response_spec(description: str, example: Any) -> Dict[int, Dict[str
                     "example": example,
                 }
             },
-        }
+        },
+        **(extra_responses or {}),
     }
 
 MONITORING_WATCHLIST_ROUTE_RESPONSES = {
@@ -226,6 +231,86 @@ WATCHLIST_STOCK_DELETE_RESPONSES = _success_response_spec(
         "data": None,
         "timestamp": "2026-04-05T12:00:00Z",
         "request_id": "req-monitoring-watchlists-005",
+        "errors": None,
+    },
+)
+
+WATCHLIST_CREATE_RESPONSES = _success_response_spec(
+    "监控清单创建结果",
+    {
+        "success": True,
+        "code": 200,
+        "message": "创建清单成功",
+        "data": {
+            "id": 3,
+            "user_id": 1,
+            "name": "港股高股息观察",
+            "watchlist_type": "manual",
+            "risk_profile": {
+                "max_position_size": 0.1,
+                "default_stop_loss_pct": 0.06,
+                "market_scope": ["HK"],
+            },
+            "is_active": True,
+            "created_at": "2026-04-08T03:40:00Z",
+            "updated_at": "2026-04-08T03:40:00Z",
+            "stocks_count": 0,
+        },
+        "timestamp": "2026-04-08T03:40:00Z",
+        "request_id": "req-monitoring-watchlists-create-001",
+        "errors": None,
+    },
+)
+
+WATCHLIST_UPDATE_RESPONSES = _success_response_spec(
+    "监控清单更新结果",
+    {
+        "success": True,
+        "code": 200,
+        "message": "更新清单成功",
+        "data": {
+            "id": 1,
+            "user_id": 1,
+            "name": "股指期货风险监控",
+            "watchlist_type": "strategy",
+            "risk_profile": {
+                "max_position_size": 0.12,
+                "take_profit_pct": 0.18,
+                "alert_threshold": "medium",
+                "market_scope": ["CFFEX"],
+            },
+            "is_active": True,
+            "created_at": "2026-03-13T09:30:00Z",
+            "updated_at": "2026-04-08T03:45:00Z",
+            "stocks_count": 4,
+        },
+        "timestamp": "2026-04-08T03:45:00Z",
+        "request_id": "req-monitoring-watchlists-update-001",
+        "errors": None,
+    },
+    {501: FEATURE_NOT_IMPLEMENTED_RESPONSE},
+)
+
+WATCHLIST_STOCK_CREATE_RESPONSES = _success_response_spec(
+    "监控清单成员添加结果",
+    {
+        "success": True,
+        "code": 200,
+        "message": "添加股票成功",
+        "data": {
+            "id": 3001,
+            "watchlist_id": 3,
+            "stock_code": "00700.HK",
+            "entry_price": 328.6,
+            "entry_at": "2026-04-08T03:50:00Z",
+            "entry_reason": "港股科技龙头纳入观察",
+            "stop_loss_price": 312.0,
+            "target_price": 356.0,
+            "weight": 0.25,
+            "is_active": True,
+        },
+        "timestamp": "2026-04-08T03:50:00Z",
+        "request_id": "req-monitoring-watchlists-stock-create-001",
         "errors": None,
     },
 )
@@ -534,6 +619,7 @@ def _delete_runtime_watchlist(watchlist_id: int, user_id: int) -> bool:
     response_model=UnifiedResponse[WatchlistResponse],
     summary="创建监控清单",
     description="创建一个新的监控清单，记录名称、清单类型和可选风控配置，供后续持仓跟踪与告警使用。",
+    responses=WATCHLIST_CREATE_RESPONSES,
 )
 @handle_exceptions
 async def create_watchlist(
@@ -712,7 +798,7 @@ async def get_watchlist(
     response_model=UnifiedResponse[WatchlistResponse],
     summary="更新监控清单",
     description="更新监控清单的名称、类型、风控配置或启用状态。当前版本仅保留契约，后端实现尚未开放。",
-    responses={501: FEATURE_NOT_IMPLEMENTED_RESPONSE},
+    responses=WATCHLIST_UPDATE_RESPONSES,
 )
 @handle_exceptions
 async def update_watchlist(
@@ -778,6 +864,7 @@ async def delete_watchlist(
     response_model=UnifiedResponse[WatchlistStockResponse],
     summary="添加监控清单成员",
     description="向指定监控清单添加一只股票，并记录入库价格、建仓理由、止损价、目标价和权重等跟踪信息。",
+    responses=WATCHLIST_STOCK_CREATE_RESPONSES,
 )
 @handle_exceptions
 async def add_stock_to_watchlist(

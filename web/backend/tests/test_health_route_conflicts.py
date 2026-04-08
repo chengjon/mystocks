@@ -2413,6 +2413,8 @@ def test_monitoring_watchlist_endpoints_have_docs_examples_and_error_responses()
     ]:
         operation = schema["paths"][path][method]
         parameters = operation.get("parameters", [])
+        success_code = next(code for code in operation["responses"] if code.startswith("2"))
+        success_json = operation["responses"][success_code]["content"]["application/json"]
 
         assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
@@ -2423,6 +2425,7 @@ def test_monitoring_watchlist_endpoints_have_docs_examples_and_error_responses()
             request_json = operation["requestBody"]["content"]["application/json"]
             assert "example" in request_json or "examples" in request_json
 
+        assert "example" in success_json or "examples" in success_json
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
