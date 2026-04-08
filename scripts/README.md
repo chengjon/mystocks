@@ -109,6 +109,27 @@ python scripts/dev/validate_documentation_consistency.py
 
 # Audit OpenAPI success-response examples
 python scripts/dev/openapi_success_example_audit.py --show-non-json
+
+# Collect current technical-debt metrics
+python scripts/dev/quality_gate/collect_tech_debt_baseline.py --output /tmp/tech-debt-current.json
+
+# Evaluate current metrics against the frozen baseline
+python scripts/dev/quality_gate/tech_debt_governance_gate.py kpi-gate \
+  --baseline reports/analysis/tech-debt-baseline.json \
+  --current /tmp/tech-debt-current.json \
+  --output /tmp/tech-debt-kpi-gate.json
+
+# Generate the weekly governance report
+python scripts/dev/quality_gate/tech_debt_governance_gate.py weekly-report \
+  --baseline reports/analysis/tech-debt-baseline.json \
+  --current /tmp/tech-debt-current.json \
+  --output /tmp/tech-debt-weekly-report.md
+
+# Review a baseline update that needs an approved rebaseline exception
+python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-review \
+  --previous /tmp/tech-debt-baseline.previous.json \
+  --proposed reports/analysis/tech-debt-baseline.json \
+  --exceptions reports/compliance/exceptions/tech_debt_baseline_rebaseline.json
 ```
 
 ---
