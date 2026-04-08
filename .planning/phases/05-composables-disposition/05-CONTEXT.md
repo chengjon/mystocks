@@ -29,6 +29,10 @@ Resolve STRU-04 by making evidence-based decisions on the 2 extraction candidate
 - **D-06:** The convention rule: "Role-first, then consumer count. (1) Files that are not composables (no reactive state / Vue lifecycle) do NOT go in `src/composables/` — route by role. (2) True composables with a single consumer are co-located with their view via `./composables/` relative imports — this is idiomatic Vue and the canonical pattern. (3) Extraction to `src/composables/` requires 2+ consumers."
 - **D-07:** COMPOSABLES-AUDIT.md remains as the audit evidence document (why these decisions were made). STANDARDS.md is the forward-looking rule (how to decide in the future).
 
+### Traceability Closure
+- **D-08:** After documenting the convention and finalizing dispositions, update `.planning/REQUIREMENTS.md` so STRU-04 reflects the evidence-based re-scope ("accept view-local as canonical + audit 2 candidates → both kept in place") rather than the original bulk-relocation wording. Mark COMP-01/02/03 as complete with disposition outcomes.
+- **D-09:** Update `.planning/PROJECT.md` to move STRU-04 from Active to Validated with phase reference.
+
 ### Claude's Discretion
 - Exact wording of the STANDARDS.md addition
 - Whether to add examples in the STANDARDS.md entry (e.g., "useTradingDashboard.ts → 1 consumer → keep view-local")

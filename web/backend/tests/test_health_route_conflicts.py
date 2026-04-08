@@ -1572,17 +1572,45 @@ def test_strategy_update_endpoint_has_docs_request_and_response_example() -> Non
     assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
-def test_risk_v31_broadcast_endpoint_has_docs_and_request_example() -> None:
+def test_risk_v31_broadcast_endpoint_has_docs_examples_and_error_responses() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
     operation = schema["paths"]["/api/v1/risk/v31/ws/broadcast/{topic}"]["post"]
     parameters = operation.get("parameters", [])
     request_json = operation["requestBody"]["content"]["application/json"]
+    success_json = operation["responses"]["200"]["content"]["application/json"]
 
+    assert operation.get("summary")
     assert len(operation.get("description", "")) >= 20
     assert any(param["name"] == "topic" and param.get("description") for param in parameters)
     assert "example" in request_json or "examples" in request_json
+    assert "example" in success_json or "examples" in success_json
+    assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
+def test_risk_v31_read_endpoints_have_docs_examples_and_error_responses() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
+    endpoint_expectations = {
+        ("/api/v1/risk/v31/stock/{symbol}", "get"): {"parameters": {"symbol"}},
+        ("/api/v1/risk/v31/portfolio/{portfolio_id}", "get"): {"parameters": {"portfolio_id"}},
+        ("/api/v1/risk/v31/health", "get"): {"parameters": set()},
+        ("/api/v1/risk/v31/ws/connections", "get"): {"parameters": set()},
+    }
+
+    for (path, method), expectation in endpoint_expectations.items():
+        operation = schema["paths"][path][method]
+        parameters = operation.get("parameters", [])
+        success_json = operation["responses"]["200"]["content"]["application/json"]
+
+        assert operation.get("summary")
+        assert len(operation.get("description", "")) >= 20
+        for parameter_name in expectation["parameters"]:
+            assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
+        assert "example" in success_json or "examples" in success_json
+        assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
 def test_trading_runtime_add_strategy_endpoint_has_docs_request_and_response_examples() -> None:
