@@ -300,10 +300,10 @@ npx playwright show-report
 
 ## 联系方式
 
-**测试工程师**: Test CLI (Worker CLI)
-**主CLI**: Manager CLI
-**工作分支**: phase7-test-contracts-automation
-**Worktree**: /opt/claude/mystocks_phase7_test
+**Historical Test Engineer Snapshot**: Test CLI (Worker CLI)
+**Historical Main CLI Snapshot**: Manager CLI
+**Historical Branch Snapshot**: phase7-test-contracts-automation
+**Historical Worktree Snapshot**: /opt/claude/mystocks_phase7_test
 
 ---
 
