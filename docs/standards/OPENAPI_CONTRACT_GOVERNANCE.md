@@ -125,6 +125,8 @@ OpenAPI 在本项目中是 API 契约层，不是事后文档层。
 - 仅允许在确认仓库当前状态真实改善后向上收紧基线。
 - 禁止为了“让 CI 通过”而把更差的指标写回基线。
 - 基线更新必须和对应治理提交一并入库，保证可追溯。
+- 若 `backend_api_documentation` 基线需要调整，必须通过 `baseline-review` 审核并保留对应例外清单或审批记录。
+- 若要判断当前 OpenAPI 文档波动是否属于真实回归，必须同时生成 `baseline-drift-report`，区分门禁漂移与观察项漂移。
 
 ## 6. 标准命令
 
@@ -140,6 +142,25 @@ pytest web/backend/tests/test_health_route_conflicts.py \
 
 ```bash
 python scripts/dev/openapi_success_example_audit.py --show-non-json
+```
+
+审核 OpenAPI 文档基线更新：
+
+```bash
+python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-review \
+  --previous <old-baseline-json> \
+  --proposed reports/analysis/tech-debt-baseline.json \
+  --exceptions reports/compliance/exceptions/tech_debt_baseline_rebaseline.json
+```
+
+复核当前 OpenAPI 文档指标相对基线的漂移：
+
+```bash
+python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-drift-report \
+  --baseline reports/analysis/tech-debt-baseline.json \
+  --current <current-metrics-json> \
+  --output reports/analysis/tech-debt-baseline-drift-report.json \
+  --only-drifted
 ```
 
 查看当前 OpenAPI 汇总：

@@ -123,7 +123,7 @@
 #### 优先级 P0：先补齐 Stage A 遗留机制缺口
 
 1) 完成 1.2：技术债基线文件化 + CI 对比
-- 建议基线文件（示例）：`reports/quality/tech-debt-baseline.json`
+- 建议基线文件（示例）：`reports/analysis/tech-debt-baseline.json`
 - 指标至少包含：
   - `frontend_type_errors`
   - `frontend_suppressions_count`
