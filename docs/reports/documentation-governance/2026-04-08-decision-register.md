@@ -71,12 +71,15 @@ archive > rewrite
   - `docs/reports/worklogs/INDEX.md`、`docs/INDEX.md` 与本台账已同步刷新
 - `2549953ab docs(state): refresh root task control snapshots`
   - root 控制面快照 `TASK.md` 与 `TASK-REPORT.md` 的自动更新已单独收口，不再与文档治理波次混排
+- `ui-ux-pro-max` 目录已按用户澄清降级为“skill 运行产物 / 残留文档”，不再视为 guide family、门禁或根导航候选
+  - 当前处理原则改为：退出 `docs/INDEX.md` 主导航与 hygiene 主守护
+  - 若需确认该能力本身，应回到项目 skill 源文件而不是使用这组产物文档
 
 据此，下一步仍应遵循 trunk-first / family-first，而不是回头重复处理已闭环条线。当前建议顺序为：
 
-1. `docs/guides/ui-ux-pro-max/`
-2. `docs/guides/features/`
-3. `docs/guides/wencai/`
+1. `docs/guides/features/`
+2. `docs/guides/wencai/`
+3. `docs/guides/buger/`
 
 以下 family 暂缓，避免过早进入高入链或高耦合面：
 

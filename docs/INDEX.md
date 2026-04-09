@@ -677,20 +677,6 @@
         - 📄 [Typescript_QUICKSTART](guides/typescript/Typescript_QUICKSTART.md)
         - 📄 [Typescript_USER_GUIDE](guides/typescript/Typescript_USER_GUIDE.md)
         - 📄 [Supporting Guides](guides/typescript/INDEX.md)
-    - 📂 [Ui Ux Pro Max](guides/ui-ux-pro-max)
-
-###### Ui Ux Pro Max
-
-        - 📄 [README](guides/ui-ux-pro-max/README.md)
-        - 📂 [Domains](guides/ui-ux-pro-max/domains)
-
-######## Domains
-
-            - 📄 [style](guides/ui-ux-pro-max/domains/style.md)
-        - 📄 [CONVERSION_SUMMARY](guides/ui-ux-pro-max/CONVERSION_SUMMARY.md)
-        - 📄 [PROJECT_COMPLETION_REPORT](guides/ui-ux-pro-max/PROJECT_COMPLETION_REPORT.md)
-        - 📄 [quick-reference](guides/ui-ux-pro-max/quick-reference.md)
-        - 📄 [search-router](guides/ui-ux-pro-max/search-router.md)
     - 📂 [Web](guides/web)
 
 ###### Web

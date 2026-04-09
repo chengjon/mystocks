@@ -850,11 +850,6 @@ def test_openspec_command_template_is_converged_under_guides_openspec_cmd_family
 
 
 def test_active_workflow_docs_no_longer_point_to_removed_docs_top_level_families() -> None:
-    guides_readme = (PROJECT_ROOT / "docs" / "guides" / "README.md").read_text(encoding="utf-8")
-    uiux_readme = (PROJECT_ROOT / "docs" / "guides" / "ui-ux-pro-max" / "README.md").read_text(encoding="utf-8")
-    uiux_report = (
-        PROJECT_ROOT / "docs" / "guides" / "ui-ux-pro-max" / "PROJECT_COMPLETION_REPORT.md"
-    ).read_text(encoding="utf-8")
     web_task = (PROJECT_ROOT / "scripts" / "cli" / "web" / "TASK.md").read_text(encoding="utf-8")
     web_rules = (PROJECT_ROOT / "scripts" / "cli" / "web" / "RULES.md").read_text(encoding="utf-8")
     openspec_plan = (
@@ -863,14 +858,6 @@ def test_active_workflow_docs_no_longer_point_to_removed_docs_top_level_families
     tests_plan = (
         PROJECT_ROOT / "tests" / "changes" / "frontend-optimization-six-phase" / "implementation-plan.md"
     ).read_text(encoding="utf-8")
-
-    assert "`docs/guides/features/`" in guides_readme
-    assert "`docs/features/`" not in guides_readme
-
-    assert "docs/guides/ui-ux-pro-max/" in uiux_readme
-    assert "docs/ui-ux-pro-max/" not in uiux_readme
-    assert "docs/guides/ui-ux-pro-max/" in uiux_report
-    assert "docs/ui-ux-pro-max/" not in uiux_report
 
     assert "docs/guides/frontend/INDEX.md" in web_task
     assert "docs/guides/web/ART_DECO_COMPONENTS_CATALOG.md" in web_task
@@ -887,6 +874,13 @@ def test_active_workflow_docs_no_longer_point_to_removed_docs_top_level_families
     assert "docs/frontend/KLINE_COMPONENT_GUIDE.md" not in openspec_plan
     assert "docs/guides/web/WEB_FRAMEWORK_INCREMENTAL_OPTIMIZATION_PLAN.md" in tests_plan
     assert "docs/frontend/KLINE_COMPONENT_GUIDE.md" not in tests_plan
+
+
+def test_ui_ux_pro_max_skill_outputs_are_not_retained_as_active_docs_family() -> None:
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
+
+    assert "guides/ui-ux-pro-max/" not in docs_index
+    assert not (PROJECT_ROOT / "docs" / "guides" / "ui-ux-pro-max").exists()
 
 
 def test_legacy_directory_organization_drafts_are_converged_under_reports_cleanup() -> None:
