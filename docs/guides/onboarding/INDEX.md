@@ -1,33 +1,25 @@
-# MyStocks 文档索引
+# Onboarding Guide Family
 
 > **导航说明**:
-> 本文件是文档导航或索引，不是当前规则、当前基线或当前实现状态的唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线文档一并核对。
->
-> 文内目录、链接、数量和分类如未重新生成或复核，应视为导航快照，不得直接当作当前事实。
+> 本文件是 `docs/guides/onboarding/` 的 transition index，不是仓库共享规则、当前 onboarding 流程边界或唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若涉及具体执行入口，再结合根目录 `AGENTS.md`、根目录 `CLAUDE.md` 与当前代码核对。
 
+## Current Entry Order
 
-**生成时间**: 2026-03-25 00:25:40
+这一 family 当前角色是 `supporting`，用于新开发者与用户上手，不承担仓库级 trunk。由于当前仅保留两份有效文档，根导航无需继续收薄。推荐阅读顺序：
 
+1. [`DEVELOPER_GUIDE.md`](./DEVELOPER_GUIDE.md)
+2. [`USER_GUIDE.md`](./USER_GUIDE.md)
 
----
+## Active Supporting Guides
 
-## 🚀 快速导航
+- [`DEVELOPER_GUIDE.md`](./DEVELOPER_GUIDE.md)
+  - 开发者 onboarding 入口
+- [`USER_GUIDE.md`](./USER_GUIDE.md)
+  - 用户使用与基础操作入口
 
+## Retention Rule
 
----
-
-## 📊 统计信息
-
-
-- **总文档数**: 2
-- **总目录数**: 0
-- **最后更新**: 2026-03-25
-
----
-
-
-## 📁 项目根目录
-
-- 📄 [DEVELOPER_GUIDE](DEVELOPER_GUIDE.md)
-- 📄 [USER_GUIDE](USER_GUIDE.md)
+- 该 family 当前保留为 `supporting`，不升级为新的 canonical docs trunk
+- 由于当前只有 2 份仍有现实引用的文档，根导航维持现有暴露面，不再额外收薄
+- 若后续 `USER_GUIDE.md` 或 `DEVELOPER_GUIDE.md` 被新的 trunk 取代，再按 bounded batch 单独评估 archive/delete

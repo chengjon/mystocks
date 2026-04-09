@@ -1,34 +1,31 @@
-# MyStocks 文档索引
+# Data Interface Guide Family
 
 > **导航说明**:
-> 本文件是文档导航或索引，不是当前规则、当前基线或当前实现状态的唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线文档一并核对。
->
-> 文内目录、链接、数量和分类如未重新生成或复核，应视为导航快照，不得直接当作当前事实。
+> 本文件是 `docs/guides/data-interface/` 的 transition index，不是仓库共享规则、当前数据接口实现边界或唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若涉及具体实现状态，再结合根目录 `AGENTS.md`、当前代码与相关脚本输出核对。
 
+## Current Entry Order
 
-**生成时间**: 2026-03-24 12:02:14
+这一 family 当前角色是 `supporting`，用于保留数据接口抽象、扫描工具和 API 使用分析说明，不承担仓库级 trunk。推荐阅读顺序：
 
+1. [`UNIFIED_INTERFACE_GUIDE.md`](./UNIFIED_INTERFACE_GUIDE.md)
+2. [`DATA_INTERFACE_SCANNER_GUIDE.md`](./DATA_INTERFACE_SCANNER_GUIDE.md)
+3. 再按需进入 API 与 Web 前端数据使用分析工具说明
 
----
+## Active Supporting Guides
 
-## 🚀 快速导航
+- [`UNIFIED_INTERFACE_GUIDE.md`](./UNIFIED_INTERFACE_GUIDE.md)
+  - 统一数据访问抽象层与智能路由使用说明
+- [`DATA_INTERFACE_SCANNER_GUIDE.md`](./DATA_INTERFACE_SCANNER_GUIDE.md)
+  - 数据接口扫描脚本与注册表盘点入口
 
+## Retained Specialized References
 
----
+- [`analyze_api_data_usage_README.md`](./analyze_api_data_usage_README.md)
+  - API 与 Web 前端数据使用分析工具说明
 
-## 📊 统计信息
+## Retention Rule
 
-
-- **总文档数**: 3
-- **总目录数**: 0
-- **最后更新**: 2026-03-24
-
----
-
-
-## 📁 项目根目录
-
-- 📄 [DATA_INTERFACE_SCANNER_GUIDE](DATA_INTERFACE_SCANNER_GUIDE.md)
-- 📄 [UNIFIED_INTERFACE_GUIDE](UNIFIED_INTERFACE_GUIDE.md)
-- 📄 [analyze_api_data_usage_README](analyze_api_data_usage_README.md)
+- 该 family 当前保留为 `supporting`，不升级为新的 canonical docs trunk
+- 根导航只暴露统一接口与扫描工具两个仍具直接使用价值的入口，API 使用分析说明统一通过本 index 进入
+- 若后续 `analyze_api_data_usage_README.md` 的实际入链继续下降，可再按 bounded batch 单独评估 archive/delete

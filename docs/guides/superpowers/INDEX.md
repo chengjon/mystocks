@@ -1,38 +1,27 @@
-# MyStocks 文档索引
+# Superpowers Guide Family
 
 > **导航说明**:
-> 本文件是文档导航或索引，不是当前规则、当前基线或当前实现状态的唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线文档一并核对。
->
-> 文内目录、链接、数量和分类如未重新生成或复核，应视为导航快照，不得直接当作当前事实。
+> 本文件是 `docs/guides/superpowers/` 的 transition index，不是仓库共享规则、当前 superpowers 执行口径或唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若涉及具体执行入口，再结合根目录 `AGENTS.md`、根目录 `CLAUDE.md` 与当前代码核对。
 
+## Current Entry Order
 
-**生成时间**: 2026-03-25 00:28:18
+这一 family 当前角色是 `supporting`，主要保留 superpowers 相关的历史 implementation plans，不承担仓库级 trunk，也不再作为活跃 workflow 入口。推荐阅读顺序：
 
+1. 先确认根目录 `AGENTS.md`、`architecture/STANDARDS.md` 与当前实际 skill/tooling 配置
+2. 如需回看历史实施方案，再进入 `plans/`
 
----
+## Retained Specialized References
 
-## 🚀 快速导航
+### Plans
 
+- [`plans/2026-03-23-frontend-test-gates.md`](./plans/2026-03-23-frontend-test-gates.md)
+  - Frontend test gates 历史实施计划
+- [`plans/2026-03-25-guides-onboarding-migration.md`](./plans/2026-03-25-guides-onboarding-migration.md)
+  - Guides onboarding migration 历史实施计划
 
----
+## Retention Rule
 
-## 📊 统计信息
-
-
-- **总文档数**: 2
-- **总目录数**: 1
-- **最后更新**: 2026-03-25
-
----
-
-
-## 📁 项目根目录
-
-- 📄 [README](./INDEX.md)
-- 📂 [Plans](plans)
-
-#### Plans
-
-    - 📄 [2026-03-23-frontend-test-gates](plans/2026-03-23-frontend-test-gates.md)
-    - 📄 [2026-03-25-guides-onboarding-migration](plans/2026-03-25-guides-onboarding-migration.md)
+- 该 family 当前保留为 `supporting`，不升级为新的 canonical docs trunk
+- 根导航不再平铺暴露 superpowers 下的历史 plan 文件，读者统一先进入本 family index
+- 若后续确认这些历史计划已无现实入链义务，可继续按 bounded batch 单独评估 archive/delete

@@ -1,41 +1,44 @@
-# MyStocks 文档索引
+# Data Source Guide Family
 
 > **导航说明**:
-> 本文件是文档导航或索引，不是当前规则、当前基线或当前实现状态的唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线文档一并核对。
->
-> 文内目录、链接、数量和分类如未重新生成或复核，应视为导航快照，不得直接当作当前事实。
+> 本文件是 `docs/guides/data-source/` 的 transition index，不是仓库共享规则、当前数据源实现边界或唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若涉及具体实现状态，再结合根目录 `AGENTS.md`、当前代码与相关脚本核对。
 
+## Current Entry Order
 
-**生成时间**: 2026-03-24 12:39:03
+这一 family 当前角色是 `supporting`，用于保留数据源接入、管理、速查、监控与优化说明，不承担仓库级 trunk。推荐阅读顺序：
 
+1. [`NEW_API_SOURCE_INTEGRATION_GUIDE.md`](./NEW_API_SOURCE_INTEGRATION_GUIDE.md)
+2. [`DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md`](./DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md)
+3. [`DATA_SOURCE_TOOLS_QUICK_REFERENCE.md`](./DATA_SOURCE_TOOLS_QUICK_REFERENCE.md)
+4. 再按需进入数据清洗、监控、端点注册、扩展策略和优化专题
 
----
+## Active Supporting Guides
 
-## 🚀 快速导航
+- [`NEW_API_SOURCE_INTEGRATION_GUIDE.md`](./NEW_API_SOURCE_INTEGRATION_GUIDE.md)
+  - 新增数据源/API 接口开发与验证入口
+- [`DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md`](./DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md)
+  - 数据源管理工具完整使用说明
+- [`DATA_SOURCE_TOOLS_QUICK_REFERENCE.md`](./DATA_SOURCE_TOOLS_QUICK_REFERENCE.md)
+  - 数据源管理与调用速查卡片
 
+## Retained Specialized References
 
----
+- [`DATA_CLEANING_QUICK_START.md`](./DATA_CLEANING_QUICK_START.md)
+  - 数据清洗与验证快速开始
+- [`DATA_SOURCE_ENDPOINT_REGISTRATION_GUIDE.md`](./DATA_SOURCE_ENDPOINT_REGISTRATION_GUIDE.md)
+  - 数据源端点注册方案
+- [`DATA_SOURCE_EXPANSION_STRATEGY.md`](./DATA_SOURCE_EXPANSION_STRATEGY.md)
+  - 数据源扩展与规划说明
+- [`DATA_SOURCE_MONITORING_GUIDE.md`](./DATA_SOURCE_MONITORING_GUIDE.md)
+  - 数据源监控系统集成指南
+- [`DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md`](./DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md)
+  - 优化方案部署检查清单
+- [`DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md`](./DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md)
+  - 优化方案快速参考
 
-## 📊 统计信息
+## Retention Rule
 
-
-- **总文档数**: 9
-- **总目录数**: 0
-- **最后更新**: 2026-03-24
-
----
-
-
-## 📁 项目根目录
-
-- 📄 [README](./INDEX.md)
-- 📄 [DATA_CLEANING_QUICK_START](DATA_CLEANING_QUICK_START.md)
-- 📄 [DATA_SOURCE_ENDPOINT_REGISTRATION_GUIDE](DATA_SOURCE_ENDPOINT_REGISTRATION_GUIDE.md)
-- 📄 [DATA_SOURCE_EXPANSION_STRATEGY](DATA_SOURCE_EXPANSION_STRATEGY.md)
-- 📄 [DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE](DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md)
-- 📄 [DATA_SOURCE_MONITORING_GUIDE](DATA_SOURCE_MONITORING_GUIDE.md)
-- 📄 [DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST](DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md)
-- 📄 [DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE](DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md)
-- 📄 [DATA_SOURCE_TOOLS_QUICK_REFERENCE](DATA_SOURCE_TOOLS_QUICK_REFERENCE.md)
-- 📄 [NEW_API_SOURCE_INTEGRATION_GUIDE](NEW_API_SOURCE_INTEGRATION_GUIDE.md)
+- 该 family 当前保留为 `supporting`，不升级为新的 canonical docs trunk
+- 根导航只保留当前仍有较强直接使用价值的接入、管理与速查入口，其余清洗、监控、优化与扩展材料统一通过本 index 进入
+- 若后续 specialized references 的实际入链继续下降，可继续按 bounded batch 单独评估 archive/delete

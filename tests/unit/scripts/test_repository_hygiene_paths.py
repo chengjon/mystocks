@@ -814,13 +814,23 @@ def test_hook_guides_are_converged_under_guides_hooks_family() -> None:
 
 
 def test_superpowers_docs_are_converged_under_guides_family() -> None:
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
+    superpowers_index = (PROJECT_ROOT / "docs" / "guides" / "superpowers" / "INDEX.md").read_text(encoding="utf-8")
     directory_plan = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "directory-organization" / "DIRECTORY_ORGANIZATION_PLAN.md"
     ).read_text(encoding="utf-8")
 
     assert not (PROJECT_ROOT / "docs" / "superpowers").exists()
     assert (PROJECT_ROOT / "docs" / "guides" / "superpowers" / "plans" / "2026-03-23-frontend-test-gates.md").is_file()
+    assert (PROJECT_ROOT / "docs" / "guides" / "superpowers" / "plans" / "2026-03-25-guides-onboarding-migration.md").is_file()
+    assert "guides/superpowers/INDEX.md" in docs_index
+    assert "guides/superpowers/plans/2026-03-23-frontend-test-gates.md" not in docs_index
+    assert "guides/superpowers/plans/2026-03-25-guides-onboarding-migration.md" not in docs_index
+    assert "Supporting Guides](guides/superpowers/INDEX.md)" in docs_index
     assert "docs/guides/superpowers/" in directory_plan
+    assert "transition index" in superpowers_index
+    assert "2026-03-23-frontend-test-gates.md" in superpowers_index
+    assert "2026-03-25-guides-onboarding-migration.md" in superpowers_index
 
 
 def test_openspec_command_template_is_converged_under_guides_openspec_cmd_family() -> None:
@@ -1487,6 +1497,7 @@ def test_standards_index_root_is_converged_under_reports_cleanup_index_artifacts
 
 
 def test_ai_tooling_guides_are_converged_under_guides_ai_tools_family() -> None:
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
     agents_skills_report = (
         PROJECT_ROOT / "docs" / "api" / "AGENTS_SKILLS_AVAILABILITY_REPORT.md"
@@ -1516,7 +1527,6 @@ def test_ai_tooling_guides_are_converged_under_guides_ai_tools_family() -> None:
         PROJECT_ROOT / "scripts" / "opencode" / "migrate_opencode_assets_to_mydoc.sh"
     ).read_text(encoding="utf-8")
     task_report = (PROJECT_ROOT / "TASK-REPORT.md").read_text(encoding="utf-8")
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
     ai_tools_index = (PROJECT_ROOT / "docs" / "guides" / "ai-tools" / "INDEX.md").read_text(encoding="utf-8")
     cleanup_index_root = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "index-artifacts" / "INDEX_root.md"
@@ -1544,8 +1554,22 @@ def test_ai_tooling_guides_are_converged_under_guides_ai_tools_family() -> None:
     for name in ai_tool_docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "ai-tools" / name).is_file()
-        assert f"ai-tools/{name}" in guides_index
         assert f"ai-tools/{name}" in cleanup_index_root
+
+    assert "guides/ai-tools/INDEX.md" in docs_index
+    assert "guides/ai-tools/AI_QUICK_START.md" in docs_index
+    assert "guides/ai-tools/AGENTS.md" in docs_index
+    assert "guides/ai-tools/CLAUDE.md" in docs_index
+    assert "guides/ai-tools/GEMINI.md" in docs_index
+    assert "guides/ai-tools/GRAPHITI_MCP_WORKFLOW.md" in docs_index
+    assert "guides/ai-tools/OMC_WORKFLOW_GUIDE.md" in docs_index
+    assert "guides/ai-tools/OMO_SETUP_GUIDE.md" in docs_index
+    assert "guides/ai-tools/OpenCode生产级配置与固化指南.md" in docs_index
+    assert "guides/ai-tools/AGENTS_DOCUMENTATION_INDEX.md" not in docs_index
+    assert "guides/ai-tools/CLAUDE_CODE_AGENTS_MANAGEMENT_GUIDE.md" not in docs_index
+    assert "guides/ai-tools/AI_TEST_OPTIMIZER_USER_GUIDE.md" not in docs_index
+    assert "guides/ai-tools/GEMINI_PROXY_CONFIGURATION_GUIDE.md" not in docs_index
+    assert "Supporting Guides](guides/ai-tools/INDEX.md)" in docs_index
 
     assert "docs/guides/ai-tools/OMC_WORKFLOW_GUIDE.md" in readme
     assert "docs/guides/ai-tools/CLAUDE_AGENTS_SUMMARY.md" in agents_skills_report
@@ -1559,7 +1583,7 @@ def test_ai_tooling_guides_are_converged_under_guides_ai_tools_family() -> None:
     assert 'SRC_PROD_GUIDE="$SRC_ROOT/ai-tools/OpenCode生产级配置与固化指南.md"' in update_mydoc_opencode_guides
     assert 'SRC_OMO_GUIDE="$SRC_ROOT/ai-tools/OMO_SETUP_GUIDE.md"' in update_mydoc_opencode_guides
     assert 'SRC_GUIDE="$SRC_ROOT/docs/guides/ai-tools/OMO_SETUP_GUIDE.md"' in migrate_opencode_assets
-    assert "docs/guides/ai-tools/GEMINI_PROXY_CONFIGURATION_GUIDE.md" in task_report
+    assert "docs/guides/ai-tools/GEMINI_PROXY_CONFIGURATION_GUIDE.md" not in task_report
     assert "AMP配置" in ai_tools_index
     assert "amp-help" in ai_tools_index
     assert "aider-local-maintenance" in ai_tools_index
@@ -1574,6 +1598,7 @@ def test_ai_tooling_guides_are_converged_under_guides_ai_tools_family() -> None:
     assert "OpenCode生产级配置与固化指南" in ai_tools_index
     assert "claude_code_lsp_guide" in ai_tools_index
     assert "claude_code_plugin_marketplace_fix" in ai_tools_index
+    assert "transition index" in ai_tools_index
     omo_setup_guide = (PROJECT_ROOT / "docs" / "guides" / "ai-tools" / "OMO_SETUP_GUIDE.md").read_text(
         encoding="utf-8"
     )
@@ -1588,7 +1613,7 @@ def test_ai_tooling_guides_are_converged_under_guides_ai_tools_family() -> None:
 
 
 def test_ai_quick_start_is_converged_under_guides_ai_tools_family() -> None:
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     ai_tools_index = (PROJECT_ROOT / "docs" / "guides" / "ai-tools" / "INDEX.md").read_text(encoding="utf-8")
     cleanup_index_root = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "index-artifacts" / "INDEX_root.md"
@@ -1621,8 +1646,8 @@ def test_ai_quick_start_is_converged_under_guides_ai_tools_family() -> None:
 
     assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
     assert (PROJECT_ROOT / "docs" / "guides" / "ai-tools" / name).is_file()
-    assert f"ai-tools/{name}" in guides_index
-    assert name.removesuffix(".md") in ai_tools_index
+    assert f"guides/ai-tools/{name}" in docs_index
+    assert name in ai_tools_index
     assert f"guides/ai-tools/{name}" in cleanup_index_root
     assert "./guides/ai-tools/AI_QUICK_START.md" in function_tree
     assert "docs/guides/ai-tools/AI_QUICK_START.md" in feature_workflow
@@ -1631,7 +1656,7 @@ def test_ai_quick_start_is_converged_under_guides_ai_tools_family() -> None:
     assert "../guides/ai-tools/AI_QUICK_START.md" in backlog_priorities
     assert "docs/guides/ai-tools/AI_QUICK_START.md" in openspec_tasks
     assert "docs/guides/ai-tools/AI_QUICK_START.md" in openspec_proposal
-    assert "docs/guides/ai-tools/AI_QUICK_START.md" in task_report
+    assert "docs/guides/ai-tools/AI_QUICK_START.md" not in task_report
     assert "../../../architecture/STANDARDS.md" in ai_quick_start
     assert "../../../openspec/AGENTS.md" in ai_quick_start
     assert "../../INDEX.md" in ai_quick_start
@@ -1641,7 +1666,6 @@ def test_ai_quick_start_is_converged_under_guides_ai_tools_family() -> None:
 
 
 def test_governance_guides_are_converged_under_guides_governance_family() -> None:
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
     cleanup_index_root = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "index-artifacts" / "INDEX_root.md"
     ).read_text(encoding="utf-8")
@@ -1679,18 +1703,18 @@ def test_onboarding_guides_are_converged_under_guides_onboarding_family() -> Non
     for name in onboarding_docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "onboarding" / name).is_file()
-        assert f"- [{name.removesuffix('.md')}]({name})" not in guides_index
-        assert f"onboarding/{name}" in guides_index
         assert f"guides/onboarding/{name}" in docs_index
         assert f"guides/onboarding/{name}" in cleanup_index_root
         assert name.removesuffix(".md") in onboarding_index
 
+    assert "transition index" in onboarding_index
+
 
 def test_ai_test_optimizer_guides_are_converged_under_guides_ai_tools_family() -> None:
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     optimizer_user_guide = (
         PROJECT_ROOT / "docs" / "guides" / "ai-tools" / "AI_TEST_OPTIMIZER_USER_GUIDE.md"
     ).read_text(encoding="utf-8")
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
     ai_tools_index = (PROJECT_ROOT / "docs" / "guides" / "ai-tools" / "INDEX.md").read_text(encoding="utf-8")
     cleanup_index_root = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "index-artifacts" / "INDEX_root.md"
@@ -1704,9 +1728,10 @@ def test_ai_test_optimizer_guides_are_converged_under_guides_ai_tools_family() -
     for name in optimizer_docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "ai-tools" / name).is_file()
-        assert f"ai-tools/{name}" in guides_index
         assert f"ai-tools/{name}" in cleanup_index_root
 
+    assert "guides/ai-tools/AI_TEST_OPTIMIZER_TRAINING.md" not in docs_index
+    assert "guides/ai-tools/AI_TEST_OPTIMIZER_USER_GUIDE.md" not in docs_index
     assert "docs/guides/ai-tools/AI_TEST_OPTIMIZER_USER_GUIDE.md" in optimizer_user_guide
     assert "AI_TEST_OPTIMIZER_TRAINING" in ai_tools_index
     assert "AI_TEST_OPTIMIZER_USER_GUIDE" in ai_tools_index
@@ -1730,7 +1755,7 @@ def test_maestro_and_multicli_runtime_docs_are_converged_under_guides_multicli_t
     reports_cleanup_index_root = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "index-artifacts" / "INDEX_root.md"
     ).read_text(encoding="utf-8")
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     multicli_index = (PROJECT_ROOT / "docs" / "guides" / "multi-cli-tasks" / "INDEX.md").read_text(encoding="utf-8")
 
     assert not (PROJECT_ROOT / "docs" / "guides" / "MAESTRO_SUMMARY.md").exists()
@@ -1743,8 +1768,8 @@ def test_maestro_and_multicli_runtime_docs_are_converged_under_guides_multicli_t
     assert (PROJECT_ROOT / "docs" / "guides" / "multi-cli-tasks" / "SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md").is_file()
     assert (PROJECT_ROOT / "docs" / "guides" / "multi-cli-tasks" / "MULTI_CLI_PROMPT_STRATEGIES.md").is_file()
 
-    assert "docs/guides/multi-cli-tasks/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md" in task_md
-    assert "docs/guides/multi-cli-tasks/MULTI_CLI_PROMPT_STRATEGIES.md" in task_md
+    assert "docs/guides/multi-cli-tasks/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md" not in task_md
+    assert "docs/guides/multi-cli-tasks/MULTI_CLI_PROMPT_STRATEGIES.md" not in task_md
     assert "docs/guides/multi-cli-tasks/MAESTRO_SUMMARY.md" in maestro_readme
     assert "docs/guides/multi-cli-tasks/MAESTRO_QUICK_START.md" in maestro_readme
     assert "docs/guides/multi-cli-tasks/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md" in maestro_readme
@@ -1757,17 +1782,19 @@ def test_maestro_and_multicli_runtime_docs_are_converged_under_guides_multicli_t
     assert "multi-cli-tasks/MAESTRO_QUICK_START.md" in reports_cleanup_index_root
     assert "multi-cli-tasks/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md" in reports_cleanup_index_root
     assert "multi-cli-tasks/MULTI_CLI_PROMPT_STRATEGIES.md" in reports_cleanup_index_root
-    assert "multi-cli-tasks/MAESTRO_SUMMARY.md" in guides_index
-    assert "multi-cli-tasks/MAESTRO_QUICK_START.md" in guides_index
-    assert "multi-cli-tasks/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md" in guides_index
-    assert "multi-cli-tasks/MULTI_CLI_PROMPT_STRATEGIES.md" in guides_index
+    assert "guides/multi-cli-tasks/MAESTRO_SUMMARY.md" not in docs_index
+    assert "guides/multi-cli-tasks/MAESTRO_QUICK_START.md" not in docs_index
+    assert "guides/multi-cli-tasks/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md" not in docs_index
+    assert "guides/multi-cli-tasks/MULTI_CLI_PROMPT_STRATEGIES.md" not in docs_index
     assert "MAESTRO_SUMMARY" in multicli_index
     assert "MAESTRO_QUICK_START" in multicli_index
     assert "SYMPHONY_LOCAL_MULTICLI_WORKFLOW" in multicli_index
     assert "MULTI_CLI_PROMPT_STRATEGIES" in multicli_index
+    assert "transition index" in multicli_index
 
 
 def test_selected_web_guides_are_converged_under_guides_web_family() -> None:
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     web_access_standard = (
         PROJECT_ROOT / "docs" / "guides" / "web" / "WEB_ACCESS_VERIFICATION_STANDARD.md"
     ).read_text(encoding="utf-8")
@@ -1799,7 +1826,6 @@ def test_selected_web_guides_are_converged_under_guides_web_family() -> None:
     tests_tasks = (
         PROJECT_ROOT / "tests" / "changes" / "frontend-optimization-six-phase" / "tasks.md"
     ).read_text(encoding="utf-8")
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
     web_index = (PROJECT_ROOT / "docs" / "guides" / "web" / "INDEX.md").read_text(encoding="utf-8")
     cleanup_index_root = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "index-artifacts" / "INDEX_root.md"
@@ -1827,14 +1853,17 @@ def test_selected_web_guides_are_converged_under_guides_web_family() -> None:
     assert "docs/guides/web/WEB_FRONTEND_STARTUP_GUIDE.md" in architecture_readme
     assert "docs/guides/web/WEB_ROUTER_MIGRATION_RECORD.md" in openspec_tasks
     assert "docs/guides/web/WEB_ROUTER_MIGRATION_RECORD.md" in tests_tasks
-    assert "web/WEB_FRAMEWORK_INTEGRATION_PLAN.md" in guides_index
-    assert "web/WEB_FRONTEND_STARTUP_GUIDE.md" in guides_index
-    assert "web/WEB_HTML_SAMPLES_GUIDE.md" in guides_index
-    assert "web/WEB_ROUTER_MIGRATION_RECORD.md" in guides_index
+    assert "guides/web/INDEX.md" in docs_index
+    assert "guides/web/WEB_FRONTEND_STARTUP_GUIDE.md" in docs_index
+    assert "guides/web/WEB_FRAMEWORK_INTEGRATION_PLAN.md" not in docs_index
+    assert "guides/web/WEB_HTML_SAMPLES_GUIDE.md" not in docs_index
+    assert "guides/web/WEB_ROUTER_MIGRATION_RECORD.md" not in docs_index
+    assert "Supporting Guides](guides/web/INDEX.md)" in docs_index
     assert "WEB_FRAMEWORK_INTEGRATION_PLAN" in web_index
     assert "WEB_FRONTEND_STARTUP_GUIDE" in web_index
     assert "WEB_HTML_SAMPLES_GUIDE" in web_index
     assert "WEB_ROUTER_MIGRATION_RECORD" in web_index
+    assert "transition index" in web_index
     assert "web/WEB_FRAMEWORK_INTEGRATION_PLAN.md" in cleanup_index_root
     assert "web/WEB_FRONTEND_STARTUP_GUIDE.md" in cleanup_index_root
     assert "web/WEB_HTML_SAMPLES_GUIDE.md" in cleanup_index_root
@@ -1842,7 +1871,7 @@ def test_selected_web_guides_are_converged_under_guides_web_family() -> None:
 
 
 def test_html5_migration_experience_doc_is_converged_under_guides_web_family() -> None:
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     web_index = (PROJECT_ROOT / "docs" / "guides" / "web" / "INDEX.md").read_text(encoding="utf-8")
     cleanup_index_root = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "index-artifacts" / "INDEX_root.md"
@@ -1852,7 +1881,7 @@ def test_html5_migration_experience_doc_is_converged_under_guides_web_family() -
 
     assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
     assert (PROJECT_ROOT / "docs" / "guides" / "web" / name).is_file()
-    assert f"web/{name}" in guides_index
+    assert f"guides/web/{name}" not in docs_index
     assert name.removesuffix(".md") in web_index
     assert f"guides/web/{name}" in cleanup_index_root or f"web/{name}" in cleanup_index_root
 
@@ -1861,7 +1890,7 @@ def test_theme_guides_are_converged_under_guides_web_family() -> None:
     linear_completion_report = (
         PROJECT_ROOT / "docs" / "guides" / "web" / "LINEAR_THEME_COMPLETION_REPORT.md"
     ).read_text(encoding="utf-8")
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     web_index = (PROJECT_ROOT / "docs" / "guides" / "web" / "INDEX.md").read_text(encoding="utf-8")
     cleanup_index_root = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "index-artifacts" / "INDEX_root.md"
@@ -1875,7 +1904,7 @@ def test_theme_guides_are_converged_under_guides_web_family() -> None:
     for name in theme_docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "web" / name).is_file()
-        assert f"web/{name}" in guides_index
+        assert f"guides/web/{name}" not in docs_index
         assert f"web/{name}" in cleanup_index_root
 
     assert "/docs/guides/web/LINEAR_THEME_GUIDE.md" in linear_completion_report
@@ -1884,7 +1913,7 @@ def test_theme_guides_are_converged_under_guides_web_family() -> None:
 
 
 def test_additional_web_runtime_and_planning_guides_are_converged_under_guides_web_family() -> None:
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     web_index = (PROJECT_ROOT / "docs" / "guides" / "web" / "INDEX.md").read_text(encoding="utf-8")
     cleanup_index_root = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "index-artifacts" / "INDEX_root.md"
@@ -1934,10 +1963,14 @@ def test_additional_web_runtime_and_planning_guides_are_converged_under_guides_w
     for name in web_docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "web" / name).is_file()
-        assert f"web/{name}" in guides_index
         assert f"web/{name}" in cleanup_index_root
         assert name.removesuffix(".md") in web_index
 
+    assert "guides/web/WEB_ACCESS_VERIFICATION_STANDARD.md" in docs_index
+    assert "guides/web/MYSTOCKS_WEB_STARTUP_EXPERIENCE.md" not in docs_index
+    assert "guides/web/WEB_CLIENT_OPERATION_PLAN.md" not in docs_index
+    assert "guides/web/WEB_FRAMEWORK_INCREMENTAL_OPTIMIZATION_PLAN.md" not in docs_index
+    assert "guides/web/WEB_TESTING_TOOLS_SETUP.md" not in docs_index
     assert "docs/guides/web/WEB_ACCESS_VERIFICATION_STANDARD.md" in verify_web_access_js
     assert "docs/guides/web/WEB_ACCESS_VERIFICATION_STANDARD.md" in verify_web_access_mjs
     assert "docs/guides/web/WEB_CLIENT_OPERATION_PLAN.md" in p0_report
@@ -1954,7 +1987,7 @@ def test_additional_web_runtime_and_planning_guides_are_converged_under_guides_w
 
 
 def test_realtime_integration_guide_is_converged_under_guides_web_family() -> None:
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     web_index = (PROJECT_ROOT / "docs" / "guides" / "web" / "INDEX.md").read_text(encoding="utf-8")
     cleanup_index_root = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "index-artifacts" / "INDEX_root.md"
@@ -1964,13 +1997,13 @@ def test_realtime_integration_guide_is_converged_under_guides_web_family() -> No
 
     assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
     assert (PROJECT_ROOT / "docs" / "guides" / "web" / name).is_file()
-    assert f"web/{name}" in guides_index
+    assert f"guides/web/{name}" not in docs_index
     assert name.removesuffix(".md") in web_index
     assert f"guides/web/{name}" in cleanup_index_root or f"web/{name}" in cleanup_index_root
 
 
 def test_websocket_performance_guide_is_converged_under_guides_web_family() -> None:
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     web_index = (PROJECT_ROOT / "docs" / "guides" / "web" / "INDEX.md").read_text(encoding="utf-8")
     cleanup_index_root = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "index-artifacts" / "INDEX_root.md"
@@ -1983,14 +2016,14 @@ def test_websocket_performance_guide_is_converged_under_guides_web_family() -> N
 
     assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
     assert (PROJECT_ROOT / "docs" / "guides" / "web" / name).is_file()
-    assert f"web/{name}" in guides_index
+    assert f"guides/web/{name}" not in docs_index
     assert name.removesuffix(".md") in web_index
     assert f"guides/web/{name}" in cleanup_index_root or f"web/{name}" in cleanup_index_root
     assert "../web/WEBSOCKET_PERFORMANCE_OPTIMIZATION_GUIDE.md" in pm2_guide
 
 
 def test_html_to_vue_conversion_guides_are_converged_under_guides_web_family() -> None:
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     web_index = (PROJECT_ROOT / "docs" / "guides" / "web" / "INDEX.md").read_text(encoding="utf-8")
     cleanup_index_root = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "index-artifacts" / "INDEX_root.md"
@@ -2016,7 +2049,7 @@ def test_html_to_vue_conversion_guides_are_converged_under_guides_web_family() -
     for name in docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "web" / name).is_file()
-        assert f"web/{name}" in guides_index
+        assert f"guides/web/{name}" not in docs_index
         assert name.removesuffix(".md") in web_index
         assert f"guides/web/{name}" in cleanup_index_root or f"web/{name}" in cleanup_index_root
 
@@ -2027,6 +2060,13 @@ def test_html_to_vue_conversion_guides_are_converged_under_guides_web_family() -
 
 
 def test_artdeco_guides_are_converged_under_guides_web_family() -> None:
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
+    root_artdeco_component_guide = (
+        PROJECT_ROOT / "docs" / "guides" / "ARTDECO_COMPONENT_GUIDE.md"
+    ).read_text(encoding="utf-8")
+    root_artdeco_master_index = (PROJECT_ROOT / "docs" / "guides" / "ARTDECO_MASTER_INDEX.md").read_text(
+        encoding="utf-8"
+    )
     task_report = (PROJECT_ROOT / "TASK-REPORT.md").read_text(encoding="utf-8")
     frontend_package = (PROJECT_ROOT / "web" / "frontend" / "package.json").read_text(encoding="utf-8")
     artdeco_spec = (PROJECT_ROOT / "docs" / "api" / "ARTDECO_TRADING_CENTER_OPTIMIZED_V3.1.md").read_text(
@@ -2041,7 +2081,6 @@ def test_artdeco_guides_are_converged_under_guides_web_family() -> None:
     websocket_perf = (
         PROJECT_ROOT / "docs" / "guides" / "web" / "WEBSOCKET_PERFORMANCE_OPTIMIZATION_GUIDE.md"
     ).read_text(encoding="utf-8")
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
     web_index = (PROJECT_ROOT / "docs" / "guides" / "web" / "INDEX.md").read_text(encoding="utf-8")
     cleanup_index_root = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "index-artifacts" / "INDEX_root.md"
@@ -2062,12 +2101,32 @@ def test_artdeco_guides_are_converged_under_guides_web_family() -> None:
     ]
 
     for name in artdeco_docs:
-        assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
+        if name in {"ARTDECO_COMPONENT_GUIDE.md", "ARTDECO_MASTER_INDEX.md"}:
+            assert (PROJECT_ROOT / "docs" / "guides" / name).is_file()
+        else:
+            assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "web" / name).is_file()
-        assert f"web/{name}" in guides_index
         assert f"web/{name}" in cleanup_index_root
 
-    assert "docs/guides/web/ARTDECO_MASTER_INDEX.md" in task_report
+    assert "guides/web/INDEX.md" in docs_index
+    assert "guides/web/ARTDECO_START_HERE.md" in docs_index
+    assert "guides/web/ARTDECO_MASTER_INDEX.md" in docs_index
+    assert "guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md" in docs_index
+    assert "guides/web/ARTDECO_COMPONENT_GUIDE.md" in docs_index
+    assert "guides/web/ARTDECO_GRID_QUICK_REFERENCE.md" in docs_index
+    assert "guides/web/ARTDECO_MENU_DATA_FETCHING_IMPLEMENTATION_GUIDE.md" in docs_index
+    assert "guides/web/ARTDECO_GRID_QUICK_START.md" not in docs_index
+    assert "guides/web/ARTDECO_MENU_API_MAPPING.md" not in docs_index
+    assert "guides/web/ARTDECO_MENU_STRUCTURE_REFACTOR_PLAN.md" not in docs_index
+    assert "guides/web/ARTDECO_MENU_USER_TESTING_GUIDE.md" not in docs_index
+    assert "guides/web/ARTDECO_PAGE_TEMPLATE_GUIDE.md" not in docs_index
+    assert "guides/web/ARTDECO_SCSS_GOVERNANCE_BASELINE.md" not in docs_index
+    assert "guides/web/ARTDECO_UI_UX_FUNCTIONALITY_GUIDE.md" not in docs_index
+    assert "历史兼容入口" in root_artdeco_component_guide
+    assert "docs/guides/web/ARTDECO_COMPONENT_GUIDE.md" in root_artdeco_component_guide
+    assert "历史兼容入口" in root_artdeco_master_index
+    assert "docs/guides/web/ARTDECO_MASTER_INDEX.md" in root_artdeco_master_index
+    assert "docs/guides/web/ARTDECO_MASTER_INDEX.md" not in task_report
     assert "../../docs/guides/web/ARTDECO_MASTER_INDEX.md" in frontend_package
     assert "../../docs/guides/web/ARTDECO_GRID_QUICK_REFERENCE.md" in frontend_package
     assert "../../docs/guides/web/ARTDECO_UI_UX_FUNCTIONALITY_GUIDE.md" in frontend_package
@@ -2076,13 +2135,15 @@ def test_artdeco_guides_are_converged_under_guides_web_family() -> None:
     assert "./web/ARTDECO_MENU_STRUCTURE_REFACTOR_PLAN.md" in web_client_plan
     assert "./web/ARTDECO_MENU_DATA_FETCHING_IMPLEMENTATION_GUIDE.md" in websocket_perf
     assert "./web/ARTDECO_MENU_API_MAPPING.md" in websocket_perf
+    assert "ARTDECO_START_HERE" in web_index
+    assert "ARTDECO_FINTECH_UNIFIED_SPEC" in web_index
     assert "ARTDECO_MASTER_INDEX" in web_index
     assert "ARTDECO_SCSS_GOVERNANCE_BASELINE" in web_index
     assert "ARTDECO_MENU_API_MAPPING" in web_index
 
 
 def test_additional_ui_and_visualization_guides_are_converged_under_guides_web_family() -> None:
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     web_index = (PROJECT_ROOT / "docs" / "guides" / "web" / "INDEX.md").read_text(encoding="utf-8")
     cleanup_index_root = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "index-artifacts" / "INDEX_root.md"
@@ -2108,7 +2169,7 @@ def test_additional_ui_and_visualization_guides_are_converged_under_guides_web_f
     for name in ui_docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "web" / name).is_file()
-        assert f"web/{name}" in guides_index
+        assert f"guides/web/{name}" not in docs_index
         assert f"web/{name}" in cleanup_index_root
         assert name.removesuffix(".md") in web_index
 
@@ -2175,13 +2236,13 @@ def test_typescript_document_cluster_is_converged_under_guides_typescript_family
 
 
 def test_chrome_devtools_guides_are_converged_under_guides_chrome_devtools_family() -> None:
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     web_startup_guide = (PROJECT_ROOT / "docs" / "guides" / "web" / "WEB_FRONTEND_STARTUP_GUIDE.md").read_text(
         encoding="utf-8"
     )
     web_access_standard = (
         PROJECT_ROOT / "docs" / "guides" / "web" / "WEB_ACCESS_VERIFICATION_STANDARD.md"
     ).read_text(encoding="utf-8")
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
     chrome_index = (PROJECT_ROOT / "docs" / "guides" / "chrome-devtools" / "INDEX.md").read_text(
         encoding="utf-8"
     ) if (PROJECT_ROOT / "docs" / "guides" / "chrome-devtools" / "INDEX.md").exists() else ""
@@ -2200,9 +2261,15 @@ def test_chrome_devtools_guides_are_converged_under_guides_chrome_devtools_famil
     for name in chrome_docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "chrome-devtools" / name).is_file()
-        assert f"chrome-devtools/{name}" in guides_index
         assert f"chrome-devtools/{name}" in cleanup_index_root
 
+    assert "guides/chrome-devtools/INDEX.md" in docs_index
+    assert "guides/chrome-devtools/CHROME_DEVTOOLS_MCP_GUIDE.md" in docs_index
+    assert "guides/chrome-devtools/chrome-devtools-wsl2-guide.md" in docs_index
+    assert "guides/chrome-devtools/mystocks-chromedevtools-testing-guide.md" in docs_index
+    assert "guides/chrome-devtools/CHROME_DEVTOOLS_MCP_FIX_GUIDE.md" not in docs_index
+    assert "guides/chrome-devtools/CHROME_DEVTOOLS_MCP_SOLUTION.md" not in docs_index
+    assert "Supporting Guides](guides/chrome-devtools/INDEX.md)" in docs_index
     assert "docs/guides/chrome-devtools/mystocks-chromedevtools-testing-guide.md" in web_startup_guide
     assert "./chrome-devtools/mystocks-chromedevtools-testing-guide.md" in web_access_standard
     assert "CHROME_DEVTOOLS_MCP_FIX_GUIDE" in chrome_index
@@ -2210,6 +2277,7 @@ def test_chrome_devtools_guides_are_converged_under_guides_chrome_devtools_famil
     assert "CHROME_DEVTOOLS_MCP_SOLUTION" in chrome_index
     assert "chrome-devtools-wsl2-guide" in chrome_index
     assert "mystocks-chromedevtools-testing-guide" in chrome_index
+    assert "transition index" in chrome_index
 
 
 def test_mock_real_data_docs_are_converged_under_guides_mock_data_family() -> None:
@@ -2744,7 +2812,7 @@ def test_monitoring_guides_are_converged_under_operations_monitoring_family() ->
 
 
 def test_data_source_guides_are_converged_under_guides_data_source_family() -> None:
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     data_source_index = (
         PROJECT_ROOT / "docs" / "guides" / "data-source" / "INDEX.md"
     ).read_text(encoding="utf-8")
@@ -2783,22 +2851,31 @@ def test_data_source_guides_are_converged_under_guides_data_source_family() -> N
     for name in data_source_docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "data-source" / name).is_file()
-        assert f"data-source/{name}" in guides_index
         assert f"data-source/{name}" in cleanup_index_root
-        assert name.removesuffix(".md") in data_source_index
+        assert name in data_source_index
+
+    assert "guides/data-source/INDEX.md" in docs_index
+    assert "guides/data-source/NEW_API_SOURCE_INTEGRATION_GUIDE.md" in docs_index
+    assert "guides/data-source/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md" in docs_index
+    assert "guides/data-source/DATA_SOURCE_TOOLS_QUICK_REFERENCE.md" in docs_index
+    assert "guides/data-source/DATA_CLEANING_QUICK_START.md" not in docs_index
+    assert "guides/data-source/DATA_SOURCE_MONITORING_GUIDE.md" not in docs_index
+    assert "guides/data-source/DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md" not in docs_index
+    assert "Supporting Guides](guides/data-source/INDEX.md)" in docs_index
 
     assert "./docs/guides/data-source/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md" in readme_root
     assert "./docs/guides/data-source/DATA_SOURCE_TOOLS_QUICK_REFERENCE.md" in readme_root
-    assert "./data-source/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md" in guides_readme
-    assert "./data-source/DATA_SOURCE_TOOLS_QUICK_REFERENCE.md" in guides_readme
+    assert "./data-source/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md" not in guides_readme
+    assert "./data-source/DATA_SOURCE_TOOLS_QUICK_REFERENCE.md" not in guides_readme
     assert "./docs/guides/data-source/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md" in guides_claude
     assert "./docs/guides/data-source/DATA_SOURCE_TOOLS_QUICK_REFERENCE.md" in guides_claude
     assert "./docs/guides/data-source/NEW_API_SOURCE_INTEGRATION_GUIDE.md" in guides_claude
     assert "../guides/data-source/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md" in architecture_guide
-    assert "docs/guides/data-source/NEW_API_SOURCE_INTEGRATION_GUIDE.md" in api_readme
+    assert "docs/guides/data-source/NEW_API_SOURCE_INTEGRATION_GUIDE.md" not in api_readme
     assert "docs/guides/data-source/NEW_API_SOURCE_INTEGRATION_GUIDE.md" in quant_api_spec
     assert "docs/guides/data-source/NEW_API_SOURCE_INTEGRATION_GUIDE.md" in verify_data_source
     assert "docs/guides/data-source/NEW_API_SOURCE_INTEGRATION_GUIDE.md" in api_source_report
+    assert "transition index" in data_source_index
 
 
 def test_refactoring_and_index_analysis_docs_are_converged_under_reports_analysis() -> None:
@@ -2928,7 +3005,7 @@ def test_technical_debt_governance_charter_is_converged_under_docs_standards_fam
 
 
 def test_data_interface_guides_are_converged_under_guides_data_interface_family() -> None:
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     data_interface_index = (
         PROJECT_ROOT / "docs" / "guides" / "data-interface" / "INDEX.md"
     ).read_text(encoding="utf-8")
@@ -2954,8 +3031,16 @@ def test_data_interface_guides_are_converged_under_guides_data_interface_family(
     for name in docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "data-interface" / name).is_file()
-        assert f"data-interface/{name}" in guides_index
-        assert name.removesuffix(".md") in data_interface_index
+        assert name in data_interface_index
+
+    assert "guides/data-interface/INDEX.md" in docs_index
+    assert "guides/data-interface/UNIFIED_INTERFACE_GUIDE.md" in docs_index
+    assert "guides/data-interface/DATA_INTERFACE_SCANNER_GUIDE.md" in docs_index
+    assert "guides/data-interface/analyze_api_data_usage_README.md" not in docs_index
+    assert "Supporting Guides](guides/data-interface/INDEX.md)" in docs_index
+    assert "Retained Specialized References" in data_interface_index
+    assert "analyze_api_data_usage_README.md" in data_interface_index
+    assert "transition index" in data_interface_index
 
     assert "guides/data-interface/DATA_INTERFACE_SCANNER_GUIDE.md" in cleanup_index_root
     assert "guides/data-interface/UNIFIED_INTERFACE_GUIDE.md" in cleanup_index_root
@@ -3000,6 +3085,46 @@ def test_quant_trading_guides_are_converged_under_guides_quant_trading_family() 
     assert "guides/quant-trading/neural_algorithms_usage_guide.md" not in docs_index
     assert "transition index" in quant_index
     assert "./algorithm_system_usage_guide.md" in algorithm_usage
+
+
+def test_features_guides_are_converged_under_guides_features_family() -> None:
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
+    features_index = (PROJECT_ROOT / "docs" / "guides" / "features" / "INDEX.md").read_text(encoding="utf-8")
+    troubleshooting = (
+        PROJECT_ROOT / "docs" / "guides" / "features" / "TRADINGVIEW_TROUBLESHOOTING.md"
+    ).read_text(encoding="utf-8")
+
+    assert "guides/features/INDEX.md" in docs_index
+    assert "guides/features/TRADINGVIEW_TROUBLESHOOTING.md" in docs_index
+    assert "guides/features/STOCK_HEATMAP_IMPLEMENTATION.md" not in docs_index
+    assert "guides/features/TRADINGVIEW_FIX_SUMMARY.md" not in docs_index
+    assert "guides/features/WATCHLIST_GROUP_IMPLEMENTATION.md" not in docs_index
+    assert "guides/features/WENCAI_MENU_FIX.md" not in docs_index
+    assert "TRADINGVIEW_TROUBLESHOOTING.md" in features_index
+    assert "STOCK_HEATMAP_IMPLEMENTATION.md" in features_index
+    assert "TRADINGVIEW_FIX_SUMMARY.md" in features_index
+    assert "WATCHLIST_GROUP_IMPLEMENTATION.md" in features_index
+    assert "WENCAI_MENU_FIX.md" in features_index
+    assert "transition index" in features_index
+    assert "TradingView 官方 CDN" in troubleshooting
+
+
+def test_wencai_guides_are_converged_under_guides_wencai_family() -> None:
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
+    wencai_index = (PROJECT_ROOT / "docs" / "guides" / "wencai" / "INDEX.md").read_text(encoding="utf-8")
+    integration_index = (
+        PROJECT_ROOT / "docs" / "guides" / "wencai" / "WENCAI_INTEGRATION_INDEX.md"
+    ).read_text(encoding="utf-8")
+
+    assert "guides/wencai/INDEX.md" in docs_index
+    assert "guides/wencai/WENCAI_INTEGRATION_INDEX.md" in docs_index
+    assert "guides/wencai/WENCAI_INTEGRATION_QUICKREF.md" in docs_index
+    assert "guides/wencai/WENCAI_INTEGRATION_PLAN.md" not in docs_index
+    assert "WENCAI_INTEGRATION_INDEX.md" in wencai_index
+    assert "WENCAI_INTEGRATION_QUICKREF.md" in wencai_index
+    assert "WENCAI_INTEGRATION_PLAN.md" in wencai_index
+    assert "transition index" in wencai_index
+    assert "WENCAI_INTEGRATION_QUICKREF.md" in integration_index
 
 
 def test_security_guides_are_converged_under_standards_security_family() -> None:
@@ -3057,6 +3182,7 @@ def test_security_guides_are_converged_under_standards_security_family() -> None
 
 
 def test_frontend_topic_guides_are_converged_under_guides_frontend_family() -> None:
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     root_claude = (PROJECT_ROOT / "CLAUDE.md").read_text(encoding="utf-8")
     agents_md = (PROJECT_ROOT / "AGENTS.md").read_text(encoding="utf-8")
     frontend_status_report = (
@@ -3086,7 +3212,6 @@ def test_frontend_topic_guides_are_converged_under_guides_frontend_family() -> N
     frontend_port_fix = (
         PROJECT_ROOT / "docs" / "reports" / "FRONTEND_PORT_FIX_COMPLETION_REPORT.md"
     ).read_text(encoding="utf-8")
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
     frontend_index = (PROJECT_ROOT / "docs" / "guides" / "frontend" / "INDEX.md").read_text(
         encoding="utf-8"
     )
@@ -3117,8 +3242,21 @@ def test_frontend_topic_guides_are_converged_under_guides_frontend_family() -> N
     for name in frontend_docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "frontend" / name).is_file()
-        assert f"frontend/{name}" in guides_index
         assert f"frontend/{name}" in cleanup_index_root
+
+    assert "guides/frontend/INDEX.md" in docs_index
+    assert "guides/frontend/frontend-change-hygiene-and-micro-commit-guide.md" in docs_index
+    assert "guides/frontend/PR_GATE_QUICK_REFERENCE.md" in docs_index
+    assert "guides/frontend/DASHBOARD_API_INTEGRATION_GUIDE.md" in docs_index
+    assert "guides/frontend/DASHBOARD_API_ENRICHMENT_GUIDE.md" in docs_index
+    assert "guides/frontend/history-mode-deployment-guide.md" in docs_index
+    assert "guides/frontend/SASS_DEPRECATION_FIX.md" in docs_index
+    assert "guides/frontend/css-scss-development-guide.md" in docs_index
+    assert "guides/frontend/SERVICE_ADAPTER_GUIDE.md" not in docs_index
+    assert "guides/frontend/FRONTEND_ROUTING_OPTIMIZATION_GUIDE.md" not in docs_index
+    assert "guides/frontend/dayjs修复指南.md" not in docs_index
+    assert "guides/frontend/dayjs新手指南.md" not in docs_index
+    assert "Supporting Guides](guides/frontend/INDEX.md)" in docs_index
 
     assert "docs/guides/frontend/frontend-change-hygiene-and-micro-commit-guide.md" in root_claude
     assert "docs/guides/frontend/frontend-change-hygiene-and-micro-commit-guide.md" in agents_md
@@ -3145,6 +3283,7 @@ def test_frontend_topic_guides_are_converged_under_guides_frontend_family() -> N
     assert "history-mode-deployment-guide" in frontend_index
     assert "frontend-auth-guard-enablement-task" in frontend_index
     assert "frontend-change-hygiene-and-micro-commit-guide" in frontend_index
+    assert "transition index" in frontend_index
     assert "frontend-routing-history-migration-task" in frontend_index
     assert "frontend_optimization_next_steps" in frontend_index
     assert "mystocks-artdeco-integration-fix" in frontend_index
@@ -3153,6 +3292,7 @@ def test_frontend_topic_guides_are_converged_under_guides_frontend_family() -> N
 
 
 def test_mongo_multicli_guides_are_converged_under_guides_multicli_tasks() -> None:
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
     function_map = (PROJECT_ROOT / "docs" / "overview" / "FUNCTION_MAP.md").read_text(encoding="utf-8")
     function_catalog = (PROJECT_ROOT / "governance" / "function-tree" / "catalog.yaml").read_text(encoding="utf-8")
@@ -3163,7 +3303,6 @@ def test_mongo_multicli_guides_are_converged_under_guides_multicli_tasks() -> No
         PROJECT_ROOT / "docs" / "guides" / "multi-cli-tasks" / "MAIN_CLI_WORKFLOW_STANDARDS.md"
     ).read_text(encoding="utf-8")
     task_report = (PROJECT_ROOT / "TASK-REPORT.md").read_text(encoding="utf-8")
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
     multicli_index = (PROJECT_ROOT / "docs" / "guides" / "multi-cli-tasks" / "INDEX.md").read_text(
         encoding="utf-8"
     )
@@ -3179,25 +3318,29 @@ def test_mongo_multicli_guides_are_converged_under_guides_multicli_tasks() -> No
     for name in mongo_docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "multi-cli-tasks" / name).is_file()
-        assert f"multi-cli-tasks/{name}" in guides_index
         assert f"multi-cli-tasks/{name}" in cleanup_index_root
 
+    assert "guides/multi-cli-tasks/INDEX.md" in docs_index
+    assert "guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md" in docs_index
+    assert "guides/multi-cli-tasks/MONGO_MULTICLI_OPERATION_CHECKLIST.md" in docs_index
+    assert "guides/multi-cli-tasks/CONFIG_SYSTEM_GUIDE.md" not in docs_index
+    assert "Supporting Guides](guides/multi-cli-tasks/INDEX.md)" in docs_index
     assert "docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md" in readme
     assert "docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md" in function_map
     assert "docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md" in function_catalog
     assert "docs/guides/multi-cli-tasks/MONGO_MULTICLI_OPERATION_CHECKLIST.md" in cli_workflow_guide
     assert "docs/guides/multi-cli-tasks/MONGO_MULTICLI_OPERATION_CHECKLIST.md" in main_cli_standards
-    assert "docs/guides/multi-cli-tasks/MONGO_MULTICLI_OPERATION_CHECKLIST.md" in task_report
-    assert "docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md" in task_report
+    assert "docs/guides/multi-cli-tasks/MONGO_MULTICLI_OPERATION_CHECKLIST.md" not in task_report
+    assert "docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md" not in task_report
     assert "MONGO_MULTICLI_COORDINATION_GUIDE" in multicli_index
     assert "MONGO_MULTICLI_OPERATION_CHECKLIST" in multicli_index
 
 
 def test_git_worktree_and_branch_strategy_guides_are_converged_under_guides_multicli_tasks() -> None:
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     cicd_daily = (
         PROJECT_ROOT / "docs" / "operations" / "ci-cd" / "MYSTOCKS_CI_CD_DAILY_APPLICATION.md"
     ).read_text(encoding="utf-8")
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
     multicli_index = (PROJECT_ROOT / "docs" / "guides" / "multi-cli-tasks" / "INDEX.md").read_text(
         encoding="utf-8"
     )
@@ -3213,16 +3356,19 @@ def test_git_worktree_and_branch_strategy_guides_are_converged_under_guides_mult
     for name in docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "multi-cli-tasks" / name).is_file()
-        assert f"multi-cli-tasks/{name}" in guides_index
         assert f"multi-cli-tasks/{name}" in cleanup_index_root
 
+    assert "guides/multi-cli-tasks/BRANCH_STRATEGY.md" in docs_index
+    assert "guides/multi-cli-tasks/MULTI_CLI_WORKTREE_MANAGEMENT.md" in docs_index
+    assert "guides/multi-cli-tasks/worktree.md" not in docs_index
+    assert "guides/multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md" not in docs_index
     assert "docs/guides/multi-cli-tasks/BRANCH_STRATEGY.md" in cicd_daily
     assert "BRANCH_STRATEGY" in multicli_index
     assert "worktree" in multicli_index
 
 
 def test_dayjs_guides_are_converged_under_guides_frontend_family() -> None:
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     frontend_index = (PROJECT_ROOT / "docs" / "guides" / "frontend" / "INDEX.md").read_text(
         encoding="utf-8"
     )
@@ -3233,9 +3379,10 @@ def test_dayjs_guides_are_converged_under_guides_frontend_family() -> None:
     for name in ["dayjs修复指南.md", "dayjs新手指南.md"]:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "frontend" / name).is_file()
-        assert f"frontend/{name}" in guides_index
         assert f"frontend/{name}" in cleanup_index_root
 
+    assert "guides/frontend/dayjs修复指南.md" not in docs_index
+    assert "guides/frontend/dayjs新手指南.md" not in docs_index
     assert "dayjs修复指南" in frontend_index
     assert "dayjs新手指南" in frontend_index
 
@@ -3263,7 +3410,7 @@ def test_windows_tdx_bridge_setup_is_converged_under_guides_tdx_integration_fami
 
 
 def test_buger_client_guides_are_converged_under_guides_buger_family() -> None:
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     buger_index = (PROJECT_ROOT / "docs" / "guides" / "buger" / "INDEX.md").read_text(encoding="utf-8")
     cleanup_index_root = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "index-artifacts" / "INDEX_root.md"
@@ -3281,24 +3428,28 @@ def test_buger_client_guides_are_converged_under_guides_buger_family() -> None:
     for name in buger_docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "buger" / name).is_file()
-        assert f"buger/{name}" in guides_index
         assert f"buger/{name}" in cleanup_index_root
 
+    assert "guides/buger/INDEX.md" in docs_index
+    assert "guides/buger/B项目接入指南.md" in docs_index
+    assert "guides/buger/客户端连接指南.md" in docs_index
+    assert "guides/buger/客户端集成指南.md" not in docs_index
     assert "docs/guides/buger/B项目接入指南.md" in phase10_report
     assert "docs/guides/buger/客户端集成指南.md" in phase10_report
     assert "docs/guides/buger/客户端连接指南.md" in phase10_report
     assert "B项目接入指南" in buger_index
     assert "客户端连接指南" in buger_index
     assert "客户端集成指南" in buger_index
+    assert "transition index" in buger_index
 
 
 def test_cli_registration_and_roles_guides_are_converged_under_guides_multicli_tasks() -> None:
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     cli_main_task = (PROJECT_ROOT / "scripts" / "cli" / "main" / "TASK.md").read_text(encoding="utf-8")
     cli_readme = (PROJECT_ROOT / "scripts" / "cli" / "README.md").read_text(encoding="utf-8")
     multicli_config_report = (
         PROJECT_ROOT / "docs" / "reports" / "MULTI_CLI_CONFIG_SYSTEM_COMPLETION.md"
     ).read_text(encoding="utf-8")
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
     multicli_index = (PROJECT_ROOT / "docs" / "guides" / "multi-cli-tasks" / "INDEX.md").read_text(
         encoding="utf-8"
     )
@@ -3314,9 +3465,10 @@ def test_cli_registration_and_roles_guides_are_converged_under_guides_multicli_t
     for name in cli_docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "multi-cli-tasks" / name).is_file()
-        assert f"multi-cli-tasks/{name}" in guides_index
         assert f"multi-cli-tasks/{name}" in cleanup_index_root
 
+    assert "guides/multi-cli-tasks/CLI_REGISTRATION_GUIDE.md" in docs_index
+    assert "guides/multi-cli-tasks/CLI_ROLES_REFERENCE.md" not in docs_index
     assert "docs/guides/multi-cli-tasks/CLI_REGISTRATION_GUIDE.md" in cli_main_task
     assert "../docs/guides/multi-cli-tasks/CLI_REGISTRATION_GUIDE.md" in cli_readme
     assert "../docs/guides/multi-cli-tasks/CLI_REGISTRATION_GUIDE.md" in multicli_config_report
@@ -3325,6 +3477,7 @@ def test_cli_registration_and_roles_guides_are_converged_under_guides_multicli_t
 
 
 def test_multicli_coordination_guides_are_converged_under_guides_multicli_tasks() -> None:
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     cli_main_task = (PROJECT_ROOT / "scripts" / "cli" / "main" / "TASK.md").read_text(encoding="utf-8")
     cli_readme = (PROJECT_ROOT / "scripts" / "cli" / "README.md").read_text(encoding="utf-8")
     multicli_config_report = (
@@ -3342,7 +3495,6 @@ def test_multicli_coordination_guides_are_converged_under_guides_multicli_tasks(
     cli_registration_guide = (
         PROJECT_ROOT / "docs" / "guides" / "multi-cli-tasks" / "CLI_REGISTRATION_GUIDE.md"
     ).read_text(encoding="utf-8")
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
     multicli_index = (PROJECT_ROOT / "docs" / "guides" / "multi-cli-tasks" / "INDEX.md").read_text(
         encoding="utf-8"
     )
@@ -3360,9 +3512,12 @@ def test_multicli_coordination_guides_are_converged_under_guides_multicli_tasks(
     for name in multicli_docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "multi-cli-tasks" / name).is_file()
-        assert f"multi-cli-tasks/{name}" in guides_index
         assert f"multi-cli-tasks/{name}" in cleanup_index_root
 
+    assert "guides/multi-cli-tasks/TASK_POOL_USAGE_GUIDE.md" in docs_index
+    assert "guides/multi-cli-tasks/CONFIG_SYSTEM_GUIDE.md" not in docs_index
+    assert "guides/multi-cli-tasks/MULTI_CLI_COLLABORATION_METHOD.md" not in docs_index
+    assert "guides/multi-cli-tasks/MULTI_CLI_OPTIMIZATION_PROPOSAL.md" not in docs_index
     assert "docs/guides/multi-cli-tasks/TASK_POOL_USAGE_GUIDE.md" in cli_main_task
     assert "../docs/guides/multi-cli-tasks/TASK_POOL_USAGE_GUIDE.md" in cli_readme
     assert "../docs/guides/multi-cli-tasks/MULTI_CLI_COLLABORATION_METHOD.md" in cli_readme
