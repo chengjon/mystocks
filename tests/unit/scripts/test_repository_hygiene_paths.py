@@ -1272,6 +1272,7 @@ def test_agents_cleanup_completion_docs_are_converged_under_reports_completion_r
 
 def test_multi_cli_main_cli_lessons_learned_is_converged_under_reports_worklogs() -> None:
     reports_index = (PROJECT_ROOT / "docs" / "reports" / "INDEX.md").read_text(encoding="utf-8")
+    worklogs_index = (PROJECT_ROOT / "docs" / "reports" / "worklogs" / "INDEX.md").read_text(encoding="utf-8")
     cleanup_index_root = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "index-artifacts" / "INDEX_root.md"
     ).read_text(encoding="utf-8")
@@ -1282,7 +1283,8 @@ def test_multi_cli_main_cli_lessons_learned_is_converged_under_reports_worklogs(
     assert not (PROJECT_ROOT / "docs" / "guides" / "MULTI_CLI_MAIN_CLI_LESSONS_LEARNED.md").exists()
     assert (PROJECT_ROOT / "docs" / "reports" / "worklogs" / "MULTI_CLI_MAIN_CLI_LESSONS_LEARNED.md").is_file()
 
-    assert "worklogs/MULTI_CLI_MAIN_CLI_LESSONS_LEARNED.md" in reports_index
+    assert "/opt/claude/mystocks_spec/docs/reports/worklogs/" in reports_index
+    assert "MULTI_CLI_MAIN_CLI_LESSONS_LEARNED.md" in worklogs_index
     assert "worklogs/MULTI_CLI_MAIN_CLI_LESSONS_LEARNED.md" in cleanup_index_root
     assert "../reports/worklogs/MULTI_CLI_MAIN_CLI_LESSONS_LEARNED.md" in phase7_proposal
 
