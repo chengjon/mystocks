@@ -14,8 +14,8 @@
 
 ### Known Gaps
 
-- F821 ruff errors: 699 in 46 files (verified 2026-04-09) — deferred to v1.2
-- 7 vitest failures in 7 test files + 1 unhandled error (chart styles, type cleanup, system settings — verified 2026-04-09)
+- F821 ruff errors: 699 in 45 files (verified 2026-04-09) — deferred to v1.2
+- 7 vitest failures in 7 test files, 1 with unhandled error (chart styles, type cleanup, system settings — verified 2026-04-09)
 
 ### Archive
 

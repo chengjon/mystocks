@@ -12,8 +12,8 @@
 **Goal:** Resolve all remaining F821 ruff errors and fix pre-existing vitest failures to achieve the project's core value of zero lint/test errors.
 
 **Target features:**
-- F821 ruff errors resolved (699 errors in 46 files → 0; baseline 2026-04-09, `ruff check src/ --select F821 --statistics`)
-- Vitest failures fixed (7 failures in 7 test files + 1 unhandled error → 0; baseline 2026-04-09, `cd web/frontend && npx vitest run`)
+- F821 ruff errors resolved (699 errors in 45 files → 0; baseline 2026-04-09, `ruff check src/ --select F821 --statistics`)
+- Vitest failures fixed (7 failures in 7 test files, 1 with unhandled error → 0; baseline 2026-04-09, `cd web/frontend && npx vitest run`)
 
 **Last shipped:** v1.1 Final Polish (2026-04-09)
 
@@ -58,8 +58,8 @@ Every file in the codebase has exactly one canonical location, every import reso
 
 ### Active
 
-- [ ] F821 ruff errors: 699 in 46 files → zero (baseline 2026-04-09)
-- [ ] Vitest failures: 7 test files + 1 unhandled error → zero (baseline 2026-04-09)
+- [ ] F821 ruff errors: 699 in 45 files → zero (baseline 2026-04-09)
+- [ ] Vitest failures: 7 test files, 1 with unhandled error → zero (baseline 2026-04-09)
 
 ### Out of Scope
 
@@ -78,7 +78,7 @@ Every file in the codebase has exactly one canonical location, every import reso
 - **v1.1** (2026-04-09): 3 phases, 5 plans, ~20 commits — final polish (composables, archive, entry)
 - **Python**: ~195K LOC in src/ (863 ruff errors remaining, down from 1,456)
 - **Frontend**: ~192K LOC in web/frontend/src/, single entry point (main-standard.ts)
-- **Remaining**: F821 resolution (699 errors, 46 files — verified 2026-04-09) — target for v1.2
+- **Remaining**: F821 resolution (699 errors, 45 files — verified 2026-04-09) — target for v1.2
 
 ### Architecture
 

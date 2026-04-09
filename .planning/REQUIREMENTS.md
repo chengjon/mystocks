@@ -63,9 +63,9 @@ Requirements for Lint & Test Zero milestone. Each maps to roadmap phases.
   - **Pass condition:** Both test files pass with zero failures
 
 - [ ] **VTEST-03**: Unhandled error in vitest resolved
-  - **Baseline:** 1 unhandled rejection (TypeError: monitoringApi.getSystemGeneralSettings is not a function) triggered by ArtDecoSystemSettings.spec.ts (2026-04-09)
-  - **Verification:** `cd web/frontend && npx vitest run 2>&1 | grep "Unhandled"`
-  - **Pass condition:** Zero unhandled errors in vitest output
+  - **Baseline:** 1 unhandled rejection (TypeError: monitoringApi.getSystemGeneralSettings is not a function) co-occurring with ArtDecoSystemSettings.spec.ts failure (2026-04-09)
+  - **Verification:** `cd web/frontend && npx vitest run 2>&1 | grep -c "Unhandled"`
+  - **Pass condition:** grep returns exit code 1 (zero matches)
 
 ### Milestone Gate
 
@@ -98,21 +98,21 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LINT-05 | — | Pending |
-| LINT-06 | — | Pending |
-| LINT-07 | — | Pending |
-| LINT-08 | — | Pending |
-| LINT-09 | — | Pending |
-| VTEST-01 | — | Pending |
-| VTEST-02 | — | Pending |
-| VTEST-03 | — | Pending |
-| GATE-01 | — | Pending |
-| GATE-02 | — | Pending |
+| LINT-05 | Phase 8 | Pending |
+| LINT-06 | Phase 9 | Pending |
+| LINT-07 | Phase 9 | Pending |
+| LINT-08 | Phase 9 | Pending |
+| LINT-09 | Phase 10 | Pending |
+| VTEST-01 | Phase 10 | Pending |
+| VTEST-02 | Phase 10 | Pending |
+| VTEST-03 | Phase 10 | Pending |
+| GATE-01 | Phase 11 | Pending |
+| GATE-02 | Phase 11 | Pending |
 
 **Coverage:**
 - v1.2 requirements: 10 total
-- Mapped to phases: 0
-- Unmapped: 10
+- Mapped to phases: 10
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-09*
