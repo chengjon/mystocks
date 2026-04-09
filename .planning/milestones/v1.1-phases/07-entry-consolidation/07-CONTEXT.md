@@ -6,7 +6,7 @@
 <domain>
 ## Phase Boundary
 
-Consolidate frontend entry points to a single canonical source (`main-standard.ts`). Resolve STRU-03 by handling verify-mount.js, archiving main.js, and cleaning up router artifacts. The migrated entry point becomes the full runtime boot — incorporating all production-critical startup responsibilities from main.js.
+Consolidate frontend entry points to a single canonical source (`main-standard.ts`). Resolve STRU-03 by handling verify-mount.js, archiving main.js, and cleaning up router artifacts. The migrated entry point becomes the full runtime boot — incorporating all retained startup responsibilities from main.js.
 
 Requirements: ENTRY-01, ENTRY-02, ENTRY-03
 
@@ -61,7 +61,7 @@ Requirements: ENTRY-01, ENTRY-02, ENTRY-03
 
 ### Traceability Updates
 
-- **D-12:** Update REQUIREMENTS.md traceability for ARCH-03: add note that demo/ views are reclassified as reference code (not routed in index.ts, features planned for future integration into main pages).
+- **D-12:** Update REQUIREMENTS.md traceability for ARCH-03: add note that demo/ views are reclassified as reference code (not routed in index.ts, features planned for future integration into main pages). Also update the existing demo-related out-of-scope wording so it no longer implies route truth is still unresolved after Phase 7.
 - **D-13:** Add resolution note in Phase 7 documents: Phase 6 D-08 ("route truth unresolved") is resolved — demo views kept as reference code, not routed in canonical router. Do NOT modify Phase 6's historical context file (it is a phase snapshot).
 
 ### Approval Gate
@@ -95,7 +95,7 @@ Requirements: ENTRY-01, ENTRY-02, ENTRY-03
 
 ### Test files needing updates
 - `web/frontend/tests/all-pages-accessibility.spec.ts` §66-71 — Demo page assertions to remove
-- `web/frontend/tests/menu-configuration.spec.js` §126-143 — Demo menu + Wencai assertions to remove
+- `web/frontend/tests/menu-configuration.spec.js` §121-144 — Entire "功能演示菜单" test block to remove
 
 ### Planning artifacts
 - `.planning/ROADMAP.md` §Phase 7 — Phase scope, requirements, success criteria

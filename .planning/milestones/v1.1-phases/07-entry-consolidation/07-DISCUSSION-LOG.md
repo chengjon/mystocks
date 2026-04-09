@@ -115,7 +115,7 @@
 | Skip update | Leave traceability as-is | |
 
 **User's choice:** Update traceability
-**Notes:** views/demo/ reclassified from "active, not safely deletable" to "reference code, not routed." Phase 6 D-08 note updated from "unresolved" to "resolved."
+**Notes:** views/demo/ reclassified from "active, not safely deletable" to "reference code, not routed." Phase 7 records the resolution of Phase 6 D-08 without rewriting the Phase 6 historical snapshot.
 
 ---
 
