@@ -9,6 +9,7 @@
 - [`ai-tools/`](/opt/claude/mystocks_spec/docs/guides/ai-tools/)
 - [`frontend/`](/opt/claude/mystocks_spec/docs/guides/frontend/)
 - [`hooks/`](/opt/claude/mystocks_spec/docs/guides/hooks/)
+- [`mock-data/`](/opt/claude/mystocks_spec/docs/guides/mock-data/)
 - [`web/`](/opt/claude/mystocks_spec/docs/guides/web/)
 - [`typescript/`](/opt/claude/mystocks_spec/docs/guides/typescript/)
 - [`multi-cli-tasks/`](/opt/claude/mystocks_spec/docs/guides/multi-cli-tasks/)
