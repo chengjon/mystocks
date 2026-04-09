@@ -4,7 +4,7 @@
 **Phase:** 03-structural-consolidation (Plan 03-02, Task 5)
 **Revised:** 2026-04-07 (review findings: enumerate individual SCSS files)
 
-## Inventory (10 vue files + 2 SCSS files)
+## Inventory (9 vue files + 2 SCSS files)
 
 | # | File | Runtime Consumers | Test Consumers |
 |---|------|-------------------|----------------|
