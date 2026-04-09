@@ -31,8 +31,14 @@
 ## 4) 验收标准（DoD）
 - 功能/行为验收：连续 10 个工作日有完整观测记录。
 - 质量门验收：门禁任务无中断，指标可追溯。
+- 基线/实测口径记录：
+  - 基线来源：`reports/analysis/tech-debt-baseline.json`
+  - 当前实测：`reports/analysis/tech-debt-current.json`
+  - 漂移结论：`reports/analysis/tech-debt-baseline-drift-report.json`
 - 证据命令：
   - `python scripts/dev/quality_gate/collect_tech_debt_baseline.py`
+  - `python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-drift-report --baseline reports/analysis/tech-debt-baseline.json --current reports/analysis/tech-debt-current.json --output reports/analysis/tech-debt-baseline-drift-report.json --only-drifted`
+  - `python scripts/dev/quality_gate/tech_debt_governance_gate.py weekly-report --baseline reports/analysis/tech-debt-baseline.json --current reports/analysis/tech-debt-current.json --output reports/analysis/tech-debt-weekly-report.md`
   - `openspec validate refactor-technical-debt-remediation-wave1 --strict`
 
 ## 5) 风险与应对
