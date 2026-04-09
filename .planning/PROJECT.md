@@ -7,13 +7,11 @@
 > 文内步骤、范围、状态或说明如未重新复核，应按其所属上下文理解，不得直接当作跨场景通用事实。
 
 
-## Current Milestone: v1.1 Final Polish
+## Current Milestone: None (Planning next)
 
-**Goal:** Resolve the 3 deferred structural items from v1.0 with evidence-based dispositions.
+**Last shipped:** v1.1 Final Polish (2026-04-09)
 
-**Target features:**
-- STRU-03: Single frontend entry point (resolve verify-mount.js, archive main.js)
-- STRU-05: Archive removal (handle 5 test deps, delete converted.archive/, demo/ is N/A)
+**Next step:** Use `/gsd:new-milestone` to plan the next milestone
 
 ## What This Is
 
@@ -68,15 +66,14 @@ Every file in the codebase has exactly one canonical location, every import reso
 
 ## Context
 
-### Current State (post-v1.1 Phase 7 — milestone complete)
+### Current State (post-v1.1 — all milestones shipped)
 
-Milestone v1.1 complete (2026-04-09):
-- **v1.1 results**: 3 phases (composables disposition, archive cleanup, entry consolidation), all requirements resolved
-- **Phase 7 results**: main-standard.ts rewritten with 7 production capabilities, main.js archived, dead router artifacts deleted
-- **v1.0 results**: 4 phases, 10 plans, ~54 commits over 3 days
+**Both milestones complete:**
+- **v1.0** (2026-04-08): 4 phases, 10 plans, ~54 commits — codebase consolidation
+- **v1.1** (2026-04-09): 3 phases, 5 plans, ~20 commits — final polish (composables, archive, entry)
 - **Python**: ~195K LOC in src/ (863 ruff errors remaining, down from 1,456)
-- **Frontend**: ~192K LOC in web/frontend/src/
-- **Remaining**: F821 resolution (791 errors, 62 files) — deferred to future milestone
+- **Frontend**: ~192K LOC in web/frontend/src/, single entry point (main-standard.ts)
+- **Remaining**: F821 resolution (791 errors, 62 files) — candidate for future milestone
 
 ### Architecture
 
@@ -121,4 +118,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-09 after Phase 7 entry consolidation*
+*Last updated: 2026-04-09 after v1.1 milestone completion*
