@@ -7,9 +7,9 @@
 
 ### Entry Consolidation
 
-- [ ] **ENTRY-01**: verify-mount.js disposition resolved (updated to reference main-standard.ts, or removed with justification)
-- [ ] **ENTRY-02**: main.js archived after verify-mount.js no longer depends on it
-- [ ] **ENTRY-03**: Single active entry point confirmed (main-standard.ts only), `npm run dev` and `npm run build` both succeed
+- [x] **ENTRY-01**: verify-mount.js disposition resolved (deleted — standalone script with no CI integration, no consumers after archive)
+- [x] **ENTRY-02**: main.js archived to `_entry-archive/` (verify-mount.js deleted first, zero remaining consumers)
+- [x] **ENTRY-03**: Single active entry point confirmed (main-standard.ts), `npm run dev` and `npm run build` both succeed
 
 ### Composables Re-scoping
 
@@ -30,7 +30,7 @@
 |---------|--------|
 | F821 resolution | Deferred to future milestone — 791 errors, 62 files, separate focus needed |
 | Bulk composable migration | v1.0 audit proves 15/17 are view-local; bulk move breaks 15+ imports |
-| views/demo/ removal | Cannot be safely deleted — has consumers, composables, styles, 8+ test references. Route truth deferred to Phase 7 (D-08). |
+| views/demo/ removal | Kept as reference code (not routed in canonical router/index.ts). Features planned for future integration into main pages. Route truth resolved in Phase 7. |
 | New feature development | This is cleanup only |
 | Mobile/responsive changes | Desktop-only per project constraints |
 
@@ -45,9 +45,9 @@
 | ARCH-02 | Phase 6 | Complete — 11 files removed |
 | ARCH-03 | Phase 6 | Complete — demo/ confirmed active, marked N/A |
 | ARCH-04 | Phase 6 | Complete — build + tests pass |
-| ENTRY-01 | Phase 7 | Pending |
-| ENTRY-02 | Phase 7 | Pending |
-| ENTRY-03 | Phase 7 | Pending |
+| ENTRY-01 | Phase 7 | Complete — verify-mount.js deleted (standalone, no CI, no consumers) |
+| ENTRY-02 | Phase 7 | Complete — main.js archived to _entry-archive/ |
+| ENTRY-03 | Phase 7 | Complete — main-standard.ts sole entry, dev/build verified |
 
 **Coverage:**
 - v1.1 requirements: 10 total
@@ -56,4 +56,4 @@
 
 ---
 *Requirements defined: 2026-04-08*
-*Last updated: 2026-04-09 after Phase 6 archive cleanup*
+*Last updated: 2026-04-09 after Phase 7 entry consolidation*
