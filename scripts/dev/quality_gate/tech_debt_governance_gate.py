@@ -633,7 +633,7 @@ def build_parser() -> argparse.ArgumentParser:
     drift = sub.add_parser("baseline-drift-report", help="Compare frozen baseline with current measured metrics")
     drift.add_argument("--baseline", default=str(DEFAULT_BASELINE.relative_to(PROJECT_ROOT)))
     drift.add_argument("--current", default="reports/analysis/tech-debt-current.json")
-    drift.add_argument("--output", default="reports/analysis/tech-debt-baseline-drift.json")
+    drift.add_argument("--output", default="reports/analysis/tech-debt-baseline-drift-report.json")
     drift.add_argument("--only-drifted", action="store_true")
     drift.add_argument("--only-gated", action="store_true")
     drift.set_defaults(func=run_baseline_drift_report)

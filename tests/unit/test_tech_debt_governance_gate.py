@@ -4,6 +4,7 @@ import json
 from datetime import date
 
 from scripts.dev.quality_gate.tech_debt_governance_gate import (
+    build_parser,
     build_baseline_drift_report,
     build_weekly_report_drift_lines,
     compute_hotspot_scores,
@@ -250,6 +251,14 @@ def test_build_baseline_drift_report_marks_gated_and_observed_drifts() -> None:
     assert by_path["backend_todo_count"]["gated"] is False
     assert by_path["backend_todo_count"]["baseline"] == 0
     assert by_path["backend_todo_count"]["current"] == 50
+
+
+def test_build_parser_uses_standard_drift_report_output_path() -> None:
+    parser = build_parser()
+
+    args = parser.parse_args(["baseline-drift-report"])
+
+    assert args.output == "reports/analysis/tech-debt-baseline-drift-report.json"
 
 
 def test_build_weekly_report_drift_lines_separates_gated_and_observed() -> None:
