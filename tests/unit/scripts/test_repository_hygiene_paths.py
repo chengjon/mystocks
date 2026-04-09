@@ -1283,6 +1283,16 @@ def test_multi_cli_main_cli_lessons_learned_is_converged_under_reports_worklogs(
     assert "../reports/worklogs/MULTI_CLI_MAIN_CLI_LESSONS_LEARNED.md" in phase7_proposal
 
 
+def test_recurring_claude_auto_worklog_is_converged_under_reports_worklogs_trunk() -> None:
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
+    worklogs_index = (PROJECT_ROOT / "docs" / "reports" / "worklogs" / "INDEX.md").read_text(encoding="utf-8")
+
+    assert not (PROJECT_ROOT / "docs" / "worklogs").exists()
+    assert (PROJECT_ROOT / "docs" / "reports" / "worklogs" / "claude-auto" / "2026-04-09.md").is_file()
+    assert "reports/worklogs/claude-auto/2026-04-09.md" in docs_index
+    assert "claude-auto/2026-04-09.md" in worklogs_index
+
+
 def test_api_endpoints_statistics_report_is_converged_under_docs_api_family() -> None:
     api_readme = (PROJECT_ROOT / "docs" / "api" / "README.md").read_text(encoding="utf-8")
     guides_readme_integration = (
