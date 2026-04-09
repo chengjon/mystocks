@@ -103,12 +103,13 @@
 
 ### 3.2 基线指标变化
 - [ ] Day 1：记录 baseline 指标快照（frontend_type_errors 等）
-- [ ] Day 2：记录当前指标 + 对比 baseline
-- [ ] Day 3：记录当前指标 + 对比 baseline
-- [ ] Day 4：记录当前指标 + 对比 baseline
-- [ ] Day 5：记录当前指标 + 计算 Week 1 变化趋势
+- [ ] Day 2：记录当前指标 + 对比 baseline + 输出 drift 分类
+- [ ] Day 3：记录当前指标 + 对比 baseline + 输出 drift 分类
+- [ ] Day 4：记录当前指标 + 对比 baseline + 输出 drift 分类
+- [ ] Day 5：记录当前指标 + 计算 Week 1 变化趋势 + 汇总 drift 分类
   - **目标：** 指标不增加（≤ baseline）
-  - **数据源：** `reports/analysis/tech-debt-kpi-report-week1-phase-a-*.json`
+  - **数据源：** `reports/analysis/tech-debt-baseline-drift-report-week1-phase-a-*.json`
+  - **记录要求：** 每日区分 `gated drift` 与 `observed drift`，观察项不得直接计入阻断事故。
 
 ### 3.3 误伤样本分析
 - [ ] Day 1：采集误伤样本（false positive 文件列表）
@@ -127,6 +128,7 @@
 - [ ] 汇总所有日常指标（误伤率、CI 增幅、双签合规、TTL 清理）
 - [ ] 汇总所有阻塞事故（门禁、CI、审批延迟）
 - [ ] 汇总代码质量变化（新增债务、基线变化、误伤样本）
+- [ ] 汇总 baseline drift 结论（gated/observed 分列）
 - [ ] 生成报告文件：`docs/reports/technical-debt-phase-a-week1-execution-report-2026-03-05.md`
 
 ### 4.2 评估 Phase B 进入条件
@@ -158,7 +160,7 @@
 | TTL 清理 | `ttl-gate-report-week1-phase-a-*.json` | 每日 | QA/Efficiency |
 | 阻塞事故 | Git 日志 + CI 日志 + Slack | 实时 | 所有人 |
 | 新增债务 | `tech-debt-kpi-report-week1-phase-a-*.json` | 每日 | QA/Efficiency |
-| 基线变化 | `tech-debt-kpi-report-week1-phase-a-*.json` | 每日 | QA/Efficiency |
+| 基线变化 | `tech-debt-baseline-drift-report-week1-phase-a-*.json` | 每日 | QA/Efficiency |
 | 误伤样本 | `false-positive-analysis-week1-phase-a-*.json` | 每日 | QA/Efficiency |
 
 ---

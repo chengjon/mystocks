@@ -34,12 +34,14 @@
 动作：
 - 启用 KPI gate
 - 固化周报机制
+- 固化 baseline drift 周期复核
 
 ### Phase C（第 4 周起）
 范围：全仓
 动作：
 - 全仓执行统一门禁
 - 每迭代进行基线复盘
+- 每迭代输出 baseline drift 结论，区分 gated / observed
 - 例外项到期自动清理
 
 ## 放量阈值（进入下一阶段条件）
@@ -61,5 +63,6 @@
 
 ## 交付物清单
 - 每周：`reports/analysis/tech-debt-weekly-report.md`
+- 每周：`reports/analysis/tech-debt-baseline-drift-report.json`
 - 每阶段：推广复盘记录（本文件追加）
 - 每月：基线变更审计记录

@@ -61,7 +61,17 @@
 - 关键回归指标：Day1 为 `frontend_type_errors`（213 > baseline 190）；Day2~Day5 已回落并稳定在 131
 - 结论：基线不增门禁已恢复稳定，当前满足该项进入条件
 
-### 3.3 debt-exception 双签
+### 3.3 baseline-drift 复核
+- 目标：区分硬门禁漂移（gated drift）与观察项漂移（observed drift），避免把库存波动误记为门禁回归。
+- 证据命令：
+  - `python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-drift-report --baseline reports/analysis/tech-debt-baseline.json --current <current-metrics-json> --output <drift-report-json> --only-drifted`
+- 数据来源：`reports/analysis/tech-debt-baseline-drift*.json`
+- 复核要求：
+  - gated drift 必须逐项说明是否为本次回归；
+  - observed drift 只能作为观察结论，不得直接写成阻断失败结论；
+  - 报告正文必须同时注明基线日期、当前实测日期和统计命令。
+
+### 3.4 debt-exception 双签
 - 双签合规率：3.59%（Week2 Day5，远低于目标 >= 95%）
 - 过期 TTL 清理率：1.0（Week2 Day1-Day5 连续 100%）
 - 风险提示：TTL gate 发现 537 个历史 TODO 元数据缺失（owner/issue/ttl），主要集中在测试文件
@@ -113,6 +123,7 @@
 1. 完成 Week2 Day2~Day5 连续观测，补齐 no-new-debt 误伤样本台账（目标样本数 >= 20）。
 2. 聚焦前端类型债务热点（交易链路）清偿，推动 `frontend_type_errors` 向冻结基线收敛。
 3. 完成 debt-exception 双签合规率统计并输出审计结论（目标 >= 95%）。
+4. 补齐 baseline drift 复核结论，明确 gated/observed 漂移项及其处置动作。
 
 ---
 
