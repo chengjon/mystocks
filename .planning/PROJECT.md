@@ -7,11 +7,15 @@
 > 文内步骤、范围、状态或说明如未重新复核，应按其所属上下文理解，不得直接当作跨场景通用事实。
 
 
-## Current Milestone: None (Planning next)
+## Current Milestone: v1.2 Lint & Test Zero
+
+**Goal:** Resolve all remaining F821 ruff errors and fix pre-existing vitest failures to achieve the project's core value of zero lint/test errors.
+
+**Target features:**
+- F821 ruff errors resolved (791 errors in 62 files → 0)
+- Vitest failures fixed (6 pre-existing failures → 0)
 
 **Last shipped:** v1.1 Final Polish (2026-04-09)
-
-**Next step:** Use `/gsd:new-milestone` to plan the next milestone
 
 ## What This Is
 
@@ -54,7 +58,8 @@ Every file in the codebase has exactly one canonical location, every import reso
 
 ### Active
 
-(None — all v1.1 requirements resolved)
+- [ ] F821 ruff errors: 791 in 62 files → zero
+- [ ] Vitest failures: 6 pre-existing → zero
 
 ### Out of Scope
 
@@ -118,4 +123,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-09 after v1.1 milestone completion*
+*Last updated: 2026-04-09 after v1.2 milestone started*
