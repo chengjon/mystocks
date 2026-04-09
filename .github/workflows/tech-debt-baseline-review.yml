@@ -99,3 +99,19 @@ jobs:
             --previous /tmp/tech-debt-baseline.previous.json \
             --proposed "${{ env.BASELINE_FILE }}" \
             "${EXCEPTION_ARGS[@]}"
+
+      - name: Generate baseline drift artifact
+        if: steps.scope.outputs.baseline_changed == 'true'
+        run: |
+          python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-drift-report \
+            --baseline /tmp/tech-debt-baseline.previous.json \
+            --current "${{ env.BASELINE_FILE }}" \
+            --output /tmp/tech-debt-baseline-drift.json \
+            --only-drifted
+
+      - name: Upload baseline drift artifact
+        if: steps.scope.outputs.baseline_changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: tech-debt-baseline-drift
+          path: /tmp/tech-debt-baseline-drift.json
