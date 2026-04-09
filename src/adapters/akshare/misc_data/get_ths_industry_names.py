@@ -1,3 +1,11 @@
+import logging
+
+import akshare as ak
+import pandas as pd
+
+# pylint: disable=undefined-variable  # 混入模块使用动态类型
+logger = logging.getLogger(__name__)
+
 
 def get_ths_industry_names(self) -> pd.DataFrame:
     """获取同花顺行业名称列表-Akshare实现
