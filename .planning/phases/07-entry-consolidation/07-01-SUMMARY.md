@@ -18,14 +18,14 @@ Removed all dead entry-point and router artifacts with zero active consumers. Cr
 | 1 | Delete verify-mount.js | ✓ Complete |
 | 2 | Delete 6 router artifact files | ✓ Complete |
 | 3 | Remove dead demo test assertions | ✓ Complete |
-| 4 | Create OpenSpec proposal for entry point migration | ✓ Complete |
+| 4 | Create OpenSpec proposal scaffold (proposal.md + tasks.md) | ✓ Drafted, awaiting approval |
 
 ## Key Decisions
 
 - verify-mount.js deleted (standalone script, not in CI, no package.json reference)
 - 6 router files deleted: index.js (legacy), index.js.backup, index.ts.backup, index.js.backup-phase2.3, index.js.clean, phase4.routes.js
 - Demo route assertions removed from 2 test files (routes don't exist in active router/index.ts)
-- OpenSpec proposal created with status `pending` — Plan 07-02 blocked until user approves
+- OpenSpec proposal scaffold drafted (proposal.md + tasks.md) with status `pending` — Plan 07-02 blocked until user approves
 
 ## Files Modified
 
@@ -44,6 +44,7 @@ Removed all dead entry-point and router artifacts with zero active consumers. Cr
 
 ### key-files.created
 - `openspec/changes/refactor-entry-consolidation/proposal.md`
+- `openspec/changes/refactor-entry-consolidation/tasks.md`
 
 ## Issues Encountered
 
@@ -54,5 +55,6 @@ None. All deletions verified — zero active consumers for all removed files.
 - [x] verify-mount.js deleted
 - [x] All 6 router artifact files deleted
 - [x] Dead demo test assertions removed from both test files
-- [x] OpenSpec proposal created with status `pending`
-- [x] No broken imports — router dir contains only expected files
+- [x] OpenSpec proposal scaffold drafted (proposal.md + tasks.md), status `pending`
+- [x] Router dir contains only expected files (index.ts, guards.ts, homeRoute.ts, utils.js, __tests__)
+- [x] Build verified: `npm run build` passes (24.14s, no broken imports)
