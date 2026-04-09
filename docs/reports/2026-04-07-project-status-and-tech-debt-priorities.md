@@ -70,6 +70,27 @@ Phase 2 目录中已经存在 4 份计划文件，但自动进度工具仍把该
 - 已发生过的历史收敛动作
 - 或旧计划口径滞后于当前工作区
 
+### 2026-04-09 Status Sync
+
+补充执行记录表明，两条此前容易被反复重开的治理线已经基本收口：
+
+- 文档治理 / state 控制面：
+  - `9ced0498b docs(governance): reclose recurring worklogs root`
+  - `2549953ab docs(state): refresh root task control snapshots`
+  - 这意味着 `docs/worklogs/` 复发、root `TASK.md` / `TASK-REPORT.md` 快照漂移，当前都应视为已关闭输入，而不是下一轮待办
+- 技术债治理脚本真值：
+  - `bd7579111 governance(tech-debt): standardize default drift report artifact`
+  - `baseline-drift-report` 的默认产物名已统一为 `reports/analysis/tech-debt-baseline-drift-report.json`
+  - `tests/unit/test_tech_debt_governance_gate.py` 已锁定该默认值
+  - 定点验证：`PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=. pytest -o addopts='' tests/unit/test_tech_debt_governance_gate.py` = `14 passed`
+
+这对后续优先级的直接影响是：
+
+- 不再把 `docs/worklogs/` 复发收口列为当前主线待办
+- 不再把 drift report 默认产物命名列为待统一事项
+- 文档治理剩余工作转向仍然过度暴露的 guide family，继续按 family wave 收薄导航面
+- 当前主代码线优先级仍保持为 Phase 2 历史收口真相对齐，其后才进入 `docs/reports/2026-04-07-phase3-4-execution-matrix.md` 对应的前端结构批次
+
 ---
 
 ## 2. Recommended Priority Order
