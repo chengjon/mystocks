@@ -156,6 +156,31 @@ def build_baseline_drift_report(baseline: dict, current: dict) -> list[dict]:
     return report
 
 
+def build_weekly_report_drift_lines(drift_items: list[dict]) -> list[str]:
+    gated = [item for item in drift_items if item["status"] == "drifted" and item["gated"]]
+    observed = [item for item in drift_items if item["status"] == "drifted" and not item["gated"]]
+
+    lines = [
+        "## 4. Baseline Drift",
+        f"- gated_drift_items: `{len(gated)}`",
+        f"- observed_drift_items: `{len(observed)}`",
+    ]
+
+    if gated:
+        for item in gated[:10]:
+            lines.append(f"- gated `{item['path']}`: baseline={item['baseline']} current={item['current']}")
+    else:
+        lines.append("- gated drift: none")
+
+    if observed:
+        for item in observed[:10]:
+            lines.append(f"- observed `{item['path']}`: baseline={item['baseline']} current={item['current']}")
+    else:
+        lines.append("- observed drift: none")
+
+    return lines
+
+
 def is_approved_baseline_review_exception(
     path: str,
     proposed_value: int | float,
@@ -341,6 +366,10 @@ def render_weekly_report(metrics: dict, kpi: dict, hotspots: list[dict], ttl_vio
     now = datetime.now(timezone.utc).isoformat()
     baseline_doc = metrics.get("baseline", {}).get("backend_api_documentation", {})
     current_doc = metrics.get("current", {}).get("backend_api_documentation", {})
+    drift_items = build_baseline_drift_report(
+        baseline=metrics.get("baseline", {}),
+        current=metrics.get("current", {}),
+    )
     lines = [
         "# Technical Debt Weekly Governance Report",
         "",
@@ -364,8 +393,9 @@ def render_weekly_report(metrics: dict, kpi: dict, hotspots: list[dict], ttl_vio
         f"- baseline_non_json_success_responses: `{baseline_doc.get('non_json_success_responses', 'N/A')}`",
         f"- current_non_json_success_responses: `{current_doc.get('non_json_success_responses', 'N/A')}`",
         "",
-        "## 4. Risk Hotspots (Top N)",
     ]
+    lines.extend(build_weekly_report_drift_lines(drift_items))
+    lines.extend(["", "## 5. Risk Hotspots (Top N)"])
 
     if hotspots:
         for item in hotspots:
@@ -373,7 +403,7 @@ def render_weekly_report(metrics: dict, kpi: dict, hotspots: list[dict], ttl_vio
     else:
         lines.append("- no hotspot files detected")
 
-    lines.extend(["", "## 5. Expired Items", ""])
+    lines.extend(["", "## 6. Expired Items", ""])
     if ttl_violations:
         for violation in ttl_violations[:30]:
             lines.append(f"- {violation.path}:{violation.line} -> {violation.message}")
@@ -383,7 +413,7 @@ def render_weekly_report(metrics: dict, kpi: dict, hotspots: list[dict], ttl_vio
     lines.extend(
         [
             "",
-            "## 6. Actions",
+            "## 7. Actions",
             "- owners should remediate expired markers before merge",
             "- baseline updates are allowed only if metrics are non-increasing",
             "",

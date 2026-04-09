@@ -5,6 +5,7 @@ from datetime import date
 
 from scripts.dev.quality_gate.tech_debt_governance_gate import (
     build_baseline_drift_report,
+    build_weekly_report_drift_lines,
     compute_hotspot_scores,
     evaluate_baseline_review,
     evaluate_no_new_debt,
@@ -12,6 +13,7 @@ from scripts.dev.quality_gate.tech_debt_governance_gate import (
     get_metric_value,
     load_baseline_review_exceptions,
     parse_ttl,
+    render_weekly_report,
 )
 
 
@@ -248,6 +250,62 @@ def test_build_baseline_drift_report_marks_gated_and_observed_drifts() -> None:
     assert by_path["backend_todo_count"]["gated"] is False
     assert by_path["backend_todo_count"]["baseline"] == 0
     assert by_path["backend_todo_count"]["current"] == 50
+
+
+def test_build_weekly_report_drift_lines_separates_gated_and_observed() -> None:
+    lines = build_weekly_report_drift_lines(
+        [
+            {
+                "path": "skip_xfail_count",
+                "baseline": 100,
+                "current": 102,
+                "status": "drifted",
+                "gated": True,
+            },
+            {
+                "path": "backend_todo_count",
+                "baseline": 0,
+                "current": 50,
+                "status": "drifted",
+                "gated": False,
+            },
+        ]
+    )
+
+    assert any("gated_drift_items" in line for line in lines)
+    assert any("observed_drift_items" in line for line in lines)
+    assert any("skip_xfail_count" in line for line in lines)
+    assert any("backend_todo_count" in line for line in lines)
+
+
+def test_render_weekly_report_includes_baseline_drift_section() -> None:
+    metrics = {
+        "baseline": {
+            "frontend_type_errors": 0,
+            "skip_xfail_count": 100,
+            "backend_todo_count": 0,
+            "backend_api_documentation": {
+                "json_success_missing_examples": 0,
+                "non_json_success_responses": 3,
+            },
+        },
+        "current": {
+            "frontend_type_errors": 0,
+            "skip_xfail_count": 102,
+            "backend_todo_count": 50,
+            "backend_api_documentation": {
+                "json_success_missing_examples": 0,
+                "non_json_success_responses": 3,
+            },
+        },
+    }
+    report = render_weekly_report(metrics=metrics, kpi={}, hotspots=[], ttl_violations=[])
+
+    assert "## 4. Baseline Drift" in report
+    assert "skip_xfail_count" in report
+    assert "backend_todo_count" in report
+    assert "gated_drift_items" in report
+    assert "observed_drift_items" in report
 
 
 def test_get_metric_value_supports_nested_paths() -> None:
