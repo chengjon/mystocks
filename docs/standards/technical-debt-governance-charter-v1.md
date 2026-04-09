@@ -270,6 +270,8 @@
 7. Non-JSON success responses（观察项，单列汇报，不作为债务失败阈值）
 
 ## 6.3 Baseline Drift
+- 标准产物路径：`reports/analysis/tech-debt-baseline-drift-report.json`
+- 标准命令：`python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-drift-report --baseline reports/analysis/tech-debt-baseline.json --current <current-metrics-json> --output reports/analysis/tech-debt-baseline-drift-report.json --only-drifted`
 - 必须分列 `gated_drift_items` 与 `observed_drift_items`
 - 至少列出前若干项 drift 明细：`path`、`baseline`、`current`
 - `gated_drift_items` 非零时，必须在结论或行动项中说明是否属于回归、受控纠偏或口径修正
