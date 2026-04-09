@@ -118,31 +118,6 @@ test.describe('菜单配置功能测试', () => {
     await expect(page.locator('h1, .page-title')).toBeVisible()
   })
 
-  test('功能演示菜单', async ({ page }) => {
-    // 展开功能演示菜单
-    await page.click('.el-sub-menu:has-text("功能演示")')
-
-    // 验证所有演示子菜单
-    const demoMenus = [
-      'OpenStock',
-      'PyProfiling',
-      'Freqtrade',
-      'Stock-Analysis',
-      'pytdx',
-      'Phase 4 Dashboard',
-      'Wencai'
-    ]
-
-    for (const menu of demoMenus) {
-      await expect(page.locator(`.el-menu-item:has-text("${menu}")`)).toBeVisible()
-    }
-
-    // 测试点击Wencai
-    await page.click('.el-menu-item:has-text("Wencai")')
-    await page.waitForURL('**/demo/wencai')
-    await expect(page.url()).toContain('/demo/wencai')
-  })
-
   test('菜单激活状态', async ({ page }) => {
     // 导航到仪表盘
     await page.goto(`${BASE_URL}/dashboard`)

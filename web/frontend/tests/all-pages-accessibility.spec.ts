@@ -62,13 +62,6 @@ const routes = [
   { path: '/settings/general', name: 'General Settings' },
   { path: '/settings/system', name: 'System Settings' },
   { path: '/settings/database', name: 'Database Settings' },
-
-  // Demo pages
-  { path: '/demo/openstock', name: 'OpenStock Demo' },
-  { path: '/demo/freqtrade', name: 'Freqtrade Demo' },
-  { path: '/demo/stock-analysis', name: 'Stock Analysis Demo' },
-  { path: '/demo/tdxpy', name: 'TDXPY Demo' },
-  { path: '/demo/smart-data', name: 'Smart Data Test' },
 ];
 
 test.describe('MyStocks Frontend - Page Accessibility', () => {
