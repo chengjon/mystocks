@@ -62,13 +62,12 @@
 
 ### Wencai / Phase4Dashboard
 
-| Option | Description | Selected |
-|--------|-------------|----------|
-| Add Wencai route | views/demo/Wencai.vue exists, test expects /demo/wencai | |
-| Add Phase4Dashboard route | views/Phase4Dashboard.vue exists, phase4.routes.js defines it | |
-| Only the 6 demo routes | From index.js | ✓ |
+**Decision:** No routes added for Wencai or Phase4Dashboard. Consistent with "no demo routes" decision above. Both views exist in the codebase but are kept as reference code for future feature integration.
 
-**User's choice:** Only the 6 demo routes (but combined with "no demo routes" decision above, result is: no routes added)
+| Route | Status | Reason |
+|-------|--------|--------|
+| Wencai (/demo/wencai) | NOT added | Feature planned for integration into main pages, not separate demo route |
+| Phase4Dashboard (/phase4-dashboard) | NOT added | phase4.routes.js references StrategyMgmtPhase4.vue which doesn't exist |
 
 ### Router artifacts
 
@@ -102,7 +101,9 @@
 | Defer test updates | Keep tests as-is, accept they may fail | |
 
 **User's choice:** Remove demo assertions now
-**Notes:** Necessary because deleting router/index.js makes these assertions fail. Tests to update: all-pages-accessibility.spec.ts (lines 66-71) and menu-configuration.spec.js (Wencai demo menu section).
+**Notes:** Two test files need updates:
+1. `all-pages-accessibility.spec.ts` lines 66-71: Remove 5 demo page entries (OpenStock, Freqtrade, Stock Analysis, TDXPY, Smart Data)
+2. `menu-configuration.spec.js` lines 121-144: Remove entire "功能演示菜单" test block — includes demoMenus array (7 items with visibility assertions) AND Wencai click/URL assertion. Entire test is orphaned.
 
 ---
 

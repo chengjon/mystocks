@@ -56,13 +56,13 @@ Requirements: ENTRY-01, ENTRY-02, ENTRY-03
 ### Demo Route Tests
 
 - **D-09:** Remove demo page assertions from `tests/all-pages-accessibility.spec.ts` (lines 66-71: 5 demo page entries). These test routes that don't exist in the active router.
-- **D-10:** Remove Wencai demo menu assertion from `tests/menu-configuration.spec.js` (line 141-143: click Wencai, waitForURL `/demo/wencai`). Wencai has no route in index.ts.
-- **D-11:** Demo views (`views/demo/`) reclassified from "active, not safely deletable" to "reference code, not routed." Traceability update required in REQUIREMENTS.md and Phase 6 D-08 note.
+- **D-10:** Remove entire "功能演示菜单" test block from `tests/menu-configuration.spec.js` (lines 121-144). This includes: the demoMenus array (OpenStock, PyProfiling, Freqtrade, Stock-Analysis, pytdx, Phase 4 Dashboard, Wencai visibility assertions at lines 126-138), plus the Wencai click + URL assertion (lines 141-143). The entire test is orphaned — it asserts a demo submenu and /demo/* URLs that don't exist in the active router.
+- **D-11:** Demo views (`views/demo/`) reclassified from "active, not safely deletable" to "reference code, not routed." Traceability update required in REQUIREMENTS.md. Phase 6 D-08 ("route truth unresolved") is resolved by this phase — add resolution note in Phase 7 documents, do NOT modify Phase 6's historical context.
 
 ### Traceability Updates
 
 - **D-12:** Update REQUIREMENTS.md traceability for ARCH-03: add note that demo/ views are reclassified as reference code (not routed in index.ts, features planned for future integration into main pages).
-- **D-13:** Update Phase 6 D-08 note: change "route truth unresolved" to "resolved: demo views kept as reference code, not routed in canonical router."
+- **D-13:** Add resolution note in Phase 7 documents: Phase 6 D-08 ("route truth unresolved") is resolved — demo views kept as reference code, not routed in canonical router. Do NOT modify Phase 6's historical context file (it is a phase snapshot).
 
 ### Approval Gate
 
