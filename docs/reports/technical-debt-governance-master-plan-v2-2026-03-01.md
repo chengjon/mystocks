@@ -43,6 +43,7 @@
 - 产物：
   - `reports/analysis/tech-debt-weekly-report.md`
   - `reports/analysis/tech-debt-kpi-report.json`
+  - `reports/analysis/tech-debt-baseline-drift-report.json`
 
 ### Week 2（复审周）
 - 动作：
@@ -128,3 +129,4 @@
 1. 每个治理任务必须具备“背景/目标/执行项/验收命令/风险回滚”。
 2. 涉及 debt-exception 时必须填写例外元数据与双签字段。
 3. 周报中的行动项必须能回溯到对应任务卡。
+4. 涉及基线治理的任务卡，必须同时记录“历史基线、当前实测、baseline-drift-report 结论”，禁止只贴单个数字或口头判断。

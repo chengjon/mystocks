@@ -38,9 +38,15 @@
 ### 4) 验收标准（DoD）
 - **功能/行为验收**：
 - **质量门验收**（示例：no-new-debt、baseline-non-increase、TTL gate）：
+- **基线/实测口径记录**：
+  - 基线来源：`reports/analysis/tech-debt-baseline.json` / 历史快照（注明日期）
+  - 当前实测：`<current-metrics-json>`
+  - 漂移结论：`<drift-report-json>`（注明 gated/observed 是否漂移）
 - **证据命令**（需可复现）：
   - `openspec validate <change-id> --strict`
   - `python scripts/dev/quality_gate/collect_tech_debt_baseline.py`
+  - `python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-drift-report --baseline reports/analysis/tech-debt-baseline.json --current <current-metrics-json> --output <drift-report-json> --only-drifted`
+  - `python scripts/dev/quality_gate/tech_debt_governance_gate.py weekly-report --baseline reports/analysis/tech-debt-baseline.json --current <current-metrics-json> --output <weekly-report-md>`
   - `<项目定向测试命令>`
 
 ### 5) 风险与应对
@@ -80,4 +86,5 @@
   - [ ] 补充对应定向测试
 - **验收命令**：
   - `pytest tests/api/file_tests/test_trade_routes_api.py -k trade -q -o addopts=''`
+  - `python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-drift-report --baseline reports/analysis/tech-debt-baseline.json --current reports/analysis/tech-debt-current.json --output reports/analysis/tech-debt-baseline-drift.json --only-drifted`
   - `openspec validate refactor-technical-debt-remediation-wave1 --strict`
