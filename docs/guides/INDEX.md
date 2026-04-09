@@ -14,6 +14,7 @@
 - [`typescript/`](/opt/claude/mystocks_spec/docs/guides/typescript/)
 - [`multi-cli-tasks/`](/opt/claude/mystocks_spec/docs/guides/multi-cli-tasks/)
 - [`pm2/`](/opt/claude/mystocks_spec/docs/guides/pm2/)
+- [`quant-trading/`](/opt/claude/mystocks_spec/docs/guides/quant-trading/)
 - [`openspec-cmd/`](/opt/claude/mystocks_spec/docs/guides/openspec-cmd/)
 - [`governance/`](/opt/claude/mystocks_spec/docs/guides/governance/)
 - [`documentation/`](/opt/claude/mystocks_spec/docs/guides/documentation/)
