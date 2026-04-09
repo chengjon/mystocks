@@ -34,6 +34,8 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 本文件仅保留 Claude 使用方式、协作流程和排障细节，不再重复共享规则正文或维护并行目录。
 
+- Claude Auto / Agent 自动 worklog 若需落盘，统一写入 `docs/reports/worklogs/claude-auto/`；不得重新创建 `docs/worklogs/` 平行目录。
+
 ---
 
 ## 2. 项目基础认知 (Project Basic Cognition)

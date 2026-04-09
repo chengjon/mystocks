@@ -47,6 +47,7 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 - 执行任何代码修改前，必须先阅读 `architecture/STANDARDS.md`。
 - 仓库级共享规则与当前执行口径统一以 `architecture/STANDARDS.md` 为准。
 - 本文件只保留 Agent 执行层面的流程、命令和协作规范，避免重复维护共享规则正文。
+- Claude Auto / Agent 自动 worklog 若需落盘，统一写入 `docs/reports/worklogs/claude-auto/`；不得重新创建 `docs/worklogs/` 平行目录。
 
 ---
 

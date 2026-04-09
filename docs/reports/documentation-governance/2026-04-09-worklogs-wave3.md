@@ -19,6 +19,7 @@
 - 删除重新出现的平行目录 `docs/worklogs/`
 - 不改动 root navigation，因为 `docs/INDEX.md` 当前仍只指向 `docs/reports/worklogs/`
 - 不新增测试条目，因为现有 hygiene 测试已覆盖“`docs/worklogs/` 不得存在”
+- 在 `AGENTS.md` 与 `CLAUDE.md` 补充执行层约束，明确 Claude Auto / Agent 自动 worklog 只能写入 `docs/reports/worklogs/claude-auto/`
 
 ## Gate Check
 
@@ -34,4 +35,5 @@
 
 - 同日复发的 `docs/worklogs/` 再次被收口回 canonical worklog trunk
 - 本次没有丢失新增 worklog 内容
-- 后续若该目录继续被自动生成，应优先处理生成源，而不是继续依赖人工并回
+- 对外部/会话级自动记录器新增了明确落点约束，降低继续回流到 `docs/worklogs/` 的概率
+- 后续若该目录仍继续被自动生成，应继续追查真正生成源，而不是继续依赖人工并回

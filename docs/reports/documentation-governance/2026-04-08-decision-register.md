@@ -81,6 +81,7 @@ archive > rewrite
   - `docs/worklogs/claude-auto/2026-04-09.md` 在同日再次复发，且携带 3 条新增记录
   - 新增记录已补并入 `docs/reports/worklogs/claude-auto/2026-04-09.md`
   - 平行根目录 `docs/worklogs/` 已再次删除；当前问题已记录为 recurring artifact，而不是新的 canonical family
+  - `AGENTS.md` 与 `CLAUDE.md` 已补充执行层约束，固定 Claude Auto / Agent worklog 落点为 `docs/reports/worklogs/claude-auto/`
 - `2549953ab docs(state): refresh root task control snapshots`
   - root 控制面快照 `TASK.md` 与 `TASK-REPORT.md` 的自动更新已单独收口，不再与文档治理波次混排
 - `ui-ux-pro-max` 目录已按用户澄清降级为“skill 运行产物 / 残留文档”，不再视为 guide family、门禁或根导航候选
