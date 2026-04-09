@@ -51,11 +51,12 @@ Every file in the codebase has exactly one canonical location, every import reso
 - ✓ NAME-04: Root-level shims deleted (core.py, data_access.py, monitoring.py) — v1.0
 - ✓ NAME-05: Pinia store domain boundaries documented — v1.0
 - ✓ STRU-04: Composables disposition — view-local accepted as canonical, 2 candidates kept (Phase 5, 2026-04-08)
-- ✓ STRU-05: Archive removal — 5 test consumers deleted, converted.archive/ deleted (11 files), demo/ confirmed active (Phase 6, 2026-04-09)
+- ✓ STRU-05: Archive removal — 5 test consumers deleted, converted.archive/ deleted (11 files), demo/ kept as reference code (Phase 6, 2026-04-09)
+- ✓ STRU-03: Single frontend entry point — verify-mount.js deleted, main.js archived, main-standard.ts rewritten with 7 capabilities (Phase 7, 2026-04-09)
 
 ### Active
 
-- [ ] STRU-03: Single frontend entry point (resolve verify-mount.js, archive main.js, keep main-standard.ts)
+(None — all v1.1 requirements resolved)
 
 ### Out of Scope
 
@@ -67,15 +68,15 @@ Every file in the codebase has exactly one canonical location, every import reso
 
 ## Context
 
-### Current State (post-v1.1 Phase 6)
+### Current State (post-v1.1 Phase 7 — milestone complete)
 
-Phase 6 complete (2026-04-09):
-- **v1.1 progress**: 2/3 phases complete (Phase 5: composables, Phase 6: archive cleanup)
-- **Phase 6 results**: Deleted views/converted.archive/ (11 files), 5 test consumers, 2 config exclusions removed
+Milestone v1.1 complete (2026-04-09):
+- **v1.1 results**: 3 phases (composables disposition, archive cleanup, entry consolidation), all requirements resolved
+- **Phase 7 results**: main-standard.ts rewritten with 7 production capabilities, main.js archived, dead router artifacts deleted
 - **v1.0 results**: 4 phases, 10 plans, ~54 commits over 3 days
 - **Python**: ~195K LOC in src/ (863 ruff errors remaining, down from 1,456)
 - **Frontend**: ~192K LOC in web/frontend/src/
-- **Remaining**: STRU-03 (entry consolidation, Phase 7)
+- **Remaining**: F821 resolution (791 errors, 62 files) — deferred to future milestone
 
 ### Architecture
 
@@ -120,4 +121,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-09 after Phase 6 archive cleanup*
+*Last updated: 2026-04-09 after Phase 7 entry consolidation*
