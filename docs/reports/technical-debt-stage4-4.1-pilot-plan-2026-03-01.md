@@ -52,6 +52,7 @@
 
 ## 每周产出
 - `reports/analysis/tech-debt-weekly-report.md`（自动）
+- `reports/analysis/tech-debt-baseline-drift-report.json`（按当前治理标准补充）
 - 审核记录（人工补充）
   - 误伤案例与修复结论
   - 例外审批记录（issue/owner/ttl/reason/remediation）
@@ -70,6 +71,8 @@
   - 应对：设定审批 SLA（工作日 24h 内）
 
 ## Week1 真实数据执行快照（2026-03-01）
+
+> 补充口径说明：本节保留历史执行快照；若按当前治理标准复跑或复盘，需要在 `collect_tech_debt_baseline.py` 之后同时生成 `baseline-drift-report`，并明确区分 `gated drift` 与 `observed drift`，不得仅依据周报或 KPI 报告下结论。
 
 ### 执行模式确认
 - `.env` 静态配置：`USE_MOCK_DATA=false`，`DATA_SOURCE_MODE=real`。
