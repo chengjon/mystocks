@@ -30,10 +30,11 @@
 
 ## 4) 验收标准（DoD）
 - 功能/行为验收：周审计报告产出。
-- 质量门验收：低于阈值触发整改任务。
+- 质量门验收：低于阈值触发整改任务，且能区分审批问题与基线漂移问题。
 - 证据命令：
   - `grep -RIn "debt-exception-tech-lead-approved" .github/workflows`
   - `cat reports/analysis/tech-debt-weekly-report.md`
+  - `cat reports/analysis/tech-debt-baseline-drift-report.json`
 
 ## 5) 风险与应对
 - 主要风险：审计口径不一致。

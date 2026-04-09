@@ -30,10 +30,16 @@
 
 ## 4) 验收标准（DoD）
 - 功能/行为验收：4.2 报告字段完整，可复核。
-- 质量门验收：误伤样本、双签合规、TTL 清理率有证据。
+- 质量门验收：误伤样本、双签合规、TTL 清理率、基线漂移结论均有证据。
+- 基线/实测口径记录：
+  - 基线来源：`reports/analysis/tech-debt-baseline.json`
+  - 当前实测：`reports/analysis/tech-debt-current.json`
+  - 漂移结论：`reports/analysis/tech-debt-baseline-drift.json`
 - 证据命令：
   - `python scripts/dev/quality_gate/collect_tech_debt_baseline.py`
+  - `python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-drift-report --baseline reports/analysis/tech-debt-baseline.json --current reports/analysis/tech-debt-current.json --output reports/analysis/tech-debt-baseline-drift.json --only-drifted`
   - `cat reports/analysis/tech-debt-kpi-report.json`
+  - `cat reports/analysis/tech-debt-baseline-drift.json`
 
 ## 5) 风险与应对
 - 主要风险：样本不足导致结论不可靠。
