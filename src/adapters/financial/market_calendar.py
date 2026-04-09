@@ -1,4 +1,11 @@
+import logging
+
+import pandas as pd
+
 # pylint: disable=undefined-variable  # 混入模块使用动态类型
+logger = logging.getLogger(__name__)
+
+
 def get_market_calendar(self) -> pd.DataFrame:
     """
     获取交易日历
