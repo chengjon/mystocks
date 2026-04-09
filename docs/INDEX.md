@@ -639,11 +639,9 @@
 ###### Quant Trading
 
         - 📄 [README](guides/quant-trading/INDEX.md)
-        - 📄 [advanced_algorithms_usage_guide](guides/quant-trading/advanced_algorithms_usage_guide.md)
         - 📄 [algorithm_system_usage_guide](guides/quant-trading/algorithm_system_usage_guide.md)
-        - 📄 [neural_algorithms_usage_guide](guides/quant-trading/neural_algorithms_usage_guide.md)
-        - 📄 [quantitative_trading_implementation](guides/quant-trading/quantitative_trading_implementation.md)
         - 📄 [risk_management_system_plan](guides/quant-trading/risk_management_system_plan.md)
+        - 📄 [Supporting Guides](guides/quant-trading/INDEX.md)
     - 📂 [Superpowers](guides/superpowers)
 
 ###### Superpowers
@@ -679,23 +677,11 @@
 ###### Typescript
 
         - 📄 [README](guides/typescript/INDEX.md)
-        - 📄 [TYPESCRIPT_ERROR_FIXING_GUIDE](guides/typescript/TYPESCRIPT_ERROR_FIXING_GUIDE.md)
-        - 📄 [TYPESCRIPT_EXTENSION_SYSTEM_BALANCED_PLAN](guides/typescript/TYPESCRIPT_EXTENSION_SYSTEM_BALANCED_PLAN.md)
-        - 📄 [TYPESCRIPT_EXTENSION_SYSTEM_IMPLEMENTATION_PLAN](guides/typescript/TYPESCRIPT_EXTENSION_SYSTEM_IMPLEMENTATION_PLAN.md)
-        - 📄 [TYPESCRIPT_EXTENSION_SYSTEM_IMPLEMENTATION_PLAN_V3](guides/typescript/TYPESCRIPT_EXTENSION_SYSTEM_IMPLEMENTATION_PLAN_V3.md)
-        - 📄 [TYPESCRIPT_SOURCE_FIX_GUIDE](guides/typescript/TYPESCRIPT_SOURCE_FIX_GUIDE.md)
-        - 📄 [TYPEScript_EXTENSION_SYSTEM_PROPOSAL](guides/typescript/TYPEScript_EXTENSION_SYSTEM_PROPOSAL.md)
-        - 📄 [TYPE_CHECKING_INTEGRATION](guides/typescript/TYPE_CHECKING_INTEGRATION.md)
-        - 📄 [TypeScript_优化修复方案](guides/typescript/TypeScript_优化修复方案.md)
-        - 📄 [TypeScript_快速修复指南](guides/typescript/TypeScript_快速修复指南.md)
-        - 📄 [Typescript_API_REFERENCE](guides/typescript/Typescript_API_REFERENCE.md)
         - 📄 [Typescript_BEST_PRACTICES](guides/typescript/Typescript_BEST_PRACTICES.md)
         - 📄 [Typescript_CONFIG_REFERENCE](guides/typescript/Typescript_CONFIG_REFERENCE.md)
         - 📄 [Typescript_QUICKSTART](guides/typescript/Typescript_QUICKSTART.md)
-        - 📄 [Typescript_TRAINING_ADVANCED](guides/typescript/Typescript_TRAINING_ADVANCED.md)
-        - 📄 [Typescript_TRAINING_BEGINNER](guides/typescript/Typescript_TRAINING_BEGINNER.md)
-        - 📄 [Typescript_TROUBLESHOOTING](guides/typescript/Typescript_TROUBLESHOOTING.md)
         - 📄 [Typescript_USER_GUIDE](guides/typescript/Typescript_USER_GUIDE.md)
+        - 📄 [Supporting Guides](guides/typescript/INDEX.md)
     - 📂 [Ui Ux Pro Max](guides/ui-ux-pro-max)
 
 ###### Ui Ux Pro Max

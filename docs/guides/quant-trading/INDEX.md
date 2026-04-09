@@ -1,30 +1,35 @@
-# Quant Trading
+# Quant Trading Guide Family
 
 > **导航说明**:
-> 本文件是文档导航或索引，不是当前规则、当前基线或当前实现状态的唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线文档一并核对。
->
-> 文内目录、链接、数量和分类如未重新生成或复核，应视为导航快照，不得直接当作当前事实。
+> 本文件是 `docs/guides/quant-trading/` 的 transition index，不是当前量化交易主线、仓库共享规则或当前实施状态的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若涉及当前代码实现边界，再结合根目录 `AGENTS.md` 与实际代码核对。
 
+## Current Entry Order
 
-**最后更新**: 2026-03-24 10:32:04
+这一 family 当前角色是 `supporting`，用于量化交易专题方案、阶段总结和历史实现参考，不承担仓库级 trunk。推荐阅读顺序：
 
-**文档数量**: 5
+1. [`algorithm_system_usage_guide.md`](./algorithm_system_usage_guide.md)
+2. [`risk_management_system_plan.md`](./risk_management_system_plan.md)
+3. 再按需进入 phase 完成报告与历史实现计划
 
+## Active Supporting Guides
 
----
+- [`algorithm_system_usage_guide.md`](./algorithm_system_usage_guide.md)
+  - 量化交易算法系统 Phase 1-3 的整体实现说明
+- [`risk_management_system_plan.md`](./risk_management_system_plan.md)
+  - 轻量化风险管理系统架构方案与历史规划背景
 
-- [advanced_algorithms_usage_guide](advanced_algorithms_usage_guide.md)
-  - *MyStocks 量化交易算法系统 - Phase 4 完成报告*
+## Retained Historical References
 
-- [algorithm_system_usage_guide](algorithm_system_usage_guide.md)
-  - *MyStocks 量化交易算法系统 - 开发完成报告*
+- [`advanced_algorithms_usage_guide.md`](./advanced_algorithms_usage_guide.md)
+  - Phase 4 高级算法完成报告
+- [`neural_algorithms_usage_guide.md`](./neural_algorithms_usage_guide.md)
+  - Phase 5 神经网络算法完成报告
+- [`quantitative_trading_implementation.md`](./quantitative_trading_implementation.md)
+  - 量化交易算法实现计划
 
-- [neural_algorithms_usage_guide](neural_algorithms_usage_guide.md)
-  - *MyStocks 量化交易算法系统 - Phase 5 完成报告*
+## Retention Rule
 
-- [quantitative_trading_implementation](quantitative_trading_implementation.md)
-  - *Quantitative Trading Algorithms Implementation Plan*
-
-- [risk_management_system_plan](risk_management_system_plan.md)
-  - *MyStocks 轻量化风险管理系统架构方案 (V3.1)*
+- 该 family 当前保留为 `supporting`，不升级为新的 canonical docs trunk
+- 根导航只暴露少量总览入口，阶段完成报告和历史实现计划统一通过本 index 进入
+- 若后续历史 phase 文档入链继续下降，再按 bounded batch 单独评估 archive/delete

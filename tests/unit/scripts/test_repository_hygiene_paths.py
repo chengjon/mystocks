@@ -2134,7 +2134,9 @@ def test_typescript_document_cluster_is_converged_under_guides_typescript_family
         "Typescript_USER_GUIDE.md",
     ]
 
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
+    typescript_index = (PROJECT_ROOT / "docs" / "guides" / "typescript" / "INDEX.md").read_text(encoding="utf-8")
     cleanup_index_root = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "index-artifacts" / "INDEX_root.md"
     ).read_text(encoding="utf-8")
@@ -2148,8 +2150,19 @@ def test_typescript_document_cluster_is_converged_under_guides_typescript_family
     for name in typescript_files:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "typescript" / name).is_file()
-        assert f"typescript/{name}" in guides_index
         assert f"typescript/{name}" in cleanup_index_root
+        assert name.removesuffix(".md") in typescript_index
+
+    assert "[`typescript/`]" in guides_index
+    assert "/docs/guides/typescript/" in guides_index
+    assert "guides/typescript/INDEX.md" in docs_index
+    assert "guides/typescript/Typescript_QUICKSTART.md" in docs_index
+    assert "guides/typescript/Typescript_USER_GUIDE.md" in docs_index
+    assert "guides/typescript/Typescript_BEST_PRACTICES.md" in docs_index
+    assert "guides/typescript/Typescript_CONFIG_REFERENCE.md" in docs_index
+    assert "guides/typescript/TYPESCRIPT_ERROR_FIXING_GUIDE.md" not in docs_index
+    assert "guides/typescript/Typescript_TRAINING_BEGINNER.md" not in docs_index
+    assert "transition index" in typescript_index
 
     assert "docs/guides/typescript/Typescript_QUICKSTART.md" in typescript_report
     assert "docs/guides/typescript/Typescript_BEST_PRACTICES.md" in typescript_report
@@ -2941,6 +2954,7 @@ def test_data_interface_guides_are_converged_under_guides_data_interface_family(
 
 
 def test_quant_trading_guides_are_converged_under_guides_quant_trading_family() -> None:
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
     quant_index = (PROJECT_ROOT / "docs" / "guides" / "quant-trading" / "INDEX.md").read_text(
         encoding="utf-8"
@@ -2968,6 +2982,11 @@ def test_quant_trading_guides_are_converged_under_guides_quant_trading_family() 
 
     assert "[`quant-trading/`]" in guides_index
     assert "/docs/guides/quant-trading/" in guides_index
+    assert "guides/quant-trading/INDEX.md" in docs_index
+    assert "guides/quant-trading/algorithm_system_usage_guide.md" in docs_index
+    assert "guides/quant-trading/risk_management_system_plan.md" in docs_index
+    assert "guides/quant-trading/advanced_algorithms_usage_guide.md" not in docs_index
+    assert "guides/quant-trading/neural_algorithms_usage_guide.md" not in docs_index
     assert "transition index" in quant_index
     assert "./algorithm_system_usage_guide.md" in algorithm_usage
 
