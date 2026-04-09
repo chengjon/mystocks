@@ -31,9 +31,14 @@
 ## 4) 验收标准（DoD）
 - 功能/行为验收：到期项清理完成或合法续期。
 - 质量门验收：到期未处理项 = 0。
+- 基线/实测口径记录：
+  - 基线来源：`reports/analysis/tech-debt-baseline.json`
+  - 当前实测：`reports/analysis/tech-debt-current.json`
+  - 漂移结论：`reports/analysis/tech-debt-baseline-drift-report.json`
 - 证据命令：
   - `python scripts/dev/quality_gate/collect_tech_debt_baseline.py --output reports/analysis/tech-debt-current.json`
   - `python scripts/dev/quality_gate/tech_debt_governance_gate.py ttl-gate --input reports/analysis/tech-debt-current.json`
+  - `python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-drift-report --baseline reports/analysis/tech-debt-baseline.json --current reports/analysis/tech-debt-current.json --output reports/analysis/tech-debt-baseline-drift-report.json --only-drifted`
   - `python scripts/dev/quality_gate/tech_debt_governance_gate.py weekly-report --baseline reports/analysis/tech-debt-baseline.json --current reports/analysis/tech-debt-current.json --output reports/analysis/tech-debt-weekly-report.md`
 
 ## 5) 风险与应对

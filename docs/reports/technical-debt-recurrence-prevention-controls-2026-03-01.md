@@ -34,6 +34,7 @@
 3. **先记录，再豁免**：例外必须 owner/issue/ttl/reason/remediation 完整后才允许。
 4. **先复盘，再更新基线**：基线更新必须附复盘结论，默认只降不升。
 5. **先证据，再结论**：周报结论必须绑定命令输出/JSON 报告。
+6. **先看 drift，再判回归**：涉及基线波动的结论必须同时附 `baseline-drift-report`，明确区分 `gated drift` 与 `observed drift`。
 
 ---
 
@@ -61,6 +62,7 @@
 ### 触发器 C：基线指标连续两周上升
 - 处置：进入“清债冲刺周”，暂停新增非关键特性。
 - 责任：项目负责人 + Tech Lead。
+- 复核要求：必须先核对 `reports/analysis/tech-debt-baseline-drift-report.json`，确认上升项属于真实回归而非口径修正或观察项波动。
 
 ---
 

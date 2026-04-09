@@ -176,6 +176,7 @@
 
 4) 完成 3.2：周报模板落地
 - 输出字段：新增债务、消化债务、存量债务、过期项、风险热点
+- 同步要求：每轮周报/阶段复盘同时产出 `reports/analysis/tech-debt-baseline-drift-report.json`，区分 `gated drift` 与 `observed drift`
 
 5) 完成 3.3：KPI 门禁化
 - no-new-debt
@@ -227,6 +228,7 @@
 2. 落地例外模板 + 双签流程（1.4）
 3. 实现 TTL 到期自动失败（3.1）
 4. 更新 OpenSpec tasks 与阶段性周报
+5. 生成并归档 baseline drift 复核结果，避免把口径修正误判为阶段回归
 
 ---
 
