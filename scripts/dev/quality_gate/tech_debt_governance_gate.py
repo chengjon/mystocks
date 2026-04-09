@@ -114,6 +114,48 @@ def get_metric_value(payload: dict, path: str) -> int | float | None:
     return current if isinstance(current, (int, float)) else None
 
 
+def flatten_numeric_metrics(payload: dict, prefix: str = "") -> dict[str, int | float]:
+    flattened: dict[str, int | float] = {}
+    for key, value in payload.items():
+        path = f"{prefix}.{key}" if prefix else key
+        if isinstance(value, dict):
+            flattened.update(flatten_numeric_metrics(value, prefix=path))
+        elif isinstance(value, (int, float)):
+            flattened[path] = value
+    return flattened
+
+
+def build_baseline_drift_report(baseline: dict, current: dict) -> list[dict]:
+    baseline_metrics = flatten_numeric_metrics(baseline)
+    current_metrics = flatten_numeric_metrics(current)
+    gated_paths = {rule.path for rule in GATE_METRIC_RULES}
+
+    report: list[dict] = []
+    for path in sorted(set(baseline_metrics) | set(current_metrics)):
+        baseline_value = baseline_metrics.get(path)
+        current_value = current_metrics.get(path)
+
+        if baseline_value is None:
+            status = "missing_in_baseline"
+        elif current_value is None:
+            status = "missing_in_current"
+        elif baseline_value == current_value:
+            status = "match"
+        else:
+            status = "drifted"
+
+        report.append(
+            {
+                "path": path,
+                "baseline": baseline_value,
+                "current": current_value,
+                "status": status,
+                "gated": path in gated_paths,
+            }
+        )
+    return report
+
+
 def is_approved_baseline_review_exception(
     path: str,
     proposed_value: int | float,
@@ -492,6 +534,33 @@ def run_baseline_review(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_baseline_drift_report(args: argparse.Namespace) -> int:
+    baseline = load_json((PROJECT_ROOT / args.baseline).resolve())
+    current = load_json((PROJECT_ROOT / args.current).resolve())
+    report = build_baseline_drift_report(baseline=baseline, current=current)
+
+    if args.only_drifted:
+        report = [item for item in report if item["status"] != "match"]
+    if args.only_gated:
+        report = [item for item in report if item["gated"]]
+
+    payload = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "baseline": args.baseline,
+        "current": args.current,
+        "only_drifted": args.only_drifted,
+        "only_gated": args.only_gated,
+        "items": report,
+    }
+
+    output = (PROJECT_ROOT / args.output).resolve()
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"[baseline-drift-report] written: {output}")
+    print(f"[baseline-drift-report] items={len(report)}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Technical debt governance gate")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -530,6 +599,14 @@ def build_parser() -> argparse.ArgumentParser:
     review.add_argument("--proposed", required=True)
     review.add_argument("--exceptions", help="Optional JSON manifest for approved rebaseline exceptions")
     review.set_defaults(func=run_baseline_review)
+
+    drift = sub.add_parser("baseline-drift-report", help="Compare frozen baseline with current measured metrics")
+    drift.add_argument("--baseline", default=str(DEFAULT_BASELINE.relative_to(PROJECT_ROOT)))
+    drift.add_argument("--current", default="reports/analysis/tech-debt-current.json")
+    drift.add_argument("--output", default="reports/analysis/tech-debt-baseline-drift.json")
+    drift.add_argument("--only-drifted", action="store_true")
+    drift.add_argument("--only-gated", action="store_true")
+    drift.set_defaults(func=run_baseline_drift_report)
 
     return parser
 

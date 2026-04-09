@@ -4,9 +4,11 @@ import json
 from datetime import date
 
 from scripts.dev.quality_gate.tech_debt_governance_gate import (
+    build_baseline_drift_report,
     compute_hotspot_scores,
     evaluate_baseline_review,
     evaluate_no_new_debt,
+    flatten_numeric_metrics,
     get_metric_value,
     load_baseline_review_exceptions,
     parse_ttl,
@@ -194,6 +196,58 @@ def test_load_baseline_review_exceptions_reads_json_file(tmp_path) -> None:
     exceptions = load_baseline_review_exceptions(manifest)
 
     assert exceptions["skip_xfail_count"]["approved_value"] == 102
+
+
+def test_flatten_numeric_metrics_flattens_nested_paths() -> None:
+    payload = {
+        "frontend_type_errors": 0,
+        "backend_api_documentation": {
+            "documented_endpoints": 491,
+            "json_success_missing_examples": 0,
+        },
+        "generated_at": "2026-04-09T00:00:00Z",
+    }
+
+    flattened = flatten_numeric_metrics(payload)
+
+    assert flattened == {
+        "frontend_type_errors": 0,
+        "backend_api_documentation.documented_endpoints": 491,
+        "backend_api_documentation.json_success_missing_examples": 0,
+    }
+
+
+def test_build_baseline_drift_report_marks_gated_and_observed_drifts() -> None:
+    baseline = {
+        "frontend_type_errors": 0,
+        "frontend_suppressions_count": 0,
+        "skip_xfail_count": 102,
+        "backend_todo_count": 0,
+        "backend_api_documentation": {
+            "documented_endpoints": 491,
+            "json_success_missing_examples": 0,
+        },
+    }
+    current = {
+        "frontend_type_errors": 0,
+        "frontend_suppressions_count": 0,
+        "skip_xfail_count": 102,
+        "backend_todo_count": 50,
+        "backend_api_documentation": {
+            "documented_endpoints": 491,
+            "json_success_missing_examples": 0,
+        },
+    }
+
+    report = build_baseline_drift_report(baseline=baseline, current=current)
+    by_path = {item["path"]: item for item in report}
+
+    assert by_path["skip_xfail_count"]["status"] == "match"
+    assert by_path["skip_xfail_count"]["gated"] is True
+    assert by_path["backend_todo_count"]["status"] == "drifted"
+    assert by_path["backend_todo_count"]["gated"] is False
+    assert by_path["backend_todo_count"]["baseline"] == 0
+    assert by_path["backend_todo_count"]["current"] == 50
 
 
 def test_get_metric_value_supports_nested_paths() -> None:

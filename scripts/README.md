@@ -130,6 +130,13 @@ python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-review \
   --previous /tmp/tech-debt-baseline.previous.json \
   --proposed reports/analysis/tech-debt-baseline.json \
   --exceptions reports/compliance/exceptions/tech_debt_baseline_rebaseline.json
+
+# Compare frozen baseline with current measured metrics
+python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-drift-report \
+  --baseline reports/analysis/tech-debt-baseline.json \
+  --current /tmp/tech-debt-current.json \
+  --output /tmp/tech-debt-baseline-drift.json \
+  --only-drifted
 ```
 
 ---
