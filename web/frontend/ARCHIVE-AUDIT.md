@@ -41,3 +41,24 @@
 **Risk:** Low — no runtime code imports these files. Only test infrastructure references them.
 
 **STRU-05 status (archive portion):** Can proceed after removing 5 test files. Test files are: `tests/unit/config/converted-archive-*.spec.ts` (5 files).
+
+---
+
+## Post-Deletion Confirmation (2026-04-09)
+
+### views/converted.archive/ — DELETED
+
+All 11 files removed. Zero runtime consumers existed. Config exclusions removed from:
+- tsconfig.json (line 100)
+- .stylelintignore (line 6)
+
+### views/demo/ — CONFIRMED ACTIVE (Not Applicable for Removal)
+
+Per DEMO-AUDIT.md evidence and ARCH-03 disposition:
+- Has direct consumers (views importing from demo subdirectories), composables, styles
+- 8+ test files reference demo/ views
+- Route truth unresolved: router/index.js (legacy) has 6 demo routes; router/index.ts (active via main-standard.ts) has none
+- Phase 6 does NOT assert demo routes are "active" — only that the directory cannot be safely deleted
+- Route truth is a Phase 7 cross-cutting concern (D-08)
+
+**STRU-05 demo portion: Not Applicable.** views/demo/ directory cannot be safely deleted.

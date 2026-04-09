@@ -2,14 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
-status: Defining requirements
+status: Phase 6 complete
 last_updated: "2026-04-09T00:00:00.000Z"
-last_activity: 2026-04-09
 progress:
   total_phases: 3
-  completed_phases: 1
-  total_plans: 1
-  completed_plans: 1
+  completed_phases: 2
+  total_plans: 3
+  completed_plans: 3
 ---
 
 # Project State
@@ -26,19 +25,15 @@ progress:
 
 ## Current Position
 
-Phase: 6
-Plan: Not started
-Status: Defining requirements
-Last activity: 2026-04-08
-
----
+Phase: 06 (archive-cleanup) — COMPLETE
+Plan: 2 of 2
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-04-08)
 
 **Core value:** Every file has exactly one canonical location, every import resolves cleanly, zero lint errors.
-**Current focus:** v1.1 Final Polish — 3 deferred structural items with evidence-based dispositions
+**Current focus:** Phase 06 — archive-cleanup (COMPLETE)
 
 ---
 
@@ -47,7 +42,7 @@ See: .planning/PROJECT.md (updated 2026-04-08)
 | Milestone | Shipped | Phases | Plans | Status |
 |-----------|---------|--------|-------|--------|
 | v1.0 Codebase Consolidation | 2026-04-08 | 4 | 10 | Complete (3 deferred requirements) |
-| v1.1 Final Polish | — | TBD | TBD | Defining requirements |
+| v1.1 Final Polish | — | 3 | 3 | Phase 6 complete |
 
 ---
 
@@ -59,7 +54,9 @@ See: .planning/PROJECT.md (updated 2026-04-08)
 - Composables migration must be per-file (15+ active imports); bulk move will break
 - verify-mount.js is the blocker for STRU-03 — must understand its runtime role first
 - STRU-04 CLOSED (2026-04-08): view-local is canonical pattern per STANDARDS.md, 2 extraction candidates both kept view-local
+- views/converted.archive/ deleted (2026-04-09): 11 files, 5 test consumers, 2 config exclusions removed
+- views/demo/ cannot be safely deleted: has consumers, composables, styles, test references. Route truth deferred to Phase 7 (ARCH-03 = N/A)
 
 ---
 *State initialized: 2026-04-06*
-*Last updated: 2026-04-08 after v1.1 milestone started*
+*Last updated: 2026-04-09 after Phase 6 archive cleanup*
