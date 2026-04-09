@@ -84,8 +84,10 @@ archive > rewrite
   - `AGENTS.md` 与 `CLAUDE.md` 已补充执行层约束，固定 Claude Auto / Agent worklog 落点为 `docs/reports/worklogs/claude-auto/`
 - `2026-04-09-worklogs-source-investigation.md`
   - 已完成仓库内、`/root/.codex`、`oh-my-codex` 安装目录与 `/root/.config/manicode/` 的只读排查
-  - 当前未发现仓库内或可见本机配置中的明确 worklog 输出路径设置
-  - 暂定结论为：复发源更可能位于仓库外的会话级工具默认值或历史行为
+  - 随后又完成项目级会话状态切断、历史 `.worktrees/` 壳体清理、深层静态入口扫描与运行态快照核查
+  - 当前未发现仓库内、可见本机静态配置或当前运行态中仍在生效的明确 worklog 输出路径设置
+  - 当前更强结论为：已知 repo-side 与本机主要 session/worktree/static-state 回流入口已完成收口；剩余命中主要属于历史 transcript 证据残留，而不是新的活跃配置
+  - 后续处理模式切换为“观察期 + 触发式 runtime capture”，只有在 `docs/worklogs/` 再次复发时才进入下一轮进程级取证
 - `2549953ab docs(state): refresh root task control snapshots`
   - root 控制面快照 `TASK.md` 与 `TASK-REPORT.md` 的自动更新已单独收口，不再与文档治理波次混排
 - `ui-ux-pro-max` 目录已按用户澄清降级为“skill 运行产物 / 残留文档”，不再视为 guide family、门禁或根导航候选
