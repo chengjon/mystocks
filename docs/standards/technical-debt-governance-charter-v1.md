@@ -269,12 +269,17 @@
 6. OpenAPI JSON success example gap（目标：`<= baseline`）
 7. Non-JSON success responses（观察项，单列汇报，不作为债务失败阈值）
 
-## 6.3 热点与行动
+## 6.3 Baseline Drift
+- 必须分列 `gated_drift_items` 与 `observed_drift_items`
+- 至少列出前若干项 drift 明细：`path`、`baseline`、`current`
+- `gated_drift_items` 非零时，必须在结论或行动项中说明是否属于回归、受控纠偏或口径修正
+
+## 6.4 热点与行动
 - Top 10 热点文件（含路径）
 - 下周治理任务（owner + deadline）
 - 阻塞项与所需决策
 
-## 6.4 结构性技术债补充项
+## 6.5 结构性技术债补充项
 
 若本周涉及结构性技术债治理，周报还应补充：
 

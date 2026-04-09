@@ -839,8 +839,13 @@ def test_openspec_command_template_is_converged_under_guides_openspec_cmd_family
     assert (PROJECT_ROOT / "docs" / "guides" / "openspec-cmd" / "command-template.md").is_file()
 
     assert "./command-template.md" in openspec_cmd_readme
-    assert "openspec-cmd/command-template.md" in guides_index
+    assert "[`openspec-cmd/`]" in guides_index
+    assert "/docs/guides/openspec-cmd/" in guides_index
+    assert "README.md" in openspec_cmd_index
+    assert "check.md" in openspec_cmd_index
+    assert "check-report-example.md" in openspec_cmd_index
     assert "command-template" in openspec_cmd_index
+    assert "transition index" in openspec_cmd_index
     assert "openspec-cmd/command-template.md" in cleanup_index_root
 
 
@@ -2958,10 +2963,12 @@ def test_quant_trading_guides_are_converged_under_guides_quant_trading_family() 
     for name in quant_docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "quant-trading" / name).is_file()
-        assert f"quant-trading/{name}" in guides_index
         assert f"quant-trading/{name}" in cleanup_index_root
         assert name.removesuffix(".md") in quant_index
 
+    assert "[`quant-trading/`]" in guides_index
+    assert "/docs/guides/quant-trading/" in guides_index
+    assert "transition index" in quant_index
     assert "./algorithm_system_usage_guide.md" in algorithm_usage
 
 

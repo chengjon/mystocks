@@ -1,24 +1,33 @@
-# Openspec Cmd
+# OpenSpec Cmd Guide Family
 
 > **导航说明**:
-> 本文件是文档导航或索引，不是当前规则、当前基线或当前实现状态的唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线文档一并核对。
->
-> 文内目录、链接、数量和分类如未重新生成或复核，应视为导航快照，不得直接当作当前事实。
+> 本文件是 `docs/guides/openspec-cmd/` 的 transition index，不是当前 OpenSpec 官方工作流或仓库共享规则的唯一事实来源。
+> 若任务涉及 proposal、plan、spec、change 实施或归档，请优先阅读 [`openspec/AGENTS.md`](/opt/claude/mystocks_spec/openspec/AGENTS.md)；若涉及仓库级共享规则、审批门禁或迁移治理，请回到 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)。
 
+## Current Entry Order
 
-**最后更新**: 2026-03-24 10:32:04
+这一 family 当前角色是 `supporting`，用于 OpenSpec 命令扩展与示例参考，不承担仓库级 trunk。推荐阅读顺序：
 
-**文档数量**: 3
+1. [`README.md`](./README.md)
+2. [`check.md`](./check.md)
+3. 再按需进入模板与报告示例
 
+## Active Supporting Guides
 
----
+- [`README.md`](./README.md)
+  - OpenSpec 命令扩展主指南
+- [`check.md`](./check.md)
+  - `openspec-check` 命令定义与执行说明
 
-- [check](check.md)
-  - *check*
+## Retained Specialized References
 
-- [check-report-example](check-report-example.md)
-  - *OpenSpec Check Report: frontend-unified-optimization*
+- [`check-report-example.md`](./check-report-example.md)
+  - `openspec-check` 报告示例
+- [`command-template.md`](./command-template.md)
+  - 自定义 OpenSpec 命令模板
 
-- [command-template](command-template.md)
-  - *command-template*
+## Retention Rule
+
+- 该 family 当前保留为 `supporting`，不升级为新的 canonical docs trunk
+- 根导航只暴露 README 和主命令说明，模板与示例统一通过本 index 进入
+- 若后续模板或示例材料入链继续下降，再按 bounded batch 单独评估 archive/delete
