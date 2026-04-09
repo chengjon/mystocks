@@ -2283,6 +2283,7 @@ def test_mock_real_data_docs_are_converged_under_guides_mock_data_family() -> No
 
 def test_pm2_guides_are_converged_under_guides_pm2_family() -> None:
     testing_guide = (PROJECT_ROOT / "docs" / "testing" / "TESTING_GUIDE.md").read_text(encoding="utf-8")
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     web_e2e_quick_ref = (PROJECT_ROOT / "docs" / "testing" / "WEB_E2E_TEST_QUICK_REFERENCE.md").read_text(
         encoding="utf-8"
     )
@@ -2314,8 +2315,15 @@ def test_pm2_guides_are_converged_under_guides_pm2_family() -> None:
     for name in pm2_docs:
         assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
         assert (PROJECT_ROOT / "docs" / "guides" / "pm2" / name).is_file()
-        assert f"pm2/{name}" in guides_index
         assert f"pm2/{name}" in cleanup_index_root
+
+    assert "[`pm2/`]" in guides_index
+    assert "/docs/guides/pm2/" in guides_index
+    assert "guides/pm2/INDEX.md" in docs_index
+    assert "guides/pm2/PM2_PLAYWRIGHT_TESTING_GUIDE.md" in docs_index
+    assert "guides/pm2/PM2_QUICK_START_GUIDE.md" in docs_index
+    assert "guides/pm2/PM2_TMUX_LNV_COLLABORATION_GUIDE.md" in docs_index
+    assert "guides/pm2/PM2_PLAYWRIGHT_TESTING_GUIDE_REVIEW.md" not in docs_index
 
     assert "docs/guides/pm2/PM2_PLAYWRIGHT_TESTING_GUIDE.md" in testing_guide
     assert "docs/guides/pm2/PM2_PLAYWRIGHT_TESTING_GUIDE.md" in web_e2e_quick_ref
@@ -2328,6 +2336,7 @@ def test_pm2_guides_are_converged_under_guides_pm2_family() -> None:
     assert "PM2_PLAYWRIGHT_TESTING_GUIDE_REVIEW" in pm2_index
     assert "PM2_QUICK_START_GUIDE" in pm2_index
     assert "PM2_TMUX_LNV_COLLABORATION_GUIDE" in pm2_index
+    assert "transition index" in pm2_index
 
 
 def test_cicd_guides_are_converged_under_operations_ci_cd_family() -> None:

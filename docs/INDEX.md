@@ -624,17 +624,16 @@
 
         - 📄 [README](guides/openspec-cmd/README.md)
         - 📄 [check](guides/openspec-cmd/check.md)
-        - 📄 [check-report-example](guides/openspec-cmd/check-report-example.md)
-        - 📄 [command-template](guides/openspec-cmd/command-template.md)
+        - 📄 [Supporting Guides](guides/openspec-cmd/INDEX.md)
     - 📂 [Pm2](guides/pm2)
 
 ###### Pm2
 
         - 📄 [README](guides/pm2/INDEX.md)
         - 📄 [PM2_PLAYWRIGHT_TESTING_GUIDE](guides/pm2/PM2_PLAYWRIGHT_TESTING_GUIDE.md)
-        - 📄 [PM2_PLAYWRIGHT_TESTING_GUIDE_REVIEW](guides/pm2/PM2_PLAYWRIGHT_TESTING_GUIDE_REVIEW.md)
         - 📄 [PM2_QUICK_START_GUIDE](guides/pm2/PM2_QUICK_START_GUIDE.md)
         - 📄 [PM2_TMUX_LNV_COLLABORATION_GUIDE](guides/pm2/PM2_TMUX_LNV_COLLABORATION_GUIDE.md)
+        - 📄 [Supporting Guides](guides/pm2/INDEX.md)
     - 📂 [Quant Trading](guides/quant-trading)
 
 ###### Quant Trading
