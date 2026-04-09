@@ -35,6 +35,7 @@
 > - `reports/analysis/tech-debt-baseline.json`
 > - `reports/analysis/tech-debt-current.json`
 > - `reports/analysis/tech-debt-kpi-report.json`
+> - `reports/analysis/tech-debt-baseline-drift-report.json`
 
 | 指标 | 试点起始（baseline） | 当前（current） | 变化 | 结论 |
 |---|---:|---:|---:|---|
@@ -65,6 +66,15 @@
 说明：
 - 本周已完成 SoT 迁移与采集口径修正，部分历史报告基线时间点不同（183/190）会造成口径对照偏差；
 - 第 2 周建议固定“同一基线文件版本”后再做趋势结论。
+
+### 3.1 baseline drift 复核
+
+> 数据来源：`reports/analysis/tech-debt-baseline-drift-report.json`
+
+- 目的：区分 `gated drift` 与 `observed drift`，避免把历史库存观察项误写成门禁回归。
+- 当前要求：
+  - 若存在 `gated drift`，必须明确是否为本次回归；
+  - 若仅存在 `observed drift`，只能写为观察结论，不得直接得出“阻断失败”。
 
 ---
 
@@ -125,6 +135,7 @@
 2. 补齐误伤样本台账（Top 3）与双签例外明细。
 3. 对 `frontend_type_errors` 回归项做定向清偿（优先交易主链路）。
 4. 形成第 2 周报告后召开 4.2 评审会（通过/有条件通过/不通过）。
+5. 在正式评审前补齐 baseline drift 结论，明确 183/190 差异属于口径漂移还是门禁回归。
 
 ---
 

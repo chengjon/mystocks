@@ -24,7 +24,7 @@
 
 依据：
 1. 门禁机制已具备：no-new-debt、baseline 对比、例外双签规则均已落地。
-2. 指标趋势未稳定：当前仍存在类型错误高位与口径时间点差异（183/190）。
+2. 指标趋势未稳定：当前仍存在类型错误高位与口径时间点差异（183/190），需通过 baseline drift 复核拆分口径差与真实回归。
 3. 误伤率与交付影响数据尚未补齐，无法支持 4.3 全仓推广决策。
 
 ---
@@ -56,6 +56,12 @@
 - ttl-cleanup-rate：`1.0`
 
 > 说明：当前“183/190”口径差异来自基线时间点不一致；第2周必须锁定同一基线文件版本后再做趋势结论。
+
+### 3.1 baseline drift 复核要求
+- 基线文件：`reports/analysis/tech-debt-baseline.json`
+- 当前实测文件：`reports/analysis/tech-debt-current.json`
+- drift 报告：`reports/analysis/tech-debt-baseline-drift-report.json`
+- 要求：正式复审时必须分别列出 `gated drift` 与 `observed drift`，并说明哪些属于本次回归、哪些只是历史库存观察项。
 
 ---
 
@@ -115,4 +121,5 @@
 1. 锁定单一 baseline 文件版本（消除 183/190 口径漂移）
 2. 完成误伤样本台账 Top 3（含根因归类）
 3. 完成双签例外审计表
-4. 第 2 周结束后复审并给出“通过/有条件通过/不通过”最终结论
+4. 补齐 baseline drift 复核，拆分 `gated drift` / `observed drift`
+5. 第 2 周结束后复审并给出“通过/有条件通过/不通过”最终结论
