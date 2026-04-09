@@ -34,12 +34,12 @@
 - 基线/实测口径记录：
   - 基线来源：`reports/analysis/tech-debt-baseline.json`
   - 当前实测：`reports/analysis/tech-debt-current.json`
-  - 漂移结论：`reports/analysis/tech-debt-baseline-drift.json`
+  - 漂移结论：`reports/analysis/tech-debt-baseline-drift-report.json`
 - 证据命令：
   - `python scripts/dev/quality_gate/collect_tech_debt_baseline.py`
-  - `python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-drift-report --baseline reports/analysis/tech-debt-baseline.json --current reports/analysis/tech-debt-current.json --output reports/analysis/tech-debt-baseline-drift.json --only-drifted`
+  - `python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-drift-report --baseline reports/analysis/tech-debt-baseline.json --current reports/analysis/tech-debt-current.json --output reports/analysis/tech-debt-baseline-drift-report.json --only-drifted`
   - `cat reports/analysis/tech-debt-kpi-report.json`
-  - `cat reports/analysis/tech-debt-baseline-drift.json`
+  - `cat reports/analysis/tech-debt-baseline-drift-report.json`
 
 ## 5) 风险与应对
 - 主要风险：样本不足导致结论不可靠。

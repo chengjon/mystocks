@@ -86,5 +86,5 @@
   - [ ] 补充对应定向测试
 - **验收命令**：
   - `pytest tests/api/file_tests/test_trade_routes_api.py -k trade -q -o addopts=''`
-  - `python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-drift-report --baseline reports/analysis/tech-debt-baseline.json --current reports/analysis/tech-debt-current.json --output reports/analysis/tech-debt-baseline-drift.json --only-drifted`
+  - `python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-drift-report --baseline reports/analysis/tech-debt-baseline.json --current reports/analysis/tech-debt-current.json --output reports/analysis/tech-debt-baseline-drift-report.json --only-drifted`
   - `openspec validate refactor-technical-debt-remediation-wave1 --strict`
