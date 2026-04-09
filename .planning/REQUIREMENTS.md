@@ -1,59 +1,119 @@
-# Requirements: MyStocks Codebase Consolidation — v1.1
+# Requirements: MyStocks Codebase Consolidation
 
-**Defined:** 2026-04-08
-**Core Value:** Every file has exactly one canonical location, every import resolves cleanly, zero lint errors.
+**Defined:** 2026-04-09
+**Core Value:** Every file has exactly one canonical location, every import resolves cleanly, and `ruff check` / `stylelint` / `pytest` pass with zero errors.
 
-## v1.1 Requirements
+## v1.2 Requirements
 
-### Entry Consolidation
+Requirements for Lint & Test Zero milestone. Each maps to roadmap phases.
 
-- [x] **ENTRY-01**: verify-mount.js disposition resolved (deleted — standalone script with no CI integration, no consumers after archive)
-- [x] **ENTRY-02**: main.js archived to `_entry-archive/` (verify-mount.js deleted first, zero remaining consumers)
-- [x] **ENTRY-03**: Single active entry point confirmed (main-standard.ts), `npm run dev` and `npm run build` both succeed
+### F821 Resolution
 
-### Composables Re-scoping
+- [ ] **LINT-05**: All F821 errors in src/adapters/ resolved
+  - **Baseline:** 468 errors in 15 files (2026-04-09)
+  - **Verification:** `ruff check src/adapters/ --select F821`
+  - **Pass condition:** Zero output (F821 count = 0)
 
-- [x] **COMP-01**: COMPOSABLES-AUDIT.md reviewed and disposition decided for each of the 2 extraction candidates
-- [x] **COMP-02**: View-local pattern (15/17 composables) accepted as canonical and documented; only the 2 extraction candidates may be migrated
-- [x] **COMP-03**: Any extracted composables placed in src/composables/ with all consumer imports updated, `vue-tsc --noEmit` passes
+- [ ] **LINT-06**: All F821 errors in src/advanced_analysis/ resolved
+  - **Baseline:** 91 errors in 10 files (2026-04-09)
+  - **Verification:** `ruff check src/advanced_analysis/ --select F821`
+  - **Pass condition:** Zero output (F821 count = 0)
 
-### Archive Removal
+- [ ] **LINT-07**: All F821 errors in src/monitoring/ resolved
+  - **Baseline:** 83 errors in 8 files (2026-04-09)
+  - **Verification:** `ruff check src/monitoring/ --select F821`
+  - **Pass condition:** Zero output (F821 count = 0)
 
-- [x] **ARCH-01**: 5 test consumers of views/converted.archive/ identified, updated or removed
-- [x] **ARCH-02**: views/converted.archive/ directory deleted (11 files removed)
-- [x] **ARCH-03**: views/demo/ kept as reference code (not routed in canonical router/index.ts); route truth resolved in Phase 7
-- [x] **ARCH-04**: Test suite passes after archive removal, no dangling references
+- [ ] **LINT-08**: All F821 errors in src/gpu/ resolved
+  - **Baseline:** 46 errors in 6 files (2026-04-09)
+  - **Verification:** `ruff check src/gpu/ --select F821`
+  - **Pass condition:** Zero output (F821 count = 0)
+
+- [ ] **LINT-09**: All F821 errors in remaining directories resolved
+  - **Baseline:** 11 errors in 6 files (2026-04-09)
+  - **Scope:** alternative_data (2), core (1), database (1), governance (1), storage (1)
+  - **Specific files:**
+    - src/alternative_data/_news_sentiment_service_helper.py
+    - src/alternative_data/news_sentiment_analyzer.py
+    - src/core/data_source/config_manager.py
+    - src/database/service/adapter_query.py
+    - src/governance/risk_management/services/alert_rule_engine.py
+    - src/storage/database/database_manager/database_table_manager_methods/close_all_connections.py
+  - **Verification:** `ruff check src/alternative_data/ src/core/ src/database/ src/governance/ src/storage/ --select F821`
+  - **Pass condition:** Zero output (F821 count = 0)
+
+### Vitest Fixes
+
+- [ ] **VTEST-01**: Chart style and type cleanup tests pass
+  - **Baseline:** 4 failing test files (2026-04-09)
+  - **Scope:**
+    - tests/unit/config/chart-component-style-normalization.spec.ts
+    - tests/unit/config/chart-style-sources.spec.ts
+    - tests/unit/config/charts-use-pro-kline-chart-types-cleanup.spec.ts
+    - tests/unit/config/indicator-selector-types-cleanup.spec.ts
+  - **Verification:** `cd web/frontend && npx vitest run tests/unit/config/chart-component-style-normalization.spec.ts tests/unit/config/chart-style-sources.spec.ts tests/unit/config/charts-use-pro-k-line-chart-types-cleanup.spec.ts tests/unit/config/indicator-selector-types-cleanup.spec.ts`
+  - **Pass condition:** All 4 test files pass with zero failures
+
+- [ ] **VTEST-02**: ArtDeco system settings tests pass
+  - **Baseline:** 2 failing test files (2026-04-09)
+  - **Scope:**
+    - src/views/artdeco-pages/system-tabs/__tests__/ArtDecoDataManagement.spec.ts
+    - src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts
+  - **Verification:** `cd web/frontend && npx vitest run src/views/artdeco-pages/system-tabs/__tests__/`
+  - **Pass condition:** Both test files pass with zero failures
+
+- [ ] **VTEST-03**: Unhandled error in vitest resolved
+  - **Baseline:** 1 unhandled rejection (TypeError: monitoringApi.getSystemGeneralSettings is not a function) triggered by ArtDecoSystemSettings.spec.ts (2026-04-09)
+  - **Verification:** `cd web/frontend && npx vitest run 2>&1 | grep "Unhandled"`
+  - **Pass condition:** Zero unhandled errors in vitest output
+
+### Milestone Gate
+
+- [ ] **GATE-01**: Full F821 zero achieved
+  - **Verification:** `ruff check src/ --select F821 --statistics`
+  - **Pass condition:** Zero F821 errors reported
+
+- [ ] **GATE-02**: Full vitest pass achieved
+  - **Verification:** `cd web/frontend && npx vitest run`
+  - **Pass condition:** All test files pass, zero failures, zero unhandled errors
+
+## v2 Requirements
+
+Deferred to future release. Tracked but not in current roadmap.
+
+(None identified — this milestone targets full lint/test zero)
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| F821 resolution | Deferred to future milestone — 791 errors, 62 files, separate focus needed |
-| Bulk composable migration | v1.0 audit proves 15/17 are view-local; bulk move breaks 15+ imports |
-| views/demo/ removal | Kept as reference code (not routed in canonical router/index.ts). Features planned for future integration into main pages. Route truth resolved in Phase 7. |
-| New feature development | This is cleanup only |
-| Mobile/responsive changes | Desktop-only per project constraints |
+| Non-F821 ruff errors | ~164 remaining (other codes); out of scope for this milestone |
+| New feature development | Cleanup only — no new features |
+| Performance optimization | Out of scope unless caused by missing imports |
+| Backend test (pytest) fixes | Separate concern; not in scope |
 
 ## Traceability
 
+Which phases cover which requirements. Updated during roadmap creation.
+
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| COMP-01 | Phase 5 | Complete — both candidates kept view-local per evidence |
-| COMP-02 | Phase 5 | Complete — convention added to STANDARDS.md |
-| COMP-03 | Phase 5 | N/A — no extraction justified; both candidates kept view-local per evidence. Build verified unchanged. |
-| ARCH-01 | Phase 6 | Complete — 5 test consumers deleted |
-| ARCH-02 | Phase 6 | Complete — 11 files removed |
-| ARCH-03 | Phase 6 | Complete — demo/ kept as reference code (not routed), route truth resolved in Phase 7 |
-| ARCH-04 | Phase 6 | Complete — build + tests pass |
-| ENTRY-01 | Phase 7 | Complete — verify-mount.js deleted (standalone, no CI, no consumers) |
-| ENTRY-02 | Phase 7 | Complete — main.js archived to _entry-archive/ |
-| ENTRY-03 | Phase 7 | Complete — main-standard.ts sole entry, dev/build verified |
+| LINT-05 | — | Pending |
+| LINT-06 | — | Pending |
+| LINT-07 | — | Pending |
+| LINT-08 | — | Pending |
+| LINT-09 | — | Pending |
+| VTEST-01 | — | Pending |
+| VTEST-02 | — | Pending |
+| VTEST-03 | — | Pending |
+| GATE-01 | — | Pending |
+| GATE-02 | — | Pending |
 
 **Coverage:**
-- v1.1 requirements: 10 total
-- Mapped to phases: 10
-- Unmapped: 0 ✓
+- v1.2 requirements: 10 total
+- Mapped to phases: 0
+- Unmapped: 10
 
 ---
-*Requirements defined: 2026-04-08*
-*Last updated: 2026-04-09 after Phase 7 entry consolidation*
+*Requirements defined: 2026-04-09*
+*Last updated: 2026-04-09 after initial definition*

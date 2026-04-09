@@ -51,14 +51,14 @@ See: .planning/PROJECT.md (updated 2026-04-09)
 
 ## Accumulated Context
 
-- Ruff F821 count: 791 errors in 62 files — primary target for v1.2
+- Ruff F821 count: 699 errors in 46 files (verified 2026-04-09) — primary target for v1.2
 - Store overlap (market.ts vs marketData.ts) is CLOSED per NAME-05 — do not reopen
 - Frontend case-conflict: only Charts→charts was a merge; Common/, Market/ were deleted (untracked)
 - Composables migration must be per-file (15+ active imports); bulk move will break
 - STRU-03 CLOSED: verify-mount.js deleted, main.js archived, main-standard.ts sole entry point
 - STRU-04 CLOSED: view-local is canonical pattern per STANDARDS.md
 - STRU-05 CLOSED: views/converted.archive/ deleted (11 files), demo/ kept as reference code
-- 6 pre-existing vitest failures (chart styles, type cleanup, system settings) — target for v1.2
+- 7 vitest failures in 7 test files + 1 unhandled error (chart styles, type cleanup, system settings — verified 2026-04-09) — target for v1.2
 
 ---
 *State initialized: 2026-04-06*
