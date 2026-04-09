@@ -2,7 +2,7 @@
 
 ## v1.1 Final Polish (Shipped: 2026-04-09)
 
-**Phases:** 3 | **Plans:** 5 | **Commits:** ~20 | **Timeline:** 2 days (Apr 8–9)
+**Phases:** 3 | **Plans:** 5 | **Commits:** 31 | **Timeline:** 2 days (Apr 8–9)
 
 ### Key Accomplishments
 
