@@ -51,11 +51,11 @@ Every file in the codebase has exactly one canonical location, every import reso
 - ✓ NAME-04: Root-level shims deleted (core.py, data_access.py, monitoring.py) — v1.0
 - ✓ NAME-05: Pinia store domain boundaries documented — v1.0
 - ✓ STRU-04: Composables disposition — view-local accepted as canonical, 2 candidates kept (Phase 5, 2026-04-08)
+- ✓ STRU-05: Archive removal — 5 test consumers deleted, converted.archive/ deleted (11 files), demo/ confirmed active (Phase 6, 2026-04-09)
 
 ### Active
 
 - [ ] STRU-03: Single frontend entry point (resolve verify-mount.js, archive main.js, keep main-standard.ts)
-- [ ] STRU-05: views/converted.archive/ removal (resolve 5 test deps first; demo/ is active code, N/A)
 
 ### Out of Scope
 
@@ -67,16 +67,15 @@ Every file in the codebase has exactly one canonical location, every import reso
 
 ## Context
 
-### Current State (post-v1.0)
+### Current State (post-v1.1 Phase 6)
 
-Shipped v1.0 Codebase Consolidation (2026-04-08):
-- **4 phases, 10 plans, ~54 commits** over 3 days
+Phase 6 complete (2026-04-09):
+- **v1.1 progress**: 2/3 phases complete (Phase 5: composables, Phase 6: archive cleanup)
+- **Phase 6 results**: Deleted views/converted.archive/ (11 files), 5 test consumers, 2 config exclusions removed
+- **v1.0 results**: 4 phases, 10 plans, ~54 commits over 3 days
 - **Python**: ~195K LOC in src/ (863 ruff errors remaining, down from 1,456)
 - **Frontend**: ~192K LOC in web/frontend/src/
-- **Deleted**: 34 dead files across 5 directories, 3 root shims, 1 empty directory
-- **Renamed**: 32 part-files to semantic names
-- **Merged**: 1 case-conflict directory (Charts→charts); 2 untracked conflict directories deleted (Common/, Market/)
-- **Known gaps**: STRU-03/04/05 deferred with audit evidence
+- **Remaining**: STRU-03 (entry consolidation, Phase 7)
 
 ### Architecture
 
@@ -121,4 +120,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-08 after v1.1 milestone started*
+*Last updated: 2026-04-09 after Phase 6 archive cleanup*
