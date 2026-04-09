@@ -78,7 +78,7 @@ ENTRY-01, ENTRY-02, ENTRY-03
 1. verify-mount.js disposition resolved (updated to reference main-standard.ts, or removed with documented justification)
 2. main.js archived (moved to _entry-archive/ or deleted)
 3. main-standard.ts confirmed as sole active entry point
-4. `npm run dev` starts successfully with hot-reload working
+4. `npm run dev` starts successfully (dev server startup verified)
 5. `npm run build` succeeds
 
 ### Approach
