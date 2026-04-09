@@ -469,6 +469,46 @@ families:
     canonical_trunk_id: historical-evidence
     archive_target: docs/reports/
     decision_status: keep-supporting
+  - id: config-root-local-reference-cn
+    concern: local-config-reference
+    match_paths:
+      - config/TDX目录规则 .md
+    lifecycle: supporting
+    canonical_trunk_id: docs-entrypoint
+    decision_status: keep-supporting
+  - id: reports-phase-root-history-cn
+    concern: historical-evidence
+    match_paths:
+      - reports/phase/Phase_6_3_GPU加速引擎核心功能重构_完成报告.md
+    lifecycle: report
+    canonical_trunk_id: historical-evidence
+    archive_target: docs/reports/
+    decision_status: keep-supporting
+  - id: tests-root-history-cn
+    concern: historical-evidence
+    match_paths:
+      - tests/001-readme-md-md/改进执行报告.md
+    lifecycle: report
+    canonical_trunk_id: historical-evidence
+    archive_target: docs/reports/
+    decision_status: keep-supporting
+  - id: frontend-root-guides-cn
+    concern: local-frontend-reference
+    match_paths:
+      - web/frontend/测试指南.md
+    lifecycle: supporting
+    canonical_trunk_id: docs-entrypoint
+    decision_status: keep-supporting
+  - id: frontend-root-plans-cn
+    concern: local-frontend-planning
+    match_paths:
+      - web/frontend/失败预案.md
+      - web/frontend/改进需求-用户反馈.md
+      - web/frontend/页面功能与改进需求.md
+    lifecycle: plan
+    canonical_trunk_id: approved-change-truth
+    archive_target: docs/plans/
+    decision_status: keep-supporting
   - id: reports-secondary-indexes
     concern: historical-evidence
     match_paths:
