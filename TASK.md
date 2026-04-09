@@ -1,12 +1,5 @@
 # TASK
 
-> **使用说明**:
-> 本文件是项目入口、工作流快照、规划工件或使用说明，不是当前共享规则、当前代码实现或当前运行状态的唯一事实来源。
-> 当前共享规则与治理口径请优先遵循 `architecture/STANDARDS.md`；执行流程、命令与协作约束再结合根目录 `AGENTS.md`，并与当前代码、主线任务系统及验证结果一并核对。
->
-> 文内步骤、范围、状态或说明如未重新复核，应按其所属上下文理解，不得直接当作跨场景通用事实。
-
-
 > Exported from Mongo control plane. Do not treat this file as the primary editable task source.
 
 - Issue Identifier: `2026-04-03-root-task-artifact-mongo-cutover-main`
@@ -137,14 +130,3 @@
 - reports/governance/2026-03-14-active-tree-legacy-backup-cleanup.TASK-REPORT.md
 - reports/governance/2026-03-14-api-route-registration-governance.TASK.md
 - reports/governance/2026-03-14-api-route-registration-governance.TASK-REPORT.md
-
-<!-- AUTO_LAYER1_START -->
-## Auto Layer 1 (Now/Next/Blocked)
-- Last Sync: 2026-04-09 11:14:10
-- Session: `8cac2064-0e5d-4754-9b0e-ab3fa4d41230`
-- Completion Detected: `false`
-- Summary: (no assistant text)
-- Changed Files (0): (none)
-- Next: Review and update task ownership/DDL if needed
-- Blocked: (manual fill if any)
-<!-- AUTO_LAYER1_END -->
