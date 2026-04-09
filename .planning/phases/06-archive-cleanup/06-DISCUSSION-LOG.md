@@ -29,7 +29,7 @@
 | Leave for later | Harmless dead references, future lint pass | |
 
 **User's choice:** Clean up now
-**Notes:** EXPLICIT BOUNDARY — only remove converted.archive references (tsconfig line 100, stylelintignore line 6). Do NOT touch demo exclusion (tsconfig line 108).
+**Notes:** EXPLICIT BOUNDARY — only remove converted.archive references (tsconfig line 100, stylelintignore line 6). Do NOT touch demo exclusion (tsconfig line 108). Config cleanup moved to Step 2 (atomic with archive deletion) to prevent vue-tsc --noEmit from scanning still-existing archive files.
 
 ---
 
@@ -53,7 +53,7 @@
 | REQUIREMENTS.md + demo/README.md | Update traceability + update demo README | |
 
 **User's choice:** REQUIREMENTS.md + ARCHIVE-AUDIT.md
-**Notes:** Append demo/ confirmation note to ARCHIVE-AUDIT.md citing directory evidence and router/index.js routes.
+**Notes:** Append demo/ confirmation note to ARCHIVE-AUDIT.md citing directory evidence and test references. Route truth (index.js vs index.ts) is unresolved and deferred to Phase 7.
 
 ---
 
@@ -97,10 +97,11 @@
 
 | Option | Description | Selected |
 |--------|-------------|----------|
-| 2 commits (matches 2-step) | Commit 1: tests + config + header fix. Commit 2: archive + traceability | ✓ |
+| 2 commits (matches 2-step) | Commit 1: tests + header fix. Commit 2: archive + config cleanup + traceability | ✓ |
 | Single commit | Everything in one | |
 
 **User's choice:** 2 commits
+**Notes:** Config cleanup moved to Commit 2 (atomic with archive deletion) per review finding.
 
 ---
 
