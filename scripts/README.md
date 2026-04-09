@@ -135,8 +135,11 @@ python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-review \
 python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-drift-report \
   --baseline reports/analysis/tech-debt-baseline.json \
   --current /tmp/tech-debt-current.json \
-  --output /tmp/tech-debt-baseline-drift.json \
+  --output reports/analysis/tech-debt-baseline-drift-report.json \
   --only-drifted
+
+# For ad hoc local inspection, you can also write to a temp file:
+# --output /tmp/tech-debt-baseline-drift.json
 ```
 
 ---
