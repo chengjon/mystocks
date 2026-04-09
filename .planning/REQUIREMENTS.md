@@ -21,7 +21,7 @@
 
 - [x] **ARCH-01**: 5 test consumers of views/converted.archive/ identified, updated or removed
 - [x] **ARCH-02**: views/converted.archive/ directory deleted (11 files removed)
-- [x] **ARCH-03**: views/demo/ confirmed as active code and marked "not applicable" for removal in REQUIREMENTS.md traceability
+- [x] **ARCH-03**: views/demo/ kept as reference code (not routed in canonical router/index.ts); route truth resolved in Phase 7
 - [x] **ARCH-04**: Test suite passes after archive removal, no dangling references
 
 ## Out of Scope
@@ -43,7 +43,7 @@
 | COMP-03 | Phase 5 | N/A — no extraction justified; both candidates kept view-local per evidence. Build verified unchanged. |
 | ARCH-01 | Phase 6 | Complete — 5 test consumers deleted |
 | ARCH-02 | Phase 6 | Complete — 11 files removed |
-| ARCH-03 | Phase 6 | Complete — demo/ confirmed active, marked N/A |
+| ARCH-03 | Phase 6 | Complete — demo/ kept as reference code (not routed), route truth resolved in Phase 7 |
 | ARCH-04 | Phase 6 | Complete — build + tests pass |
 | ENTRY-01 | Phase 7 | Complete — verify-mount.js deleted (standalone, no CI, no consumers) |
 | ENTRY-02 | Phase 7 | Complete — main.js archived to _entry-archive/ |

@@ -33,7 +33,7 @@ Rewrote main-standard.ts with all 7 production capabilities from main.js. Archiv
 
 - `vue-tsc --noEmit` ✓ (zero type errors)
 - `npm run build` ✓ (25.65s, no broken imports)
-- Dev server starts ✓ (type generation + Vite, no errors)
+- Dev server starts ✓ (type generation + Vite startup, no errors — hot-reload not separately tested)
 
 ## Files Modified
 
