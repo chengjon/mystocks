@@ -45,6 +45,8 @@ archive > rewrite
 | `main` | `docs/guides/openspec-cmd/` | `keep-supporting` | `openspec/AGENTS.md` + `docs/guides/openspec-cmd/README.md` + `docs/guides/openspec-cmd/check.md` | root navigation compacted; template/example moved behind family index | executed in openspec-cmd wave 1 | family index now routes readers to OpenSpec main guidance and the `check` command first; template and report example remain retained as supporting references |
 | `main` | `docs/guides/pm2/` | `keep-supporting` | `docs/guides/pm2/PM2_PLAYWRIGHT_TESTING_GUIDE.md` + `docs/guides/pm2/PM2_QUICK_START_GUIDE.md` + `docs/guides/pm2/PM2_TMUX_LNV_COLLABORATION_GUIDE.md` | root navigation compacted; review doc moved behind family index | executed in pm2 wave 1 | family index now routes readers to the active PM2 execution guides first; the review document remains retained as historical feedback rather than a primary entrypoint |
 | `main` | `docs/guides/quant-trading/` | `keep-supporting` | `docs/guides/quant-trading/algorithm_system_usage_guide.md` + `docs/guides/quant-trading/risk_management_system_plan.md` | root navigation compacted; phase/historical docs moved behind family index | executed in quant-trading wave 1 | family index now routes readers to the system overview and risk-management plan first; phase 4/5 completion reports and the historical implementation plan remain retained as supporting references |
+| `main` | `docs/guides/templates/` | `keep-supporting` | `docs/guides/templates/INITIALIZATION_PROMPT.md` | root navigation compacted; specialized templates moved behind family index | executed in templates wave 1 | family index now routes readers to the initialization prompt first; task-card and tech-debt exception templates remain retained as supporting references |
+| `main` | `docs/guides/tdx-integration/` | `keep-supporting` | `docs/guides/tdx-integration/README.md` + `docs/guides/tdx-integration/WINDOWS_TDX_BRIDGE_SETUP.md` | root navigation compacted; analysis/example docs moved behind family index | executed in tdx-integration wave 1 | family index now routes readers to the TDX overview and Windows bridge setup first; historical analysis, capture, analysis, visualization, and example docs remain retained as supporting references |
 | `main` | `docs/guides/typescript/` | `keep-supporting` | `docs/guides/typescript/Typescript_QUICKSTART.md` + `docs/guides/typescript/Typescript_USER_GUIDE.md` + `docs/guides/typescript/Typescript_BEST_PRACTICES.md` + `docs/guides/typescript/Typescript_CONFIG_REFERENCE.md` | root navigation compacted; training/fix/plan docs moved behind family index | executed in typescript wave 1 | family index now routes readers to quickstart, user guide, best practices, and config reference first; training materials, troubleshooting, fix guides, and extension-system plans remain retained as supporting references |
 | `main` | `docs/architecture/legacy-cn/` | `archive` | `docs/architecture/README.md` + retained architecture indexes | `cleaned` | executed in architecture wave 1 | active-tree links removed from `docs/architecture/INDEX.md`, `docs/INDEX.md`, and `architecture/INDEX.md`; archived to `archive/docs/architecture/legacy-cn-2026-04-08/` |
 | `main` | `docs/worklogs/` | `merge-into-trunk` | `docs/reports/worklogs/` | `cleaned` | executed in worklogs wave 2 | active-tree navigation stays on `docs/reports/worklogs/`; recurring `docs/worklogs/claude-auto/2026-04-09.md` was merged back into the canonical reports trunk, indexes were refreshed, and the reintroduced parallel root directory was removed again |
@@ -55,6 +57,32 @@ archive > rewrite
 | `main` | `docs/testing/README.md` | `keep-canonical` | `docs/testing/README.md` | root trunk linked from `docs/README.md` | executed in operations/testing wave 2 | `docs/README.md` continues routing to the canonical testing trunk; hygiene tests were refreshed so supporting/compatibility docs stay retained without forcing `docs/testing/INDEX.md` back into a broad flat index |
 | `main` | `docs/testing/INDEX.md` | `merge-into-trunk` | `docs/testing/README.md` | transition index active | executed in wave 3 | root testing index no longer routes readers into legacy branches |
 | `main` | `docs/testing/legacy-cn/` | `archive` | `docs/testing/README.md` | `cleaned` | executed in wave 3 | archived to `archive/docs/testing/legacy-cn-2026-04-08/` after active-tree link cleanup |
+
+## 2026-04-09 Execution Sync
+
+按 2026-04-09 已完成提交补充，以下条线应视为当前轮次已闭环输入，不再回到待执行队列：
+
+- `bd7579111 governance(tech-debt): standardize default drift report artifact`
+  - `scripts/dev/quality_gate/tech_debt_governance_gate.py` 的 `baseline-drift-report` 默认输出已统一为 `reports/analysis/tech-debt-baseline-drift-report.json`
+  - `tests/unit/test_tech_debt_governance_gate.py` 已新增断言锁定该默认值
+  - 补充执行记录显示定点验证 `14 passed`，旧默认产物名已不再作为当前口径保留
+- `9ced0498b docs(governance): reclose recurring worklogs root`
+  - `docs/worklogs/claude-auto/2026-04-09.md` 已重新并回 `docs/reports/worklogs/claude-auto/2026-04-09.md`
+  - `docs/reports/worklogs/INDEX.md`、`docs/INDEX.md` 与本台账已同步刷新
+- `2549953ab docs(state): refresh root task control snapshots`
+  - root 控制面快照 `TASK.md` 与 `TASK-REPORT.md` 的自动更新已单独收口，不再与文档治理波次混排
+
+据此，下一步仍应遵循 trunk-first / family-first，而不是回头重复处理已闭环条线。当前建议顺序为：
+
+1. `docs/guides/ui-ux-pro-max/`
+2. `docs/guides/features/`
+3. `docs/guides/wencai/`
+
+以下 family 暂缓，避免过早进入高入链或高耦合面：
+
+- `docs/guides/multi-cli-tasks/`
+- `docs/guides/web/`
+- `docs/guides/frontend/`
 
 ## Blocked Clusters
 

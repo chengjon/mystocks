@@ -1,35 +1,30 @@
-# MyStocks 文档索引
+# Templates Guide Family
 
 > **导航说明**:
-> 本文件是文档导航或索引，不是当前规则、当前基线或当前实现状态的唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线文档一并核对。
->
-> 文内目录、链接、数量和分类如未重新生成或复核，应视为导航快照，不得直接当作当前事实。
+> 本文件是 `docs/guides/templates/` 的 transition index，不是仓库共享规则、当前实施口径或唯一模板真相源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若涉及具体执行流程与协作约束，再结合根目录 `AGENTS.md` 与当前实际工作流。
 
+## Current Entry Order
 
-**生成时间**: 2026-03-24 12:58:54
+这一 family 当前角色是 `supporting`，用于任务初始化和治理模板参考，不承担仓库级 trunk。推荐阅读顺序：
 
+1. [`INITIALIZATION_PROMPT.md`](./INITIALIZATION_PROMPT.md)
+2. 再按需进入任务卡模板和技术债例外模板
 
----
+## Active Supporting Guides
 
-## 🚀 快速导航
+- [`INITIALIZATION_PROMPT.md`](./INITIALIZATION_PROMPT.md)
+  - Frontend CLI 任务初始化模板
 
+## Retained Specialized References
 
----
+- [`task-card-standard-template.md`](./task-card-standard-template.md)
+  - 标准化任务卡模板
+- [`tech-debt-exception-template.md`](./tech-debt-exception-template.md)
+  - 技术债例外申请模板
 
-## 📊 统计信息
+## Retention Rule
 
-
-- **总文档数**: 3
-- **总目录数**: 0
-- **最后更新**: 2026-03-24
-
----
-
-
-## 📁 项目根目录
-
-- 📄 [README](./INDEX.md)
-- 📄 [INITIALIZATION_PROMPT](INITIALIZATION_PROMPT.md)
-- 📄 [task-card-standard-template](task-card-standard-template.md)
-- 📄 [tech-debt-exception-template](tech-debt-exception-template.md)
+- 该 family 当前保留为 `supporting`，不升级为新的 canonical docs trunk
+- 根导航只暴露最常用的初始化模板，其余治理模板统一通过本 index 进入
+- 若后续模板入链继续下降，再按 bounded batch 单独评估 archive/delete

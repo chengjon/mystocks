@@ -658,20 +658,15 @@
 ###### Tdx Integration
 
         - 📄 [README](guides/tdx-integration/README.md)
-        - 📄 [INTEGRATION_ANALYSIS](guides/tdx-integration/INTEGRATION_ANALYSIS.md)
         - 📄 [WINDOWS_TDX_BRIDGE_SETUP](guides/tdx-integration/WINDOWS_TDX_BRIDGE_SETUP.md)
-        - 📄 [complete_example](guides/tdx-integration/complete_example.md)
-        - 📄 [data_analysis](guides/tdx-integration/data_analysis.md)
-        - 📄 [data_capture](guides/tdx-integration/data_capture.md)
-        - 📄 [data_visualization](guides/tdx-integration/data_visualization.md)
+        - 📄 [Supporting Guides](guides/tdx-integration/INDEX.md)
     - 📂 [Templates](guides/templates)
 
 ###### Templates
 
         - 📄 [README](guides/templates/INDEX.md)
         - 📄 [INITIALIZATION_PROMPT](guides/templates/INITIALIZATION_PROMPT.md)
-        - 📄 [task-card-standard-template](guides/templates/task-card-standard-template.md)
-        - 📄 [tech-debt-exception-template](guides/templates/tech-debt-exception-template.md)
+        - 📄 [Supporting Guides](guides/templates/INDEX.md)
     - 📂 [Typescript](guides/typescript)
 
 ###### Typescript

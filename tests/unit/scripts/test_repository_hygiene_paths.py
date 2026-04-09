@@ -2875,6 +2875,7 @@ def test_documentation_process_guides_are_converged_under_guides_documentation_f
 
 
 def test_initialization_prompt_is_converged_under_guides_templates_family() -> None:
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
     templates_index = (PROJECT_ROOT / "docs" / "guides" / "templates" / "INDEX.md").read_text(encoding="utf-8")
     cleanup_index_root = (
@@ -2888,10 +2889,16 @@ def test_initialization_prompt_is_converged_under_guides_templates_family() -> N
 
     assert not (PROJECT_ROOT / "docs" / "guides" / name).exists()
     assert (PROJECT_ROOT / "docs" / "guides" / "templates" / name).is_file()
-    assert f"templates/{name}" in guides_index
+    assert "[`templates/`]" in guides_index
+    assert "/docs/guides/templates/" in guides_index
+    assert "guides/templates/INDEX.md" in docs_index
+    assert "guides/templates/INITIALIZATION_PROMPT.md" in docs_index
+    assert "guides/templates/task-card-standard-template.md" not in docs_index
+    assert "guides/templates/tech-debt-exception-template.md" not in docs_index
     assert name.removesuffix(".md") in templates_index
     assert f"guides/templates/{name}" in cleanup_index_root
     assert '\"INITIALIZATION_PROMPT.md\": \"guides/templates/INITIALIZATION_PROMPT.md\"' in migration_script
+    assert "transition index" in templates_index
 
 
 def test_technical_debt_governance_charter_is_converged_under_docs_standards_family() -> None:
@@ -3240,6 +3247,7 @@ def test_dayjs_guides_are_converged_under_guides_frontend_family() -> None:
 
 
 def test_windows_tdx_bridge_setup_is_converged_under_guides_tdx_integration_family() -> None:
+    docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
     guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
     tdx_index = (PROJECT_ROOT / "docs" / "guides" / "tdx-integration" / "INDEX.md").read_text(
         encoding="utf-8"
@@ -3249,9 +3257,15 @@ def test_windows_tdx_bridge_setup_is_converged_under_guides_tdx_integration_fami
     assert not (PROJECT_ROOT / "docs" / "guides" / "WINDOWS_TDX_BRIDGE_SETUP.md").exists()
     assert (PROJECT_ROOT / "docs" / "guides" / "tdx-integration" / "WINDOWS_TDX_BRIDGE_SETUP.md").is_file()
 
-    assert "tdx-integration/WINDOWS_TDX_BRIDGE_SETUP.md" in guides_index
+    assert "[`tdx-integration/`]" in guides_index
+    assert "/docs/guides/tdx-integration/" in guides_index
+    assert "guides/tdx-integration/README.md" in docs_index
+    assert "guides/tdx-integration/WINDOWS_TDX_BRIDGE_SETUP.md" in docs_index
+    assert "guides/tdx-integration/INTEGRATION_ANALYSIS.md" not in docs_index
+    assert "guides/tdx-integration/complete_example.md" not in docs_index
     assert "WINDOWS_TDX_BRIDGE_SETUP" in tdx_index
     assert "./WINDOWS_TDX_BRIDGE_SETUP.md" in tdx_readme or "WINDOWS_TDX_BRIDGE_SETUP.md" in tdx_readme
+    assert "transition index" in tdx_index
 
 
 def test_buger_client_guides_are_converged_under_guides_buger_family() -> None:
