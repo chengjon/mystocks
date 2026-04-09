@@ -80,7 +80,15 @@ jobs:
 
       - name: Skip baseline review when baseline file is unchanged
         if: steps.scope.outputs.baseline_changed != 'true'
-        run: echo "Baseline file unchanged; unit tests already validated governance logic."
+        run: |
+          echo "Baseline file unchanged; unit tests already validated governance logic."
+          {
+            echo "# Tech Debt Baseline Review"
+            echo ""
+            echo "- baseline_changed: false"
+            echo "- result: skipped"
+            echo "- note: baseline file unchanged; governance unit tests still executed"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Export previous baseline snapshot
         if: steps.scope.outputs.baseline_changed == 'true'
@@ -115,3 +123,42 @@ jobs:
         with:
           name: tech-debt-baseline-drift
           path: /tmp/tech-debt-baseline-drift.json
+
+      - name: Publish baseline review summary
+        if: steps.scope.outputs.baseline_changed == 'true'
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          drift_path = Path("/tmp/tech-debt-baseline-drift.json")
+          payload = json.loads(drift_path.read_text(encoding="utf-8"))
+          items = payload.get("items", [])
+          gated = [item for item in items if item.get("gated")]
+          observed = [item for item in items if not item.get("gated")]
+
+          lines = [
+              "# Tech Debt Baseline Review",
+              "",
+              "- baseline_changed: true",
+              "- result: passed",
+              f"- drift_items: {len(items)}",
+              f"- gated_drift_items: {len(gated)}",
+              f"- observed_drift_items: {len(observed)}",
+              "",
+              "## Drift Preview",
+          ]
+
+          if items:
+              for item in items[:10]:
+                  lines.append(
+                      f"- {item['path']}: baseline={item['baseline']} current={item['current']} gated={item['gated']}"
+                  )
+          else:
+              lines.append("- no drift items")
+
+          summary_path = Path(os.environ["GITHUB_STEP_SUMMARY"])
+          with summary_path.open("a", encoding="utf-8") as handle:
+              handle.write("\n".join(lines) + "\n")
+          PY
