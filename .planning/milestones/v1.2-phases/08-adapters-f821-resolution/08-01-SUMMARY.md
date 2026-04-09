@@ -59,7 +59,7 @@ completed: 2026-04-10
 
 ## Files Created/Modified
 - `src/adapters/akshare/index_daily.py` - Added logging, pd, ak, normalize_date, format_index_code_for_source
-- `src/adapters/akshare/industry_data.py` - Added logging, pd, ak, ColumnMapper, format_stock_code_for_source
+- `src/adapters/akshare/industry_data.py` - Added logging, pd, ak (linter removed unused ColumnMapper/format_stock_code_for_source)
 - `src/adapters/akshare/misc_data/get_futures_index_daily.py` - Added logging, pd, ak
 - `src/adapters/akshare/misc_data/get_ths_industry_names.py` - Added logging, pd, ak
 - `src/adapters/akshare/realtime_data.py` - Added logging, typing, pd, ak, normalize_date

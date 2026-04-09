@@ -9,7 +9,7 @@ Requirements for Lint & Test Zero milestone. Each maps to roadmap phases.
 
 ### F821 Resolution
 
-- [ ] **LINT-05**: All F821 errors in src/adapters/ resolved
+- [x] **LINT-05**: All F821 errors in src/adapters/ resolved
   - **Baseline:** 468 errors in 15 files (2026-04-09)
   - **Verification:** `ruff check src/adapters/ --select F821`
   - **Pass condition:** Zero output (F821 count = 0)
