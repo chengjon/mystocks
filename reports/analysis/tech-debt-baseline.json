@@ -4,8 +4,8 @@
   "frontend_type_errors": 0,
   "frontend_suppressions_count": 0,
   "skip_xfail_count": 102,
-  "backend_todo_count": 0,
-  "backend_placeholder_count": 0,
+  "backend_todo_count": 50,
+  "backend_placeholder_count": 502,
   "test_placeholder_assert_count": 0,
   "backend_static_code_analysis": {
     "frozen_at": "2026-04-03T19:08:21+08:00",

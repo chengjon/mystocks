@@ -207,7 +207,13 @@
 - suppression 基线
 - skip/xfail 基线
 - OpenAPI 文档质量基线（`backend_api_documentation`）
+- 债务库存观察基线（如 `backend_todo_count`、`backend_placeholder_count`、`test_placeholder_assert_count`）
 - 大文件热点基线（按仓库既有例外清单）
+
+说明：
+
+- 债务库存观察基线用于冻结“当前仓库里还剩多少历史债务库存”，目的是防止历史占位值继续冒充真实状态。
+- 观察基线默认不自动等同于“基线不增”硬门禁；只有当指标被显式纳入 `GATE_METRIC_RULES` 后，才进入失败判定。
 
 ## 5.2 冻结与更新
 1. 冻结频率：每个治理阶段开始时冻结一次。
