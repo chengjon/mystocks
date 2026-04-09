@@ -1,0 +1,112 @@
+version: "v0.2"
+
+task:
+  id: "pr-73"
+  title: "finalize technical-debt governance follow-through closeout"
+  owner: "main"
+  created_at: "2026-04-09"
+
+mainline:
+  id: "L1-tech-debt-governance-followthrough-final-closeout"
+  objective: "close the remaining technical-debt governance follow-through drift on one cumulative branch and keep the canonical governance records aligned on main"
+  milestone_id: "L2-governance-closeout"
+  slice_id: "L3-tech-debt-governance-followthrough-final"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "required"
+  secondary_domains: []
+  exemption_reason: "governance-closeout-docs-only"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-73.yaml"
+    - "docs/guides/governance/DELETION_EVIDENCE_GATE.md"
+    - "docs/reports/tasks/INDEX.md"
+    - "docs/reports/tasks/TASK.md"
+    - "docs/reports/tasks/TASK-T01-REPORT.md"
+    - "docs/reports/tasks/TASK-T02-REPORT.md"
+    - "docs/reports/tasks/TASK-T03-REPORT.md"
+    - "docs/reports/tasks/TASK-T04-REPORT.md"
+    - "docs/reports/tasks/TASK-T05-REPORT.md"
+    - "docs/reports/tasks/TASK-T06-REPORT.md"
+    - "docs/reports/tasks/TASK-T07-REPORT.md"
+    - "docs/reports/tasks/TASK-T08-REPORT.md"
+    - "docs/reports/tasks/TASK-T09-REPORT.md"
+    - "docs/reports/tasks/TASK-T10-REPORT.md"
+    - "governance/technical-debt/ARCHITECTURE_SOURCE_OF_TRUTH.md"
+    - "governance/technical-debt/DEBT_REGISTER.md"
+    - "governance/technical-debt/INDEX.md"
+    - "governance/technical-debt/SPEC_CONFLICT_MATRIX.md"
+    - "governance/technical-debt/TASK-REPORT.md"
+    - "governance/technical-debt/TEMPORARY_ARTIFACT_INVENTORY.md"
+    - "governance/technical-debt/WEEKLY_GOVERNANCE_CADENCE.md"
+    - "reports/governance/README.md"
+    - "reports/governance/2026-04-07-reports-retirement-readiness-matrix.md"
+    - "reports/governance/2026-04-07-reports-cli-retirement-readiness-audit.md"
+    - "reports/governance/2026-04-07-reports-data-cleaning-retirement-readiness-audit.md"
+    - "reports/governance/2026-04-07-reports-phase7-monitoring-retirement-readiness-audit.md"
+    - "reports/governance/2026-04-07-reports-quant-retirement-readiness-audit.md"
+  forbidden_paths:
+    - ".github/workflows/**"
+    - "openspec/**"
+    - "scripts/**"
+    - "tests/**"
+    - "web/frontend/**"
+    - "web/backend/**"
+    - "src/**"
+
+non_goals:
+  - "No runtime or hook-engine behavior change"
+  - "No new governance capability or OpenSpec proposal"
+  - "No unrelated frontend, Mongo, watchlist, or deletion-engine implementation work"
+
+acceptance:
+  checks:
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-73.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr73-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If any touched governance document is omitted from the task card, Mainline Governance Gate will fail"
+    - "If any closeout line overstates canonical truth, the cumulative branch would merge stale governance state onto main"
+  rollback_plan: "git revert <merge-commit-sha> if any closeout record or bridge note is found to misstate the canonical governance truth after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "finish the remaining technical-debt governance follow-through closeout on one cumulative branch and remove the last canonical-governance documentation drift"
+    modified_scope: "canonical technical-debt governance records, historical task-sidecar bridge notes, deletion-governance runbook bridge text, retirement-readiness reports, and this PR-73 task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime, hook, or workflow logic change; only governance documentation truth and closeout status are synchronized"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the merge if any TD-011/014/015 or SC-008/018 closeout claim, registry-path bridge, or canonical-reference note is inaccurate"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-04-09T00:00:00Z"
+    approval_note: "this PR only closes already-implemented governance follow-through items and synchronizes canonical governance truth on main"
+    secondary_approved: false
