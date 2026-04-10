@@ -55,7 +55,7 @@ Requirements for Lint & Test Zero milestone. Each maps to roadmap phases.
     - tests/unit/config/chart-style-sources.spec.ts
     - tests/unit/config/charts-use-pro-kline-chart-types-cleanup.spec.ts
     - tests/unit/config/indicator-selector-types-cleanup.spec.ts
-  - **Verification:** `cd web/frontend && npx vitest run tests/unit/config/chart-component-style-normalization.spec.ts tests/unit/config/chart-style-sources.spec.ts tests/unit/config/charts-use-pro-k-line-chart-types-cleanup.spec.ts tests/unit/config/indicator-selector-types-cleanup.spec.ts`
+  - **Verification:** `cd web/frontend && npx vitest run tests/unit/config/chart-component-style-normalization.spec.ts tests/unit/config/chart-style-sources.spec.ts tests/unit/config/charts-use-pro-kline-chart-types-cleanup.spec.ts tests/unit/config/indicator-selector-types-cleanup.spec.ts`
   - **Pass condition:** All 4 test files pass with zero failures
   - **Completed:** 2026-04-10 (Phase 10)
 

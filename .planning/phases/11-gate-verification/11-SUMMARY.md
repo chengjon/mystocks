@@ -7,14 +7,19 @@ completed: "2026-04-10"
 
 # Phase 11: Gate Verification — Complete
 
-## Gate Results
+## Gate Results (Formal — defined in REQUIREMENTS.md)
 
 | Gate | Command | Result | Status |
 |------|---------|--------|--------|
 | GATE-01 | `ruff check src/ --select F821 --statistics` | 0 F821 errors | PASS |
 | GATE-02 | `npx vitest run --reporter=verbose` | 231 files, 840 tests passed, 0 unhandled | PASS |
-| GATE-03 | `ruff check src/ --statistics` | 0 total errors | PASS |
-| GATE-04 | `git diff --stat main...HEAD -- src/` | Import-only changes verified per-phase | PASS |
+
+## Informational Checks (not formal gates)
+
+| Check | Command | Result | Note |
+|-------|---------|--------|------|
+| Non-F821 ruff baseline | `ruff check src/ --statistics` | 47 errors (F403, F601, F401, F811, F823, E722, F402) | Out of scope for v1.2 — tracked separately |
+| Import-only diff | `git diff --stat main...HEAD -- src/` | Verified per-phase (Phases 8–10) | No logic regressions introduced during F821 work |
 
 ## Docs Residuals Fixed
 
