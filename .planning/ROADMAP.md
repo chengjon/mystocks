@@ -57,12 +57,15 @@ LINT-06, LINT-07, LINT-08
 2. `ruff check src/monitoring/ --select F821 --statistics` reports 0 errors
 3. `ruff check src/gpu/ --select F821 --statistics` reports 0 errors
 4. `ruff check src/ --select F821 --statistics` reports ≤131 errors (699 − 468 − 91 − 83 − 46 = remaining only)
-5. `git diff --stat src/advanced_analysis/ src/monitoring/ src/gpu/` — only import lines changed
+5. `git diff --stat src/advanced_analysis/ src/monitoring/ src/gpu/` — only import lines and function signature changes (no logic changes)
 
 #### Approach
 
 - Apply same import-resolution patterns from Phase 8 to these directories
-- Process by directory: advanced_analysis first (most files), then monitoring, then gpu
+- Some files have non-mechanical F821 errors (variables used outside scope) — fix by adding missing parameters to function signatures
+- Conditional dependencies (SNOWNLP, jieba) use try/except ImportError + AVAILABLE flag pattern
+- Cross-module types imported from canonical locations only (no local stubs)
+- Process by directory: advanced_analysis first (most complex, has non-mechanical errors), then monitoring, then gpu
 - Verify per-directory after changes
 
 ---

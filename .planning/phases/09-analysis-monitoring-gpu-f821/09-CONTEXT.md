@@ -21,12 +21,12 @@ Only import lines and function signatures may change. No logic changes.
 
 ### Conditional imports strategy
 - **D-01:** Use module-level `try/except ImportError` with `*_AVAILABLE` boolean flag pattern for optional third-party dependencies
-- **D-02:** For SNOWNLP: create new `SNOWNLP_AVAILABLE = False` default, import `SnowNLP` and `jieba` inside try block. Never make them hard dependencies
+- **D-02:** For SNOWNLP: create new `SNOWNLP_AVAILABLE = False` default, import `SnowNLP` and `jieba` inside try block. **Must also `import jieba.analyse`** — `jieba.analyse.extract_tags()` requires the submodule explicitly imported; bare `import jieba` does not expose `.analyse` at runtime
 - **D-03:** For GPU: import `GPU_AVAILABLE` and `IsolationForest` from sibling `dataclasses.py` module where they're already properly defined (don't recreate the pattern)
 - **D-04:** Pattern matches existing codebase convention: `try: from cuml import IsolationForest; GPU_AVAILABLE = True; except ImportError: GPU_AVAILABLE = False`
 
 ### Non-mechanical F821 errors
-- **D-05:** Fix by adding missing parameters to function signatures only (e.g., add `stock_data` parameter to `_generate_summary()` in canslim_analyzer.py)
+- **D-05:** Fix by adding missing parameters to function signatures only (e.g., add `stock_data: Dict` parameter to `get_canslim_score(self, score)` in `src/advanced_analysis/decision_models/models/canslim_analyzer.py:144` — it uses `stock_data` at line 160 without it being a parameter)
 - **D-06:** Do NOT refactor to store as instance attributes — minimal change, preserve existing structure
 - **D-07:** Each non-mechanical fix must be analyzed individually — the executor reads the file to understand the scope before fixing
 
