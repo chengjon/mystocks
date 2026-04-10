@@ -14,5 +14,5 @@
 - 做必要清理与优化修复
 
 ## Impact
-- Affected specs: data access, storage, runtime config
+- Affected specs: architecture-governance
 - Affected code: `src/adapters/**`, `src/data_access/**`, `src/storage/**`, `config/**`
