@@ -7,6 +7,8 @@ import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, List
 
+from src.alternative_data.news_sentiment_analyzer import NewsArticle
+
 logger = logging.getLogger(__name__)
 
 

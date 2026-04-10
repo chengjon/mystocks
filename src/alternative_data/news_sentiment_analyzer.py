@@ -26,6 +26,13 @@ except ImportError:
     TRANSFORMERS_AVAILABLE = False
     logging.warning("Transformers not available, using fallback sentiment analysis")
 
+try:
+    import torch
+
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
+
 from src.core.database import DatabaseConnectionManager
 
 logger = logging.getLogger(__name__)

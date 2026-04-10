@@ -7,6 +7,7 @@ from typing import Dict, List, Union
 import pandas as pd
 
 from src.data_access import PostgreSQLDataAccess
+from src.database.service import DatabaseService
 
 logger = logging.getLogger(__name__)
 

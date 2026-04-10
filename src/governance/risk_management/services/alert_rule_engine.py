@@ -512,7 +512,7 @@ class AlertRuleEngine:
                         "field": "var_1d_95",
                         "operator": ">",
                         "value": "{threshold}",
-                        "description": f"VaR超过 {threshold}%",
+                        "description": "VaR超过 {threshold}%",
                     }
                 ],
                 "actions": [{"type": "notify", "severity": "warning", "message": "VaR风险超标", "channels": ["email"]}],
@@ -526,7 +526,7 @@ class AlertRuleEngine:
                         "field": "volatility_20d",
                         "operator": ">",
                         "value": "{threshold}",
-                        "description": f"波动率超过 {threshold}%",
+                        "description": "波动率超过 {threshold}%",
                     }
                 ],
                 "actions": [

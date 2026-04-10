@@ -14,6 +14,8 @@ import logging
 import redis
 from dotenv import load_dotenv
 
+from src.storage.database.database_manager import DatabaseType
+
 # 配置日志
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("DatabaseTableManager")
