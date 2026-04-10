@@ -4,7 +4,6 @@
 > 本文件用于描述某一专题能力的规格边界、变更提案或专题约束，服务于 OpenSpec 的方案管理与差异追踪。
 > 它不自动等同于“当前已上线实现”或仓库共享治理规则的唯一真相源；执行时需同时核对 `architecture/STANDARDS.md`、审批状态、当前代码实现以及相关 `openspec/specs/` 正式规格。
 
-
 ## Purpose
 Define the local-first Symphony/Maestro orchestration runtime contract for repository-owned workflows,
 tracker-backed issue dispatch, multi-CLI collaboration, and MyStocks-specific operating conventions.
@@ -165,19 +164,22 @@ The system SHALL provide a small local tracker CLI for managing issues without L
 
 ### Requirement: Human-Authored Task Contract Boundary
 
-The system SHALL treat `TASK.md`, `TASK-REPORT.md`, and file ownership rules as human-authored
-coordination artifacts, while Symphony automates the execution flow that begins after a task has
-already been defined and activated.
+The system SHALL treat file ownership rules as human-authored coordination artifacts, and for
+Mongo-backed active work it SHALL treat `TASK.md` and `TASK-REPORT.md` as exported task snapshots
+derived from the control plane rather than authoritative hand-authored task records.
 
-#### Scenario: Execute after task contract exists
-- **WHEN** a MyStocks issue is activated for Symphony execution
-- **THEN** Symphony treats the existing `TASK.md` and `TASK-REPORT.md` as authoritative collaboration context
-- **AND** it does not redefine the task contract on behalf of the human operator
+#### Scenario: Execute after Mongo-backed task exists
 
-#### Scenario: Respect repository ownership boundaries
-- **WHEN** a worker session is launched for a MyStocks issue
-- **THEN** the session prompt instructs the worker to respect `.FILE_OWNERSHIP`
-- **AND** the worker stays within the assigned task boundary unless the main CLI explicitly coordinates otherwise
+- **WHEN** a MyStocks issue is activated for Mongo-backed multi-CLI execution
+- **THEN** the active task definition is sourced from the Mongo control plane
+- **AND** any `TASK.md` / `TASK-REPORT.md` artifact used in the worktree is an exported snapshot of that state
+- **AND** the system does not require operators to hand-maintain markdown as the primary active task source
+
+#### Scenario: Preserve readable exported artifacts
+
+- **WHEN** an operator needs a readable worktree-local task artifact for review or worker onboarding
+- **THEN** the system can export `TASK.md` and `TASK-REPORT.md` from Mongo-backed collaboration records
+- **AND** the exported artifact remains consistent with the current control-plane state
 
 ### Requirement: Local-First Multi-CLI Runtime Visibility
 
@@ -255,3 +257,4 @@ The system SHALL provide local operator surfaces for managing and inspecting col
 #### Scenario: Inspect collaboration runtime state from API
 - **WHEN** an operator calls the collaboration status API
 - **THEN** the API exposes per-issue collaboration state, workspace mappings, and stale worker visibility
+
