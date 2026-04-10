@@ -33,7 +33,7 @@ Plan: Not started
 See: .planning/PROJECT.md (updated 2026-04-09)
 
 **Core value:** Every file has exactly one canonical location, every import resolves cleanly, zero lint errors.
-**Current focus:** Phase 09 — analysis-monitoring-gpu-f821
+**Current focus:** Phase 10 — remaining-f821-+-vitest-fixes
 
 ---
 

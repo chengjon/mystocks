@@ -14,20 +14,23 @@ Requirements for Lint & Test Zero milestone. Each maps to roadmap phases.
   - **Verification:** `ruff check src/adapters/ --select F821`
   - **Pass condition:** Zero output (F821 count = 0)
 
-- [ ] **LINT-06**: All F821 errors in src/advanced_analysis/ resolved
+- [x] **LINT-06**: All F821 errors in src/advanced_analysis/ resolved
   - **Baseline:** 91 errors in 10 files (2026-04-09)
   - **Verification:** `ruff check src/advanced_analysis/ --select F821`
   - **Pass condition:** Zero output (F821 count = 0)
+  - **Completed:** 2026-04-10 (Phase 09)
 
-- [ ] **LINT-07**: All F821 errors in src/monitoring/ resolved
+- [x] **LINT-07**: All F821 errors in src/monitoring/ resolved
   - **Baseline:** 83 errors in 8 files (2026-04-09)
   - **Verification:** `ruff check src/monitoring/ --select F821`
   - **Pass condition:** Zero output (F821 count = 0)
+  - **Completed:** 2026-04-10 (Phase 09)
 
-- [ ] **LINT-08**: All F821 errors in src/gpu/ resolved
+- [x] **LINT-08**: All F821 errors in src/gpu/ resolved
   - **Baseline:** 46 errors in 6 files (2026-04-09)
   - **Verification:** `ruff check src/gpu/ --select F821`
   - **Pass condition:** Zero output (F821 count = 0)
+  - **Completed:** 2026-04-10 (Phase 09)
 
 - [ ] **LINT-09**: All F821 errors in remaining directories resolved
   - **Baseline:** 11 errors in 6 files (2026-04-09)
@@ -99,9 +102,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | LINT-05 | Phase 8 | Pending |
-| LINT-06 | Phase 9 | Pending |
-| LINT-07 | Phase 9 | Pending |
-| LINT-08 | Phase 9 | Pending |
+| LINT-06 | Phase 9 | Complete |
+| LINT-07 | Phase 9 | Complete |
+| LINT-08 | Phase 9 | Complete |
 | LINT-09 | Phase 10 | Pending |
 | VTEST-01 | Phase 10 | Pending |
 | VTEST-02 | Phase 10 | Pending |
@@ -116,4 +119,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-09*
-*Last updated: 2026-04-09 after initial definition*
+*Last updated: 2026-04-10 — LINT-06/07/08 marked complete after Phase 09*

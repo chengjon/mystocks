@@ -49,4 +49,4 @@ ae90692e5 fix(lint): resolve 46 F821 undefined-name errors in src/gpu/
 - **Total files modified:** 24
 - **Total errors fixed:** 220
 - **Plans completed:** 3/3
-- **Verification:** PASSED
+- **Verification:** F821 GATE PASSED (scope: `--select F821` only; other lint codes remain in these directories)
