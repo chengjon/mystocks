@@ -1,5 +1,27 @@
 # Milestones
 
+## v1.2 Lint & Test Zero (Shipped: 2026-04-10)
+
+**Phases:** 4 | **Plans:** 8 | **Timeline:** 2 days (Apr 9–10)
+
+### Key Accomplishments
+
+1. Resolved all 699 F821 ruff errors across 45 files (Phases 8-10)
+2. Fixed all 7 vitest test failures (4 chart config path, 2 system-tabs, 1 unhandled error)
+3. Established TYPE_CHECKING guard pattern for type-only imports; removed dead code causing circular import
+4. Gate verification: GATE-01 (F821=0) and GATE-02 (231 files / 840 tests all passing) both PASS
+
+### Known Gaps (deferred to future milestone)
+
+- 47 non-F821 ruff errors: F401 (19), E722 (10), F601 (6), F811 (4), F823 (4), F403 (3), F402 (1)
+
+### Archive
+
+- [ROADMAP.md](ROADMAP.md) — full roadmap with phase details
+- [REQUIREMENTS.md](REQUIREMENTS.md) — all 10 requirements with outcomes
+
+---
+
 ## v1.1 Final Polish (Shipped: 2026-04-09)
 
 **Phases:** 3 | **Plans:** 5 | **Commits:** 31 | **Timeline:** 2 days (Apr 8–9)

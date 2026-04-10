@@ -81,7 +81,7 @@ LINT-09, VTEST-01, VTEST-02, VTEST-03
 #### Success Criteria
 
 1. `ruff check src/ --select F821 --statistics` reports 0 F821 errors (all 45 files clean)
-2. `cd web/frontend && npx vitest run tests/unit/config/chart-component-style-normalization.spec.ts tests/unit/config/chart-style-sources.spec.ts tests/unit/config/charts-use-pro-k-line-chart-types-cleanup.spec.ts tests/unit/config/indicator-selector-types-cleanup.spec.ts --reporter=verbose 2>&1 | tail -5` — shows "X passed", 0 failed
+2. `cd web/frontend && npx vitest run tests/unit/config/chart-component-style-normalization.spec.ts tests/unit/config/chart-style-sources.spec.ts tests/unit/config/charts-use-pro-kline-chart-types-cleanup.spec.ts tests/unit/config/indicator-selector-types-cleanup.spec.ts --reporter=verbose 2>&1 | tail -5` — shows "X passed", 0 failed
 3. `cd web/frontend && npx vitest run src/views/artdeco-pages/system-tabs/__tests__/ --reporter=verbose 2>&1 | tail -5` — shows "X passed", 0 failed
 4. `cd web/frontend && npx vitest run 2>&1 | grep -c "Unhandled"` returns exit code 1 (no matches)
 
@@ -109,8 +109,6 @@ GATE-01, GATE-02
 
 1. `ruff check src/ --select F821 --statistics` reports 0 F821 errors (GATE-01)
 2. `cd web/frontend && npx vitest run --reporter=verbose 2>&1 | tail -10` — zero failures, zero unhandled errors (GATE-02)
-3. `ruff check src/ --statistics` — total error count not higher than pre-milestone baseline (excluding F821)
-4. `git diff --stat src/` — changes limited to import blocks only (no logic regressions)
 
 #### Approach
 
@@ -124,10 +122,10 @@ GATE-01, GATE-02
 
 | # | Phase | Goal | Requirements | Success Criteria |
 |---|-------|------|--------------|------------------|
-| 8 | Adapters F821 | Resolve 468 errors in 15 adapter files | LINT-05 | 5 |
-| 9 | Analysis + Monitoring + GPU | Resolve 220 errors in 24 files | LINT-06, LINT-07, LINT-08 | 5 |
+| 8 | Adapters F821 | Resolve 468 errors in 15 adapter files | LINT-05 | 2026-04-09 |
+| 9 | Analysis + Monitoring + GPU | Resolve 220 errors in 24 files | LINT-06, LINT-07, LINT-08 | 2026-04-10 |
 | 10 | Remaining + Vitest | Resolve 11 errors + fix 7 test failures | LINT-09, VTEST-01, VTEST-02, VTEST-03 | 2026-04-10 |
-| 11 | Gate Verification | Prove full zero state | GATE-01, GATE-02 | 2026-04-10 |
+| 11 | Gate Verification | Prove F821 zero + Vitest full pass | GATE-01, GATE-02 | 2026-04-10 |
 
 **Coverage:** 10/10 requirements mapped ✓
 

@@ -7,15 +7,15 @@
 > 文内步骤、范围、状态或说明如未重新复核，应按其所属上下文理解，不得直接当作跨场景通用事实。
 
 
-## Current Milestone: v1.2 Lint & Test Zero
+## All Milestones Shipped
 
-**Goal:** Resolve all remaining F821 ruff errors and fix pre-existing vitest failures to achieve the project's core value of zero lint/test errors.
+**Last shipped:** v1.2 Lint & Test Zero (2026-04-10)
 
-**Target features:**
-- F821 ruff errors resolved (699 errors in 45 files → 0; baseline 2026-04-09, `ruff check src/ --select F821 --statistics`)
-- Vitest failures fixed (7 failures in 7 test files, 1 with unhandled error → 0; baseline 2026-04-09, `cd web/frontend && npx vitest run`)
+**No active milestone** — awaiting next planning cycle.
 
-**Last shipped:** v1.1 Final Polish (2026-04-09)
+**Potential future work:**
+- 47 non-F821 ruff errors (F401, E722, F601, F811, F823, F403, F402)
+- Backend test (pytest) fixes
 
 ## What This Is
 
@@ -58,8 +58,7 @@ Every file in the codebase has exactly one canonical location, every import reso
 
 ### Active
 
-- [ ] F821 ruff errors: 699 in 45 files → zero (baseline 2026-04-09)
-- [ ] Vitest failures: 7 test files, 1 with unhandled error → zero (baseline 2026-04-09)
+(None — all requirements shipped)
 
 ### Out of Scope
 
@@ -71,14 +70,15 @@ Every file in the codebase has exactly one canonical location, every import reso
 
 ## Context
 
-### Current State (post-v1.1 — all milestones shipped)
+### Current State (post-v1.2 — all milestones shipped)
 
-**Both milestones complete:**
-- **v1.0** (2026-04-08): 4 phases, 10 plans, ~54 commits — codebase consolidation
-- **v1.1** (2026-04-09): 3 phases, 5 plans, ~20 commits — final polish (composables, archive, entry)
-- **Python**: ~195K LOC in src/ (863 ruff errors remaining, down from 1,456)
+**Three milestones complete:**
+- **v1.0** (2026-04-08): 4 phases, 10 plans — codebase consolidation
+- **v1.1** (2026-04-09): 3 phases, 5 plans — final polish (composables, archive, entry)
+- **v1.2** (2026-04-10): 4 phases, 8 plans — F821 zero + Vitest full pass
+- **Python**: ~195K LOC in src/ (0 F821 errors, 47 non-F821 ruff errors remaining)
 - **Frontend**: ~192K LOC in web/frontend/src/, single entry point (main-standard.ts)
-- **Remaining**: F821 resolution (699 errors, 45 files — verified 2026-04-09) — target for v1.2
+- **Vitest**: 231 files, 840 tests, all passing
 
 ### Architecture
 
@@ -123,4 +123,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-09 after v1.2 milestone started*
+*Last updated: 2026-04-10 — v1.2 shipped, all milestones complete*
