@@ -5,7 +5,7 @@ import { resolve } from 'node:path'
 describe('charts useProKLineChart type cleanup', () => {
   it('keeps the charts kline composable free of ts-nocheck', () => {
     const source = readFileSync(
-      resolve(process.cwd(), 'src/components/Charts/composables/useProKLineChart.ts'),
+      resolve(process.cwd(), 'src/components/charts/composables/useProKLineChart.ts'),
       'utf8'
     )
     const tsNoCheckDirective = '@ts-' + 'nocheck'

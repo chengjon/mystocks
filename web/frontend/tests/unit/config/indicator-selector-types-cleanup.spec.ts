@@ -8,7 +8,7 @@ describe('indicator selector type cleanup', () => {
     const tsExpectErrorDirective = '@ts-' + 'expect-error'
     const files = [
       'src/components/market/IndicatorSelector.vue',
-      'src/components/Charts/IndicatorSelector.vue',
+      'src/components/charts/IndicatorSelector.vue',
     ]
 
     for (const file of files) {

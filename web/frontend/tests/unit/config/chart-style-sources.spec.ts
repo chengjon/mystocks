@@ -9,9 +9,9 @@ function readSource(pathFromFrontendRoot: string): string {
 describe('chart style sources', () => {
   it('keeps chart style files on ArtDeco token variables', () => {
     const files = [
-      'src/components/Charts/styles/AdvancedHeatmap.scss',
-      'src/components/Charts/styles/ProKLineChart.css',
-      'src/components/Charts/styles/RelationChart.scss',
+      'src/components/charts/styles/AdvancedHeatmap.scss',
+      'src/components/charts/styles/ProKLineChart.css',
+      'src/components/charts/styles/RelationChart.scss',
       'src/components/chart/styles/HealthRadarChart.css',
     ]
 

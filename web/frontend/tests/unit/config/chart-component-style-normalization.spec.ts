@@ -9,10 +9,10 @@ function readSource(pathFromFrontendRoot: string): string {
 describe('chart component style normalization', () => {
   it('keeps chart component styles on the artdeco token namespace', () => {
     const files = [
-      'src/components/Charts/IndicatorSelector.vue',
-      'src/components/Charts/OscillatorChart.vue',
-      'src/components/Charts/SankeyChart.vue',
-      'src/components/Charts/TreeChart.vue',
+      'src/components/charts/IndicatorSelector.vue',
+      'src/components/charts/OscillatorChart.vue',
+      'src/components/charts/SankeyChart.vue',
+      'src/components/charts/TreeChart.vue',
     ]
 
     for (const file of files) {
