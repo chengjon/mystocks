@@ -1,6 +1,6 @@
 # frontend-routing Delta: refactor-entry-consolidation
 
-## MODIFIED Requirements
+## ADDED Requirements
 
 ### Requirement: Single Entry Point Architecture
 
@@ -31,8 +31,3 @@ Legacy entry points (`main.js`, `main.js.backup`) SHALL be archived in `_entry-a
 - **AND** the application continues running (non-blocking)
 - **AND** no emoji-based debug logs appear in production
 
-## REMOVED Requirements
-
-### Requirement: Bloomberg Terminal Override Styles
-
-The Bloomberg terminal override styles import is dropped from the entry point. ArtDeco is the current design system; Bloomberg overrides are a legacy layer with no active consumers.
