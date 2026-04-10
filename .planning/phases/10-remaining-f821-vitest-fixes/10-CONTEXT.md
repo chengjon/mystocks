@@ -83,7 +83,7 @@ Two distinct domains:
 ### Vitest — failing test files
 - `web/frontend/tests/unit/config/chart-component-style-normalization.spec.ts` — stale `Charts/` paths
 - `web/frontend/tests/unit/config/chart-style-sources.spec.ts` — stale `Charts/` paths
-- `web/frontend/tests/unit/config/charts-use-pro-k-line-chart-types-cleanup.spec.ts` — stale `Charts/` paths
+- `web/frontend/tests/unit/config/charts-use-pro-kline-chart-types-cleanup.spec.ts` — stale `Charts/` paths
 - `web/frontend/tests/unit/config/indicator-selector-types-cleanup.spec.ts` — stale `Charts/` paths
 - `web/frontend/src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts` — needs semantic rewrite
 - `web/frontend/src/views/artdeco-pages/system-tabs/__tests__/ArtDecoDataManagement.spec.ts` — needs semantic rewrite
