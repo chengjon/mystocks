@@ -1,9 +1,10 @@
 """Tail helpers for `chip_concentration.py`."""
 
 import logging
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
+import pandas as pd
 
 from src.advanced_analysis.chip_distribution_analyzer.chip_models import (
     ChipConcentration,

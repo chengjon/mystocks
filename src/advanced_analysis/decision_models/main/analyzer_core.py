@@ -62,7 +62,7 @@ class DecisionAnalyzerCore:
                 "canslim": {
                     "score": canslim_score.overall_score,
                     "rating": canslim_score.overall_rating,
-                    "summary": self.canslim_analyzer.get_canslim_score(canslim_score),
+                    "summary": self.canslim_analyzer.get_canslim_score(canslim_score, stock_data),
                 },
                 "fisher": {
                     "score": fisher_score.overall_score,

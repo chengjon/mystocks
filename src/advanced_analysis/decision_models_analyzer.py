@@ -10,6 +10,8 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 
+from src.advanced_analysis import BaseAnalyzer, AnalysisResult, AnalysisType
+
 from .models import (
     BuffettModelMixin,
     CANSLIMModelMixin,

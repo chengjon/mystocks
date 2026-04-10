@@ -14,6 +14,7 @@ from typing import List
 
 
 from src.advanced_analysis import AnalysisResult, AnalysisType
+from src.advanced_analysis.trading_signals_analyzer.trading_signal_models import TradingSignal
 
 def _assess_signal_risk(self, signals: List[TradingSignal]) -> str:
     """评估信号风险水平"""

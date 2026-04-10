@@ -9,7 +9,8 @@ import pandas as pd
 
 logger = logging.getLogger(__name__)
 
-from .dataclasses import AnomalyEvent, AnomalyAlert, AnomalyPattern
+from .dataclasses import AnomalyCluster, AnomalyEvent, AnomalyAlert, AnomalyPattern
+from src.advanced_analysis import AnalysisResult, AnalysisType
 def _analyze_anomaly_patterns(self, anomalies: List[AnomalyEvent], data: pd.DataFrame) -> List[AnomalyPattern]:
     """分析异常模式"""
     patterns = []

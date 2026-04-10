@@ -16,6 +16,7 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 
 from src.advanced_analysis import AnalysisResult, AnalysisType
+from src.advanced_analysis.sentiment_analyzer.sentiment_models import SentimentScore, SentimentAlert, MarketSentimentImpact
 
 def _generate_sentiment_signals(
     self, sentiment: SentimentScore, sentiment_trend: Dict[str, Any], alerts: List[SentimentAlert]

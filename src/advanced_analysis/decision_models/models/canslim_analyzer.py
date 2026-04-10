@@ -141,8 +141,10 @@ class CANSLIMAnalyzer:
             score.technical.rating = "C"
             score.technical.ma_signal = "neutral"
 
-    def get_canslim_score(self, score: OverallModelScore) -> Dict:
+    def get_canslim_score(self, score: OverallModelScore, stock_data: Optional[Dict] = None) -> Dict:
         """获取CAN SLIM评分明细"""
+        if stock_data is None:
+            stock_data = {}
         return {
             "model": "CAN SLIM",
             "criteria_scores": {

@@ -14,6 +14,14 @@ from src.advanced_analysis.sentiment_analyzer.sentiment_models import (
     SentimentScore,
 )
 
+try:
+    from snownlp import SnowNLP
+    import jieba
+    import jieba.analyse
+    SNOWNLP_AVAILABLE = True
+except ImportError:
+    SNOWNLP_AVAILABLE = False
+
 logger = logging.getLogger(__name__)
 
 

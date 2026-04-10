@@ -1,7 +1,7 @@
 """Tail helpers for `sentiment_score.py`."""
 
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
 
