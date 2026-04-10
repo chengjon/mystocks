@@ -23,6 +23,8 @@ import json
 import logging
 import pickle
 import threading
+
+from src.gpu.api_system.utils.cache_optimization import MultiLevelCache
 import time
 import zlib
 from collections import defaultdict, deque

@@ -6,6 +6,8 @@ Resource Scheduler
 import logging
 from typing import Any, Dict, List
 
+from src.gpu.api_system.services.resource_scheduler.helpers import TaskStatus
+
 
 logger = logging.getLogger(__name__)
 

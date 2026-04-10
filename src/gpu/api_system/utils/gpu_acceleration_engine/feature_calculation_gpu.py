@@ -16,6 +16,7 @@ import pandas as pd
 
 from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
 from src.gpu.api_system.utils.monitoring import MetricsCollector
+from src.gpu.api_system.utils.gpu_acceleration_engine.backtest_engine_gpu import BacktestEngineGPU, MLTrainingGPU
 
 logger = logging.getLogger(__name__)
 

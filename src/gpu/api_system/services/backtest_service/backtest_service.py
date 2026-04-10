@@ -15,6 +15,7 @@ import numpy as np
 from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
 from src.gpu.api_system.utils.monitoring import MetricsCollector
 from src.gpu.api_system.utils.redis_utils import RedisQueue
+from src.gpu.api_system.services.backtest_service.backtest_engine import BacktestEngine
 
 try:
     from src.gpu.api_system.api_proto.backtest_pb2 import (
