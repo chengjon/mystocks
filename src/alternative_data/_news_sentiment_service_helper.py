@@ -5,9 +5,10 @@ from __future__ import annotations
 import json
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, List
+from typing import TYPE_CHECKING, Any, Dict, List
 
-from src.alternative_data.news_sentiment_analyzer import NewsArticle
+if TYPE_CHECKING:
+    from src.alternative_data.news_sentiment_analyzer import NewsArticle
 
 logger = logging.getLogger(__name__)
 

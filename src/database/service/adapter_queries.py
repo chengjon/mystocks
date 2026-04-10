@@ -7,7 +7,6 @@ from typing import Dict, List, Union
 import pandas as pd
 
 from src.data_access import PostgreSQLDataAccess
-from src.database.service import DatabaseService
 
 logger = logging.getLogger(__name__)
 
@@ -380,6 +379,3 @@ class AdapterQueriesMixin:
             logger.error("获取个股行业概念信息失败: %s", e)
             return {"symbol": symbol, "industries": [], "concepts": []}
 
-
-# 创建全局数据库服务实例
-db_service = DatabaseService()
