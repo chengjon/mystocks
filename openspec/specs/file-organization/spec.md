@@ -125,3 +125,21 @@ The project SHALL govern documentation by both taxonomy and lifecycle.
 - **THEN** it SHALL be placed under `reports/`
 - **AND** `docs/` SHALL not be used as a long-term catch-all evidence store
 
+### Requirement: Legacy Frontend Asset Lifecycle Classification
+The project SHALL classify legacy frontend assets by functional role before relocating, archiving, or removing them.
+
+#### Scenario: Classify monitoring and legacy route-bound pages
+- **WHEN** the project evaluates `src/views/monitoring/` or other route-adjacent legacy page groups
+- **THEN** it SHALL classify each page as canonical runtime truth, historical route target, test-guarded artifact, or another explicit lifecycle role
+- **AND** it SHALL NOT treat missing imports from the live router alone as deletion proof
+
+#### Scenario: Classify duplicate page forks before relocation
+- **WHEN** the project evaluates duplicate or forked page sets such as `Phase4Dashboard` or `TechnicalAnalysis`
+- **THEN** it SHALL classify each member as canonical, historical retention, demo/example asset, or independent fork pending judgment
+- **AND** it SHALL record retirement conditions before structural cleanup begins
+
+#### Scenario: Classify view-local composables before migration
+- **WHEN** the project evaluates `src/views/composables/`
+- **THEN** it SHALL distinguish legacy page support, support modules, test-guarded modules, and duplicate-candidates
+- **AND** it SHALL NOT bulk-migrate the directory without consumer and lifecycle alignment
+

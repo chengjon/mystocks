@@ -115,3 +115,28 @@ The system SHALL keep `/trade/terminal` semantics separate from dashboard / Deal
 - **THEN** the router resolves the trade-terminal implementation
 - **AND** that implementation SHALL NOT be renamed to `DealingRoom.vue` as part of dashboard truth reconciliation
 
+### Requirement: Evidence-Based Frontend Route Truth
+The system SHALL treat the current frontend runtime route truth as the evidence-backed chain
+`web/frontend/index.html -> /src/main-standard.ts -> /src/router/index.ts` unless an approved
+change updates all linked entry surfaces together.
+
+#### Scenario: Resolve the canonical runtime route chain
+- **WHEN** an operator audits the live frontend route entry
+- **THEN** they identify `web/frontend/index.html` as the HTML entry
+- **AND** that entry loads `/src/main-standard.ts`
+- **AND** `/src/main-standard.ts` resolves the live router at `/src/router/index.ts`
+
+#### Scenario: Reject historical router files as live truth
+- **GIVEN** historical router assets such as `src/router/index.js`, `src/router/index.js.clean`, `src/router/index.js.backup-phase2.3`, or `src/router/phase4.routes.js` still exist
+- **WHEN** the project classifies current route truth
+- **THEN** those files SHALL NOT be treated as the current runtime route source
+- **AND** they SHALL be handled through lifecycle classification before archive or removal
+
+### Requirement: Historical Route Asset Classification
+The system SHALL classify non-canonical router files before they can be archived, relocated, or removed.
+
+#### Scenario: Classify legacy router assets before cleanup
+- **WHEN** a frontend closure batch evaluates non-canonical router files
+- **THEN** each file SHALL receive an explicit lifecycle status such as historical backup, broken working copy, stale route asset, or retained historical reference
+- **AND** cleanup SHALL wait until that status and its retirement conditions are recorded
+
