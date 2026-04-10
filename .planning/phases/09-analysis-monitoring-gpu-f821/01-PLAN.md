@@ -20,12 +20,12 @@ requirements:
   - LINT-06
 must_haves:
   - ruff check src/advanced_analysis/ --select F821 reports 0 errors
-  - Import additions and one function signature change with caller update — no other logic changes
+  - Import additions and one bounded compatibility fix (optional param + guard + caller update) — no other logic changes
 ---
 
 # Plan 01: Resolve F821 Errors in src/advanced_analysis/
 
-**Objective:** Fix all 91 F821 (undefined-name) errors across 10 files in `src/advanced_analysis/` by adding missing imports and one function signature fix.
+**Objective:** Fix all 91 F821 (undefined-name) errors across 10 files in `src/advanced_analysis/` by adding missing imports and one bounded compatibility fix (signature + guard + caller update).
 
 ## Task 1: Fix decision_synthesis.py (34 errors)
 
@@ -229,7 +229,7 @@ if stock_data is None:
     stock_data = {}
 ```
 
-This makes the parameter optional so that `model_synthesis.py:54` (which calls with no args) doesn't break, while allowing callers that have `stock_data` to pass it.
+The parameter is optional with a default as a defensive measure — it ensures this purely additive change does not break any caller that doesn't pass `stock_data`. The only known live caller is `analyzer_core.py:65` (updated in Part B).
 
 **Part B — Update caller in analyzer_core.py:**
 
