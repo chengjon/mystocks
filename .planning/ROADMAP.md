@@ -4,9 +4,9 @@
 
 - ✅ **v1.0 Codebase Consolidation** — Phases 1-4 (shipped 2026-04-08)
 - ✅ **v1.1 Final Polish** — Phases 5-7 (shipped 2026-04-09)
-- ◆ **v1.2 Lint & Test Zero** — Phases 8-11 (in progress)
+- ✅ **v1.2 Lint & Test Zero** — Phases 8-11 (shipped 2026-04-10)
 
-## Current: v1.2 Lint & Test Zero
+## Completed: v1.2 Lint & Test Zero
 
 **Created:** 2026-04-09
 **Starting Phase:** 8 (continues from v1.1 Phase 7)
@@ -126,8 +126,8 @@ GATE-01, GATE-02
 |---|-------|------|--------------|------------------|
 | 8 | Adapters F821 | Resolve 468 errors in 15 adapter files | LINT-05 | 5 |
 | 9 | Analysis + Monitoring + GPU | Resolve 220 errors in 24 files | LINT-06, LINT-07, LINT-08 | 5 |
-| 10 | Remaining + Vitest | Resolve 11 errors + fix 7 test failures | Complete    | 2026-04-10 |
-| 11 | Gate Verification | Prove full zero state | GATE-01, GATE-02 | 4 |
+| 10 | Remaining + Vitest | Resolve 11 errors + fix 7 test failures | LINT-09, VTEST-01, VTEST-02, VTEST-03 | 2026-04-10 |
+| 11 | Gate Verification | Prove full zero state | GATE-01, GATE-02 | 2026-04-10 |
 
 **Coverage:** 10/10 requirements mapped ✓
 
@@ -159,4 +159,4 @@ See [v1.1-ROADMAP.md](milestones/v1.1-ROADMAP.md) for details.
 </details>
 
 ---
-*Last updated: 2026-04-09*
+*Last updated: 2026-04-10*
