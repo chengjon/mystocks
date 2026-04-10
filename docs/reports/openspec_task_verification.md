@@ -17,6 +17,13 @@ Generated: 2026-02-03
 ## Scope
 This log captures per-change task status from `openspec list` and cross-checks it against top-level checkbox counts in each change's `tasks.md` (indent 0), matching OpenSpec's counting method.
 
+> 2026-04-10 exception note
+>
+> - `verify-api-availability-mapping` was removed from active OpenSpec changes as an orphan residual.
+> - Workspace evidence showed the directory only contained a completed `tasks.md`, with no `proposal.md`, no `design.md`, and no spec delta under `openspec/changes/verify-api-availability-mapping/specs/`.
+> - `openspec validate verify-api-availability-mapping --strict` returned `Unknown item`, so the item could not be archived through the normal OpenSpec lifecycle.
+> - Historical implementation evidence remains in dated planning artifacts such as `docs/plans/2026-03-12-api-availability-matrix-draft.md`; that evidence is not treated as a formal OpenSpec capability spec.
+
 ## Classification Summary (Rolling)
 - Repo structure & file organization: implement-file-directory-migration (9/12)
 - Frontend config model & tooling: extend-frontend-config-model (62/85)
