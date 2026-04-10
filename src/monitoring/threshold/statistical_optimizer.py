@@ -2,7 +2,10 @@
 
 import logging
 from typing import List
+
 import numpy as np
+
+from src.monitoring.threshold.dataclasses import OptimizationResult
 
 logger = logging.getLogger(__name__)
 class StatisticalOptimizer:

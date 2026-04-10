@@ -1,8 +1,13 @@
 """智能阈值管理器 - 趋势与聚类优化器"""
 
 import logging
+from datetime import datetime
 from typing import List
+
 import numpy as np
+from sklearn.cluster import DBSCAN
+
+from src.monitoring.threshold.dataclasses import OptimizationResult
 
 logger = logging.getLogger(__name__)
 class TrendOptimizer:

@@ -1,5 +1,7 @@
 """智能阈值管理器 - 数据类定义"""
 
+import logging
+import warnings
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 from datetime import datetime

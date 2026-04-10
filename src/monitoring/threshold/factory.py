@@ -1,5 +1,11 @@
 """智能阈值管理器 - 工厂函数"""
 
+import asyncio
+from datetime import datetime
+from typing import Any, Dict, Optional
+
+from src.monitoring.threshold.dataclasses import OptimizationResult
+
 from .manager import IntelligentThresholdManager
 
 _intelligent_threshold_manager = None

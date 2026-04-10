@@ -28,6 +28,17 @@ except ImportError:
     Alert = Any
     AlertSeverity = Any
 
+from src.monitoring.multi_channel_alert_manager.alert_channel_config import (
+    AlertHandler,
+    AlertChannelConfig,
+    EmailConfig,
+    EmailAlertHandler,
+    WebhookConfig,
+    WebhookAlertHandler,
+    LogConfig,
+    LogAlertHandler,
+)
+
 logger = logging.getLogger(__name__)
 
 class MultiChannelAlertManager:

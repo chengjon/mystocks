@@ -2,10 +2,14 @@
 
 import json
 import logging
+from dataclasses import asdict
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import numpy as np
+
+from src.monitoring.threshold.dataclasses import ThresholdRule, ThresholdAdjustment, OptimizationResult
+from src.monitoring.monitoring_database import get_monitoring_database
 
 from .data_analyzer import DataAnalyzer
 from .statistical_optimizer import StatisticalOptimizer

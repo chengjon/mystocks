@@ -26,7 +26,8 @@ except ImportError:
     GPU_AVAILABLE = False
     logging.warning("⚠️ GPU库不可用，GPU性能优化管理器将使用模拟模式")
 
-# 导入MyStocks组件
+from src.monitoring.gpu_performance_optimizer.gpu_optimization_config import GPUOptimizationConfig
+from src.monitoring.gpu_performance_optimizer.gpu_performance_optimizer import initialize_gpu_optimizer
 
 async def main():
     """主函数 - 示例用法"""
