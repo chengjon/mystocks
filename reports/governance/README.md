@@ -60,3 +60,13 @@
   - `architecture/STANDARDS.md` 第“三、迁移收口与技术债治理规则”
 - 门禁、基线、例外、周报执行细则：
   - `docs/standards/technical-debt-governance-charter-v1.md`
+
+## Current Tech Debt Governance Baseline
+
+2026Q1 技术债治理基线当前使用以下工件：
+
+- `reports/governance/2026-04-10-tech-debt-governance-sot.md`
+- `reports/governance/2026-04-10-tech-debt-spec-conflict-matrix.md`
+- `reports/governance/2026-04-10-tech-debt-register.md`
+- `reports/governance/2026-04-10-tech-debt-governance-execution.TASK.md`
+- `reports/governance/2026-04-10-tech-debt-governance-execution.TASK-REPORT.md`
