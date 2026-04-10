@@ -119,22 +119,16 @@ Do NOT modify any code beyond import statements.
 Add the following imports at the top of `src/monitoring/threshold/advanced_optimizers.py`:
 
 1. Stdlib: `from datetime import datetime`
-2. Local types: `from src.monitoring.threshold.dataclasses import OptimizationResult`
-3. Conditional third-party:
-```python
-try:
-    from sklearn.cluster import DBSCAN
-except ImportError:
-    DBSCAN = None
-```
+2. Third-party: `from sklearn.cluster import DBSCAN`
+3. Local types: `from src.monitoring.threshold.dataclasses import OptimizationResult`
 
-Do NOT modify any code beyond import statements.
+Use direct import for DBSCAN — matching existing pattern in `src/monitoring/threshold/clustering_optimizer.py` which uses `from sklearn.cluster import DBSCAN` as a hard dependency. Do NOT use try/except ImportError here.
 </action>
 
 <acceptance_criteria>
 - `src/monitoring/threshold/advanced_optimizers.py` contains `from datetime import datetime`
-- `src/monitoring/threshold/advanced_optimizers.py` contains `from src.monitoring.threshold.dataclasses import OptimizationResult`
 - `src/monitoring/threshold/advanced_optimizers.py` contains `from sklearn.cluster import DBSCAN`
+- `src/monitoring/threshold/advanced_optimizers.py` contains `from src.monitoring.threshold.dataclasses import OptimizationResult`
 - `ruff check src/monitoring/threshold/advanced_optimizers.py --select F821` reports 0 errors
 </acceptance_criteria>
 
@@ -168,15 +162,9 @@ Add the following imports at the top of `src/monitoring/threshold/data_analyzer.
 
 1. Stdlib: `from collections import deque`
 2. Stdlib: `from datetime import datetime`
-3. Conditional third-party:
-```python
-try:
-    from sklearn.ensemble import IsolationForest
-except ImportError:
-    IsolationForest = None
-```
+3. Third-party: `from sklearn.ensemble import IsolationForest`
 
-Do NOT modify any code beyond import statements.
+Use direct import for IsolationForest — matching existing pattern in `src/monitoring/data_analyzer.py` which uses `from sklearn.ensemble import IsolationForest` as a hard dependency. Do NOT use try/except ImportError here.
 </action>
 
 <acceptance_criteria>

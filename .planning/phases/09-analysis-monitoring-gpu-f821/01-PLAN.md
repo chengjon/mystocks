@@ -13,13 +13,14 @@ files_modified:
   - src/advanced_analysis/sentiment_analyzer/_generate_sentiment_signals.py
   - src/advanced_analysis/sentiment_analyzer/_sentiment_score_tail.py
   - src/advanced_analysis/decision_models/models/canslim_analyzer.py
+  - src/advanced_analysis/decision_models/main/analyzer_core.py
   - src/advanced_analysis/decision_models_analyzer.py
   - src/advanced_analysis/trading_signals_analyzer/_assess_signal_risk.py
 requirements:
   - LINT-06
 must_haves:
   - ruff check src/advanced_analysis/ --select F821 reports 0 errors
-  - No logic changes — only import lines and function signature changes
+  - Import additions and one function signature change with caller update — no other logic changes
 ---
 
 # Plan 01: Resolve F821 Errors in src/advanced_analysis/
@@ -198,34 +199,58 @@ Do NOT modify any code beyond import statements.
 - `ruff check src/advanced_analysis/sentiment_analyzer/_sentiment_score_tail.py --select F821` reports 0 errors
 </acceptance_criteria>
 
-## Task 8: Fix canslim_analyzer.py (7 errors — NON-MECHANICAL)
+## Task 8: Fix canslim_analyzer.py (7 errors — NON-MECHANICAL + caller update)
 
 <read_first>
 - src/advanced_analysis/decision_models/models/canslim_analyzer.py
   - READ THE FULL FILE — understand where `stock_data` is defined and where it's used
   - The method `get_canslim_score(self, score)` at approximately line 144 uses `stock_data` at lines 160-166
   - `stock_data` is NOT a parameter of this method — it must be added as a parameter
+- src/advanced_analysis/decision_models/main/analyzer_core.py
+  - Line 65 calls `self.canslim_analyzer.get_canslim_score(canslim_score)` — must be updated to pass `stock_data`
+  - `stock_data` IS available in scope (it's a parameter of the enclosing method, used at lines 50-51)
 </read_first>
 
 <action>
-In `src/advanced_analysis/decision_models/models/canslim_analyzer.py`, find the method `get_canslim_score` that takes `self` and `score` parameters. Add `stock_data: dict` as an additional parameter:
+**Part A — Update method signature in canslim_analyzer.py:**
 
 Change the method signature from:
 ```python
-def get_canslim_score(self, score):
+def get_canslim_score(self, score: OverallModelScore) -> Dict:
 ```
 To:
 ```python
-def get_canslim_score(self, score, stock_data: dict):
+def get_canslim_score(self, score: OverallModelScore, stock_data: Optional[Dict] = None) -> Dict:
 ```
 
-IMPORTANT: This is the ONLY change — add the parameter. Do NOT refactor to store as instance attribute. Do NOT change any logic. Do NOT change any callers (caller fixes are out of scope for F821 resolution).
+Then add a guard as the first line inside the method body (after the docstring):
+```python
+if stock_data is None:
+    stock_data = {}
+```
+
+This makes the parameter optional so that `model_synthesis.py:54` (which calls with no args) doesn't break, while allowing callers that have `stock_data` to pass it.
+
+**Part B — Update caller in analyzer_core.py:**
+
+At line 65, change:
+```python
+"summary": self.canslim_analyzer.get_canslim_score(canslim_score),
+```
+To:
+```python
+"summary": self.canslim_analyzer.get_canslim_score(canslim_score, stock_data),
+```
+
+`stock_data` is available in scope — it's the parameter of the enclosing method that calls `analyze(stock_data)` at lines 50-51.
 </action>
 
 <acceptance_criteria>
-- `src/advanced_analysis/decision_models/models/canslim_analyzer.py` contains `def get_canslim_score(self, score, stock_data: dict):`
+- `src/advanced_analysis/decision_models/models/canslim_analyzer.py` contains `def get_canslim_score(self, score: OverallModelScore, stock_data: Optional[Dict] = None) -> Dict:`
+- `src/advanced_analysis/decision_models/models/canslim_analyzer.py` contains `if stock_data is None:`
+- `src/advanced_analysis/decision_models/main/analyzer_core.py` contains `self.canslim_analyzer.get_canslim_score(canslim_score, stock_data),`
 - `ruff check src/advanced_analysis/decision_models/models/canslim_analyzer.py --select F821` reports 0 errors
-- `git diff src/advanced_analysis/decision_models/models/canslim_analyzer.py` shows ONLY the method signature change (one line modified)
+- `git diff src/advanced_analysis/decision_models/main/analyzer_core.py` shows ONLY the one-line caller update
 </acceptance_criteria>
 
 ## Task 9: Fix decision_models_analyzer.py (4 errors)
