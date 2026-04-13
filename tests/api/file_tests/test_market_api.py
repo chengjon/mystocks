@@ -87,8 +87,8 @@ class TestMarketAPIFile:
     def test_contract_fixture_still_covers_market_data_domain(self, contract_specs):
         spec = contract_specs["market-data"]
 
-        assert spec["_meta"]["source_type"] == "historical_snapshot"
-        assert spec["_meta"]["is_contract_truth"] is False
+        assert spec["info"]["version"] == "1.0.0"
+        assert spec["openapi"] == "3.0.3"
         assert "/api/market/overview" in spec["paths"]
         assert "/api/market/fund-flow" in spec["paths"]
 

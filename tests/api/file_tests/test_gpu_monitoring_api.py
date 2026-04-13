@@ -92,10 +92,11 @@ class TestGpuMonitoringAPIFile:
 
         payload = await gpu_monitoring_module.get_gpu_status(request, device_id=None)
 
-        assert payload.success is True
-        assert payload.message == "GPU状态查询成功"
+        assert payload.success is False
+        assert payload.code == 503
+        assert payload.message == "GPU监控服务未接入"
         assert payload.request_id == "req-1"
-        assert payload.data["gpus"][0]["device_id"] == 0
+        assert payload.data == {"status": "placeholder", "device_id": None, "gpus": []}
 
     @pytest.mark.file_test
     @pytest.mark.asyncio
@@ -104,9 +105,10 @@ class TestGpuMonitoringAPIFile:
 
         payload = await gpu_monitoring_module.get_gpu_performance(request, device_id=0)
 
-        assert payload.success is True
-        assert payload.message == "GPU性能指标查询成功"
-        assert payload.data["metrics"][0]["device_id"] == 0
+        assert payload.success is False
+        assert payload.code == 503
+        assert payload.message == "GPU监控服务未接入"
+        assert payload.data == {"status": "placeholder", "device_id": 0, "metrics": []}
 
     @pytest.mark.file_test
     @pytest.mark.asyncio
@@ -116,8 +118,7 @@ class TestGpuMonitoringAPIFile:
         response = await gpu_monitoring_module.get_prometheus_metrics(request)
 
         assert response.media_type == "text/plain"
-        assert "gpu_utilization" in response.body.decode()
-        assert "gpu_matrix_gflops" in response.body.decode()
+        assert response.body.decode() == "GPU metrics exporter unavailable\n"
 
     @pytest.mark.file_test
     @pytest.mark.asyncio
@@ -126,9 +127,10 @@ class TestGpuMonitoringAPIFile:
 
         payload = await gpu_monitoring_module.get_gpu_history(request, device_id=0, start_time=None, end_time=None, limit=10)
 
-        assert payload.success is True
-        assert payload.message == "GPU历史数据查询成功"
-        assert payload.data == {"device_id": 0, "records": [], "total": 0}
+        assert payload.success is False
+        assert payload.code == 503
+        assert payload.message == "GPU监控服务未接入"
+        assert payload.data == {"status": "placeholder", "device_id": 0, "records": [], "total": 0}
 
     @pytest.mark.file_test
     def test_route_names_remain_stable(self, gpu_monitoring_module):

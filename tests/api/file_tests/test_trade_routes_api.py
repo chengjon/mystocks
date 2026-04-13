@@ -65,8 +65,7 @@ class TestTradeRoutesAPIFile:
         """Test OpenAPI contract compliance for trade/routes.py"""
         spec = contract_specs.get("trading")
         assert spec is not None
-        assert spec["_meta"]["source_type"] == "historical_snapshot"
-        assert spec["_meta"]["is_contract_truth"] is False
+        assert spec["info"]["version"] == "1.0.0"
         assert "/api/trade/portfolio" in spec["paths"]
         assert "/api/trade/positions" in spec["paths"]
         assert "/api/trade/trades" in spec["paths"]
@@ -154,10 +153,10 @@ class TestTradeContractValidation:
 
     @pytest.mark.contract_test
     def test_openapi_spec_compliance(self, contract_specs):
-        """Test trading snapshot metadata stays explicitly non-authoritative."""
+        """Test compliance with OpenAPI 3.0.3 specification"""
         spec = contract_specs["trading"]
-        assert spec["_meta"]["source_type"] == "historical_snapshot"
-        assert spec["_meta"]["is_contract_truth"] is False
+        assert spec["info"]["version"] == "1.0.0"
+        assert spec["openapi"] == "3.0.3"
 
     @pytest.mark.contract_test
     def test_response_schema_validation(self, contract_specs, mock_responses):

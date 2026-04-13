@@ -135,8 +135,8 @@ class TestRiskManagementAPIFile:
     def test_contract_fixture_still_covers_risk_management_domain(self, contract_specs):
         spec = contract_specs["risk-management"]
 
-        assert spec["_meta"]["source_type"] == "historical_snapshot"
-        assert spec["_meta"]["is_contract_truth"] is False
+        assert spec["info"]["version"] == "1.0.0"
+        assert spec["openapi"] == "3.0.3"
         assert "/var-cvar" in spec["paths"]
         assert "/beta" in spec["paths"]
         assert "/dashboard" in spec["paths"]

@@ -7,11 +7,11 @@ File-level contract tests for the active multi_source API package.
 
 from __future__ import annotations
 
+import importlib
 import sys
 from pathlib import Path
 
 import pytest
-import importlib
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -28,6 +28,8 @@ def multi_source_module(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv("JWT_SECRET_KEY", "test-secret-key")
     monkeypatch.setenv("BACKEND_PORT", "8020")
     monkeypatch.setenv("BACKEND_BACKUP_PORT", "8021")
+    sys.modules.pop("app.api.multi_source", None)
+    sys.modules.pop("app.api.multi_source.routes", None)
     package = importlib.import_module("app.api.multi_source")
     routes = importlib.import_module("app.api.multi_source.routes")
     return package, routes
@@ -70,7 +72,17 @@ class TestMultiSourceAPIFile:
 
         payload = await routes.analyze_data({"symbol": "600519"})
 
-        assert payload == {"result": "分析完成", "endpoint": "multi_source"}
+        assert payload.success is False
+        assert payload.code == 503
+        assert payload.data == {
+            "status": "placeholder",
+            "endpoint": "multi_source",
+            "symbol": "600519",
+            "analysis_depth": None,
+            "data_sources": [],
+            "summary": None,
+            "insights": [],
+        }
 
     @pytest.mark.file_test
     @pytest.mark.asyncio
@@ -87,8 +99,17 @@ class TestMultiSourceAPIFile:
             }
         )
 
-        assert payload["endpoint"] == "multi_source"
-        assert payload["result"] == "分析完成"
+        assert payload.success is False
+        assert payload.code == 503
+        assert payload.data == {
+            "status": "placeholder",
+            "endpoint": "multi_source",
+            "symbol": "600519",
+            "analysis_depth": "advanced",
+            "data_sources": ["technical", "fundamental", "sentiment"],
+            "summary": None,
+            "insights": [],
+        }
 
     @pytest.mark.file_test
     def test_router_contains_unique_paths_only(self, multi_source_module):

@@ -91,7 +91,16 @@ class TestAnnouncementAPIFile:
 
         payload = await routes.analyze_data({"symbol": "600519"})
 
-        assert payload == {"result": "分析完成", "endpoint": "announcement"}
+        assert payload.success is False
+        assert payload.code == 503
+        assert payload.data == {
+            "status": "placeholder",
+            "endpoint": "announcement",
+            "stock_code": "600519",
+            "analysis_mode": None,
+            "summary": None,
+            "signals": [],
+        }
 
     @pytest.mark.file_test
     @pytest.mark.asyncio
@@ -107,8 +116,16 @@ class TestAnnouncementAPIFile:
             }
         )
 
-        assert payload["endpoint"] == "announcement"
-        assert payload["result"] == "分析完成"
+        assert payload.success is False
+        assert payload.code == 503
+        assert payload.data == {
+            "status": "placeholder",
+            "endpoint": "announcement",
+            "stock_code": "600519",
+            "analysis_mode": "advanced",
+            "summary": None,
+            "signals": [],
+        }
 
     @pytest.mark.file_test
     def test_package_exports_router_in___all__(self, announcement_module):

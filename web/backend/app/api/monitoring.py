@@ -3,9 +3,10 @@
 Real-time Monitoring System
 """
 
+import asyncio
 import os
 from datetime import date, datetime
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Body, Depends, Path, Query
 from pydantic import BaseModel, Field
@@ -30,6 +31,11 @@ from app.services.monitoring_service import monitoring_service
 router = APIRouter()
 
 _RUNTIME_ALERT_TIMESTAMP = datetime(2026, 3, 13, 10, 0, 0)
+_monitoring_control_state: Dict[str, Any] = {
+    "task": None,
+    "interval": None,
+    "last_started_at": None,
+}
 
 
 def _success_response_spec(status_code: int, description: str, example: object) -> dict[int, dict]:
@@ -198,8 +204,17 @@ ALERT_MARK_ALL_READ_RESPONSES = {
     ),
     **_success_response_spec(
         200,
-        "批量标记所有未读告警为已读",
-        {"success": True, "message": "功能开发中"},
+        "批量标记全部告警已读兼容占位结果",
+        {
+            "success": False,
+            "code": 503,
+            "message": "Bulk alert mark-read is not implemented yet",
+            "data": {
+                "status": "placeholder",
+                "scope": "all_alerts",
+                "updated_count": 0,
+            },
+        },
     ),
 }
 
@@ -435,11 +450,17 @@ START_MONITORING_RESPONSES = {
     ),
     **_success_response_spec(
         200,
-        "监控启动请求已受理",
+        "监控启动结果",
         {
             "success": True,
-            "message": "监控启动功能开发中",
-            "data": {"symbols": ["600519", "000001"], "interval": 30},
+            "code": 200,
+            "message": "监控已启动",
+            "data": {
+                "is_monitoring": True,
+                "monitored_symbols": ["600519", "000001"],
+                "monitored_count": 2,
+                "interval": 30,
+            },
         },
     ),
 }
@@ -453,7 +474,16 @@ STOP_MONITORING_RESPONSES = {
     **_success_response_spec(
         200,
         "监控已停止",
-        {"success": True, "message": "监控已停止"},
+        {
+            "success": True,
+            "code": 200,
+            "message": "监控已停止",
+            "data": {
+                "is_monitoring": False,
+                "monitored_symbols": [],
+                "monitored_count": 0,
+            },
+        },
     ),
 }
 
@@ -468,10 +498,13 @@ MONITORING_STATUS_RESPONSES = {
         "监控运行状态",
         {
             "success": True,
+            "code": 200,
+            "message": "获取监控状态成功",
             "data": {
                 "is_monitoring": True,
                 "monitored_symbols": ["600519", "000001", "601318"],
                 "monitored_count": 3,
+                "update_interval": 30,
             },
         },
     ),
@@ -563,6 +596,26 @@ def _resolve_query_int(value: object, default: int) -> int:
     if isinstance(value, int):
         return value
     return int(getattr(value, "default", default))
+
+
+def _build_monitoring_control_payload(*, include_interval_key: Optional[str] = None) -> Dict[str, Any]:
+    symbols = list(monitoring_service.monitored_symbols or [])
+    payload: Dict[str, Any] = {
+        "is_monitoring": bool(monitoring_service.is_monitoring),
+        "monitored_symbols": symbols,
+        "monitored_count": len(symbols),
+    }
+    if include_interval_key:
+        payload[include_interval_key] = _monitoring_control_state["interval"]
+    return payload
+
+
+def _get_monitoring_task() -> Optional[asyncio.Task]:
+    task = _monitoring_control_state["task"]
+    if task is not None and task.done() and not monitoring_service.is_monitoring:
+        _monitoring_control_state["task"] = None
+        return None
+    return task
 
 
 # ============================================================================
@@ -833,13 +886,22 @@ async def mark_alert_read(
     "/alerts/mark-all-read",
     summary="批量标记全部告警已读",
     description="批量将当前用户可见的未读告警标记为已读，用于监控中心一键清空提醒。",
+    response_model=UnifiedResponse[Dict[str, Any]],
     responses=ALERT_MARK_ALL_READ_RESPONSES,
 )
 async def mark_all_alerts_read(current_user: User = Depends(get_current_user)):
     """批量标记所有未读告警为已读。"""
     try:
-        # TODO: 实现批量标记功能
-        return {"success": True, "message": "功能开发中"}
+        return UnifiedResponse(
+            success=False,
+            code=503,
+            message="Bulk alert mark-read is not implemented yet",
+            data={
+                "status": "placeholder",
+                "scope": "all_alerts",
+                "updated_count": 0,
+            },
+        )
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
@@ -1215,6 +1277,7 @@ class MonitoringControlRequest(BaseModel):
     "/control/start",
     summary="启动实时监控任务",
     description="提交监控启动请求，指定监控股票范围和刷新间隔，用于监控面板手动拉起任务。",
+    response_model=UnifiedResponse[Dict[str, Any]],
     responses=START_MONITORING_RESPONSES,
 )
 async def start_monitoring(
@@ -1232,13 +1295,18 @@ async def start_monitoring(
     - interval: 更新间隔(秒)，默认60秒
     """
     try:
-        # 这里应该在后台启动监控任务
-        # 实际应该使用 Celery 或 BackgroundTasks
-        return {
-            "success": True,
-            "message": "监控启动功能开发中",
-            "data": {"symbols": request.symbols, "interval": request.interval},
-        }
+        current_task = _get_monitoring_task()
+        if not monitoring_service.is_monitoring or current_task is None:
+            _monitoring_control_state["interval"] = request.interval
+            _monitoring_control_state["last_started_at"] = datetime.now()
+            _monitoring_control_state["task"] = asyncio.create_task(
+                monitoring_service.start_monitoring(symbols=request.symbols, interval=request.interval)
+            )
+            await asyncio.sleep(0)
+        return create_unified_success_response(
+            data=_build_monitoring_control_payload(include_interval_key="interval"),
+            message="监控已启动",
+        )
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
@@ -1247,13 +1315,28 @@ async def start_monitoring(
     "/control/stop",
     summary="停止实时监控任务",
     description="停止当前运行中的监控任务，并返回停止结果给监控控制面板。",
+    response_model=UnifiedResponse[Dict[str, Any]],
     responses=STOP_MONITORING_RESPONSES,
 )
 async def stop_monitoring(current_user: User = Depends(get_current_user)):
     """停止当前监控任务并返回结果。"""
     try:
         monitoring_service.stop_monitoring()
-        return {"success": True, "message": "监控已停止"}
+        monitoring_service.monitored_symbols = []
+        task = _get_monitoring_task()
+        if task is not None:
+            task.cancel()
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
+        _monitoring_control_state["task"] = None
+        _monitoring_control_state["interval"] = None
+        _monitoring_control_state["last_started_at"] = None
+        return create_unified_success_response(
+            data=_build_monitoring_control_payload(),
+            message="监控已停止",
+        ).model_dump()
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
@@ -1262,6 +1345,7 @@ async def stop_monitoring(current_user: User = Depends(get_current_user)):
     "/control/status",
     summary="获取监控运行状态",
     description="查询实时监控系统的运行状态、监控范围和当前监控股票数量，用于面板状态展示。",
+    response_model=UnifiedResponse[Dict[str, Any]],
     responses=MONITORING_STATUS_RESPONSES,
 )
 async def get_monitoring_status():
@@ -1336,13 +1420,9 @@ async def get_monitoring_status():
     - 配合 /control/start 和 /control/stop 端点使用
     """
     try:
-        return {
-            "success": True,
-            "data": {
-                "is_monitoring": monitoring_service.is_monitoring,
-                "monitored_symbols": monitoring_service.monitored_symbols,
-                "monitored_count": len(monitoring_service.monitored_symbols),
-            },
-        }
+        return create_unified_success_response(
+            data=_build_monitoring_control_payload(include_interval_key="update_interval"),
+            message="获取监控状态成功",
+        ).model_dump()
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")

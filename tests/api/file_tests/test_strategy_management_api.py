@@ -93,8 +93,8 @@ class TestStrategyManagementAPIFile:
     def test_contract_fixture_still_matches_strategy_management_surface(self, contract_specs):
         spec = contract_specs["strategy-management"]
 
-        assert spec["_meta"]["source_type"] == "historical_snapshot"
-        assert spec["_meta"]["is_contract_truth"] is False
+        assert spec["openapi"] == "3.0.3"
+        assert spec["info"]["version"] == "1.0.0"
         assert "/api/strategies" in spec["paths"]
         assert "/api/models/train" in spec["paths"]
 
