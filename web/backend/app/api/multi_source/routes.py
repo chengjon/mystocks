@@ -1,10 +1,11 @@
-"""
-多数据源API路由
-"""
+"""多数据源API路由。"""
+
+from typing import Any, Dict
 
 from fastapi import APIRouter, Body
 
 from app.openapi_config import COMMON_RESPONSES
+from app.core.responses import UnifiedResponse
 
 MULTI_SOURCE_ROUTE_RESPONSES = {
     500: COMMON_RESPONSES[500],
@@ -58,12 +59,22 @@ MULTI_SOURCE_STATUS_RESPONSES = {
 
 MULTI_SOURCE_ANALYZE_RESPONSES = {
     200: {
-        "description": "多数据源综合分析结果",
+        "description": "多数据源综合分析兼容占位结果",
         "content": {
             "application/json": {
                 "example": {
-                    "result": "分析完成",
-                    "endpoint": "multi_source",
+                    "success": False,
+                    "code": 503,
+                    "message": "Multi-source AI analysis is not implemented yet",
+                    "data": {
+                        "status": "placeholder",
+                        "endpoint": "multi_source",
+                        "symbol": "600519",
+                        "analysis_depth": "advanced",
+                        "data_sources": ["technical", "fundamental", "sentiment", "flow"],
+                        "summary": None,
+                        "insights": [],
+                    },
                 }
             }
         },
@@ -97,10 +108,11 @@ async def get_status():
 @router.post(
     "/analyze",
     summary="执行多数据源综合分析",
-    description="接收多个分析维度与权重配置，返回当前版本的多数据源综合分析结果。",
+    description="接收多个分析维度与权重配置，返回显式标记为未接入真实综合分析引擎的兼容占位结果。",
+    response_model=UnifiedResponse[Dict[str, Any]],
     responses=MULTI_SOURCE_ANALYZE_RESPONSES,
 )
-async def analyze_data(data: dict = Body(..., example=MULTI_SOURCE_ANALYZE_REQUEST_EXAMPLE)):
+async def analyze_data(data: dict = Body(..., example=MULTI_SOURCE_ANALYZE_REQUEST_EXAMPLE)) -> UnifiedResponse[Dict[str, Any]]:
     """
     多数据源AI综合分析
 
@@ -195,5 +207,17 @@ async def analyze_data(data: dict = Body(..., example=MULTI_SOURCE_ANALYZE_REQUE
     - 数据源权重配置需根据市场环境调整
     - 分析结果的准确性受所有数据源质量影响
     """
-    # TODO: 实现AI分析逻辑
-    return {"result": "分析完成", "endpoint": "multi_source"}
+    return UnifiedResponse(
+        success=False,
+        code=503,
+        message="Multi-source AI analysis is not implemented yet",
+        data={
+            "status": "placeholder",
+            "endpoint": "multi_source",
+            "symbol": data.get("symbol"),
+            "analysis_depth": data.get("analysis_depth"),
+            "data_sources": data.get("data_sources") or [],
+            "summary": None,
+            "insights": [],
+        },
+    )

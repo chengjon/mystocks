@@ -21,7 +21,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from app.repositories import AlgorithmModelRepository
+from app.repositories.algorithm_model_repository import AlgorithmModelRepository
 from app.schemas.algorithm_schemas import (  # Add other algorithm-specific imports as needed
     AlgorithmConfig,
     AlgorithmInfoRequest,
@@ -36,18 +36,14 @@ logger = logging.getLogger(__name__)
 
 # Import from src/algorithms
 try:
-    # Import concrete algorithm classes
-    from src.algorithms import (  # KMPAlgorithm,  # TODO: Fix indentation; BMHAlgorithm,  # TODO: Fix indentation; AhoCorasickAlgorithm,  # TODO: Fix indentation
-        BayesianNetworkAlgorithm,
-        BruteForceAlgorithm,
-        DecisionTreeAlgorithm,
-        HMMAlgorithm,
-        NaiveBayesAlgorithm,
-        NeuralNetworkAlgorithm,
-        NGramAlgorithm,
-    )
     from src.algorithms.base import AlgorithmMetadata, BaseAlgorithm
+    from src.algorithms.bayesian.bayesian_network_algorithm import BayesianNetworkAlgorithm
+    from src.algorithms.classification import DecisionTreeAlgorithm, NaiveBayesAlgorithm, SVMAlgorithm
     from src.algorithms.config import AlgorithmConfig as SrcAlgorithmConfig
+    from src.algorithms.markov.hmm_algorithm import HMMAlgorithm
+    from src.algorithms.neural.neural_network_algorithm import NeuralNetworkAlgorithm
+    from src.algorithms.ngram.ngram_algorithm import NGramAlgorithm
+    from src.algorithms.pattern_matching import AhoCorasickAlgorithm, BMHAlgorithm, BruteForceAlgorithm, KMPAlgorithm
     from src.algorithms.types import AlgorithmType as SrcAlgorithmType
 
     ALGORITHMS_AVAILABLE = True

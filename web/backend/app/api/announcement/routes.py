@@ -3,9 +3,10 @@
 """
 
 from datetime import date, timedelta
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Body, HTTPException, Path, Query
+from app.core.responses import UnifiedResponse
 
 try:
     from app.models.announcement import (
@@ -133,7 +134,22 @@ ANNOUNCEMENT_STATUS_RESPONSES = {
 
 ANNOUNCEMENT_ANALYZE_RESPONSES = {
     **ANNOUNCEMENT_ERROR_RESPONSE,
-    **_success_response_spec("公告分析结果摘要", {"result": "分析完成", "endpoint": "announcement"}),
+    **_success_response_spec(
+        "公告分析兼容占位结果",
+        {
+            "success": False,
+            "code": 503,
+            "message": "Announcement AI analysis is not implemented yet",
+            "data": {
+                "status": "placeholder",
+                "endpoint": "announcement",
+                "stock_code": "600519",
+                "analysis_mode": "summary",
+                "summary": None,
+                "signals": [],
+            },
+        },
+    ),
 }
 
 ANNOUNCEMENT_FETCH_RESPONSES = {
@@ -296,15 +312,27 @@ async def get_status():
 
 @router.post(
     "/analyze",
-    description="提交公告文本和辅助上下文，返回用于联调的分析结果摘要。",
+    description="提交公告文本和辅助上下文，返回显式标记为未接入真实分析引擎的兼容占位结果。",
+    response_model=UnifiedResponse[Dict[str, Any]],
     responses=ANNOUNCEMENT_ANALYZE_RESPONSES,
 )
 async def analyze_data(
     data: dict = Body(..., openapi_examples=ANNOUNCEMENT_ANALYZE_EXAMPLES),
-):
-    """AI分析数据"""
-    # TODO: 实现AI分析逻辑
-    return {"result": "分析完成", "endpoint": "announcement"}
+) -> UnifiedResponse[Dict[str, Any]]:
+    """返回公告AI分析接口的兼容占位响应。"""
+    return UnifiedResponse(
+        success=False,
+        code=503,
+        message="Announcement AI analysis is not implemented yet",
+        data={
+            "status": "placeholder",
+            "endpoint": "announcement",
+            "stock_code": data.get("stock_code") or data.get("symbol"),
+            "analysis_mode": data.get("analysis_mode") or data.get("analysis_depth"),
+            "summary": None,
+            "signals": [],
+        },
+    )
 
 
 if HAS_ANNOUNCEMENT_SERVICE:

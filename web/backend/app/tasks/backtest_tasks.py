@@ -50,11 +50,10 @@ def run_backtest_task(self, backtest_id: int, strategy_config: dict, backtest_co
         # 添加 backtest_id 到配置
         backtest_config["backtest_id"] = backtest_id
 
-        # 获取数据源
-        # TODO: 根据环境选择数据源（Mock/Real/Composite）
-        from app.services.data_service import get_data_source
+        # 使用现有策略服务单例作为同步历史数据源，避免引用不存在的兼容入口。
+        from app.services.strategy_service import get_strategy_service
 
-        data_source = get_data_source()
+        data_source = get_strategy_service()
 
         # 定义进度回调
         def progress_callback(progress_event: ProgressEvent):

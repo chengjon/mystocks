@@ -26,7 +26,7 @@ from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field
 
 # 导入统一响应格式
-from app.core.responses import create_unified_success_response
+from app.core.responses import UnifiedResponse
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -35,42 +35,25 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/gpu", tags=["gpu-monitoring"])
 
 GPU_STATUS_RESPONSE_EXAMPLE = {
-    "success": True,
-    "message": "GPU状态查询成功",
+    "success": False,
+    "code": 503,
+    "message": "GPU监控服务未接入",
     "data": {
-        "gpus": [
-            {
-                "device_id": 0,
-                "name": "NVIDIA GeForce RTX 3090",
-                "gpu_utilization": 75.5,
-                "memory_used": 18000,
-                "memory_total": 24576,
-                "memory_utilization": 73.2,
-                "temperature": 68.0,
-                "power_usage": 320.5,
-                "sm_clock": 1755,
-                "memory_clock": 9751,
-            }
-        ]
+        "status": "placeholder",
+        "device_id": 0,
+        "gpus": [],
     },
     "request_id": "demo-request-id",
 }
 
 GPU_PERFORMANCE_RESPONSE_EXAMPLE = {
-    "success": True,
-    "message": "GPU性能指标查询成功",
+    "success": False,
+    "code": 503,
+    "message": "GPU监控服务未接入",
     "data": {
-        "metrics": [
-            {
-                "device_id": 0,
-                "matrix_gflops": 662.52,
-                "matrix_speedup": 187.35,
-                "memory_gflops": 450.2,
-                "memory_speedup": 82.53,
-                "throughput": 1000000.0,
-                "timestamp": 1712073600.0,
-            }
-        ]
+        "status": "placeholder",
+        "device_id": 0,
+        "metrics": [],
     },
     "request_id": "demo-request-id",
 }
@@ -101,20 +84,14 @@ gpu_temperature{device_id="0"} 68.0
 gpu_power_usage{device_id="0"} 320.5"""
 
 GPU_HISTORY_RESPONSE_EXAMPLE = {
-    "success": True,
-    "message": "GPU历史数据查询成功",
+    "success": False,
+    "code": 503,
+    "message": "GPU监控服务未接入",
     "data": {
+        "status": "placeholder",
         "device_id": 0,
-        "records": [
-            {
-                "timestamp": 1712073600.0,
-                "gpu_utilization": 75.5,
-                "memory_utilization": 73.2,
-                "temperature": 68.0,
-                "power_usage": 320.5,
-            }
-        ],
-        "total": 1,
+        "records": [],
+        "total": 0,
     },
     "request_id": "demo-request-id",
 }
@@ -131,6 +108,16 @@ def _json_response_spec(description: str, example: object) -> dict[int, dict]:
             },
         }
     }
+
+
+def _placeholder_gpu_response(message: str, request_id: Optional[str], data: dict) -> UnifiedResponse:
+    return UnifiedResponse(
+        success=False,
+        code=503,
+        message=message,
+        data=data,
+        request_id=request_id,
+    )
 
 
 GPU_HISTORY_RESPONSES = {
@@ -214,33 +201,16 @@ async def get_gpu_status(
     """
     request_id = getattr(request.state, "request_id", None)
 
-    # TODO: 集成CLI-5的GPU监控服务
-    # from src.gpu_monitoring.gpu_monitor_service import GPUMonitorService
-    # monitor_service = GPUMonitorService()
-    # gpu_statuses = await monitor_service.get_gpu_status(device_id)
+    logger.warning("GPU状态查询返回占位响应: device_id=%(device_id)s, request_id=%(request_id)s")
 
-    # Mock数据 - 待替换为真实实现
-    gpu_statuses = [
-        GPUStatus(
-            device_id=0,
-            name="NVIDIA GeForce RTX 3090",
-            gpu_utilization=75.5,
-            memory_used=18000,
-            memory_total=24576,
-            memory_utilization=73.2,
-            temperature=68.0,
-            power_usage=320.5,
-            sm_clock=1755,
-            memory_clock=9751,
-        )
-    ]
-
-    logger.info("GPU状态查询: device_id=%(device_id)s, request_id=%(request_id)s")
-
-    return create_unified_success_response(
-        data={"gpus": [gpu.dict() for gpu in gpu_statuses]},
-        message="GPU状态查询成功",
+    return _placeholder_gpu_response(
+        message="GPU监控服务未接入",
         request_id=request_id,
+        data={
+            "status": "placeholder",
+            "device_id": device_id,
+            "gpus": [],
+        },
     )
 
 
@@ -272,29 +242,16 @@ async def get_gpu_performance(
     """
     request_id = getattr(request.state, "request_id", None)
 
-    # TODO: 集成CLI-5的性能收集器
-    # from src.gpu_monitoring.performance_collector import PerformanceCollector
-    # collector = PerformanceCollector()
-    # metrics = await collector.get_performance_metrics(device_id)
+    logger.warning("GPU性能查询返回占位响应: device_id=%(device_id)s, request_id=%(request_id)s")
 
-    # Mock数据 - 待替换为真实实现
-    performance_metrics = [
-        GPUPerformanceMetrics(
-            device_id=0,
-            matrix_gflops=662.52,
-            matrix_speedup=187.35,
-            memory_gflops=450.2,
-            memory_speedup=82.53,
-            throughput=1000000.0,
-        )
-    ]
-
-    logger.info("GPU性能查询: device_id=%(device_id)s, request_id=%(request_id)s")
-
-    return create_unified_success_response(
-        data={"metrics": [metric.dict() for metric in performance_metrics]},
-        message="GPU性能指标查询成功",
+    return _placeholder_gpu_response(
+        message="GPU监控服务未接入",
         request_id=request_id,
+        data={
+            "status": "placeholder",
+            "device_id": device_id,
+            "metrics": [],
+        },
     )
 
 
@@ -314,42 +271,10 @@ async def get_prometheus_metrics(request: Request):
     Returns:
         Prometheus格式的文本指标
     """
-    # TODO: 集成CLI-5的Prometheus导出器
-    # from src.gpu_monitoring.prometheus_exporter import PrometheusExporter
-    # exporter = PrometheusExporter()
-    # metrics_text = await exporter.export_prometheus_metrics()
-
-    # Mock数据 - 待替换为真实实现
-    metrics_text = """
-# HELP gpu_utilization GPU利用率百分比
-# TYPE gpu_utilization gauge
-gpu_utilization{device_id="0"} 75.5
-
-# HELP gpu_memory_utilization 显存利用率百分比
-# TYPE gpu_memory_utilization gauge
-gpu_memory_utilization{device_id="0"} 73.2
-
-# HELP gpu_temperature GPU温度（摄氏度）
-# TYPE gpu_temperature gauge
-gpu_temperature{device_id="0"} 68.0
-
-# HELP gpu_power_usage GPU功耗（瓦特）
-# TYPE gpu_power_usage gauge
-gpu_power_usage{device_id="0"} 320.5
-
-# HELP gpu_matrix_gflops 矩阵运算性能（GFLOPS）
-# TYPE gpu_matrix_gflops gauge
-gpu_matrix_gflops{device_id="0"} 662.52
-
-# HELP gpu_matrix_speedup 矩阵运算加速比
-# TYPE gpu_matrix_speedup gauge
-gpu_matrix_speedup{device_id="0"} 187.35
-""".strip()
-
-    logger.info("Prometheus GPU指标导出")
+    logger.warning("Prometheus GPU指标导出返回占位文本")
 
     return PlainTextResponse(
-        content=metrics_text,
+        content=GPU_METRICS_ERROR_RESPONSE_EXAMPLE,
         media_type="text/plain",
     )
 
@@ -381,29 +306,17 @@ async def get_gpu_history(
     """
     request_id = getattr(request.state, "request_id", None)
 
-    # TODO: 集成CLI-5的历史数据服务
-    # from src.gpu_monitoring.history_service import GPUHistoryService
-    # history_service = GPUHistoryService()
-    # history_data = await history_service.get_history(
-    #     device_id=device_id,
-    #     start_time=start_time,
-    #     end_time=end_time,
-    #     limit=limit
-    # )
+    logger.warning("GPU历史数据查询返回占位响应: device_id=%(device_id)s, limit=%(limit)s, request_id=%(request_id)s")
 
-    # Mock数据 - 待替换为真实实现
-    history_data = {
-        "device_id": device_id,
-        "records": [],
-        "total": 0,
-    }
-
-    logger.info("GPU历史数据查询: device_id=%(device_id)s, limit=%(limit)s, request_id=%(request_id)s")
-
-    return create_unified_success_response(
-        data=history_data,
-        message="GPU历史数据查询成功",
+    return _placeholder_gpu_response(
+        message="GPU监控服务未接入",
         request_id=request_id,
+        data={
+            "status": "placeholder",
+            "device_id": device_id,
+            "records": [],
+            "total": 0,
+        },
     )
 
 

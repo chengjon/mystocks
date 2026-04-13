@@ -345,13 +345,25 @@ async def get_strategy_detailed_health(
             -1: "unhealthy",
         }
 
-        # 检查各组件状态（简化版，实际应该分别检查每个组件）
+        async with pg.pool.acquire() as conn:
+            active_count_row = await conn.fetchrow(
+                """
+                SELECT COUNT(*) AS total
+                FROM signal_records
+                WHERE strategy_id = $1
+                  AND status IN ('generated', 'executed')
+                """,
+                strategy_id,
+            )
+        active_signals_count = active_count_row["total"] if active_count_row else 0
+
+        # 仅为已验证组件输出明确状态，未接入真实检测的组件保持 unknown，避免伪绿。
         components = {
             "signal_generation": "healthy",
             "signal_execution": "healthy",
-            "signal_push": "healthy",  # TODO: 实际检查推送服务状态
+            "signal_push": "unknown",
             "database": "connected" if pg.is_connected() else "disconnected",
-            "gpu": "healthy",  # TODO: 实际检查GPU服务状态
+            "gpu": "unknown",
         }
 
         # 根据整体健康状态调整组件状态
@@ -384,7 +396,7 @@ async def get_strategy_detailed_health(
                 "signal_success_rate": health_data["success_rate"],
                 "signal_accuracy": health_data["accuracy"],
                 "avg_execution_time_ms": health_data["avg_latency_ms"],
-                "active_signals_count": 0,  # TODO: 实际查询活跃信号数
+                "active_signals_count": active_signals_count,
             },
             last_check_time=datetime.now(),
             alerts=alerts,
