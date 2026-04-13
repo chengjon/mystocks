@@ -35,6 +35,10 @@ on:
         type: boolean
         default: false
 
+permissions:
+  contents: read
+  issues: write
+
 env:
   PYTHON_VERSION: '3.12'
 
@@ -57,7 +61,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
         cache: 'pip'
@@ -71,7 +75,7 @@ jobs:
         pip install ta-lib --no-cache-dir || echo "TA-Lib not available"
 
     - name: Cache strategy benchmarks
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.mystocks/strategy_benchmarks
         key: strategy-benchmarks-${{ github.sha }}
@@ -95,7 +99,18 @@ jobs:
         VALIDATION_TYPE: ${{ matrix.validation_type }}
         GITHUB_STEP_SUMMARY: strategy_validation_summary_${{ matrix.validation_type }}.md
 
-    - name: Upload validation results
+    - name: Upload correctness validation results
+      if: matrix.validation_type == 'correctness'
+      uses: actions/upload-artifact@v4
+      with:
+        name: strategy-validation-correctness
+        path: |
+          quant_strategy_validation_results.json
+          strategy_validation_summary_${{ matrix.validation_type }}.md
+        retention-days: 30
+
+    - name: Upload non-correctness validation results
+      if: matrix.validation_type != 'correctness'
       uses: actions/upload-artifact@v4
       with:
         name: strategy-validation-${{ matrix.validation_type }}
@@ -126,7 +141,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
@@ -184,18 +199,7 @@ jobs:
 
         if [ -f "validation-results/quant_strategy_validation_results.json" ]; then
           # 解析验证结果，提取新的基准数据
-          python -c "
-          import json
-          import os
-
-          with open('validation-results/quant_strategy_validation_results.json', 'r') as f:
-              results = json.load(f)
-
-          # 检查是否有新的基准数据需要更新
-          # 这里可以实现基准数据的自动更新逻辑
-
-          print('✅ 基准数据处理完成')
-          "
+          python -c "import json; json.load(open('validation-results/quant_strategy_validation_results.json', 'r')); print('✅ 基准数据处理完成')"
         else
           echo "⚠️ 未找到验证结果文件"
         fi
@@ -358,6 +362,8 @@ jobs:
 
     - name: Create GitHub Issue for failures
       if: needs.quant-strategy-correctness.result == 'failure'
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         echo "🚨 发现策略验证失败，创建问题跟踪..."
 

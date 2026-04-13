@@ -68,7 +68,7 @@ jobs:
 
         for changed_file in "${changed_files[@]}"; do
           case "$changed_file" in
-            web/frontend/src/views/artdeco-pages/*|web/frontend/src/views/artdeco-pages/**|web/frontend/src/components/artdeco/*|web/frontend/src/components/artdeco/**|web/frontend/src/layouts/*|web/frontend/src/layouts/**|web/frontend/src/components/layout/*|web/frontend/src/components/layout/**|web/frontend/src/components/menu/*|web/frontend/src/components/menu/**|web/frontend/src/components/common/*|web/frontend/src/components/common/**|web/frontend/src/components/shared/ui/*|web/frontend/src/components/shared/ui/**|web/frontend/src/views/stock-analysis/*|web/frontend/src/views/stock-analysis/**|web/frontend/src/views/styles/*|web/frontend/src/views/styles/**|web/frontend/src/views/SkeletonUsage.vue|web/frontend/src/views/ArtDecoTest.vue|web/frontend/src/views/Stocks.vue|web/frontend/src/views/system/styles/PerformanceMonitor.css|web/frontend/src/components/market/styles/SmartRecommendation.css|web/frontend/src/components/Market/styles/SmartRecommendation.css|web/frontend/src/styles/*|web/frontend/src/styles/**|web/frontend/scripts/check-artdeco-tokens.js|docs/guides/web/ARTDECO_MASTER_INDEX.md|docs/api/ArtDeco_System_Architecture_Summary.md|docs/guides/web/ARTDECO_GRID_QUICK_REFERENCE.md|docs/guides/web/ARTDECO_UI_UX_FUNCTIONALITY_GUIDE.md|docs/guides/web/ART_DECO_QUICK_REFERENCE.md)
+            web/frontend/src/views/artdeco-pages/*|web/frontend/src/views/artdeco-pages/**|web/frontend/src/components/artdeco/*|web/frontend/src/components/artdeco/**|web/frontend/src/layouts/*|web/frontend/src/layouts/**|web/frontend/src/components/layout/*|web/frontend/src/components/layout/**|web/frontend/src/components/menu/*|web/frontend/src/components/menu/**|web/frontend/src/components/common/*|web/frontend/src/components/common/**|web/frontend/src/components/shared/ui/*|web/frontend/src/components/shared/ui/**|web/frontend/src/views/stock-analysis/*|web/frontend/src/views/stock-analysis/**|web/frontend/src/views/styles/*|web/frontend/src/views/styles/**|web/frontend/src/views/SkeletonUsage.vue|web/frontend/src/views/Stocks.vue|web/frontend/src/components/market/styles/SmartRecommendation.css|web/frontend/src/components/Market/styles/SmartRecommendation.css|web/frontend/src/styles/*|web/frontend/src/styles/**|web/frontend/scripts/check-artdeco-tokens.js|docs/guides/web/ARTDECO_MASTER_INDEX.md|docs/api/ArtDeco_System_Architecture_Summary.md|docs/guides/web/ARTDECO_GRID_QUICK_REFERENCE.md|docs/guides/web/ARTDECO_UI_UX_FUNCTIONALITY_GUIDE.md|docs/guides/web/ART_DECO_QUICK_REFERENCE.md)
               artdeco_scope_changed=true
               ;;
           esac
@@ -106,7 +106,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.12'
 
@@ -136,7 +136,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.12'
 
@@ -205,7 +205,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.12'
 

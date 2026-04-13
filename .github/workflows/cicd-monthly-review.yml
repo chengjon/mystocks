@@ -16,6 +16,10 @@ on:
         type: boolean
         default: false
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   # ============================================================================
   # 月度审查执行
@@ -33,7 +37,7 @@ jobs:
         fetch-depth: 0  # 获取完整历史以进行趋势分析
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.12'
         cache: 'pip'
@@ -95,6 +99,8 @@ jobs:
           path: monthly-report
 
       - name: Create GitHub Issue with report
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # 读取报告内容
           if [ -f "monthly-report/monthly_optimization_report.md" ]; then
@@ -116,12 +122,27 @@ jobs:
           # Slack、微信、企业微信等
 
           if [ -n "${{ secrets.TEAM_WEBHOOK_URL }}" ]; then
+            REPORT_PREVIEW=$(head -20 monthly-report/monthly_optimization_report.md 2>/dev/null || echo '报告生成失败')
+            export REPORT_PREVIEW
+            PAYLOAD=$(python - <<'PY'
+          import json
+          import os
+
+          text = (
+              f"📊 MyStocks {os.environ['REPORT_MONTH']} CI/CD优化报告已生成\n"
+              f"查看: {os.environ['RUN_URL']}\n\n"
+              f"{os.environ['REPORT_PREVIEW']}"
+          )
+          print(json.dumps({"text": text}, ensure_ascii=False))
+          PY
+            )
             curl -X POST "${{ secrets.TEAM_WEBHOOK_URL }}" \
               -H "Content-Type: application/json" \
-              -d "{
-                \"text\": \"📊 MyStocks ${{ needs.monthly-review.outputs.report_month }} CI/CD优化报告已生成\\n查看: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\\n\\n$(head -20 monthly-report/monthly_optimization_report.md 2>/dev/null || echo '报告生成失败')\"
-              }"
+              -d "$PAYLOAD"
           fi
+        env:
+          REPORT_MONTH: ${{ needs.monthly-review.outputs.report_month }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
   # ============================================================================
   # 优化任务跟踪
@@ -141,6 +162,8 @@ jobs:
 
       - name: Parse optimization recommendations
         id: parse-recommendations
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # 解析优化建议JSON
           if [ -f "monthly-report/optimization_recommendations.json" ]; then
@@ -166,21 +189,21 @@ jobs:
                 actions=$(echo "$item_data" | jq -r '.actions | join("\\n- ")')
 
                 issue_body=$(cat <<EOF
-                ## 问题描述
-                $description
+          ## 问题描述
+          $description
 
-                ## 分类
-                $category
+          ## 分类
+          $category
 
-                ## 建议措施
-                - $actions
+          ## 建议措施
+          - $actions
 
-                ## 报告月份
-                ${{ needs.monthly-review.outputs.report_month }}
+          ## 报告月份
+          ${{ needs.monthly-review.outputs.report_month }}
 
-                ---
-                *此任务由月度优化审查自动生成*
-                EOF
+          ---
+          *此任务由月度优化审查自动生成*
+          EOF
                 )
 
                 # 创建Issue

@@ -20,6 +20,10 @@ on:
       - '.github/workflows/python-type-check.yml'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  issues: write
+
 env:
   PYTHON_VERSION: '3.12'
   MYPY_CACHE_DIR: '.mypy_cache'
@@ -332,6 +336,7 @@ jobs:
         with:
           pattern: mypy-*-results
           path: .
+          merge-multiple: true
 
       - name: Evaluate quality gate
         id: gate
@@ -394,7 +399,7 @@ jobs:
 
       - name: Generate consolidated report
         run: |
-          cat > type-check-summary.md << 'EOF'
+          cat > type-check-summary.md << EOF
           # Python 类型检查总结
 
           **执行时间**: $(date)

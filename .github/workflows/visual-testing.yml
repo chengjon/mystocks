@@ -111,7 +111,7 @@ jobs:
           cache-dependency-path: web/frontend/package-lock.json
 
       - name: Cache Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             web/frontend/node_modules
@@ -157,7 +157,7 @@ jobs:
           cache-dependency-path: web/frontend/package-lock.json
 
       - name: Restore Dependencies Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             web/frontend/node_modules

@@ -26,6 +26,10 @@ on:
     types:
       - completed
 
+permissions:
+  contents: read
+  issues: write
+
 env:
   PROMETHEUS_URL: ${{ secrets.PROMETHEUS_URL }}
   GRAFANA_URL: ${{ secrets.GRAFANA_URL }}
@@ -48,7 +52,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.12'
         cache: 'pip'
@@ -355,22 +359,28 @@ jobs:
         SECURITY_SCORE=${{ needs.collect-monitoring-data.outputs.security_score }}
 
         # 构建告警消息
-        ALERT_MESSAGE="🚨 MyStocks 质量门禁告警\\n\\n"
+        ALERT_MESSAGE=$'🚨 MyStocks 质量门禁告警\n'
 
         if (( $(echo "$PERFORMANCE_SCORE < 70" | bc -l) )); then
-          ALERT_MESSAGE="${ALERT_MESSAGE}❌ 性能评分过低: $PERFORMANCE_SCORE/100\\n"
+          ALERT_MESSAGE+=$'\n'"❌ 性能评分过低: $PERFORMANCE_SCORE/100"
         fi
 
         if (( $(echo "$SECURITY_SCORE < 80" | bc -l) )); then
-          ALERT_MESSAGE="${ALERT_MESSAGE}❌ 安全评分过低: $SECURITY_SCORE/100\\n"
+          ALERT_MESSAGE+=$'\n'"❌ 安全评分过低: $SECURITY_SCORE/100"
         fi
 
-        ALERT_MESSAGE="${ALERT_MESSAGE}\\n请立即检查系统状态并采取 corrective action。\\n"
-        ALERT_MESSAGE="${ALERT_MESSAGE}🔗 查看详情: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        ALERT_MESSAGE+=$'\n\n请立即检查系统状态并采取 corrective action。\n'
+        ALERT_MESSAGE+="🔗 查看详情: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
-        echo "ALERT_MESSAGE=$ALERT_MESSAGE" >> $GITHUB_ENV
+        {
+          echo 'ALERT_MESSAGE<<EOF'
+          printf '%s\n' "$ALERT_MESSAGE"
+          echo 'EOF'
+        } >> "$GITHUB_ENV"
 
     - name: Send alert notification
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         # 这里可以集成多种通知方式
 
@@ -384,9 +394,16 @@ jobs:
 
         # 2. Webhook 通知 (如企业微信、Slack等)
         if [ -n "$ALERT_WEBHOOK_URL" ]; then
+          PAYLOAD=$(python - <<'PY'
+        import json
+        import os
+
+        print(json.dumps({"text": os.environ["ALERT_MESSAGE"]}, ensure_ascii=False))
+        PY
+          )
           curl -X POST "$ALERT_WEBHOOK_URL" \
             -H "Content-Type: application/json" \
-            -d "{\"text\": \"$ALERT_MESSAGE\"}"
+            -d "$PAYLOAD"
         fi
 
         # 3. 邮件通知 (如果配置了)

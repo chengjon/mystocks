@@ -38,6 +38,9 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       quality_score: ${{ steps.quality.outputs.score }}
+      black_passed: ${{ steps.black.outputs.passed }}
+      mypy_passed: ${{ steps.mypy.outputs.passed }}
+      eslint_passed: ${{ steps.eslint.outputs.passed }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -45,7 +48,7 @@ jobs:
         fetch-depth: 0  # 获取完整历史用于质量分析
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
@@ -171,7 +174,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
@@ -234,7 +237,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
@@ -301,7 +304,7 @@ jobs:
         fetch-depth: 0  # 获取完整历史用于趋势分析
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
@@ -309,6 +312,12 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pandas numpy matplotlib plotly requests
+
+    - name: Download quality reports
+      uses: actions/download-artifact@v4
+      with:
+        name: quality-reports-${{ github.run_id }}
+        path: .
 
     - name: Collect optimization data
       run: |
@@ -320,7 +329,7 @@ jobs:
         # 收集代码质量指标
         echo "📊 收集代码质量指标..."
         jq -r '.[] | "\(.file):\(.line):\(.code):\(.message)"' ruff-results.json > optimization-data/metrics/code_quality_issues.txt || true
-        echo "${{ steps.quality.outputs.score }}" > optimization-data/metrics/quality_score.txt
+        echo "${{ needs.code-quality.outputs.quality_score }}" > optimization-data/metrics/quality_score.txt
 
         # 收集测试性能数据
         echo "⚡ 收集测试性能数据..."
@@ -353,12 +362,12 @@ jobs:
             'commit_sha': '${{ github.sha }}',
             'branch': '${{ github.ref }}',
             'metrics': {
-                'code_quality_score': float('${{ steps.quality.outputs.score }}' or '0'),
+                'code_quality_score': float('${{ needs.code-quality.outputs.quality_score }}' or '0'),
                 'test_success_rate': 100.0,
                 'ruff_errors': $(jq length ruff-results.json 2>/dev/null || echo 0),
-                'black_passed': '${{ steps.black.outputs.passed }}' == 'true',
-                'mypy_passed': '${{ steps.mypy.outputs.passed }}' == 'true',
-                'eslint_passed': '${{ steps.eslint.outputs.passed }}' == 'true'
+                'black_passed': '${{ needs.code-quality.outputs.black_passed }}' == 'true',
+                'mypy_passed': '${{ needs.code-quality.outputs.mypy_passed }}' == 'true',
+                'eslint_passed': '${{ needs.code-quality.outputs.eslint_passed }}' == 'true'
             }
         }
 
@@ -453,7 +462,7 @@ jobs:
         echo "📋 生成优化总结报告..."
 
         # 生成Markdown格式的优化报告
-        cat > optimization-data/optimization_summary.md << 'EOF'
+        cat > optimization-data/optimization_summary.md << EOF
         # MyStocks 持续优化数据报告
 
         **生成时间**: $(date)
@@ -464,10 +473,10 @@ jobs:
         ## 📊 关键指标
 
         ### 代码质量
-        - **质量评分**: ${{ steps.quality.outputs.score }}/100
+        - **质量评分**: ${{ needs.code-quality.outputs.quality_score }}/100
         - **Ruff错误数**: $(jq length ruff-results.json 2>/dev/null || echo 0)
-        - **Black格式**: ${{ steps.black.outputs.passed == 'true' && '✅ 通过' || '❌ 未通过' }}
-        - **MyPy类型检查**: ${{ steps.mypy.outputs.passed == 'true' && '✅ 通过' || '❌ 未通过' }}
+        - **Black格式**: ${{ needs.code-quality.outputs.black_passed == 'true' && '✅ 通过' || '❌ 未通过' }}
+        - **MyPy类型检查**: ${{ needs.code-quality.outputs.mypy_passed == 'true' && '✅ 通过' || '❌ 未通过' }}
 
         ### 测试表现
         - **测试成功率**: 100%
@@ -566,17 +575,17 @@ jobs:
         echo "### ✅ 已实现功能" >> cicd-summary.md
         echo "- GitHub Actions CI/CD工作流配置" >> cicd-summary.md
         echo "- 代码质量检查 (Ruff, Black, MyPy, ESLint)" >> cicd-summary.md
-        echo "- 安全扫描 (Bandit, Safety)" >> cicd_summary.md
-        echo "- 前端测试集成 (Vitest, Playwright)" >> cicd_summary.md
-        echo "- 性能测试环境验证" >> cicd_summary.md
-        echo "- 测试链路编排验证" >> cicd_summary.md
-        echo "- AI测试分析集成" >> cicd_summary.md
-        echo "" >> cicd_summary.md
-        echo "### 🔄 需要后续完善" >> cicd_summary.md
-        echo "- 数据库服务集成 (PostgreSQL, TDengine)" >> cicd_summary.md
-        echo "- 完整后端测试执行" >> cicd_summary.md
-        echo "- Slack通知配置" >> cicd_summary.md
-        echo "- 部署流程自动化" >> cicd_summary.md
+        echo "- 安全扫描 (Bandit, Safety)" >> cicd-summary.md
+        echo "- 前端测试集成 (Vitest, Playwright)" >> cicd-summary.md
+        echo "- 性能测试环境验证" >> cicd-summary.md
+        echo "- 测试链路编排验证" >> cicd-summary.md
+        echo "- AI测试分析集成" >> cicd-summary.md
+        echo "" >> cicd-summary.md
+        echo "### 🔄 需要后续完善" >> cicd-summary.md
+        echo "- 数据库服务集成 (PostgreSQL, TDengine)" >> cicd-summary.md
+        echo "- 完整后端测试执行" >> cicd-summary.md
+        echo "- Slack通知配置" >> cicd-summary.md
+        echo "- 部署流程自动化" >> cicd-summary.md
 
     - name: Upload CI/CD summary
       uses: actions/upload-artifact@v4
