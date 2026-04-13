@@ -175,6 +175,10 @@ def test_v1_health_endpoints_have_docs_examples_and_error_responses() -> None:
         assert operation.get("summary")
         assert len(operation.get("description", "")) >= 20
         assert "example" in success_json or "examples" in success_json
+        success_example = success_json.get("example") or next(iter(success_json["examples"].values()))["value"]
+        assert success_example["success"] is True
+        assert success_example["code"] == 200
+        assert success_example["data"]
         assert any(status.startswith("5") for status in operation["responses"])
 
 
@@ -482,6 +486,10 @@ def test_public_announcement_endpoints_have_success_examples_and_error_responses
     assert len(analyze_operation.get("description", "")) >= 20
     assert "example" in analyze_json or "examples" in analyze_json
     assert "example" in analyze_success_json or "examples" in analyze_success_json
+    analyze_example = analyze_success_json.get("example") or next(iter(analyze_success_json["examples"].values()))["value"]
+    assert analyze_example["success"] is False
+    assert analyze_example["code"] == 503
+    assert analyze_example["data"]["status"] == "placeholder"
     assert any(code.startswith(("4", "5")) for code in analyze_operation["responses"])
 
     monitor_rules_post = schema["paths"]["/api/announcement/monitor-rules"]["post"]
@@ -616,6 +624,15 @@ def test_kline_data_endpoints_have_docs_examples_and_error_responses() -> None:
         for parameter_name in parameter_names:
             assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
         assert "example" in success_json or "examples" in success_json
+        success_example = success_json.get("example") or next(iter(success_json["examples"].values()))["value"]
+        assert success_example["success"] is True
+        assert success_example["code"] == 200
+        if method == "delete":
+            assert success_example["data"]["message"]
+        elif path == "/api/v1/trading/sessions" and method == "get":
+            assert success_example["data"]["sessions"] is not None
+        else:
+            assert success_example["data"]["session_id"]
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
@@ -896,6 +913,10 @@ def test_multi_source_endpoints_have_descriptions_examples_and_error_responses()
     assert len(analyze_operation.get("description", "")) >= 20
     assert "example" in analyze_json or "examples" in analyze_json
     assert "example" in analyze_success_json or "examples" in analyze_success_json
+    analyze_example = analyze_success_json.get("example") or next(iter(analyze_success_json["examples"].values()))["value"]
+    assert analyze_example["success"] is False
+    assert analyze_example["code"] == 503
+    assert analyze_example["data"]["status"] == "placeholder"
     assert any(code.startswith(("4", "5")) for code in analyze_operation["responses"])
 
 
@@ -1000,6 +1021,11 @@ def test_sentiment_and_technical_pattern_endpoints_have_docs_examples_and_parame
     for parameter_name in ["symbol", "days"]:
         assert any(param["name"] == parameter_name and param.get("description") for param in sentiment_parameters)
     assert "example" in sentiment_success_json or "examples" in sentiment_success_json
+    sentiment_example = sentiment_success_json.get("example") or next(iter(sentiment_success_json["examples"].values()))["value"]
+    assert sentiment_example["success"] is True
+    assert sentiment_example["code"] == 200
+    assert sentiment_example["data"]["sentiment"] in {"positive", "negative", "neutral"}
+    assert sentiment_example["data"]["key_phrases"]
     assert any(code.startswith(("4", "5")) for code in sentiment_operation["responses"])
 
     patterns_operation = schema["paths"]["/api/v1/technical/patterns/{symbol}"]["get"]
@@ -1028,6 +1054,10 @@ def test_audit_endpoints_have_parameter_descriptions() -> None:
             for param in logs_operation.get("parameters", [])
         )
     assert "example" in logs_success_json or "examples" in logs_success_json
+    logs_example = logs_success_json.get("example") or next(iter(logs_success_json["examples"].values()))["value"]
+    assert logs_example["success"] is True
+    assert logs_example["code"] == 200
+    assert logs_example["data"]
     assert any(code.startswith(("4", "5")) for code in logs_operation["responses"])
 
     log_detail_operation = schema["paths"]["/api/v1/audit/logs/{log_id}"]["get"]
@@ -1039,6 +1069,10 @@ def test_audit_endpoints_have_parameter_descriptions() -> None:
         for param in log_detail_operation.get("parameters", [])
     )
     assert "example" in log_detail_success_json or "examples" in log_detail_success_json
+    log_detail_example = log_detail_success_json.get("example") or next(iter(log_detail_success_json["examples"].values()))["value"]
+    assert log_detail_example["success"] is True
+    assert log_detail_example["code"] == 200
+    assert log_detail_example["data"]
     assert any(code.startswith(("4", "5")) for code in log_detail_operation["responses"])
 
     statistics_operation = schema["paths"]["/api/v1/audit/statistics"]["get"]
@@ -1051,6 +1085,10 @@ def test_audit_endpoints_have_parameter_descriptions() -> None:
             for param in statistics_operation.get("parameters", [])
         )
     assert "example" in statistics_success_json or "examples" in statistics_success_json
+    statistics_example = statistics_success_json.get("example") or next(iter(statistics_success_json["examples"].values()))["value"]
+    assert statistics_example["success"] is True
+    assert statistics_example["code"] == 200
+    assert statistics_example["data"]
     assert any(code.startswith(("4", "5")) for code in statistics_operation["responses"])
 
 
@@ -1100,6 +1138,15 @@ def test_position_write_endpoints_have_request_and_response_examples() -> None:
             assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
         assert "example" in request_json or "examples" in request_json
         assert "example" in success_json or "examples" in success_json
+        success_example = success_json.get("example") or next(iter(success_json["examples"].values()))["value"]
+        assert success_example["success"] is True
+        assert success_example["code"] == 200
+        if method == "delete":
+            assert success_example["data"]["message"]
+        elif path == "/api/v1/trading/sessions" and method == "get":
+            assert success_example["data"]["sessions"] is not None
+        else:
+            assert success_example["data"]["session_id"]
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
@@ -1262,6 +1309,16 @@ def test_monitoring_realtime_control_and_summary_endpoints_have_docs_examples_an
             request_json = operation["requestBody"]["content"]["application/json"]
             assert "example" in request_json or "examples" in request_json
         assert "example" in success_json or "examples" in success_json
+        if path == "/api/v1/monitoring/alerts/mark-all-read":
+            success_example = success_json.get("example") or next(iter(success_json["examples"].values()))["value"]
+            assert success_example["success"] is False
+            assert success_example["code"] == 503
+            assert success_example["data"]["status"] == "placeholder"
+        if path == "/api/v1/monitoring/control/start":
+            success_example = success_json.get("example") or next(iter(success_json["examples"].values()))["value"]
+            assert success_example["success"] is True
+            assert success_example["data"]["is_monitoring"] is True
+            assert success_example["data"]["monitored_count"] >= 0
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
@@ -1663,6 +1720,15 @@ def test_trading_session_endpoints_have_docs_examples_and_error_responses() -> N
             request_json = operation["requestBody"]["content"]["application/json"]
             assert "example" in request_json or "examples" in request_json
         assert "example" in success_json or "examples" in success_json
+        success_example = success_json.get("example") or next(iter(success_json["examples"].values()))["value"]
+        assert success_example["success"] is True
+        assert success_example["code"] == 200
+        if method == "delete":
+            assert success_example["data"]["message"]
+        elif path == "/api/v1/trading/sessions" and method == "get":
+            assert success_example["data"]["sessions"] is not None
+        else:
+            assert success_example["data"]["session_id"]
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
@@ -2276,12 +2342,20 @@ def test_trade_endpoints_have_examples_parameter_docs_and_error_responses() -> N
     assert portfolio_operation.get("summary")
     assert len(portfolio_operation.get("description", "")) >= 20
     assert "example" in portfolio_success_json or "examples" in portfolio_success_json
+    portfolio_example = portfolio_success_json.get("example") or next(iter(portfolio_success_json["examples"].values()))["value"]
+    assert portfolio_example["success"] is False
+    assert portfolio_example["code"] == 503
+    assert portfolio_example["data"]["status"] == "placeholder"
     assert any(code.startswith("5") for code in portfolio_operation["responses"])
 
     positions_success_json = positions_operation["responses"]["200"]["content"]["application/json"]
     assert positions_operation.get("summary")
     assert len(positions_operation.get("description", "")) >= 20
     assert "example" in positions_success_json or "examples" in positions_success_json
+    positions_example = positions_success_json.get("example") or next(iter(positions_success_json["examples"].values()))["value"]
+    assert positions_example["success"] is False
+    assert positions_example["code"] == 503
+    assert positions_example["data"]["status"] == "placeholder"
     assert any(code.startswith("5") for code in positions_operation["responses"])
 
     assert any(
@@ -2290,6 +2364,10 @@ def test_trade_endpoints_have_examples_parameter_docs_and_error_responses() -> N
     )
     signals_success_json = signals_operation["responses"]["200"]["content"]["application/json"]
     assert "example" in signals_success_json or "examples" in signals_success_json
+    signals_example = signals_success_json.get("example") or next(iter(signals_success_json["examples"].values()))["value"]
+    assert signals_example["success"] is False
+    assert signals_example["code"] == 503
+    assert signals_example["data"]["status"] == "placeholder"
     assert any(code.startswith("5") for code in signals_operation["responses"])
 
     trades_success_json = trades_operation["responses"]["200"]["content"]["application/json"]
@@ -2301,18 +2379,30 @@ def test_trade_endpoints_have_examples_parameter_docs_and_error_responses() -> N
             for param in trades_operation.get("parameters", [])
         )
     assert "example" in trades_success_json or "examples" in trades_success_json
+    trades_example = trades_success_json.get("example") or next(iter(trades_success_json["examples"].values()))["value"]
+    assert trades_example["success"] is False
+    assert trades_example["code"] == 503
+    assert trades_example["data"]["status"] == "placeholder"
     assert any(code.startswith(("4", "5")) for code in trades_operation["responses"])
 
     statistics_success_json = statistics_operation["responses"]["200"]["content"]["application/json"]
     assert statistics_operation.get("summary")
     assert len(statistics_operation.get("description", "")) >= 20
     assert "example" in statistics_success_json or "examples" in statistics_success_json
+    statistics_example = statistics_success_json.get("example") or next(iter(statistics_success_json["examples"].values()))["value"]
+    assert statistics_example["success"] is False
+    assert statistics_example["code"] == 503
+    assert statistics_example["data"]["status"] == "placeholder"
     assert any(code.startswith("5") for code in statistics_operation["responses"])
 
     execute_json = execute_operation["requestBody"]["content"]["application/json"]
     execute_success_json = execute_operation["responses"]["200"]["content"]["application/json"]
     assert "example" in execute_json or "examples" in execute_json
     assert "example" in execute_success_json or "examples" in execute_success_json
+    execute_example = execute_success_json.get("example") or next(iter(execute_success_json["examples"].values()))["value"]
+    assert execute_example["success"] is False
+    assert execute_example["code"] == 503
+    assert execute_example["data"]["status"] == "placeholder"
     assert any(code.startswith(("4", "5")) for code in execute_operation["responses"])
 
 
@@ -2625,6 +2715,11 @@ def test_analysis_backtest_and_stress_test_endpoints_have_docs_examples_and_erro
         success_code = next(code for code in operation["responses"] if code.startswith("2"))
         success_json = operation["responses"][success_code]["content"]["application/json"]
         assert "example" in success_json or "examples" in success_json
+        if path.startswith("/api/v1/backtest/") or path.startswith("/api/v1/stress-test/"):
+            analysis_example = success_json.get("example") or next(iter(success_json["examples"].values()))["value"]
+            assert analysis_example["success"] is True
+            assert analysis_example["code"] == 200
+            assert analysis_example["data"]
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 
@@ -2705,6 +2800,10 @@ def test_ml_strategy_endpoints_have_request_and_response_examples() -> None:
         assert len(operation.get("description", "")) >= 20
         assert "example" in request_json or "examples" in request_json
         assert "example" in success_json or "examples" in success_json
+        success_example = success_json.get("example") or next(iter(success_json["examples"].values()))["value"]
+        assert success_example["success"] is True
+        assert success_example["code"] == 200
+        assert success_example["data"]
 
 
 def test_risk_v31_stop_loss_write_endpoints_have_docs_and_request_examples() -> None:
@@ -2932,21 +3031,42 @@ def test_v1_data_route_sentiment_strategy_and_optimization_endpoints_have_docs()
     app.openapi_schema = None
     schema = app.openapi()
 
-    for path in ["/api/v1/data/route", "/api/v1/sentiment/analyze"]:
-        operation = schema["paths"][path]["post"]
-        request_json = operation["requestBody"]["content"]["application/json"]
-        success_json = operation["responses"]["200"]["content"]["application/json"]
+    data_route_operation = schema["paths"]["/api/v1/data/route"]["post"]
+    data_route_request_json = data_route_operation["requestBody"]["content"]["application/json"]
+    data_route_success_json = data_route_operation["responses"]["200"]["content"]["application/json"]
+    assert data_route_operation.get("summary")
+    assert len(data_route_operation.get("description", "")) >= 20
+    assert "example" in data_route_request_json or "examples" in data_route_request_json
+    assert "example" in data_route_success_json or "examples" in data_route_success_json
+    data_route_example = data_route_success_json.get("example") or next(iter(data_route_success_json["examples"].values()))["value"]
+    assert data_route_example["success"] is True
+    assert data_route_example["code"] == 200
+    assert data_route_example["data"]["route_selected"] in {"tdengine", "postgresql"}
+    assert data_route_example["data"]["classification"]
 
-        assert operation.get("summary")
-        assert len(operation.get("description", "")) >= 20
-        assert "example" in request_json or "examples" in request_json
-        assert "example" in success_json or "examples" in success_json
+    sentiment_operation = schema["paths"]["/api/v1/sentiment/analyze"]["post"]
+    sentiment_request_json = sentiment_operation["requestBody"]["content"]["application/json"]
+    sentiment_success_json = sentiment_operation["responses"]["200"]["content"]["application/json"]
+    assert sentiment_operation.get("summary")
+    assert len(sentiment_operation.get("description", "")) >= 20
+    assert "example" in sentiment_request_json or "examples" in sentiment_request_json
+    assert "example" in sentiment_success_json or "examples" in sentiment_success_json
+    sentiment_example = sentiment_success_json.get("example") or next(iter(sentiment_success_json["examples"].values()))["value"]
+    assert sentiment_example["success"] is True
+    assert sentiment_example["code"] == 200
+    assert sentiment_example["data"]["sentiment"] in {"positive", "negative", "neutral"}
+    assert sentiment_example["data"]["key_phrases"]
 
     market_sentiment_operation = schema["paths"]["/api/v1/sentiment/market"]["get"]
     market_sentiment_success_json = market_sentiment_operation["responses"]["200"]["content"]["application/json"]
     assert market_sentiment_operation.get("summary")
     assert len(market_sentiment_operation.get("description", "")) >= 20
     assert "example" in market_sentiment_success_json or "examples" in market_sentiment_success_json
+    market_sentiment_example = market_sentiment_success_json.get("example") or next(iter(market_sentiment_success_json["examples"].values()))["value"]
+    assert market_sentiment_example["success"] is True
+    assert market_sentiment_example["code"] == 200
+    assert market_sentiment_example["data"]["sentiment"] in {"positive", "negative", "neutral"}
+    assert market_sentiment_example["data"]["coverage"] >= 0
 
     technical_indicators_operation = schema["paths"]["/api/v1/technical-indicators"]["get"]
     technical_indicators_parameters = technical_indicators_operation.get("parameters", [])
@@ -2959,6 +3079,12 @@ def test_v1_data_route_sentiment_strategy_and_optimization_endpoints_have_docs()
             for param in technical_indicators_parameters
         )
     assert "example" in technical_indicators_success_json or "examples" in technical_indicators_success_json
+    technical_indicators_example = technical_indicators_success_json.get("example") or next(iter(technical_indicators_success_json["examples"].values()))["value"]
+    assert technical_indicators_example["success"] is True
+    assert technical_indicators_example["code"] == 200
+    assert technical_indicators_example["data"]["symbol"]
+    assert technical_indicators_example["data"]["indicators"]
+    assert technical_indicators_example["data"]["data_points"] > 0
 
     strategies_operation = schema["paths"]["/api/v1/strategies"]["get"]
     strategies_parameters = strategies_operation.get("parameters", [])
@@ -2966,6 +3092,10 @@ def test_v1_data_route_sentiment_strategy_and_optimization_endpoints_have_docs()
     assert strategies_operation.get("summary")
     assert len(strategies_operation.get("description", "")) >= 20
     assert "example" in strategies_success_json or "examples" in strategies_success_json
+    strategies_example = strategies_success_json.get("example") or next(iter(strategies_success_json["examples"].values()))["value"]
+    assert strategies_example["success"] is True
+    assert strategies_example["code"] == 200
+    assert strategies_example["data"]
     assert any(
         param["name"] == "strategy_type" and param.get("description")
         for param in strategies_parameters
@@ -2990,6 +3120,16 @@ def test_v1_data_route_sentiment_strategy_and_optimization_endpoints_have_docs()
         for parameter_name in parameter_names:
             assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
         assert "example" in success_json or "examples" in success_json
+        optimization_example = success_json.get("example") or next(iter(success_json["examples"].values()))["value"]
+        assert optimization_example["success"] is True
+        assert optimization_example["code"] == 200
+        if path == "/api/v1/optimization/status":
+            assert optimization_example["data"]["database"]
+        elif path == "/api/v1/optimization/slow-queries":
+            assert optimization_example["data"]["summary"]
+        else:
+            assert optimization_example["data"]["operation"] in {"vacuum", "analyze", "reindex"}
+            assert optimization_example["data"]["status"] in {"completed", "failed"}
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
 
 

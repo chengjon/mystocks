@@ -36,6 +36,7 @@ RISK_ALERT_ROUTE_RESPONSES = {
 }
 
 router = APIRouter(prefix="/api/v1/risk", tags=["风险管理-告警"], responses=RISK_ALERT_ROUTE_RESPONSES)
+_acknowledged_v31_alerts: dict[int, dict[str, Any]] = {}
 
 
 def _success_response_spec(description: str, example: Any) -> dict[int, dict[str, Any]]:
@@ -49,6 +50,54 @@ def _success_response_spec(description: str, example: Any) -> dict[int, dict[str
             },
         }
     }
+
+
+def _resolve_notification_manager():
+    notification_manager = get_risk_alert_notification_manager()
+    if not notification_manager:
+        raise BusinessException(
+            detail="告警通知管理器不可用", status_code=503, error_code="ALERT_NOTIFICATION_MANAGER_UNAVAILABLE"
+        )
+    return notification_manager
+
+
+def _resolve_rule_engine():
+    rule_engine = get_alert_rule_engine()
+    if not rule_engine:
+        raise BusinessException(detail="告警规则引擎不可用", status_code=503, error_code="ALERT_RULE_ENGINE_UNAVAILABLE")
+    return rule_engine
+
+
+def _resolve_runtime_alert_service():
+    core = get_risk_management_core()
+    if not core or not core.alert_service:
+        raise BusinessException(detail="告警服务不可用", status_code=503, error_code="ALERT_SERVICE_UNAVAILABLE")
+    return core.alert_service
+
+
+def _build_active_alerts_payload(alert_service: Any) -> list[dict[str, Any]]:
+    history = getattr(alert_service, "alert_history", {}) or {}
+    active_alerts: list[dict[str, Any]] = []
+
+    for index, (alert_key, records) in enumerate(history.items(), start=1):
+        if not records:
+            continue
+        latest = records[-1]
+        active_alerts.append(
+            {
+                "alert_id": index,
+                "alert_key": alert_key,
+                "risk_level": latest.get("risk_level", "attention"),
+                "status": "acknowledged" if index in _acknowledged_v31_alerts else "active",
+                "last_triggered_at": latest.get("timestamp").isoformat()
+                if hasattr(latest.get("timestamp"), "isoformat")
+                else latest.get("timestamp"),
+                "trigger_count": len(records),
+                "acknowledgement": _acknowledged_v31_alerts.get(index),
+            }
+        )
+
+    return active_alerts
 
 RISK_ALERT_UPDATE_EXAMPLES = {
     "update_threshold_and_message": {
@@ -395,16 +444,7 @@ async def send_risk_alert(
     request: Dict[str, Any] = Body(..., openapi_examples=RISK_ALERT_SEND_EXAMPLES)
 ) -> Dict[str, Any]:
     try:
-        if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
-            )
-
-        notification_manager = get_risk_alert_notification_manager()
-        if not notification_manager:
-            raise BusinessException(
-                detail="告警通知管理器不可用", status_code=503, error_code="ALERT_NOTIFICATION_MANAGER_UNAVAILABLE"
-            )
+        notification_manager = _resolve_notification_manager()
 
         alert_type = request.get("alert_type", "general_risk")
         severity = request.get("severity", "warning")
@@ -454,16 +494,7 @@ async def send_risk_alert(
 )
 async def get_alert_statistics() -> Dict[str, Any]:
     try:
-        if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
-            )
-
-        notification_manager = get_risk_alert_notification_manager()
-        if not notification_manager:
-            raise BusinessException(
-                detail="告警通知管理器不可用", status_code=503, error_code="ALERT_NOTIFICATION_MANAGER_UNAVAILABLE"
-            )
+        notification_manager = _resolve_notification_manager()
 
         return notification_manager.get_alert_statistics()
 
@@ -487,16 +518,7 @@ async def evaluate_alert_rules(
     request: Dict[str, Any] = Body(..., openapi_examples=RISK_ALERT_RULE_EVALUATION_EXAMPLES)
 ) -> List[Dict[str, Any]]:
     try:
-        if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
-            )
-
-        rule_engine = get_alert_rule_engine()
-        if not rule_engine:
-            raise BusinessException(
-                detail="告警规则引擎不可用", status_code=503, error_code="ALERT_RULE_ENGINE_UNAVAILABLE"
-            )
+        rule_engine = _resolve_rule_engine()
 
         context = AlertContext(
             symbol=request.get("symbol"),
@@ -536,16 +558,7 @@ async def add_alert_rule(
     request: Dict[str, Any] = Body(..., openapi_examples=RISK_ALERT_RULE_CREATE_EXAMPLES)
 ) -> Dict[str, Any]:
     try:
-        if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
-            )
-
-        rule_engine = get_alert_rule_engine()
-        if not rule_engine:
-            raise BusinessException(
-                detail="告警规则引擎不可用", status_code=503, error_code="ALERT_RULE_ENGINE_UNAVAILABLE"
-            )
+        rule_engine = _resolve_rule_engine()
 
         rule_data = request.copy()
         rule_id = rule_data.pop("rule_id")
@@ -580,16 +593,7 @@ async def add_alert_rule(
 )
 async def remove_alert_rule(rule_id: str = Path(..., description="需要移除的告警规则ID。")) -> Dict[str, Any]:
     try:
-        if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
-            )
-
-        rule_engine = get_alert_rule_engine()
-        if not rule_engine:
-            raise BusinessException(
-                detail="告警规则引擎不可用", status_code=503, error_code="ALERT_RULE_ENGINE_UNAVAILABLE"
-            )
+        rule_engine = _resolve_rule_engine()
 
         if rule_engine.remove_rule(rule_id):
             return {"success": True, "rule_id": rule_id, "message": "规则移除成功"}
@@ -614,16 +618,7 @@ async def remove_alert_rule(rule_id: str = Path(..., description="需要移除�
 )
 async def get_rule_statistics() -> Dict[str, Any]:
     try:
-        if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
-            )
-
-        rule_engine = get_alert_rule_engine()
-        if not rule_engine:
-            raise BusinessException(
-                detail="告警规则引擎不可用", status_code=503, error_code="ALERT_RULE_ENGINE_UNAVAILABLE"
-            )
+        rule_engine = _resolve_rule_engine()
 
         return rule_engine.get_rule_statistics()
 
@@ -918,11 +913,8 @@ async def get_active_alerts_v31() -> Dict[str, Any]:
                 detail="V3.1风险管理系统未初始化", status_code=503, error_code="RISK_MANAGEMENT_SYSTEM_NOT_INITIALIZED"
             )
 
-        core = get_risk_management_core()
-        if not core or not core.alert_service:
-            raise BusinessException(detail="告警服务不可用", status_code=503, error_code="ALERT_SERVICE_UNAVAILABLE")
-
-        alerts = []
+        alert_service = _resolve_runtime_alert_service()
+        alerts = _build_active_alerts_payload(alert_service)
         return {"status": "success", "data": {"alerts": alerts, "total": len(alerts), "version": "3.1"}}
 
     except (BusinessException, ValidationException, NotFoundException):
@@ -950,18 +942,25 @@ async def acknowledge_alert_v31(
                 detail="V3.1风险管理系统未初始化", status_code=503, error_code="RISK_MANAGEMENT_SYSTEM_NOT_INITIALIZED"
             )
 
-        core = get_risk_management_core()
-        if not core or not core.alert_service:
-            raise BusinessException(detail="告警服务不可用", status_code=503, error_code="ALERT_SERVICE_UNAVAILABLE")
+        alert_service = _resolve_runtime_alert_service()
+        alerts = _build_active_alerts_payload(alert_service)
+        if not any(item["alert_id"] == alert_id for item in alerts):
+            raise NotFoundException(resource="风险告警", identifier=str(alert_id))
+
+        _acknowledged_v31_alerts[alert_id] = {
+            "action_taken": request.get("action_taken", ""),
+            "feedback": request.get("feedback", ""),
+            "acknowledged_at": datetime.now().isoformat(),
+        }
 
         return {
             "status": "success",
             "data": {
                 "alert_id": alert_id,
                 "status": "acknowledged",
-                "action_taken": request.get("action_taken", ""),
-                "feedback": request.get("feedback", ""),
-                "acknowledged_at": datetime.now().isoformat(),
+                "action_taken": _acknowledged_v31_alerts[alert_id]["action_taken"],
+                "feedback": _acknowledged_v31_alerts[alert_id]["feedback"],
+                "acknowledged_at": _acknowledged_v31_alerts[alert_id]["acknowledged_at"],
             },
             "version": "3.1",
         }

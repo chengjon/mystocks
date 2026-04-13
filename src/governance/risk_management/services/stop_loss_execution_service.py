@@ -511,9 +511,24 @@ class StopLossExecutionService:
 _stop_loss_execution_service: Optional[StopLossExecutionService] = None
 
 
+def _build_default_order_service() -> Optional[OrderManagementService]:
+    """Build a default order service from the web backend runtime when available."""
+    try:
+        from app.core.database import get_postgresql_session
+        from src.infrastructure.persistence.repository_impl import OrderRepositoryImpl
+
+        session = get_postgresql_session()
+        return OrderManagementService(OrderRepositoryImpl(session))
+    except Exception:
+        logger.warning("构建默认止损订单服务失败: %(e)s")
+        return None
+
+
 def get_stop_loss_execution_service(order_service: Optional[OrderManagementService] = None) -> StopLossExecutionService:
     """获取止损执行服务实例（单例模式）"""
     global _stop_loss_execution_service
+    if _stop_loss_execution_service is None:
+        order_service = order_service or _build_default_order_service()
     if _stop_loss_execution_service is None and order_service is not None:
         _stop_loss_execution_service = StopLossExecutionService(order_service)
     return _stop_loss_execution_service

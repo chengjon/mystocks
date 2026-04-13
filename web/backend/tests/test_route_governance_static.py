@@ -56,6 +56,7 @@ def test_governed_route_prefixes_are_defined_in_version_mapping():
         "web/backend/app/api/VERSION_MAPPING.py",
     )
 
+    assert version_mapping_module.VERSION_MAPPING["auth"]["prefix"] == "/api/v1/auth"
     assert version_mapping_module.VERSION_MAPPING["market_v2"]["prefix"] == "/api/v2/market"
     assert version_mapping_module.VERSION_MAPPING["monitoring_analysis"]["prefix"] == "/api/v1/monitoring/analysis"
     assert version_mapping_module.VERSION_MAPPING["monitoring_watchlists"]["prefix"] == "/api/v1/monitoring/watchlists"
@@ -111,3 +112,33 @@ def test_register_all_routers_delegates_to_central_registry(monkeypatch):
     assert calls[0]["app"] is app
     assert calls[0]["use_mock_apis"] == register_routers.settings.use_mock_apis
     assert calls[0]["logger"] is register_routers.logger
+
+
+def test_route_truth_doc_records_auth_as_registry_managed_runtime_surface() -> None:
+    doc_path = PROJECT_ROOT / "docs/guides/backend-v1-route-truth.md"
+    text = doc_path.read_text(encoding="utf-8")
+
+    assert "web/backend/app/api/v1/router.py" in text
+    assert "web/backend/app/router_registry.py" in text
+    assert "web/backend/app/api/VERSION_MAPPING.py" in text
+    assert "web/backend/app/api/v1/admin/auth.py" in text
+    assert "web/backend/app/api/auth.py" in text
+    assert "web/backend/app/api/risk/__init__.py" in text
+    assert "web/backend/app/api/v1/risk/__init__.py" in text
+
+
+def test_parallel_v1_admin_auth_surface_has_been_retired() -> None:
+    retired_path = PROJECT_ROOT / "web/backend/app/api/v1/admin/auth.py"
+    assert retired_path.exists() is False
+
+
+def test_parallel_v1_risk_surface_has_been_retired() -> None:
+    retired_paths = [
+        PROJECT_ROOT / "web/backend/app/api/v1/risk/__init__.py",
+        PROJECT_ROOT / "web/backend/app/api/v1/risk/core.py",
+        PROJECT_ROOT / "web/backend/app/api/v1/risk/position.py",
+        PROJECT_ROOT / "web/backend/app/api/v1/risk/alerts.py",
+        PROJECT_ROOT / "web/backend/app/api/v1/risk/rules.py",
+        PROJECT_ROOT / "web/backend/app/api/v1/risk/stop_loss.py",
+    ]
+    assert all(path.exists() is False for path in retired_paths)

@@ -256,6 +256,15 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"❌ Failed to initialize Indicator System: {e}")
 
+    # 初始化风险管理系统（v31 risk runtime）
+    try:
+        from src.governance.risk_management import initialize_risk_management_system
+
+        await initialize_risk_management_system()
+        logger.info("✅ Risk management system initialized")
+    except Exception as e:
+        logger.warning(f"⚠️ Risk management system initialization failed: {e}")
+
     # Dashboard market-overview 预热（异步，不阻塞启动）
     try:
         from .api.dashboard_data_source import prewarm_dashboard_market_overview_cache

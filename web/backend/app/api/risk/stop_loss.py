@@ -39,6 +39,20 @@ def _success_response_spec(description: str, example: Any) -> dict[int, dict[str
         }
     }
 
+
+def _resolve_history_service():
+    history_service = get_stop_loss_history_service()
+    if not history_service:
+        raise BusinessException(detail="历史分析服务不可用", status_code=503, error_code="HISTORICAL_ANALYSIS_UNAVAILABLE")
+    return history_service
+
+
+def _resolve_execution_service():
+    execution_service = get_stop_loss_execution_service()
+    if not execution_service:
+        raise BusinessException(detail="止损执行服务不可用", status_code=503, error_code="STOP_LOSS_EXECUTION_UNAVAILABLE")
+    return execution_service
+
 STOP_LOSS_ADD_POSITION_EXAMPLES = {
     "monitor_equity_position": {
         "summary": "添加股票止损监控",
@@ -308,16 +322,7 @@ async def add_stop_loss_position(
     request: Dict[str, Any] = Body(..., openapi_examples=STOP_LOSS_ADD_POSITION_EXAMPLES)
 ) -> Dict[str, Any]:
     try:
-        if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
-            )
-
-        execution_service = get_stop_loss_execution_service()
-        if not execution_service:
-            raise BusinessException(
-                detail="止损执行服务不可用", status_code=503, error_code="STOP_LOSS_EXECUTION_UNAVAILABLE"
-            )
+        execution_service = _resolve_execution_service()
 
         result = await execution_service.add_position_monitoring(
             symbol=request["symbol"],
@@ -354,16 +359,7 @@ async def update_stop_loss_price(
     request: Dict[str, Any] = Body(..., openapi_examples=STOP_LOSS_UPDATE_PRICE_EXAMPLES)
 ) -> Dict[str, Any]:
     try:
-        if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
-            )
-
-        execution_service = get_stop_loss_execution_service()
-        if not execution_service:
-            raise BusinessException(
-                detail="止损执行服务不可用", status_code=503, error_code="STOP_LOSS_EXECUTION_UNAVAILABLE"
-            )
+        execution_service = _resolve_execution_service()
 
         result = await execution_service.update_position_price(
             position_id=request["position_id"],
@@ -391,16 +387,7 @@ async def remove_stop_loss_position(
     position_id: str = Path(..., description="需要移除的止损监控持仓ID。"),
 ) -> Dict[str, Any]:
     try:
-        if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
-            )
-
-        execution_service = get_stop_loss_execution_service()
-        if not execution_service:
-            raise BusinessException(
-                detail="止损执行服务不可用", status_code=503, error_code="STOP_LOSS_EXECUTION_UNAVAILABLE"
-            )
+        execution_service = _resolve_execution_service()
 
         success = await execution_service.remove_position_monitoring(position_id)
         if not success:
@@ -427,16 +414,7 @@ async def get_stop_loss_status(
     position_id: str = Path(..., description="需要查询止损状态的持仓ID。"),
 ) -> Dict[str, Any]:
     try:
-        if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
-            )
-
-        execution_service = get_stop_loss_execution_service()
-        if not execution_service:
-            raise BusinessException(
-                detail="止损执行服务不可用", status_code=503, error_code="STOP_LOSS_EXECUTION_UNAVAILABLE"
-            )
+        execution_service = _resolve_execution_service()
 
         result = await execution_service.get_monitoring_status(position_id)
         if not result.get("found"):
@@ -461,16 +439,7 @@ async def get_stop_loss_status(
 )
 async def get_stop_loss_overview() -> Dict[str, Any]:
     try:
-        if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
-            )
-
-        execution_service = get_stop_loss_execution_service()
-        if not execution_service:
-            raise BusinessException(
-                detail="止损执行服务不可用", status_code=503, error_code="STOP_LOSS_EXECUTION_UNAVAILABLE"
-            )
+        execution_service = _resolve_execution_service()
 
         return await execution_service.get_monitoring_status()
 
@@ -494,16 +463,7 @@ async def batch_update_stop_loss_prices(
     request: Dict[str, Any] = Body(..., openapi_examples=STOP_LOSS_BATCH_UPDATE_EXAMPLES)
 ) -> Dict[str, Any]:
     try:
-        if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
-            )
-
-        execution_service = get_stop_loss_execution_service()
-        if not execution_service:
-            raise BusinessException(
-                detail="止损执行服务不可用", status_code=503, error_code="STOP_LOSS_EXECUTION_UNAVAILABLE"
-            )
+        execution_service = _resolve_execution_service()
 
         price_updates = request.get("price_updates", {})
         if not price_updates:
@@ -533,16 +493,7 @@ async def get_stop_loss_performance(
     days: int = Query(30, description="回溯统计的天数窗口，默认 30 天。"),
 ) -> Dict[str, Any]:
     try:
-        if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
-            )
-
-        history_service = get_stop_loss_history_service()
-        if not history_service:
-            raise BusinessException(
-                detail="历史分析服务不可用", status_code=503, error_code="HISTORICAL_ANALYSIS_UNAVAILABLE"
-            )
+        history_service = _resolve_history_service()
 
         date_from = datetime.now() - timedelta(days=days)
         return await history_service.get_strategy_performance(
@@ -572,16 +523,7 @@ async def get_stop_loss_recommendations(
     symbol: Optional[str] = Query(None, description="可选的股票代码，用于生成单一标的建议。"),
 ) -> Dict[str, Any]:
     try:
-        if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
-            )
-
-        history_service = get_stop_loss_history_service()
-        if not history_service:
-            raise BusinessException(
-                detail="历史分析服务不可用", status_code=503, error_code="HISTORICAL_ANALYSIS_UNAVAILABLE"
-            )
+        history_service = _resolve_history_service()
 
         return await history_service.get_strategy_recommendations(strategy_type, symbol)
 

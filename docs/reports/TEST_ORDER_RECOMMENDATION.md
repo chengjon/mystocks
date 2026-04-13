@@ -136,7 +136,6 @@
 - `app.api.tradingview`
 - `app.api.v1.admin`
 - `app.api.v1.admin.audit`
-- `app.api.v1.admin.auth`
 - `app.api.v1.admin.optimization`
 - `app.api.v1.analysis`
 - `app.api.v1.analysis.backtest`

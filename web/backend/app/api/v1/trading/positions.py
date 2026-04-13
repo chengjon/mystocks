@@ -5,11 +5,13 @@
 """
 
 from datetime import datetime
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Body, Path, Query
 from pydantic import BaseModel, Field
 
+from app.api.v1.trading.runtime_state import PositionState, runtime_store
+from app.core.responses import UnifiedResponse
 from app.openapi_config import COMMON_RESPONSES
 
 POSITION_ROUTE_RESPONSES = {
@@ -24,6 +26,19 @@ router = APIRouter(
     tags=["Positions"],
     responses=POSITION_ROUTE_RESPONSES,
 )
+
+
+def _success_response_spec(description: str, example: dict) -> dict[int, dict]:
+    return {
+        200: {
+            "description": description,
+            "content": {
+                "application/json": {
+                    "example": example,
+                }
+            },
+        }
+    }
 
 
 class PositionResponse(BaseModel):
@@ -97,300 +112,180 @@ POSITION_UPDATE_EXAMPLES = {
     }
 }
 
-POSITION_RESPONSE_EXAMPLE = {
-    "position_id": "pos_001",
-    "symbol": "600519",
-    "name": "贵州茅台",
-    "quantity": 100,
-    "average_cost": 1800.0,
-    "current_price": 1850.0,
-    "market_value": 185000.0,
-    "unrealized_pnl": 5000.0,
-    "realized_pnl": 0.0,
-    "weight": 0.35,
-    "created_at": "2025-01-15T10:30:00Z",
-    "updated_at": "2025-01-20T15:00:00Z",
-}
-
-POSITION_CREATE_RESPONSE_EXAMPLE = {
-    "position_id": "pos_003",
-    "symbol": "600519",
-    "name": "贵州茅台",
-    "quantity": 100,
-    "average_cost": 1800.0,
-    "current_price": 1800.0,
-    "market_value": 180000.0,
-    "unrealized_pnl": 0.0,
-    "realized_pnl": 0.0,
-    "weight": 0.0,
-    "created_at": "2026-04-08T04:00:00Z",
-    "updated_at": "2026-04-08T04:00:00Z",
-}
-
-POSITION_UPDATE_RESPONSE_EXAMPLE = {
-    "position_id": "pos_001",
-    "symbol": "600519",
-    "name": "贵州茅台",
-    "quantity": 120,
-    "average_cost": 1800.0,
-    "current_price": 1850.0,
-    "market_value": 222000.0,
-    "unrealized_pnl": 6000.0,
-    "realized_pnl": 0.0,
-    "weight": 0.4,
-    "created_at": "2025-01-15T10:30:00Z",
-    "updated_at": "2026-04-08T04:05:00Z",
-}
-
-POSITION_LIST_RESPONSES = {
-    **POSITION_ROUTE_RESPONSES,
-    200: {
-        "description": "持仓列表查询成功。",
-        "content": {
-            "application/json": {
-                "example": {
-                    "positions": [
-                        POSITION_RESPONSE_EXAMPLE,
-                        {
-                            "position_id": "pos_002",
-                            "symbol": "00700.HK",
-                            "name": "腾讯控股",
-                            "quantity": 200,
-                            "average_cost": 320.5,
-                            "current_price": 328.0,
-                            "market_value": 65600.0,
-                            "unrealized_pnl": 1500.0,
-                            "realized_pnl": 0.0,
-                            "weight": 0.15,
-                            "created_at": "2025-01-18T09:30:00Z",
-                            "updated_at": "2025-01-20T15:00:00Z",
-                        },
-                    ],
-                    "total_value": 250600.0,
-                    "total": 2,
-                }
+POSITION_LIST_EXAMPLE = {
+    "success": True,
+    "code": 200,
+    "message": "Positions retrieved",
+    "data": {
+        "positions": [
+            {
+                "position_id": "pos_demo_001",
+                "symbol": "600519",
+                "name": "600519",
+                "quantity": 100,
+                "average_cost": 1800.0,
+                "current_price": 1800.0,
+                "market_value": 180000.0,
+                "unrealized_pnl": 0.0,
+                "realized_pnl": 0.0,
+                "weight": 1.0,
+                "created_at": "2026-04-13T08:00:00+00:00",
+                "updated_at": "2026-04-13T08:00:00+00:00",
             }
-        },
+        ],
+        "total_value": 180000.0,
+        "total": 1,
     },
 }
 
-POSITION_DETAIL_RESPONSES = {
-    **POSITION_ROUTE_RESPONSES,
-    200: {
-        "description": "持仓详情查询成功。",
-        "content": {
-            "application/json": {
-                "example": POSITION_RESPONSE_EXAMPLE,
-            }
-        },
-    },
+POSITION_DETAIL_EXAMPLE = {
+    "success": True,
+    "code": 200,
+    "message": "Position retrieved",
+    "data": POSITION_LIST_EXAMPLE["data"]["positions"][0],
 }
 
-POSITION_DELETE_RESPONSES = {
-    **POSITION_ROUTE_RESPONSES,
-    200: {
-        "description": "持仓删除成功。",
-        "content": {
-            "application/json": {
-                "example": {
-                    "message": "Position pos_001 deleted successfully",
-                }
-            }
-        },
-    },
+POSITION_CREATE_SUCCESS_EXAMPLE = {
+    "success": True,
+    "code": 200,
+    "message": "Position created",
+    "data": POSITION_DETAIL_EXAMPLE["data"],
 }
 
-POSITION_CREATE_RESPONSES = {
-    **POSITION_ROUTE_RESPONSES,
-    200: {
-        "description": "持仓创建成功。",
-        "content": {
-            "application/json": {
-                "example": POSITION_CREATE_RESPONSE_EXAMPLE,
-            }
-        },
-    },
+POSITION_UPDATE_SUCCESS_EXAMPLE = {
+    "success": True,
+    "code": 200,
+    "message": "Position updated",
+    "data": {**POSITION_DETAIL_EXAMPLE["data"], "quantity": 120, "market_value": 216000.0},
 }
 
-POSITION_UPDATE_RESPONSES = {
-    **POSITION_ROUTE_RESPONSES,
-    200: {
-        "description": "持仓更新成功。",
-        "content": {
-            "application/json": {
-                "example": POSITION_UPDATE_RESPONSE_EXAMPLE,
-            }
-        },
-    },
+POSITION_DELETE_SUCCESS_EXAMPLE = {
+    "success": True,
+    "code": 200,
+    "message": "Position deleted",
+    "data": {"message": "Position pos_demo_001 deleted"},
 }
+
+POSITION_LIST_RESPONSES = _success_response_spec("持仓列表结果。", POSITION_LIST_EXAMPLE)
+POSITION_DETAIL_RESPONSES = _success_response_spec("持仓详情结果。", POSITION_DETAIL_EXAMPLE)
+POSITION_CREATE_RESPONSES = _success_response_spec("持仓创建结果。", POSITION_CREATE_SUCCESS_EXAMPLE)
+POSITION_UPDATE_RESPONSES = _success_response_spec("持仓更新结果。", POSITION_UPDATE_SUCCESS_EXAMPLE)
+POSITION_DELETE_RESPONSES = _success_response_spec("持仓删除结果。", POSITION_DELETE_SUCCESS_EXAMPLE)
+
+
+def _resolve_query_value(value: Any) -> Any:
+    return getattr(value, "default", value)
+
+
+def _serialize_position(position: PositionState) -> dict[str, Any]:
+    return PositionResponse(
+        position_id=position.position_id,
+        symbol=position.symbol,
+        name=position.name,
+        quantity=position.quantity,
+        average_cost=position.average_cost,
+        current_price=position.current_price,
+        market_value=position.market_value,
+        unrealized_pnl=position.unrealized_pnl,
+        realized_pnl=position.realized_pnl,
+        weight=position.weight,
+        created_at=position.created_at,
+        updated_at=position.updated_at,
+    ).model_dump()
 
 
 @router.get(
     "",
-    response_model=PositionListResponse,
+    response_model=UnifiedResponse[Dict[str, Any]],
     summary="List Positions",
-    description="按标的或交易会话筛选当前持仓列表，并返回总市值汇总。",
+    description="按标的或交易会话筛选当前持仓列表，当前实现读取与交易会话共享的运行时状态。",
     responses=POSITION_LIST_RESPONSES,
 )
 async def list_positions(
     symbol: Optional[str] = Query(None, description="可选的标的代码过滤条件。"),
     session_id: Optional[str] = Query(None, description="可选的交易会话ID过滤条件。"),
 ):
-    """
-    获取持仓列表
-
-    Returns list of current positions.
-    """
-    mock_positions = [
-        {
-            "position_id": "pos_001",
-            "symbol": "600519",
-            "name": "贵州茅台",
-            "quantity": 100,
-            "average_cost": 1800.0,
-            "current_price": 1850.0,
-            "market_value": 185000.0,
-            "unrealized_pnl": 5000.0,
-            "realized_pnl": 0.0,
-            "weight": 0.35,
-            "created_at": "2025-01-15T10:30:00Z",
-            "updated_at": "2025-01-20T15:00:00Z",
+    positions = runtime_store.list_positions(
+        symbol=_resolve_query_value(symbol), session_id=_resolve_query_value(session_id)
+    )
+    total_value = round(sum(item.market_value for item in positions), 4)
+    return UnifiedResponse(
+        success=True,
+        code=200,
+        message="Positions retrieved",
+        data={
+            "positions": [_serialize_position(item) for item in positions],
+            "total_value": total_value,
+            "total": len(positions),
         },
-        {
-            "position_id": "pos_002",
-            "symbol": "000001",
-            "name": "平安银行",
-            "quantity": 500,
-            "average_cost": 12.5,
-            "current_price": 12.8,
-            "market_value": 6400.0,
-            "unrealized_pnl": 150.0,
-            "realized_pnl": 0.0,
-            "weight": 0.12,
-            "created_at": "2025-01-16T14:00:00Z",
-            "updated_at": "2025-01-20T15:00:00Z",
-        },
-    ]
-
-    if symbol:
-        mock_positions = [p for p in mock_positions if p["symbol"] == symbol]
-    if session_id:
-        mock_positions = [p for p in mock_positions if p.get("session_id") == session_id]
-
-    total_value = sum(p["market_value"] for p in mock_positions)
-    for p in mock_positions:
-        p["weight"] = p["market_value"] / total_value if total_value > 0 else 0
-
-    return {
-        "positions": mock_positions,
-        "total_value": total_value,
-        "total": len(mock_positions),
-    }
+    )
 
 
 @router.get(
     "/{position_id}",
-    response_model=PositionResponse,
+    response_model=UnifiedResponse[Dict[str, Any]],
     summary="Get Position",
-    description="根据持仓ID获取单个持仓的成本、价格、市值和盈亏详情。",
+    description="根据持仓ID获取单个持仓详情，当前实现读取共享运行时中的真实持仓数据。",
     responses=POSITION_DETAIL_RESPONSES,
 )
 async def get_position(position_id: str = Path(..., description="需要查询详情的持仓ID。")):
-    """
-    获取单个持仓详情
-
-    Returns details of a specific position.
-    """
-    return PositionResponse(
-        position_id=position_id,
-        symbol="600519",
-        name="贵州茅台",
-        quantity=100,
-        average_cost=1800.0,
-        current_price=1850.0,
-        market_value=185000.0,
-        unrealized_pnl=5000.0,
-        realized_pnl=0.0,
-        weight=0.35,
-        created_at=datetime.now(),
-        updated_at=datetime.now(),
-    )
+    position = runtime_store.get_position(position_id)
+    if position is None:
+        return UnifiedResponse(success=False, code=404, message="Position not found", data={"position_id": position_id})
+    return UnifiedResponse(success=True, code=200, message="Position retrieved", data=_serialize_position(position))
 
 
 @router.post(
     "",
-    response_model=PositionResponse,
+    response_model=UnifiedResponse[Dict[str, Any]],
     summary="Create Position",
-    description="创建新的持仓记录，并根据建仓价格和数量初始化市值。",
+    description="创建新的持仓记录，当前实现会把持仓写入当前活动交易会话。",
     responses=POSITION_CREATE_RESPONSES,
 )
 async def create_position(request: PositionCreate = Body(..., openapi_examples=POSITION_CREATE_EXAMPLES)):
-    """
-    创建新持仓
-
-    Creates a new position.
-    """
-    position_id = f"pos_{int(datetime.now().timestamp())}"
-    market_value = request.quantity * request.price
-    return PositionResponse(
-        position_id=position_id,
-        symbol=request.symbol,
-        name=request.symbol,
-        quantity=request.quantity,
-        average_cost=request.price,
-        current_price=request.price,
-        market_value=market_value,
-        unrealized_pnl=0.0,
-        realized_pnl=0.0,
-        weight=0.0,
-        created_at=datetime.now(),
-        updated_at=datetime.now(),
-    )
+    try:
+        position = runtime_store.create_position(symbol=request.symbol, quantity=request.quantity, price=request.price)
+    except ValueError as exc:
+        return UnifiedResponse(success=False, code=404, message=str(exc), data={"symbol": request.symbol})
+    return UnifiedResponse(success=True, code=200, message="Position created", data=_serialize_position(position))
 
 
 @router.patch(
     "/{position_id}",
-    response_model=PositionResponse,
+    response_model=UnifiedResponse[Dict[str, Any]],
     summary="Update Position",
-    description="更新指定持仓的数量或风控参数，例如止损价和止盈价。",
+    description="更新指定持仓的数量或风控参数，当前实现会回写共享运行时状态。",
     responses=POSITION_UPDATE_RESPONSES,
 )
 async def update_position(
     position_id: str = Path(..., description="需要更新的持仓ID。"),
     request: PositionUpdate = Body(..., openapi_examples=POSITION_UPDATE_EXAMPLES),
 ):
-    """
-    更新持仓
-
-    Updates position parameters (quantity, stop loss, take profit).
-    """
-    return PositionResponse(
-        position_id=position_id,
-        symbol="600519",
-        name="贵州茅台",
-        quantity=request.quantity or 100,
-        average_cost=1800.0,
-        current_price=1850.0,
-        market_value=185000.0,
-        unrealized_pnl=5000.0,
-        realized_pnl=0.0,
-        weight=0.35,
-        created_at=datetime.now(),
-        updated_at=datetime.now(),
+    position = runtime_store.update_position(
+        position_id,
+        quantity=request.quantity,
+        stop_loss=request.stop_loss,
+        take_profit=request.take_profit,
     )
+    if position is None:
+        return UnifiedResponse(success=False, code=404, message="Position not found", data={"position_id": position_id})
+    return UnifiedResponse(success=True, code=200, message="Position updated", data=_serialize_position(position))
 
 
 @router.delete(
     "/{position_id}",
-    response_model=PositionDeleteResponse,
+    response_model=UnifiedResponse[Dict[str, Any]],
     summary="Delete Position",
-    description="删除或关闭指定持仓，并返回本次持仓处理结果。",
+    description="删除或关闭指定持仓，当前实现会同步释放对应会话的占用资金。",
     responses=POSITION_DELETE_RESPONSES,
 )
 async def delete_position(position_id: str = Path(..., description="需要删除或关闭的持仓ID。")):
-    """
-    删除持仓
-
-    Closes and removes a position.
-    """
-    return {"message": f"Position {position_id} deleted successfully"}
+    deleted = runtime_store.delete_position(position_id)
+    if not deleted:
+        return UnifiedResponse(success=False, code=404, message="Position not found", data={"position_id": position_id})
+    return UnifiedResponse(
+        success=True,
+        code=200,
+        message="Position deleted",
+        data=PositionDeleteResponse(message=f"Position {position_id} deleted").model_dump(),
+    )
