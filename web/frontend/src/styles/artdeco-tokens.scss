@@ -4,15 +4,9 @@
 //   ⭐ ArtDeco V3.0: 专家评估版，提升品牌识别度+200%
 // ============================================
 
-// ============================================
-//   ART DECO DESIGN TOKENS V3.0
-//   艺术装饰风格设计令牌 - 大胆金色金融配色
-//   ⭐ ArtDeco V3.0: 专家评估版，提升品牌识别度+200%
-// ============================================
-
-// ⚡ P0 字体加载优化: 字体已从 index.html 中加载
-// 移除 @import 以避免阻塞渲染，提升首屏性能
-// @import url('https://fonts.googleapis.com/css2?family=Marcellus:wght@400;700&family=Josefin+Sans:wght@400;500;600;700&display=swap');
+// ⚡ 字体加载策略说明（2026-04-10）
+// 当前文件暂采用 @import 加载字体，并统一使用 display=swap。
+// 若迁移到 index.html <link rel="preconnect/preload"> 方案，需在本文件与治理文档同步更新，避免口径不一致。
 
 // Governance note (2026-04-01): typography truth is Cinzel + Barlow + JetBrains Mono.
 // Spacing truth is the 13-step numbered scale: 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32,

@@ -29,3 +29,17 @@ export interface DatabaseHealthResponse {
   total_tables?: number;
   last_health_check?: string;
 }
+
+export interface GeneralSettingsPayload {
+  backend_url?: string;
+  max_backtest_jobs?: number;
+  default_slippage_percent?: number;
+  fee_rate_bps?: number;
+}
+
+export interface SecuritySettingsPayload {
+  session_timeout_minutes?: number;
+  mfa_required?: boolean;
+  ip_allowlist_enabled?: boolean;
+  password_policy_level?: 'standard' | 'strict';
+}

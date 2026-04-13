@@ -6,6 +6,16 @@ export interface PositionCreate {
   price?: number;
 }
 
+export interface PositionDeleteResponse {
+  message?: string;
+}
+
+export interface PositionListResponse {
+  positions?: PositionResponse[];
+  total_value?: number;
+  total?: number;
+}
+
 export interface PositionResponse {
   position_id?: string;
   symbol?: string;
@@ -33,6 +43,15 @@ export interface TradingSessionCreate {
   initial_capital?: number;
   position_size?: number;
   risk_threshold?: number;
+}
+
+export interface TradingSessionDeleteResponse {
+  message?: string;
+}
+
+export interface TradingSessionListResponse {
+  sessions?: TradingSessionResponse[];
+  total?: number;
 }
 
 export interface TradingSessionResponse {

@@ -1,5 +1,14 @@
 // Auto-generated types for analysis domain
 
+export interface EquityCurveSummaryResponse {
+  strategy_id?: string;
+  period?: Record<string, string>;
+  data_points?: number;
+  final_value?: number;
+  max_drawdown?: number;
+  sharpe_ratio?: number;
+}
+
 export interface MonteCarloRequest {
   strategy_id?: string;
   symbol?: string;
@@ -19,6 +28,19 @@ export interface MonteCarloResponse {
   equity_curves?: Record<string, unknown>[];
 }
 
+export interface PredefinedScenarioListResponse {
+  scenarios?: PredefinedScenarioResponse[];
+}
+
+export interface PredefinedScenarioResponse {
+  id?: string;
+  name?: string;
+  description?: string;
+  shock_type?: string;
+  severity?: number;
+  duration_days?: number;
+}
+
 export interface SentimentRequest {
   symbol?: string;
   text?: string;
@@ -36,6 +58,20 @@ export interface SentimentResponse {
   analyzed_at?: string;
 }
 
+export interface StressTestHistoryItem {
+  test_id?: string;
+  date?: string;
+  scenario?: string;
+  impact?: number;
+  passed?: boolean;
+}
+
+export interface StressTestHistoryResponse {
+  portfolio_id?: string;
+  tests?: StressTestHistoryItem[];
+  total?: number;
+}
+
 export interface StressTestRequest {
   portfolio_id?: string;
   scenarios?: Record<string, unknown>[];
@@ -43,6 +79,13 @@ export interface StressTestRequest {
 }
 
 export interface StressTestResponse {
+  portfolio_id?: string;
+  scenarios_tested?: number;
+  results?: Record<string, unknown>[];
+  recommendations?: string[];
+}
+
+export interface StressTestRunResponse {
   portfolio_id?: string;
   scenarios_tested?: number;
   results?: Record<string, unknown>[];

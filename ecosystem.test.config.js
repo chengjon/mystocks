@@ -6,7 +6,12 @@ function loadEnvFile(envPath) {
     return;
   }
 
-  const lines = fs.readFileSync(envPath, "utf8").split(/\r?\n/u);
+  let lines;
+  try {
+    lines = fs.readFileSync(envPath, "utf8").split(/\r?\n/u);
+  } catch {
+    return;
+  }
   for (const line of lines) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("#")) {
@@ -34,16 +39,16 @@ function loadEnvFile(envPath) {
   }
 }
 
-if (typeof process.loadEnvFile === "function") {
-  for (const envFile of [path.join(__dirname, ".env"), path.join(__dirname, "web", "frontend", ".env")]) {
-    if (fs.existsSync(envFile)) {
+for (const envFile of [path.join(__dirname, ".env"), path.join(__dirname, "web", "frontend", ".env")]) {
+  if (typeof process.loadEnvFile === "function") {
+    try {
       process.loadEnvFile(envFile);
+      continue;
+    } catch {
+      // Fall back to the manual parser when the native loader cannot access the file.
     }
   }
-} else {
-  for (const envFile of [path.join(__dirname, ".env"), path.join(__dirname, "web", "frontend", ".env")]) {
-    loadEnvFile(envFile);
-  }
+  loadEnvFile(envFile);
 }
 
 function requireEnv(name) {
@@ -60,6 +65,8 @@ const frontendPort = requireEnv("FRONTEND_PORT");
 const frontendBackupPort = requireEnv("FRONTEND_BACKUP_PORT");
 const viteApiBaseUrl = process.env.VITE_API_BASE_URL || `http://localhost:${backendPort}`;
 const viteWsUrl = process.env.VITE_WS_URL || `ws://localhost:${backendPort}`;
+const projectRoot = __dirname;
+const backendRoot = path.join(projectRoot, "web", "backend");
 
 module.exports = {
   apps: [
@@ -72,7 +79,7 @@ module.exports = {
       restart_delay: 5000,
       max_restarts: 10,
       env: {
-        PYTHONPATH: '/opt/claude/mystocks_spec/web/backend', 
+        PYTHONPATH: `${projectRoot}:${backendRoot}`,
         VITE_APP_MODE: 'mock',
         PORT: backendPort,
         BACKEND_PORT: backendPort,

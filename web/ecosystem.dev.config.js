@@ -4,7 +4,12 @@ const path = require("node:path")
 function loadEnvFile(envPath) {
   if (!fs.existsSync(envPath)) return
 
-  const lines = fs.readFileSync(envPath, "utf8").split(/\r?\n/u)
+  let lines
+  try {
+    lines = fs.readFileSync(envPath, "utf8").split(/\r?\n/u)
+  } catch {
+    return
+  }
   for (const line of lines) {
     const trimmed = line.trim()
     if (!trimmed || trimmed.startsWith("#")) continue
@@ -96,7 +101,9 @@ module.exports = {
         TESTING: "false",
         USE_MOCK_DATA: "false",
         BACKEND_PORT: backendPort,
-        BACKEND_BACKUP_PORT: backendBackupPort
+        BACKEND_BACKUP_PORT: backendBackupPort,
+        REDIS_HOST: "localhost",
+        REDIS_PORT: "6379"
       },
       instances: 1,
       exec_mode: "fork",

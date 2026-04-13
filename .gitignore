@@ -207,6 +207,7 @@ data/backups/*
 # ARCHIVE AND OLD CODE (NOT FOR PRODUCTION)
 # ========================================
 .archive/
+archive/
 
 # ========================================
 # OTHER BUILD/DEPENDENCY ARTIFACTS
@@ -314,6 +315,21 @@ bak/
 coverage.xml
 coverage.json
 
+# Auto-generated report files (regenerate with scripts)
+src/monitoring/code_inventory/inventory.json
+config/code_quality_report.json
+config/pylint_report.json
+config/safety_report.json
+docs/reports/code_quality/*.json
+docs/reports/security/*.json
+docs/reports/api_split/
+docs/references/function-classification-manual/metadata/
+reports/docs-inventory.json
+reports/code_inventory_report_*.md
+
+# Source maps (build artifacts)
+*.map
+
 # Path-scoped generated reports still emitted by local tools
 config/coverage.json
 scripts/tests/coverage.xml
@@ -333,3 +349,4 @@ test_timing.csv
 # Local tool runtime state
 .playwright-mcp/
 .omc/
+.omx/

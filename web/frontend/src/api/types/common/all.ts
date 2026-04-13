@@ -66,8 +66,8 @@ export interface AlertRecordResponse {
   alert_level?: string;
   alert_title?: string | null;
   alert_message?: string | null;
-  alert_details?: Dict | null;
-  snapshot_data?: Dict | null;
+  alert_details?: Record<string, unknown> | null;
+  snapshot_data?: Record<string, unknown> | null;
   is_read?: boolean;
   is_handled?: boolean;
   created_at?: string;
@@ -79,9 +79,9 @@ export interface AlertRuleCreate {
   description?: string | null;
   symbol?: string | null;
   stock_name?: string | null;
-  parameters?: Dict;
-  trigger_conditions?: Dict;
-  notification_config?: Dict;
+  parameters?: Record<string, unknown>;
+  trigger_conditions?: Record<string, unknown>;
+  notification_config?: Record<string, unknown>;
   priority?: number;
   is_active?: boolean;
 }
@@ -93,9 +93,9 @@ export interface AlertRuleResponse {
   description?: string | null;
   symbol?: string | null;
   stock_name?: string | null;
-  parameters?: Dict;
-  trigger_conditions?: Dict;
-  notification_config?: Dict;
+  parameters?: Record<string, unknown>;
+  trigger_conditions?: Record<string, unknown>;
+  notification_config?: Record<string, unknown>;
   is_active?: boolean;
   priority?: number;
   created_at?: string;
@@ -107,9 +107,9 @@ export type AlertRuleType = 'price_change' | 'volume_surge' | 'technical_break' 
 export interface AlertRuleUpdate {
   rule_name?: string | null;
   description?: string | null;
-  parameters?: Dict | null;
-  trigger_conditions?: Dict | null;
-  notification_config?: Dict | null;
+  parameters?: Record<string, unknown> | null;
+  trigger_conditions?: Record<string, unknown> | null;
+  notification_config?: Record<string, unknown> | null;
   priority?: number | null;
   is_active?: boolean | null;
 }
@@ -565,7 +565,7 @@ export interface DragonTigerListResponse {
   institution_buy_count?: number;
   institution_sell_count?: number;
   institution_net_amount?: number | null;
-  detail_data?: Dict | null;
+  detail_data?: Record<string, unknown> | null;
   impact_score?: number | null;
 }
 
@@ -1496,7 +1496,7 @@ export interface RealtimeMonitoringResponse {
   change_percent?: number | null;
   volume?: number | null;
   amount?: number | null;
-  indicators?: Dict | null;
+  indicators?: Record<string, unknown> | null;
   market_strength?: string | null;
   is_limit_up?: boolean;
   is_limit_down?: boolean;
@@ -1756,7 +1756,7 @@ export interface StrategyListResponse {
 
 export interface StrategyParameter {
   name?: string;
-  value?: unknown;
+  value?: string | number | number | boolean | Record<string, unknown> | unknown[] | null;
   description?: string | null;
   data_type?: string;
 }
