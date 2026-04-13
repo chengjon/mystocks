@@ -10,6 +10,15 @@ CANONICAL_COVERAGE_XML = "var/reports/coverage/coverage.xml"
 CANONICAL_TIMING_FILE = "var/reports/test_timing.csv"
 
 
+def _safe_rmtree(path: Path) -> None:
+    try:
+        shutil.rmtree(path)
+    except FileNotFoundError:
+        return
+    except PermissionError:
+        return
+
+
 def ensure_canonical_timing_output(config, *, project_root: Path | None = None) -> None:
     root = project_root or Path.cwd()
     timing_file = config.getoption("timing_file", default=None)
@@ -84,8 +93,8 @@ def cleanup_root_runtime_artifacts(project_root: Path | None = None) -> None:
         root_coverage_data_file.unlink()
 
     if root_htmlcov_dir.exists():
-        shutil.rmtree(root_htmlcov_dir)
+        _safe_rmtree(root_htmlcov_dir)
 
     root_cache_dir = root / "__pycache__"
     if root_cache_dir.exists():
-        shutil.rmtree(root_cache_dir)
+        _safe_rmtree(root_cache_dir)

@@ -10,6 +10,8 @@ from typing import Any, Dict
 
 from sqlalchemy.ext.declarative import declarative_base
 
+from ..helpers import AlgorithmModel, PredictionHistoryModel, TrainingHistoryModel
+
 logger = logging.getLogger(__name__)
 Base = declarative_base()
 
@@ -125,4 +127,3 @@ class AlgorithmModelRepositoryValidateDataIntegrityMixin:
         except Exception as e:
             logger.error("Failed to validate data integrity: %(e)s")
             return {"timestamp": datetime.now().isoformat(), "overall_status": "error", "error": str(e)}
-
