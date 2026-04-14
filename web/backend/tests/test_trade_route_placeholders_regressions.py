@@ -69,21 +69,80 @@ async def test_trade_signals_returns_unified_placeholder_response():
 async def test_trade_history_returns_unified_placeholder_response():
     module = _load_module()
 
+    def fake_query_trade_history(**kwargs):
+        assert kwargs == {
+            "symbol": "600519",
+            "start_date_obj": module.datetime.strptime("2026-04-01", "%Y-%m-%d").date(),
+            "end_date_obj": module.datetime.strptime("2026-04-12", "%Y-%m-%d").date(),
+            "page": 2,
+            "page_size": 50,
+        }
+        return {
+            "trades": [
+                {
+                    "trade_id": "101",
+                    "order_id": "backtest-7-101",
+                    "symbol": "600519",
+                    "direction": "buy",
+                    "price": "1750.00",
+                    "quantity": 100,
+                    "amount": "175000.00",
+                    "commission": "52.50",
+                    "trade_time": "2026-04-08T00:00:00",
+                    "trade_type": "backtest",
+                }
+            ],
+            "total_count": 1,
+            "total_amount": "175000.00",
+            "total_commission": "52.50",
+            "page": 2,
+            "page_size": 50,
+            "source": "backtest_trades",
+        }
+
+    module._query_trade_history = fake_query_trade_history
+
     payload = await module.get_trades(symbol="600519", start_date="2026-04-01", end_date="2026-04-12", page=2, page_size=50)
 
-    assert payload.success is False
-    assert payload.code == 503
+    assert payload.success is True
+    assert payload.code == 200
     assert payload.data == {
-        "status": "placeholder",
+        "status": "available",
         "endpoint": "trade",
         "resource": "trades",
-        "trades": [],
-        "total_count": 0,
-        "total_amount": 0,
-        "total_commission": 0,
+        "trades": [
+            {
+                "trade_id": "101",
+                "order_id": "backtest-7-101",
+                "symbol": "600519",
+                "direction": "buy",
+                "price": "1750.00",
+                "quantity": 100,
+                "amount": "175000.00",
+                "commission": "52.50",
+                "trade_time": "2026-04-08T00:00:00",
+                "trade_type": "backtest",
+            }
+        ],
+        "total_count": 1,
+        "total_amount": "175000.00",
+        "total_commission": "52.50",
         "page": 2,
         "page_size": 50,
+        "source": "backtest_trades",
     }
+
+
+async def test_trade_history_rejects_invalid_date_range():
+    module = _load_module()
+
+    try:
+        await module.get_trades(symbol="600519", start_date="2026-04-12", end_date="2026-04-01", page=1, page_size=20)
+    except Exception as exc:
+        assert getattr(exc, "status_code", None) == 400
+        assert "start_date 不能晚于 end_date" in str(exc.detail)
+    else:
+        raise AssertionError("expected HTTPException for invalid date range")
 
 
 async def test_trade_statistics_returns_unified_placeholder_response():

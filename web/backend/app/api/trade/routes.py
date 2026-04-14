@@ -4,6 +4,8 @@
 使用统一的Pydantic模型和APIResponse格式
 """
 
+from datetime import datetime
+from decimal import Decimal
 from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Body, HTTPException, Query
@@ -86,21 +88,35 @@ TRADE_SIGNALS_RESPONSE_EXAMPLE = {
 }
 
 TRADE_HISTORY_RESPONSE_EXAMPLE = {
-    "success": False,
-    "code": 503,
-    "message": "Trade history service is not implemented yet",
+    "success": True,
+    "code": 200,
+    "message": "Trade history loaded from backtest trades",
     "request_id": "req-trade-history-001",
     "timestamp": "2026-04-08T04:20:00Z",
     "data": {
-        "status": "placeholder",
+        "status": "available",
         "endpoint": "trade",
         "resource": "trades",
-        "trades": [],
-        "total_count": 0,
-        "total_amount": 0,
-        "total_commission": 0,
+        "trades": [
+            {
+                "trade_id": "101",
+                "order_id": "backtest-7-101",
+                "symbol": "600519.SH",
+                "direction": "buy",
+                "price": "1750.00",
+                "quantity": 100,
+                "amount": "175000.00",
+                "commission": "52.50",
+                "trade_time": "2026-04-08T00:00:00",
+                "trade_type": "backtest",
+            }
+        ],
+        "total_count": 1,
+        "total_amount": "175000.00",
+        "total_commission": "52.50",
         "page": 1,
         "page_size": 20,
+        "source": "backtest_trades",
     },
 }
 
@@ -199,6 +215,83 @@ def _placeholder_trade_response(message: str, resource: str, data: dict[str, Any
     )
 
 
+def _success_trade_response(message: str, resource: str, data: dict[str, Any]) -> UnifiedResponse[Dict[str, Any]]:
+    return UnifiedResponse(
+        success=True,
+        code=200,
+        message=message,
+        data={
+            "status": "available",
+            "endpoint": "trade",
+            "resource": resource,
+            **data,
+        },
+    )
+
+
+def _query_trade_history(
+    *,
+    symbol: Optional[str],
+    start_date_obj,
+    end_date_obj,
+    page: int,
+    page_size: int,
+) -> dict[str, Any]:
+    from app.core.database import SessionLocal
+    from app.repositories.backtest_repository import BacktestTradeModel
+
+    db = SessionLocal()
+    try:
+        query = db.query(BacktestTradeModel)
+
+        if symbol:
+            query = query.filter(BacktestTradeModel.symbol == symbol)
+        if start_date_obj:
+            query = query.filter(BacktestTradeModel.trade_date >= start_date_obj)
+        if end_date_obj:
+            query = query.filter(BacktestTradeModel.trade_date <= end_date_obj)
+
+        total_count = query.count()
+        offset = (page - 1) * page_size
+        trade_rows = query.order_by(BacktestTradeModel.trade_date.desc()).offset(offset).limit(page_size).all()
+
+        trades = []
+        total_amount = Decimal("0")
+        total_commission = Decimal("0")
+
+        for trade in trade_rows:
+            amount = Decimal(str(trade.amount))
+            commission = Decimal(str(trade.commission))
+            total_amount += amount
+            total_commission += commission
+            trades.append(
+                TradeHistoryItem(
+                    trade_id=str(trade.trade_id),
+                    order_id=f"backtest-{trade.backtest_id}-{trade.trade_id}",
+                    symbol=trade.symbol,
+                    direction=trade.action,
+                    price=Decimal(str(trade.price)),
+                    quantity=trade.quantity,
+                    amount=amount,
+                    commission=commission,
+                    trade_time=datetime.combine(trade.trade_date, datetime.min.time()),
+                    trade_type="backtest",
+                ).model_dump(mode="json")
+            )
+
+        return {
+            "trades": trades,
+            "total_count": total_count,
+            "total_amount": total_amount,
+            "total_commission": total_commission,
+            "page": page,
+            "page_size": page_size,
+            "source": "backtest_trades",
+        }
+    finally:
+        db.close()
+
+
 # ==================== Health Check ====================
 
 
@@ -295,11 +388,9 @@ async def get_trades(
     """
     获取交易记录列表
 
-    支持参数校验，并在当前版本返回显式标记未接入真实成交历史服务的兼容占位结果。
+    支持参数校验，并优先返回当前仓库中已持久化的回测成交历史。
     """
     try:
-        from datetime import datetime
-
         def parse_query_date(value: Optional[str], field_name: str):
             if value is None:
                 return None
@@ -326,17 +417,18 @@ async def get_trades(
                 ).model_dump(),
             )
 
-        return _placeholder_trade_response(
-            message="Trade history service is not implemented yet",
+        trade_history = _query_trade_history(
+            symbol=symbol,
+            start_date_obj=start_date_obj,
+            end_date_obj=end_date_obj,
+            page=page,
+            page_size=page_size,
+        )
+
+        return _success_trade_response(
+            message="Trade history loaded from backtest trades",
             resource="trades",
-            data={
-                "trades": [],
-                "total_count": 0,
-                "total_amount": 0,
-                "total_commission": 0,
-                "page": page,
-                "page_size": page_size,
-            },
+            data=trade_history,
         )
     except HTTPException:
         raise
