@@ -14,6 +14,7 @@ Features:
 """
 
 import logging
+import traceback
 import uuid
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -33,6 +34,7 @@ from app.services._algorithm_service_history import AlgorithmServiceHistoryMixin
 
 # Define logger early for try/except block
 logger = logging.getLogger(__name__)
+ALGORITHM_FRAMEWORK_UNAVAILABLE_MESSAGE = "Algorithm framework is not available in the current runtime"
 
 # Import from src/algorithms
 try:
@@ -109,6 +111,11 @@ class AlgorithmFactory:
             except Exception:
                 logger.warning("Failed to initialize GPU service: %(e)s")
 
+    def _ensure_framework_available(self) -> None:
+        """在运行时未接入算法框架时显式失败，避免占位类继续伪装可用。"""
+        if not ALGORITHMS_AVAILABLE:
+            raise RuntimeError(ALGORITHM_FRAMEWORK_UNAVAILABLE_MESSAGE)
+
     async def create_algorithm(self, algorithm_type: AlgorithmType, config: AlgorithmConfig) -> BaseAlgorithm:
         """
         Create an algorithm instance based on type and configuration.
@@ -125,35 +132,31 @@ class AlgorithmFactory:
             RuntimeError: If algorithm creation fails
         """
         try:
-            # Convert API enum to src enum if needed
-            if ALGORITHMS_AVAILABLE:
-                src_algorithm_type = SrcAlgorithmType(algorithm_type.value)
+            self._ensure_framework_available()
+            src_algorithm_type = SrcAlgorithmType(algorithm_type.value)
 
-                # Create metadata
-                metadata = AlgorithmMetadata(
-                    algorithm_type=src_algorithm_type,
-                    name=f"{algorithm_type.value}_algorithm",
-                    version="1.0.0",
-                    created_at=datetime.now(),
-                    updated_at=datetime.now(),
-                    description=f"{algorithm_type.value.upper()} algorithm instance",
-                )
+            # Create metadata
+            metadata = AlgorithmMetadata(
+                algorithm_type=src_algorithm_type,
+                name=f"{algorithm_type.value}_algorithm",
+                version="1.0.0",
+                created_at=datetime.now(),
+                updated_at=datetime.now(),
+                description=f"{algorithm_type.value.upper()} algorithm instance",
+            )
 
-                # Import and instantiate the specific algorithm class
-                algorithm_class = await self._get_algorithm_class(algorithm_type)
+            # Import and instantiate the specific algorithm class
+            algorithm_class = await self._get_algorithm_class(algorithm_type)
 
-                # Create algorithm instance
-                algorithm = algorithm_class(metadata)
+            # Create algorithm instance
+            algorithm = algorithm_class(metadata)
 
-                # Configure GPU if available and requested
-                if config.enable_gpu and GPU_AVAILABLE and hasattr(algorithm, "gpu_enabled"):
-                    await self._configure_gpu_algorithm(algorithm, config)
+            # Configure GPU if available and requested
+            if config.enable_gpu and GPU_AVAILABLE and hasattr(algorithm, "gpu_enabled"):
+                await self._configure_gpu_algorithm(algorithm, config)
 
-                logger.info("Created algorithm: {algorithm_type.value}")
-                return algorithm
-
-            else:
-                raise RuntimeError("Algorithm framework not available")
+            logger.info("Created algorithm: {algorithm_type.value}")
+            return algorithm
 
         except Exception as e:
             logger.error("Failed to create algorithm {algorithm_type.value}: %(e)s")
@@ -161,6 +164,7 @@ class AlgorithmFactory:
 
     async def _get_algorithm_class(self, algorithm_type: AlgorithmType):
         """Get the algorithm class for the given type."""
+        self._ensure_framework_available()
 
         # Mapping of algorithm types to their implementation classes
         algorithm_mapping = {
@@ -364,6 +368,8 @@ class AlgorithmService(AlgorithmServiceHistoryMixin):
             Algorithm metadata and capabilities
         """
         try:
+            if not ALGORITHMS_AVAILABLE:
+                raise RuntimeError(ALGORITHM_FRAMEWORK_UNAVAILABLE_MESSAGE)
             algorithm_type = request.algorithm_type
 
             # Get algorithm capabilities based on type
