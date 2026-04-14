@@ -26,6 +26,7 @@ from app.schemas.trade_schemas import (
     TradeHistoryItem,
     TradeHistoryResponse,
 )
+from app.api.v1.trading.runtime_state import PositionState, SessionState, runtime_store
 
 TRADE_ROUTE_RESPONSES = {
     500: COMMON_RESPONSES[500],
@@ -41,33 +42,57 @@ TRADE_HEALTH_RESPONSE_EXAMPLE = {
 }
 
 TRADE_PORTFOLIO_RESPONSE_EXAMPLE = {
-    "success": False,
-    "code": 503,
-    "message": "Trade portfolio service is not implemented yet",
+    "success": True,
+    "code": 200,
+    "message": "Trade portfolio loaded from trading runtime",
     "request_id": "req-trade-portfolio-001",
     "timestamp": "2026-04-08T04:20:00Z",
     "data": {
-        "status": "placeholder",
+        "status": "available",
         "endpoint": "trade",
         "resource": "portfolio",
-        "account": None,
+        "account": {
+            "account_id": "session_demo_001",
+            "account_type": "stock",
+            "total_assets": "100000.00",
+            "cash": "82000.00",
+            "market_value": "18000.00",
+            "frozen_cash": None,
+            "total_profit_loss": "0.00",
+            "profit_loss_percent": 0.0,
+            "risk_level": "low",
+            "last_update": "2026-04-08T04:20:00Z",
+        },
     },
 }
 
 TRADE_POSITIONS_RESPONSE_EXAMPLE = {
-    "success": False,
-    "code": 503,
-    "message": "Trade positions service is not implemented yet",
+    "success": True,
+    "code": 200,
+    "message": "Trade positions loaded from trading runtime",
     "request_id": "req-trade-positions-001",
     "timestamp": "2026-04-08T04:20:00Z",
     "data": {
-        "status": "placeholder",
+        "status": "available",
         "endpoint": "trade",
         "resource": "positions",
-        "positions": [],
-        "total_count": 0,
-        "total_market_value": 0,
-        "total_profit_loss": 0,
+        "positions": [
+            {
+                "symbol": "600519",
+                "symbol_name": "600519",
+                "quantity": 100,
+                "available_quantity": 100,
+                "cost_price": "1800.0",
+                "current_price": "1800.0",
+                "market_value": "180000.0",
+                "profit_loss": "0.0",
+                "profit_loss_percent": 0.0,
+                "last_update": "2026-04-08T04:20:00Z",
+            }
+        ],
+        "total_count": 1,
+        "total_market_value": "180000.0",
+        "total_profit_loss": "0.0",
         "total_profit_loss_percent": 0.0,
     },
 }
@@ -229,6 +254,76 @@ def _success_trade_response(message: str, resource: str, data: dict[str, Any]) -
     )
 
 
+def _resolve_active_runtime_session() -> Optional[SessionState]:
+    if runtime_store.current_session_id:
+        session = runtime_store.get_session(runtime_store.current_session_id)
+        if session is not None:
+            return session
+    active_sessions = runtime_store.list_sessions(status="active")
+    return active_sessions[0] if active_sessions else None
+
+
+def _serialize_trade_position(position: PositionState) -> dict[str, Any]:
+    cost_basis = float(position.average_cost * position.quantity)
+    profit_loss_percent = round((position.unrealized_pnl / cost_basis) * 100, 4) if cost_basis else 0.0
+    return Position(
+        symbol=position.symbol,
+        symbol_name=position.name,
+        quantity=position.quantity,
+        available_quantity=position.quantity,
+        cost_price=Decimal(str(position.average_cost)),
+        current_price=Decimal(str(position.current_price)),
+        market_value=Decimal(str(position.market_value)),
+        profit_loss=Decimal(str(position.unrealized_pnl)),
+        profit_loss_percent=profit_loss_percent,
+        last_update=position.updated_at,
+    ).model_dump(mode="json")
+
+
+def _build_runtime_positions_payload() -> dict[str, Any]:
+    positions = runtime_store.list_positions()
+    total_market_value = round(sum(item.market_value for item in positions), 4)
+    total_profit_loss = round(sum(item.unrealized_pnl for item in positions), 4)
+    total_cost = round(sum(item.average_cost * item.quantity for item in positions), 4)
+    total_profit_loss_percent = round((total_profit_loss / total_cost) * 100, 4) if total_cost else 0.0
+    return {
+        "positions": [_serialize_trade_position(item) for item in positions],
+        "total_count": len(positions),
+        "total_market_value": total_market_value,
+        "total_profit_loss": total_profit_loss,
+        "total_profit_loss_percent": total_profit_loss_percent,
+    }
+
+
+def _build_runtime_portfolio_payload() -> dict[str, Any]:
+    session = _resolve_active_runtime_session()
+    if session is None:
+        return {"account": None}
+
+    session_positions = runtime_store.list_positions(session_id=session.session_id)
+    market_value = round(sum(item.market_value for item in session_positions), 4)
+    unrealized_profit = round(sum(item.unrealized_pnl for item in session_positions), 4)
+    total_profit_loss = round(session.total_pnl + unrealized_profit, 4)
+    total_assets = round(session.current_capital + market_value, 4)
+    profit_loss_percent = round((total_profit_loss / session.initial_capital) * 100, 4) if session.initial_capital else 0.0
+    portfolio_weight = (market_value / total_assets) if total_assets else 0.0
+    risk_level = "high" if portfolio_weight >= 0.8 else "medium" if portfolio_weight >= 0.5 else "low"
+
+    account = AccountInfo(
+        account_id=session.session_id,
+        account_type="stock",
+        total_assets=Decimal(str(total_assets)),
+        cash=Decimal(str(session.current_capital)),
+        market_value=Decimal(str(market_value)),
+        frozen_cash=None,
+        total_profit_loss=Decimal(str(total_profit_loss)),
+        profit_loss_percent=profit_loss_percent,
+        risk_level=risk_level,
+        last_update=session.updated_at,
+    )
+    return {"account": account.model_dump(mode="json")}
+
+
 def _query_trade_history(
     *,
     symbol: Optional[str],
@@ -328,12 +423,12 @@ async def get_portfolio() -> UnifiedResponse[Dict[str, Any]]:
     """
     获取投资组合概览
 
-    返回交易投资组合接口的兼容占位响应，显式说明当前尚未接入真实账户资产服务。
+    返回当前活动交易会话推导出的账户资产视图。
     """
-    return _placeholder_trade_response(
-        message="Trade portfolio service is not implemented yet",
+    return _success_trade_response(
+        message="Trade portfolio loaded from trading runtime",
         resource="portfolio",
-        data={"account": None},
+        data=_build_runtime_portfolio_payload(),
     )
 
 
@@ -345,18 +440,12 @@ async def get_positions() -> UnifiedResponse[Dict[str, Any]]:
     """
     获取持仓列表
 
-    返回交易持仓接口的兼容占位响应，显式说明当前尚未接入真实持仓查询服务。
+    返回与交易会话共享运行时中的当前持仓列表。
     """
-    return _placeholder_trade_response(
-        message="Trade positions service is not implemented yet",
+    return _success_trade_response(
+        message="Trade positions loaded from trading runtime",
         resource="positions",
-        data={
-            "positions": [],
-            "total_count": 0,
-            "total_market_value": 0,
-            "total_profit_loss": 0,
-            "total_profit_loss_percent": 0.0,
-        },
+        data=_build_runtime_positions_payload(),
     )
 
 

@@ -16,36 +16,76 @@ def _load_module():
     return importlib.import_module("app.api.trade.routes")
 
 
-async def test_trade_portfolio_returns_unified_placeholder_response():
+async def test_trade_portfolio_returns_runtime_account_response():
     module = _load_module()
+    module.runtime_store.reset()
+
+    session = module.runtime_store.create_session(
+        symbol="600519",
+        strategy_id="svm_momentum_v1",
+        initial_capital=100000.0,
+        position_size=0.1,
+        risk_threshold=0.05,
+    )
+    module.runtime_store.create_position(symbol="600519", quantity=100, price=180.0, session_id=session.session_id)
 
     payload = await module.get_portfolio()
 
-    assert payload.success is False
-    assert payload.code == 503
-    assert payload.data == {
-        "status": "placeholder",
-        "endpoint": "trade",
-        "resource": "portfolio",
-        "account": None,
+    assert payload.success is True
+    assert payload.code == 200
+    assert payload.data["status"] == "available"
+    assert payload.data["resource"] == "portfolio"
+    assert payload.data["account"] == {
+        "account_id": session.session_id,
+        "account_type": "stock",
+        "total_assets": "100000.0",
+        "cash": "82000.0",
+        "market_value": "18000.0",
+        "frozen_cash": None,
+        "total_profit_loss": "0.0",
+        "profit_loss_percent": 0.0,
+        "risk_level": "low",
+        "last_update": session.updated_at.isoformat().replace("+00:00", "Z"),
     }
 
 
-async def test_trade_positions_returns_unified_placeholder_response():
+async def test_trade_positions_returns_runtime_positions_response():
     module = _load_module()
+    module.runtime_store.reset()
+    session = module.runtime_store.create_session(
+        symbol="600519",
+        strategy_id="svm_momentum_v1",
+        initial_capital=100000.0,
+        position_size=0.1,
+        risk_threshold=0.05,
+    )
+    position = module.runtime_store.create_position(symbol="600519", quantity=100, price=180.0, session_id=session.session_id)
 
     payload = await module.get_positions()
 
-    assert payload.success is False
-    assert payload.code == 503
+    assert payload.success is True
+    assert payload.code == 200
     assert payload.data == {
-        "status": "placeholder",
+        "status": "available",
         "endpoint": "trade",
         "resource": "positions",
-        "positions": [],
-        "total_count": 0,
-        "total_market_value": 0,
-        "total_profit_loss": 0,
+        "positions": [
+            {
+                "symbol": "600519",
+                "symbol_name": "600519",
+                "quantity": 100,
+                "available_quantity": 100,
+                "cost_price": "180.0",
+                "current_price": "180.0",
+                "market_value": "18000.0",
+                "profit_loss": "0.0",
+                "profit_loss_percent": 0.0,
+                "last_update": position.updated_at.isoformat().replace("+00:00", "Z"),
+            }
+        ],
+        "total_count": 1,
+        "total_market_value": 18000.0,
+        "total_profit_loss": 0.0,
         "total_profit_loss_percent": 0.0,
     }
 

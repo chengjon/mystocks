@@ -2344,9 +2344,10 @@ def test_trade_endpoints_have_examples_parameter_docs_and_error_responses() -> N
     assert len(portfolio_operation.get("description", "")) >= 20
     assert "example" in portfolio_success_json or "examples" in portfolio_success_json
     portfolio_example = portfolio_success_json.get("example") or next(iter(portfolio_success_json["examples"].values()))["value"]
-    assert portfolio_example["success"] is False
-    assert portfolio_example["code"] == 503
-    assert portfolio_example["data"]["status"] == "placeholder"
+    assert portfolio_example["success"] is True
+    assert portfolio_example["code"] == 200
+    assert portfolio_example["data"]["status"] == "available"
+    assert portfolio_example["data"]["account"]["account_id"]
     assert any(code.startswith("5") for code in portfolio_operation["responses"])
 
     positions_success_json = positions_operation["responses"]["200"]["content"]["application/json"]
@@ -2354,9 +2355,10 @@ def test_trade_endpoints_have_examples_parameter_docs_and_error_responses() -> N
     assert len(positions_operation.get("description", "")) >= 20
     assert "example" in positions_success_json or "examples" in positions_success_json
     positions_example = positions_success_json.get("example") or next(iter(positions_success_json["examples"].values()))["value"]
-    assert positions_example["success"] is False
-    assert positions_example["code"] == 503
-    assert positions_example["data"]["status"] == "placeholder"
+    assert positions_example["success"] is True
+    assert positions_example["code"] == 200
+    assert positions_example["data"]["status"] == "available"
+    assert positions_example["data"]["positions"]
     assert any(code.startswith("5") for code in positions_operation["responses"])
 
     assert any(
@@ -2381,9 +2383,10 @@ def test_trade_endpoints_have_examples_parameter_docs_and_error_responses() -> N
         )
     assert "example" in trades_success_json or "examples" in trades_success_json
     trades_example = trades_success_json.get("example") or next(iter(trades_success_json["examples"].values()))["value"]
-    assert trades_example["success"] is False
-    assert trades_example["code"] == 503
-    assert trades_example["data"]["status"] == "placeholder"
+    assert trades_example["success"] is True
+    assert trades_example["code"] == 200
+    assert trades_example["data"]["status"] == "available"
+    assert trades_example["data"]["trades"]
     assert any(code.startswith(("4", "5")) for code in trades_operation["responses"])
 
     statistics_success_json = statistics_operation["responses"]["200"]["content"]["application/json"]
