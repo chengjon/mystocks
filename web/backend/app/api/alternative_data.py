@@ -13,6 +13,7 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, Path, Query
 from pydantic import BaseModel, Field
 
 from src.alternative_data.news_sentiment_analyzer import NewsSentimentService
+from src.core.database_pool import DatabaseConnectionManager
 from src.infrastructure.logging.audit_system import AuditEvent, get_audit_manager
 
 router = APIRouter(prefix="/api/alternative-data", tags=["另类数据分析"])
@@ -66,8 +67,7 @@ def get_news_service() -> NewsSentimentService:
     """获取新闻情感分析服务实例"""
     global _news_service
     if _news_service is None:
-        # TODO: Pass proper database manager instance
-        _news_service = NewsSentimentService(None)
+        _news_service = NewsSentimentService(DatabaseConnectionManager())
     return _news_service
 
 
