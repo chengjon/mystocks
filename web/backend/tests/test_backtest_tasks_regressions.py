@@ -44,3 +44,31 @@ def test_run_backtest_task_uses_data_service_singleton(monkeypatch):
     assert captured["data_source"] is fake_data_source
     assert captured["backtest_config"]["start_date"] == datetime(2025, 1, 1)
     assert captured["backtest_config"]["end_date"] == datetime(2025, 1, 31)
+
+
+def test_run_backtest_task_rejects_unsupported_data_source_mode(monkeypatch):
+    from app.tasks import backtest_tasks as module
+
+    captured = {}
+
+    monkeypatch.setattr(module, "_save_backtest_results", lambda *args, **kwargs: None)
+    monkeypatch.setattr(module, "_update_backtest_status", lambda *args, **kwargs: captured.setdefault("failed", args))
+    monkeypatch.setattr(module, "get_progress_callback", lambda backtest_id: None)
+    monkeypatch.setattr(module.run_backtest_task, "update_state", lambda **kwargs: captured.setdefault("states", []).append(kwargs))
+
+    try:
+        module.run_backtest_task.run(
+            backtest_id=8,
+            strategy_config={"name": "demo"},
+            backtest_config={
+                "start_date": "2025-01-01",
+                "end_date": "2025-01-31",
+                "data_source_mode": "mock",
+            },
+        )
+    except ValueError as exc:
+        assert "不支持的回测数据源策略" in str(exc)
+    else:
+        raise AssertionError("expected ValueError for unsupported data_source_mode")
+
+    assert captured["states"][-1]["state"] == "FAILURE"

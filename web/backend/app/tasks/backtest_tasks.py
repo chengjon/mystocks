@@ -15,6 +15,22 @@ from app.core.celery_app import celery_app, get_progress_callback
 logger = logging.getLogger(__name__)
 
 
+def _resolve_backtest_data_source(backtest_config: dict):
+    """
+    解析回测任务的数据源策略。
+
+    当前仅支持使用现有策略服务单例作为同步历史数据源，
+    显式拒绝未落地的兼容/占位模式，避免任务层继续悬空。
+    """
+    data_source_mode = backtest_config.get("data_source_mode", "strategy_service")
+    if data_source_mode not in {"strategy_service", "auto"}:
+        raise ValueError(f"不支持的回测数据源策略: {data_source_mode}")
+
+    from app.services.strategy_service import get_strategy_service
+
+    return get_strategy_service()
+
+
 @celery_app.task(bind=True, name="app.tasks.backtest_tasks.run_backtest")
 def run_backtest_task(self, backtest_id: int, strategy_config: dict, backtest_config: dict):
     """
@@ -50,10 +66,7 @@ def run_backtest_task(self, backtest_id: int, strategy_config: dict, backtest_co
         # 添加 backtest_id 到配置
         backtest_config["backtest_id"] = backtest_id
 
-        # 使用现有策略服务单例作为同步历史数据源，避免引用不存在的兼容入口。
-        from app.services.strategy_service import get_strategy_service
-
-        data_source = get_strategy_service()
+        data_source = _resolve_backtest_data_source(backtest_config)
 
         # 定义进度回调
         def progress_callback(progress_event: ProgressEvent):
