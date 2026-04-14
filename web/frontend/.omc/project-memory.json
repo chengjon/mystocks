@@ -378,6 +378,12 @@
       "type": "file"
     },
     {
+      "path": "src/views/artdeco-pages/system-tabs/__tests__/ArtDecoDataManagement.spec.ts",
+      "accessCount": 6,
+      "lastAccessed": 1775816955646,
+      "type": "file"
+    },
+    {
       "path": "src/api/types/domains/market-data.ts",
       "accessCount": 5,
       "lastAccessed": 1772367737979,
@@ -435,6 +441,60 @@
       "path": "package.json",
       "accessCount": 1,
       "lastAccessed": 1772369763693,
+      "type": "file"
+    },
+    {
+      "path": "tests/unit/workflows/ci-workflow-gates.spec.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774772117253,
+      "type": "file"
+    },
+    {
+      "path": "web/frontend",
+      "accessCount": 1,
+      "lastAccessed": 1775707399175,
+      "type": "directory"
+    },
+    {
+      "path": "src/router/index.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775707416397,
+      "type": "file"
+    },
+    {
+      "path": "src/router/index.js",
+      "accessCount": 1,
+      "lastAccessed": 1775707903700,
+      "type": "file"
+    },
+    {
+      "path": "src/router/phase4.routes.js",
+      "accessCount": 1,
+      "lastAccessed": 1775707903732,
+      "type": "file"
+    },
+    {
+      "path": "tests",
+      "accessCount": 1,
+      "lastAccessed": 1775707915964,
+      "type": "directory"
+    },
+    {
+      "path": "src/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue",
+      "accessCount": 1,
+      "lastAccessed": 1775814402823,
+      "type": "file"
+    },
+    {
+      "path": "src/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue",
+      "accessCount": 1,
+      "lastAccessed": 1775814402896,
+      "type": "file"
+    },
+    {
+      "path": "src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775814450384,
       "type": "file"
     }
   ],
