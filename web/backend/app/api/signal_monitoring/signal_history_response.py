@@ -151,6 +151,37 @@ STRATEGY_REALTIME_RESPONSES = {
 }
 
 
+async def _get_runtime_gpu_utilization() -> Optional[float]:
+    try:
+        from src.gpu.core.hardware_abstraction.resource_manager import GPUResourceManager, NVML_AVAILABLE
+
+        if not NVML_AVAILABLE:
+            return None
+
+        manager = GPUResourceManager()
+        initialized = await manager.initialize()
+        if not initialized or not manager.devices:
+            return None
+
+        await manager.update_device_metrics()
+
+        utilizations = []
+        for device_id in manager.devices.keys():
+            device = manager.get_device_health(device_id)
+            if "error" in device:
+                continue
+            utilizations.append(float(device.get("compute_utilization") or 0) * 100)
+
+        if not utilizations:
+            return None
+
+        return round(sum(utilizations) / len(utilizations), 2)
+
+    except Exception:
+        logger.warning("读取GPU实时利用率失败", exc_info=True)
+        return None
+
+
 @router.get(
     "/signals/history",
     response_model=List[SignalHistoryResponse],
@@ -612,6 +643,13 @@ async def get_strategy_realtime_monitoring(
         LIMIT 1
         """
 
+        active_query = """
+        SELECT COUNT(*) as total
+        FROM signal_records
+        WHERE strategy_id = $1
+          AND status IN ('generated', 'executed')
+        """
+
         # 查询最近5条信号
         recent_query = """
         SELECT
@@ -629,6 +667,7 @@ async def get_strategy_realtime_monitoring(
             # 执行查询
             stats_row = await conn.fetchrow(stats_query, strategy_id, five_minutes_ago)
             health_row = await conn.fetchrow(health_query, strategy_id)
+            active_row = await conn.fetchrow(active_query, strategy_id)
             recent_rows = await conn.fetch(recent_query, strategy_id)
 
         # 提取统计数据
@@ -640,9 +679,9 @@ async def get_strategy_realtime_monitoring(
 
         # 计算衍生指标
         signal_generation_rate = signal_count / 5.0  # 信号/分钟
-        active_signals_count = signal_count  # 简化：假设最近的都是活跃的
+        active_signals_count = active_row["total"] if active_row else 0
         gpu_enabled = gpu_count > 0
-        gpu_utilization = None  # TODO: 从GPU管理器获取实际利用率
+        gpu_utilization = await _get_runtime_gpu_utilization() if gpu_enabled else None
 
         # 健康状态
         health_status = health_row["health_status"] if health_row else 1
