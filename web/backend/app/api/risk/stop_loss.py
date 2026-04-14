@@ -556,8 +556,13 @@ async def calculate_stop_loss_v31(
             raise BusinessException(detail="止损引擎不可用", status_code=503, error_code="STOP_LOSS_ENGINE_UNAVAILABLE")
 
         strategy_type = request.get("strategy_type", "volatility_adaptive")
-        symbol = request.get("symbol", "placeholder")
-        entry_price = request.get("entry_price", 100.0)
+        symbol = request.get("symbol")
+        entry_price = request.get("entry_price")
+
+        if not symbol:
+            raise ValidationException(detail="缺少必要参数: symbol", field="symbol")
+        if entry_price is None:
+            raise ValidationException(detail="缺少必要参数: entry_price", field="entry_price")
 
         if strategy_type == "volatility_adaptive":
             result = await core.stop_loss_engine.calculate_volatility_stop_loss(
