@@ -294,6 +294,7 @@ class BacktestRepository:
             更新后的回测结果，回测不存在时返回None
         """
         try:
+            normalized_status = status if isinstance(status, BacktestStatus) else BacktestStatus(status)
             backtest_orm = (
                 self.db.query(BacktestResultModel).filter(BacktestResultModel.backtest_id == backtest_id).first()
             )
@@ -302,19 +303,19 @@ class BacktestRepository:
                 logger.warning("回测不存在: backtest_id=%(backtest_id)s")
                 return None
 
-            backtest_orm.status = status.value
+            backtest_orm.status = normalized_status.value
             backtest_orm.error_message = error_message
 
             # 更新时间戳
-            if status == BacktestStatus.RUNNING:
+            if normalized_status == BacktestStatus.RUNNING:
                 backtest_orm.started_at = datetime.now(timezone.utc)
-            elif status in [BacktestStatus.COMPLETED, BacktestStatus.FAILED]:
+            elif normalized_status in [BacktestStatus.COMPLETED, BacktestStatus.FAILED]:
                 backtest_orm.completed_at = datetime.now(timezone.utc)
 
             self.db.commit()
             self.db.refresh(backtest_orm)
 
-            logger.info("更新回测状态: backtest_id=%(backtest_id)s, status={status.value}")
+            logger.info("更新回测状态: backtest_id=%(backtest_id)s, status={normalized_status.value}")
 
             return self._orm_to_pydantic(backtest_orm)
 

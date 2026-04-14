@@ -41,6 +41,7 @@ celery_app.conf.update(
 
 # 任务进度回调（用于 WebSocket 推送）
 task_progress_callbacks = {}
+backtest_task_registry = {}
 
 
 def register_progress_callback(task_id: str, callback):
@@ -57,3 +58,18 @@ def unregister_progress_callback(task_id: str):
 def get_progress_callback(task_id: str):
     """获取任务进度回调"""
     return task_progress_callbacks.get(task_id)
+
+
+def register_backtest_task(backtest_id: int | str, task_id: str) -> None:
+    """登记 backtest_id 到 Celery task_id 的运行时映射。"""
+    backtest_task_registry[str(backtest_id)] = task_id
+
+
+def unregister_backtest_task(backtest_id: int | str) -> None:
+    """移除 backtest_id 到 Celery task_id 的运行时映射。"""
+    backtest_task_registry.pop(str(backtest_id), None)
+
+
+def get_backtest_task_id(backtest_id: int | str) -> str | None:
+    """查询 backtest_id 关联的 Celery task_id。"""
+    return backtest_task_registry.get(str(backtest_id))

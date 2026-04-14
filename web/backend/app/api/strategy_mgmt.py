@@ -19,6 +19,7 @@ from app.api.strategy_management.backtest_status_contract import (
     BacktestStatusResponse,
     build_backtest_status_response,
 )
+from app.core.celery_app import register_backtest_task
 from app.core.config import settings
 from app.core.database import get_db
 from app.core.responses import ErrorCodes, create_error_response
@@ -658,11 +659,12 @@ async def execute_backtest(
         }
 
         # 启动 Celery 异步任务
-        run_backtest_task.delay(
+        task = run_backtest_task.delay(
             backtest_id=backtest_result.backtest_id,
             strategy_config=strategy_config_dict,
             backtest_config=backtest_config_dict,
         )
+        register_backtest_task(backtest_result.backtest_id, task.id)
 
         logger.info("回测任务已提交: backtest_id={backtest_result.backtest_id}, task_id={task.id}")
         return backtest_result

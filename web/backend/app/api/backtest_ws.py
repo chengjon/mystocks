@@ -10,7 +10,14 @@ from typing import Dict, Set
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
-from app.core.celery_app import register_progress_callback, unregister_progress_callback
+from app.core.celery_app import (
+    celery_app,
+    get_backtest_task_id,
+    register_progress_callback,
+    unregister_backtest_task,
+    unregister_progress_callback,
+)
+from app.models.strategy_schemas import BacktestStatus
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/ws", tags=["WebSocket"])
@@ -101,6 +108,25 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
+def _mark_backtest_cancelled(backtest_id: str) -> None:
+    """将已撤销的回测任务标记为失败，避免接口继续伪装成功运行。"""
+    try:
+        from app.core.database import SessionLocal
+        from app.repositories.backtest_repository import BacktestRepository
+
+        db = SessionLocal()
+        try:
+            BacktestRepository(db).update_backtest_status(
+                int(backtest_id),
+                BacktestStatus.FAILED,
+                "Cancelled by user",
+            )
+        finally:
+            db.close()
+    except Exception:
+        logger.warning("回测取消状态回写失败: backtest_id=%(backtest_id)s", backtest_id=backtest_id, exc_info=True)
+
+
 @router.websocket("/backtest/{backtest_id}")
 async def websocket_backtest_progress(websocket: WebSocket, backtest_id: str):
     """
@@ -127,10 +153,34 @@ async def websocket_backtest_progress(websocket: WebSocket, backtest_id: str):
                     # 心跳响应
                     await manager.send_personal_message(json.dumps({"type": "pong"}), websocket)
                 elif message.get("type") == "cancel":
-                    # 取消回测请求
-                    # TODO: 实现取消逻辑
+                    task_id = get_backtest_task_id(backtest_id)
+                    if not task_id:
+                        await manager.send_personal_message(
+                            json.dumps(
+                                {
+                                    "type": "cancel_failed",
+                                    "backtest_id": backtest_id,
+                                    "message": "未找到可取消的运行中回测任务",
+                                }
+                            ),
+                            websocket,
+                        )
+                        continue
+
+                    celery_app.control.revoke(task_id, terminate=True)
+                    unregister_progress_callback(backtest_id)
+                    unregister_backtest_task(backtest_id)
+                    _mark_backtest_cancelled(backtest_id)
                     await manager.send_personal_message(
-                        json.dumps({"type": "cancelled", "message": "回测已取消"}), websocket
+                        json.dumps(
+                            {
+                                "type": "cancelled",
+                                "backtest_id": backtest_id,
+                                "task_id": task_id,
+                                "message": "回测已取消",
+                            }
+                        ),
+                        websocket,
                     )
                     break
 
