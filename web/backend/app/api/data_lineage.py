@@ -16,6 +16,7 @@ Date: 2026-01-09
 
 import logging
 from datetime import datetime
+from contextlib import asynccontextmanager
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Body, HTTPException, Path, Query, Request
@@ -426,6 +427,20 @@ class ImpactAnalysisResponse(BaseModel):
 # =============================================================================
 
 
+class _AsyncpgLineageConnectionAdapter:
+    """为 LineageStorage 适配 asyncpg 原生连接。"""
+
+    def __init__(self, connection):
+        self._connection = connection
+
+    @asynccontextmanager
+    async def acquire_connection(self):
+        yield self._connection
+
+    async def close(self) -> None:
+        await self._connection.close()
+
+
 def handle_lineage_error(error: str, request_id: Optional[str] = None) -> UnifiedResponse:
     """
     处理血缘错误并返回统一响应
@@ -467,23 +482,22 @@ async def get_lineage_tracker():
     Returns:
         LineageTracker实例
     """
-    # TODO: 从依赖注入容器获取LineageTracker实例
-    # 这里先创建一个简单的占位符实现
     import asyncpg
 
     from src.data_governance.lineage import LineageStorage, LineageTracker
 
     try:
-        conn = await asyncpg.connect(
+        raw_connection = await asyncpg.connect(
             host=settings.postgresql_host,
             port=settings.postgresql_port,
             user=settings.postgresql_user,
             password=settings.postgresql_password,
             database=settings.postgresql_database,
         )
-        storage = LineageStorage(conn)
+        connection_adapter = _AsyncpgLineageConnectionAdapter(raw_connection)
+        storage = LineageStorage(connection_adapter)
         tracker = LineageTracker(storage)
-        return tracker, conn
+        return tracker, connection_adapter
     except Exception as e:
         logger.error("Failed to create lineage tracker: {str(e)}")
         raise HTTPException(
