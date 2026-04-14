@@ -204,15 +204,15 @@ ALERT_MARK_ALL_READ_RESPONSES = {
     ),
     **_success_response_spec(
         200,
-        "批量标记全部告警已读兼容占位结果",
+        "批量标记全部告警已读结果",
         {
-            "success": False,
-            "code": 503,
-            "message": "Bulk alert mark-read is not implemented yet",
+            "success": True,
+            "code": 200,
+            "message": "全部告警已标记为已读",
             "data": {
-                "status": "placeholder",
+                "status": "updated",
                 "scope": "all_alerts",
-                "updated_count": 0,
+                "updated_count": 5,
             },
         },
     ),
@@ -892,14 +892,34 @@ async def mark_alert_read(
 async def mark_all_alerts_read(current_user: User = Depends(get_current_user)):
     """批量标记所有未读告警为已读。"""
     try:
+        if _runtime_fallback_enabled():
+            fallback_records = _build_runtime_alert_records()
+            updated_count = sum(1 for record in fallback_records if not record.is_read)
+            return UnifiedResponse(
+                success=True,
+                code=200,
+                message="全部告警已标记为已读",
+                data={
+                    "status": "updated",
+                    "scope": "all_alerts",
+                    "updated_count": updated_count,
+                },
+            )
+
+        records, _ = monitoring_service.get_alert_records(is_read=False, limit=1000, offset=0)
+        updated_count = 0
+        for record in records:
+            if monitoring_service.mark_alert_read(record.id):
+                updated_count += 1
+
         return UnifiedResponse(
-            success=False,
-            code=503,
-            message="Bulk alert mark-read is not implemented yet",
+            success=True,
+            code=200,
+            message="全部告警已标记为已读",
             data={
-                "status": "placeholder",
+                "status": "updated",
                 "scope": "all_alerts",
-                "updated_count": 0,
+                "updated_count": updated_count,
             },
         )
     except Exception as e:

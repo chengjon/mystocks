@@ -1311,9 +1311,10 @@ def test_monitoring_realtime_control_and_summary_endpoints_have_docs_examples_an
         assert "example" in success_json or "examples" in success_json
         if path == "/api/v1/monitoring/alerts/mark-all-read":
             success_example = success_json.get("example") or next(iter(success_json["examples"].values()))["value"]
-            assert success_example["success"] is False
-            assert success_example["code"] == 503
-            assert success_example["data"]["status"] == "placeholder"
+            assert success_example["success"] is True
+            assert success_example["code"] == 200
+            assert success_example["data"]["status"] == "updated"
+            assert success_example["data"]["updated_count"] >= 0
         if path == "/api/v1/monitoring/control/start":
             success_example = success_json.get("example") or next(iter(success_json["examples"].values()))["value"]
             assert success_example["success"] is True

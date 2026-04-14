@@ -19,18 +19,41 @@ def _load_module():
     return importlib.import_module("app.api.monitoring")
 
 
-async def test_monitoring_mark_all_read_returns_unified_placeholder_response():
+async def test_monitoring_mark_all_read_returns_runtime_batch_response():
     module = _load_module()
 
     payload = await module.mark_all_alerts_read(current_user=SimpleNamespace(id="user-1"))
 
-    assert payload.success is False
-    assert payload.code == 503
+    assert payload.success is True
+    assert payload.code == 200
     assert payload.data == {
-        "status": "placeholder",
+        "status": "updated",
         "scope": "all_alerts",
-        "updated_count": 0,
+        "updated_count": 2,
     }
+
+
+async def test_monitoring_mark_all_read_marks_database_unread_alerts(monkeypatch):
+    module = _load_module()
+    monkeypatch.setenv("TESTING", "false")
+    monkeypatch.setenv("DEVELOPMENT_MODE", "false")
+
+    unread_records = [SimpleNamespace(id=101), SimpleNamespace(id=102), SimpleNamespace(id=103)]
+    captured = []
+
+    monkeypatch.setattr(module.monitoring_service, "get_alert_records", lambda **kwargs: (unread_records, len(unread_records)))
+    monkeypatch.setattr(module.monitoring_service, "mark_alert_read", lambda alert_id: captured.append(alert_id) or True)
+
+    payload = await module.mark_all_alerts_read(current_user=SimpleNamespace(id="user-1"))
+
+    assert payload.success is True
+    assert payload.code == 200
+    assert payload.data == {
+        "status": "updated",
+        "scope": "all_alerts",
+        "updated_count": 3,
+    }
+    assert captured == [101, 102, 103]
 
 
 @pytest.fixture
