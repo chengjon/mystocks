@@ -24,7 +24,7 @@
 | SC-011 | 文档系统 canonical / report / plan / supporting 分类曾混乱 | documentation governance spec | monitoring | docs-governance | 后续继续 family wave 收口 |
 | SC-012 | `docs/standards/` 与 `reports/governance/` 可能重复承载模板或流程 | charter in docs, templates in reports | monitoring | main | 不在 `docs/standards/` 复制模板 |
 | SC-013 | 技术债“基线不增”与“观察项”边界容易混用 | charter v1 section 5 | monitoring | main | 明确哪些指标是 gate、哪些只是观察项 |
-| SC-014 | 历史 `.planning` phase 统计与当前工作区真相存在口径差 | current workspace truth + refreshed docs | open | main | 继续对齐 Phase 2/3 历史工件 |
+| SC-014 | 历史 `.planning` phase 统计与当前工作区真相存在口径差 | current workspace truth + refreshed docs | open | main | 以 `2026-04-12-phase2-historical-repo-truth-alignment.md` 固定 Phase 2 解释，并继续评估是否需要 Phase 3 sister note |
 | SC-015 | `docs/worklogs/` 与 `docs/reports/worklogs/` 曾复发并存 | canonical worklogs under docs/reports | resolved | docs-governance | 保持复发防护测试 |
 | SC-016 | `ui-ux-pro-max` 产物曾被误当 active docs family | skill artifact only | resolved | docs-governance | 保持退出根导航 |
 | SC-017 | API contract truth 在 Markdown 清单与 OpenAPI 之间可能重叠 | FastAPI routes + Pydantic + /openapi.json | monitoring | backend-governance | 不再新增手写并行契约真相 |

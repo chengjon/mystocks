@@ -274,3 +274,74 @@
 
 #### Next
 - Only re-export root artifacts again if downstream consumers need the newest projections after later Mongo updates.
+
+## [AUTO] 2026-04-09 13:44:13 Session a7b23df7-0428-4bc7-8fae-fe7267f129e0
+- Completion: true
+- Summary: Both findings addressed. Here's the updated status:
+- Model: `glm-5.1`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/a7b23df7-0428-4bc7-8fae-fe7267f129e0.jsonl`
+
+
+## [AUTO] 2026-04-09 14:54:03 Session a7b23df7-0428-4bc7-8fae-fe7267f129e0
+- Completion: true
+- Summary: These are the same three findings I just fixed. Let me verify the current state to confirm they're applied.
+- Model: `glm-5.1`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/a7b23df7-0428-4bc7-8fae-fe7267f129e0.jsonl`
+
+
+## [AUTO] 2026-04-09 17:08:46 Session a7b23df7-0428-4bc7-8fae-fe7267f129e0
+- Completion: true
+- Summary: 已修复 — 第 90 行现在显示为“Verify dev server startup + build (hot-reload not separately tested)”。此处成功标准（第 81 行）和“Approach”（第 90 行）都保持一致。
+- Model: `glm-5.1`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/a7b23df7-0428-4bc7-8fae-fe7267f129e0.jsonl`
+
+
+## [AUTO] 2026-04-10 11:03:07 Session a800d2eb-5d59-4605-91f4-adaee6bd0475
+- Completion: true
+- Summary: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Model: `glm-5.1`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/a800d2eb-5d59-4605-91f4-adaee6bd0475.jsonl`
+
+
+## [AUTO] 2026-04-10 12:26:34 Session d7bdc221-39a2-433b-81b5-13a3e946db00
+- Completion: true
+- Summary: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Model: `glm-5.1`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/d7bdc221-39a2-433b-81b5-13a3e946db00.jsonl`
+
+
+## [AUTO] 2026-04-10 17:55:47 Session 8e770ee6-0be3-4a03-b065-4d5a93dc9d87
+- Completion: true
+- Summary: ✓ Plans committed. Requirements coverage: LINT-09 (Plan 01), VTEST-01 (Plan 02), VTEST-02+VTEST-03 (Plan 03). All covered.
+- Model: `glm-5.1`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/8e770ee6-0be3-4a03-b065-4d5a93dc9d87.jsonl`
+
+
+## [AUTO] 2026-04-10 18:11:07 Session 8e770ee6-0be3-4a03-b065-4d5a93dc9d87
+- Completion: true
+- Summary: ✓ All 4 review findings addressed and committed.
+- Model: `glm-5.1`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/8e770ee6-0be3-4a03-b065-4d5a93dc9d87.jsonl`
+
+
+## [AUTO] 2026-04-10 18:33:02 Session 5acb7891-e0ee-4a2b-bb38-4c0347be0fba
+- Completion: true
+- Summary: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Model: `glm-5.1`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/5acb7891-e0ee-4a2b-bb38-4c0347be0fba.jsonl`
+
+
+## [AUTO] 2026-04-10 19:22:55 Session 5acb7891-e0ee-4a2b-bb38-4c0347be0fba
+- Completion: true
+- Summary: **Phase 11 complete. v1.2 Lint & Test Zero shipped.**
+- Model: `glm-5.1`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/5acb7891-e0ee-4a2b-bb38-4c0347be0fba.jsonl`

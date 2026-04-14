@@ -16,7 +16,9 @@
 
 ## 1. 审核范围与依据文档
 
-本建议严格以以下文档体系为基线，不另立风格：
+本建议严格以以下文档体系为基线，不另立风格。
+
+> 路径口径说明：本文统一使用 `docs/guides/web/*` 作为 canonical 文档路径；兼容入口（如 `docs/guides/*`）仅用于历史链接兼容，不作为主引用。
 
 1. 上手入口：`docs/guides/web/ARTDECO_START_HERE.md`
 2. 总目录：`docs/guides/web/ARTDECO_MASTER_INDEX.md`
@@ -106,15 +108,20 @@
   - 模板化工作台：检查 `pageConfig + slots` 壳层是否统一
   - 直接 Tab 容器：检查 tab rail 与 content shell 是否清晰
   - 功能树驱动总控容器：检查 orchestration 是否只留在顶层
-- 明确目录边界：
+- 明确目录边界（以下为**当前代码实态**，非仅目标架构）：
   - `views/artdeco-pages/`：页面容器与工作台入口
   - `views/artdeco-pages/components/`：页面系统共享片段
   - `views/artdeco-pages/*-tabs/`：域内工作台块
-  - `src/components/artdeco/`：沉淀可复用资产
+  - `src/components/artdeco/`：沉淀可复用资产（base/business/charts/core/advanced/specialized/trading）
 - 对 `pageConfig.ts` 的要求改为：
-  - 页面元信息可配置化
+  - 页面元信息与壳层编排可配置化
   - 不再假设它是所有 tabs 的唯一事实源
+  - 域内 tab 逻辑以对应 domain block 为准
   - 页面内仍禁止散落 endpoint 字面量
+- 若后续发生目录迁移/重命名，需在同一变更内同步更新：
+  - `ARTDECO_MASTER_INDEX`
+  - `ArtDeco_System_Architecture_Summary`
+  - 本文档对应章节
 
 **收益**
 - 形成稳定边界，降低跨层耦合。
@@ -167,6 +174,11 @@
 6. 桌面端断点下的信息密度与可读性稳定
 7. 关键页面焦点可见性、对比度满足团队标准
 
+**统计口径说明（建议固化到执行脚本）**
+- 统计范围：`web/frontend/src/**`（不含第三方依赖与构建产物）
+- 统计对象：颜色、间距、字号、阴影、边框等视觉属性
+- 统计方式：基于关键词与样式规则扫描（硬编码色值、像素值、直接字体名等）并输出差异报告
+
 ---
 
 ## 5. 建议执行分段
@@ -199,6 +211,12 @@
 - 先做“样式与结构分离”的小步提交。
 - 每次仅处理一个 Domain，避免跨域并行改动。
 - 对 Trading / Market 等核心页面建立最小回归清单。
+
+**最小回归集合（建议）**
+- Tab 切换与工作台区块切换可用
+- 实时数据渲染与涨跌语义颜色正确
+- 关键操作按钮（查询/刷新/下单入口）状态与反馈正常
+- 关键表格（若页面存在）渲染、排序/筛选与高亮状态正常
 
 ---
 

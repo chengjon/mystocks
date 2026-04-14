@@ -17,6 +17,12 @@
 - `reports/governance/2026-04-10-tech-debt-register.md`
 - `reports/governance/2026-04-10-tech-debt-governance-execution.TASK.md`
 - `reports/governance/2026-04-10-tech-debt-governance-execution.TASK-REPORT.md`
+- `reports/governance/2026-04-12-phase2-historical-repo-truth-alignment.md`
+- `reports/governance/2026-04-12-skip-xfail-inventory-baseline.md`
+- `reports/governance/2026-04-12-backend-placeholder-inventory-baseline.md`
+- `reports/governance/2026-04-12-backend-static-analysis-bucketing-plan.md`
+- `reports/governance/2026-04-12-backend-security-remediation-seed.md`
+- `reports/governance/2026-04-12-backend-todo-inventory-baseline.md`
 - `reports/governance/README.md`
 - `openspec/changes/tech-debt-governance-2026q1/**`
 - `openspec/specs/architecture-governance/spec.md`
@@ -77,4 +83,10 @@
 
 ## Next Steps
 - 完成 OpenSpec 任务勾选与归档。
-- 从 TD-001、TD-003、TD-007、TD-009 开始下一轮执行批次。
+- 以 `2026-04-12-phase2-historical-repo-truth-alignment.md` 固定历史 Phase 2 的 repo-truth 解释。
+- 以 `2026-04-12-skip-xfail-inventory-baseline.md` 扩展 `skip_xfail_count` 全量 inventory。
+- 以 `2026-04-12-backend-placeholder-inventory-baseline.md` 扩展 backend placeholder 全量 inventory。
+- 以 `2026-04-12-backend-static-analysis-bucketing-plan.md` 固定 `TD-003` wave map。
+- 以 `2026-04-12-backend-security-remediation-seed.md` 固定 `TD-006` 首批 security review lanes。
+- 以 `2026-04-12-backend-todo-inventory-baseline.md` 固定 `TD-008` TODO inventory 初稿。
+- 在上述 inventory / seed 文档基础上切出 `TD-003`、`TD-006`、`TD-008` 的下一批治理任务。

@@ -1,7 +1,7 @@
 # function-tree-governance Specification
 
 ## Purpose
-TBD - created by archiving change govern-function-tree-as-code. Update Purpose after archive.
+Define governance requirements for a machine-readable function-tree catalog, task-card mapping, scope-gate enforcement, mirrored-domain sync duties, and meta-governance self-bootstrap rules.
 ## Requirements
 ### Requirement: Governance SHALL maintain a machine-readable function-tree catalog
 
