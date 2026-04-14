@@ -44,7 +44,7 @@ class _FakeTracker:
         }
 
 
-async def test_get_strategy_detailed_health_marks_unchecked_components_unknown():
+async def test_get_strategy_detailed_health_uses_runtime_component_states():
     module = importlib.import_module("app.api.signal_monitoring.get_signal_statistics")
 
     fake_pg_module = ModuleType("src.monitoring.infrastructure.postgresql_async_v3")
@@ -59,9 +59,21 @@ async def test_get_strategy_detailed_health_marks_unchecked_components_unknown()
     sys.modules["src.monitoring.infrastructure.postgresql_async_v3"] = fake_pg_module
     sys.modules["src.monitoring.signal_result_tracker"] = fake_tracker_module
 
+    original_push_status = module._get_signal_push_component_status
+    original_gpu_status = module._get_gpu_component_status
+    module._get_signal_push_component_status = lambda: "healthy"
+
+    async def fake_gpu_status():
+        return "healthy"
+
+    module._get_gpu_component_status = fake_gpu_status
+
     try:
         response = await module.get_strategy_detailed_health("macd_strategy", current_user=SimpleNamespace(id=1))
     finally:
+        module._get_signal_push_component_status = original_push_status
+        module._get_gpu_component_status = original_gpu_status
+
         if previous_pg is None:
             sys.modules.pop("src.monitoring.infrastructure.postgresql_async_v3", None)
         else:
@@ -72,6 +84,6 @@ async def test_get_strategy_detailed_health_marks_unchecked_components_unknown()
         else:
             sys.modules["src.monitoring.signal_result_tracker"] = previous_tracker
 
-    assert response.components["signal_push"] == "unknown"
-    assert response.components["gpu"] == "unknown"
+    assert response.components["signal_push"] == "healthy"
+    assert response.components["gpu"] == "healthy"
     assert response.metrics["active_signals_count"] == 3

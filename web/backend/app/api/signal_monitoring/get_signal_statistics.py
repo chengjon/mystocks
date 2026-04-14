@@ -11,7 +11,7 @@ Signal Monitoring API Endpoints
 
 import logging
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
@@ -26,6 +26,72 @@ from .signal_history_response_schemas import (
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+
+def _get_metric_sample_value(metric: Any, sample_name: str, labels: Optional[dict[str, str]] = None) -> float:
+    labels = labels or {}
+    total = 0.0
+    for family in metric.collect():
+        for sample in family.samples:
+            if sample.name != sample_name:
+                continue
+            if all(sample.labels.get(key) == value for key, value in labels.items()):
+                total += float(sample.value)
+    return total
+
+
+def _get_signal_push_component_status() -> str:
+    try:
+        from src.monitoring.signal_metrics import SIGNAL_PUSH_TOTAL
+
+        success_count = _get_metric_sample_value(
+            SIGNAL_PUSH_TOTAL,
+            "mystocks_signal_push_total",
+            {"status": "success"},
+        )
+        failed_count = sum(
+            _get_metric_sample_value(SIGNAL_PUSH_TOTAL, "mystocks_signal_push_total", {"status": status})
+            for status in ("failed", "timeout")
+        )
+        total = success_count + failed_count
+
+        if total <= 0:
+            return "unknown"
+        if failed_count <= 0:
+            return "healthy"
+        if success_count >= failed_count:
+            return "degraded"
+        return "unhealthy"
+    except Exception:
+        logger.warning("读取信号推送监控指标失败", exc_info=True)
+        return "unknown"
+
+
+async def _get_gpu_component_status() -> str:
+    try:
+        from src.gpu.core.hardware_abstraction.resource_manager import GPUResourceManager, NVML_AVAILABLE
+
+        if not NVML_AVAILABLE:
+            return "unknown"
+
+        manager = GPUResourceManager()
+        initialized = await manager.initialize()
+        if not initialized or not manager.devices:
+            return "unknown"
+
+        await manager.update_device_metrics()
+        devices = [manager.get_device_health(device_id) for device_id in manager.devices.keys()]
+        if not devices:
+            return "unknown"
+
+        if any(device.get("health_status") == "critical" for device in devices):
+            return "degraded"
+        if any(device.get("health_status") in {"warning", "healthy"} for device in devices):
+            return "healthy"
+        return "unknown"
+    except Exception:
+        logger.warning("读取GPU运行时状态失败", exc_info=True)
+        return "unknown"
 
 
 @router.get("/signals/statistics", response_model=List[SignalStatisticsResponse])
@@ -357,13 +423,15 @@ async def get_strategy_detailed_health(
             )
         active_signals_count = active_count_row["total"] if active_count_row else 0
 
-        # 仅为已验证组件输出明确状态，未接入真实检测的组件保持 unknown，避免伪绿。
+        signal_push_status = _get_signal_push_component_status()
+        gpu_status = await _get_gpu_component_status()
+
         components = {
             "signal_generation": "healthy",
             "signal_execution": "healthy",
-            "signal_push": "unknown",
+            "signal_push": signal_push_status,
             "database": "connected" if pg.is_connected() else "disconnected",
-            "gpu": "unknown",
+            "gpu": gpu_status,
         }
 
         # 根据整体健康状态调整组件状态
@@ -384,6 +452,12 @@ async def get_strategy_detailed_health(
             alerts.append("执行延迟过高")
         if health_data["health_status"] == -1:
             alerts.append("策略状态不健康")
+        if signal_push_status == "degraded":
+            alerts.append("信号推送成功率下降")
+        elif signal_push_status == "unhealthy":
+            alerts.append("信号推送失败率过高")
+        if gpu_status == "degraded":
+            alerts.append("GPU运行状态告警")
 
         # 构建响应
         response = StrategyDetailedHealthResponse(
