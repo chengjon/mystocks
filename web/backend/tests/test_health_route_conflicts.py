@@ -915,9 +915,10 @@ def test_multi_source_endpoints_have_descriptions_examples_and_error_responses()
     assert "example" in analyze_json or "examples" in analyze_json
     assert "example" in analyze_success_json or "examples" in analyze_success_json
     analyze_example = analyze_success_json.get("example") or next(iter(analyze_success_json["examples"].values()))["value"]
-    assert analyze_example["success"] is False
-    assert analyze_example["code"] == 503
-    assert analyze_example["data"]["status"] == "placeholder"
+    assert analyze_example["success"] is True
+    assert analyze_example["code"] == 200
+    assert analyze_example["data"]["status"] == "available"
+    assert analyze_example["data"]["insights"]
     assert any(code.startswith(("4", "5")) for code in analyze_operation["responses"])
 
 
