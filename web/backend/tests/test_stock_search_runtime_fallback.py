@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -21,6 +22,12 @@ class _CircuitBreakerStub:
 
     def record_failure(self) -> None:
         self.failure_count += 1
+
+
+def test_stock_search_route_source_contains_no_direct_use_mock_env_reads():
+    source = Path(module.__file__).read_text(encoding="utf-8")
+
+    assert 'os.getenv("USE_MOCK_DATA"' not in source
 
 
 @pytest.mark.asyncio
@@ -74,3 +81,34 @@ async def test_search_stocks_uses_mock_when_fallback_explicitly_enabled(monkeypa
     assert len(result) == 1
     assert result[0]["symbol"] == "000001"
     assert result[0]["name"] == "平安银行"
+
+
+@pytest.mark.asyncio
+async def test_company_profile_returns_501_when_mock_mode_disabled(monkeypatch):
+    monkeypatch.setattr(module.settings, "use_mock_apis", False, raising=False)
+    monkeypatch.setattr(module.settings, "stock_search_mock_enabled", False, raising=False)
+
+    with pytest.raises(BusinessException) as exc_info:
+        await module.get_company_profile(
+            symbol="600519",
+            market="cn",
+            current_user=SimpleNamespace(id=1, username="tester"),
+        )
+
+    assert exc_info.value.status_code == 501
+    assert exc_info.value.error_code == "FEATURE_NOT_SUPPORTED"
+
+
+@pytest.mark.asyncio
+async def test_recommendation_returns_501_when_mock_mode_disabled(monkeypatch):
+    monkeypatch.setattr(module.settings, "use_mock_apis", False, raising=False)
+    monkeypatch.setattr(module.settings, "stock_search_mock_enabled", False, raising=False)
+
+    with pytest.raises(BusinessException) as exc_info:
+        await module.get_recommendation_trends(
+            symbol="600519",
+            current_user=SimpleNamespace(id=1, username="tester"),
+        )
+
+    assert exc_info.value.status_code == 501
+    assert exc_info.value.error_code == "FEATURE_NOT_SUPPORTED"

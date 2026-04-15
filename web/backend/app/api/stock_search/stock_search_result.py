@@ -10,7 +10,6 @@
 """
 
 import logging
-import os
 import re
 import time
 from typing import Any, Dict, List, Optional
@@ -72,6 +71,14 @@ def _get_mock_stock_search_results(keyword: str, *, market: str, limit: int) -> 
     mock_manager = get_mock_data_manager()
     mock_data = mock_manager.get_data("stock_search", keyword=keyword, market=market, limit=limit)
     return mock_data.get("data", [])
+
+
+def _get_mock_stock_data(data_type: str, **kwargs: Any) -> Any:
+    from app.mock.unified_mock_data import get_mock_data_manager
+
+    mock_manager = get_mock_data_manager()
+    mock_data = mock_manager.get_data(data_type, **kwargs)
+    return mock_data.get("data")
 
 
 def validate_stock_symbol(symbol: str, market: str) -> str:
@@ -313,36 +320,27 @@ async def get_stock_quote(
             details={"market": market, "original_symbol": symbol, "validated_symbol": validated_symbol},
         )
 
-        # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
-        if use_mock:
-            # 使用Mock数据
-            from app.mock.unified_mock_data import get_mock_data_manager
-
-            mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data("stock_quote", symbol=validated_symbol, market=market)
-            quote_data = mock_data.get("data", {})
+        if _is_stock_search_mock_enabled():
+            quote_data = _get_mock_stock_data("stock_quote", symbol=validated_symbol, market=market) or {}
 
             if not quote_data:
                 raise NotFoundException(resource="股票报价", identifier="查询条件")
 
             return quote_data
+
+        service = get_stock_search_service()
+
+        if market.lower() == "cn":
+            quote = service.get_a_stock_realtime(validated_symbol)
+        elif market.lower() == "hk":
+            quote = service.get_hk_stock_realtime(validated_symbol)
         else:
-            # 正常获取真实数据
-            service = get_stock_search_service()
+            raise ValidationException(detail="不支持的市场类型，仅支持: cn, hk", field="market")
 
-            if market.lower() == "cn":
-                quote = service.get_a_stock_realtime(validated_symbol)
-            elif market.lower() == "hk":
-                quote = service.get_hk_stock_realtime(validated_symbol)
-            else:
-                raise ValidationException(detail="不支持的市场类型，仅支持: cn, hk", field="market")
+        if not quote:
+            raise NotFoundException(resource="股票报价", identifier="查询条件")
 
-            if not quote:
-                raise NotFoundException(resource="股票报价", identifier="查询条件")
-
-            return quote
+        return quote
 
     except HTTPException:
         raise
@@ -363,7 +361,7 @@ async def get_stock_quote(
 @router.get(
     "/profile/{symbol}",
     summary="获取A股或港股公司资料",
-    description="返回 A 股或港股股票的公司基础档案。当前真实数据源尚未启用时，会按契约返回 501，并在开发或测试环境下回退到 mock 数据。",
+    description="返回 A 股或港股股票的公司基础档案。当前真实数据源尚未启用时，仅在显式开启 mock 配置时返回 mock 数据，否则按契约返回 501。",
     responses=STOCK_PROFILE_RESPONSES,
 )
 async def get_company_profile(
@@ -379,23 +377,14 @@ async def get_company_profile(
         market: 市场类型
     """
     try:
-        # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
+        if _is_stock_search_mock_enabled():
+            return _get_mock_stock_data("stock_profile", symbol=symbol, market=market) or {}
 
-        if use_mock:
-            # 使用Mock数据
-            from app.mock.unified_mock_data import get_mock_data_manager
-
-            mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data("stock_profile", symbol=symbol, market=market)
-            return mock_data.get("data", {})
-        else:
-            # 正常获取真实数据
-            raise BusinessException(
-                detail="公司基本信息功能暂不支持，本系统仅支持 A 股和 H 股（港股），不支持美股",
-                status_code=501,
-                error_code="FEATURE_NOT_SUPPORTED",
-            )
+        raise BusinessException(
+            detail="公司基本信息功能暂不支持，本系统仅支持 A 股和 H 股（港股），不支持美股",
+            status_code=501,
+            error_code="FEATURE_NOT_SUPPORTED",
+        )
     except (BusinessException, ValidationException, NotFoundException, ForbiddenException):
         raise
     except (DataFetchError, ServiceError) as e:
@@ -432,28 +421,19 @@ async def get_stock_news(
         days: 获取最近几天的新闻
     """
     try:
-        # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
+        if _is_stock_search_mock_enabled():
+            return _get_mock_stock_data("stock_news", symbol=symbol, market=market, days=days) or []
 
-        if use_mock:
-            # 使用Mock数据
-            from app.mock.unified_mock_data import get_mock_data_manager
+        service = get_stock_search_service()
 
-            mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data("stock_news", symbol=symbol, market=market, days=days)
-            return mock_data.get("data", [])
+        if market.lower() == "cn":
+            news = service.get_a_stock_news(symbol, days=days)
+        elif market.lower() == "hk":
+            news = service.get_hk_stock_news(symbol)
         else:
-            # 正常获取真实数据
-            service = get_stock_search_service()
+            raise ValidationException(detail="不支持的市场类型，仅支持: cn, hk", field="market")
 
-            if market.lower() == "cn":
-                news = service.get_a_stock_news(symbol, days=days)
-            elif market.lower() == "hk":
-                news = service.get_hk_stock_news(symbol)
-            else:
-                raise ValidationException(detail="不支持的市场类型，仅支持: cn, hk", field="market")
-
-            return news
+        return news
     except HTTPException:
         raise
     except (DataFetchError, ServiceError, NetworkError) as e:
@@ -527,23 +507,14 @@ async def get_recommendation_trends(
         symbol: 股票代码
     """
     try:
-        # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
+        if _is_stock_search_mock_enabled():
+            return _get_mock_stock_data("stock_recommendation", symbol=symbol) or {}
 
-        if use_mock:
-            # 使用Mock数据
-            from app.mock.unified_mock_data import get_mock_data_manager
-
-            mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data("stock_recommendation", symbol=symbol)
-            return mock_data.get("data", {})
-        else:
-            # 正常获取真实数据
-            raise BusinessException(
-                detail="分析师推荐功能暂不支持，本系统仅支持 A 股和 H 股（港股），不支持美股",
-                status_code=501,
-                error_code="FEATURE_NOT_SUPPORTED",
-            )
+        raise BusinessException(
+            detail="分析师推荐功能暂不支持，本系统仅支持 A 股和 H 股（港股），不支持美股",
+            status_code=501,
+            error_code="FEATURE_NOT_SUPPORTED",
+        )
     except HTTPException:
         raise
     except (DataFetchError, ServiceError) as e:
