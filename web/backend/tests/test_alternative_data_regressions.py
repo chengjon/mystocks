@@ -205,3 +205,27 @@ async def test_get_alternative_data_summary_uses_runtime_sentiment_sources():
     assert response["news_sentiment"]["market_sentiment"] == 0.42
     assert response["social_media"]["source"] == "news_sentiment_proxy"
     assert response["data_sources"][1]["status"] == "proxy"
+
+
+async def test_start_social_media_monitoring_returns_proxy_registration_response():
+    class FakeService:
+        def __init__(self, db_manager):
+            self.db_manager = db_manager
+
+    previous_news, previous_db_pool, previous_audit = _install_fake_alternative_modules(FakeService)
+
+    try:
+        module = _load_module()
+        response = await module.start_social_media_monitoring(
+            background_tasks=None,
+            keywords=["茅台", "业绩"],
+            symbols=["600519"],
+            user_id="tester-1",
+        )
+    finally:
+        _restore_fake_alternative_modules(previous_news, previous_db_pool, previous_audit)
+
+    assert response["status"] == "accepted"
+    assert response["monitoring_mode"] == "news_sentiment_proxy"
+    assert response["backend_support"]["social_media_collectors"] is False
+    assert response["symbols"] == ["600519"]

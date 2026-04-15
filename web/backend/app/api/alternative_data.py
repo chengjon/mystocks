@@ -338,9 +338,6 @@ async def start_social_media_monitoring(
     监控Twitter、微博等社交媒体上的相关讨论和情感。
     """
     try:
-        # 这里应该启动社交媒体监控任务
-        # 暂时返回模拟响应
-
         # 审计日志
         audit_manager = get_audit_manager()
         await audit_manager.log_audit_event(
@@ -359,11 +356,16 @@ async def start_social_media_monitoring(
         )
 
         return {
-            "message": "社交媒体监控已启动",
-            "status": "running",
+            "message": "社交媒体监控请求已登记，当前以新闻情感代理模式运行",
+            "status": "accepted",
             "keywords": keywords,
             "symbols": symbols or [],
-            "note": "社交媒体监控功能正在开发中，目前返回模拟数据",
+            "monitoring_mode": "news_sentiment_proxy",
+            "backend_support": {
+                "social_media_collectors": False,
+                "news_sentiment_proxy": True,
+            },
+            "next_step": "使用新闻情感服务代理生成相关情绪摘要，待真实社交媒体采集器接入后升级。",
         }
 
     except Exception as e:
