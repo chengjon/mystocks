@@ -660,9 +660,8 @@ def get_system_logs_from_db(
         return logs, total
 
     except Exception as e:
-        # 如果数据库查询失败，返回模拟日志
         logger.exception("Error fetching logs from database: %s", e)
-        return get_mock_system_logs(filter_errors, limit), 0
+        return [], 0
     finally:
         # 确保连接和游标被关闭，防止连接泄漏
         _close_resource_quietly("system logs cursor", cursor)
@@ -819,11 +818,6 @@ async def get_system_logs(
             category=category,
         )
 
-        # 如果数据库查询失败或没有数据，使用模拟数据
-        if not logs or total == 0:
-            logs = get_mock_system_logs(filter_errors=filter_errors, limit=limit)
-            total = len(logs)
-
         return LogQueryResponse(
             success=True,
             data=logs,
@@ -849,11 +843,6 @@ async def get_logs_summary():
     """
     try:
         logs, total = get_system_logs_from_db(limit=1000)
-
-        # 如果没有真实数据，使用模拟数据
-        if not logs:
-            logs = get_mock_system_logs(limit=100)
-            total = len(logs)
 
         return build_logs_summary_payload(logs, total)
 
