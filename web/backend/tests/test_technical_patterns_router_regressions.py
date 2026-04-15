@@ -16,17 +16,17 @@ def _import_patterns_router_module():
     return importlib.import_module("app.api._technical_patterns_router")
 
 
-def test_detect_patterns_returns_unified_placeholder_response():
+def test_detect_patterns_returns_rule_based_pattern_response():
     module = _import_patterns_router_module()
 
     response = asyncio.run(module.detect_patterns(symbol="600519.SH", period="weekly"))
 
-    assert response.success is False
-    assert response.code == 503
+    assert response.success is True
+    assert response.code == 200
     assert response.message
     assert response.data == {
-        "status": "placeholder",
+        "status": "available",
         "symbol": "600519.SH",
         "period": "weekly",
-        "patterns": [],
+        "patterns": ["primary_trend_channel", "breakout_setup", "volatility_expansion_watch"],
     }
