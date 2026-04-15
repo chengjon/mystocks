@@ -44,6 +44,17 @@ class _FakeTracker:
         }
 
 
+class _DegradedTracker:
+    async def update_strategy_health_status(self, strategy_id):
+        return {
+            "health_status": 0,
+            "success_rate": 82.0,
+            "accuracy": 61.5,
+            "avg_latency_ms": 420.0,
+            "status_text": "degraded",
+        }
+
+
 async def test_get_strategy_detailed_health_uses_runtime_component_states():
     module = importlib.import_module("app.api.signal_monitoring.get_signal_statistics")
 
@@ -86,4 +97,54 @@ async def test_get_strategy_detailed_health_uses_runtime_component_states():
 
     assert response.components["signal_push"] == "healthy"
     assert response.components["gpu"] == "healthy"
+    assert response.components["signal_generation"] == "healthy"
+    assert response.components["signal_execution"] == "healthy"
     assert response.metrics["active_signals_count"] == 3
+
+
+async def test_get_strategy_detailed_health_derives_degraded_component_states():
+    module = importlib.import_module("app.api.signal_monitoring.get_signal_statistics")
+
+    fake_pg_module = ModuleType("src.monitoring.infrastructure.postgresql_async_v3")
+    fake_pg_module.get_postgres_async = lambda: _FakePostgres()
+
+    fake_tracker_module = ModuleType("src.monitoring.signal_result_tracker")
+    fake_tracker_module.get_signal_result_tracker = lambda: _DegradedTracker()
+
+    previous_pg = sys.modules.get("src.monitoring.infrastructure.postgresql_async_v3")
+    previous_tracker = sys.modules.get("src.monitoring.signal_result_tracker")
+
+    sys.modules["src.monitoring.infrastructure.postgresql_async_v3"] = fake_pg_module
+    sys.modules["src.monitoring.signal_result_tracker"] = fake_tracker_module
+
+    original_push_status = module._get_signal_push_component_status
+    original_gpu_status = module._get_gpu_component_status
+    module._get_signal_push_component_status = lambda: "degraded"
+
+    async def fake_gpu_status():
+        return "unknown"
+
+    module._get_gpu_component_status = fake_gpu_status
+
+    try:
+        response = await module.get_strategy_detailed_health("macd_strategy", current_user=SimpleNamespace(id=1))
+    finally:
+        module._get_signal_push_component_status = original_push_status
+        module._get_gpu_component_status = original_gpu_status
+
+        if previous_pg is None:
+            sys.modules.pop("src.monitoring.infrastructure.postgresql_async_v3", None)
+        else:
+            sys.modules["src.monitoring.infrastructure.postgresql_async_v3"] = previous_pg
+
+        if previous_tracker is None:
+            sys.modules.pop("src.monitoring.signal_result_tracker", None)
+        else:
+            sys.modules["src.monitoring.signal_result_tracker"] = previous_tracker
+
+    assert response.components["signal_generation"] == "degraded"
+    assert response.components["signal_execution"] == "degraded"
+    assert response.components["signal_push"] == "degraded"
+    assert response.components["gpu"] == "unknown"
+    assert "信号生成稳定性下降" in response.alerts
+    assert "信号执行性能下降" in response.alerts

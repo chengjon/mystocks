@@ -94,6 +94,22 @@ async def _get_gpu_component_status() -> str:
         return "unknown"
 
 
+def _derive_signal_generation_status(*, health_status: int, success_rate: float) -> str:
+    if health_status == -1 or success_rate < 60:
+        return "unhealthy"
+    if health_status == 0 or success_rate < 90:
+        return "degraded"
+    return "healthy"
+
+
+def _derive_signal_execution_status(*, health_status: int, accuracy: float, avg_latency_ms: float) -> str:
+    if health_status == -1 or accuracy < 50 or avg_latency_ms > 1000:
+        return "unhealthy"
+    if health_status == 0 or accuracy < 70 or avg_latency_ms > 300:
+        return "degraded"
+    return "healthy"
+
+
 @router.get("/signals/statistics", response_model=List[SignalStatisticsResponse])
 async def get_signal_statistics(
     strategy_id: str = Query(..., description="策略ID"),
@@ -427,20 +443,19 @@ async def get_strategy_detailed_health(
         gpu_status = await _get_gpu_component_status()
 
         components = {
-            "signal_generation": "healthy",
-            "signal_execution": "healthy",
+            "signal_generation": _derive_signal_generation_status(
+                health_status=health_data["health_status"],
+                success_rate=float(health_data["success_rate"]),
+            ),
+            "signal_execution": _derive_signal_execution_status(
+                health_status=health_data["health_status"],
+                accuracy=float(health_data["accuracy"]),
+                avg_latency_ms=float(health_data["avg_latency_ms"]),
+            ),
             "signal_push": signal_push_status,
             "database": "connected" if pg.is_connected() else "disconnected",
             "gpu": gpu_status,
         }
-
-        # 根据整体健康状态调整组件状态
-        if health_data["health_status"] == -1:
-            components["signal_generation"] = "unhealthy"
-            components["signal_execution"] = "unhealthy"
-        elif health_data["health_status"] == 0:
-            components["signal_generation"] = "degraded"
-            components["signal_execution"] = "degraded"
 
         # 收集告警信息
         alerts = []
@@ -450,6 +465,8 @@ async def get_strategy_detailed_health(
             alerts.append("信号准确率严重过低")
         if health_data["avg_latency_ms"] > 1000:
             alerts.append("执行延迟过高")
+        elif health_data["avg_latency_ms"] > 300:
+            alerts.append("执行延迟出现退化")
         if health_data["health_status"] == -1:
             alerts.append("策略状态不健康")
         if signal_push_status == "degraded":
@@ -458,6 +475,14 @@ async def get_strategy_detailed_health(
             alerts.append("信号推送失败率过高")
         if gpu_status == "degraded":
             alerts.append("GPU运行状态告警")
+        if components["signal_generation"] == "degraded":
+            alerts.append("信号生成稳定性下降")
+        elif components["signal_generation"] == "unhealthy":
+            alerts.append("信号生成异常")
+        if components["signal_execution"] == "degraded":
+            alerts.append("信号执行性能下降")
+        elif components["signal_execution"] == "unhealthy":
+            alerts.append("信号执行异常")
 
         # 构建响应
         response = StrategyDetailedHealthResponse(
