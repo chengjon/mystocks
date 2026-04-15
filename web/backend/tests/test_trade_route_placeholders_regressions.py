@@ -185,23 +185,50 @@ async def test_trade_history_rejects_invalid_date_range():
         raise AssertionError("expected HTTPException for invalid date range")
 
 
-async def test_trade_statistics_returns_unified_placeholder_response():
+async def test_trade_statistics_returns_runtime_summary_response():
     module = _load_module()
+    module.runtime_store.reset()
+    session = module.runtime_store.create_session(
+        symbol="600519.SH",
+        strategy_id="svm_momentum_v1",
+        initial_capital=100000.0,
+        position_size=0.1,
+        risk_threshold=0.05,
+    )
+    module.runtime_store.create_position(symbol="600519.SH", quantity=100, price=1750.0, session_id=session.session_id)
 
     payload = await module.get_statistics()
 
-    assert payload.success is False
-    assert payload.code == 503
+    assert payload.success is True
+    assert payload.code == 200
     assert payload.data == {
-        "status": "placeholder",
+        "status": "available",
         "endpoint": "trade",
         "resource": "statistics",
-        "statistics": None,
+        "statistics": {
+            "total_trades": 1,
+            "buy_count": 1,
+            "sell_count": 0,
+            "position_count": 1,
+            "total_buy_amount": 175000.0,
+            "total_sell_amount": 0.0,
+            "total_commission": 0.0,
+            "realized_profit": 0.0,
+        },
+        "source": "trading_runtime",
     }
 
 
-async def test_trade_execute_returns_unified_placeholder_response_after_validation():
+async def test_trade_execute_applies_runtime_buy_order():
     module = _load_module()
+    module.runtime_store.reset()
+    session = module.runtime_store.create_session(
+        symbol="600519.SH",
+        strategy_id="svm_momentum_v1",
+        initial_capital=300000.0,
+        position_size=0.2,
+        risk_threshold=0.05,
+    )
 
     payload = await module.execute_trade(
         {
@@ -212,17 +239,117 @@ async def test_trade_execute_returns_unified_placeholder_response_after_validati
         }
     )
 
+    positions = module.runtime_store.list_positions(session_id=session.session_id, symbol="600519.SH")
+
+    assert payload.success is True
+    assert payload.code == 200
+    assert payload.data["status"] == "available"
+    assert payload.data["endpoint"] == "trade"
+    assert payload.data["resource"] == "execute"
+    assert payload.data["accepted"] is True
+    assert payload.data["execution_mode"] == "runtime"
+    assert payload.data["session_id"] == session.session_id
+    assert payload.data["order"] == {
+        "direction": "buy",
+        "symbol": "600519.SH",
+        "quantity": 100,
+        "price": 1750.0,
+    }
+    assert payload.data["result"]["action"] == "opened"
+    assert payload.data["result"]["remaining_quantity"] == 100
+    assert payload.data["result"]["realized_profit"] == 0.0
+    assert positions
+    assert positions[0].quantity == 100
+    assert positions[0].average_cost == 1750.0
+
+
+async def test_trade_execute_applies_runtime_sell_order():
+    module = _load_module()
+    module.runtime_store.reset()
+    session = module.runtime_store.create_session(
+        symbol="600519.SH",
+        strategy_id="svm_momentum_v1",
+        initial_capital=300000.0,
+        position_size=0.2,
+        risk_threshold=0.05,
+    )
+    module.runtime_store.create_position(symbol="600519.SH", quantity=200, price=1750.0, session_id=session.session_id)
+
+    payload = await module.execute_trade(
+        {
+            "direction": "sell",
+            "symbol": "600519.SH",
+            "quantity": 100,
+            "price": 1800.0,
+        }
+    )
+
+    positions = module.runtime_store.list_positions(session_id=session.session_id, symbol="600519.SH")
+
+    assert payload.success is True
+    assert payload.code == 200
+    assert payload.data["status"] == "available"
+    assert payload.data["result"] == {
+        "action": "reduced",
+        "position_id": payload.data["result"]["position_id"],
+        "remaining_quantity": 100,
+        "realized_profit": 5000.0,
+    }
+    assert len(positions) == 1
+    assert positions[0].quantity == 100
+    assert module.runtime_store.get_session(session.session_id).total_pnl == 5000.0
+
+
+async def test_trade_execute_requires_active_session():
+    module = _load_module()
+    module.runtime_store.reset()
+
+    try:
+        await module.execute_trade(
+            {
+                "direction": "buy",
+                "symbol": "600519.SH",
+                "quantity": 100,
+                "price": 1750.0,
+            }
+        )
+    except Exception as exc:
+        assert getattr(exc, "status_code", None) == 400
+        assert "活动交易会话" in str(exc.detail)
+    else:
+        raise AssertionError("expected HTTPException for missing active trading session")
+
+
+async def test_trade_execute_rejects_invalid_lot_size():
+    module = _load_module()
+
+    try:
+        await module.execute_trade(
+            {
+                "direction": "buy",
+                "symbol": "600519.SH",
+                "quantity": 50,
+                "price": 1750.0,
+            }
+        )
+    except Exception as exc:
+        assert getattr(exc, "status_code", None) == 400
+        assert "100的整数倍" in str(exc.detail)
+    else:
+        raise AssertionError("expected HTTPException for invalid lot size")
+
+
+async def test_trade_signals_placeholder_contract_is_unchanged():
+    module = _load_module()
+
+    payload = await module.get_signals(limit=20)
+
     assert payload.success is False
     assert payload.code == 503
     assert payload.data == {
         "status": "placeholder",
         "endpoint": "trade",
-        "resource": "execute",
-        "accepted": False,
-        "order": {
-            "direction": "buy",
-            "symbol": "600519.SH",
-            "quantity": 100,
-            "price": 1750.0,
-        },
+        "resource": "signals",
+        "items": [],
+        "total": 0,
     }

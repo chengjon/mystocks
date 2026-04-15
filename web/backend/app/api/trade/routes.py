@@ -146,16 +146,26 @@ TRADE_HISTORY_RESPONSE_EXAMPLE = {
 }
 
 TRADE_STATISTICS_RESPONSE_EXAMPLE = {
-    "success": False,
-    "code": 503,
-    "message": "Trade statistics service is not implemented yet",
+    "success": True,
+    "code": 200,
+    "message": "Trade statistics summarized from trading runtime",
     "request_id": "req-trade-statistics-001",
     "timestamp": "2026-04-08T04:20:00Z",
     "data": {
-        "status": "placeholder",
+        "status": "available",
         "endpoint": "trade",
         "resource": "statistics",
-        "statistics": None,
+        "statistics": {
+            "total_trades": 1,
+            "buy_count": 1,
+            "sell_count": 0,
+            "position_count": 1,
+            "total_buy_amount": 18000.0,
+            "total_sell_amount": 0.0,
+            "total_commission": 0.0,
+            "realized_profit": 0.0,
+        },
+        "source": "trading_runtime",
     },
 }
 
@@ -167,17 +177,25 @@ EXECUTE_TRADE_REQUEST_EXAMPLE = {
 }
 
 EXECUTE_TRADE_RESPONSE_EXAMPLE = {
-    "success": False,
-    "code": 503,
-    "message": "Trade execution service is not implemented yet",
+    "success": True,
+    "code": 200,
+    "message": "Trade order executed in trading runtime",
     "request_id": "req-trade-execute-001",
     "timestamp": "2026-04-08T04:20:00Z",
     "data": {
-        "status": "placeholder",
+        "status": "available",
         "endpoint": "trade",
         "resource": "execute",
-        "accepted": False,
+        "accepted": True,
+        "execution_mode": "runtime",
+        "session_id": "session_demo_001",
         "order": EXECUTE_TRADE_REQUEST_EXAMPLE,
+        "result": {
+            "action": "opened",
+            "position_id": "pos_demo_001",
+            "remaining_quantity": 100,
+            "realized_profit": 0.0,
+        },
     },
 }
 
@@ -322,6 +340,105 @@ def _build_runtime_portfolio_payload() -> dict[str, Any]:
         last_update=session.updated_at,
     )
     return {"account": account.model_dump(mode="json")}
+
+
+def _build_runtime_statistics_payload() -> dict[str, Any]:
+    session = _resolve_active_runtime_session()
+    session_positions = runtime_store.list_positions(session_id=session.session_id) if session is not None else []
+    total_buy_amount = round(sum(item.average_cost * item.quantity for item in session_positions), 4)
+    statistics = TradeStatistics(
+        total_trades=len(session_positions),
+        buy_count=len(session_positions),
+        sell_count=0,
+        position_count=len(session_positions),
+        total_buy_amount=total_buy_amount,
+        total_sell_amount=0.0,
+        total_commission=0.0,
+        realized_profit=round(session.total_pnl, 4) if session is not None else 0.0,
+    )
+    return {
+        "statistics": statistics.model_dump(mode="json"),
+        "source": "trading_runtime",
+    }
+
+
+def _require_active_runtime_session() -> SessionState:
+    session = _resolve_active_runtime_session()
+    if session is None:
+        raise HTTPException(
+            status_code=400,
+            detail=create_error_response(
+                error_code=ErrorCodes.INVALID_VALUE,
+                message="当前没有活动交易会话，无法执行委托",
+            ).model_dump(),
+        )
+    return session
+
+
+def _execute_runtime_buy(*, session: SessionState, symbol: str, quantity: int, price: float) -> dict[str, Any]:
+    position = runtime_store.create_position(symbol=symbol, quantity=quantity, price=price, session_id=session.session_id)
+    return {
+        "action": "opened",
+        "position_id": position.position_id,
+        "remaining_quantity": position.quantity,
+        "realized_profit": 0.0,
+    }
+
+
+def _execute_runtime_sell(*, session: SessionState, symbol: str, quantity: int, price: float) -> dict[str, Any]:
+    positions = runtime_store.list_positions(session_id=session.session_id, symbol=symbol)
+    if not positions:
+        raise HTTPException(
+            status_code=404,
+            detail=create_error_response(
+                error_code=ErrorCodes.NOT_FOUND,
+                message=f"未找到可卖出的持仓: {symbol}",
+            ).model_dump(),
+        )
+
+    remaining_quantity = quantity
+    realized_profit = 0.0
+    last_position_id: Optional[str] = None
+    total_available = sum(item.quantity for item in positions)
+
+    if total_available < quantity:
+        raise HTTPException(
+            status_code=400,
+            detail=create_error_response(
+                error_code=ErrorCodes.OUT_OF_RANGE,
+                message=f"可卖出数量不足: requested={quantity}, available={total_available}",
+            ).model_dump(),
+        )
+
+    for position in positions:
+        if remaining_quantity <= 0:
+            break
+
+        close_quantity = min(position.quantity, remaining_quantity)
+        realized_delta = round((price - position.average_cost) * close_quantity, 4)
+        session.current_capital = round(session.current_capital + (price * close_quantity), 4)
+        session.total_pnl = round(session.total_pnl + realized_delta, 4)
+        realized_profit = round(realized_profit + realized_delta, 4)
+        last_position_id = position.position_id
+
+        if close_quantity == position.quantity:
+            runtime_store.positions.pop(position.position_id, None)
+        else:
+            position.quantity -= close_quantity
+            position.market_value = round(position.quantity * position.current_price, 4)
+            position.unrealized_pnl = round((position.current_price - position.average_cost) * position.quantity, 4)
+            position.updated_at = datetime.now(session.updated_at.tzinfo)
+
+        remaining_quantity -= close_quantity
+
+    runtime_store._recalculate_session(session.session_id)  # noqa: SLF001
+    remaining_positions = runtime_store.list_positions(session_id=session.session_id, symbol=symbol)
+    return {
+        "action": "closed" if not remaining_positions else "reduced",
+        "position_id": last_position_id,
+        "remaining_quantity": total_available - quantity,
+        "realized_profit": realized_profit,
+    }
 
 
 def _query_trade_history(
@@ -551,12 +668,12 @@ async def get_statistics() -> UnifiedResponse[Dict[str, Any]]:
     """
     获取交易统计数据
 
-    返回交易统计接口的兼容占位响应，显式说明当前尚未接入真实统计服务。
+    返回当前活动交易会话的运行时统计摘要。
     """
-    return _placeholder_trade_response(
-        message="Trade statistics service is not implemented yet",
+    return _success_trade_response(
+        message="Trade statistics summarized from trading runtime",
         resource="statistics",
-        data={"statistics": None},
+        data=_build_runtime_statistics_payload(),
     )
 
 
@@ -568,7 +685,7 @@ async def execute_trade(order: dict = Body(..., example=EXECUTE_TRADE_REQUEST_EX
     """
     执行买卖交易
 
-    接收交易指令并执行基础参数校验，当前版本返回显式标记未接入真实下单通道的兼容占位结果。
+    接收交易指令并执行基础参数校验，然后把结果回写到当前活动交易会话的运行时状态。
 
     Args:
         order: 交易信息字典，包含 type, symbol, quantity, price 等字段
@@ -614,17 +731,37 @@ async def execute_trade(order: dict = Body(..., example=EXECUTE_TRADE_REQUEST_EX
                 ).model_dump(),
             )
 
-        return _placeholder_trade_response(
-            message="Trade execution service is not implemented yet",
+        price = order.get("price")
+        if price is None or float(price) <= 0:
+            raise HTTPException(
+                status_code=400,
+                detail=create_error_response(
+                    error_code=ErrorCodes.OUT_OF_RANGE, message="委托价格必须大于0"
+                ).model_dump(),
+            )
+
+        session = _require_active_runtime_session()
+        normalized_symbol = str(order.get("symbol")).strip()
+        execution_result = (
+            _execute_runtime_buy(session=session, symbol=normalized_symbol, quantity=quantity, price=float(price))
+            if direction == "buy"
+            else _execute_runtime_sell(session=session, symbol=normalized_symbol, quantity=quantity, price=float(price))
+        )
+
+        return _success_trade_response(
+            message="Trade order executed in trading runtime",
             resource="execute",
             data={
-                "accepted": False,
+                "accepted": True,
+                "execution_mode": "runtime",
+                "session_id": session.session_id,
                 "order": {
                     "direction": direction,
-                    "symbol": order.get("symbol"),
+                    "symbol": normalized_symbol,
                     "quantity": quantity,
-                    "price": order.get("price"),
+                    "price": float(price),
                 },
+                "result": execution_result,
             },
         )
     except HTTPException:

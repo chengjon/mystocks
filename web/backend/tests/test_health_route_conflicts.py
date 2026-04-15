@@ -2394,9 +2394,10 @@ def test_trade_endpoints_have_examples_parameter_docs_and_error_responses() -> N
     assert len(statistics_operation.get("description", "")) >= 20
     assert "example" in statistics_success_json or "examples" in statistics_success_json
     statistics_example = statistics_success_json.get("example") or next(iter(statistics_success_json["examples"].values()))["value"]
-    assert statistics_example["success"] is False
-    assert statistics_example["code"] == 503
-    assert statistics_example["data"]["status"] == "placeholder"
+    assert statistics_example["success"] is True
+    assert statistics_example["code"] == 200
+    assert statistics_example["data"]["status"] == "available"
+    assert statistics_example["data"]["statistics"]["total_trades"] >= 0
     assert any(code.startswith("5") for code in statistics_operation["responses"])
 
     execute_json = execute_operation["requestBody"]["content"]["application/json"]
@@ -2404,9 +2405,10 @@ def test_trade_endpoints_have_examples_parameter_docs_and_error_responses() -> N
     assert "example" in execute_json or "examples" in execute_json
     assert "example" in execute_success_json or "examples" in execute_success_json
     execute_example = execute_success_json.get("example") or next(iter(execute_success_json["examples"].values()))["value"]
-    assert execute_example["success"] is False
-    assert execute_example["code"] == 503
-    assert execute_example["data"]["status"] == "placeholder"
+    assert execute_example["success"] is True
+    assert execute_example["code"] == 200
+    assert execute_example["data"]["status"] == "available"
+    assert execute_example["data"]["accepted"] is True
     assert any(code.startswith(("4", "5")) for code in execute_operation["responses"])
 
 
