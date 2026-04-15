@@ -1,14 +1,25 @@
 """Market heatmap routes."""
 
-import os
 from datetime import datetime
 
 from fastapi import APIRouter, Query
 
 from app.core.cache_utils import cache_response
+from app.core.config import settings
 from app.core.exceptions import BusinessException
 
 router = APIRouter()
+
+
+def _is_market_heatmap_mock_enabled() -> bool:
+    return settings.use_mock_apis
+
+
+def _get_mock_market_heatmap(market: str, limit: int) -> dict:
+    from app.mock.unified_mock_data import get_mock_data_manager
+
+    mock_manager = get_mock_data_manager()
+    return mock_manager.get_data("market_heatmap", market=market, limit=limit)
 
 
 def _success_response_spec(description: str, example: dict) -> dict[int, dict]:
@@ -57,13 +68,8 @@ async def get_market_heatmap(
 ):
     """获取市场热力图数据，用于可视化展示各股票的涨跌情况。"""
     try:
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
-        if use_mock:
-            from app.mock.unified_mock_data import get_mock_data_manager
-
-            mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data("market_heatmap", market=market, limit=limit)
+        if _is_market_heatmap_mock_enabled():
+            mock_data = _get_mock_market_heatmap(market=market, limit=limit)
             return {
                 "success": True,
                 "data": mock_data.get("data", []),
