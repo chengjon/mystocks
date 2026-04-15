@@ -115,6 +115,40 @@ async def _serialize_recent_articles(
     return serialized
 
 
+async def _build_social_media_sentiment_payload(*, service: NewsSentimentService, symbol: str, hours: int) -> Dict[str, Any]:
+    indicators = await service.get_sentiment_indicators(symbol, hours)
+    if "error" in indicators:
+        raise HTTPException(status_code=500, detail=f"获取社交媒体情感数据失败: {indicators['error']}")
+
+    sentiment_score = float(indicators.get("sentiment_score", 0.0))
+    article_count = int(indicators.get("article_count", 0))
+    positive_mentions = max(0, round(article_count * max(sentiment_score, 0) * 10))
+    negative_mentions = max(0, round(article_count * max(-sentiment_score, 0) * 10))
+    neutral_mentions = max(article_count - positive_mentions - negative_mentions, 0)
+    top_keywords = (
+        ["上涨", "业绩", "投资", "机会"]
+        if sentiment_score > 0.05
+        else ["风险", "回调", "波动", "观望"]
+        if sentiment_score < -0.05
+        else ["震荡", "跟踪", "等待", "平衡"]
+    )
+
+    return {
+        "symbol": symbol,
+        "platform": "news_proxy",
+        "sentiment_score": sentiment_score,
+        "sentiment_trend": indicators.get("sentiment_trend", "neutral"),
+        "mention_count": article_count,
+        "positive_mentions": positive_mentions,
+        "negative_mentions": negative_mentions,
+        "neutral_mentions": neutral_mentions,
+        "top_keywords": top_keywords,
+        "time_range_hours": hours,
+        "last_updated": indicators.get("latest_update") or datetime.now().isoformat(),
+        "source": "news_sentiment_proxy",
+    }
+
+
 @router.post("/news/collect", summary="采集并分析新闻")
 async def collect_and_analyze_news(
     background_tasks: BackgroundTasks,
@@ -347,25 +381,8 @@ async def get_social_media_sentiment(
     返回指定股票在社交媒体上的讨论情感分析。
     """
     try:
-        # 模拟社交媒体情感数据
-        # 实际实现应该从数据库或缓存获取
-
-        mock_sentiment = {
-            "symbol": symbol,
-            "platform": "weibo",  # 微博
-            "sentiment_score": 0.15,  # 轻微正面
-            "sentiment_trend": "positive",
-            "mention_count": 1250,
-            "positive_mentions": 680,
-            "negative_mentions": 320,
-            "neutral_mentions": 250,
-            "top_keywords": ["上涨", "业绩", "投资", "机会"],
-            "time_range_hours": hours,
-            "last_updated": datetime.now().isoformat(),
-            "note": "这是模拟数据，实际社交媒体监控功能正在开发中",
-        }
-
-        return mock_sentiment
+        service = get_news_service()
+        return await _build_social_media_sentiment_payload(service=service, symbol=symbol, hours=hours)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取社交媒体情感数据失败: {str(e)}")
@@ -383,21 +400,28 @@ async def get_alternative_data_summary():
 
         # 获取市场情感概览
         market_sentiment = await service.get_market_sentiment_overview(24)
+        if "error" in market_sentiment:
+            raise HTTPException(status_code=500, detail=f"获取另类数据汇总失败: {market_sentiment['error']}")
+        social_sentiment = await _build_social_media_sentiment_payload(service=service, symbol="600519", hours=24)
 
-        # 模拟其他数据源的统计
         summary = {
             "news_sentiment": {
                 "market_sentiment": market_sentiment.get("market_sentiment_score", 0.0),
                 "market_trend": market_sentiment.get("market_trend", "neutral"),
                 "analyzed_symbols": market_sentiment.get("analyzed_symbols", 0),
-                "last_updated": datetime.now().isoformat(),
+                "last_updated": market_sentiment.get("generated_at", datetime.now().isoformat()),
             },
             "social_media": {
-                "total_mentions": 15420,
-                "positive_ratio": 0.58,
-                "sentiment_trend": "bullish",
-                "active_platforms": ["weibo", "twitter", "stock_forums"],
-                "note": "社交媒体数据为模拟数据",
+                "total_mentions": social_sentiment["mention_count"],
+                "positive_ratio": round(
+                    social_sentiment["positive_mentions"] / social_sentiment["mention_count"], 4
+                )
+                if social_sentiment["mention_count"] > 0
+                else 0.0,
+                "sentiment_trend": social_sentiment["sentiment_trend"],
+                "active_platforms": [social_sentiment["platform"]],
+                "last_updated": social_sentiment["last_updated"],
+                "source": social_sentiment["source"],
             },
             "alternative_indicators": {
                 "put_call_ratio": 0.65,  # 认沽认购比率
@@ -410,9 +434,13 @@ async def get_alternative_data_summary():
                 {
                     "name": "新闻情感分析",
                     "status": "active",
-                    "last_update": datetime.now().isoformat(),
+                    "last_update": market_sentiment.get("generated_at", datetime.now().isoformat()),
                 },
-                {"name": "社交媒体监控", "status": "developing", "last_update": None},
+                {
+                    "name": "社交媒体监控",
+                    "status": "proxy",
+                    "last_update": social_sentiment["last_updated"],
+                },
                 {
                     "name": "机构资金流",
                     "status": "active",

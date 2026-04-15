@@ -18,18 +18,13 @@ def _load_module():
     return importlib.import_module("app.api.alternative_data")
 
 
-def test_get_news_service_uses_real_database_manager():
+def _install_fake_alternative_modules(fake_service_cls):
     fake_news_module = ModuleType("src.alternative_data.news_sentiment_analyzer")
     fake_db_pool_module = ModuleType("src.core.database_pool")
     fake_audit_module = ModuleType("src.infrastructure.logging.audit_system")
 
     class FakeDatabaseConnectionManager:
         pass
-
-    class FakeNewsSentimentService:
-        def __init__(self, db_manager):
-            self.db_manager = db_manager
-            self.collector = type("Collector", (), {"db_manager": db_manager})()
 
     class FakeAuditEvent:
         def __init__(self, *args, **kwargs):
@@ -40,7 +35,7 @@ def test_get_news_service_uses_real_database_manager():
         async def log_audit_event(self, event):
             return event
 
-    fake_news_module.NewsSentimentService = FakeNewsSentimentService
+    fake_news_module.NewsSentimentService = fake_service_cls
     fake_db_pool_module.DatabaseConnectionManager = FakeDatabaseConnectionManager
     fake_audit_module.AuditEvent = FakeAuditEvent
     fake_audit_module.get_audit_manager = lambda: FakeAuditManager()
@@ -53,25 +48,39 @@ def test_get_news_service_uses_real_database_manager():
     sys.modules["src.core.database_pool"] = fake_db_pool_module
     sys.modules["src.infrastructure.logging.audit_system"] = fake_audit_module
 
+    return previous_news, previous_db_pool, previous_audit
+
+
+def _restore_fake_alternative_modules(previous_news, previous_db_pool, previous_audit):
+    if previous_news is None:
+        sys.modules.pop("src.alternative_data.news_sentiment_analyzer", None)
+    else:
+        sys.modules["src.alternative_data.news_sentiment_analyzer"] = previous_news
+
+    if previous_db_pool is None:
+        sys.modules.pop("src.core.database_pool", None)
+    else:
+        sys.modules["src.core.database_pool"] = previous_db_pool
+
+    if previous_audit is None:
+        sys.modules.pop("src.infrastructure.logging.audit_system", None)
+    else:
+        sys.modules["src.infrastructure.logging.audit_system"] = previous_audit
+
+
+def test_get_news_service_uses_real_database_manager():
+    class FakeNewsSentimentService:
+        def __init__(self, db_manager):
+            self.db_manager = db_manager
+            self.collector = type("Collector", (), {"db_manager": db_manager})()
+    previous_news, previous_db_pool, previous_audit = _install_fake_alternative_modules(FakeNewsSentimentService)
+
     try:
         module = _load_module()
         module._news_service = None
         service = module.get_news_service()
     finally:
-        if previous_news is None:
-            sys.modules.pop("src.alternative_data.news_sentiment_analyzer", None)
-        else:
-            sys.modules["src.alternative_data.news_sentiment_analyzer"] = previous_news
-
-        if previous_db_pool is None:
-            sys.modules.pop("src.core.database_pool", None)
-        else:
-            sys.modules["src.core.database_pool"] = previous_db_pool
-
-        if previous_audit is None:
-            sys.modules.pop("src.infrastructure.logging.audit_system", None)
-        else:
-            sys.modules["src.infrastructure.logging.audit_system"] = previous_audit
+        _restore_fake_alternative_modules(previous_news, previous_db_pool, previous_audit)
 
     assert service.db_manager is not None
     assert service.db_manager.__class__.__name__ == "FakeDatabaseConnectionManager"
@@ -79,13 +88,6 @@ def test_get_news_service_uses_real_database_manager():
 
 
 async def test_get_recent_news_uses_service_collector_and_filters_results():
-    fake_news_module = ModuleType("src.alternative_data.news_sentiment_analyzer")
-    fake_db_pool_module = ModuleType("src.core.database_pool")
-    fake_audit_module = ModuleType("src.infrastructure.logging.audit_system")
-
-    class FakeDatabaseConnectionManager:
-        pass
-
     class FakeArticle:
         def __init__(self, article_id, title, content, symbols, source):
             self.article_id = article_id
@@ -126,49 +128,80 @@ async def test_get_recent_news_uses_service_collector_and_filters_results():
             self.collector = FakeCollector(db_manager)
             self.analyzer = FakeAnalyzer()
 
-    class FakeAuditEvent:
-        def __init__(self, *args, **kwargs):
-            self.args = args
-            self.kwargs = kwargs
-
-    class FakeAuditManager:
-        async def log_audit_event(self, event):
-            return event
-
-    fake_news_module.NewsSentimentService = FakeNewsSentimentService
-    fake_db_pool_module.DatabaseConnectionManager = FakeDatabaseConnectionManager
-    fake_audit_module.AuditEvent = FakeAuditEvent
-    fake_audit_module.get_audit_manager = lambda: FakeAuditManager()
-
-    previous_news = sys.modules.get("src.alternative_data.news_sentiment_analyzer")
-    previous_db_pool = sys.modules.get("src.core.database_pool")
-    previous_audit = sys.modules.get("src.infrastructure.logging.audit_system")
-
-    sys.modules["src.alternative_data.news_sentiment_analyzer"] = fake_news_module
-    sys.modules["src.core.database_pool"] = fake_db_pool_module
-    sys.modules["src.infrastructure.logging.audit_system"] = fake_audit_module
+    previous_news, previous_db_pool, previous_audit = _install_fake_alternative_modules(FakeNewsSentimentService)
 
     try:
         module = _load_module()
         module._news_service = None
         response = await module.get_recent_news(limit=10, sentiment_filter="positive", symbol="600519", hours_back=24)
     finally:
-        if previous_news is None:
-            sys.modules.pop("src.alternative_data.news_sentiment_analyzer", None)
-        else:
-            sys.modules["src.alternative_data.news_sentiment_analyzer"] = previous_news
-
-        if previous_db_pool is None:
-            sys.modules.pop("src.core.database_pool", None)
-        else:
-            sys.modules["src.core.database_pool"] = previous_db_pool
-
-        if previous_audit is None:
-            sys.modules.pop("src.infrastructure.logging.audit_system", None)
-        else:
-            sys.modules["src.infrastructure.logging.audit_system"] = previous_audit
+        _restore_fake_alternative_modules(previous_news, previous_db_pool, previous_audit)
 
     assert len(response) == 1
     assert response[0].article_id == "news-1"
     assert response[0].sentiment_label == "positive"
     assert response[0].symbols == ["600519"]
+
+
+async def test_get_social_media_sentiment_uses_sentiment_service_proxy():
+    class FakeService:
+        def __init__(self, db_manager):
+            self.db_manager = db_manager
+
+        async def get_sentiment_indicators(self, symbol, hours):
+            assert symbol == "600519"
+            assert hours == 24
+            return {
+                "sentiment_score": 0.3,
+                "sentiment_trend": "positive",
+                "article_count": 20,
+                "latest_update": "2026-04-15T09:00:00",
+            }
+
+    previous_news, previous_db_pool, previous_audit = _install_fake_alternative_modules(FakeService)
+    try:
+        module = _load_module()
+        module._news_service = None
+        response = await module.get_social_media_sentiment(symbol="600519", hours=24)
+    finally:
+        _restore_fake_alternative_modules(previous_news, previous_db_pool, previous_audit)
+
+    assert response["platform"] == "news_proxy"
+    assert response["sentiment_score"] == 0.3
+    assert response["mention_count"] == 20
+    assert response["source"] == "news_sentiment_proxy"
+
+
+async def test_get_alternative_data_summary_uses_runtime_sentiment_sources():
+    class FakeService:
+        def __init__(self, db_manager):
+            self.db_manager = db_manager
+
+        async def get_market_sentiment_overview(self, hours):
+            assert hours == 24
+            return {
+                "market_sentiment_score": 0.42,
+                "market_trend": "positive",
+                "analyzed_symbols": 8,
+                "generated_at": "2026-04-15T09:30:00",
+            }
+
+        async def get_sentiment_indicators(self, symbol, hours):
+            return {
+                "sentiment_score": 0.2,
+                "sentiment_trend": "positive",
+                "article_count": 10,
+                "latest_update": "2026-04-15T09:10:00",
+            }
+
+    previous_news, previous_db_pool, previous_audit = _install_fake_alternative_modules(FakeService)
+    try:
+        module = _load_module()
+        module._news_service = None
+        response = await module.get_alternative_data_summary()
+    finally:
+        _restore_fake_alternative_modules(previous_news, previous_db_pool, previous_audit)
+
+    assert response["news_sentiment"]["market_sentiment"] == 0.42
+    assert response["social_media"]["source"] == "news_sentiment_proxy"
+    assert response["data_sources"][1]["status"] == "proxy"
