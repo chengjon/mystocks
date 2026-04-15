@@ -3,16 +3,36 @@ TradingView Widget API
 提供 TradingView 图表和 widgets 配置
 """
 
-import os
-from typing import Dict, List
+from typing import Any, Dict, List
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from app.api.auth import User, get_current_user
+from app.core.config import settings
 from app.services.tradingview_widget_service import get_tradingview_service
 
 router = APIRouter()
+
+
+def _is_tradingview_mock_enabled() -> bool:
+    return settings.use_mock_apis
+
+
+def _get_mock_tradingview_config(data_type: str, **kwargs: Any) -> Dict[str, Any]:
+    from app.mock.unified_mock_data import get_mock_data_manager
+
+    mock_manager = get_mock_data_manager()
+    mock_data = mock_manager.get_data(data_type, **kwargs)
+    return mock_data.get("config", {})
+
+
+def _get_mock_tradingview_symbol(symbol: str, market: str) -> str:
+    from app.mock.unified_mock_data import get_mock_data_manager
+
+    mock_manager = get_mock_data_manager()
+    mock_data = mock_manager.get_data("tradingview_symbol_convert", symbol=symbol, market=market)
+    return mock_data.get("tradingview_symbol", "")
 
 TRADINGVIEW_ERROR_RESPONSE = {
     500: {
@@ -186,15 +206,8 @@ async def get_chart_config(
     返回用于前端嵌入的图表配置
     """
     try:
-        # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
-        if use_mock:
-            # 使用Mock数据
-            from app.mock.unified_mock_data import get_mock_data_manager
-
-            mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data(
+        if _is_tradingview_mock_enabled():
+            config = _get_mock_tradingview_config(
                 "tradingview_chart",
                 symbol=request.symbol,
                 market=request.market,
@@ -203,24 +216,19 @@ async def get_chart_config(
                 locale=request.locale,
                 container_id=request.container_id,
             )
-            return {"success": True, "config": mock_data.get("config", {})}
-        else:
-            # 正常获取真实数据
-            service = get_tradingview_service()
-
-            # 转换股票代码为 TradingView 格式
-            tv_symbol = service.convert_symbol_to_tradingview_format(request.symbol, request.market)
-
-            # 生成图表配置
-            config = service.generate_chart_config(
-                symbol=tv_symbol,
-                container_id=request.container_id,
-                interval=request.interval,
-                theme=request.theme,
-                locale=request.locale,
-            )
-
             return {"success": True, "config": config}
+
+        service = get_tradingview_service()
+        tv_symbol = service.convert_symbol_to_tradingview_format(request.symbol, request.market)
+        config = service.generate_chart_config(
+            symbol=tv_symbol,
+            container_id=request.container_id,
+            interval=request.interval,
+            theme=request.theme,
+            locale=request.locale,
+        )
+
+        return {"success": True, "config": config}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"生成图表配置失败: {str(e)}")
 
@@ -242,15 +250,8 @@ async def get_mini_chart_config(
     获取 TradingView 迷你图表配置
     """
     try:
-        # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
-        if use_mock:
-            # 使用Mock数据
-            from app.mock.unified_mock_data import get_mock_data_manager
-
-            mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data(
+        if _is_tradingview_mock_enabled():
+            config = _get_mock_tradingview_config(
                 "tradingview_mini_chart",
                 symbol=symbol,
                 market=market,
@@ -258,20 +259,13 @@ async def get_mini_chart_config(
                 locale=locale,
                 container_id=container_id,
             )
-            return {"success": True, "config": mock_data.get("config", {})}
-        else:
-            # 正常获取真实数据
-            service = get_tradingview_service()
-
-            # 转换股票代码
-            tv_symbol = service.convert_symbol_to_tradingview_format(symbol, market)
-
-            # 生成迷你图表配置
-            config = service.generate_mini_chart_config(
-                symbol=tv_symbol, container_id=container_id, theme=theme, locale=locale
-            )
-
             return {"success": True, "config": config}
+
+        service = get_tradingview_service()
+        tv_symbol = service.convert_symbol_to_tradingview_format(symbol, market)
+        config = service.generate_mini_chart_config(symbol=tv_symbol, container_id=container_id, theme=theme, locale=locale)
+
+        return {"success": True, "config": config}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"生成迷你图表配置失败: {str(e)}")
 
@@ -305,43 +299,29 @@ async def get_ticker_tape_config(
     获取 TradingView Ticker Tape 配置
     """
     try:
-        # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
+        symbols = None
+        if request.symbols:
+            symbols = [item.dict() for item in request.symbols]
 
-        if use_mock:
-            # 使用Mock数据
-            from app.mock.unified_mock_data import get_mock_data_manager
-
-            mock_manager = get_mock_data_manager()
-            symbols = None
-            if request.symbols:
-                symbols = [item.dict() for item in request.symbols]
-            mock_data = mock_manager.get_data(
+        if _is_tradingview_mock_enabled():
+            config = _get_mock_tradingview_config(
                 "tradingview_ticker_tape",
                 symbols=symbols,
                 theme=request.theme,
                 locale=request.locale,
                 container_id=request.container_id,
             )
-            return {"success": True, "config": mock_data.get("config", {})}
-        else:
-            # 正常获取真实数据
-            service = get_tradingview_service()
-
-            # 转换 symbols 为字典列表
-            symbols = None
-            if request.symbols:
-                symbols = [item.dict() for item in request.symbols]
-
-            # 生成 Ticker Tape 配置
-            config = service.generate_ticker_tape_config(
-                symbols=symbols,
-                container_id=request.container_id,
-                theme=request.theme,
-                locale=request.locale,
-            )
-
             return {"success": True, "config": config}
+
+        service = get_tradingview_service()
+        config = service.generate_ticker_tape_config(
+            symbols=symbols,
+            container_id=request.container_id,
+            theme=request.theme,
+            locale=request.locale,
+        )
+
+        return {"success": True, "config": config}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"生成 Ticker Tape 配置失败: {str(e)}")
 
@@ -362,28 +342,18 @@ async def get_market_overview_config(
     获取 TradingView 市场概览配置
     """
     try:
-        # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
-        if use_mock:
-            # 使用Mock数据
-            from app.mock.unified_mock_data import get_mock_data_manager
-
-            mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data(
+        if _is_tradingview_mock_enabled():
+            config = _get_mock_tradingview_config(
                 "tradingview_market_overview", market=market, theme=theme, locale=locale, container_id=container_id
             )
-            return {"success": True, "config": mock_data.get("config", {})}
-        else:
-            # 正常获取真实数据
-            service = get_tradingview_service()
-
-            # 生成市场概览配置
-            config = service.generate_market_overview_config(
-                container_id=container_id, theme=theme, locale=locale, market=market
-            )
-
             return {"success": True, "config": config}
+
+        service = get_tradingview_service()
+        config = service.generate_market_overview_config(
+            container_id=container_id, theme=theme, locale=locale, market=market
+        )
+
+        return {"success": True, "config": config}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"生成市场概览配置失败: {str(e)}")
 
@@ -404,28 +374,18 @@ async def get_screener_config(
     获取 TradingView 股票筛选器配置
     """
     try:
-        # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
-        if use_mock:
-            # 使用Mock数据
-            from app.mock.unified_mock_data import get_mock_data_manager
-
-            mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data(
+        if _is_tradingview_mock_enabled():
+            config = _get_mock_tradingview_config(
                 "tradingview_screener", market=market, theme=theme, locale=locale, container_id=container_id
             )
-            return {"success": True, "config": mock_data.get("config", {})}
-        else:
-            # 正常获取真实数据
-            service = get_tradingview_service()
-
-            # 生成筛选器配置
-            config = service.generate_screener_config(
-                container_id=container_id, theme=theme, locale=locale, market=market
-            )
-
             return {"success": True, "config": config}
+
+        service = get_tradingview_service()
+        config = service.generate_screener_config(
+            container_id=container_id, theme=theme, locale=locale, market=market
+        )
+
+        return {"success": True, "config": config}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"生成筛选器配置失败: {str(e)}")
 
@@ -444,31 +404,22 @@ async def convert_symbol(
     将股票代码转换为 TradingView 格式
     """
     try:
-        # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
-        if use_mock:
-            # 使用Mock数据
-            from app.mock.unified_mock_data import get_mock_data_manager
-
-            mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data("tradingview_symbol_convert", symbol=symbol, market=market)
+        if _is_tradingview_mock_enabled():
             return {
                 "success": True,
                 "original_symbol": symbol,
-                "tradingview_symbol": mock_data.get("tradingview_symbol", ""),
+                "tradingview_symbol": _get_mock_tradingview_symbol(symbol=symbol, market=market),
                 "market": market,
             }
-        else:
-            # 正常获取真实数据
-            service = get_tradingview_service()
-            tv_symbol = service.convert_symbol_to_tradingview_format(symbol, market)
 
-            return {
-                "success": True,
-                "original_symbol": symbol,
-                "tradingview_symbol": tv_symbol,
-                "market": market,
-            }
+        service = get_tradingview_service()
+        tv_symbol = service.convert_symbol_to_tradingview_format(symbol, market)
+
+        return {
+            "success": True,
+            "original_symbol": symbol,
+            "tradingview_symbol": tv_symbol,
+            "market": market,
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"转换股票代码失败: {str(e)}")
