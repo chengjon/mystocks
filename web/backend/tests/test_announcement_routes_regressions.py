@@ -16,24 +16,27 @@ def _load_module():
     return importlib.import_module("app.api.announcement.routes")
 
 
-async def test_announcement_analyze_returns_unified_placeholder_response():
+async def test_announcement_analyze_returns_rule_based_response():
     module = _load_module()
 
     payload = await module.analyze_data(
         {
             "title": "2026年第一季度业绩预增公告",
             "stock_code": "600519",
+            "content": "预计2026年第一季度归母净利润同比增长18%-22%。",
             "analysis_mode": "summary",
         }
     )
 
-    assert payload.success is False
-    assert payload.code == 503
+    assert payload.success is True
+    assert payload.code == 200
     assert payload.data == {
-        "status": "placeholder",
+        "status": "available",
         "endpoint": "announcement",
         "stock_code": "600519",
         "analysis_mode": "summary",
-        "summary": None,
-        "signals": [],
+        "summary": "公告内容偏利多，核心信号集中在业绩增长预期。",
+        "signals": ["earnings_growth", "positive_guidance"],
+        "sentiment": "positive",
+        "importance_level": 4,
     }

@@ -135,22 +135,106 @@ ANNOUNCEMENT_STATUS_RESPONSES = {
 ANNOUNCEMENT_ANALYZE_RESPONSES = {
     **ANNOUNCEMENT_ERROR_RESPONSE,
     **_success_response_spec(
-        "公告分析兼容占位结果",
+        "公告分析结果",
         {
-            "success": False,
-            "code": 503,
-            "message": "Announcement AI analysis is not implemented yet",
+            "success": True,
+            "code": 200,
+            "message": "Announcement analysis completed from provided text",
             "data": {
-                "status": "placeholder",
+                "status": "available",
                 "endpoint": "announcement",
                 "stock_code": "600519",
                 "analysis_mode": "summary",
-                "summary": None,
-                "signals": [],
+                "summary": "公告内容偏利多，核心信号集中在业绩增长预期。",
+                "signals": ["earnings_growth", "positive_guidance"],
+                "sentiment": "positive",
+                "importance_level": 4,
             },
         },
     ),
 }
+
+POSITIVE_ANNOUNCEMENT_KEYWORDS = (
+    "预增",
+    "增长",
+    "回购",
+    "分红",
+    "中标",
+    "增持",
+    "扭亏",
+    "超预期",
+)
+
+NEGATIVE_ANNOUNCEMENT_KEYWORDS = (
+    "预减",
+    "下滑",
+    "亏损",
+    "减持",
+    "问询",
+    "处罚",
+    "延期",
+    "风险",
+)
+
+
+def _extract_announcement_text(data: dict[str, Any]) -> str:
+    return " ".join(
+        str(value).strip()
+        for value in (
+            data.get("title"),
+            data.get("content"),
+            data.get("summary"),
+        )
+        if value
+    )
+
+
+def _detect_announcement_sentiment(text: str) -> tuple[str, list[str], int]:
+    signals: list[str] = []
+    importance_level = 2
+
+    positive_hits = [keyword for keyword in POSITIVE_ANNOUNCEMENT_KEYWORDS if keyword in text]
+    negative_hits = [keyword for keyword in NEGATIVE_ANNOUNCEMENT_KEYWORDS if keyword in text]
+
+    if positive_hits:
+        signals.extend(
+            "earnings_growth" if keyword in {"预增", "增长", "扭亏", "超预期"} else
+            "capital_return" if keyword in {"回购", "分红"} else
+            "business_momentum"
+            for keyword in positive_hits
+        )
+        if len(positive_hits) >= 2:
+            signals.append("positive_guidance")
+        importance_level = max(importance_level, 4 if len(positive_hits) >= 2 else 3)
+
+    if negative_hits:
+        signals.extend(
+            "earnings_pressure" if keyword in {"预减", "下滑", "亏损"} else
+            "governance_risk" if keyword in {"问询", "处罚"} else
+            "execution_risk"
+            for keyword in negative_hits
+        )
+        if len(negative_hits) >= 2:
+            signals.append("risk_escalation")
+        importance_level = max(importance_level, 4 if len(negative_hits) >= 2 else 3)
+
+    if len(positive_hits) > len(negative_hits):
+        return "positive", list(dict.fromkeys(signals)), importance_level
+    if len(negative_hits) > len(positive_hits):
+        return "negative", list(dict.fromkeys(signals)), importance_level
+    if signals:
+        return "neutral", list(dict.fromkeys(signals)), importance_level
+    return "neutral", ["watchlist_review"], 2
+
+
+def _build_announcement_summary(sentiment: str, signals: list[str]) -> str:
+    if sentiment == "positive":
+        return "公告内容偏利多，核心信号集中在业绩增长预期。"
+    if sentiment == "negative":
+        return "公告内容偏利空，需重点关注业绩或治理风险。"
+    if "watchlist_review" in signals:
+        return "公告文本未出现强烈方向性关键词，建议结合原文进一步研判。"
+    return "公告信号多空交织，短期方向仍需更多信息确认。"
 
 ANNOUNCEMENT_FETCH_RESPONSES = {
     **ANNOUNCEMENT_ERROR_RESPONSE,
@@ -312,25 +396,29 @@ async def get_status():
 
 @router.post(
     "/analyze",
-    description="提交公告文本和辅助上下文，返回显式标记为未接入真实分析引擎的兼容占位结果。",
+    description="提交公告文本和辅助上下文，基于正文关键词返回规则驱动的公告分析结果。",
     response_model=UnifiedResponse[Dict[str, Any]],
     responses=ANNOUNCEMENT_ANALYZE_RESPONSES,
 )
 async def analyze_data(
     data: dict = Body(..., openapi_examples=ANNOUNCEMENT_ANALYZE_EXAMPLES),
 ) -> UnifiedResponse[Dict[str, Any]]:
-    """返回公告AI分析接口的兼容占位响应。"""
+    """返回基于输入公告文本的规则驱动分析结果。"""
+    text = _extract_announcement_text(data)
+    sentiment, signals, importance_level = _detect_announcement_sentiment(text)
     return UnifiedResponse(
-        success=False,
-        code=503,
-        message="Announcement AI analysis is not implemented yet",
+        success=True,
+        code=200,
+        message="Announcement analysis completed from provided text",
         data={
-            "status": "placeholder",
+            "status": "available",
             "endpoint": "announcement",
             "stock_code": data.get("stock_code") or data.get("symbol"),
             "analysis_mode": data.get("analysis_mode") or data.get("analysis_depth"),
-            "summary": None,
-            "signals": [],
+            "summary": _build_announcement_summary(sentiment, signals),
+            "signals": signals,
+            "sentiment": sentiment,
+            "importance_level": importance_level,
         },
     )
 
