@@ -37,6 +37,7 @@ from app.api.stock_search.stock_search_support import (
     log_search_operation,
     search_analytics,
 )
+from app.core.config import settings
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
 from app.core.exceptions import BusinessException, ForbiddenException, NotFoundException, ValidationException
 from app.core.responses import APIResponse
@@ -53,6 +54,24 @@ from src.core.exceptions import (
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+
+def _is_stock_search_mock_enabled() -> bool:
+    """股票搜索 mock 模式由统一配置显式控制。"""
+    return settings.stock_search_mock_enabled or settings.use_mock_apis
+
+
+def _is_stock_search_mock_fallback_enabled() -> bool:
+    """真实搜索失败后的 mock 回退必须显式开启。"""
+    return settings.stock_search_mock_fallback_enabled
+
+
+def _get_mock_stock_search_results(keyword: str, *, market: str, limit: int) -> List[Dict[str, Any]]:
+    from app.mock.unified_mock_data import get_mock_data_manager
+
+    mock_manager = get_mock_data_manager()
+    mock_data = mock_manager.get_data("stock_search", keyword=keyword, market=market, limit=limit)
+    return mock_data.get("data", [])
 
 
 def validate_stock_symbol(symbol: str, market: str) -> str:
@@ -178,70 +197,66 @@ async def search_stocks(
         # 清理查询参数
         params = sanitize_query_params({"market": market, "limit": validated_params.page_size})
 
-        # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
-        if use_mock:
-            # 使用Mock数据
-            from app.mock.unified_mock_data import get_mock_data_manager
-
-            mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data("stock_search", keyword=clean_query, **params)
-            results = mock_data.get("data", [])
-
+        if _is_stock_search_mock_enabled():
+            results = _get_mock_stock_search_results(
+                clean_query,
+                market=params["market"],
+                limit=validated_params.page_size,
+            )
             # 应用分页
             offset = (validated_params.page - 1) * validated_params.page_size
             return results[offset : offset + validated_params.page_size]
-        else:
-            # P0改进 Task 3: 使用熔断器保护外部API调用
-            circuit_breaker = get_circuit_breaker("stock_search")
 
-            if circuit_breaker.is_open():
-                # 熔断器打开，降级到Mock数据
-                logger.warning("⚠️ Circuit breaker for stock_search is OPEN, falling back to mock data")
-                from app.mock.unified_mock_data import get_mock_data_manager
-
-                mock_manager = get_mock_data_manager()
-                mock_data = mock_manager.get_data("stock_search", keyword=clean_query, **params)
-                results = mock_data.get("data", [])
-
-                # 应用分页
+        # P0改进 Task 3: 使用熔断器保护外部API调用
+        circuit_breaker = get_circuit_breaker("stock_search")
+        if circuit_breaker.is_open():
+            if _is_stock_search_mock_fallback_enabled():
+                logger.warning("Circuit breaker for stock_search is OPEN, using configured mock fallback")
+                results = _get_mock_stock_search_results(
+                    clean_query,
+                    market=params["market"],
+                    limit=validated_params.page_size,
+                )
                 offset = (validated_params.page - 1) * validated_params.page_size
                 return results[offset : offset + validated_params.page_size]
 
-            # 正常获取真实数据
-            service = get_stock_search_service()
-            try:
-                results = service.unified_search(
-                    clean_query,
-                    market=market,
-                    limit=validated_params.page_size,
-                    offset=(validated_params.page - 1) * validated_params.page_size,
-                )
-                circuit_breaker.record_success()
-            except (DataFetchError, ServiceError, NetworkError) as api_error:
-                circuit_breaker.record_failure()
-                logger.error(
-                    f"❌ Stock search API failed: {api_error.message}, failures: {circuit_breaker.failure_count}",
-                    extra=api_error.to_dict(),
-                )
-                raise BusinessException(
-                    detail="股票搜索服务暂时不可用，请稍后重试", status_code=503, error_code="SERVICE_UNAVAILABLE"
-                )
-            except Exception as api_error:
-                circuit_breaker.record_failure()
-                logger.error(
-                    f"❌ Stock search API failed with unexpected error: {str(api_error)}, "
-                    f"failures: {circuit_breaker.failure_count}"
-                )
-                raise BusinessException(detail="股票搜索失败，请稍后重试", status_code=500, error_code="SEARCH_FAILED")
+            raise BusinessException(
+                detail="股票搜索服务暂时不可用，请稍后重试",
+                status_code=503,
+                error_code="SERVICE_UNAVAILABLE",
+            )
 
-            # 应用排序
-            if validated_params.sort_by and validated_params.sort_by != "relevance":
-                reverse = validated_params.sort_order.lower() == "desc"
-                results = sorted(results, key=lambda x: x.get(validated_params.sort_by, 0), reverse=reverse)
+        service = get_stock_search_service()
+        try:
+            results = service.unified_search(
+                clean_query,
+                market=market,
+                limit=validated_params.page_size,
+                offset=(validated_params.page - 1) * validated_params.page_size,
+            )
+            circuit_breaker.record_success()
+        except (DataFetchError, ServiceError, NetworkError) as api_error:
+            circuit_breaker.record_failure()
+            logger.error(
+                f"Stock search API failed: {api_error.message}, failures: {circuit_breaker.failure_count}",
+                extra=api_error.to_dict(),
+            )
+            raise BusinessException(
+                detail="股票搜索服务暂时不可用，请稍后重试", status_code=503, error_code="SERVICE_UNAVAILABLE"
+            )
+        except Exception as api_error:
+            circuit_breaker.record_failure()
+            logger.error(
+                f"Stock search API failed with unexpected error: {str(api_error)}, "
+                f"failures: {circuit_breaker.failure_count}"
+            )
+            raise BusinessException(detail="股票搜索失败，请稍后重试", status_code=500, error_code="SEARCH_FAILED")
 
-            return results
+        if validated_params.sort_by and validated_params.sort_by != "relevance":
+            reverse = validated_params.sort_order.lower() == "desc"
+            results = sorted(results, key=lambda x: x.get(validated_params.sort_by, 0), reverse=reverse)
+
+        return results
 
     except HTTPException:
         raise

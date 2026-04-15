@@ -36,10 +36,9 @@ AUTH_ROUTE_RESPONSES = {
 router = APIRouter(responses=AUTH_ROUTE_RESPONSES)
 security = HTTPBearer()
 
-# User database now backed by PostgreSQL via security.py
-# The authenticate_user() and get_user_from_database() functions
-# handle database queries with automatic fallback to mock data
-# if the database is unavailable.
+# User database now backed by PostgreSQL via security.py.
+# Mock authentication is only available when explicitly enabled
+# for testing or controlled runtime scenarios.
 
 
 def _success_response_spec(status_code: int, description: str, example: object) -> dict[int, dict]:

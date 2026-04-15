@@ -192,7 +192,7 @@ def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
     验证用户身份
 
     从数据库查询用户信息并验证密码。
-    如果数据库连接失败，回退到模拟用户数据。
+    非测试环境下不允许因数据库异常自动回退到 mock 用户。
 
     Args:
         username: 用户名
@@ -204,7 +204,7 @@ def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
     Process:
         1. 如果是测试环境，直接使用mock数据
         2. 否则尝试从PostgreSQL数据库查询用户
-        3. 如果数据库连接失败，回退到环境变量配置的模拟用户数据
+        3. 如果数据库连接失败，记录错误并返回None
         4. 返回验证成功的用户或None
     """
     from app.core.config import settings
@@ -219,22 +219,15 @@ def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
         user = get_user_from_database(username)
         if user and verify_password(password, user.hashed_password):
             return user
-        # 如果数据库中找不到用户或密码不匹配，继续尝试模拟数据
-        if user:
-            # 用户存在但密码错误
-            return None
-
+        return None
     except Exception as e:
-        # 捕获所有异常，回退到模拟用户数据
         logger.warning(
-            "Database authentication failed (will use fallback mock data): %s: %s",
+            "Database authentication failed without mock fallback: %s: %s",
             type(e).__name__,
             e.message if hasattr(e, "message") else str(e),
             exc_info=True,
         )
-
-    # 回退到mock数据
-    return _authenticate_with_mock(username, password)
+        return None
 
 
 def authenticate_user_by_id(user_id: int) -> Optional[UserInDB]:
@@ -300,10 +293,9 @@ def get_user_from_database(username: str) -> Optional[UserInDB]:
         repository = UserRepository(session)
         return repository.get_user_by_username(username)
 
-    except Exception as e:
-        # 捕获所有异常并记录
-        logger.exception("[get_user_from_database] Error: %s", e)
-        return None
+    except Exception:
+        # 让调用者区分“用户不存在”和“数据库调用失败”
+        raise
     finally:
         # 确保会话被关闭
         if session:
@@ -452,24 +444,29 @@ def _authenticate_with_mock(username: str, password: str) -> Optional[UserInDB]:
         logger.warning("[Security] Mock authentication attempt blocked (MOCK_AUTH_ENABLED=False)")
         return None
 
-    # 获取管理员初始密码
-    getattr(settings, "admin_initial_password", "admin123")
+    admin_password = getattr(settings, "mock_auth_admin_password", "") or getattr(settings, "admin_initial_password", "")
+    user_password = getattr(settings, "mock_auth_user_password", "")
+    admin_username = getattr(settings, "mock_auth_admin_username", "admin")
+    user_username = getattr(settings, "mock_auth_user_username", "user")
 
-    # 生成固定的哈希值（避免每次调用get_password_hash都生成新哈希）
+    if not admin_password or not user_password:
+        logger.warning("[Security] Mock authentication blocked due to missing mock credentials configuration")
+        return None
+
     users_db = {
-        "admin": {
+        admin_username: {
             "id": 1,
-            "username": "admin",
+            "username": admin_username,
             "email": "admin@mystocks.com",
-            "hashed_password": get_password_hash("admin123"),  # 固定密码
+            "hashed_password": get_password_hash(admin_password),
             "role": "admin",
             "is_active": True,
         },
-        "user": {
+        user_username: {
             "id": 2,
-            "username": "user",
+            "username": user_username,
             "email": "user@mystocks.com",
-            "hashed_password": get_password_hash("user123"),  # 固定密码
+            "hashed_password": get_password_hash(user_password),
             "role": "user",
             "is_active": True,
         },

@@ -32,6 +32,12 @@ class Settings(BaseSettings):
     mock_auth_enabled: bool = Field(
         default=False, validation_alias="MOCK_AUTH_ENABLED"
     )  # 生产环境安全控制：禁用Mock认证
+    stock_search_mock_enabled: bool = Field(
+        default=False, validation_alias="STOCK_SEARCH_MOCK_ENABLED"
+    )  # 显式开启股票搜索 mock 模式
+    stock_search_mock_fallback_enabled: bool = Field(
+        default=False, validation_alias="STOCK_SEARCH_MOCK_FALLBACK_ENABLED"
+    )  # 真实搜索失败后是否允许回退 mock
 
     # 服务器配置
     host: str = Field(default="0.0.0.0", validation_alias="BACKEND_HOST")  # nosec
@@ -115,6 +121,10 @@ class Settings(BaseSettings):
 
     # 管理员初始密码配置
     admin_initial_password: str = Field(default="", validation_alias="ADMIN_INITIAL_PASSWORD")
+    mock_auth_admin_username: str = Field(default="admin", validation_alias="MOCK_AUTH_ADMIN_USERNAME")
+    mock_auth_admin_password: str = Field(default="", validation_alias="MOCK_AUTH_ADMIN_PASSWORD")
+    mock_auth_user_username: str = Field(default="user", validation_alias="MOCK_AUTH_USER_USERNAME")
+    mock_auth_user_password: str = Field(default="", validation_alias="MOCK_AUTH_USER_PASSWORD")
 
     # CORS 配置 (使用字符串形式，避免pydantic-settings解析问题)
     # 默认仅允许固定前端端口，实际环境以 .env 的 CORS_ORIGINS 为准
