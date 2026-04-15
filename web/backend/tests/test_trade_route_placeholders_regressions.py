@@ -90,19 +90,38 @@ async def test_trade_positions_returns_runtime_positions_response():
     }
 
 
-async def test_trade_signals_returns_unified_placeholder_response():
+async def test_trade_signals_returns_runtime_signal_items():
     module = _load_module()
+    module.runtime_store.reset()
+    session = module.runtime_store.create_session(
+        symbol="600519.SH",
+        strategy_id="svm_momentum_v1",
+        initial_capital=100000.0,
+        position_size=0.1,
+        risk_threshold=0.05,
+    )
+    position = module.runtime_store.create_position(symbol="600519.SH", quantity=100, price=1750.0, session_id=session.session_id)
 
     payload = await module.get_signals(limit=20)
 
-    assert payload.success is False
-    assert payload.code == 503
+    assert payload.success is True
+    assert payload.code == 200
     assert payload.data == {
-        "status": "placeholder",
+        "status": "available",
         "endpoint": "trade",
         "resource": "signals",
-        "items": [],
-        "total": 0,
+        "items": [
+            {
+                "symbol": "600519.SH",
+                "name": "600519.SH",
+                "type": "HOLD",
+                "price": 1750.0,
+                "time": position.updated_at.isoformat().replace("+00:00", "Z"),
+                "strategy": "svm_momentum_v1",
+            }
+        ],
+        "total": 1,
+        "source": "trading_runtime",
     }
 
 
@@ -339,17 +358,19 @@ async def test_trade_execute_rejects_invalid_lot_size():
         raise AssertionError("expected HTTPException for invalid lot size")
 
 
-async def test_trade_signals_placeholder_contract_is_unchanged():
+async def test_trade_signals_returns_empty_list_without_active_session():
     module = _load_module()
+    module.runtime_store.reset()
 
     payload = await module.get_signals(limit=20)
 
-    assert payload.success is False
-    assert payload.code == 503
+    assert payload.success is True
+    assert payload.code == 200
     assert payload.data == {
-        "status": "placeholder",
+        "status": "available",
         "endpoint": "trade",
         "resource": "signals",
         "items": [],
         "total": 0,
+        "source": "trading_runtime",
     }

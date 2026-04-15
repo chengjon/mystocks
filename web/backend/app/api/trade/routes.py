@@ -98,17 +98,27 @@ TRADE_POSITIONS_RESPONSE_EXAMPLE = {
 }
 
 TRADE_SIGNALS_RESPONSE_EXAMPLE = {
-    "success": False,
-    "code": 503,
-    "message": "Trade signals service is not implemented yet",
+    "success": True,
+    "code": 200,
+    "message": "Trade signals derived from trading runtime",
     "request_id": "req-trade-signals-001",
     "timestamp": "2026-04-08T04:20:00Z",
     "data": {
-        "status": "placeholder",
+        "status": "available",
         "endpoint": "trade",
         "resource": "signals",
-        "items": [],
-        "total": 0,
+        "items": [
+            {
+                "symbol": "600519.SH",
+                "name": "600519.SH",
+                "type": "BUY",
+                "price": 1750.0,
+                "time": "2026-04-08T04:20:00Z",
+                "strategy": "svm_momentum_v1",
+            }
+        ],
+        "total": 1,
+        "source": "trading_runtime",
     },
 }
 
@@ -362,6 +372,44 @@ def _build_runtime_statistics_payload() -> dict[str, Any]:
     }
 
 
+def _build_runtime_signals_payload(limit: int) -> dict[str, Any]:
+    session = _resolve_active_runtime_session()
+    if session is None:
+        return {
+            "items": [],
+            "total": 0,
+            "source": "trading_runtime",
+        }
+
+    strategy_name = session.strategy_id or "runtime_strategy"
+    positions = runtime_store.list_positions(session_id=session.session_id)[:limit]
+    items: list[dict[str, Any]] = []
+
+    for position in positions:
+        signal_type = "BUY"
+        if position.unrealized_pnl < 0:
+            signal_type = "SELL"
+        elif position.unrealized_pnl == 0:
+            signal_type = "HOLD"
+
+        items.append(
+            {
+                "symbol": position.symbol,
+                "name": position.name,
+                "type": signal_type,
+                "price": round(position.current_price, 4),
+                "time": position.updated_at.isoformat().replace("+00:00", "Z"),
+                "strategy": strategy_name,
+            }
+        )
+
+    return {
+        "items": items,
+        "total": len(items),
+        "source": "trading_runtime",
+    }
+
+
 def _require_active_runtime_session() -> SessionState:
     session = _resolve_active_runtime_session()
     if session is None:
@@ -571,12 +619,12 @@ async def get_signals(limit: int = Query(20, ge=1, le=200, description="返回�
     """
     获取交易信号列表
 
-    返回交易信号接口的兼容占位响应，显式说明当前尚未接入真实信号聚合服务。
+    返回基于当前交易运行时持仓派生的轻量信号列表。
     """
-    return _placeholder_trade_response(
-        message="Trade signals service is not implemented yet",
+    return _success_trade_response(
+        message="Trade signals derived from trading runtime",
         resource="signals",
-        data={"items": [], "total": 0},
+        data=_build_runtime_signals_payload(limit),
     )
 
 

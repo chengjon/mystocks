@@ -2368,9 +2368,10 @@ def test_trade_endpoints_have_examples_parameter_docs_and_error_responses() -> N
     signals_success_json = signals_operation["responses"]["200"]["content"]["application/json"]
     assert "example" in signals_success_json or "examples" in signals_success_json
     signals_example = signals_success_json.get("example") or next(iter(signals_success_json["examples"].values()))["value"]
-    assert signals_example["success"] is False
-    assert signals_example["code"] == 503
-    assert signals_example["data"]["status"] == "placeholder"
+    assert signals_example["success"] is True
+    assert signals_example["code"] == 200
+    assert signals_example["data"]["status"] == "available"
+    assert signals_example["data"]["items"]
     assert any(code.startswith("5") for code in signals_operation["responses"])
 
     trades_success_json = trades_operation["responses"]["200"]["content"]["application/json"]
