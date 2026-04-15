@@ -71,6 +71,50 @@ def get_news_service() -> NewsSentimentService:
     return _news_service
 
 
+async def _serialize_recent_articles(
+    *,
+    service: NewsSentimentService,
+    limit: int,
+    sentiment_filter: Optional[str],
+    symbol: Optional[str],
+    hours_back: int,
+) -> List[NewsArticleResponse]:
+    articles = await service.collector.collect_news(hours_back)
+    serialized: List[NewsArticleResponse] = []
+
+    for article in articles:
+        sentiment = await service.analyzer.analyze_sentiment(f"{article.title} {article.content}")
+        article.sentiment_score = sentiment.sentiment_score
+        article.sentiment_label = sentiment.sentiment_label
+        article.confidence = sentiment.confidence
+
+        if sentiment_filter and article.sentiment_label != sentiment_filter:
+            continue
+        if symbol and symbol not in article.symbols:
+            continue
+
+        serialized.append(
+            NewsArticleResponse(
+                article_id=article.article_id,
+                title=article.title,
+                content=article.content,
+                url=article.url,
+                source=article.source,
+                published_at=article.published_at.isoformat(),
+                symbols=article.symbols,
+                sentiment_score=article.sentiment_score,
+                sentiment_label=article.sentiment_label,
+                confidence=article.confidence,
+                relevance_score=article.relevance_score,
+            )
+        )
+
+        if len(serialized) >= limit:
+            break
+
+    return serialized
+
+
 @router.post("/news/collect", summary="采集并分析新闻")
 async def collect_and_analyze_news(
     background_tasks: BackgroundTasks,
@@ -128,34 +172,14 @@ async def get_recent_news(
     支持按情感、股票代码、时间范围过滤。
     """
     try:
-        # 这里应该从数据库查询新闻数据
-        # 暂时返回模拟数据用于演示
-
-        mock_articles = [
-            {
-                "article_id": f"news_{i}",
-                "title": f"金融新闻标题 {i}",
-                "content": f"这是第{i}篇金融新闻的内容，包含市场分析和投资建议。",
-                "url": f"https://example.com/news/{i}",
-                "source": "模拟新闻源",
-                "published_at": (datetime.now() - timedelta(hours=i)).isoformat(),
-                "symbols": ["600519", "000001"] if i % 2 == 0 else ["600036"],
-                "sentiment_score": 0.3 if i % 3 == 0 else -0.2 if i % 3 == 1 else 0.0,
-                "sentiment_label": "positive" if i % 3 == 0 else "negative" if i % 3 == 1 else "neutral",
-                "confidence": 0.8,
-                "relevance_score": 0.6,
-            }
-            for i in range(min(limit, 10))  # 最多返回10条模拟数据
-        ]
-
-        # 应用过滤器
-        if sentiment_filter:
-            mock_articles = [a for a in mock_articles if a["sentiment_label"] == sentiment_filter]
-
-        if symbol:
-            mock_articles = [a for a in mock_articles if symbol in a["symbols"]]
-
-        return [NewsArticleResponse(**article) for article in mock_articles]
+        service = get_news_service()
+        return await _serialize_recent_articles(
+            service=service,
+            limit=limit,
+            sentiment_filter=sentiment_filter,
+            symbol=symbol,
+            hours_back=hours_back,
+        )
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取新闻失败: {str(e)}")
