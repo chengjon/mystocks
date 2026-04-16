@@ -11,10 +11,10 @@ from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, Body, Depends, Path, Query
 from pydantic import BaseModel, Field
 
+from app.core.config import settings
 from app.core.exceptions import BusinessException, NotFoundException
 from app.core.responses import UnifiedResponse, create_unified_success_response
 from app.core.security import User, get_current_user
-from app.mock.unified_mock_data import get_mock_data_manager
 from app.models.monitoring import (
     AlertLevel,
     AlertRecordResponse,
@@ -36,6 +36,16 @@ _monitoring_control_state: Dict[str, Any] = {
     "interval": None,
     "last_started_at": None,
 }
+
+
+def _is_monitoring_summary_mock_enabled() -> bool:
+    return settings.use_mock_apis
+
+
+def _get_mock_monitoring_summary() -> Dict[str, Any]:
+    from src.mock.mock_RealTimeMonitor import get_monitoring_summary as get_monitoring_summary_mock
+
+    return get_monitoring_summary_mock()
 
 
 def _success_response_spec(status_code: int, description: str, example: object) -> dict[int, dict]:
@@ -1215,31 +1225,11 @@ async def get_monitoring_summary(current_user: User = Depends(get_current_user))
     - 未读告警数
     """
     try:
-        # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
+        if _is_monitoring_summary_mock_enabled():
+            return MonitoringSummaryResponse(**_get_mock_monitoring_summary())
 
-        if use_mock:
-            # 使用Mock数据
-            mock_manager = get_mock_data_manager()
-            mock_manager.get_data("monitoring", alert_type="all")
-
-            # 构建返回的监控摘要数据
-            summary = {
-                "total_stocks": 1568,
-                "limit_up_count": 23,
-                "limit_down_count": 5,
-                "strong_up_count": 127,
-                "strong_down_count": 89,
-                "avg_change_percent": 0.85,
-                "total_amount": 2456789000.0,
-                "active_alerts": 12,
-                "unread_alerts": 5,
-            }
-            return MonitoringSummaryResponse(**summary)
-        else:
-            # 使用真实数据库
-            summary = monitoring_service.get_monitoring_summary()
-            return MonitoringSummaryResponse(**summary)
+        summary = monitoring_service.get_monitoring_summary()
+        return MonitoringSummaryResponse(**summary)
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
