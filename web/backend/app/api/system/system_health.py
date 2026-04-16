@@ -13,13 +13,15 @@ from fastapi import APIRouter, Body, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from app.api.system._logs_summary_helper import build_logs_summary_payload
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
-# Mock数据支持
-use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
 router = APIRouter()
+
+
+def _is_system_health_mock_enabled() -> bool:
+    return settings.use_mock_apis
 
 SYSTEM_MANAGEMENT_ERROR_RESPONSE = {
     500: {
@@ -221,7 +223,7 @@ async def system_health():
     - 系统运行时间
     - 服务状态
     """
-    if use_mock:
+    if _is_system_health_mock_enabled():
         # Mock数据：返回模拟健康状态
         return {
             "status": "healthy",
