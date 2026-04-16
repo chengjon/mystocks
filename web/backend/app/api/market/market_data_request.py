@@ -14,7 +14,6 @@
 """
 
 import logging
-import os
 from datetime import date, datetime
 from typing import List, Optional
 
@@ -24,6 +23,7 @@ from pydantic import ValidationError
 from app.api.market._market_heatmap_router import router as market_heatmap_router
 from app.api.market.health_check import router as market_health_router
 from app.core.cache_utils import cache_response  # 导入缓存工具
+from app.core.config import settings
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
 from app.core.exceptions import BusinessException, NotFoundException, ValidationException
 from app.core.responses import create_error_response, create_success_response
@@ -40,6 +40,19 @@ router = APIRouter()
 router.include_router(market_heatmap_router)
 router.include_router(market_health_router)
 logger = logging.getLogger(__name__)
+
+
+def _is_market_stock_list_mock_enabled() -> bool:
+    return settings.use_mock_apis
+
+
+def _get_mock_stock_list(*, limit: int, search: Optional[str], exchange: Optional[str], security_type: Optional[str]):
+    from app.mock.unified_mock_data import get_mock_data_manager
+
+    mock_manager = get_mock_data_manager()
+    return mock_manager.get_data(
+        "stock_list", limit=limit, search=search, exchange=exchange, security_type=security_type
+    )
 
 
 def _success_response_spec(description: str, example: object) -> dict[int, dict]:
@@ -792,16 +805,12 @@ async def get_stock_list(
     **返回**: 股票列表
     """
     try:
-        # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
-        if use_mock:
-            # 使用Mock数据
-            from app.mock.unified_mock_data import get_mock_data_manager
-
-            mock_manager = get_mock_data_manager()
-            mock_data = mock_manager.get_data(
-                "stock_list", limit=limit, search=search, exchange=exchange, security_type=security_type
+        if _is_market_stock_list_mock_enabled():
+            mock_data = _get_mock_stock_list(
+                limit=limit,
+                search=search,
+                exchange=exchange,
+                security_type=security_type,
             )
             return create_success_response(
                 data={
@@ -814,59 +823,58 @@ async def get_stock_list(
                 },
                 message="获取股票列表成功（Mock数据）",
             )
-        else:
-            # 正常获取真实数据
-            from sqlalchemy import text
 
-            from app.core.database import get_postgresql_session
+        from sqlalchemy import text
 
-            session = get_postgresql_session()
+        from app.core.database import get_postgresql_session
 
-            # 使用固定SQL模板 + 参数占位，避免动态拼接 WHERE 子句
-            sql = text(
-                """
-                SELECT
-                    symbol,
-                    name,
-                    exchange,
-                    security_type,
-                    list_date,
-                    status,
-                    listing_board,
-                    market_cap,
-                    circulating_market_cap
-                FROM stock_info
-                WHERE (:search IS NULL OR symbol LIKE :search OR name LIKE :search)
-                  AND (:exchange IS NULL OR exchange = :exchange)
-                  AND (:security_type IS NULL OR security_type = :security_type)
-                ORDER BY symbol
-                LIMIT :limit
+        session = get_postgresql_session()
+
+        # 使用固定SQL模板 + 参数占位，避免动态拼接 WHERE 子句
+        sql = text(
             """
-            )
+            SELECT
+                symbol,
+                name,
+                exchange,
+                security_type,
+                list_date,
+                status,
+                listing_board,
+                market_cap,
+                circulating_market_cap
+            FROM stock_info
+            WHERE (:search IS NULL OR symbol LIKE :search OR name LIKE :search)
+              AND (:exchange IS NULL OR exchange = :exchange)
+              AND (:security_type IS NULL OR security_type = :security_type)
+            ORDER BY symbol
+            LIMIT :limit
+        """
+        )
 
-            params = {
-                "search": f"%{search}%" if search else None,
+        params = {
+            "search": f"%{search}%" if search else None,
+            "exchange": exchange,
+            "security_type": security_type,
+            "limit": limit,
+        }
+
+        result = session.execute(sql, params)
+        stocks = [dict(row._mapping) for row in result]
+
+        session.close()
+
+        return create_success_response(
+            data={
+                "stocks": stocks,
+                "total": len(stocks),
+                "source": "real",
+                "search": search,
                 "exchange": exchange,
                 "security_type": security_type,
-                "limit": limit,
-            }
-
-            result = session.execute(sql, params)
-            stocks = [dict(row._mapping) for row in result]
-
-            session.close()
-
-            return create_success_response(
-                data={
-                    "stocks": stocks,
-                    "total": len(stocks),
-                    "source": "real",
-                    "search": search,
-                    "exchange": exchange,
-                    "security_type": security_type,
-                },
-                message=f"获取股票列表成功，共{len(stocks)}条记录",
-            )
+            },
+            message=f"获取股票列表成功，共{len(stocks)}条记录",
+        )
 
     except Exception as e:
         raise BusinessException(detail=f"查询股票列表失败: {str(e)}", status_code=500, error_code="DATABASE_ERROR")
