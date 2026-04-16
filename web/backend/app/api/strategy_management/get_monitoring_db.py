@@ -27,6 +27,7 @@ if project_root not in sys.path:
 from app.mock.unified_mock_data import get_mock_data_manager
 from app.api.strategy_management._strategy_management_task_tail import run_backtest_task, train_model_task
 from app.openapi_config import COMMON_RESPONSES
+from app.core.config import settings
 from app.core.responses import create_unified_success_response
 from app.schemas.backtest_schemas import BacktestRequest
 from app.api.strategy_management.monitoring_adapter import MonitoringAdapter, MonitoringFallback
@@ -422,6 +423,16 @@ _runtime_strategy_store: List[Dict[str, Any]] = []
 _runtime_backtest_store: List[Dict[str, Any]] = []
 
 
+def _is_strategy_management_mock_enabled() -> bool:
+    return settings.use_mock_apis
+
+
+def _get_mock_strategy_list() -> List[Dict[str, Any]]:
+    mock_manager = get_mock_data_manager()
+    strategies_data = mock_manager.get_data("strategy", action="list")
+    return [_normalize_strategy_record(item) for item in strategies_data.get("strategies", [])]
+
+
 def _runtime_fallback_enabled() -> bool:
     return (
         os.getenv("TESTING", "false").lower() == "true"
@@ -807,15 +818,12 @@ async def list_strategies(
     支持Mock数据模式切换
     """
     operation_start = datetime.now()
-    use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
     source = "database"
 
     try:
-        if use_mock:
+        if _is_strategy_management_mock_enabled():
             try:
-                mock_manager = get_mock_data_manager()
-                strategies_data = mock_manager.get_data("strategy", action="list")
-                strategies = [_normalize_strategy_record(item) for item in strategies_data.get("strategies", [])]
+                strategies = _get_mock_strategy_list()
 
                 if status:
                     strategies = [s for s in strategies if s.get("status") == status]
@@ -933,12 +941,10 @@ async def create_strategy(
     source = "database"
 
     try:
-        # 检查是否使用Mock数据
-        use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
-
-        if use_mock:
+        if _is_strategy_management_mock_enabled():
             strategy_record = _build_runtime_strategy_record(
                 {
+                    **strategy_data,
                     "name": strategy_data.get("name", "Mock策略"),
                     "description": strategy_data.get("description", "Mock策略描述"),
                     "strategy_type": strategy_data.get("strategy_type", "technical"),
