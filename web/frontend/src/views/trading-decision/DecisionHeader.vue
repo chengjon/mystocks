@@ -23,7 +23,7 @@
         v-for="(tab, _idx) in decisionTabs"
         :key="tab.id"
         :class="['artdeco-tab', { active: activeTab === tab.id }]"
-        @click="activeTab = tab.id"
+        @click="scrollToSection(tab.id)"
       >
         {{ tab.label }}
       </button>
@@ -66,24 +66,83 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { ElMessage } from 'element-plus'
 import { Plus, Minus, Grid } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
 import ArtDecoCardCompact from '@/components/artdeco/ArtDecoCardCompact.vue'
 
-const activeTab = ref('portfolio')
+const AUTO_REFRESH_EVENT = 'trading-decision:auto-refresh'
+const AUTO_REFRESH_INTERVAL_MS = 30000
+
+const router = useRouter()
+const activeTab = ref('portfolio-panel')
 const autoRefreshEnabled = ref(true)
+const autoRefreshTimer = ref<ReturnType<typeof setInterval> | null>(null)
 
 const decisionTabs = [
-  { id: 'portfolio', label: '资产组合' },
-  { id: 'positions', label: '持仓管理' },
-  { id: 'orders', label: '委托下单' }
+  { id: 'portfolio-panel', label: '资产组合' },
+  { id: 'positions-panel', label: '持仓管理' },
+  { id: 'orders-panel', label: '委托下单' }
 ]
 
-const handleQuickAction = (action: string): void => {
-  console.log('Quick action:', action)
+const scrollToSection = (sectionId: string): void => {
+  const section = document.getElementById(sectionId)
+  if (!section) {
+    ElMessage.warning('目标面板暂不可用')
+    return
+  }
+
+  activeTab.value = sectionId
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+const handleQuickAction = async (action: string): Promise<void> => {
+  if (action === 'new-trade' || action === 'new-buy' || action === 'new-sell') {
+    scrollToSection('orders-panel')
+    return
+  }
+
+  if (action === 'quick-sell' || action === 'view-all') {
+    scrollToSection('positions-panel')
+    return
+  }
+
+  await router.push({ name: 'trade-terminal' })
+}
+
+const dispatchAutoRefresh = (): void => {
+  window.dispatchEvent(new CustomEvent(AUTO_REFRESH_EVENT))
+}
+
+const syncAutoRefreshTimer = (): void => {
+  if (autoRefreshTimer.value) {
+    clearInterval(autoRefreshTimer.value)
+    autoRefreshTimer.value = null
+  }
+
+  if (!autoRefreshEnabled.value) {
+    return
+  }
+
+  autoRefreshTimer.value = setInterval(() => {
+    dispatchAutoRefresh()
+  }, AUTO_REFRESH_INTERVAL_MS)
 }
 
 const toggleAutoRefresh = (): void => {
   autoRefreshEnabled.value = !autoRefreshEnabled.value
+  syncAutoRefreshTimer()
+  ElMessage.info(autoRefreshEnabled.value ? '已开启自动刷新，每 30 秒同步一次面板数据' : '已暂停自动刷新')
 }
+
+onMounted(() => {
+  syncAutoRefreshTimer()
+})
+
+onBeforeUnmount(() => {
+  if (autoRefreshTimer.value) {
+    clearInterval(autoRefreshTimer.value)
+  }
+})
 </script>

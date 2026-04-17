@@ -52,6 +52,7 @@ import type { EChartsType } from 'echarts/core'
 
 import { artDecoTheme } from '@/utils/echarts'
 import { tradeApi } from '@/api/trade'
+import type { PositionVM, TradeHistoryVM } from '@/utils/trade-adapters'
 
 interface Statistics {
   total_trades: number
@@ -81,34 +82,49 @@ const getCssVar = (name: string, fallback: string): string => {
 }
 
 const statistics = reactive<Statistics>({
-  total_trades: 2,
-  buy_count: 2,
+  total_trades: 0,
+  buy_count: 0,
   sell_count: 0,
-  position_count: 2,
-  total_buy_amount: 25400,
+  position_count: 0,
+  total_buy_amount: 0,
   total_sell_amount: 0,
-  total_commission: 10,
-  realized_profit: 1050
+  total_commission: 0,
+  realized_profit: 0
 })
 
-const mockPositions = [
-  { stock_name: '平安银行', profit: 700 },
-  { stock_name: '万科A', profit: 350 }
-]
+const chartState = reactive({
+  totalAssets: 0,
+  positions: [] as PositionVM[]
+})
 
 const loadStatistics = async () => {
   try {
-    const data = await tradeApi.getTradeStatistics()
+    const [accountOverview, positions, tradeHistory] = await Promise.all([
+      tradeApi.getAccountOverview(),
+      tradeApi.getPositions(),
+      tradeApi.getTradeHistory({ page: 1, pageSize: 100 })
+    ])
+
+    const flattenedTrades = tradeHistory.flatMap((group: TradeHistoryVM) => group.trades)
+    const buyTrades = flattenedTrades.filter((trade) => trade.side === 'buy')
+    const sellTrades = flattenedTrades.filter((trade) => trade.side === 'sell')
+    const totalBuyAmount = buyTrades.reduce((sum, trade) => sum + trade.amount, 0)
+    const totalSellAmount = sellTrades.reduce((sum, trade) => sum + trade.amount, 0)
+    const totalCommission = flattenedTrades.reduce((sum, trade) => sum + trade.commission, 0)
+
     Object.assign(statistics, {
-      total_trades: data.totalTrades,
-      buy_count: data.winningTrades,
-      sell_count: data.losingTrades,
-      position_count: 2,
-      total_buy_amount: 25400,
-      total_sell_amount: 0,
-      total_commission: data.totalCommission,
-      realized_profit: data.avgWin - data.avgLoss
+      total_trades: flattenedTrades.length,
+      buy_count: buyTrades.length,
+      sell_count: sellTrades.length,
+      position_count: positions.length,
+      total_buy_amount: totalBuyAmount,
+      total_sell_amount: totalSellAmount,
+      total_commission: totalCommission,
+      realized_profit: accountOverview.totalPnL
     })
+
+    chartState.totalAssets = accountOverview.totalAssets
+    chartState.positions = positions
   } catch (error) {
     console.error('加载统计数据失败:', error)
   }
@@ -123,14 +139,15 @@ const renderAssetsChart = () => {
 
   const dates: string[] = []
   const values: number[] = []
+  const totalAssets = chartState.totalAssets || 0
   const startDate = new Date()
-  startDate.setDate(startDate.getDate() - 29)
+  startDate.setDate(startDate.getDate() - 6)
 
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 7; i++) {
     const date = new Date(startDate)
     date.setDate(date.getDate() + i)
     dates.push(date.toISOString().slice(5, 10))
-    values.push(1000000 + Math.random() * 100000)
+    values.push(totalAssets)
   }
 
   const artDecoGold = getCssVar('--artdeco-gold-primary', '#D4AF37')
@@ -215,9 +232,9 @@ const renderProfitChart = () => {
         name: 'POSITION PROFIT',
         type: 'pie',
         radius: '60%',
-        data: mockPositions.map(p => ({
-          name: p.stock_name,
-          value: p.profit
+        data: (chartState.positions.length > 0 ? chartState.positions : [{ name: 'NO POSITION', positionPnL: 0 }]).map((p) => ({
+          name: p.name,
+          value: Math.abs(p.positionPnL) || 0.01
         })),
         emphasis: {
           itemStyle: {

@@ -80,6 +80,7 @@
 import { reactive, ref, watch, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { tradeApi } from '@/api/trade'
+import type { OrderRequest } from '@/api/types/additional-types'
 
 interface TradeForm {
   type: 'buy' | 'sell'
@@ -146,6 +147,19 @@ const handleClose = () => {
   emit('update:visible', false)
 }
 
+const normalizeOrderSymbol = (symbol: string): string => {
+  const trimmed = symbol.trim().toUpperCase()
+  if (/^\d{6}\.(SH|SZ)$/.test(trimmed)) {
+    return trimmed
+  }
+
+  if (/^\d{6}$/.test(trimmed)) {
+    return `${trimmed}.${trimmed.startsWith('6') ? 'SH' : 'SZ'}`
+  }
+
+  return trimmed
+}
+
 const handleSubmit = async () => {
   if (!form.symbol) {
     ElMessage.warning('PLEASE ENTER SYMBOL')
@@ -162,14 +176,12 @@ const handleSubmit = async () => {
 
   submitting.value = true
   try {
-    const orderData = {
-      symbol: form.symbol,
+    const orderData: OrderRequest = {
+      symbol: normalizeOrderSymbol(form.symbol),
       side: form.type,
+      type: 'limit',
       quantity: form.quantity,
-      price: form.price,
-      order_type: 'limit' as const,
-      time_in_force: 'gtc' as const,
-      remark: form.remark
+      price: form.price
     }
 
     await tradeApi.createOrder(orderData)

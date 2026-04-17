@@ -111,6 +111,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { tradeApi } from '@/api/trade'
+import type { TradeHistoryVM } from '@/utils/trade-adapters'
 
 interface TradeRecord {
   trade_time: string
@@ -164,8 +165,10 @@ const loadTrades = async () => {
 
     const params = {
       symbol: tradeFilter.symbol || undefined,
-      side: tradeFilter.type || undefined,
-      limit: pagination.pageSize
+      startDate: dateStart.value || undefined,
+      endDate: dateEnd.value || undefined,
+      page: pagination.page,
+      pageSize: pagination.pageSize
     }
 
     Object.keys(params).forEach((key) => {
@@ -174,64 +177,30 @@ const loadTrades = async () => {
       }
     })
 
-    // TODO: Transform TradeHistoryVM to TradeRecord format when API is ready
-    // For now, the API returns a different structure, so we use mock data
-    const _apiData = await tradeApi.getTradeHistory(params)
-    // Transform API data to component format (API returns grouped by date)
-    // Using mock data until API response format is aligned
-    trades.value = [
-      {
-        trade_time: '2025-12-30 10:30:00',
-        type: 'buy',
-        symbol: '000001',
-        stock_name: 'PING AN BANK',
-        quantity: 1000,
-        price: 12.50,
-        commission: 5.0,
-        status: 'completed',
-        remark: 'NORMAL BUY'
-      },
-      {
-        trade_time: '2025-12-29 14:20:00',
-        type: 'buy',
-        symbol: '000002',
-        stock_name: 'VANKA A',
-        quantity: 500,
-        price: 25.80,
-        commission: 5.0,
-        status: 'completed',
-        remark: 'NORMAL BUY'
-      }
-    ]
-    pagination.total = trades.value.length
+    const apiData = await tradeApi.getTradeHistory(params)
+    const flattenedTrades = apiData.flatMap((group: TradeHistoryVM) =>
+      group.trades
+        .filter((trade) => !tradeFilter.type || trade.side === tradeFilter.type)
+        .map((trade) => ({
+          trade_time: trade.tradeTime,
+          type: trade.side,
+          symbol: trade.symbol,
+          stock_name: trade.name || trade.symbol,
+          quantity: trade.quantity,
+          price: trade.price,
+          commission: trade.commission,
+          status: 'completed' as const,
+          remark: trade.notes || trade.tradeType
+        }))
+    )
+
+    trades.value = flattenedTrades
+    pagination.total = flattenedTrades.length
   } catch (error) {
     console.error('Load failed:', error)
     ElMessage.error('FAILED TO LOAD TRADE HISTORY')
-    trades.value = [
-      {
-        trade_time: '2025-12-30 10:30:00',
-        type: 'buy',
-        symbol: '000001',
-        stock_name: 'PING AN BANK',
-        quantity: 1000,
-        price: 12.50,
-        commission: 5.0,
-        status: 'completed',
-        remark: 'NORMAL BUY'
-      },
-      {
-        trade_time: '2025-12-29 14:20:00',
-        type: 'buy',
-        symbol: '000002',
-        stock_name: 'VANKA A',
-        quantity: 500,
-        price: 25.80,
-        commission: 5.0,
-        status: 'completed',
-        remark: 'NORMAL BUY'
-      }
-    ]
-    pagination.total = trades.value.length
+    trades.value = []
+    pagination.total = 0
   } finally {
     loading.value = false
   }
