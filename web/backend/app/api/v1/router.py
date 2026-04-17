@@ -6,7 +6,7 @@ MyStocks API v1 聚合路由
 - strategy: ML策略、技术指标
 - trading: 交易会话、持仓管理
 - admin: 认证、审计、优化
-- analysis: 情感分析、回测、压力测试
+- analysis: 情感分析、回测、压力测试、Kronos 集成
 
 Usage:
     from web.backend.app.api.v1.router import api_v1_router
@@ -17,7 +17,7 @@ Usage:
 from fastapi import APIRouter
 
 from .admin import audit_router, optimization_router
-from .analysis import backtest_router, sentiment_router, stress_test_router
+from .analysis import backtest_router, kronos_router, sentiment_router, stress_test_router
 from .strategy import indicators_router, ml_router
 from .system import health_router, routing_router, settings_router
 from .trading import positions_router, session_router
@@ -48,5 +48,6 @@ api_v1_router.include_router(optimization_router)
 api_v1_router.include_router(sentiment_router)
 api_v1_router.include_router(backtest_router)
 api_v1_router.include_router(stress_test_router)
+api_v1_router.include_router(kronos_router)
 
 __all__ = ["api_v1_router"]
