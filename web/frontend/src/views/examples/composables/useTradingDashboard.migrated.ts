@@ -7,31 +7,31 @@ import axios from 'axios'
 // ====================================================================
 
 /**
- * 交易路由配置（模拟扩展后的PAGE_CONFIG）
+ * 交易仪表板分段配置（示例）
  *
- * 实际使用时，这些配置应该在 src/config/pageConfig.ts 中
- * 这里为了示例完整性，定义在本地
+ * 当前仓库里 `/trade/terminal` 是聚合页，会组合调用多条 `/api/trading/*` 接口。
+ * 这里用本地 section key 演示“去硬编码”的写法，不代表实际路由名。
  */
 const TRADING_PAGE_CONFIG = {
-  'trading-status': {
+  'trade-terminal-status': {
     apiEndpoint: '/api/trading/status',
     wsChannel: 'trading:status',
     realtime: true,
     description: '交易状态查询'
   },
-  'trading-performance': {
+  'trade-terminal-performance': {
     apiEndpoint: '/api/trading/strategies/performance',
     wsChannel: 'trading:performance',
     realtime: true,
     description: '策略表现分析'
   },
-  'trading-market': {
+  'trade-terminal-market': {
     apiEndpoint: '/api/trading/market/snapshot',
     wsChannel: 'trading:market',
     realtime: true,
     description: '交易市场快照'
   },
-  'trading-risk': {
+  'trade-terminal-risk': {
     apiEndpoint: '/api/trading/risk/metrics',
     wsChannel: 'trading:risk',
     realtime: true,
@@ -105,12 +105,12 @@ const loadTradingData = async () => {
 
   try {
     // ✅ 使用统一配置（无硬编码）
-    const config = getTradingConfig('trading-status')
+    const config = getTradingConfig('trade-terminal-status')
     const response = await axios.get(config.apiEndpoint)
 
     tradingData.value = response.data
     usedConfigs.value.push({
-      key: 'trading-status',
+      key: 'trade-terminal-status',
       endpoint: config.apiEndpoint,
       wsChannel: config.wsChannel,
       description: config.description
@@ -133,12 +133,12 @@ const loadStrategyPerformance = async () => {
 
   try {
     // ✅ 使用统一配置
-    const config = getTradingConfig('trading-performance')
+    const config = getTradingConfig('trade-terminal-performance')
     const response = await axios.get(config.apiEndpoint)
 
     strategyPerformance.value = response.data.strategies || []
     usedConfigs.value.push({
-      key: 'trading-performance',
+      key: 'trade-terminal-performance',
       endpoint: config.apiEndpoint,
       wsChannel: config.wsChannel,
       description: config.description
@@ -161,12 +161,12 @@ const loadMarketData = async () => {
 
   try {
     // ✅ 使用统一配置
-    const config = getTradingConfig('trading-market')
+    const config = getTradingConfig('trade-terminal-market')
     const response = await axios.get(config.apiEndpoint)
 
     marketData.value = response.data
     usedConfigs.value.push({
-      key: 'trading-market',
+      key: 'trade-terminal-market',
       endpoint: config.apiEndpoint,
       wsChannel: config.wsChannel,
       description: config.description
@@ -189,12 +189,12 @@ const loadRiskData = async () => {
 
   try {
     // ✅ 使用统一配置
-    const config = getTradingConfig('trading-risk')
+    const config = getTradingConfig('trade-terminal-risk')
     const response = await axios.get(config.apiEndpoint)
 
     riskData.value = response.data
     usedConfigs.value.push({
-      key: 'trading-risk',
+      key: 'trade-terminal-risk',
       endpoint: config.apiEndpoint,
       wsChannel: config.wsChannel,
       description: config.description

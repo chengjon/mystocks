@@ -127,7 +127,7 @@ unsubscribeAll()
 
 **订阅的路由**（从PAGE_CONFIG自动获取）：
 - `market-realtime` → `market:realtime`
-- `trading-signals` → `trading:signals`
+- `trade-signals` → `trade:signals`
 - `risk-alerts` → `risk:alerts`
 - `system-monitoring` → `system:status`
 
@@ -163,7 +163,7 @@ const allChannels = getAllWebSocketChannels()
 console.log(allChannels)
 // [
 //   { routeName: 'market-realtime', channel: 'market:realtime', description: '...' },
-//   { routeName: 'trading-signals', channel: 'trading:signals', description: '...' },
+//   { routeName: 'trade-signals', channel: 'trade:signals', description: '...' },
 //   ...
 // ]
 ```

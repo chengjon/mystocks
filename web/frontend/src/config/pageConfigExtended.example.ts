@@ -1,22 +1,23 @@
 /**
  * pageConfigExtended.example.ts
  *
- * 扩展配置示例 - 展示如何为PAGE_CONFIG添加新路由
+ * 扩展配置示例 - 展示如何为聚合页添加局部 section 配置
  *
  * ⚠️ 这是一个示例文件，展示如何扩展统一配置
- * 实际使用时，应该将这些配置合并到 src/config/pageConfig.ts
+ * 当前仓库里 `/trade/terminal` 是聚合页，会组合调用多条 `/api/trading/*` 接口。
+ * 示例中的 key 用于局部 section 管理，不代表真实路由名。
  */
 
 import { PAGE_CONFIG as BASE_PAGE_CONFIG } from './pageConfig'
 
 /**
- * 扩展的路由配置 - 交易管理相关
+ * 扩展的 section 配置 - 交易终端相关
  *
- * 这些配置展示了如何为特定业务领域（如交易管理）添加路由配置
+ * 这些配置展示了如何为聚合页的局部数据面板添加配置
  */
 export const TRADING_ROUTES_CONFIG = {
   // 交易状态管理
-  'trading-status': {
+  'trade-terminal-status': {
     apiEndpoint: '/api/trading/status',
     wsChannel: 'trading:status',
     realtime: true,
@@ -24,7 +25,7 @@ export const TRADING_ROUTES_CONFIG = {
   },
 
   // 策略表现分析
-  'trading-performance': {
+  'trade-terminal-performance': {
     apiEndpoint: '/api/trading/strategies/performance',
     wsChannel: 'trading:performance',
     realtime: true,
@@ -32,7 +33,7 @@ export const TRADING_ROUTES_CONFIG = {
   },
 
   // 交易市场快照
-  'trading-market': {
+  'trade-terminal-market': {
     apiEndpoint: '/api/trading/market/snapshot',
     wsChannel: 'trading:market',
     realtime: true,
@@ -40,7 +41,7 @@ export const TRADING_ROUTES_CONFIG = {
   },
 
   // 风险指标监控
-  'trading-risk': {
+  'trade-terminal-risk': {
     apiEndpoint: '/api/trading/risk/metrics',
     wsChannel: 'trading:risk',
     realtime: true,
@@ -48,7 +49,7 @@ export const TRADING_ROUTES_CONFIG = {
   },
 
   // 策略管理
-  'trading-strategies': {
+  'trade-terminal-strategies': {
     apiEndpoint: '/api/trading/strategies',
     wsChannel: 'trading:strategies',
     realtime: false,
@@ -97,11 +98,11 @@ export function getExtendedPageConfig(routeName: string): ExtendedPageConfig | n
  * import { PAGE_CONFIG_EXTENDED, type ExtendedRouteName } from '@/config/pageConfigExtended.example'
  *
  * // 方式1: 直接访问配置
- * const config = PAGE_CONFIG_EXTENDED['trading-status']
+ * const config = PAGE_CONFIG_EXTENDED['trade-terminal-status']
  * console.log(config.apiEndpoint)  // '/api/trading/status'
  *
  * // 方式2: 使用辅助函数
- * const config = getExtendedPageConfig('trading-status')
+ * const config = getExtendedPageConfig('trade-terminal-status')
  * if (config) {
  *   console.log(config.apiEndpoint)
  * }
@@ -117,28 +118,23 @@ export function getExtendedPageConfig(routeName: string): ExtendedPageConfig | n
 /**
  * 迁移到生产环境的步骤：
  *
- * 1. **复制配置到 pageConfig.ts**:
+ * 1. **为聚合页建立 section 配置对象**:
  *    ```typescript
- *    // 在 src/config/pageConfig.ts 中添加
- *    export const PAGE_CONFIG = {
- *      // ... 现有8个路由
- *
- *      // 添加新路由
- *      'trading-status': {
+ *    const TRADE_TERMINAL_SECTION_CONFIG = {
+ *      'trade-terminal-status': {
  *        apiEndpoint: '/api/trading/status',
  *        wsChannel: 'trading:status',
  *        realtime: true,
  *        description: '交易状态查询'
  *      },
- *      // ... 其他4个交易路由
+ *      // ... 其他 section
  *    } as const
  *    ```
  *
- * 2. **更新类型定义**:
+ * 2. **更新局部类型定义**:
  *    ```typescript
- *    // RouteName 类型会自动扩展
- *    export type RouteName = keyof typeof PAGE_CONFIG
- *    // 现在包含: 'trading-status', 'trading-performance', 等
+ *    export type TradeTerminalSectionKey = keyof typeof TRADE_TERMINAL_SECTION_CONFIG
+ *    // 现在包含: 'trade-terminal-status', 'trade-terminal-performance', 等
  *    ```
  *
  * 3. **删除示例文件**:
@@ -149,9 +145,9 @@ export function getExtendedPageConfig(routeName: string): ExtendedPageConfig | n
  * 4. **更新导入**:
  *    ```typescript
  *    // 从
- *    import { getPageConfig } from '@/config/pageConfigExtended.example'
+ *    import { getExtendedPageConfig } from '@/config/pageConfigExtended.example'
  *
  *    // 改为
- *    import { getPageConfig } from '@/config/pageConfig'
+ *    import { getTradingConfig } from '@/views/examples/composables/useTradingDashboard.migrated'
  *    ```
  */

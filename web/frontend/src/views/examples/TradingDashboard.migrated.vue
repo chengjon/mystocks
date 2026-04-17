@@ -204,7 +204,7 @@ pre {
 
   ✅ 迁移后（统一配置）:
   -----------------------
-  const config = getTradingConfig('trading-status')
+  const config = getTradingConfig('trade-terminal-status')
   const response = await axios.get(config.apiEndpoint)
 
   优势：
@@ -217,33 +217,30 @@ pre {
   迁移步骤
   ============================================================================
 
-  步骤1: 扩展 PAGE_CONFIG
+  步骤1: 为 `/trade/terminal` 建立聚合页 section 配置
   ---------------------
-  在 src/config/pageConfig.ts 中添加：
+  在示例 composable 中按 section key 管理：
 
-  export const PAGE_CONFIG = {
-    // ... 现有8个路由
-
-    // 新增：交易管理
-    'trading-status': {
+  const TRADING_PAGE_CONFIG = {
+    'trade-terminal-status': {
       apiEndpoint: '/api/trading/status',
       wsChannel: 'trading:status',
       realtime: true,
       description: '交易状态查询'
     },
-    'trading-performance': {
+    'trade-terminal-performance': {
       apiEndpoint: '/api/trading/strategies/performance',
       wsChannel: 'trading:performance',
       realtime: true,
       description: '策略表现分析'
     },
-    'trading-market': {
+    'trade-terminal-market': {
       apiEndpoint: '/api/trading/market/snapshot',
       wsChannel: 'trading:market',
       realtime: true,
       description: '交易市场快照'
     },
-    'trading-risk': {
+    'trade-terminal-risk': {
       apiEndpoint: '/api/trading/risk/metrics',
       wsChannel: 'trading:risk',
       realtime: true,
@@ -261,10 +258,8 @@ pre {
   const response = await axios.get('/api/trading/status')
 
   // 改为
-  const config = getPageConfig('trading-status')
-  if (config) {
-    const response = await axios.get(config.apiEndpoint)
-  }
+  const config = getTradingConfig('trade-terminal-status')
+  const response = await axios.get(config.apiEndpoint)
 
   步骤4: 验证
   -----------
