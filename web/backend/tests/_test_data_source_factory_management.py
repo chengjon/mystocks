@@ -282,30 +282,54 @@ class TestDataSourceFactory:
 
 
 class TestEnvironmentVariables:
-    """测试环境变量驱动的功能"""
+    """测试统一配置驱动的功能"""
 
-    def test_get_data_source_mode_mock_only(self):
+    def test_get_data_source_mode_mock_only(self, monkeypatch):
         """测试仅Mock模式"""
-        with patch.dict(os.environ, {"USE_MOCK_DATA": "true", "REAL_DATA_AVAILABLE": "false"}):
-            mode = get_data_source_mode()
-            assert mode == DataSourceMode.MOCK
+        settings_obj = get_data_source_mode.__globals__["settings"]
+        monkeypatch.setattr(settings_obj, "use_mock_apis", True, raising=False)
+        monkeypatch.setattr(settings_obj, "real_data_available", False, raising=False)
+        mode = get_data_source_mode()
+        assert mode == DataSourceMode.MOCK
 
-    def test_get_data_source_mode_real_only(self):
+    def test_get_data_source_mode_real_only(self, monkeypatch):
         """测试仅Real模式"""
-        with patch.dict(os.environ, {"USE_MOCK_DATA": "false", "REAL_DATA_AVAILABLE": "true"}):
-            mode = get_data_source_mode()
-            assert mode == DataSourceMode.REAL
+        settings_obj = get_data_source_mode.__globals__["settings"]
+        monkeypatch.setattr(settings_obj, "use_mock_apis", False, raising=False)
+        monkeypatch.setattr(settings_obj, "real_data_available", True, raising=False)
+        mode = get_data_source_mode()
+        assert mode == DataSourceMode.REAL
 
-    def test_get_data_source_mode_hybrid(self):
+    def test_get_data_source_mode_hybrid(self, monkeypatch):
         """测试Hybrid模式"""
-        with patch.dict(os.environ, {"USE_MOCK_DATA": "true", "REAL_DATA_AVAILABLE": "true"}):
-            mode = get_data_source_mode()
-            assert mode == DataSourceMode.HYBRID
+        settings_obj = get_data_source_mode.__globals__["settings"]
+        monkeypatch.setattr(settings_obj, "use_mock_apis", True, raising=False)
+        monkeypatch.setattr(settings_obj, "real_data_available", True, raising=False)
+        mode = get_data_source_mode()
+        assert mode == DataSourceMode.HYBRID
 
-    def test_is_fallback_enabled(self):
+    def test_is_fallback_enabled(self, monkeypatch):
         """测试fallback启用状态"""
-        with patch.dict(os.environ, {"FALLBACK_ENABLED": "true"}):
-            assert is_fallback_enabled() is True
+        settings_obj = is_fallback_enabled.__globals__["settings"]
+        monkeypatch.setattr(settings_obj, "fallback_enabled", True, raising=False)
+        assert is_fallback_enabled() is True
 
-        with patch.dict(os.environ, {"FALLBACK_ENABLED": "false"}):
-            assert is_fallback_enabled() is False
+        monkeypatch.setattr(settings_obj, "fallback_enabled", False, raising=False)
+        assert is_fallback_enabled() is False
+
+    @pytest.mark.asyncio
+    async def test_default_config_uses_settings_backed_runtime_flags(self, monkeypatch):
+        """测试默认配置由 settings 统一驱动"""
+        settings_obj = DynamicConfigManager._get_default_config.__globals__["settings"]
+        monkeypatch.setattr(settings_obj, "use_mock_apis", True, raising=False)
+        monkeypatch.setattr(settings_obj, "real_data_available", True, raising=False)
+        monkeypatch.setattr(settings_obj, "fallback_enabled", False, raising=False)
+        monkeypatch.setattr(settings_obj, "market_data_base_url", "http://runtime/api/market", raising=False)
+
+        manager = DynamicConfigManager("/tmp/nonexistent-config.json")
+        config = await manager._get_default_config()
+
+        market_config = config["data_sources"]["market"]
+        assert market_config["mode"] == DataSourceMode.HYBRID
+        assert market_config["base_url"] == "http://runtime/api/market"
+        assert market_config["fallback_enabled"] is False

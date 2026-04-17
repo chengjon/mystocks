@@ -20,6 +20,7 @@ import aiofiles
 import aiohttp
 import yaml
 
+from app.core.config import settings
 
 # 导入数据源接口和适配器
 from app.services.data_source_interface import (
@@ -613,9 +614,13 @@ class DynamicConfigManager:
     async def _get_default_config(self) -> Dict[str, Any]:
         """获取默认配置"""
         backend_port = os.getenv("BACKEND_PORT", "").strip()
-        market_data_base_url = os.getenv("MARKET_DATA_BASE_URL", "").strip()
+        market_data_base_url = settings.market_data_base_url.strip()
         if not market_data_base_url and backend_port:
             market_data_base_url = f"http://localhost:{backend_port}/api/market"
+
+        market_mode = settings.use_mock_apis and DataSourceMode.MOCK or DataSourceMode.REAL
+        if settings.use_mock_apis and settings.real_data_available:
+            market_mode = DataSourceMode.HYBRID
 
         return {
             "version": "1.0",
@@ -624,17 +629,13 @@ class DynamicConfigManager:
                     "name": "Market Data Source",
                     "type": "market",
                     "enabled": True,
-                    "mode": os.getenv("USE_MOCK_DATA", "true").lower() == "true"
-                    and DataSourceMode.MOCK
-                    or DataSourceMode.REAL,
-                    "base_url": os.getenv("REAL_DATA_AVAILABLE", "false").lower() == "true"
-                    and market_data_base_url
-                    or None,
+                    "mode": market_mode,
+                    "base_url": market_data_base_url if settings.real_data_available else None,
                     "timeout": 30.0,
                     "retry_count": 3,
                     "retry_delay": 1.0,
                     "health_check_interval": 60.0,
-                    "fallback_enabled": True,
+                    "fallback_enabled": settings.fallback_enabled,
                     "cache_enabled": True,
                     "cache_ttl": 300,
                 },

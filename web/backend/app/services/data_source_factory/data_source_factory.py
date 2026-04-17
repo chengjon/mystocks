@@ -6,13 +6,13 @@
 
 import asyncio
 import logging
-import os
 from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from config.data_sources_loader import JSON_DATA_SOURCES_CONFIG_PATH
 
+from app.core.config import settings
 from app.services.data_adapter import (
     DashboardDataSourceAdapter,
     DataDataSourceAdapter,
@@ -322,9 +322,9 @@ async def get_technical_analysis_data(endpoint: str, params: Dict[str, Any] = No
 
 
 def get_data_source_mode() -> DataSourceMode:
-    """从环境变量获取数据源模式"""
-    use_mock = os.getenv("USE_MOCK_DATA", "true").lower() == "true"
-    real_available = os.getenv("REAL_DATA_AVAILABLE", "false").lower() == "true"
+    """从统一配置获取数据源模式"""
+    use_mock = settings.use_mock_apis
+    real_available = settings.real_data_available
 
     if use_mock and not real_available:
         return DataSourceMode.MOCK
@@ -336,4 +336,4 @@ def get_data_source_mode() -> DataSourceMode:
 
 def is_fallback_enabled() -> bool:
     """检查是否启用fallback"""
-    return os.getenv("FALLBACK_ENABLED", "true").lower() == "true"
+    return settings.fallback_enabled
