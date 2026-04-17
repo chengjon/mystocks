@@ -63,6 +63,7 @@
 
     // Additional Options
     "incremental": true,            // ✅ 增量编译（提升构建速度）
+    "tsBuildInfoFile": "../../var/cache/tsc/web-frontend.tsbuildinfo",
     "sourceMap": true,
     "noEmitOnError": false          // 🔧 紧急修复: 允许TypeScript错误但不阻止构建（2026-01-20）
   },

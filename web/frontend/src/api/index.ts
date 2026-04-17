@@ -17,7 +17,7 @@ import type {
   AlertRecordResponse,
   StrategyConfig
 } from './types/common.ts'
-import type { LoginResponse } from './types/admin.ts'
+import type { LoginResponse } from '../types/user/index.ts'
 
 // Legacy compatibility export for modules still importing `request` from this entry.
 export const request = apiClient

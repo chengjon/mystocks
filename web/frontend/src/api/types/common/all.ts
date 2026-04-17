@@ -206,6 +206,9 @@ export interface AnnouncementBase {
   impact_score?: number | null;
 }
 
+export interface AnnouncementCreate extends AnnouncementBase {
+}
+
 export interface AnnouncementMonitorRecordResponse {
   id?: number;
   rule_id?: number;
@@ -229,6 +232,17 @@ export interface AnnouncementMonitorRuleBase {
   notify_channels?: unknown[];
 }
 
+export interface AnnouncementMonitorRuleCreate extends AnnouncementMonitorRuleBase {
+}
+
+export interface AnnouncementMonitorRuleResponse extends AnnouncementMonitorRuleBase {
+  id?: number;
+  is_active?: boolean;
+  created_by?: number | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface AnnouncementMonitorRuleUpdate {
   rule_name?: string | null;
   keywords?: unknown[] | null;
@@ -238,6 +252,13 @@ export interface AnnouncementMonitorRuleUpdate {
   notify_enabled?: boolean | null;
   notify_channels?: unknown[] | null;
   is_active?: boolean | null;
+}
+
+export interface AnnouncementResponse extends AnnouncementBase {
+  id?: number;
+  is_analyzed?: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface AnnouncementSearchRequest {
@@ -259,6 +280,11 @@ export interface AnnouncementStatsResponse {
   by_source?: Record<string, unknown>;
   by_type?: Record<string, unknown>;
   by_sentiment?: Record<string, unknown>;
+}
+
+export interface AuthTokenResponse extends StandardResponse {
+  status?: string;
+  data?: Record<string, unknown>;
 }
 
 export interface BOLLParams {
@@ -388,6 +414,11 @@ export interface BatchOperationRequest {
   max_concurrent?: number | null;
 }
 
+export interface BatchOperationResponse extends StandardResponse {
+  status?: string;
+  data?: Record<string, unknown>;
+}
+
 export interface BatchOperationResult {
   total_operations?: number;
   successful_operations?: number;
@@ -424,6 +455,11 @@ export interface BetaResult {
   entity_type?: string | null;
   entity_id?: number | null;
   market_index?: string | null;
+}
+
+export interface CSRFTokenResponse extends StandardResponse {
+  status?: string;
+  data?: Record<string, string>;
 }
 
 export interface CancelOrderRequest {
@@ -553,6 +589,16 @@ export interface DateRangeModel {
   end_date?: string;
 }
 
+export interface DecisionTreeConfig extends AlgorithmConfig {
+  max_depth?: number | null;
+  min_samples_split?: number;
+  criterion?: string;
+}
+
+export interface DecisionTreeTrainRequest extends AlgorithmTrainRequest {
+  tree_config?: DecisionTreeConfig;
+}
+
 export interface DragonTigerListResponse {
   id?: number;
   symbol?: string;
@@ -614,12 +660,13 @@ export interface ErrorDetail {
 }
 
 export interface ErrorResponse {
-  error?: string;
+  error?: string | null;
   detail?: string | null;
   message?: string;
+  status?: string;
+  details?: Record<string, unknown> | null;
   error_code?: string;
   error_message?: string;
-  details?: Record<string, unknown> | null;
   timestamp?: string;
   success?: 'False';
   path?: string | null;
@@ -659,6 +706,11 @@ export interface FilterRequest {
   filters?: Record<string, unknown> | null;
 }
 
+export interface ForbiddenResponse extends ErrorResponse {
+  code?: number;
+  error?: string;
+}
+
 export interface FundFlowDataResponse {
   fund_flow?: FundFlowItem[];
   total?: number;
@@ -695,6 +747,12 @@ export interface FundFlowResponse {
   medium_net_inflow?: number;
   small_net_inflow?: number;
   created_at?: string | null;
+}
+
+export interface HMMConfig extends AlgorithmConfig {
+  n_states?: number;
+  n_features?: number;
+  covariance_type?: string;
 }
 
 export interface HMMPredictRequest {
@@ -795,6 +853,17 @@ export interface IndicatorCalculateResponse {
   indicators?: IndicatorResult[];
   calculation_time_ms?: number;
   cached?: boolean;
+}
+
+export interface IndicatorCalculationEvent extends BaseEvent {
+  event_type?: EventType;
+  stock_code?: string;
+  indicator_code?: string;
+  parameters?: Record<string, unknown>;
+  success?: boolean;
+  calculation_time_ms?: number;
+  from_cache?: boolean;
+  error_message?: string | null;
 }
 
 export interface IndicatorConfigCreateRequest {
@@ -1038,6 +1107,13 @@ export interface MarketDataQueryModel {
   interval?: string | null;
 }
 
+export interface MarketDataUpdateEvent extends BaseEvent {
+  event_type?: EventType;
+  stock_code?: string;
+  data_type?: string;
+  data?: Record<string, unknown>;
+}
+
 export interface MarketIndexItem {
   symbol?: string;
   name?: string;
@@ -1210,6 +1286,21 @@ export interface NGramTrainRequest {
   window_size?: number;
 }
 
+export interface NaiveBayesConfig extends AlgorithmConfig {
+  distribution_type?: string;
+}
+
+export interface NaiveBayesTrainRequest extends AlgorithmTrainRequest {
+  nb_config?: NaiveBayesConfig;
+}
+
+export interface NeuralNetworkConfig extends AlgorithmConfig {
+  architecture?: string;
+  layers?: number;
+  units?: number;
+  dropout?: number;
+}
+
 export interface NeuralNetworkPredictRequest {
   model_id?: string;
   current_data?: Record<string, number[]>;
@@ -1221,6 +1312,11 @@ export interface NeuralNetworkTrainRequest {
   prediction_horizon?: number;
   lookback_window?: number;
   nn_config?: NeuralNetworkConfig;
+}
+
+export interface NotFoundResponse extends ErrorResponse {
+  code?: number;
+  error?: string;
 }
 
 export interface NotificationResponse {
@@ -1356,7 +1452,8 @@ export interface PaginatedResponse {
   page?: number;
   page_size?: number;
   total_pages?: number;
-  data?: T[];
+  data?: Record<string, unknown> | null;
+  status?: string;
 }
 
 export interface PaginationInfo {
@@ -1446,6 +1543,19 @@ export interface PositionsResponse {
   total_market_value?: number;
   total_profit_loss?: number;
   total_profit_loss_percent?: number;
+}
+
+export interface PostgreSQLFullBackupRequest extends BackupRequestBase {
+  exclude_tables?: string[] | null;
+  include_tables?: string[] | null;
+  compression_level?: number;
+  description?: string | null;
+}
+
+export interface PostgreSQLFullRecoveryRequest extends RecoveryRequestBase {
+  target_tables?: string[] | null;
+  restore_to_database?: string | null;
+  drop_existing?: boolean;
 }
 
 export type PredictionLabel = 'BUY' | 'SELL' | 'HOLD';
@@ -1614,6 +1724,17 @@ export interface RiskMetricsSummary {
   beta?: number | null;
 }
 
+export interface SVMConfig extends AlgorithmConfig {
+  kernel?: string;
+  C?: number;
+  gamma?: string | number;
+  max_iter?: number;
+}
+
+export interface SVMTrainRequest extends AlgorithmTrainRequest {
+  svm_config?: SVMConfig;
+}
+
 export interface ScheduledJobInfo {
   job_id?: string;
   job_type?: string;
@@ -1627,6 +1748,11 @@ export interface ScheduledJobInfo {
 export interface SchedulerControlRequest {
   action?: 'start' | 'stop' | 'restart' | 'status';
   force?: boolean;
+}
+
+export interface ServerErrorResponse extends ErrorResponse {
+  code?: number;
+  error?: string;
 }
 
 export interface SortParams {
@@ -1646,6 +1772,16 @@ export interface StandardResponse {
   timestamp?: string;
 }
 
+export interface StockIndicatorsCompletedEvent extends BaseEvent {
+  event_type?: EventType;
+  stock_code?: string;
+  indicators?: string[];
+  success_count?: number;
+  failed_count?: number;
+  calculation_time_ms?: number;
+  from_cache_count?: number;
+}
+
 export interface StockInfo {
   symbol?: string;
   name?: string | null;
@@ -1653,6 +1789,12 @@ export interface StockInfo {
   change_percent?: number | null;
   volume?: number | null;
   amount?: number | null;
+}
+
+export interface StockListQueryModel extends PaginationModel {
+  query?: string | null;
+  sort_by?: string | null;
+  sort_order?: string | null;
 }
 
 export interface StockListResponse {
@@ -1789,12 +1931,48 @@ export interface SubscriptionInfo {
   nextBillingDate?: string | null;
 }
 
+export interface SuccessResponse extends StandardResponse {
+  status?: string;
+  data?: unknown | null;
+}
+
 export type SyncDirection = 'tdengine_to_postgresql' | 'postgresql_to_tdengine' | 'bidirectional';
+
+export interface SystemHeartbeatEvent extends BaseEvent {
+  event_type?: EventType;
+  service?: string;
+  status?: string;
+  metrics?: Record<string, unknown>;
+}
+
+export interface TDengineFullBackupRequest extends BackupRequestBase {
+  description?: string | null;
+  tags?: string[] | null;
+}
+
+export interface TDengineFullRecoveryRequest extends RecoveryRequestBase {
+  target_tables?: string[] | null;
+  restore_to_database?: string | null;
+}
+
+export interface TDengineIncrementalBackupRequest extends BackupRequestBase {
+  since_backup_id?: string;
+  description?: string | null;
+}
 
 export interface TDenginePITRRequest {
   target_time?: string;
   target_tables?: string[] | null;
   restore_to_database?: string | null;
+}
+
+export interface TaskCompletedEvent extends BaseEvent {
+  event_type?: EventType;
+  task_id?: string;
+  task_type?: string;
+  status?: TaskStatus;
+  duration_seconds?: number;
+  result?: Record<string, unknown>;
 }
 
 export interface TaskConfig {
@@ -1830,6 +2008,19 @@ export interface TaskExecution {
 }
 
 export type TaskPriority = 100 | 200 | 500 | 800 | 900;
+
+export interface TaskProgressEvent extends BaseEvent {
+  event_type?: EventType;
+  task_id?: string;
+  task_type?: string;
+  status?: TaskStatus;
+  progress?: number;
+  message?: string;
+  metadata?: Record<string, unknown>;
+  processed?: number;
+  total?: number;
+  failed?: number;
+}
 
 export interface TaskResponse {
   success?: boolean;
@@ -1959,6 +2150,11 @@ export interface TradeRecord {
   profit_loss?: number | null;
 }
 
+export interface UnauthorizedResponse extends ErrorResponse {
+  code?: number;
+  error?: string;
+}
+
 export interface UserPermissions {
   canTrade?: boolean;
   canWithdraw?: boolean;
@@ -2036,6 +2232,12 @@ export interface VaRCVaRResult {
   entity_type?: string | null;
   entity_id?: number | null;
   confidence_level?: number | null;
+}
+
+export interface ValidationErrorResponse extends ErrorResponse {
+  code?: number;
+  error?: string;
+  details?: Record<string, string[]>;
 }
 
 export interface VolumeField {

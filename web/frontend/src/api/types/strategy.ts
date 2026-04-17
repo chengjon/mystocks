@@ -68,4 +68,7 @@ export interface TechnicalIndicatorResponse {
   symbol?: string;
   indicators?: Record<string, unknown>;
   calculated_at?: string;
+  data_points?: number;
+  window_start?: string;
+  window_end?: string;
 }

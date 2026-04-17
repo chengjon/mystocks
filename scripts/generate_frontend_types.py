@@ -299,6 +299,7 @@ class PydanticModelExtractor:
         self.type_conflicts: Dict[str, List[Dict]] = defaultdict(list)
         self.warnings: List[str] = []
         self.fixed_conflicts: List[str] = []
+        self.known_pydantic_models: Set[str] = set()
 
     def extract_from_file(self, file_path: Path) -> None:
         """Extract models from a Python file"""
@@ -307,25 +308,43 @@ class PydanticModelExtractor:
                 content = f.read()
 
             tree = ast.parse(content)
+            class_nodes = [node for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
 
-            for node in ast.walk(tree):
-                if isinstance(node, ast.ClassDef):
+            pending_nodes = class_nodes[:]
+            while pending_nodes:
+                progressed = False
+                next_pending: List[ast.ClassDef] = []
+                for node in pending_nodes:
                     domain = self._determine_domain(file_path, node.name)
                     if self._is_pydantic_model(node):
                         model_info = self._extract_model_info(node)
                         if model_info:
                             self._add_or_merge_model(node.name, model_info, file_path, domain)
+                            self.known_pydantic_models.add(node.name)
+                            progressed = True
+                            continue
                     elif self._is_enum(node):
                         enum_info = self._extract_enum_info(node)
                         if enum_info:
                             self._add_or_merge_model(node.name, enum_info, file_path, domain)
+                            progressed = True
+                            continue
+                    next_pending.append(node)
+
+                if not progressed:
+                    break
+                pending_nodes = next_pending
 
         except Exception as e:
             print(f"  ⚠️  Error processing {file_path}: {e}")
 
     def _add_or_merge_model(self, name: str, new_info: Dict, file_path: Path, domain: str) -> None:
         """Add new model or merge with existing one, detecting conflicts"""
-        new_info["source_file"] = str(file_path.relative_to(PROJECT_ROOT))
+        try:
+            source_file = str(file_path.relative_to(PROJECT_ROOT))
+        except ValueError:
+            source_file = str(file_path)
+        new_info["source_file"] = source_file
         new_info["source_domain"] = domain
         
         if name in self.models:
@@ -499,6 +518,8 @@ class PydanticModelExtractor:
         for base in class_node.bases:
             if isinstance(base, ast.Name) and base.id == "BaseModel":
                 return True
+            if isinstance(base, ast.Name) and base.id in self.known_pydantic_models:
+                return True
             if isinstance(base, ast.Attribute) and base.attr == "BaseModel":
                 return True
         return False
@@ -513,6 +534,10 @@ class PydanticModelExtractor:
 
     def _extract_model_info(self, class_node: ast.ClassDef) -> Dict:
         fields = {}
+        extends: List[str] = []
+        for base in class_node.bases:
+            if isinstance(base, ast.Name) and base.id in self.known_pydantic_models:
+                extends.append(base.id)
         for item in class_node.body:
             if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
                 field_name = item.target.id
@@ -520,7 +545,7 @@ class PydanticModelExtractor:
                     continue
                 field_type = self._get_type_annotation(item.annotation)
                 fields[field_name] = {"type": field_type, "required": True}
-        return {"type": "interface", "fields": fields}
+        return {"type": "interface", "fields": fields, "extends": extends}
 
     def _extract_enum_info(self, class_node: ast.ClassDef) -> Dict:
         values = []
@@ -637,7 +662,9 @@ class TypeScriptGenerator:
     def _render_model(self, name: str, info: Dict) -> List[str]:
         lines: List[str] = []
         if info["type"] == "interface":
-            lines.append(f"export interface {name} {{")
+            extends = info.get("extends", [])
+            extends_clause = f" extends {', '.join(extends)}" if extends else ""
+            lines.append(f"export interface {name}{extends_clause} {{")
             for field_name, field_info in info["fields"].items():
                 ts_type = self.type_converter.convert_type(field_info["type"])
                 lines.append(f"  {field_name}?: {ts_type};")

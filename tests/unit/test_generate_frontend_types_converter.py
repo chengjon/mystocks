@@ -1,6 +1,7 @@
 import importlib
 from pathlib import Path
 
+from scripts.generate_frontend_types import PydanticModelExtractor, TypeGenerationConfig
 from scripts._generate_frontend_types_cli import generate_index_file as cli_generate_index_file
 from scripts.generate_frontend_types import TypeConverter, TypeScriptGenerator
 
@@ -69,3 +70,53 @@ def test_generated_types_output_is_deterministic(tmp_path: Path) -> None:
 
     index_output = cli_generate_index_file(["admin"], tmp_path)
     assert "Generated at:" not in index_output
+
+
+def test_extractor_recognizes_models_inheriting_from_local_pydantic_base(tmp_path: Path) -> None:
+    source_file = tmp_path / "analysis_models.py"
+    source_file.write_text(
+        """
+from pydantic import BaseModel
+
+
+class ParentRequest(BaseModel):
+    request_id: str
+
+
+class ChildRequest(ParentRequest):
+    pred_len: int
+""",
+        encoding="utf-8",
+    )
+
+    extractor = PydanticModelExtractor(TypeGenerationConfig())
+    extractor.extract_from_file(source_file)
+
+    assert "ParentRequest" in extractor.models
+    assert "ChildRequest" in extractor.models
+    assert extractor.models["ChildRequest"]["fields"]["pred_len"]["type"] == "int"
+    assert extractor.models["ChildRequest"]["extends"] == ["ParentRequest"]
+
+
+def test_generator_emits_interface_extends_clause_for_inherited_models() -> None:
+    generator = TypeScriptGenerator()
+    models = {
+        "ParentRequest": {
+            "type": "interface",
+            "fields": {
+                "request_id": {"type": "str"},
+            },
+            "extends": [],
+        },
+        "ChildRequest": {
+            "type": "interface",
+            "fields": {
+                "pred_len": {"type": "int"},
+            },
+            "extends": ["ParentRequest"],
+        },
+    }
+
+    output = generator.generate_domain("analysis", models)
+
+    assert "export interface ChildRequest extends ParentRequest {" in output

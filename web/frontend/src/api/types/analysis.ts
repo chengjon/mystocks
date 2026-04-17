@@ -9,6 +9,39 @@ export interface EquityCurveSummaryResponse {
   sharpe_ratio?: number;
 }
 
+export interface KronosCandle {
+  timestamp?: string;
+  open?: number;
+  high?: number;
+  low?: number;
+  close?: number;
+  volume?: number | null;
+  amount?: number | null;
+}
+
+export interface KronosEncodeRequest extends KronosRequestBase {
+}
+
+export type KronosModel = 'mini' | 'small' | 'base';
+
+export interface KronosPredictRequest extends KronosRequestBase {
+  pred_len?: number;
+  sample_count?: number;
+  top_p?: number;
+  temperature?: number;
+}
+
+export interface KronosRequestBase {
+  request_id?: string | null;
+  model?: KronosModel;
+  candles?: KronosCandle[] | null;
+  symbol?: string | null;
+  period?: string;
+  lookback?: number;
+  start_date?: string | null;
+  end_date?: string | null;
+}
+
 export interface MonteCarloRequest {
   strategy_id?: string;
   symbol?: string;
@@ -56,6 +89,7 @@ export interface SentimentResponse {
   neutral_score?: number;
   key_phrases?: string[];
   analyzed_at?: string;
+  source?: string | null;
 }
 
 export interface StressTestHistoryItem {

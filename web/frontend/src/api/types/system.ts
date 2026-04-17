@@ -19,6 +19,7 @@ export interface DataRoutingResponse {
   estimated_records?: number;
   query_complexity?: string;
   recommended_strategy?: string;
+  classification?: string;
 }
 
 export interface DatabaseHealthResponse {
