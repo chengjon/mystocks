@@ -1,13 +1,15 @@
 """Mock 数据子模块"""
 
 import logging
-import os
 import random
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict
 
+from app.core.config import settings
+
 from ._watchlist_data import get_watchlist_mock_data
+from .extended_data import MockExtendedDataMixin
 
 logger = logging.getLogger(__name__)
 
@@ -16,18 +18,20 @@ class MockDataCoreMixin:
     """Mock 数据核心：初始化、路由、数据生成"""
 
 
-class UnifiedMockDataManager:
+class UnifiedMockDataManager(MockExtendedDataMixin):
     """统一Mock数据管理器"""
 
-    def __init__(self, use_mock_data: bool = None):
+    def __init__(self, use_mock_data: bool = None, fallback_enabled: bool | None = None):
         """
         初始化Mock数据管理器
 
         Args:
             use_mock_data: 是否使用Mock数据，如果为None则从环境变量读取
+            fallback_enabled: 真实路径失败后是否允许回退到 mock
         """
-        # 从环境变量获取数据源配置
-        self.use_mock_data = use_mock_data or os.getenv("USE_MOCK_DATA", "false").lower() == "true"
+        # 统一由显式参数或 settings 控制 mock/real 开关
+        self.use_mock_data = settings.use_mock_apis if use_mock_data is None else use_mock_data
+        self.fallback_enabled = settings.fallback_enabled if fallback_enabled is None else fallback_enabled
 
         # Mock数据目录
         self.mock_data_dir = Path(__file__).parent
@@ -73,7 +77,7 @@ class UnifiedMockDataManager:
         except Exception:
             logger.error("获取数据失败 {data_type}: {str(e)}", exc_info=True)
             # 如果是真实数据获取失败，可以降级到Mock数据
-            if not self.use_mock_data:
+            if not self.use_mock_data and self.fallback_enabled:
                 logger.warning("降级到Mock数据: %(data_type)s")
                 return self._get_mock_data(data_type, **kwargs)
             else:

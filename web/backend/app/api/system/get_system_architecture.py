@@ -4,14 +4,10 @@
 """
 
 import logging
-import os
 from datetime import datetime
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
-
-# Mock数据支持
-use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

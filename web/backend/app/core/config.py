@@ -38,6 +38,15 @@ class Settings(BaseSettings):
     stock_search_mock_fallback_enabled: bool = Field(
         default=False, validation_alias="STOCK_SEARCH_MOCK_FALLBACK_ENABLED"
     )  # 真实搜索失败后是否允许回退 mock
+    real_data_available: bool = Field(
+        default=False, validation_alias="REAL_DATA_AVAILABLE"
+    )  # 运行时是否声明真实数据通道可用
+    fallback_enabled: bool = Field(
+        default=True, validation_alias="FALLBACK_ENABLED"
+    )  # 运行时是否允许真实链路失败后回退
+    market_data_base_url: str = Field(
+        default="", validation_alias="MARKET_DATA_BASE_URL"
+    )  # 数据源工厂默认市场数据服务地址
 
     # 服务器配置
     host: str = Field(default="0.0.0.0", validation_alias="BACKEND_HOST")  # nosec

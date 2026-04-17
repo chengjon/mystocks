@@ -4,12 +4,12 @@
 """
 
 import logging
-import os
 from datetime import datetime, timedelta
 from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Body, Path, Query
 
+from app.core.config import settings
 from app.core.exceptions import NotFoundException
 from app.core.responses import create_error_response, create_success_response
 from app.openapi_config import COMMON_RESPONSES
@@ -566,15 +566,16 @@ async def get_data_source_mode():
     try:
         mode = get_factory_mode()
         fallback_enabled = is_fallback_enabled()
+        current_mode = mode.value if hasattr(mode, "value") else str(mode)
 
         config_data = {
-            "current_mode": mode.value if hasattr(mode, "value") else str(mode),
+            "current_mode": current_mode,
             "fallback_enabled": fallback_enabled,
             "available_modes": ["mock", "real", "hybrid"],
             "environment_variables": {
-                "USE_MOCK_DATA": os.getenv("USE_MOCK_DATA", "true"),
-                "REAL_DATA_AVAILABLE": os.getenv("REAL_DATA_AVAILABLE", "false"),
-                "FALLBACK_ENABLED": os.getenv("FALLBACK_ENABLED", "true"),
+                "USE_MOCK_DATA": str(settings.use_mock_apis).lower(),
+                "REAL_DATA_AVAILABLE": str(current_mode != "mock").lower(),
+                "FALLBACK_ENABLED": str(fallback_enabled).lower(),
             },
             "mode_description": {
                 "mock": "完全使用模拟数据",
