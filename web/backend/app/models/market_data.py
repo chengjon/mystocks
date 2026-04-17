@@ -12,6 +12,7 @@
 """
 
 from datetime import datetime
+import math
 
 from sqlalchemy import (
     DECIMAL,
@@ -25,6 +26,22 @@ from sqlalchemy import (
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
+
+
+def _safe_numeric_float(value, default: float = 0) -> float | None:
+    """Convert DECIMAL-like values to JSON-safe floats."""
+    if value is None:
+        return default
+
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError):
+        return default
+
+    if math.isfinite(numeric):
+        return numeric
+
+    return None
 
 
 class FundFlow(Base):
@@ -239,12 +256,12 @@ class LongHuBangData(Base):
             "name": self.name,
             "trade_date": self.trade_date.isoformat() if self.trade_date else None,
             "reason": self.reason,
-            "buy_amount": float(self.buy_amount) if self.buy_amount else 0,
-            "sell_amount": float(self.sell_amount) if self.sell_amount else 0,
-            "net_amount": float(self.net_amount) if self.net_amount else 0,
-            "turnover_rate": float(self.turnover_rate) if self.turnover_rate else 0,
-            "institution_buy": (float(self.institution_buy) if self.institution_buy else 0),
-            "institution_sell": (float(self.institution_sell) if self.institution_sell else 0),
+            "buy_amount": _safe_numeric_float(self.buy_amount),
+            "sell_amount": _safe_numeric_float(self.sell_amount),
+            "net_amount": _safe_numeric_float(self.net_amount),
+            "turnover_rate": _safe_numeric_float(self.turnover_rate),
+            "institution_buy": _safe_numeric_float(self.institution_buy),
+            "institution_sell": _safe_numeric_float(self.institution_sell),
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 

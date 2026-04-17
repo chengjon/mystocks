@@ -219,7 +219,7 @@ class DatabaseService:
             return
 
         try:
-            redis.setex(cache_key, ttl, json.dumps(data))
+            redis.setex(cache_key, ttl, json.dumps(data, default=str))
         except Exception as e:
             logger.warning("Failed to set cache", key=cache_key, error=str(e))
 

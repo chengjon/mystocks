@@ -1,9 +1,9 @@
 from typing import Dict, List, Optional
 
-from .connection_service import ConnectionService
-from .query_service import QueryService
-from .transaction_service import TransactionService
-from .migration_service import MigrationService
+from .services.connection_service import ConnectionService
+from .services.migration_service import MigrationService
+from .services.query_service import QueryService
+from .services.transaction_service import TransactionService
 
 
 class DatabaseService:

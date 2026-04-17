@@ -90,3 +90,11 @@ class DatabaseTarget(Enum):
 
     TDENGINE = "TDengine"  # 高频时序数据专用
     POSTGRESQL = "PostgreSQL"  # 通用数据仓库+TimescaleDB时序扩展
+
+
+def __getattr__(name: str):
+    if name == "DeduplicationStrategy":
+        from .deduplication_strategy import DeduplicationStrategy
+
+        return DeduplicationStrategy
+    raise AttributeError(name)
