@@ -21,6 +21,17 @@ import requests
 import yaml
 from jsonschema import SchemaError, ValidationError, validate
 
+from .contract_violation_type import (
+    ContractSpec,
+    ContractTest,
+    ContractViolation,
+    DeprecationValidator,
+    RequestValidator,
+    SchemaValidator,
+    ValidationLevel,
+    ValidationResult,
+)
+
 # 设置日志
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -755,5 +766,4 @@ def demo_contract_validator():
 
     # 清理
     os.remove("test_openapi.json")
-
 

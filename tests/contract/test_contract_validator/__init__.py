@@ -11,4 +11,7 @@ from .contract_violation_type import DeprecationValidator  # noqa: F401
 from .contract_validator import ContractValidator  # noqa: F401
 from .contract_validator import demo_contract_validator  # noqa: F401
 
-__all__ = ['ContractViolationType', 'ValidationLevel', 'ContractSpec', 'ContractTest', 'ContractViolation', 'ValidationResult', 'SchemaValidator', 'RequestValidator', 'DeprecationValidator', 'ContractValidator', 'demo_contract_validator']
+# 兼容历史导入名，避免拆分包迁移后打断旧测试入口。
+ContractTestValidator = ContractValidator
+
+__all__ = ['ContractViolationType', 'ValidationLevel', 'ContractSpec', 'ContractTest', 'ContractViolation', 'ValidationResult', 'SchemaValidator', 'RequestValidator', 'DeprecationValidator', 'ContractValidator', 'ContractTestValidator', 'demo_contract_validator']
