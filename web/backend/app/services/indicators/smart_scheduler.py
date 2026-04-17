@@ -690,3 +690,21 @@ class SmartScheduler:
         self._dependency_graph.reset()
         self._incremental_calculator.clear_cache()
         self.clear_cache()
+
+
+def create_scheduler(
+    max_workers: int = 4,
+    mode: Optional[CalculationMode] = None,
+    enable_cache: bool = True,
+    enable_distributed_lock: bool = True,
+) -> SmartScheduler:
+    """Compatibility factory kept on the legacy module path."""
+    if mode is None:
+        mode = CalculationMode.ASYNC_PARALLEL
+
+    return SmartScheduler(
+        max_workers=max_workers,
+        mode=mode,
+        enable_cache=enable_cache,
+        enable_distributed_lock=enable_distributed_lock,
+    )

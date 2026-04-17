@@ -7,6 +7,7 @@ Enhanced Technical Analysis
 """
 
 import logging
+import re
 from datetime import datetime, timedelta
 from typing import Dict, Optional
 
@@ -38,6 +39,45 @@ def _get_akshare_module(feature: str):
     if _akshare_unavailable(feature):
         return None
     return ak
+
+
+_WINDOW_PERIOD_PATTERN = re.compile(r"^(?P<count>\d+)(?P<unit>[dwmy])$")
+
+
+def _normalize_history_period(
+    period: str,
+    start_date: Optional[str],
+    end_date: Optional[str],
+) -> tuple[str, Optional[str], Optional[str]]:
+    normalized_period = (period or "daily").strip().lower()
+
+    if normalized_period in {"day", "daily"}:
+        return "daily", start_date, end_date
+    if normalized_period in {"week", "weekly"}:
+        return "weekly", start_date, end_date
+    if normalized_period in {"month", "monthly"}:
+        return "monthly", start_date, end_date
+
+    match = _WINDOW_PERIOD_PATTERN.match(normalized_period)
+    if not match:
+        return normalized_period, start_date, end_date
+
+    count = int(match.group("count"))
+    unit = match.group("unit")
+    day_multiplier = {"d": 1, "w": 7, "m": 30, "y": 365}[unit]
+
+    normalized_end_date = end_date
+    if normalized_end_date is None:
+        end_dt = datetime.now()
+        normalized_end_date = end_dt.strftime("%Y-%m-%d")
+    else:
+        end_dt = datetime.strptime(normalized_end_date, "%Y-%m-%d")
+
+    normalized_start_date = start_date
+    if normalized_start_date is None:
+        normalized_start_date = (end_dt - timedelta(days=count * day_multiplier)).strftime("%Y-%m-%d")
+
+    return "daily", normalized_start_date, normalized_end_date
 
 
 class TechnicalAnalysisService:
@@ -98,6 +138,8 @@ class TechnicalAnalysisService:
         if ak_module is None:
             return pd.DataFrame()
         try:
+            period, start_date, end_date = _normalize_history_period(period, start_date, end_date)
+
             # 缓存键
             cache_key = f"{symbol}_{period}_{start_date}_{end_date}_{adjust}"
 
@@ -105,7 +147,7 @@ class TechnicalAnalysisService:
             if cache_key in self._cache:
                 cached_data, cached_time = self._cache[cache_key]
                 if (datetime.now() - cached_time).seconds < self._cache_ttl:
-                    logger.info("Using cached data for %(symbol)s")
+                    logger.info("Using cached data for %s", symbol)
                     return cached_data
 
             # 设置默认日期范围
@@ -129,7 +171,7 @@ class TechnicalAnalysisService:
             )
 
             if df.empty:
-                logger.warning("No data for %(symbol)s")
+                logger.warning("No data for %s", symbol)
                 return pd.DataFrame()
 
             # 重命名列
@@ -163,11 +205,11 @@ class TechnicalAnalysisService:
             # 缓存数据
             self._cache[cache_key] = (df, datetime.now())
 
-            logger.info("Fetched {len(df)} records for %(symbol)s")
+            logger.info("Fetched %s records for %s", len(df), symbol)
             return df
 
-        except Exception:
-            logger.error("Failed to get stock history for %(symbol)s: %(e)s")
+        except Exception as exc:
+            logger.error("Failed to get stock history for %s: %s", symbol, exc)
             return pd.DataFrame()
 
     # ========================================================================
@@ -233,8 +275,8 @@ class TechnicalAnalysisService:
             logger.info("Calculated {len(indicators)} trend indicators")
             return indicators
 
-        except Exception:
-            logger.error("Failed to calculate trend indicators: %(e)s")
+        except Exception as exc:
+            logger.error("Failed to calculate trend indicators: %s", exc)
             return {}
 
     # ========================================================================
