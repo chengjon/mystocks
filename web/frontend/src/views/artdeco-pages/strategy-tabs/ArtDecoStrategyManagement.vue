@@ -4,9 +4,10 @@
       <div class="hero-rail">
         <div class="hero-copy">
           <span class="hero-eyebrow">strategy repository desk</span>
+          <h2 class="hero-section-title">策略管理</h2>
           <div class="hero-meta">
             <span>REQ_ID: {{ traceRequestId }}</span>
-            <span>PROCESS: {{ traceProcessTimeMs }}</span>
+            <span>PROCESS: {{ traceProcessTimeMs }} ms</span>
             <span>SOURCE: {{ sourceModeLabel }}</span>
           </div>
         </div>
@@ -63,6 +64,8 @@
             <h2>{{ isEmbedded ? '策略仓库模块' : '策略仓库' }}</h2>
           </div>
           <div class="header-meta">
+            <span class="trace-id">REQ_ID: {{ traceRequestId }}</span>
+            <span class="trace-id">PROCESS: {{ traceProcessTimeMs }} ms</span>
             <span class="trace-id">MATCHED: {{ filteredStrategies.length }}</span>
             <span class="trace-id">PAGE: {{ currentPage }} / {{ totalPages }}</span>
             <span :class="['source-badge', dataSource]">SOURCE: {{ sourceModeLabel }}</span>
@@ -88,8 +91,8 @@
           <option value="error">异常</option>
         </select>
         <button class="toolbar-button" :disabled="loading" @click="refreshStrategies">刷新</button>
-        <button class="toolbar-button" :disabled="loading" @click="openCreateForm">
-          新建策略
+        <button class="toolbar-button" aria-label="展开录入面板" :disabled="loading" @click="openCreateForm">
+          录入面板
         </button>
       </div>
 

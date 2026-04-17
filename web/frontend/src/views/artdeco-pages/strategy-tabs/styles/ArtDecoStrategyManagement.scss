@@ -72,6 +72,13 @@
   color: var(--artdeco-fg-primary);
 }
 
+.hero-section-title {
+  margin: 0;
+  font-family: var(--artdeco-font-display);
+  font-size: var(--artdeco-text-lg);
+  color: var(--artdeco-fg-primary);
+}
+
 .stats-strip {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
