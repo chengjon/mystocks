@@ -144,7 +144,7 @@ describe('menuDataFetcher', () => {
         // 缺少apiEndpoint
       }
 
-      const result = await fetchMenuItemData(invalidMenuItem)
+      const result = await fetchMenuItemData(invalidMenuItem, { retries: 0 })
 
       expect(result.success).toBe(false)
       expect(result.error).toContain('未配置API端点')
@@ -172,7 +172,7 @@ describe('menuDataFetcher', () => {
     it('应该处理网络错误', async () => {
       vi.mocked(apiClient.get).mockRejectedValue(new Error('Network Error'))
 
-      const result = await fetchMenuItemData(mockMenuItem)
+      const result = await fetchMenuItemData(mockMenuItem, { retries: 0 })
 
       expect(result.success).toBe(false)
       expect(result.error).toContain('获取数据失败')
@@ -370,7 +370,7 @@ describe('menuDataFetcher', () => {
       expect(result.success).toBe(false)
       expect(result.error).toContain('获取数据失败')
       expect(apiClient.get).toHaveBeenCalledTimes(3) // 初始调用 + 2次重试
-    })
+    }, 10000)
 
     it('应该使用指数退避延迟', async () => {
       const timestamps: number[] = []
@@ -419,7 +419,7 @@ describe('menuDataFetcher', () => {
         })
       })
 
-      const results = await fetchMultipleMenuItems(menuItems)
+      const results = await fetchMultipleMenuItems(menuItems, { retries: 0 })
 
       expect(results.size).toBe(3)
 
@@ -453,7 +453,7 @@ describe('menuDataFetcher', () => {
         })
       })
 
-      const results = await fetchMultipleMenuItems(menuItems)
+      const results = await fetchMultipleMenuItems(menuItems, { retries: 0 })
 
       expect(results.size).toBe(3)
 

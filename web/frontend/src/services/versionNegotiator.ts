@@ -32,6 +32,18 @@ interface NegotiationResult {
   errors?: string[]
 }
 
+interface VersionDetectionOptions {
+  probeContracts?: boolean
+}
+
+export function resolveContractVersionPath(endpoint: string): string {
+  const contractName = endpoint
+    .replace('/api/v1/', '')
+    .replace('/api/', '')
+
+  return `/contracts/versions/${contractName}/active`
+}
+
 const VERSION_CONFIG = {
   supportedVersions: {
     min: '1.0.0',
@@ -73,13 +85,22 @@ class ApiVersionNegotiator {
   private negotiationHistory: NegotiationResult[] = []
 
   constructor() {
+    this.seedDefaultEndpointVersions()
     this.initializeVersionDetection()
   }
 
-  private async initializeVersionDetection(): Promise<void> {
+  private seedDefaultEndpointVersions(): void {
+    for (const [endpoint, version] of Object.entries(VERSION_CONFIG.endpoints)) {
+      this.detectedVersions.set(endpoint, version)
+    }
+  }
+
+  private async initializeVersionDetection(options: VersionDetectionOptions = {}): Promise<void> {
     try {
       await this.detectSystemVersion()
-      await this.detectApiVersions()
+      if (options.probeContracts) {
+        await this.detectApiVersions()
+      }
     } catch (error) {
       console.error('❌ API版本检测失败:', error)
     }
@@ -102,18 +123,22 @@ class ApiVersionNegotiator {
     const endpoints = Object.keys(VERSION_CONFIG.endpoints)
 
     const versionPromises = endpoints.map(async (endpoint) => {
+      const defaultVersion = VERSION_CONFIG.endpoints[endpoint]
+
       try {
-        const contractResponse = await apiClient.get(`/contracts/${endpoint.replace('/api/v1/', '').replace('/api/', '')}/active`)
+        const contractResponse = await apiClient.get(resolveContractVersionPath(endpoint))
         const data = contractResponse.data as Record<string, unknown> | undefined
+
         if (contractResponse.success && data?.version) {
           this.detectedVersions.set(endpoint, String(data.version))
           return { endpoint, version: String(data.version), source: 'contract' }
         }
       } catch (_error) {
-        const defaultVersion = VERSION_CONFIG.endpoints[endpoint]
-        this.detectedVersions.set(endpoint, defaultVersion)
-        return { endpoint, version: defaultVersion, source: 'config' }
+        // Fall through to config-backed default below.
       }
+
+      this.detectedVersions.set(endpoint, defaultVersion)
+      return { endpoint, version: defaultVersion, source: 'config' }
     })
 
     const results = await Promise.allSettled(versionPromises)
@@ -313,7 +338,8 @@ class ApiVersionNegotiator {
   public async refreshVersions(): Promise<void> {
     this.detectedVersions.clear()
     this.compatibilityCache.clear()
-    await this.initializeVersionDetection()
+    this.seedDefaultEndpointVersions()
+    await this.initializeVersionDetection({ probeContracts: true })
   }
 }
 

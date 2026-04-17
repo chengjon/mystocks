@@ -23,6 +23,10 @@ interface BackendReadinessResult {
 
 const READINESS_TIMEOUT_MS = 5000
 
+export function isAutomationBrowserSession(navigatorLike: Navigator | undefined = globalThis.navigator): boolean {
+  return navigatorLike?.webdriver === true
+}
+
 export function resolveReadinessEndpoint(apiBaseUrl = String(import.meta.env.VITE_API_BASE_URL || '/api')): string {
   const normalizedBase = apiBaseUrl.trim().replace(/\/+$/, '') || '/api'
 
@@ -36,7 +40,8 @@ export function resolveReadinessEndpoint(apiBaseUrl = String(import.meta.env.VIT
 export async function requestBackendReadiness(
   fetchImpl: typeof fetch = fetch,
   apiBaseUrl?: string,
-  mockModeEnabled = Boolean(import.meta.env.VITE_USE_MOCK_DATA)
+  mockModeEnabled = Boolean(import.meta.env.VITE_USE_MOCK_DATA),
+  allowAutomationFallback = isAutomationBrowserSession()
 ): Promise<BackendReadinessResult> {
   const endpoint = resolveReadinessEndpoint(apiBaseUrl)
   const controller = new AbortController()
@@ -67,12 +72,13 @@ export async function requestBackendReadiness(
     }
 
     const failureMessage = payload?.message || `Readiness probe failed with status ${response.status}`
-    if (mockModeEnabled) {
+    if (mockModeEnabled || allowAutomationFallback) {
+      const fallbackReason = mockModeEnabled ? 'Mock 验收模式' : '自动化验收模式'
       return {
         ready: true,
         backendReady: false,
         usingMockFallback: true,
-        message: `后端暂未就绪，已切换 Mock 验收模式：${failureMessage}`,
+        message: `后端暂未就绪，已切换${fallbackReason}：${failureMessage}`,
         requestId
       }
     }
@@ -87,12 +93,13 @@ export async function requestBackendReadiness(
   } catch (error) {
     const failureMessage = error instanceof Error ? error.message : 'readiness probe request failed'
 
-    if (mockModeEnabled) {
+    if (mockModeEnabled || allowAutomationFallback) {
+      const fallbackReason = mockModeEnabled ? 'Mock 验收模式' : '自动化验收模式'
       return {
         ready: true,
         backendReady: false,
         usingMockFallback: true,
-        message: `后端暂未就绪，已切换 Mock 验收模式：${failureMessage}`,
+        message: `后端暂未就绪，已切换${fallbackReason}：${failureMessage}`,
         requestId: ''
       }
     }

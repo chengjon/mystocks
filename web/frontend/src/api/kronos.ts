@@ -35,8 +35,11 @@ export interface KronosStatusResult {
   active_model?: string
   loaded_models?: string[]
   device?: string
+  gpu_name?: string
+  gpu_memory_used_mb?: number
   queue_depth?: number
   requests_inflight?: number
+  inference_latency_ms_avg?: number
   version?: string
   meta?: KronosRuntimeMeta
 }

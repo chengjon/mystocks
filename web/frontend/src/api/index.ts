@@ -8,6 +8,7 @@
  */
 
 import { apiClient } from './apiClient.ts'
+import { kronosApi } from './kronos.ts'
 import type { UnifiedResponse } from './types/common.ts'
 import type {
   StockListResponse,
@@ -95,7 +96,9 @@ const api = {
   data: dataApi,
   market: marketApi,
   monitoring: monitoringApi,
-  strategy: strategyApi
+  strategy: strategyApi,
+  kronos: kronosApi
 }
 
 export default api
+export { kronosApi }
