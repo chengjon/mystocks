@@ -5,7 +5,7 @@
  * To make permanent changes, update the generation script and run:
  *   npm run generate-page-config
  * 
- * Generated at: 2026-04-04T05:41:04.359Z
+ * Generated at: 2026-04-17T09:09:42.233Z
  * Routes processed: 35
  */
 
@@ -193,7 +193,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     routePath: 'positions',
     title: '头寸管理',
     description: '头寸管理',
-    apiEndpoint: '/api/trade/positions',
+    apiEndpoint: '/api/v1/trade/positions',
     wsChannel: 'trade:positions',
     component: 'Center.vue',
     requiresAuth: true,
@@ -203,7 +203,6 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     routePath: 'terminal',
     title: '交易操作',
     description: '交易操作',
-    apiEndpoint: '/api/trade/terminal',
     wsChannel: 'trade:terminal',
     component: 'TradingDashboard.vue',
     requiresAuth: true,
@@ -213,7 +212,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     routePath: 'signals',
     title: '信号监控',
     description: '信号监控',
-    apiEndpoint: '/api/trade/signals',
+    apiEndpoint: '/api/v1/trade/signals',
     wsChannel: 'trade:signals',
     component: 'Signals.vue',
     requiresAuth: true,
@@ -223,7 +222,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     routePath: 'portfolio',
     title: '持仓透视',
     description: '持仓透视',
-    apiEndpoint: '/api/trade/portfolio',
+    apiEndpoint: '/api/v1/trade/positions',
     wsChannel: 'trade:portfolio',
     component: 'Portfolio.vue',
     requiresAuth: true,
@@ -233,7 +232,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     routePath: 'history',
     title: '历史对账',
     description: '历史对账',
-    apiEndpoint: '/api/trade/history',
+    apiEndpoint: '/api/v1/trade/trades',
     wsChannel: 'trade:history',
     component: 'History.vue',
     requiresAuth: true,
