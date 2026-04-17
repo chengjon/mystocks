@@ -25,7 +25,8 @@ class WatchlistDataSourceAdapter(IDataSource):
         self.config = config
         self.source_type = "watchlist"
         self.name = config.get("name", "Watchlist Management Source")
-        self.mode = config.get("mode", "mock")
+        self.mode = str(config.get("mode", "mock")).lower()
+        self.fallback_enabled = bool(config.get("fallback_enabled", False))
 
         # Lazy initialization of services (only when needed)
         self._watchlist_service = None
@@ -59,6 +60,12 @@ class WatchlistDataSourceAdapter(IDataSource):
                 raise RuntimeError(f"Failed to initialize mock manager: {e}")
         return self._mock_manager
 
+    def _is_mock_mode(self) -> bool:
+        return self.mode == "mock"
+
+    def _should_use_mock_fallback(self) -> bool:
+        return self._is_mock_mode() or self.fallback_enabled
+
     async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Any:
         """获取自选股管理数据"""
         start_time = time.time()
@@ -91,7 +98,7 @@ class WatchlistDataSourceAdapter(IDataSource):
 
     async def _fetch_watchlist_data(self, endpoint: str, params: Dict[str, Any]) -> Any:
         """从自选股服务获取数据"""
-        if self.mode == "mock":
+        if self._is_mock_mode():
             # 使用Mock数据
             return self._get_mock_watchlist_data(endpoint, params)
 
@@ -212,7 +219,7 @@ class WatchlistDataSourceAdapter(IDataSource):
         except Exception:
             logger.error("Watchlist service error: %(e)s")
             # 降级到Mock数据
-            if self._get_mock_manager():
+            if self._should_use_mock_fallback() and self._get_mock_manager():
                 return self._get_mock_watchlist_data(endpoint, params)
             raise
 

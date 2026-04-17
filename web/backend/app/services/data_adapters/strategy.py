@@ -22,6 +22,8 @@ class StrategyDataSourceAdapter(IDataSource):
         self.config = config
         self.source_type = "strategy"
         self.name = config.get("name", "Strategy Management Source")
+        self.mode = str(config.get("mode", "mock")).lower()
+        self.fallback_enabled = bool(config.get("fallback_enabled", False))
 
         # Initialize services lazily (only when needed)
         self._strategy_service = None
@@ -54,6 +56,12 @@ class StrategyDataSourceAdapter(IDataSource):
                 self._mock_manager = None
                 raise RuntimeError(f"Failed to initialize mock data manager: {e}")
         return self._mock_manager
+
+    def _is_mock_mode(self) -> bool:
+        return self.mode == "mock"
+
+    def _should_use_mock_fallback(self) -> bool:
+        return self._is_mock_mode() or self.fallback_enabled
 
     async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Any:
         """获取策略管理数据"""
@@ -92,7 +100,7 @@ class StrategyDataSourceAdapter(IDataSource):
         except Exception:
             service_available = False
 
-        if not service_available and self._get_mock_manager():
+        if not service_available and self._should_use_mock_fallback() and self._get_mock_manager():
             # 使用Mock数据
             return self._get_mock_strategy_data(endpoint, params)
 
@@ -182,7 +190,7 @@ class StrategyDataSourceAdapter(IDataSource):
         except Exception as e:
             logger.error(f"Strategy service error: {e}")
             # 降级到Mock数据
-            if self._get_mock_manager():
+            if self._should_use_mock_fallback() and self._get_mock_manager():
                 return self._get_mock_strategy_data(endpoint, params)
             raise
 
