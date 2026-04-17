@@ -61,7 +61,16 @@ sleep 15
 # 4. 运行测试
 echo "--- Running Tests on http://localhost:$FOUND_PORT ---"
 export BASE_URL="http://localhost:$FOUND_PORT"
-if npx playwright test tests/navigation-consistency.spec.ts --config=playwright.config.ts --project=chromium; then
+PLAYWRIGHT_BIN="./web/frontend/node_modules/.bin/playwright"
+PLAYWRIGHT_NODE_PATH="$(pwd)/web/frontend/node_modules"
+
+if [ ! -x "$PLAYWRIGHT_BIN" ]; then
+    echo "Playwright binary missing: $PLAYWRIGHT_BIN"
+    pm2 delete all || true
+    exit 1
+fi
+
+if NODE_PATH="$PLAYWRIGHT_NODE_PATH" "$PLAYWRIGHT_BIN" test tests/navigation-consistency.spec.ts --config=playwright.config.ts --project=chromium; then
     TEST_EXIT_CODE=0
 else
     TEST_EXIT_CODE=$?

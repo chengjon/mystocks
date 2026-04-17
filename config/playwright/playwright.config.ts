@@ -9,7 +9,7 @@ export default defineConfig({
       testDir: './tests/e2e',
       testIgnore: '**/specs/**',
       use: {
-        baseURL: process.env.E2E_BASE_URL || 'http://localhost:3000',
+        baseURL: process.env.E2E_BASE_URL || 'http://localhost:3020',
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
         video: 'retain-on-failure',
@@ -23,7 +23,7 @@ export default defineConfig({
       workers: process.env.CI ? 1 : undefined,
       webServer: {
         command: 'cd web/frontend && npm run dev',
-        url: 'http://localhost:3000',
+        url: 'http://localhost:3020',
         reuseExistingServer: !process.env.CI,
         timeout: 120000,
       },
@@ -33,7 +33,7 @@ export default defineConfig({
       name: 'api',
       testDir: './tests/api',
       use: {
-        baseURL: process.env.API_BASE_URL || 'http://localhost:8000',
+        baseURL: process.env.API_BASE_URL || 'http://localhost:8020',
         trace: 'on-first-retry',
       },
       timeout: 30000,
@@ -48,7 +48,7 @@ export default defineConfig({
       testIgnore: '**/specs/**',
       use: {
         ...devices['Desktop Firefox'],
-        baseURL: process.env.E2E_BASE_URL || 'http://localhost:3000',
+        baseURL: process.env.E2E_BASE_URL || 'http://localhost:3020',
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
         video: 'retain-on-failure',
@@ -65,7 +65,7 @@ export default defineConfig({
       testIgnore: '**/specs/**',
       use: {
         ...devices['Desktop Safari'],
-        baseURL: process.env.E2E_BASE_URL || 'http://localhost:3000',
+        baseURL: process.env.E2E_BASE_URL || 'http://localhost:3020',
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
         video: 'retain-on-failure',
