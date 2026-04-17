@@ -92,11 +92,7 @@
     import ArtDecoLoadingOverlay from '@/components/artdeco/core/ArtDecoLoadingOverlay.vue'
 
     // ========== 配置系统集成 ==========
-    import { getPageConfig } from '@/config/pageConfig'
     import { strategyApiService } from '@/api/services/strategyService'
-
-    const routeName = 'artdeco-trading-center'
-    const _pageConfig = ref(getPageConfig(routeName))
 
     console.log('Trading Center - 配置系统已就绪')
     import ArtDecoMarketOverview from './market-data-tabs/ArtDecoMarketOverview.vue'
@@ -180,22 +176,22 @@
             icon: 'tickets',
             children: [
                 {
-                    key: 'trading-signals',
+                    key: 'trade-signals',
                     label: '交易信号',
                     icon: 'notification'
                 },
                 {
-                    key: 'trading-history',
+                    key: 'trade-history',
                     label: '交易历史',
                     icon: 'timer'
                 },
                 {
-                    key: 'position-monitor',
+                    key: 'trade-positions',
                     label: '持仓监控',
                     icon: 'pie-chart'
                 },
                 {
-                    key: 'performance-analysis',
+                    key: 'trade-portfolio',
                     label: '绩效分析',
                     icon: 'trend-charts'
                 }
@@ -275,10 +271,10 @@
         'realtime-monitor': ArtDecoRealtimeMonitor,
         'market-analysis': ArtDecoMarketAnalysis,
         'industry-analysis': ArtDecoIndustryAnalysis,
-        'trading-signals': ArtDecoSignalsView,
-        'trading-history': ArtDecoHistoryView,
-        'position-monitor': ArtDecoPositionMonitor,
-        'performance-analysis': ArtDecoPerformanceAnalysis,
+        'trade-signals': ArtDecoSignalsView,
+        'trade-history': ArtDecoHistoryView,
+        'trade-positions': ArtDecoPositionMonitor,
+        'trade-portfolio': ArtDecoPerformanceAnalysis,
         'strategy-management': ArtDecoStrategyManagement,
         'backtest-analysis': ArtDecoBacktestAnalysis,
         'strategy-optimization': ArtDecoStrategyOptimization,

@@ -1,6 +1,6 @@
 <template>
   <div>
-        <div v-if="activeTab === 'orders'" class="tab-content">
+        <div v-if="isVisible" class="tab-content">
           <!-- Order Entry Panel -->
           <ArtDecoCardCompact>
             <template #header>
@@ -55,10 +55,10 @@
 
               <!-- Quick Action Buttons -->
               <div class="quick-action-buttons">
-                <el-button type="success" size="small" @click="handleQuickBuy" plain>
+                <el-button type="success" size="small" :loading="submitting" @click="handleQuickBuy" plain>
                   买入
                 </el-button>
-                <el-button type="danger" size="small" @click="handleQuickSell" plain>
+                <el-button type="danger" size="small" :loading="submitting" @click="handleQuickSell" plain>
                   卖出
                 </el-button>
               </div>
@@ -112,23 +112,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { computed, ref, reactive, onMounted, onBeforeUnmount } from 'vue'
+import { ElMessage } from 'element-plus'
 import { Search } from '@element-plus/icons-vue'
 import ArtDecoCardCompact from '@/components/artdeco/ArtDecoCardCompact.vue'
+import { marketApi } from '@/api/market.ts'
+import { tradeApi } from '@/api/trade.ts'
+import type { OrderRequest } from '@/api/types/additional-types.ts'
 
-defineProps<{
+const AUTO_REFRESH_EVENT = 'trading-decision:auto-refresh'
+
+const props = defineProps<{
   activeTab?: string
 }>()
 
 const currentPrice = ref('0.00')
+const isVisible = computed(() => !props.activeTab || props.activeTab === 'orders')
 
-const orderForm = reactive({
+const orderForm = reactive<{
+  symbol: string
+  orderType: NonNullable<OrderRequest['type']>
+  quantity: number
+}>({
   symbol: '',
   orderType: 'market',
   quantity: 100
 })
 
 interface OrderHistoryItem {
+  id: string
   symbol: string
   name: string
   orderType: string
@@ -139,23 +151,151 @@ interface OrderHistoryItem {
 }
 
 const orderHistory = ref<OrderHistoryItem[]>([])
+const submitting = ref(false)
 
-const handleQuickAction = (_action: string): void => {
+const loadOrders = async (): Promise<void> => {
+  const orders = await tradeApi.getOrders({
+    symbol: orderForm.symbol || undefined,
+    limit: 20
+  })
+
+  orderHistory.value = orders.map((order) => ({
+    id: order.orderId,
+    symbol: order.symbol,
+    name: order.name,
+    orderType: order.type,
+    quantity: order.quantity,
+    price: order.price,
+    status: order.status,
+    time: order.orderTime
+  }))
+}
+
+const handleQuickAction = async (action: string): Promise<void> => {
+  if (action === 'search-stock') {
+    await handleSearchStock()
+    return
+  }
+
+  if (action === 'create-order') {
+    ElMessage.info('请使用买入或卖出按钮提交委托')
+  }
+}
+
+const handleSearchStock = async (): Promise<void> => {
+  const query = orderForm.symbol.trim()
+  if (!query) {
+    ElMessage.warning('请输入股票代码或名称')
+    return
+  }
+
+  try {
+    const results = await marketApi.searchStocks(query, 10)
+    const firstMatch = results[0]
+
+    if (!firstMatch) {
+      currentPrice.value = '0.00'
+      ElMessage.warning(`未找到 ${query} 的行情信息`)
+      return
+    }
+
+    orderForm.symbol = firstMatch.symbol
+    currentPrice.value = firstMatch.current.toFixed(2)
+    ElMessage.success(`已载入 ${firstMatch.name} (${firstMatch.symbol})`)
+    await loadOrders()
+  } catch (error) {
+    currentPrice.value = '0.00'
+    ElMessage.error(error instanceof Error ? error.message : '股票搜索失败')
+  }
+}
+
+const normalizeOrderSymbol = (symbol: string): string => {
+  const trimmed = symbol.trim().toUpperCase()
+  if (/^\d{6}\.(SH|SZ)$/.test(trimmed)) {
+    return trimmed
+  }
+
+  if (/^\d{6}$/.test(trimmed)) {
+    return `${trimmed}.${trimmed.startsWith('6') ? 'SH' : 'SZ'}`
+  }
+
+  return trimmed
+}
+
+const submitOrder = async (side: 'buy' | 'sell'): Promise<void> => {
+  if (!orderForm.symbol) {
+    ElMessage.warning('请先搜索股票')
+    return
+  }
+
+  if (!orderForm.quantity || orderForm.quantity <= 0 || orderForm.quantity % 100 !== 0) {
+    ElMessage.warning('委托数量必须是大于 0 的 100 整数倍')
+    return
+  }
+
+  const price = Number.parseFloat(currentPrice.value)
+  if (!Number.isFinite(price) || price <= 0) {
+    ElMessage.warning('请先获取有效价格后再提交委托')
+    return
+  }
+
+  const requestPayload: OrderRequest = {
+    symbol: normalizeOrderSymbol(orderForm.symbol),
+    side,
+    type: orderForm.orderType,
+    quantity: orderForm.quantity,
+    price
+  }
+
+  submitting.value = true
+  try {
+    await tradeApi.createOrder(requestPayload)
+    ElMessage.success(`${side === 'buy' ? '买入' : '卖出'}委托已提交`)
+    await handleRefreshOrders(false)
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : '委托提交失败')
+  } finally {
+    submitting.value = false
+  }
 }
 
 const handleQuickBuy = (): void => {
+  void submitOrder('buy')
 }
 
 const handleQuickSell = (): void => {
+  void submitOrder('sell')
 }
 
-const handleRefreshOrders = (): void => {
+const handleRefreshOrders = async (showSuccess = true): Promise<void> => {
+  try {
+    await loadOrders()
+    if (showSuccess) {
+      ElMessage.success('委托列表已刷新')
+    }
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : '委托列表刷新失败')
+  }
 }
+
+const handleAutoRefresh = (): void => {
+  void handleRefreshOrders(false)
+}
+
+onMounted(() => {
+  window.addEventListener(AUTO_REFRESH_EVENT, handleAutoRefresh)
+  void handleRefreshOrders(false)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener(AUTO_REFRESH_EVENT, handleAutoRefresh)
+})
 
 const getStatusVariant = (status: string): 'success' | 'info' | 'warning' | 'danger' | 'primary' | undefined => {
-  if (status === '已成交') return 'success'
-  if (status === '已撤销') return 'info'
-  if (status === '待成交') return 'warning'
+  if (status === '已成交' || status === 'filled') return 'success'
+  if (status === '已撤销' || status === 'cancelled') return 'info'
+  if (status === '待成交' || status === 'pending' || status === 'partial') return 'warning'
+  if (status === 'rejected') return 'danger'
   return undefined
 }
 </script>

@@ -6,8 +6,11 @@
  */
 
 import { ref, readonly, onMounted } from 'vue';
+import { dataApi } from '@/api/index.ts';
 import { marketService } from '@/api/services/marketService';
 import { getCache } from '@/utils/cache/part-1';
+import type { MarketOverview } from '@/api/types/common.ts';
+import type { MarketIndexItem } from '@/api/types/market.ts';
 import type { MarketOverviewVM, FundFlowChartPoint, KLineChartData } from '@/api/types/extensions';
 
 /**
@@ -27,6 +30,156 @@ const CACHE_TTL = {
   FUND_FLOW: 600,       // 10 minutes
   K_LINE: 180,          // 3 minutes
 };
+
+const createEmptyCapitalFlow = () => ({
+  inflow: 0,
+  outflow: 0,
+  net_flow: 0,
+  large_orders: { buy: 0, sell: 0, net: 0 },
+  big_orders: { buy: 0, sell: 0, net: 0 },
+  medium_orders: { buy: 0, sell: 0, net: 0 },
+  small_orders: { buy: 0, sell: 0, net: 0 },
+  net_flow_ratio: 0,
+  large_order_ratio: 0,
+});
+
+const toMarketIndex = (
+  item: MarketIndexItem | undefined,
+  fallbackCode: string,
+  fallbackName: string
+) => ({
+  code: item?.symbol || fallbackCode,
+  name: item?.name || fallbackName,
+  current_price: item?.current_price || 0,
+  change_amount: 0,
+  change_percent: item?.change_percent || 0,
+  volume: item?.volume || 0,
+  amount: item?.turnover || 0,
+  open: item?.current_price || 0,
+  high: item?.current_price || 0,
+  low: item?.current_price || 0,
+  close: item?.current_price || 0,
+  prev_close: item?.current_price || 0,
+});
+
+const toMarketOverviewVM = (overview: MarketOverview): MarketOverviewVM => {
+  const indices = overview.indices || [];
+  const shanghai = indices[0];
+  const shenzhen = indices[1];
+  const chiNext = indices[2];
+  const totalStocks =
+    (overview.up_count || 0) +
+    (overview.down_count || 0) +
+    (overview.flat_count || 0);
+  const turnover = overview.total_turnover || 0;
+  const volume = overview.total_volume || 0;
+
+  return {
+    market_status: 'sideways',
+    market_phase: 'accumulation',
+    indices: {
+      shanghai: toMarketIndex(shanghai, 'SH000001', '上证指数'),
+      shenzhen: toMarketIndex(shenzhen, 'SZ399001', '深证成指'),
+      chiNext: toMarketIndex(chiNext, 'SZ399006', '创业板指'),
+    },
+    sentiment: {
+      advance_decline_ratio:
+        overview.down_count && overview.down_count > 0
+          ? (overview.up_count || 0) / overview.down_count
+          : overview.up_count || 0,
+      up_down_volume_ratio: 0,
+      new_highs_new_lows_ratio: 0,
+    },
+    turnover: {
+      total_value: turnover,
+      total_volume: volume,
+      average_price: volume > 0 ? turnover / volume : 0,
+      turnover_rate: 0,
+    },
+    price_distribution: {
+      up_stocks: overview.up_count || 0,
+      down_stocks: overview.down_count || 0,
+      flat_stocks: overview.flat_count || 0,
+      limit_up: 0,
+      limit_down: 0,
+      total_stocks: totalStocks,
+    },
+    sector_performance: [],
+    hot_concepts: [],
+    capital_flow: {
+      northbound: createEmptyCapitalFlow(),
+      southbound: createEmptyCapitalFlow(),
+      institutional: createEmptyCapitalFlow(),
+      retail: createEmptyCapitalFlow(),
+      foreign: createEmptyCapitalFlow(),
+    },
+    technical_summary: {
+      market_breadth: totalStocks > 0 ? (overview.up_count || 0) / totalStocks : 0,
+      momentum_index: 0,
+    },
+    timestamp: new Date().toISOString(),
+    last_update: new Date().toISOString(),
+    market_session: 'close',
+  };
+};
+
+const toFundFlowChartPoints = (
+  payload: {
+    fund_flow?: Array<{
+      trade_date?: string;
+      main_net_inflow?: number;
+      super_large_net_inflow?: number;
+      large_net_inflow?: number;
+      medium_net_inflow?: number;
+      small_net_inflow?: number;
+    }>;
+  } | null | undefined
+): FundFlowChartPoint[] =>
+  (payload?.fund_flow || []).map((item) => {
+    const large = item.super_large_net_inflow || 0;
+    const big = item.large_net_inflow || 0;
+    const medium = item.medium_net_inflow || 0;
+    const small = item.small_net_inflow || 0;
+    const total = large + big + medium + small;
+
+    return {
+      date: item.trade_date || '',
+      timestamp: item.trade_date ? new Date(item.trade_date).getTime() : Date.now(),
+      main_force: {
+        inflow: item.main_net_inflow || large,
+        outflow: 0,
+        net_flow: item.main_net_inflow || large,
+        ratio: total > 0 ? ((item.main_net_inflow || large) / total) * 100 : 0,
+      },
+      large_orders: {
+        inflow: large,
+        outflow: 0,
+        net_flow: large,
+        ratio: total > 0 ? (large / total) * 100 : 0,
+      },
+      big_orders: {
+        inflow: big,
+        outflow: 0,
+        net_flow: big,
+        ratio: total > 0 ? (big / total) * 100 : 0,
+      },
+      medium_orders: {
+        inflow: medium,
+        outflow: 0,
+        net_flow: medium,
+        ratio: total > 0 ? (medium / total) * 100 : 0,
+      },
+      small_orders: {
+        inflow: small,
+        outflow: 0,
+        net_flow: small,
+        ratio: total > 0 ? (small / total) * 100 : 0,
+      },
+      total_inflow: total,
+      total_outflow: 0,
+      total_net_flow: total,
+    };
+  });
 
 /**
  * Market data management composable
@@ -71,84 +224,8 @@ export function useMarket(options?: {
         }
       }
 
-      // TODO: Implement these methods in marketService
-      // For now, return mock data with minimal required fields
-      const vm = {
-        market_status: 'sideways' as const,
-        market_phase: 'accumulation' as const,
-        indices: {
-          shanghai: {
-            code: 'SH000001',
-            name: '上证指数',
-            current_price: 3000,
-            change_amount: 0,
-            change_percent: 0,
-            volume: 0,
-            amount: 0,
-            open: 3000,
-            high: 3000,
-            low: 3000,
-            close: 3000,
-            prev_close: 3000
-          },
-          shenzhen: {
-            code: 'SZ399001',
-            name: '深证成指',
-            current_price: 10000,
-            change_amount: 0,
-            change_percent: 0,
-            volume: 0,
-            amount: 0,
-            open: 10000,
-            high: 10000,
-            low: 10000,
-            close: 10000,
-            prev_close: 10000
-          },
-          chiNext: {
-            code: 'SZ399006',
-            name: '创业板指',
-            current_price: 2000,
-            change_amount: 0,
-            change_percent: 0,
-            volume: 0,
-            amount: 0,
-            open: 2000,
-            high: 2000,
-            low: 2000,
-            close: 2000,
-            prev_close: 2000
-          }
-        },
-        sentiment: {
-          advance_decline_ratio: 1.0,
-          up_down_volume_ratio: 1.0,
-          new_highs_new_lows_ratio: 1.0
-        },
-        turnover: { total: 0, shanghai: 0, shenzhen: 0 },
-        price_distribution: { up: 0, down: 0, flat: 0 },
-        sector_performance: [],
-        hot_concepts: [],
-        capital_flow: { main_net: 0, retail_net: 0, institution_net: 0 },
-        top_gainers: [],
-        top_losers: [],
-        technical_summary: { trend: 'neutral' as const, support: 0, resistance: 0 },
-        last_update: new Date().toISOString(),
-        market_session: 'closed' as const,
-        timestamp: new Date().toISOString()
-      } as unknown as MarketOverviewVM;
-
-      // Merge Chip Race data
-      // TODO: MarketOverviewVM interface doesn't have chipRaces field
-      // if (chipRes.success) {
-      //     vm.chipRaces = MarketAdapter.adaptChipRace(chipRes);
-      // }
-
-      // Merge Long Hu Bang data
-      // TODO: MarketOverviewVM interface doesn't have longHuBang field
-      // if (lhbRes.success) {
-      //     vm.longHuBang = MarketAdapter.adaptLongHuBang(lhbRes);
-      // }
+      const response = await dataApi.getMarketOverview();
+      const vm = toMarketOverviewVM(response.data || {});
 
       // Cache the result
       if (enableCache) {
@@ -199,9 +276,17 @@ export function useMarket(options?: {
         }
       }
 
-      // TODO: Implement getFundFlow in marketService
-      // For now, return mock data
-      const vm: FundFlowChartPoint[] = [];
+      const response = await marketService.getFundFlow(params) as {
+        fund_flow?: Array<{
+          trade_date?: string;
+          main_net_inflow?: number;
+          super_large_net_inflow?: number;
+          large_net_inflow?: number;
+          medium_net_inflow?: number;
+          small_net_inflow?: number;
+        }>;
+      };
+      const vm = toFundFlowChartPoints(response);
 
       // Cache the result
       if (enableCache) {

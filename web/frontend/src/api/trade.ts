@@ -17,6 +17,149 @@ import type {
   TradeHistoryVM
 } from '@/utils/trade-adapters.ts'
 
+type ApiEnvelope<T> = {
+  data?: T
+  request_id?: string
+}
+
+type TradeRouteEnvelope<T> = {
+  request_id?: string
+  status?: string
+  endpoint?: string
+  resource?: string
+} & T
+
+type ExecuteTradePayload = {
+  request_id?: string
+  data?: {
+    order?: {
+      symbol?: string
+      direction?: string
+      order_type?: string
+      quantity?: number
+      price?: number
+    }
+    result?: {
+      action?: string
+    }
+  }
+}
+
+type StatisticsPayload = {
+  statistics?: {
+    total_trades?: number
+    buy_count?: number
+    sell_count?: number
+    position_count?: number
+    total_buy_amount?: number
+    total_sell_amount?: number
+    total_commission?: number
+    realized_profit?: number
+  }
+}
+
+const unwrapResponseData = <T>(raw: unknown): T => {
+  if (raw && typeof raw === 'object' && 'data' in (raw as Record<string, unknown>)) {
+    const outer = raw as ApiEnvelope<T>
+    if (outer.data !== undefined) {
+      return outer.data
+    }
+  }
+
+  return raw as T
+}
+
+const asRecord = (value: unknown): Record<string, unknown> =>
+  typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : {}
+
+const asArray = <T = unknown>(value: unknown): T[] => Array.isArray(value) ? (value as T[]) : []
+
+const asNumber = (value: unknown, fallback = 0): number =>
+  typeof value === 'number' && Number.isFinite(value)
+    ? value
+    : typeof value === 'string' && value.trim() !== '' && Number.isFinite(Number(value))
+      ? Number(value)
+      : fallback
+
+const asString = (value: unknown, fallback = ''): string =>
+  typeof value === 'string' ? value : value == null ? fallback : String(value)
+
+const normalizeAccountPayload = (raw: unknown): Record<string, unknown> => {
+  const payload = unwrapResponseData<TradeRouteEnvelope<{ account?: Record<string, unknown> }>>(raw)
+  const account = asRecord(payload?.account)
+
+  return {
+    totalAssets: asNumber(account.total_assets),
+    availableCash: asNumber(account.cash),
+    totalMarketValue: asNumber(account.market_value),
+    totalPositionValue: asNumber(account.market_value),
+    totalPnL: asNumber(account.total_profit_loss),
+    totalPnLPercent: `${asNumber(account.profit_loss_percent).toFixed(2)}%`,
+    currency: 'CNY',
+    assetAllocation: []
+  }
+}
+
+const normalizePositionPayload = (raw: unknown): Record<string, unknown>[] => {
+  const payload = unwrapResponseData<TradeRouteEnvelope<{ positions?: unknown[] }>>(raw)
+  return asArray(payload?.positions).map((item) => {
+    const record = asRecord(item)
+    return {
+      symbol: asString(record.symbol),
+      name: asString(record.symbol_name || record.name || record.symbol),
+      quantity: asNumber(record.quantity),
+      avgPrice: asNumber(record.cost_price),
+      currentPrice: asNumber(record.current_price),
+      marketValue: asNumber(record.market_value),
+      realizedPnL: 0,
+      costBasis: asNumber(record.cost_price) * asNumber(record.quantity),
+      lastUpdate: asString(record.last_update),
+      side: 'long'
+    }
+  })
+}
+
+const normalizeTradeRows = (raw: unknown): Record<string, unknown>[] => {
+  const payload = unwrapResponseData<TradeRouteEnvelope<{ trades?: unknown[] }>>(raw)
+  return asArray(payload?.trades).map((item) => {
+    const record = asRecord(item)
+    return {
+      trade_id: asString(record.trade_id),
+      order_id: asString(record.order_id || record.trade_id),
+      symbol: asString(record.symbol),
+      name: asString(record.symbol),
+      action: asString(record.direction || record.side, 'buy'),
+      price: asNumber(record.price),
+      quantity: asNumber(record.quantity),
+      amount: asNumber(record.amount),
+      commission: asNumber(record.commission),
+      trade_time: asString(record.trade_time),
+      trade_type: asString(record.trade_type, 'runtime')
+    }
+  })
+}
+
+const normalizeOrderRows = (raw: unknown): Record<string, unknown>[] =>
+  normalizeTradeRows(raw).map((record) => ({
+    order_id: record.order_id,
+    symbol: record.symbol,
+    name: record.name,
+    side: record.action,
+    order_type: 'market',
+    quantity: record.quantity,
+    price: record.price,
+    amount: record.amount,
+    status: 'filled',
+    filled_quantity: record.quantity,
+    filled_amount: record.amount,
+    average_price: record.price,
+    order_time: record.trade_time,
+    update_time: record.trade_time,
+    remarks: record.trade_type
+  }))
+
+const buildUnsupportedTradeActionError = (message: string): Error => new Error(message)
+
 class TradeApiService {
   private baseUrl = '/api/trade'
 
@@ -24,8 +167,8 @@ class TradeApiService {
    * Get account overview
    */
   async getAccountOverview(): Promise<AccountOverviewVM> {
-    const rawData = await request.get(`${this.baseUrl}/account`)
-    return TradeAdapter.toAccountOverviewVM(rawData as Record<string, unknown>)
+    const rawData = await request.get(`${this.baseUrl}/portfolio`)
+    return TradeAdapter.toAccountOverviewVM(normalizeAccountPayload(rawData))
   }
 
   /**
@@ -40,31 +183,64 @@ class TradeApiService {
     limit?: number
     offset?: number
   }): Promise<OrderVM[]> {
-    const rawData = await request.get(`${this.baseUrl}/orders`, { params })
-    return TradeAdapter.toOrderVM(rawData as Record<string, unknown>[])
+    const query = {
+      symbol: params?.symbol,
+      page_size: params?.limit,
+      start_date: params?.startDate,
+      end_date: params?.endDate
+    }
+    const rawData = await request.get(`${this.baseUrl}/trades`, { params: query })
+    return TradeAdapter.toOrderVM(normalizeOrderRows(rawData))
   }
 
   /**
    * Get order details
    */
   async getOrder(orderId: string): Promise<OrderVM> {
-    const rawData = await request.get(`${this.baseUrl}/orders/${orderId}`)
-    return TradeAdapter.toOrderVM([rawData as Record<string, unknown>])[0]
+    const orders = await this.getOrders({ limit: 200 })
+    const matchedOrder = orders.find((item) => item.orderId === orderId)
+
+    if (!matchedOrder) {
+      throw new Error(`未找到委托记录: ${orderId}`)
+    }
+
+    return matchedOrder
   }
 
   /**
    * Create a new order
    */
   async createOrder(orderData: OrderRequest): Promise<OrderVM> {
-    const rawData = await request.post(`${this.baseUrl}/order`, orderData)
-    return TradeAdapter.toOrderVM([rawData as Record<string, unknown>])[0]
+    const payload = {
+      symbol: orderData.symbol,
+      direction: orderData.side || 'buy',
+      order_type: orderData.type || 'limit',
+      quantity: orderData.quantity,
+      price: orderData.price
+    }
+
+    const rawData = await request.post(`${this.baseUrl}/execute`, payload)
+    const response = unwrapResponseData<ExecuteTradePayload>(rawData)
+    const order = response?.data?.order || payload
+
+    return TradeAdapter.toOrderVM([{
+      order_id: response?.request_id || `execute-${Date.now()}`,
+      symbol: order.symbol || payload.symbol,
+      order_type: order.order_type || payload.order_type,
+      direction: order.direction || payload.direction,
+      quantity: order.quantity || payload.quantity,
+      price: order.price || payload.price,
+      status: 'pending',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }])[0]
   }
 
   /**
    * Cancel order
    */
   async cancelOrder(orderId: string): Promise<void> {
-    await request.post(`${this.baseUrl}/orders/${orderId}/cancel`)
+    throw buildUnsupportedTradeActionError(`当前后端未提供委托撤销接口: ${orderId}`)
   }
 
   /**
@@ -74,8 +250,9 @@ class TradeApiService {
     quantity?: number
     price?: number
   }): Promise<OrderVM> {
-    const rawData = await request.patch(`${this.baseUrl}/orders/${orderId}`, modifications)
-    return TradeAdapter.toOrderVM([rawData as Record<string, unknown>])[0]
+    throw buildUnsupportedTradeActionError(
+      `当前后端未提供委托改单接口: ${orderId} (${JSON.stringify(modifications)})`
+    )
   }
 
   /**
@@ -86,7 +263,11 @@ class TradeApiService {
     side?: string
   }): Promise<PositionVM[]> {
     const rawData = await request.get(`${this.baseUrl}/positions`, { params })
-    return TradeAdapter.toPositionVM(rawData as Record<string, unknown>[])
+    const positions = TradeAdapter.toPositionVM(normalizePositionPayload(rawData))
+    if (params?.symbol) {
+      return positions.filter((item) => item.symbol === params.symbol)
+    }
+    return positions
   }
 
   /**
@@ -100,8 +281,11 @@ class TradeApiService {
    * Get position details
    */
   async getPosition(symbol: string): Promise<PositionVM> {
-    const rawData = await request.get(`${this.baseUrl}/positions/${symbol}`)
-    return TradeAdapter.toPositionVM([rawData as Record<string, unknown>])[0]
+    const positions = await this.getPositions({ symbol })
+    if (positions.length === 0) {
+      throw new Error(`未找到持仓: ${symbol}`)
+    }
+    return positions[0]
   }
 
   /**
@@ -113,9 +297,18 @@ class TradeApiService {
     startDate?: string
     endDate?: string
     limit?: number
+    page?: number
+    pageSize?: number
   }): Promise<TradeHistoryVM[]> {
-    const rawData = await request.get(`${this.baseUrl}/history`, { params })
-    return TradeAdapter.toTradeHistoryVM(rawData as Record<string, unknown>[])
+    const query = {
+      symbol: params?.symbol,
+      start_date: params?.startDate,
+      end_date: params?.endDate,
+      page: params?.page,
+      page_size: params?.pageSize || params?.limit
+    }
+    const rawData = await request.get(`${this.baseUrl}/trades`, { params: query })
+    return TradeAdapter.toTradeHistoryVM(normalizeTradeRows(rawData))
   }
 
   /**
@@ -155,7 +348,32 @@ class TradeApiService {
     leverage: number
     riskLevel: 'low' | 'medium' | 'high'
   }> {
-    return request.get(`${this.baseUrl}/risk-metrics`)
+    const [accountOverview, positions] = await Promise.all([
+      this.getAccountOverview(),
+      this.getPositions()
+    ])
+
+    const totalExposure = positions.reduce((sum, position) => sum + asNumber(position.marketValue), 0)
+    const totalAssets = asNumber(accountOverview.totalAssets)
+    const freeMargin = asNumber(accountOverview.availableCash)
+    const marginRequirement = totalExposure
+    const leverage = totalAssets > 0 ? totalExposure / totalAssets : 0
+    const exposureRatio = totalAssets > 0 ? totalExposure / totalAssets : 0
+
+    let riskLevel: 'low' | 'medium' | 'high' = 'low'
+    if (exposureRatio >= 0.8 || leverage >= 0.8) {
+      riskLevel = 'high'
+    } else if (exposureRatio >= 0.5 || leverage >= 0.5) {
+      riskLevel = 'medium'
+    }
+
+    return {
+      totalExposure,
+      marginRequirement,
+      freeMargin,
+      leverage,
+      riskLevel
+    }
   }
 
   /**
@@ -171,9 +389,26 @@ class TradeApiService {
     profitFactor: number
     totalCommission: number
   }> {
-    return request.get(`${this.baseUrl}/statistics`, {
+    const rawData = await request.get(`${this.baseUrl}/statistics`, {
       params: { period }
     })
+    const payload = unwrapResponseData<TradeRouteEnvelope<StatisticsPayload>>(rawData)
+    const statistics = asRecord(payload?.statistics)
+    const totalTrades = asNumber(statistics.total_trades)
+    const buyCount = asNumber(statistics.buy_count)
+    const sellCount = asNumber(statistics.sell_count)
+    const realizedProfit = asNumber(statistics.realized_profit)
+
+    return {
+      totalTrades,
+      winningTrades: buyCount,
+      losingTrades: sellCount,
+      winRate: totalTrades > 0 ? (buyCount / totalTrades) * 100 : 0,
+      avgWin: buyCount > 0 ? realizedProfit / buyCount : 0,
+      avgLoss: sellCount > 0 ? Math.abs(realizedProfit) / sellCount : 0,
+      profitFactor: sellCount > 0 ? buyCount / sellCount : buyCount > 0 ? buyCount : 0,
+      totalCommission: asNumber(statistics.total_commission)
+    }
   }
 
   /**
@@ -183,7 +418,13 @@ class TradeApiService {
     cancelled: string[]
     failed: Array<{ orderId: string; reason: string }>
   }> {
-    return request.post(`${this.baseUrl}/orders/batch-cancel`, { orderIds })
+    return {
+      cancelled: [],
+      failed: orderIds.map((orderId) => ({
+        orderId,
+        reason: '当前后端未提供批量撤单接口'
+      }))
+    }
   }
 
   /**
@@ -195,7 +436,41 @@ class TradeApiService {
     warnings?: string[]
     estimatedCost?: number
   }> {
-    return request.post(`${this.baseUrl}/validate-order`, orderData)
+    const errors: string[] = []
+    const warnings: string[] = []
+    const quantity = asNumber(orderData.quantity)
+    const price = asNumber(orderData.price)
+
+    if (!asString(orderData.symbol).trim()) {
+      errors.push('股票代码不能为空')
+    }
+
+    if (!orderData.side || !['buy', 'sell'].includes(orderData.side)) {
+      errors.push('交易方向无效')
+    }
+
+    if (!orderData.type || !['market', 'limit', 'stop'].includes(orderData.type)) {
+      errors.push('订单类型无效')
+    }
+
+    if (quantity <= 0) {
+      errors.push('委托数量必须大于 0')
+    }
+
+    if (orderData.type !== 'market' && price <= 0) {
+      errors.push('限价/止损委托必须提供有效价格')
+    }
+
+    if (orderData.type === 'market' && price <= 0) {
+      warnings.push('市价单未提供价格，预估成交金额将按 0 计算')
+    }
+
+    return {
+      valid: errors.length === 0,
+      errors: errors.length > 0 ? errors : undefined,
+      warnings: warnings.length > 0 ? warnings : undefined,
+      estimatedCost: quantity * Math.max(price, 0)
+    }
   }
 
   /**
@@ -209,7 +484,7 @@ class TradeApiService {
     remainingQuantity: number
     avgPrice: number
   }> {
-    return request.get(`${this.baseUrl}/execution/${orderId}`)
+    throw buildUnsupportedTradeActionError(`当前后端未提供委托执行状态接口: ${orderId}`)
   }
 
   /**
@@ -223,7 +498,14 @@ class TradeApiService {
     maxOrderSize: number
     maxPositionSize: number
   }> {
-    return request.get(`${this.baseUrl}/permissions`)
+    return {
+      canTrade: true,
+      canShortSell: false,
+      canTradeOptions: false,
+      maxLeverage: 1,
+      maxOrderSize: 0,
+      maxPositionSize: 0
+    }
   }
 
   /**

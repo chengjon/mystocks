@@ -1,7 +1,18 @@
-    import { ref, computed, onMounted, watch , onUnmounted } from 'vue'
+    import { ref, computed, watch } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
     import _ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
      import { getPageConfig, getTabConfig, isRouteName, isMonolithicConfig, type MonolithicPageConfig, type TabConfig } from '@/config/pageConfig'
+
+const asRecord = (value: unknown): Record<string, unknown> =>
+    typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : {}
+
+const CANONICAL_TRADE_ROUTE_BY_TAB: Record<string, string> = {
+    overview: 'trade-portfolio',
+    signals: 'trade-signals',
+    positions: 'trade-positions',
+    history: 'trade-history',
+    attribution: 'trade-portfolio'
+}
 
 export function useArtDecoTradingManagement() {
 
@@ -13,7 +24,7 @@ export function useArtDecoTradingManagement() {
 
     // 根据当前路由名称获取配置
     const currentRouteName = computed(() => {
-        return route.name as string || 'trading-signals'
+        return route.name as string || 'trade-terminal'
     })
 
     // 当前页面配置
@@ -109,11 +120,7 @@ export function useArtDecoTradingManagement() {
 
     const switchTab = (tabKey: string) => {
         activeTab.value = tabKey
-        // Optional: update URL when tab changes internally
-        const targetPath = `/trading/${tabKey === 'overview' ? 'signals' : tabKey}` // Simple mapping
-        if (route.path !== targetPath) {
-            // router.push(targetPath)
-        }
+        void navigateToCanonicalTradePage(tabKey)
     }
 
     // Watch route meta to sync activeTab
@@ -291,15 +298,31 @@ export function useArtDecoTradingManagement() {
 
     const historyLoading = ref(false)
 
+    const navigateToCanonicalTradePage = async (tabKey = activeTab.value, query: Record<string, string> = {}) => {
+        const routeName = CANONICAL_TRADE_ROUTE_BY_TAB[tabKey]
+        if (!routeName) return
+
+        refreshing.value = true
+        try {
+            await _router.push({
+                name: routeName,
+                query: {
+                    source: 'artdeco-trading-management',
+                    ...query
+                }
+            })
+        } finally {
+            refreshing.value = false
+        }
+    }
+
     // 事件处理函数
     const handleExportCsv = () => {
-        console.log('导出CSV')
-        // TODO: 实现CSV导出逻辑
+        void navigateToCanonicalTradePage('history', { compatAction: 'export-csv' })
     }
 
     const handleBatchExecute = () => {
-        console.log('批量执行')
-        // TODO: 实现批量执行逻辑
+        void navigateToCanonicalTradePage('signals', { compatAction: 'batch-execute' })
     }
 
     const refreshData = async () => {
@@ -308,100 +331,73 @@ export function useArtDecoTradingManagement() {
             refreshing.value = false
             return
         }
-        
-        console.log('刷新数据 - API端点:', apiEndpoint.value)
-        // TODO: 使用 apiEndpoint 调用 API
-        refreshing.value = false
+
+        await navigateToCanonicalTradePage(activeTab.value, {
+            compatAction: 'refresh',
+            compatEndpoint: apiEndpoint.value
+        })
     }
 
     const openSettings = () => {
-        console.log('打开设置')
-        // TODO: 实现设置弹窗逻辑
-    }
-
-    const _handleStopSignals = () => {
-        console.log('停止交易信号')
-        // TODO: 实现停止信号逻辑
-    }
-
-    const _handleUpdateConfig = (config: unknown) => {
-        console.log('更新配置:', config)
-        // TODO: 实现配置更新逻辑
+        void _router.push({
+            name: 'system-config',
+            query: {
+                source: 'artdeco-trading-management'
+            }
+        })
     }
 
     const handleClosePosition = (positionId: string) => {
-        console.log('关闭持仓:', positionId)
-        // TODO: 实现关闭持仓逻辑
+        void navigateToCanonicalTradePage('positions', {
+            compatAction: 'close-position',
+            positionId
+        })
     }
 
     const handleAdjustPosition = (positionId: string, adjustment: unknown) => {
-        console.log('调整持仓:', positionId, adjustment)
-        // TODO: 实现调整持仓逻辑
+        const adjustmentRecord = asRecord(adjustment)
+        void navigateToCanonicalTradePage('positions', {
+            compatAction: 'adjust-position',
+            positionId,
+            side: String(adjustmentRecord.side ?? '')
+        })
     }
 
     const handleExecuteSignal = (signalId: string) => {
-        console.log('执行信号:', signalId)
-        // TODO: 实现执行信号逻辑
+        void navigateToCanonicalTradePage('signals', {
+            compatAction: 'execute-signal',
+            signalId
+        })
     }
 
     const handleCancelSignal = (signalId: string) => {
-        console.log('取消信号:', signalId)
-        // TODO: 实现取消信号逻辑
+        void navigateToCanonicalTradePage('signals', {
+            compatAction: 'cancel-signal',
+            signalId
+        })
     }
 
     const handleHistoryFilter = (filters: unknown) => {
-        console.log('历史筛选:', filters)
-        // TODO: 实现历史筛选逻辑
-    }
-
-    const _handleExportHistory = (format: string) => {
-        console.log('导出历史:', format)
-        // TODO: 实现导出历史逻辑
+        const filterRecord = asRecord(filters)
+        void navigateToCanonicalTradePage('history', {
+            compatAction: 'filter-history',
+            symbol: String(filterRecord.symbol ?? selectedSymbol.value ?? ''),
+            type: String(filterRecord.type ?? selectedType.value ?? '')
+        })
     }
 
     const handleLoadMoreHistory = () => {
-        // 加载更多历史数据
-        console.log('Loading more history...')
+        void navigateToCanonicalTradePage('history', { compatAction: 'load-more-history' })
     }
 
-    // 收益归因分析方法 - 从HTML功能扩展
     const handleAttributionAnalysis = async () => {
         attributionLoading.value = true
         try {
-            // 模拟归因分析计算
-            await new Promise(resolve => setTimeout(resolve, 2000))
-
-            // 更新分析结果 (实际实现应调用API)
-            strategyBreakdown.value = [
-                { strategy: '双均线交叉', contribution: 42.3, weight: 35.2 },
-                { strategy: 'MACD金叉', contribution: 26.1, weight: 28.7 },
-                { strategy: 'RSI超卖反弹', contribution: 18.7, weight: 18.9 },
-                { strategy: '布林带突破', contribution: 15.6, weight: 17.2 }
-            ]
-
-            stockBreakdown.value = [
-                { stock: '600519', name: '贵州茅台', contribution: 31.2, weight: 15.6 },
-                { stock: '000001', name: '平安银行', contribution: 22.8, weight: 12.4 },
-                { stock: '300750', name: '宁德时代', contribution: 19.5, weight: 10.8 },
-                { stock: '600036', name: '招商银行', contribution: 16.3, weight: 9.2 },
-                { stock: '000725', name: '京东方A', contribution: 12.1, weight: 6.7 }
-            ]
-        } catch (error) {
-            console.error('Attribution analysis failed:', error)
+            await navigateToCanonicalTradePage('attribution', { compatAction: 'attribution-analysis' })
         } finally {
             attributionLoading.value = false
         }
     }
-
-    onMounted(() => {
-        // TODO: 初始化交易管理数据
-    })
-
-// Auto-generated: cleanup timers to prevent memory leaks
-const _timer_1: ReturnType<typeof setTimeout> | null = null
-onUnmounted(() => {
-  if (_timer_1) clearTimeout(_timer_1)
-})
 
   return {
     route,
