@@ -29,7 +29,8 @@
 - 34 条前端路由全部通过 Playwright MCP 测试，**0 JS 错误**
 - 新增后端 schema 回归测试：`web/backend/tests/test_backtest_repository_trade_schema.py`
 - 新增 trade history 映射回归测试：`web/backend/tests/test_trade_route_placeholders_regressions.py`
-- `pytest web/backend/tests/test_backtest_repository_trade_schema.py web/backend/tests/test_trade_route_placeholders_regressions.py -q -o addopts=''` → `14 passed`
+- 原始提交验证：`pytest web/backend/tests/test_backtest_repository_trade_schema.py web/backend/tests/test_trade_route_placeholders_regressions.py -q -o addopts=''` → `14 passed`
+- 2026-04-19 复核：同一命令当前结果为 `20 passed`
 - `/api/v1/monitoring/watchlists` → 200（返回 18 个真实 watchlist）
 - `/api/v1/data/stocks/basic` → 200（认证正常）
 
