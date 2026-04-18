@@ -9,17 +9,25 @@
 
 本文档从运行时角度总结当前 ArtDeco 前端体系，重点是“现在实际上怎么跑”，而不是历史理想模型。
 
+> 2026-04-18 对齐补充
+>
+> - ArtDeco 仍然是前端主要视觉与工作台体系。
+> - 但当前活跃业务路由已经大量收敛到 `views/<domain>/*.vue`。
+> - `artdeco-pages/**` 现在同时承担模板页、工作台块、兼容包装层和少量路由例外入口。
+
 ## 1. 当前运行时全景
 
-ArtDeco 运行时由四层组成：
+ArtDeco 运行时由五层组成：
 
 1. **路由与布局壳层**
    `web/frontend/src/router/index.ts` + `web/frontend/src/layouts/ArtDecoLayoutEnhanced.vue`
-2. **可复用资产层**
+2. **活跃业务域页面层**
+   `web/frontend/src/views/{market,data,watchlist,strategy,trade,risk,system}/**`
+3. **可复用资产层**
    `web/frontend/src/components/artdeco/**`
-3. **页面工作台层**
+4. **页面工作台层**
    `web/frontend/src/views/artdeco-pages/**`
-4. **设计令牌层**
+5. **设计令牌层**
    `web/frontend/src/styles/artdeco-*.scss`
 
 ## 2. 不是单一容器架构，而是三种模式并存
@@ -71,6 +79,11 @@ ArtDeco 运行时由四层组成：
 - 定义主业务域路由：`market`、`data`、`watchlist`、`strategy`、`trade`、`risk`、`system`
 - 将大量 ArtDeco page/workbench 直接作为独立路由挂入
 
+更准确地说：
+
+- 大多数主业务页面已经挂在 `views/<domain>/*.vue`
+- ArtDeco 页面作为路由入口时属于“明确声明的例外”，不能再按目录推断
+
 ### 3.2 `pageConfig.ts` 不是唯一真值
 
 `web/frontend/src/config/pageConfig.ts` 当前是自动生成的页面配置文件，提供：
@@ -88,6 +101,17 @@ ArtDeco 运行时由四层组成：
 - 很多页面的 tab 结构仍然由页面自身维护
 
 因此，架构文档不能再把 `pageConfig.ts` 写成“所有页签块都由它动态驱动”。
+
+### 3.3 当前路由例外清单
+
+当前确认仍由 ArtDeco 目录直接承载的代表性路由包括：
+
+- `/dashboard` -> `views/artdeco-pages/ArtDecoDashboard.vue`
+- `/strategy/signals` -> `views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue`
+- `/strategy/pos` -> `views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue`
+- `/risk/pnl` -> `views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue`
+
+此外，`/trade/terminal` 是当前保留的非域目录例外，由 `views/TradingDashboard.vue` 提供。
 
 ## 4. 组件边界
 
@@ -121,6 +145,17 @@ ArtDeco 运行时由四层组成：
 - 允许独立路由态 / 内嵌态双承载
 - 默认不应跨域复用
 
+### 4.4 ArtDeco 页面目录的当前角色
+
+`views/artdeco-pages/**` 当前主要承载四类对象：
+
+1. 模板化工作台页
+2. 域内工作台块
+3. 页面系统内部共享片段
+4. 兼容包装层与少量活跃路由例外
+
+因此，目录存在本身不代表该文件就是当前 canonical routed page。
+
 ## 5. 设计令牌事实点
 
 当前 `web/frontend/src/styles/artdeco-tokens.scss` 明确包含：
@@ -131,6 +166,14 @@ ArtDeco 运行时由四层组成：
   - `1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32`
 - 语义别名：`sm / md / lg / xl`
 - 紧凑变量：`compact-*`
+
+同时，当前交互与视觉优化契约还要叠加读取根目录 `DESIGN.md`，尤其是：
+
+- 数据优先动效
+- 盈亏 glow 语义
+- 紧凑 / 微密度模式
+- 交易面板单主按钮规则
+- 200ms / 400ms 混合过渡预算
 
 ## 6. 当前代表性页面映射
 
@@ -147,6 +190,7 @@ ArtDeco 运行时由四层组成：
 当前 ArtDeco 前端的准确描述不是单一“容器 - 页签块”模型，而是：
 
 - **布局壳层统一**
+- **活跃业务域路由已部分域目录化**
 - **组件层分层明确**
 - **页面承载模式并存**
 - **路由驱动与模板化工作台共存**

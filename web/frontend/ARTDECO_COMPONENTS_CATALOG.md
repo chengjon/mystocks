@@ -7,11 +7,17 @@
 
 本目录是当前 MyStocks ArtDeco 生态的组件全景清单。
 
-> 2026-04-01 盘点结果
+> 2026-04-18 盘点结果
 >
 > - `src/components/artdeco/` 下共 **73** 个 Vue 组件
 > - `views/artdeco-pages/` 下共 **89** 个 ArtDeco 相关 Vue 页面/块/模板
 > - 整个 ArtDeco 前端生态共盘点到 **162** 个 Vue 文件
+>
+> 口径说明
+>
+> - 这里统计的是 **ArtDeco 生态资产存量**，不是全部活跃业务路由页面数。
+> - 当前活跃业务路由真值仍需回到 `web/frontend/src/router/index.ts` 与 `web/frontend/src/views/<domain>/*.vue`。
+> - `artdeco-pages/**` 既包含工作台块，也包含模板页和兼容包装层。
 
 ## 1. 先看治理口径
 
@@ -21,6 +27,8 @@
    位于 `web/frontend/src/components/artdeco/`
 2. **Domain / Business 承载**
    位于 `web/frontend/src/components/artdeco/{trading,advanced,specialized}` 与 `web/frontend/src/views/artdeco-pages/**`
+3. **活跃路由 canonical entry**
+   多数已经位于 `web/frontend/src/views/<domain>/*.vue`，只有少数 ArtDeco 页面仍直接作为路由入口
 
 判断原则：
 
@@ -144,6 +152,17 @@ Domain reusable 主链共 **25** 个 Vue 组件，处理：
 
 `ArtDecoPageTemplate`、`ExampleRiskManagement`
 
+### 6.3 当前仍直接参与路由的 ArtDeco 例外入口
+
+以下文件应被视为“ArtDeco 生态中的活跃路由例外”，不是一般性的目录事实推断依据：
+
+- `web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue`
+- `web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue`
+- `web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue`
+- `web/frontend/src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue`
+
+当某个 ArtDeco 文件被路由直接引用时，应以 router 为准逐项确认，而不是默认整个目录都是主业务入口。
+
 ## 7. 当前生态总览
 
 | 区域 | 数量 | 定位 |
@@ -161,6 +180,7 @@ Domain reusable 主链共 **25** 个 Vue 组件，处理：
 - 组件职责变化时，先改 `ARTDECO_COMPONENT_GUIDE.md`，再改本目录。
 - 不要把 `*-tabs` 误记为 reusable base assets。
 - 不要把 `views/artdeco-pages/components/` 误记为 `src/components/artdeco/` 的替代品。
+- 不要把 `views/artdeco-pages/**` 误记为当前所有业务路由的 canonical 页面目录。
 - 当目录结构变化时，必须同步更新：
   - `docs/guides/web/ARTDECO_COMPONENT_GUIDE.md`
   - `docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md`

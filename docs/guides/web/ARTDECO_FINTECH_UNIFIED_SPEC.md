@@ -57,10 +57,50 @@
 
 1. `ARTDECO_START_HERE.md`
 2. `ARTDECO_FINTECH_UNIFIED_SPEC.md`
-3. `ARTDECO_SCSS_GOVERNANCE_BASELINE.md`
-4. `ARTDECO_COMPONENT_GUIDE.md`
-5. `web/frontend/ARTDECO_COMPONENTS_CATALOG.md`
-6. `docs/api/ArtDeco_System_Architecture_Summary.md`
+3. `DESIGN.md`
+4. `ARTDECO_SCSS_GOVERNANCE_BASELINE.md`
+5. `ARTDECO_COMPONENT_GUIDE.md`
+6. `web/frontend/ARTDECO_COMPONENTS_CATALOG.md`
+7. `docs/api/ArtDeco_System_Architecture_Summary.md`
+
+其中职责边界为：
+
+- `DESIGN.md`：设计契约层，定义动效预算、密度模式、金融反馈、交易面板交互层级
+- `artdeco-tokens.scss` 等样式文件：样式令牌与实现真值层
+- `router/index.ts` + `docs/guides/frontend-structure.md`：活跃业务路由与目录真值层
+- `artdeco-pages/**`：工作台、模板、域块与兼容包装层真值
+
+### 2.3 路由真值与 ArtDeco 真值必须分开理解
+
+当前仓库不是“ArtDeco 页面目录 = 活跃业务路由入口”的结构。
+
+需要区分：
+
+1. **活跃业务路由真值**
+   - `web/frontend/src/router/index.ts`
+   - `web/frontend/src/views/<domain>/*.vue`
+2. **ArtDeco 工作台真值**
+   - `web/frontend/src/components/artdeco/**`
+   - `web/frontend/src/views/artdeco-pages/**`
+
+当前业务域路由主线是：
+
+- `market`
+- `data`
+- `watchlist`
+- `strategy`
+- `trade`
+- `risk`
+- `system`
+
+当前已知 ArtDeco 例外入口：
+
+- `/dashboard` -> `views/artdeco-pages/ArtDecoDashboard.vue`
+- `/strategy/signals` -> `views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue`
+- `/strategy/pos` -> `views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue`
+- `/risk/pnl` -> `views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue`
+
+这意味着：ArtDeco 体系仍是前端核心视觉与工作台承载体系，但它不等于“所有业务路由都继续直接落在 `artdeco-pages/**`”。
 
 ## 3. 组件与页面的目录边界
 
@@ -118,12 +158,21 @@
 
 - `router/index.ts` 以 `ArtDecoLayoutEnhanced.vue` 为主壳层。
 - `pageConfig.ts` 是自动生成的路由元数据源，但它 **不是** 当前所有 ArtDeco tabs 的唯一事实源。
+- `pageConfig.ts` 当前服务于页面元数据和部分模板化承载，不应被描述成“所有页面块统一由它生成”。
 - 许多工作台页面已经可作为独立路由直接挂载，例如：
   - `strategy-tabs/ArtDecoStrategyManagement.vue`
   - `strategy-tabs/ArtDecoBacktestAnalysis.vue`
   - `trading-tabs/ArtDecoSignalsView.vue`
   - `risk-tabs/RiskOverviewTab.vue`
   - `system-tabs/ArtDecoMonitoringDashboard.vue`
+
+### 4.1 兼容包装层规则
+
+当活跃业务路由已经迁到 `views/<domain>/*.vue` 时：
+
+- `artdeco-pages/**` 中的同类文件默认视为 **工作台块、模板页或兼容包装层**
+- 兼容包装层必须保持薄封装，不能重新沉淀业务真值
+- 新增页面时，优先判断应进入域目录还是 ArtDeco 工作台目录，而不是机械复制两份
 
 ## 5. 工程铁律
 
@@ -146,6 +195,8 @@
 - 新页面优先复用现有工作台壳层
 - 页面至少要有明确的 header、meta、content 节奏
 - 需要 tabs 时，优先延续当前 `tabs shell -> content shell` 结构
+- 若该页面是活跃业务路由 canonical entry，优先落在 `views/<domain>/`
+- 若该页面是 ArtDeco 工作台内部块、模板页、兼容壳或独立工作台页签，才落在 `views/artdeco-pages/**`
 
 ### 5.4 桌面端约束
 
@@ -172,6 +223,8 @@
 
 - 入门看 `ARTDECO_START_HERE.md`
 - 目录看 `ARTDECO_MASTER_INDEX.md`
+- 设计契约看 `DESIGN.md`
 - 组件清单看 `web/frontend/ARTDECO_COMPONENTS_CATALOG.md`
 - 运行时摘要看 `docs/api/ArtDeco_System_Architecture_Summary.md`
 - 历史基准看 `docs/reports/ARTDECO_V3_COMPLETE_SUMMARY.md`
+- 活跃前端路由目录真相看 `docs/guides/frontend-structure.md`

@@ -9,12 +9,18 @@
 
 本文档定义 ArtDeco 组件与页面块的放置规则、命名边界和开发准入标准。
 
-## 1. 先记住 4 条铁律
+> 2026-04-18 补充
+>
+> 当前前端已存在 `views/<domain>/*.vue` 的 canonical routed page 主线。
+> 因此本指南除了回答“组件放哪”，还必须回答“这是 reusable asset、ArtDeco 工作台块，还是业务路由入口”。
+
+## 1. 先记住 5 条铁律
 
 1. `src/components/artdeco/**` 只放可持续沉淀的可复用资产。
 2. `views/artdeco-pages/components/` 只放 ArtDeco 页面系统内部共享片段。
 3. `views/artdeco-pages/*-tabs/` 只放域内工作台块，不默认跨域复用。
 4. 页面专属逻辑不要上提到 `base / core`，临时页面块不要伪装成全局组件。
+5. 活跃业务路由页优先放 `views/<domain>/*.vue`，不是默认放进 `artdeco-pages/**`。
 
 ## 2. 目录治理矩阵
 
@@ -29,6 +35,7 @@
 | `src/components/artdeco/specialized/` | 强专题组件 | LongHuBang、BlockTrading | 冒充全局通用组件 |
 | `views/artdeco-pages/components/` | 页面系统内部共享片段 | 在多个 ArtDeco 页面工作台之间复用 | 当作通用 UI 组件库 |
 | `views/artdeco-pages/*-tabs/` | 域内工作台块 | 独立路由块、Tab block、内嵌块 | 随意跨域 import |
+| `views/<domain>/` | 活跃业务路由页面 | 作为 router canonical entry，承载域页面组合 | 伪装成通用组件目录 |
 
 ## 3. `*-tabs` 与 `components/` 的铁律
 
@@ -66,11 +73,12 @@
 
 ## 4. 决策树
 
-### 4.1 新能力先问 3 个问题
+### 4.1 新能力先问 4 个问题
 
 1. 它是不是纯视觉 / 通用交互？
 2. 它是不是会在多个页面或多个域中稳定复用？
 3. 它是不是强依赖当前页面的 tab、路由、筛选或局部状态？
+4. 它是不是当前业务路由的 canonical 页面入口？
 
 ### 4.2 放置建议
 
@@ -85,6 +93,21 @@
 | 强专题、难泛化 | `specialized/` |
 | 多个 ArtDeco 页面内部共享 | `views/artdeco-pages/components/` |
 | 单域工作台块 / 单页 tabs 块 | `views/artdeco-pages/*-tabs/` |
+| 当前业务路由的主页面 | `views/<domain>/` |
+
+### 4.3 关于兼容包装层
+
+如果某个旧 ArtDeco 页面仍然存在，是因为：
+
+- 需要兼容旧 import
+- 需要兼容嵌入式工作台用法
+- 需要作为过渡壳层包装新域目录页面
+
+此时规则是：
+
+- 保持薄封装
+- 不再把它扩写成新的业务真值
+- 文档中明确标成 wrapper / compatibility / embedded shell
 
 ## 5. 样式与实现规则
 
@@ -102,6 +125,7 @@
 - 禁止新增硬编码颜色、间距、圆角、阴影、过渡
 - 新代码优先 `@use`，不要继续扩散 `@import`
 - 涉及金融语义时，用 `artdeco-financial.scss` 提供的语义
+- 交互节奏、密度模式、主按钮层级按根目录 `DESIGN.md` 执行
 
 ### 5.2 字体与间距
 
@@ -126,7 +150,18 @@
 - 不做移动端 / 平板适配
 - 不要把“响应式治理”写成移动端适配任务
 
-## 7. 命名建议
+## 7. 业务路由入口与 ArtDeco 工作台的分工
+
+当前推荐分工是：
+
+- `views/<domain>/*.vue`：面向导航、菜单、路由的 canonical entry
+- `components/artdeco/**`：长期复用资产
+- `views/artdeco-pages/components/`：工作台内部共享片段
+- `views/artdeco-pages/*-tabs/`：工作台域块、独立 tab block、兼容工作台入口
+
+例外允许存在，但必须在 router 中明确声明，而不是靠目录习惯默认成立。
+
+## 8. 命名建议
 
 当前仓库命名并不完全统一，因此本指南不强推机械改名；但新文件建议满足以下原则：
 
@@ -136,13 +171,14 @@
 
 比“统一成单一公式”更重要的是：目录边界正确、职责边界正确。
 
-## 8. 提交前检查
+## 9. 提交前检查
 
 至少确认：
 
 - 新文件放在了正确目录
 - 没有把页面专属逻辑提到 `base/core`
 - 没有把域内工作台块错误抽成全局组件
+- 没有把 canonical routed page 错放到 `artdeco-pages/**`
 - 没有新增硬编码视觉值
 - 新样式优先使用 `@use`
 - A 股语义没有写反
@@ -154,10 +190,12 @@
 - PM2 服务状态
 - 实际 E2E 执行结果
 
-## 9. 与其他文档的关系
+## 10. 与其他文档的关系
 
 - 先上手：`ARTDECO_START_HERE.md`
 - 看总目录：`ARTDECO_MASTER_INDEX.md`
 - 看运行时架构：`docs/api/ArtDeco_System_Architecture_Summary.md`
 - 看组件清单：`web/frontend/ARTDECO_COMPONENTS_CATALOG.md`
 - 看样式真值：`ARTDECO_SCSS_GOVERNANCE_BASELINE.md`
+- 看设计契约：`DESIGN.md`
+- 看当前前端路由目录真相：`docs/guides/frontend-structure.md`
