@@ -121,8 +121,9 @@
 
 **技术规范**
 - OpenAPI 3.1.0 Schema (`docs/api/openapi.json`)
-- Swagger UI 可访问 (`/docs`)
-- ReDoc 文档 (`/redoc`)
+- Swagger UI 历史兼容入口 (`/docs`)
+- ReDoc 历史兼容入口 (`/redoc`)
+- 当前 canonical 文档端点：`/api/docs`、`/api/redoc`
 
 #### 📊 API 端点覆盖
 
