@@ -6,7 +6,17 @@ function parseAndLoadEnvFallback(envPath) {
     return
   }
 
-  const lines = fs.readFileSync(envPath, "utf8").split(/\r?\n/u)
+  let contents
+  try {
+    contents = fs.readFileSync(envPath, "utf8")
+  } catch (error) {
+    if (error && (error.code === "EACCES" || error.code === "EPERM")) {
+      return
+    }
+    throw error
+  }
+
+  const lines = contents.split(/\r?\n/u)
   for (const line of lines) {
     const trimmed = line.trim()
     if (!trimmed || trimmed.startsWith("#")) {
