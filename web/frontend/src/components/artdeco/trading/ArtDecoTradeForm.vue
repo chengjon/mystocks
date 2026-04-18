@@ -84,10 +84,11 @@
             </div>
 
             <div class="form-footer">
+                <div v-if="submitBlockReason" class="form-status">{{ submitBlockReason }}</div>
                 <button class="artdeco-btn artdeco-btn-secondary" @click="handleCancel">CANCEL</button>
                 <button
                     class="artdeco-btn"
-                    :class="tradeTypeClass"
+                    :class="['artdeco-btn-primary-action', tradeTypeClass]"
                     @click="handleSubmit"
                     :disabled="disabled || submitting || !isValid"
                 >
@@ -182,6 +183,16 @@
         return formData.symbol.trim() !== '' && formData.quantity >= props.minQuantity && formData.price > 0
     })
 
+    const submitBlockReason = computed(() => {
+        if (props.readonly) return 'READ ONLY'
+        if (props.disabled) return 'ACTION UNAVAILABLE'
+        if (props.submitting) return ''
+        if (formData.symbol.trim() === '') return 'ENTER SYMBOL'
+        if (formData.quantity < props.minQuantity) return `MIN QUANTITY ${props.minQuantity}`
+        if (formData.price <= 0) return 'ENTER VALID PRICE'
+        return ''
+    })
+
     const handleSymbolChange = () => {
         emit('update:symbol', formData.symbol)
         emit('symbolChange', formData.symbol)
@@ -219,7 +230,7 @@
     .artdeco-trade-form {
       background: var(--artdeco-bg-card);
       border: 1px solid var(--artdeco-gold-opacity-20);
-      padding: var(--artdeco-spacing-5);
+      padding: var(--artdeco-spacing-compact-lg);
       min-width: calc(var(--artdeco-spacing-20) * 6 + var(--artdeco-spacing-5));
       max-width: calc(var(--artdeco-spacing-20) * 7 + var(--artdeco-spacing-10));
       position: relative;
@@ -256,8 +267,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: var(--artdeco-spacing-5);
-      padding-bottom: var(--artdeco-spacing-4);
+      margin-bottom: var(--artdeco-spacing-4);
+      padding-bottom: var(--artdeco-spacing-3);
       border-bottom: 1px solid var(--artdeco-gold-opacity-20);
     }
 
@@ -294,19 +305,19 @@
     .form-body {
       display: flex;
       flex-direction: column;
-      gap: var(--artdeco-spacing-4);
-      margin-bottom: var(--artdeco-spacing-5);
+      gap: var(--artdeco-spacing-3);
+      margin-bottom: var(--artdeco-spacing-4);
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: var(--artdeco-spacing-2);
+      gap: var(--artdeco-spacing-compact-xs);
     }
 
     .artdeco-label {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-base);
+      font-size: var(--artdeco-text-compact-sm);
       font-weight: 600;
       color: var(--artdeco-accent-gold);
       text-transform: uppercase;
@@ -315,13 +326,16 @@
 
     .artdeco-input,
     .artdeco-textarea {
-      background: var(--artdeco-bg-primary);
+      background: var(--artdeco-bg-base);
       border: 1px solid var(--artdeco-gold-opacity-20);
-      color: var(--artdeco-fg-secondary);
+      color: var(--artdeco-fg-primary);
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-base);
-      padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
-      transition: all var(--artdeco-transition-base);
+      font-size: var(--artdeco-text-compact-base);
+      padding: var(--artdeco-spacing-1) var(--artdeco-spacing-3);
+      transition: border-color var(--artdeco-transition-quick) var(--artdeco-ease-out),
+                  box-shadow var(--artdeco-transition-quick) var(--artdeco-ease-out),
+                  background-color var(--artdeco-transition-quick) var(--artdeco-ease-out);
+      min-height: 36px;
     }
 
     .artdeco-input:focus,
@@ -344,12 +358,13 @@
 
     .trade-amount-display {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-lg);
+      font-size: var(--artdeco-text-compact-md);
       font-weight: 700;
-      padding: var(--artdeco-spacing-3);
-      background: var(--artdeco-bg-primary);
+      padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
+      background: var(--artdeco-bg-base);
       border: 1px solid var(--artdeco-gold-opacity-20);
       text-align: center;
+      font-variant-numeric: tabular-nums;
     }
 
     .trade-amount-display.gold {
@@ -358,10 +373,12 @@
 
     .trade-amount-display.rise {
       color: var(--artdeco-rise);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--artdeco-rise) 30%, transparent), var(--artdeco-glow-profit);
     }
 
     .trade-amount-display.fall {
       color: var(--artdeco-down);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--artdeco-down) 30%, transparent), var(--artdeco-glow-loss);
     }
 
     .max-quantity-display {
@@ -376,25 +393,41 @@
     /* Form footer */
     .form-footer {
       display: flex;
+      align-items: center;
+      flex-wrap: wrap;
       justify-content: flex-end;
-      gap: var(--artdeco-spacing-3);
-      padding-top: var(--artdeco-spacing-4);
+      gap: var(--artdeco-spacing-2);
+      padding-top: var(--artdeco-spacing-3);
       border-top: 1px solid var(--artdeco-gold-opacity-20);
+    }
+
+    .form-status {
+      margin-right: auto;
+      color: var(--artdeco-fg-muted);
+      font-family: var(--artdeco-font-mono);
+      font-size: var(--artdeco-text-compact-sm);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
 
     /* Button styles */
     .artdeco-btn {
-      padding: var(--artdeco-spacing-2) var(--artdeco-spacing-5);
+      min-height: 44px;
+      padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
       border: 1px solid var(--artdeco-gold-opacity-20);
       background: var(--artdeco-bg-card);
-      color: var(--artdeco-fg-secondary);
-      font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-base);
+      color: var(--artdeco-fg-primary);
+      font-family: var(--artdeco-font-body);
+      font-size: var(--artdeco-text-compact-base);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       cursor: pointer;
-      transition: all var(--artdeco-transition-base);
+      transition: transform var(--artdeco-transition-quick) var(--artdeco-ease-out),
+                  box-shadow var(--artdeco-transition-quick) var(--artdeco-ease-out),
+                  border-color var(--artdeco-transition-quick) var(--artdeco-ease-out),
+                  background-color var(--artdeco-transition-quick) var(--artdeco-ease-out),
+                  color var(--artdeco-transition-quick) var(--artdeco-ease-out);
       position: relative;
       overflow: hidden;
       display: inline-flex;
@@ -418,6 +451,18 @@
       color: var(--artdeco-accent-gold);
     }
 
+    .artdeco-btn-primary-action {
+      min-width: 136px;
+      border-width: 1px;
+    }
+
+    .artdeco-btn-primary-action.artdeco-btn-rise {
+      background: color-mix(in srgb, var(--artdeco-rise) 16%, var(--artdeco-bg-card));
+      border-color: color-mix(in srgb, var(--artdeco-rise) 50%, transparent);
+      color: var(--artdeco-rise);
+      box-shadow: var(--artdeco-glow-profit);
+    }
+
     .artdeco-btn-rise:hover {
       color: var(--artdeco-rise);
       border-color: var(--artdeco-rise);
@@ -426,6 +471,13 @@
     .artdeco-btn-fall:hover {
       color: var(--artdeco-down);
       border-color: var(--artdeco-down);
+    }
+
+    .artdeco-btn-primary-action.artdeco-btn-fall {
+      background: color-mix(in srgb, var(--artdeco-down) 16%, var(--artdeco-bg-card));
+      border-color: color-mix(in srgb, var(--artdeco-down) 50%, transparent);
+      color: var(--artdeco-down);
+      box-shadow: var(--artdeco-glow-loss);
     }
 
     /* Spinner */

@@ -1,5 +1,5 @@
 <template>
-    <div class="artdeco-position-card" :class="{ clickable }" @click="handleClick">
+    <div class="artdeco-position-card" :class="[cardToneClass, { clickable }]" @click="handleClick">
         <div class="artdeco-corner-tl"></div>
         <div class="artdeco-corner-br"></div>
 
@@ -48,7 +48,7 @@
         </div>
 
         <div v-if="showActions" class="position-footer">
-            <button class="artdeco-btn-mini artdeco-btn-rise" @click.stop="handleSell">SELL</button>
+            <button class="artdeco-btn-mini artdeco-btn-primary artdeco-btn-rise" @click.stop="handleSell">SELL</button>
             <button class="artdeco-btn-mini artdeco-btn-secondary" @click.stop="handleDetail">DETAILS</button>
         </div>
 
@@ -114,6 +114,10 @@
 
     const profitClass = computed(() => {
         return props.position.profit >= 0 ? 'profit-up' : 'profit-down'
+    })
+
+    const cardToneClass = computed(() => {
+        return props.position.profit >= 0 ? 'position-card--profit' : 'position-card--loss'
     })
 
     const formatTime = (time: string | Date): string => {
@@ -218,7 +222,17 @@
       padding: var(--artdeco-spacing-4);
       position: relative;
       overflow: hidden;
-      transition: all var(--artdeco-transition-base);
+      transition: transform var(--artdeco-transition-quick) var(--artdeco-ease-out),
+                  box-shadow var(--artdeco-transition-quick) var(--artdeco-ease-out),
+                  border-color var(--artdeco-transition-quick) var(--artdeco-ease-out);
+    }
+
+    .artdeco-position-card.position-card--profit {
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--artdeco-profit) 14%, transparent);
+    }
+
+    .artdeco-position-card.position-card--loss {
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--artdeco-loss) 14%, transparent);
     }
 
     .artdeco-position-card.clickable {
@@ -344,10 +358,12 @@
 
     .item-value.profit-up {
       color: var(--artdeco-up);
+      text-shadow: var(--artdeco-glow-profit);
     }
 
     .item-value.profit-down {
       color: var(--artdeco-down);
+      text-shadow: var(--artdeco-glow-loss);
     }
 
     .percent {
@@ -364,7 +380,7 @@
     }
 
     .artdeco-btn-mini {
-      flex: 1;
+      min-height: 44px;
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
       border: 1px solid var(--artdeco-gold-opacity-20);
       background: var(--artdeco-bg-primary);
@@ -375,7 +391,20 @@
       text-transform: uppercase;
       letter-spacing: 0.05em;
       cursor: pointer;
-      transition: all var(--artdeco-transition-base);
+      transition: transform var(--artdeco-transition-quick) var(--artdeco-ease-out),
+                  box-shadow var(--artdeco-transition-quick) var(--artdeco-ease-out),
+                  border-color var(--artdeco-transition-quick) var(--artdeco-ease-out),
+                  color var(--artdeco-transition-quick) var(--artdeco-ease-out);
+    }
+
+    .artdeco-btn-primary {
+      flex: 1;
+    }
+
+    .artdeco-btn-secondary {
+      flex: 0 0 auto;
+      min-width: 92px;
+      background: transparent;
     }
 
     .artdeco-btn-mini:hover {
@@ -387,6 +416,13 @@
     .artdeco-btn-mini.artdeco-btn-rise:hover {
       border-color: var(--artdeco-rise);
       color: var(--artdeco-rise);
+    }
+
+    .artdeco-btn-mini.artdeco-btn-primary.artdeco-btn-rise {
+      background: color-mix(in srgb, var(--artdeco-rise) 16%, var(--artdeco-bg-card));
+      border-color: color-mix(in srgb, var(--artdeco-rise) 45%, transparent);
+      color: var(--artdeco-rise);
+      box-shadow: var(--artdeco-glow-profit);
     }
 
     .artdeco-btn-mini.artdeco-btn-secondary:hover {

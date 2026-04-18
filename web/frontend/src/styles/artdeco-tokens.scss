@@ -41,15 +41,18 @@
   --artdeco-bg-card: #141414;         // 卡片背景
   --artdeco-bg-elevated: #1a1a1a;     // 提升表面
   --artdeco-bg-header: #111118;       // ✨ 侧边栏/顶部栏背景
+  --artdeco-bg-primary: var(--artdeco-bg-base); // 向后兼容别名
 
   // Foregrounds - 浅色前景系列
   --artdeco-fg-primary: #F2F0E4;      // 香槟奶油 - 主要文本
   --artdeco-fg-muted: #A0A0A0;        // 锚色 - 次要文本（提升对比度，WCAG AA）
   --artdeco-fg-subtle: rgb(255 255 255 / 60%); // 微妙 - 占位符
+  --artdeco-fg-secondary: var(--artdeco-fg-primary); // 向后兼容别名
 
   // Accent - 金色强调系列 V3.0 (大阻使用，提升品牌识别度）
   --artdeco-gold-primary: #D4AF37;    // ✨ 古典金 - 主品牌色（大幅增加使用）
   --artdeco-gold-light: #F0E68C;     // ✨ 浅金 - Hover/高亮（金色系渐变过渡）
+  --artdeco-gold-hover: var(--artdeco-gold-light); // Hover alias
   --artdeco-bronze: #CD7F32;        // ✨ 青铜色 - 次要强调
   --artdeco-champagne: #F7E7CE;     // ✨ 香槟金 - 柔和背景
   --artdeco-gold-dim: #8B7355;       // 暗金 - 优雅阴影
@@ -81,6 +84,7 @@
   --artdeco-rise: #FF5252;           // ✨ 涨 - 红色（A股约定，更饱和提升可读性）
   --artdeco-down: #00E676;           // ✨ 跌 - 绿色（A股约定，更饱和提升可读性）
   --artdeco-flat: #B0B3B8;           // 平 - 灰色
+  --artdeco-up: var(--artdeco-rise); // 历史兼容别名
 
   // 盈亏颜色（语义化别名）
   --artdeco-profit: var(--artdeco-rise);   // 盈利 - 红色（与上涨一致）
@@ -173,6 +177,8 @@
   --artdeco-font-size-lg: var(--artdeco-text-xl);
 
   // 字体家族别名（保持组件兼容性）
+  --artdeco-font-heading: var(--font-display);
+  --artdeco-font-accent: var(--font-mono);
   --artdeco-font-display: var(--artdeco-font-heading);
   --artdeco-font-mono: var(--artdeco-font-accent);
 
@@ -260,6 +266,36 @@
 
 .data-updated {
   animation: data-update-flash 0.8s ease;
+}
+
+@keyframes artdeco-price-flash-up {
+  0%, 100% {
+    background-color: transparent;
+    box-shadow: none;
+  }
+  50% {
+    background-color: rgb(255 82 82 / 18%);
+    box-shadow: 0 0 12px rgb(255 82 82 / 30%);
+  }
+}
+
+@keyframes artdeco-price-flash-down {
+  0%, 100% {
+    background-color: transparent;
+    box-shadow: none;
+  }
+  50% {
+    background-color: rgb(0 230 118 / 18%);
+    box-shadow: 0 0 12px rgb(0 230 118 / 30%);
+  }
+}
+
+.artdeco-price-flash-up {
+  animation: artdeco-price-flash-up var(--artdeco-transition-quick) var(--artdeco-ease-out);
+}
+
+.artdeco-price-flash-down {
+  animation: artdeco-price-flash-down var(--artdeco-transition-quick) var(--artdeco-ease-out);
 }
 
 // Tab切换 - 金色滑块效果
@@ -372,8 +408,11 @@
 
   // Art Deco specific glows (gold-tinted)
   --artdeco-glow-subtle: 0 0 15px rgb(212 175 55 / 20%);
+  --artdeco-glow-medium: 0 0 18px rgb(212 175 55 / 30%);
   --artdeco-glow-intense: 0 0 20px rgb(212 175 55 / 40%);
   --artdeco-glow-max: 0 0 30px rgb(212 175 55 / 60%);
+  --artdeco-glow-profit: 0 0 12px rgb(255 82 82 / 30%);
+  --artdeco-glow-loss: 0 0 12px rgb(0 230 118 / 30%);
 }
 
 // ============================================

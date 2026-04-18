@@ -68,6 +68,7 @@
         width: 100%;
         border-collapse: collapse;
         font-family: var(--hybrid-font-body);
+        font-variant-numeric: tabular-nums;
     }
 
     .hybrid-table__thead {
@@ -133,6 +134,7 @@
         padding: var(--data-dense-table-cell-padding);
         color: var(--artdeco-fg-primary);
         border-bottom: var(--data-dense-border-width) solid var(--data-dense-border-color);
+        height: 36px;
 
         @include data-dense-transitions;
 
@@ -159,6 +161,10 @@
     .hybrid-table__tbody tr {
         @include gpu-accelerated;
 
+        &:nth-child(even) .hybrid-table__cell {
+            background-color: color-mix(in srgb, var(--artdeco-bg-card) 92%, var(--artdeco-gold-primary) 8%);
+        }
+
         &:hover .hybrid-table__cell {
             background-color: color-mix(in srgb, var(--artdeco-gold-primary) 5%, transparent);
         }
@@ -167,6 +173,7 @@
     .hybrid-table__row--active .hybrid-table__cell {
         background-color: color-mix(in srgb, var(--artdeco-gold-primary) 10%, transparent);
         color: var(--artdeco-gold-primary);
+        box-shadow: inset 2px 0 0 var(--artdeco-gold-primary);
     }
 
     .hybrid-table__cell--actions {
@@ -260,6 +267,7 @@
         .hybrid-table__cell {
             padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
             font-size: var(--data-dense-font-xs);
+            height: 32px;
         }
     }
 

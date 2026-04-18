@@ -12,7 +12,7 @@
 
         <!-- Spread / Current Price -->
         <div class="artdeco-orderbook-meta">
-            <div class="current-price" :class="priceChangeClass">
+            <div class="current-price" :class="[priceChangeClass, priceFlashClass]">
                 {{ formatPrice(currentPrice) }}
                 <span class="price-arrow">{{ currentPrice >= lastClose ? '▲' : '▼' }}</span>
             </div>
@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-    import { computed } from 'vue'
+    import { computed, ref, watch } from 'vue'
 
     interface OrderItem {
         price: number
@@ -72,6 +72,19 @@
         return 'text-flat'
     })
 
+    const priceFlashClass = ref('')
+
+    watch(
+        () => props.currentPrice,
+        (next, prev) => {
+            if (prev === undefined || next === prev) return
+            priceFlashClass.value = next > prev ? 'artdeco-price-flash-up' : 'artdeco-price-flash-down'
+            window.setTimeout(() => {
+                priceFlashClass.value = ''
+            }, 220)
+        }
+    )
+
     function formatPrice(price: number) {
         return price.toFixed(2)
     }
@@ -90,6 +103,7 @@
       padding: var(--artdeco-spacing-2);
       font-family: var(--artdeco-font-mono);
       width: 100%;
+      font-variant-numeric: tabular-nums;
     }
 
     .artdeco-orderbook-section {
@@ -101,10 +115,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
+      padding: var(--artdeco-spacing-compact-xs) var(--artdeco-spacing-2);
       position: relative;
-      height: var(--artdeco-spacing-6);
+      height: 28px;
       z-index: 1;
+      transition: background-color var(--artdeco-transition-quick) var(--artdeco-ease-out);
     }
 
     .artdeco-orderbook-row:hover {
@@ -122,12 +137,14 @@
       padding-left: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
       font-weight: 600;
       color: var(--artdeco-fg-secondary);
+      font-variant-numeric: tabular-nums;
     }
 
     .row-volume {
       text-align: right;
       color: var(--artdeco-silver-dim);
       font-size: var(--artdeco-font-size-sm); // Compact small size
+      font-variant-numeric: tabular-nums;
     }
 
     .artdeco-depth-bar {
@@ -144,7 +161,7 @@
     .depth-rise { background: var(--artdeco-up); }
 
     .artdeco-orderbook-meta {
-      margin: var(--artdeco-spacing-3) 0;
+      margin: var(--artdeco-spacing-2) 0;
       padding: var(--artdeco-spacing-2);
       border-top: 1px solid var(--artdeco-gold-opacity-20);
       border-bottom: 1px solid var(--artdeco-gold-opacity-20);
@@ -158,16 +175,20 @@
       align-items: center;
       justify-content: center;
       gap: var(--artdeco-spacing-2);
+      border-radius: var(--artdeco-radius-sm);
+      transition: background-color var(--artdeco-transition-quick) var(--artdeco-ease-out),
+                  box-shadow var(--artdeco-transition-quick) var(--artdeco-ease-out);
     }
 
     .price-details {
       font-size: var(--artdeco-font-size-sm); // Compact small size
       color: var(--artdeco-fg-muted);
       margin-top: var(--artdeco-spacing-1);
+      font-variant-numeric: tabular-nums;
     }
 
-    .text-rise { color: var(--artdeco-up); }
-    .text-fall { color: var(--artdeco-down); }
+    .text-rise { color: var(--artdeco-up); text-shadow: var(--artdeco-glow-profit); }
+    .text-fall { color: var(--artdeco-down); text-shadow: var(--artdeco-glow-loss); }
     .text-flat { color: var(--artdeco-fg-muted); }
 
     .price-arrow { font-size: var(--artdeco-font-size-sm); } // Compact small size
