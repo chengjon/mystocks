@@ -396,6 +396,8 @@ const routes = [
 
 **数据库持久化** (1-2天):
 1. 创建PostgreSQL表结构
+   > 说明：以下 SQL 为 Phase 4 Day 3 当时对 Day 4-5 的计划草案，仅用于说明阶段目标，不代表当前仓库已落地的 canonical schema。
+   > 当前 `backtest_results` / `backtest_trades` 真相源请以 `web/backend/app/repositories/backtest_repository.py`、`web/backend/init_tables.sql` 与 `web/backend/init_tables_simple.sql` 为准。
    ```sql
    CREATE TABLE user_strategies (
      strategy_id SERIAL PRIMARY KEY,
