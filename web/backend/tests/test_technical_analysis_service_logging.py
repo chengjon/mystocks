@@ -1,6 +1,9 @@
 import pandas as pd
 
-from app.services.technical_analysis_service import TechnicalAnalysisService, _normalize_history_period
+from app.services.technical_analysis_service import (
+    TechnicalAnalysisService,
+    _normalize_history_period,
+)
 
 
 def test_get_stock_history_logs_real_symbol_and_error(monkeypatch, caplog):
@@ -20,6 +23,29 @@ def test_get_stock_history_logs_real_symbol_and_error(monkeypatch, caplog):
     assert result.empty
     assert "600519" in caplog.text
     assert "upstream unavailable" in caplog.text
+
+
+def test_get_stock_history_logs_transient_upstream_disconnect_as_warning(monkeypatch, caplog):
+    service = TechnicalAnalysisService()
+
+    class _TransientAkshare:
+        @staticmethod
+        def stock_zh_a_hist(**_kwargs):
+            raise ConnectionError("Connection aborted. Remote end closed connection without response")
+
+    monkeypatch.setattr(
+        "app.services.technical_analysis_service._get_akshare_module",
+        lambda _feature: _TransientAkshare,
+    )
+
+    with caplog.at_level("WARNING"):
+        result = service.get_stock_history("000001")
+
+    assert isinstance(result, pd.DataFrame)
+    assert result.empty
+    assert "000001" in caplog.text
+    assert "Remote end closed connection" in caplog.text
+    assert not [record for record in caplog.records if record.levelname == "ERROR"]
 
 
 def test_normalize_history_period_maps_window_alias_to_daily_range():
@@ -62,3 +88,13 @@ def test_get_stock_history_uses_normalized_period_and_dates(monkeypatch):
     assert captured["period"] == "daily"
     assert captured["start_date"] == "20260117"
     assert captured["end_date"] == "20260417"
+
+
+def test_calculate_trend_indicators_skips_warning_for_empty_dataframe(caplog):
+    service = TechnicalAnalysisService()
+
+    with caplog.at_level("WARNING"):
+        result = service.calculate_trend_indicators(pd.DataFrame())
+
+    assert result == {}
+    assert "Insufficient data for trend indicators" not in caplog.text

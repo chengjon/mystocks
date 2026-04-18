@@ -42,6 +42,13 @@ def _get_akshare_module(feature: str):
 
 
 _WINDOW_PERIOD_PATTERN = re.compile(r"^(?P<count>\d+)(?P<unit>[dwmy])$")
+_TRANSIENT_HISTORY_FETCH_ERROR_HINTS = (
+    "connection aborted",
+    "remote end closed connection",
+    "timed out",
+    "temporarily unavailable",
+    "connection reset",
+)
 
 
 def _normalize_history_period(
@@ -78,6 +85,16 @@ def _normalize_history_period(
         normalized_start_date = (end_dt - timedelta(days=count * day_multiplier)).strftime("%Y-%m-%d")
 
     return "daily", normalized_start_date, normalized_end_date
+
+
+def _is_transient_history_fetch_error(exc: Exception) -> bool:
+    error_name = exc.__class__.__name__.lower()
+    error_message = str(exc).lower()
+
+    if "timeout" in error_name or "connection" in error_name:
+        return True
+
+    return any(hint in error_message for hint in _TRANSIENT_HISTORY_FETCH_ERROR_HINTS)
 
 
 class TechnicalAnalysisService:
@@ -209,7 +226,8 @@ class TechnicalAnalysisService:
             return df
 
         except Exception as exc:
-            logger.error("Failed to get stock history for %s: %s", symbol, exc)
+            log_method = logger.warning if _is_transient_history_fetch_error(exc) else logger.error
+            log_method("Failed to get stock history for %s: %s", symbol, exc)
             return pd.DataFrame()
 
     # ========================================================================
@@ -227,7 +245,10 @@ class TechnicalAnalysisService:
         - DMI (动向指标): ADX, +DI, -DI
         - SAR (抛物线转向指标)
         """
-        if df.empty or len(df) < 250:
+        if df.empty:
+            return {}
+
+        if len(df) < 250:
             logger.warning("Insufficient data for trend indicators")
             return {}
 
