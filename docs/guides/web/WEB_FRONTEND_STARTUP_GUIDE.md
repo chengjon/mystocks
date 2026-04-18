@@ -129,23 +129,21 @@ python -m web.backend.app.main
 
 ### 当前端口使用情况
 
-- **前端开发服务器**：端口 3020（实际运行）
-- **后端 API 服务器**：端口 8000（实际运行）
+- **前端开发服务器**：端口 3020（由 `.env` 中 `FRONTEND_PORT` 控制）
+- **后端 API 服务器**：端口 8020（由 `.env` 中 `BACKEND_PORT` 控制）
 
 ### 端口配置说明
 
-项目中存在多个端口配置来源，目前状态较为混乱：
+端口统一通过项目根目录 `.env` 管理（`ecosystem.test.config.js` 和 `config/pm2.config.js` 均从 `.env` 读取）：
 
-1. **vite.config.mts**：使用 `findAvailablePort(3000, 3009)` 自动查找可用端口
-2. **ecosystem.config.js**：设置 `PORT=3020`（但 Vite 会忽略此环境变量）
-3. **ecosystem.dev.config.js**：设置 `PORT=3001`
-4. **CLAUDE.md 项目规则**：前端 3020-3029，后端 8020-8029
+```
+FRONTEND_PORT=3020
+FRONTEND_BACKUP_PORT=3021
+BACKEND_PORT=8020
+BACKEND_BACKUP_PORT=8021
+```
 
-**推荐的标准配置：**
-
-- 开发环境前端：3020-3029 范围内
-- 开发环境后端：8000（当前实际使用）
-- 生产环境：根据部署环境配置
+允许范围（CLAUDE.md 项目规则）：前端 3020-3029，后端 8020-8029。
 
 ### Vite 代理配置
 
@@ -441,89 +439,77 @@ npm run build
 - **ReDoc**：http://localhost:8020/redoc
 - **健康检查**：http://localhost:8020/health
 
-## 当前已知问题
+## 辅助工具
 
-### 1. 端口配置不一致
+### 浏览器环境管理
 
-**问题描述**：
+使用 `scripts/ensure_browsers.sh` 在运行浏览器测试前确保环境一致：
 
-项目中存在多个端口配置来源，导致配置不一致：
+```bash
+# 清理旧版本 + 检查驱动对齐
+bash scripts/ensure_browsers.sh
 
-- `vite.config.mts` 使用 `findAvailablePort(3000, 3009)`
-- `ecosystem.config.js` 设置 `PORT=3020`
-- `ecosystem.dev.config.js` 设置 `PORT=3001`
-- `CLAUDE.md` 规定前端使用 3020-3029
+# 清理 + 自动安装缺失驱动
+bash scripts/ensure_browsers.sh --fix
 
-**当前状态**：
-
-前端实际运行在 3020 端口（可能是因为 3000-3009 被占用）
-
-**建议解决方案**：
-
-统一配置为 3020-3029 范围，修改 `vite.config.mts`：
-
-```typescript
-server: {
-  port: await findAvailablePort(3020, 3029),
-  // ...
-}
+# 列出所有可用浏览器及驱动版本
+bash scripts/ensure_browsers.sh --list
 ```
 
-### 2. 后端 PYTHONPATH 问题
+### Playwright CLI 测试
 
-**问题描述**：
+使用 `scripts/run_playwright_cli_tests.sh` 运行交互式路由测试：
+
+```bash
+# 快速测试（P0 + P1 路由）
+bash scripts/run_playwright_cli_tests.sh --quick
+
+# 冒烟测试（P0-P3）
+bash scripts/run_playwright_cli_tests.sh --smoke
+
+# 全量测试（所有路由）
+bash scripts/run_playwright_cli_tests.sh --full
+```
+
+测试前需确保 PM2 服务已启动（前端 :3020，后端 :8020）。
+
+## 当前已知问题
+
+### 1. ~~端口配置不一致~~ (已解决)
+
+端口已统一通过 `.env` 管理，`config/pm2.config.js` 从 `.env` 读取端口配置。
+
+### 2. 后端 PYTHONPATH 问题
 
 直接使用 `pm2 start app/main.py` 会导致 ImportError，因为 Python 无法找到项目模块。
 
 **当前解决方案**：
 
-必须使用 `pm2_start.py` 启动脚本，它会正确设置 PYTHONPATH。
-
-**建议改进**：
-
-在项目根目录添加 `setup.py` 或使用 Poetry 管理依赖，使项目成为可安装的 Python 包。
+使用 `config/pm2.config.js`（推荐）或 `pm2_start.py` 启动脚本，它们会正确设置 PYTHONPATH。
 
 ### 3. PM2 后端进程频繁重启
 
-**当前状态**：
-
-如果使用错误的启动命令，后端会因为 ImportError 而不断重启（已观察到 468 次重启）。
+如果使用错误的启动命令，后端会因为 ImportError 而不断重启。
 
 **解决方案**：
 
-严格按照本指南的"方法 2"使用 `pm2_start.py` 启动后端。
+使用统一的 PM2 配置：`pm2 start config/pm2.config.js`。
 
-### 4. PM2 健康检查端口不匹配
+### 4. ~~PM2 健康检查端口不匹配~~ (已解决)
 
-**问题描述**：
-
-`ecosystem.config.js` 中的健康检查 URL 可能配置为 3002，但前端实际运行在 3020。
-
-**影响**：
-
-PM2 健康检查失败，可能触发不必要的重启。
-
-**解决方案**：
-
-更新 `ecosystem.config.js` 中的 `health_check.url` 为实际运行端口：
-
-```javascript
-health_check: {
-  url: 'http://localhost:3020',
-  timeout: 5000,
-  retries: 3,
-  interval: 10000
-}
-```
+`config/pm2.config.js` 从 `.env` 读取端口，健康检查 URL 与实际端口一致。
 
 ## 相关文档
 
+- **PM2 统一配置**：`config/pm2.config.js`
+- **浏览器管理脚本**：`scripts/ensure_browsers.sh`
+- **Playwright CLI 测试**：`scripts/run_playwright_cli_tests.sh`
 - **测试指南**：`docs/guides/chrome-devtools/mystocks-chromedevtools-testing-guide.md`
 - **修复报告**：`docs/reports/FRONTEND_JS_SYNTAX_FIX_REPORT.md`
 - **测试报告**：`docs/reports/CHROME_DEVTOOLS_TESTING_REPORT_*.md`
 
 ---
 
-**文档版本**：v2.0
-**最后更新**：2025-02-12
+**文档版本**：v3.0
+**最后更新**：2026-04-18
 **项目路径**：`/opt/claude/mystocks_spec`
