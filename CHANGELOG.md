@@ -65,9 +65,15 @@
 
 - `pytest tests/unit/services/symphony/test_config.py tests/unit/services/symphony/test_tracker_factory.py tests/unit/services/symphony/test_mongo_tracker.py tests/unit/services/symphony/test_mongo_runtime_flow.py tests/unit/services/symphony/test_orchestrator.py tests/unit/services/symphony/test_workspace_manager.py tests/unit/services/symphony/test_status_api.py tests/unit/services/symphony/test_maestro_collab_cli.py tests/unit/services/symphony/test_maestro_namespace.py tests/unit/services/symphony/test_collab_backend_selection.py tests/unit/maestro_collab tests/unit/runtime/test_maestro_coordination_cli.py tests/unit/runtime/test_collab_migration_scripts.py tests/unit/runtime/test_smoke_mongo_multicli.py -q -o addopts=''`
 - 原始提交验证结果：`77 passed`
-- 2026-04-18 复核：同一命令当前结果为 `111 passed`
+- 2026-04-19 复核：同一命令当前结果为 `111 passed`
 - `python scripts/runtime/smoke_mongo_multicli.py`
 - 原始 / 当前复核 smoke 结果一致：`assignment_status=retrying`，`control_plane_status=ready_for_review`，`status_api_control_plane_count=1`
+
+### 📚 文档路径说明
+
+- 该批次新增的 Mongo multi-CLI / Symphony 本地多 CLI guide 后续已完成目录收敛，当前 canonical 路径为：
+  - `docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md`
+  - `docs/guides/multi-cli-tasks/SYMPHONY_LOCAL_MULTICLI_WORKFLOW.md`
 
 ### 🎼 Maestro / Symphony 本地优先收口
 
