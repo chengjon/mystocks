@@ -6,6 +6,7 @@ Backtest Repository Layer
 
 import logging
 from datetime import datetime, timezone
+from decimal import Decimal
 from typing import List, Optional
 
 from sqlalchemy import (
@@ -37,6 +38,44 @@ from app.models.strategy_schemas import (
 
 logger = logging.getLogger(__name__)
 Base = declarative_base()
+
+
+def _trade_field(trade: TradeRecord | dict, name: str, default=None):
+    if isinstance(trade, dict):
+        return trade.get(name, default)
+    return getattr(trade, name, default)
+
+
+def _normalize_trade_date(value):
+    if isinstance(value, datetime):
+        return value.date()
+    return value
+
+
+def _resolve_trade_quantity(trade) -> int:
+    quantity = _trade_field(trade, "quantity")
+    if quantity is not None:
+        return int(quantity)
+    fallback_quantity = _trade_field(trade, "amount", 0)
+    return int(fallback_quantity or 0)
+
+
+def _resolve_trade_direction(trade) -> str:
+    direction = _trade_field(trade, "direction", _trade_field(trade, "action", "buy"))
+    return str(direction).lower()
+
+
+def _resolve_trade_total_cost(trade, quantity: int, price) -> Decimal:
+    explicit_amount = _trade_field(trade, "amount")
+    if explicit_amount is not None:
+        return Decimal(str(explicit_amount))
+    return Decimal(str(price or 0)) * Decimal(str(quantity))
+
+
+def _trade_row_total_cost(trade: "BacktestTradeModel") -> Decimal:
+    if trade.total_cost is not None:
+        return Decimal(str(trade.total_cost))
+    return Decimal(str(trade.price or 0)) * Decimal(str(trade.amount or 0))
 
 
 # ============================================================
@@ -79,7 +118,12 @@ class BacktestResultModel(Base):
         back_populates="backtest",
         cascade="all, delete-orphan",
     )
-    trades = relationship("BacktestTradeModel", back_populates="backtest", cascade="all, delete-orphan")
+    trades = relationship(
+        "BacktestTradeModel",
+        foreign_keys="BacktestTradeModel.backtest_id",
+        primaryjoin="BacktestResultModel.backtest_id == BacktestTradeModel.backtest_id",
+        cascade="all, delete-orphan",
+    )
 
     __table_args__ = (
         CheckConstraint(
@@ -121,33 +165,24 @@ class BacktestEquityCurveModel(Base):
 
 
 class BacktestTradeModel(Base):
-    """交易记录表ORM模型"""
+    """交易记录表ORM模型 — 匹配实际库表 schema"""
 
     __tablename__ = "backtest_trades"
 
-    trade_id = Column(Integer, primary_key=True, autoincrement=True)
-    backtest_id = Column(
-        Integer,
-        ForeignKey("backtest_results.backtest_id", ondelete="CASCADE"),
-        nullable=False,
-    )
-    symbol = Column(String(20), nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    backtest_id = Column(Integer, nullable=False)
     trade_date = Column(Date, nullable=False)
-    action = Column(String(10), nullable=False)
-    price = Column(Numeric(10, 2), nullable=False)
-    quantity = Column(Integer, nullable=False)
-    amount = Column(Numeric(15, 2), nullable=False)
-    commission = Column(Numeric(10, 2), nullable=False)
-    profit_loss = Column(Numeric(15, 2), nullable=True)
-
-    # 关系
-    backtest = relationship("BacktestResultModel", back_populates="trades")
+    symbol = Column(String, nullable=False)
+    direction = Column(String, nullable=False)
+    amount = Column(Integer)
+    price = Column(Numeric)
+    commission = Column(Numeric)
+    stamp_tax = Column(Numeric)
+    total_cost = Column(Numeric)
+    created_at = Column(TIMESTAMP(timezone=True))
 
     __table_args__ = (
-        CheckConstraint("action IN ('buy', 'sell')", name="chk_action"),
         Index("idx_backtest_trades_backtest_id", "backtest_id"),
-        Index("idx_backtest_trades_symbol", "symbol"),
-        Index("idx_backtest_trades_date", "trade_date"),
     )
 
 
@@ -432,7 +467,7 @@ class BacktestRepository:
             logger.error("获取权益曲线失败: backtest_id=%(backtest_id)s, error={str(e)}")
             raise
 
-    def save_trades(self, backtest_id: int, trades: List[TradeRecord]) -> bool:
+    def save_trades(self, backtest_id: int, trades: List[TradeRecord | dict]) -> bool:
         """保存交易记录
 
         Args:
@@ -446,14 +481,21 @@ class BacktestRepository:
             trade_models = [
                 BacktestTradeModel(
                     backtest_id=backtest_id,
-                    symbol=trade.symbol,
-                    trade_date=trade.date,
-                    action=trade.action,
-                    price=trade.price,
-                    quantity=trade.quantity,
-                    amount=trade.amount,
-                    commission=trade.commission,
-                    profit_loss=trade.profit_loss,
+                    symbol=_trade_field(trade, "symbol"),
+                    trade_date=_normalize_trade_date(
+                        _trade_field(trade, "trade_date", _trade_field(trade, "date"))
+                    ),
+                    direction=_resolve_trade_direction(trade),
+                    amount=_resolve_trade_quantity(trade),
+                    price=_trade_field(trade, "price"),
+                    commission=_trade_field(trade, "commission"),
+                    stamp_tax=None,
+                    total_cost=_resolve_trade_total_cost(
+                        trade,
+                        _resolve_trade_quantity(trade),
+                        _trade_field(trade, "price"),
+                    ),
+                    created_at=datetime.now(timezone.utc),
                 )
                 for trade in trades
             ]
@@ -489,14 +531,15 @@ class BacktestRepository:
 
             return [
                 TradeRecord(
+                    trade_id=trade.id,
                     symbol=trade.symbol,
-                    date=trade.trade_date,
-                    action=trade.action,
+                    trade_date=trade.trade_date,
+                    action=trade.direction,
                     price=float(trade.price),
-                    quantity=trade.quantity,
-                    amount=float(trade.amount),
-                    commission=float(trade.commission),
-                    profit_loss=float(trade.profit_loss) if trade.profit_loss else None,
+                    quantity=int(trade.amount or 0),
+                    amount=float(_trade_row_total_cost(trade)),
+                    commission=float(trade.commission) if trade.commission is not None else 0.0,
+                    profit_loss=None,
                 )
                 for trade in trades_orm
             ]
@@ -566,14 +609,15 @@ class BacktestRepository:
         if backtest_orm.trades:
             trades = [
                 TradeRecord(
+                    trade_id=trade.id,
                     symbol=trade.symbol,
-                    date=trade.trade_date,
-                    action=trade.action,
+                    trade_date=trade.trade_date,
+                    action=trade.direction,
                     price=float(trade.price),
-                    quantity=trade.quantity,
-                    amount=float(trade.amount),
-                    commission=float(trade.commission),
-                    profit_loss=float(trade.profit_loss) if trade.profit_loss else None,
+                    quantity=int(trade.amount or 0),
+                    amount=float(_trade_row_total_cost(trade)),
+                    commission=float(trade.commission) if trade.commission is not None else 0.0,
+                    profit_loss=None,
                 )
                 for trade in backtest_orm.trades
             ]

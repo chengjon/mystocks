@@ -6,6 +6,39 @@
 >
 > 文内版本状态、验证结果、阶段命名和变更摘要如未重新复核，应视为对应版本的历史快照，不得直接当作当前事实。
 
+## 2026-04-18 — Playwright 全页面验证与后端 Schema 修复
+
+### 前端修复
+
+- **Screener 401 认证失败**：`Screener.vue` 读取 `localStorage.getItem('access_token')` 但登录存储为 `auth_token`，导致 `/api/v1/data/stocks/basic` 返回 401。已修正为 `auth_token`。
+  - 文件：`web/frontend/src/views/stocks/Screener.vue`（line 197）
+
+### 后端修复
+
+- **Trade History 500 — 数据库 Schema 不匹配**：在 `BacktestTradeModel` 已切换到 `id`、`direction`、`amount`、`stamp_tax`、`total_cost` 结构后，仓储层和 trade history 查询仍残留旧 `action`、`quantity`、`profit_loss` 读写。现已补齐真实映射：
+  - `save_trades()` 统一把旧回测结果结构映射到当前库表，`action -> direction`、`quantity -> amount`、成交金额写入 `total_cost`
+  - `get_trades()` / `_orm_to_pydantic()` 从当前 schema 还原 `TradeRecord`
+  - `_query_trade_history()` 按当前 schema 正确返回 `quantity` 与成交金额
+  - 文件：`web/backend/app/repositories/backtest_repository.py`
+  - 文件：`web/backend/app/api/trade/routes.py`
+- **Watchlists 500 — 模块导入缺失**：`get_postgres_async` 定义在 `_postgresql_async_v3_singleton.py` 但调用方从 `postgresql_async_v3.py` 导入。已添加 re-export。
+  - 文件：`src/monitoring/infrastructure/postgresql_async_v3.py`（末尾追加 re-export）
+
+### 验证结果
+
+- 34 条前端路由全部通过 Playwright MCP 测试，**0 JS 错误**
+- 新增后端 schema 回归测试：`web/backend/tests/test_backtest_repository_trade_schema.py`
+- 新增 trade history 映射回归测试：`web/backend/tests/test_trade_route_placeholders_regressions.py`
+- `pytest web/backend/tests/test_backtest_repository_trade_schema.py web/backend/tests/test_trade_route_placeholders_regressions.py -q -o addopts=''` → `14 passed`
+- `/api/v1/monitoring/watchlists` → 200（返回 18 个真实 watchlist）
+- `/api/v1/data/stocks/basic` → 200（认证正常）
+
+### 文档更新
+
+- `docs/reports/FRONTEND_JS_SYNTAX_FIX_REPORT.md` — 新增 Issue 13-15 修复记录（v2.0 → v3.0）
+
+---
+
 ## Unreleased (2026-03-14)
 
 ### 🧭 MongoDB Multi-CLI Coordination（Maestro vNext）
@@ -30,9 +63,10 @@
 ### ✅ 验证
 
 - `pytest tests/unit/services/symphony/test_config.py tests/unit/services/symphony/test_tracker_factory.py tests/unit/services/symphony/test_mongo_tracker.py tests/unit/services/symphony/test_mongo_runtime_flow.py tests/unit/services/symphony/test_orchestrator.py tests/unit/services/symphony/test_workspace_manager.py tests/unit/services/symphony/test_status_api.py tests/unit/services/symphony/test_maestro_collab_cli.py tests/unit/services/symphony/test_maestro_namespace.py tests/unit/services/symphony/test_collab_backend_selection.py tests/unit/maestro_collab tests/unit/runtime/test_maestro_coordination_cli.py tests/unit/runtime/test_collab_migration_scripts.py tests/unit/runtime/test_smoke_mongo_multicli.py -q -o addopts=''`
-- 结果：`77 passed`
+- 原始提交验证结果：`77 passed`
+- 2026-04-18 复核：同一命令当前结果为 `111 passed`
 - `python scripts/runtime/smoke_mongo_multicli.py`
-- 真实 Mongo smoke 结果：`assignment_status=retrying`，`control_plane_status=ready_for_review`，`status_api_control_plane_count=1`
+- 原始 / 当前复核 smoke 结果一致：`assignment_status=retrying`，`control_plane_status=ready_for_review`，`status_api_control_plane_count=1`
 
 ### 🎼 Maestro / Symphony 本地优先收口
 
@@ -69,9 +103,14 @@
 - `docs/api/ERROR_CODES.md` - 详细的错误码参考
 
 **部署文档**
-- `docs/guides/DEPLOYMENT.md` - 完整的 Docker/K8s 部署指南
-- `docs/guides/USER_GUIDE.md` - 用户使用指南
-- `docs/guides/TROUBLESHOOTING.md` - 故障排查手册
+- 历史新增路径（2025-12-28 快照）：
+  - `docs/guides/DEPLOYMENT.md`
+  - `docs/guides/USER_GUIDE.md`
+  - `docs/guides/TROUBLESHOOTING.md`
+- 当前仓库 canonical 路径（后续文档治理已迁移）：
+  - `docs/operations/deployment/DEPLOYMENT.md`
+  - `docs/guides/onboarding/USER_GUIDE.md`
+  - `docs/operations/TROUBLESHOOTING.md`
 
 **技术规范**
 - OpenAPI 3.1.0 Schema (`docs/api/openapi.json`)
@@ -79,6 +118,8 @@
 - ReDoc 文档 (`/redoc`)
 
 #### 📊 API 端点覆盖
+
+> 以下端点统计为 2025-12-28 历史快照；当前 API 真相源请以 FastAPI 路由 + `/openapi.json` 为准。
 
 | 模块 | 端点数 | 状态 |
 |------|--------|------|

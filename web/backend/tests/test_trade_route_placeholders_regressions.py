@@ -3,6 +3,8 @@ from __future__ import annotations
 import importlib
 import sys
 from pathlib import Path
+from types import SimpleNamespace
+from decimal import Decimal
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -202,6 +204,94 @@ async def test_trade_history_rejects_invalid_date_range():
         assert "start_date 不能晚于 end_date" in str(exc.detail)
     else:
         raise AssertionError("expected HTTPException for invalid date range")
+
+
+def test_query_trade_history_maps_backtest_schema_fields():
+    module = _load_module()
+    database_module = importlib.import_module("app.core.database")
+
+    class _FakeQuery:
+        def __init__(self, rows):
+            self._rows = rows
+
+        def filter(self, *_args, **_kwargs):
+            return self
+
+        def count(self):
+            return len(self._rows)
+
+        def order_by(self, *_args, **_kwargs):
+            return self
+
+        def offset(self, *_args, **_kwargs):
+            return self
+
+        def limit(self, *_args, **_kwargs):
+            return self
+
+        def all(self):
+            return list(self._rows)
+
+    class _FakeSession:
+        def __init__(self, rows):
+            self._rows = rows
+
+        def query(self, _model):
+            return _FakeQuery(self._rows)
+
+        def close(self):
+            return None
+
+    fake_rows = [
+        SimpleNamespace(
+            id=101,
+            backtest_id=7,
+            trade_date=module.datetime.strptime("2026-04-08", "%Y-%m-%d").date(),
+            symbol="600519",
+            direction="buy",
+            price="1750.00",
+            amount=100,
+            total_cost="175000.00",
+            commission="52.50",
+        )
+    ]
+
+    original_session_local = database_module.SessionLocal
+    database_module.SessionLocal = lambda: _FakeSession(fake_rows)
+
+    try:
+        result = module._query_trade_history(
+            symbol="600519",
+            start_date_obj=module.datetime.strptime("2026-04-01", "%Y-%m-%d").date(),
+            end_date_obj=module.datetime.strptime("2026-04-12", "%Y-%m-%d").date(),
+            page=1,
+            page_size=20,
+        )
+    finally:
+        database_module.SessionLocal = original_session_local
+
+    assert result == {
+        "trades": [
+            {
+                "trade_id": "101",
+                "order_id": "backtest-7-101",
+                "symbol": "600519",
+                "direction": "buy",
+                "price": "1750.00",
+                "quantity": 100,
+                "amount": "175000.00",
+                "commission": "52.50",
+                "trade_time": "2026-04-08T00:00:00",
+                "trade_type": "backtest",
+            }
+        ],
+        "total_count": 1,
+        "total_amount": Decimal("175000.00"),
+        "total_commission": Decimal("52.50"),
+        "page": 1,
+        "page_size": 20,
+        "source": "backtest_trades",
+    }
 
 
 async def test_trade_statistics_returns_runtime_summary_response():

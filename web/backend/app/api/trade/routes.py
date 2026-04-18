@@ -520,21 +520,28 @@ def _query_trade_history(
         total_commission = Decimal("0")
 
         for trade in trade_rows:
-            amount = Decimal(str(trade.amount))
-            commission = Decimal(str(trade.commission))
+            quantity = int(trade.amount or 0)
+            price = Decimal(str(trade.price or 0))
+            amount = Decimal(str(trade.total_cost)) if trade.total_cost is not None else price * Decimal(str(quantity))
+            commission = Decimal(str(trade.commission or 0))
             total_amount += amount
             total_commission += commission
+            trade_time = (
+                trade.trade_date
+                if isinstance(trade.trade_date, datetime)
+                else datetime.combine(trade.trade_date, datetime.min.time())
+            )
             trades.append(
                 TradeHistoryItem(
-                    trade_id=str(trade.trade_id),
-                    order_id=f"backtest-{trade.backtest_id}-{trade.trade_id}",
+                    trade_id=str(trade.id),
+                    order_id=f"backtest-{trade.backtest_id}-{trade.id}",
                     symbol=trade.symbol,
-                    direction=trade.action,
-                    price=Decimal(str(trade.price)),
-                    quantity=trade.quantity,
+                    direction=trade.direction,
+                    price=price,
+                    quantity=quantity,
                     amount=amount,
                     commission=commission,
-                    trade_time=datetime.combine(trade.trade_date, datetime.min.time()),
+                    trade_time=trade_time,
                     trade_type="backtest",
                 ).model_dump(mode="json")
             )
