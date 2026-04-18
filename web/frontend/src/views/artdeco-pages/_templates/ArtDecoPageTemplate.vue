@@ -18,6 +18,8 @@
           <ArtDecoButton
             v-if="pageConfig.showRefresh !== false"
             variant="outline"
+            priority="secondary"
+            motion="data"
             size="sm"
             :loading="loading"
             @click="handleRefresh"
@@ -58,7 +60,7 @@
         <ArtDecoIcon name="alert" size="xl" class="error-icon" />
         <h3>加载失败</h3>
         <p>{{ errorMessage }}</p>
-        <ArtDecoButton variant="solid" size="sm" @click="handleRefresh">
+        <ArtDecoButton variant="solid" priority="primary" motion="data" size="sm" @click="handleRefresh">
           <template #icon>
             <ArtDecoIcon name="refresh" />
           </template>
@@ -74,6 +76,8 @@
           <ArtDecoButton
             v-if="pageConfig.showRefresh !== false"
             variant="outline"
+            priority="secondary"
+            motion="data"
             size="sm"
             @click="handleRefresh"
           >

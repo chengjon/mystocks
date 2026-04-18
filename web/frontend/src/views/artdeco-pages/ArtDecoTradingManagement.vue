@@ -20,14 +20,21 @@
                 :status-type="connectionStatusType"
             >
                 <template #actions>
-                    <ArtDecoButton variant="outline" size="sm" @click="refreshData" :loading="refreshing">
+                    <ArtDecoButton
+                        variant="solid"
+                        priority="primary"
+                        motion="data"
+                        size="sm"
+                        @click="refreshData"
+                        :loading="refreshing"
+                    >
                         <template #icon>
                             <ArtDecoIcon name="refresh" />
                         </template>
                         刷新数据
                     </ArtDecoButton>
 
-                    <ArtDecoButton variant="default" size="sm" @click="openSettings">
+                    <ArtDecoButton variant="outline" priority="ghost" motion="data" size="sm" @click="openSettings">
                         <template #icon>
                             <ArtDecoIcon name="settings" />
                         </template>

@@ -1,5 +1,6 @@
 <template>
-    <button :class="buttonClasses" :disabled="disabled" @click="handleClick">
+    <button :class="buttonClasses" :disabled="isDisabled" :aria-busy="loading ? 'true' : 'false'" @click="handleClick">
+        <span v-if="loading" class="artdeco-button__spinner" aria-hidden="true"></span>
         <!-- 图标插槽（可选） -->
         <span v-if="$slots.icon" class="artdeco-button__icon">
             <slot name="icon" />
@@ -57,6 +58,15 @@
         /// Disabled state
         disabled?: boolean
 
+        /// Loading state
+        loading?: boolean
+
+        /// Visual action hierarchy without breaking existing variants
+        priority?: 'auto' | 'primary' | 'secondary' | 'ghost'
+
+        /// Motion profile
+        motion?: 'auto' | 'data' | 'decorative'
+
         /// Full width button
         block?: boolean
 
@@ -68,6 +78,9 @@
         variant: 'default',
         size: 'md',
         disabled: false,
+        loading: false,
+        priority: 'auto',
+        motion: 'auto',
         block: false,
         class: ''
     })
@@ -84,6 +97,8 @@
     //   COMPUTED - 计算属性
     // ============================================
 
+    const isDisabled = computed(() => props.disabled || props.loading)
+
     /**
      * Generate button CSS classes based on props
      * 根据属性生成按钮CSS类名
@@ -93,8 +108,11 @@
             'artdeco-button',
             `artdeco-button--${props.variant}`,
             `artdeco-button--${props.size}`,
+            props.priority !== 'auto' ? `artdeco-button--priority-${props.priority}` : null,
+            props.motion !== 'auto' ? `artdeco-button--motion-${props.motion}` : null,
             {
-                'artdeco-button--disabled': props.disabled,
+                'artdeco-button--disabled': isDisabled.value,
+                'artdeco-button--loading': props.loading,
                 'artdeco-button--block': props.block
             },
             props.class
@@ -110,7 +128,7 @@
      * 处理按钮点击事件
      */
     const handleClick = (event: MouseEvent): void => {
-        if (!props.disabled) {
+        if (!isDisabled.value) {
             emit('click', event)
         }
     }
@@ -147,7 +165,13 @@
         min-width: 44px;
 
         // Theatrical transition - 使用更慢的过渡增加戏剧感
-        transition: all var(--artdeco-transition-base) var(--artdeco-ease-in-out);
+        transition:
+            background-color 200ms var(--artdeco-ease-in-out),
+            border-color 200ms var(--artdeco-ease-in-out),
+            color 200ms var(--artdeco-ease-in-out),
+            box-shadow 200ms var(--artdeco-ease-in-out),
+            transform 200ms var(--artdeco-ease-in-out),
+            opacity 200ms var(--artdeco-ease-in-out);
 
         // Remove default button styles
         border: none;
@@ -164,6 +188,11 @@
         &--disabled {
             cursor: not-allowed;
             opacity: 50%;
+        }
+
+        &--loading {
+            position: relative;
+            pointer-events: none;
         }
 
         // Block button (full width)
@@ -195,6 +224,17 @@
             height: 100%;
             fill: currentColor;
         }
+    }
+
+    .artdeco-button__spinner {
+        width: 14px;
+        height: 14px;
+        margin-right: var(--artdeco-spacing-1);
+        border: 1.5px solid currentColor;
+        border-right-color: transparent;
+        border-radius: 50%;
+        animation: artdeco-button-spin 0.7s linear infinite;
+        flex-shrink: 0;
     }
 
     .artdeco-button__text {
@@ -277,6 +317,37 @@
         }
     }
 
+    .artdeco-button--priority-primary {
+        box-shadow: 0 0 0 1px color-mix(in srgb, var(--artdeco-gold-primary) 35%, transparent), var(--artdeco-glow-subtle);
+    }
+
+    .artdeco-button--priority-secondary {
+        opacity: 92%;
+        box-shadow: none;
+    }
+
+    .artdeco-button--priority-ghost {
+        border-color: color-mix(in srgb, var(--artdeco-gold-primary) 55%, transparent);
+        color: color-mix(in srgb, var(--artdeco-gold-primary) 80%, white 20%);
+        background-color: transparent;
+        box-shadow: none;
+    }
+
+    .artdeco-button--priority-ghost:hover:not(:disabled, &--disabled) {
+        background-color: color-mix(in srgb, var(--artdeco-gold-primary) 8%, transparent);
+        border-color: var(--artdeco-gold-primary);
+        color: var(--artdeco-gold-primary);
+        box-shadow: none;
+    }
+
+    .artdeco-button--motion-data {
+        transition-duration: 200ms;
+    }
+
+    .artdeco-button--motion-decorative {
+        transition-duration: 400ms;
+    }
+
     // ============================================
     //   VARIANT: RISE - 上涨样式 (红)
     //   A股标准色：#FF5252
@@ -338,6 +409,7 @@
             border-radius: inherit;
             animation: pulse-ring 2s infinite;
             opacity: 0%;
+            transition: opacity 400ms var(--artdeco-ease-in-out), transform 400ms var(--artdeco-ease-in-out);
         }
 
         &:hover:not(:disabled, &--disabled) {
@@ -378,7 +450,7 @@
             inset: 4px 4px 4px 4px;
             border: 1px solid var(--artdeco-gold-primary);
             pointer-events: none;
-            transition: all var(--artdeco-transition-base);
+            transition: all 400ms var(--artdeco-ease-in-out);
             z-index: 1;
         }
 
@@ -389,7 +461,7 @@
             inset: 0 0 0 0;
             border: 2px solid var(--artdeco-gold-primary);
             pointer-events: none;
-            transition: all var(--artdeco-transition-base);
+            transition: all 400ms var(--artdeco-ease-in-out);
             z-index: 1;
         }
 
@@ -461,6 +533,12 @@
         font-size: var(--artdeco-font-size-base); // 14px - 紧凑设计（原18px，-22%）
         min-width: 160px; // Ensure button doesn't get too small
         letter-spacing: 0.2em; // UI Pro Max优化：智能字间距，大按钮用最宽字间距（ArtDeco标准）
+    }
+
+    @keyframes artdeco-button-spin {
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     // ============================================

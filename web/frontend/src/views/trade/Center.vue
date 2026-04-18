@@ -109,7 +109,14 @@ onMounted(() => {
         :status-type="pageStatusType"
       >
         <template #actions>
-          <ArtDecoButton variant="outline" size="sm" :loading="loading" @click="loadPositions">
+          <ArtDecoButton
+            variant="solid"
+            priority="primary"
+            motion="data"
+            size="sm"
+            :loading="loading"
+            @click="loadPositions"
+          >
             <template #icon>
               <ArtDecoIcon name="refresh" />
             </template>

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 from decimal import Decimal
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -137,3 +138,27 @@ def test_backtest_trade_model_backtest_id_keeps_cascade_foreign_key():
     assert foreign_keys[0].column.table.name == "backtest_results"
     assert foreign_keys[0].column.name == "backtest_id"
     assert foreign_keys[0].ondelete == "CASCADE"
+
+
+@pytest.mark.parametrize(
+    "sql_path",
+    [
+        Path(__file__).resolve().parents[1] / "init_tables.sql",
+        Path(__file__).resolve().parents[1] / "init_tables_simple.sql",
+    ],
+)
+def test_backtest_trade_bootstrap_sql_matches_current_schema(sql_path: Path):
+    sql = sql_path.read_text(encoding="utf-8")
+
+    assert "CREATE TABLE IF NOT EXISTS backtest_trades" in sql
+    assert "backtest_id BIGINT NOT NULL REFERENCES backtest_results(backtest_id) ON DELETE CASCADE" in sql
+    assert "trade_date DATE NOT NULL" in sql
+    assert "direction VARCHAR(10) NOT NULL" in sql
+    assert "amount INT" in sql
+    assert "stamp_tax DECIMAL(20, 2)" in sql
+    assert "total_cost DECIMAL(20, 2)" in sql
+    assert "created_at TIMESTAMPTZ DEFAULT NOW()" in sql
+    assert "action VARCHAR(10) NOT NULL" not in sql
+    assert "shares INT" not in sql
+    assert "profit DECIMAL(20, 2)" not in sql
+    assert "return_rate DECIMAL(10, 4)" not in sql

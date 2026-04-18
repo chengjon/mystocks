@@ -9,13 +9,24 @@
             :status-type="statusType"
         >
             <template #actions>
-                <ArtDecoButton variant="outline" size="sm" @click="refreshAllData" :loading="refreshing">
-                    <ArtDecoIcon name="refresh" />
+                <ArtDecoButton
+                    variant="solid"
+                    priority="primary"
+                    motion="data"
+                    size="sm"
+                    @click="refreshAllData"
+                    :loading="refreshing"
+                >
+                    <template #icon>
+                        <ArtDecoIcon name="refresh" />
+                    </template>
                     刷新数据
                 </ArtDecoButton>
 
-                <ArtDecoButton variant="default" size="sm" @click="openSettings">
-                    <ArtDecoIcon name="settings" />
+                <ArtDecoButton variant="outline" priority="ghost" motion="data" size="sm" @click="openSettings">
+                    <template #icon>
+                        <ArtDecoIcon name="settings" />
+                    </template>
                     系统设置
                 </ArtDecoButton>
             </template>

@@ -176,16 +176,16 @@ CREATE INDEX IF NOT EXISTS idx_strategy_signals_symbol
 -- 6. 回测交易明细表
 CREATE TABLE IF NOT EXISTS backtest_trades (
     id BIGSERIAL,
-    backtest_id VARCHAR(50) NOT NULL,
-    trade_date TIMESTAMP NOT NULL,
-    action VARCHAR(10) NOT NULL,
+    backtest_id BIGINT NOT NULL REFERENCES backtest_results(backtest_id) ON DELETE CASCADE,
+    trade_date DATE NOT NULL,
     symbol VARCHAR(20) NOT NULL,
-    price DECIMAL(10, 3),
-    shares INT,
-    amount DECIMAL(20, 2),
+    direction VARCHAR(10) NOT NULL,
+    amount INT,
+    price DECIMAL(20, 6),
     commission DECIMAL(20, 2),
-    profit DECIMAL(20, 2),
-    return_rate DECIMAL(10, 4),
+    stamp_tax DECIMAL(20, 2),
+    total_cost DECIMAL(20, 2),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
     PRIMARY KEY (id, trade_date)
 );
 
