@@ -80,6 +80,117 @@
         </div>
     </div>
 
+    <div class="card config-card">
+        <div class="card-header">
+            <div class="header-title">
+                <div class="title-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M3 17l6-6 4 4 7-8"></path>
+                        <path d="M14 7h6v6"></path>
+                    </svg>
+                </div>
+                <span class="title-text">Kronos 预测</span>
+                <span class="title-sub">REMOTE K-LINE INFERENCE</span>
+            </div>
+            <div class="action-buttons">
+                <button
+                    class="button button-secondary"
+                    @click="runKronosPrediction"
+                    :class="{ loading: kronosPredictLoading }"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14"></path>
+                        <path d="m12 5 7 7-7 7"></path>
+                    </svg>
+                    运行 Kronos 预测
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="analysis-form">
+                <div class="form-row">
+                    <label class="form-label">开始日期</label>
+                    <input type="date" v-model="kronosPredictForm.startDate" class="input" />
+                </div>
+
+                <div class="form-row">
+                    <label class="form-label">结束日期</label>
+                    <input type="date" v-model="kronosPredictForm.endDate" class="input" />
+                </div>
+
+                <div class="form-row">
+                    <label class="form-label">预测根数</label>
+                    <input type="number" v-model.number="kronosPredictForm.predLen" min="1" max="120" class="input" />
+                </div>
+            </div>
+
+            <el-alert
+                title="MyStocks 仅负责标准化日期区间与股票代码，请求将转发到 Kronos 服务执行。"
+                type="info"
+                :closable="false"
+                show-icon
+            />
+
+            <div v-if="kronosPrediction" class="detail-results">
+                <div class="overview-grid">
+                    <div class="card overview-card">
+                        <div class="card-header">
+                            <div class="header-title">
+                                <span class="title-text">预测摘要</span>
+                                <span class="title-sub">PREDICTION SUMMARY</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="overview-metrics">
+                                <div class="metric-item">
+                                    <div class="metric-value">{{ kronosPrediction.confidence ?? '-' }}</div>
+                                    <div class="metric-label">置信度</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-value">{{ kronosPrediction.predictions.length }}</div>
+                                    <div class="metric-label">返回K线数</div>
+                                </div>
+                            </div>
+                            <el-alert
+                                :title="kronosPrediction.requestId ? `Request ID: ${kronosPrediction.requestId}` : '未返回 Request ID'"
+                                type="success"
+                                :closable="false"
+                                show-icon
+                            />
+                        </div>
+                    </div>
+
+                    <div class="card health-card">
+                        <div class="card-header">
+                            <div class="header-title">
+                                <span class="title-text">预测预览</span>
+                                <span class="title-sub">FIRST 3 CANDLES</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="overview-metrics">
+                                <div
+                                    v-for="(candle, index) in kronosPrediction.predictions.slice(0, 3)"
+                                    :key="`${candle.timestamp || 'unknown'}-${index}`"
+                                    class="metric-item"
+                                >
+                                    <div class="metric-value">{{ candle.close ?? '-' }}</div>
+                                    <div class="metric-label">{{ candle.timestamp || `预测 ${index + 1}` }}</div>
+                                </div>
+                            </div>
+                            <el-alert
+                                title="完整预测结果后续可接入专用K线可视化组件。"
+                                type="warning"
+                                :closable="false"
+                                show-icon
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 分析结果展示 -->
     <div v-if="analysisResult" class="analysis-results">
         <!-- 总体概览卡片 -->
@@ -114,7 +225,7 @@
                 <div class="card-header">
                     <div class="header-title">
                         <span class="title-text">系统状态</span>
-                        <span class="title-sub">SYSTEM HEALTH</span>
+                        <span class="title-sub">KRONOS RUNTIME HEALTH</span>
                     </div>
                 </div>
                 <div class="card-body">
@@ -135,7 +246,7 @@
                                     <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
                                 </svg>
                             </div>
-                            <span>API服务</span>
+                            <span>Kronos API</span>
                         </div>
                         <div class="health-item">
                             <div class="health-icon" :class="healthStatus.gpu">
@@ -145,9 +256,39 @@
                                     <line x1="12" y1="17" x2="12" y2="21"></line>
                                 </svg>
                             </div>
-                            <span>GPU加速</span>
+                            <span>Kronos Runtime</span>
                         </div>
                     </div>
+                    <div v-if="kronosStatus" class="overview-metrics">
+                        <div class="metric-item">
+                            <div class="metric-value">{{ kronosStatus.activeModel }}</div>
+                            <div class="metric-label">活动模型</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">{{ kronosStatus.device || 'N/A' }}</div>
+                            <div class="metric-label">执行设备</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">{{ kronosStatus.queueDepth ?? '-' }}</div>
+                            <div class="metric-label">队列深度</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">{{ kronosStatus.latencyMs ?? '-' }}</div>
+                            <div class="metric-label">延迟(ms)</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">{{ kronosStatus.gpuMemoryUsedMb ?? '-' }}</div>
+                            <div class="metric-label">显存(MB)</div>
+                        </div>
+                    </div>
+                    <el-alert
+                        v-if="kronosStatus"
+                        :title="`Kronos 状态: ${kronosStatus.health}`"
+                        :type="kronosStatus.degraded ? 'warning' : 'success'"
+                        :description="kronosStatus.requestId ? `Request ID: ${kronosStatus.requestId}` : '未返回 Request ID'"
+                        :closable="false"
+                        show-icon
+                    />
                 </div>
             </div>
         </div>
@@ -461,14 +602,19 @@ import { useAdvancedAnalysis } from './composables/useAdvancedAnalysis'
 const {
   loading,
   batchLoading,
+  kronosPredictLoading,
   analysisResult,
   batchResults,
+  kronosPrediction,
   form,
+  kronosPredictForm,
   healthStatus,
+  kronosStatus,
   overviewMetrics,
   getAnalysisTitle,
   getOverallSignalType,
   runAnalysis,
   runBatchAnalysis,
+  runKronosPrediction,
 } = useAdvancedAnalysis()
 </script>

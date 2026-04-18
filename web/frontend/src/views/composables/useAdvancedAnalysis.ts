@@ -1,12 +1,21 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { advancedAnalysisApi, type AnalysisRequest, type AnalysisResponse } from '@/api/advancedAnalysis'
+import { kronosApi, type KronosPredictResult, type KronosStatusResult } from '@/api/kronos'
+
+type HealthTone = 'healthy' | 'warning' | 'error'
 
 interface AnalysisForm {
     symbol: string
     analysisType: string
     includeRawData: boolean
     enableRealtime: boolean
+}
+
+interface KronosPredictForm {
+    startDate: string
+    endDate: string
+    predLen: number
 }
 
 interface AnalysisResult {
@@ -26,9 +35,33 @@ interface AnalysisResult {
 }
 
 interface HealthStatus {
-    database: string
-    api: string
-    gpu: string
+    database: HealthTone
+    api: HealthTone
+    gpu: HealthTone
+}
+
+interface KronosRuntimeStatus {
+    health: string
+    activeModel: string
+    queueDepth: number | null
+    device: string | null
+    gpuMemoryUsedMb: number | null
+    latencyMs: number | null
+    degraded: boolean
+    requestId: string | null
+}
+
+interface KronosPredictionPreview {
+    predictions: Array<{
+        timestamp?: string
+        open?: number
+        high?: number
+        low?: number
+        close?: number
+        volume?: number | null
+    }>
+    confidence: number | null
+    requestId: string | null
 }
 
 interface ApiResponse<T = unknown> {
@@ -71,8 +104,10 @@ export function useAdvancedAnalysis() {
 
     const loading = ref(false)
     const batchLoading = ref(false)
+    const kronosPredictLoading = ref(false)
     const analysisResult = ref<AnalysisResult | null>(null)
     const batchResults = ref<Record<string, BatchAnalysisResult> | null>(null)
+    const kronosPrediction = ref<KronosPredictionPreview | null>(null)
     const realtimeInterval = ref<NodeJS.Timeout | null>(null)
 
     const form = ref<AnalysisForm>({
@@ -81,12 +116,30 @@ export function useAdvancedAnalysis() {
         includeRawData: false,
         enableRealtime: false
     })
+    const kronosPredictForm = ref<KronosPredictForm>({
+        startDate: '',
+        endDate: '',
+        predLen: 5
+    })
 
     const healthStatus = ref<HealthStatus>({
-        database: 'healthy',
-        api: 'healthy',
+        database: 'warning',
+        api: 'warning',
         gpu: 'warning'
     })
+    const kronosStatus = ref<KronosRuntimeStatus | null>(null)
+
+    const normalizeHealthTone = (value: unknown): HealthTone => {
+        const text = String(value || '').toLowerCase()
+        if (!text) return 'warning'
+        if (text.includes('healthy') || text.includes('ok') || text.includes('normal') || text.includes('ready')) {
+            return 'healthy'
+        }
+        if (text.includes('degraded') || text.includes('warning') || text.includes('busy')) {
+            return 'warning'
+        }
+        return 'error'
+    }
 
     const overviewMetrics = computed(() => {
         if (!analysisResult.value) return []
@@ -231,6 +284,55 @@ export function useAdvancedAnalysis() {
         }
     }
 
+    const runKronosPrediction = async (): Promise<void> => {
+        if (!form.value.symbol) {
+            ElMessage.warning('请输入股票代码')
+            return
+        }
+        if (!kronosPredictForm.value.startDate || !kronosPredictForm.value.endDate) {
+            ElMessage.warning('请选择预测使用的开始和结束日期')
+            return
+        }
+        if (kronosPredictForm.value.startDate > kronosPredictForm.value.endDate) {
+            ElMessage.warning('开始日期不能晚于结束日期')
+            return
+        }
+
+        kronosPredictLoading.value = true
+        try {
+            const response = await kronosApi.predict({
+                model: 'small',
+                symbol: form.value.symbol,
+                period: 'day',
+                start_date: kronosPredictForm.value.startDate,
+                end_date: kronosPredictForm.value.endDate,
+                pred_len: kronosPredictForm.value.predLen,
+                sample_count: 1,
+                top_p: 0.9,
+                temperature: 1.0,
+            })
+
+            if (response.success) {
+                const data = (response.data || {}) as KronosPredictResult
+                kronosPrediction.value = {
+                    predictions: data.predictions || [],
+                    confidence: typeof data.confidence === 'number' ? data.confidence : null,
+                    requestId: response.request_id || null,
+                }
+                ElMessage.success('Kronos 预测完成')
+                await checkSystemHealth()
+            } else {
+                ElMessage.error(response.message || 'Kronos 预测失败')
+            }
+        } catch (error: unknown) {
+            console.error('Kronos 预测失败:', error)
+            const apiError = error as ApiErrorResponse
+            ElMessage.error('Kronos 预测失败: ' + (apiError.response?.data?.detail || apiError.message))
+        } finally {
+            kronosPredictLoading.value = false
+        }
+    }
+
     const startRealtimeUpdates = (): void => {
         if (realtimeInterval.value) {
             clearInterval(realtimeInterval.value)
@@ -347,33 +449,90 @@ export function useAdvancedAnalysis() {
     })
 
     const checkSystemHealth = async (): Promise<void> => {
+        let nextDatabase: HealthTone = 'warning'
+        let nextApi: HealthTone = 'warning'
+        let nextGpu: HealthTone = 'warning'
+
         try {
-            // 这里可以添加实际的健康检查逻辑
-            // 暂时使用模拟状态
+            const [analysisHealthResult, kronosHealthResult] = await Promise.allSettled([
+                advancedAnalysisApi.health(),
+                kronosApi.getStatus(),
+            ])
+
+            if (analysisHealthResult.status === 'fulfilled') {
+                const payload = analysisHealthResult.value
+                if (payload.success) {
+                    const healthData = (payload.data || {}) as Record<string, unknown>
+                    nextDatabase = normalizeHealthTone(healthData.database ?? healthData.status ?? 'healthy')
+                }
+            }
+
+            if (kronosHealthResult.status === 'fulfilled') {
+                const payload = kronosHealthResult.value
+                if (payload.success) {
+                    const data = (payload.data || {}) as KronosStatusResult
+                    const meta = data.meta || {}
+                    const degraded = Boolean(meta.degraded)
+                    nextApi = normalizeHealthTone(data.health ?? 'healthy')
+                    nextGpu = degraded ? 'warning' : (data.device || meta.device ? 'healthy' : nextApi)
+                    kronosStatus.value = {
+                        health: data.health || 'unknown',
+                        activeModel: data.active_model || 'N/A',
+                        queueDepth: typeof data.queue_depth === 'number' ? data.queue_depth : null,
+                        device: data.device || meta.device || null,
+                        gpuMemoryUsedMb: typeof data.gpu_memory_used_mb === 'number' ? data.gpu_memory_used_mb : null,
+                        latencyMs: typeof data.inference_latency_ms_avg === 'number'
+                            ? data.inference_latency_ms_avg
+                            : (typeof meta.latency_ms === 'number' ? meta.latency_ms : null),
+                        degraded,
+                        requestId: payload.request_id || null,
+                    }
+                } else {
+                    nextApi = 'error'
+                    nextGpu = 'warning'
+                    kronosStatus.value = null
+                }
+            } else {
+                nextApi = 'error'
+                nextGpu = 'warning'
+                kronosStatus.value = null
+            }
+
             healthStatus.value = {
-                database: 'healthy',
-                api: 'healthy',
-                gpu: 'healthy'
+                database: nextDatabase,
+                api: nextApi,
+                gpu: nextGpu
             }
         } catch (error) {
             console.error('健康检查失败:', error)
+            healthStatus.value = {
+                database: nextDatabase,
+                api: 'error',
+                gpu: 'warning'
+            }
+            kronosStatus.value = null
         }
     }
 
   return {
     loading,
     batchLoading,
+    kronosPredictLoading,
     analysisResult,
     batchResults,
+    kronosPrediction,
     realtimeInterval,
     form,
+    kronosPredictForm,
     healthStatus,
+    kronosStatus,
     overviewMetrics,
     getAnalysisTitle,
     getOverallSignalType,
     getSignalClass,
     runAnalysis,
     runBatchAnalysis,
+    runKronosPrediction,
     startRealtimeUpdates,
     stopRealtimeUpdates,
     connectWebSocket,
