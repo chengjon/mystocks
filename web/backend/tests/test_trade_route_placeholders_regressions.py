@@ -3,8 +3,9 @@ from __future__ import annotations
 import importlib
 import sys
 from pathlib import Path
-from types import SimpleNamespace
+from datetime import date
 from decimal import Decimal
+from types import SimpleNamespace
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -16,6 +17,80 @@ if str(BACKEND_ROOT) not in sys.path:
 def _load_module():
     sys.modules.pop("app.api.trade.routes", None)
     return importlib.import_module("app.api.trade.routes")
+
+
+def test_query_trade_history_maps_runtime_trade_schema(monkeypatch):
+    module = _load_module()
+
+    import app.core.database as database_module
+    import app.repositories.backtest_repository as repository_module
+
+    class _TradeRow:
+        id = 101
+        backtest_id = 7
+        trade_date = date(2026, 4, 8)
+        symbol = "600519"
+        direction = "buy"
+        amount = 100
+        price = Decimal("1750.00")
+        commission = Decimal("52.50")
+        total_cost = Decimal("175000.00")
+
+    class _FakeQuery:
+        def filter(self, *_args, **_kwargs):
+            return self
+
+        def count(self):
+            return 1
+
+        def order_by(self, *_args, **_kwargs):
+            return self
+
+        def offset(self, *_args, **_kwargs):
+            return self
+
+        def limit(self, *_args, **_kwargs):
+            return self
+
+        def all(self):
+            return [_TradeRow()]
+
+    class _FakeSession:
+        def query(self, model):
+            assert model is repository_module.BacktestTradeModel
+            return _FakeQuery()
+
+        def close(self):
+            return None
+
+    monkeypatch.setattr(database_module, "SessionLocal", lambda: _FakeSession())
+
+    payload = module._query_trade_history(
+        symbol="600519",
+        start_date_obj=date(2026, 4, 1),
+        end_date_obj=date(2026, 4, 12),
+        page=1,
+        page_size=20,
+    )
+
+    assert payload["trades"] == [
+        {
+            "trade_id": "101",
+            "order_id": "backtest-7-101",
+            "symbol": "600519",
+            "direction": "buy",
+            "price": "1750.00",
+            "quantity": 100,
+            "amount": "175000.00",
+            "commission": "52.50",
+            "trade_time": "2026-04-08T00:00:00",
+            "trade_type": "backtest",
+        }
+    ]
+    assert payload["total_count"] == 1
+    assert payload["total_amount"] == Decimal("175000.00")
+    assert payload["total_commission"] == Decimal("52.50")
+    assert payload["source"] == "backtest_trades"
 
 
 async def test_trade_portfolio_returns_runtime_account_response():
