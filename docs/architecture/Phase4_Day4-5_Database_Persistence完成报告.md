@@ -128,25 +128,29 @@ CREATE TABLE IF NOT EXISTS backtest_equity_curves (
 
 存储回测过程中的所有交易明细。
 
+> 说明：以下结构已按当前仓库中的 `BacktestTradeModel` 与 bootstrap SQL 收敛更新，不再使用早期的 `trade_id/action/quantity/profit_loss` 版本。
+
 ```sql
 CREATE TABLE IF NOT EXISTS backtest_trades (
-    trade_id SERIAL PRIMARY KEY,
+    id BIGSERIAL,
     backtest_id INTEGER NOT NULL REFERENCES backtest_results(backtest_id) ON DELETE CASCADE,
-    symbol VARCHAR(20) NOT NULL,
     trade_date DATE NOT NULL,
-    action VARCHAR(10) NOT NULL,  -- buy/sell
-    price DECIMAL(10,2) NOT NULL,
-    quantity INTEGER NOT NULL,
-    amount DECIMAL(15,2) NOT NULL,
-    commission DECIMAL(10,2) NOT NULL,
-    profit_loss DECIMAL(15,2)
+    symbol VARCHAR(20) NOT NULL,
+    direction VARCHAR(10) NOT NULL,  -- buy/sell
+    amount INTEGER,                  -- 成交数量
+    price DECIMAL(20,6),
+    commission DECIMAL(20,2),
+    stamp_tax DECIMAL(20,2),
+    total_cost DECIMAL(20,2),        -- 成交总金额
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    PRIMARY KEY (id, trade_date)
 );
 ```
 
 **关键特性**:
-- **交易明细**: 完整记录买卖操作
-- **CHECK约束**: action IN ('buy', 'sell')
-- **索引**: backtest_id, symbol, trade_date
+- **交易明细**: 完整记录买卖方向、数量、价格、手续费与成交总金额
+- **CASCADE DELETE**: 跟随 `backtest_results` 删除
+- **索引**: `backtest_id, trade_date`
 
 ---
 
