@@ -255,6 +255,10 @@ CREATE TABLE indicators (
 SELECT create_hypertable('indicators', 'trade_date');
 
 -- 4. 回测结果表
+-- 注：以下为当时“四表最小方案”的历史示意，不代表当前仓库的 canonical schema。
+-- 当前 backtest_results / backtest_trades 真相源请以
+-- web/backend/app/repositories/backtest_repository.py
+-- 及 web/backend/init_tables*.sql 为准。
 CREATE TABLE backtest_results (
     id SERIAL PRIMARY KEY,
     strategy_name VARCHAR(100),
