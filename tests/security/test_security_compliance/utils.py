@@ -17,6 +17,9 @@ from typing import Any, Dict, List, Optional
 import pytest
 from cryptography.fernet import Fernet
 
+from .compliance_test_engine import ComplianceTestEngine
+from .helpers import ComplianceLevel, ComplianceReport, ComplianceStandard
+
 # 设置日志
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -185,5 +188,4 @@ async def test_comprehensive_compliance():
     print(f"\n📋 共生成 {len(reports)} 份合规报告:")
     for report in reports:
         print(f"   📄 {report.standard.value}: {report.score_percentage:.1f}% ({report.overall_status.value})")
-
 

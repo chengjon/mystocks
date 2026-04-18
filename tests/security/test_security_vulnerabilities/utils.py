@@ -14,6 +14,8 @@ from typing import Any, Dict, List, Optional
 
 import pytest
 
+from .security_vulnerability_scanner import SecurityVulnerabilityScanner
+
 from tests.conftest import mock_api_client, test_config
 
 def security_scan(test_func):
@@ -96,5 +98,4 @@ async def test_dependency_vulnerabilities():
     assert isinstance(result, dict)
     assert "vulnerabilities" in result
     assert isinstance(result["vulnerabilities"], list)
-
 
