@@ -284,15 +284,15 @@ watch(activeTab, refreshData)
     display: flex;
     gap: var(--artdeco-spacing-2);
     margin: var(--artdeco-spacing-6) 0;
-    border-bottom: 2px solid var(--artdeco-border-gold-subtle);
+    border-bottom: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-border-gold-subtle);
     padding-bottom: var(--artdeco-spacing-2);
 }
 
 .main-tab {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
+    gap: var(--artdeco-spacing-2);
+    padding: var(--artdeco-spacing-3) var(--artdeco-spacing-5);
     background: var(--artdeco-bg-card);
     border: 1px solid var(--artdeco-border-gold-subtle);
     color: var(--artdeco-fg-primary);
@@ -315,18 +315,18 @@ watch(activeTab, refreshData)
 .rating-overview {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    gap: var(--artdeco-spacing-4);
 }
 
 .search-container {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--artdeco-spacing-4);
 }
 
 .quick-tags {
     display: flex;
-    gap: 8px;
+    gap: var(--artdeco-spacing-2);
     flex-wrap: wrap;
 }
 

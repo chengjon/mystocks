@@ -333,7 +333,7 @@
         box-shadow: none;
     }
 
-    .artdeco-button--priority-ghost:hover:not(:disabled, &--disabled) {
+    .artdeco-button--priority-ghost:hover:not(:disabled):not(.artdeco-button--disabled) {
         background-color: color-mix(in srgb, var(--artdeco-gold-primary) 8%, transparent);
         border-color: var(--artdeco-gold-primary);
         color: var(--artdeco-gold-primary);
