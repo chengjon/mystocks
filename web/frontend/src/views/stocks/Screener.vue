@@ -194,7 +194,7 @@
             return {}
         }
 
-        const token = localStorage.getItem('access_token')
+        const token = localStorage.getItem('auth_token')
         return token ? { Authorization: `Bearer ${token}` } : {}
     }
 
