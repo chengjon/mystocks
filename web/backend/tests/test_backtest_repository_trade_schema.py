@@ -4,6 +4,8 @@ from datetime import date
 from decimal import Decimal
 from types import SimpleNamespace
 
+import pytest
+
 from app.repositories.backtest_repository import BacktestRepository
 
 
@@ -104,3 +106,34 @@ def test_get_trades_restores_api_trade_record_shape_from_current_schema():
     assert trade.amount == 175000.0
     assert trade.commission == 52.5
     assert trade.profit_loss is None
+
+
+def test_save_trades_rejects_dict_payload_without_quantity():
+    db = _FakeDB()
+    repository = BacktestRepository(db)
+
+    with pytest.raises(ValueError, match="quantity"):
+        repository.save_trades(
+            7,
+            [
+                {
+                    "symbol": "600519",
+                    "trade_date": date(2026, 4, 8),
+                    "action": "BUY",
+                    "price": Decimal("1750.00"),
+                    "amount": Decimal("175000.00"),
+                    "commission": Decimal("52.50"),
+                }
+            ],
+        )
+
+
+def test_backtest_trade_model_backtest_id_keeps_cascade_foreign_key():
+    from app.repositories.backtest_repository import BacktestTradeModel
+
+    foreign_keys = list(BacktestTradeModel.__table__.c.backtest_id.foreign_keys)
+
+    assert len(foreign_keys) == 1
+    assert foreign_keys[0].column.table.name == "backtest_results"
+    assert foreign_keys[0].column.name == "backtest_id"
+    assert foreign_keys[0].ondelete == "CASCADE"

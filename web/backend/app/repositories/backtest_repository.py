@@ -56,6 +56,8 @@ def _resolve_trade_quantity(trade) -> int:
     quantity = _trade_field(trade, "quantity")
     if quantity is not None:
         return int(quantity)
+    if isinstance(trade, dict):
+        raise ValueError("trade payload missing required quantity field")
     fallback_quantity = _trade_field(trade, "amount", 0)
     return int(fallback_quantity or 0)
 
@@ -170,7 +172,11 @@ class BacktestTradeModel(Base):
     __tablename__ = "backtest_trades"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    backtest_id = Column(Integer, nullable=False)
+    backtest_id = Column(
+        Integer,
+        ForeignKey("backtest_results.backtest_id", ondelete="CASCADE"),
+        nullable=False,
+    )
     trade_date = Column(Date, nullable=False)
     symbol = Column(String, nullable=False)
     direction = Column(String, nullable=False)
