@@ -564,6 +564,8 @@ class BacktestRepository:
             True表示删除成功，False表示回测不存在
         """
         try:
+            self.db.query(BacktestTradeModel).filter(BacktestTradeModel.backtest_id == backtest_id).delete()
+            self.db.query(BacktestEquityCurveModel).filter(BacktestEquityCurveModel.backtest_id == backtest_id).delete()
             result = self.db.query(BacktestResultModel).filter(BacktestResultModel.backtest_id == backtest_id).delete()
 
             self.db.commit()

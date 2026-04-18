@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
+import re
 from types import SimpleNamespace
 
 import pytest
@@ -16,6 +17,7 @@ class _FakeDB:
         self.saved_objects = None
         self.committed = False
         self.rolled_back = False
+        self.deleted = []
 
     def bulk_save_objects(self, objects):
         self.saved_objects = objects
@@ -27,12 +29,14 @@ class _FakeDB:
         self.rolled_back = True
 
     def query(self, _model):
-        return _FakeQuery(self.rows)
+        return _FakeQuery(self.rows, self.deleted, _model)
 
 
 class _FakeQuery:
-    def __init__(self, rows):
+    def __init__(self, rows, deleted, model):
         self.rows = rows
+        self.deleted = deleted
+        self.model = model
 
     def filter(self, *_args, **_kwargs):
         return self
@@ -42,6 +46,10 @@ class _FakeQuery:
 
     def all(self):
         return list(self.rows)
+
+    def delete(self):
+        self.deleted.append(self.model.__name__)
+        return 1 if self.model.__name__ == "BacktestResultModel" else 0
 
 
 def test_save_trades_maps_legacy_trade_payload_to_current_schema():
@@ -149,16 +157,51 @@ def test_backtest_trade_model_backtest_id_keeps_cascade_foreign_key():
 )
 def test_backtest_trade_bootstrap_sql_matches_current_schema(sql_path: Path):
     sql = sql_path.read_text(encoding="utf-8")
+    trade_match = re.search(r"CREATE TABLE IF NOT EXISTS backtest_trades \((.*?)\n\);", sql, re.S)
+    results_match = re.search(r"CREATE TABLE IF NOT EXISTS backtest_results \((.*?)\n\);", sql, re.S)
+
+    assert trade_match is not None
+    assert results_match is not None
+
+    trade_sql = trade_match.group(1)
+    results_sql = results_match.group(1)
 
     assert "CREATE TABLE IF NOT EXISTS backtest_trades" in sql
-    assert "backtest_id BIGINT NOT NULL REFERENCES backtest_results(backtest_id) ON DELETE CASCADE" in sql
-    assert "trade_date DATE NOT NULL" in sql
-    assert "direction VARCHAR(10) NOT NULL" in sql
-    assert "amount INT" in sql
-    assert "stamp_tax DECIMAL(20, 2)" in sql
-    assert "total_cost DECIMAL(20, 2)" in sql
-    assert "created_at TIMESTAMPTZ DEFAULT NOW()" in sql
-    assert "action VARCHAR(10) NOT NULL" not in sql
-    assert "shares INT" not in sql
-    assert "profit DECIMAL(20, 2)" not in sql
-    assert "return_rate DECIMAL(10, 4)" not in sql
+    assert "backtest_id BIGINT NOT NULL REFERENCES backtest_results(backtest_id) ON DELETE CASCADE" in trade_sql
+    assert "trade_date DATE NOT NULL" in trade_sql
+    assert "direction VARCHAR(10) NOT NULL" in trade_sql
+    assert "amount INT" in trade_sql
+    assert "stamp_tax DECIMAL(20, 2)" in trade_sql
+    assert "total_cost DECIMAL(20, 2)" in trade_sql
+    assert "created_at TIMESTAMPTZ DEFAULT NOW()" in trade_sql
+    assert "action VARCHAR(10) NOT NULL" not in trade_sql
+    assert "shares INT" not in trade_sql
+    assert "profit DECIMAL(20, 2)" not in trade_sql
+    assert "return_rate DECIMAL(10, 4)" not in trade_sql
+    assert "CREATE TABLE IF NOT EXISTS backtest_results" in sql
+    assert "backtest_id BIGSERIAL PRIMARY KEY" in results_sql
+    assert "strategy_id INTEGER NOT NULL" in results_sql
+    assert "user_id INTEGER NOT NULL" in results_sql
+    assert "symbols TEXT[] NOT NULL" in results_sql
+    assert "commission_rate DECIMAL(6, 4) NOT NULL DEFAULT 0.0003" in results_sql
+    assert "slippage_rate DECIMAL(6, 4) NOT NULL DEFAULT 0.001" in results_sql
+    assert "performance_metrics JSONB" in results_sql
+    assert "status VARCHAR(20) NOT NULL DEFAULT 'pending'" in results_sql
+    assert "backtest_id VARCHAR(50) NOT NULL UNIQUE" not in results_sql
+    assert "symbol VARCHAR(20) NOT NULL" not in results_sql
+    assert "parameters JSONB" not in results_sql
+
+
+def test_delete_backtest_deletes_child_rows_before_parent():
+    db = _FakeDB()
+    repository = BacktestRepository(db)
+
+    deleted = repository.delete_backtest(7)
+
+    assert deleted is True
+    assert db.committed is True
+    assert db.deleted == [
+        "BacktestTradeModel",
+        "BacktestEquityCurveModel",
+        "BacktestResultModel",
+    ]

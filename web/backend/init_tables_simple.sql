@@ -171,30 +171,30 @@ CREATE INDEX IF NOT EXISTS idx_backtest_trades_backtest
 
 -- 7. 回测结果汇总表 (非hypertable)
 CREATE TABLE IF NOT EXISTS backtest_results (
-    id BIGSERIAL PRIMARY KEY,
-    backtest_id VARCHAR(50) NOT NULL UNIQUE,
-    strategy_id VARCHAR(50) NOT NULL,
-    symbol VARCHAR(20) NOT NULL,
+    backtest_id BIGSERIAL PRIMARY KEY,
+    strategy_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    symbols TEXT[] NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
-    initial_capital DECIMAL(20, 2),
-    final_capital DECIMAL(20, 2),
-    total_return DECIMAL(10, 4),
-    annual_return DECIMAL(10, 4),
-    sharpe_ratio DECIMAL(10, 4),
-    max_drawdown DECIMAL(10, 4),
-    win_rate DECIMAL(5, 4),
-    total_trades INT,
-    profit_factor DECIMAL(10, 4),
-    parameters JSONB,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    initial_capital DECIMAL(15, 2) NOT NULL,
+    commission_rate DECIMAL(6, 4) NOT NULL DEFAULT 0.0003,
+    slippage_rate DECIMAL(6, 4) NOT NULL DEFAULT 0.001,
+    benchmark VARCHAR(20),
+    final_capital DECIMAL(15, 2),
+    performance_metrics JSONB,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    error_message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    started_at TIMESTAMP,
+    completed_at TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_backtest_results_strategy
     ON backtest_results(strategy_id, created_at DESC);
 
-CREATE INDEX IF NOT EXISTS idx_backtest_results_symbol
-    ON backtest_results(symbol, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_backtest_results_user
+    ON backtest_results(user_id, created_at DESC);
 
 CREATE INDEX IF NOT EXISTS idx_backtest_results_backtest_id
     ON backtest_results(backtest_id);
