@@ -26,9 +26,6 @@ sys.dont_write_bytecode = True
 # - 旧 DataClassification / storage access 枚举口径测试
 # - 强 GPU / 真实外部依赖测试
 collect_ignore_glob = [
-    "dashboard/test_dashboard.py",
-    "security/test_security_compliance.py",
-    "security/test_security_vulnerabilities.py",
     "real_data_synchronization_test.py",
     "test_database_service.py",
     "test_gpu_performance_optimizer.py",
@@ -42,9 +39,6 @@ collect_ignore_glob = [
 ]
 
 COLLECT_IGNORE_SUFFIXES = {
-    "tests/dashboard/test_dashboard.py",
-    "tests/security/test_security_compliance.py",
-    "tests/security/test_security_vulnerabilities.py",
     "tests/real_data_synchronization_test.py",
     "tests/test_database_service.py",
     "tests/test_gpu_performance_optimizer.py",

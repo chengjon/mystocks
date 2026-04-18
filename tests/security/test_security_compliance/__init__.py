@@ -11,4 +11,7 @@ from .utils import test_compliance_sox  # noqa: F401
 from .utils import test_compliance_owasp  # noqa: F401
 from .utils import test_comprehensive_compliance  # noqa: F401
 
-__all__ = ['ComplianceStandard', 'ComplianceLevel', 'ComplianceControl', 'ComplianceReport', 'ComplianceTestEngine', 'compliance_test', 'test_compliance_gdpr', 'test_compliance_pci_dss', 'test_compliance_sox', 'test_compliance_owasp', 'test_comprehensive_compliance']
+# 兼容历史导入名，避免拆分包迁移后打断旧集成入口。
+SecurityComplianceTester = ComplianceTestEngine
+
+__all__ = ['ComplianceStandard', 'ComplianceLevel', 'ComplianceControl', 'ComplianceReport', 'ComplianceTestEngine', 'SecurityComplianceTester', 'compliance_test', 'test_compliance_gdpr', 'test_compliance_pci_dss', 'test_compliance_sox', 'test_compliance_owasp', 'test_comprehensive_compliance']
