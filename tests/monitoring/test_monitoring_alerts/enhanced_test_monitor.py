@@ -27,6 +27,13 @@ from pydantic import BaseModel, Field
 from prometheus_client import Counter, Gauge, Histogram, start_http_server
 
 from ...ai.test_data_manager import DataManager as AIDataManager
+from .test_alert_manager import (
+    DynamicPerformanceOptimizer,
+    IntelligentPerformanceAnalyzer,
+    RealTimeMonitor,
+    TestAlertManager,
+    TestExecutionResult,
+)
 
 class EnhancedTestMonitor:
     """增强的测试监控器"""
@@ -193,4 +200,3 @@ def demo_test_monitoring():
 
     # 停止监控
     alert_manager.stop_monitoring()
-

@@ -15,6 +15,17 @@ from typing import Any, Dict, List, Optional
 
 import numpy as np
 
+from .metric_category import (
+    MetricCategory,
+    MetricWeight,
+    QualityMetric,
+    TestCoverageAnalyzer,
+    TestPerformanceAnalyzer,
+    TestReliabilityAnalyzer,
+    TestResult,
+    TestSuiteMetrics,
+)
+
 class TestQualityMetrics:
     """测试质量指标主类"""
 
@@ -626,5 +637,4 @@ def demo_test_quality_metrics():
         print("\n💡 改进建议:")
         for rec in quality_report.get("quality_recommendations", [])[:3]:
             print(f"   {rec['priority'].upper()}: {rec['recommendation']}")
-
 

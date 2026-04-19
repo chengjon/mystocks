@@ -28,6 +28,17 @@ import seaborn as sns
 from jinja2 import Template
 from plotly.subplots import make_subplots
 
+from .report_format import (
+    ChartGenerator,
+    HTMLReportGenerator,
+    JSONReportGenerator,
+    PDFReportGenerator,
+    ReportData,
+    ReportFormat,
+    ReportType,
+    TestMetrics,
+)
+
 class TestReportGenerator:
     """测试报告生成器主类"""
 
@@ -379,5 +390,4 @@ async def demo_report_generator():
     print(f"  可靠性评分: {metrics.reliability_score:.1f}")
 
     print(f"\n✅ 测试报告生成器演示完成")
-
 
