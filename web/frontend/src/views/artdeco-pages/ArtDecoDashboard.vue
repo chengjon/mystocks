@@ -7,44 +7,7 @@
             :show-status="true"
             :status-text="marketStatus"
             :status-type="marketStatusType"
-        >
-            <template #actions>
-                <div class="header-metrics">
-                    <ArtDecoSkeleton v-if="loading.strategies" variant="button" width="120px" />
-                    <ArtDecoBadge v-else-if="activeStrategiesCount !== null" variant="primary" pulse>
-                        <ArtDecoIcon name="activity" />
-                        {{ activeStrategiesCount }} 策略运行中
-                    </ArtDecoBadge>
-                    <ArtDecoBadge v-else variant="primary">
-                        <ArtDecoIcon name="activity" />
-                        策略状态待接入真实接口
-                    </ArtDecoBadge>
-                    
-                    <ArtDecoSkeleton v-if="loading.pnl" variant="button" width="120px" />
-                    <ArtDecoBadge v-else-if="todayPnLValue !== null" variant="success" pulse>
-                        <ArtDecoIcon name="trending-up" />
-                        {{ todayPnLValue }}
-                    </ArtDecoBadge>
-                    <ArtDecoBadge v-else variant="success">
-                        <ArtDecoIcon name="trending-up" />
-                        收益数据待接入真实接口
-                    </ArtDecoBadge>
-                </div>
-
-                <div class="time-refresh">
-                    <div class="time-display">
-                        <ArtDecoIcon name="clock" />
-                        <span class="time-value">{{ currentTime }}</span>
-                    </div>
-                    <ArtDecoButton variant="outline" size="sm" @click="refreshData" :loading="refreshing">
-                        <template #icon>
-                            <ArtDecoIcon name="refresh" />
-                        </template>
-                        刷新数据
-                    </ArtDecoButton>
-                </div>
-            </template>
-        </ArtDecoHeader>
+        />
 
         <div class="request-meta-bar">
             <span class="brand-text dashboard-brand">QUANTIX</span>

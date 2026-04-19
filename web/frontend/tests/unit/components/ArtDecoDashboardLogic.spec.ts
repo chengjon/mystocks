@@ -5,6 +5,7 @@ import ArtDecoDashboard from '@/views/artdeco-pages/ArtDecoDashboard.vue'
 import dashboardService from '@/api/services/dashboardService'
 import { marketService } from '@/api/services/marketService'
 import { mockWebSocket } from '@/api/mockWebSocket'
+import { useHeaderSummary } from '@/composables/useHeaderSummary'
 
 vi.mock('@/api/services/dashboardService', () => ({
   default: {
@@ -83,6 +84,15 @@ describe('ArtDecoDashboard Logic Integration', () => {
     setActivePinia(createPinia())
     vi.clearAllMocks()
     wsMock.reset()
+    const headerSummary = useHeaderSummary()
+    headerSummary.update({
+      marketStatus: '',
+      activeStrategiesCount: null,
+      todayPnLValue: '¥0.00',
+      currentTime: '',
+      refreshing: false,
+    })
+    headerSummary.setRefreshFn(async () => {})
   })
 
   it('loads dashboard data on mount', async () => {
@@ -132,5 +142,18 @@ describe('ArtDecoDashboard Logic Integration', () => {
     wrapper.unmount()
 
     expect(mockWebSocket.unsubscribe).toHaveBeenCalledWith('market.trend.000001', expect.any(Function))
+  })
+
+  it('syncs dashboard summary data into the shared header store', async () => {
+    mountDashboard()
+    await flushMicrotasks()
+
+    const headerSummary = useHeaderSummary()
+
+    expect(headerSummary.marketStatus.value).toBe('市场震荡')
+    expect(headerSummary.activeStrategiesCount.value).toBe(0)
+    expect(headerSummary.todayPnLValue.value).toBe('¥0')
+    expect(headerSummary.currentTime.value).toBeTruthy()
+    expect(headerSummary.refreshing.value).toBe(false)
   })
 })

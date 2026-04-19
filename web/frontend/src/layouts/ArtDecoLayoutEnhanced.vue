@@ -6,13 +6,37 @@
     <!-- Main Content Area -->
     <main class="artdeco-main" :class="{ 'sidebar-collapsed': preferenceStore.sidebarCollapsed }">
       <!-- Top Bar: Core ArtDeco header -->
-      <ArtDecoHeader 
+      <ArtDecoHeader
         :unread-count="unreadCount"
         :user-name="userName"
         @open-command-palette="openCommandPalette"
         @open-notifications="toggleNotifications"
         @open-user-menu="toggleUserMenu"
-      />
+      >
+        <template #actions>
+          <div v-if="headerSummary.marketStatus.value" class="header-metrics">
+            <ArtDecoBadge variant="primary" pulse>
+              <ArtDecoIcon name="activity" />
+              {{ headerSummary.activeStrategiesCount.value ?? 0 }} 策略运行中
+            </ArtDecoBadge>
+            <ArtDecoBadge variant="success" pulse>
+              <ArtDecoIcon name="trending-up" />
+              {{ headerSummary.todayPnLValue.value }}
+            </ArtDecoBadge>
+          </div>
+          <div v-if="headerSummary.marketStatus.value" class="time-refresh">
+            <div class="time-display">
+              <ArtDecoIcon name="clock" />
+              <span class="time-value">{{ headerSummary.currentTime.value }}</span>
+            </div>
+            <ArtDecoButton variant="outline" size="sm"
+              @click="headerSummary.refresh()" :loading="headerSummary.refreshing.value">
+              <template #icon><ArtDecoIcon name="refresh" /></template>
+              刷新数据
+            </ArtDecoButton>
+          </div>
+        </template>
+      </ArtDecoHeader>
 
       <!-- Breadcrumb Navigation -->
       <div class="artdeco-breadcrumb-container">
@@ -56,6 +80,7 @@ import { useRoute } from 'vue-router'
 import { useMenuStore } from '@/stores/menuStore'
 import { usePreferenceStore } from '@/stores/preferenceStore'
 import { useLiveDataManager } from '@/composables/useLiveDataManager'
+import { useHeaderSummary } from '@/composables/useHeaderSummary'
 
 // ✅ 修正组件引用路径
 import ArtDecoSidebar from '@/components/artdeco/trading/ArtDecoCollapsibleSidebar.vue'
@@ -81,6 +106,9 @@ const devMode = import.meta.env.DEV
 
 // Live Data Management
 const { isConnected: isLiveDataConnected } = useLiveDataManager(ARTDECO_MENU_ITEMS)
+
+// Header Summary
+const headerSummary = useHeaderSummary()
 
 // Methods
 const openCommandPalette = () => {
@@ -196,5 +224,44 @@ const toggleUserMenu = () => {
 .fade-slide-leave-to {
   opacity: 0;
   transform: translateY(-10px);
+}
+.header-metrics {
+  display: flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-6);
+
+  :deep(.artdeco-badge) {
+    border: none;
+    background: transparent;
+  }
+}
+
+.time-refresh {
+  display: flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-3);
+
+  :deep(.artdeco-button) {
+    border: none;
+    background: transparent;
+
+    .artdeco-button__icon {
+      margin-right: 0 !important;
+      padding-right: 0 !important;
+    }
+  }
+
+  .time-display {
+    display: flex;
+    align-items: center;
+    gap: var(--artdeco-spacing-1);
+  }
+
+  .time-value {
+    font-family: var(--artdeco-font-mono);
+    font-size: var(--artdeco-text-xs);
+    color: var(--artdeco-gold-primary);
+    font-weight: 600;
+  }
 }
 </style>

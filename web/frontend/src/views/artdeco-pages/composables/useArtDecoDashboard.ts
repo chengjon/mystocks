@@ -1,5 +1,6 @@
 import { ref, computed, onMounted, onUnmounted, watch, type Ref } from 'vue'
 import { marketService } from '@/api/services/marketService'
+import { useHeaderSummary } from '@/composables/useHeaderSummary'
 import { mockWebSocket } from '@/api/mockWebSocket'
 import dashboardService from '@/api/services/dashboardService'
 import { extractKlineRows } from '../market-tabs/marketKlineData.ts'
@@ -375,6 +376,24 @@ export function useArtDecoDashboard() {
             timestamp: new Date().toLocaleString('zh-CN')
         }
     }
+
+    // Sync summary data to layout header
+    const headerSummary = useHeaderSummary()
+    headerSummary.setRefreshFn(refreshData)
+
+    watch(
+      [marketStatus, activeStrategiesCount, todayPnLValue, currentTime, refreshing],
+      () => {
+        headerSummary.update({
+          marketStatus: marketStatus.value,
+          activeStrategiesCount: activeStrategiesCount.value,
+          todayPnLValue: todayPnLValue.value,
+          currentTime: currentTime.value,
+          refreshing: refreshing.value,
+        })
+      },
+      { immediate: true }
+    )
 
     watch(activeFlowTab, () => {
         fetchStockFlowRanking()
