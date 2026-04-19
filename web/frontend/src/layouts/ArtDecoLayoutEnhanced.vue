@@ -15,7 +15,7 @@
       >
         <template #actions>
           <div v-if="headerSummary.marketStatus.value" class="header-metrics">
-            <ArtDecoBadge variant="primary" pulse>
+            <ArtDecoBadge variant="gold" pulse>
               <ArtDecoIcon name="activity" />
               {{ headerSummary.activeStrategiesCount.value ?? 0 }} 策略运行中
             </ArtDecoBadge>
