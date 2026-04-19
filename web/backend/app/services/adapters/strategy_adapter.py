@@ -93,7 +93,7 @@ class StrategyDataSourceAdapter(IDataSource):
 
         except Exception as e:
             self.metrics.record_error(time.time() - start_time, str(e))
-            logger.error("Strategy data fetch error: %(e)s")
+            logger.error("Strategy data fetch error: %s", e)
             raise
 
     async def _fetch_strategy_data(self, endpoint: str, params: Dict[str, Any]) -> Any:
@@ -190,8 +190,8 @@ class StrategyDataSourceAdapter(IDataSource):
             # 如果没有匹配的endpoint，返回默认数据
             return self._get_mock_strategy_data(endpoint, params)
 
-        except Exception:
-            logger.error("Strategy service error: %(e)s")
+        except Exception as e:
+            logger.error("Strategy service error: %s", e)
             # 降级到Mock数据
             if self._should_use_mock_fallback() and self._get_mock_manager():
                 return self._get_mock_strategy_data(endpoint, params)
@@ -316,7 +316,7 @@ class StrategyDataSourceAdapter(IDataSource):
             }
 
         except Exception as e:
-            logger.error("Mock strategy data generation error: %(e)s")
+            logger.error("Mock strategy data generation error: %s", e)
             return {"success": False, "error": str(e)}
 
     async def health_check(self) -> HealthStatus:
@@ -325,7 +325,7 @@ class StrategyDataSourceAdapter(IDataSource):
             start_time = time.time()
 
             # 检查策略服务可用性
-            service_available = self.strategy_service is not None
+            service_available = self._get_strategy_service() is not None
             mock_available = self._get_mock_manager() is not None
 
             # 基础健康检查
@@ -336,7 +336,7 @@ class StrategyDataSourceAdapter(IDataSource):
             if basic_healthy:
                 try:
                     # 尝试获取策略定义作为连接测试
-                    if self.strategy_service:
+                    if service_available:
                         self._get_strategy_service().get_strategy_definitions()
                     connection_test = True
                     self.last_successful_check = time.time()
@@ -347,17 +347,9 @@ class StrategyDataSourceAdapter(IDataSource):
 
             status = HealthStatusEnum.HEALTHY if (basic_healthy and connection_test) else HealthStatusEnum.FAILED
 
-            {
-                "service_available": service_available,
-                "mock_available": mock_available,
-                "connection_test": connection_test,
-                "cache_size": len(self._cache),
-                "response_time_ms": (time.time() - start_time) * 1000,
-            }
-
             return HealthStatus(
                 status=status,
-                response_time=0.0,
+                response_time=(time.time() - start_time) * 1000,
                 message=f"Strategy data source is {status.value}",
                 timestamp=datetime.now(),
             )
@@ -373,4 +365,3 @@ class StrategyDataSourceAdapter(IDataSource):
     def get_metrics(self) -> DataSourceMetrics:
         """获取监控指标"""
         return self.metrics
-

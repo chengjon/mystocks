@@ -70,7 +70,7 @@ class DashboardDataSourceAdapter(IDataSource):
             self._update_metrics(response_time, False)
             self.metrics.last_error = str(e)
 
-            logger.error("Dashboard数据获取失败: endpoint=%(endpoint)s, error={str(e)}")
+            logger.error("Dashboard数据获取失败: endpoint=%s, error=%s", endpoint, e)
             raise
 
     async def _generate_mock_dashboard_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
@@ -257,8 +257,8 @@ class DashboardDataSourceAdapter(IDataSource):
                 response_time=response_time,
                 success=success,
             )
-        except Exception:
-            logger.warning("Failed to trigger quality monitoring: {str(e)}")
+        except Exception as e:
+            logger.warning("Failed to trigger quality monitoring: %s", e)
 
     async def health_check(self) -> HealthStatus:
         """健康检查"""
@@ -267,8 +267,11 @@ class DashboardDataSourceAdapter(IDataSource):
             test_params = {"user_id": 999}
             await self._generate_mock_dashboard_data("summary", test_params)
 
-            # 基于响应时间和成功率确定健康状态
-            if self.metrics.response_time < 1000 and self.metrics.success_rate >= 95:
+            # 首次健康检查时没有历史请求，按冷启动通过处理
+            if self.total_requests == 0:
+                status = HealthStatusEnum.HEALTHY
+                message = "Dashboard service is healthy (cold start)"
+            elif self.metrics.response_time < 1000 and self.metrics.success_rate >= 95:
                 status = HealthStatusEnum.HEALTHY
                 message = f"Dashboard service is healthy (RT: {self.metrics.response_time:.2f}ms)"
             elif self.metrics.response_time < 2000 and self.metrics.success_rate >= 90:
@@ -305,5 +308,4 @@ class DashboardDataSourceAdapter(IDataSource):
 # ============================================================================
 # Technical Analysis Data Source Adapter
 # ============================================================================
-
 

@@ -93,7 +93,7 @@ class WatchlistDataSourceAdapter(IDataSource):
 
         except Exception as e:
             self.metrics.record_error(time.time() - start_time, str(e))
-            logger.error("Watchlist data fetch error: %(e)s")
+            logger.error("Watchlist data fetch error: %s", e)
             raise
 
     async def _fetch_watchlist_data(self, endpoint: str, params: Dict[str, Any]) -> Any:
@@ -216,8 +216,8 @@ class WatchlistDataSourceAdapter(IDataSource):
             # 如果没有匹配的endpoint，返回默认数据
             return self._get_mock_watchlist_data(endpoint, params)
 
-        except Exception:
-            logger.error("Watchlist service error: %(e)s")
+        except Exception as e:
+            logger.error("Watchlist service error: %s", e)
             # 降级到Mock数据
             if self._should_use_mock_fallback() and self._get_mock_manager():
                 return self._get_mock_watchlist_data(endpoint, params)
@@ -234,7 +234,7 @@ class WatchlistDataSourceAdapter(IDataSource):
             return mock_manager.get_data("watchlist", endpoint=endpoint, **params)
 
         except Exception as e:
-            logger.error("Mock watchlist data fetch failed for %(endpoint)s: {str(e)}")
+            logger.error("Mock watchlist data fetch failed for %s: %s", endpoint, e)
             return {
                 "success": False,
                 "error": f"Failed to fetch mock watchlist data: {str(e)}",
@@ -247,7 +247,7 @@ class WatchlistDataSourceAdapter(IDataSource):
             start_time = time.time()
 
             # 检查自选股服务可用性
-            service_available = self.watchlist_service is not None
+            service_available = self._get_watchlist_service() is not None
             mock_available = self._get_mock_manager() is not None
 
             # 基础健康检查
@@ -258,7 +258,7 @@ class WatchlistDataSourceAdapter(IDataSource):
             if basic_healthy:
                 try:
                     # 尝试获取自选股列表作为连接测试
-                    if self.mode != "mock":
+                    if service_available:
                         self._get_watchlist_service().get_user_watchlist(1)
                     connection_test = True
                     self.last_successful_check = time.time()
@@ -269,17 +269,9 @@ class WatchlistDataSourceAdapter(IDataSource):
 
             status = HealthStatusEnum.HEALTHY if (basic_healthy and connection_test) else HealthStatusEnum.FAILED
 
-            {
-                "service_available": service_available,
-                "mock_available": mock_available,
-                "connection_test": connection_test,
-                "cache_size": len(self._cache),
-                "response_time_ms": (time.time() - start_time) * 1000,
-            }
-
             return HealthStatus(
                 status=status,
-                response_time=0.0,
+                response_time=(time.time() - start_time) * 1000,
                 message=f"Watchlist data source is {status.value}",
                 timestamp=datetime.now(),
             )
