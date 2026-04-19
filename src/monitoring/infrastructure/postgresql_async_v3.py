@@ -676,3 +676,11 @@ class MonitoringPostgreSQLAccess:
         if row:
             return dict(row)
         return None
+
+
+# Re-export singleton helpers so callers can import from this module
+from src.monitoring.infrastructure._postgresql_async_v3_singleton import (  # noqa: E402
+    close_postgres_async,
+    get_postgres_async,
+    initialize_postgres_async,
+)

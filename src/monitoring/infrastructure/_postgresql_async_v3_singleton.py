@@ -31,8 +31,8 @@ async def initialize_postgres_async() -> bool:
     try:
         await instance.initialize()
         return True
-    except Exception:
-        logger.error("❌ 异步数据库初始化失败: %(e)s")
+    except Exception as exc:
+        logger.error("❌ 异步数据库初始化失败: %s", exc)
         return False
 
 

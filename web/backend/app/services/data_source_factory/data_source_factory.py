@@ -40,6 +40,10 @@ from .data_source_mode import (
 
 logger = logging.getLogger(__name__)
 
+
+def _log_unhealthy_data_source(source_name: str, health: HealthStatus) -> None:
+    logger.warning("Data source '%s' is %s: %s", source_name, health.status.value, health.message)
+
 class DataSourceFactory:
     """数据源工厂 - 核心工厂类"""
 
@@ -85,17 +89,17 @@ class DataSourceFactory:
                 self._source_configs[source_name] = config
 
                 if not config.enabled:
-                    logger.info("Data source '%(source_name)s' is disabled, skipping")
+                    logger.info("Data source '%s' is disabled, skipping", source_name)
                     continue
 
                 # 创建数据源实例
                 data_source = await self._create_single_data_source(config)
                 self._data_sources[source_name] = data_source
 
-                logger.info("Data source '%(source_name)s' created successfully (mode: {config.mode})")
+                logger.info("Data source '%s' created successfully (mode: %s)", source_name, config.mode)
 
-            except Exception:
-                logger.error("Failed to create data source '%(source_name)s': %(e)s")
+            except Exception as e:
+                logger.error("Failed to create data source '%s': %s", source_name, e)
 
     async def _create_single_data_source(self, config: DataSourceConfig) -> IDataSource:
         """创建单个数据源实例"""
@@ -164,14 +168,14 @@ class DataSourceFactory:
         try:
             return await self.get_data(source_name, endpoint, params)
         except Exception as e:
-            logger.warning("Primary data source '%(source_name)s' failed: %(e)s")
+            logger.warning("Primary data source '%s' failed: %s", source_name, e)
 
             # 尝试找到Mock数据源作为fallback
             mock_source_name = f"{source_name}_mock"
             mock_source = await self.get_data_source(mock_source_name)
 
             if mock_source:
-                logger.info("Using fallback data source '%(mock_source_name)s'")
+                logger.info("Using fallback data source '%s'", mock_source_name)
                 return await mock_source.get_data(endpoint, params)
             else:
                 raise e
@@ -197,7 +201,7 @@ class DataSourceFactory:
             try:
                 health_results[source_name] = await data_source.health_check()
             except Exception as e:
-                logger.error("Health check failed for '%(source_name)s': %(e)s")
+                logger.error("Health check failed for '%s': %s", source_name, e)
                 health_results[source_name] = HealthStatus(
                     status=HealthStatusEnum.FAILED,
                     response_time=0,
@@ -217,10 +221,10 @@ class DataSourceFactory:
                 # 记录不健康的数据源
                 for source_name, health in health_results.items():
                     if health.status != HealthStatusEnum.HEALTHY:
-                        logger.warning("Data source '%(source_name)s' is {health.status.value}: {health.message}")
+                        _log_unhealthy_data_source(source_name, health)
 
-            except Exception:
-                logger.error("Health check loop error: %(e)s")
+            except Exception as e:
+                logger.error("Health check loop error: %s", e)
 
     async def _on_config_changed(self, old_config: Dict[str, Any], new_config: Dict[str, Any]):
         """配置变化处理器"""
@@ -235,17 +239,17 @@ class DataSourceFactory:
 
             logger.info("Data sources recreated successfully")
 
-        except Exception:
-            logger.error("Failed to recreate data sources: %(e)s")
+        except Exception as e:
+            logger.error("Failed to recreate data sources: %s", e)
 
     async def _cleanup_data_sources(self):
         """清理数据源"""
         for source_name, data_source in self._data_sources.items():
             try:
                 await data_source.cleanup()
-                logger.debug("Data source '%(source_name)s' cleaned up")
-            except Exception:
-                logger.error("Failed to cleanup data source '%(source_name)s': %(e)s")
+                logger.debug("Data source '%s' cleaned up", source_name)
+            except Exception as e:
+                logger.error("Failed to cleanup data source '%s': %s", source_name, e)
 
         self._data_sources.clear()
         self._source_configs.clear()
