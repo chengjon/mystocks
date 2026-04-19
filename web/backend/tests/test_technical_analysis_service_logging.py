@@ -3,6 +3,8 @@ import pandas as pd
 from app.services.technical_analysis_service import (
     TechnicalAnalysisService,
     _normalize_history_period,
+    _TRANSIENT_HISTORY_WARNING_CACHE_MAX_ENTRIES,
+    _TRANSIENT_HISTORY_WARNING_SUPPRESSION_SECONDS,
 )
 
 
@@ -27,6 +29,7 @@ def test_get_stock_history_logs_real_symbol_and_error(monkeypatch, caplog):
 
 def test_get_stock_history_logs_transient_upstream_disconnect_as_warning(monkeypatch, caplog):
     service = TechnicalAnalysisService()
+    service._transient_history_warning_cache.clear()
 
     class _TransientAkshare:
         @staticmethod
@@ -46,6 +49,66 @@ def test_get_stock_history_logs_transient_upstream_disconnect_as_warning(monkeyp
     assert "000001" in caplog.text
     assert "Remote end closed connection" in caplog.text
     assert not [record for record in caplog.records if record.levelname == "ERROR"]
+
+
+def test_get_stock_history_suppresses_duplicate_transient_warning_within_window(monkeypatch, caplog):
+    service = TechnicalAnalysisService()
+    service._transient_history_warning_cache.clear()
+
+    class _TransientAkshare:
+        @staticmethod
+        def stock_zh_a_hist(**_kwargs):
+            raise ConnectionError("Connection aborted. Remote end closed connection without response")
+
+    monkeypatch.setattr(
+        "app.services.technical_analysis_service._get_akshare_module",
+        lambda _feature: _TransientAkshare,
+    )
+
+    with caplog.at_level("WARNING"):
+        first = service.get_stock_history("000001")
+        second = service.get_stock_history("000001")
+
+    assert first.empty
+    assert second.empty
+    warning_records = [
+        record
+        for record in caplog.records
+        if record.levelname == "WARNING" and "Failed to get stock history for 000001" in record.getMessage()
+    ]
+    assert len(warning_records) == 1
+
+
+def test_transient_history_warning_cache_prunes_expired_entries():
+    service = TechnicalAnalysisService()
+    service._transient_history_warning_cache = {
+        "expired": (
+            "Connection aborted",
+            pd.Timestamp.now().to_pydatetime()
+            - pd.Timedelta(seconds=_TRANSIENT_HISTORY_WARNING_SUPPRESSION_SECONDS + 1).to_pytimedelta(),
+        ),
+        "fresh": ("Connection aborted", pd.Timestamp.now().to_pydatetime()),
+    }
+
+    should_log = service._should_log_transient_history_warning("fresh-2", "Connection aborted")
+
+    assert should_log is True
+    assert "expired" not in service._transient_history_warning_cache
+    assert "fresh" in service._transient_history_warning_cache
+    assert "fresh-2" in service._transient_history_warning_cache
+
+
+def test_transient_history_warning_cache_caps_entry_count():
+    service = TechnicalAnalysisService()
+    now = pd.Timestamp.now().to_pydatetime()
+    service._transient_history_warning_cache = {
+        f"key-{idx}": ("Connection aborted", now)
+        for idx in range(_TRANSIENT_HISTORY_WARNING_CACHE_MAX_ENTRIES + 5)
+    }
+
+    service._prune_transient_history_warning_cache()
+
+    assert len(service._transient_history_warning_cache) == _TRANSIENT_HISTORY_WARNING_CACHE_MAX_ENTRIES
 
 
 def test_normalize_history_period_maps_window_alias_to_daily_range():

@@ -9,6 +9,7 @@ PostgreSQL数据访问层
 """
 
 import logging
+import warnings
 from contextlib import contextmanager
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
@@ -20,6 +21,39 @@ from psycopg2.extras import execute_values
 from src.storage.database.connection_manager import get_connection_manager
 
 logger = logging.getLogger(__name__)
+
+_PANDAS_DBAPI_WARNING_PATTERN = (
+    "pandas only supports SQLAlchemy connectable"
+)
+_ALLOWED_TABLES = {
+    "daily_kline",
+    "minute_kline",
+    "tick_data",
+    "symbols_info",
+    "technical_indicators",
+    "quantitative_factors",
+    "model_outputs",
+    "trading_signals",
+    "order_records",
+    "transaction_records",
+    "position_records",
+    "account_funds",
+    "realtime_quotes",
+    "market_data",
+    "stock_basic",
+    "trade_cal",
+    "income_statement",
+    "balance_sheet",
+    "cash_flow",
+    "financial_indicators",
+    "monitoring_logs",
+    "alerts",
+    "system_metrics",
+    "concepts",
+    "industries",
+    "transaction_log",
+}
+_MAX_QUERY_LIMIT = 10000
 
 
 class PostgreSQLDataAccess:
@@ -75,6 +109,30 @@ class PostgreSQLDataAccess:
         """归还连接到连接池"""
         if self.pool:
             self.pool.putconn(conn)
+
+    @contextmanager
+    def _suppress_pandas_dbapi_warning(self):
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore",
+                message=_PANDAS_DBAPI_WARNING_PATTERN,
+                category=UserWarning,
+            )
+            yield
+
+    def _validate_table_name(self, table_name: str) -> None:
+        if table_name not in _ALLOWED_TABLES:
+            raise ValueError(f"Invalid table name: {table_name}")
+
+    def _validate_where_clause(self, where: str) -> None:
+        if any(x in where.lower() for x in [";", "--", "drop", "truncate"]):
+            raise ValueError("Potentially dangerous SQL pattern")
+
+    def _validate_limit(self, limit: Optional[int]) -> None:
+        if limit is None:
+            return
+        if limit <= 0 or limit > _MAX_QUERY_LIMIT:
+            raise ValueError("Invalid limit value")
 
     @contextmanager
     def transaction_scope(self):
@@ -246,37 +304,8 @@ class PostgreSQLDataAccess:
         """通用查询"""
         conn = self._get_connection()
         try:
-            # SECURITY FIX: Whitelist table names
-            ALLOWED_TABLES = {
-                "daily_kline",
-                "minute_kline",
-                "tick_data",
-                "symbols_info",
-                "technical_indicators",
-                "quantitative_factors",
-                "model_outputs",
-                "trading_signals",
-                "order_records",
-                "transaction_records",
-                "position_records",
-                "account_funds",
-                "realtime_quotes",
-                "market_data",
-                "stock_basic",
-                "trade_cal",
-                "income_statement",
-                "balance_sheet",
-                "cash_flow",
-                "financial_indicators",
-                "monitoring_logs",
-                "alerts",
-                "system_metrics",
-                "concepts",
-                "industries",
-                "transaction_log",  # Added transaction_log
-            }
-            if table_name not in ALLOWED_TABLES:
-                raise ValueError(f"Invalid table name: {table_name}")
+            self._validate_table_name(table_name)
+            self._validate_limit(limit)
 
             if columns:
                 # Basic validation for columns
@@ -297,8 +326,7 @@ class PostgreSQLDataAccess:
                     sql_query = sql.SQL("{} WHERE {}").format(sql_query, sql.SQL(where))
                 else:
                     # Simple validation
-                    if any(x in where.lower() for x in [";", "--", "drop", "truncate"]):
-                        raise ValueError("Potentially dangerous SQL pattern")
+                    self._validate_where_clause(where)
                     sql_query = sql.SQL("{} WHERE {}").format(sql_query, sql.SQL(where))
 
             if order_by:
@@ -310,7 +338,8 @@ class PostgreSQLDataAccess:
             if limit:
                 sql_query = sql.SQL("{} LIMIT {}").format(sql_query, sql.Literal(limit))
 
-            df = pd.read_sql(sql_query.as_string(conn), conn, params=params)
+            with self._suppress_pandas_dbapi_warning():
+                df = pd.read_sql(sql_query.as_string(conn), conn, params=params)
             return df
 
         except Exception as e:
@@ -349,7 +378,8 @@ class PostgreSQLDataAccess:
         try:
             # 如果是 SELECT 语句，返回 DataFrame
             if sql_str.strip().upper().startswith("SELECT"):
-                df = pd.read_sql(sql_str, conn, params=params)
+                with self._suppress_pandas_dbapi_warning():
+                    df = pd.read_sql(sql_str, conn, params=params)
                 return df
             else:
                 # 如果是 UPDATE/INSERT/DELETE
@@ -373,6 +403,9 @@ class PostgreSQLDataAccess:
         """删除数据"""
         conn = self._get_connection()
         try:
+            self._validate_table_name(table_name)
+            if params is None:
+                self._validate_where_clause(where)
             if params:
                 sql = f"DELETE FROM {table_name} WHERE {where}"
                 cursor = conn.cursor()

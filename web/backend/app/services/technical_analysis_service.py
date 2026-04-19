@@ -49,6 +49,8 @@ _TRANSIENT_HISTORY_FETCH_ERROR_HINTS = (
     "temporarily unavailable",
     "connection reset",
 )
+_TRANSIENT_HISTORY_WARNING_SUPPRESSION_SECONDS = 60
+_TRANSIENT_HISTORY_WARNING_CACHE_MAX_ENTRIES = 1024
 
 
 def _normalize_history_period(
@@ -123,9 +125,55 @@ class TechnicalAnalysisService:
         # 数据缓存
         self._cache = {}
         self._cache_ttl = 300  # 5分钟缓存
+        self._transient_history_warning_cache: dict[str, tuple[str, datetime]] = {}
 
         self._initialized = True
         logger.info("TechnicalAnalysisService initialized")
+
+    def _build_history_warning_cache_key(
+        self,
+        symbol: str,
+        period: str,
+        start_date: Optional[str],
+        end_date: Optional[str],
+        adjust: str,
+    ) -> str:
+        return f"{symbol}|{period}|{start_date}|{end_date}|{adjust}"
+
+    def _should_log_transient_history_warning(self, cache_key: str, error_message: str) -> bool:
+        self._prune_transient_history_warning_cache()
+        cached = self._transient_history_warning_cache.get(cache_key)
+        now = datetime.now()
+
+        if cached is None:
+            self._transient_history_warning_cache[cache_key] = (error_message, now)
+            return True
+
+        cached_message, cached_time = cached
+        if (
+            cached_message == error_message
+            and (now - cached_time).total_seconds() < _TRANSIENT_HISTORY_WARNING_SUPPRESSION_SECONDS
+        ):
+            return False
+
+        self._transient_history_warning_cache[cache_key] = (error_message, now)
+        return True
+
+    def _prune_transient_history_warning_cache(self) -> None:
+        now = datetime.now()
+        fresh_cache = {
+            key: value
+            for key, value in self._transient_history_warning_cache.items()
+            if (now - value[1]).total_seconds() < _TRANSIENT_HISTORY_WARNING_SUPPRESSION_SECONDS
+        }
+
+        if len(fresh_cache) > _TRANSIENT_HISTORY_WARNING_CACHE_MAX_ENTRIES:
+            freshest_entries = sorted(fresh_cache.items(), key=lambda item: item[1][1], reverse=True)[
+                :_TRANSIENT_HISTORY_WARNING_CACHE_MAX_ENTRIES
+            ]
+            fresh_cache = dict(freshest_entries)
+
+        self._transient_history_warning_cache = fresh_cache
 
     # ========================================================================
     # 数据获取
@@ -154,6 +202,7 @@ class TechnicalAnalysisService:
         ak_module = _get_akshare_module("technical analysis history fetch")
         if ak_module is None:
             return pd.DataFrame()
+        cache_key = self._build_history_warning_cache_key(symbol, period, start_date, end_date, adjust)
         try:
             period, start_date, end_date = _normalize_history_period(period, start_date, end_date)
 
@@ -226,8 +275,12 @@ class TechnicalAnalysisService:
             return df
 
         except Exception as exc:
-            log_method = logger.warning if _is_transient_history_fetch_error(exc) else logger.error
-            log_method("Failed to get stock history for %s: %s", symbol, exc)
+            if _is_transient_history_fetch_error(exc):
+                error_message = str(exc)
+                if self._should_log_transient_history_warning(cache_key, error_message):
+                    logger.warning("Failed to get stock history for %s: %s", symbol, exc)
+            else:
+                logger.error("Failed to get stock history for %s: %s", symbol, exc)
             return pd.DataFrame()
 
     # ========================================================================

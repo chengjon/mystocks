@@ -236,6 +236,8 @@ class TestPostgreSQLDataAccessBasic:
     def test_query_limit_is_forwarded_to_sql_builder(self, data_access):
         """测试超范围 limit 会被安全校验拦截"""
         with pytest.raises(ValueError, match="Invalid limit value"):
+            data_access.query("daily_kline", limit=-1)
+        with pytest.raises(ValueError, match="Invalid limit value"):
             data_access.query("daily_kline", limit=999999)
 
     def test_query_dangerous_where(self, data_access):
