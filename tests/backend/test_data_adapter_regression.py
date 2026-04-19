@@ -19,7 +19,7 @@ from app.services.data_adapter import (
 
 @pytest.fixture
 def mock_db_service():
-    with patch("app.services.data_adapters.data_source.db_service") as mock:
+    with patch("app.services.adapters.data_adapter.db_service") as mock:
         yield mock
 
 @pytest.fixture
@@ -87,6 +87,90 @@ async def test_technical_adapter_indicators():
         
         assert result["success"] is True
         assert result["data"]["rsi"] == 50
+
+
+@pytest.mark.asyncio
+async def test_technical_adapter_indicators_falls_back_to_mock_when_real_returns_error():
+    adapter = TechnicalAnalysisDataSourceAdapter({"name": "test", "fallback_enabled": True})
+
+    with (
+        patch.object(adapter, "_get_technical_service") as mock_service_getter,
+        patch.object(adapter, "_get_mock_manager") as mock_mock_manager_getter,
+    ):
+        mock_service = MagicMock()
+        mock_service_getter.return_value = mock_service
+        mock_service.calculate_all_indicators.return_value = {"error": "No data available"}
+
+        mock_manager = MagicMock()
+        mock_manager.get_data.return_value = {
+            "indicators": {
+                "trend": {"ma5": 10.5},
+                "momentum": {"rsi6": 65.5},
+                "volatility": {"bb_upper": 12.5},
+                "volume": {"obv": 1250000},
+            },
+            "signals": {"overall_signal": "hold"},
+        }
+        mock_mock_manager_getter.return_value = mock_manager
+
+        result = await adapter.get_data("indicators", {"symbol": "000001"})
+
+        assert result["success"] is True
+        assert result["data"]["trend"]["ma5"] == 10.5
+        mock_manager.get_data.assert_called_once_with("technical", symbol="000001")
+
+
+@pytest.mark.asyncio
+async def test_technical_adapter_signals_falls_back_to_mock_when_real_returns_error():
+    adapter = TechnicalAnalysisDataSourceAdapter({"name": "test", "fallback_enabled": True})
+
+    with (
+        patch.object(adapter, "_get_trading_signals", return_value={"error": "Insufficient data"}),
+        patch.object(adapter, "_get_mock_manager") as mock_mock_manager_getter,
+    ):
+        mock_manager = MagicMock()
+        mock_manager.get_data.return_value = {
+            "indicators": {},
+            "signals": {"overall_signal": "hold", "signal_strength": 0.5, "signals": []},
+        }
+        mock_mock_manager_getter.return_value = mock_manager
+
+        result = await adapter.get_data("signals", {"symbol": "000001"})
+
+        assert result["success"] is True
+        assert result["data"]["overall_signal"] == "hold"
+        mock_manager.get_data.assert_called_once_with("technical", symbol="000001")
+
+
+@pytest.mark.asyncio
+async def test_technical_adapter_falls_back_to_mock_when_service_init_fails():
+    adapter = TechnicalAnalysisDataSourceAdapter({"name": "test", "fallback_enabled": True})
+
+    with (
+        patch.object(
+            adapter,
+            "_get_technical_service",
+            side_effect=RuntimeError("technical service boot failed"),
+        ),
+        patch.object(adapter, "_get_mock_manager") as mock_mock_manager_getter,
+    ):
+        mock_manager = MagicMock()
+        mock_manager.get_data.return_value = {
+            "indicators": {
+                "trend": {"ma5": 10.5},
+                "momentum": {"rsi6": 65.5},
+                "volatility": {"bb_upper": 12.5},
+                "volume": {"obv": 1250000},
+            },
+            "signals": {"overall_signal": "hold", "signal_strength": 0.5, "signals": []},
+        }
+        mock_mock_manager_getter.return_value = mock_manager
+
+        result = await adapter.get_data("signals", {"symbol": "000001"})
+
+        assert result["success"] is True
+        assert result["data"]["overall_signal"] == "hold"
+        mock_manager.get_data.assert_called_once_with("technical", symbol="000001")
 
 # --- StrategyDataSourceAdapter Tests ---
 
