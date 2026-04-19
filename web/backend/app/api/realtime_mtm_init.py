@@ -39,7 +39,7 @@ def get_database_session() -> Session:
         SessionLocal = sessionmaker(bind=_engine)
         _db_session = SessionLocal()
 
-        logger.info("✅ Database session created: %(database_url)s")
+        logger.info("✅ Database session created", database_url=database_url)
 
     return _db_session
 
@@ -62,8 +62,8 @@ def initialize_realtime_mtm():
             redis_kwargs = get_redis_connection_kwargs("monitoring_events", decode_responses=True)
             event_bus = RedisEventBus(host=redis_kwargs["host"], port=redis_kwargs["port"], db=redis_kwargs["db"], password=redis_kwargs["password"])
             logger.info("✅ Redis Event Bus connected for Real-time MTM")
-        except Exception:
-            logger.warning("⚠️ Redis not available for Real-time MTM: %(e)s")
+        except Exception as exc:
+            logger.warning("⚠️ Redis not available for Real-time MTM", error=str(exc))
 
         # 初始化适配器
         from web.backend.app.api.realtime_mtm_adapter import initialize_adapter
@@ -73,8 +73,8 @@ def initialize_realtime_mtm():
         logger.info("✅ Real-time MTM system initialized successfully")
         return adapter
 
-    except Exception:
-        logger.error("❌ Failed to initialize Real-time MTM: %(e)s")
+    except Exception as exc:
+        logger.error("❌ Failed to initialize Real-time MTM", error=str(exc))
         raise
 
 
@@ -105,8 +105,8 @@ def shutdown_realtime_mtm():
             _engine = None
             logger.info("✅ Database engine disposed")
 
-    except Exception:
-        logger.error("❌ Error shutting down Real-time MTM: %(e)s")
+    except Exception as exc:
+        logger.error("❌ Error shutting down Real-time MTM", error=str(exc))
 
 
 # FastAPI 生命周期事件处理器
