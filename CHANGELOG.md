@@ -6,6 +6,21 @@
 >
 > 文内版本状态、验证结果、阶段命名和变更摘要如未重新复核，应视为对应版本的历史快照，不得直接当作当前事实。
 
+## 2026-04-19 — Frontend Header Summary 回归修复
+
+### 前端修复
+
+- **Dashboard header 摘要状态跨路由残留**：`useHeaderSummary` 采用模块级共享状态后，Dashboard 卸载时未清理摘要数据和刷新回调，导致离开 `/dashboard` 后其他页面仍继续显示旧的策略数 / 收益 / 时间，并且 layout header 的“刷新数据”按钮仍会调用已脱离当前路由上下文的 dashboard 刷新逻辑。现已补齐收口：
+  - `useHeaderSummary()` 新增 `reset()`，统一清空共享摘要状态与 `_refreshFn`
+  - `useArtDecoDashboard()` 在 `onUnmounted` 中调用 `headerSummary.reset()`，确保离开 Dashboard 后 layout header 不再保留过期摘要
+  - 文件：`web/frontend/src/composables/useHeaderSummary.ts`
+  - 文件：`web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts`
+
+### 验证结果
+
+- `git diff --check -- web/frontend/src/composables/useHeaderSummary.ts web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts` → 通过
+- 本次仅完成代码级修复与 diff 完整性检查，未重新执行前端 build / typecheck / E2E
+
 ## 2026-04-18 — Playwright 全页面验证与后端 Schema 修复
 
 ### 前端修复

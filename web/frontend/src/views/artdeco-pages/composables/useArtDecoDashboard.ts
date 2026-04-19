@@ -418,6 +418,7 @@ export function useArtDecoDashboard() {
         if (timeInterval) {
             clearInterval(timeInterval)
         }
+        headerSummary.reset()
         mockWebSocket.unsubscribe('market.trend.000001', handleTrendUpdate)
     })
 

@@ -7,6 +7,15 @@ const currentTime = ref('')
 const refreshing = ref(false)
 let _refreshFn: (() => Promise<void>) | null = null
 
+function resetSummaryState() {
+  marketStatus.value = ''
+  activeStrategiesCount.value = null
+  todayPnLValue.value = '¥0.00'
+  currentTime.value = ''
+  refreshing.value = false
+  _refreshFn = null
+}
+
 export function useHeaderSummary() {
   function update(data: {
     marketStatus?: string
@@ -30,6 +39,10 @@ export function useHeaderSummary() {
     await _refreshFn?.()
   }
 
+  function reset() {
+    resetSummaryState()
+  }
+
   return {
     marketStatus,
     activeStrategiesCount,
@@ -39,5 +52,6 @@ export function useHeaderSummary() {
     update,
     setRefreshFn,
     refresh,
+    reset,
   }
 }
